@@ -86,6 +86,7 @@ namespace MonoDevelop.Ide.Gui
 			
 		}
 		public event EventHandler TitleChanged { add {} remove {} }
+		public event EventHandler DocumentChanged;
 		public event MonoDevelop.Ide.Gui.WorkbenchWindowEventHandler Closing;
 		public event MonoDevelop.Ide.Gui.WorkbenchWindowEventHandler Closed;
 		public event MonoDevelop.Ide.Gui.ActiveViewContentEventHandler ActiveViewContentChanged;

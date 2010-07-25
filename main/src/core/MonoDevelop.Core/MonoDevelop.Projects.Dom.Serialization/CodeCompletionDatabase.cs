@@ -59,8 +59,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		Dictionary<string, List<ClassEntry>> classEntries = new Dictionary<string, List<ClassEntry>> ();
 		Dictionary<string, List<ClassEntry>> classEntriesIgnoreCase = new Dictionary<string, List<ClassEntry>> (StringComparer.InvariantCultureIgnoreCase);
 
-		Dictionary<string, HashSet<string>> namespaceEntries = new Dictionary<string, HashSet<string>> ();
-		Dictionary<string, HashSet<string>> namespaceEntriesIgnoreCase = new Dictionary<string, HashSet<string>> (StringComparer.InvariantCultureIgnoreCase);
+		Dictionary<string, List<Namespace>> namespaceEntries = new Dictionary<string, List<Namespace>> ();
+		Dictionary<string, List<Namespace>> namespaceEntriesIgnoreCase = new Dictionary<string, List<Namespace>> (StringComparer.InvariantCultureIgnoreCase);
 		// TODO: Table for inner types. Problem A.Inner could be B.Inner if B inherits from A.
 		
 		List<ReferenceEntry> references;
@@ -100,24 +100,32 @@ namespace MonoDevelop.Projects.Dom.Serialization
 
 			classEntries.Clear ();
 			classEntriesIgnoreCase.Clear ();
-			HashSet<string> namespaceAlreadyAdded = new HashSet<string> ();
 			namespaceEntries.Clear ();
 			namespaceEntriesIgnoreCase.Clear ();
+			namespaceEntriesIgnoreCase[""] = namespaceEntries[""] = new List<Namespace> ();
 			foreach (ClassEntry ce in typeEntries.Values) {
 				if (!classEntries.ContainsKey (ce.Namespace))
 					classEntriesIgnoreCase[ce.Namespace] = classEntries[ce.Namespace] = new List<ClassEntry> ();
 				classEntries[ce.Namespace].Add (ce);
-				if (namespaceAlreadyAdded.Contains (ce.Namespace))
-					continue;
-				namespaceAlreadyAdded.Add (ce.Namespace);
-				string[] path = ce.Namespace.Split ('.');
-				for (int i = 0; i < path.Length; i++) {
-					string ns = i > 0 ? string.Join (".", path, 0, i) : "";
-					if (!namespaceEntries.ContainsKey (ns)) 
-						namespaceEntriesIgnoreCase[ns] = namespaceEntries[ns] = new HashSet<string> ();
-					namespaceEntries[ns].Add (path [i]);
-				}
+				AddNamespace (ce.Namespace);
 			}
+		}
+
+		public void AddNamespace (string nsName)
+		{
+			if (namespaceEntries.ContainsKey (nsName))
+				return;
+			namespaceEntriesIgnoreCase[nsName] = namespaceEntries[nsName] = new List<Namespace> ();
+			
+			int idx = nsName.LastIndexOf ('.');
+			if (idx < 0) {
+				namespaceEntries[""].Add (new Namespace (nsName));
+				return;
+			}
+			string parent = nsName.Substring (0, idx);
+			string name   = nsName.Substring (idx + 1);
+			AddNamespace (parent);
+			namespaceEntries[parent].Add (new Namespace (name));
 		}
 
 		public SerializationCodeCompletionDatabase (ParserDatabase pdb, bool handlesCommentTags)
@@ -1231,16 +1239,16 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			this.typeEntries.TryGetValue (ParserDatabase.GetDecoratedName (fullName, genericArgumentCount), out ce);
 			return ce;
 		}
-		
+
 		public void GetNamespaceContents (List<IMember> list, string subNameSpace, bool caseSensitive)
 		{
 			lock (rwlock) {
 				List<ClassEntry> classList;
 				if ((caseSensitive ? classEntries : classEntriesIgnoreCase).TryGetValue (subNameSpace, out classList))
 					list.AddRange (from c in classList where c.Name.IndexOfAny (new char[] { '<', '>' }) < 0 select (IMember)GetClass (c));
-				HashSet<string> namespaceList;
+				List<Namespace> namespaceList;
 				if ((caseSensitive ? namespaceEntries : namespaceEntriesIgnoreCase).TryGetValue (subNameSpace, out namespaceList))
-					list.AddRange (from n in namespaceList select (IMember)new Namespace (n));
+					list.AddRange (namespaceList.Cast<IMember> ());
 			}
 		}
 
@@ -1314,7 +1322,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		public bool NamespaceExists (string name, bool caseSensitive)
 		{
 			lock (rwlock) {
-				return (caseSensitive ? classEntries : classEntriesIgnoreCase).ContainsKey (name);
+				return (caseSensitive ? namespaceEntries : namespaceEntriesIgnoreCase).ContainsKey (name);
 			}
 		}
 		

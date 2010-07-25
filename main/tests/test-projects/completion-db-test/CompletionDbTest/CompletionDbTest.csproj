@@ -37,6 +37,7 @@
     <Compile Include="GenericRewrite.cs" />
     <Compile Include="PartialTest1.cs" />
     <Compile Include="PartialTest2.cs" />
+    <Compile Include="NamespaceTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -43,6 +43,8 @@ namespace MonoDevelop.VersionControl.Views
 		ListStore logstore;
 		public void ShowHistory ()
 		{
+			if (history == null)
+				return;
 			foreach (Revision d in history) {
 				logstore.AppendValues(
 					d.ToString (),

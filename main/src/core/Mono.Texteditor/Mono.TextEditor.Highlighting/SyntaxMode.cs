@@ -399,6 +399,8 @@ namespace Mono.TextEditor.Highlighting
 
 			public void ParseSpans (int offset, int length)
 			{
+				if (offset < 0 || offset >= doc.Length || length <= 0)
+					return;
 				StartOffset = offset;
 				CurText = doc.GetTextAt (offset, length);
 				maxEnd = offset + length;

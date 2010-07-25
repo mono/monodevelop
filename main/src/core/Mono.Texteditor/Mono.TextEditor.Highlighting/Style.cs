@@ -612,6 +612,8 @@ namespace Mono.TextEditor.Highlighting
 		
 		public ChunkStyle GetChunkStyle (string name)
 		{
+			if (name == null)
+				return GetDefaultChunkStyle ();
 			ChunkStyle style;
 			if (styleLookupTable.TryGetValue (name, out style))
 				return style;

@@ -1704,7 +1704,6 @@ namespace MonoDevelop.CSharp.Completion
 		
 		CompletionDataList CreateCtrlSpaceCompletionData (CodeCompletionContext ctx, ExpressionResult expressionResult)
 		{
-			Console.WriteLine ("expression result:" + expressionResult.ExpressionContext);
 			NRefactoryResolver resolver = CreateResolver ();
 			
 			DomLocation cursorLocation = new DomLocation (ctx.TriggerLine, ctx.TriggerLineOffset);

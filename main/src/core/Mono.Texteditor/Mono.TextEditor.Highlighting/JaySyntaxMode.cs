@@ -107,24 +107,23 @@ namespace Mono.TextEditor.Highlighting
 			protected override void ScanSpan (ref int i)
 			{
 				bool hasJayDefinitonSpan = spanStack.Any (s => s is JayDefinitionSpan);
+				int textOffset = i - StartOffset;
 				
-				if (i + 1 < doc.Length && doc.GetCharAt (i) == '%')  {
-					char next = doc.GetCharAt (i + 1);
+				if (textOffset + 1 < CurText.Length && CurText[textOffset] == '%')  {
+					char next = CurText[textOffset + 1];
 					if (next == '{') {
-						ForcedJayBlockSpan forcedBlockSpan = new ForcedJayBlockSpan ();
-						FoundSpanBegin (forcedBlockSpan, i, 2);
+						FoundSpanBegin (new ForcedJayBlockSpan (), i, 2);
 						i++;
 						return;
 					}
 					
 					if (!hasJayDefinitonSpan && next == '%') {
-						JayDefinitionSpan jayDefinitionSpan = new JayDefinitionSpan ();
-						FoundSpanBegin (jayDefinitionSpan, i, 2);
+						FoundSpanBegin (new JayDefinitionSpan (), i, 2);
 						return;
 					}
 					
 					if (next == '}' && spanStack.Any (s => s is ForcedJayBlockSpan)) {
-						foreach (Span span in spanStack.ToArray ().Reverse ()) {
+						foreach (Span span in spanStack.Clone ()) {
 							FoundSpanEnd (span, i, span.End.Pattern.Length);
 							if (span is ForcedJayBlockSpan)
 								break;
@@ -134,12 +133,10 @@ namespace Mono.TextEditor.Highlighting
 				}
 				
 				
-				if (CurSpan is JayDefinitionSpan && doc.GetCharAt (i) == '{' && hasJayDefinitonSpan && !spanStack.Any (s => s is JayBlockSpan)) {
-					JayBlockSpan jayBlockSpan = new JayBlockSpan (i);
-					FoundSpanBegin (jayBlockSpan, i, 1);
+				if (CurSpan is JayDefinitionSpan && CurText[textOffset] == '{' && hasJayDefinitonSpan && !spanStack.Any (s => s is JayBlockSpan)) {
+					FoundSpanBegin (new JayBlockSpan (i), i, 1);
 					return;
 				}
-				
 				
 				base.ScanSpan (ref i);
 			}
@@ -147,8 +144,9 @@ namespace Mono.TextEditor.Highlighting
 			protected override bool ScanSpanEnd (Mono.TextEditor.Highlighting.Span cur, ref int i)
 			{
 				JayBlockSpan jbs = cur as JayBlockSpan;
+				int textOffset = i - StartOffset;
 				if (jbs != null) {
-					if (doc.GetCharAt (i) == '}') {
+					if (CurText[textOffset] == '}') {
 						int brackets = 0;
 						bool isInString = false, isInChar = false, isVerbatimString = false;
 						bool isInLineComment  = false, isInBlockComment = false;
@@ -218,14 +216,14 @@ namespace Mono.TextEditor.Highlighting
 				}
 				
 				if (cur is ForcedJayBlockSpan) {
-					if (i + 1 < doc.Length && doc.GetCharAt (i) == '%' && doc.GetCharAt (i + 1) == '}') {
+					if (textOffset + 1 < CurText.Length && CurText[textOffset] == '%' && CurText[textOffset + 1] == '}') {
 						FoundSpanEnd (cur, i, 2);
 						return true;
 					}
 				}
 				
 				if (cur is JayDefinitionSpan) {
-					if (i + 1 < doc.Length && doc.GetCharAt (i) == '%' && doc.GetCharAt (i + 1) == '%') {
+					if (textOffset + 1 < CurText.Length && CurText[textOffset] == '%' && CurText[textOffset + 1] == '%') {
 						FoundSpanEnd (cur, i, 2);
 						return true;
 					}

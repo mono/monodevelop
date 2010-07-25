@@ -790,5 +790,16 @@ namespace MonoDevelop.Projects
 			type = mainProject.GetType ("CompletionDbTest.PartialTest");
 			Assert.IsNull (type);
 		}
+		
+		[Test]
+		public void NamespaceExistsTest ()
+		{
+			Assert.IsTrue (mainProject.NamespaceExists ("Level1"), "Level1 doesn't exist.");
+			Assert.IsTrue (mainProject.NamespaceExists ("Level1.Level2"), "Level1.Level2 doesn't exist.");
+			Assert.IsTrue (mainProject.NamespaceExists ("Level1.Level2.Level3"), "Level1.Level2.Level3 doesn't exist.");
+			Assert.IsTrue (mainProject.NamespaceExists ("Level1.Level2.Level3.Level4"), "Level1.Level2.Level3.Level4 doesn't exist.");
+			Assert.IsFalse (mainProject.NamespaceExists ("Level1.Level2.Level3.Level4.Level5"), "Level5 shouldn't exist.");
+			Assert.IsFalse (mainProject.NamespaceExists ("Level1.Level3"), "level1.level3 shouldn't exist.");
+		}
 	}
 }

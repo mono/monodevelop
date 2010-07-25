@@ -90,6 +90,7 @@
 		<Command id = "MonoDevelop.VersionControl.Commands.Diff" 
 			_label = "_Diff"
 			icon = "vc-diff"
+			defaultHandler = "MonoDevelop.VersionControl.CurrentFileDiffHandler"
 			description = "Show the changes made to the local copy since the last update."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Revert" 
 			_label = "_Revert"
@@ -98,6 +99,7 @@
 		<Command id = "MonoDevelop.VersionControl.Commands.Log" 
 			_label = "_Log"
 			icon = "vc-log"
+			defaultHandler = "MonoDevelop.VersionControl.CurrentFileLogHandler"
 			description = "Shows the commit history of the file or folder."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Status" 
 			_label = "_Review Changes"
@@ -123,6 +125,7 @@
 			description = "Unlock files in the repository, so that other user can change them."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Annotate" 
 			_label = "Show Annotations"
+			defaultHandler = "MonoDevelop.VersionControl.CurrentFileBlameHandler"
 			description = "Show the origin of each line in a file."/> <!--
 		<Command id = "MonoDevelop.VersionControl.Commands.ShowAnnotations" 
 			defaultHandler = "MonoDevelop.VersionControl.ShowAnnotationsCommand" 
@@ -142,7 +145,24 @@
 	<Extension path="/MonoDevelop/Ide/MainMenu/File">
 		<SeparatorItem id = "CheckoutSep" insertafter="MonoDevelop.Ide.Commands.FileCommands.OpenFile" />
 		<CommandItem id="MonoDevelop.VersionControl.Commands.Checkout" />
-	</Extension>	
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/DocumentTab">
+		<ItemSet id = "VersionControl" _label = "_Version Control" insertafter = "SaveSeparator">
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Diff"/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Log"/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Annotate"/>
+		</ItemSet>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Window">
+		<SeparatorItem id ="VersionControlSeparator" insertafter = "MonoDevelop.Ide.Commands.WindowCommands.SwitchSplitWindow"/> 
+		<ItemSet id = "VersionControl" _label = "_Version Control">
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Diff"/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Log"/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Annotate"/>
+		</ItemSet>
+	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
 		<Condition id="ItemType" value="IFileItem|IFolderItem">

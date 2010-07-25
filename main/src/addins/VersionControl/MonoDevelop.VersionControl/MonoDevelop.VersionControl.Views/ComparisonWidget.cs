@@ -822,16 +822,13 @@ namespace MonoDevelop.VersionControl.Views
 			
 			public void GetButtonPosition (Diff.Hunk hunk, int z1, int z2, int y1, int y2, out int x, out int y, out int r)
 			{
-				r = Allocation.Width / 2;
+				r = 14;
 				if (hunk.Left.Count == 0) {
-					x = Allocation.Width - r;
-					y = Math.Min (z1, z2);
-				} else if (hunk.Right.Count == 0) {
 					x = 0;
-					y = Math.Min (y1, y2);
+					y = Math.Min (z1, z2);
 				} else {
-					x = (Allocation.Width - r) / 2;
-					y = ((y1 + y2) / 2 + (z1 + z2) / 2) / 2 - r / 2;
+					x = Allocation.Width - r;
+					y = Math.Min (y1, y2);
 				}
 			}
 

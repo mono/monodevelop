@@ -48,7 +48,8 @@ namespace MonoDevelop.Ide.Gui
 
 		bool CloseWindow (bool force, bool fromMenu, int pageNum);
 		void SelectWindow ();
-
+		
+		event EventHandler DocumentChanged;
 		event WorkbenchWindowEventHandler Closed;
 		event WorkbenchWindowEventHandler Closing;
 		event ActiveViewContentEventHandler ActiveViewContentChanged;

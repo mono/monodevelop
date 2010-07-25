@@ -130,7 +130,6 @@ namespace MonoDevelop.SourceEditor
 		bool wasEdited = false;
 		public SourceEditorView ()
 		{
-			
 			Counters.LoadedEditors++;
 			currentFrameChanged = (EventHandler)DispatchService.GuiDispatch (new EventHandler (OnCurrentFrameChanged));
 			breakpointAdded = (EventHandler<BreakpointEventArgs>)DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointAdded));
@@ -421,7 +420,20 @@ namespace MonoDevelop.SourceEditor
 				this.encoding = file.SourceEncoding;
 				this.hadBom = file.HadBOM;
 			}
-			widget.ListenToParseServiceUpdates ();
+			
+			// TODO: Would be much easier if the view would be created after the containers.
+			this.WorkbenchWindowChanged += delegate {
+				if (WorkbenchWindow == null)
+					return;
+				WorkbenchWindow.DocumentChanged += delegate {
+					if (WorkbenchWindow.Document == null)
+						return;
+					WorkbenchWindow.Document.DocumentParsed += delegate(object sender, EventArgs e) {
+						widget.UpdateParsedDocument (WorkbenchWindow.Document.ParsedDocument);
+					};
+				};
+			};
+			
 			ContentName = fileName;
 			
 			widget.TextEditor.Caret.Offset = 0;

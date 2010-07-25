@@ -458,7 +458,7 @@ namespace Mono.TextEditor
 			if (caretGc != null || textEditor.GdkWindow == null)
 				return;
 			caretGc = new Gdk.GC (textEditor.GdkWindow);
-			caretGc.RgbFgColor = new Color (255, 255, 255);
+			caretGc.RgbFgColor = new Color (0x80, 0x80, 0x80);
 			caretGc.Function = Gdk.Function.Xor;
 		}
 
@@ -500,14 +500,7 @@ namespace Mono.TextEditor
 			CancelCodeSegmentTooltip ();
 			DisposeHighightBackgroundWorker ();
 			DisposeSearchPatternWorker ();
-			lock (lockObject) {
-				if (caretTimer != null) {
-					StopCaretThread ();
-					caretTimer.Elapsed -= UpdateCaret; 
-					caretTimer.Dispose ();
-					caretTimer = null;
-				}
-			}
+			StopCaretThread ();
 
 			textEditor.Document.EndUndo -= UpdateBracketHighlighting;
 			Caret.PositionChanged -= UpdateBracketHighlighting;
@@ -540,52 +533,44 @@ namespace Mono.TextEditor
 		}
 
 		#region Caret blinking
-		Timer caretTimer = null;
 		bool caretBlink = true;
-		object lockObject = new object ();
-
+		uint blinkTimeout = 0;
+		object caretLock = new object ();
+		
+		// constants taken from gtk.
+		const int cursorOnMultiplier = 2;
+		const int cursorOffMultiplier = 1;
+		const int cursorDivider = 3;
+		
 		public void ResetCaretBlink ()
 		{
-			lock (lockObject) {
-				if (caretTimer != null)
-					StopCaretThread ();
-
-				if (caretTimer == null) {
-					caretTimer = new Timer (Gtk.Settings.Default.CursorBlinkTime / 2);
-					caretTimer.Elapsed += UpdateCaret;
-				}
+			lock (caretLock) {
+				StopCaretThread ();
+				blinkTimeout = GLib.Timeout.Add ((uint)(Gtk.Settings.Default.CursorBlinkTime * cursorOnMultiplier / cursorDivider), UpdateCaret);
 				caretBlink = true;
-				caretTimer.Start ();
 			}
 		}
 
 		internal void StopCaretThread ()
 		{
-			lock (lockObject) {
-
-				if (caretTimer != null)
-					caretTimer.Stop ();
+			lock (caretLock) {
+				if (blinkTimeout == 0)
+					return;
+				GLib.Source.Remove (blinkTimeout);
+				blinkTimeout = 0;
 				caretBlink = false;
 			}
 		}
 
-		void UpdateCaret (object sender, EventArgs args)
+		bool UpdateCaret ()
 		{
-			lock (lockObject) {
-			/*	if (firstBlink) {
-					firstBlink = false;
-					return;
-				}*/
+			lock (caretLock) {
 				caretBlink = !caretBlink;
-				if (Caret.IsVisible) {
-					Application.Invoke (delegate {
-						try {
-							textEditor.RedrawMarginLine (this, Caret.Line);
-						} catch (Exception) {
-
-						}
-					});
-				}
+				int multiplier = caretBlink ? cursorOnMultiplier : cursorOffMultiplier;
+				if (Caret.IsVisible)
+					DrawCaret (textEditor.GdkWindow);
+				blinkTimeout = GLib.Timeout.Add ((uint)(Gtk.Settings.Default.CursorBlinkTime * multiplier / cursorDivider), UpdateCaret);
+				return false;
 			}
 		}
 		#endregion
@@ -610,9 +595,8 @@ namespace Mono.TextEditor
 					return;
 				}
 			}
-			if (Settings.Default.CursorBlink && (!Caret.IsVisible || !caretBlink)) {
+			if (Settings.Default.CursorBlink && !Caret.IsVisible)
 				return;
-			}
 
 			switch (Caret.Mode) {
 			case CaretMode.Insert:

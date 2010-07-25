@@ -290,7 +290,6 @@ namespace MonoDevelop.SourceEditor
 				this.splittedTextEditor = null;
 				view = null;
 				
-				ProjectDomService.ParsedDocumentUpdated -= OnParseInformationChanged;
 				IdeApp.Workbench.StatusBar.ClearCaretState ();
 				if (parseInformationUpdaterWorkerThread != null) {
 					parseInformationUpdaterWorkerThread.Dispose ();
@@ -301,11 +300,6 @@ namespace MonoDevelop.SourceEditor
 			parseInformationUpdaterWorkerThread = new BackgroundWorker ();
 			parseInformationUpdaterWorkerThread.WorkerSupportsCancellation = true;
 			parseInformationUpdaterWorkerThread.DoWork += HandleParseInformationUpdaterWorkerThreadDoWork;
-		}
-		
-		internal void ListenToParseServiceUpdates ()
-		{
-			ProjectDomService.ParsedDocumentUpdated += OnParseInformationChanged;
 		}
 
 		void UpdateLineColOnEventHandler (object sender, EventArgs e)
@@ -437,12 +431,9 @@ namespace MonoDevelop.SourceEditor
 		
 		BackgroundWorker parseInformationUpdaterWorkerThread;
 		
-		void OnParseInformationChanged (object sender, ParsedDocumentEventArgs args)
+		internal void UpdateParsedDocument (ParsedDocument document)
 		{
-			if (this.isDisposed || args == null || args.ParsedDocument == null || this.view == null)
-				return;
-			string fileName = this.view.IsUntitled ? this.view.UntitledName : this.view.ContentName;
-			if (fileName != args.FileName)
+			if (this.isDisposed || document == null || this.view == null)
 				return;
 			
 			if (MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false) && TextEditor != null) {
@@ -450,7 +441,7 @@ namespace MonoDevelop.SourceEditor
 				if (margin != null)
 					Gtk.Application.Invoke (delegate { margin.PurgeLayoutCache (); });
 			}
-			SetParsedDocument (args.ParsedDocument, parsedDocument != null);
+			SetParsedDocument (document, parsedDocument != null);
 		}
 		
 		public ParsedDocument ParsedDocument {

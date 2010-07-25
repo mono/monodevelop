@@ -107,11 +107,25 @@ namespace MonoDevelop.Ide.Gui
 		internal TabLabel TabLabel {
 			get { return tabLabel; }
 		}
-
+		
+		Document document;
 		public Document Document {
-			get;
-			set;
+			get {
+				return document;
+			}
+			set {
+				document = value;
+				OnDocumentChanged (EventArgs.Empty);
+			}
 		}
+		
+		protected virtual void OnDocumentChanged (EventArgs e)
+		{
+			EventHandler handler = this.DocumentChanged;
+			if (handler != null)
+				handler (this, e);
+		}
+		public event EventHandler DocumentChanged;
 		
 		public bool ShowNotification {
 			get {
