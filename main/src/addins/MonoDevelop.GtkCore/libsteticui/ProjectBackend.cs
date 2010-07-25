@@ -335,7 +335,7 @@ namespace Stetic {
 					string dir = libElem.GetAttribute ("path");
 					if (dir.Length > 0) {
 						if (basePath != null && !Path.IsPathRooted (dir)) {
-							dir = Path.Combine (basePath, dir);
+							dir = FromOSAgnosticRelPath (Path.Combine (basePath, dir));
 							if (Directory.Exists (dir))
 								dir = Path.GetFullPath (dir);
 						}
@@ -348,7 +348,7 @@ namespace Stetic {
 					string libname = libElem.GetAttribute ("name");
 					if (libname.EndsWith (".dll") || libname.EndsWith (".exe")) {
 						if (basePath != null && !Path.IsPathRooted (libname)) {
-							libname = Path.Combine (basePath, libname);
+							libname = FromOSAgnosticRelPath (Path.Combine (basePath, libname));
 							if (File.Exists (libname))
 								libname = Path.GetFullPath (libname);
 						}
@@ -408,6 +408,9 @@ namespace Stetic {
 				// Write to a temporary file first, just in case something fails
 				writer = new XmlTextWriter (fileName + "~", System.Text.Encoding.UTF8);
 				writer.Formatting = Formatting.Indented;
+				writer.Settings = new XmlWriterSettings () {
+					NewLineHandling = NewLineHandling.Replace,
+				};
 				doc.Save (writer);
 				writer.Close ();
 				
@@ -419,6 +422,18 @@ namespace Stetic {
 			}
 		}
 		
+		//in the cases where a path is relative, we store it using / as a path separator
+		//so the .stetic file doesn't unnecessarily differ between Windows & Linux/Mac
+		string ToOSAgnosticRelPath (string s)
+		{
+			return s.Replace ('\\', '/');
+		}
+
+		string FromOSAgnosticRelPath (string s)
+		{
+			return s.Replace ('/', Path.DirectorySeparatorChar);
+		}
+
 		XmlDocument Write (bool includeUndoInfo)
 		{
 			XmlDocument doc = new XmlDocument ();
@@ -451,7 +466,7 @@ namespace Stetic {
 					foreach (string dir in resolver.Directories) {
 						XmlElement dirElem = doc.CreateElement ("assembly-directory");
 						if (basePath != null)
-							dirElem.SetAttribute ("path", AbsoluteToRelativePath (basePath, dir));
+							dirElem.SetAttribute ("path", ToOSAgnosticRelPath (AbsoluteToRelativePath (basePath, dir)));
 						else
 							dirElem.SetAttribute ("path", dir);
 						toplevel.AppendChild (dirElem);
@@ -463,7 +478,7 @@ namespace Stetic {
 					XmlElement libElem = doc.CreateElement ("widget-library");
 					if (wlib.EndsWith (".dll") || wlib.EndsWith (".exe")) {
 						if (basePath != null)
-							libName = AbsoluteToRelativePath (basePath, wlib);
+							libName = ToOSAgnosticRelPath (AbsoluteToRelativePath (basePath, wlib));
 					}
 
 					libElem.SetAttribute ("name", libName);
@@ -958,7 +973,7 @@ namespace Stetic {
 			m.Popup ();
 		}
 		
-		internal static string AbsoluteToRelativePath (string baseDirectoryPath, string absPath)
+		static string AbsoluteToRelativePath (string baseDirectoryPath, string absPath)
 		{
 			if (!Path.IsPathRooted (absPath))
 				return absPath;
