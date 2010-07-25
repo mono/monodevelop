@@ -1,3 +1,10 @@
+#Autosave files
+*~
+
+#build stuff
+main/build/bin
+main/build/AddIns
+
 # globs
 Makefile.in
 *.pidb
