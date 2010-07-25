@@ -9,6 +9,7 @@ main/build/AddIns
 Makefile.in
 *.pidb
 *.userprefs
+*.usertasks
 config.log
 config.make
 config.status
