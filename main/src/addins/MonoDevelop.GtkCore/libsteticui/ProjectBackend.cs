@@ -405,12 +405,17 @@ namespace Stetic {
 			
 			XmlTextWriter writer = null;
 			try {
-				// Write to a temporary file first, just in case something fails
-				writer = new XmlTextWriter (fileName + "~", System.Text.Encoding.UTF8);
-				writer.Formatting = Formatting.Indented;
-				writer.Settings = new XmlWriterSettings () {
+				// Normalize the line endings, or different line endings from unmodified
+				// sub-documents may be preserved, resulting in mixed endings.
+				var settings = new XmlWriterSettings () {
 					NewLineHandling = NewLineHandling.Replace,
+					Encoding = System.Text.Encoding.UTF8,
+					NewLineChars = Environment.NewLine,
 				};
+
+				// Write to a temporary file first, just in case something fails
+				writer = (XmlTextWriter)XmlTextWriter.Create (fileName + "~", settings);
+				writer.Formatting = Formatting.Indented;
 				doc.Save (writer);
 				writer.Close ();
 				
