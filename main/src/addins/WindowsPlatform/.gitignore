@@ -1,0 +1,4 @@
+# Not sure why these resources are in here.
+# Suspect MD internal build is dumping temporary build files here.
+# MSBuild/xbuild would put them in obj/
+*.resources
