@@ -403,7 +403,7 @@ namespace Stetic {
 			this.fileName = fileName;
 			XmlDocument doc = Write (false);
 			
-			XmlTextWriter writer = null;
+			XmlWriter writer = null;
 			try {
 				// Normalize the line endings, or different line endings from unmodified
 				// sub-documents may be preserved, resulting in mixed endings.
@@ -411,11 +411,11 @@ namespace Stetic {
 					NewLineHandling = NewLineHandling.Replace,
 					Encoding = System.Text.Encoding.UTF8,
 					NewLineChars = Environment.NewLine,
+					Indent = true,
 				};
 
 				// Write to a temporary file first, just in case something fails
-				writer = (XmlTextWriter)XmlTextWriter.Create (fileName + "~", settings);
-				writer.Formatting = Formatting.Indented;
+				writer = XmlTextWriter.Create (fileName + "~", settings);
 				doc.Save (writer);
 				writer.Close ();
 				
