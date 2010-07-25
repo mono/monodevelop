@@ -378,7 +378,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				while (Char.IsWhiteSpace (data.Document.GetCharAt (end - 1))) {
 					end--;
 				}
-				context.LineIndent = data.Document.GetLineIndent (data.Document.OffsetToLineNumber (start) + 1);
+				context.LineIndent = data.Document.GetLineIndent (data.Document.OffsetToLineNumber (start));
 				context.SelectedText = RemoveIndent (data.Document.GetTextBetween (start, end), context.LineIndent);
 				data.Remove (start, end - start);
 				offset = start;
