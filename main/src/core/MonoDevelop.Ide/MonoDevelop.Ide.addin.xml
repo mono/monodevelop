@@ -763,15 +763,25 @@
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.WordCount"
 				_label = "_Word Count..." 
 				description = "Count words in a text file"/>
-		<Command id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences"
-				defaultHandler = "MonoDevelop.Ide.Commands.MonodevelopPreferencesHandler"
-				_label = "Pr_eferences"
-				icon = "gtk-preferences"
-				macShortcut = "Meta|,"
-				_description = "Show MonoDevelop preferences window" />
+		<Condition id="Platform" value="windows">
+			<Command id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences"
+					defaultHandler = "MonoDevelop.Ide.Commands.MonodevelopPreferencesHandler"
+					_label = "_Options..."
+					icon = "gtk-preferences"
+					macShortcut = "Meta|,"
+					_description = "Show MonoDevelop options window" />
+		</Condition>
+		<Condition id="Platform" value="!windows">
+			<Command id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences"
+					defaultHandler = "MonoDevelop.Ide.Commands.MonodevelopPreferencesHandler"
+					_label = "Pr_eferences..."
+					icon = "gtk-preferences"
+					macShortcut = "Meta|,"
+					_description = "Show MonoDevelop preferences window" />
+		</Condition>
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.DefaultPolicies"
 				defaultHandler = "MonoDevelop.Ide.Commands.DefaultPoliciesHandler"
-				_label = "Default Po_licies"
+				_label = "Default Po_licies..."
 				_description = "Edit the default policies that are applied to new projects" />
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.InsertStandardHeader"
 				_label = "_Insert Standard Header" 
