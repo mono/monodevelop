@@ -22,15 +22,25 @@
 .gitignore	crlf
 
 # Having proj files as crlf on windows will make VS happier
-# MD can deal with (and preserve) either.
+# MD can deal with (and preserve) either, so it doesn't matter.
 *proj	crlf
 
-# Stetic files are always generated using native line endings, so need to be converted
+# Stetic's XML files are always generated using native line endings, so need to be converted
 # Sadly, git has useless path globs
-*/*/gtk-gui/*	crlf
-*/*/*/gtk-gui/*	crlf
-*/*/*/*/gtk-gui/*	crlf
-*/*/*/*/*/gtk-gui/*	crlf
-*/*/*/*/*/*/gtk-gui/*	crlf
-*/*/*/*/*/*/*/gtk-gui/*	crlf
-*/*/*/*/*/*/*/*/gtk-gui/*	crlf
+gui.stetic crlf
+*/*/gtk-gui/*objects.xml	crlf
+*/*/*/gtk-gui/*.objects.xml	crlf
+*/*/*/*/gtk-gui/*.objects.xml	crlf
+*/*/*/*/*/gtk-gui/*.objects.xml	crlf
+*/*/*/*/*/*/gtk-gui/*.objects.xml	crlf
+*/*/*/*/*/*/*/gtk-gui/*.objects.xml	crlf
+*/*/*/*/*/*/*/*/gtk-gui/*.objects.xml	crlf
+
+# But Stetic's C# files are always generated as LF, so explicitly ignore those.
+*/*/gtk-gui/*.cs	-crlf
+*/*/*/gtk-gui/*.cs	-crlf
+*/*/*/*/gtk-gui/*.cs	-crlf
+*/*/*/*/*/gtk-gui/*.cs	-crlf
+*/*/*/*/*/*/gtk-gui/*.cs	-crlf
+*/*/*/*/*/*/*/gtk-gui/*.cs	-crlf
+*/*/*/*/*/*/*/*/gtk-gui/*.cs	-crlf
