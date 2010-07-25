@@ -54,8 +54,7 @@ namespace Stetic {
 	
 			doc = GladeUtils.XslExportTransform (doc);
 
-			// FIXME; if you use UTF8, it starts with a BOM???
-			XmlTextWriter writer = new XmlTextWriter (filename, System.Text.Encoding.ASCII);
+			XmlTextWriter writer = new XmlTextWriter (filename, new System.Text.UTF8Encoding (false));
 			writer.Formatting = Formatting.Indented;
 			doc.Save (writer);
 			writer.Close ();
