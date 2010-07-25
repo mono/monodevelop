@@ -54,7 +54,7 @@ namespace Stetic {
 	
 			doc = GladeUtils.XslExportTransform (doc);
 
-			XmlTextWriter writer = new XmlTextWriter (filename, new System.Text.UTF8Encoding (false));
+			XmlTextWriter writer = new XmlTextWriter (filename, EncodingUtility.UTF8NoBom);
 			writer.Formatting = Formatting.Indented;
 			doc.Save (writer);
 			writer.Close ();

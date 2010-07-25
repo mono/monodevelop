@@ -101,9 +101,10 @@ namespace MonoDevelop.GtkCore
 
 		public void Save ()
 		{
-			//Always write line endings as \n to be consistent with other stetic files.
+			//Always write line endings as \n to be consistent with other stetic files
+			//and write with no BOM in order to be consistent between .NET and Mono.
 			var settings = new XmlWriterSettings () {
-				Encoding = System.Text.Encoding.UTF8,
+				Encoding = Stetic.EncodingUtility.UTF8NoBom,
 				NewLineChars = "\n",
 				Indent = true,
 			};

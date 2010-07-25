@@ -410,9 +410,10 @@ namespace Stetic {
 				//end up with mixed line endings.
 				//Also, string arrays are stored in plain text data with \n separators,
 				//and break badly if we have \r\n.
+				//And write without a BOM so we get same output from .NET and Mono.
 				var settings = new XmlWriterSettings () {
 					NewLineHandling = NewLineHandling.Replace,
-					Encoding = System.Text.Encoding.UTF8,
+					Encoding = EncodingUtility.UTF8NoBom,
 					NewLineChars = "\n",
 					Indent = true,
 				};
@@ -1099,6 +1100,19 @@ namespace Stetic {
 					return Widget.Name;
 				else
 					return name;
+			}
+		}
+	}
+
+	public static class EncodingUtility
+	{
+		static System.Text.UTF8Encoding utf8NoBom;
+
+		/// This is so we can write XML files on .NET in a compatible way with Mono,
+		/// since .NET's XmlWriter writes the BOM but Mono's does not.
+		public static System.Text.UTF8Encoding UTF8NoBom {
+			get {
+				return utf8NoBom ?? (utf8NoBom = new System.Text.UTF8Encoding (false));
 			}
 		}
 	}
