@@ -43,7 +43,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		static XmlNamespaceManager manager;
 		
 		bool endsWithEmptyLine;
-		string newLine = "\r";
+		string newLine = Environment.NewLine;
 		
 		internal static XmlNamespaceManager XmlNamespaceManager {
 			get {
