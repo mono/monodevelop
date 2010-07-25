@@ -405,12 +405,15 @@ namespace Stetic {
 			
 			XmlWriter writer = null;
 			try {
-				// Normalize the line endings, or different line endings from unmodified
-				// sub-documents may be preserved, resulting in mixed endings.
+				//Always normalize line endings to \n so that they remain consistent.
+				//Else, because of the way subdocument are persisted unmodified, we could
+				//end up with mixed line endings.
+				//Also, string arrays are stored in plain text data with \n separators,
+				//and break badly if we have \r\n.
 				var settings = new XmlWriterSettings () {
 					NewLineHandling = NewLineHandling.Replace,
 					Encoding = System.Text.Encoding.UTF8,
-					NewLineChars = Environment.NewLine,
+					NewLineChars = "\n",
 					Indent = true,
 				};
 

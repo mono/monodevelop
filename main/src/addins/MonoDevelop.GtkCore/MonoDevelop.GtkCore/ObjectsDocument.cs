@@ -101,7 +101,15 @@ namespace MonoDevelop.GtkCore
 
 		public void Save ()
 		{
-			Save (path);
+			//Always write line endings as \n to be consistent with other stetic files.
+			var settings = new XmlWriterSettings () {
+				Encoding = System.Text.Encoding.UTF8,
+				NewLineChars = "\n",
+				Indent = true,
+			};
+			using (var writer = XmlTextWriter.Create (path, settings)) {
+				Save (writer);
+			}
 		}
 
 		void InsertToolboxItemAttributes (WidgetParser parser, CodeRefactorer cref)
