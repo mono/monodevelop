@@ -410,10 +410,9 @@ namespace Stetic {
 				//end up with mixed line endings.
 				//Also, string arrays are stored in plain text data with \n separators,
 				//and break badly if we have \r\n.
-				//And write without a BOM so we get same output from .NET and Mono.
 				var settings = new XmlWriterSettings () {
 					NewLineHandling = NewLineHandling.Replace,
-					Encoding = EncodingUtility.UTF8NoBom,
+					Encoding = System.Text.Encoding.UTF8,
 					NewLineChars = "\n",
 					Indent = true,
 				};
