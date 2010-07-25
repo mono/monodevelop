@@ -26,22 +26,12 @@
 # Unfortunately MD creates with LF, so we need to convert these.
 *proj	crlf
 
-# Stetic's XML files are always generated using native line endings, so need to be converted.
+# All Stetic's files are always generated as LF, so explicitly ignore those.
 # Sadly, git has useless path globs
-gui.stetic crlf
-*/*/gtk-gui/*objects.xml	crlf
-*/*/*/gtk-gui/*.objects.xml	crlf
-*/*/*/*/gtk-gui/*.objects.xml	crlf
-*/*/*/*/*/gtk-gui/*.objects.xml	crlf
-*/*/*/*/*/*/gtk-gui/*.objects.xml	crlf
-*/*/*/*/*/*/*/gtk-gui/*.objects.xml	crlf
-*/*/*/*/*/*/*/*/gtk-gui/*.objects.xml	crlf
-
-# But Stetic's C# files are always generated as LF, so explicitly ignore those.
-*/*/gtk-gui/*.cs	-crlf
-*/*/*/gtk-gui/*.cs	-crlf
-*/*/*/*/gtk-gui/*.cs	-crlf
-*/*/*/*/*/gtk-gui/*.cs	-crlf
-*/*/*/*/*/*/gtk-gui/*.cs	-crlf
-*/*/*/*/*/*/*/gtk-gui/*.cs	-crlf
-*/*/*/*/*/*/*/*/gtk-gui/*.cs	-crlf
+*/*/gtk-gui/*	-crlf
+*/*/*/gtk-gui/*	-crlf
+*/*/*/*/gtk-gui/*	-crlf
+*/*/*/*/*/gtk-gui/*	-crlf
+*/*/*/*/*/*/gtk-gui/*	-crlf
+*/*/*/*/*/*/*/gtk-gui/*	-crlf
+*/*/*/*/*/*/*/*/gtk-gui/*	-crlf
