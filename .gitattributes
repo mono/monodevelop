@@ -23,9 +23,10 @@
 
 # Having proj files as crlf on windows will make VS happier
 # MD can deal with (and preserve) either, so it doesn't matter.
+# Unfortunately MD creates with LF, so we need to convert these.
 *proj	crlf
 
-# Stetic's XML files are always generated using native line endings, so need to be converted
+# Stetic's XML files are always generated using native line endings, so need to be converted.
 # Sadly, git has useless path globs
 gui.stetic crlf
 */*/gtk-gui/*objects.xml	crlf
