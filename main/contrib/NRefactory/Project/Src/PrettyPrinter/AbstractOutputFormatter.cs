@@ -136,11 +136,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		protected void WriteLineInPreviousLine(string txt, bool forceWriteInPreviousBlock)
 		{
-			WriteInPreviousLine(txt + Environment.NewLine, forceWriteInPreviousBlock);
+			WriteInPreviousLine(txt + prettyPrintOptions.EolMarker, forceWriteInPreviousBlock);
 		}
 		protected void WriteLineInPreviousLine(string txt, bool forceWriteInPreviousBlock, bool indent)
 		{
-			WriteInPreviousLine(txt + Environment.NewLine, forceWriteInPreviousBlock, indent);
+			WriteInPreviousLine(txt + prettyPrintOptions.EolMarker, forceWriteInPreviousBlock, indent);
 		}
 		
 		protected void WriteInPreviousLine(string txt, bool forceWriteInPreviousBlock)
@@ -154,7 +154,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			bool lastCharacterWasNewLine = LastCharacterIsNewLine;
 			if (lastCharacterWasNewLine) {
 				if (forceWriteInPreviousBlock == false) {
-					if (indent && txt != Environment.NewLine) Indent();
+					if (indent && txt != prettyPrintOptions.EolMarker) Indent();
 					text.Append(txt);
 					lineBeforeLastStart = lastLineStart;
 					lastLineStart = text.Length;
@@ -216,7 +216,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public void PrintBlankLine(bool forceWriteInPreviousBlock)
 		{
-			WriteInPreviousLine(Environment.NewLine, forceWriteInPreviousBlock);
+			WriteInPreviousLine(prettyPrintOptions.EolMarker, forceWriteInPreviousBlock);
 		}
 		
 		public abstract void PrintToken(int token);
