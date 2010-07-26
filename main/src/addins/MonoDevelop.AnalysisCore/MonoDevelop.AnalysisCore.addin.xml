@@ -17,7 +17,8 @@
 		<ExtensionNode name="Category" type="MonoDevelop.Ide.Codons.CategoryNode">
 			<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules" />
 		</ExtensionNode>
-		<ExtensionNode name="Rule" type="MonoDevelop.AnalysisCore.RuleExtensionNode" />
+		<ExtensionNode name="Rule" type="MonoDevelop.AnalysisCore.NamedAnalysisRuleAddinNode" />
+		<ExtensionNode name="Adaptor" type="MonoDevelop.AnalysisCore.AdaptorAnalysisRuleAddinNode" />
 	</ExtensionNodeSet>
 	
 	<ExtensionPoint path = "/MonoDevelop/AnalysisCore/Rules" name = "Analysis Rules">
@@ -35,6 +36,14 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/AnalysisCore/Types">
-		<Type name="ParsedDocument" class="MonoDevelop.Projects.Dom.Parser.ParsedDocument" />
+		<Type name="ParsedDocument" class="MonoDevelop.Projects.Dom.ParsedDocument" />
+		<Type name="CompilationUnit" class="MonoDevelop.Projects.Dom.ICompilationUnit" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
+		<Adaptor func="MonoDevelop.AnalysisCore.Adapters.GetCompilationUnit" input="ParsedDocument" output="CompilationUnit" />
+		<Category _name="Design Guidelines">
+			<Rule _name="Naming Conventions" func="MonoDevelop.AnalysisCore.Rules.NamingConventions" input="CompilationUnit" />
+		</Category>
 	</Extension>
 </Addin>

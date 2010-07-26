@@ -43,7 +43,7 @@ namespace MonoDevelop.AnalysisCore
 	{
 		AnalysisRuleAddinNode rule;
 		
-		internal const string TYPE = "Result";
+		internal const string TYPE = "Results";
 	
 		public RuleTreeLeaf (AnalysisRuleAddinNode rule)
 		{
@@ -153,7 +153,7 @@ namespace MonoDevelop.AnalysisCore
 				}
 				
 				var branch = (RuleTreeBranch) c;
-				builder.AppendFormat ("[Branch (Output='{0}',Rule='{1}')", branch.Rule.Output, branch.Rule.FuncName);
+				builder.AppendFormat ("[Branch (Output='{0}',Rule='{1}')\n", branch.Rule.Output, branch.Rule.FuncName);
 				
 				PrintTreeStructure (builder, branch.Children, indent + "  ");
 				

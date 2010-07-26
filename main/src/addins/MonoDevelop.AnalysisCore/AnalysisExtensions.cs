@@ -92,6 +92,8 @@ namespace MonoDevelop.AnalysisCore
 			List<AnalysisRuleAddinNode> list;
 			if (!rulesByInput.TryGetValue (node.Input, out list))
 				list = rulesByInput[node.Input] = new List<AnalysisRuleAddinNode> ();
+			
+			Console.WriteLine (node.GetErrSource ());
 			list.Add (node);
 		}
 		
@@ -127,7 +129,7 @@ namespace MonoDevelop.AnalysisCore
 		internal static Type GetType (string name)
 		{
 			//this is hardcoded as the tree leaf node
-			if (name == "Results")
+			if (name == RuleTreeLeaf.TYPE)
 				return typeof (IEnumerable<Result>);
 			
 			//throws if not present
@@ -139,8 +141,15 @@ namespace MonoDevelop.AnalysisCore
 		public static RuleTreeRoot GetAnalysisTree (NodeTreeType treeType)
 		{
 			RuleTreeRoot tree;
-			if (!analysisTreeCache.TryGetValue (treeType, out tree))
-				analysisTreeCache [treeType] = tree = BuildTree (treeType);
+			if (analysisTreeCache.TryGetValue (treeType, out tree))
+				return tree;
+			
+			analysisTreeCache [treeType] = tree = BuildTree (treeType);
+
+#if DEBUG
+			if (tree != null)
+				Console.WriteLine (tree.GetTreeStructure ());
+#endif
 			return tree;
 		}
 		
@@ -167,7 +176,6 @@ namespace MonoDevelop.AnalysisCore
 			var list = new List<IRuleTreeNode> ();
 			
 			foreach (var n in validNodes) {
-				
 				//leaf node, return directly
 				if (n.Output == RuleTreeLeaf.TYPE) {
 					list.Add (new RuleTreeLeaf (n));
@@ -175,9 +183,8 @@ namespace MonoDevelop.AnalysisCore
 				}
 	
 				if (depth > 50)
-					throw new InvalidOperationException (string.Format (
-						"Analysis tree too deep. Check for circular dependencies in rule '{0}' (Input='{1}',Output='{2}')",
-						n.Name, n.Input, n.Output));
+					throw new InvalidOperationException ("Analysis tree too deep. Check for circular dependencies " +
+						n.GetErrSource ());
 	
 				//get the nodes that will handle the output - by recursively calling this
 				var childNodes = GetTreeNodes (treeType, n.Output, depth + 1);
@@ -190,6 +197,7 @@ namespace MonoDevelop.AnalysisCore
 			}
 			
 			return list.ToArray ();
-		}}
+		}
+	}
 }
 

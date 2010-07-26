@@ -66,8 +66,11 @@ namespace MonoDevelop.AnalysisCore
 		{
 			lock (updaterLock) {
 				if (!updaterRunning) {
-					GLib.Idle.Add (ResultsUpdater);
-					updaterRunning = true;
+					if (results != null) {
+						nextResults = results;
+						GLib.Idle.Add (ResultsUpdater);
+						updaterRunning = true;
+					}
 				}
 			}
 		}
@@ -76,7 +79,7 @@ namespace MonoDevelop.AnalysisCore
 		
 		//protected by lock. This is how we hand new results over to ResultsUpdater from the callback.
 		bool updaterRunning;
-		List<Result> nextResults;
+		IList<Result> nextResults;
 		
 		//only accessed by ResultsUpdater. This is the list it's using to update the text editor.
 		int updateIndex = 0;
@@ -112,7 +115,7 @@ namespace MonoDevelop.AnalysisCore
 			//clear the old results out at the same rate we add in the new ones
 			for (int i = 0; oldMarkers > 0 && i < UPDATE_COUNT; i++) {
 				Editor.Document.RemoveMarker (markers.Dequeue ());
-				oldMarkers --;
+				oldMarkers--;
 			}
 			
 			//add in the new markers
@@ -120,6 +123,7 @@ namespace MonoDevelop.AnalysisCore
 				var marker = new ResultMarker (currentResults[i]);
 				Editor.Document.AddMarker (marker.Line, marker);
 				markers.Enqueue (marker);
+				Console.WriteLine (marker.Result.Message);
 			}
 			
 			return true;

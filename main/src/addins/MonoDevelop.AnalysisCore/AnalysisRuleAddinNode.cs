@@ -32,29 +32,41 @@ using System.Reflection.Emit;
 
 namespace MonoDevelop.AnalysisCore
 {
-	public class AnalysisRuleAddinNode : ExtensionNode
+	class NamedAnalysisRuleAddinNode : AnalysisRuleAddinNode
+	{
+		[NodeAttribute ("_name", Required=true, Localizable=true, Description="User-visible name of the rule")]
+		string name = null;
+		
+		public string Name { get { return name; } }
+		
+		public override string Output { get { return RuleTreeLeaf.TYPE; } }
+	}
+	
+	//hidden in GUIs
+	class AdaptorAnalysisRuleAddinNode : AnalysisRuleAddinNode
+	{
+		[NodeAttribute (Required=true, Description="The ID of the output type.")]
+		string output = null;
+		
+		public override string Output { get { return output; } }
+	}
+	
+	abstract class AnalysisRuleAddinNode : ExtensionNode
 	{
 		//generally rules should not need to use fileExtensions, since their input types (e.g.CSharpDom) should be enough
 		//but it's needed for the proprocessor/typemapping rules like ParsedDocument->CSharpDom
 		[NodeAttribute (Description="Comma separated list of file extensions to which this rule applies. It applies to all if none is specified.")]
 		string[] fileExtensions = null;
 	
-		[NodeAttribute (Description="The ID of the output type. Assumed to be Results if none specified.")]
-		string output = null;
-	
 		[NodeAttribute (Required=true, Description="The ID of the input type")]
 		string input = null;
-		
-		[NodeAttribute ("_name", Required=true, Localizable=true, Description="User-visible name of the rule")]
-		string name = null;
 	
 		[NodeAttribute ("func", Required=true, Description="The static Func<T,T> that processes the rule.")]
 		string funcName = null;
 		
 		public string[] FileExtensions { get { return fileExtensions; } }
 		public string Input { get { return input; } }
-		public string Output { get { return output ?? "Results"; } }
-		public string Name { get { return name; } }
+		public abstract string Output {get; }
 		public string FuncName { get { return funcName; } }
 	
 		//Lazy so we avoid loading assemblies until needed
@@ -83,10 +95,10 @@ namespace MonoDevelop.AnalysisCore
 				string typeName = funcName.Substring (0, dotIdx);
 				var type = this.Addin.GetType (typeName, true);
 				
-				var inputType = AnalysisExtensions.GetType (input);
-				var outputType = AnalysisExtensions.GetType (output);
+				var inputType = AnalysisExtensions.GetType (Input);
+				var outputType = AnalysisExtensions.GetType (Output);
 				
-				string methodName = funcName.Substring (dotIdx);
+				string methodName = funcName.Substring (dotIdx + 1);
 				var methodInfo = type.GetMethod (methodName,
 					BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
 					Type.DefaultBinder, new Type[] { inputType}, 
@@ -99,13 +111,13 @@ namespace MonoDevelop.AnalysisCore
 					throw new InvalidOperationException ("Rule func ' " + funcName + "' has wrong output type " + GetErrSource ());
 				
 				var wrapper = new DynamicMethod (methodName + "_obj" + (dynamicMethodKey++),
-					typeof (object), new Type[] { typeof (object) });
+					typeof (object), new Type[] { typeof (object) }, true);
 				
 				var il = wrapper.GetILGenerator ();
 				il.Emit (OpCodes.Ldarg_0);
 				il.Emit (OpCodes.Castclass, inputType);
-				il.Emit (OpCodes.Call, methodInfo);
-				il.Emit(OpCodes.Stloc_0);
+				il.Emit ((methodInfo.IsFinal || !methodInfo.IsVirtual)? OpCodes.Call : OpCodes.Callvirt, methodInfo);
+				il.Emit (OpCodes.Ret);
 				
 				rule = (Func<object,object>) wrapper.CreateDelegate (typeof(Func<object,object>));
 			} finally {
@@ -115,9 +127,9 @@ namespace MonoDevelop.AnalysisCore
 		
 		static int dynamicMethodKey = 0;
 		
-		string GetErrSource ()
+		internal string GetErrSource ()
 		{
-			return string.Format ("({0}:{1}.{2})", Addin.Id, Path, Id);
+			return string.Format ("({0}:{1})", Addin.Id, Path);
 		}
 		
 		static object NullRule (object o)
