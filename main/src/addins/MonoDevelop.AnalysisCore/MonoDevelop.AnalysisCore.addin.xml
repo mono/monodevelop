@@ -42,7 +42,7 @@
 	
 	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
 		<Adaptor func="MonoDevelop.AnalysisCore.Adapters.GetCompilationUnit" input="ParsedDocument" output="CompilationUnit" />
-		<Category _name="Design Guidelines">
+		<Category _name="Design Guidelines" id="Design">
 			<Rule _name="Naming Conventions" func="MonoDevelop.AnalysisCore.Rules.NamingConventions" input="CompilationUnit" />
 		</Category>
 	</Extension>
