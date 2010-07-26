@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using Mono.Addins;
 using System.Linq;
+using MonoDevelop.Ide.Codons;
 
 namespace MonoDevelop.AnalysisCore
 {
@@ -56,10 +57,10 @@ namespace MonoDevelop.AnalysisCore
 		{
 			switch (args.Change) {
 			case ExtensionChange.Add:
-				AddRule ((AnalysisRuleAddinNode) args.ExtensionNode);
+				AddRule (args.ExtensionNode);
 				break;
 			case ExtensionChange.Remove:
-				RemoveRule ((AnalysisRuleAddinNode) args.ExtensionNode);
+				RemoveRule (args.ExtensionNode);
 				break;
 			}
 			analysisTreeCache.Clear ();
@@ -78,16 +79,31 @@ namespace MonoDevelop.AnalysisCore
 			analysisTreeCache.Clear ();
 		}
 		
-		static void AddRule (AnalysisRuleAddinNode node)
+		static void AddRule (ExtensionNode extNode)
 		{
+			if (extNode is CategoryNode) {
+				foreach (ExtensionNode child in extNode.ChildNodes)
+					AddRule (child);
+				return;
+			}
+			
+			var node = (AnalysisRuleAddinNode)extNode;
+			
 			List<AnalysisRuleAddinNode> list;
 			if (!rulesByInput.TryGetValue (node.Input, out list))
 				list = rulesByInput[node.Input] = new List<AnalysisRuleAddinNode> ();
 			list.Add (node);
 		}
 		
-		static void RemoveRule (AnalysisRuleAddinNode node)
+		static void RemoveRule (ExtensionNode extNode)
 		{
+			if (extNode is CategoryNode) {
+				foreach (ExtensionNode child in extNode.ChildNodes)
+					AddRule (child);
+				return;
+			}
+			
+			var node = (AnalysisRuleAddinNode)extNode;
 			List<AnalysisRuleAddinNode> list;
 			if (!rulesByInput.TryGetValue (node.Input, out list))
 				return;
@@ -110,6 +126,10 @@ namespace MonoDevelop.AnalysisCore
 		
 		internal static Type GetType (string name)
 		{
+			//this is hardcoded as the tree leaf node
+			if (name == "Results")
+				return typeof (IEnumerable<Result>);
+			
 			//throws if not present
 			return ruleInputTypes[name].Type;
 		}

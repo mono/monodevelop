@@ -37,7 +37,7 @@ namespace MonoDevelop.AnalysisCore
 		public string Input { get { return input; } }
 		public string FileExtension { get { return fileExtension; } }
 		
-		public NodeTreeType (string input, string output, string fileExtension)
+		public NodeTreeType (string input, string fileExtension)
 		{
 			Debug.Assert (!string.IsNullOrEmpty (input));
 			Debug.Assert (!string.IsNullOrEmpty (fileExtension));

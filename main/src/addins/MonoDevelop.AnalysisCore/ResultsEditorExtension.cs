@@ -26,19 +26,127 @@
 
 using System;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Dom;
+using System.Threading;
+using System.Collections.Generic;
+using System.IO;
+using Mono.TextEditor;
 
 namespace MonoDevelop.AnalysisCore
 {
 	public class ResultsEditorExtension : TextEditorExtension
 	{
+		bool disposed;
+		
 		public override void Initialize ()
 		{
 			base.Initialize ();
+			
+			Document.DocumentParsed += OnDocumentParsed;
 		}
 		
 		public override void Dispose ()
 		{
+			if (!disposed) {
+				Document.DocumentParsed -= OnDocumentParsed;
+				disposed = true;
+			}
 			base.Dispose ();
+		}
+		
+		void OnDocumentParsed (object sender, EventArgs args)
+		{
+			var doc = Document.ParsedDocument;
+			var treeType = new NodeTreeType ("ParsedDocument", Path.GetExtension (doc.FileName));
+			AnalysisService.QueueAnalysis (doc, treeType, UpdateResults);
+		}
+		
+		void UpdateResults (IList<Result> results)
+		{
+			lock (updaterLock) {
+				if (!updaterRunning) {
+					GLib.Idle.Add (ResultsUpdater);
+					updaterRunning = true;
+				}
+			}
+		}
+		
+		object updaterLock = new object ();
+		
+		//protected by lock. This is how we hand new results over to ResultsUpdater from the callback.
+		bool updaterRunning;
+		List<Result> nextResults;
+		
+		//only accessed by ResultsUpdater. This is the list it's using to update the text editor.
+		int updateIndex = 0;
+		IList<Result> currentResults;
+		
+		//the number of markers at the head of the queue that need tp be removed
+		int oldMarkers = 0;
+		
+		//all merkers known to be in the editor
+		Queue<TextMarker> markers = new Queue<TextMarker> ();
+		
+		const int UPDATE_COUNT = 20;
+		
+		//this runs as a glib idle handler so it can add/remove text editor markers
+		//in order to to block the GUI thread, we batch them in UPDATE_COUNT
+		bool ResultsUpdater ()
+		{
+			lock (updaterLock) {
+				if (nextResults != null) {
+					currentResults = nextResults;
+					nextResults = null;
+					updateIndex = 0;
+					oldMarkers += markers.Count;
+				}
+				//stop the updater when we're done updating results
+				if (currentResults.Count == updateIndex && oldMarkers == 0) {
+					currentResults = null;
+					updaterRunning = false;
+					return false;
+				}
+			}
+			
+			//clear the old results out at the same rate we add in the new ones
+			for (int i = 0; oldMarkers > 0 && i < UPDATE_COUNT; i++) {
+				Editor.Document.RemoveMarker (markers.Dequeue ());
+				oldMarkers --;
+			}
+			
+			//add in the new markers
+			for (int i = updateIndex; i < currentResults.Count && i < (updateIndex + UPDATE_COUNT); i++) {
+				var marker = new ResultMarker (currentResults[i]);
+				Editor.Document.AddMarker (marker.Line, marker);
+				markers.Enqueue (marker);
+			}
+			
+			return true;
+		}
+	}
+	
+	//FIXME: make a tooltip and commands that can inspect these
+	class ResultMarker : UnderlineMarker
+	{
+		Result result;
+		
+		public ResultMarker (Result result) : base (
+				GetColor (result), 
+				result.Region.Start.Line == result.Region.End.Line? result.Region.Start.Column : -1,
+				result.Region.Start.Line == result.Region.End.Line? result.Region.End.Column : -1)
+		{
+			this.result = result;
+		}
+		
+		public Result Result { get { return result; } }
+		public int Line { get { return result.Region.Start.Line; } }
+		
+		static string GetColor (Result result)
+		{
+			return result.Level == ResultLevel.Error
+				? Mono.TextEditor.Highlighting.Style.ErrorUnderlineString
+				: Mono.TextEditor.Highlighting.Style.WarningUnderlineString;
 		}
 	}
 }

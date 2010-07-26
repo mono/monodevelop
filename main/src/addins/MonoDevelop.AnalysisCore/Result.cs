@@ -25,13 +25,16 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.AnalysisCore
 {
 	public class Result
 	{
-		public Result (string message, ResultLevel level, ResultCertainty certainty, ResultImportance importance)
+		public Result (DomRegion region, string message, ResultLevel level,
+			ResultCertainty certainty, ResultImportance importance)
 		{
+			this.Region = region;
 			this.Message = message;
 			this.Level = level;
 			this.Certainty = certainty;
@@ -42,6 +45,7 @@ namespace MonoDevelop.AnalysisCore
 		public ResultLevel Level { get; private set; }
 		public ResultCertainty Certainty { get; private set; }
 		public ResultImportance Importance { get; private set; }
+		public DomRegion Region { get; private set; }
 		
 		internal AnalysisRuleAddinNode Source { get; set; }
 	}

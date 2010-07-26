@@ -27,10 +27,14 @@
 	
 	<ExtensionPoint path = "/MonoDevelop/AnalysisCore/Types" name = "Analysis rule input/output types">
 		<Description>Analysis rule input/output types.</Description>
-		<ExtensionNode name="Type" type="MonoDevelop.AnalysisCore.RuleInputTypeExtensionNode" />
+		<ExtensionNode name="Type" type="MonoDevelop.AnalysisCore.AnalysisTypeExtensionNode" />
 	</ExtensionPoint>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class class = "MonoDevelop.AnalysisCore.ResultsEditorExtension" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/AnalysisCore/Types">
+		<Type name="ParsedDocument" class="MonoDevelop.Projects.Dom.Parser.ParsedDocument" />
 	</Extension>
 </Addin>

@@ -29,6 +29,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Core;
+using System.Threading;
 
 namespace MonoDevelop.AnalysisCore
 {
@@ -36,12 +38,27 @@ namespace MonoDevelop.AnalysisCore
 	{
 		public static IList<Result> Analyze<T> (T input, NodeTreeType treeType)
 		{
+			Debug.Assert (typeof (T) == AnalysisExtensions.GetType (treeType.Input));
+			
 			var tree = AnalysisExtensions.GetAnalysisTree (treeType);
 			if (tree == null)
 				return null;
 			
 			//force to analyze immediately by evaluating into a list
 			return tree.Analyze (input).ToList ();
+		}
+		
+		//TODO: proper job scheduler and discarding superseded jobs
+		public static void QueueAnalysis <T> (T input, NodeTreeType treeType, Action<IList<Result>> callback)
+		{
+			ThreadPool.QueueUserWorkItem (delegate {
+				try {
+					var results = Analyze (input, treeType);
+					callback (results);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error in analysis service", ex);
+				}
+			});
 		}
 	}
 }
