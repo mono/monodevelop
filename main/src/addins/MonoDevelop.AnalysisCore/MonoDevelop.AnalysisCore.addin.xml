@@ -1,0 +1,36 @@
+<Addin id          = "AnalysisCore"
+       namespace   = "MonoDevelop"
+       name        = "Analysis Core"
+       author      = "Michael Hutchinson"
+       copyright   = "MIT X11"
+       url         = "http://www.monodevelop.com"
+       description = "Core support for background analysis of code" 
+       category    = "IDE Extensions"
+       version     = "2.4">
+
+	<Dependencies>
+		<Addin id="Core" version="2.4"/>
+		<Addin id="Ide" version="2.4"/>
+	</Dependencies>
+	
+	<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules">
+		<ExtensionNode name="Category" type="MonoDevelop.Ide.Codons.CategoryNode">
+			<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules" />
+		</ExtensionNode>
+		<ExtensionNode name="Rule" type="MonoDevelop.AnalysisCore.RuleExtensionNode" />
+	</ExtensionNodeSet>
+	
+	<ExtensionPoint path = "/MonoDevelop/AnalysisCore/Rules" name = "Analysis Rules">
+		<Description>Analysis rules.</Description>
+		<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules" />
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/AnalysisCore/Types" name = "Analysis rule input/output types">
+		<Description>Analysis rule input/output types.</Description>
+		<ExtensionNode name="Type" type="MonoDevelop.AnalysisCore.RuleInputTypeExtensionNode" />
+	</ExtensionPoint>
+	
+	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
+		<Class class = "MonoDevelop.AnalysisCore.ResultsEditorExtension" />
+	</Extension>
+</Addin>
