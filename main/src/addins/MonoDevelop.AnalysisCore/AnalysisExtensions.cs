@@ -93,7 +93,6 @@ namespace MonoDevelop.AnalysisCore
 			if (!rulesByInput.TryGetValue (node.Input, out list))
 				list = rulesByInput[node.Input] = new List<AnalysisRuleAddinNode> ();
 			
-			Console.WriteLine (node.GetErrSource ());
 			list.Add (node);
 		}
 		

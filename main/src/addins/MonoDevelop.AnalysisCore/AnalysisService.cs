@@ -42,7 +42,7 @@ namespace MonoDevelop.AnalysisCore
 			
 			var tree = AnalysisExtensions.GetAnalysisTree (treeType);
 			if (tree == null)
-				return null;
+				return RuleTreeLeaf.Empty;
 			
 			//force to analyze immediately by evaluating into a list
 			return tree.Analyze (input).ToList ();

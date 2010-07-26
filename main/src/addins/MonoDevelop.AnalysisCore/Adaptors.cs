@@ -44,7 +44,7 @@ namespace MonoDevelop.AnalysisCore
 		{
 			foreach (var type in input.Types) {
 				if (!char.IsUpper (type.Name[0])) {
-					var start = type.BodyRegion.Start;
+					var start = type.Location;
 					yield return new Result (
 						new DomRegion (start, new DomLocation (start.Line, start.Column + type.Name.Length)),
 						"Type names should begin with an uppercase letter",

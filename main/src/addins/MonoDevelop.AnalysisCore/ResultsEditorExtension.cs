@@ -55,6 +55,7 @@ namespace MonoDevelop.AnalysisCore
 			base.Dispose ();
 		}
 		
+		//FIXME: rate-limit this, so we don't send multiple new documents while it's processing
 		void OnDocumentParsed (object sender, EventArgs args)
 		{
 			var doc = Document.ParsedDocument;
@@ -65,12 +66,10 @@ namespace MonoDevelop.AnalysisCore
 		void UpdateResults (IList<Result> results)
 		{
 			lock (updaterLock) {
+				nextResults = results;
 				if (!updaterRunning) {
-					if (results != null) {
-						nextResults = results;
-						GLib.Idle.Add (ResultsUpdater);
-						updaterRunning = true;
-					}
+					GLib.Idle.Add (ResultsUpdater);
+					updaterRunning = true;
 				}
 			}
 		}
@@ -119,11 +118,11 @@ namespace MonoDevelop.AnalysisCore
 			}
 			
 			//add in the new markers
-			for (int i = updateIndex; i < currentResults.Count && i < (updateIndex + UPDATE_COUNT); i++) {
-				var marker = new ResultMarker (currentResults[i]);
+			int targetIndex = updateIndex + UPDATE_COUNT;
+			for (; updateIndex < targetIndex && updateIndex < currentResults.Count; updateIndex++) {
+				var marker = new ResultMarker (currentResults[updateIndex]);
 				Editor.Document.AddMarker (marker.Line, marker);
 				markers.Enqueue (marker);
-				Console.WriteLine (marker.Result.Message);
 			}
 			
 			return true;
@@ -136,15 +135,25 @@ namespace MonoDevelop.AnalysisCore
 		Result result;
 		
 		public ResultMarker (Result result) : base (
-				GetColor (result), 
-				result.Region.Start.Line == result.Region.End.Line? result.Region.Start.Column : -1,
-				result.Region.Start.Line == result.Region.End.Line? result.Region.End.Column : -1)
+				GetColor (result),
+				IsOneLine (result)? (result.Region.Start.Column - 1) : -1,
+				IsOneLine (result)? (result.Region.End.Column - 1) : -1)
 		{
 			this.result = result;
 		}
 		
+		static bool IsOneLine (Result result)
+		{
+			return result.Region.Start.Line == result.Region.End.Line;
+		}
+		
 		public Result Result { get { return result; } }
-		public int Line { get { return result.Region.Start.Line; } }
+		
+		//utility for debugging
+		public int Line { get { return result.Region.Start.Line - 1; } }
+		public int ColStart { get { return IsOneLine (result)? (result.Region.Start.Column - 1) : -1; } }
+		public int ColEnd   { get { return IsOneLine (result)? (result.Region.End.Column - 1) : -1; } }
+		public string Message { get { return result.Message; } }
 		
 		static string GetColor (Result result)
 		{
