@@ -601,7 +601,8 @@ namespace Mono.TextEditor
 			if (isDisposed)
 				return;
 			this.isDisposed = true;
-			
+			if (popupWindow != null)
+				popupWindow.Destroy ();
 			if (this.Document != null)
 				this.Document.EndUndo -= HandleDocumenthandleEndUndo;
 			
@@ -1732,143 +1733,6 @@ namespace Mono.TextEditor
 			return textEditorData.SearchBackward (fromOffset);
 		}
 		
-		class HighlightSearchResultAnimation : IAnimationDrawer, IDisposable
-		{
-			TextEditor editor;
-			SearchResult result;
-			Gdk.Pixbuf textImage = null;
-			
-			public double Percent { get; set; }
-			
-			public HighlightSearchResultAnimation (TextEditor editor, SearchResult result)
-			{
-				this.editor = editor;
-				this.result = result;
-			}
-			
-			public Gdk.Rectangle AnimationBounds {
-				get {
-//					LineSegment line = editor.Document.GetLineByOffset (result.Offset);
-					int lineNr = editor.Document.OffsetToLineNumber (result.Offset);
-					int y = editor.LineToVisualY (lineNr) - (int)editor.VAdjustment.Value;
-					return new Gdk.Rectangle (0, y - editor.LineHeight , editor.Allocation.Width, editor.LineHeight * 3);
-				}
-			}
-			
-			public void Draw (Drawable drawable)
-			{
-				LineSegment line = editor.Document.GetLineByOffset (result.Offset);
-				int lineNr = editor.Document.OffsetToLineNumber (result.Offset);
-				SyntaxMode mode = editor.Document.SyntaxMode != null && editor.Options.EnableSyntaxHighlighting ? editor.Document.SyntaxMode : SyntaxMode.Default;
-				int logicalRulerColumn = line.GetLogicalColumn(editor.GetTextEditorData(), editor.Options.RulerColumn);
-				TextViewMargin.LayoutWrapper lineLayout = editor.textViewMargin.CreateLinePartLayout(mode, line, logicalRulerColumn, line.Offset, line.EditableLength, -1, -1);
-				if (lineLayout == null)
-					return;
-				int l, x1, x2;
-				int index = result.Offset - line.Offset - 1;
-				if (index >= 0) {
-					lineLayout.Layout.IndexToLineX (index, true, out l, out x1);
-				} else {
-					l = x1 = 0;
-				}
-				index = result.Offset - line.Offset - 1 + result.Length;
-				if (index <= 0) 
-					index = 1;
-				lineLayout.Layout.IndexToLineX (index, true, out l, out x2);
-				x1 /= (int)Pango.Scale.PangoScale;
-				x2 /= (int)Pango.Scale.PangoScale;
-				int y = editor.LineToVisualY (lineNr) - (int)editor.VAdjustment.Value;
-				using (Cairo.Context cr = Gdk.CairoHelper.Create (drawable)) {
-					cr.Rectangle (editor.TextViewMargin.XOffset, 0, editor.Allocation.Width - editor.TextViewMargin.XOffset, editor.Allocation.Height);
-					cr.Clip ();
-					
-					int width = (int)(x2 - x1);
-					int border = 2;
-					int rx = (int)(editor.TextViewMargin.XOffset - editor.HAdjustment.Value + x1 - border);
-					int ry = (int)(y) - border;
-					int rw = width + border * 2;
-					int rh = (int)(editor.LineHeight) + border * 2;
-					
-					int iw = width, ih = editor.LineHeight;
-					if (textImage == null) {
-						using (Gdk.Pixmap pixmap = new Gdk.Pixmap (drawable, iw, ih)) {
-							using (var bgGc = new Gdk.GC(pixmap)) {
-								bgGc.RgbFgColor = editor.ColorStyle.SearchTextMainBg;
-								pixmap.DrawRectangle (bgGc, true, 0, 0, iw, ih);
-								using (var layout = PangoUtil.CreateLayout (editor)) {
-									layout.FontDescription = editor.Options.Font;
-									layout.SetMarkup (editor.Document.SyntaxMode.GetMarkup (editor.Document, editor.Options, editor.ColorStyle, result.Offset, result.Length, true));
-									pixmap.DrawLayout (bgGc, 0, 0, layout);
-								}
-							}
-							textImage = Pixbuf.FromDrawable (pixmap, Colormap.System, 0, 0, 0, 0, iw, ih);
-						}
-					}
-					
-					cr.Translate (rx + rw / 2, ry + rh / 2);
-					/*cr.Save ();
-					Cairo.Color color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.SearchTextBg);
-					cr.Color = color;
-					double scale2 = (1 + 1.1 * Percent / 6);
-					cr.Scale (scale2, scale2 * 1.2);
-					
-					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, -rw / 2, -rh / 2, (int)(System.Math.Min (10, width ) * editor.Options.Zoom), rw, rh);
-					cr.Fill (); 
-					cr.Restore ();*/
-					
-					double scale = 1 + Percent / 12;
-					cr.Scale (scale, scale);
-					double textx = -rw / 2;
-					double texty = -rh / 2;
-					cr.TransformPoint (ref textx, ref texty);
-					
-					double textr = +rw / 2;
-					double textb = +rh / 2;
-					cr.TransformPoint (ref textr, ref textb);
-					
-					cr.Color = new Cairo.Color (0, 0, 0, 0.3);
-					//because the initial highlight is not rounded, so the rounding scales to make the transition smoother
-					int rounding = (int)(-rw / 2 + 2 * editor.Options.Zoom * Percent);
-					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, rounding, (int)(-rh / 2 + 2 * editor.Options.Zoom), (int)(System.Math.Min (10, width ) * editor.Options.Zoom), rw, rh);
-					cr.Fill (); 
-					
-					cr.Color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.SearchTextMainBg);
-					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, -rw / 2, -rh / 2, (int)(System.Math.Min (10, width ) * editor.Options.Zoom), rw, rh);
-					cr.Fill ();
-					
-					int tx, ty, tw, th;
-					tw = (int) System.Math.Ceiling (iw * scale);
-					th = (int) System.Math.Ceiling (ih * scale);
-					tx = rx - (int) System.Math.Ceiling ((double)(tw - iw) / 2) + border;
-					ty = ry - (int) System.Math.Ceiling ((double)(th - ih) / 2) + border;
-					try {
-						using (var scaled = textImage.ScaleSimple (tw, th, InterpType.Bilinear)) {
-							if (scaled != null) {
-								using (var gc = new Gdk.GC (drawable)) {
-									gc.ClipRectangle = new Rectangle (editor.TextViewMargin.XOffset, 0, editor.Allocation.Width - editor.TextViewMargin.XOffset, editor.Allocation.Height);
-									scaled.RenderToDrawable (drawable, gc, 0, 0, tx, ty, tw, th, RgbDither.None, 0, 0);
-								}
-							}
-						}
-					} catch (Exception e) {
-						Console.WriteLine ("got exception in search result animation:" + e);
-					}
-				}
-				
-				if (lineLayout.IsUncached) 
-					lineLayout.Dispose ();
-			}
-			
-			public void Dispose ()
-			{
-				if (this.textImage != null) {
-					this.textImage.Dispose ();
-					this.textImage = null;
-				}
-			}
-			
-		}
-		
 		class CaretPulseAnimation : IAnimationDrawer
 		{
 			TextEditor editor;
@@ -2049,7 +1913,6 @@ namespace Mono.TextEditor
 			SearchResult result = textEditorData.FindNext (setSelection);
 			TryToResetHorizontalScrollPosition ();
 			AnimateSearchResult (result);
-			
 			return result;
 		}
 
@@ -2057,18 +1920,95 @@ namespace Mono.TextEditor
 		{
 			StartAnimation (new TextEditor.CaretPulseAnimation (this));
 		}
-		
-		Animation searchResultAnimation;
+		SearchHighlightPopupWindow popupWindow = null;
 		public void AnimateSearchResult (SearchResult result)
 		{
 			TextViewMargin.MainSearchResult = result;
 			if (result != null) {
-				if (searchResultAnimation != null) 
-					RemoveAnimation (searchResultAnimation);
-				var anim = new TextEditor.HighlightSearchResultAnimation (this, result);
-				searchResultAnimation = StartAnimation (anim, 180, Easing.Sine);
+				if (popupWindow != null) {
+					popupWindow.StopPlaying ();
+				} else {
+					popupWindow = new SearchHighlightPopupWindow (this);
+				}
+				CenterTo (result.Offset);
+				popupWindow.Startup (result);
 			}
 		}
+		
+		class SearchHighlightPopupWindow : CachedBounceFadePopupWindow
+		{
+			SearchResult result;
+			
+			public SearchHighlightPopupWindow (TextEditor editor) : base (editor)
+			{
+			}
+			
+			public void Startup (SearchResult result)
+			{
+				this.result = result;
+				
+				ExpandWidth = (uint)editor.LineHeight;
+				ExpandHeight = (uint)editor.LineHeight / 2;
+				BounceEasing = Easing.Sine;
+				Duration = 900;
+				base.Start (CalcBounds (editor, result));
+			}
+			
+			static Gdk.Rectangle CalcBounds (TextEditor editor, SearchResult result)
+			{
+				LineSegment line = editor.Document.GetLineByOffset (result.Offset);
+				int lineNr = editor.Document.OffsetToLineNumber (result.Offset);
+				SyntaxMode mode = editor.Document.SyntaxMode != null && editor.Options.EnableSyntaxHighlighting ? editor.Document.SyntaxMode : SyntaxMode.Default;
+				int logicalRulerColumn = line.GetLogicalColumn(editor.GetTextEditorData(), editor.Options.RulerColumn);
+				TextViewMargin.LayoutWrapper lineLayout = editor.textViewMargin.CreateLinePartLayout(mode, line, logicalRulerColumn, line.Offset, line.EditableLength, -1, -1);
+				if (lineLayout == null)
+					return Gdk.Rectangle.Zero;
+				
+				int l, x1, x2;
+				int index = result.Offset - line.Offset - 1;
+				if (index >= 0) {
+					lineLayout.Layout.IndexToLineX (index, true, out l, out x1);
+				} else {
+					l = x1 = 0;
+				}
+				index = result.Offset - line.Offset - 1 + result.Length;
+				if (index <= 0) 
+					index = 1;
+				lineLayout.Layout.IndexToLineX (index, true, out l, out x2);
+				x1 /= (int)Pango.Scale.PangoScale;
+				x2 /= (int)Pango.Scale.PangoScale;
+				int y = editor.LineToVisualY (lineNr) - (int)editor.VAdjustment.Value ;
+				return new Gdk.Rectangle (x1 + editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition - (int)editor.HAdjustment.Value, y, x2 - x1, editor.LineHeight);
+			}
+			
+			protected override Gdk.Pixbuf RenderInitialPixbuf (Gdk.Window parentwindow, Gdk.Rectangle bounds)
+			{
+				//FIXME add a drop shadow on the pixmap, and expand the bounds to include this
+				using (Gdk.Pixmap pixmap = new Gdk.Pixmap (parentwindow, bounds.Width, bounds.Height)) {
+					
+					using (Cairo.Context cr = Gdk.CairoHelper.Create (pixmap)) {
+						cr.Color = new Cairo.Color (0, 0, 0, 0);
+						cr.Rectangle (0, 0, bounds.Width, bounds.Height);
+						cr.Fill ();
+						cr.Color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.SearchTextMainBg);
+						int rounding = (int)(-bounds.Width / 2);
+						FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 0, 0, rounding, bounds.Width, bounds.Height);
+						cr.Fill (); 
+					}
+					
+					using (var layout = PangoUtil.CreateLayout (editor)) {
+						layout.FontDescription = editor.Options.Font;
+						layout.SetMarkup (editor.Document.SyntaxMode.GetMarkup (editor.Document, editor.Options, editor.ColorStyle, result.Offset, result.Length, true));
+						using (var bgGc = new Gdk.GC(pixmap)) {
+							bgGc.RgbFgColor = editor.ColorStyle.SearchTextMainBg;
+							pixmap.DrawLayout (bgGc, 0, 0, layout);
+						}
+					}
+					return Gdk.Pixbuf.FromDrawable (pixmap, Colormap, 0, 0, 0, 0, bounds.Width, bounds.Height);
+				}
+			}
+		}
+
 	
 		public SearchResult FindPrevious (bool setSelection)
 		{
