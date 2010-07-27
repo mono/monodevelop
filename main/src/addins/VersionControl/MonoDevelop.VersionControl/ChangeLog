@@ -1,5 +1,10 @@
 2010-07-27  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.VersionControl/VersionControlNodeExtension.cs:
+	  Remove debug output.
+
+2010-07-27  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.VersionControl.csproj:
 	* MonoDevelop.VersionControl/ChangeSet.cs: New reusable widget

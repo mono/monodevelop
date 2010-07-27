@@ -152,7 +152,6 @@ namespace MonoDevelop.VersionControl
 					foreach (VersionInfo vin in vc.GetDirectoryVersionInfo (dir, false, false))
 						data.FileData [vin.LocalPath.CanonicalPath] = vin;
 					data.Timestamp = DateTime.Now;
-					Console.WriteLine ("pp CACHED INFO FOR: " + dir);
 				}
 				VersionInfo vi;
 				if (data.FileData.TryGetValue ((FilePath)filepath, out vi))
@@ -175,7 +174,6 @@ namespace MonoDevelop.VersionControl
 				DirData dd;
 				if (filePaths.TryGetValue (path, out dd)) {
 					dd.FileData = null; // Clear the status cache
-					Console.WriteLine ("pp CLEARED INFO FOR: " + path);
 					ITreeBuilder builder = Context.GetTreeBuilder (dd.Object);
 					if (builder != null)
 						builder.UpdateAll();
@@ -186,7 +184,6 @@ namespace MonoDevelop.VersionControl
 				DirData dd;
 				if (filePaths.TryGetValue (path.CanonicalPath, out dd) && dd.FileData != null) {
 					dd.FileData.Remove (args.FilePath.CanonicalPath);
-					Console.WriteLine ("pp UPDATED INFO FOR: " + args.FilePath);
 				}
 				if (filePaths.TryGetValue (args.FilePath.CanonicalPath, out dd)) {
 					ITreeBuilder builder = Context.GetTreeBuilder (dd.Object);
@@ -214,8 +211,6 @@ namespace MonoDevelop.VersionControl
 				DirData data;
 				if (filePaths.TryGetValue (path, out data) && data.Object == dataObject) {
 					filePaths.Remove (path);
-					if (data.FileData != null)
-						Console.WriteLine ("pp REMOVED INFO FOR: " + path);
 				}
 			}
 		}

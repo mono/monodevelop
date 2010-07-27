@@ -1,5 +1,13 @@
 2010-07-27  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.VersionControl.Git/GitRepository.cs: Remove
+	  debug output.
+
+	* MonoDevelop.VersionControl.Git/GitVersionControl.cs: Added
+	  missing null check.
+
+2010-07-27  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* gtk-gui/gui.stetic:
 	* gtk-gui/generated.cs:

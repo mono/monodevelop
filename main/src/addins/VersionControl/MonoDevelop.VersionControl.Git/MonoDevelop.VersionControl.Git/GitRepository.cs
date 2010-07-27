@@ -149,13 +149,13 @@ namespace MonoDevelop.VersionControl.Git
 		
 		StringReader RunCommand (string cmd, bool checkExitCode, IProgressMonitor monitor)
 		{
-			Console.WriteLine (cmd);
+//			Console.WriteLine (cmd);
 			StringWriter outw = new StringWriter ();
 			ProcessWrapper proc = Runtime.ProcessService.StartProcess ("git", "--no-pager " + cmd, path, outw, outw, null);
 			proc.WaitForOutput ();
 			if (monitor != null)
 				monitor.Log.Write (outw.ToString ());
-			Console.WriteLine (outw.ToString ());
+//			Console.WriteLine (outw.ToString ());
 			if (checkExitCode && proc.ExitCode != 0)
 				throw new InvalidOperationException ("Git operation failed");
 			return new StringReader (outw.ToString ());

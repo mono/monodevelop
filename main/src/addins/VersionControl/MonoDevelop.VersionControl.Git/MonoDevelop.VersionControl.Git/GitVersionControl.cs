@@ -45,7 +45,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override Repository GetRepositoryReference (FilePath path, string id)
 		{
-			if (path.IsEmpty || path.ParentDirectory.IsEmpty)
+			if (path.IsEmpty || path.ParentDirectory.IsEmpty || path.IsNull || path.ParentDirectory.IsNull)
 				return null;
 			if (System.IO.Directory.Exists (path.Combine (".git")))
 				return new GitRepository (path, null);
