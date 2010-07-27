@@ -169,7 +169,7 @@ AM_CONDITIONAL(ENABLE_SUBVERSION, test x$enable_subversion = xyes)
 AC_ARG_ENABLE(git,
 	AC_HELP_STRING([--enable-git],
 		[enable Git support [default=no]]),
-		enable_git=${enableval}, enable_git=no)
+		enable_git=${enableval}, enable_git=yes)
 
 AM_CONDITIONAL(ENABLE_GIT, test x$enable_git = xyes)
 

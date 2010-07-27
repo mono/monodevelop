@@ -1,5 +1,9 @@
 2010-07-27  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* configure.in: Enable git by default.
+
+2010-07-27  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Main.sln: Updated projects to build.
 
 2010-06-28  Dale Ragan  <dale.ragan@sinesignal.com>
