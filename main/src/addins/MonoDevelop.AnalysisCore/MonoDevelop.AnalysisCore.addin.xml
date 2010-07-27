@@ -11,6 +11,7 @@
 	<Dependencies>
 		<Addin id="Core" version="2.4"/>
 		<Addin id="Ide" version="2.4"/>
+		<Addin id="SourceEditor2" version="2.4"/>
 	</Dependencies>
 	
 	<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules">
@@ -45,5 +46,9 @@
 		<Category _name="Design Guidelines" id="Design">
 			<Rule _name="Naming Conventions" func="MonoDevelop.AnalysisCore.Rules.NamingConventions" input="CompilationUnit" />
 		</Category>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
+		<Class id="AnalysisResults" class="MonoDevelop.AnalysisCore.ResultTooltipProvider" insertafter="Debug" />
 	</Extension>
 </Addin>

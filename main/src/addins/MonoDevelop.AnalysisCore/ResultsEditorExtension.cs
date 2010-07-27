@@ -32,6 +32,7 @@ using System.Threading;
 using System.Collections.Generic;
 using System.IO;
 using Mono.TextEditor;
+using System.Linq;
 
 namespace MonoDevelop.AnalysisCore
 {
@@ -87,8 +88,8 @@ namespace MonoDevelop.AnalysisCore
 		//the number of markers at the head of the queue that need tp be removed
 		int oldMarkers = 0;
 		
-		//all merkers known to be in the editor
-		Queue<TextMarker> markers = new Queue<TextMarker> ();
+		//all markers known to be in the editor
+		Queue<ResultMarker> markers = new Queue<ResultMarker> ();
 		
 		const int UPDATE_COUNT = 20;
 		
@@ -126,6 +127,25 @@ namespace MonoDevelop.AnalysisCore
 			}
 			
 			return true;
+		}
+		
+		//FIXME; use a less naive lookup 
+		//this would be faster if the currentResults were sorted by line in the analysis thread,
+		//so we could binary search.
+		public IList<Result> GetResultsAtOffset (int offset)
+		{
+			var location = Editor.Document.OffsetToLocation (offset);
+			
+			var list = new List<Result> ();
+			foreach (var marker in markers) {
+				if (marker.Line != location.Line)
+					continue;
+				int cs = marker.ColStart, ce = marker.ColEnd;
+				if ((cs >= 0 && cs > location.Column) || (ce >= 0 && ce < location.Column))
+					continue;
+				list.Add (marker.Result);
+			}
+			return list;
 		}
 	}
 	
