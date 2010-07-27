@@ -1,5 +1,18 @@
 2010-07-27  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* gtk-gui/generated.cs:
+	* MonoDevelop.VersionControl.Git.csproj:
+	* MonoDevelop.VersionControl.Git.addin.xml:
+	* MonoDevelop.VersionControl.Git/Commands.cs:
+	* MonoDevelop.VersionControl.Git/PushDialog.cs:
+	* MonoDevelop.VersionControl.Git/GitRepository.cs:
+	* gtk-gui/MonoDevelop.VersionControl.Git.PushDialog.cs:
+	  Implement push command.
+
+2010-07-27  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.VersionControl.Git.csproj:
 	* MonoDevelop.VersionControl.Git.addin.xml:
 	* MonoDevelop.VersionControl.Git/GitRepository.cs:

@@ -153,13 +153,21 @@ namespace MonoDevelop.VersionControl.Git
 			StringWriter outw = new StringWriter ();
 			ProcessWrapper proc = Runtime.ProcessService.StartProcess ("git", "--no-pager " + cmd, path, outw, outw, null);
 			proc.WaitForOutput ();
+			if (monitor != null)
+				monitor.Log.Write (outw.ToString ());
 			Console.WriteLine (outw.ToString ());
-			if (checkExitCode && proc.ExitCode != 0) {
-				if (monitor != null)
-					monitor.Log.Write (outw.ToString ());
+			if (checkExitCode && proc.ExitCode != 0)
 				throw new InvalidOperationException ("Git operation failed");
-			}
 			return new StringReader (outw.ToString ());
+		}
+		
+		List<string> ToList (StringReader sr)
+		{
+			List<string> list = new List<string> ();
+			string line;
+			while ((line = sr.ReadLine ()) != null)
+				list.Add (line);
+			return list;
 		}
 		
 		public override VersionInfo[] GetDirectoryVersionInfo (FilePath localDirectory, bool getRemoteStatus, bool recursive)
@@ -242,7 +250,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override void Update (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
-			RunCommand ("pull ", true, monitor);
+			RunCommand ("pull --rebase --ff " + GetCurrentRemote () + " " + GetCurrentBranch (), true, monitor);
 		}
 		
 		
@@ -308,7 +316,6 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			else {
 				StringReader sr = RunCommand ("diff \"" + baseLocalPath + "\"", true);
-				sr.ReadLine (); // The diff command
 				return GetUnifiedDiffInfo (sr.ReadToEnd (), baseLocalPath, null);
 			}
 		}
@@ -342,8 +349,31 @@ namespace MonoDevelop.VersionControl.Git
 			return list.ToArray ();
 		}
 		
-		public void Push (FilePath baseDirectory)
+		public string GetCurrentRemote ()
 		{
+			List<string> remotes = new List<string> (GetNamedRemotes ());
+			if (remotes.Count == 0)
+				throw new InvalidOperationException ("There are no remote repositories defined");
+			
+			if (remotes.Contains ("origin"))
+				return "origin";
+			else
+				return remotes [0];
+		}
+		
+		public void Push (IProgressMonitor monitor, string remote, string remoteBranch)
+		{
+			RunCommand ("push " + remote + " HEAD:" + remoteBranch, true, monitor);
+			monitor.ReportSuccess ("Repository successfully pushed");
+		}
+		
+		public IEnumerable<string> GetNamedRemotes ()
+		{
+			StringReader sr = RunCommand ("remote", true);
+			string line;
+			while ((line = sr.ReadLine ()) != null) {
+				yield return line;
+			}
 		}
 		
 		public IEnumerable<string> GetBranches ()
@@ -355,6 +385,18 @@ namespace MonoDevelop.VersionControl.Git
 					yield return line.Substring (2).Trim ();
 				else
 					yield return line.Trim ();
+			}
+		}
+		
+		public IEnumerable<string> GetRemoteBranches (string remoteName)
+		{
+			StringReader sr = RunCommand ("branch -r", true);
+			string line;
+			while ((line = sr.ReadLine ()) != null) {
+				if (line.StartsWith ("  " + remoteName + "/") || line.StartsWith ("* " + remoteName + "/")) {
+					int i = line.IndexOf ('/');
+					yield return line.Substring (i+1);
+				}
 			}
 		}
 		
@@ -374,8 +416,7 @@ namespace MonoDevelop.VersionControl.Git
 			StringReader sr = RunCommand ("diff " + branch + " --name-status", true);
 			RunCommand ("checkout " + branch, true);
 			
-			string line;
-			while ((line = sr.ReadLine ()) != null) {
+			foreach (string line in ToList (sr)) {
 				char s = line [0];
 				FilePath file = path.Combine (line.Substring (2));
 				if (s == 'A')
@@ -384,6 +425,30 @@ namespace MonoDevelop.VersionControl.Git
 				else
 					FileService.NotifyFileChanged (file);
 			}
+		}
+		
+		public ChangeSet GetPushChangeSet (string remote, string branch)
+		{
+			ChangeSet cset = CreateChangeSet (path);
+			StringReader sr = RunCommand ("diff --name-status " + remote + "/" + branch + " " + GetCurrentBranch (), true);
+			foreach (string change in ToList (sr)) {
+				FilePath file = path.Combine (change.Substring (2));
+				VersionStatus status;
+				switch (change [0]) {
+				case 'A': status = VersionStatus.ScheduledAdd; break;
+				case 'D': status = VersionStatus.ScheduledDelete; break;
+				default: status = VersionStatus.Modified; break;
+				}
+				VersionInfo vi = new VersionInfo (file, "", false, status | VersionStatus.Versioned, null, VersionStatus.Versioned, null);
+				cset.AddFile (vi);
+			}
+			return cset;
+		}
+		
+		public DiffInfo[] GetPushDiff (string remote, string branch)
+		{
+			StringReader sr = RunCommand ("diff " + remote + "/" + branch + " " + GetCurrentBranch (), true);
+			return GetUnifiedDiffInfo (sr.ReadToEnd (), path, null);
 		}
 	}
 	

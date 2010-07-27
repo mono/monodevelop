@@ -24,7 +24,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/Commands/VersionControl">
 		<Command id = "MonoDevelop.VersionControl.Git.Commands.Push" 
-			_label = "Push"
+			_label = "Push Changes..."
 			defaultHandler = "MonoDevelop.VersionControl.Git.PushCommandHalder"
 			description = "Push changes to a remote repository."/>
 		<Command id = "MonoDevelop.VersionControl.Git.Commands.SwitchToBranch" 

@@ -17,6 +17,7 @@ FILES =  \
 	MonoDevelop.VersionControl.Views/BlameView.cs \
 	MonoDevelop.VersionControl.Views/BlameWidget.cs \
 	MonoDevelop.VersionControl.Views/CellRendererDiff.cs \
+	MonoDevelop.VersionControl.Views/ChangeSetView.cs \
 	MonoDevelop.VersionControl.Views/ComparisonView.cs \
 	MonoDevelop.VersionControl.Views/ComparisonWidget.cs \
 	MonoDevelop.VersionControl.Views/DiffParser.cs \

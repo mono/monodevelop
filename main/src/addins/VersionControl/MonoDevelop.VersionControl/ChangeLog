@@ -1,5 +1,12 @@
 2010-07-27  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.VersionControl.csproj:
+	* MonoDevelop.VersionControl/ChangeSet.cs: New reusable widget
+	  for showing change sets.
+
+2010-07-27  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.VersionControl/Repository.cs:
 	* MonoDevelop.VersionControl.Views/DiffView.cs:
 	* MonoDevelop.VersionControl/UnknownRepository.cs:

@@ -168,6 +168,10 @@ namespace MonoDevelop.VersionControl
 			get { return versionInfo.Status; }
 		}
 		
+		public bool HasLocalChanges {
+			get { return versionInfo.HasLocalChanges; }
+		}
+		
 		public bool IsDirectory {
 			get { return versionInfo.IsDirectory; }
 		}

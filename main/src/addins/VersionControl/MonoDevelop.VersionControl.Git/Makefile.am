@@ -11,15 +11,21 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:Mono.Posix \
-	-r:System
+	-r:System \
+	-r:System.Core
 
 FILES =  \
 	AssemblyInfo.cs \
+	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.VersionControl.Git.PushDialog.cs \
+	MonoDevelop.VersionControl.Git/Commands.cs \
+	MonoDevelop.VersionControl.Git/GitClient.cs \
 	MonoDevelop.VersionControl.Git/GitRepository.cs \
 	MonoDevelop.VersionControl.Git/GitVersionControl.cs \
-	MonoDevelop.VersionControl.Git/GitClient.cs
+	MonoDevelop.VersionControl.Git/PushDialog.cs
 
 RES =  \
+	gtk-gui/gui.stetic \
 	MonoDevelop.VersionControl.Git.addin.xml
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
