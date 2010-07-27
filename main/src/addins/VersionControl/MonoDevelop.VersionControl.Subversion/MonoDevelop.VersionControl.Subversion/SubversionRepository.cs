@@ -71,7 +71,12 @@ namespace MonoDevelop.VersionControl.Subversion
 			return Svn.CanCommit (this, localPath);
 		}
 
-		public override string GetPathToBaseText (FilePath sourcefile)
+		public override string GetBaseText (FilePath sourcefile)
+		{
+			return File.ReadAllText (Svn.GetPathToBaseText (sourcefile));
+		}
+
+		public string GetPathToBaseText (FilePath sourcefile)
 		{
 			return Svn.GetPathToBaseText (sourcefile);
 		}

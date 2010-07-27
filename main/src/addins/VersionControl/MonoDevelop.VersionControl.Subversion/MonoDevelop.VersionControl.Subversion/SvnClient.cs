@@ -429,7 +429,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			LibSvnClient.Rev revisionStart = (LibSvnClient.Rev) revStart;
 			LibSvnClient.Rev revisionEnd = (LibSvnClient.Rev) revEnd;
 			
-			int numAnnotations = File.ReadAllLines (repo.GetPathToBaseText(file)).Length;
+			int numAnnotations = File.ReadAllLines (((SubversionRepository)repo).GetPathToBaseText(file)).Length;
 			Annotation[] annotations = new Annotation [numAnnotations];
 			
 			AnnotationCollector collector = new AnnotationCollector (annotations);

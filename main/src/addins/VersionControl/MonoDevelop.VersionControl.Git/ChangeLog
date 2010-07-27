@@ -1,3 +1,11 @@
+2010-07-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl.Git.csproj:
+	* MonoDevelop.VersionControl.Git.addin.xml:
+	* MonoDevelop.VersionControl.Git/GitRepository.cs:
+	* MonoDevelop.VersionControl.Git/GitVersionControl.cs: Add
+	  basic support for git.
+
 2010-06-30  Michael Hutchinson  <mhutchinson@novell.com>
 
 	* MonoDevelop.VersionControl.Git.csproj: Make MD refs private.

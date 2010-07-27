@@ -154,7 +154,7 @@ namespace MonoDevelop.VersionControl.Views
 			widget.OriginalEditor.Options.ColorScheme = widget.DiffEditor.Options.ColorScheme = info.Document.Editor.Options.ColorScheme;
 			widget.OriginalEditor.Options.ShowFoldMargin = widget.DiffEditor.Options.ShowFoldMargin = false;
 			widget.OriginalEditor.Options.ShowIconMargin = widget.DiffEditor.Options.ShowIconMargin = false;
-			widget.DiffEditor.Document.Text = System.IO.File.ReadAllText (info.Item.Repository.GetPathToBaseText (info.Item.Path));
+			widget.DiffEditor.Document.Text = info.Item.Repository.GetBaseText (info.Item.Path);
 			widget.SetLocal (widget.OriginalEditor.GetTextEditorData ());
 			widget.ShowAll ();
 		}

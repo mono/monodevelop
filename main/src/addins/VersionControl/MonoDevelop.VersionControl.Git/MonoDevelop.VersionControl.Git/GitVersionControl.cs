@@ -25,12 +25,13 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl.Git
 {
 	public abstract class GitVersionControl : VersionControlSystem
 	{
-		readonly string[] protocolsGit = {"git", "ssh", "http", "https"};
+		readonly string[] protocolsGit = {"git", "ssh", "http", "https", "ftp", "ftps", "rsync"};
 		
 		public override string Name {
 			get { return "Git"; }
@@ -38,18 +39,28 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override bool IsInstalled {
 			get {
-				return false;
+				return true;
 			}
+		}
+		
+		public override Repository GetRepositoryReference (FilePath path, string id)
+		{
+			if (path.IsEmpty || path.ParentDirectory.IsEmpty)
+				return null;
+			if (System.IO.Directory.Exists (path.Combine (".git")))
+				return new GitRepository (path, null);
+			else
+				return GetRepositoryReference (path.ParentDirectory, id);
 		}
 		
 		protected override Repository OnCreateRepositoryInstance ()
 		{
-			throw new System.NotImplementedException ();
+			return new GitRepository ();
 		}
 		
 		public override Gtk.Widget CreateRepositoryEditor (Repository repo)
 		{
-			throw new System.NotImplementedException ();
+			return new UrlBasedRepositoryEditor ((GitRepository)repo, protocolsGit);
 		}
 	}
 }

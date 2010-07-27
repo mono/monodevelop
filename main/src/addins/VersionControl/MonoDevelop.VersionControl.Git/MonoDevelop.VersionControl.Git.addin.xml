@@ -21,4 +21,28 @@
 	<Extension path="/MonoDevelop/VersionControl/VersionControlSystems">
 		<Class class="MonoDevelop.VersionControl.Git.GitClient"/>
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/Commands/VersionControl">
+		<Command id = "MonoDevelop.VersionControl.Git.Commands.Push" 
+			_label = "Push"
+			defaultHandler = "MonoDevelop.VersionControl.Git.PushCommandHalder"
+			description = "Push changes to a remote repository."/>
+		<Command id = "MonoDevelop.VersionControl.Git.Commands.SwitchToBranch" 
+			_label = "Switch to Branch"
+			type="radio|array"
+			defaultHandler = "MonoDevelop.VersionControl.Git.SwitchToBranchHandler"
+			description = "Switch to branch."/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
+		<ItemSet id = "VersionControl" _label = "Switch to Branch" insertafter = "VersionControl">
+			<CommandItem id = "MonoDevelop.VersionControl.Git.Commands.SwitchToBranch"/>
+		</ItemSet>
+		<SeparatorItem />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/VersionControl">
+		<CommandItem id = "MonoDevelop.VersionControl.Git.Commands.Push" insertbefore="MonoDevelop.VersionControl.Commands.Publish"/>
+		<SeparatorItem />
+	</Extension>
 </Addin>

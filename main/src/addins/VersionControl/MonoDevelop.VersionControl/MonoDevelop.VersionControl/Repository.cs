@@ -63,7 +63,9 @@ namespace MonoDevelop.VersionControl
 		public VersionControlSystem VersionControlSystem {
 			get {
 				if (vcs == null && vcsName != null) {
+					Console.WriteLine ("pp1:" + vcsName);
 					foreach (VersionControlSystem v in VersionControlService.GetVersionControlSystems ()) {
+						Console.WriteLine ("pp2:" + v + " - " + v.Id);
 						if (v.Id == vcsName) {
 							vcs = v;
 							break;
@@ -117,7 +119,7 @@ namespace MonoDevelop.VersionControl
 			VersionInfo vinfo = GetVersionInfo (localFile, false);
 			if (vinfo == null)
 				return false;
-			return vinfo.Status == VersionStatus.Modified;
+			return (vinfo.Status & VersionStatus.Modified) != 0;
 		}
 		
 		// Returns true if the specified file or directory can be added to the repository
@@ -186,7 +188,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		// Returns a path to the last version of the file updated from the repository
-		public abstract string GetPathToBaseText (FilePath localFile);
+		public abstract string GetBaseText (FilePath localFile);
 		
 		// Returns the revision history of a file
 		public abstract Revision[] GetHistory (FilePath localFile, Revision since);

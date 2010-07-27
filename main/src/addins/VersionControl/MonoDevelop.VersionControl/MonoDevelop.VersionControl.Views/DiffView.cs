@@ -4,6 +4,7 @@ using Gtk;
 
 using MonoDevelop.Components.Diff;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -33,11 +34,16 @@ namespace MonoDevelop.VersionControl.Views
 				if (item.Repository.IsModified (item.Path)) {
 					if (test) return true;
 					found = true;
+					string tmpFile = Path.GetTempFileName ();
+					File.WriteAllText (tmpFile, item.Repository.GetBaseText (item.Path));
 					DiffView d = new DiffView(
 						Path.GetFileName (item.Path),
-						item.Repository.GetPathToBaseText (item.Path),
+						tmpFile,
 						item.Path);
-					IdeApp.Workbench.OpenDocument (d, true);
+					Document doc = IdeApp.Workbench.OpenDocument (d, true);
+					doc.Closed += delegate {
+						File.Delete (tmpFile);
+					};
 				}
 			}
 			return found;

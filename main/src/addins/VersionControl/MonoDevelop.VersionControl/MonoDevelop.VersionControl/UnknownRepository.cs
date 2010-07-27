@@ -17,7 +17,7 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 
-		public override string GetPathToBaseText (FilePath sourcefile)
+		public override string GetBaseText (FilePath sourcefile)
 		{
 			return null;
 		}

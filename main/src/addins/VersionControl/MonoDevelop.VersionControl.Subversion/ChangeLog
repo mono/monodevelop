@@ -1,3 +1,9 @@
+2010-07-27  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl.Subversion/SvnClient.cs:
+	* MonoDevelop.VersionControl.Subversion/SubversionRepository.cs:
+	  Add basic support for git.
+
 2010-06-29  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.VersionControl.Subversion/SvnClient.cs:

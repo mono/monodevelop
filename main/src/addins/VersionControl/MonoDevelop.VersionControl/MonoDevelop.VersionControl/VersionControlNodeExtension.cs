@@ -15,7 +15,14 @@ namespace MonoDevelop.VersionControl
 {
 	class VersionControlNodeExtension : NodeBuilderExtension
 	{
-		Dictionary<string,object> filePaths = new Dictionary<string, object> ();
+		Dictionary<FilePath,DirData> filePaths = new Dictionary<FilePath, DirData> ();
+		
+		class DirData
+		{
+			public object Object;
+			public Dictionary<FilePath,VersionInfo> FileData;
+			public DateTime Timestamp;
+		}
 	
 		public override bool CanBuildNode (Type dataType)
 		{
@@ -40,6 +47,7 @@ namespace MonoDevelop.VersionControl
 			
 			if (dataObject is IWorkspaceObject) {
 				IWorkspaceObject ce = (IWorkspaceObject) dataObject;
+				ClearDirCache (ce.BaseDirectory);
 				Repository rep = VersionControlService.GetRepository (ce);
 				if (rep != null)
 					AddFolderOverlay (rep, ce.BaseDirectory, ref icon, ref closedIcon);
@@ -47,6 +55,7 @@ namespace MonoDevelop.VersionControl
 			} else if (dataObject is ProjectFolder) {
 				ProjectFolder ce = (ProjectFolder) dataObject;
 				if (ce.ParentWorkspaceObject != null) {
+					ClearDirCache (ce.Path);
 					Repository rep = VersionControlService.GetRepository (ce.ParentWorkspaceObject);
 					if (rep != null)
 						AddFolderOverlay (rep, ce.Path, ref icon, ref closedIcon);
@@ -55,7 +64,7 @@ namespace MonoDevelop.VersionControl
 			}
 			
 			IWorkspaceObject prj;
-			string file;
+			FilePath file;
 			
 			if (dataObject is ProjectFile) {
 				ProjectFile pfile = (ProjectFile) dataObject;
@@ -123,36 +132,92 @@ namespace MonoDevelop.VersionControl
 			icon = res;
 		}
 		
-		VersionStatus GetVersionInfo (Repository vc, string filepath)
+		void ClearDirCache (FilePath path)
 		{
+			path = path.CanonicalPath;
+			DirData data;
+			if (filePaths.TryGetValue (path, out data))
+				data.FileData = null;
+		}
+		
+		VersionStatus GetVersionInfo (Repository vc, FilePath filepath)
+		{
+			FilePath dir = filepath;
+			dir = dir.ParentDirectory.CanonicalPath;
+
+			DirData data;
+			if (filePaths.TryGetValue (dir, out data)) {
+				if (data.FileData == null) {
+					data.FileData = new Dictionary<FilePath, VersionInfo> ();
+					foreach (VersionInfo vin in vc.GetDirectoryVersionInfo (dir, false, false))
+						data.FileData [vin.LocalPath.CanonicalPath] = vin;
+					data.Timestamp = DateTime.Now;
+					Console.WriteLine ("pp CACHED INFO FOR: " + dir);
+				}
+				VersionInfo vi;
+				if (data.FileData.TryGetValue ((FilePath)filepath, out vi))
+					return vi.Status;
+			}
+			
 			VersionInfo node = vc.GetVersionInfo (filepath, false);
-			if (node != null)
+			if (node != null) {
+				if (data != null)
+					data.FileData [filepath] = node;
 				return node.Status;
+			}
 			return VersionStatus.Unversioned;
 		}
 		
 		void Monitor (object sender, FileUpdateEventArgs args)
 		{
-			object obj;
-			if (filePaths.TryGetValue (args.FilePath, out obj)) {
-				ITreeBuilder builder = Context.GetTreeBuilder (obj);
-				if (builder != null)
-					builder.UpdateAll();
+			if (args.IsDirectory) {
+				FilePath path = args.FilePath.CanonicalPath;
+				DirData dd;
+				if (filePaths.TryGetValue (path, out dd)) {
+					dd.FileData = null; // Clear the status cache
+					Console.WriteLine ("pp CLEARED INFO FOR: " + path);
+					ITreeBuilder builder = Context.GetTreeBuilder (dd.Object);
+					if (builder != null)
+						builder.UpdateAll();
+				}
+			} else {
+				// If it's a file, clear the cached version info for the file, if exists
+				FilePath path = args.FilePath.ParentDirectory;
+				DirData dd;
+				if (filePaths.TryGetValue (path.CanonicalPath, out dd) && dd.FileData != null) {
+					dd.FileData.Remove (args.FilePath.CanonicalPath);
+					Console.WriteLine ("pp UPDATED INFO FOR: " + args.FilePath);
+				}
+				if (filePaths.TryGetValue (args.FilePath.CanonicalPath, out dd)) {
+					ITreeBuilder builder = Context.GetTreeBuilder (dd.Object);
+					if (builder != null)
+						builder.UpdateAll();
+				}
 			}
 		}
 		
 		public override void OnNodeAdded (object dataObject)
 		{
 			FilePath path = GetPath (dataObject);
-			if (path != FilePath.Null)
-				filePaths [path] = dataObject;
+			if (path != FilePath.Null) {
+				DirData dd = new DirData ();
+				dd.Object = dataObject;
+				filePaths [path.CanonicalPath] = dd;
+			}
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
 			FilePath path = GetPath (dataObject);
-			if (path != FilePath.Null)
-				filePaths.Remove (path);
+			if (path != FilePath.Null) {
+				path = path.CanonicalPath;
+				DirData data;
+				if (filePaths.TryGetValue (path, out data) && data.Object == dataObject) {
+					filePaths.Remove (path);
+					if (data.FileData != null)
+						Console.WriteLine ("pp REMOVED INFO FOR: " + path);
+				}
+			}
 		}
 		
 		internal static string GetPath (object dataObject)
@@ -339,7 +404,7 @@ namespace MonoDevelop.VersionControl
 				if (it.Repository == null) {
 					if (cmd != Commands.Publish)
 						return TestResult.NoVersionControl;
-				} else if (!it.Repository.VersionControlSystem.IsInstalled) {
+				} else if (it.Repository.VersionControlSystem != null && !it.Repository.VersionControlSystem.IsInstalled) {
 					return TestResult.Disable;
 				}
 			}
