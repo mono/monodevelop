@@ -44,25 +44,8 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
 			GitRepository repo = VersionControlService.GetRepository (wob) as GitRepository;
-			if (repo != null) {
-				PushDialog dlg = new PushDialog (repo);
-				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-					string remote = dlg.SelectedRemote;
-					string branch = dlg.SelectedRemoteBranch;
-					dlg.Destroy ();
-					IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("Version Control", "md-version-control", false, true);
-					System.Threading.ThreadPool.QueueUserWorkItem (delegate {
-						try {
-							repo.Push (monitor, remote, branch);
-						} catch (Exception ex) {
-							monitor.ReportError (ex.Message, ex);
-						} finally {
-							monitor.Dispose ();
-						}
-					});
-				} else
-					dlg.Destroy ();
-			}
+			if (repo != null)
+				GitService.Push (repo);
 		}
 		
 		protected override void Update (CommandInfo info)
@@ -86,11 +69,13 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
 			GitRepository repo = VersionControlService.GetRepository (wob) as GitRepository;
-			string currentBranch = repo.GetCurrentBranch ();
-			foreach (string branch in repo.GetBranches ()) {
-				CommandInfo ci = info.Add (branch, branch);
-				if (branch == currentBranch)
-					ci.Checked = true;
+			if (repo != null) {
+				string currentBranch = repo.GetCurrentBranch ();
+				foreach (string branch in repo.GetBranches ()) {
+					CommandInfo ci = info.Add (branch, branch);
+					if (branch == currentBranch)
+						ci.Checked = true;
+				}
 			}
 		}
 	}

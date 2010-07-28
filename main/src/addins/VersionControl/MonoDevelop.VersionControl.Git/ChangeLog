@@ -1,5 +1,21 @@
 2010-07-28  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.VersionControl.Git.addin.xml: Don't show the
+	  Switch to Branch command if there are no branches.
+
+	* Makefile.am:
+	* MonoDevelop.VersionControl.Git.csproj: Updated.
+
+	* MonoDevelop.VersionControl.Git/Commands.cs:
+	* MonoDevelop.VersionControl.Git/GitService.cs: Moved Push
+	  command to the new GitService class.
+
+	* MonoDevelop.VersionControl.Git/CommitDialogExtensionWidget.cs:
+	  Added extension which allows pushing changes after
+	  committing.
+
+2010-07-28  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* Makefile.am:
 	* MonoDevelop.VersionControl.Git.csproj:
 	* MonoDevelop.VersionControl.Git.addin.xml:
