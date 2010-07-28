@@ -1,5 +1,21 @@
 2010-07-28  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.VersionControl.Dialogs/CommitDialog.cs: Focus
+	  the text view and move the insert point to the begining.
+	  Makes it easier to insert a comment header.
+
+	* MonoDevelop.VersionControl/ChangeLogWriter.cs:
+	* MonoDevelop.VersionControl/CommitMessageFormat.cs:
+	* MonoDevelop.VersionControl/VersionControlService.cs: Added
+	  option which allows omiting the file list in the commit
+	  message when all files have the same comment.
+
+	* gtk-gui/gui.stetic:
+	* gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:
+	  Add some mnemonics.
+
+2010-07-28  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.VersionControl/Repository.cs: Remove debug code.
 
 2010-07-27  Lluis Sanchez Gual  <lluis@novell.com>

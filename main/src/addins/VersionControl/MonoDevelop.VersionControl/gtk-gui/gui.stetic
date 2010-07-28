@@ -1174,7 +1174,9 @@
               <widget class="Gtk.Label" id="label2">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes">Commit message:</property>
+                <property name="LabelProp" translatable="yes">Commit _message:</property>
+                <property name="UseUnderline">True</property>
+                <property name="MnemonicWidget">textview</property>
               </widget>
               <packing>
                 <property name="PackType">End</property>
@@ -1223,7 +1225,7 @@
             <property name="CanFocus">True</property>
             <property name="Type">TextAndIcon</property>
             <property name="Icon">stock:vc-commit Menu</property>
-            <property name="Label" translatable="yes">Commit</property>
+            <property name="Label" translatable="yes">C_ommit</property>
             <property name="UseUnderline">True</property>
             <property name="ResponseId">-5</property>
           </widget>

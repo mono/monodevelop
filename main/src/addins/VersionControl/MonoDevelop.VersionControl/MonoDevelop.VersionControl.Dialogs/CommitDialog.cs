@@ -84,6 +84,12 @@ namespace MonoDevelop.VersionControl.Dialogs
 				Message = changeSet.GlobalComment;
 				
 			textview.Buffer.Changed += OnTextChanged;
+			
+			// Focus the text view and move the insert point to the begining. Makes it easier to insert
+			// a comment header.
+			textview.Buffer.MoveMark (textview.Buffer.InsertMark, textview.Buffer.StartIter);
+			textview.Buffer.MoveMark (textview.Buffer.SelectionBound, textview.Buffer.StartIter);
+			textview.GrabFocus ();
 		}
 
 		void HandleAllowCommitChanged (object sender, EventArgs e)

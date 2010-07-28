@@ -615,6 +615,7 @@ namespace MonoDevelop.VersionControl
 		{
 			CommitMessageFormat format = new CommitMessageFormat ();
 			format.Style = item.Policies.Get<VersionControlPolicy> ().CommitMessageStyle;
+			format.ShowFilesForSingleComment = false;
 			return format;
 		}
 		
@@ -652,6 +653,7 @@ namespace MonoDevelop.VersionControl
 			
 			CommitMessageFormat format = new CommitMessageFormat ();
 			format.Style = style;
+			format.ShowFilesForSingleComment = false;
 			
 			return format;
 		}

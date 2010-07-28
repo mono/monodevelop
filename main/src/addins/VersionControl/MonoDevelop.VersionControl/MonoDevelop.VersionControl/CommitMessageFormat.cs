@@ -35,6 +35,7 @@ namespace MonoDevelop.VersionControl
 		{
 			MaxColumns = 70;
 			TabWidth = 8;
+			ShowFilesForSingleComment = true;
 		}
 		
 		public CommitMessageStyle Style { get; set; }
@@ -46,5 +47,7 @@ namespace MonoDevelop.VersionControl
 		public bool TabsAsSpaces { get; set; }
 		
 		public int AppendNewlines { get; set; }
+		
+		public bool ShowFilesForSingleComment { get; set; }
 	}
 }

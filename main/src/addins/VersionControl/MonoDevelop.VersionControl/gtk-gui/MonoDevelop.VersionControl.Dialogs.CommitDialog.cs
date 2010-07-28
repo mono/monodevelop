@@ -96,7 +96,8 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.label2.Xalign = 0f;
-			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Commit message:");
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Commit _message:");
+			this.label2.UseUnderline = true;
 			this.mainBox.Add (this.label2);
 			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.mainBox[this.label2]));
 			w8.PackType = ((global::Gtk.PackType)(1));
@@ -142,7 +143,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			w13.Add (w14);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w16 = new global::Gtk.Label ();
-			w16.LabelProp = global::Mono.Unix.Catalog.GetString ("Commit");
+			w16.LabelProp = global::Mono.Unix.Catalog.GetString ("C_ommit");
 			w16.UseUnderline = true;
 			w13.Add (w16);
 			w12.Add (w13);
@@ -157,6 +158,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			}
 			this.DefaultWidth = 628;
 			this.DefaultHeight = 481;
+			this.label2.MnemonicWidget = this.textview;
 			this.Show ();
 		}
 	}
