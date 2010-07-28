@@ -115,10 +115,9 @@ namespace Mono.TextEditor
 			get { return charWidth; }
 		}
 
-		const char spaceMarkerChar = '·';
-		const char tabMarkerChar = '»';
-		const char eolMarkerChar = '¶';
-		const char invalidLineMarkerChar = '~';
+		const string spaceMarkerChar = "·";
+		const string tabMarkerChar = "»";
+		const string invalidLineMarkerChar = "~";
 
 		public TextViewMargin (TextEditor textEditor)
 		{
@@ -575,14 +574,12 @@ namespace Mono.TextEditor
 		}
 		#endregion
 
-//		char caretChar;
 		internal int caretX;
 		internal int caretY;
 		Gdk.GC caretGc;
 
-		void SetVisibleCaretPosition (Gdk.Drawable win, char ch, int x, int y)
+		void SetVisibleCaretPosition (Gdk.Drawable win, int x, int y)
 		{
-//			caretChar = ch;
 			caretX = x;
 			caretY = y;
 		}
@@ -1325,7 +1322,7 @@ namespace Mono.TextEditor
 						wrapper.Layout.Tabs = tabArray;
 						int vy, vx;
 						wrapper.Layout.GetSize (out vx, out vy);
-						SetVisibleCaretPosition (win, ' ', (int)((pangoPosition + vx + layout.PangoWidth) / Pango.Scale.PangoScale), y);
+						SetVisibleCaretPosition (win, (int)((pangoPosition + vx + layout.PangoWidth) / Pango.Scale.PangoScale), y);
 						xPos = (int)((pangoPosition + layout.PangoWidth) / Pango.Scale.PangoScale);
 
 						if (!isSelectionDrawn && (selectionEnd == lineOffset + line.EditableLength)) {
@@ -1345,14 +1342,9 @@ namespace Mono.TextEditor
 					} else if (index >= 0 && index < length) {
 						curIndex = byteIndex = 0;
 						layout.Layout.GetCursorPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)index, ref curIndex, ref byteIndex), out strong_pos, out weak_pos);
-						char caretChar = Document.GetCharAt (caretOffset);
-						if (textEditor.Options.ShowSpaces && caretChar == ' ')
-							caretChar = spaceMarkerChar;
-						if (textEditor.Options.ShowTabs && caretChar == '\t')
-							caretChar = tabMarkerChar;
-						SetVisibleCaretPosition (win, caretChar, xPos + (int)(strong_pos.X / Pango.Scale.PangoScale), y);
+						SetVisibleCaretPosition (win, xPos + (int)(strong_pos.X / Pango.Scale.PangoScale), y);
 					} else if (index == length) {
-						SetVisibleCaretPosition (win, textEditor.Options.ShowEolMarkers ? eolMarkerChar : ' ', (int)((pangoPosition + layout.PangoWidth) / Pango.Scale.PangoScale), y);
+						SetVisibleCaretPosition (win, (int)((pangoPosition + layout.PangoWidth) / Pango.Scale.PangoScale), y);
 					}
 				}
 			}
@@ -1397,27 +1389,41 @@ namespace Mono.TextEditor
 			return null;
 		}
 
-		void DrawEolMarker (Gdk.Drawable win, bool selected, int x, int y)
+		void DrawEolMarker (Gdk.Drawable win, LineSegment line, bool selected, int x, int y)
 		{
-			markerLayout.SetText (eolMarkerChar.ToString ());
+			switch (line.DelimiterLength) {
+			case 1:
+				if (Document.GetCharAt (line.Offset + line.EditableLength) == '\n') {
+					markerLayout.SetText ("\\n");
+				} else {
+					markerLayout.SetText ("\\r");
+				}
+				break;
+			case 2:
+				markerLayout.SetText ("\\r\\n");
+				break;
+			case 4:
+				markerLayout.SetText ("<EOL>");
+				break;
+			}
 			win.DrawLayout (GetGC (selected ? SelectionColor.Color : ColorStyle.WhitespaceMarker), x, y, markerLayout);
 		}
 
 		void DrawSpaceMarker (Gdk.Drawable win, bool selected, int x, int y)
 		{
-			markerLayout.SetText (spaceMarkerChar.ToString ());
+			markerLayout.SetText (spaceMarkerChar);
 			win.DrawLayout (GetGC (selected ? SelectionColor.Color : ColorStyle.WhitespaceMarker), x, y, markerLayout);
 		}
 
 		void DrawTabMarker (Gdk.Drawable win, bool selected, int x, int y)
 		{
-			markerLayout.SetText (tabMarkerChar.ToString ());
+			markerLayout.SetText (tabMarkerChar);
 			win.DrawLayout (GetGC (selected ? SelectionColor.Color : ColorStyle.WhitespaceMarker), x, y, markerLayout);
 		}
 
 		void DrawInvalidLineMarker (Gdk.Drawable win, int x, int y)
 		{
-			markerLayout.SetText (invalidLineMarkerChar.ToString ());
+			markerLayout.SetText (invalidLineMarkerChar);
 			win.DrawLayout (GetGC (ColorStyle.InvalidLineMarker), x, y, markerLayout);
 		}
 
@@ -2163,7 +2169,7 @@ namespace Mono.TextEditor
 					win.DrawLayout (GetGC (isFoldingSelected ? SelectionColor.Color : ColorStyle.FoldLine.Color), (int)(pangoPosition / Pango.Scale.PangoScale), y, markerLayout);
 
 					if (caretOffset == foldOffset && !string.IsNullOrEmpty (folding.Description))
-						SetVisibleCaretPosition (win, folding.Description[0], (int)(pangoPosition / Pango.Scale.PangoScale), y);
+						SetVisibleCaretPosition (win, (int)(pangoPosition / Pango.Scale.PangoScale), y);
 
 					pangoPosition += width;
 
@@ -2230,7 +2236,7 @@ namespace Mono.TextEditor
 			}
 
 			if (textEditor.Options.ShowEolMarkers)
-				DrawEolMarker (win, isEolSelected, (int)(pangoPosition / Pango.Scale.PangoScale), y);
+				DrawEolMarker (win, line, isEolSelected, (int)(pangoPosition / Pango.Scale.PangoScale), y);
 			var extendingMarker = Document.GetExtendingTextMarker (lineNr);
 			if (extendingMarker != null)
 				extendingMarker.Draw (textEditor, win, lineNr, lineArea);
