@@ -1,3 +1,8 @@
+2010-07-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl.Git/GitRepository.cs: Notify file
+	  changes after pulling.
+
 2010-07-28  Dale Ragan  <dale.ragan@sinesignal.com>
 
 	* MonoDevelop.VersionControl.Git.addin.xml: Fixed 

@@ -38,6 +38,8 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		FilePath path;
 		
+		public static event EventHandler BranchSelectionChanged;
+		
 		public GitRepository ()
 		{
 			Method = "git";
@@ -47,6 +49,10 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			this.path = path;
 			Url = url;
+		}
+		
+		public FilePath RootPath {
+			get { return path; }
 		}
 		
 		public override void CopyConfigurationFrom (Repository other)
@@ -250,7 +256,17 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override void Update (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
-			RunCommand ("pull --rebase --ff " + GetCurrentRemote () + " " + GetCurrentBranch (), true, monitor);
+			IEnumerable<string> output = ToList (RunCommand ("pull --rebase --ff --stat " + GetCurrentRemote () + " " + GetCurrentBranch (), true, monitor));
+			foreach (string line in output) {
+				int i = line.IndexOf ('|');
+				if (i != -1 && line[0] == ' ') {
+					FilePath file = path.Combine (line.Substring (1, i - 1).Trim ());
+					if (File.Exists (file))
+						FileService.NotifyFileChanged (file);
+					else
+						FileService.NotifyFileRemoved (file);
+				}
+			}
 		}
 		
 		
@@ -425,6 +441,8 @@ namespace MonoDevelop.VersionControl.Git
 				else
 					FileService.NotifyFileChanged (file);
 			}
+			if (BranchSelectionChanged != null)
+				BranchSelectionChanged (this, EventArgs.Empty);
 		}
 		
 		public ChangeSet GetPushChangeSet (string remote, string branch)
