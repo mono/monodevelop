@@ -208,7 +208,7 @@ namespace MonoDevelop.CSharp.Highlighting
 						if (configuration != null) {
 							CSharpCompilerParameters cparams = configuration.CompilationParameters as CSharpCompilerParameters;
 							if (cparams != null) {
-								string[] syms = cparams.DefineSymbols.Split (';', ',');
+								string[] syms = cparams.DefineSymbols.Split (';', ',', ' ', '\t');
 								foreach (string s in syms) {
 									string ss = s.Trim ();
 									if (ss.Length > 0 && !symbols.Contains (ss))
