@@ -27,6 +27,7 @@
 
 using System;
 using System.Text;
+using System.Collections.Generic;
 
 namespace Mono.TextEditor
 {
@@ -150,5 +151,340 @@ namespace Mono.TextEditor
 			this.gapLength = gapLength;
 			buffer    = newBuffer;
 		}
+		
+		unsafe int SearchForwardInternal (string value, int startIndex)
+		{
+			int valueLen = value.Length;
+			if (startIndex >= buffer.Length - valueLen + 1)
+				return -1;
+			
+			int count = buffer.Length;
+			fixed (char* thisptr = buffer, valueptr = value) {
+				char* ap = thisptr + startIndex;
+				char* thisEnd = thisptr + count - valueLen + 1;
+				char* gapBeginPtr = thisptr + gapBegin;
+				char* gapEndPtr = thisptr + gapEnd;
+				char* stopGap = gapBeginPtr - valueLen + 1;
+				
+				if (ap < gapBeginPtr) {
+					while (ap != stopGap) {
+						if (*ap == *valueptr) {
+							for (int i = 1; i < valueLen; i++) {
+								if (ap[i] != valueptr[i])
+									goto NextVal;
+							}
+							return (int)(ap - thisptr);
+						}
+						NextVal:
+						ap++;
+					}
+					
+					while (ap != gapBeginPtr) {
+						if (*ap == *valueptr) {
+							for (int i = 1; i < valueLen; i++) {
+								char* p = ap + i;
+								if (p >= gapBeginPtr)
+									p = p - gapBeginPtr + gapEndPtr;
+								if (*p != valueptr[i])
+									goto NextVal;
+							}
+							return (int)(ap - thisptr);
+						}
+						NextVal:
+						ap++;
+					}
+				}
+				
+				if (ap < gapEndPtr)
+					ap = gapEndPtr;
+				
+				while (ap != thisEnd) {
+					if (*ap == *valueptr) {
+						for (int i = 1; i < valueLen; i++) {
+							if (ap[i] != valueptr[i])
+								goto NextVal;
+						}
+						return (int)(ap - thisptr);
+					}
+					NextVal:
+					ap++;
+				}
+			}
+			return -1;
+		}
+		
+		unsafe int SearchForwardInternalIgnoreCase (string value, int startIndex)
+		{
+			int valueLen = value.Length;
+			if (startIndex >= buffer.Length - valueLen + 1)
+				return -1;
+			
+			int count = buffer.Length;
+			fixed (char* thisptr = buffer, valueptr = value) {
+				char* ap = thisptr + startIndex;
+				char* thisEnd = thisptr + count - valueLen + 1;
+				char* gapBeginPtr = thisptr + gapBegin;
+				char* gapEndPtr = thisptr + gapEnd;
+				char* stopGap = gapBeginPtr - valueLen + 1;
+				
+				if (ap < gapBeginPtr) {
+					while (ap != stopGap) {
+						if (*ap == *valueptr) {
+							for (int i = 1; i < valueLen; i++) {
+								if (char.ToUpper (ap[i]) != valueptr[i])
+									goto NextVal;
+							}
+							return (int)(ap - thisptr);
+						}
+						NextVal:
+						ap++;
+					}
+					
+					while (ap != gapBeginPtr) {
+						if (*ap == *valueptr) {
+							for (int i = 1; i < valueLen; i++) {
+								char* p = ap + i;
+								if (p >= gapBeginPtr)
+									p = p - gapBeginPtr + gapEndPtr;
+								if (char.ToUpper (*p) != valueptr[i])
+									goto NextVal;
+							}
+							return (int)(ap - thisptr);
+						}
+						NextVal:
+						ap++;
+					}
+				}
+				
+				if (ap < gapEndPtr)
+					ap = gapEndPtr;
+				
+				while (ap != thisEnd) {
+					if (*ap == *valueptr) {
+						for (int i = 1; i < valueLen; i++) {
+							if (char.ToUpper (ap[i]) != valueptr[i])
+								goto NextVal;
+						}
+						return (int)(ap - thisptr);
+					}
+					NextVal:
+					ap++;
+				}
+			}
+			return -1;
+		}
+		
+		public IEnumerable<int> SearchForward (string pattern, int startIndex)
+		{
+			int idx = startIndex;
+			while ((idx = SearchForwardInternal (pattern, idx)) != -1) {
+				yield return idx;
+				idx += pattern.Length;
+			}
+		}
+		
+		public IEnumerable<int> SearchForwardIgnoreCase (string pattern, int startIndex)
+		{
+			pattern = pattern.ToUpper ();
+			int idx = startIndex;
+			while ((idx = SearchForwardInternalIgnoreCase (pattern, idx)) != -1) {
+				yield return idx;
+				idx += pattern.Length;
+			}
+		}
+		
+		
+		unsafe int SearchBackwardInternal (string value, int startIndex)
+		{
+			int valueLen = value.Length;
+			if (startIndex < valueLen)
+				return -1;
+			
+			int count = buffer.Length;
+			fixed (char* thisptr = buffer, v = value) {
+				char* valueptr = v + valueLen - 1;
+				char* ap = thisptr + startIndex;
+				char* thisEnd = thisptr + count - valueLen + 1;
+				char* gapBeginPtr = thisptr + gapBegin;
+				char* gapEndPtr = thisptr + gapEnd;
+				char* stopGap = gapEndPtr - valueLen + 1;
+				
+				if (ap >= gapEndPtr) {
+					while (ap != stopGap) {
+						if (*ap == *valueptr) {
+							for (int i = 1; i < valueLen; i++) {
+								if (*(ap - i) != *(valueptr - i))
+									goto NextVal;
+							}
+							return (int)(ap - thisptr);
+						}
+						NextVal:
+						ap--;
+					}
+					
+					while (ap != gapEndPtr) {
+						if (*ap == *valueptr) {
+							for (int i = 1; i < valueLen; i++) {
+								char* p = ap - i;
+								if (p >= gapEndPtr)
+									p += gapBeginPtr - gapEndPtr;
+								if (*p != *(valueptr - i))
+									goto NextVal;
+							}
+							return (int)(ap - thisptr);
+						}
+						NextVal:
+						ap--;
+					}
+				}
+				
+				if (ap > gapBeginPtr)
+					ap = gapBeginPtr;
+				
+				while (ap != thisEnd) {
+					if (*ap == *valueptr) {
+						for (int i = 1; i < valueLen; i++) {
+							if (ap[i] != *(valueptr - i))
+								goto NextVal;
+						}
+						return (int)(ap - thisptr);
+					}
+					NextVal:
+					ap--;
+				}
+			}
+			return -1;
+		}
+		
+		unsafe int SearchBackwardInternalIgnoreCase (string value, int startIndex)
+		{
+			int valueLen = value.Length;
+			if (startIndex < valueLen)
+				return -1;
+			
+			int count = buffer.Length;
+			fixed (char* thisptr = buffer, v = value) {
+				char* valueptr = v + valueLen - 1;
+				char* ap = thisptr + startIndex;
+				char* thisEnd = thisptr + count - valueLen + 1;
+				char* gapBeginPtr = thisptr + gapBegin;
+				char* gapEndPtr = thisptr + gapEnd;
+				char* stopGap = gapEndPtr - valueLen + 1;
+				
+				if (ap >= gapEndPtr) {
+					while (ap != stopGap) {
+						if (*ap == *valueptr) {
+							for (int i = 1; i < valueLen; i++) {
+								if (char.ToUpper (*(ap - i)) != char.ToUpper (*(valueptr - i)))
+									goto NextVal;
+							}
+							return (int)(ap - thisptr);
+						}
+						NextVal:
+						ap--;
+					}
+					
+					while (ap != gapEndPtr) {
+						if (*ap == *valueptr) {
+							for (int i = 1; i < valueLen; i++) {
+								char* p = ap - i;
+								if (p >= gapEndPtr)
+									p += gapBeginPtr - gapEndPtr;
+								if (char.ToUpper (*p) != char.ToUpper (*(valueptr - i)))
+									goto NextVal;
+							}
+							return (int)(ap - thisptr);
+						}
+						NextVal:
+						ap--;
+					}
+				}
+				
+				if (ap > gapBeginPtr)
+					ap = gapBeginPtr;
+				
+				while (ap != thisEnd) {
+					if (*ap == *valueptr) {
+						for (int i = 1; i < valueLen; i++) {
+							if (char.ToUpper (ap[i]) != char.ToUpper (*(valueptr - i)))
+								goto NextVal;
+						}
+						return (int)(ap - thisptr);
+					}
+					NextVal:
+					ap--;
+				}
+			}
+			return -1;
+		}
+		
+		
+		public IEnumerable<int> SearchBackward (string pattern, int startIndex)
+		{
+			int idx = startIndex;
+			while ((idx = SearchBackwardInternal (pattern, idx)) != -1) {
+				yield return idx;
+				idx -= pattern.Length;
+			}
+		}
+		
+		public IEnumerable<int> SearchBackwardIgnoreCase (string pattern, int startIndex)
+		{
+			pattern = pattern.ToUpper ();
+			int idx = startIndex;
+			while ((idx = SearchBackwardInternalIgnoreCase (pattern, idx)) != -1) {
+				yield return idx;
+				idx -= pattern.Length;
+			}
+		}
+		
+		/* Boyer-Moore-Horspool-Raita implementation: (but on Intel Core i brute force outpeforms it.
+
+	static int[] ProcessString (string pattern)
+	{
+		var result = new int[char.MaxValue];
+		for (int i = 0; i < result.Length; i++)
+			result[i] = pattern.Length - 1;
+		for (int i = 0; i < pattern.Length - 1; ++i) {
+			result[pattern[i]] = pattern.Length - i - 1;
+		}
+		return result;
+	}
+	unsafe static int bmhrSearchBytes (string text, string pattern, int textStart, int[] b)
+	{
+		int lastIndex = text.Length + pattern.Length - 1;
+		if (textStart >= lastIndex)
+			return -1;
+		
+		int m = pattern.Length - 1;
+		int mMinusOne = pattern.Length - 2;
+		
+		var last = pattern[pattern.Length - 1];
+		var first = pattern[0];
+		
+		fixed (char* textPtr = text, pattenrPtr = pattern) {
+			char* i = textPtr + textStart + pattern.Length - 1;
+			char* endText = textPtr + lastIndex;
+			while (i < endText) {
+				if (*i == last) {
+					//if (*(i - m) == first) {
+						char* k = i - 1;
+						char* pp = pattenrPtr + mMinusOne;
+						
+						while (pp >= pattenrPtr && *k == *pp) {
+							--k;
+							--pp;
+						}
+						
+						if (pp < pattenrPtr)
+							return (int)(k - textPtr) + 1;
+				//	}
+				}
+				i += b[*i];
+			}
+		}
+		return -1;
+	}
+			 * */
 	}
 }

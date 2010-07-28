@@ -233,6 +233,26 @@ namespace Mono.TextEditor
 			return buffer.GetCharAt (offset);
 		}
 		
+		public IEnumerable<int> SearchForward (string pattern, int startIndex)
+		{
+			return buffer.SearchForward (pattern, startIndex);
+		}
+		
+		public IEnumerable<int> SearchForwardIgnoreCase (string pattern, int startIndex)
+		{
+			return SearchForwardIgnoreCase (pattern, startIndex);
+		}
+		
+		public IEnumerable<int> SearchBackward (string pattern, int startIndex)
+		{
+			return SearchBackward (pattern, startIndex);
+		}
+		
+		public IEnumerable<int> SearchBackwardIgnoreCase (string pattern, int startIndex)
+		{
+			return SearchBackwardIgnoreCase (pattern, startIndex);
+		}
+		
 		protected virtual void OnTextReplaced (ReplaceEventArgs args)
 		{
 			if (TextReplaced != null)
