@@ -1,3 +1,12 @@
+2010-07-28  Dale Ragan  <dale.ragan@sinesignal.com>
+
+	* MonoDevelop.VersionControl.Git.addin.xml: Fixed 
+	  typo and issue with add-in not loading due to bad 
+      extension for adding the Switch to Branch label.
+
+	* MonoDevelop.VersionControl.Git/Commands.cs: Fixed 
+	  a small typo.
+
 2010-07-27  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl.Git/GitRepository.cs: Remove

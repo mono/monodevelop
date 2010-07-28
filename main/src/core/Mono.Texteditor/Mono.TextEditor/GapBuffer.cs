@@ -30,7 +30,7 @@ using System.Text;
 
 namespace Mono.TextEditor
 {
-	public class GapBuffer : AbstractBuffer
+	sealed class GapBuffer : IBuffer
 	{
 		char[] buffer = new char[0];
 		
@@ -41,13 +41,28 @@ namespace Mono.TextEditor
 		const int minGapLength = 16 * 1024;
 		const int maxGapLength = 256 * 1024;
 		
-		public override int Length {
+		public int Length {
 			get {
 				return buffer.Length - gapLength;
 			}
 		}
 		
-		public override string Text {
+		public void Insert (int offset, string text)
+		{
+			Replace (offset, 0, text);
+		}
+		
+		public void Remove (int offset, int count)
+		{
+			Replace (offset, count, null);
+		}
+		
+		public string GetTextAt (ISegment segment)
+		{
+			return GetTextAt (segment.Offset, segment.Length);
+		}
+		
+		public string Text {
 			get {
 				return GetTextAt (0, Length);
 			}
@@ -57,12 +72,12 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public override char GetCharAt (int offset)
+		public char GetCharAt (int offset)
 		{
 			return buffer[offset < gapBegin ? offset : offset + gapLength];
 		}
 		
-		public override string GetTextAt (int offset, int count)
+		public string GetTextAt (int offset, int count)
 		{
 			int end = offset + count;
 			if (end < gapBegin) 
@@ -78,7 +93,7 @@ namespace Mono.TextEditor
 			return new string (result);
 		}
 		
-		public override void Replace (int offset, int count, string text)
+		public void Replace (int offset, int count, string text)
 		{
 			if (!string.IsNullOrEmpty (text)) { 
 				PlaceGap (offset, text.Length - count);

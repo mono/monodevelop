@@ -160,7 +160,6 @@
     <Compile Include="Mono.TextEditor.Vi\ViMark.cs" />
     <Compile Include="Mono.TextEditor.Theatrics\SmartScrolledWindow.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\JaySyntaxMode.cs" />
-    <Compile Include="Mono.TextEditor\PieceTable.cs" />
     <Compile Include="Mono.TextEditor\PangoUtil.cs" />
     <Compile Include="Mono.TextEditor.Theatrics\BounceFadePopupWindow.cs" />
     <Compile Include="Mono.TextEditor\InsertionCursorEditMode.cs" />

@@ -34,10 +34,11 @@ namespace MonoDevelop.VersionControl.Git
 {
 	public enum Commands
 	{
-		Push
+		Push,
+		SwitchToBranch
 	}
 	
-	class PushCommandHalder: CommandHandler
+	class PushCommandHandler: CommandHandler
 	{
 		protected override void Run ()
 		{
