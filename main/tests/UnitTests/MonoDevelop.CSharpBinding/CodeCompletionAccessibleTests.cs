@@ -821,6 +821,39 @@ namespace X
 			Assert.IsNotNull (provider.Find ("MyMethod"), "method 'MyMethod' not found");			
 		}
 
+		[Test()]
+		public void TestEnumInnerClass ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+using System;
+namespace CaptainHook.Mail
+{
+	public class TestClass
+	{
+		enum ParsingState
+		{
+			Any,
+			Start,
+			InMacro,
+			InMacroArgumentList,
+			InQuotedMacroArgument,
+			PlainText
+		}
+
+		ParsingState state;
+
+		public TestClass ()
+		{
+			$state = $
+		}
+	}
+}");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNull (provider.Find ("CaptainHook.Mail.TestClass.ParsingState"), "class 'CaptainHook.Mail.TestClass.ParsingState' found!");
+			Assert.IsNull (provider.Find ("TestClass.ParsingState"), "class 'TestClass.ParsingState' found!");
+			Assert.IsNotNull (provider.Find ("ParsingState"), "class 'ParsingState' not found");
+		}
 		
 	}
 }

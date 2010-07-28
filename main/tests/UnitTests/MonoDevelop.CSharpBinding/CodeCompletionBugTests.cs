@@ -612,7 +612,7 @@ class C {
         }
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.AreEqual ("C.D", provider.DefaultCompletionString, "Completion string is incorrect");
+			Assert.AreEqual ("D", provider.DefaultCompletionString, "Completion string is incorrect");
 		}
 		
 		[Test()]
