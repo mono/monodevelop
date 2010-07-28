@@ -2,8 +2,13 @@
 *~
 
 #build stuff
-main/build/bin
-main/build/AddIns
+obj/
+/main/build/bin
+/main/build/AddIns
+/main/build/data/
+/main/build/locale/
+/extras/*/build
+/main/src/tools/SharpCoco/SharpCoco.exe*
 
 # globs
 Makefile.in
