@@ -238,6 +238,7 @@ namespace MonoDevelop.CSharp.Resolver
 			IProperty property = callingMember as IProperty;
 			if (property != null && property.Parameters != null)
 				AddParameterList (col, property.Parameters);
+			
 			if (CallingType == null)
 				return;
 			
@@ -252,21 +253,26 @@ namespace MonoDevelop.CSharp.Resolver
 			}
 			
 			if (context != ExpressionContext.TypeDeclaration && CallingMember != null) {
-				bool includeProtected = DomType.IncludeProtected (dom, CallingType, CallingMember.DeclaringType);
-				foreach (IType type in dom.GetInheritanceTree (CallingType)) {
-					foreach (IMember member in type.Members) {
-						if (!(member is IType) && CallingMember.IsStatic && !(member.IsStatic || member.IsConst))
+				AddInnerTypes (context, col);
+			}
+		}
+		
+		void AddInnerTypes (ExpressionContext context, CSharpTextEditorCompletion.CompletionDataCollector col)
+		{
+			bool includeProtected = DomType.IncludeProtected (dom, CallingType, CallingMember != null ? CallingMember.DeclaringType : CallingType);
+			foreach (IType type in dom.GetInheritanceTree (CallingType)) {
+				foreach (IMember member in type.Members) {
+					if (!(member is IType) && (CallingMember == null || CallingMember.IsStatic) && !(member.IsStatic || member.IsConst))
+						continue;
+					if (member.IsAccessibleFrom (dom, CallingType, CallingMember ?? CallingType, includeProtected)) {
+						if (context.FilterEntry (member))
 							continue;
-						if (member.IsAccessibleFrom (dom, CallingType, CallingMember, includeProtected)) {
-							if (context.FilterEntry (member))
-								continue;
-							col.Add (member);
-						}
+						col.Add (member);
 					}
 				}
 			}
 		}
-		
+
 		void AddContentsFromOuterClass (IType outer, ExpressionContext context, CSharpTextEditorCompletion.CompletionDataCollector col)
 		{
 			if (outer == null)
@@ -309,6 +315,10 @@ namespace MonoDevelop.CSharp.Resolver
 				
 				if (CallingMember is IEvent)
 					col.Add ("value");
+			}
+			
+			if (context == ExpressionContext.TypeName) {
+				AddInnerTypes (context, col);
 			}
 			
 			List<string> namespaceList = new List<string> ();
