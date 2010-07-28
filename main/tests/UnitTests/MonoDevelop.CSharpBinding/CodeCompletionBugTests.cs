@@ -104,8 +104,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			
 			if (isCtrlSpace)
 				return textEditorCompletion.CodeCompletionCommand (ctx) as CompletionDataList;
-			else
-				return textEditorCompletion.HandleCodeCompletion (ctx, editorText[cursorPosition - 1] , ref triggerWordLength) as CompletionDataList;
+			return textEditorCompletion.HandleCodeCompletion (ctx, editorText[cursorPosition - 1] , ref triggerWordLength) as CompletionDataList;
 		}
 		
 		public static void CheckObjectMembers (CompletionDataList provider)
@@ -2657,6 +2656,21 @@ class Test : TestBase
 			Assert.IsNotNull (provider.Find ("Bar"), "method 'Bar' not found.");
 		}
 		
-
+		/// <summary>
+		/// Bug 625064 - Internal classes aren't suggested for completion
+		/// </summary>
+		[Test()]
+		public void TestBug625064 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"class Foo 
+{
+	class Bar { }
+	$List<$
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Bar"), "class 'Bar' not found.");
+		}
+		
 	}
 }

@@ -1,3 +1,9 @@
+2010-07-28  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs: Added
+	  unit test for 'Bug 625064 - Internal classes aren't
+	  suggested for completion'.
+
 2010-07-22  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Refactoring/ExtractMethodTests.cs: Track API
