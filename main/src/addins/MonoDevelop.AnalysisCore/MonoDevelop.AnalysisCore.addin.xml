@@ -12,6 +12,7 @@
 		<Addin id="Core" version="2.4"/>
 		<Addin id="Ide" version="2.4"/>
 		<Addin id="SourceEditor2" version="2.4"/>
+		<Addin id="Refactoring" version="2.4"/>
 	</Dependencies>
 	
 	<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules">
@@ -51,4 +52,16 @@
 	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
 		<Class id="AnalysisResults" class="MonoDevelop.AnalysisCore.ResultTooltipProvider" insertafter="Debug" />
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/Commands/Refactoring">
+		<Command id = "MonoDevelop.AnalysisCore.AnalysisCommands.FixOperations" type="array" 
+			_label = "Fixes" />
+	</Extension>
+				
+	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
+		<ItemSet id = "ChooseFixOperation" _label = "Fixes"
+			insertbefore="MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations">
+			<CommandItem id = "MonoDevelop.AnalysisCore.AnalysisCommands.FixOperations" />
+		</ItemSet>
+	</Extension>	
 </Addin>

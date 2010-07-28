@@ -1,5 +1,5 @@
 // 
-// Adaptors.cs
+// AnalysisCommands.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -25,35 +25,14 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Projects.Dom;
-using System.Collections.Generic;
 
 namespace MonoDevelop.AnalysisCore
 {
-	public static class Adapters
+	public enum AnalysisCommands
 	{
-		public static ICompilationUnit GetCompilationUnit (ParsedDocument input)
-		{
-			return input.CompilationUnit;
-		}
-	}
-	
-	public static class Rules
-	{
-		public static IEnumerable<Result> NamingConventions (ICompilationUnit input)
-		{
-			foreach (var type in input.Types) {
-				if (!char.IsUpper (type.Name[0])) {
-					var start = type.Location;
-					var newName = char.ToUpper (type.Name[0]).ToString () + type.Name.Substring (1);
-					yield return new FixableResult (
-						new DomRegion (start, new DomLocation (start.Line, start.Column + type.Name.Length)),
-						"Type names should begin with an uppercase letter",
-						ResultLevel.Warning, ResultCertainty.High, ResultImportance.Medium,
-						new RenameMemberFix (type, newName));
-				}
-			}
-		}
+		FixOperations,
+		ShowFixes,
+		QuickFix
 	}
 }
 
