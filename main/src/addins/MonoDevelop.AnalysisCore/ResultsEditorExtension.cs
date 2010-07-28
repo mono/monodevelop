@@ -148,25 +148,6 @@ namespace MonoDevelop.AnalysisCore
 			}
 			return list;
 		}
-		
-		[CommandUpdateHandler (AnalysisCommands.FixOperations)]
-		void UpdateFix (CommandArrayInfo info)
-		{
-			var results = GetResultsAtOffset (Editor.Caret.Offset).OfType<FixableResult> ();
-			
-			//FIXME: avoid duplicating the messages by making it possible to add headers
-			//FIXME: ellipsize long messages
-			foreach (var result in results)
-				foreach (var fix in result.Fixes)
-					info.Add (new CommandInfo (result.Message + "\n    " + fix.Label), fix);
-		}
-		
-		[CommandHandler (AnalysisCommands.FixOperations)]
-		void Fix (object data)
-		{
-			var fix = (IAnalysisFix) data;
-			fix.Fix (this.Document);
-		}
 	}
 	
 	//FIXME: make a tooltip and commands that can inspect these

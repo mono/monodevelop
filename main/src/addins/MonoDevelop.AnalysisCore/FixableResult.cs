@@ -48,42 +48,21 @@ namespace MonoDevelop.AnalysisCore
 	//FIXME: should this really use MonoDevelop.Ide.Gui.Document? Fixes could be more generic.
 	public interface IAnalysisFix
 	{
-		string Label { get; }
-		void Fix (MonoDevelop.Ide.Gui.Document doc);
+		string FixType { get; }
 	}
 	
 	public class RenameMemberFix : IAnalysisFix
 	{
-		string newName;
-		IMember item;
+		public string NewName { get; private set; }
+		public IMember Item { get; private set; }
 		
 		public RenameMemberFix (IMember item, string newName)
 		{
-			this.newName = newName;
-			this.item = item;
+			this.NewName = newName;
+			this.Item = item;
 		}
 		
-		public string Label {
-			get { return GettextCatalog.GetString ("Rename '{0}' to '{1}'", item.Name, newName); }
-		}
-		
-		public void Fix (MonoDevelop.Ide.Gui.Document doc)
-		{
-			var refactoring = new RenameRefactoring ();
-			var options = new RefactoringOptions () {
-				Document = doc,
-				Dom = doc.Dom,
-				SelectedItem = item,
-			};
-			var prop = new RenameRefactoring.RenameProperties () {
-				NewName = newName
-			};
-			
-			//FIXME: performchanges should probably use a monitor too, as it can be slow
-			var changes = refactoring.PerformChanges (options, prop);
-			var monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Rename", null);
-			RefactoringService.AcceptChanges (monitor, options.Dom, changes);
-		}
+		public string FixType { get { return "RenameMember"; } }
 	}
 }
 

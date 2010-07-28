@@ -35,9 +35,12 @@ namespace MonoDevelop.AnalysisCore
 {
 	internal static class AnalysisExtensions
 	{
-		//TODO: this will have to be built and updated from the addin extension point events
-		static Dictionary<string,List<AnalysisRuleAddinNode>> rulesByInput
-			= new Dictionary<string, List<AnalysisRuleAddinNode>> ();
+		const string EXT_RULES = "/MonoDevelop/AnalysisCore/Rules";
+		const string EXT_TYPES = "/MonoDevelop/AnalysisCore/Types";
+		const string EXT_FIX_HANDLERS = "/MonoDevelop/AnalysisCore/FixHandlers";
+		
+		static KeyedNodeList<string,AnalysisRuleAddinNode> rulesByInput
+			= new KeyedNodeList<string,AnalysisRuleAddinNode> ();
 		
 		// This is a re-usable cache of computed trees. it will need to be flushed nodesByInput is cached.
 		// We should probably clean it via a LRU too.
@@ -47,10 +50,14 @@ namespace MonoDevelop.AnalysisCore
 		static Dictionary<string,AnalysisTypeExtensionNode> ruleInputTypes
 			= new Dictionary<string, AnalysisTypeExtensionNode> ();
 		
+		static KeyedNodeList<string,FixHandlerExtensionNode> fixHandlers
+			= new KeyedNodeList<string,FixHandlerExtensionNode> ();
+		
 		static AnalysisExtensions ()
 		{
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/AnalysisCore/Rules", OnRuleNodeChanged);
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/AnalysisCore/Types", OnTypeNodeChanged);
+			AddinManager.AddExtensionNodeHandler (EXT_RULES, OnRuleNodeChanged);
+			AddinManager.AddExtensionNodeHandler (EXT_TYPES, OnTypeNodeChanged);
+			AddinManager.AddExtensionNodeHandler (EXT_FIX_HANDLERS, OnFixHandlerNodeChanged);
 		}
 		
 		static void OnRuleNodeChanged (object sender, ExtensionNodeEventArgs args)
@@ -68,15 +75,31 @@ namespace MonoDevelop.AnalysisCore
 		
 		static void OnTypeNodeChanged (object sender, ExtensionNodeEventArgs args)
 		{
+			var node = (AnalysisTypeExtensionNode) args.ExtensionNode;
 			switch (args.Change) {
 			case ExtensionChange.Add:
-				AddType ((AnalysisTypeExtensionNode) args.ExtensionNode);
+				if (ruleInputTypes.ContainsKey (node.Name))
+					throw new InvalidOperationException ("Duplicate analysis node type '" + node.Name + "' registered");
+				ruleInputTypes[node.Name] = node;
 				break;
 			case ExtensionChange.Remove:
-				AddType ((AnalysisTypeExtensionNode) args.ExtensionNode);
+				ruleInputTypes.Remove (node.Name);
 				break;
 			}
 			analysisTreeCache.Clear ();
+		}
+		
+		static void OnFixHandlerNodeChanged (object sender, ExtensionNodeEventArgs args)
+		{
+			var node = (FixHandlerExtensionNode) args.ExtensionNode;
+			switch (args.Change) {
+			case ExtensionChange.Add:
+				fixHandlers.Add (node.FixName, node);
+				break;
+			case ExtensionChange.Remove:
+				fixHandlers.Remove (node.FixName, node);
+				break;
+			}
 		}
 		
 		static void AddRule (ExtensionNode extNode)
@@ -88,41 +111,18 @@ namespace MonoDevelop.AnalysisCore
 			}
 			
 			var node = (AnalysisRuleAddinNode)extNode;
-			
-			List<AnalysisRuleAddinNode> list;
-			if (!rulesByInput.TryGetValue (node.Input, out list))
-				list = rulesByInput[node.Input] = new List<AnalysisRuleAddinNode> ();
-			
-			list.Add (node);
+			rulesByInput.Add (node.Input, node);
 		}
 		
 		static void RemoveRule (ExtensionNode extNode)
 		{
 			if (extNode is CategoryNode) {
 				foreach (ExtensionNode child in extNode.ChildNodes)
-					AddRule (child);
+					RemoveRule (child);
 				return;
 			}
-			
 			var node = (AnalysisRuleAddinNode)extNode;
-			List<AnalysisRuleAddinNode> list;
-			if (!rulesByInput.TryGetValue (node.Input, out list))
-				return;
-			list.Remove (node);
-			if (list.Count == 0)
-				rulesByInput.Remove (node.Input);
-		}
-		
-		static void AddType (AnalysisTypeExtensionNode node)
-		{
-			if (ruleInputTypes.ContainsKey (node.Name))
-				throw new InvalidOperationException ("Duplicate analysis node type '" + node.Name + "' registered");
-			ruleInputTypes[node.Name] = node;
-		}
-		
-		static void RemoveType (AnalysisTypeExtensionNode node)
-		{
-			ruleInputTypes.Remove (node.Name);
+			rulesByInput.Remove (node.Input, node);
 		}
 		
 		internal static Type GetType (string name)
@@ -140,7 +140,7 @@ namespace MonoDevelop.AnalysisCore
 		public static RuleTreeRoot GetAnalysisTree (NodeTreeType treeType)
 		{
 			RuleTreeRoot tree;
-			if (analysisTreeCache.TryGetValue (treeType, out tree))
+			if (analysisTreeCache .TryGetValue (treeType, out tree))
 				return tree;
 			
 			analysisTreeCache [treeType] = tree = BuildTree (treeType);
@@ -164,8 +164,8 @@ namespace MonoDevelop.AnalysisCore
 		//recursively builds the rule tree for branches that terminate in leaves (rules with result outputs)
 		static IRuleTreeNode[] GetTreeNodes (NodeTreeType treeType, string input, int depth)
 		{
-			List<AnalysisRuleAddinNode> addinNodes;
-			if (!rulesByInput.TryGetValue (input, out addinNodes))
+			var addinNodes = rulesByInput.Get (input);
+			if (addinNodes == null)
 				return null;
 	
 			var validNodes = addinNodes.Where (n => n.Supports (treeType.FileExtension)).ToList ();
@@ -196,6 +196,43 @@ namespace MonoDevelop.AnalysisCore
 			}
 			
 			return list.ToArray ();
+		}
+		
+		public static IEnumerable<IFixHandler> GetFixHandlers (string fixType)
+		{
+			var nodes = fixHandlers.Get (fixType);
+			if (nodes != null)
+				return nodes.Select (node => node.FixHandler);
+			return new IFixHandler[0];
+		}
+	}
+	
+	class KeyedNodeList<K,V>
+	{
+		Dictionary<K,List<V>> dict = new Dictionary<K,List<V>> ();
+		
+		public List<V> Get (K key)
+		{
+			List<V> list;
+			dict.TryGetValue (key, out list);
+			return list;
+		}
+		
+		public void Remove (K key, V value)
+		{
+			List<V> list;
+			if (!dict.TryGetValue (key, out list) || !list.Remove (value))
+				throw new Exception ("Item missing");
+			if (list.Count == 0)
+				dict.Remove (key);
+		}
+		
+		public void Add (K key, V value)
+		{
+			List<V> list;
+			if (!dict.TryGetValue (key, out list))
+				dict[key] = list = new List<V> ();
+			list.Add (value);
 		}
 	}
 }
