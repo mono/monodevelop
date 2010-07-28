@@ -20,6 +20,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.VersionControl.Git.PushDialog.cs \
 	MonoDevelop.VersionControl.Git/Commands.cs \
 	MonoDevelop.VersionControl.Git/GitClient.cs \
+	MonoDevelop.VersionControl.Git/GitNodeBuilderExtension.cs \
 	MonoDevelop.VersionControl.Git/GitRepository.cs \
 	MonoDevelop.VersionControl.Git/GitVersionControl.cs \
 	MonoDevelop.VersionControl.Git/PushDialog.cs

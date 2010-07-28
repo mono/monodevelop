@@ -44,4 +44,8 @@
 		<CommandItem id = "MonoDevelop.VersionControl.Git.Commands.Push" insertbefore="MonoDevelop.VersionControl.Commands.Publish"/>
 		<SeparatorItem />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
+		<NodeBuilder id = "VersionControlNodeExtension" class = "MonoDevelop.VersionControl.Git.GitNodeBuilderExtension"/>
+	</Extension>
 </Addin>

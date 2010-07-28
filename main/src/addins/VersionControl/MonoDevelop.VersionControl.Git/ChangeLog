@@ -1,5 +1,13 @@
 2010-07-28  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.VersionControl.Git.csproj:
+	* MonoDevelop.VersionControl.Git.addin.xml:
+	* MonoDevelop.VersionControl.Git/GitNodeBuilderExtension.cs:
+	  Show the current branch next to the solution name.
+
+2010-07-28  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.VersionControl.Git/GitRepository.cs: Notify file
 	  changes after pulling.
 
