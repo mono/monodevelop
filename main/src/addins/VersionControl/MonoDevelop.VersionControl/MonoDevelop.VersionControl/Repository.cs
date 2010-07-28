@@ -63,9 +63,7 @@ namespace MonoDevelop.VersionControl
 		public VersionControlSystem VersionControlSystem {
 			get {
 				if (vcs == null && vcsName != null) {
-					Console.WriteLine ("pp1:" + vcsName);
 					foreach (VersionControlSystem v in VersionControlService.GetVersionControlSystems ()) {
-						Console.WriteLine ("pp2:" + v + " - " + v.Id);
 						if (v.Id == vcsName) {
 							vcs = v;
 							break;
