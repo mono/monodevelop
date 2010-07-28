@@ -30,7 +30,7 @@ using System.Text;
 
 namespace Mono.TextEditor
 {
-	sealed class GapBuffer : IBuffer
+	public sealed class GapBuffer : IBuffer
 	{
 		char[] buffer = new char[0];
 		
