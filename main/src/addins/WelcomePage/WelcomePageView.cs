@@ -139,7 +139,7 @@ namespace MonoDevelop.WelcomePage
 						var response = (HttpWebResponse) request.EndGetResponse (ar);
 						if (response.StatusCode == HttpStatusCode.OK) {
 							using (var fs = File.Create (localCachedNewsFile))
-								CopyStream (fs, response.GetResponseStream (), response.ContentLength);
+								CopyStream (response.GetResponseStream (), fs, response.ContentLength);
 						}
 						NewsUpdated (null, EventArgs.Empty);
 					} catch (System.Net.WebException wex) {
