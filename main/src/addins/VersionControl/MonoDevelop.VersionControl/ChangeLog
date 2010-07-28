@@ -1,5 +1,17 @@
 2010-07-28  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:
+	* gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:
+	  Improved look. Show separators between extension widgets.
+
+	* MonoDevelop.VersionControl/CommitDialogExtension.cs: The
+	  Initialize method now can return a boolean indicating
+	  whether the extension is enabled or not. Added some
+	  comments.
+
+2010-07-28  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.VersionControl.Dialogs/CommitDialog.cs: Focus
 	  the text view and move the insert point to the begining.
 	  Makes it easier to insert a comment header.

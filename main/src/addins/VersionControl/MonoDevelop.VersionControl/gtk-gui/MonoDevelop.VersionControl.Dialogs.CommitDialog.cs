@@ -70,6 +70,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			// Container child mainBox.Gtk.Box+BoxChild
 			this.vboxExtensions = new global::Gtk.VBox ();
 			this.vboxExtensions.Name = "vboxExtensions";
+			this.vboxExtensions.Spacing = 6;
 			this.mainBox.Add (this.vboxExtensions);
 			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.mainBox[this.vboxExtensions]));
 			w5.PackType = ((global::Gtk.PackType)(1));

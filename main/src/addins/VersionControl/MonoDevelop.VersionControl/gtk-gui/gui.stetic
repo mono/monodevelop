@@ -1131,9 +1131,7 @@
             <child>
               <widget class="Gtk.VBox" id="vboxExtensions">
                 <property name="MemberName" />
-                <child>
-                  <placeholder />
-                </child>
+                <property name="Spacing">6</property>
                 <child>
                   <placeholder />
                 </child>
