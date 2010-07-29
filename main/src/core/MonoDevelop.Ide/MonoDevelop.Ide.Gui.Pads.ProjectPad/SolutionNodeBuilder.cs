@@ -92,23 +92,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			Solution solution = dataObject as Solution;
-			int count = 0;
-			foreach (SolutionItem e in solution.GetAllSolutionItems ())
-				if (!(e is SolutionFolder))
-					count++;
-			
-			switch (count) {
-				case 0:
-					label = GettextCatalog.GetString ("Solution {0}", solution.Name);
-					break;
-				case 1:
-					label = GettextCatalog.GetString ("Solution {0} (1 entry)", solution.Name);
-					break;
-				default:
-					label = GettextCatalog.GetString ("Solution {0} ({1} entries)", solution.Name, count);
-					break;
-			}
-
+			label = GettextCatalog.GetString ("Solution {0}", solution.Name);
 			icon = Context.GetIcon (Stock.Solution);
 		}
 

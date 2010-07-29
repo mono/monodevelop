@@ -1,3 +1,9 @@
+2010-07-28  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionNodeBuilder.cs:
+	  Don't show the project count in the solution node. That
+	  space can be used for more useful things.
+
 2010-07-22  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Ide.Commands/EditCommands.cs:

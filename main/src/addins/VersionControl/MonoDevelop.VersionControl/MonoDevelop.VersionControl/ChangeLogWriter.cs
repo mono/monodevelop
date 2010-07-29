@@ -30,6 +30,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Text;
 
@@ -114,31 +115,37 @@ namespace MonoDevelop.VersionControl
 			formatter.LeftMargin = message_style.LineAlign;
 			formatter.ParagraphStartMargin = 0;
 			
-			foreach (KeyValuePair<string, List<string>> message in messages) {
-				List<string> paths = message.Value;
-				paths.Sort ((a, b) => a.Length.CompareTo (b.Length));
-				
-				formatter.BeginWord ();
-				
-				formatter.Append (message_style.FirstFilePrefix);
-				for (int i = 0, n = paths.Count; i < n; i++) {
-					if (i > 0) {
-						formatter.Append (fileSeparator1);
-						formatter.EndWord ();
-						formatter.BeginWord ();
-						formatter.Append (fileSeparator2);
+			if (!MessageFormat.ShowFilesForSingleComment && messages.Count == 1) {
+				string msg = messages.Keys.First ();
+				formatter.Append (msg);
+			}
+			else {
+				foreach (KeyValuePair<string, List<string>> message in messages) {
+					List<string> paths = message.Value;
+					paths.Sort ((a, b) => a.Length.CompareTo (b.Length));
+					
+					formatter.BeginWord ();
+					
+					formatter.Append (message_style.FirstFilePrefix);
+					for (int i = 0, n = paths.Count; i < n; i++) {
+						if (i > 0) {
+							formatter.Append (fileSeparator1);
+							formatter.EndWord ();
+							formatter.BeginWord ();
+							formatter.Append (fileSeparator2);
+						}
+						formatter.Append (paths [i]);
 					}
-					formatter.Append (paths [i]);
-				}
-				
-				formatter.Append (message_style.LastFilePostfix);
-				formatter.EndWord ();
-				formatter.Append (message.Key);
-				
-				if (m_i++ < messages.Count - 1) {
-					formatter.AppendLine ();
-					for (int n=0; n < message_style.InterMessageLines; n++)
+					
+					formatter.Append (message_style.LastFilePostfix);
+					formatter.EndWord ();
+					formatter.Append (message.Key);
+					
+					if (m_i++ < messages.Count - 1) {
 						formatter.AppendLine ();
+						for (int n=0; n < message_style.InterMessageLines; n++)
+							formatter.AppendLine ();
+					}
 				}
 			}
 			

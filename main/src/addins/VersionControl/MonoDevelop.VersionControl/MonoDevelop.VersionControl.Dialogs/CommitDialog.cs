@@ -48,16 +48,26 @@ namespace MonoDevelop.VersionControl.Dialogs
 			colCommit.Visible = false;
 			
 			object[] exts = AddinManager.GetExtensionObjects ("/MonoDevelop/VersionControl/CommitDialogExtensions", false);
+			bool separatorRequired = false;
+			
 			foreach (object ob in exts) {
 				CommitDialogExtension ext = ob as CommitDialogExtension;
 				if (ext == null) {
 					MessageService.ShowError ("Commit extension type " + ob.GetType() + " must be a subclass of CommitDialogExtension");
 					continue;
 				}
-				vboxExtensions.PackEnd (ext, false, false, 0);
-				ext.Initialize (changeSet);
-				extensions.Add (ext);
-				ext.AllowCommitChanged += HandleAllowCommitChanged;
+				if (ext.Initialize (changeSet)) {
+					if (separatorRequired) {
+						HSeparator sep = new HSeparator ();
+						sep.Show ();
+						vboxExtensions.PackEnd (sep, false, false, 0);
+					}
+					vboxExtensions.PackEnd (ext, false, false, 0);
+					extensions.Add (ext);
+					ext.AllowCommitChanged += HandleAllowCommitChanged;
+					separatorRequired = true;
+				} else
+					ext.Destroy ();
 			}
 			HandleAllowCommitChanged (null, null);
 
@@ -84,6 +94,12 @@ namespace MonoDevelop.VersionControl.Dialogs
 				Message = changeSet.GlobalComment;
 				
 			textview.Buffer.Changed += OnTextChanged;
+			
+			// Focus the text view and move the insert point to the begining. Makes it easier to insert
+			// a comment header.
+			textview.Buffer.MoveMark (textview.Buffer.InsertMark, textview.Buffer.StartIter);
+			textview.Buffer.MoveMark (textview.Buffer.SelectionBound, textview.Buffer.StartIter);
+			textview.GrabFocus ();
 		}
 
 		void HandleAllowCommitChanged (object sender, EventArgs e)

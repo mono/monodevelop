@@ -73,7 +73,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			haux.PackStart (optionsButton, false, false, 0);
 		}
 		
-		public override void Initialize (ChangeSet cset)
+		public override bool Initialize (ChangeSet cset)
 		{	
 			this.cset = cset;
 			msgLabel = new Label ();
@@ -88,6 +88,7 @@ namespace MonoDevelop.ChangeLogAddIn
 				ShowAll ();
 				UpdateStatus ();
 			}
+			return enabled;
 		}
 		
 		void UpdateStatus ()

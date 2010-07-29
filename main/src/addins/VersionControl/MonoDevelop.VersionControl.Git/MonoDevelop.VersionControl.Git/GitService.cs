@@ -1,20 +1,21 @@
-// CommitMessageFormat.cs
-//
+// 
+// GitService.cs
+//  
 // Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
-//
-// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
-//
+//       Lluis Sanchez Gual <lluis@novell.com>
+// 
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
+// 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,32 +23,35 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
 
 using System;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
-namespace MonoDevelop.VersionControl
+namespace MonoDevelop.VersionControl.Git
 {
-	public class CommitMessageFormat
+	public static class GitService
 	{
-		public CommitMessageFormat ()
+		public static void Push (GitRepository repo)
 		{
-			MaxColumns = 70;
-			TabWidth = 8;
-			ShowFilesForSingleComment = true;
+			PushDialog dlg = new PushDialog (repo);
+			if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+				string remote = dlg.SelectedRemote;
+				string branch = dlg.SelectedRemoteBranch;
+				dlg.Destroy ();
+				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("Version Control", "md-version-control", false, true);
+				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+					try {
+						repo.Push (monitor, remote, branch);
+					} catch (Exception ex) {
+						monitor.ReportError (ex.Message, ex);
+					} finally {
+						monitor.Dispose ();
+					}
+				});
+			} else
+				dlg.Destroy ();
 		}
-		
-		public CommitMessageStyle Style { get; set; }
-		
-		public int MaxColumns { get; set; }
-		
-		public int TabWidth { get; set; }
-		
-		public bool TabsAsSpaces { get; set; }
-		
-		public int AppendNewlines { get; set; }
-		
-		public bool ShowFilesForSingleComment { get; set; }
 	}
 }
+
