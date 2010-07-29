@@ -1,9 +1,8 @@
 # On branch master
-# Your branch and 'origin/master' have diverged,
-# and have 1 and 2 different commit(s) each, respectively.
-#
-# Untracked files:
-#   (use "git add <file>..." to include in what will be committed)
+elvelv
+elvevle
+vlelve
+lvevlelvel
 #
 #	.DS_Store
 #	a
@@ -538,11 +537,8 @@
 #	main/src/tools/mdrun/obj/
 #	main/tests/ComponentTests/CompileAllDefaultProjectTemplates.py
 #	main/tests/UnitTests/MonoDevelop.CSharpBinding/FindReferencesTest.cs
-#	main/tests/UnitTests/UnitTests.csproj.user
+#	main/tests/UnitTests/UnitTests.cspoj.user
 #	main/tests/UnitTests/UnitTests.mdp
-#	main/tests/UnitTests/obj/
-#	main/tests/UnitTests/test-results/
-#	main/tests/config/
 #	main/tests/test-projects/completion-db-test/Library2/bin/
 #	main/tests/test-projects/completion-db-test/Library3/bin/
 #	main/theme-icons/Mac/png/monodevelop-128.png
