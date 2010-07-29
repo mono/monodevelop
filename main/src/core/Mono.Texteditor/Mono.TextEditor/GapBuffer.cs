@@ -152,43 +152,58 @@ namespace Mono.TextEditor
 			buffer    = newBuffer;
 		}
 		
-		unsafe int SearchForwardInternal (string value, int startIndex)
+		unsafe int SearchForwardInternal (string pattern, int startIndex)
 		{
-			int valueLen = value.Length;
+			if (startIndex > gapBegin)
+				startIndex += gapLength;
+			
+			int valueLen = pattern.Length;
 			if (startIndex >= buffer.Length - valueLen + 1)
 				return -1;
 			
-			int count = buffer.Length;
-			fixed (char* thisptr = buffer, valueptr = value) {
-				char* ap = thisptr + startIndex;
-				char* thisEnd = thisptr + count - valueLen + 1;
-				char* gapBeginPtr = thisptr + gapBegin;
-				char* gapEndPtr = thisptr + gapEnd;
+			fixed (char* bufferPtr = buffer, patternPtr = pattern) {
+				char* ap = bufferPtr + startIndex;
+				char* bufferPhysEnd = bufferPtr + buffer.Length;
+				char* bufferEnd = bufferPhysEnd - valueLen + 1;
+				char* gapBeginPtr = bufferPtr + gapBegin;
+				char* gapEndPtr = bufferPtr + gapEnd;
 				char* stopGap = gapBeginPtr - valueLen + 1;
+				char* patternPos1Ptr = patternPtr + 1;
+				char* patternEndPtr = patternPtr + valueLen;
+				char p0 = *patternPtr;
 				
 				if (ap < gapBeginPtr) {
-					while (ap != stopGap) {
-						if (*ap == *valueptr) {
-							for (int i = 1; i < valueLen; i++) {
-								if (ap[i] != valueptr[i])
-									goto NextVal;
+					if (stopGap > bufferPtr) {
+						while (ap < stopGap) {
+							if (*ap == p0) {
+								char* p = ap + 1;
+								char* v = patternPos1Ptr;
+								while (v < patternEndPtr) {
+									if (*p != *v)
+										goto NextVal;
+									v++;
+									p++;
+								}
+								return (int)(ap - bufferPtr);
 							}
-							return (int)(ap - thisptr);
+							NextVal:
+							ap++;
 						}
-						NextVal:
-						ap++;
 					}
 					
 					while (ap != gapBeginPtr) {
-						if (*ap == *valueptr) {
-							for (int i = 1; i < valueLen; i++) {
-								char* p = ap + i;
-								if (p >= gapBeginPtr)
-									p = p - gapBeginPtr + gapEndPtr;
-								if (*p != valueptr[i])
+						if (*ap == p0) {
+							char* p = ap + 1;
+							char* v = patternPos1Ptr;
+							while (v < patternEndPtr) {
+								if (*p != *v)
 									goto NextVal;
+								v++;
+								p++;
+								if (p == gapBeginPtr)
+									p = gapEndPtr;
 							}
-							return (int)(ap - thisptr);
+							return (int)(ap - bufferPtr);
 						}
 						NextVal:
 						ap++;
@@ -197,59 +212,79 @@ namespace Mono.TextEditor
 				
 				if (ap < gapEndPtr)
 					ap = gapEndPtr;
-				
-				while (ap != thisEnd) {
-					if (*ap == *valueptr) {
-						for (int i = 1; i < valueLen; i++) {
-							if (ap[i] != valueptr[i])
-								goto NextVal;
+				if (ap < bufferEnd) {
+					while (ap != bufferEnd) {
+						if (*ap == p0) {
+							char* p = ap + 1;
+							char* v = patternPos1Ptr;
+							while (v < patternEndPtr) {
+								if (*p != *v)
+									goto NextVal;
+								v++;
+								p++;
+							}
+							return (int)(ap - gapLength - bufferPtr);
 						}
-						return (int)(ap - thisptr);
+						NextVal:
+						ap++;
 					}
-					NextVal:
-					ap++;
 				}
 			}
 			return -1;
 		}
 		
-		unsafe int SearchForwardInternalIgnoreCase (string value, int startIndex)
+		unsafe int SearchForwardInternalIgnoreCase (string pattern, int startIndex)
 		{
-			int valueLen = value.Length;
+			if (startIndex > gapBegin)
+				startIndex += gapLength;
+			
+			int valueLen = pattern.Length;
 			if (startIndex >= buffer.Length - valueLen + 1)
 				return -1;
 			
-			int count = buffer.Length;
-			fixed (char* thisptr = buffer, valueptr = value) {
-				char* ap = thisptr + startIndex;
-				char* thisEnd = thisptr + count - valueLen + 1;
-				char* gapBeginPtr = thisptr + gapBegin;
-				char* gapEndPtr = thisptr + gapEnd;
+			fixed (char* bufferPtr = buffer, patternPtr = pattern) {
+				char* ap = bufferPtr + startIndex;
+				char* bufferPhysEnd = bufferPtr + buffer.Length;
+				char* bufferEnd = bufferPhysEnd - valueLen + 1;
+				char* gapBeginPtr = bufferPtr + gapBegin;
+				char* gapEndPtr = bufferPtr + gapEnd;
 				char* stopGap = gapBeginPtr - valueLen + 1;
+				char* patternPos1Ptr = patternPtr + 1;
+				char* patternEndPtr = patternPtr + valueLen;
+				char p0 = *patternPtr;
 				
 				if (ap < gapBeginPtr) {
-					while (ap != stopGap) {
-						if (*ap == *valueptr) {
-							for (int i = 1; i < valueLen; i++) {
-								if (char.ToUpper (ap[i]) != valueptr[i])
-									goto NextVal;
+					if (stopGap > bufferPtr) {
+						while (ap < stopGap) {
+							if (char.ToUpper (*ap) == p0) {
+								char* p = ap + 1;
+								char* v = patternPos1Ptr;
+								while (v < patternEndPtr) {
+									if (char.ToUpper (*p) != *v)
+										goto NextVal;
+									v++;
+									p++;
+								}
+								return (int)(ap - bufferPtr);
 							}
-							return (int)(ap - thisptr);
+							NextVal:
+							ap++;
 						}
-						NextVal:
-						ap++;
 					}
 					
 					while (ap != gapBeginPtr) {
-						if (*ap == *valueptr) {
-							for (int i = 1; i < valueLen; i++) {
-								char* p = ap + i;
-								if (p >= gapBeginPtr)
-									p = p - gapBeginPtr + gapEndPtr;
-								if (char.ToUpper (*p) != valueptr[i])
+						if (char.ToUpper (*ap) == p0) {
+							char* p = ap + 1;
+							char* v = patternPos1Ptr;
+							while (v < patternEndPtr) {
+								if (char.ToUpper (*p) != *v)
 									goto NextVal;
+								v++;
+								p++;
+								if (p == gapBeginPtr)
+									p = gapEndPtr;
 							}
-							return (int)(ap - thisptr);
+							return (int)(ap - bufferPtr);
 						}
 						NextVal:
 						ap++;
@@ -258,17 +293,22 @@ namespace Mono.TextEditor
 				
 				if (ap < gapEndPtr)
 					ap = gapEndPtr;
-				
-				while (ap != thisEnd) {
-					if (*ap == *valueptr) {
-						for (int i = 1; i < valueLen; i++) {
-							if (char.ToUpper (ap[i]) != valueptr[i])
-								goto NextVal;
+				if (ap < bufferEnd) {
+					while (ap != bufferEnd) {
+						if (char.ToUpper (*ap) == p0) {
+							char* p = ap + 1;
+							char* v = patternPos1Ptr;
+							while (v < patternEndPtr) {
+								if (char.ToUpper (*p) != *v)
+									goto NextVal;
+								v++;
+								p++;
+							}
+							return (int)(ap - gapLength - bufferPtr);
 						}
-						return (int)(ap - thisptr);
+						NextVal:
+						ap++;
 					}
-					NextVal:
-					ap++;
 				}
 			}
 			return -1;
@@ -293,61 +333,78 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		
-		unsafe int SearchBackwardInternal (string value, int startIndex)
+		unsafe int SearchBackwardInternal (string pattern, int startIndex)
 		{
-			int valueLen = value.Length;
-			if (startIndex < valueLen)
+			int valueLen = pattern.Length;
+			if (startIndex < valueLen - 1)
 				return -1;
-			
-			int count = buffer.Length;
-			fixed (char* thisptr = buffer, v = value) {
-				char* valueptr = v + valueLen - 1;
-				char* ap = thisptr + startIndex;
-				char* thisEnd = thisptr + count - valueLen + 1;
-				char* gapBeginPtr = thisptr + gapBegin;
-				char* gapEndPtr = thisptr + gapEnd;
-				char* stopGap = gapEndPtr - valueLen + 1;
+			if (startIndex > gapBegin)
+				startIndex += gapLength;
+			fixed (char* bufferPtr = buffer, patternPtr = pattern) {
+				char* ap = bufferPtr + startIndex;
+				char* bufferEnd = bufferPtr + valueLen - 1;
+				
+				char* bufferPhysEnd = bufferPtr + buffer.Length;
+				char* gapBeginPtr = bufferPtr + gapBegin;
+				char* gapEndPtr = bufferPtr + gapEnd;
+				char* stopGap = gapEndPtr + valueLen - 1;
+				char* patternPos1Ptr = patternPtr + valueLen - 2;
+				char* patternEndPtr = patternPtr - 1;
+				char p0 = *(patternPtr + valueLen - 1);
 				
 				if (ap >= gapEndPtr) {
-					while (ap != stopGap) {
-						if (*ap == *valueptr) {
-							for (int i = 1; i < valueLen; i++) {
-								if (*(ap - i) != *(valueptr - i))
-									goto NextVal;
+					if (stopGap < bufferPhysEnd) {
+						while (ap >= stopGap) {
+							if (*ap == p0) {
+								char* p = ap - 1;
+								char* v = patternPos1Ptr;
+								while (v > patternEndPtr) {
+									if (*p != *v)
+										goto NextVal;
+									v--;
+									p--;
+								}
+								return (int)(p - gapLength - bufferPtr + 1);
 							}
-							return (int)(ap - thisptr);
+							NextVal:
+							ap--;
 						}
-						NextVal:
-						ap--;
 					}
 					
-					while (ap != gapEndPtr) {
-						if (*ap == *valueptr) {
-							for (int i = 1; i < valueLen; i++) {
-								char* p = ap - i;
-								if (p >= gapEndPtr)
-									p += gapBeginPtr - gapEndPtr;
-								if (*p != *(valueptr - i))
+					while (ap >= gapEndPtr) {
+						if (*ap == p0) {
+							char* p = ap - 1;
+							char* v = patternPos1Ptr;
+							while (v > patternEndPtr) {
+								if (*p != *v)
 									goto NextVal;
+								v--;
+								if (p == gapEndPtr) {
+									p = gapBeginPtr - 1;
+								} else {
+									p--;
+								}
 							}
-							return (int)(ap - thisptr);
+							if (p >= gapEndPtr)
+								return (int)(p - gapLength - bufferPtr + 1);
+							return (int)(p - bufferPtr + 1);
 						}
 						NextVal:
 						ap--;
 					}
 				}
 				
-				if (ap > gapBeginPtr)
-					ap = gapBeginPtr;
-				
-				while (ap != thisEnd) {
-					if (*ap == *valueptr) {
-						for (int i = 1; i < valueLen; i++) {
-							if (ap[i] != *(valueptr - i))
+				while (ap >= bufferEnd) {
+					if (*ap == p0) {
+						char* p = ap - 1;
+						char* v = patternPos1Ptr;
+						while (v > patternEndPtr) {
+							if (*p != *v)
 								goto NextVal;
+							v--;
+							p--;
 						}
-						return (int)(ap - thisptr);
+						return (int)(p - bufferPtr + 1);
 					}
 					NextVal:
 					ap--;
@@ -356,60 +413,78 @@ namespace Mono.TextEditor
 			return -1;
 		}
 		
-		unsafe int SearchBackwardInternalIgnoreCase (string value, int startIndex)
+		unsafe int SearchBackwardInternalIgnoreCase (string pattern, int startIndex)
 		{
-			int valueLen = value.Length;
-			if (startIndex < valueLen)
+			int valueLen = pattern.Length;
+			if (startIndex < valueLen - 1)
 				return -1;
+			if (startIndex > gapBegin)
+				startIndex += gapLength;
 			
-			int count = buffer.Length;
-			fixed (char* thisptr = buffer, v = value) {
-				char* valueptr = v + valueLen - 1;
-				char* ap = thisptr + startIndex;
-				char* thisEnd = thisptr + count - valueLen + 1;
-				char* gapBeginPtr = thisptr + gapBegin;
-				char* gapEndPtr = thisptr + gapEnd;
-				char* stopGap = gapEndPtr - valueLen + 1;
+			fixed (char* bufferPtr = buffer, patternPtr = pattern) {
+				char* ap = bufferPtr + startIndex;
+				char* bufferEnd = bufferPtr + valueLen - 1;
+				
+				char* bufferPhysEnd = bufferPtr + buffer.Length;
+				char* gapBeginPtr = bufferPtr + gapBegin;
+				char* gapEndPtr = bufferPtr + gapEnd;
+				char* stopGap = gapEndPtr + valueLen - 1;
+				char* patternPos1Ptr = patternPtr + valueLen - 2;
+				char* patternEndPtr = patternPtr - 1;
+				char p0 = *(patternPtr + valueLen - 1);
 				
 				if (ap >= gapEndPtr) {
-					while (ap != stopGap) {
-						if (*ap == *valueptr) {
-							for (int i = 1; i < valueLen; i++) {
-								if (char.ToUpper (*(ap - i)) != char.ToUpper (*(valueptr - i)))
-									goto NextVal;
+					if (stopGap < bufferPhysEnd) {
+						while (ap >= stopGap) {
+							if (char.ToUpper (*ap) == p0) {
+								char* p = ap - 1;
+								char* v = patternPos1Ptr;
+								while (v > patternEndPtr) {
+									if (char.ToUpper (*p) != *v)
+										goto NextVal;
+									v--;
+									p--;
+								}
+								return (int)(p - gapLength - bufferPtr + 1);
 							}
-							return (int)(ap - thisptr);
+							NextVal:
+							ap--;
 						}
-						NextVal:
-						ap--;
 					}
 					
-					while (ap != gapEndPtr) {
-						if (*ap == *valueptr) {
-							for (int i = 1; i < valueLen; i++) {
-								char* p = ap - i;
-								if (p >= gapEndPtr)
-									p += gapBeginPtr - gapEndPtr;
-								if (char.ToUpper (*p) != char.ToUpper (*(valueptr - i)))
+					while (ap >= gapEndPtr) {
+						if (char.ToUpper (*ap) == p0) {
+							char* p = ap - 1;
+							char* v = patternPos1Ptr;
+							while (v > patternEndPtr) {
+								if (char.ToUpper (*p) != *v)
 									goto NextVal;
+								v--;
+								if (p == gapEndPtr) {
+									p = gapBeginPtr - 1;
+								} else {
+									p--;
+								}
 							}
-							return (int)(ap - thisptr);
+							if (p >= gapEndPtr)
+								return (int)(p - gapLength - bufferPtr + 1);
+							return (int)(p - bufferPtr + 1);
 						}
 						NextVal:
 						ap--;
 					}
 				}
-				
-				if (ap > gapBeginPtr)
-					ap = gapBeginPtr;
-				
-				while (ap != thisEnd) {
-					if (*ap == *valueptr) {
-						for (int i = 1; i < valueLen; i++) {
-							if (char.ToUpper (ap[i]) != char.ToUpper (*(valueptr - i)))
+				while (ap >= bufferEnd) {
+					if (char.ToUpper (*ap) == p0) {
+						char* p = ap - 1;
+						char* v = patternPos1Ptr;
+						while (v > patternEndPtr) {
+							if (char.ToUpper (*p) != *v)
 								goto NextVal;
+							v--;
+							p--;
 						}
-						return (int)(ap - thisptr);
+						return (int)(p - bufferPtr + 1);
 					}
 					NextVal:
 					ap--;
@@ -417,7 +492,6 @@ namespace Mono.TextEditor
 			}
 			return -1;
 		}
-		
 		
 		public IEnumerable<int> SearchBackward (string pattern, int startIndex)
 		{

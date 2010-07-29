@@ -37,6 +37,7 @@ FILES =  \
 	Mono.TextEditor.Tests.DefaultEditActions/InsertTabTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/RemoveTabTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/SelectionActionTests.cs \
+	Mono.TextEditor.Tests/BufferTests.cs \
 	Mono.TextEditor.Tests/DocumentTests.cs \
 	Mono.TextEditor.Tests/EditActionsTest.cs \
 	Mono.TextEditor.Tests/FoldingTests.cs \

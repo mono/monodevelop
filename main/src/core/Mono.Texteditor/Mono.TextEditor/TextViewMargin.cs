@@ -494,12 +494,10 @@ namespace Mono.TextEditor
 
 		public override void Dispose ()
 		{
-			if (arrowCursor == null)
-				return;
 			CancelCodeSegmentTooltip ();
+			StopCaretThread ();
 			DisposeHighightBackgroundWorker ();
 			DisposeSearchPatternWorker ();
-			StopCaretThread ();
 
 			textEditor.Document.EndUndo -= UpdateBracketHighlighting;
 			Caret.PositionChanged -= UpdateBracketHighlighting;
@@ -508,26 +506,15 @@ namespace Mono.TextEditor
 
 			arrowCursor.Dispose ();
 			xtermCursor.Dispose ();
-			arrowCursor = xtermCursor = null;
 
 			DisposeGCs ();
-			if (caretGc != null) {
+			if (caretGc != null)
 				caretGc.Dispose ();
-				caretGc = null;
-			}
-
-			if (markerLayout != null) {
+			if (markerLayout != null)
 				markerLayout.Dispose ();
-				markerLayout = null;
-			}
-
 			DisposeLayoutDict ();
-			if (tabArray != null) {
+			if (tabArray != null)
 				tabArray.Dispose ();
-				tabArray = null;
-			}
-
-			layoutDict = null;
 			base.Dispose ();
 		}
 
@@ -822,12 +809,9 @@ namespace Mono.TextEditor
 
 		internal void DisposeLayoutDict ()
 		{
-			if (layoutDict == null)
-				return;
 			foreach (LayoutDescriptor descr in layoutDict.Values) {
 				descr.Dispose ();
 			}
-			layoutDict.Clear ();
 		}
 
 		public void PurgeLayoutCache ()
@@ -843,7 +827,6 @@ namespace Mono.TextEditor
 				get;
 				private set;
 			}
-
 			public ChunkDescriptor (LineSegment line, int offset, int length, Chunk chunk) : base(line, offset, length)
 			{
 				this.Chunk = chunk;
@@ -853,7 +836,6 @@ namespace Mono.TextEditor
 		Dictionary<LineSegment, ChunkDescriptor> chunkDict = new Dictionary<LineSegment, ChunkDescriptor> ();
 		Chunk GetCachedChunks (SyntaxMode mode, Document doc, Mono.TextEditor.Highlighting.Style style, LineSegment line, int offset, int length)
 		{
-//			return mode.GetChunks (doc, style, line, offset, length);
 			ChunkDescriptor descriptor;
 			if (chunkDict.TryGetValue (line, out descriptor)) {
 				bool isInvalid;
