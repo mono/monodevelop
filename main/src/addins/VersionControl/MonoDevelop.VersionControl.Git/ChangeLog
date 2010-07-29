@@ -1,5 +1,10 @@
 2010-07-29  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.VersionControl.Git/GitRepository.cs: Improve
+	  handling of git moves and deletes.
+
+2010-07-29  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.VersionControl.Git/GitRepository.cs: Stash local
 	  changes before doing a pull or branch switch.
 

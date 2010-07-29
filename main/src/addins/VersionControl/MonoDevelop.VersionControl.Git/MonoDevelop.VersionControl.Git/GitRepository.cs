@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+//#define DEBUG_GIT
+
 using System;
 using System.IO;
 using MonoDevelop.Core;
@@ -155,13 +157,17 @@ namespace MonoDevelop.VersionControl.Git
 		
 		StringReader RunCommand (string cmd, bool checkExitCode, IProgressMonitor monitor)
 		{
-//			Console.WriteLine ("> git " + cmd);
+#if DEBUG_GIT
+			Console.WriteLine ("> git " + cmd);
+#endif
 			StringWriter outw = new StringWriter ();
 			ProcessWrapper proc = Runtime.ProcessService.StartProcess ("git", "--no-pager " + cmd, path, outw, outw, null);
 			proc.WaitForOutput ();
 			if (monitor != null)
 				monitor.Log.Write (outw.ToString ());
-//			Console.WriteLine (outw.ToString ());
+#if DEBUG_GIT
+			Console.WriteLine (outw.ToString ());
+#endif
 			if (checkExitCode && proc.ExitCode != 0)
 				throw new InvalidOperationException ("Git operation failed");
 			return new StringReader (outw.ToString ());
@@ -206,11 +212,13 @@ namespace MonoDevelop.VersionControl.Git
 			while ((line = sr.ReadLine ()) != null) {
 				char staged = line[0];
 				char nostaged = line[1];
-				string stat = line.Substring (0, 2);
 				string file = line.Substring (3);
+				FilePath srcFile = FilePath.Null;
 				int i = file.IndexOf ("->");
-				if (i != -1)
+				if (i != -1) {
+					srcFile = path.Combine (file.Substring (0, i - 1));
 					file = file.Substring (i + 3);
+				}
 				FilePath statFile = path.Combine (file);
 				if (statFile.ParentDirectory != localDirectory && (!statFile.IsChildPathOf (localDirectory) || !recursive))
 					continue;
@@ -219,10 +227,17 @@ namespace MonoDevelop.VersionControl.Git
 					status = VersionStatus.Versioned | VersionStatus.Modified;
 				else if (staged == 'A')
 					status = VersionStatus.Versioned | VersionStatus.ScheduledAdd;
-				else if (stat == " D")
+				else if (staged == 'D' || nostaged == 'D')
 					status = VersionStatus.Versioned | VersionStatus.ScheduledDelete;
 				else if (staged == 'U' || nostaged == 'U')
 					status = VersionStatus.Versioned | VersionStatus.Conflicted;
+				else if (staged == 'R') {
+					// Renamed files are in reality files delete+added to a different location.
+					existingFiles.Remove (srcFile.CanonicalPath);
+					VersionInfo rvi = new VersionInfo (srcFile, "", false, VersionStatus.Versioned | VersionStatus.ScheduledDelete, rev, VersionStatus.Versioned, null);
+					versions.Add (rvi);
+					status = VersionStatus.Versioned | VersionStatus.ScheduledAdd;
+				}
 				else
 					status = VersionStatus.Unversioned;
 				
@@ -312,8 +327,16 @@ namespace MonoDevelop.VersionControl.Git
 			StringBuilder sb = new StringBuilder ();
 			foreach (FilePath it in localPaths)
 				sb.Append (" \"").Append (it).Append ('"');
+			
 			RunCommand ("reset --" + sb, false, monitor);
-			RunCommand ("checkout --" + sb, false, monitor);
+			
+			// The checkout command may fail if a file is not tracked anymore after
+			// the reset, so the checkouts have to be run one by one.
+			foreach (FilePath p in localPaths)
+				RunCommand ("checkout -- \"" + p + "\"", false, monitor);
+			
+			foreach (FilePath p in localPaths)
+				FileService.NotifyFileChanged (p);
 		}
 		
 		public override void RevertRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
@@ -534,6 +557,25 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			StringReader sr = RunCommand ("diff " + remote + "/" + branch + " " + GetCurrentBranch (), true);
 			return GetUnifiedDiffInfo (sr.ReadToEnd (), path, null);
+		}
+		
+		public override void MoveFile (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
+		{
+			if (!IsVersioned (localSrcPath)) {
+				base.MoveFile (localSrcPath, localDestPath, force, monitor);
+				return;
+			}
+			RunCommand ("mv \"" + localSrcPath + "\" \"" + localDestPath + "\"", true, monitor);
+		}
+		
+		public override void MoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
+		{
+			try {
+				RunCommand ("mv \"" + localSrcPath + "\" \"" + localDestPath + "\"", true, monitor);
+			} catch {
+				// If the move can't be done using git, do a regular move
+				base.MoveDirectory (localSrcPath, localDestPath, force, monitor);
+			}
 		}
 	}
 	
