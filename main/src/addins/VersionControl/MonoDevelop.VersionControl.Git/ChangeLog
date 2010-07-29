@@ -1,5 +1,10 @@
 2010-07-29  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.VersionControl.Git/GitRepository.cs: Implement
+	  Blame command.
+
+2010-07-29  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.VersionControl.Git/GitRepository.cs: Trim empty
 	  lines from commit messages.
 

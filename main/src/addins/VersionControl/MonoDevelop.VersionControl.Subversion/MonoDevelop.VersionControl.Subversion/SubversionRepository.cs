@@ -477,7 +477,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			List<Annotation> annotations = new List<Annotation> (Svn.GetAnnotations (this, localPath, SvnRevision.First, SvnRevision.Base));
 			Range    original,
 			         local;
-			Annotation nextRev = new Annotation (GettextCatalog.GetString ("working copy"), "", "");
+			Annotation nextRev = new Annotation (GettextCatalog.GetString ("working copy"), "", DateTime.MinValue);
 
 			// "SubversionException: blame of the WORKING revision is not supported"
 			foreach (Hunk hunk in new Diff (GetPathToBaseText (localPath), localPath.FullPath, true, true)) {

@@ -201,11 +201,8 @@ namespace MonoDevelop.VersionControl.Git
 		
 		VersionInfo[] GetDirectoryVersionInfo (FilePath localDirectory, string fileName, bool getRemoteStatus, bool recursive)
 		{
-			string strRev = "";
-			StringReader sr = RunCommand ("log -1 --pretty=raw", true);
-			string cl = sr.ReadLine ();
-			if (cl != null && cl.StartsWith ("commit "))
-				strRev = cl.Substring (7);
+			StringReader sr = RunCommand ("log -1 --format=format:%H", true);
+			string strRev = sr.ReadLine ();
 			sr.Close ();
 			
 			HashSet<FilePath> existingFiles = new HashSet<FilePath> ();
@@ -588,6 +585,70 @@ namespace MonoDevelop.VersionControl.Git
 				// If the move can't be done using git, do a regular move
 				base.MoveDirectory (localSrcPath, localDestPath, force, monitor);
 			}
+		}
+		
+		public override bool CanGetAnnotations (FilePath localPath)
+		{
+			return true;
+		}
+		
+		public override Annotation[] GetAnnotations (FilePath repositoryPath)
+		{
+			List<Annotation> alist = new List<Annotation> ();
+			StringReader sr = RunCommand ("blame -p \"" + repositoryPath + "\"", true);
+			
+			string author = null;
+			string mail = null;
+			string date = null;
+			string tz = null;
+				
+			
+			string line;
+			while ((line = sr.ReadLine ()) != null) {
+				string[] header = line.Split (' ');
+				string rev = header[0];
+				int lcount = int.Parse (header[3]);
+				
+				line = sr.ReadLine ();
+				while (line != null && line.Length > 0 && line[0] != '\t') {
+					int i = line.IndexOf (' ');
+					string val;
+					string field;
+					if (i != -1) {
+						val = line.Substring (i + 1);
+						field = line.Substring (0, i);
+					} else {
+						val = null;
+						field = line;
+					}
+					switch (field) {
+					case "author": author = val; break;
+					case "author-mail": mail = val; break;
+					case "author-time": date = val; break;
+					case "author-tz": tz = val; break;
+					}
+					line = sr.ReadLine ();
+				}
+				
+				// Convert from git date format
+				double secs = double.Parse (date);
+				DateTime t = new DateTime (1970, 1, 1) + TimeSpan.FromSeconds (secs);
+				string st = t.ToString ("yyyy-MM-ddTHH:mm:ss") + tz.Substring (0, 3) + ":" + tz.Substring (3);
+				DateTime sdate = DateTime.Parse (st);
+				
+				string sauthor = author;
+				if (!string.IsNullOrEmpty (mail))
+					sauthor += " " + mail;
+				Annotation a = new Annotation (rev, sauthor, sdate);
+				while (lcount-- > 0) {
+					alist.Add (a);
+					if (lcount > 0) {
+						sr.ReadLine (); // Next header
+						sr.ReadLine (); // Next line content
+					}
+				}
+			}
+			return alist.ToArray ();
 		}
 	}
 	

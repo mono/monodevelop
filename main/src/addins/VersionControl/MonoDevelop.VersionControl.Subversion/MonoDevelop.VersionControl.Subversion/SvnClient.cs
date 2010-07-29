@@ -1284,7 +1284,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			public IntPtr Func (IntPtr baton, long line_no, int revision, string author, string date, string line, IntPtr pool)
 			{
 				if (line_no < annotations.Length) {
-					annotations[(int)line_no] = new Annotation (revision.ToString (), author, date);
+					DateTime tdate;
+					try {
+						tdate = DateTime.Parse (date);
+					} catch {
+						tdate = DateTime.MinValue;
+					}
+					annotations[(int)line_no] = new Annotation (revision.ToString (), author, tdate);
 				}
 				
 				return IntPtr.Zero;
