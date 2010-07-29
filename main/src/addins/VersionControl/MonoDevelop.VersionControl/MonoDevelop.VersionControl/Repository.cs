@@ -467,12 +467,16 @@ namespace MonoDevelop.VersionControl
 			private set;
 		}
 
-		public string Date {
+		public DateTime Date {
 			get;
 			private set;
 		}
+		
+		public bool HasDate {
+			get { return Date != DateTime.MinValue; }
+		}
 
-		public Annotation (string revision, string author, string date)
+		public Annotation (string revision, string author, DateTime date)
 		{
 			this.Revision = revision;
 			this.Author = author;

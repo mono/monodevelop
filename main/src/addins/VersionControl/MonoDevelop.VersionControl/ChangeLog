@@ -1,3 +1,13 @@
+2010-07-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl/Repository.cs:
+	* MonoDevelop.VersionControl.Views/BlameWidget.cs: Annotations
+	  now use a DateTime instead of a String to represent the
+	  commit date.
+
+	* MonoDevelop.VersionControl.Views/ComparisonWidget.cs:
+	  Provide the correct path to GetTextAtRevision.
+
 2010-07-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* gtk-gui/gui.stetic:
