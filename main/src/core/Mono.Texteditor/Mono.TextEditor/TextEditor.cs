@@ -476,13 +476,16 @@ namespace Mono.TextEditor
 		
 		protected override bool OnFocusInEvent (EventFocus evnt)
 		{
+			var result = base.OnFocusInEvent (evnt);
 			IMContext.FocusIn ();
 			RequestResetCaretBlink ();
-			return base.OnFocusInEvent (evnt);
+			Document.CommitLineUpdate (Caret.Line);
+			return result;
 		}
 		
 		protected override bool OnFocusOutEvent (EventFocus evnt)
 		{
+			var result = base.OnFocusOutEvent (evnt);
 			imContext.FocusOut ();
 			GLib.Timeout.Add (10, delegate {
 				// Don't immediately hide the tooltip. Wait a bit and check if the tooltip has the focus.
@@ -491,7 +494,8 @@ namespace Mono.TextEditor
 				return false;
 			});
 			TextViewMargin.StopCaretThread ();
-			return base.OnFocusOutEvent (evnt);
+			Document.CommitLineUpdate (Caret.Line);
+			return result;
 		}
 		
 		protected override void OnRealized ()
@@ -596,23 +600,18 @@ namespace Mono.TextEditor
  
 		protected override void OnDestroyed ()
 		{
-			base.OnDestroyed ();
-			
-			if (isDisposed)
-				return;
-			this.isDisposed = true;
 			if (popupWindow != null)
 				popupWindow.Destroy ();
+			
 			if (this.Document != null)
 				this.Document.EndUndo -= HandleDocumenthandleEndUndo;
 			
 			DisposeAnimations ();
 			
 			RemoveScrollWindowTimer ();
-			if (invisibleCursor != null) {
+			if (invisibleCursor != null)
 				invisibleCursor.Dispose ();
-				invisibleCursor = null;
-			}
+			
 			Caret.PositionChanged -= CaretPositionChanged;
 			
 			Document.DocumentUpdated -= DocumentUpdatedHandler;
@@ -621,31 +620,22 @@ namespace Mono.TextEditor
 
 			imContext = imContext.Kill (x => x.Commit -= IMCommit);
 
-			if (this.textEditorData.HAdjustment != null) {
+			if (this.textEditorData.HAdjustment != null)
 				this.textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged;
-				this.textEditorData.HAdjustment = null;
-			}
-			if (this.textEditorData.VAdjustment != null) {
+			
+			if (this.textEditorData.VAdjustment != null)
 				this.textEditorData.VAdjustment.ValueChanged -= VAdjustmentValueChanged;
-				this.textEditorData.VAdjustment = null;
+			
+			foreach (Margin margin in this.margins) {
+				if (margin is IDisposable)
+					((IDisposable)margin).Dispose ();
 			}
 			
-			if (margins != null) {
-				foreach (Margin margin in this.margins) {
-					if (margin is IDisposable)
-						((IDisposable)margin).Dispose ();
-				}
-				this.margins = null;
-			}
-
-			iconMargin = null; 
-			gutterMargin = null;
-			dashedLineMargin = null;
-			foldMarkerMargin = null;
-			textViewMargin = null;
-			this.textEditorData = this.textEditorData.Kill (x => x.SelectionChanged -= TextEditorDataSelectionChanged);
+			this.textEditorData.SelectionChanged -= TextEditorDataSelectionChanged;
+			this.textEditorData.Dispose (); 
 			this.Realized -= OptionsChanged;
 			
+			base.OnDestroyed ();
 		}
 		
 		internal void RedrawMargin (Margin margin)
@@ -1474,7 +1464,7 @@ namespace Mono.TextEditor
 			Console.WriteLine ("{0} expose {1},{2} {3}x{4}", (long)(DateTime.Now - started).TotalMilliseconds,
 			                   e.Area.X, e.Area.Y, e.Area.Width, e.Area.Height);
 #endif
-			if (requestResetCaretBlink) {
+			if (requestResetCaretBlink && IsFocus) {
 				textViewMargin.ResetCaretBlink ();
 				requestResetCaretBlink = false;
 			}

@@ -182,7 +182,7 @@ namespace Mono.TextEditor
 			}
 			linesToRemove.ForEach (line => RemoveCachedLine (line));
 			linesToRemove.Clear ();
-
+			
 			textEditor.RequestResetCaretBlink ();
 		}
 
