@@ -1276,16 +1276,23 @@ namespace MonoDevelop.SourceEditor
 			DocumentLocation loc = Document.OffsetToLocation (triggerOffset);
 			result.TriggerLine   = loc.Line + 1;
 			result.TriggerLineOffset = loc.Column + 1;
-			Gdk.Point p = this.widget.TextEditor.DocumentToVisualLocation (loc);
-			int tx, ty;
-			
-			widget.Vbox.ParentWindow.GetOrigin (out tx, out ty);
-			tx += widget.TextEditorContainer.Allocation.X;
-			ty += widget.TextEditorContainer.Allocation.Y;
-			result.TriggerXCoord = tx + p.X + TextEditor.TextViewMargin.XOffset - (int)TextEditor.HAdjustment.Value;
-			result.TriggerYCoord = ty + p.Y - (int)TextEditor.VAdjustment.Value + TextEditor.LineHeight;
+			var p = DocumentToScreenLocation (loc);
+			result.TriggerXCoord = p.X;
+			result.TriggerYCoord = p.Y;
 			result.TriggerTextHeight = TextEditor.LineHeight;
 			return result;
+		}
+		
+		public Gdk.Point DocumentToScreenLocation (DocumentLocation location)
+		{
+			var p = widget.TextEditor.DocumentToVisualLocation (location);
+			int tx, ty;
+			widget.Vbox.ParentWindow.GetOrigin (out tx, out ty);
+			tx += widget.TextEditorContainer.Allocation.X +
+				p.X + TextEditor.TextViewMargin.XOffset - (int)TextEditor.HAdjustment.Value;
+			ty += widget.TextEditorContainer.Allocation.Y +
+				p.Y - (int)TextEditor.VAdjustment.Value + TextEditor.LineHeight;
+			return new Gdk.Point (tx, ty);
 		}
 		
 		public CodeTemplateContext GetCodeTemplateContext ()
