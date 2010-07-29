@@ -28,6 +28,9 @@ using System;
 using MonoDevelop.Components.Commands;
 using System.Linq;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
+using System.Collections.Generic;
+using Gtk;
 
 namespace MonoDevelop.AnalysisCore
 {
@@ -38,15 +41,51 @@ namespace MonoDevelop.AnalysisCore
 		QuickFix
 	}
 	
+	class ShowFixesHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			MonoDevelop.Ide.Gui.Document document;
+			IList<FixableResult> results;
+			info.Enabled = FixOperationsHandler.GetFixes (out document, out results)
+			    && results.Any (r => FixOperationsHandler.GetActions (document, r).Any ());
+		}
+		
+		protected override void Run ()
+		{
+			var doc = MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument;
+			var view = doc.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
+			if (view == null) {
+				LoggingService.LogWarning ("ShowFixesHandler could not find a SourceEditorView");
+				return;
+			}
+			var widget = view.TextEditor;
+			var pt = view.DocumentToScreenLocation (doc.Editor.Caret.Location);
+			
+			var ces = new CommandEntrySet ();
+			ces.AddItem (AnalysisCommands.FixOperations);
+			var menu = MonoDevelop.Ide.IdeApp.CommandService.CreateMenu (ces);
+			
+			menu.Popup (null, null, delegate (Menu mn, out int x, out int y, out bool push_in) {
+				x = pt.X;
+				y = pt.Y;
+				push_in = true;
+				//if the menu would be off the bottom of the screen, "drop" it upwards
+				if (y + mn.Requisition.Height > widget.Screen.Height)
+					y -= mn.Requisition.Height + widget.LineHeight;
+			}, 0, Global.CurrentEventTime);
+		}
+	}
+	
 	class FixOperationsHandler : CommandHandler
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
-			var menu = GetFixActionInfos ();
-			if (menu != null) {
-				menu.Text = GettextCatalog.GetString ("Fix");
-				info.Add (menu);
-			}
+			MonoDevelop.Ide.Gui.Document document;
+			IList<FixableResult> results;
+			if (!GetFixes (out document, out results))
+				return;
+			PopulateInfos (info, document, results);
 		}
 		
 		protected override void Run (object dataItem)
@@ -55,38 +94,79 @@ namespace MonoDevelop.AnalysisCore
 			action.Fix ();
 		}
 		
-		public static CommandInfoSet GetFixActionInfos ()
+		public static bool GetFixes (out Document document, out IList<FixableResult> results)
 		{
-			var doc = MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument;
-			if (doc == null)
-				return null;
+			results = null;
+			document = MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument;
+			if (document == null)
+				return false;
 			
-			var ext = doc.GetContent<ResultsEditorExtension> ();
+			var ext = document.GetContent<ResultsEditorExtension> ();
 			if (ext == null)
-				return null;
+				return false;
 			
-			var results = ext.GetResultsAtOffset (doc.Editor.Caret.Offset).OfType<FixableResult> ();
-			
-			var infoSet = new CommandInfoSet ();
-			
+			var list = ext.GetResultsAtOffset (document.Editor.Caret.Offset).OfType<FixableResult> ().ToList ();
+			list.Sort (ResultCompareImportanceDesc);
+			results = list;
+			return results.Count > 0;
+		}
+		
+		static int ResultCompareImportanceDesc (Result r1, Result r2)
+		{
+			int c = ((int)r1.Level).CompareTo ((int)r2.Level);
+			if (c != 0)
+				return c;
+			c = ((int)r1.Importance).CompareTo ((int)r2.Importance);
+			if (c != 0)
+				return c;
+			c = ((int)r1.Certainty).CompareTo ((int)r2.Certainty);
+			if (c != 0)
+				return c;
+			return r1.Message.CompareTo (r2.Message);
+		}
+		
+		public static void PopulateInfos (CommandArrayInfo infos, Document doc, IEnumerable<FixableResult> results)
+		{
 			//FIXME: ellipsize long messages
+			int mnemonic = 1;
 			foreach (var result in results) {
-				foreach (var fix in result.Fixes) {
-					var handlers = AnalysisExtensions.GetFixHandlers (fix.FixType);
-					bool firstAction = true;
-					foreach (var action in handlers.SelectMany (h => h.GetFixes (doc, fix))) {
-						if (firstAction) {
-							infoSet.CommandInfos.Add (new CommandInfo (result.Message, false, false), null);
-							firstAction = false;
-						}
-						infoSet.CommandInfos.Add ("  " + action.Label, action);
+				bool firstAction = true;
+				foreach (var action in GetActions (doc, result)) {
+					if (firstAction) {
+						//FIXME: make this header item insensitive but not greyed out
+						infos.Add (new CommandInfo (result.Message, false, false) {
+							Icon = GetIcon (result.Level)
+						}, null);
+						firstAction = false;
 					}
+					var label = (mnemonic <= 10)
+						? "_" + (mnemonic++ % 10).ToString () + " " + action.Label
+						: "  " + action.Label;
+					infos.Add (label, action);
 				}
 			}
-			if (infoSet.CommandInfos.Count == 0)
+		}
+		
+		public static IEnumerable<IAnalysisFixAction> GetActions (Document doc, FixableResult result)
+		{
+			foreach (var fix in result.Fixes)
+				foreach (var handler in AnalysisExtensions.GetFixHandlers (fix.FixType))
+					foreach (var action in handler.GetFixes (doc, fix))
+						yield return action;
+		}
+		
+		static string GetIcon (ResultLevel severity)
+		{
+			switch (severity) {
+			case ResultLevel.Error:
+				return Gtk.Stock.DialogError;
+			case ResultLevel.Warning:
+				return Gtk.Stock.DialogWarning;
+			case ResultLevel.Suggestion:
+				return Gtk.Stock.Info;
+			default:
 				return null;
-			
-			return infoSet;
+			}
 		}
 	}
 }

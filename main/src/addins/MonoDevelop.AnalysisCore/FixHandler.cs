@@ -46,6 +46,8 @@ namespace MonoDevelop.AnalysisCore
 	
 	public class RenameMemberHandler : IFixHandler
 	{
+		//FIXME: why is this invalid on the parseddocuments loaded when the doc is first loaded?
+		//maybe the item's type's SourceProject is null?
 		public IEnumerable<IAnalysisFixAction> GetFixes (MonoDevelop.Ide.Gui.Document doc, object fix)
 		{
 			var renameFix = (RenameMemberFix) fix;

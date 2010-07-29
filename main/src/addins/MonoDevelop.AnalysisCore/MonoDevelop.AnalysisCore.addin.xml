@@ -62,11 +62,19 @@
 		<Command id = "MonoDevelop.AnalysisCore.AnalysisCommands.FixOperations" type="array" 
 			defaultHandler="MonoDevelop.AnalysisCore.FixOperationsHandler"
 			_label = "Fixes" />
+		<Command id = "MonoDevelop.AnalysisCore.AnalysisCommands.ShowFixes"
+			defaultHandler="MonoDevelop.AnalysisCore.ShowFixesHandler"
+			_label = "Show Fixes"
+			_description="Shows a list of fixes for problems at the current location"
+			macShortcut="Control|."
+			shortcut = "Control|." />
 	</Extension>
-				
+	
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
-		<CommandItem id = "MonoDevelop.AnalysisCore.AnalysisCommands.FixOperations" 
-			insertbefore="MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations"/>
+		<ItemSet id = "Fix" _label = "Fix" autohide="true"
+			insertbefore="MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations">
+			<CommandItem id = "MonoDevelop.AnalysisCore.AnalysisCommands.FixOperations" />
+		</ItemSet>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/AnalysisCore/FixHandlers">
