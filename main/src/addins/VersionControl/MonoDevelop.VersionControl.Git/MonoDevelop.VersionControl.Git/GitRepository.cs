@@ -155,7 +155,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		StringReader RunCommand (string cmd, bool checkExitCode, IProgressMonitor monitor)
 		{
-//			Console.WriteLine (cmd);
+//			Console.WriteLine ("> git " + cmd);
 			StringWriter outw = new StringWriter ();
 			ProcessWrapper proc = Runtime.ProcessService.StartProcess ("git", "--no-pager " + cmd, path, outw, outw, null);
 			proc.WaitForOutput ();
@@ -205,6 +205,7 @@ namespace MonoDevelop.VersionControl.Git
 			string line;
 			while ((line = sr.ReadLine ()) != null) {
 				char staged = line[0];
+				char nostaged = line[1];
 				string stat = line.Substring (0, 2);
 				string file = line.Substring (3);
 				int i = file.IndexOf ("->");
@@ -214,12 +215,14 @@ namespace MonoDevelop.VersionControl.Git
 				if (statFile.ParentDirectory != localDirectory && (!statFile.IsChildPathOf (localDirectory) || !recursive))
 					continue;
 				VersionStatus status;
-				if (stat == " M" || stat == "MM")
+				if (staged == 'M' || nostaged == 'M')
 					status = VersionStatus.Versioned | VersionStatus.Modified;
 				else if (staged == 'A')
 					status = VersionStatus.Versioned | VersionStatus.ScheduledAdd;
 				else if (stat == " D")
 					status = VersionStatus.Versioned | VersionStatus.ScheduledDelete;
+				else if (staged == 'U' || nostaged == 'U')
+					status = VersionStatus.Versioned | VersionStatus.Conflicted;
 				else
 					status = VersionStatus.Unversioned;
 				
@@ -256,17 +259,31 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override void Update (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
-			IEnumerable<string> output = ToList (RunCommand ("pull --rebase --ff --stat " + GetCurrentRemote () + " " + GetCurrentBranch (), true, monitor));
-			foreach (string line in output) {
-				int i = line.IndexOf ('|');
-				if (i != -1 && line[0] == ' ') {
-					FilePath file = path.Combine (line.Substring (1, i - 1).Trim ());
-					if (File.Exists (file))
-						FileService.NotifyFileChanged (file);
-					else
-						FileService.NotifyFileRemoved (file);
-				}
+			List<string> statusList = null;
+			
+			try {
+				// Fetch remote commits
+				RunCommand ("fetch " + GetCurrentRemote (), true, monitor);
+				
+				// Get a list of files that are different in the target branch
+				statusList = ToList (RunCommand ("diff " + GetCurrentRemote () + "/" + GetCurrentBranch () + " --name-status", true));
+				
+				// Save local changes
+				RunCommand ("stash save " + GetStashName ("_tmp_"), true);
+				
+				// Apply changes
+				RunCommand ("rebase " + GetCurrentRemote () + " " + GetCurrentBranch (), true, monitor);
+				
+			} finally {
+				// Restore local changes
+				string sid = GetStashId ("_tmp_");
+				if (sid != null)
+					RunCommand ("stash pop " + sid, false);
 			}
+			
+			// Notify changes
+			if (statusList != null)
+				NotifyFileChanges (statusList);
 		}
 		
 		
@@ -429,10 +446,45 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public void SwitchToBranch (string branch)
 		{
-			StringReader sr = RunCommand ("diff " + branch + " --name-status", true);
-			RunCommand ("checkout " + branch, true);
+			// Remove the stash for this branch, if exists
+			string currentBranch = GetCurrentBranch ();
+			string sid = GetStashId (currentBranch);
+			if (sid != null)
+				RunCommand ("stash drop " + sid, true);
 			
-			foreach (string line in ToList (sr)) {
+			// Get a list of files that are different in the target branch
+			var statusList = ToList (RunCommand ("diff " + branch + " --name-status", true));
+			
+			// Create a new stash for the branch. This allows switching branches
+			// without losing local changes
+			RunCommand ("stash save " + GetStashName (currentBranch), true);
+			
+			// Switch to the target branch
+			try {
+				RunCommand ("checkout " + branch, true);
+			} catch {
+				// If something goes wrong, restore the work tree status
+				RunCommand ("stash pop", true);
+				throw;
+			}
+
+			// Restore the branch stash
+			
+			sid = GetStashId (branch);
+			if (sid != null)
+				RunCommand ("stash pop " + sid, true);
+			
+			// Notify file changes
+			
+			NotifyFileChanges (statusList);
+			
+			if (BranchSelectionChanged != null)
+				BranchSelectionChanged (this, EventArgs.Empty);
+		}
+		
+		void NotifyFileChanges (List<string> statusList)
+		{
+			foreach (string line in statusList) {
 				char s = line [0];
 				FilePath file = path.Combine (line.Substring (2));
 				if (s == 'A')
@@ -441,8 +493,23 @@ namespace MonoDevelop.VersionControl.Git
 				else
 					FileService.NotifyFileChanged (file);
 			}
-			if (BranchSelectionChanged != null)
-				BranchSelectionChanged (this, EventArgs.Empty);
+		}
+		
+		string GetStashName (string branchName)
+		{
+			return "__MD_" + branchName;
+		}
+		
+		string GetStashId (string branchName)
+		{
+			string sn = GetStashName (branchName);
+			foreach (string ss in ToList (RunCommand ("stash list", true))) {
+				if (ss.IndexOf (sn) != -1) {
+					int i = ss.IndexOf (':');
+					return ss.Substring (0, i);
+				}
+			}
+			return null;
 		}
 		
 		public ChangeSet GetPushChangeSet (string remote, string branch)
