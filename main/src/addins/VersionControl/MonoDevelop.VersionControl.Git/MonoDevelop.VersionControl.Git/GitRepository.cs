@@ -98,6 +98,7 @@ namespace MonoDevelop.VersionControl.Git
 				List<RevisionPath> paths = new List<RevisionPath> ();
 				bool readingComment = true;
 				StringBuilder message = new StringBuilder ();
+				StringBuilder interline = new StringBuilder ();
 				
 				while ((line = sr.ReadLine ()) != null) {
 					if (line.Length > 2 && ("ADM".IndexOf (line[0]) != -1) && line [1] == '\t') {
@@ -113,14 +114,25 @@ namespace MonoDevelop.VersionControl.Git
 						paths.Add (p);
 					}
 					else if (readingComment) {
-						message.AppendLine (line);
+						if (IsEmptyLine (line))
+							interline.AppendLine (line);
+						else {
+							message.Append (interline);
+							message.AppendLine (line);
+							interline = new StringBuilder ();
+						}
 					}
 					else
 						break;
 				}
-				revs.Add (new GitRevision (this, rev, date, author, message.ToString (), paths.ToArray ()));
+				revs.Add (new GitRevision (this, rev, date, author, message.ToString ().Trim ('\n','\r'), paths.ToArray ()));
 			}
 			return revs.ToArray ();
+		}
+		
+		bool IsEmptyLine (string txt)
+		{
+			return txt.Replace (" ","").Replace ("\t","").Length == 0;
 		}
 		
 		string ReadWithPrefix (StringReader sr, string prefix)
