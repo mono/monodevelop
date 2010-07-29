@@ -23,9 +23,43 @@ namespace MonoDevelop.VersionControl.Views
 		public static void Show (VersionControlItemList items, Revision since)
 		{
 			foreach (VersionControlItem item in items) {
-				var document = IdeApp.Workbench.OpenDocument (item.Path);
-				ComparisonView.AttachViewContents (document, item);
-				document.Window.SwitchView (4);
+				if (!item.IsDirectory) {
+					var document = IdeApp.Workbench.OpenDocument (item.Path);
+					ComparisonView.AttachViewContents (document, item);
+					document.Window.SwitchView (4);
+				} else if (item.Repository.IsHistoryAvailable (item.Path)) {
+					new Worker (item.Repository, item.Path, item.IsDirectory, since).Start ();
+				}
+			}
+		}
+		
+		class Worker : Task {
+			Repository vc;
+			string filepath;
+			bool isDirectory;
+			Revision since;
+			Revision [] history;
+						
+			public Worker (Repository vc, string filepath, bool isDirectory, Revision since) {
+				this.vc = vc;
+				this.filepath = filepath;
+				this.isDirectory = isDirectory;
+				this.since = since;
+			}
+			
+			protected override string GetDescription () {
+				return GettextCatalog.GetString ("Retrieving history for {0}...", Path.GetFileName (filepath));
+			}
+			
+			protected override void Run () {
+				history = vc.GetHistory (filepath, since);
+			}
+		
+			protected override void Finished() {
+				if (history == null)
+					return;
+				LogView d = new LogView (filepath, isDirectory, history, vc);
+				IdeApp.Workbench.OpenDocument (d, true);
 			}
 		}
 		
