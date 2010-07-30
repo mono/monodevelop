@@ -52,21 +52,26 @@ namespace MonoDevelop.Ide.Desktop
 	{
 		const int MaxRecentItemsCount = 500; // max. items according to the spec.
 		
-		const string FileName = ".recently-used";
-		string RecentFileFullPath = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), FileName);
-				
+		string filePath;
 		FileSystemWatcher watcher;
 		object writerLock = new object ();
 		
-		public RecentFileStorage()
+		public static string DefaultPath {
+			get {
+				return Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), ".recently-used");
+			}
+		}
+		
+		public RecentFileStorage (string filePath)
 		{
+			this.filePath = filePath;
 		}
 		
 		void EnableWatching ()
 		{
 			if (watcher != null)
 				return;
-			watcher = new FileSystemWatcher (Environment.GetFolderPath (Environment.SpecialFolder.Personal), FileName);
+			watcher = new FileSystemWatcher (Path.GetDirectoryName (filePath), Path.GetFileName (filePath));
 			watcher.Created += FileChanged;
 			watcher.Changed += FileChanged;
 			watcher.Deleted += FileChanged;
@@ -209,9 +214,9 @@ namespace MonoDevelop.Ide.Desktop
 		List<RecentItem> ReadStore (int numberOfTry)
 		{
 			List<RecentItem> result = new List<RecentItem> ();
-			if (!File.Exists (RecentFileFullPath))
+			if (!File.Exists (filePath))
 				return result;
-			var reader = new XmlTextReader (RecentFileFullPath);
+			var reader = new XmlTextReader (filePath);
 			try {
 				while (true) {
 					bool read = false;
@@ -246,7 +251,7 @@ namespace MonoDevelop.Ide.Desktop
 			items.Sort ();
 			if (items.Count > MaxRecentItemsCount)
 				items.RemoveRange (MaxRecentItemsCount, items.Count - MaxRecentItemsCount);
-			var writer = new XmlTextWriter (RecentFileFullPath, utf8WithoutByteOrderMark);
+			var writer = new XmlTextWriter (filePath, utf8WithoutByteOrderMark);
 			try {
 				writer.Formatting = Formatting.Indented;
 				writer.WriteStartDocument ();
