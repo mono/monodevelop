@@ -15,6 +15,8 @@
 		<Addin id="Refactoring" version="2.4"/>
 	</Dependencies>
 	
+	<!-- Extension points -->
+	
 	<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules">
 		<ExtensionNode name="Category" type="MonoDevelop.Ide.Codons.CategoryNode">
 			<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules" />
@@ -38,25 +40,17 @@
 		<ExtensionNode name="Handler" type="MonoDevelop.AnalysisCore.FixHandlerExtensionNode" />
 	</ExtensionPoint>
 	
+	<!-- Text editor integration -->
+	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class class = "MonoDevelop.AnalysisCore.ResultsEditorExtension" />
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/AnalysisCore/Types">
-		<Type name="ParsedDocument" class="MonoDevelop.Projects.Dom.ParsedDocument" />
-		<Type name="CompilationUnit" class="MonoDevelop.Projects.Dom.ICompilationUnit" />
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
-		<Adaptor func="MonoDevelop.AnalysisCore.Adapters.GetCompilationUnit" input="ParsedDocument" output="CompilationUnit" />
-		<Category _name="Design Guidelines" id="Design">
-			<Rule _name="Naming Conventions" func="MonoDevelop.AnalysisCore.Rules.NamingConventions" input="CompilationUnit" />
-		</Category>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
 		<Class id="AnalysisResults" class="MonoDevelop.AnalysisCore.ResultTooltipProvider" insertafter="Debug" />
 	</Extension>
+	
+	<!-- Quick fix commands -->
 
 	<Extension path = "/MonoDevelop/Ide/Commands/Refactoring">
 		<Command id = "MonoDevelop.AnalysisCore.AnalysisCommands.FixOperations" type="array" 
@@ -75,6 +69,26 @@
 			insertbefore="MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations">
 			<CommandItem id = "MonoDevelop.AnalysisCore.AnalysisCommands.FixOperations" />
 		</ItemSet>
+	</Extension>
+	
+	<!-- Options panels -->
+	
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Other">
+		<Section id = "Analysis" _label = "Source Analysis" fill="true" class="MonoDevelop.AnalysisCore.AnalysisOptionsPanel"/>
+	</Extension>
+	
+	<!-- Extensions to the addin points defined by this addin -->
+	
+	<Extension path = "/MonoDevelop/AnalysisCore/Types">
+		<Type name="ParsedDocument" class="MonoDevelop.Projects.Dom.ParsedDocument" />
+		<Type name="CompilationUnit" class="MonoDevelop.Projects.Dom.ICompilationUnit" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
+		<Adaptor func="MonoDevelop.AnalysisCore.Adapters.GetCompilationUnit" input="ParsedDocument" output="CompilationUnit" />
+		<Category _name="Design Guidelines" id="Design">
+			<Rule _name="Naming Conventions" func="MonoDevelop.AnalysisCore.Rules.NamingConventions" input="CompilationUnit" />
+		</Category>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/AnalysisCore/FixHandlers">

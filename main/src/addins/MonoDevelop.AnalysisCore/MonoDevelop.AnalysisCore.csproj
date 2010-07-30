@@ -115,6 +115,8 @@
     <Compile Include="FixableResult.cs" />
     <Compile Include="FixHandlerExtensionNode.cs" />
     <Compile Include="FixHandler.cs" />
+    <Compile Include="AnalysisOptionsPanel.cs" />
+    <Compile Include="AnalysisOptions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

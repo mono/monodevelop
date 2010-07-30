@@ -44,17 +44,51 @@ namespace MonoDevelop.AnalysisCore
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			
-			Document.DocumentParsed += OnDocumentParsed;
+			AnalysisOptions.Changed += AnalysisOptionsChanged;
+			AnalysisOptionsChanged (null, null);
+		}
+
+		void AnalysisOptionsChanged (object sender, EventArgs e)
+		{
+			Enabled = AnalysisOptions.AnalysisEnabled;
 		}
 		
 		public override void Dispose ()
 		{
 			if (!disposed) {
-				Document.DocumentParsed -= OnDocumentParsed;
+				AnalysisOptions.Changed -= AnalysisOptionsChanged;
+				Enabled = false;
 				disposed = true;
 			}
 			base.Dispose ();
+		}
+		
+		bool enabled;
+		
+		public bool Enabled {
+			get { return enabled; }
+			set {
+				if (enabled != value) {
+					enabled = value;
+					if (value)
+						Enable ();
+					else
+						Disable ();
+				}
+			}
+		}
+		
+		void Enable ()
+		{
+			Document.DocumentParsed += OnDocumentParsed;
+			if (Document.ParsedDocument != null)
+				OnDocumentParsed (null, null);
+		}
+		
+		void Disable ()
+		{
+			Document.DocumentParsed -= OnDocumentParsed;
+			UpdateResults (new Result[0]);
 		}
 		
 		//FIXME: rate-limit this, so we don't send multiple new documents while it's processing
@@ -68,6 +102,8 @@ namespace MonoDevelop.AnalysisCore
 		void UpdateResults (IList<Result> results)
 		{
 			lock (updaterLock) {
+				if (!Enabled && results.Count > 0)
+					return;
 				nextResults = results;
 				if (!updaterRunning) {
 					GLib.Idle.Add (ResultsUpdater);
