@@ -1,5 +1,5 @@
 // 
-// FixableResult.cs
+// Adaptors.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -25,38 +25,26 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using MonoDevelop.Projects.Dom;
-
-namespace MonoDevelop.AnalysisCore
+using System.Collections.Generic;
+using MonoDevelop.AnalysisCore.Fixes;
+namespace MonoDevelop.AnalysisCore.Rules
 {
-	public class FixableResult : Result
+	public static class NamingConventions
 	{
-		public FixableResult (DomRegion region, string message, ResultLevel level,
-			ResultCertainty certainty, ResultImportance importance, params IAnalysisFix[] fixes)
-			: base (region, message, level, certainty, importance)
+		public static IEnumerable<Result> ClassNaming (ICompilationUnit input)
 		{
-			this.Fixes = fixes;
+			foreach (var type in input.Types) {
+				if (!char.IsUpper (type.Name[0])) {
+					var start = type.Location;
+					var newName = char.ToUpper (type.Name[0]).ToString () + type.Name.Substring (1);
+					yield return new FixableResult (
+						new DomRegion (start, new DomLocation (start.Line, start.Column + type.Name.Length)),
+						"Type names should begin with an uppercase letter",
+						ResultLevel.Warning, ResultCertainty.High, ResultImportance.Medium,
+						new RenameMemberFix (type, newName));
+				}
+			}
 		}
-		
-		public IAnalysisFix[] Fixes { get; private set; }
-	}
-	
-	//FIXME: should this really use MonoDevelop.Ide.Gui.Document? Fixes could be more generic.
-	public interface IAnalysisFix
-	{
-		string FixType { get; }
-	}
-	
-	public interface IFixHandler
-	{
-		IEnumerable<IAnalysisFixAction> GetFixes (MonoDevelop.Ide.Gui.Document doc, object fix);
-	}
-	
-	public interface IAnalysisFixAction
-	{
-		string Label { get; }
-		void Fix ();
 	}
 }
-

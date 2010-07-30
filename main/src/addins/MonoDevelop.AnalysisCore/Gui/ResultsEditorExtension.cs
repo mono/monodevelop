@@ -35,7 +35,7 @@ using Mono.TextEditor;
 using System.Linq;
 using MonoDevelop.Components.Commands;
 
-namespace MonoDevelop.AnalysisCore
+namespace MonoDevelop.AnalysisCore.Gui
 {
 	public class ResultsEditorExtension : TextEditorExtension
 	{
@@ -95,7 +95,7 @@ namespace MonoDevelop.AnalysisCore
 		void OnDocumentParsed (object sender, EventArgs args)
 		{
 			var doc = Document.ParsedDocument;
-			var treeType = new NodeTreeType ("ParsedDocument", Path.GetExtension (doc.FileName));
+			var treeType = new RuleTreeType ("ParsedDocument", Path.GetExtension (doc.FileName));
 			AnalysisService.QueueAnalysis (doc, treeType, UpdateResults);
 		}
 		
@@ -185,39 +185,4 @@ namespace MonoDevelop.AnalysisCore
 			return list;
 		}
 	}
-	
-	//FIXME: make a tooltip and commands that can inspect these
-	class ResultMarker : UnderlineMarker
-	{
-		Result result;
-		
-		public ResultMarker (Result result) : base (
-				GetColor (result),
-				IsOneLine (result)? (result.Region.Start.Column - 1) : -1,
-				IsOneLine (result)? (result.Region.End.Column - 1) : -1)
-		{
-			this.result = result;
-		}
-		
-		static bool IsOneLine (Result result)
-		{
-			return result.Region.Start.Line == result.Region.End.Line;
-		}
-		
-		public Result Result { get { return result; } }
-		
-		//utility for debugging
-		public int Line { get { return result.Region.Start.Line - 1; } }
-		public int ColStart { get { return IsOneLine (result)? (result.Region.Start.Column - 1) : -1; } }
-		public int ColEnd   { get { return IsOneLine (result)? (result.Region.End.Column - 1) : -1; } }
-		public string Message { get { return result.Message; } }
-		
-		static string GetColor (Result result)
-		{
-			return result.Level == ResultLevel.Error
-				? Mono.TextEditor.Highlighting.Style.ErrorUnderlineString
-				: Mono.TextEditor.Highlighting.Style.WarningUnderlineString;
-		}
-	}
 }
-

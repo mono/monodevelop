@@ -21,8 +21,8 @@
 		<ExtensionNode name="Category" type="MonoDevelop.Ide.Codons.CategoryNode">
 			<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules" />
 		</ExtensionNode>
-		<ExtensionNode name="Rule" type="MonoDevelop.AnalysisCore.NamedAnalysisRuleAddinNode" />
-		<ExtensionNode name="Adaptor" type="MonoDevelop.AnalysisCore.AdaptorAnalysisRuleAddinNode" />
+		<ExtensionNode name="Rule" type="MonoDevelop.AnalysisCore.Extensions.NamedAnalysisRuleAddinNode" />
+		<ExtensionNode name="Adaptor" type="MonoDevelop.AnalysisCore.Extensions.AdaptorAnalysisRuleAddinNode" />
 	</ExtensionNodeSet>
 	
 	<ExtensionPoint path = "/MonoDevelop/AnalysisCore/Rules" name = "Analysis Rules">
@@ -32,22 +32,22 @@
 	
 	<ExtensionPoint path = "/MonoDevelop/AnalysisCore/Types" name = "Analysis rule input/output types">
 		<Description>Analysis rule input/output types.</Description>
-		<ExtensionNode name="Type" type="MonoDevelop.AnalysisCore.AnalysisTypeExtensionNode" />
+		<ExtensionNode name="Type" type="MonoDevelop.AnalysisCore.Extensions.AnalysisTypeExtensionNode" />
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/AnalysisCore/FixHandlers" name = "Fix handlers">
 		<Description>Fix handlers. Classes must implement IAnalysisFixHandler.</Description>
-		<ExtensionNode name="Handler" type="MonoDevelop.AnalysisCore.FixHandlerExtensionNode" />
+		<ExtensionNode name="Handler" type="MonoDevelop.AnalysisCore.Extensions.FixHandlerExtensionNode" />
 	</ExtensionPoint>
 	
 	<!-- Text editor integration -->
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class class = "MonoDevelop.AnalysisCore.ResultsEditorExtension" />
+		<Class class = "MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
-		<Class id="AnalysisResults" class="MonoDevelop.AnalysisCore.ResultTooltipProvider" insertafter="Debug" />
+		<Class id="AnalysisResults" class="MonoDevelop.AnalysisCore.Gui.ResultTooltipProvider" insertafter="Debug" />
 	</Extension>
 	
 	<!-- Quick fix commands -->
@@ -74,7 +74,8 @@
 	<!-- Options panels -->
 	
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Other">
-		<Section id = "Analysis" _label = "Source Analysis" fill="true" class="MonoDevelop.AnalysisCore.AnalysisOptionsPanel"/>
+		<Section id = "Analysis" _label = "Source Analysis" fill="true"
+			class="MonoDevelop.AnalysisCore.Gui.AnalysisOptionsPanel"/>
 	</Extension>
 	
 	<!-- Extensions to the addin points defined by this addin -->
@@ -85,13 +86,15 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
-		<Adaptor func="MonoDevelop.AnalysisCore.Adapters.GetCompilationUnit" input="ParsedDocument" output="CompilationUnit" />
+		<Adaptor func="MonoDevelop.AnalysisCore.Rules.Adapters.GetCompilationUnit"
+			input="ParsedDocument" output="CompilationUnit" />
 		<Category _name="Design Guidelines" id="Design">
-			<Rule _name="Naming Conventions" func="MonoDevelop.AnalysisCore.Rules.NamingConventions" input="CompilationUnit" />
+			<Rule _name="Naming Conventions" input="CompilationUnit" 
+				func="MonoDevelop.AnalysisCore.Rules.NamingConventions.ClassNaming" />
 		</Category>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/AnalysisCore/FixHandlers">
-		<Handler fixName="RenameMember" class = "MonoDevelop.AnalysisCore.RenameMemberHandler" />
+		<Handler fixName="RenameMember" class = "MonoDevelop.AnalysisCore.Fixes.RenameMemberHandler" />
 	</Extension>
 </Addin>

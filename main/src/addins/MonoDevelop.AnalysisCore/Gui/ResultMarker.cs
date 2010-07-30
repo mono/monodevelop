@@ -1,5 +1,5 @@
 // 
-// AnalysisOptionsPanel.cs
+// ResultsEditorExtension.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -24,46 +24,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using MonoDevelop.Ide.Gui.Dialogs;
-using Gtk;
-using MonoDevelop.Core;
+using Mono.TextEditor;
 
-namespace MonoDevelop.AnalysisCore
+namespace MonoDevelop.AnalysisCore.Gui
 {
-	public class AnalysisOptionsPanel : OptionsPanel
+	class ResultMarker : UnderlineMarker
 	{
-		AnalysisOptionsWidget widget;
+		Result result;
 		
-		public override Widget CreatePanelWidget ()
+		public ResultMarker (Result result) : base (
+				GetColor (result),
+				IsOneLine (result)? (result.Region.Start.Column - 1) : -1,
+				IsOneLine (result)? (result.Region.End.Column - 1) : -1)
 		{
-			return widget = new AnalysisOptionsWidget () {
-				AnalysisEnabled = AnalysisOptions.AnalysisEnabled
-			};
+			this.result = result;
 		}
 		
-		public override void ApplyChanges ()
+		static bool IsOneLine (Result result)
 		{
-			AnalysisOptions.AnalysisEnabled = widget.AnalysisEnabled;
-		}
-	}
-	
-	class AnalysisOptionsWidget : VBox
-	{
-		CheckButton enabledCheck;
-		
-		public AnalysisOptionsWidget ()
-		{
-			enabledCheck = new CheckButton (GettextCatalog.GetString ("Enable source analysis of open files"));
-			PackStart (enabledCheck, false, false, 0);
-			
-			ShowAll ();
+			return result.Region.Start.Line == result.Region.End.Line;
 		}
 		
-		public bool AnalysisEnabled {
-			get { return enabledCheck.Active; }
-			set { enabledCheck.Active = value; }
+		public Result Result { get { return result; } }
+		
+		//utility for debugging
+		public int Line { get { return result.Region.Start.Line - 1; } }
+		public int ColStart { get { return IsOneLine (result)? (result.Region.Start.Column - 1) : -1; } }
+		public int ColEnd   { get { return IsOneLine (result)? (result.Region.End.Column - 1) : -1; } }
+		public string Message { get { return result.Message; } }
+		
+		static string GetColor (Result result)
+		{
+			return result.Level == ResultLevel.Error
+				? Mono.TextEditor.Highlighting.Style.ErrorUnderlineString
+				: Mono.TextEditor.Highlighting.Style.WarningUnderlineString;
 		}
 	}
 }
-

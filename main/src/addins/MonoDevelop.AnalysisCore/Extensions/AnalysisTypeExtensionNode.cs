@@ -1,5 +1,5 @@
 // 
-// FixableResult.cs
+// RuleInputTypeExtensionNode.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -25,38 +25,16 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using MonoDevelop.Projects.Dom;
+using Mono.Addins;
 
-namespace MonoDevelop.AnalysisCore
+namespace MonoDevelop.AnalysisCore.Extensions
 {
-	public class FixableResult : Result
+	public class AnalysisTypeExtensionNode : TypeExtensionNode
 	{
-		public FixableResult (DomRegion region, string message, ResultLevel level,
-			ResultCertainty certainty, ResultImportance importance, params IAnalysisFix[] fixes)
-			: base (region, message, level, certainty, importance)
-		{
-			this.Fixes = fixes;
-		}
+		[NodeAttribute(Required=true)]
+		string name = null;
 		
-		public IAnalysisFix[] Fixes { get; private set; }
-	}
-	
-	//FIXME: should this really use MonoDevelop.Ide.Gui.Document? Fixes could be more generic.
-	public interface IAnalysisFix
-	{
-		string FixType { get; }
-	}
-	
-	public interface IFixHandler
-	{
-		IEnumerable<IAnalysisFixAction> GetFixes (MonoDevelop.Ide.Gui.Document doc, object fix);
-	}
-	
-	public interface IAnalysisFixAction
-	{
-		string Label { get; }
-		void Fix ();
+		public string Name { get { return name; } }
 	}
 }
 

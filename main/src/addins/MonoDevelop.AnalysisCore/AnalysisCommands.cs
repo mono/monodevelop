@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
 using Gtk;
+using MonoDevelop.AnalysisCore.Gui;
 
 namespace MonoDevelop.AnalysisCore
 {

@@ -1,5 +1,5 @@
 // 
-// RuleInputTypeExtensionNode.cs
+// Adaptors.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -25,16 +25,17 @@
 // THE SOFTWARE.
 
 using System;
-using Mono.Addins;
+using MonoDevelop.Projects.Dom;
+using System.Collections.Generic;
+using MonoDevelop.AnalysisCore.Fixes;
 
-namespace MonoDevelop.AnalysisCore
+namespace MonoDevelop.AnalysisCore.Rules
 {
-	public class AnalysisTypeExtensionNode : TypeExtensionNode
+	public static class Adapters
 	{
-		[NodeAttribute(Required=true)]
-		string name = null;
-		
-		public string Name { get { return name; } }
+		public static ICompilationUnit GetCompilationUnit (ParsedDocument input)
+		{
+			return input.CompilationUnit;
+		}
 	}
 }
-

@@ -30,6 +30,7 @@ using MonoDevelop.Core;
 using Mono.Addins;
 using System.Linq;
 using MonoDevelop.Ide.Codons;
+using MonoDevelop.AnalysisCore.Extensions;
 
 namespace MonoDevelop.AnalysisCore
 {
@@ -44,8 +45,8 @@ namespace MonoDevelop.AnalysisCore
 		
 		// This is a re-usable cache of computed trees. it will need to be flushed nodesByInput is cached.
 		// We should probably clean it via a LRU too.
-		static Dictionary<NodeTreeType,RuleTreeRoot> analysisTreeCache
-			= new Dictionary<NodeTreeType, RuleTreeRoot> ();
+		static Dictionary<RuleTreeType,RuleTreeRoot> analysisTreeCache
+			= new Dictionary<RuleTreeType, RuleTreeRoot> ();
 		
 		static Dictionary<string,AnalysisTypeExtensionNode> ruleInputTypes
 			= new Dictionary<string, AnalysisTypeExtensionNode> ();
@@ -137,7 +138,7 @@ namespace MonoDevelop.AnalysisCore
 		
 		// Gets an analysis tree from the cache, or creates one.
 		// Cache may have null value if there were no nodes for the type.
-		public static RuleTreeRoot GetAnalysisTree (NodeTreeType treeType)
+		public static RuleTreeRoot GetAnalysisTree (RuleTreeType treeType)
 		{
 			RuleTreeRoot tree;
 			if (analysisTreeCache .TryGetValue (treeType, out tree))
@@ -152,7 +153,7 @@ namespace MonoDevelop.AnalysisCore
 			return tree;
 		}
 		
-		static RuleTreeRoot BuildTree (NodeTreeType treeType)
+		static RuleTreeRoot BuildTree (RuleTreeType treeType)
 		{
 			var nodes = GetTreeNodes (treeType, treeType.Input, 0);
 			if (nodes == null || nodes.Length == 0)
@@ -162,7 +163,7 @@ namespace MonoDevelop.AnalysisCore
 		}
 
 		//recursively builds the rule tree for branches that terminate in leaves (rules with result outputs)
-		static IRuleTreeNode[] GetTreeNodes (NodeTreeType treeType, string input, int depth)
+		static IRuleTreeNode[] GetTreeNodes (RuleTreeType treeType, string input, int depth)
 		{
 			var addinNodes = rulesByInput.Get (input);
 			if (addinNodes == null)

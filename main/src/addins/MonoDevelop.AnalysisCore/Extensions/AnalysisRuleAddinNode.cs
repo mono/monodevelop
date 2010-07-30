@@ -30,7 +30,7 @@ using Mono.Addins;
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace MonoDevelop.AnalysisCore
+namespace MonoDevelop.AnalysisCore.Extensions
 {
 	class NamedAnalysisRuleAddinNode : AnalysisRuleAddinNode
 	{

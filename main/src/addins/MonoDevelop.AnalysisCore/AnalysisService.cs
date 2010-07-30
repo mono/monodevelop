@@ -36,7 +36,7 @@ namespace MonoDevelop.AnalysisCore
 {
 	public static class AnalysisService
 	{
-		public static IList<Result> Analyze<T> (T input, NodeTreeType treeType)
+		public static IList<Result> Analyze<T> (T input, RuleTreeType treeType)
 		{
 			Debug.Assert (typeof (T) == AnalysisExtensions.GetType (treeType.Input));
 			
@@ -49,7 +49,7 @@ namespace MonoDevelop.AnalysisCore
 		}
 		
 		//TODO: proper job scheduler and discarding superseded jobs
-		public static void QueueAnalysis <T> (T input, NodeTreeType treeType, Action<IList<Result>> callback)
+		public static void QueueAnalysis <T> (T input, RuleTreeType treeType, Action<IList<Result>> callback)
 		{
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {

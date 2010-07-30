@@ -3,11 +3,7 @@ Some things that still need to be done in AnalyzerCore:
 * LOTS of rules - both generic .NET (for ICompilationUnit) and 
   using an adaptor that would invoke the new C# parser.
 
-* A tooltip provider, for inspecting the error underlines.
-
 * A pad, for viewing the rules list more directly.
-
-* Options for diablign on-the-fly analysis
 
 * Support for configuring which rules are used, via additional 
   filters when building the analysis tree.
@@ -21,10 +17,6 @@ Some things that still need to be done in AnalyzerCore:
 
 * A scheduler for analysis jobs that would automatically discard outdated 
   queued jobs when a newer job comes in.
-
-* Ability for results to include a "quick fix". This would be a command which 
-  would be shown in the menu context menu. Possibly this could be done by 
-  simply flagging results with a key to a handler in another extension point.
 
 * UserVisibleStringCollection type and a rule to spellcheck it, so anything
   can output this node to generate spellchecking results.
@@ -42,7 +34,7 @@ Some things that would be nice, but aren't so immediately important:
 * Commands to suppress individual results, persisted in suppression files.
 
 * Analysis on demand, with a results list. This could easily process all files 
-  in a prject or sln.
+  in a project or sln.
 
 * Support for specifying rule priorities and using multiple analyser 
   trees at different frequencies for one document, in order to run 

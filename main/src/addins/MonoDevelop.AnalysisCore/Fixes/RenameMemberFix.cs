@@ -30,21 +30,25 @@ using MonoDevelop.Refactoring.Rename;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Projects.Dom;
 
-namespace MonoDevelop.AnalysisCore
+namespace MonoDevelop.AnalysisCore.Fixes
 {
-	public interface IFixHandler
+	public class RenameMemberFix : IAnalysisFix
 	{
-		IEnumerable<IAnalysisFixAction> GetFixes (MonoDevelop.Ide.Gui.Document doc, object fix);
+		public string NewName { get; private set; }
+		public IMember Item { get; private set; }
+		
+		public RenameMemberFix (IMember item, string newName)
+		{
+			this.NewName = newName;
+			this.Item = item;
+		}
+		
+		public string FixType { get { return "RenameMember"; } }
 	}
 	
-	public interface IAnalysisFixAction
-	{
-		string Label { get; }
-		void Fix ();
-	}
-	
-	public class RenameMemberHandler : IFixHandler
+	class RenameMemberHandler : IFixHandler
 	{
 		//FIXME: why is this invalid on the parseddocuments loaded when the doc is first loaded?
 		//maybe the item's type's SourceProject is null?
@@ -104,4 +108,3 @@ namespace MonoDevelop.AnalysisCore
 		}
 	}
 }
-

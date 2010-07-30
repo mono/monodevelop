@@ -30,9 +30,9 @@ using MonoDevelop.SourceEditor;
 using System.Text;
 using System.Collections.Generic;
 
-namespace MonoDevelop.AnalysisCore
+namespace MonoDevelop.AnalysisCore.Gui
 {
-	public class ResultTooltipProvider : ITooltipProvider
+	class ResultTooltipProvider : ITooltipProvider
 	{
 		public TooltipItem GetItem (TextEditor editor, int offset)
 		{

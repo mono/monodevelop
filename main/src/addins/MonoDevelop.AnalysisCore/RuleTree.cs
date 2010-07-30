@@ -29,6 +29,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using MonoDevelop.AnalysisCore.Extensions;
 
 namespace MonoDevelop.AnalysisCore
 {
@@ -113,9 +114,9 @@ namespace MonoDevelop.AnalysisCore
 	sealed class RuleTreeRoot
 	{
 		IRuleTreeNode[] children;
-		NodeTreeType treeType;
+		RuleTreeType treeType;
 		
-		public RuleTreeRoot (IRuleTreeNode[] children, NodeTreeType treeType)
+		public RuleTreeRoot (IRuleTreeNode[] children, RuleTreeType treeType)
 		{
 			this.children = children;
 			this.treeType = treeType;
@@ -126,6 +127,8 @@ namespace MonoDevelop.AnalysisCore
 				|| (c is RuleTreeBranch && ((RuleTreeBranch)c).Rule.Input == treeType.Input)
 			));
 		}
+		
+		public RuleTreeType TreeType { get { return treeType; } }
 		
 		public IEnumerable<Result> Analyze (object input)
 		{
@@ -159,6 +162,42 @@ namespace MonoDevelop.AnalysisCore
 				
 				builder.Append (indent);
 				builder.Append ("]\n");
+			}
+		}
+	}
+	
+	// Type of the analysis tree. Basically a key for the analysis tree cache.
+	public class RuleTreeType
+	{
+		string input, fileExtension;
+		
+		public string Input { get { return input; } }
+		public string FileExtension { get { return fileExtension; } }
+		
+		public RuleTreeType (string input, string fileExtension)
+		{
+			Debug.Assert (!string.IsNullOrEmpty (input));
+			Debug.Assert (!string.IsNullOrEmpty (fileExtension));
+			
+			this.input = input;
+			this.fileExtension = fileExtension;
+		}
+		
+		public override bool Equals (object obj)
+		{
+			if (obj == null)
+				return false;
+			if (ReferenceEquals (this, obj))
+				return true;
+			var other = obj as RuleTreeType;
+			return other != null && input == other.input && fileExtension == other.fileExtension;
+		}
+
+		public override int GetHashCode ()
+		{
+			unchecked {
+				return (input != null ? input.GetHashCode () : 0)
+					^ (fileExtension != null ? fileExtension.GetHashCode () : 0);
 			}
 		}
 	}

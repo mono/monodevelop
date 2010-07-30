@@ -27,7 +27,7 @@
 using System;
 using Mono.Addins;
 
-namespace MonoDevelop.AnalysisCore
+namespace MonoDevelop.AnalysisCore.Extensions
 {
 	public class FixHandlerExtensionNode : TypeExtensionNode
 	{

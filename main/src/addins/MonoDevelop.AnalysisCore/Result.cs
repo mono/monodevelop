@@ -26,6 +26,7 @@
 
 using System;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.AnalysisCore.Extensions;
 
 namespace MonoDevelop.AnalysisCore
 {

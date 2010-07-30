@@ -1,5 +1,5 @@
 // 
-// NodeTreeType.cs
+// AnalysisOptionsPanel.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -25,43 +25,44 @@
 // THE SOFTWARE.
 
 using System;
-using System.Diagnostics;
+using MonoDevelop.Ide.Gui.Dialogs;
+using Gtk;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.AnalysisCore
+namespace MonoDevelop.AnalysisCore.Gui
 {
-	// Type of the analysis tree. Basically a key for the analysis tree cache.
-	public class NodeTreeType
+	public class AnalysisOptionsPanel : OptionsPanel
 	{
-		string input, fileExtension;
+		AnalysisOptionsWidget widget;
 		
-		public string Input { get { return input; } }
-		public string FileExtension { get { return fileExtension; } }
-		
-		public NodeTreeType (string input, string fileExtension)
+		public override Widget CreatePanelWidget ()
 		{
-			Debug.Assert (!string.IsNullOrEmpty (input));
-			Debug.Assert (!string.IsNullOrEmpty (fileExtension));
+			return widget = new AnalysisOptionsWidget () {
+				AnalysisEnabled = AnalysisOptions.AnalysisEnabled
+			};
+		}
+		
+		public override void ApplyChanges ()
+		{
+			AnalysisOptions.AnalysisEnabled = widget.AnalysisEnabled;
+		}
+	}
+	
+	class AnalysisOptionsWidget : VBox
+	{
+		CheckButton enabledCheck;
+		
+		public AnalysisOptionsWidget ()
+		{
+			enabledCheck = new CheckButton (GettextCatalog.GetString ("Enable source analysis of open files"));
+			PackStart (enabledCheck, false, false, 0);
 			
-			this.input = input;
-			this.fileExtension = fileExtension;
+			ShowAll ();
 		}
 		
-		public override bool Equals (object obj)
-		{
-			if (obj == null)
-				return false;
-			if (ReferenceEquals (this, obj))
-				return true;
-			var other = obj as NodeTreeType;
-			return other != null && input == other.input && fileExtension == other.fileExtension;
-		}
-
-		public override int GetHashCode ()
-		{
-			unchecked {
-				return (input != null ? input.GetHashCode () : 0)
-					^ (fileExtension != null ? fileExtension.GetHashCode () : 0);
-			}
+		public bool AnalysisEnabled {
+			get { return enabledCheck.Active; }
+			set { enabledCheck.Active = value; }
 		}
 	}
 }
