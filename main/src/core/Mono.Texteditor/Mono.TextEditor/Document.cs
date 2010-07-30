@@ -1550,9 +1550,9 @@ namespace Mono.TextEditor
 		
 		
 		#region Diff
-		int[] GetDiffCodes (Dictionary<string, int> codeDictionary)
+		int[] GetDiffCodes (ref int codeCounter, Dictionary<string, int> codeDictionary)
 		{
-			int codeCounter = 0, i = 0;
+			int i = 0;
 			int[] result = new int[LineCount];
 			foreach (LineSegment line in Lines) {
 				string lineText = buffer.GetTextAt (line.Offset, line.EditableLength);
@@ -1569,7 +1569,8 @@ namespace Mono.TextEditor
 		public IEnumerable<Item> Diff (Document other)
 		{
 			Dictionary<string, int> codeDictionary = new Dictionary<string, int> ();
-			return Mono.TextEditor.Utils.Diff.Diff<int> (this.GetDiffCodes (codeDictionary), other.GetDiffCodes (codeDictionary));
+			int codeCounter = 0;
+			return Mono.TextEditor.Utils.Diff.Diff<int> (this.GetDiffCodes (ref codeCounter, codeDictionary), other.GetDiffCodes (ref codeCounter, codeDictionary));
 		}
 		#endregion
 	}
