@@ -36,9 +36,10 @@ namespace MonoDevelop.SourceEditor
 	public class MessageBubbleHighlightPopupWindow : BounceFadePopupWindow
 	{
 		MessageBubbleTextMarker marker;
+		Gdk.Rectangle bounds;
 		
 		public MessageBubbleHighlightPopupWindow (SourceEditorView view, MessageBubbleTextMarker marker)
-			: base (view.TextEditor, marker.ErrorTextBounds)
+			: base (view.TextEditor)
 		{
 			this.marker = marker;
 			
@@ -46,6 +47,11 @@ namespace MonoDevelop.SourceEditor
 			ExpandHeight = 2;
 			BounceEasing = Easing.Sine;
 			Duration = 600;
+		}
+	
+		protected override Gdk.Rectangle CalculateInitialBounds ()
+		{
+			return marker.ErrorTextBounds;
 		}
 		
 		protected override Gdk.Pixbuf RenderInitialPixbuf (Gdk.Window parentwindow, Gdk.Rectangle bounds)
@@ -59,6 +65,11 @@ namespace MonoDevelop.SourceEditor
 				}
 				return Gdk.Pixbuf.FromDrawable (pixmap, Colormap, 0, 0, 0, 0, bounds.Width, bounds.Height);
 			}
+		}
+
+		protected override void OnAnimationCompleted ()
+		{
+			Destroy ();
 		}
 	}
 }
