@@ -167,16 +167,8 @@ namespace MonoDevelop.CSharp.Refactoring
 				return;
 			
 			// search if the member name exists in the file (otherwise it doesn't make sense to search it)
-			FindReplace findReplace = new FindReplace ();
-			FilterOptions filterOptions = new FilterOptions {
-				CaseSensitive = true,
-				WholeWordsOnly = true
-			};
-			findReplace.CompilePattern (searchedMemberName, filterOptions);
-			IEnumerable<SearchResult> result = findReplace.Search (new FileProvider (null), text.Text, searchedMemberName, null, filterOptions);
-			if (result == null || !result.Any ()) {
+			if (!text.SearchForward (searchedMemberName, 0).Any ())
 				return;
-			}
 			
 			string parseText = text.Text;
 			ICSharpCode.NRefactory.IParser parser = ICSharpCode.NRefactory.ParserFactory.CreateParser (ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader (parseText));

@@ -1,3 +1,8 @@
+2010-07-30  Mike Krüger  <mkrueger@novell.com>
+
+	* MonoDevelop.CSharp.Refactoring/FindMemberAstVisitor.cs: Used
+	  fast text search.
+
 2010-07-28  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.CSharp.Resolver/NRefactoryResolver.cs:
