@@ -316,12 +316,15 @@ namespace MonoDevelop.Ide.Desktop
 			throw new InvalidOperationException ();
 		}
 		
-		RecentFiles recentFiles;
-		protected virtual RecentFiles RecentFilesProvider { get { return null; } }
+		protected virtual RecentFiles CreateRecentFilesProvider ()
+		{
+			return new FdoRecentFiles ();
+		}
 		
+		RecentFiles recentFiles;
 		public RecentFiles RecentFiles {
 			get {
-				return recentFiles ?? (recentFiles = RecentFilesProvider ?? new FdoRecentFiles ());
+				return recentFiles ?? (recentFiles = CreateRecentFilesProvider ());
 			}
 		}
 	}
