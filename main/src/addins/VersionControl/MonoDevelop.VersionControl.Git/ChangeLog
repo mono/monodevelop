@@ -1,5 +1,11 @@
 2010-07-30  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* MonoDevelop.VersionControl.Git/GitRepository.cs: Use
+	  relative paths in the git command invocations. Old git
+	  versions have problems with absolute paths.
+
+2010-07-30  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.VersionControl.Git/GitRepository.cs: Don't use
 	  the --porcelain option for the status command, since it is
 	  not available in old git versions.

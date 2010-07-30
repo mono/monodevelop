@@ -27,6 +27,7 @@
 //#define DEBUG_GIT
 
 using System;
+using System.Linq;
 using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
@@ -86,7 +87,7 @@ namespace MonoDevelop.VersionControl.Git
 		public override Revision[] GetHistory (FilePath localFile, Revision since)
 		{
 			List<Revision> revs = new List<Revision> ();
-			StringReader sr = RunCommand ("log --name-status --date=iso " + localFile, true);
+			StringReader sr = RunCommand ("log --name-status --date=iso " + ToCmdPath (localFile), true);
 			string line;
 			string rev;
 			while ((rev = ReadWithPrefix (sr, "commit ")) != null) {
@@ -199,6 +200,19 @@ namespace MonoDevelop.VersionControl.Git
 			return GetDirectoryVersionInfo (localDirectory, null, getRemoteStatus, recursive);
 		}
 		
+		string ToCmdPath (FilePath filePath)
+		{
+			return "\"" + filePath.ToRelative (path) + "\"";
+		}
+		
+		string ToCmdPathList (IEnumerable<FilePath> paths)
+		{
+			StringBuilder sb = new StringBuilder ();
+			foreach (FilePath it in paths)
+				sb.Append (' ').Append (ToCmdPath (it));
+			return sb.ToString ();
+		}
+		
 		VersionInfo[] GetDirectoryVersionInfo (FilePath localDirectory, string fileName, bool getRemoteStatus, bool recursive)
 		{
 			StringReader sr = RunCommand ("log -1 --format=format:%H", true);
@@ -216,7 +230,7 @@ namespace MonoDevelop.VersionControl.Git
 			GitRevision rev = new GitRevision (this, strRev);
 			List<VersionInfo> versions = new List<VersionInfo> ();
 			FilePath p = fileName != null ? localDirectory.Combine (fileName) : localDirectory;
-			sr = RunCommand ("status -s " + p, true);
+			sr = RunCommand ("status -s " + ToCmdPath (p), true);
 			string line;
 			while ((line = sr.ReadLine ()) != null) {
 				char staged = line[0];
@@ -316,10 +330,8 @@ namespace MonoDevelop.VersionControl.Git
 			string file = Path.GetTempFileName ();
 			try {
 				File.WriteAllText (file, changeSet.GlobalComment);
-				StringBuilder sb = new StringBuilder ();
-				foreach (ChangeSetItem it in changeSet.Items)
-					sb.Append (" \"").Append (it.LocalPath).Append ('"');
-				RunCommand ("commit -F " + file + sb, true, monitor);
+				string paths = ToCmdPathList (changeSet.Items.Select (it => it.LocalPath));
+				RunCommand ("commit -F " + file + " " + paths, true, monitor);
 			} finally {
 				File.Delete (file);
 			}
@@ -333,16 +345,12 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override void Revert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
-			StringBuilder sb = new StringBuilder ();
-			foreach (FilePath it in localPaths)
-				sb.Append (" \"").Append (it).Append ('"');
-			
-			RunCommand ("reset --" + sb, false, monitor);
+			RunCommand ("reset --" + ToCmdPathList (localPaths), false, monitor);
 			
 			// The checkout command may fail if a file is not tracked anymore after
 			// the reset, so the checkouts have to be run one by one.
 			foreach (FilePath p in localPaths)
-				RunCommand ("checkout -- \"" + p + "\"", false, monitor);
+				RunCommand ("checkout -- " + ToCmdPath (p), false, monitor);
 			
 			foreach (FilePath p in localPaths)
 				FileService.NotifyFileChanged (p);
@@ -362,10 +370,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override void Add (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
-			StringBuilder sb = new StringBuilder ();
-			foreach (FilePath it in localPaths)
-				sb.Append (" \"").Append (it).Append ('"');
-			RunCommand ("add " + sb, true, monitor);
+			RunCommand ("add " + ToCmdPathList (localPaths), true, monitor);
 		}
 		
 		public override string GetTextAtRevision (FilePath repositoryPath, Revision revision)
@@ -380,7 +385,7 @@ namespace MonoDevelop.VersionControl.Git
 				return new DiffInfo [0];
 			}
 			else {
-				StringReader sr = RunCommand ("diff \"" + baseLocalPath + "\"", true);
+				StringReader sr = RunCommand ("diff " + ToCmdPath (baseLocalPath), true);
 				return GetUnifiedDiffInfo (sr.ReadToEnd (), baseLocalPath, null);
 			}
 		}
@@ -574,13 +579,13 @@ namespace MonoDevelop.VersionControl.Git
 				base.MoveFile (localSrcPath, localDestPath, force, monitor);
 				return;
 			}
-			RunCommand ("mv \"" + localSrcPath + "\" \"" + localDestPath + "\"", true, monitor);
+			RunCommand ("mv " + ToCmdPath (localSrcPath) + " " + ToCmdPath (localDestPath), true, monitor);
 		}
 		
 		public override void MoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
 		{
 			try {
-				RunCommand ("mv \"" + localSrcPath + "\" \"" + localDestPath + "\"", true, monitor);
+				RunCommand ("mv " + ToCmdPath (localSrcPath) + " " + ToCmdPath (localDestPath), true, monitor);
 			} catch {
 				// If the move can't be done using git, do a regular move
 				base.MoveDirectory (localSrcPath, localDestPath, force, monitor);
@@ -595,7 +600,7 @@ namespace MonoDevelop.VersionControl.Git
 		public override Annotation[] GetAnnotations (FilePath repositoryPath)
 		{
 			List<Annotation> alist = new List<Annotation> ();
-			StringReader sr = RunCommand ("blame -p \"" + repositoryPath + "\"", true);
+			StringReader sr = RunCommand ("blame -p " + ToCmdPath (repositoryPath), true);
 			
 			string author = null;
 			string mail = null;
