@@ -137,5 +137,10 @@ namespace MonoDevelop.Platform
 			proc.Start ();
 			return proc;
         }
+		
+		protected override RecentFiles CreateRecentFilesProvider ()
+		{
+			return new MonoDevelop.Platform.WindowsRecentFiles ();
+		}
 	}
 }

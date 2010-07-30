@@ -74,6 +74,7 @@
     <Compile Include="WinFormsRoot.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="RecentFiles.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
