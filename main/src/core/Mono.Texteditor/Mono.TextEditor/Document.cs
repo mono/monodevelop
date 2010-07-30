@@ -1566,7 +1566,7 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
-		public IEnumerable<Item> Diff (Document other)
+		public IEnumerable<Hunk> Diff (Document other)
 		{
 			Dictionary<string, int> codeDictionary = new Dictionary<string, int> ();
 			int codeCounter = 0;

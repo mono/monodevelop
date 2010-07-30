@@ -32,9 +32,9 @@ using System.Text.RegularExpressions;
 
 namespace Mono.TextEditor.Utils
 {
-	public struct Item
+	public struct Hunk
 	{
-		public static readonly Item Empty = new Item (-1, -1, 0, 0);
+		public static readonly Hunk Empty = new Hunk (-1, -1, 0, 0);
 
 		public readonly int StartA;
 		public readonly int StartB;
@@ -42,7 +42,7 @@ namespace Mono.TextEditor.Utils
 		public readonly int DeletedA;
 		public readonly int InsertedB;
 
-		public Item (int startA, int startB, int deletedA, int insertedB)
+		public Hunk (int startA, int startB, int deletedA, int insertedB)
 		{
 			this.StartA = startA;
 			this.StartB = startB;
@@ -80,7 +80,7 @@ namespace Mono.TextEditor.Utils
 	/// completely deleted or inserted.
 	///
 	/// The result from a comparisation is stored in 2 arrays that flag for modified (deleted or inserted)
-	/// lines in the 2 data arrays. These bits are then analysed to produce a array of Item objects.
+	/// lines in the 2 data arrays. These bits are then analysed to produce a array of Hunk objects.
 	///
 	/// Further possible optimizations:
 	/// (first rule: don't do it; second: don't do it yet)
@@ -133,42 +133,80 @@ namespace Mono.TextEditor.Utils
 		{
 			int startPos = 0;
 			while (startPos < data.Length) {
-				while (startPos < data.Length && data.modified[startPos] == false)
+				while (startPos < data.Length && data.Modified[startPos] == false)
 					startPos++;
 				int endPos = startPos;
-				while (endPos < data.Length && data.modified[endPos] == true)
+				while (endPos < data.Length && data.Modified[endPos] == true)
 					endPos++;
 
-				if (endPos < data.Length && data.data[startPos].Equals (data.data[endPos])) {
-					data.modified[startPos] = false;
-					data.modified[endPos] = true;
+				if (endPos < data.Length && data.Data[startPos].Equals (data.Data[endPos])) {
+					data.Modified[startPos] = false;
+					data.Modified[endPos] = true;
 				} else {
 					startPos = endPos;
 				}
 			}
 		}
 
-		public static IEnumerable<Item> CharDiff (string left, string right)
+		public static IEnumerable<Hunk> CharDiff (string left, string right)
 		{
 			return Diff (left != null ? left.ToCharArray () : new char[0], right != null ? right.ToCharArray () : new char[0]);
 		}
 
-		internal static IEnumerable<Item> Diff<T> (T[] arrayA, T[] arrayB)
+		internal static IEnumerable<Hunk> Diff<T> (T[] arrayA, T[] arrayB)
 		{
 			// The A-Version of the data (original data) to be compared.
-			var DataA = new DiffData<T> (arrayA);
+			var dataA = new DiffData<T> (arrayA);
 
 			// The B-Version of the data (modified data) to be compared.
-			var DataB = new DiffData<T> (arrayB);
+			var dataB = new DiffData<T> (arrayB);
 
-			int MAX = DataA.Length + DataB.Length + 1;
+			int MAX = dataA.Length + dataB.Length + 1;
 			/// vector for the (0,0) to (x,y) search
 			int[] downVector = new int[2 * MAX + 2];
 			/// vector for the (u,v) to (N,M) search
 			int[] upVector = new int[2 * MAX + 2];
 
-			LCS (DataA, 0, DataA.Length, DataB, 0, DataB.Length, downVector, upVector);
-			return CreateDiffs (DataA, DataB);
+			LCS (dataA, 0, dataA.Length, dataB, 0, dataB.Length, downVector, upVector);
+			return CreateDiffs (dataA, dataB);
+		}
+		
+		/// <summary>Scan the tables of which lines are inserted and deleted,
+		/// producing an edit script in forward order.
+		/// </summary>
+		/// dynamic array
+		static IEnumerable<Hunk> CreateDiffs<T> (DiffData<T> dataA, DiffData<T> dataB)
+		{
+			int lineA = 0;
+			int lineB = 0;
+			while (lineA < dataA.Length || lineB < dataB.Length) {
+				if (lineA < dataA.Length && !dataA.Modified[lineA] && lineB < dataB.Length && !dataB.Modified[lineB]) {
+					// equal lines
+					lineA++;
+					lineB++;
+
+				} else {
+					// maybe deleted and/or inserted lines
+					int startA = lineA;
+					int startB = lineB;
+
+					while (lineA < dataA.Length && (lineB >= dataB.Length || dataA.Modified[lineA]))
+						// while (LineA < DataA.Length && DataA.Modified[LineA])
+						lineA++;
+
+					while (lineB < dataB.Length && (lineA >= dataA.Length || dataB.Modified[lineB]))
+						// while (LineB < DataB.Length && DataB.Modified[LineB])
+						lineB++;
+
+					if (startA < lineA || startB < lineB) {
+						// store a new difference-item
+						yield return new Hunk (startA, startB, lineA - startA, lineB - startB);
+					}
+					// if
+				}
+				// if
+			}
+			// while
 		}
 
 		/// <summary>
@@ -222,21 +260,21 @@ namespace Mono.TextEditor.Utils
 					} else {
 						x = downVector[downOffset + k - 1] + 1;
 						// a step to the right
-						if ((k < downK + D) && (downVector[downOffset + k + 1] >= x))
+						if (k < downK + D && downVector[downOffset + k + 1] >= x)
 							x = downVector[downOffset + k + 1];
 						// down
 					}
 					y = x - k;
 
 					// find the end of the furthest reaching forward D-path in diagonal k.
-					while ((x < upperA) && (y < upperB) && (dataA.data[x].Equals (dataB.data[y]))) {
+					while (x < upperA && y < upperB && dataA.Data[x].Equals (dataB.Data[y])) {
 						x++;
 						y++;
 					}
 					downVector[downOffset + k] = x;
 
 					// overlap ?
-					if (oddDelta && (upK - D < k) && (k < upK + D)) {
+					if (oddDelta && upK - D < k && k < upK + D) {
 						if (upVector[upOffset + k] <= downVector[downOffset + k]) {
 							ret.x = downVector[downOffset + k];
 							ret.y = downVector[downOffset + k] - k;
@@ -261,14 +299,14 @@ namespace Mono.TextEditor.Utils
 					} else {
 						x = upVector[upOffset + k + 1] - 1;
 						// left
-						if ((k > upK - D) && (upVector[upOffset + k - 1] < x))
+						if (k > upK - D && upVector[upOffset + k - 1] < x)
 							x = upVector[upOffset + k - 1];
 						// up
 					}
 					// if
 					y = x - k;
 
-					while ((x > lowerA) && (y > lowerB) && (dataA.data[x - 1].Equals (dataB.data[y - 1]))) {
+					while (x > lowerA && y > lowerB && dataA.Data[x - 1].Equals (dataB.Data[y - 1])) {
 						x--;
 						y--;
 						// diagonal
@@ -276,7 +314,7 @@ namespace Mono.TextEditor.Utils
 					upVector[upOffset + k] = x;
 
 					// overlap ?
-					if (!oddDelta && (downK - D <= k) && (k <= downK + D)) {
+					if (!oddDelta && downK - D <= k && k <= downK + D) {
 						if (upVector[upOffset + k] <= downVector[downOffset + k]) {
 							ret.x = downVector[downOffset + k];
 							ret.y = downVector[downOffset + k] - k;
@@ -312,13 +350,13 @@ namespace Mono.TextEditor.Utils
 		static void LCS<T> (DiffData<T> dataA, int lowerA, int upperA, DiffData<T> dataB, int lowerB, int upperB, int[] downVector, int[] upVector)
 		{
 			// Fast walkthrough equal lines at the start
-			while (lowerA < upperA && lowerB < upperB && dataA.data[lowerA].Equals (dataB.data[lowerB])) {
+			while (lowerA < upperA && lowerB < upperB && dataA.Data[lowerA].Equals (dataB.Data[lowerB])) {
 				lowerA++;
 				lowerB++;
 			}
 
 			// Fast walkthrough equal lines at the end
-			while (lowerA < upperA && lowerB < upperB && dataA.data[upperA - 1].Equals (dataB.data[upperB - 1])) {
+			while (lowerA < upperA && lowerB < upperB && dataA.Data[upperA - 1].Equals (dataB.Data[upperB - 1])) {
 				--upperA;
 				--upperB;
 			}
@@ -326,12 +364,12 @@ namespace Mono.TextEditor.Utils
 			if (lowerA == upperA) {
 				// mark as inserted lines.
 				while (lowerB < upperB)
-					dataB.modified[lowerB++] = true;
+					dataB.Modified[lowerB++] = true;
 
 			} else if (lowerB == upperB) {
 				// mark as deleted lines.
 				while (lowerA < upperA)
-					dataA.modified[lowerA++] = true;
+					dataA.Modified[lowerA++] = true;
 
 			} else {
 				// Find the middle snakea and length of an optimal path for A and B
@@ -346,75 +384,36 @@ namespace Mono.TextEditor.Utils
 		}
 		// LCS()
 
-		/// <summary>Scan the tables of which lines are inserted and deleted,
-		/// producing an edit script in forward order.
-		/// </summary>
-		/// dynamic array
-		static IEnumerable<Item> CreateDiffs<T> (DiffData<T> DataA, DiffData<T> DataB)
-		{
-			int StartA, StartB;
-			int LineA, LineB;
-
-			LineA = 0;
-			LineB = 0;
-			while (LineA < DataA.Length || LineB < DataB.Length) {
-				if ((LineA < DataA.Length) && (!DataA.modified[LineA]) && (LineB < DataB.Length) && (!DataB.modified[LineB])) {
-					// equal lines
-					LineA++;
-					LineB++;
-
-				} else {
-					// maybe deleted and/or inserted lines
-					StartA = LineA;
-					StartB = LineB;
-
-					while (LineA < DataA.Length && (LineB >= DataB.Length || DataA.modified[LineA]))
-						// while (LineA < DataA.Length && DataA.modified[LineA])
-						LineA++;
-
-					while (LineB < DataB.Length && (LineA >= DataA.Length || DataB.modified[LineB]))
-						// while (LineB < DataB.Length && DataB.modified[LineB])
-						LineB++;
-
-					if ((StartA < LineA) || (StartB < LineB)) {
-						// store a new difference-item
-						yield return new Item (StartA, StartB, LineA - StartA, LineB - StartB);
-					}
-					// if
-				}
-				// if
-			}
-			// while
-		}
+		
 	}
 
 	// class Diff
 	/// <summary>Data on one input file being compared.
 	/// </summary>
-	internal class DiffData<T>
+	class DiffData<T>
 	{
 		/// <summary>Number of elements (lines).</summary>
-		internal int Length;
+		public readonly int Length;
 
 		/// <summary>Buffer of numbers that will be compared.</summary>
-		internal T[] data;
+		public readonly T[] Data;
 
 		/// <summary>
 		/// Array of booleans that flag for modified data.
 		/// This is the result of the diff.
 		/// This means deletedA in the first Data or inserted in the second Data.
 		/// </summary>
-		internal bool[] modified;
+		public readonly bool[] Modified;
 
 		/// <summary>
 		/// Initialize the Diff-Data buffer.
 		/// </summary>
 		/// <param name="data">reference to the buffer</param>
-		internal DiffData (T[] initData)
+		public DiffData (T[] initData)
 		{
-			data = initData;
+			Data = initData;
 			Length = initData.Length;
-			modified = new bool[Length + 2];
+			Modified = new bool[Length + 2];
 		}
 		// DiffData
 	}

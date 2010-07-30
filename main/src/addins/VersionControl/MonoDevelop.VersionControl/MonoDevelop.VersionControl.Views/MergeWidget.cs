@@ -84,7 +84,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		List<Mono.TextEditor.Utils.Item> leftDiff, rightDiff;
+		List<Mono.TextEditor.Utils.Hunk> leftDiff, rightDiff;
 		
 		protected MergeWidget (IntPtr ptr) : base (ptr)
 		{
@@ -264,8 +264,8 @@ namespace MonoDevelop.VersionControl.Views
 
 		List<TextEditorData> localUpdate = new List<TextEditorData> ();
 		List<Conflict> currentConflicts = new List<Conflict> ();
-		List<Mono.TextEditor.Utils.Item> leftConflicts = new List<Mono.TextEditor.Utils.Item> ();
-		List<Mono.TextEditor.Utils.Item> rightConflicts = new List<Mono.TextEditor.Utils.Item> ();
+		List<Mono.TextEditor.Utils.Hunk> leftConflicts = new List<Mono.TextEditor.Utils.Hunk> ();
+		List<Mono.TextEditor.Utils.Hunk> rightConflicts = new List<Mono.TextEditor.Utils.Hunk> ();
 		
 		public void CreateDiff ()
 		{
@@ -293,8 +293,8 @@ namespace MonoDevelop.VersionControl.Views
 					int middleA = middleEditor.Document.OffsetToLineNumber (conflict.StartOffset);
 					int middleB = middleEditor.Document.OffsetToLineNumber (conflict.EndOffset);
 					
-					leftConflicts.Add (new Mono.TextEditor.Utils.Item (middleA, leftA, middleB - middleA, leftB - leftA));
-					rightConflicts.Add (new Mono.TextEditor.Utils.Item (middleA, rightA, middleB - middleA, rightB - rightA));
+					leftConflicts.Add (new Mono.TextEditor.Utils.Hunk (middleA, leftA, middleB - middleA, leftB - leftA));
+					rightConflicts.Add (new Mono.TextEditor.Utils.Hunk (middleA, rightA, middleB - middleA, rightB - rightA));
 					
 					curOffset = conflict.EndOffset;
 				}
@@ -304,8 +304,8 @@ namespace MonoDevelop.VersionControl.Views
 			leftEditor.Insert (leftEditor.Document.Length, lastPart);
 			rightEditor.Insert (rightEditor.Document.Length, lastPart);
 			
-			leftDiff  = new List<Mono.TextEditor.Utils.Item> (middleEditor.Document.Diff (leftEditor.Document));
-			rightDiff = new List<Mono.TextEditor.Utils.Item> (middleEditor.Document.Diff (rightEditor.Document));
+			leftDiff  = new List<Mono.TextEditor.Utils.Hunk> (middleEditor.Document.Diff (leftEditor.Document));
+			rightDiff = new List<Mono.TextEditor.Utils.Hunk> (middleEditor.Document.Diff (rightEditor.Document));
 			
 /*			foreach (var item in leftDiff) {
 				Console.WriteLine ("@@ -" + item.StartA + "," + item.DeletedA + " +" + item.StartB + "," + item.InsertedB + " @@");
@@ -473,7 +473,7 @@ namespace MonoDevelop.VersionControl.Views
 			children.ForEach (child => child.Child.SizeRequest ());
 		}
 
-		public static Cairo.Color GetColor (Mono.TextEditor.Utils.Item item, double alpha)
+		public static Cairo.Color GetColor (Mono.TextEditor.Utils.Hunk item, double alpha)
 		{
 			if (item.DeletedA == 0)
 				return new Cairo.Color (0.4, 0.8, 0.4, alpha);
@@ -485,7 +485,7 @@ namespace MonoDevelop.VersionControl.Views
 		const double fillAlpha = 0.1;
 		const double lineAlpha = 0.6;
 		
-		void PaintEditorOverlay (TextEditor editor, ExposeEventArgs args, List<Mono.TextEditor.Utils.Item> diff, bool takeLeftSide)
+		void PaintEditorOverlay (TextEditor editor, ExposeEventArgs args, List<Mono.TextEditor.Utils.Hunk> diff, bool takeLeftSide)
 		{
 			if (diff == null)
 				return;
@@ -681,11 +681,11 @@ namespace MonoDevelop.VersionControl.Views
 				this.useLeft = useLeft;
 			}
 
-			Mono.TextEditor.Utils.Item selectedHunk = Mono.TextEditor.Utils.Item.Empty;
+			Mono.TextEditor.Utils.Hunk selectedHunk = Mono.TextEditor.Utils.Hunk.Empty;
 			protected override bool OnMotionNotifyEvent (EventMotion evnt)
 			{/*
 				bool hideButton = widget.OriginalEditor.Document.ReadOnly || !widget.DiffEditor.Document.ReadOnly;
-				Mono.TextEditor.Utils.Item selectedHunk = Mono.TextEditor.Utils.Item.Empty;
+				Mono.TextEditor.Utils.Hunk selectedHunk = Mono.TextEditor.Utils.Hunk.Empty;
 				if (!hideButton) {
 					int delta = widget.OriginalEditor.Allocation.Y - Allocation.Y;
 					foreach (var hunk in widget.leftDiff) {
@@ -744,13 +744,13 @@ namespace MonoDevelop.VersionControl.Views
 			
 			protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
 			{
-				selectedHunk = Mono.TextEditor.Utils.Item.Empty;
+				selectedHunk = Mono.TextEditor.Utils.Hunk.Empty;
 				TooltipText = null;
 				QueueDraw ();
 				return base.OnLeaveNotifyEvent (evnt);
 			}
 			
-			public void GetButtonPosition (Mono.TextEditor.Utils.Item hunk, int z1, int z2, int y1, int y2, out int x, out int y, out int r)
+			public void GetButtonPosition (Mono.TextEditor.Utils.Hunk hunk, int z1, int z2, int y1, int y2, out int x, out int y, out int r)
 			{
 				r = 14;
 				if (hunk.DeletedA == 0) {
@@ -767,7 +767,7 @@ namespace MonoDevelop.VersionControl.Views
 				bool hideButton = widget.OriginalEditor.Document.ReadOnly || !widget.DiffEditor.Document.ReadOnly;
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
 					int delta = widget.OriginalEditor.Allocation.Y - Allocation.Y;
-					foreach (Mono.TextEditor.Utils.Item hunk in (useLeft ? widget.leftDiff : widget.rightDiff)) {
+					foreach (Mono.TextEditor.Utils.Hunk hunk in (useLeft ? widget.leftDiff : widget.rightDiff)) {
 						int y1 = delta + fromEditor.LineToVisualY (useLeft ? hunk.StartA : hunk.StartB) - (int)fromEditor.VAdjustment.Value;
 						int y2 = delta + fromEditor.LineToVisualY (useLeft ? hunk.StartA + hunk.DeletedA : hunk.StartB + hunk.InsertedB) - (int)fromEditor.VAdjustment.Value;
 						if (y1 == y2)
@@ -948,7 +948,7 @@ namespace MonoDevelop.VersionControl.Views
 				return true;
 			}
 			
-			void IncPos(Mono.TextEditor.Utils.Item h, ref int pos)
+			void IncPos(Mono.TextEditor.Utils.Hunk h, ref int pos)
 			{
 				pos += System.Math.Max (h.InsertedB, h.DeletedA);
 /*				if (sidebyside)
