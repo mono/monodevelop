@@ -39,15 +39,20 @@ namespace MonoDevelop.Ide.Desktop
 {
 	public class FdoRecentFiles : RecentFiles, IDisposable
 	{
-		RecentFileStorage recentFiles = new RecentFileStorage ();
+		RecentFileStorage recentFiles;
 		
 		const string projGroup = "MonoDevelop Projects";
 		const string fileGroup = "MonoDevelop Files";
 		
 		const int ItemLimit = 10;
 		
-		public FdoRecentFiles ()
+		public FdoRecentFiles () : this (RecentFileStorage.DefaultPath)
 		{
+		}
+		
+		public FdoRecentFiles (string storageFile)
+		{
+			recentFiles = new RecentFileStorage (storageFile);
 			recentFiles.RemoveMissingFiles (projGroup, fileGroup);
 		}
 		
