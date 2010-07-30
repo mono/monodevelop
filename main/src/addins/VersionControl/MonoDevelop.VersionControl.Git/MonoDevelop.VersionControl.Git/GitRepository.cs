@@ -216,7 +216,7 @@ namespace MonoDevelop.VersionControl.Git
 			GitRevision rev = new GitRevision (this, strRev);
 			List<VersionInfo> versions = new List<VersionInfo> ();
 			FilePath p = fileName != null ? localDirectory.Combine (fileName) : localDirectory;
-			sr = RunCommand ("status --porcelain " + p, true);
+			sr = RunCommand ("status -s " + p, true);
 			string line;
 			while ((line = sr.ReadLine ()) != null) {
 				char staged = line[0];

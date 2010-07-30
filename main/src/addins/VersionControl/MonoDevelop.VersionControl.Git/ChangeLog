@@ -1,3 +1,9 @@
+2010-07-30  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl.Git/GitRepository.cs: Don't use
+	  the --porcelain option for the status command, since it is
+	  not available in old git versions.
+
 2010-07-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl.Git/GitRepository.cs: Implement
