@@ -85,7 +85,7 @@ namespace Mono.TextEditor.Theatrics
 		double vValue, hValue;
 		Rectangle bounds;
 
-		public void Popup ()
+		public virtual void Popup ()
 		{
 			editor.GdkWindow.GetOrigin (out x, out y);
 			bounds = CalculateInitialBounds ();
@@ -97,22 +97,32 @@ namespace Mono.TextEditor.Theatrics
 			stage.AddOrReset (this, Duration);
 			stage.Play ();
 			Show ();
+			ListenToEvents ();
 		}
 
-		protected override void OnShown ()
+		protected void ListenToEvents ()
 		{
-			base.OnShown ();
 			editor.VAdjustment.ValueChanged += HandleEditorVAdjustmentValueChanged;
 			editor.HAdjustment.ValueChanged += HandleEditorHAdjustmentValueChanged;
 			vValue = editor.VAdjustment.Value;
 			hValue = editor.HAdjustment.Value;
 		}
+
+		protected override void OnShown ()
+		{
+			base.OnShown ();
+		}
 		
+		protected void DetachEvents ()
+		{
+			editor.VAdjustment.ValueChanged -= HandleEditorVAdjustmentValueChanged;
+			editor.HAdjustment.ValueChanged -= HandleEditorHAdjustmentValueChanged;
+		}
+
 		protected override void OnHidden ()
 		{
 			base.OnHidden ();
-			editor.VAdjustment.ValueChanged -= HandleEditorVAdjustmentValueChanged;
-			editor.HAdjustment.ValueChanged -= HandleEditorHAdjustmentValueChanged;
+			DetachEvents ();
 		}
 		
 		void HandleEditorVAdjustmentValueChanged (object sender, EventArgs e)

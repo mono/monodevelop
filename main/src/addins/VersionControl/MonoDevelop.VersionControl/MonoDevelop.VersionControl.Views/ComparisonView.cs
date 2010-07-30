@@ -121,6 +121,7 @@ namespace MonoDevelop.VersionControl.Views
 			window.AttachViewContent (new PatchView (comparisonView, info));
 			window.AttachViewContent (new BlameView (info));
 			window.AttachViewContent (new LogView (info));
+//			window.AttachViewContent (new MergeView (info.Document.Editor.Text));
 			
 			info.Start ();
 		}
@@ -224,7 +225,5 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		#endregion
-
 	}
 }
-

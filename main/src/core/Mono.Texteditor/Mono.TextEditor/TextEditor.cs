@@ -1476,7 +1476,8 @@ namespace Mono.TextEditor
 			if (e.Area.Contains (TextViewMargin.caretX, TextViewMargin.caretY))
 				textViewMargin.DrawCaret (e.Window);
 			
-			return base.OnExposeEvent (e);
+			var result = base.OnExposeEvent (e);
+			return result;
 		}
 
 		#region TextEditorData functions
@@ -1913,6 +1914,13 @@ namespace Mono.TextEditor
 
 		SearchHighlightPopupWindow popupWindow = null;
 		
+		public void StopSearchResultAnimation ()
+		{
+			if (popupWindow == null)
+				return;
+			popupWindow.StopPlaying ();
+		}
+		
 		public void AnimateSearchResult (SearchResult result)
 		{
 			if (!IsComposited)
@@ -1924,34 +1932,44 @@ namespace Mono.TextEditor
 				} else {
 					popupWindow = new SearchHighlightPopupWindow (this);
 				}
-				CenterTo (result.Offset);
-				popupWindow.Popup (result);
+				popupWindow.Result = result;
+				popupWindow.Popup ();
 			}
 		}
 		
 		class SearchHighlightPopupWindow : BounceFadePopupWindow
 		{
-			SearchResult result;
+			public SearchResult Result {
+				get;
+				set;
+			}
 			
 			public SearchHighlightPopupWindow (TextEditor editor) : base (editor)
 			{
 			}
 			
-			public void Popup (SearchResult result)
+			public override void Popup ()
 			{
-				this.result = result;
-				
+				Visible = true;
 				ExpandWidth = (uint)Editor.LineHeight;
 				ExpandHeight = (uint)Editor.LineHeight / 2;
 				BounceEasing = Easing.Sine;
 				Duration = 900;
 				base.Popup ();
+				ShowAll ();
 			}
-
+			
+			protected override void OnAnimationCompleted ()
+			{
+				base.OnAnimationCompleted ();
+				Visible = false;
+				DetachEvents ();
+			}
+			
 			protected override Rectangle CalculateInitialBounds ()
 			{
-				LineSegment line = Editor.Document.GetLineByOffset (result.Offset);
-				int lineNr = Editor.Document.OffsetToLineNumber (result.Offset);
+				LineSegment line = Editor.Document.GetLineByOffset (Result.Offset);
+				int lineNr = Editor.Document.OffsetToLineNumber (Result.Offset);
 				SyntaxMode mode = Editor.Document.SyntaxMode != null && Editor.Options.EnableSyntaxHighlighting ? Editor.Document.SyntaxMode : SyntaxMode.Default;
 				int logicalRulerColumn = line.GetLogicalColumn(Editor.GetTextEditorData(), Editor.Options.RulerColumn);
 				var lineLayout = Editor.textViewMargin.CreateLinePartLayout(mode, line, logicalRulerColumn, line.Offset, line.EditableLength, -1, -1);
@@ -1959,13 +1977,13 @@ namespace Mono.TextEditor
 					return Gdk.Rectangle.Zero;
 				
 				int l, x1, x2;
-				int index = result.Offset - line.Offset - 1;
+				int index = Result.Offset - line.Offset - 1;
 				if (index >= 0) {
 					lineLayout.Layout.IndexToLineX (index, true, out l, out x1);
 				} else {
 					l = x1 = 0;
 				}
-				index = result.Offset - line.Offset - 1 + result.Length;
+				index = Result.Offset - line.Offset - 1 + Result.Length;
 				if (index <= 0) 
 					index = 1;
 				lineLayout.Layout.IndexToLineX (index, true, out l, out x2);
@@ -1992,7 +2010,7 @@ namespace Mono.TextEditor
 					
 					using (var layout = PangoUtil.CreateLayout (Editor)) {
 						layout.FontDescription = Editor.Options.Font;
-						layout.SetMarkup (Editor.Document.SyntaxMode.GetMarkup (Editor.Document, Editor.Options, Editor.ColorStyle, result.Offset, result.Length, true));
+						layout.SetMarkup (Editor.Document.SyntaxMode.GetMarkup (Editor.Document, Editor.Options, Editor.ColorStyle, Result.Offset, Result.Length, true));
 						using (var bgGc = new Gdk.GC(pixmap)) {
 							bgGc.RgbFgColor = Editor.ColorStyle.SearchTextMainBg;
 							pixmap.DrawLayout (bgGc, 0, 0, layout);

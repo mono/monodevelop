@@ -381,8 +381,20 @@ namespace MonoDevelop.CSharp.Refactoring
 					return;
 				result.Append (GetModifiers (options.ImplementingType, member));
 				
-				if ((member.Modifiers & Modifiers.Virtual) == Modifiers.Virtual ||
-				    (member.Modifiers & Modifiers.Abstract) == Modifiers.Abstract)
+				bool isFromInterface = false;
+				if (member.DeclaringType.ClassType == ClassType.Interface) {
+					isFromInterface = true;
+					foreach (IType type in options.ImplementingType.SourceProjectDom.GetInheritanceTree (options.ImplementingType)) {
+						if (type.ClassType == ClassType.Interface)
+							continue;
+						if (type.SearchMember (member.Name, true).Any (m => m.Name == member.Name && member.MemberType == m.MemberType && DomMethod.ParameterListEquals (member.Parameters, m.Parameters))) {
+							isFromInterface = false;
+							break;
+						}
+					}
+				}
+				if (!isFromInterface && ((member.Modifiers & Modifiers.Virtual) == Modifiers.Virtual ||
+				    (member.Modifiers & Modifiers.Abstract) == Modifiers.Abstract))
 					result.Append ("override ");
 			}
 			

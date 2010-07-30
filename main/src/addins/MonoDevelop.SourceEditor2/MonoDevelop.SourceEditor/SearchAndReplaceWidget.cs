@@ -168,7 +168,8 @@ namespace MonoDevelop.SourceEditor
 				widget.SetSearchPattern (SearchPattern);
 				string oldPattern = searchPattern;
 				searchPattern = SearchPattern;
-				UpdateSearchEntry ();
+				if (oldPattern != searchPattern)
+					UpdateSearchEntry ();
 				var history = GetHistory (seachHistoryProperty);
 				if (history.Count > 0 && history[0] == oldPattern) {
 					ChangeHistory (seachHistoryProperty, searchPattern);
@@ -541,6 +542,7 @@ But I leave it in in the case I've missed something. Mike
 					widget.TextEditor.ClearSelection ();
 					return;
 				}
+				widget.TextEditor.StopSearchResultAnimation ();
 				widget.TextEditor.Caret.Offset = result.EndOffset;
 				widget.TextEditor.SetSelection (result.Offset, result.EndOffset);
 				widget.TextEditor.CenterToCaret ();

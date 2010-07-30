@@ -52,6 +52,7 @@ FILES =  \
 	Mono.TextEditor.Theatrics/SingleActorStage.cs \
 	Mono.TextEditor.Theatrics/SmartScrolledWindow.cs \
 	Mono.TextEditor.Theatrics/Stage.cs \
+	Mono.TextEditor.Utils/Diff.cs \
 	Mono.TextEditor.Vi/ViActionMaps.cs \
 	Mono.TextEditor.Vi/ViActions.cs \
 	Mono.TextEditor.Vi/ViCommandBuilder.cs \

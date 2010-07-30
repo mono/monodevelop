@@ -170,6 +170,7 @@
     <Compile Include="Mono.TextEditor.Vi\ViEditorContext.cs" />
     <Compile Include="Mono.TextEditor.PopupWindow\ModeHelpWindow.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\CloneableStack.cs" />
+    <Compile Include="Mono.TextEditor.Utils\Diff.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -282,5 +283,6 @@
   <ItemGroup>
     <Folder Include="Mono.TextEditor.PopupWindow\" />
     <Folder Include="Mono.TextEditor.Highlighting.Regex\" />
+    <Folder Include="Mono.TextEditor.Utils\" />
   </ItemGroup>
 </Project>

@@ -31,6 +31,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Text;
 using Mono.TextEditor.Highlighting;
+using Mono.TextEditor.Utils;
 using System.Linq;
 using System.ComponentModel;
 
@@ -1546,6 +1547,31 @@ namespace Mono.TextEditor
 			List<int> keys = new List<int> (from pair in virtualTextMarkers where pair.Value == marker select pair.Key);
 			keys.ForEach (key => { virtualTextMarkers.Remove (key); CommitLineUpdate (key); });
 		}
+		
+		
+		#region Diff
+		int[] GetDiffCodes (Dictionary<string, int> codeDictionary)
+		{
+			int codeCounter = 0, i = 0;
+			int[] result = new int[LineCount];
+			foreach (LineSegment line in Lines) {
+				string lineText = buffer.GetTextAt (line.Offset, line.EditableLength);
+				int curCode;
+				if (!codeDictionary.TryGetValue (lineText, out curCode)) {
+					codeDictionary[lineText] = curCode = ++codeCounter;
+				}
+				result[i] = curCode;
+				i++;
+			}
+			return result;
+		}
+		
+		public IEnumerable<Item> Diff (Document other)
+		{
+			Dictionary<string, int> codeDictionary = new Dictionary<string, int> ();
+			return Mono.TextEditor.Utils.Diff.Diff<int> (this.GetDiffCodes (codeDictionary), other.GetDiffCodes (codeDictionary));
+		}
+		#endregion
 	}
 	
 	public delegate bool ReadOnlyCheckDelegate (int line);

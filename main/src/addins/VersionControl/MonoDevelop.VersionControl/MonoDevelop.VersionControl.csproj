@@ -212,6 +212,8 @@
     <Compile Include="MonoDevelop.VersionControl.Views\DropDownBox.cs" />
     <Compile Include="MonoDevelop.VersionControl\CurrentFileHandler.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\ChangeSetView.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Views\MergeView.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Views\MergeWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
