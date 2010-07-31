@@ -122,20 +122,25 @@ namespace Mono.TextEditor
 		{
 			if (text == null || text.Length == 0)
 				return;
-			LineSegment line  = lines.GetNodeAtOffset (offset);
+			
+			LineSegment line = lines.GetNodeAtOffset (offset);
 			int textOffset = 0;
-			ISegment delimiter;
-			while ((delimiter = FindDelimiter (text, textOffset)) != null) {
-				int newLineLength = line.EndOffset - (offset + textOffset);
-				int oldDelimiterLength = line.DelimiterLength;
-				lines.ChangeLength (line, offset + delimiter.EndOffset - line.Offset, delimiter.Length);
-				bool isBookmark = line.IsBookmarked;
-				//line.ClearMarker ();
+			int lineOffset = line.Offset;
+			int delimiter, delimiterLength;
+			while ((delimiter = FindDelimiter (text, textOffset, out delimiterLength)) >= 0) {
+				int newLineLength = lineOffset + line.Length - (offset + textOffset);
+				int delimiterEndOffset = delimiter + delimiterLength;
+				int curLineLength = offset + delimiterEndOffset - lineOffset;
+				lines.ChangeLength (line, curLineLength, delimiterLength);
+			/*	bool isBookmark = line.IsBookmarked;
+				line.ClearMarker ();
 				if (isBookmark)
-					line.IsBookmarked = true;
-				line = this.lines.InsertAfter (line, newLineLength, oldDelimiterLength);
-				textOffset = delimiter.EndOffset;
+					line.IsBookmarked = true;*/
+				line = this.lines.InsertAfter (line, newLineLength, line.DelimiterLength);
+				textOffset = delimiterEndOffset;
+				lineOffset += curLineLength;
 			}
+			
 			if (textOffset != text.Length) { 
 				lines.ChangeLength (line, line.Length + text.Length - textOffset);
 			}
@@ -146,26 +151,30 @@ namespace Mono.TextEditor
 			return lines.OffsetToLineNumber (offset);
 		}
 		
-		static Segment FindDelimiter (string text, int startOffset) 
+		static int FindDelimiter (string text, int startOffset, out int delimiterLength) 
 		{
 			for (int i = startOffset; i < text.Length; i++) {
 				switch (text[i]) {
-					case '\r':
-						return new Segment (i, i + 1 < text.Length && text[i + 1] == '\n' ? 2 : 1);
-					case '\n':
-						return new Segment (i, 1);
+				case '\r':
+					delimiterLength = i + 1 < text.Length && text[i + 1] == '\n' ? 2 : 1;
+					return i;
+				case '\n':
+					delimiterLength = 1;
+					return i;
 				}
 			}
-			return null;
+			delimiterLength = 0;
+			return -1;
 		}
+		
 		internal static int CountLines (string text)
 		{
 			int textOffset = 0;
 			int result = 0;
-			ISegment delimiter;
-			while ((delimiter = FindDelimiter (text, textOffset)) != null) {
+			int delimiter, delimiterLength;
+			while ((delimiter = FindDelimiter (text, textOffset, out delimiterLength)) >= 0) {
 				result++;
-				textOffset = delimiter.EndOffset;
+				textOffset = delimiter+ delimiterLength;
 			}
 			return result;
 		}
