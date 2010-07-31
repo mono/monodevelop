@@ -158,7 +158,7 @@ namespace Mono.TextEditor.Theatrics
 			}
 			//for the second half, vary opacity linearly from 1 to 0.
 			else {
-				scale = scale = Choreographer.Compose (1.0, BounceEasing);
+				scale = Choreographer.Compose (1.0, BounceEasing);
 				opacity = 2.0 - actor.Percent * 2;
 			}
 			return true;
