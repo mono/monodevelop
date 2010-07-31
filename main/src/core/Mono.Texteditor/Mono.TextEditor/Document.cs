@@ -215,11 +215,28 @@ namespace Mono.TextEditor
 		
 		public string GetTextBetween (int startOffset, int endOffset)
 		{
+			if (startOffset < 0)
+				throw new ArgumentException ("startOffset < 0");
+			if (startOffset > Length)
+				throw new ArgumentException ("startOffset > Length");
+			if (endOffset < 0)
+				throw new ArgumentException ("startOffset < 0");
+			if (endOffset > Length)
+				throw new ArgumentException ("endOffset > Length");
+			
 			return buffer.GetTextAt (startOffset, endOffset - startOffset);
 		}
 		
 		public string GetTextAt (int offset, int count)
 		{
+			if (offset < 0)
+				throw new ArgumentException ("startOffset < 0");
+			if (offset > Length)
+				throw new ArgumentException ("startOffset > Length");
+			if (count < 0)
+				throw new ArgumentException ("count < 0");
+			if (offset + count > Length)
+				throw new ArgumentException ("offset + cound is beyond EOF");
 			return buffer.GetTextAt (offset, count);
 		}
 		

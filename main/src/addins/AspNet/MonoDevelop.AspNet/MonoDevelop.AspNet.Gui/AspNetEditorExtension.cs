@@ -210,7 +210,7 @@ namespace MonoDevelop.AspNet.Gui
 			string sourceText = Document.Editor.GetTextBetween (start, caretOffset);
 			if (ch != '\0')
 				sourceText += ch;
-			string textAfterCaret = Document.Editor.GetTextBetween (caretOffset, Math.Max (caretOffset, Tracker.Engine.Position + Tracker.Engine.CurrentStateLength - start));
+			string textAfterCaret = Document.Editor.GetTextBetween (caretOffset, Math.Min (Document.Editor.Length, Math.Max (caretOffset, Tracker.Engine.Position + Tracker.Engine.CurrentStateLength - 2)));
 			
 			var loc = new MonoDevelop.AspNet.Parser.Internal.Location ();
 			var docLoc = Document.Editor.Document.OffsetToLocation (start);
@@ -265,7 +265,7 @@ namespace MonoDevelop.AspNet.Gui
 		{
 			if (localDocumentInfo == null)
 				return base.HandleCodeCompletion (completionContext, completionChar, ref triggerWordLength);
-			
+			localDocumentInfo.HiddenDocument.Editor.InsertAtCaret (completionChar.ToString ());
 			return documentBuilder.HandleCompletion (defaultDocument, completionContext, documentInfo, localDocumentInfo, completionChar, ref triggerWordLength);
 		}
 
@@ -282,7 +282,6 @@ namespace MonoDevelop.AspNet.Gui
 			try {
 				result = base.KeyPress (key, keyChar, modifier);
 				if (PropertyService.Get ("EnableParameterInsight", true) && (keyChar == ',' || keyChar == ')') && CanRunParameterCompletionCommand ()) {
-					Console.WriteLine ("run parameter completion !!!");
 					RunParameterCompletionCommand ();
 				}
 			} finally {
