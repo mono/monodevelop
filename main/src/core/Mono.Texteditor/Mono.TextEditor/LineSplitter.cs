@@ -30,6 +30,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Mono.TextEditor
 {
@@ -126,16 +127,12 @@ namespace Mono.TextEditor
 			LineSegment line = lines.GetNodeAtOffset (offset);
 			int textOffset = 0;
 			int lineOffset = line.Offset;
-			int delimiter, delimiterLength;
-			while ((delimiter = FindDelimiter (text, textOffset, out delimiterLength)) >= 0) {
+			foreach (var delimiter in FindDelimiter (text)) {
 				int newLineLength = lineOffset + line.Length - (offset + textOffset);
-				int delimiterEndOffset = delimiter + delimiterLength;
+				int delimiterEndOffset = delimiter.Offset + delimiter.Length;
 				int curLineLength = offset + delimiterEndOffset - lineOffset;
-				lines.ChangeLength (line, curLineLength, delimiterLength);
-			/*	bool isBookmark = line.IsBookmarked;
-				line.ClearMarker ();
-				if (isBookmark)
-					line.IsBookmarked = true;*/
+				lines.ChangeLength (line, curLineLength, delimiter.Length);
+				
 				line = this.lines.InsertAfter (line, newLineLength, line.DelimiterLength);
 				textOffset = delimiterEndOffset;
 				lineOffset += curLineLength;
@@ -151,32 +148,40 @@ namespace Mono.TextEditor
 			return lines.OffsetToLineNumber (offset);
 		}
 		
-		static int FindDelimiter (string text, int startOffset, out int delimiterLength) 
+		struct Delimiter 
 		{
-			for (int i = startOffset; i < text.Length; i++) {
+			public readonly int Offset;
+			public readonly int Length;
+			
+			public Delimiter (int offset, int length)
+			{
+				this.Offset = offset;
+				this.Length = length;
+			}
+		}
+		
+		static IEnumerable<Delimiter> FindDelimiter (string text) 
+		{
+			for (int i = 0; i < text.Length; i++) {
 				switch (text[i]) {
 				case '\r':
-					delimiterLength = i + 1 < text.Length && text[i + 1] == '\n' ? 2 : 1;
-					return i;
+					if (i + 1 < text.Length && text[i + 1] == '\n') {
+						yield return new Delimiter (i, 2);
+						i++;
+					} else {
+						yield return new Delimiter (i, 1);
+					}
+					break;
 				case '\n':
-					delimiterLength = 1;
-					return i;
+					yield return new Delimiter (i, 1);
+					break;
 				}
 			}
-			delimiterLength = 0;
-			return -1;
 		}
 		
 		internal static int CountLines (string text)
 		{
-			int textOffset = 0;
-			int result = 0;
-			int delimiter, delimiterLength;
-			while ((delimiter = FindDelimiter (text, textOffset, out delimiterLength)) >= 0) {
-				result++;
-				textOffset = delimiter+ delimiterLength;
-			}
-			return result;
+			return FindDelimiter (text).Count ();
 		}
 	}
 }
