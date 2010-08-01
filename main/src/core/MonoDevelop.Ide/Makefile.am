@@ -273,6 +273,7 @@ FILES =  \
 	MonoDevelop.Ide.CodeCompletion/CompletionData.cs \
 	MonoDevelop.Ide.CodeCompletion/CompletionDataList.cs \
 	MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs \
+	MonoDevelop.Ide.CodeCompletion/CompletionMatcher.cs \
 	MonoDevelop.Ide.CodeCompletion/CompletionWindowManager.cs \
 	MonoDevelop.Ide.CodeCompletion/DeclarationViewWindow.cs \
 	MonoDevelop.Ide.CodeCompletion/DisplayFlags.cs \

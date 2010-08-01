@@ -405,18 +405,20 @@ namespace MonoDevelop.Ide.CodeCompletion
 		class WordComparer : IComparer <KeyValuePair<int, string>>
 		{
 			string filterWord;
+			CompletionMatcher matcher;
 
 			public WordComparer (string filterWord)
 			{
 				this.filterWord = filterWord ?? "";
+				matcher = new CompletionMatcher (filterWord);
 			}
 			
 			public int Compare (KeyValuePair<int, string> xpair, KeyValuePair<int, string> ypair)
 			{
 				string x = xpair.Value;
 				string y = ypair.Value;
-				int[] xMatches = ListWidget.Match (filterWord, x) ?? new int[0];
-				int[] yMatches = ListWidget.Match (filterWord, y) ?? new int[0];
+				int[] xMatches = matcher.GetMatch (x) ?? new int[0];
+				int[] yMatches = matcher.GetMatch (y) ?? new int[0];
 				if (xMatches.Length < yMatches.Length) 
 					return 1;
 				if (xMatches.Length > yMatches.Length) 
@@ -455,13 +457,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 			// default - word with highest match rating in the list.
 			hasMismatches = true;
 			int idx = -1;
+			CompletionMatcher matcher = new CompletionMatcher (partialWord);
 			
 			List<KeyValuePair<int, string>> words = new List<KeyValuePair<int, string>> ();
 			if (!string.IsNullOrEmpty (partialWord)) {
 				for (int i = 0; i < list.filteredItems.Count; i++) {
 					int index = list.filteredItems[i];
 					string text = DataProvider.GetCompletionText (index);
-					if (!ListWidget.Matches (partialWord, text))
+					if (!matcher.IsMatch (text))
 						continue;
 					words.Add (new KeyValuePair <int,string> (i, text));
 				}
@@ -481,7 +484,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				// Search for history matches.
 				for (int i = 0; i < wordHistory.Count; i++) {
 					string historyWord = wordHistory[i];
-					if (ListWidget.Matches (partialWord, historyWord)) {
+					if (matcher.IsMatch (historyWord)) {
 						for (int xIndex = 0; xIndex < list.filteredItems.Count; xIndex++) {
 							string currentWord = DataProvider.GetCompletionText (list.filteredItems[xIndex]);
 							if (currentWord == historyWord) {

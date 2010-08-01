@@ -1361,6 +1361,7 @@
     <Compile Include="MonoDevelop.Components.AutoTest\AutoTestClientSession.cs" />
     <Compile Include="MonoDevelop.Components\DropDownBoxListWindow.cs" />
     <Compile Include="MonoDevelop.Components\DropDownBox.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionMatcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

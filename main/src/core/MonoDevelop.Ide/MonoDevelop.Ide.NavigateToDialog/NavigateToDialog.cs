@@ -310,7 +310,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			public ResultsDataSource results = new ResultsDataSource ();
 			
 			public bool IncludeFiles, IncludeTypes, IncludeMembers;
-			public bool UseFastMatch = false;
+			
+			public CompletionMatcher matcher = null;
 			
 			internal SearchResult CheckFile (ProjectFile file, string toMatch)
 			{
@@ -354,17 +355,19 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			{
 				MatchResult savedMatch;
 				if (!savedMatches.TryGetValue (name, out savedMatch)) {
-					if (UseFastMatch) {
-						if (MonoDevelop.Ide.CodeCompletion.ListWidget.Matches (toMatch, name)) {
-							bool doesMatch = CalcMatchRank (name, toMatch, out matchRank);
-							savedMatch = new MatchResult (doesMatch, matchRank);
-						} else {
-							savedMatch = new MatchResult (false, int.MinValue);
-						}
+					// new match algorithm:
+					int[] match;
+					if ((match = matcher.GetMatch (name)) != null) {
+						savedMatch = new MatchResult (true, match.Length > 0 ? -(match[0] + match.Length) : 0);
 					} else {
-						bool doesMatch = CalcMatchRank (name, toMatch, out matchRank);
-						savedMatch = new MatchResult (doesMatch, matchRank);
+						savedMatch = new MatchResult (false, int.MinValue);
 					}
+					
+					// old match algorithm:
+					/*
+					bool doesMatch = CalcMatchRank (name, toMatch, out matchRank);
+					savedMatch = new MatchResult (doesMatch, matchRank);
+					 */
 					savedMatches[name] = savedMatch;
 				}
 				
@@ -390,7 +393,12 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			newResult.pattern = arg.Key;
 			newResult.IncludeFiles = (NavigateToType & NavigateToType.Files) == NavigateToType.Files;
 			newResult.IncludeTypes = (NavigateToType & NavigateToType.Types) == NavigateToType.Types;
-			newResult.UseFastMatch = newResult.IncludeMembers = (NavigateToType & NavigateToType.Members) == NavigateToType.Members;
+			
+			string toMatch = newResult.pattern;
+			int i = toMatch.IndexOf (':');
+			if (i != -1)
+				toMatch = toMatch.Substring (0,i);
+			newResult.matcher = new CompletionMatcher (toMatch);
 			
 			foreach (SearchResult result in AllResults (worker, lastResult, newResult)) {
 				if (worker.CancellationPending)
@@ -558,7 +566,6 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				AddType (ct, list);
 		}
 		
-		
 		struct MatchResult 
 		{
 			public bool Match;
@@ -570,8 +577,6 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				this.Rank = rank;
 			}
 		}
-		
-		
 		
 		static bool CalcMatchRank (string name, string toMatch, out int matchRank)
 		{

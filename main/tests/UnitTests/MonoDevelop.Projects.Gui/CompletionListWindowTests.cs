@@ -385,6 +385,21 @@ namespace MonoDevelop.Projects.Gui
 		}
 		
 		[Test()]
+		public void TestAutoCompleteFileNames ()
+		{
+			string output = RunSimulation ("", "Doc.cs ", true, true, true, "Document.cs");
+
+			Assert.AreEqual ("Document.cs", output);
+			
+			output = RunSimulation ("", "cwid.cs ", true, true, true,
+				"Test.txt",
+				"CompletionWidget.cs", 
+				"CommandWindow.cs");
+
+			Assert.AreEqual ("CompletionWidget.cs", output);
+		}
+		
+		[Test()]
 		public void TestAutoCompleteEmptyMatchOff ()
 		{
 			string output = RunSimulation ("", " ", true, true, false,
@@ -427,13 +442,13 @@ namespace MonoDevelop.Projects.Gui
 			Assert.AreEqual ("/AbAb", output);
 			
 			output = RunSimulation ("", ".\n", true, false, false, punctuationData);
-			Assert.AreEqual ("AbAb", output);
+			Assert.AreEqual (",A.bAb", output);
 			
 			output = RunSimulation ("", "A\n", true, false, false, punctuationData);
 			Assert.AreEqual ("AbAb", output);
 			
-			output = RunSimulation ("", ",A.b\n", true, false, false, punctuationData);
-			Assert.AreEqual (",A.bAb", output);
+			output = RunSimulation ("", ",A..\n", true, false, false, punctuationData);
+			Assert.AreEqual (",A..bAb", output);
 		}
 		
 		[Test]
@@ -548,7 +563,7 @@ namespace MonoDevelop.Projects.Gui
 		[Test]
 		public void TestBug543984 ()
 		{
-			string output = RunSimulation ("", "foo b ", true, true, false, "foo bar", "foo bar baz");
+			string output = RunSimulation ("", "foo b\n", true, true, false, "foo bar", "foo bar baz");
 			Assert.AreEqual ("foo bar", output);
 		}
 		
