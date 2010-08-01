@@ -677,27 +677,31 @@ namespace MonoDevelop.Projects
 		{
 			if (base.CheckNeedsBuild (configuration))
 				return true;
-
-			DotNetProjectConfiguration configObj = (DotNetProjectConfiguration) GetConfiguration (configuration);
-			if (GeneratesDebugInfoFile && configObj != null && configObj.DebugMode) {
+			
+			return Files.Any (file => file.BuildAction == BuildAction.EmbeddedResource
+					&& String.Compare (Path.GetExtension (file.FilePath), ".resx", StringComparison.OrdinalIgnoreCase) == 0
+					&& MD1DotNetProjectHandler.IsResgenRequired (file.FilePath));
+		}
+		
+		protected internal override DateTime OnGetLastBuildTime (ConfigurationSelector configuration)
+		{
+			var outputBuildTime = base.OnGetLastBuildTime (configuration);
+			
+			//if the debug file is newer than the output file, use that as the build time
+			var conf = (DotNetProjectConfiguration) GetConfiguration (configuration);
+			if (GeneratesDebugInfoFile && conf != null && conf.DebugMode) {
 				string file = GetOutputFileName (configuration);
 				if (file != null) {
 					file = TargetRuntime.GetAssemblyDebugInfoFile (file);
-					FileInfo finfo = new FileInfo (file);
-					if (!finfo.Exists)
-						return true;
-					else if (finfo.LastWriteTime < GetLastBuildTime (configuration))
-						return true;
+					var finfo = new FileInfo (file);
+					if (finfo.Exists)  {
+						var debugFileBuildTime = finfo.LastWriteTime;
+						if (debugFileBuildTime > outputBuildTime)
+							return debugFileBuildTime;
+					}
 				}
 			}
-			
-			foreach (ProjectFile file in Files) {
-				if (file.BuildAction == BuildAction.EmbeddedResource && String.Compare (Path.GetExtension (file.FilePath), ".resx", true) == 0 && MD1DotNetProjectHandler.IsResgenRequired (file.FilePath)) {
-					return true;
-				}
-			}
-
-			return false;
+			return outputBuildTime;
 		}
 		
 		public IList<string> GetUserAssemblyPaths (ConfigurationSelector configuration)
