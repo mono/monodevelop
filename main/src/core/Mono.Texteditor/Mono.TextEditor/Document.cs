@@ -177,6 +177,8 @@ namespace Mono.TextEditor
 		//			Debug.Assert (0 <= offset && offset + count <= Length);
 			int oldLineCount = this.LineCount;
 			ReplaceEventArgs args = new ReplaceEventArgs (offset, count, value);
+			if (Partitioner != null)
+				Partitioner.TextReplacing (args);
 			OnTextReplacing (args);
 			value = args.Value;
 			/* insert/repla
@@ -184,7 +186,7 @@ namespace Mono.TextEditor
 				int endOffset = offset + count;
 				foldSegments = new List<FoldSegment> (foldSegments.Where (s => (s.Offset < offset || s.Offset >= endOffset) && 
 				                                                               (s.EndOffset <= offset || s.EndOffset >= endOffset)));
-			}*/			
+			}*/	
 			UndoOperation operation = null;
 			if (!isInUndo) {
 				operation = new UndoOperation (args, count > 0 ? GetTextAt (offset, count) : "");
@@ -200,6 +202,8 @@ namespace Mono.TextEditor
 			
 			buffer.Replace (offset, count, value);
 			splitter.TextReplaced (this, args);
+			if (Partitioner != null)
+				Partitioner.TextReplaced (args);
 			OnTextReplaced (args);
 			
 			UpdateUndoStackOnReplace (args);
@@ -1589,6 +1593,54 @@ namespace Mono.TextEditor
 			int codeCounter = 0;
 			return Mono.TextEditor.Utils.Diff.GetDiff<int> (this.GetDiffCodes (ref codeCounter, codeDictionary),
 				other.GetDiffCodes (ref codeCounter, codeDictionary));
+		}
+		#endregion
+		
+		#region Partitioner
+		IDocumentPartitioner partitioner;
+		public IDocumentPartitioner Partitioner {
+			get { 
+				return partitioner; 
+			}
+			set {
+				partitioner = value;
+				partitioner.Document = this; 
+			}
+		}
+		
+		public IEnumerable<ITypedSegment> GetPartitions (int offset, int length)
+		{
+			if (Partitioner == null)
+				return new ITypedSegment[0];
+			return Partitioner.GetPartitions (offset, length);
+		}
+		
+		public IEnumerable<ITypedSegment> GetPartitions (ISegment segment)
+		{
+			if (Partitioner == null)
+				return new ITypedSegment[0];
+			return Partitioner.GetPartitions (segment);
+		}
+		
+		public ITypedSegment GetPartition (int offset)
+		{
+			if (Partitioner == null)
+				return null;
+			return Partitioner.GetPartition (offset);
+		}
+		
+		public ITypedSegment GetPartition (DocumentLocation location)
+		{
+			if (Partitioner == null)
+				return null;
+			return Partitioner.GetPartition (location);
+		}
+		
+		public ITypedSegment GetPartition (int line, int column)
+		{
+			if (Partitioner == null)
+				return null;
+			return Partitioner.GetPartition (line, column);
 		}
 		#endregion
 	}

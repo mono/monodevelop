@@ -62,6 +62,7 @@ FILES =  \
 	Mono.TextEditor.Vi/ViMark.cs \
 	Mono.TextEditor.Vi/ViMode.cs \
 	Mono.TextEditor.Vi/ViWordFindStrategy.cs \
+	Mono.TextEditor/AbstractPartitioner.cs \
 	Mono.TextEditor/BookmarkActions.cs \
 	Mono.TextEditor/BookmarkMarker.cs \
 	Mono.TextEditor/BufferedTextReader.cs \
@@ -92,11 +93,13 @@ FILES =  \
 	Mono.TextEditor/IBracketMatcher.cs \
 	Mono.TextEditor/IBuffer.cs \
 	Mono.TextEditor/IconMargin.cs \
+	Mono.TextEditor/IDocumentPartitioner.cs \
 	Mono.TextEditor/InsertionCursorEditMode.cs \
 	Mono.TextEditor/ISearchEngine.cs \
 	Mono.TextEditor/ISegment.cs \
 	Mono.TextEditor/ITextEditorOptions.cs \
 	Mono.TextEditor/ITooltipProvider.cs \
+	Mono.TextEditor/ITypedSegment.cs \
 	Mono.TextEditor/IWordFindStrategy.cs \
 	Mono.TextEditor/LineEventArgs.cs \
 	Mono.TextEditor/LineSegment.cs \
@@ -123,7 +126,8 @@ FILES =  \
 	Mono.TextEditor/TextEditorOptions.cs \
 	Mono.TextEditor/TextLinkEditMode.cs \
 	Mono.TextEditor/TextMarker.cs \
-	Mono.TextEditor/TextViewMargin.cs 
+	Mono.TextEditor/TextViewMargin.cs \
+	Mono.TextEditor/TypedSegment.cs 
 	Mono.TextEditor.Highlighting/Match.cs \
 	Mono.TextEditor.Highlighting/Style.cs \
 	Mono.TextEditor.Highlighting/SyntaxMode.cs \
