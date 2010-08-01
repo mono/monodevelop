@@ -131,7 +131,7 @@ namespace Mono.TextEditor.Vi
 			}
 		}	
 		
-		enum CharacterClass
+		new enum CharacterClass
 		{
 			AlphaNumeric, // Should be roughly equivalent to [\w\d]
 			Whitespace,
