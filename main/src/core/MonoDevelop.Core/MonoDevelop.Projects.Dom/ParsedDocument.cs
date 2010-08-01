@@ -296,6 +296,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		public static IEnumerable<FoldingRegion> ToFolds (this IList<Comment> comments)
 		{
+			
+			
 			for (int i = 0; i < comments.Count; i++) {
 				Comment comment = comments[i];
 				
@@ -317,7 +319,7 @@ namespace MonoDevelop.Projects.Dom
 					
 					string txt;
 					if (endOffset > startOffset) {
-						txt = "/* " + comment.Text.Substring (startOffset, endOffset - startOffset) +  "... */";
+						txt = "/* " + SubstrEllipsize (comment.Text, startOffset, endOffset - startOffset) + " */";
 					} else {
 						txt = "/* */";
 					}
@@ -345,11 +347,13 @@ namespace MonoDevelop.Projects.Dom
 				if (j - i > 1) {
 					string txt;
 					if (comment.IsDocumentation) {
-						txt = "/// "; 
+						txt = "/// ..."; 
 						string cmtText = commentText.ToString ();
 						int idx = cmtText.IndexOf ("<summary>");
 						if (idx >= 0) {
 							int maxOffset = cmtText.IndexOf ("</summary>");
+							while (cmtText[maxOffset-1] == ' ')
+								maxOffset--;
 							if (maxOffset < 0)
 								maxOffset = cmtText.Length;
 							int startOffset = idx + "<summary>".Length;
@@ -366,11 +370,11 @@ namespace MonoDevelop.Projects.Dom
 									break;
 								endOffset++;
 							}
-							if (endOffset > startOffset) 
-								txt = "/// " + cmtText.Substring (startOffset, endOffset - startOffset) +  "...";
+							if (endOffset > startOffset)
+								txt = "/// " + SubstrEllipsize (cmtText, startOffset, endOffset - startOffset);
 						}
 					} else {
-						txt = "// " + comment.Text + "...";
+						txt = "// " + SubstrEllipsize (comment.Text, 0, comment.Text.Length);
 					}
 					
 					yield return new FoldingRegion (txt,
@@ -382,9 +386,35 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		static string SubstrEllipsize (string str, int start, int length)
+		{
+			//TODO: would be nice to ellipsize fold labels to a specific column, ideally the the formatting 
+			// policy's desired width. However, we would have to know the "real" start column, i.e. respecting 
+			// tab widths. Maybe that would work best by performing the ellipsis in the editor, instead of the parser.
+			const int TRUNC_LEN = 60;
+			
+			if (str.Length == 0 || length == 0)
+				return " ...";
+			
+			if (!(start == 0 && length <= TRUNC_LEN)) {
+				if (length > TRUNC_LEN) {
+					length = TRUNC_LEN;
+					int wordBoundaryLen = str.LastIndexOf (' ', length) - start;
+					if (wordBoundaryLen > TRUNC_LEN - 20)
+						length = wordBoundaryLen;
+				}
+				str = str.Substring (start, length);
+			}
+			
+			if (str[str.Length - 1] == '.')
+				return str + "..";
+			else if (char.IsPunctuation (str[str.Length - 1]))
+				return str + " ...";
+			return str + "...";
+		}
+		
 		public static IEnumerable<FoldingRegion> FlagIfInsideMembers (this IEnumerable<FoldingRegion> folds,
-		                                                          IEnumerable<IType> types,
-		                                                          Action<FoldingRegion> flagAction)
+			IEnumerable<IType> types, Action<FoldingRegion> flagAction)
 		{
 			foreach (FoldingRegion fold in folds) {
 				foreach (IType type in types) {
