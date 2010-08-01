@@ -26,6 +26,7 @@
 
 using System;
 using MonoDevelop.Core;
+using System.IO;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -33,13 +34,44 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		readonly string[] protocolsGit = {"git", "ssh", "http", "https", "ftp", "ftps", "rsync"};
 		
+		static string gitExe;
+		const string msysGitX86 = @"C:\Program Files (x86)\Git\bin\git.exe";
+		const string msysGit = @"C:\Program Files\Git\bin\git.exe";
+		
+		static GitVersionControl ()
+		{
+			string git = "git";
+			if (MonoDevelop.Core.PropertyService.IsWindows) {
+				if (File.Exists (msysGit))
+					git = msysGit;
+				else if (File.Exists (msysGitX86))
+					git = msysGitX86;
+			}
+			
+			try {
+				var p = System.Diagnostics.Process.Start (git, "--version");
+				p.WaitForExit ();
+				if (p.ExitCode == 0) {
+					gitExe = git;
+					return;
+				}
+			} catch (Exception) {
+				LoggingService.LogWarning ("Could not find git. Git addin will be disabled");
+				gitExe = null;
+			}
+		}
+		
+		internal static string GitExe {
+			get { return gitExe; }
+		}
+		
 		public override string Name {
 			get { return "Git"; }
 		}
 		
 		public override bool IsInstalled {
 			get {
-				return true;
+				return gitExe != null;
 			}
 		}
 		

@@ -174,7 +174,8 @@ namespace MonoDevelop.VersionControl.Git
 			Console.WriteLine ("> git " + cmd);
 #endif
 			StringWriter outw = new StringWriter ();
-			ProcessWrapper proc = Runtime.ProcessService.StartProcess ("git", "--no-pager " + cmd, path, outw, outw, null);
+			ProcessWrapper proc = Runtime.ProcessService.StartProcess (GitVersionControl.GitExe,
+				"--no-pager " + cmd, path, outw, outw, null);
 			proc.WaitForOutput ();
 			if (monitor != null)
 				monitor.Log.Write (outw.ToString ());
