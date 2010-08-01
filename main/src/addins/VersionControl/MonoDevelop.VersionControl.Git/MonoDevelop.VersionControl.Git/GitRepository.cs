@@ -173,9 +173,20 @@ namespace MonoDevelop.VersionControl.Git
 #if DEBUG_GIT
 			Console.WriteLine ("> git " + cmd);
 #endif
+			var psi = new System.Diagnostics.ProcessStartInfo (GitVersionControl.GitExe, "--no-pager " + cmd) {
+				WorkingDirectory = path,
+				RedirectStandardOutput = true,
+				RedirectStandardError = true,
+				RedirectStandardInput = false,
+				UseShellExecute = false,
+			};
+			if (PropertyService.IsWindows) {
+				//msysgit needs this to read global config
+				psi.EnvironmentVariables ["HOME"] = Environment.GetEnvironmentVariable("USERPROFILE");
+			}
+
 			StringWriter outw = new StringWriter ();
-			ProcessWrapper proc = Runtime.ProcessService.StartProcess (GitVersionControl.GitExe,
-				"--no-pager " + cmd, path, outw, outw, null);
+			ProcessWrapper proc = Runtime.ProcessService.StartProcess (psi, outw, outw, null);
 			proc.WaitForOutput ();
 			if (monitor != null)
 				monitor.Log.Write (outw.ToString ());
