@@ -78,7 +78,7 @@ namespace Mono.TextEditor
 			};
 		}
 		
-		void UpdateNode (RedBlackTree<TreeNode>.RedBlackTreeNode node)
+		static void UpdateNode (RedBlackTree<TreeNode>.RedBlackTreeNode node)
 		{
 			if (node == null)
 				return;
@@ -105,7 +105,7 @@ namespace Mono.TextEditor
 		public void Clear ()
 		{
 			tree.Root = new RedBlackTree<TreeNode>.RedBlackTreeNode (new TreeNode (0, 0));
-			tree.Root.value.TreeNode =  tree.Root;
+			tree.Root.value.treeNode =  tree.Root;
 			tree.Count = 1;
 		}
 		
@@ -117,7 +117,7 @@ namespace Mono.TextEditor
 			RedBlackTree<TreeNode>.RedBlackTreeIterator iter = segment != null ? segment.Iter : null;
 			if (iter == null) {
 				tree.Root = newNode;
-				result.TreeNode = tree.Root;
+				result.treeNode = tree.Root;
 				tree.Count = 1;
 				return result;
 			}
@@ -127,7 +127,7 @@ namespace Mono.TextEditor
 			} else {
 				tree.Insert (iter.node.right.OuterLeft, newNode, true);
 			}
-			result.TreeNode = newNode;
+			result.treeNode = newNode;
 			UpdateNode (newNode);
 			OnLineChanged (new LineEventArgs (result));
 			return result;

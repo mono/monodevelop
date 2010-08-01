@@ -27,19 +27,61 @@ using System;
 
 namespace Mono.TextEditor
 {
-	public class TypedSegment : Segment, ITypedSegment
+	public class TypedSegment : ISegment
 	{
-		#region ITypedSegment implementation
+		internal RedBlackTree<AbstractPartitioner.TreeNode>.RedBlackTreeNode treeNode;
+		
+		public RedBlackTree<AbstractPartitioner.TreeNode>.RedBlackTreeIterator Iter {
+			get {
+				return new RedBlackTree<AbstractPartitioner.TreeNode>.RedBlackTreeIterator (treeNode);
+			}
+		}
+		
+		public int Offset {
+			get {
+				return treeNode != null ? AbstractPartitioner.GetOffsetFromNode (treeNode) : -1;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+		
+		public int Length {
+			get;
+			set;
+		}
+
+		public int EndOffset {
+			get {
+				return Offset + Length;
+			}
+		}
+		
 		public string Type {
 			get;
 			set;
 		}
-		#endregion
 
-		public TypedSegment (int offset, int length, string type) : base (offset, length)
+		public TypedSegment (int length, string type)
 		{
+			this.Length = length;
 			this.Type = type;
+		}
+		
+		public bool Contains (int offset)
+		{
+			int o = Offset;
+			return o <= offset && offset < o + Length;
+		}
+
+		public bool Contains (ISegment segment)
+		{
+			return segment != null && Offset <= segment.Offset && segment.EndOffset <= EndOffset;
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[TypedSegment: Offset={0}, Length={1}, Type={2}]", Offset, Length, Type);
 		}
 	}
 }
-

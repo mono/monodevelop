@@ -36,7 +36,7 @@ namespace Mono.TextEditor
 {
 	public class LineSegment : ISegment
 	{
-		RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeNode treeNode;
+		internal RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeNode treeNode;
 
 		public RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator Iter {
 			get {
@@ -102,15 +102,6 @@ namespace Mono.TextEditor
 		public int EndOffset {
 			get {
 				return Offset + Length;
-			}
-		}
-
-		internal RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeNode TreeNode {
-			get {
-				return treeNode;
-			}
-			set {
-				treeNode = value;
 			}
 		}
 

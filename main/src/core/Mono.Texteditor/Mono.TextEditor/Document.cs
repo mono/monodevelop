@@ -1608,35 +1608,35 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public IEnumerable<ITypedSegment> GetPartitions (int offset, int length)
+		public IEnumerable<TypedSegment> GetPartitions (int offset, int length)
 		{
 			if (Partitioner == null)
-				return new ITypedSegment[0];
+				return new TypedSegment[0];
 			return Partitioner.GetPartitions (offset, length);
 		}
 		
-		public IEnumerable<ITypedSegment> GetPartitions (ISegment segment)
+		public IEnumerable<TypedSegment> GetPartitions (ISegment segment)
 		{
 			if (Partitioner == null)
-				return new ITypedSegment[0];
+				return new TypedSegment[0];
 			return Partitioner.GetPartitions (segment);
 		}
 		
-		public ITypedSegment GetPartition (int offset)
+		public TypedSegment GetPartition (int offset)
 		{
 			if (Partitioner == null)
 				return null;
 			return Partitioner.GetPartition (offset);
 		}
 		
-		public ITypedSegment GetPartition (DocumentLocation location)
+		public TypedSegment GetPartition (DocumentLocation location)
 		{
 			if (Partitioner == null)
 				return null;
 			return Partitioner.GetPartition (location);
 		}
 		
-		public ITypedSegment GetPartition (int line, int column)
+		public TypedSegment GetPartition (int line, int column)
 		{
 			if (Partitioner == null)
 				return null;

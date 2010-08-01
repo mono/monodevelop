@@ -80,7 +80,7 @@ namespace Mono.TextEditor
 		/// <param name='length'>
 		/// The length.
 		/// </param>
-		IEnumerable<ITypedSegment> GetPartitions (int offset, int length);
+		IEnumerable<TypedSegment> GetPartitions (int offset, int length);
 		
 		/// <summary>
 		/// Gets the partitions in a specified segment.
@@ -91,7 +91,7 @@ namespace Mono.TextEditor
 		/// <param name='segment'>
 		/// The segment to get the partitions from.
 		/// </param>
-		IEnumerable<ITypedSegment> GetPartitions (ISegment segment);
+		IEnumerable<TypedSegment> GetPartitions (ISegment segment);
 		
 		/// <summary>
 		/// Gets the partition from an offset.
@@ -102,7 +102,7 @@ namespace Mono.TextEditor
 		/// <param name='offset'>
 		/// The offset inside the partition.
 		/// </param>
-		ITypedSegment GetPartition (int offset);
+		TypedSegment GetPartition (int offset);
 		
 		/// <summary>
 		/// Gets the partition from a location.
@@ -113,7 +113,7 @@ namespace Mono.TextEditor
 		/// <param name='location'>
 		/// The location inside the partition.
 		/// </param>
-		ITypedSegment GetPartition (DocumentLocation location);
+		TypedSegment GetPartition (DocumentLocation location);
 		
 		/// <summary>
 		/// Gets the partition from a location.
@@ -127,7 +127,7 @@ namespace Mono.TextEditor
 		/// <param name='column'>
 		/// The column inside the partition.
 		/// </param>
-		ITypedSegment GetPartition (int line, int column);
+		TypedSegment GetPartition (int line, int column);
 	}
 }
 

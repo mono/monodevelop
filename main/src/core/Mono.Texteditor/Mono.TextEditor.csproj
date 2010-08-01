@@ -173,8 +173,8 @@
     <Compile Include="Mono.TextEditor.Utils\Diff.cs" />
     <Compile Include="Mono.TextEditor\IDocumentPartitioner.cs" />
     <Compile Include="Mono.TextEditor\AbstractPartitioner.cs" />
-    <Compile Include="Mono.TextEditor\ITypedSegment.cs" />
     <Compile Include="Mono.TextEditor\TypedSegment.cs" />
+    <Compile Include="Mono.TextEditor.Highlighting\HighlightingPartitioner.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

@@ -22,6 +22,7 @@ FILES =  \
 	Mono.TextEditor.Highlighting/ChunkStyle.cs \
 	Mono.TextEditor.Highlighting/CloneableStack.cs \
 	Mono.TextEditor.Highlighting/DefaultStyle.cs \
+	Mono.TextEditor.Highlighting/HighlightingPartitioner.cs \
 	Mono.TextEditor.Highlighting/IXmlProvider.cs \
 	Mono.TextEditor.Highlighting/JaySyntaxMode.cs \
 	Mono.TextEditor.Highlighting/Keywords.cs \
@@ -99,7 +100,6 @@ FILES =  \
 	Mono.TextEditor/ISegment.cs \
 	Mono.TextEditor/ITextEditorOptions.cs \
 	Mono.TextEditor/ITooltipProvider.cs \
-	Mono.TextEditor/ITypedSegment.cs \
 	Mono.TextEditor/IWordFindStrategy.cs \
 	Mono.TextEditor/LineEventArgs.cs \
 	Mono.TextEditor/LineSegment.cs \
