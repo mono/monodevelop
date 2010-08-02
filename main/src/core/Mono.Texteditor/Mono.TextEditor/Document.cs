@@ -1587,12 +1587,12 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
-		public IEnumerable<Hunk> Diff (Document other)
+		public IEnumerable<Hunk> Diff (Document changedDocument)
 		{
 			Dictionary<string, int> codeDictionary = new Dictionary<string, int> ();
 			int codeCounter = 0;
 			return Mono.TextEditor.Utils.Diff.GetDiff<int> (this.GetDiffCodes (ref codeCounter, codeDictionary),
-				other.GetDiffCodes (ref codeCounter, codeDictionary));
+				changedDocument.GetDiffCodes (ref codeCounter, codeDictionary));
 		}
 		#endregion
 		

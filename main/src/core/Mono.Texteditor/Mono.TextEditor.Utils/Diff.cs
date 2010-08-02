@@ -102,19 +102,55 @@ namespace Mono.TextEditor.Utils
 	public struct Hunk
 	{
 		public static readonly Hunk Empty = new Hunk (-1, -1, 0, 0);
+		
+		public bool IsEmpty {
+			get {
+				return InsertStart < 0;
+			}
+		}
+		
+		public readonly int InsertStart;
+		public readonly int RemoveStart;
 
-		public readonly int StartA;
-		public readonly int StartB;
+		public readonly int Removed;
+		public readonly int Inserted;
 
-		public readonly int DeletedA;
-		public readonly int InsertedB;
-
-		public Hunk (int startA, int startB, int deletedA, int insertedB)
+		public Hunk (int insertStart, int removeStart, int removed, int inserted)
 		{
-			this.StartA = startA;
-			this.StartB = startB;
-			this.DeletedA = deletedA;
-			this.InsertedB = insertedB;
+			this.InsertStart = insertStart;
+			this.RemoveStart = removeStart;
+			this.Removed = removed;
+			this.Inserted = inserted;
+		}
+
+		public static bool operator ==(Hunk left, Hunk right)
+		{
+			return left.InsertStart == right.InsertStart && left.RemoveStart == right.RemoveStart &&
+				left.Removed == right.Removed && left.Inserted == right.Inserted;
+		}
+	
+		public static bool operator !=(Hunk left, Hunk right)
+		{
+			return !(left == right);
+		}
+
+		public override bool Equals (object obj)
+		{
+			if (!(obj is Hunk))
+				return false;
+			return ((Hunk)obj) == this;
+		}
+		
+		public override int GetHashCode ()
+		{
+			return InsertStart ^ RemoveStart ^ Inserted ^ Removed;
+		}
+		
+		public override string ToString ()
+		{
+			if (IsEmpty)
+				return"[Hunk: Empty]";
+			return string.Format ("[Hunk: InsertStart={0}, RemoveStart={1}, Removed={2}, Inserted={3}]", InsertStart, RemoveStart, Removed, Inserted);
 		}
 	}
 	
@@ -152,13 +188,13 @@ namespace Mono.TextEditor.Utils
 			return GetDiff (left != null ? left.ToCharArray () : new char[0], right != null ? right.ToCharArray () : new char[0]);
 		}
 
-		internal static IEnumerable<Hunk> GetDiff<T> (T[] arrayA, T[] arrayB)
+		internal static IEnumerable<Hunk> GetDiff<T> (T[] baseArray, T[] changedArray)
 		{
 			// The A-Version of the data (original data) to be compared.
-			var dataA = new DiffData<T> (arrayA);
+			var dataA = new DiffData<T> (baseArray);
 
 			// The B-Version of the data (modified data) to be compared.
-			var dataB = new DiffData<T> (arrayB);
+			var dataB = new DiffData<T> (changedArray);
 
 			int MAX = dataA.Length + dataB.Length + 1;
 			/// vector for the (0,0) to (x,y) search
@@ -174,12 +210,15 @@ namespace Mono.TextEditor.Utils
 		/// producing an edit script in forward order.
 		/// </summary>
 		/// dynamic array
-		static IEnumerable<Hunk> CreateDiffs<T> (DiffData<T> dataA, DiffData<T> dataB)
+		static IEnumerable<Hunk> CreateDiffs<T> (DiffData<T> baseData, DiffData<T> changedData)
 		{
 			int lineA = 0;
 			int lineB = 0;
-			while (lineA < dataA.Length || lineB < dataB.Length) {
-				if (lineA < dataA.Length && !dataA.Modified[lineA] && lineB < dataB.Length && !dataB.Modified[lineB]) {
+			while (lineA < baseData.Length || lineB < changedData
+		.Length) {
+				if (lineA < baseData.Length && !baseData.Modified[lineA] && lineB < changedData
+		.Length && !changedData
+		.Modified[lineB]) {
 					// equal lines
 					lineA++;
 					lineB++;
@@ -189,11 +228,14 @@ namespace Mono.TextEditor.Utils
 					int startA = lineA;
 					int startB = lineB;
 
-					while (lineA < dataA.Length && (lineB >= dataB.Length || dataA.Modified[lineA]))
+					while (lineA < baseData.Length && (lineB >= changedData
+		.Length || baseData.Modified[lineA]))
 						// while (LineA < DataA.Length && DataA.Modified[LineA])
 						lineA++;
 
-					while (lineB < dataB.Length && (lineA >= dataA.Length || dataB.Modified[lineB]))
+					while (lineB < changedData
+		.Length && (lineA >= baseData.Length || changedData
+		.Modified[lineB]))
 						// while (LineB < DataB.Length && DataB.Modified[LineB])
 						lineB++;
 
