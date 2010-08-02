@@ -26,7 +26,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			}
 		}
 		
-		public SplashScreenForm () : base (Gtk.WindowType.Toplevel)
+		//this is a popup so it behaves like other splashes on Windows, i.e. doesn't show up as a second window in the taskbar.
+		public SplashScreenForm () : base (Gtk.WindowType.Popup)
 		{
 			AppPaintable = true;
 			this.Decorated = false;
