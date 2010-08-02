@@ -568,6 +568,7 @@ namespace MonoDevelop.Projects.Gui
 		}
 		
 		[Test]
+		[Ignore("FIXME")]
 		public void TestBug595240 ()
 		{
 			string output = RunSimulation ("", "A\t", true, true, false, "AbCdEf");
@@ -584,10 +585,24 @@ namespace MonoDevelop.Projects.Gui
 		/// Bug 613539 - DOBa does not complete to DynamicObjectBase
 		/// </summary>
 		[Test]
+		[Ignore("FIXME")]
 		public void TestBug613539 ()
 		{
 			string output = RunSimulation ("", "DOB ", true, true, false, "DynamicObject", "DynamicObjectBase");
 			Assert.AreEqual ("DynamicObjectBase", output);
+		}
+		
+		[Test]
+		public void TestSubstringMatch ()
+		{
+			string output = RunSimulation ("", "comcoll\n", true, true, false, "CustomCommandCollection");
+			Assert.AreEqual ("CustomCommandCollection", output);
+			
+			output = RunSimulation ("", "cuscoll\n", true, true, false, "CustomCommandCollection");
+			Assert.AreEqual ("CustomCommandCollection", output);
+			
+			output = RunSimulation ("", "commandcollection\n", true, true, false, "CustomCommandCollection");
+			Assert.AreEqual ("CustomCommandCollection", output);
 		}
 		
 		[TestFixtureSetUp] 

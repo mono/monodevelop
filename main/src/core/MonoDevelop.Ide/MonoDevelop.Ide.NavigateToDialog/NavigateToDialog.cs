@@ -46,6 +46,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.CodeCompletion;
 using System.ComponentModel;
+using System.Linq;
 
 namespace MonoDevelop.Ide.NavigateToDialog
 {
@@ -175,7 +176,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		void StartCollectTypes ()
 		{
-			collectTypes = new Thread (new ThreadStart (delegate {
+			ThreadPool.QueueUserWorkItem (delegate {
 				types = GetTypes ();
 				if (isAbleToSearchMembers) {
 					getMembersTimer.BeginTiming ();
@@ -192,22 +193,14 @@ namespace MonoDevelop.Ide.NavigateToDialog
 						getMembersTimer.EndTiming ();
 					}
 				}
-			}));
-			collectTypes.IsBackground = true;
-			collectTypes.Name = "Navigate to: Collect Types and members";
-			collectTypes.Priority = ThreadPriority.Lowest;
-			collectTypes.Start ();
+			});
 		}
 		
 		void StartCollectFiles ()
 		{
-			collectFiles= new Thread (new ThreadStart (delegate {
+			ThreadPool.QueueUserWorkItem (delegate {
 				files = GetFiles ();
-			}));
-			collectFiles.IsBackground = true;
-			collectFiles.Name = "Navigate to: Collect Files";
-			collectFiles.Priority = ThreadPriority.Lowest;
-			collectFiles.Start ();
+			});
 		}
 		
 		void SetupTreeView ()
@@ -307,68 +300,57 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			public List<IMember> filteredMembers  = null;
 			
 			public string pattern = null;
+			public bool isGotoFilePattern;
 			public ResultsDataSource results = new ResultsDataSource ();
 			
 			public bool IncludeFiles, IncludeTypes, IncludeMembers;
 			
 			public CompletionMatcher matcher = null;
 			
-			internal SearchResult CheckFile (ProjectFile file, string toMatch)
+			internal SearchResult CheckFile (ProjectFile file)
 			{
 				int rank;
 				string matchString = System.IO.Path.GetFileName (file.FilePath);
-				if (MatchName (matchString, toMatch, out rank)) 
-					return new FileSearchResult (toMatch, matchString, rank, file, true);
+				if (MatchName (matchString, out rank)) 
+					return new FileSearchResult (pattern, matchString, rank, file, true);
 				
 				matchString = FileSearchResult.GetRelProjectPath (file);
-				if (MatchName (FileSearchResult.GetRelProjectPath (file), toMatch, out rank)) 
-					return new FileSearchResult (toMatch, matchString, rank, file, false);
+				if (MatchName (FileSearchResult.GetRelProjectPath (file), out rank)) 
+					return new FileSearchResult (pattern, matchString, rank, file, false);
 				
 				return null;
 			}
 			
-			internal SearchResult CheckType (IType type, string toMatch)
+			internal SearchResult CheckType (IType type)
 			{
 				int rank;
-				if (MatchName (type.Name, toMatch, out rank))
-					return new TypeSearchResult (toMatch, type.Name, rank, type, false);
-				if (MatchName (type.FullName, toMatch, out rank))
-					return new TypeSearchResult (toMatch, type.FullName, rank, type, true);
+				if (MatchName (type.Name, out rank))
+					return new TypeSearchResult (pattern, type.Name, rank, type, false);
+				if (MatchName (type.FullName, out rank))
+					return new TypeSearchResult (pattern, type.FullName, rank, type, true);
 				return null;
 			}
 			
-			internal SearchResult CheckMember (IMember member, string toMatch)
+			internal SearchResult CheckMember (IMember member)
 			{
 				int rank;
 				bool useDeclaringTypeName = member is IMethod && (((IMethod)member).IsConstructor || ((IMethod)member).IsFinalizer);
 				string memberName = useDeclaringTypeName ? member.DeclaringType.Name : member.Name;
-				if (MatchName (memberName, toMatch, out rank))
-					return new MemberSearchResult (toMatch, memberName, rank, member, false);
+				if (MatchName (memberName, out rank))
+					return new MemberSearchResult (pattern, memberName, rank, member, false);
 				memberName = useDeclaringTypeName ? member.DeclaringType.FullName : member.FullName;
-				if (MatchName (memberName, toMatch, out rank))
-					return new MemberSearchResult (toMatch, memberName, rank, member, true);
+				if (MatchName (memberName, out rank))
+					return new MemberSearchResult (pattern, memberName, rank, member, true);
 				return null;
 			}
 			
 			Dictionary<string, MatchResult> savedMatches = new Dictionary<string, MatchResult> ();
-			bool MatchName (string name, string toMatch, out int matchRank)
+			bool MatchName (string name, out int matchRank)
 			{
 				MatchResult savedMatch;
 				if (!savedMatches.TryGetValue (name, out savedMatch)) {
-					// new match algorithm:
-					int[] match;
-					if ((match = matcher.GetMatch (name)) != null) {
-						savedMatch = new MatchResult (true, match.Length > 0 ? -(match[0] + match.Length) : 0);
-					} else {
-						savedMatch = new MatchResult (false, int.MinValue);
-					}
-					
-					// old match algorithm:
-					/*
-					bool doesMatch = CalcMatchRank (name, toMatch, out matchRank);
-					savedMatch = new MatchResult (doesMatch, matchRank);
-					 */
-					savedMatches[name] = savedMatch;
+					bool doesMatch = matcher.CalcMatchRank (name, out matchRank);
+					savedMatches[name] = savedMatch = new MatchResult (doesMatch, matchRank);
 				}
 				
 				matchRank = savedMatch.Rank;
@@ -395,10 +377,12 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			newResult.IncludeTypes = (NavigateToType & NavigateToType.Types) == NavigateToType.Types;
 			newResult.IncludeMembers = (NavigateToType & NavigateToType.Members) == NavigateToType.Members;
 			
-			string toMatch = newResult.pattern;
+			string toMatch = arg.Key;
 			int i = toMatch.IndexOf (':');
-			if (i != -1)
+			if (i != -1) {
 				toMatch = toMatch.Substring (0,i);
+				newResult.isGotoFilePattern = true;
+			}
 			newResult.matcher = new CompletionMatcher (toMatch);
 			
 			foreach (SearchResult result in AllResults (worker, lastResult, newResult)) {
@@ -418,38 +402,33 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		IEnumerable<SearchResult> AllResults (BackgroundWorker worker, WorkerResult lastResult, WorkerResult newResult)
 		{
-			string toMatch = newResult.pattern;
-			int i = toMatch.IndexOf (':');
-			if (i != -1)
-				toMatch = toMatch.Substring (0,i);
-			
 			// Search files
 			if (newResult.IncludeFiles) {
 				newResult.filteredFiles = new List<ProjectFile> ();
-				bool startsWithLastFilter = lastResult.pattern != null && toMatch.StartsWith (lastResult.pattern) && lastResult.filteredFiles != null;
+				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredFiles != null;
 				IEnumerable<ProjectFile> allFiles = startsWithLastFilter ? lastResult.filteredFiles : files;
 				foreach (ProjectFile file in allFiles) {
 					if (worker.CancellationPending) 
 						yield break;
-					SearchResult curResult = newResult.CheckFile (file, toMatch);
+					SearchResult curResult = newResult.CheckFile (file);
 					if (curResult != null) {
 						newResult.filteredFiles.Add (file);
 						yield return curResult;
 					}
 				}
 			}
-			if (i >= 0)
+			if (newResult.isGotoFilePattern)
 				yield break;
 			
 			// Search Types
 			if (newResult.IncludeTypes) {
 				newResult.filteredTypes = new List<IType> ();
-				bool startsWithLastFilter = lastResult.pattern != null && toMatch.StartsWith (lastResult.pattern) && lastResult.filteredTypes != null;
+				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredTypes != null;
 				List<IType> allTypes = startsWithLastFilter ? lastResult.filteredTypes : types;
 				foreach (IType type in allTypes) {
 					if (worker.CancellationPending)
 						yield break;
-					SearchResult curResult = newResult.CheckType (type, toMatch);
+					SearchResult curResult = newResult.CheckType (type);
 					if (curResult != null) {
 						newResult.filteredTypes.Add (type);
 						yield return curResult;
@@ -460,12 +439,12 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			// Search members
 			if (newResult.IncludeMembers) {
 				newResult.filteredMembers = new List<IMember> ();
-				bool startsWithLastFilter = lastResult.pattern != null && toMatch.StartsWith (lastResult.pattern) && lastResult.filteredMembers != null;
+				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredMembers != null;
 				List<IMember> allMembers = startsWithLastFilter ? lastResult.filteredMembers : members;
 				foreach (IMember member in allMembers) {
 					if (worker.CancellationPending)
 						yield break;
-					SearchResult curResult = newResult.CheckMember (member, toMatch);
+					SearchResult curResult = newResult.CheckMember (member);
 					if (curResult != null) {
 						newResult.filteredMembers.Add (member);
 						yield return curResult;
