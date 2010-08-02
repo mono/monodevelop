@@ -391,10 +391,10 @@ namespace Mono.TextEditor
 			
 			if (keyBindings.ContainsKey (keyCode)) {
 				RunAction (keyBindings [keyCode]);
-			} else if (unicodeKey != 0) {
+			} else if (unicodeKey != 0 && modifier == Gdk.ModifierType.None || key == Gdk.Key.space && (modifier & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask) {
 				InsertCharacter (unicodeKey);
 			}
 		}
-
+		     
 	}
 }
