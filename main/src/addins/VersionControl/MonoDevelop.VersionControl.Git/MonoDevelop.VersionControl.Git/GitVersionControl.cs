@@ -49,9 +49,16 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			
 			try {
-				var p = System.Diagnostics.Process.Start (git, "--version");
-				p.WaitForExit ();
-				if (p.ExitCode == 0) {
+				var psi = new System.Diagnostics.ProcessStartInfo (git, "--version") {
+					UseShellExecute = false,
+					RedirectStandardOutput = true,
+					RedirectStandardError = true,
+				};
+				
+				StringWriter outw = new StringWriter ();
+				var proc = Runtime.ProcessService.StartProcess (psi, outw, outw, null);
+				proc.WaitForOutput ();
+				if (proc.ExitCode == 0) {
 					gitExe = git;
 					return;
 				}
