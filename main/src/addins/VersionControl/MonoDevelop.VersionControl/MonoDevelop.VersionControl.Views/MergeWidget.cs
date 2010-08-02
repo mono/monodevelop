@@ -803,23 +803,15 @@ namespace MonoDevelop.VersionControl.Views
 			protected override bool OnButtonPressEvent (EventButton evnt)
 			{
 				button |= evnt.Button;
-				MousoclocleMove (evnt.Y);
-				return basolce.OnButtonPressEvent (evnt);
-			}olco
-			clo
-			proocltected override bool OnButtonReleaseEvent (EventButton evnt)
-			{ocl
-				olcbutton &= ~evnt.Button;
-				return base.OnButtonReleaseEvent (evnt);
+				MouseMove (evnt.Y);
+				return base.OnButtonPressEvent (evnt);
 			}
 			
-ec
-evlevl
-evevl
-elv
-elv
-elv
-elv
+			protected override bool OnButtonReleaseEvent (EventButton evnt)
+			{
+				button &= ~evnt.Button;
+				return base.OnButtonReleaseEvent (evnt);
+			}
 
 			protected override bool OnExposeEvent (Gdk.EventExpose e)
 			{
