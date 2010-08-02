@@ -393,6 +393,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			newResult.pattern = arg.Key;
 			newResult.IncludeFiles = (NavigateToType & NavigateToType.Files) == NavigateToType.Files;
 			newResult.IncludeTypes = (NavigateToType & NavigateToType.Types) == NavigateToType.Types;
+			newResult.IncludeMembers = (NavigateToType & NavigateToType.Members) == NavigateToType.Members;
 			
 			string toMatch = newResult.pattern;
 			int i = toMatch.IndexOf (':');
