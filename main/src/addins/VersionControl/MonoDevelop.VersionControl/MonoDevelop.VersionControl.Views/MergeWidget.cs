@@ -199,7 +199,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			this.CreateDiff ();
 			this.middleEditor.Document.TextReplaced += delegate {
-				this.CreateDiff ();
+				this.UpdateDiff ();
 			};
 		}
 		
@@ -235,7 +235,6 @@ namespace MonoDevelop.VersionControl.Views
 				this.StartOffset = startOffset;
 				this.EndOffset = endOffset;
 			}
-
 		}
 
 		internal static void EditorFocusIn (object sender, FocusInEventArgs args)
@@ -264,40 +263,77 @@ namespace MonoDevelop.VersionControl.Views
 
 		List<TextEditorData> localUpdate = new List<TextEditorData> ();
 		List<Conflict> currentConflicts = new List<Conflict> ();
-		List<Mono.TextEditor.Utils.Hunk> leftConflicts = new List<Mono.TextEditor.Utils.Hunk> ();
-		List<Mono.TextEditor.Utils.Hunk> rightConflicts = new List<Mono.TextEditor.Utils.Hunk> ();
+		Dictionary<Conflict, Mono.TextEditor.Utils.Hunk> leftConflicts = new Dictionary<Conflict, Mono.TextEditor.Utils.Hunk> ();
+		Dictionary<Conflict, Mono.TextEditor.Utils.Hunk> rightConflicts = new Dictionary<Conflict, Mono.TextEditor.Utils.Hunk> ();
+
+		public void UpdateDiff ()
+		{
+			int curOffset = 0;
+			
+			var conflicts = new List<Conflict> (Conflicts (middleEditor.Document));
+			
+			leftDiff  = new List<Mono.TextEditor.Utils.Hunk> (middleEditor.Document.Diff (leftEditor.Document));
+			rightDiff = new List<Mono.TextEditor.Utils.Hunk> (middleEditor.Document.Diff (rightEditor.Document));
+			
+			LineSegment line;
+			leftDiff.RemoveAll (item => null != (line = middleEditor.Document.GetLine (item.StartA)) && 
+				conflicts.Any (c => c.StartOffset <= line.Offset && line.Offset < c.EndOffset));
+			rightDiff.RemoveAll (item => null != (line = middleEditor.Document.GetLine (item.StartA)) && 
+				conflicts.Any (c => c.StartOffset <= line.Offset && line.Offset < c.EndOffset));
+			
+			int j = 0;
+			for (int i = 0; i < currentConflicts.Count && j < conflicts.Count;) {
+				var curConflict = currentConflicts[i];
+				var newConflict = conflicts[j];
+				
+				if (curConflict.EndOffset - curConflict.StartOffset == newConflict.EndOffset - newConflict.StartOffset) {
+					Console.WriteLine ("Found conflict !!");
+					var left = leftConflicts[curConflict];
+					var right = rightConflicts[curConflict];
+					
+					int middleA = middleEditor.Document.OffsetToLineNumber (newConflict.StartOffset);
+					int middleB = middleEditor.Document.OffsetToLineNumber (newConflict.EndOffset);
+				
+					leftDiff.Add (new Mono.TextEditor.Utils.Hunk (middleA, left.StartB, middleB - middleA, left.InsertedB));
+					rightDiff.Add (new Mono.TextEditor.Utils.Hunk (middleA, right.StartB, middleB - middleA, right.InsertedB));
+					i++;j++;
+				} else {
+					j++;
+				}
+			}
+			QueueDraw ();
+		}
 		
 		public void CreateDiff ()
 		{
 			int curOffset = 0;
 			
 			var conflicts = new List<Conflict> (Conflicts (middleEditor.Document));
-			if (!conflicts.Equals (currentConflicts)) {
-				currentConflicts = conflicts;
-				leftConflicts.Clear ();
-				rightConflicts.Clear ();
+			currentConflicts = conflicts;
+			leftConflicts.Clear ();
+			rightConflicts.Clear ();
+			
+			leftEditor.Document.Text = "";
+			rightEditor.Document.Text = "";
+			foreach (Conflict conflict in currentConflicts) {
+				string above = middleEditor.Document.GetTextBetween (curOffset, conflict.StartOffset);
+				leftEditor.Insert (leftEditor.Document.Length, above);
+				int leftA = leftEditor.Document.LineCount - 1;
+				leftEditor.Insert (leftEditor.Document.Length, middleEditor.Document.GetTextAt (conflict.MySegment));
+				int leftB = leftEditor.Document.LineCount - 1;
 				
-				leftEditor.Document.Text = "";
-				rightEditor.Document.Text = "";
-				foreach (Conflict conflict in currentConflicts) {
-					string above = middleEditor.Document.GetTextBetween (curOffset, conflict.StartOffset);
-					leftEditor.Insert (leftEditor.Document.Length, above);
-					int leftA = leftEditor.Document.LineCount - 1;
-					leftEditor.Insert (leftEditor.Document.Length, middleEditor.Document.GetTextAt (conflict.MySegment));
-					int leftB = leftEditor.Document.LineCount - 1;
-					
-					rightEditor.Insert (rightEditor.Document.Length, above);
-					int rightA = rightEditor.Document.LineCount - 1;
-					rightEditor.Insert (rightEditor.Document.Length, middleEditor.Document.GetTextAt (conflict.TheirSegment));
-					int rightB = rightEditor.Document.LineCount - 1;
-					int middleA = middleEditor.Document.OffsetToLineNumber (conflict.StartOffset);
-					int middleB = middleEditor.Document.OffsetToLineNumber (conflict.EndOffset);
-					
-					leftConflicts.Add (new Mono.TextEditor.Utils.Hunk (middleA, leftA, middleB - middleA, leftB - leftA));
-					rightConflicts.Add (new Mono.TextEditor.Utils.Hunk (middleA, rightA, middleB - middleA, rightB - rightA));
-					
-					curOffset = conflict.EndOffset;
-				}
+				rightEditor.Insert (rightEditor.Document.Length, above);
+				int rightA = rightEditor.Document.LineCount - 1;
+				rightEditor.Insert (rightEditor.Document.Length, middleEditor.Document.GetTextAt (conflict.TheirSegment));
+				int rightB = rightEditor.Document.LineCount - 1;
+				
+				int middleA = middleEditor.Document.OffsetToLineNumber (conflict.StartOffset);
+				int middleB = middleEditor.Document.OffsetToLineNumber (conflict.EndOffset);
+				
+				leftConflicts[conflict] = new Mono.TextEditor.Utils.Hunk (middleA, leftA, middleB - middleA, leftB - leftA);
+				rightConflicts[conflict] = new Mono.TextEditor.Utils.Hunk (middleA, rightA, middleB - middleA, rightB - rightA);
+				
+				curOffset = conflict.EndOffset;
 			}
 			
 			string lastPart = middleEditor.Document.GetTextBetween (curOffset, middleEditor.Document.Length);
@@ -307,54 +343,16 @@ namespace MonoDevelop.VersionControl.Views
 			leftDiff  = new List<Mono.TextEditor.Utils.Hunk> (middleEditor.Document.Diff (leftEditor.Document));
 			rightDiff = new List<Mono.TextEditor.Utils.Hunk> (middleEditor.Document.Diff (rightEditor.Document));
 			
-/*			foreach (var item in leftDiff) {
-				Console.WriteLine ("@@ -" + item.StartA + "," + item.DeletedA + " +" + item.StartB + "," + item.InsertedB + " @@");
-				for (int i = item.StartA; i < item.StartA + item.DeletedA; i++) {
-					Console.Write ("-" + middleEditor.GetTextEditorData ().GetLineText (i));
-				}
-				for (int i = item.StartB; i < item.StartB + item.InsertedB; i++) {
-					Console.Write ("+" + leftEditor.GetTextEditorData ().GetLineText (i));
-				}
-			}
-		*/
-			
 			LineSegment line;
 			leftDiff.RemoveAll (item => null != (line = middleEditor.Document.GetLine (item.StartA)) && 
 				currentConflicts.Any (c => c.StartOffset <= line.Offset && line.Offset < c.EndOffset));
 			rightDiff.RemoveAll (item => null != (line = middleEditor.Document.GetLine (item.StartA)) && 
 				currentConflicts.Any (c => c.StartOffset <= line.Offset && line.Offset < c.EndOffset));
 			
-			leftDiff.AddRange (leftConflicts);
-			rightDiff.AddRange (rightConflicts);
-			
-			QueueDraw ();
+			leftDiff.AddRange (leftConflicts.Values);
+			rightDiff.AddRange (rightConflicts.Values);
 		}
-
-		Dictionary<Mono.TextEditor.Document, TextEditorData> dict = new Dictionary<Mono.TextEditor.Document, TextEditorData> ();
-		public void SetLocal (TextEditorData data)
-		{
-			dict[data.Document] = data;
-			data.Document.ReadOnly = false;
-			data.Document.TextReplaced += HandleDataDocumentTextReplaced;
-			localUpdate.Add (data);
-			CreateDiff ();
-		}
-
-		void HandleDataDocumentTextReplaced (object sender, ReplaceEventArgs e)
-		{
-			var data = dict[(Document)sender];
-			localUpdate.Remove (data);
-			localUpdate.Add (data);
-			CreateDiff ();
-		}
-
-		public void RemoveLocal (TextEditorData data)
-		{
-			localUpdate.Remove (data);
-			data.Document.ReadOnly = true;
-			data.Document.TextReplaced -= HandleDataDocumentTextReplaced;
-		}
-
+		
 		void HandleAdjustmentChanged (object sender, EventArgs e)
 		{
 			Adjustment adjustment = (Adjustment)sender;
@@ -475,9 +473,9 @@ namespace MonoDevelop.VersionControl.Views
 
 		public static Cairo.Color GetColor (Mono.TextEditor.Utils.Hunk item, double alpha)
 		{
-			if (item.DeletedA == 0)
+			if (item.InsertedB == 0)
 				return new Cairo.Color (0.4, 0.8, 0.4, alpha);
-			if (item.InsertedB == 0) 
+			if (item.DeletedA == 0) 
 				return new Cairo.Color (0.8, 0.4, 0.4, alpha);
 			return new Cairo.Color (0.4, 0.8, 0.8, alpha);
 		}
@@ -580,92 +578,6 @@ namespace MonoDevelop.VersionControl.Views
 			blockStart = -1;
 		}
 
-		/*
-		void HandleRightEditorExposeEvent (object o, ExposeEventArgs args)
-		{
-			using (Cairo.Context cr = Gdk.CairoHelper.Create (args.Event.Window)) {
-				if (Diff != null) {
-					foreach (Diff.Hunk hunk in Diff) {
-						if (!hunk.Same) {
-							int y1 = leftEditor.LineToVisualY (hunk.Left.Start) - (int)leftEditor.VAdjustment.Value;
-							int y2 = leftEditor.LineToVisualY (hunk.Left.Start + hunk.Left.Count) - (int)leftEditor.VAdjustment.Value;
-								
-							if (y1 == y2)
-								y2 = y1 + 1;
-							
-							cr.Rectangle (0, y1, leftEditor.Allocation.Width, y2 - y1);
-							cr.Color = GetColor (hunk, fillAlpha);
-							cr.Fill ();
-							
-							if (hunk.Right.Count > 0 && hunk.Left.Count > 0) {
-								int startOffset = middleEditor.Document.GetLine (hunk.Right.Start).Offset;
-								int rStartOffset = leftEditor.Document.GetLine (hunk.Left.Start).Offset;
-								var lcs = GetLCS (hunk);
-								if (lcs == null) {
-									string leftText = middleEditor.Document.GetTextBetween (startOffset, middleEditor.Document.GetLine (hunk.Right.Start + hunk.Right.Count - 1).EndOffset);
-									string rightText = leftEditor.Document.GetTextBetween (rStartOffset, leftEditor.Document.GetLine (hunk.Left.Start + hunk.Left.Count - 1).EndOffset);
-									llcsCache[hunk] = lcs = GetLCS (leftText, rightText);
-								}
-								
-								int ll = lcs.GetLength (0), rl = lcs.GetLength (1);
-								int blockStart = -1;
-								Stack<KeyValuePair<int, int>> posStack = new Stack<KeyValuePair<int, int>> ();
-								if (ll > 0 && rl > 0)
-									posStack.Push (new KeyValuePair<int, int> (ll - 1, rl - 1));
-								while (posStack.Count > 0) {
-									var pos = posStack.Pop ();
-									int i = pos.Key, j = pos.Value;
-									if (i > 0 && j > 0 && middleEditor.Document.GetCharAt (startOffset + i) == leftEditor.Document.GetCharAt (rStartOffset + j)) {
-										posStack.Push (new KeyValuePair<int, int> (i - 1, j - 1));
-										PaintBlock (leftEditor, cr, rStartOffset, j, ref blockStart);
-										continue;
-									}
-									
-									if (j > 0 && (i == 0 || lcs[i, j - 1] >= lcs[i - 1, j])) {
-										posStack.Push (new KeyValuePair<int, int> (i, j - 1));
-										if (blockStart < 0)
-											blockStart = j;
-									} else if (i > 0 && (j == 0 || lcs[i, j - 1] < lcs[i - 1, j])) {
-										posStack.Push (new KeyValuePair<int, int> (i - 1, j));
-										PaintBlock (leftEditor, cr, rStartOffset, j, ref blockStart);
-									}
-								}
-								PaintBlock (leftEditor, cr, rStartOffset, 0, ref blockStart);
-							}
-							
-							cr.Color = GetColor (hunk, lineAlpha);
-							cr.MoveTo (0, y1);
-							cr.LineTo (leftEditor.Allocation.Width, y1);
-							cr.Stroke ();
-							
-							cr.MoveTo (0, y2);
-							cr.LineTo (leftEditor.Allocation.Width, y2);
-							cr.Stroke ();
-						}
-					}
-				}
-			}
-		}
-		 */
-		public static int[,] GetLCS (string left, string right)
-		{
-			int[,] result = new int[left.Length, right.Length];
-			for (int i = 0; i < left.Length; i++) {
-				for (int j = 0; j < right.Length; j++) {
-					if (left[i] == right[j]) {
-						result[i, j] = (i == 0 || j == 0) ? 1 : 1 + result[i - 1, j - 1];
-					} else {
-						if (i == 0) {
-							result[i, j] = j == 0 ? 0 : Math.Max(0, result[i, j - 1]);
-						} else {
-							result[i, j] = j == 0 ? Math.Max(result[i - 1, j], 0) : Math.Max(result[i - 1, j], result [i, j - 1]);
-						}
-					}
-				}
-			}
-			return result;
-		}
-		
 		class MiddleArea : DrawingArea 
 		{
 			MergeWidget widget;
@@ -891,16 +803,24 @@ namespace MonoDevelop.VersionControl.Views
 			protected override bool OnButtonPressEvent (EventButton evnt)
 			{
 				button |= evnt.Button;
-				MouseMove (evnt.Y);
-				return base.OnButtonPressEvent (evnt);
-			}
-			
-			protected override bool OnButtonReleaseEvent (EventButton evnt)
-			{
-				button &= ~evnt.Button;
+				MousoclocleMove (evnt.Y);
+				return basolce.OnButtonPressEvent (evnt);
+			}olco
+			clo
+			proocltected override bool OnButtonReleaseEvent (EventButton evnt)
+			{ocl
+				olcbutton &= ~evnt.Button;
 				return base.OnButtonReleaseEvent (evnt);
 			}
 			
+ec
+evlevl
+evevl
+elv
+elv
+elv
+elv
+
 			protected override bool OnExposeEvent (Gdk.EventExpose e)
 			{
 				if (widget.leftDiff == null)
@@ -951,15 +871,6 @@ namespace MonoDevelop.VersionControl.Views
 			void IncPos(Mono.TextEditor.Utils.Hunk h, ref int pos)
 			{
 				pos += System.Math.Max (h.InsertedB, h.DeletedA);
-/*				if (sidebyside)
-					pos += h.MaxLines();
-				else if (h.Same)
-					pos += h.Original().Count;
-				else {
-					pos += h.Original().Count;
-					for (int i = 0; i < h.ChangedLists; i++)
-						pos += h.Changes(i).Count;
-				}*/
 			}
 		}
 	}
