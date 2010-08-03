@@ -717,6 +717,9 @@ namespace MonoDevelop.Ide
 							UseDefaultRuntime = true;
 					}
 				}
+				else {
+					ActiveConfigurationId = GetBestDefaultConfiguration ();
+				}
 			}
 			catch (Exception ex) {
 				LoggingService.LogError ("Exception while loading user solution preferences.", ex);
@@ -732,6 +735,29 @@ namespace MonoDevelop.Ide
 					LoggingService.LogError ("Exception in LoadingUserPreferences.", ex);
 				}
 			}
+		}
+		
+		string GetBestDefaultConfiguration ()
+		{
+			// 'Debug' is always the best candidate. If there is no debug, pick
+			// the configuration with the highest number of built projects.
+			int nbuilds = 0;
+			string bestConfig = null;
+			foreach (Solution sol in GetAllSolutions ()) {
+				foreach (string conf in sol.GetConfigurations ()) {
+					if (conf == "Debug")
+						return conf;
+					SolutionConfiguration sconf = sol.GetConfiguration (new SolutionConfigurationSelector (conf));
+					int c = 0;
+					foreach (var sce in sconf.Configurations)
+						if (sce.Build) c++;
+					if (c > nbuilds) {
+						nbuilds = c;
+						bestConfig = conf;
+					}
+				}
+			}
+			return bestConfig;
 		}
 		
 		public void SavePreferences (WorkspaceItem item)

@@ -1,3 +1,10 @@
+2010-08-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Ide/RootWorkspace.cs: Pick a good default
+	  configuration when loading a solution for the first time.
+	  Fixes bug 627297 - Projects from VS.NET solution are not
+	  build.
+
 2010-07-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionNodeBuilder.cs:
