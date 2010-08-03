@@ -23,6 +23,7 @@ FILES =  \
 	MonoDevelop.VersionControl.Views/DiffParser.cs \
 	MonoDevelop.VersionControl.Views/DiffView.cs \
 	MonoDevelop.VersionControl.Views/DropDownBox.cs \
+	MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.cs \
 	MonoDevelop.VersionControl.Views/LogView.cs \
 	MonoDevelop.VersionControl.Views/MergeView.cs \
 	MonoDevelop.VersionControl.Views/MergeWidget.cs \

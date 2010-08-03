@@ -36,7 +36,6 @@ using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	
 	public class VersionControlDocumentInfo
 	{
 		public Document Document {
@@ -101,8 +100,13 @@ namespace MonoDevelop.VersionControl.Views
 				return widget;
 			}
 		}
-
-		public Diff Diff {
+		
+		public ComparisonWidget Widget {
+			get {
+				return this.widget;
+			}
+		}
+		public List<Mono.TextEditor.Utils.Hunk> Diff {
 			get {
 				return widget.Diff;
 			}
@@ -121,7 +125,9 @@ namespace MonoDevelop.VersionControl.Views
 			window.AttachViewContent (new PatchView (comparisonView, info));
 			window.AttachViewContent (new BlameView (info));
 			window.AttachViewContent (new LogView (info));
-//			window.AttachViewContent (new MergeView (info.Document.Editor.Text));
+			
+			if (info.VersionInfo != null && info.VersionInfo.Status == VersionStatus.Conflicted)
+				window.AttachViewContent (new MergeView (info.Document.Editor.Text));
 			
 			info.Start ();
 		}

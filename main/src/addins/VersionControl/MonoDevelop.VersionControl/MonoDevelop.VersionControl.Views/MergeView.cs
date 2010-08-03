@@ -40,6 +40,15 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
+		public static void Show (VersionControlItemList items)
+		{
+			foreach (VersionControlItem item in items) {
+				var document = IdeApp.Workbench.OpenDocument (item.Path);
+				ComparisonView.AttachViewContents (document, item);
+				document.Window.SwitchView (5);
+			}
+		}
+		
 		public MergeView (string doc) : base ("Merge")
 		{
 			widget = new MergeWidget (doc);

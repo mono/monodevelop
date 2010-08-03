@@ -40,12 +40,7 @@ namespace MonoDevelop.VersionControl.Views
 	internal partial class PatchWidget : Gtk.Bin
 	{
 		Mono.TextEditor.TextEditor diffEditor;
-		ComparisonWidget widget;
-		public ComparisonWidget ComparisonWidget {
-			get {
-				return this.widget;
-			}
-		}
+		
 		public PatchWidget (ComparisonView comparisonView, VersionControlDocumentInfo info)
 		{
 			this.Build ();
@@ -61,13 +56,18 @@ namespace MonoDevelop.VersionControl.Views
 			diffEditor.Document.ReadOnly = true;
 			scrolledwindow1.Child = diffEditor;
 			diffEditor.ShowAll ();
-			using (var writer = new StringWriter ()) {
-				UnifiedDiff.WriteUnifiedDiff (comparisonView.Diff, writer, 
-				                              System.IO.Path.GetFileName (info.Item.Path) + "    (repository)", 
-				                              System.IO.Path.GetFileName (info.Item.Path) + "    (working copy)",
-				                              3);
-				diffEditor.Document.Text = writer.ToString ();
+			
+			
+			foreach (var item in comparisonView.Diff) {
+				diffEditor.InsertAtCaret ("@@ -" + item.RemoveStart + "," + item.Removed + " +" + item.InsertStart + "," + item.Inserted + " @@" + Environment.NewLine);
+				for (int i = item.RemoveStart; i < item.RemoveStart + item.Removed; i++) {
+					diffEditor.InsertAtCaret ("-" + comparisonView.Widget.OriginalEditor.GetTextEditorData ().GetLineText (i));
+				}
+				for (int i = item.InsertStart; i < item.InsertStart + item.Inserted; i++) {
+					diffEditor.InsertAtCaret ("+" + comparisonView.Widget.DiffEditor.GetTextEditorData ().GetLineText (i));
+				}
 			}
+			
 			buttonSave.Clicked += delegate {
 				var dlg = new OpenFileDialog (GettextCatalog.GetString ("Save as..."), FileChooserAction.Save) {
 					TransientFor = IdeApp.Workbench.RootWindow
