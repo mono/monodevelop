@@ -176,6 +176,9 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		Thread collectFiles, collectTypes;
 		void StartCollectThreads ()
 		{
+			members = new List<IMember> ();
+			types = new List<IType> ();
+			
 			StartCollectFiles ();
 			StartCollectTypes ();
 		}
@@ -185,16 +188,18 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		void StartCollectTypes ()
 		{
 			ThreadPool.QueueUserWorkItem (delegate {
-				types = GetTypes ();
+				CollectTypes ();
+				
 				if (isAbleToSearchMembers) {
 					getMembersTimer.BeginTiming ();
 					try {
-						members = new List<IMember> ();
-						foreach (IType type in types) {
-							foreach (IMember m in type.Members) {
-								if (m is IType)
-									continue;
-								members.Add (m);
+						lock (members) {
+							foreach (IType type in types) {
+								foreach (IMember m in type.Members) {
+									if (m is IType)
+										continue;
+									members.Add (m);
+								}
 							}
 						}
 					} finally {
@@ -437,15 +442,17 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			// Search Types
 			if (newResult.IncludeTypes) {
 				newResult.filteredTypes = new List<IType> ();
-				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredTypes != null;
-				List<IType> allTypes = startsWithLastFilter ? lastResult.filteredTypes : types;
-				foreach (IType type in allTypes) {
-					if (worker.CancellationPending)
-						yield break;
-					SearchResult curResult = newResult.CheckType (type);
-					if (curResult != null) {
-						newResult.filteredTypes.Add (type);
-						yield return curResult;
+				lock (types) {
+					bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredTypes != null;
+					List<IType> allTypes = startsWithLastFilter ? lastResult.filteredTypes : types;
+					foreach (IType type in allTypes) {
+						if (worker.CancellationPending)
+							yield break;
+						SearchResult curResult = newResult.CheckType (type);
+						if (curResult != null) {
+							newResult.filteredTypes.Add (type);
+							yield return curResult;
+						}
 					}
 				}
 			}
@@ -453,15 +460,17 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			// Search members
 			if (newResult.IncludeMembers) {
 				newResult.filteredMembers = new List<IMember> ();
-				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredMembers != null;
-				List<IMember> allMembers = startsWithLastFilter ? lastResult.filteredMembers : members;
-				foreach (IMember member in allMembers) {
-					if (worker.CancellationPending)
-						yield break;
-					SearchResult curResult = newResult.CheckMember (member);
-					if (curResult != null) {
-						newResult.filteredMembers.Add (member);
-						yield return curResult;
+				lock (members) {
+					bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredMembers != null;
+					List<IMember> allMembers = startsWithLastFilter ? lastResult.filteredMembers : members;
+					foreach (IMember member in allMembers) {
+						if (worker.CancellationPending)
+							yield break;
+						SearchResult curResult = newResult.CheckMember (member);
+						if (curResult != null) {
+							newResult.filteredMembers.Add (member);
+							yield return curResult;
+						}
 					}
 				}
 			}
@@ -519,38 +528,38 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		static TimerCounter getTypesTimer = InstrumentationService.CreateTimerCounter ("Time to get all types", "NavigateToDialog");
 		
-		List<IType> GetTypes ()
+		void CollectTypes ()
 		{
-			List<IType> list = new List<IType> ();
-			getTypesTimer.BeginTiming ();
-			try {
-				foreach (Document doc in IdeApp.Workbench.Documents) {
-					// We only want to check it here if it's not part
-					// of the open combine.  Otherwise, it will get
-					// checked down below.
-					if (doc.Project == null && doc.IsFile) {
-						ICompilationUnit info = doc.CompilationUnit;
-						if (info != null) {
-							foreach (IType c in info.Types) {
-								list.Add (c);
+			lock (types) {
+				getTypesTimer.BeginTiming ();
+				try {
+					foreach (Document doc in IdeApp.Workbench.Documents) {
+						// We only want to check it here if it's not part
+						// of the open combine.  Otherwise, it will get
+						// checked down below.
+						if (doc.Project == null && doc.IsFile) {
+							ICompilationUnit info = doc.CompilationUnit;
+							if (info != null) {
+								foreach (IType c in info.Types) {
+									types.Add (c);
+								}
 							}
 						}
 					}
+					
+					ReadOnlyCollection<Project> projects = IdeApp.Workspace.GetAllProjects ();
+		
+					foreach (Project p in projects) {
+						ProjectDom dom = ProjectDomService.GetProjectDom (p);
+						if (dom == null)
+							continue;
+						foreach (IType c in dom.Types)
+							AddType (c, types);
+					}
+				} finally {
+					getTypesTimer.EndTiming ();
 				}
-				
-				ReadOnlyCollection<Project> projects = IdeApp.Workspace.GetAllProjects ();
-	
-				foreach (Project p in projects) {
-					ProjectDom dom = ProjectDomService.GetProjectDom (p);
-					if (dom == null)
-						continue;
-					foreach (IType c in dom.Types)
-						AddType (c, list);
-				}
-			} finally {
-				getTypesTimer.EndTiming ();
 			}
-			return list;
 		}
 
 		void AddType (IType c, List<IType> list)
