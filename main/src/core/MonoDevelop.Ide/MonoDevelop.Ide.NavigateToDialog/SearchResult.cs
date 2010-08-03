@@ -76,19 +76,18 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		protected static string HighlightMatch (string text, string toMatch)
 		{
-			var lane = !string.IsNullOrEmpty (toMatch) ? NavigateToDialog.MatchString (text, toMatch) : null;
+			var lane = CompletionMatcher.CreateCompletionMatcher (toMatch).GetMatch (text);
 			if (lane != null) {
 				StringBuilder result = new StringBuilder ();
 				int lastPos = 0;
-				for (int n=0; n <= lane.Index; n++) {
-					int pos = lane.Positions [n];
-					int len = lane.Lengths [n];
+				for (int n=0; n < lane.Length; n++) {
+					int pos = lane[n];
 					if (pos - lastPos > 0)
 						result.Append (GLib.Markup.EscapeText (text.Substring (lastPos, pos - lastPos)));
 					result.Append ("<span foreground=\"blue\">");
-					result.Append (GLib.Markup.EscapeText (text.Substring (pos, len)));
+					result.Append (GLib.Markup.EscapeText (text[pos].ToString ()));
 					result.Append ("</span>");
-					lastPos = pos + len;
+					lastPos = pos + 1;
 				}
 				if (lastPos < text.Length)
 					result.Append (GLib.Markup.EscapeText (text.Substring (lastPos, text.Length - lastPos)));

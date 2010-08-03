@@ -139,6 +139,14 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				};
 			}
 			
+			CheckMenuItem useComplexMatching = this.matchEntry.AddFilterOption (3, GettextCatalog.GetString ("Use complex matching"));
+			useComplexMatching.DrawAsRadio = false;
+			useComplexMatching.Active = CompletionMatcher.UseLaneCompletionMatcher;
+			useComplexMatching.Toggled += delegate {
+				CompletionMatcher.UseLaneCompletionMatcher = useComplexMatching.Active;
+				PerformSearch ();
+			};
+			
 			this.matchEntry.Changed += delegate {
 				PerformSearch ();
 			};
@@ -149,7 +157,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			this.matchEntry.Entry.KeyPressEvent += HandleKeyPress;
 			this.matchEntry.Activated += delegate {
 				OpenFile ();
-			}; 
+			};
 			this.buttonOpen.Clicked += delegate {
 				OpenFile ();
 			};
@@ -305,7 +313,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			
 			public bool IncludeFiles, IncludeTypes, IncludeMembers;
 			
-			public CompletionMatcher matcher = null;
+			public ICompletionMatcher matcher = null;
 			
 			internal SearchResult CheckFile (ProjectFile file)
 			{
@@ -314,6 +322,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				if (MatchName (matchString, out rank)) 
 					return new FileSearchResult (pattern, matchString, rank, file, true);
 				
+				if (!CompletionMatcher.UseLaneCompletionMatcher)
+					return null;
 				matchString = FileSearchResult.GetRelProjectPath (file);
 				if (MatchName (FileSearchResult.GetRelProjectPath (file), out rank)) 
 					return new FileSearchResult (pattern, matchString, rank, file, false);
@@ -326,6 +336,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				int rank;
 				if (MatchName (type.Name, out rank))
 					return new TypeSearchResult (pattern, type.Name, rank, type, false);
+				if (!CompletionMatcher.UseLaneCompletionMatcher)
+					return null;
 				if (MatchName (type.FullName, out rank))
 					return new TypeSearchResult (pattern, type.FullName, rank, type, true);
 				return null;
@@ -338,6 +350,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				string memberName = useDeclaringTypeName ? member.DeclaringType.Name : member.Name;
 				if (MatchName (memberName, out rank))
 					return new MemberSearchResult (pattern, memberName, rank, member, false);
+				if (!CompletionMatcher.UseLaneCompletionMatcher)
+					return null;
 				memberName = useDeclaringTypeName ? member.DeclaringType.FullName : member.FullName;
 				if (MatchName (memberName, out rank))
 					return new MemberSearchResult (pattern, memberName, rank, member, true);
@@ -383,8 +397,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				toMatch = toMatch.Substring (0,i);
 				newResult.isGotoFilePattern = true;
 			}
-			newResult.matcher = new CompletionMatcher (toMatch);
-			
+			newResult.matcher = CompletionMatcher.CreateCompletionMatcher (toMatch);
+			Console.WriteLine (CompletionMatcher.UseLaneCompletionMatcher + ": created:" + newResult.matcher);
 			foreach (SearchResult result in AllResults (worker, lastResult, newResult)) {
 				if (worker.CancellationPending)
 					break;
@@ -555,158 +569,6 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			{
 				this.Match = match;
 				this.Rank = rank;
-			}
-		}
-		
-		static bool CalcMatchRank (string name, string toMatch, out int matchRank)
-		{
-			if (toMatch.Length == 0) {
-				matchRank = int.MinValue;
-				return true;
-			}
-			MatchLane lane = MatchString (name, toMatch);
-			if (lane != null) {
-				matchRank = -(lane.Positions [0] + (name.Length - toMatch.Length));
-				return true;
-			}
-			matchRank = int.MinValue;
-			return false;
-		}
-		
-		internal static MatchLane MatchString (string text, string toMatch)
-		{
-			if (text.Length < toMatch.Length)
-				return null;
-			
-			List<MatchLane> matchLanes = null;
-			bool lastWasSeparator = false;
-			int tn = 0;
-			
-			while (tn < text.Length) {
-				char ct = text [tn];
-				
-				// Keep the lane count in a var because new lanes don't have to be updated
-				// until the next iteration
-				int laneCount = matchLanes != null ? matchLanes.Count : 0;
-				
-				char cm = toMatch [0]; 
-				if (char.ToLower (ct) == char.ToLower (cm)) {
-					if (matchLanes == null)
-						matchLanes = new List<MatchLane> ();
-					matchLanes.Add (new MatchLane (MatchMode.Substring, tn, text.Length - tn));
-					if (toMatch.Length == 1)
-						return matchLanes[0];
-					if (char.IsUpper (ct) || lastWasSeparator)
-						matchLanes.Add (new MatchLane (MatchMode.Acronym, tn, text.Length - tn));
-				}
-					
-				for (int n=0; n<laneCount; n++) {
-					MatchLane lane = matchLanes [n];
-					if (lane == null)
-						continue;
-					cm = toMatch [lane.MatchIndex]; 
-					bool match = char.ToLower (ct) == char.ToLower (cm);
-					bool wordStartMatch = match && (tn == 0 || char.IsUpper (ct) || lastWasSeparator);
-	
-					if (lane.MatchMode == MatchMode.Substring) {
-						if (wordStartMatch) {
-							// Possible acronym match after a substring. Start a new lane.
-							MatchLane newLane = lane.Clone ();
-							newLane.MatchMode = MatchMode.Acronym;
-							newLane.Index++;
-							newLane.Positions [newLane.Index] = tn;
-							newLane.Lengths [newLane.Index] = 1;
-							newLane.MatchIndex++;
-							matchLanes.Add (newLane);
-						}
-						if (match) {
-							// Maybe it is a false substring start, so add a new lane to keep
-							// track of the old lane
-							MatchLane newLane = lane.Clone ();
-							newLane.MatchMode = MatchMode.Acronym;
-							matchLanes.Add (newLane);
-	
-							// Update the current lane
-							lane.Lengths [lane.Index]++;
-							lane.MatchIndex++;
-						} else {
-							if (lane.Lengths [lane.Index] > 1)
-								lane.MatchMode = MatchMode.Acronym;
-							else
-								matchLanes [n] = null; // Kill the lane
-						}
-					}
-					else if (lane.MatchMode == MatchMode.Acronym) {
-						if (match && lane.Positions [lane.Index] == tn - 1) {
-							// Possible substring match after an acronim. Start a new lane.
-							MatchLane newLane = lane.Clone ();
-							newLane.MatchMode = MatchMode.Substring;
-							newLane.Lengths [newLane.Index]++;
-							newLane.MatchIndex++;
-							matchLanes.Add (newLane);
-							if (newLane.MatchIndex == toMatch.Length)
-								return newLane;
-						}
-						if (wordStartMatch || (match && char.IsPunctuation (cm))) {
-							// Maybe it is a false acronym start, so add a new lane to keep
-							// track of the old lane
-							MatchLane newLane = lane.Clone ();
-							matchLanes.Add (newLane);
-	
-							// Update the current lane
-							lane.Index++;
-							lane.Positions [lane.Index] = tn;
-							lane.Lengths [lane.Index] = 1;
-							lane.MatchIndex++;
-						}
-					}
-					if (lane.MatchIndex == toMatch.Length)
-						return lane;
-				}
-				lastWasSeparator = (ct == '.' || ct == '_' || ct == '-' || ct == ' ' || ct == '/' || ct == '\\');
-				tn++;
-			}
-			return null;
-		}
-
-		internal enum MatchMode
-		{
-			Substring,
-			Acronym
-		}
-
-		internal class MatchLane
-		{
-			public int[] Positions;
-			public int[] Lengths;
-			public MatchMode MatchMode;
-			public int Index;
-			public int MatchIndex;
-	
-			public MatchLane ()
-			{
-			}
-	
-			public MatchLane (MatchMode mode, int pos, int len)
-			{
-				MatchMode = mode;
-				Positions = new int [len];
-				Lengths = new int [len];
-				Positions [0] = pos;
-				Lengths [0] = 1;
-				Index = 0;
-				MatchIndex = 1;
-			}
-	
-			public MatchLane Clone ()
-			{
-				MatchLane lane = new MatchLane ();
-				lane.Positions = (int[]) Positions.Clone ();
-				lane.Lengths = (int[]) Lengths.Clone ();
-				lane.MatchMode = MatchMode;
-				lane.MatchIndex = MatchIndex;
-				lane.Index = Index;
-				return lane;
 			}
 		}
 		
