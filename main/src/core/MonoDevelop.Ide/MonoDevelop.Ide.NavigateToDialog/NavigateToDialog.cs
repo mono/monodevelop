@@ -398,7 +398,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				newResult.isGotoFilePattern = true;
 			}
 			newResult.matcher = CompletionMatcher.CreateCompletionMatcher (toMatch);
-			Console.WriteLine (CompletionMatcher.UseLaneCompletionMatcher + ": created:" + newResult.matcher);
+			
 			foreach (SearchResult result in AllResults (worker, lastResult, newResult)) {
 				if (worker.CancellationPending)
 					break;

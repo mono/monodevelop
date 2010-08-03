@@ -49,15 +49,15 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		public MergeView (string doc) : base ("Merge")
+		public MergeView (VersionControlDocumentInfo info) : base ("Merge")
 		{
-			widget = new MergeWidget (doc);
+			widget = new MergeWidget (info);
 		}
 
 		public void Selected ()
 		{
 		}
-
+		
 		public void Deselected ()
 		{
 		}

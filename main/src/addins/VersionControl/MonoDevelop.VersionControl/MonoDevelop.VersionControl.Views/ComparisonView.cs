@@ -127,7 +127,7 @@ namespace MonoDevelop.VersionControl.Views
 			window.AttachViewContent (new LogView (info));
 			
 			if (info.VersionInfo != null && info.VersionInfo.Status == VersionStatus.Conflicted)
-				window.AttachViewContent (new MergeView (info.Document.Editor.Text));
+				window.AttachViewContent (new MergeView (info));
 			
 			info.Start ();
 		}

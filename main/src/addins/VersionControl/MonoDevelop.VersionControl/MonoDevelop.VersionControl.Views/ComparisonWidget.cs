@@ -39,8 +39,6 @@ namespace MonoDevelop.VersionControl.Views
 {
 	class ComparisonWidget : EditorCompareWidgetBase
 	{
-		VersionControlDocumentInfo info;
-		
 		DropDownBox originalComboBox, diffComboBox;
 		
 		public TextEditor OriginalEditor {
@@ -89,10 +87,8 @@ namespace MonoDevelop.VersionControl.Views
 			this.headerWidgets = new [] { diffComboBox, originalComboBox };
 		}
 		
-		public ComparisonWidget (VersionControlDocumentInfo info)
+		public ComparisonWidget (VersionControlDocumentInfo info) : base (info)
 		{
-			this.info = info;
-		
 		/*	prev = new Button ();
 			prev.Add (new Arrow (ArrowType.Up, ShadowType.None));
 			AddChild (prev);
@@ -142,55 +138,16 @@ namespace MonoDevelop.VersionControl.Views
 			AddChild (next);
 			next.ShowAll ();*/
 		}
-		
-		
-		List<TextEditorData> localUpdate = new List<TextEditorData> ();
 
-		void HandleInfoDocumentTextEditorDataDocumentTextReplaced (object sender, ReplaceEventArgs e)
-		{
-			foreach (var data in localUpdate.ToArray ()) {
-				data.Document.TextReplaced -= HandleDataDocumentTextReplaced;
-				data.Replace (e.Offset, e.Count, e.Value);
-				data.Document.TextReplaced += HandleDataDocumentTextReplaced;
-				data.Document.CommitUpdateAll ();
-			}
-		}
-		
 		public override void UpdateDiff ()
 		{
-			 CreateDiff ();
+			CreateDiff ();
 		}
 		
 		public override void CreateDiff () 
 		{
-			Diff = new List<Mono.TextEditor.Utils.Hunk> (OriginalEditor.Document.Diff (DiffEditor.Document));
+			Diff = new List<Mono.TextEditor.Utils.Hunk> (DiffEditor.Document.Diff (OriginalEditor.Document));
 			QueueDraw ();
-		}
-		
-		Dictionary<Mono.TextEditor.Document, TextEditorData> dict = new Dictionary<Mono.TextEditor.Document, TextEditorData> ();
-		public void SetLocal (TextEditorData data)
-		{
-			dict[data.Document] = data;
-			data.Document.Text = info.Document.Editor.Document.Text;
-			data.Document.ReadOnly = false;
-			data.Document.TextReplaced += HandleDataDocumentTextReplaced;
-			CreateDiff ();
-		}
-		
-		void HandleDataDocumentTextReplaced (object sender, ReplaceEventArgs e)
-		{
-			var data = dict[(Document)sender];
-			localUpdate.Remove (data);
-			info.Document.Editor.Replace (e.Offset, e.Count, e.Value);
-			localUpdate.Add (data);
-			CreateDiff ();
-		}
-		
-		public void RemoveLocal (TextEditorData data)
-		{
-			localUpdate.Remove (data);
-			data.Document.ReadOnly = true;
-			data.Document.TextReplaced -= HandleDataDocumentTextReplaced;
 		}
 		
 		class ComboBoxSelector : DropDownBoxListWindow.IListDataProvider

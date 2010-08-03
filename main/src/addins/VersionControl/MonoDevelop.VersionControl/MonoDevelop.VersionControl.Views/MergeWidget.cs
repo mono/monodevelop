@@ -46,15 +46,14 @@ namespace MonoDevelop.VersionControl.Views
 				return editors[1];
 			}
 		}
-		
-		
+
 		protected MergeWidget (IntPtr ptr) : base (ptr)
 		{
 		}
 
-		public MergeWidget (string content)
+		public MergeWidget (VersionControlDocumentInfo info) : base (info)
 		{
-			MainEditor.Document.Text = content;
+			SetLocal (MainEditor.GetTextEditorData ());
 			
 			this.CreateDiff ();
 			MainEditor.Document.TextReplaced += delegate {

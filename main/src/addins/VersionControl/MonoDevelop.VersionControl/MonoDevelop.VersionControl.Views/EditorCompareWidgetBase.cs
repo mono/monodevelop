@@ -41,6 +41,8 @@ namespace MonoDevelop.VersionControl.Views
 {
 	abstract class EditorCompareWidgetBase : Gtk.Bin
 	{
+		protected VersionControlDocumentInfo info;
+		
 		Adjustment vAdjustment;
 		Adjustment[] attachedVAdjustments;
 		
@@ -61,8 +63,9 @@ namespace MonoDevelop.VersionControl.Views
 			get;
 		}
 		
-		public EditorCompareWidgetBase ()
+		public EditorCompareWidgetBase (VersionControlDocumentInfo info)
 		{
+			this.info = info;
 			CreateComponents ();
 			
 			vAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
@@ -97,7 +100,7 @@ namespace MonoDevelop.VersionControl.Views
 				if (i == 0) {
 					editor.ExposeEvent +=  delegate (object sender, ExposeEventArgs args) {
 						var myEditor = (TextEditor)sender;
-						PaintEditorOverlay (myEditor, args, leftDiff, false);
+						PaintEditorOverlay (myEditor, args, leftDiff, true);
 					};
 				} else {
 					editor.ExposeEvent +=  delegate (object sender, ExposeEventArgs args) {
@@ -229,6 +232,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		#endregion
 		
+		
 		protected override void OnSizeAllocated (Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
@@ -243,7 +247,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (headerWidgets != null)
 				headerSize = System.Math.Max (headerWidgets[0].SizeRequest ().Height, 16);
 			
-			Rectangle childRectangle = new Rectangle (allocation.X + 1, allocation.Y + headerSize + 1, allocation.Width - vwidth - overviewWidth, allocation.Height - hheight - hheight);
+			Rectangle childRectangle = new Rectangle (allocation.X + 1, allocation.Y + headerSize + 1, allocation.Width - vwidth - overviewWidth, allocation.Height - hheight - headerSize);
 			
 			overview.SizeAllocate (new Rectangle (allocation.Right - overviewWidth + 1, childRectangle.Y, overviewWidth - 1, childRectangle.Height ));
 			
@@ -251,7 +255,7 @@ namespace MonoDevelop.VersionControl.Views
 			int editorWidth = (childRectangle.Width - middleAreaWidth * (editors.Length - 1)) / editors.Length;
 			
 			for (int i = 0; i < editors.Length; i++) {
-				Rectangle editorRectangle = new Rectangle (childRectangle.X + (editorWidth + middleAreaWidth) * i  , childRectangle.Top, editorWidth, Allocation.Height - hheight);
+				Rectangle editorRectangle = new Rectangle (childRectangle.X + (editorWidth + middleAreaWidth) * i  , childRectangle.Top, editorWidth, childRectangle.Height);
 				editors[i].SizeAllocate (editorRectangle);
 				
 				if (hScrollBarVisible)
@@ -266,27 +270,28 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		static double GetWheelDelta (Scrollbar scrollbar, ScrollDirection direction)
+		static double GetWheelDelta (Adjustment adjustment, ScrollDirection direction)
 		{
-			double delta = System.Math.Pow (scrollbar.Adjustment.PageSize, 2.0 / 3.0);
+			double delta = System.Math.Pow (adjustment.PageSize, 2.0 / 3.0);
 			if (direction == ScrollDirection.Up || direction == ScrollDirection.Left)
 				delta = -delta;
-			if (scrollbar.Inverted)
-				delta = -delta;
+			
+//			if (scrollbar.Inverted)
+//				delta = -delta;
 			return delta;
 		}
 		
-//		protected override bool OnScrollEvent (EventScroll evnt)
-//		{
-//			Scrollbar scrollWidget = (evnt.Direction == ScrollDirection.Up || evnt.Direction == ScrollDirection.Down) ? (Scrollbar)vScrollBar : leftHScrollBar;
-//			
-//			if (scrollWidget.Visible) {
-//				double newValue = scrollWidget.Adjustment.Value + GetWheelDelta (scrollWidget, evnt.Direction);
-//				newValue = System.Math.Max (System.Math.Min (scrollWidget.Adjustment.Upper  - scrollWidget.Adjustment.PageSize, newValue), scrollWidget.Adjustment.Lower);
-//				scrollWidget.Adjustment.Value = newValue;
-//			}
-//			return base.OnScrollEvent (evnt);
-//		}
+		protected override bool OnScrollEvent (EventScroll evnt)
+		{
+			var adjustment = (evnt.Direction == ScrollDirection.Up || evnt.Direction == ScrollDirection.Down) ? vAdjustment : hAdjustment;
+			
+			if (adjustment.PageSize < adjustment.Upper) {
+				double newValue = adjustment.Value + GetWheelDelta (adjustment, evnt.Direction);
+				newValue = System.Math.Max (System.Math.Min (adjustment.Upper  - adjustment.PageSize, newValue), adjustment.Lower);
+				adjustment.Value = newValue;
+			}
+			return base.OnScrollEvent (evnt);
+		}
 		
 		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
 		{
@@ -384,6 +389,45 @@ namespace MonoDevelop.VersionControl.Views
 			cr.Color = editor == MainEditor ? new Cairo.Color (0, 1, 0, 0.2) : new Cairo.Color (1, 0, 0, 0.2);
 			cr.Fill ();
 			blockStart = -1;
+		}
+
+		Dictionary<Mono.TextEditor.Document, TextEditorData> dict = new Dictionary<Mono.TextEditor.Document, TextEditorData> ();
+
+		List<TextEditorData> localUpdate = new List<TextEditorData> ();
+
+		void HandleInfoDocumentTextEditorDataDocumentTextReplaced (object sender, ReplaceEventArgs e)
+		{
+			foreach (var data in localUpdate.ToArray ()) {
+				data.Document.TextReplaced -= HandleDataDocumentTextReplaced;
+				data.Replace (e.Offset, e.Count, e.Value);
+				data.Document.TextReplaced += HandleDataDocumentTextReplaced;
+				data.Document.CommitUpdateAll ();
+			}
+		}
+		
+		public void SetLocal (TextEditorData data)
+		{
+			dict[data.Document] = data;
+			data.Document.Text = info.Document.Editor.Document.Text;
+			data.Document.ReadOnly = false;
+			data.Document.TextReplaced += HandleDataDocumentTextReplaced;
+			CreateDiff ();
+		}
+		
+		void HandleDataDocumentTextReplaced (object sender, ReplaceEventArgs e)
+		{
+			var data = dict[(Document)sender];
+			localUpdate.Remove (data);
+			info.Document.Editor.Replace (e.Offset, e.Count, e.Value);
+			localUpdate.Add (data);
+			CreateDiff ();
+		}
+		
+		public void RemoveLocal (TextEditorData data)
+		{
+			localUpdate.Remove (data);
+			data.Document.ReadOnly = true;
+			data.Document.TextReplaced -= HandleDataDocumentTextReplaced;
 		}
 
 		class MiddleArea : DrawingArea 

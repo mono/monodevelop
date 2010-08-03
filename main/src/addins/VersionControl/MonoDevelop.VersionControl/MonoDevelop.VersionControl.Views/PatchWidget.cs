@@ -61,10 +61,10 @@ namespace MonoDevelop.VersionControl.Views
 			foreach (var item in comparisonView.Diff) {
 				diffEditor.InsertAtCaret ("@@ -" + item.RemoveStart + "," + item.Removed + " +" + item.InsertStart + "," + item.Inserted + " @@" + Environment.NewLine);
 				for (int i = item.RemoveStart; i < item.RemoveStart + item.Removed; i++) {
-					diffEditor.InsertAtCaret ("-" + comparisonView.Widget.OriginalEditor.GetTextEditorData ().GetLineText (i));
+					diffEditor.InsertAtCaret ("-" + comparisonView.Widget.DiffEditor.GetTextEditorData ().GetLineText (i));
 				}
 				for (int i = item.InsertStart; i < item.InsertStart + item.Inserted; i++) {
-					diffEditor.InsertAtCaret ("+" + comparisonView.Widget.DiffEditor.GetTextEditorData ().GetLineText (i));
+					diffEditor.InsertAtCaret ("+" + comparisonView.Widget.OriginalEditor.GetTextEditorData ().GetLineText (i));
 				}
 			}
 			
