@@ -348,7 +348,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var textGCInsensitive = this.Style.TextGC (StateType.Insensitive);
 			var textGCNormal = this.Style.TextGC (StateType.Normal);
 			var fgGCNormal = this.Style.ForegroundGC (StateType.Normal);
-			CompletionMatcher matcher = new CompletionMatcher (CompletionString);
+			var matcher = CompletionMatcher.CreateCompletionMatcher (CompletionString);
 			Iterate (true, ref yPos, delegate (Category category, int ypos) {
 				if (ypos >= height - margin)
 					return;
@@ -536,7 +536,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			filteredItems.Clear ();
 			categories.Clear ();
-			CompletionMatcher matcher = new CompletionMatcher (CompletionString);
+			var matcher = CompletionMatcher.CreateCompletionMatcher (CompletionString);
 			for (int newSelection = 0; newSelection < win.DataProvider.ItemCount; newSelection++) {
 				if (string.IsNullOrEmpty (CompletionString) || matcher.IsMatch (win.DataProvider.GetText (newSelection))) {
 					CompletionCategory completionCategory = win.DataProvider.GetCompletionCategory (newSelection);

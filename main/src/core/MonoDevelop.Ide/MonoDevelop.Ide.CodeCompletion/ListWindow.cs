@@ -405,12 +405,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 		class WordComparer : IComparer <KeyValuePair<int, string>>
 		{
 			string filterWord;
-			CompletionMatcher matcher;
+			ICompletionMatcher matcher;
 
 			public WordComparer (string filterWord)
 			{
 				this.filterWord = filterWord ?? "";
-				matcher = new CompletionMatcher (filterWord);
+				matcher = CompletionMatcher.CreateCompletionMatcher (filterWord);
 			}
 			
 			public int Compare (KeyValuePair<int, string> xpair, KeyValuePair<int, string> ypair)
@@ -457,7 +457,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			// default - word with highest match rating in the list.
 			hasMismatches = true;
 			int idx = -1;
-			CompletionMatcher matcher = new CompletionMatcher (partialWord);
+			var matcher = CompletionMatcher.CreateCompletionMatcher (partialWord);
 			
 			List<KeyValuePair<int, string>> words = new List<KeyValuePair<int, string>> ();
 			if (!string.IsNullOrEmpty (partialWord)) {
