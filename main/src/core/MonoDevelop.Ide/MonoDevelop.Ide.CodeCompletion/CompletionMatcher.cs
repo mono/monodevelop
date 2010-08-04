@@ -64,13 +64,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 	class LaneCompletionMatcher : ICompletionMatcher
 	{
 		readonly string filterLowerCase;
-		
 		readonly List<MatchLane> matchLanes;
 		
 		public LaneCompletionMatcher (string filter)
 		{
 			matchLanes = new List<MatchLane> ();
-			this.filterLowerCase = filter != null ? filter.ToLower () : "";
+			this.filterLowerCase = filter != null ? filter.ToLowerInvariant () : "";
 		}
 
 		public bool CalcMatchRank (string name, out int matchRank)
@@ -130,7 +129,24 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (text.Length < filterLowerCase.Length)
 				return null;
+			
+			string textLowerCase = text.ToLowerInvariant ();
 	
+			// Pre-match check
+			
+			int j = 0;
+			int tlen = textLowerCase.Length;
+			int flen = filterLowerCase.Length;
+			for (int n=0; n<tlen && j < flen; n++) {
+				if (textLowerCase[n] == filterLowerCase [j])
+					j++;
+			}
+
+			if (j < flen)
+				return null;
+			
+			// Full match check
+			
 			matchLanes.Clear ();
 			bool lastWasSeparator = false;
 			int tn = 0;
@@ -138,8 +154,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			while (tn < text.Length) {
 				char ct = text [tn];
-				bool ctIsUpper = char.IsUpper (ct);
-				char ctLower = ctIsUpper ? char.ToLower (ct) : ct;
+				char ctLower = textLowerCase [tn];
 				
 				// Keep the lane count in a var because new lanes don't have to be updated
 				// until the next iteration
@@ -149,7 +164,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					matchLanes.Add (new MatchLane (MatchMode.Substring, tn, text.Length - tn));
 					if (filterLowerCase.Length == 1)
 						return matchLanes[0];
-					if (ctIsUpper || lastWasSeparator)
+					if (ct != ctLower /*is upper*/ || lastWasSeparator)
 						matchLanes.Add (new MatchLane (MatchMode.Acronym, tn, text.Length - tn));
 				}
 	
@@ -159,7 +174,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 						continue;
 					char cm = filterLowerCase [lane.MatchIndex];
 					bool match = ctLower == cm;
-					bool wordStartMatch = match && (tn == 0 || ctIsUpper || lastWasSeparator);
+					bool wordStartMatch = match && (tn == 0 || ct != ctLower /*is upper*/ || lastWasSeparator);
 	
 					if (lane.MatchMode == MatchMode.Substring) {
 						if (wordStartMatch) {
