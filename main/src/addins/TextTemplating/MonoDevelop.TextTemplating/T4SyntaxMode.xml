@@ -42,17 +42,17 @@
 		</Span>
 		
 		<!-- expressions -->
-		<Span tagColor = "keyword.declaration" color = "template" tagColor="template.tag" rule = "csharp">
+		<Span color = "template" tagColor="template.tag" rule = "csharp">
 			<Begin>&lt;#=</Begin>
 			<End>#&gt;</End>
 		</Span>
 		
-		<Span tagColor = "keyword.declaration" color = "template" tagColor="template.tag" rule = "csharp">
+		<Span color = "template" tagColor="template.tag" rule = "csharp">
 			<Begin>&lt;#+</Begin>
 			<End>#&gt;</End>
 		</Span>
 		
-		<Span tagColor = "keyword.declaration" color = "template" tagColor="template.tag" rule = "csharp">
+		<Span color = "template" tagColor="template.tag" rule = "csharp">
 			<Begin>&lt;#</Begin>
 			<End>#&gt;</End>
 		</Span>
