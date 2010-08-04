@@ -52,52 +52,6 @@ namespace MonoDevelop.Projects.Formats.MD1
 			get { return (DotNetProject) Item; }
 		}
 		
-		protected override BuildResult OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
-		{
-			DotNetProject project = Project;
-			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) project.GetConfiguration (configuration);
-			
-			// Delete the generated debug info
-			string file = project.GetOutputFileName (configuration);
-			if (file != null) {
-				string mdb = conf.TargetRuntime.GetAssemblyDebugInfoFile (file);
-				if (File.Exists (mdb))
-					FileService.DeleteFile (mdb);
-			}
-
-			List<string> cultures = new List<string> ();
-			monitor.Log.WriteLine (GettextCatalog.GetString ("Removing all .resources files"));
-			foreach (ProjectFile pfile in project.Files) {
-				if (pfile.BuildAction == BuildAction.EmbeddedResource &&
-					Path.GetExtension (pfile.Name) == ".resx") {
-					string resFilename = Path.ChangeExtension (pfile.Name, ".resources");
-					if (File.Exists (resFilename))
-						FileService.DeleteFile (resFilename);
-				}
-				string culture = GetCulture (pfile.Name);
-				if (culture != null)
-					cultures.Add (culture);
-			}
-
-			if (cultures.Count > 0 && conf != null && project.DefaultNamespace != null) {
-				monitor.Log.WriteLine (GettextCatalog.GetString ("Removing all satellite assemblies"));
-				string outputDir = ((DotNetProjectConfiguration)conf).OutputDirectory;
-				string satelliteAsmName = Path.GetFileNameWithoutExtension (((DotNetProjectConfiguration)conf).OutputAssembly) + ".resources.dll";
-
-				foreach (string culture in cultures) {
-					string path = String.Format ("{0}{3}{1}{3}{2}", outputDir, culture, satelliteAsmName, Path.DirectorySeparatorChar);
-					if (File.Exists (path)) {
-						FileService.DeleteFile (path);
-						string dir = Path.GetDirectoryName (path);
-						if (Directory.GetFiles (dir).Length == 0)
-							FileService.DeleteDirectory (dir);
-					}
-				}
-			}
-			return null;
-		}
-
-		
 		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			DotNetProject project = Project;
@@ -227,7 +181,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 
 					return new BuildResult (cr, String.Empty);
 				}
-				string culture = GetCulture (finfo.Name);
+				string culture = DotNetProject.GetResourceCulture (finfo.Name);
 				if (culture == null)
 					continue;
 
@@ -467,43 +421,6 @@ namespace MonoDevelop.Projects.Formats.MD1
 			return null;
 		}
 		
-		//Given a filename like foo.it.resx, get 'it', if its
-		//a valid culture
-		//Note: hand-written as this can get called lotsa times
-		//Note: code duplicated in prj2make/Utils.cs as TrySplitResourceName
-		string GetCulture (string fname)
-		{
-			int last_dot = -1;
-			int culture_dot = -1;
-			int i = fname.Length - 1;
-			while (i >= 0) {
-				if (fname [i] == '.') {
-					last_dot = i;
-					break;
-				}
-				i --;
-			}
-			if (i < 0)
-				return null;
-
-			i--;
-			while (i >= 0) {
-				if (fname [i] == '.') {
-					culture_dot = i;
-					break;
-				}
-				i --;
-			}
-			if (culture_dot < 0)
-				return null;
-
-			string culture = fname.Substring (culture_dot + 1, last_dot - culture_dot - 1);
-			if (!CultureNamesTable.ContainsKey (culture))
-				return null;
-
-			return culture;
-		}
-
 		// Used for parsing "Line 123, position 5" errors from tools
 		// like resgen, xamlg
 		static Regex regexErrorLinePos;
@@ -512,19 +429,6 @@ namespace MonoDevelop.Projects.Formats.MD1
 				if (regexErrorLinePos == null)
 					regexErrorLinePos = new Regex (@"Line (\d*), position (\d*)");
 				return regexErrorLinePos;
-			}
-		}
-
-		static Dictionary<string, string> cultureNamesTable;
-		static Dictionary<string, string> CultureNamesTable {
-			get {
-				if (cultureNamesTable == null) {
-					cultureNamesTable = new Dictionary<string, string> ();
-					foreach (CultureInfo ci in CultureInfo.GetCultures (CultureTypes.AllCultures))
-						cultureNamesTable [ci.Name] = ci.Name;
-				}
-
-				return cultureNamesTable;
 			}
 		}
 	}
