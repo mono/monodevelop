@@ -20,11 +20,16 @@ namespace MonoDevelop.Deployment
 		{
 			DeployFileCollection deployFiles = new DeployFileCollection ();
 			base.GetProjectDeployFiles (ctx, project, configuration);
-			// Add the compiled output file
 			
-			string outputFile = project.GetOutputFileName (configuration);
-			if (!string.IsNullOrEmpty (outputFile))
-				deployFiles.Add (new DeployFile (project, outputFile, Path.GetFileName (outputFile), TargetDirectory.ProgramFiles));
+			// Add the compiled output files
+			
+			ProjectConfiguration pconf = (ProjectConfiguration) project.GetConfiguration (configuration);
+			FilePath outDir = pconf.OutputDirectory;
+			foreach (FilePath file in project.GetOutputFiles (configuration)) {
+				deployFiles.Add (new DeployFile (project, file, file.ToRelative (outDir), TargetDirectory.ProgramFiles));
+			}
+			
+			FilePath outputFile = project.GetOutputFileName (configuration);
 			
 			// Collect deployable files
 			foreach (ProjectFile file in project.Files) {
@@ -48,15 +53,6 @@ namespace MonoDevelop.Deployment
 			
 			foreach (FileCopySet.Item item in project.GetSupportFileList (configuration)) {
 				 deployFiles.Add (new DeployFile (project, item.Src, item.Target, TargetDirectory.ProgramFiles));
-			}
-			
-			DotNetProject netProject = project as DotNetProject;
-			if (netProject != null) {
-				DotNetProjectConfiguration conf = (DotNetProjectConfiguration) project.GetConfiguration (configuration);
-				if (conf.DebugMode) {
-					string mdbFile = netProject.TargetRuntime.GetAssemblyDebugInfoFile (conf.CompiledOutputName);
-					deployFiles.Add (new DeployFile (project, mdbFile, Path.GetFileName (mdbFile), TargetDirectory.ProgramFiles));
-				}
 			}
 			
 			return deployFiles;

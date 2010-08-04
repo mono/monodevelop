@@ -1,3 +1,10 @@
+2010-08-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Deployment/DefaultDeployServiceExtension.cs: Get
+	  the output file list using the new Project.GetOutputFiles
+	  method. This includes the output assembly, but also the
+	  debug info file and satellite assemblies.
+
 2010-06-01  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* templates/PackagingProject.xpt.xml: Don't include the
