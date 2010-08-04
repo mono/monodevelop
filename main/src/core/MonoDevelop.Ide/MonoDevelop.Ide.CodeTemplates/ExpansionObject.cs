@@ -34,6 +34,7 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom.Output;
 using Mono.TextEditor.PopupWindow;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -53,7 +54,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			set;
 		}
 		
-		public DomLocation InsertPosition {
+		public DocumentLocation InsertPosition {
 			get;
 			set;
 		}
@@ -183,7 +184,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			if (CurrentContext.ParsedDocument == null)
 				return fullTypeName;
 			
-			return CurrentContext.ParsedDocument.CompilationUnit.ShortenTypeName (new DomReturnType (fullTypeName), CurrentContext.InsertPosition).FullName;
+			return CurrentContext.ParsedDocument.CompilationUnit.ShortenTypeName (new DomReturnType (fullTypeName), CurrentContext.InsertPosition.Line + 1, CurrentContext.InsertPosition.Column + 1).FullName;
 		}
 		
 		static Regex functionRegEx = new Regex ("([^(]*)\\(([^(]*)\\)", RegexOptions.Compiled);

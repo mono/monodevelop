@@ -173,45 +173,54 @@ namespace Mono.TextEditor
 			Replace (offset, count, null);
 		}
 		
-		public int Replace (int offset, int count, string value)
+		public string FormatString (DocumentLocation loc, string str)
 		{
+			if (string.IsNullOrEmpty (str))
+				return "";
 			StringBuilder sb = new StringBuilder ();
-			if (value != null) {
-				bool convertTabs = Options.TabsToSpaces;
-				DocumentLocation loc = Document.OffsetToLocation (offset);
-				for (int i = 0; i < value.Length; i++) {
-					char ch = value[i];
-					switch (ch) {
-					case '\u00A0': // convert non breaking spaces to standard spaces.
-						sb.Append (' ');
-						break;
-					case '\t':
-						if (convertTabs) {
-							int tabWidth = TextViewMargin.GetNextTabstop (this, loc.Column) - loc.Column;
-							sb.Append (new string (' ', tabWidth));
-							loc.Column += tabWidth;
-						} else 
-							goto default;
-						break;
-					case '\r':
-						if (i + 1 < value.Length && value[i + 1] == '\n')
-							i++;
-						goto case '\n';
-					case '\n':
-						sb.Append (EolMarker);
-						loc.Line++;
-						loc.Column = 0;
-						break;
-					default:
-						sb.Append (ch);
-						loc.Column++;
-						break;
-					}
+			bool convertTabs = Options.TabsToSpaces;
+			for (int i = 0; i < str.Length; i++) {
+				char ch = str[i];
+				switch (ch) {
+				case '\u00A0': // convert non breaking spaces to standard spaces.
+					sb.Append (' ');
+					break;
+				case '\t':
+					if (convertTabs) {
+						int tabWidth = TextViewMargin.GetNextTabstop (this, loc.Column) - loc.Column;
+						sb.Append (new string (' ', tabWidth));
+						loc.Column += tabWidth;
+					} else 
+						goto default;
+					break;
+				case '\r':
+					if (i + 1 < str.Length && str[i + 1] == '\n')
+						i++;
+					goto case '\n';
+				case '\n':
+					sb.Append (EolMarker);
+					loc.Line++;
+					loc.Column = 0;
+					break;
+				default:
+					sb.Append (ch);
+					loc.Column++;
+					break;
 				}
 			}
-			
-			((IBuffer)document).Replace (offset, count, sb.ToString ());
-			return sb.Length;
+			return sb.ToString ();
+		}
+		
+		public string FormatString (int offset, string str)
+		{
+			return FormatString (Document.OffsetToLocation (offset), str);
+		}
+		
+		public int Replace (int offset, int count, string value)
+		{
+			string formattedString = FormatString (offset, value);
+			((IBuffer)document).Replace (offset, count, formattedString);
+			return formattedString.Length;
 		}
 			
 		public void InsertAtCaret (string text)

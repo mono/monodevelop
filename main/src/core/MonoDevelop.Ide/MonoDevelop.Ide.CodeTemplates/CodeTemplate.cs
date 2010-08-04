@@ -209,7 +209,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 			TemplateResult result = new TemplateResult ();
 			StringBuilder sb = new StringBuilder ();
 			int lastOffset = 0;
-			string code = context.TemplateCode;
+			string code = context.Document.Editor.FormatString (context.InsertPosition, context.TemplateCode);
+			
 			result.TextLinks = new List<TextLink> ();
 			foreach (Match match in variableRegEx.Matches (code)) {
 				string name = match.Groups[1].Value;
@@ -364,7 +365,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				Document = document,
 				ProjectDom = dom,
 				ParsedDocument = doc,
-				InsertPosition = new DomLocation (data.Caret.Line + 1, data.Caret.Column + 1),
+				InsertPosition = data.Caret.Location,
 				LineIndent = data.Document.GetLineIndent (data.Caret.Line),
 				TemplateCode = IndentCode (Code, document.Editor.EolMarker, data.Document.GetLineIndent (data.Caret.Line))
 			};
