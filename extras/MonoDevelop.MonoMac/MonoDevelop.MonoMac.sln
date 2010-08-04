@@ -27,7 +27,8 @@ Global
 		$1.DirectoryNamespaceAssociation = PrefixedFlat
 		$1.ResourceNamePolicy = FileName
 		$0.ChangeLogPolicy = $2
-		$2.UpdateMode = ProjectRoot
+		$2.UpdateMode = None
+		$2.VcsIntegration = None
 		$2.inheritsSet = Mono
 		$0.TextStylePolicy = $3
 		$3.FileWidth = 120

@@ -1,7 +1,7 @@
 <Combine fileversion="2.0">
   <Policies>
     <VersionControlPolicy inheritsSet="Mono" />
-    <ChangeLogPolicy UpdateMode="Nearest" inheritsSet="Mono" />
+    <ChangeLogPolicy UpdateMode="None" VcsIntegration="None" inheritsSet="Mono" />
   </Policies>
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
