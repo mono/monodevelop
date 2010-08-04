@@ -111,7 +111,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			IEditableTextBuffer textBuffer = document.GetContent<IEditableTextBuffer>();					
 			if (textBuffer == null) return false;
 			
-			AuthorInformation userInfo = IdeApp.Workspace.GetAuthorInformation (document.Project);
+			AuthorInformation userInfo = document.Project != null ? document.Project.AuthorInformation : AuthorInformation.Default;
 			
 			if (!userInfo.IsValid) {
 				string title = GettextCatalog.GetString ("ChangeLog entries can't be generated");

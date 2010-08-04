@@ -1,3 +1,9 @@
+2010-08-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* ChangeLogAddIn.cs:
+	* ProjectOptionPanelWidget.cs:
+	* CommitDialogExtensionWidget.cs: Track api changes.
+
 2010-07-28  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* CommitDialogExtensionWidget.cs: Track api changes.
