@@ -203,21 +203,6 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		public AuthorInformation GetAuthorInformation  (SolutionItem item)
-		{
-			if (item != null)
-				return GetAuthorInformation (item.ParentSolution);
-			return AuthorInformation.Default;
-		}
-		
-		public AuthorInformation GetAuthorInformation (Solution solution)
-		{
-			if (solution == null)
-				return AuthorInformation.Default;
-			AuthorInformation info = solution.UserProperties.GetValue<AuthorInformation> ("AuthorInfo");
-			return info ?? AuthorInformation.Default;
-		}
-		
 #region Model queries
 		
 		public SolutionEntityItem FindSolutionItem (string fileName)

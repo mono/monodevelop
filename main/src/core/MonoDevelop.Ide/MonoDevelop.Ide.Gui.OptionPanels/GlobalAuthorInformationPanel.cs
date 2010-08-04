@@ -29,6 +29,7 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {

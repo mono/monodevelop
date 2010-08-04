@@ -927,7 +927,6 @@
     <Compile Include="BuildVariables.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\ITextEditorResolver.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\AuthorInformationPanel.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\AuthorInformation.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\GlobalAuthorInformationPanel.cs" />
     <Compile Include="MonoDevelop.Ide.StandardHeader\StandardHeaderPolicyPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.OptionPanels.AuthorInformationPanelWidget.cs" />

@@ -1,3 +1,16 @@
+2010-08-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* MonoDevelop.Ide.csproj:
+	* MonoDevelop.Ide/RootWorkspace.cs:
+	* MonoDevelop.Ide.Gui/AuthorInformation.cs:
+	* MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/AuthorInformationPanel.cs:
+	* MonoDevelop.Ide.Gui.OptionPanels/GlobalAuthorInformationPanel.cs:
+	  Moved AuthorInformation to MD.Projects. Use the new
+	  AuthorInformation added to Solution and SolutionItem. Track
+	  api changes.
+
 2010-08-03  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.Ide/RootWorkspace.cs: Pick a good default

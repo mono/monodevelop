@@ -40,19 +40,13 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public override Gtk.Widget CreatePanelWidget ()
 		{
-			AuthorInformation info = solution.UserProperties.GetValue<AuthorInformation> ("AuthorInfo");
-			return widget = new AuthorInformationPanelWidget (info);
+			return widget = new AuthorInformationPanelWidget (solution.LocalAuthorInformation);
 		}
 
 		public override void ApplyChanges ()
 		{
-			if (solution != null) {
-				AuthorInformation ainfo = widget.Get ();
-				if (ainfo != null)
-					solution.UserProperties.SetValue<AuthorInformation> ("AuthorInfo", ainfo);
-				else if (solution.UserProperties.HasValue ("AuthorInfo"))
-					solution.UserProperties.RemoveValue ("AuthorInfo");
-			}
+			if (solution != null)
+				solution.LocalAuthorInformation = widget.Get ();
 		}
 
 		public override void Initialize (MonoDevelop.Ide.Gui.Dialogs.OptionsDialog dialog, object dataObject)

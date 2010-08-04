@@ -516,7 +516,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui/AbstractViewContent.cs \
 	MonoDevelop.Ide.Gui/AddinUpdateHandler.cs \
 	MonoDevelop.Ide.Gui/AsyncDispatchAttribute.cs \
-	MonoDevelop.Ide.Gui/AuthorInformation.cs \
 	MonoDevelop.Ide.Gui/BackgroundProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/ConfigurationComboBox.cs \
 	MonoDevelop.Ide.Gui/DefaultWorkbench.cs \
