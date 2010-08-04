@@ -25,7 +25,8 @@ Global
 		$0.VersionControlPolicy = $3
 		$3.inheritsSet = Mono
 		$0.ChangeLogPolicy = $4
-		$4.UpdateMode = ProjectRoot
+		$4.UpdateMode = None
+		$4.VcsIntegration = None
 		$4.inheritsSet = Mono
 	EndGlobalSection
 EndGlobal
