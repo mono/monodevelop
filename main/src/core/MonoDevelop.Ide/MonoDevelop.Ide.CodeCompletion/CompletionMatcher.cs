@@ -106,6 +106,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (filterLowerCase.Length == 0) 
 				return new int[0];
+			if (string.IsNullOrEmpty (text))
+				return null;
 			var lane = MatchString (text);
 			if (lane == null)
 				return null;
