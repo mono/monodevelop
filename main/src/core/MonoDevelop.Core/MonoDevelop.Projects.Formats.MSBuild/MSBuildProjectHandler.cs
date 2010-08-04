@@ -817,7 +817,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			} else
 				msproject.RemoveProjectExtensions ("MonoDevelop");
 			
-			msproject.Save (eitem.FileName);
+			string txt = msproject.Save ();
+			
+			// Don't save the file to disk if the content did not change
+			if (txt != fileContent) {
+				File.WriteAllText (eitem.FileName, txt);
+				fileContent = txt;
+			}
 		}
 
 		void CollectMergetoprojectProperties (MSBuildPropertyGroup pgroup, List<String> propertyNames, Dictionary<string,string> mergeToProjectProperties)
