@@ -184,7 +184,7 @@ namespace MonoDevelop.Refactoring
 			int lineNumber = line + 1;
 			
 			if (delta == 0) {
-				insertBefore = NewLineInsertion.BlankLine;
+				insertBefore = NewLineInsertion.Eol;
 				insertAfter = NewLineInsertion.BlankLine;
 			} else if (delta == 1) {
 				insertAfter = NewLineInsertion.BlankLine;

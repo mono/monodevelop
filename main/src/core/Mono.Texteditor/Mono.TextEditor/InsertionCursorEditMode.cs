@@ -73,22 +73,24 @@ namespace Mono.TextEditor
 				return;
 			}
 			
-			editor.Insert (offset, str);
-			offset += str.Length;
+			offset += editor.Insert (offset, str);
 		}
 		
 		public void Insert (TextEditor editor, string text)
 		{
 			int offset = editor.Document.LocationToOffset (Location);
 			editor.Document.BeginAtomicUndo ();
-			InsertNewLine (editor, LineBefore, ref offset);
+			text = editor.GetTextEditorData ().FormatString (Location, text);
+			
 			LineSegment line = editor.Document.GetLineByOffset (offset);
 			string indent = editor.Document.GetLineIndent (line) ?? "";
-			editor.Replace (line.Offset, indent.Length, text);
-			offset = line.Offset + text.Length;
+			bool isBlankLine = indent.Length == line.EditableLength;
+			int insertionOffset = line.Offset;
+			offset = insertionOffset;
+			InsertNewLine (editor, LineBefore, ref offset);
+			
+			offset += editor.Insert (offset, text);
 			InsertNewLine (editor, LineAfter, ref offset);
-			if (!string.IsNullOrEmpty (indent))
-				editor.Insert (offset, indent);
 			editor.Document.EndAtomicUndo ();
 		}
 	}

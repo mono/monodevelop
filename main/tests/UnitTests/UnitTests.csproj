@@ -206,6 +206,7 @@
     <Compile Include="Mono.TextEditor.Tests\VirtualSpacesTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\EditActionsTest.cs" />
     <Compile Include="Mono.TextEditor.Tests\BufferTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\InsertionModeTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />

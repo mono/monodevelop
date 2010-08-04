@@ -41,6 +41,7 @@ FILES =  \
 	Mono.TextEditor.Tests/DocumentTests.cs \
 	Mono.TextEditor.Tests/EditActionsTest.cs \
 	Mono.TextEditor.Tests/FoldingTests.cs \
+	Mono.TextEditor.Tests/InsertionModeTests.cs \
 	Mono.TextEditor.Tests/LineSplitterTests.cs \
 	Mono.TextEditor.Tests/SearchTests.cs \
 	Mono.TextEditor.Tests/SelectionTests.cs \
