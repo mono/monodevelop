@@ -80,11 +80,12 @@ namespace MonoDevelop.DocFood
 			
 			int offset = textEditorData.Caret.Offset;
 			textEditorData.Document.EndAtomicUndo ();
-			textEditorData.Insert (offset, documentationEmpty);
-			textEditorData.Caret.Offset = offset + documentationEmpty.Length;
+			int insertedLength = textEditorData.Insert (offset, documentationEmpty);
+			// important to set the caret position here for the undo step
+			textEditorData.Caret.Offset = offset + insertedLength;
 			textEditorData.Document.BeginAtomicUndo ();
-			textEditorData.Replace (offset, documentationEmpty.Length, documentation);
-			textEditorData.Caret.Offset = offset + documentation.Length;
+			insertedLength = textEditorData.Replace (offset, insertedLength, documentation);
+			textEditorData.Caret.Offset = offset + insertedLength;
 			return false;
 		}
 		
