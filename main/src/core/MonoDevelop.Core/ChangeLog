@@ -1,3 +1,11 @@
+2010-08-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProject.cs:
+	* MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:
+	  Don't save the msbuild file to disk if the content did not
+	  change. Fixes bug #628082 - MonoDevelop needs writable
+	  project files even though it doesn't write them.
+
 2010-07-22  Mike Krüger  <mkrueger@novell.com>
 
 	* MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs:
