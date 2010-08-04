@@ -115,8 +115,8 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			var conflicts = new List<Conflict> (Conflicts (MainEditor.Document));
 			
-			leftDiff  = new List<Mono.TextEditor.Utils.Hunk> (MainEditor.Document.Diff (editors[0].Document));
-			rightDiff = new List<Mono.TextEditor.Utils.Hunk> (MainEditor.Document.Diff (editors[2].Document));
+			leftDiff  = new List<Mono.TextEditor.Utils.Hunk> (editors[0].Document.Diff (MainEditor.Document));
+			rightDiff = new List<Mono.TextEditor.Utils.Hunk> (editors[2].Document.Diff (MainEditor.Document));
 			
 			LineSegment line;
 			leftDiff.RemoveAll (item => null != (line = MainEditor.Document.GetLine (item.InsertStart)) && 
@@ -130,15 +130,14 @@ namespace MonoDevelop.VersionControl.Views
 				var newConflict = conflicts[j];
 				
 				if (curConflict.EndOffset - curConflict.StartOffset == newConflict.EndOffset - newConflict.StartOffset) {
-					Console.WriteLine ("Found conflict !!");
 					var left = leftConflicts[curConflict];
 					var right = rightConflicts[curConflict];
 					
 					int middleA = MainEditor.Document.OffsetToLineNumber (newConflict.StartOffset);
 					int middleB = MainEditor.Document.OffsetToLineNumber (newConflict.EndOffset);
 				
-					leftDiff.Add (new Mono.TextEditor.Utils.Hunk (middleA, left.RemoveStart, middleB - middleA, left.Inserted));
-					rightDiff.Add (new Mono.TextEditor.Utils.Hunk (middleA, right.RemoveStart, middleB - middleA, right.Inserted));
+					leftDiff.Add (new Mono.TextEditor.Utils.Hunk (left.RemoveStart, middleA, left.Removed, middleB - middleA));
+					rightDiff.Add (new Mono.TextEditor.Utils.Hunk (right.RemoveStart, middleA, right.Removed, middleB - middleA));
 					i++;j++;
 				} else {
 					j++;
@@ -172,8 +171,8 @@ namespace MonoDevelop.VersionControl.Views
 				int middleA = MainEditor.Document.OffsetToLineNumber (conflict.StartOffset);
 				int middleB = MainEditor.Document.OffsetToLineNumber (conflict.EndOffset);
 				
-				leftConflicts[conflict] = new Mono.TextEditor.Utils.Hunk (middleA, leftA, middleB - middleA, leftB - leftA);
-				rightConflicts[conflict] = new Mono.TextEditor.Utils.Hunk (middleA, rightA, middleB - middleA, rightB - rightA);
+				leftConflicts[conflict] = new Mono.TextEditor.Utils.Hunk (leftA, middleA, leftB - leftA, middleB - middleA);
+				rightConflicts[conflict] = new Mono.TextEditor.Utils.Hunk (rightA, middleA, rightB - rightA, middleB - middleA);
 				
 				curOffset = conflict.EndOffset;
 			}
@@ -182,18 +181,7 @@ namespace MonoDevelop.VersionControl.Views
 			editors[0].Insert (editors[0].Document.Length, lastPart);
 			editors[2].Insert (editors[2].Document.Length, lastPart);
 
-			leftDiff  = new List<Mono.TextEditor.Utils.Hunk> (MainEditor.Document.Diff (editors[0].Document));
-			rightDiff = new List<Mono.TextEditor.Utils.Hunk> (MainEditor.Document.Diff (editors[2].Document));
-
-			
-			LineSegment line;
-			leftDiff.RemoveAll (item => null != (line = MainEditor.Document.GetLine (item.InsertStart)) && 
-				currentConflicts.Any (c => c.StartOffset <= line.Offset && line.Offset < c.EndOffset));
-			rightDiff.RemoveAll (item => null != (line = MainEditor.Document.GetLine (item.InsertStart)) && 
-				currentConflicts.Any (c => c.StartOffset <= line.Offset && line.Offset < c.EndOffset));
-			
-			leftDiff.AddRange (leftConflicts.Values);
-			rightDiff.AddRange (rightConflicts.Values);
+			UpdateDiff ();
 		}
 	
 	}

@@ -115,7 +115,7 @@ namespace Mono.TextEditor.Utils
 		public readonly int Removed;
 		public readonly int Inserted;
 
-		public Hunk (int insertStart, int removeStart, int removed, int inserted)
+		public Hunk (int removeStart, int insertStart, int removed, int inserted)
 		{
 			this.InsertStart = insertStart;
 			this.RemoveStart = removeStart;

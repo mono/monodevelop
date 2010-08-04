@@ -97,17 +97,32 @@ namespace MonoDevelop.VersionControl.Views
 				editor.Caret.PositionChanged += CaretPositionChanged;
 				editor.FocusInEvent += EditorFocusIn;
 				editor.SetScrollAdjustments (attachedHAdjustments[i], attachedVAdjustments[i]);
-				if (i == 0) {
-					editor.ExposeEvent +=  delegate (object sender, ExposeEventArgs args) {
-						var myEditor = (TextEditor)sender;
-						PaintEditorOverlay (myEditor, args, leftDiff, true);
-					};
-				} else {
-					editor.ExposeEvent +=  delegate (object sender, ExposeEventArgs args) {
-						var myEditor = (TextEditor)sender;
-						PaintEditorOverlay (myEditor, args, rightDiff, false);
-					};
-				}
+			}
+			
+			if (editors.Length == 2) {
+				editors[0].ExposeEvent +=  delegate (object sender, ExposeEventArgs args) {
+					var myEditor = (TextEditor)sender;
+					PaintEditorOverlay (myEditor, args, leftDiff, true);
+				};
+				
+				editors[1].ExposeEvent +=  delegate (object sender, ExposeEventArgs args) {
+					var myEditor = (TextEditor)sender;
+					PaintEditorOverlay (myEditor, args, leftDiff, false);
+				};
+			} else {
+				editors[0].ExposeEvent +=  delegate (object sender, ExposeEventArgs args) {
+					var myEditor = (TextEditor)sender;
+					PaintEditorOverlay (myEditor, args, leftDiff, true);
+				};
+				editors[1].ExposeEvent +=  delegate (object sender, ExposeEventArgs args) {
+					var myEditor = (TextEditor)sender;
+					PaintEditorOverlay (myEditor, args, leftDiff, false);
+					PaintEditorOverlay (myEditor, args, rightDiff, false);
+				};
+				editors[2].ExposeEvent +=  delegate (object sender, ExposeEventArgs args) {
+					var myEditor = (TextEditor)sender;
+					PaintEditorOverlay (myEditor, args, rightDiff, true);
+				};
 			}
 			
 			foreach (var widget in headerWidgets) {
@@ -290,6 +305,9 @@ namespace MonoDevelop.VersionControl.Views
 				newValue = System.Math.Max (System.Math.Min (adjustment.Upper  - adjustment.PageSize, newValue), adjustment.Lower);
 				adjustment.Value = newValue;
 			}
+			foreach (var middleWidget in middleAreas) {
+				middleWidget.QueueDraw ();
+			}
 			return base.OnScrollEvent (evnt);
 		}
 		
@@ -299,31 +317,28 @@ namespace MonoDevelop.VersionControl.Views
 			children.ForEach (child => child.Child.SizeRequest ());
 		}
 
-		public static Cairo.Color GetColor (Mono.TextEditor.Utils.Hunk item, double alpha)
+		public static Cairo.Color GetColor (Mono.TextEditor.Utils.Hunk hunk, bool removeSide, double alpha)
 		{
-			if (item.Inserted == 0)
-				return new Cairo.Color (0.4, 0.8, 0.4, alpha);
-			if (item.Removed == 0) 
-				return new Cairo.Color (0.8, 0.4, 0.4, alpha);
-			return new Cairo.Color (0.4, 0.8, 0.8, alpha);
+			if (removeSide)
+				return hunk.Removed > 0 ? new Cairo.Color (0.8, 0.4, 0.4, alpha) : new Cairo.Color (0.4, 0.8, 0.4, alpha);
+			return hunk.Inserted == 0 ? new Cairo.Color (0.8, 0.4, 0.4, alpha) : new Cairo.Color (0.4, 0.8, 0.4, alpha);
 		}
 
 		const double fillAlpha = 0.1;
 		const double lineAlpha = 0.6;
 		
-		void PaintEditorOverlay (TextEditor editor, ExposeEventArgs args, List<Mono.TextEditor.Utils.Hunk> diff, bool takeLeftSide)
+		void PaintEditorOverlay (TextEditor editor, ExposeEventArgs args, List<Mono.TextEditor.Utils.Hunk> diff, bool paintRemoveSide)
 		{
 			if (diff == null)
 				return;
-			
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (args.Event.Window)) {
 				foreach (var hunk in diff) {
-					int y1 = editor.LineToVisualY (takeLeftSide ? hunk.InsertStart : hunk.RemoveStart) - (int)editor.VAdjustment.Value;
-					int y2 = editor.LineToVisualY (takeLeftSide ? hunk.InsertStart + hunk.Removed : hunk.RemoveStart + hunk.Inserted) - (int)editor.VAdjustment.Value;
+					int y1 = editor.LineToVisualY (paintRemoveSide ? hunk.RemoveStart : hunk.InsertStart) - (int)editor.VAdjustment.Value;
+					int y2 = editor.LineToVisualY (paintRemoveSide ? hunk.RemoveStart + hunk.Removed : hunk.InsertStart + hunk.Inserted) - (int)editor.VAdjustment.Value;
 					if (y1 == y2)
 						y2 = y1 + 1;
 					cr.Rectangle (0, y1, editor.Allocation.Width, y2 - y1);
-					cr.Color = GetColor (hunk, fillAlpha);
+					cr.Color = GetColor (hunk, paintRemoveSide, fillAlpha);
 					cr.Fill ();
 //					if (hunk.Right.Count > 0 && hunk.Left.Count > 0) {
 //						int startOffset = editor.Document.GetLine (hunk.Right.Start).Offset;
@@ -361,7 +376,7 @@ namespace MonoDevelop.VersionControl.Views
 //						PaintBlock (editor, cr, startOffset, 0, ref blockStart);
 //					}
 					
-					cr.Color = GetColor (hunk, lineAlpha);
+					cr.Color =  GetColor (hunk, paintRemoveSide, lineAlpha);
 					cr.MoveTo (0, y1);
 					cr.LineTo (editor.Allocation.Width, y1);
 					cr.Stroke ();
@@ -420,7 +435,7 @@ namespace MonoDevelop.VersionControl.Views
 			localUpdate.Remove (data);
 			info.Document.Editor.Replace (e.Offset, e.Count, e.Value);
 			localUpdate.Add (data);
-			CreateDiff ();
+			UpdateDiff ();
 		}
 		
 		public void RemoveLocal (TextEditorData data)
@@ -459,13 +474,16 @@ namespace MonoDevelop.VersionControl.Views
 				if (!hideButton) {
 					int delta = widget.MainEditor.Allocation.Y - Allocation.Y;
 					foreach (var hunk in Diff) {
-						int y1 = delta + fromEditor.LineToVisualY (useLeft ? hunk.InsertStart : hunk.RemoveStart) - (int)fromEditor.VAdjustment.Value;
-						int y2 = delta + fromEditor.LineToVisualY (useLeft ? hunk.InsertStart + hunk.Removed : hunk.RemoveStart + hunk.Inserted) - (int)fromEditor.VAdjustment.Value;
+						int z1 = delta + fromEditor.LineToVisualY (hunk.RemoveStart) - (int)fromEditor.VAdjustment.Value;
+						int z2 = delta + fromEditor.LineToVisualY (hunk.RemoveStart + hunk.Removed) - (int)fromEditor.VAdjustment.Value;
+						if (z1 == z2)
+							z2 = z1 + 1;
+						
+						int y1 = delta + toEditor.LineToVisualY (hunk.InsertStart) - (int)toEditor.VAdjustment.Value;
+						int y2 = delta + toEditor.LineToVisualY (hunk.InsertStart + hunk.Inserted) - (int)toEditor.VAdjustment.Value;
+
 						if (y1 == y2)
 							y2 = y1 + 1;
-						
-						int z1 = delta + toEditor.LineToVisualY (useLeft ? hunk.RemoveStart : hunk.InsertStart) - (int)toEditor.VAdjustment.Value;
-						int z2 = delta + toEditor.LineToVisualY (useLeft ? hunk.RemoveStart + hunk.Inserted : hunk.InsertStart + hunk.Removed) - (int)toEditor.VAdjustment.Value;
 						double x, y, w, h;
 						GetButtonPosition (hunk, y1, y2, z1, z2, out x, out y, out w, out h);
 						
@@ -483,7 +501,6 @@ namespace MonoDevelop.VersionControl.Views
 					TooltipText = null;
 				
 				if (this.selectedHunk != selectedHunk) {
-					Console.WriteLine ("draw !!! ");
 					this.selectedHunk = selectedHunk;
 					QueueDraw ();
 				}
@@ -494,28 +511,19 @@ namespace MonoDevelop.VersionControl.Views
 			{
 				if (!selectedHunk.IsEmpty) {
 					toEditor.Document.BeginAtomicUndo ();
-					Console.WriteLine ("Hunk:" + selectedHunk);
-					for (int i = 0; i < widget.editors.Length; i++) {
-						var editor = widget.editors[i];
-						if (editor == toEditor)
-							Console.WriteLine ("to: " + i);
-						if (editor == fromEditor)
-							Console.WriteLine ("from: " + i);
-					}
-						
-					var start = toEditor.Document.GetLine (selectedHunk.RemoveStart);
-					int toOffset = start.Offset;
-					if (selectedHunk.Removed > 0) {
-						int line = Math.Min (selectedHunk.RemoveStart + selectedHunk.Removed - 1, toEditor.Document.LineCount - 1);
+					var start = toEditor.Document.GetLine (selectedHunk.InsertStart);
+					int toOffset = start != null ? start.Offset : toEditor.Document.Length;
+					if (start != null && selectedHunk.Inserted > 0) {
+						int line = Math.Min (selectedHunk.InsertStart + selectedHunk.Inserted - 1, toEditor.Document.LineCount - 1);
 						var end = toEditor.Document.GetLine (line);
 						toEditor.Remove (start.Offset, end.EndOffset - start.Offset);
 					}
 				
-					if (selectedHunk.Inserted > 0) {
-						start = fromEditor.Document.GetLine (selectedHunk.InsertStart);
-						int line = Math.Min (selectedHunk.InsertStart + selectedHunk.Inserted - 1, fromEditor.Document.LineCount - 1);
+					if (selectedHunk.Removed > 0) {
+						start = fromEditor.Document.GetLine (Math.Min (selectedHunk.RemoveStart, fromEditor.Document.LineCount - 1));
+						int line = Math.Min (selectedHunk.RemoveStart + selectedHunk.Removed - 1, fromEditor.Document.LineCount - 1);
 						var end = fromEditor.Document.GetLine (line);
-						toEditor.Insert (toOffset, fromEditor.Document.GetTextBetween (start.Offset, end.EndOffset));
+						toEditor.Insert (toOffset, start.Offset == end.EndOffset ? toEditor.EolMarker : fromEditor.Document.GetTextBetween (start.Offset, end.EndOffset));
 					}
 					
 					toEditor.Document.EndAtomicUndo ();
@@ -536,24 +544,23 @@ namespace MonoDevelop.VersionControl.Views
 			
 			public bool GetButtonPosition (Mono.TextEditor.Utils.Hunk hunk, int y1, int y2, int z1, int z2, out double x, out double y, out double w, out double h)
 			{
-				if (useLeft && hunk.Removed > 0 || !useLeft && hunk.Removed == 0) {
-					int b1 = useLeft ? z1 : y1;
-					int b2 = useLeft ? z2 : y2;
-					
-					x = lineWidth;
+				if (hunk.Removed > 0) {
+					int b1 = z1;
+					int b2 = z2;
+					x = useLeft ? lineWidth : Allocation.Width - buttonSize;
 					y = b1;
 					w = buttonSize;
 					h = b2 - b1;
-					return useLeft;
+					return hunk.Inserted > 0;
 				} else {
-					int b1 = useLeft ? z1 : y1;
-					int b2 = useLeft ? z2 : y2;
+					int b1 = y1;
+					int b2 = y2;
 					
-					x = Allocation.Width - buttonSize;
+					x = useLeft ? Allocation.Width - buttonSize : lineWidth;
 					y = b1;
 					w = buttonSize - lineWidth;
 					h = b2 - b1;
-					return !useLeft;
+					return  hunk.Removed > 0;
 				}
 			}
 
@@ -584,13 +591,26 @@ namespace MonoDevelop.VersionControl.Views
 					lineWidth = cr.LineWidth;
 					int delta = widget.MainEditor.Allocation.Y - Allocation.Y;
 					foreach (Mono.TextEditor.Utils.Hunk hunk in Diff) {
-						int y1 = delta + fromEditor.LineToVisualY (useLeft ? hunk.InsertStart : hunk.RemoveStart) - (int)fromEditor.VAdjustment.Value;
-						int y2 = delta + fromEditor.LineToVisualY (useLeft ? hunk.InsertStart + hunk.Removed : hunk.RemoveStart + hunk.Inserted) - (int)fromEditor.VAdjustment.Value;
+						int z1 = delta + fromEditor.LineToVisualY (hunk.RemoveStart) - (int)fromEditor.VAdjustment.Value;
+						int z2 = delta + fromEditor.LineToVisualY (hunk.RemoveStart + hunk.Removed) - (int)fromEditor.VAdjustment.Value;
+						if (z1 == z2)
+							z2 = z1 + 1;
+						
+						int y1 = delta + toEditor.LineToVisualY (hunk.InsertStart) - (int)toEditor.VAdjustment.Value;
+						int y2 = delta + toEditor.LineToVisualY (hunk.InsertStart + hunk.Inserted) - (int)toEditor.VAdjustment.Value;
+
 						if (y1 == y2)
 							y2 = y1 + 1;
 						
-						int z1 = delta + toEditor.LineToVisualY (useLeft ? hunk.RemoveStart : hunk.InsertStart) - (int)toEditor.VAdjustment.Value;
-						int z2 = delta + toEditor.LineToVisualY (useLeft ? hunk.RemoveStart + hunk.Inserted : hunk.InsertStart + hunk.Removed) - (int)toEditor.VAdjustment.Value;
+						if (!useLeft) {
+							int tmp = z1;
+							z1 = y1;
+							y1 = tmp;
+							
+							tmp = z2;
+							z2 = y2;
+							y2 = tmp;
+						}
 						
 						int x1 = 0;
 						int x2 = Allocation.Width;
@@ -616,10 +636,10 @@ namespace MonoDevelop.VersionControl.Views
 							(x2 - x1) / 2, z2,
 							x1, z2);
 						cr.ClosePath ();
-						cr.Color = GetColor (hunk, fillAlpha);
+						cr.Color = GetColor (hunk, this.useLeft, fillAlpha);
 						cr.Fill ();
 						
-						cr.Color = GetColor (hunk, lineAlpha);
+						cr.Color = GetColor (hunk, this.useLeft, lineAlpha);
 						cr.MoveTo (x2, y1);
 						cr.CurveTo ((x2 - x1) / 2, y1,
 							(x2 - x1) / 2,  z1,
@@ -636,7 +656,8 @@ namespace MonoDevelop.VersionControl.Views
 							bool isButtonSelected = hunk == selectedHunk;
 							
 							double x, y, w, h;
-							bool drawArrow = GetButtonPosition (hunk, y1, y2, z1, z2, out x, out y, out w, out h);
+							bool drawArrow = useLeft ? GetButtonPosition (hunk, y1, y2, z1, z2, out x, out y, out w, out h) :
+								GetButtonPosition (hunk, z1, z2, y1, y2, out x, out y, out w, out h);
 							
 							cr.Rectangle (x, y, w, h);
 							if (isButtonSelected) {
