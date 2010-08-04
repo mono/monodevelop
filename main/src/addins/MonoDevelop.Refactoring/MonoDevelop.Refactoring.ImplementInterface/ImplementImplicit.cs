@@ -79,7 +79,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			mode.StartMode ();
 			mode.Exited += delegate(object s, InsertionCursorEventArgs args) {
 				if (args.Success) {
-					CodeGenerator generator = CodeGenerator.CreateGenerator (options.GetTextEditorData ().Document.MimeType);
+					CodeGenerator generator = options.Document.CreateCodeGenerator ();
 					args.InsertionPoint.Insert (editor, generator.CreateInterfaceImplementation (declaringType, interfaceType, false));
 				}
 			};

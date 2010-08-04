@@ -653,6 +653,13 @@ namespace MonoDevelop.Ide.Gui
 			else
 				return null;
 		}
+	
+		public MonoDevelop.Projects.CodeGeneration.CodeGenerator CreateCodeGenerator ()
+		{
+			return MonoDevelop.Projects.CodeGeneration.CodeGenerator.CreateGenerator (Editor.Document.MimeType, 
+				Editor.Options.TabsToSpaces, Editor.Options.TabSize, Editor.EolMarker);
+		}
+
 	}
 	
 	

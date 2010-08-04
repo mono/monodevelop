@@ -432,7 +432,7 @@ namespace MonoDevelop.Refactoring {
 			mode.StartMode ();
 			mode.Exited += delegate(object s, InsertionCursorEventArgs args) {
 				if (args.Success) {
-					CodeGenerator generator = CodeGenerator.CreateGenerator (editor.Document.MimeType);
+					CodeGenerator generator =  CodeGenerator.CreateGenerator (editor.Document.MimeType, editor.Options.TabsToSpaces, editor.Options.TabSize, editor.EolMarker);
 					StringBuilder code = new StringBuilder ();
 					for (int j = 0; j < data.Count; j++) {
 						if (j > 0) {

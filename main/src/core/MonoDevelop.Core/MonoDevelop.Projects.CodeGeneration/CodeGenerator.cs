@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom;
@@ -37,13 +38,53 @@ namespace MonoDevelop.Projects.CodeGeneration
 	{
 		static Dictionary<string, MimeTypeExtensionNode> generators = new Dictionary<string, MimeTypeExtensionNode> ();
 		
-		public static CodeGenerator CreateGenerator (string mimeType)
+		protected bool UseSpaceIndent {
+			get;
+			private set;
+		}
+		
+		protected string EolMarker {
+			get;
+			private set;
+		}
+		
+		protected int TabSize {
+			get;
+			private set;
+		}
+		
+		public static CodeGenerator CreateGenerator (string mimeType, bool useSpaceIndent, int tabSize, string eolMarker)
 		{
 			MimeTypeExtensionNode node;
 			if (!generators.TryGetValue (mimeType, out node))
 				return null;
-			return (CodeGenerator)node.CreateInstance ();
+			if (eolMarker == null)
+				throw new ArgumentNullException ("eolMarker");
+			if (eolMarker.Length == 0 || eolMarker.Length > 2)
+				throw new ArgumentException ("invalid eolMarker");
+			if (tabSize <= 0)
+				throw new ArgumentException ("tabSize <= 0");
+			
+			var result = (CodeGenerator)node.CreateInstance ();
+			result.UseSpaceIndent = useSpaceIndent;
+			result.EolMarker = eolMarker;
+			result.TabSize = tabSize;
+			return result;
 		}
+		
+		protected void AppendLine (StringBuilder sb)
+		{
+			sb.Append (EolMarker);
+		}
+		
+		protected string GetIndent (int indentLevel)
+		{
+			if (UseSpaceIndent) 
+				return new string (' ', indentLevel * TabSize);
+				
+			return new string ('\t', indentLevel);
+		}
+		
 		
 		public static bool HasGenerator (string mimeType)
 		{
@@ -107,8 +148,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 				if (baseInterface.FullName == DomReturnType.Object.FullName)
 					break;
 				if (result.Length > 0) {
-					result.AppendLine ();
-					result.AppendLine ();
+					AppendLine (result);
+					AppendLine (result);
 				}
 				string implementation = InternalCreateInterfaceImplementation (implementingType, baseInterface, explicitly);
 				result.Append (WrapInRegions (baseInterface.Name + " implementation", implementation));
@@ -184,8 +225,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 			bool first = true;
 			foreach (var pair in toImplement) {
 				if (!first) {
-					result.AppendLine ();
-					result.AppendLine ();
+					AppendLine (result);
+					AppendLine (result);
 				} else {
 					first = false;
 				}

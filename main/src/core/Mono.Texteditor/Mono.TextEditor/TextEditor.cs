@@ -1481,6 +1481,12 @@ namespace Mono.TextEditor
 		}
 
 		#region TextEditorData functions
+		public string EolMarker {
+			get {
+				return textEditorData.EolMarker;
+			}
+		}
+		
 		public Mono.TextEditor.Highlighting.Style ColorStyle {
 			get {
 				return this.textEditorData.ColorStyle;

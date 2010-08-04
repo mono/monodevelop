@@ -241,7 +241,7 @@ namespace MonoDevelop.Refactoring
 		{
 			try {
 				StringBuilder code = new StringBuilder ();
-				CodeGenerator generator = CodeGenerator.CreateGenerator (editor.Document.MimeType);
+				CodeGenerator generator =  CodeGenerator.CreateGenerator (editor.Document.MimeType, editor.Options.TabsToSpaces, editor.Options.TabSize, editor.EolMarker);
 				
 				foreach (KeyValuePair<IType, IEnumerable<TreeIter>> kvp in GetAllClasses ()) {
 					if (code.Length > 0) {
