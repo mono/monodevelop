@@ -80,15 +80,19 @@ namespace MonoDevelop.VersionControl
 			List<DiffInfo> diffs = new List<DiffInfo> ();
 			
 			object[] exts = AddinManager.GetExtensionObjects ("/MonoDevelop/VersionControl/CommitDialogExtensions", typeof(CommitDialogExtension), false);
-			
+			List<CommitDialogExtension> activeExtensions = new List<CommitDialogExtension> ();
 			try {
 				foreach (CommitDialogExtension ext in exts) {
-					ext.Initialize (items);
-					ext.OnBeginCommit (items);
+					if (ext.Initialize (items)) {
+						activeExtensions.Add (ext);
+						if (!ext.OnBeginCommit (items))
+							break;
+					} else
+						ext.Destroy ();
 				}
 				diffs.AddRange (repo.PathDiff (items, false));
 			} finally {
-				foreach (CommitDialogExtension ext in exts) {
+				foreach (CommitDialogExtension ext in activeExtensions) {
 					ext.OnEndCommit (items, false);
 					ext.Destroy ();
 				}

@@ -7,6 +7,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using Mono.Addins;
 using MonoDevelop.Ide;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.VersionControl.Dialogs
 {

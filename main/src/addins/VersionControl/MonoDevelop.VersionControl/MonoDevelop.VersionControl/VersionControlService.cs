@@ -649,7 +649,7 @@ namespace MonoDevelop.VersionControl
 				style = PolicyService.GetDefaultPolicy<CommitMessageStyle> ();
 			}
 			
-			authorInfo = IdeApp.Workspace.GetAuthorInformation (project);
+			authorInfo = project != null ? project.AuthorInformation : AuthorInformation.Default;
 			
 			CommitMessageFormat format = new CommitMessageFormat ();
 			format.Style = style;

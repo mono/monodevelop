@@ -41,13 +41,13 @@ namespace MonoDevelop.VersionControl
 			get { return items.Count (item => !string.IsNullOrEmpty (item.Comment)); }
 		}
 		
-		public string GenerateGlobalComment (CommitMessageFormat format, MonoDevelop.Ide.Gui.AuthorInformation userInfo)
+		public string GenerateGlobalComment (CommitMessageFormat format, MonoDevelop.Projects.AuthorInformation userInfo)
 		{
 			return GeneratePathComment (basePath, items, format, userInfo);
 		}
 		
 		public string GeneratePathComment (string path, IEnumerable<ChangeSetItem> items, 
-			CommitMessageFormat messageFormat, MonoDevelop.Ide.Gui.AuthorInformation userInfo)
+			CommitMessageFormat messageFormat, MonoDevelop.Projects.AuthorInformation userInfo)
 		{
 			ChangeLogWriter writer = new ChangeLogWriter (path, userInfo);
 			writer.MessageFormat = messageFormat;

@@ -31,7 +31,7 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 
 using MonoDevelop.Core;

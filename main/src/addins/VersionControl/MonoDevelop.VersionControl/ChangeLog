@@ -1,3 +1,16 @@
+2010-08-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* MonoDevelop.VersionControl/ChangeSet.cs:
+	* MonoDevelop.VersionControl/ChangeLogWriter.cs:
+	* MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:
+	* MonoDevelop.VersionControl/VersionControlService.cs:
+	* MonoDevelop.VersionControl.Dialogs/VersionControlPolicyPanel.cs:
+	* MonoDevelop.VersionControl.Dialogs/CommitMessageStylePanelWidget.cs:
+	  Track api changes.
+
+	* MonoDevelop.VersionControl/CreatePatchCommand.cs: Ignore
+	  extensions which failed to initialize.
+
 2010-07-29  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl/Repository.cs:
