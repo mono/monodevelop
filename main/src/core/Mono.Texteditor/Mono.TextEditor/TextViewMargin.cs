@@ -1302,6 +1302,7 @@ namespace Mono.TextEditor
 						wrapper.LineChars = virtualSpace.ToCharArray ();
 						wrapper.Layout.SetText (virtualSpace);
 						wrapper.Layout.Tabs = tabArray;
+						wrapper.Layout.FontDescription = textEditor.Options.Font;
 						int vy, vx;
 						wrapper.Layout.GetSize (out vx, out vy);
 						SetVisibleCaretPosition (win, (int)((pangoPosition + vx + layout.PangoWidth) / Pango.Scale.PangoScale), y);

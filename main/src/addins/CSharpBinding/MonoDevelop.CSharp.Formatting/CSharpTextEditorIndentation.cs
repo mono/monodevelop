@@ -141,7 +141,7 @@ namespace MonoDevelop.CSharp.Formatting
 			{
 				string indent = GetIndent (lineNumber, column);
 				if (column == indent.Length)
-					return indent;
+					return data.FormatString (0, indent);
 				return "";
 			}
 			
