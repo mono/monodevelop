@@ -69,8 +69,8 @@ namespace MonoDevelop.CSharp.Highlighting
 					if (data == null)
 						continue;
 					Mono.TextEditor.Document document = data.Document;
-					document.UpdateHighlighting ();
-					document.CommitUpdateAll ();
+					document.Text = document.Text;
+					doc.UpdateParseDocument ();
 				}
 			};
 		}
