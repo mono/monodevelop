@@ -18,6 +18,7 @@ FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.PushDialog.cs \
+	gtk-gui/MonoDevelop.VersionControl.Git.UserInfoConflictDialog.cs \
 	MonoDevelop.VersionControl.Git/Commands.cs \
 	MonoDevelop.VersionControl.Git/CommitDialogExtensionWidget.cs \
 	MonoDevelop.VersionControl.Git/GitClient.cs \
@@ -25,7 +26,8 @@ FILES =  \
 	MonoDevelop.VersionControl.Git/GitRepository.cs \
 	MonoDevelop.VersionControl.Git/GitService.cs \
 	MonoDevelop.VersionControl.Git/GitVersionControl.cs \
-	MonoDevelop.VersionControl.Git/PushDialog.cs
+	MonoDevelop.VersionControl.Git/PushDialog.cs \
+	MonoDevelop.VersionControl.Git/UserInfoConflictDialog.cs
 
 RES =  \
 	gtk-gui/gui.stetic \

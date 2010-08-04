@@ -349,6 +349,18 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 		
+		public void GetUserInfo (out string name, out string email)
+		{
+			name = ToList (RunCommand ("config --get user.name", false)).FirstOrDefault ();
+			email = ToList (RunCommand ("config --get user.email", false)).FirstOrDefault ();
+		}
+		
+		public void SetUserInfo (string name, string email)
+		{
+			RunCommand ("config user.name \"" + name + "\"", false);
+			RunCommand ("config user.email \"" + email + "\"", false);
+		}
+		
 		public override void Checkout (FilePath targetLocalPath, Revision rev, bool recurse, IProgressMonitor monitor)
 		{
 			RunCommand ("clone " + Url + " " + targetLocalPath, true, monitor);

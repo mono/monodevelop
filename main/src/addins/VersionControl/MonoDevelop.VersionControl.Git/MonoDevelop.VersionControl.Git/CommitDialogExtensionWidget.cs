@@ -26,6 +26,8 @@
 using System;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -42,6 +44,74 @@ namespace MonoDevelop.VersionControl.Git
 				return true;
 			} else
 				return false;
+		}
+		
+		public override bool OnBeginCommit (ChangeSet changeSet)
+		{
+			// In this callback we check if the user information configured in Git
+			// matches the user information configured in MonoDevelop. If the configurations
+			// don't match, it shows a dialog asking the user what to do.
+			
+			GitRepository repo = (GitRepository) changeSet.Repository;
+			
+			Solution sol = null;
+			// Locate the solution to which the changes belong
+			foreach (Solution s in IdeApp.Workspace.GetAllSolutions ()) {
+				if (s.BaseDirectory == changeSet.BaseLocalPath || changeSet.BaseLocalPath.IsChildPathOf (s.BaseDirectory)) {
+					sol = s;
+					break;
+				}
+			}
+			if (sol == null)
+				return true;
+			
+			string val = sol.UserProperties.GetValue<string> ("GitUserInfo");
+			if (val == "UsingMD") {
+				// If the solution is configured to use the MD configuration, make sure the Git config is up to date.
+				string user;
+				string email;
+				repo.GetUserInfo (out user, out email);
+				if (user != sol.AuthorInformation.Name || email != sol.AuthorInformation.Email)
+					repo.SetUserInfo (sol.AuthorInformation.Name, sol.AuthorInformation.Email);
+			}
+			else if (val != "UsingGIT") {
+				string user;
+				string email;
+				repo.GetUserInfo (out user, out email);
+				if (user != sol.AuthorInformation.Name || email != sol.AuthorInformation.Email) {
+					// There is a conflict. Ask the user what to do
+					string gitInfo = GetDesc (user, email);
+					string mdInfo = GetDesc (sol.AuthorInformation.Name, sol.AuthorInformation.Email);
+					
+					UserInfoConflictDialog dlg = new UserInfoConflictDialog (mdInfo, gitInfo);
+					try {
+						if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+							if (dlg.UseMonoDevelopConfig) {
+								repo.SetUserInfo (sol.AuthorInformation.Name, sol.AuthorInformation.Email);
+								sol.UserProperties.SetValue ("GitUserInfo", "UsingMD");
+							} else
+								sol.UserProperties.SetValue ("GitUserInfo", "UsingGIT");
+							sol.SaveUserProperties ();
+						}
+						else
+							return false;
+					} finally {
+						dlg.Destroy ();
+					}
+				}
+			}
+			return true;
+		}
+		
+		string GetDesc (string name, string email)
+		{
+			if (string.IsNullOrEmpty (name) && string.IsNullOrEmpty (email))
+				return "Not configured";
+			if (string.IsNullOrEmpty (name))
+				name = GettextCatalog.GetString ("Name not configured");
+			if (string.IsNullOrEmpty (email))
+				email = GettextCatalog.GetString ("e-mail not configured");
+			return name + ", " + email;
 		}
 		
 		public override void OnEndCommit (ChangeSet changeSet, bool success)

@@ -1,3 +1,16 @@
+2010-08-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* gtk-gui/gui.stetic:
+	* MonoDevelop.VersionControl.Git.csproj:
+	* MonoDevelop.VersionControl.Git/GitRepository.cs:
+	* MonoDevelop.VersionControl.Git/UserInfoConflictDialog.cs:
+	* MonoDevelop.VersionControl.Git/CommitDialogExtensionWidget.cs:
+	* gtk-gui/MonoDevelop.VersionControl.Git.UserInfoConflictDialog.cs:
+	  Check conflicts between user information configured in MD
+	  and Git. In case of conflict, allow the user to choose which
+	  information to use.
+
 2010-07-30  Lluis Sanchez Gual  <lluis@novell.com>
 
 	* MonoDevelop.VersionControl.Git/GitRepository.cs: Use
