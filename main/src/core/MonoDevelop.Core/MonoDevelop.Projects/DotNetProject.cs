@@ -44,6 +44,7 @@ using MonoDevelop.Projects.Formats.MD1;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Projects.Formats.MSBuild;
 using MonoDevelop.Core.Assemblies;
+using System.Globalization;
 
 namespace MonoDevelop.Projects
 {
@@ -447,6 +448,37 @@ namespace MonoDevelop.Projects
 			}
 			return base.RunTarget (monitor, target, configuration);
 		}
+		
+		protected override void PopulateOutputFileList (List<FilePath> list, ConfigurationSelector configuration)
+		{
+			base.PopulateOutputFileList (list, configuration);
+			DotNetProjectConfiguration conf = GetConfiguration (configuration) as DotNetProjectConfiguration;
+			
+			// Debug info file
+			
+			if (conf.DebugMode) {
+				string mdbFile = TargetRuntime.GetAssemblyDebugInfoFile (conf.CompiledOutputName);
+				list.Add (mdbFile);
+			}
+			
+			// Generated satellite resource files
+			
+			FilePath outputDir = conf.OutputDirectory;
+			string satelliteAsmName = Path.GetFileNameWithoutExtension (conf.OutputAssembly) + ".resources.dll";
+			
+			HashSet<string> cultures = new HashSet<string> ();
+			foreach (ProjectFile finfo in Files) {
+				if (finfo.Subtype == Subtype.Directory || finfo.BuildAction != BuildAction.EmbeddedResource)
+					continue;
+
+				string culture = GetResourceCulture (finfo.Name);
+				if (culture != null && cultures.Add (culture)) {
+					cultures.Add (culture);
+					FilePath path = outputDir.Combine (culture, satelliteAsmName);
+					list.Add (path);
+				}
+			}
+		}
 
 		protected override void PopulateSupportFileList (FileCopySet list, ConfigurationSelector configuration)
 		{
@@ -517,6 +549,56 @@ namespace MonoDevelop.Projects
 					foreach (string refFile in projectReference.GetReferencedFileNames (configuration))
 						list.Add (refFile);
 				}
+			}
+		}
+		
+		//Given a filename like foo.it.resx, get 'it', if its
+		//a valid culture
+		//Note: hand-written as this can get called lotsa times
+		//Note: code duplicated in prj2make/Utils.cs as TrySplitResourceName
+		internal static string GetResourceCulture (string fname)
+		{
+			int last_dot = -1;
+			int culture_dot = -1;
+			int i = fname.Length - 1;
+			while (i >= 0) {
+				if (fname [i] == '.') {
+					last_dot = i;
+					break;
+				}
+				i --;
+			}
+			if (i < 0)
+				return null;
+
+			i--;
+			while (i >= 0) {
+				if (fname [i] == '.') {
+					culture_dot = i;
+					break;
+				}
+				i --;
+			}
+			if (culture_dot < 0)
+				return null;
+
+			string culture = fname.Substring (culture_dot + 1, last_dot - culture_dot - 1);
+			if (!CultureNamesTable.ContainsKey (culture))
+				return null;
+
+			return culture;
+		}
+
+		static Dictionary<string, string> cultureNamesTable;
+		static Dictionary<string, string> CultureNamesTable {
+			get {
+				if (cultureNamesTable == null) {
+					cultureNamesTable = new Dictionary<string, string> ();
+					foreach (CultureInfo ci in CultureInfo.GetCultures (CultureTypes.AllCultures))
+						cultureNamesTable [ci.Name] = ci.Name;
+				}
+
+				return cultureNamesTable;
 			}
 		}
 		

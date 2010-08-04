@@ -33,7 +33,9 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
-	
+	/// <summary>
+	/// A list of files to be deployed together with the project output binary
+	/// </summary>
 	public class FileCopySet : IEnumerable<FileCopySet.Item>
 	{
 		Dictionary<FilePath, Item> files = new Dictionary<FilePath, Item> ();
@@ -41,17 +43,44 @@ namespace MonoDevelop.Projects
 		public FileCopySet ()
 		{
 		}
-
+		
+		/// <summary>
+		/// Add a file
+		/// </summary>
+		/// <param name='sourcePath'>
+		/// File path.
+		/// </param>
 		public void Add (FilePath sourcePath)
 		{
 			Add (sourcePath, false);
 		}
-
+		
+		/// <summary>
+		/// Add a file
+		/// </summary>
+		/// <param name='sourcePath'>
+		/// File path.
+		/// </param>
+		/// <param name='copyOnlyIfNewer'>
+		/// Copy to otuput dir only if the file has changed.
+		/// </param>
 		public void Add (FilePath sourcePath, bool copyOnlyIfNewer)
 		{
 			Add (sourcePath, copyOnlyIfNewer, sourcePath.FileName);
 		}
-
+		
+		/// <summary>
+		/// Add a file
+		/// </summary>
+		/// <param name='sourcePath'>
+		/// File path.
+		/// </param>
+		/// <param name='copyOnlyIfNewer'>
+		/// Copy to otuput dir only if the file has changed.
+		/// </param>
+		/// <param name='targetRelativePath'>
+		/// Directory (relative to the output directory) where the file has to be copied.
+		/// </param>
 		public bool Add (FilePath sourcePath, bool copyOnlyIfNewer, FilePath targetRelativePath)
 		{
 			//don't add duplicates
@@ -62,6 +91,12 @@ namespace MonoDevelop.Projects
 			return true;
 		}
 
+		/// <summary>
+		/// Remove a file
+		/// </summary>
+		/// <param name='fileName'>
+		/// File name.
+		/// </param>
 		public Item Remove (FilePath fileName)
 		{
 			string key = fileName.FileName;
@@ -84,6 +119,9 @@ namespace MonoDevelop.Projects
 			return files.Values.GetEnumerator ();
 		}
 		
+		/// <summary>
+		/// A file
+		/// </summary>
 		public class Item
 		{
 			public Item (FilePath src, bool copyOnlyIfNewer, FilePath target)
@@ -93,8 +131,19 @@ namespace MonoDevelop.Projects
 				this.CopyOnlyIfNewer = copyOnlyIfNewer;
 			}
 			
+			/// <summary>
+			/// Gets or sets a value indicating whether the file has to be copied only if it has changed.
+			/// </summary>
 			public bool CopyOnlyIfNewer { get; private set; }
+
+			/// <summary>
+			/// Gets or sets the target directory (must be a relative path)
+			/// </summary>
 			public FilePath Target { get; private set; }
+			
+			/// <summary>
+			/// Gets or sets the source path
+			/// </summary>
 			public FilePath Src { get; private set; }
 		}
 	}
