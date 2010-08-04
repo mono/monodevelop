@@ -1,5 +1,15 @@
 2010-08-04  Lluis Sanchez Gual  <lluis@novell.com>
 
+	* Makefile.am:
+	* MonoDevelop.Core.csproj:
+	* MonoDevelop.Projects/Solution.cs:
+	* MonoDevelop.Projects/SolutionItem.cs:
+	* MonoDevelop.Projects/AuthorInformation.cs: Moved
+	  AuthorInformation from MD.Ide to MD.Projects. Added an
+	  AuthorInformation property to Solution and SolutionItem.
+
+2010-08-04  Lluis Sanchez Gual  <lluis@novell.com>
+
 	* MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:
 	  Moved GetCulture to DotNetProject. Implemented the Clean
 	  method in Project.

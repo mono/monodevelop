@@ -91,6 +91,18 @@ namespace MonoDevelop.Projects
 			return this.handler;
 		}
 		
+		/// <summary>
+		/// Gets the author information for this solution item, inherited from the solution and global settings.
+		/// </summary>
+		public AuthorInformation AuthorInformation {
+			get {
+				if (ParentSolution != null)
+					return ParentSolution.AuthorInformation;
+				else
+					return AuthorInformation.Default;
+			}
+		}
+		
 		public T GetService<T> () where T: class
 		{
 			return (T) GetService (typeof(T));

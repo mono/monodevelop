@@ -347,6 +347,7 @@ FILES =  \
 	MonoDevelop.Projects.Text/TextFileService.cs \
 	MonoDevelop.Projects.Text/TextFormatter.cs \
 	MonoDevelop.Projects.Utility/DiffUtility.cs \
+	MonoDevelop.Projects/AuthorInformation.cs \
 	MonoDevelop.Projects/BuildAction.cs \
 	MonoDevelop.Projects/BuildEventHandler.cs \
 	MonoDevelop.Projects/BuildResult.cs \

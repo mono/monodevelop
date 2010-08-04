@@ -478,6 +478,7 @@
     <Compile Include="MonoDevelop.Projects.CodeGeneration\MimeTypeExtensionNode.cs" />
     <Compile Include="MonoDevelop.Core.Execution\ExecutionEnvironment.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\ParserNode.cs" />
+    <Compile Include="MonoDevelop.Projects\AuthorInformation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
