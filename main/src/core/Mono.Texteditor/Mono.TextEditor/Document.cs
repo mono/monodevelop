@@ -98,6 +98,11 @@ namespace Mono.TextEditor
 			TextReplacing += UpdateFoldSegmentsOnReplace;
 		}
 		
+		public Document (string text) : this ()
+		{
+			this.Text = text;
+		}
+		
 		~Document ()
 		{
 			if (foldSegmentWorker != null) {
