@@ -290,9 +290,6 @@ namespace Mono.TextEditor
 				widget.AnimationState = AnimationState.Going;
 				stage.Add (widget, widget.Duration);
 			}
-			
-			duration = widget.Duration;
-			easing = widget.Easing;
 		}
 
 		public void AddAnimatedWidget (Widget widget, uint duration, Easing easing, Blocking blocking, int x, int y)
