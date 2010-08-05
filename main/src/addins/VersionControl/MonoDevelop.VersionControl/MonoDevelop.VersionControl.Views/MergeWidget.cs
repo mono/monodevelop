@@ -38,7 +38,8 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	class MergeWidget : EditorCompareWidgetBase
+	[ToolboxItem (true)]
+	public class MergeWidget : EditorCompareWidgetBase
 	{
 		protected override TextEditor MainEditor {
 			get {

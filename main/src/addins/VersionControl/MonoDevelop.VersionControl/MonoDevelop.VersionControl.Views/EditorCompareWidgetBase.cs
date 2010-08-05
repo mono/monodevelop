@@ -38,7 +38,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	abstract class EditorCompareWidgetBase : Gtk.Bin
+	public abstract class EditorCompareWidgetBase : Gtk.Bin
 	{
 		protected VersionControlDocumentInfo info;
 		
