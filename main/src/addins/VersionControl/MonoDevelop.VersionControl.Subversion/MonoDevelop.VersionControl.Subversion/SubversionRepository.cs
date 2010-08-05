@@ -6,7 +6,6 @@ using System.Collections;
 using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Collections;
-using MonoDevelop.Components.Diff;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Subversion
