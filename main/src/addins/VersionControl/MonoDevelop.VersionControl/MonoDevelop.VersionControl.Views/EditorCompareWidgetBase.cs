@@ -421,6 +421,8 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public void SetLocal (TextEditorData data)
 		{
+			if (info == null)
+				throw new InvalidOperationException ("Version control info must be set before attaching the merge view to an editor.");
 			dict[data.Document] = data;
 			data.Document.Text = info.Document.Editor.Document.Text;
 			data.Document.ReadOnly = false;

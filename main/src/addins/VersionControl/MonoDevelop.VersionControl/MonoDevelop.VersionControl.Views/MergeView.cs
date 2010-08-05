@@ -51,7 +51,8 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public MergeView (VersionControlDocumentInfo info) : base ("Merge")
 		{
-			widget = new MergeWidget (info);
+			widget = new MergeWidget ();
+			widget.Load (info);
 		}
 
 		public void Selected ()

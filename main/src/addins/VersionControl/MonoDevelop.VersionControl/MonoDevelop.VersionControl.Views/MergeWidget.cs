@@ -49,9 +49,15 @@ namespace MonoDevelop.VersionControl.Views
 		protected MergeWidget (IntPtr ptr) : base (ptr)
 		{
 		}
-
-		public MergeWidget (VersionControlDocumentInfo info) : base (info)
+		
+		public MergeWidget () : base (null)
 		{
+		}
+
+		public void Load (VersionControlDocumentInfo info)
+		{
+			base.info = info;
+			
 			SetLocal (MainEditor.GetTextEditorData ());
 			
 			this.CreateDiff ();
@@ -61,7 +67,7 @@ namespace MonoDevelop.VersionControl.Views
 			Show ();
 		}
 
-		public MergeWidget (string fileName) : base (null)
+		public void Load (string fileName)
 		{
 			MainEditor.Document.MimeType = DesktopService.GetMimeTypeForUri (fileName);
 			MainEditor.Document.Text = System.IO.File.ReadAllText (fileName);
