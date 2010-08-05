@@ -1963,6 +1963,7 @@ namespace Mono.TextEditor
 		
 		class SearchHighlightPopupWindow : BounceFadePopupWindow
 		{
+			bool shouldDraw = false;
 			public SearchResult Result {
 				get;
 				set;
@@ -1974,19 +1975,21 @@ namespace Mono.TextEditor
 			
 			public override void Popup ()
 			{
-				Visible = true;
+				shouldDraw = false;
 				ExpandWidth = (uint)Editor.LineHeight;
 				ExpandHeight = (uint)Editor.LineHeight / 2;
 				BounceEasing = Easing.Sine;
-				Duration = 900;
+				Duration = 500;
+				Visible = true;
 				base.Popup ();
-				ShowAll ();
+				shouldDraw = true;
 			}
 			
 			protected override void OnAnimationCompleted ()
 			{
 				base.OnAnimationCompleted ();
 				Visible = false;
+				shouldDraw = false;
 				DetachEvents ();
 			}
 			
@@ -2014,7 +2017,10 @@ namespace Mono.TextEditor
 				x1 /= (int)Pango.Scale.PangoScale;
 				x2 /= (int)Pango.Scale.PangoScale;
 				int y = Editor.LineToVisualY (lineNr) - (int)Editor.VAdjustment.Value ;
-				return new Gdk.Rectangle (x1 + Editor.TextViewMargin.XOffset + Editor.TextViewMargin.TextStartPosition - (int)Editor.HAdjustment.Value, y, x2 - x1, Editor.LineHeight);
+				int w = x2 - x1;
+				int spaceX = 16;
+				int spaceY = Editor.LineHeight;
+				return new Gdk.Rectangle (x1 + Editor.TextViewMargin.XOffset + Editor.TextViewMargin.TextStartPosition - (int)Editor.HAdjustment.Value - spaceX, y - spaceY, w + spaceX * 2, Editor.LineHeight + spaceY * 2);
 			}
 			
 			protected override Gdk.Pixbuf RenderInitialPixbuf (Gdk.Window parentwindow, Gdk.Rectangle bounds)
@@ -2043,9 +2049,46 @@ namespace Mono.TextEditor
 					return Gdk.Pixbuf.FromDrawable (pixmap, Colormap, 0, 0, 0, 0, bounds.Width, bounds.Height);
 				}
 			}
+			
+			protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+			{
+				try {
+					using (var cr = Gdk.CairoHelper.Create (evnt.Window)) {
+						cr.SetSourceRGBA (1, 1, 1, 0);
+						cr.Operator = Cairo.Operator.Source; 
+						cr.Paint ();
+						if (!shouldDraw)
+							return true;
+						cr.Translate (width / 2,  height / 2);
+						cr.Scale (1 + scale / 2, 1 + scale / 2);
+						
+						
+						using (var layout = cr.CreateLayout ()) {
+							layout.FontDescription = Editor.Options.Font;
+							layout.SetMarkup (Editor.Document.SyntaxMode.GetMarkup (Editor.Document, Editor.Options, Editor.ColorStyle, Result.Offset, Result.Length, true));
+							int pw, ph;
+							layout.GetPixelSize (out pw, out ph);
+							
+							cr.Translate (-pw / 2, -ph / 2);
+							
+							FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, -2, 0, 4, pw + 4, Editor.LineHeight);
+							cr.Color = Mono.TextEditor.Highlighting.Style.ToCairoColor (Editor.ColorStyle.SearchTextMainBg);
+							cr.Fill (); 
+						
+							cr.LayoutPath (layout);
+							cr.Color = new Cairo.Color (0, 0, 0);
+							cr.Fill ();
+						}
+						
+					}
+					
+				} catch (Exception e) {
+					Console.WriteLine ("Exception in animation:" + e);
+				}
+				return false;
+			}
 		}
-
-	
+		
 		public SearchResult FindPrevious (bool setSelection)
 		{
 			SearchResult result = textEditorData.FindPrevious (setSelection);

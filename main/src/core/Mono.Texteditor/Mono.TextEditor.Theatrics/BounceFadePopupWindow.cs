@@ -39,14 +39,14 @@ namespace Mono.TextEditor.Theatrics
 		Gdk.Pixbuf textImage = null;
 		TextEditor editor;
 		
-		double scale = 0.0;
-		double opacity = 1.0;
+		protected double scale = 0.0;
+		protected double opacity = 1.0;
 		
 		public BounceFadePopupWindow (TextEditor editor) : base (Gtk.WindowType.Popup)
 		{
 			if (!IsComposited)
 				throw new InvalidOperationException ("Only works with composited screen. Check Widget.IsComposited.");
-
+			DoubleBuffered = true;
 			Decorated = false;
 			BorderWidth = 0;
 			HasFrame = true;
@@ -82,8 +82,9 @@ namespace Mono.TextEditor.Theatrics
 		public Easing BounceEasing { get; set; }
 		
 		int x, y;
+		protected int width, height;
 		double vValue, hValue;
-		Rectangle bounds;
+		protected Rectangle bounds;
 
 		public virtual void Popup ()
 		{
@@ -92,12 +93,14 @@ namespace Mono.TextEditor.Theatrics
 			x = x + bounds.X - (int)(ExpandWidth / 2);
 			y = y + bounds.Y - (int)(ExpandHeight / 2);
 			Move (x, y);
-			Resize (bounds.Width + (int)ExpandWidth, bounds.Height + (int)ExpandHeight);
-
+			width = bounds.Width + (int)ExpandWidth;
+			height = bounds.Height + (int)ExpandHeight;
+			Resize (width, height);
+			
 			stage.AddOrReset (this, Duration);
 			stage.Play ();
-			Show ();
 			ListenToEvents ();
+			Show ();
 		}
 
 		protected void ListenToEvents ()
@@ -203,7 +206,7 @@ namespace Mono.TextEditor.Theatrics
 					var img = RenderInitialPixbuf (evnt.Window, bounds);
 					if (!img.HasAlpha) {
 						textImage = img.AddAlpha (false, 0, 0, 0);
-						img.Dispose ();
+						img.Dispose (); 
 					} else {
 						textImage = img;
 					}
