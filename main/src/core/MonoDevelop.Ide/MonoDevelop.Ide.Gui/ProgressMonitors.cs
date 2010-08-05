@@ -109,6 +109,26 @@ namespace MonoDevelop.Ide.Gui
 			return ((DefaultMonitorPad) pad.Content).BeginProgress (title);
 		}
 		
+		/// <summary>
+		/// Gets the pad that is showing the output of a progress monitor
+		/// </summary>
+		/// <param name='monitor'>
+		/// The monitor.
+		/// </param>
+		/// <remarks>
+		/// For example, if you have a monitor 'm' created with a call to GetOutputProgressMonitor,
+		/// GetPadForMonitor (m) will return the output pad.
+		/// </remarks>
+		public Pad GetPadForMonitor (IProgressMonitor monitor)
+		{
+			foreach (Pad pad in outputMonitors) {
+				DefaultMonitorPad p = (DefaultMonitorPad) pad.Content;
+				if (p.CurrentMonitor == monitor)
+					return pad;
+			}
+			return null;
+		}
+		
 		Pad CreateMonitorPad (string title, string icon, bool bringToFront, bool allowMonitorReuse, bool show)
 		{
 			Pad pad = null;

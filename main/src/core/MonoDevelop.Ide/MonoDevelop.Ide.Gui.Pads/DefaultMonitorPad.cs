@@ -114,6 +114,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 			set { this.statusSourcePad = value; }
 		}
 		
+		internal IProgressMonitor CurrentMonitor {
+			get { return monitor; }
+		}
+		
 		void OnButtonClearClick (object sender, EventArgs e)
 		{
 			logView.Clear ();
