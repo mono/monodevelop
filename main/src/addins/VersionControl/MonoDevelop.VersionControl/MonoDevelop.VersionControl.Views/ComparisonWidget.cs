@@ -29,7 +29,6 @@ using Gtk;
 using Gdk;
 using System.Collections.Generic;
 using Mono.TextEditor;
-using MonoDevelop.Components.Diff;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using System.ComponentModel;
@@ -150,6 +149,39 @@ namespace MonoDevelop.VersionControl.Views
 			QueueDraw ();
 		}
 		
+		public void SetRevision (TextEditor toEditor, Revision rev)
+		{
+			BackgroundWorker worker = new BackgroundWorker ();
+			worker.DoWork += delegate(object sender, DoWorkEventArgs e) {
+				Revision workingRevision = (Revision)e.Argument;
+				string text = null;
+				try {
+					text = info.Item.Repository.GetTextAtRevision (info.VersionInfo.LocalPath, workingRevision);
+				} catch (Exception ex) {
+					text = "Error retrieving revision " + workingRevision + Environment.NewLine + ex.ToString ();
+				}
+				e.Result = new KeyValuePair<Revision, string> (workingRevision, text);
+			};
+			
+			worker.RunWorkerCompleted += delegate(object sender, RunWorkerCompletedEventArgs e) {
+				var result = (KeyValuePair<Revision, string>)e.Result;
+				var box = toEditor == editors[0] ? diffComboBox : originalComboBox;
+				box.SetItem (string.Format (GettextCatalog.GetString ("Revision {0}\t{1}\t{2}"), result.Key, result.Key.Time, result.Key.Author), null, result.Key);
+				toEditor.Text = result.Value;
+				CreateDiff ();
+				IdeApp.Workbench.StatusBar.AutoPulse = false;
+				IdeApp.Workbench.StatusBar.EndProgress ();
+				box.Sensitive = true;
+			};
+			
+			worker.RunWorkerAsync (rev);
+			IdeApp.Workbench.StatusBar.BeginProgress (string.Format (GettextCatalog.GetString ("Retrieving revision {0}..."), rev.ToString ()));
+			IdeApp.Workbench.StatusBar.AutoPulse = true;
+			
+			var box2 = toEditor == editors[0] ? diffComboBox : originalComboBox;
+			box2.Sensitive = false;
+		}
+		
 		class ComboBoxSelector : DropDownBoxListWindow.IListDataProvider
 		{
 			ComparisonWidget widget;
@@ -205,39 +237,8 @@ namespace MonoDevelop.VersionControl.Views
 					return;
 				}
 				
-				BackgroundWorker worker = new BackgroundWorker ();
-				worker.DoWork += HandleWorkerDoWork;
-				worker.RunWorkerCompleted += HandleWorkerRunWorkerCompleted;
 				Revision rev = widget.info.History[n - 2];
-				worker.RunWorkerAsync (rev);
-				IdeApp.Workbench.StatusBar.BeginProgress (string.Format (GettextCatalog.GetString ("Retrieving revision {0}..."), rev.ToString ()));
-				IdeApp.Workbench.StatusBar.AutoPulse = true;
-				box.Sensitive = false;
-			}
-
-			void HandleWorkerRunWorkerCompleted (object sender, RunWorkerCompletedEventArgs e)
-			{
-				Application.Invoke (delegate {
-					var result = (KeyValuePair<Revision, string>)e.Result;
-					box.SetItem (string.Format (GettextCatalog.GetString ("Revision {0}\t{1}\t{2}"), result.Key, result.Key.Time, result.Key.Author), null, result.Key);
-					((TextEditor)box.Tag).Document.Text = result.Value;
-					widget.CreateDiff ();
-					IdeApp.Workbench.StatusBar.AutoPulse = false;
-					IdeApp.Workbench.StatusBar.EndProgress ();
-					box.Sensitive = true;
-				});
-			}
-
-			void HandleWorkerDoWork (object sender, DoWorkEventArgs e)
-			{
-				Revision rev = (Revision)e.Argument;
-				string text = null;
-				try {
-					text = widget.info.Item.Repository.GetTextAtRevision (widget.info.VersionInfo.LocalPath, rev);
-				} catch (Exception ex) {
-					text = "Error retrieving revision " + rev + Environment.NewLine + ex.ToString ();
-				}
-				e.Result = new KeyValuePair<Revision, string> (rev, text);
+				widget.SetRevision ((TextEditor)box.Tag, rev);
 			}
 
 			public int IconCount {

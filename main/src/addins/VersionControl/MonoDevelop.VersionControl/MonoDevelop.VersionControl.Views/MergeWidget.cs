@@ -31,7 +31,6 @@ using Gdk;
 using System.Collections.Generic;
 using Mono.TextEditor;
 using Mono.TextEditor.Utils;
-using MonoDevelop.Components.Diff;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using System.ComponentModel;

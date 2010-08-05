@@ -409,7 +409,10 @@ namespace MonoDevelop.VersionControl.Views
 			Revision d = GetSelectedRev ();
 			if (d == null)
 				return;
-			new DiffWorker (Path.GetFileName (filepath), vc, vinfo.RepositoryPath, d).Start ();
+			
+			
+			ComparisonView comparisonView = new ComparisonView (info, d.GetPrevious (), d);
+			IdeApp.Workbench.OpenDocument (comparisonView, true);
 		}
 		
 		void DirDiffButtonClicked (object src, EventArgs args) {
@@ -458,7 +461,7 @@ namespace MonoDevelop.VersionControl.Views
 		}
 
 		
-		internal class DiffWorker : Task {
+/*		internal class DiffWorker : Task {
 			Repository vc;
 			string name;
 			Revision revision;
@@ -491,9 +494,9 @@ namespace MonoDevelop.VersionControl.Views
 		
 			protected override void Finished () {
 				if (text1 == null || text2 == null) return;
-				DiffView.Show (name + " (revision " + revision.ToString () + ")", text1, text2);
+				DiffView.Show (name + " (revision " + revision.ToString () + ")", DesktopService.GetMimeTypeForUri (revPath), text1, text2);
 			}
-		}
+		}*/
 		
 		/// Background worker to create a revision-specific diff for a directory
 		internal class DirectoryDiffWorker: Task

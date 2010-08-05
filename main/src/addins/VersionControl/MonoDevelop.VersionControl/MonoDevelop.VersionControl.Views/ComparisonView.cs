@@ -28,7 +28,6 @@ using System.Linq;
 using System.IO;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Components.Diff;
 using System.Collections.Generic;
 using System.Threading;
 using MonoDevelop.Core;
@@ -166,6 +165,22 @@ namespace MonoDevelop.VersionControl.Views
 			widget.ShowAll ();
 		}
 		
+		public ComparisonView (VersionControlDocumentInfo info, Revision baseRev, Revision toRev) : base ("Comparison")
+		{
+			this.info = info;
+			widget = new ComparisonWidget (info);
+			
+			widget.OriginalEditor.Document.MimeType = widget.DiffEditor.Document.MimeType = info.Document.Editor.Document.MimeType;
+			widget.OriginalEditor.Options.FontName = widget.DiffEditor.Options.FontName = info.Document.Editor.Options.FontName;
+			widget.OriginalEditor.Options.ColorScheme = widget.DiffEditor.Options.ColorScheme = info.Document.Editor.Options.ColorScheme;
+			widget.OriginalEditor.Options.ShowFoldMargin = widget.DiffEditor.Options.ShowFoldMargin = false;
+			widget.OriginalEditor.Options.ShowIconMargin = widget.DiffEditor.Options.ShowIconMargin = false;
+			
+			widget.SetRevision (widget.DiffEditor, baseRev);
+			widget.SetRevision (widget.OriginalEditor, toRev);
+			
+			widget.ShowAll ();
+		}
 		
 		public override void Dispose ()
 		{

@@ -30,7 +30,6 @@ using Gtk;
 using Gdk;
 using System.Collections.Generic;
 using Mono.TextEditor;
-using MonoDevelop.Components.Diff;
 using MonoDevelop.Ide;
 using System.Threading;
 using MonoDevelop.Core;

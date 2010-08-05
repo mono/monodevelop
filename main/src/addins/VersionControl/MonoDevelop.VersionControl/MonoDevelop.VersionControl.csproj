@@ -149,7 +149,6 @@
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\CellRendererDiff.cs" />
-    <Compile Include="MonoDevelop.VersionControl.Views\DiffView.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\LogView.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\StatusView.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\AnnotateView.cs" />

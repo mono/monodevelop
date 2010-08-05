@@ -28,7 +28,6 @@ using System.IO;
 using System.Linq;
 using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Components.Diff;
 using MonoDevelop.Ide.Gui.Dialogs;
 using Gtk;
 using MonoDevelop.Core;
@@ -58,15 +57,7 @@ namespace MonoDevelop.VersionControl.Views
 			diffEditor.ShowAll ();
 			
 			
-			foreach (var item in comparisonView.Diff) {
-				diffEditor.InsertAtCaret ("@@ -" + item.RemoveStart + "," + item.Removed + " +" + item.InsertStart + "," + item.Inserted + " @@" + Environment.NewLine);
-				for (int i = item.RemoveStart; i < item.RemoveStart + item.Removed; i++) {
-					diffEditor.InsertAtCaret ("-" + comparisonView.Widget.DiffEditor.GetTextEditorData ().GetLineText (i));
-				}
-				for (int i = item.InsertStart; i < item.InsertStart + item.Inserted; i++) {
-					diffEditor.InsertAtCaret ("+" + comparisonView.Widget.OriginalEditor.GetTextEditorData ().GetLineText (i));
-				}
-			}
+			diffEditor.Document.Text = Mono.TextEditor.Utils.Diff.GetDiffString (comparisonView.Diff, comparisonView.Widget.DiffEditor.Document ,info.Document.Editor.Document, info.Item.Path, info.Item.Path);
 			
 			buttonSave.Clicked += delegate {
 				var dlg = new OpenFileDialog (GettextCatalog.GetString ("Save as..."), FileChooserAction.Save) {
