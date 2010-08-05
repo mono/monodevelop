@@ -14,6 +14,7 @@ using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core.Serialization;
 using Mono.Addins;
 using MonoDevelop.Ide;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.VersionControl
 {
@@ -486,6 +487,16 @@ namespace MonoDevelop.VersionControl
 			}
 			
 			NotifyFileStatusChanged (repo, parent.BaseDirectory, true);
+		}
+		
+		public static IProgressMonitor GetProgressMonitor (string operation)
+		{
+			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("Version Control", "md-version-control", false, true);
+			Pad outPad = IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (monitor);
+			
+			AggregatedProgressMonitor mon = new AggregatedProgressMonitor (monitor);
+			mon.AddSlaveMonitor (IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (operation, "md-version-control", false, true, false, outPad));
+			return mon;
 		}
 		
 		static IProgressMonitor GetStatusMonitor ()

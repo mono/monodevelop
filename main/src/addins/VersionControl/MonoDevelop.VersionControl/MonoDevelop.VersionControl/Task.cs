@@ -23,10 +23,9 @@ namespace MonoDevelop.VersionControl
 		{
 		}
 
-		protected Task() {
+		protected Task()
+		{
 			threadnotify = new ThreadNotify(new ReadyEvent(Wakeup));
-			
-			tracker = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("Version Control", "md-version-control", false, true);
 		}
 		
 		protected IProgressMonitor Monitor {
@@ -34,6 +33,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		public void Start() {
+			tracker = VersionControlService.GetProgressMonitor (GetDescription ());
 			tracker.BeginTask(GetDescription(), 0);
 			new Thread(new ThreadStart(BackgroundWorker)) {
 				Name = "VCS background tasks",
