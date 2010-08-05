@@ -178,7 +178,7 @@ namespace MonoDevelop.Core
 				else if (entry.Value is DataNode) {
 					val = (DataNode) entry.Value;
 				} else {
-					val = handler.SerializationContext.Serializer.Serialize (entry.Value, typeof(object));
+					val = handler.SerializationContext.Serializer.Serialize (entry.Value, entry.Value.GetType ());
 				}
 				val.Name = EscapeName (entry.Key);
 				data.Add (val);
