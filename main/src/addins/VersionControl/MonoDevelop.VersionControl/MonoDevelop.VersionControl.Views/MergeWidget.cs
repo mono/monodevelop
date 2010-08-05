@@ -60,7 +60,19 @@ namespace MonoDevelop.VersionControl.Views
 			};
 			Show ();
 		}
-		
+
+		public MergeWidget (string fileName) : base (null)
+		{
+			MainEditor.Document.MimeType = DesktopService.GetMimeTypeForUri (fileName);
+			MainEditor.Document.Text = System.IO.File.ReadAllText (fileName);
+			
+			this.CreateDiff ();
+			MainEditor.Document.TextReplaced += delegate {
+				this.UpdateDiff ();
+			};
+			Show ();
+		}
+
 		protected override void CreateComponents ()
 		{
 			this.editors = new [] { new TextEditor (), new TextEditor (), new TextEditor () };
