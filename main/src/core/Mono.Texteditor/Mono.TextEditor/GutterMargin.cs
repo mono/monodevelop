@@ -184,7 +184,7 @@ namespace Mono.TextEditor
 			lineNumberHighlightGC = (HslColor)editor.ColorStyle.LineNumberFgHighlighted;
 		}
 		
-		internal protected override void Draw (Cairo.Context cr, Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y, int lineHeight)
+		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, int line, int x, int y, int lineHeight)
 		{
 			cr.Rectangle (x, y, Width, lineHeight);
 			cr.Color = lineNumberBgGC;

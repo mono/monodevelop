@@ -49,7 +49,7 @@ namespace Mono.TextEditor
 			color = (HslColor)editor.ColorStyle.FoldLine.Color;
 		}
 		
-		internal protected override void Draw (Cairo.Context cr, Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y, int lineHeight)
+		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, int line, int x, int y, int lineHeight)
 		{
 			cr.MoveTo (x, y);
 			cr.LineTo (x, y + lineHeight);

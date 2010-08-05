@@ -31,7 +31,7 @@ namespace Mono.TextEditor
 	public interface IExtendingTextMarker 
 	{
 		int GetLineHeight (TextEditor editor);
-		void Draw (TextEditor editor, Cairo.Context cr, int lineNr, Rectangle lineArea);
+		void Draw (TextEditor editor, Cairo.Context cr, int lineNr, Cairo.Rectangle lineArea);
 	}
 	
 	public interface IActionTextMarker
@@ -86,7 +86,7 @@ namespace Mono.TextEditor
 		{
 		}
 		
-		public virtual void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
+		public virtual void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
 		{
 		}
 		
@@ -145,7 +145,7 @@ namespace Mono.TextEditor
 			this.endColumn   = endColumn;
 		}
 		
-		public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
+		public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
 		{
 			int markerStart = line.Offset + startColumn;
 			int markerEnd = line.Offset + endColumn;
@@ -153,8 +153,8 @@ namespace Mono.TextEditor
 			if (markerEnd < startOffset || markerStart > endOffset) 
 				return; 
 	
-			int @from;
-			int to;
+			double @from;
+			double to;
 	
 			if (markerStart < startOffset && endOffset < markerEnd) {
 				@from = startXPos;
@@ -184,7 +184,7 @@ namespace Mono.TextEditor
 	/// </summary>
 	public interface IIconBarMarker
 	{
-		void DrawIcon (TextEditor editor, Cairo.Context cr, LineSegment line, int lineNumber, int xPos, int yPos, int width, int height);
+		void DrawIcon (TextEditor editor, Cairo.Context cr, LineSegment line, int lineNumber, double xPos, double yPos, double width, double height);
 		void MousePress (MarginMouseEventArgs args);
 		void MouseRelease (MarginMouseEventArgs args);
 	}
@@ -200,7 +200,7 @@ namespace Mono.TextEditor
 		/// <returns>
 		/// true, when the text view should draw the text, false when the text view should not draw the text.
 		/// </returns>
-		bool DrawBackground (TextEditor Editor, Cairo.Context cr, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg);
+		bool DrawBackground (TextEditor Editor, Cairo.Context cr, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, double y, double startXPos, double endXPos, ref bool drawBg);
 	}
 	
 	public class LineBackgroundMarker: TextMarker, IBackgroundMarker
@@ -212,7 +212,7 @@ namespace Mono.TextEditor
 			this.color = color;
 		}
 		
-		public bool DrawBackground (TextEditor editor, Cairo.Context cr, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg)
+		public bool DrawBackground (TextEditor editor, Cairo.Context cr, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, double y, double startXPos, double endXPos, ref bool drawBg)
 		{
 			drawBg = false;
 			if (selectionStart > 0)
@@ -247,15 +247,15 @@ namespace Mono.TextEditor
 		public int EndCol { get; set; }
 		public bool Wave { get; set; }
 		
-		public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
+		public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
 		{
 			int markerStart = LineSegment.Offset + System.Math.Max (StartCol, 0);
 			int markerEnd = LineSegment.Offset + (EndCol < 0 ? LineSegment.Length : EndCol);
 			if (markerEnd < startOffset || markerStart > endOffset) 
 				return; 
 	
-			int @from;
-			int to;
+			double @from;
+			double to;
 				
 			if (markerStart < startOffset && endOffset < markerEnd) {
 				@from = startXPos;

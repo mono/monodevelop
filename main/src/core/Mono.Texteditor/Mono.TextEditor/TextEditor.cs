@@ -1377,6 +1377,8 @@ namespace Mono.TextEditor
 				startY -= GetLineHeight (Document.GetLine (startLine));
 			}
 			
+			var cairoRectangle = new Cairo.Rectangle (area.X, area.Y, area.Width, area.Height);
+			
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (win)) {
 				cr.LineWidth = Options.Zoom;
 				int curX = 0;
@@ -1399,8 +1401,7 @@ namespace Mono.TextEditor
 						try {
 							if (renderFirstLine)
 								margin.XOffset = curX;
-							margin.Draw (cr, win, area, logicalLineNumber, margin.XOffset, curY, lineHeight);
-							margin.EndRender (win, area, margin.XOffset);
+							margin.Draw (cr, cairoRectangle, logicalLineNumber, margin.XOffset, curY, lineHeight);
 							if (renderFirstLine)
 								curX += (int)margin.Width;
 						} catch (Exception e) {

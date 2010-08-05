@@ -565,10 +565,10 @@ namespace Mono.TextEditor
 		internal int caretY;
 		Gdk.GC caretGc;
 
-		void SetVisibleCaretPosition (int x, int y)
+		void SetVisibleCaretPosition (double x, double y)
 		{
-			caretX = x;
-			caretY = y;
+			caretX = (int)x;
+			caretY = (int)y;
 		}
 
 		public static Gdk.Rectangle EmptyRectangle = new Gdk.Rectangle (0, 0, 0, 0);
@@ -1134,11 +1134,11 @@ namespace Mono.TextEditor
 		}
 		#endregion
 
-		public delegate void LineDecorator (Cairo.Context ctx, LayoutWrapper layout, int offset, int length, int xPos, int y, int selectionStart, int selectionEnd);
+		public delegate void LineDecorator (Cairo.Context ctx, LayoutWrapper layout, int offset, int length, double xPos, double y, int selectionStart, int selectionEnd);
 		public event LineDecorator DecorateLineBg;
 		public event LineDecorator DecorateLineFg;
 
-		void DecorateSpaces (Cairo.Context ctx, LayoutWrapper layout, int offset, int length, int xPos, int y, int selectionStart, int selectionEnd)
+		void DecorateSpaces (Cairo.Context ctx, LayoutWrapper layout, int offset, int length, double xPos, double y, int selectionStart, int selectionEnd)
 		{
 			uint curIndex = 0, byteIndex = 0;
 			for (int i = 0; i < layout.LineChars.Length; i++) {
@@ -1150,7 +1150,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		void DecorateTabs (Cairo.Context ctx, LayoutWrapper layout, int offset, int length, int xPos, int y, int selectionStart, int selectionEnd)
+		void DecorateTabs (Cairo.Context ctx, LayoutWrapper layout, int offset, int length, double xPos, double y, int selectionStart, int selectionEnd)
 		{
 			uint curIndex = 0, byteIndex = 0;
 			for (int i = 0; i < layout.LineChars.Length; i++) {
@@ -1162,7 +1162,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		void DecorateMatchingBracket (Cairo.Context ctx, LayoutWrapper layout, int offset, int length, int xPos, int y, int selectionStart, int selectionEnd)
+		void DecorateMatchingBracket (Cairo.Context ctx, LayoutWrapper layout, int offset, int length, double xPos, double y, int selectionStart, int selectionEnd)
 		{
 			uint curIndex = 0, byteIndex = 0;
 			if (offset <= highlightBracketOffset && highlightBracketOffset <= offset + length) {
@@ -1200,7 +1200,7 @@ namespace Mono.TextEditor
 			cr.Stroke ();
 		}
 
-		void DrawLinePart (Cairo.Context cr, LineSegment line, int lineNumber, int logicalRulerColumn, int offset, int length, ref int pangoPosition, ref bool isSelectionDrawn, int y, int maxX)
+		void DrawLinePart (Cairo.Context cr, LineSegment line, int lineNumber, int logicalRulerColumn, int offset, int length, ref int pangoPosition, ref bool isSelectionDrawn, double y, double maxX)
 		{
 			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
 			int selectionStart;
@@ -1223,7 +1223,7 @@ namespace Mono.TextEditor
 					x1 = layout.Layout.IndexToPos (bg.FromIdx).X;
 					x2 = layout.Layout.IndexToPos (bg.ToIdx).X;
 					DrawRectangleWithRuler (cr, xPos + (int)textEditor.HAdjustment.Value - TextStartPosition,
-						new Rectangle ((x1 + pangoPosition) / (int)Pango.Scale.PangoScale, y, (x2 - x1) / (int)Pango.Scale.PangoScale + 1, LineHeight),
+						new Cairo.Rectangle ((x1 + pangoPosition) / Pango.Scale.PangoScale, y, (x2 - x1) / Pango.Scale.PangoScale + 1, LineHeight),
 						bg.Color, true);
 			}
 	//		}
@@ -1261,7 +1261,7 @@ namespace Mono.TextEditor
 				if (textEditor.MainSelection.SelectionMode == SelectionMode.Block && startX == endX) {
 					endX = startX + 2;
 				}
-				DrawRectangleWithRuler (cr, xPos + (int)textEditor.HAdjustment.Value - TextStartPosition, new Rectangle (xPos + startX, y, endX - startX, textEditor.LineHeight), this.SelectionColor.BackgroundColor, true);
+				DrawRectangleWithRuler (cr, xPos + (int)textEditor.HAdjustment.Value - TextStartPosition, new Cairo.Rectangle (xPos + startX, y, endX - startX, textEditor.LineHeight), this.SelectionColor.BackgroundColor, true);
 			}
 
 			// highlight search results
@@ -1323,7 +1323,7 @@ namespace Mono.TextEditor
 						wrapper.Layout.FontDescription = textEditor.Options.Font;
 						int vy, vx;
 						wrapper.Layout.GetSize (out vx, out vy);
-						SetVisibleCaretPosition ((int)((pangoPosition + vx + layout.PangoWidth) / Pango.Scale.PangoScale), y);
+						SetVisibleCaretPosition (((pangoPosition + vx + layout.PangoWidth) / Pango.Scale.PangoScale), y);
 						xPos = (int)((pangoPosition + layout.PangoWidth) / Pango.Scale.PangoScale);
 
 						if (!isSelectionDrawn && (selectionEnd == lineOffset + line.EditableLength)) {
@@ -1331,7 +1331,7 @@ namespace Mono.TextEditor
 							int endX;
 							startX = xPos;
 							endX = (int)((pangoPosition + vx + layout.PangoWidth) / Pango.Scale.PangoScale);
-							DrawRectangleWithRuler (cr, xPos + (int)textEditor.HAdjustment.Value - TextStartPosition, new Rectangle (startX, y, endX - startX, textEditor.LineHeight), this.SelectionColor.BackgroundColor, true);
+							DrawRectangleWithRuler (cr, xPos + (int)textEditor.HAdjustment.Value - TextStartPosition, new Cairo.Rectangle (startX, y, endX - startX, textEditor.LineHeight), this.SelectionColor.BackgroundColor, true);
 						}
 						if ((HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNumber)
 							DrawCaretLineMarker (cr, pangoPosition / Pango.Scale.PangoScale, y, vx / Pango.Scale.PangoScale);
@@ -1392,7 +1392,7 @@ namespace Mono.TextEditor
 			return null;
 		}
 
-		void DrawEolMarker (Cairo.Context cr, LineSegment line, bool selected, int x, int y)
+		void DrawEolMarker (Cairo.Context cr, LineSegment line, bool selected, double x, double y)
 		{
 			switch (line.DelimiterLength) {
 			case 1:
@@ -1416,7 +1416,7 @@ namespace Mono.TextEditor
 			cr.Restore ();
 		}
 
-		void DrawSpaceMarker (Cairo.Context cr, bool selected, int x, int y)
+		void DrawSpaceMarker (Cairo.Context cr, bool selected, double x, double y)
 		{
 			markerLayout.SetText (spaceMarkerChar);
 			cr.Save ();
@@ -1426,7 +1426,7 @@ namespace Mono.TextEditor
 			cr.Restore ();
 		}
 
-		void DrawTabMarker (Cairo.Context cr, bool selected, int x, int y)
+		void DrawTabMarker (Cairo.Context cr, bool selected, double x, double y)
 		{
 			markerLayout.SetText (tabMarkerChar);
 			cr.Save ();
@@ -2006,7 +2006,7 @@ namespace Mono.TextEditor
 			return result;
 		}
 
-		public void DrawRectangleWithRuler (Cairo.Context cr, int x, Gdk.Rectangle area, Gdk.Color color, bool drawDefaultBackground)
+		public void DrawRectangleWithRuler (Cairo.Context cr, double x, Cairo.Rectangle area, Gdk.Color color, bool drawDefaultBackground)
 		{
 			if (BackgroundRenderer != null)
 				return;
@@ -2110,13 +2110,13 @@ namespace Mono.TextEditor
 			}
 		}
 
-		protected internal override void Draw (Cairo.Context cr, Gdk.Drawable win, Gdk.Rectangle area, int lineNr, int x, int y, int _lineHeight)
+		protected internal override void Draw (Cairo.Context cr, Cairo.Rectangle area, int lineNr, int x, int y, int _lineHeight)
 		{
 			LineSegment line = lineNr < Document.LineCount ? Document.GetLine (lineNr) : null;
-			int xStart = System.Math.Max (area.X, XOffset);
+			double xStart = System.Math.Max (area.X, XOffset);
 			xStart = System.Math.Max (0, xStart);
-
-			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, textEditor.LineHeight);
+			var lineArea = new Cairo.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, textEditor.LineHeight);
+			
 			int width, height;
 			int pangoPosition = (int)((x - textEditor.HAdjustment.Value + TextStartPosition) * Pango.Scale.PangoScale);
 
@@ -2152,7 +2152,7 @@ namespace Mono.TextEditor
 					continue;
 
 				if (folding.IsFolded) {
-					DrawLinePart (cr, line, lineNr, logicalRulerColumn, offset, foldOffset - offset, ref pangoPosition, ref isSelectionDrawn, y, area.Right);
+					DrawLinePart (cr, line, lineNr, logicalRulerColumn, offset, foldOffset - offset, ref pangoPosition, ref isSelectionDrawn, y, area.X + area.Width);
 					
 					offset = folding.EndLine.Offset + folding.EndColumn;
 					markerLayout.SetText (folding.Description);
@@ -2161,11 +2161,17 @@ namespace Mono.TextEditor
 					bool isFoldingSelected = !this.HideSelection && textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (folding);
 					int pixelX = (int)(pangoPosition / Pango.Scale.PangoScale);
 					int pixelWidth = (int)((pangoPosition + width) / Pango.Scale.PangoScale) - pixelX;
-					Rectangle foldingRectangle = new Rectangle (pixelX, y, pixelWidth - 1, this.LineHeight - 1);
-					if (BackgroundRenderer == null)
-						win.DrawRectangle (GetGC (isFoldingSelected ? SelectionColor.BackgroundColor : defaultBgColor), true, foldingRectangle);
+					var foldingRectangle = new Cairo.Rectangle (pixelX, y, pixelWidth - 1, this.LineHeight - 1);
+					if (BackgroundRenderer == null) {
+						cr.Color = (HslColor)(isFoldingSelected ? SelectionColor.BackgroundColor : defaultBgColor);
+						cr.Rectangle (foldingRectangle);
+						cr.Fill ();
+					}
 					
-					win.DrawRectangle (GetGC (isFoldingSelected ? SelectionColor.Color : ColorStyle.FoldLine.Color), false, foldingRectangle);
+					cr.Color = (HslColor)(isFoldingSelected ? SelectionColor.Color : ColorStyle.FoldLine.Color);
+					cr.Rectangle (foldingRectangle);
+					cr.Stroke ();
+					
 					cr.Save ();
 					cr.Translate (pangoPosition / Pango.Scale.PangoScale, y);
 					cr.Color = (HslColor)(isFoldingSelected ? SelectionColor.Color : ColorStyle.FoldLine.Color);
@@ -2190,12 +2196,13 @@ namespace Mono.TextEditor
 			// Draw remaining line - must be called for empty line parts as well because the caret may be at this positon
 			// and the caret position is calculated in DrawLinePart.
 			if (line.EndOffset - offset >= 0)
-				DrawLinePart (cr, line, lineNr, logicalRulerColumn, offset, line.Offset + line.EditableLength - offset, ref pangoPosition, ref isSelectionDrawn, y, area.Right);
+				DrawLinePart (cr, line, lineNr, logicalRulerColumn, offset, line.Offset + line.EditableLength - offset, ref pangoPosition, ref isSelectionDrawn, y, area.X + area.Width);
 			
 			bool isEolSelected = !this.HideSelection && textEditor.IsSomethingSelected && textEditor.SelectionMode == SelectionMode.Normal && textEditor.SelectionRange.Contains (line.Offset + line.EditableLength);
-
-			lineArea.X = (int)(pangoPosition / Pango.Scale.PangoScale);
-			lineArea.Width = textEditor.Allocation.Width - (int)(pangoPosition / Pango.Scale.PangoScale);
+			lineArea = new Cairo.Rectangle (pangoPosition / Pango.Scale.PangoScale,
+				lineArea.Y,
+				textEditor.Allocation.Width - pangoPosition / Pango.Scale.PangoScale,
+				lineArea.Height);
 
 			if (textEditor.SelectionMode == SelectionMode.Block && textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (line.Offset + line.EditableLength)) {
 				DocumentLocation start = textEditor.MainSelection.Anchor;
@@ -2215,12 +2222,11 @@ namespace Mono.TextEditor
 
 				if (x2 > lineArea.X) {
 					if (x1 - lineArea.X > 0) {
-						DrawRectangleWithRuler (cr, x, new Gdk.Rectangle (lineArea.X, lineArea.Y, x1 - lineArea.X, lineArea.Height), defaultBgColor, false);
-						lineArea.X = x1;
+						DrawRectangleWithRuler (cr, x, new Cairo.Rectangle (lineArea.X, lineArea.Y, x1 - lineArea.X, lineArea.Height), defaultBgColor, false);
+						lineArea = new Cairo.Rectangle (x1, lineArea.Y, lineArea.Width, lineArea.Height);
 					}
-					DrawRectangleWithRuler (cr, x, new Gdk.Rectangle (lineArea.X, lineArea.Y, x2 - lineArea.X, lineArea.Height), this.SelectionColor.BackgroundColor, false);
-					lineArea.X = x2;
-					lineArea.Width = textEditor.Allocation.Width - lineArea.X;
+					DrawRectangleWithRuler (cr, x, new Cairo.Rectangle (lineArea.X, lineArea.Y, x2 - lineArea.X, lineArea.Height), this.SelectionColor.BackgroundColor, false);
+					lineArea = new Cairo.Rectangle (x2, lineArea.Y, textEditor.Allocation.Width - lineArea.X, lineArea.Height);
 				}
 			}
 
@@ -2240,7 +2246,7 @@ namespace Mono.TextEditor
 					}
 				} else {
 					double xPos = (int)(pangoPosition / Pango.Scale.PangoScale);
-					DrawCaretLineMarker (cr, xPos, y, lineArea.Right - xPos);
+					DrawCaretLineMarker (cr, xPos, y, lineArea.X + lineArea.Width - xPos);
 				}
 			}
 

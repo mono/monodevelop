@@ -38,7 +38,7 @@ namespace Mono.TextEditor
 		{
 		}
 
-		public void DrawIcon (TextEditor editor, Cairo.Context cr, LineSegment lineSegment, int lineNumber, int x, int y, int width, int height)
+		public void DrawIcon (TextEditor editor, Cairo.Context cr, LineSegment lineSegment, int lineNumber, double x, double y, double width, double height)
 		{
 			if (lineSegment.IsBookmarked) {
 				Cairo.Color color1 = Style.ToCairoColor (editor.ColorStyle.BookmarkColor1);
@@ -59,11 +59,11 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public static void DrawRoundRectangle (Cairo.Context cr, int x, int y, int r, int w, int h)
+		public static void DrawRoundRectangle (Cairo.Context cr, double x, double y, double r, double w, double h)
 		{
 			const double ARC_TO_BEZIER = 0.55228475;
-			int radius_x = r;
-			int radius_y = r / 4;
+			double radius_x = r;
+			double radius_y = r / 4;
 			
 			if (radius_x > w - radius_x)
 				radius_x = w / 2;

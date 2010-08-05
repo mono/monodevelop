@@ -618,7 +618,7 @@ namespace Mono.TextEditor
 					start < segment.EndOffset && segment.EndOffset < end;
 		}*/
 		
-	public bool DrawBackground (TextEditor Editor, Cairo.Context cr, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg)
+	public bool DrawBackground (TextEditor Editor, Cairo.Context cr, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, double y, double startXPos, double endXPos, ref bool drawBg)
 	{
 		int caretOffset = Editor.Caret.Offset - BaseOffset;
 
@@ -649,9 +649,9 @@ namespace Mono.TextEditor
 					}
 					// Draw segment
 
-					int x1 = startXPos + x_pos - 1;
-					int x2 = startXPos + x_pos2 - 1;
-					int y2 = y + Editor.LineHeight - 1;
+					double x1 = startXPos + x_pos - 1;
+					double x2 = startXPos + x_pos2 - 1;
+					double y2 = y + Editor.LineHeight - 1;
 
 					if (selectionStart < 0) {
 						cr.Color = fillGc;

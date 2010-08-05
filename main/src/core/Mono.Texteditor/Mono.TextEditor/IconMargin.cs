@@ -94,7 +94,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		internal protected override void Draw (Cairo.Context ctx, Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y, int lineHeight)
+		internal protected override void Draw (Cairo.Context ctx, Cairo.Rectangle area, int line, int x, int y, int lineHeight)
 		{
 			ctx.Rectangle (x, y, Width, lineHeight);
 			ctx.Color = backgroundColor;

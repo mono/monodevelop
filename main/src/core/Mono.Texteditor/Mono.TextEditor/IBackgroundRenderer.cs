@@ -31,6 +31,6 @@ namespace Mono.TextEditor
 {
 	interface IBackgroundRenderer
 	{
-		void Draw (Cairo.Context cr, Gdk.Rectangle area, LineSegment lineSegment, int x, int y, int lineHeight);
+		void Draw (Cairo.Context cr, Cairo.Rectangle area, LineSegment lineSegment, double x, double y, double lineHeight);
 	}
 }

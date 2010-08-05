@@ -55,7 +55,7 @@ namespace Mono.TextEditor
 			this.roles = new Roles[this.foldSegments.Count];
 		}
 
-		public void Draw (Cairo.Context cr, Gdk.Rectangle area, LineSegment lineSegment, int x, int y, int lineHeight)
+		public void Draw (Cairo.Context cr, Cairo.Rectangle area, LineSegment lineSegment, double x, double y, double lineHeight)
 		{
 			int foundSegment = -1;
 			if (lineSegment != null) {

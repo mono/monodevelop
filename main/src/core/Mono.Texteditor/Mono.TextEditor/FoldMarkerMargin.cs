@@ -259,7 +259,7 @@ namespace Mono.TextEditor
 		List<FoldSegment> containingFoldings = new List<FoldSegment> ();
 		List<FoldSegment> endFoldings        = new List<FoldSegment> ();
 		
-		internal protected override void Draw (Cairo.Context cr, Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y, int lineHeight)
+		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, int line, int x, int y, int lineHeight)
 		{
 			foldSegmentSize = marginWidth * 4 / 6;
 			foldSegmentSize -= (foldSegmentSize) % 2;
