@@ -89,6 +89,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			}
 		}
 		
+		bool useFullSearch;
 		bool isAbleToSearchMembers;
 		public NavigateToDialog (NavigateToType navigateTo, bool isAbleToSearchMembers)
 		{
@@ -100,6 +101,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			this.matchEntry.Visible = true;
 			this.matchEntry.IsCheckMenu = true;
 			HasSeparator = false;
+			useFullSearch = PropertyService.Get ("UseFullSearchMatch", true);
 			
 			CheckMenuItem includeFilesItem = this.matchEntry.AddFilterOption (0, GettextCatalog.GetString ("Include _Files"));
 			includeFilesItem.DrawAsRadio = false;
@@ -141,9 +143,10 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			
 			CheckMenuItem useComplexMatching = this.matchEntry.AddFilterOption (3, GettextCatalog.GetString ("Use complex matching"));
 			useComplexMatching.DrawAsRadio = false;
-			useComplexMatching.Active = CompletionMatcher.UseLaneCompletionMatcher;
+			useComplexMatching.Active = useFullSearch;
 			useComplexMatching.Toggled += delegate {
-				CompletionMatcher.UseLaneCompletionMatcher = useComplexMatching.Active;
+				useFullSearch = useComplexMatching.Active;
+				PropertyService.Set ("UseFullSearchMatch", useFullSearch);
 				PerformSearch ();
 			};
 			
@@ -315,6 +318,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			public string pattern = null;
 			public bool isGotoFilePattern;
 			public ResultsDataSource results = new ResultsDataSource ();
+			public bool FullSearch;
 			
 			public bool IncludeFiles, IncludeTypes, IncludeMembers;
 			
@@ -327,7 +331,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				if (MatchName (matchString, out rank)) 
 					return new FileSearchResult (pattern, matchString, rank, file, true);
 				
-				if (!CompletionMatcher.UseLaneCompletionMatcher)
+				if (!FullSearch)
 					return null;
 				matchString = FileSearchResult.GetRelProjectPath (file);
 				if (MatchName (FileSearchResult.GetRelProjectPath (file), out rank)) 
@@ -341,7 +345,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				int rank;
 				if (MatchName (type.Name, out rank))
 					return new TypeSearchResult (pattern, type.Name, rank, type, false);
-				if (!CompletionMatcher.UseLaneCompletionMatcher)
+				if (!FullSearch)
 					return null;
 				if (MatchName (type.FullName, out rank))
 					return new TypeSearchResult (pattern, type.FullName, rank, type, true);
@@ -355,7 +359,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				string memberName = useDeclaringTypeName ? member.DeclaringType.Name : member.Name;
 				if (MatchName (memberName, out rank))
 					return new MemberSearchResult (pattern, memberName, rank, member, false);
-				if (!CompletionMatcher.UseLaneCompletionMatcher)
+				if (!FullSearch)
 					return null;
 				memberName = useDeclaringTypeName ? member.DeclaringType.FullName : member.FullName;
 				if (MatchName (memberName, out rank))
@@ -403,6 +407,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				newResult.isGotoFilePattern = true;
 			}
 			newResult.matcher = CompletionMatcher.CreateCompletionMatcher (toMatch);
+			newResult.FullSearch = useFullSearch;
 			
 			foreach (SearchResult result in AllResults (worker, lastResult, newResult)) {
 				if (worker.CancellationPending)

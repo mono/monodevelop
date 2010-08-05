@@ -38,26 +38,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 	
 	static class CompletionMatcher
 	{
-		static bool useLaneCompletionMatcher;
-		
-		public static bool UseLaneCompletionMatcher {
-			get {
-				return useLaneCompletionMatcher;
-			}
-			set {
-				useLaneCompletionMatcher = value;
-				PropertyService.Set ("UseLaneCompletionMatcher", useLaneCompletionMatcher);
-			}
-		}
-		
-		static CompletionMatcher ()
-		{
-			useLaneCompletionMatcher = PropertyService.Get ("UseLaneCompletionMatcher", true);
-		}
-		
 		public static ICompletionMatcher CreateCompletionMatcher (string filterText)
 		{
-			return useLaneCompletionMatcher ? (ICompletionMatcher)new LaneCompletionMatcher (filterText) : new PrefixCompletionMatcher (filterText);
+			return new LaneCompletionMatcher (filterText);
 		}
 	}
 
@@ -111,12 +94,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (lane == null)
 				return null;
 			int cnt = 0;
-			for (int i = 0; i < lane.Positions.Length; i++) {
+			for (int i = 0; i <= lane.Index; i++) {
 				cnt += lane.Lengths[i];
 			}
 			int[] result = new int [cnt];
 			int x = 0;
-			for (int i = 0; i < lane.Positions.Length; i++) {
+			for (int i = 0; i <= lane.Index; i++) {
 				int p = lane.Positions[i];
 				for (int j = 0 ; j < lane.Lengths[i]; j++) {
 					result[x++] = p++;
@@ -124,32 +107,40 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			return result;
 		}
-
+		
 		MatchLane MatchString (string text)
 		{
 			if (text.Length < filterLowerCase.Length)
 				return null;
 			
-			string textLowerCase = text.ToLowerInvariant ();
-	
 			// Pre-match check
 			
+			string textLowerCase = text.ToLowerInvariant ();
+	
+			int firstMatchPos = -1;
 			int j = 0;
-			int tlen = textLowerCase.Length;
+			int tlen = text.Length;
 			int flen = filterLowerCase.Length;
 			for (int n=0; n<tlen && j < flen; n++) {
-				if (textLowerCase[n] == filterLowerCase [j])
+				if (textLowerCase[n] == filterLowerCase [j]) {
 					j++;
+					if (firstMatchPos == -1)
+						firstMatchPos = n;
+					if (flen == 1)
+						return CreateLane (MatchMode.Substring, n);
+				}
 			}
 
 			if (j < flen)
 				return null;
 			
+			ResetLanePool ();
+			
 			// Full match check
 			
 			matchLanes.Clear ();
 			bool lastWasSeparator = false;
-			int tn = 0;
+			int tn = firstMatchPos;
 			char filterStart = filterLowerCase[0];
 			
 			while (tn < text.Length) {
@@ -161,11 +152,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 				int laneCount = matchLanes != null ? matchLanes.Count : 0;
 	
 				if (ctLower == filterStart) {
-					matchLanes.Add (new MatchLane (MatchMode.Substring, tn, text.Length - tn));
+					matchLanes.Add (CreateLane (MatchMode.Substring, tn));
 					if (filterLowerCase.Length == 1)
 						return matchLanes[0];
 					if (ct != ctLower /*is upper*/ || lastWasSeparator)
-						matchLanes.Add (new MatchLane (MatchMode.Acronym, tn, text.Length - tn));
+						matchLanes.Add (CreateLane (MatchMode.Acronym, tn));
 				}
 	
 				for (int n=0; n<laneCount; n++) {
@@ -179,7 +170,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					if (lane.MatchMode == MatchMode.Substring) {
 						if (wordStartMatch) {
 							// Possible acronym match after a substring. Start a new lane.
-							MatchLane newLane = lane.Clone ();
+							MatchLane newLane = CloneLane (lane);
 							newLane.MatchMode = MatchMode.Acronym;
 							newLane.Index++;
 							newLane.Positions [newLane.Index] = tn;
@@ -190,7 +181,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 						if (match) {
 							// Maybe it is a false substring start, so add a new lane to keep
 							// track of the old lane
-							MatchLane newLane = lane.Clone ();
+							MatchLane newLane = CloneLane (lane);
 							newLane.MatchMode = MatchMode.Acronym;
 							matchLanes.Add (newLane);
 	
@@ -207,7 +198,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					else if (lane.MatchMode == MatchMode.Acronym) {
 						if (match && lane.Positions [lane.Index] == tn - 1) {
 							// Possible substring match after an acronim. Start a new lane.
-							MatchLane newLane = lane.Clone ();
+							MatchLane newLane = CloneLane (lane);
 							newLane.MatchMode = MatchMode.Substring;
 							newLane.Lengths [newLane.Index]++;
 							newLane.MatchIndex++;
@@ -218,7 +209,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 						if (wordStartMatch || (match && char.IsPunctuation (cm))) {
 							// Maybe it is a false acronym start, so add a new lane to keep
 							// track of the old lane
-							MatchLane newLane = lane.Clone ();
+							MatchLane newLane = CloneLane (lane);
 							matchLanes.Add (newLane);
 	
 							// Update the current lane
@@ -236,6 +227,39 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			return null;
 		}
+		
+		void ResetLanePool ()
+		{
+			lanePoolIndex = 0;
+		}
+		
+		MatchLane GetPoolLane ()
+		{
+			if (lanePoolIndex < lanePool.Count)
+				return lanePool [lanePoolIndex++];
+			
+			MatchLane lane = new MatchLane (filterLowerCase.Length * 2);
+			lanePool.Add (lane);
+			lanePoolIndex++;
+			return lane;
+		}
+		
+		MatchLane CreateLane (MatchMode mode, int pos)
+		{
+			MatchLane lane = GetPoolLane ();
+			lane.Initialize (mode, pos);
+			return lane;
+		}
+		
+		MatchLane CloneLane (MatchLane other)
+		{
+			MatchLane lane = GetPoolLane ();
+			lane.Initialize (other);
+			return lane;
+		}
+		
+		int lanePoolIndex = 0;
+		List<MatchLane> lanePool = new List<MatchLane> ();
 	
 		enum MatchMode {
 			Substring,
@@ -250,30 +274,30 @@ namespace MonoDevelop.Ide.CodeCompletion
 			public int Index;
 			public int MatchIndex;
 	
-			public MatchLane ()
+			public MatchLane (int maxlen)
 			{
+				Positions = new int [maxlen];
+				Lengths = new int [maxlen];
 			}
-	
-			public MatchLane (MatchMode mode, int pos, int len)
+			
+			public void Initialize (MatchMode mode, int pos)
 			{
 				MatchMode = mode;
-				Positions = new int [len];
-				Lengths = new int [len];
 				Positions [0] = pos;
 				Lengths [0] = 1;
 				Index = 0;
 				MatchIndex = 1;
 			}
 	
-			public MatchLane Clone ()
+			public void Initialize (MatchLane other)
 			{
-				MatchLane lane = new MatchLane ();
-				lane.Positions = (int[]) Positions.Clone ();
-				lane.Lengths = (int[]) Lengths.Clone ();
-				lane.MatchMode = MatchMode;
-				lane.MatchIndex = MatchIndex;
-				lane.Index = Index;
-				return lane;
+				for (int n=0; n<=other.Index; n++) {
+					Positions [n] = other.Positions [n];
+					Lengths [n] = other.Lengths [n];
+				}
+				MatchMode = other.MatchMode;
+				MatchIndex = other.MatchIndex;
+				Index = other.Index;
 			}
 		}
 	}
