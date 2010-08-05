@@ -155,13 +155,6 @@ FILES =  \
 	MonoDevelop.Components.Commands/KeyBindingSet.cs \
 	MonoDevelop.Components.Commands/LinkCommandEntry.cs \
 	MonoDevelop.Components.Commands/MenuToolButton.cs \
-	MonoDevelop.Components.Diff/Diff.cs \
-	MonoDevelop.Components.Diff/DiffWidget.cs \
-	MonoDevelop.Components.Diff/Merge.cs \
-	MonoDevelop.Components.Diff/Patch.cs \
-	MonoDevelop.Components.Diff/StructuredDiff.cs \
-	MonoDevelop.Components.Diff/TextDiff.cs \
-	MonoDevelop.Components.Diff/UnifiedDiff.cs \
 	MonoDevelop.Components.Docking/AutoHideBox.cs \
 	MonoDevelop.Components.Docking/DockBar.cs \
 	MonoDevelop.Components.Docking/DockBarItem.cs \

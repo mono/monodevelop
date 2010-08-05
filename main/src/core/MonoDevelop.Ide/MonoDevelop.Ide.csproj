@@ -1101,13 +1101,6 @@
     <Compile Include="MonoDevelop.Components.Commands.ExtensionNodes\SeparatorItemCodon.cs" />
     <Compile Include="MonoDevelop.Components.Commands.ExtensionNodes\LocalCommandItemCodon.cs" />
     <Compile Include="MonoDevelop.Components.Commands.ExtensionNodes\SchemeExtensionNode.cs" />
-    <Compile Include="MonoDevelop.Components.Diff\DiffWidget.cs" />
-    <Compile Include="MonoDevelop.Components.Diff\Diff.cs" />
-    <Compile Include="MonoDevelop.Components.Diff\Merge.cs" />
-    <Compile Include="MonoDevelop.Components.Diff\Patch.cs" />
-    <Compile Include="MonoDevelop.Components.Diff\StructuredDiff.cs" />
-    <Compile Include="MonoDevelop.Components.Diff\TextDiff.cs" />
-    <Compile Include="MonoDevelop.Components.Diff\UnifiedDiff.cs" />
     <Compile Include="MonoDevelop.Components.DockToolbars\ArrowWindow.cs" />
     <Compile Include="MonoDevelop.Components.DockToolbars\DockedPosition.cs" />
     <Compile Include="MonoDevelop.Components.DockToolbars\DockGrip.cs" />
