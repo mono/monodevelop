@@ -424,8 +424,31 @@ namespace Mono.TextEditor.Utils
 			}
 		}
 		// LCS()
-
 		
+		
+		public static string GetDiffString (Document baseDocument, Document changedDocument)
+		{
+			return GetDiffString (baseDocument.Diff (changedDocument), baseDocument, changedDocument, baseDocument.FileName, changedDocument.FileName);
+		}
+		
+		public static string GetDiffString (IEnumerable<Hunk> diff, Document baseDocument, Document changedDocument, string baseFileName, string changedFileName)
+		{
+			StringBuilder sb = new StringBuilder ();
+			sb.Append ("--- " + baseFileName);
+			sb.Append ("+++ " + changedFileName);
+			
+			foreach (var item in diff) {
+				sb.AppendLine ("@@ -" + item.RemoveStart + "," + item.Removed + " +" + item.InsertStart + "," + item.Inserted + " @@");
+				
+				for (int i = item.RemoveStart; i < item.RemoveStart + item.Removed; i++) {
+					sb.AppendLine ("-" + baseDocument.GetLineText (i, false));
+				}
+				for (int i = item.InsertStart; i < item.InsertStart + item.Inserted; i++) {
+					sb.AppendLine ("+" + changedDocument.GetLineText (i, false));
+				}
+			}
+			return sb.ToString ();
+		}
 	}
 	
 	/// <summary>Data on one input file being compared.
