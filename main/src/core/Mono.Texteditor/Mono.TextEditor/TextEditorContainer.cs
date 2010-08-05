@@ -1,16 +1,37 @@
-using System;
-using System.Linq;
-using System.Diagnostics;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using Mono.TextEditor.Highlighting;
-using Mono.TextEditor.PopupWindow;
-using Mono.TextEditor.Theatrics;
+// 
+// TextEditorContainer.cs
+//  
+// Author:
+//       Mike Krüger <mkrueger@novell.com>
+// 
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Gdk;
 using Gtk;
+using Mono.TextEditor.Highlighting;
+using Mono.TextEditor.Theatrics;
+
 
 namespace Mono.TextEditor
 {
@@ -31,11 +52,7 @@ namespace Mono.TextEditor
 		
 		public override ContainerChild this [Widget w] {
 			get {
-				foreach (EditorContainerChild info in containerChildren.ToArray ()) {
-					if (info.Child == w || (info.Child is AnimatedWidget && ((AnimatedWidget)info.Child).Widget == w))
-						return info;
-				}
-				return null;
+				return containerChildren.FirstOrDefault (info => info.Child == w || (info.Child is AnimatedWidget && ((AnimatedWidget)info.Child).Widget == w));
 			}
 		}
 		
@@ -104,17 +121,6 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public void MoveTopLevelWidgetX (Gtk.Widget widget, int x)
-		{
-			foreach (EditorContainerChild info in containerChildren.ToArray ()) {
-				if (info.Child == widget || (info.Child is AnimatedWidget && ((AnimatedWidget)info.Child).Widget == widget)) {
-					info.X = x;
-					QueueResize ();
-					break;
-				}
-			}
-		}
-		
 		public void MoveToTop (Gtk.Widget widget)
 		{
 			EditorContainerChild editorContainerChild = containerChildren.FirstOrDefault (c => c.Child == widget);
@@ -165,21 +171,9 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
-		{
-			base.OnSizeRequested (ref requisition);
-			
-			// Ignore the size of top levels. They are supposed to fit the available space
-			foreach (EditorContainerChild tchild in containerChildren.ToArray ())
-				tchild.Child.SizeRequest ();
-		}
-
-		
 		protected override void ForAll (bool include_internals, Gtk.Callback callback)
 		{
-			foreach (EditorContainerChild child in containerChildren.ToArray ()) {
-				callback (child.Child);
-			}
+			containerChildren.ForEach (child => callback (child.Child));
 		}
 		
 		protected override void OnSizeAllocated (Rectangle allocation)
@@ -210,23 +204,7 @@ namespace Mono.TextEditor
 		
 		#region Animated Widgets
 		Stage<AnimatedWidget> stage = new Stage<AnimatedWidget> ();
-		
-/*		uint duration = 500;
-		Easing easing = Easing.Linear;
-		Blocking blocking = Blocking.Upstage;
-		int start_padding;
-		int end_padding;
-		int spacing;
-		int start_spacing;
-		int end_spacing;*/
-		
-//		int start_border;
-//		int end_border;
-		
-	/*	double Percent {
-			get { return border_stage.Actor == null ? 0 : border_stage.Actor.Percent * border_bias + (1.0 - border_bias); }
-		}
-		*/
+
 		bool OnActorStep (Actor<AnimatedWidget> actor)
 		{
 			switch (actor.Target.AnimationState) {
@@ -345,6 +323,5 @@ namespace Mono.TextEditor
 				editorVAdjustement.ValueChanged -= HandleHAdjustementValueChanged;
 			base.OnDestroyed ();
 		}
-		
 	}
 }
