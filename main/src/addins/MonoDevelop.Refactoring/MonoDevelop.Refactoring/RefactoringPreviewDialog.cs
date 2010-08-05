@@ -28,8 +28,7 @@ using System;
 using System.Collections.Generic;
 using Gtk;
 using Gdk;
- 
-using MonoDevelop.Components.Diff;
+
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom.Parser;
 using Mono.TextEditor;
@@ -134,25 +133,19 @@ namespace MonoDevelop.Refactoring
 				if (replaceChange == null) 
 					return;
 			
-				Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
-				doc.Text = System.IO.File.ReadAllText (replaceChange.FileName);
-				List<string> before = new List<string> ();
-				foreach (var line in doc.Lines) {
-					before.Add (doc.GetTextAt (line.Offset, line.EditableLength));
-				}
+				Mono.TextEditor.Document originalDocument = new Mono.TextEditor.Document ();
+				originalDocument.FileName = replaceChange.FileName;
+				originalDocument.Text = System.IO.File.ReadAllText (replaceChange.FileName);
 				
-				((Mono.TextEditor.IBuffer)doc).Replace (replaceChange.Offset, replaceChange.RemovedChars, replaceChange.InsertedText);
+				Mono.TextEditor.Document changedDocument = new Mono.TextEditor.Document ();
+				changedDocument.FileName = replaceChange.FileName;
+				changedDocument.Text = originalDocument.Text;
 				
-				List<string> after = new List<string> ();
-				foreach (var line in doc.Lines) {
-					after.Add (doc.GetTextAt (line.Offset, line.EditableLength));
-				}
+				((Mono.TextEditor.IBuffer)changedDocument).Replace (replaceChange.Offset, replaceChange.RemovedChars, replaceChange.InsertedText);
 				
-				Diff diff = new Diff (before.ToArray (), after.ToArray (), true, true);
+				string diffString = Mono.TextEditor.Utils.Diff.GetDiffString (originalDocument, changedDocument);
 				
-				System.IO.StringWriter w = new System.IO.StringWriter();
-				UnifiedDiff.WriteUnifiedDiff (diff, w, replaceChange.FileName, replaceChange.FileName, 2);
-				cellRendererDiff.InitCell (treeviewPreview, true, w.ToString ().Trim (), replaceChange.FileName);
+				cellRendererDiff.InitCell (treeviewPreview, true, diffString, replaceChange.FileName);
 			} catch (Exception e) {
 				Console.WriteLine (e);
 			}
