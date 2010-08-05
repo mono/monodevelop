@@ -64,6 +64,7 @@ namespace MonoDevelop.VersionControl
 			checkOneLinePerFile.Active = format.Style.FileSeparator == ":\n* ";
 			checkUseBullets.Active = format.Style.FirstFilePrefix.Trim ().Length > 0;
 			checkIndentEntries.Active = format.Style.Indent.Length > 0;
+			checkIncludeDirs.Active = format.Style.IncludeDirectoryPaths;
 			entryHeader.Text = ToCString (format.Style.Header.TrimEnd ('\n'));
 			UpdatePreview ();
 			updating = false;
@@ -75,7 +76,7 @@ namespace MonoDevelop.VersionControl
 				return;
 			ChangeLogWriter writer = new ChangeLogWriter ("./", uinfo);
 			string msg = "My changes made additional changes. This is sample documentation.";
-			writer.AddFile (msg, "./myfile.ext");
+			writer.AddFile (msg, "./somedir/myfile.ext");
 			writer.AddFile (msg, "./yourfile.ext");
 			writer.AddFile ("Some additional changes on another file of the project.", "./otherfile.ext");
 			format.MaxColumns = 60;
@@ -158,6 +159,13 @@ namespace MonoDevelop.VersionControl
 		{
 			if (updating) return;
 			format.Style.Indent = checkIndentEntries.Active ? "\t" : "";
+			OnChanged ();
+		}
+		
+		protected virtual void OnCheckIncludeDirsToggled (object sender, System.EventArgs e)
+		{
+			if (updating) return;
+			format.Style.IncludeDirectoryPaths = checkIncludeDirs.Active;
 			OnChanged ();
 		}
 	}

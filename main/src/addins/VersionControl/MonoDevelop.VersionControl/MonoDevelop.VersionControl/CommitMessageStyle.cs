@@ -42,6 +42,7 @@ namespace MonoDevelop.VersionControl
 			LastFilePostfix = ": ";
 			LineAlign = 0;
 			InterMessageLines = 1;
+			IncludeDirectoryPaths = false;
 		}
 		
 		[ItemProperty]
@@ -64,6 +65,9 @@ namespace MonoDevelop.VersionControl
 		
 		[ItemProperty]
 		public int InterMessageLines { get; set; }
+		
+		[ItemProperty]
+		public bool IncludeDirectoryPaths { get; set; }
 		
 		public void CopyFrom (CommitMessageStyle other)
 		{

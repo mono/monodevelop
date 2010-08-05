@@ -57,9 +57,8 @@ namespace MonoDevelop.VersionControl
 			}
 			
 			string relative_path = GetRelativeEntryPath (path);
-			if (relative_path == null) {
+			if (relative_path == null)
 				return;
-			}
 			
 			List<string> path_list;
 			if (!messages.TryGetValue (message, out path_list)) {
@@ -117,6 +116,7 @@ namespace MonoDevelop.VersionControl
 			
 			if (!MessageFormat.ShowFilesForSingleComment && messages.Count == 1) {
 				string msg = messages.Keys.First ();
+				formatter.LeftMargin = formatter.ParagraphStartMargin;
 				formatter.Append (msg);
 			}
 			else {
@@ -134,7 +134,11 @@ namespace MonoDevelop.VersionControl
 							formatter.BeginWord ();
 							formatter.Append (fileSeparator2);
 						}
-						formatter.Append (paths [i]);
+						string path = paths [i];
+						if (!MessageFormat.Style.IncludeDirectoryPaths)
+							path = Path.GetFileName (path);
+
+						formatter.Append (path);
 					}
 					
 					formatter.Append (message_style.LastFilePostfix);
