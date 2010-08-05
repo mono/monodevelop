@@ -434,8 +434,8 @@ namespace Mono.TextEditor.Utils
 		public static string GetDiffString (IEnumerable<Hunk> diff, Document baseDocument, Document changedDocument, string baseFileName, string changedFileName)
 		{
 			StringBuilder sb = new StringBuilder ();
-			sb.Append ("--- " + baseFileName);
-			sb.Append ("+++ " + changedFileName);
+			sb.AppendLine ("--- " + baseFileName);
+			sb.AppendLine ("+++ " + changedFileName);
 			
 			foreach (var item in diff) {
 				sb.AppendLine ("@@ -" + item.RemoveStart + "," + item.Removed + " +" + item.InsertStart + "," + item.Inserted + " @@");
