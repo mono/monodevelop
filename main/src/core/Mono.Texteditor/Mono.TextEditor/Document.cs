@@ -247,7 +247,17 @@ namespace Mono.TextEditor
 		public string GetTextAt (ISegment segment)
 		{
 			return GetTextAt (segment.Offset, segment.Length);
-
+		}
+		
+		public string GetLineText (int line)
+		{
+			return GetTextAt (GetLine (line));
+		}
+		
+		public string GetLineText (int line, bool includeDelimiter)
+		{
+			var lineSegment = GetLine (line);
+			return includeDelimiter ? GetTextAt (lineSegment) : GetTextAt (lineSegment.Offset, lineSegment.EditableLength);
 		}
 		
 		public char GetCharAt (int offset)

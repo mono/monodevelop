@@ -956,7 +956,12 @@ namespace Mono.TextEditor
 		
 		public string GetLineText (int line)
 		{
-			return Document.GetTextAt (Document.GetLine (line));
+			return Document.GetLineText (line);
+		}
+		
+		public string GetLineText (int line, bool includeDelimiter)
+		{
+			return Document.GetLineText (line, includeDelimiter);
 		}
 		
 		public bool HasFocus {

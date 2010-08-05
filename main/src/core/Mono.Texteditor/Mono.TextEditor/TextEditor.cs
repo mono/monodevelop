@@ -1639,6 +1639,15 @@ namespace Mono.TextEditor
 			return textEditorData.CanEdit (line);
 		}
 		
+		public string GetLineText (int line)
+		{
+			return textEditorData.GetLineText (line);
+		}
+		
+		public string GetLineText (int line, bool includeDelimiter)
+		{
+			return textEditorData.GetLineText (line, includeDelimiter);
+		}
 		
 		/// <summary>
 		/// Use with care.
