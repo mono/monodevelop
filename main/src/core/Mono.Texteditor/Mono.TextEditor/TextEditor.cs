@@ -2025,29 +2025,8 @@ namespace Mono.TextEditor
 			
 			protected override Gdk.Pixbuf RenderInitialPixbuf (Gdk.Window parentwindow, Gdk.Rectangle bounds)
 			{
-				//FIXME add a drop shadow on the pixmap, and expand the bounds to include this
-				using (Gdk.Pixmap pixmap = new Gdk.Pixmap (parentwindow, bounds.Width, bounds.Height)) {
-					
-					using (Cairo.Context cr = Gdk.CairoHelper.Create (pixmap)) {
-						cr.Color = new Cairo.Color (0, 0, 0, 0);
-						cr.Rectangle (0, 0, bounds.Width, bounds.Height);
-						cr.Fill ();
-						cr.Color = Mono.TextEditor.Highlighting.Style.ToCairoColor (Editor.ColorStyle.SearchTextMainBg);
-						int rounding = (int)(-bounds.Width / 2);
-						FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 0, 0, rounding, bounds.Width, bounds.Height);
-						cr.Fill (); 
-					}
-					
-					using (var layout = PangoUtil.CreateLayout (Editor)) {
-						layout.FontDescription = Editor.Options.Font;
-						layout.SetMarkup (Editor.Document.SyntaxMode.GetMarkup (Editor.Document, Editor.Options, Editor.ColorStyle, Result.Offset, Result.Length, true));
-						using (var bgGc = new Gdk.GC(pixmap)) {
-							bgGc.RgbFgColor = Editor.ColorStyle.SearchTextMainBg;
-							pixmap.DrawLayout (bgGc, 0, 0, layout);
-						}
-					}
-					return Gdk.Pixbuf.FromDrawable (pixmap, Colormap, 0, 0, 0, 0, bounds.Width, bounds.Height);
-				}
+				// deprecated.
+				return null;
 			}
 			
 			protected override bool OnExposeEvent (Gdk.EventExpose evnt)
@@ -2075,9 +2054,7 @@ namespace Mono.TextEditor
 							cr.Color = Mono.TextEditor.Highlighting.Style.ToCairoColor (Editor.ColorStyle.SearchTextMainBg);
 							cr.Fill (); 
 						
-							cr.LayoutPath (layout);
-							cr.Color = new Cairo.Color (0, 0, 0);
-							cr.Fill ();
+							cr.ShowLayout (layout);
 						}
 						
 					}
