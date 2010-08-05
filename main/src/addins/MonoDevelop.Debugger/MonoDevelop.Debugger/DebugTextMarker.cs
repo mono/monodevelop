@@ -43,7 +43,7 @@ namespace MonoDevelop.Debugger
 			this.editor = editor;
 		}
 		
-		public void DrawIcon (Mono.TextEditor.TextEditor editor, Gdk.Drawable win, LineSegment line, int lineNumber, int x, int y, int width, int height)
+		public void DrawIcon (Mono.TextEditor.TextEditor editor, Cairo.Context cr, LineSegment line, int lineNumber, int x, int y, int width, int height)
 		{
 			int size;
 			if (width > height) {
@@ -54,9 +54,7 @@ namespace MonoDevelop.Debugger
 				size = width;
 			}
 			
-			using (Cairo.Context cr = Gdk.CairoHelper.Create (win)) {
-				DrawIcon (cr, x, y, size);
-			}
+			DrawIcon (cr, x, y, size);
 		}
 		
 		protected virtual void DrawIcon (Cairo.Context cr, int x, int y, int size)

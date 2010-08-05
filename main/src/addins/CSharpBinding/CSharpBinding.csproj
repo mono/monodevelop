@@ -109,6 +109,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="Mono.Cairo" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="templates\ConsoleProject.xpt.xml">

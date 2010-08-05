@@ -352,7 +352,7 @@ namespace MonoDevelop.DocFood
 			
 			this.currentType = "exception";
 			foreach (var exception in visitor.Exceptions) {
-				var exceptionType = HelperMethods.ConvertToReturnType (exception);
+				var exceptionType = MonoDevelop.Refactoring.HelperMethods.ConvertToReturnType (exception);
 				
 				
 				curName = exceptionType.FullName;

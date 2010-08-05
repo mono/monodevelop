@@ -30,8 +30,6 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	
-	
 	public class BookmarkMarker: TextMarker, IIconBarMarker
 	{
 		internal static BookmarkMarker Instance = new BookmarkMarker ();
@@ -40,13 +38,12 @@ namespace Mono.TextEditor
 		{
 		}
 
-		public void DrawIcon (TextEditor editor, Gdk.Drawable win, LineSegment lineSegment, int lineNumber, int x, int y, int width, int height)
+		public void DrawIcon (TextEditor editor, Cairo.Context cr, LineSegment lineSegment, int lineNumber, int x, int y, int width, int height)
 		{
 			if (lineSegment.IsBookmarked) {
 				Cairo.Color color1 = Style.ToCairoColor (editor.ColorStyle.BookmarkColor1);
 				Cairo.Color color2 = Style.ToCairoColor (editor.ColorStyle.BookmarkColor2);
 				
-				Cairo.Context cr = Gdk.CairoHelper.Create (win);
 				DrawRoundRectangle (cr, x + 1, y + 1, 8, width - 4, height - 4);
 				Cairo.Gradient pat = new Cairo.LinearGradient (x + width / 4, y, x + width / 2, y + height - 4);
 				pat.AddColorStop (0, color1);
@@ -59,7 +56,6 @@ namespace Mono.TextEditor
 				//pat.AddColorStop (1, color1);
 				cr.Pattern = pat;
 				cr.Stroke ();
-				((IDisposable)cr).Dispose();
 			}
 		}
 		

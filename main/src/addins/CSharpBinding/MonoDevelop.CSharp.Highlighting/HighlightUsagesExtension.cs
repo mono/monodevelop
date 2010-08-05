@@ -249,7 +249,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				return usages.Any (u => u.Offset <= offset && offset <= u.EndOffset);
 			}
 			
-			public bool DrawBackground (TextEditor editor, Gdk.Drawable win, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg)
+			public bool DrawBackground (TextEditor editor, Cairo.Context cr, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg)
 			{
 				drawBg = false;
 				if (selectionStart >= 0 || editor.CurrentMode is TextLinkEditMode)
@@ -287,12 +287,13 @@ namespace MonoDevelop.CSharp.Highlighting
 					@from = System.Math.Max (@from, editor.TextViewMargin.XOffset);
 					to = System.Math.Max (to, editor.TextViewMargin.XOffset);
 					if (@from < to) {
-						using (Gdk.GC gc = new Gdk.GC(win)) {
-							gc.RgbFgColor = editor.ColorStyle.BracketHighlightRectangle.BackgroundColor;
-							win.DrawRectangle (gc, true, @from + 1, y + 1, to - @from - 1, editor.LineHeight - 2);
-							gc.RgbFgColor = editor.ColorStyle.BracketHighlightRectangle.Color;
-							win.DrawRectangle (gc, false, @from, y, to - @from, editor.LineHeight - 1);
-						}
+						cr.Color = (HslColor)editor.ColorStyle.BracketHighlightRectangle.BackgroundColor;
+						cr.Rectangle (@from + 1, y + 1, to - @from - 1, editor.LineHeight - 2);
+						cr.Fill ();
+						
+						cr.Color = (HslColor)editor.ColorStyle.BracketHighlightRectangle.Color;
+						cr.Rectangle (@from, y, to - @from, editor.LineHeight - 1);
+						cr.Fill ();
 					}
 				}
 				return true;

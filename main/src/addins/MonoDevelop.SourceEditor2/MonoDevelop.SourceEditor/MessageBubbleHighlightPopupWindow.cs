@@ -61,7 +61,8 @@ namespace MonoDevelop.SourceEditor
 				using (var bgGc = new Gdk.GC(pixmap)) {
 					bgGc.RgbFgColor = CairoExtensions.CairoColorToGdkColor (marker.colorMatrix[0, 0, 0, 0, 0]);
 					pixmap.DrawRectangle (bgGc, true, 0, 0, bounds.Width, bounds.Height);
-					pixmap.DrawLayout (marker.gc, 4, (bounds.Height - marker.Layouts[0].Height) / 2, marker.Layouts[0].Layout);
+					bgGc.RgbFgColor = (Mono.TextEditor.HslColor)marker.gc;
+					pixmap.DrawLayout (bgGc, 4, (bounds.Height - marker.Layouts[0].Height) / 2, marker.Layouts[0].Layout);
 				}
 				return Gdk.Pixbuf.FromDrawable (pixmap, Colormap, 0, 0, 0, 0, bounds.Width, bounds.Height);
 			}
