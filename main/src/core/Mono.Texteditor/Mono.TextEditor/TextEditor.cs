@@ -1481,6 +1481,15 @@ namespace Mono.TextEditor
 		}
 
 		#region TextEditorData functions
+		public string Text {
+			get {
+				return textEditorData.Text;
+			}
+			set {
+				textEditorData.Text = value;
+			}
+		}
+		
 		public string EolMarker {
 			get {
 				return textEditorData.EolMarker;
