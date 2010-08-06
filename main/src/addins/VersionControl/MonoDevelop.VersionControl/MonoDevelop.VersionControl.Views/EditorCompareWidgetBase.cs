@@ -391,11 +391,11 @@ namespace MonoDevelop.VersionControl.Views
 			if (blockStart < 0)
 				return;
 			var point = editor.DocumentToVisualLocation (editor.Document.OffsetToLocation (startOffset + i + 1));
-			point.X += editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition - (int)hAdjustment.Value;
+			point.X += (int)(editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition - hAdjustment.Value);
 			point.Y -= (int)editor.VAdjustment.Value;
 
 			var point2 = editor.DocumentToVisualLocation (editor.Document.OffsetToLocation (startOffset + blockStart + 1));
-			point2.X += editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition - (int)hAdjustment.Value;
+			point2.X += (int)(editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition - hAdjustment.Value);
 			point2.Y -= (int)editor.VAdjustment.Value;
 
 			cr.Rectangle (point.X, point.Y, point2.X - point.X, editor.LineHeight);
