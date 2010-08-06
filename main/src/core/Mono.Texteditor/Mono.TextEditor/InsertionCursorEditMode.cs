@@ -246,7 +246,7 @@ namespace Mono.TextEditor
 				this.mode = mode;
 			}
 			
-			void DrawArrow (Cairo.Context g, int x, int y)
+			void DrawArrow (Cairo.Context g, double x, double y)
 			{
 				TextEditor editor = mode.editor;
 				double phi = 1.618;
@@ -275,8 +275,8 @@ namespace Mono.TextEditor
 					LineSegment lineAbove = editor.Document.GetLine (mode.CurrentInsertionPoint.Line - 1);
 					LineSegment lineBelow = editor.Document.GetLine (mode.CurrentInsertionPoint.Line);
 					
-					int aboveStart = 0, aboveEnd = editor.TextViewMargin.XOffset;
-					int belowStart = 0, belowEnd = editor.TextViewMargin.XOffset;
+					int aboveStart = 0, aboveEnd = (int)editor.TextViewMargin.XOffset;
+					int belowStart = 0, belowEnd = (int)editor.TextViewMargin.XOffset;
 					int l = 0;
 					if (lineAbove != null) {
 						var wrapper = editor.TextViewMargin.GetLayout (lineAbove);
@@ -305,8 +305,8 @@ namespace Mono.TextEditor
 					}
 					
 					int d = editor.LineHeight / 3;
-					int x1 = editor.TextViewMargin.XOffset - (int)editor.HAdjustment.Value;
-					int x2 = x1;
+					double x1 = editor.TextViewMargin.XOffset - (int)editor.HAdjustment.Value;
+					double x2 = x1;
 					if (aboveStart < belowEnd) {
 						x1 += aboveStart;
 						x2 += belowEnd;

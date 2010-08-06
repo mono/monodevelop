@@ -192,7 +192,7 @@ namespace Mono.TextEditor
 		void TextImplementor.GetCharacterExtents (int offset, out int x, out int y, out int width, out int height, CoordType coords)
 		{
 			var point = editor.DocumentToVisualLocation (Document.OffsetToLocation (offset));
-			x = point.X + editor.TextViewMargin.XOffset;
+			x = point.X + (int)editor.TextViewMargin.XOffset;
 			y = point.Y;
 			width = editor.TextViewMargin.CharWidth;
 			height = editor.LineHeight;
@@ -214,10 +214,10 @@ namespace Mono.TextEditor
 			switch (coords) {
 			case Atk.CoordType.Screen:
 				editor.TranslateCoordinates (editor, x, y, out rx, out ry);
-				rx -= editor.TextViewMargin.XOffset;
+				rx -= (int)editor.TextViewMargin.XOffset;
 				break;
 			case Atk.CoordType.Window:
-				rx = x - editor.TextViewMargin.XOffset;
+				rx = x - (int)editor.TextViewMargin.XOffset;
 				ry = y;
 				break;
 			}

@@ -94,7 +94,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		internal protected override void Draw (Cairo.Context ctx, Cairo.Rectangle area, int line, int x, int y, int lineHeight)
+		internal protected override void Draw (Cairo.Context ctx, Cairo.Rectangle area, int line, double x, double y, double lineHeight)
 		{
 			ctx.Rectangle (x, y, Width, lineHeight);
 			ctx.Color = backgroundColor;
@@ -137,12 +137,12 @@ namespace Mono.TextEditor
 			private set;
 		}
 
-		public int X {
+		public double X {
 			get;
 			private set;
 		}
 
-		public int Y {
+		public double Y {
 			get;
 			private set;
 		}
@@ -152,7 +152,7 @@ namespace Mono.TextEditor
 			private set;
 		}
 		
-		public BookmarkMarginDrawEventArgs (TextEditor editor, Cairo.Context context, LineSegment line, int lineNumber, int xPos, int yPos)
+		public BookmarkMarginDrawEventArgs (TextEditor editor, Cairo.Context context, LineSegment line, int lineNumber, double xPos, double yPos)
 		{
 			this.Editor = editor;
 			this.Context    = context;

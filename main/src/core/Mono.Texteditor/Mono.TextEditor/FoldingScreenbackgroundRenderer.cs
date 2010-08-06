@@ -95,18 +95,18 @@ namespace Mono.TextEditor
 				}
 				
 				Roles role = Roles.Between;
-				int xPos = textViewMargin.XOffset;
-				int rectangleWidth = editor.Allocation.Width - xPos;
+				double xPos = textViewMargin.XOffset;
+				double rectangleWidth = editor.Allocation.Width - xPos;
 				if (segment >= 0) {
 					LineSegment segmentStartLine = foldSegments[segment].StartLine;
 					lineLayout = textViewMargin.CreateLinePartLayout (mode, segmentStartLine, segmentStartLine.Offset, segmentStartLine.EditableLength, -1, -1);
 					Pango.Rectangle rectangle = lineLayout.Layout.IndexToPos (GetFirstNonWsIdx (lineLayout.Layout.Text));
-					xPos = System.Math.Max (textViewMargin.XOffset, (int)(textViewMargin.XOffset + rectangle.X / Pango.Scale.PangoScale - editor.HAdjustment.Value));
+					xPos = System.Math.Max (textViewMargin.XOffset, (textViewMargin.XOffset + rectangle.X / Pango.Scale.PangoScale - editor.HAdjustment.Value));
 					
 					LineSegment segmentEndLine = foldSegments[segment].EndLine;
 					lineLayout = textViewMargin.CreateLinePartLayout (mode, segmentEndLine, segmentEndLine.Offset, segmentEndLine.EditableLength, -1, -1);
 					rectangle = lineLayout.Layout.IndexToPos (GetFirstNonWsIdx (lineLayout.Layout.Text));
-					xPos = System.Math.Min (xPos ,System.Math.Max (textViewMargin.XOffset, (int)(textViewMargin.XOffset + rectangle.X / Pango.Scale.PangoScale - editor.HAdjustment.Value)));
+					xPos = System.Math.Min (xPos ,System.Math.Max (textViewMargin.XOffset, (textViewMargin.XOffset + rectangle.X / Pango.Scale.PangoScale - editor.HAdjustment.Value)));
 					
 					int width = editor.Allocation.Width;
 					if (editor.HAdjustment.Upper > width) {

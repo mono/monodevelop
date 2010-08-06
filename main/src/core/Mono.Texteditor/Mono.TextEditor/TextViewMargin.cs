@@ -58,15 +58,14 @@ namespace Mono.TextEditor
 			get { return -1; }
 		}
 
-		int xOffset;
-		public override int XOffset {
+		double xOffset;
+		public override double XOffset {
 			get {
 				return xOffset;
 			}
 			internal set {
 				if (xOffset != value) {
 					xOffset = value;
-					SetClip ();
 				}
 			}
 		}
@@ -607,11 +606,11 @@ namespace Mono.TextEditor
 		{
 			switch (mode) {
 			case CaretMode.Insert:
-				return new Gdk.Rectangle (System.Math.Max (this.XOffset, caretX), caretY, 1, LineHeight);
+				return new Gdk.Rectangle (System.Math.Max ((int)this.XOffset, caretX), caretY, 1, LineHeight);
 			case CaretMode.Block:
-				return new Gdk.Rectangle (System.Math.Max (this.XOffset, caretX), caretY, this.charWidth, LineHeight);
+				return new Gdk.Rectangle (System.Math.Max ((int)this.XOffset, caretX), caretY, this.charWidth, LineHeight);
 			case CaretMode.Underscore:
-				return new Gdk.Rectangle (System.Math.Max (this.XOffset, caretX), caretY + LineHeight, this.charWidth, 1);
+				return new Gdk.Rectangle (System.Math.Max ((int)this.XOffset, caretX), caretY + LineHeight, this.charWidth, 1);
 			}
 			throw new NotImplementedException ("Unknown caret mode :" + mode);
 		}
@@ -1261,7 +1260,7 @@ namespace Mono.TextEditor
 				if (textEditor.MainSelection.SelectionMode == SelectionMode.Block && startX == endX) {
 					endX = startX + 2;
 				}
-				DrawRectangleWithRuler (cr, xPos + textEditor.HAdjustment.Value - TextStartPosition, new Cairo.Rectangle (xPos + startX, y, endX - startX, textEditor.LineHeight), this.SelectionColor.BackgroundColor, true);
+				DrawRectangleWithRuler (cr, xPos + textEditor.HAdjustment.Value - TextStartPosition, new Cairo.Rectangle (xPos + startX, y, endX - startX + 0.5, textEditor.LineHeight), this.SelectionColor.BackgroundColor, true);
 			}
 
 			// highlight search results
@@ -1767,7 +1766,7 @@ namespace Mono.TextEditor
 				// folding marker
 				int lineNr = args.LineNumber;
 				foreach (KeyValuePair<Rectangle, FoldSegment> shownFolding in GetFoldRectangles (lineNr)) {
-					if (shownFolding.Key.Contains (args.X + this.XOffset, args.Y)) {
+					if (shownFolding.Key.Contains (args.X + (int)this.XOffset, args.Y)) {
 						ShowTooltip (shownFolding.Value, shownFolding.Key);
 						return;
 					}
@@ -2014,13 +2013,11 @@ namespace Mono.TextEditor
 			cr.Color = (HslColor)color;
 			
 			if (textEditor.Options.ShowRuler) {
-				// add +0.5 for 'sharp' edges otherwise the alpha blending will draw small light lines between adjacenting rectangles
-				// (maybe the rectangle drawing should be optimized to not allow such cases)
 				double divider = System.Math.Max (area.X, System.Math.Min (x + rulerX, area.X + area.Width));
 				if (divider < area.X + area.Width) {
-					cr.Rectangle (area.X + 0.5, area.Y, divider - area.X + 0.5, area.Height);
+					cr.Rectangle (area.X, area.Y, divider - area.X, area.Height);
 					cr.Fill ();
-					cr.Rectangle (divider + 0.5, area.Y, area.X + area.Width - divider + 0.5, area.Height);
+					cr.Rectangle (divider, area.Y, area.X + area.Width - divider, area.Height);
 					cr.Color = (HslColor)DimColor (color);
 					cr.Fill ();
 					cr.DrawLine ((HslColor)ColorStyle.Ruler, divider, area.Y, divider, area.Y + area.Height);
@@ -2099,24 +2096,19 @@ namespace Mono.TextEditor
 		Gdk.Color defaultBgColor;
 		Gdk.Rectangle clipRectangle;
 
-		internal void SetClip ()
-		{
-			SetClip (new Gdk.Rectangle (XOffset, 0, textEditor.Allocation.Width - XOffset, textEditor.Allocation.Height));
-		}
-
 		public int TextStartPosition {
 			get {
 				return 4;
 			}
 		}
 
-		protected internal override void Draw (Cairo.Context cr, Cairo.Rectangle area, int lineNr, int x, int y, int _lineHeight)
+		protected internal override void Draw (Cairo.Context cr, Cairo.Rectangle area, int lineNr, double x, double y, double _lineHeight)
 		{
 			LineSegment line = lineNr < Document.LineCount ? Document.GetLine (lineNr) : null;
 			double xStart = System.Math.Max (area.X, XOffset);
 			xStart = System.Math.Max (0, xStart);
-			var lineArea = new Cairo.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, textEditor.LineHeight);
-			cr.Rectangle (lineArea);
+			var lineArea = new Cairo.Rectangle (XOffset - 1, y, textEditor.Allocation.Width - XOffset, textEditor.LineHeight);
+			cr.Rectangle (XOffset - 1 , 0, textEditor.Allocation.Width, textEditor.Allocation.Height);
 			cr.Clip ();
 			int width, height;
 			double pangoPosition = (x - textEditor.HAdjustment.Value + TextStartPosition) * Pango.Scale.PangoScale;

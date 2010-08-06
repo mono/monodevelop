@@ -149,7 +149,7 @@ namespace Mono.TextEditor
 			if (oldHAdjustment == curHAdjustment)
 				return;
 			
-			QueueDrawArea (this.textViewMargin.XOffset, 0, this.Allocation.Width - this.textViewMargin.XOffset, this.Allocation.Height);
+			QueueDrawArea ((int)this.textViewMargin.XOffset, 0, this.Allocation.Width - (int)this.textViewMargin.XOffset, this.Allocation.Height);
 			OnHScroll (EventArgs.Empty);
 		}
 		
@@ -641,7 +641,7 @@ namespace Mono.TextEditor
 		{
 			if (isDisposed)
 				return;
-			QueueDrawArea (margin.XOffset, 0, GetMarginWidth (margin),  this.Allocation.Height);
+			QueueDrawArea ((int)margin.XOffset, 0, GetMarginWidth (margin),  this.Allocation.Height);
 		}
 		
 		public void RedrawMarginLine (Margin margin, int logicalLine)
@@ -653,13 +653,13 @@ namespace Mono.TextEditor
 			int h = GetLineHeight (logicalLine);
 			
 			if (y + h > 0)
-				QueueDrawArea (margin.XOffset, y, GetMarginWidth (margin), h);
+				QueueDrawArea ((int)margin.XOffset, y, GetMarginWidth (margin), h);
 		}
 
 		int GetMarginWidth (Margin margin)
 		{
 			if (margin.Width < 0)
-				return Allocation.Width - margin.XOffset;
+				return Allocation.Width - (int)margin.XOffset;
 			return (int)margin.Width;
 		}
 		
@@ -711,7 +711,7 @@ namespace Mono.TextEditor
 			if (end < 0)
 				end = Document.LineCount - 1;
 			int visualEnd   = (int)-this.textEditorData.VAdjustment.Value + LineToVisualY (end) + GetLineHeight (end);
-			QueueDrawArea (margin.XOffset, visualStart, GetMarginWidth (margin), visualEnd - visualStart);
+			QueueDrawArea ((int)margin.XOffset, visualStart, GetMarginWidth (margin), visualEnd - visualStart);
 		}
 			
 		internal void RedrawLines (int start, int end)
@@ -994,7 +994,7 @@ namespace Mono.TextEditor
 			DocumentLocation oldLocation = Caret.Location;
 			dragOver = true;
 			Caret.PreserveSelection = true;
-			dragCaretPos = VisualToDocumentLocation (x - textViewMargin.XOffset, y);
+			dragCaretPos = VisualToDocumentLocation (x - (int)textViewMargin.XOffset, y);
 			int offset = Document.LocationToOffset (dragCaretPos);
 			if (selection != null && offset >= this.selection.GetSelectionRange (textEditorData).Offset && offset < this.selection.GetSelectionRange (textEditorData).EndOffset) {
 				Gdk.Drag.Status (context, DragAction.Default, time);
@@ -1079,7 +1079,7 @@ namespace Mono.TextEditor
 			Margin margin;
 			if (textViewMargin.inSelectionDrag) {
 				margin = textViewMargin;
-				startPos = textViewMargin.XOffset;
+				startPos = (int)textViewMargin.XOffset;
 			} else {
 				margin = GetMarginAtX ((int)x, out startPos);
 				if (margin != null && GdkWindow != null)
@@ -1215,7 +1215,7 @@ namespace Mono.TextEditor
 				this.textEditorData.HAdjustment.Value = 0;
 			} else {
 				int caretX = (int)textViewMargin.ColumnToVisualX (Document.GetLine (p.Line), p.Column);
-				int textWith = Allocation.Width - textViewMargin.XOffset;
+				int textWith = Allocation.Width - (int)textViewMargin.XOffset;
 				if (this.textEditorData.HAdjustment.Value > caretX) {
 					this.textEditorData.HAdjustment.Value = caretX;
 				} else if (this.textEditorData.HAdjustment.Value + textWith < caretX + TextViewMargin.CharWidth) {
@@ -1257,7 +1257,7 @@ namespace Mono.TextEditor
 					this.textEditorData.HAdjustment.Value = 0;
 				} else {
 					int caretX = (int)textViewMargin.ColumnToVisualX (Document.GetLine (p.Line), p.Column);
-					int textWith = Allocation.Width - textViewMargin.XOffset;
+					int textWith = Allocation.Width - (int)textViewMargin.XOffset;
 					if (this.textEditorData.HAdjustment.Value > caretX) {
 						this.textEditorData.HAdjustment.Value = caretX;
 					} else if (this.textEditorData.HAdjustment.Value + textWith < caretX + TextViewMargin.CharWidth) {
@@ -1279,7 +1279,7 @@ namespace Mono.TextEditor
 		public void TryToResetHorizontalScrollPosition ()
 		{
 			int caretX = (int)textViewMargin.ColumnToVisualX (Document.GetLine (Caret.Line), Caret.Column);
-			int textWith = Allocation.Width - textViewMargin.XOffset;
+			int textWith = Allocation.Width - (int)textViewMargin.XOffset;
 			if (caretX < textWith - TextViewMargin.CharWidth) 
 				this.textEditorData.HAdjustment.Value = 0;
 		}
@@ -1297,7 +1297,6 @@ namespace Mono.TextEditor
 				this.GdkWindow.MoveResize (allocation);
 			SetAdjustments (Allocation);
 			QueueDraw ();
-			textViewMargin.SetClip ();
 		}
 		
 		protected override bool OnScrollEvent (EventScroll evnt)
@@ -1330,7 +1329,7 @@ namespace Mono.TextEditor
 				int maxX = longestLineWidth;
 				if (maxX > Allocation.Width)
 					maxX += 2 * this.textViewMargin.CharWidth;
-				int width = Allocation.Width - this.TextViewMargin.XOffset;
+				int width = Allocation.Width - (int)this.TextViewMargin.XOffset;
 				this.textEditorData.HAdjustment.SetBounds (0, maxX, this.textViewMargin.CharWidth, width, width);
 				if (maxX < width)
 					this.textEditorData.HAdjustment.Value = 0;
@@ -1381,7 +1380,7 @@ namespace Mono.TextEditor
 			
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (win)) {
 				cr.LineWidth = Options.Zoom;
-				int curX = 0;
+				double curX = 0;
 				int curY = startY - (int)this.textEditorData.VAdjustment.Value;
 				bool setLongestLine = false;
 				bool renderFirstLine = true;
@@ -1403,7 +1402,7 @@ namespace Mono.TextEditor
 								margin.XOffset = curX;
 							margin.Draw (cr, cairoRectangle, logicalLineNumber, margin.XOffset, curY, lineHeight);
 							if (renderFirstLine)
-								curX += (int)margin.Width;
+								curX += margin.Width;
 						} catch (Exception e) {
 							System.Console.WriteLine (e);
 						}
@@ -2027,7 +2026,7 @@ namespace Mono.TextEditor
 				int w = x2 - x1;
 				int spaceX = 16;
 				int spaceY = Editor.LineHeight;
-				return new Gdk.Rectangle (x1 + Editor.TextViewMargin.XOffset + Editor.TextViewMargin.TextStartPosition - (int)Editor.HAdjustment.Value - spaceX, y - spaceY, w + spaceX * 2, Editor.LineHeight + spaceY * 2);
+				return new Gdk.Rectangle (x1 + (int)Editor.TextViewMargin.XOffset + Editor.TextViewMargin.TextStartPosition - (int)Editor.HAdjustment.Value - spaceX, y - spaceY, w + spaceX * 2, Editor.LineHeight + spaceY * 2);
 			}
 			
 			protected override Gdk.Pixbuf RenderInitialPixbuf (Gdk.Window parentwindow, Gdk.Rectangle bounds)
@@ -2228,7 +2227,7 @@ namespace Mono.TextEditor
 			provider.GetRequiredPosition (this, liw, out w, out xalign);
 			w += 10;
 			
-			int x = xloc + ox + textViewMargin.XOffset - (int) ((double)w * xalign);
+			int x = xloc + ox + (int)textViewMargin.XOffset - (int) ((double)w * xalign);
 			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtPoint (ox + xloc, oy + yloc));
 			
 			if (x + w >= geometry.Right)

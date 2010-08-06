@@ -39,7 +39,7 @@ namespace Mono.TextEditor
 		public bool IsVisible { get; set; }
 		
 		// set by the text editor
-		public virtual int XOffset {
+		public virtual double XOffset {
 			get;
 			internal set;
 		}
@@ -74,7 +74,7 @@ namespace Mono.TextEditor
 			marginDrawer.Remove (drawer);
 		}
 		
-		internal protected abstract void Draw (Cairo.Context cr, Cairo.Rectangle area, int line, int x, int y, int lineHeight);
+		internal protected abstract void Draw (Cairo.Context cr, Cairo.Rectangle area, int line, double x, double y, double lineHeight);
 		
 		internal protected virtual void OptionsChanged ()
 		{
