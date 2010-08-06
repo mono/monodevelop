@@ -572,8 +572,10 @@ namespace MonoDevelop.VersionControl
 		{
 			foreach (VersionControlSystem vcs in GetVersionControlSystems ()) {
 				Repository repo = vcs.GetRepositoryReference (path, id);
-				if (repo != null)
+				if (repo != null) {
+					repo.VersionControlSystem = vcs;
 					return repo;
+				}
 			}
 			return null;
 		}

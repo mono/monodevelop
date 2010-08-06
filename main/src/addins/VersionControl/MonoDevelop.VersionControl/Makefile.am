@@ -42,7 +42,6 @@ FILES =  \
 	MonoDevelop.VersionControl/CommitMessageFormat.cs \
 	MonoDevelop.VersionControl/CommitMessageStyle.cs \
 	MonoDevelop.VersionControl/CreatePatchCommand.cs \
-	MonoDevelop.VersionControl/CurrentFileHandler.cs \
 	MonoDevelop.VersionControl/FileUpdateEventHandler.cs \
 	MonoDevelop.VersionControl/LockCommand.cs \
 	MonoDevelop.VersionControl/PublishCommand.cs \

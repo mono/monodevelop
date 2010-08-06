@@ -452,11 +452,7 @@ namespace MonoDevelop.VersionControl
 						res = PublishCommand.Publish (it.WorkspaceObject, it.Path, test);
 					break;
 				case Commands.Annotate:
-					if (!test) {
-						BlameView.Show (items);
-					} else {
-						res = BlameView.CanShow (items[0].Repository, items[0].Path);
-					}
+					res = BlameView.Show (items, test);
 					break;
 				case Commands.CreatePatch:
 					res = CreatePatchCommand.CreatePatch (items, test);

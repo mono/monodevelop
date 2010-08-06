@@ -209,7 +209,6 @@
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Views.PatchWidget.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\PatchView.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\DropDownBox.cs" />
-    <Compile Include="MonoDevelop.VersionControl\CurrentFileHandler.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\ChangeSetView.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\MergeView.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\MergeWidget.cs" />
