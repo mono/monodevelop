@@ -35,7 +35,7 @@ namespace Mono.TextEditor
 		
 		public override double Width {
 			get {
-				return editor.Options.Zoom;
+				return System.Math.Min (1.0, editor.Options.Zoom);
 			}
 		}
 		
@@ -51,8 +51,8 @@ namespace Mono.TextEditor
 		
 		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, int line, int x, int y, int lineHeight)
 		{
-			cr.MoveTo (x, y);
-			cr.LineTo (x, y + lineHeight);
+			cr.MoveTo (x + 0.5, y);
+			cr.LineTo (x + 0.5, y + lineHeight);
 			cr.Color = color;
 			cr.Stroke ();
 		}

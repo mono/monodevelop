@@ -1165,7 +1165,7 @@ namespace Mono.TextEditor
 		{
 			Gdk.Point result = new Point ();
 			LineSegment lineSegment = Document.GetLine (loc.Line);
-			result.X = textViewMargin.ColumnToVisualX (lineSegment, loc.Column);
+			result.X = (int)textViewMargin.ColumnToVisualX (lineSegment, loc.Column);
 			result.Y = LineToVisualY (loc.Line);
 			return result;
 		}
@@ -1214,7 +1214,7 @@ namespace Mono.TextEditor
 			if (this.textEditorData.HAdjustment.Upper < Allocation.Width)  {
 				this.textEditorData.HAdjustment.Value = 0;
 			} else {
-				int caretX = textViewMargin.ColumnToVisualX (Document.GetLine (p.Line), p.Column);
+				int caretX = (int)textViewMargin.ColumnToVisualX (Document.GetLine (p.Line), p.Column);
 				int textWith = Allocation.Width - textViewMargin.XOffset;
 				if (this.textEditorData.HAdjustment.Value > caretX) {
 					this.textEditorData.HAdjustment.Value = caretX;
@@ -1256,7 +1256,7 @@ namespace Mono.TextEditor
 				if (this.textEditorData.HAdjustment.Upper < Allocation.Width)  {
 					this.textEditorData.HAdjustment.Value = 0;
 				} else {
-					int caretX = textViewMargin.ColumnToVisualX (Document.GetLine (p.Line), p.Column);
+					int caretX = (int)textViewMargin.ColumnToVisualX (Document.GetLine (p.Line), p.Column);
 					int textWith = Allocation.Width - textViewMargin.XOffset;
 					if (this.textEditorData.HAdjustment.Value > caretX) {
 						this.textEditorData.HAdjustment.Value = caretX;
@@ -1278,7 +1278,7 @@ namespace Mono.TextEditor
 		
 		public void TryToResetHorizontalScrollPosition ()
 		{
-			int caretX = textViewMargin.ColumnToVisualX (Document.GetLine (Caret.Line), Caret.Column);
+			int caretX = (int)textViewMargin.ColumnToVisualX (Document.GetLine (Caret.Line), Caret.Column);
 			int textWith = Allocation.Width - textViewMargin.XOffset;
 			if (caretX < textWith - TextViewMargin.CharWidth) 
 				this.textEditorData.HAdjustment.Value = 0;
@@ -2284,7 +2284,8 @@ namespace Mono.TextEditor
 					longest = line;
 			}
 			if (longest != longestLine) {
-				int width = textViewMargin.ColumnToVisualX (longest, longest.EditableLength);
+				int width = (int)(textViewMargin.GetLayout (longest).PangoWidth / Pango.Scale.PangoScale);
+				
 				if (width > this.longestLineWidth) {
 					this.longestLineWidth = width;
 					this.longestLine = longest;
