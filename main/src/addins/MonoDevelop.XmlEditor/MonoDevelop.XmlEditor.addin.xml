@@ -84,11 +84,8 @@
 	</Extension>
 
 	<!-- XML menu -->
-	<Extension path = "/MonoDevelop/Ide/MainMenu">
-		<ItemSet id = "XmlMenu" 
-		         insertafter = "Run" 
-		         insertbefore = "Tools" 
-		         _label = "_XML" >
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Tools">
+		<ItemSet id = "XmlMenu" insertafter = "AddinManagerSeparator" _label = "_XML" >
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.CreateSchema" />
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.GoToSchemaDefinition" />
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.Validate" /><!--
@@ -101,6 +98,7 @@
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.RunXslTransform"/>				
 			<SeparatorItem id = "FormatSeparator"/>
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.Format" />
+			<SeparatorItem/>
 		</ItemSet>
 	</Extension>
 	
