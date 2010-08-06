@@ -33,7 +33,7 @@ namespace Mono.TextEditor
 	{
 		public virtual int Offset { get; set; }
 		public virtual int Length { get; set; }
-		
+
 		public int EndOffset {
 			get {
 				return Offset + Length;
@@ -43,27 +43,32 @@ namespace Mono.TextEditor
 		protected Segment ()
 		{
 		}
-		
+
 		public Segment (int offset, int length)
 		{
 			this.Offset = offset;
 			this.Length = length;
 		}
-		
+
+		public Segment (ISegment segment) : this (segment.Offset, segment.Length)
+		{
+		}
+
 		public static bool Equals (ISegment left, ISegment right)
 		{
 			return left != null && right != null && left.Offset == right.Offset && left.Length == right.Length;
 		}
-		
+
 		public bool Contains (int offset)
 		{
 			return Offset <= offset && offset < EndOffset;
 		}
+
 		public bool Contains (ISegment segment)
 		{
 			return  segment != null && Offset <= segment.Offset && segment.EndOffset <= EndOffset;
 		}
-		
+
 		public override string ToString ()
 		{
 			return String.Format ("[Segment: Offset={0}, Length={1}]", this.Offset, this.Length);
