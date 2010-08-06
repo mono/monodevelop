@@ -459,24 +459,30 @@ namespace MonoDevelop.Ide.CodeCompletion
 			int idx = -1;
 			var matcher = CompletionMatcher.CreateCompletionMatcher (partialWord);
 			
-			List<KeyValuePair<int, string>> words = new List<KeyValuePair<int, string>> ();
+			string bestWord = null;
+			int bestRank = int.MinValue;
+			int bestIndex = 0;
+			
 			if (!string.IsNullOrEmpty (partialWord)) {
 				for (int i = 0; i < list.filteredItems.Count; i++) {
 					int index = list.filteredItems[i];
 					string text = DataProvider.GetCompletionText (index);
-					if (!matcher.IsMatch (text))
+					int rank;
+					if (!matcher.CalcMatchRank (text, out rank))
 						continue;
-					words.Add (new KeyValuePair <int,string> (i, text));
+					if (rank > bestRank) {
+						bestWord = text;
+						bestRank = rank;
+						bestIndex = i;
+					}
 				}
 			}
 			
-			ListWindow.WordComparer comparer = new WordComparer (partialWord);
-			if (words.Count > 0) {
-				words.Sort (comparer);
-				idx = words[0].Key;
+			if (bestWord != null) {
+				idx = bestIndex;
 				hasMismatches = false;
 				// exact match found.
-				if (words[0].Value.ToUpper () == (partialWord ?? "").ToUpper ()) 
+				if (string.Compare (bestWord, partialWord ?? "", true) == 0) 
 					return idx;
 			}
 			
