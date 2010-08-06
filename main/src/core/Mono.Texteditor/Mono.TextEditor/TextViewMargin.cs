@@ -426,6 +426,9 @@ namespace Mono.TextEditor
 				invalidLineLayout.SetText ("~");
 			}
 			
+			if (invalidLineLayout != null)
+				invalidLineLayout.FontDescription = textEditor.Options.Font;
+			
 			if (textEditor.Options.ShowEolMarkers && unixEolLayout == null) {
 				unixEolLayout = PangoUtil.CreateLayout (textEditor);
 				unixEolLayout.SetText ("\\n");
@@ -437,15 +440,22 @@ namespace Mono.TextEditor
 				emptyEolLayout.SetText ("<EOL>");
 			}
 			
+			if (unixEolLayout != null)
+				unixEolLayout.FontDescription = macEolLayout.FontDescription = windowEolLayout.FontDescription = emptyEolLayout.FontDescription = textEditor.Options.Font;
+			
 			if (textEditor.Options.ShowTabs && tabMarkerLayout == null) {
 				tabMarkerLayout = PangoUtil.CreateLayout (textEditor);
 				tabMarkerLayout.SetText ("»");
 			}
+			if (tabMarkerLayout != null)
+				tabMarkerLayout.FontDescription = textEditor.Options.Font;
 
 			if (textEditor.Options.ShowSpaces && spaceMarkerLayout == null) {
 				spaceMarkerLayout = PangoUtil.CreateLayout (textEditor);
 				spaceMarkerLayout.SetText ("·");
 			}
+			if (spaceMarkerLayout != null)
+				spaceMarkerLayout.FontDescription = textEditor.Options.Font;
 			
 			DecorateLineFg -= DecorateTabs;
 			DecorateLineFg -= DecorateSpaces;
