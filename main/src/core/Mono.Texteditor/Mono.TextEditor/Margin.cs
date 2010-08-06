@@ -32,7 +32,7 @@ namespace Mono.TextEditor
 {
 	public abstract class Margin : IDisposable
 	{
-		public abstract int Width {
+		public abstract double Width {
 			get;
 		}
 		
@@ -73,16 +73,8 @@ namespace Mono.TextEditor
 		{
 			marginDrawer.Remove (drawer);
 		}
-
-		internal protected virtual void BeginRender (Gdk.Drawable drawable, Gdk.Rectangle area, int x)
-		{
-		}
-
-		internal protected virtual void EndRender (Gdk.Drawable drawable, Gdk.Rectangle area, int x)
-		{
-		}
 		
-		internal protected abstract void Draw (Gdk.Drawable drawable, Gdk.Rectangle area, int line, int x, int y, int lineHeight);
+		internal protected abstract void Draw (Cairo.Context cr, Cairo.Rectangle area, int line, int x, int y, int lineHeight);
 		
 		internal protected virtual void OptionsChanged ()
 		{

@@ -223,14 +223,6 @@ namespace MonoDevelop.SourceEditor
 				fontDescription.Dispose ();
 				fontDescription = null;
 			}
-			if (gc != null) {
-				gc.Dispose ();
-				gc = null;
-			}
-			if (gcLight != null) {
-				gcLight.Dispose ();
-				gcLight = null;
-			}
 			if (errorCountLayout != null) {
 				errorCountLayout.Dispose ();
 				errorCountLayout = null;
@@ -259,7 +251,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		internal Gdk.GC gc, gcLight, gcSelected;
+		internal Cairo.Color gc, gcLight, gcSelected;
 		internal Pango.Layout errorCountLayout;
 		List<LayoutDescriptor> layouts;
 		internal IList<LayoutDescriptor> Layouts {
@@ -270,19 +262,16 @@ namespace MonoDevelop.SourceEditor
 		
 		void EnsureLayoutCreated (TextEditor editor)
 		{
-			if (editor.ColorStyle != null && gc == null) {
+			if (editor.ColorStyle != null) {
 				bool isError = errors.Any (e => e.IsError);
 				
 				string typeString = isError ? "error" : "warning";
 				
-				gc = new Gdk.GC (editor.GdkWindow);
-				gc.RgbFgColor = editor.ColorStyle.GetChunkStyle ("bubble." + typeString + ".text").Color;
+				gc = (HslColor)(editor.ColorStyle.GetChunkStyle ("bubble." + typeString + ".text").Color);
 				
-				gcSelected = new Gdk.GC (editor.GdkWindow);
-				gcSelected.RgbFgColor = editor.ColorStyle.Selection.Color;
+				gcSelected = (HslColor)editor.ColorStyle.Selection.Color;
 				
-				gcLight = new Gdk.GC (editor.GdkWindow);
-				gcLight.RgbFgColor = new Gdk.Color (255, 255, 255);
+				gcLight = new Cairo.Color (1, 1, 1);
 				
 				
 				colorMatrix[0, 0, 0, 0, 0] = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("bubble." + typeString + ".light.color1").Color);
@@ -374,7 +363,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public bool DrawBackground (TextEditor editor, Gdk.Drawable win, TextViewMargin.LayoutWrapper layout2, int selectionStart, int selectionEnd, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg)
+		public bool DrawBackground (TextEditor editor, Cairo.Context g, TextViewMargin.LayoutWrapper layout2, int selectionStart, int selectionEnd, int startOffset, int endOffset, double y, double startXPos, double endXPos, ref bool drawBg)
 		{
 			if (!IsVisible || DebuggingService.IsDebugging)
 				return true;
@@ -398,279 +387,282 @@ namespace MonoDevelop.SourceEditor
 			
 			int topSize = editor.LineHeight / 2;
 			int bottomSize = editor.LineHeight / 2 + editor.LineHeight % 2;
-			
-			using (var g = Gdk.CairoHelper.Create (win)) {
-				g.LineWidth = Math.Max (1.0, editor.Options.Zoom);
-				if (!fitsInSameLine) {
-					if (isEolSelected) {
-						x -= (int)editor.HAdjustment.Value;
-						editor.TextViewMargin.DrawRectangleWithRuler (win, x, new Gdk.Rectangle (x, y + editor.LineHeight, editor.TextViewMargin.TextStartPosition, editor.LineHeight), editor.ColorStyle.Default.BackgroundColor, true);
-						editor.TextViewMargin.DrawRectangleWithRuler (win, x + editor.TextViewMargin.TextStartPosition, new Gdk.Rectangle (x + editor.TextViewMargin.TextStartPosition, y + editor.LineHeight, editor.Allocation.Width + (int)editor.HAdjustment.Value, editor.LineHeight), editor.ColorStyle.Selection.BackgroundColor, true);
-						x += (int)editor.HAdjustment.Value;
-					} else {
-						editor.TextViewMargin.DrawRectangleWithRuler (win, x, new Gdk.Rectangle (x, y + editor.LineHeight, x2, editor.LineHeight), editor.ColorStyle.Default.BackgroundColor, true);
-					}
+		
+			if (!fitsInSameLine) {
+				if (isEolSelected) {
+					x -= (int)editor.HAdjustment.Value;
+					editor.TextViewMargin.DrawRectangleWithRuler (g, x, new Cairo.Rectangle (x, y + editor.LineHeight, editor.TextViewMargin.TextStartPosition, editor.LineHeight), editor.ColorStyle.Default.BackgroundColor, true);
+					editor.TextViewMargin.DrawRectangleWithRuler (g, x + editor.TextViewMargin.TextStartPosition, new Cairo.Rectangle (x + editor.TextViewMargin.TextStartPosition, y + editor.LineHeight, editor.Allocation.Width + (int)editor.HAdjustment.Value, editor.LineHeight), editor.ColorStyle.Selection.BackgroundColor, true);
+					x += (int)editor.HAdjustment.Value;
+				} else {
+					editor.TextViewMargin.DrawRectangleWithRuler (g, x, new Cairo.Rectangle (x, y + editor.LineHeight, x2, editor.LineHeight), editor.ColorStyle.Default.BackgroundColor, true);
 				}
-				DrawRectangle (g, x, y, right, topSize);
-				g.Color = colorMatrix[active, TOP, LIGHT, highlighted, selected];
-				g.Fill ();
-				DrawRectangle (g, x, y + topSize, right, bottomSize);
-				g.Color = colorMatrix[active, BOTTOM, LIGHT, highlighted, selected];
-				g.Fill ();
-				
-				g.MoveTo (new Cairo.PointD (x, y + 0.5));
-				g.LineTo (new Cairo.PointD (x + right, y + 0.5));
-				g.Color = colorMatrix[active, TOP, LINE, highlighted, selected];
-				g.Stroke ();
-				
-				g.MoveTo (new Cairo.PointD (x, y + editor.LineHeight - 0.5));
-				g.LineTo (new Cairo.PointD ((fitsInSameLine ? x + right : x2 + 1), y + editor.LineHeight - 0.5));
+			}
+			DrawRectangle (g, x, y, right, topSize);
+			g.Color = colorMatrix[active, TOP, LIGHT, highlighted, selected];
+			g.Fill ();
+			DrawRectangle (g, x, y + topSize, right, bottomSize);
+			g.Color = colorMatrix[active, BOTTOM, LIGHT, highlighted, selected];
+			g.Fill ();
+			
+			g.MoveTo (new Cairo.PointD (x, y + 0.5));
+			g.LineTo (new Cairo.PointD (x + right, y + 0.5));
+			g.Color = colorMatrix[active, TOP, LINE, highlighted, selected];
+			g.Stroke ();
+			
+			g.MoveTo (new Cairo.PointD (x, y + editor.LineHeight - 0.5));
+			g.LineTo (new Cairo.PointD ((fitsInSameLine ? x + right : x2 + 1), y + editor.LineHeight - 0.5));
+			g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, selected];
+			g.Stroke ();
+			if (editor.Options.ShowRuler) {
+				int divider = Math.Max (editor.TextViewMargin.XOffset, x + editor.TextViewMargin.RulerX);
+				g.MoveTo (new Cairo.PointD (divider + 0.5, y));
+				g.LineTo (new Cairo.PointD (divider + 0.5, y + editor.LineHeight));
 				g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, selected];
 				g.Stroke ();
-				if (editor.Options.ShowRuler) {
-					int divider = Math.Max (editor.TextViewMargin.XOffset, x + editor.TextViewMargin.RulerX);
-					g.MoveTo (new Cairo.PointD (divider + 0.5, y));
-					g.LineTo (new Cairo.PointD (divider + 0.5, y + editor.LineHeight));
-					g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, selected];
-					g.Stroke ();
-				}
+			}
+			
+			// draw background
+			if (layout2.StartSet || selectionStart == endOffset) {
+				double startX;
+				double endX;
 				
-				// draw background
-				if (layout2.StartSet || selectionStart == endOffset) {
-					int startX;
-					int endX;
-					
-					if (selectionStart != endOffset) {
-						var start = layout2.Layout.IndexToPos ((int)layout2.SelectionStartIndex);
-						startX = (int)(start.X / Pango.Scale.PangoScale);
-						var end = layout2.Layout.IndexToPos ((int)layout2.SelectionEndIndex);
-						endX = (int)(end.X / Pango.Scale.PangoScale);
-					} else {
-						startX = x2;
-						endX = startX;
-					}
-					
-					if (editor.MainSelection.SelectionMode == SelectionMode.Block && startX == endX)
-						endX = startX + 2;
-					startX += startXPos;
-					endX += startXPos;
-					startX = Math.Max (editor.TextViewMargin.XOffset, startX);
-					// clip region to textviewmargin start
-					if (isEolSelected)
-						endX = editor.Allocation.Width + (int)editor.HAdjustment.Value;
-					if (startX < endX) {
-						DrawRectangle (g, startX, y, endX - startX, topSize);
-						g.Color = colorMatrix[active, TOP, LIGHT, highlighted, 1];
-						g.Fill ();
-						DrawRectangle (g, startX, y + topSize, endX - startX, bottomSize);
-						g.Color = colorMatrix[active, BOTTOM, LIGHT, highlighted, 1];
-						g.Fill ();
-						
-						g.MoveTo (new Cairo.PointD (startX, y + 0.5));
-						g.LineTo (new Cairo.PointD (endX, y + 0.5));
-						g.Color = colorMatrix[active, TOP, LINE, highlighted, 1];
-						g.Stroke ();
-						
-						if (startX < x2) {
-							g.MoveTo (new Cairo.PointD (startX, y + editor.LineHeight - 0.5));
-							g.LineTo (new Cairo.PointD (System.Math.Min (endX, x2 + 1), y + editor.LineHeight - 0.5));
-							g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, 1];
-							g.Stroke ();
-							if (x2 + 1 < endX) {
-								g.MoveTo (new Cairo.PointD (x2 + 1, y + editor.LineHeight - 0.5));
-								g.LineTo (new Cairo.PointD (endX, y + editor.LineHeight - 0.5));
-								g.Color = colorMatrix[active, BOTTOM, LIGHT, highlighted, 1];
-								g.Stroke ();
-							}
-						}
-						
-						if (editor.Options.ShowRuler) {
-							int divider = Math.Max (editor.TextViewMargin.XOffset, x + editor.TextViewMargin.RulerX);
-							g.MoveTo (new Cairo.PointD (divider + 0.5, y));
-							g.LineTo (new Cairo.PointD (divider + 0.5, y + editor.LineHeight));
-							g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, 1];
-							g.Stroke ();
-						}
-					}
-				}
-				
-				if (!fitsInSameLine)
-					y += editor.LineHeight;
-				double y2 = y + 0.5;
-				double y2Bottom = y2 + editor.LineHeight - 1;
-				selected = isEolSelected && (CollapseExtendedErrors || errors.Count == 1) ? 1 : 0;
-				
-				// draw message text background
-				if (CollapseExtendedErrors || errors.Count == 1) {
-					if (!fitsInSameLine) {
-						// draw box below line 
-						g.MoveTo (new Cairo.PointD (x2 + 0.5, y2 - 1));
-						g.LineTo (new Cairo.PointD (x2 + 0.5, y2Bottom));
-						g.LineTo (new Cairo.PointD (right, y2Bottom));
-						g.LineTo (new Cairo.PointD (right, y2 - 1));
-						g.ClosePath ();
-						g.Color = colorMatrix[active, BOTTOM, LIGHT, highlighted, selected];
-						g.Fill ();
-						
-						g.MoveTo (new Cairo.PointD (x2 + 0.5, y2 - 1));
-						g.LineTo (new Cairo.PointD (x2 + 0.5, y2Bottom));
-						g.LineTo (new Cairo.PointD (right, y2Bottom));
-						g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, selected];
-						g.Stroke ();
-					} else {
-						// draw 'arrow marker' in the same line
-						g.MoveTo (new Cairo.PointD (x2 + 0.5, y2));
-						double mid = y2 + topSize;
-						g.LineTo (new Cairo.PointD (x2 - editor.LineHeight / 2 + 0.5, mid));
-						
-						g.LineTo (new Cairo.PointD (right, mid));
-						g.LineTo (new Cairo.PointD (right, y2));
-						g.ClosePath ();
-						g.Color = colorMatrix[active, TOP, DARK, highlighted, selected];
-						g.Fill ();
-						g.MoveTo (new Cairo.PointD (x2 + 0.5, y2Bottom));
-						g.LineTo (new Cairo.PointD (x2 - editor.LineHeight / 2 + 0.5, mid));
-						
-						g.LineTo (new Cairo.PointD (right, mid));
-						g.LineTo (new Cairo.PointD (right, y2Bottom));
-						g.ClosePath ();
-						
-						g.Color = colorMatrix[active, BOTTOM, DARK, highlighted, selected];
-						g.Fill ();
-						
-						// draw border
-						g.MoveTo (new Cairo.PointD (x2 + 0.5, y2));
-						g.LineTo (new Cairo.PointD (x2 - editor.LineHeight / 2 + 0.5, y2 + editor.LineHeight / 2));
-						
-						g.LineTo (new Cairo.PointD (x2 + 0.5, y2Bottom));
-						g.LineTo (new Cairo.PointD (right, y2Bottom));
-						g.LineTo (new Cairo.PointD (right, y2));
-						g.ClosePath ();
-						
-						g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, selected];
-						g.Stroke ();
-					}
+				if (selectionStart != endOffset) {
+					var start = layout2.Layout.IndexToPos ((int)layout2.SelectionStartIndex);
+					startX = (int)(start.X / Pango.Scale.PangoScale);
+					var end = layout2.Layout.IndexToPos ((int)layout2.SelectionEndIndex);
+					endX = (int)(end.X / Pango.Scale.PangoScale);
 				} else {
-					if (!fitsInSameLine) {
-						// draw box below line
-						g.MoveTo (new Cairo.PointD (x2 + 0.5, y2 - 1));
-						g.LineTo (new Cairo.PointD (x2 + 0.5, y2Bottom));
-						g.LineTo (new Cairo.PointD (right, y2Bottom));
-						g.LineTo (new Cairo.PointD (right, y2 - 1));
-						g.ClosePath ();
-					} else {
-						// draw filled arrow box
-						g.MoveTo (new Cairo.PointD (x2 + 0.5, y2));
-						g.LineTo (new Cairo.PointD (x2 - editor.LineHeight / 2 + 0.5, y2 + editor.LineHeight / 2));
-						g.LineTo (new Cairo.PointD (x2 + 0.5, y2Bottom));
-						g.LineTo (new Cairo.PointD (right, y2Bottom));
-						g.LineTo (new Cairo.PointD (right, y2));
-						g.ClosePath ();
+					startX = x2;
+					endX = startX;
+				}
+				
+				if (editor.MainSelection.SelectionMode == SelectionMode.Block && startX == endX)
+					endX = startX + 2;
+				startX += startXPos;
+				endX += startXPos;
+				startX = Math.Max (editor.TextViewMargin.XOffset, startX);
+				// clip region to textviewmargin start
+				if (isEolSelected)
+					endX = editor.Allocation.Width + (int)editor.HAdjustment.Value;
+				if (startX < endX) {
+					DrawRectangle (g, startX, y, endX - startX, topSize);
+					g.Color = colorMatrix[active, TOP, LIGHT, highlighted, 1];
+					g.Fill ();
+					DrawRectangle (g, startX, y + topSize, endX - startX, bottomSize);
+					g.Color = colorMatrix[active, BOTTOM, LIGHT, highlighted, 1];
+					g.Fill ();
+					
+					g.MoveTo (new Cairo.PointD (startX, y + 0.5));
+					g.LineTo (new Cairo.PointD (endX, y + 0.5));
+					g.Color = colorMatrix[active, TOP, LINE, highlighted, 1];
+					g.Stroke ();
+					
+					if (startX < x2) {
+						g.MoveTo (new Cairo.PointD (startX, y + editor.LineHeight - 0.5));
+						g.LineTo (new Cairo.PointD (System.Math.Min (endX, x2 + 1), y + editor.LineHeight - 0.5));
+						g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, 1];
+						g.Stroke ();
+						if (x2 + 1 < endX) {
+							g.MoveTo (new Cairo.PointD (x2 + 1, y + editor.LineHeight - 0.5));
+							g.LineTo (new Cairo.PointD (endX, y + editor.LineHeight - 0.5));
+							g.Color = colorMatrix[active, BOTTOM, LIGHT, highlighted, 1];
+							g.Stroke ();
+						}
 					}
+					
+					if (editor.Options.ShowRuler) {
+						int divider = Math.Max (editor.TextViewMargin.XOffset, x + editor.TextViewMargin.RulerX);
+						g.MoveTo (new Cairo.PointD (divider + 0.5, y));
+						g.LineTo (new Cairo.PointD (divider + 0.5, y + editor.LineHeight));
+						g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, 1];
+						g.Stroke ();
+					}
+				}
+			}
+			
+			if (!fitsInSameLine)
+				y += editor.LineHeight;
+			double y2 = y + 0.5;
+			double y2Bottom = y2 + editor.LineHeight - 1;
+			selected = isEolSelected && (CollapseExtendedErrors || errors.Count == 1) ? 1 : 0;
+			
+			// draw message text background
+			if (CollapseExtendedErrors || errors.Count == 1) {
+				if (!fitsInSameLine) {
+					// draw box below line 
+					g.MoveTo (new Cairo.PointD (x2 + 0.5, y2 - 1));
+					g.LineTo (new Cairo.PointD (x2 + 0.5, y2Bottom));
+					g.LineTo (new Cairo.PointD (right, y2Bottom));
+					g.LineTo (new Cairo.PointD (right, y2 - 1));
+					g.ClosePath ();
 					g.Color = colorMatrix[active, BOTTOM, LIGHT, highlighted, selected];
 					g.Fill ();
 					
-					// draw light bottom line
-					g.MoveTo (new Cairo.PointD (right, y2Bottom));
+					g.MoveTo (new Cairo.PointD (x2 + 0.5, y2 - 1));
 					g.LineTo (new Cairo.PointD (x2 + 0.5, y2Bottom));
+					g.LineTo (new Cairo.PointD (right, y2Bottom));
+					g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, selected];
 					g.Stroke ();
+				} else {
+					// draw 'arrow marker' in the same line
+					g.MoveTo (new Cairo.PointD (x2 + 0.5, y2));
+					double mid = y2 + topSize;
+					g.LineTo (new Cairo.PointD (x2 - editor.LineHeight / 2 + 0.5, mid));
 					
-					// stroke left line
-					if (fitsInSameLine) {
-						g.MoveTo (new Cairo.PointD (x2 + 0.5, y2));
-						g.LineTo (new Cairo.PointD (x2 - editor.LineHeight / 2 + 0.5, y2 + editor.LineHeight / 2));
-						g.LineTo (new Cairo.PointD (x2 + 0.5, y2Bottom));
-					} else {
-						g.MoveTo (new Cairo.PointD (x2 + 0.5, y2 - 1));
-						g.LineTo (new Cairo.PointD (x2 + 0.5, y2Bottom + 1));
-					}
+					g.LineTo (new Cairo.PointD (right, mid));
+					g.LineTo (new Cairo.PointD (right, y2));
+					g.ClosePath ();
+					g.Color = colorMatrix[active, TOP, DARK, highlighted, selected];
+					g.Fill ();
+					g.MoveTo (new Cairo.PointD (x2 + 0.5, y2Bottom));
+					g.LineTo (new Cairo.PointD (x2 - editor.LineHeight / 2 + 0.5, mid));
+					
+					g.LineTo (new Cairo.PointD (right, mid));
+					g.LineTo (new Cairo.PointD (right, y2Bottom));
+					g.ClosePath ();
+					
+					g.Color = colorMatrix[active, BOTTOM, DARK, highlighted, selected];
+					g.Fill ();
+					
+					// draw border
+					g.MoveTo (new Cairo.PointD (x2 + 0.5, y2));
+					g.LineTo (new Cairo.PointD (x2 - editor.LineHeight / 2 + 0.5, y2 + editor.LineHeight / 2));
+					
+					g.LineTo (new Cairo.PointD (x2 + 0.5, y2Bottom));
+					g.LineTo (new Cairo.PointD (right, y2Bottom));
+					g.LineTo (new Cairo.PointD (right, y2));
+					g.ClosePath ();
 					
 					g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, selected];
 					g.Stroke ();
-					
-					// stroke top line
-					if (fitsInSameLine) {
-						g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, selected];
-						g.MoveTo (new Cairo.PointD (right, y2));
-						g.LineTo (new Cairo.PointD (x2 + 0.5, y2));
-						g.Stroke ();
-					}
+				}
+			} else {
+				if (!fitsInSameLine) {
+					// draw box below line
+					g.MoveTo (new Cairo.PointD (x2 + 0.5, y2 - 1));
+					g.LineTo (new Cairo.PointD (x2 + 0.5, y2Bottom));
+					g.LineTo (new Cairo.PointD (right, y2Bottom));
+					g.LineTo (new Cairo.PointD (right, y2 - 1));
+					g.ClosePath ();
+				} else {
+					// draw filled arrow box
+					g.MoveTo (new Cairo.PointD (x2 + 0.5, y2));
+					g.LineTo (new Cairo.PointD (x2 - editor.LineHeight / 2 + 0.5, y2 + editor.LineHeight / 2));
+					g.LineTo (new Cairo.PointD (x2 + 0.5, y2Bottom));
+					g.LineTo (new Cairo.PointD (right, y2Bottom));
+					g.LineTo (new Cairo.PointD (right, y2));
+					g.ClosePath ();
+				}
+				g.Color = colorMatrix[active, BOTTOM, LIGHT, highlighted, selected];
+				g.Fill ();
+				
+				// draw light bottom line
+				g.MoveTo (new Cairo.PointD (right, y2Bottom));
+				g.LineTo (new Cairo.PointD (x2 + 0.5, y2Bottom));
+				g.Stroke ();
+				
+				// stroke left line
+				if (fitsInSameLine) {
+					g.MoveTo (new Cairo.PointD (x2 + 0.5, y2));
+					g.LineTo (new Cairo.PointD (x2 - editor.LineHeight / 2 + 0.5, y2 + editor.LineHeight / 2));
+					g.LineTo (new Cairo.PointD (x2 + 0.5, y2Bottom));
+				} else {
+					g.MoveTo (new Cairo.PointD (x2 + 0.5, y2 - 1));
+					g.LineTo (new Cairo.PointD (x2 + 0.5, y2Bottom + 1));
 				}
 				
-				if (editor.Options.ShowRuler) {
-					int divider = Math.Max (editor.TextViewMargin.XOffset, x + editor.TextViewMargin.RulerX);
-					if (divider >= x2) {
-						g.MoveTo (new Cairo.PointD (divider + 0.5, y2));
-						g.LineTo (new Cairo.PointD (divider + 0.5, y2Bottom));
-						g.Color = colorMatrix[active, BOTTOM, DARK, highlighted, selected];
-						g.Stroke ();
-					}
-				}
+				g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, selected];
+				g.Stroke ();
 				
-				if (errors.Count > 1 && errorCountLayout != null) {
-					int rX = x2 + (ShowIconsInBubble ? errorPixbuf.Width : 0) + border + LayoutWidth;
-					int rY = y + editor.LineHeight / 6;
-					int rW = errorCounterWidth - 2;
-					int rH = editor.LineHeight * 3 / 4;
-					BookmarkMarker.DrawRoundRectangle (g, rX, rY, 8, rW, rH);
+				// stroke top line
+				if (fitsInSameLine) {
+					g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, selected];
+					g.MoveTo (new Cairo.PointD (right, y2));
+					g.LineTo (new Cairo.PointD (x2 + 0.5, y2));
+					g.Stroke ();
+				}
+			}
+			
+			if (editor.Options.ShowRuler) {
+				int divider = Math.Max (editor.TextViewMargin.XOffset, x + editor.TextViewMargin.RulerX);
+				if (divider >= x2) {
+					g.MoveTo (new Cairo.PointD (divider + 0.5, y2));
+					g.LineTo (new Cairo.PointD (divider + 0.5, y2Bottom));
+					g.Color = colorMatrix[active, BOTTOM, DARK, highlighted, selected];
+					g.Stroke ();
+				}
+			}
+			
+			if (errors.Count > 1 && errorCountLayout != null) {
+				double rX = x2 + (ShowIconsInBubble ? errorPixbuf.Width : 0) + border + LayoutWidth;
+				double rY = y + editor.LineHeight / 6;
+				double rW = errorCounterWidth - 2;
+				double rH = editor.LineHeight * 3 / 4;
+				BookmarkMarker.DrawRoundRectangle (g, rX, rY, 8, rW, rH);
+				
+				g.Color = oldIsOver ? new Cairo.Color (0.3, 0.3, 0.3) : new Cairo.Color (0.5, 0.5, 0.5);
+				g.Fill ();
+				if (CollapseExtendedErrors) {
+					g.Color = gcLight;
+					g.Save ();
+					g.Translate (x2 + (ShowIconsInBubble ? errorPixbuf.Width : 0) + border + LayoutWidth + 4, y + (editor.LineHeight - eh) / 2 + eh % 2);
+					g.ShowLayout (errorCountLayout);
+					g.Restore ();
+				} else {
+					g.MoveTo (rX + rW / 2 - rW / 4, rY + rH - rH / 4);
+					g.LineTo (rX + rW / 2 + rW / 4, rY + rH - rH / 4);
+					g.LineTo (rX + rW / 2, rY + rH / 4);
+					g.ClosePath ();
 					
-					g.Color = oldIsOver ? new Cairo.Color (0.3, 0.3, 0.3) : new Cairo.Color (0.5, 0.5, 0.5);
+					g.Color = new Cairo.Color (1, 1, 1);
 					g.Fill ();
+				}
+			}
+			
+			for (int i = 0; i < layouts.Count; i++) {
+				LayoutDescriptor layout = layouts[i];
+				x2 = right - layout.Width - border - errorPixbuf.Width;
+				if (i == 0)
+					x2 -= errorCounterWidth;
+				x2 = System.Math.Max (x2, fitsInSameLine ? editor.TextViewMargin.XOffset + editor.LineHeight / 2 : editor.TextViewMargin.XOffset);
+				if (i > 0) {
+					editor.TextViewMargin.DrawRectangleWithRuler (g, x, new Cairo.Rectangle (x, y, right, editor.LineHeight), isEolSelected ? editor.ColorStyle.Selection.BackgroundColor : editor.ColorStyle.Default.BackgroundColor, true);
+					g.MoveTo (new Cairo.PointD (x2 + 0.5, y));
+					g.LineTo (new Cairo.PointD (x2 + 0.5, y + editor.LineHeight));
+					g.LineTo (new Cairo.PointD (right, y + editor.LineHeight));
+					g.LineTo (new Cairo.PointD (right, y));
+					g.ClosePath ();
+					
 					if (CollapseExtendedErrors) {
-						win.DrawLayout (gcLight, x2 + (ShowIconsInBubble ? errorPixbuf.Width : 0) + border + LayoutWidth + 4, y + (editor.LineHeight - eh) / 2 + eh % 2, errorCountLayout);
+						Cairo.Gradient pat = new Cairo.LinearGradient (x2, y, x2, y + editor.LineHeight);
+						pat.AddColorStop (0, colorMatrix[active, TOP, LIGHT, highlighted, selected]);
+						pat.AddColorStop (1, colorMatrix[active, BOTTOM, LIGHT, highlighted, selected]);
+						g.Pattern = pat;
 					} else {
-						g.MoveTo (rX + rW / 2 - rW / 4, rY + rH - rH / 4);
-						g.LineTo (rX + rW / 2 + rW / 4, rY + rH - rH / 4);
-						g.LineTo (rX + rW / 2, rY + rH / 4);
-						g.ClosePath ();
-						
-						g.Color = new Cairo.Color (1, 1, 1);
-						g.Fill ();
+						g.Color = colorMatrix[active, TOP, LIGHT, highlighted, selected];
 					}
-				}
-				
-				for (int i = 0; i < layouts.Count; i++) {
-					LayoutDescriptor layout = layouts[i];
-					x2 = right - layout.Width - border - errorPixbuf.Width;
-					if (i == 0)
-						x2 -= errorCounterWidth;
-					x2 = System.Math.Max (x2, fitsInSameLine ? editor.TextViewMargin.XOffset + editor.LineHeight / 2 : editor.TextViewMargin.XOffset);
-					if (i > 0) {
-						editor.TextViewMargin.DrawRectangleWithRuler (win, x, new Gdk.Rectangle (x, y, right, editor.LineHeight), isEolSelected ? editor.ColorStyle.Selection.BackgroundColor : editor.ColorStyle.Default.BackgroundColor, true);
-						g.MoveTo (new Cairo.PointD (x2 + 0.5, y));
-						g.LineTo (new Cairo.PointD (x2 + 0.5, y + editor.LineHeight));
-						g.LineTo (new Cairo.PointD (right, y + editor.LineHeight));
-						g.LineTo (new Cairo.PointD (right, y));
-						g.ClosePath ();
-						
-						if (CollapseExtendedErrors) {
-							Cairo.Gradient pat = new Cairo.LinearGradient (x2, y, x2, y + editor.LineHeight);
-							pat.AddColorStop (0, colorMatrix[active, TOP, LIGHT, highlighted, selected]);
-							pat.AddColorStop (1, colorMatrix[active, BOTTOM, LIGHT, highlighted, selected]);
-							g.Pattern = pat;
-						} else {
-							g.Color = colorMatrix[active, TOP, LIGHT, highlighted, selected];
-						}
-						g.Fill ();
-						if (editor.Options.ShowRuler) {
-							int divider = Math.Max (editor.TextViewMargin.XOffset, x + editor.TextViewMargin.RulerX);
-							if (divider >= x2) {
-								g.MoveTo (new Cairo.PointD (divider + 0.5, y));
-								g.LineTo (new Cairo.PointD (divider + 0.5, y + editor.LineHeight));
-								g.Color = colorMatrix[active, BOTTOM, DARK, highlighted, selected];
-								g.Stroke ();
-							}
+					g.Fill ();
+					if (editor.Options.ShowRuler) {
+						int divider = Math.Max (editor.TextViewMargin.XOffset, x + editor.TextViewMargin.RulerX);
+						if (divider >= x2) {
+							g.MoveTo (new Cairo.PointD (divider + 0.5, y));
+							g.LineTo (new Cairo.PointD (divider + 0.5, y + editor.LineHeight));
+							g.Color = colorMatrix[active, BOTTOM, DARK, highlighted, selected];
+							g.Stroke ();
 						}
 					}
-					int lw, lh;
-					layout.Layout.GetPixelSize (out lw, out lh);
-					win.DrawLayout (selected == 0 ? gc : gcSelected, x2 + errorPixbuf.Width + border, y + (editor.LineHeight - layout.Height) / 2 + layout.Height % 2, layout.Layout);
-					if (ShowIconsInBubble)
-						win.DrawPixbuf (editor.Style.BaseGC (Gtk.StateType.Normal), errors[i].IsError ? errorPixbuf : warningPixbuf, 0, 0, x2, y + (editor.LineHeight - errorPixbuf.Height) / 2, errorPixbuf.Width, errorPixbuf.Height, Gdk.RgbDither.None, 0, 0);
-					y += editor.LineHeight;
-					if (!UseVirtualLines)
-						break;
 				}
+				int lw, lh;
+				layout.Layout.GetPixelSize (out lw, out lh);
+				g.Color = (HslColor)(selected == 0 ? gc : gcSelected);
+				g.Save ();
+				g.Translate (x2 + errorPixbuf.Width + border, y + (editor.LineHeight - layout.Height) / 2 + layout.Height % 2);
+				g.ShowLayout (layout.Layout);
+				g.Restore ();
+				y += editor.LineHeight;
+				if (!UseVirtualLines)
+					break;
 			}
 			return true;
 		}
@@ -685,10 +677,10 @@ namespace MonoDevelop.SourceEditor
 			return arr[minp];
 		}*/
 
-		static void DrawRectangle (Cairo.Context g, int x, int y, int width, int height)
+		static void DrawRectangle (Cairo.Context g, double x, double y, double width, double height)
 		{
-			int right = x + width;
-			int bottom = y + height;
+			double right = x + width;
+			double bottom = y + height;
 			g.MoveTo (new Cairo.PointD (x, y));
 			g.LineTo (new Cairo.PointD (right, y));
 			g.LineTo (new Cairo.PointD (right, bottom));
@@ -698,11 +690,12 @@ namespace MonoDevelop.SourceEditor
 		}
 		#region IIconBarMarker implementation
 
-		public void DrawIcon (Mono.TextEditor.TextEditor editor, Gdk.Drawable win, LineSegment line, int lineNumber, int x, int y, int width, int height)
+		public void DrawIcon (Mono.TextEditor.TextEditor editor, Cairo.Context cr, LineSegment line, int lineNumber, double x, double y, double width, double height)
 		{
 			if (DebuggingService.IsDebugging)
 				return;
-			win.DrawPixbuf (editor.Style.BaseGC (Gtk.StateType.Normal), errors.Any (e => e.IsError) ? errorPixbuf : warningPixbuf, 0, 0, x + (width - errorPixbuf.Width) / 2, y + (height - errorPixbuf.Height) / 2, errorPixbuf.Width, errorPixbuf.Height, Gdk.RgbDither.None, 0, 0);
+// TODO:
+//			win.DrawPixbuf (editor.Style.BaseGC (Gtk.StateType.Normal), errors.Any (e => e.IsError) ? errorPixbuf : warningPixbuf, 0, 0, x + (width - errorPixbuf.Width) / 2, y + (height - errorPixbuf.Height) / 2, errorPixbuf.Width, errorPixbuf.Height, Gdk.RgbDither.None, 0, 0);
 		}
 
 		public void MousePress (MarginMouseEventArgs args)
@@ -828,14 +821,14 @@ namespace MonoDevelop.SourceEditor
 		#endregion
 
 		#region IExtendingTextMarker implementation
-		public void Draw (TextEditor editor, Gdk.Drawable win, int lineNr, Gdk.Rectangle lineArea)
+		public void Draw (TextEditor editor, Cairo.Context g, int lineNr, Cairo.Rectangle lineArea)
 		{
 			EnsureLayoutCreated (editor);
 			int lineNumber = editor.Document.OffsetToLineNumber (lineSegment.Offset);
 			int errorNumber = lineNr - lineNumber;
-			int x = editor.TextViewMargin.XOffset;
-			int y = lineArea.Y;
-			int right = editor.Allocation.Width;
+			double x = editor.TextViewMargin.XOffset;
+			double y = lineArea.Y;
+			double right = editor.Allocation.Width;
 			int errorCounterWidth = 0;
 			
 			int ew = 0, eh = 0;
@@ -844,7 +837,7 @@ namespace MonoDevelop.SourceEditor
 				errorCounterWidth = ew + 10;
 			}
 			
-			int x2 = System.Math.Max (right - LayoutWidth - border - (ShowIconsInBubble ? errorPixbuf.Width : 0) - errorCounterWidth, fitsInSameLine ? editor.TextViewMargin.XOffset + editor.LineHeight / 2 : editor.TextViewMargin.XOffset);
+			double x2 = System.Math.Max (right - LayoutWidth - border - (ShowIconsInBubble ? errorPixbuf.Width : 0) - errorCounterWidth, fitsInSameLine ? editor.TextViewMargin.XOffset + editor.LineHeight / 2 : editor.TextViewMargin.XOffset);
 //			bool isEolSelected = editor.IsSomethingSelected && editor.SelectionMode != SelectionMode.Block ? editor.SelectionRange.Contains (lineSegment.Offset  + lineSegment.EditableLength) : false;
 			int active = editor.Document.GetTextAt (lineSegment) == initialText ? 0 : 1;
 			bool isCaretInLine = lineSegment.Offset <= editor.Caret.Offset && editor.Caret.Offset <= lineSegment.EndOffset;
@@ -856,36 +849,37 @@ namespace MonoDevelop.SourceEditor
 			x2 -= errorCounterWidth;
 			x2 = System.Math.Max (x2, fitsInSameLine ? editor.TextViewMargin.XOffset + editor.LineHeight / 2 : editor.TextViewMargin.XOffset);
 			
-			using (var g = Gdk.CairoHelper.Create (win)) {
-				g.LineWidth = Math.Max (1.0, editor.Options.Zoom);
-				g.MoveTo (new Cairo.PointD (x2 + 0.5, y));
-				g.LineTo (new Cairo.PointD (x2 + 0.5, y + editor.LineHeight));
-				g.LineTo (new Cairo.PointD (right, y + editor.LineHeight));
-				g.LineTo (new Cairo.PointD (right, y));
-				g.ClosePath ();
-				g.Color = colorMatrix[active, BOTTOM, LIGHT, highlighted, selected];
-				g.Fill ();
-				
-				g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, selected];
-				g.MoveTo (new Cairo.PointD (x2 + 0.5, y));
-				g.LineTo (new Cairo.PointD (x2 + 0.5, y + editor.LineHeight));
-				if (errorNumber == errors.Count - 1)
-					g.LineTo (new Cairo.PointD (lineArea.Right, y + editor.LineHeight));
-				g.Stroke ();
-				
-				if (editor.Options.ShowRuler) {
-					int divider = Math.Max (editor.TextViewMargin.XOffset, x + editor.TextViewMargin.RulerX);
-					if (divider >= x2) {
-						g.MoveTo (new Cairo.PointD (divider + 0.5, y));
-						g.LineTo (new Cairo.PointD (divider + 0.5, y + editor.LineHeight));
-						g.Color = colorMatrix[active, BOTTOM, DARK, highlighted, selected];
-						g.Stroke ();
-					}
+			g.MoveTo (new Cairo.PointD (x2 + 0.5, y));
+			g.LineTo (new Cairo.PointD (x2 + 0.5, y + editor.LineHeight));
+			g.LineTo (new Cairo.PointD (right, y + editor.LineHeight));
+			g.LineTo (new Cairo.PointD (right, y));
+			g.ClosePath ();
+			g.Color = colorMatrix[active, BOTTOM, LIGHT, highlighted, selected];
+			g.Fill ();
+			
+			g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, selected];
+			g.MoveTo (new Cairo.PointD (x2 + 0.5, y));
+			g.LineTo (new Cairo.PointD (x2 + 0.5, y + editor.LineHeight));
+			if (errorNumber == errors.Count - 1)
+				g.LineTo (new Cairo.PointD (lineArea.X + lineArea.Width, y + editor.LineHeight));
+			g.Stroke ();
+			
+			if (editor.Options.ShowRuler) {
+				double divider = Math.Max (editor.TextViewMargin.XOffset, x + editor.TextViewMargin.RulerX);
+				if (divider >= x2) {
+					g.MoveTo (new Cairo.PointD (divider + 0.5, y));
+					g.LineTo (new Cairo.PointD (divider + 0.5, y + editor.LineHeight));
+					g.Color = colorMatrix[active, BOTTOM, DARK, highlighted, selected];
+					g.Stroke ();
 				}
 			}
-			win.DrawLayout (selected == 0 ? gc : gcSelected, x2 + (ShowIconsInBubble ? errorPixbuf.Width : 0) + border, y + (editor.LineHeight - layout.Height) / 2 + layout.Height % 2, layout.Layout);
-			if (ShowIconsInBubble)
-				win.DrawPixbuf (editor.Style.BaseGC (Gtk.StateType.Normal), errors[errorNumber].IsError ? errorPixbuf : warningPixbuf, 0, 0, x2, y + (editor.LineHeight - errorPixbuf.Height) / 2, errorPixbuf.Width, errorPixbuf.Height, Gdk.RgbDither.None, 0, 0);
+			g.Save ();
+			g.Translate (x2 + (ShowIconsInBubble ? errorPixbuf.Width : 0) + border, y + (editor.LineHeight - layout.Height) / 2 + layout.Height % 2);
+			g.Color = selected == 0 ? gc : gcSelected;
+			g.ShowLayout (layout.Layout);
+			g.Restore ();
+//			if (ShowIconsInBubble)
+//				win.DrawPixbuf (editor.Style.BaseGC (Gtk.StateType.Normal), errors[errorNumber].IsError ? errorPixbuf : warningPixbuf, 0, 0, x2, y + (editor.LineHeight - errorPixbuf.Height) / 2, errorPixbuf.Width, errorPixbuf.Height, Gdk.RgbDither.None, 0, 0);
 		}
 		
 		#endregion

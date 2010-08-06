@@ -66,10 +66,11 @@ namespace Mono.TextEditor
 			layout.SetText (editor.Document.LineCount.ToString ());
 			layout.Alignment = Pango.Alignment.Left;
 			layout.Width = -1;
-			
 			int height;
 			layout.GetPixelSize (out this.width, out height);
 			this.width += 4;
+			layout.Width = (int)Width;
+			layout.Alignment = Pango.Alignment.Right;
 		}
 		
 		void UpdateWidth (object sender, LineEventArgs args)
@@ -82,11 +83,12 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public override int Width {
+		public override double Width {
 			get {
 				return width;
 			}
 		}
+		
 		DocumentLocation anchorLocation = DocumentLocation.Empty;
 		internal protected override void MousePressed (MarginMouseEventArgs args)
 		{
@@ -168,44 +170,33 @@ namespace Mono.TextEditor
 			this.editor.Document.TextSet -= HandleEditorDocumenthandleTextSet;
 			this.editor.Document.LineChanged -= UpdateWidth;
 			layout = layout.Kill ();
-			DisposeGCs ();
 			base.Dispose ();
 		}
 		
-		void DisposeGCs ()
-		{
-			lineNumberBgGC = lineNumberBgGC.Kill ();
-			lineNumberGC = lineNumberGC.Kill ();
-			lineNumberHighlightGC = lineNumberHighlightGC.Kill ();
-		}
-		
-		Gdk.GC lineNumberBgGC, lineNumberGC, lineNumberHighlightGC;
+		Cairo.Color lineNumberBgGC, lineNumberGC, lineNumberHighlightGC;
 		internal protected override void OptionsChanged ()
 		{
 			layout.FontDescription = editor.Options.Font;
 			CalculateWidth ();
 			
-			DisposeGCs ();
-			lineNumberBgGC = new Gdk.GC (editor.GdkWindow);
-			lineNumberBgGC.RgbFgColor = editor.ColorStyle.LineNumber.BackgroundColor;
-			
-			lineNumberGC = new Gdk.GC (editor.GdkWindow);
-			lineNumberGC.RgbFgColor = editor.ColorStyle.LineNumber.Color;
-			
-			lineNumberHighlightGC = new Gdk.GC (editor.GdkWindow);
-			lineNumberHighlightGC.RgbFgColor = editor.ColorStyle.LineNumberFgHighlighted;
+			lineNumberBgGC = (HslColor)editor.ColorStyle.LineNumber.BackgroundColor;
+			lineNumberGC = (HslColor)editor.ColorStyle.LineNumber.Color;
+			lineNumberHighlightGC = (HslColor)editor.ColorStyle.LineNumberFgHighlighted;
 		}
 		
-		internal protected override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y, int lineHeight)
+		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, int line, int x, int y, int lineHeight)
 		{
-			Gdk.Rectangle drawArea = new Rectangle (x, y, Width, lineHeight);
-			win.DrawRectangle (lineNumberBgGC, true, drawArea);
-			layout.Alignment = Pango.Alignment.Right;
-			layout.Width = Width;
+			cr.Rectangle (x, y, Width, lineHeight);
+			cr.Color = lineNumberBgGC;
+			cr.Fill ();
 			
 			if (line < editor.Document.LineCount) {
 				layout.SetText ((line + 1).ToString ());
-				win.DrawLayout (editor.Caret.Line == line ? lineNumberHighlightGC : lineNumberGC, x + Width, y, layout);
+				cr.Save ();
+				cr.Translate (x + (int)Width, y);
+				cr.Color = editor.Caret.Line == line ? lineNumberHighlightGC : lineNumberGC;
+				cr.ShowLayout (layout);
+				cr.Restore ();
 			}
 		}
 	}

@@ -31,7 +31,7 @@ namespace Mono.TextEditor
 	public interface IExtendingTextMarker 
 	{
 		int GetLineHeight (TextEditor editor);
-		void Draw (TextEditor editor, Gdk.Drawable win, int lineNr, Rectangle lineArea);
+		void Draw (TextEditor editor, Cairo.Context cr, int lineNr, Cairo.Rectangle lineArea);
 	}
 	
 	public interface IActionTextMarker
@@ -86,7 +86,7 @@ namespace Mono.TextEditor
 		{
 		}
 		
-		public virtual void Draw (TextEditor editor, Gdk.Drawable win, Pango.Layout layout, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
+		public virtual void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
 		{
 		}
 		
@@ -145,7 +145,7 @@ namespace Mono.TextEditor
 			this.endColumn   = endColumn;
 		}
 		
-		public override void Draw (TextEditor editor, Gdk.Drawable win, Pango.Layout layout, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
+		public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
 		{
 			int markerStart = line.Offset + startColumn;
 			int markerEnd = line.Offset + endColumn;
@@ -153,8 +153,8 @@ namespace Mono.TextEditor
 			if (markerEnd < startOffset || markerStart > endOffset) 
 				return; 
 	
-			int @from;
-			int to;
+			double @from;
+			double to;
 	
 			if (markerStart < startOffset && endOffset < markerEnd) {
 				@from = startXPos;
@@ -174,10 +174,7 @@ namespace Mono.TextEditor
 			@from = System.Math.Max (@from, editor.TextViewMargin.XOffset);
 			to = System.Math.Max (to, editor.TextViewMargin.XOffset);
 			if (@from < to) {
-				using (Gdk.GC gc = new Gdk.GC(win)) {
-					gc.RgbFgColor = selected ? editor.ColorStyle.Selection.Color : editor.ColorStyle.GetChunkStyle (style).Color;
-					win.DrawLine (gc, @from, y + editor.LineHeight - 1, to, y + editor.LineHeight - 1);
-				}
+				cr.DrawLine ((HslColor)(selected ? editor.ColorStyle.Selection.Color : editor.ColorStyle.GetChunkStyle (style).Color), @from, y + editor.LineHeight - 1, to, y + editor.LineHeight - 1);
 			}
 		}
 	}
@@ -187,7 +184,7 @@ namespace Mono.TextEditor
 	/// </summary>
 	public interface IIconBarMarker
 	{
-		void DrawIcon (TextEditor editor, Gdk.Drawable win, LineSegment line, int lineNumber, int xPos, int yPos, int width, int height);
+		void DrawIcon (TextEditor editor, Cairo.Context cr, LineSegment line, int lineNumber, double xPos, double yPos, double width, double height);
 		void MousePress (MarginMouseEventArgs args);
 		void MouseRelease (MarginMouseEventArgs args);
 	}
@@ -203,7 +200,7 @@ namespace Mono.TextEditor
 		/// <returns>
 		/// true, when the text view should draw the text, false when the text view should not draw the text.
 		/// </returns>
-		bool DrawBackground (TextEditor Editor, Gdk.Drawable win, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg);
+		bool DrawBackground (TextEditor Editor, Cairo.Context cr, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, double y, double startXPos, double endXPos, ref bool drawBg);
 	}
 	
 	public class LineBackgroundMarker: TextMarker, IBackgroundMarker
@@ -215,15 +212,14 @@ namespace Mono.TextEditor
 			this.color = color;
 		}
 		
-		public bool DrawBackground (TextEditor editor, Drawable win, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg)
+		public bool DrawBackground (TextEditor editor, Cairo.Context cr, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, double y, double startXPos, double endXPos, ref bool drawBg)
 		{
 			drawBg = false;
 			if (selectionStart > 0)
 				return true;
-			using (Gdk.GC gc = new Gdk.GC (win)) {
-				gc.RgbFgColor = color;
-				win.DrawRectangle (gc, true, startXPos, y, endXPos - startXPos, editor.LineHeight);
-			}
+			cr.Color = (HslColor)color;
+			cr.Rectangle (startXPos, y, endXPos - startXPos, editor.LineHeight);
+			cr.Fill ();
 			return true;
 		}
 	}
@@ -251,15 +247,15 @@ namespace Mono.TextEditor
 		public int EndCol { get; set; }
 		public bool Wave { get; set; }
 		
-		public override void Draw (TextEditor editor, Gdk.Drawable win, Pango.Layout layout, bool selected, int startOffset, int endOffset, int y, int startXPos, int endXPos)
+		public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
 		{
 			int markerStart = LineSegment.Offset + System.Math.Max (StartCol, 0);
 			int markerEnd = LineSegment.Offset + (EndCol < 0 ? LineSegment.Length : EndCol);
 			if (markerEnd < startOffset || markerStart > endOffset) 
 				return; 
 	
-			int @from;
-			int to;
+			double @from;
+			double to;
 				
 			if (markerStart < startOffset && endOffset < markerEnd) {
 				@from = startXPos;
@@ -281,29 +277,12 @@ namespace Mono.TextEditor
 			if (@from >= to) {
 				return;
 			}
-			using (Cairo.Context cr = Gdk.CairoHelper.Create (win)) {
-				int height = editor.LineHeight / 5;
-				cr.Color = Mono.TextEditor.Highlighting.Style.ToCairoColor (ColorName == null ? Color : editor.ColorStyle.GetColorFromDefinition (ColorName));
-				Pango.CairoHelper.ShowErrorUnderline (cr, @from, y + editor.LineHeight - height, to - @from, height);
-			}
-	/*		
-			using (Gdk.GC gc = new Gdk.GC(win)) {
-				gc.RgbFgColor = ;
-				const int length = 6;
-				const int height = 2;
-				if (Wave) {
-					startXPos = System.Math.Max (startXPos, editor.TextViewMargin.XOffset);
-					for (int height = @from; height < to; height += length) {
-						win.DrawLine (gc, height, drawY, height + length / 2, drawY - height);
-						win.DrawLine (gc, height + length / 2, drawY - height, height + length, drawY);
-					}
-				} else {
-					win.DrawLine (gc, @from, drawY, to, drawY);
-				}
-			}	*/		
-		} 
+			int height = editor.LineHeight / 5;
+			cr.Color = Mono.TextEditor.Highlighting.Style.ToCairoColor (ColorName == null ? Color : editor.ColorStyle.GetColorFromDefinition (ColorName));
+			Pango.CairoHelper.ShowErrorUnderline (cr, @from, y + editor.LineHeight - height, to - @from, height);
+		}
 	}
-	
+
 	public class StyleTextMarker: TextMarker
 	{
 		[Flags]

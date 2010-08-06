@@ -30,7 +30,7 @@ using System.Runtime.InteropServices;
 
 namespace Mono.TextEditor
 {
-	internal static class HelperMethods
+	public static class HelperMethods
 	{
 		public static T Kill<T>(this T gc) where T : IDisposable
 		{
@@ -95,6 +95,14 @@ namespace Mono.TextEditor
 		{
 			IntPtr handle = pango_layout_get_context (layout.Handle);
 			return handle.Equals (IntPtr.Zero) ? null : GLib.Object.GetObject (handle) as Pango.Context;
+		}
+		
+		public static void DrawLine (this Cairo.Context cr, Cairo.Color color, double x1, double y1, double x2, double y2)
+		{
+			cr.Color = color;
+			cr.MoveTo (x1, y1);
+			cr.LineTo (x2, y2);
+			cr.Stroke ();
 		}
 	}
 }

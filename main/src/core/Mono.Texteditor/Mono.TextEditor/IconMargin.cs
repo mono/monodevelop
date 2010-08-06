@@ -34,7 +34,7 @@ namespace Mono.TextEditor
 	public class IconMargin : Margin
 	{
 		TextEditor editor;
-		Gdk.GC backgroundGC, separatorGC;
+		Cairo.Color backgroundColor, separatorColor;
 		Pango.Layout layout;
 		int marginWidth = 18;
 		
@@ -44,7 +44,7 @@ namespace Mono.TextEditor
 			layout = PangoUtil.CreateLayout (editor);
 		}
 		
-		public override int Width {
+		public override double Width {
 			get {
 				return marginWidth;
 			}
@@ -53,23 +53,12 @@ namespace Mono.TextEditor
 		public override void Dispose ()
 		{
 			layout = layout.Kill ();
-			DisposeGCs ();
-		}
-		
-		void DisposeGCs ()
-		{
-			backgroundGC = backgroundGC.Kill ();
-			separatorGC  = separatorGC.Kill ();
 		}
 		
 		internal protected override void OptionsChanged ()
 		{
-			DisposeGCs ();
-			backgroundGC = new Gdk.GC (editor.GdkWindow);
-			backgroundGC.RgbFgColor = editor.ColorStyle.IconBarBg;
-			
-			separatorGC = new Gdk.GC (editor.GdkWindow);
-			separatorGC.RgbFgColor = editor.ColorStyle.IconBarSeperator;
+			backgroundColor = (HslColor)editor.ColorStyle.IconBarBg;
+			separatorColor = (HslColor)editor.ColorStyle.IconBarSeperator;
 			
 			layout.FontDescription = editor.Options.Font;
 			layout.SetText ("!");
@@ -105,22 +94,26 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		internal protected override void Draw (Gdk.Drawable win, Gdk.Rectangle area, int line, int x, int y, int lineHeight)
+		internal protected override void Draw (Cairo.Context ctx, Cairo.Rectangle area, int line, int x, int y, int lineHeight)
 		{
-			Gdk.Rectangle drawArea = new Gdk.Rectangle (x, y, Width, lineHeight);
+			ctx.Rectangle (x, y, Width, lineHeight);
+			ctx.Color = backgroundColor;
+			ctx.Fill ();
 			
-			win.DrawRectangle (backgroundGC, true, drawArea);
-			win.DrawLine (separatorGC, x + Width - 1, drawArea.Top, x + Width - 1, drawArea.Bottom);
+			ctx.MoveTo (x + Width - 1, y);
+			ctx.LineTo (x + Width - 1, y + lineHeight);
+			ctx.Color = separatorColor;
+			ctx.Stroke ();
 			
 			if (line < editor.Document.LineCount) {
 				LineSegment lineSegment = editor.Document.GetLine (line);
 				
 				foreach (TextMarker marker in lineSegment.Markers) {
 					if (marker is IIconBarMarker) 
-						((IIconBarMarker)marker).DrawIcon (editor, win, lineSegment, line, x, y, Width, editor.LineHeight);
+						((IIconBarMarker)marker).DrawIcon (editor, ctx, lineSegment, line, x, y, (int)Width, editor.LineHeight);
 				}
 				if (DrawEvent != null) 
-					DrawEvent (this, new BookmarkMarginDrawEventArgs (editor, win, lineSegment, line, x, y));
+					DrawEvent (this, new BookmarkMarginDrawEventArgs (editor, ctx, lineSegment, line, x, y));
 			}
 		}
 		
@@ -134,7 +127,7 @@ namespace Mono.TextEditor
 			private set;
 		}
 
-		public Drawable Win {
+		public Cairo.Context Context {
 			get;
 			private set;
 		}
@@ -159,10 +152,10 @@ namespace Mono.TextEditor
 			private set;
 		}
 		
-		public BookmarkMarginDrawEventArgs (TextEditor editor, Gdk.Drawable win, LineSegment line, int lineNumber, int xPos, int yPos)
+		public BookmarkMarginDrawEventArgs (TextEditor editor, Cairo.Context context, LineSegment line, int lineNumber, int xPos, int yPos)
 		{
 			this.Editor = editor;
-			this.Win    = win;
+			this.Context    = context;
 			this.LineSegment = line;
 			this.Line   = lineNumber;
 			this.X      = xPos;

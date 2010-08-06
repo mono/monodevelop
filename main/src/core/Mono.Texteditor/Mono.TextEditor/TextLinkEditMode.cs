@@ -618,7 +618,7 @@ namespace Mono.TextEditor
 					start < segment.EndOffset && segment.EndOffset < end;
 		}*/
 		
-	public bool DrawBackground (TextEditor Editor, Gdk.Drawable win, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg)
+	public bool DrawBackground (TextEditor Editor, Cairo.Context cr, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, double y, double startXPos, double endXPos, ref bool drawBg)
 	{
 		int caretOffset = Editor.Caret.Offset - BaseOffset;
 
@@ -638,37 +638,31 @@ namespace Mono.TextEditor
 					
 					x_pos = (int)(x_pos / Pango.Scale.PangoScale);
 					x_pos2 = (int)(x_pos2 / Pango.Scale.PangoScale);
-					using (Gdk.GC rectangleGc = new Gdk.GC(win)) {
-						//	rectangleGc.ClipRectangle = clipRectangle;
-						using (Gdk.GC fillGc = new Gdk.GC(win)) {
-							//		fillGc.ClipRectangle = clipRectangle;
-							drawBg = false;
-
-							if (segment == link.PrimaryLink) {
-								fillGc.RgbFgColor = isPrimaryHighlighted ? Editor.ColorStyle.PrimaryTemplateHighlighted.BackgroundColor : Editor.ColorStyle.PrimaryTemplate.BackgroundColor;
-								rectangleGc.RgbFgColor = isPrimaryHighlighted ? Editor.ColorStyle.PrimaryTemplateHighlighted.Color : Editor.ColorStyle.PrimaryTemplate.Color;
-							} else {
-								fillGc.RgbFgColor = isPrimaryHighlighted ? Editor.ColorStyle.SecondaryTemplateHighlighted.BackgroundColor : Editor.ColorStyle.SecondaryTemplate.BackgroundColor;
-								rectangleGc.RgbFgColor = isPrimaryHighlighted ? Editor.ColorStyle.SecondaryTemplateHighlighted.Color : Editor.ColorStyle.SecondaryTemplate.Color;
-							}
-							// Draw segment
-
-							int x1 = startXPos + x_pos - 1;
-							int x2 = startXPos + x_pos2 - 1;
-							int y2 = y + Editor.LineHeight - 1;
-
-							if (selectionStart < 0) {
-						//		Console.WriteLine ("Draw BG at " + y + "//" + Editor.GetTextEditorData ().VAdjustment.Value);
-						//		Console.WriteLine (Environment.StackTrace);
-								win.DrawRectangle (fillGc, true, x1, y, x2 - x1, Editor.LineHeight); 
-							}
-
-							win.DrawLine (rectangleGc, x1, y, x2, y);
-							win.DrawLine (rectangleGc, x1, y2, x2, y2);
-							win.DrawLine (rectangleGc, x1, y, x1, y2);
-							win.DrawLine (rectangleGc, x2, y, x2, y2);
-						}
+					drawBg = false;
+					Cairo.Color fillGc, rectangleGc;
+					if (segment == link.PrimaryLink) {
+						fillGc = (HslColor)(isPrimaryHighlighted ? Editor.ColorStyle.PrimaryTemplateHighlighted.BackgroundColor : Editor.ColorStyle.PrimaryTemplate.BackgroundColor);
+						rectangleGc = (HslColor)(isPrimaryHighlighted ? Editor.ColorStyle.PrimaryTemplateHighlighted.Color : Editor.ColorStyle.PrimaryTemplate.Color);
+					} else {
+						fillGc = (HslColor)(isPrimaryHighlighted ? Editor.ColorStyle.SecondaryTemplateHighlighted.BackgroundColor : Editor.ColorStyle.SecondaryTemplate.BackgroundColor);
+						rectangleGc = (HslColor)(isPrimaryHighlighted ? Editor.ColorStyle.SecondaryTemplateHighlighted.Color : Editor.ColorStyle.SecondaryTemplate.Color);
 					}
+					// Draw segment
+
+					double x1 = startXPos + x_pos - 1;
+					double x2 = startXPos + x_pos2 - 1;
+					double y2 = y + Editor.LineHeight - 1;
+
+					if (selectionStart < 0) {
+						cr.Color = fillGc;
+						cr.Rectangle (x1, y, x2 - x1, Editor.LineHeight);
+						cr.Fill ();
+					}
+
+					cr.DrawLine (rectangleGc, x1, y, x2, y);
+					cr.DrawLine (rectangleGc, x1, y2, x2, y2);
+					cr.DrawLine (rectangleGc, x1, y, x1, y2);
+					cr.DrawLine (rectangleGc, x2, y, x2, y2);
 				}
 			}
 		}

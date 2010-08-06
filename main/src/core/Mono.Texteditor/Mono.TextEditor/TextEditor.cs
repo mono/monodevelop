@@ -267,7 +267,6 @@ namespace Mono.TextEditor
 			iconMargin = new IconMargin (this);
 			gutterMargin = new GutterMargin (this);
 			dashedLineMargin = new DashedLineMargin (this);
-			dashedLineMargin.UseBGColor = false;
 			foldMarkerMargin = new FoldMarkerMargin (this);
 			textViewMargin = new TextViewMargin (this);
 
@@ -661,7 +660,7 @@ namespace Mono.TextEditor
 		{
 			if (margin.Width < 0)
 				return Allocation.Width - margin.XOffset;
-			return margin.Width;
+			return (int)margin.Width;
 		}
 		
 		internal void RedrawLine (int logicalLine)
@@ -883,7 +882,7 @@ namespace Mono.TextEditor
 						return margin;
 					}
 				}
-				curX += margin.Width;
+				curX += (int)margin.Width;
 			}
 			startingPos = -1;
 			return null;
@@ -1166,7 +1165,7 @@ namespace Mono.TextEditor
 		{
 			Gdk.Point result = new Point ();
 			LineSegment lineSegment = Document.GetLine (loc.Line);
-			result.X = textViewMargin.ColumnToVisualX (lineSegment, loc.Column);
+			result.X = (int)textViewMargin.ColumnToVisualX (lineSegment, loc.Column);
 			result.Y = LineToVisualY (loc.Line);
 			return result;
 		}
@@ -1215,7 +1214,7 @@ namespace Mono.TextEditor
 			if (this.textEditorData.HAdjustment.Upper < Allocation.Width)  {
 				this.textEditorData.HAdjustment.Value = 0;
 			} else {
-				int caretX = textViewMargin.ColumnToVisualX (Document.GetLine (p.Line), p.Column);
+				int caretX = (int)textViewMargin.ColumnToVisualX (Document.GetLine (p.Line), p.Column);
 				int textWith = Allocation.Width - textViewMargin.XOffset;
 				if (this.textEditorData.HAdjustment.Value > caretX) {
 					this.textEditorData.HAdjustment.Value = caretX;
@@ -1257,7 +1256,7 @@ namespace Mono.TextEditor
 				if (this.textEditorData.HAdjustment.Upper < Allocation.Width)  {
 					this.textEditorData.HAdjustment.Value = 0;
 				} else {
-					int caretX = textViewMargin.ColumnToVisualX (Document.GetLine (p.Line), p.Column);
+					int caretX = (int)textViewMargin.ColumnToVisualX (Document.GetLine (p.Line), p.Column);
 					int textWith = Allocation.Width - textViewMargin.XOffset;
 					if (this.textEditorData.HAdjustment.Value > caretX) {
 						this.textEditorData.HAdjustment.Value = caretX;
@@ -1279,7 +1278,7 @@ namespace Mono.TextEditor
 		
 		public void TryToResetHorizontalScrollPosition ()
 		{
-			int caretX = textViewMargin.ColumnToVisualX (Document.GetLine (Caret.Line), Caret.Column);
+			int caretX = (int)textViewMargin.ColumnToVisualX (Document.GetLine (Caret.Line), Caret.Column);
 			int textWith = Allocation.Width - textViewMargin.XOffset;
 			if (caretX < textWith - TextViewMargin.CharWidth) 
 				this.textEditorData.HAdjustment.Value = 0;
@@ -1378,58 +1377,61 @@ namespace Mono.TextEditor
 				startY -= GetLineHeight (Document.GetLine (startLine));
 			}
 			
-			int curX = 0;
-			int curY = startY - (int)this.textEditorData.VAdjustment.Value;
-			bool setLongestLine = false;
-			bool renderFirstLine = true;
-			for (int visualLineNumber = startLine; ; visualLineNumber++) {
-				int logicalLineNumber = visualLineNumber;
-				LineSegment line      = Document.GetLine (logicalLineNumber);
-				int lineHeight        = GetLineHeight (line);
-				int lastFold = -1;
-				foreach (FoldSegment fs in Document.GetStartFoldings (line).Where (fs => fs.IsFolded)) {
-					lastFold = System.Math.Max (fs.EndOffset, lastFold);
+			var cairoRectangle = new Cairo.Rectangle (area.X, area.Y, area.Width, area.Height);
+			
+			using (Cairo.Context cr = Gdk.CairoHelper.Create (win)) {
+				cr.LineWidth = Options.Zoom;
+				int curX = 0;
+				int curY = startY - (int)this.textEditorData.VAdjustment.Value;
+				bool setLongestLine = false;
+				bool renderFirstLine = true;
+				for (int visualLineNumber = startLine; ; visualLineNumber++) {
+					int logicalLineNumber = visualLineNumber;
+					LineSegment line      = Document.GetLine (logicalLineNumber);
+					int lineHeight        = GetLineHeight (line);
+					int lastFold = -1;
+					foreach (FoldSegment fs in Document.GetStartFoldings (line).Where (fs => fs.IsFolded)) {
+						lastFold = System.Math.Max (fs.EndOffset, lastFold);
+					}
+					if (lastFold > 0) 
+						visualLineNumber = Document.OffsetToLineNumber (lastFold);
+					foreach (Margin margin in this.margins) {
+						if (!margin.IsVisible)
+							continue;
+						try {
+							if (renderFirstLine)
+								margin.XOffset = curX;
+							margin.Draw (cr, cairoRectangle, logicalLineNumber, margin.XOffset, curY, lineHeight);
+							if (renderFirstLine)
+								curX += (int)margin.Width;
+						} catch (Exception e) {
+							System.Console.WriteLine (e);
+						}
+					}
+					renderFirstLine = false;
+					// take the line real render width from the text view margin rendering (a line can consist of more than 
+					// one line and be longer (foldings!) ex. : someLine1[...]someLine2[...]someLine3)
+					int lineWidth = textViewMargin.lastLineRenderWidth + (int)HAdjustment.Value;
+					if (longestLine == null || lineWidth > longestLineWidth) {
+						longestLine = line;
+						longestLineWidth = lineWidth;
+						setLongestLine = true;
+					}
+					curY += lineHeight;
+					if (curY > area.Bottom)
+						break;
 				}
-				if (lastFold > 0) 
-					visualLineNumber = Document.OffsetToLineNumber (lastFold);
+				
 				foreach (Margin margin in this.margins) {
 					if (!margin.IsVisible)
 						continue;
-					try {
-						if (renderFirstLine)
-							margin.XOffset = curX;
-						margin.Draw (win, area, logicalLineNumber, margin.XOffset, curY, lineHeight);
-						margin.EndRender (win, area, margin.XOffset);
-						if (renderFirstLine)
-							curX += margin.Width;
-					} catch (Exception e) {
-						System.Console.WriteLine (e);
-					}
+					foreach (var drawer in margin.MarginDrawer)
+						drawer.Draw (win, area);
 				}
-				renderFirstLine = false;
-				// take the line real render width from the text view margin rendering (a line can consist of more than 
-				// one line and be longer (foldings!) ex. : someLine1[...]someLine2[...]someLine3)
-				int lineWidth = textViewMargin.lastLineRenderWidth + (int)HAdjustment.Value;
-				if (longestLine == null || lineWidth > longestLineWidth) {
-					longestLine = line;
-					longestLineWidth = lineWidth;
-					setLongestLine = true;
-				}
-				curY += lineHeight;
-				if (curY > area.Bottom)
-					break;
+				
+				if (setLongestLine) 
+					SetHAdjustment ();
 			}
-			
-			foreach (Margin margin in this.margins) {
-				if (!margin.IsVisible)
-					continue;
-				foreach (var drawer in margin.MarginDrawer)
-					drawer.Draw (win, area);
-			}
-			
-			if (setLongestLine) 
-				SetHAdjustment ();
-
 		}
 		/*
 		protected override bool OnWidgetEvent (Event evnt)
@@ -2287,7 +2289,8 @@ namespace Mono.TextEditor
 					longest = line;
 			}
 			if (longest != longestLine) {
-				int width = textViewMargin.ColumnToVisualX (longest, longest.EditableLength);
+				int width = (int)(textViewMargin.GetLayout (longest).PangoWidth / Pango.Scale.PangoScale);
+				
 				if (width > this.longestLineWidth) {
 					this.longestLineWidth = width;
 					this.longestLine = longest;
