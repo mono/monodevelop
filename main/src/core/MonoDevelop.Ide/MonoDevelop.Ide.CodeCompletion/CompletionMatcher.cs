@@ -46,12 +46,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 	class LaneCompletionMatcher : ICompletionMatcher
 	{
+		readonly string filter;
 		readonly string filterLowerCase;
 		readonly List<MatchLane> matchLanes;
 		
 		public LaneCompletionMatcher (string filter)
 		{
 			matchLanes = new List<MatchLane> ();
+			this.filter = filter;
 			this.filterLowerCase = filter != null ? filter.ToLowerInvariant () : "";
 		}
 
@@ -64,6 +66,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			MatchLane lane = MatchString (name);
 			if (lane != null) {
 				matchRank = -(lane.Positions [0] + (name.Length - filterLowerCase.Length));
+				// rank up matches which start with a filter substring
+				if (lane.Positions [0] == 0)
+					matchRank += lane.Lengths[0] * 50;
 				return true;
 			}
 			matchRank = int.MinValue;
@@ -122,7 +127,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			int tlen = text.Length;
 			int flen = filterLowerCase.Length;
 			for (int n=0; n<tlen && j < flen; n++) {
-				if (textLowerCase[n] == filterLowerCase [j]) {
+				char ctLower = textLowerCase[n];
+				char cfLower = filterLowerCase [j];
+				if (ctLower == cfLower && !(cfLower != filter[j] && ctLower == text[n])) {
 					j++;
 					if (firstMatchPos == -1)
 						firstMatchPos = n;
@@ -141,21 +148,23 @@ namespace MonoDevelop.Ide.CodeCompletion
 			matchLanes.Clear ();
 			bool lastWasSeparator = false;
 			int tn = firstMatchPos;
-			char filterStart = filterLowerCase[0];
+			char filterStartLower = filterLowerCase[0];
+			bool filterStartIsUpper = filterStartLower != filter[0];
 			
 			while (tn < text.Length) {
 				char ct = text [tn];
 				char ctLower = textLowerCase [tn];
+				bool ctIsUpper = ct != ctLower;
 				
 				// Keep the lane count in a var because new lanes don't have to be updated
 				// until the next iteration
 				int laneCount = matchLanes != null ? matchLanes.Count : 0;
 	
-				if (ctLower == filterStart) {
+				if (ctLower == filterStartLower && !(filterStartIsUpper && !ctIsUpper)) {
 					matchLanes.Add (CreateLane (MatchMode.Substring, tn));
 					if (filterLowerCase.Length == 1)
 						return matchLanes[0];
-					if (ct != ctLower /*is upper*/ || lastWasSeparator)
+					if (ctIsUpper || lastWasSeparator)
 						matchLanes.Add (CreateLane (MatchMode.Acronym, tn));
 				}
 	
@@ -163,9 +172,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 					MatchLane lane = matchLanes [n];
 					if (lane == null)
 						continue;
-					char cm = filterLowerCase [lane.MatchIndex];
-					bool match = ctLower == cm;
-					bool wordStartMatch = match && (tn == 0 || ct != ctLower /*is upper*/ || lastWasSeparator);
+					char cfLower = filterLowerCase [lane.MatchIndex];
+					bool cfIsUpper = cfLower != filter [lane.MatchIndex];
+					bool match = ctLower == cfLower && !(cfIsUpper && !ctIsUpper);
+					bool wordStartMatch = match && (tn == 0 || ctIsUpper || lastWasSeparator);
 	
 					if (lane.MatchMode == MatchMode.Substring) {
 						if (wordStartMatch) {
@@ -206,7 +216,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 							if (newLane.MatchIndex == filterLowerCase.Length)
 								return newLane;
 						}
-						if (wordStartMatch || (match && char.IsPunctuation (cm))) {
+						if (wordStartMatch || (match && char.IsPunctuation (cfLower))) {
 							// Maybe it is a false acronym start, so add a new lane to keep
 							// track of the old lane
 							MatchLane newLane = CloneLane (lane);
