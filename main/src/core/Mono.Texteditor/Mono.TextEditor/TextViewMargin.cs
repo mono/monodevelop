@@ -48,7 +48,7 @@ namespace Mono.TextEditor
 		Pango.Layout markerLayout;
 		
 		Pango.Layout tabMarkerLayout, spaceMarkerLayout, invalidLineLayout;
-		Pango.Layout macEolLayout, unixEolLayout, windowEolLayout, emptyEolLayout;
+		Pango.Layout macEolLayout, unixEolLayout, windowEolLayout, eofEolLayout;
 		
 		internal int charWidth;
 		
@@ -436,12 +436,12 @@ namespace Mono.TextEditor
 				macEolLayout.SetText ("\\r");
 				windowEolLayout = PangoUtil.CreateLayout (textEditor);
 				windowEolLayout.SetText ("\\r\\n");
-				emptyEolLayout = PangoUtil.CreateLayout (textEditor);
-				emptyEolLayout.SetText ("<EOL>");
+				eofEolLayout = PangoUtil.CreateLayout (textEditor);
+				eofEolLayout.SetText ("<EOF>");
 			}
 			
 			if (unixEolLayout != null)
-				unixEolLayout.FontDescription = macEolLayout.FontDescription = windowEolLayout.FontDescription = emptyEolLayout.FontDescription = textEditor.Options.Font;
+				unixEolLayout.FontDescription = macEolLayout.FontDescription = windowEolLayout.FontDescription = eofEolLayout.FontDescription = textEditor.Options.Font;
 			
 			if (textEditor.Options.ShowTabs && tabMarkerLayout == null) {
 				tabMarkerLayout = PangoUtil.CreateLayout (textEditor);
@@ -538,7 +538,7 @@ namespace Mono.TextEditor
 				macEolLayout.Dispose ();
 				unixEolLayout.Dispose ();
 				windowEolLayout.Dispose ();
-				emptyEolLayout.Dispose ();
+				eofEolLayout.Dispose ();
 			}
 			
 			DisposeLayoutDict ();
@@ -1476,6 +1476,10 @@ namespace Mono.TextEditor
 		{
 			Pango.Layout layout;
 			switch (line.DelimiterLength) {
+			case 0:
+				// an emty line end should only happen at eof
+				layout = eofEolLayout;
+				break;
 			case 1:
 				if (Document.GetCharAt (line.Offset + line.EditableLength) == '\n') {
 					layout = unixEolLayout;
@@ -1487,8 +1491,7 @@ namespace Mono.TextEditor
 				layout = windowEolLayout;
 				break;
 			default:
-				layout = emptyEolLayout;
-				break;
+				throw new InvalidOperationException (); // other line endings are not known.
 			}
 			cr.Save ();
 			cr.Translate (x, y);
