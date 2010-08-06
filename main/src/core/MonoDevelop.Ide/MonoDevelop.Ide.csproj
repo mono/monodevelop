@@ -1402,7 +1402,6 @@
     <Folder Include="MonoDevelop.Ide.Execution\" />
     <Folder Include="MonoDevelop.Ide.Extensions\" />
     <Folder Include="MonoDevelop.Ide.CustomTools\" />
-    <Folder Include="MonoDevelop.Components.Diff\" />
     <Folder Include="MonoDevelop.Components.Extensions\" />
     <Folder Include="MonoDevelop.Components.Theming\" />
     <Folder Include="MonoDevelop.Components.Docking\" />
