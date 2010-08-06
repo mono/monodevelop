@@ -169,6 +169,11 @@ namespace Mono.TextEditor
 		{
 			((IBuffer)this).Replace (offset, count, null);
 		}
+		
+		void IBuffer.Remove (ISegment segment)
+		{
+			((IBuffer)this).Remove (segment.Offset, segment.Length);
+		}
 
 		void IBuffer.Replace (int offset, int count, string value)
 		{

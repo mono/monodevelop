@@ -173,6 +173,11 @@ namespace Mono.TextEditor
 			Replace (offset, count, null);
 		}
 		
+		public void Remove (ISegment removeSegment)
+		{
+			Remove (removeSegment.Offset, removeSegment.Length);
+		}
+		
 		public string FormatString (DocumentLocation loc, string str)
 		{
 			if (string.IsNullOrEmpty (str))

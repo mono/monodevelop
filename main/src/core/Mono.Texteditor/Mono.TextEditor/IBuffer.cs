@@ -44,6 +44,8 @@ namespace Mono.TextEditor
 		
 		void Insert (int offset, string value);
 		void Remove (int offset, int count);
+		void Remove (ISegment segment);
+		
 		void Replace (int offset, int count, string value);
 		
 		string GetTextAt (int offset, int count);

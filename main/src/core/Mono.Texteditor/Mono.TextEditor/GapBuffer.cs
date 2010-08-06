@@ -58,6 +58,11 @@ namespace Mono.TextEditor
 			Replace (offset, count, null);
 		}
 		
+		public void Remove (ISegment segment)
+		{
+			Remove (segment.Offset, segment.Length);
+		}
+		
 		public string GetTextAt (ISegment segment)
 		{
 			return GetTextAt (segment.Offset, segment.Length);

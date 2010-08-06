@@ -1585,6 +1585,11 @@ namespace Mono.TextEditor
 			return textEditorData.Insert (offset, value);
 		}
 		
+		public void Remove (ISegment removeSegment)
+		{
+			textEditorData.Remove (removeSegment);
+		}
+		
 		public void Remove (int offset, int count)
 		{
 			textEditorData.Remove (offset, count);
