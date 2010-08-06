@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		MatchLane MatchString (string text)
 		{
-			if (text.Length < filterLowerCase.Length)
+			if (text == null || text.Length < filterLowerCase.Length)
 				return null;
 			
 			// Pre-match check
