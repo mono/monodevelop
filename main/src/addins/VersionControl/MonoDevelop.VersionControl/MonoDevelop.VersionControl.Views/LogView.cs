@@ -4,6 +4,7 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
+using System.Text;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -169,9 +170,13 @@ namespace MonoDevelop.VersionControl.Views
 			textRenderer.Yalign = 0;
 			
 			TreeViewColumn colRevNum = new TreeViewColumn (GettextCatalog.GetString ("Revision"), textRenderer, "text", 0);
+			colRevNum.Resizable = true;
 			TreeViewColumn colRevDate = new TreeViewColumn (GettextCatalog.GetString ("Date"), textRenderer, "text", 1);
+			colRevDate.Resizable = true;
 			TreeViewColumn colRevAuthor = new TreeViewColumn (GettextCatalog.GetString ("Author"), textRenderer, "text", 2);
+			colRevAuthor.Resizable = true;
 			TreeViewColumn colRevMessage = new TreeViewColumn (GettextCatalog.GetString ("Message"), textRenderer, "text", 3);
+			colRevMessage.Resizable = true;
 			
 			loglist.AppendColumn (colRevNum);
 			loglist.AppendColumn (colRevDate);
@@ -298,24 +303,40 @@ namespace MonoDevelop.VersionControl.Views
 			textRenderer.Yalign = 0;
 			
 			TreeViewColumn colRevNum = new TreeViewColumn (GettextCatalog.GetString ("Revision"), textRenderer, "text", 0);
+			colRevNum.Resizable = true;
 			TreeViewColumn colRevDate = new TreeViewColumn (GettextCatalog.GetString ("Date"), textRenderer, "text", 1);
+			colRevDate.Resizable = true;
+			TreeViewColumn colFiles = new TreeViewColumn (GettextCatalog.GetString ("Files"), textRenderer, "text", 4);
+			colFiles.Resizable = true;
+			colFiles.Sizing = TreeViewColumnSizing.Fixed;
+			colFiles.FixedWidth = 100;
 			TreeViewColumn colRevAuthor = new TreeViewColumn (GettextCatalog.GetString ("Author"), textRenderer, "text", 2);
+			colRevAuthor.Resizable = true;
 			TreeViewColumn colRevMessage = new TreeViewColumn (GettextCatalog.GetString ("Message"), textRenderer, "text", 3);
+			colRevMessage.Resizable = true;
 			
 			loglist.AppendColumn (colRevNum);
 			loglist.AppendColumn (colRevDate);
 			loglist.AppendColumn (colRevAuthor);
+			loglist.AppendColumn (colFiles);
 			loglist.AppendColumn (colRevMessage);
 			
-			ListStore logstore = new ListStore (typeof (string), typeof (string), typeof (string), typeof (string));
+			ListStore logstore = new ListStore (typeof (string), typeof (string), typeof (string), typeof (string), typeof(string));
 			loglist.Model = logstore;
 			 
 			foreach (Revision d in history) {
+				StringBuilder sb = new StringBuilder ();
+				foreach (RevisionPath rp in d.ChangedFiles) {
+					if (sb.Length != 0) sb.Append (", ");
+					sb.Append (Path.GetFileName (rp.Path));
+				}
 				logstore.AppendValues(
 					d.ToString (),
 					d.Time.ToString (),
 					d.Author,
-					d.Message == String.Empty ? GettextCatalog.GetString ("(No message)") : d.Message);
+					d.Message == String.Empty ? GettextCatalog.GetString ("(No message)") : d.Message,
+					sb.ToString ()
+					);
 			}
 
 			// Changed paths list setup
