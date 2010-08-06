@@ -426,7 +426,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					} else {
 						markup = markup.Insert (pos2, "</span>");
 					}
-					Gdk.Color searchColor = highlightStyle.SearchTextBg;
+					Gdk.Color searchColor = Mono.TextEditor.Highlighting.Style.ToGdkColor (highlightStyle.SearchTextBg);
 					double b1 = HslColor.Brightness (searchColor);
 					double b2 = HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), highlightStyle.Default.Color));
 					double delta = Math.Abs (b1 - b2);
