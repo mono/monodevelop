@@ -94,6 +94,11 @@ namespace MonoDevelop.VersionControl.Views
 			};
 			Show ();
 		}
+		
+		public string GetResultText ()
+		{
+			return MainEditor.Text;
+		}
 
 		protected override void CreateComponents ()
 		{
