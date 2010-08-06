@@ -148,6 +148,13 @@ namespace Mono.TextEditor.Highlighting
 				return GetColorFromDefinition (WhitespaceMarkerString);
 			}
 		}
+		
+		public const string EolWhitespaceMarkerString = "marker.whitespace.eol";
+		public virtual Cairo.Color EolWhitespaceMarker {
+			get {
+				return GetColorFromDefinition (EolWhitespaceMarkerString);
+			}
+		}
 
 		public const string InvalidLineMarkerString = "marker.invalidline";
 		public virtual Cairo.Color InvalidLineMarker {

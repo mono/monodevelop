@@ -1492,7 +1492,7 @@ namespace Mono.TextEditor
 			}
 			cr.Save ();
 			cr.Translate (x, y);
-			cr.Color = selected ? SelectionColor.CairoColor : ColorStyle.WhitespaceMarker;
+			cr.Color = selected ? SelectionColor.CairoColor : ColorStyle.EolWhitespaceMarker;
 			cr.ShowLayout (layout);
 			cr.Restore ();
 		}

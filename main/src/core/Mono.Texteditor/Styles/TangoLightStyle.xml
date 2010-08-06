@@ -97,7 +97,9 @@
 		<Style name="line.dirty" color="butter2"/>
 	
 		<Style name="ruler" color="aluminium3"/>
-		<Style name="whitespace" color="aluminium3"/>
+		<Style name="whitespace" color="aluminium3"> 
+			<Style name="eol" color="aluminium2"/> 
+		</Style>
 		<Style name="invalidline" color="scarletred2"/>
 		<Style name="bracket" color="aluminium2" bgColor="aluminium1"/>
 		
