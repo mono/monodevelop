@@ -164,14 +164,15 @@ namespace MonoDevelop.VersionControl.Views
 			};
 			
 			worker.RunWorkerCompleted += delegate(object sender, RunWorkerCompletedEventArgs e) {
-				var result = (KeyValuePair<Revision, string>)e.Result;
-				var box = toEditor == editors[0] ? diffComboBox : originalComboBox;
-				box.SetItem (string.Format (GettextCatalog.GetString ("Revision {0}\t{1}\t{2}"), result.Key, result.Key.Time, result.Key.Author), null, result.Key);
-				toEditor.Text = result.Value;
-				CreateDiff ();
-				IdeApp.Workbench.StatusBar.AutoPulse = false;
-				IdeApp.Workbench.StatusBar.EndProgress ();
-				box.Sensitive = true;
+				Application.Invoke (delegate {
+					var result = (KeyValuePair<Revision, string>)e.Result;
+					var box = toEditor == editors[0] ? diffComboBox : originalComboBox;
+					box.SetItem (string.Format (GettextCatalog.GetString ("Revision {0}\t{1}\t{2}"), result.Key, result.Key.Time, result.Key.Author), null, result.Key);
+					toEditor.Text = result.Value;
+					IdeApp.Workbench.StatusBar.AutoPulse = false;
+					IdeApp.Workbench.StatusBar.EndProgress ();
+					box.Sensitive = true;
+				});
 			};
 			
 			worker.RunWorkerAsync (rev);
