@@ -70,7 +70,7 @@ namespace MonoDevelop.HexEditor
 		
 		public override Color HexOffsetHighlighted {
 			get {
-				return colorStyle.LineNumberFgHighlighted;
+				return Mono.TextEditor.Highlighting.Style.ToGdkColor (colorStyle.LineNumberFgHighlighted);
 			}
 		}
 		
@@ -100,25 +100,25 @@ namespace MonoDevelop.HexEditor
 		
 		public override Color IconBarBg {
 			get {
-				return colorStyle.IconBarBg;
+				return Mono.TextEditor.Highlighting.Style.ToGdkColor (colorStyle.IconBarBg);
 			}
 		}
 		
 		public override Color IconBarSeperator {
 			get {
-				return colorStyle.IconBarSeperator;
+				return Mono.TextEditor.Highlighting.Style.ToGdkColor (colorStyle.IconBarSeperator);
 			}
 		}
 		
 		public override Color BookmarkColor1 {
 			get {
-				return colorStyle.BookmarkColor1;
+				return Mono.TextEditor.Highlighting.Style.ToGdkColor (colorStyle.BookmarkColor1);
 			}
 		}
 		
 		public override Color BookmarkColor2 {
 			get {
-				return colorStyle.BookmarkColor2;
+				return Mono.TextEditor.Highlighting.Style.ToGdkColor (colorStyle.BookmarkColor2);
 			}
 		}
 		
@@ -136,7 +136,7 @@ namespace MonoDevelop.HexEditor
 		
 		public override Color HighlightOffset {
 			get {
-				return colorStyle.SearchTextBg;
+				return Mono.TextEditor.Highlighting.Style.ToGdkColor (colorStyle.SearchTextBg);
 			}
 		}
 	}
