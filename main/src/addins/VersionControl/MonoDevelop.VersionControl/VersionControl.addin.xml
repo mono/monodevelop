@@ -164,6 +164,14 @@
 		</ItemSet>
 	</Extension>
 
+	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
+		<ItemSet id = "VersionControl" _label = "_Version Control">
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Diff"/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Log"/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Annotate"/>
+		</ItemSet>
+	</Extension>
+
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
 		<Condition id="ItemType" value="IFileItem|IFolderItem">
 			<ItemSet id = "VersionControl" _label = "_Version Control" insertafter = "Tools">
