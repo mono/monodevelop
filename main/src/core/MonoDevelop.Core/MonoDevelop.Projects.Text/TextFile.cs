@@ -350,7 +350,7 @@ namespace MonoDevelop.Projects.Text
 			if (encoding != null) {
 				buf = ConvertToBytes (buf, encoding, "UTF-8");
 				if (buf == null)
-					throw new Exception ("Invalid encoding: " + encoding);
+					throw new InvalidEncodingException (encoding + " is invalid.");
 			}
 			
 			string tempName = Path.GetDirectoryName (fileName) + 
@@ -368,6 +368,35 @@ namespace MonoDevelop.Projects.Text
 			fs.Close ();
 
 			FileService.SystemRename (tempName, fileName);
+		}
+	}
+	
+	
+	[Serializable]
+	public class InvalidEncodingException : Exception
+	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:InvalidEncodingException"/> class
+		/// </summary>
+		public InvalidEncodingException ()
+		{
+		}
+		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:InvalidEncodingException"/> class
+		/// </summary>
+		/// <param name="message">A <see cref="T:System.String"/> that describes the exception. </param>
+		public InvalidEncodingException (string message) : base (message)
+		{
+		}
+		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:InvalidEncodingException"/> class
+		/// </summary>
+		/// <param name="message">A <see cref="T:System.String"/> that describes the exception. </param>
+		/// <param name="inner">The exception that is the cause of the current exception. </param>
+		public InvalidEncodingException (string message, Exception inner) : base (message, inner)
+		{
 		}
 	}
 	
