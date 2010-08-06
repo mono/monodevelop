@@ -495,33 +495,8 @@ namespace Mono.TextEditor
 		void DisposeGCs ()
 		{
 			ShowTooltip (null, Gdk.Rectangle.Zero);
-			//gc = gc.Kill ();
-			foreach (Gdk.GC gc in gcDictionary.Values) {
-				gc.Kill ();
-			}
-			gcDictionary.Clear ();
 		}
-		//Gdk.GC gc = null;
-		Dictionary<ulong, Gdk.GC> gcDictionary = new Dictionary<ulong, Gdk.GC> ();
-		internal Gdk.GC GetGC (Color color)
-		{
-			/*if (gc == null)
-				gc = new Gdk.GC (textEditor.GdkWindow);
-			gc.RgbFgColor = color;
-			return gc;*/
-			Gdk.GC result = null;
-			// color.Pixel doesn't work
-			ulong colorId = (ulong)color.Red * (1 << 32) + (ulong)color.Blue * (1 << 16) + (ulong)color.Green;
-			if (gcDictionary.TryGetValue (colorId, out result)) {
-				// GCs are clipped when starting to draw the line
-				return result;
-			}
-			result = new Gdk.GC (textEditor.GdkWindow);
-			result.RgbFgColor = color;
-			result.ClipRectangle = clipRectangle;
-			gcDictionary.Add (colorId, result);
-			return result;
-		}
+		
 
 		public override void Dispose ()
 		{
@@ -2344,10 +2319,7 @@ namespace Mono.TextEditor
 		{
 			clipRectangle = rect;
 			EnsureCaretGc ();
-			if (caretGc != null)
-				caretGc.ClipRectangle = rect;
-			foreach (Gdk.GC gc in gcDictionary.Values)
-				gc.ClipRectangle = rect;
+			caretGc.ClipRectangle = rect;
 		}
 
 		protected internal override void MouseLeft ()
