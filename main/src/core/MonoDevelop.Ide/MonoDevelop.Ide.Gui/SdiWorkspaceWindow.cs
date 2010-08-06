@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		List<IAttachableViewContent> subViewContents = null;
 		Notebook subViewNotebook = null;
-		Toolbar subViewToolbar = null;
+		HBox subViewToolbar = null;
 		PathBar pathBar = null;
 		HBox toolbarBox = null;
 		
@@ -361,10 +361,7 @@ namespace MonoDevelop.Ide.Gui
 			if (subViewToolbar != null)
 				return;
 			
-			subViewToolbar = new Toolbar ();
-			subViewToolbar.IconSize = IconSize.SmallToolbar;
-			subViewToolbar.ToolbarStyle = ToolbarStyle.BothHoriz;
-			subViewToolbar.ShowArrow = false;
+			subViewToolbar = new HBox (false, 3);
 			subViewToolbar.Show ();
 			
 			CheckCreateToolbarBox ();
@@ -373,6 +370,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		void EnsureToolbarBoxSeparator ()
 		{
+/*			The path bar is now shown at the top
+
 			if (toolbarBox == null || subViewToolbar == null)
 				return;
 
@@ -381,13 +380,13 @@ namespace MonoDevelop.Ide.Gui
 				separatorItem = null;
 			} else if (separatorItem == null && pathBar != null) {
 				separatorItem = new SeparatorToolItem ();
-				subViewToolbar.Insert (separatorItem, -1);
+				subViewToolbar.PackStart (separatorItem, false, false, 0);
 			} else if (separatorItem != null && pathBar != null) {
-				if (subViewToolbar.GetItemIndex(separatorItem) != subViewToolbar.NumChildren - 1) {
-					subViewToolbar.Remove (separatorItem);
-					subViewToolbar.Insert (separatorItem, -1);
-				}
+				Widget[] buttons = subViewToolbar.Children;
+				if (separatorItem != buttons [buttons.Length - 1])
+					subViewToolbar.ReorderChild (separatorItem, buttons.Length - 1);
 			}
+			*/
 		}
 		
 		void CheckCreateToolbarBox ()
@@ -439,16 +438,17 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		bool updating = false;
-		protected ToggleToolButton AddButton (string label, Gtk.Widget page)
+		protected ToggleButton AddButton (string label, Gtk.Widget page)
 		{
 			CheckCreateSubViewToolbar ();
 			updating = true;
-			ToggleToolButton button = new ToggleToolButton ();
+			ToggleButton button = new ToggleButton ();
+			button.Relief = ReliefStyle.None;
 			button.Label = label;
-			button.IsImportant = true;
+			button.CanFocus = false;
 			button.Clicked += new EventHandler (OnButtonToggled);
 			button.ShowAll ();
-			subViewToolbar.Insert (button, -1);
+			subViewToolbar.PackStart (button, false, false, 0);
 			subViewNotebook.AppendPage (page, new Gtk.Label ());
 			page.ShowAll ();
 			EnsureToolbarBoxSeparator ();
@@ -514,8 +514,8 @@ namespace MonoDevelop.Ide.Gui
 			subViewNotebook.CurrentPage = npage;
 			Gtk.Widget[] buttons = subViewToolbar.Children;
 			for (int n=0; n<buttons.Length; n++) {
-				if (buttons [n] is ToggleToolButton) {
-					ToggleToolButton b = (ToggleToolButton) buttons [n];
+				if (buttons [n] is ToggleButton) {
+					ToggleButton b = (ToggleButton) buttons [n];
 					b.Active = (n == npage);
 				}
 			}
