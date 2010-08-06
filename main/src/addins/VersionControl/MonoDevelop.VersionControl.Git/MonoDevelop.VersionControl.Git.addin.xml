@@ -34,6 +34,13 @@
 			description = "Switch to branch."/>
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Ide/MainMenu/VersionControl">
+		<CommandItem id = "MonoDevelop.VersionControl.Git.Commands.Push" insertafter="MonoDevelop.VersionControl.Commands.CommitSolution"/>
+		<ItemSet id = "SwitchToBranch" _label = "Switch to Branch" autohide="true">
+			<CommandItem id = "MonoDevelop.VersionControl.Git.Commands.SwitchToBranch"/>
+		</ItemSet>
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
 		<ItemSet id = "SwitchToBranch" _label = "Switch to Branch" autohide="true" insertafter = "VersionControl">
 			<CommandItem id = "MonoDevelop.VersionControl.Git.Commands.SwitchToBranch"/>

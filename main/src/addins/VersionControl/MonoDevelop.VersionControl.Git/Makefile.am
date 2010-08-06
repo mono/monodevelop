@@ -17,10 +17,12 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.VersionControl.Git.ConflictResolutionDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.PushDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.UserInfoConflictDialog.cs \
 	MonoDevelop.VersionControl.Git/Commands.cs \
 	MonoDevelop.VersionControl.Git/CommitDialogExtensionWidget.cs \
+	MonoDevelop.VersionControl.Git/ConflictResolutionDialog.cs \
 	MonoDevelop.VersionControl.Git/GitClient.cs \
 	MonoDevelop.VersionControl.Git/GitNodeBuilderExtension.cs \
 	MonoDevelop.VersionControl.Git/GitRepository.cs \

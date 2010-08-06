@@ -34,6 +34,7 @@ using MonoDevelop.Core.Execution;
 using System.Collections.Generic;
 using System.Text;
 using System.Globalization;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -306,7 +307,6 @@ namespace MonoDevelop.VersionControl.Git
 			throw new System.NotImplementedException();
 		}
 		
-		
 		public override void Update (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
 			List<string> statusList = null;
@@ -322,7 +322,24 @@ namespace MonoDevelop.VersionControl.Git
 				RunCommand ("stash save " + GetStashName ("_tmp_"), true);
 				
 				// Apply changes
-				RunCommand ("rebase " + GetCurrentRemote () + " " + GetCurrentBranch (), true, monitor);
+				StringReader sr = RunCommand ("rebase " + GetCurrentRemote () + " " + GetCurrentBranch (), false, monitor);
+				string conflictFile = null;
+				do {
+					conflictFile = GetConflictFile (sr);
+					if (conflictFile != null) {
+						ConflictResult res = ResolveConflict (conflictFile);
+						if (res == ConflictResult.Abort) {
+							sr = RunCommand ("rebase --abort", false, monitor);
+							break;
+						}
+						else if (res == ConflictResult.Skip)
+							sr = RunCommand ("rebase --skip", false, monitor);
+						else {
+							RunCommand ("add " + ToCmdPath (conflictFile), false, monitor);
+							sr = RunCommand ("rebase --continue", false, monitor);
+						}
+					}
+				} while (conflictFile != null);
 				
 			} finally {
 				// Restore local changes
@@ -334,6 +351,35 @@ namespace MonoDevelop.VersionControl.Git
 			// Notify changes
 			if (statusList != null)
 				NotifyFileChanges (statusList);
+		}
+		
+		string GetConflictFile (StringReader reader)
+		{
+			foreach (string line in ToList (reader)) {
+				if (line.StartsWith ("CONFLICT ")) {
+					string s = "Merge conflict in ";
+					int i = line.IndexOf (s) + s.Length;
+					return path.Combine (line.Substring (i));
+				}
+			}
+			return null;
+		}
+		
+		ConflictResult ResolveConflict (string file)
+		{
+			ConflictResult res = ConflictResult.Abort;
+			DispatchService.GuiSyncDispatch (delegate {
+				ConflictResolutionDialog dlg = new ConflictResolutionDialog ();
+				dlg.Load (file);
+				Gtk.ResponseType dres = (Gtk.ResponseType) dlg.Run ();
+				dlg.Destroy ();
+				switch (dres) {
+				case Gtk.ResponseType.Cancel: res = ConflictResult.Abort; break;
+				case Gtk.ResponseType.Close: res = ConflictResult.Skip; break;
+				case Gtk.ResponseType.Ok: res = ConflictResult.Continue; dlg.Save (file); break;
+				}
+			});
+			return res;
 		}
 		
 		
@@ -369,6 +415,10 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override void Revert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
+			RunCommand ("reset --" + ToCmdPathList (localPaths), false, monitor);
+			
+			// Reset again. If a file is in conflict, the first reset will only
+			// reset the conflict state, but it won't unstage the file
 			RunCommand ("reset --" + ToCmdPathList (localPaths), false, monitor);
 			
 			// The checkout command may fail if a file is not tracked anymore after
