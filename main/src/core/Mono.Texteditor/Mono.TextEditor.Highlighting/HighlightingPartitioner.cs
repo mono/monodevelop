@@ -31,7 +31,7 @@ namespace Mono.TextEditor.Highlighting
 	{
 		public override void TextReplaced (ReplaceEventArgs args)
 		{
-			// TODO: Implement span rule based document partitioner
+/*			// TODO: Implement span rule based document partitioner
 			var mode = Document.SyntaxMode;
 			var node = GetTreeNodeAtOffset (args.Offset);
 			base.ChangeLength (node.value, node.value.Length - args.Count);
@@ -40,7 +40,7 @@ namespace Mono.TextEditor.Highlighting
 			
 			for (int i = args.Offset; i < args.Offset + args.Value.Length; i++) {
 				
-			}
+			}*/
 		}
 	}
 }

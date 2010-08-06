@@ -83,8 +83,7 @@ namespace Mono.TextEditor
 			text = editor.GetTextEditorData ().FormatString (Location, text);
 			
 			LineSegment line = editor.Document.GetLineByOffset (offset);
-			string indent = editor.Document.GetLineIndent (line) ?? "";
-			bool isBlankLine = indent.Length == line.EditableLength;
+			
 			int insertionOffset = line.Offset;
 			offset = insertionOffset;
 			InsertNewLine (editor, LineBefore, ref offset);

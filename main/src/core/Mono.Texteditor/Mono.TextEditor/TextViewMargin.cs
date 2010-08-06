@@ -2154,8 +2154,7 @@ namespace Mono.TextEditor
 		}
 
 		Cairo.Color defaultBgColor;
-		Gdk.Rectangle clipRectangle;
-
+		
 		public int TextStartPosition {
 			get {
 				return 4;
@@ -2214,9 +2213,9 @@ namespace Mono.TextEditor
 					markerLayout.GetSize (out width, out height);
 					
 					bool isFoldingSelected = !this.HideSelection && textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (folding);
-					int pixelX = (int)(pangoPosition / Pango.Scale.PangoScale);
-					int pixelWidth = (int)((pangoPosition + width) / Pango.Scale.PangoScale) - pixelX;
-					var foldingRectangle = new Cairo.Rectangle (pixelX, y, pixelWidth - 1, this.LineHeight - 1);
+					double pixelX = pangoPosition / Pango.Scale.PangoScale;
+					double pixelWidth = (pangoPosition + width) / Pango.Scale.PangoScale - pixelX;
+					var foldingRectangle = new Cairo.Rectangle (pixelX, y, pixelWidth, this.LineHeight - 1);
 					if (BackgroundRenderer == null) {
 						cr.Color = isFoldingSelected ? SelectionColor.CairoBackgroundColor : defaultBgColor;
 						cr.Rectangle (foldingRectangle);
@@ -2325,7 +2324,6 @@ namespace Mono.TextEditor
 
 		void SetClip (Gdk.Rectangle rect)
 		{
-			clipRectangle = rect;
 			EnsureCaretGc ();
 			caretGc.ClipRectangle = rect;
 		}
