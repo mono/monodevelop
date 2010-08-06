@@ -366,8 +366,22 @@ namespace MonoDevelop.SourceEditor
 						LoggingService.LogWarning ("Can't get file attributes", e);
 					}
 				}
-
-				TextFile.WriteFile (fileName, Document.Text, encoding, hadBom);
+				try {
+					TextFile.WriteFile (fileName, Document.Text, encoding, hadBom);
+				} catch (InvalidEncodingException) {
+					var result = MessageService.AskQuestion (GettextCatalog.GetString ("Can't save file witch current codepage."), 
+						GettextCatalog.GetString ("Some unicode characters in this file could not be saved with the current encoding.\nDo you want to resave this file as Unicode ?\nYou can choose another encoding in the 'save as' dialog."),
+						1,
+						AlertButton.Cancel,
+						new AlertButton (GettextCatalog.GetString ("Save as Unicode")));
+					if (result != AlertButton.Cancel) {
+						this.hadBom = true;
+						this.encoding = "UTF-8";
+						TextFile.WriteFile (fileName, Document.Text, this.encoding, this.hadBom);
+					} else {
+						return;
+					}
+				}
 				lastSaveTime = File.GetLastWriteTime (fileName);
 				try {
 					if (attributes != null)
