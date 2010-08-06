@@ -295,8 +295,8 @@ namespace Mono.TextEditor
 		}
 		
 		StyleFlag includedStyles;
-		Gdk.Color color;
-		Gdk.Color backColor;
+		Cairo.Color color;
+		Cairo.Color backColor;
 		bool bold;
 		bool italic;
 		
@@ -319,7 +319,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public virtual Color Color {
+		public virtual Cairo.Color Color {
 			get {
 				return color;
 			}
@@ -339,7 +339,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public virtual Color BackgroundColor {
+		public virtual Cairo.Color BackgroundColor {
 			get {
 				return backColor;
 			}
@@ -356,11 +356,11 @@ namespace Mono.TextEditor
 			
 			ChunkStyle style = new ChunkStyle (baseStyle);
 			if ((includedStyles & StyleFlag.Color) != 0)
-				style.Color = Color;
+				style.Color = Mono.TextEditor.Highlighting.Style.ToGdkColor (Color);
 		
 			if ((includedStyles & StyleFlag.BackgroundColor) != 0) {
 				style.ChunkProperties &= ~ChunkProperties.TransparentBackground;
-				style.BackgroundColor = BackgroundColor;
+				style.BackgroundColor = Mono.TextEditor.Highlighting.Style.ToGdkColor (BackgroundColor);
 			}
 			
 			if ((includedStyles & StyleFlag.Bold) != 0)
