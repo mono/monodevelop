@@ -1177,13 +1177,14 @@ namespace Mono.TextEditor
 		void DecorateSpaces (Cairo.Context ctx, LayoutWrapper layout, int offset, int length, double xPos, double y, int selectionStart, int selectionEnd)
 		{
 			uint curIndex = 0, byteIndex = 0;
-			bool first = true;
+			bool first = true, oldSelected = false;
 			for (int i = 0; i < layout.LineChars.Length; i++) {
 				if (layout.LineChars[i] == ' ') {
 					bool selected = selectionStart <= offset + i && offset + i < selectionEnd;
-					if (first) {
+					if (first || oldSelected != selected) {
 						ctx.Color = selected ? SelectionColor.CairoColor : ColorStyle.WhitespaceMarker;
 						first = false;
+						oldSelected = selected;
 					}
 					Pango.Rectangle pos = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)i, ref curIndex, ref byteIndex));
 					int xpos = pos.X;
@@ -1203,13 +1204,14 @@ namespace Mono.TextEditor
 		void DecorateTabs (Cairo.Context ctx, LayoutWrapper layout, int offset, int length, double xPos, double y, int selectionStart, int selectionEnd)
 		{
 			uint curIndex = 0, byteIndex = 0;
-			bool first = true;
+			bool first = true, oldSelected = false;
 			for (int i = 0; i < layout.LineChars.Length; i++) {
 				if (layout.LineChars[i] == '\t') {
 					bool selected = selectionStart <= offset + i && offset + i < selectionEnd;
-					if (first) {
+					if (first || oldSelected != selected) {
 						ctx.Color = selected ? SelectionColor.CairoColor : ColorStyle.WhitespaceMarker;
 						first = false;
+						oldSelected = selected;
 					}
 					Pango.Rectangle pos = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)i, ref curIndex, ref byteIndex));
 					int xpos = pos.X;
@@ -1221,15 +1223,16 @@ namespace Mono.TextEditor
 		void DecorateTabsAndSpaces (Cairo.Context ctx, LayoutWrapper layout, int offset, int length, double xPos, double y, int selectionStart, int selectionEnd)
 		{
 			uint curIndex = 0, byteIndex = 0;
-			bool first = true;
+			bool first = true, oldSelected = false;
 			for (int i = 0; i < layout.LineChars.Length; i++) {
 				char ch = layout.LineChars[i];
 				if (ch != ' ' && ch != '\t')
 					continue;
 				bool selected = selectionStart <= offset + i && offset + i < selectionEnd;
-				if (first) {
+				if (first || oldSelected != selected) {
 					ctx.Color = selected ? SelectionColor.CairoColor : ColorStyle.WhitespaceMarker;
 					first = false;
+					oldSelected = selected;
 				}
 				Pango.Rectangle pos = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)i, ref curIndex, ref byteIndex));
 				int xpos = pos.X;
