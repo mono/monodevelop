@@ -162,7 +162,13 @@ namespace MonoDevelop.Ide.Desktop
 				return string.IsNullOrEmpty (displayName)? Path.GetFileName (fileName) : displayName;
 			}
 		}
+		
 		public DateTime TimeStamp { get { return timestamp; } }
+		
+		public override string ToString ()
+		{
+			return FileName;
+		}
 	}
 }
 
