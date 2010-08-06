@@ -43,10 +43,15 @@ namespace Mono.TextEditor
 	public class TextViewMargin : Margin
 	{
 		readonly TextEditor textEditor;
-		Pango.TabArray tabArray = null;
-		Pango.Layout markerLayout = null;
+		Pango.TabArray tabArray;
+		
+		Pango.Layout markerLayout;
+		
+		Pango.Layout tabMarkerLayout, spaceMarkerLayout, invalidLineLayout;
+		Pango.Layout macEolLayout, unixEolLayout, windowEolLayout, emptyEolLayout;
+		
 		internal int charWidth;
-
+		
 		int lineHeight = 16;
 		int highlightBracketOffset = -1;
 
@@ -114,9 +119,6 @@ namespace Mono.TextEditor
 			get { return charWidth; }
 		}
 
-		const string spaceMarkerChar = "·";
-		const string tabMarkerChar = "»";
-		const string invalidLineMarkerChar = "~";
 
 		public TextViewMargin (TextEditor textEditor)
 		{
@@ -419,14 +421,44 @@ namespace Mono.TextEditor
 
 			CaretMoveActions.LineHeight = lineHeight = System.Math.Max (1, lineHeight);
 
+			if (textEditor.Options.ShowInvalidLines && invalidLineLayout == null) {
+				invalidLineLayout = PangoUtil.CreateLayout (textEditor);
+				invalidLineLayout.SetText ("~");
+			}
+			
+			if (textEditor.Options.ShowEolMarkers && unixEolLayout == null) {
+				unixEolLayout = PangoUtil.CreateLayout (textEditor);
+				unixEolLayout.SetText ("\\n");
+				macEolLayout = PangoUtil.CreateLayout (textEditor);
+				macEolLayout.SetText ("\\r");
+				windowEolLayout = PangoUtil.CreateLayout (textEditor);
+				windowEolLayout.SetText ("\\r\\n");
+				emptyEolLayout = PangoUtil.CreateLayout (textEditor);
+				emptyEolLayout.SetText ("<EOL>");
+			}
+			
+			if (textEditor.Options.ShowTabs && tabMarkerLayout == null) {
+				tabMarkerLayout = PangoUtil.CreateLayout (textEditor);
+				tabMarkerLayout.SetText ("»");
+			}
+
+			if (textEditor.Options.ShowSpaces && spaceMarkerLayout == null) {
+				spaceMarkerLayout = PangoUtil.CreateLayout (textEditor);
+				spaceMarkerLayout.SetText ("·");
+			}
+			
 			DecorateLineFg -= DecorateTabs;
-			if (textEditor.Options.ShowTabs)
-				DecorateLineFg += DecorateTabs;
-
 			DecorateLineFg -= DecorateSpaces;
-			if (textEditor.Options.ShowSpaces)
+			DecorateLineFg -= DecorateTabsAndSpaces;
+			
+			if (textEditor.Options.ShowTabs && textEditor.Options.ShowSpaces) {
+				DecorateLineFg += DecorateTabsAndSpaces;
+			} else if (textEditor.Options.ShowTabs) {
+				DecorateLineFg += DecorateTabs;
+			} else if (textEditor.Options.ShowSpaces) {
 				DecorateLineFg += DecorateSpaces;
-
+			} 
+			
 			DecorateLineBg -= DecorateMatchingBracket;
 			if (textEditor.Options.HighlightMatchingBracket && !Document.ReadOnly)
 				DecorateLineBg += DecorateMatchingBracket;
@@ -511,6 +543,19 @@ namespace Mono.TextEditor
 				caretGc.Dispose ();
 			if (markerLayout != null)
 				markerLayout.Dispose ();
+			if (tabMarkerLayout != null)
+				tabMarkerLayout.Dispose ();
+			if (spaceMarkerLayout != null)
+				spaceMarkerLayout.Dispose ();
+			if (invalidLineLayout != null)
+				invalidLineLayout.Dispose ();
+			if (unixEolLayout != null) {
+				macEolLayout.Dispose ();
+				unixEolLayout.Dispose ();
+				windowEolLayout.Dispose ();
+				emptyEolLayout.Dispose ();
+			}
+			
 			DisposeLayoutDict ();
 			if (tabArray != null)
 				tabArray.Dispose ();
@@ -1137,26 +1182,77 @@ namespace Mono.TextEditor
 		public event LineDecorator DecorateLineBg;
 		public event LineDecorator DecorateLineFg;
 
+		void DrawSpaceMarker (Cairo.Context cr, bool selected, double x, double y)
+		{
+			cr.Save ();
+			cr.Translate (x, y);
+			cr.ShowLayout (spaceMarkerLayout);
+			cr.Restore ();
+		}
+
 		void DecorateSpaces (Cairo.Context ctx, LayoutWrapper layout, int offset, int length, double xPos, double y, int selectionStart, int selectionEnd)
 		{
 			uint curIndex = 0, byteIndex = 0;
+			bool first = true;
 			for (int i = 0; i < layout.LineChars.Length; i++) {
 				if (layout.LineChars[i] == ' ') {
+					bool selected = selectionStart <= offset + i && offset + i < selectionEnd;
+					if (first) {
+						ctx.Color = (HslColor)(selected ? SelectionColor.Color : ColorStyle.WhitespaceMarker);
+						first = false;
+					}
 					Pango.Rectangle pos = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)i, ref curIndex, ref byteIndex));
 					int xpos = pos.X;
-					DrawSpaceMarker (ctx, selectionStart <= offset + i && offset + i < selectionEnd, xPos + xpos / 1024, y);
+					DrawSpaceMarker (ctx, selected, xPos + xpos / Pango.Scale.PangoScale, y);
 				}
 			}
 		}
 
+		void DrawTabMarker (Cairo.Context cr, bool selected, double x, double y)
+		{
+			cr.Save ();
+			cr.Translate (x, y);
+			cr.ShowLayout (tabMarkerLayout);
+			cr.Restore ();
+		}
+		
 		void DecorateTabs (Cairo.Context ctx, LayoutWrapper layout, int offset, int length, double xPos, double y, int selectionStart, int selectionEnd)
 		{
 			uint curIndex = 0, byteIndex = 0;
+			bool first = true;
 			for (int i = 0; i < layout.LineChars.Length; i++) {
 				if (layout.LineChars[i] == '\t') {
+					bool selected = selectionStart <= offset + i && offset + i < selectionEnd;
+					if (first) {
+						ctx.Color = (HslColor)(selected ? SelectionColor.Color : ColorStyle.WhitespaceMarker);
+						first = false;
+					}
 					Pango.Rectangle pos = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)i, ref curIndex, ref byteIndex));
 					int xpos = pos.X;
-					DrawTabMarker (ctx, selectionStart <= offset + i && offset + i < selectionEnd, xPos + xpos / 1024, y);
+					DrawTabMarker (ctx, selected, xPos + xpos / Pango.Scale.PangoScale, y);
+				}
+			}
+		}
+
+		void DecorateTabsAndSpaces (Cairo.Context ctx, LayoutWrapper layout, int offset, int length, double xPos, double y, int selectionStart, int selectionEnd)
+		{
+			uint curIndex = 0, byteIndex = 0;
+			bool first = true;
+			for (int i = 0; i < layout.LineChars.Length; i++) {
+				char ch = layout.LineChars[i];
+				if (ch != ' ' && ch != '\t')
+					continue;
+				bool selected = selectionStart <= offset + i && offset + i < selectionEnd;
+				if (first) {
+					ctx.Color = (HslColor)(selected ? SelectionColor.Color : ColorStyle.WhitespaceMarker);
+					first = false;
+				}
+				Pango.Rectangle pos = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)i, ref curIndex, ref byteIndex));
+				int xpos = pos.X;
+				if (ch == '\t') {
+					DrawTabMarker (ctx, selected, xPos + xpos / Pango.Scale.PangoScale, y);
+				} else {
+					DrawSpaceMarker (ctx, selected, xPos + xpos / Pango.Scale.PangoScale, y);
 				}
 			}
 		}
@@ -1391,55 +1487,36 @@ namespace Mono.TextEditor
 
 		void DrawEolMarker (Cairo.Context cr, LineSegment line, bool selected, double x, double y)
 		{
+			Pango.Layout layout;
 			switch (line.DelimiterLength) {
 			case 1:
 				if (Document.GetCharAt (line.Offset + line.EditableLength) == '\n') {
-					markerLayout.SetText ("\\n");
+					layout = unixEolLayout;
 				} else {
-					markerLayout.SetText ("\\r");
+					layout = macEolLayout;
 				}
 				break;
 			case 2:
-				markerLayout.SetText ("\\r\\n");
+				layout = windowEolLayout;
 				break;
-			case 4:
-				markerLayout.SetText ("<EOL>");
+			default:
+				layout = emptyEolLayout;
 				break;
 			}
 			cr.Save ();
 			cr.Translate (x, y);
 			cr.Color = (HslColor)(selected ? SelectionColor.Color : ColorStyle.WhitespaceMarker);
-			cr.ShowLayout (markerLayout);
+			cr.ShowLayout (layout);
 			cr.Restore ();
 		}
-
-		void DrawSpaceMarker (Cairo.Context cr, bool selected, double x, double y)
-		{
-			markerLayout.SetText (spaceMarkerChar);
-			cr.Save ();
-			cr.Translate (x, y);
-			cr.Color = (HslColor)(selected ? SelectionColor.Color : ColorStyle.WhitespaceMarker);
-			cr.ShowLayout (markerLayout);
-			cr.Restore ();
-		}
-
-		void DrawTabMarker (Cairo.Context cr, bool selected, double x, double y)
-		{
-			markerLayout.SetText (tabMarkerChar);
-			cr.Save ();
-			cr.Translate (x, y);
-			cr.Color = (HslColor)(selected ? SelectionColor.Color : ColorStyle.WhitespaceMarker);
-			cr.ShowLayout (markerLayout);
-			cr.Restore ();
-		}
+		
 
 		void DrawInvalidLineMarker (Cairo.Context cr, double x, double y)
 		{
-			markerLayout.SetText (invalidLineMarkerChar);
 			cr.Save ();
 			cr.Translate (x, y);
 			cr.Color = (HslColor)ColorStyle.InvalidLineMarker;
-			cr.ShowLayout (markerLayout);
+			cr.ShowLayout (invalidLineLayout);
 			cr.Restore ();
 		}
 
