@@ -69,7 +69,7 @@ namespace Mono.TextEditor
 		public Cairo.Color CairoBackgroundColor {
 			get {
 				if (cairoBackgroundColor.A == 0)
-					cairoBackgroundColor = Mono.TextEditor.Highlighting.Style.ToCairoColor (Color);
+					cairoBackgroundColor = Mono.TextEditor.Highlighting.Style.ToCairoColor (BackgroundColor);
 				return cairoBackgroundColor;
 			}
 		}
