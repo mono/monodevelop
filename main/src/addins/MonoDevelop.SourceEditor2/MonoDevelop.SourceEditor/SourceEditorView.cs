@@ -749,7 +749,7 @@ namespace MonoDevelop.SourceEditor
 				w.OffsetY = widget.TextEditor.LineToVisualY (w.Line - 1);
 				int lw, lh;
 				widget.TextEditor.TextViewMargin.GetLayout (line).Layout.GetPixelSize (out lw, out lh);
-				w.OffsetX = widget.TextEditor.TextViewMargin.XOffset + lw + 4;
+				w.OffsetX = (int)widget.TextEditor.TextViewMargin.XOffset + lw + 4;
 			}
 			wi.Widget = new PinnedWatchWidget (widget.TextEditorContainer, w);
 			
@@ -1303,7 +1303,7 @@ namespace MonoDevelop.SourceEditor
 			int tx, ty;
 			widget.Vbox.ParentWindow.GetOrigin (out tx, out ty);
 			tx += widget.TextEditorContainer.Allocation.X +
-				p.X + TextEditor.TextViewMargin.XOffset - (int)TextEditor.HAdjustment.Value;
+				p.X + (int)TextEditor.TextViewMargin.XOffset - (int)TextEditor.HAdjustment.Value;
 			ty += widget.TextEditorContainer.Allocation.Y +
 				p.Y - (int)TextEditor.VAdjustment.Value + TextEditor.LineHeight;
 			return new Gdk.Point (tx, ty);

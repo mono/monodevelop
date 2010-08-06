@@ -368,7 +368,7 @@ namespace MonoDevelop.SourceEditor
 			if (!IsVisible || DebuggingService.IsDebugging)
 				return true;
 			EnsureLayoutCreated (editor);
-			int x = editor.TextViewMargin.XOffset;
+			double x = editor.TextViewMargin.XOffset;
 			int right = editor.Allocation.Width;
 			int errorCounterWidth = 0;
 			bool isCaretInLine = startOffset <= editor.Caret.Offset && editor.Caret.Offset <= endOffset;
@@ -378,7 +378,7 @@ namespace MonoDevelop.SourceEditor
 				errorCounterWidth = ew + 10;
 			}
 			
-			int x2 = System.Math.Max (right - LayoutWidth - border - (ShowIconsInBubble ? errorPixbuf.Width : 0) - errorCounterWidth, fitsInSameLine ? editor.TextViewMargin.XOffset + editor.LineHeight / 2 : editor.TextViewMargin.XOffset);
+			double x2 = System.Math.Max (right - LayoutWidth - border - (ShowIconsInBubble ? errorPixbuf.Width : 0) - errorCounterWidth, fitsInSameLine ? editor.TextViewMargin.XOffset + editor.LineHeight / 2 : editor.TextViewMargin.XOffset);
 			bool isEolSelected = editor.IsSomethingSelected && editor.SelectionMode != SelectionMode.Block ? editor.SelectionRange.Contains (lineSegment.Offset + lineSegment.EditableLength) : false;
 			
 			int active = editor.Document.GetTextAt (lineSegment) == initialText ? 0 : 1;
@@ -415,7 +415,7 @@ namespace MonoDevelop.SourceEditor
 			g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, selected];
 			g.Stroke ();
 			if (editor.Options.ShowRuler) {
-				int divider = Math.Max (editor.TextViewMargin.XOffset, x + editor.TextViewMargin.RulerX);
+				double divider = Math.Max (editor.TextViewMargin.XOffset, x + editor.TextViewMargin.RulerX);
 				g.MoveTo (new Cairo.PointD (divider + 0.5, y));
 				g.LineTo (new Cairo.PointD (divider + 0.5, y + editor.LineHeight));
 				g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, selected];
@@ -472,7 +472,7 @@ namespace MonoDevelop.SourceEditor
 					}
 					
 					if (editor.Options.ShowRuler) {
-						int divider = Math.Max (editor.TextViewMargin.XOffset, x + editor.TextViewMargin.RulerX);
+						double divider = Math.Max (editor.TextViewMargin.XOffset, x + editor.TextViewMargin.RulerX);
 						g.MoveTo (new Cairo.PointD (divider + 0.5, y));
 						g.LineTo (new Cairo.PointD (divider + 0.5, y + editor.LineHeight));
 						g.Color = colorMatrix[active, BOTTOM, LINE, highlighted, 1];
@@ -585,7 +585,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			if (editor.Options.ShowRuler) {
-				int divider = Math.Max (editor.TextViewMargin.XOffset, x + editor.TextViewMargin.RulerX);
+				double divider = Math.Max (editor.TextViewMargin.XOffset, x + editor.TextViewMargin.RulerX);
 				if (divider >= x2) {
 					g.MoveTo (new Cairo.PointD (divider + 0.5, y2));
 					g.LineTo (new Cairo.PointD (divider + 0.5, y2Bottom));
@@ -644,7 +644,7 @@ namespace MonoDevelop.SourceEditor
 					}
 					g.Fill ();
 					if (editor.Options.ShowRuler) {
-						int divider = Math.Max (editor.TextViewMargin.XOffset, x + editor.TextViewMargin.RulerX);
+						double divider = Math.Max (editor.TextViewMargin.XOffset, x + editor.TextViewMargin.RulerX);
 						if (divider >= x2) {
 							g.MoveTo (new Cairo.PointD (divider + 0.5, y));
 							g.LineTo (new Cairo.PointD (divider + 0.5, y + editor.LineHeight));

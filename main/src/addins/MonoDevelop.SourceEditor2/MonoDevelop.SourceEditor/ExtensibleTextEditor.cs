@@ -170,7 +170,7 @@ namespace MonoDevelop.SourceEditor
 		void OnPopupMenu (object sender, Gtk.ButtonPressEventArgs args)
 		{
 			if (args.Event.Button == 3) {
-				int textEditorXOffset = (int)args.Event.X - this.TextViewMargin.XOffset;
+				int textEditorXOffset = (int)args.Event.X - (int)this.TextViewMargin.XOffset;
 				if (textEditorXOffset < 0)
 					return;
 				this.menuPopupLocation = new Gdk.Point ((int)args.Event.X, (int)args.Event.Y);
