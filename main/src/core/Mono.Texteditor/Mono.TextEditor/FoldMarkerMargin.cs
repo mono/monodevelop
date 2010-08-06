@@ -188,11 +188,9 @@ namespace Mono.TextEditor
 		
 		internal protected override void OptionsChanged ()
 		{
-			foldBgGC = (HslColor)editor.ColorStyle.FoldLine.BackgroundColor;
-			
-			foldLineGC = (HslColor)editor.ColorStyle.FoldLine.Color;
-			
-			foldLineHighlightedGC = (HslColor)editor.ColorStyle.FoldLineHighlighted;
+			foldBgGC = editor.ColorStyle.FoldLine.CairoBackgroundColor;
+			foldLineGC = editor.ColorStyle.FoldLine.CairoColor;
+			foldLineHighlightedGC = editor.ColorStyle.FoldLineHighlighted;
 			
 			HslColor hslColor = new HslColor (editor.ColorStyle.Default.BackgroundColor);
 			double brightness = HslColor.Brightness (editor.ColorStyle.Default.BackgroundColor);
@@ -203,12 +201,9 @@ namespace Mono.TextEditor
 			}
 			
 			foldLineHighlightedGCBg = hslColor;
-			
-			foldToggleMarkerGC = (HslColor)editor.ColorStyle.FoldToggleMarker;
-
-			lineStateChangedGC = (HslColor)new Gdk.Color (108, 226, 108);
-			
-			lineStateDirtyGC = (HslColor)new Gdk.Color (255, 238, 98);
+			foldToggleMarkerGC = editor.ColorStyle.FoldToggleMarker;
+			lineStateChangedGC = new Cairo.Color (108 / 255.0, 226 / 255.0, 108 / 255.0);
+			lineStateDirtyGC = new Cairo.Color (255 / 255.0, 238 / 255.0, 98 / 255.0);
 			
 			marginWidth = editor.LineHeight;
 		}

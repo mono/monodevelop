@@ -179,9 +179,9 @@ namespace Mono.TextEditor
 			layout.FontDescription = editor.Options.Font;
 			CalculateWidth ();
 			
-			lineNumberBgGC = (HslColor)editor.ColorStyle.LineNumber.BackgroundColor;
-			lineNumberGC = (HslColor)editor.ColorStyle.LineNumber.Color;
-			lineNumberHighlightGC = (HslColor)editor.ColorStyle.LineNumberFgHighlighted;
+			lineNumberBgGC = editor.ColorStyle.LineNumber.CairoBackgroundColor;
+			lineNumberGC = editor.ColorStyle.LineNumber.CairoColor;
+			lineNumberHighlightGC = editor.ColorStyle.LineNumberFgHighlighted;
 		}
 		
 		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, int line, double x, double y, double lineHeight)

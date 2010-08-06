@@ -174,7 +174,7 @@ namespace Mono.TextEditor
 			@from = System.Math.Max (@from, editor.TextViewMargin.XOffset);
 			to = System.Math.Max (to, editor.TextViewMargin.XOffset);
 			if (@from < to) {
-				cr.DrawLine ((HslColor)(selected ? editor.ColorStyle.Selection.Color : editor.ColorStyle.GetChunkStyle (style).Color), @from, y + editor.LineHeight - 1, to, y + editor.LineHeight - 1);
+				cr.DrawLine (selected ? editor.ColorStyle.Selection.CairoColor : editor.ColorStyle.GetChunkStyle (style).CairoColor, @from, y + editor.LineHeight - 1, to, y + editor.LineHeight - 1);
 			}
 		}
 	}
@@ -205,9 +205,9 @@ namespace Mono.TextEditor
 	
 	public class LineBackgroundMarker: TextMarker, IBackgroundMarker
 	{
-		Gdk.Color color;
+		Cairo.Color color;
 		
-		public LineBackgroundMarker (Gdk.Color color)
+		public LineBackgroundMarker (Cairo.Color color)
 		{
 			this.color = color;
 		}
@@ -217,7 +217,7 @@ namespace Mono.TextEditor
 			drawBg = false;
 			if (selectionStart > 0)
 				return true;
-			cr.Color = (HslColor)color;
+			cr.Color = color;
 			cr.Rectangle (startXPos, y, endXPos - startXPos, editor.LineHeight);
 			cr.Fill ();
 			return true;
@@ -233,7 +233,7 @@ namespace Mono.TextEditor
 			this.EndCol = end;
 			this.Wave = true;
 		}
-		public UnderlineMarker (Gdk.Color color, int start, int end)
+		public UnderlineMarker (Cairo.Color color, int start, int end)
 		{
 			this.Color = color;
 			this.StartCol = start;
@@ -242,7 +242,7 @@ namespace Mono.TextEditor
 		}
 		
 		public string ColorName { get; set; }
-		public Gdk.Color Color { get; set; }
+		public Cairo.Color Color { get; set; }
 		public int StartCol { get; set; }
 		public int EndCol { get; set; }
 		public bool Wave { get; set; }
@@ -278,7 +278,7 @@ namespace Mono.TextEditor
 				return;
 			}
 			int height = editor.LineHeight / 5;
-			cr.Color = Mono.TextEditor.Highlighting.Style.ToCairoColor (ColorName == null ? Color : editor.ColorStyle.GetColorFromDefinition (ColorName));
+			cr.Color = ColorName == null ? Color : editor.ColorStyle.GetColorFromDefinition (ColorName);
 			Pango.CairoHelper.ShowErrorUnderline (cr, @from, y + editor.LineHeight - height, to - @from, height);
 		}
 	}

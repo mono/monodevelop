@@ -43,7 +43,16 @@ namespace Mono.TextEditor
 			get;
 			set;
 		}
-
+		
+		Cairo.Color cairoColor = new Cairo.Color (0, 0, 0, 0);
+		public Cairo.Color CairoColor {
+			get {
+				if (cairoColor.A == 0)
+					cairoColor = Mono.TextEditor.Highlighting.Style.ToCairoColor (Color);
+				return cairoColor;
+			}
+		}
+		
 		Gdk.Color backColor = Gdk.Color.Zero;
 		bool backColorIsZero = true;
 		public virtual Gdk.Color BackgroundColor {
@@ -55,6 +64,16 @@ namespace Mono.TextEditor
 				backColorIsZero = value.Equal (Gdk.Color.Zero);
 			}
 		}
+		
+		Cairo.Color cairoBackgroundColor = new Cairo.Color (0, 0, 0, 0);
+		public Cairo.Color CairoBackgroundColor {
+			get {
+				if (cairoBackgroundColor.A == 0)
+					cairoBackgroundColor = Mono.TextEditor.Highlighting.Style.ToCairoColor (Color);
+				return cairoBackgroundColor;
+			}
+		}
+		
 		
 		public bool TransparentBackround {
 			get {

@@ -641,11 +641,11 @@ namespace Mono.TextEditor
 					drawBg = false;
 					Cairo.Color fillGc, rectangleGc;
 					if (segment == link.PrimaryLink) {
-						fillGc = (HslColor)(isPrimaryHighlighted ? Editor.ColorStyle.PrimaryTemplateHighlighted.BackgroundColor : Editor.ColorStyle.PrimaryTemplate.BackgroundColor);
-						rectangleGc = (HslColor)(isPrimaryHighlighted ? Editor.ColorStyle.PrimaryTemplateHighlighted.Color : Editor.ColorStyle.PrimaryTemplate.Color);
+						fillGc = isPrimaryHighlighted ? Editor.ColorStyle.PrimaryTemplateHighlighted.CairoBackgroundColor : Editor.ColorStyle.PrimaryTemplate.CairoBackgroundColor;
+						rectangleGc = isPrimaryHighlighted ? Editor.ColorStyle.PrimaryTemplateHighlighted.CairoBackgroundColor : Editor.ColorStyle.PrimaryTemplate.CairoBackgroundColor;
 					} else {
-						fillGc = (HslColor)(isPrimaryHighlighted ? Editor.ColorStyle.SecondaryTemplateHighlighted.BackgroundColor : Editor.ColorStyle.SecondaryTemplate.BackgroundColor);
-						rectangleGc = (HslColor)(isPrimaryHighlighted ? Editor.ColorStyle.SecondaryTemplateHighlighted.Color : Editor.ColorStyle.SecondaryTemplate.Color);
+						fillGc = isPrimaryHighlighted ? Editor.ColorStyle.SecondaryTemplateHighlighted.CairoBackgroundColor : Editor.ColorStyle.SecondaryTemplate.CairoBackgroundColor;
+						rectangleGc = isPrimaryHighlighted ? Editor.ColorStyle.SecondaryTemplateHighlighted.CairoColor : Editor.ColorStyle.SecondaryTemplate.CairoColor;
 					}
 					// Draw segment
 

@@ -2057,7 +2057,7 @@ namespace Mono.TextEditor
 							cr.Translate (-pw / 2, -ph / 2);
 							
 							FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, -2, 0, 4, pw + 4, Editor.LineHeight);
-							cr.Color = Mono.TextEditor.Highlighting.Style.ToCairoColor (Editor.ColorStyle.SearchTextMainBg);
+							cr.Color = Editor.ColorStyle.SearchTextMainBg;
 							cr.Fill (); 
 						
 							cr.ShowLayout (layout);

@@ -46,7 +46,7 @@ namespace Mono.TextEditor
 		
 		internal protected override void OptionsChanged ()
 		{
-			color = (HslColor)editor.ColorStyle.FoldLine.Color;
+			color = editor.ColorStyle.FoldLine.CairoColor;
 		}
 		
 		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, int line, double x, double y, double lineHeight)

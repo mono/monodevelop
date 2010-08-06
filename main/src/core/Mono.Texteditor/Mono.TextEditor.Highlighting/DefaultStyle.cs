@@ -51,20 +51,20 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public override Color LineNumberFgHighlighted {
+		public override Cairo.Color LineNumberFgHighlighted {
 			get {
-				return new Gdk.Color (122, 118, 103);
+				return new Cairo.Color (122 / 255.0, 118 / 255.0, 103 / 255.0);
 			}
 		}
-		Color iconBarBg;
-		public override Color IconBarBg {
+		Cairo.Color iconBarBg;
+		public override Cairo.Color IconBarBg {
 			get {
 				return iconBarBg;
 			}
 		}
 
-		Color iconBarSeperator;
-		public override Color IconBarSeperator {
+		Cairo.Color iconBarSeperator;
+		public override Cairo.Color IconBarSeperator {
 			get {
 				return iconBarSeperator;
 			}
@@ -76,9 +76,9 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		public override Color FoldLineHighlighted {
+		public override Cairo.Color FoldLineHighlighted {
 			get {
-				return new Gdk.Color (122, 118, 103);
+				return new Cairo.Color (122 / 255.0, 118 / 255.0 , 103 / 255.0);
 			}
 		}
 		
@@ -89,15 +89,15 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		public override Color LineMarker {
+		public override Cairo.Color LineMarker {
 			get {
-				return new Gdk.Color (212, 208, 193);
+				return new Cairo.Color (212 / 255.0, 208 / 255.0, 193 / 255.0);
 			}
 		}
 
-		public override Color Ruler {
+		public override Cairo.Color Ruler {
 			get {
-				return new Gdk.Color (172, 168, 153);
+				return new Cairo.Color (172 / 255.0, 168 / 255.0, 153 / 255.0);
 			}
 		}
 		
@@ -129,8 +129,8 @@ namespace Mono.TextEditor.Highlighting
 			this.selectionStyle = new ChunkStyle (style.Text (StateType.Selected), style.Base (StateType.Selected));
 			this.defaultStyle = new ChunkStyle (style.Text (StateType.Normal), style.Base (StateType.Normal));
 			this.lineNumberStyle = new ChunkStyle (new Gdk.Color (172, 168, 153), style.Base (StateType.Normal));
-			this.iconBarBg = style.Background (StateType.Normal);
-			this.iconBarSeperator = style.Background (StateType.Active);
+			this.iconBarBg = ToCairoColor (style.Background (StateType.Normal));
+			this.iconBarSeperator = ToCairoColor (style.Background (StateType.Active));
 		}
 
 	}

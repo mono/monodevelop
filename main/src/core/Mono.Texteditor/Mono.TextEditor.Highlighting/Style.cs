@@ -37,9 +37,9 @@ namespace Mono.TextEditor.Highlighting
 		Dictionary<string, ChunkStyle> styleLookupTable = new Dictionary<string, ChunkStyle> (); 
 		Dictionary<string, string> customPalette = new Dictionary<string, string> (); 
 		
-		public Color GetColorFromDefinition (string colorName)
+		public Cairo.Color GetColorFromDefinition (string colorName)
 		{
-			return this.GetChunkStyle (colorName).Color;
+			return this.GetChunkStyle (colorName).CairoColor;
 		}
 		
 		#region Named colors
@@ -66,21 +66,21 @@ namespace Mono.TextEditor.Highlighting
 		}
 
 		public const string LineNumberFgHighlightedString = "linenumber.highlight";
-		public virtual Color LineNumberFgHighlighted {
+		public virtual Cairo.Color LineNumberFgHighlighted {
 			get {
 				return GetColorFromDefinition (LineNumberFgHighlightedString);
 			}
 		}
 
 		public const string IconBarBgString = "iconbar";
-		public virtual Color IconBarBg {
+		public virtual Cairo.Color IconBarBg {
 			get {
 				return GetColorFromDefinition (IconBarBgString);
 			}
 		}
 
 		public const string IconBarSeperatorString = "iconbar.separator";
-		public virtual Color IconBarSeperator {
+		public virtual Cairo.Color IconBarSeperator {
 			get {
 				return GetColorFromDefinition (IconBarSeperatorString);
 			}
@@ -94,21 +94,21 @@ namespace Mono.TextEditor.Highlighting
 		}
 
 		public const string FoldLineHighlightedString = "fold.highlight";
-		public virtual Color FoldLineHighlighted {
+		public virtual Cairo.Color FoldLineHighlighted {
 			get {
 				return GetColorFromDefinition (FoldLineHighlightedString);
 			}
 		}
 		
 		public const string LineChangedBgString = "marker.line.changed";
-		public virtual Color LineChangedBg {
+		public virtual Cairo.Color LineChangedBg {
 			get {
 				return GetColorFromDefinition (LineChangedBgString);
 			}
 		}
 		
 		public const string LineDirtyBgString = "marker.line.dirty";
-		public virtual Color LineDirtyBg {
+		public virtual Cairo.Color LineDirtyBg {
 			get {
 				return GetColorFromDefinition (LineDirtyBgString);
 			}
@@ -129,35 +129,35 @@ namespace Mono.TextEditor.Highlighting
 		}
 
 		public const string LineMarkerString = "marker.line";
-		public virtual Color LineMarker {
+		public virtual Cairo.Color LineMarker {
 			get {
 				return GetColorFromDefinition (LineMarkerString);
 			}
 		}
 
 		public const string RulerString = "marker.ruler";
-		public virtual Color Ruler {
+		public virtual Cairo.Color Ruler {
 			get {
 				return GetColorFromDefinition (RulerString);
 			}
 		}
 
 		public const string WhitespaceMarkerString = "marker.whitespace";
-		public virtual Color WhitespaceMarker {
+		public virtual Cairo.Color WhitespaceMarker {
 			get {
 				return GetColorFromDefinition (WhitespaceMarkerString);
 			}
 		}
 
 		public const string InvalidLineMarkerString = "marker.invalidline";
-		public virtual Color InvalidLineMarker {
+		public virtual Cairo.Color InvalidLineMarker {
 			get {
 				return GetColorFromDefinition (InvalidLineMarkerString);
 			}
 		}
 		
 		public const string FoldToggleMarkerString = "fold.togglemarker";
-		public virtual Color FoldToggleMarker {
+		public virtual Cairo.Color FoldToggleMarker {
 			get {
 				return GetColorFromDefinition (FoldToggleMarkerString);
 			}
@@ -171,14 +171,14 @@ namespace Mono.TextEditor.Highlighting
 		}
 		
 		public const string BookmarkColor2String = "marker.bookmark.color2";
-		public virtual Color BookmarkColor2 {
+		public virtual Cairo.Color BookmarkColor2 {
 			get {
 				return GetColorFromDefinition (BookmarkColor2String);
 			}
 		}
 		
 		public const string BookmarkColor1String = "marker.bookmark.color1";
-		public virtual Color BookmarkColor1 {
+		public virtual Cairo.Color BookmarkColor1 {
 			get {
 				return GetColorFromDefinition (BookmarkColor1String);
 			}
@@ -186,150 +186,150 @@ namespace Mono.TextEditor.Highlighting
 
 		
 		public const string SearchTextBgString = "text.background.searchresult";
-		public Color SearchTextBg {
+		public Cairo.Color SearchTextBg {
 			get {
 				return GetColorFromDefinition (SearchTextBgString);
 			}
 		}
 		
 		public const string SearchTextMainBgString = "text.background.searchresult-main";
-		public Color SearchTextMainBg {
+		public Cairo.Color SearchTextMainBg {
 			get {
 				return GetColorFromDefinition (SearchTextMainBgString);
 			}
 		}
 
 		public const string BreakpointString = "marker.breakpoint";
-		public Color BreakpointFg {
+		public Cairo.Color BreakpointFg {
 			get {
-				return GetChunkStyle (BreakpointString).Color;
+				return GetChunkStyle (BreakpointString).CairoColor;
 			}
 		}
-		public Color BreakpointBg {
+		public Cairo.Color BreakpointBg {
 			get {
-				return GetChunkStyle (BreakpointString).BackgroundColor;
+				return GetChunkStyle (BreakpointString).CairoBackgroundColor;
 			}
 		}
 
 		public const string BreakpointMarkerColor2String = "marker.breakpoint.color2";
-		public Color BreakpointMarkerColor2 {
+		public Cairo.Color BreakpointMarkerColor2 {
 			get {
 				return GetColorFromDefinition (BreakpointMarkerColor2String);
 			}
 		}
 
 		public const string BreakpointMarkerColor1String = "marker.breakpoint.color1";
-		public Color BreakpointMarkerColor1 {
+		public Cairo.Color BreakpointMarkerColor1 {
 			get {
 				return GetColorFromDefinition (BreakpointMarkerColor1String);
 			}
 		}
 
 		public const string CurrentDebugLineString = "marker.debug.currentline";
-		public Color CurrentDebugLineFg {
+		public Cairo.Color CurrentDebugLineFg {
 			get {
-				return GetChunkStyle (CurrentDebugLineString).Color;
+				return GetChunkStyle (CurrentDebugLineString).CairoColor;
 			}
 		}
 		
-		public Color CurrentDebugLineBg {
+		public Cairo.Color CurrentDebugLineBg {
 			get {
-				return GetChunkStyle (CurrentDebugLineString).BackgroundColor;
+				return GetChunkStyle (CurrentDebugLineString).CairoBackgroundColor;
 			}
 		}
 
 		public const string CurrentDebugLineMarkerColor2String = "marker.debug.currentline.color2";
-		public Color CurrentDebugLineMarkerColor2 {
+		public Cairo.Color CurrentDebugLineMarkerColor2 {
 			get {
 				return GetColorFromDefinition (CurrentDebugLineMarkerColor2String);
 			}
 		}
 
 		public const string CurrentDebugLineMarkerColor1String = "marker.debug.currentline.color1";
-		public Color CurrentDebugLineMarkerColor1 {
+		public Cairo.Color CurrentDebugLineMarkerColor1 {
 			get {
 				return GetColorFromDefinition (CurrentDebugLineMarkerColor1String);
 			}
 		}
 
 		public const string CurrentDebugLineMarkerBorderString = "marker.debug.currentline.border";
-		public Color CurrentDebugLineMarkerBorder {
+		public Cairo.Color CurrentDebugLineMarkerBorder {
 			get {
 				return GetColorFromDefinition (CurrentDebugLineMarkerBorderString);
 			}
 		}
 		
 		public const string DebugStackLineString = "marker.debug.stackline";
-		public Color DebugStackLineFg {
+		public Cairo.Color DebugStackLineFg {
 			get {
-				return GetChunkStyle (DebugStackLineString).Color;
+				return GetChunkStyle (DebugStackLineString).CairoColor;
 			}
 		}
 		
-		public Color DebugStackLineBg {
+		public Cairo.Color DebugStackLineBg {
 			get {
-				return GetChunkStyle (DebugStackLineString).BackgroundColor;
+				return GetChunkStyle (DebugStackLineString).CairoBackgroundColor;
 			}
 		}
 
 		public const string DebugStackLineMarkerColor2String = "marker.debug.stackline.color2";
-		public Color DebugStackLineMarkerColor2 {
+		public Cairo.Color DebugStackLineMarkerColor2 {
 			get {
 				return GetColorFromDefinition (DebugStackLineMarkerColor2String);
 			}
 		}
 
 		public const string DebugStackLineMarkerColor1String = "marker.debug.stackline.color1";
-		public Color DebugStackLineMarkerColor1 {
+		public Cairo.Color DebugStackLineMarkerColor1 {
 			get {
 				return GetColorFromDefinition (DebugStackLineMarkerColor1String);
 			}
 		}
 
 		public const string DebugStackLineMarkerBorderString = "marker.debug.stackline.border";
-		public Color DebugStackLineMarkerBorder {
+		public Cairo.Color DebugStackLineMarkerBorder {
 			get {
 				return GetColorFromDefinition (DebugStackLineMarkerBorderString);
 			}
 		}
 
 		public const string InvalidBreakpointBgString = "marker.breakpoint.invalid.background";
-		public Color InvalidBreakpointBg {
+		public Cairo.Color InvalidBreakpointBg {
 			get {
 				return GetColorFromDefinition (InvalidBreakpointBgString);
 			}
 		}
 
 		public const string InvalidBreakpointMarkerColor1String = "marker.breakpoint.invalid.color1";
-		public Color InvalidBreakpointMarkerColor1 {
+		public Cairo.Color InvalidBreakpointMarkerColor1 {
 			get {
 				return GetColorFromDefinition (InvalidBreakpointMarkerColor1String);
 			}
 		}
 
 		public const string DisabledBreakpointBgString = "marker.breakpoint.disabled.background";
-		public Color DisabledBreakpointBg {
+		public Cairo.Color DisabledBreakpointBg {
 			get {
 				return GetColorFromDefinition (DisabledBreakpointBgString);
 			}
 		}
 
 		public const string InvalidBreakpointMarkerBorderString = "marker.breakpoint.invalid.border";
-		public Color InvalidBreakpointMarkerBorder {
+		public Cairo.Color InvalidBreakpointMarkerBorder {
 			get {
 				return GetColorFromDefinition (InvalidBreakpointMarkerBorderString);
 			}
 		}
 		
 		public const string ErrorUnderlineString = "marker.underline.error";
-		public Color ErrorUnderline {
+		public Cairo.Color ErrorUnderline {
 			get {
 				return GetColorFromDefinition (ErrorUnderlineString);
 			}
 		}
 		
 		public const string WarningUnderlineString = "marker.underline.warning";
-		public Color WarningUnderline {
+		public Cairo.Color WarningUnderline {
 			get {
 				return GetColorFromDefinition (WarningUnderlineString);
 			}
@@ -381,6 +381,13 @@ namespace Mono.TextEditor.Highlighting
 			                        (double)color.Blue / ushort.MaxValue);
 		}
 		
+		public static Gdk.Color ToGdkColor (Cairo.Color color)
+		{
+			return new Gdk.Color ((byte)(color.R  * 255),
+			                        (byte)(color.G * 255),
+			                        (byte)(color.B * 255));
+		}
+				
 		public static Cairo.Color ToCairoColor (Gdk.Color color, double alpha)
 		{
 			return new Cairo.Color ((double)color.Red / ushort.MaxValue,
@@ -604,7 +611,7 @@ namespace Mono.TextEditor.Highlighting
 		{
 			ChunkStyle style;
 			if (!styleLookupTable.TryGetValue (DefaultString, out style)) {
-				style = new ChunkStyle (GetColorFromDefinition (DefaultString));
+				style = new ChunkStyle (ToGdkColor (GetColorFromDefinition (DefaultString)));
 				styleLookupTable[DefaultString] = style;
 			}
 			return style;
