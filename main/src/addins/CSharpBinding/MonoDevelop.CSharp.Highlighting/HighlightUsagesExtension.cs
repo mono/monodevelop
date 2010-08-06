@@ -249,7 +249,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				return usages.Any (u => u.Offset <= offset && offset <= u.EndOffset);
 			}
 			
-			public bool DrawBackground (TextEditor editor, Cairo.Context cr, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, int y, int startXPos, int endXPos, ref bool drawBg)
+			public bool DrawBackground (TextEditor editor, Cairo.Context cr, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, double y, double startXPos, double endXPos, ref bool drawBg)
 			{
 				drawBg = false;
 				if (selectionStart >= 0 || editor.CurrentMode is TextLinkEditMode)
@@ -261,8 +261,8 @@ namespace MonoDevelop.CSharp.Highlighting
 					if (markerEnd < startOffset || markerStart > endOffset) 
 						return true; 
 					
-					int @from;
-					int to;
+					double @from;
+					double to;
 					
 					if (markerStart < startOffset && endOffset < markerEnd) {
 						@from = startXPos;

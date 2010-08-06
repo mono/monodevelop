@@ -88,7 +88,6 @@ namespace Mono.MHex.Rendering
 			Cairo.Gradient pat = new Cairo.LinearGradient (x + Width / 4, y, x + Width / 2, y + Editor.LineHeight - 4);
 			pat.AddColorStop (0, color1);
 			pat.AddColorStop (1, color2);
-			cr.LineWidth = Editor.Options.Zoom;
 			cr.Pattern = pat;
 			cr.FillPreserve ();
 			

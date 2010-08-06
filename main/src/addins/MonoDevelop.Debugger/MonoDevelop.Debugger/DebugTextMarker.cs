@@ -43,9 +43,9 @@ namespace MonoDevelop.Debugger
 			this.editor = editor;
 		}
 		
-		public void DrawIcon (Mono.TextEditor.TextEditor editor, Cairo.Context cr, LineSegment line, int lineNumber, int x, int y, int width, int height)
+		public void DrawIcon (Mono.TextEditor.TextEditor editor, Cairo.Context cr, LineSegment line, int lineNumber, double x, double y, double width, double height)
 		{
-			int size;
+			double size;
 			if (width > height) {
 				x += (width - height) / 2;
 				size = height;
@@ -57,11 +57,11 @@ namespace MonoDevelop.Debugger
 			DrawIcon (cr, x, y, size);
 		}
 		
-		protected virtual void DrawIcon (Cairo.Context cr, int x, int y, int size)
+		protected virtual void DrawIcon (Cairo.Context cr, double x, double y, double size)
 		{
 		}
 		
-		protected void DrawCircle (Cairo.Context cr, double x, double y, int size)
+		protected void DrawCircle (Cairo.Context cr, double x, double y, double size)
 		{
 			x += 0.5; y += 0.5;
 			cr.NewPath ();
@@ -102,7 +102,7 @@ namespace MonoDevelop.Debugger
 			cr.ClosePath ();
 		}
 		
-		protected void FillGradient (Cairo.Context cr, Cairo.Color color1, Cairo.Color color2, int x, int y, int size)
+		protected void FillGradient (Cairo.Context cr, Cairo.Color color1, Cairo.Color color2, double x, double y, double size)
 		{
 			Cairo.Gradient pat = new Cairo.LinearGradient (x + size / 4, y, x + size / 2, y + size - 4);
 			pat.AddColorStop (0, color1);
@@ -111,12 +111,11 @@ namespace MonoDevelop.Debugger
 			cr.FillPreserve ();
 		}
 		
-		protected void DrawBorder (Cairo.Context cr, Cairo.Color color, int x, int y, int size)
+		protected void DrawBorder (Cairo.Context cr, Cairo.Color color, double x, double y, double size)
 		{
 			Cairo.Gradient pat = new Cairo.LinearGradient (x, y + size, x + size, y);
 			pat.AddColorStop (0, color);
 			cr.Pattern = pat;
-			cr.LineWidth = 1;
 			cr.Stroke ();
 		}
 
@@ -148,7 +147,7 @@ namespace MonoDevelop.Debugger
 			IsTracepoint = isTracePoint;
 		}
 		
-		protected override void DrawIcon (Cairo.Context cr, int x, int y, int size)
+		protected override void DrawIcon (Cairo.Context cr, double x, double y, double size)
 		{
 			Cairo.Color color1 = Style.ToCairoColor (editor.ColorStyle.BreakpointMarkerColor1);
 			Cairo.Color color2 = Style.ToCairoColor (editor.ColorStyle.BreakpointMarkerColor2);
@@ -176,7 +175,7 @@ namespace MonoDevelop.Debugger
 		
 		public bool IsTracepoint { get; set; }
 		
-		protected override void DrawIcon (Cairo.Context cr, int x, int y, int size)
+		protected override void DrawIcon (Cairo.Context cr, double x, double y, double size)
 		{
 			Cairo.Color border = Style.ToCairoColor (editor.ColorStyle.InvalidBreakpointMarkerBorder);
 			if (IsTracepoint)
@@ -205,7 +204,7 @@ namespace MonoDevelop.Debugger
 			IncludedStyles |= StyleFlag.BackgroundColor | StyleFlag.Color;
 		}
 		
-		protected override void DrawIcon (Cairo.Context cr, int x, int y, int size)
+		protected override void DrawIcon (Cairo.Context cr, double x, double y, double size)
 		{
 			Cairo.Color color1 = Style.ToCairoColor (editor.ColorStyle.CurrentDebugLineMarkerColor1);
 			Cairo.Color color2 = Style.ToCairoColor (editor.ColorStyle.CurrentDebugLineMarkerColor2);
@@ -234,7 +233,7 @@ namespace MonoDevelop.Debugger
 			IncludedStyles |= StyleFlag.BackgroundColor | StyleFlag.Color;
 		}
 		
-		protected override void DrawIcon (Cairo.Context cr, int x, int y, int size)
+		protected override void DrawIcon (Cairo.Context cr, double x, double y, double size)
 		{
 			Cairo.Color color1 = Style.ToCairoColor (editor.ColorStyle.DebugStackLineMarkerColor1);
 			Cairo.Color color2 = Style.ToCairoColor (editor.ColorStyle.DebugStackLineMarkerColor2);
@@ -258,7 +257,7 @@ namespace MonoDevelop.Debugger
 			IncludedStyles |= StyleFlag.BackgroundColor;
 		}
 		
-		protected override void DrawIcon (Cairo.Context cr, int x, int y, int size)
+		protected override void DrawIcon (Cairo.Context cr, double x, double y, double size)
 		{
 			Cairo.Color color1 = Style.ToCairoColor (editor.ColorStyle.InvalidBreakpointMarkerColor1);
 			Cairo.Color color2 = color1;
