@@ -1302,10 +1302,8 @@ namespace MonoDevelop.SourceEditor
 			var p = widget.TextEditor.LocationToPoint (location);
 			int tx, ty;
 			widget.Vbox.ParentWindow.GetOrigin (out tx, out ty);
-			tx += widget.TextEditorContainer.Allocation.X +
-				p.X + (int)TextEditor.TextViewMargin.XOffset - (int)TextEditor.HAdjustment.Value;
-			ty += widget.TextEditorContainer.Allocation.Y +
-				p.Y - (int)TextEditor.VAdjustment.Value + TextEditor.LineHeight;
+			tx += widget.TextEditorContainer.Allocation.X + p.X;
+			ty += widget.TextEditorContainer.Allocation.Y + p.Y + TextEditor.LineHeight;
 			return new Gdk.Point (tx, ty);
 		}
 		
