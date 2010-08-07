@@ -746,7 +746,7 @@ namespace MonoDevelop.SourceEditor
 			PinnedWatchInfo wi = new PinnedWatchInfo ();
 			wi.Line = line;
 			if (w.OffsetX < 0) {
-				w.OffsetY = widget.TextEditor.LineToVisualY (w.Line - 1);
+				w.OffsetY = widget.TextEditor.LineToY (w.Line - 1);
 				int lw, lh;
 				widget.TextEditor.TextViewMargin.GetLayout (line).Layout.GetPixelSize (out lw, out lh);
 				w.OffsetX = (int)widget.TextEditor.TextViewMargin.XOffset + lw + 4;
@@ -1299,7 +1299,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public Gdk.Point DocumentToScreenLocation (DocumentLocation location)
 		{
-			var p = widget.TextEditor.DocumentToVisualLocation (location);
+			var p = widget.TextEditor.LocationToPoint (location);
 			int tx, ty;
 			widget.Vbox.ParentWindow.GetOrigin (out tx, out ty);
 			tx += widget.TextEditorContainer.Allocation.X +

@@ -712,7 +712,7 @@ namespace MonoDevelop.SourceEditor
 			get {
 				int lineNumber = editor.Document.OffsetToLineNumber (lineSegment.Offset);
 				
-				int y = editor.LineToVisualY (lineNumber) - (int)editor.VAdjustment.Value;
+				int y = editor.LineToY (lineNumber) - (int)editor.VAdjustment.Value;
 				int height = editor.LineHeight * errors.Count;
 				if (!fitsInSameLine)
 					y += editor.LineHeight;
@@ -747,7 +747,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			int ew = 0, eh = 0;
 			int lineNumber = editor.Document.OffsetToLineNumber (lineSegment.Offset);
-			int y = editor.LineToVisualY (lineNumber) - (int)editor.VAdjustment.Value;
+			int y = editor.LineToY (lineNumber) - (int)editor.VAdjustment.Value;
 			if (fitsInSameLine) {
 				if (args.Y < y + 2 || args.Y > y + editor.LineHeight - 2)
 					return false;
@@ -770,7 +770,7 @@ namespace MonoDevelop.SourceEditor
 			if (layouts == null)
 				return -1;
 			int lineNumber = editor.Document.OffsetToLineNumber (lineSegment.Offset);
-			int y = editor.LineToVisualY (lineNumber) - (int)editor.VAdjustment.Value;
+			int y = editor.LineToY (lineNumber) - (int)editor.VAdjustment.Value;
 			int height = editor.LineHeight * errors.Count;
 			if (!fitsInSameLine) {
 				y += editor.LineHeight;
