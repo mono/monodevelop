@@ -331,8 +331,8 @@ namespace MonoDevelop.VersionControl.Views
 				return;
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (args.Event.Window)) {
 				foreach (var hunk in diff) {
-					int y1 = editor.LineToVisualY (paintRemoveSide ? hunk.RemoveStart : hunk.InsertStart) - (int)editor.VAdjustment.Value;
-					int y2 = editor.LineToVisualY (paintRemoveSide ? hunk.RemoveStart + hunk.Removed : hunk.InsertStart + hunk.Inserted) - (int)editor.VAdjustment.Value;
+					int y1 = editor.LineToY (paintRemoveSide ? hunk.RemoveStart : hunk.InsertStart) - (int)editor.VAdjustment.Value;
+					int y2 = editor.LineToY (paintRemoveSide ? hunk.RemoveStart + hunk.Removed : hunk.InsertStart + hunk.Inserted) - (int)editor.VAdjustment.Value;
 					if (y1 == y2)
 						y2 = y1 + 1;
 					cr.Rectangle (0, y1, editor.Allocation.Width, y2 - y1);
@@ -390,11 +390,11 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			if (blockStart < 0)
 				return;
-			var point = editor.DocumentToVisualLocation (editor.Document.OffsetToLocation (startOffset + i + 1));
+			var point = editor.LocationToPoint (editor.Document.OffsetToLocation (startOffset + i + 1));
 			point.X += (int)(editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition - hAdjustment.Value);
 			point.Y -= (int)editor.VAdjustment.Value;
 
-			var point2 = editor.DocumentToVisualLocation (editor.Document.OffsetToLocation (startOffset + blockStart + 1));
+			var point2 = editor.LocationToPoint (editor.Document.OffsetToLocation (startOffset + blockStart + 1));
 			point2.X += (int)(editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition - hAdjustment.Value);
 			point2.Y -= (int)editor.VAdjustment.Value;
 
@@ -495,13 +495,13 @@ namespace MonoDevelop.VersionControl.Views
 				if (!hideButton) {
 					int delta = widget.MainEditor.Allocation.Y - Allocation.Y;
 					foreach (var hunk in Diff) {
-						int z1 = delta + fromEditor.LineToVisualY (hunk.RemoveStart) - (int)fromEditor.VAdjustment.Value;
-						int z2 = delta + fromEditor.LineToVisualY (hunk.RemoveStart + hunk.Removed) - (int)fromEditor.VAdjustment.Value;
+						int z1 = delta + fromEditor.LineToY (hunk.RemoveStart) - (int)fromEditor.VAdjustment.Value;
+						int z2 = delta + fromEditor.LineToY (hunk.RemoveStart + hunk.Removed) - (int)fromEditor.VAdjustment.Value;
 						if (z1 == z2)
 							z2 = z1 + 1;
 
-						int y1 = delta + toEditor.LineToVisualY (hunk.InsertStart) - (int)toEditor.VAdjustment.Value;
-						int y2 = delta + toEditor.LineToVisualY (hunk.InsertStart + hunk.Inserted) - (int)toEditor.VAdjustment.Value;
+						int y1 = delta + toEditor.LineToY (hunk.InsertStart) - (int)toEditor.VAdjustment.Value;
+						int y2 = delta + toEditor.LineToY (hunk.InsertStart + hunk.Inserted) - (int)toEditor.VAdjustment.Value;
 
 						if (y1 == y2)
 							y2 = y1 + 1;
@@ -595,13 +595,13 @@ namespace MonoDevelop.VersionControl.Views
 					lineWidth = cr.LineWidth;
 					int delta = widget.MainEditor.Allocation.Y - Allocation.Y;
 					foreach (Mono.TextEditor.Utils.Hunk hunk in Diff) {
-						int z1 = delta + fromEditor.LineToVisualY (hunk.RemoveStart) - (int)fromEditor.VAdjustment.Value;
-						int z2 = delta + fromEditor.LineToVisualY (hunk.RemoveStart + hunk.Removed) - (int)fromEditor.VAdjustment.Value;
+						int z1 = delta + fromEditor.LineToY (hunk.RemoveStart) - (int)fromEditor.VAdjustment.Value;
+						int z2 = delta + fromEditor.LineToY (hunk.RemoveStart + hunk.Removed) - (int)fromEditor.VAdjustment.Value;
 						if (z1 == z2)
 							z2 = z1 + 1;
 
-						int y1 = delta + toEditor.LineToVisualY (hunk.InsertStart) - (int)toEditor.VAdjustment.Value;
-						int y2 = delta + toEditor.LineToVisualY (hunk.InsertStart + hunk.Inserted) - (int)toEditor.VAdjustment.Value;
+						int y1 = delta + toEditor.LineToY (hunk.InsertStart) - (int)toEditor.VAdjustment.Value;
+						int y2 = delta + toEditor.LineToY (hunk.InsertStart + hunk.Inserted) - (int)toEditor.VAdjustment.Value;
 
 						if (y1 == y2)
 							y2 = y1 + 1;

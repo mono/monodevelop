@@ -235,9 +235,9 @@ namespace MonoDevelop.VersionControl.Views
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (args.Event.Window)) {
 				cr.LineWidth = Math.Max (1.0, Editor.Options.Zoom);
 				
-				int startLine = Editor.CalculateLineNumber ((int)Editor.VAdjustment.Value);
+				int startLine = Editor.YToLine ((int)Editor.VAdjustment.Value);
 				
-				int startY = Editor.LineToVisualY (startLine);
+				int startY = Editor.LineToY (startLine);
 				if (startY > 0) {
 					startLine--;
 					startY -= Editor.GetLineHeight (Editor.Document.GetLine (startLine));
@@ -457,9 +457,9 @@ namespace MonoDevelop.VersionControl.Views
 					cr.Color = new Cairo.Color (0.95, 0.95, 0.95);
 					cr.Fill ();
 					
-					int startLine = widget.Editor.CalculateLineNumber ((int)widget.Editor.VAdjustment.Value);
+					int startLine = widget.Editor.YToLine ((int)widget.Editor.VAdjustment.Value);
 					
-					int startY = widget.Editor.LineToVisualY (startLine);
+					int startY = widget.Editor.LineToY (startLine);
 					if (startY > 0) {
 						startLine--;
 						startY -= widget.Editor.GetLineHeight (widget.Editor.Document.GetLine (startLine));
