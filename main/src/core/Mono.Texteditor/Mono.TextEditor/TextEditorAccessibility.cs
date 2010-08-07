@@ -191,7 +191,7 @@ namespace Mono.TextEditor
 
 		void TextImplementor.GetCharacterExtents (int offset, out int x, out int y, out int width, out int height, CoordType coords)
 		{
-			var point = editor.DocumentToVisualLocation (Document.OffsetToLocation (offset));
+			var point = editor.LocationToPoint (Document.OffsetToLocation (offset));
 			x = point.X + (int)editor.TextViewMargin.XOffset;
 			y = point.Y;
 			width = editor.TextViewMargin.CharWidth;
@@ -221,7 +221,7 @@ namespace Mono.TextEditor
 				ry = y;
 				break;
 			}
-			return Document.LocationToOffset (editor.TextViewMargin.VisualToDocumentLocation (rx, ry));
+			return Document.LocationToOffset (editor.PointToLocation (rx, ry));
 		}
 
 		string TextImplementor.GetSelection (int selection_num, out int start_offset, out int end_offset)
@@ -263,8 +263,8 @@ namespace Mono.TextEditor
 		void TextImplementor.GetRangeExtents (int start_offset, int end_offset, CoordType coord_type, out TextRectangle rect)
 		{
 			Atk.TextRectangle result = new Atk.TextRectangle ();
-			var point1 = editor.DocumentToVisualLocation (Document.OffsetToLocation (start_offset));
-			var point2 = editor.DocumentToVisualLocation (Document.OffsetToLocation (end_offset));
+			var point1 = editor.LocationToPoint (Document.OffsetToLocation (start_offset));
+			var point2 = editor.LocationToPoint (Document.OffsetToLocation (end_offset));
 
 			result.X = System.Math.Min (point2.X, point1.Y);
 			result.Y = System.Math.Min (point2.Y, point1.Y);

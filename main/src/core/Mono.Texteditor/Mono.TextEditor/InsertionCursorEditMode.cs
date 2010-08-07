@@ -268,7 +268,7 @@ namespace Mono.TextEditor
 			public override void Draw (Gdk.Drawable drawable, Gdk.Rectangle area)
 			{
 				TextEditor editor = mode.editor;
-				int y = editor.LineToVisualY (mode.CurrentInsertionPoint.Line) - (int)editor.VAdjustment.Value; 
+				int y = editor.LineToY (mode.CurrentInsertionPoint.Line) - (int)editor.VAdjustment.Value; 
 				using (var g = Gdk.CairoHelper.Create (drawable)) {
 					g.LineWidth = System.Math.Min (1, editor.Options.Zoom);
 					LineSegment lineAbove = editor.Document.GetLine (mode.CurrentInsertionPoint.Line - 1);

@@ -334,7 +334,7 @@ namespace Mono.TextEditor
 		
 		public void ShowListWindow<T> (ListWindow<T> window, DocumentLocation loc)
 		{
-			Gdk.Point p = TextViewMargin.LocationToDisplayCoordinates (loc);
+			var p = LocationToPoint (loc);
 			int ox = 0, oy = 0;
 			GdkWindow.GetOrigin (out ox, out oy);
 	
@@ -649,7 +649,7 @@ namespace Mono.TextEditor
 			if (isDisposed)
 				return;
 			
-			int y = LineToVisualY (logicalLine) - (int)this.textEditorData.VAdjustment.Value;
+			int y = LineToY (logicalLine) - (int)this.textEditorData.VAdjustment.Value;
 			int h = GetLineHeight (logicalLine);
 			
 			if (y + h > 0)
@@ -668,7 +668,7 @@ namespace Mono.TextEditor
 			if (isDisposed)
 				return;
 			
-			int y = LineToVisualY (logicalLine) - (int)this.textEditorData.VAdjustment.Value;
+			int y = LineToY (logicalLine) - (int)this.textEditorData.VAdjustment.Value;
 			int h = GetLineHeight (logicalLine);
 			
 			if (y + h > 0)
@@ -707,10 +707,10 @@ namespace Mono.TextEditor
 				return;
 			if (start < 0)
 				start = 0;
-			int visualStart = (int)-this.textEditorData.VAdjustment.Value + LineToVisualY (start);
+			int visualStart = (int)-this.textEditorData.VAdjustment.Value + LineToY (start);
 			if (end < 0)
 				end = Document.LineCount - 1;
-			int visualEnd   = (int)-this.textEditorData.VAdjustment.Value + LineToVisualY (end) + GetLineHeight (end);
+			int visualEnd   = (int)-this.textEditorData.VAdjustment.Value + LineToY (end) + GetLineHeight (end);
 			QueueDrawArea ((int)margin.XOffset, visualStart, GetMarginWidth (margin), visualEnd - visualStart);
 		}
 			
@@ -733,7 +733,7 @@ namespace Mono.TextEditor
 //			Console.WriteLine ("Redraw from line: logicalLine={0}", logicalLine);
 			if (isDisposed)
 				return;
-			QueueDrawArea (0, (int)-this.textEditorData.VAdjustment.Value + LineToVisualY (logicalLine),
+			QueueDrawArea (0, (int)-this.textEditorData.VAdjustment.Value + LineToY (logicalLine),
 			               this.Allocation.Width, this.Allocation.Height);
 		}
 		
@@ -792,7 +792,7 @@ namespace Mono.TextEditor
 			Platform.MapRawKeys (evt, out key, out mod);
 			
 			if (key == Gdk.Key.F1 && (mod & (ModifierType.ControlMask | ModifierType.ShiftMask)) == ModifierType.ControlMask) {
-				Point p = textViewMargin.LocationToDisplayCoordinates (Caret.Location);
+				var p = LocationToPoint (Caret.Location);
 				ShowTooltip (Gdk.ModifierType.None, Caret.Offset, p.X, p.Y);
 				return true;
 			}
@@ -994,7 +994,7 @@ namespace Mono.TextEditor
 			DocumentLocation oldLocation = Caret.Location;
 			dragOver = true;
 			Caret.PreserveSelection = true;
-			dragCaretPos = VisualToDocumentLocation (x - (int)textViewMargin.XOffset, y);
+			dragCaretPos = PointToLocation (x - textViewMargin.XOffset, y);
 			int offset = Document.LocationToOffset (dragCaretPos);
 			if (selection != null && offset >= this.selection.GetSelectionRange (textEditorData).Offset && offset < this.selection.GetSelectionRange (textEditorData).EndOffset) {
 				Gdk.Drag.Status (context, DragAction.Default, time);
@@ -1161,20 +1161,6 @@ namespace Mono.TextEditor
 			get { return iconMargin; }
 		}
 		
-		public Gdk.Point DocumentToVisualLocation (DocumentLocation loc)
-		{
-			Gdk.Point result = new Point ();
-			LineSegment lineSegment = Document.GetLine (loc.Line);
-			result.X = (int)textViewMargin.ColumnToVisualX (lineSegment, loc.Column);
-			result.Y = LineToVisualY (loc.Line);
-			return result;
-		}
-		
-		public DocumentLocation VisualToDocumentLocation (int x, int y)
-		{
-			return this.textViewMargin.VisualToDocumentLocation (x, y);
-		}
-		
 		public DocumentLocation LogicalToVisualLocation (DocumentLocation location)
 		{
 			return Document.LogicalToVisualLocation (this.textEditorData, location);
@@ -1208,13 +1194,13 @@ namespace Mono.TextEditor
 			}
 			
 			//	int yMargin = 1 * this.LineHeight;
-			int caretPosition = LineToVisualY (p.Line);
+			int caretPosition = LineToY (p.Line);
 			this.textEditorData.VAdjustment.Value = caretPosition - this.textEditorData.VAdjustment.PageSize / 2;
 			
 			if (this.textEditorData.HAdjustment.Upper < Allocation.Width)  {
 				this.textEditorData.HAdjustment.Value = 0;
 			} else {
-				int caretX = (int)textViewMargin.ColumnToVisualX (Document.GetLine (p.Line), p.Column);
+				int caretX = (int)ColumnToX (Document.GetLine (p.Line), p.Column);
 				int textWith = Allocation.Width - (int)textViewMargin.XOffset;
 				if (this.textEditorData.HAdjustment.Value > caretX) {
 					this.textEditorData.HAdjustment.Value = caretX;
@@ -1245,7 +1231,7 @@ namespace Mono.TextEditor
 					this.textEditorData.VAdjustment.Value = 0;
 				} else {
 					int yMargin = 1 * this.LineHeight;
-					int caretPosition = LineToVisualY (p.Line);
+					int caretPosition = LineToY (p.Line);
 					if (this.textEditorData.VAdjustment.Value > caretPosition) {
 						this.textEditorData.VAdjustment.Value = caretPosition;
 					} else if (this.textEditorData.VAdjustment.Value + this.textEditorData.VAdjustment.PageSize - this.LineHeight < caretPosition + yMargin) {
@@ -1256,7 +1242,7 @@ namespace Mono.TextEditor
 				if (this.textEditorData.HAdjustment.Upper < Allocation.Width)  {
 					this.textEditorData.HAdjustment.Value = 0;
 				} else {
-					int caretX = (int)textViewMargin.ColumnToVisualX (Document.GetLine (p.Line), p.Column);
+					int caretX = (int)ColumnToX (Document.GetLine (p.Line), p.Column);
 					int textWith = Allocation.Width - (int)textViewMargin.XOffset;
 					if (this.textEditorData.HAdjustment.Value > caretX) {
 						this.textEditorData.HAdjustment.Value = caretX;
@@ -1278,7 +1264,7 @@ namespace Mono.TextEditor
 		
 		public void TryToResetHorizontalScrollPosition ()
 		{
-			int caretX = (int)textViewMargin.ColumnToVisualX (Document.GetLine (Caret.Line), Caret.Column);
+			int caretX = (int)ColumnToX (Document.GetLine (Caret.Line), Caret.Column);
 			int textWith = Allocation.Width - (int)textViewMargin.XOffset;
 			if (caretX < textWith - TextViewMargin.CharWidth) 
 				this.textEditorData.HAdjustment.Value = 0;
@@ -1345,7 +1331,7 @@ namespace Mono.TextEditor
 		internal void SetAdjustments (Gdk.Rectangle allocation)
 		{
 			if (this.textEditorData.VAdjustment != null) {
-				int maxY = LineToVisualY (Document.LineCount - 1);
+				int maxY = LineToY (Document.LineCount - 1);
 				if (maxY > allocation.Height)
 					maxY += 5 * this.LineHeight;
 				
@@ -1369,8 +1355,8 @@ namespace Mono.TextEditor
 		{
 			this.TextViewMargin.rulerX = Options.RulerColumn * this.TextViewMargin.CharWidth - (int)this.textEditorData.HAdjustment.Value;
 			int reminder  = (int)this.textEditorData.VAdjustment.Value % LineHeight;
-			int startLine = CalculateLineNumber (area.Top - reminder + (int)this.textEditorData.VAdjustment.Value);
-			int startY = LineToVisualY (startLine);
+			int startLine = YToLine (area.Top - reminder + (int)this.textEditorData.VAdjustment.Value);
+			int startY = LineToY (startLine);
 			if (area.Top == 0 && startY > 0) {
 				startLine--;
 				startY -= GetLineHeight (Document.GetLine (startLine));
@@ -1870,24 +1856,13 @@ namespace Mono.TextEditor
 			}
 		}
 		
-	/*	Gdk.Rectangle RangeToRectangle (int offset, int length)
-		{
-			DocumentLocation startLocation = Document.OffsetToLocation (offset);
-			DocumentLocation endLocation = Document.OffsetToLocation (offset + length);
-			
-			if (startLocation.Column < 0 || startLocation.Line < 0 || endLocation.Column < 0 || endLocation.Line < 0)
-				return Gdk.Rectangle.Zero;
-			
-			return RangeToRectangle (startLocation, endLocation);
-		}*/
-		
 		Gdk.Rectangle RangeToRectangle (DocumentLocation start, DocumentLocation end)
 		{
 			if (start.Column < 0 || start.Line < 0 || end.Column < 0 || end.Line < 0)
 				return Gdk.Rectangle.Zero;
 			
-			Gdk.Point startPt = this.textViewMargin.LocationToDisplayCoordinates (start);
-			Gdk.Point endPt = this.textViewMargin.LocationToDisplayCoordinates (end);
+			var startPt = this.LocationToPoint (start);
+			var endPt = this.LocationToPoint (end);
 			int width = endPt.X - startPt.X;
 			
 			if (startPt.Y != endPt.Y || startPt.X < 0 || startPt.Y < 0 || width < 0)
@@ -1895,20 +1870,6 @@ namespace Mono.TextEditor
 			
 			return new Gdk.Rectangle (startPt.X, startPt.Y, width, this.textViewMargin.LineHeight);
 		}
-		
-	/*	void AnimationTimer (object sender, EventArgs args)
-		{
-			if (animation != null) {
-				animation.LifeTime--;
-				if (animation.LifeTime < 0)
-					animation = null;
-				Application.Invoke (delegate {
-					QueueDraw ();
-				});
-			} else {
-				animationTimer.Stop ();
-			}
-		}*/
 		
 		/// <summary>
 		/// Initiate a pulse at the specified document location
@@ -2022,7 +1983,7 @@ namespace Mono.TextEditor
 				lineLayout.Layout.IndexToLineX (index, true, out l, out x2);
 				x1 /= (int)Pango.Scale.PangoScale;
 				x2 /= (int)Pango.Scale.PangoScale;
-				int y = Editor.LineToVisualY (lineNr) - (int)Editor.VAdjustment.Value ;
+				int y = Editor.LineToY (lineNr) - (int)Editor.VAdjustment.Value ;
 				int w = x2 - x1;
 				int spaceX = 16;
 				int spaceY = Editor.LineHeight;
@@ -2118,7 +2079,7 @@ namespace Mono.TextEditor
 		void ShowTooltip (Gdk.ModifierType modifierState)
 		{
 			ShowTooltip (modifierState, 
-			             Document.LocationToOffset (VisualToDocumentLocation ((int)mx, (int)my)),
+			             Document.LocationToOffset (PointToLocation (mx, my)),
 			             (int)mx,
 			             (int)my);
 		}
@@ -2297,113 +2258,61 @@ namespace Mono.TextEditor
 			}
 		}
 		#endregion
-
 		
-/*#region Container
-		public override ContainerChild this [Widget w] {
-			get {
-				foreach (EditorContainerChild info in containerChildren.ToArray ()) {
-					if (info.Child == w || (info.Child is AnimatedWidget && ((AnimatedWidget)info.Child).Widget == w))
-						return info;
-				}
-				return null;
-			}
-		}
-		
-		public class EditorContainerChild : Container.ContainerChild
+		#region Coordinate transformation
+		public DocumentLocation PointToLocation (double xp, double yp)
 		{
-			public int X { get; set; }
-			public int Y { get; set; }
-			public bool FixedPosition { get; set; }
-			public EditorContainerChild (Container parent, Widget child) : base (parent, child)
-			{
-			}
-		}
-		
-		public override GLib.GType ChildType ()
-		{
-			return Gtk.Widget.GType;
-		}
-		
-		List<EditorContainerChild> containerChildren = new List<EditorContainerChild> ();
-		
-		public void AddTopLevelWidget (Gtk.Widget w, int x, int y)
-		{
-			w.Parent = this;
-			EditorContainerChild info = new EditorContainerChild (this, w);
-			info.X = x;
-			info.Y = y;
-			containerChildren.Add (info);
-		}
-		
-		public void MoveTopLevelWidget (Gtk.Widget w, int x, int y)
-		{
-			foreach (EditorContainerChild info in containerChildren.ToArray ()) {
-				if (info.Child == w || (info.Child is AnimatedWidget && ((AnimatedWidget)info.Child).Widget == w)) {
-					info.X = x;
-					info.Y = y;
-					QueueResize ();
-					break;
-				}
-			}
-		}
-		
-		public void MoveTopLevelWidgetX (Gtk.Widget w, int x)
-		{
-			foreach (EditorContainerChild info in containerChildren.ToArray ()) {
-				if (info.Child == w || (info.Child is AnimatedWidget && ((AnimatedWidget)info.Child).Widget == w)) {
-					info.X = x;
-					QueueResize ();
-					break;
-				}
-			}
-		}
-		
-		
-		public void MoveToTop (Gtk.Widget w)
-		{
-			EditorContainerChild editorContainerChild = containerChildren.FirstOrDefault (c => c.Child == w);
-			if (editorContainerChild == null)
-				throw new Exception ("child " + w + " not found.");
-			List<EditorContainerChild> newChilds = new List<EditorContainerChild> (containerChildren.Where (child => child != editorContainerChild));
-			newChilds.Add (editorContainerChild);
-			this.containerChildren = newChilds;
-			w.GdkWindow.Raise ();
-		}
-		
-		protected override void OnAdded (Widget widget)
-		{
-			AddTopLevelWidget (widget, 0, 0);
-		}
-		
-		protected override void OnRemoved (Widget widget)
-		{
-			foreach (EditorContainerChild info in containerChildren.ToArray ()) {
-				if (info.Child == widget) {
-					widget.Unparent ();
-					containerChildren.Remove (info);
-					break;
-				}
-			}
-		}
-		
-		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
-		{
-			base.OnSizeRequested (ref requisition);
-			
-			// Ignore the size of top levels. They are supposed to fit the available space
-			foreach (EditorContainerChild tchild in containerChildren.ToArray ())
-				tchild.Child.SizeRequest ();
+			return TextViewMargin.PointToLocation (xp, yp);
 		}
 
-		
-		protected override void ForAll (bool include_internals, Gtk.Callback callback)
+		public DocumentLocation PointToLocation (Cairo.Point p)
 		{
-			foreach (EditorContainerChild child in containerChildren.ToArray ()) {
-				callback (child.Child);
-			}
+			return TextViewMargin.PointToLocation (p);
 		}
-#endregion*/
+		
+		public DocumentLocation PointToLocation (Cairo.PointD p)
+		{
+			return TextViewMargin.PointToLocation (p);
+		}
+
+		public Cairo.Point LocationToPoint (DocumentLocation loc)
+		{
+			return TextViewMargin.LocationToPoint (loc);
+		}
+
+		public Cairo.Point LocationToPoint (int line, int column)
+		{
+			return TextViewMargin.LocationToPoint (line, column);
+		}
+
+		public double ColumnToX (LineSegment line, int column)
+		{
+			return TextViewMargin.ColumnToX (line, column);
+		}
+		
+		/// <summary>
+		/// Calculates the line number at line start (in one visual line could be several logical lines be displayed).
+		/// </summary>
+		public int YToLine (int yPos)
+		{
+			return TextViewMargin.YToLine (yPos);
+		}
+		
+		public int LineToY (int logicalLine)
+		{
+			return TextViewMargin.LineToY (logicalLine);
+		}
+		
+		public int GetLineHeight (LineSegment line)
+		{
+			return TextViewMargin.GetLineHeight (line);
+		}
+		
+		public int GetLineHeight (int logicalLineNumber)
+		{
+			return TextViewMargin.GetLineHeight (logicalLineNumber);
+		}
+		#endregion
 		
 		#region Animation
 		Stage<Animation> animationStage = new Stage<Animation> ();
@@ -2535,69 +2444,6 @@ namespace Mono.TextEditor
 				requestResetCaretBlink = true;
 		}
 
-		public int CalculateLineNumber (int yPos)
-		{
-			int delta = 0;
-			foreach (LineSegment extendedTextMarkerLine in Document.LinesWithExtendingTextMarkers) {
-				int lineNumber = Document.OffsetToLineNumber (extendedTextMarkerLine.Offset);
-				int y = LineToVisualY (lineNumber);
-				if (y < yPos) {
-					int curLineHeight = GetLineHeight (extendedTextMarkerLine);
-					delta += curLineHeight - LineHeight;
-					if (y <= yPos && yPos < y + curLineHeight)
-						return lineNumber;
-				}
-			}
-			return Document.VisualToLogicalLine ((yPos - delta) / LineHeight);
-/*			LineSegment logicalLineSegment = Document.GetLine (logicalLine);
-			foreach (LineSegment extendedTextMarkerLine in Document.LinesWithExtendingTextMarkers) {
-				if (logicalLineSegment != null && extendedTextMarkerLine.Offset > logicalLineSegment.Offset)
-					continue;
-				int curLineHeight = GetLineHeight (extendedTextMarkerLine) - LineHeight;
-				
-				if (curLineHeight != 0) {
-					logicalLine -= curLineHeight / LineHeight;
-					logicalLineSegment = Document.GetLine (logicalLine - 1);
-				}
-			}
-			
-			return logicalLine;*/
-		}
-		
-		public int LineToVisualY (int logicalLine)
-		{
-			int delta = 0;
-			LineSegment logicalLineSegment = Document.GetLine (logicalLine);
-			foreach (LineSegment extendedTextMarkerLine in Document.LinesWithExtendingTextMarkers) {
-				if (extendedTextMarkerLine == null)
-					continue;
-				if (logicalLineSegment != null && extendedTextMarkerLine.Offset >= logicalLineSegment.Offset)
-					continue;
-				delta += GetLineHeight (extendedTextMarkerLine) - LineHeight;
-			}
-			
-			int visualLine = Document.LogicalToVisualLine (logicalLine);
-			return visualLine * LineHeight + delta;
-		}
-		
-		public int GetLineHeight (LineSegment line)
-		{
-			if (line == null || line.MarkerCount == 0)
-				return LineHeight;
-			foreach (var marker in line.Markers) {
-				IExtendingTextMarker extendingTextMarker = marker as IExtendingTextMarker;
-				if (extendingTextMarker == null)
-					continue;
-				return extendingTextMarker.GetLineHeight (this);
-			}
-			return LineHeight;
-		}
-		
-		public int GetLineHeight (int logicalLineNumber)
-		{
-			return GetLineHeight (Document.GetLine (logicalLineNumber));
-		}
-		
 		void UpdateLinesOnTextMarkerHeightChange (object sender, LineEventArgs e)
 		{
 			if (!e.Line.Markers.Any (m => m is IExtendingTextMarker))

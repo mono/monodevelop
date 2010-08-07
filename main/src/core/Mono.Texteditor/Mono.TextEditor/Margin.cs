@@ -146,7 +146,7 @@ namespace Mono.TextEditor
 		public int LineNumber {
 			get {
 				if (lineNumber == -2) {
-					lineNumber = Editor.CalculateLineNumber ((int)(Editor.VAdjustment.Value + Y));
+					lineNumber = Editor.YToLine ((int)(Editor.VAdjustment.Value + Y));
 					if (lineNumber >= Editor.Document.LineCount)
 						lineNumber = -1;
 				}
