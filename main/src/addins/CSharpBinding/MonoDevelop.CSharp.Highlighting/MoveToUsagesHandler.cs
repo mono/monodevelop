@@ -159,7 +159,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			data.Parent.ScrollTo (segment.EndOffset);
 			
 			var loc = data.Document.OffsetToLocation (segment.EndOffset);
-			if (data.Parent.TextViewMargin.ColumnToVisualX (data.Document.GetLine (loc.Line), loc.Column) < data.HAdjustment.PageSize)
+			if (data.Parent.TextViewMargin.ColumnToX (data.Document.GetLine (loc.Line), loc.Column) < data.HAdjustment.PageSize)
 				data.HAdjustment.Value = 0;
 		}
 	}
