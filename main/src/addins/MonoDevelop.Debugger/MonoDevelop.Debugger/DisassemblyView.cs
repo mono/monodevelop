@@ -229,8 +229,8 @@ namespace MonoDevelop.Debugger
 			if (!autoRefill || dragging)
 				return;
 			
-			DocumentLocation loc = editor.VisualToDocumentLocation (0, 0);
-			DocumentLocation loc2 = editor.VisualToDocumentLocation (0, editor.Allocation.Height);
+			DocumentLocation loc = editor.PointToLocation (0, 0);
+			DocumentLocation loc2 = editor.PointToLocation (0, editor.Allocation.Height);
 			bool moveCaret = editor.Caret.Line >= loc.Line && editor.Caret.Line <= loc2.Line;
 			
 			if (loc.Line < FillMarginLines) {
