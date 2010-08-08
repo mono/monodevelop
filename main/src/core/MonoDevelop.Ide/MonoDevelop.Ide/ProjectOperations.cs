@@ -1379,11 +1379,13 @@ namespace MonoDevelop.Ide
 			}
 			
 			// If copying a single file, bring any grouped children along
+			ProjectFile sourceParent = null;
 			if (filesToMove.Count == 1 && sourceProject != null) {
 				var pf = filesToMove[0];
 				if (pf != null && pf.HasChildren)
 					foreach (ProjectFile child in pf.DependentChildren)
 						filesToMove.Add (child);
+				sourceParent = pf;
 			}
 			
 			// Ensure that the destination folder is created, even if no files
@@ -1409,10 +1411,9 @@ namespace MonoDevelop.Ide
 				}
 			}
 			
-			ProjectFile sourceParent = null;
-			ProjectFile targetParent = null;
 			monitor.BeginTask (GettextCatalog.GetString ("Copying files..."), filesToMove.Count);
 			
+			ProjectFile targetParent = null;
 			foreach (ProjectFile file in filesToMove) {
 				bool fileIsLink = file.Project != null && file.IsLink;
 				
@@ -1457,16 +1458,13 @@ namespace MonoDevelop.Ide
 					} else if (targetProject.Files.GetFile (newFile) == null) {
 						ProjectFile projectFile = (ProjectFile) file.Clone ();
 						projectFile.Name = newFile;
-						if (filesToMove.IndexOf (file) == 0) {
-							sourceParent = file;
-							targetParent = projectFile;
-						} 
-						if (sourceParent != null && targetParent != null) {
-							if (projectFile.DependsOn == sourceParent.Name) {
+						if (targetParent == null) {
+							if (file == sourceParent)
+								targetParent = file;
+						} else if (sourceParent != null) {
+							if (projectFile.DependsOn == sourceParent.Name)
 								projectFile.DependsOn = targetParent.Name;
-							}
 						}
-						
 						targetProject.Files.Add (projectFile);
 					}
 				}
