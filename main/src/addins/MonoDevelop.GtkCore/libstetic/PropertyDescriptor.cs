@@ -185,14 +185,13 @@ namespace Stetic {
 			else if (PropertyType == typeof(TimeSpan))
 				return new TimeSpan (long.Parse (value));
 			else if (PropertyType == typeof(double)) {
-				try {
-					return Convert.ChangeType (value, PropertyType);
-				}
-				catch (InvalidCastException) {
+				int i = value.IndexOf (System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator);
+				if (i != -1)
+					return Convert.ChangeType (value, PropertyType, System.Globalization.CultureInfo.CurrentCulture);
+				else
 					return Convert.ChangeType (value, PropertyType, System.Globalization.CultureInfo.InvariantCulture);
-				}
 			} else
-				return Convert.ChangeType (value, PropertyType, System.Globalization.CultureInfo.InvariantCulture);
+				return Convert.ChangeType (value, PropertyType, System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
 		}
 		
 		// Returns a string representation of the provided property value
