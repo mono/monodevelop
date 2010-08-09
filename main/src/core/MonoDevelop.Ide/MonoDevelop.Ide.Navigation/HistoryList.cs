@@ -314,8 +314,10 @@ namespace MonoDevelop.Ide.Navigation
 			forward.Clear ();
 			back.Clear ();
 			
-			if (current != null)
+			if (current != null) {
 				DestroyItem (current);
+				current = null;
+			}
 		}
 		
 		public void ClearForward ()
