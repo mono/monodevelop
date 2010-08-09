@@ -66,10 +66,19 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			MatchLane lane = MatchString (name);
 			if (lane != null) {
-				matchRank = -(lane.Positions [0] + (name.Length - filterLowerCase.Length));
+				// Favor matches with less splits. That is, 'abc def' is better than 'ab c def'.
+				int baseRank = (filter.Length - lane.Index - 1) * 5000;
+
+				// First matching letter close to the begining is better
+				// The more matched letters the better
+				matchRank = baseRank - (lane.Positions [0] + (name.Length - filterLowerCase.Length));
+				
+				matchRank += lane.ExactCaseMatches * 10;
+				
 				// rank up matches which start with a filter substring
 				if (lane.Positions [0] == 0)
 					matchRank += lane.Lengths[0] * 50;
+				
 				return true;
 			}
 			matchRank = int.MinValue;
@@ -131,11 +140,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 				char ctLower = textLowerCase[n];
 				char cfLower = filterLowerCase [j];
 				if (ctLower == cfLower && !(cfLower != filter[j] && ctLower == text[n])) {
+					bool exactMatch = filter[j] == text[n];
 					j++;
 					if (firstMatchPos == -1)
 						firstMatchPos = n;
-					if (flen == 1)
-						return CreateLane (MatchMode.Substring, n);
+					if (flen == 1) {
+						MatchLane lane = CreateLane (MatchMode.Substring, n);
+						if (exactMatch)
+							lane.ExactCaseMatches++;
+						return lane;
+					}
 				}
 			}
 
@@ -162,7 +176,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 				int laneCount = matchLanes != null ? matchLanes.Count : 0;
 	
 				if (ctLower == filterStartLower && !(filterStartIsUpper && !ctIsUpper)) {
-					matchLanes.Add (CreateLane (MatchMode.Substring, tn));
+					MatchLane lane = CreateLane (MatchMode.Substring, tn);
+					if (filterStartIsUpper == ctIsUpper)
+						lane.ExactCaseMatches++;
+					matchLanes.Add (lane);
 					if (filterLowerCase.Length == 1)
 						return matchLanes[0];
 					if (ctIsUpper || lastWasSeparator)
@@ -176,6 +193,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					char cfLower = filterLowerCase [lane.MatchIndex];
 					bool cfIsUpper = cfLower != filter [lane.MatchIndex];
 					bool match = ctLower == cfLower && !(cfIsUpper && !ctIsUpper);
+					bool exactMatch = match && (cfIsUpper == ctIsUpper);
 					bool wordStartMatch = match && (tn == 0 || ctIsUpper || lastWasSeparator);
 	
 					if (lane.MatchMode == MatchMode.Substring) {
@@ -187,6 +205,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 							newLane.Positions [newLane.Index] = tn;
 							newLane.Lengths [newLane.Index] = 1;
 							newLane.MatchIndex++;
+							if (exactMatch)
+								newLane.ExactCaseMatches++;
 							matchLanes.Add (newLane);
 						}
 						if (match) {
@@ -199,6 +219,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 							// Update the current lane
 							lane.Lengths [lane.Index]++;
 							lane.MatchIndex++;
+							if (exactMatch)
+								newLane.ExactCaseMatches++;
 						} else {
 							if (lane.Lengths [lane.Index] > 1)
 								lane.MatchMode = MatchMode.Acronym;
@@ -213,6 +235,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 							newLane.MatchMode = MatchMode.Substring;
 							newLane.Lengths [newLane.Index]++;
 							newLane.MatchIndex++;
+							if (exactMatch)
+								newLane.ExactCaseMatches++;
 							matchLanes.Add (newLane);
 							if (newLane.MatchIndex == filterLowerCase.Length)
 								return newLane;
@@ -228,6 +252,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 							lane.Positions [lane.Index] = tn;
 							lane.Lengths [lane.Index] = 1;
 							lane.MatchIndex++;
+							if (exactMatch)
+								newLane.ExactCaseMatches++;
 						}
 					}
 					if (lane.MatchIndex == filterLowerCase.Length)
@@ -284,6 +310,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			public MatchMode MatchMode;
 			public int Index;
 			public int MatchIndex;
+			public int ExactCaseMatches;
 	
 			public MatchLane (int maxlen)
 			{
@@ -298,6 +325,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				Lengths [0] = 1;
 				Index = 0;
 				MatchIndex = 1;
+				ExactCaseMatches = 0;
 			}
 	
 			public void Initialize (MatchLane other)
@@ -309,6 +337,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				MatchMode = other.MatchMode;
 				MatchIndex = other.MatchIndex;
 				Index = other.Index;
+				ExactCaseMatches = other.ExactCaseMatches;
 			}
 		}
 	}
