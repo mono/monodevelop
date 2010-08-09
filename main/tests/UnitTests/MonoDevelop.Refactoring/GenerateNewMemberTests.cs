@@ -83,8 +83,16 @@ namespace MonoDevelop.Refactoring.Tests
 						insertBefore = NewLineInsertion.Eol;
 						insertAfter = NewLineInsertion.BlankLine;
 						break;
+					case 'T':
+						insertBefore = NewLineInsertion.None;
+						insertAfter = NewLineInsertion.BlankLine;
+						break;
 					case 'v':
 						insertBefore = NewLineInsertion.BlankLine;
+						insertAfter = NewLineInsertion.Eol;
+						break;
+					case 'V':
+						insertBefore = NewLineInsertion.None;
 						insertAfter = NewLineInsertion.Eol;
 						break;
 					default:
@@ -139,20 +147,16 @@ class Test
 		}
 		
 		
-		[Test()]
 		public void TestBasicInsertionPointWithoutEmpty ()
 		{
 			TestInsertionPoints (@"
 class Test {
-	@Dvoid TestMe ()
+	@Tvoid TestMe ()
 	{
 	}
-@v}
+@V}
 ");
 		}
-
-		
-		
 		
 		[Test()]
 		public void TestBasicInsertionPointOneLineCase ()
@@ -218,7 +222,7 @@ class Test {
 	@Dstatic void A ()
 	{
 	}
-	@Sstatic void B ()
+	@tstatic void B ()
 	{
 	}
 	
@@ -226,12 +230,12 @@ class Test {
 	{
 		System.Console.WriteLine ();
 	}
-	@Sint g;
-	@Sint i;
+	@tint g;
+	@tint i;
 	
 	@Dint j;
-	@Spublic delegate void Del(int a);
-@v}
+	@tpublic delegate void Del(int a);
+@s}
 ");
 		}
 
