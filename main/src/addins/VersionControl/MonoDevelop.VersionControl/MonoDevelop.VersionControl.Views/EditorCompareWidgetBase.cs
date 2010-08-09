@@ -38,6 +38,62 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl.Views
 {
+	static class Tuple
+	{
+		public static Tuple<S, T> Create<S, T> (S s, T t)
+		{
+			return new Tuple<S, T> (s, t);
+		}
+
+		public static Tuple<S, T, R > Create<S, T, R> (S s, T t, R r)
+		{
+			return new Tuple<S, T, R> (s, t, r);
+		}
+	}
+	
+	class Tuple<S, T>
+	{
+		public S Item1 {
+			get;
+			set;
+		}
+		
+		public T Item2 {
+			get;
+			set;
+		}
+		public Tuple (S item1, T item2)
+		{
+			this.Item1 = item1;
+			this.Item2 = item2;
+		}
+	}
+	
+	class Tuple<S, T, R>
+	{
+		public S Item1 {
+			get;
+			set;
+		}
+		
+		public T Item2 {
+			get;
+			set;
+		}
+		
+		public R Item3 {
+			get;
+			set;
+		}
+		
+		public Tuple (S item1, T item2, R item3)
+		{
+			this.Item1 = item1;
+			this.Item2 = item2;
+			this.Item3 = item3;
+		}
+	}
+	
 	public abstract class EditorCompareWidgetBase : Gtk.Bin
 	{
 		protected VersionControlDocumentInfo info;
@@ -149,8 +205,60 @@ namespace MonoDevelop.VersionControl.Views
 		}
 		
 		protected abstract void CreateComponents ();
+		
+		Dictionary<Hunk, Tuple<List<Hunk>, List<Chunk>, List<Chunk>>> leftDiffs = new Dictionary<Hunk, Tuple<List<Hunk>, List<Chunk>, List<Chunk>>> ();
+		Dictionary<Hunk, Tuple<List<Hunk>, List<Chunk>, List<Chunk>>> rightDiffs = new Dictionary<Hunk, Tuple<List<Hunk>, List<Chunk>, List<Chunk>>> ();
+		
+		protected void ClearDiffCache ()
+		{
+			leftDiffs.Clear ();
+			rightDiffs.Clear ();
+		}
+		
+		Tuple<List<Hunk>, List<Chunk>, List<Chunk>> GetLeftDiff (Hunk hunk)
+		{
+			Tuple<List<Hunk>, List<Chunk>, List<Chunk>> result;
+			if (leftDiffs.TryGetValue (hunk, out result))
+				return result;
+			
+			var words = GetWordList (editors[0], hunk.RemoveStart, hunk.Removed);
+			var cmpWords = GetWordList (MainEditor, hunk.InsertStart, hunk.Inserted);
+			
+			result = Tuple.Create (
+				new List<Hunk> (Diff.GetDiff (words.Select (w => w.GetText (editors[0].Document)).ToArray (),
+					cmpWords.Select (w => w.GetText (MainEditor.Document)).ToArray ())),
+				words,
+				cmpWords
+			);
+			leftDiffs[hunk] = result;
+			return result;
+		}
+		
+		
+		Tuple<List<Hunk>, List<Chunk>, List<Chunk>> GetRightDiff (Hunk hunk)
+		{
+			Tuple<List<Hunk>, List<Chunk>, List<Chunk>> result;
+			if (rightDiffs.TryGetValue (hunk, out result))
+				return result;
+			
+			var words = GetWordList (editors[2], hunk.RemoveStart, hunk.Removed);
+			var cmpWords = GetWordList (MainEditor, hunk.InsertStart, hunk.Inserted);
+			
+			result = Tuple.Create (
+				new List<Hunk> (Diff.GetDiff (words.Select (w => w.GetText (editors[2].Document)).ToArray (),
+					cmpWords.Select (w => w.GetText (MainEditor.Document)).ToArray ())),
+				words,
+				cmpWords
+			);
+			rightDiffs[hunk] = result;
+			return result;
+		}
+		
 
-		public abstract void UpdateDiff ();
+		public virtual void UpdateDiff ()
+		{
+			ClearDiffCache ();
+		}
 		public abstract void CreateDiff ();
 
 		void RedrawMiddleAreas ()
@@ -336,11 +444,25 @@ namespace MonoDevelop.VersionControl.Views
 		const double fillAlpha = 0.1;
 		const double lineAlpha = 0.6;
 
+		static List<Chunk> GetWordList (TextEditor editor, int start, int count)
+		{
+			List<Chunk> words = new List<Chunk> ();
+			for (int i = start; i < start + count; i++) {
+				var line = editor.Document.GetLine (i);
+				var chunk = editor.Document.SyntaxMode.GetChunks (editor.Document, editor.ColorStyle, line, line.Offset, line.EditableLength);
+				while (chunk != null) {
+					words.Add (chunk);
+					chunk = chunk.Next;
+				}
+			}
+			return words;
+		}
+
 		void PaintEditorOverlay (TextEditor editor, ExposeEventArgs args, List<Mono.TextEditor.Utils.Hunk> diff, bool paintRemoveSide)
 		{
 			if (diff == null)
 				return;
-			using (Cairo.Context cr = Gdk.CairoHelper.Create (args.Event.Window)) {
+			using (var cr = Gdk.CairoHelper.Create (args.Event.Window)) {
 				foreach (var hunk in diff) {
 					int y1 = editor.LineToY (paintRemoveSide ? hunk.RemoveStart : hunk.InsertStart) - (int)editor.VAdjustment.Value;
 					int y2 = editor.LineToY (paintRemoveSide ? hunk.RemoveStart + hunk.Removed : hunk.InsertStart + hunk.Inserted) - (int)editor.VAdjustment.Value;
@@ -349,41 +471,26 @@ namespace MonoDevelop.VersionControl.Views
 					cr.Rectangle (0, y1, editor.Allocation.Width, y2 - y1);
 					cr.Color = GetColor (hunk, paintRemoveSide, fillAlpha);
 					cr.Fill ();
-//					if (hunk.Right.Count > 0 && hunk.Left.Count > 0) {
-//						int startOffset = editor.Document.GetLine (hunk.Right.Start).Offset;
-//						int rStartOffset = leftEditor.Document.GetLine (hunk.Left.Start).Offset;
-//						var lcs = GetLCS (hunk);
-//						if (lcs == null) {
-//							string leftText = middleEditor.Document.GetTextBetween (startOffset, middleEditor.Document.GetLine (hunk.Right.Start + hunk.Right.Count - 1).EndOffset);
-//							string rightText = leftEditor.Document.GetTextBetween (rStartOffset, leftEditor.Document.GetLine (hunk.Left.Start + hunk.Left.Count - 1).EndOffset);
-//							llcsCache[hunk] = lcs = GetLCS (leftText, rightText);
-//						}
-//
-//						int ll = lcs.GetLength (0), rl = lcs.GetLength (1);
-//						int blockStart = -1;
-//						Stack<KeyValuePair<int, int>> p-osStack = new Stack<KeyValuePair<int, int>> ();
-//						if (ll > 0 && rl > 0)
-//							posStack.Push (new KeyValuePair<int, int> (ll - 1, rl - 1));
-//						while (posStack.Count > 0) {
-//							var pos = posStack.Pop ();
-//							int i = pos.Key, j = pos.Value;
-//							if (i > 0 && j > 0 && middleEditor.Document.GetCharAt (startOffset + i) == leftEditor.Document.GetCharAt (rStartOffset + j)) {
-//								posStack.Push (new KeyValuePair<int, int> (i - 1, j - 1));
-//								PaintBlock (middleEditor, cr, startOffset, i, ref blockStart);
-//								continue;
-//							}
-//
-//							if (j > 0 && (i == 0 || lcs[i, j - 1] >= lcs[i - 1, j])) {
-//								posStack.Push (new KeyValuePair<int, int> (i, j - 1));
-//								PaintBlock (middleEditor, cr, startOffset, i, ref blockStart);
-//							} else if (i > 0 && (j == 0 || lcs[i, j - 1] < lcs[i - 1, j])) {
-//								posStack.Push (new KeyValuePair<int, int> (i - 1, j));
-//								if (blockStart < 0)
-//									blockStart = i;
-//							}
-//						}
-//						PaintBlock (editor, cr, startOffset, 0, ref blockStart);
-//					}
+					
+					if  (paintRemoveSide) {
+						var localDiff = GetLeftDiff (hunk);
+						for (int i = 0; i < localDiff.Item1.Count; i++) {
+							var subHunk = localDiff.Item1[i];
+							for (int idx = subHunk.RemoveStart; idx < subHunk.RemoveStart + subHunk.Removed; idx++) {
+								var subChunk = localDiff.Item2[idx];
+								PaintBlock (editor, cr, subChunk.Offset, subChunk.Length);
+							}
+						}
+					} else {
+						var localDiff = GetLeftDiff (hunk);
+						for (int i = 0; i < localDiff.Item1.Count; i++) {
+							var subHunk = localDiff.Item1[i];
+							for (int idx = subHunk.InsertStart; idx < subHunk.InsertStart + subHunk.Inserted; idx++) {
+								var subChunk = localDiff.Item3[idx];
+								PaintBlock (editor, cr, subChunk.Offset, subChunk.Length);
+							}
+						}
+					}
 
 					cr.Color =  GetColor (hunk, paintRemoveSide, lineAlpha);
 					cr.MoveTo (0, y1);
@@ -397,22 +504,14 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		void PaintBlock (TextEditor editor, Cairo.Context cr, int startOffset, int i, ref int blockStart)
+		void PaintBlock (TextEditor editor, Cairo.Context cr, int startOffset, int count)
 		{
-			if (blockStart < 0)
-				return;
-			var point = editor.LocationToPoint (editor.Document.OffsetToLocation (startOffset + i + 1));
-			point.X += (int)(editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition - hAdjustment.Value);
-			point.Y -= (int)editor.VAdjustment.Value;
-
-			var point2 = editor.LocationToPoint (editor.Document.OffsetToLocation (startOffset + blockStart + 1));
-			point2.X += (int)(editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition - hAdjustment.Value);
-			point2.Y -= (int)editor.VAdjustment.Value;
-
+			var point = editor.LocationToPoint (editor.Document.OffsetToLocation (startOffset));
+			var point2 = editor.LocationToPoint (editor.Document.OffsetToLocation (startOffset + count));
+			
 			cr.Rectangle (point.X, point.Y, point2.X - point.X, editor.LineHeight);
 			cr.Color = editor == MainEditor ? new Cairo.Color (0, 1, 0, 0.2) : new Cairo.Color (1, 0, 0, 0.2);
 			cr.Fill ();
-			blockStart = -1;
 		}
 
 		Dictionary<Mono.TextEditor.Document, TextEditorData> dict = new Dictionary<Mono.TextEditor.Document, TextEditorData> ();

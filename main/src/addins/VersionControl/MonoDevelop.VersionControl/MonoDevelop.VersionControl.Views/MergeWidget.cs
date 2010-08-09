@@ -179,6 +179,7 @@ namespace MonoDevelop.VersionControl.Views
 				leftDiff.Add (new Mono.TextEditor.Utils.Hunk (left.RemoveStart, middleA, left.Removed, middleB - middleA));
 				rightDiff.Add (new Mono.TextEditor.Utils.Hunk (right.RemoveStart, middleA, right.Removed, middleB - middleA));
 			}
+			base.UpdateDiff ();
 			QueueDraw ();
 		}
 
