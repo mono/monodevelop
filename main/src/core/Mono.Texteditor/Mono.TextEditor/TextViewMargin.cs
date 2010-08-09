@@ -2366,7 +2366,7 @@ namespace Mono.TextEditor
 			LineSegment line = Document.GetLine (loc.Line);
 			if (line == null)
 				return new Cairo.Point (-1, -1);
-			int x = (int)(ColumnToX (line, loc.Column) + this.XOffset);
+			int x = (int)(ColumnToX (line, loc.Column) + this.XOffset + this.TextStartPosition);
 			int y = LineToY (loc.Line);
 			return new Cairo.Point (x - (int)this.textEditor.HAdjustment.Value, y - (int)this.textEditor.VAdjustment.Value);
 		}
