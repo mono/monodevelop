@@ -188,7 +188,7 @@ namespace Mono.TextEditor.Utils
 			return GetDiff (left != null ? left.ToCharArray () : new char[0], right != null ? right.ToCharArray () : new char[0]);
 		}
 
-		internal static IEnumerable<Hunk> GetDiff<T> (T[] baseArray, T[] changedArray)
+		public static IEnumerable<Hunk> GetDiff<T> (T[] baseArray, T[] changedArray)
 		{
 			// The A-Version of the data (original data) to be compared.
 			var dataA = new DiffData<T> (baseArray);
