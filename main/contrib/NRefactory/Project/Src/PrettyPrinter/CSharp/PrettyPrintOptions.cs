@@ -8,6 +8,7 @@
 namespace ICSharpCode.NRefactory.PrettyPrinter
 {
 	public enum BraceStyle {
+		DoNotChange,
 		EndOfLine,
 		EndOfLineWithoutSpace,
 		NextLine,
