@@ -592,6 +592,16 @@ namespace MonoDevelop.Projects.Gui
 			Assert.AreEqual ("DynamicObjectBase", output);
 		}
 		
+		/// <summary>
+		/// Bug 629361 - Exact completion matches should take account of case
+		/// </summary>
+		[Test]
+		public void TestBug629361 ()
+		{
+			string output = RunSimulation ("", "unit\t", true, true, false, "Unit", "unit");
+			Assert.AreEqual ("unit", output);
+		}
+				
 		[Test]
 		public void TestSubstringMatch ()
 		{
