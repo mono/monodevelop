@@ -149,7 +149,8 @@ namespace MonoDevelop.VersionControl.Views
 				try {
 					text = info.Item.Repository.GetTextAtRevision (info.VersionInfo.LocalPath, workingRevision);
 				} catch (Exception ex) {
-					text = "Error retrieving revision " + workingRevision + Environment.NewLine + ex.ToString ();
+					text = string.Format (GettextCatalog.GetString ("Error while getting the text of revision {0}:\n{1}"), workingRevision, ex.ToString ());
+					MessageService.ShowError (text);
 				}
 				e.Result = new KeyValuePair<Revision, string> (workingRevision, text);
 			};
@@ -224,7 +225,15 @@ namespace MonoDevelop.VersionControl.Views
 				((TextEditor)box.Tag).Document.ReadOnly = true;
 				if (n == 1) {
 					box.SetItem ("Base", null, new object());
-					((TextEditor)box.Tag).Document.Text = widget.info.Item.Repository.GetBaseText (widget.info.Item.Path);
+					string text;
+					try {
+						text = widget.info.Item.Repository.GetBaseText (widget.info.Item.Path);
+					} catch (Exception ex) {
+						text = string.Format (GettextCatalog.GetString ("Error while getting the base text of {0}:\n{1}"), widget.info.Item.Path, ex.ToString ());
+						MessageService.ShowError (text);
+					}
+					
+					((TextEditor)box.Tag).Document.Text = text;
 					widget.CreateDiff ();
 					return;
 				}
