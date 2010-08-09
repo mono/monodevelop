@@ -458,7 +458,31 @@ namespace MonoDevelop.Ide.CodeCompletion
 			hasMismatches = true;
 			int idx = -1;
 			var matcher = CompletionMatcher.CreateCompletionMatcher (partialWord);
+			List<KeyValuePair<int, string>> words = new List<KeyValuePair<int, string>> ();
 			
+			if (!string.IsNullOrEmpty (partialWord)) {
+				for (int i = 0; i < list.filteredItems.Count; i++) {
+					int index = list.filteredItems[i];
+					string text = DataProvider.GetCompletionText (index);
+					if (!matcher.IsMatch (text))
+						continue;
+					words.Add (new KeyValuePair <int,string> (i, text));
+				}
+			}
+			
+			ListWindow.WordComparer comparer = new WordComparer (partialWord);
+			if (words.Count > 0) {
+				words.Sort (comparer);
+				idx = words[0].Key;
+				hasMismatches = false;
+				// exact match found.
+				if (words[0].Value.ToUpper () == (partialWord ?? "").ToUpper ()) 
+					return idx;
+			}
+			
+			// calc best match based on match rank: 
+			// currently disabled due - "Bug 629361 - Exact completion matches should take account of case"
+			/* 
 			string bestWord = null;
 			int bestRank = int.MinValue;
 			int bestIndex = 0;
@@ -484,7 +508,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				// exact match found.
 				if (string.Compare (bestWord, partialWord ?? "", true) == 0) 
 					return idx;
-			}
+			}*/
 			
 			if (string.IsNullOrEmpty (partialWord) || partialWord.Length <= 2) {
 				// Search for history matches.
