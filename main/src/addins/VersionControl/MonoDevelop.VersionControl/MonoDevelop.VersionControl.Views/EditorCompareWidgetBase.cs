@@ -67,12 +67,6 @@ namespace MonoDevelop.VersionControl.Views
 			CreateComponents ();
 
 			vAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
-			vAdjustment.Changed += delegate {
-				Console.WriteLine ("Change !!!");
-				foreach (var middleArea in middleAreas) {
-					middleArea.QueueDraw ();
-				}
-			};
 			attachedVAdjustments = new Adjustment[editors.Length];
 			attachedHAdjustments = new Adjustment[editors.Length];
 			for (int i = 0; i < editors.Length; i++) {
@@ -159,17 +153,26 @@ namespace MonoDevelop.VersionControl.Views
 		public abstract void UpdateDiff ();
 		public abstract void CreateDiff ();
 
+		void RedrawMiddleAreas ()
+		{
+			foreach (var middleArea in middleAreas) {
+				middleArea.QueueDraw ();
+			}
+		}
+		
 		void Connect (Adjustment fromAdj, Adjustment toAdj)
 		{
 			fromAdj.Changed += AdjustmentChanged;
 			fromAdj.ValueChanged += delegate {
 				if (toAdj.Value != fromAdj.Value)
 					toAdj.Value = fromAdj.Value;
+				RedrawMiddleAreas ();
 			};
 
 			toAdj.ValueChanged += delegate {
 				if (toAdj.Value != fromAdj.Value)
 					fromAdj.Value = toAdj.Value;
+				RedrawMiddleAreas ();
 			};
 		}
 
