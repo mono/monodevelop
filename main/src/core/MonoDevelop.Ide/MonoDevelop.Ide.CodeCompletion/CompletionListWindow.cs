@@ -328,7 +328,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (item == null)
 				return false;
 			item.InsertCompletionText (this);
-			AddWordToHistory (item.CompletionText);
+			AddWordToHistory (PartialWord, item.CompletionText);
 			OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, item.CompletionText));
 			return true;
 		}

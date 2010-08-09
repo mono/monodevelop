@@ -40,11 +40,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 	{
 		public static ICompletionMatcher CreateCompletionMatcher (string filterText)
 		{
-			return new BacktrackingCompletionMatcher (filterText);
+			return new LaneCompletionMatcher (filterText);
 		}
 	}
 	
-	/*
 	class LaneCompletionMatcher : ICompletionMatcher
 	{
 		readonly string filter;
@@ -342,118 +341,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 	}
 	
-	class PrefixCompletionMatcher : ICompletionMatcher
-	{
-		readonly string filterTextUpperCase;
-
-		readonly bool[] filterTextLowerCaseTable;
-		readonly bool[] filterIsNonLetter;
-
-		readonly List<int> matchIndices;
-
-		public PrefixCompletionMatcher (string filterText)
-		{
-			matchIndices = new List<int> ();
-			if (filterText != null) {
-				filterTextLowerCaseTable = new bool[filterText.Length];
-				filterIsNonLetter        = new bool[filterText.Length];
-				for (int  i = 0; i < filterText.Length; i++) {
-					filterTextLowerCaseTable[i] = char.IsLower (filterText[i]);
-					filterIsNonLetter[i] = !char.IsLetter (filterText[i]);
-				}
-				
-				filterTextUpperCase = filterText.ToUpper ();
-			} else {
-				filterTextUpperCase = "";
-			}
-		}
-
-		public bool CalcMatchRank (string name, out int matchRank)
-		{
-			if (filterTextUpperCase.Length == 0) {
-				matchRank = int.MinValue;
-				return true;
-			}
-			var lane = GetMatch (name);
-			if (lane != null) {
-				matchRank = -(lane[0] + (name.Length - filterTextUpperCase.Length));
-				return true;
-			}
-			matchRank = int.MinValue;
-			return false;
-		}
-
-		public bool IsMatch (string text)
-		{
-			return GetMatch (text) != null;
-		}
-		
-		/// <summary>
-		/// Gets the match indices.
-		/// </summary>
-		/// <returns>
-		/// The indices in the text which are matched by our filter.
-		/// </returns>
-		/// <param name='text'>
-		/// The text to match.
-		/// </param>
-		public int[] GetMatch (string text)
-		{
-			if (string.IsNullOrEmpty (filterTextUpperCase))
-				return new int[0];
-			if (string.IsNullOrEmpty (text))
-				return null;
-
-			matchIndices.Clear ();
-			int j = 0;
-			
-			for (int i = 0; i < filterTextUpperCase.Length; i++) {
-				if (j >= text.Length)
-					return null;
-				bool wasMatch = false;
-				char filterChar = filterTextUpperCase[i];
-				// filter char is no letter -> search for next exact match
-				if (filterIsNonLetter[i]) {
-					for (; j < text.Length; j++) {
-						if (filterChar == text[j]) {
-							matchIndices.Add (j);
-							j++;
-							wasMatch = true;
-							break;
-						}
-					}
-					if (!wasMatch)
-						return null;
-					continue;
-				}
-				
-				// letter case
-				bool textCharIsUpper = char.IsUpper (text[j]);
-				if ((textCharIsUpper || filterTextLowerCaseTable[i]) && filterChar == (textCharIsUpper ? text[j] : char.ToUpper (text[j]))) {
-					matchIndices.Add (j++);
-					continue;
-				}
-
-				// no match, try to continue match at the next word start
-				j++;
-				for (; j < text.Length; j++) {
-					if (char.IsUpper (text[j]) && filterChar == text[j]) {
-						matchIndices.Add (j);
-						j++;
-						wasMatch = true;
-						break;
-					}
-				}
-				
-				if (!wasMatch)
-					return null;
-			}
-			
-			return matchIndices.ToArray ();
-		}
-	}
-*/
-	class BacktrackingCompletionMatcher : ICompletionMatcher
+/*	class BacktrackingCompletionMatcher : ICompletionMatcher
 	{
 		readonly string filterTextUpperCase;
 
@@ -578,7 +466,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			return matchIndices.ToArray ();
 		}
-	}
+	}*/
 
 }
 
