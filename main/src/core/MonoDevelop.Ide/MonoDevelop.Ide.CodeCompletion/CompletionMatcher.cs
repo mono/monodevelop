@@ -349,6 +349,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		readonly bool[] filterIsNonLetter;
 
 		readonly List<int> matchIndices;
+		int[] cachedResult;
 
 		public BacktrackingCompletionMatcher (string filterText)
 		{
@@ -429,18 +430,19 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return new int[0];
 			if (string.IsNullOrEmpty (text))
 				return null;
-			
-			matchIndices.Clear ();
+			int[] result;
+			if (cachedResult != null) {
+				result = cachedResult;
+			} else {
+				cachedResult = result = new int[filterTextUpperCase.Length];
+			}
 			int j = 0;
 			int i = 0;
 			bool onlyWordStart = false;
-			
 			while (i < filterTextUpperCase.Length) {
 				if (j >= text.Length) {
 					if (i > 0) {
-						i--;
-						j = matchIndices[matchIndices.Count - 1] + 1;
-						matchIndices.RemoveAt (matchIndices.Count - 1);
+						j = result[--i] + 1;
 						onlyWordStart = true;
 						continue;
 					}
@@ -448,23 +450,21 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 				j = GetMatchChar (text, i, j, onlyWordStart);
 				onlyWordStart = false;
-				
 				if (j == -1) {
 					if (i > 0) {
-						i--;
-						j = matchIndices[matchIndices.Count - 1] + 1;
-						matchIndices.RemoveAt (matchIndices.Count - 1);
+						j = result[--i] + 1;
 						onlyWordStart = true;
 						continue;
 					}
 					return null;
 				} else {
-					matchIndices.Add (j++);
+					result[i] = j++;
 				}
 				i++;
 			}
-			
-			return matchIndices.ToArray ();
+			cachedResult = null;
+			// clear cache
+			return result;
 		}
 	}*/
 
