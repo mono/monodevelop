@@ -164,6 +164,7 @@ namespace MonoDevelop.VersionControl.Views
 					IdeApp.Workbench.StatusBar.AutoPulse = false;
 					IdeApp.Workbench.StatusBar.EndProgress ();
 					box.Sensitive = true;
+					UpdateDiff ();
 				});
 			};
 			
