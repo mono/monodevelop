@@ -125,7 +125,7 @@ namespace MonoDevelop.Platform
 			    args += "\"";
 			
 			var psi = new ProcessStartInfo ("cmd.exe", args) {
-				CreateNoWindow = true,
+				CreateNoWindow = false,
 				WorkingDirectory = workingDirectory,
 				UseShellExecute = false,
 			};
