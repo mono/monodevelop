@@ -385,7 +385,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public bool IsMatch (string text)
 		{
-			return GetMatch (text) != null;
+			int[] match = GetMatch (text);
+			// no need to clear the cache
+			cachedResult = cachedResult ?? match;
+			return match != null;
 		}
 
 		int GetMatchChar (string text, int i, int j, bool onlyWordStart)
