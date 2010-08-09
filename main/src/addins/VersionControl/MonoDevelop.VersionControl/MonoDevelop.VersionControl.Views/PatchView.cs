@@ -44,7 +44,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			foreach (VersionControlItem item in items) {
 				var document = IdeApp.Workbench.OpenDocument (item.Path);
-				ComparisonView.AttachViewContents (document, item);
+				DiffView.AttachViewContents (document, item);
 				document.Window.SwitchView (2);
 			}
 		}
@@ -54,7 +54,7 @@ namespace MonoDevelop.VersionControl.Views
 			return repo.IsModified (file);
 		}
 
-		public PatchView (ComparisonView comparisonView, VersionControlDocumentInfo info) : base ("Diff")
+		public PatchView (DiffView comparisonView, VersionControlDocumentInfo info) : base ("Diff")
 		{
 			widget = new PatchWidget (comparisonView, info);
 		}

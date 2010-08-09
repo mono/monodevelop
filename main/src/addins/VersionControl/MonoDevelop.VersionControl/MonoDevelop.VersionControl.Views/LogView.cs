@@ -26,7 +26,7 @@ namespace MonoDevelop.VersionControl.Views
 			foreach (VersionControlItem item in items) {
 				if (!item.IsDirectory) {
 					var document = IdeApp.Workbench.OpenDocument (item.Path);
-					ComparisonView.AttachViewContents (document, item);
+					DiffView.AttachViewContents (document, item);
 					document.Window.SwitchView (4);
 				} else if (item.Repository.IsHistoryAvailable (item.Path)) {
 					new Worker (item.Repository, item.Path, item.IsDirectory, since).Start ();
@@ -432,7 +432,7 @@ namespace MonoDevelop.VersionControl.Views
 				return;
 			
 			
-			ComparisonView comparisonView = new ComparisonView (info, d.GetPrevious (), d);
+			DiffView comparisonView = new DiffView (info, d.GetPrevious (), d);
 			IdeApp.Workbench.OpenDocument (comparisonView, true);
 		}
 		

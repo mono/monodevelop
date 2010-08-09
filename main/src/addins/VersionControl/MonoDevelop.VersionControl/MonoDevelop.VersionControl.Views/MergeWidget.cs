@@ -51,7 +51,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 		}
 
-		public MergeWidget () : base (null)
+		public MergeWidget ()
 		{
 		}
 

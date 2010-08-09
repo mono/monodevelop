@@ -62,12 +62,17 @@ namespace MonoDevelop.VersionControl.Views
 			get;
 		}
 
-		public EditorCompareWidgetBase (VersionControlDocumentInfo info)
+		public EditorCompareWidgetBase ()
 		{
-			this.info = info;
 			CreateComponents ();
 
 			vAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
+			vAdjustment.Changed += delegate {
+				Console.WriteLine ("Change !!!");
+				foreach (var middleArea in middleAreas) {
+					middleArea.QueueDraw ();
+				}
+			};
 			attachedVAdjustments = new Adjustment[editors.Length];
 			attachedHAdjustments = new Adjustment[editors.Length];
 			for (int i = 0; i < editors.Length; i++) {
@@ -143,7 +148,12 @@ namespace MonoDevelop.VersionControl.Views
 				Add (middleAreas[1]);
 			}
 		}
-
+		
+		public void SetVersionControlInfo (VersionControlDocumentInfo info)
+		{
+			this.info = info;
+		}
+		
 		protected abstract void CreateComponents ();
 
 		public abstract void UpdateDiff ();
@@ -176,6 +186,7 @@ namespace MonoDevelop.VersionControl.Views
 				attachedHAdjustments[0].StepIncrement,
 				attachedHAdjustments[0].PageIncrement,
 				attachedHAdjustments[0].PageSize);
+			
 		}
 
 		internal static void EditorFocusIn (object sender, FocusInEventArgs args)
@@ -302,9 +313,6 @@ namespace MonoDevelop.VersionControl.Views
 				double newValue = adjustment.Value + GetWheelDelta (adjustment, evnt.Direction);
 				newValue = System.Math.Max (System.Math.Min (adjustment.Upper  - adjustment.PageSize, newValue), adjustment.Lower);
 				adjustment.Value = newValue;
-			}
-			foreach (var middleWidget in middleAreas) {
-				middleWidget.QueueDraw ();
 			}
 			return base.OnScrollEvent (evnt);
 		}

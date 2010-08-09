@@ -213,7 +213,7 @@ namespace MonoDevelop.VersionControl
 		protected override void Run ()
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			ComparisonView.AttachViewContents (doc, GetItem ());
+			DiffView.AttachViewContents (doc, GetItem ());
 			doc.Window.SwitchView (1);
 		}
 	}
@@ -223,7 +223,7 @@ namespace MonoDevelop.VersionControl
 		protected override void Run ()
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			ComparisonView.AttachViewContents (doc, GetItem ());
+			DiffView.AttachViewContents (doc, GetItem ());
 			doc.Window.SwitchView (3);
 		}
 	}
@@ -233,7 +233,7 @@ namespace MonoDevelop.VersionControl
 		protected override void Run ()
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			ComparisonView.AttachViewContents (doc, GetItem ());
+			DiffView.AttachViewContents (doc, GetItem ());
 			doc.Window.SwitchView (4);
 		}
 	}

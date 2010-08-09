@@ -1,5 +1,5 @@
 // 
-// MergeView.cs
+// DiffWidget.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -24,68 +24,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide;
-using MonoDevelop.Core;
-
 namespace MonoDevelop.VersionControl.Views
 {
-	class MergeView : BaseView, IAttachableViewContent
+	[System.ComponentModel.ToolboxItem(false)]
+	public partial class DiffWidget : Gtk.Bin
 	{
-		MergeWidget widget;
-
-		public override Gtk.Widget Control { 
+		internal ComparisonWidget ComparisonWidget {
 			get {
-				return widget;
-			}
-		}
-
-		public static void Show (VersionControlItemList items)
-		{
-			foreach (VersionControlItem item in items) {
-				var document = IdeApp.Workbench.OpenDocument (item.Path);
-				DiffView.AttachViewContents (document, item);
-				document.Window.SwitchView (5);
+				return comparisonWidget;
 			}
 		}
 		
-		public MergeView (VersionControlDocumentInfo info) : base ("Merge")
+		public DiffWidget ()
 		{
-			widget = new MergeWidget ();
-			widget.Load (info);
+			this.Build ();
+			this.buttonNext.Clicked += (sender, args) => ComparisonWidget.GotoNext ();
+			this.buttonPrev.Clicked += (sender, args) => ComparisonWidget.GotoPrev ();
 		}
-
-		public void Selected ()
-		{
-		}
-		
-		public void Deselected ()
-		{
-		}
-
-		public void BeforeSave ()
-		{
-		}
-
-		public void BaseContentChanged ()
-		{
-		}
-
-	/*	MergeWidget mergeWidget;
-		
-		public override Gtk.Widget Control {
-			get {
-				return mergeWidget;
-			}
-		}
-		
-		
-		public override void Load (string fileName)
-		{
-			
-			
-		}*/
-		
 	}
 }
 

@@ -413,9 +413,9 @@ namespace MonoDevelop.VersionControl
 					break;
 				case Commands.Diff:
 					if (!test) {
-						ComparisonView.Show (items);
+						DiffView.Show (items);
 					} else {
-						res = ComparisonView.CanShow (items);
+						res = DiffView.CanShow (items);
 					}
 					break;
 				case Commands.Log:

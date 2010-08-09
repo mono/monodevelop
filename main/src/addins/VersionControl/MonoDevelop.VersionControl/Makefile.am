@@ -7,6 +7,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs \
+	gtk-gui/MonoDevelop.VersionControl.Views.DiffWidget.cs \
 	gtk-gui/MonoDevelop.VersionControl.Views.PatchWidget.cs \
 	MonoDevelop.VersionControl.Dialogs/CommitDialog.cs \
 	MonoDevelop.VersionControl.Dialogs/CommitMessageStylePanelWidget.cs \
@@ -18,9 +19,10 @@ FILES =  \
 	MonoDevelop.VersionControl.Views/BlameWidget.cs \
 	MonoDevelop.VersionControl.Views/CellRendererDiff.cs \
 	MonoDevelop.VersionControl.Views/ChangeSetView.cs \
-	MonoDevelop.VersionControl.Views/ComparisonView.cs \
 	MonoDevelop.VersionControl.Views/ComparisonWidget.cs \
 	MonoDevelop.VersionControl.Views/DiffParser.cs \
+	MonoDevelop.VersionControl.Views/DiffView.cs \
+	MonoDevelop.VersionControl.Views/DiffWidget.cs \
 	MonoDevelop.VersionControl.Views/DropDownBox.cs \
 	MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.cs \
 	MonoDevelop.VersionControl.Views/LogView.cs \
@@ -80,7 +82,7 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
-	-r:Mono.Cairo \
+	$(MONO_CAIRO_LIBS) \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \

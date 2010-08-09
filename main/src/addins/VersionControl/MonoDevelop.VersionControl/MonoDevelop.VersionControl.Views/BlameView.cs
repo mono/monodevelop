@@ -54,7 +54,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			foreach (VersionControlItem item in items) {
 				var document = IdeApp.Workbench.OpenDocument (item.Path);
-				ComparisonView.AttachViewContents (document, item);
+				DiffView.AttachViewContents (document, item);
 				document.Window.SwitchView (3);
 			}
 		}

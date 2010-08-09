@@ -40,7 +40,7 @@ namespace MonoDevelop.VersionControl.Views
 	{
 		Mono.TextEditor.TextEditor diffEditor;
 		
-		public PatchWidget (ComparisonView comparisonView, VersionControlDocumentInfo info)
+		public PatchWidget (DiffView comparisonView, VersionControlDocumentInfo info)
 		{
 			this.Build ();
 			diffEditor = new Mono.TextEditor.TextEditor ();
@@ -57,7 +57,7 @@ namespace MonoDevelop.VersionControl.Views
 			diffEditor.ShowAll ();
 			
 			
-			diffEditor.Document.Text = Mono.TextEditor.Utils.Diff.GetDiffString (comparisonView.Diff, comparisonView.Widget.DiffEditor.Document ,info.Document.Editor.Document, info.Item.Path, info.Item.Path);
+			diffEditor.Document.Text = Mono.TextEditor.Utils.Diff.GetDiffString (comparisonView.Diff, comparisonView.ComparisonWidget.DiffEditor.Document ,info.Document.Editor.Document, info.Item.Path, info.Item.Path);
 			
 			buttonSave.Clicked += delegate {
 				var dlg = new OpenFileDialog (GettextCatalog.GetString ("Save as..."), FileChooserAction.Save) {

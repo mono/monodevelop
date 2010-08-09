@@ -1,5 +1,5 @@
 // 
-// DiffWidget.cs
+// ComparisonWidget.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -36,6 +36,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl.Views
 {
+	[ToolboxItem (true)]
 	class ComparisonWidget : EditorCompareWidgetBase
 	{
 		DropDownBox originalComboBox, diffComboBox;
@@ -51,15 +52,13 @@ namespace MonoDevelop.VersionControl.Views
 				return editors[0];
 			}
 		}
-		
-		
+
 		protected override TextEditor MainEditor {
 			get {
 				return editors[1];
 			}
 		}
-		
-		
+
 		public List<Mono.TextEditor.Utils.Hunk> Diff {
 			get { return leftDiff; }
 			set { leftDiff = value; }
@@ -85,59 +84,50 @@ namespace MonoDevelop.VersionControl.Views
 			
 			this.headerWidgets = new [] { diffComboBox, originalComboBox };
 		}
-		
-		public ComparisonWidget (VersionControlDocumentInfo info) : base (info)
-		{
-		/*	prev = new Button ();
-			prev.Add (new Arrow (ArrowType.Up, ShadowType.None));
-			AddChild (prev);
-			prev.ShowAll ();
-			prev.Clicked += delegate {
-				if (this.Diff == null)
-					return;
-				originalEditor.GrabFocus ();
-				
-				int line = originalEditor.Caret.Line;
-				int max  = -1, searched = -1;
-				foreach (Diff.Hunk hunk in this.Diff) {
-					if (hunk.Same)
-						continue;
-					max = System.Math.Max (hunk.Right.Start, max);
-					if (hunk.Right.Start < line)
-						searched = System.Math.Max (hunk.Right.Start, searched);
-				}
-				if (max >= 0) {
-					originalEditor.Caret.Line = searched < 0 ? max : searched;
-					originalEditor.CenterToCaret ();
-				}
-			};
-			
-			next = new Button ();
-			next.BorderWidth = 0;
-			next.Add (new Arrow (ArrowType.Down, ShadowType.None));
-			next.Clicked += delegate {
-				if (this.Diff == null)
-					return;
-				originalEditor.GrabFocus ();
-				
-				int line = originalEditor.Caret.Line;
-				int min  = Int32.MaxValue, searched = Int32.MaxValue;
-				foreach (Diff.Hunk hunk in this.Diff) {
-					if (hunk.Same)
-						continue;
-					min = System.Math.Min (hunk.Right.Start, min);
-					if (hunk.Right.Start > line)
-						searched = System.Math.Min (hunk.Right.Start, searched);
-				}
-				if (min < Int32.MaxValue) {
-					originalEditor.Caret.Line = searched == Int32.MaxValue ? min : searched;
-					originalEditor.CenterToCaret ();
-				}
-			};
-			AddChild (next);
-			next.ShowAll ();*/
-		}
 
+		public ComparisonWidget ()
+		{
+		}
+		
+		
+		public void GotoPrev () 
+		{
+			if (this.Diff == null)
+				return;
+			MainEditor.GrabFocus ();
+			
+			int line = MainEditor.Caret.Line;
+			int max  = -1, searched = -1;
+			foreach (var hunk in this.leftDiff) {
+				max = System.Math.Max (hunk.InsertStart, max);
+				if (hunk.InsertStart < line)
+					searched = System.Math.Max (hunk.InsertStart, searched);
+			}
+			if (max >= 0) {
+				MainEditor.Caret.Line = searched < 0 ? max : searched;
+				MainEditor.CenterToCaret ();
+			}
+		}
+		
+		public void GotoNext ()
+		{
+			if (this.Diff == null)
+				return;
+			MainEditor.GrabFocus ();
+				
+			int line = MainEditor.Caret.Line;
+			int min  = Int32.MaxValue, searched = Int32.MaxValue;
+			foreach (var hunk in this.leftDiff) {
+				min = System.Math.Min (hunk.InsertStart, min);
+				if (hunk.InsertStart > line)
+					searched = System.Math.Min (hunk.InsertStart, searched);
+			}
+			if (min < Int32.MaxValue) {
+				MainEditor.Caret.Line = searched == Int32.MaxValue ? min : searched;
+				MainEditor.CenterToCaret ();
+			}
+		}
+		
 		public override void UpdateDiff ()
 		{
 			CreateDiff ();
