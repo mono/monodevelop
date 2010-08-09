@@ -115,7 +115,9 @@ namespace MonoDevelop.GtkCore {
 		{
 			if (String.IsNullOrEmpty (assembly_version))
 				return String.Empty;
-
+			
+			int i = assembly_version.IndexOf ('=');
+			assembly_version = assembly_version.Substring (i+1);
 			return GetVersionPrefix (assembly_version);
 		}
 
