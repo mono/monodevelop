@@ -40,10 +40,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 	{
 		public static ICompletionMatcher CreateCompletionMatcher (string filterText)
 		{
-			return new LaneCompletionMatcher (filterText);
+			return new BacktrackingCompletionMatcher (filterText);
 		}
 	}
-
+	
+	/*
 	class LaneCompletionMatcher : ICompletionMatcher
 	{
 		readonly string filter;
@@ -422,5 +423,133 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return matchIndices.ToArray ();
 		}
 	}
+*/
+	class BacktrackingCompletionMatcher : ICompletionMatcher
+	{
+		readonly string filterTextUpperCase;
+
+		readonly bool[] filterTextLowerCaseTable;
+		readonly bool[] filterIsNonLetter;
+
+		readonly List<int> matchIndices;
+
+		public BacktrackingCompletionMatcher (string filterText)
+		{
+			matchIndices = new List<int> ();
+			if (filterText != null) {
+				filterTextLowerCaseTable = new bool[filterText.Length];
+				filterIsNonLetter = new bool[filterText.Length];
+				for (int i = 0; i < filterText.Length; i++) {
+					filterTextLowerCaseTable[i] = char.IsLower (filterText[i]);
+					filterIsNonLetter[i] = !char.IsLetter (filterText[i]);
+				}
+				
+				filterTextUpperCase = filterText.ToUpper ();
+			} else {
+				filterTextUpperCase = "";
+			}
+		}
+
+		public bool CalcMatchRank (string name, out int matchRank)
+		{
+			if (filterTextUpperCase.Length == 0) {
+				matchRank = int.MinValue;
+				return true;
+			}
+			var lane = GetMatch (name);
+			if (lane != null) {
+				matchRank = -(lane[0] + (name.Length - filterTextUpperCase.Length));
+				return true;
+			}
+			matchRank = int.MinValue;
+			return false;
+		}
+
+		public bool IsMatch (string text)
+		{
+			return GetMatch (text) != null;
+		}
+
+		int GetMatchChar (string text, int i, int j, bool onlyWordStart)
+		{
+			char filterChar = filterTextUpperCase[i];
+			// filter char is no letter -> search for next exact match
+			if (filterIsNonLetter[i]) {
+				for (; j < text.Length; j++) {
+					if (filterChar == text[j])
+						return j;
+				}
+				return -1;
+			}
+			
+			// letter case
+			bool textCharIsUpper = char.IsUpper (text[j]);
+			if (!onlyWordStart && (textCharIsUpper || filterTextLowerCaseTable[i]) && filterChar == (textCharIsUpper ? text[j] : char.ToUpper (text[j]))) {
+				return j;
+			}
+			
+			// no match, try to continue match at the next word start
+			j++;
+			for (; j < text.Length; j++) {
+				if (char.IsUpper (text[j]) && filterChar == text[j])
+					return j;
+			}
+			return -1;
+		}
+		
+		/// <summary>
+		/// Gets the match indices.
+		/// </summary>
+		/// <returns>
+		/// The indices in the text which are matched by our filter.
+		/// </returns>
+		/// <param name='text'>
+		/// The text to match.
+		/// </param>
+		public int[] GetMatch (string text)
+		{
+			if (string.IsNullOrEmpty (filterTextUpperCase))
+				return new int[0];
+			if (string.IsNullOrEmpty (text))
+				return null;
+			
+			matchIndices.Clear ();
+			int j = 0;
+			int i = 0;
+			bool onlyWordStart = false;
+			
+		restart:
+			for (; i < filterTextUpperCase.Length; i++) {
+				if (j >= text.Length) {
+					if (i > 0) {
+						i--;
+						j = matchIndices[matchIndices.Count - 1] + 1;
+						matchIndices.RemoveAt (matchIndices.Count - 1);
+						onlyWordStart = true;
+						goto restart;
+					}
+					return null;
+				}
+				j = GetMatchChar (text, i, j, onlyWordStart);
+				onlyWordStart = false;
+				
+				if (j == -1) {
+					if (i > 0) {
+						i--;
+						j = matchIndices[matchIndices.Count - 1] + 1;
+						matchIndices.RemoveAt (matchIndices.Count - 1);
+						onlyWordStart = true;
+						goto restart;
+					}
+					return null;
+				} else {
+					matchIndices.Add (j++);
+				}
+			}
+			
+			return matchIndices.ToArray ();
+		}
+	}
+
 }
 
