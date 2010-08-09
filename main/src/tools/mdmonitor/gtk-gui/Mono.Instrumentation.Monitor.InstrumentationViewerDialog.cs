@@ -57,11 +57,11 @@ namespace Mono.Instrumentation.Monitor
 			this.FileAction = new global::Gtk.Action ("FileAction", global::Mono.Unix.Catalog.GetString ("File"), null, null);
 			this.FileAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("File");
 			w1.Add (this.FileAction, null);
-			this.openAction = new global::Gtk.Action ("openAction", global::Mono.Unix.Catalog.GetString ("_Obre"), null, "gtk-open");
-			this.openAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("_Obre");
+			this.openAction = new global::Gtk.Action ("openAction", global::Mono.Unix.Catalog.GetString ("_Open"), null, "gtk-open");
+			this.openAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("_Open");
 			w1.Add (this.openAction, null);
-			this.connectAction = new global::Gtk.Action ("connectAction", global::Mono.Unix.Catalog.GetString ("C_onnecta"), null, "gtk-connect");
-			this.connectAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("C_onnecta");
+			this.connectAction = new global::Gtk.Action ("connectAction", global::Mono.Unix.Catalog.GetString ("C_onnect"), null, "gtk-connect");
+			this.connectAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("C_onnect");
 			w1.Add (this.connectAction, null);
 			this.ExitAction = new global::Gtk.Action ("ExitAction", global::Mono.Unix.Catalog.GetString ("Exit"), null, null);
 			this.ExitAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Exit");

@@ -5,6 +5,7 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
+    <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/bin/mdmonitor.exe" internal="true" />
   </import>
@@ -254,15 +255,15 @@
       </action>
       <action id="openAction">
         <property name="Type">Action</property>
-        <property name="Label" translatable="yes">_Obre</property>
-        <property name="ShortLabel" translatable="yes">_Obre</property>
+        <property name="Label" translatable="yes">_Open</property>
+        <property name="ShortLabel" translatable="yes">_Open</property>
         <property name="StockId">gtk-open</property>
         <signal name="Activated" handler="OnOpenActionActivated" />
       </action>
       <action id="connectAction">
         <property name="Type">Action</property>
-        <property name="Label" translatable="yes">C_onnecta</property>
-        <property name="ShortLabel" translatable="yes">C_onnecta</property>
+        <property name="Label" translatable="yes">C_onnect</property>
+        <property name="ShortLabel" translatable="yes">C_onnect</property>
         <property name="StockId">gtk-connect</property>
       </action>
       <action id="ExitAction">

@@ -145,7 +145,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 						refres = new BuildResult ();
 					string msg;
 					if (!pr.IsExactVersion && pr.SpecificVersion) {
-						msg = GettextCatalog.GetString ("Reference '{0}' not found on system. Using '{1} instead.", pr.StoredReference, pr.Reference);
+						msg = GettextCatalog.GetString ("Reference '{0}' not found on system. Using '{1}' instead.", pr.StoredReference, pr.Reference);
 						monitor.ReportWarning (msg);
 						refres.AddWarning (msg);
 					}
