@@ -51,7 +51,9 @@ namespace MonoDevelop.VersionControl.Git
 		protected override void Update (CommandInfo info)
 		{
 			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
-			GitRepository repo = VersionControlService.GetRepository (wob) as GitRepository;
+			GitRepository repo = null;
+			if (wob != null)
+				repo = VersionControlService.GetRepository (wob) as GitRepository;
 			info.Visible = repo != null;
 		}
 	}
@@ -68,6 +70,8 @@ namespace MonoDevelop.VersionControl.Git
 		protected override void Update (CommandArrayInfo info)
 		{
 			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
+			if (wob == null)
+				return;
 			GitRepository repo = VersionControlService.GetRepository (wob) as GitRepository;
 			if (repo != null) {
 				string currentBranch = repo.GetCurrentBranch ();
