@@ -568,7 +568,6 @@ namespace MonoDevelop.Projects.Gui
 		}
 		
 		[Test]
-		[Ignore("FIXME")]
 		public void TestBug595240 ()
 		{
 			string output = RunSimulation ("", "A\t", true, true, false, "AbCdEf");
@@ -585,7 +584,6 @@ namespace MonoDevelop.Projects.Gui
 		/// Bug 613539 - DOBa does not complete to DynamicObjectBase
 		/// </summary>
 		[Test]
-		[Ignore("FIXME")]
 		public void TestBug613539 ()
 		{
 			string output = RunSimulation ("", "DOB ", true, true, false, "DynamicObject", "DynamicObjectBase");
