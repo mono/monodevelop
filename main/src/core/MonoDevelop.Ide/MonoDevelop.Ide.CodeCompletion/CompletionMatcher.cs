@@ -518,15 +518,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 			int i = 0;
 			bool onlyWordStart = false;
 			
-		restart:
-			for (; i < filterTextUpperCase.Length; i++) {
+			while (i < filterTextUpperCase.Length) {
 				if (j >= text.Length) {
 					if (i > 0) {
 						i--;
 						j = matchIndices[matchIndices.Count - 1] + 1;
 						matchIndices.RemoveAt (matchIndices.Count - 1);
 						onlyWordStart = true;
-						goto restart;
+						continue;
 					}
 					return null;
 				}
@@ -539,12 +538,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 						j = matchIndices[matchIndices.Count - 1] + 1;
 						matchIndices.RemoveAt (matchIndices.Count - 1);
 						onlyWordStart = true;
-						goto restart;
+						continue;
 					}
 					return null;
 				} else {
 					matchIndices.Add (j++);
 				}
+				i++;
 			}
 			
 			return matchIndices.ToArray ();
