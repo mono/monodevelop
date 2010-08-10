@@ -2055,7 +2055,7 @@ namespace Mono.TextEditor
 			double xStart = System.Math.Max (area.X, XOffset);
 			xStart = System.Math.Max (0, xStart);
 			var lineArea = new Cairo.Rectangle (XOffset - 1, y, textEditor.Allocation.Width - XOffset, textEditor.LineHeight);
-			cr.Rectangle (XOffset - 1 , 0, textEditor.Allocation.Width, textEditor.Allocation.Height);
+			cr.Rectangle (XOffset - 1 , 0, textEditor.Allocation.Width - XOffset + 1, textEditor.Allocation.Height);
 			cr.Clip ();
 			int width, height;
 			double pangoPosition = (x - textEditor.HAdjustment.Value + TextStartPosition) * Pango.Scale.PangoScale;
