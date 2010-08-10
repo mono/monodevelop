@@ -2000,17 +2000,19 @@ namespace Mono.TextEditor
 			if (result != null) {
 				if (popupWindow != null) {
 					popupWindow.StopPlaying ();
-				} else {
-					popupWindow = new SearchHighlightPopupWindow (this);
+					popupWindow.Destroy ();
 				}
+				popupWindow = new SearchHighlightPopupWindow (this);
 				popupWindow.Result = result;
 				popupWindow.Popup ();
+				popupWindow.Destroyed += delegate {
+					popupWindow = null;
+				};
 			}
 		}
 		
 		class SearchHighlightPopupWindow : BounceFadePopupWindow
 		{
-			bool shouldDraw = false;
 			public SearchResult Result {
 				get;
 				set;
@@ -2022,22 +2024,25 @@ namespace Mono.TextEditor
 			
 			public override void Popup ()
 			{
-				shouldDraw = false;
 				ExpandWidth = (uint)Editor.LineHeight;
 				ExpandHeight = (uint)Editor.LineHeight / 2;
 				BounceEasing = Easing.Sine;
-				Duration = 500;
-				Visible = true;
+				Duration = 200;
 				base.Popup ();
-				shouldDraw = true;
 			}
 			
 			protected override void OnAnimationCompleted ()
 			{
 				base.OnAnimationCompleted ();
-				Visible = false;
-				shouldDraw = false;
 				DetachEvents ();
+				Destroy ();
+			}
+			
+			protected override void OnDestroyed ()
+			{
+				base.OnDestroyed ();
+				if (layout != null)
+					layout.Dispose ();
 			}
 			
 			protected override Rectangle CalculateInitialBounds ()
@@ -2065,8 +2070,11 @@ namespace Mono.TextEditor
 				x2 /= (int)Pango.Scale.PangoScale;
 				int y = Editor.LineToY (lineNr) - (int)Editor.VAdjustment.Value ;
 				int w = x2 - x1;
-				int spaceX = 16;
+				int spaceX = w / 3;
 				int spaceY = Editor.LineHeight;
+				if (layout != null)
+					layout.Dispose ();
+				layout = null;
 				return new Gdk.Rectangle (x1 + (int)Editor.TextViewMargin.XOffset + Editor.TextViewMargin.TextStartPosition - (int)Editor.HAdjustment.Value - spaceX, y - spaceY, w + spaceX * 2, Editor.LineHeight + spaceY * 2);
 			}
 			
@@ -2075,6 +2083,26 @@ namespace Mono.TextEditor
 				// deprecated.
 				return null;
 			}
+			/*
+			protected override bool OnAnimationActorStep (Actor<BounceFadePopupWindow> actor)
+			{
+				if (actor.Expired) {
+					OnAnimationCompleted ();
+					return false;
+				}
+				
+				// for the first half, use an easing
+				if (actor.Percent < 0.5) {
+					scale = Choreographer.Compose (actor.Percent * 2, BounceEasing);
+				} else {
+					scale = Choreographer.Compose (1.0, BounceEasing);
+					alpha = 2.0 - actor.Percent * 2;
+				}
+				return true;
+			}*/
+			
+			Pango.Layout layout = null;
+			int layoutWidth, layoutHeight;
 			
 			protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 			{
@@ -2083,32 +2111,42 @@ namespace Mono.TextEditor
 						cr.SetSourceRGBA (1, 1, 1, 0);
 						cr.Operator = Cairo.Operator.Source; 
 						cr.Paint ();
-						if (!shouldDraw)
-							return true;
-						cr.Translate (width / 2,  height / 2);
-						cr.Scale (1 + scale / 2, 1 + scale / 2);
 						
-						using (var layout = cr.CreateLayout ()) {
+						cr.Translate (width / 2,  height / 2);
+						cr.Scale (1 + scale / 4, 1 + scale / 4);
+						if (layout == null) {
+							layout = cr.CreateLayout ();
 							layout.FontDescription = Editor.Options.Font;
 							layout.SetMarkup (Editor.Document.SyntaxMode.GetMarkup (Editor.Document, Editor.Options, Editor.ColorStyle, Result.Offset, Result.Length, true));
-							int pw, ph;
-							layout.GetPixelSize (out pw, out ph);
-							
-							cr.Translate (-pw / 2, -ph / 2);
-							
-							FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, -2, 0, 4, pw + 4, Editor.LineHeight);
-							cr.Color = Editor.ColorStyle.SearchTextMainBg;
-							cr.Fill (); 
-						
-							cr.ShowLayout (layout);
+							layout.GetPixelSize (out layoutWidth, out layoutHeight);
 						}
 						
+						FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, -layoutWidth / 2 - 2 + 2, -Editor.LineHeight / 2 + 2, Editor.LineHeight, layoutWidth + 4, Editor.LineHeight);
+						var color = TextViewMargin.DimColor (Editor.ColorStyle.SearchTextMainBg, 0.3);
+						color.A = 0.5 * opacity;
+						cr.Color = color;
+						cr.Fill (); 
+						
+						FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, -layoutWidth / 2 -2, -Editor.LineHeight / 2, Editor.LineHeight, layoutWidth + 4, Editor.LineHeight);
+						using (Cairo.LinearGradient gradient = new Cairo.LinearGradient (0, -Editor.LineHeight / 2, 0, Editor.LineHeight / 2)) {
+							color = TextViewMargin.DimColor (Editor.ColorStyle.SearchTextMainBg, 1.1);
+							color.A = opacity;
+							gradient.AddColorStop (0, color);
+							color = TextViewMargin.DimColor (Editor.ColorStyle.SearchTextMainBg, 0.9);
+							color.A = opacity;
+							gradient.AddColorStop (1, color);
+							cr.Pattern = gradient;
+							cr.Fill (); 
+						}
+						
+						cr.Translate (-layoutWidth / 2 + 1, -layoutHeight / 2);
+						cr.ShowLayout (layout);
 					}
 					
 				} catch (Exception e) {
 					Console.WriteLine ("Exception in animation:" + e);
 				}
-				return false;
+				return true;
 			}
 		}
 		

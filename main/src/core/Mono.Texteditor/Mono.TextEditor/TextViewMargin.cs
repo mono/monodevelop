@@ -1939,13 +1939,16 @@ namespace Mono.TextEditor
 			return width;
 		}
 
-		static Cairo.Color DimColor (Cairo.Color color)
+		internal static Cairo.Color DimColor (Cairo.Color color, double dimFactor)
 		{
-			const double dimFactor = 0.95;
 			var result = new Cairo.Color (color.R * dimFactor,
 			                              color.G * dimFactor,
 			                              color.B * dimFactor);
 			return result;
+		}
+		internal static Cairo.Color DimColor (Cairo.Color color)
+		{
+			return DimColor (color, 0.95);
 		}
 
 		public void DrawRectangleWithRuler (Cairo.Context cr, double x, Cairo.Rectangle area, Cairo.Color color, bool drawDefaultBackground)

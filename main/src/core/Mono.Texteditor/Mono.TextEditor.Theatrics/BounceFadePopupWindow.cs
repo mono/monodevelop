@@ -51,7 +51,7 @@ namespace Mono.TextEditor.Theatrics
 			BorderWidth = 0;
 			HasFrame = true;
 			this.editor = editor;
-			
+			Events = Gdk.EventMask.ExposureMask;
 			Duration = 500;
 			ExpandWidth = 12;
 			ExpandHeight = 2;
@@ -93,9 +93,11 @@ namespace Mono.TextEditor.Theatrics
 			x = x + bounds.X - (int)(ExpandWidth / 2);
 			y = y + bounds.Y - (int)(ExpandHeight / 2);
 			Move (x, y);
+			
 			width = bounds.Width + (int)ExpandWidth;
 			height = bounds.Height + (int)ExpandHeight;
 			Resize (width, height);
+			
 			
 			stage.AddOrReset (this, Duration);
 			stage.Play ();
@@ -147,7 +149,7 @@ namespace Mono.TextEditor.Theatrics
 			QueueDraw ();
 		}
 		
-		bool OnAnimationActorStep (Actor<BounceFadePopupWindow> actor)
+		protected virtual bool OnAnimationActorStep (Actor<BounceFadePopupWindow> actor)
 		{
 			if (actor.Expired) {
 				OnAnimationCompleted ();
