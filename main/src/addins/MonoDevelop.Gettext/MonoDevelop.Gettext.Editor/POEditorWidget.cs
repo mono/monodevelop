@@ -71,15 +71,6 @@ namespace MonoDevelop.Gettext
 				headersEditor.CatalogHeaders = catalog;
 				ClearTextview ();
 				AddTextview (0);
-				this.GetTextView (0).Document.TextReplaced += delegate {
-					Gtk.TreeIter iter = SelectedIter;
-					if (treeviewEntries.Selection.IterIsSelected (iter)) {
-						store.SetValue (iter, (int)Columns.Stock, GetStockForEntry (SelectedEntry));
-						store.SetValue (iter, (int)Columns.Translation, StringEscaping.ToGettextFormat (this.SelectedEntry.GetTranslation (0)));
-						store.SetValue (iter, (int)Columns.RowColor, GetRowColorForEntry (SelectedEntry));
-						store.SetValue (iter, (int)Columns.TypeSortIndicator, GetTypeSortIndicator (SelectedEntry));
-					}
-				};
 				UpdateFromCatalog ();
 				UpdateProgressBar ();
 				UpdateTasks ();
@@ -103,10 +94,6 @@ namespace MonoDevelop.Gettext
 			this.headersEditor = new CatalogHeadersWidget ();
 			this.notebookPages.AppendPage (headersEditor, new Gtk.Label ());
 			
-			updateThread = new BackgroundWorker ();
-			updateThread.WorkerSupportsCancellation = true;
-			updateThread.DoWork += FilterWorker;
-			
 			updateTaskThread = new BackgroundWorker ();
 			updateTaskThread.WorkerSupportsCancellation = true;
 			updateTaskThread.DoWork += TaskUpdateWorker;
@@ -115,40 +102,49 @@ namespace MonoDevelop.Gettext
 			AddButton (GettextCatalog.GetString ("Headers")).Active = false;
 			
 			// entries tree view 
-			store = new ListStore (typeof(string), typeof(bool), typeof(string), typeof(string), typeof(CatalogEntry), typeof(Gdk.Color), typeof(int), typeof(Gdk.Color));
+			store = new ListStore (typeof(CatalogEntry));
 			this.treeviewEntries.Model = store;
 			
-			treeviewEntries.AppendColumn (String.Empty, new CellRendererIcon (), "stock_id", Columns.Stock, "cell-background-gdk", Columns.RowColor);
+			TreeViewColumn fuzzyColumn = new TreeViewColumn ();
+			fuzzyColumn.SortIndicator = true;
+			fuzzyColumn.SortColumnId = 0;
+				
+			fuzzyColumn.Title = GettextCatalog.GetString ("Fuzzy");
+			var iconRenderer = new CellRendererPixbuf ();
+			fuzzyColumn.PackStart (iconRenderer, false);
+			fuzzyColumn.SetCellDataFunc (iconRenderer, CatalogIconDataFunc);
 			
 			CellRendererToggle cellRendFuzzy = new CellRendererToggle ();
-			cellRendFuzzy.Toggled += new ToggledHandler (FuzzyToggled);
 			cellRendFuzzy.Activatable = true;
-			treeviewEntries.AppendColumn (GettextCatalog.GetString ("Fuzzy"), cellRendFuzzy, "active", Columns.Fuzzy, "cell-background-gdk", Columns.RowColor);
+			cellRendFuzzy.Toggled += HandleCellRendFuzzyToggled;
+			fuzzyColumn.PackStart (cellRendFuzzy, false);
+			fuzzyColumn.SetCellDataFunc (cellRendFuzzy, FuzzyToggleDataFunc);
+			treeviewEntries.AppendColumn (fuzzyColumn);
 			
+			TreeViewColumn originalColumn = new TreeViewColumn ();
+			originalColumn.Expand = true;
+			originalColumn.SortIndicator = true;
+			originalColumn.SortColumnId = 1;
+			originalColumn.Title = GettextCatalog.GetString ("Original string");
 			CellRendererText original = new CellRendererText ();
 			original.Ellipsize = Pango.EllipsizeMode.End;
-			treeviewEntries.AppendColumn (GettextCatalog.GetString ("Original string"), original, "text", Columns.String, "cell-background-gdk", Columns.RowColor, "foreground-gdk", Columns.ForeColor);
+			originalColumn.PackStart (original, true);
+			originalColumn.SetCellDataFunc (original, OriginalTextDataFunc);
+			treeviewEntries.AppendColumn (originalColumn);
 			
+			TreeViewColumn translatedColumn = new TreeViewColumn ();
+			translatedColumn.Expand = true;
+			translatedColumn.SortIndicator = true;
+			translatedColumn.SortColumnId = 2;
+			translatedColumn.Title = GettextCatalog.GetString ("Translated string");
 			CellRendererText translation = new CellRendererText ();
 			translation.Ellipsize = Pango.EllipsizeMode.End;
-			treeviewEntries.AppendColumn (GettextCatalog.GetString ("Translated string"), translation, "text", Columns.Translation, "cell-background-gdk", Columns.RowColor, "foreground-gdk", Columns.ForeColor);
-			treeviewEntries.Selection.Changed += new EventHandler (OnEntrySelected);
+			translatedColumn.PackStart (translation, true);
+			translatedColumn.SetCellDataFunc (translation, TranslationTextDataFunc);
+			treeviewEntries.AppendColumn (translatedColumn);
 			
-			treeviewEntries.GetColumn (0).SortIndicator = true;
-			treeviewEntries.GetColumn (0).SortColumnId = (int)Columns.TypeSortIndicator;
+			treeviewEntries.Selection.Changed += OnEntrySelected;
 			
-			treeviewEntries.GetColumn (1).SortIndicator = true;
-			treeviewEntries.GetColumn (1).SortColumnId = (int)Columns.Fuzzy;
-			
-			treeviewEntries.GetColumn (2).SortIndicator = true;
-			treeviewEntries.GetColumn (2).SortColumnId = (int)Columns.String;
-			treeviewEntries.GetColumn (2).Resizable = true;
-			treeviewEntries.GetColumn (2).Expand = true;
-			
-			treeviewEntries.GetColumn (3).SortIndicator = true;
-			treeviewEntries.GetColumn (3).SortColumnId = (int)Columns.Translation;
-			treeviewEntries.GetColumn (3).Resizable = true;
-			treeviewEntries.GetColumn (3).Expand = true;
 			// found in tree view
 			foundInStore = new ListStore (typeof(string), typeof(string), typeof(string), typeof(Pixbuf));
 			this.treeviewFoundIn.Model = foundInStore;
@@ -219,6 +215,7 @@ namespace MonoDevelop.Gettext
 				}
 				UpdateProgressBar ();
 			};
+			
 			this.treeviewEntries.PopupMenu += delegate {
 				ShowPopup ();
 			};
@@ -234,29 +231,10 @@ namespace MonoDevelop.Gettext
 			searchEntryFilter.RequestMenu += delegate {
 				searchEntryFilter.Menu = CreateOptionsMenu ();
 			};
-		
-//			this.buttonOptions.Label = GettextCatalog.GetString ("Options");
-			//			this.buttonOptions.StockImage = Gtk.Stock.Properties;
-			//			this.buttonOptions.MenuCreator = ;
+			
 			widgets.Add (this);
 			UpdateTasks ();
-			//			this.vpaned2.AcceptPosition += delegate {
-			//				PropertyService.Set ("Gettext.SplitPosition", vpaned2.Position / (double)Allocation.Height);
-			//				inMove = false;
-			//			};
-			//			this.vpaned2.CancelPosition += delegate {
-			//				inMove = false;
-			//			};
-			//			this.vpaned2.MoveHandle += delegate {
-			//				inMove = true;
-			//			};
-			//			this.ResizeChecked += delegate {
-			//				if (inMove)
-			//					return;
-			//				int newPosition = (int)(Allocation.Height * PropertyService.Get ("Gettext.SplitPosition", 0.3d));
-			//				if (vpaned2.Position != newPosition)
-			//					vpaned2.Position = newPosition;
-			//			};
+			
 			checkbuttonWhiteSpaces.Toggled += CheckbuttonWhiteSpacesToggled;
 			options.ShowLineNumberMargin = false;
 			options.ShowFoldMargin = false;
@@ -278,9 +256,44 @@ namespace MonoDevelop.Gettext
 			this.texteditorPlural.Document.ReadOnly = true;
 		}
 
-		void HandleUpdateTaskThreadDoWork (object sender, DoWorkEventArgs e)
+		void HandleCellRendFuzzyToggled (object sender, ToggledArgs args)
 		{
-			
+			TreeIter iter;
+			if (store.GetIterFromString (out iter, args.Path)) {
+				CatalogEntry entry = (CatalogEntry)store.GetValue (iter, 0);
+				entry.IsFuzzy = !entry.IsFuzzy; 
+				UpdateProgressBar ();
+			}
+		}
+
+		void CatalogIconDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			CatalogEntry entry = (CatalogEntry)model.GetValue (iter, 0);
+			((CellRendererPixbuf)cell).Pixbuf = ImageService.GetPixbuf (GetStockForEntry (entry), IconSize.Menu);
+			cell.CellBackgroundGdk = GetRowColorForEntry (entry);
+		}
+		
+		void FuzzyToggleDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			CatalogEntry entry = (CatalogEntry)model.GetValue (iter, 0);
+			((CellRendererToggle)cell).Active = entry.IsFuzzy;
+			cell.CellBackgroundGdk = GetRowColorForEntry (entry);
+		}
+		
+		void OriginalTextDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			CatalogEntry entry = (CatalogEntry)model.GetValue (iter, 0);
+			((CellRendererText)cell).Text = StringEscaping.ToGettextFormat (entry.String);
+			cell.CellBackgroundGdk = GetRowColorForEntry (entry);
+			((CellRendererText)cell).ForegroundGdk = GetForeColorForEntry (entry);
+		}
+		
+		void TranslationTextDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			CatalogEntry entry = (CatalogEntry)model.GetValue (iter, 0);
+			((CellRendererText)cell).Text = StringEscaping.ToGettextFormat (entry.GetTranslation (0));
+			cell.CellBackgroundGdk = GetRowColorForEntry (entry);
+			((CellRendererText)cell).ForegroundGdk = GetForeColorForEntry (entry);
 		}
 		
 		void CheckbuttonWhiteSpacesToggled (object sender, EventArgs e)
@@ -447,12 +460,6 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
-//		bool inMove = false;
-//		protected override void OnSizeAllocated (Rectangle rect)
-//		{
-//			base.OnSizeAllocated (rect);
-//		}
-//		
 		void Reload ()
 		{
 			Catalog newCatalog = new Catalog(project);
@@ -496,6 +503,7 @@ namespace MonoDevelop.Gettext
 					IdeApp.Workbench.StatusBar.ShowError (e.Message);
 					textView.ModifyBase (Gtk.StateType.Normal, errorColor);
 				}
+				treeviewEntries.QueueDraw ();
 				UpdateProgressBar ();
 				UpdateTasks ();
 			};
@@ -584,7 +592,7 @@ namespace MonoDevelop.Gettext
 			this.progressbar1.Text = barText;
 			percentage = percentage / 100;
 			this.progressbar1.Fraction = percentage;
-		}		
+		}
 		
 		#region EntryEditor handling
 		CatalogEntry currentEntry;
@@ -648,10 +656,6 @@ namespace MonoDevelop.Gettext
 						textView.Caret.Offset = textView.Document.Text.Length;
 						textView.VAdjustment.Value = textView.HAdjustment.Value = 0;
 						textView.Document.CommitUpdateAll ();
-/*						if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (textView)) {
-							GtkSpell.Attach (textView, "en");
-							this.gtkSpellSet[textView] = true;
-						}*/
 					}
 					
 					foreach (string reference in entry.References) {
@@ -683,58 +687,12 @@ namespace MonoDevelop.Gettext
 		#endregion
 		
 #region TreeView handling
-		enum Columns : int
-		{
-			Stock,
-			Fuzzy,
-			String,
-			Translation,
-			CatalogEntry,
-			RowColor,
-			TypeSortIndicator,
-			ForeColor
-		}
-		
 		enum FoundInColumns : int
 		{
 			File,
 			Line,
 			FullFileName,
 			Pixbuf
-		}
-		
-		protected override void OnStyleSet (Gtk.Style previous_style)
-		{
-			base.OnStyleSet (previous_style);
-			UpdateColors ();
-		}
-		
-		void UpdateColors ()
-		{
-			TreeIter iter;
-			if (store == null || !store.GetIterFirst (out iter))
-				return;
-			do {
-				CatalogEntry entry = (CatalogEntry)store.GetValue (iter, (int)Columns.CatalogEntry);
-				store.SetValue (iter, (int)Columns.RowColor, GetRowColorForEntry (entry));
-				store.SetValue (iter, (int)Columns.ForeColor, GetForeColorForEntry (entry));
-				
-			} while (store.IterNext (ref iter));
-		}
-		
-		void FuzzyToggled (object o, ToggledArgs args)
-		{
-			TreeIter iter;
-			if (store.GetIterFromString (out iter, args.Path)) {
-				bool val = (bool)store.GetValue (iter, (int)Columns.Fuzzy);
-				CatalogEntry entry = (CatalogEntry)store.GetValue (iter, (int)Columns.CatalogEntry);
-				entry.IsFuzzy = !val;
-				store.SetValue (iter, (int)Columns.Fuzzy, !val);
-				store.SetValue (iter, (int)Columns.Stock, GetStockForEntry (entry));
-				store.SetValue (iter, (int)Columns.RowColor, GetRowColorForEntry (entry));
-				store.SetValue (iter, (int)Columns.ForeColor, GetForeColorForEntry (entry));
-				UpdateProgressBar ();
-			}
 		}
 		
 		static string GetStockForEntry (CatalogEntry entry)
@@ -787,7 +745,7 @@ namespace MonoDevelop.Gettext
 				if (iter.Equals (Gtk.TreeIter.Zero))
 					return null;
 				if (treeviewEntries.Selection.IterIsSelected (iter))
-					return store.GetValue (iter, (int)Columns.CatalogEntry) as CatalogEntry;
+					return store.GetValue (iter, 0) as CatalogEntry;
 				return null;
 			}
 		}
@@ -798,27 +756,7 @@ namespace MonoDevelop.Gettext
 			if (entry != null)
 				EditEntry (entry);
 		}
-		
-		public void UpdateEntry (CatalogEntry entry)
-		{	
-			TreeIter iter, foundIter = TreeIter.Zero;
-			
-			// Look if selected is the same - only wanted usecase
-			if (treeviewEntries.Selection.GetSelected (out iter)) {
-				CatalogEntry storeEntry = store.GetValue (iter, (int)Columns.CatalogEntry) as CatalogEntry;
-				if (entry.Equals (storeEntry))
-					foundIter = iter;
-			}
-						
-			// Update data
-			if (foundIter.Stamp != TreeIter.Zero.Stamp) {
-				store.SetValue (foundIter, (int)Columns.Fuzzy, entry.IsFuzzy);
-				store.SetValue (foundIter, (int)Columns.Stock, GetStockForEntry (entry));
-				store.SetValue (foundIter, (int)Columns.RowColor, GetRowColorForEntry (entry));
-				store.SetValue (foundIter, (int)Columns.ForeColor, GetForeColorForEntry (entry));
-			}
-		}
- 
+
 		bool IsMatch (string text, string filter)
 		{
 			if (RegexSearch)
@@ -870,7 +808,6 @@ namespace MonoDevelop.Gettext
 			return true;
 		}
 		
-		BackgroundWorker updateThread = null;
 		string filter = "";
 		Regex  regex = new Regex ("");
 		
@@ -892,63 +829,43 @@ namespace MonoDevelop.Gettext
 				}
 			}
 			this.searchEntryFilter.Entry.ModifyBase (StateType.Normal, Style.Base (StateType.Normal));
-			StopFilterWorkerThread ();
-			updateThread.RunWorkerAsync ();
-		}
-		
-		void FilterWorker (object sender, DoWorkEventArgs e)
-		{
-			BackgroundWorker worker = sender as BackgroundWorker;
 			
-			int number = 1, found = 0;
-			double count = catalog.Count;
-			ListStore newStore = new ListStore (typeof(string), typeof(bool), typeof(string), typeof(string), typeof(CatalogEntry), typeof(Gdk.Color), typeof(int), typeof(Gdk.Color));
-			StatusBarContext statusBar = null;
-			DispatchService.GuiSyncDispatch (delegate {
-				statusBar = IdeApp.Workbench.StatusBar.CreateContext ();
-				statusBar.BeginProgress (GettextCatalog.GetString ("Update catalog list..."));
-			});
+			int found = 0;
+			ListStore newStore = new ListStore (typeof(CatalogEntry));
 			
 			try {
 				foreach (CatalogEntry entry in catalog) {
-					if (worker != null && worker.CancellationPending)
-						return;
-					number++;
-					if (number % 50 == 0) {
-						DispatchService.GuiSyncDispatch (delegate {
-							statusBar.SetProgressFraction (Math.Min (1.0, Math.Max (0.0, number / (double)count)));
-						});
-					}
 					if (!ShouldFilter (entry, filter)) {
-						newStore.AppendValues (GetStockForEntry (entry), 
-							entry.IsFuzzy, StringEscaping.ToGettextFormat (entry.String), 
-							StringEscaping.ToGettextFormat (entry.GetTranslation (0)), 
-							entry,
-							GetRowColorForEntry (entry),
-							GetTypeSortIndicator (entry),
-							GetForeColorForEntry (entry)
-						);
+						newStore.AppendValues (entry);
 						found++;
 					}
 				}
 			} catch (Exception) {
-			
+				
 			}
-			DispatchService.GuiSyncDispatch (delegate {
-				store.Dispose ();
-				treeviewEntries.Model = store = newStore;
-				statusBar.EndProgress ();
-				IdeApp.Workbench.StatusBar.ShowMessage (string.Format (GettextCatalog.GetPluralString ("Found {0} catalog entry.", "Found {0} catalog entries.", found), found));
+			
+			newStore.SetSortFunc (0, delegate (TreeModel model, TreeIter iter1, TreeIter iter2) {
+				CatalogEntry entry1 = (CatalogEntry)model.GetValue (iter1, 0);
+				CatalogEntry entry2 = (CatalogEntry)model.GetValue (iter2, 0);
+				return GetTypeSortIndicator (entry1).CompareTo (GetTypeSortIndicator (entry2));
 			});
+			newStore.SetSortFunc (1, delegate (TreeModel model, TreeIter iter1, TreeIter iter2) {
+				CatalogEntry entry1 = (CatalogEntry)model.GetValue (iter1, 0);
+				CatalogEntry entry2 = (CatalogEntry)model.GetValue (iter2, 0);
+				return entry1.String.CompareTo (entry2.String);
+			});
+			newStore.SetSortFunc (2, delegate (TreeModel model, TreeIter iter1, TreeIter iter2) {
+				CatalogEntry entry1 = (CatalogEntry)model.GetValue (iter1, 0);
+				CatalogEntry entry2 = (CatalogEntry)model.GetValue (iter2, 0);
+				return entry1.GetTranslation (0).CompareTo (entry2.GetTranslation (0));
+			});
+			IdeApp.Workbench.StatusBar.ShowMessage (string.Format (GettextCatalog.GetPluralString ("Found {0} catalog entry.", "Found {0} catalog entries.", found), found));
+			store.Dispose ();
+			treeviewEntries.Model = store = newStore;
 		}
-
 		
-		void StopFilterWorkerThread ()
-		{
-			updateThread.CancelAsync ();
-			while (updateThread.IsBusy)
-				Thread.Sleep (20);
-		}
+		
+			
 		
 		bool IsVisible (TreePath path)
 		{
@@ -967,8 +884,8 @@ namespace MonoDevelop.Gettext
 		
 		public void SelectEntry (CatalogEntry entry)
 		{
-			if (updateThread.IsBusy)
-				return;
+//			if (updateThread.IsBusy)
+//				return;
 			
 			TreeIter iter;
 			if (store.GetIterFirst (out iter)) {
@@ -994,9 +911,7 @@ namespace MonoDevelop.Gettext
 			);
 			SelectEntry (entry);
 		}
-		
-		
-#endregion
+		#endregion
 		
 #region Toolbar handling
 		ToggleToolButton AddButton (string label)
@@ -1042,7 +957,6 @@ namespace MonoDevelop.Gettext
 		
 		protected override void OnDestroyed ()
 		{
-			StopFilterWorkerThread ();
 			StopTaskWorkerThread ();
 		
 			if (store != null) {

@@ -49,8 +49,6 @@ namespace MonoDevelop.Gettext.Editor
 			poEditorWidget = new POEditorWidget (project);
 			catalog.DirtyChanged += delegate (object sender, EventArgs args) {
 				IsDirty = catalog.IsDirty;
-				if (sender is CatalogEntry)
-					this.poEditorWidget.UpdateEntry (sender as CatalogEntry);
 			};
 		}
 		
