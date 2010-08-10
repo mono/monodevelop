@@ -969,6 +969,60 @@ namespace Mono.TextEditor
 			return Document.GetLineText (line, includeDelimiter);
 		}
 		
+		public IEnumerable<LineSegment> Lines {
+			get {
+				return Document.Lines;
+			}
+		}
+		
+		public int LineCount {
+			get {
+				return Document.LineCount;
+			}
+		}
+		
+		public int LocationToOffset (int line, int column)
+		{
+			return Document.LocationToOffset (line, column);
+		}
+		
+		public int LocationToOffset (DocumentLocation location)
+		{
+			return Document.LocationToOffset (location);
+		}
+		
+		public DocumentLocation OffsetToLocation (int offset)
+		{
+			return Document.OffsetToLocation (offset);
+		}
+
+		public string GetLineIndent (int lineNumber)
+		{
+			return Document.GetLineIndent (lineNumber);
+		}
+		
+		public string GetLineIndent (LineSegment segment)
+		{
+			return Document.GetLineIndent (segment);
+		}
+		
+		public LineSegment GetLine (int lineNumber)
+		{
+			return Document.GetLine (lineNumber);
+		}
+		
+		public LineSegment GetLineByOffset (int offset)
+		{
+			return Document.GetLineByOffset (offset);
+		}
+		
+		public int OffsetToLineNumber (int offset)
+		{
+			return Document.OffsetToLineNumber (offset);
+		}
+		#endregion
+		
+		#region Parent functions
 		public bool HasFocus {
 			get {
 				return Parent != null ? Parent.HasFocus : false;

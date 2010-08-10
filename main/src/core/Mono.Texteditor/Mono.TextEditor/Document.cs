@@ -336,36 +336,24 @@ namespace Mono.TextEditor
 		{
 			return LocationToOffset (new DocumentLocation (line, column));
 		}
-
 		
 		public int LocationToOffset (DocumentLocation location)
-
 		{
 			if (location.Line >= this.splitter.LineCount) 
-
 				return -1;
-
 			LineSegment line = GetLine (location.Line);
-
 			return System.Math.Min (Length, line.Offset + System.Math.Min (line.EditableLength, location.Column));
-
 		}
 		
 		public DocumentLocation OffsetToLocation (int offset)
-
 		{
-
 			int lineNr = splitter.OffsetToLineNumber (offset);
-
 			if (lineNr < 0)
 				return DocumentLocation.Empty;
 			LineSegment line = GetLine (lineNr);
-
 			return new DocumentLocation (lineNr, System.Math.Min (line.Length, offset - line.Offset));
-
 		}
 
-		
 		public string GetLineIndent (int lineNumber)
 		{
 			return GetLineIndent (GetLine (lineNumber));
@@ -392,7 +380,6 @@ namespace Mono.TextEditor
 		{
 			return splitter.OffsetToLineNumber (offset);
 		}
-		
 		#endregion
 		
 		#region Undo/Redo operations

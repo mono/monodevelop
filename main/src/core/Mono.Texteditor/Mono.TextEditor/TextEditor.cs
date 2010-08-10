@@ -1467,16 +1467,7 @@ namespace Mono.TextEditor
 			return result;
 		}
 
-		#region TextEditorData functions
-		public string Text {
-			get {
-				return textEditorData.Text;
-			}
-			set {
-				textEditorData.Text = value;
-			}
-		}
-		
+		#region TextEditorData delegation
 		public string EolMarker {
 			get {
 				return textEditorData.EolMarker;
@@ -1667,6 +1658,95 @@ namespace Mono.TextEditor
 			CurrentMode.InternalSelectionChanged (this, textEditorData);
 			if (SelectionChanged != null) 
 				SelectionChanged (this, args);
+		}
+		#endregion
+		
+		#region Document delegation
+		public int Length {
+			get {
+				return Document.Length;
+			}
+		}
+
+		public string Text {
+			get {
+				return Document.Text;
+			}
+			set {
+				Document.Text = value;
+			}
+		}
+
+		public string GetTextBetween (int startOffset, int endOffset)
+		{
+			return Document.GetTextBetween (startOffset, endOffset);
+		}
+
+		public string GetTextAt (int offset, int count)
+		{
+			return Document.GetTextAt (offset, count);
+		}
+
+		public string GetTextAt (ISegment segment)
+		{
+			return Document.GetTextAt (segment);
+		}
+		
+		public char GetCharAt (int offset)
+		{
+			return Document.GetCharAt (offset);
+		}
+		
+		public IEnumerable<LineSegment> Lines {
+			get {
+				return Document.Lines;
+			}
+		}
+		
+		public int LineCount {
+			get {
+				return Document.LineCount;
+			}
+		}
+		
+		public int LocationToOffset (int line, int column)
+		{
+			return Document.LocationToOffset (line, column);
+		}
+		
+		public int LocationToOffset (DocumentLocation location)
+		{
+			return Document.LocationToOffset (location);
+		}
+		
+		public DocumentLocation OffsetToLocation (int offset)
+		{
+			return Document.OffsetToLocation (offset);
+		}
+
+		public string GetLineIndent (int lineNumber)
+		{
+			return Document.GetLineIndent (lineNumber);
+		}
+		
+		public string GetLineIndent (LineSegment segment)
+		{
+			return Document.GetLineIndent (segment);
+		}
+		
+		public LineSegment GetLine (int lineNumber)
+		{
+			return Document.GetLine (lineNumber);
+		}
+		
+		public LineSegment GetLineByOffset (int offset)
+		{
+			return Document.GetLineByOffset (offset);
+		}
+		
+		public int OffsetToLineNumber (int offset)
+		{
+			return Document.OffsetToLineNumber (offset);
 		}
 		#endregion
 		
@@ -2007,7 +2087,6 @@ namespace Mono.TextEditor
 							return true;
 						cr.Translate (width / 2,  height / 2);
 						cr.Scale (1 + scale / 2, 1 + scale / 2);
-						
 						
 						using (var layout = cr.CreateLayout ()) {
 							layout.FontDescription = Editor.Options.Font;
