@@ -85,6 +85,13 @@ namespace MonoDevelop.Gettext
 		public TranslationProject ()
 		{
 			translations = new TranslationCollection (this);
+			
+			foreach (string platform in new [] { "x86", "AnyCPU"}) {
+				foreach (string config in new [] { "Debug", "Release"}) {
+					Configurations.Add (new TranslationProjectConfiguration (config + "|" + platform) { Platform = platform });
+				}
+			}
+			
 		}
 		
 		protected override List<FilePath> OnGetItemFiles (bool includeReferencedFiles)
