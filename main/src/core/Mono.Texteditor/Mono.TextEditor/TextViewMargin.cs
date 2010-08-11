@@ -2361,19 +2361,29 @@ namespace Mono.TextEditor
 		
 		public Cairo.Point LocationToPoint (int line, int column)
 		{
-			return LocationToPoint (new DocumentLocation (line, column));
+			return LocationToPoint (line, column, false);
 		}
 		
 		public Cairo.Point LocationToPoint (DocumentLocation loc)
+		{
+			return LocationToPoint (loc, false);
+		}
+		
+		public Cairo.Point LocationToPoint (int line, int column, bool useAbsoluteCoordinates)
+		{
+			return LocationToPoint (new DocumentLocation (line, column), useAbsoluteCoordinates);
+		}
+		
+		public Cairo.Point LocationToPoint (DocumentLocation loc, bool useAbsoluteCoordinates)
 		{
 			LineSegment line = Document.GetLine (loc.Line);
 			if (line == null)
 				return new Cairo.Point (-1, -1);
 			int x = (int)(ColumnToX (line, loc.Column) + this.XOffset + this.TextStartPosition);
 			int y = LineToY (loc.Line);
-			return new Cairo.Point (x - (int)this.textEditor.HAdjustment.Value, y - (int)this.textEditor.VAdjustment.Value);
+			return useAbsoluteCoordinates ? new Cairo.Point (x, y) : new Cairo.Point (x - (int)this.textEditor.HAdjustment.Value, y - (int)this.textEditor.VAdjustment.Value);
 		}
-
+		
 		public double ColumnToX (LineSegment line, int column)
 		{
 			if (line == null || line.EditableLength == 0 || column < 0)

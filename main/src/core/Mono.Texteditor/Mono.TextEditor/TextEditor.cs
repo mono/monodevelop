@@ -2401,6 +2401,16 @@ namespace Mono.TextEditor
 		{
 			return TextViewMargin.LocationToPoint (line, column);
 		}
+		
+		public Cairo.Point LocationToPoint (int line, int column, bool useAbsoluteCoordinates)
+		{
+			return TextViewMargin.LocationToPoint (line, column, useAbsoluteCoordinates);
+		}
+		
+		public Cairo.Point LocationToPoint (DocumentLocation loc, bool useAbsoluteCoordinates)
+		{
+			return TextViewMargin.LocationToPoint (loc, useAbsoluteCoordinates);
+		}
 
 		public double ColumnToX (LineSegment line, int column)
 		{
