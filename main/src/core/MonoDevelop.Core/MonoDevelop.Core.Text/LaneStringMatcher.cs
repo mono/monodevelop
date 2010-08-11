@@ -48,9 +48,21 @@ namespace MonoDevelop.Core.Text
 				matchRank = int.MinValue;
 				return true;
 			}
-			MatchLane lane = MatchString (name);
+			int totalWords;
+			MatchLane lane = MatchString (name, out totalWords);
 			if (lane != null) {
-				// Favor matches with less splits. That is, 'abc def' is better than 'ab c def'.
+				matchRank = filterLowerCase.Length - name.Length;
+				matchRank -= lane.Positions [0];
+				
+				matchRank += (lane.WordStartsMatched - totalWords) * 100;
+				
+				// Favor matches where all parts are word starts
+				if (lane.WordStartsMatched == lane.Index + 1)
+					matchRank += 100;
+				
+//				Console.WriteLine ("MM: " + name + " " + lane.WordStartsMatched + " - " + matchRank);
+				
+/*				// Favor matches with less splits. That is, 'abc def' is better than 'ab c def'.
 				int baseRank = (filter.Length - lane.Index - 1) * 5000;
 
 				// First matching letter close to the begining is better
@@ -62,7 +74,7 @@ namespace MonoDevelop.Core.Text
 				// rank up matches which start with a filter substring
 				if (lane.Positions [0] == 0)
 					matchRank += lane.Lengths[0] * 50;
-				
+				*/
 				return true;
 			}
 			matchRank = int.MinValue;
@@ -71,7 +83,8 @@ namespace MonoDevelop.Core.Text
 
 		public override bool IsMatch (string name)
 		{
-			return filterLowerCase.Length == 0 || MatchString (name) != null;
+			int totalWords;
+			return filterLowerCase.Length == 0 || MatchString (name, out totalWords) != null;
 		}
 		
 		/// <summary>
@@ -89,7 +102,8 @@ namespace MonoDevelop.Core.Text
 				return new int[0];
 			if (string.IsNullOrEmpty (text))
 				return null;
-			var lane = MatchString (text);
+			int totalWords;
+			var lane = MatchString (text, out totalWords);
 			if (lane == null)
 				return null;
 			int cnt = 0;
@@ -107,8 +121,10 @@ namespace MonoDevelop.Core.Text
 			return result;
 		}
 		
-		MatchLane MatchString (string text)
+		MatchLane MatchString (string text, out int totalWords)
 		{
+			totalWords = 0;
+			
 			if (text == null || text.Length < filterLowerCase.Length)
 				return null;
 			
@@ -116,6 +132,7 @@ namespace MonoDevelop.Core.Text
 			
 			string textLowerCase = text.ToLowerInvariant ();
 	
+			bool lastWasSeparator = false;
 			int firstMatchPos = -1;
 			int j = 0;
 			int tlen = text.Length;
@@ -123,6 +140,9 @@ namespace MonoDevelop.Core.Text
 			for (int n=0; n<tlen && j < flen; n++) {
 				char ctLower = textLowerCase[n];
 				char cfLower = filterLowerCase [j];
+				bool wordStart = (ctLower != text[n]) || n == 0 || lastWasSeparator;
+				if (wordStart)
+					totalWords++;
 				if (ctLower == cfLower && !(cfLower != filter[j] && ctLower == text[n])) {
 					bool exactMatch = filter[j] == text[n];
 					j++;
@@ -135,6 +155,7 @@ namespace MonoDevelop.Core.Text
 						return lane;
 					}
 				}
+				lastWasSeparator = IsSeparator (ctLower);
 			}
 
 			if (j < flen)
@@ -145,7 +166,6 @@ namespace MonoDevelop.Core.Text
 			// Full match check
 			
 			matchLanes.Clear ();
-			bool lastWasSeparator = false;
 			int tn = firstMatchPos;
 			char filterStartLower = filterLowerCase[0];
 			bool filterStartIsUpper = filterStartLower != filter[0];
@@ -154,6 +174,10 @@ namespace MonoDevelop.Core.Text
 				char ct = text [tn];
 				char ctLower = textLowerCase [tn];
 				bool ctIsUpper = ct != ctLower;
+				bool wordStart = ctIsUpper || tn == 0 || lastWasSeparator;
+				
+				if (wordStart)
+					totalWords++;
 				
 				// Keep the lane count in a var because new lanes don't have to be updated
 				// until the next iteration
@@ -178,13 +202,14 @@ namespace MonoDevelop.Core.Text
 					bool cfIsUpper = cfLower != filter [lane.MatchIndex];
 					bool match = ctLower == cfLower && !(cfIsUpper && !ctIsUpper);
 					bool exactMatch = match && (cfIsUpper == ctIsUpper);
-					bool wordStartMatch = match && (tn == 0 || ctIsUpper || lastWasSeparator);
+					bool wordStartMatch = match && wordStart;
 	
 					if (lane.MatchMode == MatchMode.Substring) {
 						if (wordStartMatch) {
 							// Possible acronym match after a substring. Start a new lane.
 							MatchLane newLane = CloneLane (lane);
 							newLane.MatchMode = MatchMode.Acronym;
+							newLane.WordStartsMatched++;
 							newLane.Index++;
 							newLane.Positions [newLane.Index] = tn;
 							newLane.Lengths [newLane.Index] = 1;
@@ -236,6 +261,8 @@ namespace MonoDevelop.Core.Text
 							lane.Positions [lane.Index] = tn;
 							lane.Lengths [lane.Index] = 1;
 							lane.MatchIndex++;
+							if (wordStartMatch)
+								lane.WordStartsMatched++;
 							if (exactMatch)
 								newLane.ExactCaseMatches++;
 						}
@@ -243,10 +270,15 @@ namespace MonoDevelop.Core.Text
 					if (lane.MatchIndex == filterLowerCase.Length)
 						return lane;
 				}
-				lastWasSeparator = (ct == '.' || ct == '_' || ct == '-' || ct == ' ' || ct == '/' || ct == '\\');
+				lastWasSeparator = IsSeparator (ct);
 				tn++;
 			}
 			return null;
+		}
+		
+		bool IsSeparator (char ct)
+		{
+			return (ct == '.' || ct == '_' || ct == '-' || ct == ' ' || ct == '/' || ct == '\\');
 		}
 		
 		void ResetLanePool ()
@@ -269,6 +301,8 @@ namespace MonoDevelop.Core.Text
 		{
 			MatchLane lane = GetPoolLane ();
 			lane.Initialize (mode, pos);
+			if (mode == MatchMode.Acronym)
+				lane.WordStartsMatched = 1;
 			return lane;
 		}
 		
@@ -295,6 +329,7 @@ namespace MonoDevelop.Core.Text
 			public int Index;
 			public int MatchIndex;
 			public int ExactCaseMatches;
+			public int WordStartsMatched;
 	
 			public MatchLane (int maxlen)
 			{
@@ -310,6 +345,7 @@ namespace MonoDevelop.Core.Text
 				Index = 0;
 				MatchIndex = 1;
 				ExactCaseMatches = 0;
+				WordStartsMatched = 0;
 			}
 	
 			public void Initialize (MatchLane other)
@@ -322,6 +358,7 @@ namespace MonoDevelop.Core.Text
 				MatchIndex = other.MatchIndex;
 				Index = other.Index;
 				ExactCaseMatches = other.ExactCaseMatches;
+				WordStartsMatched = other.WordStartsMatched;
 			}
 		}
 	}

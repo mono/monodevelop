@@ -35,11 +35,13 @@ namespace MonoDevelop.Core.Text
 
 		readonly bool[] filterTextLowerCaseTable;
 		readonly bool[] filterIsNonLetter;
+		readonly string filterText;
 
 		int[] cachedResult;
 
 		public BacktrackingStringMatcher (string filterText)
 		{
+			this.filterText = filterText ?? "";
 			if (filterText != null) {
 				filterTextLowerCaseTable = new bool[filterText.Length];
 				filterIsNonLetter = new bool[filterText.Length];
@@ -62,7 +64,10 @@ namespace MonoDevelop.Core.Text
 			}
 			var lane = GetMatch (name);
 			if (lane != null) {
-				matchRank = -(lane[0] + (name.Length - filterTextUpperCase.Length));
+				int caseMatches = 0;
+				for (int n=0; n<lane.Length; n++)
+					if (filterText[n] == name [lane[n]]) caseMatches++;
+				matchRank = caseMatches * 10 - (lane[0] + (name.Length - filterTextUpperCase.Length));
 				return true;
 			}
 			matchRank = int.MinValue;
