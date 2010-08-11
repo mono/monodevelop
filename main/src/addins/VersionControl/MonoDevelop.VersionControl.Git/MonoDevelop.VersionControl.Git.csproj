@@ -55,6 +55,12 @@
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.UserInfoConflictDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.ConflictResolutionDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\ConflictResolutionDialog.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git\GitConfigurationDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.GitConfigurationDialog.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git\EditBranchDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.EditBranchDialog.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git\EditRemoteDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.EditRemoteDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

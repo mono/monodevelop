@@ -495,7 +495,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public string GetCurrentRemote ()
 		{
-			List<string> remotes = new List<string> (GetNamedRemotes ());
+			List<string> remotes = new List<string> (GetRemotes ().Select (r => r.Name));
 			if (remotes.Count == 0)
 				throw new InvalidOperationException ("There are no remote repositories defined");
 			
@@ -511,25 +511,118 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.ReportSuccess ("Repository successfully pushed");
 		}
 		
-		public IEnumerable<string> GetNamedRemotes ()
+		public void CreateBranch (string name, string trackSource)
 		{
-			StringReader sr = RunCommand ("remote", true);
-			string line;
-			while ((line = sr.ReadLine ()) != null) {
-				yield return line;
-			}
+			if (string.IsNullOrEmpty (trackSource))
+				RunCommand ("branch " + name, true);
+			else
+				RunCommand ("branch --track " + name + " " + trackSource, true);
 		}
 		
-		public IEnumerable<string> GetBranches ()
+		public void SetBranchTrackSource (string name, string trackSource)
 		{
-			StringReader sr = RunCommand ("branch", true);
+			if (string.IsNullOrEmpty (trackSource))
+				RunCommand ("branch --no-track -f " + name, true);
+			else
+				RunCommand ("branch --track -f " + name + " " + trackSource, true);
+		}
+		
+		public void RemoveBranch (string name)
+		{
+			RunCommand ("branch -d " + name, true);
+		}
+		
+		public void RenameBranch (string name, string newName)
+		{
+			RunCommand ("branch -m " + name + " " + newName, true);
+		}
+		
+		public IEnumerable<RemoteSource> GetRemotes ()
+		{
+			StringReader sr = RunCommand ("remote -v", true);
+			string line;
+			List<RemoteSource> sources = new List<RemoteSource> ();
+			while ((line = sr.ReadLine ()) != null) {
+				int i = line.IndexOf ('\t');
+				if (i == -1)
+					continue;
+				string name = line.Substring (0, i);
+				RemoteSource remote = sources.FirstOrDefault (r => r.Name == name);
+				if (remote == null) {
+					remote = new RemoteSource ();
+					remote.Name = name;
+					sources.Add (remote);
+				}
+				int j = line.IndexOf (" (fetch)");
+				if (j != -1) {
+					remote.FetchUrl = line.Substring (i, line.Length - i - 8).Trim ();
+				} else {
+					j = line.IndexOf (" (push)");
+					remote.PushUrl = line.Substring (i, line.Length - i - 7).Trim ();
+				}
+			}
+			return sources;
+		}
+		
+		public void RenameRemote (string name, string newName)
+		{
+			RunCommand ("remote rename " + name + " " + newName, true);
+		}
+		
+		public void AddRemote (RemoteSource remote, bool importTags)
+		{
+			RunCommand ("remote add " + (importTags ? "--tags " : "--no-tags ") + remote.Name, true);
+			UpdateRemote (remote);
+		}
+		
+		public void UpdateRemote (RemoteSource remote)
+		{
+			if (string.IsNullOrEmpty (remote.FetchUrl))
+				throw new InvalidOperationException ("Fetch url can't be empty");
+			
+			RunCommand ("remote set-url " + remote.Name + " " + remote.FetchUrl, true);
+			
+			if (!string.IsNullOrEmpty (remote.PushUrl))
+				RunCommand ("remote set-url --push " + remote.Name + " " + remote.PushUrl, true);
+			else
+				RunCommand ("remote set-url --push --delete " + remote.Name + " " + remote.PushUrl, true);
+		}
+		
+		public void RemoveRemote (string name)
+		{
+			RunCommand ("remote rm " + name, true);
+		}
+		
+		public IEnumerable<Branch> GetBranches ()
+		{
+			StringReader sr = RunCommand ("branch -vv", true);
+			List<Branch> list = new List<Branch> ();
 			string line;
 			while ((line = sr.ReadLine ()) != null) {
-				if (line.StartsWith ("* "))
-					yield return line.Substring (2).Trim ();
-				else
-					yield return line.Trim ();
+				if (line.Length < 2)
+					continue;
+				line = line.Substring (2);
+				int i = line.IndexOf (' ');
+				if (i == -1)
+					continue;
+				
+				Branch b = new Branch ();
+				b.Name = line.Substring (0, i);
+				
+				i = line.IndexOf ('[', i);
+				if (i != -1) {
+					int j = line.IndexOf (']', ++i);
+					b.Tracking = line.Substring (i, j - i);
+				}
+				list.Add (b);
 			}
+			return list;
+		}
+		
+		public IEnumerable<string> GetTags ()
+		{
+			StringReader sr = RunCommand ("tag", true);
+			return ToList (sr);
 		}
 		
 		public IEnumerable<string> GetRemoteBranches (string remoteName)
@@ -539,7 +632,10 @@ namespace MonoDevelop.VersionControl.Git
 			while ((line = sr.ReadLine ()) != null) {
 				if (line.StartsWith ("  " + remoteName + "/") || line.StartsWith ("* " + remoteName + "/")) {
 					int i = line.IndexOf ('/');
-					yield return line.Substring (i+1);
+					int j = line.IndexOf (" -> ");
+					if (j == -1) j = line.Length;
+					i++;
+					yield return line.Substring (i, j - i);
 				}
 			}
 		}
@@ -756,6 +852,19 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			throw new System.NotImplementedException();
 		}
+	}
+	
+	public class Branch
+	{
+		public string Name { get; internal set; }
+		public string Tracking { get; internal set; }
+	}
+	
+	public class RemoteSource
+	{
+		public string Name { get; internal set; }
+		public string FetchUrl { get; internal set; }
+		public string PushUrl { get; internal set; }
 	}
 }
 

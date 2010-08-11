@@ -35,7 +35,8 @@ namespace MonoDevelop.VersionControl.Git
 	public enum Commands
 	{
 		Push,
-		SwitchToBranch
+		SwitchToBranch,
+		ManageBranches
 	}
 	
 	class PushCommandHandler: CommandHandler
@@ -75,12 +76,31 @@ namespace MonoDevelop.VersionControl.Git
 			GitRepository repo = VersionControlService.GetRepository (wob) as GitRepository;
 			if (repo != null) {
 				string currentBranch = repo.GetCurrentBranch ();
-				foreach (string branch in repo.GetBranches ()) {
-					CommandInfo ci = info.Add (branch, branch);
-					if (branch == currentBranch)
+				foreach (Branch branch in repo.GetBranches ()) {
+					CommandInfo ci = info.Add (branch.Name, branch.Name);
+					if (branch.Name == currentBranch)
 						ci.Checked = true;
 				}
 			}
+		}
+	}
+	
+	class ManageBranchesHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
+			GitRepository repo = VersionControlService.GetRepository (wob) as GitRepository;
+			GitService.ShowConfigurationDialog (repo);
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
+			GitRepository repo = null;
+			if (wob != null)
+				repo = VersionControlService.GetRepository (wob) as GitRepository;
+			info.Visible = repo != null;
 		}
 	}
 }

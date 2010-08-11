@@ -1,5 +1,5 @@
 // 
-// GitService.cs
+// EditRemoteDialog.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
@@ -25,39 +25,60 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core;
-using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public static class GitService
+	public partial class EditRemoteDialog : Gtk.Dialog
 	{
-		public static void Push (GitRepository repo)
+		RemoteSource remote;
+		bool updating;
+		
+		public EditRemoteDialog (RemoteSource remote, bool isNew)
 		{
-			PushDialog dlg = new PushDialog (repo);
-			if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-				string remote = dlg.SelectedRemote;
-				string branch = dlg.SelectedRemoteBranch;
-				dlg.Destroy ();
-				IProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Pushing changes..."));
-				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
-					try {
-						repo.Push (monitor, remote, branch);
-					} catch (Exception ex) {
-						monitor.ReportError (ex.Message, ex);
-					} finally {
-						monitor.Dispose ();
-					}
-				});
-			} else
-				dlg.Destroy ();
+			this.Build ();
+			this.remote = remote;
+			
+			updating = true;
+			entryName.Text = remote.Name;
+			entryUrl.Text = remote.FetchUrl ?? "";
+			entryPushUrl.Text = remote.PushUrl ?? "";
+			if (!isNew)
+				checkImportTags.Visible = false;
+			updating = false;
+			UpdateButtons ();
 		}
-	
-		public static void ShowConfigurationDialog (GitRepository repo)
+		
+		public bool ImportTags {
+			get { return checkImportTags.Active; }
+		}
+		
+		void UpdateButtons ()
 		{
-			GitConfigurationDialog dlg = new GitConfigurationDialog (repo);
-			dlg.Run ();
-			dlg.Destroy ();
+			buttonOk.Sensitive = entryName.Text.Length > 0 && entryUrl.Text.Length > 0;
+		}
+		
+		protected virtual void OnEntryNameChanged (object sender, System.EventArgs e)
+		{
+			if (updating)
+				return;
+			remote.Name = entryName.Text;
+			UpdateButtons ();
+		}
+		
+		protected virtual void OnEntryUrlChanged (object sender, System.EventArgs e)
+		{
+			if (updating)
+				return;
+			remote.FetchUrl = entryUrl.Text;
+			UpdateButtons ();
+		}
+		
+		protected virtual void OnEntryPushUrlChanged (object sender, System.EventArgs e)
+		{
+			if (updating)
+				return;
+			remote.PushUrl = entryPushUrl.Text;
+			UpdateButtons ();
 		}
 	}
 }

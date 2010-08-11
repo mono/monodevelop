@@ -32,13 +32,19 @@
 			type="radio|array"
 			defaultHandler = "MonoDevelop.VersionControl.Git.SwitchToBranchHandler"
 			description = "Switch to branch."/>
+		<Command id = "MonoDevelop.VersionControl.Git.Commands.ManageBranches" 
+			_label = "Manage Branches and Remotes"
+			defaultHandler = "MonoDevelop.VersionControl.Git.ManageBranchesHandler" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/VersionControl">
-		<CommandItem id = "MonoDevelop.VersionControl.Git.Commands.Push" insertafter="MonoDevelop.VersionControl.Commands.CommitSolution"/>
+		<SeparatorItem insertafter="MonoDevelop.VersionControl.Commands.CommitSolution"/>
+		<CommandItem id = "MonoDevelop.VersionControl.Git.Commands.Push" />
 		<ItemSet id = "SwitchToBranch" _label = "Switch to Branch" autohide="true">
 			<CommandItem id = "MonoDevelop.VersionControl.Git.Commands.SwitchToBranch"/>
 		</ItemSet>
+		<CommandItem id = "MonoDevelop.VersionControl.Git.Commands.ManageBranches"/>
+		<SeparatorItem />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
