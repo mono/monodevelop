@@ -151,9 +151,9 @@ namespace MonoDevelop.SourceEditor
 				if (MessageBubbleTextMarker.RemoveLine (e.Line)) {
 					MessageBubbleTextMarker marker = currentErrorMarkers.FirstOrDefault (m => m.LineSegment == e.Line);
 					if (marker != null) {
-						int oldHeight = marker.lastHeight;
+						double oldHeight = marker.lastHeight;
 						widget.TextEditor.TextViewMargin.RemoveCachedLine (e.Line); // ensure that the line cache is renewed
-						int newHeight = marker.GetLineHeight (widget.TextEditor);
+						double newHeight = marker.GetLineHeight (widget.TextEditor);
 						if (oldHeight != newHeight)
 							widget.Document.CommitLineToEndUpdate (widget.TextEditor.Document.OffsetToLineNumber (e.Line.Offset));
 					}
@@ -746,7 +746,7 @@ namespace MonoDevelop.SourceEditor
 			PinnedWatchInfo wi = new PinnedWatchInfo ();
 			wi.Line = line;
 			if (w.OffsetX < 0) {
-				w.OffsetY = widget.TextEditor.LineToY (w.Line - 1);
+				w.OffsetY = (int)widget.TextEditor.LineToY (w.Line - 1);
 				int lw, lh;
 				widget.TextEditor.TextViewMargin.GetLayout (line).Layout.GetPixelSize (out lw, out lh);
 				w.OffsetX = (int)widget.TextEditor.TextViewMargin.XOffset + lw + 4;
@@ -1293,7 +1293,7 @@ namespace MonoDevelop.SourceEditor
 			var p = DocumentToScreenLocation (loc);
 			result.TriggerXCoord = p.X;
 			result.TriggerYCoord = p.Y;
-			result.TriggerTextHeight = TextEditor.LineHeight;
+			result.TriggerTextHeight = (int)TextEditor.LineHeight;
 			return result;
 		}
 		
@@ -1303,7 +1303,7 @@ namespace MonoDevelop.SourceEditor
 			int tx, ty;
 			widget.Vbox.ParentWindow.GetOrigin (out tx, out ty);
 			tx += widget.TextEditorContainer.Allocation.X + p.X;
-			ty += widget.TextEditorContainer.Allocation.Y + p.Y + TextEditor.LineHeight;
+			ty += widget.TextEditorContainer.Allocation.Y + p.Y + (int)TextEditor.LineHeight;
 			return new Gdk.Point (tx, ty);
 		}
 		

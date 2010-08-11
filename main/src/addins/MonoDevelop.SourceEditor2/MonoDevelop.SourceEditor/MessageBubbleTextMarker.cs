@@ -99,9 +99,9 @@ namespace MonoDevelop.SourceEditor
 		Task task;
 		LineSegment lineSegment;
 		int editorAllocHeight = -1, lastLineLength = -1;
-		internal int lastHeight = 0;
+		internal double lastHeight = 0;
 
-		public int GetLineHeight (TextEditor editor)
+		public double GetLineHeight (TextEditor editor)
 		{
 			if (!IsVisible || DebuggingService.IsDebugging)
 				return editor.LineHeight;
@@ -110,7 +110,7 @@ namespace MonoDevelop.SourceEditor
 				return lastHeight;
 			
 			CalculateLineFit (editor, lineSegment);
-			int height;
+			double height;
 			if (CollapseExtendedErrors) {
 				height = editor.LineHeight;
 			} else {
@@ -385,8 +385,8 @@ namespace MonoDevelop.SourceEditor
 			int highlighted = active == 0 && isCaretInLine ? 1 : 0;
 			int selected = 0;
 			
-			int topSize = editor.LineHeight / 2;
-			int bottomSize = editor.LineHeight / 2 + editor.LineHeight % 2;
+			double topSize = editor.LineHeight / 2;
+			double bottomSize = editor.LineHeight / 2 + editor.LineHeight % 2;
 		
 			if (!fitsInSameLine) {
 				if (isEolSelected) {
@@ -712,8 +712,8 @@ namespace MonoDevelop.SourceEditor
 			get {
 				int lineNumber = editor.Document.OffsetToLineNumber (lineSegment.Offset);
 				
-				int y = editor.LineToY (lineNumber) - (int)editor.VAdjustment.Value;
-				int height = editor.LineHeight * errors.Count;
+				double y = editor.LineToY (lineNumber) - (int)editor.VAdjustment.Value;
+				double height = editor.LineHeight * errors.Count;
 				if (!fitsInSameLine)
 					y += editor.LineHeight;
 				int errorCounterWidth = 0;
@@ -724,10 +724,10 @@ namespace MonoDevelop.SourceEditor
 					errorCounterWidth = ew + 10;
 				}
 				
-				int labelWidth = LayoutWidth + border + (ShowIconsInBubble ? errorPixbuf.Width : 0) + errorCounterWidth;
+				double labelWidth = LayoutWidth + border + (ShowIconsInBubble ? errorPixbuf.Width : 0) + errorCounterWidth;
 				if (fitsInSameLine)
 					labelWidth += editor.LineHeight / 2;
-				return new Gdk.Rectangle (editor.Allocation.Width - labelWidth, y, labelWidth, height);
+				return new Gdk.Rectangle ((int)(editor.Allocation.Width - labelWidth), (int)y, (int)labelWidth, (int)height);
 			}
 		}
 
@@ -747,7 +747,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			int ew = 0, eh = 0;
 			int lineNumber = editor.Document.OffsetToLineNumber (lineSegment.Offset);
-			int y = editor.LineToY (lineNumber) - (int)editor.VAdjustment.Value;
+			double y = editor.LineToY (lineNumber) - editor.VAdjustment.Value;
 			if (fitsInSameLine) {
 				if (args.Y < y + 2 || args.Y > y + editor.LineHeight - 2)
 					return false;
@@ -770,15 +770,14 @@ namespace MonoDevelop.SourceEditor
 			if (layouts == null)
 				return -1;
 			int lineNumber = editor.Document.OffsetToLineNumber (lineSegment.Offset);
-			int y = editor.LineToY (lineNumber) - (int)editor.VAdjustment.Value;
-			int height = editor.LineHeight * errors.Count;
-			if (!fitsInSameLine) {
+			double y = editor.LineToY (lineNumber) - editor.VAdjustment.Value;
+			double height = editor.LineHeight * errors.Count;
+			if (!fitsInSameLine)
 				y += editor.LineHeight;
-			}
 //			Console.WriteLine (lineNumber +  ": height={0}, y={1}, args={2}", height, y, args.Y);
 			if (y > args.Y || args.Y > y + height)
 				return -1;
-			int error = (args.Y - y) / editor.LineHeight;
+			int error = (int)((args.Y - y) / editor.LineHeight);
 //			Console.WriteLine ("error:" + error);
 			if (error >= layouts.Count)
 				return -1;
@@ -790,7 +789,7 @@ namespace MonoDevelop.SourceEditor
 				errorCounterWidth = ew + 10;
 			}
 			
-			int labelWidth = LayoutWidth + border + (ShowIconsInBubble ? errorPixbuf.Width : 0) + errorCounterWidth + editor.LineHeight / 2;
+			double labelWidth = LayoutWidth + border + (ShowIconsInBubble ? errorPixbuf.Width : 0) + errorCounterWidth + editor.LineHeight / 2;
 			
 			if (editor.Allocation.Width - editor.TextViewMargin.XOffset - args.X < labelWidth)
 				return error;
