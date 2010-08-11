@@ -237,19 +237,19 @@ namespace MonoDevelop.VersionControl.Views
 				
 				int startLine = Editor.YToLine ((int)Editor.VAdjustment.Value);
 				
-				int startY = Editor.LineToY (startLine);
+				double startY = Editor.LineToY (startLine);
 				if (startY > 0) {
 					startLine--;
 					startY -= Editor.GetLineHeight (Editor.Document.GetLine (startLine));
 				}
 				
-				int curY = startY - (int)Editor.VAdjustment.Value;
+				double curY = startY - (int)Editor.VAdjustment.Value;
 				int line = startLine;
 				while (curY < editor.Allocation.Bottom) {
 					Annotation ann = line < overview.annotations.Count ? overview.annotations[line] : null;
 					
 					do {
-						int lineHeight = Editor.GetLineHeight (line);
+						double lineHeight = Editor.GetLineHeight (line);
 						curY += lineHeight;
 						line++;
 					} while (line + 1 < overview.annotations.Count && ann != null && overview.annotations[line] != null && overview.annotations[line].Revision == ann.Revision);
@@ -459,7 +459,7 @@ namespace MonoDevelop.VersionControl.Views
 					
 					int startLine = widget.Editor.YToLine ((int)widget.Editor.VAdjustment.Value);
 					
-					int startY = widget.Editor.LineToY (startLine);
+					double startY = widget.Editor.LineToY (startLine);
 					if (startY > 0) {
 						startLine--;
 						startY -= widget.Editor.GetLineHeight (widget.Editor.Document.GetLine (startLine));
@@ -470,33 +470,33 @@ namespace MonoDevelop.VersionControl.Views
 						startY -= widget.Editor.GetLineHeight (widget.Editor.Document.GetLine (startLine));
 					}
 					
-					int curY = startY - (int)widget.Editor.VAdjustment.Value;
+					double curY = startY - widget.Editor.VAdjustment.Value;
 					int line = startLine;
 					while (curY < Allocation.Bottom) {
-						int curStart = curY;
+						double curStart = curY;
 						int lineStart = line;
 						int w = 0, w2 = 0, h = 16;
 						Annotation ann = line < annotations.Count ? annotations[line] : null;
 						if (ann != null) {
 							layout.SetText (ann.Author);
 							layout.GetPixelSize (out w, out h);
-							e.Window.DrawLayout (Style.BlackGC, leftSpacer + margin, curY + (widget.Editor.LineHeight - h) / 2, layout);
+							e.Window.DrawLayout (Style.BlackGC, leftSpacer + margin, (int)(curY + (widget.Editor.LineHeight - h) / 2), layout);
 							
 							
 							layout.SetText (ann.Revision);
 							layout.GetPixelSize (out w2, out h);
-							e.Window.DrawLayout (Style.BlackGC, Allocation.Width - w2 - margin, curY + (widget.Editor.LineHeight - h) / 2, layout);
+							e.Window.DrawLayout (Style.BlackGC, Allocation.Width - w2 - margin, (int)(curY + (widget.Editor.LineHeight - h) / 2), layout);
 
 							if (ann.HasDate) {
 								string dateTime = ann.Date.ToShortDateString ();
 								int middle = w + (Allocation.Width - margin * 2 - leftSpacer - w - w2) / 2;
 								layout.SetText (dateTime);
 								layout.GetPixelSize (out w, out h);
-								e.Window.DrawLayout (Style.BlackGC, leftSpacer + margin + middle - w / 2, curY + (widget.Editor.LineHeight - h) / 2, layout);
+								e.Window.DrawLayout (Style.BlackGC, leftSpacer + margin + middle - w / 2, (int)(curY + (widget.Editor.LineHeight - h) / 2), layout);
 							}
 						
 							do {
-								int lineHeight = widget.Editor.GetLineHeight (line);
+								double lineHeight = widget.Editor.GetLineHeight (line);
 								curY += lineHeight;
 								line++;
 							} while (line + 1 < annotations.Count && annotations[line] != null && annotations[line].Revision == ann.Revision);
@@ -527,8 +527,8 @@ namespace MonoDevelop.VersionControl.Views
 								layout.Width = (int)(Allocation.Width * Pango.Scale.PangoScale);
 								using (var gc = new Gdk.GC (e.Window)) {
 									gc.RgbFgColor = Style.Dark (State);
-									gc.ClipRectangle = new Rectangle (0, curStart, Allocation.Width, curY - curStart);
-									e.Window.DrawLayout (gc, leftSpacer + margin, curStart + h, layout);
+									gc.ClipRectangle = new Rectangle (0, (int)curStart, Allocation.Width, (int)(curY - curStart));
+									e.Window.DrawLayout (gc, (int)(leftSpacer + margin), (int)(curStart + h), layout);
 								}
 							}
 						}

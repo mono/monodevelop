@@ -257,10 +257,8 @@ namespace MonoDevelop.VersionControl.Views
 		
 		Cairo.Path CalculateChunkPath (Cairo.Context cr, TextEditor editor, List<Hunk> diff, List<ISegment> words, bool useRemove)
 		{
-		
 			int startOffset = -1;
 			int endOffset = -1;
-			Console.WriteLine ("Diffs:" + diff.Count);
 			foreach (var hunk in diff) {
 				int start = useRemove ? hunk.RemoveStart : hunk.InsertStart;
 				int count = useRemove ? hunk.Removed : hunk.Inserted;
@@ -321,31 +319,33 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			fromAdj.Changed += AdjustmentChanged;
 			fromAdj.ValueChanged += delegate {
-				if (toAdj.Value != fromAdj.Value)
-					toAdj.Value = fromAdj.Value;
+				double fromValue = fromAdj.Value / (fromAdj.Upper - fromAdj.Lower);
+				if (toAdj.Value != fromValue)
+					toAdj.Value = fromValue;
 				RedrawMiddleAreas ();
 			};
 
 			toAdj.ValueChanged += delegate {
-				if (toAdj.Value != fromAdj.Value)
-					fromAdj.Value = toAdj.Value;
+				double toValue = toAdj.Value * (fromAdj.Upper - fromAdj.Lower); 
+				if (fromAdj.Value != toValue)
+					fromAdj.Value = toValue;
 				RedrawMiddleAreas ();
 			};
 		}
 
 		void AdjustmentChanged (object sender, EventArgs e)
 		{
-			vAdjustment.SetBounds (attachedVAdjustments.Select (adj => adj.Lower).Min (),
-				attachedVAdjustments.Select (adj => adj.Upper).Max (),
-				attachedVAdjustments[0].StepIncrement,
-				attachedVAdjustments[0].PageIncrement,
-				attachedVAdjustments[0].PageSize);
-
-			hAdjustment.SetBounds (attachedHAdjustments.Select (adj => adj.Lower).Min (),
-				attachedHAdjustments.Select (adj => adj.Upper).Max (),
-				attachedHAdjustments[0].StepIncrement,
-				attachedHAdjustments[0].PageIncrement,
-				attachedHAdjustments[0].PageSize);
+			vAdjustment.SetBounds (0, 1.0,
+				attachedVAdjustments.Select (adj => adj.StepIncrement / (adj.Upper - adj.Lower)).Min (),
+				attachedVAdjustments.Select (adj => adj.PageIncrement / (adj.Upper - adj.Lower)).Min (),
+				attachedVAdjustments.Select (adj => adj.PageSize / (adj.Upper - adj.Lower)).Min ());
+			
+			
+			
+			hAdjustment.SetBounds (0, 1.0,
+				attachedHAdjustments.Select (adj => adj.StepIncrement / (adj.Upper - adj.Lower)).Min (),
+				attachedHAdjustments.Select (adj => adj.PageIncrement / (adj.Upper - adj.Lower)).Min (),
+				attachedHAdjustments.Select (adj => adj.PageSize / (adj.Upper - adj.Lower)).Min ());
 			
 		}
 
@@ -458,12 +458,9 @@ namespace MonoDevelop.VersionControl.Views
 
 		static double GetWheelDelta (Adjustment adjustment, ScrollDirection direction)
 		{
-			double delta = System.Math.Pow (adjustment.PageSize, 2.0 / 3.0);
+			double delta = adjustment.StepIncrement * 4;
 			if (direction == ScrollDirection.Up || direction == ScrollDirection.Left)
 				delta = -delta;
-
-//			if (scrollbar.Inverted)
-//				delta = -delta;
 			return delta;
 		}
 
@@ -512,8 +509,8 @@ namespace MonoDevelop.VersionControl.Views
 				return;
 			using (var cr = Gdk.CairoHelper.Create (args.Event.Window)) {
 				foreach (var hunk in diff) {
-					int y1 = editor.LineToY (paintRemoveSide ? hunk.RemoveStart : hunk.InsertStart) - (int)editor.VAdjustment.Value;
-					int y2 = editor.LineToY (paintRemoveSide ? hunk.RemoveStart + hunk.Removed : hunk.InsertStart + hunk.Inserted) - (int)editor.VAdjustment.Value;
+					double y1 = editor.LineToY (paintRemoveSide ? hunk.RemoveStart : hunk.InsertStart) - editor.VAdjustment.Value;
+					double y2 = editor.LineToY (paintRemoveSide ? hunk.RemoveStart + hunk.Removed : hunk.InsertStart + hunk.Inserted) - editor.VAdjustment.Value;
 					if (y1 == y2)
 						y2 = y1 + 1;
 					cr.Rectangle (0, y1, editor.Allocation.Width, y2 - y1);
@@ -632,13 +629,13 @@ namespace MonoDevelop.VersionControl.Views
 				if (!hideButton) {
 					int delta = widget.MainEditor.Allocation.Y - Allocation.Y;
 					foreach (var hunk in Diff) {
-						int z1 = delta + fromEditor.LineToY (hunk.RemoveStart) - (int)fromEditor.VAdjustment.Value;
-						int z2 = delta + fromEditor.LineToY (hunk.RemoveStart + hunk.Removed) - (int)fromEditor.VAdjustment.Value;
+						double z1 = delta + fromEditor.LineToY (hunk.RemoveStart) - fromEditor.VAdjustment.Value;
+						double z2 = delta + fromEditor.LineToY (hunk.RemoveStart + hunk.Removed) - fromEditor.VAdjustment.Value;
 						if (z1 == z2)
 							z2 = z1 + 1;
 
-						int y1 = delta + toEditor.LineToY (hunk.InsertStart) - (int)toEditor.VAdjustment.Value;
-						int y2 = delta + toEditor.LineToY (hunk.InsertStart + hunk.Inserted) - (int)toEditor.VAdjustment.Value;
+						double y1 = delta + toEditor.LineToY (hunk.InsertStart) - toEditor.VAdjustment.Value;
+						double y2 = delta + toEditor.LineToY (hunk.InsertStart + hunk.Inserted) - toEditor.VAdjustment.Value;
 
 						if (y1 == y2)
 							y2 = y1 + 1;
@@ -683,19 +680,19 @@ namespace MonoDevelop.VersionControl.Views
 			const int buttonSize = 16;
 			double lineWidth;
 
-			public bool GetButtonPosition (Mono.TextEditor.Utils.Hunk hunk, int y1, int y2, int z1, int z2, out double x, out double y, out double w, out double h)
+			public bool GetButtonPosition (Mono.TextEditor.Utils.Hunk hunk, double y1, double y2, double z1, double z2, out double x, out double y, out double w, out double h)
 			{
 				if (hunk.Removed > 0) {
-					int b1 = z1;
-					int b2 = z2;
+					var b1 = z1;
+					var b2 = z2;
 					x = useLeft ? lineWidth : Allocation.Width - buttonSize;
 					y = b1;
 					w = buttonSize;
 					h = b2 - b1;
 					return hunk.Inserted > 0;
 				} else {
-					int b1 = y1;
-					int b2 = y2;
+					var b1 = y1;
+					var b2 = y2;
 
 					x = useLeft ? Allocation.Width - buttonSize : lineWidth;
 					y = b1;
@@ -732,19 +729,19 @@ namespace MonoDevelop.VersionControl.Views
 					lineWidth = cr.LineWidth;
 					int delta = widget.MainEditor.Allocation.Y - Allocation.Y;
 					foreach (Mono.TextEditor.Utils.Hunk hunk in Diff) {
-						int z1 = delta + fromEditor.LineToY (hunk.RemoveStart) - (int)fromEditor.VAdjustment.Value;
-						int z2 = delta + fromEditor.LineToY (hunk.RemoveStart + hunk.Removed) - (int)fromEditor.VAdjustment.Value;
+						double z1 = delta + fromEditor.LineToY (hunk.RemoveStart) - fromEditor.VAdjustment.Value;
+						double z2 = delta + fromEditor.LineToY (hunk.RemoveStart + hunk.Removed) - fromEditor.VAdjustment.Value;
 						if (z1 == z2)
 							z2 = z1 + 1;
 
-						int y1 = delta + toEditor.LineToY (hunk.InsertStart) - (int)toEditor.VAdjustment.Value;
-						int y2 = delta + toEditor.LineToY (hunk.InsertStart + hunk.Inserted) - (int)toEditor.VAdjustment.Value;
+						double y1 = delta + toEditor.LineToY (hunk.InsertStart) - toEditor.VAdjustment.Value;
+						double y2 = delta + toEditor.LineToY (hunk.InsertStart + hunk.Inserted) - toEditor.VAdjustment.Value;
 
 						if (y1 == y2)
 							y2 = y1 + 1;
 
 						if (!useLeft) {
-							int tmp = z1;
+							var tmp = z1;
 							z1 = y1;
 							y1 = tmp;
 
@@ -924,9 +921,9 @@ namespace MonoDevelop.VersionControl.Views
 					cr.Fill ();
 
 					cr.Rectangle (1,
-					              (int)(Allocation.Height * adj.Value / adj.Upper) + cr.LineWidth + 0.5,
+					              Allocation.Height * adj.Value / adj.Upper + cr.LineWidth + 0.5,
 					              Allocation.Width - 2,
-					              (int)(Allocation.Height * ((double)adj.PageSize / adj.Upper)));
+					              Allocation.Height * (adj.PageSize / adj.Upper));
 					cr.Color = new Cairo.Color (0, 0, 0, 0.5);
 					cr.StrokePreserve ();
 
