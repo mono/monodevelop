@@ -29,24 +29,21 @@
 // THE SOFTWARE.
 
 using System;
-using System.Text;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
 using System.Threading;
 using Gdk;
 using Gtk;
-using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Dom.Output;
-using MonoDevelop.Ide.CodeCompletion;
-using System.ComponentModel;
-using System.Linq;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Parser;
 
 namespace MonoDevelop.Ide.NavigateToDialog
 {
@@ -276,7 +273,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			WaitForCollectFiles ();
 			WaitForCollectTypes ();
 			
-			string toMatch = matchEntry.Query.ToLower ();
+			string toMatch = matchEntry.Query;
 			
 			if (string.IsNullOrEmpty (toMatch)) {
 				list.DataSource = new ResultsDataSource ();
@@ -322,7 +319,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			
 			public bool IncludeFiles, IncludeTypes, IncludeMembers;
 			
-			public ICompletionMatcher matcher = null;
+			public StringMatcher matcher = null;
 			
 			internal SearchResult CheckFile (ProjectFile file)
 			{
@@ -406,7 +403,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				toMatch = toMatch.Substring (0,i);
 				newResult.isGotoFilePattern = true;
 			}
-			newResult.matcher = CompletionMatcher.CreateCompletionMatcher (toMatch);
+			newResult.matcher = StringMatcher.GetMatcher (toMatch, false);
 			newResult.FullSearch = useFullSearch;
 			
 			foreach (SearchResult result in AllResults (worker, lastResult, newResult)) {

@@ -135,6 +135,9 @@ FILES =  \
 	MonoDevelop.Core.StringParsing/StringTagModel.cs \
 	MonoDevelop.Core.StringParsing/StringTagModelDescription.cs \
 	MonoDevelop.Core.StringParsing/StringTagProvider.cs \
+	MonoDevelop.Core.Text/BacktrackingStringMatcher.cs \
+	MonoDevelop.Core.Text/LaneStringMatcher.cs \
+	MonoDevelop.Core.Text/StringMatcher.cs \
 	MonoDevelop.Core/ClrVersion.cs \
 	MonoDevelop.Core/ComponentModelLocalization.cs \
 	MonoDevelop.Core/DefaultAddinLocalizer.cs \

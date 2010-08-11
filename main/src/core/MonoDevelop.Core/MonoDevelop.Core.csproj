@@ -479,6 +479,9 @@
     <Compile Include="MonoDevelop.Core.Execution\ExecutionEnvironment.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\ParserNode.cs" />
     <Compile Include="MonoDevelop.Projects\AuthorInformation.cs" />
+    <Compile Include="MonoDevelop.Core.Text\StringMatcher.cs" />
+    <Compile Include="MonoDevelop.Core.Text\LaneStringMatcher.cs" />
+    <Compile Include="MonoDevelop.Core.Text\BacktrackingStringMatcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -530,6 +533,7 @@
     <Folder Include="frameworks\" />
     <Folder Include="MonoDevelop.Core.Instrumentation\" />
     <Folder Include="MonoDevelop.Core.StringParsing\" />
+    <Folder Include="MonoDevelop.Core.Text\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\contrib\Mono.Cecil\Mono.Cecil.csproj">

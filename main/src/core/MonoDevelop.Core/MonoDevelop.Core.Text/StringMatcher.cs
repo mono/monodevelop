@@ -25,16 +25,23 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Core.Text;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Ide.CodeCompletion
+namespace MonoDevelop.Core.Text
 {
-	static class CompletionMatcher
+	public abstract class StringMatcher
 	{
-		public static StringMatcher CreateCompletionMatcher (string filterText)
+		public static StringMatcher GetMatcher (string filter, bool matchWordStartsOnly)
 		{
-			return StringMatcher.GetMatcher (filterText, true);
+			if (matchWordStartsOnly)
+				return new BacktrackingStringMatcher (filter);
+			else
+				return new LaneStringMatcher (filter);
 		}
+		
+		public abstract bool CalcMatchRank (string name, out int matchRank);
+		public abstract bool IsMatch (string name);
+		public abstract int[] GetMatch (string text);
 	}
 }
 

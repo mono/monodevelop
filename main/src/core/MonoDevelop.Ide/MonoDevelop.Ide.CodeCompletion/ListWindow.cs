@@ -33,6 +33,7 @@ using System.Xml;
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -405,7 +406,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		class WordComparer : IComparer <KeyValuePair<int, string>>
 		{
 			string filterWord;
-			ICompletionMatcher matcher;
+			StringMatcher matcher;
 
 			public WordComparer (string filterWord)
 			{

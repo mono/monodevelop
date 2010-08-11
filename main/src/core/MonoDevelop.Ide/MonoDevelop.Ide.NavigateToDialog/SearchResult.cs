@@ -26,21 +26,13 @@
 
 using System;
 using System.Text;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Threading;
 using Gdk;
 using Gtk;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Text;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Components;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Instrumentation;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom.Output;
-using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.Ide.NavigateToDialog
 {
@@ -76,7 +68,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		protected static string HighlightMatch (string text, string toMatch)
 		{
-			var lane = CompletionMatcher.CreateCompletionMatcher (toMatch).GetMatch (text);
+			var lane = StringMatcher.GetMatcher (toMatch, false).GetMatch (text);
 			if (lane != null) {
 				StringBuilder result = new StringBuilder ();
 				int lastPos = 0;
