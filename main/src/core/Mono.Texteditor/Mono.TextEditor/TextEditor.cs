@@ -135,6 +135,11 @@ namespace Mono.TextEditor
 		
 		protected virtual void HAdjustmentValueChanged ()
 		{
+			double value = this.textEditorData.HAdjustment.Value;
+			if (value != System.Math.Round (value)) {
+				this.textEditorData.HAdjustment.Value = System.Math.Round (value);
+				return;
+			}
 			HideTooltip ();
 			textViewMargin.HideCodeSegmentPreviewWindow ();
 			QueueDrawArea ((int)this.textViewMargin.XOffset, 0, this.Allocation.Width - (int)this.textViewMargin.XOffset, this.Allocation.Height);
@@ -143,6 +148,7 @@ namespace Mono.TextEditor
 		
 		void VAdjustmentValueChanged (object sender, EventArgs args)
 		{
+			
 			VAdjustmentValueChanged ();
 		}
 		
@@ -150,12 +156,16 @@ namespace Mono.TextEditor
 		{
 			HideTooltip ();
 			textViewMargin.HideCodeSegmentPreviewWindow ();
-
+			double value = this.textEditorData.VAdjustment.Value;
+			if (value != System.Math.Round (value)) {
+				this.textEditorData.VAdjustment.Value = System.Math.Round (value);
+				return;
+			}
 			if (isMouseTrapped)
 				FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
 			
-			double delta = this.textEditorData.VAdjustment.Value - this.oldVadjustment;
-			oldVadjustment = this.textEditorData.VAdjustment.Value;
+			double delta = value - this.oldVadjustment;
+			oldVadjustment = value;
 			TextViewMargin.caretY -= delta;
 			
 			if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.inSelectionDrag) {
@@ -1330,14 +1340,14 @@ namespace Mono.TextEditor
 		void RenderMargins (Gdk.Drawable win, Gdk.Rectangle area)
 		{
 			this.TextViewMargin.rulerX = Options.RulerColumn * this.TextViewMargin.CharWidth - this.textEditorData.HAdjustment.Value;
-			int startLine = YToLine (area.Top + System.Math.Floor (this.textEditorData.VAdjustment.Value));
+			int startLine = YToLine (area.Top + this.textEditorData.VAdjustment.Value);
 			double startY = LineToY (startLine);
 			var cairoRectangle = new Cairo.Rectangle (area.X, area.Y, area.Width, area.Height);
 			
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (win)) {
 				cr.LineWidth = Options.Zoom;
 				double curX = 0;
-				double curY = System.Math.Floor (startY - this.textEditorData.VAdjustment.Value);
+				double curY = startY - this.textEditorData.VAdjustment.Value;
 				bool setLongestLine = false;
 				bool renderFirstLine = true;
 				for (int visualLineNumber = startLine; ; visualLineNumber++) {
