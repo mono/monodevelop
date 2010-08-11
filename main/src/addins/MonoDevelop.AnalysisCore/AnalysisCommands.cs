@@ -73,7 +73,7 @@ namespace MonoDevelop.AnalysisCore
 				push_in = true;
 				//if the menu would be off the bottom of the screen, "drop" it upwards
 				if (y + mn.Requisition.Height > widget.Screen.Height)
-					y -= mn.Requisition.Height + widget.LineHeight;
+					y -= mn.Requisition.Height + (int)widget.LineHeight;
 			}, 0, Global.CurrentEventTime);
 		}
 	}
