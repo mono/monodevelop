@@ -137,12 +137,6 @@ namespace Mono.TextEditor
 		
 		protected virtual void HAdjustmentValueChanged ()
 		{
-			if (this.textEditorData.HAdjustment.Value != System.Math.Ceiling (this.textEditorData.HAdjustment.Value)) {
-				this.textEditorData.HAdjustment.Value = System.Math.Ceiling (this.textEditorData.HAdjustment.Value);
-				return;
-			}
-/*			if (this.containerChildren.Count > 0)
-				QueueResize ();*/
 			HideTooltip ();
 			textViewMargin.HideCodeSegmentPreviewWindow ();
 			int curHAdjustment = (int)this.textEditorData.HAdjustment.Value;
@@ -162,11 +156,6 @@ namespace Mono.TextEditor
 		{
 			HideTooltip ();
 			textViewMargin.HideCodeSegmentPreviewWindow ();
-			
-			if (this.textEditorData.VAdjustment.Value != System.Math.Ceiling (this.textEditorData.VAdjustment.Value)) {
-				this.textEditorData.VAdjustment.Value = System.Math.Ceiling (this.textEditorData.VAdjustment.Value);
-				return;
-			}
 
 			if (isMouseTrapped)
 				FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
