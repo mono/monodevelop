@@ -243,8 +243,8 @@ namespace MonoDevelop.Debugger
 				if (moveCaret)
 					editor.Caret.Line += num;
 				
-				int hinc = num * editor.LineHeight;
-				sw.Vadjustment.Value += (double) hinc;
+				double hinc = num * editor.LineHeight;
+				sw.Vadjustment.Value += hinc;
 				
 				if (lastDebugLine != -1) {
 					lastDebugLine += num;
