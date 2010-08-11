@@ -326,7 +326,7 @@ namespace MonoDevelop.VersionControl.Views
 			};
 
 			toAdj.ValueChanged += delegate {
-				double toValue = toAdj.Value * (fromAdj.Upper - fromAdj.Lower); 
+				double toValue = System.Math.Round (toAdj.Value * (fromAdj.Upper - fromAdj.Lower)); 
 				if (fromAdj.Value != toValue)
 					fromAdj.Value = toValue;
 				RedrawMiddleAreas ();
