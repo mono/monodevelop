@@ -3,6 +3,7 @@
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
+//       Andrea Krüger <andrea@shakuras.homeunix.net>
 // 
 // Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
