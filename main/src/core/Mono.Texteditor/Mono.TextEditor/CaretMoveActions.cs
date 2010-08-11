@@ -295,7 +295,7 @@ namespace Mono.TextEditor
 			data.Caret.Offset = data.Document.Length;
 		}
 		
-		public static int LineHeight { get; set; }
+		public static double LineHeight { get; set; }
 		
 		public static void PageUp (TextEditorData data)
 		{

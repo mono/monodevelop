@@ -117,12 +117,12 @@ namespace Mono.TextEditor
 	
 	public class MarginMouseEventArgs : EventArgs
 	{
-		public int X {
+		public double X {
 			get;
 			private set;
 		}
 		
-		public int Y {
+		public double Y {
 			get;
 			private set;
 		}
@@ -137,7 +137,7 @@ namespace Mono.TextEditor
 			private set;
 		}
 		
-		public int Button {
+		public uint Button {
 			get;
 			private set;
 		}
@@ -146,7 +146,7 @@ namespace Mono.TextEditor
 		public int LineNumber {
 			get {
 				if (lineNumber == -2) {
-					lineNumber = Editor.YToLine ((int)(Editor.VAdjustment.Value + Y));
+					lineNumber = Editor.YToLine (Editor.VAdjustment.Value + Y);
 					if (lineNumber >= Editor.Document.LineCount)
 						lineNumber = -1;
 				}
@@ -171,7 +171,7 @@ namespace Mono.TextEditor
 			private set;
 		}
 		
-		public MarginMouseEventArgs (TextEditor editor, int button, int x, int y, Gdk.EventType type, Gdk.ModifierType modifierState)
+		public MarginMouseEventArgs (TextEditor editor, uint button, double x, double y, Gdk.EventType type, Gdk.ModifierType modifierState)
 		{
 			this.Editor = editor;
 			this.Button = button;

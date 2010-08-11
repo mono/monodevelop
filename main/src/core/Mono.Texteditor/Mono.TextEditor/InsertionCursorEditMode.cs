@@ -268,20 +268,20 @@ namespace Mono.TextEditor
 			public override void Draw (Gdk.Drawable drawable, Gdk.Rectangle area)
 			{
 				TextEditor editor = mode.editor;
-				int y = editor.LineToY (mode.CurrentInsertionPoint.Line) - (int)editor.VAdjustment.Value; 
+				double y = editor.LineToY (mode.CurrentInsertionPoint.Line) - (int)editor.VAdjustment.Value; 
 				using (var g = Gdk.CairoHelper.Create (drawable)) {
 					g.LineWidth = System.Math.Min (1, editor.Options.Zoom);
 					LineSegment lineAbove = editor.Document.GetLine (mode.CurrentInsertionPoint.Line - 1);
 					LineSegment lineBelow = editor.Document.GetLine (mode.CurrentInsertionPoint.Line);
 					
-					int aboveStart = 0, aboveEnd = (int)editor.TextViewMargin.XOffset;
-					int belowStart = 0, belowEnd = (int)editor.TextViewMargin.XOffset;
-					int l = 0;
+					double aboveStart = 0, aboveEnd = editor.TextViewMargin.XOffset;
+					double belowStart = 0, belowEnd = editor.TextViewMargin.XOffset;
+					int l = 0, tmp;
 					if (lineAbove != null) {
 						var wrapper = editor.TextViewMargin.GetLayout (lineAbove);
-						wrapper.Layout.IndexToLineX (lineAbove.GetIndentation (editor.Document).Length, true, out l, out aboveStart);
-						aboveStart = (int)(aboveStart / Pango.Scale.PangoScale);
-						aboveEnd = (int)(wrapper.PangoWidth / Pango.Scale.PangoScale);
+						wrapper.Layout.IndexToLineX (lineAbove.GetIndentation (editor.Document).Length, true, out l, out tmp);
+						aboveStart = tmp / Pango.Scale.PangoScale;
+						aboveEnd = wrapper.PangoWidth / Pango.Scale.PangoScale;
 						
 						if (wrapper.IsUncached)
 							wrapper.Dispose ();
@@ -290,21 +290,21 @@ namespace Mono.TextEditor
 						var wrapper = editor.TextViewMargin.GetLayout (lineBelow);
 						int index = lineAbove.GetIndentation (editor.Document).Length;
 						if (index == 0) {
-							belowStart = 0;
+							tmp = 0;
 						} else if (index >= lineBelow.EditableLength) {
-							belowStart = wrapper.PangoWidth;
+							tmp = wrapper.PangoWidth;
 						} else {
-							wrapper.Layout.IndexToLineX (index, true, out l, out belowStart);
+							wrapper.Layout.IndexToLineX (index, true, out l, out tmp);
 						}
 						
-						belowStart = (int)(belowStart / Pango.Scale.PangoScale);
-						belowEnd = (int)(wrapper.PangoWidth / Pango.Scale.PangoScale);
+						belowStart = tmp / Pango.Scale.PangoScale;
+						belowEnd = wrapper.PangoWidth / Pango.Scale.PangoScale;
 						if (wrapper.IsUncached)
 							wrapper.Dispose ();
 					}
 					
-					int d = editor.LineHeight / 3;
-					double x1 = editor.TextViewMargin.XOffset - (int)editor.HAdjustment.Value;
+					double d = editor.LineHeight / 3;
+					double x1 = editor.TextViewMargin.XOffset - editor.HAdjustment.Value;
 					double x2 = x1;
 					if (aboveStart < belowEnd) {
 						x1 += aboveStart;

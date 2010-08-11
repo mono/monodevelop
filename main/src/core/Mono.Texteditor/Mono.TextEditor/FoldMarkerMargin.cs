@@ -39,8 +39,8 @@ namespace Mono.TextEditor
 		LineSegment lineHover;
 		Pango.Layout layout;
 		
-		int foldSegmentSize = 8;
-		int marginWidth;
+		double foldSegmentSize = 8;
+		double marginWidth;
 		public override double Width {
 			get {
 				return marginWidth;

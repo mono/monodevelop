@@ -30,7 +30,7 @@ namespace Mono.TextEditor
 {
 	public interface IExtendingTextMarker 
 	{
-		int GetLineHeight (TextEditor editor);
+		double GetLineHeight (TextEditor editor);
 		void Draw (TextEditor editor, Cairo.Context cr, int lineNr, Cairo.Rectangle lineArea);
 	}
 	
@@ -277,7 +277,7 @@ namespace Mono.TextEditor
 			if (@from >= to) {
 				return;
 			}
-			int height = editor.LineHeight / 5;
+			double height = editor.LineHeight / 5;
 			cr.Color = ColorName == null ? Color : editor.ColorStyle.GetColorFromDefinition (ColorName);
 			Pango.CairoHelper.ShowErrorUnderline (cr, @from, y + editor.LineHeight - height, to - @from, height);
 		}

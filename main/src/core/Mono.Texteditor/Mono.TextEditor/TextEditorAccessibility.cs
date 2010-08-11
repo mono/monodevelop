@@ -194,8 +194,8 @@ namespace Mono.TextEditor
 			var point = editor.LocationToPoint (Document.OffsetToLocation (offset));
 			x = point.X + (int)editor.TextViewMargin.XOffset;
 			y = point.Y;
-			width = editor.TextViewMargin.CharWidth;
-			height = editor.LineHeight;
+			width = (int)editor.TextViewMargin.CharWidth;
+			height = (int)editor.LineHeight;
 			switch (coords) {
 			case Atk.CoordType.Screen:
 				int ox, oy;
@@ -269,7 +269,7 @@ namespace Mono.TextEditor
 			result.X = System.Math.Min (point2.X, point1.Y);
 			result.Y = System.Math.Min (point2.Y, point1.Y);
 			result.Width = System.Math.Abs (point2.X - point1.X);
-			result.Height = System.Math.Abs (point2.Y - point1.Y) + editor.LineHeight;
+			result.Height = (int)(System.Math.Abs (point2.Y - point1.Y) + editor.LineHeight);
 			rect = result;
 		}
 
