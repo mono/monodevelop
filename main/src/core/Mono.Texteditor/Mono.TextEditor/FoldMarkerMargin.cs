@@ -309,17 +309,17 @@ namespace Mono.TextEditor
 			
 			if (state == Document.LineState.Changed) {
 				cr.Color = lineStateChangedGC;
-				cr.Rectangle (x + 1, y, marginWidth / 3, lineHeight);
+				cr.Rectangle (x + 1 + 0.5, y + 0.5, marginWidth / 3, lineHeight);
 				cr.Fill ();
 			} else if (state == Document.LineState.Dirty) {
 				cr.Color = lineStateDirtyGC;
-				cr.Rectangle (x + 1, y, marginWidth / 3, lineHeight);
+				cr.Rectangle (x + 1 + 0.5, y + 0.5, marginWidth / 3, lineHeight);
 				cr.Fill ();
 			}
 			
 			if (line < editor.Document.LineCount) {
 				double foldSegmentYPos = y + (editor.LineHeight - foldSegmentSize) / 2;
-				double xPos = x + marginWidth / 2;
+				double xPos = x + marginWidth / 2 + 0.5;
 				
 				if (isFoldStart) {
 					bool isVisible         = true;
@@ -336,7 +336,7 @@ namespace Mono.TextEditor
 						if (foldSegment.EndLine.Offset > foldSegment.StartLine.Offset && !foldSegment.IsFolded) 
 							isFoldEndFromUpperFold = true;
 					}
-					DrawFoldSegment (cr, x, y, isVisible, isStartSelected);
+					DrawFoldSegment (cr, x + 0.5, y + 0.5, isVisible, isStartSelected);
 
 					if (isContaining || isFoldEndFromUpperFold)
 						cr.DrawLine (isContainingSelected ? foldLineHighlightedGC : foldLineGC, xPos, drawArea.Y, xPos, foldSegmentYPos - 2);

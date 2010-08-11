@@ -2103,7 +2103,7 @@ namespace Mono.TextEditor
 					bool isFoldingSelected = !this.HideSelection && textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (folding);
 					double pixelX = pangoPosition / Pango.Scale.PangoScale;
 					double pixelWidth = (pangoPosition + width) / Pango.Scale.PangoScale - pixelX;
-					var foldingRectangle = new Cairo.Rectangle (pixelX, y, pixelWidth, this.LineHeight - 1);
+					var foldingRectangle = new Cairo.Rectangle (pixelX + 0.5, y + 0.5, pixelWidth - cr.LineWidth, this.LineHeight - cr.LineWidth);
 					if (BackgroundRenderer == null) {
 						cr.Color = isFoldingSelected ? SelectionColor.CairoBackgroundColor : defaultBgColor;
 						cr.Rectangle (foldingRectangle);
