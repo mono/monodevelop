@@ -83,18 +83,31 @@ namespace Mono.TextEditor
 			set;
 		}
 		
-		public Document ()
+		protected Document (IBuffer buffer, ILineSplitter splitter)
 		{
-			buffer = new GapBuffer ();
-			splitter = new LineSplitter ();
+			this.buffer = buffer;
+			this.splitter = splitter;
 			splitter.LineChanged += SplitterLineSegmentTreeLineChanged;
 			splitter.LineRemoved += HandleSplitterLineSegmentTreeLineRemoved;
 			TextReplacing += UpdateFoldSegmentsOnReplace;
 		}
-		
-		public Document (string text) : this ()
+
+		public Document () : this(new GapBuffer (), new LineSplitter ())
 		{
-			this.Text = text;
+		}
+		
+		public Document (string text) : this()
+		{
+			Text = text;
+		}
+
+		public static Document CreateImmutableDocument (string text)
+		{
+			return new Document(new StringBuffer(text), new PrimitiveLineSplitter()) {
+				SurpressHighlightUpdate = true,
+				Text = text,
+				ReadOnly = true
+			};
 		}
 		
 		~Document ()
@@ -130,14 +143,11 @@ namespace Mono.TextEditor
 			set {
 				if (!SurpressHighlightUpdate)
 					Mono.TextEditor.Highlighting.SyntaxModeService.WaitUpdate (this);
-				splitter.Clear ();
 				int oldLength = Length;
 				ReplaceEventArgs args = new ReplaceEventArgs (0, oldLength, value);
 				this.OnTextReplacing (args);
 				this.buffer.Text = value;
-				splitter.LineChanged -= SplitterLineSegmentTreeLineChanged;
-				splitter.TextReplaced (this, args);
-				splitter.LineChanged += SplitterLineSegmentTreeLineChanged;
+				splitter.Initalize (value);
 				UpdateHighlighting ();
 				this.OnTextReplaced (args);
 				this.OnTextSet (EventArgs.Empty);
@@ -324,7 +334,7 @@ namespace Mono.TextEditor
 		
 		public int LineCount {
 			get {
-				return splitter.LineCount;
+				return splitter.Count;
 			}
 		}
 
@@ -350,7 +360,7 @@ namespace Mono.TextEditor
 		
 		public int LocationToOffset (DocumentLocation location)
 		{
-			if (location.Line >= this.splitter.LineCount) 
+			if (location.Line >= this.splitter.Count) 
 				return -1;
 			LineSegment line = GetLine (location.Line);
 			return System.Math.Min (Length, line.Offset + System.Math.Min (line.EditableLength, location.Column));

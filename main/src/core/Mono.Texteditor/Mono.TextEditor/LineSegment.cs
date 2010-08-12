@@ -147,9 +147,7 @@ namespace Mono.TextEditor
 
 		internal void RemoveMarker (Type type)
 		{
-			if (markers == null)
-				return;
-			for (int i = 0; i < markers.Count; i++) {
+			for (int i = 0; markers != null && i < markers.Count; i++) {
 				if (markers[i].GetType () == type) {
 					RemoveMarker (markers[i]);
 					i--;

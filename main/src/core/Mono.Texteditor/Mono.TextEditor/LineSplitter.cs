@@ -33,15 +33,25 @@ namespace Mono.TextEditor
 {
 	public interface ILineSplitter
 	{
-		int LineCount { get; }
+		int Count { get; }
+		
 		IEnumerable<LineSegment> Lines { get; }
+
 		void Clear ();
+		
+		/// <summary>
+		/// Initializes the splitter with a new text. No events are fired during this process.
+		/// </summary>
+		/// <param name="text"></param>
+		void Initalize (string text);
+		
 		LineSegment Get (int number);
 		LineSegment GetLineByOffset (int offset);
+		int OffsetToLineNumber (int offset);
+
 		void TextReplaced (object sender, ReplaceEventArgs args);
 		void TextRemove (int offset, int length);
 		void TextInsert (int offset, string text);
-		int OffsetToLineNumber (int offset);
 
 		IEnumerable<LineSegment> GetLinesBetween (int startLine, int endLine);
 		IEnumerable<LineSegment> GetLinesStartingAt (int startLine);
@@ -131,7 +141,7 @@ namespace Mono.TextEditor
 
 		public void TextRemove (int offset, int length)
 		{
-			if (length == 0 || (LineCount == 1 && Length == 0)) 
+			if (length == 0 || (Count == 1 && Length == 0)) 
 				return; 
 
 			var startNode = GetNodeAtOffset (offset);
@@ -159,6 +169,18 @@ namespace Mono.TextEditor
 			ChangeLength (startNode, startNode.Length - charsRemoved + charsLeft, endNode.DelimiterLength);
 		}
 
+		bool inInit;
+		public void Initalize (string text)
+		{
+			Clear ();
+			inInit = true;
+			try {
+				TextInsert(0, text);
+			} finally {
+				inInit = false;
+			}
+		}
+
 		public void TextInsert (int offset, string text)
 		{
 			if (string.IsNullOrEmpty(text))
@@ -183,11 +205,15 @@ namespace Mono.TextEditor
 				ChangeLength(line, line.Length + text.Length - textOffset);
 		}
 
-		struct Delimiter 
+		internal struct Delimiter 
 		{
 			public readonly int Offset;
 			public readonly int Length;
 			
+			public int EndOffset {
+				get { return Offset + Length; }
+			}
+
 			public Delimiter (int offset, int length)
 			{
 				Offset = offset;
@@ -195,7 +221,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		static IEnumerable<Delimiter> FindDelimiter (string text) 
+		internal static IEnumerable<Delimiter> FindDelimiter (string text) 
 		{
 			for (int i = 0; i < text.Length; i++) {
 				switch (text[i]) {
@@ -258,7 +284,7 @@ namespace Mono.TextEditor
 
 		readonly RedBlackTree<TreeNode> tree = new RedBlackTree<TreeNode> ();
 
-		public int LineCount {
+		public int Count {
 			get {
 				return tree.Count;
 			}
@@ -345,6 +371,7 @@ namespace Mono.TextEditor
 		
 		protected virtual void OnLineChanged (LineEventArgs e)
 		{
+			if (inInit) return;
 			EventHandler<LineEventArgs> handler = LineChanged;
 			if (handler != null)
 				handler (this, e);
@@ -353,6 +380,7 @@ namespace Mono.TextEditor
 		
 		protected virtual void OnLineInserted (LineEventArgs e)
 		{
+			if (inInit) return;
 			EventHandler<LineEventArgs> handler = LineInserted;
 			if (handler != null)
 				handler (this, e);
@@ -361,6 +389,7 @@ namespace Mono.TextEditor
 		
 		protected virtual void OnLineRemoved (LineEventArgs e)
 		{
+			if (inInit) return;
 			EventHandler<LineEventArgs> handler = LineRemoved;
 			if (handler != null)
 				handler (this, e);
@@ -460,5 +489,113 @@ namespace Mono.TextEditor
 			}
 		}
 		#endregion
+	}
+
+	/// <summary>
+	/// A very fast line splitter for read-only documents that generates lines only on demand.
+	/// </summary>
+	public class PrimitiveLineSplitter : ILineSplitter
+	{
+		int textLength;
+		List<LineSplitter.Delimiter> delimiters = new List<LineSplitter.Delimiter> ();
+		
+		sealed class PrimitiveLineSegment : LineSegment
+		{
+			public override int Offset { get; set; }
+			
+			public PrimitiveLineSegment (int offset, int length, int delimiterLength) : base(length, delimiterLength)
+			{
+				Offset = offset;
+			}
+		}
+
+		public int Count {
+			get { return delimiters.Count + 1; }
+		}
+
+		public IEnumerable<LineSegment> Lines {
+			get { return GetLinesStartingAt(0); }
+		}
+
+		public void Initalize (string text)
+		{
+			delimiters = new List<LineSplitter.Delimiter> (LineSplitter.FindDelimiter (text));
+			textLength = text.Length;
+		}
+
+		public void Clear ()
+		{
+			delimiters.Clear ();
+			textLength = 0;
+		}
+
+		public LineSegment Get (int number)
+		{
+			if (number < 0)
+				return null;
+			int startOffset = number > 0 ? delimiters[number - 1].EndOffset : 0;
+			int endOffset;
+			int delimiterLength;
+			if (number < delimiters.Count) {
+				endOffset = delimiters[number].Offset;
+				delimiterLength = delimiters[number].Length;
+			} else {
+				endOffset = textLength;
+				delimiterLength = 0;
+			}
+			return new PrimitiveLineSegment (startOffset, endOffset - startOffset, delimiterLength);
+		}
+
+		public LineSegment GetLineByOffset (int offset)
+		{
+			return Get (OffsetToLineNumber (offset));
+		}
+		
+		public int OffsetToLineNumber (int offset)
+		{
+			for (int i = 0; i < delimiters.Count; i++) {
+				var delimiter = delimiters[i];
+				if (offset < delimiter.Offset)
+					return i;
+			}
+			return - 1;
+		}
+
+		public void TextReplaced (object sender, ReplaceEventArgs args)
+		{
+			throw new NotSupportedException ("Operation not supported on this line splitter.");
+		}
+
+		public void TextRemove (int offset, int length)
+		{
+			throw new NotSupportedException ("Operation not supported on this line splitter.");
+		}
+
+		public void TextInsert (int offset, string text)
+		{
+			throw new NotSupportedException ("Operation not supported on this line splitter.");
+		}
+
+		public IEnumerable<LineSegment> GetLinesBetween (int startLine, int endLine)
+		{
+			for (int i = startLine; i <= endLine; i++)
+				yield return Get (i);
+		}
+
+		public IEnumerable<LineSegment> GetLinesStartingAt (int startLine)
+		{
+			for (int i = startLine; i < Count; i++)
+				yield return Get (i);
+		}
+
+		public IEnumerable<LineSegment> GetLinesReverseStartingAt (int startLine)
+		{
+			for (int i = Count - 1; i --> 0;)
+				yield return Get (i);
+		}
+
+		public event EventHandler<LineEventArgs> LineChanged;
+		public event EventHandler<LineEventArgs> LineInserted;
+		public event EventHandler<LineEventArgs> LineRemoved;
 	}
 }
