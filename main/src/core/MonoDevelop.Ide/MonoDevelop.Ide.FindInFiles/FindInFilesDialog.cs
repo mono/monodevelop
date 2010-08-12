@@ -26,6 +26,7 @@
 
 using System;
 using System.Linq;
+using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
@@ -37,8 +38,8 @@ namespace MonoDevelop.Ide.FindInFiles
 {
 	public partial class FindInFilesDialog : Gtk.Dialog
 	{
-		bool writeScope = true;
-		bool showReplace;
+		readonly bool writeScope = true;
+		readonly bool showReplace;
 		
 		const int ScopeWholeSolution   = 0;
 		const int ScopeCurrentProject  = 1;
@@ -54,54 +55,51 @@ namespace MonoDevelop.Ide.FindInFiles
 			writeScope = false;
 		}
 
-		ComboBoxEntry comboboxentryReplace;
-		Label labelReplace;
+		readonly ComboBoxEntry comboboxentryReplace;
+		readonly Label labelReplace;
+
 		FindInFilesDialog (bool showReplace)
 		{
 			this.showReplace = showReplace;
-			this.Build ();
-			this.Title = showReplace ? GettextCatalog.GetString ("Replace in Files") : GettextCatalog.GetString ("Find in Files");
-			this.TransientFor = IdeApp.Workbench.RootWindow;
-			if (!showReplace) {
-				buttonReplace.Destroy ();
-			}
+			Build ();
+			Title = showReplace ? GettextCatalog.GetString ("Replace in Files") : GettextCatalog.GetString ("Find in Files");
+			TransientFor = IdeApp.Workbench.RootWindow;
+			if (!showReplace)
+				buttonReplace.Destroy();
 
 			if (showReplace) {
 				tableFindAndReplace.NRows = 4;
-				labelReplace = new Label ();
-				labelReplace.Text = GettextCatalog.GetString ("_Replace:");
-				labelReplace.Xalign = 0f;
-				labelReplace.UseUnderline = true;
+				labelReplace = new Label {Text = GettextCatalog.GetString("_Replace:"), Xalign = 0f, UseUnderline = true};
 				tableFindAndReplace.Add (labelReplace);
 
 				comboboxentryReplace = new ComboBoxEntry ();
 				tableFindAndReplace.Add (comboboxentryReplace);
 
-				Gtk.Table.TableChild childLabel = (Gtk.Table.TableChild)this.tableFindAndReplace[this.labelReplace];
+				var childLabel = (Table.TableChild)tableFindAndReplace[labelReplace];
 				childLabel.TopAttach = 1;
 				childLabel.BottomAttach = 2;
-				childLabel.XOptions = childLabel.YOptions = (Gtk.AttachOptions)4;
+				childLabel.XOptions = childLabel.YOptions = (AttachOptions)4;
 
-				Gtk.Table.TableChild childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[this.comboboxentryReplace];
+				var childCombo = (Table.TableChild)tableFindAndReplace[comboboxentryReplace];
 				childCombo.TopAttach = 1;
 				childCombo.BottomAttach = 2;
 				childCombo.LeftAttach = 1;
 				childCombo.RightAttach = 2;
-				childCombo.XOptions = childCombo.YOptions = (Gtk.AttachOptions)4;
+				childCombo.XOptions = childCombo.YOptions = (AttachOptions)4;
 
-				childLabel = (Gtk.Table.TableChild)this.tableFindAndReplace[this.labelScope];
+				childLabel = (Table.TableChild)tableFindAndReplace[labelScope];
 				childLabel.TopAttach = 2;
 				childLabel.BottomAttach = 3;
 
-				childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[this.hbox2];
+				childCombo = (Table.TableChild)tableFindAndReplace[hbox2];
 				childCombo.TopAttach = 2;
 				childCombo.BottomAttach = 3;
 
-				childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[this.labelFileMask];
+				childCombo = (Table.TableChild)tableFindAndReplace[labelFileMask];
 				childCombo.TopAttach = 3;
 				childCombo.BottomAttach = 4;
 
-				childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[this.searchentry1];
+				childCombo = (Table.TableChild)tableFindAndReplace[searchentry1];
 				childCombo.TopAttach = 3;
 				childCombo.BottomAttach = 4;
 
@@ -114,7 +112,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			buttonSearch.Clicked += HandleSearchClicked;
 			buttonClose.Clicked += ButtonCloseClicked;
 			buttonStop.Clicked += ButtonStopClicked;
-			ListStore scopeStore = new ListStore (typeof(string));
+			var scopeStore = new ListStore (typeof(string));
 			scopeStore.AppendValues (GettextCatalog.GetString ("Whole solution"));
 			scopeStore.AppendValues (GettextCatalog.GetString ("Current project"));
 			scopeStore.AppendValues (GettextCatalog.GetString ("All open files"));
@@ -129,7 +127,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			InitFromProperties ();
 
 			if (IdeApp.Workbench.ActiveDocument != null) {
-				ITextBuffer view = IdeApp.Workbench.ActiveDocument.GetContent<ITextBuffer> ();
+				var view = IdeApp.Workbench.ActiveDocument.GetContent<ITextBuffer> ();
 				if (view != null) {
 					string selectedText = view.SelectedText;
 					if (!string.IsNullOrEmpty (selectedText)) {
@@ -150,30 +148,25 @@ namespace MonoDevelop.Ide.FindInFiles
 			
 			Hidden += delegate { Destroy (); };
 			UpdateStopButton ();
-			this.searchentry1.Ready = true;
-			this.searchentry1.Visible = true;
-			this.searchentry1.IsCheckMenu = true;
+			searchentry1.Ready = true;
+			searchentry1.Visible = true;
+			searchentry1.IsCheckMenu = true;
 			
-			Properties properties = (Properties)PropertyService.Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
+			var properties = PropertyService.Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
 			
-			CheckMenuItem checkMenuItem = this.searchentry1.AddFilterOption (0, GettextCatalog.GetString ("Include binary files"));
+			CheckMenuItem checkMenuItem = searchentry1.AddFilterOption (0, GettextCatalog.GetString ("Include binary files"));
 			checkMenuItem.DrawAsRadio = false;
 			checkMenuItem.Active = properties.Get ("IncludeBinaryFiles", false);
 			checkMenuItem.Toggled += delegate {
 				properties.Set ("IncludeBinaryFiles", checkMenuItem.Active);
 			};
 			
-			CheckMenuItem checkMenuItem1 = this.searchentry1.AddFilterOption (1, GettextCatalog.GetString ("Include hidden files and directories"));
+			CheckMenuItem checkMenuItem1 = searchentry1.AddFilterOption (1, GettextCatalog.GetString ("Include hidden files and directories"));
 			checkMenuItem1.DrawAsRadio = false;
 			checkMenuItem1.Active = properties.Get ("IncludeHiddenFiles", false);
 			checkMenuItem1.Toggled += delegate {
 				properties.Set ("IncludeHiddenFiles", checkMenuItem1.Active);
 			};
-		}
-
-		public override void Destroy ()
-		{
-			base.Destroy ();
 		}
 
 		void ButtonCloseClicked (object sender, EventArgs e)
@@ -208,11 +201,11 @@ namespace MonoDevelop.Ide.FindInFiles
 
 				//tableFindAndReplace.NRows = showReplace ? 4u : 3u;
 
-				Gtk.Table.TableChild childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[this.labelFileMask];
+				var childCombo = (Table.TableChild)tableFindAndReplace[labelFileMask];
 				childCombo.TopAttach = tableFindAndReplace.NRows - 3;
 				childCombo.BottomAttach = tableFindAndReplace.NRows - 2;
 
-				childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[this.searchentry1];
+				childCombo = (Table.TableChild)tableFindAndReplace[searchentry1];
 				childCombo.TopAttach = tableFindAndReplace.NRows - 3;
 				childCombo.BottomAttach = tableFindAndReplace.NRows - 2;
 			}
@@ -220,19 +213,21 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (comboboxScope.Active == ScopeDirectories) {
 				// DirectoryScope
 				tableFindAndReplace.NRows = showReplace ? 6u : 5u;
-				labelPath = new Label ();
-				labelPath.LabelProp = GettextCatalog.GetString ("_Path:");
-				labelPath.UseUnderline = true;
-				labelPath.Xalign = 0f;
+				labelPath = new Label {
+					LabelProp = GettextCatalog.GetString("_Path:"),
+					UseUnderline = true, 
+					Xalign = 0f
+				};
+
 				tableFindAndReplace.Add (labelPath);
 
-				Gtk.Table.TableChild childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[labelPath];
+				var childCombo = (Table.TableChild)tableFindAndReplace[labelPath];
 				childCombo.TopAttach = tableFindAndReplace.NRows - 3;
 				childCombo.BottomAttach = tableFindAndReplace.NRows - 2;
-				childCombo.XOptions = childCombo.YOptions = (Gtk.AttachOptions)4;
+				childCombo.XOptions = childCombo.YOptions = (AttachOptions)4;
 
 				hboxPath = new HBox ();
-				Properties properties = (Properties)PropertyService.Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
+				var properties = PropertyService.Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
 				comboboxentryPath = new ComboBoxEntry ();
 				comboboxentryPath.Destroyed += ComboboxentryPathDestroyed;
 				LoadHistory ("MonoDevelop.FindReplaceDialogs.PathHistory", comboboxentryPath);
@@ -240,60 +235,61 @@ namespace MonoDevelop.Ide.FindInFiles
 
 				labelPath.MnemonicWidget = comboboxentryPath;
 
-				Gtk.Box.BoxChild boxChild = (Gtk.Box.BoxChild)hboxPath[comboboxentryPath];
+				var boxChild = (Box.BoxChild)hboxPath[comboboxentryPath];
 				boxChild.Position = 0;
 				boxChild.Expand = boxChild.Fill = true;
 
-				buttonBrowsePaths = new Button ();
-				buttonBrowsePaths.Label = "...";
+				buttonBrowsePaths = new Button { Label = "..." };
 				buttonBrowsePaths.Clicked += ButtonBrowsePathsClicked;
 				hboxPath.PackStart (buttonBrowsePaths);
-				boxChild = (Gtk.Box.BoxChild)hboxPath[buttonBrowsePaths];
+				boxChild = (Box.BoxChild)hboxPath[buttonBrowsePaths];
 				boxChild.Position = 1;
 				boxChild.Expand = boxChild.Fill = false;
 
 				tableFindAndReplace.Add (hboxPath);
-				childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[hboxPath];
+				childCombo = (Table.TableChild)tableFindAndReplace[hboxPath];
 				childCombo.TopAttach = tableFindAndReplace.NRows - 3;
 				childCombo.BottomAttach = tableFindAndReplace.NRows - 2;
 				childCombo.LeftAttach = 1;
 				childCombo.RightAttach = 2;
-				childCombo.XOptions = childCombo.YOptions = (Gtk.AttachOptions)4;
+				childCombo.XOptions = childCombo.YOptions = (AttachOptions)4;
 
-				checkbuttonRecursively = new CheckButton ();
-				checkbuttonRecursively.Label = GettextCatalog.GetString ("Re_cursively");
-				checkbuttonRecursively.Active = properties.Get ("SearchPathRecursively", true);
-				checkbuttonRecursively.UseUnderline = true;
+				checkbuttonRecursively = new CheckButton {
+					Label = GettextCatalog.GetString ("Re_cursively"),
+					Active = properties.Get ("SearchPathRecursively", true),
+					UseUnderline = true
+				};
+
 				checkbuttonRecursively.Destroyed += CheckbuttonRecursivelyDestroyed;
 				tableFindAndReplace.Add (checkbuttonRecursively);
-				childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[checkbuttonRecursively];
+				childCombo = (Table.TableChild)tableFindAndReplace[checkbuttonRecursively];
 				childCombo.TopAttach = tableFindAndReplace.NRows - 2;
 				childCombo.BottomAttach = tableFindAndReplace.NRows - 1;
 				childCombo.LeftAttach = 1;
 				childCombo.RightAttach = 2;
-				childCombo.XOptions = childCombo.YOptions = (Gtk.AttachOptions)4;
+				childCombo.XOptions = childCombo.YOptions = (AttachOptions)4;
 
-				childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[this.labelFileMask];
+				childCombo = (Table.TableChild)tableFindAndReplace[labelFileMask];
 				childCombo.TopAttach = tableFindAndReplace.NRows - 1;
 				childCombo.BottomAttach = tableFindAndReplace.NRows;
 
-				childCombo = (Gtk.Table.TableChild)this.tableFindAndReplace[this.searchentry1];
+				childCombo = (Table.TableChild)tableFindAndReplace[searchentry1];
 				childCombo.TopAttach = tableFindAndReplace.NRows - 1;
 				childCombo.BottomAttach = tableFindAndReplace.NRows;
 			}
-			Requisition req = this.SizeRequest ();
-			this.Resize (req.Width, req.Height);
+			Requisition req = SizeRequest ();
+			Resize (req.Width, req.Height);
 			//	this.QueueResize ();
 			ShowAll ();
 		}
 
-		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
+		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
 			requisition.Width = Math.Max (480, requisition.Width);
 		}
 
-		void ComboboxentryPathDestroyed (object sender, EventArgs e)
+		static void ComboboxentryPathDestroyed (object sender, EventArgs e)
 		{
 			StoreHistory ("MonoDevelop.FindReplaceDialogs.PathHistory", (ComboBoxEntry)sender);
 		}
@@ -304,26 +300,26 @@ namespace MonoDevelop.Ide.FindInFiles
 				TransientFor = this,
 			};
 			
-			string defaultFolder = this.comboboxentryPath.Entry.Text;
+			string defaultFolder = comboboxentryPath.Entry.Text;
 			if (string.IsNullOrEmpty (defaultFolder))
 				defaultFolder = IdeApp.ProjectOperations.ProjectsDefaultPath;
 			if (!string.IsNullOrEmpty (defaultFolder))
 				dlg.CurrentFolder = defaultFolder;
 			
 			if (dlg.Run ())
-				this.comboboxentryPath.Entry.Text = dlg.SelectedFile;
+				comboboxentryPath.Entry.Text = dlg.SelectedFile;
 		}
 
-		void CheckbuttonRecursivelyDestroyed (object sender, EventArgs e)
+		static void CheckbuttonRecursivelyDestroyed (object sender, EventArgs e)
 		{
-			Properties properties = (Properties)PropertyService.Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
+			var properties = PropertyService.Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
 			properties.Set ("SearchPathRecursively", ((CheckButton)sender).Active);
 		}
 
 		const char historySeparator = '\n';
 		void InitFromProperties ()
 		{
-			Properties properties = (Properties)PropertyService.Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
+			var properties = PropertyService.Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
 			comboboxScope.Active = properties.Get ("Scope", ScopeWholeSolution);
 
 			//checkbuttonRecursively.Active    = properties.Get ("SearchPathRecursively", true);
@@ -343,13 +339,12 @@ namespace MonoDevelop.Ide.FindInFiles
 		static void LoadHistory (string propertyName, ComboBoxEntry entry)
 		{
 			entry.Entry.Completion = new EntryCompletion ();
-			ListStore store = new ListStore (typeof(string));
+			var store = new ListStore (typeof(string));
 			entry.Entry.Completion.Model = store;
 			entry.Model = store;
 			entry.Entry.ActivatesDefault = true;
-			if (entry.TextColumn != 0)
-				entry.TextColumn = 0;
-			string history = PropertyService.Get<string> (propertyName);
+			entry.TextColumn = 0;
+			var history = PropertyService.Get<string> (propertyName);
 			if (!string.IsNullOrEmpty (history)) {
 				string[] items = history.Split (historySeparator);
 				foreach (string item in items) {
@@ -363,7 +358,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		void StorePoperties ()
 		{
-			Properties properties = (Properties)PropertyService.Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
+			var properties = PropertyService.Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
 			if (writeScope)
 				properties.Set ("Scope", comboboxScope.Active);
 //			properties.Set ("SearchPathRecursively", checkbuttonRecursively.Active);
@@ -380,10 +375,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			//StoreHistory ("MonoDevelop.FindReplaceDialogs.FileMaskHistory", comboboxentryFileMask);
 		}
 
-		static void StoreHistory (string propertyName, Gtk.ComboBoxEntry comboBox)
+		static void StoreHistory (string propertyName, ComboBoxEntry comboBox)
 		{
-			ListStore store = (ListStore)comboBox.Model;
-			List<string> history = new List<string> ();
+			var store = (ListStore)comboBox.Model;
+			var history = new List<string> ();
 			TreeIter iter;
 			if (store.GetIterFirst (out iter)) {
 				do {
@@ -406,7 +401,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			base.OnDestroyed ();
 		}
 		
-		static FindInFilesDialog currentFindDialog = null;
+		static FindInFilesDialog currentFindDialog;
 		static bool IsCurrentDialogClosed {
 			get {
 				return currentFindDialog == null || !currentFindDialog.Visible;
@@ -458,16 +453,14 @@ namespace MonoDevelop.Ide.FindInFiles
 				return new WholeSolutionScope ();
 			case ScopeCurrentProject:
 				MonoDevelop.Projects.Project currentSelectedProject = IdeApp.ProjectOperations.CurrentSelectedProject;
-				if (currentSelectedProject != null) {
-					return new WholeProjectScope (currentSelectedProject);
+				if (currentSelectedProject != null)
+					return new WholeProjectScope(currentSelectedProject);
+				if (IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
+					AlertButton alertButton = MessageService.AskQuestion (GettextCatalog.GetString ("Currently there is no project selected. Search in the solution instead ?"), AlertButton.Yes, AlertButton.No);
+					if (alertButton == AlertButton.Yes)
+						return new WholeSolutionScope ();
 				} else {
-					if (IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
-						AlertButton alertButton = MessageService.AskQuestion (GettextCatalog.GetString ("Currently there is no project selected. Search in the solution instead ?"), AlertButton.Yes, AlertButton.No);
-						if (alertButton == AlertButton.Yes)
-							return new WholeSolutionScope ();
-					} else {
-						MessageService.ShowError (GettextCatalog.GetString ("Currently there is no open solution."));
-					}
+					MessageService.ShowError (GettextCatalog.GetString ("Currently there is no open solution."));
 				}
 				return null;
 			case ScopeAllOpenFiles:
@@ -477,9 +470,9 @@ namespace MonoDevelop.Ide.FindInFiles
 					MessageService.ShowError (string.Format (GettextCatalog.GetString ("Directory not found: {0}"), comboboxentryPath.Entry.Text));
 					return null;
 				}
-				DirectoryScope directoryScope = new DirectoryScope (comboboxentryPath.Entry.Text, checkbuttonRecursively.Active);
+				var directoryScope = new DirectoryScope (comboboxentryPath.Entry.Text, checkbuttonRecursively.Active);
 				
-				Properties properties = (Properties)PropertyService.Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
+				var properties = PropertyService.Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
 				directoryScope.IncludeBinaryFiles = properties.Get ("IncludeBinaryFiles", false);
 				directoryScope.IncludeHiddenFiles = properties.Get ("IncludeHiddenFiles", false);
 				
@@ -490,12 +483,12 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		FilterOptions GetFilterOptions ()
 		{
-			FilterOptions result = new FilterOptions ();
-			result.FileMask = !string.IsNullOrEmpty (searchentry1.Query) ? searchentry1.Query : "*";
-			result.CaseSensitive = checkbuttonCaseSensitive.Active;
-			result.RegexSearch = checkbuttonRegexSearch.Active;
-			result.WholeWordsOnly = checkbuttonWholeWordsOnly.Active;
-			return result;
+			return new FilterOptions {
+				FileMask = !string.IsNullOrEmpty (searchentry1.Query) ? searchentry1.Query : "*",
+				CaseSensitive = checkbuttonCaseSensitive.Active,
+				RegexSearch = checkbuttonRegexSearch.Active,
+				WholeWordsOnly = checkbuttonWholeWordsOnly.Active
+			};
 		}
 
 		static FindReplace find;
@@ -510,7 +503,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			SearchReplace (null);
 //			Hide ();
 		}
-		List<ISearchProgressMonitor> searchesInProgress = new List<ISearchProgressMonitor> ();
+
+		readonly List<ISearchProgressMonitor> searchesInProgress = new List<ISearchProgressMonitor> ();
 		void UpdateStopButton ()
 		{
 			buttonStop.Sensitive = searchesInProgress.Count > 0;
@@ -532,7 +526,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (!MessageService.Confirm (GettextCatalog.GetString ("There is a search already in progress. Do you want to stop it?"), AlertButton.Stop))
 					return;
 				lock (searchesInProgress) {
-					foreach (IProgressMonitor mon in searchesInProgress)
+					foreach (var mon in searchesInProgress)
 						mon.AsyncOperation.Cancel ();
 					searchesInProgress.Clear ();
 				}
@@ -562,52 +556,40 @@ namespace MonoDevelop.Ide.FindInFiles
 				return;
 			}
 
-			DispatchService.BackgroundDispatch (delegate {
-				DateTime timer = DateTime.Now;
-				string errorMessage = null;
+			DateTime timer = DateTime.Now;
+			string errorMessage = null;
 				
-				try {
-					List<SearchResult> results = new List<SearchResult> ();
-					foreach (SearchResult result in find.FindAll (scope, searchMonitor, pattern, replacePattern, options)) {
-						if (searchMonitor.IsCancelRequested)
-							return;
-						results.Add (result);
-						if (results.Count > 10) {
-							Application.Invoke (delegate {
-								results.ForEach (r => searchMonitor.ReportResult (r));
-								results.Clear ();
-							});
-						}
-					}
-					Application.Invoke (delegate {
-						results.ForEach (r => searchMonitor.ReportResult (r));
-						results.Clear ();
-					});
-				} catch (Exception ex) {
-					errorMessage = ex.Message;
-					LoggingService.LogError ("Error while search", ex);
+			try {
+				var results = new List<SearchResult> ();
+				foreach (SearchResult result in find.FindAll (scope, searchMonitor, pattern, replacePattern, options)) {
+					if (searchMonitor.IsCancelRequested)
+						return;
+					results.Add (result);
 				}
+				searchMonitor.ReportResults (results);
+			} catch (Exception ex) {
+				errorMessage = ex.Message;
+				LoggingService.LogError ("Error while search", ex);
+			}
 				
-				string message;
-				if (errorMessage != null) {
-					message = GettextCatalog.GetString ("The search could not be finished: {0}", errorMessage);
-					searchMonitor.ReportError (message, null);
-				} else if (searchMonitor.IsCancelRequested) {
-					message = GettextCatalog.GetString ("Search cancelled.");
-					searchMonitor.ReportWarning (message);
-				} else {
-					string matches = string.Format (GettextCatalog.GetPluralString ("{0} match found", "{0} matches found", find.FoundMatchesCount), find.FoundMatchesCount);
-					string files = string.Format (GettextCatalog.GetPluralString ("in {0} file.", "in {0} files.", find.SearchedFilesCount), find.SearchedFilesCount);
-					message = GettextCatalog.GetString ("Search completed.") + Environment.NewLine + matches + " " + files;
-					searchMonitor.ReportSuccess (message);
-				}
-				searchMonitor.ReportStatus (message);
-				searchMonitor.Log.WriteLine (GettextCatalog.GetString ("Search time: {0} seconds."), (DateTime.Now - timer).TotalSeconds);
-				searchMonitor.Dispose ();
-				lock (searchesInProgress)
-					searchesInProgress.Remove (searchMonitor);
-				UpdateStopButton ();
-			});
+			string message;
+			if (errorMessage != null) {
+				message = GettextCatalog.GetString ("The search could not be finished: {0}", errorMessage);
+				searchMonitor.ReportError (message, null);
+			} else if (searchMonitor.IsCancelRequested) {
+				message = GettextCatalog.GetString ("Search cancelled.");
+				searchMonitor.ReportWarning (message);
+			} else {
+				string matches = string.Format (GettextCatalog.GetPluralString ("{0} match found", "{0} matches found", find.FoundMatchesCount), find.FoundMatchesCount);
+				string files = string.Format (GettextCatalog.GetPluralString ("in {0} file.", "in {0} files.", find.SearchedFilesCount), find.SearchedFilesCount);
+				message = GettextCatalog.GetString ("Search completed.") + Environment.NewLine + matches + " " + files;
+				searchMonitor.ReportSuccess (message);
+			}
+			searchMonitor.ReportStatus (message);
+			searchMonitor.Log.WriteLine (GettextCatalog.GetString ("Search time: {0} seconds."), (DateTime.Now - timer).TotalSeconds);
+			searchMonitor.Dispose ();
+			searchesInProgress.Remove (searchMonitor);
+			UpdateStopButton ();
 		}
 	}
 }

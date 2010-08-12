@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.IO;
 using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.FindInFiles
@@ -73,7 +72,7 @@ namespace MonoDevelop.Ide.FindInFiles
 	
 	public class PatternMatcher
 	{
-		List<Instruction> compiledPattern = new List<Instruction> ();
+		readonly List<Instruction> compiledPattern = new List<Instruction> ();
 		
 		enum Command {
 			Match,
@@ -98,8 +97,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public PatternMatcher (string pattern)
 		{
-			for (int i = 0; i < pattern.Length; i++) {
-				char ch = pattern[i];
+			foreach (char ch in pattern) {
 				switch (ch) {
 				case '?':
 					compiledPattern.Add (Instruction.AnyChar);
@@ -113,7 +111,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				}
 			}
 		}
-		
+
 		public bool Match (string text)
 		{
 			return Match (text, 0, 0);

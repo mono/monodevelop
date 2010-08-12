@@ -48,11 +48,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			return 1;
 		}
-		
-		public DocumentScope()
-		{
-		}
-		
+
 		public override IEnumerable<FileProvider> GetFiles (IProgressMonitor monitor, FilterOptions filterOptions)
 		{
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in '{0}'", IdeApp.Workbench.ActiveDocument.FileName));
@@ -73,10 +69,6 @@ namespace MonoDevelop.Ide.FindInFiles
 		public override int GetTotalWork (FilterOptions filterOptions)
 		{
 			return 1;
-		}
-		
-		public SelectionScope()
-		{
 		}
 
 		public override IEnumerable<FileProvider> GetFiles (IProgressMonitor monitor, FilterOptions filterOptions)
@@ -128,7 +120,7 @@ namespace MonoDevelop.Ide.FindInFiles
 	
 	public class WholeProjectScope : Scope
 	{
-		Project project;
+		readonly Project project;
 		
 		public override int GetTotalWork (FilterOptions filterOptions)
 		{
@@ -169,11 +161,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			return IdeApp.Workbench.Documents.Count;
 		}
-		
-		public AllOpenFilesScope ()
-		{
-		}
-		
+
 		public override IEnumerable<FileProvider> GetFiles (IProgressMonitor monitor, FilterOptions filterOptions)
 		{
 			foreach (Document document in IdeApp.Workbench.Documents) {
@@ -194,8 +182,8 @@ namespace MonoDevelop.Ide.FindInFiles
 	
 	public class DirectoryScope : Scope
 	{
-		string path;
-		bool recurse;
+		readonly string path;
+		readonly bool recurse;
 		
 		public bool IncludeBinaryFiles {
 			get;
@@ -209,7 +197,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public override int GetTotalWork (FilterOptions filterOptions)
 		{
-			return GetFileNames (null, path, recurse, filterOptions).Count ();
+			return GetFileNames (null, filterOptions).Count ();
 		}
 		
 		public DirectoryScope (string path, bool recurse)
@@ -227,17 +215,17 @@ namespace MonoDevelop.Ide.FindInFiles
 			         mimeType == "image/x-xpixmap");
 		}
 		
-		IEnumerable<string> GetFileNames (IProgressMonitor monitor, string path, bool recurse, FilterOptions filterOptions)
+		IEnumerable<string> GetFileNames (IProgressMonitor monitor, FilterOptions filterOptions)
 		{
 			if (monitor != null)
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in '{0}'", path));
 			foreach (string fileMask in filterOptions.FileMask.Split (',', ';')) {
 				string[] files;
 				try {
-					files = Directory.GetFiles (path, fileMask, SearchOption.TopDirectoryOnly);
+					files = Directory.GetFiles (path, fileMask, recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
 				} catch (Exception e) {
 					LoggingService.LogError ("Can't access path " + path, e);
-					continue;
+					yield break;
 				}
 				
 				foreach (string fileName in files) {
@@ -247,26 +235,14 @@ namespace MonoDevelop.Ide.FindInFiles
 						continue;
 					yield return fileName;
 				}
-				
-				if (recurse) {
-					foreach (string directoryName in Directory.GetDirectories (path)) {
-						if (directoryName.StartsWith (".") && !IncludeHiddenFiles)
-							continue;
-						foreach (string fileName in GetFileNames (monitor, Path.Combine (path, directoryName), recurse, filterOptions)) {
-							yield return fileName;
-						}
-					}
-				}
 			}
 		}
 		
 		public override IEnumerable<FileProvider> GetFiles (IProgressMonitor monitor, FilterOptions filterOptions)
 		{
-			foreach (string file in GetFileNames (monitor, path, recurse, filterOptions)) {
-				yield return new FileProvider (file);
-			}
+			return GetFileNames (monitor, filterOptions).Select (file => new FileProvider (file));
 		}
-		
+
 		public override string GetDescription (FilterOptions filterOptions, string pattern, string replacePattern)
 		{
 			if (string.IsNullOrEmpty (replacePattern))

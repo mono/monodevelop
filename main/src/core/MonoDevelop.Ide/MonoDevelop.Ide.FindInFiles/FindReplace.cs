@@ -77,33 +77,30 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (!filter.CaseSensitive)
 					regexOptions |= RegexOptions.IgnoreCase;
 				regex = new Regex (pattern, regexOptions);
-			} else {
-				CompilePattern (pattern, filter);
 			}
 			IsRunning = true;
 			FoundMatchesCount = SearchedFilesCount = 0;
 			
-			monitor.BeginTask (scope.GetDescription (filter, pattern, replacePattern), 100);
+			monitor.BeginTask (scope.GetDescription (filter, pattern, replacePattern), 50);
 			try {
 				int totalWork = scope.GetTotalWork (filter);
-				int step = Math.Max (1, totalWork / 100);
+				int step = Math.Max (1, totalWork / 50);
 				foreach (FileProvider provider in scope.GetFiles (monitor, filter)) {
 					if (monitor.IsCancelRequested)
-						break;
+						yield break;
 					SearchedFilesCount++;
 					if (!string.IsNullOrEmpty (replacePattern))
 						provider.BeginReplace ();
 					foreach (SearchResult result in FindAll (monitor, provider, pattern, replacePattern, filter)) {
 						if (monitor.IsCancelRequested)
-							break;
+							yield break;
 						FoundMatchesCount++;
 						yield return result;
 					}
 					if (!string.IsNullOrEmpty (replacePattern))
 						provider.EndReplace ();
-					if (SearchedFilesCount % step == 0) 
-						monitor.Step (1);
-					DispatchService.RunPendingEvents ();
+					if (SearchedFilesCount % step == 0)
+						monitor.Step (1); 
 				}
 			} finally {
 				monitor.EndTask ();
@@ -124,13 +121,13 @@ namespace MonoDevelop.Ide.FindInFiles
 				return new SearchResult[0];
 			}
 			if (filter.RegexSearch)
-				return RegexSearch (monitor, provider, content, pattern, replacePattern, filter);
+				return RegexSearch (monitor, provider, content, replacePattern, filter);
 			return Search (provider, content, pattern, replacePattern, filter);
 		}
 		
-		IEnumerable<SearchResult> RegexSearch (IProgressMonitor monitor, FileProvider provider, string content, string pattern, string replacePattern, FilterOptions filter)
+		IEnumerable<SearchResult> RegexSearch (IProgressMonitor monitor, FileProvider provider, string content, string replacePattern, FilterOptions filter)
 		{
-			List<SearchResult> results = new List<SearchResult> ();
+			var results = new List<SearchResult> ();
 			if (replacePattern == null) {
 				foreach (Match match in regex.Matches (content)) {
 					if (monitor.IsCancelRequested)
@@ -143,7 +140,7 @@ namespace MonoDevelop.Ide.FindInFiles
 						results.Add(new SearchResult(provider, match.Index, match.Length));
 				}
 			} else {
-				List<Match> matches = new List<Match> ();
+				var matches = new List<Match> ();
 				foreach (Match match in regex.Matches(content))
 				{
 					if (provider.SelectionStartPosition > -1 && match.Index < provider.SelectionStartPosition)
@@ -170,89 +167,27 @@ namespace MonoDevelop.Ide.FindInFiles
 			return results;
 		}
 		
-		
-		int[] occ;
-		int[] next;
-		
-		public void CompilePattern (string pattern, FilterOptions filter)
-		{
-			if (!filter.CaseSensitive)
-				pattern = pattern.ToUpper ();
-			int plen = pattern.Length;
-			
-			occ = new int[(int)Char.MaxValue];
-			int i;
-			for (i = 0; i < (int)Char.MaxValue; i++) {
-				occ[i] = -1;
-			}
-			for (i = 0; i < plen; i++) 
-				occ[(int)pattern[i]] = i;
-			
-			int[] f = new int[plen + 1];
-			next = new int[plen + 1];
-			
-			// Pre process part 1
-			i = plen;
-			int j = plen + 1;
-			f[i] = j;
-			while (i > 0) {
-				while (j <= plen && pattern[i - 1] != pattern[j - 1]) {
-					if (next[j] == 0) 
-						next[j] = j-i;
-					j = f[j];
-				}
-				i--;
-				j--;
-				f[i] = j;
-			}
-			
-			// Pre process part 2
-			j = f[0];
-			for (i = 0; i <= plen; i++) {
-				if (next[i] == 0) 
-					next[i] = j;
-				if (i == j) 
-					j = f[j];
-			}
-			
-		}
-		
 		public IEnumerable<SearchResult> Search (FileProvider provider, string content, string pattern, string replacePattern, FilterOptions filter)
 		{
-			if (!filter.CaseSensitive) {
-				pattern = pattern.ToUpper ();
-				content = content.ToUpper ();
-			}
-
-			int plen = pattern.Length - 1;
-			int delta = 0;
-			int i = 0, end = content.Length - pattern.Length;
-			if (provider.SelectionStartPosition > -1)
-				i = provider.SelectionStartPosition;
-			if (provider.SelectionEndPosition > -1)
-				end = provider.SelectionEndPosition - pattern.Length;
-			while (i <= end) {
-				int j = plen;
-				while (j >= 0 && pattern[j] == content[i + j])
-					j--;
-
-				if (j < 0) {
-					int idx = i;
-					if (!filter.WholeWordsOnly || FilterOptions.IsWholeWordAt (content, idx, pattern.Length)) {
-						if (replacePattern != null) {
-							yield return new SearchResult (provider, idx + delta, replacePattern.Length);
-							
-							provider.Replace (idx + delta, pattern.Length, replacePattern);
-							delta += replacePattern.Length - pattern.Length;
-						} else {
-							yield return new SearchResult (provider, idx, pattern.Length);
-						}
+			if (string.IsNullOrEmpty (content))
+				yield break;
+			int idx = provider.SelectionStartPosition < 0 ? 0 : Math.Max (0, provider.SelectionStartPosition);
+			int lastPossibleIndex = content.Length - pattern.Length + 1;
+			int end = provider.SelectionEndPosition < 0 ? lastPossibleIndex : Math.Min (lastPossibleIndex, provider.SelectionEndPosition - pattern.Length);
+			var comparison = filter.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+			
+			while ((idx = content.IndexOf (pattern, idx, end - idx, comparison)) >= 0) {
+				if (!filter.WholeWordsOnly || FilterOptions.IsWholeWordAt (content, idx, pattern.Length)) {
+					if (replacePattern != null) {
+						int delta = replacePattern.Length - pattern.Length;
+						provider.Replace (idx, pattern.Length, replacePattern);
+						yield return new SearchResult (provider, idx, replacePattern.Length);
+						idx += delta;
+					} else {
+						yield return new SearchResult (provider, idx, pattern.Length);
 					}
-					i += next[0];
 				}
-				else if (j+1 < next.Length && j+i < content.Length && content[j+i] < occ.Length)
-					i += System.Math.Max (next[j + 1], j-occ[(int)content[i + j]]);
-				else i += next[0];
+				idx += pattern.Length;
 			}
 		}
 	}

@@ -26,9 +26,9 @@
 
 using System;
 using System.Linq;
+using Gdk;
 using Gtk;
 using Mono.TextEditor;
-using MonoDevelop.Ide.Gui;
 using Mono.TextEditor.Highlighting;
 using System.Collections.Generic;
 using MonoDevelop.Core;
@@ -43,11 +43,11 @@ using MonoDevelop.Ide.Navigation;
 namespace MonoDevelop.Ide.FindInFiles
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class SearchResultWidget : Gtk.Bin, ILocationList
+	sealed partial class SearchResultWidget : Bin, ILocationList
 	{
 		ListStore store;
-		ToolButton buttonStop;
-		ToggleToolButton buttonPin;
+		readonly ToolButton buttonStop;
+		readonly ToggleToolButton buttonPin;
 		
 		const int SearchResultColumn = 0;
 		const int DidReadColumn      = 1;
@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public SearchResultWidget ()
 		{
-			this.Build ();
+			Build ();
 			
 			store = new ListStore (typeof (SearchResult), 
 			                       typeof (bool)          // didRead
@@ -84,48 +84,53 @@ namespace MonoDevelop.Ide.FindInFiles
 			treeviewSearchResults.ButtonPressEvent += HandleButtonPressEvent;
 			treeviewSearchResults.RulesHint = true;
 			
-			TreeViewColumn fileNameColumn = new TreeViewColumn ();
-			fileNameColumn.Resizable = true;
-			fileNameColumn.SortColumnId  = 0;
-			fileNameColumn.Title = GettextCatalog.GetString ("File");
+			var fileNameColumn = new TreeViewColumn {
+				Resizable = false,
+				SortColumnId = 0,
+				Title = GettextCatalog.GetString("File")
+			};
+			fileNameColumn.FixedWidth = 200;
 			var fileNamePixbufRenderer = new CellRendererPixbuf ();
 			fileNameColumn.PackStart (fileNamePixbufRenderer, false);
-			fileNameColumn.SetCellDataFunc (fileNamePixbufRenderer, new Gtk.TreeCellDataFunc (FileIconDataFunc));
+			fileNameColumn.SetCellDataFunc (fileNamePixbufRenderer, FileIconDataFunc);
 			
-			CellRendererText fileNameRenderer = new CellRendererText ();
+			var fileNameRenderer = new CellRendererText ();
 			fileNameColumn.PackStart (fileNameRenderer, true);
-			fileNameColumn.SetCellDataFunc (fileNameRenderer, new Gtk.TreeCellDataFunc (FileNameDataFunc));
+			fileNameColumn.SetCellDataFunc (fileNameRenderer, FileNameDataFunc);
 			treeviewSearchResults.AppendColumn (fileNameColumn);
 			
-			TreeViewColumn lineColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Line"), new Gtk.CellRendererText (), new Gtk.TreeCellDataFunc (ResultLineDataFunc));
+			TreeViewColumn lineColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Line"), new CellRendererText (), ResultLineDataFunc);
 			lineColumn.SortColumnId = 1;
+			lineColumn.FixedWidth = 50;
 			
-			TreeViewColumn textColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Text"), new Gtk.CellRendererText (), new Gtk.TreeCellDataFunc (ResultTextDataFunc));
+			TreeViewColumn textColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Text"), new CellRendererText (), ResultTextDataFunc);
 			textColumn.SortColumnId = 2;
-			textColumn.Resizable = true;
+			textColumn.Resizable = false;
+			textColumn.FixedWidth = 300;
 			
-			TreeViewColumn pathColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Path"), new Gtk.CellRendererText (), new Gtk.TreeCellDataFunc (ResultPathDataFunc));
+			TreeViewColumn pathColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Path"), new CellRendererText (), ResultPathDataFunc);
 			pathColumn.SortColumnId = 3;
-			pathColumn.Resizable = true;
-			store.SetSortFunc (0, new TreeIterCompareFunc (CompareFileNames));
-			store.SetSortFunc (1, new TreeIterCompareFunc (CompareLineNumbers));
-			store.SetSortFunc (3, new TreeIterCompareFunc (CompareFilePaths));
+			pathColumn.Resizable = false;
+			pathColumn.FixedWidth = 500;
 			
+			store.SetSortFunc (0, CompareFileNames);
+			store.SetSortFunc (1, CompareLineNumbers);
+			store.SetSortFunc (3, CompareFilePaths);
+
 			treeviewSearchResults.RowActivated += TreeviewSearchResultsRowActivated;
 			
-			buttonStop = new ToolButton ("gtk-stop");
-			buttonStop.Sensitive = false;
+			buttonStop = new ToolButton ("gtk-stop") { Sensitive = false };
 			buttonStop.Clicked += ButtonStopClicked;
 			
 			buttonStop.TooltipText = GettextCatalog.GetString ("Stop");
 			toolbar.Insert (buttonStop, -1);
 
-			ToolButton buttonClear = new ToolButton ("gtk-clear");
+			var buttonClear = new ToolButton ("gtk-clear");
 			buttonClear.Clicked += ButtonClearClicked;
 			buttonClear.TooltipText = GettextCatalog.GetString ("Clear results");
 			toolbar.Insert (buttonClear, -1);
 			
-			ToggleToolButton buttonOutput = new ToggleToolButton (MonoDevelop.Ide.Gui.Stock.OutputIcon);
+			var buttonOutput = new ToggleToolButton (Gui.Stock.OutputIcon);
 			buttonOutput.Clicked += ButtonOutputClicked;
 			buttonOutput.TooltipText = GettextCatalog.GetString ("Show output");
 			toolbar.Insert (buttonOutput, -1);
@@ -144,12 +149,12 @@ namespace MonoDevelop.Ide.FindInFiles
 		protected override void OnRealized ()
 		{
 			base.OnRealized ();
-			highlightStyle = SyntaxModeService.GetColorStyle (this.Style, PropertyService.Get ("ColorScheme", "Default"));
+			highlightStyle = SyntaxModeService.GetColorStyle (Style, PropertyService.Get ("ColorScheme", "Default"));
 		}
 		
-		protected override void OnStyleSet (Gtk.Style previous_style)
+		protected override void OnStyleSet (Gtk.Style previousStyle)
 		{
-			base.OnStyleSet (previous_style);
+			base.OnStyleSet (previousStyle);
 			if (highlightStyle != null)
 				highlightStyle.UpdateFromGtkStyle (Style);
 		}
@@ -170,7 +175,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		void ButtonClearClicked (object sender, EventArgs e)
 		{
-			this.Reset ();
+			Reset ();
 		}
 
 		void ButtonStopClicked (object sender, EventArgs e)
@@ -187,28 +192,29 @@ namespace MonoDevelop.Ide.FindInFiles
 		public void BeginProgress ()
 		{
 			IdeApp.Workbench.ActiveLocationList = this;
-			
+			newStore = new ListStore (typeof (SearchResult), typeof (bool));
 			Reset ();
 			buttonStop.Sensitive = true;
 			treeviewSearchResults.FreezeChildNotify ();
-			store.SetSortFunc (0, new TreeIterCompareFunc (DefaultSortFunc));
-			store.SetSortFunc (1, new TreeIterCompareFunc (DefaultSortFunc));
-			store.SetSortFunc (3, new TreeIterCompareFunc (DefaultSortFunc));
 		}
 		
+		ListStore newStore;
 		public void EndProgress ()
 		{
 			buttonStop.Sensitive = false;
-			store.SetSortFunc (0, new TreeIterCompareFunc (CompareFileNames));
-			store.SetSortFunc (1, new TreeIterCompareFunc (CompareLineNumbers));
-			store.SetSortFunc (3, new TreeIterCompareFunc (CompareFilePaths));
+			newStore.SetSortFunc (0, CompareFileNames);
+			newStore.SetSortFunc (1, CompareLineNumbers);
+			newStore.SetSortFunc (3, CompareFilePaths);
+			treeviewSearchResults.Model = newStore;
+			store.Dispose ();
+			store = newStore;
 			treeviewSearchResults.ThawChildNotify ();
-			
 		}
+
 		public void FocusPad ()
 		{
 			treeviewSearchResults.GrabFocus ();
-			Gtk.TreeIter iter;
+			TreeIter iter;
 			if (store.GetIterFirst (out iter)) 
 				treeviewSearchResults.Selection.SelectIter (iter);
 		}
@@ -237,8 +243,8 @@ namespace MonoDevelop.Ide.FindInFiles
 				args.RetVal = treeviewSearchResults.Selection.GetSelectedRows ().Length > 1;
 			}
 		}
-		
-		Gdk.Color AdjustColor (Gdk.Color baseColor, Gdk.Color color)
+
+		static Color AdjustColor (Color baseColor, Color color)
 		{
 			double b1 = HslColor.Brightness (color);
 			double b2 = HslColor.Brightness (baseColor);
@@ -257,18 +263,14 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		string AdjustColors (string markup)
 		{
-			StringBuilder result = new StringBuilder ();
+			var result = new StringBuilder ();
 			int idx = markup.IndexOf ("foreground=\"");
 			int offset = 0;
-			Gdk.Color baseColor;
+
 			// This is a workaround for Bug 559804 - Strings in search result pad are near-invisible
 			// On mac it's not possible to get the white background color with the Base or Background
 			// methods. If this bug is fixed or a better work around is found - remove this hack.
-			if (Platform.IsMac) {
-				baseColor = treeviewSearchResults.Style.Light (treeviewSearchResults.State);
-			} else {
-				baseColor = treeviewSearchResults.Style.Base (treeviewSearchResults.State);
-			}
+			Color baseColor = Platform.IsMac ?treeviewSearchResults.Style.Light (treeviewSearchResults.State) : treeviewSearchResults.Style.Base (treeviewSearchResults.State);
 			
 			while (idx > 0) {
 				idx += "foreground=\"".Length;
@@ -280,10 +282,9 @@ namespace MonoDevelop.Ide.FindInFiles
 				offset = idx + 7;
 				string colorStr = markup.Substring (idx, 7);
 				
-				Gdk.Color color = Gdk.Color.Zero;
-				if (Gdk.Color.Parse (colorStr, ref color)) {
-					colorStr = SyntaxMode.ColorToPangoMarkup (AdjustColor (baseColor, color));
-				}
+				Color color = Color.Zero;
+				if (Color.Parse(colorStr, ref color))
+					colorStr = SyntaxMode.ColorToPangoMarkup(AdjustColor(baseColor, color));
 				result.Append (colorStr);
 				idx = markup.IndexOf ("foreground=\"", idx);
 			}
@@ -293,7 +294,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		void OnPopupMenu (object sender, PopupMenuArgs args)
 		{
-			CommandEntrySet contextMenu = new CommandEntrySet ();
+			var contextMenu = new CommandEntrySet ();
 			contextMenu.AddItem (ViewCommands.Open);
 			contextMenu.AddItem (EditCommands.Copy);
 			contextMenu.AddItem (EditCommands.SelectAll);
@@ -305,40 +306,38 @@ namespace MonoDevelop.Ide.FindInFiles
 			labelStatus.Text = text;
 		}
 		
-		void FileIconDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		void FileIconDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			if (TreeIter.Zero.Equals (iter))
 				return;
-			CellRendererPixbuf fileNamePixbufRenderer = (CellRendererPixbuf) cell;
-			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			var fileNamePixbufRenderer = (CellRendererPixbuf) cell;
+			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
 			if (searchResult == null)
 				return;
-			fileNamePixbufRenderer.Pixbuf = DesktopService.GetPixbufForFile (searchResult.FileName, Gtk.IconSize.Menu);
+			fileNamePixbufRenderer.Pixbuf = DesktopService.GetPixbufForFile (searchResult.FileName, IconSize.Menu);
 		}
-		
-		string MarkupText (string text, bool didRead, bool isSelected)
+
+		static string MarkupText (string text, bool didRead)
 		{
 			return string.Format ("<span weight=\"{1}\">{0}</span>", GLib.Markup.EscapeText (text), didRead ? "normal" : "bold");
 		}
 		
-		void FileNameDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		void FileNameDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			if (TreeIter.Zero.Equals (iter))
 				return;
-			CellRendererText fileNameRenderer = (CellRendererText)cell;
+			var fileNameRenderer = (CellRendererText)cell;
 			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
-			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
 			if (searchResult == null)
 				return;
-			bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
-			
-			fileNameRenderer.Markup = MarkupText (System.IO.Path.GetFileName (searchResult.FileName), didRead, isSelected);
+			fileNameRenderer.Markup = MarkupText (System.IO.Path.GetFileName (searchResult.FileName), didRead);
 		}
 		
 		int CompareLineNumbers (TreeModel model, TreeIter first, TreeIter second)
 		{
-			DocumentLocation loc1 = GetLocation ((SearchResult)model.GetValue (first, SearchResultColumn));
-			DocumentLocation loc2 = GetLocation ((SearchResult)model.GetValue (second, SearchResultColumn));
+			var loc1 = GetLocation ((SearchResult)model.GetValue (first, SearchResultColumn));
+			var loc2 = GetLocation ((SearchResult)model.GetValue (second, SearchResultColumn));
 			return loc1.Line.CompareTo (loc2.Line);
 		}
 		
@@ -349,8 +348,8 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		static int CompareFileNames (TreeModel model, TreeIter first, TreeIter second)
 		{
-			SearchResult searchResult1 = (SearchResult)model.GetValue (first, SearchResultColumn);
-			SearchResult searchResult2 = (SearchResult)model.GetValue (second, SearchResultColumn);
+			var searchResult1 = (SearchResult)model.GetValue (first, SearchResultColumn);
+			var searchResult2 = (SearchResult)model.GetValue (second, SearchResultColumn);
 			if (searchResult1 == null || searchResult2 == null || searchResult1.FileName == null || searchResult2.FileName == null)
 				return -1;
 			return System.IO.Path.GetFileName (searchResult1.FileName).CompareTo (System.IO.Path.GetFileName (searchResult2.FileName));
@@ -358,62 +357,57 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		static int CompareFilePaths (TreeModel model, TreeIter first, TreeIter second)
 		{
-			SearchResult searchResult1 = (SearchResult)model.GetValue (first, SearchResultColumn);
-			SearchResult searchResult2 = (SearchResult)model.GetValue (second, SearchResultColumn);
+			var searchResult1 = (SearchResult)model.GetValue (first, SearchResultColumn);
+			var searchResult2 = (SearchResult)model.GetValue (second, SearchResultColumn);
 			if (searchResult1 == null || searchResult2 == null || searchResult1.FileName == null || searchResult2.FileName == null)
 				return -1;
 			return System.IO.Path.GetDirectoryName (searchResult1.FileName).CompareTo (System.IO.Path.GetDirectoryName (searchResult2.FileName));
 		}
 		
-		void ResultPathDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		void ResultPathDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			if (TreeIter.Zero.Equals (iter))
 				return;
-			CellRendererText pathRenderer = (CellRendererText)cell;
-			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			var pathRenderer = (CellRendererText)cell;
+			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
 			if (searchResult == null)
 				return;
 			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
-			bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
-			pathRenderer.Markup = MarkupText (System.IO.Path.GetDirectoryName (searchResult.FileName), didRead, isSelected);
+			pathRenderer.Markup = MarkupText (System.IO.Path.GetDirectoryName (searchResult.FileName), didRead);
 		}
 		
-		void ResultLineDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		void ResultLineDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			if (TreeIter.Zero.Equals (iter))
 				return;
-			CellRendererText lineRenderer = (CellRendererText)cell;
-			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			var lineRenderer = (CellRendererText)cell;
+			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
 			if (searchResult == null)
 				return;
 			
-			Mono.TextEditor.Document doc = GetDocument (searchResult);
+			Document doc = GetDocument (searchResult);
 			int lineNr = doc.OffsetToLineNumber (searchResult.Offset) + 1;
 			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
-			bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
-			lineRenderer.Markup = MarkupText (lineNr.ToString (), didRead, isSelected);
+			lineRenderer.Markup = MarkupText (lineNr.ToString (), didRead);
 		}
 		
-		void ResultTextDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		void ResultTextDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			if (TreeIter.Zero.Equals (iter))
 				return;
-			CellRendererText textRenderer = (CellRendererText)cell;
-			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			var textRenderer = (CellRendererText)cell;
+			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
 			if (searchResult == null)
 				return;
 			
-			Mono.TextEditor.Document doc = GetDocument (searchResult);
+			Document doc = GetDocument (searchResult);
 			int lineNr = doc.OffsetToLineNumber (searchResult.Offset);
 			LineSegment line = doc.GetLine (lineNr);
 			bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
-			
-			string markup;
-			if (doc.SyntaxMode != null) {
-				markup = doc.SyntaxMode.GetMarkup (doc, new TextEditorOptions (), highlightStyle, line.Offset, line.EditableLength, true, !isSelected, false);
-			} else {
-				markup = GLib.Markup.EscapeText (doc.GetTextAt (line.Offset, line.EditableLength));
-			}
+
+			string markup = doc.SyntaxMode != null ? 
+				doc.SyntaxMode.GetMarkup (doc, new TextEditorOptions (), highlightStyle, line.Offset, line.EditableLength, true, !isSelected, false) : 
+				GLib.Markup.EscapeText (doc.GetTextAt (line.Offset, line.EditableLength));
 			
 			if (!isSelected) {
 				int col = searchResult.Offset - line.Offset;
@@ -421,12 +415,8 @@ namespace MonoDevelop.Ide.FindInFiles
 				int pos1 = FindPosition (markup, col, out tag);
 				int pos2 = FindPosition (markup, col + searchResult.Length, out tag);
 				if (pos1 >= 0 && pos2 >= 0) {
-					if (tag.StartsWith ("span")) {
-						markup = markup.Insert (pos2, "</span></span><" + tag + ">");
-					} else {
-						markup = markup.Insert (pos2, "</span>");
-					}
-					Gdk.Color searchColor = Mono.TextEditor.Highlighting.Style.ToGdkColor (highlightStyle.SearchTextBg);
+					markup = tag.StartsWith ("span") ? markup.Insert (pos2, "</span></span><" + tag + ">") : markup.Insert (pos2, "</span>");
+					Color searchColor = Mono.TextEditor.Highlighting.Style.ToGdkColor (highlightStyle.SearchTextBg);
 					double b1 = HslColor.Brightness (searchColor);
 					double b2 = HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), highlightStyle.Default.Color));
 					double delta = Math.Abs (b1 - b2);
@@ -455,7 +445,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			bool inTag = false;
 			bool inChar = false;
 			int realPos = 0;
-			StringBuilder lastTag = new StringBuilder ();
+			var lastTag = new StringBuilder ();
 			for (int i = 0; i < markup.Length; i++) {
 				char ch = markup[i];
 				if (ch != '<' && ch != '&' && !inTag && !inChar && realPos >= pos) {
@@ -491,17 +481,16 @@ namespace MonoDevelop.Ide.FindInFiles
 				return markup.Length;
 			return -1;
 		}
+
+		readonly Dictionary<string, Document> documents = new Dictionary<string, Document> ();
 		
-		Dictionary<string, Mono.TextEditor.Document> documents = new Dictionary<string, Mono.TextEditor.Document> ();
-		
-		Mono.TextEditor.Document GetDocument (SearchResult result)
+		Document GetDocument (SearchResult result)
 		{
-			Mono.TextEditor.Document doc;
+			Document doc;
 			if (!documents.TryGetValue (result.FileName, out doc)) {
-				doc = new Mono.TextEditor.Document ();
-				doc.MimeType = DesktopService.GetMimeTypeForUri (result.FileName);
 				TextReader reader = result.FileProvider.Open ();
-				doc.Text = reader.ReadToEnd ();
+				doc = Document.CreateImmutableDocument (reader.ReadToEnd ());
+				doc.MimeType = DesktopService.GetMimeTypeForUri (result.FileName);
 				reader.Close ();
 				documents[result.FileName] = doc;
 			}
@@ -523,13 +512,19 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public void Add (SearchResult result)
 		{
-			store.InsertWithValues (ResultCount, result, false);
-			ResultCount++;
+			newStore.InsertWithValues (ResultCount++, result, false);
 		}
 		
-		void OpenDocumentAt (Gtk.TreeIter iter)
+		public void AddRange (IEnumerable<SearchResult> results)
 		{
-			SearchResult result = store.GetValue (iter, SearchResultColumn) as SearchResult;
+			foreach (var result in results) {
+				Add (result);
+			}
+		}
+		
+		void OpenDocumentAt (TreeIter iter)
+		{
+			var result = store.GetValue (iter, SearchResultColumn) as SearchResult;
 			if (result != null) {
 				DocumentLocation loc = GetLocation (result);
 				store.SetValue (iter, DidReadColumn, true);
@@ -538,7 +533,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 		DocumentLocation GetLocation (SearchResult searchResult)
 		{
-			Mono.TextEditor.Document doc = GetDocument (searchResult);
+			Document doc = GetDocument (searchResult);
 			int lineNr = doc.OffsetToLineNumber (searchResult.Offset);
 			LineSegment line = doc.GetLine (lineNr);
 			return new DocumentLocation (lineNr + 1, searchResult.Offset - line.Offset + 1);
@@ -546,8 +541,8 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public void OpenSelectedMatches ()
 		{
-			foreach (Gtk.TreePath path in treeviewSearchResults.Selection.GetSelectedRows ()) {
-				Gtk.TreeIter iter;
+			foreach (TreePath path in treeviewSearchResults.Selection.GetSelectedRows ()) {
+				TreeIter iter;
 				if (!store.GetIter (out iter, path))
 					continue;
 				OpenDocumentAt (iter);
@@ -563,25 +558,25 @@ namespace MonoDevelop.Ide.FindInFiles
 		public void CopySelection ()
 		{
 			TreeModel model;
-			StringBuilder sb = new StringBuilder ();
-			foreach (Gtk.TreePath p in treeviewSearchResults.Selection.GetSelectedRows (out model)) {
+			var sb = new StringBuilder ();
+			foreach (TreePath p in treeviewSearchResults.Selection.GetSelectedRows (out model)) {
 				TreeIter iter;
 				if (!model.GetIter (out iter, p))
 					continue;
-				SearchResult result = store.GetValue (iter, SearchResultColumn) as SearchResult;
+				var result = store.GetValue (iter, SearchResultColumn) as SearchResult;
 				if (result == null)
 					continue;
 				DocumentLocation loc = GetLocation (result);
-				Mono.TextEditor.Document doc = GetDocument (result);
+				Document doc = GetDocument (result);
 				LineSegment line = doc.GetLine (loc.Line - 1);
 				
 				sb.AppendFormat ("{0} ({1}, {2}):{3}", result.FileName, loc.Line, loc.Column, doc.GetTextAt (line.Offset, line.EditableLength));
 				sb.AppendLine ();
 			}
-			Gtk.Clipboard clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+			Clipboard clipboard = Clipboard.Get (Atom.Intern ("CLIPBOARD", false));
 			clipboard.Text = sb.ToString ();
 			
-			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
+			clipboard = Clipboard.Get (Atom.Intern ("PRIMARY", false));
 			clipboard.Text = sb.ToString ();
 		}
 		
@@ -593,7 +588,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public NavigationPoint GetNextLocation ()
 		{
-			TreeIter iter = TreeIter.Zero;
+			TreeIter iter;
 			TreePath[] path = treeviewSearchResults.Selection.GetSelectedRows ();
 			if (path != null && path.Length > 0 && store.GetIter (out iter, path[0])) {
 				if (!store.IterNext (ref iter)) 
@@ -631,14 +626,14 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		NavigationPoint GetLocation (TreeIter iter)
 		{
-			this.treeviewSearchResults.Selection.UnselectAll ();
+			treeviewSearchResults.Selection.UnselectAll ();
 			if (!store.IterIsValid (iter))
 				return null;
 
-			this.treeviewSearchResults.Selection.SelectIter (iter);
-			this.treeviewSearchResults.ScrollToCell (store.GetPath (iter), this.treeviewSearchResults.Columns[0], false, 0, 0);
-			SearchResult searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
-			Mono.TextEditor.Document doc = GetDocument (searchResult);
+			treeviewSearchResults.Selection.SelectIter (iter);
+			treeviewSearchResults.ScrollToCell (store.GetPath (iter), treeviewSearchResults.Columns[0], false, 0, 0);
+			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			Document doc = GetDocument (searchResult);
 			DocumentLocation location = doc.OffsetToLocation (searchResult.Offset);
 			return new SearchTextFileNavigationPoint (searchResult.FileName, location.Line + 1, location.Column + 1);
 		}
@@ -649,14 +644,14 @@ namespace MonoDevelop.Ide.FindInFiles
 			{
 			}
 			
-			protected override MonoDevelop.Ide.Gui.Document DoShow ()
+			protected override Gui.Document DoShow ()
 			{
 				var doc = base.DoShow ();
-				if (doc != null) {
-					IEditableTextBuffer buf = doc.GetContent<IEditableTextBuffer> ();
-					if (buf != null)
-						buf.SetCaretTo (Math.Max (Line, 1), Math.Max (Column, 1));
-				}
+				if (doc == null)
+					return null;
+				var buf = doc.GetContent<IEditableTextBuffer> ();
+				if (buf != null)
+					buf.SetCaretTo (Math.Max (Line, 1), Math.Max (Column, 1));
 				return doc;
 			}
 			

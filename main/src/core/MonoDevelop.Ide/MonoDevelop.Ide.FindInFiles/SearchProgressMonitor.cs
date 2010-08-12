@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.ProgressMonitoring;
 using MonoDevelop.Ide.Gui;
@@ -36,13 +37,12 @@ namespace MonoDevelop.Ide.FindInFiles
 	class SearchProgressMonitor : BaseProgressMonitor, ISearchProgressMonitor
 	{
 		SearchResultPad outputPad;
-		IProgressMonitor statusMonitor;
-		event EventHandler stopRequested;
-		
+		readonly IProgressMonitor statusMonitor;
+
 		public SearchProgressMonitor (Pad pad)
 		{
 			outputPad = (SearchResultPad) pad.Content;
-			outputPad.AsyncOperation = this.AsyncOperation;
+			outputPad.AsyncOperation = AsyncOperation;
 			outputPad.BeginProgress (pad.Title);
 			statusMonitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Searching..."), Stock.FindIcon, false, true, false, pad);
 		}
@@ -66,6 +66,16 @@ namespace MonoDevelop.Ide.FindInFiles
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error adding search result for file {0}:{1} to result pad:\n{2}",
 				                         result.FileName, result.Offset, ex.ToString ());
+			}
+		}
+		
+		[AsyncDispatch]
+		public void ReportResults (IEnumerable<SearchResult> results)
+		{
+			try {
+				outputPad.ReportResults (results);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error adding search results.", ex.ToString ());
 			}
 		}
 		
@@ -102,19 +112,12 @@ namespace MonoDevelop.Ide.FindInFiles
 			
 			outputPad = null;
 		}
-		
-		Exception GetDisposedException ()
+
+		static Exception GetDisposedException ()
 		{
 			return new InvalidOperationException ("Search progress monitor already disposed.");
 		}
-		
-		protected override void OnCancelRequested ()
-		{
-			base.OnCancelRequested ();
-			if (stopRequested != null)
-				stopRequested (this, null);
-		}
-		
+
 		public override void ReportError (string message, Exception ex)
 		{
 			base.ReportError (message, ex);

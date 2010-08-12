@@ -26,22 +26,17 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using System.Text;
 using System.Collections.Generic;
-
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
-using MonoDevelop.Ide.Gui.Pads;
-using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
 	public class SearchResultPad : AbstractPadContent
 	{
-		SearchResultWidget widget = new SearchResultWidget ();
+		readonly SearchResultWidget widget = new SearchResultWidget ();
 		
 		public string DefaultPlacement {
 			get {
@@ -89,17 +84,22 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public SearchResultPad (int instanceNum)
 		{
-			this.InstanceNum = instanceNum;
+			InstanceNum = instanceNum;
 		}
 		
 		public void ReportResult (SearchResult result)
 		{
 			widget.Add (result);
 		}
+
+		public void ReportResults (IEnumerable<SearchResult> results)
+		{
+			widget.AddRange (results);
+		}
 		
 		public override void Initialize (IPadWindow window)
 		{
-			window.Icon = MonoDevelop.Ide.Gui.Stock.FindIcon;
+			window.Icon = Stock.FindIcon;
 			base.Initialize (window);
 		}
 		

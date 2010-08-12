@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.FindInFiles
@@ -35,6 +36,7 @@ namespace MonoDevelop.Ide.FindInFiles
 	{
 		void SetBasePath (string path);
 		void ReportResult (SearchResult result);
+		void ReportResults (IEnumerable<SearchResult> result);
 		void ReportStatus (string resultMessage);
 	}
 }

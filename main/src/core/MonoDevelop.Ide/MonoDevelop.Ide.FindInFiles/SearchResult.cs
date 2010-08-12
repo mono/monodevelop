@@ -26,9 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using MonoDevelop.Projects;
-
 namespace MonoDevelop.Ide.FindInFiles
 {
 	public class SearchResult
@@ -46,9 +43,9 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public SearchResult (FileProvider fileProvider, int offset, int length)
 		{
-			this.FileProvider = fileProvider;
-			this.Offset = offset;
-			this.Length = length;
+			FileProvider = fileProvider;
+			Offset = offset;
+			Length = length;
 		}
 		
 		public override string ToString ()

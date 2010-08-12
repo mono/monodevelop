@@ -24,8 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.IO;
+using System.Linq;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using System.Text;
@@ -66,10 +66,10 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		public FileProvider(string fileName, Project project, int selectionStartPostion, int selectionEndPosition)
 		{
-			this.FileName = fileName;
-			this.Project = project;
-			this.SelectionStartPosition = selectionStartPostion;
-			this.SelectionEndPosition = selectionEndPosition;
+			FileName = fileName;
+			Project = project;
+			SelectionStartPosition = selectionStartPostion;
+			SelectionEndPosition = selectionEndPosition;
 		}
 		
 		public virtual TextReader Open ()
@@ -84,15 +84,9 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		Document SearchDocument ()
 		{
-			foreach (Document document in IdeApp.Workbench.Documents) {
-				if (string.IsNullOrEmpty (document.FileName))
-					continue;
-				if (Path.GetFullPath (document.FileName) == Path.GetFullPath (FileName)) 
-					return document;
-			}
-			return null;
+			return IdeApp.Workbench.Documents.FirstOrDefault(d => !string.IsNullOrEmpty (d.FileName) &&  Path.GetFullPath (d.FileName) == Path.GetFullPath (FileName));
 		}
-		
+
 		Document document;
 		StringBuilder buffer = null;
 		bool somethingReplaced;
@@ -103,8 +97,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			TextReader reader = Open ();
 			buffer = new StringBuilder (reader.ReadToEnd ());
 			reader.Close ();
-			this.document = SearchDocument ();
-			if (this.document != null) {
+			document = SearchDocument ();
+			if (document != null) {
 				Gtk.Application.Invoke (delegate {
 					document.Editor.Document.BeginAtomicUndo ();
 				});
@@ -117,7 +111,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			somethingReplaced = true;
 			buffer.Remove (offset, length);
 			buffer.Insert (offset, replacement);
-			if (this.document != null) {
+			if (document != null) {
 				Gtk.Application.Invoke (delegate {
 					document.Editor.Replace (offset, length, replacement);
 				});
@@ -127,7 +121,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public void EndReplace ()
 		{
-			if (this.document != null) {
+			if (document != null) {
 				Gtk.Application.Invoke (delegate { document.Editor.Document.EndAtomicUndo (); });
 				return;
 			}
