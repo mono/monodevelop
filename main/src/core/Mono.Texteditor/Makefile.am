@@ -95,6 +95,7 @@ FILES =  \
 	Mono.TextEditor/IBuffer.cs \
 	Mono.TextEditor/IconMargin.cs \
 	Mono.TextEditor/IDocumentPartitioner.cs \
+	Mono.TextEditor/ILineSplitter.cs \
 	Mono.TextEditor/InsertionCursorEditMode.cs \
 	Mono.TextEditor/ISearchEngine.cs \
 	Mono.TextEditor/ISegment.cs \
@@ -103,13 +104,13 @@ FILES =  \
 	Mono.TextEditor/IWordFindStrategy.cs \
 	Mono.TextEditor/LineEventArgs.cs \
 	Mono.TextEditor/LineSegment.cs \
-	Mono.TextEditor/LineSegmentTree.cs \
 	Mono.TextEditor/LineSplitter.cs \
 	Mono.TextEditor/LinkEventArgs.cs \
 	Mono.TextEditor/Margin.cs \
 	Mono.TextEditor/MarginDrawer.cs \
 	Mono.TextEditor/PangoUtil.cs \
 	Mono.TextEditor/Platform.cs \
+	Mono.TextEditor/PrimitiveLineSplitter.cs \
 	Mono.TextEditor/RedBlackTree.cs \
 	Mono.TextEditor/ReplaceEventArgs.cs \
 	Mono.TextEditor/SearchRequest.cs \
@@ -119,6 +120,7 @@ FILES =  \
 	Mono.TextEditor/SelectionActions.cs \
 	Mono.TextEditor/SharpDevelopWordFindStrategy.cs \
 	Mono.TextEditor/SimpleEditMode.cs \
+	Mono.TextEditor/StringBuffer.cs \
 	Mono.TextEditor/TextEditor.cs \
 	Mono.TextEditor/TextEditorAccessibility.cs \
 	Mono.TextEditor/TextEditorContainer.cs \

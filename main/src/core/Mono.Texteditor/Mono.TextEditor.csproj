@@ -70,7 +70,6 @@
     <Compile Include="Mono.TextEditor\DocumentLocation.cs" />
     <Compile Include="Mono.TextEditor\DashedLineMargin.cs" />
     <Compile Include="Mono.TextEditor\Document.cs" />
-    <Compile Include="Mono.TextEditor\LineSegmentTree.cs" />
     <Compile Include="Mono.TextEditor\RedBlackTree.cs" />
     <Compile Include="Mono.TextEditor\GutterMargin.cs" />
     <Compile Include="Mono.TextEditor\GapBuffer.cs" />
@@ -175,6 +174,9 @@
     <Compile Include="Mono.TextEditor\AbstractPartitioner.cs" />
     <Compile Include="Mono.TextEditor\TypedSegment.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\HighlightingPartitioner.cs" />
+    <Compile Include="Mono.TextEditor\ILineSplitter.cs" />
+    <Compile Include="Mono.TextEditor\PrimitiveLineSplitter.cs" />
+    <Compile Include="Mono.TextEditor\StringBuffer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
