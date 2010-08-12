@@ -107,10 +107,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			fileNameColumn.SetCellDataFunc (fileNameRenderer, FileNameDataFunc);
 			treeviewSearchResults.AppendColumn (fileNameColumn);
 			
-			TreeViewColumn lineColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Line"), new CellRendererText (), ResultLineDataFunc);
-			lineColumn.SortColumnId = 1;
-			lineColumn.FixedWidth = 50;
-
+//			TreeViewColumn lineColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Line"), new CellRendererText (), ResultLineDataFunc);
+//			lineColumn.SortColumnId = 1;
+//			lineColumn.FixedWidth = 50;
+//			
 			
 			TreeViewColumn textColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Text"), new CellRendererText (), ResultTextDataFunc);
 			textColumn.SortColumnId = 2;
@@ -125,7 +125,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			
 			store.SetSortFunc (0, CompareFileNames);
-			store.SetSortFunc (1, CompareLineNumbers);
+//			store.SetSortFunc (1, CompareLineNumbers);
 			store.SetSortFunc (3, CompareFilePaths);
 
 			treeviewSearchResults.RowActivated += TreeviewSearchResultsRowActivated;
@@ -356,7 +356,9 @@ namespace MonoDevelop.Ide.FindInFiles
 			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
 			if (searchResult == null)
 				return;
-			fileNameRenderer.Markup = MarkupText (System.IO.Path.GetFileName (searchResult.FileName), didRead);
+			Document doc = GetDocument (searchResult);
+			int lineNr = doc.OffsetToLineNumber (searchResult.Offset) + 1;
+			fileNameRenderer.Markup = MarkupText (System.IO.Path.GetFileName (searchResult.FileName), didRead) + ":" + lineNr;
 		}
 		
 		int CompareLineNumbers (TreeModel model, TreeIter first, TreeIter second)
@@ -403,21 +405,21 @@ namespace MonoDevelop.Ide.FindInFiles
 			pathRenderer.Markup = MarkupText (System.IO.Path.GetDirectoryName (searchResult.FileName), didRead);
 		}
 		
-		void ResultLineDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
-		{
-			if (TreeIter.Zero.Equals (iter))
-				return;
-			var lineRenderer = (CellRendererText)cell;
-			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
-			if (searchResult == null)
-				return;
-			
-			Document doc = GetDocument (searchResult);
-			int lineNr = doc.OffsetToLineNumber (searchResult.Offset) + 1;
-			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
-			lineRenderer.Markup = MarkupText (lineNr.ToString (), didRead);
-		}
-		
+//		void ResultLineDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
+//		{
+//			if (TreeIter.Zero.Equals (iter))
+//				return;
+//			var lineRenderer = (CellRendererText)cell;
+//			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+//			if (searchResult == null)
+//				return;
+//			
+//			Document doc = GetDocument (searchResult);
+//			int lineNr = doc.OffsetToLineNumber (searchResult.Offset) + 1;
+//			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
+//			lineRenderer.Markup = MarkupText (lineNr.ToString (), didRead);
+//		}
+//		
 		void ResultTextDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			if (TreeIter.Zero.Equals (iter))
@@ -431,13 +433,13 @@ namespace MonoDevelop.Ide.FindInFiles
 			int lineNr = doc.OffsetToLineNumber (searchResult.Offset);
 			LineSegment line = doc.GetLine (lineNr);
 			bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
-			
+			int indent = line.GetIndentation (doc).Length;
 			string markup = doc.SyntaxMode != null ? 
-				doc.SyntaxMode.GetMarkup (doc, new TextEditorOptions (), highlightStyle, line.Offset, line.EditableLength, true, !isSelected, false) : 
+				doc.SyntaxMode.GetMarkup (doc, new TextEditorOptions (), highlightStyle, line.Offset + indent, line.EditableLength - indent, true, !isSelected, false) : 
 				GLib.Markup.EscapeText (doc.GetTextAt (line.Offset, line.EditableLength));
 			
 			if (!isSelected) {
-				int col = searchResult.Offset - line.Offset;
+				int col = searchResult.Offset - line.Offset - indent;
 				string tag;
 				int pos1 = FindPosition (markup, col, out tag);
 				int pos2 = FindPosition (markup, col + searchResult.Length, out tag);
