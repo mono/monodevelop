@@ -1337,67 +1337,63 @@ namespace Mono.TextEditor
 			return this.textViewMargin.GetWidth (text);
 		}
 		
-		void RenderMargins (Gdk.Drawable win, Gdk.Rectangle area)
+		void RenderMargins (Cairo.Context cr, Cairo.Rectangle cairoRectangle)
 		{
 			this.TextViewMargin.rulerX = Options.RulerColumn * this.TextViewMargin.CharWidth - this.textEditorData.HAdjustment.Value;
-			int startLine = YToLine (area.Top + this.textEditorData.VAdjustment.Value);
+			int startLine = YToLine (cairoRectangle.Y + this.textEditorData.VAdjustment.Value);
 			double startY = LineToY (startLine);
-			var cairoRectangle = new Cairo.Rectangle (area.X, area.Y, area.Width, area.Height);
-			
-			using (Cairo.Context cr = Gdk.CairoHelper.Create (win)) {
-				cr.LineWidth = Options.Zoom;
-				double curX = 0;
-				double curY = startY - this.textEditorData.VAdjustment.Value;
-				bool setLongestLine = false;
-				bool renderFirstLine = true;
-				for (int visualLineNumber = startLine; ; visualLineNumber++) {
-					int logicalLineNumber = visualLineNumber;
-					LineSegment line      = Document.GetLine (logicalLineNumber);
-					double lineHeight     = GetLineHeight (line);
-					int lastFold = -1;
-					foreach (FoldSegment fs in Document.GetStartFoldings (line).Where (fs => fs.IsFolded)) {
-						lastFold = System.Math.Max (fs.EndOffset, lastFold);
-					}
-					if (lastFold > 0) 
-						visualLineNumber = Document.OffsetToLineNumber (lastFold);
-					foreach (Margin margin in this.margins) {
-						if (!margin.IsVisible)
-							continue;
-						try {
-							if (renderFirstLine)
-								margin.XOffset = curX;
-							margin.Draw (cr, cairoRectangle, logicalLineNumber, margin.XOffset, curY, lineHeight);
-							if (renderFirstLine)
-								curX += margin.Width;
-						} catch (Exception e) {
-							System.Console.WriteLine (e);
-						}
-					}
-					renderFirstLine = false;
-					// take the line real render width from the text view margin rendering (a line can consist of more than 
-					// one line and be longer (foldings!) ex. : someLine1[...]someLine2[...]someLine3)
-					double lineWidth = textViewMargin.lastLineRenderWidth + HAdjustment.Value;
-					if (longestLine == null || lineWidth > longestLineWidth) {
-						longestLine = line;
-						longestLineWidth = lineWidth;
-						setLongestLine = true;
-					}
-					curY += lineHeight;
-					if (curY > area.Bottom)
-						break;
+			double curX = 0;
+			double curY = startY - this.textEditorData.VAdjustment.Value;
+			bool setLongestLine = false;
+			bool renderFirstLine = true;
+			for (int visualLineNumber = startLine; ; visualLineNumber++) {
+				int logicalLineNumber = visualLineNumber;
+				LineSegment line      = Document.GetLine (logicalLineNumber);
+				double lineHeight     = GetLineHeight (line);
+				int lastFold = -1;
+				foreach (FoldSegment fs in Document.GetStartFoldings (line).Where (fs => fs.IsFolded)) {
+					lastFold = System.Math.Max (fs.EndOffset, lastFold);
 				}
-				
+				if (lastFold > 0) 
+					visualLineNumber = Document.OffsetToLineNumber (lastFold);
 				foreach (Margin margin in this.margins) {
 					if (!margin.IsVisible)
 						continue;
-					foreach (var drawer in margin.MarginDrawer)
-						drawer.Draw (win, area);
+					try {
+						if (renderFirstLine)
+							margin.XOffset = curX;
+						margin.Draw (cr, cairoRectangle, logicalLineNumber, margin.XOffset, curY, lineHeight);
+						if (renderFirstLine)
+							curX += margin.Width;
+					} catch (Exception e) {
+						System.Console.WriteLine (e);
+					}
 				}
-				
-				if (setLongestLine) 
-					SetHAdjustment ();
+				renderFirstLine = false;
+				// take the line real render width from the text view margin rendering (a line can consist of more than 
+				// one line and be longer (foldings!) ex. : someLine1[...]someLine2[...]someLine3)
+				double lineWidth = textViewMargin.lastLineRenderWidth + HAdjustment.Value;
+				if (longestLine == null || lineWidth > longestLineWidth) {
+					longestLine = line;
+					longestLineWidth = lineWidth;
+					setLongestLine = true;
+				}
+				curY += lineHeight;
+				if (curY > cairoRectangle.Y + cairoRectangle.Height)
+					break;
 			}
+			
+			foreach (Margin margin in this.margins) {
+				if (!margin.IsVisible)
+					continue;
+				foreach (var drawer in margin.MarginDrawer)
+					drawer.Draw (cr, cairoRectangle);
+			}
+			
+			if (setLongestLine) 
+				SetHAdjustment ();
 		}
+		
 		/*
 		protected override bool OnWidgetEvent (Event evnt)
 		{
@@ -1425,26 +1421,33 @@ namespace Mono.TextEditor
 				return true;
 			UpdateAdjustments ();
 			
-			RenderMargins (e.Window, e.Region.Clipbox);
+			var area = e.Region.Clipbox;
+			var cairoArea = new Cairo.Rectangle (area.X, area.Y, area.Width, area.Height);
+			
+			using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
+				cr.LineWidth = Options.Zoom;
+			
+				RenderMargins (cr, cairoArea);
 			
 #if DEBUG_EXPOSE
-			Console.WriteLine ("{0} expose {1},{2} {3}x{4}", (long)(DateTime.Now - started).TotalMilliseconds,
-			                   e.Area.X, e.Area.Y, e.Area.Width, e.Area.Height);
+				Console.WriteLine ("{0} expose {1},{2} {3}x{4}", (long)(DateTime.Now - started).TotalMilliseconds,
+					e.Area.X, e.Area.Y, e.Area.Width, e.Area.Height);
 #endif
-			if (requestResetCaretBlink && IsFocus) {
-				textViewMargin.ResetCaretBlink ();
-				requestResetCaretBlink = false;
+				if (requestResetCaretBlink && IsFocus) {
+					textViewMargin.ResetCaretBlink ();
+					requestResetCaretBlink = false;
+				}
+				
+				foreach (Animation animation in actors) {
+					animation.Drawer.Draw (e.Window);
+				}
+				
+				if (e.Area.Contains ((int)TextViewMargin.caretX, (int)TextViewMargin.caretY))
+					textViewMargin.DrawCaret (e.Window);
+				
+				var result = base.OnExposeEvent (e);
+				return result;
 			}
-			
-			foreach (Animation animation in actors) {
-				animation.Drawer.Draw (e.Window);
-			}
-			
-			if (e.Area.Contains ((int)TextViewMargin.caretX, (int)TextViewMargin.caretY))
-				textViewMargin.DrawCaret (e.Window);
-			
-			var result = base.OnExposeEvent (e);
-			return result;
 		}
 
 		#region TextEditorData delegation

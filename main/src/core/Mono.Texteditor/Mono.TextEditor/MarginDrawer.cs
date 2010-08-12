@@ -34,7 +34,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public abstract void Draw (Gdk.Drawable drawable, Gdk.Rectangle area);
+		public abstract void Draw (Cairo.Context cr, Cairo.Rectangle erea);
 	}
 }
 
