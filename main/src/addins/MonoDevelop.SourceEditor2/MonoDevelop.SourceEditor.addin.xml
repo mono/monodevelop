@@ -6,6 +6,7 @@
        url         = ""
        description = "Provides a text editor for the MonoDevelop based on Mono.TextEditor"
        category    = "MonoDevelop Core"
+       flags       = "Hidden"
        version     = "2.4">
 	
 	<Runtime>

@@ -6,7 +6,7 @@
        url         = "http://monodevelop.com/"
        description = "GNOME Platform Support for MonoDevelop"
        category    = "MonoDevelop Core"
-       flags       = "CantUninstall,CantDisable"
+       flags       = "Hidden"
        version     = "2.4">
 	
 	<Runtime>

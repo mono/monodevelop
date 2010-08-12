@@ -5,7 +5,7 @@
        copyright   = "MIT X11"
        url         = "http://www.monodevelop.com"
        description = "Core support for background analysis of code" 
-       category    = "IDE Extensions"
+       category    = "IDE extensions"
        version     = "2.4">
 
 	<Dependencies>

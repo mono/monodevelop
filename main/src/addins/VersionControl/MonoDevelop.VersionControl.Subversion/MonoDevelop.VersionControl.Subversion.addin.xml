@@ -1,6 +1,6 @@
 <Addin id        = "VersionControl.Subversion"
        namespace = "MonoDevelop"
-       name      = "Subversion support for the Version Control Add-in"
+       name      = "Subversion support"
        author    = "Joshua Tauberer"
        copyright = "LGPL"
        url       = "http://taubz.for.net/code/diff"

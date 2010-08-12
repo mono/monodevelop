@@ -5,7 +5,7 @@
        copyright   = ""
        url         = ""
        description = "Provides a hex editor for MonoDevelop"
-       category    = "MonoDevelop Core"
+       category    = "IDE extensions"
        version     = "2.4">
 	
 	<Runtime>
