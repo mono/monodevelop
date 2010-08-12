@@ -358,7 +358,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				return;
 			Document doc = GetDocument (searchResult);
 			int lineNr = doc.OffsetToLineNumber (searchResult.Offset) + 1;
-			fileNameRenderer.Markup = MarkupText (System.IO.Path.GetFileName (searchResult.FileName), didRead) + ":" + lineNr;
+			fileNameRenderer.Markup = MarkupText (System.IO.Path.GetFileName (searchResult.FileName) + ":" + lineNr, didRead);
 		}
 		
 		int CompareLineNumbers (TreeModel model, TreeIter first, TreeIter second)
