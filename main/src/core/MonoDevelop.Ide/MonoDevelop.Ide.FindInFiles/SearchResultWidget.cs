@@ -26,9 +26,12 @@
 
 using System;
 using System.Linq;
+
 using Gdk;
+
 using Gtk;
 using Mono.TextEditor;
+
 using Mono.TextEditor.Highlighting;
 using System.Collections.Generic;
 using MonoDevelop.Core;
@@ -43,10 +46,13 @@ using MonoDevelop.Ide.Navigation;
 namespace MonoDevelop.Ide.FindInFiles
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	sealed partial class SearchResultWidget : Bin, ILocationList
+	partial class SearchResultWidget : Bin, ILocationList
 	{
+
 		ListStore store;
+
 		readonly ToolButton buttonStop;
+
 		readonly ToggleToolButton buttonPin;
 		
 		const int SearchResultColumn = 0;
@@ -89,7 +95,9 @@ namespace MonoDevelop.Ide.FindInFiles
 				SortColumnId = 0,
 				Title = GettextCatalog.GetString("File")
 			};
+
 			fileNameColumn.FixedWidth = 200;
+
 			var fileNamePixbufRenderer = new CellRendererPixbuf ();
 			fileNameColumn.PackStart (fileNamePixbufRenderer, false);
 			fileNameColumn.SetCellDataFunc (fileNamePixbufRenderer, FileIconDataFunc);
@@ -102,16 +110,19 @@ namespace MonoDevelop.Ide.FindInFiles
 			TreeViewColumn lineColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Line"), new CellRendererText (), ResultLineDataFunc);
 			lineColumn.SortColumnId = 1;
 			lineColumn.FixedWidth = 50;
+
 			
 			TreeViewColumn textColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Text"), new CellRendererText (), ResultTextDataFunc);
 			textColumn.SortColumnId = 2;
 			textColumn.Resizable = false;
 			textColumn.FixedWidth = 300;
+
 			
 			TreeViewColumn pathColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Path"), new CellRendererText (), ResultPathDataFunc);
 			pathColumn.SortColumnId = 3;
 			pathColumn.Resizable = false;
 			pathColumn.FixedWidth = 500;
+
 			
 			store.SetSortFunc (0, CompareFileNames);
 			store.SetSortFunc (1, CompareLineNumbers);
@@ -120,6 +131,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			treeviewSearchResults.RowActivated += TreeviewSearchResultsRowActivated;
 			
 			buttonStop = new ToolButton ("gtk-stop") { Sensitive = false };
+
 			buttonStop.Clicked += ButtonStopClicked;
 			
 			buttonStop.TooltipText = GettextCatalog.GetString ("Stop");
@@ -199,15 +211,19 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 		
 		ListStore newStore;
+
 		public void EndProgress ()
 		{
 			buttonStop.Sensitive = false;
 			newStore.SetSortFunc (0, CompareFileNames);
 			newStore.SetSortFunc (1, CompareLineNumbers);
 			newStore.SetSortFunc (3, CompareFilePaths);
+
 			treeviewSearchResults.Model = newStore;
+
 			store.Dispose ();
 			store = newStore;
+
 			treeviewSearchResults.ThawChildNotify ();
 		}
 
@@ -244,6 +260,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 
+
+
 		static Color AdjustColor (Color baseColor, Color color)
 		{
 			double b1 = HslColor.Brightness (color);
@@ -267,6 +285,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			int idx = markup.IndexOf ("foreground=\"");
 			int offset = 0;
 
+
+
 			// This is a workaround for Bug 559804 - Strings in search result pad are near-invisible
 			// On mac it's not possible to get the white background color with the Base or Background
 			// methods. If this bug is fixed or a better work around is found - remove this hack.
@@ -283,8 +303,11 @@ namespace MonoDevelop.Ide.FindInFiles
 				string colorStr = markup.Substring (idx, 7);
 				
 				Color color = Color.Zero;
+
 				if (Color.Parse(colorStr, ref color))
+
 					colorStr = SyntaxMode.ColorToPangoMarkup(AdjustColor(baseColor, color));
+
 				result.Append (colorStr);
 				idx = markup.IndexOf ("foreground=\"", idx);
 			}
@@ -316,6 +339,8 @@ namespace MonoDevelop.Ide.FindInFiles
 				return;
 			fileNamePixbufRenderer.Pixbuf = DesktopService.GetPixbufForFile (searchResult.FileName, IconSize.Menu);
 		}
+
+
 
 		static string MarkupText (string text, bool didRead)
 		{
@@ -361,7 +386,9 @@ namespace MonoDevelop.Ide.FindInFiles
 			var searchResult2 = (SearchResult)model.GetValue (second, SearchResultColumn);
 			if (searchResult1 == null || searchResult2 == null || searchResult1.FileName == null || searchResult2.FileName == null)
 				return -1;
+
 			return System.IO.Path.GetDirectoryName (searchResult1.FileName).CompareTo (System.IO.Path.GetDirectoryName (searchResult2.FileName));
+
 		}
 		
 		void ResultPathDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
@@ -404,7 +431,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			int lineNr = doc.OffsetToLineNumber (searchResult.Offset);
 			LineSegment line = doc.GetLine (lineNr);
 			bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
-
+			
 			string markup = doc.SyntaxMode != null ? 
 				doc.SyntaxMode.GetMarkup (doc, new TextEditorOptions (), highlightStyle, line.Offset, line.EditableLength, true, !isSelected, false) : 
 				GLib.Markup.EscapeText (doc.GetTextAt (line.Offset, line.EditableLength));
@@ -482,6 +509,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			return -1;
 		}
 
+
+
 		readonly Dictionary<string, Document> documents = new Dictionary<string, Document> ();
 		
 		Document GetDocument (SearchResult result)
@@ -491,6 +520,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				TextReader reader = result.FileProvider.Open ();
 				doc = Document.CreateImmutableDocument (reader.ReadToEnd ());
 				doc.MimeType = DesktopService.GetMimeTypeForUri (result.FileName);
+				
 				reader.Close ();
 				documents[result.FileName] = doc;
 			}
@@ -531,6 +561,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				IdeApp.Workbench.OpenDocument (result.FileName, loc.Line, loc.Column, true);
 			}
 		}
+		
 		DocumentLocation GetLocation (SearchResult searchResult)
 		{
 			Document doc = GetDocument (searchResult);
@@ -649,9 +680,11 @@ namespace MonoDevelop.Ide.FindInFiles
 				var doc = base.DoShow ();
 				if (doc == null)
 					return null;
+				
 				var buf = doc.GetContent<IEditableTextBuffer> ();
 				if (buf != null)
 					buf.SetCaretTo (Math.Max (Line, 1), Math.Max (Column, 1));
+				
 				return doc;
 			}
 			
