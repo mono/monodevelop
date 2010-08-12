@@ -247,7 +247,6 @@ namespace MonoDevelop.CSharp.Refactoring
 				CaseSensitive = true,
 				WholeWordsOnly = true
 			};
-			findReplace.CompilePattern (searchedMemberName, filterOptions);
 			IEnumerable<SearchResult> result = findReplace.Search (new FileProvider (null), text.Text, searchedMemberName, null, filterOptions);
 			if (result == null || !result.Any ()) {
 				return;
