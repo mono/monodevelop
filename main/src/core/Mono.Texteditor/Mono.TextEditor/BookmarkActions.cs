@@ -30,6 +30,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 
 using Gtk;
@@ -44,15 +45,8 @@ namespace Mono.TextEditor
 			int startLineNumber = lineNumber + 1;
 			if (startLineNumber > document.Length) 
 				startLineNumber = 0;
-			
-			LineSegment startLine = document.GetLine (startLineNumber);
-			RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = startLine.Iter;
-			do {
-				LineSegment line = iter.Current;
-				if (line.IsBookmarked)
-					return line.Offset;
-			} while (iter.MoveNext ());
-			return -1;
+			var line = document.GetLinesStartingAt (startLineNumber).FirstOrDefault (l => l.IsBookmarked);
+			return line != null ? line.Offset : -1;
 		}
 		
 		public static void GotoNext (TextEditorData data)
@@ -66,15 +60,11 @@ namespace Mono.TextEditor
 		
 		static int GetPrevOffset (Document document, int lineNumber)
 		{
-			LineSegment startLine = document.GetLine (lineNumber);
-			RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = startLine.Iter;
-			while (iter.MoveBack ()) {
-				LineSegment line = iter.Current;
-				if (line.IsBookmarked) {
-					return line.Offset;
-				}
-			}
-			return -1;
+			int startLineNumber = lineNumber - 1;
+			if (startLineNumber < 0) 
+				startLineNumber =  document.Length - 1;
+			var line = document.GetLinesReverseStartingAt (startLineNumber).FirstOrDefault (l => l.IsBookmarked);
+			return line != null ? line.Offset : -1;
 		}
 		
 		public static void GotoPrevious (TextEditorData data)

@@ -227,33 +227,24 @@ namespace Mono.TextEditor.Highlighting
 			public void InnerRun ()
 			{
 				bool doUpdate = false;
-				LineSegment lineSegment = doc.GetLineByOffset (startOffset);
-				if (lineSegment == null)
+				int startLine = doc.OffsetToLineNumber (startOffset);
+				if (startLine < 0)
 					return;
-				RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = lineSegment.Iter;
-				if (iter == null || iter.Current == null)
-					return;
-				
 				try {
-					LineSegment line = iter.Current;
-					var spanStack = line.StartSpan.Clone ();
-					SyntaxMode.SpanParser parser = mode.CreateSpanParser (doc, mode, null, spanStack);
-					do {
-						line = iter.Current;
-						if (line == null || line.Offset < 0)
-							break;
+					var spanStack = doc.GetLine (startLine).StartSpan.Clone ();
+					SyntaxMode.SpanParser parser = mode.CreateSpanParser(doc, mode, null, spanStack);
+					foreach (var line in doc.GetLinesStartingAt (startLine)) {
 						if (line.Offset > endOffset) {
-							bool equal = line.StartSpan.Equals (spanStack);
+							bool equal = line.StartSpan.Equals(spanStack);
 							doUpdate |= !equal;
-							if (equal) {
+							if (equal)
 								break;
-							}
 						}
-						line.StartSpan = spanStack.Clone ();
-						parser.ParseSpans (line.Offset, line.Length);
-						while (spanStack.Count > 0 && !EndsWithContinuation (spanStack.Peek (), line))
-							parser.PopSpan ();
-					} while (iter.MoveNext ());
+						line.StartSpan = spanStack.Clone();
+						parser.ParseSpans(line.Offset, line.Length);
+						while (spanStack.Count > 0 && !EndsWithContinuation(spanStack.Peek(), line))
+							parser.PopSpan();
+					}
 				} catch (Exception e) {
 					Console.WriteLine ("Syntax highlighting exception:" + e);
 				}

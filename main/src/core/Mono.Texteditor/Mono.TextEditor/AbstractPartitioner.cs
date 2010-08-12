@@ -64,11 +64,11 @@ namespace Mono.TextEditor
 			};
 			tree.NodeRotateLeft += delegate (object sender, RedBlackTree<TreeNode>.RedBlackTreeNodeEventArgs args) {
 				UpdateNode (args.Node);
-				UpdateNode (args.Node.parent);
+				UpdateNode (args.Node.Parent);
 			};
 			tree.NodeRotateRight += delegate (object sender, RedBlackTree<TreeNode>.RedBlackTreeNodeEventArgs args) {
 				UpdateNode (args.Node);
-				UpdateNode (args.Node.parent);
+				UpdateNode (args.Node.Parent);
 			};
 		}
 		
@@ -78,49 +78,49 @@ namespace Mono.TextEditor
 				return;
 			
 			int count       = 1;
-			int totalLength = node.value.Length;
+			int totalLength = node.Value.Length;
 			
-			if (node.left != null) {
-				count       += node.left.value.count;
-				totalLength += node.left.value.totalLength;
+			if (node.Left != null) {
+				count       += node.Left.Value.count;
+				totalLength += node.Left.Value.totalLength;
 			}
 			
-			if (node.right != null) {
-				count       += node.right.value.count;
-				totalLength += node.right.value.totalLength;
+			if (node.Right != null) {
+				count       += node.Right.Value.count;
+				totalLength += node.Right.Value.totalLength;
 			}
-			if (count != node.value.count || totalLength != node.value.totalLength) {
-				node.value.count       = count;
-				node.value.totalLength = totalLength;
-				UpdateNode (node.parent);
+			if (count != node.Value.count || totalLength != node.Value.totalLength) {
+				node.Value.count       = count;
+				node.Value.totalLength = totalLength;
+				UpdateNode (node.Parent);
 			}
 		}
 		
 		public void Clear ()
 		{
 			tree.Root = new RedBlackTree<TreeNode>.RedBlackTreeNode (new TreeNode (0, ""));
-			tree.Root.value.treeNode = tree.Root;
+			tree.Root.Value.treeNode = tree.Root;
 			tree.Count = 1;
 		}
 		
 		protected RedBlackTree<TreeNode>.RedBlackTreeNode GetTreeNodeAtOffset (int offset)
 		{
-			if (offset == tree.Root.value.totalLength) 
+			if (offset == tree.Root.Value.totalLength) 
 				return tree.Root.OuterRight;
 			RedBlackTree<TreeNode>.RedBlackTreeNode node = tree.Root;
 			int i = offset;
 			while (true) {
 				if (node == null)
 					return null;
-				if (node.left != null && i < node.left.value.totalLength) {
-					node = node.left;
+				if (node.Left != null && i < node.Left.Value.totalLength) {
+					node = node.Left;
 				} else {
-					if (node.left != null) 
-						i -= node.left.value.totalLength;
-					i -= node.value.Length;
+					if (node.Left != null) 
+						i -= node.Left.Value.totalLength;
+					i -= node.Value.Length;
 					if (i < 0) 
 						return node;
-					node = node.right;
+					node = node.Right;
 				} 
 			}
 		}
@@ -142,10 +142,10 @@ namespace Mono.TextEditor
 				return;
 			}
 			
-			if (iter.node.right == null) {
-				tree.Insert (iter.node, newNode, false);
+			if (iter.Node.Right == null) {
+				tree.Insert (iter.Node, newNode, false);
 			} else {
-				tree.Insert (iter.node.right.OuterLeft, newNode, true);
+				tree.Insert (iter.Node.Right.OuterLeft, newNode, true);
 			}
 			newSegment.treeNode = newNode;
 			UpdateNode (newNode);
@@ -154,20 +154,20 @@ namespace Mono.TextEditor
 		public TreeNode GetNodeAtOffset (int offset)
 		{
 			RedBlackTree<TreeNode>.RedBlackTreeNode node = GetTreeNodeAtOffset (offset);
-			return node != null ? node.value : null;
+			return node != null ? node.Value : null;
 		}
 		
 		public static int GetOffsetFromNode (RedBlackTree<TreeNode>.RedBlackTreeNode node)
 		{
-			int offset = node.left != null ? node.left.value.totalLength : 0;
-			while (node.parent != null) {
-				if (node == node.parent.right) {
-					if (node.parent.left != null && node.parent.left.value != null)
-						offset += node.parent.left.value.totalLength;
-					if (node.parent.value != null)
-						offset += node.parent.value.Length;
+			int offset = node.Left != null ? node.Left.Value.totalLength : 0;
+			while (node.Parent != null) {
+				if (node == node.Parent.Right) {
+					if (node.Parent.Left != null && node.Parent.Left.Value != null)
+						offset += node.Parent.Left.Value.totalLength;
+					if (node.Parent.Value != null)
+						offset += node.Parent.Value.Length;
 				}
-				node = node.parent;
+				node = node.Parent;
 			}
 			return offset;
 		}
@@ -184,8 +184,8 @@ namespace Mono.TextEditor
 			if (node == null)
 				yield break;
 			int endOffset = offset + length;
-			yield return node.value;
-			var iter = node.value.Iter;
+			yield return node.Value;
+			var iter = node.Value.Iter;
 			while (iter.MoveNext ()) {
 				if (iter.Current.Offset > endOffset)
 					break;

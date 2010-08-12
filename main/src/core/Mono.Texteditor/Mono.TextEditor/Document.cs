@@ -27,9 +27,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Text;
 using Mono.TextEditor.Highlighting;
 using Mono.TextEditor.Utils;
 using System.Linq;
@@ -40,7 +38,7 @@ namespace Mono.TextEditor
 	public class Document : IBuffer
 	{
 		IBuffer      buffer;
-		LineSplitter splitter;
+		ILineSplitter splitter;
 		SyntaxMode   syntaxMode = null;
 		
 		string mimeType;
@@ -88,13 +86,9 @@ namespace Mono.TextEditor
 		public Document ()
 		{
 			buffer = new GapBuffer ();
-			splitter = new LineSplitter (buffer);
-			splitter.LineSegmentTree.LineChanged += SplitterLineSegmentTreeLineChanged;
-			splitter.LineSegmentTree.LineRemoved += HandleSplitterLineSegmentTreeLineRemoved;
-		/*	splitter.LineSegmentTree.LineInserted += delegate (object sender, LineEventArgs args) {
-				if (LineInserted != null) 
-					LineInserted (this, args);
-			};*/
+			splitter = new LineSplitter ();
+			splitter.LineChanged += SplitterLineSegmentTreeLineChanged;
+			splitter.LineRemoved += HandleSplitterLineSegmentTreeLineRemoved;
 			TextReplacing += UpdateFoldSegmentsOnReplace;
 		}
 		
@@ -126,21 +120,24 @@ namespace Mono.TextEditor
 				return this.buffer.Length;
 			}
 		}
+
+		public bool SurpressHighlightUpdate { get; set; }
 		
 		public string Text {
 			get {
 				return this.buffer.Text;
 			}
 			set {
-				Mono.TextEditor.Highlighting.SyntaxModeService.WaitUpdate (this);
+				if (!SurpressHighlightUpdate)
+					Mono.TextEditor.Highlighting.SyntaxModeService.WaitUpdate (this);
 				splitter.Clear ();
 				int oldLength = Length;
 				ReplaceEventArgs args = new ReplaceEventArgs (0, oldLength, value);
 				this.OnTextReplacing (args);
 				this.buffer.Text = value;
-				splitter.LineSegmentTree.LineChanged -= SplitterLineSegmentTreeLineChanged;
+				splitter.LineChanged -= SplitterLineSegmentTreeLineChanged;
 				splitter.TextReplaced (this, args);
-				splitter.LineSegmentTree.LineChanged += SplitterLineSegmentTreeLineChanged;
+				splitter.LineChanged += SplitterLineSegmentTreeLineChanged;
 				UpdateHighlighting ();
 				this.OnTextReplaced (args);
 				this.OnTextSet (EventArgs.Empty);
@@ -150,9 +147,8 @@ namespace Mono.TextEditor
 		
 		public void UpdateHighlighting ()
 		{
-			if (this.syntaxMode != null) {
+			if (this.syntaxMode != null && !SurpressHighlightUpdate)
 				Mono.TextEditor.Highlighting.SyntaxModeService.StartUpdate (this, this.syntaxMode, 0, buffer.Length);
-			}
 		}
 		
 		public System.IO.TextReader OpenTextReader ()
@@ -178,7 +174,7 @@ namespace Mono.TextEditor
 		void IBuffer.Replace (int offset, int count, string value)
 		{
 			if (atomicUndoLevel == 0) {
-				if (this.syntaxMode != null)
+				if (this.syntaxMode != null && !SurpressHighlightUpdate)
 					Mono.TextEditor.Highlighting.SyntaxModeService.WaitUpdate (this);
 			}
 			InterruptFoldWorker ();
@@ -220,7 +216,7 @@ namespace Mono.TextEditor
 			if (operation != null)
 				operation.Setup (this, args);
 			
-			if (this.syntaxMode != null) {
+			if (this.syntaxMode != null && !SurpressHighlightUpdate) {
 				Mono.TextEditor.Highlighting.SyntaxModeService.StartUpdate (this, this.syntaxMode, offset, value != null ? offset + value.Length : offset + count);
 			}
 			if (oldLineCount != LineCount)
@@ -330,6 +326,21 @@ namespace Mono.TextEditor
 			get {
 				return splitter.LineCount;
 			}
+		}
+
+		public IEnumerable<LineSegment> GetLinesBetween (int startLine, int endLine)
+		{
+			return splitter.GetLinesBetween (startLine, endLine);
+		}
+
+		public IEnumerable<LineSegment> GetLinesStartingAt (int startLine)
+		{
+			return splitter.GetLinesStartingAt (startLine);
+		}
+
+		public IEnumerable<LineSegment> GetLinesReverseStartingAt (int startLine)
+		{
+			return splitter.GetLinesReverseStartingAt (startLine);
 		}
 		
 		public int LocationToOffset (int line, int column)

@@ -26,29 +26,19 @@
 //
 
 using System;
-using System.Linq;
 using System.Text;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	public class LineSegment : ISegment
+	public abstract class LineSegment : ISegment
 	{
-		internal RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeNode treeNode;
-
-		public RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator Iter {
-			get {
-				return new RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator (treeNode);
-			}
-		}
-
-		static IEnumerable<TextMarker> nullMarkers = new TextMarker[0];
-		List<TextMarker> markers = null;
+		static readonly IEnumerable<TextMarker> NullMarkers = new TextMarker[0];
+		List<TextMarker> markers;
 		public IEnumerable<TextMarker> Markers {
 			get {
-				return markers ?? nullMarkers;
+				return markers ?? NullMarkers;
 			}
 		}
 		public int MarkerCount {
@@ -68,31 +58,25 @@ namespace Mono.TextEditor
 			set;
 		}
 
-		public int Offset {
-			get {
-				return treeNode != null ? LineSegmentTree.GetOffsetFromNode (treeNode) : -1;
-			}
-			set {
-				throw new NotSupportedException ();
-			}
-		}
 
 		public bool WasChanged {
 			get;
 			set;
 		}
 
-		CloneableStack<Span> startSpan = null;
-		static CloneableStack<Span> emptySpan = new CloneableStack<Span> ();
+		CloneableStack<Span> startSpan;
+		static readonly CloneableStack<Span> EmptySpan = new CloneableStack<Span> ();
 
 		public CloneableStack<Span> StartSpan {
 			get {
-				return startSpan ?? emptySpan;
+				return startSpan ?? EmptySpan;
 			}
 			set {
 				startSpan = value != null && value.Count == 0 ? null : value;
 			}
 		}
+
+		public abstract int Offset { get; set; }
 
 		public int Length {
 			get;
@@ -122,10 +106,10 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public LineSegment (int length, int delimiterLength)
+		protected LineSegment (int length, int delimiterLength)
 		{
-			this.Length          = length;
-			this.DelimiterLength = delimiterLength;
+			Length          = length;
+			DelimiterLength = delimiterLength;
 		}
 
 		internal void AddMarker (TextMarker marker)
@@ -168,8 +152,6 @@ namespace Mono.TextEditor
 			for (int i = 0; i < markers.Count; i++) {
 				if (markers[i].GetType () == type) {
 					RemoveMarker (markers[i]);
-					if (markers == null)
-						return;
 					i--;
 				}
 			}
@@ -186,7 +168,7 @@ namespace Mono.TextEditor
 		/// </returns>
 		public string GetIndentation (Document doc)
 		{
-			StringBuilder result = new StringBuilder ();
+			var result = new StringBuilder ();
 			int offset = Offset;
 			int max = System.Math.Min (offset + Length, doc.Length);
 			for (int i = offset; i < max; i++) {
@@ -242,7 +224,7 @@ namespace Mono.TextEditor
 
 		public override string ToString ()
 		{
-			return String.Format ("[LineSegment: Offset={0}, Length={1}, DelimiterLength={2}, StartSpan={3}]", this.Offset, this.Length, this.DelimiterLength, StartSpan == null ? "null" : StartSpan.Count.ToString());
+			return String.Format ("[LineSegment: Offset={0}, Length={1}, DelimiterLength={2}, StartSpan={3}]", Offset, Length, DelimiterLength, StartSpan == null ? "null" : StartSpan.Count.ToString());
 		}
 	}
 }

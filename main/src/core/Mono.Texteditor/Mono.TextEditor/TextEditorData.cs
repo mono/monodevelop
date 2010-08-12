@@ -553,34 +553,18 @@ namespace Mono.TextEditor
 		
 		public IEnumerable<LineSegment> SelectedLines {
 			get {
-				if (!this.IsSomethingSelected) {
-					yield return this.document.GetLine (this.caret.Line);
-				} else {
-					foreach (Selection selection in Selections) {
-						int startLineNr = selection.MinLine;
-						RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = this.document.GetLine (startLineNr).Iter;
-						LineSegment endLine = Document.GetLine (selection.MaxLine);
-						bool skipEndLine = selection.Anchor < selection.Lead ? selection.Lead.Column == 0 : selection.Anchor.Column == 0;
-						do {
-							if (iter.Current == endLine && skipEndLine)
-								break;
-							yield return iter.Current;
-							if (iter.Current == endLine)
-								break;
-						} while (iter.MoveNext ());
-					}
-				}
+				if (!IsSomethingSelected) 
+					return document.GetLinesBetween (caret.Line, caret.Line);
+				var selection = MainSelection;
+				int startLineNr = selection.MinLine;
+				int endLineNr = selection.MaxLine;
+						
+				bool skipEndLine = selection.Anchor < selection.Lead ? selection.Lead.Column == 0 : selection.Anchor.Column == 0;
+				if (skipEndLine)
+					endLineNr--;
+				return document.GetLinesBetween (startLineNr, endLineNr);
 			}
 		}
-	/*	
-		public int SelectionAnchor {
-			get {
-				return selectionAnchor;
-			}
-			set {
-				selectionAnchor = value;
-			}
-		}*/
 		
 		public void ClearSelection ()
 		{

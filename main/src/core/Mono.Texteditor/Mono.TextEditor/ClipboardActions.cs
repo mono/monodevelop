@@ -127,16 +127,14 @@ namespace Mono.TextEditor
 				List<Gdk.Color> colorList = new List<Gdk.Color> ();
 	
 				ISegment selection = new Segment (0, doc.Length);
-				LineSegment line    = doc.GetLineByOffset (selection.Offset);
-				LineSegment endLine = doc.GetLineByOffset (selection.EndOffset);
+				int startLineNumber = doc.OffsetToLineNumber (selection.Offset);
+				int endLineNumber   = doc.OffsetToLineNumber (selection.EndOffset);
 				
-				RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = line.Iter;
 				bool isItalic = false;
 				bool isBold   = false;
 				int curColor  = -1;
-				do {
+				foreach (var line in doc.GetLinesBetween (startLineNumber, endLineNumber)) {
 					bool appendSpace = false;
-					line = iter.Current;
 					for (Chunk chunk = mode.GetChunks (doc, style, line, line.Offset, line.EditableLength); chunk != null; chunk = chunk.Next) {
 						int start = System.Math.Max (selection.Offset, chunk.Offset);
 						int end   = System.Math.Min (chunk.EndOffset, selection.EndOffset);
@@ -188,11 +186,9 @@ namespace Mono.TextEditor
 							}
 						}
 					}
-					if (line == endLine)
-						break;
 					rtfText.Append (@"\par");
 					rtfText.AppendLine ();
-				} while (iter.MoveNext ());
+				}
 				
 				// color table
 				StringBuilder colorTable = new StringBuilder ();
@@ -208,7 +204,6 @@ namespace Mono.TextEditor
 					colorTable.Append (";");
 				}
 				colorTable.Append ("}");
-				
 				
 				StringBuilder rtf = new StringBuilder();
 				rtf.Append (@"{\rtf1\ansi\deff0\adeflang1025");

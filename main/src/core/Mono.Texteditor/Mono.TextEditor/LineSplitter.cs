@@ -26,52 +26,94 @@
 //
 
 using System;
-using System.Diagnostics;
-using System.Text;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Mono.TextEditor
 {
-	public class LineSplitter
+	public interface ILineSplitter
 	{
-		LineSegmentTree lines = new LineSegmentTree ();
+		int LineCount { get; }
+		IEnumerable<LineSegment> Lines { get; }
+		void Clear ();
+		LineSegment Get (int number);
+		LineSegment GetLineByOffset (int offset);
+		void TextReplaced (object sender, ReplaceEventArgs args);
+		void TextRemove (int offset, int length);
+		void TextInsert (int offset, string text);
+		int OffsetToLineNumber (int offset);
+
+		IEnumerable<LineSegment> GetLinesBetween (int startLine, int endLine);
+		IEnumerable<LineSegment> GetLinesStartingAt (int startLine);
+		IEnumerable<LineSegment> GetLinesReverseStartingAt (int startLine);
 		
-		public int LineCount {
-			get {
-				return lines.Count;
-			}
-		}
-		
+		event EventHandler<LineEventArgs> LineChanged;
+		event EventHandler<LineEventArgs> LineInserted;
+		event EventHandler<LineEventArgs> LineRemoved;
+	}
+
+	public class LineSplitter : ILineSplitter
+	{
 		public IEnumerable<LineSegment> Lines {
 			get {
-				RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = lines.GetNode (0).Iter;
+				var iter = GetNode (0).Iter;
 				do {
 					yield return iter.Current;
 				} while (iter.MoveNext ());
 			}
 		}
 		
-		internal LineSegmentTree LineSegmentTree {
-			get {
-				return lines;
-			}
-		}
-		
-		public void Clear ()
+		public LineSplitter ()
 		{
-			lines.Clear ();
+			tree.ChildrenChanged += (sender, args) => UpdateNode (args.Node);
+			tree.NodeRotateLeft += (sender, args) => {
+				UpdateNode (args.Node);
+				UpdateNode (args.Node.Parent);
+			};
+			tree.NodeRotateRight += (sender, args) => {
+				UpdateNode (args.Node);
+				UpdateNode (args.Node.Parent);
+			};
+			Clear ();
 		}
-		
-		public LineSplitter (IBuffer buffer)
+
+		public IEnumerable<LineSegment> GetLinesBetween (int startLine, int endLine)
 		{
-			lines.Clear ();
+			var startNode = GetNode (startLine);
+			if (startNode == null)
+				yield break;
+			var iter = startNode.Iter;
+			int curLine = startLine;
+			do {
+				yield return iter.Current;
+			} while (iter.MoveNext() && curLine++ <= endLine);
+		}
+
+		public IEnumerable<LineSegment> GetLinesStartingAt (int startLine)
+		{
+			var startNode = GetNode (startLine);
+			if (startNode == null)
+				yield break;
+			var iter = startNode.Iter;
+			do {
+				yield return iter.Current;
+			} while (iter.MoveNext());
 		}
 		
+		public IEnumerable<LineSegment> GetLinesReverseStartingAt (int startLine)
+		{
+			var startNode = GetNode (startLine);
+			if (startNode == null)
+				yield break;
+			var iter = startNode.Iter;
+			do {
+				yield return iter.Current;
+			} while (iter.MoveBack());
+		}
+
 		public LineSegment Get (int number)
 		{
-			return lines.GetNode (number);
+			return GetNode (number);
 		}
 		
 		public LineSegment GetLineByOffset (int offset)
@@ -79,52 +121,50 @@ namespace Mono.TextEditor
 			return Get (OffsetToLineNumber (offset));
 		}
 		
-		
 		public void TextReplaced (object sender, ReplaceEventArgs args)
 		{
 			if (args.Count > 0)
 				TextRemove (args.Offset, args.Count);
-			if (args.Value != null && args.Value.Length > 0)
+			if (!string.IsNullOrEmpty(args.Value))
 				TextInsert (args.Offset, args.Value);
 		}
 
-		void TextRemove (int offset, int length)
+		public void TextRemove (int offset, int length)
 		{
-			if (length == 0 || (lines.Count == 1 && lines.Length == 0)) 
+			if (length == 0 || (LineCount == 1 && Length == 0)) 
 				return; 
-			LineSegmentTree.TreeNode startNode = lines.GetNodeAtOffset (offset);
+
+			var startNode = GetNodeAtOffset (offset);
 			int charsRemoved = startNode.EndOffset - offset;
 			if (offset + length < startNode.EndOffset) {
-				lines.ChangeLength (startNode, startNode.Length - length);
+				ChangeLength (startNode, startNode.Length - length);
 				return;
 			}
-			LineSegmentTree.TreeNode endNode = lines.GetNodeAtOffset (offset + length);
+			var endNode = GetNodeAtOffset (offset + length);
 			if (endNode == null)
 				return;
 			int charsLeft = endNode.EndOffset - (offset + length);
 			if (startNode == endNode) {
-				lines.ChangeLength (startNode, startNode.Length - length);
+				ChangeLength (startNode, startNode.Length - length);
 				return;
 			}
-			RedBlackTree<LineSegmentTree.TreeNode>.RedBlackTreeIterator iter = startNode.Iter;
+			var iter = startNode.Iter;
 			iter.MoveNext ();
-			LineSegment line;
-			int cnt = 0;
+			TreeNode line;
 			do {
 				line = iter.Current;
 				iter.MoveNext ();
-				lines.RemoveLine (line);
-				++cnt;
+				RemoveLine (line);
 			} while (line != endNode);
-			lines.ChangeLength (startNode, startNode.Length - charsRemoved + charsLeft, endNode.DelimiterLength);
+			ChangeLength (startNode, startNode.Length - charsRemoved + charsLeft, endNode.DelimiterLength);
 		}
-		
-		void TextInsert (int offset, string text)
+
+		public void TextInsert (int offset, string text)
 		{
-			if (text == null || text.Length == 0)
+			if (string.IsNullOrEmpty(text))
 				return;
 			
-			LineSegment line = lines.GetNodeAtOffset (offset);
+			var line = GetNodeAtOffset (offset);
 			int textOffset = 0;
 			int lineOffset = line.Offset;
 			foreach (var delimiter in FindDelimiter (text)) {
@@ -132,23 +172,17 @@ namespace Mono.TextEditor
 				int delimiterEndOffset = delimiter.Offset + delimiter.Length;
 				int curLineLength = offset + delimiterEndOffset - lineOffset;
 				int oldDelimiterLength = line.DelimiterLength;
-				lines.ChangeLength (line, curLineLength, delimiter.Length);
+				ChangeLength (line, curLineLength, delimiter.Length);
 				
-				line = this.lines.InsertAfter (line, newLineLength, oldDelimiterLength);
+				line = InsertAfter (line, newLineLength, oldDelimiterLength);
 				textOffset = delimiterEndOffset;
 				lineOffset += curLineLength;
 			}
-			
-			if (textOffset != text.Length) { 
-				lines.ChangeLength (line, line.Length + text.Length - textOffset);
-			}
+
+			if (textOffset != text.Length)
+				ChangeLength(line, line.Length + text.Length - textOffset);
 		}
-		
-		public int OffsetToLineNumber (int offset)
-		{
-			return lines.OffsetToLineNumber (offset);
-		}
-		
+
 		struct Delimiter 
 		{
 			public readonly int Offset;
@@ -156,8 +190,8 @@ namespace Mono.TextEditor
 			
 			public Delimiter (int offset, int length)
 			{
-				this.Offset = offset;
-				this.Length = length;
+				Offset = offset;
+				Length = length;
 			}
 		}
 		
@@ -184,5 +218,247 @@ namespace Mono.TextEditor
 		{
 			return FindDelimiter (text).Count ();
 		}
+
+		#region Line segment tree
+		public class TreeNode : LineSegment
+		{
+			internal RedBlackTree<TreeNode>.RedBlackTreeNode treeNode;
+
+			public RedBlackTree<TreeNode>.RedBlackTreeIterator Iter {
+				get {
+					return new RedBlackTree<TreeNode>.RedBlackTreeIterator (treeNode);
+				}
+			}
+
+			public override int Offset {
+				get {
+					return treeNode != null ? GetOffsetFromNode (treeNode) : -1;
+				}
+				set {
+					throw new NotSupportedException ();
+				}
+			}
+
+
+			public int Count       = 1;
+			public int TotalLength;
+			
+			public TreeNode (int length, int delimiterLength) : base (length, delimiterLength)
+			{
+			}
+			
+			public override string ToString ()
+			{
+				return String.Format ("[TreeNode: Line={0}, Count={1}, TotalLength={2}]",
+				                      base.ToString (),
+				                      Count,
+				                      TotalLength);
+			}
+		}
+
+		readonly RedBlackTree<TreeNode> tree = new RedBlackTree<TreeNode> ();
+
+		public int LineCount {
+			get {
+				return tree.Count;
+			}
+		}
+		
+		public int Length {
+			get {
+				return tree.Root.Value.TotalLength;
+			}
+		}
+	
+		static void UpdateNode (RedBlackTree<TreeNode>.RedBlackTreeNode node)
+		{
+			if (node == null)
+				return;
+			
+			int count       = 1;
+			int totalLength = node.Value.Length;
+			
+			if (node.Left != null) {
+				count       += node.Left.Value.Count;
+				totalLength += node.Left.Value.TotalLength;
+			}
+			
+			if (node.Right != null) {
+				count       += node.Right.Value.Count;
+				totalLength += node.Right.Value.TotalLength;
+			}
+			if (count != node.Value.Count || totalLength != node.Value.TotalLength) {
+				node.Value.Count       = count;
+				node.Value.TotalLength = totalLength;
+				UpdateNode (node.Parent);
+			}
+		}
+		
+		public void Clear ()
+		{
+			tree.Root = new RedBlackTree<TreeNode>.RedBlackTreeNode (new TreeNode (0, 0));
+			tree.Root.Value.treeNode = tree.Root;
+			tree.Count = 1;
+		}
+		
+		public TreeNode InsertAfter (TreeNode segment, int length, int delimiterLength)
+		{
+			var result = new TreeNode (length, delimiterLength) { StartSpan = segment.StartSpan };
+			var newNode = new RedBlackTree<TreeNode>.RedBlackTreeNode (result);
+			var iter = segment.Iter;
+			if (iter == null) {
+				tree.Root = newNode;
+				result.treeNode = tree.Root;
+				tree.Count = 1;
+				return result;
+			}
+			
+			if (iter.Node.Right == null) {
+				tree.Insert (iter.Node, newNode, false);
+			} else {
+				tree.Insert (iter.Node.Right.OuterLeft, newNode, true);
+			}
+			result.treeNode = newNode;
+			UpdateNode (newNode);
+			OnLineChanged (new LineEventArgs (result));
+			return result;
+		}
+		
+		public override string ToString ()
+		{
+			return tree.ToString ();
+		}
+		
+		
+		public void ChangeLength (TreeNode line, int newLength)
+		{
+			ChangeLength (line, newLength, line.DelimiterLength);
+		}
+		
+		public void ChangeLength (TreeNode line, int newLength, int delimiterLength)
+		{
+			line.Length = newLength;
+			line.DelimiterLength = delimiterLength;
+			OnLineChanged (new LineEventArgs (line));
+			UpdateNode (line.Iter.CurrentNode);
+		}
+		
+		protected virtual void OnLineChanged (LineEventArgs e)
+		{
+			EventHandler<LineEventArgs> handler = LineChanged;
+			if (handler != null)
+				handler (this, e);
+		}
+		public event EventHandler<LineEventArgs> LineChanged;
+		
+		protected virtual void OnLineInserted (LineEventArgs e)
+		{
+			EventHandler<LineEventArgs> handler = LineInserted;
+			if (handler != null)
+				handler (this, e);
+		}
+		public event EventHandler<LineEventArgs> LineInserted;
+		
+		protected virtual void OnLineRemoved (LineEventArgs e)
+		{
+			EventHandler<LineEventArgs> handler = LineRemoved;
+			if (handler != null)
+				handler (this, e);
+		}
+		public event EventHandler<LineEventArgs> LineRemoved;
+		
+		public static int GetOffsetFromNode (RedBlackTree<TreeNode>.RedBlackTreeNode node)
+		{
+			int offset = node.Left != null ? node.Left.Value.TotalLength : 0;
+			while (node.Parent != null) {
+				if (node == node.Parent.Right) {
+					if (node.Parent.Left != null && node.Parent.Left.Value != null)
+						offset += node.Parent.Left.Value.TotalLength;
+					if (node.Parent.Value != null)
+						offset += node.Parent.Value.Length;
+				}
+				node = node.Parent;
+			}
+			return offset;
+		}
+
+		RedBlackTree<TreeNode>.RedBlackTreeNode GetTreeNodeAtOffset (int offset)
+		{
+			if (offset == tree.Root.Value.TotalLength) 
+				return tree.Root.OuterRight;
+			RedBlackTree<TreeNode>.RedBlackTreeNode node = tree.Root;
+			int i = offset;
+			while (true) {
+				if (node == null)
+					return null;
+				if (node.Left != null && i < node.Left.Value.TotalLength) {
+					node = node.Left;
+				} else {
+					if (node.Left != null) 
+						i -= node.Left.Value.TotalLength;
+					i -= node.Value.Length;
+					if (i < 0) 
+						return node;
+					node = node.Right;
+				} 
+			}
+		}
+		
+		public TreeNode GetNodeAtOffset (int offset)
+		{
+			var node = GetTreeNodeAtOffset (offset);
+			return node != null ? node.Value : null;
+		}
+		
+		public int OffsetToLineNumber (int offset)
+		{
+			var node = GetTreeNodeAtOffset (offset);
+			if (node == null)
+				return -1;
+			int result = node.Left != null ? node.Left.Value.Count : 0;
+			while (node.Parent != null) {
+				if (node == node.Parent.Right) {
+					if (node.Parent.Left != null)
+						result += node.Parent.Left.Value.Count;
+					result++;
+				}
+				node = node.Parent;
+			}
+			return result;
+		}
+		
+		public void RemoveLine (TreeNode line)
+		{
+			var parent = line.Iter.CurrentNode.Parent; 
+			tree.RemoveAt (line.Iter);
+			UpdateNode (parent); 
+			OnLineRemoved (new LineEventArgs (line));
+		}
+		
+		public TreeNode GetNode (int index)
+		{
+#if DEBUG
+			if (index < 0)
+				Debug.Assert (false, "index must be >=0 but was " + index + "." + Environment.NewLine + "Stack trace:" + Environment.StackTrace);
+#endif
+			RedBlackTree<TreeNode>.RedBlackTreeNode node = tree.Root;
+			int i = index;
+			while (true) {
+				if (node == null)
+					return null;
+				if (node.Left != null && i < node.Left.Value.Count) {
+					node = node.Left;
+				} else {
+					if (node.Left != null) {
+						i -= node.Left.Value.Count;
+					}
+					if (i <= 0)
+						return node.Value;
+					i--;
+					node = node.Right;
+				} 
+			}
+		}
+		#endregion
 	}
 }

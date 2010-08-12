@@ -51,18 +51,18 @@ namespace Mono.TextEditor
 			RedBlackTreeNode parent = Root;
 			
 			while (true) {
-				if (((IComparable)parent.value).CompareTo (node.value) <= 0) {
-					if (parent.left == null) {
+				if (((IComparable)parent.Value).CompareTo (node.Value) <= 0) {
+					if (parent.Left == null) {
 						Insert (parent, node, true);
 						break;
 					}
-					parent = parent.left;
+					parent = parent.Left;
 				} else {
-					if (parent.right == null) {
+					if (parent.Right == null) {
 						Insert (parent, node, false);
 						break;
 					}
-					parent = parent.right;
+					parent = parent.Right;
 				}
 			}
 		}
@@ -70,16 +70,14 @@ namespace Mono.TextEditor
 		public RedBlackTreeIterator Insert (RedBlackTreeNode parent, RedBlackTreeNode node, bool insertLeft)
 		{
 			if (insertLeft) {
-				Debug.Assert (parent.left == null);
-				parent.left = node;
+				parent.Left = node;
 			} else {
-				Debug.Assert (parent.right == null);
-				parent.right = node;
+				parent.Right = node;
 			}
-			node.parent = parent;
-			node.color = red;
+			node.Parent = parent;
+			node.Color = Red;
 			
-			this.OnChildrenChanged (new RedBlackTreeNodeEventArgs (parent));
+			OnChildrenChanged (new RedBlackTreeNodeEventArgs (parent));
 			FixTreeOnInsert (node);
 			Count++;
 			return new RedBlackTreeIterator (node); 
@@ -87,33 +85,33 @@ namespace Mono.TextEditor
 		
 		void FixTreeOnInsert (RedBlackTreeNode node)
 		{
-			if (node.parent == null) {
-				node.color = black;
+			if (node.Parent == null) {
+				node.Color = Black;
 				return;
 			}
 			
-			if (node.parent.color == black) 
+			if (node.Parent.Color == Black) 
 				return;
 			
-			if (node.Uncle != null && node.Uncle.color == red) {
-				node.parent.color = black;
-				node.Uncle.color = black;
-				node.Grandparent.color = red;
+			if (node.Uncle != null && node.Uncle.Color == Red) {
+				node.Parent.Color = Black;
+				node.Uncle.Color = Black;
+				node.Grandparent.Color = Red;
 				FixTreeOnInsert (node.Grandparent);
 				return;
 			}
 			
-			if (node == node.parent.right && node.parent == node.Grandparent.left) {
-				RotateLeft (node.parent);
-				node = node.left;
-			} else if (node == node.parent.left && node.parent == node.Grandparent.right) {
-				RotateRight (node.parent);
-				node = node.right;
+			if (node == node.Parent.Right && node.Parent == node.Grandparent.Left) {
+				RotateLeft (node.Parent);
+				node = node.Left;
+			} else if (node == node.Parent.Left && node.Parent == node.Grandparent.Right) {
+				RotateRight (node.Parent);
+				node = node.Right;
 			}
 			
-			node.parent.color = black;
-			node.Grandparent.color = red;
-			if (node == node.parent.left && node.parent == node.Grandparent.left) {
+			node.Parent.Color = Black;
+			node.Grandparent.Color = Red;
+			if (node == node.Parent.Left && node.Parent == node.Grandparent.Left) {
 				RotateRight (node.Grandparent);
 			} else {
 				RotateLeft (node.Grandparent);
@@ -122,37 +120,35 @@ namespace Mono.TextEditor
 		
 		void RotateLeft (RedBlackTreeNode node) 
 		{
-			RedBlackTreeNode right = node.right;
-			this.Replace (node, right);
-			node.right = right.left;
-			if (node.right != null) 
-				node.right.parent = node;
-			right.left = node;
-			node.parent = right;
-			this.OnNodeRotateLeft (new RedBlackTreeNodeEventArgs (node));
+			RedBlackTreeNode right = node.Right;
+			Replace (node, right);
+			node.Right = right.Left;
+			if (node.Right != null) 
+				node.Right.Parent = node;
+			right.Left = node;
+			node.Parent = right;
+			OnNodeRotateLeft (new RedBlackTreeNodeEventArgs (node));
 		}
 
 		void RotateRight (RedBlackTreeNode node) 
 		{
-			RedBlackTreeNode left = node.left;
+			RedBlackTreeNode left = node.Left;
 			Replace (node, left);
-			node.left = left.right;
-			if (node.left != null) 
-				node.left.parent = node;
-			left.right = node;
-			node.parent = left;			
-			this.OnNodeRotateRight (new RedBlackTreeNodeEventArgs (node));
+			node.Left = left.Right;
+			if (node.Left != null) 
+				node.Left.Parent = node;
+			left.Right = node;
+			node.Parent = left;			
+			OnNodeRotateRight (new RedBlackTreeNodeEventArgs (node));
 		}
 		
 		public void RemoveAt (RedBlackTreeIterator iter)
 		{
 			try {
-				Remove (iter.node);
+				Remove (iter.Node);
 			} catch (Exception e) {
-				string s1 = "remove:" + iter.node.value;
-				string s2 = this.ToString ();
-				Console.WriteLine (s1);
-				Console.WriteLine (s2);
+				Console.WriteLine ("remove:" + iter.Node.Value);
+				Console.WriteLine (this);
 				Console.WriteLine ("----");
 				Console.WriteLine (e);
 			}
@@ -162,45 +158,43 @@ namespace Mono.TextEditor
 		void Replace (RedBlackTreeNode oldNode, RedBlackTreeNode newNode)
 		{
 			if (newNode != null)
-				newNode.parent = oldNode.parent;
-			if (oldNode.parent == null) {
+				newNode.Parent = oldNode.Parent;
+			if (oldNode.Parent == null) {
 				Root = newNode;
 			} else {
-				if (oldNode.parent.left == oldNode)
-					oldNode.parent.left = newNode;
+				if (oldNode.Parent.Left == oldNode)
+					oldNode.Parent.Left = newNode;
 				else
-					oldNode.parent.right = newNode;
-				this.OnChildrenChanged (new RedBlackTreeNodeEventArgs (oldNode.parent));
+					oldNode.Parent.Right = newNode;
+				OnChildrenChanged (new RedBlackTreeNodeEventArgs (oldNode.Parent));
 			}
 		}
 		
 		public void Remove (RedBlackTreeNode node)
 		{
-			if (node.left != null && node.right != null) {
-				RedBlackTreeNode outerLeft = node.right.OuterLeft;
+			if (node.Left != null && node.Right != null) {
+				RedBlackTreeNode outerLeft = node.Right.OuterLeft;
 				Remove (outerLeft);
 				Replace (node, outerLeft);
 				
-				outerLeft.color = node.color;
-				outerLeft.left = node.left;
-				if (outerLeft.left != null) 
-					outerLeft.left.parent = outerLeft;
+				outerLeft.Color = node.Color;
+				outerLeft.Left = node.Left;
+				outerLeft.Left.Parent = outerLeft;
 				
-				outerLeft.right = node.right;
-				if (outerLeft.right != null) 
-					outerLeft.right.parent = outerLeft;
-				this.OnChildrenChanged (new RedBlackTreeNodeEventArgs (outerLeft));
+				outerLeft.Right = node.Right;
+				outerLeft.Right.Parent = outerLeft;
+				OnChildrenChanged (new RedBlackTreeNodeEventArgs (outerLeft));
 				return;
 			}
 			Count--;
 			// node has only one child
-			RedBlackTreeNode child = node.left ?? node.right;
+			RedBlackTreeNode child = node.Left ?? node.Right;
 			
 			Replace (node, child);
 			
-			if (node.color == black && child != null) {
-				if (child.color == red) {
-					child.color = black;
+			if (node.Color == Black && child != null) {
+				if (child.Color == Red) {
+					child.Color = Black;
 				} else {
 					DeleteOneChild (child);
 				}
@@ -209,25 +203,25 @@ namespace Mono.TextEditor
 		
 		static bool GetColorSafe (RedBlackTreeNode node)
 		{
-			return node != null ? node.color : black;
+			return node != null ? node.Color : Black;
 		}
 				
 		void DeleteOneChild (RedBlackTreeNode node) 
 		{
 			// case 1
-			if (node == null || node.parent == null)
+			if (node == null || node.Parent == null)
 				return;
 			
-			RedBlackTreeNode parent  = node.parent;
+			RedBlackTreeNode parent  = node.Parent;
 			RedBlackTreeNode sibling = node.Sibling;
 			if (sibling == null)
 				return;
 			
 			// case 2
-			if (sibling.color == red) {
-				parent.color  = red;
-				sibling.color = black;
-				if (node == parent.left) {
+			if (sibling.Color == Red) {
+				parent.Color  = Red;
+				sibling.Color = Black;
+				if (node == parent.Left) {
 					RotateLeft (parent);
 				} else {
 					RotateRight (parent);
@@ -238,41 +232,41 @@ namespace Mono.TextEditor
 			}
 			
 			// case 3
-			if (parent.color == black &&
-			    sibling.color == black &&
-			    GetColorSafe (sibling.left) == black &&
-			    GetColorSafe (sibling.right) == black) {
-				sibling.color = red;
+			if (parent.Color == Black &&
+			    sibling.Color == Black &&
+			    GetColorSafe (sibling.Left) == Black &&
+			    GetColorSafe (sibling.Right) == Black) {
+				sibling.Color = Red;
 				DeleteOneChild (parent);
 				return;
 			}
 			
 			// case 4
-			if (parent.color == red &&
-			    sibling.color == black &&
-			    GetColorSafe (sibling.left) == black &&
-			    GetColorSafe (sibling.right) == black) {
-				sibling.color = red;
-				parent.color = black;
+			if (parent.Color == Red &&
+			    sibling.Color == Black &&
+			    GetColorSafe (sibling.Left) == Black &&
+			    GetColorSafe (sibling.Right) == Black) {
+				sibling.Color = Red;
+				parent.Color = Black;
 				return;
 			}
 			
 			// case 5
-			if (node == parent.left &&
-			    sibling.color == black &&
-			    GetColorSafe (sibling.left) == red &&
-			    GetColorSafe (sibling.right) == black) {
-				sibling.color = red;
-				if (sibling.left != null)
-					sibling.left.color = black;
+			if (node == parent.Left &&
+			    sibling.Color == Black &&
+			    GetColorSafe (sibling.Left) == Red &&
+			    GetColorSafe (sibling.Right) == Black) {
+				sibling.Color = Red;
+				if (sibling.Left != null)
+					sibling.Left.Color = Black;
 				RotateRight (sibling);
-			} else if (node == parent.right &&
-			           sibling.color == black &&
-			           GetColorSafe (sibling.right) == red &&
-			           GetColorSafe (sibling.left) == black) {
-				sibling.color = red;
-				if (sibling.right != null)
-					sibling.right.color = black;
+			} else if (node == parent.Right &&
+			           sibling.Color == Black &&
+			           GetColorSafe (sibling.Right) == Red &&
+			           GetColorSafe (sibling.Left) == Black) {
+				sibling.Color = Red;
+				if (sibling.Right != null)
+					sibling.Right.Color = Black;
 				RotateLeft (sibling);
 			}
 			
@@ -280,15 +274,15 @@ namespace Mono.TextEditor
 			sibling = node.Sibling;
 			if (sibling == null)
 				return;
-			sibling.color = parent.color;
-			parent.color = black;
-			if (node == parent.left) {
-				if (sibling.right != null) 
-					sibling.right.color = black;
+			sibling.Color = parent.Color;
+			parent.Color = Black;
+			if (node == parent.Left) {
+				if (sibling.Right != null) 
+					sibling.Right.Color = Black;
 				RotateLeft (parent);
 			} else {
-				if (sibling.left != null) 
-					sibling.left.color = black;
+				if (sibling.Left != null) 
+					sibling.Left.Color = Black;
 				RotateRight (parent);
 			}
 		}
@@ -312,7 +306,7 @@ namespace Mono.TextEditor
 		
 		public bool Contains(T item)
 		{
-			RedBlackTreeIterator iter = new RedBlackTreeIterator (Root.OuterLeft);
+			var iter = new RedBlackTreeIterator (Root.OuterLeft);
 			while (iter.IsValid) {
 				if (iter.Current.Equals (item)) 
 					return true;
@@ -323,10 +317,10 @@ namespace Mono.TextEditor
 		
 		public bool Remove(T item)
 		{
-			RedBlackTreeIterator iter = new RedBlackTreeIterator (Root.OuterLeft);
+			var iter = new RedBlackTreeIterator (Root.OuterLeft);
 			while (iter.IsValid) {
 				if (iter.Current.Equals (item)) {
-					this.RemoveAt (iter);
+					RemoveAt (iter);
 					return true;
 				}
 				iter.MoveNext ();
@@ -362,8 +356,7 @@ namespace Mono.TextEditor
 		{
 			if (Root == null) 
 				return null;
-			RedBlackTreeNode dummyNode = new RedBlackTreeNode (default(T));
-			dummyNode.right = Root;
+			var dummyNode = new RedBlackTreeNode (default(T)) { Right = Root };
 			return new RedBlackTreeIterator (dummyNode);
 		}
 #endregion
@@ -398,31 +391,31 @@ namespace Mono.TextEditor
 			
 			public RedBlackTreeNodeEventArgs (RedBlackTreeNode node)
 			{
-				this.Node = node;
+				Node = node;
 			}
 		}
-		
-		string GetIndent (int level)
+
+		static string GetIndent (int level)
 		{
 			return new String ('\t', level);
 		}
-		
-		void AppendNode (StringBuilder builder, RedBlackTreeNode node, int indent)
+
+		static void AppendNode (StringBuilder builder, RedBlackTreeNode node, int indent)
 		{
-			builder.Append (GetIndent (indent) + "Node (" + (node.color == red ? "r" : "b" ) + "):" + node.value.ToString () + Environment.NewLine);
+			builder.Append (GetIndent (indent) + "Node (" + (node.Color == Red ? "r" : "b" ) + "):" + node.Value + Environment.NewLine);
 			builder.Append (GetIndent (indent) + "Left: ");
-			if (node.left != null) {
+			if (node.Left != null) {
 				builder.Append (Environment.NewLine);
-				AppendNode (builder, node.left, indent + 1);
+				AppendNode (builder, node.Left, indent + 1);
 			} else { 
 				builder.Append ("null");
 			}
 				
 			builder.Append (Environment.NewLine);
 			builder.Append (GetIndent (indent) +  "Right: ");
-			if (node.right != null) {
+			if (node.Right != null) {
 				builder.Append (Environment.NewLine);
-				AppendNode (builder, node.right, indent + 1);
+				AppendNode (builder, node.Right, indent + 1);
 			} else { 
 				builder.Append ("null");
 			}
@@ -430,54 +423,54 @@ namespace Mono.TextEditor
 		
 		public override string ToString ()
 		{
-			StringBuilder result = new StringBuilder ();
+			var result = new StringBuilder ();
 			AppendNode (result, Root, 0);
 			return result.ToString ();
 		}
 		
-		static bool red   = true;
-		static bool black = false;
+		const bool Red   = true;
+		const bool Black = false;
 		
 		public class RedBlackTreeNode
 		{
-			public RedBlackTreeNode parent;
-			public RedBlackTreeNode left, right;
-			public T value;
-			public bool color;
+			public RedBlackTreeNode Parent;
+			public RedBlackTreeNode Left, Right;
+			public T Value;
+			public bool Color;
 			
 			public RedBlackTreeNode (T value)
 			{
-				this.value = value;
+				Value = value;
 			}
 			
 			public bool IsLeaf {
 				get {
-					return left == null && right == null;
+					return Left == null && Right == null;
 				}
 			}
 			
 			public RedBlackTreeNode Sibling {
 				get {
-					if (parent == null)
+					if (Parent == null)
 						return null;
-					return this == parent.left ? parent.right : parent.left;
+					return this == Parent.Left ? Parent.Right : Parent.Left;
 				}
 			}
 			public RedBlackTreeNode OuterLeft {
 				get {
-					return left != null ? left.OuterLeft : this;
+					return Left != null ? Left.OuterLeft : this;
 				}
 			}
 			
 			public RedBlackTreeNode OuterRight {
 				get {
-					return right != null ? right.OuterRight : this;
+					return Right != null ? Right.OuterRight : this;
 				}
 			}
 			
 			public RedBlackTreeNode Grandparent {
 				get {
-					return parent != null ? parent.parent : null;
+					return Parent != null ? Parent.Parent : null;
 				}
 			}
 			
@@ -486,51 +479,51 @@ namespace Mono.TextEditor
 					RedBlackTreeNode grandparent = Grandparent;
 					if (grandparent == null)
 						return null;
-					return parent == grandparent.left ? grandparent.right : grandparent.left;
+					return Parent == grandparent.Left ? grandparent.Right : grandparent.Left;
 				}
 			}
 		}
 		
 		public class RedBlackTreeIterator : IEnumerator<T>
 		{
-			public RedBlackTreeNode startNode;
-			public RedBlackTreeNode node;
+			public RedBlackTreeNode StartNode;
+			public RedBlackTreeNode Node;
 			
 			public RedBlackTreeIterator (RedBlackTreeNode node)
 			{
-				this.startNode = this.node = node;
+				StartNode = Node = node;
 			}
 			
 			public RedBlackTreeIterator Clone ()
 			{
-				return new RedBlackTreeIterator (this.startNode);
+				return new RedBlackTreeIterator (StartNode);
 			}
 			
 			public bool IsValid {
-				get { return node != null; }
+				get { return Node != null; }
 			}
 			
 			public T Current {
 				get {
-					return node != null ? node.value : default(T);
+					return Node != null ? Node.Value : default(T);
 				}
 			}
 			
 			public RedBlackTreeNode CurrentNode {
 				get {
-					return node;
+					return Node;
 				}
 			}
 			
 			object System.Collections.IEnumerator.Current {
 				get {
-					return this.Current;
+					return Current;
 				}
 			}
 			
 			public void Reset ()
 			{
-				this.node = this.startNode; 
+				 Node = StartNode; 
 			}
 			
 			public void Dispose ()
@@ -541,14 +534,14 @@ namespace Mono.TextEditor
 			{
 				if (!IsValid)
 					return false;
-				if (node.right == null) {
+				if (Node.Right == null) {
 					RedBlackTreeNode oldNode;
 					do {
-						oldNode = node;
-						node = node.parent;
-					} while (node != null && node.right == oldNode);
+						oldNode = Node;
+						Node = Node.Parent;
+					} while (Node != null && Node.Right == oldNode);
 				} else {
-					node = node.right.OuterLeft;
+					Node = Node.Right.OuterLeft;
 				}
 				return IsValid;			
 			}
@@ -557,14 +550,14 @@ namespace Mono.TextEditor
 			{
 				if (!IsValid)
 					return false;
-				if (node.left == null) {
+				if (Node.Left == null) {
 					RedBlackTreeNode oldNode;
 					do {
-						oldNode = node;
-						node = node.parent;
-					} while (node != null && node.left == oldNode);
+						oldNode = Node;
+						Node = Node.Parent;
+					} while (Node != null && Node.Left == oldNode);
 				} else {
-					node = node.left.OuterRight;
+					Node = Node.Left.OuterRight;
 				}
 				return IsValid;
 			}
