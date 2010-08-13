@@ -132,9 +132,9 @@ namespace Mono.TextEditor.Theatrics
 		{
 			base.OnSizeAllocated (allocation);
 			
-			int vwidth = vScrollBar.Visible ? vScrollBar.Requisition.Width : 1;
-			int hheight = hScrollBar.Visible ? hScrollBar.Requisition.Height : 1; 
-			Rectangle childRectangle = new Rectangle (allocation.X + 1, allocation.Y + 1, allocation.Width - vwidth, allocation.Height - hheight);
+			int vwidth = vScrollBar.Visible ? vScrollBar.Requisition.Width : 0;
+			int hheight = hScrollBar.Visible ? hScrollBar.Requisition.Height : 0; 
+			Rectangle childRectangle = new Rectangle (allocation.X + 1, allocation.Y + 1, allocation.Width - vwidth - 1, allocation.Height - hheight - 1);
 			if (Child != null) 
 				Child.SizeAllocate (childRectangle);
 			
