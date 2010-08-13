@@ -309,11 +309,11 @@ namespace Mono.TextEditor
 			
 			if (state == Document.LineState.Changed) {
 				cr.Color = lineStateChangedGC;
-				cr.Rectangle (x + 1 + 0.5, y + 0.5, marginWidth / 3, lineHeight);
+				cr.Rectangle (x + 1, y, marginWidth / 3, lineHeight);
 				cr.Fill ();
 			} else if (state == Document.LineState.Dirty) {
 				cr.Color = lineStateDirtyGC;
-				cr.Rectangle (x + 1 + 0.5, y + 0.5, marginWidth / 3, lineHeight);
+				cr.Rectangle (x + 1, y, marginWidth / 3, lineHeight);
 				cr.Fill ();
 			}
 			

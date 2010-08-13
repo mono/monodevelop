@@ -104,5 +104,11 @@ namespace Mono.TextEditor
 			cr.LineTo (x2, y2);
 			cr.Stroke ();
 		}
+		
+		public static void Line (this Cairo.Context cr, double x1, double y1, double x2, double y2)
+		{
+			cr.MoveTo (x1, y1);
+			cr.LineTo (x2, y2);
+		}
 	}
 }
