@@ -76,6 +76,13 @@ namespace Mono.Debugging.Evaluation
 //			}
 		}
 		
+		/// <summary>
+		/// Executes the provided evaluator. If a result is obtained before RunTimeout milliseconds,
+		/// the method ends returning True.
+		/// If it does not finish after RunTimeout milliseconds, the method ends retuning False, although
+		/// the evaluation continues in the background. In that case, when evaluation ends, the provided
+		/// delayedDoneCallback delegate is called.
+		/// </summary>
 		public bool Run (EvaluatorDelegate evaluator, EvaluatorDelegate delayedDoneCallback)
 		{
 			if (!useTimeout) {
@@ -88,6 +95,8 @@ namespace Mono.Debugging.Evaluation
 			task.FinishedCallback = delayedDoneCallback;
 			
 			lock (runningLock) {
+				if (disposed)
+					return false;
 				if (mainThreadBusy || runningThreads == 0) {
 					if (runningThreads < maxThreads) {
 						runningThreads++;
@@ -104,10 +113,10 @@ namespace Mono.Debugging.Evaluation
 					}
 				}
 				mainThreadBusy = true;
+				currentTask = task;
 			}
 			
 			OnStartEval ();
-			currentTask = task;
 			newTaskEvent.Set ();
 			task.RunningEvent.WaitOne ();
 			
@@ -139,10 +148,9 @@ namespace Mono.Debugging.Evaluation
 							runningThreads--;
 							return;
 						}
+						threadTask = currentTask;
+						currentTask = null;
 					}
-					
-					threadTask = currentTask;
-					currentTask = null;
 				}
 				
 				threadTask.RunningEvent.Set ();
@@ -195,14 +203,22 @@ namespace Mono.Debugging.Evaluation
 		
 		public void Dispose ()
 		{
-			disposed = true;
-			CancelAll ();
-			newTaskEvent.Set ();
+			lock (runningLock) {
+				disposed = true;
+				CancelAll ();
+				newTaskEvent.Set ();
+			}
 		}
 
 		public void CancelAll ()
 		{
 			lock (runningLock) {
+				// If there is a task waiting the be picked by the runner,
+				// set the task wait events to avoid deadlocking the caller.
+				if (currentTask != null) {
+					currentTask.RunningEvent.Set ();
+					currentTask.RunFinishedEvent.Set ();
+				}
 				pendingTasks.Clear ();
 				Monitor.PulseAll (runningLock);
 			}
