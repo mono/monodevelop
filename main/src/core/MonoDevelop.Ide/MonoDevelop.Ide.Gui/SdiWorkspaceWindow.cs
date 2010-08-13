@@ -415,7 +415,7 @@ namespace MonoDevelop.Ide.Gui
 			subViewNotebook.SwitchPage += subViewNotebookIndexChanged;
 			
 			//add existing ViewContent
-			AddButton (this.ViewContent.TabPageLabel, this.ViewContent.Control);
+			AddButton (this.ViewContent.TabPageLabel, this.ViewContent);
 			
 			//pack them in a box
 			box.PackStart (subViewNotebook, true, true, 0);
@@ -432,13 +432,13 @@ namespace MonoDevelop.Ide.Gui
 			
 			subViewContents.Add (subViewContent);
 			subViewContent.WorkbenchWindow = this;
-			AddButton (subViewContent.TabPageLabel, subViewContent.Control);
+			AddButton (subViewContent.TabPageLabel, subViewContent);
 			
 			OnContentChanged (null, null);
 		}
 		
 		bool updating = false;
-		protected Tab AddButton (string label, Gtk.Widget page)
+		protected Tab AddButton (string label, IBaseViewContent viewContent)
 		{
 			CheckCreateSubViewToolbar ();
 			updating = true;
@@ -448,8 +448,14 @@ namespace MonoDevelop.Ide.Gui
 			tab.Activated += (sender, e) => subViewNotebook.CurrentPage = (int)((Tab)sender).Tag;
 			subViewToolbar.AddTab (tab);
 			
-			subViewNotebook.AppendPage (page, new Gtk.Label ());
-			page.ShowAll ();
+			
+			Gtk.VBox widgetBox = new Gtk.VBox ();
+			widgetBox.Realized += delegate {
+				widgetBox.Add (viewContent.Control);
+			};
+			subViewNotebook.AppendPage (widgetBox, new Gtk.Label ());
+			widgetBox.ShowAll ();
+			
 			EnsureToolbarBoxSeparator ();
 			updating = false;
 			return tab;

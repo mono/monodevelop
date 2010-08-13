@@ -592,7 +592,7 @@ namespace MonoDevelop.Ide.Gui
 			documents.Add (doc);
 			
 			doc.OnDocumentAttached ();
-			
+			OnDocumentOpened (new DocumentEventArgs (doc));
 			return doc;
 		}
 		
@@ -948,6 +948,15 @@ namespace MonoDevelop.Ide.Gui
 			public FilePath File;
 			public DateTime Time;
 		}
+		
+		protected virtual void OnDocumentOpened (DocumentEventArgs e)
+		{
+			EventHandler<DocumentEventArgs> handler = this.DocumentOpened;
+			if (handler != null)
+				handler (this, e);
+		}
+
+		public event EventHandler<DocumentEventArgs> DocumentOpened;
 	}
 	
 
@@ -1057,5 +1066,6 @@ namespace MonoDevelop.Ide.Gui
 			ipos.SetCaretTo (Math.Max(1, fileInfo.Line), Math.Max(1, fileInfo.Column), fileInfo.HighlightCaretLine);
 			return false;
 		}
+		
 	}
 }
