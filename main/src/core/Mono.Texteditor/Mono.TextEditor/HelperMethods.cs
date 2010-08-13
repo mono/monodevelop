@@ -1,6 +1,9 @@
 // HelperMethods.cs
+// 
+// Cut & paste from PangoCairoHelper.
 //
 // Author:
+//   Aaron Bockover <abockover@novell.com>
 //   Mike Krüger <mkrueger@novell.com>
 //
 // Copyright (c) 2008 Novell, Inc (http://www.novell.com)

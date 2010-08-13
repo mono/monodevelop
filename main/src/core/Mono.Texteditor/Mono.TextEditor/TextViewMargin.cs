@@ -410,8 +410,8 @@ namespace Mono.TextEditor
 			markerLayout.SetText (" ");
 			int w, h;
 			markerLayout.GetSize (out w, out h);
-			this.charWidth = (int)(w / Pango.Scale.PangoScale);
-			this.lineHeight = (int)(h / Pango.Scale.PangoScale);
+			this.charWidth = w / Pango.Scale.PangoScale;
+			this.lineHeight = System.Math.Ceiling (h / Pango.Scale.PangoScale);
 			
 			markerLayout.FontDescription.Weight = Pango.Weight.Normal;
 
