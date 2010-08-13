@@ -515,9 +515,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (updating) return;
 			updating = true;
-			
-			subViewToolbar.ActivateButton (npage);
-			
+			subViewToolbar.ActiveTab = npage;
 			updating = false;
 		}
 		

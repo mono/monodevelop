@@ -70,11 +70,6 @@ namespace MonoDevelop.Components
 			Events |= Gdk.EventMask.ButtonPressMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.LeaveNotifyMask;
 		}
 		
-		public void ActivateButton (int button)
-		{
-			tabs[button].Activate ();
-		}
-		
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
