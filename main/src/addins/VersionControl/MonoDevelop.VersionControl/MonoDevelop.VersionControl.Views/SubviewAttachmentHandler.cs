@@ -37,7 +37,8 @@ namespace MonoDevelop.VersionControl.Views
 
 		void HandleDocumentOpened (object sender, Ide.Gui.DocumentEventArgs e)
 		{
-			Console.WriteLine ("Project: "+ e.Document.Project);
+			if (e.Document.Project == null)
+				return;
 			var repo = VersionControlService.GetRepository (e.Document.Project);
 			if (repo == null)
 				return;
