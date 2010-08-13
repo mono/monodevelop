@@ -224,7 +224,7 @@ namespace MonoDevelop.VersionControl
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			DiffView.AttachViewContents (doc, GetItem ());
-			doc.Window.SwitchView (3);
+			doc.Window.SwitchView (2);
 		}
 	}
 	
@@ -234,7 +234,7 @@ namespace MonoDevelop.VersionControl
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			DiffView.AttachViewContents (doc, GetItem ());
-			doc.Window.SwitchView (4);
+			doc.Window.SwitchView (3);
 		}
 	}
 }

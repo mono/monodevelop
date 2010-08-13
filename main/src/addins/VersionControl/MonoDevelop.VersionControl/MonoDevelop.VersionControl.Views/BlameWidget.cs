@@ -121,6 +121,8 @@ namespace MonoDevelop.VersionControl.Views
 			};
 			editor.Caret.PositionChanged += ComparisonWidget.CaretPositionChanged;
 			editor.FocusInEvent += ComparisonWidget.EditorFocusIn;
+			
+			Show ();
 		}
 
 		void HandleAdjustmentChanged (object sender, EventArgs e)

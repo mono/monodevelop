@@ -92,14 +92,14 @@ namespace MonoDevelop.VersionControl.Views
 		public LogView (VersionControlDocumentInfo info) : base ("Log")
 		{
 			this.info = info;
+		}
+		
+		void CreateControlFromInfo ()
+		{
 			this.vc = info.Item.Repository;
 			this.filepath = info.Item.Path;
 			
-			info.Updated += delegate {
-				history = this.info.History;
-				vinfo   = this.info.VersionInfo;
-				ShowHistory ();
-			};
+			
 			
 			// Widget setup
 			VBox box = new VBox (false, 6);
@@ -212,6 +212,16 @@ namespace MonoDevelop.VersionControl.Views
 			changedPaths.AppendColumn (colChangedPath);
 			
 			loglist.Selection.Changed += new EventHandler (TreeSelectionChanged);
+			
+			
+			info.Updated += delegate {
+				history = this.info.History;
+				vinfo   = this.info.VersionInfo;
+				ShowHistory ();
+			};
+			history = this.info.History;
+			vinfo   = this.info.VersionInfo;
+			ShowHistory ();
 		}
 		
 		public LogView (string filepath, bool isDirectory, Revision [] history, Repository vc) 
@@ -465,7 +475,11 @@ namespace MonoDevelop.VersionControl.Views
 		}
 		
 		public override Gtk.Widget Control { 
-			get { return widget; }
+			get {
+				if (widget == null)
+					CreateControlFromInfo ();
+				return widget; 
+			}
 		}
 		
 		public override void Dispose ()
@@ -558,6 +572,8 @@ namespace MonoDevelop.VersionControl.Views
 		#region IAttachableViewContent implementation
 		public void Selected ()
 		{
+			if (info != null)
+				info.Start ();
 		}
 
 		public void Deselected ()

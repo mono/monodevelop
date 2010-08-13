@@ -275,5 +275,9 @@
 	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
 		<Parser class = "MonoDevelop.VersionControl.Views.DiffParser" id = "DiffParser" fileExtensions=".diff, .patch" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
+		<Class class = "MonoDevelop.VersionControl.Views.SubviewAttachmentHandler"/>
+	</Extension>
 </Addin>
 	

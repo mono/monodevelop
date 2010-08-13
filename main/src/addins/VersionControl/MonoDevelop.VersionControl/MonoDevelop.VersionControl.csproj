@@ -215,6 +215,7 @@
     <Compile Include="MonoDevelop.VersionControl.Views\DiffView.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\DiffWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Views.DiffWidget.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Views\SubviewAttachmentHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

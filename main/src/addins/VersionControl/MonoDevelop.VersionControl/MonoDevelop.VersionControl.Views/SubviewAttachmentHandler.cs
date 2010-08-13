@@ -1,5 +1,5 @@
 // 
-// MergeView.cs
+// SubviewAttachmentHandler.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -24,69 +24,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide;
-using MonoDevelop.Core;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	class MergeView : BaseView, IAttachableViewContent
+	class SubviewAttachmentHandler : CommandHandler
 	{
-		MergeWidget widget;
-
-		public override Gtk.Widget Control { 
-			get {
-				return widget;
-			}
+		protected override void Run ()
+		{
+			Ide.IdeApp.Workbench.DocumentOpened += HandleDocumentOpened;
 		}
 
-		public static void Show (VersionControlItemList items)
+		void HandleDocumentOpened (object sender, Ide.Gui.DocumentEventArgs e)
 		{
-			foreach (VersionControlItem item in items) {
-				var document = IdeApp.Workbench.OpenDocument (item.Path);
-				DiffView.AttachViewContents (document, item);
-				document.Window.SwitchView (5);
-			}
+			Console.WriteLine ("Project: "+ e.Document.Project);
+			var repo = VersionControlService.GetRepository (e.Document.Project);
+			if (repo == null)
+				return;
+			var item = new VersionControlItem (repo, e.Document.Project, e.Document.FileName, false);
+			DiffView.AttachViewContents (e.Document, item);
 		}
-		
-		public MergeView (VersionControlDocumentInfo info) : base ("Merge")
-		{
-			widget = new MergeWidget ();
-			widget.Load (info);
-		}
-
-		public void Selected ()
-		{
-			widget.info.Start ();
-		}
-		
-		public void Deselected ()
-		{
-		}
-
-		public void BeforeSave ()
-		{
-		}
-
-		public void BaseContentChanged ()
-		{
-		}
-
-	/*	MergeWidget mergeWidget;
-		
-		public override Gtk.Widget Control {
-			get {
-				return mergeWidget;
-			}
-		}
-		
-		
-		public override void Load (string fileName)
-		{
-			
-			
-		}*/
-		
 	}
 }
 

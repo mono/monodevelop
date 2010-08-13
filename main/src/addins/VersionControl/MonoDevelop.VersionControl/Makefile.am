@@ -31,6 +31,7 @@ FILES =  \
 	MonoDevelop.VersionControl.Views/PatchView.cs \
 	MonoDevelop.VersionControl.Views/PatchWidget.cs \
 	MonoDevelop.VersionControl.Views/StatusView.cs \
+	MonoDevelop.VersionControl.Views/SubviewAttachmentHandler.cs \
 	MonoDevelop.VersionControl/AddRemoveMoveCommand.cs \
 	MonoDevelop.VersionControl/AnnotateCommand.cs \
 	MonoDevelop.VersionControl/BaseView.cs \

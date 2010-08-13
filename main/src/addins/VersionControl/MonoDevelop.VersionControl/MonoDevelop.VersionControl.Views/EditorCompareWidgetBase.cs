@@ -98,7 +98,7 @@ namespace MonoDevelop.VersionControl.Views
 	
 	public abstract class EditorCompareWidgetBase : Gtk.Bin
 	{
-		protected VersionControlDocumentInfo info;
+		internal protected VersionControlDocumentInfo info;
 
 		Adjustment vAdjustment;
 		Adjustment[] attachedVAdjustments;
