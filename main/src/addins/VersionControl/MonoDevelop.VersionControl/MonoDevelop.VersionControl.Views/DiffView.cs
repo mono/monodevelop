@@ -122,7 +122,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			DiffView comparisonView = new DiffView (info);
 			window.AttachViewContent (comparisonView);
-			window.AttachViewContent (new PatchView (comparisonView, info));
+//			window.AttachViewContent (new PatchView (comparisonView, info));
 			window.AttachViewContent (new BlameView (info));
 			window.AttachViewContent (new LogView (info));
 			
@@ -151,7 +151,7 @@ namespace MonoDevelop.VersionControl.Views
 		}
 		
 		VersionControlDocumentInfo info;
-		public DiffView (VersionControlDocumentInfo info) : base ("Comparison")
+		public DiffView (VersionControlDocumentInfo info) : base ("Diff")
 		{
 			this.info = info;
 			widget = new DiffWidget ();
@@ -167,7 +167,7 @@ namespace MonoDevelop.VersionControl.Views
 			widget.ShowAll ();
 		}
 		
-		public DiffView (VersionControlDocumentInfo info, Revision baseRev, Revision toRev) : base ("Comparison")
+		public DiffView (VersionControlDocumentInfo info, Revision baseRev, Revision toRev) : base ("Diff")
 		{
 			this.info = info;
 			widget = new DiffWidget ();
