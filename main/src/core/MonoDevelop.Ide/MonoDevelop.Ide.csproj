@@ -1354,6 +1354,7 @@
     <Compile Include="MonoDevelop.Components\DropDownBoxListWindow.cs" />
     <Compile Include="MonoDevelop.Components\DropDownBox.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionMatcher.cs" />
+    <Compile Include="MonoDevelop.Components\Tabstrip.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

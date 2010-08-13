@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		List<IAttachableViewContent> subViewContents = null;
 		Notebook subViewNotebook = null;
-		HBox subViewToolbar = null;
+		Tabstrip subViewToolbar = null;
 		PathBar pathBar = null;
 		HBox toolbarBox = null;
 		
@@ -361,11 +361,11 @@ namespace MonoDevelop.Ide.Gui
 			if (subViewToolbar != null)
 				return;
 			
-			subViewToolbar = new HBox (false, 3);
+			subViewToolbar = new Tabstrip ();
 			subViewToolbar.Show ();
 			
 			CheckCreateToolbarBox ();
-			toolbarBox.PackStart (subViewToolbar, false, false, 0);
+			toolbarBox.PackStart (subViewToolbar, true, true, 0);
 		}
 		
 		void EnsureToolbarBoxSeparator ()
@@ -393,9 +393,9 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (toolbarBox != null)
 				return;
-			toolbarBox = new HBox (false, 6);
+			toolbarBox = new HBox (false, 0);
 			toolbarBox.Show ();
-			box.PackEnd (toolbarBox, false, false, 3);
+			box.PackEnd (toolbarBox, false, false, 0);
 		}
 		
 		void CheckCreateSubViewContents ()
@@ -415,7 +415,7 @@ namespace MonoDevelop.Ide.Gui
 			subViewNotebook.SwitchPage += subViewNotebookIndexChanged;
 			
 			//add existing ViewContent
-			AddButton (this.ViewContent.TabPageLabel, this.ViewContent.Control).Active = true;
+			AddButton (this.ViewContent.TabPageLabel, this.ViewContent.Control);
 			
 			//pack them in a box
 			box.PackStart (subViewNotebook, true, true, 0);
@@ -438,22 +438,21 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		bool updating = false;
-		protected ToggleButton AddButton (string label, Gtk.Widget page)
+		protected Tab AddButton (string label, Gtk.Widget page)
 		{
 			CheckCreateSubViewToolbar ();
 			updating = true;
-			ToggleButton button = new ToggleButton ();
-			button.Relief = ReliefStyle.None;
-			button.Label = label;
-			button.CanFocus = false;
-			button.Clicked += new EventHandler (OnButtonToggled);
-			button.ShowAll ();
-			subViewToolbar.PackStart (button, false, false, 0);
+			
+			Tab tab = new Tab (subViewToolbar, label);
+			tab.Tag = subViewToolbar.TabCount;
+			tab.Activated += (sender, e) => subViewNotebook.CurrentPage = (int)((Tab)sender).Tag;
+			subViewToolbar.AddTab (tab);
+			
 			subViewNotebook.AppendPage (page, new Gtk.Label ());
 			page.ShowAll ();
 			EnsureToolbarBoxSeparator ();
 			updating = false;
-			return button;
+			return tab;
 		}
 		
 		#region Track and display document's "path"
@@ -511,23 +510,9 @@ namespace MonoDevelop.Ide.Gui
 			if (updating) return;
 			updating = true;
 			
-			subViewNotebook.CurrentPage = npage;
-			Gtk.Widget[] buttons = subViewToolbar.Children;
-			for (int n=0; n<buttons.Length; n++) {
-				if (buttons [n] is ToggleButton) {
-					ToggleButton b = (ToggleButton) buttons [n];
-					b.Active = (n == npage);
-				}
-			}
-
+			subViewToolbar.ActivateButton (npage);
+			
 			updating = false;
-		}
-		
-		void OnButtonToggled (object s, EventArgs args)
-		{
-			int i = Array.IndexOf (subViewToolbar.Children, s);
-			if (i != -1)
-				ShowPage (i);
 		}
 		
 		int oldIndex = -1;

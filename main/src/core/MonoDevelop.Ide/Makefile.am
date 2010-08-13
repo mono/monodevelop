@@ -256,6 +256,7 @@ FILES =  \
 	MonoDevelop.Components/SelectFileDialog.cs \
 	MonoDevelop.Components/SelectFolderDialog.cs \
 	MonoDevelop.Components/TabLabel.cs \
+	MonoDevelop.Components/Tabstrip.cs \
 	MonoDevelop.Components/TooltipWindow.cs \
 	MonoDevelop.Components/TreeViewCellContainer.cs \
 	MonoDevelop.Components/TreeViewState.cs \
