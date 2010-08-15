@@ -36,17 +36,20 @@ namespace MonoDevelop.Core.Assemblies
 		public override IEnumerable<string> GetFrameworkFolders ()
 		{
 			switch (framework.Id) {
-				case "1.1":
-				case "2.0":
-					yield return targetRuntime.RootDirectory.Combine (GetClrVersion (framework.ClrVersion));
-					break;
-			}
-
-			RegistryKey fxFolderKey = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\.NETFramework\AssemblyFolders\v" + framework.Id, false);
-			if (fxFolderKey != null) {
-				string folder = fxFolderKey.GetValue ("All Assemblies In") as string;
-				fxFolderKey.Close ();
-				yield return folder;
+			case "1.1":
+			case "2.0":
+			case "4.0":
+				yield return targetRuntime.RootDirectory.Combine (GetClrVersion (framework.ClrVersion));
+				break;
+			case "3.0":
+			case "3.5":
+				RegistryKey fxFolderKey = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\.NETFramework\AssemblyFolders\v" + framework.Id, false);
+				if (fxFolderKey != null) {
+					string folder = fxFolderKey.GetValue ("All Assemblies In") as string;
+					fxFolderKey.Close ();
+					yield return folder;
+				}
+				break;
 			}
 		}
 		
@@ -96,7 +99,7 @@ namespace MonoDevelop.Core.Assemblies
 				case ClrVersion.Net_1_1: return "v1.1.4322";
 				case ClrVersion.Net_2_0: return "v2.0.50727";
 				case ClrVersion.Clr_2_1: return "v2.1";
-				case ClrVersion.Net_4_0: return "v4.0.20506";
+				case ClrVersion.Net_4_0: return "v4.0.30319";
 			}
 			return "?";
 		}
