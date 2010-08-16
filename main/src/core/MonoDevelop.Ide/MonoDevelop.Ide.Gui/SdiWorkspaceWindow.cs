@@ -418,7 +418,7 @@ namespace MonoDevelop.Ide.Gui
 			AddButton (this.ViewContent.TabPageLabel, this.ViewContent);
 			
 			//pack them in a box
-			box.PackStart (subViewNotebook, true, true, 0);
+			box.PackStart (subViewNotebook, true, true, 1);
 			box.ShowAll ();
 		}
 		
@@ -445,7 +445,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			Tab tab = new Tab (subViewToolbar, label);
 			tab.Tag = subViewToolbar.TabCount;
-			tab.Activated += (sender, e) => subViewNotebook.CurrentPage = (int)((Tab)sender).Tag;
+			tab.Activated += (sender, e) => { subViewNotebook.CurrentPage = (int)((Tab)sender).Tag; QueueDraw (); };
 			subViewToolbar.AddTab (tab);
 			
 			
