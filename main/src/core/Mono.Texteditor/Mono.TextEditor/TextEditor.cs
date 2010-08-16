@@ -246,9 +246,7 @@ namespace Mono.TextEditor
 //			this.Events = EventMask.AllEventsMask;
 			this.Events = EventMask.PointerMotionMask | EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.EnterNotifyMask | EventMask.LeaveNotifyMask | EventMask.VisibilityNotifyMask | EventMask.FocusChangeMask | EventMask.ScrollMask | EventMask.KeyPressMask | EventMask.KeyReleaseMask;
 			this.DoubleBuffered = true;
-			this.AppPaintable = false;
 			base.CanFocus = true;
-			this.RedrawOnAllocate = false;
 			WidgetFlags |= WidgetFlags.NoWindow;
 			iconMargin = new IconMargin (this);
 			gutterMargin = new GutterMargin (this);
@@ -1362,7 +1360,10 @@ namespace Mono.TextEditor
 					try {
 						if (renderFirstLine)
 							margin.XOffset = curX;
+						cr.Rectangle (margin.XOffset, 0, margin.Width >= 0 ? margin.Width : Allocation.Width - curX, Allocation.Height);
+						cr.Clip ();
 						margin.Draw (cr, cairoRectangle, logicalLineNumber, margin.XOffset, curY, lineHeight);
+						cr.ResetClip ();
 						if (renderFirstLine)
 							curX += margin.Width;
 					} catch (Exception e) {

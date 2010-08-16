@@ -2006,8 +2006,6 @@ namespace Mono.TextEditor
 			double xStart = System.Math.Max (area.X, XOffset);
 			xStart = System.Math.Max (0, xStart);
 			var lineArea = new Cairo.Rectangle (XOffset - 1, y, textEditor.Allocation.Width - XOffset, textEditor.LineHeight);
-			cr.Rectangle (XOffset - 1 , 0, textEditor.Allocation.Width - XOffset + 1, textEditor.Allocation.Height);
-			cr.Clip ();
 			int width, height;
 			double pangoPosition = (x - textEditor.HAdjustment.Value + TextStartPosition) * Pango.Scale.PangoScale;
 
@@ -2029,7 +2027,6 @@ namespace Mono.TextEditor
 				var marker = Document.GetExtendingTextMarker (lineNr);
 				if (marker != null)
 					marker.Draw (textEditor, cr, lineNr, lineArea);
-				cr.ResetClip ();
 				return;
 			}
 			
@@ -2150,7 +2147,6 @@ namespace Mono.TextEditor
 				extendingMarker.Draw (textEditor, cr, lineNr, lineArea);
 			
 			lastLineRenderWidth = pangoPosition / Pango.Scale.PangoScale;
-			cr.ResetClip ();
 		}
 
 		internal IBackgroundRenderer BackgroundRenderer {

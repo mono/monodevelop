@@ -55,6 +55,13 @@ namespace Mono.TextEditor.Theatrics
 			}
 		}
 		
+		
+		protected override void OnMapped ()
+		{
+			base.OnMapped ();
+			QueueDraw ();
+		}
+		
 		protected SmartScrolledWindow (IntPtr ptr) : base (ptr)
 		{
 		}
@@ -74,6 +81,7 @@ namespace Mono.TextEditor.Theatrics
 			hScrollBar = new HScrollbar (hAdjustment);
 			hScrollBar.Parent = this;
 			hScrollBar.Show ();
+			
 		}
 		
 		void HandleAdjustmentChanged (object sender, EventArgs e)
@@ -94,12 +102,13 @@ namespace Mono.TextEditor.Theatrics
 		
 		protected override void ForAll (bool include_internals, Gtk.Callback callback)
 		{
-			base.ForAll (include_internals, callback);
-			if (include_internals) {
-				callback (vScrollBar);
-				callback (hScrollBar);
-				children.ForEach (child => callback (child.Child));
-			}
+			if (!include_internals) 
+				return;
+			if (Child != null)
+				callback (Child);
+			callback (vScrollBar);
+			callback (hScrollBar);
+			children.ForEach (child => callback (child.Child));
 		}
 		
 		public void AddChild (Gtk.Widget child, ChildPosition position)
@@ -191,29 +200,26 @@ namespace Mono.TextEditor.Theatrics
 		
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
-			Gdk.GC gc = Style.DarkGC (State);
-			evnt.Window.DrawLine (gc, Allocation.X, Allocation.Top, Allocation.X, Allocation.Bottom);
-			if (vScrollBar.Visible && hScrollBar.Visible) {
-				evnt.Window.DrawLine (gc, Allocation.Right, Allocation.Top, Allocation.Right, Allocation.Y + Allocation.Height / 2);
-			} else {
-				evnt.Window.DrawLine (gc, Allocation.Right, Allocation.Top, Allocation.Right, Allocation.Bottom);
+			using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
+				cr.LineWidth = 1;
+				
+				cr.SharpLineX (Allocation.X, Allocation.Y, Allocation.X, Allocation.Bottom);
+				
+				/*if (vScrollBar.Visible && hScrollBar.Visible) {
+					cr.SharpLineX (Allocation.Right, Allocation.Top, Allocation.Right, Allocation.Y + Allocation.Height / 2);
+				} else {*/
+					cr.SharpLineX (Allocation.Right, Allocation.Top, Allocation.Right, Allocation.Bottom);
+//				}
+				
+				cr.SharpLineY (Allocation.Left, Allocation.Y, Allocation.Right, Allocation.Y);
+/*				if (vScrollBar.Visible && hScrollBar.Visible) {
+					cr.SharpLineY (Allocation.Left, Allocation.Bottom, Allocation.Left + Allocation.Width / 2 , Allocation.Bottom);
+				} else {*/
+					cr.SharpLineY (Allocation.Left, Allocation.Bottom, Allocation.Right, Allocation.Bottom);
+//				}
+				cr.Color = Mono.TextEditor.Highlighting.Style.ToCairoColor (Style.Dark (State));
+				cr.Stroke ();
 			}
-			evnt.Window.DrawLine (gc, Allocation.Left, Allocation.Y, Allocation.Right, Allocation.Y);
-			if (vScrollBar.Visible && hScrollBar.Visible) {
-				evnt.Window.DrawLine (gc, Allocation.Left, Allocation.Bottom, Allocation.Left + Allocation.Width / 2 , Allocation.Bottom);
-			} else {
-				evnt.Window.DrawLine (gc, Allocation.Left, Allocation.Bottom, Allocation.Right, Allocation.Bottom);
-			}
-			
-/*			if (vScrollBar.Visible && hScrollBar.Visible) {
-				int vwidth = vScrollBar.Requisition.Width;
-				int hheight = hScrollBar.Requisition.Height; 
-
-				evnt.Window.DrawRectangle (Style.BackgroundGC (State), true, 
-				                           Allocation.Right - vwidth, 
-				                           Allocation.Bottom - hheight, 
-				                           vwidth, hheight);
-			}*/
 			return base.OnExposeEvent (evnt);
 		}
 		
