@@ -290,7 +290,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (lastFold > 0) 
 				line = Editor.Document.OffsetToLineNumber (lastFold);
 		}
-		
+
 		class BlameRenderer : DrawingArea 
 		{
 			static readonly Annotation locallyModified = new Annotation ("", "?", DateTime.MinValue);
@@ -298,7 +298,8 @@ namespace MonoDevelop.VersionControl.Views
 			BlameWidget widget;
 			internal List<Annotation> annotations;
 			Pango.Layout layout;
-			
+
+			double dragPosition = -1;
 			public BlameRenderer (BlameWidget widget)
 			{
 				this.widget = widget;
@@ -335,6 +336,41 @@ namespace MonoDevelop.VersionControl.Views
 					layout.Dispose ();
 					layout = null;
 				}
+			}
+			
+			protected override bool OnMotionNotifyEvent (EventMotion evnt)
+			{
+				if (dragPosition >= 0) {
+					int x, y;
+					widget.GetPointer (out x, out y);
+					int newWidthRequest = widget.Allocation.Width - x;
+					newWidthRequest = Math.Min (widget.Allocation.Width - (int)widget.Editor.TextViewMargin.XOffset, Math.Max (leftSpacer, newWidthRequest));
+					
+					WidthRequest = newWidthRequest;
+					QueueResize ();
+				}
+				return base.OnMotionNotifyEvent (evnt);
+			}
+			uint grabTime;
+			protected override bool OnButtonPressEvent (EventButton evnt)
+			{
+				if (evnt.X < leftSpacer) {
+					grabTime = evnt.Time;
+					var status = Gdk.Pointer.Grab (this.GdkWindow, false, EventMask.PointerMotionHintMask | EventMask.Button1MotionMask | EventMask.ButtonReleaseMask | EventMask.EnterNotifyMask | EventMask.LeaveNotifyMask, null, null, grabTime);
+					if (status == GrabStatus.Success) {
+						dragPosition = evnt.X;
+					}
+				}
+				return base.OnButtonPressEvent (evnt);
+			}
+			
+			protected override bool OnButtonReleaseEvent (EventButton evnt)
+			{
+				if (dragPosition >= 0) {
+					Gdk.Pointer.Ungrab (grabTime);
+					dragPosition = -1;
+				}
+				return base.OnButtonReleaseEvent (evnt);
 			}
 			
 			/// <summary>
@@ -417,7 +453,7 @@ namespace MonoDevelop.VersionControl.Views
 					annotations.Add (locallyModified);
 				annotations[index] = text;
 			}
-		
+	
 			/// <summary>
 			/// Gets the commit message matching a given annotation index.
 			/// </summary>
@@ -432,7 +468,6 @@ namespace MonoDevelop.VersionControl.Views
 						}
 					}
 				}
-				
 				return null;
 			}
 
@@ -458,10 +493,9 @@ namespace MonoDevelop.VersionControl.Views
 			Regex regex = new Regex (@"[\s+\*[^:]*\:\s*]*(?<msg>[^:\s*](.)*)$");
 			const int leftSpacer = 4;
 			const int margin = 4;
-			
-		
+
 			protected override bool OnExposeEvent (Gdk.EventExpose e)
-			{	
+			{
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
 					cr.LineWidth = Math.Max (1.0, widget.Editor.Options.Zoom);
 					
