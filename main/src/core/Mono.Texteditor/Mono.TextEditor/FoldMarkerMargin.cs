@@ -224,7 +224,8 @@ namespace Mono.TextEditor
 
 		void DrawFoldSegment (Cairo.Context ctx, double x, double y, bool isOpen, bool isSelected)
 		{
-			var drawArea = new Cairo.Rectangle (x + (Width - foldSegmentSize) / 2, y + (editor.LineHeight - foldSegmentSize) / 2, foldSegmentSize, foldSegmentSize);
+			var drawArea = new Cairo.Rectangle (System.Math.Floor (x + (Width - foldSegmentSize) / 2) + 0.5, 
+				                                System.Math.Floor (y + (editor.LineHeight - foldSegmentSize) / 2) + 0.5, foldSegmentSize, foldSegmentSize);
 			ctx.Rectangle (drawArea);
 			ctx.Color = foldBgGC;
 			ctx.FillPreserve ();
@@ -318,8 +319,8 @@ namespace Mono.TextEditor
 			}
 			
 			if (line < editor.Document.LineCount) {
-				double foldSegmentYPos = y + (editor.LineHeight - foldSegmentSize) / 2;
-				double xPos = x + marginWidth / 2 + 0.5;
+				double foldSegmentYPos = y + System.Math.Floor (editor.LineHeight - foldSegmentSize) / 2;
+				double xPos = x + System.Math.Floor (marginWidth / 2) + 0.5;
 				
 				if (isFoldStart) {
 					bool isVisible         = true;
@@ -336,7 +337,7 @@ namespace Mono.TextEditor
 						if (foldSegment.EndLine.Offset > foldSegment.StartLine.Offset && !foldSegment.IsFolded) 
 							isFoldEndFromUpperFold = true;
 					}
-					DrawFoldSegment (cr, x + 0.5, y + 0.5, isVisible, isStartSelected);
+					DrawFoldSegment (cr, x, y, isVisible, isStartSelected);
 
 					if (isContaining || isFoldEndFromUpperFold)
 						cr.DrawLine (isContainingSelected ? foldLineHighlightedGC : foldLineGC, xPos, drawArea.Y, xPos, foldSegmentYPos - 2);
