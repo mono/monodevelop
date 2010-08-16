@@ -1443,7 +1443,7 @@ namespace Mono.TextEditor
 					animation.Drawer.Draw (e.Window);
 				}
 				
-				if (e.Area.Contains ((int)TextViewMargin.caretX, (int)TextViewMargin.caretY))
+				if (HasFocus && e.Area.Contains ((int)TextViewMargin.caretX, (int)TextViewMargin.caretY))
 					textViewMargin.DrawCaret (e.Window);
 				
 				var result = base.OnExposeEvent (e);
