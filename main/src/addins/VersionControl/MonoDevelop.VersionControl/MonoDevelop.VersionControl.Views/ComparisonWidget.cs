@@ -71,6 +71,7 @@ namespace MonoDevelop.VersionControl.Views
 		protected override void CreateComponents ()
 		{
 			this.editors = new [] { new TextEditor (), new TextEditor ()};
+			DiffEditor.Document.ReadOnly = true;
 			
 			originalComboBox = new DropDownBox ();
 			originalComboBox.WindowRequestFunc = CreateComboBoxSelector;

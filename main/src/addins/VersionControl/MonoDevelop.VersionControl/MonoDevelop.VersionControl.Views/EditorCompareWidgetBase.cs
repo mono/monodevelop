@@ -210,6 +210,12 @@ namespace MonoDevelop.VersionControl.Views
 				middleAreas[1] = new MiddleArea (this, editors[2], MainEditor, false);
 				Add (middleAreas[1]);
 			}
+			this.MainEditor.EditorOptionsChanged += HandleMainEditorhandleEditorOptionsChanged;
+		}
+
+		void HandleMainEditorhandleEditorOptionsChanged (object sender, EventArgs e)
+		{
+			ClearDiffCache ();
 		}
 		
 		public void SetVersionControlInfo (VersionControlDocumentInfo info)
@@ -620,6 +626,18 @@ namespace MonoDevelop.VersionControl.Views
 				this.fromEditor = fromEditor;
 				this.toEditor = toEditor;
 				this.useLeft = useLeft;
+				this.toEditor.EditorOptionsChanged += HandleToEditorhandleEditorOptionsChanged;
+			}
+			
+			protected override void OnDestroyed ()
+			{
+				this.toEditor.EditorOptionsChanged -= HandleToEditorhandleEditorOptionsChanged;
+				base.OnDestroyed ();
+			}
+			
+			void HandleToEditorhandleEditorOptionsChanged (object sender, EventArgs e)
+			{
+				QueueDraw ();
 			}
 
 			Mono.TextEditor.Utils.Hunk selectedHunk = Mono.TextEditor.Utils.Hunk.Empty;
