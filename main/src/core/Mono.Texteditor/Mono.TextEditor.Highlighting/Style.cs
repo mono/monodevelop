@@ -190,7 +190,13 @@ namespace Mono.TextEditor.Highlighting
 				return GetColorFromDefinition (BookmarkColor1String);
 			}
 		}
-
+		
+		public const string ReadOnlyTextBgString = "text.background.readonly";
+		public Cairo.Color ReadOnlyTextBg {
+			get {
+				return GetColorFromDefinition (ReadOnlyTextBgString);
+			}
+		}
 		
 		public const string SearchTextBgString = "text.background.searchresult";
 		public Cairo.Color SearchTextBg {
@@ -406,6 +412,8 @@ namespace Mono.TextEditor.Highlighting
 		protected Style ()
 		{
 			SetStyle (DefaultString, 0, 0, 0, 255, 255, 255);
+			SetStyle (ReadOnlyTextBgString, 0xFA, 0xFA, 0xF8);
+			
 			GetChunkStyle (DefaultString).ChunkProperties |= ChunkProperties.TransparentBackground;
 			
 			SetStyle (CaretString, DefaultString);

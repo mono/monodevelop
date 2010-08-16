@@ -56,6 +56,7 @@
 	<!-- color styles -->
 	<Style name="text" color="black" bgColor="white">
 		<Style name="background" color="white">
+			<Style name="readonly" color="#fAfAf8"/>
 			<Style name="searchresult-main" color="#f3d647"/>
 			<Style name="searchresult" color="#ffe2b9"/>
 		</Style>

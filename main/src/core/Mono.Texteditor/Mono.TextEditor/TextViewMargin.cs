@@ -2006,7 +2006,7 @@ namespace Mono.TextEditor
 			int width, height;
 			double pangoPosition = (x - textEditor.HAdjustment.Value + TextStartPosition) * Pango.Scale.PangoScale;
 
-			defaultBgColor = ColorStyle.Default.CairoBackgroundColor;
+			defaultBgColor = Document.ReadOnly ? ColorStyle.ReadOnlyTextBg : ColorStyle.Default.CairoBackgroundColor;
 
 			// Draw the default back color for the whole line. Colors other than the default
 			// background will be drawn when rendering the text chunks.

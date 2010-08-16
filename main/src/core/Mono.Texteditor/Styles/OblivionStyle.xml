@@ -59,6 +59,7 @@
 	<Style name="text.selection" color="aluminium1" bgColor="aluminium4"/>
 	<Style name="text.selection.inactive" color="aluminium1" bgColor="aluminium5"/>
 	
+	<Style name="text.background.readonly" color="aluminium7"/>
 	<Style name="text.background.searchresult" color="#006060"/>
 	<Style name="text.background.searchresult-main" color="#008080"/>
 	<Style name="text.link" color="butter2"/>
