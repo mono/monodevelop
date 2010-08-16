@@ -31,7 +31,17 @@ namespace Mono.TextEditor
 {
 	public class FoldSegment : Segment, System.IComparable
 	{
-		public bool IsFolded { get; set; }
+		bool isFolded;
+		public bool IsFolded {
+			get {
+				return isFolded;
+			}
+			set {
+				isFolded = value;
+				doc.InformFoldChanged (new FoldSegmentEventArgs (this));
+			}
+		}
+		
 		public string Description { get; set; }
 		
 		public int Column { get; set; }
@@ -88,4 +98,19 @@ namespace Mono.TextEditor
 			return this.Offset != segment.Offset ? this.Offset.CompareTo (segment.Offset) : 0;
 		}
 	}
+	
+	[Serializable]
+	public sealed class FoldSegmentEventArgs : EventArgs
+	{
+		public FoldSegment FoldSegment {
+			get;
+			set;
+		}
+		
+		public FoldSegmentEventArgs (FoldSegment foldSegment)
+		{
+			this.FoldSegment = foldSegment;
+		}
+	}
+	
 }

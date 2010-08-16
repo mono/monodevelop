@@ -1129,6 +1129,7 @@ namespace Mono.TextEditor
 							int lineNr = OffsetToLineNumber (updateFrom.Offset) - 1;
 							CommitLineToEndUpdate (lineNr);
 						}
+						InformFoldTreeUpdated ();
 					});
 				} else {
 					foldSegmentTree = newFoldSegmentTree; // assume that document hasn't shown
@@ -1159,6 +1160,7 @@ namespace Mono.TextEditor
 		{
 			InterruptFoldWorker ();
 			foldSegmentTree = new FoldSegmentTreeNode ();
+			InformFoldTreeUpdated ();
 		}
 		
 		public IEnumerable<FoldSegment> GetFoldingsFromOffset (int offset)
@@ -1222,6 +1224,22 @@ namespace Mono.TextEditor
 				CommitDocumentUpdate ();
 			}
 		}
+		
+		internal void InformFoldTreeUpdated ()
+		{
+			var handler = FoldTreeUpdated;
+			if (handler != null)
+				handler (this, EventArgs.Empty);
+		}
+		public event EventHandler FoldTreeUpdated;
+		
+		internal void InformFoldChanged (FoldSegmentEventArgs args)
+		{
+			var handler = Folded;
+			if (handler != null)
+				handler (this, args);
+		}
+		public event EventHandler<FoldSegmentEventArgs> Folded;
 		#endregion
 		List<TextMarker> extendingTextMarkers = new List<TextMarker> ();
 		public IEnumerable<LineSegment> LinesWithExtendingTextMarkers {
