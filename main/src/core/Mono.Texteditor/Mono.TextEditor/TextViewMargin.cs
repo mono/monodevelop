@@ -2003,8 +2003,8 @@ namespace Mono.TextEditor
 		protected internal override void Draw (Cairo.Context cr, Cairo.Rectangle area, int lineNr, double x, double y, double _lineHeight)
 		{
 			LineSegment line = lineNr < Document.LineCount ? Document.GetLine (lineNr) : null;
-			double xStart = System.Math.Max (area.X, XOffset);
-			xStart = System.Math.Max (0, xStart);
+//			double xStart = System.Math.Max (area.X, XOffset);
+//			xStart = System.Math.Max (0, xStart);
 			var lineArea = new Cairo.Rectangle (XOffset - 1, y, textEditor.Allocation.Width - XOffset, textEditor.LineHeight);
 			int width, height;
 			double pangoPosition = (x - textEditor.HAdjustment.Value + TextStartPosition) * Pango.Scale.PangoScale;

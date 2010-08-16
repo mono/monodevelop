@@ -2011,7 +2011,7 @@ namespace Mono.TextEditor
 				ExpandWidth = (uint)Editor.LineHeight;
 				ExpandHeight = (uint)Editor.LineHeight / 2;
 				BounceEasing = Easing.Sine;
-				Duration = 200;
+				Duration = 150;
 				base.Popup ();
 			}
 			
@@ -2046,20 +2046,26 @@ namespace Mono.TextEditor
 				} else {
 					l = x1 = 0;
 				}
+				
 				index = Result.Offset - line.Offset - 1 + Result.Length;
-				if (index <= 0) 
-					index = 1;
-				lineLayout.Layout.IndexToLineX (index, true, out l, out x2);
-				x1 /= (int)Pango.Scale.PangoScale;
-				x2 /= (int)Pango.Scale.PangoScale;
+				if (index >= 0) {
+					lineLayout.Layout.IndexToLineX (index, true, out l, out x2);
+				} else {
+					x2 = 0;
+					Console.WriteLine ("Invalid end index :" + index);
+				}
+				
 				double y = Editor.LineToY (lineNr) - Editor.VAdjustment.Value ;
-				int w = x2 - x1;
-				int spaceX = w / 3;
+				double w = (x2 - x1) / Pango.Scale.PangoScale;
+				double spaceX = System.Math.Ceiling (w / 3);
 				double spaceY = Editor.LineHeight;
 				if (layout != null)
 					layout.Dispose ();
-				layout = null;
-				return new Gdk.Rectangle ((int)(x1 + Editor.TextViewMargin.XOffset + Editor.TextViewMargin.TextStartPosition - Editor.HAdjustment.Value - spaceX), (int)(y - spaceY), (int)(w + spaceX * 2), (int)(Editor.LineHeight + spaceY * 2));
+				
+				return new Gdk.Rectangle ((int)(x1 / Pango.Scale.PangoScale + Editor.TextViewMargin.XOffset + Editor.TextViewMargin.TextStartPosition - Editor.HAdjustment.Value - spaceX), 
+					(int)(y - spaceY), 
+					(int)(w + spaceX * 2), 
+					(int)(Editor.LineHeight + spaceY * 2));
 			}
 			
 			protected override Gdk.Pixbuf RenderInitialPixbuf (Gdk.Window parentwindow, Gdk.Rectangle bounds)
@@ -2105,13 +2111,13 @@ namespace Mono.TextEditor
 							layout.GetPixelSize (out layoutWidth, out layoutHeight);
 						}
 						
-						FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, -layoutWidth / 2 - 2 + 2, -Editor.LineHeight / 2 + 2, Editor.LineHeight, layoutWidth + 4, Editor.LineHeight);
+						FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, -layoutWidth / 2 - 2 + 2, -Editor.LineHeight / 2 + 2, System.Math.Min (10, layoutWidth), layoutWidth + 4, Editor.LineHeight);
 						var color = TextViewMargin.DimColor (Editor.ColorStyle.SearchTextMainBg, 0.3);
 						color.A = 0.5 * opacity;
 						cr.Color = color;
 						cr.Fill (); 
 						
-						FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, -layoutWidth / 2 -2, -Editor.LineHeight / 2, Editor.LineHeight, layoutWidth + 4, Editor.LineHeight);
+						FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, -layoutWidth / 2 -2, -Editor.LineHeight / 2, System.Math.Min (10, layoutWidth), layoutWidth + 4, Editor.LineHeight);
 						using (Cairo.LinearGradient gradient = new Cairo.LinearGradient (0, -Editor.LineHeight / 2, 0, Editor.LineHeight / 2)) {
 							color = TextViewMargin.DimColor (Editor.ColorStyle.SearchTextMainBg, 1.1);
 							color.A = opacity;
@@ -2123,7 +2129,7 @@ namespace Mono.TextEditor
 							cr.Fill (); 
 						}
 						
-						cr.Translate (-layoutWidth / 2 + 1, -layoutHeight / 2);
+						cr.Translate (-layoutWidth / 2, -layoutHeight / 2);
 						cr.ShowLayout (layout);
 					}
 					
