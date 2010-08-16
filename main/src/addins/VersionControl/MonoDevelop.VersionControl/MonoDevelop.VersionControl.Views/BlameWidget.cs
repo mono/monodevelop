@@ -121,7 +121,12 @@ namespace MonoDevelop.VersionControl.Views
 			};
 			editor.Caret.PositionChanged += ComparisonWidget.CaretPositionChanged;
 			editor.FocusInEvent += ComparisonWidget.EditorFocusIn;
-			
+			editor.Document.Folded += delegate {
+				QueueDraw ();
+			};
+			editor.Document.FoldTreeUpdated += delegate {
+				QueueDraw ();
+			};
 			Show ();
 		}
 
@@ -236,16 +241,9 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (args.Event.Window)) {
 				cr.LineWidth = Math.Max (1.0, Editor.Options.Zoom);
-				
-				int startLine = Editor.YToLine ((int)Editor.VAdjustment.Value);
-				
+				int startLine = Editor.YToLine (Editor.VAdjustment.Value);
 				double startY = Editor.LineToY (startLine);
-				if (startY > 0) {
-					startLine--;
-					startY -= Editor.GetLineHeight (Editor.Document.GetLine (startLine));
-				}
-				
-				double curY = startY - (int)Editor.VAdjustment.Value;
+				double curY = startY - Editor.VAdjustment.Value;
 				int line = startLine;
 				while (curY < editor.Allocation.Bottom) {
 					Annotation ann = line < overview.annotations.Count ? overview.annotations[line] : null;
@@ -254,6 +252,7 @@ namespace MonoDevelop.VersionControl.Views
 						double lineHeight = Editor.GetLineHeight (line);
 						curY += lineHeight;
 						line++;
+						JumpOverFodings (ref  line);
 					} while (line + 1 < overview.annotations.Count && ann != null && overview.annotations[line] != null && overview.annotations[line].Revision == ann.Revision);
 					
 					if (ann != null) {
@@ -280,6 +279,16 @@ namespace MonoDevelop.VersionControl.Views
 			
 			
 			return base.OnExposeEvent (evnt);
+		}
+		
+		void JumpOverFodings (ref int line)
+		{
+			int lastFold = -1;
+			foreach (FoldSegment fs in Editor.Document.GetStartFoldings (line).Where (fs => fs.IsFolded)) {
+				lastFold = System.Math.Max (fs.EndOffset, lastFold);
+			}
+			if (lastFold > 0) 
+				line = Editor.Document.OffsetToLineNumber (lastFold);
 		}
 		
 		class BlameRenderer : DrawingArea 
@@ -450,6 +459,7 @@ namespace MonoDevelop.VersionControl.Views
 			const int leftSpacer = 4;
 			const int margin = 4;
 			
+		
 			protected override bool OnExposeEvent (Gdk.EventExpose e)
 			{	
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
@@ -460,12 +470,7 @@ namespace MonoDevelop.VersionControl.Views
 					cr.Fill ();
 					
 					int startLine = widget.Editor.YToLine ((int)widget.Editor.VAdjustment.Value);
-					
 					double startY = widget.Editor.LineToY (startLine);
-					if (startY > 0) {
-						startLine--;
-						startY -= widget.Editor.GetLineHeight (widget.Editor.Document.GetLine (startLine));
-					}
 					
 					while (startLine > 0 && startLine < annotations.Count && annotations[startLine - 1] != null && annotations[startLine] != null && annotations[startLine - 1].Revision == annotations[startLine].Revision) {
 						startLine--;
@@ -501,10 +506,12 @@ namespace MonoDevelop.VersionControl.Views
 								double lineHeight = widget.Editor.GetLineHeight (line);
 								curY += lineHeight;
 								line++;
+								widget.JumpOverFodings (ref line);
 							} while (line + 1 < annotations.Count && annotations[line] != null && annotations[line].Revision == ann.Revision);
 						} else {
 							curY += widget.Editor.GetLineHeight (line);
 							line++;
+							widget.JumpOverFodings (ref line);
 						}
 						
 						if (ann != null && line - lineStart > 1) {

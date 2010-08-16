@@ -204,14 +204,14 @@ namespace MonoDevelop.VersionControl.Views
 			info.Start ();
 			ComparisonWidget.OriginalEditor.Document.IgnoreFoldings = true;
 			ComparisonWidget.OriginalEditor.Caret.Location = info.Document.Editor.Caret.Location;
-			ComparisonWidget.OriginalEditor.CenterToCaret ();
+			ComparisonWidget.OriginalEditor.VAdjustment.Value = info.Document.Editor.VAdjustment.Value;
 			ComparisonWidget.OriginalEditor.GrabFocus ();
 		}
 		
 		public void Deselected ()
 		{
 			info.Document.Editor.Caret.Location = ComparisonWidget.OriginalEditor.Caret.Location;
-			info.Document.Editor.CenterToCaret ();
+			info.Document.Editor.VAdjustment.Value = ComparisonWidget.OriginalEditor.VAdjustment.Value;
 			ComparisonWidget.OriginalEditor.Document.IgnoreFoldings = false;
 		}
 

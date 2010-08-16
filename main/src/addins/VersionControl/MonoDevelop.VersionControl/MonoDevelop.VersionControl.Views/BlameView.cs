@@ -79,16 +79,14 @@ namespace MonoDevelop.VersionControl.Views
 		public void Selected ()
 		{
 			info.Start ();
-			widget.Editor.Document.IgnoreFoldings = true;
 			widget.Editor.Caret.Location = info.Document.Editor.Caret.Location;
-			widget.Editor.CenterToCaret ();
+			widget.Editor.VAdjustment.Value = info.Document.Editor.VAdjustment.Value;
 		}
 
 		public void Deselected ()
 		{
 			info.Document.Editor.Caret.Location = widget.Editor.Caret.Location;
-			info.Document.Editor.CenterToCaret ();
-			widget.Editor.Document.IgnoreFoldings = false;
+			info.Document.Editor.VAdjustment.Value = widget.Editor.VAdjustment.Value;
 		}
 
 		public void BeforeSave ()
