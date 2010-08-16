@@ -607,12 +607,9 @@ namespace Mono.TextEditor
 		public static Gdk.Rectangle EmptyRectangle = new Gdk.Rectangle (0, 0, 0, 0);
 		public void DrawCaret (Gdk.Drawable win)
 		{
-			if (!this.textEditor.IsInDrag) {
-				if (!(this.caretX >= 0 && (!this.textEditor.IsSomethingSelected || this.textEditor.SelectionRange.Length == 0))) {
-					return;
-				}
-			}
-			if (Settings.Default.CursorBlink && !Caret.IsVisible)
+			if (!(this.textEditor.IsInDrag && this.caretX >= 0 && (!this.textEditor.IsSomethingSelected || this.textEditor.SelectionRange.Length == 0))) 
+				return;
+			if (win == null || Settings.Default.CursorBlink && !Caret.IsVisible)
 				return;
 
 			switch (Caret.Mode) {
