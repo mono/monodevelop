@@ -219,7 +219,6 @@ namespace MonoDevelop.Components
 			layout = PangoUtil.CreateLayout (parent);
 			layout.SetText (label);
 			layout.GetPixelSize (out w, out h);
-			Console.WriteLine ("h:" +h);
 			this.TabPosition = tabPosition;
 		}
 		
