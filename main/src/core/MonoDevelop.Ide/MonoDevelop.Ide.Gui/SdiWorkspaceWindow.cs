@@ -299,11 +299,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void OnContentChanged (object o, EventArgs e)
 		{
-			if (subViewContents != null) {
-				foreach (IAttachableViewContent subContent in subViewContents)
-				{
-					subContent.BaseContentChanged ();
-				}
+			if (subViewContents == null)
+				return;
+			foreach (IAttachableViewContent subContent in subViewContents) {
+				subContent.BaseContentChanged ();
 			}
 		}
 		
@@ -315,6 +314,7 @@ namespace MonoDevelop.Ide.Gui
 			OnClosing (args);
 			if (args.Cancel)
 				return false;
+			
 			if (fromMenu == true) {
 				workbench.RemoveTab (tabControl.PageNum(this));
 			} else {
@@ -322,34 +322,20 @@ namespace MonoDevelop.Ide.Gui
 			}
 			OnClosed (args);
 			
+			if (subViewContents != null) {
+				foreach (IAttachableViewContent sv in subViewContents) {
+					sv.Dispose ();
+				}
+			}
+			
 			content.ContentNameChanged -= new EventHandler(SetTitleEvent);
 			content.DirtyChanged       -= new EventHandler(SetTitleEvent);
 			content.BeforeSave         -= new EventHandler(BeforeSave);
 			content.ContentChanged     -= new EventHandler (OnContentChanged);
-			content.WorkbenchWindow = null;
-			
-			if (subViewContents != null) {
-				foreach (IAttachableViewContent sv in subViewContents) {
-					subViewNotebook.Remove (sv.Control);
-					sv.Dispose ();
-				}
-				this.subViewContents = null;
-				subViewNotebook.Remove (content.Control);
-			}
-			DetachFromPathedDocument ();
+			content.WorkbenchWindow     = null;
 			content.Dispose ();
-			box.Destroy ();
 			
-			this.subViewToolbar = null;
-			this.separatorItem = null;
-			
-			this.content = null;
-			this.subViewNotebook = null;
-			this.tabControl = null;
-			tabLabel.Destroy ();
-			this.tabLabel = null;
-			this.tabPage = null;
-			
+			DetachFromPathedDocument ();
 			Destroy ();
 			return true;
 		}
@@ -421,7 +407,6 @@ namespace MonoDevelop.Ide.Gui
 			box.PackStart (subViewNotebook, true, true, 1);
 			box.ShowAll ();
 		}
-		
 		#endregion
 		
 			
@@ -448,11 +433,11 @@ namespace MonoDevelop.Ide.Gui
 			tab.Activated += (sender, e) => { subViewNotebook.CurrentPage = (int)((Tab)sender).Tag; QueueDraw (); };
 			subViewToolbar.AddTab (tab);
 			
-			
 			Gtk.VBox widgetBox = new Gtk.VBox ();
 			widgetBox.Realized += delegate {
 				widgetBox.Add (viewContent.Control);
 			};
+			
 			subViewNotebook.AppendPage (widgetBox, new Gtk.Label ());
 			widgetBox.ShowAll ();
 			
