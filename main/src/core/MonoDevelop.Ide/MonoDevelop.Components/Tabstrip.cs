@@ -82,6 +82,7 @@ namespace MonoDevelop.Components
 			tabSizes.Add (tab.Size);
 			if (tabs.Count == 1)
 				tab.Active = true;
+			QueueResize ();
 		}
 		
 		Cairo.Rectangle GetBounds (Tab tab)
@@ -130,7 +131,7 @@ namespace MonoDevelop.Components
 		
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
-			requisition.Height = (int)(this.PangoContext.FontDescription.Size / Pango.Scale.PangoScale) + 4;
+			requisition.Height = (int)Math.Ceiling (tabSizes.Max (p => p.Y)) + 1;
 		}
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
@@ -218,7 +219,7 @@ namespace MonoDevelop.Components
 			layout = PangoUtil.CreateLayout (parent);
 			layout.SetText (label);
 			layout.GetPixelSize (out w, out h);
-			
+			Console.WriteLine ("h:" +h);
 			this.TabPosition = tabPosition;
 		}
 		
@@ -268,7 +269,7 @@ namespace MonoDevelop.Components
 			cr.Fill ();
 			
 			cr.Save ();
-			cr.Translate (rectangle.X + (rectangle.Width - w) / 2, (rectangle.Height - h) / 2 - 1);
+			cr.Translate (rectangle.X + (rectangle.Width - w) / 2, (rectangle.Height - h) / 2);
 			cr.Color = (HslColor)parent.Style.Text (StateType.Normal);
 			
 			cr.ShowLayout (layout);
