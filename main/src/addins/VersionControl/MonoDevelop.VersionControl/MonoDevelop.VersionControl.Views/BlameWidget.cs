@@ -245,6 +245,7 @@ namespace MonoDevelop.VersionControl.Views
 				double startY = Editor.LineToY (startLine);
 				double curY = startY - Editor.VAdjustment.Value;
 				int line = startLine;
+				JumpOverFoldings (ref line);
 				while (curY < editor.Allocation.Bottom) {
 					Annotation ann = line < overview.annotations.Count ? overview.annotations[line] : null;
 					
@@ -252,7 +253,7 @@ namespace MonoDevelop.VersionControl.Views
 						double lineHeight = Editor.GetLineHeight (line);
 						curY += lineHeight;
 						line++;
-						JumpOverFodings (ref  line);
+						JumpOverFoldings (ref  line);
 					} while (line + 1 < overview.annotations.Count && ann != null && overview.annotations[line] != null && overview.annotations[line].Revision == ann.Revision);
 					
 					if (ann != null) {
@@ -281,7 +282,7 @@ namespace MonoDevelop.VersionControl.Views
 			return base.OnExposeEvent (evnt);
 		}
 		
-		void JumpOverFodings (ref int line)
+		void JumpOverFoldings (ref int line)
 		{
 			int lastFold = -1;
 			foreach (FoldSegment fs in Editor.Document.GetStartFoldings (line).Where (fs => fs.IsFolded)) {
@@ -515,6 +516,7 @@ namespace MonoDevelop.VersionControl.Views
 					int line = startLine;
 					while (curY < Allocation.Bottom) {
 						double curStart = curY;
+						widget.JumpOverFoldings (ref line);
 						int lineStart = line;
 						int w = 0, w2 = 0, h = 16;
 						Annotation ann = line < annotations.Count ? annotations[line] : null;
@@ -540,12 +542,12 @@ namespace MonoDevelop.VersionControl.Views
 								double lineHeight = widget.Editor.GetLineHeight (line);
 								curY += lineHeight;
 								line++;
-								widget.JumpOverFodings (ref line);
+								widget.JumpOverFoldings (ref line);
 							} while (line + 1 < annotations.Count && annotations[line] != null && annotations[line].Revision == ann.Revision);
 						} else {
 							curY += widget.Editor.GetLineHeight (line);
 							line++;
-							widget.JumpOverFodings (ref line);
+							widget.JumpOverFoldings (ref line);
 						}
 						
 						if (ann != null && line - lineStart > 1) {
