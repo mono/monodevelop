@@ -380,7 +380,7 @@ namespace MonoDevelop.VersionControl.Views
 				}
 				return base.OnButtonReleaseEvent (evnt);
 			}
-			
+			DateTime minDate, maxDate;
 			/// <summary>
 			/// Reloads annotations for the current document
 			/// </summary>
@@ -393,6 +393,8 @@ namespace MonoDevelop.VersionControl.Views
 				ThreadPool.QueueUserWorkItem (delegate {
 					try {
 						annotations = new List<Annotation> (widget.VersionControlItem.Repository.GetAnnotations (widget.Document.FileName));
+						minDate = annotations.Min (a => a.Date);
+						maxDate = annotations.Max (a => a.Date);
 					} catch (Exception ex) {
 						LoggingService.LogError ("Error retrieving history", ex);
 					}
@@ -588,21 +590,14 @@ namespace MonoDevelop.VersionControl.Views
 						cr.Rectangle (0, curStart, leftSpacer, curY - curStart);
 						
 						if (ann != null && ann != locallyModified && !string.IsNullOrEmpty (ann.Author)) {
+							double a;
 							
-							double a = 1.0;
-							var history = widget.info.History;
-							if (ann != null && history != null) {
-								for (int i = 0; i < history.Length; i++) {
-									Revision rev = history[i];
-									if (rev.ToString () == ann.Revision) {
-										a = i / (double)history.Length;
-										break;
-									}
-								}
+							if (ann != null && (maxDate - minDate).TotalHours > 0) {
+								a = 1 - (ann.Date  - minDate).TotalHours / (maxDate - minDate).TotalHours;
 							} else {
 								a = 1;
 							}
-	
+							
 							HslColor color = new Cairo.Color (0.90, 0.90, 1);
 							color.L = 0.4 + a / 2;
 							color.S = 1 - a / 2;
