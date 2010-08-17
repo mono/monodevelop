@@ -340,6 +340,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			protected override bool OnMotionNotifyEvent (EventMotion evnt)
 			{
+				TooltipText = null;
 				if (dragPosition >= 0) {
 					int x, y;
 					widget.GetPointer (out x, out y);
@@ -348,9 +349,16 @@ namespace MonoDevelop.VersionControl.Views
 					
 					WidthRequest = newWidthRequest;
 					QueueResize ();
+				} else {
+					int startLine = widget.Editor.YToLine (widget.Editor.VAdjustment.Value + evnt.Y);
+					var ann = annotations[startLine];
+					if (ann != null)
+						TooltipText = GetCommitMessage (startLine);
 				}
+				
 				return base.OnMotionNotifyEvent (evnt);
 			}
+			
 			uint grabTime;
 			protected override bool OnButtonPressEvent (EventButton evnt)
 			{
