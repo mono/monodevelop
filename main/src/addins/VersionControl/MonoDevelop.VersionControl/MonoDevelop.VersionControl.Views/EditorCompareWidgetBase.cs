@@ -715,14 +715,13 @@ namespace MonoDevelop.VersionControl.Views
 			}
 
 			const int buttonSize = 16;
-			double lineWidth;
 
 			public bool GetButtonPosition (Mono.TextEditor.Utils.Hunk hunk, double y1, double y2, double z1, double z2, out double x, out double y, out double w, out double h)
 			{
 				if (hunk.Removed > 0) {
 					var b1 = z1;
 					var b2 = z2;
-					x = useLeft ? lineWidth : Allocation.Width - buttonSize;
+					x = useLeft ? 0 : Allocation.Width - buttonSize;
 					y = b1;
 					w = buttonSize;
 					h = b2 - b1;
@@ -731,9 +730,9 @@ namespace MonoDevelop.VersionControl.Views
 					var b1 = y1;
 					var b2 = y2;
 
-					x = useLeft ? Allocation.Width - buttonSize : lineWidth;
+					x = useLeft ? Allocation.Width - buttonSize : 0;
 					y = b1;
-					w = buttonSize - lineWidth;
+					w = buttonSize;
 					h = b2 - b1;
 					return  hunk.Removed > 0;
 				}
@@ -763,7 +762,6 @@ namespace MonoDevelop.VersionControl.Views
 			{
 				bool hideButton = widget.MainEditor.Document.ReadOnly;
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
-					lineWidth = cr.LineWidth;
 					int delta = widget.MainEditor.Allocation.Y - Allocation.Y;
 					foreach (Mono.TextEditor.Utils.Hunk hunk in Diff) {
 						double z1 = delta + fromEditor.LineToY (hunk.RemoveStart) - fromEditor.VAdjustment.Value;
@@ -802,29 +800,30 @@ namespace MonoDevelop.VersionControl.Views
 							z2 = z1 + 1;
 
 						cr.MoveTo (x1, z1);
-						cr.CurveTo ((x2 - x1) / 2, z1,
-							(x2 - x1) / 2,  y1,
+						
+						cr.CurveTo (x1 + (x2 - x1) / 4, z1,
+							x1 + (x2 - x1) * 3 / 4, y1,
 							x2, y1);
 
 						cr.LineTo (x2, y2);
-						cr.CurveTo ((x2 - x1) / 2, y2,
-							(x2 - x1) / 2, z2,
+						cr.CurveTo (x1 + (x2 - x1) * 3 / 4, y2,
+							x1 + (x2 - x1) / 4, z2,
 							x1, z2);
 						cr.ClosePath ();
 						cr.Color = GetColor (hunk, this.useLeft, false, 1.0);
 						cr.Fill ();
 
 						cr.Color = GetColor (hunk, this.useLeft, true, 1.0);
-						cr.MoveTo (x2, y1);
-						cr.CurveTo ((x2 - x1) / 2, y1,
-							(x2 - x1) / 2,  z1,
-							x1, z1);
+						cr.MoveTo (x1, z1);
+						cr.CurveTo (x1 + (x2 - x1) / 4, z1,
+							x1 + (x2 - x1) * 3 / 4, y1,
+							x2, y1);
 						cr.Stroke ();
-
-						cr.MoveTo (x1, z2);
-						cr.CurveTo ((x2 - x1) / 2, z2,
-							(x2 - x1) / 2, y2,
-							x2, y2);
+						
+						cr.MoveTo (x2, y2);
+						cr.CurveTo (x1 + (x2 - x1) * 3 / 4, y2,
+							x1 + (x2 - x1) / 4, z2,
+							x1, z2);
 						cr.Stroke ();
 
 						if (!hideButton) {
