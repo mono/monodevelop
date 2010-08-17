@@ -87,6 +87,8 @@ namespace MonoDevelop.Components
 		
 		Cairo.Rectangle GetBounds (Tab tab)
 		{
+			if (tab == null)
+				return new Cairo.Rectangle (0, 0, 0, 0);
 			int idx = tabs.IndexOf (tab);
 			double distance = 0;
 			for (int i = 0; i < idx; i++) {
@@ -103,14 +105,27 @@ namespace MonoDevelop.Components
 		{
 			mx = evnt.X;
 			my = evnt.Y;
+			var oldHoverTab = hoverTab;
+			hoverTab = null;
+			
 			foreach (var tab in tabs) {
 				var bounds = GetBounds (tab);
 				if (bounds.X < mx && mx < bounds.X + bounds.Width) {
 					hoverTab = tab;
-					QueueDraw ();
 					break;
 				}
 			}
+			
+			if (hoverTab != oldHoverTab && oldHoverTab != null) {
+				var oldBounds = GetBounds (oldHoverTab);
+				QueueDrawArea ((int)oldBounds.X, (int)oldBounds.Y, (int)oldBounds.Width, (int)oldBounds.Height);
+			}
+			
+			if (hoverTab != null) {
+				var bounds = GetBounds (hoverTab);
+				QueueDrawArea ((int)bounds.X, (int)bounds.Y, (int)bounds.Width, (int)bounds.Height);
+			}
+			
 			return base.OnMotionNotifyEvent (evnt);
 		}
 		
@@ -124,8 +139,11 @@ namespace MonoDevelop.Components
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
 		{
-			hoverTab = null;
-			QueueDraw ();
+			if (hoverTab != null) {
+				var bounds = GetBounds (hoverTab);
+				hoverTab = null;
+				QueueDrawArea ((int)bounds.X, (int)bounds.Y, (int)bounds.Width, (int)bounds.Height);
+			}
 			return base.OnLeaveNotifyEvent (evnt);
 		}
 		
@@ -139,7 +157,8 @@ namespace MonoDevelop.Components
 			using (var cr = Gdk.CairoHelper.Create (evnt.Window)) {
 				cr.Rectangle (evnt.Region.Clipbox.X, evnt.Region.Clipbox.Y, evnt.Region.Clipbox.Width, evnt.Region.Clipbox.Height);
 				cr.Color = (HslColor)Style.Background (StateType.Normal);
-				cr.Fill ();
+				cr.FillPreserve ();
+				cr.Clip ();
 				
 				for (int i = tabs.Count; i --> 0;) {
 					if (i == ActiveTab)
