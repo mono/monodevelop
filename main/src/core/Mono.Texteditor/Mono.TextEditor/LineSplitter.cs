@@ -67,7 +67,7 @@ namespace Mono.TextEditor
 			int curLine = startLine;
 			do {
 				yield return iter.Current;
-			} while (iter.MoveNext () && curLine++ <= endLine);
+			} while (iter.MoveNext () && curLine++ < endLine);
 		}
 
 		public IEnumerable<LineSegment> GetLinesStartingAt (int startLine)
