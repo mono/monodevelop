@@ -179,29 +179,29 @@ namespace MonoDevelop.VersionControl.Views
 			}
 
 			if (editors.Length == 2) {
-				editors[0].ExposeEvent +=  delegate (object sender, ExposeEventArgs args) {
+				editors[0].Painted +=  delegate (object sender, PaintEventArgs args) {
 					var myEditor = (TextEditor)sender;
 					PaintEditorOverlay (myEditor, args, LeftDiff, true);
 				};
 
-				editors[1].ExposeEvent +=  delegate (object sender, ExposeEventArgs args) {
+				editors[1].Painted +=  delegate (object sender, PaintEventArgs args) {
 					var myEditor = (TextEditor)sender;
 					PaintEditorOverlay (myEditor, args, LeftDiff, false);
 				};
-				
+
 				rightDiffScrollBar = new DiffScrollbar (this, editors[1], true, true);
 				Add (rightDiffScrollBar);
 			} else {
-				editors[0].ExposeEvent +=  delegate (object sender, ExposeEventArgs args) {
+				editors[0].Painted +=  delegate (object sender, PaintEventArgs args) {
 					var myEditor = (TextEditor)sender;
 					PaintEditorOverlay (myEditor, args, LeftDiff, true);
 				};
-				editors[1].ExposeEvent +=  delegate (object sender, ExposeEventArgs args) {
+				editors[1].Painted +=  delegate (object sender, PaintEventArgs args) {
 					var myEditor = (TextEditor)sender;
 					PaintEditorOverlay (myEditor, args, LeftDiff, false);
 					PaintEditorOverlay (myEditor, args, RightDiff, false);
 				};
-				editors[2].ExposeEvent +=  delegate (object sender, ExposeEventArgs args) {
+				editors[2].Painted +=  delegate (object sender, PaintEventArgs args) {
 					var myEditor = (TextEditor)sender;
 					PaintEditorOverlay (myEditor, args, RightDiff, true);
 				};
@@ -242,14 +242,14 @@ namespace MonoDevelop.VersionControl.Views
 		
 		protected abstract void CreateComponents ();
 		
-		public static void DrawDiffRectangle (TextEditor editor, Cairo.Context cr, int startOffset, int endOffset)
+		public static Cairo.Rectangle GetDiffRectangle (TextEditor editor, int startOffset, int endOffset)
 		{
 			var point = editor.LocationToPoint (editor.Document.OffsetToLocation (startOffset), true);
 			var point2 = editor.LocationToPoint (editor.Document.OffsetToLocation (endOffset), true);
-			cr.Rectangle (point.X - editor.TextViewMargin.XOffset, point.Y, point2.X - point.X, editor.LineHeight);
+			return new Cairo.Rectangle (point.X - editor.TextViewMargin.XOffset, point.Y, point2.X - point.X, editor.LineHeight);
 		}
 		
-		Dictionary<List<Mono.TextEditor.Utils.Hunk>, Dictionary<Hunk, Tuple<Cairo.Path, Cairo.Path>>> diffCache = new Dictionary<List<Mono.TextEditor.Utils.Hunk>, Dictionary<Hunk, Tuple<Cairo.Path, Cairo.Path>>> ();
+		Dictionary<List<Mono.TextEditor.Utils.Hunk>, Dictionary<Hunk, Tuple<List<Cairo.Rectangle>, List<Cairo.Rectangle>>>> diffCache = new Dictionary<List<Mono.TextEditor.Utils.Hunk>, Dictionary<Hunk, Tuple<List<Cairo.Rectangle>, List<Cairo.Rectangle>>>> ();
 		
 		protected void ClearDiffCache ()
 		{
@@ -279,8 +279,9 @@ namespace MonoDevelop.VersionControl.Views
 			return result;
 		}
 		
-		Cairo.Path CalculateChunkPath (Cairo.Context cr, TextEditor editor, List<Hunk> diff, List<ISegment> words, bool useRemove)
+		List<Cairo.Rectangle> CalculateChunkPath (TextEditor editor, List<Hunk> diff, List<ISegment> words, bool useRemove)
 		{
+			List<Cairo.Rectangle> result = new List<Cairo.Rectangle> ();
 			int startOffset = -1;
 			int endOffset = -1;
 			foreach (var hunk in diff) {
@@ -290,26 +291,24 @@ namespace MonoDevelop.VersionControl.Views
 					var word = words[start + i];
 					if (endOffset != word.Offset) {
 						if (startOffset >= 0)
-							DrawDiffRectangle (editor, cr, startOffset, endOffset);
+							result.Add (GetDiffRectangle (editor, startOffset, endOffset));
 						startOffset = word.Offset;
 					}
 					endOffset = word.EndOffset;
 				}
 			}
 			if (startOffset >= 0)
-				DrawDiffRectangle (editor, cr, startOffset, endOffset);
-			var result = cr.CopyPath ();
-			cr.NewPath ();
+				result.Add (GetDiffRectangle (editor, startOffset, endOffset));
 			return result;
 		}
 		
-		Tuple<Cairo.Path, Cairo.Path> GetDiffPaths (List<Mono.TextEditor.Utils.Hunk> diff, TextEditor editor, Cairo.Context cr, Hunk hunk)
+		Tuple<List<Cairo.Rectangle>, List<Cairo.Rectangle>> GetDiffPaths (List<Mono.TextEditor.Utils.Hunk> diff, TextEditor editor, Hunk hunk)
 		{
 			if (!diffCache.ContainsKey (diff))
-				diffCache[diff] = new Dictionary<Hunk, Tuple<Cairo.Path, Cairo.Path>> ();
+				diffCache[diff] = new Dictionary<Hunk, Tuple<List<Cairo.Rectangle>, List<Cairo.Rectangle>>> ();
 			var pathCache = diffCache[diff];
 			
-			Tuple<Cairo.Path, Cairo.Path> result;
+			Tuple<List<Cairo.Rectangle>, List<Cairo.Rectangle>> result;
 			if (pathCache.TryGetValue (hunk, out result))
 				return result;
 			
@@ -319,8 +318,8 @@ namespace MonoDevelop.VersionControl.Views
 			var wordDiff = new List<Hunk> (Diff.GetDiff (words.Select (w => editor.GetTextAt (w)).ToArray (),
 				cmpWords.Select (w => MainEditor.GetTextAt (w)).ToArray ()));
 			
-			result = Tuple.Create (CalculateChunkPath (cr, editor, wordDiff, words, true), 
-				CalculateChunkPath (cr, MainEditor, wordDiff, cmpWords, false));
+			result = Tuple.Create (CalculateChunkPath (editor, wordDiff, words, true), 
+				CalculateChunkPath (MainEditor, wordDiff, cmpWords, false));
 			
 			pathCache[hunk] = result;
 			return result;
@@ -527,38 +526,40 @@ namespace MonoDevelop.VersionControl.Views
 			return result;
 		}
 		
-		void PaintEditorOverlay (TextEditor editor, ExposeEventArgs args, List<Mono.TextEditor.Utils.Hunk> diff, bool paintRemoveSide)
+		void PaintEditorOverlay (TextEditor editor, PaintEventArgs args, List<Mono.TextEditor.Utils.Hunk> diff, bool paintRemoveSide)
 		{
 			if (diff == null)
 				return;
-			using (var cr = Gdk.CairoHelper.Create (args.Event.Window)) {
-				foreach (var hunk in diff) {
-					double y1 = editor.LineToY (paintRemoveSide ? hunk.RemoveStart : hunk.InsertStart) - editor.VAdjustment.Value;
-					double y2 = editor.LineToY (paintRemoveSide ? hunk.RemoveStart + hunk.Removed : hunk.InsertStart + hunk.Inserted) - editor.VAdjustment.Value;
-					if (y1 == y2)
-						y2 = y1 + 1;
-					cr.Rectangle (0, y1, editor.Allocation.Width, y2 - y1);
-					cr.Color = GetColor (hunk, paintRemoveSide, false, 0.15);
-					cr.Fill ();
-					
-					var paths = GetDiffPaths (diff, editors[0], cr, hunk);
-					
-					cr.Save ();
-					cr.Translate (-editor.HAdjustment.Value + editor.TextViewMargin.XOffset, -editor.VAdjustment.Value);
-					cr.AppendPath (paintRemoveSide ? paths.Item1 : paths.Item2);
-					cr.Color = GetColor (hunk, paintRemoveSide, false, 0.3);
-					cr.Fill ();
-					cr.Restore ();
-					
-					cr.Color = GetColor (hunk, paintRemoveSide, true, 0.15);
-					cr.MoveTo (0, y1);
-					cr.LineTo (editor.Allocation.Width, y1);
-					cr.Stroke ();
-
-					cr.MoveTo (0, y2);
-					cr.LineTo (editor.Allocation.Width, y2);
-					cr.Stroke ();
+			var cr = args.Context;
+			foreach (var hunk in diff) {
+				double y1 = editor.LineToY (paintRemoveSide ? hunk.RemoveStart : hunk.InsertStart) - editor.VAdjustment.Value;
+				double y2 = editor.LineToY (paintRemoveSide ? hunk.RemoveStart + hunk.Removed : hunk.InsertStart + hunk.Inserted) - editor.VAdjustment.Value;
+				if (y1 == y2)
+					y2 = y1 + 1;
+				cr.Rectangle (0, y1, editor.Allocation.Width, y2 - y1);
+				cr.Color = GetColor (hunk, paintRemoveSide, false, 0.15);
+				cr.Fill ();
+				
+				var paths = GetDiffPaths (diff, editors[0], hunk);
+				
+				cr.Save ();
+				cr.Translate (-editor.HAdjustment.Value + editor.TextViewMargin.XOffset, -editor.VAdjustment.Value);
+				foreach (var rect in (paintRemoveSide ? paths.Item1 : paths.Item2)) {
+					cr.Rectangle (rect);
 				}
+				
+				cr.Color = GetColor (hunk, paintRemoveSide, false, 0.3);
+				cr.Fill ();
+				cr.Restore ();
+				
+				cr.Color = GetColor (hunk, paintRemoveSide, true, 0.15);
+				cr.MoveTo (0, y1);
+				cr.LineTo (editor.Allocation.Width, y1);
+				cr.Stroke ();
+
+				cr.MoveTo (0, y2);
+				cr.LineTo (editor.Allocation.Width, y2);
+				cr.Stroke ();
 			}
 		}
 

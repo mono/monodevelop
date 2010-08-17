@@ -115,7 +115,7 @@ namespace MonoDevelop.VersionControl.Views
 			AddChild (overview);
 			
 			this.DoubleBuffered = true;
-			editor.ExposeEvent += HandleEditorExposeEvent;
+			editor.Painted += HandleEditorExposeEvent;
 			editor.EditorOptionsChanged += delegate {
 				overview.OptionsChanged ();
 			};
@@ -237,38 +237,37 @@ namespace MonoDevelop.VersionControl.Views
 			children.ForEach (child => child.Child.SizeRequest ());
 		}
 		
-		void HandleEditorExposeEvent (object o, ExposeEventArgs args)
+		void HandleEditorExposeEvent (object o, PaintEventArgs args)
 		{
-			using (Cairo.Context cr = Gdk.CairoHelper.Create (args.Event.Window)) {
-				cr.LineWidth = Math.Max (1.0, Editor.Options.Zoom);
-				int startLine = Editor.YToLine (Editor.VAdjustment.Value);
-				double startY = Editor.LineToY (startLine);
-				double curY = startY - Editor.VAdjustment.Value;
-				int line = startLine;
-				JumpOverFoldings (ref line);
-				while (curY < editor.Allocation.Bottom) {
-					Annotation ann = line < overview.annotations.Count ? overview.annotations[line] : null;
-					
-					do {
-						double lineHeight = Editor.GetLineHeight (line);
-						curY += lineHeight;
-						line++;
-						JumpOverFoldings (ref  line);
-					} while (line + 1 < overview.annotations.Count && ann != null && overview.annotations[line] != null && overview.annotations[line].Revision == ann.Revision);
-					
-					if (ann != null) {
-						cr.MoveTo (Editor.TextViewMargin.XOffset, curY + 0.5);
-						cr.LineTo (Editor.Allocation.Width, curY + 0.5);
-						var color = Style.Dark (State);
-						cr.Color = new Cairo.Color (color.Red / (double)ushort.MaxValue, 
-						                            color.Green / (double)ushort.MaxValue,
-						                            color.Blue / (double)ushort.MaxValue,
-						                            0.2);
-						cr.Stroke ();
-					}
+			var cr = args.Context;
+			int startLine = Editor.YToLine (Editor.VAdjustment.Value);
+			double startY = Editor.LineToY (startLine);
+			double curY = startY - Editor.VAdjustment.Value;
+			int line = startLine;
+			JumpOverFoldings (ref line);
+			while (curY < editor.Allocation.Bottom) {
+				Annotation ann = line < overview.annotations.Count ? overview.annotations[line] : null;
+				
+				do {
+					double lineHeight = Editor.GetLineHeight (line);
+					curY += lineHeight;
+					line++;
+					JumpOverFoldings (ref  line);
+				} while (line + 1 < overview.annotations.Count && ann != null && overview.annotations[line] != null && overview.annotations[line].Revision == ann.Revision);
+				
+				if (ann != null) {
+					cr.MoveTo (Editor.TextViewMargin.XOffset, curY + 0.5);
+					cr.LineTo (Editor.Allocation.Width, curY + 0.5);
+					var color = Style.Dark (State);
+					cr.Color = new Cairo.Color (color.Red / (double)ushort.MaxValue, 
+					                            color.Green / (double)ushort.MaxValue,
+					                            color.Blue / (double)ushort.MaxValue,
+					                            0.2);
+					cr.Stroke ();
 				}
 			}
 		}
+		
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
 			Gdk.GC gc = Style.DarkGC (State);
