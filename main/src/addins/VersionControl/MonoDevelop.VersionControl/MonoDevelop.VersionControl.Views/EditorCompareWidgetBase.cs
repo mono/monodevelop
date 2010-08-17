@@ -114,8 +114,25 @@ namespace MonoDevelop.VersionControl.Views
 		protected TextEditor[] editors;
 		protected Widget[] headerWidgets;
 
-		protected List<Mono.TextEditor.Utils.Hunk> leftDiff, rightDiff;
 		
+		List<Hunk> leftDiff;
+		protected List<Hunk> LeftDiff {
+			get { return leftDiff; }
+			set {
+				leftDiff = value;
+				OnDiffChanged (EventArgs.Empty);
+			}
+		}
+		
+		List<Hunk> rightDiff;
+		protected List<Hunk> RightDiff {
+			get { return rightDiff; }
+			set {
+				rightDiff = value;
+				OnDiffChanged (EventArgs.Empty);
+			}
+		}
+
 		static readonly Cairo.Color lightRed = new Cairo.Color (255 / 255.0, 200 / 255.0, 200 / 255.0);
 		static readonly Cairo.Color darkRed = new Cairo.Color (178 / 255.0, 140 / 255.0, 140 / 255.0);
 		
@@ -164,12 +181,12 @@ namespace MonoDevelop.VersionControl.Views
 			if (editors.Length == 2) {
 				editors[0].ExposeEvent +=  delegate (object sender, ExposeEventArgs args) {
 					var myEditor = (TextEditor)sender;
-					PaintEditorOverlay (myEditor, args, leftDiff, true);
+					PaintEditorOverlay (myEditor, args, LeftDiff, true);
 				};
 
 				editors[1].ExposeEvent +=  delegate (object sender, ExposeEventArgs args) {
 					var myEditor = (TextEditor)sender;
-					PaintEditorOverlay (myEditor, args, leftDiff, false);
+					PaintEditorOverlay (myEditor, args, LeftDiff, false);
 				};
 				
 				rightDiffScrollBar = new DiffScrollbar (this, editors[1], true, true);
@@ -177,16 +194,16 @@ namespace MonoDevelop.VersionControl.Views
 			} else {
 				editors[0].ExposeEvent +=  delegate (object sender, ExposeEventArgs args) {
 					var myEditor = (TextEditor)sender;
-					PaintEditorOverlay (myEditor, args, leftDiff, true);
+					PaintEditorOverlay (myEditor, args, LeftDiff, true);
 				};
 				editors[1].ExposeEvent +=  delegate (object sender, ExposeEventArgs args) {
 					var myEditor = (TextEditor)sender;
-					PaintEditorOverlay (myEditor, args, leftDiff, false);
-					PaintEditorOverlay (myEditor, args, rightDiff, false);
+					PaintEditorOverlay (myEditor, args, LeftDiff, false);
+					PaintEditorOverlay (myEditor, args, RightDiff, false);
 				};
 				editors[2].ExposeEvent +=  delegate (object sender, ExposeEventArgs args) {
 					var myEditor = (TextEditor)sender;
-					PaintEditorOverlay (myEditor, args, rightDiff, true);
+					PaintEditorOverlay (myEditor, args, RightDiff, true);
 				};
 				rightDiffScrollBar = new DiffScrollbar (this, editors[2], false, false);
 				Add (rightDiffScrollBar);
@@ -615,7 +632,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			IEnumerable<Mono.TextEditor.Utils.Hunk> Diff {
 				get {
-					return useLeft ? widget.leftDiff : widget.rightDiff;
+					return useLeft ? widget.LeftDiff : widget.RightDiff;
 				}
 			}
 
@@ -902,11 +919,11 @@ namespace MonoDevelop.VersionControl.Views
 
 			protected override bool OnExposeEvent (Gdk.EventExpose e)
 			{
-				if (widget.leftDiff == null)
+				if (widget.LeftDiff == null)
 					return true;
 				var adj = widget.vAdjustment;
 				
-				var diff = useLeftDiff ? widget.leftDiff : widget.rightDiff;
+				var diff = useLeftDiff ? widget.LeftDiff : widget.RightDiff;
 				
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
 					cr.LineWidth = 1;
@@ -960,6 +977,15 @@ namespace MonoDevelop.VersionControl.Views
 				pos += System.Math.Max (h.Inserted, h.Removed);
 			}
 		}
+		
+		protected virtual void OnDiffChanged (EventArgs e)
+		{
+			EventHandler handler = this.DiffChanged;
+			if (handler != null)
+				handler (this, e);
+		}
+		
+		public event EventHandler DiffChanged;
 	}
 
 }

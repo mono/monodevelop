@@ -8,7 +8,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs \
 	gtk-gui/MonoDevelop.VersionControl.Views.DiffWidget.cs \
-	gtk-gui/MonoDevelop.VersionControl.Views.PatchWidget.cs \
 	MonoDevelop.VersionControl.Dialogs/CommitDialog.cs \
 	MonoDevelop.VersionControl.Dialogs/CommitMessageStylePanelWidget.cs \
 	MonoDevelop.VersionControl.Dialogs/EditRepositoryDialog.cs \
@@ -28,8 +27,6 @@ FILES =  \
 	MonoDevelop.VersionControl.Views/LogView.cs \
 	MonoDevelop.VersionControl.Views/MergeView.cs \
 	MonoDevelop.VersionControl.Views/MergeWidget.cs \
-	MonoDevelop.VersionControl.Views/PatchView.cs \
-	MonoDevelop.VersionControl.Views/PatchWidget.cs \
 	MonoDevelop.VersionControl.Views/StatusView.cs \
 	MonoDevelop.VersionControl.Views/SubviewAttachmentHandler.cs \
 	MonoDevelop.VersionControl/AddRemoveMoveCommand.cs \

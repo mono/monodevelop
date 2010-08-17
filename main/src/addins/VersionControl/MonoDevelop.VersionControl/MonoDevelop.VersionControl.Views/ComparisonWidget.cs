@@ -39,7 +39,7 @@ namespace MonoDevelop.VersionControl.Views
 	[ToolboxItem (true)]
 	class ComparisonWidget : EditorCompareWidgetBase
 	{
-		DropDownBox originalComboBox, diffComboBox;
+		internal DropDownBox originalComboBox, diffComboBox;
 		
 		public TextEditor OriginalEditor {
 			get {
@@ -60,8 +60,8 @@ namespace MonoDevelop.VersionControl.Views
 		}
 
 		public List<Mono.TextEditor.Utils.Hunk> Diff {
-			get { return leftDiff; }
-			set { leftDiff = value; }
+			get { return LeftDiff; }
+			set { LeftDiff = value; }
 		}
 		
 		protected ComparisonWidget (IntPtr ptr) : base (ptr)
@@ -99,7 +99,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			int line = MainEditor.Caret.Line;
 			int max  = -1, searched = -1;
-			foreach (var hunk in this.leftDiff) {
+			foreach (var hunk in LeftDiff) {
 				max = System.Math.Max (hunk.InsertStart, max);
 				if (hunk.InsertStart < line)
 					searched = System.Math.Max (hunk.InsertStart, searched);
@@ -118,7 +118,7 @@ namespace MonoDevelop.VersionControl.Views
 				
 			int line = MainEditor.Caret.Line;
 			int min  = Int32.MaxValue, searched = Int32.MaxValue;
-			foreach (var hunk in this.leftDiff) {
+			foreach (var hunk in this.LeftDiff) {
 				min = System.Math.Min (hunk.InsertStart, min);
 				if (hunk.InsertStart > line)
 					searched = System.Math.Min (hunk.InsertStart, searched);
@@ -173,9 +173,17 @@ namespace MonoDevelop.VersionControl.Views
 			IdeApp.Workbench.StatusBar.BeginProgress (string.Format (GettextCatalog.GetString ("Retrieving revision {0}..."), rev.ToString ()));
 			IdeApp.Workbench.StatusBar.AutoPulse = true;
 			
+			if (toEditor == editors[0]) {
+				diffRevision = rev;
+			} else {
+				originalRevision = rev;
+			}
+	
 			var box2 = toEditor == editors[0] ? diffComboBox : originalComboBox;
 			box2.Sensitive = false;
 		}
+		
+		internal Revision originalRevision, diffRevision;
 		
 		class ComboBoxSelector : DropDownBoxListWindow.IListDataProvider
 		{
@@ -227,6 +235,11 @@ namespace MonoDevelop.VersionControl.Views
 				((TextEditor)box.Tag).Document.ReadOnly = true;
 				if (n == 1) {
 					box.SetItem ("Base", null, new object());
+					if (((TextEditor)box.Tag) == widget.editors[0]) {
+						widget.diffRevision = null;
+					} else {
+						widget.originalRevision = null;
+					}
 					string text;
 					try {
 						text = widget.info.Item.Repository.GetBaseText (widget.info.Item.Path);

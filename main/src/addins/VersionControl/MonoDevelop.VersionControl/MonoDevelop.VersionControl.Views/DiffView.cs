@@ -102,10 +102,7 @@ namespace MonoDevelop.VersionControl.Views
 		public override Gtk.Widget Control { 
 			get {
 				if (widget == null) {
-					Console.WriteLine ("Create diff widget!");
-					Console.WriteLine (Environment.StackTrace);
-					widget = new DiffWidget ();
-					ComparisonWidget.SetVersionControlInfo (info);
+					widget = new DiffWidget (info);
 					
 					ComparisonWidget.OriginalEditor.Document.MimeType = ComparisonWidget.DiffEditor.Document.MimeType = info.Document.Editor.Document.MimeType;
 					ComparisonWidget.OriginalEditor.Options.FontName = ComparisonWidget.DiffEditor.Options.FontName = info.Document.Editor.Options.FontName;
@@ -172,14 +169,12 @@ namespace MonoDevelop.VersionControl.Views
 		public DiffView (VersionControlDocumentInfo info) : base ("Diff")
 		{
 			this.info = info;
-			
 		}
 		
 		public DiffView (VersionControlDocumentInfo info, Revision baseRev, Revision toRev) : base ("Diff")
 		{
 			this.info = info;
-			widget = new DiffWidget ();
-			ComparisonWidget.SetVersionControlInfo (info);
+			widget = new DiffWidget (info);
 			
 			ComparisonWidget.OriginalEditor.Document.MimeType = ComparisonWidget.DiffEditor.Document.MimeType = info.Document.Editor.Document.MimeType;
 			ComparisonWidget.OriginalEditor.Options.FontName = ComparisonWidget.DiffEditor.Options.FontName = info.Document.Editor.Options.FontName;
