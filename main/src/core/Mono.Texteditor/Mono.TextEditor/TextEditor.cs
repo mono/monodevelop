@@ -1446,10 +1446,20 @@ namespace Mono.TextEditor
 				if (HasFocus && e.Area.Contains ((int)TextViewMargin.caretX, (int)TextViewMargin.caretY))
 					textViewMargin.DrawCaret (e.Window);
 				
-				var result = base.OnExposeEvent (e);
-				return result;
+				OnPainted (new PaintEventArgs (cr, cairoArea));
 			}
+			
+			return true;
 		}
+		
+		protected virtual void OnPainted (PaintEventArgs e)
+		{
+			EventHandler<PaintEventArgs> handler = this.Painted;
+			if (handler != null)
+				handler (this, e);
+		}
+
+		public event EventHandler<PaintEventArgs> Painted;
 
 		#region TextEditorData delegation
 		public string EolMarker {
@@ -2629,4 +2639,26 @@ namespace Mono.TextEditor
 	{
 		TextEditorData GetTextEditorData ();
 	}
+	
+	[Serializable]
+	public sealed class PaintEventArgs : EventArgs
+	{
+		public Cairo.Context Context {
+			get;
+			set;
+		}
+		
+		public Cairo.Rectangle Area {
+			get;
+			set;
+		}
+		
+		public PaintEventArgs (Cairo.Context context, Cairo.Rectangle area)
+		{
+			this.Context = context;
+			this.Area = area;
+		}
+	}
 }
+
+
