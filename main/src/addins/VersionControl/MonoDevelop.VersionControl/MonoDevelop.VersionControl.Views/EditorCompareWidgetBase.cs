@@ -682,6 +682,7 @@ namespace MonoDevelop.VersionControl.Views
 						if (evnt.X >= x && evnt.X < x + w && evnt.Y >= y && evnt.Y < y + h) {
 							selectedHunk = hunk;
 							TooltipText = GettextCatalog.GetString ("Revert this change");
+							QueueDrawArea ((int)x, (int)y, (int)w, (int)h);
 							break;
 						}
 					}
@@ -762,6 +763,8 @@ namespace MonoDevelop.VersionControl.Views
 			{
 				bool hideButton = widget.MainEditor.Document.ReadOnly;
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
+					cr.Rectangle (evnt.Region.Clipbox.X, evnt.Region.Clipbox.Y, evnt.Region.Clipbox.Width, evnt.Region.Clipbox.Height);
+					cr.Clip ();
 					int delta = widget.MainEditor.Allocation.Y - Allocation.Y;
 					foreach (Mono.TextEditor.Utils.Hunk hunk in Diff) {
 						double z1 = delta + fromEditor.LineToY (hunk.RemoveStart) - fromEditor.VAdjustment.Value;
@@ -835,10 +838,25 @@ namespace MonoDevelop.VersionControl.Views
 
 							cr.Rectangle (x, y, w, h);
 							if (isButtonSelected) {
-								cr.Color = new Cairo.Color (0.7, 0.7, 0.7, 0.3);
-								cr.FillPreserve ();
+								int mx, my;
+								GetPointer (out mx, out my);
+								Console.WriteLine (x  + " - " + y + "/" + mx + " - " + my);
+							//	mx -= (int)x;
+							//	my -= (int)y;
+								Cairo.RadialGradient gradient = new Cairo.RadialGradient (mx, my, h, 
+									mx, my, 2);
+								var color = (Mono.TextEditor.HslColor)Style.Mid (StateType.Normal);
+								color.L *= 1.05;
+								gradient.AddColorStop (0, color);
+								color.L *= 1.07;
+								gradient.AddColorStop (1, color);
+								cr.Pattern = gradient;
+							} else {
+								cr.Color = (Mono.TextEditor.HslColor)Style.Mid (StateType.Normal);
 							}
-							cr.Color = new Cairo.Color (0.7, 0.7, 0.7);
+							cr.FillPreserve ();
+							
+							cr.Color = (Mono.TextEditor.HslColor)Style.Dark (StateType.Normal);
 							cr.Stroke ();
 							cr.LineWidth = 1;
 							cr.Color = new Cairo.Color (0, 0, 0);
@@ -852,16 +870,16 @@ namespace MonoDevelop.VersionControl.Views
 						}
 					}
 				}
-				var result = base.OnExposeEvent (evnt);
+//				var result = base.OnExposeEvent (evnt);
+//
+//				Gdk.GC gc = Style.DarkGC (State);
+//				evnt.Window.DrawLine (gc, Allocation.X, Allocation.Top, Allocation.X, Allocation.Bottom);
+//				evnt.Window.DrawLine (gc, Allocation.Right, Allocation.Top, Allocation.Right, Allocation.Bottom);
+//
+//				evnt.Window.DrawLine (gc, Allocation.Left, Allocation.Y, Allocation.Right, Allocation.Y);
+//				evnt.Window.DrawLine (gc, Allocation.Left, Allocation.Bottom, Allocation.Right, Allocation.Bottom);
 
-				Gdk.GC gc = Style.DarkGC (State);
-				evnt.Window.DrawLine (gc, Allocation.X, Allocation.Top, Allocation.X, Allocation.Bottom);
-				evnt.Window.DrawLine (gc, Allocation.Right, Allocation.Top, Allocation.Right, Allocation.Bottom);
-
-				evnt.Window.DrawLine (gc, Allocation.Left, Allocation.Y, Allocation.Right, Allocation.Y);
-				evnt.Window.DrawLine (gc, Allocation.Left, Allocation.Bottom, Allocation.Right, Allocation.Bottom);
-
-				return result;
+				return true;
 			}
 		}
 
