@@ -1440,7 +1440,7 @@ namespace Mono.TextEditor
 				}
 				
 				foreach (Animation animation in actors) {
-					animation.Drawer.Draw (e.Window);
+					animation.Drawer.Draw (cr);
 				}
 				
 				if (HasFocus && e.Area.Contains ((int)TextViewMargin.caretX, (int)TextViewMargin.caretY))
@@ -1828,30 +1828,29 @@ namespace Mono.TextEditor
 				this.editor = editor;
 			}
 			
-			public void Draw (Drawable drawable)
+			public void Draw (Cairo.Context cr)
 			{
 				double x = editor.TextViewMargin.caretX;
 				double y = editor.TextViewMargin.caretY;
 				if (editor.Caret.Mode != CaretMode.Block)
 					x -= editor.TextViewMargin.charWidth / 2;
-				using (Cairo.Context cr = Gdk.CairoHelper.Create (drawable)) {
-					cr.Rectangle (editor.TextViewMargin.XOffset, 0, editor.Allocation.Width - editor.TextViewMargin.XOffset, editor.Allocation.Height);
-					cr.Clip ();
+				cr.Rectangle (editor.TextViewMargin.XOffset, 0, editor.Allocation.Width - editor.TextViewMargin.XOffset, editor.Allocation.Height);
+				cr.Clip ();
 
-					double extend = Percent * 5;
-					double width = editor.TextViewMargin.charWidth + 2 * extend * editor.Options.Zoom / 2;
-					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 
-					                                                    x - extend * editor.Options.Zoom / 2, 
-					                                                    y - extend * editor.Options.Zoom, 
-					                                                    System.Math.Min (editor.TextViewMargin.charWidth / 2, width), 
-					                                                    width,
-					                                                    editor.LineHeight + 2 * extend * editor.Options.Zoom);
-					Cairo.Color color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.Caret.Color);
-					color.A = 0.8;
-					cr.LineWidth = editor.Options.Zoom;
-					cr.Color = color;
-					cr.Stroke ();
-				}
+				double extend = Percent * 5;
+				double width = editor.TextViewMargin.charWidth + 2 * extend * editor.Options.Zoom / 2;
+				FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 
+				                                                    x - extend * editor.Options.Zoom / 2, 
+				                                                    y - extend * editor.Options.Zoom, 
+				                                                    System.Math.Min (editor.TextViewMargin.charWidth / 2, width), 
+				                                                    width,
+				                                                    editor.LineHeight + 2 * extend * editor.Options.Zoom);
+				Cairo.Color color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.Caret.Color);
+				color.A = 0.8;
+				cr.LineWidth = editor.Options.Zoom;
+				cr.Color = color;
+				cr.Stroke ();
+				cr.ResetClip ();
 			}
 		}
 		
@@ -1894,29 +1893,28 @@ namespace Mono.TextEditor
 				this.region = region;
 			}
 			
-			public void Draw (Drawable drawable)
+			public void Draw (Cairo.Context cr)
 			{
 				int x = region.X;
 				int y = region.Y;
 				int animationPosition = (int)(Percent * 100);
 				
-				using (Cairo.Context cr = Gdk.CairoHelper.Create (drawable)) {
-					cr.Rectangle (editor.TextViewMargin.XOffset, 0, editor.Allocation.Width - editor.TextViewMargin.XOffset, editor.Allocation.Height);
-					cr.Clip ();
+				cr.Rectangle (editor.TextViewMargin.XOffset, 0, editor.Allocation.Width - editor.TextViewMargin.XOffset, editor.Allocation.Height);
+				cr.Clip ();
 
-					int width = (int)(region.Width + 2 * animationPosition * editor.Options.Zoom / 2);
-					FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 
-					                                                    (int)(x - animationPosition * editor.Options.Zoom / 2), 
-					                                                    (int)(y - animationPosition * editor.Options.Zoom), 
-					                                                    System.Math.Min (editor.TextViewMargin.charWidth / 2, width), 
-					                                                    width,
-					                                                    (int)(region.Height + 2 * animationPosition * editor.Options.Zoom));
-					Cairo.Color color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.Caret.Color);
-					color.A = 0.8;
-					cr.LineWidth = editor.Options.Zoom;
-					cr.Color = color;
-					cr.Stroke ();
-				}
+				int width = (int)(region.Width + 2 * animationPosition * editor.Options.Zoom / 2);
+				FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 
+				                                                    (int)(x - animationPosition * editor.Options.Zoom / 2), 
+				                                                    (int)(y - animationPosition * editor.Options.Zoom), 
+				                                                    System.Math.Min (editor.TextViewMargin.charWidth / 2, width), 
+				                                                    width,
+				                                                    (int)(region.Height + 2 * animationPosition * editor.Options.Zoom));
+				Cairo.Color color = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.Caret.Color);
+				color.A = 0.8;
+				cr.LineWidth = editor.Options.Zoom;
+				cr.Color = color;
+				cr.Stroke ();
+				cr.ResetClip ();
 			}
 		}
 		

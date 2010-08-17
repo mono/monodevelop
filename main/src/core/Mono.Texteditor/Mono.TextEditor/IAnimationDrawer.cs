@@ -35,6 +35,6 @@ namespace Mono.TextEditor
 			get;
 		}
 		double Percent { get; set; }
-		void Draw (Drawable drawable);
+		void Draw (Cairo.Context cr);
 	}
 }
