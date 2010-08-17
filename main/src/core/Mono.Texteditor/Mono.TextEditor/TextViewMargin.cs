@@ -1060,7 +1060,7 @@ namespace Mono.TextEditor
 							
 							if (!chunkStyle.TransparentBackround && GetPixel (ColorStyle.Default.BackgroundColor) != GetPixel (chunkStyle.BackgroundColor)) {
 								wrapper.AddBackground (chunkStyle.CairoBackgroundColor, (int)si, (int)ei);
-							} else if (chunk.SpanStack != null) {
+							} else if (chunk.SpanStack != null && ColorStyle != null) {
 								foreach (var span in chunk.SpanStack) {
 									if (span == null)
 										continue;
