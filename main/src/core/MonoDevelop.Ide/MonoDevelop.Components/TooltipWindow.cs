@@ -42,7 +42,8 @@ namespace MonoDevelop.Components
 		public string LinkColor {
 			get {
 				var baseColor = (Mono.TextEditor.HslColor)Style.Background (State);
-				baseColor.H = (baseColor.H + 0.5);
+				double bgH = (baseColor.H == 0 && baseColor.S == 0) ? 2 / 3.0 : baseColor.H;
+				baseColor.H = bgH + 0.5;
 				baseColor.S = 0.7;
 				baseColor.L = 0.5;
 				var resultColor = (Cairo.Color)baseColor;
