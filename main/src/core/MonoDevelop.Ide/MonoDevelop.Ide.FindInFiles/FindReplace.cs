@@ -173,6 +173,8 @@ namespace MonoDevelop.Ide.FindInFiles
 				yield break;
 			int idx = provider.SelectionStartPosition < 0 ? 0 : Math.Max (0, provider.SelectionStartPosition);
 			int lastPossibleIndex = content.Length - pattern.Length + 1;
+			if (lastPossibleIndex < 0)
+				yield break;
 			int end = provider.SelectionEndPosition < 0 ? lastPossibleIndex : Math.Min (lastPossibleIndex, provider.SelectionEndPosition - pattern.Length);
 			var comparison = filter.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
 			
