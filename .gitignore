@@ -9,6 +9,7 @@ obj/
 /main/build/locale/
 /extras/*/build
 /main/src/tools/SharpCoco/SharpCoco.exe*
+/main/vcrevision
 
 # globs
 Makefile.in
