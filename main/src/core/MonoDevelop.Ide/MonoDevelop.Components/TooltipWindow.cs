@@ -39,6 +39,20 @@ namespace MonoDevelop.Components
 		bool nudgeHorizontal = false;
 		WindowTransparencyDecorator decorator;
 		
+		public string LinkColor {
+			get {
+				var baseColor = (Mono.TextEditor.HslColor)Style.Background (State);
+				baseColor.H = (baseColor.H + 0.5);
+				baseColor.S = 0.7;
+				baseColor.L = 0.5;
+				var resultColor = (Cairo.Color)baseColor;
+				return string.Format ("#{0:x2}{1:x2}{2:x2}",
+					(int)(resultColor.R * 255),
+					(int)(resultColor.G * 255), 
+					(int)(resultColor.B * 255));
+			}
+		}
+		
 		public TooltipWindow () : base(Gtk.WindowType.Popup)
 		{
 			this.SkipPagerHint = true;

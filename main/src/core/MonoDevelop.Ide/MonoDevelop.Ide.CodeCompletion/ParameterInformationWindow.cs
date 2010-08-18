@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			for (int i = 0; i < numParams; i++) {
 				string txt = provider.GetParameterMarkup (overload, i);
 				if (i == currentParam)
-					txt = "<u><span foreground='darkblue'>" + txt + "</span></u>";
+					txt = "<u><span foreground='" + LinkColor + "'>" + txt + "</span></u>";
 				paramText [i] = txt;
 			}
 			string text = provider.GetMethodMarkup (overload, paramText, currentParam);
