@@ -108,6 +108,15 @@ namespace Mono.TextEditor
 			return new HslColor (color);
 		}
 		
+		public static HslColor FromHsl (double h, double s, double l)
+		{
+			return new HslColor () {
+				H = h,
+				S = s,
+				L = l
+			};
+		}
+		
 		public HslColor (double r, double g, double b) : this ()
 		{
 			double v = System.Math.Max (r, g);
