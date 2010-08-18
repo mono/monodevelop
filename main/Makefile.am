@@ -10,22 +10,15 @@ buildinfo = $(top_builddir)/build/bin/buildinfo
 all:
 
 vcrevision:
-	@if test -d ../.svn; then \
+	@if test -d ../.git; then \
 		version=$$(cd ..; \
 			LANG=C; export LANG; \
-			svn info | sed -n -e '/Last Changed Rev/ s/.*: //p'; \
+			git describe --dirty --always --abbrev=0; \
 		); \
-		modified=$$( \
-			LANG=C; export LANG; \
-			svn st | grep -v ^\? | wc -l; \
-		); \
-		if test $$modified != 0; then \
-			version="$$version (modified)"; \
-		fi; \
-		echo "SVN revision: $$version" > "vcrevision"; \
+		echo "git revision: $$version" > "vcrevision"; \
 	else \
 		if test ! -f ./vcrevision; then \
-			echo "SVN revision: unknown" > "vcrevision"; \
+			echo "git revision: unknown" > "vcrevision"; \
 		fi; \
 	fi
 
