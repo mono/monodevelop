@@ -2672,5 +2672,26 @@ class Test : TestBase
 			Assert.IsNotNull (provider.Find ("Bar"), "class 'Bar' not found.");
 		}
 		
+		
+		/// <summary>
+		/// Bug 631875 - No Intellisense for arrays
+		/// </summary>
+		[Test()]
+		public void TestBug631875 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"class C
+{
+	static void Main ()
+	{
+		var objects = new[] { new { X = (object)null }};
+		$objects[0].$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("X"), "property 'X' not found.");
+		}
+		
 	}
 }
