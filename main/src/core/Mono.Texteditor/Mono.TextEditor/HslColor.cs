@@ -26,6 +26,7 @@
 
 using System;
 using Gdk;
+using System.Collections.Generic;
 
 namespace Mono.TextEditor
 {
@@ -167,9 +168,41 @@ namespace Mono.TextEditor
 			return System.Math.Sqrt (r * .241 + g * .691 + b * .068);
 		}
 		
+		public static List<HslColor> GenerateHighlightColors (HslColor backGround, HslColor foreGround, int n)
+		{
+			double bgH = (backGround.H == 0 && backGround.S == 0) ? 2 / 3.0 : backGround.H;
+			var result = new List<HslColor> ();
+			for (int i = 0; i < n; i++) {
+				double h = bgH + (i + 1.0) / (double)n;
+				
+				// for monochromatic backround the h value doesn't matter
+				if (i + 1 == n && !(backGround.H == 0 && backGround.S == 0))
+					h = bgH + 0.5;
+				
+				if (h > 1.0)
+					h -= 1.0;
+					
+				double s = 0.85;
+				double l = 0.5;
+				if (backGround.H == 0 && backGround.S == 0 && backGround.L < 0.5)
+					l = 0.8;
+				result.Add (Mono.TextEditor.HslColor.FromHsl (h, s, l));
+			}
+			return result;
+		}
+		
 		public override string ToString ()
 		{
 			return string.Format ("[HslColor: H={0}, S={1}, L={2}]", H, S, L);
+		}
+		
+		public string ToPangoString ()
+		{
+			var resultColor = (Cairo.Color)this;
+			return string.Format ("#{0:x2}{1:x2}{2:x2}",
+				(int)(resultColor.R * 255),
+				(int)(resultColor.G * 255), 
+				(int)(resultColor.B * 255));
 		}
 	}
 }
