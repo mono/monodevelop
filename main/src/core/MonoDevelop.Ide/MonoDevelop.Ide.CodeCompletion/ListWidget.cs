@@ -312,25 +312,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get { return MonoDevelop.Core.GettextCatalog.GetString ("No suggestions"); }
 		}
 
-		List<Gdk.Color> GenerateHighlightColors (Gdk.Color backGround, Gdk.Color foreGround, int n)
-		{
-			var bg = (Mono.TextEditor.HslColor)backGround;
-			double bgH = (bg.H == 0 && bg.S == 0) ? 2 / 3.0 : bg.H;
-			List<Gdk.Color> result = new List<Gdk.Color> ();
-			for (int i = 0; i < n; i++) {
-				double h = bgH + (i + 1.0) / (double)n;
-				if (h > 1.0)
-					h -= 1.0;
-				double s = 0.85;
-				double l = 0.5;
-				result.Add ((Gdk.Color)Mono.TextEditor.HslColor.FromHsl (h, s, l));
-			}
-			return result;
-		}
-		
 		Gdk.Color HighlightColor {
 			get {
-				return GenerateHighlightColors (Style.Base (State), Style.Text (State), 3)[2];
+				return (Gdk.Color)Mono.TextEditor.HslColor.GenerateHighlightColors (Style.Base (State), Style.Text (State), 3)[2];
 			}
 		}
 		

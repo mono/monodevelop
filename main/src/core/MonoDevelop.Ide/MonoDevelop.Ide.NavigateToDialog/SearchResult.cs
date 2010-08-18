@@ -40,10 +40,9 @@ namespace MonoDevelop.Ide.NavigateToDialog
 	{
 		protected string match;
 		
-		public virtual string MarkupText {
-			get {
-				return HighlightMatch (PlainText, match);
-			}
+		public virtual string GetMarkupText (Widget widget)
+		{
+			return HighlightMatch (widget, PlainText, match);
 		}
 		
 		public abstract string PlainText  { get; }
@@ -66,7 +65,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			Rank = rank;
 		}
 		
-		protected static string HighlightMatch (string text, string toMatch)
+		protected static string HighlightMatch (Widget widget, string text, string toMatch)
 		{
 			var lane = StringMatcher.GetMatcher (toMatch, false).GetMatch (text);
 			if (lane != null) {
@@ -76,7 +75,11 @@ namespace MonoDevelop.Ide.NavigateToDialog
 					int pos = lane[n];
 					if (pos - lastPos > 0)
 						result.Append (GLib.Markup.EscapeText (text.Substring (lastPos, pos - lastPos)));
-					result.Append ("<span foreground=\"blue\">");
+					result.Append ("<span foreground=\"");
+					var color = Mono.TextEditor.HslColor.GenerateHighlightColors (widget.Style.Base (StateType.Normal), 
+						widget.Style.Text (StateType.Normal), 3)[2];
+					result.Append (color.ToPangoString ());
+					result.Append ("\">");
 					result.Append (GLib.Markup.EscapeText (text[pos].ToString ()));
 					result.Append ("</span>");
 					lastPos = pos + 1;
@@ -171,17 +174,16 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			}
 		}
 		
-		public override string MarkupText {
-			get {
-				if (useFullName)
-					return HighlightMatch (Ambience.GetString (member, Flags), match);
-				OutputSettings settings = new OutputSettings (Flags | OutputFlags.IncludeMarkup);
-				settings.EmitNameCallback = delegate (INode domVisitable, ref string outString) {
-					if (domVisitable == member)
-						outString = HighlightMatch (outString, match);
-				};
-				return Ambience.GetString (member, settings);
-			}
+		public override string GetMarkupText (Widget widget)
+		{
+			if (useFullName)
+				return HighlightMatch (widget, Ambience.GetString (member, Flags), match);
+			OutputSettings settings = new OutputSettings (Flags | OutputFlags.IncludeMarkup);
+			settings.EmitNameCallback = delegate (INode domVisitable, ref string outString) {
+				if (domVisitable == member)
+					outString = HighlightMatch (widget, outString, match);
+			};
+			return Ambience.GetString (member, settings);
 		}
 		
 			/*	

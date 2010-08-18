@@ -46,16 +46,22 @@ namespace MonoDevelop.Ide.NavigateToDialog
 {
 	class ResultsDataSource: List<SearchResult>, IListViewDataSource
 	{
+		Gtk.Widget widget;
 		SearchResult bestResult;
 		int bestRank = int.MinValue;
 		Dictionary<string,bool> names = new Dictionary<string,bool> ();
-
+		
+		public ResultsDataSource (Gtk.Widget widget)
+		{
+			this.widget = widget;
+		}
+		
 		public string GetText (int n)
 		{
 			string descr = this[n].Description;
 			if (string.IsNullOrEmpty (descr))
-				return this[n].MarkupText;
-			return this[n].MarkupText + " <span foreground=\"darkgray\">[" + descr + "]</span>";
+				return this[n].GetMarkupText (widget);
+			return this[n].GetMarkupText (widget) + " <span foreground=\"darkgray\">[" + descr + "]</span>";
 		}
 		
 		public string GetSelectedText (int n)

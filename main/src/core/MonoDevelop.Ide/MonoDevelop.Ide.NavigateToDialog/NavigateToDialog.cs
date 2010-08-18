@@ -97,6 +97,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			this.matchEntry.Ready = true;
 			this.matchEntry.Visible = true;
 			this.matchEntry.IsCheckMenu = true;
+			lastResult = new WorkerResult (this);
 			HasSeparator = false;
 			useFullSearch = PropertyService.Get ("UseFullSearchMatch", true);
 			
@@ -220,7 +221,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		{
 			list = new ListView ();
 			list.AllowMultipleSelection = true;
-			list.DataSource = new ResultsDataSource ();
+			list.DataSource = new ResultsDataSource (this);
 			list.Show ();
 			list.ItemActivated += delegate { 
 				OpenFile ();
@@ -276,7 +277,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			string toMatch = matchEntry.Query;
 			
 			if (string.IsNullOrEmpty (toMatch)) {
-				list.DataSource = new ResultsDataSource ();
+				list.DataSource = new ResultsDataSource (this);
 				labelResults.LabelProp = GettextCatalog.GetString ("_Results: Enter search term to start.");
 				return;
 			} else {
@@ -284,7 +285,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			}
 			
 			if (!string.IsNullOrEmpty (lastResult.pattern) && toMatch.StartsWith (lastResult.pattern))
-				list.DataSource = new ResultsDataSource ();
+				list.DataSource = new ResultsDataSource (this);
 			
 			searchWorker = new System.ComponentModel.BackgroundWorker  ();
 			searchWorker.WorkerSupportsCancellation = true;
@@ -314,12 +315,18 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			
 			public string pattern = null;
 			public bool isGotoFilePattern;
-			public ResultsDataSource results = new ResultsDataSource ();
+			public ResultsDataSource results;
+			
 			public bool FullSearch;
 			
 			public bool IncludeFiles, IncludeTypes, IncludeMembers;
 			
 			public StringMatcher matcher = null;
+			
+			public WorkerResult (Widget widget)
+			{
+				results = new ResultsDataSource (widget);
+			}
 			
 			internal SearchResult CheckFile (ProjectFile file)
 			{
@@ -382,7 +389,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		List<IType> types;
 		List<IMember> members;
 		
-		WorkerResult lastResult = new WorkerResult ();
+		WorkerResult lastResult;
 		
 		void SearchWorker (object sender, DoWorkEventArgs e)
 		{
@@ -391,7 +398,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			
 			WorkerResult lastResult = arg.Value;
 			
-			WorkerResult newResult = new WorkerResult ();
+			WorkerResult newResult = new WorkerResult (this);
 			newResult.pattern = arg.Key;
 			newResult.IncludeFiles = (NavigateToType & NavigateToType.Files) == NavigateToType.Files;
 			newResult.IncludeTypes = (NavigateToType & NavigateToType.Types) == NavigateToType.Types;

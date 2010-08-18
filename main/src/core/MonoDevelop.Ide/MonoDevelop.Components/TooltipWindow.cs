@@ -41,16 +41,8 @@ namespace MonoDevelop.Components
 		
 		public string LinkColor {
 			get {
-				var baseColor = (Mono.TextEditor.HslColor)Style.Background (State);
-				double bgH = (baseColor.H == 0 && baseColor.S == 0) ? 2 / 3.0 : baseColor.H;
-				baseColor.H = bgH + 0.5;
-				baseColor.S = 0.7;
-				baseColor.L = 0.5;
-				var resultColor = (Cairo.Color)baseColor;
-				return string.Format ("#{0:x2}{1:x2}{2:x2}",
-					(int)(resultColor.R * 255),
-					(int)(resultColor.G * 255), 
-					(int)(resultColor.B * 255));
+				var color = Mono.TextEditor.HslColor.GenerateHighlightColors (Style.Background (State), Style.Text (State), 3)[2];
+				return color.ToPangoString ();
 			}
 		}
 		
