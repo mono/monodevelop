@@ -35,6 +35,7 @@ MonoDevelop.app:
 	sed -e "s/@BUNDLE_VERSION@/$(BUNDLE_VERSION)/" -e "s/@ASSEMBLY_VERSION@/$(ASSEMBLY_VERSION)/" Info.plist.in > $(MAC_APP_DIR)/Contents/Info.plist
 	cp ../../theme-icons/Mac/*.icns $(MAC_APP_DIR)/Contents/Resources/
 	cp monodevelop $(MACOS)/monodevelop
+	cp mono-version-check $(MACOS)/mono-version-check
 	cp mdtool $(MACOS)/mdtool
 	
 # copy monodevelop.pc and mono-addins.pc to Contents/MacOS/lib/pkgconfig
