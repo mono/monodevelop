@@ -167,6 +167,7 @@ namespace MonoDevelop.CSharp.Resolver
 		
 		internal void SetupResolver (DomLocation resolvePosition)
 		{
+			this.lambdaResolver = null;
 			this.resolvePosition = resolvePosition;
 			this.resultTable.Clear ();
 			if (unit == null)
@@ -696,10 +697,13 @@ namespace MonoDevelop.CSharp.Resolver
 				return null;
 			}
 		}
-
+		LambdaResolver lambdaResolver;
+		
 		public ResolveResult ResolveLambda (ResolveVisitor visitor, Expression lambdaExpression)
 		{
-			return new LambdaResolver (this).ResolveLambda (visitor, lambdaExpression);
+			if (lambdaResolver == null)
+				lambdaResolver = new LambdaResolver (this);
+			return lambdaResolver.ResolveLambda (visitor, lambdaExpression);
 		}
 		
 		Dictionary<string, ResolveResult> resultTable = new Dictionary<string, ResolveResult> ();
