@@ -117,19 +117,20 @@ namespace MonoDevelop.Components
 				MessageArea.Remove (child);
 				child.Destroy ();
 			}
-			
 			var l = new Gtk.Label () {
 				Wrap = true,
 				Selectable = true,
 				Yalign = 0.5f,
 				Xalign = 0f,
-				Markup = markup
+				Markup = markup,
+				Style = Style
 			};
 			MessageArea.Add (l);
 			l.SizeAllocated += delegate (object o, SizeAllocatedArgs args) {
 				l.WidthRequest = Math.Max (350, args.Allocation.Width - 15);
 			};
 		}
+		
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
@@ -140,6 +141,7 @@ namespace MonoDevelop.Components
 		
 		//this is used to style like a tooltip
 		bool changeStyle = false;
+		
 		protected override void OnStyleSet (Gtk.Style previous_style)
 		{
 			if (changeStyle)
@@ -149,6 +151,10 @@ namespace MonoDevelop.Components
 			surrogate.EnsureStyle ();
 			this.Style = surrogate.Style;
 			surrogate.Destroy ();
+			foreach (var label in MessageArea.Children) {
+				label.Style = Style;
+			}
+				
 			base.OnStyleSet (previous_style);
 			changeStyle = false;
 		}
