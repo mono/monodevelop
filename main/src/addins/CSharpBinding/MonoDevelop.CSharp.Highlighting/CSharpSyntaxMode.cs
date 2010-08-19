@@ -46,7 +46,7 @@ namespace MonoDevelop.CSharp.Highlighting
 	{
 		public static bool IsAt (this string str, int idx, string pattern)
 		{
-			if (idx + pattern.Length >= str.Length)
+			if (idx + pattern.Length > str.Length)
 				return false;
 			int i = idx;
 			return pattern.All (ch => str[i++] == ch);
@@ -134,14 +134,8 @@ namespace MonoDevelop.CSharp.Highlighting
 			
 			protected void SetColor ()
 			{
-				if (disabled) {
-					TagColor = Color = "comment.block";
-					Rule = "String";
-					return;
-				}
-				
 				TagColor = "text.preprocessor";
-				if (!IsValid) {
+				if (disabled || !IsValid) {
 					Color = "comment.block";
 					Rule = "String";
 				} else {
@@ -304,15 +298,15 @@ namespace MonoDevelop.CSharp.Highlighting
 					} else if (elseIfBlock != null) {
 						elseBlockSpan.Disabled = elseIfBlock.Disabled;
 					}
-					FoundSpanBegin (elseBlockSpan, i, 0);
+					FoundSpanBegin (elseBlockSpan, i, "#else".Length);
+					i += "#else".Length;
 					
-					// put pre processor eol span on stack, so that '#else' gets the correct highlight
-					FoundSpanBegin (elseBlockSpan,  i, 5);
-					i += length - 1;
+					// put pre processor eol span on stack, so that '#elif' gets the correct highlight
+					Span preprocessorSpan = CreatePreprocessorSpan ();
+					FoundSpanBegin (preprocessorSpan, i, 0);
 					return;
 				}
 				if (CurRule.Name == "<root>" && CurText.IsAt (textOffset, "#if")) {
-					LineSegment line = doc.GetLineByOffset (i);
 					int length = CurText.Length - textOffset;
 					string parameter = CurText.Substring (textOffset + 3, length - 3);
 					ICSharpCode.NRefactory.Parser.CSharp.Lexer lexer = new ICSharpCode.NRefactory.Parser.CSharp.Lexer (new System.IO.StringReader (parameter));
@@ -400,7 +394,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					bool end = CurText.IsAt (textOffset, "#endif");
 					if (end) {
 						FoundSpanEnd (cur, i, 6); // put empty end tag in
-						while (spanStack.Count > 0 && !(spanStack.Peek () is IfBlockSpan)) {
+						while (spanStack.Count > 0 && (spanStack.Peek () is IfBlockSpan || spanStack.Peek () is ElseIfBlockSpan || spanStack.Peek () is ElseBlockSpan)) {
 							spanStack.Pop ();
 							if (ruleStack.Count > 1) // rulStack[1] is always syntax mode
 								ruleStack.Pop ();
@@ -416,12 +410,12 @@ namespace MonoDevelop.CSharp.Highlighting
 			
 			public CSharpSpanParser (Mono.TextEditor.Document doc, SyntaxMode mode, CloneableStack<Span> spanStack) : base (doc, mode, spanStack)
 			{
-		/*		foreach (Span span in mode.Spans) {
-					 * if (span.Rule == "text.preprocessor") {
-						preprocessorSpan = span;
-						preprocesso-rRule = GetRule (span);
-					}
-				}*/
+//				foreach (Span span in mode.Spans) {
+//					if (span.Rule == "text.preprocessor") {
+//						preprocessorSpan = span;
+//						preprocessorRule = GetRule (span);
+//					}
+//				}
 			}
 		}
 	}
