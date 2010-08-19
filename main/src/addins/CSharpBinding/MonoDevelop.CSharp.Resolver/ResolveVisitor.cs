@@ -226,6 +226,11 @@ namespace MonoDevelop.CSharp.Resolver
 			return Resolve (unaryOperatorExpression.Expression);
 		}
 		
+		public override object VisitDefaultValueExpression (DefaultValueExpression defaultValueExpression, object data)
+		{
+			return CreateResult (defaultValueExpression.TypeReference);
+		}
+		
 		public override object VisitIndexerExpression(IndexerExpression indexerExpression, object data)
 		{
 			if (indexerExpression.Indexes == null || indexerExpression.Indexes.Count == 0)
@@ -234,8 +239,6 @@ namespace MonoDevelop.CSharp.Resolver
 			
 			if (result.ResolvedType != null && result.ResolvedType.ArrayDimensions > 0) {
 				((DomReturnType)result.ResolvedType).ArrayDimensions--;
-				if (result.ResolvedType.Type is ITypeParameterType)
-					((DomReturnType)result.ResolvedType).Type = null;
 				return CreateResult (result.ResolvedType);
 			}
 			
