@@ -161,14 +161,14 @@ namespace MonoDevelop.CSharp.Resolver
 			
 			for (int i = 0; i < collectionInitializerExpression.CreateExpressions.Count; i++) {
 				DomReturnType curType = (DomReturnType)ResolveType (collectionInitializerExpression.CreateExpressions[i]);
-				// if we found object we can stop
-				if (curType.DecoratedFullName == DomReturnType.Object.DecoratedFullName) {
+				// if we found object or we have only one create expression we can stop
+				if (curType.DecoratedFullName == DomReturnType.Object.DecoratedFullName || collectionInitializerExpression.CreateExpressions.Count == 1) {
 					type = curType;
 					break;
 				}
 				IType curTypeObject = resolver.Dom.GetType (curType);
 				if (type == null || resolver.Dom.GetInheritanceTree (typeObject).Any (t => t.DecoratedFullName == curTypeObject.DecoratedFullName)) {
-					curType = type;
+					type = curType;
 					typeObject = curTypeObject;
 				}
 			}
