@@ -2713,5 +2713,29 @@ class C {
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNull (provider.Find ("FooBar"), "method 'FooBar' found, but shouldn't.");
 		}
+
+		/// <summary>
+		/// Bug 632696 - No intellisense for constraints
+		/// </summary>
+		[Test()]
+		public void TestBug632696 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"
+class Program
+{
+	void Foo ()
+	{
+	}
+
+	static void Foo<T> () where T : Program
+	{
+		var s = new[] { default(T) };
+		$s[0].$
+	}
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Foo"), "method 'Foo' not found.");
+		}
 	}
 }
