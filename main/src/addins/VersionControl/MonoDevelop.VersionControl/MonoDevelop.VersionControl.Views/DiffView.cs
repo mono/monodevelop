@@ -197,6 +197,7 @@ namespace MonoDevelop.VersionControl.Views
 		public void Selected ()
 		{
 			info.Start ();
+			ComparisonWidget.UpdateLocalText ();
 			ComparisonWidget.OriginalEditor.Document.IgnoreFoldings = true;
 			ComparisonWidget.OriginalEditor.Caret.Location = info.Document.Editor.Caret.Location;
 			ComparisonWidget.OriginalEditor.VAdjustment.Value = info.Document.Editor.VAdjustment.Value;

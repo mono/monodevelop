@@ -74,11 +74,12 @@ namespace MonoDevelop.VersionControl.Views
 			diffTextEditor.Document.ReadOnly = true;
 			scrolledwindow1.Child = diffTextEditor;
 			diffTextEditor.Show ();
+			SetButtonSensitivity ();
 		}
 		
 		void SetButtonSensitivity ()
 		{
-			this.buttonNext.Sensitive = this.buttonPrev.Sensitive = notebook1.Page == 0 && comparisonWidget.Diff.Count > 0;
+			this.buttonNext.Sensitive = this.buttonPrev.Sensitive = notebook1.Page == 0 &&  comparisonWidget.Diff != null && comparisonWidget.Diff.Count > 0;
 		}
 		
 		void HandleButtonDiffhandleClicked (object sender, EventArgs e)

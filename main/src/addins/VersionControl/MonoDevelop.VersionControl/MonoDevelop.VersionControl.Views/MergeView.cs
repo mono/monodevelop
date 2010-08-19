@@ -57,6 +57,7 @@ namespace MonoDevelop.VersionControl.Views
 
 		public void Selected ()
 		{
+			widget.UpdateLocalText ();
 			widget.info.Start ();
 		}
 		

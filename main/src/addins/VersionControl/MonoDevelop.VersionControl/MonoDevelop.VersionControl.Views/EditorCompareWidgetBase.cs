@@ -576,6 +576,16 @@ namespace MonoDevelop.VersionControl.Views
 				data.Document.CommitUpdateAll ();
 			}
 		}
+		
+		public void UpdateLocalText ()
+		{
+			foreach (var data in dict.Values) {
+				data.Document.TextReplaced -= HandleDataDocumentTextReplaced;
+				data.Document.Text = info.Document.Editor.Document.Text;
+				data.Document.TextReplaced += HandleDataDocumentTextReplaced;
+			}
+			CreateDiff ();
+		}
 
 		public void SetLocal (TextEditorData data)
 		{
