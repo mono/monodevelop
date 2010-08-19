@@ -43,6 +43,7 @@ namespace MonoDevelop.Components
 		
 		double mx, my;
 		Tab hoverTab;
+		TabstripVisualStyle visualStyle = TabstripVisualStyle.Buttons;
 		
 		int activeTab;
 		public int ActiveTab {
@@ -70,6 +71,11 @@ namespace MonoDevelop.Components
 			Events |= Gdk.EventMask.ButtonPressMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.LeaveNotifyMask;
 		}
 		
+		public TabstripVisualStyle VisualStyle {
+			get { return visualStyle; }
+			set { visualStyle = value; QueueDraw (); }
+		}
+		
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
@@ -89,11 +95,13 @@ namespace MonoDevelop.Components
 		{
 			if (tab == null)
 				return new Cairo.Rectangle (0, 0, 0, 0);
+			
+			int spacerWidth = visualStyle == TabstripVisualStyle.CurveTabs ? Tab.SpacerWidth : 0;
 			int idx = tabs.IndexOf (tab);
 			double distance = 0;
 			for (int i = 0; i < idx; i++) {
 				if (tabs[i].TabPosition == tab.TabPosition)
-					distance += tabSizes[i].X - Tab.SpacerWidth;
+					distance += tabSizes[i].X - spacerWidth;
 			}
 			return new Cairo.Rectangle (tab.TabPosition == TabPosition.Left ? distance : Allocation.Width - distance - tabSizes[idx].X,
 				0,
@@ -109,6 +117,8 @@ namespace MonoDevelop.Components
 			hoverTab = null;
 			
 			foreach (var tab in tabs) {
+				if (tab.IsSeparator)
+					continue;
 				var bounds = GetBounds (tab);
 				if (bounds.X < mx && mx < bounds.X + bounds.Width) {
 					hoverTab = tab;
@@ -149,7 +159,7 @@ namespace MonoDevelop.Components
 		
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
-			requisition.Height = (int)Math.Ceiling (tabSizes.Max (p => p.Y)) + 1;
+			requisition.Height = (int)Math.Ceiling (tabSizes.Max (p => p.Y));
 		}
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
@@ -212,6 +222,10 @@ namespace MonoDevelop.Components
 			}
 		}
 		
+		public bool IsSeparator {
+			get { return Label == "|"; }
+		}
+		
 		public object Tag {
 			get;
 			set;
@@ -228,7 +242,8 @@ namespace MonoDevelop.Components
 		
 		public void Dispose ()
 		{
-			layout.Dispose ();
+			if (layout != null)
+				layout.Dispose ();
 		}
 		
 		public Tab (Tabstrip parent, string label, TabPosition tabPosition)
@@ -238,17 +253,36 @@ namespace MonoDevelop.Components
 			layout = PangoUtil.CreateLayout (parent);
 			layout.SetText (label);
 			layout.GetPixelSize (out w, out h);
+			h += 2;
+			
+			if (IsSeparator)
+				w = SpacerWidth * 2;
+			
 			this.TabPosition = tabPosition;
 		}
 		
 		public Cairo.PointD Size {
 			get {
-				return new Cairo.PointD (Math.Max (60, w + SpacerWidth * 2), h);
+				if (IsSeparator)
+					return new Cairo.PointD (w, h);
+				else
+					return new Cairo.PointD (Math.Max (45, w + SpacerWidth * 2), h);
 			}
 		}
 		
 		public void Draw (Cairo.Context cr, Cairo.Rectangle rectangle)
 		{
+			switch (parent.VisualStyle) {
+			case TabstripVisualStyle.CurveTabs: DrawCurveTabs (cr, rectangle); break;
+			case TabstripVisualStyle.Buttons: DrawButtonTabs (cr, rectangle); break;
+			}
+		}
+		
+		void DrawCurveTabs (Cairo.Context cr, Cairo.Rectangle rectangle)
+		{
+			if (IsSeparator)
+				return;
+			
 			cr.MoveTo (rectangle.X, rectangle.Y);
 			
 			double bottom = rectangle.Y + rectangle.Height - 1;
@@ -295,6 +329,56 @@ namespace MonoDevelop.Components
 			cr.Restore ();
 		}
 		
+		void DrawButtonTabs (Cairo.Context cr, Cairo.Rectangle rectangle)
+		{
+			Console.WriteLine ("TAB: {0} {1} {2} {3} {4}", IsSeparator, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+			if (IsSeparator) {
+				cr.NewPath ();
+				double x = Math.Ceiling (rectangle.X + rectangle.Width / 2) + 0.5;
+				cr.MoveTo (x, rectangle.Y + 0.5 + 2);
+				cr.RelLineTo (0, rectangle.Height - 1 - 4);
+				cr.ClosePath ();
+				cr.Color = (HslColor)parent.Style.Dark (StateType.Normal);
+				cr.LineWidth = 1;
+				cr.Stroke ();
+				return;
+			}
+			
+			int topPadding = 2;
+			
+			if (Active || HoverPosition.X >= 0) {
+				cr.NewPath ();
+				cr.Rectangle (rectangle.X + 0.5, rectangle.Y + 0.5 + topPadding, rectangle.Width - 1, rectangle.Height - 1 - topPadding);
+				cr.ClosePath ();
+				if (Active) {
+					cr.Color = (HslColor)parent.Style.Background (StateType.Prelight);
+				} else if (HoverPosition.X >= 0) {
+					double rx = rectangle.X + HoverPosition.X;
+					double ry = rectangle.Y + HoverPosition.Y;
+					Cairo.RadialGradient gradient = new Cairo.RadialGradient (rx, ry, rectangle.Height * 1.5, 
+						rx, ry, 2);
+					var color = (HslColor)parent.Style.Mid (StateType.Normal);
+					color.L *= 1.05;
+					gradient.AddColorStop (0, color);
+					color.L *= 1.07;
+					gradient.AddColorStop (1, color);
+					cr.Pattern = gradient;
+				}
+				cr.FillPreserve ();
+				cr.Color = (HslColor)parent.Style.Dark (StateType.Normal);
+				cr.LineWidth = 1;
+				cr.Stroke ();
+			}
+			
+			cr.Save ();
+			cr.Translate (rectangle.X + (rectangle.Width - w) / 2, (rectangle.Height - h) / 2 + topPadding - 1);
+			cr.Color = (HslColor)parent.Style.Text (StateType.Normal);
+			
+			cr.ShowLayout (layout);
+			
+			cr.Restore ();
+		}
+		
 		public override string ToString ()
 		{
 			return string.Format ("[Tab: Label={0}, TabPosition={1}, Active={2}]", Label, TabPosition, Active);
@@ -308,6 +392,12 @@ namespace MonoDevelop.Components
 		}
 
 		public event EventHandler Activated;
+	}
+	
+	public enum TabstripVisualStyle
+	{
+		CurveTabs,
+		Buttons
 	}
 }
 

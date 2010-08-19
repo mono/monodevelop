@@ -81,6 +81,9 @@ namespace MonoDevelop.Ide.Gui
 		public void SwitchView (int viewNumber)
 		{
 		}
+		public void SwitchView (MonoDevelop.Ide.Gui.IAttachableViewContent subViewContent)
+		{
+		}
 		public void AttachViewContent (MonoDevelop.Ide.Gui.IAttachableViewContent subViewContent)
 		{
 			

@@ -28,23 +28,22 @@
 
 
 using System;
+using System.Linq;
 using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
+using System.Collections.Generic;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	public class CombinedDesignView : AbstractViewContent
 	{
 		IViewContent content;
-		Gtk.Notebook notebook;
-		VBox box;
-		Toolbar toolbar;
-		
-		bool updating;
+		Gtk.Widget control;
+		List<TabView> tabs = new List<TabView> ();
 		
 		public CombinedDesignView (IViewContent content)
 		{
@@ -57,84 +56,48 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			content.ContentChanged += new EventHandler (OnTextContentChanged);
 			content.DirtyChanged += new EventHandler (OnTextDirtyChanged);
 			
-			notebook = new Gtk.Notebook ();
-			
-			// Main notebook
-			
-			notebook.TabPos = Gtk.PositionType.Bottom;
-			notebook.ShowTabs = false;
-			notebook.ShowBorder = false;
-			notebook.Show ();
-			box = new VBox ();
-			
-			// Bottom toolbar
-			
-			toolbar = new Toolbar ();
-			toolbar.IconSize = IconSize.SmallToolbar;
-			toolbar.ToolbarStyle = ToolbarStyle.BothHoriz;
-			toolbar.ShowArrow = false;
-			
 			CommandRouterContainer crc = new CommandRouterContainer (content.Control, content, true);
 			crc.Show ();
-			AddButton (GettextCatalog.GetString ("Source Code"), crc).Active = true;
-			
-			toolbar.ShowAll ();
-			
-			box.PackStart (notebook, true, true, 0);
-			box.PackStart (toolbar, false, false, 0);
-			
-			box.Show ();
+			control = crc;
 			
 			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnActiveDocumentChanged);
-			content.Control.Realized += delegate {
-				if (content != null && content.WorkbenchWindow != null) 
-					content.WorkbenchWindow.ActiveViewContent = notebook.CurrentPageWidget == content.Control ? content : this;
-			};
-			notebook.SwitchPage += delegate {
-				if (content != null && content.WorkbenchWindow != null) 
-					content.WorkbenchWindow.ActiveViewContent = notebook.CurrentPageWidget == content.Control ? content : this;
-			};
 		}
 		
 		public virtual Stetic.Designer Designer {
 			get { return null; }
 		}
 		
-		protected ToggleToolButton AddButton (string label, Gtk.Widget page)
+		protected void AddButton (string label, Gtk.Widget page)
 		{
-			updating = true;
-			ToggleToolButton button = new ToggleToolButton ();
-			button.Label = label;
-			button.IsImportant = true;
-			button.Clicked += new EventHandler (OnButtonToggled);
-			button.ShowAll ();
-			toolbar.Insert (button, -1);
-			notebook.AppendPage (page, new Gtk.Label ());
-			updating = false;
-			return button;
+			TabView view = new TabView (label, page);
+			tabs.Add (view);
+			if (WorkbenchWindow != null) {
+				view.WorkbenchWindow = WorkbenchWindow;
+				WorkbenchWindow.AttachViewContent (view);
+			}
 		}
 		
 		public bool HasPage (Gtk.Widget page)
 		{
-			return notebook.PageNum (page) != -1;
+			return tabs.Any (p => p.Control == page);
 		}
 		
 		public void RemoveButton (Gtk.Widget page)
 		{
-			int i = notebook.PageNum (page);
+/*			int i = notebook.PageNum (page);
 			if (i != -1)
-				RemoveButton (i);
+				RemoveButton (i);*/
 		}
 		
 		public void RemoveButton (int npage)
 		{
-			if (npage >= toolbar.Children.Length)
+/*			if (npage >= toolbar.Children.Length)
 				return;
 			notebook.RemovePage (npage);
 			Gtk.Widget cw = toolbar.Children [npage];
 			toolbar.Remove (cw);
 			cw.Destroy ();
-			ShowPage (0);
+			ShowPage (0);*/
 		}
 		
 		public override MonoDevelop.Projects.Project Project {
@@ -149,30 +112,39 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			base.OnWorkbenchWindowChanged (e);
 			content.WorkbenchWindow = WorkbenchWindow;
-		}
-		
-		void OnButtonToggled (object s, EventArgs args)
-		{
-			int i = Array.IndexOf (toolbar.Children, s);
-			if (i != -1)
-				ShowPage (i);
-		}
-		
-		public virtual void ShowPage (int npage)
-		{
-			if (notebook.CurrentPage == npage)
-				return;
-				
-			if (updating) return;
-			updating = true;
-			
-			notebook.CurrentPage = npage;
-			Gtk.Widget[] buttons = toolbar.Children;
-			for (int n=0; n<buttons.Length; n++) {
-				ToggleToolButton b = (ToggleToolButton) buttons [n];
-				b.Active = (n == npage);
+			if (WorkbenchWindow != null) {
+				foreach (TabView view in tabs) {
+					view.WorkbenchWindow = WorkbenchWindow;
+					WorkbenchWindow.AttachViewContent (view);
+				}
+				WorkbenchWindow.ActiveViewContentChanged += OnActiveViewContentChanged;
 			}
-			updating = false;
+		}
+
+		void OnActiveViewContentChanged (object o, ActiveViewContentEventArgs e)
+		{
+			if (WorkbenchWindow.ActiveViewContent == this)
+				OnPageShown (0);
+			else {
+				TabView tab = WorkbenchWindow.ActiveViewContent as TabView;
+				if (tab != null) {
+					int n = tabs.IndexOf (tab);
+					if (n != -1)
+						OnPageShown (n + 1);
+				}
+			}
+		}
+		
+		public void ShowPage (int npage)
+		{
+			if (WorkbenchWindow != null) {
+				var view = tabs [npage];
+				WorkbenchWindow.SwitchView (view);
+			}
+		}
+		
+		protected virtual void OnPageShown (int npage)
+		{
 		}
 		
 		public override void Dispose ()
@@ -182,18 +154,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			IdeApp.Workbench.ActiveDocumentChanged -= new EventHandler (OnActiveDocumentChanged);
 			content.Dispose ();
 			
-			// Remove and destroy the contents of the Notebook, since the destroy event is
-			// not propagated to pages in some gtk versions.
-			
-			foreach (Gtk.Widget cw in notebook.Children) {
-				Gtk.Widget lw = notebook.GetTabLabel (cw);
-				notebook.Remove (cw);
-				cw.Destroy ();
-				if (lw != null)
-					lw.Destroy ();
-			}
 			content = null;
-			box = null;
+			control = null;
 			
 			base.Dispose ();
 		}
@@ -205,7 +167,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		}
 		
 		public override Gtk.Widget Control {
-			get { return box; }
+			get { return control; }
 		}
 		
 		public override void Save (string fileName)
@@ -277,6 +239,48 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (ip != null) {
 				ShowPage (0);
 				ip.SetCaretTo (line, column);
+			}
+		}
+	}
+	
+	class TabView: AbstractBaseViewContent, IAttachableViewContent
+	{
+		string label;
+		Gtk.Widget content;
+		
+		public TabView (string label, Gtk.Widget content)
+		{
+			this.label = label;
+			this.content = content;
+		}
+		
+		#region IAttachableViewContent implementation
+		public virtual void Selected ()
+		{
+		}
+
+		public virtual void Deselected ()
+		{
+		}
+
+		public virtual void BeforeSave ()
+		{
+		}
+
+		public virtual void BaseContentChanged ()
+		{
+		}
+		#endregion
+
+		public override Widget Control {
+			get {
+				return content;
+			}
+		}
+
+		public override string TabPageLabel {
+			get {
+				return label;
 			}
 		}
 	}

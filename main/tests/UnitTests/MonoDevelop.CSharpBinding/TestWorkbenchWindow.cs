@@ -86,6 +86,9 @@ namespace MonoDevelop.CSharpBinding.Tests
 		public void SwitchView (int viewNumber)
 		{
 		}
+		public void SwitchView (IAttachableViewContent view)
+		{
+		}
 		public void AttachViewContent (IAttachableViewContent subViewContent)
 		{
 			

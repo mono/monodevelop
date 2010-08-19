@@ -72,6 +72,11 @@ namespace MonoDevelop.Ide.Gui
 			this.tabLabel = tabLabel;
 			this.tabPage = content.Control;
 			
+			ShadowType = ShadowType.None;
+			box = new VBox ();
+			Add (box);
+			box.PackStart (content.Control);
+			
 			content.WorkbenchWindow = this;
 			
 			content.ContentNameChanged += new EventHandler(SetTitleEvent);
@@ -79,10 +84,6 @@ namespace MonoDevelop.Ide.Gui
 			content.BeforeSave         += new EventHandler(BeforeSave);
 			content.ContentChanged     += new EventHandler (OnContentChanged);
 			
-			ShadowType = ShadowType.None;
-			box = new VBox ();
-			box.PackStart (content.Control);
-			Add (box);
 			box.Show ();
 			
 			SetTitleEvent(null, null);
@@ -182,6 +183,12 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (subViewNotebook != null)
 				ShowPage (viewNumber);
+		}
+		
+		public void SwitchView (IAttachableViewContent view)
+		{
+			if (subViewNotebook != null)
+				ShowPage (subViewContents.IndexOf (view));
 		}
 		
 		public void SelectWindow()	
@@ -398,7 +405,6 @@ namespace MonoDevelop.Ide.Gui
 			subViewNotebook.ShowTabs = false;
 			subViewNotebook.ShowBorder = false;
 			subViewNotebook.Show ();
-			subViewNotebook.SwitchPage += subViewNotebookIndexChanged;
 			
 			//add existing ViewContent
 			AddButton (this.ViewContent.TabPageLabel, this.ViewContent);
@@ -430,7 +436,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			Tab tab = new Tab (subViewToolbar, label);
 			tab.Tag = subViewToolbar.TabCount;
-			tab.Activated += (sender, e) => { subViewNotebook.CurrentPage = (int)((Tab)sender).Tag; QueueDraw (); };
+			tab.Activated += (sender, e) => { SetCurrentView ((int)((Tab)sender).Tag); QueueDraw (); };
 			subViewToolbar.AddTab (tab);
 			
 			Gtk.VBox widgetBox = new Gtk.VBox ();
@@ -505,8 +511,11 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		int oldIndex = -1;
-		protected void subViewNotebookIndexChanged(object sender, SwitchPageArgs e)
+		
+		void SetCurrentView (int newIndex)
 		{
+			subViewNotebook.CurrentPage = newIndex;
+			
 			if (oldIndex > 0) {
 				IAttachableViewContent secondaryViewContent = subViewContents[oldIndex - 1] as IAttachableViewContent;
 				if (secondaryViewContent != null) {

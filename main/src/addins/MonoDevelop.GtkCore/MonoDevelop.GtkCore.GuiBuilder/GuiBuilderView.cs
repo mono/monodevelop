@@ -239,7 +239,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return label;
 		}
 		
-		public override void ShowPage (int npage)
+		protected override void OnPageShown (int npage)
 		{
 			if (npage == 0 && designer != null && window != null && !ErrorMode) {
 				// At every page switch update the generated code, to make sure code completion works
@@ -249,7 +249,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				if (gproject.Project.UsePartialTypes)
 					GuiBuilderService.GenerateSteticCodeStructure ((DotNetProject)gproject.Project, designer.RootComponent, null, false, false);
 			}
-			base.ShowPage (npage);
+			base.OnPageShown (npage);
 		}
 		
 		string ImportFile (string file)

@@ -120,7 +120,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			set { Load (value.Name); }
 		}
 		
-		public override void ShowPage (int npage)
+		protected override void OnPageShown (int npage)
 		{
 			if (designer != null && group != null) {
 				// At every page switch update the generated code, to make sure code completion works
@@ -130,7 +130,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				if (project.Project.UsePartialTypes)
 					GuiBuilderService.GenerateSteticCodeStructure ((DotNetProject)project.Project, designer.RootComponent, null, false, false);
 			}
-			base.ShowPage (npage);
+			base.OnPageShown (npage);
 		}
 		
 		void OnRootComponentChanged (object s, EventArgs args)
