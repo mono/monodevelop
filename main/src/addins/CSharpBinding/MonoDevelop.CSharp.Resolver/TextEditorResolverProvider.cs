@@ -114,6 +114,7 @@ namespace MonoDevelop.CSharp.Resolver
 					resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line + 1, loc.Column + 1));
 					if (resolveResult != null) {
 						resolveResult = new MemberResolveResult (dom.GetType (resolveResult.ResolvedType));
+						resolveResult.ResolvedExpression = expressionResult;
 						return resolveResult;
 					}
 				}
