@@ -104,11 +104,6 @@ namespace MonoDevelop.VersionControl.Views
 				if (widget == null) {
 					widget = new DiffWidget (info);
 					
-					ComparisonWidget.OriginalEditor.Document.MimeType = ComparisonWidget.DiffEditor.Document.MimeType = info.Document.Editor.Document.MimeType;
-					ComparisonWidget.OriginalEditor.Options.FontName = ComparisonWidget.DiffEditor.Options.FontName = info.Document.Editor.Options.FontName;
-					ComparisonWidget.OriginalEditor.Options.ColorScheme = ComparisonWidget.DiffEditor.Options.ColorScheme = info.Document.Editor.Options.ColorScheme;
-					ComparisonWidget.OriginalEditor.Options.ShowFoldMargin = ComparisonWidget.DiffEditor.Options.ShowFoldMargin = false;
-					ComparisonWidget.OriginalEditor.Options.ShowIconMargin = ComparisonWidget.DiffEditor.Options.ShowIconMargin = false;
 					ComparisonWidget.DiffEditor.Document.Text = info.Item.Repository.GetBaseText (info.Item.Path);
 					ComparisonWidget.SetLocal (ComparisonWidget.OriginalEditor.GetTextEditorData ());
 					widget.ShowAll ();

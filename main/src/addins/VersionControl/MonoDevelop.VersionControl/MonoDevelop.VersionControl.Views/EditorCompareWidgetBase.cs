@@ -238,6 +238,19 @@ namespace MonoDevelop.VersionControl.Views
 		public void SetVersionControlInfo (VersionControlDocumentInfo info)
 		{
 			this.info = info;
+			
+			
+			foreach (var editor in editors) {
+				editor.Document.MimeType = info.Document.Editor.Document.MimeType;
+				editor.Options.FontName = info.Document.Editor.Options.FontName;
+				editor.Options.ColorScheme = info.Document.Editor.Options.ColorScheme;
+				editor.Options.ShowSpaces = info.Document.Editor.Options.ShowSpaces;
+				editor.Options.ShowTabs = info.Document.Editor.Options.ShowTabs;
+				editor.Options.ShowEolMarkers = info.Document.Editor.Options.ShowEolMarkers;
+				editor.Options.ShowInvalidLines = info.Document.Editor.Options.ShowInvalidLines;
+				editor.Options.ShowFoldMargin = false;
+				editor.Options.ShowIconMargin = false;
+			}
 		}
 		
 		protected abstract void CreateComponents ();

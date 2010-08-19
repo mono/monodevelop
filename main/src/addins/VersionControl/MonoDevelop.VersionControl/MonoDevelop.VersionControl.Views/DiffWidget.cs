@@ -69,8 +69,9 @@ namespace MonoDevelop.VersionControl.Views
 			diffTextEditor.Options.ColorScheme = info.Document.Editor.Options.ColorScheme;
 			diffTextEditor.Options.ShowFoldMargin = false;
 			diffTextEditor.Options.ShowIconMargin = false;
-			diffTextEditor.Options.ShowTabs = true;
-			diffTextEditor.Options.ShowSpaces = true;
+			diffTextEditor.Options.ShowTabs = info.Document.Editor.Options.ShowTabs;
+			diffTextEditor.Options.ShowSpaces = info.Document.Editor.Options.ShowSpaces;
+			diffTextEditor.Options.ShowInvalidLines = info.Document.Editor.Options.ShowInvalidLines;
 			diffTextEditor.Options.ShowInvalidLines = info.Document.Editor.Options.ShowInvalidLines;
 			diffTextEditor.Document.ReadOnly = true;
 			scrolledwindow1.Child = diffTextEditor;
