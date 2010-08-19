@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
@@ -41,14 +42,18 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			var dialog = new NavigateToDialog (NavigateToType.Types, false) {
 				Title = GettextCatalog.GetString ("Go to Type"),
 			};
+			IEnumerable<NavigateToDialog.OpenLocation> locations = null;
 			try {
 				if (MessageService.RunCustomDialog (dialog, MessageService.RootWindow) == (int)ResponseType.Ok) {
 					dialog.Sensitive = false;
-					foreach (var loc in dialog.Locations)
-						IdeApp.Workbench.OpenDocument (loc.Filename, loc.Line, loc.Column, true);
+					locations = dialog.Locations;
 				}
 			} finally {
 				dialog.Destroy ();
+			}
+			if (locations != null) {
+				foreach (var loc in locations)
+					IdeApp.Workbench.OpenDocument (loc.Filename, loc.Line, loc.Column, true);
 			}
 		}
 		
@@ -65,14 +70,18 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			var dialog = new NavigateToDialog (NavigateToType.Files, false) {
 				Title = GettextCatalog.GetString ("Go to File"),
 			};
+			IEnumerable<NavigateToDialog.OpenLocation> locations = null;
 			try {
 				if (MessageService.RunCustomDialog (dialog, MessageService.RootWindow) == (int)ResponseType.Ok) {
 					dialog.Sensitive = false;
-					foreach (var loc in dialog.Locations)
-						IdeApp.Workbench.OpenDocument (loc.Filename, loc.Line, loc.Column, true);
+					locations = dialog.Locations;
 				}
 			} finally {
 				dialog.Destroy ();
+			}
+			if (locations != null) {
+				foreach (var loc in locations)
+					IdeApp.Workbench.OpenDocument (loc.Filename, loc.Line, loc.Column, true);
 			}
 		}
 		
@@ -87,14 +96,18 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		protected override void Run ()
 		{
 			var dialog = new NavigateToDialog (NavigateToType.All, true);
+			IEnumerable<NavigateToDialog.OpenLocation> locations = null;
 			try {
 				if (MessageService.RunCustomDialog (dialog, MessageService.RootWindow) == (int)ResponseType.Ok) {
 					dialog.Sensitive = false;
-					foreach (var loc in dialog.Locations)
-						IdeApp.Workbench.OpenDocument (loc.Filename, loc.Line, loc.Column, true);
+					locations = dialog.Locations;
 				}
 			} finally {
 				dialog.Destroy ();
+			}
+			if (locations != null) {
+				foreach (var loc in locations)
+					IdeApp.Workbench.OpenDocument (loc.Filename, loc.Line, loc.Column, true);
 			}
 		}
 		
