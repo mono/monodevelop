@@ -67,6 +67,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			get { return null; }
 		}
 		
+		public override string TabPageLabel {
+			get {
+				return GettextCatalog.GetString ("Source");
+			}
+		}
+		
 		protected void AddButton (string label, Gtk.Widget page)
 		{
 			TabView view = new TabView (label, page);
@@ -252,6 +258,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			this.label = label;
 			this.content = content;
+		}
+		
+		public override T GetContent<T> ()
+		{
+			if (Control is T)
+				return (T) (object) Control;
+			return base.GetContent<T> ();
 		}
 		
 		#region IAttachableViewContent implementation
