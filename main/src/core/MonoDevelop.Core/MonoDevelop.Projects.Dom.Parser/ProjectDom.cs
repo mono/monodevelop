@@ -554,10 +554,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 			
 			if (returnType.ArrayDimensions > 0) {
 				DomReturnType newType = new DomReturnType (returnType.FullName);
+				// dimensions are correctly updated when cropped
 				newType.ArrayDimensions = returnType.ArrayDimensions - 1;
-				for (int i = 0; i < newType.ArrayDimensions; i++) {
-					newType.SetDimension (i, returnType.ArrayDimensions - 1);
-				}
 				newType.PointerNestingLevel = returnType.PointerNestingLevel;
 				return GetArrayType (newType);
 			}
