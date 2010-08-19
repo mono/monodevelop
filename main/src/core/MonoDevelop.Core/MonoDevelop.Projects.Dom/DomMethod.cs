@@ -274,7 +274,8 @@ namespace MonoDevelop.Projects.Dom
 						DomReturnType drr = new DomReturnType (res.FullName);
 						drr.PointerNestingLevel = type.PointerNestingLevel;
 						drr.ArrayDimensions = type.ArrayDimensions;
-						drr.Type  = type.Type; // May be anonymous type
+						if (!(type.Type is ITypeParameterType))
+							drr.Type  = type.Type; // May be anonymous type
 						for (int i = 0; i < type.ArrayDimensions; i++)
 							drr.SetDimension (i, type.GetDimension (i));
 						return drr;
