@@ -295,6 +295,32 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (5, types.Count);
 		}
 		
+			
+		[Test]
+		public void GetInheritanceTreeForEnumsAndStructs ()
+		{
+			IType type = mainProject.GetType ("CompletionDbTest.TestEnum", false);
+			
+			List<string> types = new List<string> ();
+			foreach (IType t in mainProject.GetInheritanceTree (type)) {
+				Console.WriteLine (t.FullName);
+				types.Add (t.FullName);
+			}
+			
+			Assert.IsTrue (types.Contains ("CompletionDbTest.TestEnum"));
+			Assert.IsTrue (types.Contains ("System.Enum"));
+			Assert.IsTrue (types.Contains ("System.Object"));
+			
+			type = mainProject.GetType ("CompletionDbTest.TestStruct", false);
+			
+			types = new List<string> ();
+			foreach (IType t in mainProject.GetInheritanceTree (type))
+				types.Add (t.FullName);
+			
+			Assert.IsTrue (types.Contains ("CompletionDbTest.TestStruct"));
+			Assert.IsTrue (types.Contains ("System.ValueType"));
+			Assert.IsTrue (types.Contains ("System.Object"));
+		}
 		[Test]
 		public void GetNamespaceContents ()
 		{
