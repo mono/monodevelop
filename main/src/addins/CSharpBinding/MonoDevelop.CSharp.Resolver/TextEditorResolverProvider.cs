@@ -67,28 +67,30 @@ namespace MonoDevelop.CSharp.Resolver
 			while (wordEnd < data.Length - 1 && Char.IsWhiteSpace (data.GetCharAt (wordEnd)))
 				wordEnd++;
 			
+			int saveEnd = wordEnd;
 			if (wordEnd < data.Length && data.GetCharAt (wordEnd) == '<') {
-				bool wasMethodCall = false;
-				int saveEnd = wordEnd;
 				int matchingBracket = data.Document.GetMatchingBracketOffset (wordEnd);
 				if (matchingBracket > 0)
 					wordEnd = matchingBracket;
 				while (wordEnd < data.Length - 1 && Char.IsWhiteSpace (data.GetCharAt (wordEnd)))
 					wordEnd++;
-				if (data.GetCharAt (wordEnd) == '(') {
-					matchingBracket = data.Document.GetMatchingBracketOffset (wordEnd);
-					if (matchingBracket > 0) {
-						wordEnd = matchingBracket;
-						wasMethodCall = true;
-					}
-				}
-				if (!wasMethodCall)
-					wordEnd = saveEnd;
 			}
+			
+			bool wasMethodCall = false;
+			if (data.GetCharAt (wordEnd) == '(') {
+				int matchingBracket = data.Document.GetMatchingBracketOffset (wordEnd);
+				if (matchingBracket > 0) {
+					wordEnd = matchingBracket;
+					wasMethodCall = true;
+				}
+			}
+			if (!wasMethodCall)
+				wordEnd = saveEnd;
 
 			ExpressionResult expressionResult = expressionFinder.FindExpression (data, wordEnd);
 			if (expressionResult == null)
 				return null;
+
 			ResolveResult resolveResult;
 			DocumentLocation loc = data.Document.OffsetToLocation (offset);
 			string savedExpression = null;
