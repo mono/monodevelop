@@ -274,7 +274,7 @@ namespace Mono.TextEditor.Highlighting
 					return result;
 				Rule rule = mode;
 				result.Push (mode);
-				foreach (Span span in this.spanStack) {
+				foreach (Span span in this.spanStack.Reverse ()) {
 					Rule tmp = rule.GetRule (span.Rule) ?? this.CurRule;
 					result.Push (tmp);
 					rule = tmp;
@@ -543,6 +543,7 @@ namespace Mono.TextEditor.Highlighting
 				AddChunk (ref curChunk, 0, curChunk.Style);
 
 				Rule spanRule = spanParser.GetRule (span);
+				
 				if (spanRule == null)
 					throw new Exception ("Rule " + span.Rule + " not found in " + span);
 				spanParser.PushSpan (span, spanRule);
@@ -571,12 +572,11 @@ namespace Mono.TextEditor.Highlighting
 				curChunk.Style  = GetStyle (curChunk) ?? GetChunkStyle (span);
 				AddChunk (ref curChunk, 0, defaultStyle);
 
-				spanParser.PopSpan ();
 				curChunk.Offset = offset;
 				curChunk.Length = length;
 				curChunk.Style  = span.TagColor ?? GetChunkStyle (span);
 				AddChunk (ref curChunk, 0, defaultStyle);
-
+				spanParser.PopSpan ();
 			}
 
 			bool inWord = false;
