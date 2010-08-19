@@ -420,12 +420,13 @@ namespace MonoDevelop.Projects.Dom
 				IMethod result = methods [0];
 				foreach (IMethod method in methods) {
 					if (method.Parameters.Any (p => p.IsParams)) {
-						if (method.TypeParameters.Count != genericArguments.Count || method.Parameters.Count - 1 > arguments.Count)
+						if (method.Parameters.Count - 1 > arguments.Count)
 							continue;
 					} else {
-						if (method.TypeParameters.Count != genericArguments.Count || method.Parameters.Count != arguments.Count)
+						if (method.Parameters.Count != arguments.Count)
 							continue;
 					}
+					
 					bool match = true;
 					for (int i = 0; i < arguments.Count; i++) {
 						if (method.Parameters.Count == 0) { // should never happen
