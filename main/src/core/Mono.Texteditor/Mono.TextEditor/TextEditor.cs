@@ -1335,7 +1335,7 @@ namespace Mono.TextEditor
 			return this.textViewMargin.GetWidth (text);
 		}
 		
-		void RenderMargins (Cairo.Context cr, Cairo.Rectangle cairoRectangle)
+		void RenderMargins (Cairo.Context cr, Cairo.Context textViewCr, Cairo.Rectangle cairoRectangle)
 		{
 			this.TextViewMargin.rulerX = Options.RulerColumn * this.TextViewMargin.CharWidth - this.textEditorData.HAdjustment.Value;
 			int startLine = YToLine (cairoRectangle.Y + this.textEditorData.VAdjustment.Value);
@@ -1360,10 +1360,8 @@ namespace Mono.TextEditor
 					try {
 						if (renderFirstLine)
 							margin.XOffset = curX;
-						cr.Rectangle (margin.XOffset, 0, margin.Width >= 0 ? margin.Width : Allocation.Width - curX, Allocation.Height);
-						cr.Clip ();
-						margin.Draw (cr, cairoRectangle, logicalLineNumber, margin.XOffset, curY, lineHeight);
-						cr.ResetClip ();
+						
+						margin.Draw (margin == textViewMargin ? textViewCr : cr, cairoRectangle, logicalLineNumber, margin.XOffset, curY, lineHeight);
 						if (renderFirstLine)
 							curX += margin.Width;
 					} catch (Exception e) {
@@ -1424,11 +1422,14 @@ namespace Mono.TextEditor
 			
 			var area = e.Region.Clipbox;
 			var cairoArea = new Cairo.Rectangle (area.X, area.Y, area.Width, area.Height);
-			
-			using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
+			using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window))
+			using (Cairo.Context textViewCr = Gdk.CairoHelper.Create (e.Window)) {
 				cr.LineWidth = Options.Zoom;
-			
-				RenderMargins (cr, cairoArea);
+				textViewCr.LineWidth = Options.Zoom;
+				textViewCr.Rectangle (textViewMargin.XOffset, 0, Allocation.Width - textViewMargin.XOffset, Allocation.Height);
+				textViewCr.Clip ();
+				
+				RenderMargins (cr, textViewCr, cairoArea);
 			
 #if DEBUG_EXPOSE
 				Console.WriteLine ("{0} expose {1},{2} {3}x{4}", (long)(DateTime.Now - started).TotalMilliseconds,
