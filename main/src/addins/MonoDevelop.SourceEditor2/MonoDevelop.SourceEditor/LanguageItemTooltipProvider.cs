@@ -46,7 +46,7 @@ namespace MonoDevelop.SourceEditor
 			ExtensibleTextEditor ed = (ExtensibleTextEditor) editor;
 			
 			ResolveResult resolveResult = ed.GetLanguageItem (offset);
-			if (resolveResult == null)
+			if (resolveResult == null || resolveResult.ResolvedExpression == null)
 				return null;
 			int startOffset = editor.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.Start.Line - 1, 
 			                                                    resolveResult.ResolvedExpression.Region.Start.Column - 1);
