@@ -87,16 +87,26 @@ namespace MonoDevelop.Deployment.Targets
 		{
 			MonoDevelop.Core.Execution.ProcessWrapper pWrapper = MonoDevelop.Core.Runtime.ProcessService.StartProcess (name, args, null, null);
 			pWrapper.WaitForExit ();
-			if (pWrapper.ExitCode != 0)
+			if (pWrapper.ExitCode != 0) {
+				LoggingService.LogWarning ("Failed to run {0} {1}", name, args);
 				throw new Exception (pWrapper.StandardError.ReadToEnd ());
+			}
+		}
+
+		static string ConstructTempDirName ()
+		{
+			return System.IO.Path.Combine (System.IO.Path.GetTempPath (), "md-deploy-" + Environment.UserName + DateTime.Now.Ticks);
 		}
 		
 		DirectoryInfo CreateTempDir ()
 		{
-			string tempPath = System.IO.Path.GetTempFileName ();
-			if (tempPath == null)
-				throw new Exception ("Null temp path.");
-			File.Delete (tempPath);
+			string tempPath = ConstructTempDirName ();
+			if (Directory.Exists (tempPath) || File.Exists (tempPath)) {
+				tempPath = ConstructTempDirName ();
+				if (Directory.Exists (tempPath) || File.Exists (tempPath))
+					throw new Exception ("Temp directory " + ConstructTempDirName () + " already exists");
+			}
+
 			DirectoryInfo dInfo = Directory.CreateDirectory (tempPath);
 			if (dInfo == null || !dInfo.Exists)
 				throw new Exception ("Directory could not be created.");
