@@ -1987,7 +1987,7 @@ namespace Mono.TextEditor
 		
 		public void AnimateSearchResult (SearchResult result)
 		{
-			if (!IsComposited)
+			if (!IsComposited || !Options.EnableAnimations)
 				return;
 			TextViewMargin.MainSearchResult = result;
 			if (result != null) {
