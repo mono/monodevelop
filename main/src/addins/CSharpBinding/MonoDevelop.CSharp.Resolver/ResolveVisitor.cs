@@ -167,6 +167,8 @@ namespace MonoDevelop.CSharp.Resolver
 					break;
 				}
 				IType curTypeObject = resolver.Dom.GetType (curType);
+				if (curTypeObject == null)
+					continue;
 				if (type == null || resolver.Dom.GetInheritanceTree (typeObject).Any (t => t.DecoratedFullName == curTypeObject.DecoratedFullName)) {
 					type = curType;
 					typeObject = curTypeObject;
@@ -746,7 +748,7 @@ namespace MonoDevelop.CSharp.Resolver
 		public override object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 		{
 			if (primitiveExpression.Value == null) 
-				return CreateResult (DomReturnType.Object);
+				return CreateResult ("");
 			Type type = primitiveExpression.Value.GetType();
 			return CreateResult (type.FullName);
 		}
