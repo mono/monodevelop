@@ -56,6 +56,7 @@ namespace MonoDevelop.VersionControl.Views
 			fixed1.SetSizeRequest (16, 16);
 			this.buttonNext.Clicked += (sender, args) => ComparisonWidget.GotoNext ();
 			this.buttonPrev.Clicked += (sender, args) => ComparisonWidget.GotoPrev ();
+			notebook1.Page = 0;
 			comparisonWidget.DiffChanged += delegate {
 				labelOverview.Markup = "<big>" + LabelText + "</big>";
 				SetButtonSensitivity ();

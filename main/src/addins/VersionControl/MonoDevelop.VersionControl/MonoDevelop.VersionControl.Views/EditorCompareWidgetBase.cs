@@ -329,6 +329,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			ClearDiffCache ();
 		}
+		
 		public abstract void CreateDiff ();
 
 		void RedrawMiddleAreas ()
