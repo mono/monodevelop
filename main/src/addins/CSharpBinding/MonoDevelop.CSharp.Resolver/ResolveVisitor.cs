@@ -156,8 +156,25 @@ namespace MonoDevelop.CSharp.Resolver
 		{
 			if (collectionInitializerExpression.CreateExpressions.Count == 0)
 				return null;
-			DomReturnType type = (DomReturnType)ResolveType (collectionInitializerExpression.CreateExpressions[0]);
-			type.ArrayDimensions++;
+			DomReturnType type = null;
+			IType typeObject = null;
+			
+			for (int i = 0; i < collectionInitializerExpression.CreateExpressions.Count; i++) {
+				DomReturnType curType = (DomReturnType)ResolveType (collectionInitializerExpression.CreateExpressions[i]);
+				// if we found object we can stop
+				if (curType.DecoratedFullName == DomReturnType.Object.DecoratedFullName) {
+					type = curType;
+					break;
+				}
+				IType curTypeObject = resolver.Dom.GetType (curType);
+				if (type == null || resolver.Dom.GetInheritanceTree (typeObject).Any (t => t.DecoratedFullName == curTypeObject.DecoratedFullName)) {
+					curType = type;
+					typeObject = curTypeObject;
+				}
+			}
+			
+			if (type != null)
+				type.ArrayDimensions++;
 			return CreateResult (type);
 		}
 		
@@ -729,7 +746,7 @@ namespace MonoDevelop.CSharp.Resolver
 		public override object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 		{
 			if (primitiveExpression.Value == null) 
-				return CreateResult ("");
+				return CreateResult (DomReturnType.Object);
 			Type type = primitiveExpression.Value.GetType();
 			return CreateResult (type.FullName);
 		}
