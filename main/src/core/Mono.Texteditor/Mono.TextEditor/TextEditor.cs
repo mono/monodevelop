@@ -1335,15 +1335,24 @@ namespace Mono.TextEditor
 			return this.textViewMargin.GetWidth (text);
 		}
 		
+		void UpdateMarginXOffsets ()
+		{
+			double curX = 0;
+			foreach (Margin margin in this.margins) {
+				if (!margin.IsVisible)
+					continue;
+				margin.XOffset = curX;
+				curX += margin.Width;
+			}
+		}
+		
 		void RenderMargins (Cairo.Context cr, Cairo.Context textViewCr, Cairo.Rectangle cairoRectangle)
 		{
 			this.TextViewMargin.rulerX = Options.RulerColumn * this.TextViewMargin.CharWidth - this.textEditorData.HAdjustment.Value;
 			int startLine = YToLine (cairoRectangle.Y + this.textEditorData.VAdjustment.Value);
 			double startY = LineToY (startLine);
-			double curX = 0;
 			double curY = startY - this.textEditorData.VAdjustment.Value;
 			bool setLongestLine = false;
-			bool renderFirstLine = true;
 			for (int visualLineNumber = startLine; ; visualLineNumber++) {
 				int logicalLineNumber = visualLineNumber;
 				LineSegment line      = Document.GetLine (logicalLineNumber);
@@ -1358,17 +1367,11 @@ namespace Mono.TextEditor
 					if (!margin.IsVisible)
 						continue;
 					try {
-						if (renderFirstLine)
-							margin.XOffset = curX;
-						
 						margin.Draw (margin == textViewMargin ? textViewCr : cr, cairoRectangle, logicalLineNumber, margin.XOffset, curY, lineHeight);
-						if (renderFirstLine)
-							curX += margin.Width;
 					} catch (Exception e) {
 						System.Console.WriteLine (e);
 					}
 				}
-				renderFirstLine = false;
 				// take the line real render width from the text view margin rendering (a line can consist of more than 
 				// one line and be longer (foldings!) ex. : someLine1[...]someLine2[...]someLine3)
 				double lineWidth = textViewMargin.lastLineRenderWidth + HAdjustment.Value;
@@ -1424,6 +1427,8 @@ namespace Mono.TextEditor
 			var cairoArea = new Cairo.Rectangle (area.X, area.Y, area.Width, area.Height);
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window))
 			using (Cairo.Context textViewCr = Gdk.CairoHelper.Create (e.Window)) {
+				UpdateMarginXOffsets ();
+				
 				cr.LineWidth = Options.Zoom;
 				textViewCr.LineWidth = Options.Zoom;
 				textViewCr.Rectangle (textViewMargin.XOffset, 0, Allocation.Width - textViewMargin.XOffset, Allocation.Height);
