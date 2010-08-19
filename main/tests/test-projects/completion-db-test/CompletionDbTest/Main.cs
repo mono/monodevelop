@@ -125,6 +125,11 @@ namespace CompletionDbTest
 	}
 	
 #endregion
+
+#region enums/structs
+	public enum TestEnum {}
+	public struct TestStruct {}
+#endregion
 	
 }
 
