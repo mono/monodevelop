@@ -2693,5 +2693,25 @@ class Test : TestBase
 			Assert.IsNotNull (provider.Find ("X"), "property 'X' not found.");
 		}
 		
+		/// <summary>
+		/// Bug 632228 - Wrong var inference
+		/// </summary>
+		[Test()]
+		public void TestBug632228 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"
+class C {
+	public void FooBar () {}
+	public static void Main ()
+	{
+		var thingToTest = new[] { new C (), 22, new object(), string.Empty, null };
+		$thingToTest[0].$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNull (provider.Find ("FooBar"), "method 'FooBar' found, but shouldn't.");
+		}
 	}
 }
