@@ -143,8 +143,7 @@ namespace Mono.TextEditor
 			set {
 				if (!SurpressHighlightUpdate)
 					Mono.TextEditor.Highlighting.SyntaxModeService.WaitUpdate (this);
-				int oldLength = Length;
-				ReplaceEventArgs args = new ReplaceEventArgs (0, oldLength, value);
+				ReplaceEventArgs args = new ReplaceEventArgs (0, Length, value);
 				this.OnTextReplacing (args);
 				this.buffer.Text = value;
 				splitter.Initalize (value);
@@ -256,7 +255,7 @@ namespace Mono.TextEditor
 			if (count < 0)
 				throw new ArgumentException ("count < 0");
 			if (offset + count > Length)
-				throw new ArgumentException ("offset + cound is beyond EOF");
+				throw new ArgumentException ("offset + count is beyond EOF");
 			return buffer.GetTextAt (offset, count);
 		}
 		
