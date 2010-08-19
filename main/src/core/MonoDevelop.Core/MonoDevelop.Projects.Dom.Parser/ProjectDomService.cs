@@ -1024,12 +1024,14 @@ namespace MonoDevelop.Projects.Dom.Parser
 				tr.UnresolvedCount = 0;
 				DomType rc = (DomType)c.AcceptVisitor (tr, null);
 				rc.Resolved = true;
-				
+				// no need to set the base type here - the completion db handles that
+				// (setting to system.object is wrong for enums & structs - and interfaces may never have a base)
+/*				
 				if (tr.UnresolvedCount == 0 && c.FullName != "System.Object") {
 					// If the class has no base classes, make sure it subclasses System.Object
 					if (rc.BaseType == null)
 						rc.BaseType = new DomReturnType ("System.Object");
-				}
+				}*/
 				
 				result.Add (rc);
 				unresolvedCount += tr.UnresolvedCount;

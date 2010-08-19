@@ -160,6 +160,9 @@ namespace MonoDevelop.Projects.Dom
 		public static readonly IReturnType EventArgs;
 		public static readonly IReturnType StringBuilder;
 		public static readonly IReturnType TypeReturnType;
+		
+		public static readonly IReturnType Enum;
+		public static readonly IReturnType ValueType;
 	
 		public bool IsGenerated {
 			get;
@@ -234,6 +237,8 @@ namespace MonoDevelop.Projects.Dom
 			CreateTableEntry ("Gtk.Label");
 			
 			Delegate = CreateTableEntry ("System.Delegate");
+			Enum = CreateTableEntry ("System.Enum");
+			ValueType = CreateTableEntry ("System.ValueType");
 		}
 
 		public List<IReturnTypePart> Parts {

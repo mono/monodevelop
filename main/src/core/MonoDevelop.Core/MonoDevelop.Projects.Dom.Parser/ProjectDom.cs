@@ -180,9 +180,15 @@ namespace MonoDevelop.Projects.Dom.Parser
 						types.Push (resolvedType);
 					}
 				}
-
-				if (cur.BaseType == null && cur.FullName != "System.Object") 
-					types.Push (this.GetType (DomReturnType.Object));
+				if (cur.BaseType == null && cur.FullName != "System.Object") {
+					if (cur.ClassType == ClassType.Enum) {
+						types.Push (this.GetType (DomReturnType.Enum));
+					} else if (cur.ClassType == ClassType.Struct) {
+						types.Push (this.GetType (DomReturnType.ValueType));
+					} else {
+						types.Push (this.GetType (DomReturnType.Object));
+					}
+				}
 			}
 		}
 
