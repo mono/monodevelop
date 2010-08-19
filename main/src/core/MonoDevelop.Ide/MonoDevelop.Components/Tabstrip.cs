@@ -331,7 +331,6 @@ namespace MonoDevelop.Components
 		
 		void DrawButtonTabs (Cairo.Context cr, Cairo.Rectangle rectangle)
 		{
-			Console.WriteLine ("TAB: {0} {1} {2} {3} {4}", IsSeparator, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 			if (IsSeparator) {
 				cr.NewPath ();
 				double x = Math.Ceiling (rectangle.X + rectangle.Width / 2) + 0.5;
