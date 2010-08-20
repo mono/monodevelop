@@ -26,6 +26,7 @@
 
 using System;
 using MonoDevelop.Projects.Text;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -34,11 +35,14 @@ namespace MonoDevelop.VersionControl.Git
 		public ConflictResolutionDialog ()
 		{
 			this.Build ();
+			HasSeparator = false;
 		}
 		
 		public void Load (string file)
 		{
 			mergeWidget.Load (file);
+			string msg = GettextCatalog.GetString ("A merge conflict has been detected in file <b>{0}</b>", System.IO.Path.GetFileName (file));
+			labelTop.Markup = msg;
 		}
 		
 		public void Save (string file)

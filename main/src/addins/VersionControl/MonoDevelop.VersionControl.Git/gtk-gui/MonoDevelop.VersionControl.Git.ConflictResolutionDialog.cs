@@ -6,7 +6,7 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		private global::Gtk.VBox vbox2;
 
-		private global::Gtk.Label label1;
+		private global::Gtk.Label labelTop;
 
 		private global::MonoDevelop.VersionControl.Views.MergeWidget mergeWidget;
 
@@ -33,12 +33,13 @@ namespace MonoDevelop.VersionControl.Git
 			this.vbox2.Spacing = 6;
 			this.vbox2.BorderWidth = ((uint)(9));
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.label1 = new global::Gtk.Label ();
-			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
-			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("A merge conflict has been detected while updating from the repository:");
-			this.vbox2.Add (this.label1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.label1]));
+			this.labelTop = new global::Gtk.Label ();
+			this.labelTop.Name = "labelTop";
+			this.labelTop.Xalign = 0f;
+			this.labelTop.LabelProp = "A merge conflict has been detected in file <b>SomeFile.txt</b>";
+			this.labelTop.UseMarkup = true;
+			this.vbox2.Add (this.labelTop);
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.labelTop]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -95,8 +96,8 @@ namespace MonoDevelop.VersionControl.Git
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.DefaultWidth = 759;
-			this.DefaultHeight = 524;
+			this.DefaultWidth = 991;
+			this.DefaultHeight = 534;
 			this.Show ();
 		}
 	}
