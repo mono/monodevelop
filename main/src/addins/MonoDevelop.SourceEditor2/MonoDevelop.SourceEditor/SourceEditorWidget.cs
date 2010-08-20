@@ -798,10 +798,21 @@ namespace MonoDevelop.SourceEditor
 		
 		void ClickedReload (object sender, EventArgs args)
 		{
+			Reload ();
+			view.TextEditor.GrabFocus ();
+		}
+		
+		public void Reload ()
+		{
 			try {
-//				double vscroll = view.VScroll;
+				double vscroll = view.TextEditor.VAdjustment.Value;
+				var loc = view.TextEditor.Caret.Location;
+				
 				view.Load (view.ContentName);
-//				view.VScroll = vscroll;
+				
+				view.TextEditor.VAdjustment.Value = vscroll;
+				view.TextEditor.Caret.Location = loc;
+				
 				view.WorkbenchWindow.ShowNotification = false;
 			} catch (Exception ex) {
 				MessageService.ShowException (ex, "Could not reload the file.");

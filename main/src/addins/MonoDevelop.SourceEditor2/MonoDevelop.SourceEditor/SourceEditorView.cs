@@ -590,23 +590,26 @@ namespace MonoDevelop.SourceEditor
 		void GotFileChanged (object sender, FileEventArgs args)
 		{
 			if (!isDisposed)
-				ShowFileChangedWarning (args.FileName);
+				HandleFileChanged (args.FileName);
 		}
 		
 		void OnFileChanged (object sender, FileSystemEventArgs args)
 		{
 			if (args.ChangeType == WatcherChangeTypes.Changed || args.ChangeType == WatcherChangeTypes.Created) 
-				ShowFileChangedWarning (args.FullPath);
+				HandleFileChanged (args.FullPath);
 		}
 		
-		void ShowFileChangedWarning (string fileName)
+		void HandleFileChanged (string fileName)
 		{
 			if (!isInWrite && fileName != ContentName)
 				return;
 			if (lastSaveTime == File.GetLastWriteTime (ContentName))
 				return;
 			
-			widget.ShowFileChangedWarning ();
+			if (!IsDirty && IdeApp.Workbench.AutoReloadDocuments)
+				widget.Reload ();
+			else
+				widget.ShowFileChangedWarning ();
 		}
 		
 		bool CheckReadOnly (int line)
