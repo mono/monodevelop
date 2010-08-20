@@ -159,7 +159,7 @@ namespace MonoDevelop.Components
 		
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
-			requisition.Height = (int)Math.Ceiling (tabSizes.Max (p => p.Y));
+			requisition.Height = 1 + (int)Math.Ceiling (tabSizes.Max (p => p.Y));
 		}
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
@@ -347,7 +347,7 @@ namespace MonoDevelop.Components
 			
 			if (Active || HoverPosition.X >= 0) {
 				cr.NewPath ();
-				cr.Rectangle (rectangle.X + 0.5, rectangle.Y + 0.5 + topPadding, rectangle.Width - 1, rectangle.Height - 1 - topPadding);
+				cr.Rectangle (rectangle.X + 0.5, rectangle.Y + 0.5 + topPadding, rectangle.Width - 1, rectangle.Height - topPadding);
 				cr.ClosePath ();
 				if (Active) {
 					cr.Color = (HslColor)parent.Style.Background (StateType.Prelight);
@@ -356,21 +356,25 @@ namespace MonoDevelop.Components
 					double ry = rectangle.Y + HoverPosition.Y;
 					Cairo.RadialGradient gradient = new Cairo.RadialGradient (rx, ry, rectangle.Height * 1.5, 
 						rx, ry, 2);
-					var color = (HslColor)parent.Style.Mid (StateType.Normal);
-					color.L *= 1.05;
+					var color = (HslColor)parent.Style.Dark (StateType.Normal);
+					color.L *= 1.1;
 					gradient.AddColorStop (0, color);
-					color.L *= 1.07;
+					color.L *= 1.1;
 					gradient.AddColorStop (1, color);
 					cr.Pattern = gradient;
 				}
-				cr.FillPreserve ();
-				cr.Color = (HslColor)parent.Style.Dark (StateType.Normal);
-				cr.LineWidth = 1;
-				cr.Stroke ();
+				if (!Active) {
+					cr.Fill ();
+				} else {
+					cr.FillPreserve ();
+					cr.Color = (HslColor)parent.Style.Dark (StateType.Normal);
+					cr.LineWidth = 1;
+					cr.Stroke ();
+				}
 			}
 			
 			cr.Save ();
-			cr.Translate (rectangle.X + (rectangle.Width - w) / 2, (rectangle.Height - h) / 2 + topPadding - 1);
+			cr.Translate (rectangle.X + (rectangle.Width - w) / 2, (rectangle.Height - h) / 2 + topPadding);
 			cr.Color = (HslColor)parent.Style.Text (StateType.Normal);
 			
 			cr.ShowLayout (layout);
