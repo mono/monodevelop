@@ -166,6 +166,13 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		/// <summary>
+		/// When set to <c>true</c>, opened documents will automatically be reloaded when a change in the underlying
+		/// file is detected (unless the document has unsaved changes)
+		/// </summary>
+		/// </value>
+		public bool AutoReloadDocuments { get; set; }
+		
+		/// <summary>
 		/// Whether the root window or any undocked part of it has toplevel focus. 
 		/// </summary>
 		public bool HasToplevelFocus {
