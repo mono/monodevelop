@@ -61,6 +61,8 @@
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.EditBranchDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\EditRemoteDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.EditRemoteDialog.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git\MergeDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.MergeDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -90,9 +92,19 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\tag_blue.png">
+      <LogicalName>tag_blue.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\arrow_branch.png">
+      <LogicalName>arrow_branch.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\server.png">
+      <LogicalName>server.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.VersionControl.Git\" />
+    <Folder Include="icons\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

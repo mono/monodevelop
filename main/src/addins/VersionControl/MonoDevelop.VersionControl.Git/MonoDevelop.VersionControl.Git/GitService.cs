@@ -59,6 +59,21 @@ namespace MonoDevelop.VersionControl.Git
 			dlg.Run ();
 			dlg.Destroy ();
 		}
+	
+		public static void ShowMergeDialog (GitRepository repo)
+		{
+			MergeDialog dlg = new MergeDialog (repo);
+			try {
+				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+					dlg.Hide ();
+					using (IProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Merging branch '{0}'...", dlg.SelectedBranch))) {
+						repo.Merge (dlg.SelectedBranch, monitor);
+					}
+				}
+			} finally {
+				dlg.Destroy ();
+			}
+		}
 	}
 }
 

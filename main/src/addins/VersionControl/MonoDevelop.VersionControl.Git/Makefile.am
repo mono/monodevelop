@@ -22,6 +22,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.VersionControl.Git.EditBranchDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.EditRemoteDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.GitConfigurationDialog.cs \
+	gtk-gui/MonoDevelop.VersionControl.Git.MergeDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.PushDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.UserInfoConflictDialog.cs \
 	MonoDevelop.VersionControl.Git/Commands.cs \
@@ -35,11 +36,15 @@ FILES =  \
 	MonoDevelop.VersionControl.Git/GitRepository.cs \
 	MonoDevelop.VersionControl.Git/GitService.cs \
 	MonoDevelop.VersionControl.Git/GitVersionControl.cs \
+	MonoDevelop.VersionControl.Git/MergeDialog.cs \
 	MonoDevelop.VersionControl.Git/PushDialog.cs \
 	MonoDevelop.VersionControl.Git/UserInfoConflictDialog.cs
 
 RES =  \
 	gtk-gui/gui.stetic \
+	icons/arrow_branch.png \
+	icons/server.png \
+	icons/tag_blue.png \
 	MonoDevelop.VersionControl.Git.addin.xml
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)

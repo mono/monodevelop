@@ -98,7 +98,7 @@ namespace MonoDevelop.VersionControl.Git
 			this.buttonAddBranch.Name = "buttonAddBranch";
 			this.buttonAddBranch.UseStock = true;
 			this.buttonAddBranch.UseUnderline = true;
-			this.buttonAddBranch.Label = "gtk-add";
+			this.buttonAddBranch.Label = "gtk-new";
 			this.vbox3.Add (this.buttonAddBranch);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.buttonAddBranch]));
 			w4.Position = 0;
@@ -122,7 +122,7 @@ namespace MonoDevelop.VersionControl.Git
 			this.buttonRemoveBranch.Name = "buttonRemoveBranch";
 			this.buttonRemoveBranch.UseStock = true;
 			this.buttonRemoveBranch.UseUnderline = true;
-			this.buttonRemoveBranch.Label = "gtk-remove";
+			this.buttonRemoveBranch.Label = "gtk-delete";
 			this.vbox3.Add (this.buttonRemoveBranch);
 			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.buttonRemoveBranch]));
 			w6.Position = 2;
@@ -133,7 +133,7 @@ namespace MonoDevelop.VersionControl.Git
 			this.buttonSetDefaultBranch.CanFocus = true;
 			this.buttonSetDefaultBranch.Name = "buttonSetDefaultBranch";
 			this.buttonSetDefaultBranch.UseUnderline = true;
-			this.buttonSetDefaultBranch.Label = global::Mono.Unix.Catalog.GetString ("Set Default");
+			this.buttonSetDefaultBranch.Label = global::Mono.Unix.Catalog.GetString ("Switch to Branch");
 			this.vbox3.Add (this.buttonSetDefaultBranch);
 			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.buttonSetDefaultBranch]));
 			w7.Position = 3;

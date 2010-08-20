@@ -36,7 +36,8 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		Push,
 		SwitchToBranch,
-		ManageBranches
+		ManageBranches,
+		Merge
 	}
 	
 	class PushCommandHandler: CommandHandler
@@ -92,6 +93,25 @@ namespace MonoDevelop.VersionControl.Git
 			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
 			GitRepository repo = VersionControlService.GetRepository (wob) as GitRepository;
 			GitService.ShowConfigurationDialog (repo);
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
+			GitRepository repo = null;
+			if (wob != null)
+				repo = VersionControlService.GetRepository (wob) as GitRepository;
+			info.Visible = repo != null;
+		}
+	}
+	
+	class MergeBranchHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
+			GitRepository repo = VersionControlService.GetRepository (wob) as GitRepository;
+			GitService.ShowMergeDialog (repo);
 		}
 		
 		protected override void Update (CommandInfo info)

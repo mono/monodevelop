@@ -28,6 +28,7 @@ using System;
 using System.Linq;
 using Gtk;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -43,11 +44,11 @@ namespace MonoDevelop.VersionControl.Git
 			this.Build ();
 			this.repo =  repo;
 			
-			comboStore = new ListStore (typeof(string), typeof(string), typeof (string));
+			comboStore = new ListStore (typeof(string), typeof(Gdk.Pixbuf), typeof (string));
 			comboSources.Model = comboStore;
 			CellRendererPixbuf crp = new CellRendererPixbuf ();
 			comboSources.PackStart (crp, false);
-			comboSources.AddAttribute (crp, "stock-id", 1);
+			comboSources.AddAttribute (crp, "pixbuf", 1);
 			CellRendererText crt = new CellRendererText ();
 			comboSources.PackStart (crt, true);
 			comboSources.AddAttribute (crt, "text", 2);
@@ -62,23 +63,23 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			
 			foreach (Branch b in repo.GetBranches ()) {
-				AddValues (b.Name, null);
+				AddValues (b.Name, ImageService.GetPixbuf ("vc-git-branch"));
 			}
 			
 			foreach (string t in repo.GetTags ())
-				AddValues (t, null);
+				AddValues (t, ImageService.GetPixbuf ("vc-git-tag"));
 			
 			foreach (RemoteSource r in repo.GetRemotes ()) {
 				foreach (string b in repo.GetRemoteBranches (r.Name))
-					AddValues (r.Name + "/" + b, "md-web-search-icon");
+					AddValues (r.Name + "/" + b, ImageService.GetPixbuf ("md-web-search-icon"));
 			}
 				
 			UpdateStatus ();
 		}
 		
-		void AddValues (string name, IconId icon)
+		void AddValues (string name, Gdk.Pixbuf icon)
 		{
-			TreeIter it = comboStore.AppendValues (name, (string)icon, name);
+			TreeIter it = comboStore.AppendValues (name, icon, name);
 			if (name == currentTracking)
 				comboSources.SetActiveIter (it);
 		}

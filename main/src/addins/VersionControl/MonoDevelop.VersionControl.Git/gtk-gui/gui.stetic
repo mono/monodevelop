@@ -7,6 +7,7 @@
   <import>
     <widget-library name="../../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../../build/AddIns/VersionControl/MonoDevelop.VersionControl.dll" />
+    <widget-library name="../../../../../build/bin/Mono.TextEditor.dll" />
     <widget-library name="../../../../../build/AddIns/VersionControl/MonoDevelop.VersionControl.Git.dll" internal="true" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Git.PushDialog" design-size="730 540">
@@ -475,9 +476,9 @@
                             <property name="CanFocus">True</property>
                             <property name="UseStock">True</property>
                             <property name="Type">StockItem</property>
-                            <property name="StockId">gtk-add</property>
+                            <property name="StockId">gtk-new</property>
                             <signal name="Clicked" handler="OnButtonAddBranchClicked" />
-                            <property name="label">gtk-add</property>
+                            <property name="label">gtk-new</property>
                           </widget>
                           <packing>
                             <property name="Position">0</property>
@@ -509,9 +510,9 @@
                             <property name="CanFocus">True</property>
                             <property name="UseStock">True</property>
                             <property name="Type">StockItem</property>
-                            <property name="StockId">gtk-remove</property>
+                            <property name="StockId">gtk-delete</property>
                             <signal name="Clicked" handler="OnButtonRemoveBranchClicked" />
-                            <property name="label">gtk-remove</property>
+                            <property name="label">gtk-delete</property>
                           </widget>
                           <packing>
                             <property name="Position">2</property>
@@ -525,7 +526,7 @@
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
                             <property name="Type">TextOnly</property>
-                            <property name="Label" translatable="yes">Set Default</property>
+                            <property name="Label" translatable="yes">Switch to Branch</property>
                             <property name="UseUnderline">True</property>
                             <signal name="Clicked" handler="OnButtonSetDefaultBranchClicked" />
                           </widget>
@@ -1129,6 +1130,117 @@
             <property name="StockId">gtk-ok</property>
             <property name="ResponseId">-5</property>
             <property name="label">gtk-ok</property>
+          </widget>
+          <packing>
+            <property name="Position">1</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+  <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Git.MergeDialog" design-size="469 487">
+    <property name="MemberName" />
+    <property name="WindowPosition">CenterOnParent</property>
+    <property name="Buttons">2</property>
+    <property name="HelpButton">False</property>
+    <child internal-child="VBox">
+      <widget class="Gtk.VBox" id="dialog1_VBox">
+        <property name="MemberName" />
+        <property name="BorderWidth">2</property>
+        <child>
+          <widget class="Gtk.VBox" id="vbox2">
+            <property name="MemberName" />
+            <property name="Spacing">6</property>
+            <property name="BorderWidth">9</property>
+            <child>
+              <widget class="Gtk.Label" id="label1">
+                <property name="MemberName" />
+                <property name="Xalign">0</property>
+                <property name="LabelProp" translatable="yes">Select the branch to be merged with the current branch:</property>
+              </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
+                <property name="MemberName" />
+                <property name="ShadowType">In</property>
+                <child>
+                  <widget class="Gtk.TreeView" id="tree">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="ShowScrollbars">True</property>
+                    <property name="HeadersVisible">False</property>
+                  </widget>
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Label" id="labelOper">
+                <property name="MemberName" />
+                <property name="WidthRequest">443</property>
+                <property name="Xalign">0</property>
+                <property name="LabelProp">The remote branch &lt;b&gt;origin/blablabla&lt;/b&gt; will be merged into the branch &lt;b&gt;master&lt;/b&gt;.</property>
+                <property name="UseMarkup">True</property>
+                <property name="Wrap">True</property>
+              </widget>
+              <packing>
+                <property name="Position">2</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">0</property>
+            <property name="AutoSize">True</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+    <child internal-child="ActionArea">
+      <widget class="Gtk.HButtonBox" id="dialog1_ActionArea">
+        <property name="MemberName" />
+        <property name="Spacing">10</property>
+        <property name="BorderWidth">5</property>
+        <property name="Size">2</property>
+        <property name="LayoutStyle">End</property>
+        <child>
+          <widget class="Gtk.Button" id="buttonCancel">
+            <property name="MemberName" />
+            <property name="CanDefault">True</property>
+            <property name="CanFocus">True</property>
+            <property name="UseStock">True</property>
+            <property name="Type">StockItem</property>
+            <property name="StockId">gtk-cancel</property>
+            <property name="ResponseId">-6</property>
+            <property name="label">gtk-cancel</property>
+          </widget>
+          <packing>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Button" id="buttonOk">
+            <property name="MemberName" />
+            <property name="CanDefault">True</property>
+            <property name="CanFocus">True</property>
+            <property name="Type">TextOnly</property>
+            <property name="Label" translatable="yes">Merge</property>
+            <property name="UseUnderline">True</property>
+            <property name="ResponseId">-5</property>
           </widget>
           <packing>
             <property name="Position">1</property>

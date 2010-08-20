@@ -325,7 +325,7 @@ namespace MonoDevelop.VersionControl.Git
 				StringReader sr = RunCommand ("rebase " + GetCurrentRemote () + " " + GetCurrentBranch (), false, monitor);
 				string conflictFile = null;
 				do {
-					conflictFile = GetConflictFile (sr);
+					conflictFile = GetConflictFiles (sr).FirstOrDefault ();
 					if (conflictFile != null) {
 						ConflictResult res = ResolveConflict (conflictFile);
 						if (res == ConflictResult.Abort) {
@@ -353,16 +353,63 @@ namespace MonoDevelop.VersionControl.Git
 				NotifyFileChanges (statusList);
 		}
 		
-		string GetConflictFile (StringReader reader)
+		public void Merge (string branch, IProgressMonitor monitor)
 		{
+			List<string> statusList = null;
+			
+			try {
+				// Get a list of files that are different in the target branch
+				statusList = ToList (RunCommand ("diff " + branch + " --name-status", true));
+				
+				// Save local changes
+				RunCommand ("stash save " + GetStashName ("_tmp_"), true);
+				
+				// Apply changes
+				StringReader sr = RunCommand ("merge " + branch, false, monitor);
+				
+				var conflicts = GetConflictFiles (sr);
+				if (conflicts.Count != 0) {
+					foreach (string conflictFile in conflicts) {
+						ConflictResult res = ResolveConflict (conflictFile);
+						if (res == ConflictResult.Abort) {
+							sr = RunCommand ("reset --merge", false, monitor);
+							return;
+						}
+						else if (res == ConflictResult.Skip) {
+							RunCommand ("reset " + ToCmdPath (conflictFile), false, monitor);
+							RunCommand ("reset " + ToCmdPath (conflictFile), false, monitor);
+							RunCommand ("checkout " + ToCmdPath (conflictFile), false, monitor);
+						} else {
+							// Do nothing. The change will be committed with the -a option
+						}
+					}
+					string msg = "Merge branch '" + branch + "'";
+					RunCommand ("commit -a -m \"" + msg + "\"", true, monitor);
+				}
+				
+			} finally {
+				// Restore local changes
+				string sid = GetStashId ("_tmp_");
+				if (sid != null)
+					RunCommand ("stash pop " + sid, false);
+			}
+			
+			// Notify changes
+			if (statusList != null)
+				NotifyFileChanges (statusList);
+		}
+		
+		List<string> GetConflictFiles (StringReader reader)
+		{
+			List<string> list = new List<string> ();
 			foreach (string line in ToList (reader)) {
 				if (line.StartsWith ("CONFLICT ")) {
 					string s = "Merge conflict in ";
 					int i = line.IndexOf (s) + s.Length;
-					return path.Combine (line.Substring (i));
+					list.Add (path.Combine (line.Substring (i)));
 				}
 			}
-			return null;
+			return list;
 		}
 		
 		ConflictResult ResolveConflict (string file)
@@ -372,11 +419,15 @@ namespace MonoDevelop.VersionControl.Git
 				ConflictResolutionDialog dlg = new ConflictResolutionDialog ();
 				dlg.Load (file);
 				Gtk.ResponseType dres = (Gtk.ResponseType) dlg.Run ();
-				dlg.Destroy ();
-				switch (dres) {
-				case Gtk.ResponseType.Cancel: res = ConflictResult.Abort; break;
-				case Gtk.ResponseType.Close: res = ConflictResult.Skip; break;
-				case Gtk.ResponseType.Ok: res = ConflictResult.Continue; dlg.Save (file); break;
+				try {
+					dlg.Hide ();
+					switch (dres) {
+					case Gtk.ResponseType.Cancel: res = ConflictResult.Abort; break;
+					case Gtk.ResponseType.Close: res = ConflictResult.Skip; break;
+					case Gtk.ResponseType.Ok: res = ConflictResult.Continue; dlg.Save (file); break;
+					}
+				} finally {
+					dlg.Destroy ();
 				}
 			});
 			return res;
@@ -571,8 +622,9 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public void AddRemote (RemoteSource remote, bool importTags)
 		{
-			RunCommand ("remote add " + (importTags ? "--tags " : "--no-tags ") + remote.Name, true);
-			UpdateRemote (remote);
+			RunCommand ("remote add " + (importTags ? "--tags " : "--no-tags ") + remote.Name + " " + remote.FetchUrl, true);
+			if (!string.IsNullOrEmpty (remote.PushUrl) && remote.PushUrl != remote.FetchUrl)
+				RunCommand ("remote set-url --push " + remote.Name + " " + remote.PushUrl, true);
 		}
 		
 		public void UpdateRemote (RemoteSource remote)
