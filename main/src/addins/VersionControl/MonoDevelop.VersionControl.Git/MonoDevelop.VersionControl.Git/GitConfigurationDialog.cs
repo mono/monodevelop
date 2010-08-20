@@ -151,7 +151,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (!listBranches.Selection.GetSelected (out it))
 				return;
 			Branch b = (Branch) storeBranches.GetValue (it, 0);
-			repo.SwitchToBranch (b.Name);
+			GitService.SwitchToBranch (repo, b.Name);
 			FillBranches ();
 		}
 		

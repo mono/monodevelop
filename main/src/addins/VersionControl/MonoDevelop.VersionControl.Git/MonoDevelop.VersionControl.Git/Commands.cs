@@ -66,7 +66,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
 			GitRepository repo = VersionControlService.GetRepository (wob) as GitRepository;
-			repo.SwitchToBranch ((string)dataItem);
+			GitService.SwitchToBranch (repo, (string)dataItem);
 		}
 		
 		protected override void Update (CommandArrayInfo info)

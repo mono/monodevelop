@@ -74,6 +74,16 @@ namespace MonoDevelop.VersionControl.Git
 				dlg.Destroy ();
 			}
 		}
+		
+		public static void SwitchToBranch (GitRepository repo, string branch)
+		{
+			IdeApp.Workbench.AutoReloadDocuments = true;
+			try {
+				repo.SwitchToBranch (branch);
+			} finally {
+				IdeApp.Workbench.AutoReloadDocuments = false;
+			}
+		}
 	}
 }
 
