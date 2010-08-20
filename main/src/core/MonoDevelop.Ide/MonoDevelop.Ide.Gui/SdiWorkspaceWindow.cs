@@ -531,18 +531,16 @@ namespace MonoDevelop.Ide.Gui
 			}
 			oldIndex = subViewNotebook.CurrentPage;
 			DetachFromPathedDocument ();
-			if (oldIndex >= 0) {
-				
-				MonoDevelop.Ide.Gui.Content.IPathedDocument pathedDocument = null;
-				if (oldIndex == 0) {
-					pathedDocument = Document != null ? Document.GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> () : ViewContent.GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ();
-				} else {
-					pathedDocument = subViewContents[oldIndex - 1].GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ();
-				}
-				
-				if (pathedDocument != null)
-					AttachToPathedDocument (pathedDocument);
+			
+			MonoDevelop.Ide.Gui.Content.IPathedDocument pathedDocument;
+			if (oldIndex <= 0) {
+				pathedDocument = Document != null ? Document.GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> () : ViewContent.GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ();
+			} else {
+				pathedDocument = subViewContents[oldIndex - 1].GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ();
 			}
+
+			if (pathedDocument != null)
+				AttachToPathedDocument (pathedDocument);
 			OnActiveViewContentChanged (new ActiveViewContentEventArgs (this.ActiveViewContent));
 		}
 
