@@ -1,0 +1,24 @@
+<Addin id = "MonoDevelop.Debugger.Soft.MonoDroid"
+       name      = "Mono Soft Debugger Support for MonoDroid"
+       author	 = "Michael Hutchinson"
+       url       = "http://www.mono-project.com"
+       description = "Mono Soft Debugger Support for MonoDroid"
+       copyright   = "MIT X11"
+       category = "Debugging"
+       version   = "2.4">
+
+	<Dependencies>
+		<Addin id="MonoDevelop.Core" version="2.4"/>
+		<Addin id="MonoDevelop.Debugger" version="2.4"/>
+		<Addin id="MonoDevelop.MonoDroid" version="2.4"/>
+		<Addin id="MonoDevelop.Debugger.Soft" version="2.4"/>
+	</Dependencies>
+	
+	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
+		<DebuggerEngine
+			id="Mono.Debugger.Soft.MonoDroid"
+			name="Mono Soft Debugger for MonoDroid"
+			features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints"
+			type="MonoDevelop.Debugger.Soft.MonoDroid.MonoDroidSoftDebuggerEngine" />
+	</Extension>
+</Addin>

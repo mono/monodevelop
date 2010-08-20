@@ -1,0 +1,114 @@
+<Addin id          = "MonoDroid"
+       namespace   = "MonoDevelop"
+       name        = "MonoDroid development"
+       author      = "Michael Hutchinson"
+       copyright   = "MIT X11"
+       url         = "http://monodevelop.com/"
+       description = "Support for developing and deploying MonoDroid applications."
+       category    = "Mobile Development"
+       version     = "2.4">
+	
+	<Runtime>
+		<Import file = "templates/MonoDroidLibraryProject.xpt.xml" />
+		<Import file = "templates/MonoDroidProjectEmpty.xpt.xml"/>
+	</Runtime>
+	
+	<Dependencies>
+		<Addin id="Core" version="2.4"/>
+		<Addin id="Ide" version="2.4"/>
+	</Dependencies>
+	
+	<ConditionType id="MonoDroidInstalled" type="MonoDevelop.MonoDroid.MonoTouchInstalledCondition" />
+	
+	<Extension path = "/MonoDevelop/Ide/FileTemplates">
+		<Condition id="MonoDroidInstalled">
+		</Condition>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
+		<Condition id="MonoDroidInstalled">
+			<ProjectTemplate id   = "MonoDroidLibraryProject"
+			                 file = "templates/MonoDroidLibraryProject.xpt.xml" />
+			<ProjectTemplate id   = "MonoDroidProject-Empty"
+			                 file = "templates/MonoDroidProjectEmpty.xpt.xml"/>
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
+		<Condition id="MonoDroidInstalled">
+			<DotNetProjectSubtype
+				guid="{FIXME}"
+				type="MonoDevelop.MonoDroid.MonoDroidProject" />
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
+		<Condition id="MonoDroidInstalled">
+			<ProjectBinding id = "MonoDroid" class = "MonoDevelop.MonoDroid.MonoDroidProjectBinding" />
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
+		<Condition id="MonoDroidInstalled">
+			<DataType class = "MonoDevelop.MonoDroid.MonoDroidProject" />
+			<DataType class = "MonoDevelop.MonoDroid.MonoDroidProjectConfiguration" />
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
+		<Condition id="MonoDroidInstalled">
+			<Class class = "MonoDevelop.MonoDroid.MonoDroidBuildExtension" insertafter="MidStep" />
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/Frameworks">
+		<Framework id="MonoDroid" resource="framework_MonoDroid.xml">
+			<Backend class="MonoDevelop.MonoDroid.MonoDroidFrameworkBackend" />
+		</Framework>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/ExecutionHandlers">
+		<Condition id="MonoDroidInstalled">
+			<ExecutionHandler id="MonoDroid" class = "MonoDevelop.MonoDroid.MonoDroidExecutionHandler"/>
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/ExecutionModes">
+		<ModeSetType class="MonoDevelop.MonoDroid.MonoDroidExecutionModeSet"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/Commands/Project">
+		<Condition id="MonoDroidInstalled">
+			<Command id = "MonoDevelop.MonoDroid.MonoDroidCommands.UploadToDevice" 
+				_description = "Upload the MonoDroid application to the device" 
+				defaultHandler = "MonoDevelop.MonoDroid.DefaultUploadToDeviceHandler"
+				_label = "Upload to Device" />
+		<Command id = "MonoDevelop.MonoDroid.MonoDroidCommands.SelectDeviceTarget"
+				type = "radio|array"
+				defaultHandler = "MonoDevelop.MonoDroid.SelectDeviceTargetHandler"
+				_label = "MonoDroid Device" />
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
+		<Condition id="MonoDroidInstalled">
+			<ItemSet id = "SelectSimulatorTarget" _label = "MonoDroid Device Target" autohide = "true" 
+			         insertafter = "SelectActiveRuntime"  >
+				<CommandItem id = "MonoDevelop.MonoDroid.MonoDroidCommands.SelectDeviceTarget" />
+			</ItemSet>
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Run">
+		<Condition id="MonoDroidInstalled">
+			<CommandItem id = "MonoDevelop.MonoDroid.MonoDroidCommands.UploadToDevice"
+			             insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.RunWithList" />
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/MonoDocSources">
+		<Condition id="MonoDroidInstalled">
+			<Source directory="/Developer/MonoDroid/usr/share/doc/MonoDroid/" />
+		</Condition>
+	</Extension>
+</Addin>
