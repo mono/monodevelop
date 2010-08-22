@@ -361,7 +361,7 @@ namespace Mono.TextEditor
 		{
 //			if (location.Column < DocumentLocation.MinColumn)
 //				throw new ArgumentException ("column < MinColumn");
-			if (location.Line >= this.splitter.Count)
+			if (location.Line >= this.splitter.Count || location.Line < DocumentLocation.MinLine)
 				return -1;
 			LineSegment line = GetLine (location.Line);
 			return System.Math.Min (Length, line.Offset + System.Math.Max (0, System.Math.Min (line.EditableLength, location.Column - 1)));
