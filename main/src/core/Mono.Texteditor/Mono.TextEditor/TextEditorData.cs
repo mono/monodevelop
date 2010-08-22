@@ -129,7 +129,7 @@ namespace Mono.TextEditor
 				if (Options.OverrideDocumentEolMarker)
 					return Options.DefaultEolMarker;
 				if (eol == null && Document.LineCount > 0) {
-					LineSegment line = Document.GetLine (0);
+					LineSegment line = Document.GetLine (DocumentLocation.MinLine);
 					if (line.DelimiterLength > 0) 
 						eol = Document.GetTextAt (line.EditableLength, line.DelimiterLength);
 				}
@@ -559,7 +559,7 @@ namespace Mono.TextEditor
 				int startLineNr = selection.MinLine;
 				int endLineNr = selection.MaxLine;
 						
-				bool skipEndLine = selection.Anchor < selection.Lead ? selection.Lead.Column == 0 : selection.Anchor.Column == 0;
+				bool skipEndLine = selection.Anchor < selection.Lead ? selection.Lead.Column == DocumentLocation.MinColumn : selection.Anchor.Column == DocumentLocation.MinColumn;
 				if (skipEndLine)
 					endLineNr--;
 				return document.GetLinesBetween (startLineNr, endLineNr);
@@ -841,7 +841,7 @@ namespace Mono.TextEditor
 				LineSegment line = doc.GetLine (lineNumber);
 				if (line == null)
 					return "";
-				int count = column - line.EditableLength;
+				int count = column - 1 - line.EditableLength;
 				return new string (' ', System.Math.Max (0, count));
 			}
 			
@@ -867,7 +867,7 @@ namespace Mono.TextEditor
 			if (line == null)
 				return 0;
 			
-			if (Caret.Column > line.EditableLength) {
+			if (Caret.Column > line.EditableLength + 1) {
 				string virtualSpace = GetVirtualSpaces (Caret.Line, Caret.Column);
 				if (!string.IsNullOrEmpty (virtualSpace))
 					Insert (Caret.Offset, virtualSpace);

@@ -27,7 +27,7 @@ namespace Mono.TextEditor
 		}
 
 		public IEnumerable<LineSegment> Lines {
-			get { return GetLinesStartingAt (0); }
+			get { return GetLinesStartingAt (DocumentLocation.MinLine); }
 		}
 
 		public void Initalize (string text)
@@ -44,6 +44,7 @@ namespace Mono.TextEditor
 
 		public LineSegment Get (int number)
 		{
+			number--;
 			if (number < 0)
 				return null;
 			int startOffset = number > 0 ? delimiters[number - 1].EndOffset : 0;
@@ -69,7 +70,7 @@ namespace Mono.TextEditor
 			for (int i = 0; i < delimiters.Count; i++) {
 				var delimiter = delimiters[i];
 				if (offset < delimiter.Offset)
-					return i;
+					return i + 1;
 			}
 			return -1;
 		}
@@ -97,13 +98,13 @@ namespace Mono.TextEditor
 
 		public IEnumerable<LineSegment> GetLinesStartingAt (int startLine)
 		{
-			for (int i = startLine; i < Count; i++)
+			for (int i = startLine; i <= Count; i++)
 				yield return Get (i);
 		}
 
 		public IEnumerable<LineSegment> GetLinesReverseStartingAt (int startLine)
 		{
-			for (int i = Count - 1; i-- > 0;)
+			for (int i = startLine; i-- > DocumentLocation.MinLine;)
 				yield return Get (i);
 		}
 

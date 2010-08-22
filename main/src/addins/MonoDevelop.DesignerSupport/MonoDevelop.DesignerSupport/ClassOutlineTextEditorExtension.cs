@@ -112,9 +112,8 @@ namespace MonoDevelop.DesignerSupport
 					line = ((IMember)o).BodyRegion.Start.Line;
 					col = ((IMember)o).BodyRegion.Start.Column;
 				}
-				if (line > -1) {
-					Editor.SetCaretTo (line - 1, Math.Max (1, col) - 1);
-				}
+				if (line > -1)
+					Editor.SetCaretTo (line, Math.Max (1, col));
 			};
 
 			this.lastCU = Document.ParsedDocument;
@@ -277,7 +276,7 @@ namespace MonoDevelop.DesignerSupport
 
 		static bool OuterEndsAfterInner (DomRegion outer, DomRegion inner)
 		{
-			return ((outer.End.Line > 0 && outer.End.Line > inner.End.Line) || (outer.End.Line == inner.End.Line && outer.End.Column > inner.End.Column));
+			return ((outer.End.Line > 1 && outer.End.Line > inner.End.Line) || (outer.End.Line == inner.End.Line && outer.End.Column > inner.End.Column));
 		}
 	}
 }

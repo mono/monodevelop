@@ -106,8 +106,8 @@ namespace MonoDevelop.Refactoring.IntroduceFormat
 						expr.StringValue = '"' + str  + '"';
 						possibleFormatCall.Arguments.Add (new PrimitiveExpression (data.Document.GetTextAt (data.SelectionRange)));
 						formatCall = possibleFormatCall;
-						start = data.Document.LocationToOffset (expressionResult.Region.Start.Line - 1, expressionResult.Region.Start.Column - 1);
-						end = data.Document.LocationToOffset (expressionResult.Region.End.Line - 1, expressionResult.Region.End.Column - 1) - 1;
+						start = data.Document.LocationToOffset (expressionResult.Region.Start.Line, expressionResult.Region.Start.Column);
+						end = data.Document.LocationToOffset (expressionResult.Region.End.Line, expressionResult.Region.End.Column) - 1;
 					}
 				}
 			}

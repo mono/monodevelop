@@ -136,11 +136,11 @@ namespace MonoDevelop.CSharp.Formatting
 				this.data = data;
 				this.stateTracker = stateTracker;
 			}
-					
+			
 			public string GetVirtualSpaces (int lineNumber, int column)
 			{
 				string indent = GetIndent (lineNumber, column);
-				if (column == indent.Length)
+				if (column == indent.Length + 1)
 					return data.FormatString (0, indent);
 				return "";
 			}
@@ -153,8 +153,8 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			public int GetNextVirtualColumn (int lineNumber, int column)
 			{
-				if (column == 0) {
-					int result = GetIndent (lineNumber, column).Length;
+				if (column == DocumentLocation.MinColumn) {
+					int result = GetIndent (lineNumber, column).Length + 1;
 					return result;
 				}
 				return column;
@@ -454,7 +454,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		bool FixLineStart (int lineNumber)
 		{
-			if (lineNumber > 0) {
+			if (lineNumber > DocumentLocation.MinLine) {
 				LineSegment line = textEditorData.Document.GetLine (lineNumber);
 				int insertionPoint = line.Offset + line.GetIndentation (textEditorData.Document).Length;
 				

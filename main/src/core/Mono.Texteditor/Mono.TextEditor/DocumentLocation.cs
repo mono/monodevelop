@@ -31,14 +31,18 @@ namespace Mono.TextEditor
 {
 	public struct DocumentLocation
 	{
-		public static readonly DocumentLocation Empty = new DocumentLocation (-1, -1);
+		public static readonly DocumentLocation Empty = new DocumentLocation (0, 0);
+		
+		public const int MinLine   = 1;
+		public const int MinColumn = 1;
+		
 		
 		public int Line { get; set; }
 		public int Column { get; set; }
 		
 		public bool IsEmpty {
 			get {
-				return Line < 0 && Column < 0;
+				return Line < MinLine && Column < MinColumn;
 			}
 		}
 		

@@ -85,7 +85,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			int line, column;
 			sev.GetLineColumnFromPosition (sev.CursorPosition, out line, out column);
 			ctx.TriggerLine = line;
-			ctx.TriggerLineOffset = column;
+			ctx.TriggerLineOffset = column - 1;
 			
 			IParameterDataProvider result = textEditorCompletion.HandleParameterCompletion (ctx, editorText[cursorPosition - 1]);
 			ProjectDomService.Unload (project);

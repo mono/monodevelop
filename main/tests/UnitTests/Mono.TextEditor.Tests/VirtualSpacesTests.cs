@@ -44,7 +44,7 @@ namespace Mono.TextEditor.Tests
 			data.Document.Text = "\n\nHello World\n";
 			data.Caret.Offset = 1; // 2nd.Line
 			data.Caret.AllowCaretBehindLineEnd = true;
-			data.Caret.Column = 4;
+			data.Caret.Column = DocumentLocation.MinColumn + 4;
 			Clipboard clipboard = Clipboard.Get (Mono.TextEditor.ClipboardActions.CopyOperation.CLIPBOARD_ATOM);
 			clipboard.Text = "Test";
 			
@@ -63,7 +63,7 @@ namespace Mono.TextEditor.Tests
 			data.Document.Text = "\n\n\n";
 			data.Caret.Offset = 1; // 2nd.Line
 			data.Caret.AllowCaretBehindLineEnd = true;
-			data.Caret.Column = 4;
+			data.Caret.Column = DocumentLocation.MinColumn + 4;
 			DeleteActions.Backspace (data);
 			
 			Assert.AreEqual ("\n\n\n", data.Document.Text);
@@ -77,7 +77,7 @@ namespace Mono.TextEditor.Tests
 			data.Document.Text = "\n\n\n";
 			data.Caret.Offset = 1; // 2nd.Line
 			data.Caret.AllowCaretBehindLineEnd = true;
-			data.Caret.Column = 4;
+			data.Caret.Column = DocumentLocation.MinColumn + 4;
 			data.Options.RemoveTrailingWhitespaces = false;
 			MiscActions.InsertNewLine (data);
 			
@@ -94,10 +94,10 @@ namespace Mono.TextEditor.Tests
 			data.Document.Text = "\n \n\n";
 			data.Caret.AllowCaretBehindLineEnd = true;
 			data.Caret.Offset = 2; // 2nd.Line
-			Assert.AreEqual (1, data.Caret.Column);
-			Document.RemoveTrailingWhitespaces (data, data.Document.GetLine (1));
+			Assert.AreEqual (DocumentLocation.MinColumn + 1, data.Caret.Column);
+			Document.RemoveTrailingWhitespaces (data, data.Document.GetLine (2));
 			Assert.AreEqual ("\n\n\n", data.Document.Text);
-			Assert.AreEqual (1, data.Caret.Column);
+			Assert.AreEqual (DocumentLocation.MinColumn + 1, data.Caret.Column);
 		}
 		
 	}

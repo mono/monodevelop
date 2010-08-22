@@ -111,7 +111,7 @@ namespace MonoDevelop.Refactoring.References
 					
 					var resolver = ProjectDomService.GetParser (fileInfo.FileName).CreateResolver (fileInfo.Dom, data, fileInfo.FileName);
 					var location = data.Document.OffsetToLocation (match.Offset);
-					ResolveResult resolveResult = resolver.Resolve (expr, new DomLocation (location.Line + 1, location.Column + 1));
+					ResolveResult resolveResult = resolver.Resolve (expr, new DomLocation (location.Line, location.Column));
 					
 					// TODO: Add IsReferenceTo in the resolve results - could could be taken from FindMemberAstVisitor
 					if (resolveResult != null && resolveResult.IsReferenceTo (member))

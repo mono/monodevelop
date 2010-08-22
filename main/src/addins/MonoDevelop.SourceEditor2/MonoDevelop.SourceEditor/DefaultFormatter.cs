@@ -44,8 +44,8 @@ namespace MonoDevelop.SourceEditor
 		
 		static int GetNextTabstop (int currentColumn, int tabSize)
 		{
-			int result = currentColumn + tabSize;
-			return (result / tabSize) * tabSize;
+			int result = currentColumn - 1 + tabSize;
+			return 1 + (result / tabSize) * tabSize;
 		}
 		
 		protected override string InternalFormat (PolicyContainer policyParent, string mimeType, string input, int startOffset, int endOffset)

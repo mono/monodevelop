@@ -281,7 +281,7 @@ namespace MonoDevelop.CSharp.Resolver
 				foreach (Expression expr in initializer.CreateExpressions) {
 					var oldPos = resolver.ResolvePosition;
 					if (!expr.StartLocation.IsEmpty)
-						resolver.resolvePosition = new DomLocation (expr.StartLocation.Line + resolver.CallingMember.Location.Line - 1, expr.StartLocation.Column - 1);
+						resolver.resolvePosition = new DomLocation (expr.StartLocation.Line + resolver.CallingMember.Location.Line, expr.StartLocation.Column);
 					DomProperty newProperty = new DomProperty (GetAnonymousTypeFieldName (expr), MonoDevelop.Projects.Dom.Modifiers.Public, DomLocation.Empty, DomRegion.Empty, ResolveType (expr));
 					newProperty.DeclaringType = result;
 					result.Add (newProperty);

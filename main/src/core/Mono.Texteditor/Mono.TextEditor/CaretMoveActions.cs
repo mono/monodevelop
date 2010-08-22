@@ -61,15 +61,15 @@ namespace Mono.TextEditor
 				return;
 			}
 			
-			if (data.Caret.Column > 0) {
-				if (data.Caret.Column > line.EditableLength) {
-					data.Caret.Column = line.EditableLength;
+			if (data.Caret.Column > DocumentLocation.MinColumn) {
+				if (data.Caret.Column > line.EditableLength + 1) {
+					data.Caret.Column = line.EditableLength + 1;
 				} else {
 					data.Caret.Column--;
 				}
-			} else if (data.Caret.Line > 0) {
+			} else if (data.Caret.Line > DocumentLocation.MinLine) {
 				LineSegment prevLine = data.Document.GetLine (data.Caret.Line - 1);
-				data.Caret.Location = new DocumentLocation (data.Caret.Line - 1, prevLine.EditableLength);
+				data.Caret.Location = new DocumentLocation (data.Caret.Line - 1, prevLine.EditableLength + 1);
 			}
 		}
 		
@@ -104,20 +104,20 @@ namespace Mono.TextEditor
 				data.Caret.Location = data.Document.OffsetToLocation (segment.EndLine.Offset + segment.EndColumn); 
 				return;
 			}
-			if (data.Caret.Column < line.EditableLength || data.Caret.AllowCaretBehindLineEnd) {
-				if (data.Caret.Column >= line.EditableLength) {
+			if (data.Caret.Column < line.EditableLength + 1 || data.Caret.AllowCaretBehindLineEnd) {
+				if (data.Caret.Column >= line.EditableLength + 1) {
 					int nextColumn = data.GetNextVirtualColumn (data.Caret.Line, data.Caret.Column);
 					if (data.Caret.Column != nextColumn) {
 						data.Caret.Column = nextColumn;
 					} else {
-						data.Caret.Location = new DocumentLocation (data.Caret.Line + 1, 0);
+						data.Caret.Location = new DocumentLocation (data.Caret.Line + 1, DocumentLocation.MinColumn);
 						data.Caret.CheckCaretPosition ();
 					}
 				} else {
 					data.Caret.Column++;
 				}
 			} else if (data.Caret.Line + 1 < data.Document.LineCount) {
-				data.Caret.Location = new DocumentLocation (data.Caret.Line + 1, 0);
+				data.Caret.Location = new DocumentLocation (data.Caret.Line + 1, DocumentLocation.MinColumn);
 			}
 		}
 		
@@ -140,13 +140,14 @@ namespace Mono.TextEditor
 				int col = data.MainSelection.Anchor > data.MainSelection.Lead ? data.MainSelection.Lead.Column : data.MainSelection.Anchor.Column;
 				int line = data.MainSelection.MinLine - 1;
 				data.ClearSelection ();
-				data.Caret.Location = (line >= 0) ? new DocumentLocation (line, col) : new DocumentLocation (0, 0);
+				data.Caret.Location = (line >=  DocumentLocation.MinLine) ? new DocumentLocation (line, col) : new DocumentLocation (DocumentLocation.MinLine, DocumentLocation.MinColumn);
 				data.Caret.SetToDesiredColumn (desiredColumn);
 				return;
 			}
 			
-			if (data.Caret.Line > 0) {
-				int line = data.Document.VisualToLogicalLine (data.Document.LogicalToVisualLine (data.Caret.Line) - 1);
+			if (data.Caret.Line > DocumentLocation.MinLine) {
+				int visualLine = data.Document.LogicalToVisualLine (data.Caret.Line);
+				int line = data.Document.VisualToLogicalLine (visualLine - 1);
 				int offset = data.Document.LocationToOffset (line, data.Caret.Column);
 				data.Caret.Offset = MoveCaretOutOfFolding (data, offset);
 				data.Caret.SetToDesiredColumn (desiredColumn);
@@ -183,7 +184,7 @@ namespace Mono.TextEditor
 				return;
 			}
 			
-			if (data.Caret.Line < data.Document.LineCount - 1) {
+			if (data.Caret.Line < data.Document.LineCount) {
 				int line = data.Document.VisualToLogicalLine (data.Document.LogicalToVisualLine (data.Caret.Line) + 1);
 				int offset = data.Document.LocationToOffset (line, data.Caret.Column);
 				data.Caret.SetToOffsetWithDesiredColumn (MoveCaretOutOfFolding (data, offset));
@@ -197,8 +198,8 @@ namespace Mono.TextEditor
 			int result;
 			for (result = 0; result < line.EditableLength; result++)
 				if (!Char.IsWhiteSpace (document.GetCharAt (line.Offset + result)))
-					return result;
-			return result;
+					return result + 1;
+			return result + 1;
 		}
 		
 		static void InternalCaretMoveHome (TextEditorData data, bool firstNonWhitespace, bool hop)
@@ -206,17 +207,19 @@ namespace Mono.TextEditor
 			if (!data.Caret.PreserveSelection)
 				data.ClearSelection ();
 			DocumentLocation newLocation = data.Caret.Location;
+
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			
 			if (firstNonWhitespace) {
+
 				int homeMark = GetHomeMark (data.Document, line);
 				if (hop) {
-					newLocation.Column = data.Caret.Column == homeMark ? 0 : homeMark;
+					newLocation.Column = data.Caret.Column == homeMark ? DocumentLocation.MinColumn : homeMark;
 				} else {
 					newLocation.Column = homeMark;
 				}
 			} else {
-				newLocation.Column = 0;
+				newLocation.Column = DocumentLocation.MinColumn;
 			}
 			
 			// handle folding
@@ -231,8 +234,11 @@ namespace Mono.TextEditor
 			if (segment != null) 
 				newLocation = data.Document.OffsetToLocation (segment.StartLine.Offset); 
 			
+
 			if (newLocation != data.Caret.Location) 
+
 				data.Caret.Location = newLocation;
+
 		}
 		
 		public static void LineHome (TextEditorData data)
@@ -256,7 +262,8 @@ namespace Mono.TextEditor
 				data.ClearSelection ();
 			DocumentLocation newLocation = data.Caret.Location;
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
-			newLocation.Column = line.EditableLength;
+
+			newLocation.Column = line.EditableLength + 1;
 			
 			// handle folding
 			IEnumerable<FoldSegment> foldings = data.Document.GetStartFoldings (line);
@@ -269,9 +276,8 @@ namespace Mono.TextEditor
 			}
 			if (segment != null) 
 				newLocation = data.Document.OffsetToLocation (segment.EndLine.Offset + segment.EndColumn); 
-			if (newLocation != data.Caret.Location) {
+			if (newLocation != data.Caret.Location)
 				data.Caret.Location = newLocation;
-			}
 			
 			if (data.Caret.AllowCaretBehindLineEnd) {
 				int nextColumn = data.GetNextVirtualColumn (data.Caret.Line, data.Caret.Column);
@@ -285,7 +291,7 @@ namespace Mono.TextEditor
 		{
 			if (!data.Caret.PreserveSelection)
 				data.ClearSelection ();
-			data.Caret.Location = new DocumentLocation (0, 0);
+			data.Caret.Location = new DocumentLocation (DocumentLocation.MinLine, DocumentLocation.MinColumn);
 		}
 		
 		public static void ToDocumentEnd (TextEditorData data)
@@ -302,7 +308,7 @@ namespace Mono.TextEditor
 			int pageLines = (int)((data.VAdjustment.PageSize + ((int)data.VAdjustment.Value % LineHeight)) / LineHeight);
 			int visualLine = data.Document.LogicalToVisualLine (data.Caret.Line);
 			visualLine -= pageLines;
-			int line = System.Math.Max (data.Document.VisualToLogicalLine (visualLine), 0);
+			int line = System.Math.Max (data.Document.VisualToLogicalLine (visualLine), DocumentLocation.MinLine);
 			int offset = data.Document.LocationToOffset (line, data.Caret.Column);
 			ScrollActions.PageUp (data);
 			data.Caret.Offset = MoveCaretOutOfFolding (data, offset);
@@ -314,7 +320,7 @@ namespace Mono.TextEditor
 			int visualLine = data.Document.LogicalToVisualLine (data.Caret.Line);
 			visualLine += pageLines;
 			
-			int line = System.Math.Min (data.Document.VisualToLogicalLine (visualLine), data.Document.LineCount - 1);
+			int line = System.Math.Min (data.Document.VisualToLogicalLine (visualLine), data.Document.LineCount);
 			int offset = data.Document.LocationToOffset (line, data.Caret.Column);
 			ScrollActions.PageDown (data);
 			data.Caret.Offset = MoveCaretOutOfFolding (data, offset);

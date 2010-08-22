@@ -376,7 +376,7 @@ namespace MonoDevelop.CSharp.Parser
 				newType.Location = ConvertLocation (typeDeclaration.StartLocation);
 				newType.ClassType = ConvertClassType (typeDeclaration.Type);
 				DomRegion region = ConvertRegion (typeDeclaration.BodyStartLocation, typeDeclaration.EndLocation);
-				region.End = new DomLocation (region.End.Line, region.End.Column + 1);
+				region.End = new DomLocation (region.End.Line, region.End.Column);
 				newType.BodyRegion = region;
 				newType.Modifiers = ConvertModifiers (typeDeclaration.Modifier);
 
@@ -558,7 +558,8 @@ namespace MonoDevelop.CSharp.Parser
 
 				return null;
 			}
-
+			
+			
 			static string GetOperatorName (ICSharpCode.NRefactory.Ast.OperatorDeclaration operatorDeclaration)
 			{
 				if (operatorDeclaration == null)

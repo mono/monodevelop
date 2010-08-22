@@ -34,7 +34,7 @@ using System.Runtime.InteropServices;
 
 using Mono.TextEditor.Highlighting;
 
-using Gdk;
+using Gdk; 
 using Gtk;
 using System.Timers;
 
@@ -1342,7 +1342,7 @@ namespace Mono.TextEditor
 						index += textEditor.preeditString.Length;
 					}
 
-					if (Caret.Column > line.EditableLength) {
+					if (Caret.Column > line.EditableLength + 1) {
 						string virtualSpace = this.textEditor.GetTextEditorData ().GetVirtualSpaces (Caret.Line, Caret.Column);
 						LayoutWrapper wrapper = new LayoutWrapper (PangoUtil.CreateLayout (textEditor));
 						wrapper.LineChars = virtualSpace.ToCharArray ();
@@ -1493,6 +1493,8 @@ namespace Mono.TextEditor
 			if (args.Button == 1) {
 				VisualLocationTranslator trans = new VisualLocationTranslator (this);
 				clickLocation = trans.PointToLocation (args.X, args.Y);
+				if (clickLocation.IsEmpty)
+					return;
 				LineSegment line = Document.GetLine (clickLocation.Line);
 				bool isHandled = false;
 				if (line != null) {
@@ -1506,7 +1508,7 @@ namespace Mono.TextEditor
 				}
 				if (isHandled)
 					return;
-				if (line != null && clickLocation.Column >= line.EditableLength && GetWidth (Document.GetTextAt (line) + "-") < args.X) {
+				if (line != null && clickLocation.Column >= line.EditableLength + 1 && GetWidth (Document.GetTextAt (line) + "-") < args.X) {
 					int nextColumn = this.textEditor.GetTextEditorData ().GetNextVirtualColumn (clickLocation.Line, clickLocation.Column);
 					clickLocation.Column = nextColumn;
 				}
@@ -1745,7 +1747,8 @@ namespace Mono.TextEditor
 			}
 
 			DocumentLocation loc = PointToLocation (args.X, args.Y);
-
+			if (loc.IsEmpty)
+				return;
 			LineSegment line = Document.GetLine (loc.Line);
 			LineSegment oldHoveredLine = HoveredLine;
 			HoveredLine = line;
@@ -1868,8 +1871,8 @@ namespace Mono.TextEditor
 		public static int GetNextTabstop (TextEditorData textEditor, int currentColumn)
 		{
 			int tabSize = textEditor != null && textEditor.Options != null ? textEditor.Options.TabSize : 4;
-			int result = currentColumn + tabSize;
-			return (result / tabSize) * tabSize;
+			int result = currentColumn - 1 + tabSize;
+			return 1 + (result / tabSize) * tabSize;
 		}
 
 		internal double rulerX = 0;
@@ -2208,7 +2211,7 @@ namespace Mono.TextEditor
 
 			public DocumentLocation PointToLocation (double xp, double yp)
 			{
-				lineNumber = System.Math.Min (margin.YToLine (yp + margin.textEditor.VAdjustment.Value), margin.Document.LineCount - 1);
+				lineNumber = System.Math.Min (margin.YToLine (yp + margin.textEditor.VAdjustment.Value), margin.Document.LineCount);
 				line = lineNumber < margin.Document.LineCount ? margin.Document.GetLine (lineNumber) : null;
 				if (line == null)
 					return DocumentLocation.Empty;
@@ -2222,8 +2225,8 @@ namespace Mono.TextEditor
 				yp *= Pango.Scale.PangoScale;
 				yp = System.Math.Max (0, yp);
 				if (xp < 0)
-					return new DocumentLocation (lineNumber, 0);
-				int column = 0;
+					return new DocumentLocation (lineNumber, DocumentLocation.MinColumn);
+				int column = DocumentLocation.MinColumn;
 				SyntaxMode mode = margin.Document.SyntaxMode != null && margin.textEditor.Options.EnableSyntaxHighlighting ? margin.Document.SyntaxMode : SyntaxMode.Default;
 				IEnumerable<FoldSegment> foldings = margin.Document.GetStartFoldings (line);
 				bool done = false;
@@ -2450,7 +2453,7 @@ namespace Mono.TextEditor
 						return lineNumber;
 				}
 			}
-			return Document.VisualToLogicalLine ((int)((yPos - delta) / LineHeight));
+			return Document.VisualToLogicalLine (1 + (int)((yPos - delta) / LineHeight));
 		}
 		
 		public double LineToY (int logicalLine)
@@ -2465,7 +2468,7 @@ namespace Mono.TextEditor
 				delta += GetLineHeight (extendedTextMarkerLine) - LineHeight;
 			}
 			
-			int visualLine = Document.LogicalToVisualLine (logicalLine);
+			int visualLine = Document.LogicalToVisualLine (logicalLine) - 1;
 			return visualLine * LineHeight + delta;
 		}
 		

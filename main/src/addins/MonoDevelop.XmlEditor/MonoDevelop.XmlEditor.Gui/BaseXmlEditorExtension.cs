@@ -546,8 +546,8 @@ namespace MonoDevelop.XmlEditor.Gui
 		
 		protected void EditorSelect (DomRegion region)
 		{
-			int s = Editor.Document.LocationToOffset (region.Start.Line - 1, region.Start.Column - 1);
-			int e = Editor.Document.LocationToOffset (region.End.Line - 1, region.End.Column - 1);
+			int s = Editor.Document.LocationToOffset (region.Start.Line, region.Start.Column);
+			int e = Editor.Document.LocationToOffset (region.End.Line, region.End.Column);
 			if (s > -1 && e > s) {
 				Editor.SetSelection (s, e);
 				Editor.ScrollTo (s);

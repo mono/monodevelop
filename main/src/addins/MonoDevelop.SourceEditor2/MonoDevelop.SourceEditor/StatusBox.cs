@@ -116,15 +116,15 @@ namespace MonoDevelop.SourceEditor
 		
 		string GetText (bool showMax)
 		{
-			int line = showMax ? Editor.Document.LineCount : Editor.TextEditor.Caret.Line + 1;
+			int line = showMax ? Editor.Document.LineCount : Editor.TextEditor.Caret.Line;
 			int column;
 			if (showMax) {
 				column = System.Math.Max (Editor.TextEditor.Caret.Column, 100);
 			} else if (ShowRealColumns) {
 				DocumentLocation location = Editor.TextEditor.LogicalToVisualLocation (Editor.TextEditor.Caret.Location);
-				column = location.Column + 1;
+				column = location.Column;
 			} else {
-				column = Editor.TextEditor.Caret.Column + 1;
+				column = Editor.TextEditor.Caret.Column ;
 			}
 			
 			return string.Format (ShowRealColumns ? GettextCatalog.GetString ("Line: {0}, Column: {1}") : "{0} : {1}", line, column);

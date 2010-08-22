@@ -97,7 +97,7 @@ namespace MonoDevelop.DocFood
 				return null;
 			IMember result = null;
 			foreach (IMember member in type.Members) {
-				if (member.Location > new DomLocation (textEditorData.Caret.Line + 1, textEditorData.Caret.Column + 1) && (result == null || member.Location < result.Location))
+				if (member.Location > new DomLocation (textEditorData.Caret.Line, textEditorData.Caret.Column) && (result == null || member.Location < result.Location))
 					result = member;
 			}
 			return result;

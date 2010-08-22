@@ -518,7 +518,7 @@ namespace MonoDevelop.Refactoring
 			public void ResolveName ()
 			{
 				// TODO: Move this to a expression refactorer !!!!
-				int pos = doc.Editor.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.Start.Line - 1, resolveResult.ResolvedExpression.Region.Start.Column - 1);
+				int pos = doc.Editor.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.Start.Line, resolveResult.ResolvedExpression.Region.Start.Column);
 				doc.Editor.Insert (pos, ns +"." );
 			}
 		}
@@ -836,7 +836,7 @@ namespace MonoDevelop.Refactoring
 						System.IO.TextReader textReader = provider.Open ();
 						doc.Text = textReader.ReadToEnd ();
 						textReader.Close ();
-						int position = doc.LocationToOffset (part.Location.Line - 1, part.Location.Column - 1);
+						int position = doc.LocationToOffset (part.Location.Line, part.Location.Column);
 						while (position + part.Name.Length < doc.Length) {
 							if (doc.GetTextAt (position, part.Name.Length) == part.Name)
 								break;

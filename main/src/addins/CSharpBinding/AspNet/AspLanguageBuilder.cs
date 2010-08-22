@@ -157,8 +157,8 @@ namespace MonoDevelop.CSharp.Completion
 			
 			codeCompletionContext = new CodeCompletionContext () {
 				TriggerOffset = localInfo.CaretPosition,
-				TriggerLine = documentLocation.Line + 1,
-				TriggerLineOffset = documentLocation.Column + 1,
+				TriggerLine = documentLocation.Line,
+				TriggerLineOffset = documentLocation.Column - 1
 			};
 			
 			var r = new System.IO.StringReader (localInfo.LocalDocument);
@@ -219,8 +219,8 @@ namespace MonoDevelop.CSharp.Completion
 				CodeCompletionContext result = new CodeCompletionContext ();
 				result.TriggerOffset = triggerOffset;
 				DocumentLocation loc = localInfo.HiddenDocument.Editor.Document.OffsetToLocation (triggerOffset);
-				result.TriggerLine   = loc.Line + 1;
-				result.TriggerLineOffset = loc.Column + 1;
+				result.TriggerLine   = loc.Line;
+				result.TriggerLineOffset = loc.Column - 1;
 				
 				result.TriggerXCoord = savedCtx.TriggerXCoord;
 				result.TriggerYCoord = savedCtx.TriggerYCoord;
@@ -248,8 +248,8 @@ namespace MonoDevelop.CSharp.Completion
 				int offset = localInfo.OriginalCaretPosition + ctx.TriggerOffset - localInfo.CaretPosition;
 				translatedCtx.TriggerOffset = offset;
 				DocumentLocation loc = localInfo.HiddenDocument.Editor.Document.OffsetToLocation (offset);
-				translatedCtx.TriggerLine   = loc.Line + 1;
-				translatedCtx.TriggerLineOffset = loc.Column + 1;
+				translatedCtx.TriggerLine   = loc.Line;
+				translatedCtx.TriggerLineOffset = loc.Column - 1;
 				translatedCtx.TriggerWordLength = ctx.TriggerWordLength;
 				realDocument.GetContent <ICompletionWidget> ().SetCompletionText (translatedCtx, partial_word, complete_word, wordOffset);
 			}
@@ -282,8 +282,8 @@ namespace MonoDevelop.CSharp.Completion
 			WriteClassDeclaration (info, document);
 			
 			foreach (var node in info.ScriptBlocks) {
-				int start = data.Document.LocationToOffset (node.Location.EndLine - 1,  node.Location.EndColumn);
-				int end = data.Document.LocationToOffset (node.EndLocation.BeginLine - 1, node.EndLocation.BeginColumn);
+				int start = data.Document.LocationToOffset (node.Location.EndLine,  node.Location.EndColumn);
+				int end = data.Document.LocationToOffset (node.EndLocation.BeginLine, node.EndLocation.BeginColumn);
 				document.AppendLine (data.Document.GetTextBetween (start, end));
 			}
 			

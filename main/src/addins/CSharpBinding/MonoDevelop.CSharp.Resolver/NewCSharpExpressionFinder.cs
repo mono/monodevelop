@@ -260,7 +260,7 @@ namespace MonoDevelop.CSharp.Resolver
 			if (lhsExpr.Expression != null) {
 				NRefactoryResolver resolver = new NRefactoryResolver (projectContent, unit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
 				
-				ResolveResult rr = resolver.Resolve (lhsExpr, new DomLocation (editor.Caret.Line + 1, editor.Caret.Column + 1));
+				ResolveResult rr = resolver.Resolve (lhsExpr, new DomLocation (editor.Caret.Line, editor.Caret.Column));
 				//ResolveResult rr = ParserService.Resolve (lhsExpr, currentLine.LineNumber, pos, editor.FileName, editor.Text);
 				
 				if (rr != null && rr.ResolvedType != null) {
@@ -338,7 +338,7 @@ namespace MonoDevelop.CSharp.Resolver
 			if (lhsExpr.Expression != null) {
 				NRefactoryResolver resolver = new NRefactoryResolver (projectContent, unit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
 				
-				ResolveResult rr = resolver.Resolve (lhsExpr, new DomLocation (editor.Caret.Line + 1, editor.Caret.Column + 1));
+				ResolveResult rr = resolver.Resolve (lhsExpr, new DomLocation (editor.Caret.Line, editor.Caret.Column));
 				//ResolveResult rr = ParserService.Resolve (lhsExpr, currentLine.LineNumber, pos, editor.FileName, editor.Text);
 				
 				if (rr != null && rr.ResolvedType != null) {
@@ -362,7 +362,7 @@ namespace MonoDevelop.CSharp.Resolver
 						/*LanguageProperties.CSharp.CodeGenerator.GenerateCode(
 							CodeGenerator.ConvertType(
 								rr.ResolvedType,
-								new ClassFinder(ParserService.GetParseInformation(editor.FileName), editor.ActiveTextAreaControl.Caret.Line + 1, editor.ActiveTextAreaControl.Caret.Column + 1)
+								new ClassFinder(ParserService.GetParseInformation(editor.FileName), editor.ActiveTextAreaControl.Caret.Line, editor.ActiveTextAreaControl.Caret.Column)
 							), "");*/						if (suggestedClassName != c.Name) {
 							// create an IType instance that includes the type arguments in its name
 							//context.DefaultItem = new RenamedClass (c, suggestedClassName);
@@ -671,7 +671,7 @@ namespace MonoDevelop.CSharp.Resolver
 			lexer = ParserFactory.CreateLexer (SupportedLanguage.CSharp, editor.Document.OpenTextReader ());
 			lexer.SkipAllComments = true;
 			var loc = editor.Document.OffsetToLocation (offset);
-			targetPosition = new Location (loc.Column + 1, loc.Line + 1);
+			targetPosition = new Location (loc.Column, loc.Line);
 			
 			frame = new Frame ();
 			lastToken = Tokens.EOF;
@@ -720,9 +720,9 @@ namespace MonoDevelop.CSharp.Resolver
 				if (token == null || token.Kind == Tokens.EOF)
 					tokenOffset = editor.Length;
 				else
-					tokenOffset = editor.Document.LocationToOffset (token.Location.Line - 1, token.Location.Column - 1);
-				int lastExpressionStartOffset = editor.Document.LocationToOffset (frame.lastExpressionStart.Line - 1, frame.lastExpressionStart.Column - 1);
-				if (lastExpressionStartOffset >= 0) {
+					tokenOffset = editor.Document.LocationToOffset (token.Location.Line, token.Location.Column);
+				if (!frame.lastExpressionStart.IsEmpty) {
+					int lastExpressionStartOffset = editor.Document.LocationToOffset (frame.lastExpressionStart.Line, frame.lastExpressionStart.Column);
 					if (offset < tokenOffset) {
 						// offset is in front of this token
 						return MakeResult (editor, lastExpressionStartOffset, tokenOffset, frame.contexts);
@@ -786,7 +786,7 @@ namespace MonoDevelop.CSharp.Resolver
 				}
 				break;
 			case Tokens.From:
-				frame.SetContext (new ExpressionContext.LinqContext (token.Location.Line - 1, token.Location.Column - 1));
+				frame.SetContext (new ExpressionContext.LinqContext (token.Location.Line, token.Location.Column));
 				break;
 			case Tokens.LessThan:
 				if (Tokens.ValidInsideTypeName[lastToken]) {
@@ -1082,11 +1082,11 @@ namespace MonoDevelop.CSharp.Resolver
 					if (targetPosition < token.Location) {
 						resultFrame = frame;
 						resultContext = frame.context;
-						resultStartOffset = editor.Document.LocationToOffset (frame.lastExpressionStart.Line - 1, frame.lastExpressionStart.Column - 1);
-						alternateResultStartOffset = editor.Document.LocationToOffset (frame.lastNewTokenStart.Line - 1, frame.lastNewTokenStart.Column - 1);
+						resultStartOffset = frame.lastExpressionStart.IsEmpty ? -1 : editor.Document.LocationToOffset (frame.lastExpressionStart.Line, frame.lastExpressionStart.Column);
+						alternateResultStartOffset = frame.lastNewTokenStart.IsEmpty ? -1 : editor.Document.LocationToOffset (frame.lastNewTokenStart.Line, frame.lastNewTokenStart.Column);
 						if (resultStartOffset < 0)
 							break;
-						resultEndOffset = editor.Document.LocationToOffset (token.Location.Line - 1, token.Location.Column - 1);
+						resultEndOffset = editor.Document.LocationToOffset (token.Location.Line, token.Location.Column);
 						state = SEARCHING_END;
 					}
 				}
@@ -1096,15 +1096,15 @@ namespace MonoDevelop.CSharp.Resolver
 					if (targetPosition < token.EndLocation) {
 						resultFrame = frame;
 						resultContext = prevContext;
-						resultStartOffset = editor.Document.LocationToOffset (frame.lastExpressionStart.Line  - 1, frame.lastExpressionStart.Column - 1);
-						alternateResultStartOffset = editor.Document.LocationToOffset (frame.lastNewTokenStart.Line - 1, frame.lastNewTokenStart.Column - 1);
-						resultEndOffset = editor.Document.LocationToOffset (token.EndLocation.Line - 1, token.EndLocation.Column - 1);
+						resultStartOffset = frame.lastExpressionStart.IsEmpty ? -1 : editor.Document.LocationToOffset (frame.lastExpressionStart.Line, frame.lastExpressionStart.Column);
+						alternateResultStartOffset = frame.lastNewTokenStart.IsEmpty ? -1 : editor.Document.LocationToOffset (frame.lastNewTokenStart.Line, frame.lastNewTokenStart.Column);
+						resultEndOffset = token.EndLocation.IsEmpty ? -1 : editor.Document.LocationToOffset (token.EndLocation.Line, token.EndLocation.Column);
 						if (resultStartOffset < 0)
 							break;
 						state = SEARCHING_END;
 					}
 				} else if (state == SEARCHING_END) {
-					int lastExpressionStartOffset = editor.Document.LocationToOffset (resultFrame.lastExpressionStart.Line - 1, resultFrame.lastExpressionStart.Column - 1);
+					int lastExpressionStartOffset = resultFrame.lastExpressionStart.IsEmpty ? -1 : editor.Document.LocationToOffset (resultFrame.lastExpressionStart.Line, resultFrame.lastExpressionStart.Column);
 					if (lastExpressionStartOffset == alternateResultStartOffset && alternateResultStartOffset >= 0)
 						resultStartOffset = lastExpressionStartOffset;
 					if (resultFrame.type == FrameType.Popped || lastExpressionStartOffset != resultStartOffset || token.Kind == Tokens.Dot || token.Kind == Tokens.DoubleColon) {
@@ -1123,7 +1123,7 @@ namespace MonoDevelop.CSharp.Resolver
 						}
 					} else {
 						if (frame.bracketType != '<') {
-							resultEndOffset = editor.Document.LocationToOffset (token.EndLocation.Line - 1, token.EndLocation.Column - 1);
+							resultEndOffset = token.EndLocation.IsEmpty ? -1 : editor.Document.LocationToOffset (token.EndLocation.Line, token.EndLocation.Column);
 						}
 					}
 				}
@@ -1142,7 +1142,7 @@ namespace MonoDevelop.CSharp.Resolver
 			}
 			var start = editor.Document.OffsetToLocation (startOffset);
 			var end = editor.Document.OffsetToLocation (endOffset);
-			return new ExpressionResult (editor.GetTextBetween (startOffset, endOffset), new DomRegion (start.Line + 1, start.Column + 1, end.Line + 1, end.Column + 1), contexts);
+			return new ExpressionResult (editor.GetTextBetween (startOffset, endOffset), new DomRegion (start.Line, start.Column, end.Line, end.Column), contexts);
 		}
 /*
 		public string RemoveLastPart (string expression)

@@ -377,9 +377,9 @@ namespace MonoDevelop.DocFood
 		void Init (IMember member)
 		{
 			FillDocumentation (GetBaseDocumentation (member));
-			if (provider != null && !member.Location.IsEmpty && member.BodyRegion.End.Line > 0) {
-				LineSegment start = data.Document.GetLine (member.Location.Line - 1);
-				LineSegment end = data.Document.GetLine (member.BodyRegion.End.Line - 1);
+			if (provider != null && !member.Location.IsEmpty && member.BodyRegion.End.Line > 1) {
+				LineSegment start = data.Document.GetLine (member.Location.Line);
+				LineSegment end = data.Document.GetLine (member.BodyRegion.End.Line);
 				if (start != null && end != null) {
 					var result = provider.ParseFile ("class A {" + data.Document.GetTextAt (start.Offset, end.EndOffset - start.Offset) + "}");
 					result.AcceptVisitor (visitor, null);

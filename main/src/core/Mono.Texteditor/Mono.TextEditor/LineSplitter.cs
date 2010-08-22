@@ -60,7 +60,7 @@ namespace Mono.TextEditor
 
 		public IEnumerable<LineSegment> GetLinesBetween (int startLine, int endLine)
 		{
-			var startNode = GetNode (startLine);
+			var startNode = GetNode (startLine - 1);
 			if (startNode == null)
 				yield break;
 			var iter = startNode.Iter;
@@ -72,7 +72,7 @@ namespace Mono.TextEditor
 
 		public IEnumerable<LineSegment> GetLinesStartingAt (int startLine)
 		{
-			var startNode = GetNode (startLine);
+			var startNode = GetNode (startLine - 1);
 			if (startNode == null)
 				yield break;
 			var iter = startNode.Iter;
@@ -94,7 +94,7 @@ namespace Mono.TextEditor
 
 		public LineSegment Get (int number)
 		{
-			return GetNode (number);
+			return GetNode (number - 1);
 		}
 
 		public LineSegment GetLineByOffset (int offset)
@@ -406,7 +406,7 @@ namespace Mono.TextEditor
 		{
 			var node = GetTreeNodeAtOffset (offset);
 			if (node == null)
-				return -1;
+				return 0;
 			int result = node.Left != null ? node.Left.Value.Count : 0;
 			while (node.Parent != null) {
 				if (node == node.Parent.Right) {
@@ -416,7 +416,7 @@ namespace Mono.TextEditor
 				}
 				node = node.Parent;
 			}
-			return result;
+			return result + 1;
 		}
 
 		public void RemoveLine (TreeNode line)

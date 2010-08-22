@@ -51,9 +51,9 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 			if (property == null || resolveResult.CallingMember == null || resolveResult.CallingMember.FullName != property.FullName || !property.HasGet || property.DeclaringType == null)
 				return false;
 			TextEditorData data = options.GetTextEditorData ();
-			if (property.HasGet && data.Document.GetCharAt (data.Document.LocationToOffset (property.GetRegion.End.Line - 1, property.GetRegion.End.Column - 2)) != ';')
+			if (property.HasGet && data.Document.GetCharAt (data.Document.LocationToOffset (property.GetRegion.End.Line, property.GetRegion.End.Column - 1)) != ';')
 				return false;
-			if (property.HasSet && data.Document.GetCharAt (data.Document.LocationToOffset (property.SetRegion.End.Line - 1, property.SetRegion.End.Column - 2)) != ';')
+			if (property.HasSet && data.Document.GetCharAt (data.Document.LocationToOffset (property.SetRegion.End.Line, property.SetRegion.End.Column - 1)) != ';')
 				return false;
 			return true;
 		}
@@ -109,7 +109,7 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 			backingStore.TypeReference = options.Document.CompilationUnit.ShortenTypeName (property.ReturnType, property.Location).ConvertToTypeReference ();
 			backingStore.Fields.Add (new VariableDeclaration (backingStoreName));
 			DocumentLocation location = property.Location.ToDocumentLocation (data.Document);
-			location.Column = 0;
+			location.Column = 1;
 			refactoringStartOffset = data.Document.LocationToOffset (location);
 			
 			result.Add (new TextReplaceChange () {

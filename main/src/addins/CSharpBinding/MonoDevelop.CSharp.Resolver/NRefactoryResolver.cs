@@ -206,7 +206,7 @@ namespace MonoDevelop.CSharp.Resolver
 					parser.Parse ();
 					lookupTableVisitor.VisitCompilationUnit (parser.CompilationUnit, null);
 					memberCompilationUnit = parser.CompilationUnit;
-					lookupVariableLine = editor.Caret.Line - 1;
+					lookupVariableLine = editor.Caret.Line - 2;
 					setupLookupTableVisitor = true;
 				}
 			}
@@ -310,7 +310,7 @@ namespace MonoDevelop.CSharp.Resolver
 				
 				if (CallingMember is IProperty) {
 					IProperty property = (IProperty)callingMember;
-					if (property.HasSet && editor != null && property.SetRegion.Contains (resolvePosition.Line, editor.Caret.Column + 1))
+					if (property.HasSet && editor != null && property.SetRegion.Contains (resolvePosition.Line, editor.Caret.Column))
 						col.Add ("value");
 				}
 				
@@ -604,7 +604,7 @@ namespace MonoDevelop.CSharp.Resolver
 					if (!lambda.ExpressionBody.IsNull) {
 						DomLocation old = resolver.resolvePosition;
 						try {
-							resolver.resolvePosition = new DomLocation ((resolver.CallingMember != null ? resolver.CallingMember.Location.Line : 0) + 
+							resolver.resolvePosition = new DomLocation ((resolver.CallingMember != null ? resolver.CallingMember.Location.Line : 0) +
 							                                            lambda.ExpressionBody.StartLocation.Line - 2,
 							                                            lambda.ExpressionBody.StartLocation.Column - 1);
 							lambdaReturnType =  visitor.Resolve (lambda.ExpressionBody);
@@ -713,14 +713,15 @@ namespace MonoDevelop.CSharp.Resolver
 			if (resultTable.TryGetValue (identifier, out result))
 				return result;
 			resultTable[identifier] = result;
+//			Console.WriteLine ("lookup: " + identifier);
 //			Console.WriteLine (lookupVariableLine);
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in this.lookupTableVisitor.Variables) {
 				if (identifier == pair.Key) {
 					LocalLookupVariable var = null;
 //					Console.WriteLine ("--- RP:" + this.resolvePosition + "/" + pair.Value.Count);
 					foreach (LocalLookupVariable v2 in pair.Value) {
-						DomLocation varStartPos = new DomLocation (lookupVariableLine + v2.StartPos.Line, v2.StartPos.Column - 1);
-						DomLocation varEndPos   = new DomLocation (lookupVariableLine + v2.EndPos.Line, v2.EndPos.Column - 1);
+						DomLocation varStartPos = new DomLocation (lookupVariableLine + v2.StartPos.Line, v2.StartPos.Column);
+						DomLocation varEndPos   = new DomLocation (lookupVariableLine + v2.EndPos.Line, v2.EndPos.Column);
 //						Console.WriteLine (v2.Name + ":" + varStartPos + " <> " + varEndPos + " resolve position:" + this.resolvePosition);
 						if (varStartPos > this.resolvePosition || (!v2.EndPos.IsEmpty && varEndPos < this.resolvePosition))
 							continue;
@@ -768,7 +769,7 @@ namespace MonoDevelop.CSharp.Resolver
 						}
 						if (var.Initializer != null) {
 							ResolveResult initializerResolve = visitor.Resolve (var.Initializer);
-//							Console.WriteLine ("initializer : "+ var.Initializer + " result:" + initializerResolve);
+//							Console.WriteLine ("initializer : "+ var.Initializer + " result:" + initializerResolve + " isloopvar: " +var.IsLoopVariable);
 							varType           = var.IsLoopVariable ? DomType.GetComponentType (dom, initializerResolve.ResolvedType) : initializerResolve.ResolvedType;
 							varTypeUnresolved = var.IsLoopVariable ? DomType.GetComponentType (dom, initializerResolve.UnresolvedType) : initializerResolve.UnresolvedType;
 //							Console.WriteLine ("resolved type:" + initializerResolve.ResolvedType + " is loop : " + var.IsLoopVariable);
@@ -779,6 +780,7 @@ namespace MonoDevelop.CSharp.Resolver
 						varTypeUnresolved = varType = ConvertTypeReference (var.TypeRef);
 					}
 					varType = ResolveType (varType);
+					Console.WriteLine (identifier + ":" +  varType);
 					result = new LocalVariableResolveResult (
 						new LocalVariable (CallingMember, identifier, varType,
 							new DomRegion (lookupVariableLine + var.StartPos.Line, var.StartPos.Column, 
@@ -794,7 +796,7 @@ namespace MonoDevelop.CSharp.Resolver
 				// special handling of property or field return types, they can have the same name as the return type
 				// ex.: MyType MyType { get; set; }  Type1 Type1;
 				if ((callingMember is IProperty || callingMember is IField) && identifier == callingMember.Name) {
-					int pos = editor.Document.LocationToOffset (resolvePosition.Line - 1, resolvePosition.Column - 1);
+					int pos = editor.Document.LocationToOffset (resolvePosition.Line, resolvePosition.Column);
 					while (pos < editor.Length && !Char.IsWhiteSpace (editor.GetCharAt (pos)))
 						pos++;
 					while (pos < editor.Length && Char.IsWhiteSpace (editor.GetCharAt (pos)))
@@ -921,18 +923,18 @@ namespace MonoDevelop.CSharp.Resolver
 			if (member == null)
 				return "";
 			StringBuilder result = new StringBuilder ();
-			int startLine = member.Location.Line - 1;
+			int startLine = member.Location.Line;
 			int endLine   = member.BodyRegion.End.Line < startLine ? startLine : member.BodyRegion.End.Line;
 			string text;
 			result.Append ("class ");
 			result.Append (member.DeclaringType.Name);
 			result.Append ("{");
 			result.Append (editor.EolMarker);
-			endLine = Math.Min (endLine, editor.Document.LineCount - 1);
+			endLine = Math.Min (endLine, editor.Document.LineCount);
 			int endPos = editor.Document.GetLine (endLine).EndOffset;
 			if (endPos < 0)
 				endPos = editor.Length;
-			int startPos = Math.Max (0, editor.Document.LocationToOffset (startLine, 0));
+			int startPos = Math.Max (1, editor.Document.LocationToOffset (startLine, 1));
 			text = editor.GetTextBetween (startPos, endPos);
 			if (!string.IsNullOrEmpty (text))
 				result.Append (text);

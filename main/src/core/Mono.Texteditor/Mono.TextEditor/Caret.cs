@@ -31,7 +31,7 @@ namespace Mono.TextEditor
 {
 	public class Caret
 	{
-		DocumentLocation location;
+		DocumentLocation location = new DocumentLocation (1, 1);
 		
 		bool isInInsertMode = true;
 		bool autoScrollToCaret = true;
@@ -44,6 +44,8 @@ namespace Mono.TextEditor
 			}
 			set {
 				if (location.Line != value) {
+					if (value < DocumentLocation.MinLine)
+						throw new ArgumentException ("Line < MinLine");
 					DocumentLocation old = location;
 					location.Line = value;
 					SetColumn ();
@@ -58,6 +60,8 @@ namespace Mono.TextEditor
 			}
 			set {
 				if (location.Column != value) {
+					if (value < DocumentLocation.MinColumn)
+						throw new ArgumentException ("Column < MinColumn");
 					DocumentLocation old = location;
 					location.Column = value;
 					SetDesiredColumn ();
@@ -72,6 +76,8 @@ namespace Mono.TextEditor
 			}
 			set {
 				if (location != value) {
+					if (value.Line < DocumentLocation.MinLine || value.Column < DocumentLocation.MinColumn)
+						throw new ArgumentException ("invalid location: " + value);
 					DocumentLocation old = location;
 					location = value;
 					SetDesiredColumn ();
@@ -83,17 +89,17 @@ namespace Mono.TextEditor
 		public int Offset {
 			get {
 				int result = 0;
-				if (Line < TextEditorData.Document.LineCount) {
+				if (Line <= TextEditorData.Document.LineCount) {
 					LineSegment line = TextEditorData.Document.GetLine (Line);
 					if (line != null)
 						result = line.Offset;
-					result += System.Math.Min (Column, line.EditableLength);
+					result += System.Math.Min (Column - 1, line.EditableLength);
 				}
 				return result;
 			}
 			set {
 				int line   = TextEditorData.Document.OffsetToLineNumber (value);
-				int column = value - TextEditorData.Document.GetLine (line).Offset;
+				int column = value - TextEditorData.Document.GetLine (line).Offset + 1;
 				Location = new DocumentLocation (line, column);
 			}
 		}
@@ -164,15 +170,15 @@ namespace Mono.TextEditor
 			this.TextEditorData = editor;
 			this.IsVisible = true;
 			this.AllowCaretBehindLineEnd = false;
+			this.DesiredColumn = DocumentLocation.MinColumn;
 		}
 		
 		public void CheckCaretPosition ()
 		{
-			if (this.Line >= TextEditorData.Document.LineCount) 
-				this.Line = TextEditorData.Document.LineCount - 1;
+			this.Line = System.Math.Min (this.Line, TextEditorData.Document.LineCount);
 			if (!AllowCaretBehindLineEnd) {
 				LineSegment curLine = TextEditorData.Document.GetLine (this.Line);
-				this.Column = System.Math.Min (curLine.EditableLength, System.Math.Max (0, this.Column));
+				this.Column = System.Math.Min (curLine.EditableLength + 1, this.Column);
 			}
 		}
 		
@@ -189,7 +195,7 @@ namespace Mono.TextEditor
 			DocumentLocation old = Location;
 			
 			int line   = TextEditorData.Document.OffsetToLineNumber (desiredOffset);
-			int column = desiredOffset - TextEditorData.Document.GetLine (line).Offset;
+			int column = desiredOffset - TextEditorData.Document.GetLine (line).Offset + 1;
 			location = new DocumentLocation (line, column);
 			SetColumn ();
 			OnPositionChanged (new DocumentLocationEventArgs (old));
@@ -202,7 +208,7 @@ namespace Mono.TextEditor
 				return;
 			
 			if (!AllowCaretBehindLineEnd)
-				this.Column = System.Math.Min (curLine.EditableLength, System.Math.Max (0, this.Column));
+				this.Column = System.Math.Min (curLine.EditableLength + 1, System.Math.Max (DocumentLocation.MinColumn, this.Column));
 			this.DesiredColumn = curLine.GetVisualColumn (TextEditorData, this.Column);
 		}
 		
@@ -215,8 +221,8 @@ namespace Mono.TextEditor
 			if (curLine.GetVisualColumn (TextEditorData, this.location.Column) < this.DesiredColumn) {
 				this.location.Column = TextEditorData.GetNextVirtualColumn (Line, this.location.Column);
 			} else {
-				if (this.Column > curLine.EditableLength) {
-					this.location.Column = System.Math.Min (curLine.EditableLength, System.Math.Max (0, this.Column));
+				if (this.Column > curLine.EditableLength + 1) {
+					this.location.Column = System.Math.Min (curLine.EditableLength + 1, System.Math.Max (DocumentLocation.MinColumn, this.Column));
 					if (AllowCaretBehindLineEnd)
 						this.location.Column = TextEditorData.GetNextVirtualColumn (Line, this.location.Column);
 				}

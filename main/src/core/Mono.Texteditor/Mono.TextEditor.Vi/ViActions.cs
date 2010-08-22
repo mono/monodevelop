@@ -37,14 +37,14 @@ namespace Mono.TextEditor.Vi
 	{
 		public static void MoveToNextEmptyLine (TextEditorData data)
 		{
-			if (data.Caret.Line == data.Document.LineCount - 1) {
+			if (data.Caret.Line == data.Document.LineCount) {
 				data.Caret.Offset = data.Document.Length;
 				return;
 			}
 			
 			int line = data.Caret.Line + 1;
 			LineSegment currentLine = data.Document.GetLine (line);
-			while (line < data.Document.LineCount - 1) {
+			while (line < data.Document.LineCount) {
 				line++;
 				LineSegment nextLine = data.Document.GetLine (line);
 				if (currentLine.EditableLength != 0 && nextLine.EditableLength == 0) {
@@ -59,14 +59,14 @@ namespace Mono.TextEditor.Vi
 		
 		public static void MoveToPreviousEmptyLine (TextEditorData data)
 		{
-			if (data.Caret.Line == 0) {
+			if (data.Caret.Line == DocumentLocation.MinLine) {
 				data.Caret.Offset = 0;
 				return;
 			}
 			
 			int line = data.Caret.Line - 1;
 			LineSegment currentLine = data.Document.GetLine (line);
-			while (line > 0) {
+			while (line > DocumentLocation.MinLine) {
 				line--;
 				LineSegment previousLine = data.Document.GetLine (line);
 				if (currentLine.EditableLength != 0 && previousLine.EditableLength == 0) {
@@ -88,7 +88,7 @@ namespace Mono.TextEditor.Vi
 		
 		public static void NewLineAbove (TextEditorData data)
 		{
-			if (data.Caret.Line == 0) {
+			if (data.Caret.Line == DocumentLocation.MinLine ) {
 				data.Caret.Offset = 0;
 				MiscActions.InsertNewLine (data);
 				data.Caret.Offset = 0;
@@ -115,7 +115,7 @@ namespace Mono.TextEditor.Vi
 			if (endLine == startLine)
 				endLine++;
 			
-			if (endLine >= data.Document.LineCount)
+			if (endLine > data.Document.LineCount)
 				return;
 			
 			LineSegment seg = data.Document.GetLine (startLine);
@@ -159,7 +159,7 @@ namespace Mono.TextEditor.Vi
 					ch = Char.ToLower (ch);
 				int length = data.Replace (data.Caret.Offset, 1, new string (ch, 1));
 				LineSegment seg = data.Document.GetLine (data.Caret.Line);
-				if (data.Caret.Column < seg.EditableLength - 1)
+				if (data.Caret.Column < seg.EditableLength)
 					data.Caret.Offset += length;
 			}
 		}
@@ -175,7 +175,7 @@ namespace Mono.TextEditor.Vi
 		
 		public static void Left (TextEditorData data)
 		{
-			if (0 < data.Caret.Column) {
+			if (DocumentLocation.MinColumn < data.Caret.Column) {
 				CaretMoveActions.Left (data);
 			}
 		}
@@ -228,7 +228,7 @@ namespace Mono.TextEditor.Vi
 		internal static void RetreatFromLineEnd (TextEditorData data)
 		{
 			if (data.Caret.Mode == CaretMode.Block && !data.IsSomethingSelected && !data.Caret.PreserveSelection) {
-				while (0 < data.Caret.Column && (data.Caret.Offset >= data.Document.Length
+				while (DocumentLocation.MinLine < data.Caret.Column && (data.Caret.Offset >= data.Document.Length
 				                                 || IsEol (data.Document.GetCharAt (data.Caret.Offset)))) {
 					Left (data);
 				}

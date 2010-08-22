@@ -101,11 +101,11 @@ namespace Mono.TextEditor.Utils
 {
 	public struct Hunk
 	{
-		public static readonly Hunk Empty = new Hunk (-1, -1, 0, 0);
+		public static readonly Hunk Empty = new Hunk (0, 0, 0, 0);
 		
 		public bool IsEmpty {
 			get {
-				return InsertStart < 0;
+				return InsertStart <= 0;
 			}
 		}
 		
@@ -241,7 +241,7 @@ namespace Mono.TextEditor.Utils
 
 					if (startA < lineA || startB < lineB) {
 						// store a new difference-item
-						yield return new Hunk (startA, startB, lineA - startA, lineB - startB);
+						yield return new Hunk (startA + 1, startB + 1, lineA - startA, lineB - startB);
 					}
 					// if
 				}

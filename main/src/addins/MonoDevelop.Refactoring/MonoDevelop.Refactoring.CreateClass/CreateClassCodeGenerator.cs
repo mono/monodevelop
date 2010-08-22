@@ -74,7 +74,7 @@ namespace MonoDevelop.Refactoring.CreateClass
 				return null;
 			string expression = options.ResolveResult.ResolvedExpression.Expression;
 			if (!expression.Contains ("(")) {
-				int startPos = data.Document.LocationToOffset (options.ResolveResult.ResolvedExpression.Region.Start.Line - 1, options.ResolveResult.ResolvedExpression.Region.Start.Column - 1);
+				int startPos = data.Document.LocationToOffset (options.ResolveResult.ResolvedExpression.Region.Start.Line, options.ResolveResult.ResolvedExpression.Region.Start.Column);
 				if (startPos < 0)
 					return null;
 				for (int pos = startPos; pos < data.Document.Length; pos++) {
@@ -89,7 +89,7 @@ namespace MonoDevelop.Refactoring.CreateClass
 				}
 			}
 			if (!expression.StartsWith ("new ")) {
-				int startPos = data.Document.LocationToOffset (options.ResolveResult.ResolvedExpression.Region.Start.Line - 1, options.ResolveResult.ResolvedExpression.Region.Start.Column - 1);
+				int startPos = data.Document.LocationToOffset (options.ResolveResult.ResolvedExpression.Region.Start.Line, options.ResolveResult.ResolvedExpression.Region.Start.Column);
 				if (startPos < 0)
 					return null;
 				for (int pos = startPos; pos >= 0; pos--) {
@@ -161,7 +161,7 @@ namespace MonoDevelop.Refactoring.CreateClass
 				constructor.Parameters.Add (pde);
 			}
 			ICSharpCode.NRefactory.Ast.INode node = newType;
-			IType curType = options.Document.CompilationUnit.GetTypeAt (options.Document.Editor.Caret.Line - 1, options.Document.Editor.Caret.Column - 1);
+			IType curType = options.Document.CompilationUnit.GetTypeAt (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column);
 			if (curType != null && !string.IsNullOrEmpty (curType.Namespace)) {
 				NamespaceDeclaration namespaceDeclaration = new NamespaceDeclaration (curType.Namespace);
 				namespaceDeclaration.Children.Add (newType);

@@ -90,10 +90,10 @@ namespace MonoDevelop.Refactoring.Rename
 				TextLink link = new TextLink ("name");
 				int baseOffset = Int32.MaxValue;
 				foreach (MemberReference r in col) {
-					baseOffset = Math.Min (baseOffset, data.Document.LocationToOffset (r.Line - 1, r.Column - 1));
+					baseOffset = Math.Min (baseOffset, data.Document.LocationToOffset (r.Line, r.Column));
 				}
 				foreach (MemberReference r in col) {
-					Segment segment = new Segment (data.Document.LocationToOffset (r.Line - 1, r.Column - 1) - baseOffset, r.Name.Length);
+					Segment segment = new Segment (data.Document.LocationToOffset (r.Line, r.Column) - baseOffset, r.Name.Length);
 					if (segment.Offset <= data.Caret.Offset - baseOffset && data.Caret.Offset - baseOffset <= segment.EndOffset) {
 						link.Links.Insert (0, segment); 
 					} else {

@@ -222,9 +222,9 @@ namespace MonoDevelop.Projects
 			System.Text.StringBuilder sb = new System.Text.StringBuilder ();
 			if (!string.IsNullOrEmpty (fileName)) {
 				sb.Append (fileName);
-				if (line > 0) {
+				if (line > 1) {
 					sb.Append ('(').Append (line);
-					if (column > 0)
+					if (column > 1)
 						sb.Append (',').Append (column);
 					sb.Append (')');
 				}

@@ -126,10 +126,8 @@ namespace Mono.TextEditor.Tests
 			do {
 				Gtk.Application.RunIteration ();
 			} while (!document.HasFoldSegments);
-			Assert.AreEqual (12, document.VisualToLogicalLine (4));
-			Assert.AreEqual (17, document.VisualToLogicalLine (7));
+			Assert.AreEqual (13, document.VisualToLogicalLine (5));
+			Assert.AreEqual (18, document.VisualToLogicalLine (8));
 		}
-		
-		
 	}
 }

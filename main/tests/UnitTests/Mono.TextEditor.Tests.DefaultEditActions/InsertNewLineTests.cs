@@ -38,11 +38,11 @@ namespace Mono.TextEditor.Tests
 		{
 			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
 			data.Document.Text = "Hello World!";
-			data.Caret.Location = new DocumentLocation (0, "Hello".Length);
+			data.Caret.Location = new DocumentLocation (1, "Hello".Length + 1);
 			MiscActions.InsertNewLine (data);
 			Assert.AreEqual (2, data.Document.LineCount);
-			Assert.AreEqual (1, data.Caret.Line);
-			Assert.AreEqual (0, data.Caret.Column);
+			Assert.AreEqual (2, data.Caret.Line);
+			Assert.AreEqual (1, data.Caret.Column);
 			Assert.AreEqual ("Hello" + Environment.NewLine + " World!", data.Document.Text);
 		}
 		

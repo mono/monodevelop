@@ -158,7 +158,7 @@ namespace Mono.TextEditor
 		public LineSegment LineSegment {
 			get {
 				if (line == null) {
-					if (LineNumber == -1)
+					if (LineNumber < DocumentLocation.MinLine)
 						return null;
 					line = Editor.Document.GetLine (lineNumber);
 				}

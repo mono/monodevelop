@@ -41,7 +41,7 @@ namespace Mono.TextEditor.Tests
 1234567890
 1234567890");
 			SelectionActions.MoveLeft (data);
-			Assert.AreEqual (new Selection (2, 4, 2, 3), data.MainSelection);
+			Assert.AreEqual (new Selection (DocumentLocation.MinLine + 2, DocumentLocation.MinColumn +  4, DocumentLocation.MinLine + 2, DocumentLocation.MinColumn + 3), data.MainSelection);
 		}
 		
 		[Test()]
@@ -53,7 +53,7 @@ namespace Mono.TextEditor.Tests
 1234567890
 1234567890");
 			SelectionActions.MoveRight (data);
-			Assert.AreEqual (new Selection (2, 4, 2, 5), data.MainSelection);
+			Assert.AreEqual (new Selection (DocumentLocation.MinLine + 2, DocumentLocation.MinColumn + 4, DocumentLocation.MinLine + 2, DocumentLocation.MinColumn + 5), data.MainSelection);
 		}
 		
 		[Test()]
@@ -65,7 +65,7 @@ namespace Mono.TextEditor.Tests
 1234567890
 1234567890");
 			SelectionActions.MoveDown (data);
-			Assert.AreEqual (new Selection (2, 4, 3, 4), data.MainSelection);
+			Assert.AreEqual (new Selection (DocumentLocation.MinLine + 2, DocumentLocation.MinColumn + 4, DocumentLocation.MinLine + 3, DocumentLocation.MinColumn + 4), data.MainSelection);
 		}
 		
 		[Test()]
@@ -77,7 +77,7 @@ namespace Mono.TextEditor.Tests
 1234567890
 1234567890");
 			SelectionActions.MoveUp (data);
-			Assert.AreEqual (new Selection (2, 4, 1, 4), data.MainSelection);
+			Assert.AreEqual (new Selection (DocumentLocation.MinLine + 2, DocumentLocation.MinColumn + 4, DocumentLocation.MinLine + 1, DocumentLocation.MinColumn + 4), data.MainSelection);
 		}
 		
 		[Test()]
@@ -89,7 +89,7 @@ namespace Mono.TextEditor.Tests
 1234567890
 1234567890");
 			SelectionActions.MoveToDocumentStart (data);
-			Assert.AreEqual (new Selection (2, 4, 0, 0), data.MainSelection);
+			Assert.AreEqual (new Selection (DocumentLocation.MinLine + 2, DocumentLocation.MinColumn + 4, DocumentLocation.MinLine, DocumentLocation.MinColumn), data.MainSelection);
 		}
 		
 		[Test()]
@@ -101,7 +101,7 @@ namespace Mono.TextEditor.Tests
 1234567890
 1234567890");
 			SelectionActions.MoveToDocumentEnd (data);
-			Assert.AreEqual (new Selection (2, 4, 4, 10), data.MainSelection);
+			Assert.AreEqual (new Selection (DocumentLocation.MinLine + 2, DocumentLocation.MinColumn + 4, DocumentLocation.MinLine + 4, DocumentLocation.MinColumn + 10), data.MainSelection);
 		}
 		
 		[Test()]
@@ -113,7 +113,7 @@ namespace Mono.TextEditor.Tests
 1234567890
 1234567890");
 			SelectionActions.MoveLineEnd (data);
-			Assert.AreEqual (new Selection (2, 4, 2, 10), data.MainSelection);
+			Assert.AreEqual (new Selection (DocumentLocation.MinLine + 2, DocumentLocation.MinColumn + 4, DocumentLocation.MinLine + 2, DocumentLocation.MinColumn + 10), data.MainSelection);
 		}
 		
 		[Test()]
@@ -125,7 +125,7 @@ namespace Mono.TextEditor.Tests
 1234567890
 1234567890");
 			SelectionActions.MoveLineHome (data);
-			Assert.AreEqual (new Selection (2, 4, 2, 0), data.MainSelection);
+			Assert.AreEqual (new Selection (DocumentLocation.MinLine + 2, DocumentLocation.MinColumn + 4, DocumentLocation.MinLine + 2, DocumentLocation.MinColumn), data.MainSelection);
 		}
 		
 		[Test()]

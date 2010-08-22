@@ -220,7 +220,7 @@ namespace MonoDevelop.CSharp.Completion
 				cursor = textEditorData.IsSomethingSelected ? textEditorData.SelectionRange.Offset : textEditorData.Caret.Offset;
 				
 				if (stateTracker.Engine.IsInsideDocLineComment) {
-					string lineText = textEditorData.GetLineText (completionContext.TriggerLine - 1);
+					string lineText = textEditorData.GetLineText (completionContext.TriggerLine);
 					int startIndex = Math.Min (completionContext.TriggerLineOffset - 1, lineText.Length - 1);
 					
 					while (startIndex >= 0 && lineText[startIndex] != '<') {
@@ -293,7 +293,7 @@ namespace MonoDevelop.CSharp.Completion
 					break;
 					
 				if (stateTracker.Engine.IsInsideDocLineComment) {
-					string lineText = textEditorData.GetLineText (completionContext.TriggerLine - 1);
+					string lineText = textEditorData.GetLineText (completionContext.TriggerLine);
 					bool startsDocComment = true;
 					int slashes = 0;
 					for (int i = 0; i < completionContext.TriggerLineOffset && i < lineText.Length; i++) {
@@ -340,7 +340,7 @@ namespace MonoDevelop.CSharp.Completion
 					ParsedDocument currentParsedDocument = Document.UpdateParseDocument ();
 					IType insideClass = NRefactoryResolver.GetTypeAtCursor (currentParsedDocument.CompilationUnit, Document.FileName, location);
 					if (insideClass != null) {
-						string indent = textEditorData.Document.GetLineIndent (completionContext.TriggerLine - 1);
+						string indent = textEditorData.Document.GetLineIndent (completionContext.TriggerLine);
 						if (insideClass.ClassType == ClassType.Delegate) {
 							AppendSummary (generatedComment, indent, out newCursorOffset);
 							IMethod m = null;
@@ -359,7 +359,7 @@ namespace MonoDevelop.CSharp.Completion
 						}
 					}
 					if (generateStandardComment) {
-						string indent = textEditorData.Document.GetLineIndent (completionContext.TriggerLine - 1);
+						string indent = textEditorData.Document.GetLineIndent (completionContext.TriggerLine);
 						AppendSummary (generatedComment, indent, out newCursorOffset);
 					}
 					textEditorData.Document.EndAtomicUndo ();
@@ -523,7 +523,7 @@ namespace MonoDevelop.CSharp.Completion
 									sb.Append (", ");
 								IType parameterType = dom.GetType (delegateMethod.Parameters[k].ReturnType);
 								IReturnType returnType = parameterType != null ? new DomReturnType (parameterType) : delegateMethod.Parameters[k].ReturnType;
-								sb.Append (CompletionDataCollector.ambience.GetString (Document.CompilationUnit.ShortenTypeName (returnType, textEditorData.Caret.Line + 1, textEditorData.Caret.Column + 1), OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName  | OutputFlags.UseFullInnerTypeName));
+								sb.Append (CompletionDataCollector.ambience.GetString (Document.CompilationUnit.ShortenTypeName (returnType, textEditorData.Caret.Line, textEditorData.Caret.Column), OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName  | OutputFlags.UseFullInnerTypeName));
 								sb.Append (" ");
 								sb.Append (delegateMethod.Parameters[k].Name);
 							}
@@ -693,9 +693,9 @@ namespace MonoDevelop.CSharp.Completion
 		int GetMemberStartPosition (IMember mem)
 		{
 			if (mem is IField)
-				return textEditorData.Document.LocationToOffset (mem.Location.Line - 1, mem.Location.Column - 1);
+				return textEditorData.Document.LocationToOffset (mem.Location.Line, mem.Location.Column);
 			if (mem != null)
-				return textEditorData.Document.LocationToOffset (mem.BodyRegion.Start.Line - 1, mem.BodyRegion.Start.Column - 1);
+				return textEditorData.Document.LocationToOffset (mem.BodyRegion.Start.Line, mem.BodyRegion.Start.Column);
 			return 0;
 		}
 
@@ -704,8 +704,7 @@ namespace MonoDevelop.CSharp.Completion
 			// Start calculating the parameter offset from the beginning of the
 			// current member, instead of the beginning of the file. 
 			cpos = textEditorData.Caret.Offset - 1;
-			IMember mem = Document.ParsedDocument.CompilationUnit.GetMemberAt (textEditorData.Caret.Line + 1, textEditorData.Caret.Column + 1);
-			Console.WriteLine ("member:" + mem);
+			IMember mem = Document.ParsedDocument.CompilationUnit.GetMemberAt (textEditorData.Caret.Line, textEditorData.Caret.Column);
 			if (mem == null || (mem is IType))
 				return false;
 			int startPos = GetMemberStartPosition (mem);
@@ -2290,8 +2289,8 @@ namespace MonoDevelop.CSharp.Completion
 				return;
 			
 			var loc = textEditorData.Caret.Location;
-			IType type = Document.ParsedDocument.CompilationUnit.GetTypeAt (loc.Line + 1, loc.Column + 1);
-			IMember member = type != null && type.ClassType != ClassType.Delegate ? type.GetMemberAt (loc.Line + 1, loc.Column + 1) : null;
+			IType type = Document.ParsedDocument.CompilationUnit.GetTypeAt (loc.Line, loc.Column);
+			IMember member = type != null && type.ClassType != ClassType.Delegate ? type.GetMemberAt (loc.Line, loc.Column) : null;
 			
 			List<PathEntry> result = new List<PathEntry> ();
 			var amb = GetAmbience ();
@@ -2301,7 +2300,7 @@ namespace MonoDevelop.CSharp.Completion
 				if (node is ICompilationUnit) {
 					if (!Document.ParsedDocument.UserRegions.Any ())
 						break;
-					FoldingRegion reg = Document.ParsedDocument.UserRegions.Where (r => r.Region.Contains (loc.Line + 1, loc.Column + 1)).LastOrDefault ();
+					FoldingRegion reg = Document.ParsedDocument.UserRegions.Where (r => r.Region.Contains (loc.Line, loc.Column)).LastOrDefault ();
 					if (reg == null) {
 						entry = new PathEntry (GettextCatalog.GetString ("No region"));
 					} else {

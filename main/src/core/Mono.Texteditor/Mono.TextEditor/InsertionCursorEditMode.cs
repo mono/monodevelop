@@ -180,14 +180,14 @@ namespace Mono.TextEditor
 				if (CurIndex > 0)
 					CurIndex--;
 				DocumentLocation loc = insertionPoints[CurIndex].Location;
-				editor.CenterTo (loc.Line - 1, 0);
+				editor.CenterTo (loc.Line - 1, DocumentLocation.MinColumn);
 				editor.QueueDraw ();
 				break;
 			case Gdk.Key.Down:
 				if (CurIndex < insertionPoints.Count - 1)
 					CurIndex++;
 				loc = insertionPoints[CurIndex].Location;
-				editor.CenterTo (loc.Line + 1, 0);
+				editor.CenterTo (loc.Line + 1, DocumentLocation.MinColumn);
 				editor.QueueDraw ();
 				break;
 				

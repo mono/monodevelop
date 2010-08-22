@@ -160,8 +160,8 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 					resolveResult = resolver.Resolve (new ExpressionResult (SearchNumber (data, out start, out end)), DomLocation.Empty);
 				}
 			} else {
-				start = data.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.Start.Line - 1, resolveResult.ResolvedExpression.Region.Start.Column - 1);
-				end = data.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.End.Line - 1, resolveResult.ResolvedExpression.Region.End.Column - 1);
+				start = data.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.Start.Line, resolveResult.ResolvedExpression.Region.Start.Column);
+				end = data.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.End.Line, resolveResult.ResolvedExpression.Region.End.Column);
 			}
 			if (start == 0 && end == 0)
 				return result;
@@ -179,7 +179,7 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			TextReplaceChange insertConstant = new TextReplaceChange ();
 			insertConstant.FileName = options.Document.FileName;
 			insertConstant.Description = string.Format (GettextCatalog.GetString ("Generate constant '{0}'"), param.Name);
-			insertConstant.Offset = data.Document.LocationToOffset (curMember.Location.Line - 1, 0);
+			insertConstant.Offset = data.Document.LocationToOffset (curMember.Location.Line, 1);
 			insertConstant.InsertedText = provider.OutputNode (options.Dom, fieldDeclaration, options.GetIndent (curMember)) + Environment.NewLine;
 			result.Add (insertConstant);
 

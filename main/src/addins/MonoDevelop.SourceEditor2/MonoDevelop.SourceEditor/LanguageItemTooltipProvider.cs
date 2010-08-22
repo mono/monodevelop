@@ -48,10 +48,10 @@ namespace MonoDevelop.SourceEditor
 			ResolveResult resolveResult = ed.GetLanguageItem (offset);
 			if (resolveResult == null || resolveResult.ResolvedExpression == null)
 				return null;
-			int startOffset = editor.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.Start.Line - 1, 
-			                                                    resolveResult.ResolvedExpression.Region.Start.Column - 1);
-			int endOffset = editor.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.End.Line - 1, 
-			                                                    resolveResult.ResolvedExpression.Region.End.Column - 1);
+			int startOffset = editor.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.Start.Line,
+			                                                    resolveResult.ResolvedExpression.Region.Start.Column);
+			int endOffset = editor.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.End.Line, 
+			                                                    resolveResult.ResolvedExpression.Region.End.Column);
 			return new TooltipItem (resolveResult, startOffset, endOffset - startOffset);
 		}
 		

@@ -79,12 +79,12 @@ namespace MonoDevelop.Ide.Commands
 					
 				case "CURLINE":
 					if (wb.ActiveDocument != null && wb.ActiveDocument.Editor != null)
-						return wb.ActiveDocument.Editor.Caret.Line + 1;
+						return wb.ActiveDocument.Editor.Caret.Line;
 					return null;
 					
 				case "CURCOLUMN":
 					if (wb.ActiveDocument != null && wb.ActiveDocument.Editor != null)
-						return wb.ActiveDocument.Editor.Caret.Column + 1;
+						return wb.ActiveDocument.Editor.Caret.Column;
 					return null;
 					
 				case "CUROFFSET":

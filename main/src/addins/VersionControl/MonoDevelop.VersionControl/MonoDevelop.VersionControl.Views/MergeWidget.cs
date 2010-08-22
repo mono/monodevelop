@@ -198,14 +198,14 @@ namespace MonoDevelop.VersionControl.Views
 
 				string above = MainEditor.Document.GetTextBetween (curOffset, conflict.StartSegment.Offset);
 				editors[0].Insert (editors[0].Document.Length, above);
-				int leftA = editors[0].Document.LineCount - 1;
+				int leftA = editors[0].Document.LineCount;
 				editors[0].Insert (editors[0].Document.Length, MainEditor.Document.GetTextAt (conflict.MySegment));
-				int leftB = editors[0].Document.LineCount - 1;
+				int leftB = editors[0].Document.LineCount;
 
 				editors[2].Insert (editors[2].Document.Length, above);
-				int rightA = editors[2].Document.LineCount - 1;
+				int rightA = editors[2].Document.LineCount;
 				editors[2].Insert (editors[2].Document.Length, MainEditor.Document.GetTextAt (conflict.TheirSegment));
-				int rightB = editors[2].Document.LineCount - 1;
+				int rightB = editors[2].Document.LineCount;
 
 				try {
 					MainEditor.Remove (conflict.EndSegment);

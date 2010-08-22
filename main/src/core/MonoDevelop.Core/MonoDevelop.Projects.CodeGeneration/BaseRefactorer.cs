@@ -1077,7 +1077,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				IMethod m = cls.Methods.Last ();
 				
 				int pos;
-				if (!m.BodyRegion.IsEmpty && m.BodyRegion.End.Line > 0) {
+				if (!m.BodyRegion.IsEmpty && m.BodyRegion.End.Line > 1) {
 					pos = buffer.GetPositionFromLineColumn (m.BodyRegion.End.Line, m.BodyRegion.End.Column);
 					pos = GetNextLine (buffer, pos);
 					pos = SkipBlankLine (buffer, pos);

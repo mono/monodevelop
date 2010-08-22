@@ -199,7 +199,7 @@ namespace Mono.TextEditor.Vi
 			
 			if (CaretMode.Block != data.Caret.Mode) {
 				data.Caret.Mode = CaretMode.Block;
-				if (data.Caret.Column > 0)
+				if (data.Caret.Column > DocumentLocation.MinColumn)
 					data.Caret.Column--;
 			}
 			ViActions.RetreatFromLineEnd (data);
@@ -354,7 +354,7 @@ namespace Mono.TextEditor.Vi
 						return;
 						
 					case 'x':
-						if (Data.Caret.Column == Data.Document.GetLine (Data.Caret.Line).EditableLength)
+						if (Data.Caret.Column == Data.Document.GetLine (Data.Caret.Line).EditableLength + 1)
 							return;
 						Status = string.Empty;
 						if (!Data.IsSomethingSelected)
@@ -365,7 +365,7 @@ namespace Mono.TextEditor.Vi
 						return;
 						
 					case 'X':
-						if (Data.Caret.Column == 0)
+						if (Data.Caret.Column == DocumentLocation.MinColumn)
 							return;
 						Status = string.Empty;
 						if (!Data.IsSomethingSelected && 0 < Caret.Offset)
@@ -423,21 +423,21 @@ namespace Mono.TextEditor.Vi
 						return;
 						
 					case 'H':
-						Caret.Line = System.Math.Max (0, Editor.PointToLocation (0, Editor.LineHeight - 1).Line);
+						Caret.Line = System.Math.Max (DocumentLocation.MinLine, Editor.PointToLocation (0, Editor.LineHeight - 1).Line);
 						return;
 					case 'J':
 						RunAction (ViActions.Join);
 						return;
 					case 'L':
 						int line = Editor.PointToLocation (0, Editor.Allocation.Height - Editor.LineHeight * 2 - 2).Line;
-						if (line < 0)
-							line = Document.LineCount - 1;
+						if (line < DocumentLocation.MinLine)
+							line = Document.LineCount;
 						Caret.Line = line;
 						return;
 					case 'M':
 						line = Editor.PointToLocation (0, Editor.Allocation.Height/2).Line;
-						if (line < 0)
-							line = Document.LineCount - 1;
+						if (line < DocumentLocation.MinLine)
+							line = Document.LineCount;
 						Caret.Line = line;
 						return;
 						
@@ -581,7 +581,6 @@ namespace Mono.TextEditor.Vi
 			case State.Insert:
 			case State.Replace:
 				action = GetInsertAction (key, modifier);
-				
 				
 				if (action != null)
 					RunAction (action);

@@ -88,7 +88,7 @@ namespace MonoDevelop.AspNet.Tests
 			int line, column;
 			sev.GetLineColumnFromPosition (sev.CursorPosition, out line, out column);
 			ctx.TriggerLine = line;
-			ctx.TriggerLineOffset = column;
+			ctx.TriggerLineOffset = column - 1;
 			
 			if (isCtrlSpace)
 				return textEditorCompletion.CodeCompletionCommand (ctx) as CompletionDataList;

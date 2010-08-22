@@ -107,12 +107,13 @@ namespace Mono.TextEditor
 				return;
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			data.EnsureCaretIsNotVirtual ();
-			if (data.Caret.Column == line.EditableLength) {
+			int physColumn = data.Caret.Column - 1;
+			if (physColumn == line.EditableLength) {
 				// Nothing after the cursor, delete the end-of-line sequence
-				data.Remove (line.Offset + data.Caret.Column, line.Length - data.Caret.Column);
+				data.Remove (line.Offset + physColumn, line.Length - physColumn);
 			} else {
 				// Delete from cursor position to the end of the line
-				data.Remove (line.Offset + data.Caret.Column, line.EditableLength - data.Caret.Column);
+				data.Remove (line.Offset + physColumn, line.EditableLength - physColumn);
 			}
 			data.Document.CommitLineUpdate (data.Caret.Line);
 		}
@@ -146,11 +147,11 @@ namespace Mono.TextEditor
 			if (data.Caret.Offset == 0)
 				return;
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
-			if (data.Caret.Column > line.EditableLength) {
-				data.Caret.Column = line.EditableLength;
+			if (data.Caret.Column > line.EditableLength + 1) {
+				data.Caret.Column = line.EditableLength + 1;
 			} else if (data.Caret.Offset == line.Offset) {
 				LineSegment lineAbove = data.Document.GetLine (data.Caret.Line - 1);
-				data.Caret.Location = new DocumentLocation (data.Caret.Line - 1, lineAbove.EditableLength);
+				data.Caret.Location = new DocumentLocation (data.Caret.Line - 1, lineAbove.EditableLength + 1);
 				data.Remove (lineAbove.EndOffset - lineAbove.DelimiterLength, lineAbove.DelimiterLength);
 			} else {
 				removeCharBeforeCaret (data);
@@ -177,7 +178,7 @@ namespace Mono.TextEditor
 			if (data.Caret.Offset >= data.Document.Length)
 				return;
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
-			if (data.Caret.Column == line.EditableLength) {
+			if (data.Caret.Column == line.EditableLength + 1) {
 				if (data.Caret.Line < data.Document.LineCount) { 
 					data.Remove (line.EndOffset - line.DelimiterLength, line.DelimiterLength);
 					if (line.EndOffset == data.Document.Length)

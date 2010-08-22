@@ -365,7 +365,7 @@ namespace MonoDevelop.AspNet.Parser
 			Doc.Info.RegisteredTags.Add (directive);
 			
 			var line = Math.Max (node.Location.EndLine, node.Location.BeginLine);
-			var pos = editor.Document.LocationToOffset (line - 1, editor.Document.GetLine (line - 2).EditableLength);
+			var pos = editor.Document.LocationToOffset (line, editor.Document.GetLine (line - 1).EditableLength);
 			if (pos < 0)
 				return;
 			

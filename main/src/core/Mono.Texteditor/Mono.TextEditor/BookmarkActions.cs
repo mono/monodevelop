@@ -71,7 +71,7 @@ namespace Mono.TextEditor
 		{
 			int offset = GetPrevOffset (data.Document, data.Caret.Line);
 			if (offset < 0)
-				offset = GetPrevOffset (data.Document, data.Document.LineCount - 1);
+				offset = GetPrevOffset (data.Document, data.Document.LineCount);
 			if (offset >= 0)
 				data.Caret.Offset = offset;
 		}

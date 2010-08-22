@@ -36,9 +36,9 @@ namespace Mono.TextEditor.Tests
 		public void TestBackspace ()
 		{
 			TextEditorData data = CaretMoveActionTests.Create (@"1234$567890");
-			Assert.AreEqual (new DocumentLocation (0, 4), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (1, 5), data.Caret.Location);
 			DeleteActions.Backspace (data);
-			Assert.AreEqual (new DocumentLocation (0, 3), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (1, 4), data.Caret.Location);
 			Assert.AreEqual ("123567890", data.Document.Text);
 		}
 		
@@ -47,7 +47,7 @@ namespace Mono.TextEditor.Tests
 		{
 			TextEditorData data = CaretMoveActionTests.Create (@"$1234567890");
 			DeleteActions.Backspace (data);
-			Assert.AreEqual (new DocumentLocation (0, 0), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (1, 1), data.Caret.Location);
 			Assert.AreEqual ("1234567890", data.Document.Text);
 		}
 		
@@ -55,9 +55,9 @@ namespace Mono.TextEditor.Tests
 		public void TestDelete ()
 		{
 			TextEditorData data = CaretMoveActionTests.Create (@"1234$567890");
-			Assert.AreEqual (new DocumentLocation (0, 4), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (1, 5), data.Caret.Location);
 			DeleteActions.Delete (data);
-			Assert.AreEqual (new DocumentLocation (0, 4), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (1, 5), data.Caret.Location);
 			Assert.AreEqual ("123467890", data.Document.Text);
 		}
 		
@@ -66,7 +66,7 @@ namespace Mono.TextEditor.Tests
 		{
 			TextEditorData data = CaretMoveActionTests.Create (@"1234567890$");
 			DeleteActions.Delete (data);
-			Assert.AreEqual (new DocumentLocation (0, 10), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (1, 11), data.Caret.Location);
 			Assert.AreEqual ("1234567890", data.Document.Text);
 		}
 		

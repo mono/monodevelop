@@ -60,7 +60,7 @@ namespace MonoDevelop.Refactoring.CreateMethod
 				return false;
 			returnType = DomReturnType.Void;
 			modifiers = ICSharpCode.NRefactory.Ast.Modifiers.None;
-			resolvePosition = new DomLocation (options.Document.Editor.Caret.Line + 1, options.Document.Editor.Caret.Column + 1);
+			resolvePosition = new DomLocation (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column);
 			ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (provider.OutputNode (options.Dom, invoke)), resolvePosition);
 			
 			if (resolveResult is MethodResolveResult) {
@@ -96,7 +96,7 @@ namespace MonoDevelop.Refactoring.CreateMethod
 				return null;
 			string expression = options.ResolveResult.ResolvedExpression.Expression;
 			if (!expression.Contains ("(")) {
-				int startPos = data.Document.LocationToOffset (options.ResolveResult.ResolvedExpression.Region.Start.Line - 1, options.ResolveResult.ResolvedExpression.Region.Start.Column - 1);
+				int startPos = data.Document.LocationToOffset (options.ResolveResult.ResolvedExpression.Region.Start.Line, options.ResolveResult.ResolvedExpression.Region.Start.Column);
 				if (startPos < 0)
 					return null;
 				bool gotWs = false;
@@ -167,7 +167,7 @@ namespace MonoDevelop.Refactoring.CreateMethod
 					if (data == null)
 						throw new InvalidOperationException ("Can't open file:" + modifiers);
 					try {
-						indent = data.Document.GetLine (type.Location.Line - 1).GetIndentation (data.Document) ?? "";
+						indent = data.Document.GetLine (type.Location.Line).GetIndentation (data.Document) ?? "";
 					} catch (Exception) {
 						indent = "";
 					}

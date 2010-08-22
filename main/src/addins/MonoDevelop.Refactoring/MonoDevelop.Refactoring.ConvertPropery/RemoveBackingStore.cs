@@ -53,9 +53,9 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 				return false;
 			
 			TextEditorData data = options.GetTextEditorData ();
-			if (property.HasGet && data.Document.GetCharAt (data.Document.LocationToOffset (property.GetRegion.End.Line - 1, property.GetRegion.End.Column - 2)) == ';')
+			if (property.HasGet && data.Document.GetCharAt (data.Document.LocationToOffset (property.GetRegion.End.Line, property.GetRegion.End.Column - 1)) == ';')
 				return false;
-			if (property.HasSet && data.Document.GetCharAt (data.Document.LocationToOffset (property.SetRegion.End.Line - 1, property.SetRegion.End.Column - 2)) == ';')
+			if (property.HasSet && data.Document.GetCharAt (data.Document.LocationToOffset (property.SetRegion.End.Line, property.SetRegion.End.Column - 1)) == ';')
 				return false;
 			INRefactoryASTProvider astProvider = options.GetASTProvider ();
 			string backingStoreName = RetrieveBackingStore (options, astProvider, property);

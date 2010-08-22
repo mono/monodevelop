@@ -73,11 +73,11 @@ namespace MonoDevelop.Refactoring.RefactorImports
 			foreach (IUsing u in compilationUnit.Usings) {
 				if (u.IsFromNamespace)
 					continue;
-				int offset = textEditorData.Document.LocationToOffset (u.Region.Start.Line - 1, u.Region.Start.Column - 1);
+				int offset = textEditorData.Document.LocationToOffset (u.Region.Start.Line, u.Region.Start.Column);
 				TextReplaceChange change = new TextReplaceChange () {
 					FileName = options.Document.FileName,
 					Offset = offset,
-					RemovedChars = textEditorData.Document.LocationToOffset (u.Region.End.Line - 1, u.Region.End.Column - 1) - offset
+					RemovedChars = textEditorData.Document.LocationToOffset (u.Region.End.Line, u.Region.End.Column) - offset
 				};
 				Mono.TextEditor.LineSegment line = textEditorData.Document.GetLineByOffset (change.Offset);
 				if (line != null && line.EditableLength == change.RemovedChars)

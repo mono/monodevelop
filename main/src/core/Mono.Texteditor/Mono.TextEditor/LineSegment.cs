@@ -180,7 +180,7 @@ namespace Mono.TextEditor
 
 		public int GetLogicalColumn (TextEditorData editor, int visualColumn)
 		{
-			int curVisualColumn = 0;
+			int curVisualColumn = 1;
 			int offset = Offset;
 			int max = offset + EditableLength;
 			for (int i = offset; i < max; i++) {
@@ -190,16 +190,16 @@ namespace Mono.TextEditor
 					curVisualColumn++;
 				}
 				if (curVisualColumn > visualColumn)
-					return i - offset;
+					return i - offset + 1;
 			}
-			return EditableLength + (visualColumn - curVisualColumn);
+			return EditableLength + (visualColumn - curVisualColumn) + 1;
 		}
 
 		public int GetVisualColumn (TextEditorData editor, int logicalColumn)
 		{
-			int result = 0;
+			int result = 1;
 			int offset = Offset;
-			for (int i = 0; i < logicalColumn; i++) {
+			for (int i = 0; i < logicalColumn - 1; i++) {
 				if (i < EditableLength && editor.Document.GetCharAt (offset + i) == '\t') {
 					result = TextViewMargin.GetNextTabstop (editor, result);
 				} else {

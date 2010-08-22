@@ -254,7 +254,7 @@ namespace MonoDevelop.Ide.Tasks
 							desc = tag.Key + ": " + desc;
 					}
 					
-					Task t = new Task (fileName, desc, tag.Region.Start.Column - 1, tag.Region.Start.Line,
+					Task t = new Task (fileName, desc, tag.Region.Start.Column, tag.Region.Start.Line,
 					                   TaskSeverity.Information, priorities[tag.Key], wob);
 					newTasks.Add (t);
 				}
@@ -479,12 +479,12 @@ namespace MonoDevelop.Ide.Tasks
 				if (doc != null && doc.HasProject && doc.Project is DotNetProject) {
 					string[] commentTags = doc.CommentTags;
 					if (commentTags != null && commentTags.Length == 1) {
-						string line = doc.Editor.GetLineText (task.Line - 1);
+						string line = doc.Editor.GetLineText (task.Line);
 						int index = line.IndexOf (commentTags[0]);
 						if (index != -1) {
-							doc.Editor.SetCaretTo (task.Line - 1, task.Column - 1);
+							doc.Editor.SetCaretTo (task.Line, task.Column);
 							line = line.Substring (0, index);
-							var ls = doc.Editor.Document.GetLine (task.Line  - 1);
+							var ls = doc.Editor.Document.GetLine (task.Line);
 							doc.Editor.Replace (ls.Offset, ls.EditableLength, line);
 							comments.Remove (task);
 						}

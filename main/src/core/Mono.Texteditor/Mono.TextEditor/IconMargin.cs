@@ -105,7 +105,7 @@ namespace Mono.TextEditor
 			ctx.Color = separatorColor;
 			ctx.Stroke ();
 			
-			if (line < editor.Document.LineCount) {
+			if (line <= editor.Document.LineCount) {
 				LineSegment lineSegment = editor.Document.GetLine (line);
 				
 				foreach (TextMarker marker in lineSegment.Markers) {

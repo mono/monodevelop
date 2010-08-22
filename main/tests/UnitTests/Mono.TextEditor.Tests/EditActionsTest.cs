@@ -42,8 +42,8 @@ namespace Mono.TextEditor.Tests
 		{
 			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
 			data.Document.Text = "\n\n\n\n\n";
-			data.Caret.Offset = data.Document.GetLine (1).Offset; // 2nd.Line
-			data.MainSelection = new Selection (1,0, 3, 0);
+			data.Caret.Offset = data.Document.GetLine (2).Offset; // 2nd.Line
+			data.MainSelection = new Selection (2, 1, 4, 1);
 			MiscActions.InsertTab (data);
 			MiscActions.InsertTab (data);
 			
@@ -55,8 +55,8 @@ namespace Mono.TextEditor.Tests
 		{
 			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
 			data.Document.Text = "\n\t\t\n\t\t\n\t\t\n\n";
-			data.Caret.Offset = data.Document.GetLine (1).Offset; // 2nd.Line
-			data.MainSelection = new Selection (1,0, 3, 0);
+			data.Caret.Offset = data.Document.GetLine (2).Offset; // 2nd.Line
+			data.MainSelection = new Selection (2, 1, 4, 1);
 			MiscActions.RemoveTab (data);
 			MiscActions.RemoveTab (data);
 			

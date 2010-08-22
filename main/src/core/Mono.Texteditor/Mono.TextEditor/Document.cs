@@ -359,19 +359,20 @@ namespace Mono.TextEditor
 		
 		public int LocationToOffset (DocumentLocation location)
 		{
-			if (location.Line >= this.splitter.Count) 
-				return -1;
+//			if (location.Column < DocumentLocation.MinColumn)
+//				throw new ArgumentException ("column < MinColumn");
+			// line is checked by Getline
 			LineSegment line = GetLine (location.Line);
-			return System.Math.Min (Length, line.Offset + System.Math.Min (line.EditableLength, location.Column));
+			return System.Math.Min (Length, line.Offset + System.Math.Max (0, System.Math.Min (line.EditableLength, location.Column - 1)));
 		}
 		
 		public DocumentLocation OffsetToLocation (int offset)
 		{
 			int lineNr = splitter.OffsetToLineNumber (offset);
-			if (lineNr < 0)
+			if (lineNr < DocumentLocation.MinLine)
 				return DocumentLocation.Empty;
 			LineSegment line = GetLine (lineNr);
-			return new DocumentLocation (lineNr, System.Math.Min (line.Length, offset - line.Offset));
+			return new DocumentLocation (lineNr, System.Math.Min (line.Length, offset - line.Offset) + 1);
 		}
 
 		public string GetLineIndent (int lineNumber)
@@ -388,6 +389,9 @@ namespace Mono.TextEditor
 		
 		public LineSegment GetLine (int lineNumber)
 		{
+			if (lineNumber < DocumentLocation.MinLine)
+				return null;
+			
 			return splitter.Get (lineNumber);
 		}
 		
@@ -972,7 +976,7 @@ namespace Mono.TextEditor
 			public int LogicalToVisualLine (Document doc, int logicalLine)
 			{
 				int result = logicalLine;
-				LineSegment line = doc.GetLine (result) ?? doc.GetLine (doc.LineCount - 1);
+				LineSegment line = doc.GetLine (result) ?? doc.GetLine (doc.LineCount);
 				foreach (FoldSegment segment in Traverse (x => !(x.IsFolded && x.StartLine.Offset < line.Offset))) {
 					if (segment.IsFolded && segment.StartLine.Offset < line.Offset) {
 						result -= doc.GetLineCount (segment);
@@ -1353,8 +1357,8 @@ namespace Mono.TextEditor
 		
 		public int VisualToLogicalLine (int visualLineNumber)
 		{
-			if (visualLineNumber <= 0)
-				return 0;
+			if (visualLineNumber <= DocumentLocation.MinLine)
+				return DocumentLocation.MinLine;
 			return this.FoldSegmentTree.VisualToLogicalLine (this, visualLineNumber);
 		}
 		

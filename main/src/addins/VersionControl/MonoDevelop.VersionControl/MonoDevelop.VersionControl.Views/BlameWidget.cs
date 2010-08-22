@@ -433,10 +433,10 @@ namespace MonoDevelop.VersionControl.Views
 					lineCount = Math.Min (lineCount, annotations.Count - startLine);
 					
 					if (lineCount > 0)
-						annotations.RemoveRange (startLine, lineCount);
+						annotations.RemoveRange (startLine - 1, lineCount);
 					if (!string.IsNullOrEmpty (e.Value)) {
 						for (int i=0; i<lineCount; ++i)
-							annotations.Insert (startLine, locallyModified);
+							annotations.Insert (startLine - 1, locallyModified);
 					}
 					return;
 				} else if (0 == e.Count) {
@@ -444,7 +444,7 @@ namespace MonoDevelop.VersionControl.Views
 						tokens = e.Value.Split (new string[]{Environment.NewLine}, StringSplitOptions.None);
 						lineCount = tokens.Length - 1;
 						for (int i=0; i<lineCount; ++i) {
-							annotations.Insert (Math.Min (startLine + 1, annotations.Count), locallyModified);
+							annotations.Insert (Math.Min (startLine, annotations.Count), locallyModified);
 						}
 				} else if (startLine > endLine) {
 					// revert
@@ -516,7 +516,7 @@ namespace MonoDevelop.VersionControl.Views
 					int startLine = widget.Editor.YToLine ((int)widget.Editor.VAdjustment.Value);
 					double startY = widget.Editor.LineToY (startLine);
 					
-					while (startLine > 0 && startLine < annotations.Count && annotations[startLine - 1] != null && annotations[startLine] != null && annotations[startLine - 1].Revision == annotations[startLine].Revision) {
+					while (startLine > 1 && startLine < annotations.Count && annotations[startLine - 1] != null && annotations[startLine] != null && annotations[startLine - 1].Revision == annotations[startLine].Revision) {
 						startLine--;
 						startY -= widget.Editor.GetLineHeight (widget.Editor.Document.GetLine (startLine));
 					}
@@ -528,7 +528,7 @@ namespace MonoDevelop.VersionControl.Views
 						widget.JumpOverFoldings (ref line);
 						int lineStart = line;
 						int w = 0, w2 = 0, h = 16;
-						Annotation ann = line < annotations.Count ? annotations[line] : null;
+						Annotation ann = line <= annotations.Count ? annotations[line - 1] : null;
 						if (ann != null) {
 							layout.SetText (ann.Author);
 							layout.GetPixelSize (out w, out h);
@@ -552,7 +552,7 @@ namespace MonoDevelop.VersionControl.Views
 								curY += lineHeight;
 								line++;
 								widget.JumpOverFoldings (ref line);
-							} while (line + 1 < annotations.Count && annotations[line] != null && annotations[line].Revision == ann.Revision);
+							} while (line + 1 <= annotations.Count && annotations[line - 1] != null && annotations[line - 1].Revision == ann.Revision);
 						} else {
 							curY += widget.Editor.GetLineHeight (line);
 							line++;

@@ -76,12 +76,12 @@ namespace MonoDevelop.Refactoring.RefactorImports
 		{
 			string invocation = "";
 			if (!invocationExpression.StartLocation.IsEmpty && !invocationExpression.EndLocation.IsEmpty) {
-				invocation = this.data.Document.GetTextBetween (this.data.Document.LocationToOffset (invocationExpression.StartLocation.Line - 1, invocationExpression.StartLocation.Column - 1),
-				                                                this.data.Document.LocationToOffset (invocationExpression.EndLocation.Line - 1, invocationExpression.EndLocation.Column - 1));
+				invocation = this.data.Document.GetTextBetween (this.data.Document.LocationToOffset (invocationExpression.StartLocation.Line, invocationExpression.StartLocation.Column),
+				                                                this.data.Document.LocationToOffset (invocationExpression.EndLocation.Line, invocationExpression.EndLocation.Column));
 			}
 			base.VisitInvocationExpression (invocationExpression, data);
 			
-			MethodResolveResult mrr = resolver.Resolve (new ExpressionResult (invocation), new DomLocation (invocationExpression.StartLocation.Line - 1, invocationExpression.StartLocation.Column - 1)) as MethodResolveResult;
+			MethodResolveResult mrr = resolver.Resolve (new ExpressionResult (invocation), new DomLocation (invocationExpression.StartLocation.Line, invocationExpression.StartLocation.Column)) as MethodResolveResult;
 			if (mrr != null && mrr.MostLikelyMethod != null && mrr.MostLikelyMethod is ExtensionMethod) {
 				IMethod originalMethod = ((ExtensionMethod)mrr.MostLikelyMethod).OriginalMethod;
 				possibleTypeReferences.Add (new TypeReference (originalMethod.DeclaringType.Name));

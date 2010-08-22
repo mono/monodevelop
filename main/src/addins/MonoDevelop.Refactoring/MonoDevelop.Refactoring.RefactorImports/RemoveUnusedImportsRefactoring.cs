@@ -73,8 +73,8 @@ namespace MonoDevelop.Refactoring.RefactorImports
 				if (!u.Aliases.Any () && u.Namespaces.All (name => currentUsings.Contains (name) || !usedUsings.Contains (name)) ) {
 					TextReplaceChange change = new TextReplaceChange ();
 					change.FileName = options.Document.FileName;
-					change.Offset = textEditorData.Document.LocationToOffset (u.Region.Start.Line - 1, u.Region.Start.Column - 1);
-					change.RemovedChars = textEditorData.Document.LocationToOffset (u.Region.End.Line - 1, u.Region.End.Column - 1) - change.Offset;
+					change.Offset = textEditorData.Document.LocationToOffset (u.Region.Start.Line, u.Region.Start.Column);
+					change.RemovedChars = textEditorData.Document.LocationToOffset (u.Region.End.Line, u.Region.End.Column) - change.Offset;
 					Mono.TextEditor.LineSegment line = textEditorData.Document.GetLineByOffset (change.Offset);
 					if (line != null && line.EditableLength == change.RemovedChars)
 						change.RemovedChars += line.DelimiterLength;

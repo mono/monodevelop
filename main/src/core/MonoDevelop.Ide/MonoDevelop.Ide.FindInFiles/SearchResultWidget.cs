@@ -357,7 +357,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (searchResult == null)
 				return;
 			Document doc = GetDocument (searchResult);
-			int lineNr = doc.OffsetToLineNumber (searchResult.Offset) + 1;
+			int lineNr = doc.OffsetToLineNumber (searchResult.Offset);
 			fileNameRenderer.Markup = MarkupText (System.IO.Path.GetFileName (searchResult.FileName) + ":" + lineNr, didRead);
 		}
 		
@@ -569,7 +569,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			Document doc = GetDocument (searchResult);
 			int lineNr = doc.OffsetToLineNumber (searchResult.Offset);
 			LineSegment line = doc.GetLine (lineNr);
-			return new DocumentLocation (lineNr + 1, searchResult.Offset - line.Offset + 1);
+			return new DocumentLocation (lineNr, searchResult.Offset - line.Offset + 1);
 		}
 		
 		public void OpenSelectedMatches ()
@@ -601,7 +601,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					continue;
 				DocumentLocation loc = GetLocation (result);
 				Document doc = GetDocument (result);
-				LineSegment line = doc.GetLine (loc.Line - 1);
+				LineSegment line = doc.GetLine (loc.Line);
 				
 				sb.AppendFormat ("{0} ({1}, {2}):{3}", result.FileName, loc.Line, loc.Column, doc.GetTextAt (line.Offset, line.EditableLength));
 				sb.AppendLine ();
@@ -668,7 +668,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
 			Document doc = GetDocument (searchResult);
 			DocumentLocation location = doc.OffsetToLocation (searchResult.Offset);
-			return new SearchTextFileNavigationPoint (searchResult.FileName, location.Line + 1, location.Column + 1);
+			return new SearchTextFileNavigationPoint (searchResult.FileName, location.Line, location.Column);
 		}
 		
 		class SearchTextFileNavigationPoint : TextFileNavigationPoint 

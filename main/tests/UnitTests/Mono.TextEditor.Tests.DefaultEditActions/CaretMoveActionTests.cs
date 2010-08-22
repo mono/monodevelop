@@ -55,7 +55,7 @@ namespace Mono.TextEditor.Tests
 1234567890
 1234567890");
 			CaretMoveActions.Left (data);
-			Assert.AreEqual (new DocumentLocation (2, 3), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (3, 4), data.Caret.Location);
 		}
 		
 		[Test()]
@@ -67,7 +67,7 @@ $1234567890
 1234567890
 1234567890");
 			CaretMoveActions.Left (data);
-			Assert.AreEqual (new DocumentLocation (0, 10), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (1, 11), data.Caret.Location);
 		}
 		
 		[Test()]
@@ -78,9 +78,9 @@ $1234567890
 1234567890
 1234567890
 1234567890");
-			Assert.AreEqual (new DocumentLocation (0, 0), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (1, 1), data.Caret.Location);
 			CaretMoveActions.Left (data);
-			Assert.AreEqual (new DocumentLocation (0, 0), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (1, 1), data.Caret.Location);
 		}
 		
 		[Test()]
@@ -92,7 +92,7 @@ $1234567890
 1234567890
 1234567890");
 			CaretMoveActions.Right (data);
-			Assert.AreEqual (new DocumentLocation (2, 5), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (3, 6), data.Caret.Location);
 		}
 		
 		[Test()]
@@ -104,7 +104,7 @@ $1234567890
 1234567890
 1234567890");
 			CaretMoveActions.Right (data);
-			Assert.AreEqual (new DocumentLocation (1, 0), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (2, 1), data.Caret.Location);
 		}
 		
 		[Test()]
@@ -115,9 +115,9 @@ $1234567890
 1234567890
 1234567890
 1234567890$");
-			Assert.AreEqual (new DocumentLocation (4, 10), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (5, 11), data.Caret.Location);
 			CaretMoveActions.Right (data);
-			Assert.AreEqual (new DocumentLocation (4, 10), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (5, 11), data.Caret.Location);
 		}
 		
 		[Test()]
@@ -128,9 +128,9 @@ $1234567890
 1234$567890
 1234567890
 1234567890");
-			Assert.AreEqual (new DocumentLocation (2, 4), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (3, 5), data.Caret.Location);
 			CaretMoveActions.Up (data);
-			Assert.AreEqual (new DocumentLocation (1, 4), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (2, 5), data.Caret.Location);
 		}
 		
 		[Test()]
@@ -141,9 +141,9 @@ $1234567890
 1234567890
 1234567890
 1234567890");
-			Assert.AreEqual (new DocumentLocation (0, 2), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (1, 3), data.Caret.Location);
 			CaretMoveActions.Up (data);
-			Assert.AreEqual (new DocumentLocation (0, 0), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (1, 1), data.Caret.Location);
 		}
 		
 		[Test()]
@@ -154,9 +154,9 @@ $1234567890
 1234$567890
 1234567890
 1234567890");
-			Assert.AreEqual (new DocumentLocation (2, 4), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (3, 5), data.Caret.Location);
 			CaretMoveActions.Down (data);
-			Assert.AreEqual (new DocumentLocation (3, 4), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (4, 5), data.Caret.Location);
 		}
 		
 		[Test()]
@@ -167,49 +167,49 @@ $1234567890
 1234567890
 1234567890
 123$4567890");
-			Assert.AreEqual (new DocumentLocation (4, 3), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (5, 4), data.Caret.Location);
 			CaretMoveActions.Down (data);
-			Assert.AreEqual (new DocumentLocation (4, 10), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (5, 11), data.Caret.Location);
 		}
 		
 		[Test()]
 		public void TestCaretLineHome ()
 		{
 			TextEditorData data = Create (@"  345$67890");
-			Assert.AreEqual (new DocumentLocation (0, 5), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (1, 6), data.Caret.Location);
 			CaretMoveActions.LineHome (data);
-			Assert.AreEqual (new DocumentLocation (0, 2), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (1, 3), data.Caret.Location);
 			CaretMoveActions.LineHome (data);
-			Assert.AreEqual (new DocumentLocation (0, 0), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (1, 1), data.Caret.Location);
 			CaretMoveActions.LineHome (data);
-			Assert.AreEqual (new DocumentLocation (0, 2), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (1, 3), data.Caret.Location);
 		}
 		
 		[Test()]
 		public void TestCaretLineEnd ()
 		{
 			TextEditorData data = Create (@"12345$67890");
-			Assert.AreEqual (new DocumentLocation (0, 5), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (1, 6), data.Caret.Location);
 			CaretMoveActions.LineEnd (data);
-			Assert.AreEqual (new DocumentLocation (0, 10), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (1, 11), data.Caret.Location);
 		}
 		
 		[Test()]
 		public void TestToDocumentStart ()
 		{
 			TextEditorData data = Create (@"12345$67890");
-			Assert.AreEqual (new DocumentLocation (0, 5), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (1, 6), data.Caret.Location);
 			CaretMoveActions.ToDocumentStart (data);
-			Assert.AreEqual (new DocumentLocation (0, 0), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (1, 1), data.Caret.Location);
 		}
 		
 		[Test()]
 		public void TestToDocumentEnd ()
 		{
 			TextEditorData data = Create (@"12345$67890");
-			Assert.AreEqual (new DocumentLocation (0, 5), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (1, 6), data.Caret.Location);
 			CaretMoveActions.ToDocumentEnd (data);
-			Assert.AreEqual (new DocumentLocation (0, 10), data.Caret.Location);
+			Assert.AreEqual (new DocumentLocation (1, 11), data.Caret.Location);
 		}
 		
 		[TestFixtureSetUp] 

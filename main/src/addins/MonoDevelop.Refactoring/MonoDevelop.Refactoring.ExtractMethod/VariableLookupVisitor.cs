@@ -151,12 +151,12 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 		
 		public override object VisitLocalVariableDeclaration (LocalVariableDeclaration localVariableDeclaration, object data)
 		{
-			if (!CutRegion.Contains (localVariableDeclaration.StartLocation.Line - 1, localVariableDeclaration.StartLocation.Column -1)) {
+			if (!CutRegion.Contains (localVariableDeclaration.StartLocation.Line, localVariableDeclaration.StartLocation.Column)) {
 				foreach (VariableDeclaration varDecl in localVariableDeclaration.Variables) {
 					variables[varDecl.Name] = new VariableDescriptor (varDecl.Name) {
 						IsDefined = true, 
 						ReturnType = ConvertTypeReference (localVariableDeclaration.TypeReference),
-						Location = new DocumentLocation (MemberLocation.Line + localVariableDeclaration.StartLocation.Line - 1, localVariableDeclaration.StartLocation.Column - 1)
+						Location = new DocumentLocation (MemberLocation.Line + localVariableDeclaration.StartLocation.Line, localVariableDeclaration.StartLocation.Column)
 					};
 				}
 			}
@@ -181,7 +181,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 				if (!result.StaticResolve && !variables.ContainsKey (identifierExpression.Identifier)) {
 					variables[identifierExpression.Identifier] = new VariableDescriptor (identifierExpression.Identifier) {
 						InitialValueUsed = !valueGetsChanged,
-						Location = new DocumentLocation (MemberLocation.Line + identifierExpression.StartLocation.Line - 1, identifierExpression.StartLocation.Column - 1)
+						Location = new DocumentLocation (MemberLocation.Line + identifierExpression.StartLocation.Line, identifierExpression.StartLocation.Column)
 
 					};
 					variables[identifierExpression.Identifier].ReturnType = result.ResolvedType;

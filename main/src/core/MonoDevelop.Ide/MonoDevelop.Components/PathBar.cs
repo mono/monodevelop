@@ -319,7 +319,6 @@ namespace MonoDevelop.Components
 		{
 			if (Path[hoverIndex].Position == EntryPosition.Left) {
 				int idx = leftPath.TakeWhile (p => p != Path[hoverIndex]).Count ();
-				Console.WriteLine ("lidx={0}", idx);
 				
 				if (idx >= 0) {
 					w = leftWidths[idx];

@@ -141,7 +141,7 @@ namespace MonoDevelop.SourceEditor
 					line = entryLineNumber.Text.Trim ().StartsWith ("-") ? int.MinValue : int.MaxValue;
 				}
 				bool isRelativeJump = entryLineNumber.Text.Trim ().StartsWith ("-") || entryLineNumber.Text.Trim ().StartsWith ("+");
-				return isRelativeJump ? this.caretSave.Line + line : line - 1;
+				return isRelativeJump ? this.caretSave.Line + line : line;
 			}
 		}
 		
@@ -167,7 +167,7 @@ namespace MonoDevelop.SourceEditor
 			try {
 				int targetLine = TargetLine;
 				if (targetLine >= widget.TextEditor.Document.LineCount || targetLine < 0) {
-					targetLine = Math.Max (0, Math.Min (widget.TextEditor.Document.LineCount - 1, targetLine));
+					targetLine = Math.Max (1, Math.Min (widget.TextEditor.Document.LineCount, targetLine));
 					
 				} else {
 					this.entryLineNumber.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Normal));

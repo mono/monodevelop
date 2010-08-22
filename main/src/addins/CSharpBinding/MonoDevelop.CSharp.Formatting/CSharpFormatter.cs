@@ -71,7 +71,7 @@ namespace MonoDevelop.CSharp.Formatting
 				return "";
 			}
 			StringBuilder result = new StringBuilder ();
-			int offset = data.Document.LocationToOffset (member.Location.Line - 1, 0);
+			int offset = data.Document.LocationToOffset (member.Location.Line, 1);
 			int start = offset;
 			while (offset < data.Document.Length && data.Document.GetCharAt (offset) != '{') {
 				offset++;
@@ -252,7 +252,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (formatter.hasErrors)
 				return;
 			
-			int startPos = data.Document.LocationToOffset (member.Location.Line - 1, 0) - 1;
+			int startPos = data.Document.LocationToOffset (member.Location.Line, 1) - 1;
 			InFormat = true;
 			if (member != type) {
 				int len1 = formattedText.IndexOf ('{') + 1;
@@ -272,11 +272,11 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 			//Console.WriteLine ("Indent:" + GetIndent (data, member.Location.Line - 1).Replace ("\t", "->").Replace (" ", "°"));
 			//Console.WriteLine ("formattedText1:" + formattedText.Replace ("\t", "->").Replace (" ", "°"));
-			formattedText = AddIndent (formattedText, GetIndent (data, member.Location.Line - 1));
+			formattedText = AddIndent (formattedText, GetIndent (data, member.Location.Line));
 			
 			Document doc = new Document ();
 			doc.Text = formattedText;
-			for (int i = doc.LineCount - 1; i >= 0; i--) {
+			for (int i = doc.LineCount; i --> DocumentLocation.MinLine;) {
 				LineSegment lineSegment = doc.GetLine (i);
 				if (doc.IsEmptyLine (lineSegment))
 					((IBuffer)doc).Remove (lineSegment.Offset, lineSegment.Length);
@@ -492,8 +492,8 @@ namespace MonoDevelop.CSharp.Formatting
 
 		static int GetNextTabstop (int currentColumn, int tabSize)
 		{
-			int result = currentColumn + tabSize;
-			return (result / tabSize) * tabSize;
+			int result = currentColumn - 1 + tabSize;
+			return 1 + (result / tabSize) * tabSize;
 		}
 
 		public static void SetFormatOptions (CSharpOutputVisitor outputVisitor, PolicyContainer policyParent)

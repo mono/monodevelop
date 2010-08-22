@@ -80,6 +80,10 @@ namespace Mono.TextEditor
 		
 		public Selection (DocumentLocation anchor, DocumentLocation lead, SelectionMode selectionMode)
 		{
+			if (anchor.Line < DocumentLocation.MinLine || anchor.Column < DocumentLocation.MinColumn)
+				throw new ArgumentException ("anchor");
+			if (lead.Line < DocumentLocation.MinLine || lead.Column < DocumentLocation.MinColumn)
+				throw new ArgumentException ("lead");
 			this.Anchor        = anchor;
 			this.Lead          = lead;
 			this.SelectionMode = selectionMode;

@@ -334,13 +334,13 @@ namespace MonoDevelop.SourceEditor
 		{
 			Document document = textEditorData.Document;
 			if (document == null || region.Start.Line <= 0 || region.End.Line <= 0
-			    || region.Start.Line >= document.LineCount || region.End.Line >= document.LineCount)
+			    || region.Start.Line > document.LineCount || region.End.Line > document.LineCount)
 			{
 				return null;
 			}
 			
-			int startOffset = document.LocationToOffset (region.Start.Line - 1,  region.Start.Column - 1);
-			int endOffset   = document.LocationToOffset (region.End.Line - 1,  region.End.Column - 1);
+			int startOffset = document.LocationToOffset (region.Start.Line, region.Start.Column);
+			int endOffset   = document.LocationToOffset (region.End.Line, region.End.Column );
 			FoldSegment result = new FoldSegment (document, text, startOffset, endOffset - startOffset, type);
 			
 			foldSegments.Add (result);
@@ -538,7 +538,7 @@ namespace MonoDevelop.SourceEditor
 			if (errors.ContainsKey (info.Region.Start.Line - 1))
 				return;
 			
-			LineSegment line = this.TextEditor.Document.GetLine (info.Region.Start.Line - 1);
+			LineSegment line = this.TextEditor.Document.GetLine (info.Region.Start.Line);
 			ErrorMarker error = new ErrorMarker (info, line);
 			errors [info.Region.Start.Line - 1] = error;
 			error.AddToLine (this.TextEditor.Document);
@@ -1451,9 +1451,9 @@ namespace MonoDevelop.SourceEditor
 				underlineColor = Mono.TextEditor.Highlighting.Style.ErrorUnderlineString;
 			
 			if (Info.Region.Start.Line == info.Region.End.Line)
-				marker = new UnderlineMarker (underlineColor, Info.Region.Start.Column - 1, info.Region.End.Column - 1);
+				marker = new UnderlineMarker (underlineColor, Info.Region.Start.Column, info.Region.End.Column);
 			else
-				marker = new UnderlineMarker (underlineColor, - 1, - 1);
+				marker = new UnderlineMarker (underlineColor, 0, 0);
 		}
 		
 		public void AddToLine (Mono.TextEditor.Document doc)

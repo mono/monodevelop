@@ -181,7 +181,7 @@ data.Document.Text =
 2
 3
 ";
-			data.SetSelectLines (0, 3);
+			data.SetSelectLines (1, 4);
 			Assert.AreEqual (0, data.SelectionAnchor);
 			Assert.AreEqual (0, data.SelectionRange.Offset);
 			Assert.AreEqual (data.Document.Length, data.SelectionRange.EndOffset);

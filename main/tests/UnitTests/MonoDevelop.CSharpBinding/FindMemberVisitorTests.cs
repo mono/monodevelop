@@ -131,7 +131,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 					if (expectedReferences[i].Line < astVisitor.FoundReferences[j].Line) {
 						errorText.Append ("Reference at  line " + expectedReferences[i].Line + " not found.");
 						errorText.AppendLine ();
-						errorText.Append (doc.GetTextAt (doc.GetLine (expectedReferences[i].Line - 1)).Replace ('\t', ' '));
+						errorText.Append (doc.GetTextAt (doc.GetLine (expectedReferences[i].Line)).Replace ('\t', ' '));
 						errorText.AppendLine ();
 						errorText.Append (new string (' ', expectedReferences[i].Column));errorText.Append ('^');
 						errorText.AppendLine ();
@@ -141,7 +141,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 					if (expectedReferences[i].Line > astVisitor.FoundReferences[j].Line) {
 						errorText.Append ("Found unexpected Reference at line " + astVisitor.FoundReferences[j].Line);
 						errorText.AppendLine ();
-						errorText.Append (doc.GetTextAt (doc.GetLine (astVisitor.FoundReferences[j].Line - 1)).Replace ('\t', ' '));
+						errorText.Append (doc.GetTextAt (doc.GetLine (astVisitor.FoundReferences[j].Line)).Replace ('\t', ' '));
 						errorText.AppendLine ();
 						errorText.Append (new string (' ', astVisitor.FoundReferences[j].Column));errorText.Append ('^');
 						errorText.AppendLine ();
@@ -151,7 +151,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 					
 					errorText.Append ("Column mismatch at line " + astVisitor.FoundReferences[j].Line + " was: " + astVisitor.FoundReferences[j].Column + " should be:" + expectedReferences[i].Column);
 					errorText.AppendLine ();
-					errorText.Append (doc.GetTextAt (doc.GetLine (astVisitor.FoundReferences[j].Line - 1)).Replace ('\t', ' '));
+					errorText.Append (doc.GetTextAt (doc.GetLine (astVisitor.FoundReferences[j].Line)).Replace ('\t', ' '));
 					errorText.Append (new string (' ', expectedReferences[i].Column));errorText.Append ('^');
 					errorText.AppendLine ();
 					errorText.Append (new string (' ', astVisitor.FoundReferences[j].Column));errorText.Append ('^');
@@ -162,7 +162,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			while (i < expectedReferences.Count) {
 				errorText.Append ("Reference at  line " + expectedReferences[i].Line + " not found.");
 				errorText.AppendLine ();
-				errorText.Append (doc.GetTextAt (doc.GetLine (expectedReferences[i].Line - 1)).Replace ('\t', ' '));
+				errorText.Append (doc.GetTextAt (doc.GetLine (expectedReferences[i].Line)).Replace ('\t', ' '));
 				errorText.AppendLine ();
 				errorText.Append (new string (' ', expectedReferences[j].Column));errorText.Append ('^');
 				errorText.AppendLine ();
@@ -171,7 +171,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			while (j < astVisitor.FoundReferences.Count) {
 				errorText.Append ("Found unexpected Reference at line " + astVisitor.FoundReferences[j].Line);
 				errorText.AppendLine ();
-				errorText.Append (doc.GetTextAt (doc.GetLine (astVisitor.FoundReferences[j].Line - 1)).Replace ('\t', ' '));
+				errorText.Append (doc.GetTextAt (doc.GetLine (astVisitor.FoundReferences[j].Line)).Replace ('\t', ' '));
 				errorText.AppendLine ();
 				errorText.Append (new string (' ', astVisitor.FoundReferences[i].Column));errorText.Append ('^');
 				errorText.AppendLine ();

@@ -1,4 +1,3 @@
-
 //
 // TextEditor.cs
 //
@@ -693,7 +692,7 @@ namespace Mono.TextEditor
 				start = 0;
 			double visualStart = -this.textEditorData.VAdjustment.Value + LineToY (start);
 			if (end < 0)
-				end = Document.LineCount - 1;
+				end = Document.LineCount;
 			double visualEnd   = -this.textEditorData.VAdjustment.Value + LineToY (end) + GetLineHeight (end);
 			QueueDrawArea ((int)margin.XOffset, (int)visualStart, GetMarginWidth (margin), (int)(visualEnd - visualStart));
 		}
@@ -707,7 +706,7 @@ namespace Mono.TextEditor
 				start = 0;
 			double visualStart = -this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (start) * LineHeight;
 			if (end < 0)
-				end = Document.LineCount - 1;
+				end = Document.LineCount;
 			double visualEnd   = -this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (end) * LineHeight + LineHeight;
 			QueueDrawArea (0, (int)visualStart, this.Allocation.Width, (int)(visualEnd - visualStart));
 		}
@@ -1315,7 +1314,7 @@ namespace Mono.TextEditor
 		internal void SetAdjustments (Gdk.Rectangle allocation)
 		{
 			if (this.textEditorData.VAdjustment != null) {
-				double maxY = LineToY (Document.LineCount - 1);
+				double maxY = Document.LineCount > 1 ? LineToY (Document.LineCount) : LineHeight;
 				if (maxY > allocation.Height)
 					maxY += 5 * this.LineHeight;
 				
@@ -1357,11 +1356,11 @@ namespace Mono.TextEditor
 				int logicalLineNumber = visualLineNumber;
 				LineSegment line      = Document.GetLine (logicalLineNumber);
 				double lineHeight     = GetLineHeight (line);
-				int lastFold = -1;
+				int lastFold = 0;
 				foreach (FoldSegment fs in Document.GetStartFoldings (line).Where (fs => fs.IsFolded)) {
 					lastFold = System.Math.Max (fs.EndOffset, lastFold);
 				}
-				if (lastFold > 0) 
+				if (lastFold > DocumentLocation.MinLine) 
 					visualLineNumber = Document.OffsetToLineNumber (lastFold);
 				foreach (Margin margin in this.margins) {
 					if (!margin.IsVisible)
@@ -1407,7 +1406,7 @@ namespace Mono.TextEditor
 		
 		void UpdateAdjustments ()
 		{
-			int lastVisibleLine = Document.LogicalToVisualLine (Document.LineCount - 1);
+			int lastVisibleLine = Document.LogicalToVisualLine (Document.LineCount);
 			if (oldRequest != lastVisibleLine) {
 				SetAdjustments (this.Allocation);
 				oldRequest = lastVisibleLine;
@@ -2199,8 +2198,11 @@ namespace Mono.TextEditor
 
 		void ShowTooltip (Gdk.ModifierType modifierState)
 		{
+			var loc = PointToLocation (mx, my);
+			if (loc.IsEmpty)
+				return;
 			ShowTooltip (modifierState, 
-			             Document.LocationToOffset (PointToLocation (mx, my)),
+			             Document.LocationToOffset (loc),
 			             (int)mx,
 			             (int)my);
 		}
@@ -2606,7 +2608,7 @@ namespace Mono.TextEditor
 			{
 				if (view.isDisposed)
 					return;
-				line = System.Math.Min (line, view.Document.LineCount - 1);
+				line = System.Math.Min (line, view.Document.LineCount);
 				view.Caret.AutoScrollToCaret = false;
 				try {
 					view.Caret.Location = new DocumentLocation (line, column);
@@ -2632,6 +2634,11 @@ namespace Mono.TextEditor
 
 		public void SetCaretTo (int line, int column, bool highlight)
 		{
+			if (line < DocumentLocation.MinLine)
+				throw new ArgumentException ("line < MinLine");
+			if (column < DocumentLocation.MinColumn)
+				throw new ArgumentException ("column < MinColumn");
+			
 			if (!IsRealized) {
 				SetCaret setCaret = new SetCaret (this, line, column, highlight);
 				SizeAllocated += setCaret.Run;

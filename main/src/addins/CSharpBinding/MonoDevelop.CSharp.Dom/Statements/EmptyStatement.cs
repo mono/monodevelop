@@ -43,7 +43,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 		public override DomLocation EndLocation {
 			get {
-				return new DomLocation (Location.Line, Location.Column + 1);
+				return new DomLocation (Location.Line, Location.Column);
 			}
 		}
 		

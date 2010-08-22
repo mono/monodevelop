@@ -386,7 +386,7 @@ namespace Mono.TextEditor.Vi
 		{
 			var line = ed.Editor.PointToLocation (0, ed.Editor.Allocation.Height/2).Line;
 			if (line < 0)
-				line = ed.Data.Document.LineCount - 1;
+				line = ed.Data.Document.LineCount;
 			ed.Data.Caret.Line = line;
 		}
 		
@@ -394,7 +394,7 @@ namespace Mono.TextEditor.Vi
 		{
 			int line = ed.Editor.PointToLocation (0, ed.Editor.Allocation.Height - ed.Editor.LineHeight * 2 - 2).Line;
 			if (line < 0)
-				line = ed.Data.Document.LineCount - 1;
+				line = ed.Data.Document.LineCount;
 			ed.Data.Caret.Line = line;
 		}
 		

@@ -34,8 +34,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 		
 		public ResultMarker (Result result) : base (
 				GetColor (result),
-				IsOneLine (result)? (result.Region.Start.Column - 1) : -1,
-				IsOneLine (result)? (result.Region.End.Column - 1) : -1)
+				IsOneLine (result)? (result.Region.Start.Column) : 0,
+				IsOneLine (result)? (result.Region.End.Column) : 0)
 		{
 			this.result = result;
 		}
@@ -48,9 +48,9 @@ namespace MonoDevelop.AnalysisCore.Gui
 		public Result Result { get { return result; } }
 		
 		//utility for debugging
-		public int Line { get { return result.Region.Start.Line - 1; } }
-		public int ColStart { get { return IsOneLine (result)? (result.Region.Start.Column - 1) : -1; } }
-		public int ColEnd   { get { return IsOneLine (result)? (result.Region.End.Column - 1) : -1; } }
+		public int Line { get { return result.Region.Start.Line; } }
+		public int ColStart { get { return IsOneLine (result)? (result.Region.Start.Column) : 0; } }
+		public int ColEnd   { get { return IsOneLine (result)? (result.Region.End.Column) : 0; } }
 		public string Message { get { return result.Message; } }
 		
 		static string GetColor (Result result)

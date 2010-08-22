@@ -101,7 +101,7 @@ namespace MonoDevelop.DocFood
 		
 		static bool NeedsDocumentation (TextEditorData data, IMember member)
 		{
-			int lineNr = member.Location.Line - 1;
+			int lineNr = member.Location.Line;
 			LineSegment line;
 			do {
 				line = data.Document.GetLine (lineNr--);
@@ -114,7 +114,7 @@ namespace MonoDevelop.DocFood
 		
 		static string GetIndent (TextEditorData data, IMember member, out int offset)
 		{
-			LineSegment line = data.Document.GetLine (member.Location.Line - 1);
+			LineSegment line = data.Document.GetLine (member.Location.Line);
 			offset = line.Offset;
 			return data.Document.GetLineIndent (line);
 		}

@@ -85,7 +85,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			if (expression == null || (block != null && block.Children[0] is LocalVariableDeclaration))
 				return false;
 			
-			resolveResult = resolver.Resolve (new ExpressionResult (line), new DomLocation (options.Document.Editor.Caret.Line - 1, options.Document.Editor.Caret.Column - 1));
+			resolveResult = resolver.Resolve (new ExpressionResult (line), new DomLocation (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column));
 			return resolveResult.ResolvedType != null && !string.IsNullOrEmpty (resolveResult.ResolvedType.FullName) && resolveResult.ResolvedType.FullName != DomReturnType.Void.FullName;
 		}
 		
@@ -189,16 +189,16 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				varDecl.Variables.Add (new VariableDeclaration (varName, provider.ParseExpression (data.SelectedText)));
 				
 				GetContainingEmbeddedStatementVisitor blockVisitor = new GetContainingEmbeddedStatementVisitor ();
-				blockVisitor.LookupLocation = new Location (data.Caret.Column + 1, data.Caret.Line + 1);
-				
+				blockVisitor.LookupLocation = new Location (data.Caret.Column, data.Caret.Line );
+			
 				unit.AcceptVisitor (blockVisitor, null);
 				
 				StatementWithEmbeddedStatement containing = blockVisitor.ContainingStatement as StatementWithEmbeddedStatement;
 				
 				if (containing != null && !(containing.EmbeddedStatement is BlockStatement)) {
-					insert.Offset = data.Document.LocationToOffset (containing.StartLocation.Line - 1, containing.StartLocation.Column - 1);
+					insert.Offset = data.Document.LocationToOffset (containing.StartLocation.Line, containing.StartLocation.Column);
 					lineSegment = data.Document.GetLineByOffset (insert.Offset);
-					insert.RemovedChars = data.Document.LocationToOffset (containing.EndLocation.Line - 1, containing.EndLocation.Column - 1) - insert.Offset;
+					insert.RemovedChars = data.Document.LocationToOffset (containing.EndLocation.Line, containing.EndLocation.Column) - insert.Offset;
 					BlockStatement insertedBlock = new BlockStatement ();
 					insertedBlock.AddChild (varDecl);
 					insertedBlock.AddChild (containing.EmbeddedStatement);
@@ -215,9 +215,9 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				} else if (blockVisitor.ContainingStatement is IfElseStatement) {
 					IfElseStatement ifElse = blockVisitor.ContainingStatement as IfElseStatement;
 					
-					insert.Offset = data.Document.LocationToOffset (blockVisitor.ContainingStatement.StartLocation.Line - 1, blockVisitor.ContainingStatement.StartLocation.Column - 1);
+					insert.Offset = data.Document.LocationToOffset (blockVisitor.ContainingStatement.StartLocation.Line, blockVisitor.ContainingStatement.StartLocation.Column);
 					lineSegment = data.Document.GetLineByOffset (insert.Offset);
-					insert.RemovedChars = data.Document.LocationToOffset (blockVisitor.ContainingStatement.EndLocation.Line - 1, blockVisitor.ContainingStatement.EndLocation.Column - 1) - insert.Offset;
+					insert.RemovedChars = data.Document.LocationToOffset (blockVisitor.ContainingStatement.EndLocation.Line, blockVisitor.ContainingStatement.EndLocation.Column) - insert.Offset;
 					BlockStatement insertedBlock = new BlockStatement ();
 					insertedBlock.AddChild (varDecl);
 					if (blockVisitor.ContainsLocation (ifElse.TrueStatement[0])) {
@@ -268,7 +268,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			if (expression == null)
 				return result;
 
-			resolveResult = resolver.Resolve (new ExpressionResult (line), new DomLocation (options.Document.Editor.Caret.Line - 1, options.Document.Editor.Caret.Column - 1));
+			resolveResult = resolver.Resolve (new ExpressionResult (line), new DomLocation (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column));
 
 			if (resolveResult.ResolvedType != null && !string.IsNullOrEmpty (resolveResult.ResolvedType.FullName)) {
 				TextReplaceChange insert = new TextReplaceChange ();

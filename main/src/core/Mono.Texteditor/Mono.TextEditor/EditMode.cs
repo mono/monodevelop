@@ -35,8 +35,8 @@ namespace Mono.TextEditor
 	{
 		//NOTE: the behaviour of this class is actually stateless; these variables are used to make the API
 		// friendlier for subclassers of this class
-		TextEditorData textEditorData;
-		TextEditor editor;
+		protected TextEditorData textEditorData;
+		protected TextEditor editor;
 	//	string status;
 		
 		internal void InternalHandleKeypress (TextEditor editor, TextEditorData data, Gdk.Key key, 
@@ -118,8 +118,8 @@ namespace Mono.TextEditor
 			char ch = (char)unicodeKey;
 			if (!char.IsControl (ch) && textEditorData.CanEdit (Caret.Line)) {
 				LineSegment line = Document.GetLine (Caret.Line);
-				if (Caret.IsInInsertMode || Caret.Column >= line.EditableLength) {
-					string text = Caret.Column > line.EditableLength ? textEditorData.GetVirtualSpaces (Caret.Line, Caret.Column) + ch.ToString () : ch.ToString ();
+				if (Caret.IsInInsertMode || Caret.Column >= line.EditableLength + 1) {
+					string text = Caret.Column > line.EditableLength + 1 ? textEditorData.GetVirtualSpaces (Caret.Line, Caret.Column) + ch.ToString () : ch.ToString ();
 					if (textEditorData.IsSomethingSelected && textEditorData.MainSelection.SelectionMode == SelectionMode.Block) {
 						int length = 0;
 						for (int lineNumber = textEditorData.MainSelection.MinLine; lineNumber <= textEditorData.MainSelection.MaxLine; lineNumber++) {

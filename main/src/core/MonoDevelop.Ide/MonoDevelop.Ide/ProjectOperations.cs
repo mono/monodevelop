@@ -1628,14 +1628,14 @@ namespace MonoDevelop.Ide
 			
 			public int GetPositionFromLineColumn (int line, int column)
 			{
-				return data.Document.LocationToOffset (line - 1, column - 1);
+				return data.Document.LocationToOffset (line, column);
 			}
 			
 			public void GetLineColumnFromPosition (int position, out int line, out int column)
 			{
 				var loc = data.Document.OffsetToLocation (position);
-				line = loc.Line + 1;
-				column = loc.Column + 1;
+				line = loc.Line;
+				column = loc.Column;
 			}
 			
 			public int InsertText (int position, string text)

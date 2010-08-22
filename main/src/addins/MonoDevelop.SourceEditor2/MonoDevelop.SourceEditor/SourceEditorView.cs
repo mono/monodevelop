@@ -250,7 +250,7 @@ namespace MonoDevelop.SourceEditor
 			Task task = e.Tasks.FirstOrDefault ();
 			if (task == null || task.FileName != Document.FileName)
 				return;
-			LineSegment lineSegment = Document.GetLine (task.Line - 1);
+			LineSegment lineSegment = Document.GetLine (task.Line);
 			if (lineSegment == null)
 				return;
 			MessageBubbleTextMarker marker = (MessageBubbleTextMarker)lineSegment.Markers.FirstOrDefault (m => m is MessageBubbleTextMarker);
@@ -301,7 +301,7 @@ namespace MonoDevelop.SourceEditor
 				if (task.Severity == TaskSeverity.Error || task.Severity == TaskSeverity.Warning) {
 					if (IdeApp.Preferences.ShowMessageBubbles == ShowMessageBubbles.ForErrors && task.Severity == TaskSeverity.Warning)
 						continue;
-					LineSegment lineSegment = widget.Document.GetLine (task.Line - 1);
+					LineSegment lineSegment = widget.Document.GetLine (task.Line);
 					if (lineSegment == null)
 						continue;
 					var marker = currentErrorMarkers.FirstOrDefault (m => m.LineSegment == lineSegment);
@@ -657,7 +657,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 			if (lines != 0)
-				TextFileService.FireLineCountChanged (this, location.Line + 1, lines, location.Column + 1);
+				TextFileService.FireLineCountChanged (this, location.Line, lines, location.Column);
 		}
 
 		void OnCurrentFrameChanged (object s, EventArgs args)
@@ -677,7 +677,7 @@ namespace MonoDevelop.SourceEditor
 						return;
 					RemoveDebugMarkers ();
 					lastDebugLine = frame.SourceLocation.Line;
-					var segment = widget.TextEditor.Document.GetLine (lastDebugLine-1);
+					var segment = widget.TextEditor.Document.GetLine (lastDebugLine);
 					if (segment != null) {
 						if (DebuggingService.CurrentFrameIndex == 0) {
 							currentLineSegment = segment;
@@ -743,13 +743,13 @@ namespace MonoDevelop.SourceEditor
 		
 		void AddWatch (PinnedWatch w)
 		{
-			LineSegment line = widget.TextEditor.Document.GetLine (w.Line - 1);
+			LineSegment line = widget.TextEditor.Document.GetLine (w.Line);
 			if (line == null)
 				return;
 			PinnedWatchInfo wi = new PinnedWatchInfo ();
 			wi.Line = line;
 			if (w.OffsetX < 0) {
-				w.OffsetY = (int)widget.TextEditor.LineToY (w.Line - 1);
+				w.OffsetY = (int)widget.TextEditor.LineToY (w.Line);
 				int lw, lh;
 				widget.TextEditor.TextViewMargin.GetLayout (line).Layout.GetPixelSize (out lw, out lh);
 				w.OffsetX = (int)widget.TextEditor.TextViewMargin.XOffset + lw + 4;
@@ -809,7 +809,7 @@ namespace MonoDevelop.SourceEditor
 				count++;
 				if (i < breakpointSegments.Count) {
 					int lineNumber = widget.TextEditor.Document.OffsetToLineNumber (breakpointSegments[i].Offset);
-					if (lineNumber != bp.Line - 1) {
+					if (lineNumber != bp.Line) {
 						mismatch = true;
 						break;
 					}
@@ -832,7 +832,7 @@ namespace MonoDevelop.SourceEditor
 	
 			breakpointSegments.Clear ();
 			foreach (Breakpoint bp in DebuggingService.Breakpoints.GetBreakpoints ()) {
-				lineNumbers.Add (bp.Line - 1);
+				lineNumbers.Add (bp.Line);
 				AddBreakpoint (bp);
 			}
 			
@@ -853,7 +853,7 @@ namespace MonoDevelop.SourceEditor
 				return;
 			FilePath fp = Name;
 			if (fp.FullPath == bp.FileName) {
-				LineSegment line = widget.TextEditor.Document.GetLine (bp.Line-1);
+				LineSegment line = widget.TextEditor.Document.GetLine (bp.Line);
 				
 				if (line == null)
 					return;
@@ -924,7 +924,7 @@ namespace MonoDevelop.SourceEditor
 			} else if (args.Button == 1) {
 				if (!string.IsNullOrEmpty (this.Document.FileName)) {
 					if (args.LineSegment != null)
-						DebuggingService.Breakpoints.Toggle (this.Document.FileName, args.LineNumber + 1);
+						DebuggingService.Breakpoints.Toggle (this.Document.FileName, args.LineNumber);
 				}
 			}
 		}
@@ -988,12 +988,12 @@ namespace MonoDevelop.SourceEditor
 
 		public void SetCaretTo (int line, int column)
 		{
-			widget.TextEditor.SetCaretTo (line - 1, column - 1, true);
+			widget.TextEditor.SetCaretTo (line, column, true);
 		}
 
 		public void SetCaretTo (int line, int column, bool highlight)
 		{
-			widget.TextEditor.SetCaretTo (line - 1, column - 1, highlight);
+			widget.TextEditor.SetCaretTo (line, column, highlight);
 		}
 
 		public void Redo()
@@ -1120,13 +1120,13 @@ namespace MonoDevelop.SourceEditor
 		
 		public int GetPositionFromLineColumn (int line, int column)
 		{
-			return this.widget.TextEditor.Document.LocationToOffset (new DocumentLocation (line - 1, column - 1));
+			return this.widget.TextEditor.Document.LocationToOffset (new DocumentLocation (line, column));
 		}
 		public void GetLineColumnFromPosition (int position, out int line, out int column)
 		{
 			DocumentLocation location = this.widget.TextEditor.Document.OffsetToLocation (position);
-			line   = location.Line + 1;
-			column = location.Column + 1;
+			line   = location.Line;
+			column = location.Column;
 		}
 		#endregion
 		
@@ -1291,8 +1291,8 @@ namespace MonoDevelop.SourceEditor
 			CodeCompletionContext result = new CodeCompletionContext ();
 			result.TriggerOffset = triggerOffset;
 			DocumentLocation loc = Document.OffsetToLocation (triggerOffset);
-			result.TriggerLine   = loc.Line + 1;
-			result.TriggerLineOffset = loc.Column + 1;
+			result.TriggerLine   = loc.Line;
+			result.TriggerLineOffset = loc.Column - 1;
 			var p = DocumentToScreenLocation (loc);
 			result.TriggerXCoord = p.X;
 			result.TriggerYCoord = p.Y;

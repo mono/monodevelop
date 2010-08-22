@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.Tasks
 					return;
 				Task[] ctasks = GetFileTasks (args.TextFile.Name.FullPath);
 				foreach (Task task in ctasks) {
-					if (task.Line - 1 > args.LineNumber || (task.Line - 1 == args.LineNumber && task.Column - 1 >= args.Column)) {
+					if (task.Line > args.LineNumber || (task.Line == args.LineNumber && task.Column >= args.Column)) {
 						if (task.SavedLine == -1)
 							task.SavedLine = task.Line;
 						task.Line += args.LineCount;

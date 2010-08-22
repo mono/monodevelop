@@ -89,7 +89,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		DocumentLocation anchorLocation = DocumentLocation.Empty;
+		DocumentLocation anchorLocation = new DocumentLocation (DocumentLocation.MinLine, DocumentLocation.MinColumn);
 		internal protected override void MousePressed (MarginMouseEventArgs args)
 		{
 			base.MousePressed (args);
@@ -100,7 +100,7 @@ namespace Mono.TextEditor
 			int lineNumber       = args.LineNumber;
 			bool extendSelection = (args.ModifierState & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask;
 			if (lineNumber < editor.Document.LineCount) {
-				DocumentLocation loc = new DocumentLocation (lineNumber, 0);
+				DocumentLocation loc = new DocumentLocation (lineNumber, DocumentLocation.MinColumn);
 				LineSegment line = args.LineSegment;
 				if (args.Type == EventType.TwoButtonPress) {
 					if (line != null)
@@ -151,9 +151,9 @@ namespace Mono.TextEditor
 			if (args.Button == 1) {
 			//	DocumentLocation loc = editor.Document.LogicalToVisualLocation (editor.GetTextEditorData (), editor.Caret.Location);
 				
-				int lineNumber = args.LineNumber != -1 ? args.LineNumber : editor.Document.LineCount - 1;
+				int lineNumber = args.LineNumber >= DocumentLocation.MinLine ? args.LineNumber : editor.Document.LineCount;
 				editor.Caret.PreserveSelection = true;
-				editor.Caret.Location = new DocumentLocation (lineNumber, 0);
+				editor.Caret.Location = new DocumentLocation (lineNumber, DocumentLocation.MinColumn);
 				editor.MainSelection = new Selection (anchorLocation, editor.Caret.Location);
 				editor.Caret.PreserveSelection = false;
 			}
@@ -191,7 +191,7 @@ namespace Mono.TextEditor
 			cr.Fill ();
 			
 			if (line < editor.Document.LineCount) {
-				layout.SetText ((line + 1).ToString ());
+				layout.SetText (line.ToString ());
 				cr.Save ();
 				cr.Translate (x + (int)Width, y);
 				cr.Color = editor.Caret.Line == line ? lineNumberHighlightGC : lineNumberGC;

@@ -106,7 +106,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			ITextEditorResolver textEditorResolver = CurrentContext.Document.GetContent <ITextEditorResolver> ();
 			if (textEditorResolver != null) {
-				ResolveResult result = textEditorResolver.GetLanguageItem (CurrentContext.Document.Editor.Document.LocationToOffset (CurrentContext.InsertPosition.Line -1, CurrentContext.InsertPosition.Column - 1), var);
+				ResolveResult result = textEditorResolver.GetLanguageItem (CurrentContext.Document.Editor.Document.LocationToOffset (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column), var);
 				if (result != null && (result.ResolvedType.ArrayDimensions > 0 || result.ResolvedType.FullName == DomReturnType.String.FullName))
 					return "Length";
 			}
@@ -184,7 +184,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			if (CurrentContext.ParsedDocument == null)
 				return fullTypeName;
 			
-			return CurrentContext.ParsedDocument.CompilationUnit.ShortenTypeName (new DomReturnType (fullTypeName), CurrentContext.InsertPosition.Line + 1, CurrentContext.InsertPosition.Column + 1).FullName;
+			return CurrentContext.ParsedDocument.CompilationUnit.ShortenTypeName (new DomReturnType (fullTypeName), CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column).FullName;
 		}
 		
 		static Regex functionRegEx = new Regex ("([^(]*)\\(([^(]*)\\)", RegexOptions.Compiled);

@@ -157,14 +157,14 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (references != null) {
 				bool alphaBlend = false;
 				foreach (var r in references) {
-					UsageMarker marker = GetMarker (r.Line - 1);
-					int offset = textEditorData.Document.LocationToOffset (r.Line - 1, r.Column - 1);
+					UsageMarker marker = GetMarker (r.Line);
+					int offset = textEditorData.Document.LocationToOffset (r.Line, r.Column);
 					if (!alphaBlend && textEditorData.Parent.TextViewMargin.SearchResults.Any (sr => sr.Contains (offset) || sr.Contains (offset + r.Name.Length) ||
 					                                                        offset < sr.Offset && sr.EndOffset < offset + r.Name.Length)) {
 						textEditorData.Parent.TextViewMargin.AlphaBlendSearchResults = alphaBlend = true;
 					}
 					marker.Usages.Add (new Mono.TextEditor.Segment (offset, r.Name.Length));
-					lineNumbers.Add (r.Line - 1);
+					lineNumbers.Add (r.Line);
 				}
 			}
 			foreach (int line in lineNumbers)

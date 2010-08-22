@@ -100,8 +100,8 @@ namespace MonoDevelop.Refactoring
 			if (provider == null) 
 				return null;
 			
-			int start = Document.Editor.Document.LocationToOffset (member.BodyRegion.Start.Line - 1, member.BodyRegion.Start.Column - 1);
-			int end = Document.Editor.Document.LocationToOffset (member.BodyRegion.End.Line - 1, member.BodyRegion.End.Column - 1);
+			int start = Document.Editor.Document.LocationToOffset (member.BodyRegion.Start.Line, member.BodyRegion.Start.Column);
+			int end = Document.Editor.Document.LocationToOffset (member.BodyRegion.End.Line, member.BodyRegion.End.Column);
 			string memberBody = Document.Editor.GetTextBetween (start, end);
 			return provider.ParseText (memberBody);
 		}
@@ -122,7 +122,7 @@ namespace MonoDevelop.Refactoring
 		
 		public static string GetIndent (Document document, IMember member)
 		{
-			return GetWhitespaces (document, document.Editor.Document.LocationToOffset (member.Location.Line - 1, 0));
+			return GetWhitespaces (document, document.Editor.Document.LocationToOffset (member.Location.Line, 1));
 		}
 		public string GetWhitespaces (int insertionOffset)
 		{
@@ -136,7 +136,7 @@ namespace MonoDevelop.Refactoring
 		
 		public IReturnType ShortenTypeName (IReturnType fullyQualifiedTypeName)
 		{
-			return Document.ParsedDocument.CompilationUnit.ShortenTypeName (fullyQualifiedTypeName, Document.Editor.Caret.Line + 1, Document.Editor.Caret.Column + 1);
+			return Document.ParsedDocument.CompilationUnit.ShortenTypeName (fullyQualifiedTypeName, Document.Editor.Caret.Line, Document.Editor.Caret.Column);
 		}
 		
 		public ParsedDocument ParseDocument ()

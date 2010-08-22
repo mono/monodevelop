@@ -55,14 +55,14 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (currentSelection.EndOffset, data.Caret.Offset);
 			Assert.AreEqual (currentSelection.Offset, data.SelectionAnchor);*/
 			
-			Assert.IsTrue (data.Document.GetLine(0).Length < data.Document.GetLine(1).Length);
-			Assert.IsTrue (data.Document.GetLine(0).Length < data.Document.GetLine(2).Length);
-			Assert.IsTrue (data.Document.GetLine(0).Length < data.Document.GetLine(3).Length);
+			Assert.IsTrue (data.Document.GetLine (DocumentLocation.MinLine + 0).Length < data.Document.GetLine (DocumentLocation.MinLine + 1).Length);
+			Assert.IsTrue (data.Document.GetLine (DocumentLocation.MinLine + 0).Length < data.Document.GetLine (DocumentLocation.MinLine + 2).Length);
+			Assert.IsTrue (data.Document.GetLine (DocumentLocation.MinLine + 0).Length < data.Document.GetLine (DocumentLocation.MinLine + 3).Length);
 			
-			Assert.AreEqual (data.Document.GetLine(0).Length, data.Document.GetLine(4).Length);
+			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 0).Length, data.Document.GetLine (DocumentLocation.MinLine + 4).Length);
 			
-			Assert.AreEqual (data.Document.GetLine(1).Length, data.Document.GetLine(2).Length);
-			Assert.AreEqual (data.Document.GetLine(1).Length, data.Document.GetLine(3).Length);
+			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 1).Length, data.Document.GetLine (DocumentLocation.MinLine + 2).Length);
+			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 1).Length, data.Document.GetLine (DocumentLocation.MinLine + 3).Length);
 		}
 		
 		[Test()]
@@ -86,14 +86,14 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (currentSelection.Offset, data.Caret.Offset);
 			Assert.AreEqual (currentSelection.EndOffset, data.SelectionAnchor);*/
 			
-			Assert.IsTrue (data.Document.GetLine(0).Length < data.Document.GetLine(1).Length);
-			Assert.IsTrue (data.Document.GetLine(0).Length < data.Document.GetLine(2).Length);
-			Assert.IsTrue (data.Document.GetLine(0).Length < data.Document.GetLine(3).Length);
+			Assert.IsTrue (data.Document.GetLine (DocumentLocation.MinLine + 0).Length < data.Document.GetLine (DocumentLocation.MinLine + 1).Length);
+			Assert.IsTrue (data.Document.GetLine (DocumentLocation.MinLine + 0).Length < data.Document.GetLine (DocumentLocation.MinLine + 2).Length);
+			Assert.IsTrue (data.Document.GetLine (DocumentLocation.MinLine + 0).Length < data.Document.GetLine (DocumentLocation.MinLine + 3).Length);
 			
-			Assert.AreEqual (data.Document.GetLine(0).Length, data.Document.GetLine(4).Length);
+			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 0).Length, data.Document.GetLine (DocumentLocation.MinLine + 4).Length);
 			
-			Assert.AreEqual (data.Document.GetLine(1).Length, data.Document.GetLine(2).Length);
-			Assert.AreEqual (data.Document.GetLine(1).Length, data.Document.GetLine(3).Length);
+			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 1).Length, data.Document.GetLine (DocumentLocation.MinLine + 2).Length);
+			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 1).Length, data.Document.GetLine (DocumentLocation.MinLine + 3).Length);
 		}
 		
 		[Test()]
@@ -116,16 +116,16 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (currentSelection.EndOffset, data.SelectionRange.EndOffset);
 			Assert.AreEqual (currentSelection.EndOffset, data.Caret.Offset);
 			Assert.AreEqual (currentSelection.Offset, data.SelectionAnchor);
-			Assert.AreEqual (currentSelection.Offset, data.Document.GetLine(1).Offset);*/
+			Assert.AreEqual (currentSelection.Offset, data.Document.GetLine (DocumentLocation.MinLine + 1).Offset);*/
 			
-			Assert.IsTrue (data.Document.GetLine(0).Length < data.Document.GetLine(1).Length);
-			Assert.IsTrue (data.Document.GetLine(0).Length < data.Document.GetLine(2).Length);
-			Assert.IsTrue (data.Document.GetLine(0).Length < data.Document.GetLine(3).Length);
+			Assert.IsTrue (data.Document.GetLine (DocumentLocation.MinLine + 0).Length < data.Document.GetLine (DocumentLocation.MinLine + 1).Length);
+			Assert.IsTrue (data.Document.GetLine (DocumentLocation.MinLine + 0).Length < data.Document.GetLine (DocumentLocation.MinLine + 2).Length);
+			Assert.IsTrue (data.Document.GetLine (DocumentLocation.MinLine + 0).Length < data.Document.GetLine (DocumentLocation.MinLine + 3).Length);
 			
-			Assert.AreEqual (data.Document.GetLine(0).Length, data.Document.GetLine(4).Length);
+			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 0).Length, data.Document.GetLine (DocumentLocation.MinLine + 4).Length);
 			
-			Assert.AreEqual (data.Document.GetLine(1).Length, data.Document.GetLine(2).Length);
-			Assert.AreEqual (data.Document.GetLine(1).Length, data.Document.GetLine(3).Length);
+			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 1).Length, data.Document.GetLine (DocumentLocation.MinLine + 2).Length);
+			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 1).Length, data.Document.GetLine (DocumentLocation.MinLine + 3).Length);
 		}
 		
 		[Test()]
@@ -150,14 +150,14 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (0, data.Caret.Column);
 			Assert.AreEqual (currentSelection.EndOffset, data.SelectionAnchor);*/
 			
-			Assert.IsTrue (data.Document.GetLine(0).Length < data.Document.GetLine(1).Length);
-			Assert.IsTrue (data.Document.GetLine(0).Length < data.Document.GetLine(2).Length);
-			Assert.IsTrue (data.Document.GetLine(0).Length < data.Document.GetLine(3).Length);
+			Assert.IsTrue (data.Document.GetLine (DocumentLocation.MinLine + 0).Length < data.Document.GetLine (DocumentLocation.MinLine + 1).Length);
+			Assert.IsTrue (data.Document.GetLine (DocumentLocation.MinLine + 0).Length < data.Document.GetLine (DocumentLocation.MinLine + 2).Length);
+			Assert.IsTrue (data.Document.GetLine (DocumentLocation.MinLine + 0).Length < data.Document.GetLine (DocumentLocation.MinLine + 3).Length);
 			
-			Assert.AreEqual (data.Document.GetLine(0).Length, data.Document.GetLine(4).Length);
+			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 0).Length, data.Document.GetLine (DocumentLocation.MinLine + 4).Length);
 			
-			Assert.AreEqual (data.Document.GetLine(1).Length, data.Document.GetLine(2).Length);
-			Assert.AreEqual (data.Document.GetLine(1).Length, data.Document.GetLine(3).Length);
+			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 1).Length, data.Document.GetLine (DocumentLocation.MinLine + 2).Length);
+			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 1).Length, data.Document.GetLine (DocumentLocation.MinLine + 3).Length);
 		}
 		
 		[TestFixtureSetUp] 

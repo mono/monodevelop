@@ -39,19 +39,19 @@ namespace Mono.TextEditor.Tests
 		public void ColumnMotion ()
 		{
 			var mode = new TestViEditMode () { Text = "Test\nText" };
-			Assert.AreEqual (0, mode.Col);
-			mode.Input ('l');
 			Assert.AreEqual (1, mode.Col);
+			mode.Input ('l');
+			Assert.AreEqual (2, mode.Col);
 			mode.Input ("ll");
-			Assert.AreEqual (3, mode.Col);
+			Assert.AreEqual (4, mode.Col);
 			mode.Input ('l');
-			Assert.AreEqual (3, mode.Col);
+			Assert.AreEqual (4, mode.Col);
 			mode.Input ("hh");
+			Assert.AreEqual (2, mode.Col);
+			mode.Input ('h');
 			Assert.AreEqual (1, mode.Col);
 			mode.Input ('h');
-			Assert.AreEqual (0, mode.Col);
-			mode.Input ('h');
-			Assert.AreEqual (0, mode.Col);
+			Assert.AreEqual (1, mode.Col);
 		}
 		
 		[Test]
@@ -64,19 +64,19 @@ qrstu
 vwxyz",
 			};
 			mode.Caret.Offset = 0;
-			Assert.AreEqual (0, mode.Line);
-			mode.Input ('j');
 			Assert.AreEqual (1, mode.Line);
-			mode.Input ('k');
-			Assert.AreEqual (0, mode.Line);
-			mode.Input ("jjjj");
-			Assert.AreEqual (3, mode.Line);
-			mode.Caret.Line = 1;
-			mode.Caret.Column = 11;
 			mode.Input ('j');
-			Assert.AreEqual (4, mode.Col);
+			Assert.AreEqual (2, mode.Line);
 			mode.Input ('k');
-			Assert.AreEqual (11, mode.Col);
+			Assert.AreEqual (1, mode.Line);
+			mode.Input ("jjjj");
+			Assert.AreEqual (4, mode.Line);
+			mode.Caret.Line = 2;
+			mode.Caret.Column = 12;
+			mode.Input ('j');
+			Assert.AreEqual (5, mode.Col);
+			mode.Input ('k');
+			Assert.AreEqual (12, mode.Col);
 		}
 		
 		[Test]
@@ -114,8 +114,8 @@ qrstu",
    ccc ccc",
 			};
 			mode.Input ("jwlldd");
-			Assert.AreEqual (1, mode.Line);
-			Assert.AreEqual (3, mode.Col);
+			Assert.AreEqual (2, mode.Line);
+			Assert.AreEqual (4, mode.Col);
 			Assert.AreEqual (
 @"   aaa aaa
    ccc ccc", mode.Text);
@@ -176,7 +176,7 @@ qrstu",
    bbb bbb
    ggg ggg
    ggg ggg", mode.Text);
-			Assert.AreEqual (4, mode.Line);
+			Assert.AreEqual (5, mode.Line);
 			//movement to/across boundaries, check selection still okay by deleting lines 1/2/3
 			mode.Input ("kVlllllhhhhhhhhhhjjjhhhhhjjjjkkkkkkkkkkkkjd");
 			Assert.AreEqual (
@@ -225,25 +225,25 @@ kkk lll", mode.Text);
 			};
 			//move 2 lines down, 2 words in, enter visual mode
 			mode.Input ("jjwwv");
-			mode.AssertSelection (2, 7, 2, 8);
+			mode.AssertSelection (3, 8, 3, 9);
 			//2 letters to right
 			mode.Input ("ll");
-			mode.AssertSelection (2, 7, 2, 10);
+			mode.AssertSelection (3, 8, 3, 11);
 			//4 letters to left
 			mode.Input ("hhhh");
-			mode.AssertSelection (2, 8, 2, 5);
+			mode.AssertSelection (3, 9, 3, 6);
 			//1 line up
 			mode.Input ("k");
-			mode.AssertSelection (2, 8, 1, 5);
+			mode.AssertSelection (3, 9, 2, 6);
 			//1 line up
 			mode.Input ("k");
-			mode.AssertSelection (2, 8, 0, 5);
+			mode.AssertSelection (3, 9, 1, 6);
 			//5 letters to right
 			mode.Input ("lllll");
-			mode.AssertSelection (2, 8, 0, 10);
+			mode.AssertSelection (3, 9, 1, 11);
 			//3 lines down
 			mode.Input ("jjj");
-			mode.AssertSelection (2, 7, 3, 11);
+			mode.AssertSelection (3, 8, 4, 12);
 		}
 		
 		[Test]
@@ -273,8 +273,10 @@ kkk lll", mode.Text);
 	{
 		public TestViEditMode () : this (new TextEditorData ())
 		{
+			Console.WriteLine ("!1111");
 			Data.Options.WordFindStrategy = new Mono.TextEditor.Vi.ViWordFindStrategy ();
 			Data.Options.RemoveTrailingWhitespaces = true;
+			Console.WriteLine ("!!!!!!");
 		}
 		
 		//used to prevent edit actions from the HandleKeypress causing Caret/SelectionPositionChanged
@@ -283,8 +285,11 @@ kkk lll", mode.Text);
 		public TestViEditMode (TextEditorData data)
 		{
 			data.CurrentMode = this;
-			var f = typeof (EditMode).GetField ("textEditorData", BindingFlags.NonPublic | BindingFlags.Instance);
-			f.SetValue (this, data);
+			textEditorData = data;
+			// Currently doesn't work on my mac (test doesn't terminate with mono 2.6.7).
+		//	var f = typeof (EditMode).GetField ("textEditorData", BindingFlags.NonPublic | BindingFlags.Instance);
+		//	f.SetValue (this, data);
+			
 			data.Caret.PositionChanged += delegate(object sender, DocumentLocationEventArgs e) {
 				if (!inputting)
 					this.CaretPositionChanged ();

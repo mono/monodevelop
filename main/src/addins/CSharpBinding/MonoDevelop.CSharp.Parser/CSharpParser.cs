@@ -63,7 +63,7 @@ namespace MonoDevelop.CSharp.Parser
 			
 			public static DomLocation Convert (Mono.CSharp.Location loc)
 			{
-				return new DomLocation (loc.Row - 1, loc.Column - 1);
+				return new DomLocation (loc.Row, loc.Column);
 			}
 			
 			#region Global

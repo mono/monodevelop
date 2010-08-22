@@ -57,7 +57,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 		{
 			DocumentLocation location = options.GetTextEditorData ().Caret.Location;
 			IType interfaceType = options.Dom.GetType (options.ResolveResult.ResolvedType);
-			IType declaringType = options.Document.CompilationUnit.GetTypeAt (location.Line + 1, location.Column + 1);
+			IType declaringType = options.Document.CompilationUnit.GetTypeAt (location.Line, location.Column);
 			options.Document.Editor.Document.BeginAtomicUndo ();
 			CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
 			

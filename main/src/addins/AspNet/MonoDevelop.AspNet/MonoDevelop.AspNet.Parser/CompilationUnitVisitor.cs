@@ -80,11 +80,11 @@ namespace MonoDevelop.AspNet.Parser
 		{
 			DomRegion region;
 			if (endLocation == null)
-				region = new DomRegion (startLocation.BeginLine, startLocation.BeginColumn + 1, 
-				                        startLocation.EndLine, startLocation.EndColumn + 1);
+				region = new DomRegion (startLocation.BeginLine, startLocation.BeginColumn, 
+				                        startLocation.EndLine, startLocation.EndColumn);
 			else
-				region = new DomRegion (startLocation.BeginLine, startLocation.BeginColumn + 1, 
-				                        endLocation.EndLine, endLocation.EndColumn + 1);
+				region = new DomRegion (startLocation.BeginLine, startLocation.BeginColumn, 
+				                        endLocation.EndLine, endLocation.EndColumn);
 			
 			FoldingRegion f = new FoldingRegion (name, region);
 			regions.Add (f);

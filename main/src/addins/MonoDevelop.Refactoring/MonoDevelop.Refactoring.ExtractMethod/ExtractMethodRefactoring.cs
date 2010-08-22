@@ -65,7 +65,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			if (buffer.IsSomethingSelected) {
 				ParsedDocument doc = options.ParseDocument ();
 				if (doc != null && doc.CompilationUnit != null) {
-					if (doc.CompilationUnit.GetMemberAt (buffer.Caret.Line + 1, buffer.Caret.Column + 1) == null)
+					if (doc.CompilationUnit.GetMemberAt (buffer.Caret.Line, buffer.Caret.Column) == null)
 						return false;
 					return true;
 				}
@@ -101,13 +101,13 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			if (doc == null || doc.CompilationUnit == null)
 				return null;
 
-			IMember member = doc.CompilationUnit.GetMemberAt (buffer.Caret.Line + 1, buffer.Caret.Column + 1);
+			IMember member = doc.CompilationUnit.GetMemberAt (buffer.Caret.Line, buffer.Caret.Column);
 			if (member == null)
 				return null;
 			
 			ExtractMethodParameters param = new ExtractMethodParameters () {
 				DeclaringMember = member,
-				Location = new DomLocation (buffer.Caret.Line + 1, buffer.Caret.Column + 1)
+				Location = new DomLocation (buffer.Caret.Line, buffer.Caret.Column)
 			};
 			Analyze (options, param, true);
 			return param;
@@ -434,7 +434,7 @@ namespace MonoDevelop.Refactoring.ExtractMethod
 			ExtractMethodAstTransformer transformer = new ExtractMethodAstTransformer (param.VariablesToGenerate);
 			node.AcceptVisitor (transformer, null);
 			if (!param.OneChangedVariable && node is Expression) {
-				ResolveResult resolveResult = resolver.Resolve (new ExpressionResult ("(" + provider.OutputNode (options.Dom, node) + ")"), new DomLocation (options.Document.Editor.Caret.Line + 1, options.Document.Editor.Caret.Column + 1));
+				ResolveResult resolveResult = resolver.Resolve (new ExpressionResult ("(" + provider.OutputNode (options.Dom, node) + ")"), new DomLocation (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column));
 				if (resolveResult.ResolvedType != null)
 					returnType = options.ShortenTypeName (resolveResult.ResolvedType).ConvertToTypeReference ();
 			}

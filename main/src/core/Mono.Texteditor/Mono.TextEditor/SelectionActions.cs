@@ -105,7 +105,7 @@ namespace Mono.TextEditor
 		{
 			data.Caret.PreserveSelection = true;
 			if (!data.IsSomethingSelected) {
-				data.MainSelection = new Selection (new DocumentLocation (data.Caret.Line, 0), new DocumentLocation (data.Caret.Line, 0));
+				data.MainSelection = new Selection (new DocumentLocation (data.Caret.Line, DocumentLocation.MinColumn), new DocumentLocation (data.Caret.Line, DocumentLocation.MinColumn));
 			}
 		}
 
@@ -129,7 +129,6 @@ namespace Mono.TextEditor
 				int toOffset = (toLine < fromLine)? toSegment.Offset: toSegment.EndOffset;
 				data.ExtendSelectionTo (toOffset);
 			}
-			                   
 			data.Caret.PreserveSelection = false;
 		}
 
@@ -137,7 +136,7 @@ namespace Mono.TextEditor
 		{
 			data.Caret.PreserveSelection = true;
 			CaretMoveActions.ToDocumentEnd (data);
-			data.MainSelection = new Selection (new DocumentLocation (0, 0), data.Caret.Location);
+			data.MainSelection = new Selection (new DocumentLocation (DocumentLocation.MinLine, DocumentLocation.MinColumn), data.Caret.Location);
 			data.Caret.PreserveSelection = false;
 		}
 		

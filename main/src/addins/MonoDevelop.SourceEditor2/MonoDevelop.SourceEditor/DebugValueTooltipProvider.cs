@@ -82,8 +82,8 @@ namespace MonoDevelop.SourceEditor
 				if (expression == null)*/
 				if (res != null && res.ResolvedExpression != null) {
 					expression = res.ResolvedExpression.Expression;
-					startOffset = editor.Document.LocationToOffset (res.ResolvedExpression.Region.Start.Line - 1, res.ResolvedExpression.Region.Start.Column - 1);
-					int endOffset = editor.Document.LocationToOffset (res.ResolvedExpression.Region.End.Line - 1, res.ResolvedExpression.Region.End.Column - 1);
+					startOffset = editor.Document.LocationToOffset (res.ResolvedExpression.Region.Start.Line, res.ResolvedExpression.Region.Start.Column);
+					int endOffset = editor.Document.LocationToOffset (res.ResolvedExpression.Region.End.Line, res.ResolvedExpression.Region.End.Column);
 					length = endOffset - startOffset;
 				}
 			}
