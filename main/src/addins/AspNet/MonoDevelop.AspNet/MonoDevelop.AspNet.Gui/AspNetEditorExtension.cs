@@ -132,7 +132,7 @@ namespace MonoDevelop.AspNet.Gui
 			if (Tracker.Engine.CurrentState is AspNetDirectiveState) {
 				var directive = Tracker.Engine.Nodes.Peek () as AspNetDirective;
 				if (HasDoc && directive != null && directive.Region.Start.Line == completionContext.TriggerLine &&
-				    directive.Region.Start.Column + 4 == completionContext.TriggerLineOffset)
+				    directive.Region.Start.Column + 3 == completionContext.TriggerLineOffset)
 				{
 					return DirectiveCompletion.GetDirectives (aspDoc.Type);
 				}
@@ -140,7 +140,7 @@ namespace MonoDevelop.AspNet.Gui
 			} else if (Tracker.Engine.CurrentState is S.XmlNameState && Tracker.Engine.CurrentState.Parent is AspNetDirectiveState) {
 				var directive = Tracker.Engine.Nodes.Peek () as AspNetDirective;
 				if (HasDoc && directive != null && directive.Region.Start.Line == completionContext.TriggerLine &&
-				    directive.Region.Start.Column + 5 == completionContext.TriggerLineOffset && char.IsLetter (currentChar))
+				    directive.Region.Start.Column + 4 == completionContext.TriggerLineOffset && char.IsLetter (currentChar))
 				{
 					triggerWordLength = 1;
 					return DirectiveCompletion.GetDirectives (aspDoc.Type);
