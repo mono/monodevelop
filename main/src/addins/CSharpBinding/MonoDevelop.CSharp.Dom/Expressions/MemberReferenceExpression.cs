@@ -37,9 +37,9 @@ namespace MonoDevelop.CSharp.Dom
 			get { return GetChildByRole (Roles.TargetExpression); }
 		}
 		
-		public ICSharpNode Identifier {
+		public Identifier Identifier {
 			get {
-				return (ICSharpNode)GetChildByRole (Roles.Identifier);
+				return (Identifier)GetChildByRole (Roles.Identifier);
 			}
 		}
 		

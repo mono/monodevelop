@@ -34,6 +34,27 @@ namespace MonoDevelop.CSharp.Dom
 		{
 		}
 		
+		public ICSharpNode GetNodeAt (int line, int column)
+		{
+			return GetNodeAt (new DomLocation (line, column));
+		}
+		
+		public ICSharpNode GetNodeAt (DomLocation location)
+		{
+			ICSharpNode node = this;
+			while (node.FirstChild != null) {
+				ICSharpNode child = node.FirstChild as ICSharpNode;
+				while (child != null) {
+					if (child.StartLocation <= location && location < child.EndLocation) {
+						node = child;
+						break;
+					}
+					child = child.NextSibling as ICSharpNode;
+				}
+			}
+			return node;
+		}
+		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitCompilationUnit (this, data);

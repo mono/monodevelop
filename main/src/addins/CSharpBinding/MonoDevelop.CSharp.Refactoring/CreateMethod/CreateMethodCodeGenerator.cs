@@ -25,10 +25,9 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
-
-using ICSharpCode.NRefactory.Ast;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Dom;
@@ -39,6 +38,8 @@ using MonoDevelop.Ide;
 using System.Text;
 using Mono.TextEditor.PopupWindow;
 using MonoDevelop.Refactoring;
+using MonoDevelop.CSharp.Parser;
+using MonoDevelop.CSharp.Dom;
 
 namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 {
@@ -51,81 +52,116 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		
 		public override bool IsValid (RefactoringOptions options)
 		{
-			INRefactoryASTProvider provider = options.GetASTProvider ();
-			IResolver resolver = options.GetResolver ();
-			if (provider == null || resolver == null)
-				return false;
-			if (invoke == null)
-				invoke = GetInvocationExpression (options);
-			if (invoke == null)
-				return false;
-			returnType = DomReturnType.Void;
-			modifiers = ICSharpCode.NRefactory.Ast.Modifiers.None;
-			resolvePosition = new DomLocation (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column);
-			ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (provider.OutputNode (options.Dom, invoke)), resolvePosition);
+			return Analyze (options);
+		}
+
+		InvocationExpression GetInvocation (MonoDevelop.CSharp.Dom.CompilationUnit unit, TextEditorData data)
+		{
+			var containingNode = unit.GetNodeAt (data.Caret.Line, data.Caret.Column);
+			var parent = containingNode.Parent;
 			
-			if (resolveResult is MethodResolveResult) {
-				MethodResolveResult mrr = (MethodResolveResult)resolveResult ;
-				if (mrr.ExactMethodMatch)
-					return false;
-				returnType = mrr.MostLikelyMethod.ReturnType;
-				modifiers = (ICSharpCode.NRefactory.Ast.Modifiers)mrr.MostLikelyMethod.Modifiers;
+			while (parent != null && !(parent is InvocationExpression)) {
+				parent = parent.Parent;
 			}
-			
-			if (invoke.TargetObject is MemberReferenceExpression) {
-				string callingObject = provider.OutputNode (options.Dom, ((MemberReferenceExpression)invoke.TargetObject).TargetObject);
-				resolveResult = resolver.Resolve (new ExpressionResult (callingObject), resolvePosition);
-				if (resolveResult == null || resolveResult.ResolvedType == null || resolveResult.CallingType == null)
-					return false;
-				IType type = options.Dom.GetType (resolveResult.ResolvedType);
-				return type != null && type.CompilationUnit != null && File.Exists (type.CompilationUnit.FileName) && RefactoringService.GetASTProvider (DesktopService.GetMimeTypeForUri (type.CompilationUnit.FileName)) != null;
-			}
-			return invoke.TargetObject is IdentifierExpression;
+			return parent as InvocationExpression;
 		}
 		
-		InvocationExpression invoke;
-		IReturnType returnType = DomReturnType.Void;
-		ICSharpCode.NRefactory.Ast.Modifiers modifiers = ICSharpCode.NRefactory.Ast.Modifiers.None;
+		public bool HasCompatibleMethod (IType type, string methodName, InvocationExpression invocation)
+		{
+			// TODO: add argument type check for overloads. 
+			return type.SearchMember (methodName, true).Any (m => m is IMethod && ((IMethod)m).Parameters.Count == invocation.Arguments.Count ());
+		}
+		
+		IReturnType GuessReturnType (RefactoringOptions options)
+		{
+			var resolver = options.GetResolver ();
+			var data = options.GetTextEditorData ();
+			
+			ICSharpNode node = invocation;
+			while (node != null) {
+				if (node.Parent is AssignmentExpression) {
+					var assignment = (AssignmentExpression)node.Parent;
+					if (assignment.Left is Identifier) {
+						string identifier = ((Identifier)assignment.Left).Name;
+						var resolveResult = resolver.Resolve (new ExpressionResult (identifier), resolvePosition);
+						if (resolveResult != null)
+							return resolveResult.ResolvedType;
+					}
+				}
+				if (node.Parent is InvocationExpression) {
+					var parentInvocation = (InvocationExpression)node.Parent;
+					int idx = 0;
+					foreach (var arg in parentInvocation.Arguments) {
+						if (arg == node)
+							break;
+						idx++;
+					}
+					var resolveResult = resolver.Resolve (new ExpressionResult (data.GetTextBetween (parentInvocation.StartLocation.Line, parentInvocation.StartLocation.Column, parentInvocation.EndLocation.Line, parentInvocation.EndLocation.Column)), resolvePosition) as MethodResolveResult;
+					if (resolveResult != null) {
+						if (idx < resolveResult.MostLikelyMethod.Parameters.Count)
+							return resolveResult.MostLikelyMethod.Parameters[idx].ReturnType;
+					}
+					return DomReturnType.Object;
+				}
+				
+				node = node.Parent as ICSharpNode;
+			}
+			return DomReturnType.Void;
+		}
+		
+		public bool Analyze (RefactoringOptions options)
+		{
+			var data = options.GetTextEditorData ();
+			var parser = new CSharpParser ();
+			var unit = parser.Parse (data);
+			if (unit == null)
+				return false;
+			invocation = GetInvocation (unit, data);
+			if (invocation == null) 
+				return false;
+			resolvePosition = new DomLocation (data.Caret.Line, data.Caret.Column);
+			var target = (ICSharpNode)invocation.Target;
+			
+			
+			if (target is MemberReferenceExpression) {
+				var memberReference = (MemberReferenceExpression)target;
+				target = (ICSharpNode)memberReference.Target;
+				var targetResult = options.GetResolver ().Resolve (new ExpressionResult (data.GetTextBetween (target.StartLocation.Line, target.StartLocation.Column, target.EndLocation.Line, target.EndLocation.Column)), resolvePosition);
+				declaringType = options.Dom.GetType (targetResult.ResolvedType);
+				methodName = memberReference.Identifier.Name;
+			} else {
+				declaringType = options.ResolveResult.CallingType;
+				methodName = data.GetTextBetween (target.StartLocation.Line, target.StartLocation.Column, target.EndLocation.Line, target.EndLocation.Column);
+			}
+			
+			if (declaringType == null || HasCompatibleMethod (declaringType, methodName, invocation))
+				return false;
+			
+			bool isInInterface = declaringType.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface;
+			if (isInInterface) {
+				modifiers = MonoDevelop.Projects.Dom.Modifiers.None;
+			} else {
+				if (declaringType.DecoratedFullName != options.ResolveResult.CallingType.DecoratedFullName)
+					modifiers |= MonoDevelop.Projects.Dom.Modifiers.Public;
+				if (options.ResolveResult.CallingMember.IsStatic)
+					modifiers |= MonoDevelop.Projects.Dom.Modifiers.Static;
+			}
+			
+			returnType = GuessReturnType (options);
+			
+			return true;
+		}
+		
 		DomLocation resolvePosition;
+		
+		IType declaringType;
+		IReturnType returnType;
+		string methodName;
+		InvocationExpression invocation;
+		MonoDevelop.Projects.Dom.Modifiers modifiers;
+		
 		InsertionPoint insertionPoint;
 		int insertionOffset;
-		
-		InvocationExpression GetInvocationExpression (RefactoringOptions options)
-		{
-			TextEditorData data = options.GetTextEditorData ();
-			if (data == null || options.ResolveResult == null || options.ResolveResult.ResolvedExpression == null)
-				return null;
-			string expression = options.ResolveResult.ResolvedExpression.Expression;
-			if (!expression.Contains ("(")) {
-				int startPos = data.Document.LocationToOffset (options.ResolveResult.ResolvedExpression.Region.Start.Line, options.ResolveResult.ResolvedExpression.Region.Start.Column);
-				if (startPos < 0)
-					return null;
-				bool gotWs = false;
-				for (int pos = startPos; pos > 2; pos--) {
-					char ch = data.Document.GetCharAt (pos);
-					if (char.IsWhiteSpace (ch)) {
-						if (gotWs)
-							break;
-						gotWs = true;
-						continue;
-					}
-					if (gotWs && ch == 'w' && data.Document.GetCharAt (pos - 1) == 'e' && data.Document.GetCharAt (pos - 2) == 'n')
-						return null;
-				}
-				for (int pos = startPos; pos < data.Document.Length; pos++) {
-					char ch = data.Document.GetCharAt (pos);
-					if (ch == '(') {
-						int offset = data.Document.GetMatchingBracketOffset (pos);
-						if (offset < startPos) 
-							return null;
-						expression = data.Document.GetTextAt (startPos, offset - startPos + 1);
-						break;
-					}
-				}
-			}
-			INRefactoryASTProvider provider = options.GetASTProvider ();
-			return provider != null ? provider.ParseText (expression) as InvocationExpression : null;
-		}
 		
 		public override string GetMenuDescription (RefactoringOptions options)
 		{
@@ -134,50 +170,25 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		
 		public override void Run (RefactoringOptions options)
 		{
-			IResolver resolver = options.GetResolver ();
-			INRefactoryASTProvider provider = options.GetASTProvider ();
 			TextEditorData data = options.GetTextEditorData ();
-			IType type = options.ResolveResult.CallingType;
-			if (invoke.TargetObject is IdentifierExpression) {
-				fileName = options.Document.FileName;
-				newMethodName = ((IdentifierExpression)invoke.TargetObject).Identifier;
-				indent = options.GetIndent (options.ResolveResult.CallingMember);
-				if (options.ResolveResult.CallingMember.IsStatic)
-					modifiers |= ICSharpCode.NRefactory.Ast.Modifiers.Static;
-			} else {
-				newMethodName = ((MemberReferenceExpression)invoke.TargetObject).MemberName;
-				string callingObject = provider.OutputNode (options.Dom, ((MemberReferenceExpression)invoke.TargetObject).TargetObject);
-				ResolveResult resolveResult = resolver.Resolve (new ExpressionResult (callingObject), resolvePosition);
-				type = options.Dom.GetType (resolveResult.ResolvedType);
-				fileName = type.CompilationUnit.FileName;
-				if (resolveResult.StaticResolve)
-					modifiers |= ICSharpCode.NRefactory.Ast.Modifiers.Static;
-				
-				if (fileName == options.Document.FileName) {
-					indent = options.GetIndent (options.ResolveResult.CallingMember);
-//					insertNewMethod.Offset = options.Document.TextEditor.GetPositionFromLineColumn (options.ResolveResult.CallingMember.BodyRegion.End.Line, options.ResolveResult.CallingMember.BodyRegion.End.Column);
-				} else {
-					var openDocument = IdeApp.Workbench.OpenDocument (fileName);
-					data = openDocument.Editor;
-					if (data == null)
-						return;
-					modifiers |= ICSharpCode.NRefactory.Ast.Modifiers.Public;
-					bool isInInterface = type.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface;
-					if (isInInterface) 
-						modifiers = ICSharpCode.NRefactory.Ast.Modifiers.None;
-					if (data == null)
-						throw new InvalidOperationException ("Can't open file:" + modifiers);
-					try {
-						indent = data.Document.GetLine (type.Location.Line).GetIndentation (data.Document) ?? "";
-					} catch (Exception) {
-						indent = "";
-					}
-					indent += "\t";
-//					insertNewMethod.Offset = otherFile.Document.LocationToOffset (type.BodyRegion.End.Line - 1, 0);
-				}
-			}
 			
-			InsertionCursorEditMode mode = new InsertionCursorEditMode (data.Parent, MonoDevelop.Refactoring.HelperMethods.GetInsertionPoints (data.Document, type));
+			fileName = declaringType.CompilationUnit.FileName;
+			
+			var openDocument = IdeApp.Workbench.OpenDocument (fileName);
+			data = openDocument.Editor;
+			if (data == null)
+				return;
+			
+			if (data == null)
+				throw new InvalidOperationException ("Can't open file:" + modifiers);
+			try {
+				indent = data.Document.GetLine (declaringType.Location.Line).GetIndentation (data.Document) ?? "";
+			} catch (Exception) {
+				indent = "";
+			}
+			indent += "\t";
+			
+			InsertionCursorEditMode mode = new InsertionCursorEditMode (data.Parent, MonoDevelop.Refactoring.HelperMethods.GetInsertionPoints (data.Document, declaringType));
 			if (fileName == options.Document.FileName) {
 				for (int i = 0; i < mode.InsertionPoints.Count; i++) {
 					var point = mode.InsertionPoints[i];
@@ -228,69 +239,70 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			return true;
 		}
 		
-		string fileName, newMethodName, indent;
+		string fileName, indent;
 		int selectionStart;
 		int selectionEnd;
+		
+		IMethod ConstructMethod (RefactoringOptions options)
+		{
+			var resolver = options.GetResolver ();
+			var data = options.GetTextEditorData ();
+			
+			DomMethod result = new DomMethod (methodName, modifiers, MethodModifier.None, DomLocation.Empty, DomRegion.Empty, returnType);
+			result.DeclaringType = new DomType ("GeneratedInterface") { ClassType = ClassType.Interface };
+			int i = 1;
+			foreach (ICSharpNode argument in invocation.Arguments) {
+				DomParameter arg = new DomParameter ();
+				string argExpression = data.GetTextBetween (argument.StartLocation.Line, argument.StartLocation.Column, argument.EndLocation.Line, argument.EndLocation.Column);
+				var resolveResult = resolver.Resolve (new ExpressionResult (argExpression), resolvePosition);
+				if (argument is MemberReferenceExpression) {
+					arg.Name = ((MemberReferenceExpression)argument).Identifier.Name;
+				} else if (argument is FullTypeName) {
+					arg.Name = ((FullTypeName)argument).Identifier.Name;
+					int idx = arg.Name.LastIndexOf ('.');
+					if (idx >= 0)
+						arg.Name = arg.Name.Substring (idx + 1);
+				} else {
+					arg.Name = "par" + i++;
+				}
+				
+				arg.Name = char.ToLower (arg.Name[0]) + arg.Name.Substring (1);
+				
+				if (resolveResult != null) {
+					arg.ReturnType = resolveResult.ResolvedType;
+				} else {
+					arg.ReturnType = DomReturnType.Object;
+				}
+				
+				result.Add (arg);
+			}
+			return result;
+		}
+		
 		public override List<Change> PerformChanges (RefactoringOptions options, object prop)
 		{
 			List<Change> result = new List<Change> ();
-			IResolver resolver = options.GetResolver ();
-			INRefactoryASTProvider provider = options.GetASTProvider ();
-			if (resolver == null || provider == null)
-				return result;
-			TextEditorData data = options.GetTextEditorData ();
 			TextReplaceChange insertNewMethod = new TextReplaceChange ();
 			insertNewMethod.FileName = fileName;
 			insertNewMethod.RemovedChars = insertionPoint.LineBefore == NewLineInsertion.Eol ? 0 : insertionPoint.Location.Column;
 			insertNewMethod.Offset = insertionOffset - insertNewMethod.RemovedChars;
-			MethodDeclaration methodDecl = new MethodDeclaration ();
-			bool isInInterface = false;
 			
-			methodDecl.Modifier = modifiers;
-			methodDecl.TypeReference = MonoDevelop.Refactoring.HelperMethods.ConvertToTypeReference (returnType);
-			methodDecl.Name = newMethodName;
-			if (!isInInterface) {
-				methodDecl.Body = new BlockStatement ();
-				methodDecl.Body.AddChild (new ThrowStatement (new ObjectCreateExpression (new TypeReference ("System.NotImplementedException"), null)));
-			}
-			insertNewMethod.Description = string.Format (GettextCatalog.GetString ("Create new method {0}"), methodDecl.Name);
-
-			int i = 0;
-			foreach (Expression expression in invoke.Arguments) {
-				i++;
-				string output = provider.OutputNode (options.Dom, expression);
-
-				string parameterName = "par" + i;
-				int idx = output.LastIndexOf ('.');
-				string lastName = output.Substring (idx + 1); // start from 0, if '.' wasn't found
-				
-				ResolveResult resolveResult2 = resolver.Resolve (new ExpressionResult (output), resolvePosition);
-				TypeReference typeReference = new TypeReference ((resolveResult2 != null && resolveResult2.ResolvedType != null) ? options.Document.CompilationUnit.ShortenTypeName (resolveResult2.ResolvedType, data.Caret.Line, data.Caret.Column).ToInvariantString () : "System.Object");
-							
-				if (lastName == "this" || lastName == "base") {
-					idx = typeReference.Type.LastIndexOf ('.');
-					lastName = typeReference.Type.Substring (idx + 1);
-				}
-				if (!string.IsNullOrEmpty (lastName))
-					lastName = char.ToLower (lastName[0]) + lastName.Substring (1);
-				if (IsValidIdentifier (lastName)) 
-					parameterName = lastName;
-				
-				typeReference.IsKeyword = true;
-				ParameterDeclarationExpression pde = new ParameterDeclarationExpression (typeReference, parameterName);
-				methodDecl.Parameters.Add (pde);
-			}
 			StringBuilder sb = new StringBuilder ();
+			sb.AppendLine ();
 			switch (insertionPoint.LineBefore) {
 			case NewLineInsertion.Eol:
 				sb.AppendLine ();
 				break;
 			case NewLineInsertion.BlankLine:
+				sb.AppendLine ();
 				sb.Append (indent);
 				sb.AppendLine ();
 				break;
 			}
-			sb.Append (provider.OutputNode (options.Dom, methodDecl, indent).TrimEnd ('\n', '\r'));
+
+			var generator = options.Document.CreateCodeGenerator ();
+			sb.Append (generator.CreateMemberImplementation (declaringType, ConstructMethod (options), false).Code);
+			
 			switch (insertionPoint.LineAfter) {
 			case NewLineInsertion.Eol:
 				sb.AppendLine ();
@@ -301,10 +313,12 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 				sb.Append (indent);
 				break;
 			}
+			
 			insertNewMethod.InsertedText = sb.ToString ();
 			result.Add (insertNewMethod);
-			if (!isInInterface) {
-				int idx = insertNewMethod.InsertedText.IndexOf ("throw");
+			selectionStart = selectionEnd = insertNewMethod.Offset;
+			int idx = insertNewMethod.InsertedText.IndexOf ("throw");
+			if (idx >= 0) {
 				selectionStart = insertNewMethod.Offset + idx;
 				selectionEnd   = insertNewMethod.Offset + insertNewMethod.InsertedText.IndexOf (';', idx) + 1;
 			} else {
@@ -312,6 +326,5 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			}
 			return result;
 		}
-		
 	}
 }
