@@ -246,6 +246,17 @@ namespace Mono.TextEditor
 			return buffer.GetTextAt (startOffset, endOffset - startOffset);
 		}
 		
+		public string GetTextBetween (DocumentLocation start, DocumentLocation end)
+		{
+			return GetTextBetween (LocationToOffset (start), LocationToOffset (end));
+		}
+		
+		public string GetTextBetween (int startLine, int startColumn, int endLine, int endColumn)
+		{
+			return GetTextBetween (LocationToOffset (startLine, startColumn), LocationToOffset (endLine, endColumn));
+		}
+		
+		
 		public string GetTextAt (int offset, int count)
 		{
 			if (offset < 0)

@@ -927,6 +927,16 @@ namespace Mono.TextEditor
 		{
 			return document.GetTextBetween (startOffset, endOffset);
 		}
+		
+		public string GetTextBetween (DocumentLocation start, DocumentLocation end)
+		{
+			return document.GetTextBetween (start, end);
+		}
+		
+		public string GetTextBetween (int startLine, int startColumn, int endLine, int endColumn)
+		{
+			return document.GetTextBetween (startLine, startColumn, endLine, endColumn);
+		}
 
 		public string GetTextAt (int offset, int count)
 		{
