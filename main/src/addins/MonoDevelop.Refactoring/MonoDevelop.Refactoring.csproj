@@ -69,7 +69,6 @@
     <Compile Include="MonoDevelop.Refactoring.ExtractMethod\ExtractMethodDialog.cs" />
     <Compile Include="MonoDevelop.Refactoring.ExtractMethod\VariableLookupVisitor.cs" />
     <Compile Include="MonoDevelop.Refactoring\INRefactoryASTProvider.cs" />
-    <Compile Include="MonoDevelop.Refactoring.CreateMethod\CreateMethodCodeGenerator.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringOptions.cs" />
     <Compile Include="MonoDevelop.Refactoring.IntegrateTemporaryVariable\IntegrateTemporaryVariableRefactoring.cs" />
     <Compile Include="MonoDevelop.Refactoring.Rename\RenameRefactoring.cs" />
@@ -120,7 +119,6 @@
     <Compile Include="MonoDevelop.Refactoring.ImplementInterface\ImplementAbstractMembers.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindDerivedClassesHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring.ExtractMethod\ExtractMethodHandler.cs" />
-    <Compile Include="MonoDevelop.Refactoring.CreateMethod\CreateMethodHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring.IntroduceConstant\IntroduceConstantHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\QuickFixHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\EncapsulateFieldDialog.cs" />

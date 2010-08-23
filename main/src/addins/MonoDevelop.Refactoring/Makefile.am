@@ -47,8 +47,6 @@ FILES =  \
 	MonoDevelop.Refactoring.ConvertPropery/RemoveBackingStore.cs \
 	MonoDevelop.Refactoring.CreateClass/CreateClassCodeGenerator.cs \
 	MonoDevelop.Refactoring.CreateClass/CreateStructCodeGenerator.cs \
-	MonoDevelop.Refactoring.CreateMethod/CreateMethodCodeGenerator.cs \
-	MonoDevelop.Refactoring.CreateMethod/CreateMethodHandler.cs \
 	MonoDevelop.Refactoring.DeclareLocal/DeclareLocalCodeGenerator.cs \
 	MonoDevelop.Refactoring.DeclareLocal/DeclareLocalHandler.cs \
 	MonoDevelop.Refactoring.DeclareLocal/GetContainingEmbeddedStatementVisitor.cs \

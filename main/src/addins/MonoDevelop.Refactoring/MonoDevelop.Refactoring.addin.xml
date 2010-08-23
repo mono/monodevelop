@@ -41,7 +41,6 @@
 		<Class id="Rename" class = "MonoDevelop.Refactoring.Rename.RenameRefactoring" />
 		<Class id="ExtractMethod" class = "MonoDevelop.Refactoring.ExtractMethod.ExtractMethodRefactoring" />
 		<Class id="IntegrateTemporaryVariable" class = "MonoDevelop.Refactoring.IntegrateTemporaryVariable.IntegrateTemporaryVariableRefactoring" />
-		<Class id="CreateMethod" class = "MonoDevelop.Refactoring.CreateMethod.CreateMethodCodeGenerator" />
 		<Class id="DeclareLocal" class = "MonoDevelop.Refactoring.DeclareLocal.DeclareLocalCodeGenerator" />
 		<Class id="IntroduceConstant" class = "MonoDevelop.Refactoring.IntroduceConstant.IntroduceConstantRefactoring" />
 		<Class id="CreateClass" class = "MonoDevelop.Refactoring.CreateClass.CreateClassCodeGenerator" />
@@ -124,9 +123,6 @@
 					defaultHandler = "MonoDevelop.Refactoring.ExtractMethod.ExtractMethodHandler"
 					_label = "Extract Method"
 					shortcut = "Control|Alt|M"/>
-		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.CreateMethod"
-					defaultHandler = "MonoDevelop.Refactoring.CreateMethod.CreateMethodHandler"
-					_label = "Create Method"/>
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.IntroduceConstant"
 					defaultHandler = "MonoDevelop.Refactoring.CreateMethod.IntroduceConstantHandler"
 					_label = "_Introduce Constant..."/>
