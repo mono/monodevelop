@@ -1166,7 +1166,7 @@ namespace Mono.TextEditor
 		
 		public void CenterTo (DocumentLocation p)
 		{
-			if (isDisposed || p.Line < 0 || p.Line >= Document.LineCount)
+			if (isDisposed || p.Line < 0 || p.Line > Document.LineCount)
 				return;
 			SetAdjustments (this.Allocation);
 			//			Adjustment adj;
@@ -1206,7 +1206,7 @@ namespace Mono.TextEditor
 		
 		public void ScrollTo (DocumentLocation p)
 		{
-			if (isDisposed || p.Line < 0 || p.Line >= Document.LineCount || inCaretScroll)
+			if (isDisposed || p.Line < 0 || p.Line > Document.LineCount || inCaretScroll)
 				return;
 			inCaretScroll = true;
 			try {
@@ -1360,13 +1360,13 @@ namespace Mono.TextEditor
 				foreach (FoldSegment fs in Document.GetStartFoldings (line).Where (fs => fs.IsFolded)) {
 					lastFold = System.Math.Max (fs.EndOffset, lastFold);
 				}
-				if (lastFold > DocumentLocation.MinLine) 
+				if (lastFold >= DocumentLocation.MinLine)
 					visualLineNumber = Document.OffsetToLineNumber (lastFold);
 				foreach (Margin margin in this.margins) {
 					if (!margin.IsVisible)
 						continue;
 					try {
-						margin.Draw (margin == textViewMargin ? textViewCr : cr, cairoRectangle, logicalLineNumber, margin.XOffset, curY, lineHeight);
+						margin.Draw (margin == textViewMargin ? textViewCr : cr, cairoRectangle, line, logicalLineNumber, margin.XOffset, curY, lineHeight);
 					} catch (Exception e) {
 						System.Console.WriteLine (e);
 					}

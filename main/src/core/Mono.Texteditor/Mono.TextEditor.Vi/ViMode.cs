@@ -77,7 +77,7 @@ namespace Mono.TextEditor.Vi
 					
 				int line;
 				if (int.TryParse (command.Substring (1), out line)) {
-					if (line < 0 || line > Data.Document.LineCount) {
+					if (line < DocumentLocation.MinLine || line > Data.Document.LineCount) {
 						return "Invalid line number.";
 					} else if (line == 0) {
 						RunAction (CaretMoveActions.ToDocumentStart);

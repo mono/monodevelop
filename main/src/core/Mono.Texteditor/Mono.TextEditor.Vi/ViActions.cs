@@ -44,7 +44,7 @@ namespace Mono.TextEditor.Vi
 			
 			int line = data.Caret.Line + 1;
 			LineSegment currentLine = data.Document.GetLine (line);
-			while (line < data.Document.LineCount) {
+			while (line <= data.Document.LineCount) {
 				line++;
 				LineSegment nextLine = data.Document.GetLine (line);
 				if (currentLine.EditableLength != 0 && nextLine.EditableLength == 0) {

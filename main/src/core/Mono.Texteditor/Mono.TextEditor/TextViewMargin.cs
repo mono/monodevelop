@@ -1019,7 +1019,7 @@ namespace Mono.TextEditor
 				var spanStack = line.StartSpan;
 				int lineOffset = line.Offset;
 				string lineText = textBuilder.ToString ();
-				bool containsPreedit = offset <= textEditor.preeditOffset && textEditor.preeditOffset <= offset + length;
+				bool containsPreedit = !string.IsNullOrEmpty (textEditor.preeditString) && offset <= textEditor.preeditOffset && textEditor.preeditOffset <= offset + length;
 				uint preeditLength = 0;
 
 				if (containsPreedit) {
@@ -1934,7 +1934,7 @@ namespace Mono.TextEditor
 			if (lineNr < 0)
 				return result;
 
-			LineSegment line = lineNr < Document.LineCount ? Document.GetLine (lineNr) : null;
+			LineSegment line = lineNr <= Document.LineCount ? Document.GetLine (lineNr) : null;
 			//			int xStart = XOffset;
 			int y = (int)(LineToY (lineNr) - textEditor.VAdjustment.Value);
 			//			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, LineHeight);
@@ -2000,9 +2000,8 @@ namespace Mono.TextEditor
 			}
 		}
 
-		protected internal override void Draw (Cairo.Context cr, Cairo.Rectangle area, int lineNr, double x, double y, double _lineHeight)
+		protected internal override void Draw (Cairo.Context cr, Cairo.Rectangle area, LineSegment line, int lineNr, double x, double y, double _lineHeight)
 		{
-			LineSegment line = lineNr < Document.LineCount ? Document.GetLine (lineNr) : null;
 //			double xStart = System.Math.Max (area.X, XOffset);
 //			xStart = System.Math.Max (0, xStart);
 			var lineArea = new Cairo.Rectangle (XOffset - 1, y, textEditor.Allocation.Width - XOffset, textEditor.LineHeight);
@@ -2212,7 +2211,7 @@ namespace Mono.TextEditor
 			public DocumentLocation PointToLocation (double xp, double yp)
 			{
 				lineNumber = System.Math.Min (margin.YToLine (yp + margin.textEditor.VAdjustment.Value), margin.Document.LineCount);
-				line = lineNumber < margin.Document.LineCount ? margin.Document.GetLine (lineNumber) : null;
+				line = lineNumber <= margin.Document.LineCount ? margin.Document.GetLine (lineNumber) : null;
 				if (line == null)
 					return DocumentLocation.Empty;
 				

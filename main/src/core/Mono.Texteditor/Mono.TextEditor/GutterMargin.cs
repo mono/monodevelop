@@ -99,7 +99,7 @@ namespace Mono.TextEditor
 			editor.LockedMargin = this;
 			int lineNumber       = args.LineNumber;
 			bool extendSelection = (args.ModifierState & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask;
-			if (lineNumber < editor.Document.LineCount) {
+			if (lineNumber <= editor.Document.LineCount) {
 				DocumentLocation loc = new DocumentLocation (lineNumber, DocumentLocation.MinColumn);
 				LineSegment line = args.LineSegment;
 				if (args.Type == EventType.TwoButtonPress) {
@@ -184,13 +184,13 @@ namespace Mono.TextEditor
 			lineNumberHighlightGC = editor.ColorStyle.LineNumberFgHighlighted;
 		}
 		
-		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, int line, double x, double y, double lineHeight)
+		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, LineSegment lineSegment, int line, double x, double y, double lineHeight)
 		{
 			cr.Rectangle (x, y, Width, lineHeight);
 			cr.Color = lineNumberBgGC;
 			cr.Fill ();
 			
-			if (line < editor.Document.LineCount) {
+			if (line <= editor.Document.LineCount) {
 				layout.SetText (line.ToString ());
 				cr.Save ();
 				cr.Translate (x + (int)Width, y);
