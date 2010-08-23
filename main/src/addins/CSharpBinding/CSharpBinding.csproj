@@ -346,6 +346,8 @@
     <Compile Include="MonoDevelop.CSharp.Parser\mcs\typemanager.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\mcs\typespec.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\mcs\visit.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\CreateMethod\CreateMethodCodeGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\CreateMethod\CreateMethodHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -384,5 +386,6 @@
     <Folder Include="MonoDevelop.CSharp\" />
     <Folder Include="MonoDevelop.CSharp.Completion\" />
     <Folder Include="MonoDevelop.CSharp.Parser\mcs\" />
+    <Folder Include="MonoDevelop.CSharp.Refactoring\CreateMethod\" />
   </ItemGroup>
 </Project>
