@@ -23,7 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-/*
+
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -346,7 +346,6 @@ namespace MonoDevelop.CSharp.Parser
 
 				
 			}
-			
 			
 			public override void Visit (Operator o)
 			{
@@ -1136,7 +1135,7 @@ namespace MonoDevelop.CSharp.Parser
 			public override object Visit (MemberAccess memberAccess)
 			{
 				var result = new MemberReferenceExpression ();
-				result.AddChild ((INode)memberAccess.Left.Accept (this), MemberReferenceExpression.Roles.TargetExpression);
+				result.AddChild ((INode)memberAccess.LeftExpression.Accept (this), MemberReferenceExpression.Roles.TargetExpression);
 				result.AddChild (new Identifier (memberAccess.Name, Convert (memberAccess.Location)), MemberReferenceExpression.Roles.Identifier);
 				if (memberAccess.TypeArguments != null)  {
 					var location = LocationsBag.GetLocations (memberAccess);
@@ -1951,4 +1950,4 @@ namespace MonoDevelop.CSharp.Parser
 			return conversionVisitor.Unit;
 		}
 	}
-}*/
+}

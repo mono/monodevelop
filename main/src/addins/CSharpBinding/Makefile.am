@@ -140,6 +140,60 @@ FILES =  \
 	MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs \
 	MonoDevelop.CSharp.Highlighting/MoveToUsagesHandler.cs \
 	MonoDevelop.CSharp.Parser/CSharpParser.cs \
+	MonoDevelop.CSharp.Parser/mcs/anonymous.cs \
+	MonoDevelop.CSharp.Parser/mcs/argument.cs \
+	MonoDevelop.CSharp.Parser/mcs/assign.cs \
+	MonoDevelop.CSharp.Parser/mcs/attribute.cs \
+	MonoDevelop.CSharp.Parser/mcs/cfold.cs \
+	MonoDevelop.CSharp.Parser/mcs/class.cs \
+	MonoDevelop.CSharp.Parser/mcs/codegen.cs \
+	MonoDevelop.CSharp.Parser/mcs/complete.cs \
+	MonoDevelop.CSharp.Parser/mcs/const.cs \
+	MonoDevelop.CSharp.Parser/mcs/constant.cs \
+	MonoDevelop.CSharp.Parser/mcs/context.cs \
+	MonoDevelop.CSharp.Parser/mcs/convert.cs \
+	MonoDevelop.CSharp.Parser/mcs/CryptoConvert.cs \
+	MonoDevelop.CSharp.Parser/mcs/cs-parser.cs \
+	MonoDevelop.CSharp.Parser/mcs/cs-tokenizer.cs \
+	MonoDevelop.CSharp.Parser/mcs/decl.cs \
+	MonoDevelop.CSharp.Parser/mcs/delegate.cs \
+	MonoDevelop.CSharp.Parser/mcs/doc.cs \
+	MonoDevelop.CSharp.Parser/mcs/driver.cs \
+	MonoDevelop.CSharp.Parser/mcs/dynamic.cs \
+	MonoDevelop.CSharp.Parser/mcs/ecore.cs \
+	MonoDevelop.CSharp.Parser/mcs/enum.cs \
+	MonoDevelop.CSharp.Parser/mcs/eval.cs \
+	MonoDevelop.CSharp.Parser/mcs/expression.cs \
+	MonoDevelop.CSharp.Parser/mcs/field.cs \
+	MonoDevelop.CSharp.Parser/mcs/flowanalysis.cs \
+	MonoDevelop.CSharp.Parser/mcs/generic.cs \
+	MonoDevelop.CSharp.Parser/mcs/import.cs \
+	MonoDevelop.CSharp.Parser/mcs/iterators.cs \
+	MonoDevelop.CSharp.Parser/mcs/lambda.cs \
+	MonoDevelop.CSharp.Parser/mcs/linq.cs \
+	MonoDevelop.CSharp.Parser/mcs/literal.cs \
+	MonoDevelop.CSharp.Parser/mcs/location.cs \
+	MonoDevelop.CSharp.Parser/mcs/membercache.cs \
+	MonoDevelop.CSharp.Parser/mcs/method.cs \
+	MonoDevelop.CSharp.Parser/mcs/modifiers.cs \
+	MonoDevelop.CSharp.Parser/mcs/MonoSymbolFile.cs \
+	MonoDevelop.CSharp.Parser/mcs/MonoSymbolTable.cs \
+	MonoDevelop.CSharp.Parser/mcs/MonoSymbolWriter.cs \
+	MonoDevelop.CSharp.Parser/mcs/namespace.cs \
+	MonoDevelop.CSharp.Parser/mcs/nullable.cs \
+	MonoDevelop.CSharp.Parser/mcs/outline.cs \
+	MonoDevelop.CSharp.Parser/mcs/parameter.cs \
+	MonoDevelop.CSharp.Parser/mcs/pending.cs \
+	MonoDevelop.CSharp.Parser/mcs/property.cs \
+	MonoDevelop.CSharp.Parser/mcs/report.cs \
+	MonoDevelop.CSharp.Parser/mcs/rootcontext.cs \
+	MonoDevelop.CSharp.Parser/mcs/roottypes.cs \
+	MonoDevelop.CSharp.Parser/mcs/statement.cs \
+	MonoDevelop.CSharp.Parser/mcs/support.cs \
+	MonoDevelop.CSharp.Parser/mcs/symbolwriter.cs \
+	MonoDevelop.CSharp.Parser/mcs/typemanager.cs \
+	MonoDevelop.CSharp.Parser/mcs/typespec.cs \
+	MonoDevelop.CSharp.Parser/mcs/visit.cs \
 	MonoDevelop.CSharp.Parser/NRefactoryParser.cs \
 	MonoDevelop.CSharp.Project/CodeGenerationPanel.cs \
 	MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs \

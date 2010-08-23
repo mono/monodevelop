@@ -292,10 +292,66 @@
     <Compile Include="MonoDevelop.CSharp.Completion\CompletionTextLinkMode.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpCodeGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpRefactorer.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\anonymous.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\argument.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\assign.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\attribute.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\cfold.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\class.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\codegen.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\complete.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\const.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\constant.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\context.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\convert.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\CryptoConvert.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\cs-parser.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\cs-tokenizer.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\decl.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\delegate.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\doc.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\driver.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\dynamic.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\ecore.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\enum.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\eval.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\expression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\field.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\flowanalysis.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\generic.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\import.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\iterators.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\lambda.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\linq.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\literal.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\location.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\membercache.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\method.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\modifiers.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\MonoSymbolFile.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\MonoSymbolTable.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\MonoSymbolWriter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\namespace.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\nullable.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\outline.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\parameter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\pending.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\property.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\report.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\rootcontext.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\roottypes.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\statement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\support.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\symbolwriter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\typemanager.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\typespec.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\visit.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
     <None Include="Makefile.am" />
+    <None Include="MonoDevelop.CSharp.Parser\mcs\cs-parser.jay" />
+    <None Include="MonoDevelop.CSharp.Parser\mcs\smcs.exe.sources" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -327,5 +383,6 @@
     <Folder Include="MonoDevelop.CSharp.Project\" />
     <Folder Include="MonoDevelop.CSharp\" />
     <Folder Include="MonoDevelop.CSharp.Completion\" />
+    <Folder Include="MonoDevelop.CSharp.Parser\mcs\" />
   </ItemGroup>
 </Project>
