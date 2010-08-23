@@ -43,82 +43,22 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 
 	public class MonoDroidDebuggerSession : RemoteSoftDebuggerSession
 	{
-		System.Diagnostics.Process simProcess;
-		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
 			var dsi = (MonoDroidDebuggerStartInfo) startInfo;
 			var cmd = dsi.ExecutionCommand;
-			if (cmd.Simulator)
-				StartSimulatorProcess (cmd);
+			
+			//start app
+			throw new NotImplementedException ();
+			
 			StartListening (dsi);
 		}
 		
 		protected override string GetListenMessage (RemoteDebuggerStartInfo dsi)
 		{
-			var cmd = ((MonoDroidDebuggerStartInfo)dsi).ExecutionCommand;
+			//var cmd = ((MonoDroidDebuggerStartInfo)dsi).ExecutionCommand;
 			string message = GettextCatalog.GetString ("Waiting for debugger to connect on {0}:{1}...", dsi.Address, dsi.DebugPort);
-			if (!cmd.Simulator)
-				message += "\n" + GettextCatalog.GetString ("Please start the application on the device.");
 			return message;
-		}
-		
-		protected override void EndSession ()
-		{
-			base.EndSession ();
-			EndSimProcess ();
-		}
-
-		//FIXME: hook up the app's stdin and stdout, and mtouch's stdin and stdout
-		void StartSimulatorProcess (MonoDroidExecutionCommand cmd)
-		{
-			var psi = MonoDroidExecutionHandler.CreateMtouchSimStartInfo (cmd, false);
-			psi.RedirectStandardInput = true;
-			simProcess = System.Diagnostics.Process.Start (psi);
-			
-			simProcess.Exited += delegate {
-				EndSession ();
-				simProcess = null;
-			};
-			
-			TargetExited += delegate {
-				EndSimProcess ();
-			};
-		}
-		
-		void EndSimProcess ()
-		{
-			if (simProcess == null)
-				return;
-			if (!simProcess.HasExited) {
-				try {
-					simProcess.StandardInput.WriteLine ();
-				} catch {}
-			}
-			GLib.Timeout.Add (10000, delegate {
-				if (!simProcess.HasExited)
-					simProcess.Kill ();
-				return false;
-			});
-		}
-		
-		protected override void OnConnected ()
-		{
-			if (simProcess != null)
-				MonoDroidUtility.MakeSimulatorGrabFocus ();
-		}
-		
-		protected override void OnContinue ()
-		{
-			base.OnContinue ();
-			if (simProcess != null)
-				MonoDroidUtility.MakeSimulatorGrabFocus ();
-		}
-		
-		protected override void OnExit ()
-		{
-			base.OnExit ();
-			EndSimProcess ();
 		}
 	}
 	
@@ -127,7 +67,7 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 		public MonoDroidExecutionCommand ExecutionCommand { get; private set; }
 		
 		public MonoDroidDebuggerStartInfo (IPAddress address, int debugPort, int outputPort, MonoDroidExecutionCommand cmd)
-			: base (cmd.AppPath.FileNameWithoutExtension, address, debugPort, outputPort)
+			: base (cmd.AppName, address, debugPort, outputPort)
 		{
 			ExecutionCommand = cmd;
 		}

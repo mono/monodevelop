@@ -1,10 +1,10 @@
 // 
-// IPhoneProjectBinding.cs
+// MonoDroidProjectBinding.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc. (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc. (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,16 +28,16 @@ using System;
 using MonoDevelop.Projects;
 
 
-namespace MonoDevelop.IPhone
+namespace MonoDevelop.MonoDroid
 {
 	
 	
-	public class IPhoneProjectBinding : IProjectBinding
+	public class MonoDroidProjectBinding : IProjectBinding
 	{
 		public Project CreateProject (ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
 		{
 			string lang = projectOptions.GetAttribute ("language");
-			return new IPhoneProject (lang, info, projectOptions);
+			return new MonoDroidProject (lang, info, projectOptions);
 		}
 		
 		public Project CreateSingleFileProject (string sourceFile)
@@ -51,7 +51,7 @@ namespace MonoDevelop.IPhone
 		}
 		
 		public string Name {
-			get { return "IPhone"; }
+			get { return "MonoDroid"; }
 		}
 	}
 }

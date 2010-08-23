@@ -48,6 +48,11 @@ namespace MonoDevelop.MonoDroid
 		public static string MonoDroidSdkPath { get; private set; }
 		public static string AndroidSdkPath { get; private set; }
 		public static string JavaSdkPath { get; private set; }
+		
+		public static IEnumerable<MonoDroidDeviceTarget> GetDeviceTargets ()
+		{
+			throw new NotImplementedException ();
+		}
 	}
 	
 	public class MonoDroidInstalledCondition : ConditionType

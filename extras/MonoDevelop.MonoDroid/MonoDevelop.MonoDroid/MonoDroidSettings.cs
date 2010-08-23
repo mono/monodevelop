@@ -1,5 +1,5 @@
 // 
-// IPhoneCommands.cs
+// MonoDroidCommands.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -27,37 +27,24 @@
 using MonoDevelop.Core;
 using System;
 
-namespace MonoDevelop.IPhone
+namespace MonoDevelop.MonoDroid
 {
-	public static class IPhoneSettings
+	public static class MonoDroidSettings
 	{
-		public static bool ShowStartOnDeviceMessage {
-			get { return PropertyService.Get ("IPhoneAddinSettings.ShowStartOnDeviceMessage", true); }
-			set { PropertyService.Set ("IPhoneAddinSettings.ShowStartOnDeviceMessage", value); }
-		}
-		
-		public static string SigningKeyDeveloper {
-			get { return PropertyService.Get<string> ("IPhoneSigningKey.Developer", null); }
-		}
-		
-		public static string SigningKeyDistribution {
-			get { return PropertyService.Get<string> ("IPhoneSigningKey.Distribution", null); }
-		}
-		
 		public static int DebuggerPort {
-			get { return PropertyService.Get ("MonoTouch.Debugger.Port", 10000); }
+			get { return PropertyService.Get ("MonoDroid.Debugger.Port", 10000); }
 		}
 		
 		public static int DebuggerOutputPort {
-			get { return PropertyService.Get ("MonoTouch.Debugger.OutputPort", 10001); }
+			get { return PropertyService.Get ("MonoDroid.Debugger.OutputPort", 10001); }
 		}
 		
-		public static System.Net.IPAddress GetDebuggerHostIP (bool simulator)
+		public static System.Net.IPAddress GetDebuggerHostIP (bool emulator)
 		{
-			if (simulator)
+			if (emulator)
 				return System.Net.IPAddress.Loopback;
 
-			var ipStr = PropertyService.Get ("MonoTouch.Debugger.HostIP", "");
+			var ipStr = PropertyService.Get ("MonoDroid.Debugger.HostIP", "");
 			try {
 				if (!string.IsNullOrEmpty (ipStr))
 					return System.Net.IPAddress.Parse (ipStr);

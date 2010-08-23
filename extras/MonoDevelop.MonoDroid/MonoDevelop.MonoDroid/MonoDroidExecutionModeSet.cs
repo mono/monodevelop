@@ -29,40 +29,40 @@ using MonoDevelop.Core.Execution;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MonoDevelop.IPhone
+namespace MonoDevelop.MonoDroid
 {
-	public class IPhoneExecutionModeSet : IExecutionModeSet
+	public class MonoDroidExecutionModeSet : IExecutionModeSet
 	{
-		public string Name { get { return "IPhone";  } }
+		public string Name { get { return "MonoDroid";  } }
 		
 		public IEnumerable<IExecutionMode> ExecutionModes {
 			get {
-				return IPhoneFramework.GetSimulatorTargets ().Select (t => (IExecutionMode) new IPhoneExecutionMode (t));
+				return MonoDroidFramework.GetDeviceTargets ().Select (t => (IExecutionMode) new MonoDroidExecutionMode (t));
 			}
 		}
 	}
 	
-	class IPhoneExecutionMode : IExecutionMode
+	class MonoDroidExecutionMode : IExecutionMode
 	{
-		public IPhoneExecutionMode (IPhoneSimulatorTarget target)
+		public MonoDroidExecutionMode (MonoDroidDeviceTarget target)
 		{
 			this.Target = target;
 		}
 		
-		IPhoneExecutionHandler handler;
+		MonoDroidExecutionHandler handler;
 		
 		public string Name {
 			get {
-				return (Target.Device == TargetDevice.IPad? "iPad Simulator " : "iPhone Simulator ") + Target.Version;
+				throw new NotImplementedException ();
 			}
 		}
 		
-		public string Id { get { return "IPhoneExecutionMode"; } }
-		public IPhoneSimulatorTarget Target { get; private set; }
+		public string Id { get { return "MonoDroidExecutionMode"; } }
+		public MonoDroidDeviceTarget Target { get; private set; }
 		
 		public IExecutionHandler ExecutionHandler {
 			get {
-				return handler ?? (handler = new IPhoneExecutionHandler (Target));
+				return handler ?? (handler = new MonoDroidExecutionHandler (Target));
 			}
 		}
 	}

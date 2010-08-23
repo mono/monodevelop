@@ -34,7 +34,7 @@ using System.Linq;
 
 namespace MonoDevelop.MonoDroid
 {
-	public class MonoDroidProjectConfiguration : DotNetProjectConfiguration, ICustomDataItem
+	public class MonoDroidProjectConfiguration : DotNetProjectConfiguration
 	{
 		public MonoDroidProjectConfiguration () : base ()
 		{
@@ -47,6 +47,42 @@ namespace MonoDevelop.MonoDroid
 		[ItemProperty ("MonoDroidExtraArgs")]
 		public string MonoDroidExtraArgs { get; set; }
 		
+		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
+		[ItemProperty ("AndroidManifest")]
+		public string AndroidManifest { get; set; }
+		
+		public string ApkPath {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+		
+		public string ApkSignedPath {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+		
+		public bool IsApplication {
+			get {
+				return !string.IsNullOrEmpty (AndroidManifest);
+			}
+		}
+		
+		public ProjectFile GetAndroidManifestFile (ConfigurationSelector conf)
+		{
+			string name = AndroidManifest;
+			var pf = ParentItem.Files.GetFileWithVirtualPath (name);
+			if (pf != null)
+				return pf;
+			
+			name = ParentItem.BaseDirectory.Combine (name);
+			var doc = new AndroidManifest ();
+			throw new NotImplementedException ();
+			//doc.WriteToFile (name);
+			return ParentItem.AddFile (name);
+		}
+		
 		public override void CopyFrom (ItemConfiguration configuration)
 		{
 			base.CopyFrom (configuration);
@@ -55,6 +91,7 @@ namespace MonoDevelop.MonoDroid
 				return;
 			
 			MonoDroidExtraArgs = cfg.MonoDroidExtraArgs;
+			AndroidManifest = cfg.AndroidManifest;
 		}
 	}
 }

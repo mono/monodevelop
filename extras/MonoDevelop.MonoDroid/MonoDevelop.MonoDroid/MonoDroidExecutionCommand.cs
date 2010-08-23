@@ -1,10 +1,10 @@
 // 
-// IPhoneExecutionCommand.cs
+// MonoDroidExecutionCommand.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc. (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc. (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,45 +30,30 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Assemblies;
 using System.Collections.Generic;
 
-namespace MonoDevelop.IPhone
+namespace MonoDevelop.MonoDroid
 {
-	public class IPhoneExecutionCommand: ExecutionCommand
+	public class MonoDroidExecutionCommand: ExecutionCommand
 	{
-		public IPhoneExecutionCommand (TargetRuntime runtime, TargetFramework framework, FilePath appPath, 
-		                               FilePath logDirectory, bool debugMode, IPhoneSimulatorTarget target, 
-		                               IPhoneSdkVersion minimumOSVersion, TargetDevice supportedDevices)
+		public MonoDroidExecutionCommand (FilePath apkPath, TargetRuntime runtime, TargetFramework framework, bool debugMode)
 		{
-			this.AppPath = appPath;
-			this.LogDirectory = logDirectory;
-			this.Framework = framework;
+			this.ApkPath = apkPath;
 			this.Runtime = runtime;
+			this.Framework = framework;
 			this.DebugMode = debugMode;
-			this.SimulatorTarget = target;
-			this.MinimumOSVersion = minimumOSVersion;
-			this.SupportedDevices = supportedDevices;
+			AppName = ApkPath.FileNameWithoutExtension;
+			if (AppName.EndsWith ("-signed"))
+				AppName = AppName.Substring (0, AppName.Length - "-signed".Length);
 		}
 		
-		public FilePath AppPath { get; private set; }
-		public FilePath LogDirectory { get; private set; }
-		public bool DebugMode { get; private set; }
-		public bool Simulator { get { return SimulatorTarget != null; } }
+		public string AppName { get; private set; }
+		public FilePath ApkPath { get; private set; }
 		public TargetRuntime Runtime { get; private set; }
 		public TargetFramework Framework { get; private set; }
 		public IList<string> UserAssemblyPaths { get; set; }
-		public IPhoneSdkVersion MinimumOSVersion { get; private set; }
-		public TargetDevice SupportedDevices { get; private set; }
-		
-		public IPhoneSimulatorTarget SimulatorTarget { get; private set; }
-		
-		public FilePath OutputLogPath {
-			get { return LogDirectory.Combine ("out.log"); }
-		}
-		public FilePath ErrorLogPath {
-			get { return LogDirectory.Combine ("err.log"); }
-		}
+		public bool DebugMode { get; private set; }
 		
 		public override string CommandString {
-			get { return "[iphone]"; }
+			get { return "[monodroid]"; }
 		}
 	}
 }

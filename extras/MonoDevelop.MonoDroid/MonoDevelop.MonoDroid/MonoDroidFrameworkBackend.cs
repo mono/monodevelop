@@ -1,10 +1,10 @@
 // 
-// IPhoneFrameworkBackend.cs
+// MonoDroidFrameworkBackend.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc. (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc. (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,27 +36,26 @@ using Gtk;
 using MonoDevelop.Core.Serialization;
 
 
-namespace MonoDevelop.IPhone
+namespace MonoDevelop.MonoDroid
 {
-	public class IPhoneFrameworkBackend : MonoFrameworkBackend
+	public class MonoDroidFrameworkBackend : MonoFrameworkBackend
 	{
-		const string SDK_ROOT = "/Developer/MonoTouch";
-		
 		string sdkDir;
 		string sdkBin;
 		
-		public IPhoneFrameworkBackend ()
+		public MonoDroidFrameworkBackend ()
 		{
-			if (Directory.Exists (SDK_ROOT)) {
+			var sdkRoot = MonoDroidFramework.MonoDroidSdkPath;
+			if (Directory.Exists (sdkRoot)) {
 				try {
-					sdkDir = SDK_ROOT + "/usr/lib/mono/2.1";
-					sdkBin = SDK_ROOT + "/usr/bin";
+					sdkDir = sdkRoot + "/usr/lib/mono/2.1";
+					sdkBin = sdkRoot + "/usr/bin";
 					if (!File.Exists (Path.Combine (sdkDir, "mscorlib.dll"))) {
 						sdkDir = null;
-					    throw new Exception ("Missing mscorlib in iPhone SDK " + SDK_ROOT);
+					    throw new Exception ("Missing mscorlib in MonoDroid SDK " + sdkRoot);
 					}
 				} catch (Exception ex) {
-					LoggingService.LogError ("Unexpected error finding iPhone SDK directory", ex);
+					LoggingService.LogError ("Unexpected error finding MonoDroid SDK directory", ex);
 				}
 			}
 		}
@@ -76,8 +75,8 @@ namespace MonoDevelop.IPhone
 		
 		public override SystemPackageInfo GetFrameworkPackageInfo (string packageName)
 		{
-			SystemPackageInfo info = base.GetFrameworkPackageInfo ("mono-iphone");
-			info.Name = "mono-iphone";
+			SystemPackageInfo info = base.GetFrameworkPackageInfo ("monodroid");
+			info.Name = "monodroid";
 			return info;
 		}
 		

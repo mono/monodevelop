@@ -87,18 +87,6 @@ namespace MonoDevelop.MonoDroid
 			}
 		}
 		
-		public string AndroidManifest {
-			get { return androidManifest; }
-			set {
-				if (value == "")
-					value = null;
-				if (value == androidManifest)
-					return;
-				NotifyModified ("AndroidManifest");
-				androidManifest = value;
-			}
-		}
-		
 		#endregion
 		
 		#region Constructors
@@ -121,13 +109,16 @@ namespace MonoDevelop.MonoDroid
 			
 			var androidResgenFileAtt = projectOptions.Attributes ["AndroidResgenFile"];
 			if (androidResgenFileAtt != null)
-				this.androidResgenFile = androidResgenFileAtt;
+				this.androidResgenFile = androidResgenFileAtt.Value;
 			
 			var androidManifestAtt = projectOptions.Attributes ["AndroidManifest"];
 			if (androidManifestAtt != null)
-				this.androidManifest = androidManifestAtt;
+				foreach (MonoDroidProjectConfiguration cfg in Configurations)
+					cfg.AndroidManifest = androidManifestAtt.Value;
 			
 			monoDroidResourcePrefix = "Resources";
+			
+			
 		}
 		
 		void Init ()
@@ -169,25 +160,9 @@ namespace MonoDevelop.MonoDroid
 		                                                            DotNetProjectConfiguration configuration)
 		{
 			var conf = (MonoDroidProjectConfiguration) configuration;
+			var devTarget = GetDeviceTarget (conf);
 			
-			MonoDroidSimulatorTarget simTarget = null;
-			
-			var minOS = string.IsNullOrEmpty (conf.MtouchMinimumOSVersion)?
-				MonoDroidSdkVersion.Default : MonoDroidSdkVersion.Parse (conf.MtouchMinimumOSVersion);
-			
-			if (conf.Platform != PLAT_IPHONE) {
-				simTarget = GetSimulatorTarget (conf);
-				if (simTarget == null) {
-					var defaultDevice = ((MonoDroidProject)conf.ParentItem).SupportedDevices == TargetDevice.IPad?
-						TargetDevice.IPad : TargetDevice.MonoDroid;
-					var sdk = string.IsNullOrEmpty (conf.MtouchSdkVersion)?
-						MonoDroidSdkVersion.Default : MonoDroidSdkVersion.Parse (conf.MtouchSdkVersion);
-					simTarget = new MonoDroidSimulatorTarget (defaultDevice, sdk);
-				}
-			}
-			
-			return new MonoDroidExecutionCommand (TargetRuntime, TargetFramework, conf.AppDirectory, conf.OutputDirectory,
-			                                   conf.DebugMode && conf.MtouchDebug, simTarget, minOS, SupportedDevices) {
+			return new MonoDroidExecutionCommand (conf.ApkSignedPath, TargetRuntime, TargetFramework, conf.DebugMode) {
 				UserAssemblyPaths = GetUserAssemblyPaths (configSel)
 			};
 		}
@@ -196,44 +171,11 @@ namespace MonoDevelop.MonoDroid
 		{
 			var conf = (MonoDroidProjectConfiguration) GetConfiguration (configSel);
 			
-			if (!Directory.Exists (conf.AppDirectory)) {
-				Gtk.Application.Invoke (delegate {
-					MessageService.ShowError (GettextCatalog.GetString ("The application has not been built."));
-				});
-				return;
-			}
+			//sign, upload
 			
-			if (conf.Platform == PLAT_IPHONE) {
-				if (NeedsUploading (conf)) {
-					using (var opMon = new AggregatedOperationMonitor (monitor)) {
-						using (var op = MonoDroidUtility.Upload (TargetRuntime, TargetFramework, conf.AppDirectory)) {
-							opMon.AddOperation (op);
-							op.WaitForCompleted ();
-							if (op.ExitCode != 0)
-								return;
-						}
-						TouchUploadMarker (conf);
-					}
-				}
-			}
+			throw new NotImplementedException ();
 			
 			base.OnExecute (monitor, context, configSel);
-		}
-		
-		static bool NeedsUploading (MonoDroidProjectConfiguration conf)
-		{
-			var markerFile = conf.OutputDirectory.Combine (".monotouch_last_uploaded");
-			return Directory.Exists (conf.AppDirectory) && (!File.Exists (markerFile) 
-				|| File.GetLastWriteTime (markerFile) < Directory.GetLastWriteTime (conf.AppDirectory));
-		}
-				
-		static void TouchUploadMarker (MonoDroidProjectConfiguration conf)
-		{
-			var markerFile = conf.OutputDirectory.Combine (".monotouch_last_uploaded");
-			if (File.Exists (markerFile))
-				File.SetLastWriteTime (markerFile, DateTime.Now);
-			else
-				File.WriteAllText (markerFile, "This file is used to determine when the app was last uploaded to a device");
 		}
 		
 		#endregion
@@ -247,8 +189,6 @@ namespace MonoDevelop.MonoDroid
 		
 		#endregion
 		
-		#region CodeBehind files
-		
 		protected override IList<string> GetCommonBuildActions ()
 		{
 			return new string[] {
@@ -256,6 +196,11 @@ namespace MonoDevelop.MonoDroid
 				MonoDroidBuildAction.AndroidResource,
 				BuildAction.None,
 			};
+		}
+		
+		public new MonoDroidProjectConfiguration GetConfiguration (ConfigurationSelector configuration)
+		{
+			return (MonoDroidProjectConfiguration) base.GetConfiguration (configuration);
 		}
 		
 		public override string GetDefaultBuildAction (string fileName)
@@ -267,8 +212,9 @@ namespace MonoDevelop.MonoDroid
 			FilePath f = fileName;
 			f = f.ToRelative (BaseDirectory);
 			
-			var prefixes = MonoDroidResourcePrefix.Split (";", StringSplitOptions.RemoveEmptyEntries)
-				.Select (p => p.Trim ().Replace ("/", Path.PathSeparator));
+			//FIXME: cache this
+			var prefixes = MonoDroidResourcePrefix.Split (new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+				.Select (p => p.Trim ().Replace ('/', Path.PathSeparator));
 			
 			foreach (var prefix in prefixes)
 				if (f.ToString ().StartsWith (prefix))
@@ -277,55 +223,25 @@ namespace MonoDevelop.MonoDroid
 			return baseAction;
 		}
 		
-		static string[] groupedExtensions = { ".xib" };
-		
-		//based on MoonlightProject
-		protected override void OnFileAddedToProject (ProjectFileEventArgs e)
+		public bool IsAndroidApplication (ConfigurationSelector conf)
 		{
-			//short-circuit if the project is being deserialised
-			if (Loading) {
-				base.OnFileAddedToProject (e);
-				return;
-			}
-			
-			if (String.IsNullOrEmpty (MainNibFile) && Path.GetFileName (e.ProjectFile.FilePath) == "MainWindow.xib") {
-				MainNibFile = e.ProjectFile.FilePath;
-			}
-			
-			//find any related files, e.g codebehind
-			//FIXME: base this on the controller class names defined in the xib
-			var filesToAdd = MonoDevelop.DesignerSupport.CodeBehind.GuessDependencies (this, e.ProjectFile, groupedExtensions);
-			
-			//let the base fire the event before we add files
-			//don't want to fire events out of order of files being added
-			base.OnFileAddedToProject (e);
-			
-			//make sure that the parent and child files are in the project
-			if (filesToAdd != null) {
-				foreach (string file in filesToAdd) {
-					//NOTE: this only adds files if they are not already in the project
-					AddFile (file);
-				}
-			}
+			return !string.IsNullOrEmpty (GetAndroidManifest (conf));
 		}
 		
-		#endregion
-		
-		public ProjectFile GetInfoPlist ()
+		public string GetAndroidManifest (ConfigurationSelector conf)
 		{
-			var name = BaseDirectory.Combine ("Info.plist");
-			var pf = Files.GetFile (name);
-			if (pf != null)
-				return pf;
-			var doc = new PlistDocument ();
-			doc.Root = new PlistDictionary ();
-			doc.WriteToFile (name);
-			return AddFile (name);
+			return ((MonoDroidProjectConfiguration)GetConfiguration (conf)).AndroidManifest;
 		}
+		
+		
 	}
 	
 	static class MonoDroidBuildAction
 	{
 		public static readonly string AndroidResource = "AndroidResource";
+	}
+	
+	class AndroidManifest
+	{
 	}
 }
