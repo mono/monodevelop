@@ -2032,15 +2032,17 @@ namespace Mono.TextEditor
 			IEnumerable<FoldSegment> foldings = Document.GetStartFoldings (line);
 			int offset = line.Offset;
 			int caretOffset = Caret.Offset;
-			restart:
+			bool isEolFolded = false;
+		restart:
 			int logicalRulerColumn = line.GetLogicalColumn(textEditor.GetTextEditorData(), textEditor.Options.RulerColumn);
-		
+			
 			foreach (FoldSegment folding in foldings) {
 				int foldOffset = folding.StartLine.Offset + folding.Column;
 				if (foldOffset < offset)
 					continue;
 
 				if (folding.IsFolded) {
+					
 					DrawLinePart (cr, line, lineNr, logicalRulerColumn, offset, foldOffset - offset, ref pangoPosition, ref isSelectionDrawn, y, area.X + area.Width);
 					
 					offset = folding.EndLine.Offset + folding.EndColumn;
@@ -2077,8 +2079,10 @@ namespace Mono.TextEditor
 						line = folding.EndLine;
 						lineNr = Document.OffsetToLineNumber (line.Offset);
 						foldings = Document.GetStartFoldings (line);
+						isEolFolded = line.EditableLength <= folding.EndColumn;
 						goto restart;
 					}
+					isEolFolded = line.EditableLength <= folding.EndColumn;
 				}
 			}
 			
@@ -2138,8 +2142,8 @@ namespace Mono.TextEditor
 					DrawCaretLineMarker (cr, xPos, y, lineArea.X + lineArea.Width - xPos);
 				}
 			}
-
-			if (textEditor.Options.ShowEolMarkers)
+			
+			if (!isEolFolded && textEditor.Options.ShowEolMarkers)
 				DrawEolMarker (cr, line, isEolSelected, pangoPosition / Pango.Scale.PangoScale, y);
 			var extendingMarker = Document.GetExtendingTextMarker (lineNr);
 			if (extendingMarker != null)
