@@ -32,7 +32,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.Projects.Gui
 {

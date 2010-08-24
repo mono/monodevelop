@@ -96,7 +96,8 @@ namespace MonoDevelop.Refactoring.Tests
 			
 			tww.ViewContent = sev;
 			var doc = new MonoDevelop.Ide.Gui.Document (tww);
-			
+			doc.Editor.Document.MimeType = "text/x-csharp";
+			doc.Editor.Document.FileName = file;
 			doc.ParsedDocument = new NRefactoryParser ().Parse (null, sev.ContentName, parsedText);
 			foreach (var e in doc.ParsedDocument.Errors)
 				Console.WriteLine (e);

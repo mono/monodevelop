@@ -86,6 +86,7 @@ FILES =  \
 	MonoDevelop.Projects/WorkspaceTests.cs \
 	MonoDevelop.Refactoring/BaseRefactorerTests.cs \
 	MonoDevelop.Refactoring/CreateBackingStoreTests.cs \
+	MonoDevelop.Refactoring/CreateMethodTests.cs \
 	MonoDevelop.Refactoring/DeclareLocalTests.cs \
 	MonoDevelop.Refactoring/ExtractMethodTests.cs \
 	MonoDevelop.Refactoring/GenerateNewMemberTests.cs \
