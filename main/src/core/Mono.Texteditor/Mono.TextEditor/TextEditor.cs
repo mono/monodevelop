@@ -1314,7 +1314,10 @@ namespace Mono.TextEditor
 		internal void SetAdjustments (Gdk.Rectangle allocation)
 		{
 			if (this.textEditorData.VAdjustment != null) {
-				double maxY = Document.LineCount > 1 ? LineToY (Document.LineCount) : LineHeight;
+				double maxY = Document.LineCount > 1 ? LineToY (Document.LineCount) : 0;
+				
+				maxY += LineHeight;
+				
 				if (maxY > allocation.Height)
 					maxY += 5 * this.LineHeight;
 				
