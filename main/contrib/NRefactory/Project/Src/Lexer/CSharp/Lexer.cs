@@ -926,7 +926,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			} else {
 				specialTracker.StartComment(commentType, isAtLineBegin, new Location(Col, Line));
 				specialTracker.AddString(ReadCommentToEOL());
-				specialTracker.FinishComment(new Location(Col, Line));
+				specialTracker.FinishComment(new Location(lineBreakPosition.Column, lineBreakPosition.Line));
 			}
 		}
 		

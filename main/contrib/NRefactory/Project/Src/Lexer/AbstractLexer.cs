@@ -84,14 +84,19 @@ namespace ICSharpCode.NRefactory.Parser
 			if (recordRead)
 				recordedText.Append ((char)val);
 			if (val == '\r') {
-				if (reader.Peek() == '\n')
+				if (reader.Peek() == '\n') {
+					lineBreakPosition = new Location (col + 2, line);
 					reader.Read ();
+				} else {
+					lineBreakPosition = new Location (col + 1, line);
+				}
 				++line;
 				col = 1;
 				LineBreak ();
 				return '\n';
 			}
 			if (val == '\n') {
+				lineBreakPosition = new Location (col + 1, line);
 				++line;
 				col = 1;
 				LineBreak ();
@@ -262,6 +267,7 @@ namespace ICSharpCode.NRefactory.Parser
 			errors.Error(line, col, String.Format("Invalid hex number '" + digit + "'"));
 			return 0;
 		}
+		protected Location lineBreakPosition = new Location (1, 1);
 		protected Location lastLineEnd = new Location (1, 1);
 		protected Location curLineEnd = new Location (1, 1);
 		protected void LineBreak ()
@@ -297,11 +303,15 @@ namespace ICSharpCode.NRefactory.Parser
 				switch (nextChar) {
 					case '\r':
 						if (reader.Peek() == '\n') {
+							lineBreakPosition = new Location (col + 2, line);
 							reader.Read();
-							goto case '\n';
+							++line;
+							col = 1;
+							break;
 						}
-						break;
+					goto case '\n';
 					case '\n':
+						lineBreakPosition = new Location (col + 1, line);
 						++line;
 						col = 1;
 						return;
@@ -322,12 +332,20 @@ namespace ICSharpCode.NRefactory.Parser
 				char ch = (char)nextChar;
 				
 				if (nextChar == '\r') {
-					if (reader.Peek() == '\n')
+					if (reader.Peek() == '\n') {
+						lineBreakPosition = new Location (col + 2, line);
 						reader.Read();
-					nextChar = '\n';
+					} else {
+						lineBreakPosition = new Location (col + 1, line);
+					}
+					++line;
+					col = 1;
+					return sb.ToString();
 				}
+				
 				// Return read string, if EOL is reached
 				if (nextChar == '\n') {
+					lineBreakPosition = new Location (col + 1, line);
 					++line;
 					col = 1;
 					return sb.ToString();
