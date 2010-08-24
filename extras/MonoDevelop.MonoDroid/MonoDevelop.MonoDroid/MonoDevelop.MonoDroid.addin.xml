@@ -18,7 +18,7 @@
 		<Addin id="Ide" version="2.4"/>
 	</Dependencies>
 	
-	<ConditionType id="MonoDroidInstalled" type="MonoDevelop.MonoDroid.MonoTouchInstalledCondition" />
+	<ConditionType id="MonoDroidInstalled" type="MonoDevelop.MonoDroid.MonoDroidInstalledCondition" />
 	
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<Condition id="MonoDroidInstalled">
@@ -37,7 +37,8 @@
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
 		<Condition id="MonoDroidInstalled">
 			<DotNetProjectSubtype
-				guid="{FIXME}"
+				guid="{EFBA0AD7-5A72-4C68-AF49-83D382785DCF}"
+				import="$(MSBuildExtensionsPath)\Novell\MonoDroid\Novell.MonoDroid.CSharp.targets"
 				type="MonoDevelop.MonoDroid.MonoDroidProject" />
 		</Condition>
 	</Extension>
@@ -106,9 +107,18 @@
 		</Condition>
 	</Extension>
 	
+	<!--
 	<Extension path = "/MonoDevelop/ProjectModel/MonoDocSources">
 		<Condition id="MonoDroidInstalled">
 			<Source directory="/Developer/MonoDroid/usr/share/doc/MonoDroid/" />
 		</Condition>
+	</Extension>
+	-->
+	
+	<!-- Options panels -->
+	
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Other">
+		<Section id = "MonoDroidSdkSettings" _label = "MonoDroid SDKs"
+			class="MonoDevelop.MonoDroid.Gui.MonoDroidSdkSettings"/>
 	</Extension>
 </Addin>

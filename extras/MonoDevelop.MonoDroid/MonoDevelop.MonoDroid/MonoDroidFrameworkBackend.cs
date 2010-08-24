@@ -40,37 +40,57 @@ namespace MonoDevelop.MonoDroid
 {
 	public class MonoDroidFrameworkBackend : MonoFrameworkBackend
 	{
-		string sdkDir;
-		string sdkBin;
-		
 		public MonoDroidFrameworkBackend ()
 		{
-			var sdkRoot = MonoDroidFramework.MonoDroidSdkPath;
-			if (Directory.Exists (sdkRoot)) {
-				try {
-					sdkDir = sdkRoot + "/usr/lib/mono/2.1";
-					sdkBin = sdkRoot + "/usr/bin";
-					if (!File.Exists (Path.Combine (sdkDir, "mscorlib.dll"))) {
-						sdkDir = null;
-					    throw new Exception ("Missing mscorlib in MonoDroid SDK " + sdkRoot);
-					}
-				} catch (Exception ex) {
-					LoggingService.LogError ("Unexpected error finding MonoDroid SDK directory", ex);
+		}
+			/*
+			
+			try {
+				var sdkRoot = MonoDroidFramework.MonoDroidSdkLocation;
+				
+				sdkBin = sdkRoot.Combine ("bin");
+				javaBinDir = MonoDroidFramework.JavaSdkLocation.Combine ("bin");
+				androidBinDir = MonoDroidFramework.AndroidSdkLocation.Combine ("tools");
+				
+				
+				if (!File.Exists (Path.Combine (sdkDir, "mscorlib.dll"))) {
+					sdkDir = null;
+				    throw new Exception ("Missing mscorlib in MonoDroid SDK " + sdkRoot);
 				}
+				
+					
+					
+				}
+				
+			} catch (Exception ex) {
+				LoggingService.LogError ("Unexpected error finding MonoDroid SDK directory", ex);
 			}
 		}
+		*/
 		
 		public override IEnumerable<string> GetToolsPaths ()
 		{
-			yield return sdkBin;
-			yield return sdkDir;
-			foreach (string path in base.GetToolsPaths ())
+			yield return MonoDroidFramework.FrameworkDir;
+			yield return MonoDroidFramework.BinDir;
+			yield return MonoDroidFramework.AndroidBinDir;
+			yield return MonoDroidFramework.JavaBinDir;
+			foreach (var path in BaseGetToolsPaths ())
 				yield return path;
+		}
+		
+		IEnumerable<string> BaseGetToolsPaths ()
+		{
+			return base.GetToolsPaths ();
+		}
+		
+		public override Dictionary<string, string> GetToolsEnvironmentVariables ()
+		{
+			return MonoDroidFramework.EnvironmentOverrides;
 		}
 		
 		public override IEnumerable<string> GetFrameworkFolders ()
 		{
-			yield return sdkDir;
+			yield return MonoDroidFramework.FrameworkDir;
 		}
 		
 		public override SystemPackageInfo GetFrameworkPackageInfo (string packageName)
@@ -81,7 +101,7 @@ namespace MonoDevelop.MonoDroid
 		}
 		
 		public override bool IsInstalled {
-			get { return sdkDir != null; }
+			get { return MonoDroidFramework.IsInstalled; }
 		}
 	}
 }

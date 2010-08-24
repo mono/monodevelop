@@ -62,7 +62,7 @@ namespace MonoDevelop.MonoDroid
 			if (projSetting == null)
 				def.Checked  = true;
 			
-			foreach (var st in MonoDroidFramework.GetDeviceTargets ()) {
+			foreach (var st in Adb.GetDeviceTargets ()) {
 				var i = info.Add (st.ToString (), st);
 				if (projSetting != null && projSetting.Equals (st))
 					i.Checked  = true;

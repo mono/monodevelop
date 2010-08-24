@@ -85,6 +85,9 @@
     <Compile Include="MonoDroidFramework.cs" />
     <Compile Include="MonoDroidSettings.cs" />
     <Compile Include="MonoDroidDeviceTarget.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="Gui\MonoDroidSdkSettings.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.MonoDroid.Gui.MonoDroidSdkSettingsWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MonoDroid.addin.xml">
@@ -93,10 +96,14 @@
     <EmbeddedResource Include="framework_MonoDroid.xml">
       <LogicalName>framework_MonoDroid.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="icons\" />
     <Folder Include="templates\" />
+    <Folder Include="Gui\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="templates\MonoDroidProjectEmpty.xpt.xml">

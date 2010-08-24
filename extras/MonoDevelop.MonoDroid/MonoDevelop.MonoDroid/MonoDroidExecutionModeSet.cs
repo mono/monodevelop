@@ -37,7 +37,7 @@ namespace MonoDevelop.MonoDroid
 		
 		public IEnumerable<IExecutionMode> ExecutionModes {
 			get {
-				return MonoDroidFramework.GetDeviceTargets ().Select (t => (IExecutionMode) new MonoDroidExecutionMode (t));
+				return Adb.GetDeviceTargets ().Select (t => (IExecutionMode) new MonoDroidExecutionMode (t));
 			}
 		}
 	}

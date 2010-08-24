@@ -39,6 +39,24 @@ namespace MonoDevelop.MonoDroid
 			get { return PropertyService.Get ("MonoDroid.Debugger.OutputPort", 10001); }
 		}
 		
+		internal static string JavaSdkLocation {
+			get {
+				return PropertyService.Get<string> ("MonoDroid.JavaSdkLocation", null);
+			}
+			set {
+				PropertyService.Set ("MonoDroid.JavaSdkLocation", value);
+			}
+		}
+		
+		internal static string AndroidSdkLocation {
+			get {
+				return PropertyService.Get<string> ("MonoDroid.AndroidSdkLocation", null);
+			}
+			set {
+				PropertyService.Set ("MonoDroid.AndroidSdkLocation", value);
+			}
+		}
+		
 		public static System.Net.IPAddress GetDebuggerHostIP (bool emulator)
 		{
 			if (emulator)
