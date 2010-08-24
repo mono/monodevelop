@@ -52,7 +52,12 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		
 		public override bool IsValid (RefactoringOptions options)
 		{
-			return Analyze (options);
+			try {
+				return Analyze (options);
+			} catch (Exception e) {
+				LoggingService.LogError ("Exception while create method analyzation", e);
+				return false;
+			}
 		}
 
 		InvocationExpression GetInvocation (MonoDevelop.CSharp.Dom.CompilationUnit unit, TextEditorData data)
