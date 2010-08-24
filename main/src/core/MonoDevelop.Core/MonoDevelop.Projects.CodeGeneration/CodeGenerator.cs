@@ -97,10 +97,10 @@ namespace MonoDevelop.Projects.CodeGeneration
 				var node = (MimeTypeExtensionNode)args.ExtensionNode;
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					generators[node.MimeType] = node;
+					AddGenerator (node);
 					break;
 				case ExtensionChange.Remove:
-					generators.Remove (node.MimeType);
+					RemoveGenerator (node);
 					break;
 				}
 			});
@@ -114,6 +114,16 @@ namespace MonoDevelop.Projects.CodeGeneration
 		public CodeGenerator ()
 		{
 			IndentLevel = -1;
+		}
+		
+		public static void AddGenerator (MimeTypeExtensionNode node)
+		{
+			generators[node.MimeType] = node;
+		}
+		
+		public static void RemoveGenerator (MimeTypeExtensionNode node)
+		{
+			generators.Remove (node.MimeType);
 		}
 		
 		static int CalculateBodyIndentLevel (IType declaringType)

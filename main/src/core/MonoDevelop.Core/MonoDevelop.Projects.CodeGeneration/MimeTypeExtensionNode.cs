@@ -52,7 +52,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				throw new InvalidOperationException ("type not provided");
 		}
 		
-		public object CreateInstance ()
+		public virtual object CreateInstance ()
 		{
 			return Activator.CreateInstance (base.Addin.GetType (TypeName, true));
 		}
