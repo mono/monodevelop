@@ -76,17 +76,20 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		{
 			var resolver = options.GetResolver ();
 			var data = options.GetTextEditorData ();
-			
 			ICSharpNode node = invocation;
 			while (node != null) {
 				if (node.Parent is AssignmentExpression) {
 					var assignment = (AssignmentExpression)node.Parent;
+					string expression;
 					if (assignment.Left is Identifier) {
-						string identifier = ((Identifier)assignment.Left).Name;
-						var resolveResult = resolver.Resolve (new ExpressionResult (identifier), resolvePosition);
-						if (resolveResult != null)
-							return resolveResult.ResolvedType;
+						expression = ((Identifier)assignment.Left).Name;
+					} else {
+						ICSharpNode left = assignment.Left as ICSharpNode;
+						expression = data.GetTextBetween (left.StartLocation.Line, left.StartLocation.Column, left.EndLocation.Line, left.EndLocation.Column);
 					}
+					var resolveResult = resolver.Resolve (new ExpressionResult (expression), resolvePosition);
+					if (resolveResult != null)
+						return resolveResult.ResolvedType;
 				}
 				if (node.Parent is InvocationExpression) {
 					var parentInvocation = (InvocationExpression)node.Parent;
@@ -141,10 +144,13 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			if (isInInterface) {
 				modifiers = MonoDevelop.Projects.Dom.Modifiers.None;
 			} else {
-				if (declaringType.DecoratedFullName != options.ResolveResult.CallingType.DecoratedFullName)
-					modifiers |= MonoDevelop.Projects.Dom.Modifiers.Public;
-				if (options.ResolveResult.CallingMember.IsStatic)
-					modifiers |= MonoDevelop.Projects.Dom.Modifiers.Static;
+				modifiers = options.ResolveResult.CallingMember.Modifiers;
+				if (declaringType.DecoratedFullName != options.ResolveResult.CallingType.DecoratedFullName) {
+					modifiers = MonoDevelop.Projects.Dom.Modifiers.Public;
+					if (options.ResolveResult.CallingMember.IsStatic)
+						modifiers |= MonoDevelop.Projects.Dom.Modifiers.Static;
+				}
+				Console.WriteLine (modifiers + "/" + options.ResolveResult.CallingMember);
 			}
 			
 			returnType = GuessReturnType (options);
@@ -162,6 +168,11 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		
 		InsertionPoint insertionPoint;
 		int insertionOffset;
+		
+		public void SetInsertionPoint (InsertionPoint point)
+		{
+			this.insertionPoint = point;
+		}
 		
 		public override string GetMenuDescription (RefactoringOptions options)
 		{
@@ -249,7 +260,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			var data = options.GetTextEditorData ();
 			
 			DomMethod result = new DomMethod (methodName, modifiers, MethodModifier.None, DomLocation.Empty, DomRegion.Empty, returnType);
-			result.DeclaringType = new DomType ("GeneratedInterface") { ClassType = ClassType.Interface };
+			result.DeclaringType = new DomType ("GeneratedType") { ClassType = declaringType.ClassType };
 			int i = 1;
 			foreach (ICSharpNode argument in invocation.Arguments) {
 				DomParameter arg = new DomParameter ();

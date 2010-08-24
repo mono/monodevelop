@@ -51,6 +51,9 @@ namespace MonoDevelop.CSharp.Dom
 					}
 					child = child.NextSibling as ICSharpNode;
 				}
+				// found no better child node - therefore the parent is the right one.
+				if (child == null)
+					break;
 			}
 			return node;
 		}

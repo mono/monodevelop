@@ -501,6 +501,8 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 
 			public void AddLocations (params Location[] additional)
 			{
+				if (additional == null)
+					return;
 				if (locations == null) {
 					locations = additional;
 				} else {
@@ -517,12 +519,15 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 		[Conditional ("FULL_AST")]
 		public void AddLocation (object element, params Location[] locations)
 		{
-			simple_locs.Add (element, locations);
+			if (element != null)
+				simple_locs.Add (element, locations);
 		}
 
 		[Conditional ("FULL_AST")]
 		public void AddStatement (object element, params Location[] locations)
 		{
+			if (element == null)
+				return;
 			if (locations.Length == 0)
 				throw new ArgumentException ("Statement is missing semicolon location");
 			simple_locs.Add (element, locations);
@@ -531,6 +536,8 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 		[Conditional ("FULL_AST")]
 		public void AddMember (MemberCore member, IList<Tuple<Modifiers, Location>> modLocations, params Location[] locations)
 		{
+			if (member == null)
+				return;
 			MemberLocations existing;
 			if (member_locs.TryGetValue (member, out existing)) {
 				existing.Modifiers = modLocations;
@@ -543,6 +550,8 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 		[Conditional ("FULL_AST")]
 		public void AppendTo (object existing, params Location[] locations)
 		{
+			if (existing == null)
+				return;
 			Location[] locs;
 			if (simple_locs.TryGetValue (existing, out locs)) {
 				simple_locs [existing] = locs.Concat (locations).ToArray ();
@@ -554,6 +563,8 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 		[Conditional ("FULL_AST")]
 		public void AppendToMember (MemberCore existing, params Location[] locations)
 		{
+			if (existing == null)
+				return;
 			MemberLocations member;
 			if (member_locs.TryGetValue (existing, out member)) {
 				member.AddLocations (locations);

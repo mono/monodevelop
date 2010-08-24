@@ -314,7 +314,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					generator.AppendLine (result);
 				} else if (IsMonoTouchModelMember (method)) {
 					AppendMonoTouchTodo (result, out bodyStartOffset, out bodyEndOffset);
-				} else if (method.IsAbstract || method.DeclaringType.ClassType == ClassType.Interface) {
+				} else if (method.IsAbstract || !(method.IsVirtual && method.IsOverride) || method.DeclaringType.ClassType == ClassType.Interface) {
 					AppendNotImplementedException (result, options, out bodyStartOffset, out bodyEndOffset);
 				} else {
 					generator.AppendIndent (result);
@@ -381,6 +381,9 @@ namespace MonoDevelop.CSharp.Refactoring
 				if (member.IsInternal) 
 					return "internal ";
 					
+				if (member.IsStatic) 
+					return "static ";
+				
 				return "";
 			}
 			
