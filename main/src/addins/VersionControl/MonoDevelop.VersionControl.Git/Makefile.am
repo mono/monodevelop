@@ -11,9 +11,15 @@ DEPS =  \
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
+	-r:DiffieHellman.dll \
+	-r:GitSharp.Core.dll \
+	-r:GitSharp.dll \
+	-r:ICSharpCode.SharpZipLib.dll \
 	-r:Mono.Posix \
 	-r:System \
-	-r:System.Core
+	-r:System.Core \
+	-r:Tamir.SharpSSH.dll \
+	-r:Winterdom.IO.FileMap.dll
 
 FILES =  \
 	AssemblyInfo.cs \
