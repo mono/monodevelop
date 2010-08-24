@@ -82,7 +82,9 @@ namespace MonoDevelop.CSharp.Parser
 				newComment.Text = comment.CommentText;
 				int commentTagLength = comment.CommentType == ICSharpCode.NRefactory.CommentType.Documentation ? 3 : 2;
 				int commentEndOffset = comment.CommentType == ICSharpCode.NRefactory.CommentType.Block ? 0 : 1;
-				newComment.Region = new DomRegion (comment.StartPosition.Line, comment.StartPosition.Column - commentTagLength, comment.EndPosition.Line, comment.EndPosition.Column - commentEndOffset);
+				newComment.Region = new DomRegion (comment.StartPosition.Line, comment.StartPosition.Column - commentTagLength, 
+					comment.EndPosition.Line, comment.EndPosition.Column - commentEndOffset);
+				
 				switch (comment.CommentType) {
 				case ICSharpCode.NRefactory.CommentType.Block:
 					newComment.CommentType = MonoDevelop.Projects.Dom.CommentType.MultiLine;

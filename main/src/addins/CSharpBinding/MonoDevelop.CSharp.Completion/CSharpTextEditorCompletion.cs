@@ -307,7 +307,7 @@ namespace MonoDevelop.CSharp.Completion
 						}
 					}
 					// check if lines above already start a doc comment
-					for (int i = completionContext.TriggerLine - 2; i >= 0; i--) {
+					for (int i = completionContext.TriggerLine - 2; i >= 1; i--) {
 						string text = textEditorData.GetLineText (i);
 						if (text.Length == 0)
 							continue;
@@ -319,7 +319,7 @@ namespace MonoDevelop.CSharp.Completion
 					}
 						
 					// check if following lines start a doc comment
-					for (int i = completionContext.TriggerLine; i < textEditorData.Document.LineCount; i++) {
+					for (int i = completionContext.TriggerLine; i <= textEditorData.Document.LineCount; i++) {
 						string text = textEditorData.GetLineText (i);
 						if (text == null)
 							break;
