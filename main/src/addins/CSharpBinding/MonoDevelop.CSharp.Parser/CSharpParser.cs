@@ -124,7 +124,7 @@ namespace MonoDevelop.CSharp.Parser
 					if (typeArgLocation != null)
 						newType.AddChild (new CSharpTokenNode (Convert (typeArgLocation[0]), 1), MemberReferenceExpression.Roles.LChevron);
 //					AddTypeArguments (newType, typeArgLocation, s.MemberName.TypeArguments);
-					if (typeArgLocation)
+					if (typeArgLocation != null)
 						newType.AddChild (new CSharpTokenNode (Convert (typeArgLocation[1]), 1), MemberReferenceExpression.Roles.RChevron);
 					AddConstraints (newType, s);
 				}
@@ -308,13 +308,13 @@ namespace MonoDevelop.CSharp.Parser
 				if (f.Declarators != null) {
 					foreach (var decl in f.Declarators) {
 						var declLoc = LocationsBag.GetLocations (decl);
-						if (declLoc)
+						if (declLoc != null)
 							newField.AddChild (new CSharpTokenNode (Convert (declLoc[declLoc.Length - 1]), 1), FieldDeclaration.Roles.Comma);
 						
 						variable = new VariableInitializer ();
 						variable.AddChild (new Identifier (decl.Name.Value, Convert (decl.Name.Location)), FieldDeclaration.Roles.Identifier);
 						if (decl.Initializer != null) {
-							if (declLoc)
+							if (declLoc != null)
 								variable.AddChild (new CSharpTokenNode (Convert (declLoc[0]), 1), FieldDeclaration.Roles.Assign);
 							variable.AddChild ((INode)decl.Initializer.Accept (this), FieldDeclaration.Roles.Initializer);
 						}
@@ -350,13 +350,13 @@ namespace MonoDevelop.CSharp.Parser
 				if (f.Declarators != null) {
 					foreach (var decl in f.Declarators) {
 						var declLoc = LocationsBag.GetLocations (decl);
-						if (declLoc)
+						if (declLoc != null)
 							newField.AddChild (new CSharpTokenNode (Convert (declLoc[declLoc.Length - 1]), 1), FieldDeclaration.Roles.Comma);
 						
 						variable = new VariableInitializer ();
 						variable.AddChild (new Identifier (decl.Name.Value, Convert (decl.Name.Location)), FieldDeclaration.Roles.Identifier);
 						if (decl.Initializer != null) {
-							if (declLoc)
+							if (declLoc != null)
 								variable.AddChild (new CSharpTokenNode (Convert (declLoc[0]), 1), FieldDeclaration.Roles.Assign);
 							variable.AddChild ((INode)decl.Initializer.Accept (this), FieldDeclaration.Roles.Initializer);
 						}
