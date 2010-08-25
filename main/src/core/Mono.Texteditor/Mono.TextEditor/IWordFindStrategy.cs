@@ -104,11 +104,10 @@ namespace Mono.TextEditor
 				return offset;
 			var line = doc.GetLineByOffset (offset);
 			char first = doc.GetCharAt (offset);
-
 			while (offset >= line.Offset && offset < line.Offset + line.EditableLength) {
 				char ch = doc.GetCharAt (offset);
 				if (char.IsWhiteSpace (first) && !char.IsWhiteSpace (ch)
-				    || IsNoLetterOrDigit (first) && !IsNoLetterOrDigit (ch)
+				    || IsNoIdentifierPart (first) && !IsNoIdentifierPart (ch)
 				    || (char.IsLetterOrDigit (first) || first == '_') && !(char.IsLetterOrDigit (ch) || ch == '_'))
 					break;
 
@@ -118,9 +117,9 @@ namespace Mono.TextEditor
 			                        System.Math.Max (line.Offset, offset + (forwardDirection ? 0 : 1)));
 		}
 		
-		static bool IsNoLetterOrDigit (char ch)
+		static bool IsNoIdentifierPart (char ch)
 		{
-			return !char.IsWhiteSpace (ch) && !char.IsLetterOrDigit (ch);
+			return !char.IsWhiteSpace (ch) && !char.IsLetterOrDigit (ch) && ch != '_';
 		}
 	}
-}
+} 
