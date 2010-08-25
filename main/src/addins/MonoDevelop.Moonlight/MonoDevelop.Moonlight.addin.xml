@@ -28,11 +28,12 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
-		<DotNetProjectSubtype
+		<DotNetProjectSubtype id="Moonlight"
 			guid="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}"
-			type="MonoDevelop.Moonlight.MoonlightProject"
-			import="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets"
-			/>
+			type="MonoDevelop.Moonlight.MoonlightProject">
+			<AddImport language="C#" projects="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
+			<RemoveImport language="C#" projects="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+		</DotNetProjectSubtype>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
