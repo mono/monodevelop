@@ -38,8 +38,10 @@
 		<Condition id="MonoDroidInstalled">
 			<DotNetProjectSubtype
 				guid="{EFBA0AD7-5A72-4C68-AF49-83D382785DCF}"
-				import="$(MSBuildExtensionsPath)\Novell\MonoDroid\Novell.MonoDroid.CSharp.targets"
-				type="MonoDevelop.MonoDroid.MonoDroidProject" />
+				type="MonoDevelop.MonoDroid.MonoDroidProject">
+				<AddImport language="C#" projects="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
+				<RemoveImport language="C#" projects="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+			</DotNetProjectSubtype>
 		</Condition>
 	</Extension>
 	
@@ -120,5 +122,10 @@
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Other">
 		<Section id = "MonoDroidSdkSettings" _label = "MonoDroid SDKs"
 			class="MonoDevelop.MonoDroid.Gui.MonoDroidSdkSettings"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/StockIcons">
+		<StockIcon stockid = "monodroid-project" file = "icons/monodroid-project-16.png" size="Menu" />
+		<StockIcon stockid = "monodroid-project" file = "icons/monodroid-project-32.png" size="Dnd" />
 	</Extension>
 </Addin>
