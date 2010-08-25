@@ -48,7 +48,7 @@ namespace MonoDevelop.MonoDroid
 		public string MonoDroidExtraArgs { get; set; }
 		
 		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
-		[ItemProperty ("AndroidManifest")]
+		[ProjectPathItemProperty ("AndroidManifest")]
 		public string AndroidManifest { get; set; }
 		
 		public string ApkPath {
