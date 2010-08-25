@@ -348,6 +348,7 @@
     <Compile Include="MonoDevelop.CSharp.Parser\mcs\visit.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CreateMethod\CreateMethodCodeGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CreateMethod\CreateMethodHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\McsParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
