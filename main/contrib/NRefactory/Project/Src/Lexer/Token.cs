@@ -95,10 +95,12 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		public override string ToString()
 		{
-			return string.Format("[C# {0}/VB {1} Location={3} EndLocation={4} val={5}]",
-			                     CSharp.Tokens.GetTokenString(kind),
-			                     VB.Tokens.GetTokenString(kind),
-			                     Location, EndLocation, val);
+			return string.Format("[C# {0}/VB {1} Location={2} EndLocation={3} val={4}]",
+				CSharp.Tokens.GetTokenString(kind),
+				VB.Tokens.GetTokenString(kind),
+				Location, 
+				EndLocation, 
+				val);
 			
 		}
 	}
