@@ -2745,5 +2745,29 @@ class Program
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNotNull (provider.Find ("ToString"), "method 'ToString' not found.");
 		}
+		
+		[Test()]
+		public void TestGhostEntryBug ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"
+using System.IO;
+
+class TestClass
+{
+	public Path Path {
+		get;
+		set;
+	}
+	
+	void Test ()
+	{
+		$$
+	}
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNull (provider.Find ("System.IO.Path"), "'System.IO.Path' found but shouldn't.");
+			Assert.IsNotNull (provider.Find ("Path"), "property 'Path' not found.");
+		}
 	}
 }
