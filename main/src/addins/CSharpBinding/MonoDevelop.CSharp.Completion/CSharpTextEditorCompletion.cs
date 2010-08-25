@@ -1391,6 +1391,11 @@ namespace MonoDevelop.CSharp.Completion
 			
 			public CompletionData Add (object obj)
 			{
+				return Add (obj, OutputFlags.None);
+			}
+			
+			public CompletionData Add (object obj, OutputFlags additionalFlags)
+			{
 				Namespace ns = obj as Namespace;
 				if (ns != null) {
 					if (data.ContainsKey (ns.Name))
@@ -1414,24 +1419,8 @@ namespace MonoDevelop.CSharp.Completion
 				
 				IMember member = obj as IMember;
 				if (member != null && !String.IsNullOrEmpty (member.Name)) {
-					OutputFlags flags = OutputFlags.IncludeGenerics | OutputFlags.HideArrayBrackets;
-					if (member is IType) {
-						IType type = member as IType;
-						bool foundType = IsNamespaceInScope (type.Namespace);
-						if (declaringType != null && dom != null) {
-							if (inheritanceTree == null)
-								inheritanceTree = new List<IType>(dom.GetInheritanceTree (declaringType));
-							foreach (IType t in inheritanceTree) {
-								if (t.SearchMember (type.Name, true).Any (m => m.MemberType != MemberType.Type)) {
-									flags |= OutputFlags.UseFullName;
-									break;
-								}
-							}
-						}
-						if (!foundType && (NamePrefix.Length == 0 || !type.Namespace.StartsWith (NamePrefix)) && !type.Namespace.EndsWith ("." + NamePrefix) && type.DeclaringType == null && NamePrefix != null && !NamePrefix.Contains ("::"))
-							flags |= OutputFlags.UseFullName;
-						
-					}
+					OutputFlags flags = OutputFlags.IncludeGenerics | OutputFlags.HideArrayBrackets | additionalFlags;
+					
 					return AddMemberCompletionData (member, flags);
 				}
 				if (obj is IParameter || obj is LocalVariable)
@@ -1928,8 +1917,20 @@ namespace MonoDevelop.CSharp.Completion
 			ResolveResult resolveResult = resolver.ResolveExpression (switchFinder.SwitchStatement.SwitchExpression, location);
 			IType type = dom.GetType (resolveResult.ResolvedType);
 			if (type != null && type.ClassType == ClassType.Enum) {
+				OutputFlags flags = OutputFlags.None;
+				var declaringType = resolver.CallingType;
+				if (declaringType != null && dom != null) {
+					foreach (IType t in new List<IType>(dom.GetInheritanceTree (declaringType))) {
+						if (t.SearchMember (type.Name, true).Any (m => m.MemberType != MemberType.Type)) {
+							flags |= OutputFlags.UseFullName;
+							break;
+						}
+					}
+				}
+//				if (!foundType && (NamePrefix.Length == 0 || !type.Namespace.StartsWith (NamePrefix)) && !type.Namespace.EndsWith ("." + NamePrefix) && type.DeclaringType == null && NamePrefix != null && !NamePrefix.Contains ("::"))
+//					flags |= OutputFlags.UseFullName;
 				CompletionDataCollector cdc = new CompletionDataCollector (dom, result, Document.CompilationUnit, resolver.CallingType, location);
-				cdc.Add (type);
+				cdc.Add (type, flags);
 			}
 			return result;
 		}

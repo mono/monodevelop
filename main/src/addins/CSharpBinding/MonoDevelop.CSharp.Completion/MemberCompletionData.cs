@@ -68,7 +68,6 @@ namespace MonoDevelop.CSharp.Completion
 				if (displayText == null) {
 					displayText = ambience.GetString (Member, flags | OutputFlags.HideGenericParameterNames);
 				}
-
 				return displayText; 
 			}
 		}
