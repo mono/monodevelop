@@ -318,6 +318,11 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		public virtual bool SupportsFormat (FileFormat format)
+		{
+			return true;
+		}
+		
 		public virtual void ConvertToFormat (FileFormat format, bool convertChildren)
 		{
 			FormatSet = true;

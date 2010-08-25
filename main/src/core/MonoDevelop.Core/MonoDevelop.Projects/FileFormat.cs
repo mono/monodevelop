@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Extensions;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
@@ -56,12 +57,19 @@ namespace MonoDevelop.Projects
 		
 		public IEnumerable<string> GetCompatibilityWarnings (object obj)
 		{
+			IWorkspaceFileObject wfo = obj as IWorkspaceFileObject;
+			if (wfo != null && !wfo.SupportsFormat (this)) {
+				return new string[] {GettextCatalog.GetString ("The project '{0}' is not supported by {1}", wfo.Name, Name) };
+			}
 			IEnumerable<string> res = format.GetCompatibilityWarnings (obj);
 			return res ?? new string [0];
 		}
 		
 		public bool CanWrite (object obj)
 		{
+			IWorkspaceFileObject wfo = obj as IWorkspaceFileObject;
+			if (wfo != null && !wfo.SupportsFormat (this))
+				return false;
 			return format.CanWriteFile (obj);
 		}
 		

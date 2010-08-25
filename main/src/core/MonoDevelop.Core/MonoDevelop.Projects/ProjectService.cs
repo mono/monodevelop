@@ -190,7 +190,7 @@ namespace MonoDevelop.Projects
 
 		internal FileFormat GetDefaultFormat (object ob)
 		{
-			if (defaultFormat.Format.CanWriteFile (ob))
+			if (defaultFormat.CanWrite (ob))
 				return defaultFormat;
 			FileFormat[] formats = FileFormats.GetFileFormatsForObject (ob);
 			if (formats.Length == 0)
@@ -317,7 +317,7 @@ namespace MonoDevelop.Projects
 		string WriteFile (IProgressMonitor monitor, string file, object item, FileFormat format)
 		{
 			if (format == null) {
-				if (defaultFormat.Format.CanWriteFile (item))
+				if (defaultFormat.CanWrite (item))
 					format = defaultFormat;
 				else {
 					FileFormat[] formats = formatManager.GetFileFormatsForObject (item);
@@ -504,7 +504,7 @@ namespace MonoDevelop.Projects
 			Solution tempSolution = new Solution ();
 			
 			FileFormat solutionFileFormat;
-			if (formats [0].Format.CanWriteFile (tempSolution))
+			if (formats [0].CanWrite (tempSolution))
 				solutionFileFormat = formats [0];
 			else
 				solutionFileFormat = MonoDevelop.Projects.Formats.MD1.MD1ProjectService.FileFormat;

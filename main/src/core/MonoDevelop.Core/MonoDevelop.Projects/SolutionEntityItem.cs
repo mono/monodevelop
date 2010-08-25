@@ -193,6 +193,11 @@ namespace MonoDevelop.Projects
 			this.FileFormat = format;
 		}
 		
+		public virtual bool SupportsFormat (FileFormat format)
+		{
+			return true;
+		}
+		
 		internal void InstallFormat (FileFormat format)
 		{
 			fileFormat = format;

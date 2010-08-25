@@ -75,7 +75,7 @@ namespace MonoDevelop.Projects
 		{
 			List<FileFormat> list = new List<FileFormat> ();
 			foreach (FileFormat f in fileFormats)
-				if (f.Format.CanWriteFile (obj))
+				if (f.CanWrite(obj))
 					list.Add (f);
 			return list.ToArray ();
 		}
