@@ -2737,5 +2737,13 @@ class Program
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNotNull (provider.Find ("Foo"), "method 'Foo' not found.");
 		}
+		
+		[Test()]
+		public void TestCommentsWithWindowsEol ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider ("class TestClass\r\n{\r\npublic static void Main (string[] args) {\r\n// TestComment\r\n$args.$\r\n}\r\n}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("ToString"), "method 'ToString' not found.");
+		}
 	}
 }

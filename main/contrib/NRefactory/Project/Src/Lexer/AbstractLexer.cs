@@ -296,25 +296,28 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		protected void SkipToEndOfLine()
 		{
-			while (true) {
-				int nextChar = reader.Read ();
-				if (nextChar == -1)
-					return;
-				switch (nextChar) {
-					case '\r':
-						if (reader.Peek() == '\n') {
-							lineBreakPosition = new Location (col + 2, line);
-							reader.Read();
-							++line;
-							col = 1;
-							break;
-						}
-					goto case '\n';
-					case '\n':
+			int nextChar;
+			while ((nextChar = reader.Read()) != -1) {
+				char ch = (char)nextChar;
+				
+				if (ch == '\r') {
+					if (reader.Peek() == '\n') {
+						lineBreakPosition = new Location (col + 2, line);
+						reader.Read();
+					} else {
 						lineBreakPosition = new Location (col + 1, line);
-						++line;
-						col = 1;
-						return;
+					}
+					++line;
+					col = 1;
+					return;
+				}
+				
+				// Return read string, if EOL is reached
+				if (ch == '\n') {
+					lineBreakPosition = new Location (col + 1, line);
+					++line;
+					col = 1;
+					return;
 				}
 			}
 		}
