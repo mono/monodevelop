@@ -67,7 +67,6 @@ namespace MonoDevelop.CSharp.Parser
 		{
 			if (string.IsNullOrEmpty (content))
 				return null;
-			Console.WriteLine ("parse:" + content);
 			CompilerCompilationUnit top;
 			ErrorReportPrinter errorReportPrinter = new ErrorReportPrinter ();
 			using (var stream = new MemoryStream (Encoding.Default.GetBytes (content))) {
@@ -76,8 +75,10 @@ namespace MonoDevelop.CSharp.Parser
 			if (top == null)
 				return null;
 			var conversionVisitor = new ConversionVisitor (top.LocationsBag);
+			var unit =  new MonoDevelop.Projects.Dom.CompilationUnit (fileName);;
+			conversionVisitor.Unit = unit;
 			conversionVisitor.ParsedDocument = new ParsedDocument (fileName);
-			conversionVisitor.ParsedDocument.CompilationUnit = new MonoDevelop.Projects.Dom.CompilationUnit (fileName);
+			conversionVisitor.ParsedDocument.CompilationUnit = unit;
 			top.ModuleCompiled.Accept (conversionVisitor);
 			errorReportPrinter.Errors.ForEach (e => conversionVisitor.ParsedDocument.Add (e));
 			return conversionVisitor.ParsedDocument;
@@ -100,11 +101,7 @@ namespace MonoDevelop.CSharp.Parser
 				private set;
 			}
 			
-			public MonoDevelop.Projects.Dom.CompilationUnit Unit {
-				get {
-					return (MonoDevelop.Projects.Dom.CompilationUnit)ParsedDocument.CompilationUnit;
-				}
-			}
+			internal MonoDevelop.Projects.Dom.CompilationUnit Unit;
 			
 			public ConversionVisitor (LocationsBag locationsBag)
 			{
@@ -139,22 +136,22 @@ namespace MonoDevelop.CSharp.Parser
 				return result;
 			}
 			
-			void AddType (INode child)
+			void AddType (IType child)
 			{
 				if (typeStack.Count > 0) {
-					typeStack.Peek ().AddChild (child);
+					typeStack.Peek ().Add (child);
 				} else {
-					Unit.AddChild (child);
+					Unit.Add (child);
 				}
 			}
 			
-			DomReturnType ConvertReturnType (FullNamedExpression typeName)
+			IReturnType ConvertReturnType (FullNamedExpression typeName)
 			{
 				if (typeName is ATypeNameExpression) {
 					var sn = (ATypeNameExpression)typeName;
 					return new DomReturnType (sn.Name);
 				}
-				throw new NotSupportedException ("type name:" + typeName);
+				return DomReturnType.Void;
 			}
 			
 			DomReturnType ConvertReturnType (TypeSpec type)
@@ -180,6 +177,7 @@ namespace MonoDevelop.CSharp.Parser
 			{
 				DomType newType = new DomType ();
 				newType.SourceProjectDom = Dom;
+				newType.CompilationUnit = Unit;
 				newType.Name = c.MemberName.Name;
 				newType.Location = Convert (c.MemberName.Location);
 				newType.ClassType = ClassType.Class;
@@ -209,7 +207,9 @@ namespace MonoDevelop.CSharp.Parser
 				AddType (newType);
 				// visit members
 				typeStack.Push (newType);
-				c.Accept (this);
+				foreach (MemberCore member in c.OrderedAllMembers) {
+					member.Accept (this);
+				}
 				typeStack.Pop ();
 			}
 			
@@ -358,9 +358,6 @@ namespace MonoDevelop.CSharp.Parser
 				var location = LocationsBag.GetMemberLocation (p);
 				if (location != null)
 					property.BodyRegion = ConvertRegion (location[0], location[1]);
-				
-				property.SetterModifier = ConvertModifiers (p.Set.ModFlags);
-				
 				property.ReturnType = ConvertReturnType (p.TypeName);
 				
 //				AddAttributes (property, propertyDeclaration.Attributes);
@@ -369,13 +366,15 @@ namespace MonoDevelop.CSharp.Parser
 				if (p.Get != null) {
 					property.PropertyModifier |= PropertyModifier.HasGet;
 					property.GetterModifier = ConvertModifiers (p.Get.ModFlags);
-					property.GetRegion = ConvertRegion (p.Get.Location, p.Get.Block.EndLocation);
+					if (p.Get.Block != null)
+						property.GetRegion = ConvertRegion (p.Get.Location, p.Get.Block.EndLocation);
 				}
 				
 				if (p.Set != null) {
 					property.PropertyModifier |= PropertyModifier.HasSet;
 					property.SetterModifier = ConvertModifiers (p.Set.ModFlags);
-					property.SetRegion = ConvertRegion (p.Set.Location, p.Set.Block.EndLocation);
+					if (p.Set.Block != null)
+						property.SetRegion = ConvertRegion (p.Set.Location, p.Set.Block.EndLocation);
 				}
 				property.DeclaringType = typeStack.Peek ();
 				typeStack.Peek ().Add (property);
@@ -383,7 +382,7 @@ namespace MonoDevelop.CSharp.Parser
 
 			public void AddParameter (MonoDevelop.Projects.Dom.AbstractMember member, AParametersCollection parameters)
 			{
-				for (int i = 0; i < parameters.Count; i++) {
+/*				for (int i = 0; i < parameters.Count; i++) {
 					var p = parameters.FixedParameters[i];
 					var t = parameters.Types[i];
 					// TODO: location & modifiers
@@ -393,7 +392,7 @@ namespace MonoDevelop.CSharp.Parser
 					parameter.ReturnType = ConvertReturnType (t);
 //					parameter.ParameterModifiers = ConvertParameterModifiers (pde.ParamModifier);
 					member.Add (parameter);
-				}
+				}*/
 			}
 
 			public override void Visit (Indexer i)
@@ -406,8 +405,6 @@ namespace MonoDevelop.CSharp.Parser
 				if (location != null)
 					indexer.BodyRegion = ConvertRegion (location[0], location[1]);
 				
-				indexer.SetterModifier = ConvertModifiers (i.Set.ModFlags);
-				
 				indexer.ReturnType = ConvertReturnType (i.TypeName);
 				AddParameter (indexer, i.Parameters);
 				
@@ -417,13 +414,15 @@ namespace MonoDevelop.CSharp.Parser
 				if (i.Get != null) {
 					indexer.PropertyModifier |= PropertyModifier.HasGet;
 					indexer.GetterModifier = ConvertModifiers (i.Get.ModFlags);
-					indexer.GetRegion = ConvertRegion (i.Get.Location, i.Get.Block.EndLocation);
+					if (i.Get.Block != null)
+						indexer.GetRegion = ConvertRegion (i.Get.Location, i.Get.Block.EndLocation);
 				}
 				
 				if (i.Set != null) {
 					indexer.PropertyModifier |= PropertyModifier.HasSet;
 					indexer.SetterModifier = ConvertModifiers (i.Set.ModFlags);
-					indexer.SetRegion = ConvertRegion (i.Set.Location, i.Set.Block.EndLocation);
+					if (i.Set.Block != null)
+						indexer.SetRegion = ConvertRegion (i.Set.Location, i.Set.Block.EndLocation);
 				}
 				indexer.DeclaringType = typeStack.Peek ();
 				typeStack.Peek ().Add (indexer);
