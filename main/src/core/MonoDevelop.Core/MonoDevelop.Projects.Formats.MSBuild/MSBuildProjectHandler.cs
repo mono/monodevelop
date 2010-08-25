@@ -54,6 +54,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		RemoteProjectBuilder projectBuilder;
 		TargetFramework lastBuildFx;
 		ITimeTracker timer;
+		bool useXBuild;
 		
 		struct ItemInfo {
 			public MSBuildItem Item;
@@ -100,6 +101,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				this.targetImports.AddRange (import.Split (':'));
 			
 			Runtime.SystemAssemblyService.DefaultRuntimeChanged += OnDefaultRuntimeChanged;
+			
+			useXBuild = PropertyService.Get ("MonoDevelop.Ide.BuildWithMSBuild", false);
+
 		}
 		
 		void OnDefaultRuntimeChanged (object o, EventArgs args)
@@ -148,7 +152,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		IEnumerable<string> IAssemblyReferenceHandler.GetAssemblyReferences (ConfigurationSelector configuration)
 		{
-			if (PropertyService.Get ("MonoDevelop.Ide.BuildWithMSBuild", false)) {
+			if (useXBuild) {
 				// Get the references list from the msbuild project
 				SolutionEntityItem item = (SolutionEntityItem) Item;
 				RemoteProjectBuilder builder = GetProjectBuilder ();
@@ -169,7 +173,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public override BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
-			if (PropertyService.Get ("MonoDevelop.Ide.BuildWithMSBuild", false)) {
+			if (useXBuild) {
 				SolutionEntityItem item = Item as SolutionEntityItem;
 				if (item != null) {
 					
@@ -281,11 +285,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				DotNetProjectSubtypeNode st = MSBuildProjectService.GetDotNetProjectSubtype (typeGuids);
 				if (st != null) {
 					item = st.CreateInstance (language);
-					if (!string.IsNullOrEmpty (st.Import))
-						targetImports.AddRange (st.Import.Split (':'));
-					if (!string.IsNullOrEmpty (st.Exclude))
-						foreach (string e in st.Exclude.Split (':'))
-							targetImports.Remove (e);
+					useXBuild = useXBuild || st.UseXBuild;
+					st.UpdateImports ((SolutionEntityItem)item, targetImports);
 				} else
 					throw new InvalidOperationException ("Unknown solution item type.");
 			}
