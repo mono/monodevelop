@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -560,6 +561,13 @@ namespace MonoDevelop.Projects
 			base.ConvertToFormat (format, convertChildren);
 			foreach (SolutionItem item in GetAllSolutionItems<SolutionItem> ())
 				ConvertToSolutionFormat (item, convertChildren);
+		}
+		
+		public override bool SupportsFormat (FileFormat format)
+		{
+			if (!base.SupportsFormat (format))
+				return false;
+			return GetAllSolutionItems<SolutionEntityItem> ().All (p => p.SupportsFormat (format));
 		}
 
 		public override List<FilePath> GetItemFiles (bool includeReferencedFiles)
