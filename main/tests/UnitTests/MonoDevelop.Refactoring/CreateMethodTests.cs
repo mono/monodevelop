@@ -176,6 +176,27 @@ namespace MonoDevelop.Refactoring.Tests
 }");
 		}
 		
+		[Test()]
+		public void TestCreateDelegateDeclaration ()
+		{
+			TestCreateMethod (@"
+class TestClass
+{
+	public event MyDelegate MyEvent;
+
+	void TestMethod ()
+	{
+		MyEvent += $NonExistantMethod;
+	}
+}
+
+public delegate string MyDelegate (int a, object b);
+", @"string NonExistantMethod (int a, object b)
+{
+	throw new System.NotImplementedException ();
+}");
+		}
+		
 		
 	}
 	
