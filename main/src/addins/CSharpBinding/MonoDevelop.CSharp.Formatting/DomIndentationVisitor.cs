@@ -242,7 +242,6 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitFieldDeclaration (FieldDeclaration fieldDeclaration, object data)
 		{
-			Console.WriteLine ("VISIT FIELD:" + fieldDeclaration.StartLocation);
 			FixIndentation (fieldDeclaration.StartLocation);
 			return base.VisitFieldDeclaration (fieldDeclaration, data);
 		}

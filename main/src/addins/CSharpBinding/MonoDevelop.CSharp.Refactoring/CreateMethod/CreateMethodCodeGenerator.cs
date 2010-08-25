@@ -64,11 +64,57 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		{
 			var containingNode = unit.GetNodeAt (data.Caret.Line, data.Caret.Column);
 			var parent = containingNode.Parent;
-			
 			while (parent != null && !(parent is InvocationExpression)) {
 				parent = parent.Parent;
 			}
 			return parent as InvocationExpression;
+		}
+		
+		bool AnalyzeTargetExpression (RefactoringOptions options, MonoDevelop.CSharp.Dom.CompilationUnit unit)
+		{
+			var data = options.GetTextEditorData ();
+			var target = (ICSharpNode)unit.GetNodeAt (data.Caret.Line, data.Caret.Column);
+			if (target == null)
+				return false;
+			if (target is MemberReferenceExpression) {
+				var memberReference = (MemberReferenceExpression)target;
+				target = (ICSharpNode)memberReference.Target;
+				var targetResult = options.GetResolver ().Resolve (new ExpressionResult (data.GetTextBetween (target.StartLocation.Line, target.StartLocation.Column, target.EndLocation.Line, target.EndLocation.Column)), resolvePosition);
+				declaringType = options.Dom.GetType (targetResult.ResolvedType);
+				methodName = memberReference.Identifier.Name;
+			} else if (target is Identifier) {
+				declaringType = options.ResolveResult.CallingType;
+				methodName = data.GetTextBetween (target.StartLocation.Line, target.StartLocation.Column, target.EndLocation.Line, target.EndLocation.Column);
+			} else {
+				return false;
+			}
+			
+			return declaringType != null && !HasCompatibleMethod (declaringType, methodName, invocation);
+		}
+		
+		IType GetDelegateType (RefactoringOptions options, MonoDevelop.CSharp.Dom.CompilationUnit unit)
+		{
+			var data = options.GetTextEditorData ();
+			var containingNode = unit.GetNodeAt (data.Caret.Line, data.Caret.Column);
+			var parent = containingNode.Parent;
+			
+			while (parent != null) {
+				if (parent is AssignmentExpression) {
+					AssignmentExpression assignment = (AssignmentExpression)parent;
+					if (assignment.AssignmentOperatorType != AssignmentOperatorType.Add && assignment.AssignmentOperatorType != AssignmentOperatorType.Subtract && assignment.AssignmentOperatorType != AssignmentOperatorType.Assign)
+						return null;
+					
+					var resolveResult = ResolveAssignment (options, assignment);
+					if (resolveResult == null)
+						return null;
+					IType type = options.Dom.GetType (resolveResult.ResolvedType);
+					if (type == null || type.ClassType != ClassType.Delegate)
+						return null;
+					return type;
+				}
+				parent = parent.Parent;
+			}
+			return null;
 		}
 		
 		public bool HasCompatibleMethod (IType type, string methodName, InvocationExpression invocation)
@@ -77,6 +123,20 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			return type.SearchMember (methodName, true).Any (m => m is IMethod && ((IMethod)m).Parameters.Count == invocation.Arguments.Count ());
 		}
 		
+		ResolveResult ResolveAssignment (RefactoringOptions options, AssignmentExpression assignment)
+		{
+			var resolver = options.GetResolver ();
+			var data = options.GetTextEditorData ();
+			string expression;
+			if (assignment.Left is Identifier) {
+				expression = ((Identifier)assignment.Left).Name;
+			} else {
+				ICSharpNode left = assignment.Left as ICSharpNode;
+				expression = data.GetTextBetween (left.StartLocation.Line, left.StartLocation.Column, left.EndLocation.Line, left.EndLocation.Column);
+			}
+			return resolver.Resolve (new ExpressionResult (expression), resolvePosition);
+		}
+
 		IReturnType GuessReturnType (RefactoringOptions options)
 		{
 			var resolver = options.GetResolver ();
@@ -84,15 +144,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			ICSharpNode node = invocation;
 			while (node != null) {
 				if (node.Parent is AssignmentExpression) {
-					var assignment = (AssignmentExpression)node.Parent;
-					string expression;
-					if (assignment.Left is Identifier) {
-						expression = ((Identifier)assignment.Left).Name;
-					} else {
-						ICSharpNode left = assignment.Left as ICSharpNode;
-						expression = data.GetTextBetween (left.StartLocation.Line, left.StartLocation.Column, left.EndLocation.Line, left.EndLocation.Column);
-					}
-					var resolveResult = resolver.Resolve (new ExpressionResult (expression), resolvePosition);
+					var resolveResult = ResolveAssignment (options, (AssignmentExpression)node.Parent);
 					if (resolveResult != null)
 						return resolveResult.ResolvedType;
 				}
@@ -124,26 +176,21 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			var unit = parser.Parse (data);
 			if (unit == null)
 				return false;
-			invocation = GetInvocation (unit, data);
-			if (invocation == null) 
-				return false;
 			resolvePosition = new DomLocation (data.Caret.Line, data.Caret.Column);
-			var target = (ICSharpNode)invocation.Target;
 			
-			
-			if (target is MemberReferenceExpression) {
-				var memberReference = (MemberReferenceExpression)target;
-				target = (ICSharpNode)memberReference.Target;
-				var targetResult = options.GetResolver ().Resolve (new ExpressionResult (data.GetTextBetween (target.StartLocation.Line, target.StartLocation.Column, target.EndLocation.Line, target.EndLocation.Column)), resolvePosition);
-				declaringType = options.Dom.GetType (targetResult.ResolvedType);
-				methodName = memberReference.Identifier.Name;
-			} else {
-				declaringType = options.ResolveResult.CallingType;
-				methodName = data.GetTextBetween (target.StartLocation.Line, target.StartLocation.Column, target.EndLocation.Line, target.EndLocation.Column);
-			}
-			
-			if (declaringType == null || HasCompatibleMethod (declaringType, methodName, invocation))
+			if (!AnalyzeTargetExpression (options, unit))
 				return false;
+			
+			invocation = GetInvocation (unit, data);
+			if (invocation != null) 
+				return AnalyzeInvocation (options);
+			delegateType = GetDelegateType (options, unit);
+			return delegateType != null;
+		}
+		
+		public bool AnalyzeInvocation (RefactoringOptions options)
+		{
+			var data = options.GetTextEditorData ();
 			
 			bool isInInterface = declaringType.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface;
 			if (isInInterface) {
@@ -155,7 +202,6 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 					if (options.ResolveResult.CallingMember.IsStatic)
 						modifiers |= MonoDevelop.Projects.Dom.Modifiers.Static;
 				}
-				Console.WriteLine (modifiers + "/" + options.ResolveResult.CallingMember);
 			}
 			
 			returnType = GuessReturnType (options);
@@ -168,7 +214,10 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		IType declaringType;
 		IReturnType returnType;
 		string methodName;
+		
 		InvocationExpression invocation;
+		IType delegateType;
+		
 		MonoDevelop.Projects.Dom.Modifiers modifiers;
 		
 		InsertionPoint insertionPoint;
@@ -260,6 +309,25 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		int selectionEnd;
 		
 		IMethod ConstructMethod (RefactoringOptions options)
+		{
+			if (invocation != null)
+				return ConstructMethodFromInvocation (options);
+			return ConstructMethodFromDelegate (options);
+		}
+		
+		IMethod ConstructMethodFromDelegate (RefactoringOptions options)
+		{
+			DomMethod result = new DomMethod (methodName, modifiers, MethodModifier.None, DomLocation.Empty, DomRegion.Empty, returnType);
+			result.DeclaringType = new DomType ("GeneratedType") { ClassType = declaringType.ClassType };
+			IMethod invocation = (IMethod)delegateType.SearchMember ("Invoke", true).First ();
+			foreach (var arg in invocation.Parameters) {
+				result.Add (arg);
+			}
+			result.ReturnType = invocation.ReturnType;
+			return result;
+		}
+		
+		IMethod ConstructMethodFromInvocation (RefactoringOptions options)
 		{
 			var resolver = options.GetResolver ();
 			var data = options.GetTextEditorData ();

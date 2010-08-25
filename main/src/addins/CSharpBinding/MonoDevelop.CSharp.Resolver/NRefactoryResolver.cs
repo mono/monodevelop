@@ -780,7 +780,6 @@ namespace MonoDevelop.CSharp.Resolver
 						varTypeUnresolved = varType = ConvertTypeReference (var.TypeRef);
 					}
 					varType = ResolveType (varType);
-					Console.WriteLine (identifier + ":" +  varType);
 					result = new LocalVariableResolveResult (
 						new LocalVariable (CallingMember, identifier, varType,
 							new DomRegion (lookupVariableLine + var.StartPos.Line, var.StartPos.Column, 

@@ -326,7 +326,6 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		MemberReference CreateReference (int line, int col, string name)
 		{
-			Console.WriteLine ("create ref: "+ line +"/"+ col + name);
 			int pos = text.LocationToOffset (line, col);
 			int spos = text.LocationToOffset (line, 1);
 			int epos = text.LocationToOffset (line + 1, 1);
