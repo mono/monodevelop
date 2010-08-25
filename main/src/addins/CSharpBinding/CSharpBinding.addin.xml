@@ -105,8 +105,8 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
-<!--	<Class class = "MonoDevelop.CSharp.Parser.DomParser" /> -->
 		<Parser class = "MonoDevelop.CSharp.Parser.NRefactoryParser" fileExtensions=".cs" />
+<!--	<Parser class = "MonoDevelop.CSharp.Parser.McsParser" fileExtensions=".cs" /> -->
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Ambiences">

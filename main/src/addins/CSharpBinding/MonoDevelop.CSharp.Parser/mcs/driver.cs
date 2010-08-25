@@ -2096,5 +2096,32 @@ namespace Mono.CSharp
 				Reset ();
 			}
 		}
+		
+		public static CompilerCompilationUnit ParseFile (string[] args, Stream input, string inputFile, ReportPrinter srp)
+		{
+			try {
+				Driver d = Driver.Create (args, false, srp);
+				if (d == null)
+					return null;
+
+				Location.AddFile (null, inputFile);
+				Location.Initialize ();
+
+				// TODO: encoding from driver
+				SeekableStreamReader reader = new SeekableStreamReader (input, Encoding.Default);
+
+				CompilerContext ctx = new CompilerContext (new Report (srp));
+				
+				RootContext.ToplevelTypes = new ModuleCompiled (ctx, false /* isUnsafe */);
+				CSharpParser parser = new CSharpParser (reader, (CompilationUnit) Location.SourceFiles [0], ctx);
+				parser.Lexer.TabSize = 1;
+				parser.LocationsBag = new LocationsBag ();
+				parser.parse ();
+				
+				return new CompilerCompilationUnit () { ModuleCompiled = RootContext.ToplevelTypes, LocationsBag = parser.LocationsBag };
+			} finally {
+				Reset ();
+			}
+		}
 	}
 }
