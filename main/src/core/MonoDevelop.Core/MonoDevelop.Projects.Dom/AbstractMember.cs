@@ -146,6 +146,20 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		public virtual void Add (IParameter parameter)
+		{
+			throw new InvalidOperationException ();
+		}
+		
+		public void Add (IEnumerable<IParameter> parameters)
+		{
+			if (parameters == null)
+				return;
+			foreach (IParameter parameter in parameters) {
+				Add (parameter);
+			}
+		}
+		
 		List<IAttribute> attributes = null;
 		static readonly IAttribute[] emptyAttributes = new IAttribute[0];
 		public virtual IEnumerable<IAttribute> Attributes {

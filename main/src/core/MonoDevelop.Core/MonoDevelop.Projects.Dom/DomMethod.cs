@@ -355,21 +355,12 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public void Add (IParameter parameter)
+		public override void Add (IParameter parameter)
 		{
 			if (parameters == null) 
 				parameters = new List<IParameter> ();
 			parameter.DeclaringMember = this;
 			parameters.Add (parameter);
-		}
-		
-		public void Add (IEnumerable<IParameter> parameters)
-		{
-			if (parameters == null)
-				return;
-			foreach (IParameter parameter in parameters) {
-				Add (parameter);
-			}
 		}
 		
 		XmlNode FindMatch (XmlNodeList nodes)
