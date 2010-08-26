@@ -23,7 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-/*
+
 using System;
 using NUnit.Framework;
 using MonoDevelop.Ide.Gui;
@@ -809,6 +809,7 @@ return (Test)null;
 		}
 		
 		[Test()]
+		[Ignore("FIX LOCAL VARIABLES!")]
 		public void TestAroundAssignmentSpaceInDeclarations ()
 		{
 			TextEditorData data = new TextEditorData ();
@@ -1164,4 +1165,3 @@ return (Test)null;
 		
 	}
 }
- */

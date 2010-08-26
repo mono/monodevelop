@@ -23,7 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-/*
+
 using System;
 using NUnit.Framework;
 using MonoDevelop.Ide.Gui;
@@ -127,9 +127,6 @@ using (IDisposable b = null) {
 		" + input + @"
 	}
 }";
-			
-			Console.WriteLine (data.Document.Text);
-			
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			DomSpacingVisitor domSpacingVisitor = new DomSpacingVisitor (policy, data);
 			domSpacingVisitor.AutoAcceptChanges = false;
@@ -144,14 +141,14 @@ using (IDisposable b = null) {
 			changes.AddRange (domIndentationVisitor.Changes);
 			RefactoringService.AcceptChanges (null, null, changes);
 			
-			for (int i = 0; i < data.Document.LineCount; i++) {
+			for (int i = 1; i <= data.Document.LineCount; i++) {
 				LineSegment line = data.Document.GetLine (i);
 				if (line.EditableLength < 2)
 					continue;
 				data.Remove (line.Offset, 2);
 			}
-			string text = data.Document.GetTextBetween (data.Document.GetLine (4).Offset,
-			                                            data.Document.GetLine (data.Document.LineCount - 2).Offset).Trim ();
+			string text = data.Document.GetTextBetween (data.Document.GetLine (5).Offset,
+			                                            data.Document.GetLine (data.Document.LineCount - 1).Offset).Trim ();
 			Console.WriteLine (text);
 			Assert.AreEqual (expectedOutput, text);
 		}
@@ -159,4 +156,4 @@ using (IDisposable b = null) {
 		
 	}
 }
-*/
+
