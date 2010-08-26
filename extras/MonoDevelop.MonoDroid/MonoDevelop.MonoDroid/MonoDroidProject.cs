@@ -37,6 +37,7 @@ using MonoDevelop.Ide;
 using System.Reflection;
 using System.Text;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace MonoDevelop.MonoDroid
 {
@@ -53,12 +54,6 @@ namespace MonoDevelop.MonoDroid
 		[ItemProperty ("MonoDroidResourcePrefix")]
 		string monoDroidResourcePrefix;
 		
-		[ProjectPathItemProperty ("MonoDroidExtraArgs")]
-		string monoDroidExtraArgs;
-		
-		[ProjectPathItemProperty ("AndroidManifest")]
-		string androidManifest;
-		
 		public override string ProjectType {
 			get { return "MonoDroid"; }
 		}
@@ -70,8 +65,8 @@ namespace MonoDevelop.MonoDroid
 					value = null;
 				if (value == androidResgenFile)
 					return;
-				NotifyModified ("AndroidResgenFile");
 				androidResgenFile = value;
+				NotifyModified ("AndroidResgenFile");
 			}
 		}
 		
@@ -82,8 +77,9 @@ namespace MonoDevelop.MonoDroid
 					value = null;
 				if (value == monoDroidResourcePrefix)
 					return;
-				NotifyModified ("MonoDroidResourcePrefix");
 				monoDroidResourcePrefix = value;
+				monoDroidResourcePrefixes = null;
+				NotifyModified ("MonoDroidResourcePrefix");
 			}
 		}
 		
@@ -109,16 +105,22 @@ namespace MonoDevelop.MonoDroid
 			
 			var androidResgenFileAtt = projectOptions.Attributes ["AndroidResgenFile"];
 			if (androidResgenFileAtt != null)
-				this.androidResgenFile = androidResgenFileAtt.Value;
+				this.androidResgenFile = MakePathNative (androidResgenFileAtt.Value);
 			
 			var androidManifestAtt = projectOptions.Attributes ["AndroidManifest"];
-			if (androidManifestAtt != null)
+			if (androidManifestAtt != null) {
+				string val = MakePathNative (androidManifestAtt.Value);
 				foreach (MonoDroidProjectConfiguration cfg in Configurations)
-					cfg.AndroidManifest = androidManifestAtt.Value;
+					cfg.AndroidManifest = val;
+			}
 			
 			monoDroidResourcePrefix = "Resources";
-			
-			
+		}
+		
+		string MakePathNative (string path)
+		{
+			char c = Path.DirectorySeparatorChar == '\\'? '/' : '\\'; 
+			return path.Replace (c, Path.DirectorySeparatorChar);
 		}
 		
 		void Init ()
@@ -131,6 +133,8 @@ namespace MonoDevelop.MonoDroid
 		{
 			var conf = new MonoDroidProjectConfiguration (name);
 			conf.CopyFrom (base.CreateConfiguration (name));
+			if (Configurations.Count > 0)
+				conf.AndroidManifest = ((MonoDroidProjectConfiguration)Configurations[0]).AndroidManifest;
 			return conf;
 		}
 
@@ -212,36 +216,84 @@ namespace MonoDevelop.MonoDroid
 			FilePath f = fileName;
 			f = f.ToRelative (BaseDirectory);
 			
-			//FIXME: cache this
-			var prefixes = MonoDroidResourcePrefix.Split (new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
-				.Select (p => p.Trim ().Replace ('/', Path.PathSeparator));
-			
-			foreach (var prefix in prefixes)
+			foreach (var prefix in MonoDroidResourcePrefixes)
 				if (f.ToString ().StartsWith (prefix))
 					return MonoDroidBuildAction.AndroidResource;
 				
 			return baseAction;
 		}
 		
+		string[] monoDroidResourcePrefixes;
+		
+		string[] MonoDroidResourcePrefixes {
+			get {
+				if (monoDroidResourcePrefixes == null) {
+					monoDroidResourcePrefixes =
+						MonoDroidResourcePrefix.Split (new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+						.Select (p => MakePathNative (p.Trim ())).ToArray ();
+				}
+				return monoDroidResourcePrefixes;
+			}
+		}
+		
+		AndroidAppManifestCache manifests;
+		
 		public bool IsAndroidApplication (ConfigurationSelector conf)
 		{
-			return !string.IsNullOrEmpty (GetAndroidManifest (conf));
+			return !((MonoDroidProjectConfiguration)GetConfiguration (conf)).IsApplication;
 		}
 		
-		public string GetAndroidManifest (ConfigurationSelector conf)
+		public AndroidAppManifest GetAndroidManifest (ConfigurationSelector conf)
 		{
-			return ((MonoDroidProjectConfiguration)GetConfiguration (conf)).AndroidManifest;
+			if (manifests == null)
+				manifests = new AndroidAppManifestCache (this);
+			
+			var cfg = (MonoDroidProjectConfiguration)GetConfiguration (conf);
+			if (cfg.AndroidManifest.IsNullOrEmpty)
+				return null;
+			
+			// If a specified manifest is not in the project, add or create it
+			// FIXME: do we really want to do this?
+			var pf = Files.GetFile (cfg.AndroidManifest);
+			if (pf == null) {
+				if (!File.Exists (cfg.AndroidManifest))
+					AndroidAppManifest.Create (GetDefaultPackageName ()).WriteToFile (cfg.AndroidManifest);
+				pf = AddFile (cfg.AndroidManifest);
+			}
+			
+			return manifests.Get (cfg.AndroidManifest);
 		}
 		
+		string GetDefaultPackageName ()
+		{
+			string sanitized = SanitizeName (Name);
+			if (sanitized.Length == 0)
+				sanitized = "Application";
+			return sanitized + "." + sanitized;
+		}
 		
+		static string SanitizeName (string name)
+		{
+			var sb = new StringBuilder ();
+			foreach (char c in name)
+				if (char.IsLetterOrDigit (c))
+					sb.Append (c);
+			return sb.ToString ();
+		}
+		
+		public override void Dispose ()
+		{
+			if (manifests != null) {
+				manifests.Dispose ();
+				manifests = null;
+			}
+			
+			base.Dispose ();
+		}
 	}
 	
 	static class MonoDroidBuildAction
 	{
 		public static readonly string AndroidResource = "AndroidResource";
-	}
-	
-	class AndroidManifest
-	{
 	}
 }

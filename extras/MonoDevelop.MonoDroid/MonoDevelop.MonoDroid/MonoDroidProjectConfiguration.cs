@@ -44,12 +44,25 @@ namespace MonoDevelop.MonoDroid
 		{
 		}
 		
+		public new MonoDroidProject ParentItem {
+			get { return (MonoDroidProject) ParentItem; }
+		}
+		
 		[ItemProperty ("MonoDroidExtraArgs")]
 		public string MonoDroidExtraArgs { get; set; }
 		
 		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
 		[ProjectPathItemProperty ("AndroidManifest")]
-		public string AndroidManifest { get; set; }
+		string androidManifest;
+			
+		public FilePath AndroidManifest {
+			get { return androidManifest; }
+			set {
+				if (!value.IsNullOrEmpty && !value.IsAbsolute)
+					value = value.ToAbsolute (ParentItem.BaseDirectory);
+				androidManifest = value;
+			}
+		}
 		
 		public string ApkPath {
 			get {
@@ -69,20 +82,6 @@ namespace MonoDevelop.MonoDroid
 			}
 		}
 		
-		public ProjectFile GetAndroidManifestFile (ConfigurationSelector conf)
-		{
-			string name = AndroidManifest;
-			var pf = ParentItem.Files.GetFileWithVirtualPath (name);
-			if (pf != null)
-				return pf;
-			
-			name = ParentItem.BaseDirectory.Combine (name);
-			var doc = new AndroidManifest ();
-			throw new NotImplementedException ();
-			//doc.WriteToFile (name);
-			return ParentItem.AddFile (name);
-		}
-		
 		public override void CopyFrom (ItemConfiguration configuration)
 		{
 			base.CopyFrom (configuration);
@@ -91,7 +90,7 @@ namespace MonoDevelop.MonoDroid
 				return;
 			
 			MonoDroidExtraArgs = cfg.MonoDroidExtraArgs;
-			AndroidManifest = cfg.AndroidManifest;
+			androidManifest = cfg.androidManifest;
 		}
 	}
 }
