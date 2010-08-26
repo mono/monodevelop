@@ -1,0 +1,3 @@
+﻿The following git commands are not supported by the command api
+
+fmt-merge-msg: see MergeCommand.FormatMergeMessage

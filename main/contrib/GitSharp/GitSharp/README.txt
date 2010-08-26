@@ -1,0 +1,2 @@
+GitSharp.API shall not only provide user friendly access to git's objects and commands but also decouple CLI and any other apps from the internals which are potentially changing all the time
+This is especially when we continue to track jgit's commits
