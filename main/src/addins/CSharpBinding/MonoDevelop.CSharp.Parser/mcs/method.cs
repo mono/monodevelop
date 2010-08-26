@@ -307,7 +307,11 @@ namespace Mono.CSharp {
 			}
 
 			if ((state & StateFlags.PendingMakeMethod) != 0) {
-				metaInfo = ((MethodInfo) metaInfo).MakeGenericMethod (targs.Select (l => l.GetMetaInfo ()).ToArray ());
+				var sre_targs = new Type[targs.Length];
+				for (int i = 0; i < sre_targs.Length; ++i)
+					sre_targs[i] = targs[i].GetMetaInfo ();
+
+				metaInfo = ((MethodInfo) metaInfo).MakeGenericMethod (sre_targs);
 				state &= ~StateFlags.PendingMakeMethod;
 			}
 
@@ -407,7 +411,7 @@ namespace Mono.CSharp {
 			var ms = (MethodSpec) MemberwiseClone ();
 			if (decl != DeclaringType) {
 				// Gets back MethodInfo in case of metaInfo was inflated
-				ms.metaInfo = MemberCache.GetMember (DeclaringType.GetDefinition (), this).metaInfo;
+				ms.metaInfo = MemberCache.GetMember (TypeParameterMutator.GetMemberDeclaringType (DeclaringType), this).metaInfo;
 
 				ms.declaringType = decl;
 				ms.state |= StateFlags.PendingMetaInflate;

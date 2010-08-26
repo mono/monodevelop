@@ -367,6 +367,15 @@ namespace Mono.CSharp {
 		PredefinedAttributes.Get.ParamArray.Initialize (ctx, false);
 		PredefinedAttributes.Get.Out.Initialize (ctx, false);
 
+		if (InternalType.Dynamic.GetMetaInfo () == null) {
+			InternalType.Dynamic.SetMetaInfo (object_type.GetMetaInfo ());
+
+			if (object_type.MemberDefinition.IsImported)
+				InternalType.Dynamic.MemberCache = object_type.MemberCache;
+
+			InternalType.Null.SetMetaInfo (object_type.GetMetaInfo ());
+		}
+
 		return ctx.Report.Errors == 0;
 	}
 

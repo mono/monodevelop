@@ -441,7 +441,7 @@ namespace MonoDevelop.CSharp.Formatting
 				break;
 			case BraceForcement.AddBraces:
 				if (!isBlock) {
-					int offset = data.Document.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column);
+					int offset = data.Document.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column) + 1;
 					string startBrace = "";
 					switch (braceStyle) {
 					case BraceStyle.DoNotChange:
@@ -747,7 +747,7 @@ namespace MonoDevelop.CSharp.Formatting
 			LineSegment lineSegment = data.Document.GetLine (location.Line);
 			string lineIndent = lineSegment.GetIndentation (data.Document);
 			string indentString = this.curIndent.IndentString;
-			if (indentString != lineIndent && location.Column + relOffset == lineIndent.Length) {
+			if (indentString != lineIndent && location.Column - 1 + relOffset == lineIndent.Length) {
 				AddChange (lineSegment.Offset, lineIndent.Length, indentString);
 			}
 		}

@@ -11,8 +11,6 @@
 // Copyright 2004-2008 Novell, Inc
 //
 
-#define BOOTSTRAP_BASIC
-
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -805,6 +803,11 @@ namespace Mono.CSharp
 			}
 
 			base.Emit ();
+		}
+
+		public override string GetDocCommentName (DeclSpace ds)
+		{
+			return String.Concat (DocCommentHeader, ds.Name, ".", GetFullName (ShortName).Replace ('.', '#'));
 		}
 	}
 

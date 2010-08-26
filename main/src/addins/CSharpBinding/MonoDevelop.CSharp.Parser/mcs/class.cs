@@ -117,6 +117,15 @@ namespace Mono.CSharp {
 			#endregion
 		}
 
+		sealed class DynamicSiteClass : CompilerGeneratedClass
+		{
+			public DynamicSiteClass (DeclSpace parent)
+				: base (parent, new MemberName (CompilerGeneratedClass.MakeName (null, "c", "DynamicSite", 0)),
+					Modifiers.PRIVATE | Modifiers.STATIC)
+			{
+			}
+		}
+
 		[Flags]
 		enum CachedMethods
 		{
@@ -213,6 +222,8 @@ namespace Mono.CSharp {
 
 		protected TypeSpec spec;
 		TypeSpec current_type;
+
+		CompilerGeneratedClass dynamic_site_container;
 
 		List<TypeContainer> partial_parts;
 
@@ -1049,6 +1060,22 @@ namespace Mono.CSharp {
 		}
 
 		//
+		// Creates a nested container for all compiler generated dynamic stuff
+		//
+		public TypeContainer CreateDynamicSite ()
+		{
+			if (dynamic_site_container == null) {
+				dynamic_site_container = new DynamicSiteClass (this);
+				RootContext.ToplevelTypes.AddCompilerGeneratedClass (dynamic_site_container);
+				dynamic_site_container.CreateType ();
+				dynamic_site_container.DefineType ();
+				dynamic_site_container.Define ();
+			}
+
+			return dynamic_site_container;
+		}
+
+		//
 		// Creates a proxy base method call inside this container for hoisted base member calls
 		//
 		public MethodSpec CreateHoistedBaseCallProxy (ResolveContext rc, MethodSpec method)
@@ -1067,7 +1094,17 @@ namespace Mono.CSharp {
 
 			if (proxy_method == null) {
 				string name = CompilerGeneratedClass.MakeName (method.Name, null, "BaseCallProxy", hoisted_base_call_proxies.Count);
-				var cloned_params = ParametersCompiled.CreateFullyResolved (method.Parameters.FixedParameters, method.Parameters.Types);
+				var base_parameters = method.Parameters.FixedParameters as Parameter[];
+				if (base_parameters == null) {
+					base_parameters = new Parameter[method.Parameters.Count];
+					for (int i = 0; i < base_parameters.Length; ++i) {
+						var base_param = method.Parameters.FixedParameters[i];
+						base_parameters[i] = new Parameter (new TypeExpression (method.Parameters.Types[i], Location),
+							base_param.Name, base_param.ModFlags, null, Location);
+					}
+				}
+
+				var cloned_params = ParametersCompiled.CreateFullyResolved (base_parameters, method.Parameters.Types);
 				if (method.Parameters.HasArglist) {
 					cloned_params.FixedParameters[0] = new Parameter (null, "__arglist", Parameter.Modifier.NONE, null, Location);
 					cloned_params.Types[0] = TypeManager.runtime_argument_handle_type;
@@ -1224,9 +1261,8 @@ namespace Mono.CSharp {
 			if (instance_constructors != null) {
 				foreach (MethodCore m in instance_constructors) {
 					var p = m.ParameterInfo;
-					if (!p.IsEmpty && p[p.Count - 1].HasDefaultValue) {
-						var rc = new ResolveContext (m);
-						p.ResolveDefaultValues (rc);
+					if (!p.IsEmpty) {
+						p.ResolveDefaultValues (m);
 					}
 				}
 			}
@@ -1234,20 +1270,15 @@ namespace Mono.CSharp {
 			if (methods != null) {
 				foreach (MethodCore m in methods) {
 					var p = m.ParameterInfo;
-					if (!p.IsEmpty && (p[p.Count - 1].HasDefaultValue || (p.HasParams && p.Count > 1 && p[p.Count - 2].HasDefaultValue))) {
-						var rc = new ResolveContext (m);
-						p.ResolveDefaultValues (rc);
+					if (!p.IsEmpty) {
+						p.ResolveDefaultValues (m);
 					}
 				}
 			}
 
 			if (indexers != null) {
 				foreach (Indexer i in indexers) {
-					var p = i.ParameterInfo;
-					if (p[p.Count - 1].HasDefaultValue) {
-					    var rc = new ResolveContext (i);
-						p.ResolveDefaultValues (rc);
-					}
+					i.ParameterInfo.ResolveDefaultValues (i);
 				}
 			}
 
@@ -1532,25 +1563,6 @@ namespace Mono.CSharp {
 				}
 			}
 
-			if (!IsTopLevel) {
-				MemberSpec candidate;
-				var conflict_symbol = MemberCache.FindBaseMember (this, out candidate);
-				if (conflict_symbol == null && candidate == null) {
-					if ((ModFlags & Modifiers.NEW) != 0)
-						Report.Warning (109, 4, Location, "The member `{0}' does not hide an inherited member. The new keyword is not required",
-							GetSignatureForError ());
-				} else {
-					if ((ModFlags & Modifiers.NEW) == 0) {
-						if (candidate == null)
-							candidate = conflict_symbol;
-
-						Report.SymbolRelatedToPreviousError (candidate);
-						Report.Warning (108, 2, Location, "`{0}' hides inherited member `{1}'. Use the new keyword if hiding was intended",
-							GetSignatureForError (), candidate.GetSignatureForError ());
-					}
-				}
-			}
-
 			DefineContainerMembers (constants);
 			DefineContainerMembers (fields);
 
@@ -1749,6 +1761,25 @@ namespace Mono.CSharp {
 
 		public override void Emit ()
 		{
+			if (!IsTopLevel) {
+				MemberSpec candidate;
+				var conflict_symbol = MemberCache.FindBaseMember (this, out candidate);
+				if (conflict_symbol == null && candidate == null) {
+					if ((ModFlags & Modifiers.NEW) != 0)
+						Report.Warning (109, 4, Location, "The member `{0}' does not hide an inherited member. The new keyword is not required",
+							GetSignatureForError ());
+				} else {
+					if ((ModFlags & Modifiers.NEW) == 0) {
+						if (candidate == null)
+							candidate = conflict_symbol;
+
+						Report.SymbolRelatedToPreviousError (candidate);
+						Report.Warning (108, 2, Location, "`{0}' hides inherited member `{1}'. Use the new keyword if hiding was intended",
+							GetSignatureForError (), candidate.GetSignatureForError ());
+					}
+				}
+			}
+
 			if (all_tp_builders != null) {
 				int current_starts_index = CurrentTypeParametersStartIndex;
 				for (int i = 0; i < all_tp_builders.Length; i++) {

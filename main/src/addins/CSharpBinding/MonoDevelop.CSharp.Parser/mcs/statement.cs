@@ -2772,7 +2772,7 @@ namespace Mono.CSharp {
 			for (int i = 0; i < n; ++i) {
 				parameter_info [i] = new ToplevelParameterInfo (this, i);
 
-				Parameter p = parameters [i];
+				var p = parameters.FixedParameters [i];
 				if (p == null)
 					continue;
 
@@ -2838,7 +2838,7 @@ namespace Mono.CSharp {
 			int count = parameters.Count;
 			Arguments args = new Arguments (count);
 			for (int i = 0; i < count; ++i) {
-				var arg_expr = new ParameterReference (parameter_info[i], parameters[i].Location);
+				var arg_expr = new ParameterReference (parameter_info[i], parameter_info[i].Location);
 				args.Add (new Argument (arg_expr));
 			}
 
@@ -5650,8 +5650,13 @@ namespace Mono.CSharp {
 
 				VarExpr ve = var_type as VarExpr;
 				if (ve != null) {
-					// Infer implicitly typed local variable from foreach enumerable type
-					var_type = new TypeExpression (current_pe.Type, var_type.Location);
+					if (is_dynamic) {
+						// Source type is dynamic, set element type to dynamic too
+						var_type = new TypeExpression (InternalType.Dynamic, var_type.Location);
+					} else {
+						// Infer implicitly typed local variable from foreach enumerable type
+						var_type = new TypeExpression (current_pe.Type, var_type.Location);
+					}
 				}
 
 				var_type = var_type.ResolveAsTypeTerminal (ec, false);

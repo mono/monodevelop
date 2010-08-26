@@ -97,7 +97,7 @@ namespace Mono.CSharp
 		//
 		Encoding encoding;
 
-		readonly CompilerContext ctx;
+		internal readonly CompilerContext ctx;
 
 		static readonly char[] argument_value_separator = new char [] { ';', ',' };
 
@@ -114,7 +114,7 @@ namespace Mono.CSharp
 
 		public static Driver Create (string[] args, bool require_files, ReportPrinter printer)
 		{
-			Driver d = new Driver (new CompilerContext (new Report (printer)));
+			Driver d = new Driver (new CompilerContext (new ReflectionMetaImporter (), new Report (printer)));
 
 			if (!d.ParseArguments (args, require_files))
 				return null;
@@ -1703,7 +1703,7 @@ namespace Mono.CSharp
 			if (timestamps)
 				ShowTime ("Loading references");
 
-			Import.Initialize ();
+			ctx.MetaImporter.Initialize ();
 			LoadReferences ();
 			
 			if (modules.Count > 0) {
@@ -2066,41 +2066,17 @@ namespace Mono.CSharp
 			Linq.QueryBlock.TransparentParameter.Reset ();
 			Convert.Reset ();
 			TypeInfo.Reset ();
-			DynamicExpressionStatement.Reset ();
 		}
 		
 		public static CompilerCompilationUnit ParseFile (string[] args, Stream input, string inputFile, TextWriter reportStream)
 		{
-			try {
-				StreamReportPrinter srp = new StreamReportPrinter (reportStream);
-				Driver d = Driver.Create (args, false, srp);
-				if (d == null)
-					return null;
-
-				Location.AddFile (null, inputFile);
-				Location.Initialize ();
-
-				// TODO: encoding from driver
-				SeekableStreamReader reader = new SeekableStreamReader (input, Encoding.Default);
-
-				CompilerContext ctx = new CompilerContext (new Report (srp));
-				
-				RootContext.ToplevelTypes = new ModuleCompiled (ctx, false /* isUnsafe */);
-				CSharpParser parser = new CSharpParser (reader, (CompilationUnit) Location.SourceFiles [0], ctx);
-				parser.Lexer.TabSize = 1;
-				parser.LocationsBag = new LocationsBag ();
-				parser.parse ();
-				
-				return new CompilerCompilationUnit () { ModuleCompiled = RootContext.ToplevelTypes, LocationsBag = parser.LocationsBag };
-			} finally {
-				Reset ();
-			}
+			return ParseFile (args, input, inputFile, new StreamReportPrinter (reportStream));
 		}
 		
-		public static CompilerCompilationUnit ParseFile (string[] args, Stream input, string inputFile, ReportPrinter srp)
+		public static CompilerCompilationUnit ParseFile (string[] args, Stream input, string inputFile, ReportPrinter reportPrinter)
 		{
 			try {
-				Driver d = Driver.Create (args, false, srp);
+				Driver d = Driver.Create (args, false, reportPrinter);
 				if (d == null)
 					return null;
 
@@ -2110,7 +2086,7 @@ namespace Mono.CSharp
 				// TODO: encoding from driver
 				SeekableStreamReader reader = new SeekableStreamReader (input, Encoding.Default);
 
-				CompilerContext ctx = new CompilerContext (new Report (srp));
+				CompilerContext ctx = new CompilerContext (new ReflectionMetaImporter (), new Report (reportPrinter));
 				
 				RootContext.ToplevelTypes = new ModuleCompiled (ctx, false /* isUnsafe */);
 				CSharpParser parser = new CSharpParser (reader, (CompilationUnit) Location.SourceFiles [0], ctx);

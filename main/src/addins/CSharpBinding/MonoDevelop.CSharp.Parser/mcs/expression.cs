@@ -1381,6 +1381,12 @@ namespace Mono.CSharp {
 				if (TypeManager.IsGenericParameter (t))
 					return ResolveGenericParameter (ec, d, (TypeParameterSpec) t);
 
+				if (t == InternalType.Dynamic) {
+					ec.Report.Warning (1981, 3, loc,
+						"Using `{0}' to test compatibility with `{1}' is identical to testing compatibility with `object'",
+						OperatorName, t.GetSignatureForError ());
+				}
+
 				if (TypeManager.IsStruct (d)) {
 					if (Convert.ImplicitBoxingConversion (null, d, t) != null)
 						return CreateConstantResult (ec, true);
@@ -1579,9 +1585,13 @@ namespace Mono.CSharp {
 			if (type.IsPointer && !ec.IsUnsafe) {
 				UnsafeError (ec, loc);
 			} else if (expr.Type == InternalType.Dynamic) {
-				Arguments arg = new Arguments (1);
-				arg.Add (new Argument (expr));
-				return new DynamicConversion (type, CSharpBinderFlags.ConvertExplicit, arg, loc).Resolve (ec);
+				if (type != InternalType.Dynamic) {
+					Arguments arg = new Arguments (1);
+					arg.Add (new Argument (expr));
+					return new DynamicConversion (type, CSharpBinderFlags.ConvertExplicit, arg, loc).Resolve (ec);
+				}
+
+				return expr;
 			}
 
 			var res = Convert.ExplicitConversion (ec, expr, type, loc);
@@ -7452,10 +7462,16 @@ namespace Mono.CSharp {
 			if (e == null)
 				return null;
 
-			if (right_side != null)
+			if (right_side != null) {
+				if (e is TypeExpr) {
+					e.Error_UnexpectedKind (rc, ResolveFlags.VariableOrValue, loc);
+					return null;
+				}
+
 				e = e.ResolveLValue (rc, right_side);
-			else
+			} else {
 				e = e.Resolve (rc, ResolveFlags.VariableOrValue | ResolveFlags.Type);
+			}
 
 			return e;
 		}
@@ -7508,8 +7524,13 @@ namespace Mono.CSharp {
 				return retval;
 			}
 
+			MemberExpr me;
 			TypeSpec expr_type = expr.Type;
 			if (expr_type == InternalType.Dynamic) {
+				me = expr as MemberExpr;
+				if (me != null)
+					me.ResolveInstanceExpression (rc);
+
 				Arguments args = new Arguments (1);
 				args.Add (new Argument (expr));
 				return new DynamicMemberBinder (Name, args, loc);
@@ -7579,9 +7600,7 @@ namespace Mono.CSharp {
 				errorMode = true;
 			}
 
-			MemberExpr me;
 			TypeExpr texpr = member_lookup as TypeExpr;
-
 			if (texpr != null) {
 				if (!(expr is TypeExpr)) {
 					me = expr as MemberExpr;
@@ -8337,7 +8356,10 @@ namespace Mono.CSharp {
 					return null;
 			}
 
-			if (dynamic || type == InternalType.Dynamic) {
+			//
+			// It has dynamic arguments
+			//
+			if (dynamic) {
 				Arguments args = new Arguments (arguments.Count + 1);
 				if (IsBase) {
 					rc.Report.Error (1972, loc,
@@ -8479,6 +8501,7 @@ namespace Mono.CSharp {
 		public static readonly EmptyExpression UnaryAddress = new EmptyExpression ();
 		public static readonly EmptyExpression EventAddition = new EmptyExpression ();
 		public static readonly EmptyExpression EventSubtraction = new EmptyExpression ();
+		public static readonly EmptyExpression MissingValue = new EmptyExpression (InternalType.FakeInternalType);
 
 		static EmptyExpression temp = new EmptyExpression ();
 		public static EmptyExpression Grab ()

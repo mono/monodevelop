@@ -1175,6 +1175,19 @@ namespace Mono.CSharp {
 			this.var = var;
 		}
 
+		public static TypeSpec GetMemberDeclaringType (TypeSpec type)
+		{
+			if (type is InflatedTypeSpec) {
+				if (type.DeclaringType == null)
+					return type.GetDefinition ();
+
+				var parent = GetMemberDeclaringType (type.DeclaringType);
+				type = MemberCache.GetMember<TypeSpec> (parent, type);
+			}
+
+			return type;
+		}
+
 		public TypeSpec Mutate (TypeSpec ts)
 		{
 			TypeSpec value;
@@ -2338,17 +2351,13 @@ namespace Mono.CSharp {
 			Upper	= 2
 		}
 
-		class BoundInfo
+		class BoundInfo : IEquatable<BoundInfo>
 		{
 			public readonly TypeSpec Type;
 			public readonly BoundKind Kind;
 
 			public BoundInfo (TypeSpec type, BoundKind kind)
 			{
-				// Unify dynamic and object to simplify best candidate resolution
-				if (type == InternalType.Dynamic)
-					type = TypeManager.object_type;
-
 				this.Type = type;
 				this.Kind = kind;
 			}
@@ -2358,11 +2367,14 @@ namespace Mono.CSharp {
 				return Type.GetHashCode ();
 			}
 
-			public override bool Equals (object obj)
+			#region IEquatable<BoundInfo> Members
+
+			public bool Equals (BoundInfo other)
 			{
-				BoundInfo a = (BoundInfo) obj;
-				return Type == a.Type && Kind == a.Kind;
+				return Type == other.Type && Kind == other.Kind;
 			}
+
+			#endregion
 		}
 
 		readonly TypeSpec[] unfixed_types;
@@ -2619,8 +2631,15 @@ namespace Mono.CSharp {
 					}
 
 					if (bound.Kind == BoundKind.Exact || cbound.Kind == BoundKind.Exact) {
-						if (cbound.Kind != BoundKind.Exact) {
+						if (cbound.Kind == BoundKind.Lower) {
 							if (!Convert.ImplicitConversionExists (ec, new TypeExpression (cbound.Type, Location.Null), bound.Type)) {
+								break;
+							}
+
+							continue;
+						}
+						if (cbound.Kind == BoundKind.Upper) {
+							if (!Convert.ImplicitConversionExists (ec, new TypeExpression (bound.Type, Location.Null), cbound.Type)) {
 								break;
 							}
 
@@ -2640,21 +2659,46 @@ namespace Mono.CSharp {
 					}
 
 					if (bound.Kind == BoundKind.Lower) {
-						if (!Convert.ImplicitConversionExists (ec, new TypeExpression (cbound.Type, Location.Null), bound.Type)) {
-							break;
+						if (cbound.Kind == BoundKind.Lower) {
+							if (!Convert.ImplicitConversionExists (ec, new TypeExpression (cbound.Type, Location.Null), bound.Type)) {
+								break;
+							}
+						} else {
+							if (!Convert.ImplicitConversionExists (ec, new TypeExpression (bound.Type, Location.Null), cbound.Type)) {
+								break;
+							}
+
+							bound = cbound;
 						}
-					} else {
+
+						continue;
+					}
+
+					if (bound.Kind == BoundKind.Upper) {
 						if (!Convert.ImplicitConversionExists (ec, new TypeExpression (bound.Type, Location.Null), cbound.Type)) {
 							break;
 						}
+					} else {
+						throw new NotImplementedException ("variance conversion");
 					}
 				}
 
 				if (cii != candidates_count)
 					continue;
 
-				if (best_candidate != null && best_candidate != bound.Type)
-					return false;
+				//
+				// We already have the best candidate, break if thet are different
+				//
+				// Dynamic is never ambiguous as we prefer dynamic over other best candidate types
+				//
+				if (best_candidate != null) {
+
+					if (best_candidate == InternalType.Dynamic)
+						continue;
+
+					if (bound.Type != InternalType.Dynamic && best_candidate != bound.Type)
+						return false;
+				}
 
 				best_candidate = bound.Type;
 			}
@@ -2925,7 +2969,7 @@ namespace Mono.CSharp {
 
 				MethodGroupExpr mg = (MethodGroupExpr) e;
 				Arguments args = DelegateCreation.CreateDelegateMethodArguments (invoke.Parameters, param_types, e.Location);
-				mg = mg.OverloadResolve (ec, ref args, null, OverloadResolver.Restrictions.Covariant | OverloadResolver.Restrictions.ProbingOnly);
+				mg = mg.OverloadResolve (ec, ref args, null, OverloadResolver.Restrictions.CovariantDelegate | OverloadResolver.Restrictions.ProbingOnly);
 				if (mg == null)
 					return 0;
 
