@@ -54,8 +54,12 @@ namespace Mono.CSharp
 		
 		protected void VisitNamespaceBody (UsingsBag.Namespace nspace)
 		{
-			foreach (MemberCore member in nspace.members) {
-				member.Accept (this);
+			foreach (object member in nspace.members) {
+				if (member is MemberCore) {
+					((MemberCore)member).Accept (this);
+				} else {
+					((UsingsBag.Namespace)member).Accept (this);
+				}
 			}
 		}
 		

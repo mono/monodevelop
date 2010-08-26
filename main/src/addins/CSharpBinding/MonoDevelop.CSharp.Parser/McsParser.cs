@@ -362,7 +362,17 @@ namespace MonoDevelop.CSharp.Parser
 				}
 			}
 			
-			IReturnType ConvertReturnType (FullNamedExpression typeName)
+			
+			void AddTypeArguments (ATypeNameExpression texpr, DomReturnType result)
+			{
+				if (!texpr.HasTypeArguments)
+					return;
+				foreach (var arg in texpr.TypeArguments.Args) {
+					result.AddTypeParameter (ConvertReturnType (arg));
+				}
+			}
+			
+			IReturnType ConvertReturnType (Expression typeName)
 			{
 				if (typeName is TypeExpression) {
 					var typeExpr = (Mono.CSharp.TypeExpression)typeName;
@@ -402,15 +412,25 @@ namespace MonoDevelop.CSharp.Parser
 						return DomReturnType.IntPtr;
 					if (typeExpr.Type == Mono.CSharp.TypeManager.uintptr_type)
 						return DomReturnType.UIntPtr;
-					throw new Exception ("unknown type expression:" + typeExpr.Type);
+					MonoDevelop.Core.LoggingService.LogError ("Error while converting :" + typeName + " - unknown type value");
+					
+					return DomReturnType.Void;
+				}
+				if (typeName is MemberAccess) {
+					MemberAccess ma = (MemberAccess)typeName;
+					var baseType = (DomReturnType)ConvertReturnType (ma.LeftExpression);
+					baseType.Parts.Add (new ReturnTypePart (ma.Name));
+					AddTypeArguments (ma, baseType);
+					return baseType;
 				}
 				
-				
-				System.Console.WriteLine (typeName);
-				if (typeName is ATypeNameExpression) {
-					var sn = (ATypeNameExpression)typeName;
-					return new DomReturnType (sn.Name);
+				if (typeName is SimpleName) {
+					var sn = (SimpleName)typeName;
+					var result = new DomReturnType (sn.Name);
+					AddTypeArguments (sn, result);
+					return result;
 				}
+				MonoDevelop.Core.LoggingService.LogError ("Error while converting :" + typeName + " - unknown type name");
 				return DomReturnType.Void;
 			}
 			
@@ -422,6 +442,16 @@ namespace MonoDevelop.CSharp.Parser
 			
 			#region Global
 			Stack<UsingsBag.Namespace> currentNamespace = new Stack<UsingsBag.Namespace> ();
+			
+			string ConvertToString (MemberName name)
+			{
+				if (name == null)
+					return "";
+				
+				return name.Left != null ? ConvertToString (name.Left)  + "." + name.Name : name.Name;
+				
+			}
+			
 			public override void Visit (UsingsBag.Namespace nspace)
 			{
 				currentNamespace.Push (nspace);
@@ -429,7 +459,7 @@ namespace MonoDevelop.CSharp.Parser
 					DomUsing domUsing = new DomUsing ();
 					domUsing.IsFromNamespace = true;
 					domUsing.Region = domUsing.ValidRegion = ConvertRegion (nspace.OpenBrace, nspace.CloseBrace); 
-					domUsing.Add (nspace.Name.Name);
+					domUsing.Add (ConvertToString (nspace.Name));
 					Unit.Add (domUsing);
 				}
 				
@@ -443,8 +473,7 @@ namespace MonoDevelop.CSharp.Parser
 				DomUsing domUsing = new DomUsing ();
 				domUsing.Region = ConvertRegion (u.UsingLocation, u.SemicolonLocation);
 				domUsing.ValidRegion = ConvertRegion (currentNamespace.Peek ().OpenBrace, currentNamespace.Peek ().CloseBrace); 
-				domUsing.Add (u.NSpace.Name);
-				System.Console.WriteLine ("add using: "+ u.NSpace.Name);
+				domUsing.Add (ConvertToString (u.NSpace));
 				Unit.Add (domUsing);
 			}
 			
@@ -453,7 +482,7 @@ namespace MonoDevelop.CSharp.Parser
 				DomUsing domUsing = new DomUsing ();
 				domUsing.Region = ConvertRegion (u.UsingLocation, u.SemicolonLocation);
 				domUsing.ValidRegion = ConvertRegion (currentNamespace.Peek ().OpenBrace, currentNamespace.Peek ().CloseBrace); 
-				domUsing.Add (u.Nspace.Name, new DomReturnType (u.Identifier.Value));
+				domUsing.Add (ConvertToString (u.Nspace), new DomReturnType (u.Identifier.Value));
 				Unit.Add (domUsing);
 			}
 			
@@ -470,6 +499,8 @@ namespace MonoDevelop.CSharp.Parser
 				DomType newType = new DomType ();
 				newType.SourceProjectDom = Dom;
 				newType.CompilationUnit = Unit;
+				if (currentNamespace.Peek ().Name != null)
+					newType.Namespace = ConvertToString (currentNamespace.Peek ().Name);
 				newType.Name = c.MemberName.Name;
 				newType.Location = Convert (c.MemberName.Location);
 				newType.ClassType = ClassType.Class;
