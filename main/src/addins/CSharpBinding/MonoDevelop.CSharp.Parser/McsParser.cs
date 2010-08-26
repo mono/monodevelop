@@ -112,7 +112,7 @@ namespace MonoDevelop.CSharp.Parser
 			var conversionVisitor = new ConversionVisitor (new Document (content), top.LocationsBag, lexer.SpecialTracker.CurrentSpecials);
 			conversionVisitor.Unit = unit;
 			conversionVisitor.ParsedDocument = result;
-			top.ModuleCompiled.Accept (conversionVisitor);
+			top.UsingsBag.Global.Accept (conversionVisitor);
 			
 			// parser errors
 			errorReportPrinter.Errors.ForEach (e => conversionVisitor.ParsedDocument.Add (e));
@@ -364,6 +364,49 @@ namespace MonoDevelop.CSharp.Parser
 			
 			IReturnType ConvertReturnType (FullNamedExpression typeName)
 			{
+				if (typeName is TypeExpression) {
+					var typeExpr = (Mono.CSharp.TypeExpression)typeName;
+					if (typeExpr.Type == Mono.CSharp.TypeManager.object_type)
+						return DomReturnType.Object;
+					if (typeExpr.Type == Mono.CSharp.TypeManager.string_type)
+						return DomReturnType.String;
+					if (typeExpr.Type == Mono.CSharp.TypeManager.int32_type)
+						return DomReturnType.Int32;
+					if (typeExpr.Type == Mono.CSharp.TypeManager.uint32_type)
+						return DomReturnType.UInt32;
+					if (typeExpr.Type == Mono.CSharp.TypeManager.int64_type)
+						return DomReturnType.Int64;
+					if (typeExpr.Type == Mono.CSharp.TypeManager.uint64_type)
+						return DomReturnType.UInt64;
+					if (typeExpr.Type == Mono.CSharp.TypeManager.float_type)
+						return DomReturnType.Float;
+					if (typeExpr.Type == Mono.CSharp.TypeManager.double_type)
+						return DomReturnType.Double;
+					if (typeExpr.Type == Mono.CSharp.TypeManager.char_type)
+						return DomReturnType.Char;
+					if (typeExpr.Type == Mono.CSharp.TypeManager.short_type)
+						return DomReturnType.Int16;
+					if (typeExpr.Type == Mono.CSharp.TypeManager.decimal_type)
+						return DomReturnType.Decimal;
+					if (typeExpr.Type == Mono.CSharp.TypeManager.bool_type)
+						return DomReturnType.Bool;
+					if (typeExpr.Type == Mono.CSharp.TypeManager.sbyte_type)
+						return DomReturnType.SByte;
+					if (typeExpr.Type == Mono.CSharp.TypeManager.byte_type)
+						return DomReturnType.Byte;
+					if (typeExpr.Type == Mono.CSharp.TypeManager.ushort_type)
+						return DomReturnType.UInt16;
+					if (typeExpr.Type == Mono.CSharp.TypeManager.void_type)
+						return DomReturnType.Void;
+					if (typeExpr.Type == Mono.CSharp.TypeManager.intptr_type)
+						return DomReturnType.IntPtr;
+					if (typeExpr.Type == Mono.CSharp.TypeManager.uintptr_type)
+						return DomReturnType.UIntPtr;
+					throw new Exception ("unknown type expression:" + typeExpr.Type);
+				}
+				
+				
+				System.Console.WriteLine (typeName);
 				if (typeName is ATypeNameExpression) {
 					var sn = (ATypeNameExpression)typeName;
 					return new DomReturnType (sn.Name);
@@ -371,10 +414,6 @@ namespace MonoDevelop.CSharp.Parser
 				return DomReturnType.Void;
 			}
 			
-			IReturnType ConvertReturnType (TypeSpec type)
-			{
-				return new DomReturnType (type.Name);
-			}
 			
 			IReturnType ConvertReturnType (MemberName name)
 			{
@@ -382,11 +421,42 @@ namespace MonoDevelop.CSharp.Parser
 			}
 			
 			#region Global
-			public override void Visit (ModuleCompiled mc)
+			Stack<UsingsBag.Namespace> currentNamespace = new Stack<UsingsBag.Namespace> ();
+			public override void Visit (UsingsBag.Namespace nspace)
 			{
-				base.Visit (mc);
+				currentNamespace.Push (nspace);
+				if (nspace.Name != null) { // no need to push the global namespace
+					DomUsing domUsing = new DomUsing ();
+					domUsing.IsFromNamespace = true;
+					domUsing.Region = domUsing.ValidRegion = ConvertRegion (nspace.OpenBrace, nspace.CloseBrace); 
+					domUsing.Add (nspace.Name.Name);
+					Unit.Add (domUsing);
+				}
+				
+				VisitNamespaceUsings (nspace);
+				VisitNamespaceBody (nspace);
+				currentNamespace.Pop ();
 			}
-
+			
+			public override void Visit (UsingsBag.Using u)
+			{
+				DomUsing domUsing = new DomUsing ();
+				domUsing.Region = ConvertRegion (u.UsingLocation, u.SemicolonLocation);
+				domUsing.ValidRegion = ConvertRegion (currentNamespace.Peek ().OpenBrace, currentNamespace.Peek ().CloseBrace); 
+				domUsing.Add (u.NSpace.Name);
+				System.Console.WriteLine ("add using: "+ u.NSpace.Name);
+				Unit.Add (domUsing);
+			}
+			
+			public override void Visit (UsingsBag.AliasUsing u)
+			{
+				DomUsing domUsing = new DomUsing ();
+				domUsing.Region = ConvertRegion (u.UsingLocation, u.SemicolonLocation);
+				domUsing.ValidRegion = ConvertRegion (currentNamespace.Peek ().OpenBrace, currentNamespace.Peek ().CloseBrace); 
+				domUsing.Add (u.Nspace.Name, new DomReturnType (u.Identifier.Value));
+				Unit.Add (domUsing);
+			}
+			
 			public override void Visit (MemberCore member)
 			{
 				Console.WriteLine ("Unknown member:");

@@ -598,4 +598,125 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 			return found;
 		}
 	}
+	
+	public class UsingsBag
+	{
+		public class Namespace {
+			public Location NamespaceLocation { get; set; }
+			public MemberName Name { get; set; }
+			
+			public Location OpenBrace { get; set; }
+			public Location CloseBrace { get; set; }
+			public Location OptSemicolon { get; set; }
+			
+			public List<object> usings = new List<object> ();
+			public List<object> members = new List<object> ();
+			
+			
+			public virtual void Accept (StructuralVisitor visitor)
+			{
+				visitor.Visit (this);
+			}
+		}
+		
+		public class AliasUsing
+		{
+			public readonly Location UsingLocation;
+			public readonly Tokenizer.LocatedToken Identifier;
+			public readonly Location AssignLocation;
+			public readonly MemberName Nspace;
+			public readonly Location SemicolonLocation;
+			
+			public AliasUsing (Location usingLocation, Tokenizer.LocatedToken identifier, Location assignLocation, MemberName nspace, Location semicolonLocation)
+			{
+				this.UsingLocation = usingLocation;
+				this.Identifier = identifier;
+				this.AssignLocation = assignLocation;
+				this.Nspace = nspace;
+				this.SemicolonLocation = semicolonLocation;
+			}
+			
+			public virtual void Accept (StructuralVisitor visitor)
+			{
+				visitor.Visit (this);
+			}
+		}
+		
+		public class Using 
+		{
+			public readonly Location UsingLocation;
+			public readonly MemberName NSpace;
+			public readonly Location SemicolonLocation;
+			
+			public Using (Location usingLocation, MemberName nSpace, Location semicolonLocation)
+			{
+				this.UsingLocation = usingLocation;
+				this.NSpace = nSpace;
+				this.SemicolonLocation = semicolonLocation;
+			}
+			public virtual void Accept (StructuralVisitor visitor)
+			{
+				visitor.Visit (this);
+			}
+		}
+		
+		public Namespace Global {
+			get;
+			set;
+		}
+		Stack<Namespace> curNamespace = new Stack<Namespace> ();
+		
+		public UsingsBag ()
+		{
+			Global = new Namespace ();
+			Global.OpenBrace = new Location (1, 1);
+			Global.CloseBrace = new Location (int.MaxValue, int.MaxValue);
+			curNamespace.Push (Global);
+		}
+		
+		[Conditional ("FULL_AST")]
+		public void AddUsingAlias (Location usingLocation, Tokenizer.LocatedToken identifier, Location assignLocation, MemberName nspace, Location semicolonLocation)
+		{
+			curNamespace.Peek ().usings.Add (new AliasUsing (usingLocation, identifier, assignLocation, nspace, semicolonLocation));
+		}
+		
+		[Conditional ("FULL_AST")]
+		public void AddUsing (Location usingLocation, MemberName nspace, Location semicolonLocation)
+		{
+			curNamespace.Peek ().usings.Add (new Using (usingLocation, nspace, semicolonLocation));
+		}
+		
+		[Conditional ("FULL_AST")]
+		public void DeclareNamespace (Location namespaceLocation, MemberName nspace)
+		{
+			var newNamespace = new Namespace () { NamespaceLocation = namespaceLocation, Name = nspace };
+			curNamespace.Peek ().members.Add (newNamespace);
+			curNamespace.Push (newNamespace);
+		}
+		
+		[Conditional ("FULL_AST")]
+		public void AddTypeDeclaration (object type)
+		{
+			curNamespace.Peek ().members.Add (type);
+		}
+		
+		[Conditional ("FULL_AST")]
+		public void EndNamespace (Location optSemicolon)
+		{
+			curNamespace.Peek ().OptSemicolon = optSemicolon;
+			curNamespace.Pop ();
+		}
+		
+		[Conditional ("FULL_AST")]
+		public void OpenNamespace (Location bracketLocation)
+		{
+			curNamespace.Peek ().OpenBrace = bracketLocation;
+		}
+		
+		[Conditional ("FULL_AST")]
+		public void CloseNamespace (Location bracketLocation)
+		{
+			curNamespace.Peek ().CloseBrace = bracketLocation;
+		}
+	}
 }

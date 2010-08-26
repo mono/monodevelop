@@ -40,7 +40,39 @@ namespace Mono.CSharp
 				member.Accept (this);
 			}
 		}
-
+		
+		protected void VisitNamespaceUsings (UsingsBag.Namespace nspace)
+		{
+			foreach (object u in nspace.usings) {
+				if (u is UsingsBag.Using) {
+					((UsingsBag.Using)u).Accept (this);
+				} else {
+					((UsingsBag.AliasUsing)u).Accept (this);
+				}
+			}
+		}
+		
+		protected void VisitNamespaceBody (UsingsBag.Namespace nspace)
+		{
+			foreach (MemberCore member in nspace.members) {
+				member.Accept (this);
+			}
+		}
+		
+		public virtual void Visit (UsingsBag.Namespace nspace)
+		{
+			VisitNamespaceUsings (nspace);
+			VisitNamespaceBody (nspace);
+		}
+		
+		public virtual void Visit (UsingsBag.Using u)
+		{
+		}
+		
+		public virtual void Visit (UsingsBag.AliasUsing aliasUsing)
+		{
+		}
+		
 		public virtual void Visit (Class c)
 		{
 			VisitTypeContainer (c);

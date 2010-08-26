@@ -607,6 +607,9 @@ namespace Mono.CSharp
 		{
 			PropertyBuilder = Parent.TypeBuilder.DefineProperty (
 				GetFullName (MemberName), PropertyAttributes.None,
+#if !BOOTSTRAP_BASIC	// Requires trunk version mscorlib
+				IsStatic ? 0 : CallingConventions.HasThis,
+#endif
 				MemberType.GetMetaInfo (), null, null,
 				parameters.GetMetaInfo (), null, null);
 

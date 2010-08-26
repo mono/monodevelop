@@ -1990,7 +1990,9 @@ namespace Mono.CSharp
 	public class CompilerCompilationUnit {
 		public ModuleCompiled ModuleCompiled { get; set; }
 		public LocationsBag LocationsBag { get; set; }
+		public UsingsBag UsingsBag { get; set; }
 	}
+	
 	//
 	// This is the only public entry point
 	//
@@ -2092,9 +2094,10 @@ namespace Mono.CSharp
 				CSharpParser parser = new CSharpParser (reader, (CompilationUnit) Location.SourceFiles [0], ctx);
 				parser.Lexer.TabSize = 1;
 				parser.LocationsBag = new LocationsBag ();
+				parser.UsingsBag = new UsingsBag ();
 				parser.parse ();
 				
-				return new CompilerCompilationUnit () { ModuleCompiled = RootContext.ToplevelTypes, LocationsBag = parser.LocationsBag };
+				return new CompilerCompilationUnit () { ModuleCompiled = RootContext.ToplevelTypes, LocationsBag = parser.LocationsBag, UsingsBag = parser.UsingsBag };
 			} finally {
 				Reset ();
 			}
