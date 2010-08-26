@@ -43,30 +43,6 @@ namespace MonoDevelop.MonoDroid
 		public MonoDroidFrameworkBackend ()
 		{
 		}
-			/*
-			
-			try {
-				var sdkRoot = MonoDroidFramework.MonoDroidSdkLocation;
-				
-				sdkBin = sdkRoot.Combine ("bin");
-				javaBinDir = MonoDroidFramework.JavaSdkLocation.Combine ("bin");
-				androidBinDir = MonoDroidFramework.AndroidSdkLocation.Combine ("tools");
-				
-				
-				if (!File.Exists (Path.Combine (sdkDir, "mscorlib.dll"))) {
-					sdkDir = null;
-				    throw new Exception ("Missing mscorlib in MonoDroid SDK " + sdkRoot);
-				}
-				
-					
-					
-				}
-				
-			} catch (Exception ex) {
-				LoggingService.LogError ("Unexpected error finding MonoDroid SDK directory", ex);
-			}
-		}
-		*/
 		
 		public override IEnumerable<string> GetToolsPaths ()
 		{
