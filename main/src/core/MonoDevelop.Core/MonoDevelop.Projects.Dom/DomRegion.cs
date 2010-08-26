@@ -51,18 +51,20 @@ namespace MonoDevelop.Projects.Dom
 			set;
 		}
 		
-		public DomRegion (int startLine, int endLine) : this (startLine, -1, endLine, -1)
+		public DomRegion (int startLine, int endLine) : this (startLine, 0, endLine, 0)
 		{
 		}
 		
-		public DomRegion (int startLine, int startColumn, int endLine, int endColumn) : this ()
+		public DomRegion (int startLine, int startColumn, int endLine, int endColumn)
 		{
 			this.Start = new DomLocation (startLine, startColumn);
 			this.End   = new DomLocation (endLine, endColumn);
 		}
 		
-		public DomRegion (DomLocation start, DomLocation end) : this (start.Line, start.Column, end.Line, end.Column)
+		public DomRegion (DomLocation start, DomLocation end)
 		{
+			this.Start = start;
+			this.End   = end;
 		}
 		
 		public static DomRegion FromInvariantString (string invariantString)
