@@ -22,7 +22,7 @@
 		</Options>
 		
 		<Project name = "${ProjectName}" directory = "." type = "MonoDroid">
-			<Options />
+			<Options AndroidManifest="Properties/AndroidManifest.xml" />
 			<References>
 				<Reference type="Gac" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
 				<Reference type="Gac" refto="System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
@@ -30,6 +30,22 @@
 				<Reference type="Gac" refto="Mono.Android" />
 			</References>
 			<Files>
+				<Directory name="Resources">
+					<Directory name="layout">
+					</Directory>
+					<Directory name="values">
+						<File name="strings.xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, Click Me!</string>
+    <string name="app_name">${ProjectName}</string>
+</resources>]]></File>
+					</Directory>
+					<Directory name="drawable">
+					</Directory>
+				</Directory>
+				<Directory name="Properties">
+					<FileTemplateReference TemplateID="MonoDroidManifest" name="AndroidManifest.xml" SuppressAutoOpen="true" />
+				</Directory>
 			</Files>
 		</Project>
 	</Combine>
