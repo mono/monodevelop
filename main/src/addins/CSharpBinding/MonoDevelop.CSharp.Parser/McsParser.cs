@@ -109,7 +109,7 @@ namespace MonoDevelop.CSharp.Parser
 			
 			
 			// convert DOM
-			var conversionVisitor = new ConversionVisitor (top.LocationsBag, lexer.SpecialTracker.CurrentSpecials);
+			var conversionVisitor = new ConversionVisitor (new Document (content), top.LocationsBag, lexer.SpecialTracker.CurrentSpecials);
 			conversionVisitor.Unit = unit;
 			conversionVisitor.ParsedDocument = result;
 			top.ModuleCompiled.Accept (conversionVisitor);
@@ -279,9 +279,10 @@ namespace MonoDevelop.CSharp.Parser
 			}
 			
 			internal MonoDevelop.Projects.Dom.CompilationUnit Unit;
-			
-			public ConversionVisitor (LocationsBag locationsBag, List<ICSharpCode.NRefactory.ISpecial> specials)
+			Mono.TextEditor.Document data;
+			public ConversionVisitor (Mono.TextEditor.Document data, LocationsBag locationsBag, List<ICSharpCode.NRefactory.ISpecial> specials)
 			{
+				this.data = data;
 				this.LocationsBag = locationsBag;
 				this.specials = specials;
 			}
@@ -311,9 +312,27 @@ namespace MonoDevelop.CSharp.Parser
 				return new DomLocation (loc.Row, loc.Column);
 			}
 			
-			public static DomRegion ConvertRegion (Mono.CSharp.Location start, Mono.CSharp.Location end)
+			public DomRegion ConvertRegion (Mono.CSharp.Location start, Mono.CSharp.Location end)
 			{
-				return new DomRegion (Convert (start), Convert (end));
+				DomLocation startLoc = Convert (start);
+				int lineNr = start.Row;
+				var line = data.GetLine (lineNr);
+				if (line != null) {
+					if (line.GetIndentation (data).Length + 1 == start.Column) {
+						lineNr--;
+						while (lineNr > 1) {
+							line = data.GetLine (lineNr);
+							if (data.GetLine (lineNr).EditableLength != line.GetIndentation (data).Length)
+								break;
+							lineNr--;
+						}
+						startLoc = new DomLocation (lineNr, line.EditableLength + 1);
+					}
+				}
+				
+				var endLoc = Convert (end);
+				endLoc.Column++;
+				return new DomRegion (startLoc, endLoc);
 			}
 			
 			static MonoDevelop.Projects.Dom.Modifiers ConvertModifiers (Mono.CSharp.Modifiers modifiers)
@@ -385,7 +404,7 @@ namespace MonoDevelop.CSharp.Parser
 				newType.Location = Convert (c.MemberName.Location);
 				newType.ClassType = ClassType.Class;
 				var location = LocationsBag.GetMemberLocation (c);
-				newType.BodyRegion = location != null ? ConvertRegion (location[1], location[2]) : DomRegion.Empty;
+				newType.BodyRegion = location != null && location.Count > 2 ? ConvertRegion (location[1], location[2]) : DomRegion.Empty;
 				newType.Modifiers = ConvertModifiers (c.ModFlags);
 				AddAttributes (newType, c.OptAttributes);
 				AddTypeParameter (newType, c);

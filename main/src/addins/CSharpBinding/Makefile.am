@@ -277,7 +277,7 @@ all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) -define:GMCS_SOURCE -debug -out:$@ -target:library $(REFS) $(build_deps) \
+	$(CSC) $(CSC_FLAGS) "-define:GMCS_SOURCE;NET_2_0;MS_COMPATIBLE;FULL_AST;BOOTSTRAP_BASIC" -debug -out:$@ -target:library $(REFS) $(build_deps) \
 		$(build_resources:%=/resource:%) $(build_sources)
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)
@@ -287,7 +287,7 @@ $(ASSEMBLY).mdb: $(ASSEMBLY)
 
 
 $(TESTASSEMBLY) : $(build_test_sources) $(build_resources)
-	$(CSC) $(CSC_FLAGS) -debug -define:GMCS_SOURCE -codepage:utf8 -out:$@ -target:library $(DLLS) $(TESTDLLS) $(REFS) /r:$(ASSEMBLY) \
+	$(CSC) $(CSC_FLAGS) -debug "-define:GMCS_SOURCE;NET_2_0;MS_COMPATIBLE;FULL_AST;BOOTSTRAP_BASIC" -codepage:utf8 -out:$@ -target:library $(DLLS) $(TESTDLLS) $(REFS) /r:$(ASSEMBLY) \
 	$(monodoc_libflags) $(build_resources:%=/resource:%) $(build_test_sources)
 
 parse: $(PARSE)
