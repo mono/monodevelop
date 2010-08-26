@@ -249,8 +249,8 @@ namespace Mono.TextEditor
 		
 		public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
 		{
-			int markerStart = LineSegment.Offset + System.Math.Max (StartCol, 0);
-			int markerEnd = LineSegment.Offset + (EndCol < 0 ? LineSegment.Length : EndCol);
+			int markerStart = LineSegment.Offset + System.Math.Max (StartCol - 1, 0);
+			int markerEnd = LineSegment.Offset + (EndCol < 1 ? LineSegment.EditableLength : EndCol - 1);
 			if (markerEnd < startOffset || markerStart > endOffset) 
 				return; 
 	
