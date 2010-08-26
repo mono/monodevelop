@@ -51,11 +51,11 @@ namespace MonoDevelop.MonoDroid
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
-			MonoDroidProjectConfiguration conf;
-			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject (out conf);
+			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
 			if (proj == null)
 				return;
 			
+			var conf = (MonoDroidProjectConfiguration) proj.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
 			var projSetting = proj.GetDeviceTarget (conf);
 			
 			var def = info.Add ("Default", null);
@@ -71,8 +71,7 @@ namespace MonoDevelop.MonoDroid
 
 		protected override void Run (object dataItem)
 		{
-			MonoDroidProjectConfiguration conf;
-			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject (out conf);
+			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
 			if (proj == null)
 				return;
 			
@@ -84,30 +83,26 @@ namespace MonoDevelop.MonoDroid
 	{
 		protected override void Update (MonoDevelop.Components.Commands.CommandInfo info)
 		{
-			MonoDroidProjectConfiguration conf;
-			var proj = GetActiveExecutableMonoDroidProject (out conf);
+			var proj = GetActiveExecutableMonoDroidProject ();
 			info.Visible = info.Enabled = proj != null;
 		}
 		
 		protected override void Run ()
 		{
-			MonoDroidProjectConfiguration conf;
-			var proj = GetActiveExecutableMonoDroidProject (out conf);
+			var proj = GetActiveExecutableMonoDroidProject ();
 			
 			throw new NotImplementedException ();
 		}
 		
-		public static MonoDroidProject GetActiveExecutableMonoDroidProject (out MonoDroidProjectConfiguration conf)
+		public static MonoDroidProject GetActiveExecutableMonoDroidProject ()
 		{
-			conf = null;
-			var config = IdeApp.Workspace.ActiveConfiguration;
 			var proj = IdeApp.ProjectOperations.CurrentSelectedProject as MonoDroidProject;
-			if (proj == null && (conf = proj.GetConfiguration (config)).IsApplication)
+			if (proj == null && proj.IsAndroidApplication)
 				return proj;
 			var sln = IdeApp.ProjectOperations.CurrentSelectedSolution;
 			if (sln != null) {
 				proj = sln.StartupItem as MonoDroidProject;
-				if (proj == null && (conf = proj.GetConfiguration (config)).IsApplication)
+				if (proj == null && proj.IsAndroidApplication)
 					return proj;
 			}
 			return null;

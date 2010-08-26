@@ -51,6 +51,9 @@ namespace MonoDevelop.MonoDroid
 		[ProjectPathItemProperty ("AndroidResgenFile")]
 		string androidResgenFile;
 		
+		[ProjectPathItemProperty ("AndroidManifest")]
+		string androidManifest;
+		
 		[ItemProperty ("MonoDroidResourcePrefix")]
 		string monoDroidResourcePrefix;
 		
@@ -58,7 +61,7 @@ namespace MonoDevelop.MonoDroid
 			get { return "MonoDroid"; }
 		}
 		
-		public string AndroidResgenFile {
+		public FilePath AndroidResgenFile {
 			get { return androidResgenFile; }
 			set {
 				if (value == "")
@@ -67,6 +70,18 @@ namespace MonoDevelop.MonoDroid
 					return;
 				androidResgenFile = value;
 				NotifyModified ("AndroidResgenFile");
+			}
+		}
+		
+		public FilePath AndroidManifest {
+			get { return androidManifest; }
+			set {
+				if (value == "")
+					value = null;
+				if (value == androidManifest)
+					return;
+				androidManifest = value;
+				NotifyModified ("AndroidManifest");
 			}
 		}
 		
@@ -236,32 +251,39 @@ namespace MonoDevelop.MonoDroid
 			}
 		}
 		
-		AndroidAppManifestCache manifests;
+		AndroidPackageNameCache packageNameCache;
 		
-		public bool IsAndroidApplication (ConfigurationSelector conf)
-		{
-			return !((MonoDroidProjectConfiguration)GetConfiguration (conf)).IsApplication;
+		public bool IsAndroidApplication {
+			get { return AndroidManifest.IsNullOrEmpty; }
 		}
 		
-		public AndroidAppManifest GetAndroidManifest (ConfigurationSelector conf)
+		public string GetPackageName (MonoDroidProjectConfiguration conf)
 		{
-			if (manifests == null)
-				manifests = new AndroidAppManifestCache (this);
-			
-			var cfg = (MonoDroidProjectConfiguration)GetConfiguration (conf);
-			if (cfg.AndroidManifest.IsNullOrEmpty)
+			if (AndroidManifest.IsNullOrEmpty)
 				return null;
+			
+			var manifestFile = conf.AndroidManifest;
+			if (manifestFile.IsNullOrEmpty)
+				manifestFile = this.AndroidManifest;
 			
 			// If a specified manifest is not in the project, add or create it
 			// FIXME: do we really want to do this?
-			var pf = Files.GetFile (cfg.AndroidManifest);
+			var pf = Files.GetFile (manifestFile);
 			if (pf == null) {
-				if (!File.Exists (cfg.AndroidManifest))
-					AndroidAppManifest.Create (GetDefaultPackageName ()).WriteToFile (cfg.AndroidManifest);
-				pf = AddFile (cfg.AndroidManifest);
+				if (!File.Exists (manifestFile))
+					AndroidAppManifest.Create (GetDefaultPackageName (), Name).WriteToFile (manifestFile);
+				pf = AddFile (manifestFile);
 			}
 			
-			return manifests.Get (cfg.AndroidManifest);
+			if (packageNameCache == null)
+				packageNameCache = new AndroidPackageNameCache (this);
+			
+			return packageNameCache.GetPackageName (manifestFile);
+		}
+		
+		public string GetPackageName (ConfigurationSelector conf)
+		{
+			return GetPackageName ((MonoDroidProjectConfiguration)GetConfiguration (conf));
 		}
 		
 		string GetDefaultPackageName ()
@@ -283,9 +305,9 @@ namespace MonoDevelop.MonoDroid
 		
 		public override void Dispose ()
 		{
-			if (manifests != null) {
-				manifests.Dispose ();
-				manifests = null;
+			if (packageNameCache != null) {
+				packageNameCache.Dispose ();
+				packageNameCache = null;
 			}
 			
 			base.Dispose ();

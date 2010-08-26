@@ -51,10 +51,12 @@ namespace MonoDevelop.MonoDroid
 		[ItemProperty ("MonoDroidExtraArgs")]
 		public string MonoDroidExtraArgs { get; set; }
 		
-		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
 		[ProjectPathItemProperty ("AndroidManifest")]
 		string androidManifest;
-			
+		
+		/// <summary>
+		/// Only for supporting advanced use. Overrides project.AndroidManifest. 
+		/// </summary>
 		public FilePath AndroidManifest {
 			get { return androidManifest; }
 			set {
@@ -66,19 +68,15 @@ namespace MonoDevelop.MonoDroid
 		
 		public string ApkPath {
 			get {
-				throw new NotImplementedException ();
+				string packageName = ParentItem.GetPackageName (this);
+				return OutputDirectory.Combine (packageName) + ".apk";
 			}
 		}
 		
 		public string ApkSignedPath {
 			get {
-				throw new NotImplementedException ();
-			}
-		}
-		
-		public bool IsApplication {
-			get {
-				return !string.IsNullOrEmpty (AndroidManifest);
+				string packageName = ParentItem.GetPackageName (this);
+				return OutputDirectory.Combine (packageName) + "-signed.apk";
 			}
 		}
 		

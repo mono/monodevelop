@@ -35,38 +35,72 @@ namespace MonoDevelop.MonoDroid
 	public class AndroidAppManifest
 	{
 		XDocument doc;
+		XElement manifest, application;
+		XNamespace aNS = "http://schemas.android.com/apk/res/android";
 		
 		private AndroidAppManifest (XDocument doc)
 		{
 			this.doc = doc;
+			manifest = doc.Root;
+			if (manifest.Name != "manifest")
+				throw new Exception ("App manifest does not have 'manifest' root element");
+			
+			application = doc.Root;
+			if (application.Name != "application")
+				throw new Exception ("App manifest does not have 'application' element");
 		}
 		
-		public static AndroidAppManifest Create (string packageName)
+		public static AndroidAppManifest Create (string packageName, string appLabel)
 		{
-			var manifest = new AndroidAppManifest (new XDocument ());
-			throw new NotImplementedException ();
+			return new AndroidAppManifest (XDocument.Parse (
+@"<?xml version=""1.0"" encoding=""utf-8""?>
+<manifest xmlns:android=""http://schemas.android.com/apk/res/android"" package="""" android:versionCode=""1"" android:versionName=""1.0"">
+  <application android:label="""">
+  </application>
+  <uses-sdk android:minSdkVersion=""4"" />
+</manifest>")) {
+				PackageName = packageName,
+				ApplicationLabel = appLabel,
+			};
 		}
 		
 		public static AndroidAppManifest Load (FilePath filename)
 		{
-			throw new NotImplementedException ();
+			var doc = XDocument.Load (filename);
+			return new AndroidAppManifest (doc);
 		}
 		
 		public void WriteToFile (FilePath fileName)
 		{
 			MonoDevelop.Projects.Text.TextFile.WriteFile (fileName, doc.ToString (), "UTF8");
 		}
+		
+		public string PackageName {
+			get { return (string) manifest.Attribute ("package");  }
+			set { manifest.SetAttributeValue ("package", value); }
+		}
+		
+		public string ApplicationLabel {
+			get { return (string) application.Attribute (aNS + "label");  }
+			set { application.SetAttributeValue (aNS + "label", value); }
+		}
 	}
 	
-	class AndroidAppManifestCache : ProjectFileCache<MonoDroidProject,AndroidAppManifest>
+	class AndroidPackageNameCache : ProjectFileCache<MonoDroidProject,string>
 	{
-		public AndroidAppManifestCache (MonoDroidProject project) : base (project)
+		public AndroidPackageNameCache (MonoDroidProject project) : base (project)
 		{
 		}
 		
-		protected override AndroidAppManifest GenerateInfo (string filename)
+		public string GetPackageName (string manifestFileName)
 		{
-			return AndroidAppManifest.Load (filename);
+			return Get (manifestFileName);
+		}
+		
+		protected override string GenerateInfo (string filename)
+		{
+			var manifest = AndroidAppManifest.Load (filename);
+			return manifest.PackageName;
 		}
 	}
 	
@@ -109,7 +143,7 @@ namespace MonoDevelop.MonoDroid
 		/// <summary>
 		/// Queries the cache for an item. If the file does not exist in the project, returns null.
 		/// </summary>
-		public U Get (string filename)
+		protected U Get (string filename)
 		{
 			U value;
 			if (cache.TryGetValue (filename, out value))
