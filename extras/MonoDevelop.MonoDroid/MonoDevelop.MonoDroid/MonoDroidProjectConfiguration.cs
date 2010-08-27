@@ -45,7 +45,7 @@ namespace MonoDevelop.MonoDroid
 		}
 		
 		public new MonoDroidProject ParentItem {
-			get { return (MonoDroidProject) ParentItem; }
+			get { return (MonoDroidProject) base.ParentItem; }
 		}
 		
 		[ItemProperty ("MonoDroidExtraArgs")]
