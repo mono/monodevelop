@@ -269,7 +269,7 @@ namespace MonoDevelop.Ide.Templates
 			foreach (Mono.TextEditor.LineSegment line in doc.Lines) {
 				var lineText = doc.GetTextAt (line.Offset, line.EditableLength);
 				if (tabToSpaces != null)
-					lineText.Replace ("\t", tabToSpaces);
+					lineText = lineText.Replace ("\t", tabToSpaces);
 				data = System.Text.Encoding.UTF8.GetBytes (lineText);
 				ms.Write (data, 0, data.Length);
 				ms.Write (eolMarkerBytes, 0, eolMarkerBytes.Length);
