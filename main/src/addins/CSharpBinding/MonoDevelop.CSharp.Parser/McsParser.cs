@@ -109,7 +109,7 @@ namespace MonoDevelop.CSharp.Parser
 			
 			
 			// convert DOM
-			var conversionVisitor = new ConversionVisitor (new Document (content), top.LocationsBag, lexer.SpecialTracker.CurrentSpecials);
+			var conversionVisitor = new ConversionVisitor (top.LocationsBag, lexer.SpecialTracker.CurrentSpecials);
 			conversionVisitor.Dom = dom;
 			conversionVisitor.Unit = unit;
 			conversionVisitor.ParsedDocument = result;
@@ -281,10 +281,8 @@ namespace MonoDevelop.CSharp.Parser
 			}
 			
 			internal MonoDevelop.Projects.Dom.CompilationUnit Unit;
-			Mono.TextEditor.Document data;
-			public ConversionVisitor (Mono.TextEditor.Document data, LocationsBag locationsBag, List<ICSharpCode.NRefactory.ISpecial> specials)
+			public ConversionVisitor (LocationsBag locationsBag, List<ICSharpCode.NRefactory.ISpecial> specials)
 			{
-				this.data = data;
 				this.LocationsBag = locationsBag;
 				this.specials = specials;
 			}
@@ -317,21 +315,6 @@ namespace MonoDevelop.CSharp.Parser
 			public DomRegion ConvertRegion (Mono.CSharp.Location start, Mono.CSharp.Location end)
 			{
 				DomLocation startLoc = Convert (start);
-				int lineNr = start.Row;
-				var line = data.GetLine (lineNr);
-				if (line != null) {
-					if (line.GetIndentation (data).Length + 1 == start.Column) {
-						lineNr--;
-						while (lineNr > 1) {
-							line = data.GetLine (lineNr);
-							if (data.GetLine (lineNr).EditableLength != line.GetIndentation (data).Length)
-								break;
-							lineNr--;
-						}
-						startLoc = new DomLocation (lineNr, line.EditableLength + 1);
-					}
-				}
-				
 				var endLoc = Convert (end);
 				endLoc.Column++;
 				return new DomRegion (startLoc, endLoc);
@@ -562,7 +545,12 @@ namespace MonoDevelop.CSharp.Parser
 				newType.Location = Convert (c.MemberName.Location);
 				newType.ClassType = classType;
 				var location = LocationsBag.GetMemberLocation (c);
-				newType.BodyRegion = location != null && location.Count > 2 ? ConvertRegion (location[1], location[2]) : DomRegion.Empty;
+				if (location != null && location.Count > 2) {
+					var region = ConvertRegion (c.MemberName.Location, location[2]);
+					region.Start = new DomLocation (region.Start.Line, region.Start.Column + c.MemberName.Name.Length);
+					newType.BodyRegion =  region;
+				}
+				
 				newType.Modifiers = ConvertModifiers (c.ModFlags);
 				AddAttributes (newType, c.OptAttributes);
 				AddTypeParameter (newType, c);
@@ -853,8 +841,14 @@ namespace MonoDevelop.CSharp.Parser
 				method.Documentation = RetrieveDocumentation (m.Location.Row);
 				method.Location = Convert (m.MemberName.Location);
 				method.Modifiers = ConvertModifiers (m.ModFlags);
-				if (m.Block != null)
-					method.BodyRegion = ConvertRegion (m.Block.StartLocation, m.Block.EndLocation);
+				if (m.Block != null) {
+					var location = LocationsBag.GetMemberLocation (m);
+					var region = ConvertRegion (location != null ? location[1] : m.Block.StartLocation, m.Block.EndLocation);
+					if (location != null)
+						region.Start = new DomLocation (region.Start.Line, region.Start.Column + 1);
+					method.BodyRegion = region;
+				}
+				
 				method.ReturnType = ConvertReturnType (m.TypeName);
 				AddAttributes (method, m.OptAttributes);
 				AddParameter (method, m.ParameterInfo);
@@ -875,8 +869,13 @@ namespace MonoDevelop.CSharp.Parser
 				method.Documentation = RetrieveDocumentation (o.Location.Row);
 				method.Location = Convert (o.MemberName.Location);
 				method.Modifiers = ConvertModifiers (o.ModFlags);
-				if (o.Block != null)
-					method.BodyRegion = ConvertRegion (o.Block.StartLocation, o.Block.EndLocation);
+				if (o.Block != null) {
+					var location = LocationsBag.GetMemberLocation (o);
+					var region = ConvertRegion (location != null ? location[1] : o.Block.StartLocation, o.Block.EndLocation);
+					if (location != null)
+						region.Start = new DomLocation (region.Start.Line, region.Start.Column + 1);
+					method.BodyRegion = region;
+				}
 				method.Modifiers = ConvertModifiers (o.ModFlags) | MonoDevelop.Projects.Dom.Modifiers.SpecialName;
 				method.ReturnType = ConvertReturnType (o.TypeName);
 				AddAttributes (method, o.OptAttributes);
@@ -895,8 +894,13 @@ namespace MonoDevelop.CSharp.Parser
 				method.Documentation = RetrieveDocumentation (c.Location.Row);
 				method.Location = Convert (c.MemberName.Location);
 				method.Modifiers = ConvertModifiers (c.ModFlags);
-				if (c.Block != null)
-					method.BodyRegion = ConvertRegion (c.Block.StartLocation, c.Block.EndLocation);
+				if (c.Block != null) {
+					var location = LocationsBag.GetMemberLocation (c);
+					var region = ConvertRegion (location != null ? location[1] : c.Block.StartLocation, c.Block.EndLocation);
+					if (location != null)
+						region.Start = new DomLocation (region.Start.Line, region.Start.Column + 1);
+					method.BodyRegion = region;
+				}
 				method.Modifiers = ConvertModifiers (c.ModFlags) | MonoDevelop.Projects.Dom.Modifiers.SpecialName;
 				method.MethodModifier |= MethodModifier.IsConstructor;
 				AddAttributes (method, c.OptAttributes);
@@ -912,8 +916,13 @@ namespace MonoDevelop.CSharp.Parser
 				method.Name = ".dtor";
 				method.Documentation = RetrieveDocumentation (d.Location.Row);
 				method.Location = Convert (d.MemberName.Location);
-				if (d.Block != null)
-					method.BodyRegion = ConvertRegion (d.Block.StartLocation, d.Block.EndLocation);
+				if (d.Block != null) {
+					var location = LocationsBag.GetMemberLocation (d);
+					var region = ConvertRegion (location != null ? location[1] : d.Block.StartLocation, d.Block.EndLocation);
+					if (location != null)
+						region.Start = new DomLocation (region.Start.Line, region.Start.Column + 1);
+					method.BodyRegion = region;
+				}
 				method.Modifiers = ConvertModifiers (d.ModFlags) | MonoDevelop.Projects.Dom.Modifiers.SpecialName;
 				method.MethodModifier |= MethodModifier.IsFinalizer;
 				AddAttributes (method, d.OptAttributes);
