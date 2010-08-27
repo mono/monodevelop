@@ -31,20 +31,27 @@
 			</References>
 			<Files>
 				<Directory name="Resources">
+					<RawFile name="AboutResources.txt" src="MonoDroidApplication/AboutResources.txt" />
 					<Directory name="layout">
 					</Directory>
 					<Directory name="values">
 						<File name="strings.xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, Click Me!</string>
     <string name="app_name">${ProjectName}</string>
 </resources>]]></File>
 					</Directory>
-					<Directory name="drawable">
+					<Directory name="drawable-hdpi">
+						<RawFile name="icon.png" src="MonoDroidApplication/icon-md.png" />
+					</Directory>
+					<Directory name="drawable-mdpi">
+						<RawFile name="icon.png" src="MonoDroidApplication/icon-md.png" />
+					</Directory>
+					<Directory name="drawable-ldpi">
+						<RawFile name="icon.png" src="MonoDroidApplication/icon-md.png" />
 					</Directory>
 				</Directory>
 				<Directory name="Properties">
-					<FileTemplateReference TemplateID="MonoDroidManifest" name="AndroidManifest.xml" SuppressAutoOpen="true" />
+					<File name="AndroidManifest.xml" src="MonoDroidApplication/AndroidManifest.xml" />
 				</Directory>
 			</Files>
 		</Project>
