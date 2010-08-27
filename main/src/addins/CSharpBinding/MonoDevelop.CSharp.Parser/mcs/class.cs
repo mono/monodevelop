@@ -232,7 +232,13 @@ namespace Mono.CSharp {
 		//   (interfaces or abstract methods)
 		/// </remarks>
 		PendingImplementation pending;
-
+		
+		public List<FullNamedExpression> TypeBaseExpressions {
+			get {
+				return this.type_bases;
+			}
+		}
+		
 		public TypeContainer (NamespaceEntry ns, DeclSpace parent, MemberName name,
 				      Attributes attrs, MemberKind kind)
 			: base (ns, parent, name, attrs)
@@ -328,24 +334,24 @@ namespace Mono.CSharp {
 
 		public void AddConstant (Const constant)
 		{
+			orderedAllMembers.Add (constant);
 			if (!AddMember (constant))
 				return;
 			
 			if (constants == null)
 				constants = new List<MemberCore> ();
-			orderedAllMembers.Add (constant);
 			constants.Add (constant);
 		}
 
 		public TypeContainer AddTypeContainer (TypeContainer tc)
 		{
+			orderedAllMembers.Add (tc);
 			if (!AddMemberType (tc))
 				return tc;
 
 			if (types == null)
 				types = new List<TypeContainer> ();
 			
-			orderedAllMembers.Add (tc);
 			types.Add (tc);
 			return tc;
 		}
@@ -446,10 +452,10 @@ namespace Mono.CSharp {
 		
 		public void AddMethod (MethodOrOperator method)
 		{
+			orderedAllMembers.Add (method);
 			if (!AddToContainer (method, method.MemberName.Basename))
 				return;
 			
-			orderedAllMembers.Add (method);
 			if (methods == null)
 				methods = new List<MemberCore> ();
 
@@ -461,6 +467,7 @@ namespace Mono.CSharp {
 
 		public void AddConstructor (Constructor c)
 		{
+			orderedAllMembers.Add (c);
 			bool is_static = (c.ModFlags & Modifiers.STATIC) != 0;
 			if (!AddToContainer (c, is_static ?
 				ConstructorBuilder.ConstructorName : ConstructorBuilder.TypeConstructorName))
@@ -479,7 +486,6 @@ namespace Mono.CSharp {
 			} else {
 				if (c.ParameterInfo.IsEmpty)
 					default_constructor = c;
-				orderedAllMembers.Add (c);
 				if (instance_constructors == null)
 					instance_constructors = new List<Constructor> ();
 				
@@ -489,9 +495,9 @@ namespace Mono.CSharp {
 
 		public bool AddField (FieldBase field)
 		{
+			orderedAllMembers.Add (field);
 			if (!AddMember (field))
 				return false;
-			orderedAllMembers.Add (field);
 			if (fields == null)
 				fields = new List<FieldBase> ();
 
@@ -516,9 +522,9 @@ namespace Mono.CSharp {
 
 		public void AddProperty (Property prop)
 		{
+			orderedAllMembers.Add (prop);
 			if (!AddMember (prop))
 				return;
-			orderedAllMembers.Add (prop);
 			if (properties == null)
 				properties = new List<MemberCore> ();
 
@@ -530,9 +536,9 @@ namespace Mono.CSharp {
 
 		public void AddEvent (Event e)
 		{
+			orderedAllMembers.Add (e);
 			if (!AddMember (e))
 				return;
-			orderedAllMembers.Add (e);
 			if (events == null)
 				events = new List<MemberCore> ();
 
@@ -544,9 +550,9 @@ namespace Mono.CSharp {
 		/// </summary>
 		public void AddIndexer (Indexer i)
 		{
+			orderedAllMembers.Add (i);
 			if (indexers == null)
 				indexers = new List<MemberCore> ();
-			orderedAllMembers.Add (i);
 			if (i.IsExplicitImpl)
 				AddMemberToList (i, indexers, true);
 			else 
@@ -555,9 +561,9 @@ namespace Mono.CSharp {
 
 		public void AddOperator (Operator op)
 		{
+			orderedAllMembers.Add (op);
 			if (!AddMember (op))
 				return;
-			orderedAllMembers.Add (op);
 			if (operators == null)
 				operators = new List<MemberCore> ();
 

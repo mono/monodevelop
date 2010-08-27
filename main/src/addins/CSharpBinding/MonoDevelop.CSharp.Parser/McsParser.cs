@@ -110,13 +110,15 @@ namespace MonoDevelop.CSharp.Parser
 			
 			// convert DOM
 			var conversionVisitor = new ConversionVisitor (new Document (content), top.LocationsBag, lexer.SpecialTracker.CurrentSpecials);
+			conversionVisitor.Dom = dom;
 			conversionVisitor.Unit = unit;
 			conversionVisitor.ParsedDocument = result;
 			top.UsingsBag.Global.Accept (conversionVisitor);
 			
+			unit.Tag = top;
+			
 			// parser errors
 			errorReportPrinter.Errors.ForEach (e => conversionVisitor.ParsedDocument.Add (e));
-			
 			return result;
 		}
 		
@@ -263,7 +265,7 @@ namespace MonoDevelop.CSharp.Parser
 		
 		class ConversionVisitor : StructuralVisitor
 		{
-			ProjectDom Dom {
+			public ProjectDom Dom {
 				get;
 				set;
 			}
@@ -350,6 +352,25 @@ namespace MonoDevelop.CSharp.Parser
 				
 				if ((modifiers & Mono.CSharp.Modifiers.ABSTRACT) != 0)
 					result |= MonoDevelop.Projects.Dom.Modifiers.Abstract;
+				if ((modifiers & Mono.CSharp.Modifiers.NEW) != 0)
+					result |= MonoDevelop.Projects.Dom.Modifiers.New;
+				if ((modifiers & Mono.CSharp.Modifiers.SEALED) != 0)
+					result |= MonoDevelop.Projects.Dom.Modifiers.Sealed;
+				if ((modifiers & Mono.CSharp.Modifiers.READONLY) != 0)
+					result |= MonoDevelop.Projects.Dom.Modifiers.Readonly;
+				if ((modifiers & Mono.CSharp.Modifiers.VIRTUAL) != 0)
+					result |= MonoDevelop.Projects.Dom.Modifiers.Virtual;
+				if ((modifiers & Mono.CSharp.Modifiers.OVERRIDE) != 0)
+					result |= MonoDevelop.Projects.Dom.Modifiers.Override;
+				if ((modifiers & Mono.CSharp.Modifiers.EXTERN) != 0)
+					result |= MonoDevelop.Projects.Dom.Modifiers.Extern;
+				if ((modifiers & Mono.CSharp.Modifiers.VOLATILE) != 0)
+					result |= MonoDevelop.Projects.Dom.Modifiers.Volatile;
+				if ((modifiers & Mono.CSharp.Modifiers.UNSAFE) != 0)
+					result |= MonoDevelop.Projects.Dom.Modifiers.Unsafe;
+				
+				if ((modifiers & Mono.CSharp.Modifiers.STATIC) != 0)
+					result |= MonoDevelop.Projects.Dom.Modifiers.Static;
 				return result;
 			}
 			
@@ -413,12 +434,15 @@ namespace MonoDevelop.CSharp.Parser
 					if (typeExpr.Type == Mono.CSharp.TypeManager.uintptr_type)
 						return DomReturnType.UIntPtr;
 					MonoDevelop.Core.LoggingService.LogError ("Error while converting :" + typeName + " - unknown type value");
-					
 					return DomReturnType.Void;
 				}
+				
 				if (typeName is MemberAccess) {
 					MemberAccess ma = (MemberAccess)typeName;
 					var baseType = (DomReturnType)ConvertReturnType (ma.LeftExpression);
+					// type expressions are global constants that never should be altered.
+					if (ma.LeftExpression is TypeExpression)
+						baseType = new DomReturnType (baseType.FullName);
 					baseType.Parts.Add (new ReturnTypePart (ma.Name));
 					AddTypeArguments (ma, baseType);
 					return baseType;
@@ -429,6 +453,32 @@ namespace MonoDevelop.CSharp.Parser
 					var result = new DomReturnType (sn.Name);
 					AddTypeArguments (sn, result);
 					return result;
+				}
+				
+				if (typeName is ComposedCast) {
+					var cc = (ComposedCast)typeName;
+					var baseType = (DomReturnType)ConvertReturnType (cc.Left);
+					// type expressions are global constants that never should be altered.
+					if (cc.Left is TypeExpression)
+						baseType = new DomReturnType (baseType.FullName);
+					if (cc.Spec.IsNullable) {
+						baseType.IsNullable = true;
+					} else if (cc.Spec.IsPointer) {
+						baseType.PointerNestingLevel++;
+					} else {
+						baseType.ArrayDimensions++;
+						baseType.SetDimension (baseType.ArrayDimensions - 1, cc.Spec.Dimension - 1);
+					}
+					return baseType;
+				}
+				if (typeName is SpecialContraintExpr) {
+					var sce = (SpecialContraintExpr)typeName;
+					if (sce.Constraint == SpecialConstraint.Struct)
+						return new DomReturnType (DomReturnType.ValueType.FullName);
+					if (sce.Constraint == SpecialConstraint.Class)
+						return new DomReturnType (DomReturnType.Object.FullName);
+					// atm we've no model in the dom to model new()
+					return new DomReturnType (DomReturnType.Object.FullName);
 				}
 				MonoDevelop.Core.LoggingService.LogError ("Error while converting :" + typeName + " - unknown type name");
 				return DomReturnType.Void;
@@ -441,6 +491,7 @@ namespace MonoDevelop.CSharp.Parser
 			}
 			
 			#region Global
+			string currentNamespaceName = "";
 			Stack<UsingsBag.Namespace> currentNamespace = new Stack<UsingsBag.Namespace> ();
 			
 			string ConvertToString (MemberName name)
@@ -452,20 +503,25 @@ namespace MonoDevelop.CSharp.Parser
 				
 			}
 			
+
 			public override void Visit (UsingsBag.Namespace nspace)
 			{
+				string oldNamespace = currentNamespaceName;
 				currentNamespace.Push (nspace);
 				if (nspace.Name != null) { // no need to push the global namespace
 					DomUsing domUsing = new DomUsing ();
 					domUsing.IsFromNamespace = true;
 					domUsing.Region = domUsing.ValidRegion = ConvertRegion (nspace.OpenBrace, nspace.CloseBrace); 
-					domUsing.Add (ConvertToString (nspace.Name));
+					string name = ConvertToString (nspace.Name);
+					domUsing.Add (name);
 					Unit.Add (domUsing);
+					currentNamespaceName = string.IsNullOrEmpty (currentNamespaceName) ? name : currentNamespaceName + "." + name;
 				}
 				
 				VisitNamespaceUsings (nspace);
 				VisitNamespaceBody (nspace);
 				currentNamespace.Pop ();
+				currentNamespaceName = oldNamespace;
 			}
 			
 			public override void Visit (UsingsBag.Using u)
@@ -482,7 +538,7 @@ namespace MonoDevelop.CSharp.Parser
 				DomUsing domUsing = new DomUsing ();
 				domUsing.Region = ConvertRegion (u.UsingLocation, u.SemicolonLocation);
 				domUsing.ValidRegion = ConvertRegion (currentNamespace.Peek ().OpenBrace, currentNamespace.Peek ().CloseBrace); 
-				domUsing.Add (ConvertToString (u.Nspace), new DomReturnType (u.Identifier.Value));
+				domUsing.Add (u.Identifier.Value, new DomReturnType (ConvertToString (u.Nspace)));
 				Unit.Add (domUsing);
 			}
 			
@@ -499,29 +555,29 @@ namespace MonoDevelop.CSharp.Parser
 				DomType newType = new DomType ();
 				newType.SourceProjectDom = Dom;
 				newType.CompilationUnit = Unit;
-				if (currentNamespace.Peek ().Name != null)
-					newType.Namespace = ConvertToString (currentNamespace.Peek ().Name);
+				if (typeStack.Count == 0 && !string.IsNullOrEmpty (currentNamespaceName))
+					newType.Namespace = currentNamespaceName;
+				
 				newType.Name = c.MemberName.Name;
 				newType.Location = Convert (c.MemberName.Location);
-				newType.ClassType = ClassType.Class;
+				newType.ClassType = classType;
 				var location = LocationsBag.GetMemberLocation (c);
 				newType.BodyRegion = location != null && location.Count > 2 ? ConvertRegion (location[1], location[2]) : DomRegion.Empty;
 				newType.Modifiers = ConvertModifiers (c.ModFlags);
 				AddAttributes (newType, c.OptAttributes);
 				AddTypeParameter (newType, c);
 				
-				/*
-
-				if (typeDeclaration.BaseTypes != null) {
-					foreach (ICSharpCode.NRefactory.Ast.TypeReference type in typeDeclaration.BaseTypes) {
-						if (type == typeDeclaration.BaseTypes[0]) {
-							newType.BaseType = ConvertReturnType (type);
+				if (c.TypeBaseExpressions != null) {
+					foreach (var type in c.TypeBaseExpressions) {
+						var baseType = ConvertReturnType (type);
+					//	Console.WriteLine (newType.Name + " -- " + baseType);
+						if (newType.BaseType == null) {
+							newType.BaseType = baseType;
 						} else {
-							newType.AddInterfaceImplementation (ConvertReturnType (type));
+							newType.AddInterfaceImplementation (baseType);
 						}
 					}
 				}
-				*/
 				
 				AddType (newType);
 				// visit members
@@ -565,15 +621,12 @@ namespace MonoDevelop.CSharp.Parser
 				}
 			}
 			
-			MonoDevelop.Projects.Dom.TypeParameter ConvertTemplateDefinition (FullNamedExpression expr, List<Constraints> constraints)
+			MonoDevelop.Projects.Dom.TypeParameter ConvertTemplateDefinition (Mono.CSharp.TypeParameter parameter)
 			{
-				Mono.CSharp.TypeParameterName parameterName = (Mono.CSharp.TypeParameterName)expr;
-				var result = new MonoDevelop.Projects.Dom.TypeParameter (parameterName.Name);
-				if (constraints != null) {
-					foreach (var c in constraints.Where (c => c.TypeParameter.Value == parameterName.Name)) {
-						foreach (var constraintExpr in c.ConstraintExpressions) {
-							result.AddConstraint (ConvertReturnType (constraintExpr));
-						}
+				var result = new MonoDevelop.Projects.Dom.TypeParameter (parameter.Name);
+				if (parameter.Constraints != null) {
+					foreach (var constraintExpr in parameter.Constraints.ConstraintExpressions) {
+						result.AddConstraint (ConvertReturnType (constraintExpr));
 					}
 				}
 				return result;
@@ -581,12 +634,13 @@ namespace MonoDevelop.CSharp.Parser
 
 			public void AddTypeParameter (AbstractTypeParameterMember member, DeclSpace decl)
 			{
-				if (decl.MemberName.TypeArguments == null)
+				if (!decl.IsGeneric || decl.CurrentTypeParameters == null)
 					return;
-				foreach (var typeArgs in decl.MemberName.TypeArguments.Args) {
-					member.AddTypeParameter (ConvertTemplateDefinition (typeArgs, decl.Constraints));
-				}
 				
+				foreach (var typeParametr in decl.CurrentTypeParameters) {
+					member.AddTypeParameter (ConvertTemplateDefinition (typeParametr));
+					
+				}
 			}
 
 			public override void Visit (Mono.CSharp.Delegate d)
@@ -705,6 +759,8 @@ namespace MonoDevelop.CSharp.Parser
 				property.Name = p.MemberName.Name;
 				property.Documentation = RetrieveDocumentation (p.Location.Row);
 				property.Location = Convert (p.MemberName.Location);
+				property.GetterModifier = property.SetterModifier = ConvertModifiers (p.ModFlags);
+				
 				var location = LocationsBag.GetMemberLocation (p);
 				if (location != null)
 					property.BodyRegion = ConvertRegion (location[0], location[1]);
@@ -715,14 +771,16 @@ namespace MonoDevelop.CSharp.Parser
 				
 				if (p.Get != null) {
 					property.PropertyModifier |= PropertyModifier.HasGet;
-					property.GetterModifier = ConvertModifiers (p.Get.ModFlags);
+					if ((p.Get.ModFlags & Mono.CSharp.Modifiers.AccessibilityMask) != 0)
+						property.GetterModifier = ConvertModifiers (p.Get.ModFlags);
 					if (p.Get.Block != null)
 						property.GetRegion = ConvertRegion (p.Get.Location, p.Get.Block.EndLocation);
 				}
 				
 				if (p.Set != null) {
 					property.PropertyModifier |= PropertyModifier.HasSet;
-					property.SetterModifier = ConvertModifiers (p.Set.ModFlags);
+					if ((p.Set.ModFlags & Mono.CSharp.Modifiers.AccessibilityMask) != 0)
+						property.SetterModifier = ConvertModifiers (p.Set.ModFlags);
 					if (p.Set.Block != null)
 						property.SetRegion = ConvertRegion (p.Set.Location, p.Set.Block.EndLocation);
 				}
@@ -758,6 +816,7 @@ namespace MonoDevelop.CSharp.Parser
 				indexer.Name = "this";
 				indexer.Documentation = RetrieveDocumentation (i.Location.Row);
 				indexer.Location = Convert (i.Location);
+				indexer.GetterModifier = indexer.SetterModifier = ConvertModifiers (i.ModFlags);
 				var location = LocationsBag.GetMemberLocation (i);
 				if (location != null)
 					indexer.BodyRegion = ConvertRegion (location[0], location[1]);
@@ -770,14 +829,16 @@ namespace MonoDevelop.CSharp.Parser
 				
 				if (i.Get != null) {
 					indexer.PropertyModifier |= PropertyModifier.HasGet;
-					indexer.GetterModifier = ConvertModifiers (i.Get.ModFlags);
+					if ((i.Get.ModFlags & Mono.CSharp.Modifiers.AccessibilityMask) != 0)
+						indexer.GetterModifier = ConvertModifiers (i.Get.ModFlags);
 					if (i.Get.Block != null)
 						indexer.GetRegion = ConvertRegion (i.Get.Location, i.Get.Block.EndLocation);
 				}
 				
 				if (i.Set != null) {
 					indexer.PropertyModifier |= PropertyModifier.HasSet;
-					indexer.SetterModifier = ConvertModifiers (i.Set.ModFlags);
+					if ((i.Set.ModFlags & Mono.CSharp.Modifiers.AccessibilityMask) != 0)
+						indexer.SetterModifier = ConvertModifiers (i.Set.ModFlags);
 					if (i.Set.Block != null)
 						indexer.SetRegion = ConvertRegion (i.Set.Location, i.Set.Block.EndLocation);
 				}
@@ -791,6 +852,7 @@ namespace MonoDevelop.CSharp.Parser
 				method.Name = m.MemberName.Name;
 				method.Documentation = RetrieveDocumentation (m.Location.Row);
 				method.Location = Convert (m.MemberName.Location);
+				method.Modifiers = ConvertModifiers (m.ModFlags);
 				if (m.Block != null)
 					method.BodyRegion = ConvertRegion (m.Block.StartLocation, m.Block.EndLocation);
 				method.ReturnType = ConvertReturnType (m.TypeName);
@@ -800,7 +862,6 @@ namespace MonoDevelop.CSharp.Parser
 				method.Modifiers = ConvertModifiers (m.ModFlags);
 				if (method.IsStatic && method.Parameters.Count > 0 && method.Parameters[0].ParameterModifiers == ParameterModifiers.This)
 					method.MethodModifier |= MethodModifier.IsExtension;
-				
 				if (m.GenericMethod != null)
 					AddTypeParameter (method, m.GenericMethod);
 				method.DeclaringType = typeStack.Peek ();
@@ -813,6 +874,7 @@ namespace MonoDevelop.CSharp.Parser
 				method.Name = o.MemberName.Name;
 				method.Documentation = RetrieveDocumentation (o.Location.Row);
 				method.Location = Convert (o.MemberName.Location);
+				method.Modifiers = ConvertModifiers (o.ModFlags);
 				if (o.Block != null)
 					method.BodyRegion = ConvertRegion (o.Block.StartLocation, o.Block.EndLocation);
 				method.Modifiers = ConvertModifiers (o.ModFlags) | MonoDevelop.Projects.Dom.Modifiers.SpecialName;
@@ -832,6 +894,7 @@ namespace MonoDevelop.CSharp.Parser
 				method.Name = ".ctor";
 				method.Documentation = RetrieveDocumentation (c.Location.Row);
 				method.Location = Convert (c.MemberName.Location);
+				method.Modifiers = ConvertModifiers (c.ModFlags);
 				if (c.Block != null)
 					method.BodyRegion = ConvertRegion (c.Block.StartLocation, c.Block.EndLocation);
 				method.Modifiers = ConvertModifiers (c.ModFlags) | MonoDevelop.Projects.Dom.Modifiers.SpecialName;

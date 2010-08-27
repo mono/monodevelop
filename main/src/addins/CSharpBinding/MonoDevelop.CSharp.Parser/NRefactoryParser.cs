@@ -381,7 +381,8 @@ namespace MonoDevelop.CSharp.Parser
 				region.End = new DomLocation (region.End.Line, region.End.Column);
 				newType.BodyRegion = region;
 				newType.Modifiers = ConvertModifiers (typeDeclaration.Modifier);
-
+				
+				
 				AddAttributes (newType, typeDeclaration.Attributes);
 
 				foreach (ICSharpCode.NRefactory.Ast.TemplateDefinition template in typeDeclaration.Templates) {

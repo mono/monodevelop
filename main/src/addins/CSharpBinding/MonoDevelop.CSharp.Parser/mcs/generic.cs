@@ -387,7 +387,13 @@ namespace Mono.CSharp {
 				return spec.Variance;
 			}
 		}
-
+		
+		public Constraints Constraints {
+			get {
+				return this.constraints;
+			}
+		}
+		
 		#endregion
 
 		//
