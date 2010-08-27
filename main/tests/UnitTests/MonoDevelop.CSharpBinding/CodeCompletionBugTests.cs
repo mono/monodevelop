@@ -101,7 +101,6 @@ namespace MonoDevelop.CSharpBinding.Tests
 			sev.GetLineColumnFromPosition (sev.CursorPosition, out line, out column);
 			ctx.TriggerLine = line;
 			ctx.TriggerLineOffset = column - 1;
-			
 			if (isCtrlSpace)
 				return textEditorCompletion.CodeCompletionCommand (ctx) as CompletionDataList;
 			return textEditorCompletion.HandleCodeCompletion (ctx, editorText[cursorPosition - 1] , ref triggerWordLength) as CompletionDataList;
@@ -2520,7 +2519,7 @@ class Foo
 	}
 }
 
-class Test
+class MyTest
 {
 	static T Test<T> (Func<string, T> myFunc)
 	{
