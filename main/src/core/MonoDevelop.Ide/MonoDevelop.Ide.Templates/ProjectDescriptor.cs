@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Templates
 		{
 		}
 
-		public static ProjectDescriptor CreateProjectDescriptor (XmlElement xmlElement)
+		public static ProjectDescriptor CreateProjectDescriptor (XmlElement xmlElement, FilePath baseDirectory)
 		{
 			ProjectDescriptor projectDescriptor = new ProjectDescriptor ();
 
@@ -66,15 +66,17 @@ namespace MonoDevelop.Ide.Templates
 			if (xmlElement["Files"] != null) {
 				foreach (XmlNode xmlNode in xmlElement["Files"].ChildNodes)
 					if (xmlNode is XmlElement)
-						projectDescriptor.files.Add (FileDescriptionTemplate.CreateTemplate ((XmlElement)xmlNode));
+						projectDescriptor.files.Add (
+							FileDescriptionTemplate.CreateTemplate ((XmlElement)xmlNode, baseDirectory));
 			}
 
 			if (xmlElement["Resources"] != null) {
 				foreach (XmlNode xmlNode in xmlElement["Resources"].ChildNodes) {
 					if (xmlNode is XmlElement) {
-						FileDescriptionTemplate fileTemplate = FileDescriptionTemplate.CreateTemplate ((XmlElement)xmlNode);
+						var fileTemplate = FileDescriptionTemplate.CreateTemplate ((XmlElement)xmlNode, baseDirectory);
 						if (fileTemplate is SingleFileDescriptionTemplate)
-							projectDescriptor.resources.Add ((SingleFileDescriptionTemplate)fileTemplate); else
+							projectDescriptor.resources.Add ((SingleFileDescriptionTemplate)fileTemplate);
+						else
 							MessageService.ShowError (GettextCatalog.GetString ("Only single-file templates allowed to generate resource files"));
 					}
 

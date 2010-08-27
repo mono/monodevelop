@@ -45,9 +45,9 @@ namespace MonoDevelop.Ide.Templates
 	{
 		XmlElement domContent;
 		
-		public override void Load (XmlElement filenode)
+		public override void Load (XmlElement filenode, FilePath baseDirectory)
 		{
-			base.Load (filenode);
+			base.Load (filenode, baseDirectory);
 			domContent = filenode ["CompileUnit"];
 			if (domContent == null)
 				throw new InvalidOperationException ("Invalid CodeDom template. CompileUnit element not found.");

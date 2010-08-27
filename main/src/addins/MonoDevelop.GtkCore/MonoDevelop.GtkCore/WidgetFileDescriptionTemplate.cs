@@ -49,7 +49,7 @@ namespace MonoDevelop.GtkCore
 			get { return "Widget"; }
 		}
 		
-		public override void Load (XmlElement filenode)
+		public override void Load (XmlElement filenode, FilePath baseDirectory)
 		{
 			foreach (XmlNode node in filenode.ChildNodes) {
 				XmlElement elem = node as XmlElement;
@@ -60,7 +60,7 @@ namespace MonoDevelop.GtkCore
 						throw new InvalidOperationException ("Widget templates can't contain more than one SteticTemplate element");
 					steticTemplate = elem;
 				} else if (fileTemplate == null) {
-					fileTemplate = FileDescriptionTemplate.CreateTemplate (elem) as SingleFileDescriptionTemplate;
+					fileTemplate = FileDescriptionTemplate.CreateTemplate (elem, baseDirectory) as SingleFileDescriptionTemplate;
 					if (fileTemplate == null)
 						throw new InvalidOperationException ("Widget templates can only contain single-file and stetic templates.");
 				}

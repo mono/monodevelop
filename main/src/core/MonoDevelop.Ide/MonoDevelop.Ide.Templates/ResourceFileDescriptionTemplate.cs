@@ -29,6 +29,7 @@
 using System;
 using System.Xml;
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -40,11 +41,11 @@ namespace MonoDevelop.Ide.Templates
 			get { return template.Name; } 
 		}
 		
-		public override void Load (XmlElement filenode)
+		public override void Load (XmlElement filenode, FilePath baseDirectory)
 		{
 			foreach (XmlNode node in filenode.ChildNodes) {
 				if (node is XmlElement) {
-					template = CreateTemplate ((XmlElement) node) as SingleFileDescriptionTemplate;
+					template = CreateTemplate ((XmlElement) node, baseDirectory) as SingleFileDescriptionTemplate;
 					if (template == null)
 						throw new InvalidOperationException ("Resource templates must contain single-file templates.");
 					return;

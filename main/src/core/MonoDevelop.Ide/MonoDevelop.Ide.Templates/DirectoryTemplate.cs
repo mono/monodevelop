@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Templates
 			get { return dirName; } 
 		}
 		
-		public override void Load (System.Xml.XmlElement filenode)
+		public override void Load (XmlElement filenode, FilePath baseDirectory)
 		{
 			dirName = filenode.GetAttribute ("name");
 			if (string.IsNullOrEmpty (dirName) || !FileService.IsValidFileName (dirName))
@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Templates
 				if (!(node is XmlElement))
 					continue;
 				
-				FileDescriptionTemplate t = FileDescriptionTemplate.CreateTemplate ((XmlElement)node);
+				FileDescriptionTemplate t = FileDescriptionTemplate.CreateTemplate ((XmlElement)node, baseDirectory);
 				if (t == null)
 					throw new InvalidOperationException ("Invalid file template in directory template");
 				

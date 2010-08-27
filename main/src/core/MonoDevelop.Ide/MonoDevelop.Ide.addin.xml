@@ -2209,6 +2209,7 @@
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplateTypes">
 		<FileTemplateType name = "File" class = "MonoDevelop.Ide.Templates.TextFileDescriptionTemplate"/>
+		<FileTemplateType name = "RawFile" class = "MonoDevelop.Ide.Templates.RawFileDescriptionTemplate"/>
 		<FileTemplateType name = "CodeDomFile" class = "MonoDevelop.Ide.Templates.CodeDomFileDescriptionTemplate"/>
 		<FileTemplateType name = "ProjectResource" class = "MonoDevelop.Ide.Templates.ResourceFileDescriptionTemplate"/>
 		<FileTemplateType name = "CodeTranslationFile" class = "MonoDevelop.Ide.Templates.CodeTranslationFileDescriptionTemplate"/>

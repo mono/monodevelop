@@ -144,11 +144,11 @@ namespace MonoDevelop.Ide.Templates
 
         private static FileTemplate LoadFileTemplate (RuntimeAddin addin, ProjectTemplateCodon codon)
         {
-            XmlDocument xmlDocument = codon.GetTemplate ();
-
+			XmlDocument xmlDocument = codon.GetTemplate ();
+			FilePath baseDirectory = codon.BaseDirectory;
+			
             //Configuration
-            //XmlNode xmlNodeConfig = xmlDocument.DocumentElement["TemplateConfiguration"];
-            XmlElement xmlNodeConfig = xmlDocument.DocumentElement["TemplateConfiguration"];
+			XmlElement xmlNodeConfig = xmlDocument.DocumentElement["TemplateConfiguration"];
 
             FileTemplate fileTemplate = null;
             if (xmlNodeConfig["Type"] != null) {
@@ -219,7 +219,8 @@ namespace MonoDevelop.Ide.Templates
 			if(xmlNodeTemplates != null) {
 				foreach(XmlNode xmlNode in xmlNodeTemplates.ChildNodes) {
 					if(xmlNode is XmlElement) {
-						fileTemplate.files.Add (FileDescriptionTemplate.CreateTemplate ((XmlElement)xmlNode));
+						fileTemplate.files.Add (
+							FileDescriptionTemplate.CreateTemplate ((XmlElement)xmlNode, baseDirectory));
 					}
 				}
 			}

@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide.Templates
 		string customTool;
 		List<string> references = new List<string> ();
 		
-		public override void Load (XmlElement filenode)
+		public override void Load (XmlElement filenode, FilePath baseDirectory)
 		{
 			name = filenode.GetAttribute ("name");
 			defaultName = filenode.GetAttribute ("DefaultName");
@@ -259,11 +259,18 @@ namespace MonoDevelop.Ide.Templates
 			Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
 			doc.Text = content;
 			
-			TextStylePolicy textPolicy = policyParent != null ? policyParent.Policies.Get<TextStylePolicy> ("text/plain") : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> ("text/plain");
+			TextStylePolicy textPolicy = policyParent != null ? policyParent.Policies.Get<TextStylePolicy> ("text/plain")
+				: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> ("text/plain");
 			string eolMarker = TextStylePolicy.GetEolMarker (textPolicy.EolMarker);
 			byte[] eolMarkerBytes = System.Text.Encoding.UTF8.GetBytes (eolMarker);
+			
+			var tabToSpaces = textPolicy.TabsToSpaces? new string (' ', textPolicy.TabWidth) : null;
+			
 			foreach (Mono.TextEditor.LineSegment line in doc.Lines) {
-				data = System.Text.Encoding.UTF8.GetBytes (doc.GetTextAt (line.Offset, line.EditableLength));
+				var lineText = doc.GetTextAt (line.Offset, line.EditableLength);
+				if (tabToSpaces != null)
+					lineText.Replace ("\t", tabToSpaces);
+				data = System.Text.Encoding.UTF8.GetBytes (lineText);
 				ms.Write (data, 0, data.Length);
 				ms.Write (eolMarkerBytes, 0, eolMarkerBytes.Length);
 			}
@@ -290,7 +297,8 @@ namespace MonoDevelop.Ide.Templates
 		// We supply defaults whenever it is possible, to avoid having unsubstituted tags. However,
 		// do not substitute blanks when a sensible default cannot be guessed, because they result
 		//in less obvious errors.
-		public virtual void ModifyTags (SolutionItem policyParent, Project project, string language, string identifier, string fileName, ref Dictionary<string,string> tags)
+		public virtual void ModifyTags (SolutionItem policyParent, Project project, string language,
+			string identifier, string fileName, ref Dictionary<string,string> tags)
 		{
 			DotNetProject netProject = project as DotNetProject;
 			string languageExtension = "";
@@ -318,7 +326,6 @@ namespace MonoDevelop.Ide.Templates
 				tags ["FullName"] = ns.Length > 0 ? ns + "." + identifier : identifier;
 				
 				//some .NET languages may be able to use keywords as identifiers if they're escaped
-				//for simplicity, we escape the identifier in "Name" and provide "UnescapedName"
 				IDotNetLanguageBinding dnb = binding as IDotNetLanguageBinding;
 				if (dnb != null) {
 					System.CodeDom.Compiler.CodeDomProvider provider = dnb.GetCodeDomProvider ();
@@ -329,8 +336,10 @@ namespace MonoDevelop.Ide.Templates
 			}
 			
 			tags ["Namespace"] = ns;
-			if (project != null)
+			if (project != null) {
 				tags ["ProjectName"] = project.Name;
+				tags ["SafeProjectName"] = CreateIdentifierName (project.Name);
+			}
 			if ((language != null) && (language.Length > 0))
 				tags ["Language"] = language;
 			if (languageExtension.Length > 0)
