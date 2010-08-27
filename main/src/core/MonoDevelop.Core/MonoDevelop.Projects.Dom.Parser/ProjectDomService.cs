@@ -870,7 +870,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 					sr.Close ();
 				} else
 					fileContent = getContent ();
-
+				
 				// Remove any pending jobs for this file
 				RemoveParseJob (fileName);
 				ProjectDom dom = projects != null && projects.Length > 0 ? GetProjectDom (projects [0]) : null;
@@ -881,6 +881,14 @@ namespace MonoDevelop.Projects.Dom.Parser
 				// information.
 				if (projects != null && projects.Length > 0 && parseInformation.CompilationUnit != null)
 					SetSourceProject (parseInformation.CompilationUnit, dom);
+				
+//				if (parseInformation.Errors.Any ()) {
+//					Console.WriteLine (fileName + "-- Errors:");
+//					foreach (var e in parseInformation.Errors) {
+//						Console.WriteLine (e);
+//					}
+//				}
+				
 				if (parseInformation.CompilationUnit != null &&
 				    (parseInformation.Flags & ParsedDocumentFlags.NonSerializable) == 0) {
 					if (projects != null && projects.Length > 0) {
@@ -920,7 +928,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 			using (Counters.FileParse.BeginTiming ()) {
 				IParser parser = GetParser (fileName);
-				
 				if (parser == null)
 					return null;
 				
@@ -931,7 +938,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 						using (StreamReader sr = File.OpenText (fileName)) {
 							fileContent = sr.ReadToEnd();
 						}
-					} catch (Exception) {
+					} catch (Exception e) {
+						LoggingService.LogError ("Got exception while reading file", e);
 						return null;
 					}
 				}

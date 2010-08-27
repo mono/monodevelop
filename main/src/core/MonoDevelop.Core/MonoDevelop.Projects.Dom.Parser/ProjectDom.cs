@@ -175,7 +175,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 					// There is no need to resolve baseType here, since 'cur' is an already resolved
 					// type, so all types it references are already resolved too
 					IType resolvedType = GetType (baseType);
-					
 					if (resolvedType != null) {
 						types.Push (resolvedType);
 					}
@@ -759,6 +758,43 @@ namespace MonoDevelop.Projects.Dom.Parser
 		public virtual void UpdateTemporaryCompilationUnit (ICompilationUnit unit)
 		{
 			temporaryCompilationUnits[unit.FileName] = unit;
+		}
+		
+		protected IType GetTemporaryType (string typeName, IList<IReturnType> genericArguments, bool deepSearchReferences, bool caseSensitive)
+		{
+			foreach (var unit in temporaryCompilationUnits.Values) {
+				var result = unit.GetType (typeName, genericArguments != null ? genericArguments.Count : 0);
+				if (result == null)
+					continue;
+				return genericArguments == null || genericArguments.Count == 0 ? result : CreateInstantiatedGenericType (result, genericArguments);
+			}
+			if (deepSearchReferences) {
+				foreach (var r in References) {
+					var result = r.GetTemporaryType (typeName, genericArguments, false, caseSensitive);
+					if (result != null)
+						return result;
+				}
+			}
+			return null;
+		}
+		
+		protected IType GetTemporaryType (string typeName, int genericArgumentsCount, bool deepSearchReferences, bool caseSensitive)
+		{
+			foreach (var unit in temporaryCompilationUnits.Values) {
+				var result = unit.GetType (typeName, genericArgumentsCount);
+				if (result == null)
+					continue;
+				return result;
+			}
+			
+			if (deepSearchReferences) {
+				foreach (var r in References) {
+					var result = r.GetTemporaryType (typeName, genericArgumentsCount, false, caseSensitive);
+					if (result != null)
+						return result;
+				}
+			}
+			return null;
 		}
 		
 		public IType MergeTypeWithTemporary (IType type)

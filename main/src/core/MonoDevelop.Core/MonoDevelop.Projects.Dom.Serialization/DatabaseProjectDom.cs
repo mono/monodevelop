@@ -157,14 +157,20 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public override IType GetType (string typeName, IList<IReturnType> genericArguments, bool deepSearchReferences, bool caseSensitive)
 		{
-			return dbProvider.GetClass (database, typeName, genericArguments, deepSearchReferences, caseSensitive);
+			var result = dbProvider.GetClass (database, typeName, genericArguments, deepSearchReferences, caseSensitive);
+			if (result == null)
+				result = GetTemporaryType (typeName, genericArguments, deepSearchReferences, caseSensitive);
+			return result;
 		}
 
 		public override IType GetType (string typeName, int genericArgumentsCount, bool deepSearchReferences, bool caseSensitive)
 		{
 			if (genericArgumentsCount > 0)
 				typeName += "`" + genericArgumentsCount;
-			return dbProvider.GetClass (database, typeName, null, deepSearchReferences, caseSensitive);
+			var result = dbProvider.GetClass (database, typeName, null, deepSearchReferences, caseSensitive);
+			if (result == null)
+				result = GetTemporaryType (typeName, genericArgumentsCount, deepSearchReferences, caseSensitive);
+			return result;
 		}
 
 		public override string ToString ()
