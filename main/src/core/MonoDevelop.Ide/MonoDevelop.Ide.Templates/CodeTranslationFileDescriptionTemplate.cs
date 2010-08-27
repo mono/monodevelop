@@ -54,9 +54,9 @@ namespace MonoDevelop.Ide.Templates
 		bool showAutogenerationNotice = false;
 		string sourceLang;
 		
-		public override void Load (XmlElement filenode)
+		public override void Load (XmlElement filenode, FilePath baseDirectory)
 		{
-			base.Load (filenode);
+			base.Load (filenode, baseDirectory);
 			content = filenode.InnerText;
 			
 			sourceLang = filenode.GetAttribute ("SourceLanguage");

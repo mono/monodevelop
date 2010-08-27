@@ -198,7 +198,8 @@ namespace MonoDevelop.Ide.Templates
 				throw new InvalidOperationException ("Combine element not found");
 			}
 			else {
-				solutionDescriptor = SolutionDescriptor.CreateSolutionDescriptor (addin, xmlDocument.DocumentElement ["Combine"]);
+				solutionDescriptor = SolutionDescriptor.CreateSolutionDescriptor (addin, xmlDocument.DocumentElement ["Combine"],
+					codon.BaseDirectory);
 			}
 
 			if (xmlDocument.DocumentElement ["Actions"] != null) {

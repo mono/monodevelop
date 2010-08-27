@@ -32,6 +32,7 @@ using System;
 using System.Xml;
 
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -44,7 +45,7 @@ namespace MonoDevelop.Ide.Templates
 		string name;
 		bool suppressAutoOpen = false;
 		
-		public override void Load (XmlElement filenode)
+		public override void Load (XmlElement filenode, FilePath baseDirectory)
 		{
 			name = filenode.GetAttribute ("name");
 			string templateID = filenode.GetAttribute ("TemplateID");

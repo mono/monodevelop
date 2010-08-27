@@ -59,7 +59,8 @@ namespace MonoDevelop.Ide.Templates
             get { return entryDescriptors.ToArray(); }
         }
 
-        public static SolutionDescriptor CreateSolutionDescriptor (RuntimeAddin addin, XmlElement xmlElement)
+        public static SolutionDescriptor CreateSolutionDescriptor (RuntimeAddin addin, XmlElement xmlElement,
+			FilePath baseDirectory)
         {
             SolutionDescriptor solutionDescriptor = new SolutionDescriptor ();
 			solutionDescriptor.addin = addin;
@@ -83,14 +84,15 @@ namespace MonoDevelop.Ide.Templates
                 if (xmlNode is XmlElement) {
                     XmlElement xmlNodeElement = (XmlElement)xmlNode;
                     switch (xmlNodeElement.Name) {
-                        case "Project":
-                            solutionDescriptor.entryDescriptors.Add (ProjectDescriptor.CreateProjectDescriptor (xmlNodeElement));
-                            break;
-                        case "CombineEntry":
-                        case "SolutionItem":
-                            solutionDescriptor.entryDescriptors.Add (SolutionItemDescriptor.CreateDescriptor (addin, xmlNodeElement));
-                            break;
-
+                    case "Project":
+                        solutionDescriptor.entryDescriptors.Add (
+							ProjectDescriptor.CreateProjectDescriptor (xmlNodeElement, baseDirectory));
+                        break;
+                    case "CombineEntry":
+                    case "SolutionItem":
+                        solutionDescriptor.entryDescriptors.Add (
+							SolutionItemDescriptor.CreateDescriptor (addin, xmlNodeElement));
+                        break;
                     }
                 }
             }

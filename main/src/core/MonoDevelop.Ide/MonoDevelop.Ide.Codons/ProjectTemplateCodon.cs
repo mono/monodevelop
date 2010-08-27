@@ -64,5 +64,12 @@ namespace MonoDevelop.Ide.Codons
 				return doc;
 			}
 		}
+			
+		public string BaseDirectory {
+			get {
+				return file != null? System.IO.Path.GetDirectoryName (Addin.GetFilePath (file))
+					: this.Addin.PrivateDataPath;
+			}
+		}
 	}
 }

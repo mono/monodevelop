@@ -28,22 +28,66 @@
 
 using System;
 using System.Xml;
+using MonoDevelop.Core;
+using System.IO;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Templates
 {
 	public class TextFileDescriptionTemplate: SingleFileDescriptionTemplate
 	{
 		string content;
+		FilePath contentSrcFile;
 		
-		public override void Load (XmlElement filenode)
+		public override void Load (XmlElement filenode, FilePath baseDirectory)
 		{
-			base.Load (filenode);
-			content = filenode.InnerText;
+			base.Load (filenode, baseDirectory);
+			var srcAtt = filenode.Attributes["src"];
+			if (srcAtt != null) {
+				contentSrcFile = MakePathNative (srcAtt.Value);
+				if (contentSrcFile.IsNullOrEmpty)
+					throw new InvalidOperationException ("Template's Src attribute is empty");
+				contentSrcFile = contentSrcFile.ToAbsolute (baseDirectory);
+			} else {
+				content = filenode.InnerText;
+			}
+		}
+		
+		static internal string MakePathNative (string path)
+		{
+			if (path == null || path.Length == 0)
+				return path;
+			char c = Path.DirectorySeparatorChar == '\\'? '/' : '\\'; 
+			return path.Replace (c, Path.DirectorySeparatorChar);
 		}
 		
 		public override string CreateContent (string language)
 		{
-			return content.Replace ("\t", MonoDevelop.Ide.Gui.Content.TextEditorProperties.IndentString);
+			return contentSrcFile.IsNullOrEmpty? content : File.ReadAllText (contentSrcFile);
+		}
+	}
+	
+	public class RawFileDescriptionTemplate : SingleFileDescriptionTemplate
+	{
+		FilePath contentSrcFile;
+		
+		public override void Load (XmlElement filenode, FilePath baseDirectory)
+		{
+			base.Load (filenode, baseDirectory);
+			var srcAtt = filenode.Attributes["src"];
+			if (srcAtt == null)
+				throw new InvalidOperationException ("Template is missing Src attribute");
+			
+			contentSrcFile = TextFileDescriptionTemplate.MakePathNative (srcAtt.Value);
+			if (contentSrcFile.IsNullOrEmpty)
+				throw new InvalidOperationException ("Template's Src attribute is empty");
+			contentSrcFile = contentSrcFile.ToAbsolute (baseDirectory);
+		}
+		
+		public override Stream CreateFileContent (SolutionItem policyParent, Project project, string language,
+			string fileName, string identifier)
+		{
+			return File.OpenRead (contentSrcFile);
 		}
 	}
 }

@@ -51,7 +51,7 @@ namespace MonoDevelop.AspNet
 		string content;
 		Hashtable codeAreas = new Hashtable ();
 		
-		public override void Load (XmlElement filenode)
+		public override void Load (XmlElement filenode, FilePath baseDirectory)
 		{			
 			//pull out the main area
 			XmlElement fileText = filenode ["FileText"];
@@ -78,8 +78,7 @@ namespace MonoDevelop.AspNet
 				if (codeAreas.ContainsKey (name))
 					throw new InvalidOperationException ("Invalid ASP.NET template: all TagNames must be unique within the AspNetFile.");
 					
-				CodeTranslationFileDescriptionTemplate templ =
-					FileDescriptionTemplate.CreateTemplate (xe) as CodeTranslationFileDescriptionTemplate;
+				var templ = FileDescriptionTemplate.CreateTemplate (xe, baseDirectory) as CodeTranslationFileDescriptionTemplate;
 					
 				if (templ == null)
 					throw new InvalidOperationException ("Invalid ASP.NET template: invalid CodeTranslationFile.");
@@ -87,7 +86,7 @@ namespace MonoDevelop.AspNet
 				codeAreas [name] = templ;
 			}
 			
-			base.Load (filenode);
+			base.Load (filenode, baseDirectory);
 		}
 		
 		public override string CreateContent (string language)
