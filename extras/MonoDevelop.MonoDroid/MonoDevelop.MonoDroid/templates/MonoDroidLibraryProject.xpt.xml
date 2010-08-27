@@ -6,7 +6,7 @@
 	<TemplateConfiguration>
 		<_Name>MonoDroid Library Project</_Name>
 		<_Category>MonoDroid</_Category>
-		<Icon>md-project-library</Icon>
+		<Icon>monodroid-project|md-library-overlay</Icon>
 		<LanguageName>*</LanguageName>
 		<_Description>Creates a MonoDroid library project.</_Description>
 	</TemplateConfiguration>

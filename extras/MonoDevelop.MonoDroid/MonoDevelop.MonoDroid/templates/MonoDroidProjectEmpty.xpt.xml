@@ -6,7 +6,7 @@
 	<TemplateConfiguration>
 		<_Name>Empty MonoDroid Project</_Name>
 		<_Category>MonoDroid</_Category>
-		<Icon>md-project</Icon>
+		<Icon>monodroid-project</Icon>
 		<LanguageName>*</LanguageName>
 		<_Description>Creates an empty MonoDroid project.</_Description>
 	</TemplateConfiguration>
