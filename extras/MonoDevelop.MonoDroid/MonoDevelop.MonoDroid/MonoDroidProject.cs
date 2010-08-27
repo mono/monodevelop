@@ -124,9 +124,7 @@ namespace MonoDevelop.MonoDroid
 			
 			var androidManifestAtt = projectOptions.Attributes ["AndroidManifest"];
 			if (androidManifestAtt != null) {
-				string val = MakePathNative (androidManifestAtt.Value);
-				foreach (MonoDroidProjectConfiguration cfg in Configurations)
-					cfg.AndroidManifest = val;
+				this.AndroidManifest = MakePathNative (androidManifestAtt.Value);
 			}
 			
 			monoDroidResourcePrefix = "Resources";
@@ -148,8 +146,6 @@ namespace MonoDevelop.MonoDroid
 		{
 			var conf = new MonoDroidProjectConfiguration (name);
 			conf.CopyFrom (base.CreateConfiguration (name));
-			if (Configurations.Count > 0)
-				conf.AndroidManifest = ((MonoDroidProjectConfiguration)Configurations[0]).AndroidManifest;
 			return conf;
 		}
 
