@@ -45,7 +45,7 @@ namespace MonoDevelop.MonoDroid
 			if (manifest.Name != "manifest")
 				throw new Exception ("App manifest does not have 'manifest' root element");
 			
-			application = doc.Root;
+			application = doc.Root.Element ("application");
 			if (application.Name != "application")
 				throw new Exception ("App manifest does not have 'application' element");
 		}
@@ -99,8 +99,13 @@ namespace MonoDevelop.MonoDroid
 		
 		protected override string GenerateInfo (string filename)
 		{
-			var manifest = AndroidAppManifest.Load (filename);
-			return manifest.PackageName;
+			try {
+				var manifest = AndroidAppManifest.Load (filename);
+				return manifest.PackageName;
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error loading android manifest '" + filename + "'", ex);
+				return null;
+			}
 		}
 	}
 	
