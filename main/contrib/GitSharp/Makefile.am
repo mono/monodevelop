@@ -1,6 +1,10 @@
 BINDIR=$(top_builddir)/build/bin
 
+if ENABLE_GIT
 all: $(GITSHARP_CORE) $(GITSHARP)
+else
+all:
+endif
 
 GITSHARP_CORE_DLL=GitSharp.Core.dll
 GITSHARP_CORE=$(BINDIR)/$(GITSHARP_CORE_DLL)
@@ -39,9 +43,6 @@ CLEANFILES = $(GITSHARP_CORE) $(GITSHARP_CORE_MDB) $(GITSHARP) $(GITSHARP_MDB)
 ## Remove the SharedAssemblyInfo.cs file also
 
 GITSHARP_ROOT_SRC_DIR=../../../../GitSharp
-
-update-shared-assembly-info:
-	cp 
 
 update-source-GitSharp.Core:
 	rm -rf ./GitSharp.Core

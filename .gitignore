@@ -44,6 +44,7 @@ autom4te.cache/
 /main/contrib/Makefile
 /main/contrib/Mono.Cecil/Makefile
 /main/contrib/NRefactory/Makefile
+/main/contrib/GitSharp/Makefile
 /main/po/Makefile
 /main/src/Makefile
 /main/src/addins/AspNet/Makefile
