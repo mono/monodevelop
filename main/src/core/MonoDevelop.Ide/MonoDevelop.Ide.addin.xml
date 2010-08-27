@@ -428,8 +428,10 @@
 		<StockIcon stockid = "md-project" resource = "project-32.png" size="Dnd" />
 		<StockIcon stockid = "md-project-gui" icon = "md-project|res:project-gui-32.png" size="Dnd" />
 		<StockIcon stockid = "md-project-console" icon = "md-project|res:project-console-32.png" size="Dnd" />
-		<StockIcon stockid = "md-project-library" icon = "md-project|res:project-library-32.png" size="Dnd" />
-		<StockIcon stockid = "md-project-web" icon = "md-project|res:web-overlay-32.png" size="Dnd" />
+		<StockIcon stockid = "md-library-overlay" resource = "project-library-32.png" size="Dnd" />
+		<StockIcon stockid = "md-web-overlay" resource = "web-overlay-32.png" size="Dnd" />
+		<StockIcon stockid = "md-project-library" icon = "md-project|md-library-overlay" size="Dnd" />
+		<StockIcon stockid = "md-project-web" icon = "md-project|md-web-overlay" size="Dnd" />
 		<StockIcon stockid = "md-sort-namespace" resource = "sort-namespace-16.png" />
 		<StockIcon stockid = "md-split-window" resource = "Icons.16x16.SplitWindow" />
 		<StockIcon stockid = "md-struct" resource = "element-structure-16.png" />
