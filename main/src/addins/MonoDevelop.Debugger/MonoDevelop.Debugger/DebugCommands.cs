@@ -356,7 +356,7 @@ namespace MonoDevelop.Debugger
 		{
 			DebuggingService.Breakpoints.Toggle (
 			    IdeApp.Workbench.ActiveDocument.FileName,
-			    IdeApp.Workbench.ActiveDocument.Editor.Caret.Line + 1);
+			    IdeApp.Workbench.ActiveDocument.Editor.Caret.Line);
 		}
 		
 		protected override void Update (CommandInfo info)
@@ -375,7 +375,7 @@ namespace MonoDevelop.Debugger
 		{
 			DebuggingService.ShowAddTracepointDialog (
 			    IdeApp.Workbench.ActiveDocument.FileName,
-			    IdeApp.Workbench.ActiveDocument.Editor.Caret.Line + 1);
+			    IdeApp.Workbench.ActiveDocument.Editor.Caret.Line);
 		}
 		
 		protected override void Update (CommandInfo info)
@@ -394,7 +394,7 @@ namespace MonoDevelop.Debugger
 		{
 			IEnumerable brs = DebuggingService.Breakpoints.GetBreakpointsAtFileLine (
 			    IdeApp.Workbench.ActiveDocument.FileName,
-			    IdeApp.Workbench.ActiveDocument.Editor.Caret.Line + 1);
+			    IdeApp.Workbench.ActiveDocument.Editor.Caret.Line);
 			
 			foreach (Breakpoint bp in brs)
 				bp.Enabled = !bp.Enabled;
@@ -409,7 +409,7 @@ namespace MonoDevelop.Debugger
 			        !DebuggingService.Breakpoints.IsReadOnly) {
 				info.Enabled = DebuggingService.Breakpoints.GetBreakpointsAtFileLine (
 			    	IdeApp.	Workbench.ActiveDocument.FileName,
-			    	IdeApp.Workbench.ActiveDocument.Editor.Caret.Line + 1).Count > 0;
+			    	IdeApp.Workbench.ActiveDocument.Editor.Caret.Line).Count > 0;
 			}
 			else
 				info.Enabled = false;
@@ -450,7 +450,7 @@ namespace MonoDevelop.Debugger
 		{
 			IEnumerable<Breakpoint> brs = DebuggingService.Breakpoints.GetBreakpointsAtFileLine (
 			    IdeApp.Workbench.ActiveDocument.FileName,
-			    IdeApp.Workbench.ActiveDocument.Editor.Caret.Line + 1);
+			    IdeApp.Workbench.ActiveDocument.Editor.Caret.Line);
 			
 			List<Breakpoint> list = new List<Breakpoint> (brs);
 			foreach (Breakpoint bp in list)
@@ -466,7 +466,7 @@ namespace MonoDevelop.Debugger
 			        !DebuggingService.Breakpoints.IsReadOnly) {
 				info.Enabled = DebuggingService.Breakpoints.GetBreakpointsAtFileLine (
 			    	IdeApp.	Workbench.ActiveDocument.FileName,
-			    	IdeApp.Workbench.ActiveDocument.Editor.Caret.Line + 1).Count > 0;
+			    	IdeApp.Workbench.ActiveDocument.Editor.Caret.Line).Count > 0;
 			}
 			else
 				info.Enabled = false;
@@ -477,7 +477,7 @@ namespace MonoDevelop.Debugger
 	{
 		protected override void Run ()
 		{
-			Breakpoint bp = new Breakpoint (IdeApp.Workbench.ActiveDocument.FileName, IdeApp.Workbench.ActiveDocument.Editor.Caret.Line + 1);
+			Breakpoint bp = new Breakpoint (IdeApp.Workbench.ActiveDocument.FileName, IdeApp.Workbench.ActiveDocument.Editor.Caret.Line);
 			if (DebuggingService.ShowBreakpointProperties (bp, true))
 				DebuggingService.Breakpoints.Add (bp);
 		}
@@ -502,7 +502,7 @@ namespace MonoDevelop.Debugger
 		{
 			IList<Breakpoint> brs = DebuggingService.Breakpoints.GetBreakpointsAtFileLine (
 			    IdeApp.Workbench.ActiveDocument.FileName,
-			    IdeApp.Workbench.ActiveDocument.Editor.Caret.Line + 1);
+			    IdeApp.Workbench.ActiveDocument.Editor.Caret.Line);
 
 			if (brs.Count > 0)
 				DebuggingService.ShowBreakpointProperties (brs [0], false);
@@ -517,7 +517,7 @@ namespace MonoDevelop.Debugger
 			        !DebuggingService.Breakpoints.IsReadOnly) {
 				info.Enabled = DebuggingService.Breakpoints.GetBreakpointsAtFileLine (
 			    	IdeApp.	Workbench.ActiveDocument.FileName,
-			    	IdeApp.Workbench.ActiveDocument.Editor.Caret.Line + 1).Count > 0;
+			    	IdeApp.Workbench.ActiveDocument.Editor.Caret.Line).Count > 0;
 			}
 			else
 				info.Enabled = false;
