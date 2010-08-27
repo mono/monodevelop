@@ -122,6 +122,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			
 			IType lookupType = db.SearchType (unit, contextType, null, type);
+			
 			if (visitAttribute && lookupType == null && type.Parts.Count > 0) {
 				type.Parts[type.Parts.Count - 1].Name += "Attribute";
 				lookupType = db.SearchType (unit, contextType, null, type);
@@ -134,12 +135,17 @@ namespace MonoDevelop.Projects.Dom.Parser
 			
 			List<IReturnTypePart> parts = new List<IReturnTypePart> (type.Parts.Count);
 			IType curType = lookupType.DeclaringType;
+			int typePart = 0;
 			while (curType != null) {
 				ReturnTypePart newPart = new ReturnTypePart {Name = curType.Name};
 				newPart.IsGenerated = true;
 				for (int n=curType.TypeParameters.Count - 1; n >= 0; n--)
 					newPart.AddTypeParameter (new DomReturnType ("?"));
-				parts.Insert (0, newPart);
+				
+				if (typePart >= type.Parts.Count || (type.Parts[typePart].Name != newPart.Name || type.Parts[typePart].GenericArguments.Count != newPart.GenericArguments.Count)) {
+					parts.Insert (0, newPart);
+					typePart++;
+				}
 				curType = curType.DeclaringType;
 			}
 			
@@ -152,7 +158,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			
 			DomReturnType rt = new DomReturnType (lookupType.Namespace, parts);
-			
 			// Make sure the whole type is resolved
 			if (parts.Count > 1 && db.SearchType (unit, contextType, null, rt) == null) {
 				unresolvedCount++;
@@ -164,7 +169,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 			rt.ArrayDimensions = type.ArrayDimensions;
 			for (int n=0; n<type.ArrayDimensions; n++)
 				rt.SetDimension (n, type.GetDimension (n));
-			
 			return db.GetSharedReturnType (rt);
 		}
 		
