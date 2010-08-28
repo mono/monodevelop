@@ -426,6 +426,13 @@ namespace MonoDevelop.CSharp.Parser
 					return DomReturnType.Void;
 				}
 				
+				if (typeName is Mono.CSharp.QualifiedAliasMember) {
+					var qam = (Mono.CSharp.QualifiedAliasMember)typeName;
+					// TODO: Overwork the return type model - atm we don't have a good representation
+					// for qualified alias members.
+					return new DomReturnType (qam.Name);
+				}
+				
 				if (typeName is MemberAccess) {
 					MemberAccess ma = (MemberAccess)typeName;
 					var baseType = (DomReturnType)ConvertReturnType (ma.LeftExpression);
@@ -454,7 +461,6 @@ namespace MonoDevelop.CSharp.Parser
 					}
 					return baseType;
 				}
-				
 				MonoDevelop.Core.LoggingService.LogError ("Error while converting :" + typeName + " - unknown type name");
 				return new DomReturnType (DomReturnType.Void.FullName);
 			}
