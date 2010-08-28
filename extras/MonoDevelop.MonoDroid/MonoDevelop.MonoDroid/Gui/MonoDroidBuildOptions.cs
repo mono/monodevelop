@@ -68,7 +68,7 @@ namespace MonoDevelop.MonoDroid.Gui
 		
 		public void LoadPanelContents (MonoDroidProjectConfiguration cfg)
 		{
-			extraMonoDroidArgsEntry.Text = cfg.MonoDroidExtraArgs;
+			extraMonoDroidArgsEntry.Text = cfg.MonoDroidExtraArgs ?? "";
 		}
 		
 		public void StorePanelContents (MonoDroidProjectConfiguration cfg)
