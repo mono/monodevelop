@@ -254,7 +254,7 @@ namespace MonoDevelop.MonoDroid
 		AndroidPackageNameCache packageNameCache;
 		
 		public bool IsAndroidApplication {
-			get { return AndroidManifest.IsNullOrEmpty; }
+			get { return !AndroidManifest.IsNullOrEmpty; }
 		}
 		
 		public string GetPackageName (MonoDroidProjectConfiguration conf)
