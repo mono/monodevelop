@@ -49,7 +49,16 @@ namespace MonoDevelop.MonoDroid
 		}
 		
 		[ItemProperty ("MonoDroidExtraArgs")]
-		public string MonoDroidExtraArgs { get; set; }
+		string monoDroidExtraArgs;
+		
+		public string MonoDroidExtraArgs {
+			get { return monoDroidExtraArgs; }
+			set {
+				if (value != null && value.Length == 0)
+					value = null;
+				monoDroidExtraArgs = value;
+			}
+		}
 		
 		[ProjectPathItemProperty ("AndroidManifest")]
 		string androidManifest;
@@ -87,7 +96,7 @@ namespace MonoDevelop.MonoDroid
 			if (cfg == null)
 				return;
 			
-			MonoDroidExtraArgs = cfg.MonoDroidExtraArgs;
+			monoDroidExtraArgs = cfg.monoDroidExtraArgs;
 			androidManifest = cfg.androidManifest;
 		}
 	}
