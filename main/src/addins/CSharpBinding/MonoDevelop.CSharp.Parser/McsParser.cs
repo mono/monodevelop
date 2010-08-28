@@ -381,41 +381,41 @@ namespace MonoDevelop.CSharp.Parser
 				if (typeName is TypeExpression) {
 					var typeExpr = (Mono.CSharp.TypeExpression)typeName;
 					if (typeExpr.Type == Mono.CSharp.TypeManager.object_type)
-						return DomReturnType.Object;
+						return new DomReturnType (DomReturnType.Object.FullName);
 					if (typeExpr.Type == Mono.CSharp.TypeManager.string_type)
-						return DomReturnType.String;
+						return new DomReturnType (DomReturnType.String.FullName);
 					if (typeExpr.Type == Mono.CSharp.TypeManager.int32_type)
-						return DomReturnType.Int32;
+						return new DomReturnType (DomReturnType.Int32.FullName);
 					if (typeExpr.Type == Mono.CSharp.TypeManager.uint32_type)
-						return DomReturnType.UInt32;
+						return new DomReturnType (DomReturnType.UInt32.FullName);
 					if (typeExpr.Type == Mono.CSharp.TypeManager.int64_type)
-						return DomReturnType.Int64;
+						return new DomReturnType (DomReturnType.Int64.FullName);
 					if (typeExpr.Type == Mono.CSharp.TypeManager.uint64_type)
-						return DomReturnType.UInt64;
+						return new DomReturnType (DomReturnType.UInt64.FullName);
 					if (typeExpr.Type == Mono.CSharp.TypeManager.float_type)
-						return DomReturnType.Float;
+						return new DomReturnType (DomReturnType.Float.FullName);
 					if (typeExpr.Type == Mono.CSharp.TypeManager.double_type)
-						return DomReturnType.Double;
+						return new DomReturnType (DomReturnType.Double.FullName);
 					if (typeExpr.Type == Mono.CSharp.TypeManager.char_type)
-						return DomReturnType.Char;
+						return new DomReturnType (DomReturnType.Char.FullName);
 					if (typeExpr.Type == Mono.CSharp.TypeManager.short_type)
-						return DomReturnType.Int16;
+						return new DomReturnType (DomReturnType.Int16.FullName);
 					if (typeExpr.Type == Mono.CSharp.TypeManager.decimal_type)
-						return DomReturnType.Decimal;
+						return new DomReturnType (DomReturnType.Decimal.FullName);
 					if (typeExpr.Type == Mono.CSharp.TypeManager.bool_type)
-						return DomReturnType.Bool;
+						return new DomReturnType (DomReturnType.Bool.FullName);
 					if (typeExpr.Type == Mono.CSharp.TypeManager.sbyte_type)
-						return DomReturnType.SByte;
+						return new DomReturnType (DomReturnType.SByte.FullName);
 					if (typeExpr.Type == Mono.CSharp.TypeManager.byte_type)
-						return DomReturnType.Byte;
+						return new DomReturnType (DomReturnType.Byte.FullName);
 					if (typeExpr.Type == Mono.CSharp.TypeManager.ushort_type)
-						return DomReturnType.UInt16;
+						return new DomReturnType (DomReturnType.UInt16.FullName);
 					if (typeExpr.Type == Mono.CSharp.TypeManager.void_type)
-						return DomReturnType.Void;
+						return new DomReturnType (DomReturnType.Void.FullName);
 					if (typeExpr.Type == Mono.CSharp.TypeManager.intptr_type)
-						return DomReturnType.IntPtr;
+						return new DomReturnType (DomReturnType.IntPtr.FullName);
 					if (typeExpr.Type == Mono.CSharp.TypeManager.uintptr_type)
-						return DomReturnType.UIntPtr;
+						return new DomReturnType (DomReturnType.UIntPtr.FullName);
 					MonoDevelop.Core.LoggingService.LogError ("Error while converting :" + typeName + " - unknown type value");
 					return DomReturnType.Void;
 				}
@@ -423,9 +423,6 @@ namespace MonoDevelop.CSharp.Parser
 				if (typeName is MemberAccess) {
 					MemberAccess ma = (MemberAccess)typeName;
 					var baseType = (DomReturnType)ConvertReturnType (ma.LeftExpression);
-					// type expressions are global constants that never should be altered.
-					if (ma.LeftExpression is TypeExpression)
-						baseType = new DomReturnType (baseType.FullName);
 					baseType.Parts.Add (new ReturnTypePart (ma.Name));
 					AddTypeArguments (ma, baseType);
 					return baseType;
@@ -441,9 +438,6 @@ namespace MonoDevelop.CSharp.Parser
 				if (typeName is ComposedCast) {
 					var cc = (ComposedCast)typeName;
 					var baseType = (DomReturnType)ConvertReturnType (cc.Left);
-					// type expressions are global constants that never should be altered.
-					if (cc.Left is TypeExpression)
-						baseType = new DomReturnType (baseType.FullName);
 					if (cc.Spec.IsNullable) {
 						baseType.IsNullable = true;
 					} else if (cc.Spec.IsPointer) {
@@ -464,7 +458,7 @@ namespace MonoDevelop.CSharp.Parser
 					return new DomReturnType (DomReturnType.Object.FullName);
 				}
 				MonoDevelop.Core.LoggingService.LogError ("Error while converting :" + typeName + " - unknown type name");
-				return DomReturnType.Void;
+				return new DomReturnType (DomReturnType.Void.FullName);
 			}
 			
 			
