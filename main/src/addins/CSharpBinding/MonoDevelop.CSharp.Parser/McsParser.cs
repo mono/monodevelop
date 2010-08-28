@@ -65,6 +65,19 @@ namespace MonoDevelop.CSharp.Parser
 			}
 		}
 		
+		static string GetLangString (LangVersion ver)
+		{
+			switch (ver) {
+			case LangVersion.Default:
+				return "Default";
+			case LangVersion.ISO_1:
+				return "ISO-1";
+			case LangVersion.ISO_2:
+				return "ISO-2";
+			}
+			return "Default";
+		}
+		
 		public override ParsedDocument Parse (ProjectDom dom, string fileName, string content)
 		{
 			if (string.IsNullOrEmpty (content))
@@ -94,6 +107,9 @@ namespace MonoDevelop.CSharp.Parser
 					if (!string.IsNullOrEmpty (par.NoWarnings))
 						compilerArguments.Add ("-nowarn:"+ string.Join (",", par.NoWarnings.Split (';', ',', ' ', '\t')));
 					compilerArguments.Add ("-warn:" + par.WarningLevel);
+					compilerArguments.Add ("-langversion:" + GetLangString (par.LangVersion));
+					if (par.GenerateOverflowChecks)
+						compilerArguments.Add ("-checked");
 				}
 			}
 //			compilerArguments.ForEach (arg => Console.WriteLine (arg));
