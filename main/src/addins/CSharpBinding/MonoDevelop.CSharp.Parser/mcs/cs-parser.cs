@@ -2444,7 +2444,7 @@ case 198:
 			default_parameter_used |= p.HasDefaultValue;
 			pars.Add (p);
 			
-			lbag.AddLocation (p, GetLocation (yyVals[-1+yyTop]));
+			lbag.AppendTo (p, GetLocation (yyVals[-1+yyTop]));
 		}
 		
 		yyVal = yyVals[-2+yyTop];

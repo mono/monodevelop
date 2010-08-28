@@ -89,8 +89,14 @@ namespace MonoDevelop.CSharp.Parser
 					}
 					if (par.UnsafeCode)
 						compilerArguments.Add ("-unsafe");
+					if (par.TreatWarningsAsErrors)
+						compilerArguments.Add ("-warnaserror");
+					if (!string.IsNullOrEmpty (par.NoWarnings))
+						compilerArguments.Add ("-nowarn:"+ string.Join (",", par.NoWarnings.Split (';', ',', ' ', '\t')));
+					compilerArguments.Add ("-warn:" + par.WarningLevel);
 				}
 			}
+//			compilerArguments.ForEach (arg => Console.WriteLine (arg));
 			while (lexer.NextToken ().Kind != ICSharpCode.NRefactory.Parser.CSharp.Tokens.EOF)
 				;
 			

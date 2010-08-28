@@ -354,7 +354,6 @@
     <None Include="ChangeLog" />
     <None Include="Makefile.am" />
     <None Include="MonoDevelop.CSharp.Parser\mcs\cs-parser.jay" />
-    <None Include="MonoDevelop.CSharp.Parser\mcs\smcs.exe.sources" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

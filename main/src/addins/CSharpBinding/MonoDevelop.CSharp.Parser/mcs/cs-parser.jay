@@ -144,6 +144,7 @@ namespace Mono.CSharp
 		// Full AST support members
 		//
 		LocationsBag lbag;
+		UsingsBag ubag;
 		List<Tuple<Modifiers, Location>> mod_locations;
 %}
 
@@ -446,6 +447,7 @@ using_alias_directive
 	  {
 		var lt = (Tokenizer.LocatedToken) $2;
 		current_namespace.AddUsingAlias (lt.Value, (MemberName) $4, GetLocation ($1));
+		ubag.AddUsingAlias (GetLocation ($1), lt, GetLocation ($3), (MemberName) $4, GetLocation ($5));
 	  }
 	| USING error {
 		CheckIdentifierToken (yyToken, GetLocation ($2));
@@ -457,6 +459,7 @@ using_namespace_directive
 	: USING namespace_name SEMICOLON 
 	  {
 		current_namespace.AddUsing ((MemberName) $2, GetLocation ($1));
+		ubag.AddUsing (GetLocation ($1), (MemberName) $2, GetLocation ($3));
 	  }
 	;
 
@@ -478,12 +481,14 @@ namespace_declaration
 			current_namespace, file, name.GetName ());
 		current_class = current_namespace.SlaveDeclSpace;
 		current_container = current_class.PartialContainer;
+		ubag.DeclareNamespace (GetLocation ($2), name);
 	  } 
 	  namespace_body opt_semicolon
 	  { 
 		current_namespace = current_namespace.Parent;
 		current_class = current_namespace.SlaveDeclSpace;
 		current_container = current_class.PartialContainer;
+		ubag.EndNamespace (GetLocation ($6));
 	  }
 	;
 
@@ -532,6 +537,8 @@ namespace_body
 	  {
 		if (RootContext.Documentation != null)
 			Lexer.doc_state = XmlCommentState.Allowed;
+		ubag.OpenNamespace (GetLocation ($1));
+			
 	  }
 	  namespace_body_body
 	;
@@ -540,7 +547,9 @@ namespace_body_body
 	: opt_extern_alias_directives
 	  opt_using_directives
 	  opt_namespace_member_declarations
-	  CLOSE_BRACE
+	  CLOSE_BRACE {
+		ubag.CloseNamespace (GetLocation ($4));
+	  }
 	| error
 	  {
 		Report.Error (1518, lexer.Location, "Expected `class', `delegate', `enum', `interface', or `struct'");
@@ -580,7 +589,7 @@ namespace_member_declaration
 	  {
 		if ($1 != null) {
 			DeclSpace ds = (DeclSpace)$1;
-
+			ubag.AddTypeDeclaration (ds);
 			if ((ds.ModFlags & (Modifiers.PRIVATE|Modifiers.PROTECTED)) != 0){
 				Report.Error (1527, ds.Location, 
 				"Namespace elements cannot be explicitly declared as private, protected or protected internal");
@@ -784,9 +793,9 @@ attribute
 		else if (global_attrs_enabled && (current_attr_target == "assembly" || current_attr_target == "module"))
 			// FIXME: supply "nameEscaped" parameter here.
 			$$ = new GlobalAttribute (current_namespace, current_attr_target,
-						  expr, arguments, mname.Location, lexer.IsEscapedIdentifier (mname.Location));
+						  expr, arguments, mname.Location, lexer.IsEscapedIdentifier (mname));
 		else
-			$$ = new Attribute (current_attr_target, expr, arguments, mname.Location, lexer.IsEscapedIdentifier (mname.Location));
+			$$ = new Attribute (current_attr_target, expr, arguments, mname.Location, lexer.IsEscapedIdentifier (mname));
 	  }
 	;
 
@@ -1547,7 +1556,7 @@ fixed_parameters
 			default_parameter_used |= p.HasDefaultValue;
 			pars.Add (p);
 			
-			lbag.AddLocation (p, GetLocation ($2));
+			lbag.AppendTo (p, GetLocation ($2));
 		}
 		
 		$$ = $1;
@@ -1934,7 +1943,7 @@ accessor_body
 	: block 
 	| SEMICOLON
 	  {
-		// TODO: lbag
+		lbag.AppendToMember (lbag.LastMember, GetLocation ($1));
 	  	$$ = null;
 	  }
 	| error
@@ -5214,8 +5223,8 @@ goto_statement
 	: GOTO IDENTIFIER SEMICOLON 
 	  {
 		var lt = (Tokenizer.LocatedToken) $2;
-		$$ = new Goto (lt.Value, lt.Location);
-		lbag.AddStatement ($$, GetLocation ($1), GetLocation ($3));
+		$$ = new Goto (lt.Value, GetLocation ($1));
+		lbag.AddStatement ($$, GetLocation ($2), GetLocation ($3));
 	  }
 	| GOTO CASE constant_expression SEMICOLON
 	  {
@@ -5370,7 +5379,8 @@ catch_clause
 
 		$$ = new Catch (type, id, (Block) $4, var_block, ((Block) $4).loc);
 		lbag.AddLocation ($$, GetLocation ($1));
-		lbag.AppendTo ($$, lbag.GetLocations ($2));
+		if ($2 != null)
+			lbag.AppendTo ($$, lbag.GetLocations ($2));
 	  }
         ;
 
@@ -6457,6 +6467,15 @@ public LocationsBag LocationsBag {
 	}
 	set {
 		lbag = value;
+	}
+}
+
+public UsingsBag UsingsBag {
+	get {
+		return ubag;
+	}
+	set {
+		ubag = value;
 	}
 }
 
