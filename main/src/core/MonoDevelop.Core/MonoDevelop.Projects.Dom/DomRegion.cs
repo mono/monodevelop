@@ -55,13 +55,14 @@ namespace MonoDevelop.Projects.Dom
 		{
 		}
 		
-		public DomRegion (int startLine, int startColumn, int endLine, int endColumn)
+		// the call to the empty construtor is required for the windows build
+		public DomRegion (int startLine, int startColumn, int endLine, int endColumn) : this()
 		{
 			this.Start = new DomLocation (startLine, startColumn);
 			this.End   = new DomLocation (endLine, endColumn);
 		}
 		
-		public DomRegion (DomLocation start, DomLocation end)
+		public DomRegion (DomLocation start, DomLocation end) : this()
 		{
 			this.Start = start;
 			this.End   = end;
