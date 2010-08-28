@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<Template>
+	<TemplateConfiguration>
+		<_Name>MonoDroid View</_Name>
+		<Icon>md-text-file-icon</Icon>
+		<_Category>MonoDroid</_Category>
+		<LanguageName>C#</LanguageName>
+		<ProjectType>MonoDroid</ProjectType>
+		<_Description>Creates a MonoDroid View.</_Description>
+	</TemplateConfiguration>
+	
+	<Conditions>
+	</Conditions>
+	
+	<TemplateFiles>
+		<File name="${Name}.cs" ><![CDATA[
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+using Android.App;
+using Android.Content;
+using Android.OS;
+using Android.Runtime;
+using Android.Views;
+using Android.Widget;
+
+namespace ${Namespace}
+{
+	public class ${Name} : View
+	{
+		public ${Name} (Context context, IAttributeSet attrs) :
+			base (context, attrs)
+		{
+			Initialize ();
+		}
+
+		public ${Name} (Context context, IAttributeSet attrs, int defStyle) :
+			base (context, attrs, defStyle)
+		{
+			Initialize ();
+		}
+
+		private void Initialize ()
+		{
+		}
+	}
+}
+]]></File>
+	</TemplateFiles>
+</Template>
+
+
+

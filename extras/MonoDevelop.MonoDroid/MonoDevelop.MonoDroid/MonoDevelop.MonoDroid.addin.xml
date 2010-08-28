@@ -22,6 +22,10 @@
 	
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<Condition id="MonoDroidInstalled">
+			<FileTemplate id   = "MonoDroidView"
+			              file = "templates/MonoDroidView.xft.xml"/>
+			<FileTemplate id   = "MonoDroidActivity"
+			              file = "templates/MonoDroidActivity.xft.xml"/>
 		</Condition>
 	</Extension>
 
