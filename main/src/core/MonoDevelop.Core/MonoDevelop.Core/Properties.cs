@@ -193,6 +193,9 @@ namespace MonoDevelop.Core
 				writer.WriteStartElement (Node);
 
 			foreach (KeyValuePair<string, object> property in this.properties) {
+				//don't know how the value could be null but at least we can skip it to avoid breaking completely
+				if (property.Value == null)
+					continue;
 				writer.WriteStartElement (PropertyNode);
 				writer.WriteAttributeString (KeyAttribute, property.Key);
 				
@@ -201,7 +204,7 @@ namespace MonoDevelop.Core
 				} else if (property.Value is ICustomXmlSerializer) {
 					((ICustomXmlSerializer)property.Value).WriteTo (writer);
 				} else {
-					if (property.Value.GetType () != typeof(string) && property.Value.GetType ().IsClass) {
+					if (!(property.Value is string) && property.Value.GetType ().IsClass) {
 						XmlSerializer serializer = new XmlSerializer (property.Value.GetType ());
 						serializer.Serialize (writer, property.Value);
 					} else {
