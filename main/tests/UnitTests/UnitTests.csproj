@@ -80,6 +80,7 @@
       <HintPath>..\..\src\addins\NUnit\lib\nunit.util.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Mono.Addins, Version=0.5.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
