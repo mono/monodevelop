@@ -126,8 +126,18 @@
 	<!-- Options panels -->
 	
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Other">
-		<Section id = "MonoDroidSdkSettings" _label = "MonoDroid SDKs"
-			class="MonoDevelop.MonoDroid.Gui.MonoDroidSdkSettings"/>
+		<Condition id="MonoDroidInstalled">
+			<Section id = "MonoDroidSdkSettings" _label = "MonoDroid SDKs"
+				class="MonoDevelop.MonoDroid.Gui.MonoDroidSdkSettings"/>
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build">
+		<Condition id="ItemType" value="MonoDevelop.MonoDroid.MonoDroidProject">
+			<Section id = "MonoDroidBuildOptions"
+				_label = "MonoDroid Build"
+				class = "MonoDevelop.MonoDroid.Gui.MonoDroidBuildOptions" />
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
