@@ -93,7 +93,7 @@ namespace MonoDevelop.MonoDroid
 				if (value == monoDroidResourcePrefix)
 					return;
 				monoDroidResourcePrefix = value;
-				monoDroidResourcePrefixes = null;
+				resPrefixes = null;
 				NotifyModified ("MonoDroidResourcePrefix");
 			}
 		}
@@ -224,26 +224,30 @@ namespace MonoDevelop.MonoDroid
 			if (baseAction == BuildAction.Compile)
 				return baseAction;
 			
-			FilePath f = fileName;
-			f = f.ToRelative (BaseDirectory);
-			
+			var parentOfParentDir = ((FilePath)fileName).ToRelative (BaseDirectory).ParentDirectory.ParentDirectory;
 			foreach (var prefix in MonoDroidResourcePrefixes)
-				if (f.ToString ().StartsWith (prefix))
+				if (prefix == parentOfParentDir)
 					return MonoDroidBuildAction.AndroidResource;
 				
 			return baseAction;
 		}
 		
-		string[] monoDroidResourcePrefixes;
+		FilePath[] resPrefixes;
 		
-		string[] MonoDroidResourcePrefixes {
+		FilePath[] MonoDroidResourcePrefixes {
 			get {
-				if (monoDroidResourcePrefixes == null) {
-					monoDroidResourcePrefixes =
-						MonoDroidResourcePrefix.Split (new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
-						.Select (p => MakePathNative (p.Trim ())).ToArray ();
+				if (resPrefixes == null) {
+					var split = MonoDroidResourcePrefix.Split (new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+					var list = new List<FilePath> ();
+					for (int i = 0; i < split.Length; i++) {
+						var s = split[i].Trim ();
+						if (s.Length == 0)
+							continue;
+						list.Add (MakePathNative (s));
+					}
+					resPrefixes = list.ToArray ();
 				}
-				return monoDroidResourcePrefixes;
+				return resPrefixes;
 			}
 		}
 		
