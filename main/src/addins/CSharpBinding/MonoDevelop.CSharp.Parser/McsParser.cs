@@ -448,15 +448,7 @@ namespace MonoDevelop.CSharp.Parser
 					}
 					return baseType;
 				}
-				if (typeName is SpecialContraintExpr) {
-					var sce = (SpecialContraintExpr)typeName;
-					if (sce.Constraint == SpecialConstraint.Struct)
-						return new DomReturnType (DomReturnType.ValueType.FullName);
-					if (sce.Constraint == SpecialConstraint.Class)
-						return new DomReturnType (DomReturnType.Object.FullName);
-					// atm we've no model in the dom to model new()
-					return new DomReturnType (DomReturnType.Object.FullName);
-				}
+				
 				MonoDevelop.Core.LoggingService.LogError ("Error while converting :" + typeName + " - unknown type name");
 				return new DomReturnType (DomReturnType.Void.FullName);
 			}
@@ -608,7 +600,17 @@ namespace MonoDevelop.CSharp.Parser
 				var result = new MonoDevelop.Projects.Dom.TypeParameter (parameter.Name);
 				if (parameter.Constraints != null) {
 					foreach (var constraintExpr in parameter.Constraints.ConstraintExpressions) {
-						result.AddConstraint (ConvertReturnType (constraintExpr));
+						if (constraintExpr is SpecialContraintExpr) {
+							var sce = (SpecialContraintExpr)constraintExpr;
+							if (sce.Constraint == SpecialConstraint.Struct)
+								result.ValueTypeRequired = true;
+							if (sce.Constraint == SpecialConstraint.Class)
+								result.ClassRequired = true;
+							if (sce.Constraint == SpecialConstraint.Constructor)
+								result.ConstructorRequired = true;
+						} else {
+							result.AddConstraint (ConvertReturnType (constraintExpr));
+						}
 					}
 				}
 				return result;
@@ -755,16 +757,24 @@ namespace MonoDevelop.CSharp.Parser
 					property.PropertyModifier |= PropertyModifier.HasGet;
 					if ((p.Get.ModFlags & Mono.CSharp.Modifiers.AccessibilityMask) != 0)
 						property.GetterModifier = ConvertModifiers (p.Get.ModFlags);
-					if (p.Get.Block != null)
+					if (p.Get.Block != null) {
 						property.GetRegion = ConvertRegion (p.Get.Location, p.Get.Block.EndLocation);
+					} else {
+						var getLocation = LocationsBag.GetMemberLocation (p.Get);
+						property.GetRegion = ConvertRegion (p.Get.Location, getLocation.Count > 0 ? getLocation[0] : p.Get.Location);
+					}
 				}
 				
 				if (p.Set != null) {
 					property.PropertyModifier |= PropertyModifier.HasSet;
 					if ((p.Set.ModFlags & Mono.CSharp.Modifiers.AccessibilityMask) != 0)
 						property.SetterModifier = ConvertModifiers (p.Set.ModFlags);
-					if (p.Set.Block != null)
+					if (p.Set.Block != null) {
 						property.SetRegion = ConvertRegion (p.Set.Location, p.Set.Block.EndLocation);
+					} else {
+						var setLocation = LocationsBag.GetMemberLocation (p.Set);
+						property.SetRegion = ConvertRegion (p.Set.Location, setLocation.Count > 0 ? setLocation[0] : p.Set.Location);
+					}
 				}
 				property.DeclaringType = typeStack.Peek ();
 				typeStack.Peek ().Add (property);
@@ -813,16 +823,24 @@ namespace MonoDevelop.CSharp.Parser
 					indexer.PropertyModifier |= PropertyModifier.HasGet;
 					if ((i.Get.ModFlags & Mono.CSharp.Modifiers.AccessibilityMask) != 0)
 						indexer.GetterModifier = ConvertModifiers (i.Get.ModFlags);
-					if (i.Get.Block != null)
+					if (i.Get.Block != null) {
 						indexer.GetRegion = ConvertRegion (i.Get.Location, i.Get.Block.EndLocation);
+					} else {
+						var getLocation = LocationsBag.GetMemberLocation (i.Get);
+						indexer.GetRegion = ConvertRegion (i.Get.Location, getLocation.Count > 0 ? getLocation[0] : i.Get.Location);
+					}
 				}
 				
 				if (i.Set != null) {
 					indexer.PropertyModifier |= PropertyModifier.HasSet;
 					if ((i.Set.ModFlags & Mono.CSharp.Modifiers.AccessibilityMask) != 0)
 						indexer.SetterModifier = ConvertModifiers (i.Set.ModFlags);
-					if (i.Set.Block != null)
+					if (i.Set.Block != null) {
 						indexer.SetRegion = ConvertRegion (i.Set.Location, i.Set.Block.EndLocation);
+					} else {
+						var setLocation = LocationsBag.GetMemberLocation (i.Set);
+						indexer.SetRegion = ConvertRegion (i.Set.Location, setLocation.Count > 0 ? setLocation[0] : i.Set.Location);
+					}
 				}
 				indexer.DeclaringType = typeStack.Peek ();
 				typeStack.Peek ().Add (indexer);

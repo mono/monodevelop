@@ -1417,7 +1417,7 @@ case 24:
 #line 460 "cs-parser.jay"
   {
 		current_namespace.AddUsing ((MemberName) yyVals[-1+yyTop], GetLocation (yyVals[-2+yyTop]));
-		ubag.AddUsing (GetLocation (yyVals[-2+yyTop]), (MemberName) yyVals[-1+yyTop], GetLocation (yyVals[-1+yyTop]));
+		ubag.AddUsing (GetLocation (yyVals[-2+yyTop]), (MemberName) yyVals[-1+yyTop], GetLocation (yyVals[0+yyTop]));
 	  }
   break;
 case 25:
@@ -2832,7 +2832,7 @@ case 234:
 case 236:
 #line 1945 "cs-parser.jay"
   {
-		/* TODO: lbag*/
+		lbag.AppendToMember (lbag.LastMember, GetLocation (yyVals[0+yyTop]));
 	  	yyVal = null;
 	  }
   break;

@@ -522,6 +522,11 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 				}
 			}
 		}
+		
+		public MemberCore LastMember {
+			get;
+			private set;
+		}
 
 		Dictionary<object, Location[]> simple_locs = new Dictionary<object, Location[]> (ReferenceEquality<object>.Default);
 		Dictionary<MemberCore, MemberLocations> member_locs = new Dictionary<MemberCore, MemberLocations> (ReferenceEquality<MemberCore>.Default);
@@ -547,8 +552,10 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 		[Conditional ("FULL_AST")]
 		public void AddMember (MemberCore member, IList<Tuple<Modifiers, Location>> modLocations, params Location[] locations)
 		{
+			LastMember = member;
 			if (member == null)
 				return;
+			
 			MemberLocations existing;
 			if (member_locs.TryGetValue (member, out existing)) {
 				existing.Modifiers = modLocations;

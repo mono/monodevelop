@@ -8727,13 +8727,13 @@ namespace Mono.CSharp {
 		public FullNamedExpression Left {
 			get { return this.left; }
 		}
-		
+
 		public ComposedTypeSpecifier Spec {
 			get {
 				return this.spec;
 			}
 		}
-		
+
 		public ComposedCast (FullNamedExpression left, ComposedTypeSpecifier spec)
 		{
 			if (spec == null)

@@ -453,8 +453,12 @@ namespace MonoDevelop.CSharp.Parser
 					AddModifiers (getAccessor, getLocation);
 					if (getLocation != null)
 						getAccessor.AddChild (new CSharpTokenNode (Convert (indexer.Get.Location), "get".Length), PropertyDeclaration.Roles.Keyword);
-					if (indexer.Get.Block != null)
+					if (indexer.Get.Block != null) {
 						getAccessor.AddChild ((INode)indexer.Get.Block.Accept (this), MethodDeclaration.Roles.Body);
+					} else {
+						if (getLocation != null && getLocation.Count > 0)
+							newIndexer.AddChild (new CSharpTokenNode (Convert (getLocation[0]), 1), MethodDeclaration.Roles.Semicolon);
+					}
 					newIndexer.AddChild (getAccessor, PropertyDeclaration.PropertyGetRole);
 				}
 				
@@ -465,8 +469,12 @@ namespace MonoDevelop.CSharp.Parser
 					if (setLocation != null)
 						setAccessor.AddChild (new CSharpTokenNode (Convert (indexer.Set.Location), "set".Length), PropertyDeclaration.Roles.Keyword);
 					
-					if (indexer.Set.Block != null)
+					if (indexer.Set.Block != null) {
 						setAccessor.AddChild ((INode)indexer.Set.Block.Accept (this), MethodDeclaration.Roles.Body);
+					} else {
+						if (setLocation != null && setLocation.Count > 0)
+							newIndexer.AddChild (new CSharpTokenNode (Convert (setLocation[0]), 1), MethodDeclaration.Roles.Semicolon);
+					}
 					newIndexer.AddChild (setAccessor, PropertyDeclaration.PropertySetRole);
 				}
 				
@@ -564,8 +572,12 @@ namespace MonoDevelop.CSharp.Parser
 					AddModifiers (getAccessor, getLocation);
 					getAccessor.AddChild (new CSharpTokenNode (Convert (p.Get.Location), "get".Length), PropertyDeclaration.Roles.Keyword);
 					
-					if (p.Get.Block != null)
+					if (p.Get.Block != null) {
 						getAccessor.AddChild ((INode)p.Get.Block.Accept (this), MethodDeclaration.Roles.Body);
+					} else {
+						if (getLocation != null && getLocation.Count > 0)
+							newProperty.AddChild (new CSharpTokenNode (Convert (getLocation[0]), 1), MethodDeclaration.Roles.Semicolon);
+					}
 					newProperty.AddChild (getAccessor, PropertyDeclaration.PropertyGetRole);
 				}
 				
@@ -575,8 +587,12 @@ namespace MonoDevelop.CSharp.Parser
 					AddModifiers (setAccessor, setLocation);
 					setAccessor.AddChild (new CSharpTokenNode (Convert (p.Set.Location), "set".Length), PropertyDeclaration.Roles.Keyword);
 					
-					if (p.Set.Block != null)
+					if (p.Set.Block != null) {
 						setAccessor.AddChild ((INode)p.Set.Block.Accept (this), MethodDeclaration.Roles.Body);
+					} else {
+						if (setLocation != null && setLocation.Count > 0)
+							newProperty.AddChild (new CSharpTokenNode (Convert (setLocation[0]), 1), MethodDeclaration.Roles.Semicolon);
+					}
 					newProperty.AddChild (setAccessor, PropertyDeclaration.PropertySetRole);
 				}
 				if (location != null)

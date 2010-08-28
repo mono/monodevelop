@@ -232,13 +232,7 @@ namespace Mono.CSharp {
 		//   (interfaces or abstract methods)
 		/// </remarks>
 		PendingImplementation pending;
-		
-		public List<FullNamedExpression> TypeBaseExpressions {
-			get {
-				return this.type_bases;
-			}
-		}
-		
+
 		public TypeContainer (NamespaceEntry ns, DeclSpace parent, MemberName name,
 				      Attributes attrs, MemberKind kind)
 			: base (ns, parent, name, attrs)
@@ -307,6 +301,12 @@ namespace Mono.CSharp {
 		public bool HasMembersDefined {
 			get {
 				return members_defined;
+			}
+		}
+		
+		public List<FullNamedExpression> TypeBaseExpressions {
+			get {
+				return type_bases;
 			}
 		}
 
