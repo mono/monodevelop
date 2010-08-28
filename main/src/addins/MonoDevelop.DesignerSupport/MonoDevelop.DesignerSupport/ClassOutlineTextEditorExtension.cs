@@ -165,16 +165,11 @@ namespace MonoDevelop.DesignerSupport
 
 		void UpdateDocumentOutline (object sender, EventArgs args)
 		{
-			bool refreshNow = lastCU == null;
 			lastCU = Document.ParsedDocument;
+			//limit update rate to 3s
 			if (!refreshingOutline) {
 				refreshingOutline = true;
-				if (refreshNow) {
-					RefillOutlineStore (); 
-				} else {
-					//limit update rate to 1s
-					GLib.Timeout.Add (1000, new GLib.TimeoutHandler (RefillOutlineStore));
-				}
+				GLib.Timeout.Add (3000, new GLib.TimeoutHandler (RefillOutlineStore));
 			}
 		}
 
