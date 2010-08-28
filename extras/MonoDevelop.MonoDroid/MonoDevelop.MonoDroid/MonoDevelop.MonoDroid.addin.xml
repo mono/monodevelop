@@ -29,8 +29,10 @@
 		<Condition id="MonoDroidInstalled">
 			<ProjectTemplate id   = "MonoDroidLibraryProject"
 			                 file = "templates/MonoDroidLibraryProject.xpt.xml" />
-			<ProjectTemplate id   = "MonoDroidProject-Empty"
-			                 file = "templates/MonoDroidProjectEmpty.xpt.xml"/>
+			<ProjectTemplate id   = "MonoDroidApplicationProject"
+			                 file = "templates/MonoDroidApplicationProject.xpt.xml"/>
+			<ProjectTemplate id   = "MonoDroidOpenGLProject"
+			                 file = "templates/MonoDroidOpenGLProject.xpt.xml"/>
 		</Condition>
 	</Extension>
 	

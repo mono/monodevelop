@@ -1,28 +1,25 @@
 <?xml version="1.0"?>
-<Template originator="Michael Hutchinson"
-          created="2010/08/19">
-	
-	<!-- Template Header -->
+<Template>
 	<TemplateConfiguration>
-		<_Name>Empty MonoDroid Project</_Name>
-		<_Category>MonoDroid</_Category>
+		<_Name>MonoDroid OpenGL Application</_Name>
+		<_Category>C#/MonoDroid</_Category>
 		<Icon>monodroid-project</Icon>
-		<LanguageName>*</LanguageName>
-		<_Description>Creates an empty MonoDroid project.</_Description>
+		<LanguageName>C#</LanguageName>
+		<_Description>Creates an MonoDroid project that uses OpenGL.</_Description>
 	</TemplateConfiguration>
 	
-	<!-- Actions -->
 	<Actions>
 	</Actions>
 	
-	<!-- Template Content -->
 	<Combine name = "${ProjectName}" directory = ".">
 		<Options>
 			<StartupProject>${ProjectName}</StartupProject>
 		</Options>
 		
 		<Project name = "${ProjectName}" directory = "." type = "MonoDroid">
-			<Options AndroidManifest="Properties/AndroidManifest.xml" />
+			<Options
+				AndroidManifest="Properties/AndroidManifest.xml"
+				AndroidResgenFile="R.cs" />
 			<References>
 				<Reference type="Gac" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
 				<Reference type="Gac" refto="System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
@@ -30,9 +27,13 @@
 				<Reference type="Gac" refto="Mono.Android" />
 			</References>
 			<Files>
+				<File name="Activity1.cs" src="OpenGLApplication/Activity1.cs" />
+				<File name="GLView1.cs" src="OpenGLApplication/GLView1.cs" />
+				<File name="R.cs" src="OpenGLApplication/R.cs" />
 				<Directory name="Resources">
 					<RawFile name="AboutResources.txt" src="MonoDroidApplication/AboutResources.txt" />
 					<Directory name="layout">
+						<File name="main.xml" src="OpenGLApplication/main.xml" />
 					</Directory>
 					<Directory name="values">
 						<File name="strings.xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
@@ -52,6 +53,7 @@
 				</Directory>
 				<Directory name="Properties">
 					<File name="AndroidManifest.xml" src="MonoDroidApplication/AndroidManifest.xml" />
+					<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="AssemblyInfo.cs" />
 				</Directory>
 			</Files>
 		</Project>
