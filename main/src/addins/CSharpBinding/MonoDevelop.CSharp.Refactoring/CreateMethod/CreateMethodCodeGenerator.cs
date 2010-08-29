@@ -63,11 +63,11 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		InvocationExpression GetInvocation (MonoDevelop.CSharp.Dom.CompilationUnit unit, TextEditorData data)
 		{
 			var containingNode = unit.GetNodeAt (data.Caret.Line, data.Caret.Column);
-			var parent = containingNode.Parent;
-			while (parent != null && !(parent is InvocationExpression)) {
-				parent = parent.Parent;
+			var curNode = containingNode;
+			while (curNode != null && !(curNode is InvocationExpression)) {
+				curNode = (ICSharpNode)curNode.Parent;
 			}
-			return parent as InvocationExpression;
+			return curNode as InvocationExpression;
 		}
 		
 		bool AnalyzeTargetExpression (RefactoringOptions options, MonoDevelop.CSharp.Dom.CompilationUnit unit)
@@ -76,8 +76,8 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			var target = (ICSharpNode)unit.GetNodeAt (data.Caret.Line, data.Caret.Column);
 			if (target == null)
 				return false;
-			if (target is MemberReferenceExpression) {
-				var memberReference = (MemberReferenceExpression)target;
+			if (target.Parent is MemberReferenceExpression && ((MemberReferenceExpression)target.Parent).Identifier == target) {
+				var memberReference = (MemberReferenceExpression)target.Parent;
 				target = (ICSharpNode)memberReference.Target;
 				var targetResult = options.GetResolver ().Resolve (new ExpressionResult (data.GetTextBetween (target.StartLocation.Line, target.StartLocation.Column, target.EndLocation.Line, target.EndLocation.Column)), resolvePosition);
 				declaringType = options.Dom.GetType (targetResult.ResolvedType);
@@ -190,8 +190,6 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		
 		public bool AnalyzeInvocation (RefactoringOptions options)
 		{
-			var data = options.GetTextEditorData ();
-			
 			bool isInInterface = declaringType.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface;
 			if (isInInterface) {
 				modifiers = MonoDevelop.Projects.Dom.Modifiers.None;
@@ -212,6 +210,12 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		DomLocation resolvePosition;
 		
 		IType declaringType;
+		public IType DeclaringType {
+			get {
+				return this.declaringType;
+			}
+		}
+		
 		IReturnType returnType;
 		string methodName;
 		
@@ -221,8 +225,6 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		MonoDevelop.Projects.Dom.Modifiers modifiers;
 		
 		InsertionPoint insertionPoint;
-		int insertionOffset;
-		
 		public void SetInsertionPoint (InsertionPoint point)
 		{
 			this.insertionPoint = point;
@@ -277,8 +279,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			mode.StartMode ();
 			mode.Exited += delegate(object s, InsertionCursorEventArgs args) {
 				if (args.Success) {
-					insertionPoint = args.InsertionPoint;
-					insertionOffset = data.Document.LocationToOffset (args.InsertionPoint.Location);
+					SetInsertionPoint (args.InsertionPoint);
 					base.Run (options);
 					if (string.IsNullOrEmpty (fileName))
 						return;
@@ -369,6 +370,8 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			TextReplaceChange insertNewMethod = new TextReplaceChange ();
 			insertNewMethod.FileName = fileName;
 			insertNewMethod.RemovedChars = insertionPoint.LineBefore == NewLineInsertion.Eol ? 0 : insertionPoint.Location.Column;
+			var data = options.GetTextEditorData ();
+			int insertionOffset = data.Document.LocationToOffset (insertionPoint.Location);
 			insertNewMethod.Offset = insertionOffset - insertNewMethod.RemovedChars;
 			
 			StringBuilder sb = new StringBuilder ();
