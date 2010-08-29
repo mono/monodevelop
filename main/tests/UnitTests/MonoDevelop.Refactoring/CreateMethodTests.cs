@@ -30,6 +30,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using Mono.TextEditor;
 using MonoDevelop.Projects.CodeGeneration;
+using System.Linq;
 
 namespace MonoDevelop.Refactoring.Tests
 {
@@ -48,21 +49,30 @@ namespace MonoDevelop.Refactoring.Tests
 				return new MonoDevelop.CSharp.Refactoring.CSharpCodeGenerator ();
 			}
 		}
-
-		void TestCreateMethod (string input, string outputString)
+		
+		void TestCreateMethod (string input, string outputString, bool returnWholeFile = false)
 		{
 			var generator = new CSharpCodeGeneratorNode ();
 			MonoDevelop.Projects.CodeGeneration.CodeGenerator.AddGenerator (generator);
 			var refactoring = new CreateMethodCodeGenerator ();
 			RefactoringOptions options = ExtractMethodTests.CreateRefactoringOptions (input);
-			DocumentLocation loc = new DocumentLocation (1, 1);
-			refactoring.SetInsertionPoint (new InsertionPoint (loc, NewLineInsertion.Eol, NewLineInsertion.Eol));
 			Assert.IsTrue (refactoring.IsValid (options));
 			
-			List<Change> changes = refactoring.PerformChanges (options, null);
+			if (returnWholeFile) {
+				refactoring.SetInsertionPoint (MonoDevelop.Refactoring.HelperMethods.GetInsertionPoints (options.GetTextEditorData ().Document, refactoring.DeclaringType).First ());
+			} else {
+				DocumentLocation loc = new DocumentLocation (1, 1);
+				refactoring.SetInsertionPoint (new InsertionPoint (loc, NewLineInsertion.Eol, NewLineInsertion.Eol));
+			}
 			
+			List<Change> changes = refactoring.PerformChanges (options, null);
+//			changes.ForEach (c => Console.WriteLine (c));
 			// get just the generated method.
 			string output = ExtractMethodTests.GetOutput (options, changes);
+			if (returnWholeFile) {
+				Assert.IsTrue (ExtractMethodTests.CompareSource (output, outputString), "Expected:" + Environment.NewLine + outputString + Environment.NewLine + "was:" + Environment.NewLine + output);
+				return;
+			}
 			output = output.Substring (0, output.IndexOf ('}') + 1).Trim ();
 			
 			// crop 1 level of indent
@@ -195,6 +205,43 @@ public delegate string MyDelegate (int a, object b);
 {
 	throw new System.NotImplementedException ();
 }");
+		}
+		
+		[Test()]
+		public void TestExternMethod ()
+		{
+			TestCreateMethod (
+@"
+class FooBar
+{
+}
+
+class TestClass
+{
+	void TestMethod ()
+	{
+		var fb = new FooBar ();
+		fb.$NonExistantMethod ();
+	}
+}
+", @"
+class FooBar
+{
+	public void NonExistantMethod ()
+	{
+		throw new System.NotImplementedException ();
+	}	
+}
+
+class TestClass
+{
+	void TestMethod ()
+	{
+		var fb = new FooBar ();
+		fb.NonExistantMethod ();
+	}
+}
+", true);
 		}
 		
 		
