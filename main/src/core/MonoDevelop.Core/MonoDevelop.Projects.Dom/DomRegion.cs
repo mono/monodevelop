@@ -34,6 +34,7 @@ namespace MonoDevelop.Projects.Dom
 	public struct DomRegion : IComparable, IComparable<DomRegion>
 	{
 		public readonly static DomRegion Empty = new DomRegion (-1, -1, -1, -1);
+		DomLocation start, end;
 		
 		public bool IsEmpty {
 			get {
@@ -42,13 +43,13 @@ namespace MonoDevelop.Projects.Dom
 		}
 
 		public DomLocation Start {
-			get;
-			set;
+			get { return start; }
+			set { start = value; }
 		}
 
 		public DomLocation End {
-			get;
-			set;
+			get { return end; }
+			set { end = value; }
 		}
 		
 		public DomRegion (int startLine, int endLine) : this (startLine, 0, endLine, 0)
@@ -58,14 +59,14 @@ namespace MonoDevelop.Projects.Dom
 		// the call to the empty construtor is required for the windows build
 		public DomRegion (int startLine, int startColumn, int endLine, int endColumn) : this()
 		{
-			this.Start = new DomLocation (startLine, startColumn);
-			this.End   = new DomLocation (endLine, endColumn);
+			this.start = new DomLocation (startLine, startColumn);
+			this.end   = new DomLocation (endLine, endColumn);
 		}
 		
 		public DomRegion (DomLocation start, DomLocation end) : this()
 		{
-			this.Start = start;
-			this.End   = end;
+			this.start = start;
+			this.end   = end;
 		}
 		
 		public static DomRegion FromInvariantString (string invariantString)

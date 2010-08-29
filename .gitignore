@@ -13,6 +13,7 @@ obj/
 
 # globs
 Makefile.in
+*.sln.cache
 *.pidb
 *.userprefs
 *.usertasks

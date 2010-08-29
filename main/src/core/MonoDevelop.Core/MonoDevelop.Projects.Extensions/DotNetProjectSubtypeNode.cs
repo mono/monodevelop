@@ -53,7 +53,7 @@ namespace MonoDevelop.Projects.Extensions
 		string exclude = null;
 
 		[NodeAttribute]
-		bool useXBuild;
+		bool useXBuild = false;
 
 		Type itemType;
 
