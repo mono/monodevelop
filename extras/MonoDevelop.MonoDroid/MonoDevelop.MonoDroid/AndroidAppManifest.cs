@@ -28,6 +28,10 @@ using System;
 using System.Xml.Linq;
 using MonoDevelop.Core;
 using System.Collections.Generic;
+using System.Text;
+using System.IO;
+using System.Xml;
+using System.Linq;
 
 
 namespace MonoDevelop.MonoDroid
@@ -35,8 +39,9 @@ namespace MonoDevelop.MonoDroid
 	public class AndroidAppManifest
 	{
 		XDocument doc;
-		XElement manifest, application;
+		XElement manifest, application, usesSdk;
 		XNamespace aNS = "http://schemas.android.com/apk/res/android";
+		const string aPermPrefix = "android.permission.";
 		
 		private AndroidAppManifest (XDocument doc)
 		{
@@ -45,9 +50,14 @@ namespace MonoDevelop.MonoDroid
 			if (manifest.Name != "manifest")
 				throw new Exception ("App manifest does not have 'manifest' root element");
 			
-			application = doc.Root.Element ("application");
-			if (application.Name != "application")
+			application = manifest.Element ("application");
+			if (application == null)
 				throw new Exception ("App manifest does not have 'application' element");
+			
+			
+			usesSdk = manifest.Element ("uses-sdk");
+			if (usesSdk == null)
+				manifest.Add (usesSdk = new XElement ("uses-sdk"));
 		}
 		
 		public static AndroidAppManifest Create (string packageName, string appLabel)
@@ -72,7 +82,23 @@ namespace MonoDevelop.MonoDroid
 		
 		public void WriteToFile (FilePath fileName)
 		{
-			MonoDevelop.Projects.Text.TextFile.WriteFile (fileName, doc.ToString (), "UTF8");
+			//get the doc to actually write a "utf-8" format
+			string text;
+			using (var ms = new MemoryStream ()) {
+				var xmlSettings = new XmlWriterSettings () {
+					Encoding = Encoding.UTF8,
+					CloseOutput = false,
+					Indent = true,
+					IndentChars = "\t",
+					NewLineChars = "\n",
+				};
+				using (var writer = XmlTextWriter.Create (ms, xmlSettings))
+					doc.Save (writer);
+				text = Encoding.UTF8.GetString (ms.GetBuffer (), 0, (int)ms.Length);
+			}
+			
+			//use textfile API because it's safer (writes out to another file then moves)
+			MonoDevelop.Projects.Text.TextFile.WriteFile (fileName, text, "utf-8");
 		}
 		
 		public string PackageName {
@@ -83,6 +109,73 @@ namespace MonoDevelop.MonoDroid
 		public string ApplicationLabel {
 			get { return (string) application.Attribute (aNS + "label");  }
 			set { application.SetAttributeValue (aNS + "label", value); }
+		}
+		
+		public string ApplicationIcon {
+			get { return (string) application.Attribute (aNS + "icon");  }
+			set { application.SetAttributeValue (aNS + "icon", value); }
+		}
+		
+		public string VersionName {
+			get { return (string) manifest.Attribute (aNS + "versionName");  }
+			set { manifest.SetAttributeValue (aNS + "versionName", value); }
+		}
+		
+		public string VersionCode {
+			get { return (string) manifest.Attribute (aNS + "versionCode");  }
+			set { manifest.SetAttributeValue (aNS + "versionCode", value); }
+		}
+		
+		public int MinSdkVersion {
+			get { return (int) usesSdk.Attribute (aNS + "minSdkVersion");  }
+			set { usesSdk.SetAttributeValue (aNS + "minSdkVersion", value); }
+		}
+		
+		public IEnumerable<string> AndroidPermissions {
+			get {
+				var aName = aNS + "name";
+				foreach (var el in manifest.Elements ("uses-permission")) {
+					var name = (string) el.Attribute (aName);
+					if (name != null && name.StartsWith (aPermPrefix) && name.Length > aPermPrefix.Length)
+						yield return name.Substring (aPermPrefix.Length);
+				}
+			}
+		}
+		
+		public void SetAndroidPermissions (IEnumerable<string> permissions)
+		{
+			var newPerms = new HashSet<string> (permissions);
+			var current = new HashSet<string> (AndroidPermissions);
+			AddAndroidPermissions (newPerms.Except (current));
+			RemoveAndroidPermissions (current.Except (newPerms));
+		}
+		
+		void AddAndroidPermissions (IEnumerable<string> permissions)
+		{
+			var aName = aNS + "name";
+			var newElements = permissions.Select (p =>
+				new XElement ("uses-permission", new XAttribute (aName, aPermPrefix + p)));
+			
+			var lastPerm = manifest.Elements ("uses-permission").LastOrDefault ();
+			if (lastPerm != null) {
+				foreach (var el in newElements) {
+					lastPerm.AddAfterSelf (el);
+					lastPerm = el;
+				}
+			} else {
+				foreach (var el in newElements)
+					manifest.Add (el);
+			}
+		}
+		
+		void RemoveAndroidPermissions (IEnumerable<string> permissions)
+		{
+			var aName = aNS + "name";
+			var perms = new HashSet<string> (permissions.Select (p => aPermPrefix + p));
+			var list = manifest.Elements ("uses-permission")
+				.Where (el => perms.Contains ((string)el.Attribute (aName))).ToList ();
+			foreach (var el in list)
+				el.Remove ();
 		}
 	}
 	
