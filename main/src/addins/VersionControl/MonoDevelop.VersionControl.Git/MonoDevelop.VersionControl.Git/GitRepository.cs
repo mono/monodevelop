@@ -200,7 +200,6 @@ namespace MonoDevelop.VersionControl.Git
 		
 		VersionInfo[] GetDirectoryVersionInfo (FilePath localDirectory, string fileName, bool getRemoteStatus, bool recursive)
 		{
-			Console.WriteLine ("pp GetDirectoryVersionInfo:");
 			DateTime t = DateTime.Now;
 			
 			HashSet<FilePath> existingFiles = new HashSet<FilePath> ();
@@ -216,13 +215,15 @@ namespace MonoDevelop.VersionControl.Git
 			FilePath p = fileName != null ? localDirectory.Combine (fileName) : localDirectory;
 			p = p.CanonicalPath;
 			
-			RepositoryStatus status = repo.Status;
+			RepositoryStatus status;
+			if (fileName != null)
+				status = repo.GetFileStatus (fileName);
+			else
+				status = repo.GetDirectoryStatus (localDirectory, recursive);
 	
 			Action<IEnumerable<string>,VersionStatus> AddFiles = delegate (IEnumerable<string> files, VersionStatus fstatus) {
 				foreach (string file in files) {
-					FilePath statFile = path.Combine (file);
-					if (statFile.ParentDirectory != localDirectory && (!statFile.IsChildPathOf (localDirectory) || !recursive))
-						continue;
+					FilePath statFile = repo.FromGitPath (file);
 					existingFiles.Remove (statFile.CanonicalPath);
 					VersionInfo vi = new VersionInfo (statFile, "", false, fstatus, rev, VersionStatus.Versioned, null);
 					versions.Add (vi);
@@ -250,7 +251,6 @@ namespace MonoDevelop.VersionControl.Git
 				versions.Add (vi);
 			}
 			
-			Console.WriteLine ("pp GetDirectoryVersionInfo -- : " + (DateTime.Now - t).TotalMilliseconds);
 			return versions.ToArray ();
 		}
 		
@@ -603,7 +603,6 @@ namespace MonoDevelop.VersionControl.Git
 			if (rem != null) {
 				rem.Name = newName;
 				rem.Update ();
-				repo.Config.Persist ();
 			}
 		}
 		
@@ -631,16 +630,13 @@ namespace MonoDevelop.VersionControl.Git
 				throw new InvalidOperationException ("Remote not created");
 			
 			remote.Update ();
-			repo.Config.Persist ();
 		}
 		
 		public void RemoveRemote (string name)
 		{
 			Remote rem = repo.Remotes.FirstOrDefault (r => r.Name == name);
-			if (rem != null) {
+			if (rem != null)
 				repo.Remotes.Remove (rem);
-				repo.Config.Persist ();
-			}
 		}
 		
 		public IEnumerable<Branch> GetBranches ()
