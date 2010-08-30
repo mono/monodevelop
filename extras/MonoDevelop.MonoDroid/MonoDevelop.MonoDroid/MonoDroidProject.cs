@@ -232,6 +232,38 @@ namespace MonoDevelop.MonoDroid
 			return baseAction;
 		}
 		
+		public IEnumerable<KeyValuePair<string,ProjectFile>> GetAndroidResources (string kind)
+		{
+			var alreadyReturned = new HashSet<string> ();
+			var splitChars = new[] { '/' };
+			foreach (var pf in Files) {
+				if (pf.BuildAction != MonoDroidBuildAction.AndroidResource)
+					continue;
+				var id = GetAndroidResourceID (pf);
+				var split = id.Split (splitChars, StringSplitOptions.RemoveEmptyEntries);
+				if (split.Length != 2 || !split[0].StartsWith (kind))
+					continue;
+				id = Path.GetFileNameWithoutExtension (split[1]);
+				if (alreadyReturned.Add (id))
+					yield return new KeyValuePair<string, ProjectFile> (id, pf);
+			}		
+		}
+		
+		string GetAndroidResourceID (ProjectFile pf)
+		{
+			if (!string.IsNullOrEmpty (pf.ResourceId))
+				return pf.ResourceId;
+			var f = pf.ProjectVirtualPath.ToString ();
+			foreach (var prefix in MonoDroidResourcePrefixes) {
+				var s = prefix.ToString ();
+				if (f.StartsWith (s)) {
+					f = f.Substring (s.Length);
+					break;
+				}
+			}
+			return f.Replace ('\\', '/');
+		}
+		
 		FilePath[] resPrefixes;
 		
 		FilePath[] MonoDroidResourcePrefixes {
@@ -259,26 +291,34 @@ namespace MonoDevelop.MonoDroid
 		
 		public string GetPackageName (MonoDroidProjectConfiguration conf)
 		{
+			var pf = GetManifestFile (conf);
+			if (pf == null)
+				return null;
+			
+			if (packageNameCache == null)
+				packageNameCache = new AndroidPackageNameCache (this);
+			
+			return packageNameCache.GetPackageName (pf.Name);
+		}
+		
+		public ProjectFile GetManifestFile (MonoDroidProjectConfiguration conf)
+		{
 			if (AndroidManifest.IsNullOrEmpty)
 				return null;
 			
-			var manifestFile = conf.AndroidManifest;
-			if (manifestFile.IsNullOrEmpty)
+			FilePath manifestFile;
+			if (conf == null || (manifestFile = conf.AndroidManifest).IsNullOrEmpty)
 				manifestFile = this.AndroidManifest;
 			
 			// If a specified manifest is not in the project, add or create it
 			// FIXME: do we really want to do this?
 			var pf = Files.GetFile (manifestFile);
-			if (pf == null) {
-				if (!File.Exists (manifestFile))
-					AndroidAppManifest.Create (GetDefaultPackageName (), Name).WriteToFile (manifestFile);
-				pf = AddFile (manifestFile);
-			}
+			if (pf != null)
+				return pf;
 			
-			if (packageNameCache == null)
-				packageNameCache = new AndroidPackageNameCache (this);
-			
-			return packageNameCache.GetPackageName (manifestFile);
+			if (!File.Exists (manifestFile))
+				AndroidAppManifest.Create (GetDefaultPackageName (), Name).WriteToFile (manifestFile);
+			return AddFile (manifestFile);
 		}
 		
 		public string GetPackageName (ConfigurationSelector conf)
