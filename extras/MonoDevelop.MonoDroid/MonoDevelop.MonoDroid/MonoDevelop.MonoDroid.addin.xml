@@ -44,8 +44,9 @@
 		<Condition id="MonoDroidInstalled">
 			<DotNetProjectSubtype
 				guid="{EFBA0AD7-5A72-4C68-AF49-83D382785DCF}"
-				type="MonoDevelop.MonoDroid.MonoDroidProject">
-				<AddImport language="C#" projects="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
+				type="MonoDevelop.MonoDroid.MonoDroidProject"
+				useXBuild="true">
+				<AddImport language="C#" projects="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
 				<RemoveImport language="C#" projects="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 			</DotNetProjectSubtype>
 		</Condition>
