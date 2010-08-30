@@ -137,6 +137,9 @@
 			<Section id = "MonoDroidBuildOptions"
 				_label = "MonoDroid Build"
 				class = "MonoDevelop.MonoDroid.Gui.MonoDroidBuildOptions" />
+			<Section id = "MonoDroidApplicationSettings" _label = "MonoDroid Application">
+				<Panel class = "MonoDevelop.MonoDroid.Gui.MonoDroidApplicationSettings" fill="true" />
+			</Section>
 		</Condition>
 	</Extension>
 	

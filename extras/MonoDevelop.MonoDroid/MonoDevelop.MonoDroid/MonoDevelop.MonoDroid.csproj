@@ -91,6 +91,8 @@
     <Compile Include="AndroidAppManifest.cs" />
     <Compile Include="Gui\MonoDroidBuildOptions.cs" />
     <Compile Include="gtk-gui\MonoDevelop.MonoDroid.Gui.MonoDroidBuildOptionsWidget.cs" />
+    <Compile Include="Gui\MonoDroidApplicationSettings.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.MonoDroid.Gui.MonoDroidApplicationSettingsWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MonoDroid.addin.xml">
