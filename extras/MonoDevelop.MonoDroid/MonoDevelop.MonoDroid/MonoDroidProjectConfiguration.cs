@@ -78,14 +78,20 @@ namespace MonoDevelop.MonoDroid
 		public string ApkPath {
 			get {
 				string packageName = ParentItem.GetPackageName (this);
-				return OutputDirectory.Combine (packageName) + ".apk";
+				if (packageName == null)
+					return null;
+				else
+					return OutputDirectory.Combine (packageName) + ".apk";
 			}
 		}
 		
 		public string ApkSignedPath {
 			get {
 				string packageName = ParentItem.GetPackageName (this);
-				return OutputDirectory.Combine (packageName) + "-signed.apk";
+				if (packageName == null)
+					return null;
+				else
+					return OutputDirectory.Combine (packageName) + "-signed.apk";
 			}
 		}
 		
