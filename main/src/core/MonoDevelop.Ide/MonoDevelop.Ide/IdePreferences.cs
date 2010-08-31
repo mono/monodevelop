@@ -28,6 +28,7 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Ide
 {
@@ -234,6 +235,11 @@ namespace MonoDevelop.Ide
 		public bool BuildWithMSBuild {
 			get { return PropertyService.Get ("MonoDevelop.Ide.BuildWithMSBuild", false); }
 			set { PropertyService.Set ("MonoDevelop.Ide.BuildWithMSBuild", value); }
+		}
+		
+		public MSBuildVerbosity MSBuildVerbosity {
+			get { return PropertyService.Get ("MonoDevelop.Ide.MSBuildVerbosity", MSBuildVerbosity.Normal); }
+			set { PropertyService.Set ("MonoDevelop.Ide.MSBuildVerbosity", value); }
 		}
 
 		public bool EnableInstrumentation {

@@ -1,7 +1,8 @@
 
 DEPS =  \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Core.dll
+	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Projects.Formats.MSBuild.exe
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \

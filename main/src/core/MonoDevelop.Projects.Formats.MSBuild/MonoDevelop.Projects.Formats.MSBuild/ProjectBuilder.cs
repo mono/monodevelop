@@ -56,7 +56,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			project.Load (file);
 		}
 		
-		public MSBuildResult[] RunTarget (string target, string configuration, string platform, ILogWriter logWriter)
+		public MSBuildResult[] RunTarget (string target, string configuration, string platform, ILogWriter logWriter,
+			MSBuildVerbosity verbosity)
 		{
 			try {
 				SetupEngine (configuration, platform);
@@ -64,7 +65,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				LocalLogger logger = new LocalLogger (Path.GetDirectoryName (file));
 				engine.RegisterLogger (logger);
 				
-				ConsoleLogger consoleLogger = new ConsoleLogger (LoggerVerbosity.Normal, logWriter.WriteLine, null, null);
+				var consoleLogger = new ConsoleLogger (GetVerbosity (verbosity), logWriter.WriteLine, null, null);
 				engine.RegisterLogger (consoleLogger);
 				
 				project.Build (target);
@@ -75,6 +76,23 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
+		LoggerVerbosity GetVerbosity (MSBuildVerbosity verbosity)
+		{
+			switch (verbosity) {
+			case MSBuildVerbosity.Quiet:
+				return LoggerVerbosity.Quiet;
+			case MSBuildVerbosity.Minimal:
+				return LoggerVerbosity.Minimal;
+			case MSBuildVerbosity.Normal:
+			default:
+				return LoggerVerbosity.Normal;
+			case MSBuildVerbosity.Detailed:
+				return LoggerVerbosity.Detailed;
+			case MSBuildVerbosity.Diagnostic:
+				return LoggerVerbosity.Diagnostic;
+			}
+		}
+
 		public string[] GetAssemblyReferences (string configuration, string platform)
 		{
 			SetupEngine (configuration, platform);
