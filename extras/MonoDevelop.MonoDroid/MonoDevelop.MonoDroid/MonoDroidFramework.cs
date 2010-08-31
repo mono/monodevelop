@@ -40,7 +40,8 @@ namespace MonoDevelop.MonoDroid
 			EnvironmentOverrides = new Dictionary<string, string> ();
 			try {
 				FindMonoDroidSdk ();
-				FindAndroidJavaSdks ();
+				if (IsInstalled)
+					FindAndroidJavaSdks ();
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error detecting MonoDroid SDK", ex);
 			}
@@ -348,7 +349,8 @@ namespace MonoDevelop.MonoDroid
 	{
 		public static IEnumerable<MonoDroidDeviceTarget> GetDeviceTargets ()
 		{
-			throw new NotImplementedException ();
+			//FIXME: implement
+			yield break;
 		}
 	}
 	
