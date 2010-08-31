@@ -226,10 +226,12 @@ namespace Mono.CSharp {
 			int id;
 			if (source_files.TryGetValue (path, out id)){
 				string other_name = source_list [id - 1].Name;
-				if (name.Equals (other_name))
-					r.Warning (2002, 1, "Source file `{0}' specified multiple times", other_name);
-				else
-					r.Warning (2002, 1, "Source filenames `{0}' and `{1}' both refer to the same file: {2}", name, other_name, path);
+				if (r != null) {
+					if (name.Equals (other_name))
+						r.Warning (2002, 1, "Source file `{0}' specified multiple times", other_name);
+					else
+						r.Warning (2002, 1, "Source filenames `{0}' and `{1}' both refer to the same file: {2}", name, other_name, path);
+				}
 				return;
 			}
 

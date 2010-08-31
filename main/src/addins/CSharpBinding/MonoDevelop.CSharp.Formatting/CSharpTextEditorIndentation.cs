@@ -444,7 +444,7 @@ namespace MonoDevelop.CSharp.Formatting
 				RunFormatter ();
 				break;
 			case '\n':
-				if (FixLineStart (stateTracker.Engine.LineNumber - 1)) 
+				if (FixLineStart (stateTracker.Engine.LineNumber)) 
 					return;
 				//newline always reindents unless it's had special handling
 				reIndent = true;
