@@ -55,6 +55,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		string lastBuildToolsVersion;
 		ITimeTracker timer;
 		bool useXBuild;
+		MSBuildVerbosity verbosity;
 		
 		struct ItemInfo {
 			public MSBuildItem Item;
@@ -102,8 +103,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			Runtime.SystemAssemblyService.DefaultRuntimeChanged += OnDefaultRuntimeChanged;
 			
+			//FIXME: Update these when the properties change
 			useXBuild = PropertyService.Get ("MonoDevelop.Ide.BuildWithMSBuild", false);
-
+			verbosity = PropertyService.Get ("MonoDevelop.Ide.MSBuildVerbosity", MSBuildVerbosity.Normal);
 		}
 		
 		void OnDefaultRuntimeChanged (object o, EventArgs args)
@@ -181,7 +183,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 					LogWriter logWriter = new LogWriter (monitor.Log);
 					RemoteProjectBuilder builder = GetProjectBuilder ();
-					MSBuildResult[] results = builder.RunTarget (target, configObject.Name, configObject.Platform, logWriter);
+					MSBuildResult[] results = builder.RunTarget (target, configObject.Name, configObject.Platform,
+						logWriter, verbosity);
 					System.Runtime.Remoting.RemotingServices.Disconnect (logWriter);
 					
 					BuildResult br = new BuildResult ();

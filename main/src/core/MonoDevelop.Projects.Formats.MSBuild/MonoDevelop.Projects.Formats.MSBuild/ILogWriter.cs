@@ -52,6 +52,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			return null;
 		}
-
+	}
+	
+	public enum MSBuildVerbosity
+	{
+		Quiet,
+		Minimal,
+		Normal,
+		Detailed,
+		Diagnostic
 	}
 }

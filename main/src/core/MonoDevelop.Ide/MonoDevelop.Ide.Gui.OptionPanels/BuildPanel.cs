@@ -29,6 +29,7 @@
 using System;
 using Gtk;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
@@ -59,6 +60,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			runWithWarningsCheckBox.Active = IdeApp.Preferences.RunWithWarnings;
 			buildBeforeRunCheckBox.Active = IdeApp.Preferences.BuildBeforeExecuting;
 			checkXBuild.Active = IdeApp.Preferences.BuildWithMSBuild;
+			Console.WriteLine (IdeApp.Preferences.MSBuildVerbosity);
+			verbosityCombo.Active = (int)IdeApp.Preferences.MSBuildVerbosity;
 		}
 		
 		public void Store ()
@@ -66,6 +69,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			IdeApp.Preferences.RunWithWarnings = runWithWarningsCheckBox.Active;
 			IdeApp.Preferences.BuildBeforeExecuting = buildBeforeRunCheckBox.Active;
 			IdeApp.Preferences.BuildWithMSBuild = checkXBuild.Active;
+			IdeApp.Preferences.MSBuildVerbosity = (MSBuildVerbosity) verbosityCombo.Active;
 			
 			if (saveChangesRadioButton.Active)
 				IdeApp.Preferences.BeforeBuildSaveAction = BeforeCompileAction.SaveAllFiles;

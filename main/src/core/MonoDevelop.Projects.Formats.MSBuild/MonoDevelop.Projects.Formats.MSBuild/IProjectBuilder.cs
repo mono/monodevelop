@@ -30,7 +30,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public interface IProjectBuilder
 	{
-		MSBuildResult[] RunTarget (string target, string configuration, string platform, ILogWriter logWriter);
+		MSBuildResult[] RunTarget (string target, string configuration, string platform, ILogWriter logWriter,
+			MSBuildVerbosity verbosity);
 		string[] GetAssemblyReferences (string configuration, string platform);
 	}
 }
