@@ -156,9 +156,6 @@
     <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\CSharpFormattingPolicy.xml">
       <LogicalName>CSharpFormattingPolicy.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\GtkSharp2ProjectMac.xpt.xml">
-      <LogicalName>GtkSharp2ProjectMac.xpt.xml</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
