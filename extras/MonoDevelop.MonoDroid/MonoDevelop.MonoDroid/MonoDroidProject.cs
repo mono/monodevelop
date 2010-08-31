@@ -148,6 +148,11 @@ namespace MonoDevelop.MonoDroid
 			conf.CopyFrom (base.CreateConfiguration (name));
 			return conf;
 		}
+		
+		public override bool SupportsFormat (FileFormat format)
+		{
+			return format.Id == "MSBuild10";
+		}
 
 		#endregion
 		
