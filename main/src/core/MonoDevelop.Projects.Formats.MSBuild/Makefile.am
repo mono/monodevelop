@@ -28,8 +28,11 @@ $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	
 $(ASSEMBLY).mdb: $(ASSEMBLY)
 
+$(ASSEMBLY).config: $(srcdir)/app.config
+	cp $< $@
+
 assemblydir = $(MD_ASSEMBLY_DIR)
-assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(ASSEMBLY).config
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
