@@ -29,8 +29,6 @@ using System.Threading;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Remoting;
-using Microsoft.Build.BuildEngine;
-using Microsoft.Build.Framework;
 using System.Collections.Generic;
 using System.Collections;
 
