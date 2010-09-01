@@ -57,6 +57,14 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 	{
 	}
 	
+	public class NSMutableDictionaryDirect : NSMutableDictionary
+	{
+		protected override void OnPropertyDeserialized (string name, object value)
+		{
+			Values[name] = value;
+		}
+	}
+	
 	public class NSMutableDictionary : IBObject
 	{
 		List<object> sortedKeys = new List<object> ();
