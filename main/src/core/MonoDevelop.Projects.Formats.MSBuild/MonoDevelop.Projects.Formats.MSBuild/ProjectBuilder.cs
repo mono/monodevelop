@@ -41,12 +41,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		Project project;
 		Engine engine;
 		string file;
+		ILogWriter currentLogWriter;
+		ConsoleLogger consoleLogger;
 		
 		public ProjectBuilder (string file, string binDir)
 		{
 			this.file = file;
 			engine = new Engine (binDir);
 			engine.GlobalProperties.SetProperty ("BuildingInsideVisualStudio", "true");
+			
+			consoleLogger = new ConsoleLogger (LoggerVerbosity.Normal, LogWriteLine, null, null);
+			engine.RegisterLogger (consoleLogger);
+			
 			Refresh ();
 		}
 		
@@ -56,23 +62,28 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			project.Load (file);
 		}
 		
+		void LogWriteLine (string txt)
+		{
+			if (currentLogWriter != null)
+				currentLogWriter.WriteLine (txt);
+		}
+		
 		public MSBuildResult[] RunTarget (string target, string configuration, string platform, ILogWriter logWriter,
 			MSBuildVerbosity verbosity)
 		{
 			try {
 				SetupEngine (configuration, platform);
+				currentLogWriter = logWriter;
 				
 				LocalLogger logger = new LocalLogger (Path.GetDirectoryName (file));
 				engine.RegisterLogger (logger);
 				
-				var consoleLogger = new ConsoleLogger (GetVerbosity (verbosity), logWriter.WriteLine, null, null);
-				engine.RegisterLogger (consoleLogger);
-				
+				consoleLogger.Verbosity = GetVerbosity (verbosity);
 				project.Build (target);
 				return logger.BuildResult.ToArray ();
 				
 			} finally {
-				engine.UnregisterAllLoggers ();
+				currentLogWriter = null;
 			}
 		}
 		
@@ -121,4 +132,3 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 	}
 }
-
