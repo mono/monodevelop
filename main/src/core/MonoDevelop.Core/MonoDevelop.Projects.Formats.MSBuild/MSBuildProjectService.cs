@@ -38,6 +38,7 @@ using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
+using Cecil = Mono.Cecil;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -51,7 +52,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		static DataContext dataContext;
 		
-		static Dictionary<TargetRuntime,RemoteBuildEngine> builders = new Dictionary<TargetRuntime, RemoteBuildEngine> ();
+		static Dictionary<string,RemoteBuildEngine> builders = new Dictionary<string, RemoteBuildEngine> ();
 		static GenericItemTypeNode genericItemTypeNode = new GenericItemTypeNode ();
 		
 		public static DataContext DataContext {
@@ -408,20 +409,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			lock (builders) {
 				string binDir = runtime.GetMSBuildBinPath (fx);
 				
+				string builderKey = runtime.Id + " " + fx.Id;
 				RemoteBuildEngine builder;
-				if (builders.TryGetValue (runtime, out builder)) {
+				if (builders.TryGetValue (builderKey, out builder)) {
 					builder.ReferenceCount++;
 					return new RemoteProjectBuilder (file, binDir, builder);
 				}
 				
-				if (runtime.IsRunning) {
+				if (runtime.IsRunning && fx.Id == "2.0") {
 					if (currentBuildEngine == null)
 						currentBuildEngine = new RemoteBuildEngine (null, new BuildEngine ());
 					return new RemoteProjectBuilder (file, binDir, currentBuildEngine);
 				}
 				else {
+					string exe = GetExeLocation (fx);
 					MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
-					string exe = typeof(ProjectBuilder).Assembly.Location;
 					ProcessStartInfo pinfo = new ProcessStartInfo (exe);
 					runtime.GetToolsExecutionEnvironment (fx).MergeTo (pinfo);
 					pinfo.UseShellExecute = false;
@@ -446,10 +448,51 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						throw;
 					}
 				}
-				builders [runtime] = builder;
+				builders [builderKey] = builder;
 				builder.ReferenceCount = 1;
 				return new RemoteProjectBuilder (file, binDir, builder);
 			}
+		}
+		
+		static string GetExeLocation (TargetFramework fx)
+		{
+			FilePath sourceExe = typeof(ProjectBuilder).Assembly.Location;
+			Dictionary<string,string[]> newVersions = new Dictionary<string, string[]> ();
+			
+			switch (fx.Id) {
+			case "3.5":
+				newVersions.Add ("Microsoft.Build.Engine", new string[] {"Microsoft.Build.Engine", "3.5.0.0"});
+				newVersions.Add ("Microsoft.Build.Framework", new string[] {"Microsoft.Build.Framework", "3.5.0.0"});
+				newVersions.Add ("Microsoft.Build.Utilities", new string[] {"Microsoft.Build.Utilities.v3.5", "3.5.0.0"});
+				break;
+			case "4.0":
+				newVersions.Add ("Microsoft.Build.Engine", new string[] {"Microsoft.Build.Engine", "4.0.0.0"});
+				newVersions.Add ("Microsoft.Build.Framework", new string[] {"Microsoft.Build.Framework", "4.0.0.0"});
+				newVersions.Add ("Microsoft.Build.Utilities", new string[] {"Microsoft.Build.Utilities", "4.0.0.0"});
+				break;
+			default:
+				return sourceExe;
+			}
+			
+			FilePath p = FilePath.Build (PropertyService.ConfigPath, "xbuild", fx.Id, "MonoDevelop.Projects.Formats.MSBuild.exe");
+			if (!File.Exists (p) || File.GetLastWriteTime (p) < File.GetLastWriteTime (sourceExe)) {
+				if (!Directory.Exists (p.ParentDirectory))
+					Directory.CreateDirectory (p.ParentDirectory);
+				File.Copy (typeof(ProjectBuilder).Assembly.Location, p);
+				
+				// Update the references to msbuild
+				Cecil.AssemblyDefinition asm = Cecil.AssemblyFactory.GetAssembly (p);
+				foreach (Cecil.AssemblyNameReference ar in asm.MainModule.AssemblyReferences) {
+					string[] replacement;
+					if (newVersions.TryGetValue (ar.Name, out replacement)) {
+						ar.Name = replacement[0];
+						ar.Version = new Version (replacement[1]);
+					}
+				}
+				
+				Cecil.AssemblyFactory.SaveAssembly (asm, p);
+			}
+			return p;
 		}
 
 		internal static void ReleaseProjectBuilder (RemoteBuildEngine engine)
@@ -487,7 +530,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			lock (builders) {
 				DateTime tnow = DateTime.Now;
-				foreach (var val in new Dictionary<TargetRuntime,RemoteBuildEngine> (builders)) {
+				foreach (var val in new Dictionary<string,RemoteBuildEngine> (builders)) {
 					if (val.Value.ReferenceCount == 0 && val.Value.ReleaseTime <= tnow) {
 						builders.Remove (val.Key);
 						val.Value.Dispose ();
