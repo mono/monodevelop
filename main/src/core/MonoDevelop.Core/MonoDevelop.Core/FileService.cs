@@ -542,6 +542,14 @@ namespace MonoDevelop.Core
 				path = Path.Combine (path, p);
 			return new FilePath (path);
 		}
+		
+		/// <summary>
+		/// Builds a path by combining all provided path sections
+		/// </summary>
+		public static FilePath Build (params string[] paths)
+		{
+			return Empty.Combine (paths);
+		}
 
 		public FilePath ToAbsolute (FilePath basePath)
 		{
