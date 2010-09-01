@@ -52,7 +52,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		List<string> subtypeGuids = new List<string> ();
 		const string Unspecified = null;
 		RemoteProjectBuilder projectBuilder;
-		TargetFramework lastBuildFx;
+		string lastBuildToolsVersion;
 		ITimeTracker timer;
 		bool useXBuild;
 		MSBuildVerbosity verbosity;
@@ -122,22 +122,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			SolutionEntityItem item = (SolutionEntityItem) Item;
 			TargetRuntime runtime = null;
-			TargetFramework fx;
+			string toolsVersion;
 			if (item is IAssemblyProject) {
 				runtime = ((IAssemblyProject) item).TargetRuntime;
-				fx = ((IAssemblyProject) item).TargetFramework;
+				toolsVersion = this.TargetFormat.ToolsVersion;
 			}
 			else {
 				runtime = Runtime.SystemAssemblyService.CurrentRuntime;
-				fx = Services.ProjectService.DefaultTargetFramework;
+				toolsVersion = MSBuildProjectService.DefaultToolsVersion;
 			}
-			if (projectBuilder == null || lastBuildFx != fx) {
+			if (projectBuilder == null || lastBuildToolsVersion != toolsVersion) {
 				if (projectBuilder != null) {
 					projectBuilder.Dispose ();
 					projectBuilder = null;
 				}
-				projectBuilder = MSBuildProjectService.GetProjectBuilder (runtime, fx, item.FileName);
-				lastBuildFx = fx;
+				projectBuilder = MSBuildProjectService.GetProjectBuilder (runtime, toolsVersion, item.FileName);
+				lastBuildToolsVersion = toolsVersion;
 			}
 			return projectBuilder;
 		}
