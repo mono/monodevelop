@@ -133,8 +133,8 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 					xibRef = new IBReference (Int32.MinValue);
 				}
 				return xibRef;
-			case "object":
-				string className = element.Attribute ("class").Value;
+			case "object": {
+				var className = (string) element.Attribute ("class");
 				Func<IBObject> constructor;
 				IBObject obj;
 				if (constructors.TryGetValue (className, out constructor))
@@ -142,6 +142,21 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 				else
 					obj = new UnknownIBObject (className);
 				return obj;
+			}
+			case "array": {
+				var className = (string) element.Attribute ("class");
+				if (className == null)
+					return new NSArray ();
+				else if (className == "NSMutableArray")
+					return new NSMutableArray ();
+				throw new InvalidOperationException ("Unknown array class '" + className + "'");
+			}
+			case "dictionary": {
+				var className = (string) element.Attribute ("class");
+				if (className == "NSMutableDictionary")
+					return new NSMutableDictionaryDirect ();
+				throw new InvalidOperationException ("Unknown dictionary class '" + className + "'");
+			}
 			default:
 				throw new Exception (String.Format ("Cannot handle primitive type {0}", element.Name));
 			}
