@@ -2091,7 +2091,14 @@ namespace Mono.CSharp
 				CompilerContext ctx = new CompilerContext (new ReflectionMetaImporter (), new Report (reportPrinter));
 				
 				RootContext.ToplevelTypes = new ModuleCompiled (ctx, false /* isUnsafe */);
-				CSharpParser parser = new CSharpParser (reader, (CompilationUnit) Location.SourceFiles [0], ctx);
+				CompilationUnit unit = null;
+				try {
+					unit = (CompilationUnit) Location.SourceFiles [0];
+				} catch (Exception e) {
+					string path = Path.GetFullPath (inputFile);
+					unit = new CompilationUnit (inputFile, path, 0);
+				}
+				CSharpParser parser = new CSharpParser (reader, unit, ctx);
 				parser.Lexer.TabSize = 1;
 				parser.LocationsBag = new LocationsBag ();
 				parser.UsingsBag = new UsingsBag ();

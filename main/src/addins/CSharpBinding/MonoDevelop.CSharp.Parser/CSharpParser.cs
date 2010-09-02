@@ -1497,7 +1497,7 @@ namespace MonoDevelop.CSharp.Parser
 				}
 				result.AddChild ((INode)binaryExpression.Left.Accept (this), BinaryOperatorExpression.LeftExpressionRole);
 				result.AddChild (new CSharpTokenNode (Convert (binaryExpression.Location), opLength), BinaryOperatorExpression.OperatorRole);
-				result.AddChild ((INode)binaryExpression.Left.Accept (this), BinaryOperatorExpression.RightExpressionRole);
+				result.AddChild ((INode)binaryExpression.Right.Accept (this), BinaryOperatorExpression.RightExpressionRole);
 				return result;
 			}
 			
@@ -1509,7 +1509,7 @@ namespace MonoDevelop.CSharp.Parser
 				var location = LocationsBag.GetLocations (nullCoalescingOperator);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), 2), BinaryOperatorExpression.OperatorRole);
-				result.AddChild ((INode)nullCoalescingOperator.Left.Accept (this), BinaryOperatorExpression.RightExpressionRole);
+				result.AddChild ((INode)nullCoalescingOperator.Right.Accept (this), BinaryOperatorExpression.RightExpressionRole);
 				return result;
 			}
 			
