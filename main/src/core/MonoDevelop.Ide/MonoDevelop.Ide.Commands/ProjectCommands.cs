@@ -30,7 +30,7 @@
 //
 //
 
-
+using System;
 using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
@@ -464,7 +464,11 @@ namespace MonoDevelop.Ide.Commands
 			Thread t = new Thread (
 				delegate () {
 					using (monitor) {
-						cmd.Execute (monitor, ce, IdeApp.Workspace.ActiveConfiguration);
+						try {
+							cmd.Execute (monitor, ce, IdeApp.Workspace.ActiveConfiguration);
+						} catch (Exception ex) {
+							monitor.ReportError (GettextCatalog.GetString ("Command execution failed"), ex);
+						}
 					}
 				}
 			);
