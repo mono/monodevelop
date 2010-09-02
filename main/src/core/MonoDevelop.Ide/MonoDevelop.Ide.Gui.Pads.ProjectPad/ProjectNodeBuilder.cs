@@ -130,13 +130,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			icon = Context.GetIcon (iconName);
 			
+			// Gray out the project name if it is not selected in the current build configuration
+			
 			SolutionConfiguration conf = p.ParentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
 			if (conf == null || !conf.BuildEnabledForItem (p)) {
 				Gdk.Pixbuf ticon = Context.GetComposedIcon (icon, "project-no-build");
 				if (ticon == null)
 					ticon = Context.CacheComposedIcon (icon, "project-no-build", ImageService.MakeTransparent (icon, 0.5));
 				icon = ticon;
-				label = "<span foreground='gray'>" + label + "</span>";
+				label = "<span foreground='gray'>" + label + " <small>(not built in active configuration)</small></span>";
 			}
 		}
 
