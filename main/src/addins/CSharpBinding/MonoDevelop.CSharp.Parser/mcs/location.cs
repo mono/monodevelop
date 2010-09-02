@@ -182,6 +182,11 @@ namespace Mono.CSharp {
 				CompilationUnit = compile_unit;
 				LineOffset = line - (int) (line % (1 << line_delta_bits));
 			}
+			
+			public override string ToString ()
+			{
+				return string.Format ("[Checkpoint: LineOffset={0}, CompilationUnit={1}, File={2}]", LineOffset, CompilationUnit, File);
+			}
 		}
 
 		static List<SourceFile> source_list;
@@ -402,7 +407,17 @@ namespace Mono.CSharp {
 			get {
 				if (token == 0)
 					return 1;
-				return checkpoints [CheckpointIndex].LineOffset + ((token & line_delta_mask) >> column_bits);
+				try {
+					return checkpoints [CheckpointIndex].LineOffset + ((token & line_delta_mask) >> column_bits);
+				} catch (Exception e) {
+					Console.WriteLine (e);
+					Console.WriteLine ("checkpoints:" + checkpoints + " CheckpointIndex:" + CheckpointIndex + " Token:" + token);
+					Console.WriteLine ("---- checkpoint contents: " + checkpoints.Length);
+					foreach (var cp in checkpoints) {
+						Console.WriteLine (cp);
+					}
+					return 0;
+				}
 			}
 		}
 
