@@ -81,6 +81,7 @@ namespace MonoDevelop.CSharp.Formatting
 		public override object VisitNamespaceDeclaration (NamespaceDeclaration namespaceDeclaration, object data)
 		{
 			FixIndentation (namespaceDeclaration.StartLocation);
+			EnforceBraceStyle (policy.NamespaceBraceStyle, namespaceDeclaration.LBrace, namespaceDeclaration.RBrace);
 			IndentLevel++;
 			object result = base.VisitNamespaceDeclaration (namespaceDeclaration, data);
 			IndentLevel--;

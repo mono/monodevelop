@@ -685,6 +685,10 @@ namespace Mono.CSharp {
 					return true;
 				}
 
+				// dynamic to __arglist
+				if (target_type == InternalType.Arglist)
+					return true;
+
 				return false;
 			}
 
@@ -1246,7 +1250,7 @@ namespace Mono.CSharp {
 				case MemberKind.TypeParameter:
 					Arguments args = new Arguments (1);
 					args.Add (new Argument (expr));
-					return new DynamicConversion (target_type, 0, args, loc).Resolve (ec);
+					return new DynamicConversion (target_type, explicit_cast ? CSharpBinderFlags.ConvertExplicit : 0, args, loc).Resolve (ec);
 				}
 
 				return null;

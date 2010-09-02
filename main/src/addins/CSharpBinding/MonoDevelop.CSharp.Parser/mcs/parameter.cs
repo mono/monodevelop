@@ -343,7 +343,7 @@ namespace Mono.CSharp {
 		
 		public virtual bool CheckAccessibility (InterfaceMemberBase member)
 		{
-			if (parameter_type == null || TypeManager.IsGenericParameter (parameter_type))
+			if (parameter_type == null)
 				return true;
 
 			return member.IsAccessibleAs (parameter_type);

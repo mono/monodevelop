@@ -80,68 +80,70 @@ namespace MonoDevelop.CSharp.Parser
 		
 		public override ParsedDocument Parse (ProjectDom dom, string fileName, string content)
 		{
-			if (string.IsNullOrEmpty (content))
-				return null;
-			
-			List<string> compilerArguments = new List<string> ();
-			
-			var unit =  new MonoDevelop.Projects.Dom.CompilationUnit (fileName);;
-			var result = new ParsedDocument (fileName);
-			result.CompilationUnit = unit;
-			
-			ICSharpCode.NRefactory.Parser.CSharp.Lexer lexer = new ICSharpCode.NRefactory.Parser.CSharp.Lexer (new StringReader (content));
-			lexer.SpecialCommentTags = ProjectDomService.SpecialCommentTags.GetNames ();
-			lexer.EvaluateConditionalCompilation = true;
-			if (dom != null && dom.Project != null && MonoDevelop.Ide.IdeApp.Workspace != null) {
-				DotNetProjectConfiguration configuration = dom.Project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
-				CSharpCompilerParameters par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
-				if (par != null) {
-					lexer.SetConditionalCompilationSymbols (par.DefineSymbols);
-					if (!string.IsNullOrEmpty (par.DefineSymbols)) {
-						compilerArguments.Add ("-define:" + string.Join (";", par.DefineSymbols.Split (';', ',', ' ', '\t')));
+			lock (CompilerCallableEntryPoint.parseLock) {
+				if (string.IsNullOrEmpty (content))
+					return null;
+				
+				List<string> compilerArguments = new List<string> ();
+				
+				var unit =  new MonoDevelop.Projects.Dom.CompilationUnit (fileName);;
+				var result = new ParsedDocument (fileName);
+				result.CompilationUnit = unit;
+				
+				ICSharpCode.NRefactory.Parser.CSharp.Lexer lexer = new ICSharpCode.NRefactory.Parser.CSharp.Lexer (new StringReader (content));
+				lexer.SpecialCommentTags = ProjectDomService.SpecialCommentTags.GetNames ();
+				lexer.EvaluateConditionalCompilation = true;
+				if (dom != null && dom.Project != null && MonoDevelop.Ide.IdeApp.Workspace != null) {
+					DotNetProjectConfiguration configuration = dom.Project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
+					CSharpCompilerParameters par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
+					if (par != null) {
+						lexer.SetConditionalCompilationSymbols (par.DefineSymbols);
+						if (!string.IsNullOrEmpty (par.DefineSymbols)) {
+							compilerArguments.Add ("-define:" + string.Join (";", par.DefineSymbols.Split (';', ',', ' ', '\t')));
+						}
+						if (par.UnsafeCode)
+							compilerArguments.Add ("-unsafe");
+						if (par.TreatWarningsAsErrors)
+							compilerArguments.Add ("-warnaserror");
+						if (!string.IsNullOrEmpty (par.NoWarnings))
+							compilerArguments.Add ("-nowarn:"+ string.Join (",", par.NoWarnings.Split (';', ',', ' ', '\t')));
+						compilerArguments.Add ("-warn:" + par.WarningLevel);
+						compilerArguments.Add ("-langversion:" + GetLangString (par.LangVersion));
+						if (par.GenerateOverflowChecks)
+							compilerArguments.Add ("-checked");
 					}
-					if (par.UnsafeCode)
-						compilerArguments.Add ("-unsafe");
-					if (par.TreatWarningsAsErrors)
-						compilerArguments.Add ("-warnaserror");
-					if (!string.IsNullOrEmpty (par.NoWarnings))
-						compilerArguments.Add ("-nowarn:"+ string.Join (",", par.NoWarnings.Split (';', ',', ' ', '\t')));
-					compilerArguments.Add ("-warn:" + par.WarningLevel);
-					compilerArguments.Add ("-langversion:" + GetLangString (par.LangVersion));
-					if (par.GenerateOverflowChecks)
-						compilerArguments.Add ("-checked");
 				}
+	//			compilerArguments.ForEach (arg => Console.WriteLine (arg));
+				while (lexer.NextToken ().Kind != ICSharpCode.NRefactory.Parser.CSharp.Tokens.EOF)
+					;
+				
+				CompilerCompilationUnit top;
+				ErrorReportPrinter errorReportPrinter = new ErrorReportPrinter ();
+				using (var stream = new MemoryStream (Encoding.Default.GetBytes (content))) {
+					top = CompilerCallableEntryPoint.ParseFile (compilerArguments.ToArray (), stream, fileName, errorReportPrinter);
+				}
+				if (top == null)
+					return null;
+				
+				SpecialTracker tracker = new SpecialTracker (result);
+				foreach (ICSharpCode.NRefactory.ISpecial special in lexer.SpecialTracker.CurrentSpecials) {
+					special.AcceptVisitor (tracker, null);
+				}	
+				
+				
+				// convert DOM
+				var conversionVisitor = new ConversionVisitor (top.LocationsBag, lexer.SpecialTracker.CurrentSpecials);
+				conversionVisitor.Dom = dom;
+				conversionVisitor.Unit = unit;
+				conversionVisitor.ParsedDocument = result;
+				top.UsingsBag.Global.Accept (conversionVisitor);
+				
+				unit.Tag = top;
+				
+				// parser errors
+				errorReportPrinter.Errors.ForEach (e => conversionVisitor.ParsedDocument.Add (e));
+				return result;
 			}
-//			compilerArguments.ForEach (arg => Console.WriteLine (arg));
-			while (lexer.NextToken ().Kind != ICSharpCode.NRefactory.Parser.CSharp.Tokens.EOF)
-				;
-			
-			CompilerCompilationUnit top;
-			ErrorReportPrinter errorReportPrinter = new ErrorReportPrinter ();
-			using (var stream = new MemoryStream (Encoding.Default.GetBytes (content))) {
-				top = CompilerCallableEntryPoint.ParseFile (compilerArguments.ToArray (), stream, fileName, errorReportPrinter);
-			}
-			if (top == null)
-				return null;
-			
-			SpecialTracker tracker = new SpecialTracker (result);
-			foreach (ICSharpCode.NRefactory.ISpecial special in lexer.SpecialTracker.CurrentSpecials) {
-				special.AcceptVisitor (tracker, null);
-			}	
-			
-			
-			// convert DOM
-			var conversionVisitor = new ConversionVisitor (top.LocationsBag, lexer.SpecialTracker.CurrentSpecials);
-			conversionVisitor.Dom = dom;
-			conversionVisitor.Unit = unit;
-			conversionVisitor.ParsedDocument = result;
-			top.UsingsBag.Global.Accept (conversionVisitor);
-			
-			unit.Tag = top;
-			
-			// parser errors
-			errorReportPrinter.Errors.ForEach (e => conversionVisitor.ParsedDocument.Add (e));
-			return result;
 		}
 		
 		class SpecialTracker : ICSharpCode.NRefactory.ISpecialVisitor

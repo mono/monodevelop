@@ -67,11 +67,52 @@ namespace MonoDevelop.CSharp.Parser
 			}
 			
 			#region Global
-			public override void Visit (ModuleCompiled mc)
+			Stack<NamespaceDeclaration> namespaceStack = new Stack<NamespaceDeclaration> ();
+			
+			public override void Visit (UsingsBag.Namespace nspace)
 			{
-				base.Visit (mc);
+				NamespaceDeclaration nDecl = null;
+				if (nspace.Name != null) {
+					nDecl = new NamespaceDeclaration ();
+					nDecl.AddChild (new CSharpTokenNode (Convert (nspace.NamespaceLocation), "namespace".Length), NamespaceDeclaration.Roles.Keyword);
+					nDecl.AddChild (new Identifier (nspace.Name.Name, Convert (nspace.Name.Location)), NamespaceDeclaration.Roles.Identifier);
+					nDecl.AddChild (new CSharpTokenNode (Convert (nspace.OpenBrace), 1), NamespaceDeclaration.Roles.LBrace);
+					AddToNamespace (nDecl);
+					namespaceStack.Push (nDecl);
+					
+				}
+				VisitNamespaceUsings (nspace);
+				VisitNamespaceBody (nspace);
+				
+				if (nDecl != null) {
+					nDecl.AddChild (new CSharpTokenNode (Convert (nspace.CloseBrace), 1), NamespaceDeclaration.Roles.RBrace);
+					if (!nspace.OptSemicolon.IsNull)
+						nDecl.AddChild (new CSharpTokenNode (Convert (nspace.OptSemicolon), 1), NamespaceDeclaration.Roles.Semicolon);
+				
+					namespaceStack.Pop ();
+				}
 			}
-
+			
+			public override void Visit (UsingsBag.Using u)
+			{
+				UsingDeclaration ud = new UsingDeclaration ();
+				ud.AddChild (new CSharpTokenNode (Convert (u.UsingLocation), "using".Length), UsingDeclaration.Roles.Keyword);
+				ud.AddChild (new Identifier (u.NSpace.Name, Convert (u.NSpace.Location)), UsingDeclaration.Roles.Identifier);
+				ud.AddChild (new CSharpTokenNode (Convert (u.SemicolonLocation), 1), UsingDeclaration.Roles.Semicolon);
+				AddToNamespace (ud);
+			}
+			
+			public override void Visit (UsingsBag.AliasUsing u)
+			{
+				UsingAliasDeclaration ud = new UsingAliasDeclaration ();
+				ud.AddChild (new CSharpTokenNode (Convert (u.UsingLocation), "using".Length), UsingAliasDeclaration.Roles.Keyword);
+				ud.AddChild (new Identifier (u.Identifier.Value, Convert (u.Identifier.Location)), UsingAliasDeclaration.AliasRole);
+				ud.AddChild (new CSharpTokenNode (Convert (u.AssignLocation), 1), UsingAliasDeclaration.Roles.Assign);
+				ud.AddChild (new Identifier (u.Nspace.Name, Convert (u.Nspace.Location)), UsingAliasDeclaration.Roles.Identifier);
+				ud.AddChild (new CSharpTokenNode (Convert (u.SemicolonLocation), 1), UsingAliasDeclaration.Roles.Semicolon);
+				AddToNamespace (ud);
+			}
+			
 			public override void Visit (MemberCore member)
 			{
 				Console.WriteLine ("Unknown member:");
@@ -199,8 +240,17 @@ namespace MonoDevelop.CSharp.Parser
 				if (typeStack.Count > 0) {
 					typeStack.Peek ().AddChild (child);
 				} else {
-					unit.AddChild (child);
+					AddToNamespace (child);
 				}
+			}
+			
+			void AddToNamespace (INode child)
+			{
+				if (namespaceStack.Count > 0) {
+					namespaceStack.Peek ().AddChild (child);
+				} else {
+					unit.AddChild (child);
+				}	
 			}
 			
 			public override void Visit (Mono.CSharp.Enum e)
@@ -2127,16 +2177,18 @@ namespace MonoDevelop.CSharp.Parser
 		}
 		public MonoDevelop.CSharp.Dom.CompilationUnit Parse (TextEditorData data)
 		{
-			CompilerCompilationUnit top;
-			using (Stream stream = data.OpenStream ()) {
-				top = CompilerCallableEntryPoint.ParseFile (new string[] { "-v", "-unsafe"}, stream, data.Document.FileName, Console.Out);
+			lock (CompilerCallableEntryPoint.parseLock) {
+				CompilerCompilationUnit top;
+				using (Stream stream = data.OpenStream ()) {
+					top = CompilerCallableEntryPoint.ParseFile (new string[] { "-v", "-unsafe"}, stream, data.Document.FileName, Console.Out);
+				}
+	
+				if (top == null)
+					return null;
+				CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (top.LocationsBag);
+				top.UsingsBag.Global.Accept (conversionVisitor);
+				return conversionVisitor.Unit;
 			}
-
-			if (top == null)
-				return null;
-			CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (top.LocationsBag);
-			top.ModuleCompiled.Accept (conversionVisitor);
-			return conversionVisitor.Unit;
 		}
 	}
 }

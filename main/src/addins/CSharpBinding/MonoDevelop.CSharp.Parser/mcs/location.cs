@@ -182,11 +182,6 @@ namespace Mono.CSharp {
 				CompilationUnit = compile_unit;
 				LineOffset = line - (int) (line % (1 << line_delta_bits));
 			}
-			
-			public override string ToString ()
-			{
-				return string.Format ("[Checkpoint: LineOffset={0}, CompilationUnit={1}, File={2}]", LineOffset, CompilationUnit, File);
-			}
 		}
 
 		static List<SourceFile> source_list;
@@ -231,12 +226,10 @@ namespace Mono.CSharp {
 			int id;
 			if (source_files.TryGetValue (path, out id)){
 				string other_name = source_list [id - 1].Name;
-				if (r != null) {
-					if (name.Equals (other_name))
-						r.Warning (2002, 1, "Source file `{0}' specified multiple times", other_name);
-					else
-						r.Warning (2002, 1, "Source filenames `{0}' and `{1}' both refer to the same file: {2}", name, other_name, path);
-				}
+				if (name.Equals (other_name))
+					r.Warning (2002, 1, "Source file `{0}' specified multiple times", other_name);
+				else
+					r.Warning (2002, 1, "Source filenames `{0}' and `{1}' both refer to the same file: {2}", name, other_name, path);
 				return;
 			}
 
@@ -407,17 +400,7 @@ namespace Mono.CSharp {
 			get {
 				if (token == 0)
 					return 1;
-				try {
-					return checkpoints [CheckpointIndex].LineOffset + ((token & line_delta_mask) >> column_bits);
-				} catch (Exception e) {
-					Console.WriteLine (e);
-					Console.WriteLine ("checkpoints:" + checkpoints + " CheckpointIndex:" + CheckpointIndex + " Token:" + token);
-					Console.WriteLine ("---- checkpoint contents: " + checkpoints.Length);
-					foreach (var cp in checkpoints) {
-						Console.WriteLine (cp);
-					}
-					return 0;
-				}
+				return checkpoints [CheckpointIndex].LineOffset + ((token & line_delta_mask) >> column_bits);
 			}
 		}
 

@@ -1584,14 +1584,6 @@ namespace Mono.CSharp {
 
 			if (type.IsPointer && !ec.IsUnsafe) {
 				UnsafeError (ec, loc);
-			} else if (expr.Type == InternalType.Dynamic) {
-				if (type != InternalType.Dynamic) {
-					Arguments arg = new Arguments (1);
-					arg.Add (new Argument (expr));
-					return new DynamicConversion (type, CSharpBinderFlags.ConvertExplicit, arg, loc).Resolve (ec);
-				}
-
-				return expr;
 			}
 
 			var res = Convert.ExplicitConversion (ec, expr, type, loc);
@@ -6428,9 +6420,10 @@ namespace Mono.CSharp {
 				return;
 
 			// Emit static initializer for arrays which have contain more than 2 items and
-			// the static initializer will initialize at least 25% of array values.
+			// the static initializer will initialize at least 25% of array values or there
+			// is more than 10 items to be initialized
 			// NOTE: const_initializers_count does not contain default constant values.
-			if (const_initializers_count > 2 && const_initializers_count * 4 > (array_data.Count) &&
+			if (const_initializers_count > 2 && (array_data.Count > 10 || const_initializers_count * 4 > (array_data.Count)) &&
 				(TypeManager.IsPrimitiveType (array_element_type) || TypeManager.IsEnumType (array_element_type))) {
 				EmitStaticInitializers (ec);
 
@@ -7540,7 +7533,10 @@ namespace Mono.CSharp {
 				MemberKind.Interface | MemberKind.TypeParameter | MemberKind.ArrayType;
 
 			if ((expr_type.Kind & dot_kinds) == 0 || expr_type == TypeManager.void_type) {
-				Unary.Error_OperatorCannotBeApplied (rc, loc, ".", expr_type);
+				if (expr_type == InternalType.Null && rc.Compiler.IsRuntimeBinder)
+					rc.Report.Error (Report.RuntimeErrorId, loc, "Cannot perform member binding on `null' value");
+				else
+					Unary.Error_OperatorCannotBeApplied (rc, loc, ".", expr_type);
 				return null;
 			}
 
@@ -8770,8 +8766,10 @@ namespace Mono.CSharp {
 					UnsafeError (ec.Compiler.Report, loc);
 				}
 
-				type = PointerContainer.MakeType (type);
-				single_spec = single_spec.Next;
+				do {
+					type = PointerContainer.MakeType (type);
+					single_spec = single_spec.Next;
+				} while (single_spec != null && single_spec.IsPointer);
 			}
 
 			if (single_spec != null && single_spec.Dimension > 0) {

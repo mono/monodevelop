@@ -1245,7 +1245,8 @@ namespace Mono.CSharp {
 	//
 	// The information about a user-perceived local variable
 	//
-	public class LocalInfo : IKnownVariable, ILocalVariable {
+	public class LocalInfo : IKnownVariable, ILocalVariable
+	{
 		public readonly FullNamedExpression Type;
 
 		public TypeSpec VariableType;
@@ -2062,7 +2063,7 @@ namespace Mono.CSharp {
 				constants.Remove (name);
 
 				if (!variable_type.IsConstantCompatible) {
-					Const.Error_InvalidConstantType (variable_type, loc, ec.Report);
+					Const.Error_InvalidConstantType (variable_type, vi.Location, ec.Report);
 					continue;
 				}
 
@@ -2474,12 +2475,11 @@ namespace Mono.CSharp {
 
 			if (am_storey == null) {
 				MemberBase mc = ec.MemberContext as MemberBase;
-				GenericMethod gm = mc == null ? null : mc.GenericMethod;
 
 				//
 				// Creates anonymous method storey for this block
 				//
-				am_storey = new AnonymousMethodStorey (this, ec.CurrentMemberDefinition.Parent.PartialContainer, mc, gm, "AnonStorey");
+				am_storey = new AnonymousMethodStorey (this, ec.CurrentMemberDefinition.Parent.PartialContainer, mc, ec.CurrentTypeParameters, "AnonStorey");
 			}
 
 			return am_storey;
@@ -5657,6 +5657,9 @@ namespace Mono.CSharp {
 						// Infer implicitly typed local variable from foreach enumerable type
 						var_type = new TypeExpression (current_pe.Type, var_type.Location);
 					}
+				} else if (is_dynamic) {
+					// Explicit cast of dynamic collection elements has to be done at runtime
+					current_pe = EmptyCast.Create (current_pe, InternalType.Dynamic);
 				}
 
 				var_type = var_type.ResolveAsTypeTerminal (ec, false);
