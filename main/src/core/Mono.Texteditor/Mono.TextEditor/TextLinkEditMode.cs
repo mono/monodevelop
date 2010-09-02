@@ -234,13 +234,14 @@ namespace Mono.TextEditor
 					}
 				}
 			}
-			TextLink firstLink = links.First (l => l.IsEditable);
-			if (SelectPrimaryLink)
-				Setlink (firstLink);
+			
 			Editor.Document.TextReplaced += UpdateLinksOnTextReplace;
 			this.Editor.Caret.PositionChanged += HandlePositionChanged;
 			this.UpdateTextLinks ();
 			this.HandlePositionChanged (null, null);
+			TextLink firstLink = links.First (l => l.IsEditable);
+			if (SelectPrimaryLink)
+				Setlink (firstLink);
 			Editor.Document.CommitUpdateAll ();
 			this.undoDepth = Editor.Document.GetCurrentUndoDepth ();
 		}
