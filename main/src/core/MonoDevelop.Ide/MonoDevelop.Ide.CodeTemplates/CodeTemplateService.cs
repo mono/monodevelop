@@ -36,6 +36,7 @@ using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using Mono.Addins;
+using System.Linq;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -50,23 +51,23 @@ namespace MonoDevelop.Ide.CodeTemplates
 				return templates;
 			}
 			set {
-				templates = value;
+				templates = value ?? new List<CodeTemplate> ();
 			}
 		}
 		
 		static CodeTemplateService ()
 		{
 			try {
-				templates = LoadTemplates () ?? new List<CodeTemplate> ();
+				Templates = LoadTemplates ();
 			} catch (Exception e) {
 				LoggingService.LogError ("CodeTemplateService: Exception while loading templates.", e);
 			}
 			
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/CodeTemplates", delegate(object sender, ExtensionNodeEventArgs args) {
-				CodeTemplateCodon syntaxModeCodon = (CodeTemplateCodon)args.ExtensionNode;
+				var codon = (CodeTemplateCodon)args.ExtensionNode;
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					using (XmlReader reader = syntaxModeCodon.Open ()) {
+					using (XmlReader reader = codon.Open ()) {
 						LoadTemplates (reader).ForEach (t => templates.Add (t));
 					}
 					break;
@@ -76,22 +77,20 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public static IEnumerable<CodeTemplate> GetCodeTemplates (string mimeType)
 		{
-			foreach (CodeTemplate template in templates) {
-				if (template.MimeType == mimeType)
-					yield return template;
-			}
+			var savedTemplates = templates;
+			if (savedTemplates == null || string.IsNullOrEmpty (mimeType))
+				return new CodeTemplate[0];
+			return savedTemplates.ToArray ().Where (t => t != null && t.MimeType == mimeType);
 		}
 		
 		public static IEnumerable<CodeTemplate> GetCodeTemplatesForFile (string fileName)
 		{
-			string mimeType = DesktopService.GetMimeTypeForUri (fileName);
-			return GetCodeTemplates (mimeType);
+			return GetCodeTemplates (DesktopService.GetMimeTypeForUri (fileName));
 		}
 		
 		public static void AddCompletionDataForFileName (string fileName, CompletionDataList list)
 		{
-			string mimeType = DesktopService.GetMimeTypeForUri (fileName);
-			AddCompletionDataForMime (mimeType, list);
+			AddCompletionDataForMime (DesktopService.GetMimeTypeForUri (fileName), list);
 		}
 		
 		public static void AddCompletionDataForMime (string mimeType, CompletionDataList list)
