@@ -50,7 +50,12 @@ namespace MonoDevelop.Refactoring.Tests
 			}
 		}
 		
-		void TestCreateMethod (string input, string outputString, bool returnWholeFile = false)
+		void TestCreateMethod (string input, string outputString)
+		{
+			TestCreateMethod (input, outputString, false);
+		}
+
+		void TestCreateMethod (string input, string outputString, bool returnWholeFile)
 		{
 			var generator = new CSharpCodeGeneratorNode ();
 			MonoDevelop.Projects.CodeGeneration.CodeGenerator.AddGenerator (generator);
