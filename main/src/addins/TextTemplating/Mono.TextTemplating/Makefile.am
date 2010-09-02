@@ -9,11 +9,15 @@ REFS =  \
 
 FILES =  \
 	AssemblyInfo.cs \
+	Microsoft.VisualStudio.TextTemplating/AssemblyCacheMonitor.cs \
 	Microsoft.VisualStudio.TextTemplating/DirectiveProcessor.cs \
 	Microsoft.VisualStudio.TextTemplating/DirectiveProcessorException.cs \
+	Microsoft.VisualStudio.TextTemplating/EncodingHelper.cs \
 	Microsoft.VisualStudio.TextTemplating/Engine.cs \
-	Microsoft.VisualStudio.TextTemplating/ITextTemplatingEngineHost.cs \
+	Microsoft.VisualStudio.TextTemplating/Interfaces.cs \
+	Microsoft.VisualStudio.TextTemplating/ParameterDirectiveProcessor.cs \
 	Microsoft.VisualStudio.TextTemplating/RequiresProvidesDirectiveProcessor.cs \
+	Microsoft.VisualStudio.TextTemplating/TextTemplatingSession.cs \
 	Microsoft.VisualStudio.TextTemplating/TextTransformation.cs \
 	Microsoft.VisualStudio.TextTemplating/ToStringHelper.cs \
 	Mono.TextTemplating/CompiledTemplate.cs \
