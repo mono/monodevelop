@@ -56,8 +56,12 @@ namespace MonoDevelop.MonoDroid.Gui
 			var path = Environment.GetEnvironmentVariable ("PATH");
 			pathDirs = path.Split (new char[] { System.IO.Path.PathSeparator }, StringSplitOptions.RemoveEmptyEntries);
 			
-			androidFolderEntry.Path = MonoDroidSettings.AndroidSdkLocation ?? "";
-			javaFolderEntry.Path = MonoDroidSettings.JavaSdkLocation ?? "";
+			
+			string configuredAndroidSdk, configuredJavaSdk;
+			MonoDroidSettings.GetConfiguredSdkLocations (out configuredAndroidSdk, out configuredJavaSdk);
+			
+			androidFolderEntry.Path = configuredAndroidSdk ?? "";
+			javaFolderEntry.Path = configuredJavaSdk ?? "";
 			
 			androidFolderEntry.PathChanged += delegate {
 				ValidateAndroid ();
@@ -122,8 +126,9 @@ namespace MonoDevelop.MonoDroid.Gui
 		
 		public void ApplyChanges ()
 		{
-			MonoDroidSettings.AndroidSdkLocation = NullIfEmpty (androidFolderEntry.Path);
-			MonoDroidSettings.JavaSdkLocation = NullIfEmpty (javaFolderEntry.Path);
+			MonoDroidSettings.SetConfiguredSdkLocations (
+				NullIfEmpty (androidFolderEntry.Path),
+				NullIfEmpty (javaFolderEntry.Path));
 		}
 		
 		string NullIfEmpty (string s)

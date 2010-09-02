@@ -26,6 +26,8 @@
 
 using MonoDevelop.Core;
 using System;
+using System.Xml.Linq;
+using System.IO;
 
 namespace MonoDevelop.MonoDroid
 {
@@ -37,24 +39,6 @@ namespace MonoDevelop.MonoDroid
 		
 		public static int DebuggerOutputPort {
 			get { return PropertyService.Get ("MonoDroid.Debugger.OutputPort", 10001); }
-		}
-		
-		internal static string JavaSdkLocation {
-			get {
-				return PropertyService.Get<string> ("MonoDroid.JavaSdkLocation", null);
-			}
-			set {
-				PropertyService.Set ("MonoDroid.JavaSdkLocation", value);
-			}
-		}
-		
-		internal static string AndroidSdkLocation {
-			get {
-				return PropertyService.Get<string> ("MonoDroid.AndroidSdkLocation", null);
-			}
-			set {
-				PropertyService.Set ("MonoDroid.AndroidSdkLocation", value);
-			}
 		}
 		
 		public static System.Net.IPAddress GetDebuggerHostIP (bool emulator)
@@ -71,6 +55,120 @@ namespace MonoDevelop.MonoDroid
 			}
 			
 			return System.Net.Dns.GetHostEntry (System.Net.Dns.GetHostName ()).AddressList[0];
+		}
+		
+		internal static void SetConfiguredSdkLocations (string androidSdk, string javaSdk)
+		{
+			if (PropertyService.IsWindows) {
+				SetWindowsConfiguredSdkLocations (androidSdk, javaSdk);
+			} else {
+				SetUnixConfiguredSdkLocations (androidSdk, javaSdk);
+			}
+		}
+		
+		internal static void SetWindowsConfiguredSdkLocations (string androidSdk, string javaSdk)
+		{
+			var wow = RegistryEx.Wow64.Key32;
+			var key = @"SOFTWARE\Novell\MonoDroid";
+			
+			RegistryEx.SetValueString (RegistryEx.CurrentUser, key, "AndroidSdkDirectory", androidSdk ?? "", wow);
+			RegistryEx.SetValueString (RegistryEx.CurrentUser, key, "JavaSdkDirectory", javaSdk ?? "", wow);
+		}
+
+		static void SetUnixConfiguredSdkLocations (string androidSdk, string javaSdk)
+		{
+			FilePath file = MonoDroidSdkConfigPath;
+			XDocument doc = null;
+			if (!File.Exists (file)) {
+				string dir = file.ParentDirectory;
+				if (!Directory.Exists (dir))
+					Directory.CreateDirectory (dir);
+			} else {
+				doc = XDocument.Load (file);
+			}
+			
+			if (doc == null || doc.Root == null) {
+				doc = new XDocument (new XElement ("monodroid"));
+			}
+			
+			var androidEl = doc.Root.Element ("android-sdk");
+			if (androidEl == null) {
+				androidEl = new XElement ("android-sdk");
+				doc.Root.Add (androidEl);
+			}
+			androidEl.SetAttributeValue ("path", androidSdk);
+			
+			var javaEl = doc.Root.Element ("java-sdk");
+			if (javaEl == null) {
+				javaEl = new XElement ("java-sdk");
+				doc.Root.Add (javaEl);
+			}
+			javaEl.SetAttributeValue ("path", javaSdk);
+			
+			doc.Save (file);
+		}
+		
+		internal static void GetConfiguredSdkLocations (out string androidSdk, out string javaSdk)
+		{
+			if (PropertyService.IsWindows) {
+				GetWindowsConfiguredSdkLocations (out androidSdk, out javaSdk);
+			} else {
+				GetUnixConfiguredSdkLocations (out androidSdk, out javaSdk);
+			}
+		}
+		
+		internal static void GetWindowsConfiguredSdkLocations (out string androidSdk, out string javaSdk)
+		{
+			var roots = new [] { RegistryEx.CurrentUser, RegistryEx.LocalMachine };
+			var wow = RegistryEx.Wow64.Key32;
+			var key = @"SOFTWARE\Novell\MonoDroid";
+			
+			androidSdk = null;
+			javaSdk = null;
+			
+			foreach (var root in roots) {
+				androidSdk = RegistryEx.GetValueString (root, key, "AndroidSdkDirectory", wow);
+				if (!string.IsNullOrEmpty (androidSdk))
+					break;
+			}
+			
+			foreach (var root in roots) {
+				javaSdk = RegistryEx.GetValueString (root, key, "JavaSdkDirectory", wow);
+				if (!string.IsNullOrEmpty (javaSdk))
+					break;
+			}
+			
+			if (androidSdk != null && androidSdk.Length == 0)
+				androidSdk = null;
+			if (javaSdk != null && javaSdk.Length == 0)
+				javaSdk = null;
+		}
+
+		static void GetUnixConfiguredSdkLocations (out string androidSdk, out string javaSdk)
+		{
+			androidSdk = null;
+			javaSdk = null;
+			
+			string file = MonoDroidSdkConfigPath;
+			if (!File.Exists (file))
+				return;
+			
+			var doc = XDocument.Load (file);;
+			
+			var androidEl = doc.Root.Element ("android-sdk");
+			if (androidEl != null)
+				androidSdk = (string) androidEl.Attribute ("path");
+			
+			var javaEl = doc.Root.Element ("java-sdk");
+			if (javaEl != null)
+				javaSdk = (string) javaEl.Attribute ("path");
+		}
+		
+		static string MonoDroidSdkConfigPath {
+			get {
+				var p = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
+				return Path.Combine (Path.Combine (p, "xbuild"), "monodroid-config.xml");
+			}
 		}
 	}
 }
