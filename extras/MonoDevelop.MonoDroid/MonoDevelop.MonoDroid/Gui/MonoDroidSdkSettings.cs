@@ -27,6 +27,7 @@
 using System;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Core;
+using MonoDroid;
 
 namespace MonoDevelop.MonoDroid.Gui
 {
@@ -58,7 +59,7 @@ namespace MonoDevelop.MonoDroid.Gui
 			
 			
 			string configuredAndroidSdk, configuredJavaSdk;
-			MonoDroidSettings.GetConfiguredSdkLocations (out configuredAndroidSdk, out configuredJavaSdk);
+			MonoDroidSdk.GetConfiguredSdkLocations (out configuredAndroidSdk, out configuredJavaSdk);
 			
 			androidFolderEntry.Path = configuredAndroidSdk ?? "";
 			javaFolderEntry.Path = configuredJavaSdk ?? "";
@@ -79,7 +80,7 @@ namespace MonoDevelop.MonoDroid.Gui
 			FilePath location = androidFolderEntry.Path;
 			
 			if (!location.IsNullOrEmpty) {
-				if (!MonoDroidFramework.ValidateAndroidSdkLocation (location)) {
+				if (!MonoDroidSdk.ValidateAndroidSdkLocation (location)) {
 					androidLocationMessage.Text = GettextCatalog.GetString ("No SDK found at specified location.");
 					androidLocationIcon.Stock = Gtk.Stock.Cancel;
 				} else {
@@ -89,7 +90,7 @@ namespace MonoDevelop.MonoDroid.Gui
 				return;
 			}
 			
-			location = MonoDroidFramework.FindAndroidSdk (pathDirs);
+			location = MonoDroidSdk.FindAndroidSdk (pathDirs);
 			if (location.IsNullOrEmpty) {
 				androidLocationMessage.Text = GettextCatalog.GetString ("SDK not found. Please specify location.");
 				androidLocationIcon.Stock = Gtk.Stock.Cancel;
@@ -104,7 +105,7 @@ namespace MonoDevelop.MonoDroid.Gui
 			FilePath location = javaFolderEntry.Path;
 			
 			if (!location.IsNullOrEmpty) {
-				if (!MonoDroidFramework.ValidateJavaSdkLocation (location)) {
+				if (!MonoDroidSdk.ValidateJavaSdkLocation (location)) {
 					javaLocationMessage.Text = GettextCatalog.GetString ("No SDK found at specified location.");
 					javaLocationIcon.Stock = Gtk.Stock.Cancel;
 				} else {
@@ -114,7 +115,7 @@ namespace MonoDevelop.MonoDroid.Gui
 				return;
 			}
 			
-			location = MonoDroidFramework.FindJavaSdk (pathDirs);
+			location = MonoDroidSdk.FindJavaSdk (pathDirs);
 			if (location.IsNullOrEmpty) {
 				javaLocationMessage.Text = GettextCatalog.GetString ("SDK not found. Please specify location.");
 				javaLocationIcon.Stock = Gtk.Stock.Cancel;
@@ -126,16 +127,7 @@ namespace MonoDevelop.MonoDroid.Gui
 		
 		public void ApplyChanges ()
 		{
-			MonoDroidSettings.SetConfiguredSdkLocations (
-				NullIfEmpty (androidFolderEntry.Path),
-				NullIfEmpty (javaFolderEntry.Path));
-		}
-		
-		string NullIfEmpty (string s)
-		{
-			if (s == null || s.Length != 0)
-				return s;
-			return null;
+			MonoDroidSdk.SetConfiguredSdkLocations (androidFolderEntry.Path, javaFolderEntry.Path);
 		}
 	}
 }
