@@ -501,13 +501,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			
 			FilePath p = FilePath.Build (PropertyService.ConfigPath, "xbuild", toolsVersion, "MonoDevelop.Projects.Formats.MSBuild.exe");
-			bool pExists = File.Exists (p);
-			if (!pExists || File.GetLastWriteTime (p) < File.GetLastWriteTime (sourceExe)) {
-				if (pExists)
-					File.Delete (p);
+			if (!File.Exists (p) || File.GetLastWriteTime (p) < File.GetLastWriteTime (sourceExe)) {
 				if (!Directory.Exists (p.ParentDirectory))
 					Directory.CreateDirectory (p.ParentDirectory);
-				File.Copy (typeof(ProjectBuilder).Assembly.Location, p);
+				File.Copy (typeof(ProjectBuilder).Assembly.Location, p, true);
 				
 				// Update the references to msbuild
 				Cecil.AssemblyDefinition asm = Cecil.AssemblyFactory.GetAssembly (p);
@@ -524,10 +521,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			FilePath configFile = p + ".config";
 			FilePath configSrc = typeof(ProjectBuilder).Assembly.Location + ".config";
-			bool configExists = File.Exists (configFile);
-			if (!configExists || File.GetLastWriteTime (configFile) < File.GetLastWriteTime (configSrc)) {
-				if (configExists)
-					File.Delete (configFile);
+			if (!File.Exists (configFile) || File.GetLastWriteTime (configFile) < File.GetLastWriteTime (configSrc)) {
 				var config = File.ReadAllText (configSrc);
 				config = config.Replace (REFERENCED_MSBUILD_TOOLS + ".0.0", version);
 				File.WriteAllText (p + ".config", config);
