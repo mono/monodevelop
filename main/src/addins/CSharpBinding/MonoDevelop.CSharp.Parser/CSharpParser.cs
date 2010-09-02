@@ -2125,21 +2125,18 @@ namespace MonoDevelop.CSharp.Parser
 			}
 			#endregion
 		}
-		static object parseLock = new object ();
 		public MonoDevelop.CSharp.Dom.CompilationUnit Parse (TextEditorData data)
 		{
-			lock (parseLock) {
-				CompilerCompilationUnit top;
-				using (Stream stream = data.OpenStream ()) {
-					top = CompilerCallableEntryPoint.ParseFile (new string[] { "-v", "-unsafe"}, stream, data.Document.FileName, Console.Out);
-				}
-
-				if (top == null)
-					return null;
-				CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (top.LocationsBag);
-				top.ModuleCompiled.Accept (conversionVisitor);
-				return conversionVisitor.Unit;
+			CompilerCompilationUnit top;
+			using (Stream stream = data.OpenStream ()) {
+				top = CompilerCallableEntryPoint.ParseFile (new string[] { "-v", "-unsafe"}, stream, data.Document.FileName, Console.Out);
 			}
+
+			if (top == null)
+				return null;
+			CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (top.LocationsBag);
+			top.ModuleCompiled.Accept (conversionVisitor);
+			return conversionVisitor.Unit;
 		}
 	}
 }

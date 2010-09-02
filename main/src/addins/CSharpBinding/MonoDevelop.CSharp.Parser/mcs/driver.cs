@@ -2075,38 +2075,41 @@ namespace Mono.CSharp
 			return ParseFile (args, input, inputFile, new StreamReportPrinter (reportStream));
 		}
 		
+		static object parseLock = new object ();
 		public static CompilerCompilationUnit ParseFile (string[] args, Stream input, string inputFile, ReportPrinter reportPrinter)
 		{
-			try {
-				Driver d = Driver.Create (args, false, reportPrinter);
-				if (d == null)
-					return null;
-
-				Location.AddFile (null, inputFile);
-				Location.Initialize ();
-
-				// TODO: encoding from driver
-				SeekableStreamReader reader = new SeekableStreamReader (input, Encoding.Default);
-
-				CompilerContext ctx = new CompilerContext (new ReflectionMetaImporter (), new Report (reportPrinter));
-				
-				RootContext.ToplevelTypes = new ModuleCompiled (ctx, false /* isUnsafe */);
-				CompilationUnit unit = null;
+			lock (parseLock) {
 				try {
-					unit = (CompilationUnit) Location.SourceFiles [0];
-				} catch (Exception e) {
-					string path = Path.GetFullPath (inputFile);
-					unit = new CompilationUnit (inputFile, path, 0);
+					Driver d = Driver.Create (args, false, reportPrinter);
+					if (d == null)
+						return null;
+	
+					Location.AddFile (null, inputFile);
+					Location.Initialize ();
+	
+					// TODO: encoding from driver
+					SeekableStreamReader reader = new SeekableStreamReader (input, Encoding.Default);
+	
+					CompilerContext ctx = new CompilerContext (new ReflectionMetaImporter (), new Report (reportPrinter));
+					
+					RootContext.ToplevelTypes = new ModuleCompiled (ctx, false /* isUnsafe */);
+					CompilationUnit unit = null;
+					try {
+						unit = (CompilationUnit) Location.SourceFiles [0];
+					} catch (Exception) {
+						string path = Path.GetFullPath (inputFile);
+						unit = new CompilationUnit (inputFile, path, 0);
+					}
+					CSharpParser parser = new CSharpParser (reader, unit, ctx);
+					parser.Lexer.TabSize = 1;
+					parser.LocationsBag = new LocationsBag ();
+					parser.UsingsBag = new UsingsBag ();
+					parser.parse ();
+					
+					return new CompilerCompilationUnit () { ModuleCompiled = RootContext.ToplevelTypes, LocationsBag = parser.LocationsBag, UsingsBag = parser.UsingsBag };
+				} finally {
+					Reset ();
 				}
-				CSharpParser parser = new CSharpParser (reader, unit, ctx);
-				parser.Lexer.TabSize = 1;
-				parser.LocationsBag = new LocationsBag ();
-				parser.UsingsBag = new UsingsBag ();
-				parser.parse ();
-				
-				return new CompilerCompilationUnit () { ModuleCompiled = RootContext.ToplevelTypes, LocationsBag = parser.LocationsBag, UsingsBag = parser.UsingsBag };
-			} finally {
-				Reset ();
 			}
 		}
 	}
