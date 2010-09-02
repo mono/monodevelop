@@ -50,8 +50,6 @@ namespace Mono.TextTemplating
 		List<string> imports = new List<string> ();
 		List<string> includePaths = new List<string> ();
 		List<string> referencePaths = new List<string> ();
-		List<string> directiveProcessors = new List<string> ();
-		Dictionary<string, string> processorValues = new Dictionary<string, string> ();
 		
 		//host properties for consumers to access
 		public CompilerErrorCollection Errors { get { return errors; } }
@@ -59,8 +57,6 @@ namespace Mono.TextTemplating
 		public List<string> Imports { get { return imports; } }
 		public List<string> IncludePaths { get { return includePaths; } }
 		public List<string> ReferencePaths { get { return referencePaths; } }
-		public List<string> DirectiveProcessors { get { return directiveProcessors; } }
-		public IDictionary<string, string> ProcessorValues { get { return processorValues; } }
 		public string OutputFile { get { return outputFile; } }
 		
 		public TemplateGenerator ()
@@ -79,9 +75,8 @@ namespace Mono.TextTemplating
 			AppDomain appdomain = ProvideTemplatingAppDomain (content);
 			TemplatingEngine engine;
 			if (appdomain != null) {
-				engine = (TemplatingEngine)
-				appdomain.CreateInstanceAndUnwrap (typeof (TemplatingEngine).Assembly.FullName,
-				                                   typeof (TemplatingEngine).FullName);
+				var t = typeof (TemplatingEngine);
+				engine = (TemplatingEngine) appdomain.CreateInstanceAndUnwrap (t.Assembly.FullName, t.FullName);
 			} else {
 				engine = new TemplatingEngine ();
 			}
@@ -120,7 +115,7 @@ namespace Mono.TextTemplating
 				if (!errors.HasErrors)
 					File.WriteAllText (outputFile, output, encoding);
 			} catch (IOException ex) {
-				AddError ("Could not read input file '" + inputFile + "':\n" + ex.ToString ());
+				AddError ("Could not write output file '" + outputFile + "':\n" + ex.ToString ());
 			}
 			
 			return !errors.HasErrors;
@@ -135,6 +130,51 @@ namespace Mono.TextTemplating
 			this.inputFile = inputFileName;
 			outputContent = Engine.ProcessTemplate (inputContent, this);
 			outputFileName = this.outputFile;
+			
+			return !errors.HasErrors;
+		}
+		
+		public bool PreprocessTemplate (string inputFile, string className, string classNamespace, 
+			string outputFile, System.Text.Encoding encoding, out string language, out string[] references)
+		{
+			language = null;
+			references = null;
+
+			if (string.IsNullOrEmpty (inputFile))
+				throw new ArgumentNullException ("inputFile");
+			if (string.IsNullOrEmpty (outputFile))
+				throw new ArgumentNullException ("outputFile");
+			
+			string content;
+			try {
+				content = File.ReadAllText (inputFile);
+			} catch (IOException ex) {
+				errors.Clear ();
+				AddError ("Could not read input file '" + inputFile + "':\n" + ex.ToString ());
+				return false;
+			}
+			
+			string output;
+			PreprocessTemplate (inputFile, className, classNamespace, content, out language, out references, out output);
+			
+			try {
+				if (!errors.HasErrors)
+					File.WriteAllText (outputFile, output, encoding);
+			} catch (IOException ex) {
+				AddError ("Could not write output file '" + outputFile + "':\n" + ex.ToString ());
+			}
+			
+			return !errors.HasErrors;
+		}
+		
+		public bool PreprocessTemplate (string inputFileName, string className, string classNamespace, string inputContent, 
+			out string language, out string[] references, out string outputContent)
+		{
+			errors.Clear ();
+			encoding = Encoding.UTF8;
+			
+			this.inputFile = inputFileName;
+			outputContent = Engine.PreprocessTemplate (inputContent, this, className, classNamespace, out language, out references);
 			
 			return !errors.HasErrors;
 		}
@@ -159,24 +199,69 @@ namespace Mono.TextTemplating
 			return null;
 		}
 		
+		//FIXME: implement
 		protected virtual string ResolveAssemblyReference (string assemblyReference)
 		{
-			//FIXME: implement
+			//foreach (string referencePath in ReferencePaths) {
+			//	
+			//}
 			return assemblyReference;
 		}
 		
+		protected virtual string ResolveParameterValue (string directiveId, string processorName, string parameterName)
+		{
+			var key = new ParameterKey (processorName, directiveId, parameterName);
+			string value;
+			parameters.TryGetValue (key, out value);
+			return value;
+		}
+		
+		protected virtual Type ResolveDirectiveProcessor (string processorName)
+		{
+			KeyValuePair<string,string> value;
+			if (!directiveProcessors.TryGetValue (processorName, out value))
+				throw new Exception (string.Format ("No directive processor registered as '{0}'", processorName));
+			var asmPath = ResolveAssemblyReference (value.Value);
+			if (asmPath == null)
+				throw new Exception (string.Format ("Could not resolve assembly '{0}' for directive processor '{1}'", value.Value, processorName));
+			var asm = System.Reflection.Assembly.LoadFrom (asmPath);
+			return asm.GetType (value.Key, true);
+		}
+		
+		protected virtual string ResolvePath (string path)
+		{
+			if (Path.IsPathRooted (path))
+				return path;
+			var dir = Path.GetDirectoryName (inputFile);
+			var test = Path.Combine (dir, path);
+			if (File.Exists (test))
+				return test;
+			return null;
+		}
+		
 		#endregion
+		
+		Dictionary<ParameterKey,string> parameters = new Dictionary<ParameterKey, string> ();
+		Dictionary<string,KeyValuePair<string,string>> directiveProcessors = new Dictionary<string, KeyValuePair<string,string>> ();
+		
+		public void AddDirectiveProcessor (string name, string klass, string assembly)
+		{
+			directiveProcessors.Add (name, new KeyValuePair<string,string> (klass,assembly));
+		}
+		
+		public void AddParameter (string processorName, string directiveName, string parameterName, string value)
+		{
+			parameters.Add (new ParameterKey (processorName, directiveName, parameterName), value);
+		}
 		
 		#region Explicit ITextTemplatingEngineHost implementation
 		
 		bool ITextTemplatingEngineHost.LoadIncludeText (string requestFileName, out string content, out string location)
 		{
 			content = "";
-			location = null;
+			location = ResolvePath (requestFileName);
 			
-			if (Path.IsPathRooted (requestFileName)) {
-				location = requestFileName;
-			} else {
+			if (location == null) {
 				foreach (string path in includePaths) {
 					string f = Path.Combine (path, requestFileName);
 					if (File.Exists (f)) {
@@ -190,7 +275,7 @@ namespace Mono.TextTemplating
 				return false;
 			
 			try {
-				content = System.IO.File.ReadAllText (location);
+				content = File.ReadAllText (location);
 				return true;
 			} catch (IOException ex) {
 				AddError ("Could not read included file '" + location +  "':\n" + ex.ToString ());
@@ -208,19 +293,19 @@ namespace Mono.TextTemplating
 			return ResolveAssemblyReference (assemblyReference);
 		}
 		
-		Type ITextTemplatingEngineHost.ResolveDirectiveProcessor (string processorName)
-		{
-			throw new NotImplementedException();
-		}
-		
 		string ITextTemplatingEngineHost.ResolveParameterValue (string directiveId, string processorName, string parameterName)
 		{
-			throw new NotImplementedException();
+			return ResolveParameterValue (directiveId, processorName, parameterName);
+		}
+		
+		Type ITextTemplatingEngineHost.ResolveDirectiveProcessor (string processorName)
+		{
+			return ResolveDirectiveProcessor (processorName);
 		}
 		
 		string ITextTemplatingEngineHost.ResolvePath (string path)
 		{
-			throw new NotImplementedException();
+			return ResolvePath (path);
 		}
 		
 		void ITextTemplatingEngineHost.SetFileExtension (string extension)
@@ -251,5 +336,36 @@ namespace Mono.TextTemplating
 		}
 		
 		#endregion
+		
+		struct ParameterKey : IEquatable<ParameterKey>
+		{
+			public ParameterKey (string processorName, string directiveName, string parameterName)
+			{
+				this.processorName = processorName ?? "";
+				this.directiveName = directiveName ?? "";
+				this.parameterName = parameterName ?? "";
+				unchecked {
+					hashCode = processorName.GetHashCode () ^ directiveName.GetHashCode () ^ parameterName.GetHashCode ();
+				}
+			}
+			
+			string processorName, directiveName, parameterName;
+			int hashCode;
+			
+			public override bool Equals (object obj)
+			{
+				return obj != null && obj is ParameterKey && Equals ((ParameterKey)obj);
+			}
+			
+			public bool Equals (ParameterKey other)
+			{
+				return processorName == other.processorName && directiveName == other.directiveName && parameterName == other.parameterName;
+			}
+			
+			public override int GetHashCode ()
+			{
+				return hashCode;
+			}
+		}
 	}
 }

@@ -148,7 +148,7 @@ namespace Mono.TextTemplating
 						}
 					}
 					if (parseIncludes && directive.Name == "include")
-						Import (host, directive);
+						Import (host, directive, Path.GetDirectoryName (tokeniser.Location.FileName));
 					break;
 				default:
 					throw new InvalidOperationException ();
@@ -161,13 +161,21 @@ namespace Mono.TextTemplating
 			}
 		}
 		
-		void Import (ITextTemplatingEngineHost host, Directive includeDirective)
+		void Import (ITextTemplatingEngineHost host, Directive includeDirective, string relativeToDirectory)
 		{
 			string fileName;
 			if (includeDirective.Attributes.Count > 1 || !includeDirective.Attributes.TryGetValue ("file", out fileName)) {
 				LogError ("Unexpected attributes in include directive", includeDirective.StartLocation);
 				return;
 			}
+			
+			//try to resolve path relative to the file that included it
+			if (!Path.IsPathRooted (fileName)) {
+				string possible = Path.Combine (relativeToDirectory, fileName);
+				if (File.Exists (possible))
+					fileName = possible;
+			}
+			
 			string content, resolvedName;
 			if (host.LoadIncludeText (fileName, out content, out resolvedName))
 				Parse (host, new Tokeniser (resolvedName, content), true);

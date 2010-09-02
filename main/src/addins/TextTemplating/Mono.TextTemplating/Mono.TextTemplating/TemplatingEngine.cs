@@ -35,10 +35,8 @@ using Microsoft.VisualStudio.TextTemplating;
 
 namespace Mono.TextTemplating
 {
-	
 	public class TemplatingEngine : MarshalByRefObject, Microsoft.VisualStudio.TextTemplating.ITextTemplatingEngine
 	{
-		
 		public string ProcessTemplate (string content, ITextTemplatingEngineHost host)
 		{
 			var tpl = CompileTemplate (content, host);
