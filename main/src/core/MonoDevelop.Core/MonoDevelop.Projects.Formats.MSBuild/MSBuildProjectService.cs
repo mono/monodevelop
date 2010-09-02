@@ -493,7 +493,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				version = "4.0.0.0";
 				newVersions.Add ("Microsoft.Build.Engine", new string[] {"Microsoft.Build.Engine", version});
 				newVersions.Add ("Microsoft.Build.Framework", new string[] {"Microsoft.Build.Framework", version});
-				newVersions.Add ("Microsoft.Build.Utilities", new string[] {"Microsoft.Build.Utilities", version});
+				newVersions.Add ("Microsoft.Build.Utilities", new string[] {"Microsoft.Build.Utilities.v4.0", version});
 				runtime = Mono.Cecil.TargetRuntime.NET_4_0;
 				break;
 			default:
@@ -501,7 +501,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			
 			FilePath p = FilePath.Build (PropertyService.ConfigPath, "xbuild", toolsVersion, "MonoDevelop.Projects.Formats.MSBuild.exe");
-			if (!File.Exists (p) || File.GetLastWriteTime (p) < File.GetLastWriteTime (sourceExe)) {
+			bool pExists = File.Exists (p);
+			if (!pExists || File.GetLastWriteTime (p) < File.GetLastWriteTime (sourceExe)) {
+				if (pExists)
+					File.Delete (p);
 				if (!Directory.Exists (p.ParentDirectory))
 					Directory.CreateDirectory (p.ParentDirectory);
 				File.Copy (typeof(ProjectBuilder).Assembly.Location, p);
@@ -521,7 +524,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			FilePath configFile = p + ".config";
 			FilePath configSrc = typeof(ProjectBuilder).Assembly.Location + ".config";
-			if (!File.Exists (configFile) || File.GetLastWriteTime (configFile) < File.GetLastWriteTime (configSrc)) {
+			bool configExists = File.Exists (configFile);
+			if (!configExists || File.GetLastWriteTime (configFile) < File.GetLastWriteTime (configSrc)) {
+				if (configExists)
+					File.Delete (configFile);
 				var config = File.ReadAllText (configSrc);
 				config = config.Replace (REFERENCED_MSBUILD_TOOLS + ".0.0", version);
 				File.WriteAllText (p + ".config", config);
