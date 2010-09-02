@@ -168,23 +168,22 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu">
-		<SeparatorItem id ="VersionControlSeparator" insertafter = "Run"/> 
-		<ItemSet id = "VersionControl" _label = "_Version Control">
-				<CommandItem id = "MonoDevelop.VersionControl.Commands.Publish"/>
-				<SeparatorItem/>
-				<CommandItem id = "MonoDevelop.VersionControl.Commands.UpdateSolution"/>
-				<CommandItem id = "MonoDevelop.VersionControl.Commands.SolutionStatus"/>
-				<CommandItem id = "MonoDevelop.VersionControl.Commands.CommitSolution"/>
-				<SeparatorItem/>
-				<CommandItem id = "MonoDevelop.VersionControl.Commands.Add"/>
-				<CommandItem id = "MonoDevelop.VersionControl.Commands.Remove"/>
-				<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert"/>
-				<CommandItem id = "MonoDevelop.VersionControl.Commands.Lock"/>
-				<CommandItem id = "MonoDevelop.VersionControl.Commands.Unlock"/>
-				<SeparatorItem/>
-				<CommandItem id = "MonoDevelop.VersionControl.Commands.Diff"/>
-				<CommandItem id = "MonoDevelop.VersionControl.Commands.Log"/>
-				<CommandItem id = "MonoDevelop.VersionControl.Commands.Annotate"/>
+		<ItemSet id = "VersionControl" _label = "_Version Control" insertafter = "Run" >
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Publish"/>
+			<SeparatorItem/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.UpdateSolution"/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.SolutionStatus"/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.CommitSolution"/>
+			<SeparatorItem/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Add"/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Remove"/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert"/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Lock"/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Unlock"/>
+			<SeparatorItem/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Diff"/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Log"/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Annotate"/>
 		</ItemSet>
 	</Extension>
 
