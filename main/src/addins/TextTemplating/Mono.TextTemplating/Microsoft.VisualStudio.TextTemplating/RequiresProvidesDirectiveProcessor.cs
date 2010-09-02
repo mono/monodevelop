@@ -46,17 +46,18 @@ namespace Microsoft.VisualStudio.TextTemplating
 		{
 			base.Initialize (host);
 			this.host = host;
-			throw new NotImplementedException ();
 		}
 		
 		protected abstract void InitializeProvidesDictionary (string directiveName, IDictionary<string, string> providesDictionary);
 		protected abstract void InitializeRequiresDictionary (string directiveName, IDictionary<string, string> requiresDictionary);
 		protected abstract string FriendlyName { get; }
 		
-		protected abstract void GenerateTransformCode (string directiveName, StringBuilder codeBuffer,
-		                                               CodeDomProvider languageProvider, 
-		                                               IDictionary<string, string> requiresArguments,
-		                                               IDictionary<string, string> providesArguments);
+		protected abstract void GeneratePostInitializationCode( string directiveName, StringBuilder codeBuffer, CodeDomProvider languageProvider, 
+			IDictionary<string, string> requiresArguments, IDictionary<string, string> providesArguments);
+		protected abstract void GeneratePreInitializationCode( string directiveName, StringBuilder codeBuffer, CodeDomProvider languageProvider,
+			IDictionary<string, string> requiresArguments, IDictionary<string, string> providesArguments);
+		protected abstract void GenerateTransformCode (string directiveName, StringBuilder codeBuffer, CodeDomProvider languageProvider,
+			IDictionary<string, string> requiresArguments, IDictionary<string, string> providesArguments);
 		
 		public override string GetClassCodeForProcessingRun ()
 		{
@@ -83,13 +84,11 @@ namespace Microsoft.VisualStudio.TextTemplating
 		}
 		
 		protected virtual void PostProcessArguments (string directiveName, IDictionary<string, string> requiresArguments,
-		                                             IDictionary<string, string> providesArguments)
+			IDictionary<string, string> providesArguments)
 		{
 		}
 		
-		public override void StartProcessingRun (System.CodeDom.Compiler.CodeDomProvider languageProvider, 
-		                                         string templateContents,
-		                                         System.CodeDom.Compiler.CompilerErrorCollection errors)
+		public override void StartProcessingRun (CodeDomProvider languageProvider, string templateContents, CompilerErrorCollection errors)
 		{
 			AssertNotProcessing ();
 			isInProcessingRun = true;
@@ -121,8 +120,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 		}
 		
 		protected virtual string ProvideUniqueId (string directiveName, IDictionary<string, string> arguments,
-		                                          IDictionary<string, string> requiresArguments,
-		                                          IDictionary<string, string> providesArguments)
+			IDictionary<string, string> requiresArguments, IDictionary<string, string> providesArguments)
 		{
 			throw new NotImplementedException ();
 		}

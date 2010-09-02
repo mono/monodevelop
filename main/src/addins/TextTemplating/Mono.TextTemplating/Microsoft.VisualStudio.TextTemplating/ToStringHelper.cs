@@ -30,8 +30,6 @@ using System.Reflection;
 
 namespace Microsoft.VisualStudio.TextTemplating
 {
-	
-	
 	public static class ToStringHelper
 	{
 		static object [] formatProviderAsParameterArray;
@@ -51,6 +49,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 			if (conv != null)
 				return conv.ToString (formatProvider);
 			
+			//FIXME: implement a cache of types and DynamicMethods
 			MethodInfo mi = objectToConvert.GetType ().GetMethod ("ToString", new Type[] { typeof (IFormatProvider) });
 			if (mi != null && mi.ReturnType == typeof (String))
 				return (string) mi.Invoke (objectToConvert, formatProviderAsParameterArray);

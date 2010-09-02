@@ -25,11 +25,13 @@
 // THE SOFTWARE.
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System;
 
 [assembly: AssemblyTitle("Mono.TextTemplating")]
 [assembly: AssemblyDescription("An implementation of Visual Studio's T4 text templating")]
 [assembly: AssemblyCompany("The Mono Project")]
 [assembly: AssemblyProduct("MonoDevelop")]
 [assembly: AssemblyCopyright("MIT/X11")]
+[assembly: CLSCompliant (true)]
 
 //[assembly: AssemblyVersion("1.0.*")]

@@ -34,33 +34,48 @@ using Mono.TextTemplating;
 
 namespace Microsoft.VisualStudio.TextTemplating
 {
-	
-	
 	public class Engine : ITextTemplatingEngine
 	{
-		
 		public Engine ()
 		{
 		}
 		
 		public string ProcessTemplate (string content, ITextTemplatingEngineHost host)
 		{
-			AppDomain appdomain = host.ProvideTemplatingAppDomain (content);
-			ITextTemplatingEngine engine;
-			if (appdomain != null) {
-				engine = (ITextTemplatingEngine)
-					appdomain.CreateInstanceAndUnwrap (typeof (TemplatingEngine).Assembly.FullName,
-					                                   typeof (TemplatingEngine).FullName);
-			} else {
-				engine = new TemplatingEngine ();
-			}
+			if (content == null)
+				throw new ArgumentNullException ("content");
+			if (host == null)
+				throw new ArgumentNullException ("host");
 			
-			return engine.ProcessTemplate (content, host);
+			return GetEngine (host, content).ProcessTemplate (content, host);
 		}
-	}
-	
-	public interface ITextTemplatingEngine
-	{
-		string ProcessTemplate (string content, ITextTemplatingEngineHost host);
+		
+		ITextTemplatingEngine GetEngine (ITextTemplatingEngineHost host, string content)
+		{
+			var appdomain = host.ProvideTemplatingAppDomain (content);
+			if (appdomain == null) {
+				return new TemplatingEngine ();
+			} else {
+				var type = typeof (TemplatingEngine);
+				return (ITextTemplatingEngine) appdomain.CreateInstanceAndUnwrap (type.Assembly.FullName, type.FullName);
+			}
+		}
+		
+		public string PreprocessTemplate (string content, ITextTemplatingEngineHost host, string className, 
+			string classNamespace, out string language, out string[] references)
+		{
+			if (content == null)
+				throw new ArgumentNullException ("content");
+			if (host == null)
+				throw new ArgumentNullException ("host");
+			if (className == null)
+				throw new ArgumentNullException ("className");
+			if (classNamespace == null)
+				throw new ArgumentNullException ("classNamespace");
+			
+			return GetEngine (host, content).PreprocessTemplate (content, host, className, classNamespace, out language, out references);
+		}
+		
+		public const string CacheAssembliesOptionString = "CacheAssemblies";
 	}
 }

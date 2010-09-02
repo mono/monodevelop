@@ -50,6 +50,8 @@ namespace Microsoft.VisualStudio.TextTemplating
 		
 		public abstract string TransformText ();
 		
+		public virtual IDictionary<string, object> Session { get; set; }
+		
 		#region Errors
 		
 		public void Error (string message)

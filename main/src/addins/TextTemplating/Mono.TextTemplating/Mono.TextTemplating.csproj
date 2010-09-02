@@ -39,7 +39,6 @@
     <Compile Include="Microsoft.VisualStudio.TextTemplating\DirectiveProcessor.cs" />
     <Compile Include="Microsoft.VisualStudio.TextTemplating\DirectiveProcessorException.cs" />
     <Compile Include="Microsoft.VisualStudio.TextTemplating\Engine.cs" />
-    <Compile Include="Microsoft.VisualStudio.TextTemplating\ITextTemplatingEngineHost.cs" />
     <Compile Include="Microsoft.VisualStudio.TextTemplating\RequiresProvidesDirectiveProcessor.cs" />
     <Compile Include="Microsoft.VisualStudio.TextTemplating\TextTransformation.cs" />
     <Compile Include="Microsoft.VisualStudio.TextTemplating\ToStringHelper.cs" />
@@ -52,6 +51,11 @@
     <Compile Include="Mono.TextTemplating\TemplatingEngine.cs" />
     <Compile Include="Mono.TextTemplating\TemplateSettings.cs" />
     <Compile Include="Mono.TextTemplating\CrossAppDomainAssemblyResolver.cs" />
+    <Compile Include="Microsoft.VisualStudio.TextTemplating\AssemblyCacheMonitor.cs" />
+    <Compile Include="Microsoft.VisualStudio.TextTemplating\EncodingHelper.cs" />
+    <Compile Include="Microsoft.VisualStudio.TextTemplating\ParameterDirectiveProcessor.cs" />
+    <Compile Include="Microsoft.VisualStudio.TextTemplating\TextTemplatingSession.cs" />
+    <Compile Include="Microsoft.VisualStudio.TextTemplating\Interfaces.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -4,7 +4,7 @@
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc. (http://www.novell.com)
+// Copyright (c) 2009-2010 Novell, Inc. (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,11 +28,26 @@ using System;
 using System.Text;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Collections;
+using System.Runtime.Serialization;
 
 namespace Microsoft.VisualStudio.TextTemplating
 {
+	public interface IRecognizeHostSpecific
+	{
+		void SetProcessingRunIsHostSpecific (bool hostSpecific);
+		bool RequiresProcessingRunIsHostSpecific { get; }
+	}
 	
+	[CLSCompliant(true)]
+	public interface ITextTemplatingEngine
+	{
+		string ProcessTemplate (string content, ITextTemplatingEngineHost host);
+		string PreprocessTemplate (string content, ITextTemplatingEngineHost host, string className, 
+			string classNamespace, out string language, out string[] references);
+	}
 	
+	[CLSCompliant(true)]
 	public interface ITextTemplatingEngineHost
 	{
 		object GetHostOption (string optionName);
@@ -48,5 +63,22 @@ namespace Microsoft.VisualStudio.TextTemplating
 		IList<string> StandardAssemblyReferences { get; }
 		IList<string> StandardImports { get; }
 		string TemplateFile { get; }	
+	}
+	
+	[CLSCompliant(true)]
+	public interface ITextTemplatingSession :
+		IEquatable<ITextTemplatingSession>, IEquatable<Guid>, IDictionary<string, Object>,
+		ICollection<KeyValuePair<string, Object>>,
+		IEnumerable<KeyValuePair<string, Object>>,
+		IEnumerable, ISerializable
+	{
+		Guid Id { get; }
+	}
+	
+	[CLSCompliant(true)]
+	public interface ITextTemplatingSessionHost	
+	{
+		ITextTemplatingSession CreateSession ();
+		ITextTemplatingSession Session { get; set; }
 	}
 }

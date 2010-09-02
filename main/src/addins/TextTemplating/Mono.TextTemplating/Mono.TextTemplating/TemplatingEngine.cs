@@ -46,6 +46,12 @@ namespace Mono.TextTemplating
 				return tpl.Process ();
 			return null;
 		}
+		
+		public string PreprocessTemplate (string content, ITextTemplatingEngineHost host, string className, 
+			string classNamespace, out string language, out string[] references)
+		{
+			throw new NotImplementedException ();
+		}
 
 		public CompiledTemplate CompileTemplate (string content, ITextTemplatingEngineHost host)
 		{

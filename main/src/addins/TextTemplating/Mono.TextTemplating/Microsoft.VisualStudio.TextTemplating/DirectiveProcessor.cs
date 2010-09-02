@@ -30,11 +30,8 @@ using System.CodeDom.Compiler;
 
 namespace Microsoft.VisualStudio.TextTemplating
 {
-	
-	
 	public abstract class DirectiveProcessor
 	{
-		
 		protected DirectiveProcessor ()
 		{
 		}
@@ -42,13 +39,14 @@ namespace Microsoft.VisualStudio.TextTemplating
 		public virtual void Initialize (ITextTemplatingEngineHost host)
 		{
 			if (host == null)
-				throw new ArgumentException ();
+				throw new ArgumentNullException ("host");
 		}
 		
 		public virtual void StartProcessingRun (CodeDomProvider languageProvider, string templateContents, CompilerErrorCollection errors)
 		{
 			if (languageProvider == null)
 				throw new ArgumentNullException ("languageProvider");
+			this.Errors = errors;
 		}
 		
 		public abstract void FinishProcessingRun ();
@@ -60,10 +58,6 @@ namespace Microsoft.VisualStudio.TextTemplating
 		public abstract bool IsDirectiveSupported (string directiveName);
 		public abstract void ProcessDirective (string directiveName, IDictionary<string, string> arguments);
 		
-		protected CompilerErrorCollection Errors {
-			get {
-				throw new NotImplementedException ();
-			} 
-		}
+		protected CompilerErrorCollection Errors { get; private set; }
 	}
 }
