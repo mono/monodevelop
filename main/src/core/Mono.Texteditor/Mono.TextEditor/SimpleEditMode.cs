@@ -388,13 +388,12 @@ namespace Mono.TextEditor
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{
 			int keyCode = GetKeyCode (key, modifier);
-			
 			if (keyBindings.ContainsKey (keyCode)) {
 				RunAction (keyBindings [keyCode]);
-			} else if (unicodeKey != 0 && modifier == Gdk.ModifierType.None || key == Gdk.Key.space && (modifier & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask) {
+				// HACK: Why we do need to filter keys here - it seems that we're doing the wrong thing here since we need a growing list of exceptions to the filter rule.
+			} else if (unicodeKey != 0 && modifier == Gdk.ModifierType.None || (key == Gdk.Key.space || key == Gdk.Key.parenleft || key == Gdk.Key.parenright) && (modifier & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask) {
 				InsertCharacter (unicodeKey);
 			}
 		}
-		     
 	}
 }
