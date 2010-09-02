@@ -88,12 +88,12 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 				Mono.TextEditor.Document generatedDocument = new Mono.TextEditor.Document ();
 				generatedDocument.Text = provider.OutputNode (options.Dom, unit);
 				
-				int startLine = -1;
+				int startLine = 0;
 				int minLine = typeFilterTransformer.TypeDeclaration.StartLocation.Line;
 				foreach (var attr in typeFilterTransformer.TypeDeclaration.Attributes) {
 					minLine = Math.Min (minLine, attr.StartLocation.Line);
 				}
-				for (int i = minLine - 2; i >= 0; i--) {
+				for (int i = minLine - 1; i >= 1; i--) {
 					string lineText = data.Document.GetTextAt (data.Document.GetLine (i)).Trim ();
 					if (string.IsNullOrEmpty (lineText))
 						continue;
@@ -105,7 +105,7 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 				}
 				
 				int start;
-				if (startLine >= 0) {
+				if (startLine >= 1) {
 					start = data.Document.GetLine (startLine).Offset;
 				} else {
 					var startLocation = typeFilterTransformer.TypeDeclaration.StartLocation;
@@ -117,7 +117,7 @@ namespace MonoDevelop.Refactoring.MoveTypeToFile
 					
 					start = data.Document.LocationToOffset (startLocation.Line, 1);
 				}
-				int length = data.Document.LocationToOffset (typeFilterTransformer.TypeDeclaration.EndLocation.Line - 1, typeFilterTransformer.TypeDeclaration.EndLocation.Column) - start;
+				int length = data.Document.LocationToOffset (typeFilterTransformer.TypeDeclaration.EndLocation.Line, typeFilterTransformer.TypeDeclaration.EndLocation.Column) - start;
 				
 				ICSharpCode.NRefactory.Ast.CompilationUnit generatedCompilationUnit = provider.ParseFile (generatedDocument.Text);
 				TypeSearchVisitor typeSearchVisitor = new TypeSearchVisitor ();
