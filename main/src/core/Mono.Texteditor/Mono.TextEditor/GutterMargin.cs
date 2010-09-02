@@ -94,7 +94,7 @@ namespace Mono.TextEditor
 		{
 			base.MousePressed (args);
 			
-			if (args.Button != 1)
+			if (args.Button != 1 || args.LineNumber < DocumentLocation.MinLine)
 				return;
 			editor.LockedMargin = this;
 			int lineNumber       = args.LineNumber;
@@ -130,7 +130,7 @@ namespace Mono.TextEditor
 		{
 			LineSegment line = data.Document.GetLine (lineNumber);
 			
-			DocumentLocation result = new DocumentLocation (lineNumber, line.EditableLength);
+			DocumentLocation result = new DocumentLocation (lineNumber, line.EditableLength + 1);
 			
 			FoldSegment segment = null;
 			foreach (FoldSegment folding in data.Document.GetStartFoldings (line)) {
@@ -140,7 +140,7 @@ namespace Mono.TextEditor
 				}
 			}
 			if (segment != null) 
-				result = data.Document.OffsetToLocation (segment.EndLine.Offset + segment.EndColumn); 
+				result = data.Document.OffsetToLocation (segment.EndLine.Offset + segment.EndColumn - 1); 
 			return result;
 		}
 		

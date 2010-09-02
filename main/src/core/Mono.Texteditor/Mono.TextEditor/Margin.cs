@@ -148,7 +148,7 @@ namespace Mono.TextEditor
 				if (lineNumber == -2) {
 					lineNumber = Editor.YToLine (Editor.VAdjustment.Value + Y);
 					if (lineNumber > Editor.Document.LineCount)
-						lineNumber = -1;
+						lineNumber = 0;
 				}
 				return lineNumber;
 			}
@@ -180,7 +180,5 @@ namespace Mono.TextEditor
 			this.Type = type;
 			this.ModifierState = modifierState;
 		}
-		
-		
 	}
 }
