@@ -178,13 +178,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			Project sourceProject;
 			System.Collections.Generic.IEnumerable<ProjectFile> groupedChildren = null;
 			
-			bool ask;
-			
 			if (dataObject is ProjectFolder) {
 				source = ((ProjectFolder) dataObject).Path;
 				sourceProject = ((ProjectFolder) dataObject).Project;
 				what = Path.GetFileName (source);
-				ask = true;
 			}
 			else if (dataObject is ProjectFile) {
 				ProjectFile file = (ProjectFile) dataObject;
@@ -196,7 +193,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 				groupedChildren = file.DependentChildren;
 				what = null;
-				ask = false;
 			}
 			else if (dataObject is Gtk.SelectionData) {
 				SelectionData data = (SelectionData) dataObject;
@@ -223,9 +219,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			targetPath = targetPath.Combine (source.FileName);
 			// If copying to the same directory, make a copy with a different name
 			if (targetPath == source)
-				targetPath = GetTargetCopyName (targetPath, dataObject is ProjectFolder);
+				targetPath = ProjectOperations.GetTargetCopyName (targetPath, dataObject is ProjectFolder);
 			
-			if (ask) {
+			if (dataObject is ProjectFolder) {
 				string q;
 				if (operation == DragOperation.Move) {
 					if (targetPath.ParentDirectory == targetProject.BaseDirectory)
@@ -243,7 +239,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					if (!MessageService.Confirm (q, AlertButton.Copy))
 						return;
 				}
-
+			} else if (dataObject is ProjectFile) {
+				if (File.Exists (targetPath))
+					if (!MessageService.Confirm (GettextCatalog.GetString ("The file '{0}' already exists. Do you want to overwrite it?", targetPath.FileName), AlertButton.OverwriteFile))
+						return;
 			}
 			
 			ArrayList filesToSave = new ArrayList ();
@@ -305,49 +304,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				bool move = operation == DragOperation.Move;
 				IdeApp.ProjectOperations.TransferFiles (monitor, sourceProject, source, targetProject, targetPath, move, false);
 			}
-		}
-		
-		internal static FilePath GetTargetCopyName (FilePath path, bool isFolder)
-		{
-			int n=1;
-			// First of all try to find an existing copy tag
-			string fn = path.FileNameWithoutExtension;
-			for (int i=1; i<100; i++) {
-				string copyTag = GetCopyTag (i); 
-				if (fn.EndsWith (copyTag)) {
-					string newfn = fn.Substring (0, fn.Length - copyTag.Length);
-					if (newfn.Trim ().Length > 0) {
-						n = i + 1;
-						path = path.ParentDirectory.Combine (newfn + path.Extension);
-						break;
-					}
-				}
-			}
-			FilePath basePath = path;
-			while ((!isFolder && File.Exists (path)) || (isFolder && Directory.Exists (path))) {
-				string copyTag = GetCopyTag (n);
-				path = basePath.ParentDirectory.Combine (basePath.FileNameWithoutExtension + copyTag + basePath.Extension);
-				n++;
-			}
-			return path;
-		}
-		
-		static string GetCopyTag (int n)
-		{
-			string sc;
-			switch (n) {
-				case 1: sc = GettextCatalog.GetString ("copy"); break;
-				case 2: sc = GettextCatalog.GetString ("another copy"); break;
-				case 3: sc = GettextCatalog.GetString ("3rd copy"); break;
-				case 4: sc = GettextCatalog.GetString ("4th copy"); break;
-				case 5: sc = GettextCatalog.GetString ("5th copy"); break;
-				case 6: sc = GettextCatalog.GetString ("6th copy"); break;
-				case 7: sc = GettextCatalog.GetString ("7th copy"); break;
-				case 8: sc = GettextCatalog.GetString ("8th copy"); break;
-				case 9: sc = GettextCatalog.GetString ("9th copy"); break;
-				default: sc = GettextCatalog.GetString ("copy {0}"); break;
-			}
-			return " (" + string.Format (sc, n) + ")";
 		}
 		
 		[CommandHandler (ProjectCommands.AddFiles)]

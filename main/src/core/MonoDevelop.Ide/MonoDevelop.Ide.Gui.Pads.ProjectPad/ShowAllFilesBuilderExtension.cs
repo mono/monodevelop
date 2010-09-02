@@ -343,7 +343,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			FilePath source = ((SystemFile)dataObject).Path;
 			targetPath = targetPath.Combine (source.FileName);
 			if (targetPath == source)
-				targetPath = FolderCommandHandler.GetTargetCopyName (targetPath, false);
+				targetPath = ProjectOperations.GetTargetCopyName (targetPath, false);
 			
 			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString("Copying files..."), Stock.CopyIcon, true))
 			{
