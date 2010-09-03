@@ -139,14 +139,15 @@ namespace Microsoft.VisualStudio.TextTemplating
 			members.Add (property);
 			
 			string acquiredName = languageProvider.CreateEscapedIdentifier ("__" + name + "Acquired");
-			var acquiredVariable = new CodeVariableDeclarationStatement (typeof (bool), acquiredName,
-				new CodePrimitiveExpression (false));
 			var acquiredVariableRef = new CodeVariableReferenceExpression (acquiredName);
 			var valRef = new CodeVariableReferenceExpression ("__val");
-			
 			var namePrimitive = new CodePrimitiveExpression (name);
 			var sessionRef = new CodePropertyReferenceExpression (thisRef, "Session");
 			var callContextTypeRefExpr = new CodeTypeReferenceExpression ("System.Runtime.Remoting.Messaging.CallContext");
+			var nullPrim = new CodePrimitiveExpression (null);
+			
+			var acquiredVariable = new CodeVariableDeclarationStatement (typeof (bool), acquiredName, new CodePrimitiveExpression (false));
+			this.postStatements.Add (acquiredVariable);
 			
 			//checks the local called "__val" can be cast and assigned to the field, and if successful, sets acquiredVariable to true
 			var checkCastThenAssignVal = new CodeConditionStatement (
@@ -169,21 +170,43 @@ namespace Microsoft.VisualStudio.TextTemplating
 				new CodeVariableDeclarationStatement (typeof (object), "__val", new CodeIndexerExpression (sessionRef, namePrimitive)),
 				checkCastThenAssignVal);
 			
+			this.postStatements.Add (checkSession);
+			
+			//if acquiredVariable is false, tries to gets the value from the host
+			if (hostSpecific) {
+				var hostRef = new CodePropertyReferenceExpression (thisRef, "Host");
+				var checkHost = new CodeConditionStatement (
+					BooleanAnd (IsFalse (acquiredVariableRef), NotNull (hostRef)),
+					new CodeVariableDeclarationStatement (typeof (string), "__val",
+						new CodeMethodInvokeExpression (hostRef, "ResolveParameterValue", nullPrim, nullPrim,  namePrimitive)),
+					new CodeConditionStatement (NotNull (valRef), checkCastThenAssignVal));
+				
+				this.postStatements.Add (checkHost);
+			}
+			
 			//if acquiredVariable is false, tries to gets the value from the call context
 			var checkCallContext = new CodeConditionStatement (
-				new CodeBinaryOperatorExpression (acquiredVariableRef, CodeBinaryOperatorType.ValueEquality, new CodePrimitiveExpression (false)),
+				IsFalse (acquiredVariableRef),
 				new CodeVariableDeclarationStatement (typeof (object), "__val",
 					new CodeMethodInvokeExpression (callContextTypeRefExpr, "LogicalGetData", namePrimitive)),
 				new CodeConditionStatement (NotNull (valRef), checkCastThenAssignVal));
 			
-			this.postStatements.Add (acquiredVariable);
-			this.postStatements.Add (checkSession);
 			this.postStatements.Add (checkCallContext);
 		}
 		
 		static CodeBinaryOperatorExpression NotNull (CodeExpression reference)
 		{
 			return new CodeBinaryOperatorExpression (reference, CodeBinaryOperatorType.IdentityInequality, new CodePrimitiveExpression (null));
+		}
+		
+		static CodeBinaryOperatorExpression IsFalse (CodeExpression expr)
+		{
+			return new CodeBinaryOperatorExpression (expr, CodeBinaryOperatorType.ValueEquality, new CodePrimitiveExpression (false));
+		}
+		
+		static CodeBinaryOperatorExpression BooleanAnd (CodeExpression expr1, CodeExpression expr2)
+		{
+			return new CodeBinaryOperatorExpression (expr1, CodeBinaryOperatorType.BooleanAnd, expr2);
 		}
 		
 		void IRecognizeHostSpecific.SetProcessingRunIsHostSpecific (bool hostSpecific)

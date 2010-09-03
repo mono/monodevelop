@@ -343,7 +343,9 @@ namespace Mono.TextTemplating
 				this.directiveName = directiveName ?? "";
 				this.parameterName = parameterName ?? "";
 				unchecked {
-					hashCode = processorName.GetHashCode () ^ directiveName.GetHashCode () ^ parameterName.GetHashCode ();
+					hashCode = this.processorName.GetHashCode ()
+						^ this.directiveName.GetHashCode ()
+						^ this.parameterName.GetHashCode ();
 				}
 			}
 			
