@@ -610,23 +610,22 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitSwitchSection (SwitchSection switchSection, object data)
 		{
-			
-			if (policy.IndentCaseBody)
+			if (policy.IndentSwitchBody)
 				curIndent.Level++;
 			
 			foreach (CaseLabel label in switchSection.CaseLabels) {
 				FixStatementIndentation (label.StartLocation);
 			}
-			if (policy.IndentSwitchBody)
+			if (policy.IndentCaseBody)
 				curIndent.Level++;
 			
 			foreach (ICSharpNode stmt in switchSection.Statements) {
 				stmt.AcceptVisitor (this, null);
 			}
-			if (policy.IndentSwitchBody)
+			if (policy.IndentCaseBody)
 				curIndent.Level--;
 				
-			if (policy.IndentCaseBody)
+			if (policy.IndentSwitchBody)
 				curIndent.Level--;
 			return null;
 		}
