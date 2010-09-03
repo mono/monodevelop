@@ -246,14 +246,14 @@ namespace MonoDevelop.VersionControl.Views
 			int line = startLine;
 			JumpOverFoldings (ref line);
 			while (curY < editor.Allocation.Bottom) {
-				Annotation ann = line < overview.annotations.Count ? overview.annotations[line] : null;
+				Annotation ann = line <= overview.annotations.Count ? overview.annotations[line - 1] : null;
 				
 				do {
 					double lineHeight = Editor.GetLineHeight (line);
 					curY += lineHeight;
 					line++;
 					JumpOverFoldings (ref  line);
-				} while (line + 1 < overview.annotations.Count && ann != null && overview.annotations[line] != null && overview.annotations[line].Revision == ann.Revision);
+				} while (line + 1 <= overview.annotations.Count && ann != null && overview.annotations[line - 1] != null && overview.annotations[line - 1].Revision == ann.Revision);
 				
 				if (ann != null) {
 					cr.MoveTo (Editor.TextViewMargin.XOffset, curY + 0.5);
