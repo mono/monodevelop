@@ -90,7 +90,7 @@ namespace Mono.TextTemplating.Tests
 				return null;
 			}
 			
-			var ccu = TemplatingEngine.GenerateCompileUnit (host, pt, settings);
+			var ccu = TemplatingEngine.GenerateCompileUnit (host, content, pt, settings);
 			if (pt.Errors.HasErrors) {
 				host.LogErrors (pt.Errors);
 				return null;

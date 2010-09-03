@@ -33,8 +33,6 @@ using Microsoft.VisualStudio.TextTemplating;
 
 namespace Mono.TextTemplating
 {
-	
-	
 	public class TemplateGenerator : MarshalByRefObject, ITextTemplatingEngineHost
 	{
 		//re-usable

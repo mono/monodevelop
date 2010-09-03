@@ -46,6 +46,8 @@ namespace Mono.TextTemplating
 			string outputFile = null, inputFile = null;
 			var directives = new List<string> ();
 			var parameters = new List<string> ();
+			var session = new Microsoft.VisualStudio.TextTemplating.TextTemplatingSession ();
+			string preprocess = null;
 			
 			optionSet = new OptionSet () {
 				{ "o=|out=", "The name of the output {file}", s => outputFile = s },
@@ -55,7 +57,9 @@ namespace Mono.TextTemplating
 				{ "P=", "Paths to search for referenced assemblies", s => generator.ReferencePaths.Add (s) },
 				{ "dp=", "Directive processor (name!class!assembly)", s => directives.Add (s) },
 				{ "a=", "Parameters ([processorName]![directiveName]!name!value)", s => parameters.Add (s) },
-				{ "h|?|help", "Show help", s => ShowHelp (false) }
+				{ "h|?|help", "Show help", s => ShowHelp (false) },
+		//		{ "k=,", "Session {key},{value} pairs", (s, t) => session.Add (s, t) },
+				{ "c=", "Preprocess the template into {0:class}", (s) => preprocess = s },
 			};
 			
 			var remainingArgs = optionSet.Parse (args);
@@ -111,13 +115,39 @@ namespace Mono.TextTemplating
 				generator.AddDirectiveProcessor (split[0], split[1], split[2]);
 			}
 			
-			Console.Write("Processing '{0}'... ", inputFile);
-			generator.ProcessTemplate (inputFile, outputFile);
-			
-			if (generator.Errors.HasErrors) {
-				Console.WriteLine("failed.");
+			if (preprocess == null) {
+				Console.Write ("Processing '{0}'... ", inputFile);
+				generator.ProcessTemplate (inputFile, outputFile);
+				if (generator.Errors.HasErrors) {
+					Console.WriteLine ("failed.");
+				} else {
+					Console.WriteLine ("completed successfully.");
+				}
 			} else {
-				Console.WriteLine("completed successfully.");
+				string className = preprocess;
+				string classNamespace = null;
+				int s = preprocess.LastIndexOf ('.');
+				if (s > 0) {
+					classNamespace = preprocess.Substring (0, s);
+					className = preprocess.Substring (s + 1);
+				}
+				
+				Console.Write ("Preprocessing '{0}' into class '{1}.{2}'... ", inputFile, classNamespace, className);
+				string language;
+				string[] references;
+				generator.PreprocessTemplate (inputFile, className, classNamespace, outputFile, System.Text.Encoding.UTF8,
+					out language, out references);
+				if (generator.Errors.HasErrors) {
+					Console.WriteLine ("failed.");
+				} else {
+					Console.WriteLine ("completed successfully:");
+					Console.WriteLine ("    Language: {0}", language);
+					if (references != null && references.Length > 0) {
+						Console.WriteLine (" References:");
+						foreach (string r in references)
+							Console.WriteLine ("    {0}", r);
+					}
+				}
 			}
 			
 			foreach (System.CodeDom.Compiler.CompilerError err in generator.Errors)

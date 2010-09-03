@@ -32,6 +32,7 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 using Microsoft.CSharp;
 using Microsoft.VisualStudio.TextTemplating;
+using System.Linq;
 
 namespace Mono.TextTemplating
 {
@@ -48,36 +49,64 @@ namespace Mono.TextTemplating
 		public string PreprocessTemplate (string content, ITextTemplatingEngineHost host, string className, 
 			string classNamespace, out string language, out string[] references)
 		{
-			throw new NotImplementedException ();
+			language = null;
+			references = null;
+			
+			var pt = ParsedTemplate.FromText (content, host);
+			if (pt.Errors.HasErrors) {
+				host.LogErrors (pt.Errors);
+				return null;
+			}
+			
+			var settings = GetSettings (host, pt);
+			if (pt.Errors.HasErrors) {
+				host.LogErrors (pt.Errors);
+				return null;
+			}
+			settings.Name = className;
+			settings.Namespace = classNamespace;
+			language = settings.Language;
+			
+			var ccu = GenerateCompileUnit (host, content, pt, settings);
+			if (pt.Errors.HasErrors) {
+				host.LogErrors (pt.Errors);
+				return null;
+			}
+			
+			var options = new CodeGeneratorOptions ();
+			using (var sw = new StringWriter ()) {
+				settings.Provider.GenerateCodeFromCompileUnit (ccu, sw, options);
+				return sw.ToString ();
+			};
 		}
 
 		public CompiledTemplate CompileTemplate (string content, ITextTemplatingEngineHost host)
 		{
-			ParsedTemplate pt = ParsedTemplate.FromText (content, host);
+			var pt = ParsedTemplate.FromText (content, host);
 			if (pt.Errors.HasErrors) {
 				host.LogErrors (pt.Errors);
 				return null;
 			}
 			
-			TemplateSettings settings = GetSettings (host, pt);
+			var settings = GetSettings (host, pt);
 			if (pt.Errors.HasErrors) {
 				host.LogErrors (pt.Errors);
 				return null;
 			}
 			
-			CodeCompileUnit ccu = GenerateCompileUnit (host, pt, settings);
+			var ccu = GenerateCompileUnit (host, content, pt, settings);
 			if (pt.Errors.HasErrors) {
 				host.LogErrors (pt.Errors);
 				return null;
 			}
 			
-			System.Reflection.Assembly results = GenerateCode (host, pt, settings, ccu);
+			var results = GenerateCode (host, pt, settings, ccu);
 			if (pt.Errors.HasErrors) {
 				host.LogErrors (pt.Errors);
 				return null;
 			}
 			
-			if (!String.IsNullOrEmpty (settings.Extension)) {
+			if (!string.IsNullOrEmpty (settings.Extension)) {
 				host.SetFileExtension (settings.Extension);
 			}
 			if (settings.Encoding != null) {
@@ -107,7 +136,7 @@ namespace Mono.TextTemplating
 			HashSet<string> assemblies = new HashSet<string> ();
 			assemblies.UnionWith (settings.Assemblies);
 			assemblies.UnionWith (host.StandardAssemblyReferences);
-			foreach (string assem in assemblies) {
+			foreach (string assem in settings.Assemblies) {
 				string resolvedAssem = host.ResolveAssemblyReference (assem);
 				if (!String.IsNullOrEmpty (resolvedAssem)) {
 					pars.ReferencedAssemblies.Add (resolvedAssem);
@@ -116,6 +145,8 @@ namespace Mono.TextTemplating
 					return null;
 				}
 			}
+			pars.ReferencedAssemblies.Add (typeof (TextTransformation).Assembly.Location);
+			pars.ReferencedAssemblies.Add (typeof (System.CodeDom.Compiler.CompilerErrorCollection).Assembly.Location);
 			CompilerResults results = settings.Provider.CompileAssemblyFromDom (pars, ccu);
 			pt.Errors.AddRange (results.Errors);
 			if (pt.Errors.HasErrors)
@@ -125,15 +156,14 @@ namespace Mono.TextTemplating
 		
 		public static TemplateSettings GetSettings (ITextTemplatingEngineHost host, ParsedTemplate pt)
 		{
-			string language = null;
+			var settings = new TemplateSettings ();
 			
-			TemplateSettings settings = new TemplateSettings ();
 			foreach (Directive dt in pt.Directives) {
 				switch (dt.Name) {
 				case "template":
 					string val = dt.Extract ("language");
 					if (val != null)
-						language = val;
+						settings.Language = val;
 					val = dt.Extract ("debug");
 					if (val != null)
 						settings.Debug = string.Compare (val, "true", StringComparison.OrdinalIgnoreCase) == 0;
@@ -174,16 +204,37 @@ namespace Mono.TextTemplating
 					settings.Extension = dt.Extract ("extension");
 					string encoding = dt.Extract ("encoding");
 					if (encoding != null)
-						settings.Encoding = Encoding.GetEncoding ("encoding");
+						settings.Encoding = Encoding.GetEncoding (encoding);
 					break;
 				
 				case "include":
 					throw new InvalidOperationException ("Include is handled in the parser");
 					
+				case "parameter":
+					AddDirective (settings, host, "ParameterDirectiveProcessor", dt);
+					continue;
+					
 				default:
-					throw new NotImplementedException ("Custom directives are not supported yet");
+					bool isParameterProcessor = dt.Name == "parameter";
+					string processorName = dt.Extract ("Processor");
+					if (processorName == null)
+						throw new InvalidOperationException ("Custom directive '" + dt.Name + "' does not specify a processor");
+					
+					AddDirective (settings, host, processorName, dt);
+					continue;
 				}
 				ComplainExcessAttributes (dt, pt);
+			}
+			
+			//initialize the custom processors
+			foreach (var kv in settings.DirectiveProcessors) {
+				kv.Value.Initialize (host);
+				var hs = kv.Value as IRecognizeHostSpecific;
+				if (hs == null)
+					continue;
+				if (hs.RequiresProcessingRunIsHostSpecific && !settings.HostSpecific)
+					throw new InvalidOperationException ("Directive processor '" + kv.Key + "' only supports host-specific templates");
+				hs.SetProcessingRunIsHostSpecific (settings.HostSpecific);
 			}
 			
 			if (settings.Name == null)
@@ -192,26 +243,47 @@ namespace Mono.TextTemplating
 				settings.Namespace = typeof (TextTransformation).Namespace;
 			
 			//resolve the CodeDOM provider
-			if (String.IsNullOrEmpty (language)) {
+			if (String.IsNullOrEmpty (settings.Language)) {
 				pt.LogError ("No language was specified for the template");
 				return settings;
 			}
 			
-			if (language == "C#v3.5") {
+			if (settings.Language == "C#v3.5") {
 				Dictionary<string, string> providerOptions = new Dictionary<string, string> ();
 				providerOptions.Add ("CompilerVersion", "v3.5");
 				settings.Provider = new CSharpCodeProvider (providerOptions);
 			}
 			else {
-				settings.Provider = CodeDomProvider.CreateProvider (language);
+				settings.Provider = CodeDomProvider.CreateProvider (settings.Language);
 			}
 			
 			if (settings.Provider == null) {
-				pt.LogError ("A provider could not be found for the language '" + language + "'");
+				pt.LogError ("A provider could not be found for the language '" + settings.Language + "'");
 				return settings;
 			}
 			
 			return settings;
+		}
+		
+		static void AddDirective (TemplateSettings settings, ITextTemplatingEngineHost host, string processorName, Directive directive)
+		{
+			DirectiveProcessor processor;
+			if (!settings.DirectiveProcessors.TryGetValue (processorName, out processor)) {
+				switch (processorName) {
+				case "ParameterDirectiveProcessor":
+					processor = new ParameterDirectiveProcessor ();
+					break;
+				default:
+					Type processorType = host.ResolveDirectiveProcessor (processorName);
+					processor = (DirectiveProcessor) Activator.CreateInstance (processorType);
+					break;
+				}
+				if (!processor.IsDirectiveSupported (directive.Name))
+					throw new InvalidOperationException ("Directive processor '" + processorName + "' does not support directive '" + directive.Name + "'");
+				
+				settings.DirectiveProcessors [processorName] = processor;
+			}
+			settings.CustomDirectives.Add (new CustomDirective (processorName, directive));
 		}
 		
 		static bool ComplainExcessAttributes (Directive dt, ParsedTemplate pt)
@@ -235,24 +307,49 @@ namespace Mono.TextTemplating
 			return false;
 		}
 		
-		public static CodeCompileUnit GenerateCompileUnit (ITextTemplatingEngineHost host, ParsedTemplate pt,
-		                                                   TemplateSettings settings)
+		static void ProcessDirectives (ITextTemplatingEngineHost host, string content, ParsedTemplate pt, TemplateSettings settings)
 		{
+			foreach (var processor in settings.DirectiveProcessors.Values) {
+				processor.StartProcessingRun (settings.Provider, content, pt.Errors);
+			}
+			
+			foreach (var dt in settings.CustomDirectives) {
+				var processor = settings.DirectiveProcessors[dt.ProcessorName];
+				
+				if (processor is RequiresProvidesDirectiveProcessor)
+					throw new NotImplementedException ("RequiresProvidesDirectiveProcessor");
+				
+				processor.ProcessDirective (dt.Directive.Name, dt.Directive.Attributes);
+			}
+			
+			foreach (var processor in settings.DirectiveProcessors.Values) {
+				processor.FinishProcessingRun ();
+				
+				var imports = processor.GetImportsForProcessingRun ();
+				if (imports != null)
+					settings.Imports.UnionWith (imports);
+				var references = processor.GetReferencesForProcessingRun ();
+				if (references != null)
+					settings.Assemblies.UnionWith (references);
+			}
+		}
+		
+		public static CodeCompileUnit GenerateCompileUnit (ITextTemplatingEngineHost host, string content, ParsedTemplate pt, TemplateSettings settings)
+		{
+			ProcessDirectives (host, content, pt, settings);
+
 			//prep the compile unit
 			var ccu = new CodeCompileUnit ();
 			var namespac = new CodeNamespace (settings.Namespace);
 			ccu.Namespaces.Add (namespac);
 			
-			var imports = new HashSet<string> ();
-			imports.UnionWith (settings.Imports);
-			imports.UnionWith (host.StandardImports);
-			foreach (string ns in imports)
+			foreach (string ns in settings.Imports.Union (host.StandardImports))
 				namespac.Imports.Add (new CodeNamespaceImport (ns));
 			
 			//prep the type
 			var type = new CodeTypeDeclaration (settings.Name);
 			type.IsPartial = true;
-			if (!String.IsNullOrEmpty (settings.Inherits))
+			if (!string.IsNullOrEmpty (settings.Inherits))
 				type.BaseTypes.Add (new CodeTypeReference (settings.Inherits));
 			else
 				type.BaseTypes.Add (new CodeTypeReference (typeof (TextTransformation)));
@@ -312,6 +409,13 @@ namespace Mono.TextTemplating
 				}
 			}
 			
+			//class code from processors
+			foreach (var processor in settings.DirectiveProcessors.Values) {
+				string classCode = processor.GetClassCodeForProcessingRun ();
+				if (classCode != null)
+					type.Members.Add (new CodeSnippetTypeMember (classCode));
+			}
+			
 			//complete the transform method
 			transformMeth.Statements.Add (new CodeMethodReturnStatement (
 				new CodeMethodInvokeExpression (
@@ -340,10 +444,41 @@ namespace Mono.TextTemplating
 				type.Members.Add (hostProp);
 			}
 			
+			//initialization method
+			var initializeMeth = new CodeMemberMethod () {
+				Name = "Initialize",
+				ReturnType = new CodeTypeReference (typeof (void)),
+				Attributes = MemberAttributes.Family | MemberAttributes.Override
+			};
+			
+			//pre-init code from processors
+			foreach (var processor in settings.DirectiveProcessors.Values) {
+				string code = processor.GetPreInitializationCodeForProcessingRun ();
+				if (code != null)
+					initializeMeth.Statements.Add (new CodeSnippetStatement (code));
+			}
+			
+			//base call
+			initializeMeth.Statements.Add (new CodeExpressionStatement (
+				new CodeMethodInvokeExpression (
+					new CodeMethodReferenceExpression (
+						new CodeBaseReferenceExpression (),
+						"Initialize"))));
+			
+			//post-init code from processors
+			foreach (var processor in settings.DirectiveProcessors.Values) {
+				string code = processor.GetPostInitializationCodeForProcessingRun ();
+				if (code != null)
+					initializeMeth.Statements.Add (new CodeSnippetStatement (code));
+			}
+			
+			type.Members.Add (initializeMeth);
+			
 			return ccu;
 		}
 		
-		public static string Run (System.Reflection.Assembly assem, string type, ITextTemplatingEngineHost host, System.Globalization.CultureInfo culture)
+		public static string Run (System.Reflection.Assembly assem, string type, ITextTemplatingEngineHost host,
+			System.Globalization.CultureInfo culture)
 		{
 			Type transformType = assem.GetType (type);
 			TextTransformation tt;
@@ -360,6 +495,12 @@ namespace Mono.TextTemplating
 			System.Reflection.PropertyInfo hostProp = transformType.GetProperty ("Host", typeof (ITextTemplatingEngineHost));
 			if (hostProp != null && hostProp.CanWrite)
 				hostProp.SetValue (tt, host, null);
+			
+			var sessionHost = host as ITextTemplatingSessionHost;
+			if (sessionHost != null) {
+				//FIXME: should we create a session if it's null?
+				tt.Session = sessionHost.Session;
+			}
 			
 			//set the culture
 			if (culture != null)

@@ -27,12 +27,18 @@
 using System;
 using System.Collections.Generic;
 using System.CodeDom.Compiler;
+using System.CodeDom;
+using System.IO;
+using System.Linq;
 
 namespace Microsoft.VisualStudio.TextTemplating
 {
 	public sealed class ParameterDirectiveProcessor : DirectiveProcessor, IRecognizeHostSpecific
 	{
 		CodeDomProvider languageProvider;
+		bool hostSpecific;
+		List<CodeStatement> postStatements = new List<CodeStatement> ();
+		CodeTypeMemberCollection members = new CodeTypeMemberCollection ();
 		
 		public ParameterDirectiveProcessor ()
 		{
@@ -42,50 +48,147 @@ namespace Microsoft.VisualStudio.TextTemplating
 		{
 			base.StartProcessingRun (languageProvider, templateContents, errors);
 			this.languageProvider = languageProvider;
+			postStatements.Clear ();
+			members.Clear ();
 		}
 		
 		public override void FinishProcessingRun ()
 		{
-			languageProvider = null;
+			var statement = new CodeConditionStatement (
+				new CodeBinaryOperatorExpression (
+					new CodePropertyReferenceExpression (
+						new CodePropertyReferenceExpression (new CodeThisReferenceExpression (), "Errors"), "HasErrors"),
+					CodeBinaryOperatorType.ValueEquality,
+					new CodePrimitiveExpression (false)),
+				postStatements.ToArray ());
+			
+			postStatements.Clear ();
+			postStatements.Add (statement);
 		}
 		
 		public override string GetClassCodeForProcessingRun ()
 		{
-			throw new NotImplementedException ();
+			var options = new CodeGeneratorOptions ();
+			using (var sw = new StringWriter ()) {
+				foreach (CodeTypeMember member in members)
+					languageProvider.GenerateCodeFromMember (member, sw, options);
+				return sw.ToString ();
+			}
 		}
 		
 		public override string[] GetImportsForProcessingRun ()
 		{
-			throw new NotImplementedException ();
+			return null;
 		}
 		
 		public override string GetPostInitializationCodeForProcessingRun ()
 		{
-			throw new NotImplementedException ();
+			return StatementsToCode (postStatements);
 		}
 		
 		public override string GetPreInitializationCodeForProcessingRun ()
 		{
-			throw new NotImplementedException ();
+			return null;
+		}
+		
+		string StatementsToCode (List<CodeStatement> statements)
+		{
+			var options = new CodeGeneratorOptions ();
+			using (var sw = new StringWriter ()) {
+				foreach (var statement in statements)
+					languageProvider.GenerateCodeFromStatement (statement, sw, options);
+				return sw.ToString ();
+			}
 		}
 		
 		public override string[] GetReferencesForProcessingRun ()
 		{
-			throw new NotImplementedException ();
+			return null;
 		}
 		
 		public override bool IsDirectiveSupported (string directiveName)
 		{
-			throw new NotImplementedException ();
+			return directiveName == "parameter";
 		}
 		
 		public override void ProcessDirective (string directiveName, IDictionary<string, string> arguments)
 		{
-			throw new NotImplementedException ();
+			string name = arguments["name"];
+			string type = arguments["type"];
+			if (string.IsNullOrEmpty (name))
+				throw new DirectiveProcessorException ("Parameter directive has no name argument");
+			if (string.IsNullOrEmpty (type))
+				throw new DirectiveProcessorException ("Parameter directive has no type argument");
+			
+			name = languageProvider.CreateEscapedIdentifier (name);
+			
+			string fieldName = languageProvider.CreateEscapedIdentifier ("__" + name + "Field");
+			var typeRef = new CodeTypeReference (type);
+			var thisRef = new CodeThisReferenceExpression ();
+			var fieldRef = new CodeFieldReferenceExpression (thisRef, fieldName);
+			
+			var property = new CodeMemberProperty () {
+				Name = name,
+				Attributes = MemberAttributes.Public,
+				HasGet = true,
+				HasSet = false,
+				Type = typeRef
+			};
+			property.GetStatements.Add (new CodeMethodReturnStatement (fieldRef));
+			members.Add (new CodeMemberField (typeRef, fieldName));
+			members.Add (property);
+			
+			string acquiredName = languageProvider.CreateEscapedIdentifier ("__" + name + "Acquired");
+			var acquiredVariable = new CodeVariableDeclarationStatement (typeof (bool), acquiredName,
+				new CodePrimitiveExpression (false));
+			var acquiredVariableRef = new CodeVariableReferenceExpression (acquiredName);
+			var valRef = new CodeVariableReferenceExpression ("__val");
+			
+			var namePrimitive = new CodePrimitiveExpression (name);
+			var sessionRef = new CodePropertyReferenceExpression (thisRef, "Session");
+			var callContextTypeRefExpr = new CodeTypeReferenceExpression ("System.Runtime.Remoting.Messaging.CallContext");
+			
+			//checks the local called "__val" can be cast and assigned to the field, and if successful, sets acquiredVariable to true
+			var checkCastThenAssignVal = new CodeConditionStatement (
+				new CodeMethodInvokeExpression (
+					new CodeTypeOfExpression (typeRef), "IsAssignableFrom", new CodeMethodInvokeExpression (valRef, "GetType")),
+				new CodeStatement[] {
+					new CodeAssignStatement (fieldRef, new CodeCastExpression (typeRef, valRef)),
+					new CodeAssignStatement (acquiredVariableRef, new CodePrimitiveExpression (true)),
+				},
+				new CodeStatement[] {
+					new CodeExpressionStatement (new CodeMethodInvokeExpression (thisRef, "Error",
+					new CodePrimitiveExpression ("The type '" + type + "' of the parameter '" + name + 
+						"' did not match the type passed to the template"))),
+				});
+			
+			//tries to gets the value from the session
+			var checkSession = new CodeConditionStatement (
+				new CodeBinaryOperatorExpression (NotNull (sessionRef), CodeBinaryOperatorType.BooleanAnd,
+					new CodeMethodInvokeExpression (sessionRef, "ContainsKey", namePrimitive)),
+				new CodeVariableDeclarationStatement (typeof (object), "__val", new CodeIndexerExpression (sessionRef, namePrimitive)),
+				checkCastThenAssignVal);
+			
+			//if acquiredVariable is false, tries to gets the value from the call context
+			var checkCallContext = new CodeConditionStatement (
+				new CodeBinaryOperatorExpression (acquiredVariableRef, CodeBinaryOperatorType.ValueEquality, new CodePrimitiveExpression (false)),
+				new CodeVariableDeclarationStatement (typeof (object), "__val",
+					new CodeMethodInvokeExpression (callContextTypeRefExpr, "LogicalGetData", namePrimitive)),
+				new CodeConditionStatement (NotNull (valRef), checkCastThenAssignVal));
+			
+			this.postStatements.Add (acquiredVariable);
+			this.postStatements.Add (checkSession);
+			this.postStatements.Add (checkCallContext);
+		}
+		
+		static CodeBinaryOperatorExpression NotNull (CodeExpression reference)
+		{
+			return new CodeBinaryOperatorExpression (reference, CodeBinaryOperatorType.IdentityInequality, new CodePrimitiveExpression (null));
 		}
 		
 		void IRecognizeHostSpecific.SetProcessingRunIsHostSpecific (bool hostSpecific)
 		{
+			this.hostSpecific = hostSpecific;
 		}
 
 		public bool RequiresProcessingRunIsHostSpecific {

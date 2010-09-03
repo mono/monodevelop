@@ -27,6 +27,7 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
+using Microsoft.VisualStudio.TextTemplating;
 
 namespace Mono.TextTemplating
 {
@@ -35,8 +36,10 @@ namespace Mono.TextTemplating
 	{
 		public TemplateSettings ()
 		{
-			Imports = new List<string> ();
-			Assemblies = new List<string> ();
+			Imports = new HashSet<string> ();
+			Assemblies = new HashSet<string> ();
+			CustomDirectives  = new List<CustomDirective> ();
+			DirectiveProcessors = new Dictionary<string, DirectiveProcessor> ();
 		}
 		
 		public bool HostSpecific { get; set; }
@@ -44,11 +47,26 @@ namespace Mono.TextTemplating
 		public string Inherits { get; set; }
 		public string Name { get; set; }
 		public string Namespace { get; set; }
-		public List<string> Imports { get; private set; }
-		public List<string> Assemblies { get; private set; }
+		public HashSet<string> Imports { get; private set; }
+		public HashSet<string> Assemblies { get; private set; }
 		public System.CodeDom.Compiler.CodeDomProvider Provider { get; set; }
+		public string Language { get; set; }
 		public Encoding Encoding { get; set; }
 		public string Extension { get; set; }
 		public System.Globalization.CultureInfo Culture { get; set; }
+		public List<CustomDirective> CustomDirectives { get; private set; }
+		public Dictionary<string,DirectiveProcessor> DirectiveProcessors { get; private set; }
+	}
+	
+	public class CustomDirective
+	{
+		public CustomDirective (string processorName, Directive directive)
+		{
+			this.ProcessorName = processorName;
+			this.Directive = directive;
+		}
+		
+		public string ProcessorName { get; set; }
+		public Directive Directive { get; set; }
 	}
 }
