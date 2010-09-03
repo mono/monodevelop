@@ -1991,6 +1991,7 @@ namespace Mono.CSharp
 		public ModuleCompiled ModuleCompiled { get; set; }
 		public LocationsBag LocationsBag { get; set; }
 		public UsingsBag UsingsBag { get; set; }
+		public SpecialsBag SpecialsBag { get; set; }
 	}
 	
 	//
@@ -2102,11 +2103,12 @@ namespace Mono.CSharp
 					}
 					CSharpParser parser = new CSharpParser (reader, unit, ctx);
 					parser.Lexer.TabSize = 1;
+					parser.Lexer.sbag = new SpecialsBag ();
 					parser.LocationsBag = new LocationsBag ();
 					parser.UsingsBag = new UsingsBag ();
 					parser.parse ();
 					
-					return new CompilerCompilationUnit () { ModuleCompiled = RootContext.ToplevelTypes, LocationsBag = parser.LocationsBag, UsingsBag = parser.UsingsBag };
+					return new CompilerCompilationUnit () { ModuleCompiled = RootContext.ToplevelTypes, LocationsBag = parser.LocationsBag, UsingsBag = parser.UsingsBag, SpecialsBag = parser.Lexer.sbag };
 				} finally {
 					Reset ();
 				}

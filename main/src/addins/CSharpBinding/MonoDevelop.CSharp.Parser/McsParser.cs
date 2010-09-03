@@ -86,36 +86,9 @@ namespace MonoDevelop.CSharp.Parser
 				
 				List<string> compilerArguments = new List<string> ();
 				
-				var unit =  new MonoDevelop.Projects.Dom.CompilationUnit (fileName);;
+				var unit =  new MonoDevelop.Projects.Dom.CompilationUnit (fileName);
 				var result = new ParsedDocument (fileName);
 				result.CompilationUnit = unit;
-				
-				ICSharpCode.NRefactory.Parser.CSharp.Lexer lexer = new ICSharpCode.NRefactory.Parser.CSharp.Lexer (new StringReader (content));
-				lexer.SpecialCommentTags = ProjectDomService.SpecialCommentTags.GetNames ();
-				lexer.EvaluateConditionalCompilation = true;
-				if (dom != null && dom.Project != null && MonoDevelop.Ide.IdeApp.Workspace != null) {
-					DotNetProjectConfiguration configuration = dom.Project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
-					CSharpCompilerParameters par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
-					if (par != null) {
-						lexer.SetConditionalCompilationSymbols (par.DefineSymbols);
-						if (!string.IsNullOrEmpty (par.DefineSymbols)) {
-							compilerArguments.Add ("-define:" + string.Join (";", par.DefineSymbols.Split (';', ',', ' ', '\t')));
-						}
-						if (par.UnsafeCode)
-							compilerArguments.Add ("-unsafe");
-						if (par.TreatWarningsAsErrors)
-							compilerArguments.Add ("-warnaserror");
-						if (!string.IsNullOrEmpty (par.NoWarnings))
-							compilerArguments.Add ("-nowarn:"+ string.Join (",", par.NoWarnings.Split (';', ',', ' ', '\t')));
-						compilerArguments.Add ("-warn:" + par.WarningLevel);
-						compilerArguments.Add ("-langversion:" + GetLangString (par.LangVersion));
-						if (par.GenerateOverflowChecks)
-							compilerArguments.Add ("-checked");
-					}
-				}
-	//			compilerArguments.ForEach (arg => Console.WriteLine (arg));
-				while (lexer.NextToken ().Kind != ICSharpCode.NRefactory.Parser.CSharp.Tokens.EOF)
-					;
 				
 				CompilerCompilationUnit top;
 				ErrorReportPrinter errorReportPrinter = new ErrorReportPrinter ();
@@ -125,20 +98,25 @@ namespace MonoDevelop.CSharp.Parser
 				if (top == null)
 					return null;
 				
-				SpecialTracker tracker = new SpecialTracker (result);
-				foreach (ICSharpCode.NRefactory.ISpecial special in lexer.SpecialTracker.CurrentSpecials) {
-					special.AcceptVisitor (tracker, null);
-				}	
-				
+				foreach (var special in top.SpecialsBag.Specials) {
+					var comment = special as SpecialsBag.Comment;
+					if (comment != null) {
+						VisitComment (result, comment);
+					} else {
+						VisitPreprocessorDirective (result, special as SpecialsBag.PreProcessorDirective);
+					}
+				}
 				
 				// convert DOM
-				var conversionVisitor = new ConversionVisitor (top.LocationsBag, lexer.SpecialTracker.CurrentSpecials);
+				var conversionVisitor = new ConversionVisitor (top.LocationsBag);
 				conversionVisitor.Dom = dom;
-				conversionVisitor.Unit = unit;
 				conversionVisitor.ParsedDocument = result;
+				conversionVisitor.Unit = unit;
 				top.UsingsBag.Global.Accept (conversionVisitor);
 				
 				unit.Tag = top;
+				
+				
 				
 				// parser errors
 				errorReportPrinter.Errors.ForEach (e => conversionVisitor.ParsedDocument.Add (e));
@@ -146,146 +124,115 @@ namespace MonoDevelop.CSharp.Parser
 			}
 		}
 		
-		class SpecialTracker : ICSharpCode.NRefactory.ISpecialVisitor
+		void VisitComment (ParsedDocument result, SpecialsBag.Comment comment)
 		{
-			ParsedDocument result;
-
-			public SpecialTracker (ParsedDocument result)
-			{
-				this.result = result;
+			var cmt = new Comment (comment.Content);
+			cmt.CommentStartsLine = comment.StartsLine;
+			switch (comment.CommentType) {
+			case SpecialsBag.CommentType.Multi:
+				cmt.CommentType = CommentType.MultiLine;
+				cmt.OpenTag = "/*";
+				cmt.ClosingTag = "*/";
+				break;
+			case SpecialsBag.CommentType.Single:
+				cmt.CommentType = CommentType.SingleLine;
+				cmt.OpenTag = "//";
+				break;
+			case SpecialsBag.CommentType.Documentation:
+				cmt.CommentType = CommentType.SingleLine;
+				cmt.IsDocumentation = true;
+				cmt.OpenTag = "///";
+				break;
 			}
+			cmt.Region = new DomRegion (comment.Line, comment.Col, comment.EndLine, comment.EndCol);
+			result.Comments.Add (cmt);
+		}
 
-			public object Visit (ICSharpCode.NRefactory.ISpecial special, object data)
-			{
-				return null;
-			}
+		Stack<SpecialsBag.PreProcessorDirective> regions = new Stack<SpecialsBag.PreProcessorDirective> ();
+		Stack<SpecialsBag.PreProcessorDirective> ifBlocks = new Stack<SpecialsBag.PreProcessorDirective> ();
+		List<SpecialsBag.PreProcessorDirective> elifBlocks = new List<SpecialsBag.PreProcessorDirective> ();
+		SpecialsBag.PreProcessorDirective elseBlock = null;
 
-			public object Visit (ICSharpCode.NRefactory.BlankLine special, object data)
-			{
-				return null;
-			}
-
-			public object Visit (ICSharpCode.NRefactory.Comment comment, object data)
-			{
-				MonoDevelop.Projects.Dom.Comment newComment = new MonoDevelop.Projects.Dom.Comment ();
-				newComment.CommentStartsLine = comment.CommentStartsLine;
-				newComment.Text = comment.CommentText;
-				int commentTagLength = comment.CommentType == ICSharpCode.NRefactory.CommentType.Documentation ? 3 : 2;
-				int commentEndOffset = comment.CommentType == ICSharpCode.NRefactory.CommentType.Block ? 0 : 1;
-				newComment.Region = new DomRegion (comment.StartPosition.Line, comment.StartPosition.Column - commentTagLength, 
-					comment.EndPosition.Line, comment.EndPosition.Column - commentEndOffset);
-				
-				switch (comment.CommentType) {
-				case ICSharpCode.NRefactory.CommentType.Block:
-					newComment.CommentType = MonoDevelop.Projects.Dom.CommentType.MultiLine;
-					break;
-				case ICSharpCode.NRefactory.CommentType.Documentation:
-					newComment.CommentType = MonoDevelop.Projects.Dom.CommentType.SingleLine;
-					newComment.IsDocumentation = true;
-					break;
-				default:
-					newComment.CommentType = MonoDevelop.Projects.Dom.CommentType.SingleLine;
-					break;
-				}
-
-				result.Add (newComment);
-				return null;
-			}
-
-			Stack<ICSharpCode.NRefactory.PreprocessingDirective> regions = new Stack<ICSharpCode.NRefactory.PreprocessingDirective> ();
-			Stack<ICSharpCode.NRefactory.PreprocessingDirective> ifBlocks = new Stack<ICSharpCode.NRefactory.PreprocessingDirective> ();
-			List<ICSharpCode.NRefactory.PreprocessingDirective> elifBlocks = new List<ICSharpCode.NRefactory.PreprocessingDirective> ();
-			ICSharpCode.NRefactory.PreprocessingDirective elseBlock = null;
-
-			Stack<ConditionalRegion> conditionalRegions = new Stack<ConditionalRegion> ();
-			ConditionalRegion ConditionalRegion {
-				get {
-					return conditionalRegions.Count > 0 ? conditionalRegions.Peek () : null;
-				}
-			}
-
-			void CloseConditionBlock (DomLocation loc)
-			{
-				if (ConditionalRegion == null || ConditionalRegion.ConditionBlocks.Count == 0 || !ConditionalRegion.ConditionBlocks[ConditionalRegion.ConditionBlocks.Count - 1].End.IsEmpty)
-					return;
-				ConditionalRegion.ConditionBlocks[ConditionalRegion.ConditionBlocks.Count - 1].End = loc;
-			}
-
-			void AddCurRegion (ICSharpCode.NRefactory.Location loc)
-			{
-				if (ConditionalRegion == null)
-					return;
-				ConditionalRegion.End = new DomLocation (loc.Line, loc.Column);
-				result.Add (ConditionalRegion);
-				conditionalRegions.Pop ();
-			}
-
-			static ICSharpCode.NRefactory.PrettyPrinter.CSharpOutputVisitor visitor = new ICSharpCode.NRefactory.PrettyPrinter.CSharpOutputVisitor ();
-
-			public object Visit (ICSharpCode.NRefactory.PreprocessingDirective directive, object data)
-			{
-				DomLocation loc = new DomLocation (directive.StartPosition.Line, directive.StartPosition.Column);
-				switch (directive.Cmd) {
-				case "#if":
-					directive.Expression.AcceptVisitor (visitor, null);
-					conditionalRegions.Push (new ConditionalRegion (visitor.Text));
-					visitor.Reset ();
-					ifBlocks.Push (directive);
-					ConditionalRegion.Start = loc;
-					break;
-				case "#elif":
-					CloseConditionBlock (new DomLocation (directive.LastLineEnd.Line, directive.LastLineEnd.Column));
-					directive.Expression.AcceptVisitor (visitor, null);
-					if (ConditionalRegion != null)
-						ConditionalRegion.ConditionBlocks.Add (new ConditionBlock (visitor.Text, loc));
-					visitor.Reset ();
-					//						elifBlocks.Add (directive);
-					break;
-				case "#else":
-					CloseConditionBlock (new DomLocation (directive.LastLineEnd.Line, directive.LastLineEnd.Column));
-					if (ConditionalRegion != null)
-						ConditionalRegion.ElseBlock = new DomRegion (loc, DomLocation.Empty);
-					//						elseBlock = directive;
-					break;
-				case "#endif":
-					DomLocation endLoc = new DomLocation (directive.LastLineEnd.Line, directive.LastLineEnd.Column);
-					CloseConditionBlock (endLoc);
-					if (ConditionalRegion != null && !ConditionalRegion.ElseBlock.Start.IsEmpty)
-						ConditionalRegion.ElseBlock = new DomRegion (ConditionalRegion.ElseBlock.Start, endLoc);
-					AddCurRegion (directive.EndPosition);
-					if (ifBlocks.Count > 0) {
-						ICSharpCode.NRefactory.PreprocessingDirective ifBlock = ifBlocks.Pop ();
-						DomRegion dr = new DomRegion (ifBlock.StartPosition.Line, ifBlock.StartPosition.Column, directive.EndPosition.Line, directive.EndPosition.Column);
-						result.Add (new FoldingRegion ("#if " + ifBlock.Arg.Trim (), dr, FoldType.UserRegion, false));
-						foreach (ICSharpCode.NRefactory.PreprocessingDirective d in elifBlocks) {
-							dr.Start = new DomLocation (d.StartPosition.Line, d.StartPosition.Column);
-							result.Add (new FoldingRegion ("#elif " + ifBlock.Arg.Trim (), dr, FoldType.UserRegion, false));
-						}
-						if (elseBlock != null) {
-							dr.Start = new DomLocation (elseBlock.StartPosition.Line, elseBlock.StartPosition.Column);
-							result.Add (new FoldingRegion ("#else", dr, FoldType.UserRegion, false));
-						}
-					}
-					elseBlock = null;
-					break;
-				case "#define":
-					result.Add (new PreProcessorDefine (directive.Arg, loc));
-					break;
-				case "#region":
-					regions.Push (directive);
-					break;
-				case "#endregion":
-					if (regions.Count > 0) {
-						ICSharpCode.NRefactory.PreprocessingDirective start = regions.Pop ();
-						DomRegion dr = new DomRegion (start.StartPosition.Line, start.StartPosition.Column, directive.EndPosition.Line, directive.EndPosition.Column);
-						result.Add (new FoldingRegion (start.Arg, dr, FoldType.UserRegion, true));
-					}
-					break;
-				}
-				return null;
+		Stack<ConditionalRegion> conditionalRegions = new Stack<ConditionalRegion> ();
+		ConditionalRegion ConditionalRegion {
+			get {
+				return conditionalRegions.Count > 0 ? conditionalRegions.Peek () : null;
 			}
 		}
 
+		void CloseConditionBlock (DomLocation loc)
+		{
+			if (ConditionalRegion == null || ConditionalRegion.ConditionBlocks.Count == 0 || !ConditionalRegion.ConditionBlocks[ConditionalRegion.ConditionBlocks.Count - 1].End.IsEmpty)
+				return;
+			ConditionalRegion.ConditionBlocks[ConditionalRegion.ConditionBlocks.Count - 1].End = loc;
+		}
+
+		void AddCurRegion (ParsedDocument result, int line, int col)
+		{
+			if (ConditionalRegion == null)
+				return;
+			ConditionalRegion.End = new DomLocation (line, col);
+			result.Add (ConditionalRegion);
+			conditionalRegions.Pop ();
+		}
+
+		static ICSharpCode.NRefactory.PrettyPrinter.CSharpOutputVisitor visitor = new ICSharpCode.NRefactory.PrettyPrinter.CSharpOutputVisitor ();
+
+		void VisitPreprocessorDirective (ParsedDocument result, SpecialsBag.PreProcessorDirective directive)
+		{
+			DomLocation loc = new DomLocation (directive.Line, directive.Col);
+			switch (directive.Cmd) {
+			case Tokenizer.PreprocessorDirective.If:
+				conditionalRegions.Push (new ConditionalRegion (visitor.Text));
+				ifBlocks.Push (directive);
+				ConditionalRegion.Start = loc;
+				break;
+			case Tokenizer.PreprocessorDirective.Elif:
+				CloseConditionBlock (new DomLocation (directive.EndLine, directive.EndCol));
+				if (ConditionalRegion != null)
+					ConditionalRegion.ConditionBlocks.Add (new ConditionBlock (visitor.Text, loc));
+				break;
+			case Tokenizer.PreprocessorDirective.Else:
+				CloseConditionBlock (new DomLocation (directive.EndLine, directive.EndCol));
+				if (ConditionalRegion != null)
+					ConditionalRegion.ElseBlock = new DomRegion (loc, DomLocation.Empty);
+				break;
+			case Tokenizer.PreprocessorDirective.Endif:
+				DomLocation endLoc = new DomLocation (directive.EndLine, directive.EndCol);
+				CloseConditionBlock (endLoc);
+				if (ConditionalRegion != null && !ConditionalRegion.ElseBlock.Start.IsEmpty)
+					ConditionalRegion.ElseBlock = new DomRegion (ConditionalRegion.ElseBlock.Start, endLoc);
+				AddCurRegion (result, directive.EndLine, directive.EndCol);
+				if (ifBlocks.Count > 0) {
+					var ifBlock = ifBlocks.Pop ();
+					DomRegion dr = new DomRegion (ifBlock.Line, ifBlock.Col, directive.EndLine, directive.EndCol);
+					result.Add (new FoldingRegion ("#if " + ifBlock.Arg.Trim (), dr, FoldType.UserRegion, false));
+					foreach (var d in elifBlocks) {
+						dr.Start = new DomLocation (d.Line, d.Col);
+						result.Add (new FoldingRegion ("#elif " + ifBlock.Arg.Trim (), dr, FoldType.UserRegion, false));
+					}
+					if (elseBlock != null) {
+						dr.Start = new DomLocation (elseBlock.Line, elseBlock.Col);
+						result.Add (new FoldingRegion ("#else", dr, FoldType.UserRegion, false));
+					}
+				}
+				elseBlock = null;
+				break;
+			case Tokenizer.PreprocessorDirective.Define:
+				result.Add (new PreProcessorDefine (directive.Arg, loc));
+				break;
+			case Tokenizer.PreprocessorDirective.Region:
+				regions.Push (directive);
+				break;
+			case Tokenizer.PreprocessorDirective.Endregion:
+				if (regions.Count > 0) {
+					var start = regions.Pop ();
+					DomRegion dr = new DomRegion (start.Line, start.Col, directive.EndLine, directive.EndCol);
+					result.Add (new FoldingRegion (start.Arg, dr, FoldType.UserRegion, true));
+				}
+				break;
+			}
+		}
 		
 		class ConversionVisitor : StructuralVisitor
 		{
@@ -304,29 +251,30 @@ namespace MonoDevelop.CSharp.Parser
 				private set;
 			}
 			
-			internal MonoDevelop.Projects.Dom.CompilationUnit Unit;
-			public ConversionVisitor (LocationsBag locationsBag, List<ICSharpCode.NRefactory.ISpecial> specials)
-			{
-				this.LocationsBag = locationsBag;
-				this.specials = specials;
+			public MonoDevelop.Projects.Dom.CompilationUnit Unit {
+				get;
+				set;
 			}
 			
-			int lastSpecial = 0;
-			List<ICSharpCode.NRefactory.ISpecial> specials;
+			public ConversionVisitor (LocationsBag locationsBag)
+			{
+				this.LocationsBag = locationsBag;
+			}
+			
+			int lastComment = 0;
 			string RetrieveDocumentation (int upToLine)
 			{
 				StringBuilder result = null;
-				while (lastSpecial < specials.Count) {
-					var cur = specials[lastSpecial];
-					if (cur.StartPosition.Line >= upToLine)
+				while (lastComment < ParsedDocument.Comments.Count) {
+					var cur = ParsedDocument.Comments[lastComment];
+					if (cur.Region.Start.Line >= upToLine)
 						break;
-					ICSharpCode.NRefactory.Comment comment = cur as ICSharpCode.NRefactory.Comment;
-					if (comment != null && comment.CommentType == ICSharpCode.NRefactory.CommentType.Documentation) {
+					if (cur.IsDocumentation) {
 						if (result == null)
 							result = new StringBuilder ();
-						result.Append (comment.CommentText);
+						result.Append (cur.Text);
 					}
-					lastSpecial++;
+					lastComment++;
 				}
 				return result == null ? null : result.ToString ();
 			}

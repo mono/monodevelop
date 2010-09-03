@@ -143,7 +143,7 @@ namespace Mono.CSharp
 			}
 		}
 
-		enum PreprocessorDirective
+		public enum PreprocessorDirective
 		{
 			Invalid = 0,
 
@@ -254,7 +254,10 @@ namespace Mono.CSharp
 		bool any_token_seen = false;
 
 		static readonly char[] simple_whitespaces = new char[] { ' ', '\t' };
-
+		
+		bool startsLine = true;
+		internal SpecialsBag sbag;
+		
 		public bool PropertyParsing {
 			get { return handle_get_set; }
 			set { handle_get_set = value; }
@@ -1689,6 +1692,7 @@ namespace Mono.CSharp
 			ref_line++;
 			previous_col = col;
 			col = 0;
+			startsLine = true;
 		}
 
 		int peek_char ()
@@ -1749,15 +1753,23 @@ namespace Mono.CSharp
 
 		int TokenizePreprocessorIdentifier (out int c)
 		{
+			int endLine, endCol;
+			return TokenizePreprocessorIdentifier (out c, out endLine, out endCol);
+		}
+
+		int TokenizePreprocessorIdentifier (out int c, out int endLine, out int endCol)
+		{
 			// skip over white space
 			do {
 				c = get_char ();
 			} while (c == '\r' || c == ' ' || c == '\t');
 
-
+			endLine = line;
+			endCol = col;
 			int pos = 0;
 			while (c != -1 && c >= 'a' && c <= 'z') {
 				id_builder[pos++] = (char) c;
+				endCol = col + 1;
 				c = get_char ();
 				if (c == '\\') {
 					int peek = peek_char ();
@@ -1779,15 +1791,20 @@ namespace Mono.CSharp
 
 		PreprocessorDirective get_cmd_arg (out string arg)
 		{
-			int c;		
+			int c;
+			int startLine = line, startCol = col;
 
 			tokens_seen = false;
 			arg = "";
-
-			var cmd = GetPreprocessorDirective (id_builder, TokenizePreprocessorIdentifier (out c));
-
-			if ((cmd & PreprocessorDirective.CustomArgumentsParsing) != 0)
+			
+			int endLine, endCol;
+			var cmd = GetPreprocessorDirective (id_builder, TokenizePreprocessorIdentifier (out c, out endLine, out endCol));
+			
+			if ((cmd & PreprocessorDirective.CustomArgumentsParsing) != 0) {
+				sbag.AddPreProcessorDirective (startLine, startCol, line, col, cmd, null);
 				return cmd;
+			}
+			
 
 			// skip over white space
 			while (c == '\r' || c == ' ' || c == '\t')
@@ -1795,7 +1812,6 @@ namespace Mono.CSharp
 
 			static_cmd_arg.Length = 0;
 			int has_identifier_argument = (int)(cmd & PreprocessorDirective.RequiresArgument);
-
 			while (c != -1 && c != '\n' && c != '\r') {
 				if (c == '\\' && has_identifier_argument >= 0) {
 					if (has_identifier_argument != 0) {
@@ -1816,6 +1832,8 @@ namespace Mono.CSharp
 					}
 				}
 				static_cmd_arg.Append ((char) c);
+				endLine = line;
+				endCol = col;
 				c = get_char ();
 			}
 
@@ -1829,6 +1847,7 @@ namespace Mono.CSharp
 
 				arg = arg.Trim (simple_whitespaces);
 			}
+			sbag.AddPreProcessorDirective (startLine, startCol, endLine, endCol, cmd, arg);
 
 			return cmd;
 		}
@@ -2119,16 +2138,21 @@ namespace Mono.CSharp
 
 			return number;
 		}
-
+		
+		
 		void ReadSingleLineComment ()
 		{
 			if (peek_char () != '/')
 				Report.Warning (1696, 1, Location, "Single-line comment or end-of-line expected");
-
+			sbag.StartComment (SpecialsBag.CommentType.Single, startsLine, line, col - 1);
 			// Read everything till the end of the line or file
 			int c;
 			do {
 				c = get_char ();
+				sbag.PushCommentChar (c);
+				var pc = peek_char ();
+				if (pc == '\n' || pc == -1) 
+					sbag.EndComment (line, col + 1);
 			} while (c != -1 && c != '\n');
 		}
 
@@ -2646,7 +2670,7 @@ namespace Mono.CSharp
 
 			if (doc_state == XmlCommentState.Allowed)
 				doc_state = XmlCommentState.NotAllowed;
-
+			startsLine = false;
 			return res;
 		}
 
@@ -3028,32 +3052,52 @@ namespace Mono.CSharp
 					// Handle double-slash comments.
 					if (d == '/'){
 						get_char ();
+						bool commentEnded = false;
 						if (RootContext.Documentation != null && peek_char () == '/') {
+							sbag.StartComment (SpecialsBag.CommentType.Documentation, startsLine, line, col - 1);
 							get_char ();
 							// Don't allow ////.
 							if ((d = peek_char ()) != '/') {
+								sbag.PushCommentChar (d);
 								update_comment_location ();
 								if (doc_state == XmlCommentState.Allowed)
 									handle_one_line_xml_comment ();
 								else if (doc_state == XmlCommentState.NotAllowed)
 									warn_incorrect_doc_comment ();
 							}
+						} else {
+							bool isDoc = peek_char () == '/';
+							sbag.StartComment (isDoc ? SpecialsBag.CommentType.Documentation : SpecialsBag.CommentType.Single, startsLine, line, col - 1);
+							if (isDoc)
+								get_char ();
 						}
-						while ((d = get_char ()) != -1 && (d != '\n') && d != '\r');
-
+						while ((d = get_char ()) != -1 && (d != '\n') && d != '\r') {
+							sbag.PushCommentChar (d);
+							var pc = peek_char ();
+							if (pc == -1 || pc == '\n' || pc == '\r') {
+								sbag.EndComment (line, col + 1);
+								commentEnded = true;
+							}
+						}
+						if (!commentEnded)
+							sbag.EndComment (line, col + 1);
 						any_token_seen |= tokens_seen;
 						tokens_seen = false;
 						comments_seen = false;
 						continue;
 					} else if (d == '*'){
+						sbag.StartComment (SpecialsBag.CommentType.Multi, startsLine, line, col);
 						get_char ();
 						bool docAppend = false;
 						if (RootContext.Documentation != null && peek_char () == '*') {
-							get_char ();
+							int ch = get_char ();
+							sbag.PushCommentChar (ch);
 							update_comment_location ();
 							// But when it is /**/, just do nothing.
 							if (peek_char () == '/') {
-								get_char ();
+								ch = get_char ();
+								sbag.PushCommentChar (ch);
+								sbag.EndComment (line, col + 1);
 								continue;
 							}
 							if (doc_state == XmlCommentState.Allowed)
@@ -3069,8 +3113,11 @@ namespace Mono.CSharp
 						}
 
 						while ((d = get_char ()) != -1){
+							sbag.PushCommentChar (d);
 							if (d == '*' && peek_char () == '/'){
+								sbag.PushCommentChar ('/');
 								get_char ();
+								sbag.EndComment (line, col + 1);
 								comments_seen = true;
 								break;
 							}
@@ -3087,6 +3134,7 @@ namespace Mono.CSharp
 								comments_seen = false;
 							}
 						}
+						
 						if (!comments_seen)
 							Report.Error (1035, Location, "End-of-file found, '*/' expected");
 
@@ -3320,9 +3368,12 @@ namespace Mono.CSharp
 		private void handle_one_line_xml_comment ()
 		{
 			int c;
-			while ((c = peek_char ()) == ' ')
+			while ((c = peek_char ()) == ' ') {
+				sbag.PushCommentChar (c);
 				get_char (); // skip heading whitespaces.
+			}
 			while ((c = peek_char ()) != -1 && c != '\n' && c != '\r') {
+				sbag.PushCommentChar (c);
 				xml_comment_buffer.Append ((char) get_char ());
 			}
 			if (c == '\r' || c == '\n')
