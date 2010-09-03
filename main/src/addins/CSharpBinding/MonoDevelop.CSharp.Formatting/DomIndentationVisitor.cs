@@ -82,9 +82,11 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			FixIndentation (namespaceDeclaration.StartLocation);
 			EnforceBraceStyle (policy.NamespaceBraceStyle, namespaceDeclaration.LBrace, namespaceDeclaration.RBrace);
-			IndentLevel++;
+			if (policy.IndentNamespaceBody)
+				IndentLevel++;
 			object result = base.VisitNamespaceDeclaration (namespaceDeclaration, data);
-			IndentLevel--;
+			if (policy.IndentNamespaceBody)
+				IndentLevel--;
 			FixIndentation (namespaceDeclaration.EndLocation);
 			return result;
 		}
