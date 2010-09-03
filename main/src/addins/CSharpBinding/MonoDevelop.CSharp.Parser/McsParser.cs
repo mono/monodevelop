@@ -687,19 +687,44 @@ namespace MonoDevelop.CSharp.Parser
 				AddAttributes (field, f.OptAttributes);
 				field.DeclaringType = typeStack.Peek ();
 				typeStack.Peek ().Add (field);
+				if (f.Declarators != null) {
+					foreach (var decl in f.Declarators) {
+						field = new DomField ();
+						field.Name = decl.Name.Value;
+						field.Location = Convert (decl.Name.Location);
+						field.Modifiers = ConvertModifiers (f.ModFlags) | MonoDevelop.Projects.Dom.Modifiers.Fixed;
+						field.ReturnType = ConvertReturnType (f.TypeName);
+						AddAttributes (field, f.OptAttributes);
+						field.DeclaringType = typeStack.Peek ();
+						typeStack.Peek ().Add (field);
+					}
+				}
 			}
 			
 			public override void Visit (Field f)
 			{
-				DomField field = new DomField ();
+				var field = new DomField ();
 				field.Name = f.MemberName.Name;
 				field.Documentation = RetrieveDocumentation (f.Location.Row);
 				field.Location = Convert (f.MemberName.Location);
-				field.Modifiers = ConvertModifiers (f.ModFlags) | MonoDevelop.Projects.Dom.Modifiers.Fixed;
+				field.Modifiers = ConvertModifiers (f.ModFlags);
 				field.ReturnType = ConvertReturnType (f.TypeName);
 				AddAttributes (field, f.OptAttributes);
 				field.DeclaringType = typeStack.Peek ();
 				typeStack.Peek ().Add (field);
+				
+				if (f.Declarators != null) {
+					foreach (var decl in f.Declarators) {
+						field = new DomField ();
+						field.Name = decl.Name.Value;
+						field.Location = Convert (decl.Name.Location);
+						field.Modifiers = ConvertModifiers (f.ModFlags);
+						field.ReturnType = ConvertReturnType (f.TypeName);
+						AddAttributes (field, f.OptAttributes);
+						field.DeclaringType = typeStack.Peek ();
+						typeStack.Peek ().Add (field);
+					}
+				}
 			}
 			
 			public override void Visit (Const f)
@@ -708,11 +733,23 @@ namespace MonoDevelop.CSharp.Parser
 				field.Name = f.MemberName.Name;
 				field.Documentation = RetrieveDocumentation (f.Location.Row);
 				field.Location = Convert (f.MemberName.Location);
-				field.Modifiers = ConvertModifiers (f.ModFlags) | MonoDevelop.Projects.Dom.Modifiers.Fixed;
+				field.Modifiers = ConvertModifiers (f.ModFlags) | MonoDevelop.Projects.Dom.Modifiers.Const;
 				field.ReturnType = ConvertReturnType (f.TypeName);
 				AddAttributes (field, f.OptAttributes);
 				field.DeclaringType = typeStack.Peek ();
 				typeStack.Peek ().Add (field);
+				if (f.Declarators != null) {
+					foreach (var decl in f.Declarators) {
+						field = new DomField ();
+						field.Name = decl.Name.Value;
+						field.Location = Convert (decl.Name.Location);
+						field.Modifiers = ConvertModifiers (f.ModFlags) | MonoDevelop.Projects.Dom.Modifiers.Const;
+						field.ReturnType = ConvertReturnType (f.TypeName);
+						AddAttributes (field, f.OptAttributes);
+						field.DeclaringType = typeStack.Peek ();
+						typeStack.Peek ().Add (field);
+					}
+				}
 			}
 			
 			void AddExplicitInterfaces (MonoDevelop.Projects.Dom.AbstractMember member, InterfaceMemberBase mcsMember)
@@ -724,7 +761,7 @@ namespace MonoDevelop.CSharp.Parser
 
 			public override void Visit (EventField e)
 			{
-				DomEvent evt = new DomEvent ();
+				var evt = new DomEvent ();
 				evt.Name = e.MemberName.Name;
 				evt.Documentation = RetrieveDocumentation (e.Location.Row);
 				evt.Location = Convert (e.MemberName.Location);
@@ -734,6 +771,18 @@ namespace MonoDevelop.CSharp.Parser
 				AddExplicitInterfaces (evt, e);
 				evt.DeclaringType = typeStack.Peek ();
 				typeStack.Peek ().Add (evt);
+				if (e.Declarators != null) {
+					foreach (var decl in e.Declarators) {
+						evt = new DomEvent ();
+						evt.Name = decl.Name.Value;
+						evt.Location = Convert (decl.Name.Location);
+						evt.Modifiers = ConvertModifiers (e.ModFlags);
+						evt.ReturnType = ConvertReturnType (e.TypeName);
+						AddAttributes (evt, e.OptAttributes);
+						evt.DeclaringType = typeStack.Peek ();
+						typeStack.Peek ().Add (evt);
+					}
+				}
 			}
 			
 			public override void Visit (EventProperty e)

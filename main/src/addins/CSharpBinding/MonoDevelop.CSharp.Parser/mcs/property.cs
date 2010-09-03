@@ -979,6 +979,12 @@ namespace Mono.CSharp
 			}
 		}
 
+		public List<FieldDeclarator> Declarators {
+			get {
+				return this.declarators;
+			}
+		}
+
 		#endregion
 
 		public void AddDeclarator (FieldDeclarator declarator)
