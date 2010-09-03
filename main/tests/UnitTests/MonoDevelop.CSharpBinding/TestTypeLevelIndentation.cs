@@ -347,7 +347,6 @@ set {
 		
 		
 		[Test()]
-		[Ignore("currently failing because namespaces are not inserted")]
 		public void TestIndentNamespaceBody ()
 		{
 			TextEditorData data = new TextEditorData ();
@@ -359,6 +358,7 @@ class FooBar {}
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.ClassBraceStyle =  BraceStyle.DoNotChange;
+			policy.NamespaceBraceStyle = BraceStyle.EndOfLine;
 			policy.IndentNamespaceBody = true;
 			
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
