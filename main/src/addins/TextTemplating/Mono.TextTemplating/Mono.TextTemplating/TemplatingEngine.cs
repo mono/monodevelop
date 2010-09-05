@@ -65,6 +65,7 @@ namespace Mono.TextTemplating
 			}
 			settings.Name = className;
 			settings.Namespace = classNamespace;
+			settings.IncludePreprocessingHelpers = string.IsNullOrEmpty (settings.Inherits);
 			language = settings.Language;
 			
 			var ccu = GenerateCompileUnit (host, content, pt, settings);
@@ -351,7 +352,7 @@ namespace Mono.TextTemplating
 			type.IsPartial = true;
 			if (!string.IsNullOrEmpty (settings.Inherits))
 				type.BaseTypes.Add (new CodeTypeReference (settings.Inherits));
-			else
+			else if (!settings.IncludePreprocessingHelpers)
 				type.BaseTypes.Add (new CodeTypeReference (typeof (TextTransformation)));
 			namespac.Types.Add (type);
 			
@@ -359,8 +360,10 @@ namespace Mono.TextTemplating
 			var transformMeth = new CodeMemberMethod () {
 				Name = "TransformText",
 				ReturnType = new CodeTypeReference (typeof (String)),
-				Attributes = MemberAttributes.Public | MemberAttributes.Override
+				Attributes = MemberAttributes.Public,
 			};
+			if (!settings.IncludePreprocessingHelpers)
+				transformMeth.Attributes |= MemberAttributes.Override;
 			
 			//method references that will need to be used multiple times
 			var writeMeth = new CodeMethodReferenceExpression (new CodeThisReferenceExpression (), "Write");
@@ -409,13 +412,6 @@ namespace Mono.TextTemplating
 				}
 			}
 			
-			//class code from processors
-			foreach (var processor in settings.DirectiveProcessors.Values) {
-				string classCode = processor.GetClassCodeForProcessingRun ();
-				if (classCode != null)
-					type.Members.Add (new CodeSnippetTypeMember (classCode));
-			}
-			
 			//complete the transform method
 			transformMeth.Statements.Add (new CodeMethodReturnStatement (
 				new CodeMethodInvokeExpression (
@@ -425,31 +421,76 @@ namespace Mono.TextTemplating
 						"ToString")));
 			type.Members.Add (transformMeth);
 			
-			//generate the Host property if needed
-			if (settings.HostSpecific) {
-				var hostField = new CodeMemberField (new CodeTypeReference (typeof (ITextTemplatingEngineHost)), "hostValue");
-				hostField.Attributes = (hostField.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Private;
-				type.Members.Add (hostField);
-				
-				var hostProp = new CodeMemberProperty () {
-					Name = "Host",
-					Attributes = MemberAttributes.Public,
-					HasGet = true,
-					HasSet = true,
-					Type = hostField.Type
-				};
-				var hostFieldRef = new CodeFieldReferenceExpression (new CodeThisReferenceExpression (), "hostValue");
-				hostProp.SetStatements.Add (new CodeAssignStatement (hostFieldRef, new CodePropertySetValueReferenceExpression ()));
-				hostProp.GetStatements.Add (new CodeMethodReturnStatement (hostFieldRef));
-				type.Members.Add (hostProp);
+			//class code from processors
+			foreach (var processor in settings.DirectiveProcessors.Values) {
+				string classCode = processor.GetClassCodeForProcessingRun ();
+				if (classCode != null)
+					type.Members.Add (new CodeSnippetTypeMember (classCode));
 			}
 			
+			//generate the Host property if needed
+			if (settings.HostSpecific) {
+				GenerateHostProperty (type, settings);
+			}
+			
+			GenerateInitializationMethod (type, settings);
+			
+			if (settings.IncludePreprocessingHelpers)
+				GenerateProcessingHelpers (type, settings);
+			
+			return ccu;
+		}
+		
+		static void GenerateHostProperty (CodeTypeDeclaration type, TemplateSettings settings)
+		{
+			var hostField = new CodeMemberField (new CodeTypeReference (typeof (ITextTemplatingEngineHost)), "hostValue");
+			hostField.Attributes = (hostField.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Private;
+			type.Members.Add (hostField);
+			
+			var hostProp = GenerateGetterSetterProperty ("Host", hostField);
+			hostProp.Attributes = MemberAttributes.Public | MemberAttributes.Final;
+			type.Members.Add (hostProp);
+		}
+		
+		static CodeMemberProperty GenerateGetterSetterProperty (string propertyName, CodeMemberField field)
+		{
+			var prop = new CodeMemberProperty () {
+				Name = propertyName,
+				Attributes = MemberAttributes.Public | MemberAttributes.Final,
+				HasGet = true,
+				HasSet = true,
+				Type = field.Type
+			};
+			var fieldRef = new CodeFieldReferenceExpression (new CodeThisReferenceExpression (), field.Name);
+			prop.SetStatements.Add (new CodeAssignStatement (fieldRef, new CodePropertySetValueReferenceExpression ()));
+			prop.GetStatements.Add (new CodeMethodReturnStatement (fieldRef));
+			return prop;
+		}
+		
+		static CodeMemberProperty GenerateGetterProperty (string propertyName, CodeMemberField field)
+		{
+			var prop = new CodeMemberProperty () {
+				Name = propertyName,
+				Attributes = MemberAttributes.Public | MemberAttributes.Final,
+				HasGet = true,
+				HasSet = false,
+				Type = field.Type
+			};
+			var fieldRef = new CodeFieldReferenceExpression (new CodeThisReferenceExpression (), field.Name);
+			prop.GetStatements.Add (new CodeMethodReturnStatement (fieldRef));
+			return prop;
+		}
+		
+		static void GenerateInitializationMethod (CodeTypeDeclaration type, TemplateSettings settings)
+		{
 			//initialization method
 			var initializeMeth = new CodeMemberMethod () {
 				Name = "Initialize",
 				ReturnType = new CodeTypeReference (typeof (void)),
-				Attributes = MemberAttributes.Family | MemberAttributes.Override
+				Attributes = MemberAttributes.Family 
 			};
+			if (!settings.IncludePreprocessingHelpers)
+				initializeMeth.Attributes |= MemberAttributes.Override;
 			
 			//pre-init code from processors
 			foreach (var processor in settings.DirectiveProcessors.Values) {
@@ -459,11 +500,13 @@ namespace Mono.TextTemplating
 			}
 			
 			//base call
-			initializeMeth.Statements.Add (new CodeExpressionStatement (
-				new CodeMethodInvokeExpression (
-					new CodeMethodReferenceExpression (
-						new CodeBaseReferenceExpression (),
-						"Initialize"))));
+			if (!settings.IncludePreprocessingHelpers) {
+				initializeMeth.Statements.Add (
+					new CodeMethodInvokeExpression (
+						new CodeMethodReferenceExpression (
+							new CodeBaseReferenceExpression (),
+							"Initialize")));
+			}
 			
 			//post-init code from processors
 			foreach (var processor in settings.DirectiveProcessors.Values) {
@@ -473,8 +516,190 @@ namespace Mono.TextTemplating
 			}
 			
 			type.Members.Add (initializeMeth);
+		}
+		
+		static CodeStatement ArgNullCheck (CodeExpression value, params CodeExpression[] argNullExcArgs)
+		{
+			return new CodeConditionStatement (
+				new CodeBinaryOperatorExpression (value,
+					CodeBinaryOperatorType.ValueEquality, new CodePrimitiveExpression (null)),
+				new CodeThrowExceptionStatement (new CodeObjectCreateExpression (typeof (ArgumentNullException), argNullExcArgs)));
+		}
+		
+		static void GenerateProcessingHelpers (CodeTypeDeclaration type, TemplateSettings settings)
+		{
+			var thisRef = new CodeThisReferenceExpression ();
+			var stringTypeRef = new CodeTypeReference (typeof (string));
+			var intTypeRef = new CodeTypeReference (typeof (int));
+			var nullPrim = new CodePrimitiveExpression (null);
+			var minusOnePrim = new CodePrimitiveExpression (-1);
+			var zeroPrim = new CodePrimitiveExpression (0);
+			var stringEmptyRef = new CodeFieldReferenceExpression (new CodeTypeReferenceExpression (typeof (string)), "Empty");
 			
-			return ccu;
+			var indentsFieldName = settings.Provider.CreateValidIdentifier ("__indents");
+			var currentIndentFieldName = settings.Provider.CreateValidIdentifier ("__currentIndent");
+			var errorsFieldName = settings.Provider.CreateValidIdentifier ("__errors");
+			var builderFieldName = settings.Provider.CreateValidIdentifier ("__builder");
+			var sessionFieldName = settings.Provider.CreateValidIdentifier ("__session");
+			
+			var indentsField = new CodeMemberField (new CodeTypeReference (typeof (Stack<int>)), indentsFieldName) {
+				Attributes = MemberAttributes.Private,
+			};
+			var currentIndentField = new CodeMemberField (stringTypeRef, currentIndentFieldName) {
+				Attributes = MemberAttributes.Private,
+			};
+			var errorsField = new CodeMemberField (new CodeTypeReference (typeof (CompilerErrorCollection)), errorsFieldName) {
+				Attributes = MemberAttributes.Private,
+			};
+			var builderField = new CodeMemberField (new CodeTypeReference (typeof (StringBuilder)), builderFieldName) {
+				Attributes = MemberAttributes.Private,
+			};
+			var sessionField = new CodeMemberField (new CodeTypeReference (typeof (IDictionary<string,object>)), sessionFieldName) {
+				Attributes = MemberAttributes.Private,
+			};
+			
+			indentsField.InitExpression = new CodeObjectCreateExpression (indentsField.Type);
+			currentIndentField.InitExpression = stringEmptyRef;
+			errorsField.InitExpression = new CodeObjectCreateExpression (errorsField.Type);
+			builderField.InitExpression = new CodeObjectCreateExpression (builderField.Type);
+			
+			var indentsFieldRef = new CodeFieldReferenceExpression (thisRef, indentsFieldName);
+			var currentIndentFieldRef = new CodeFieldReferenceExpression (thisRef, currentIndentFieldName);
+			var errorsFieldRef = new CodeFieldReferenceExpression (thisRef, errorsFieldName);
+			var builderFieldRef = new CodeFieldReferenceExpression (thisRef, builderFieldName);
+			
+			var sessionProp = GenerateGetterSetterProperty ("Session", sessionField);
+			sessionProp.Attributes = MemberAttributes.Public;
+			
+			var compilerErrorTypeRef = new CodeTypeReference (typeof (CompilerError));
+			var errorMeth = new CodeMemberMethod () {
+				Name = "Error",
+				Attributes = MemberAttributes.Public | MemberAttributes.Final,
+			};
+			errorMeth.Parameters.Add (new CodeParameterDeclarationExpression (stringTypeRef, "message"));
+			errorMeth.Statements.Add (new CodeMethodInvokeExpression (errorsFieldRef, "Add",
+				new CodeObjectCreateExpression (compilerErrorTypeRef, nullPrim, minusOnePrim, minusOnePrim, nullPrim,
+					new CodeArgumentReferenceExpression ("message"))));
+			
+			var warningMeth = new CodeMemberMethod () {
+				Name = "Warning",
+				Attributes = MemberAttributes.Public | MemberAttributes.Final,
+			};
+			warningMeth.Parameters.Add (new CodeParameterDeclarationExpression (stringTypeRef, "message"));
+			warningMeth.Statements.Add (new CodeVariableDeclarationStatement (compilerErrorTypeRef, "val",
+				new CodeObjectCreateExpression (compilerErrorTypeRef, nullPrim, minusOnePrim, minusOnePrim, nullPrim,
+					new CodeArgumentReferenceExpression ("message"))));
+			warningMeth.Statements.Add (new CodeAssignStatement (new CodePropertyReferenceExpression (
+				new CodeVariableReferenceExpression ("val"), "IsWarning"), new CodePrimitiveExpression (true)));
+			warningMeth.Statements.Add (new CodeMethodInvokeExpression (errorsFieldRef, "Add",
+				new CodeVariableReferenceExpression ("val")));
+			
+			var errorsProp = GenerateGetterProperty ("Errors", errorsField);
+			errorsProp.Attributes = MemberAttributes.Family | MemberAttributes.Final;
+			
+			var popIndentMeth = new CodeMemberMethod () {
+				Name = "PopIndent",
+				ReturnType = stringTypeRef,
+				Attributes = MemberAttributes.Public | MemberAttributes.Final,
+			};
+			popIndentMeth.Statements.Add (new CodeConditionStatement (
+				new CodeBinaryOperatorExpression (new CodePropertyReferenceExpression (indentsFieldRef, "Count"),
+					CodeBinaryOperatorType.ValueEquality, zeroPrim),
+				new CodeMethodReturnStatement (stringEmptyRef)));
+			popIndentMeth.Statements.Add (new CodeVariableDeclarationStatement (intTypeRef, "lastPos",
+				new CodeBinaryOperatorExpression (
+					new CodePropertyReferenceExpression (currentIndentFieldRef, "Length"),
+					CodeBinaryOperatorType.Subtract,
+					new CodeMethodInvokeExpression (indentsFieldRef, "Pop"))));
+			popIndentMeth.Statements.Add (new CodeVariableDeclarationStatement (stringTypeRef, "last",
+				new CodeMethodInvokeExpression (currentIndentFieldRef, "Substring", new CodeVariableReferenceExpression ("lastPos"))));
+			popIndentMeth.Statements.Add (new CodeAssignStatement (currentIndentFieldRef,
+				new CodeMethodInvokeExpression (currentIndentFieldRef, "Substring", zeroPrim, new CodeVariableReferenceExpression ("lastPos"))));
+			popIndentMeth.Statements.Add (new CodeMethodReturnStatement (new CodeVariableReferenceExpression ("last")));
+			
+			var pushIndentMeth = new CodeMemberMethod () {
+				Name = "PushIndent",
+				Attributes = MemberAttributes.Public | MemberAttributes.Final,
+			};
+			pushIndentMeth.Parameters.Add (new CodeParameterDeclarationExpression (stringTypeRef, "indent"));
+			pushIndentMeth.Statements.Add (new CodeMethodInvokeExpression (indentsFieldRef, "Push",
+				new CodePropertyReferenceExpression (new CodeArgumentReferenceExpression ("indent"), "Length")));
+			pushIndentMeth.Statements.Add (new CodeAssignStatement (currentIndentFieldRef,
+				new CodeBinaryOperatorExpression (currentIndentFieldRef, CodeBinaryOperatorType.Add, new CodeArgumentReferenceExpression ("indent"))));
+			
+			var clearIndentMeth = new CodeMemberMethod () {
+				Name = "ClearIndent",
+				Attributes = MemberAttributes.Public | MemberAttributes.Final,
+			};
+			clearIndentMeth.Statements.Add (new CodeAssignStatement (currentIndentFieldRef, stringEmptyRef));
+			clearIndentMeth.Statements.Add (new CodeMethodInvokeExpression (indentsFieldRef, "Clear"));
+			
+			var currentIndentProp = GenerateGetterProperty ("CurrentIndent", currentIndentField);
+			
+			var generationEnvironmentProp = GenerateGetterSetterProperty ("GenerationEnvironment", builderField);
+			generationEnvironmentProp.SetStatements.Insert (0, ArgNullCheck (new CodePropertySetValueReferenceExpression ()));
+			var genEnvPropRef = new CodePropertyReferenceExpression (thisRef, generationEnvironmentProp.Name);
+			
+			var textToAppendParam = new CodeParameterDeclarationExpression (stringTypeRef, "textToAppend");
+			var formatParam = new CodeParameterDeclarationExpression (stringTypeRef, "format");
+			var argsParam = new CodeParameterDeclarationExpression (typeof (object[]), "args");
+			argsParam.CustomAttributes.Add (new CodeAttributeDeclaration ("System.ParamArrayAttribute"));
+			
+			var textToAppendParamRef = new CodeArgumentReferenceExpression ("textToAppend");
+			var formatParamRef = new CodeArgumentReferenceExpression ("format");
+			var argsParamRef = new CodeArgumentReferenceExpression ("args");
+			
+			var writeMeth = new CodeMemberMethod () {
+				Name = "Write",
+				Attributes = MemberAttributes.Public | MemberAttributes.Final,
+			};
+			writeMeth.Parameters.Add (textToAppendParam);
+			writeMeth.Statements.Add (new CodeMethodInvokeExpression (genEnvPropRef, "Append", new CodeArgumentReferenceExpression ("textToAppend")));
+			
+			var writeArgsMeth = new CodeMemberMethod () {
+				Name = "Write",
+				Attributes = MemberAttributes.Public | MemberAttributes.Final,
+			};
+			writeArgsMeth.Parameters.Add (formatParam);
+			writeArgsMeth.Parameters.Add (argsParam);
+			writeArgsMeth.Statements.Add (new CodeMethodInvokeExpression (genEnvPropRef, "AppendFormat", formatParamRef, argsParamRef));
+			
+			var writeLineMeth = new CodeMemberMethod () {
+				Name = "WriteLine",
+				Attributes = MemberAttributes.Public | MemberAttributes.Final,
+			};
+			writeLineMeth.Parameters.Add (textToAppendParam);
+			writeLineMeth.Statements.Add (new CodeMethodInvokeExpression (genEnvPropRef, "Append", currentIndentFieldRef));
+			writeLineMeth.Statements.Add (new CodeMethodInvokeExpression (genEnvPropRef, "AppendLine", textToAppendParamRef));
+			
+			var writeLineArgsMeth = new CodeMemberMethod () {
+				Name = "WriteLine",
+				Attributes = MemberAttributes.Public | MemberAttributes.Final,
+			};
+			writeLineArgsMeth.Parameters.Add (formatParam);
+			writeLineArgsMeth.Parameters.Add (argsParam);
+			writeLineArgsMeth.Statements.Add (new CodeMethodInvokeExpression (genEnvPropRef, "Append", currentIndentFieldRef));
+			writeLineArgsMeth.Statements.Add (new CodeMethodInvokeExpression (genEnvPropRef, "AppendFormat", formatParamRef, argsParamRef));
+			writeLineArgsMeth.Statements.Add (new CodeMethodInvokeExpression (genEnvPropRef, "AppendLine"));
+			
+			type.Members.Add (indentsField);
+			type.Members.Add (currentIndentField);
+			type.Members.Add (errorsField);
+			type.Members.Add (builderField);
+			type.Members.Add (sessionField);
+			type.Members.Add (sessionProp);
+			type.Members.Add (errorMeth);
+			type.Members.Add (warningMeth);
+			type.Members.Add (errorsProp);
+			type.Members.Add (popIndentMeth);
+			type.Members.Add (pushIndentMeth);
+			type.Members.Add (clearIndentMeth);
+			type.Members.Add (currentIndentProp);
+			type.Members.Add (generationEnvironmentProp);
+			type.Members.Add (writeMeth);
+			type.Members.Add (writeArgsMeth);
+			type.Members.Add (writeLineMeth);
+			type.Members.Add (writeLineArgsMeth);
 		}
 		
 		public static string Run (System.Reflection.Assembly assem, string type, ITextTemplatingEngineHost host,

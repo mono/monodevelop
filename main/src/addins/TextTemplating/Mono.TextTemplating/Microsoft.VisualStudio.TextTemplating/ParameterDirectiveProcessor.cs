@@ -129,7 +129,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 			
 			var property = new CodeMemberProperty () {
 				Name = name,
-				Attributes = MemberAttributes.Public,
+				Attributes = MemberAttributes.Public | MemberAttributes.Final,
 				HasGet = true,
 				HasSet = false,
 				Type = typeRef

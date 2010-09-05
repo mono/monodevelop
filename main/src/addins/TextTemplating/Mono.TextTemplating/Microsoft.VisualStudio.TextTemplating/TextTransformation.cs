@@ -31,8 +31,6 @@ using System.Text;
 
 namespace Microsoft.VisualStudio.TextTemplating
 {
-	
-	
 	public abstract class TextTransformation : IDisposable
 	{
 		Stack<int> indents = new Stack<int> ();
@@ -56,21 +54,15 @@ namespace Microsoft.VisualStudio.TextTemplating
 		
 		public void Error (string message)
 		{
-			AddError (message);
+			errors.Add (new CompilerError (null, -1, -1, null, message));
 		}
 		
 		public void Warning (string message)
 		{
-			AddError (message).IsWarning = true;
-		}
-		
-		CompilerError AddError (string message)
-		{
-			CompilerError err = new CompilerError ();
-			err.Column = err.Line = -1;
-			err.ErrorText = message;
+			var err = new CompilerError (null, -1, -1, null, message) {
+				IsWarning = true,
+			};
 			errors.Add (err);
-			return err;
 		}
 		
 		protected internal CompilerErrorCollection Errors {

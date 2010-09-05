@@ -56,6 +56,7 @@ namespace Mono.TextTemplating
 		public System.Globalization.CultureInfo Culture { get; set; }
 		public List<CustomDirective> CustomDirectives { get; private set; }
 		public Dictionary<string,DirectiveProcessor> DirectiveProcessors { get; private set; }
+		public bool IncludePreprocessingHelpers { get; set; }
 	}
 	
 	public class CustomDirective
