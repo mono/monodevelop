@@ -37,6 +37,10 @@ namespace Microsoft.VisualStudio.TextTemplating
 	{
 		bool isInProcessingRun;
 		ITextTemplatingEngineHost host;
+		StringBuilder preInitBuffer = new StringBuilder ();
+		StringBuilder postInitBuffer = new StringBuilder ();
+		StringBuilder codeBuffer = new StringBuilder ();
+		CodeDomProvider languageProvider;
 		
 		protected RequiresProvidesDirectiveProcessor ()
 		{
@@ -52,40 +56,46 @@ namespace Microsoft.VisualStudio.TextTemplating
 		protected abstract void InitializeRequiresDictionary (string directiveName, IDictionary<string, string> requiresDictionary);
 		protected abstract string FriendlyName { get; }
 		
-		protected abstract void GeneratePostInitializationCode( string directiveName, StringBuilder codeBuffer, CodeDomProvider languageProvider, 
+		protected abstract void GeneratePostInitializationCode (string directiveName, StringBuilder codeBuffer, CodeDomProvider languageProvider, 
 			IDictionary<string, string> requiresArguments, IDictionary<string, string> providesArguments);
-		protected abstract void GeneratePreInitializationCode( string directiveName, StringBuilder codeBuffer, CodeDomProvider languageProvider,
+		protected abstract void GeneratePreInitializationCode (string directiveName, StringBuilder codeBuffer, CodeDomProvider languageProvider,
 			IDictionary<string, string> requiresArguments, IDictionary<string, string> providesArguments);
 		protected abstract void GenerateTransformCode (string directiveName, StringBuilder codeBuffer, CodeDomProvider languageProvider,
 			IDictionary<string, string> requiresArguments, IDictionary<string, string> providesArguments);
 		
+		protected virtual void PostProcessArguments (string directiveName, IDictionary<string, string> requiresArguments,
+			IDictionary<string, string> providesArguments)
+		{
+		}
+		
 		public override string GetClassCodeForProcessingRun ()
 		{
-			throw new System.NotImplementedException ();
+			AssertNotProcessing ();
+			return codeBuffer.ToString ();
 		}
 		
 		public override string[] GetImportsForProcessingRun ()
 		{
-			throw new System.NotImplementedException ();
+			AssertNotProcessing ();
+			return null;
+		}
+		
+		public override string[] GetReferencesForProcessingRun ()
+		{
+			AssertNotProcessing ();
+			return null;
 		}
 		
 		public override string GetPostInitializationCodeForProcessingRun ()
 		{
-			throw new System.NotImplementedException ();
+			AssertNotProcessing ();
+			return postInitBuffer.ToString ();
 		}
 		
 		public override string GetPreInitializationCodeForProcessingRun ()
 		{
-			throw new System.NotImplementedException ();
-		}
-		public override string[] GetReferencesForProcessingRun ()
-		{
-			throw new System.NotImplementedException ();
-		}
-		
-		protected virtual void PostProcessArguments (string directiveName, IDictionary<string, string> requiresArguments,
-			IDictionary<string, string> providesArguments)
-		{
+			AssertNotProcessing ();
+			return preInitBuffer.ToString ();
 		}
 		
 		public override void StartProcessingRun (CodeDomProvider languageProvider, string templateContents, CompilerErrorCollection errors)
@@ -94,19 +104,33 @@ namespace Microsoft.VisualStudio.TextTemplating
 			isInProcessingRun = true;
 			base.StartProcessingRun (languageProvider, templateContents, errors);
 			
-			throw new NotImplementedException ();
+			this.languageProvider = languageProvider;
+			codeBuffer.Length = 0;
+			preInitBuffer.Length = 0;
+			postInitBuffer.Length = 0;
 		}
 		
 		public override void FinishProcessingRun ()
 		{
 			isInProcessingRun = false;
-			throw new NotImplementedException (); //reset the state machine
 		}
 		
 		void AssertNotProcessing ()
 		{
 			if (isInProcessingRun)
 				throw new InvalidOperationException ();
+		}
+		
+		//FIXME: handle escaping
+		IEnumerable<KeyValuePair<string,string>> ParseArgs (string args)
+		{
+			var pairs = args.Split (';');
+			foreach (var p in pairs) {
+				int eq = p.IndexOf ('=');
+				var k = p.Substring (0, eq);
+				var v = p.Substring (eq);
+				yield return new KeyValuePair<string, string> (k, v);
+			}
 		}
 		
 		public override void ProcessDirective (string directiveName, IDictionary<string, string> arguments)
@@ -116,13 +140,53 @@ namespace Microsoft.VisualStudio.TextTemplating
 			if (arguments == null)
 				throw new ArgumentNullException ("arguments");
 			
-			throw new NotImplementedException ();
+			var providesDictionary = new Dictionary<string,string> ();
+			var requiresDictionary = new Dictionary<string,string> ();
+			
+			string provides;
+			if (arguments.TryGetValue ("provides", out provides)) {
+				foreach (var arg in ParseArgs (provides)) {
+					providesDictionary.Add (arg.Key, arg.Value);
+				}
+			}
+			
+			string requires;
+			if (arguments.TryGetValue ("requires", out requires)) {
+				foreach (var arg in ParseArgs (requires)) {
+					requiresDictionary.Add (arg.Key, arg.Value);
+				}
+			}
+			
+			InitializeRequiresDictionary (directiveName, requiresDictionary);
+			InitializeProvidesDictionary (directiveName, providesDictionary);
+			
+			var id = ProvideUniqueId (directiveName, arguments, requiresDictionary, providesDictionary);
+			
+			foreach (var req in requiresDictionary) {
+				var val = host.ResolveParameterValue (id, FriendlyName, req.Key);
+				if (val != null)
+					requiresDictionary[req.Key] = val; 
+				else if (req.Value == null)
+					throw new DirectiveProcessorException ("Could not resolve required value '" + req.Key + "'");
+			}
+			
+			foreach (var req in providesDictionary) {
+				var val = host.ResolveParameterValue (id, FriendlyName, req.Key);
+				if (val != null)
+					providesDictionary[req.Key] = val;
+			}
+			
+			PostProcessArguments (directiveName, requiresDictionary, providesDictionary);
+			
+			GeneratePreInitializationCode (directiveName, preInitBuffer, languageProvider, requiresDictionary, providesDictionary);
+			GeneratePostInitializationCode (directiveName, postInitBuffer, languageProvider, requiresDictionary, providesDictionary);
+			GenerateTransformCode (directiveName, codeBuffer, languageProvider, requiresDictionary, providesDictionary);
 		}
 		
 		protected virtual string ProvideUniqueId (string directiveName, IDictionary<string, string> arguments,
 			IDictionary<string, string> requiresArguments, IDictionary<string, string> providesArguments)
 		{
-			throw new NotImplementedException ();
+			return directiveName;
 		}
 		
 		protected ITextTemplatingEngineHost Host {

@@ -210,8 +210,11 @@ namespace Mono.TextTemplating
 		{
 			var key = new ParameterKey (processorName, directiveId, parameterName);
 			string value;
-			parameters.TryGetValue (key, out value);
-			return value;
+			if (parameters.TryGetValue (key, out value))
+				return value;
+			if (processorName != null || directiveId != null)
+				return ResolveParameterValue (null, null, parameterName);
+			return null;
 		}
 		
 		protected virtual Type ResolveDirectiveProcessor (string processorName)
