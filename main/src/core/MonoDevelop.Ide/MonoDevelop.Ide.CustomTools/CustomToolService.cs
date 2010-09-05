@@ -198,13 +198,17 @@ namespace MonoDevelop.Ide.CustomTools
 			}
 			
 			if (!result.GeneratedFilePath.IsNullOrEmpty && File.Exists (result.GeneratedFilePath)) {
-				if (genFile == null) {
-					genFile = file.Project.AddFile (result.GeneratedFilePath);
-				} else if (result.GeneratedFilePath != genFile.FilePath) {
-					genFile.Name = result.GeneratedFilePath;
-				}
-				file.LastGenOutput = genFileName;
-				genFile.DependsOn = file.FilePath.FileName; 
+				Gtk.Application.Invoke (delegate {
+					if (genFile == null) {
+						genFile = file.Project.AddFile (result.GeneratedFilePath);
+					} else if (result.GeneratedFilePath != genFile.FilePath) {
+						genFile.Name = result.GeneratedFilePath;
+					}
+					file.LastGenOutput = genFileName;
+					genFile.DependsOn = file.FilePath.FileName;
+					
+					IdeApp.ProjectOperations.Save (file.Project);
+				});
 			}
 		}
 		
