@@ -21,7 +21,8 @@ FILES =  \
 	Parser/T4ParsedDocument.cs \
 	Parser/T4Parser.cs \
 	TextTemplatingService.cs \
-	TextTemplatingTool.cs
+	TextTemplatingFileGenerator.cs \
+	TextTemplatingFilePreprocessor.cs
 
 RES =  \
 	MonoDevelop.TextTemplating.addin.xml \

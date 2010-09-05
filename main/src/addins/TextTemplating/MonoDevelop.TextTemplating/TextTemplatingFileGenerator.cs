@@ -1,5 +1,5 @@
 // 
-// TextTemplatingTool.cs
+// TextTemplatingFileGenerator.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -35,7 +35,7 @@ using System.Threading;
 
 namespace MonoDevelop.TextTemplating
 {
-	public class TextTemplatingTool : ISingleFileCustomTool
+	public class TextTemplatingFileGenerator : ISingleFileCustomTool
 	{
 		public IAsyncOperation Generate (IProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{

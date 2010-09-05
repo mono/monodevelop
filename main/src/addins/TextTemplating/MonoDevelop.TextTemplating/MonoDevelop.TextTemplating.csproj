@@ -43,7 +43,8 @@
     <Compile Include="Parser\T4ParsedDocument.cs" />
     <Compile Include="Gui\T4EditorExtension.cs" />
     <Compile Include="TextTemplatingService.cs" />
-    <Compile Include="TextTemplatingTool.cs" />
+    <Compile Include="TextTemplatingFilePreprocessor.cs" />
+    <Compile Include="TextTemplatingFileGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -124,5 +125,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Makefile.am" />
+    <None Include="Templates\T4PreprocessedTemplateCSharp.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

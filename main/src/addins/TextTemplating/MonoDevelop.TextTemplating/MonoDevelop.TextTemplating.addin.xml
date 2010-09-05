@@ -46,9 +46,12 @@
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id       = "T4TemplateCSharp"
 		              file     = "Templates/T4TemplateCSharp.xft.xml"/>
+		<FileTemplate id       = "T4PreprocessedTemplateCSharp"
+		              file     = "Templates/T4PreprocessedTemplateCSharp.xft.xml"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/CustomTools">
-		<Tool name="TextTemplatingFileGenerator" type="MonoDevelop.TextTemplating.TextTemplatingTool"/>
+		<Tool name="TextTemplatingFileGenerator" type="MonoDevelop.TextTemplating.TextTemplatingFileGenerator"/>
+		<Tool name="TextTemplatingFilePreprocessor" type="MonoDevelop.TextTemplating.TextTemplatingFilePreprocessor"/>
 	</Extension>
 </Addin>

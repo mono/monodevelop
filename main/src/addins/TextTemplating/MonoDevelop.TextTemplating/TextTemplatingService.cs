@@ -37,8 +37,6 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.TextTemplating
 {
-	
-	
 	public static class TextTemplatingService
 	{	
 		public static void ShowTemplateHostErrors (CompilerErrorCollection errors)
