@@ -1,1 +1,1 @@
-build/bin/MonoDevelop.exe
+build\bin\MonoDevelop.exe
