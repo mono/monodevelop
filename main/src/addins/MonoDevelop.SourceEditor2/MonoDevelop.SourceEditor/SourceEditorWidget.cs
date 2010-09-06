@@ -810,8 +810,8 @@ namespace MonoDevelop.SourceEditor
 				
 				view.Load (view.ContentName);
 				
-				view.TextEditor.VAdjustment.Value = vscroll;
 				view.TextEditor.Caret.Location = loc;
+				view.TextEditor.VAdjustment.Value = vscroll;
 				
 				view.WorkbenchWindow.ShowNotification = false;
 			} catch (Exception ex) {
