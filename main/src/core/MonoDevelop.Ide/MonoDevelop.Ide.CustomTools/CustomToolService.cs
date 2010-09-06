@@ -161,6 +161,7 @@ namespace MonoDevelop.Ide.CustomTools
 					string msg = GettextCatalog.GetString ("The '{0}' code generator crashed", file.Generator);
 					result.Errors.Add (new CompilerError (file.Name, 0, 0, "", msg + ": " + result.UnhandledException.Message));
 					monitor.ReportError (msg, result.UnhandledException);
+					LoggingService.LogError (msg, result.UnhandledException);
 				}
 				
 				genFileName = result.GeneratedFilePath.IsNullOrEmpty?
@@ -170,7 +171,7 @@ namespace MonoDevelop.Ide.CustomTools
 					&& genFileName.IndexOfAny (new char[] { '/', '\\' }) < 0
 					&& FileService.IsValidFileName (genFileName);
 				
-				if (!validName) {
+				if (!broken && !validName) {
 					broken = true;
 					string msg = GettextCatalog.GetString ("The '{0}' code generator output invalid filename '{1}'",
 					                                       file.Generator, result.GeneratedFilePath);
