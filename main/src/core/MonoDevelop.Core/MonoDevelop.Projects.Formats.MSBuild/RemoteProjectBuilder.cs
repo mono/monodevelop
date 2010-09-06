@@ -88,6 +88,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return builder.GetAssemblyReferences (configuration, platform);
 		}
 		
+		public void Refresh ()
+		{
+			builder.Refresh ();
+		}
+		
 		public void Dispose ()
 		{
 			if (engine != null) {

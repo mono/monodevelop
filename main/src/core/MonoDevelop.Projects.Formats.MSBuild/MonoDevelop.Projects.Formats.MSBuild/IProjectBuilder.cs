@@ -33,5 +33,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		MSBuildResult[] RunTarget (string target, string configuration, string platform, ILogWriter logWriter,
 			MSBuildVerbosity verbosity);
 		string[] GetAssemblyReferences (string configuration, string platform);
+		void Refresh ();
 	}
 }

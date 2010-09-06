@@ -827,6 +827,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (txt != fileContent) {
 				File.WriteAllText (eitem.FileName, txt);
 				fileContent = txt;
+				
+				if (projectBuilder != null)
+					projectBuilder.Refresh ();
 			}
 		}
 
