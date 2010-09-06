@@ -916,8 +916,8 @@ namespace MonoDevelop.VersionControl.Views
 			ddata.diffRunning = true;
 			
 			// Run the diff in a separate thread and update the tree when done
-			Thread t = new Thread (
-				delegate () {
+			ThreadPool.QueueUserWorkItem (
+				delegate {
 					ddata.diffException = null;
 					try {
 						ddata.difs = vc.PathDiff (filepath, null, remote);
@@ -935,9 +935,6 @@ namespace MonoDevelop.VersionControl.Views
 					}
 				}
 			);
-			t.Name = "VCS diff loader";
-			t.IsBackground = true;
-			t.Start ();
 		}
 		
 		void SetFileDiff (TreeIter iter, string file, bool remote)
@@ -1103,7 +1100,6 @@ namespace MonoDevelop.VersionControl.Views
 			QueueDraw ();
 			return base.OnScrollEvent (evnt);
 		}
-
 
 		public event EventHandler ShowContextMenu;
 		public event EventHandler DiffLineActivated;

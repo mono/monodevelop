@@ -35,13 +35,11 @@ namespace MonoDevelop.VersionControl
 		public void Start() {
 			tracker = VersionControlService.GetProgressMonitor (GetDescription ());
 			tracker.BeginTask(GetDescription(), 0);
-			new Thread(new ThreadStart(BackgroundWorker)) {
-				Name = "VCS background tasks",
-				IsBackground = true,
-			}.Start();
+			ThreadPool.QueueUserWorkItem (BackgroundWorker);
 		}
 		
-		void BackgroundWorker() {
+		void BackgroundWorker (object state)
+		{
 			try {
 				Run();
 			} catch (DllNotFoundException e) {

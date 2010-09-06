@@ -240,13 +240,9 @@ namespace MonoDevelop.VersionControl.Dialogs
 			loadingRepos.Add (FindRootRepo (repoIter));
 			UpdateControls ();
 			
-			Thread t = new Thread (delegate () {
+			ThreadPool.QueueUserWorkItem (delegate {
 				LoadRepoInfo (parent, repoIter, citer);
 			});
-			
-			t.Name = "VCS repository loader";
-			t.IsBackground = true;
-			t.Start ();
 		}
 			
 		Repository FindRootRepo (TreeIter iter)
