@@ -22,6 +22,8 @@ FILES =  \
 	Parser/T4Parser.cs \
 	TextTemplatingService.cs \
 	TextTemplatingFileGenerator.cs \
+	ThreadAsyncOperation.cs \
+	MonoDevelopTextTemplatingHost.cs \
 	TextTemplatingFilePreprocessor.cs
 
 RES =  \
