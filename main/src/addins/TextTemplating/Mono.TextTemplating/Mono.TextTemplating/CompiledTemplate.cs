@@ -27,36 +27,87 @@
 using System;
 using System.Reflection;
 using Microsoft.VisualStudio.TextTemplating;
+using System.CodeDom.Compiler;
+using System.Globalization;
 
 namespace Mono.TextTemplating
 {
-	public class CompiledTemplate : MarshalByRefObject
+	public sealed class CompiledTemplate : MarshalByRefObject, IDisposable
 	{
-		readonly ITextTemplatingEngineHost host;
-		readonly Assembly assembly;
-		readonly TemplateSettings settings;
-		readonly ParsedTemplate parsedTemplate;
-
-		public CompiledTemplate (ParsedTemplate parsedTemplate, ITextTemplatingEngineHost host, Assembly assembly, TemplateSettings settings)
+		ITextTemplatingEngineHost host;
+		TextTransformation tt;
+		CultureInfo culture;
+		string[] assemblyFiles;
+		
+		public CompiledTemplate (ITextTemplatingEngineHost host, CompilerResults results, string fullName, CultureInfo culture,
+			string[] assemblyFiles)
 		{
+			AppDomain.CurrentDomain.AssemblyResolve += Resolve;
 			this.host = host;
-			this.assembly = assembly;
-			this.settings = settings;
-			this.parsedTemplate = parsedTemplate;
+			this.culture = culture;
+			this.assemblyFiles = assemblyFiles;
+			Load (results, fullName);
+		}
+		
+		void Load (CompilerResults results, string fullName)
+		{
+			var assembly = results.CompiledAssembly;
+			Type transformType = assembly.GetType (fullName);
+			tt = (TextTransformation) Activator.CreateInstance (transformType);
+			
+			//set the host property if it exists
+			var hostProp = transformType.GetProperty ("Host", typeof (ITextTemplatingEngineHost));
+			if (hostProp != null && hostProp.CanWrite)
+				hostProp.SetValue (tt, host, null);
+			
+			var sessionHost = host as ITextTemplatingSessionHost;
+			if (sessionHost != null) {
+				//FIXME: should we create a session if it's null?
+				tt.Session = sessionHost.Session;
+			}
 		}
 
 		public string Process ()
 		{
-			string output = "";
-
+			tt.Errors.Clear ();
+			
+			//set the culture
+			if (culture != null)
+				ToStringHelper.FormatProvider = culture;
+			else
+				ToStringHelper.FormatProvider = CultureInfo.InvariantCulture;
+			
+			tt.Initialize ();
+			
+			string output = null;
 			try {
-				output = TemplatingEngine.Run (assembly, settings.Namespace + "." + settings.Name, host, settings.Culture);
+				output = tt.TransformText ();
 			} catch (Exception ex) {
-				parsedTemplate.LogError ("Error running transform: " + ex);
+				tt.Error ("Error running transform: " + ex.ToString ());
 			}
-
-			host.LogErrors (parsedTemplate.Errors);
+			host.LogErrors (tt.Errors);
+			
+			ToStringHelper.FormatProvider = CultureInfo.InvariantCulture;
 			return output;
+		}
+		
+		System.Reflection.Assembly Resolve (object sender, ResolveEventArgs args)
+		{
+			System.Reflection.Assembly asm = null;
+			foreach (var asmFile in assemblyFiles) {
+				var name = System.IO.Path.GetFileNameWithoutExtension (asmFile);
+				if (args.Name.StartsWith (name))
+					asm = System.Reflection.Assembly.LoadFrom (asmFile);
+			}
+			return asm;
+		}
+		
+		public void Dispose ()
+		{
+			if (host != null) {
+				host = null;
+				AppDomain.CurrentDomain.AssemblyResolve -= Resolve;
+			}
 		}
 	}
 }

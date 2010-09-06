@@ -36,7 +36,7 @@ namespace Mono.TextTemplating
 	public class TemplateGenerator : MarshalByRefObject, ITextTemplatingEngineHost
 	{
 		//re-usable
-		Engine engine;
+		TemplatingEngine engine;
 		
 		//per-run variables
 		string inputFile, outputFile;
@@ -60,6 +60,8 @@ namespace Mono.TextTemplating
 		public TemplateGenerator ()
 		{
 			Refs.Add (typeof (TextTransformation).Assembly.Location);
+			Refs.Add (typeof(System.Uri).Assembly.Location);
+			Imports.Add ("System");
 		}
 		
 		public CompiledTemplate CompileTemplate (string content)
@@ -70,22 +72,13 @@ namespace Mono.TextTemplating
 			errors.Clear ();
 			encoding = Encoding.UTF8;
 			
-			AppDomain appdomain = ProvideTemplatingAppDomain (content);
-			TemplatingEngine engine;
-			if (appdomain != null) {
-				var t = typeof (TemplatingEngine);
-				engine = (TemplatingEngine) appdomain.CreateInstanceAndUnwrap (t.Assembly.FullName, t.FullName);
-			} else {
-				engine = new TemplatingEngine ();
-			}
-
-			return engine.CompileTemplate (content, this);
+			return Engine.CompileTemplate (content, this);
 		}
 		
-		protected Engine Engine {
+		protected TemplatingEngine Engine {
 			get {
 				if (engine == null)
-					engine = new Engine ();
+					engine = new TemplatingEngine ();
 				return engine;
 			}
 		}
@@ -231,6 +224,7 @@ namespace Mono.TextTemplating
 		
 		protected virtual string ResolvePath (string path)
 		{
+			path = System.Environment.ExpandEnvironmentVariables (path);
 			if (Path.IsPathRooted (path))
 				return path;
 			var dir = Path.GetDirectoryName (inputFile);
@@ -255,9 +249,7 @@ namespace Mono.TextTemplating
 			parameters.Add (new ParameterKey (processorName, directiveName, parameterName), value);
 		}
 		
-		#region Explicit ITextTemplatingEngineHost implementation
-		
-		bool ITextTemplatingEngineHost.LoadIncludeText (string requestFileName, out string content, out string location)
+		protected virtual bool LoadIncludeText (string requestFileName, out string content, out string location)
 		{
 			content = "";
 			location = ResolvePath (requestFileName);
@@ -282,6 +274,13 @@ namespace Mono.TextTemplating
 				AddError ("Could not read included file '" + location +  "':\n" + ex.ToString ());
 			}
 			return false;
+		}
+		
+		#region Explicit ITextTemplatingEngineHost implementation
+		
+		bool ITextTemplatingEngineHost.LoadIncludeText (string requestFileName, out string content, out string location)
+		{
+			return LoadIncludeText (requestFileName, out content, out location);
 		}
 		
 		void ITextTemplatingEngineHost.LogErrors (CompilerErrorCollection errors)

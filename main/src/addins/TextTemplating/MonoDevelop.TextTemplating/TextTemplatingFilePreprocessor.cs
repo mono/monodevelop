@@ -25,14 +25,13 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Ide.CustomTools;
 using System.CodeDom.Compiler;
-using MonoDevelop.Projects;
 using System.IO;
 using Mono.TextTemplating;
 using MonoDevelop.Core;
-using System.Threading;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.CustomTools;
+using MonoDevelop.Projects;
 using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.TextTemplating
@@ -65,10 +64,10 @@ namespace MonoDevelop.TextTemplating
 				string langauge;
 				string[] references;
 				string className = provider.CreateValidIdentifier (file.FilePath.FileNameWithoutExtension);
-				string classNamespace = file.CustomToolNamespace;
-				if (string.IsNullOrEmpty (classNamespace))
-					classNamespace = dnp.GetDefaultNamespace (outputFile);
 				
+				string classNamespace = GetNamespaceHint (file, outputFile);
+				System.Runtime.Remoting.Messaging.CallContext.LogicalSetData ("NamespaceHint", classNamespace);
+								
 				host.PreprocessTemplate (file.FilePath, className, classNamespace, outputFile, encoding, out langauge, out references);
 				
 				result.GeneratedFilePath = outputFile;
@@ -76,6 +75,17 @@ namespace MonoDevelop.TextTemplating
 				foreach (var err in host.Errors)
 					monitor.Log.WriteLine (err.ToString ());
 			}, result);
+		}
+		
+		internal static string GetNamespaceHint (ProjectFile file, string outputFile)
+		{
+			string ns = file.CustomToolNamespace;
+			if (string.IsNullOrEmpty (ns) && !string.IsNullOrEmpty (outputFile)) {
+				var dnp = file.Project as DotNetProject;
+					if (dnp != null)
+						ns = dnp.GetDefaultNamespace (outputFile);
+			}
+			return ns;
 		}
 	}
 }

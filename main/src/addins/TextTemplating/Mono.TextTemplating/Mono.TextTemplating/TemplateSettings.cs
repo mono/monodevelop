@@ -51,6 +51,7 @@ namespace Mono.TextTemplating
 		public HashSet<string> Assemblies { get; private set; }
 		public System.CodeDom.Compiler.CodeDomProvider Provider { get; set; }
 		public string Language { get; set; }
+		public string CompilerOptions { get; set; }
 		public Encoding Encoding { get; set; }
 		public string Extension { get; set; }
 		public System.Globalization.CultureInfo Culture { get; set; }

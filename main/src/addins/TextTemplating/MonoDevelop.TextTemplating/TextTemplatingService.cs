@@ -38,7 +38,7 @@ using MonoDevelop.Core;
 namespace MonoDevelop.TextTemplating
 {
 	public static class TextTemplatingService
-	{	
+	{
 		public static void ShowTemplateHostErrors (CompilerErrorCollection errors)
 		{
 			if (errors.Count == 0)
@@ -83,7 +83,7 @@ namespace MonoDevelop.TextTemplating
 			//FIXME: do we really want to allow resolving arbitrary MD assemblies?
 			// some things do depend on this behaviour, but maybe some kind of explicit registration system 
 			// would be better, so we can prevent accidentally pulling in unwanted assemblies
-			domain.AssemblyResolve += new Mono.TextTemplating.CrossAppDomainAssemblyResolver ().Resolve;
+			//domain.AssemblyResolve += new Mono.TextTemplating.CrossAppDomainAssemblyResolver ().Resolve;
 		}
 		
 		public bool Used { get; private set; }

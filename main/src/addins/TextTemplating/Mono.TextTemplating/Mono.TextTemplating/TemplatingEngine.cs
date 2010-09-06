@@ -33,6 +33,7 @@ using System.CodeDom.Compiler;
 using Microsoft.CSharp;
 using Microsoft.VisualStudio.TextTemplating;
 using System.Linq;
+using System.Reflection;
 
 namespace Mono.TextTemplating
 {
@@ -49,6 +50,15 @@ namespace Mono.TextTemplating
 		public string PreprocessTemplate (string content, ITextTemplatingEngineHost host, string className, 
 			string classNamespace, out string language, out string[] references)
 		{
+			if (content == null)
+				throw new ArgumentNullException ("content");
+			if (host == null)
+				throw new ArgumentNullException ("host");
+			if (className == null)
+				throw new ArgumentNullException ("className");
+			if (classNamespace == null)
+				throw new ArgumentNullException ("classNamespace");
+			
 			language = null;
 			references = null;
 			
@@ -69,8 +79,10 @@ namespace Mono.TextTemplating
 			language = settings.Language;
 			
 			var ccu = GenerateCompileUnit (host, content, pt, settings);
+			references = ProcessReferences (host, pt, settings).ToArray ();
+			
+			host.LogErrors (pt.Errors);
 			if (pt.Errors.HasErrors) {
-				host.LogErrors (pt.Errors);
 				return null;
 			}
 			
@@ -83,6 +95,11 @@ namespace Mono.TextTemplating
 
 		public CompiledTemplate CompileTemplate (string content, ITextTemplatingEngineHost host)
 		{
+			if (content == null)
+				throw new ArgumentNullException ("content");
+			if (host == null)
+				throw new ArgumentNullException ("host");
+			
 			var pt = ParsedTemplate.FromText (content, host);
 			if (pt.Errors.HasErrors) {
 				host.LogErrors (pt.Errors);
@@ -90,18 +107,6 @@ namespace Mono.TextTemplating
 			}
 			
 			var settings = GetSettings (host, pt);
-			if (pt.Errors.HasErrors) {
-				host.LogErrors (pt.Errors);
-				return null;
-			}
-			
-			var ccu = GenerateCompileUnit (host, content, pt, settings);
-			if (pt.Errors.HasErrors) {
-				host.LogErrors (pt.Errors);
-				return null;
-			}
-			
-			var results = GenerateCode (host, pt, settings, ccu);
 			if (pt.Errors.HasErrors) {
 				host.LogErrors (pt.Errors);
 				return null;
@@ -115,44 +120,73 @@ namespace Mono.TextTemplating
 				host.SetOutputEncoding (settings.Encoding, true);
 			}
 			
-			return new CompiledTemplate (pt, host, results, settings);
+			var ccu = GenerateCompileUnit (host, content, pt, settings);
+			var references = ProcessReferences (host, pt, settings);
+			if (pt.Errors.HasErrors) {
+				host.LogErrors (pt.Errors);
+				return null;
+			}
+			
+			var results = GenerateCode (host, references, settings, ccu);
+			if (results.Errors.HasErrors) {
+				host.LogErrors (pt.Errors);
+				host.LogErrors (results.Errors);
+				return null;
+			}
+			
+			var templateClassFullName = settings.Namespace + "." + settings.Name;
+			AppDomain domain = host.ProvideTemplatingAppDomain (content);
+			if (domain != null) {
+				domain.DoCallBack (delegate {
+					
+				});
+				var type = typeof (CompiledTemplate);
+				references.Add (type.Assembly.Location);
+				var obj = domain.CreateInstanceAndUnwrap (type.Assembly.FullName, type.FullName, false,
+					BindingFlags.CreateInstance, null,
+					new object[] { host, results, templateClassFullName, settings.Culture, references.ToArray () },
+					null, null, null);
+				return (CompiledTemplate) obj;
+			} else {
+				return new CompiledTemplate (host, results, templateClassFullName, settings.Culture, references.ToArray ());
+			}
 		}
 		
-		public static System.Reflection.Assembly GenerateCode (ITextTemplatingEngineHost host, ParsedTemplate pt, 
-		                                                       TemplateSettings settings, CodeCompileUnit ccu)
+		static CompilerResults GenerateCode (ITextTemplatingEngineHost host, IEnumerable<string> references, TemplateSettings settings, CodeCompileUnit ccu)
 		{
-			CompilerParameters pars = new CompilerParameters ();
-			pars.GenerateExecutable = false;
+			CompilerParameters pars = new CompilerParameters () {
+				GenerateExecutable = false,
+				CompilerOptions = settings.CompilerOptions,
+				IncludeDebugInformation = settings.Debug,
+				GenerateInMemory = false,
+			};
 			
-			if (settings.Debug) {
-				pars.GenerateInMemory = false;
-				pars.IncludeDebugInformation = true;
+			foreach (var r in references)
+				pars.ReferencedAssemblies.Add (r);
+			
+			if (settings.Debug)
 				pars.TempFiles.KeepFiles = true;
-			} else {
-				pars.GenerateInMemory = true;
-				pars.IncludeDebugInformation = false;
-			}
-
-			//resolve and add assembly references
-			HashSet<string> assemblies = new HashSet<string> ();
-			assemblies.UnionWith (settings.Assemblies);
-			assemblies.UnionWith (host.StandardAssemblyReferences);
-			foreach (string assem in settings.Assemblies) {
+			
+			return settings.Provider.CompileAssemblyFromDom (pars, ccu);
+		}
+		
+		static HashSet<string> ProcessReferences (ITextTemplatingEngineHost host, ParsedTemplate pt, TemplateSettings settings)
+		{
+			var resolved = new HashSet<string> ();
+			
+			foreach (string assem in settings.Assemblies.Union (host.StandardAssemblyReferences)) {
+				if (resolved.Contains (assem))
+					continue;
+				
 				string resolvedAssem = host.ResolveAssemblyReference (assem);
-				if (!String.IsNullOrEmpty (resolvedAssem)) {
-					pars.ReferencedAssemblies.Add (resolvedAssem);
+				if (!string.IsNullOrEmpty (resolvedAssem)) {
+					resolved.Add (resolvedAssem);
 				} else {
 					pt.LogError ("Could not resolve assembly reference '" + assem + "'");
 					return null;
 				}
 			}
-			pars.ReferencedAssemblies.Add (typeof (TextTransformation).Assembly.Location);
-			pars.ReferencedAssemblies.Add (typeof (System.CodeDom.Compiler.CompilerErrorCollection).Assembly.Location);
-			CompilerResults results = settings.Provider.CompileAssemblyFromDom (pars, ccu);
-			pt.Errors.AddRange (results.Errors);
-			if (pt.Errors.HasErrors)
-				return null;
-			return results.CompiledAssembly;
+			return resolved;
 		}
 		
 		public static TemplateSettings GetSettings (ITextTemplatingEngineHost host, ParsedTemplate pt)
@@ -182,6 +216,10 @@ namespace Mono.TextTemplating
 					val = dt.Extract ("hostspecific");
 					if (val != null) {
 						settings.HostSpecific = string.Compare (val, "true", StringComparison.OrdinalIgnoreCase) == 0;
+					}
+					val = dt.Extract ("CompilerOptions");
+					if (val != null) {
+						settings.CompilerOptions = val;
 					}
 					break;
 					
@@ -234,7 +272,8 @@ namespace Mono.TextTemplating
 				if (hs == null)
 					continue;
 				if (hs.RequiresProcessingRunIsHostSpecific && !settings.HostSpecific)
-					throw new InvalidOperationException ("Directive processor '" + kv.Key + "' only supports host-specific templates");
+					settings.HostSpecific = true;
+					pt.LogWarning ("Directive processor '" + kv.Key + "' requires hostspecific=true, forcing on.");
 				hs.SetProcessingRunIsHostSpecific (settings.HostSpecific);
 			}
 			
@@ -700,44 +739,6 @@ namespace Mono.TextTemplating
 			type.Members.Add (writeArgsMeth);
 			type.Members.Add (writeLineMeth);
 			type.Members.Add (writeLineArgsMeth);
-		}
-		
-		public static string Run (System.Reflection.Assembly assem, string type, ITextTemplatingEngineHost host,
-			System.Globalization.CultureInfo culture)
-		{
-			Type transformType = assem.GetType (type);
-			TextTransformation tt;
-
-			IExtendedTextTemplatingEngineHost extendedHost = host as IExtendedTextTemplatingEngineHost;
-			if (extendedHost != null) {
-				tt = extendedHost.CreateInstance (transformType);
-			}
-			else {
-				tt = (TextTransformation) Activator.CreateInstance (transformType);
-			}
-			
-			//set the host property if it exists
-			System.Reflection.PropertyInfo hostProp = transformType.GetProperty ("Host", typeof (ITextTemplatingEngineHost));
-			if (hostProp != null && hostProp.CanWrite)
-				hostProp.SetValue (tt, host, null);
-			
-			var sessionHost = host as ITextTemplatingSessionHost;
-			if (sessionHost != null) {
-				//FIXME: should we create a session if it's null?
-				tt.Session = sessionHost.Session;
-			}
-			
-			//set the culture
-			if (culture != null)
-				ToStringHelper.FormatProvider = culture;
-			else
-				ToStringHelper.FormatProvider = System.Globalization.CultureInfo.InvariantCulture;
-			
-			tt.Initialize ();
-			string output = tt.TransformText ();
-			host.LogErrors (tt.Errors);
-			ToStringHelper.FormatProvider = System.Globalization.CultureInfo.InvariantCulture;
-			return output;
 		}
 	}
 }

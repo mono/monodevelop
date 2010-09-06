@@ -36,44 +36,21 @@ namespace Microsoft.VisualStudio.TextTemplating
 {
 	public class Engine : ITextTemplatingEngine
 	{
+		TemplatingEngine engine = new TemplatingEngine ();
+		
 		public Engine ()
 		{
 		}
 		
 		public string ProcessTemplate (string content, ITextTemplatingEngineHost host)
 		{
-			if (content == null)
-				throw new ArgumentNullException ("content");
-			if (host == null)
-				throw new ArgumentNullException ("host");
-			
-			return GetEngine (host, content).ProcessTemplate (content, host);
-		}
-		
-		ITextTemplatingEngine GetEngine (ITextTemplatingEngineHost host, string content)
-		{
-			var appdomain = host.ProvideTemplatingAppDomain (content);
-			if (appdomain == null) {
-				return new TemplatingEngine ();
-			} else {
-				var type = typeof (TemplatingEngine);
-				return (ITextTemplatingEngine) appdomain.CreateInstanceAndUnwrap (type.Assembly.FullName, type.FullName);
-			}
+			return engine.ProcessTemplate (content, host);
 		}
 		
 		public string PreprocessTemplate (string content, ITextTemplatingEngineHost host, string className, 
 			string classNamespace, out string language, out string[] references)
 		{
-			if (content == null)
-				throw new ArgumentNullException ("content");
-			if (host == null)
-				throw new ArgumentNullException ("host");
-			if (className == null)
-				throw new ArgumentNullException ("className");
-			if (classNamespace == null)
-				throw new ArgumentNullException ("classNamespace");
-			
-			return GetEngine (host, content).PreprocessTemplate (content, host, className, classNamespace, out language, out references);
+			return engine.PreprocessTemplate (content, host, className, classNamespace, out language, out references);
 		}
 		
 		public const string CacheAssembliesOptionString = "CacheAssemblies";

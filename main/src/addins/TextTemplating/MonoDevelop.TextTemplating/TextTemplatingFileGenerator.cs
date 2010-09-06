@@ -40,80 +40,22 @@ namespace MonoDevelop.TextTemplating
 		public IAsyncOperation Generate (IProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
 			return new ThreadAsyncOperation (delegate {
-				using (var h = TextTemplatingService.GetTemplatingDomain ()) {
-					var host = (MonoDevelopTemplatingHost) h.Domain.CreateInstanceAndUnwrap (
-						typeof (MonoDevelopTemplatingHost).Assembly.FullName,
-						typeof (MonoDevelopTemplatingHost).FullName);
+				using (var host = new MonoDevelopTemplatingHost ()) {
+					
 					var defaultOutputName = file.FilePath.ChangeExtension (".cs"); //cs extension for VS compat
+					
+					string ns = TextTemplatingFilePreprocessor.GetNamespaceHint (file, defaultOutputName);
+					System.Runtime.Remoting.Messaging.CallContext.LogicalSetData ("NamespaceHint", ns);
+					
 					host.ProcessTemplate (file.FilePath, defaultOutputName);
 					result.GeneratedFilePath = host.OutputFile;
 					result.Errors.AddRange (host.Errors);
+					
 					foreach (var err in host.Errors)
 						monitor.Log.WriteLine (err.ToString ());
 				}
 			}, result);
 		}
-	}
-	
-	public class ThreadAsyncOperation : IAsyncOperation
-	{
-		Thread thread;
-		bool cancelled;
-		SingleFileCustomToolResult result;
-		Action task;
-		
-		public ThreadAsyncOperation (Action task, SingleFileCustomToolResult result)
-		{
-			if (result == null)
-				throw new ArgumentNullException ("result");
-			
-			this.task = task;
-			this.result = result;
-			thread = new Thread (Run);
-			thread.Start ();
-		}
-		
-		void Run ()
-		{
-			try {
-				task ();
-			} catch (ThreadAbortException ex) {
-				result.UnhandledException = ex;
-				Thread.ResetAbort ();
-			} catch (Exception ex) {
-				result.UnhandledException = ex;
-			}
-			if (Completed != null)
-				Completed (this);
-		}
-		
-		public event OperationHandler Completed;
-		
-		public void Cancel ()
-		{
-			thread.Abort ();
-		}
-		
-		public void WaitForCompleted ()
-		{
-			thread.Join ();
-		}
-		
-		public bool IsCompleted {
-			get { return !thread.IsAlive; }
-		}
-		
-		public bool Success {
-			get { return !cancelled && result.Success; }
-		}
-		
-		public bool SuccessWithWarnings {
-			get { return !cancelled && result.SuccessWithWarnings; }
-		}
-	}
-	
-	class MonoDevelopTemplatingHost : TemplateGenerator
-	{
 	}
 }
 
