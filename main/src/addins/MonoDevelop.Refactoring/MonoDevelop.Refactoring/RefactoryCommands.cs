@@ -855,13 +855,10 @@ namespace MonoDevelop.Refactoring
 		public void FindReferences ()
 		{
 			monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
-			Thread t = new Thread (new ThreadStart (FindReferencesThread));
-			t.Name = "Find references";
-			t.IsBackground = true;
-			t.Start ();
+			ThreadPool.QueueUserWorkItem (FindReferencesThread);
 		}
 		
-		void FindReferencesThread ()
+		void FindReferencesThread (object state)
 		{
 			try {
 				CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
@@ -934,14 +931,10 @@ namespace MonoDevelop.Refactoring
 		
 		public void FindDerivedClasses ()
 		{
-			monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
-			Thread t = new Thread (new ThreadStart (FindDerivedThread));
-			t.Name = "Find subclasses";
-			t.IsBackground = true;
-			t.Start ();
+			ThreadPool.QueueUserWorkItem (FindDerivedThread);
 		}
 		
-		void FindDerivedThread ()
+		void FindDerivedThread (object state)
 		{
 			using (monitor) {
 				IType cls = (IType) item;
