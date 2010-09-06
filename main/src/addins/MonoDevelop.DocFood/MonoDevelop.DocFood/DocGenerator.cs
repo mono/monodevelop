@@ -460,8 +460,10 @@ namespace MonoDevelop.DocFood
 							result.Append (name[i]);
 							i++;
 						}
-						if (i + 1 < name.Length)
+						if (i + 1 < name.Length) {
 							result.Append (" ");
+							result.Append (char.ToLower (name[i]));
+						}
 						continue;
 					}
 				}
@@ -471,8 +473,9 @@ namespace MonoDevelop.DocFood
 			List<string> words = new List<string> (result.ToString ().Split (' '));
 			wordCount = words.Count;
 			for (int i = 0; i < words.Count; i++) {
-				if (DocConfig.Instance.WordExpansions.ContainsKey (words[i].ToLower ())) {
-					words[i] = DocConfig.Instance.WordExpansions[words[i]];
+				string lowerWord = words[i].ToLower ();
+				if (DocConfig.Instance.WordExpansions.ContainsKey (lowerWord)) {
+					words[i] = DocConfig.Instance.WordExpansions[lowerWord];
 				} else if (DocConfig.Instance.WordLists["acronyms"].Contains (words[i].ToUpper ())) {
 					words[i] = words[i].ToUpper ();
 				}
