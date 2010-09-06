@@ -480,6 +480,40 @@ namespace MonoDevelop.VersionControl.Views
 				}
 				return null;
 			}
+			
+			
+			/// <summary>
+			/// Truncates the revision. This is done by trying to find the shortest matching number.
+			/// </summary>
+			/// <returns>
+			/// The shortest revision number (down to a minimum length of initialLength).
+			/// </returns>
+			/// <param name='revision'>
+			/// The revision.
+			/// </param>
+			/// <param name='initalLength'>
+			/// Inital length.
+			/// </param> 
+			string TruncRevision (string revision, int initalLength = 8)
+			{
+				if (initalLength >= revision.Length)
+					return revision;
+				string prefix = revision.Substring (0, initalLength);
+				var history = widget.info.History;
+				if (null != history) {
+					int cnt = 0;
+					foreach (var rev in widget.info.History) {
+						if (rev.ToString ().StartsWith (prefix)) {
+							cnt++;
+							if (cnt > 1)
+								return TruncRevision (revision, initalLength + 1);
+						}
+					}
+					if (cnt == 1)
+						return prefix;
+				}
+				return revision;
+			}
 
 			void UpdateWidth ()
 			{
@@ -491,7 +525,7 @@ namespace MonoDevelop.VersionControl.Views
 							layout.SetText (note.Date.ToShortDateString ());
 							layout.GetPixelSize (out dateTimeLength, out height);
 						}
-						layout.SetText (note.Author + note.Revision);
+						layout.SetText (note.Author + TruncRevision (note.Revision));
 						layout.GetPixelSize (out tmpwidth, out height);
 						width = Math.Max (width, tmpwidth);
 					}
@@ -535,7 +569,7 @@ namespace MonoDevelop.VersionControl.Views
 							e.Window.DrawLayout (Style.BlackGC, leftSpacer + margin, (int)(curY + (widget.Editor.LineHeight - h) / 2), layout);
 							
 							
-							layout.SetText (ann.Revision);
+							layout.SetText (TruncRevision (ann.Revision));
 							layout.GetPixelSize (out w2, out h);
 							e.Window.DrawLayout (Style.BlackGC, Allocation.Width - w2 - margin, (int)(curY + (widget.Editor.LineHeight - h) / 2), layout);
 
