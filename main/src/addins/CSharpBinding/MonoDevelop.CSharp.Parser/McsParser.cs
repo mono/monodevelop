@@ -455,7 +455,8 @@ namespace MonoDevelop.CSharp.Parser
 				string oldNamespace = currentNamespaceName;
 				currentNamespace.Push (nspace);
 				if (nspace.Name != null) { // no need to push the global namespace
-					string[] splittedNamespace = ConvertToString (nspace.Name).Split ('.');
+					string name = ConvertToString (nspace.Name);
+					string[] splittedNamespace = name.Split ('.');
 					for (int i = splittedNamespace.Length; i --> 0;) {
 						DomUsing domUsing = new DomUsing ();
 						domUsing.IsFromNamespace = true;
@@ -463,6 +464,7 @@ namespace MonoDevelop.CSharp.Parser
 						domUsing.Add (string.Join (".", splittedNamespace, 0, i));
 						Unit.Add (domUsing);
 					}
+					currentNamespaceName = string.IsNullOrEmpty (currentNamespaceName) ? name : currentNamespaceName + "." + name;
 				}
 				
 				VisitNamespaceUsings (nspace);
