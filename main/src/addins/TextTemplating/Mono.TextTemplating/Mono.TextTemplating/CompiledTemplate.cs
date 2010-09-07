@@ -42,7 +42,7 @@ namespace Mono.TextTemplating
 		public CompiledTemplate (ITextTemplatingEngineHost host, CompilerResults results, string fullName, CultureInfo culture,
 			string[] assemblyFiles)
 		{
-			AppDomain.CurrentDomain.AssemblyResolve += Resolve;
+			AppDomain.CurrentDomain.AssemblyResolve += ResolveReferencedAssemblies;
 			this.host = host;
 			this.culture = culture;
 			this.assemblyFiles = assemblyFiles;
@@ -91,7 +91,7 @@ namespace Mono.TextTemplating
 			return output;
 		}
 		
-		System.Reflection.Assembly Resolve (object sender, ResolveEventArgs args)
+		System.Reflection.Assembly ResolveReferencedAssemblies (object sender, ResolveEventArgs args)
 		{
 			System.Reflection.Assembly asm = null;
 			foreach (var asmFile in assemblyFiles) {
@@ -106,7 +106,7 @@ namespace Mono.TextTemplating
 		{
 			if (host != null) {
 				host = null;
-				AppDomain.CurrentDomain.AssemblyResolve -= Resolve;
+				AppDomain.CurrentDomain.AssemblyResolve -= ResolveReferencedAssemblies;
 			}
 		}
 	}

@@ -42,9 +42,14 @@ namespace Mono.TextTemplating
 		public string ProcessTemplate (string content, ITextTemplatingEngineHost host)
 		{
 			var tpl = CompileTemplate (content, host);
-			if (tpl != null)
-				return tpl.Process ();
-			return null;
+			try {
+				if (tpl != null)
+					return tpl.Process ();
+				return null;
+			} finally {
+				if (tpl != null)
+					tpl.Dispose ();
+			}
 		}
 		
 		public string PreprocessTemplate (string content, ITextTemplatingEngineHost host, string className, 
@@ -135,13 +140,9 @@ namespace Mono.TextTemplating
 			}
 			
 			var templateClassFullName = settings.Namespace + "." + settings.Name;
-			AppDomain domain = host.ProvideTemplatingAppDomain (content);
+			var domain = host.ProvideTemplatingAppDomain (content);
 			if (domain != null) {
-				domain.DoCallBack (delegate {
-					
-				});
 				var type = typeof (CompiledTemplate);
-				references.Add (type.Assembly.Location);
 				var obj = domain.CreateInstanceAndUnwrap (type.Assembly.FullName, type.FullName, false,
 					BindingFlags.CreateInstance, null,
 					new object[] { host, results, templateClassFullName, settings.Culture, references.ToArray () },
@@ -154,7 +155,7 @@ namespace Mono.TextTemplating
 		
 		static CompilerResults GenerateCode (ITextTemplatingEngineHost host, IEnumerable<string> references, TemplateSettings settings, CodeCompileUnit ccu)
 		{
-			CompilerParameters pars = new CompilerParameters () {
+			var pars = new CompilerParameters () {
 				GenerateExecutable = false,
 				CompilerOptions = settings.CompilerOptions,
 				IncludeDebugInformation = settings.Debug,

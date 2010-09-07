@@ -23,7 +23,7 @@ FILES =  \
 	TextTemplatingService.cs \
 	TextTemplatingFileGenerator.cs \
 	ThreadAsyncOperation.cs \
-	MonoDevelopTextTemplatingHost.cs \
+	MonoDevelopTemplatingHost.cs \
 	TextTemplatingFilePreprocessor.cs
 
 RES =  \

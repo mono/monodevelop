@@ -60,6 +60,9 @@ namespace MonoDevelop.TextTemplating
 				var dir = Path.GetDirectoryName (typeof (TemplatingEngine).Assembly.Location);
 				var info = new AppDomainSetup () {
 					ApplicationBase = dir,
+					DisallowBindingRedirects = false,
+					DisallowCodeDownload = true,
+					ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile,
 				};
 				domain = new RecyclableAppDomain ("T4Domain", info);
 			}
@@ -70,7 +73,7 @@ namespace MonoDevelop.TextTemplating
 	public class RecyclableAppDomain
 	{
 		const int DOMAIN_TIMEOUT = 2 * 60 * 1000;
-		const int DOMAIN_RECYCLE_AFTER = 10;
+		const int DOMAIN_RECYCLE_AFTER = 25;
 		
 		int handleCount = 0;
 		int uses = 0;
