@@ -209,6 +209,65 @@ namespace MonoDevelop.MonoDroid
 		
 		#endregion
 		
+		#region Resgen
+		
+		protected override void OnFileChangedInProject (ProjectFileEventArgs e)
+		{
+			base.OnFileChangedInProject (e);
+			if (!Loading && e.ProjectFile.BuildAction == MonoDroidBuildAction.AndroidResource)
+				QueueResgenUpdate ();
+		}
+		
+		protected override void OnFileRemovedFromProject (ProjectFileEventArgs e)
+		{
+			base.OnFileRemovedFromProject (e);
+			if (!Loading && e.ProjectFile.BuildAction == MonoDroidBuildAction.AndroidResource)
+				QueueResgenUpdate ();
+		}
+		
+		protected override void OnFileRenamedInProject (ProjectFileRenamedEventArgs e)
+		{
+			base.OnFileRenamedInProject (e);
+			if (!Loading && e.ProjectFile.BuildAction == MonoDroidBuildAction.AndroidResource)
+				QueueResgenUpdate ();
+		}
+		
+		protected override void OnFileAddedToProject (ProjectFileEventArgs e)
+		{
+			base.OnFileAddedToProject (e);
+			if (!Loading && e.ProjectFile.BuildAction == MonoDroidBuildAction.AndroidResource)
+				QueueResgenUpdate ();
+		}
+		
+		protected override void OnFilePropertyChangedInProject (ProjectFileEventArgs e)
+		{
+			base.OnFilePropertyChangedInProject (e);
+			if (!Loading && e.ProjectFile.BuildAction == MonoDroidBuildAction.AndroidResource)
+				QueueResgenUpdate ();
+		}
+		
+		bool resgenUpdateQueued;
+		object resgenLockObj = new object ();
+		//this is fired off with a timeout, so it's effectively rate-limited
+		//if multiple changes take place at once
+		void QueueResgenUpdate ()
+		{
+			lock (resgenLockObj) {
+				if (resgenUpdateQueued)
+					return;
+				resgenUpdateQueued = true;
+				GLib.Timeout.Add (3000, delegate {
+					lock (resgenLockObj)
+						resgenUpdateQueued = false;
+					using (var monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ())
+						RunTarget (monitor, "UpdateAndroidResources", IdeApp.Workspace.ActiveConfiguration);
+					return false;
+				});
+			}
+		}
+		
+		#endregion
+		
 		protected override IList<string> GetCommonBuildActions ()
 		{
 			return new string[] {
