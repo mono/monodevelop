@@ -31,7 +31,8 @@ RES =  \
 	T4SyntaxMode.xml
 
 DATA_FILES = \
-	Templates/T4TemplateCSharp.xft.xml
+	Templates/T4TemplateCSharp.xft.xml \
+	Templates/T4PreprocessedTemplateCSharp.xft.xml
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(DATA_FILES))
 
