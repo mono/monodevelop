@@ -415,7 +415,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 				if (!runtime.IsInstalled (toolsFx))
 					throw new InvalidOperationException (string.Format (
-						"Runtime '{0}' cannot be used to build MSBuild '{0}' format projects",
+						"Runtime '{0}' cannot be used to build MSBuild '{1}' format projects",
 						runtime.Id, toolsVersion));
 				
 				string builderKey = runtime.Id + " " + toolsVersion;
