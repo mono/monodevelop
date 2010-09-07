@@ -502,23 +502,16 @@ namespace MonoDevelop.VersionControl.Views
 			{
 				if (initalLength >= revision.Length)
 					return revision;
-				string prefix = revision.Substring (0, initalLength);
+				string truncated = revision.Substring (0, initalLength);
 				var history = widget.info.History;
-				if (null != history) {
-					int cnt = 0;
-					foreach (var rev in widget.info.History) {
-						if (rev.ToString ().StartsWith (prefix)) {
-							cnt++;
-							if (cnt > 1)
-								return TruncRevision (revision, initalLength + 1);
-						}
-					}
-					if (cnt == 1)
-						return prefix;
+				if (history != null) {
+					bool isMisleadingMatch = history.Select (r => r.ToString ()).Any (rev => rev != revision && rev.StartsWith (truncated));
+					if (isMisleadingMatch)
+						truncated = TruncRevision (revision, initalLength + 1);
 				}
-				return revision;
+				return truncated;
 			}
-
+			
 			void UpdateWidth ()
 			{
 				int tmpwidth, height, width = 120;
