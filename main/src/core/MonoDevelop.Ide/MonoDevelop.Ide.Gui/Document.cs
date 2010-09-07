@@ -46,6 +46,7 @@ using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Tasks;
 using Mono.Addins;
 using MonoDevelop.Ide.Extensions;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -437,7 +438,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		public ICompilationUnit CompilationUnit {
 			get {
-				return parsedDocument != null ? parsedDocument.CompilationUnit : null;
+				if (parsedDocument == null)
+					return null;
+				// HACK: The parser sometimes doesn't send back >any< info on the file on certain errors, this code detects if the last error free parsed document is the better best-fit.
+				if (parsedDocument.HasErrors && !parsedDocument.CompilationUnit.Types.Any () && lastErrorFreeParsedDocument != null && lastErrorFreeParsedDocument.CompilationUnit.Types.Any ())
+					return lastErrorFreeParsedDocument.CompilationUnit;
+				return parsedDocument.CompilationUnit;
 			}
 		}
 		
