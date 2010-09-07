@@ -481,6 +481,10 @@ namespace MonoDevelop.VersionControl.Views
 				return null;
 			}
 			
+			string TruncRevision (string revision)
+			{
+				return TruncRevision (revision, 8);
+			}
 			
 			/// <summary>
 			/// Truncates the revision. This is done by trying to find the shortest matching number.
@@ -494,7 +498,7 @@ namespace MonoDevelop.VersionControl.Views
 			/// <param name='initalLength'>
 			/// Inital length.
 			/// </param> 
-			string TruncRevision (string revision, int initalLength = 8)
+			string TruncRevision (string revision, int initalLength)
 			{
 				if (initalLength >= revision.Length)
 					return revision;
