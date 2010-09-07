@@ -523,6 +523,45 @@ namespace MonoDevelop.Projects
 			}
 			return null;
 		}
+
+		protected internal override BuildResult OnRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		{
+			ReadOnlyCollection<SolutionItem> allProjects;
+				
+			try {
+				allProjects = GetAllBuildableEntries (configuration, true, true);
+			} catch (CyclicDependencyException) {
+				monitor.ReportError (GettextCatalog.GetString ("Cyclic dependencies are not supported."), null);
+				return new BuildResult ("", 1, 1);
+			}
+			
+			try {
+				monitor.BeginTask (GettextCatalog.GetString ("Building Solution {0}", Name), allProjects.Count);
+				
+				BuildResult cres = new BuildResult ();
+				cres.BuildCount = 0;
+				HashSet<SolutionItem> failedItems = new HashSet<SolutionItem> ();
+				
+				foreach (SolutionItem item in allProjects) {
+					if (monitor.IsCancelRequested)
+						break;
+
+					if (!item.ContainsReferences (failedItems, configuration)) {
+						BuildResult res = item.RunTarget (monitor, target, configuration);
+						if (res != null) {
+							cres.Append (res);
+							if (res.ErrorCount > 0)
+								failedItems.Add (item);
+						}
+					} else
+						failedItems.Add (item);
+					monitor.Step (1);
+				}
+				return cres;
+			} finally {
+				monitor.EndTask ();
+			}
+		}
 		
 		protected internal override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{

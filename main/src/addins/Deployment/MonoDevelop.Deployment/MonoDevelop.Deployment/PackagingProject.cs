@@ -53,6 +53,11 @@ namespace MonoDevelop.Deployment
 			return null;
 		}
 		
+		protected override BuildResult OnRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		{
+			return null;
+		}
+
 		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
 		}

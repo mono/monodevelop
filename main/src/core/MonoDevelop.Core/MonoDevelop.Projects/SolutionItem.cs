@@ -491,6 +491,7 @@ namespace MonoDevelop.Projects
 		
 		internal protected abstract void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration);
 		internal protected abstract BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration);
+		internal protected abstract BuildResult OnRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration);
 		internal protected abstract void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration);
 		internal protected abstract bool OnGetNeedsBuilding (ConfigurationSelector configuration);
 		internal protected abstract void OnSetNeedsBuilding (bool val, ConfigurationSelector configuration);

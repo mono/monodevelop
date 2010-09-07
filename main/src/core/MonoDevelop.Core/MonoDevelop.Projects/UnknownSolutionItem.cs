@@ -81,6 +81,11 @@ namespace MonoDevelop.Projects
 		{
 		}
 		
+		protected internal override BuildResult OnRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		{
+			return null;
+		}
+
 		protected internal override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			return null;
