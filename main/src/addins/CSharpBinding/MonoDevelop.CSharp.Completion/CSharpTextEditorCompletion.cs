@@ -2286,16 +2286,17 @@ namespace MonoDevelop.CSharp.Completion
 		
 		void UpdatePath (object sender, Mono.TextEditor.DocumentLocationEventArgs e)
 		{
-			if (Document.ParsedDocument == null || Document.ParsedDocument.CompilationUnit == null)
+			var unit = Document.CompilationUnit;
+			if (unit == null)
 				return;
 			
 			var loc = textEditorData.Caret.Location;
-			IType type = Document.ParsedDocument.CompilationUnit.GetTypeAt (loc.Line, loc.Column);
+			IType type = unit.GetTypeAt (loc.Line, loc.Column);
 			IMember member = type != null && type.ClassType != ClassType.Delegate ? type.GetMemberAt (loc.Line, loc.Column) : null;
 			
 			List<PathEntry> result = new List<PathEntry> ();
 			var amb = GetAmbience ();
-			INode node = member ?? type ?? (INode)Document.ParsedDocument.CompilationUnit;
+			INode node = member ?? type ?? (INode)unit;
 			while (node != null) {
 				PathEntry entry;
 				if (node is ICompilationUnit) {
