@@ -376,6 +376,11 @@ namespace MonoDevelop.Projects
 			return newDir;
 		}
 
+		internal protected override BuildResult OnRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		{
+			return DoRunTarget (monitor, target, configuration);
+		}
+
 		protected internal override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			// create output directory, if not exists
@@ -573,6 +578,12 @@ namespace MonoDevelop.Projects
 			if (file != null)
 				list.Add (file);
 		}		
+
+		protected virtual BuildResult DoRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		{
+			BuildResult res = ItemHandler.RunTarget (monitor, target, configuration);
+			return res ?? new BuildResult ();
+		}
 		
 		/// <summary>
 		/// Builds the project.

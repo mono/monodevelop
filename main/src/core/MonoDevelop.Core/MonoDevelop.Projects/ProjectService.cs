@@ -688,6 +688,22 @@ namespace MonoDevelop.Projects
 				throw new InvalidOperationException ("Unknown item type: " + item);
 		}
 
+		public override BuildResult RunTarget (IProgressMonitor monitor, IBuildTarget item, string target, ConfigurationSelector configuration)
+		{
+			BuildResult res;
+			if (item is WorkspaceItem) {
+				res = ((WorkspaceItem)item).OnRunTarget (monitor, target, configuration);
+			}
+			else if (item is SolutionItem)
+				res = ((SolutionItem)item).OnRunTarget (monitor, target, configuration);
+			else
+				throw new InvalidOperationException ("Unknown item type: " + item);
+			
+			if (res != null)
+				res.SourceTarget = item;
+			return res;
+		}
+
 		protected override BuildResult Build (IProgressMonitor monitor, IBuildTarget item, ConfigurationSelector configuration)
 		{
 			BuildResult res;
