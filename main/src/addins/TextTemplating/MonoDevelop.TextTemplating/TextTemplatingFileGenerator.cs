@@ -45,7 +45,7 @@ namespace MonoDevelop.TextTemplating
 					var defaultOutputName = file.FilePath.ChangeExtension (".cs"); //cs extension for VS compat
 					
 					string ns = TextTemplatingFilePreprocessor.GetNamespaceHint (file, defaultOutputName);
-					System.Runtime.Remoting.Messaging.CallContext.LogicalSetData ("NamespaceHint", ns);
+					TextTemplatingFilePreprocessor.LogicalSetData ("NamespaceHint", ns, result.Errors);
 					
 					host.ProcessTemplate (file.FilePath, defaultOutputName);
 					result.GeneratedFilePath = host.OutputFile;
