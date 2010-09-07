@@ -450,19 +450,19 @@ namespace MonoDevelop.CSharp.Parser
 				
 			}
 			
-
 			public override void Visit (UsingsBag.Namespace nspace)
 			{
 				string oldNamespace = currentNamespaceName;
 				currentNamespace.Push (nspace);
 				if (nspace.Name != null) { // no need to push the global namespace
-					DomUsing domUsing = new DomUsing ();
-					domUsing.IsFromNamespace = true;
-					domUsing.Region = domUsing.ValidRegion = ConvertRegion (nspace.OpenBrace, nspace.CloseBrace); 
-					string name = ConvertToString (nspace.Name);
-					domUsing.Add (name);
-					Unit.Add (domUsing);
-					currentNamespaceName = string.IsNullOrEmpty (currentNamespaceName) ? name : currentNamespaceName + "." + name;
+					string[] splittedNamespace = ConvertToString (nspace.Name).Split ('.');
+					for (int i = splittedNamespace.Length; i --> 0;) {
+						DomUsing domUsing = new DomUsing ();
+						domUsing.IsFromNamespace = true;
+						domUsing.Region = domUsing.ValidRegion = ConvertRegion (nspace.OpenBrace, nspace.CloseBrace); 
+						domUsing.Add (string.Join (".", splittedNamespace, 0, i));
+						Unit.Add (domUsing);
+					}
 				}
 				
 				VisitNamespaceUsings (nspace);
