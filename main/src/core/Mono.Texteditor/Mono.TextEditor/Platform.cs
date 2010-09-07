@@ -130,6 +130,9 @@ namespace Mono.TextEditor
 				key = Gdk.Key.Tab;
 				mod |= Gdk.ModifierType.ShiftMask;
 			}
+			
+			if ((key == Gdk.Key.space || key == Gdk.Key.parenleft || key == Gdk.Key.parenright) && (mod & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)
+				mod = ModifierType.None;
 		}
 		
 		static Dictionary<Gdk.Key,Gdk.Key> groupZeroMappings = new Dictionary<Gdk.Key,Gdk.Key> ();
