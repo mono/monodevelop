@@ -457,7 +457,7 @@ namespace MonoDevelop.CSharp.Parser
 				if (nspace.Name != null) { // no need to push the global namespace
 					string name = ConvertToString (nspace.Name);
 					string[] splittedNamespace = name.Split ('.');
-					for (int i = splittedNamespace.Length; i --> 0;) {
+					for (int i = splittedNamespace.Length; i > 0; i--) {
 						DomUsing domUsing = new DomUsing ();
 						domUsing.IsFromNamespace = true;
 						domUsing.Region = domUsing.ValidRegion = ConvertRegion (nspace.OpenBrace, nspace.CloseBrace); 
