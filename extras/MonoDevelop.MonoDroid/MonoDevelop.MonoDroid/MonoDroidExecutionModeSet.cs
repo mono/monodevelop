@@ -37,14 +37,14 @@ namespace MonoDevelop.MonoDroid
 		
 		public IEnumerable<IExecutionMode> ExecutionModes {
 			get {
-				return Adb.GetDeviceTargets ().Select (t => (IExecutionMode) new MonoDroidExecutionMode (t));
+				return MonoDroidFramework.Devices.Select (t => (IExecutionMode) new MonoDroidExecutionMode (t));
 			}
 		}
 	}
 	
 	class MonoDroidExecutionMode : IExecutionMode
 	{
-		public MonoDroidExecutionMode (MonoDroidDeviceTarget target)
+		public MonoDroidExecutionMode (AndroidDevice target)
 		{
 			this.Target = target;
 		}
@@ -58,7 +58,7 @@ namespace MonoDevelop.MonoDroid
 		}
 		
 		public string Id { get { return "MonoDroidExecutionMode"; } }
-		public MonoDroidDeviceTarget Target { get; private set; }
+		public AndroidDevice Target { get; private set; }
 		
 		public IExecutionHandler ExecutionHandler {
 			get {

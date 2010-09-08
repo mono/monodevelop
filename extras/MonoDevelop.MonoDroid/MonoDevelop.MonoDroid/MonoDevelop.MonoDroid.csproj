@@ -94,6 +94,7 @@
     <Compile Include="Gui\MonoDroidApplicationSettings.cs" />
     <Compile Include="gtk-gui\MonoDevelop.MonoDroid.Gui.MonoDroidApplicationSettingsWidget.cs" />
     <Compile Include="MonoDroidSdk.cs" />
+    <Compile Include="Adb\AndroidToolbox.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MonoDroid.addin.xml">
@@ -110,6 +111,7 @@
     <Folder Include="icons\" />
     <Folder Include="templates\" />
     <Folder Include="Gui\" />
+    <Folder Include="Adb\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="templates\MonoDroidLibraryProject.xpt.xml">

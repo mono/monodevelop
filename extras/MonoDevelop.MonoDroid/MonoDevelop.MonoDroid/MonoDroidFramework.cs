@@ -48,6 +48,7 @@ namespace MonoDevelop.MonoDroid
 		{
 			try {
 				BinDir = FrameworkDir = AndroidBinDir = JavaBinDir = null;
+				Toolbox = null;
 				EnvironmentOverrides.Remove ("PATH");
 				
 				string monodroidPath, javaPath, androidPath;
@@ -78,6 +79,8 @@ namespace MonoDevelop.MonoDroid
 					AndroidBinDir + Path.PathSeparator + 
 					JavaBinDir + Path.PathSeparator + 
 					Environment.GetEnvironmentVariable ("PATH");
+				
+				Toolbox = new AndroidToolbox (AndroidBinDir, JavaBinDir);
 				
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error detecting MonoDroid SDK", ex);
@@ -140,6 +143,15 @@ namespace MonoDevelop.MonoDroid
 		/// Environment variables to be used when invoking MonoDroid tools.
 		/// </summary>
 		public static Dictionary<string,string> EnvironmentOverrides { get; private set; }
+		
+		public static AndroidToolbox Toolbox { get; private set; }
+		
+		public static List<AndroidDevice> Devices {
+			get {
+				//FIXME: make this cancellable
+				return Toolbox.GetDevices (new MonoDevelop.Core.ProgressMonitoring.SimpleProgressMonitor ());
+			}
+		}
 		
 		public static readonly string[] Permissions = new [] {
 			"ACCESS_CHECKIN_PROPERTIES",
@@ -272,15 +284,6 @@ namespace MonoDevelop.MonoDroid
 		public override bool Evaluate (NodeElement conditionNode)
 		{
 			return MonoDroidFramework.IsInstalled;
-		}
-	}
-	
-	public static class Adb
-	{
-		public static IEnumerable<MonoDroidDeviceTarget> GetDeviceTargets ()
-		{
-			//FIXME: implement
-			yield break;
 		}
 	}
 	

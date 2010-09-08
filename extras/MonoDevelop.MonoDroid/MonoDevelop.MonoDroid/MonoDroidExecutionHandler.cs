@@ -42,12 +42,12 @@ namespace MonoDevelop.MonoDroid
 		{
 		}
 		
-		public MonoDroidExecutionHandler (MonoDroidDeviceTarget target)
+		public MonoDroidExecutionHandler (AndroidDevice target)
 		{
 			this.DeviceTarget = target;
 		}		
 		
-		public MonoDroidDeviceTarget DeviceTarget { get; private set; }
+		public AndroidDevice DeviceTarget { get; private set; }
 
 		public bool CanExecute (ExecutionCommand command)
 		{
@@ -58,7 +58,7 @@ namespace MonoDevelop.MonoDroid
 		}
 		
 		public static ProcessStartInfo CreateStartInfo (MonoDroidExecutionCommand cmd, bool logSimOutput, 
-		                                                         MonoDroidDeviceTarget target)
+			AndroidDevice target)
 		{
 			throw new NotImplementedException ();
 		}

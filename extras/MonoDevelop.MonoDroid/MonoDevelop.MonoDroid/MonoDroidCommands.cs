@@ -35,6 +35,7 @@ using System.IO;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.MonoDroid
 {
@@ -52,7 +53,7 @@ namespace MonoDevelop.MonoDroid
 		protected override void Update (CommandArrayInfo info)
 		{
 			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
-			if (proj == null)
+			if (proj == null || !MonoDroidFramework.HasAndroidJavaSdks)
 				return;
 			
 			var conf = (MonoDroidProjectConfiguration) proj.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
@@ -62,7 +63,7 @@ namespace MonoDevelop.MonoDroid
 			if (projSetting == null)
 				def.Checked  = true;
 			
-			foreach (var st in Adb.GetDeviceTargets ()) {
+			foreach (var st in MonoDroidFramework.Devices) {
 				var i = info.Add (st.ToString (), st);
 				if (projSetting != null && projSetting.Equals (st))
 					i.Checked  = true;
