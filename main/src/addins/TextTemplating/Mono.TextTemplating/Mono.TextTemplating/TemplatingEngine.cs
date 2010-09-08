@@ -81,6 +81,7 @@ namespace Mono.TextTemplating
 			settings.Name = className;
 			settings.Namespace = classNamespace;
 			settings.IncludePreprocessingHelpers = string.IsNullOrEmpty (settings.Inherits);
+			settings.IsPreprocessed = true;
 			language = settings.Language;
 			
 			var ccu = GenerateCompileUnit (host, content, pt, settings);
@@ -444,10 +445,17 @@ namespace Mono.TextTemplating
 				new CodePropertyReferenceExpression (new CodeThisReferenceExpression (), "GenerationEnvironment"),
 				new CodePrimitiveExpression (null)));
 			
+			CodeExpression toStringHelper;
+			if (settings.IsPreprocessed) {
+				toStringHelper = new CodePropertyReferenceExpression (new CodeThisReferenceExpression (), "ToStringHelper");
+			} else {
+				toStringHelper = new CodeTypeReferenceExpression (
+				new CodeTypeReference (typeof (ToStringHelper), CodeTypeReferenceOptions.GlobalReference));
+			}
+			
 			//method references that will need to be used multiple times
 			var writeMeth = new CodeMethodReferenceExpression (new CodeThisReferenceExpression (), "Write");
-			var toStringMeth = new CodeMethodReferenceExpression (new CodeTypeReferenceExpression (
-				new CodeTypeReference (typeof (ToStringHelper), CodeTypeReferenceOptions.GlobalReference)), "ToStringWithCulture");
+			var toStringMeth = new CodeMethodReferenceExpression (toStringHelper, "ToStringWithCulture");
 			bool helperMode = false;
 			
 			//build the code from the segments
@@ -518,6 +526,7 @@ namespace Mono.TextTemplating
 			if (settings.IncludePreprocessingHelpers) {
 				var baseClass = new CodeTypeDeclaration (settings.Name + "Base");
 				GenerateProcessingHelpers (baseClass, settings);
+				AddToStringHelper (baseClass, settings);
 				namespac.Types.Add (baseClass);
 			}
 			return ccu;
@@ -737,6 +746,73 @@ namespace Mono.TextTemplating
 			type.Members.Add (writeLineArgsMeth);
 		}
 		
+		static void AddToStringHelper (CodeTypeDeclaration type, TemplateSettings settings)
+		{
+			var helperCls = new CodeTypeDeclaration ("ToStringInstanceHelper") {
+				IsClass = true,
+				TypeAttributes = System.Reflection.TypeAttributes.NestedPublic,
+			};
+			
+			var formatProviderField = PrivateField (TypeRef<IFormatProvider> (), "formatProvider");
+			formatProviderField.InitExpression = new CodePropertyReferenceExpression (
+				new CodeTypeReferenceExpression (TypeRef<System.Globalization.CultureInfo> ()), "InvariantCulture");
+			var formatProviderFieldRef = new CodeFieldReferenceExpression (new CodeThisReferenceExpression (), formatProviderField.Name);
+			
+			var formatProviderProp = GenerateGetterSetterProperty ("FormatProvider", formatProviderField);
+			AddSetterNullCheck (formatProviderProp, formatProviderFieldRef);
+			
+			helperCls.Members.Add (formatProviderField);
+			helperCls.Members.Add (formatProviderProp);
+			
+			var meth = new CodeMemberMethod () {
+				Name = "ToStringWithCulture",
+				Attributes = MemberAttributes.Public | MemberAttributes.Final,
+				ReturnType = TypeRef<string> (),
+			};
+			meth.Parameters.Add (new CodeParameterDeclarationExpression (TypeRef<object> (), "objectToConvert"));
+			var paramRef = new CodeArgumentReferenceExpression ("objectToConvert");
+			
+			meth.Statements.Add (NullCheck (paramRef, paramRef.ParameterName));
+			
+			var typeLocal = new CodeVariableDeclarationStatement (TypeRef<Type> (), "type", new CodeMethodInvokeExpression (paramRef, "GetType"));
+			var typeLocalRef = new CodeVariableReferenceExpression (typeLocal.Name);
+			meth.Statements.Add (typeLocal);
+			
+			var iConvertibleTypeLocal = new CodeVariableDeclarationStatement (TypeRef<Type> (), "iConvertibleType",
+				new CodeTypeOfExpression (TypeRef<IConvertible> ()));
+			var iConvertibleTypeLocalRef = new CodeVariableReferenceExpression (iConvertibleTypeLocal.Name);
+			meth.Statements.Add (iConvertibleTypeLocal);
+			
+			meth.Statements.Add (new CodeConditionStatement (
+				new CodeMethodInvokeExpression (iConvertibleTypeLocalRef, "IsAssignableFrom", typeLocalRef),
+				new CodeMethodReturnStatement (new CodeMethodInvokeExpression (
+					new CodeCastExpression (TypeRef<IConvertible> (), paramRef), "ToString", formatProviderFieldRef))));
+			
+			var methInfoLocal = new CodeVariableDeclarationStatement (TypeRef<MethodInfo> (), "methInfo",
+				new CodeMethodInvokeExpression (typeLocalRef, "GetMethod",
+					new CodePrimitiveExpression ("ToString"),
+					new CodeArrayCreateExpression (TypeRef<Type> (), new CodeExpression [] { iConvertibleTypeLocalRef })));
+			meth.Statements.Add (methInfoLocal);
+			var methInfoLocalRef = new CodeVariableReferenceExpression (methInfoLocal.Name);
+			meth.Statements.Add (new CodeConditionStatement (NotNull (methInfoLocalRef),
+				new CodeMethodReturnStatement (new CodeCastExpression (TypeRef<string> (),
+					new CodeMethodInvokeExpression (
+					methInfoLocalRef, "Invoke", paramRef,
+					new CodeArrayCreateExpression (TypeRef<object> (), new CodeExpression [] { formatProviderFieldRef } ))))));
+			
+			meth.Statements.Add (new CodeMethodReturnStatement (new CodeMethodInvokeExpression (paramRef, "ToString")));
+			
+			helperCls.Members.Add (meth);
+			
+			
+			var helperFieldName = settings.Provider.CreateValidIdentifier ("__toStringHelper");
+			var helperField = PrivateField (new CodeTypeReference (helperCls.Name), helperFieldName);
+			helperField.InitExpression = new CodeObjectCreateExpression (helperField.Type);
+			type.Members.Add (helperField);
+			type.Members.Add (GenerateGetterProperty ("ToStringHelper", helperField));
+			type.Members.Add (helperCls);
+		}
+		
 		#region CodeDom helpers
 		
 		static CodeTypeReference TypeRef<T> ()
@@ -790,7 +866,7 @@ namespace Mono.TextTemplating
 			);
 		}
 		
-		static void AddSetterNullCheck (CodeMemberProperty property, CodeFieldReferenceExpression fieldRef, CodeExpression initExpression)
+		static void AddSetterNullCheck (CodeMemberProperty property, CodeFieldReferenceExpression fieldRef)
 		{
 			property.SetStatements.Insert (0, NullCheck (fieldRef, fieldRef.FieldName));
 		}
@@ -798,7 +874,7 @@ namespace Mono.TextTemplating
 		static CodeStatement NullCheck (CodeExpression expr, string exceptionMessage)
 		{
 			return new CodeConditionStatement (
-				NotNull (expr),
+				IsNull (expr),
 				new CodeThrowExceptionStatement (new CodeObjectCreateExpression (
 				new CodeTypeReference (typeof (ArgumentNullException), CodeTypeReferenceOptions.GlobalReference),
 				new CodePrimitiveExpression (exceptionMessage)))

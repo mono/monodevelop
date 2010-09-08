@@ -58,6 +58,7 @@ namespace Mono.TextTemplating
 		public List<CustomDirective> CustomDirectives { get; private set; }
 		public Dictionary<string,DirectiveProcessor> DirectiveProcessors { get; private set; }
 		public bool IncludePreprocessingHelpers { get; set; }
+		public bool IsPreprocessed { get; set; }
 	}
 	
 	public class CustomDirective
