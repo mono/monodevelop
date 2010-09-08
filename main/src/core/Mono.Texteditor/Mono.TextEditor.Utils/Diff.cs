@@ -433,6 +433,8 @@ namespace Mono.TextEditor.Utils
 		
 		public static string GetDiffString (IEnumerable<Hunk> diff, Document baseDocument, Document changedDocument, string baseFileName, string changedFileName)
 		{
+			if (diff == null)
+				return "";
 			StringBuilder sb = new StringBuilder ();
 			sb.AppendLine ("--- " + baseFileName);
 			sb.AppendLine ("+++ " + changedFileName);
