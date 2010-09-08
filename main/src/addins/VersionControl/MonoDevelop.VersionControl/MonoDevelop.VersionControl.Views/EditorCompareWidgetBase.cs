@@ -142,8 +142,20 @@ namespace MonoDevelop.VersionControl.Views
 		protected abstract TextEditor MainEditor {
 			get;
 		}
+		
+		protected bool viewOnly;
+
+		protected EditorCompareWidgetBase (bool viewOnly)
+		{
+			this.viewOnly = viewOnly;
+		}
 
 		public EditorCompareWidgetBase ()
+		{
+			Intialize ();
+		}
+
+		protected void Intialize ()
 		{
 			CreateComponents ();
 
@@ -211,9 +223,10 @@ namespace MonoDevelop.VersionControl.Views
 			
 			leftDiffScrollBar = new DiffScrollbar (this, editors[0], true, false);
 			Add (leftDiffScrollBar);
-			
-			foreach (var widget in headerWidgets) {
-				Add (widget);
+			if (headerWidgets != null) {
+				foreach (var widget in headerWidgets) {
+					Add (widget);
+				}
 			}
 
 			middleAreas = new MiddleArea [editors.Length - 1];
@@ -689,25 +702,27 @@ namespace MonoDevelop.VersionControl.Views
 				Mono.TextEditor.Utils.Hunk selectedHunk = Mono.TextEditor.Utils.Hunk.Empty;
 				if (!hideButton) {
 					int delta = widget.MainEditor.Allocation.Y - Allocation.Y;
-					foreach (var hunk in Diff) {
-						double z1 = delta + fromEditor.LineToY (hunk.RemoveStart) - fromEditor.VAdjustment.Value;
-						double z2 = delta + fromEditor.LineToY (hunk.RemoveStart + hunk.Removed) - fromEditor.VAdjustment.Value;
-						if (z1 == z2)
-							z2 = z1 + 1;
-
-						double y1 = delta + toEditor.LineToY (hunk.InsertStart) - toEditor.VAdjustment.Value;
-						double y2 = delta + toEditor.LineToY (hunk.InsertStart + hunk.Inserted) - toEditor.VAdjustment.Value;
-
-						if (y1 == y2)
-							y2 = y1 + 1;
-						double x, y, w, h;
-						GetButtonPosition (hunk, y1, y2, z1, z2, out x, out y, out w, out h);
-
-						if (evnt.X >= x && evnt.X < x + w && evnt.Y >= y && evnt.Y < y + h) {
-							selectedHunk = hunk;
-							TooltipText = GettextCatalog.GetString ("Revert this change");
-							QueueDrawArea ((int)x, (int)y, (int)w, (int)h);
-							break;
+					if (Diff != null) {
+						foreach (var hunk in Diff) {
+							double z1 = delta + fromEditor.LineToY (hunk.RemoveStart) - fromEditor.VAdjustment.Value;
+							double z2 = delta + fromEditor.LineToY (hunk.RemoveStart + hunk.Removed) - fromEditor.VAdjustment.Value;
+							if (z1 == z2)
+								z2 = z1 + 1;
+	
+							double y1 = delta + toEditor.LineToY (hunk.InsertStart) - toEditor.VAdjustment.Value;
+							double y2 = delta + toEditor.LineToY (hunk.InsertStart + hunk.Inserted) - toEditor.VAdjustment.Value;
+	
+							if (y1 == y2)
+								y2 = y1 + 1;
+							double x, y, w, h;
+							GetButtonPosition (hunk, y1, y2, z1, z2, out x, out y, out w, out h);
+	
+							if (evnt.X >= x && evnt.X < x + w && evnt.Y >= y && evnt.Y < y + h) {
+								selectedHunk = hunk;
+								TooltipText = GettextCatalog.GetString ("Revert this change");
+								QueueDrawArea ((int)x, (int)y, (int)w, (int)h);
+								break;
+							}
 						}
 					}
 				} else {
@@ -790,107 +805,109 @@ namespace MonoDevelop.VersionControl.Views
 					cr.Rectangle (evnt.Region.Clipbox.X, evnt.Region.Clipbox.Y, evnt.Region.Clipbox.Width, evnt.Region.Clipbox.Height);
 					cr.Clip ();
 					int delta = widget.MainEditor.Allocation.Y - Allocation.Y;
-					foreach (Mono.TextEditor.Utils.Hunk hunk in Diff) {
-						double z1 = delta + fromEditor.LineToY (hunk.RemoveStart) - fromEditor.VAdjustment.Value;
-						double z2 = delta + fromEditor.LineToY (hunk.RemoveStart + hunk.Removed) - fromEditor.VAdjustment.Value;
-						if (z1 == z2)
-							z2 = z1 + 1;
-
-						double y1 = delta + toEditor.LineToY (hunk.InsertStart) - toEditor.VAdjustment.Value;
-						double y2 = delta + toEditor.LineToY (hunk.InsertStart + hunk.Inserted) - toEditor.VAdjustment.Value;
-
-						if (y1 == y2)
-							y2 = y1 + 1;
-
-						if (!useLeft) {
-							var tmp = z1;
-							z1 = y1;
-							y1 = tmp;
-
-							tmp = z2;
-							z2 = y2;
-							y2 = tmp;
-						}
-
-						int x1 = 0;
-						int x2 = Allocation.Width;
-
-						if (!hideButton) {
-							if (useLeft && hunk.Removed > 0 || !useLeft && hunk.Removed == 0) {
-								x1 += 16;
-							} else {
-								x2 -= 16;
+					if (Diff != null) {
+						foreach (Mono.TextEditor.Utils.Hunk hunk in Diff) {
+							double z1 = delta + fromEditor.LineToY (hunk.RemoveStart) - fromEditor.VAdjustment.Value;
+							double z2 = delta + fromEditor.LineToY (hunk.RemoveStart + hunk.Removed) - fromEditor.VAdjustment.Value;
+							if (z1 == z2)
+								z2 = z1 + 1;
+	
+							double y1 = delta + toEditor.LineToY (hunk.InsertStart) - toEditor.VAdjustment.Value;
+							double y2 = delta + toEditor.LineToY (hunk.InsertStart + hunk.Inserted) - toEditor.VAdjustment.Value;
+	
+							if (y1 == y2)
+								y2 = y1 + 1;
+	
+							if (!useLeft) {
+								var tmp = z1;
+								z1 = y1;
+								y1 = tmp;
+	
+								tmp = z2;
+								z2 = y2;
+								y2 = tmp;
 							}
-						}
-
-						if (z1 == z2)
-							z2 = z1 + 1;
-
-						cr.MoveTo (x1, z1);
-						
-						cr.CurveTo (x1 + (x2 - x1) / 4, z1,
-							x1 + (x2 - x1) * 3 / 4, y1,
-							x2, y1);
-
-						cr.LineTo (x2, y2);
-						cr.CurveTo (x1 + (x2 - x1) * 3 / 4, y2,
-							x1 + (x2 - x1) / 4, z2,
-							x1, z2);
-						cr.ClosePath ();
-						cr.Color = GetColor (hunk, this.useLeft, false, 1.0);
-						cr.Fill ();
-
-						cr.Color = GetColor (hunk, this.useLeft, true, 1.0);
-						cr.MoveTo (x1, z1);
-						cr.CurveTo (x1 + (x2 - x1) / 4, z1,
-							x1 + (x2 - x1) * 3 / 4, y1,
-							x2, y1);
-						cr.Stroke ();
-						
-						cr.MoveTo (x2, y2);
-						cr.CurveTo (x1 + (x2 - x1) * 3 / 4, y2,
-							x1 + (x2 - x1) / 4, z2,
-							x1, z2);
-						cr.Stroke ();
-
-						if (!hideButton) {
-							bool isButtonSelected = hunk == selectedHunk;
-
-							double x, y, w, h;
-							bool drawArrow = useLeft ? GetButtonPosition (hunk, y1, y2, z1, z2, out x, out y, out w, out h) :
-								GetButtonPosition (hunk, z1, z2, y1, y2, out x, out y, out w, out h);
-
-							cr.Rectangle (x, y, w, h);
-							if (isButtonSelected) {
-								int mx, my;
-								GetPointer (out mx, out my);
-								Console.WriteLine (x  + " - " + y + "/" + mx + " - " + my);
-							//	mx -= (int)x;
-							//	my -= (int)y;
-								Cairo.RadialGradient gradient = new Cairo.RadialGradient (mx, my, h, 
-									mx, my, 2);
-								var color = (Mono.TextEditor.HslColor)Style.Mid (StateType.Normal);
-								color.L *= 1.05;
-								gradient.AddColorStop (0, color);
-								color.L *= 1.07;
-								gradient.AddColorStop (1, color);
-								cr.Pattern = gradient;
-							} else {
-								cr.Color = (Mono.TextEditor.HslColor)Style.Mid (StateType.Normal);
+	
+							int x1 = 0;
+							int x2 = Allocation.Width;
+	
+							if (!hideButton) {
+								if (useLeft && hunk.Removed > 0 || !useLeft && hunk.Removed == 0) {
+									x1 += 16;
+								} else {
+									x2 -= 16;
+								}
 							}
-							cr.FillPreserve ();
+	
+							if (z1 == z2)
+								z2 = z1 + 1;
+	
+							cr.MoveTo (x1, z1);
 							
-							cr.Color = (Mono.TextEditor.HslColor)Style.Dark (StateType.Normal);
+							cr.CurveTo (x1 + (x2 - x1) / 4, z1,
+								x1 + (x2 - x1) * 3 / 4, y1,
+								x2, y1);
+	
+							cr.LineTo (x2, y2);
+							cr.CurveTo (x1 + (x2 - x1) * 3 / 4, y2,
+								x1 + (x2 - x1) / 4, z2,
+								x1, z2);
+							cr.ClosePath ();
+							cr.Color = GetColor (hunk, this.useLeft, false, 1.0);
+							cr.Fill ();
+	
+							cr.Color = GetColor (hunk, this.useLeft, true, 1.0);
+							cr.MoveTo (x1, z1);
+							cr.CurveTo (x1 + (x2 - x1) / 4, z1,
+								x1 + (x2 - x1) * 3 / 4, y1,
+								x2, y1);
 							cr.Stroke ();
-							cr.LineWidth = 1;
-							cr.Color = new Cairo.Color (0, 0, 0);
-							if (drawArrow) {
-								DrawArrow (cr, x + w / 1.5, y + h / 2);
-								DrawArrow (cr, x + w / 2.5, y + h / 2);
-							} else {
-								DrawCross (cr, x + w / 2 , y + (h) / 2);
+							
+							cr.MoveTo (x2, y2);
+							cr.CurveTo (x1 + (x2 - x1) * 3 / 4, y2,
+								x1 + (x2 - x1) / 4, z2,
+								x1, z2);
+							cr.Stroke ();
+	
+							if (!hideButton) {
+								bool isButtonSelected = hunk == selectedHunk;
+	
+								double x, y, w, h;
+								bool drawArrow = useLeft ? GetButtonPosition (hunk, y1, y2, z1, z2, out x, out y, out w, out h) :
+									GetButtonPosition (hunk, z1, z2, y1, y2, out x, out y, out w, out h);
+	
+								cr.Rectangle (x, y, w, h);
+								if (isButtonSelected) {
+									int mx, my;
+									GetPointer (out mx, out my);
+									Console.WriteLine (x  + " - " + y + "/" + mx + " - " + my);
+								//	mx -= (int)x;
+								//	my -= (int)y;
+									Cairo.RadialGradient gradient = new Cairo.RadialGradient (mx, my, h, 
+										mx, my, 2);
+									var color = (Mono.TextEditor.HslColor)Style.Mid (StateType.Normal);
+									color.L *= 1.05;
+									gradient.AddColorStop (0, color);
+									color.L *= 1.07;
+									gradient.AddColorStop (1, color);
+									cr.Pattern = gradient;
+								} else {
+									cr.Color = (Mono.TextEditor.HslColor)Style.Mid (StateType.Normal);
+								}
+								cr.FillPreserve ();
+								
+								cr.Color = (Mono.TextEditor.HslColor)Style.Dark (StateType.Normal);
+								cr.Stroke ();
+								cr.LineWidth = 1;
+								cr.Color = new Cairo.Color (0, 0, 0);
+								if (drawArrow) {
+									DrawArrow (cr, x + w / 1.5, y + h / 2);
+									DrawArrow (cr, x + w / 2.5, y + h / 2);
+								} else {
+									DrawCross (cr, x + w / 2 , y + (h) / 2);
+								}
+								cr.Stroke ();
 							}
-							cr.Stroke ();
 						}
 					}
 				}

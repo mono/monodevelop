@@ -291,6 +291,35 @@ namespace MonoDevelop.VersionControl.Views
 				line = Editor.Document.OffsetToLineNumber (lastFold);
 		}
 
+		internal static string FormatMessage (string msg)
+		{
+			StringBuilder sb = new StringBuilder ();
+			bool wasWs = false;
+			foreach (char ch in msg) {
+				if (ch == ' ' || ch == '\t') {
+					if (!wasWs)
+						sb.Append (' ');
+					wasWs = true;
+					continue;
+				}
+				wasWs = false;
+				sb.Append (ch);
+			}
+			
+			Document doc = new Document ();
+			doc.Text = sb.ToString ();
+			for (int i = 1; i <= doc.LineCount; i++) {
+				string text = doc.GetLineText (i).Trim ();
+				int idx = text.IndexOf (':');
+				if (text.StartsWith ("*") && idx >= 0 && idx < text.Length - 1) {
+					int offset = doc.GetLine (i).EndOffset;
+					msg = text.Substring (idx + 1) + doc.GetTextAt (offset, doc.Length - offset);
+					break;
+				}
+			}
+			return msg.TrimStart (' ', '\t');
+		}
+
 		class BlameRenderer : DrawingArea 
 		{
 			static readonly Annotation locallyModified = new Annotation ("", "?", DateTime.MinValue);
@@ -531,10 +560,10 @@ namespace MonoDevelop.VersionControl.Views
 				QueueResize ();
 			}
 
-			Regex regex = new Regex (@"[\s+\*[^:]*\:\s*]*(?<msg>[^:\s*](.)*)$");
 			const int leftSpacer = 4;
 			const int margin = 4;
 
+			
 			protected override bool OnExposeEvent (Gdk.EventExpose e)
 			{
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window)) {
@@ -593,21 +622,7 @@ namespace MonoDevelop.VersionControl.Views
 						if (ann != null && line - lineStart > 1) {
 							string msg = GetCommitMessage (lineStart);
 							if (!string.IsNullOrEmpty (msg)) {
-								StringBuilder sb = new StringBuilder ();
-								bool wasWs = false;
-								foreach (char ch in msg) {
-									if (char.IsWhiteSpace (ch)) {
-										if (!wasWs)
-											sb.Append (' ');
-										wasWs = true;
-										continue;
-									}
-									wasWs = false;
-									sb.Append (ch);
-								}
-								var match = regex.Match (sb.ToString ());
-								if (match.Success)
-									msg = match.Result ("${msg}").Trim ();
+								msg = FormatMessage (msg);
 								layout.SetText (msg);
 								layout.Width = (int)(Allocation.Width * Pango.Scale.PangoScale);
 								using (var gc = new Gdk.GC (e.Window)) {

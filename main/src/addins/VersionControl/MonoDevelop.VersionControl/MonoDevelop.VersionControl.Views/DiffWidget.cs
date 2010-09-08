@@ -34,7 +34,8 @@ namespace MonoDevelop.VersionControl.Views
 	{
 		VersionControlDocumentInfo info;
 		Mono.TextEditor.TextEditor diffTextEditor;
-		
+		MonoDevelop.VersionControl.Views.ComparisonWidget comparisonWidget;
+
 		internal ComparisonWidget ComparisonWidget {
 			get {
 				return comparisonWidget;
@@ -49,14 +50,23 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		public DiffWidget (VersionControlDocumentInfo info)
+		public DiffWidget (VersionControlDocumentInfo info) : this (info, false)
+		{
+		}
+		
+		public DiffWidget (VersionControlDocumentInfo info, bool viewOnly)
 		{
 			this.info = info;
 			this.Build ();
+			comparisonWidget = new MonoDevelop.VersionControl.Views.ComparisonWidget (viewOnly);
+			
 			fixed1.SetSizeRequest (16, 16);
 			this.buttonNext.Clicked += (sender, args) => ComparisonWidget.GotoNext ();
 			this.buttonPrev.Clicked += (sender, args) => ComparisonWidget.GotoPrev ();
 			notebook1.Page = 0;
+			vboxComparisonView.PackStart (comparisonWidget, true, true, 0);
+			comparisonWidget.Show ();
+			
 			comparisonWidget.DiffChanged += delegate {
 				labelOverview.Markup = "<big>" + LabelText + "</big>";
 				SetButtonSensitivity ();

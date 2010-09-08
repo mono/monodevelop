@@ -98,9 +98,15 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			this.vc = info.Item.Repository;
 			this.filepath = info.Item.Path;
-			
-			
-			
+			var lw = new LogWidget (info);
+			widget = lw;
+			info.Updated += delegate {
+				history = lw.History = this.info.History;
+				vinfo   = this.info.VersionInfo;
+			};
+			lw.History = history = this.info.History;
+			vinfo   = this.info.VersionInfo;
+			/*
 			// Widget setup
 			VBox box = new VBox (false, 6);
 			
@@ -221,7 +227,7 @@ namespace MonoDevelop.VersionControl.Views
 			};
 			history = this.info.History;
 			vinfo   = this.info.VersionInfo;
-			ShowHistory ();
+			ShowHistory ();*/
 		}
 		
 		public LogView (string filepath, bool isDirectory, Revision [] history, Repository vc) 

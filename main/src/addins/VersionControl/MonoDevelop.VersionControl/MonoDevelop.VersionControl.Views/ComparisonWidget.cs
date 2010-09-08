@@ -74,22 +74,30 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			this.editors = new [] { new TextEditor (), new TextEditor ()};
 			DiffEditor.Document.ReadOnly = true;
+			if (viewOnly) {
+				OriginalEditor.Document.ReadOnly = true;
+			} else {
+				originalComboBox = new DropDownBox ();
+				originalComboBox.WindowRequestFunc = CreateComboBoxSelector;
+				originalComboBox.Text = "Local";
+				originalComboBox.Tag = editors[1];
 			
-			originalComboBox = new DropDownBox ();
-			originalComboBox.WindowRequestFunc = CreateComboBoxSelector;
-			originalComboBox.Text = "Local";
-			originalComboBox.Tag = editors[1];
+				diffComboBox = new DropDownBox ();
+				diffComboBox.WindowRequestFunc = CreateComboBoxSelector;
+				diffComboBox.Text = "Base";
+				diffComboBox.Tag = editors[0];
 			
-			diffComboBox = new DropDownBox ();
-			diffComboBox.WindowRequestFunc = CreateComboBoxSelector;
-			diffComboBox.Text = "Base";
-			diffComboBox.Tag = editors[0];
-			
-			this.headerWidgets = new [] { diffComboBox, originalComboBox };
+				this.headerWidgets = new [] { diffComboBox, originalComboBox };
+			}
 		}
-
+		
 		public ComparisonWidget ()
 		{
+		}
+		
+		public ComparisonWidget (bool viewOnly) : base (viewOnly)
+		{
+			Intialize ();
 		}
 		
 		
