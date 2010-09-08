@@ -32,9 +32,18 @@ namespace MonoDevelop.AnalysisCore.Rules
 {
 	public static class NamingConventions
 	{
-		public static IEnumerable<Result> ClassNaming (ICompilationUnit input)
+		public static IEnumerable<Result> TypeNaming (IEnumerable<IType> input)
 		{
-			foreach (var type in input.Types) {
+			foreach (var type in input) {
+				if ((type.ClassType == ClassType.Interface) && type.Name[0] != 'I') {
+					var start = type.Location;
+					var newName = "I" + char.ToUpper (type.Name[0]).ToString () + type.Name.Substring (1);
+					yield return new FixableResult (
+						new DomRegion (start, new DomLocation (start.Line, start.Column + type.Name.Length)),
+						"Interface names should begin with an I",
+						ResultLevel.Warning, ResultCertainty.High, ResultImportance.Medium,
+						new RenameMemberFix (type, newName));
+				}
 				if (!char.IsUpper (type.Name[0])) {
 					var start = type.Location;
 					var newName = char.ToUpper (type.Name[0]).ToString () + type.Name.Substring (1);

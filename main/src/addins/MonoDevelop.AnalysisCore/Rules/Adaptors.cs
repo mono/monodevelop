@@ -3,6 +3,7 @@
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
+//		 Nikhil Sarda <diff.operator@gmail.com>
 // 
 // Copyright (c) 2010 Novell, Inc.
 // 
@@ -37,5 +38,36 @@ namespace MonoDevelop.AnalysisCore.Rules
 		{
 			return input.CompilationUnit;
 		}
+		
+		public static IEnumerable<IType> GetTypes (ICompilationUnit input)
+		{
+			foreach (var type in input.Types) {
+				foreach(var subtype in type.SourceProjectDom.GetSubclasses(type)) {
+					MonoDevelop.Ide.MessageService.ShowMessage(subtype.FullName);
+				}
+				yield return type;
+			}
+		}
+		
+		public static IEnumerable<IMethod> GetMethods (IType input)
+		{
+			foreach (var meth in input.Methods) {
+				yield return meth;
+			}
+		}
+		
+		public static IEnumerable<IProperty> GetProperties (IType input)
+		{
+			foreach (var prop in input.Properties) {
+				yield return prop;
+			}	
+		}
+		
+		public static IEnumerable<IField> GetFields (IType input)
+		{
+			foreach (var field in input.Fields) {
+				yield return field;
+			}
+		}	
 	}
 }
