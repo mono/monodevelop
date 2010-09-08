@@ -33,7 +33,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 {
 	public abstract class TextTransformation : IDisposable
 	{
-		Stack<int> indents = new Stack<int> ();
+		Stack<int> indents;
 		string currentIndent = string.Empty;
 		CompilerErrorCollection errors;
 		StringBuilder builder;
