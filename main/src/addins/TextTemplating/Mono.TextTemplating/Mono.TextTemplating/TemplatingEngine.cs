@@ -272,9 +272,10 @@ namespace Mono.TextTemplating
 				var hs = kv.Value as IRecognizeHostSpecific;
 				if (hs == null)
 					continue;
-				if (hs.RequiresProcessingRunIsHostSpecific && !settings.HostSpecific)
+				if (hs.RequiresProcessingRunIsHostSpecific && !settings.HostSpecific) {
 					settings.HostSpecific = true;
 					pt.LogWarning ("Directive processor '" + kv.Key + "' requires hostspecific=true, forcing on.");
+				}
 				hs.SetProcessingRunIsHostSpecific (settings.HostSpecific);
 			}
 			
