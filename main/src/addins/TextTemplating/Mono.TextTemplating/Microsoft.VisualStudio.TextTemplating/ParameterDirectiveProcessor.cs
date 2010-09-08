@@ -72,8 +72,15 @@ namespace Microsoft.VisualStudio.TextTemplating
 			using (var sw = new StringWriter ()) {
 				foreach (CodeTypeMember member in members)
 					languageProvider.GenerateCodeFromMember (member, sw, options);
-				return sw.ToString ();
+				return Indent (sw.ToString (), "        ");
 			}
+		}
+		
+		string Indent (string s, string indent)
+		{
+			if (this.languageProvider is Microsoft.CSharp.CSharpCodeProvider)
+				return Mono.TextTemplating.TemplatingEngine.IndentSnippetText (s, indent);
+			return s;
 		}
 		
 		public override string[] GetImportsForProcessingRun ()
@@ -83,7 +90,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 		
 		public override string GetPostInitializationCodeForProcessingRun ()
 		{
-			return StatementsToCode (postStatements);
+			return Indent (StatementsToCode (postStatements), "            ");
 		}
 		
 		public override string GetPreInitializationCodeForProcessingRun ()
