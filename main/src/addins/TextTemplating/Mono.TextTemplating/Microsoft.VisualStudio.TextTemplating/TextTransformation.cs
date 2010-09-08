@@ -34,9 +34,10 @@ namespace Microsoft.VisualStudio.TextTemplating
 	public abstract class TextTransformation : IDisposable
 	{
 		Stack<int> indents = new Stack<int> ();
-		string currentIndent = "";
-		CompilerErrorCollection errors = new CompilerErrorCollection ();
-		StringBuilder builder = new StringBuilder ();
+		string currentIndent = string.Empty;
+		CompilerErrorCollection errors;
+		StringBuilder builder;
+		bool endsWithNewline;
 		
 		public TextTransformation ()
 		{
@@ -54,7 +55,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 		
 		public void Error (string message)
 		{
-			errors.Add (new CompilerError (null, -1, -1, null, message));
+			Errors.Add (new CompilerError (null, -1, -1, null, message));
 		}
 		
 		public void Warning (string message)
@@ -62,11 +63,23 @@ namespace Microsoft.VisualStudio.TextTemplating
 			var err = new CompilerError (null, -1, -1, null, message) {
 				IsWarning = true,
 			};
-			errors.Add (err);
+			Errors.Add (err);
 		}
 		
 		protected internal CompilerErrorCollection Errors {
-			get { return errors; }
+			get {
+				if (errors == null)
+					errors = new CompilerErrorCollection ();
+				return errors;
+			}
+		}
+		
+		Stack<int> Indents {
+			get {
+				if (indents == null)
+					indents = new Stack<int> ();
+				return indents;
+			}
 		}
 		
 		#endregion
@@ -75,9 +88,9 @@ namespace Microsoft.VisualStudio.TextTemplating
 		
 		public string PopIndent ()
 		{
-			if (indents.Count == 0)
+			if (Indents.Count == 0)
 				return "";
-			int lastPos = currentIndent.Length - indents.Pop ();
+			int lastPos = currentIndent.Length - Indents.Pop ();
 			string last = currentIndent.Substring (lastPos);
 			currentIndent = currentIndent.Substring (0, lastPos);
 			return last; 
@@ -85,14 +98,16 @@ namespace Microsoft.VisualStudio.TextTemplating
 		
 		public void PushIndent (string indent)
 		{
-			indents.Push (indent.Length);
+			if (indent == null)
+				throw new ArgumentNullException ("indent");
+			Indents.Push (indent.Length);
 			currentIndent += indent;
 		}
 		
 		public void ClearIndent ()
 		{
-			currentIndent = "";
-			indents.Clear ();
+			currentIndent = string.Empty;
+			Indents.Clear ();
 		}
 		
 		public string CurrentIndent {
@@ -104,7 +119,11 @@ namespace Microsoft.VisualStudio.TextTemplating
 		#region Writing
 		
 		protected StringBuilder GenerationEnvironment {
-			get { return builder; }
+			get {
+				if (builder == null)
+					builder = new StringBuilder ();
+				return builder;
+			}
 			set {
 				if (value == null)
 					throw new ArgumentNullException ();
@@ -114,25 +133,67 @@ namespace Microsoft.VisualStudio.TextTemplating
 		
 		public void Write (string textToAppend)
 		{
-			GenerationEnvironment.Append (textToAppend);
+			if (string.IsNullOrEmpty (textToAppend))
+				return;
+			
+			if ((GenerationEnvironment.Length == 0 || endsWithNewline) && CurrentIndent.Length > 0) {
+				GenerationEnvironment.Append (CurrentIndent);
+			}
+			endsWithNewline = false;
+			
+			char last = textToAppend[textToAppend.Length-1];
+			if (last == '\n' || last == '\r') {
+				endsWithNewline = true;
+			}
+			
+			if (CurrentIndent.Length == 0) {
+				GenerationEnvironment.Append (textToAppend);
+				return;
+			}
+			
+			//insert CurrentIndent after every newline (\n, \r, \r\n)
+			//but if there's one at the end of the string, ignore it, it'll be handled next time thanks to endsWithNewline
+			int lastNewline = 0;
+			for (int i = 0; i < textToAppend.Length - 1; i++) {
+				char c = textToAppend[i];
+				if (c == '\r') {
+					if (textToAppend[i + 1] == '\n') {
+						i++;
+						if (i == textToAppend.Length - 1)
+							break;
+					}
+				} else if (c != '\n') {
+					continue;
+				}
+				i++;
+				int len = i - lastNewline;
+				if (len > 0) {
+					GenerationEnvironment.Append (textToAppend, lastNewline, i - lastNewline);
+				}
+				GenerationEnvironment.Append (CurrentIndent);
+				lastNewline = i;
+			}
+			if (lastNewline > 0)
+				GenerationEnvironment.Append (textToAppend, lastNewline, textToAppend.Length - lastNewline);
+			else
+				GenerationEnvironment.Append (textToAppend);
 		}
 		
 		public void Write (string format, params object[] args)
 		{
-			GenerationEnvironment.AppendFormat (format, args);
+			Write (string.Format (format, args));
 		}
 		
 		public void WriteLine (string textToAppend)
 		{
-			GenerationEnvironment.Append (CurrentIndent);
-			GenerationEnvironment.AppendLine (textToAppend);
+			Write (textToAppend);
+			GenerationEnvironment.AppendLine ();
+			endsWithNewline = true;
 		}
 		
 		public void WriteLine (string format, params object[] args)
 		{
-			GenerationEnvironment.Append (CurrentIndent);
-			GenerationEnvironment.AppendFormat (format, args);
-			GenerationEnvironment.AppendLine ();
+			WriteLine (string.Format (format, args));
 		}
 
 		#endregion

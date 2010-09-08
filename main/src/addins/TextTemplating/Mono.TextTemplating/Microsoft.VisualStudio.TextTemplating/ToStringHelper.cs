@@ -33,8 +33,9 @@ namespace Microsoft.VisualStudio.TextTemplating
 	public static class ToStringHelper
 	{
 		static object [] formatProviderAsParameterArray;
+		
 		static IFormatProvider formatProvider = System.Globalization.CultureInfo.InvariantCulture;
-
+		
 		static ToStringHelper ()
 		{
 			formatProviderAsParameterArray = new object[] { formatProvider };
@@ -43,15 +44,19 @@ namespace Microsoft.VisualStudio.TextTemplating
 		public static string ToStringWithCulture (object objectToConvert)
 		{
 			if (objectToConvert == null)
-				return null;
+				throw new ArgumentNullException ("objectToConvert");
 
 			IConvertible conv = objectToConvert as IConvertible;
 			if (conv != null)
 				return conv.ToString (formatProvider);
 			
-			//FIXME: implement a cache of types and DynamicMethods
+			var str = objectToConvert as string;
+			if (str != null)
+				return str;
+			
+			//TODO: implement a cache of types and DynamicMethods
 			MethodInfo mi = objectToConvert.GetType ().GetMethod ("ToString", new Type[] { typeof (IFormatProvider) });
-			if (mi != null && mi.ReturnType == typeof (String))
+			if (mi != null)
 				return (string) mi.Invoke (objectToConvert, formatProviderAsParameterArray);
 			return objectToConvert.ToString ();
 		}
