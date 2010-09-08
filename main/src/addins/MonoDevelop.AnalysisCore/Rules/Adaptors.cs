@@ -26,6 +26,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
 using MonoDevelop.AnalysisCore.Fixes;
@@ -42,8 +43,18 @@ namespace MonoDevelop.AnalysisCore.Rules
 		public static IEnumerable<IType> GetTypes (ICompilationUnit input)
 		{
 			foreach (var type in input.Types) {
-				foreach(var subtype in type.SourceProjectDom.GetSubclasses(type)) {
-					MonoDevelop.Ide.MessageService.ShowMessage(subtype.FullName);
+				foreach (var innerType in GetInnerTypes(type)) {
+					yield return innerType;
+				}
+				yield return type;
+			}
+		}
+		
+		static IEnumerable<IType> GetInnerTypes (IType input)
+		{
+			foreach (var type in input.InnerTypes) {
+				foreach (var innerType in GetInnerTypes(type)) {
+					yield return innerType;
 				}
 				yield return type;
 			}
