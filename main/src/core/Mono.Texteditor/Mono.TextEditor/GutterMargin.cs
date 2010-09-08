@@ -34,14 +34,13 @@ namespace Mono.TextEditor
 	public class GutterMargin : Margin
 	{
 		TextEditor editor;
-		Pango.Layout layout;
 		int width;
 		int oldLineCountLog10 = -1;
 		
 		public GutterMargin (TextEditor editor)
 		{
 			this.editor = editor;
-			layout = PangoUtil.CreateLayout (editor, null);
+			
 			base.cursor = new Gdk.Cursor (Gdk.CursorType.RightPtr);
 			this.editor.Document.LineChanged += UpdateWidth;
 			this.editor.Document.TextSet += HandleEditorDocumenthandleTextSet;
@@ -63,14 +62,15 @@ namespace Mono.TextEditor
 
 		void CalculateWidth ()
 		{
-			layout.SetText (editor.Document.LineCount.ToString ());
-			layout.Alignment = Pango.Alignment.Left;
-			layout.Width = -1;
-			int height;
-			layout.GetPixelSize (out this.width, out height);
-			this.width += 4;
-			layout.Width = (int)Width;
-			layout.Alignment = Pango.Alignment.Right;
+			using (var layout = PangoUtil.CreateLayout (editor)) {
+				layout.FontDescription = editor.Options.Font;
+				layout.SetText (editor.Document.LineCount.ToString ());
+				layout.Alignment = Pango.Alignment.Left;
+				layout.Width = -1;
+				int height;
+				layout.GetPixelSize (out this.width, out height);
+				this.width += 4;
+			}
 		}
 		
 		void UpdateWidth (object sender, LineEventArgs args)
@@ -169,14 +169,13 @@ namespace Mono.TextEditor
 			
 			this.editor.Document.TextSet -= HandleEditorDocumenthandleTextSet;
 			this.editor.Document.LineChanged -= UpdateWidth;
-			layout = layout.Kill ();
+//			layout = layout.Kill ();
 			base.Dispose ();
 		}
 		
 		Cairo.Color lineNumberBgGC, lineNumberGC, lineNumberHighlightGC;
 		internal protected override void OptionsChanged ()
 		{
-			layout.FontDescription = editor.Options.Font;
 			CalculateWidth ();
 			
 			lineNumberBgGC = editor.ColorStyle.LineNumber.CairoBackgroundColor;
@@ -191,12 +190,19 @@ namespace Mono.TextEditor
 			cr.Fill ();
 			
 			if (line <= editor.Document.LineCount) {
-				layout.SetText (line.ToString ());
-				cr.Save ();
-				cr.Translate (x + (int)Width, y);
-				cr.Color = editor.Caret.Line == line ? lineNumberHighlightGC : lineNumberGC;
-				cr.ShowLayout (layout);
-				cr.Restore ();
+				// Due to a mac? gtk bug I need to re-create the layout here
+				// otherwise I get pango exceptions.
+				using (var layout = PangoUtil.CreateLayout (editor)) {
+					layout.FontDescription = editor.Options.Font;
+					layout.Width = (int)Width;
+					layout.Alignment = Pango.Alignment.Right;
+					layout.SetText (line.ToString ());
+					cr.Save ();
+					cr.Translate (x + (int)Width, y);
+					cr.Color = editor.Caret.Line == line ? lineNumberHighlightGC : lineNumberGC;
+					cr.ShowLayout (layout);
+					cr.Restore ();
+				}
 			}
 		}
 	}
