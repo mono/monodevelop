@@ -127,9 +127,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 			if (string.IsNullOrEmpty (type))
 				throw new DirectiveProcessorException ("Parameter directive has no type argument");
 			
-			name = languageProvider.CreateEscapedIdentifier (name);
-			
-			string fieldName = languageProvider.CreateEscapedIdentifier ("__" + name + "Field");
+			string fieldName = "_" + name + "Field";
 			var typeRef = new CodeTypeReference (type);
 			var thisRef = new CodeThisReferenceExpression ();
 			var fieldRef = new CodeFieldReferenceExpression (thisRef, fieldName);
@@ -145,18 +143,18 @@ namespace Microsoft.VisualStudio.TextTemplating
 			members.Add (new CodeMemberField (typeRef, fieldName));
 			members.Add (property);
 			
-			string acquiredName = languageProvider.CreateEscapedIdentifier ("__" + name + "Acquired");
-			var acquiredVariableRef = new CodeVariableReferenceExpression (acquiredName);
-			var valRef = new CodeVariableReferenceExpression ("__val");
+			string acquiredName = "_" + name + "Acquired";
+			var valRef = new CodeVariableReferenceExpression ("data");
 			var namePrimitive = new CodePrimitiveExpression (name);
 			var sessionRef = new CodePropertyReferenceExpression (thisRef, "Session");
 			var callContextTypeRefExpr = new CodeTypeReferenceExpression ("System.Runtime.Remoting.Messaging.CallContext");
 			var nullPrim = new CodePrimitiveExpression (null);
 			
 			var acquiredVariable = new CodeVariableDeclarationStatement (typeof (bool), acquiredName, new CodePrimitiveExpression (false));
+			var acquiredVariableRef = new CodeVariableReferenceExpression (acquiredVariable.Name);
 			this.postStatements.Add (acquiredVariable);
 			
-			//checks the local called "__val" can be cast and assigned to the field, and if successful, sets acquiredVariable to true
+			//checks the local called "data" can be cast and assigned to the field, and if successful, sets acquiredVariable to true
 			var checkCastThenAssignVal = new CodeConditionStatement (
 				new CodeMethodInvokeExpression (
 					new CodeTypeOfExpression (typeRef), "IsAssignableFrom", new CodeMethodInvokeExpression (valRef, "GetType")),
@@ -174,7 +172,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 			var checkSession = new CodeConditionStatement (
 				new CodeBinaryOperatorExpression (NotNull (sessionRef), CodeBinaryOperatorType.BooleanAnd,
 					new CodeMethodInvokeExpression (sessionRef, "ContainsKey", namePrimitive)),
-				new CodeVariableDeclarationStatement (typeof (object), "__val", new CodeIndexerExpression (sessionRef, namePrimitive)),
+				new CodeVariableDeclarationStatement (typeof (object), "data", new CodeIndexerExpression (sessionRef, namePrimitive)),
 				checkCastThenAssignVal);
 			
 			this.postStatements.Add (checkSession);
@@ -184,7 +182,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 				var hostRef = new CodePropertyReferenceExpression (thisRef, "Host");
 				var checkHost = new CodeConditionStatement (
 					BooleanAnd (IsFalse (acquiredVariableRef), NotNull (hostRef)),
-					new CodeVariableDeclarationStatement (typeof (string), "__val",
+					new CodeVariableDeclarationStatement (typeof (string), "data",
 						new CodeMethodInvokeExpression (hostRef, "ResolveParameterValue", nullPrim, nullPrim,  namePrimitive)),
 					new CodeConditionStatement (NotNull (valRef), checkCastThenAssignVal));
 				
@@ -194,7 +192,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 			//if acquiredVariable is false, tries to gets the value from the call context
 			var checkCallContext = new CodeConditionStatement (
 				IsFalse (acquiredVariableRef),
-				new CodeVariableDeclarationStatement (typeof (object), "__val",
+				new CodeVariableDeclarationStatement (typeof (object), "data",
 					new CodeMethodInvokeExpression (callContextTypeRefExpr, "LogicalGetData", namePrimitive)),
 				new CodeConditionStatement (NotNull (valRef), checkCastThenAssignVal));
 			
