@@ -482,6 +482,7 @@
     <Compile Include="MonoDevelop.Core.Text\StringMatcher.cs" />
     <Compile Include="MonoDevelop.Core.Text\LaneStringMatcher.cs" />
     <Compile Include="MonoDevelop.Core.Text\BacktrackingStringMatcher.cs" />
+    <Compile Include="MonoDevelop.Projects.Text\DocGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
