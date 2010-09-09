@@ -41,7 +41,7 @@ namespace Mono.TextEditor.Theatrics
 		Going
 	}
 
-	internal class AnimatedWidget : Bin
+	internal class AnimatedWidget : Container
 	{
 		public event EventHandler WidgetDestroyed;
 
@@ -66,11 +66,14 @@ namespace Mono.TextEditor.Theatrics
 		public AnimatedWidget (Widget widget, uint duration, Easing easing, Blocking blocking, bool horizontal)
 		{
 			this.horizontal = horizontal;
+			Widget = widget;
 			Duration = duration;
 			Easing = easing;
 			Blocking = blocking;
 			AnimationState = AnimationState.Coming;
 			
+			Widget.Parent = this;
+			Widget.Destroyed += OnWidgetDestroyed;
 			ShowAll ();
 		}
 
@@ -106,21 +109,13 @@ namespace Mono.TextEditor.Theatrics
 		}
 
 		#region Overrides
-		protected override void OnAdded (Widget widget)
-		{
-			Widget = widget;
-			Widget.Destroyed += OnWidgetDestroyed;
-			
-			base.OnAdded (widget);
-		}
 
 		protected override void OnRemoved (Widget widget)
 		{
 			if (widget == Widget) {
-				Widget.Destroyed -= OnWidgetDestroyed;
+				widget.Unparent ();
 				Widget = null;
 			}
-			base.OnRemoved (widget);
 		}
 
 		protected override void OnRealized ()
@@ -189,6 +184,13 @@ namespace Mono.TextEditor.Theatrics
 				return true;
 			} else {
 				return base.OnExposeEvent (evnt);
+			}
+		}
+
+		protected override void ForAll (bool include_internals, Callback callback)
+		{
+			if (Widget != null) {
+				callback (Widget);
 			}
 		}
 		
