@@ -34,19 +34,27 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Refactoring;
 
+
+
 namespace MonoDevelop.DocFood
 {
-	public class DocGenerator
+	public class DocGenerator : MonoDevelop.Projects.Text.DocGenerator
 	{
 		public List<Section> sections = new List<Section> ();
 		public Dictionary<string, string> tags = new Dictionary<string, string> ();
 		TextEditorData data;
 		INRefactoryASTProvider provider;
-		
+
+		public DocGenerator ()
+		{
+			
+		}
+
 		public DocGenerator (TextEditorData data)
 		{
 			this.data = data;
-			provider = RefactoringService.GetASTProvider (data.Document.MimeType);
+			if (data != null)
+				provider = RefactoringService.GetASTProvider (data.Document.MimeType);
 		}
 		
 		public static string GetBaseDocumentation (IMember member)
@@ -545,6 +553,13 @@ namespace MonoDevelop.DocFood
 			
 			sections.Add (newSection);
 		}
-}
+		
+		#region implemented abstract members of MonoDevelop.Projects.Text.DocGenerator
+		public override string GenerateDocumentation (IMember member, string linePrefix)
+		{
+			return DocumentBufferHandler.GenerateDocumentation (null, member, "", linePrefix);
+		}
+		#endregion
+	}
 }
 

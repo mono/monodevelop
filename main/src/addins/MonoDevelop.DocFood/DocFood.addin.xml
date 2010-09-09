@@ -38,6 +38,13 @@
 <!--		<CommandItem id="MonoDevelop.DocFood.Commands.DocumentThis" /> -->
 		<CommandItem id="MonoDevelop.DocFood.Commands.DocumentBuffer" insertafter = "MonoDevelop.Ide.Commands.EditCommands.InsertStandardHeader"/>
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/DocumentationGenerator">
+		<Class class = "MonoDevelop.DocFood.DocGenerator"/>
+	</Extension>
+
+	
+	
 	<!--
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog">
 		<Section id = "DocFood" _label = "DocFood">

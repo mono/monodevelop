@@ -121,6 +121,11 @@ namespace MonoDevelop.DocFood
 		
 		internal static string GenerateDocumentation (TextEditorData data, IMember member, string indent)
 		{
+			return GenerateDocumentation (data, member, indent, "/// ");
+		}
+		
+		internal static string GenerateDocumentation (TextEditorData data, IMember member, string indent, string prefix)
+		{
 			StringBuilder result = new StringBuilder ();
 			
 			DocGenerator generator = new DocGenerator (data);
@@ -130,12 +135,14 @@ namespace MonoDevelop.DocFood
 			foreach (Section section in generator.sections) {
 				if (first) {
 					result.Append (indent);
-					result.Append ("/// <");
+					result.Append (prefix);
+					result.Append ("<");
 					first = false;
 				} else {
 					result.AppendLine ();
 					result.Append (indent);
-					result.Append ("/// <");
+					result.Append (prefix);
+					result.Append ("<");
 				}
 				result.Append (section.Name);
 				foreach (var attr in section.Attributes) {
@@ -148,9 +155,9 @@ namespace MonoDevelop.DocFood
 				result.AppendLine (">");
 				
 				result.Append (indent);
-				result.Append ("/// ");
+				result.Append (prefix);
 				bool inTag = false;
-				int column = indent.Length + "/// ".Length;
+				int column = indent.Length + prefix.Length;
 				StringBuilder curWord = new StringBuilder ();
 				foreach (char ch in section.Documentation) {
 					if (ch == '<')
@@ -162,8 +169,8 @@ namespace MonoDevelop.DocFood
 							result.Length--; // trunk last char white space.
 							result.AppendLine ();
 							result.Append (indent);
-							result.Append ("/// ");
-							column = indent.Length + "/// ".Length;
+							result.Append (prefix);
+							column = indent.Length + prefix .Length;
 						}
 						result.Append (curWord.ToString ());
 						result.Append (ch);
@@ -176,7 +183,8 @@ namespace MonoDevelop.DocFood
 				result.AppendLine (curWord.ToString ());
 				
 				result.Append (indent);
-				result.Append ("/// </");
+				result.Append (prefix);
+				result.Append ("</");
 				result.Append (section.Name);
 				result.Append (">");
 			}
