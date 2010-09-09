@@ -191,13 +191,6 @@ namespace Mono.TextEditor.Theatrics
 				return base.OnExposeEvent (evnt);
 			}
 		}
-
-		protected override void ForAll (bool include_internals, Callback callback)
-		{
-			if (Widget != null) {
-				callback (Widget);
-			}
-		}
 		
 		#endregion
 		
