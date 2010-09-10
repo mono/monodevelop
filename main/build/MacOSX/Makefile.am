@@ -75,15 +75,7 @@ MonoDevelop.app:
 	cp -pR $(ARTIFACTS)/MonoDoc.app/* $(MACOS)/MonoDoc.app/
 
 # update revision in updateinfo
-	if test -d ../../../.git/svn; then svn_info="git log --no-color --first-parent -n1 --grep=git-svn-id: --pretty=format:%b | sed -n -e 's,git-svn-id: \(.*\)@\(.*\) .*,URL: \1 Revision: \2,p'"; fi; \
-	if test -d ../../../.svn; then svn_info='svn info'; fi; \
-	if test -n "$$svn_info"; then \
-		version=$$(cd ../../..; \
-			LANG=C; export LANG; \
-			eval $$svn_info | sed -n -e '/Last Changed Rev/ s/.*: //p'; \
-		); \
-		echo "a3140c14-ef90-4019-ae6c-9d93804d6611 $$version" > "$(MACOS)/updateinfo"; \
-	fi;
+	cp updateinfo "$(MACOS)/updateinfo"
 
 # touch the directory so that update dependencies work
 	touch MonoDevelop.app
