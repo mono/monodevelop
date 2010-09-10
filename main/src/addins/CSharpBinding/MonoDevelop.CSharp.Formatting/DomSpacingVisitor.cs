@@ -360,6 +360,23 @@ namespace MonoDevelop.CSharp.Formatting
 			return result;
 		}
 		
+		public override object VisitVariableInitializer (VariableInitializer variableInitializer, object data)
+		{
+			if (variableInitializer.Assign != null)
+				ForceSpacesAround (variableInitializer.Assign, policy.AroundAssignmentParentheses);
+			if (variableInitializer.Initializer != null)
+				variableInitializer.Initializer.AcceptVisitor (this, data);
+			return data;
+		}
+		
+		public override object VisitVariableDeclarationStatement (VariableDeclarationStatement variableDeclarationStatement, object data)
+		{
+			foreach (var initializer in variableDeclarationStatement.Variables) {
+				initializer.AcceptVisitor (this, data);
+			}
+			return data;
+		}
+		
 		public override object VisitInvocationExpression (InvocationExpression invocationExpression, object data)
 		{
 			ForceSpacesBefore (invocationExpression.LPar, policy.BeforeMethodCallParentheses);
@@ -532,7 +549,7 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			return base.VisitLambdaExpression (lambdaExpression, data);
 		}
-
+		
 
 	}
 }

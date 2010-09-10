@@ -691,7 +691,8 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitVariableDeclarationStatement (VariableDeclarationStatement variableDeclarationStatement, object data)
 		{
-			FixStatementIndentation (variableDeclarationStatement.StartLocation);
+			if (variableDeclarationStatement.Semicolon != null)
+				FixStatementIndentation (variableDeclarationStatement.StartLocation);
 			return null;
 		}
 		

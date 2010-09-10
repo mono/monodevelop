@@ -32,6 +32,7 @@ FILES =  \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs \
+	gtk-gui/MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs \
 	MonoDevelop.CSharp.Completion/CompletionTextLinkMode.cs \
 	MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs \
 	MonoDevelop.CSharp.Completion/EventCreationCompletionData.cs \
@@ -206,6 +207,11 @@ FILES =  \
 	MonoDevelop.CSharp.Refactoring/CSharpCodeGenerator.cs \
 	MonoDevelop.CSharp.Refactoring/CSharpNRefactoryASTProvider.cs \
 	MonoDevelop.CSharp.Refactoring/CSharpRefactorer.cs \
+	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodAstTransformer.cs \
+	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodDialog.cs \
+	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodHandler.cs \
+	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodRefactoring.cs \
+	MonoDevelop.CSharp.Refactoring/ExtractMethod/VariableLookupVisitor.cs \
 	MonoDevelop.CSharp.Refactoring/FindMemberAstVisitor.cs \
 	MonoDevelop.CSharp.Resolver/NewCSharpExpressionFinder.cs \
 	MonoDevelop.CSharp.Resolver/NRefactoryDocumentMetaInformation.cs \

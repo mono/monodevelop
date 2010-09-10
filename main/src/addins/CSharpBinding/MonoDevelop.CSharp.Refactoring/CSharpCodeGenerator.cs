@@ -42,6 +42,15 @@ namespace MonoDevelop.CSharp.Refactoring
 		OutputVisitor visitor;
 		CSharpFormattingPolicy policy;
 		
+		public CSharpFormattingPolicy Policy {
+			get {
+				return this.policy;
+			}
+			set {
+				policy = value;
+			}
+		}
+		
 		public CSharpCodeGenerator ()
 		{
 			visitor = new OutputVisitor (this);
@@ -342,6 +351,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					generator.AppendLine (result);
 				}
 				generator.AppendBraceEnd (result, generator.policy.MethodBraceStyle);
+				Console.WriteLine (result.ToString ());
 				return new CodeGeneratorMemberResult (result.ToString (), bodyStartOffset, bodyEndOffset);
 			}
 			
