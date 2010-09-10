@@ -29,6 +29,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class CSharpTokenNode : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Token;
+			}
+		}
+		
 		DomLocation startLocation;
 		public override DomLocation StartLocation {
 			get {

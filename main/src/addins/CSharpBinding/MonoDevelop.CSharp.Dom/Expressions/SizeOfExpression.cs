@@ -30,6 +30,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class SizeOfExpression : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public FullTypeName Type {
 			get {
 				return (FullTypeName)GetChildByRole (Roles.ReturnType);

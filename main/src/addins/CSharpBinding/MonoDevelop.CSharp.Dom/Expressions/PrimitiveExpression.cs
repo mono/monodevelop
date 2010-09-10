@@ -31,6 +31,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class PrimitiveExpression : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		DomLocation startLocation;
 		public override DomLocation StartLocation {
 			get {

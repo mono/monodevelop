@@ -32,6 +32,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class AnonymousMethodExpression : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public IEnumerable<ParameterDeclarationExpression> Arguments { 
 			get {
 				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclarationExpression>();

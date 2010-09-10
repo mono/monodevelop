@@ -35,6 +35,12 @@ namespace MonoDevelop.CSharp.Dom
 		public const int RightExpressionRole = 101;
 		public const int OperatorRole = 102;
 		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public BinaryOperatorType BinaryOperatorType {
 			get;
 			set;

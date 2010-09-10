@@ -39,6 +39,12 @@ namespace MonoDevelop.CSharp.Dom
 		public const int FinallyBlockRole   = 103;
 		public const int CatchClauseRole    = 104;
 		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
 		public CSharpTokenNode TryKeyword {
 			get { return (CSharpTokenNode)GetChildByRole (TryKeywordRole); }
 		}
@@ -67,6 +73,12 @@ namespace MonoDevelop.CSharp.Dom
 	
 	public class CatchClause : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public ICSharpNode ReturnType {
 			get { return (ICSharpNode)GetChildByRole (Roles.ReturnType); }
 		}

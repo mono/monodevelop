@@ -31,6 +31,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class AssignmentExpression : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public const int LeftExpressionRole = 100;
 		public const int RightExpressionRole = 101;
 		public const int OperatorRole = 102;

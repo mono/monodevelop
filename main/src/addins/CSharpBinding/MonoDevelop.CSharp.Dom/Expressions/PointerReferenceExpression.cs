@@ -36,6 +36,12 @@ namespace MonoDevelop.CSharp.Dom
 	/// </summary>
 	public class PointerReferenceExpression : MemberReferenceExpression
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public INode Expression {
 			get { return GetChildByRole (Roles.TargetExpression); }
 		}

@@ -33,6 +33,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class DelegateDeclaration : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Type;
+			}
+		}
+		
 		public string Name {
 			get {
 				return NameIdentifier.Name;

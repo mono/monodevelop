@@ -33,6 +33,12 @@ namespace MonoDevelop.CSharp.Dom
 	{
 		public const int Operator = 100;
 		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public UnaryOperatorType UnaryOperatorType {
 			get;
 			set;

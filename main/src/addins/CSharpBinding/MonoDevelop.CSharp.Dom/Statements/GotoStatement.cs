@@ -34,6 +34,12 @@ namespace MonoDevelop.CSharp.Dom
 		public const int DefaultKeywordRole = 100;
 		public const int CaseKeywordRole = 101;
 		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
 		public GotoType GotoType {
 			get;
 			set;

@@ -34,6 +34,12 @@ namespace MonoDevelop.CSharp.Dom
 		public const int DoKeywordRole = 101;
 		public const int WhileKeywordRole = 102;
 		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
 		public WhilePosition WhilePosition {
 			get;
 			set;

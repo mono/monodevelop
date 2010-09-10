@@ -31,6 +31,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class UncheckedExpression : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public INode Expression {
 			get { return GetChildByRole (Roles.Expression); }
 		}

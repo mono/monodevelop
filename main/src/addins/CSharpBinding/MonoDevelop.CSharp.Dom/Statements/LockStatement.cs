@@ -31,6 +31,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class LockStatement : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
 		public INode Expression {
 			get { return GetChildByRole (Roles.Expression); }
 		}

@@ -31,6 +31,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class ExpressionStatement : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitExpressionStatement (this, data);

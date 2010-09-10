@@ -35,6 +35,12 @@ namespace MonoDevelop.CSharp.Dom
 	{
 		public const int TypeKeyword      = 100;
 		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Type;
+			}
+		}
+		
 		public Identifier NameIdentifier {
 			get {
 				return (Identifier)GetChildByRole (Roles.Identifier);

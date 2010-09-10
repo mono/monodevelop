@@ -32,6 +32,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class FullTypeName : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public Identifier Identifier {
 			get {
 				return (Identifier)GetChildByRole (Roles.Identifier);
@@ -39,7 +45,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 			
 		public IEnumerable<ICSharpNode> TypeArguments {
-			get { return GetChildrenByRole (Roles.TypeArgument).Cast<ICSharpNode> (); }
+			get { return GetChildrenByRole (Roles.TypeArgument).Cast<ICSharpNode> () ?? new ICSharpNode[0]; }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

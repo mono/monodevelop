@@ -33,6 +33,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public abstract class AbstractMemberBase : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Member;
+			}
+		}
+
 		public IEnumerable<INode> Modifiers { 
 			get {
 				return base.GetChildrenByRole (Roles.Modifier);

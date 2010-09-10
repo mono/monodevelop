@@ -35,6 +35,12 @@ namespace MonoDevelop.CSharp.Dom
 	{
 		public const int SwitchSectionRole = 100;
 		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
 		public INode Expression {
 			get { return GetChildByRole (Roles.Expression); }
 		}
@@ -68,6 +74,12 @@ namespace MonoDevelop.CSharp.Dom
 	{
 		public const int CaseLabelRole = 100;
 		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public IEnumerable<CaseLabel> CaseLabels {
 			get { return GetChildrenByRole (CaseLabelRole).Cast<CaseLabel> (); }
 		}
@@ -87,6 +99,12 @@ namespace MonoDevelop.CSharp.Dom
 	
 	public class CaseLabel : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public INode Expression {
 			get { return GetChildByRole (Roles.Expression); }
 		}

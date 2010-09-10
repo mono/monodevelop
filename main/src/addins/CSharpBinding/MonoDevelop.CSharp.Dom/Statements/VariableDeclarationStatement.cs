@@ -33,6 +33,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class VariableDeclarationStatement : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
 		public IEnumerable<INode> Modifiers {
 			get { return base.GetChildrenByRole (Roles.Modifier); }
 		}
@@ -43,6 +49,10 @@ namespace MonoDevelop.CSharp.Dom
 		
 		public IEnumerable<VariableInitializer> Variables {
 			get { return base.GetChildrenByRole (Roles.Initializer).Cast<VariableInitializer> (); }
+		}
+		
+		public CSharpTokenNode Semicolon {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.Semicolon); }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

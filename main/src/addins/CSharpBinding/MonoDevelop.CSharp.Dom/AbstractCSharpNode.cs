@@ -29,8 +29,13 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
+	
 	public abstract class AbstractCSharpNode : AbstractNode, ICSharpNode
 	{
+		public abstract NodeType NodeType {
+			get;
+		}
+
 		public virtual DomLocation StartLocation {
 			get { 
 				ICSharpNode child = (ICSharpNode)FirstChild;

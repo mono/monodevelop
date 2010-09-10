@@ -33,6 +33,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class EnumDeclaration : TypeDeclaration
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Type;
+			}
+		}
+		
 		const int EnumMemberDeclarationRole = 100;
 		
 		public IEnumerable<EnumMemberDeclaration> Members { 
@@ -55,6 +61,12 @@ namespace MonoDevelop.CSharp.Dom
 	
 	public class EnumMemberDeclaration : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Member;
+			}
+		}
+		
 		public IEnumerable<AttributeSection> Attributes { 
 			get {
 				return base.GetChildrenByRole (Roles.Attribute).Cast <AttributeSection>();

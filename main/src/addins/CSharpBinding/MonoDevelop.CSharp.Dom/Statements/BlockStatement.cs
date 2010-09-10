@@ -32,6 +32,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class BlockStatement : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
 		public CSharpTokenNode LBrace {
 			get {
 				return (CSharpTokenNode)GetChildByRole (Roles.LBrace);

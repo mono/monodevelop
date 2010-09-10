@@ -32,6 +32,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class ObjectCreateExpression : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public ICSharpNode Type {
 			get { return (ICSharpNode)GetChildByRole (Roles.ReturnType); }
 		}

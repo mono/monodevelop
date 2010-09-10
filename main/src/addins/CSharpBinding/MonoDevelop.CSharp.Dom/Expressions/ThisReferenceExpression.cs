@@ -36,6 +36,12 @@ namespace MonoDevelop.CSharp.Dom
 			set;
 		}
 		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public override DomLocation StartLocation {
 			get {
 				return Location;

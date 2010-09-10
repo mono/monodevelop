@@ -31,6 +31,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class LabelStatement : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
 		public string Label {
 			get { return LabelIdentifier.Name; }
 		}

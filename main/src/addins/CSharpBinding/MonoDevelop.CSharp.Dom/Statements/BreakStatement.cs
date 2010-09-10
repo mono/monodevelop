@@ -31,6 +31,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class BreakStatement : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
 		public INode BreakKeyword {
 			get {
 				return GetChildByRole (Roles.Keyword);

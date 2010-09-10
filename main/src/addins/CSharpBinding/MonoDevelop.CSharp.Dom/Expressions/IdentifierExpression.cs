@@ -31,6 +31,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class IdentifierExpression : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public Identifier Identifier {
 			get {
 				return (Identifier)GetChildByRole (Roles.Identifier);

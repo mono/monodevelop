@@ -33,6 +33,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class Attribute : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+
 		public string Name {
 			get {
 				return NameIdentifier.QualifiedName;

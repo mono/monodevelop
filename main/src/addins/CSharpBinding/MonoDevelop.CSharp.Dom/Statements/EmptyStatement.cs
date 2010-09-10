@@ -31,6 +31,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class EmptyStatement : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
 		public DomLocation Location {
 			get;
 			set;

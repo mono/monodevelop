@@ -36,6 +36,12 @@ namespace MonoDevelop.CSharp.Dom
 		public const int FromKeywordRole = 100;
 		public const int InKeywordRole = 101;
 		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public ICSharpNode Type {
 			get {
 				return (ICSharpNode)GetChildByRole (Roles.ReturnType);
@@ -132,6 +138,12 @@ namespace MonoDevelop.CSharp.Dom
 	
 	public class QueryExpressionGroupClause : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public const int ProjectionExpressionRole = 100;
 		public const int GroupByExpressionRole    = 101;
 		
@@ -166,6 +178,12 @@ namespace MonoDevelop.CSharp.Dom
 	
 	public class QueryExpressionLetClause : AbstractCSharpNode 
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public string Identifier {
 			get {
 				return QueryIdentifier.Name;
@@ -204,6 +222,12 @@ namespace MonoDevelop.CSharp.Dom
 	{
 		public const int OrderingRole = 100;
 		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public bool OrderAscending {
 			get;
 			set;
@@ -228,6 +252,12 @@ namespace MonoDevelop.CSharp.Dom
 	
 	public class QueryExpressionOrdering : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public QueryExpressionOrderingDirection Direction {
 			get;
 			set;
@@ -254,6 +284,12 @@ namespace MonoDevelop.CSharp.Dom
 	
 	public class QueryExpressionSelectClause : AbstractCSharpNode 
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public CSharpTokenNode SelectKeyword {
 			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
 		}
@@ -272,6 +308,12 @@ namespace MonoDevelop.CSharp.Dom
 	
 	public class QueryExpressionWhereClause : AbstractCSharpNode 
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public CSharpTokenNode WhereKeyword {
 			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
 		}

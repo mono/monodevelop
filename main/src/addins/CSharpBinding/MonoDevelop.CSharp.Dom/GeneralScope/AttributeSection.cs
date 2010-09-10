@@ -35,6 +35,12 @@ namespace MonoDevelop.CSharp.Dom
 	{
 		const int TargetRole = 101;
 		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public AttributeTarget AttributeTarget {
 			get;
 			set;

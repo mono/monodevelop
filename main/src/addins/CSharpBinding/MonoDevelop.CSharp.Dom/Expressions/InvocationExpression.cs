@@ -33,6 +33,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class InvocationExpression : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public INode Target {
 			get { return GetChildByRole (Roles.TargetExpression); }
 		}

@@ -30,6 +30,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class IsExpression : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public FullTypeName TypeReference {
 			get { return (FullTypeName)GetChildByRole (Roles.ReturnType); }
 		}

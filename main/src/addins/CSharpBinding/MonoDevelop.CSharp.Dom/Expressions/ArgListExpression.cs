@@ -36,6 +36,12 @@ namespace MonoDevelop.CSharp.Dom
 	/// </summary>
 	public class ArgListExpression : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public bool IsAccess { // access is __arglist, otherwise it's __arlist (a1, a2, ..., an)
 			get;
 			set;

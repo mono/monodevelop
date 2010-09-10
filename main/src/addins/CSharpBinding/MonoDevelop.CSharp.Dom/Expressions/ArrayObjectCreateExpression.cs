@@ -31,6 +31,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class ArrayObjectCreateExpression : ObjectCreateExpression
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public CSharpTokenNode Rank {
 			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
 		}

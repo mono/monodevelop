@@ -37,6 +37,12 @@ namespace MonoDevelop.CSharp.Dom
 		public const int TrueExpressionRole = 100;
 		public const int FalseExpressionRole = 101;
 		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public INode TrueExpression {
 			get { return GetChildByRole (TrueExpressionRole); }
 		}

@@ -58,6 +58,12 @@ namespace MonoDevelop.CSharp.Dom
 	
 	public class ConstructorInitializer : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public ConstructorInitializerType ConstructorInitializerType {
 			get;
 			set;

@@ -29,8 +29,22 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
+	public enum NodeType
+	{
+		Unknown,
+		
+		Type,
+		Member,
+		Statement,
+		Expression,
+		Token
+	}
+	
 	public interface ICSharpNode : INode
 	{
+		NodeType NodeType {
+			get;
+		}
 		DomLocation StartLocation {
 			get;
 		}

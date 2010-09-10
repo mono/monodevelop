@@ -32,6 +32,12 @@ namespace MonoDevelop.CSharp.Dom
 	{
 		public const int AliasRole       = 100;
 		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public string Alias {
 			get {
 				return AliasIdentifier.QualifiedName;

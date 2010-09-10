@@ -33,6 +33,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class IndexerExpression : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public ICSharpNode Target {
 			get { return (ICSharpNode)GetChildByRole (Roles.TargetExpression); }
 		}

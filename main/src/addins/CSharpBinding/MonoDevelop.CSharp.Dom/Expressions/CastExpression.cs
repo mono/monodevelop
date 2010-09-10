@@ -31,6 +31,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class CastExpression : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public ICSharpNode CastTo {
 			get { return (ICSharpNode)GetChildByRole (Roles.ReturnType); }
 		}

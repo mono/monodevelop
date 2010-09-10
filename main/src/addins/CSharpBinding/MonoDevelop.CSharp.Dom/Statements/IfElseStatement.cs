@@ -36,6 +36,12 @@ namespace MonoDevelop.CSharp.Dom
 		public const int IfKeywordRole = 102;
 		public const int ElseKeywordRole = 103;
 		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
 		public ICSharpNode TrueEmbeddedStatement {
 			get { return (ICSharpNode)GetChildByRole (TrueEmbeddedStatementRole); }
 		}

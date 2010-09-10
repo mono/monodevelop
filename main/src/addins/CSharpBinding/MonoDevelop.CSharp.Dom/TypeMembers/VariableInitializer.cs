@@ -31,6 +31,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class VariableInitializer : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+
 		public string Name {
 			get {
 				return NameIdentifier.Name;
@@ -43,9 +49,14 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public INode Initializer {
+		public CSharpTokenNode Assign {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.Assign); }
+		}
+		
+		
+		public ICSharpNode Initializer {
 			get {
-				return GetChildByRole (Roles.Initializer);
+				return (ICSharpNode)GetChildByRole (Roles.Initializer);
 			}
 		}
 		

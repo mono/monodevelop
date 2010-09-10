@@ -33,6 +33,13 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class Constraint : AbstractCSharpNode
 	{
+		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public CSharpTokenNode WhereKeyword {
 			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
 		}

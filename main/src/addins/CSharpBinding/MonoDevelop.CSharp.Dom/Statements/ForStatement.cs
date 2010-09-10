@@ -32,6 +32,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class ForStatement : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
 		public ICSharpNode EmbeddedStatement {
 			get { return (ICSharpNode)GetChildByRole (Roles.EmbeddedStatement); }
 		}

@@ -38,6 +38,12 @@ namespace MonoDevelop.CSharp.Dom
 	
 	public class ParameterDeclarationExpression : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public ParameterModifier ParameterModifier {
 			get;
 			set;

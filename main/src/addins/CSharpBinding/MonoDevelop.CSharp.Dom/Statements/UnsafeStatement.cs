@@ -31,6 +31,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class UnsafeStatement : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
 		public BlockStatement Block {
 			get { return (BlockStatement)GetChildByRole (Roles.Body); }
 		}

@@ -31,6 +31,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class NullReferenceExpression : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitNullReferenceExpression (this, data);

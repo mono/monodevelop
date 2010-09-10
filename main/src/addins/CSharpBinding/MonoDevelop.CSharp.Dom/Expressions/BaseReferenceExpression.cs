@@ -31,6 +31,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class BaseReferenceExpression : AbstractCSharpNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public DomLocation Location {
 			get;
 			set;
