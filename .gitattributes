@@ -1,0 +1,37 @@
+# NOTE: this file is for git 1.6.6 (and possibly older)
+# Post-1.7.2 there is eol and text, and crlf is deprecated
+# but we can't depend on an unreleased version...
+
+# This file mainly controls line ending conversion behaviour, if
+# the user has the setting core.autocrlf true.
+
+# The meaning of the attributes is a little odd
+# -crlf means DO NOT convert line endings
+# crlf means CONVERT to lf in the repo & Linux/Mac, crlf on Windows
+
+# First, turn off git line ending handling except on a case-by-case basis
+# because our repo isn't normalized, in general.
+# There are even files with mixed line endings.
+*	-crlf
+
+# sln is always CRLF, even on linux, so don't convert
+*.sln	-crlf
+
+# These files can be converted, since they're new
+.gitattributes	crlf
+.gitignore	crlf
+
+# Having proj files as crlf on windows will make VS happier
+# MD can deal with (and preserve) either, so it doesn't matter.
+# Unfortunately MD creates with LF, so we need to convert these.
+*proj	crlf
+
+# All Stetic's files are always generated as LF, so explicitly ignore those.
+# Sadly, git has useless path globs
+*/*/gtk-gui/*	-crlf
+*/*/*/gtk-gui/*	-crlf
+*/*/*/*/gtk-gui/*	-crlf
+*/*/*/*/*/gtk-gui/*	-crlf
+*/*/*/*/*/*/gtk-gui/*	-crlf
+*/*/*/*/*/*/*/gtk-gui/*	-crlf
+*/*/*/*/*/*/*/*/gtk-gui/*	-crlf
