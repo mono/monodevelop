@@ -38,14 +38,12 @@ FILES =  \
 	Mono.TextEditor.Tests.DefaultEditActions/RemoveTabTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/SelectionActionTests.cs \
 	Mono.TextEditor.Tests/DocumentTests.cs \
-	Mono.TextEditor.Tests/EditActionsTest.cs \
 	Mono.TextEditor.Tests/FoldingTests.cs \
 	Mono.TextEditor.Tests/LineSplitterTests.cs \
 	Mono.TextEditor.Tests/SearchTests.cs \
 	Mono.TextEditor.Tests/SelectionTests.cs \
 	Mono.TextEditor.Tests/SyntaxHighlightingTests.cs \
 	Mono.TextEditor.Tests/UndoRedoTests.cs \
-	Mono.TextEditor.Tests/VirtualSpacesTests.cs \
 	Mono.TextEditor.Tests/ViTests.cs \
 	MonoDevelop.AspNet/AspNetCompletionTests.cs \
 	MonoDevelop.AspNet/AspNetTesting.cs \

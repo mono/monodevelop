@@ -203,8 +203,6 @@
     <Compile Include="MonoDevelop.CSharpBinding\TestFormattingBugs.cs" />
     <Compile Include="MonoDevelop.Refactoring\GenerateNewMemberTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\ViTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\VirtualSpacesTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\EditActionsTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
