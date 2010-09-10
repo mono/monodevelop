@@ -1017,7 +1017,7 @@ namespace Mono.CSharp {
 				DefineTypeParameters ();
 			}
 
-			if (block != null && block.IsIterator && !(Parent is IteratorStorey)) {
+			if (block != null && block.IsIterator) {
 				//
 				// Current method is turned into automatically generated
 				// wrapper which creates an instance of iterator
@@ -1486,7 +1486,7 @@ namespace Mono.CSharp {
 				// initializer, it must initialize all of the struct's fields.
 				if ((Parent.PartialContainer.Kind == MemberKind.Struct) &&
 					((ModFlags & Modifiers.STATIC) == 0) && (Initializer == null))
-					block.AddThisVariable (Parent, Location);
+					block.AddThisVariable (bc, Parent, Location);
 
 				if (block != null && (ModFlags & Modifiers.STATIC) == 0){
 					if (Parent.PartialContainer.Kind == MemberKind.Class && Initializer == null)
@@ -1503,7 +1503,7 @@ namespace Mono.CSharp {
 			SourceMethod source = SourceMethod.Create (Parent, ConstructorBuilder, block);
 
 			if (block != null) {
-				if (block.Resolve (null, bc, parameters, this)) {
+				if (block.Resolve (null, bc, this)) {
 					EmitContext ec = new EmitContext (this, ConstructorBuilder.GetILGenerator (), bc.ReturnType);
 					ec.With (EmitContext.Options.ConstructorScope, true);
 
@@ -1878,7 +1878,7 @@ namespace Mono.CSharp {
 			ToplevelBlock block = method.Block;
 			if (block != null) {
 				BlockContext bc = new BlockContext ((IMemberContext) method, block, method.ReturnType);
-				if (block.Resolve (null, bc, method.ParameterInfo, method)) {
+				if (block.Resolve (null, bc, method)) {
 					EmitContext ec = method.CreateEmitContext (MethodBuilder.GetILGenerator ());
 					if (!ec.HasReturnLabel && bc.HasReturnLabel) {
 						ec.ReturnLabel = bc.ReturnLabel;
@@ -1947,11 +1947,8 @@ namespace Mono.CSharp {
 				MethodGroupExpr method_expr = MethodGroupExpr.CreatePredefined (base_dtor, base_type, Location);
 				method_expr.InstanceExpression = new BaseThis (base_type, Location);
 
-				ToplevelBlock new_block = new ToplevelBlock (Compiler, Block.StartLocation);
-				new_block.EndLocation = Block.EndLocation;
-
-				Block finaly_block = new ExplicitBlock (new_block, Location, Location);
-				Block try_block = new Block (new_block, block);
+				var try_block = new ExplicitBlock (block, block.StartLocation, block.EndLocation);
+				var finaly_block = new ExplicitBlock (block, Location, Location);
 
 				//
 				// 0-size arguments to avoid CS0250 error
@@ -1959,9 +1956,9 @@ namespace Mono.CSharp {
 				// debugger scope
 				//
 				finaly_block.AddStatement (new StatementExpression (new Invocation (method_expr, new Arguments (0))));
-				new_block.AddStatement (new TryFinally (try_block, finaly_block, Location));
 
-				block = new_block;
+				var tf = new TryFinally (try_block, finaly_block, Location);
+				block.WrapIntoDestructor (tf, try_block);
 			}
 
 			base.Emit ();
@@ -2294,7 +2291,7 @@ namespace Mono.CSharp {
 			if (!base.Define ())
 				return false;
 
-			if (block != null && block.IsIterator && !(Parent is IteratorStorey)) {
+			if (block != null && block.IsIterator) {
 				//
 				// Current method is turned into automatically generated
 				// wrapper which creates an instance of iterator
