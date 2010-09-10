@@ -1,7 +1,6 @@
 <AddinProject appVersion="2.4">
 	<Project platforms="Mac">
 		<AddinFile>build/MonoDevelop.MonoMac.dll</AddinFile>
-		<AddinFile>build/MonoDevelop.Debugger.Soft.MonoMac.dll</AddinFile>
 		<BuildFile>MonoDevelop.MonoMac.sln</BuildFile>
 		<BuildConfiguration>Debug</BuildConfiguration>
 	</Project>
