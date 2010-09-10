@@ -39,7 +39,6 @@
 	
 	<Extension path = "/MonoDevelop/Refactoring/Refactorings">
 		<Class id="Rename" class = "MonoDevelop.Refactoring.Rename.RenameRefactoring" />
-		<Class id="ExtractMethod" class = "MonoDevelop.Refactoring.ExtractMethod.ExtractMethodRefactoring" />
 		<Class id="IntegrateTemporaryVariable" class = "MonoDevelop.Refactoring.IntegrateTemporaryVariable.IntegrateTemporaryVariableRefactoring" />
 		<Class id="DeclareLocal" class = "MonoDevelop.Refactoring.DeclareLocal.DeclareLocalCodeGenerator" />
 		<Class id="IntroduceConstant" class = "MonoDevelop.Refactoring.IntroduceConstant.IntroduceConstantRefactoring" />
@@ -119,10 +118,6 @@
 					defaultHandler = "MonoDevelop.Refactoring.RefactorImports.RemoveSortImportsHandler"
 					_label = "R_emove and Sort usings"/>
 		
-		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.ExtractMethod"
-					defaultHandler = "MonoDevelop.Refactoring.ExtractMethod.ExtractMethodHandler"
-					_label = "Extract Method"
-					shortcut = "Control|Alt|M"/>
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.IntroduceConstant"
 					defaultHandler = "MonoDevelop.Refactoring.CreateMethod.IntroduceConstantHandler"
 					_label = "_Introduce Constant..."/>

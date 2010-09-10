@@ -64,10 +64,6 @@
     <Compile Include="MonoDevelop.Refactoring\RefactoringOperation.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringService.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Refactoring.RefactoringPreviewDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Refactoring.ExtractMethod.ExtractMethodDialog.cs" />
-    <Compile Include="MonoDevelop.Refactoring.ExtractMethod\ExtractMethodRefactoring.cs" />
-    <Compile Include="MonoDevelop.Refactoring.ExtractMethod\ExtractMethodDialog.cs" />
-    <Compile Include="MonoDevelop.Refactoring.ExtractMethod\VariableLookupVisitor.cs" />
     <Compile Include="MonoDevelop.Refactoring\INRefactoryASTProvider.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringOptions.cs" />
     <Compile Include="MonoDevelop.Refactoring.IntegrateTemporaryVariable\IntegrateTemporaryVariableRefactoring.cs" />
@@ -82,7 +78,6 @@
     <Compile Include="MonoDevelop.Refactoring.CreateClass\CreateClassCodeGenerator.cs" />
     <Compile Include="MonoDevelop.Refactoring.CreateClass\CreateStructCodeGenerator.cs" />
     <Compile Include="MonoDevelop.Refactoring.Rename\RenameHandler.cs" />
-    <Compile Include="MonoDevelop.Refactoring.ExtractMethod\ExtractMethodAstTransformer.cs" />
     <Compile Include="MonoDevelop.Refactoring.MoveTypeToFile\MoveTypeToFileRefactoring.cs" />
     <Compile Include="MonoDevelop.Refactoring.MoveTypeToFile\TypeFilterTransformer.cs" />
     <Compile Include="MonoDevelop.Refactoring\GotoDeclarationHandler.cs" />
@@ -118,7 +113,6 @@
     <Compile Include="MonoDevelop.Refactoring.MoveTypeToFile\TypeSearchVisitor.cs" />
     <Compile Include="MonoDevelop.Refactoring.ImplementInterface\ImplementAbstractMembers.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindDerivedClassesHandler.cs" />
-    <Compile Include="MonoDevelop.Refactoring.ExtractMethod\ExtractMethodHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring.IntroduceConstant\IntroduceConstantHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\QuickFixHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\EncapsulateFieldDialog.cs" />

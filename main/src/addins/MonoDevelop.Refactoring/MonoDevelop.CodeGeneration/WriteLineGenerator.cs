@@ -34,7 +34,6 @@ using ICSharpCode.NRefactory.Ast;
 using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
-using MonoDevelop.Refactoring.ExtractMethod;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.NRefactory;
 
