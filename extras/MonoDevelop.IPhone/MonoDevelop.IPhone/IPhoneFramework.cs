@@ -171,8 +171,8 @@ public static class IPhoneFramework
 				else if (IPhoneSdkVersion.V3_2.CompareTo (v) == 0) {
 					yield return new IPhoneSimulatorTarget (TargetDevice.IPad, v);
 				}
-				//4.0
-				else if (IPhoneSdkVersion.V4_0.CompareTo (v) == 0) {
+				//4.0, 4.1
+				else if (IPhoneSdkVersion.V4_0.CompareTo (v) == 0 || IPhoneSdkVersion.V4_1.CompareTo (v) == 0) {
 					yield return new IPhoneSimulatorTarget (TargetDevice.IPhone, v);
 				}
 				//unknown, assume both
@@ -198,6 +198,8 @@ public static class IPhoneFramework
 				new IPhoneSdkVersion (new [] { 3, 1, 3 }),
 				new IPhoneSdkVersion (new [] { 3, 2 }),
 				new IPhoneSdkVersion (new [] { 4, 0 }),
+				new IPhoneSdkVersion (new [] { 4, 1 }),
+				new IPhoneSdkVersion (new [] { 4, 2 }),
 			};
 			
 			const string sdkDir = "/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/";

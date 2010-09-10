@@ -116,5 +116,7 @@ namespace MonoDevelop.IPhone
 		
 		public static readonly IPhoneSdkVersion V3_2 = new IPhoneSdkVersion (3, 2);
 		public static readonly IPhoneSdkVersion V4_0 = new IPhoneSdkVersion (4, 0);
+		public static readonly IPhoneSdkVersion V4_1 = new IPhoneSdkVersion (4, 1);
+		public static readonly IPhoneSdkVersion V4_2 = new IPhoneSdkVersion (4, 2);
 	}
 }
