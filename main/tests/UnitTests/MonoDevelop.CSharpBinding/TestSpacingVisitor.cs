@@ -809,7 +809,6 @@ return (Test)null;
 		}
 		
 		[Test()]
-		[Ignore("FIX LOCAL VARIABLES!")]
 		public void TestAroundAssignmentSpaceInDeclarations ()
 		{
 			TextEditorData data = new TextEditorData ();

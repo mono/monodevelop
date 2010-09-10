@@ -267,7 +267,6 @@ continue;
 		}
 		
 		[Test()]
-		[Ignore("FIX LOCAL VARIABLES!")]
 		public void TestFixedStatementIndentation ()
 		{
 			TextEditorData data = new TextEditorData ();
@@ -295,7 +294,6 @@ fixed (object* obj = &obj)
 		}
 		
 		[Test()]
-		[Ignore("FIX LOCAL VARIABLES!")]
 		public void TestFixedForcementAdd ()
 		{
 			TextEditorData data = new TextEditorData ();
@@ -1251,7 +1249,6 @@ do {
 		}
 		
 		[Test()]
-		[Ignore("FIX LOCAL VARIABLES!")]
 		public void TestFixedBracketPlacement ()
 		{
 			TextEditorData data = new TextEditorData ();

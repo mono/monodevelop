@@ -31,7 +31,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Refactoring;
 using MonoDevelop.CSharpBinding.Tests;
-using MonoDevelop.Refactoring.ExtractMethod;
+using MonoDevelop.CSharp.Refactoring.ExtractMethod;
 using System.Collections.Generic;
 using MonoDevelop.CSharpBinding;
 using System.Text;
@@ -44,7 +44,6 @@ using Mono.TextEditor;
 namespace MonoDevelop.Refactoring.Tests
 {
 	[TestFixture()]
-	[Ignore("TODO:Refactor extract method.")]
 	public class ExtractMethodTests : UnitTests.TestBase
 	{
 		static int pcount = 0;
@@ -198,7 +197,7 @@ namespace MonoDevelop.Refactoring.Tests
 	{
 		int i = 5;
 		<- i = member + 1; ->
-		Console.WriteLine (i);
+Console.WriteLine (i);
 	}
 }
 ", @"class TestClass

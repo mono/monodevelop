@@ -71,7 +71,6 @@ Console.WriteLine (""Bad indent"");",
 		/// Bug 415469 - return ternary in a switch is not tabbed properly
 		/// </summary>
 		[Test()]
-		[Ignore("FIX LOCAL VARIABLES!")]
 		public void TestBug415469 () 
 		{
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();

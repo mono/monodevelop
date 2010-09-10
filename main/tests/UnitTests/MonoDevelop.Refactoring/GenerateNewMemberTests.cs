@@ -30,7 +30,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Refactoring;
 using MonoDevelop.CSharpBinding.Tests;
-using MonoDevelop.Refactoring.ExtractMethod;
+using MonoDevelop.CSharp.Refactoring.ExtractMethod;
 using System.Collections.Generic;
 using MonoDevelop.CSharpBinding;
 using System.Text;
