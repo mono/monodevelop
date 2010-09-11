@@ -62,23 +62,31 @@ MonoDevelop.app:
 	  $(MACOS)/lib/monodevelop/AddIns/MonoDevelop.TextTemplating/Mono.TextTemplating.Tests*
 
 # add extras known to work on Mac, if they exist
-	mkdir -p $(MAC_APP_LIB_DIR)/AddIns/MonoDevelop.{IPhone,MonoMac,Database}
-	cp -pR $(EXTRAS)/MonoDevelop.IPhone/build/* $(MAC_APP_LIB_DIR)/AddIns/MonoDevelop.IPhone/
-	cp -pR $(EXTRAS)/MonoDevelop.MonoMac/build/* $(MAC_APP_LIB_DIR)/AddIns/MonoDevelop.MonoMac/
-	cp -pR $(EXTRAS)/MonoDevelop.Database/build/* $(MAC_APP_LIB_DIR)/AddIns/MonoDevelop.Database/
+	for ADDIN in MonoDevelop.IPhone MonoDevelop.MonoMac MonoDevelop.Database; do \
+		(ls $(EXTRAS)/$${ADDIN}/build/* > /dev/null 2>&1 && \
+			echo "Copying $${ADDIN}" && \
+			mkdir -p $(MAC_APP_LIB_DIR)/AddIns/$${ADDIN} && \
+			cp -pR $(EXTRAS)/$${ADDIN}/build/* $(MAC_APP_LIB_DIR)/AddIns/$${ADDIN}/ ) \
+		|| (echo "Skipping $${ADDIN}" && echo "$${ADDIN}" >> missing-stuff)  ; \
+	done
 
 # add the binary artifacts if they exist
 	mkdir -p $(MACOS)/lib/{moonlight,pkgconfig}
 	mkdir -p $(MACOS)/MonoDoc.app/
-	cp -pR $(ARTIFACTS)/MoonSDK/* $(MACOS)/lib/moonlight/
-	cp -pR $(ARTIFACTS)/system.web.mvc.pc $(MACOS)/lib/pkgconfig/
-	cp -pR $(ARTIFACTS)/MonoDoc.app/* $(MACOS)/MonoDoc.app/
+	test ! -d $(ARTIFACTS)/MoonSDK ||  cp -pR $(ARTIFACTS)/MoonSDK/* $(MACOS)/lib/moonlight/
+	test ! -d $(ARTIFACTS)/MonoDoc.app ||  cp -pR $(ARTIFACTS)/MonoDoc.app/* $(MACOS)/MonoDoc.app/
 
 # update revision in updateinfo
-	cp updateinfo "$(MACOS)/updateinfo"
+	echo "a3140c14-ef90-4019-ae6c-9d93804d6611 $$(cat release-info)" > "$(MACOS)/updateinfo"
 
 # touch the directory so that update dependencies work
 	touch MonoDevelop.app
+	
+	@echo ""
+	@echo "MONODEVELOP RELEASE: $$(cat release-info)"
+	@if test -f missing-stuff; then echo ""; echo "Missing stuff:"; cat missing-stuff; fi
+	@echo ""
+	@rm -f missing-stuff
 
 MonoDevelop.app.zip: MonoDevelop.app
 	zip -r9uq MonoDevelop.app.zip MonoDevelop.app

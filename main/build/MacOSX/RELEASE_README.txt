@@ -18,14 +18,15 @@ To make a disk image: make monodevelop.dmg
 BEFORE A RELEASE
 ================
 
-* The updateinfo file must be updated manually before making a new build to be distributed.
-* Changes to the updateinfo should be committed to git before making the final build.
-* Ensure that any version info in the dmg background image is correct.
+* The version-info file must be updated manually before making a new build to be distributed.
+* Changes to the version-info file should be committed to git before making the final build.
+* Ensure that any version in the dmg background image is correct.
+* Ensure that no desired extras are in the "Missing files" message when building the app.
 
-UPDATEINFO
-==========
+VERSIONINFO
+===========
 
-The updateinfo file contains two values, a product GUID and a release number.
+The version-info file contains a release number.
 
 The format of the release number is Mmmppbbb
 where M = major, m = minor, p = point, b = build
