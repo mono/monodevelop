@@ -84,6 +84,7 @@ MonoDevelop.app:
 	
 	@echo ""
 	@echo "MONODEVELOP RELEASE: $$(cat release-info)"
+	@echo "$$(cat ../../vcrevision)"
 	@if test -f missing-stuff; then echo ""; echo "Missing stuff:"; cat missing-stuff; fi
 	@echo ""
 	@rm -f missing-stuff
