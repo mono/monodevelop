@@ -29,7 +29,7 @@ else
 fi
 
 #mono version check
-if ! $DIR/mono-version-check MonoDevelop 2 6 7 ; then exit 1; fi
+if ! "$DIR/mono-version-check" MonoDevelop 2 6 7 ; then exit 1; fi
 
 ## use an app-specific registry if possible
 #if [ -w "$DIR" ]; then
