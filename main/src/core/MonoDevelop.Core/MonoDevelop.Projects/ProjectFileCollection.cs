@@ -39,6 +39,11 @@ namespace MonoDevelop.Projects
 		public ProjectFileCollection ()
 		{
 		}
+
+		public ProjectFile GetFile (string fileName)
+		{
+			return GetFile ((FilePath)fileName);
+		}
 		
 		public ProjectFile GetFile (FilePath fileName)
 		{
