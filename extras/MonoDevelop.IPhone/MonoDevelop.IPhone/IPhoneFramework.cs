@@ -176,7 +176,7 @@ public static class IPhoneFramework
 					yield return new IPhoneSimulatorTarget (TargetDevice.IPhone, v);
 				}
 				//unknown, assume both
-				else if (IPhoneSdkVersion.V4_0.CompareTo (v) == 0) {
+				else {
 					yield return new IPhoneSimulatorTarget (TargetDevice.IPhone, v);
 					yield return new IPhoneSimulatorTarget (TargetDevice.IPad, v);
 				}
