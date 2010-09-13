@@ -125,8 +125,6 @@ namespace Microsoft.VisualStudio.TextTemplating
 				return builder;
 			}
 			set {
-				if (value == null)
-					throw new ArgumentNullException ();
 				builder = value;
 			}
 		}
