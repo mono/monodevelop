@@ -149,7 +149,8 @@ namespace MonoDevelop.MonoDroid
 		public static List<AndroidDevice> Devices {
 			get {
 				//FIXME: make this cancellable
-				return Toolbox.GetDevices (new MonoDevelop.Core.ProgressMonitoring.SimpleProgressMonitor ());
+				return null;
+				//return Toolbox.GetDevices (new MonoDevelop.Core.ProgressMonitoring.SimpleProgressMonitor ());
 			}
 		}
 		

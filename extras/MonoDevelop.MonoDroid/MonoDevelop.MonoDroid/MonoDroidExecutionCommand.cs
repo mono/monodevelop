@@ -34,19 +34,20 @@ namespace MonoDevelop.MonoDroid
 {
 	public class MonoDroidExecutionCommand: ExecutionCommand
 	{
-		public MonoDroidExecutionCommand (FilePath apkPath, TargetRuntime runtime, TargetFramework framework, bool debugMode)
+		public MonoDroidExecutionCommand (string packageName, AndroidDevice device, FilePath apkPath,
+			TargetRuntime runtime, TargetFramework framework, bool debugMode)
 		{
+			this.Device = device;
+			this.PackageName = packageName;
 			this.ApkPath = apkPath;
 			this.Runtime = runtime;
 			this.Framework = framework;
 			this.DebugMode = debugMode;
-			AppName = ApkPath.FileNameWithoutExtension;
-			if (AppName.EndsWith ("-signed"))
-				AppName = AppName.Substring (0, AppName.Length - "-signed".Length);
 		}
 		
-		public string AppName { get; private set; }
-		public FilePath ApkPath { get; private set; }
+		public string ApkPath { get; private set; }
+		public FilePath PackageName { get; private set; }
+		public AndroidDevice Device { get; set; }
 		public TargetRuntime Runtime { get; private set; }
 		public TargetFramework Framework { get; private set; }
 		public IList<string> UserAssemblyPaths { get; set; }

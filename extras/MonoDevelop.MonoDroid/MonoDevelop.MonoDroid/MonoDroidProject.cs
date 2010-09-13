@@ -161,19 +161,19 @@ namespace MonoDevelop.MonoDroid
 		/// <summary>
 		/// User setting of device for running app in simulator. Null means use default.
 		/// </summary>
-		public MonoDroidDeviceTarget GetDeviceTarget (MonoDroidProjectConfiguration conf)
+		public AndroidDevice GetDeviceTarget (MonoDroidProjectConfiguration conf)
 		{
-			return UserProperties.GetValue<MonoDroidDeviceTarget> (GetDeviceTargetKey (conf));
+			return UserProperties.GetValue<AndroidDevice> (GetDeviceTargetKey (conf));
 		}
 		
-		public void SetDeviceTarget (MonoDroidProjectConfiguration conf, MonoDroidDeviceTarget value)
+		public void SetDeviceTarget (MonoDroidProjectConfiguration conf, AndroidDevice value)
 		{
-			UserProperties.SetValue<MonoDroidDeviceTarget> (GetDeviceTargetKey (conf), value);
+			UserProperties.SetValue<AndroidDevice> (GetDeviceTargetKey (conf), value);
 		}
 		
 		string GetDeviceTargetKey (MonoDroidProjectConfiguration conf)
 		{
-			return "MonoDroidDeviceTarget-" + conf.Id;
+			return "AndroidDevice-" + conf.Id;
 		}
 		
 		protected override ExecutionCommand CreateExecutionCommand (ConfigurationSelector configSel,
@@ -182,7 +182,8 @@ namespace MonoDevelop.MonoDroid
 			var conf = (MonoDroidProjectConfiguration) configuration;
 			var devTarget = GetDeviceTarget (conf);
 			
-			return new MonoDroidExecutionCommand (conf.ApkSignedPath, TargetRuntime, TargetFramework, conf.DebugMode) {
+			return new MonoDroidExecutionCommand (conf.PackageName, devTarget,
+				conf.ApkSignedPath, TargetRuntime, TargetFramework, conf.DebugMode) {
 				UserAssemblyPaths = GetUserAssemblyPaths (configSel)
 			};
 		}
@@ -191,11 +192,112 @@ namespace MonoDevelop.MonoDroid
 		{
 			var conf = (MonoDroidProjectConfiguration) GetConfiguration (configSel);
 			
-			//sign, upload
+			var toolbox = MonoDroidFramework.Toolbox;
 			
-			throw new NotImplementedException ();
+			//TODO: ask user for device and get it into the command
 			
-			base.OnExecute (monitor, context, configSel);
+			//FIXME: make these valid
+			AndroidDevice device = null;
+			string sharedRuntimePackage = null;
+			
+			var opMon = new AggregatedOperationMonitor (monitor);
+			
+			monitor.BeginTask ("Starting adb server", 0);
+			using (var ensureServerOp = toolbox.EnsureServerRunning (monitor.Log, monitor.Log)) {
+				ensureServerOp.WaitForCompleted ();
+				if (!ensureServerOp.Success) {
+					monitor.ReportError ("Failed to start adb server", null);
+					return;
+				}
+			}
+			monitor.EndTask ();
+			
+			if (monitor.IsCancelRequested)
+				return;
+			
+			monitor.BeginTask ("Waiting for device", 0);
+			using (var waitForDeviceOp = toolbox.WaitForDevice (device, monitor.Log, monitor.Log)) {
+				waitForDeviceOp.WaitForCompleted ();
+				if (!waitForDeviceOp.Success) {
+					monitor.ReportError ("Failed to get device", null);
+					return;
+				}
+			}
+			monitor.EndTask ();
+			
+			if (monitor.IsCancelRequested)
+				return;
+			
+			monitor.BeginTask ("Getting package list from device", 0);
+			List<string> packages;
+			using (var getPackagesOp = toolbox.GetInstalledPackagesOnDevice (device, monitor.Log)) {
+				opMon.AddOperation (getPackagesOp);
+				getPackagesOp.WaitForCompleted ();
+				if (!getPackagesOp.Success) {
+					monitor.ReportError ("Failed to get package list", null);
+					return;
+				}
+				packages = getPackagesOp.Result;
+				monitor.EndTask ();
+			}
+			
+			if (monitor.IsCancelRequested)
+				return;
+			
+			if (!toolbox.IsSharedRuntimeInstalled (packages)) {
+				monitor.BeginTask ("Installing shared runtime package on device", 0);
+				using (var installRuntimeOp = toolbox.Install (device, sharedRuntimePackage, monitor.Log, monitor.Log)) {
+					opMon.AddOperation (installRuntimeOp);
+					installRuntimeOp.WaitForCompleted ();
+					if (!installRuntimeOp.Success) {
+						monitor.ReportError ("Failed to install shared runtime package", null);
+						return;
+					}
+					monitor.EndTask ();
+				}
+				
+				if (monitor.IsCancelRequested)
+					return;
+			}
+			
+			if (!File.Exists (conf.ApkSignedPath)
+				|| File.GetLastWriteTime (conf.ApkSignedPath) <= File.GetLastWriteTime (conf.ApkPath))
+			{
+				monitor.BeginTask ("Signing package", 0);
+				var signResults = DoRunTarget (monitor, "SignAndroidPackage", configSel);
+				if (signResults.ErrorCount > 0) {
+					monitor.ReportError ("Signing failed", null);
+					return;
+				}
+				monitor.EndTask ();
+				
+				if (monitor.IsCancelRequested)
+					return;
+			}
+			
+			//TODO: use per-device flag file and installed packages list to skip re-installing unchanged packages
+			
+			monitor.BeginTask ("Installing package", 0);
+			using (var installOp = toolbox.Install (device, conf.ApkSignedPath, monitor.Log, monitor.Log)) {
+				opMon.AddOperation (installOp);
+				installOp.WaitForCompleted ();
+				if (!installOp.Success) {
+					monitor.ReportError ("Failed to install package", null);
+					return;
+				}
+				monitor.EndTask ();
+			}
+			
+			if (monitor.IsCancelRequested)
+				return;
+			
+			var command = CreateExecutionCommand (configSel, conf);
+			
+			using (var console = context.ConsoleFactory.CreateConsole (false)) {
+				var executeOp = context.ExecutionHandler.Execute (command, console);
+				opMon.AddOperation (executeOp);
+				executeOp.WaitForCompleted ();
+			}
 		}
 		
 		#endregion

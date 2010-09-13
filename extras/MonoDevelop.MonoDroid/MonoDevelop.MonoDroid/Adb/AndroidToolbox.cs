@@ -36,12 +36,13 @@ namespace MonoDevelop.MonoDroid
 {
 	public class AndroidToolbox
 	{
-		FilePath androidToolsPath;
+		FilePath androidToolsPath, javaBinPath;
 		string pathOverride;
 		
 		public AndroidToolbox (FilePath androidToolsPath, FilePath javaBinPath)
 		{
 			this.androidToolsPath = androidToolsPath;
+			this.javaBinPath = javaBinPath;
 			
 			pathOverride = Environment.GetEnvironmentVariable ("PATH");
 			if (string.IsNullOrEmpty (pathOverride))
@@ -68,91 +69,62 @@ namespace MonoDevelop.MonoDroid
 			}
 		}
 		
-		bool EnsureServerRunning (AggregatedOperationMonitor op, IProgressMonitor monitor)
+		public string JarsignerExe {
+			get {
+				return javaBinPath.Combine (PropertyService.IsWindows? "jarsigner.exe" : "jarsigner");
+			}
+		}
+		
+		public string KeytoolExe {
+			get {
+				return javaBinPath.Combine (PropertyService.IsWindows? "keytool.exe" : "keytool");
+			}
+		}
+		
+		public IProcessAsyncOperation SignPackage (AndroidSigningOptions options, string unsignedApk,
+			string signedApk, TextWriter outputLog, TextWriter errorLog)
 		{
-			var psi = new ProcessStartInfo (AdbExe, "start-server") {
-				UseShellExecute = false,
-			};
-			psi.EnvironmentVariables["PATH"] = pathOverride;
+			var args = string.Format (
+				"-keystore \"{0}\" -storepass \"{1}\" -keypass \"{2}\" -signedjar \"{3}\" \"{4}\" \"{5}\"",
+				options.KeyStore, options.StorePass, options.KeyPass , signedApk, unsignedApk, options.KeyAlias);
+			return StartProcess (JarsignerExe, args, outputLog, errorLog);
+		}
+		
+		//string dname = "CN=Android Debug,O=Android,C=US";
+		public IProcessAsyncOperation Genkeypair (AndroidSigningOptions options, string dname,
+			TextWriter outputLog, TextWriter errorLog)
+		{
 			
-			monitor.BeginTask ("Starting adb server", 0);
-			using (var p = Runtime.ProcessService.StartProcess (psi, monitor.Log, monitor.Log, null)) {
-				p.WaitForOutput ();
-				monitor.EndTask ();
-				if (p.ExitCode > 0) {
-					monitor.ReportError ("Failed to start adb server", null);
-					return false;
-				}
-				monitor.ReportSuccess ("Started adb server");
-				return true;
-			}
+			var args = string.Format (
+				"-genkeypair -alias \"{0}\" -dname \"{1}\" -storepass \"{3}\" -keypass \"{2}\" -keystore \"{4}\"",
+				options.KeyAlias, dname, options.StorePass, options.KeyPass, options.KeyStore);
+			return StartProcess (KeytoolExe, args, outputLog, errorLog);
 		}
 		
-		bool RunCommand (IProgressMonitor monitor, bool ensureServer, string exe, string command,
-			StringWriter output, string taskMessage, string failMessage)
-		{
-			using (var op = new AggregatedOperationMonitor (monitor)) {
-				if (ensureServer) {
-					if (!EnsureServerRunning (op, monitor))
-						return false;
-				}
-				
-				var errorWriter = new StringWriter ();
-				
-				monitor.BeginTask (taskMessage, 0);
-				
-				var psi = new ProcessStartInfo (exe, command) {
-					UseShellExecute = false,
-				};
-				psi.EnvironmentVariables["PATH"] = pathOverride;
-				
-				var process = StartProcess (exe, command, output, errorWriter);
-				op.AddOperation (process);
-				
-				process.WaitForOutput ();
-				monitor.EndTask ();
-				
-				if (monitor.IsCancelRequested)
-					return false;
-				
-				if (process.ExitCode > 0) {
-					monitor.Log.Write (errorWriter.ToString ());
-					monitor.ReportError (failMessage, null);
-					return false;
-				}
-				return true;
-			}
-		}
-		
-		ProcessWrapper StartProcess (string name, string args, TextWriter output, TextWriter error)
+		ProcessWrapper StartProcess (string name, string args, TextWriter outputLog, TextWriter errorLog)
 		{
 			var psi = new ProcessStartInfo (name, args) {
 				UseShellExecute = false,
 			};
 			psi.EnvironmentVariables["PATH"] = pathOverride;
-			return  Runtime.ProcessService.StartProcess (psi, output, error, null);
+			return Runtime.ProcessService.StartProcess (psi, outputLog, outputLog, null);
 		}
 		
-		public List<AndroidDevice> GetDevices (IProgressMonitor monitor)
+		public IProcessAsyncOperation EnsureServerRunning (TextWriter outputLog, TextWriter errorLog)
 		{
-			var output = new StringWriter ();
-			if (RunCommand (monitor, true, AdbExe, "devices", output,
-				"Getting running devices",
-				"Failed to get running devices"
-				))
-				return ParseDeviceListOutput (output.ToString ());
-			return null;
+			return StartProcess (AdbExe, "start-server", outputLog, errorLog);
 		}
 		
-		public List<AndroidVirtualDevice> GetAllVirtualDevices (IProgressMonitor monitor)
+		public GetDevicesOperation GetDevices (TextWriter errorLog)
 		{
 			var output = new StringWriter ();
-			if (RunCommand (monitor, true, AndroidExe, "list avd", output,
-				"Getting virtual devices",
-				"Failed to get virtual devices"
-				))
-				return ParseAndroidVirtualDeviceOutput (output.ToString ());
-			return null;
+			return new GetDevicesOperation (StartProcess (AdbExe, "devices", output, errorLog), output);
+		}
+		
+		public GetVirtualDevicesOperation GetAllVirtualDevices (TextWriter errorLog)
+		{
+			var output = new StringWriter ();
+			return new GetVirtualDevicesOperation (StartProcess (AndroidExe, "list avd", output, errorLog), output);
 		}
 		
 		public bool StartAvd (IProgressMonitor monitor, AndroidVirtualDevice avd)
@@ -187,48 +159,41 @@ namespace MonoDevelop.MonoDroid
 			return Runtime.ProcessService.StartProcess (AndroidExe, "", null, (TextWriter)null, null, null);
 		}
 		
-		public bool PushFile (IProgressMonitor monitor, AndroidDevice device, string source, string destination)
+		public IProcessAsyncOperation PushFile (AndroidDevice device, string source, string destination,
+			TextWriter outputLog, TextWriter errorLog)
 		{
 			var args = string.Format ("-s '{0}' push '{1} '{2}'", device.ID, source, destination);
-			return RunCommand (monitor, true, AdbExe, args, null,
-				string.Format ("Uploading file '{0} to '{1}' on device '{2}'", source, destination, device.ID),
-				"Failed to upload file");
+			return StartProcess (AdbExe, args, outputLog, errorLog);
 		}
 
-		public bool WaitForDevice (IProgressMonitor monitor, AndroidDevice device)
+		public IProcessAsyncOperation WaitForDevice (AndroidDevice device, TextWriter outputLog, TextWriter errorLog)
 		{
 			var args = string.Format ("-s '{0}' wait-for-device");
-			return RunCommand (monitor, true, AdbExe, args, null,
-				string.Format ("Waiting for device '{0}'", device.ID),
-				"Error waiting for device");
+			return StartProcess (AdbExe, args, outputLog, errorLog);
 		}
 
-		public bool PullFile (IProgressMonitor monitor, AndroidDevice device, string source, string destination)
+		public IProcessAsyncOperation PullFile (AndroidDevice device, string source, string destination,
+			TextWriter outputLog, TextWriter errorLog)
 		{
 			var args = string.Format ("-s '{0}' pull '{1} '{2}'", device.ID, source, destination);
-			return RunCommand (monitor, true, AdbExe, args, null,
-				string.Format ("Downloading file '{0} to '{1}' from device '{2}'", source, destination, device.ID),
-				"Failed to download file");
+			return StartProcess (AdbExe, args, outputLog, errorLog);
 		}
 
-		public bool Install (IProgressMonitor monitor, AndroidDevice device, string package)
+		public IProcessAsyncOperation Install (AndroidDevice device, string package, TextWriter outputLog, TextWriter errorLog)
 		{
 			var args = string.Format ("-s '{0}' install '{1}'", device.ID, package);
-			return RunCommand (monitor, true, AdbExe, args, null,
-				string.Format ("Installing package '{0} on device '{1}'", package, device.ID),
-				"Failed to install package");
+			return StartProcess (AdbExe, args, outputLog, errorLog);
 		}
 
-		public bool Uninstall (IProgressMonitor monitor, AndroidDevice device, string package)
+		public IProcessAsyncOperation Uninstall (AndroidDevice device, string package, TextWriter outputLog, TextWriter errorLog)
 		{
 			var args = string.Format ("-s '{0}' uninstall '{1}", device.ID, package);
-			return RunCommand (monitor, true, AdbExe, args, null,
-				string.Format ("Uninstalling package '{0}' from device '{1}'", package, device.ID),
-				"Failed to uninstall package");
+			return StartProcess (AdbExe, args, outputLog, errorLog);
 		}
 		
 		//monoRuntimeArgs: debug={0}:{1}:{2}", DebuggerHost, SdbPort, StdoutPort
-		public bool StartActivity (IProgressMonitor monitor, AndroidDevice device, string activity, string monoRuntimeArgs)
+		public IProcessAsyncOperation StartActivity (AndroidDevice device, string activity, string monoRuntimeArgs,
+			TextWriter outputLog, TextWriter errorLog)
 		{
 			var args = string.Format ("-s '{0}' shell am start -a android.intent.action.MAIN -n '{1}'",
 				device.ID, activity);
@@ -236,110 +201,158 @@ namespace MonoDevelop.MonoDroid
 			if (!string.IsNullOrEmpty (monoRuntimeArgs)) {
 				args = args + " -e mono:runtime-args " + monoRuntimeArgs;
 			}
-			return RunCommand (monitor, true, AdbExe, args, null,
-				string.Format ("Launching activity '{0}' on device '{1}'", activity, device.ID),
-				"Failed to run activity");
+			return StartProcess (AdbExe, args, outputLog, errorLog);
 		}
 
-		public bool ForwardPort (IProgressMonitor monitor, AndroidDevice device, int devicePort, int localPort)
+		public IProcessAsyncOperation ForwardPort (AndroidDevice device, int devicePort, int localPort,
+			TextWriter outputLog, TextWriter errorLog)
 		{
 			var args = string.Format ("-s '{0}' forward tcp:{1} tcp:{2}", device.ID, localPort, devicePort);
-			return RunCommand (monitor, true, AdbExe, args, null,
-				string.Format ("Forwarding port {0 on device '{1}' to local port {2}", devicePort, device.ID, localPort),
-				"Failed to forward port");
-		}
-
-		public List<string> GetInstalledPackagesOnDevice (IProgressMonitor monitor, AndroidDevice device)
-		{
-			var args = string.Format ("-s '{0}' shell pm list packages", device.ID);
-			var output = new StringWriter ();
-			if (RunCommand (monitor, true, AdbExe, args, output,
-				"Getting installed packages in device '{0}'",
-				"Failed to get installed packages"
-				))
-				return ParsePackageList (output.ToString ());
-			return null;
-		}
-
-		public bool IsSharedRuntimeInstalled (IProgressMonitor monitor, AndroidDevice device)
-		{
-			var list = GetInstalledPackagesOnDevice (monitor, device);
-			if (list == null)
-				return false;
-			return list.Contains ("package:com.novell.monodroid.runtimeservice");
+			return StartProcess (AdbExe, args, outputLog, errorLog);
 		}
 		
-		static List<AndroidDevice> ParseDeviceListOutput (string output)
+		public GetPackagesOperation GetInstalledPackagesOnDevice (AndroidDevice device, TextWriter errorWriter)
 		{
-			var devices = new List<AndroidDevice> ();
+			var output = new StringWriter ();
+			var args = string.Format ("-s '{0}' shell pm list packages", device.ID);
+			return new GetPackagesOperation (StartProcess (AdbExe, args, output, errorWriter), output);
+		}
+
+		public bool IsSharedRuntimeInstalled (List<string> packages)
+		{
+			return packages.Contains ("package:com.novell.monodroid.runtimeservice");
+		}
+		
+		public abstract class AdbParseOperation<T> : WrapperOperation
+		{
+			IProcessAsyncOperation process;
+			StringWriter output;
+			T result;
 			
-			using (var sr = new StringReader (output)) {
+			public AdbParseOperation (IProcessAsyncOperation process, StringWriter output)
+			{
+				this.process = process;
+				this.output = output;
+			}
+			
+			protected override IAsyncOperation Wrapped {
+				get { return process; }
+			}
+			
+			protected abstract T Parse (string result);
+			
+			public T Result {
+				get {
+					if (result == null)
+						result = Parse (output.ToString ());
+					return result;
+				}
+			}
+		}
+	
+		public class GetPackagesOperation : AdbParseOperation<List<string>>
+		{
+			public GetPackagesOperation (IProcessAsyncOperation process, StringWriter output)
+				: base (process, output)
+			{
+			}
+			
+			protected override List<string> Parse (string output)
+			{
+				var sr = new StringReader (output);
+				var list = new List<string> ();
+				
+				string s;
+				while ((s = sr.ReadLine ()) != null) {
+					s.Trim ();
+					if (!string.IsNullOrEmpty (s))
+						list.Add (s);
+				}
+				return list;
+			}
+		}
+		
+		public class GetVirtualDevicesOperation : AdbParseOperation<List<AndroidVirtualDevice>>
+		{
+			public GetVirtualDevicesOperation (IProcessAsyncOperation process, StringWriter output)
+				: base (process, output)
+			{
+			}
+			
+			protected override List<AndroidVirtualDevice> Parse (string output)
+			{
+				var devices = new List<AndroidVirtualDevice> ();
+	
+				var sr = new StringReader (output);
+				AndroidVirtualDevice current_device = null;
+	
 				string s;
 	
 				while ((s = sr.ReadLine ()) != null) {
 					s = s.Trim ();
-					
-					if (s.Length == 0 || s == "List of devices attached")
+	
+					if (s.Length == 0)
 						continue;
 	
-					string[] data = s.Split ('\t');
-					devices.Add (new AndroidDevice (data[0].Trim (), data[1].Trim ()));
+					if (s.StartsWith ("Available") || s.StartsWith ("------")) {
+						if (current_device != null)
+							devices.Add (current_device);
+	
+						continue;
+					}
+	
+					if (s.StartsWith ("Name:"))
+						current_device = new AndroidVirtualDevice ();
+	
+					string[] data = s.Split (':');
+	
+					// Check for a multi-line property, and ignore it
+					if (data.Length > 1 && current_device != null)
+						current_device.Properties[data[0].Trim ()] = data[1].Trim ();
 				}
+	
+				if (current_device != null)
+					devices.Add (current_device);
+	
+				return devices;
 			}
-			return devices;
 		}
 		
-		static List<AndroidVirtualDevice> ParseAndroidVirtualDeviceOutput (string output)
+		public class GetDevicesOperation : AdbParseOperation<List<AndroidDevice>>
 		{
-			var devices = new List<AndroidVirtualDevice> ();
-
-			var sr = new StringReader (output);
-			AndroidVirtualDevice current_device = null;
-
-			string s;
-
-			while ((s = sr.ReadLine ()) != null) {
-				s = s.Trim ();
-
-				if (s.Length == 0)
-					continue;
-
-				if (s.StartsWith ("Available") || s.StartsWith ("------")) {
-					if (current_device != null)
-						devices.Add (current_device);
-
-					continue;
-				}
-
-				if (s.StartsWith ("Name:"))
-					current_device = new AndroidVirtualDevice ();
-
-				string[] data = s.Split (':');
-
-				// Check for a multi-line property, and ignore it
-				if (data.Length > 1 && current_device != null)
-					current_device.Properties[data[0].Trim ()] = data[1].Trim ();
+			public GetDevicesOperation (IProcessAsyncOperation process, StringWriter output)
+				: base (process, output)
+			{
 			}
-
-			if (current_device != null)
-				devices.Add (current_device);
-
-			return devices;
-		}
-		
-		static List<string> ParsePackageList (string output)
-		{
-			var sr = new StringReader (output);
-			var list = new List<string> ();
 			
-			string s;
-			while ((s = sr.ReadLine ()) != null) {
-				s.Trim ();
-				if (!string.IsNullOrEmpty (s))
-					list.Add (s);
+			protected override List<AndroidDevice> Parse (string output)
+			{
+				var devices = new List<AndroidDevice> ();
+			
+				using (var sr = new StringReader (output)) {
+					string s;
+		
+					while ((s = sr.ReadLine ()) != null) {
+						s = s.Trim ();
+						
+						if (s.Length == 0 || s == "List of devices attached")
+							continue;
+		
+						string[] data = s.Split ('\t');
+						devices.Add (new AndroidDevice (data[0].Trim (), data[1].Trim ()));
+					}
+				}
+				return devices;
 			}
-			return list;
 		}
+	}
+	
+	public class AndroidSigningOptions
+	{
+		public string KeyStore { get; set; }
+		public string KeyAlias { get; set; }
+		public string KeyPass { get; set; }
+		public string StorePass { get; set; }
 	}
 	
 	public class AndroidDevice

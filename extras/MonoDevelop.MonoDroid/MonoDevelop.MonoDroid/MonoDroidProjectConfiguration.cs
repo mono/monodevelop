@@ -75,6 +75,12 @@ namespace MonoDevelop.MonoDroid
 			}
 		}
 		
+		public string PackageName {
+			get {
+				return ParentItem.GetPackageName (this);
+			}
+		}
+		
 		public string ApkPath {
 			get {
 				string packageName = ParentItem.GetPackageName (this);

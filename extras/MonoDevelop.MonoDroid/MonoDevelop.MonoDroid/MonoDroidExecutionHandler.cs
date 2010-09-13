@@ -57,15 +57,11 @@ namespace MonoDevelop.MonoDroid
 			return true;
 		}
 		
-		public static ProcessStartInfo CreateStartInfo (MonoDroidExecutionCommand cmd, bool logSimOutput, 
-			AndroidDevice target)
-		{
-			throw new NotImplementedException ();
-		}
-		
 		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
-			throw new NotImplementedException ();
+			var cmd = (MonoDroidExecutionCommand) command;
+			return MonoDroidFramework.Toolbox.StartActivity (cmd.Device, cmd.PackageName, null,
+				console.Out, console.Error);
 		}
 	}
 }
