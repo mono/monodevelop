@@ -85,10 +85,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			} else if (target is Identifier) {
 				declaringType = options.ResolveResult.CallingType;
 				methodName = data.GetTextBetween (target.StartLocation.Line, target.StartLocation.Column, target.EndLocation.Line, target.EndLocation.Column);
-			} else {
-				return false;
 			}
-			
 			return declaringType != null && !HasCompatibleMethod (declaringType, methodName, invocation);
 		}
 		
@@ -128,8 +125,8 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			var resolver = options.GetResolver ();
 			var data = options.GetTextEditorData ();
 			string expression;
-			if (assignment.Left is Identifier) {
-				expression = ((Identifier)assignment.Left).Name;
+			if (assignment.Left is IdentifierExpression) {
+				expression = ((IdentifierExpression)assignment.Left).Identifier.Name;
 			} else {
 				ICSharpNode left = assignment.Left as ICSharpNode;
 				expression = data.GetTextBetween (left.StartLocation.Line, left.StartLocation.Column, left.EndLocation.Line, left.EndLocation.Column);
@@ -143,6 +140,11 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			var data = options.GetTextEditorData ();
 			ICSharpNode node = invocation;
 			while (node != null) {
+				if (node.Parent is VariableInitializer) {
+					var initializer = (VariableInitializer)node.Parent;
+					var resolveResult = resolver.Resolve (new ExpressionResult (initializer.Name), resolvePosition);
+					return resolveResult.ResolvedType;
+				}
 				if (node.Parent is AssignmentExpression) {
 					var resolveResult = ResolveAssignment (options, (AssignmentExpression)node.Parent);
 					if (resolveResult != null)
@@ -342,8 +344,8 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 				var resolveResult = resolver.Resolve (new ExpressionResult (argExpression), resolvePosition);
 				if (argument is MemberReferenceExpression) {
 					arg.Name = ((MemberReferenceExpression)argument).Identifier.Name;
-				} else if (argument is FullTypeName) {
-					arg.Name = ((FullTypeName)argument).Identifier.Name;
+				} else if (argument is IdentifierExpression) {
+					arg.Name = ((IdentifierExpression)argument).Identifier.Name;
 					int idx = arg.Name.LastIndexOf ('.');
 					if (idx >= 0)
 						arg.Name = arg.Name.Substring (idx + 1);
