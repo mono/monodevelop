@@ -1608,47 +1608,48 @@ namespace MonoDevelop.CSharp.Parser
 		
 			void AddParameter (AbstractCSharpNode parent, Mono.CSharp.AParametersCollection parameters)
 			{
-//				if (parameters == null || !parameters.HasParams)
-//					return;
-//				var paramLocation = LocationsBag.GetLocations (parameters);
-//				
-//				for (int i = 0; i < parameters.Count; i++) {
-//					if (paramLocation.LocationList != null && i > 0 && i - 1 < paramLocation.LocationList.Count) 
-//						parent.AddChild (new CSharpTokenNode (Convert (paramLocation.LocationList[i - 1]), 1), ParameterDeclarationExpression.Roles.Comma);
-//					var p = parameters.FixedParameters[i];
-//					var location = LocationsBag.GetLocations (p);
-//					
-//					ParameterDeclarationExpression parameterDeclarationExpression = new ParameterDeclarationExpression ();
-//					switch (p.ModFlags) {
-//					case Parameter.Modifier.OUT:
-//						parameterDeclarationExpression.ParameterModifier = ParameterModifier.Out;
-//						parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location.LocationList[0]), "out".Length), ParameterDeclarationExpression.Roles.Keyword);
-//						break;
-//					case Parameter.Modifier.REF:
-//						parameterDeclarationExpression.ParameterModifier = ParameterModifier.Ref;
-//						parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location.LocationList[0]), "ref".Length), ParameterDeclarationExpression.Roles.Keyword);
-//						break;
-//					case Parameter.Modifier.PARAMS:
-//						parameterDeclarationExpression.ParameterModifier = ParameterModifier.Params;
-//						parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location.LocationList[0]), "params".Length), ParameterDeclarationExpression.Roles.Keyword);
-//						break;
-//					case Parameter.Modifier.This:
-//						parameterDeclarationExpression.ParameterModifier = ParameterModifier.This;
-//						parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location.LocationList[0]), "this".Length), ParameterDeclarationExpression.Roles.Keyword);
-//						break;
-//					}
-//
-//// TODO: type spec
-////					parameterDeclarationExpression.AddChild ((INode)parameters.Types[i].Accept (this), ParameterDeclarationExpression.Roles.ReturnType);
-//// TODO: Identifier location.
-//					parameterDeclarationExpression.AddChild (new Identifier (p.Name, DomLocation.Empty), ParameterDeclarationExpression.Roles.Identifier);
-////				parameterDeclarationExpression.AddChild (new Identifier (p.Name, Convert (p.)), ParameterDeclarationExpression.Roles.Identifier);
-//					if (p.HasDefaultValue) {
-//						parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[0]), 1), ParameterDeclarationExpression.Roles.Assign);
-//						parameterDeclarationExpression.AddChild ((INode)p.DefaultValue.Accept (this), ParameterDeclarationExpression.Roles.Expression);
-//					}
-//					parent.AddChild (parameterDeclarationExpression, InvocationExpression.Roles.Argument);
-//				}
+				if (parameters == null || !parameters.HasParams)
+					return;
+				var paramLocation = LocationsBag.GetLocations (parameters);
+				
+				for (int i = 0; i < parameters.Count; i++) {
+					if (paramLocation != null && i > 0 && i - 1 < paramLocation.Count) 
+						parent.AddChild (new CSharpTokenNode (Convert (paramLocation[i - 1]), 1), ParameterDeclarationExpression.Roles.Comma);
+					var p = (Parameter)parameters.FixedParameters[i];
+					var location = LocationsBag.GetLocations (p);
+					
+					ParameterDeclarationExpression parameterDeclarationExpression = new ParameterDeclarationExpression ();
+					switch (p.ModFlags) {
+					case Parameter.Modifier.OUT:
+						parameterDeclarationExpression.ParameterModifier = ParameterModifier.Out;
+						if (location != null)
+							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[0]), "out".Length), ParameterDeclarationExpression.Roles.Keyword);
+						break;
+					case Parameter.Modifier.REF:
+						parameterDeclarationExpression.ParameterModifier = ParameterModifier.Ref;
+						if (location != null)
+							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[0]), "ref".Length), ParameterDeclarationExpression.Roles.Keyword);
+						break;
+					case Parameter.Modifier.PARAMS:
+						parameterDeclarationExpression.ParameterModifier = ParameterModifier.Params;
+						if (location != null)
+							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[0]), "params".Length), ParameterDeclarationExpression.Roles.Keyword);
+						break;
+					case Parameter.Modifier.This:
+						parameterDeclarationExpression.ParameterModifier = ParameterModifier.This;
+						if (location != null)
+							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[0]), "this".Length), ParameterDeclarationExpression.Roles.Keyword);
+						break;
+					}
+					parameterDeclarationExpression.AddChild ((INode)p.TypeExpression.Accept (this), ParameterDeclarationExpression.Roles.ReturnType);
+					parameterDeclarationExpression.AddChild (new Identifier (p.Name, Convert (p.Location)), ParameterDeclarationExpression.Roles.Identifier);
+					if (p.HasDefaultValue) {
+						if (location != null)
+							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[1]), 1), ParameterDeclarationExpression.Roles.Assign);
+						parameterDeclarationExpression.AddChild ((INode)p.DefaultValue.Accept (this), ParameterDeclarationExpression.Roles.Expression);
+					}
+					parent.AddChild (parameterDeclarationExpression, InvocationExpression.Roles.Argument);
+				}
 			}
 			
 			void AddTypeArguments (AbstractCSharpNode parent, LocationsBag.MemberLocations location, Mono.CSharp.TypeArguments typeArguments)

@@ -650,7 +650,7 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 		[Conditional ("FULL_AST")]
 		public void AddLocation (object element, IEnumerable<Location> locations)
 		{
-			if (element == null)
+			if (element == null || locations == null)
 				return;
 			simple_locs.Add (element, new List<Location> (locations));
 		}

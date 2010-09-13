@@ -147,6 +147,7 @@ namespace Mono.CSharp
 		LocationsBag lbag;
 		UsingsBag ubag;
 		List<Tuple<Modifiers, Location>> mod_locations;
+		Location parameterModifierLocation;
 %}
 
 %token EOF
@@ -1421,6 +1422,7 @@ formal_parameter_list
 	  {
 		var pars_list = (List<Parameter>) $1;
 	  	$$ = new ParametersCompiled (pars_list.ToArray ());
+	  	lbag.AddLocation ($$, lbag.GetLocations (pars_list));
 	  } 
 	| fixed_parameters COMMA parameter_array
 	  {
@@ -1520,6 +1522,7 @@ fixed_parameter
 	  {
 		var lt = (Tokenizer.LocatedToken) $4;
 		$$ = new Parameter ((FullNamedExpression) $3, lt.Value, (Parameter.Modifier) $2, (Attributes) $1, lt.Location);
+		lbag.AddLocation ($$, parameterModifierLocation);
 	  }
 	| opt_attributes
 	  opt_parameter_modifier
@@ -1529,6 +1532,7 @@ fixed_parameter
 		var lt = (Tokenizer.LocatedToken) $4;
 		Report.Error (1552, lt.Location, "Array type specifier, [], must appear before parameter name");
 		$$ = new Parameter ((FullNamedExpression) $3, lt.Value, (Parameter.Modifier) $2, (Attributes) $1, lt.Location);
+		lbag.AddLocation ($$, parameterModifierLocation);
 	  }
 	| opt_attributes
 	  opt_parameter_modifier
@@ -1538,6 +1542,7 @@ fixed_parameter
 	  	Location l = GetLocation ($4);
 		CheckIdentifierToken (yyToken, l);
 		$$ = new Parameter ((FullNamedExpression) $3, "NeedSomeGeneratorHere", (Parameter.Modifier) $2, (Attributes) $1, l);
+		lbag.AddLocation ($$, parameterModifierLocation);
 	  }
 	| opt_attributes
 	  opt_parameter_modifier
@@ -1579,7 +1584,7 @@ fixed_parameter
 		
 		var lt = (Tokenizer.LocatedToken) $4;
 		$$ = new Parameter ((FullNamedExpression) $3, lt.Value, mod, (Attributes) $1, lt.Location);
-		lbag.AddLocation ($$, GetLocation ($5));
+		lbag.AddLocation ($$, parameterModifierLocation, GetLocation ($5)); // parameterModifierLocation should be ignored when mod == NONE
 		
 		if ($7 != null)
 			((Parameter) $$).DefaultValue = (Expression) $7;
@@ -1595,6 +1600,7 @@ parameter_modifiers
 	: parameter_modifier
 	  {
 		$$ = $1;
+		parameterModifierLocation = GetLocation ($1);
 	  }
 	| parameter_modifiers parameter_modifier
 	  {
