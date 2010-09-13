@@ -85,6 +85,25 @@ namespace MonoDevelop.CSharp.Parser
 					return null;
 				
 				List<string> compilerArguments = new List<string> ();
+				if (dom != null && dom.Project != null && MonoDevelop.Ide.IdeApp.Workspace != null) {
+					DotNetProjectConfiguration configuration = dom.Project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
+					CSharpCompilerParameters par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
+					if (par != null) {
+						if (!string.IsNullOrEmpty (par.DefineSymbols)) {
+							compilerArguments.Add ("-define:" + string.Join (";", par.DefineSymbols.Split (';', ',', ' ', '\t')));
+						}
+						if (par.UnsafeCode)
+							compilerArguments.Add ("-unsafe");
+						if (par.TreatWarningsAsErrors)
+							compilerArguments.Add ("-warnaserror");
+						if (!string.IsNullOrEmpty (par.NoWarnings))
+							compilerArguments.Add ("-nowarn:"+ string.Join (",", par.NoWarnings.Split (';', ',', ' ', '\t')));
+						compilerArguments.Add ("-warn:" + par.WarningLevel);
+						compilerArguments.Add ("-langversion:" + GetLangString (par.LangVersion));
+						if (par.GenerateOverflowChecks)
+							compilerArguments.Add ("-checked");
+					}
+				}
 				
 				var unit =  new MonoDevelop.Projects.Dom.CompilationUnit (fileName);
 				var result = new ParsedDocument (fileName);
