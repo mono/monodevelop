@@ -250,13 +250,14 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			param.Nodes = new List<ICSharpNode> (unit.GetNodesBetween (startLocation.Line, startLocation.Column, endLocation.Line, endLocation.Column));
 			
 			string text = options.Document.Editor.GetTextAt (options.Document.Editor.SelectionRange);
-			param.Text = RemoveIndent (text, GetIndent (text)).TrimEnd ('\n', '\r');
+			
+			param.Text = RemoveIndent (text, GetIndent (data.GetTextBetween (data.GetLine (startLocation.Line).Offset, data.GetLine (endLocation.Line).EndOffset))).TrimEnd ('\n', '\r');
 			VariableLookupVisitor visitor = new VariableLookupVisitor (resolver, param.Location);
 			visitor.MemberLocation = param.DeclaringMember.Location;
 			visitor.CutRegion = new DomRegion (startLocation.Line, startLocation.Column, endLocation.Line, endLocation.Column);
 			if (fillParameter) {
 				unit.AcceptVisitor (visitor, null);
-				if (param.Nodes.Count == 1 && param.Nodes[0].NodeType == NodeType.Expression) {
+				if (param.Nodes != null && (param.Nodes.Count == 1 && param.Nodes[0].NodeType == NodeType.Expression)) {
 					ResolveResult resolveResult = resolver.Resolve (new ExpressionResult ("(" + text + ")"), param.Location);
 					if (resolveResult != null && resolveResult.ResolvedType != null)
 						param.ExpressionType = resolveResult.ResolvedType;
@@ -267,7 +268,6 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				}
 			
 				param.Variables = new List<VariableDescriptor> (visitor.Variables.Values);
-				param.Variables.ForEach (v => Console.WriteLine (v));
 				param.ReferencesMember = visitor.ReferencesMember;
 				
 				param.OneChangedVariable = param.Parameters.Count (p => p.UsedAfterCutRegion) == 1;
@@ -375,7 +375,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				sb.Append (var.Name);
 			}
 			sb.Append (")");
-			if (param.Nodes.Count > 1 || param.Nodes[0].NodeType != NodeType.Expression) 
+			if (param.Nodes != null && (param.Nodes.Count > 1 || param.Nodes[0].NodeType != NodeType.Expression)) 
 				sb.Append (";");
 			return sb.ToString ();
 		}
@@ -439,7 +439,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			int idx2 = code.LastIndexOf (";");
 			methodText.Append (code.Substring (0, idx1));
 
-			if (param.Nodes.Count == 1 && param.Nodes[0].NodeType == NodeType.Expression) {
+			if (param.Nodes != null && (param.Nodes.Count == 1 && param.Nodes[0].NodeType == NodeType.Expression)) {
 				methodText.Append ("return ");
 				methodText.Append (param.Text.Trim ());
 				methodText.Append (";");
@@ -462,7 +462,6 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 					text.Append (param.Parameters.First (p => p.UsedAfterCutRegion).Name);
 					text.Append (";");
 				}
-				
 				methodText.Append (AddIndent (text.ToString (), indent + "\t"));
 			}
 
@@ -499,7 +498,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			TextReplaceChange insertNewMethod = new TextReplaceChange ();
 			insertNewMethod.FileName = options.Document.FileName;
 			insertNewMethod.Description = string.Format (GettextCatalog.GetString ("Create new method {0} from selected statement(s)"), param.Name);
-			insertNewMethod.RemovedChars = param.InsertionPoint.LineBefore == NewLineInsertion.Eol ? 0 : param.InsertionPoint.Location.Column;
+			insertNewMethod.RemovedChars = param.InsertionPoint.LineBefore == NewLineInsertion.Eol ? 0 : param.InsertionPoint.Location.Column - 1;
 			insertNewMethod.Offset = data.Document.LocationToOffset (param.InsertionPoint.Location) - insertNewMethod.RemovedChars;
 			insertNewMethod.InsertedText = GenerateMethodDeclaration (options, param);
 			result.Add (insertNewMethod);
