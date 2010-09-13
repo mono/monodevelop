@@ -41,32 +41,32 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			set;
 		}
 		
-		public bool GetsChanged {
-			get;
-			set;
-		}
-		
-		public bool InitialValueUsed {
-			get;
-			set;
-		}
-		
-		public bool GetsAssigned {
-			get;
-			set;
-		}
-		
-		public bool IsDefined {
-			get;
-			set;
-		}
-		
 		public IReturnType ReturnType {
 			get;
 			set;
 		}
 		
-		public DocumentLocation Location {
+		public bool IsDefinedInsideCutRegion {
+			get;
+			set;
+		}
+		
+		public bool UsedInCutRegion {
+			get;
+			set;
+		}
+		
+		public bool UsedBeforeCutRegion {
+			get;
+			set;
+		}
+		
+		public bool UsedAfterCutRegion {
+			get;
+			set;
+		}
+		
+		public bool IsChangedInsideCutRegion {
 			get;
 			set;
 		}
@@ -74,20 +74,20 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 		public VariableDescriptor (string name)
 		{
 			this.Name = name;
-			this.GetsChanged = this.IsDefined = this.InitialValueUsed = false;
 		}
 		
 		public override string ToString ()
 		{
-			return string.Format("[VariableDescriptor: Name={0}, GetsChanged={1}, InitialValueUsed={2}, GetsAssigned={3}, IsDefined={4}, ReturnType={5}, Location={6}]", Name, GetsChanged, InitialValueUsed, GetsAssigned, IsDefined, ReturnType, Location);
+			return string.Format ("[VariableDescriptor: Name={0}, ReturnType={1}, IsDefinedInsideCutRegion={2}, UsedInCutRegion={3}, UsedBeforeCutRegion={4}, UsedAfterCutRegion={5}, IsChangedInsideCutRegion={6}]", Name, ReturnType, IsDefinedInsideCutRegion, UsedInCutRegion, UsedBeforeCutRegion, UsedAfterCutRegion, IsChangedInsideCutRegion);
 		}
+
 	}
 	
 	public class VariableLookupVisitor : AbtractCSharpDomVisitor<object, object>
 	{
 		List<KeyValuePair <string, IReturnType>> unknownVariables = new List<KeyValuePair <string, IReturnType>> ();
 		Dictionary<string, VariableDescriptor> variables = new Dictionary<string, VariableDescriptor> ();
-		bool valueGetsChanged;
+//		bool valueGetsChanged;
 		
 		public bool ReferencesMember {
 			get;
@@ -130,96 +130,82 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			this.MemberLocation = DomLocation.Empty;
 		}
 		
-		static IReturnType ConvertTypeReference (ICSharpNode node)
-		{
-			if (node is FullTypeName) {
-				var ftn = (FullTypeName)node;
-				var type = new DomReturnType (ftn.Identifier.Name);
-				foreach (var param in ftn.TypeArguments) {
-					type.AddTypeParameter (ConvertTypeReference (param));
-				}
-				return type;
-			}
-			return DomReturnType.Object;
-			
-			/* old version:
-			if (typeRef == null)
-				return null;
-			DomReturnType result = new DomReturnType (typeRef.Type);
-			foreach (TypeReference genericArgument in typeRef.GenericTypes) {
-				result.AddTypeParameter (ConvertTypeReference (genericArgument));
-			}
-			result.PointerNestingLevel = typeRef.PointerNestingLevel;
-			if (typeRef.IsArrayType) {
-				result.ArrayDimensions = typeRef.RankSpecifier.Length;
-				for (int i = 0; i < typeRef.RankSpecifier.Length; i++) {
-					result.SetDimension (i, typeRef.RankSpecifier[i]);
-				}
-			}
-			return result;*/
-		}
-		
 		public override object VisitVariableDeclarationStatement (VariableDeclarationStatement variableDeclarationStatement, object data)
 		{
-			if (!CutRegion.Contains (variableDeclarationStatement.StartLocation)) {
-				foreach (var varDecl in variableDeclarationStatement.Variables) {
-					variables[varDecl.Name] = new VariableDescriptor (varDecl.Name) {
-						IsDefined = true, 
-						ReturnType = ConvertTypeReference (variableDeclarationStatement.ReturnType),
-						Location = new DocumentLocation (variableDeclarationStatement.StartLocation.Line, variableDeclarationStatement.StartLocation.Column)
-					};
+			bool isDefinedInsideCutRegion = CutRegion.Contains (variableDeclarationStatement.StartLocation);
+			foreach (var varDecl in variableDeclarationStatement.Variables) {
+				var descr = new VariableDescriptor (varDecl.Name) {
+					IsDefinedInsideCutRegion = isDefinedInsideCutRegion
+				};
+				if (varDecl.Initializer != null) {
+					if (isDefinedInsideCutRegion) {
+						descr.UsedInCutRegion = true;
+					} else if (variableDeclarationStatement.StartLocation < CutRegion.Start) {
+						descr.UsedBeforeCutRegion = true;
+					} else {
+						descr.UsedAfterCutRegion = true;
+					}
 				}
+				variables[varDecl.Name] = descr;
 			}
 			return base.VisitVariableDeclarationStatement (variableDeclarationStatement, data);
 		}
 		
 		public override object VisitIdentifierExpression (MonoDevelop.CSharp.Dom.IdentifierExpression identifierExpression, object data)
 		{
-			if (!variables.ContainsKey (identifierExpression.Identifier.Name)) {
-				ExpressionResult expressionResult = new ExpressionResult (identifierExpression.Identifier.Name);
-				ResolveResult result = resolver.Resolve (expressionResult, position);
-				Console.WriteLine (identifierExpression.Identifier.Name + ":" + result);
-				MemberResolveResult mrr = result as MemberResolveResult;
-				ReferencesMember |= mrr != null && mrr.ResolvedMember != null && !mrr.ResolvedMember.IsStatic;
-				
-				if (!(result is LocalVariableResolveResult || result is ParameterResolveResult))
-					return null;
-				
-				// result.ResolvedType == null may be true for namespace names or undeclared variables
-				if (!result.StaticResolve && !variables.ContainsKey (identifierExpression.Identifier.Name)) {
-					variables[identifierExpression.Identifier.Name] = new VariableDescriptor (identifierExpression.Identifier.Name) {
-						InitialValueUsed = !valueGetsChanged,
-						Location = new DocumentLocation (identifierExpression.StartLocation.Line, identifierExpression.StartLocation.Column)
-					};
-					variables[identifierExpression.Identifier.Name].ReturnType = result.ResolvedType;
-				}
-				if (result != null && !result.StaticResolve && result.ResolvedType != null && !(result is MethodResolveResult) && !(result is NamespaceResolveResult) && !(result is MemberResolveResult))
-					unknownVariables.Add (new KeyValuePair <string, IReturnType> (identifierExpression.Identifier.Name, result.ResolvedType));
+			ExpressionResult expressionResult = new ExpressionResult (identifierExpression.Identifier.Name);
+			ResolveResult result = resolver.Resolve (expressionResult, position);
+			MemberResolveResult mrr = result as MemberResolveResult;
+			ReferencesMember |= mrr != null && mrr.ResolvedMember != null && !mrr.ResolvedMember.IsStatic;
+			
+			if (!(result is LocalVariableResolveResult || result is ParameterResolveResult))
+				return null;
+			if (!variables.ContainsKey (identifierExpression.Identifier.Name))
+				return null;
+			var v = variables[identifierExpression.Identifier.Name];
+			v.ReturnType = result.ResolvedType;
+			if (CutRegion.Contains (identifierExpression.StartLocation)) {
+				if (!v.IsChangedInsideCutRegion)
+					v.UsedInCutRegion = true;
+			} else if (identifierExpression.StartLocation < CutRegion.Start) {
+				v.UsedBeforeCutRegion = true;
+			} else {
+				v.UsedAfterCutRegion = true;
 			}
+			
 			return null;
 		}
 		
 		public override object VisitAssignmentExpression (MonoDevelop.CSharp.Dom.AssignmentExpression assignmentExpression, object data)
 		{
 			((ICSharpNode)assignmentExpression.Right).AcceptVisitor(this, data);
-				
-			valueGetsChanged = true;
+//			valueGetsChanged = true;
+
 			var left = assignmentExpression.Left as MonoDevelop.CSharp.Dom.IdentifierExpression;
 			
-			bool isInitialUse = left != null && !variables.ContainsKey (left.Identifier.Name);
-			((ICSharpNode)assignmentExpression.Left).AcceptVisitor(this, data);
-			valueGetsChanged = false;
-			
 			if (left != null && variables.ContainsKey (left.Identifier.Name)) {
-				variables[left.Identifier.Name].GetsChanged = true;
-				if (isInitialUse)
-					variables[left.Identifier.Name].GetsAssigned = true;
+				var v = variables[left.Identifier.Name];
+				v.IsChangedInsideCutRegion = CutRegion.Contains (assignmentExpression.StartLocation);
+				if (!v.IsChangedInsideCutRegion) {
+					if (assignmentExpression.StartLocation < CutRegion.Start) {
+						v.UsedBeforeCutRegion = true;
+					} else {
+						v.UsedAfterCutRegion = true;
+					}
+				}
 			}
 			return null;
 		}
 		
 		public override object VisitUnaryOperatorExpression (MonoDevelop.CSharp.Dom.UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
+			if (CutRegion.Contains (unaryOperatorExpression.StartLocation)) {
+				var left = unaryOperatorExpression.Expression as MonoDevelop.CSharp.Dom.IdentifierExpression;
+				if (left != null && !variables.ContainsKey (left.Identifier.Name)) {
+					variables[left.Identifier.Name].IsChangedInsideCutRegion = true;
+				}
+			}
+			/*
 			switch (unaryOperatorExpression.UnaryOperatorType) {
 			case MonoDevelop.CSharp.Dom.UnaryOperatorType.Increment:
 			case MonoDevelop.CSharp.Dom.UnaryOperatorType.Decrement:
@@ -239,8 +225,8 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				if (left != null && variables.ContainsKey (left.Identifier.Name))
 					variables[left.Identifier.Name].GetsChanged = true;
 				break;
-			}
-			return result;
+			}*/
+			return null;
 		}
 		
 		public override object VisitBinaryOperatorExpression (BinaryOperatorExpression binaryOperatorExpression, object data)
@@ -252,6 +238,11 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 		{
 			if (!MemberLocation.IsEmpty && methodDeclaration.StartLocation.Line != MemberLocation.Line)
 				return null;
+			foreach (var param in methodDeclaration.Arguments) {
+				
+				variables[param.Identifier.Name] = new VariableDescriptor (param.Identifier.Name);
+				
+			}
 			return base.VisitMethodDeclaration (methodDeclaration, data);
 		}
 
