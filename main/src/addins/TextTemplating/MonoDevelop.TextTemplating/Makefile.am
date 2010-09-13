@@ -18,13 +18,13 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	Gui/T4EditorExtension.cs \
+	MonoDevelopTemplatingHost.cs \
 	Parser/T4ParsedDocument.cs \
 	Parser/T4Parser.cs \
-	TextTemplatingService.cs \
 	TextTemplatingFileGenerator.cs \
-	ThreadAsyncOperation.cs \
-	MonoDevelopTemplatingHost.cs \
-	TextTemplatingFilePreprocessor.cs
+	TextTemplatingFilePreprocessor.cs \
+	TextTemplatingService.cs \
+	ThreadAsyncOperation.cs
 
 RES =  \
 	MonoDevelop.TextTemplating.addin.xml \

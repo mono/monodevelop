@@ -137,6 +137,28 @@ namespace MonoDevelop.TextTemplating
 					parent = null;
 				}
 			}
+			
+			
+			public void LoadAssembly (System.Reflection.Assembly assembly)
+			{
+				Domain.DoCallBack (new DomainAssemblyLoader (assembly.Location).Load);
+			}
+		}
+		
+		[Serializable]
+		class DomainAssemblyLoader
+		{
+			string assemblyFile;
+			
+			public DomainAssemblyLoader (string assemblyFile)
+			{
+				this.assemblyFile = assemblyFile;
+			}
+			
+			public void Load ()
+			{
+				System.Reflection.Assembly.LoadFrom (assemblyFile);
+			}
 		}
 	}
 }
