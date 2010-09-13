@@ -44,7 +44,6 @@ using Mono.TextEditor;
 namespace MonoDevelop.Refactoring.Tests
 {
 	[TestFixture()]
-	[Ignore ("Fix extract method.")]
 	public class ExtractMethodTests : UnitTests.TestBase
 	{
 		static int pcount = 0;
@@ -198,7 +197,7 @@ namespace MonoDevelop.Refactoring.Tests
 	{
 		int i = 5;
 		<- i = member + 1; ->
-Console.WriteLine (i);
+		Console.WriteLine (i);
 	}
 }
 ", @"class TestClass
@@ -320,7 +319,7 @@ Console.WriteLine (i);
 		j = i + j;
 		k = j + member;
 		->
-		Console.WriteLine (k);
+		Console.WriteLine (k + j);
 	}
 }
 ", @"class TestClass
@@ -330,7 +329,7 @@ Console.WriteLine (i);
 	{
 		int i = 5, j = 10, k;
 		NewMethod (i, ref j, out k);
-		Console.WriteLine (k);
+		Console.WriteLine (k + j);
 	}
 	
 	void NewMethod (int i, ref int j, out int k)
