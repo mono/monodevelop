@@ -92,6 +92,10 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		
 		public static void AddView (AspMvcProject project, string path, string name)
 		{
+			var provider = project.LanguageBinding.GetCodeDomProvider ();
+			if (provider == null)
+				throw new InvalidOperationException ("Project language has null CodeDOM provider");
+			
 			string outputFile = null;
 			MvcTextTemplateHost host = null;
 			MonoDevelop.TextTemplating.RecyclableAppDomain.Handle handle = null;
@@ -119,8 +123,12 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 				}	
 				
 				handle = MonoDevelop.TextTemplating.TextTemplatingService.GetTemplatingDomain ();
+				handle.LoadAssembly (typeof (MvcTextTemplateHost).Assembly);
 				
 				host = MvcTextTemplateHost.Create (handle.Domain);
+				
+				host.LanguageExtension = provider.FileExtension;
+				host.ViewDataTypeGenericString = "";
 				
 				if (dialog.HasMaster) {
 					host.IsViewContentPage = true;
