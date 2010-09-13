@@ -385,7 +385,7 @@ namespace MonoDevelop.SourceEditor
 			int highlighted = active == 0 && isCaretInLine ? 1 : 0;
 			int selected = 0;
 			
-			double topSize = editor.LineHeight / 2;
+			double topSize = Math.Floor (editor.LineHeight / 2);
 			double bottomSize = editor.LineHeight / 2 + editor.LineHeight % 2;
 		
 			if (!fitsInSameLine) {
