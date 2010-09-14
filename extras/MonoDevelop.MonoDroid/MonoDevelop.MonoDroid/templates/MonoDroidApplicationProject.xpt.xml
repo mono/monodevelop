@@ -19,7 +19,8 @@
 		<Project name = "${ProjectName}" directory = "." type = "MonoDroid">
 			<Options
 				AndroidManifest="Properties/AndroidManifest.xml"
-				AndroidResgenFile="Resources/R.designer.cs" />
+				AndroidResgenFile="Resources/Resource.designer.cs"
+				AndroidResgenClass="Resource" />
 			<References>
 				<Reference type="Gac" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
 				<Reference type="Gac" refto="System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
@@ -29,7 +30,7 @@
 			<Files>
 				<File name="Activity1.cs" src="MonoDroidApplication/Activity1.cs" />
 				<Directory name="Resources">
-					<File name="R.designer.cs" src="MonoDroidApplication/R.cs" />
+					<File name="Resource.designer.cs" src="MonoDroidApplication/R.cs" />
 					<RawFile name="AboutResources.txt" src="MonoDroidApplication/AboutResources.txt" />
 					<Directory name="layout">
 						<File name="main.xml" src="MonoDroidApplication/main.xml" />
