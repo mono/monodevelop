@@ -57,6 +57,7 @@ namespace MonoDevelop.Projects.Text
 		/// A <see cref="DomLocation"/> that should be the end location to which the parsing should occur.
 		/// </param>
 		void OnTheFlyFormat (object textEditorData, IType callingType, IMember callingMember, ProjectDom dom, ICompilationUnit unit, DomLocation endLocation);
+		void OnTheFlyFormat (PolicyContainer policyParent, object textEditorData, int startOffset, int endOffset);
 		
 		string FormatText (PolicyContainer policyParent, string mimeType, string input);
 		string FormatText (PolicyContainer policyParent, string mimeType, string input, int fromOffest, int toOffset);
@@ -73,6 +74,11 @@ namespace MonoDevelop.Projects.Text
 		}
 		
 		public virtual void OnTheFlyFormat (object textEditorData, IType callingType, IMember callingMember, ProjectDom dom, ICompilationUnit unit, DomLocation endLocation)
+		{
+			throw new NotSupportedException ();
+		}
+		
+		public virtual void OnTheFlyFormat (PolicyContainer policyParent, object textEditorData, int startOffset, int endOffset)
 		{
 			throw new NotSupportedException ();
 		}

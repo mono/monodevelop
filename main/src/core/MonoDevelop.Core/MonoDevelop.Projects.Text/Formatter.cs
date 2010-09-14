@@ -88,6 +88,13 @@ namespace MonoDevelop.Projects.Text
 			prettyPrinter.OnTheFlyFormat (textEditorData, callingType, callingMember, dom, unit, endLocation);
 		}
 		
+		public void OnTheFlyFormat (PolicyContainer policyParent, object textEditorData, int startOffset, int endOffset)
+		{
+			if (prettyPrinter == null || !prettyPrinter.SupportsOnTheFlyFormatting)
+				throw new InvalidOperationException ("On the fly formatting not supported");
+			prettyPrinter.OnTheFlyFormat (policyParent, textEditorData, startOffset, endOffset);
+		}
+		
 		public bool SupportsCorrectIndenting {
 			get { return prettyPrinter != null; }
 		}
