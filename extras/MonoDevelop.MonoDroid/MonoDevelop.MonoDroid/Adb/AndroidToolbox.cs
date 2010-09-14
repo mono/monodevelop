@@ -106,6 +106,10 @@ namespace MonoDevelop.MonoDroid
 			var psi = new ProcessStartInfo (name, args) {
 				UseShellExecute = false,
 			};
+			if (outputLog != null)
+				psi.RedirectStandardOutput = true;
+			if (errorLog != null)
+				psi.RedirectStandardError = true;
 			psi.EnvironmentVariables["PATH"] = pathOverride;
 			return Runtime.ProcessService.StartProcess (psi, outputLog, outputLog, null);
 		}
@@ -168,7 +172,7 @@ namespace MonoDevelop.MonoDroid
 
 		public IProcessAsyncOperation WaitForDevice (AndroidDevice device, TextWriter outputLog, TextWriter errorLog)
 		{
-			var args = string.Format ("-s '{0}' wait-for-device");
+			var args = string.Format ("-s '{0}' wait-for-device", device.ID);
 			return StartProcess (AdbExe, args, outputLog, errorLog);
 		}
 
