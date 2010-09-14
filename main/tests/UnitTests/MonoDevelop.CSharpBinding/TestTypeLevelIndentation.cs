@@ -59,6 +59,26 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			Assert.AreEqual (@"class Test {}", data.Document.Text);
 		}
 		
+		
+		[Test()]
+		public void TestClassIndentationInNamespaces ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = 
+@"namespace A { class Test {} }";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.NamespaceBraceStyle = BraceStyle.EndOfLine;
+			policy.ClassBraceStyle = BraceStyle.DoNotChange;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"namespace A {
+	class Test {}
+}", data.Document.Text);
+		}
+		
 		[Test()]
 		public void TestIndentClassBody ()
 		{
