@@ -200,7 +200,7 @@ namespace MonoDevelop.CSharp.Formatting
 			int offset = data.Document.LocationToOffset (location.Line, location.Column);
 			int i = offset - 1;
 			
-			while (i >= 0 && Char.IsWhiteSpace (data.Document.GetCharAt (i))) {
+			while (i >= 0 && IsSpacing (data.Document.GetCharAt (i))) {
 				i--;
 			}
 			ForceSpace (i, offset, forceSpaces);
@@ -264,7 +264,7 @@ namespace MonoDevelop.CSharp.Formatting
 			do {
 				char ch = data.Document.GetCharAt (offset);
 				//Console.WriteLine (ch);
-				if (!Char.IsWhiteSpace (ch) && (insertedSpace || !forceSpace))
+				if (!IsSpacing (ch) && (insertedSpace || !forceSpace))
 					break;
 				if (ch == ' ' && forceSpace) {
 					if (insertedSpace) {
@@ -274,9 +274,9 @@ namespace MonoDevelop.CSharp.Formatting
 					}
 				} else if (forceSpace) {
 					if (!insertedSpace) {
-						changes.Add (new MyTextReplaceChange (data, offset, Char.IsWhiteSpace (ch) ? 1 :  0, " "));
+						changes.Add (new MyTextReplaceChange (data, offset, IsSpacing (ch) ? 1 :  0, " "));
 						insertedSpace = true;
-					} else if (Char.IsWhiteSpace (ch)) {
+					} else if (IsSpacing (ch)) {
 						changes.Add (new MyTextReplaceChange (data, offset, 1, null));
 					}
 				}
