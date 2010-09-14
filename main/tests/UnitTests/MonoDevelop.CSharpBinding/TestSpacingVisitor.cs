@@ -147,7 +147,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = "delegate void TestDelegate\n\t\t\t();";
+			data.Document.Text = "delegate void TestDelegate\t\t\t();";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.BeforeDelegateDeclarationParentheses = true;
