@@ -376,12 +376,7 @@ namespace MonoDevelop.Projects
 			return newDir;
 		}
 
-		internal protected override BuildResult OnRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
-		{
-			return DoRunTarget (monitor, target, configuration);
-		}
-
-		protected internal override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			// create output directory, if not exists
 			ProjectConfiguration conf = GetConfiguration (configuration) as ProjectConfiguration;
@@ -579,12 +574,6 @@ namespace MonoDevelop.Projects
 				list.Add (file);
 		}		
 
-		protected virtual BuildResult DoRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
-		{
-			BuildResult res = ItemHandler.RunTarget (monitor, target, configuration);
-			return res ?? new BuildResult ();
-		}
-		
 		/// <summary>
 		/// Builds the project.
 		/// </summary>
@@ -607,7 +596,7 @@ namespace MonoDevelop.Projects
 			return res ?? new BuildResult ();
 		}
 
-		protected internal override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			SetDirty ();
 			ProjectConfiguration config = GetConfiguration (configuration) as ProjectConfiguration;
@@ -992,7 +981,7 @@ namespace MonoDevelop.Projects
 			return false;
 		}
 		
-		internal protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			BuildResult res = new BuildResult ();
 			res.AddError ("Unknown project type");

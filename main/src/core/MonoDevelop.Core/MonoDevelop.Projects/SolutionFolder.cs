@@ -563,7 +563,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		protected internal override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			if (ParentSolution == null)
 				return;
@@ -585,7 +585,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		protected internal override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			ReadOnlyCollection<SolutionItem> allProjects;
 				

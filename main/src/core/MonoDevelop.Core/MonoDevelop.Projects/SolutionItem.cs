@@ -234,7 +234,7 @@ namespace MonoDevelop.Projects
 			return new SolutionItem [0];
 		}
 		
-		public virtual BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		public BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
 			return Services.ProjectService.GetExtensionChain (this).RunTarget (monitor, this, target, configuration);
 		}
@@ -488,10 +488,19 @@ namespace MonoDevelop.Projects
 		{
 		}
 		
+		internal protected virtual BuildResult OnRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		{
+			if (target == ProjectService.BuildTarget)
+				return OnBuild (monitor, configuration);
+			else if (target == ProjectService.CleanTarget) {
+				OnClean (monitor, configuration);
+				return new BuildResult ();
+			}
+			return ItemHandler.RunTarget (monitor, target, configuration) ?? new BuildResult ();
+		}
 		
-		internal protected abstract void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration);
-		internal protected abstract BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration);
-		internal protected abstract BuildResult OnRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration);
+		protected abstract void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration);
+		protected abstract BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration);
 		internal protected abstract void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration);
 		internal protected abstract bool OnGetNeedsBuilding (ConfigurationSelector configuration);
 		internal protected abstract void OnSetNeedsBuilding (bool val, ConfigurationSelector configuration);

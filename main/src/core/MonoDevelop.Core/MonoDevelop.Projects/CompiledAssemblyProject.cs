@@ -139,7 +139,7 @@ namespace MonoDevelop.Projects
 			return string.Join (Path.DirectorySeparatorChar.ToString (), s1, 0, n);
 		}
 		
-		internal protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			return new BuildResult ();
 		}
