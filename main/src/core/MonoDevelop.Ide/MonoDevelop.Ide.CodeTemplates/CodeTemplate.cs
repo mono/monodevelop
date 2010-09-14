@@ -391,13 +391,25 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			TemplateResult template = FillVariables (context);
 			template.InsertPosition = offset;
-			document.Editor.Insert (offset, template.Code);
+			int length = document.Editor.Insert (offset, template.Code);
 			
 			if (template.CaretEndOffset >= 0) {
 				document.Editor.Caret.Offset = offset + template.CaretEndOffset; 
 			} else {
 				document.Editor.Caret.Offset= offset + template.Code.Length; 
 			}
+			
+			string mt = DesktopService.GetMimeTypeForUri (document.FileName);
+			var formatter = MonoDevelop.Projects.Text.TextFileService.GetFormatter (mt);
+			if (formatter != null) {
+				document.Editor.Document.BeginAtomicUndo ();
+				formatter.OnTheFlyFormat (document.Project != null ? document.Project.Policies : null, 
+					document.Editor,
+					offset,
+					offset + length);
+				document.Editor.Document.EndAtomicUndo ();
+			}
+			
 			return template;
 		}
 
