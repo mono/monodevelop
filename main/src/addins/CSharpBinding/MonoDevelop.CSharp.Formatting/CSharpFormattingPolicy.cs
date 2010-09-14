@@ -130,6 +130,18 @@ namespace MonoDevelop.CSharp.Formatting
 			get;
 			set;
 		}
+		
+		[ItemProperty]
+		public bool AlignEmbeddedUsingStatements { 
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public bool AlignEmbeddedIfStatements { 
+			get;
+			set;
+		}
 		#endregion
 		
 		#region Braces
@@ -683,6 +695,9 @@ namespace MonoDevelop.CSharp.Formatting
 			SpacesBeforeComma = false;
 			SpacesAfterSemicolon = true;
 			SpacesAfterTypecast = false;
+			
+			AlignEmbeddedIfStatements = true;
+			AlignEmbeddedUsingStatements = true;
 		}
 		
 		public bool Equals (CSharpFormattingPolicy other)

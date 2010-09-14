@@ -435,7 +435,8 @@ namespace MonoDevelop.CSharp.Formatting
 					nextStatementIndent = " ";
 				}
 			}
-			if (!(node is IfElseStatement && node.Parent is IfElseStatement || node is UsingStatement && node.Parent is UsingStatement)) 
+			if (!(policy.AlignEmbeddedIfStatements && node is IfElseStatement && node.Parent is IfElseStatement || 
+				policy.AlignEmbeddedUsingStatements && node is UsingStatement && node.Parent is UsingStatement)) 
 				curIndent.Level++;
 			object result = isBlock ? base.VisitBlockStatement ((BlockStatement)node, null) : node.AcceptVisitor (this, null);
 			curIndent.Level = originalLevel;

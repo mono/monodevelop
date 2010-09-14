@@ -338,6 +338,9 @@ class ClassDeclaration {
 			<Option name="IndentSwitchBody" _displayName="Indent 'switch' body" example="switchExample"/>
 			<Option name="IndentCaseBody" _displayName="Indent 'case' body" example="switchExample"/>
 			<Option name="IndentBreakStatements" _displayName="Indent 'break' statements" example="switchExample"/>
+			
+			<Option name="AlignEmbeddedIfStatements" _displayName="Align embedded 'if' statements"><Example><![CDATA[class AClass { void AMethod () { if (a) if (b) { int c; } } } ]]></Example></Option>
+			<Option name="AlignEmbeddedUsingStatements" _displayName="Align embedded 'using' statements"><Example><![CDATA[class AClass { void AMethod () {using (IDisposable a = null) using (IDisposable b = null) { int c; } } } ]]></Example></Option>
 		</Category>
 	</Category>
 	
