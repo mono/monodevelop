@@ -399,17 +399,18 @@ namespace MonoDevelop.Ide.CodeTemplates
 				document.Editor.Caret.Offset= offset + template.Code.Length; 
 			}
 			
-			string mt = DesktopService.GetMimeTypeForUri (document.FileName);
-			var formatter = MonoDevelop.Projects.Text.TextFileService.GetFormatter (mt);
-			if (formatter != null) {
-				document.Editor.Document.BeginAtomicUndo ();
-				formatter.OnTheFlyFormat (document.Project != null ? document.Project.Policies : null, 
-					document.Editor,
-					offset,
-					offset + length);
-				document.Editor.Document.EndAtomicUndo ();
+			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
+				string mt = DesktopService.GetMimeTypeForUri (document.FileName);
+				var formatter = MonoDevelop.Projects.Text.TextFileService.GetFormatter (mt);
+				if (formatter != null) {
+					document.Editor.Document.BeginAtomicUndo ();
+					formatter.OnTheFlyFormat (document.Project != null ? document.Project.Policies : null, 
+						document.Editor,
+						offset,
+						offset + length);
+					document.Editor.Document.EndAtomicUndo ();
+				}
 			}
-			
 			return template;
 		}
 
