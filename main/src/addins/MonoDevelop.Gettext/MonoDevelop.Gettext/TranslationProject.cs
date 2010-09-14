@@ -369,11 +369,6 @@ namespace MonoDevelop.Gettext
 		{
 		}
 		
-		protected override BuildResult OnRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
-		{
-			return null;
-		}
-
 #region Deployment
 		public DeployFileCollection GetDeployFiles (ConfigurationSelector configuration)
 		{

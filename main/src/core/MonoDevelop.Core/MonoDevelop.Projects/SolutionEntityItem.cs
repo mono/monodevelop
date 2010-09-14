@@ -261,6 +261,24 @@ namespace MonoDevelop.Projects
 			get { return fileStatusTracker.ItemFilesChanged; }
 		}
 		
+		internal protected override BuildResult OnRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		{
+			if (target == ProjectService.BuildTarget) {
+				SolutionItemConfiguration conf = GetConfiguration (configuration) as SolutionItemConfiguration;
+				if (conf != null && conf.CustomCommands.HasCommands (CustomCommandType.Build)) {
+					conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.Build, configuration);
+					return new BuildResult ();
+				}
+			} else if (target == ProjectService.CleanTarget) {
+				SolutionItemConfiguration config = GetConfiguration (configuration) as SolutionItemConfiguration;
+				if (config != null && config.CustomCommands.HasCommands (CustomCommandType.Clean)) {
+					config.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.Clean, configuration);
+					return new BuildResult ();
+				}
+			}
+			return base.OnRunTarget (monitor, target, configuration);
+		}
+		
 		protected internal virtual void OnSave (IProgressMonitor monitor)
 		{
 			ItemHandler.Save (monitor);
