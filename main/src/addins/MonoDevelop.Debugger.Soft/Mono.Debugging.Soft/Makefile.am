@@ -34,7 +34,7 @@ all: $(ASSEMBLY) $(ASSEMBLY).mdb $(DATA_FILE_BUILD) $(SIGNING_KEY)
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS) $(DBG_ASM) $(DBG_MDB)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) -debug -out:$@ -keycontainer:$(SIGNING_KEY) -target:library $(REFS) $(build_deps) \
+	$(CSC) $(CSC_FLAGS) -debug -out:$@ -keyfile:$(SIGNING_KEY) -target:library $(REFS) $(build_deps) \
 		$(build_resources:%=/resource:%) $(build_sources)
 
 $(DBG_ASM): $(DBG_ASM_SRC)
