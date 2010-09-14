@@ -51,6 +51,12 @@ namespace MonoDevelop.CSharp.Formatting
 		AlwaysSameLine
 	}
 	
+	public enum PropertyFormatting {
+		AllowOneLine,
+		ForceOneLine,
+		ForceNewLine
+	}
+	
 	public class CSharpFormattingPolicy : IEquatable<CSharpFormattingPolicy>
 	{
 		public CSharpFormattingPolicy Clone ()

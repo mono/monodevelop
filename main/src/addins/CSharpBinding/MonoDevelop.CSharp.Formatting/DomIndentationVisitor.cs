@@ -398,6 +398,8 @@ namespace MonoDevelop.CSharp.Formatting
 						startBrace = data.EolMarker + curIndent.IndentString + curIndent.SingleIndent + "{";
 						break;
 					}
+					if (IsLineIsEmptyUpToEol (data.Document.LocationToOffset (node.StartLocation.Line, node.StartLocation.Column)))
+						startBrace += data.EolMarker;
 					AddChange (start, offset - start, startBrace);
 				}
 				break;
@@ -583,7 +585,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitIfElseStatement (IfElseStatement ifElseStatement, object data)
 		{
-			if (!(ifElseStatement.Parent is IfElseStatement))
+			if (!(ifElseStatement.Parent is IfElseStatement && ((IfElseStatement)ifElseStatement.Parent).FalseEmbeddedStatement == ifElseStatement))
 				FixStatementIndentation (ifElseStatement.StartLocation);
 			
 			if (ifElseStatement.Condition != null)
@@ -756,8 +758,9 @@ namespace MonoDevelop.CSharp.Formatting
 				Console.WriteLine (Environment.StackTrace);
 				return;
 			}
+			bool isEmpty = IsLineIsEmptyUpToEol (offset);
 			int lineStart = SearchWhitespaceLineStart (offset);
-			string indentString = nextStatementIndent == null ? this.curIndent.IndentString : nextStatementIndent;
+			string indentString = nextStatementIndent == null ? (isEmpty ? "" : data.EolMarker) + this.curIndent.IndentString : nextStatementIndent;
 			nextStatementIndent = null;
 			AddChange (lineStart, offset - lineStart, indentString);
 		}
