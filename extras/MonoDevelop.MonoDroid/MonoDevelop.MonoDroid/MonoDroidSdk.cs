@@ -76,7 +76,7 @@ namespace MonoDroid
 				return loc;
 			
 			if (IsWindows) {
-				loc = (RegistryEx.GetValueString (RegistryEx.LocalMachine, MDREG_KEY, MDREG_ANDROID, RegistryEx.Wow64.Key32));
+				loc = (RegistryEx.GetValueString (RegistryEx.LocalMachine, MDREG_KEY, MDREG_MONODROID, RegistryEx.Wow64.Key32));
 				if (ValidateMonoDroidSdkLocation (loc))
 					return loc;
 			} else {
