@@ -147,7 +147,7 @@ namespace MonoDevelop.CSharp.Formatting
 				if (c.InsertedText != null)
 					end += c.InsertedText.Length;
 			}
-			return data.Text.Substring (startOffset, end - startOffset);
+			return data.Text.Substring (startOffset, end - startOffset + 1);
 		}
 	}
 }
