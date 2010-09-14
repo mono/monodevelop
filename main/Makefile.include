@@ -12,7 +12,6 @@ MD_BIN_PATH=$(abs_top_builddir)/build/bin
 
 MD_LAUNCH_SETUP= \
 	MONODEVELOP_LOCALE_PATH=$(abs_top_builddir)/build/locale \
-	MONO_ENABLE_SHM=1 \
 	MONO_ADDINS_REGISTRY=$(MD_BIN_PATH) MOZILLA_FIVE_HOME=$(MOZILLA_HOME) \
 	LD_LIBRARY_PATH=`echo "$(LD_LIBRARY_PATH):$(MOZILLA_HOME)" | sed 's/^://g'`d
 
