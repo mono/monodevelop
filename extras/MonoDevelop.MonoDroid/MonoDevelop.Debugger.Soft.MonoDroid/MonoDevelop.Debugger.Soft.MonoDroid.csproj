@@ -82,11 +82,6 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Manifest.addin.xml">
-      <LogicalName>Manifest.addin.xml</LogicalName>
-    </EmbeddedResource>
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="MonoDroidSoftDebuggerEngine.cs" />

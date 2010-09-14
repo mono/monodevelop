@@ -67,7 +67,7 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 		public MonoDroidExecutionCommand ExecutionCommand { get; private set; }
 		
 		public MonoDroidDebuggerStartInfo (IPAddress address, int debugPort, int outputPort, MonoDroidExecutionCommand cmd)
-			: base (cmd.AppName, address, debugPort, outputPort)
+			: base (cmd.PackageName, address, debugPort, outputPort)
 		{
 			ExecutionCommand = cmd;
 		}

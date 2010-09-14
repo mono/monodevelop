@@ -163,4 +163,27 @@
 		<StockIcon stockid = "monodroid-project" file = "icons/monodroid-project-16.png" size="Menu" />
 		<StockIcon stockid = "monodroid-project" file = "icons/monodroid-project-32.png" size="Dnd" />
 	</Extension>
+
+	<!-- debugger addin -->
+	<Module>
+		<Runtime>
+			<Import assembly="MonoDevelop.Debugger.Soft.MonoDroid.dll" />
+		</Runtime>
+
+		<Dependencies>
+			<Addin id="Core" version="2.4"/>
+			<Addin id="Ide"  version="2.4"/>
+			<Addin id="Debugger" version="2.4"/>
+			<Addin id="Debugger.Soft" version="2.4"/>
+		</Dependencies>
+	
+		<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
+			<Condition id="Platform" value="mac">
+				<DebuggerEngine id="Mono.Debugger.Soft.MonoDroid"
+					name="Mono Soft Debugger for MonoDroid"
+					features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints"
+					type="MonoDevelop.Debugger.Soft.MonoDroid.MonoDroidSoftDebuggerEngine" />
+			</Condition>
+		</Extension>
+	</Module>
 </Addin>
