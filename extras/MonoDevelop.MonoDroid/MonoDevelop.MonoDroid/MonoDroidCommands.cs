@@ -49,7 +49,7 @@ namespace MonoDevelop.MonoDroid
 		OpenAvdManager,
 	}
 	
-	class SelectSimulatorTargetHandler : CommandHandler
+	class SelectDeviceTargetHandler : CommandHandler
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
@@ -99,7 +99,7 @@ namespace MonoDevelop.MonoDroid
 		public static MonoDroidProject GetActiveExecutableMonoDroidProject ()
 		{
 			var proj = IdeApp.ProjectOperations.CurrentSelectedProject as MonoDroidProject;
-			if (proj == null && proj.IsAndroidApplication)
+			if (proj != null && proj.IsAndroidApplication)
 				return proj;
 			var sln = IdeApp.ProjectOperations.CurrentSelectedSolution;
 			if (sln != null) {
