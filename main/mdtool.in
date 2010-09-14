@@ -4,6 +4,9 @@
 MONO_EXEC="exec -a mdtool mono"
 EXE_PATH="${0%%/bin/mdtool}/lib/monodevelop/bin/mdrun.exe"
 
+# MD uses SHM to communicate with the remoted builder processes
+export MONO_ENABLE_SHM=1
+
 ##NOTE: remove this for stable releases
 if [ -z "$MD_NO_DEBUG" ]; then
 	_MONO_OPTIONS=${MONO_OPTIONS:---debug}
