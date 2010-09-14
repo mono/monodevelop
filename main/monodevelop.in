@@ -4,6 +4,9 @@
 MONO_EXEC="exec -a monodevelop mono"
 EXE_PATH="${0%%/bin/monodevelop}/lib/monodevelop/bin/MonoDevelop.exe"
 
+# MD uses SHM to communicate with the remoted builder processes
+export MONO_ENABLE_SHM=1
+
 _MD_REDIRECT_LOG="${MD_REDIRECT_LOG:-${XDG_CONFIG_HOME:-$HOME/.config}/MonoDevelop/log}"
 
 _MONO_OPTIONS=$MONO_OPTIONS
