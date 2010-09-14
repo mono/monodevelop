@@ -31,7 +31,8 @@ using System.Reflection;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	public enum BraceStyle {
+	public enum BraceStyle
+	{
 		DoNotChange,
 		EndOfLine,
 		EndOfLineWithoutSpace,
@@ -40,18 +41,21 @@ namespace MonoDevelop.CSharp.Formatting
 		NextLineShifted2
 	}
 	
-	public enum BraceForcement {
+	public enum BraceForcement
+	{
 		DoNotChange,
 		RemoveBraces,
 		AddBraces
 	}
 	
-	public enum ArrayInitializerPlacement {
+	public enum ArrayInitializerPlacement
+	{
 		AlwaysNewLine,
 		AlwaysSameLine
 	}
 	
-	public enum PropertyFormatting {
+	public enum PropertyFormatting
+	{
 		AllowOneLine,
 		ForceOneLine,
 		ForceNewLine
@@ -61,7 +65,7 @@ namespace MonoDevelop.CSharp.Formatting
 	{
 		public CSharpFormattingPolicy Clone ()
 		{
-			return (CSharpFormattingPolicy) MemberwiseClone ();
+			return (CSharpFormattingPolicy)MemberwiseClone ();
 		}
 		
 		#region Indentation
@@ -138,16 +142,23 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool AlignEmbeddedUsingStatements { 
+		public bool AlignEmbeddedUsingStatements { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool AlignEmbeddedIfStatements { 
+		public bool AlignEmbeddedIfStatements { // tested
 			get;
 			set;
 		}
+		
+		[ItemProperty]
+		public PropertyFormatting PropertyFormatting { // tested
+			get;
+			set;
+		}
+		
 		#endregion
 		
 		#region Braces
@@ -704,12 +715,13 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			AlignEmbeddedIfStatements = true;
 			AlignEmbeddedUsingStatements = true;
+			PropertyFormatting = PropertyFormatting.AllowOneLine;
 		}
 		
 		public bool Equals (CSharpFormattingPolicy other)
 		{
 			foreach (PropertyInfo info in typeof (CSharpFormattingPolicy).GetProperties ()) {
-				object val      = info.GetValue (this, null);
+				object val = info.GetValue (this, null);
 				object otherVal = info.GetValue (other, null);
 				if (!val.Equals (otherVal)) {
 					//Console.WriteLine ("!equal");

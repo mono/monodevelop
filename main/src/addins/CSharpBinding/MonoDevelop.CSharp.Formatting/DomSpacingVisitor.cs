@@ -290,6 +290,7 @@ namespace MonoDevelop.CSharp.Formatting
 			int lastNonWs = SearchLastNonWsChar (startOffset, endOffset);
 			changes.Add (new MyTextReplaceChange (data, lastNonWs + 1, System.Math.Max (0, endOffset - lastNonWs - 1), forceSpace ? " " : ""));
 		}
+		
 		/*
 		int GetLastNonWsChar (LineSegment line, int lastColumn)
 		{
