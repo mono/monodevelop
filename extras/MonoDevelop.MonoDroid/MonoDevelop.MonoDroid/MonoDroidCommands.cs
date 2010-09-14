@@ -45,7 +45,8 @@ namespace MonoDevelop.MonoDroid
 		UploadToDevice,
 		ExportToXcode,
 		SelectSimulatorTarget,
-		ViewDeviceConsole
+		ViewDeviceConsole,
+		OpenAvdManager,
 	}
 	
 	class SelectSimulatorTargetHandler : CommandHandler
@@ -107,6 +108,19 @@ namespace MonoDevelop.MonoDroid
 					return proj;
 			}
 			return null;
+		}
+	}
+	
+	class DefaultOpenAvdManagerHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = MonoDroidFramework.HasAndroidJavaSdks;
+		}
+		
+		protected override void Run ()
+		{
+			MonoDroidFramework.Toolbox.StartAvdManager ();
 		}
 	}
 }

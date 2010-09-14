@@ -52,7 +52,7 @@ namespace MonoDevelop.MonoDroid
 				EnvironmentOverrides.Remove ("PATH");
 				
 				string monodroidPath, javaPath, androidPath;
-				MonoDroidSdk.GetPaths (out monodroidPath, out javaPath, out androidPath);
+				MonoDroidSdk.GetPaths (out monodroidPath, out androidPath, out javaPath);
 				
 				if (monodroidPath == null) {
 					LoggingService.LogInfo ("MonoDroid SDK not found, disabling MonoDroid addin");
@@ -146,10 +146,10 @@ namespace MonoDevelop.MonoDroid
 		
 		public static AndroidToolbox Toolbox { get; private set; }
 		
-		public static List<AndroidDevice> Devices {
+		public static IList<AndroidDevice> Devices {
 			get {
 				//FIXME: make this cancellable
-				return null;
+				return new AndroidDevice[0];
 				//return Toolbox.GetDevices (new MonoDevelop.Core.ProgressMonitoring.SimpleProgressMonitor ());
 			}
 		}

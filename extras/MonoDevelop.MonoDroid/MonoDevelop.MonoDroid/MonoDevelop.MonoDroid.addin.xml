@@ -93,10 +93,19 @@
 				_description = "Upload the MonoDroid application to the device" 
 				defaultHandler = "MonoDevelop.MonoDroid.DefaultUploadToDeviceHandler"
 				_label = "Upload to Device" />
-		<Command id = "MonoDevelop.MonoDroid.MonoDroidCommands.SelectDeviceTarget"
+			<Command id = "MonoDevelop.MonoDroid.MonoDroidCommands.SelectDeviceTarget"
 				type = "radio|array"
 				defaultHandler = "MonoDevelop.MonoDroid.SelectDeviceTargetHandler"
 				_label = "MonoDroid Device" />
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/Commands/Tools">
+		<Condition id="MonoDroidInstalled">
+			<Command id = "MonoDevelop.MonoDroid.MonoDroidCommands.OpenAvdManager" 
+				_description = "Open the Android Virtual Device Manager" 
+				defaultHandler = "MonoDevelop.MonoDroid.DefaultOpenAvdManagerHandler"
+				_label = "Open AVD Manager" />
 		</Condition>
 	</Extension>
 	
@@ -113,6 +122,12 @@
 		<Condition id="MonoDroidInstalled">
 			<CommandItem id = "MonoDevelop.MonoDroid.MonoDroidCommands.UploadToDevice"
 			             insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.RunWithList" />
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Tools">
+		<Condition id="MonoDroidInstalled">
+			<CommandItem id = "MonoDevelop.MonoDroid.MonoDroidCommands.OpenAvdManager" />
 		</Condition>
 	</Extension>
 	
