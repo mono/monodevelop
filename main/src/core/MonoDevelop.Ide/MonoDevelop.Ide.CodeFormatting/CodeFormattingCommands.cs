@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 				return;
 			string mt = DesktopService.GetMimeTypeForUri (doc.FileName);
 			Formatter formatter = TextFileService.GetFormatter (mt);
-			if (formatter == null)
+			if (formatter == null || !doc.Editor.IsSomethingSelected)
 				return;
 			var selection = doc.Editor.SelectionRange;
 			
