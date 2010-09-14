@@ -80,6 +80,18 @@ namespace MonoDevelop.MonoDroid
 			}
 		}
 		
+		public FilePath AndroidResgenClass {
+			get { return androidResgenClass; }
+			set {
+				if (value == "")
+					value = null;
+				if (value == androidResgenClass)
+					return;
+				androidResgenClass = value;
+				NotifyModified ("AndroidResgenClass");
+			}
+		}
+		
 		public FilePath AndroidManifest {
 			get { return androidManifest; }
 			set {
@@ -193,6 +205,32 @@ namespace MonoDevelop.MonoDroid
 			if (cfg == null)
 				return FilePath.Null;
 			return cfg.ApkPath;
+		}
+		
+		protected override bool CheckNeedsBuild (ConfigurationSelector configuration)
+		{
+			var apkBuildTime = GetLastBuildTime (configuration);
+			if (apkBuildTime == DateTime.MinValue)
+				return true;
+			
+			var dllBuildTime = base.GetLastBuildTime (configuration);
+			if (dllBuildTime == DateTime.MinValue || dllBuildTime > apkBuildTime)
+				return true;
+			
+			if (base.CheckNeedsBuild (configuration))
+				return true;
+			
+			if  (Files.Any (file => file.BuildAction == MonoDroidBuildAction.AndroidResource
+					&& File.Exists (file.FilePath) && File.GetLastWriteTime (file.FilePath) > apkBuildTime))
+				return true;
+				
+			var conf = GetConfiguration (configuration);
+			var manifestFile = GetManifestFileName (conf);
+			if (!manifestFile.IsNullOrEmpty && File.Exists (manifestFile)
+				&& File.GetLastWriteTime (manifestFile) > apkBuildTime)
+				return true;
+			
+			return false;
 		}
 		
 		protected override ExecutionCommand CreateExecutionCommand (ConfigurationSelector configSel,
@@ -498,14 +536,18 @@ namespace MonoDevelop.MonoDroid
 			return packageNameCache.GetPackageName (pf.Name);
 		}
 		
+		FilePath GetManifestFileName (MonoDroidProjectConfiguration conf)
+		{
+			if (conf != null && !conf.AndroidManifest.IsNullOrEmpty)
+				return conf.AndroidManifest;
+			return this.AndroidManifest;
+		}
+		
 		public ProjectFile GetManifestFile (MonoDroidProjectConfiguration conf)
 		{
-			if (AndroidManifest.IsNullOrEmpty)
+			var manifestFile = GetManifestFileName (conf);
+			if (manifestFile.IsNullOrEmpty)
 				return null;
-			
-			FilePath manifestFile;
-			if (conf == null || (manifestFile = conf.AndroidManifest).IsNullOrEmpty)
-				manifestFile = this.AndroidManifest;
 			
 			// If a specified manifest is not in the project, add or create it
 			// FIXME: do we really want to do this?
