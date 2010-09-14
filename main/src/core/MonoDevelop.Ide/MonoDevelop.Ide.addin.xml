@@ -806,6 +806,9 @@
 		<Command id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer"
 				defaultHandler = "MonoDevelop.Ide.CodeFormatting.FormatBufferHandler"
 				_label = "_Format Document" />
+		<Command id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatSelection"
+				defaultHandler = "MonoDevelop.Ide.CodeFormatting.FormatSelectionHandler"
+				_label = "_Format Selection" />
 		</Category>
 
 		<!-- ProjectCommands -->
@@ -2020,6 +2023,7 @@
 			
 			<ItemSet id = "Format" _label = "_Format">
 				<CommandItem id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer" />
+				<CommandItem id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatSelection" />
 				<SeparatorItem id ="FormatSeparator" /> 
 				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection" />
 				<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" />

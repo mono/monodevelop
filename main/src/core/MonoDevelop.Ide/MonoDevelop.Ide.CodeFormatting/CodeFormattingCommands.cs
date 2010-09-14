@@ -33,12 +33,12 @@ using MonoDevelop.Ide.Gui;
 namespace MonoDevelop.Ide.CodeFormatting
 {
 	public enum CodeFormattingCommands {
-		FormatBuffer
+		FormatBuffer,
+		FormatSelection
 	}
 	
 	public class FormatBufferHandler : CommandHandler
 	{
-		
 		protected override void Update (CommandInfo info)
 		{
 			if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsFile) {
@@ -63,6 +63,38 @@ namespace MonoDevelop.Ide.CodeFormatting
 			var loc = doc.Editor.Caret.Location;
 			doc.Editor.Text = formatter.FormatText (doc.Project != null ? doc.Project.Policies : null, doc.Editor.Text);
 			doc.Editor.Caret.Location = loc;
+			doc.Editor.Document.EndAtomicUndo ();
+		}
+	}
+	
+	public class FormatSelectionHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsFile) {
+				string mt = DesktopService.GetMimeTypeForUri (IdeApp.Workbench.ActiveDocument.FileName);
+				Formatter formatter = TextFileService.GetFormatter (mt);
+				if (formatter != null) {
+					info.Enabled = IdeApp.Workbench.ActiveDocument.Editor.IsSomethingSelected;
+					return;
+				}
+			}
+			info.Enabled = false;
+		}
+		
+		protected override void Run (object tool)
+		{
+			Document doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null)
+				return;
+			string mt = DesktopService.GetMimeTypeForUri (doc.FileName);
+			Formatter formatter = TextFileService.GetFormatter (mt);
+			if (formatter == null)
+				return;
+			var selection = doc.Editor.SelectionRange;
+			
+			doc.Editor.Document.BeginAtomicUndo ();
+			formatter.OnTheFlyFormat (doc.Project != null ? doc.Project.Policies : null, doc.Editor, selection.Offset, selection.EndOffset);
 			doc.Editor.Document.EndAtomicUndo ();
 		}
 	}
