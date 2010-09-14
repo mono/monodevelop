@@ -1263,7 +1263,7 @@ method_declaration
 	  method_body
 	  {
 		Method method = (Method) $1;
-		method.Block = (ToplevelBlock) $3;
+		method.Block = $3 as ToplevelBlock;
 		current_container.AddMethod (method);
 		
 		if (current_container.Kind == MemberKind.Interface && method.Block != null) {
@@ -1507,7 +1507,7 @@ fixed_parameters
 			default_parameter_used |= p.HasDefaultValue;
 			pars.Add (p);
 			
-			lbag.AppendTo (p, GetLocation ($2));
+			lbag.AppendTo (pars, GetLocation ($2));
 		}
 		
 		$$ = $1;

@@ -94,6 +94,29 @@ namespace MonoDevelop.CSharp.Formatting
 			OnTheFlyFormatter.Format ((TextEditorData)textEditorData, dom, caretLocation);
 		}
 		
+		public override void OnTheFlyFormat (PolicyContainer policyParent, object textEditorData, int startOffset, int endOffset)
+		{
+			TextEditorData data = (TextEditorData)textEditorData;
+			CSharp.Dom.CompilationUnit compilationUnit = new MonoDevelop.CSharp.Parser.CSharpParser ().Parse (data);
+			IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+			CSharpFormattingPolicy policy = policyParent != null ? policyParent.Get<CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
+			DomSpacingVisitor domSpacingVisitor = new DomSpacingVisitor (policy, data);
+			domSpacingVisitor.AutoAcceptChanges = false;
+			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
+			
+			DomIndentationVisitor domIndentationVisitor = new DomIndentationVisitor (policy, data);
+			domIndentationVisitor.AutoAcceptChanges = false;
+			compilationUnit.AcceptVisitor (domIndentationVisitor, null);
+			
+			List<Change> changes = new List<Change> ();
+			
+			changes.AddRange (domSpacingVisitor.Changes.
+				Concat (domIndentationVisitor.Changes).
+				Where (c => c is TextReplaceChange && (startOffset <= ((TextReplaceChange)c).Offset && ((TextReplaceChange)c).Offset < endOffset)));
+			
+			RefactoringService.AcceptChanges (null, null, changes);
+		}
+				
 		protected override string InternalFormat (PolicyContainer policyParent, string mimeType, string input, int startOffset, int endOffset)
 		{
 			TextEditorData data = new TextEditorData ();
@@ -118,8 +141,13 @@ namespace MonoDevelop.CSharp.Formatting
 				Where (c => c is TextReplaceChange && (startOffset <= ((TextReplaceChange)c).Offset && ((TextReplaceChange)c).Offset < endOffset)));
 			
 			RefactoringService.AcceptChanges (null, null, changes);
-			
-			return data.Text;
+			int end = endOffset;
+			foreach (TextReplaceChange c in changes) {
+				end -= c.RemovedChars;
+				if (c.InsertedText != null)
+					end += c.InsertedText.Length;
+			}
+			return data.Text.Substring (startOffset, end - startOffset);
 		}
 	}
 }

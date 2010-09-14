@@ -4414,7 +4414,7 @@ void case_165()
 #line 1264 "cs-parser.jay"
 {
 		Method method = (Method) yyVals[-2+yyTop];
-		method.Block = (ToplevelBlock) yyVals[0+yyTop];
+		method.Block = yyVals[0+yyTop] as ToplevelBlock;
 		current_container.AddMethod (method);
 		
 		if (current_container.Kind == MemberKind.Interface && method.Block != null) {
@@ -4631,7 +4631,7 @@ void case_188()
 			default_parameter_used |= p.HasDefaultValue;
 			pars.Add (p);
 			
-			lbag.AppendTo (p, GetLocation (yyVals[-1+yyTop]));
+			lbag.AppendTo (pars, GetLocation (yyVals[-1+yyTop]));
 		}
 		
 		yyVal = yyVals[-2+yyTop];
@@ -11570,14 +11570,13 @@ public void parse ()
 	} catch (Exception e){
 	  	if (e is yyParser.yyUnexpectedEof)
 			UnexpectedEOF = true;
+
 		if (e is yyParser.yyException)
 			Report.Error (-25, lexer.Location, "Parsing error");
 		else if (yacc_verbose_flag > 0)
 			throw;	// Used by compiler-tester to test internal errors
-		else  {
-			Console.WriteLine ("Error:" + e);
+		else 
 			Report.Error (589, lexer.Location, "Internal compiler error during parsing");
-		}
 	}
 
 	if (RootContext.ToplevelTypes.NamespaceEntry != null)

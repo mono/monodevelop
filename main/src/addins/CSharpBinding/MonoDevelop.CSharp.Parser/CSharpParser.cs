@@ -560,7 +560,6 @@ namespace MonoDevelop.CSharp.Parser
 				
 				if (location != null)
 					newMethod.AddChild (new CSharpTokenNode (Convert (location[0]), 1), MethodDeclaration.Roles.LPar);
-				
 				AddParameter (newMethod, m.ParameterInfo);
 				
 				if (location != null)
@@ -1608,10 +1607,11 @@ namespace MonoDevelop.CSharp.Parser
 		
 			void AddParameter (AbstractCSharpNode parent, Mono.CSharp.AParametersCollection parameters)
 			{
-				if (parameters == null || !parameters.HasParams)
+				if (parameters == null)
 					return;
 				var paramLocation = LocationsBag.GetLocations (parameters);
 				
+				Console.WriteLine ("loc:" + paramLocation);
 				for (int i = 0; i < parameters.Count; i++) {
 					if (paramLocation != null && i > 0 && i - 1 < paramLocation.Count) 
 						parent.AddChild (new CSharpTokenNode (Convert (paramLocation[i - 1]), 1), ParameterDeclarationExpression.Roles.Comma);
@@ -1641,7 +1641,8 @@ namespace MonoDevelop.CSharp.Parser
 							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[0]), "this".Length), ParameterDeclarationExpression.Roles.Keyword);
 						break;
 					}
-					parameterDeclarationExpression.AddChild ((INode)p.TypeExpression.Accept (this), ParameterDeclarationExpression.Roles.ReturnType);
+					if (p.TypeExpression != null) // lambdas may have no types (a, b) => ...
+						parameterDeclarationExpression.AddChild ((INode)p.TypeExpression.Accept (this), ParameterDeclarationExpression.Roles.ReturnType);
 					parameterDeclarationExpression.AddChild (new Identifier (p.Name, Convert (p.Location)), ParameterDeclarationExpression.Roles.Identifier);
 					if (p.HasDefaultValue) {
 						if (location != null)
