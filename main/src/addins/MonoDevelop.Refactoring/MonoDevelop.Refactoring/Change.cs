@@ -132,9 +132,14 @@ namespace MonoDevelop.Refactoring
 					rctx.Save ();
 				}
 			} else if (textEditorData != null) {
+				int offset = textEditorData.Caret.Offset;
 				int charsInserted = textEditorData.Replace (Offset, RemovedChars, InsertedText);
-				if (MoveCaretToReplace)
+				if (MoveCaretToReplace) {
 					textEditorData.Caret.Offset = Offset + charsInserted;
+				} else {
+					if (Offset < offset)
+						textEditorData.Caret.Offset = offset - RemovedChars + charsInserted;
+				}
 			}
 		}
 		
