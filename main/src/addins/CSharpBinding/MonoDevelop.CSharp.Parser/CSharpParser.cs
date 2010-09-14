@@ -356,7 +356,6 @@ namespace MonoDevelop.CSharp.Parser
 				variable.AddChild (new Identifier (f.MemberName.Name, Convert (f.MemberName.Location)), FieldDeclaration.Roles.Identifier);
 				
 				if (f.Initializer != null) {
-					Console.WriteLine (f.Initializer);
 					variable.AddChild (new CSharpTokenNode (Convert (f.Initializer.Location), 1), FieldDeclaration.Roles.Assign);
 					variable.AddChild ((INode)f.Initializer.Accept (this), FieldDeclaration.Roles.Initializer);
 				}
@@ -1052,7 +1051,6 @@ namespace MonoDevelop.CSharp.Parser
 				if (blockStatement.IsCompilerGenerated) {
 					if (blockStatement.Statements.First () is Using)
 						return CreateUsingStatement (blockStatement);
-					Console.WriteLine ("BLOCK !!!!" + blockStatement.Statements.Last ());
 					return blockStatement.Statements.Last ().Accept (this);
 				}
 				var result = new BlockStatement ();
@@ -1610,8 +1608,7 @@ namespace MonoDevelop.CSharp.Parser
 				if (parameters == null)
 					return;
 				var paramLocation = LocationsBag.GetLocations (parameters);
-				
-				Console.WriteLine ("loc:" + paramLocation);
+			
 				for (int i = 0; i < parameters.Count; i++) {
 					if (paramLocation != null && i > 0 && i - 1 < paramLocation.Count) 
 						parent.AddChild (new CSharpTokenNode (Convert (paramLocation[i - 1]), 1), ParameterDeclarationExpression.Roles.Comma);
@@ -1915,7 +1912,6 @@ namespace MonoDevelop.CSharp.Parser
 				var result = new AssignmentExpression ();
 				
 				result.AssignmentOperatorType = AssignmentOperatorType.Assign;
-				Console.WriteLine ("Target: "+  simpleAssign.Target);
 				if (simpleAssign.Target != null)
 					result.AddChild ((INode)simpleAssign.Target.Accept (this), AssignmentExpression.LeftExpressionRole);
 				result.AddChild (new CSharpTokenNode (Convert (simpleAssign.Location), 1), AssignmentExpression.OperatorRole);
