@@ -56,6 +56,11 @@ namespace MonoDevelop.XmlEditor
 			throw new NotSupportedException ();
 		}
 		
+		public virtual void OnTheFlyFormat (PolicyContainer policyParent, object textEditorData, int startOffset, int endOffset)
+		{
+			throw new NotImplementedException ();
+		}
+		
 		public bool CanFormat (string mimeType)
 		{
 			return DesktopService.GetMimeTypeIsSubtype (mimeType, "application/xml");

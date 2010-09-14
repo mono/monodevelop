@@ -69,6 +69,11 @@ namespace MonoDevelop.Xml.Formatting
 			throw new System.NotImplementedException();
 		}
 		
+		public void OnTheFlyFormat (PolicyContainer policyParent, object textEditorData, int startOffset, int endOffset)
+		{
+			throw new NotImplementedException ();
+		}
+		
 		public string FormatText (PolicyContainer policyParent, string mimeType, string input)
 		{
 			XmlFormattingPolicy xmlPol = policyParent.Get<XmlFormattingPolicy> (mimeType);
