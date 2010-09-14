@@ -81,8 +81,8 @@
   <Assembly name="System.Transactions" version="4.0.0.0" publicKeyToken="b77a5c561934e089" />
   <Assembly name="Microsoft.Build.Engine" version="4.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
   <Assembly name="Microsoft.Build.Framework" version="4.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
-  <Assembly name="Microsoft.Build.Tasks" />
-  <Assembly name="Microsoft.Build.Utilities" />
+  <Assembly name="Microsoft.Build.Tasks.v4.0" version="4.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+  <Assembly name="Microsoft.Build.Utilities.v4.0" version="4.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
   <Assembly name="Microsoft.VisualBasic.Compatibility.Data" version="10.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
   <Assembly name="Microsoft.VisualBasic.Compatibility" version="10.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
   <Assembly name="mscorlib" version="4.0.0.0" publicKeyToken="b77a5c561934e089" />
