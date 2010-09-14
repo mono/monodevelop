@@ -115,7 +115,8 @@ namespace MonoDevelop.CSharp.Formatting
 				ProjectDom dom = Document.Dom;
 				DocumentLocation loc = textEditorData.Document.OffsetToLocation (offset);
 				DomLocation location = new DomLocation (loc.Line, loc.Column);
-				CSharpFormatter.Format (textEditorData, dom, Document.CompilationUnit, location);
+			//	CSharpFormatter.Format (textEditorData, dom, Document.CompilationUnit, location);
+				OnTheFlyFormatter.Format (textEditorData, dom, location);
 				//	textEditorData.Document.TextReplaced += TextCut;
 			}
 		}
@@ -516,8 +517,8 @@ namespace MonoDevelop.CSharp.Formatting
 					dom = ProjectDomService.GetFileDom (Document.FileName);
 				
 				DomLocation location = new DomLocation (textEditorData.Caret.Location.Line, textEditorData.Caret.Location.Column);
-				CSharpFormatter.Format (textEditorData, dom, Document.CompilationUnit, location);
-//				OnTheFlyFormatter.Format (textEditorData, dom, location);
+//				CSharpFormatter.Format (textEditorData, dom, Document.CompilationUnit, location);
+				OnTheFlyFormatter.Format (textEditorData, dom, location);
 
 				//		textEditorData.Document.TextReplaced += TextCut;
 				textEditorData.Paste += TextEditorDataPaste;

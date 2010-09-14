@@ -483,7 +483,7 @@ namespace MonoDevelop.CSharp.Formatting
 //			LineSegment rbraceLineSegment = data.Document.GetLine (rbrace.StartLocation.Line);
 			int rbraceOffset = data.Document.LocationToOffset (rbrace.StartLocation.Line, rbrace.StartLocation.Column);
 			int whitespaceStart = SearchWhitespaceStart (lbraceOffset);
-			int whitespaceEnd = SearchWhitespaceStart (rbraceOffset);
+			int whitespaceEnd = SearchWhitespaceLineStart (rbraceOffset);
 			string startIndent = "";
 			string endIndent = "";
 			switch (braceStyle) {
@@ -492,19 +492,20 @@ namespace MonoDevelop.CSharp.Formatting
 				break;
 			case BraceStyle.EndOfLineWithoutSpace:
 				startIndent = "";
-				endIndent = data.EolMarker + curIndent.IndentString;
+				endIndent = IsLineIsEmptyUpToEol (rbraceOffset) ? curIndent.IndentString : data.EolMarker + curIndent.IndentString;
 				break;
 			case BraceStyle.EndOfLine:
 				startIndent = " ";
-				endIndent = data.EolMarker + curIndent.IndentString;
+				endIndent = IsLineIsEmptyUpToEol (rbraceOffset) ? curIndent.IndentString : data.EolMarker + curIndent.IndentString;
 				break;
 			case BraceStyle.NextLine:
 				startIndent = data.EolMarker + curIndent.IndentString;
-				endIndent = data.EolMarker + curIndent.IndentString;
+				endIndent = IsLineIsEmptyUpToEol (rbraceOffset) ? curIndent.IndentString : data.EolMarker + curIndent.IndentString;
 				break;
 			case BraceStyle.NextLineShifted2:
 			case BraceStyle.NextLineShifted:
-				endIndent = startIndent = data.EolMarker + curIndent.IndentString + curIndent.SingleIndent;
+				startIndent = data.EolMarker + curIndent.IndentString + curIndent.SingleIndent;
+				endIndent =  IsLineIsEmptyUpToEol (rbraceOffset) ? curIndent.IndentString + curIndent.SingleIndent : data.EolMarker + curIndent.IndentString + curIndent.SingleIndent;
 				break;
 			}
 			
@@ -535,6 +536,16 @@ namespace MonoDevelop.CSharp.Formatting
 			changes.Add (new DomSpacingVisitor.MyTextReplaceChange (data, offset, removedChars, insertedText));
 		}
 		
+		bool IsLineIsEmptyUpToEol (int startOffset)
+		{
+			for (int offset = startOffset - 1; offset >= 0; offset--) {
+				char ch = data.Document.GetCharAt (offset);
+				if (ch != ' ' && ch != '\t')
+					return ch == '\n' || ch == '\r';
+			}
+			return true;
+		}
+		
 		int SearchWhitespaceStart (int startOffset)
 		{
 			for (int offset = startOffset - 1; offset >= 0; offset--) {
@@ -545,14 +556,24 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 			return startOffset - 1;
 		}
-
 		
+		int SearchWhitespaceLineStart (int startOffset)
+		{
+			for (int offset = startOffset - 1; offset >= 0; offset--) {
+				char ch = data.Document.GetCharAt (offset);
+				if (ch != ' ' && ch != '\t') {
+					return offset + 1;
+				}
+			}
+			return startOffset - 1;
+		}
+
 		public override object VisitForStatement (ForStatement forStatement, object data)
 		{
 			FixStatementIndentation (forStatement.StartLocation);
 			return FixEmbeddedStatment (policy.StatementBraceStyle, policy.ForBraceForcement, forStatement.EmbeddedStatement);
 		}
-		
+
 		public override object VisitGotoStatement (GotoStatement gotoStatement, object data)
 		{
 			FixStatementIndentation (gotoStatement.StartLocation);
@@ -734,10 +755,10 @@ namespace MonoDevelop.CSharp.Formatting
 				Console.WriteLine (Environment.StackTrace);
 				return;
 			}
-			int whitespaceStart = SearchWhitespaceStart (offset);
-			string indentString = nextStatementIndent == null ? data.EolMarker + this.curIndent.IndentString : nextStatementIndent;
+			int lineStart = SearchWhitespaceLineStart (offset);
+			string indentString = nextStatementIndent == null ? this.curIndent.IndentString : nextStatementIndent;
 			nextStatementIndent = null;
-			AddChange (whitespaceStart, offset - whitespaceStart, indentString);
+			AddChange (lineStart, offset - lineStart, indentString);
 		}
 		
 		void FixIndentation (MonoDevelop.Projects.Dom.DomLocation location)
