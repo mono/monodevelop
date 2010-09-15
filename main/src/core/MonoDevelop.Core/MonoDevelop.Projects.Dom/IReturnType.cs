@@ -64,6 +64,10 @@ namespace MonoDevelop.Projects.Dom
 			set;
 		}
 		
+		string HelpUrl {
+			get;
+		}
+
 		void AddTypeParameter (IReturnType type);
 	}
 	

@@ -130,7 +130,7 @@ namespace MonoDevelop.Projects.Dom
 					result.Append ("M:");
 					result.Append (FullName);
 					if (TypeParameters.Count > 0) {
-						result.Append ("~");
+						result.Append ("`");
 						result.Append (TypeParameters.Count);
 					}
 				}

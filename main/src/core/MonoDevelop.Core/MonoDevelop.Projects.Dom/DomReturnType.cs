@@ -50,7 +50,14 @@ namespace MonoDevelop.Projects.Dom
 				return genericArguments.AsReadOnly ();
 			}
 		}
-		
+		public virtual string HelpUrl {
+			get {
+				if (GenericArguments.Count == 0)
+					return Name;
+				return Name + "`" + GenericArguments.Count;
+			}
+		}
+
 		public bool IsGenerated {
 			get;
 			set;
@@ -167,6 +174,22 @@ namespace MonoDevelop.Projects.Dom
 		public bool IsGenerated {
 			get;
 			set;
+		}
+		
+		public string HelpUrl {
+			get {
+				
+				StringBuilder result = new StringBuilder ();
+				result.Append ("T:");
+				if (!string.IsNullOrEmpty (Namespace))
+					result.Append (Namespace);
+				for (int i = 0; i < parts.Count; i++) {
+					if (result.Length > "T:".Length)
+						result.Append (".");
+					result.Append (parts[i].HelpUrl);
+				}
+				return result.ToString ();
+			}
 		}
 		
 		public object Tag {

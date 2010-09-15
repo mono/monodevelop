@@ -267,7 +267,9 @@ namespace MonoDevelop.Projects.Dom
 		
 		public override string HelpUrl {
 			get {
-				return "T:" + GetNetFullName (this);
+				if (TypeParameters.Count == 0)
+					return "T:" + FullName;
+				return "T:" + FullName + "`" + TypeParameters.Count;
 			}
 		}
 		
