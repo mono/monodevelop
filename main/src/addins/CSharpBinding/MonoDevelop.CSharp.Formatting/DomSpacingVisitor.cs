@@ -266,6 +266,28 @@ namespace MonoDevelop.CSharp.Formatting
 			return base.VisitDestructorDeclaration (destructorDeclaration, data);
 		}
 		
+		void AddChange (int offset, int removedChars, string insertedText)
+		{
+			if (changes.Cast<DomSpacingVisitor.MyTextReplaceChange> ().Any (c => c.Offset == offset && c.RemovedChars == removedChars 
+				&& c.InsertedText == insertedText))
+				return;
+			string currentText = data.Document.GetTextAt (offset, removedChars);
+			if (currentText == insertedText)
+				return;
+			foreach (MyTextReplaceChange change in changes) {
+				if (change.Offset == offset) {
+					if (removedChars > 0 && insertedText == change.InsertedText) {
+						change.RemovedChars = removedChars;
+//						change.InsertedText = insertedText;
+						return;
+					}
+				}
+			}
+//			Console.WriteLine ("offset={0}, removedChars={1}, insertedText={2}", offset, removedChars, insertedText.Replace("\n", "\\n").Replace("\t", "\\t").Replace(" ", "."));
+//			Console.WriteLine (Environment.StackTrace);
+			changes.Add (new MyTextReplaceChange (data, offset, removedChars, insertedText));
+		}
+		
 		void ForceSpaceBefore (int offset, bool forceSpace)
 		{
 			bool insertedSpace = false;
@@ -276,16 +298,16 @@ namespace MonoDevelop.CSharp.Formatting
 					break;
 				if (ch == ' ' && forceSpace) {
 					if (insertedSpace) {
-						changes.Add (new MyTextReplaceChange (data, offset, 1, null));
+						AddChange (offset, 1, null);
 					} else {
 						insertedSpace = true;
 					}
 				} else if (forceSpace) {
 					if (!insertedSpace) {
-						changes.Add (new MyTextReplaceChange (data, offset, IsSpacing (ch) ? 1 :  0, " "));
+						AddChange (offset, IsSpacing (ch) ? 1 :  0, " ");
 						insertedSpace = true;
 					} else if (IsSpacing (ch)) {
-						changes.Add (new MyTextReplaceChange (data, offset, 1, null));
+						AddChange (offset, 1, null);
 					}
 				}
 				
@@ -296,7 +318,7 @@ namespace MonoDevelop.CSharp.Formatting
 		void ForceSpace (int startOffset, int endOffset, bool forceSpace)
 		{
 			int lastNonWs = SearchLastNonWsChar (startOffset, endOffset);
-			changes.Add (new MyTextReplaceChange (data, lastNonWs + 1, System.Math.Max (0, endOffset - lastNonWs - 1), forceSpace ? " " : ""));
+			AddChange (lastNonWs + 1, System.Math.Max (0, endOffset - lastNonWs - 1), forceSpace ? " " : "");
 		}
 		
 		/*
