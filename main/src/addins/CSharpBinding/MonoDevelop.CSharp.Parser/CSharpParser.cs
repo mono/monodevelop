@@ -1086,7 +1086,13 @@ namespace MonoDevelop.CSharp.Parser
 						
 						newSection.AddChild (newLabel, MonoDevelop.CSharp.Dom.SwitchSection.CaseLabelRole);
 					}
-					newSection.AddChild ((INode)section.Block.Accept (this), MonoDevelop.CSharp.Dom.SwitchSection.Roles.Body);
+					
+					var blockStatement = section.Block;
+					var bodyBlock = new BlockStatement ();
+					int curLocal = 0;
+					AddBlockChildren (bodyBlock, blockStatement, ref curLocal);
+					
+					newSection.AddChild (bodyBlock, MonoDevelop.CSharp.Dom.SwitchSection.Roles.Body);
 					result.AddChild (newSection, SwitchStatement.SwitchSectionRole);
 				}
 				
@@ -1219,27 +1225,21 @@ namespace MonoDevelop.CSharp.Parser
 			
 			public override object Visit (Using usingStatement)
 			{
-				throw new InvalidOperationException ("should never happen (is handled in Block).");
-			}
-			
-			public override object Visit (UsingTemporary usingTemporary)
-			{
 				var result = new UsingStatement ();
-				var location = LocationsBag.GetLocations (usingTemporary);
+				var location = LocationsBag.GetLocations (usingStatement);
 				
-				result.AddChild (new CSharpTokenNode (Convert (usingTemporary.loc), "using".Length), UsingStatement.Roles.Keyword);
+				result.AddChild (new CSharpTokenNode (Convert (usingStatement.loc), "using".Length), UsingStatement.Roles.Keyword);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), UsingStatement.Roles.LPar);
 				
-				result.AddChild ((INode)usingTemporary.Expression.Accept (this), UsingStatement.Roles.Initializer);
+				result.AddChild ((INode)usingStatement.Expression.Accept (this), UsingStatement.Roles.Initializer);
 				
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), UsingStatement.Roles.RPar);
 				
-				result.AddChild ((INode)usingTemporary.Statement.Accept (this), UsingStatement.Roles.EmbeddedStatement);
+				result.AddChild ((INode)usingStatement.Statement.Accept (this), UsingStatement.Roles.EmbeddedStatement);
 				return result;
 			}
-			
 			
 			public override object Visit (Foreach foreachStatement)
 			{

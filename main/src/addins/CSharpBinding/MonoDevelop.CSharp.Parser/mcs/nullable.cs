@@ -198,7 +198,7 @@ namespace Mono.CSharp.Nullable
 		public void AddressOf (EmitContext ec, AddressOp mode)
 		{
 			IMemoryLocation ml = expr as VariableReference;
-			if (ml != null) 
+			if (ml != null)
 				ml.AddressOf (ec, mode);
 			else
 				LocalVariable.AddressOf (ec, mode);
@@ -258,6 +258,32 @@ namespace Mono.CSharp.Nullable
 				expr.Emit (ec);
 				ec.Emit (OpCodes.Newobj, NullableInfo.GetConstructor (type));
 			}
+		}
+	}
+
+	//
+	// Calls get_Value method on nullable expression
+	//
+	public class UnwrapCall : CompositeExpression
+	{
+		public UnwrapCall (Expression expr)
+			: base (expr)
+		{
+		}
+
+		protected override Expression DoResolve (ResolveContext rc)
+		{
+			base.DoResolve (rc);
+
+			if (type != null)
+				type = NullableInfo.GetUnderlyingType (type);
+
+			return this;
+		}
+
+		public override void Emit (EmitContext ec)
+		{
+			Invocation.EmitCall (ec, Child, NullableInfo.GetValue (Child.Type), null, loc);
 		}
 	}
 

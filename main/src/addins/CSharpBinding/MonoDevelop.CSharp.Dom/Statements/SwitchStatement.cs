@@ -86,8 +86,10 @@ namespace MonoDevelop.CSharp.Dom
 		
 		public IEnumerable<INode> Statements {
 			get {
-				BlockStatement block = (BlockStatement)GetChildByRole (Roles.Body);
-				return block.Statements;
+				var body = GetChildByRole (Roles.Body);
+				if (body is BlockStatement)
+					return ((BlockStatement)body).Statements;
+				return new INode[] { body };
 			}
 		}
 		

@@ -422,7 +422,11 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				methodText.AppendLine ();
 				break;
 			}
-			var codeGenerator = CSharpCodeGenerator.CreateGenerator (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType, options.Document.Editor.Options.TabsToSpaces, options.Document.Editor.Options.TabSize, options.Document.Editor.EolMarker);
+			var codeGenerator = new CSharpCodeGenerator () {
+				UseSpaceIndent = options.Document.Editor.Options.TabsToSpaces,
+				EolMarker = options.Document.Editor.EolMarker,
+				TabSize = options.Document.Editor.Options.TabSize
+			};
 			
 			var newMethod = GenerateMethodStub (options, param);
 			IType callingType = null;

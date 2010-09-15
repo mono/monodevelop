@@ -200,7 +200,7 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			var n = node as ICSharpNode;
 			if (n == null)
-				return;
+				return 0;
 			DomLocation location = n.StartLocation;
 			
 			int offset = data.Document.LocationToOffset (location.Line, location.Column);

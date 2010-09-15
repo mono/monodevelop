@@ -4948,7 +4948,7 @@ namespace Mono.CSharp {
 			Expression member_expr;
 			var atn = expr as ATypeNameExpression;
 			if (atn != null) {
-				member_expr = atn.LookupNameExpression (ec, true, true);
+				member_expr = atn.LookupNameExpression (ec, MemberLookupRestrictions.InvocableOnly | MemberLookupRestrictions.ReadAccess);
 				if (member_expr != null)
 					member_expr = member_expr.Resolve (ec);
 			} else {
@@ -7355,7 +7355,7 @@ namespace Mono.CSharp {
 			return alias + "::" + name;
 		}
 
-		public override Expression LookupNameExpression (ResolveContext rc, bool readMode, bool invocableOnly)
+		public override Expression LookupNameExpression (ResolveContext rc, MemberLookupRestrictions restrictions)
 		{
 			return DoResolve (rc);
 		}
@@ -7415,7 +7415,7 @@ namespace Mono.CSharp {
 
 		Expression DoResolveName (ResolveContext rc, Expression right_side)
 		{
-			Expression e = LookupNameExpression (rc, right_side == null, false);
+			Expression e = LookupNameExpression (rc, right_side == null ? MemberLookupRestrictions.ReadAccess : MemberLookupRestrictions.None);
 			if (e == null)
 				return null;
 
@@ -7433,7 +7433,7 @@ namespace Mono.CSharp {
 			return e;
 		}
 
-		public override Expression LookupNameExpression (ResolveContext rc, bool readMode, bool invocableOnly)
+		public override Expression LookupNameExpression (ResolveContext rc, MemberLookupRestrictions restrictions)
 		{
 			var sn = expr as SimpleName;
 			const ResolveFlags flags = ResolveFlags.VariableOrValue | ResolveFlags.Type;
@@ -7446,7 +7446,7 @@ namespace Mono.CSharp {
 			//
 			using (rc.Set (ResolveContext.Options.OmitStructFlowAnalysis)) {
 				if (sn != null) {
-					expr = sn.LookupNameExpression (rc, true, false);
+					expr = sn.LookupNameExpression (rc, MemberLookupRestrictions.ReadAccess | MemberLookupRestrictions.ExactArity);
 
 					// Call resolve on expression which does have type set as we need expression type
 					// TODO: I should probably ensure that the type is always set and leave resolve for the final
@@ -7509,7 +7509,7 @@ namespace Mono.CSharp {
 			bool errorMode = false;
 			Expression member_lookup;
 			while (true) {
-				member_lookup = MemberLookup (errorMode ? null : rc, current_type, expr_type, Name, lookup_arity, invocableOnly, loc);
+				member_lookup = MemberLookup (errorMode ? null : rc, current_type, expr_type, Name, lookup_arity, restrictions, loc);
 				if (member_lookup == null) {
 					//
 					// Try to look for extension method when member lookup failed
@@ -7556,7 +7556,7 @@ namespace Mono.CSharp {
 
 				current_type = null;
 				lookup_arity = 0;
-				invocableOnly = false;
+				restrictions &= ~MemberLookupRestrictions.InvocableOnly;
 				errorMode = true;
 			}
 
@@ -7682,7 +7682,7 @@ namespace Mono.CSharp {
 				return;
 			}
 
-			var any_other_member = MemberLookup (null, rc.CurrentType, expr_type, Name, 0, false, loc);
+			var any_other_member = MemberLookup (null, rc.CurrentType, expr_type, Name, 0, MemberLookupRestrictions.None, loc);
 			if (any_other_member != null) {
 				any_other_member.Error_UnexpectedKind (rc.Compiler.Report, null, "type", loc);
 				return;
@@ -9000,9 +9000,9 @@ namespace Mono.CSharp {
 				target = new DynamicMemberBinder (Name, args, loc);
 			} else {
 
-				var member = MemberLookup (ec, ec.CurrentType, t, Name, 0, false, loc);
+				var member = MemberLookup (ec, ec.CurrentType, t, Name, 0, MemberLookupRestrictions.ExactArity, loc);
 				if (member == null) {
-					member = Expression.MemberLookup (null, ec.CurrentType, t, Name, 0, false, loc);
+					member = Expression.MemberLookup (null, ec.CurrentType, t, Name, 0, MemberLookupRestrictions.ExactArity, loc);
 
 					if (member != null) {
 						// TODO: ec.Report.SymbolRelatedToPreviousError (member);
@@ -9199,7 +9199,7 @@ namespace Mono.CSharp {
 						initializer.Resolve (ec);
 						throw new InternalErrorException ("This line should never be reached");
 					} else {
-						if (!ec.CurrentInitializerVariable.Type.ImplementsInterface (TypeManager.ienumerable_type)) {
+						if (!ec.CurrentInitializerVariable.Type.ImplementsInterface (TypeManager.ienumerable_type, false)) {
 							ec.Report.Error (1922, loc, "A field or property `{0}' cannot be initialized with a collection " +
 								"object initializer because type `{1}' does not implement `{2}' interface",
 								ec.CurrentInitializerVariable.GetSignatureForError (),

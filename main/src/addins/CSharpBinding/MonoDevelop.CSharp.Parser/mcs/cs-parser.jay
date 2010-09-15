@@ -81,11 +81,6 @@ namespace Mono.CSharp
 		static Stack<object> oob_stack;
 
 		///
-		/// Switch stack.
-		///
-		Stack<Block> switch_stack;
-
-		///
 		/// Controls the verbosity of the errors produced by the parser
 		///
 		static public int yacc_verbose_flag;
@@ -258,11 +253,6 @@ namespace Mono.CSharp
 %token INTERR_NULLABLE
 %token EXTERN_ALIAS
 
-/* Generics <,> tokens */
-%token OP_GENERICS_LT
-%token OP_GENERICS_LT_DECL
-%token OP_GENERICS_GT
-
 /* C# keywords which are not really keywords */
 %token GET
 %token SET
@@ -321,6 +311,11 @@ namespace Mono.CSharp
 %token OP_OR_ASSIGN
 %token OP_PTR
 %token OP_COALESCING
+
+/* Generics <,> tokens */
+%token OP_GENERICS_LT
+%token OP_GENERICS_LT_DECL
+%token OP_GENERICS_GT
 
 %token LITERAL
 
@@ -451,8 +446,9 @@ using_alias_directive
 		current_namespace.AddUsingAlias (lt.Value, (MemberName) $4, GetLocation ($1));
 		ubag.AddUsingAlias (GetLocation ($1), lt, GetLocation ($3), (MemberName) $4, GetLocation ($5));
 	  }
-	| USING error {
-		CheckIdentifierToken (yyToken, GetLocation ($2));
+	| USING error
+	 {
+		Error_SyntaxError (yyToken);
 		$$ = null;
 	  }
 	;
@@ -556,7 +552,6 @@ namespace_body_body
 	  {
 		Report.Error (1518, lexer.Location, "Expected `class', `delegate', `enum', `interface', or `struct'");
 	  }
-	  CLOSE_BRACE
 	| opt_extern_alias_directives
 	  opt_using_directives
 	  opt_namespace_member_declarations
@@ -969,8 +964,9 @@ struct_declaration
 		lbag.AppendToMember (current_class, GetLocation ($13));
 		$$ = pop_current_class ();
 	  }
-	| opt_attributes opt_modifiers opt_partial STRUCT error {
-		CheckIdentifierToken (yyToken, GetLocation ($5));
+	| opt_attributes opt_modifiers opt_partial STRUCT error
+	  {
+		Error_SyntaxError (yyToken);
 	  }
 	;
 
@@ -1253,6 +1249,12 @@ fixed_field_size
 variable_initializer
 	: expression
 	| array_initializer
+	| error
+	  {
+		// It has to be here for the parent to safely restore artificial block
+	  	Error_SyntaxError (yyToken);
+	  	$$ = null;
+	  }
 	;
 
 method_declaration
@@ -1263,7 +1265,7 @@ method_declaration
 	  method_body
 	  {
 		Method method = (Method) $1;
-		method.Block = $3 as ToplevelBlock;
+		method.Block = (ToplevelBlock) $3;
 		current_container.AddMethod (method);
 		
 		if (current_container.Kind == MemberKind.Interface && method.Block != null) {
@@ -1539,8 +1541,8 @@ fixed_parameter
 	  parameter_type
 	  error
 	  {
+		Error_SyntaxError (yyToken);	  
 	  	Location l = GetLocation ($4);
-		CheckIdentifierToken (yyToken, l);
 		$$ = new Parameter ((FullNamedExpression) $3, "NeedSomeGeneratorHere", (Parameter.Modifier) $2, (Attributes) $1, l);
 		lbag.AddLocation ($$, parameterModifierLocation);
 	  }
@@ -1667,7 +1669,7 @@ parameter_array
 	  }
 	| opt_attributes params_modifier type error
 	  {
-		CheckIdentifierToken (yyToken, GetLocation ($4));
+		Error_SyntaxError (yyToken);
 		$$ = null;
 	  }
 	;
@@ -1945,8 +1947,9 @@ interface_declaration
 	    lbag.AppendToMember (current_class, GetLocation ($11), GetLocation ($13));
 		$$ = pop_current_class ();
 	  }
-	| opt_attributes opt_modifiers opt_partial INTERFACE error {
-		CheckIdentifierToken (yyToken, GetLocation ($5));
+	| opt_attributes opt_modifiers opt_partial INTERFACE error
+	  {
+		Error_SyntaxError (yyToken);	  
 	  }
 	;
 
@@ -2762,7 +2765,7 @@ type_declaration_name
 	  {
 		lexer.parsing_generic_declaration = false;
 		var lt = (Tokenizer.LocatedToken) $1;
-		$$ = new MemberName (lt.Value, (TypeArguments)$3, lt.Location);	  
+		$$ = new MemberName (lt.Value, (TypeArguments)$3, lt.Location);
 	  }
 	;
 
@@ -3627,11 +3630,6 @@ variable_initializer_list
 		list.Add ((Expression) $3);
 		lbag.AppendTo (list, GetLocation ($2));
 		$$ = list;
-	  }
-	| error
-	  {
-	  	Error_SyntaxError (yyToken);
-	  	$$ = new List<Expression> ();
 	  }
 	;
 
@@ -4637,10 +4635,10 @@ labeled_statement
 	: IDENTIFIER COLON 
 	  {
 		var lt = (Tokenizer.LocatedToken) $1;
-		LabeledStatement labeled = new LabeledStatement (lt.Value, lt.Location);
+		LabeledStatement labeled = new LabeledStatement (lt.Value, current_block, lt.Location);
 
-		if (current_block.AddLabel (labeled))
-			current_block.AddStatement (labeled);
+		current_block.AddLabel (labeled);
+		current_block.AddStatement (labeled);
 	  }
 	  statement
 	;
@@ -4943,26 +4941,22 @@ if_statement
 	;
 
 switch_statement
-	: SWITCH open_parens_any
-	  { 
-		if (switch_stack == null)
-			switch_stack = new Stack<Block> (2);
-		switch_stack.Push (current_block);
-	  }
-	  expression CLOSE_PARENS 
-	  OPEN_BRACE opt_switch_sections CLOSE_BRACE
+	: SWITCH open_parens_any expression CLOSE_PARENS OPEN_BRACE
 	  {
-		$$ = new Switch ((Expression) $4, (List<SwitchSection>) $7, GetLocation ($1));
-		lbag.AddStatement ($$, GetLocation ($2), GetLocation ($5), GetLocation ($6), GetLocation ($8));
-		
-		current_block = (Block) switch_stack.Pop ();
+		start_block (GetLocation ($5));
+	  }
+	  opt_switch_sections CLOSE_BRACE
+	  {
+		$$ = new Switch ((Expression) $3, (ExplicitBlock) current_block.Explicit, (List<SwitchSection>) $7, GetLocation ($1));	
+		end_block (GetLocation ($8));
+		lbag.AddStatement ($$, GetLocation ($2), GetLocation ($4), GetLocation ($5), GetLocation ($8));
 	  }
 	;
 
 opt_switch_sections
 	: /* empty */ 		
       {
-		Report.Warning (1522, 1, lexer.Location, "Empty switch block"); 
+		Report.Warning (1522, 1, current_block.StartLocation, "Empty switch block"); 
 		$$ = new List<SwitchSection> ();
 	  }
 	| switch_sections
@@ -4983,6 +4977,11 @@ switch_sections
 		sections.Add ((SwitchSection) $2);
 		$$ = sections;
 	  }
+	| error
+	  {
+		Error_SyntaxError (yyToken);	  
+		$$ = new List<SwitchSection> ();
+	  } 
 	;
 
 switch_section
@@ -4992,7 +4991,7 @@ switch_section
 	  }
  	  statement_list 
 	  {
-		$$ = new SwitchSection ((List<SwitchLabel>) $1, current_block.Explicit);
+		$$ = new SwitchSection ((List<SwitchLabel>) $1, current_block);
 	  }
 	;
 
@@ -5427,22 +5426,18 @@ using_statement
 			Warning_EmptyStatement (GetLocation ($10));
 	  
 		Using u = new Using ((Using.VariableDeclaration) $9, (Statement) $10, GetLocation ($1));
+		lbag.AddStatement (u, GetLocation ($2), GetLocation ($8));
 		current_block.AddStatement (u);
 		$$ = end_block (GetLocation ($8));
 	  }
-	| USING open_parens_any expression CLOSE_PARENS
+	| USING open_parens_any expression CLOSE_PARENS embedded_statement
 	  {
-		start_block (lexer.Location);
-	  }
-	  embedded_statement
-	  {
-		if ($6 is EmptyStatement && lexer.peek_token () == Token.OPEN_BRACE)
-			Warning_EmptyStatement (GetLocation ($6));
+		if ($5 is EmptyStatement && lexer.peek_token () == Token.OPEN_BRACE)
+			Warning_EmptyStatement (GetLocation ($5));
 	  
-		UsingTemporary usingTemporary = new UsingTemporary ((Expression) $3, (Statement) $6, GetLocation ($1));
-		lbag.AddStatement (usingTemporary, GetLocation ($2), GetLocation ($4));
-		current_block.AddStatement (usingTemporary);
-		$$ = end_block (lexer.Location);
+		Using u = new Using ((Expression) $3, (Statement) $5, GetLocation ($1));
+		lbag.AddStatement (u, GetLocation ($2), GetLocation ($4));
+		$$ = u;
 	  }
 	;
 	
@@ -6204,15 +6199,21 @@ public void parse ()
 		Tokenizer tokenizer = lexer as Tokenizer;
 		tokenizer.cleanup ();		
 	} catch (Exception e){
-	  	if (e is yyParser.yyUnexpectedEof)
+	  	if (e is yyParser.yyUnexpectedEof) {
+			Error_SyntaxError (yyToken);
 			UnexpectedEOF = true;
-
-		if (e is yyParser.yyException)
+			return;
+		}
+			
+		if (e is yyParser.yyException) {
 			Report.Error (-25, lexer.Location, "Parsing error");
-		else if (yacc_verbose_flag > 0)
-			throw;	// Used by compiler-tester to test internal errors
-		else 
+		} else {
+			// Used by compiler-tester to test internal errors
+			if (yacc_verbose_flag > 0)
+				throw;
+		
 			Report.Error (589, lexer.Location, "Internal compiler error during parsing");
+		}
 	}
 
 	if (RootContext.ToplevelTypes.NamespaceEntry != null)
@@ -6225,11 +6226,6 @@ void CheckToken (int error, int yyToken, string msg, Location loc)
 		Report.Error (error, loc, "{0}: `{1}' is a keyword", msg, GetTokenName (yyToken));
 	else
 		Report.Error (error, loc, msg);
-}
-
-void CheckIdentifierToken (int yyToken, Location loc)
-{
-	CheckToken (1041, yyToken, "Identifier expected", loc);
 }
 
 string ConsumeStoredComment ()
@@ -6344,7 +6340,6 @@ public NamespaceEntry CurrentNamespace {
        }
 }
 
-
 void Error_SyntaxError (int token)
 {
 	Error_SyntaxError (0, token, "Unexpected symbol");
@@ -6354,18 +6349,28 @@ void Error_SyntaxError (int error_code, int token, string msg)
 {
 	string symbol = GetSymbolName (token);
 	string expecting = GetExpecting ();
+	var loc = lexer.Location - symbol.Length;
 	
 	if (error_code == 0) {
-		if (expecting == "`)'")
+		if (expecting == "`identifier'") {
+			if (token > Token.FIRST_KEYWORD && token < Token.LAST_KEYWORD) {
+				Report.Error (1041, loc, "Identifier expected, `{0}' is a keyword", symbol);
+				return;
+			}
+			
+			error_code = 1001;
+			expecting = "identifier";
+		} else if (expecting == "`)'") {
 			error_code = 1026;
-		else
+		} else {
 			error_code = 1525;
+		}
 	}
 	
 	if (string.IsNullOrEmpty (expecting))
-		Report.Error (error_code, lexer.Location, "{1} `{0}'", symbol, msg);
+		Report.Error (error_code, loc, "{1} `{0}'", symbol, msg);
 	else
-		Report.Error (error_code, lexer.Location, "{2} `{0}', expecting {1}", symbol, expecting, msg);	  
+		Report.Error (error_code, loc, "{2} `{0}', expecting {1}", symbol, expecting, msg);	  
 }
 
 string GetExpecting ()
@@ -6794,11 +6799,13 @@ static string GetTokenName (int token)
 	case Token.IDENTIFIER:
 		return "identifier";
 
+	case Token.EOF:
+		return "end-of-file";
+
 		// All of these are internal.
 	case Token.NONE:
 	case Token.ERROR:
 	case Token.FIRST_KEYWORD:
-	case Token.EOF:
 	case Token.EVAL_COMPILATION_UNIT_PARSER:
 	case Token.EVAL_USING_DECLARATIONS_UNIT_PARSER:
 	case Token.EVAL_STATEMENT_PARSER:
