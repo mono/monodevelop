@@ -184,7 +184,10 @@ namespace MonoDevelop.CSharp.Formatting
 
 		void ForceSpacesAfter (INode node, bool forceSpaces)
 		{
-			DomLocation location = ((ICSharpNode)node).EndLocation;
+			var n = node as ICSharpNode;
+			if (n == null)
+				return;
+			DomLocation location = n.EndLocation;
 			int offset = data.Document.LocationToOffset (location.Line, location.Column);
 			int i = offset;
 			while (i < data.Document.Length && IsSpacing (data.Document.GetCharAt (i))) {
@@ -195,7 +198,10 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		int ForceSpacesBefore (INode node, bool forceSpaces)
 		{
-			DomLocation location = ((ICSharpNode)node).StartLocation;
+			var n = node as ICSharpNode;
+			if (n == null)
+				return;
+			DomLocation location = n.StartLocation;
 			
 			int offset = data.Document.LocationToOffset (location.Line, location.Column);
 			int i = offset - 1;
@@ -209,6 +215,8 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		void FormatCommas (AbstractNode parent)
 		{
+			if (parent == null)
+				return;
 			foreach (CSharpTokenNode comma in parent.Children.Where (node => node.Role == FieldDeclaration.Roles.Comma)) {
 				ForceSpacesAfter (comma, policy.SpacesAfterComma);
 				ForceSpacesBefore (comma, policy.SpacesBeforeComma);
