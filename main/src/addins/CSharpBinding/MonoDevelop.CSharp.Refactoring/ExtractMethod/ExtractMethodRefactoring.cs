@@ -375,7 +375,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				sb.Append (var.Name);
 			}
 			sb.Append (")");
-			if (param.Nodes != null && (param.Nodes.Count > 1 && param.Nodes[0].NodeType != NodeType.Expression)) 
+			if (param.Nodes != null && (param.Nodes.Count > 1 || param.Nodes.Count == 1 && param.Nodes[0].NodeType != NodeType.Expression)) 
 				sb.Append (";");
 			return sb.ToString ();
 		}
