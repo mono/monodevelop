@@ -39,6 +39,7 @@ using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -110,6 +111,12 @@ namespace MonoDevelop.CSharp.Highlighting
 			return new CSharpSpanParser (doc, mode, spanStack ?? line.StartSpan.Clone ());
 		}
 		
+		public override ChunkParser CreateChunkParser (SpanParser spanParser, Mono.TextEditor.Document doc, Style style, SyntaxMode mode, LineSegment line)
+		{
+			return new CSharpChunkParser (spanParser, doc, style, mode, line);
+		}
+
+		
 		abstract class AbstractBlockSpan : Span
 		{
 			public bool IsValid {
@@ -180,6 +187,26 @@ namespace MonoDevelop.CSharp.Highlighting
 			public override string ToString ()
 			{
 				return string.Format("[ElseBlockSpan: IsValid={0}, Disabled={3}, Color={1}, Rule={2}]", IsValid, Color, Rule, Disabled);
+			}
+		}
+		
+		protected class CSharpChunkParser : ChunkParser
+		{
+			HashSet<string> tags = new HashSet<string> ();
+			public CSharpChunkParser (SpanParser spanParser, Mono.TextEditor.Document doc, Style style, SyntaxMode mode, LineSegment line) : base (spanParser, doc, style, mode, line)
+			{
+				foreach (var tag in ProjectDomService.SpecialCommentTags) {
+					tags.Add (tag.Tag);
+				}
+			}
+			
+			protected override string GetStyle (Chunk chunk)
+			{
+				if (spanParser.CurRule.Name == "Comment") {
+					if (tags.Contains (doc.GetTextAt (chunk))) 
+						return "comment.keyword.todo";
+				}
+				return base.GetStyle (chunk);
 			}
 		}
 		
