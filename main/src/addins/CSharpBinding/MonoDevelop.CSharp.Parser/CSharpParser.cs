@@ -1327,13 +1327,14 @@ namespace MonoDevelop.CSharp.Parser
 			public override object Visit (MemberAccess memberAccess)
 			{
 				var result = new MemberReferenceExpression ();
-				result.AddChild ((INode)memberAccess.LeftExpression.Accept (this), MemberReferenceExpression.Roles.TargetExpression);
+				if (memberAccess.LeftExpression != null)
+					result.AddChild ((INode)memberAccess.LeftExpression.Accept (this), MemberReferenceExpression.Roles.TargetExpression);
 				result.AddChild (new Identifier (memberAccess.Name, Convert (memberAccess.Location)), MemberReferenceExpression.Roles.Identifier);
 				if (memberAccess.TypeArguments != null)  {
 					var location = LocationsBag.GetLocations (memberAccess);
 					if (location != null)
 						result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), MemberReferenceExpression.Roles.LChevron);
-//					AddTypeArguments (result, location, memberAccess.TypeArguments);
+					AddTypeArguments (result, location, memberAccess.TypeArguments);
 					if (location != null && location.Count > 1)
 						result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), MemberReferenceExpression.Roles.RChevron);
 				}
@@ -1652,6 +1653,17 @@ namespace MonoDevelop.CSharp.Parser
 			}
 			
 			void AddTypeArguments (AbstractCSharpNode parent, LocationsBag.MemberLocations location, Mono.CSharp.TypeArguments typeArguments)
+			{
+				if (typeArguments == null)
+					return;
+				for (int i = 0; i < typeArguments.Count; i++) {
+					if (location != null && i > 0 && i - 1 < location.Count)
+						parent.AddChild (new CSharpTokenNode (Convert (location[i - 1]), 1), InvocationExpression.Roles.Comma);
+					parent.AddChild ((INode)typeArguments.Args[i].Accept (this), InvocationExpression.Roles.TypeArgument);
+				}
+			}
+			
+			void AddTypeArguments (AbstractCSharpNode parent, List<Location> location, Mono.CSharp.TypeArguments typeArguments)
 			{
 				if (typeArguments == null)
 					return;
