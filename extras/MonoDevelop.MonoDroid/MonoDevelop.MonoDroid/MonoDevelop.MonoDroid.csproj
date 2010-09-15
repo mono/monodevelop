@@ -63,10 +63,6 @@
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="MonoDevelop.AspNet, Version=2.2.0.0, Culture=neutral">
-      <Package>monodevelop-core-addins</Package>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
@@ -95,6 +91,8 @@
     <Compile Include="gtk-gui\MonoDevelop.MonoDroid.Gui.MonoDroidApplicationSettingsWidget.cs" />
     <Compile Include="MonoDroidSdk.cs" />
     <Compile Include="Adb\AndroidToolbox.cs" />
+    <Compile Include="Gui\DeviceChooserDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.MonoDroid.Gui.DeviceChooserDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MonoDroid.addin.xml">
@@ -105,6 +103,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="banner.png">
+      <LogicalName>banner.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

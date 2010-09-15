@@ -144,6 +144,12 @@ namespace MonoDevelop.MonoDroid
 		/// </summary>
 		public static Dictionary<string,string> EnvironmentOverrides { get; private set; }
 		
+		public static FilePath SharedRuntimePackage {
+			get {
+				return BinDir.ParentDirectory.Combine ("monoruntime.pkg");
+			}
+		}
+		
 		public static AndroidToolbox Toolbox { get; private set; }
 		
 		public static IList<AndroidDevice> Devices {

@@ -254,17 +254,43 @@ namespace MonoDevelop.MonoDroid
 			return context.ExecutionHandler.CanExecute (cmd);
 		}
 		
+		AndroidDevice GetDevice ()
+		{
+			var dlg = new MonoDevelop.MonoDroid.Gui.DeviceChooserDialog ();
+			try {
+				var result = MessageService.ShowCustomDialog (dlg);
+				if (result != (int)Gtk.ResponseType.Ok)
+					return null;
+				return dlg.Device;
+			} finally {
+				dlg.Destroy ();
+			}
+		}
+		
+		T InvokeSynch<T> (Func<T> func)
+		{
+			if (DispatchService.IsGuiThread)
+				return func ();
+			
+			var ev = new System.Threading.AutoResetEvent (false);
+			T val = default (T);
+			Gtk.Application.Invoke (delegate {
+				val = func ();
+				ev.Set ();
+			});
+			System.Threading.WaitHandle.WaitAll (new[] { ev });
+			return val;
+		}
+		
 		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configSel)
 		{
 			var conf = (MonoDroidProjectConfiguration) GetConfiguration (configSel);
 			
 			var toolbox = MonoDroidFramework.Toolbox;
 			
-			//TODO: ask user for device and get it into the command
-			
-			//FIXME: make these valid
-			AndroidDevice device = null;
-			string sharedRuntimePackage = null;
+			AndroidDevice device = InvokeSynch (GetDevice);
+			if (device == null)
+				return;
 			
 			var opMon = new AggregatedOperationMonitor (monitor);
 			try {
@@ -314,7 +340,8 @@ namespace MonoDevelop.MonoDroid
 				
 				if (!toolbox.IsSharedRuntimeInstalled (packages)) {
 					monitor.BeginTask ("Installing shared runtime package on device", 0);
-					using (var installRuntimeOp = toolbox.Install (device, sharedRuntimePackage, monitor.Log, monitor.Log)) {
+					var pkg = MonoDroidFramework.SharedRuntimePackage;
+					using (var installRuntimeOp = toolbox.Install (device, pkg, monitor.Log, monitor.Log)) {
 						opMon.AddOperation (installRuntimeOp);
 						installRuntimeOp.WaitForCompleted ();
 						if (!installRuntimeOp.Success) {
@@ -332,7 +359,7 @@ namespace MonoDevelop.MonoDroid
 					|| File.GetLastWriteTime (conf.ApkSignedPath) <= File.GetLastWriteTime (conf.ApkPath))
 				{
 					monitor.BeginTask ("Signing package", 0);
-					var signResults = DoRunTarget (monitor, "SignAndroidPackage", configSel);
+					var signResults = OnRunTarget (monitor, "SignAndroidPackage", configSel);
 					if (signResults.ErrorCount > 0) {
 						monitor.ReportError ("Signing failed", null);
 						return;

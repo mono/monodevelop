@@ -131,35 +131,17 @@ namespace MonoDevelop.MonoDroid
 			return new GetVirtualDevicesOperation (StartProcess (AndroidExe, "list avd", output, errorLog), output);
 		}
 		
-		public bool StartAvd (IProgressMonitor monitor, AndroidVirtualDevice avd)
+		public StartAvdOperation StartAvd (AndroidVirtualDevice avd)
 		{
-			using (var op = new AggregatedOperationMonitor (monitor)) {
-				var output = new StringWriter ();
-				var error = new StringWriter ();
-				
-				monitor.BeginTask (string.Format ("Starting virtual device '{0}'", avd.Name), 0);
-				
-				string args = string.Format ("partition-size 512 -avd '{0}'", avd.Name);
-				var process = StartProcess (EmulatorExe, args, output, error);
-				op.AddOperation (process);
-				
-				process.WaitForOutput ();
-				monitor.EndTask ();
-				
-				if (monitor.IsCancelRequested)
-					return false;
-				
-				if (process.ExitCode > 0 && !error.ToString ().Contains ("used by another emulator")) {
-					monitor.Log.Write (error.ToString ());
-					monitor.ReportError ("Failed to start virtual device", null);
-					return false;
-				}
-				return true;
-			}
+			var error = new StringWriter ();
+			string args = string.Format ("partition-size 512 -avd '{0}'", avd.Name);
+			var process = StartProcess (EmulatorExe, args, null, error);
+			return new StartAvdOperation (process, error);
 		}
 		
 		public ProcessWrapper StartAvdManager ()
 		{
+			//FIXME: don't create multiple instances. if it's running, focus it.
 			return Runtime.ProcessService.StartProcess (AndroidExe, "", null, (TextWriter)null, null, null);
 		}
 		
@@ -347,6 +329,32 @@ namespace MonoDevelop.MonoDroid
 					}
 				}
 				return devices;
+			}
+		}
+		
+		public class StartAvdOperation : WrapperOperation
+		{
+			IProcessAsyncOperation process;
+			StringWriter error;
+			
+			public StartAvdOperation (IProcessAsyncOperation process, StringWriter error)
+			{
+				this.process = process;
+				this.error = error;
+			}
+			
+			protected override IAsyncOperation Wrapped {
+				get { return process; }
+			}
+			
+			public override bool Success {
+				get {
+					return base.Success || error.ToString ().Contains ("used by another emulator");
+				}
+			}
+			
+			public string ErrorText {
+				get { return error.ToString (); }
 			}
 		}
 	}
