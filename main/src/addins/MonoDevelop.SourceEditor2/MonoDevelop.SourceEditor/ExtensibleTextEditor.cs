@@ -408,16 +408,12 @@ namespace MonoDevelop.SourceEditor
 				if (Extension != null) {
 					if (ExtensionKeyPress (key, ch, state)) 
 						result = base.OnIMProcessedKeyPressEvent (key, ch, state);
-					if (returnBetweenBraces) {
-						Caret.Offset = initialOffset;
-						ExtensionKeyPress (Gdk.Key.Return, (char)0, Gdk.ModifierType.None);
-					}
+					if (returnBetweenBraces)
+						 HitReturn ();
 				} else {
 					result = base.OnIMProcessedKeyPressEvent (key, ch, state);
-					if (returnBetweenBraces) {
-						Caret.Offset = initialOffset;
-						base.SimulateKeyPress (Gdk.Key.Return, 0, Gdk.ModifierType.None);
-					}
+					if (returnBetweenBraces)
+						 HitReturn ();
 				}
 			}
 			if (insertionChar != '\0')
@@ -430,6 +426,15 @@ namespace MonoDevelop.SourceEditor
 				
 			Document.EndAtomicUndo ();
 			return result;
+		}
+		
+		void HitReturn ()
+		{
+			int o = Caret.Offset - 1;
+			while (o > 0 && char.IsWhiteSpace (GetCharAt (o - 1))) 
+				o--;
+			Caret.Offset = o;
+			ExtensionKeyPress (Gdk.Key.Return, (char)0, Gdk.ModifierType.None);			
 		}
 		
 		internal string GetErrorInformationAt (int offset)
