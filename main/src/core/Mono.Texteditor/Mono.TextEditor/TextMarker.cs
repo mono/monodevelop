@@ -187,6 +187,7 @@ namespace Mono.TextEditor
 		void DrawIcon (TextEditor editor, Cairo.Context cr, LineSegment line, int lineNumber, double xPos, double yPos, double width, double height);
 		void MousePress (MarginMouseEventArgs args);
 		void MouseRelease (MarginMouseEventArgs args);
+		void MouseHover (MarginMouseEventArgs args);
 	}
 	
 	/// <summary>

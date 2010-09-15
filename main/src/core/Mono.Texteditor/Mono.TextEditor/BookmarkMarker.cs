@@ -96,5 +96,9 @@ namespace Mono.TextEditor
 		public void MouseRelease (MarginMouseEventArgs args)
 		{
 		}
+		
+		public void MouseHover (MarginMouseEventArgs args)
+		{
+		}
 	}
 }

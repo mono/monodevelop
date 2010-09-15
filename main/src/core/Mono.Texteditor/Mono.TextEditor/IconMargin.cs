@@ -93,7 +93,20 @@ namespace Mono.TextEditor
 				}
 			}
 		}
-		
+
+		internal protected override void MouseHover (MarginMouseEventArgs args)
+		{
+			base.MouseHover (args);
+			args.Editor.TooltipText = null;
+			LineSegment lineSegment = args.LineSegment;
+			if (lineSegment != null) {
+				foreach (TextMarker marker in lineSegment.Markers) {
+					if (marker is IIconBarMarker) 
+						((IIconBarMarker)marker).MouseHover (args);
+				}
+			}
+		}
+
 		internal protected override void Draw (Cairo.Context ctx, Cairo.Rectangle area, LineSegment lineSegment, int line, double x, double y, double lineHeight)
 		{
 			ctx.Rectangle (x, y, Width, lineHeight);
