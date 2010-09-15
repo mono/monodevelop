@@ -436,11 +436,11 @@ namespace Mono.TextEditor.Highlighting
 		public class ChunkParser
 		{
 			readonly string defaultStyle = "text";
-			SpanParser spanParser;
-			Document doc;
-			LineSegment line;
+			protected SpanParser spanParser;
+			protected Document doc;
+			protected LineSegment line;
 			internal int lineOffset;
-			SyntaxMode mode;
+			protected SyntaxMode mode;
 
 			public ChunkParser (SpanParser spanParser, Document doc, Style style, SyntaxMode mode, LineSegment line)
 			{
@@ -613,7 +613,7 @@ namespace Mono.TextEditor.Highlighting
 				curChunk.Length = i - curChunk.Offset + 1;
 			}
 
-			string GetStyle (Chunk chunk)
+			protected virtual string GetStyle (Chunk chunk)
 			{
 				if (chunk.Length > 0) {
 					Keywords keyword = spanParser.CurRule.GetKeyword (doc, chunk.Offset, chunk.Length);
