@@ -126,6 +126,10 @@ namespace MonoDevelop.Debugger
 		public void MouseRelease (MarginMouseEventArgs args)
 		{
 		}
+		
+		public void MouseHover (MarginMouseEventArgs args)
+		{
+		}
 	}
 	
 	public class BreakpointTextMarker : DebugTextMarker
