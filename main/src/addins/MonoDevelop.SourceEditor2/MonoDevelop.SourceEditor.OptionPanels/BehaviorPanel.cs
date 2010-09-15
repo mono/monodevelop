@@ -57,6 +57,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.useViModesCheck.Active = DefaultSourceEditorOptions.Instance.UseViModes;
 			this.checkbuttonOnTheFlyFormatting.Active = DefaultSourceEditorOptions.Instance.OnTheFlyFormatting;
 			
+			checkbuttonFormatOnSave.Active = PropertyService.Get ("AutoFormatDocumentOnSave", false);
 			checkbuttonAutoSetSearchPatternCasing.Active = PropertyService.Get ("AutoSetPatternCasing", true);
 			HandleAutoInsertBraceCheckbuttonToggled (null, null);
 			return this;
@@ -78,6 +79,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			DefaultSourceEditorOptions.Instance.UseViModes = this.useViModesCheck.Active;
 			DefaultSourceEditorOptions.Instance.OnTheFlyFormatting = this.checkbuttonOnTheFlyFormatting.Active;
 			PropertyService.Set ("AutoSetPatternCasing", checkbuttonAutoSetSearchPatternCasing.Active);
+			PropertyService.Set ("AutoFormatDocumentOnSave", checkbuttonFormatOnSave.Active);
 		}
 
 		public void Initialize (OptionsDialog dialog, object dataObject)

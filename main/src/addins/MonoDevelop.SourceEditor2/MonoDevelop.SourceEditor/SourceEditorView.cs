@@ -355,6 +355,15 @@ namespace MonoDevelop.SourceEditor
 				widget.RemoveMessageBar ();
 				WorkbenchWindow.ShowNotification = false;
 			}
+			
+			if (PropertyService.Get ("AutoFormatDocumentOnSave", false)) {
+				Formatter formatter = TextFileService.GetFormatter (Document.MimeType);
+				if (formatter != null && formatter.SupportsOnTheFlyFormatting) {
+					TextEditor.Document.BeginAtomicUndo ();
+					formatter.OnTheFlyFormat (Project != null ? Project.Policies : null, TextEditor.GetTextEditorData (), 0, Document.Length);
+					TextEditor.Document.EndAtomicUndo ();
+				}
+			}
 
 			isInWrite = true;
 			try {
