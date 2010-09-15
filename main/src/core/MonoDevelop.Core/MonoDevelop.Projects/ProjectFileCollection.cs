@@ -45,7 +45,7 @@ namespace MonoDevelop.Projects
 			return GetFile ((FilePath)fileName);
 		}
 		
-		public ProjectFile GetFile (FilePath fileName)
+		private ProjectFile GetFile (FilePath fileName)
 		{
 			if (fileName.IsNull) return null;
 			fileName = fileName.FullPath;
