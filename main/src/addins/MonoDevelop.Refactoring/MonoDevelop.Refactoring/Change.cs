@@ -137,8 +137,12 @@ namespace MonoDevelop.Refactoring
 				if (MoveCaretToReplace) {
 					textEditorData.Caret.Offset = Offset + charsInserted;
 				} else {
-					if (Offset < offset)
-						textEditorData.Caret.Offset = offset - RemovedChars + charsInserted;
+					if (Offset < offset) {
+						int rem = RemovedChars;
+						if (Offset + rem > offset)
+							rem = offset - Offset;
+						textEditorData.Caret.Offset = offset - rem + charsInserted;
+					}
 				}
 			}
 		}
