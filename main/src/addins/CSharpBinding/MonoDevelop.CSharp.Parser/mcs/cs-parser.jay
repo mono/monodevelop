@@ -3610,9 +3610,11 @@ array_initializer
 	  {
 		var ai = new ArrayInitializer ((List<Expression>) $2, GetLocation ($1));
 		ai.VariableDeclaration = current_variable;
-		if ($3 != null)
-			lbag.AppendTo (ai, GetLocation ($3));
-		lbag.AddLocation (ai, GetLocation ($4));
+		if ($3 != null) {
+			lbag.AddLocation (ai, GetLocation ($3), GetLocation ($4));
+		} else {
+			lbag.AddLocation (ai, GetLocation ($4));
+		}
 		$$ = ai;
 	  }
 	;
