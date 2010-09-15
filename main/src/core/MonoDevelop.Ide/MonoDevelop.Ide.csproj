@@ -71,7 +71,9 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="ICSharpCode.SharpZipLib" />
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="Mono.Cairo" />
     <Reference Include="System.Web" />
   </ItemGroup>
