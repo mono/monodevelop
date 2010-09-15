@@ -38,19 +38,19 @@ namespace MonoDevelop.Projects.CodeGeneration
 	{
 		static Dictionary<string, MimeTypeExtensionNode> generators = new Dictionary<string, MimeTypeExtensionNode> ();
 		
-		protected bool UseSpaceIndent {
+		public bool UseSpaceIndent {
 			get;
-			private set;
+			set;
 		}
 		
-		protected string EolMarker {
+		public string EolMarker {
 			get;
-			private set;
+			set;
 		}
 		
-		protected int TabSize {
+		public int TabSize {
 			get;
-			private set;
+			set;
 		}
 		
 		public static CodeGenerator CreateGenerator (string mimeType, bool useSpaceIndent, int tabSize, string eolMarker)
