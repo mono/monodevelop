@@ -80,6 +80,41 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 		}
 		
 		[Test()]
+		public void TestClassIndentationInNamespacesCase2 ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = 
+@"using System;
+
+namespace MonoDevelop.CSharp.Formatting {
+	public class FormattingProfileService {
+		public FormattingProfileService () {
+		}
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.NamespaceBraceStyle = BraceStyle.NextLine;
+			policy.ClassBraceStyle = BraceStyle.NextLine;
+			policy.ConstructorBraceStyle = BraceStyle.NextLine;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"using System;
+
+namespace MonoDevelop.CSharp.Formatting
+{
+	public class FormattingProfileService
+	{
+		public FormattingProfileService ()
+		{
+		}
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
 		public void TestIndentClassBody ()
 		{
 			TextEditorData data = new TextEditorData ();
