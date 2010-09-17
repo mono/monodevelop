@@ -115,17 +115,81 @@ namespace MonoDevelop.CSharp.Formatting
 				Where (c => c is TextReplaceChange && (startOffset <= ((TextReplaceChange)c).Offset && ((TextReplaceChange)c).Offset < endOffset)));
 			
 			RefactoringService.AcceptChanges (null, null, changes);
+			CorrectFormatting (data, startOffset, endOffset);
 		}
+		
+		void CorrectFormatting (TextEditorData data, int start, int end)
+		{
+			int lineNumber = data.OffsetToLineNumber (start);
+			LineSegment line = data.GetLine (lineNumber);
+			if (line.Offset < start)
+				lineNumber++;
+			line = data.GetLine (lineNumber);
+			if (line == null)
+				return;
+			do {
+				string indent = line.GetIndentation (data.Document);
+				StringBuilder newIndent = new StringBuilder ();
+				int col = 1;
+				if (data.Options.TabsToSpaces) {
+					foreach (char ch in indent) {
+						if (ch == '\t') {
+							int tabWidth = TextViewMargin.GetNextTabstop (data, col) - col;
+							newIndent.Append (new string (' ', tabWidth));
+							col += tabWidth;
+						} else {
+							newIndent.Append (ch);
+						}
+							
+					}
+				} else {
+					for (int i = 0; i < indent.Length; i++) {
+						char ch = indent[i];
+						if (ch == '\t') {
+							int tabWidth = TextViewMargin.GetNextTabstop (data, col) - col;
+							newIndent.Append (ch);
+							col += tabWidth;
+						} else {
+							int tabWidth = TextViewMargin.GetNextTabstop (data, col) - col;
+							newIndent.Append ('\t');
+							col += tabWidth;
+							while (tabWidth-- > 0 && i + 1 < indent.Length) {
+								if (indent[i + 1] != ' ')
+									break;
+								i++;
+							}
+						}
+					}
+				}
+				string replaceWith = newIndent.ToString ();
+				if (indent != replaceWith)
+					data.Replace (line.Offset, (indent ?? "").Length, replaceWith);
+				if (line.DelimiterLength != 0)
+					data.Replace (line.Offset + line.EditableLength, line.DelimiterLength, data.EolMarker);
 				
+				lineNumber++;
+				line = data.GetLine (lineNumber);
+			} while (line != null && line.EndOffset <= end);
+		}
+		
 		protected override string InternalFormat (PolicyContainer policyParent, string mimeType, string input, int startOffset, int endOffset)
 		{
+			IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+			
 			TextEditorData data = new TextEditorData ();
 			data.Text = input;
 			data.Document.MimeType = mimeType;
 			data.Document.FileName = "toformat.cs";
+			var textPolicy = policyParent != null ? policyParent.Get<TextStylePolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (types);
+			data.Options.TabsToSpaces = textPolicy.TabsToSpaces;
+			data.Options.TabSize = textPolicy.TabWidth;
+			data.Options.OverrideDocumentEolMarker = true;
+			data.Options.DefaultEolMarker = textPolicy.GetEolMarker ();
+			
+			CorrectFormatting (data, 0, data.Document.Length);
 			CSharp.Dom.CompilationUnit compilationUnit = new MonoDevelop.CSharp.Parser.CSharpParser ().Parse (data);
-			IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
 			CSharpFormattingPolicy policy = policyParent != null ? policyParent.Get<CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
+			
 			DomSpacingVisitor domSpacingVisitor = new DomSpacingVisitor (policy, data);
 			domSpacingVisitor.AutoAcceptChanges = false;
 			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
@@ -147,7 +211,7 @@ namespace MonoDevelop.CSharp.Formatting
 				if (c.InsertedText != null)
 					end += c.InsertedText.Length;
 			}
-			return data.Text.Substring (startOffset, end - startOffset + 1);
+			return data.Text.Substring (startOffset, Math.Min (end - startOffset + 1, data.Document.Length - startOffset));
 		}
 	}
 }
