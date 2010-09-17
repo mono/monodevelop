@@ -4212,7 +4212,7 @@ void case_106()
 		if (RootContext.Documentation != null)
 			current_container.DocComment = Lexer.consume_doc_comment ();
 
-		lbag.AddMember (current_class, mod_locations, GetLocation (yyVals[-5+yyTop]));
+		lbag.AddMember (current_class, GetModifierLocations (), GetLocation (yyVals[-5+yyTop]));
 	  }
 
 void case_107()
@@ -4261,7 +4261,7 @@ void case_127()
 		}
 		
 		current_field.Initializer = (ConstInitializer) yyVals[-2+yyTop];
-		lbag.AddMember (current_field, mod_locations, GetLocation (yyVals[-6+yyTop]), GetLocation (yyVals[0+yyTop]));
+		lbag.AddMember (current_field, GetModifierLocations (), GetLocation (yyVals[-6+yyTop]), GetLocation (yyVals[0+yyTop]));
 		current_field = null;
 	  }
 
@@ -4310,7 +4310,7 @@ void case_139()
 			Lexer.doc_state = XmlCommentState.Allowed;
 		}
 			
-		lbag.AddMember (current_field, mod_locations, GetLocation (yyVals[0+yyTop]));
+		lbag.AddMember (current_field, GetModifierLocations (), GetLocation (yyVals[0+yyTop]));
 		yyVal = current_field;
 		current_field = null;
 	  }
@@ -4337,7 +4337,7 @@ void case_141()
 	    }
 
 		current_field.Initializer = (ConstInitializer) yyVals[-2+yyTop];	    
-		lbag.AddMember (current_field, mod_locations, GetLocation (yyVals[0+yyTop]), GetLocation (yyVals[-6+yyTop]));
+		lbag.AddMember (current_field, GetModifierLocations (), GetLocation (yyVals[0+yyTop]), GetLocation (yyVals[-6+yyTop]));
 		yyVal = current_field;
 	    current_field = null;
 	  }
@@ -4463,7 +4463,7 @@ void case_168()
 		if (RootContext.Documentation != null)
 			method.DocComment = Lexer.consume_doc_comment ();
 
-		lbag.AddMember (method, mod_locations, GetLocation (yyVals[-5+yyTop]), GetLocation (yyVals[-2+yyTop]));
+		lbag.AddMember (method, GetModifierLocations (), GetLocation (yyVals[-5+yyTop]), GetLocation (yyVals[-2+yyTop]));
 		yyVal = method;
 	  }
 
@@ -4517,7 +4517,7 @@ void case_171()
 
 		/* TODO: lbag, push void*/
 		StoreModifierLocation (Modifiers.PARTIAL, GetLocation (yyVals[-8+yyTop]));
-		lbag.AddMember (method, mod_locations, GetLocation (yyVals[-5+yyTop]), GetLocation (yyVals[-2+yyTop]));
+		lbag.AddMember (method, GetModifierLocations (), GetLocation (yyVals[-5+yyTop]), GetLocation (yyVals[-2+yyTop]));
 		yyVal = method;
 	  }
 
@@ -4832,7 +4832,7 @@ void case_209()
 			Report.Error (547, GetLocation (yyVals[-3+yyTop]), "`{0}': property or indexer cannot have void type", current_property.GetSignatureForError ());					
 			
 		current_container.AddProperty ((Property)current_property);
-		lbag.AddMember (current_property, mod_locations, GetLocation (yyVals[0+yyTop]));
+		lbag.AddMember (current_property, GetModifierLocations (), GetLocation (yyVals[0+yyTop]));
 		
 		lexer.PropertyParsing = true;
 	  }
@@ -4864,7 +4864,7 @@ void case_213()
 		current_property = indexer;
 
   		current_container.AddIndexer (indexer);
-		lbag.AddMember (current_property, mod_locations, GetLocation (yyVals[-4+yyTop]), GetLocation (yyVals[-1+yyTop]), GetLocation (yyVals[0+yyTop]));
+		lbag.AddMember (current_property, GetModifierLocations (), GetLocation (yyVals[-4+yyTop]), GetLocation (yyVals[-1+yyTop]), GetLocation (yyVals[0+yyTop]));
   		
 		if (indexer.TypeExpression.Type == TypeManager.void_type)
 			Report.Error (620, GetLocation (yyVals[-6+yyTop]), "`{0}': indexer return type cannot be `void'", indexer.GetSignatureForError ());  		
@@ -4924,7 +4924,7 @@ void case_221()
 		}	
 	  
 		current_local_parameters = current_property.Get.ParameterInfo;	  
-		lbag.AddMember (current_property.Get, mod_locations);
+		lbag.AddMember (current_property.Get, GetModifierLocations ());
 		lexer.PropertyParsing = false;
 	  }
 
@@ -4973,7 +4973,7 @@ void case_223()
 		}
 		
 		current_local_parameters = current_property.Set.ParameterInfo;	
-		lbag.AddMember (current_property.Set, mod_locations);
+		lbag.AddMember (current_property.Set, GetModifierLocations ());
 		lexer.PropertyParsing = false;
 	  }
 
@@ -5016,7 +5016,7 @@ void case_229()
 {
 		MemberName name = MakeName ((MemberName) yyVals[0+yyTop]);
 		push_current_class (new Interface (current_namespace, current_class, name, (Modifiers) yyVals[-4+yyTop], (Attributes) yyVals[-5+yyTop]), yyVals[-3+yyTop]);
-		lbag.AddMember (current_class, mod_locations, GetLocation (yyVals[-2+yyTop]));		
+		lbag.AddMember (current_class, GetModifierLocations (), GetLocation (yyVals[-2+yyTop]));		
 	  }
 
 void case_230()
@@ -5065,7 +5065,7 @@ void case_248()
 			/* Note again, checking is done in semantic analysis*/
 			current_container.AddOperator (op);
 
-			lbag.AddMember (op, mod_locations, lbag.GetLocations (decl));
+			lbag.AddMember (op, GetModifierLocations (), lbag.GetLocations (decl));
 		}
 		
 		current_local_parameters = null;
@@ -5236,7 +5236,7 @@ void case_287()
 			}
 		}
 		
-		lbag.AddMember (c, mod_locations, GetLocation (yyVals[-4+yyTop]), GetLocation (yyVals[-2+yyTop]));
+		lbag.AddMember (c, GetModifierLocations (), GetLocation (yyVals[-4+yyTop]), GetLocation (yyVals[-2+yyTop]));
 		yyVal = c;
 	  }
 
@@ -5291,7 +5291,7 @@ void case_298()
 		  
 		d.Block = (ToplevelBlock) yyVals[0+yyTop];
 		current_container.AddMethod (d);
-		lbag.AddMember (d, mod_locations, GetLocation (yyVals[-5+yyTop]), GetLocation (yyVals[-2+yyTop]), GetLocation (yyVals[-1+yyTop]));
+		lbag.AddMember (d, GetModifierLocations (), GetLocation (yyVals[-5+yyTop]), GetLocation (yyVals[-2+yyTop]), GetLocation (yyVals[-1+yyTop]));
 
 		current_local_parameters = null;
 	  }
@@ -5318,7 +5318,7 @@ void case_300()
 			Lexer.doc_state = XmlCommentState.Allowed;
 		}
 		
-		lbag.AddMember (current_event_field, mod_locations, GetLocation (yyVals[-6+yyTop]), GetLocation (yyVals[0+yyTop]));
+		lbag.AddMember (current_event_field, GetModifierLocations (), GetLocation (yyVals[-6+yyTop]), GetLocation (yyVals[0+yyTop]));
 		current_event_field = null;
 	  }
 
@@ -5327,7 +5327,7 @@ void case_301()
 {
 		current_event = new EventProperty (current_class, (FullNamedExpression) yyVals[-2+yyTop], (Modifiers) yyVals[-4+yyTop], (MemberName) yyVals[-1+yyTop], (Attributes) yyVals[-5+yyTop]);
 		current_container.AddEvent (current_event);
-		lbag.AddMember (current_event, mod_locations, GetLocation (yyVals[-3+yyTop]), GetLocation (yyVals[0+yyTop]));
+		lbag.AddMember (current_event, GetModifierLocations (), GetLocation (yyVals[-3+yyTop]), GetLocation (yyVals[0+yyTop]));
 		
 		lexer.EventParsing = true;
 	  }
@@ -5423,7 +5423,7 @@ void case_321()
 	  	current_event.Add = new EventProperty.AddDelegateMethod (current_event, (Attributes) yyVals[-2+yyTop], GetLocation (yyVals[0+yyTop]));
 		current_local_parameters = current_event.Add.ParameterInfo;
 		
-		lbag.AddMember (current_event.Add, mod_locations);
+		lbag.AddMember (current_event.Add, GetModifierLocations ());
 		lexer.EventParsing = false;		
 	  }
 
@@ -5452,7 +5452,7 @@ void case_323()
 	  	current_event.Remove = new EventProperty.RemoveDelegateMethod (current_event, (Attributes) yyVals[-2+yyTop], GetLocation (yyVals[0+yyTop]));
 		current_local_parameters = current_event.Remove.ParameterInfo;
 
-		lbag.AddMember (current_event.Remove, mod_locations);
+		lbag.AddMember (current_event.Remove, GetModifierLocations ());
 		lexer.EventParsing = false;		
 	  }
 
@@ -5518,7 +5518,7 @@ void case_330()
 /*			if (RootContext.Documentation != null)*/
 /*				em.DocComment = ev.DocComment;*/
 
-		lbag.AddMember (current_class, mod_locations, GetLocation (yyVals[-9+yyTop]), GetLocation (yyVals[-5+yyTop]), GetLocation (yyVals[-1+yyTop]));
+		lbag.AddMember (current_class, GetModifierLocations (), GetLocation (yyVals[-9+yyTop]), GetLocation (yyVals[-5+yyTop]), GetLocation (yyVals[-1+yyTop]));
 		yyVal = pop_current_class ();
 	  }
 
@@ -5618,7 +5618,7 @@ void case_345()
 #line 2668 "cs-parser.jay"
 {
 		current_delegate.SetParameterInfo ((List<Constraints>) yyVals[-2+yyTop]);
-		lbag.AddMember (current_delegate, mod_locations, GetLocation (yyVals[-10+yyTop]), GetLocation (yyVals[-7+yyTop]), GetLocation (yyVals[-4+yyTop]), GetLocation (yyVals[0+yyTop]));
+		lbag.AddMember (current_delegate, GetModifierLocations (), GetLocation (yyVals[-10+yyTop]), GetLocation (yyVals[-7+yyTop]), GetLocation (yyVals[-4+yyTop]), GetLocation (yyVals[0+yyTop]));
 
 		yyVal = current_delegate;
 
@@ -6815,7 +6815,7 @@ void case_638()
 		lexer.ConstraintsParsing = false;
 
 		current_class.SetParameterInfo ((List<Constraints>) yyVals[0+yyTop]);
-		lbag.AddMember (current_class, mod_locations, GetLocation (yyVals[-5+yyTop]));
+		lbag.AddMember (current_class, GetModifierLocations (), GetLocation (yyVals[-5+yyTop]));
 
 		if (RootContext.Documentation != null) {
 			current_container.DocComment = Lexer.consume_doc_comment ();
@@ -11476,6 +11476,13 @@ void StoreModifierLocation (object token, Location loc)
   		mod_locations = new List<Tuple<Modifiers, Location>> ();
 
 	mod_locations.Add (Tuple.Create ((Modifiers) token, loc));
+}
+
+List<Tuple<Modifiers, Location>> GetModifierLocations ()
+{
+	var result = mod_locations;
+	mod_locations = null;
+	return result;
 }
 
 string CheckAttributeTarget (string a, Location l)
