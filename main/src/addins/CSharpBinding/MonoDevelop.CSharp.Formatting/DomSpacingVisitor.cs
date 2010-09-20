@@ -213,14 +213,19 @@ namespace MonoDevelop.CSharp.Formatting
 			return i;
 		}
 		
-		void FormatCommas (AbstractNode parent)
+		void FormatCommas (AbstractNode parent, bool before, bool after)
 		{
 			if (parent == null)
 				return;
 			foreach (CSharpTokenNode comma in parent.Children.Where (node => node.Role == FieldDeclaration.Roles.Comma)) {
-				ForceSpacesAfter (comma, policy.SpacesAfterComma);
-				ForceSpacesBefore (comma, policy.SpacesBeforeComma);
+				ForceSpacesAfter (comma, after);
+				ForceSpacesBefore (comma, before);
 			}
+		}
+		
+		void FormatCommas (AbstractNode parent)
+		{
+			FormatCommas (parent, policy.SpacesBeforeComma, policy.SpacesAfterComma);
 		}
 		
 		public override object VisitFieldDeclaration (FieldDeclaration fieldDeclaration, object data)
@@ -241,10 +246,14 @@ namespace MonoDevelop.CSharp.Formatting
 		public override object VisitMethodDeclaration (MethodDeclaration methodDeclaration, object data)
 		{
 			ForceSpacesBefore (methodDeclaration.LPar, policy.BeforeMethodDeclarationParentheses);
-
-			ForceSpacesAfter (methodDeclaration.LPar, policy.WithinMethodDeclarationParentheses);
-			ForceSpacesBefore (methodDeclaration.RPar, policy.WithinMethodDeclarationParentheses);
-			FormatCommas (methodDeclaration);
+			if (methodDeclaration.Arguments.Any ()) {
+				ForceSpacesAfter (methodDeclaration.LPar, policy.WithinMethodDeclarationParentheses);
+				ForceSpacesBefore (methodDeclaration.RPar, policy.WithinMethodDeclarationParentheses);
+			} else {
+				ForceSpacesAfter (methodDeclaration.LPar, policy.BetweenEmptyMethodDeclarationParentheses);
+				ForceSpacesBefore (methodDeclaration.RPar, policy.BetweenEmptyMethodDeclarationParentheses);
+			}
+			FormatCommas (methodDeclaration, policy.BeforeMethodDeclarationParameterComma, policy.AfterMethodDeclarationParameterComma);
 
 			return base.VisitMethodDeclaration (methodDeclaration, data);
 		}

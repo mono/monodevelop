@@ -391,28 +391,10 @@ class ClassDeclaration {
 		
 		<Category _displayName="Brace forcement">
 			<Option name="IfElseBraceForcement" _displayName="'if...else' statement" example="simpleIf"><Example><![CDATA[
-class ClassDeclaration { 
-		public void Test ()
-		{
-			if (true) {
-				Console.WriteLine ("Hello World!");
-			}
-			if (true)
-				Console.WriteLine ("Hello World!");
-		}
-	}
+
 ]]></Example></Option>
 			<Option name="ForBraceForcement" _displayName="'for' statement" example="simpleFor"><Example><![CDATA[
-class ClassDeclaration { 
-		public void Test ()
-		{
-			for (int i = 0; i < 10; i++) {
-				Console.WriteLine ("Hello World " + i);
-			}
-			for (int i = 0; i < 10; i++)
-				Console.WriteLine ("Hello World " + i);
-		}
-	}
+
 ]]></Example></Option>
 			<Option name="ForEachBraceForcement" _displayName="'foreach' statement" example="simpleForeach"><Example><![CDATA[
 class ClassDeclaration { 
@@ -475,7 +457,6 @@ class ClassDeclaration {
 	<Category _displayName="Spaces">
 		<Category _displayName="Before Parentheses">
 			<Option name="BeforeMethodCallParentheses" _displayName="Method call" example ="methodSpaceExample"/>
-			<Option name="BeforeMethodDeclarationParentheses" _displayName="Method declaration" example ="methodSpaceExample"/>
 			
 			<Option name="BeforeDelegateDeclarationParentheses" _displayName="Delegate declaration" example ="delegateExample"/>
 			<Option name="BeforeConstructorDeclarationParentheses" _displayName="Constructor declaration" example ="constructorCallExample"/>
@@ -508,7 +489,6 @@ class ClassDeclaration {
 		<Category _displayName="Within Parentheses">
 			<Option name="WithinParentheses" _displayName="Parentheses" example="operatorExample"/>
 			<Option name="WithinMethodCallParentheses" _displayName="Method call" example="methodSpaceExample"/>
-			<Option name="WithinMethodDeclarationParentheses" _displayName="Method declaration" example="methodSpaceExample"/>
 			<OptionCategory _displayName="Statements">
 				<Option name="WithinIfParentheses" _displayName="'if' statement" example="simpleIf"/>
 				<Option name="WithinWhileParentheses" _displayName="'while' statement" example="simpleWhile"/>

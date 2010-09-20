@@ -63,6 +63,11 @@ namespace MonoDevelop.CSharp.Formatting
 	
 	public class CSharpFormattingPolicy : IEquatable<CSharpFormattingPolicy>
 	{
+		public string Name {
+			get;
+			set;
+		}
+		
 		public CSharpFormattingPolicy Clone ()
 		{
 			return (CSharpFormattingPolicy)MemberwiseClone ();
@@ -378,6 +383,25 @@ namespace MonoDevelop.CSharp.Formatting
 			get;
 			set;
 		}
+		
+		[ItemProperty]
+		public bool BetweenEmptyMethodDeclarationParentheses {
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public bool BeforeMethodDeclarationParameterComma {
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public bool AfterMethodDeclarationParameterComma {
+			get;
+			set;
+		}
+		
 		
 		[ItemProperty]
 		public bool BeforeConstructorDeclarationParentheses { // tested
@@ -718,11 +742,26 @@ namespace MonoDevelop.CSharp.Formatting
 			PropertyFormatting = PropertyFormatting.AllowOneLine;
 		}
 		
+		public static CSharpFormattingPolicy Load (FilePath selectedFile)
+		{
+			throw new NotImplementedException ();
+		}
+		
+		public void Save (string fileName)
+		{
+			throw new NotImplementedException ();
+		}
+		
 		public bool Equals (CSharpFormattingPolicy other)
 		{
 			foreach (PropertyInfo info in typeof (CSharpFormattingPolicy).GetProperties ()) {
 				object val = info.GetValue (this, null);
 				object otherVal = info.GetValue (other, null);
+				if (val == null) {
+					if (otherVal == null)
+						continue;
+					return false;
+				}
 				if (!val.Equals (otherVal)) {
 					//Console.WriteLine ("!equal");
 					return false;

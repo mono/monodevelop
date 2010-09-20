@@ -30,6 +30,9 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.CSharp.Formatting.CSharpFormattingPolicyPanelWidget.cs \
+	gtk-gui/MonoDevelop.CSharp.Formatting.CSharpFormattingProfileDialog.cs \
+	gtk-gui/MonoDevelop.CSharp.Formatting.NewFormattingProfileDialog.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs \
@@ -128,13 +131,17 @@ FILES =  \
 	MonoDevelop.CSharp.Formatting/CSharpFormatter.cs \
 	MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.cs \
 	MonoDevelop.CSharp.Formatting/CSharpFormattingPolicyPanel.cs \
+	MonoDevelop.CSharp.Formatting/CSharpFormattingPolicyPanelWidget.cs \
+	MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs \
 	MonoDevelop.CSharp.Formatting/CSharpFormattingProperties.cs \
 	MonoDevelop.CSharp.Formatting/CSharpIndentEngine.cs \
 	MonoDevelop.CSharp.Formatting/CSharpIndentEngineStack.cs \
 	MonoDevelop.CSharp.Formatting/CSharpTextEditorIndentation.cs \
 	MonoDevelop.CSharp.Formatting/DomIndentationVisitor.cs \
 	MonoDevelop.CSharp.Formatting/DomSpacingVisitor.cs \
+	MonoDevelop.CSharp.Formatting/FormattingProfileService.cs \
 	MonoDevelop.CSharp.Formatting/Indent.cs \
+	MonoDevelop.CSharp.Formatting/NewFormattingProfileDialog.cs \
 	MonoDevelop.CSharp.Formatting/OnTheFlyFormatter.cs \
 	MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs \
 	MonoDevelop.CSharp.Highlighting/HighlightCSharpSemanticRule.cs \

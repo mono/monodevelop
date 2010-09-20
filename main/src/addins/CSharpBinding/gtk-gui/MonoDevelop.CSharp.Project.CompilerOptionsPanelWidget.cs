@@ -5,53 +5,53 @@ namespace MonoDevelop.CSharp.Project
 	public partial class CompilerOptionsPanelWidget
 	{
 		private global::Gtk.VBox vbox1;
-
+		
 		private global::Gtk.Label label82;
-
+		
 		private global::Gtk.HBox hbox5;
-
+		
 		private global::Gtk.Label label76;
-
+		
 		private global::Gtk.VBox vbox2;
-
+		
 		private global::Gtk.Table table7;
-
+		
 		private global::Gtk.ComboBoxEntry codepageEntry;
-
+		
 		private global::Gtk.HBox hbox57;
-
+		
 		private global::Gtk.ComboBox compileTargetCombo;
-
+		
 		private global::MonoDevelop.Components.FileEntry iconEntry;
-
+		
 		private global::Gtk.Label label1;
-
+		
 		private global::Gtk.Label label3;
-
+		
 		private global::Gtk.Label label86;
-
+		
 		private global::Gtk.Label label88;
-
+		
 		private global::Gtk.ComboBoxEntry mainClassEntry;
-
+		
 		private global::Gtk.Label label83;
-
+		
 		private global::Gtk.Label label75;
-
+		
 		private global::Gtk.HBox hbox7;
-
+		
 		private global::Gtk.Label label74;
-
+		
 		private global::Gtk.VBox vbox3;
-
+		
 		private global::Gtk.Table table2;
-
+		
 		private global::Gtk.Label label2;
-
+		
 		private global::Gtk.ComboBox langVerCombo;
-
+		
 		private global::Gtk.CheckButton allowUnsafeCodeCheckButton;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -65,7 +65,7 @@ namespace MonoDevelop.CSharp.Project
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.label82 = new global::Gtk.Label ();
 			this.label82.Name = "label82";
-			this.label82.Xalign = 0f;
+			this.label82.Xalign = 0F;
 			this.label82.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Code Generation</b>");
 			this.label82.UseMarkup = true;
 			this.vbox1.Add (this.label82);
@@ -136,7 +136,7 @@ namespace MonoDevelop.CSharp.Project
 			// Container child table7.Gtk.Table+TableChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Compiler Code Page:");
 			this.table7.Add (this.label1);
 			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table7[this.label1]));
@@ -147,7 +147,7 @@ namespace MonoDevelop.CSharp.Project
 			// Container child table7.Gtk.Table+TableChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.Xalign = 0f;
+			this.label3.Xalign = 0F;
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Win32 Icon:");
 			this.table7.Add (this.label3);
 			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table7[this.label3]));
@@ -158,7 +158,7 @@ namespace MonoDevelop.CSharp.Project
 			// Container child table7.Gtk.Table+TableChild
 			this.label86 = new global::Gtk.Label ();
 			this.label86.Name = "label86";
-			this.label86.Xalign = 0f;
+			this.label86.Xalign = 0F;
 			this.label86.LabelProp = global::Mono.Unix.Catalog.GetString ("Compile _Target:");
 			this.label86.UseUnderline = true;
 			this.table7.Add (this.label86);
@@ -168,7 +168,7 @@ namespace MonoDevelop.CSharp.Project
 			// Container child table7.Gtk.Table+TableChild
 			this.label88 = new global::Gtk.Label ();
 			this.label88.Name = "label88";
-			this.label88.Xalign = 0f;
+			this.label88.Xalign = 0F;
 			this.label88.LabelProp = global::Mono.Unix.Catalog.GetString ("_Main Class:");
 			this.label88.UseUnderline = true;
 			this.table7.Add (this.label88);
@@ -200,7 +200,7 @@ namespace MonoDevelop.CSharp.Project
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.label83 = new global::Gtk.Label ();
 			this.label83.Name = "label83";
-			this.label83.Xalign = 0f;
+			this.label83.Xalign = 0F;
 			this.label83.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Language Options</b>");
 			this.label83.UseMarkup = true;
 			this.vbox1.Add (this.label83);
@@ -241,7 +241,7 @@ namespace MonoDevelop.CSharp.Project
 			// Container child table2.Gtk.Table+TableChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.Xalign = 0f;
+			this.label2.Xalign = 0F;
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("C# Language Version:");
 			this.table2.Add (this.label2);
 			global::Gtk.Table.TableChild w18 = ((global::Gtk.Table.TableChild)(this.table2[this.label2]));

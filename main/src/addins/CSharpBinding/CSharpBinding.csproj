@@ -352,6 +352,13 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\ExtractMethodRefactoring.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\VariableLookupVisitor.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs" />
+    <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingPolicyPanelWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CSharp.Formatting.CSharpFormattingPolicyPanelWidget.cs" />
+    <Compile Include="MonoDevelop.CSharp.Formatting\NewFormattingProfileDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CSharp.Formatting.NewFormattingProfileDialog.cs" />
+    <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingProfileDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CSharp.Formatting.CSharpFormattingProfileDialog.cs" />
+    <Compile Include="MonoDevelop.CSharp.Formatting\FormattingProfileService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

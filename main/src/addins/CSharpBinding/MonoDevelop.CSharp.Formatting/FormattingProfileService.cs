@@ -1,10 +1,10 @@
 // 
-// CSharpFormattingPolicyPanel.cs
+// FormattingProfileService.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,44 +23,35 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-using Gtk;
-using MonoDevelop.Ide.CodeFormatting;
-using MonoDevelop.Projects.Text;
-using System.Xml;
-using MonoDevelop.Ide.Gui.Dialogs;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	class CSharpFormattingPolicyPanel : MimeTypePolicyOptionsPanel<CSharpFormattingPolicy>
+	public static class FormattingProfileService
 	{
-		CSharpFormattingPolicyPanelWidget panel;
+		static List<CSharpFormattingPolicy> profiles = new List<CSharpFormattingPolicy> ();
 		
-		public static CodeFormatDescription CodeFormatDescription {
+		public static List<CSharpFormattingPolicy> Profiles {
 			get {
-				XmlReaderSettings settings = new XmlReaderSettings ();
-				settings.CloseInput = true;
-				using (XmlReader reader = XmlTextReader.Create (typeof (CSharpFormattingPolicy).Assembly.GetManifestResourceStream ("CSharpFormattingPolicy.xml"), settings)) {
-					return CodeFormatDescription.Read (reader);
-				}
+				return profiles;
 			}
 		}
 		
-		public override Widget CreatePanelWidget ()
+		public static CSharpFormattingPolicy GetProfile (string name)
 		{
-			return panel = new CSharpFormattingPolicyPanelWidget ();
+			return profiles.FirstOrDefault (p => p.Name == name);
 		}
 		
-		CSharpFormattingPolicy policy;
-		protected override void LoadFrom (CSharpFormattingPolicy policy)
+		public static void AddProfile (CSharpFormattingPolicy profile)
 		{
-			this.policy = policy.Clone ();
-//			panel.SetFormat (CodeFormatDescription, this.policy);
+			profiles.Add (profile);
 		}
 		
-		protected override CSharpFormattingPolicy GetPolicy ()
+		public static void Remove (CSharpFormattingPolicy profile)
 		{
-			return policy;
+			profiles.Remove (profile);
 		}
 	}
 }

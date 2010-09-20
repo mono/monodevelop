@@ -5,71 +5,71 @@ namespace MonoDevelop.CSharp.Project
 	internal partial class CodeGenerationPanelWidget
 	{
 		private global::Gtk.VBox vbox62;
-
+		
 		private global::Gtk.Label label82;
-
+		
 		private global::Gtk.HBox hbox56;
-
+		
 		private global::Gtk.Label label81;
-
+		
 		private global::Gtk.VBox vbox65;
-
+		
 		private global::Gtk.CheckButton generateOverflowChecksCheckButton;
-
+		
 		private global::Gtk.CheckButton enableOptimizationCheckButton;
-
+		
 		private global::Gtk.CheckButton generateDebugInformationCheckButton;
-
+		
 		private global::Gtk.CheckButton generateXmlOutputCheckButton;
-
+		
 		private global::Gtk.HBox hbox4;
-
+		
 		private global::Gtk.Table table1;
-
+		
 		private global::Gtk.HBox hbox1;
-
+		
 		private global::Gtk.ComboBox comboPlatforms;
-
+		
 		private global::Gtk.Label label1;
-
+		
 		private global::Gtk.Label label87;
-
+		
 		private global::Gtk.Entry symbolsEntry;
-
+		
 		private global::Gtk.Label label93;
-
+		
 		private global::Gtk.HBox hbox48;
-
+		
 		private global::Gtk.Label label73;
-
+		
 		private global::Gtk.VBox vbox67;
-
+		
 		private global::Gtk.HBox hbox60;
-
+		
 		private global::Gtk.Label label85;
-
+		
 		private global::Gtk.SpinButton warningLevelSpinButton;
-
+		
 		private global::Gtk.HBox hbox3;
-
+		
 		private global::Gtk.Label label86;
-
+		
 		private global::Gtk.Entry ignoreWarningsEntry;
-
+		
 		private global::Gtk.CheckButton warningsAsErrorsCheckButton;
-
+		
 		private global::Gtk.Label label94;
-
+		
 		private global::Gtk.HBox hbox5;
-
+		
 		private global::Gtk.Label label74;
-
+		
 		private global::Gtk.HBox hbox6;
-
+		
 		private global::Gtk.Label label88;
-
+		
 		private global::Gtk.Entry additionalArgsEntry;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -84,7 +84,7 @@ namespace MonoDevelop.CSharp.Project
 			// Container child vbox62.Gtk.Box+BoxChild
 			this.label82 = new global::Gtk.Label ();
 			this.label82.Name = "label82";
-			this.label82.Xalign = 0f;
+			this.label82.Xalign = 0F;
 			this.label82.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>General Options</b>");
 			this.label82.UseMarkup = true;
 			this.vbox62.Add (this.label82);
@@ -196,7 +196,7 @@ namespace MonoDevelop.CSharp.Project
 			// Container child table1.Gtk.Table+TableChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Platform target:");
 			this.table1.Add (this.label1);
 			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table1[this.label1]));
@@ -207,7 +207,7 @@ namespace MonoDevelop.CSharp.Project
 			// Container child table1.Gtk.Table+TableChild
 			this.label87 = new global::Gtk.Label ();
 			this.label87.Name = "label87";
-			this.label87.Xalign = 0f;
+			this.label87.Xalign = 0F;
 			this.label87.LabelProp = global::Mono.Unix.Catalog.GetString ("Define S_ymbols:");
 			this.label87.UseUnderline = true;
 			this.table1.Add (this.label87);
@@ -239,7 +239,7 @@ namespace MonoDevelop.CSharp.Project
 			// Container child vbox62.Gtk.Box+BoxChild
 			this.label93 = new global::Gtk.Label ();
 			this.label93.Name = "label93";
-			this.label93.Xalign = 0f;
+			this.label93.Xalign = 0F;
 			this.label93.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Warnings</b>");
 			this.label93.UseMarkup = true;
 			this.label93.UseUnderline = true;
@@ -347,7 +347,7 @@ namespace MonoDevelop.CSharp.Project
 			// Container child vbox62.Gtk.Box+BoxChild
 			this.label94 = new global::Gtk.Label ();
 			this.label94.Name = "label94";
-			this.label94.Xalign = 0f;
+			this.label94.Xalign = 0F;
 			this.label94.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Additional Options</b>");
 			this.label94.UseMarkup = true;
 			this.label94.UseUnderline = true;

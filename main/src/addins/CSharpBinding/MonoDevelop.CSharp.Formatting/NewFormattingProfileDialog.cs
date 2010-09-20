@@ -1,10 +1,10 @@
 // 
-// CSharpFormattingPolicyPanel.cs
+// NewFormattingProfileDialog.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,44 +23,28 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-using Gtk;
-using MonoDevelop.Ide.CodeFormatting;
-using MonoDevelop.Projects.Text;
-using System.Xml;
-using MonoDevelop.Ide.Gui.Dialogs;
-
+using System;
 namespace MonoDevelop.CSharp.Formatting
 {
-	class CSharpFormattingPolicyPanel : MimeTypePolicyOptionsPanel<CSharpFormattingPolicy>
+	public partial class NewFormattingProfileDialog  : Gtk.Dialog
 	{
-		CSharpFormattingPolicyPanelWidget panel;
-		
-		public static CodeFormatDescription CodeFormatDescription {
+		public string NewProfileName {
 			get {
-				XmlReaderSettings settings = new XmlReaderSettings ();
-				settings.CloseInput = true;
-				using (XmlReader reader = XmlTextReader.Create (typeof (CSharpFormattingPolicy).Assembly.GetManifestResourceStream ("CSharpFormattingPolicy.xml"), settings)) {
-					return CodeFormatDescription.Read (reader);
-				}
+				return entryProfileName.Text;
 			}
 		}
 		
-		public override Widget CreatePanelWidget ()
-		{
-			return panel = new CSharpFormattingPolicyPanelWidget ();
+		public CSharpFormattingPolicy InitializeFrom {
+			get {
+				return FormattingProfileService.GetProfile (comboboxInitFrom.ActiveText);
+			}
 		}
 		
-		CSharpFormattingPolicy policy;
-		protected override void LoadFrom (CSharpFormattingPolicy policy)
+		public NewFormattingProfileDialog ()
 		{
-			this.policy = policy.Clone ();
-//			panel.SetFormat (CodeFormatDescription, this.policy);
-		}
-		
-		protected override CSharpFormattingPolicy GetPolicy ()
-		{
-			return policy;
+			this.Build ();
+			
 		}
 	}
 }
+
