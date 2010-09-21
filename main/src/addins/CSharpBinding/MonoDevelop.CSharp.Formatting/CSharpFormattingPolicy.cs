@@ -375,12 +375,6 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		// Methods
 		[ItemProperty]
-		public bool BeforeMethodCallParentheses { // tested
-			get;
-			set;
-		}
-		
-		[ItemProperty]
 		public bool BeforeMethodDeclarationParentheses { // tested
 			get;
 			set;
@@ -406,6 +400,37 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		[ItemProperty]
 		public bool WithinMethodDeclarationParentheses { // tested
+			get;
+			set;
+		}
+		
+		// Method calls
+		[ItemProperty]
+		public bool BeforeMethodCallParentheses { // tested
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public bool BetweenEmptyMethodCallParentheses { // tested
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public bool BeforeMethodCallParameterComma { // tested
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public bool AfterMethodCallParameterComma { // tested
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public bool WithinMethodCallParentheses { // tested
 			get;
 			set;
 		}
@@ -611,12 +636,6 @@ namespace MonoDevelop.CSharp.Formatting
 			set;
 		}
 		
-		[ItemProperty]
-		public bool WithinMethodCallParentheses { // tested
-			get;
-			set;
-		}
-		
 		
 		[ItemProperty]
 		public bool WithinIfParentheses { // tested
@@ -679,7 +698,19 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
+		public bool BeforeSizeOfParentheses { // tested
+			get;
+			set;
+		}
+		
+		[ItemProperty]
 		public bool WithinTypeOfParentheses { // tested
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public bool BeforeTypeOfParentheses { // tested
 			get;
 			set;
 		}
@@ -721,19 +752,13 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool SpacesAfterComma { // tested
+		public bool SpacesBeforeForSemicolon { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool SpacesBeforeComma { // tested
-			get;
-			set;
-		}
-		
-		[ItemProperty]
-		public bool SpacesAfterSemicolon { // tested
+		public bool SpacesAfterForSemicolon { // tested
 			get;
 			set;
 		}
@@ -815,9 +840,8 @@ namespace MonoDevelop.CSharp.Formatting
 			ConditionalOperatorAfterSeparatorSpace = true;
 
 			SpacesWithinBrackets = false;
-			SpacesAfterComma = true;
-			SpacesBeforeComma = false;
-			SpacesAfterSemicolon = true;
+			SpacesBeforeForSemicolon = false;
+			SpacesAfterForSemicolon = true;
 			SpacesAfterTypecast = false;
 			
 			AlignEmbeddedIfStatements = true;

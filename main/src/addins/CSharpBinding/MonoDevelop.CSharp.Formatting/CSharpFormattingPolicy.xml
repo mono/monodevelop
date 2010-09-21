@@ -456,13 +456,13 @@ class ClassDeclaration {
 	
 	<Category _displayName="Spaces">
 		<Category _displayName="Before Parentheses">
-			<Option name="BeforeMethodCallParentheses" _displayName="Method call" example ="methodSpaceExample"/>
+<!--		<Option name="BeforeMethodCallParentheses" _displayName="Method call" example ="methodSpaceExample"/>
 			
 			<Option name="BeforeDelegateDeclarationParentheses" _displayName="Delegate declaration" example ="delegateExample"/>
 			<Option name="BeforeConstructorDeclarationParentheses" _displayName="Constructor declaration" example ="constructorCallExample"/>
-			
+		-->	
 			<Option name="NewParentheses" _displayName="Constructor call" example ="constructorCallExample"/>
-			
+		<!--	
 			<OptionCategory _displayName="Statements">
 				<Option name="IfParentheses" _displayName="'if' statement" example="simpleIf"/>
 				<Option name="WhileParentheses" _displayName="'while' statement" example="simpleWhile"/>
@@ -472,9 +472,9 @@ class ClassDeclaration {
 				<Option name="SwitchParentheses" _displayName="'switch' statement" example="simpleSwitch"/>
 				<Option name="LockParentheses" _displayName="'lock' statement" example="simpleLock"/>
 				<Option name="UsingParentheses" _displayName="'using' statement" example="simpleUsingStatement"/>
-			</OptionCategory>
+			</OptionCategory>-->
 		</Category>
-		
+		<!--
 		<OptionCategory _displayName="Around Operators">
 			<Option name="AroundAssignmentParentheses" _displayName="Assignment (=, -=, ...)" example="operatorExample"/>
 			<Option name="AroundLogicalOperatorParentheses" _displayName="Logical (&amp;&amp;,||) operators" example="operatorExample"/>
@@ -485,9 +485,9 @@ class ClassDeclaration {
 			<Option name="AroundMultiplicativeOperatorParentheses" _displayName="Multiplicative (*,/,%) operators" example="operatorExample"/>
 			<Option name="AroundShiftOperatorParentheses" _displayName="Shift (&lt;&lt;,&gt;&gt;) operators" example="operatorExample"/>
 		</OptionCategory>
-		
+		-->
 		<Category _displayName="Within Parentheses">
-			<Option name="WithinParentheses" _displayName="Parentheses" example="operatorExample"/>
+	<!--			<Option name="WithinParentheses" _displayName="Parentheses" example="operatorExample"/>
 			<Option name="WithinMethodCallParentheses" _displayName="Method call" example="methodSpaceExample"/>
 			<OptionCategory _displayName="Statements">
 				<Option name="WithinIfParentheses" _displayName="'if' statement" example="simpleIf"/>
@@ -498,10 +498,10 @@ class ClassDeclaration {
 				<Option name="WithinSwitchParentheses" _displayName="'switch' statement" example="simpleSwitch"/>
 				<Option name="WithinLockParentheses" _displayName="'lock' statement" example="simpleLock"/>
 				<Option name="WithinUsingParentheses" _displayName="'using' statement" example="simpleUsingStatement"/>
-			</OptionCategory>
+			</OptionCategory> -->
 			
 			<OptionCategory _displayName="Expressions">
-				<Option name="WithinCastParentheses" _displayName="Type cast" example="simpleTypeCast"/>
+<!--				<Option name="WithinCastParentheses" _displayName="Type cast" example="simpleTypeCast"/>
 				<Option name="WithinSizeOfParentheses" _displayName="'sizeof' expression"><Example><![CDATA[
 class ClassDeclaration { 
 		public void Test ()
@@ -518,7 +518,7 @@ class ClassDeclaration {
 			Type t = typeof (ClassDeclaration);
 		}
 	}
-]]></Example>
+]]></Example>-->
 				</Option>
 				<Option name="WithinCheckedExpressionParantheses" _displayName="'checked'/'fixed' expression"><Example><![CDATA[
 class ClassDeclaration { 
@@ -534,13 +534,13 @@ class ClassDeclaration {
 				</Option>
 			</OptionCategory>
 		</Category>
-		
+		<!--
 		<Category _displayName="Conditional Operator (?:)">
 			<Option name="ConditionalOperatorBeforeConditionSpace" _displayName="before '?'" example="condOpExample"/>
 			<Option name="ConditionalOperatorAfterConditionSpace" _displayName="after '?'" example="condOpExample"/>
 			<Option name="ConditionalOperatorBeforeSeparatorSpace" _displayName="before ':'" example="condOpExample"/>
 			<Option name="ConditionalOperatorAfterSeparatorSpace" _displayName="after ':'" example="condOpExample"/>
-		</Category>
+		</Category>-->
 		
 		<Category _displayName="Other">
 			<Option name="SpacesWithinBrackets" _displayName="Within brackets"><Example><![CDATA[
@@ -553,10 +553,10 @@ class ClassDeclaration {
 	}
 ]]></Example>
 </Option>
-			<Option name="SpacesAfterComma" _displayName="After comma" example="simpleArrayInitializer"/>
+<!--			<Option name="SpacesAfterComma" _displayName="After comma" example="simpleArrayInitializer"/>
 			<Option name="SpacesBeforeComma" _displayName="Before comma" example="simpleArrayInitializer"/>
 			<Option name="SpacesAfterSemicolon" _displayName="After semicolon" example="simpleFor"/>
-			<Option name="SpacesAfterTypecast" _displayName="After type cast" example="simpleTypeCast"/>
+			<Option name="SpacesAfterTypecast" _displayName="After type cast" example="simpleTypeCast"/>-->
 		</Category>
 	</Category>
 </CodeStyle>

@@ -256,7 +256,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.label8 = new global::Gtk.Label ();
 			this.label8.Name = "label8";
 			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("page1");
-			this.notebookCategories.SetTabLabel (this.vbox8, this.label8);
+			this.notebookCategories.SetTabLabel (this.vbox8,this.label8);
 			this.label8.ShowAll ();
 			// Container child notebookCategories.Gtk.Notebook+NotebookChild
 			this.frame2 = new global::Gtk.Frame ();
@@ -288,7 +288,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.label9 = new global::Gtk.Label ();
 			this.label9.Name = "label9";
 			this.label9.LabelProp = global::Mono.Unix.Catalog.GetString ("page2");
-			this.notebookCategories.SetTabLabel (this.frame2, this.label9);
+			this.notebookCategories.SetTabLabel (this.frame2,this.label9);
 			this.label9.ShowAll ();
 			// Container child notebookCategories.Gtk.Notebook+NotebookChild
 			this.vbox10 = new global::Gtk.VBox ();
@@ -532,7 +532,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.label14 = new global::Gtk.Label ();
 			this.label14.Name = "label14";
 			this.label14.LabelProp = global::Mono.Unix.Catalog.GetString ("page5");
-			this.notebookCategories.SetTabLabel (this.vbox10, this.label14);
+			this.notebookCategories.SetTabLabel (this.vbox10,this.label14);
 			this.label14.ShowAll ();
 			// Container child notebookCategories.Gtk.Notebook+NotebookChild
 			this.frame3 = new global::Gtk.Frame ();
@@ -582,7 +582,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.label10 = new global::Gtk.Label ();
 			this.label10.Name = "label10";
 			this.label10.LabelProp = global::Mono.Unix.Catalog.GetString ("page3");
-			this.notebookCategories.SetTabLabel (this.frame3, this.label10);
+			this.notebookCategories.SetTabLabel (this.frame3,this.label10);
 			this.label10.ShowAll ();
 			// Container child notebookCategories.Gtk.Notebook+NotebookChild
 			this.frame4 = new global::Gtk.Frame ();
@@ -614,7 +614,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.label11 = new global::Gtk.Label ();
 			this.label11.Name = "label11";
 			this.label11.LabelProp = global::Mono.Unix.Catalog.GetString ("page4");
-			this.notebookCategories.SetTabLabel (this.frame4, this.label11);
+			this.notebookCategories.SetTabLabel (this.frame4,this.label11);
 			this.label11.ShowAll ();
 			this.hpaned1.Add (this.notebookCategories);
 			global::Gtk.Paned.PanedChild w52 = ((global::Gtk.Paned.PanedChild)(this.hpaned1[this.notebookCategories]));
@@ -662,7 +662,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.buttonCancel.UseStock = true;
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
-			this.AddActionWidget (this.buttonCancel, -6);
+			this.AddActionWidget (this.buttonCancel,-6);
 			global::Gtk.ButtonBox.ButtonBoxChild w59 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w58[this.buttonCancel]));
 			w59.Expand = false;
 			w59.Fill = false;
@@ -674,7 +674,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.buttonOk.UseStock = true;
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
-			this.AddActionWidget (this.buttonOk, -5);
+			this.AddActionWidget (this.buttonOk,-5);
 			global::Gtk.ButtonBox.ButtonBoxChild w60 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w58[this.buttonOk]));
 			w60.Position = 1;
 			w60.Expand = false;

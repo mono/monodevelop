@@ -194,6 +194,65 @@ namespace MonoDevelop.CSharp.Formatting
 			int[] i = new int[] { 1, 3, 3, 7 };
 		}
 	}";
+		const string condOpExample = @"class ClassDeclaration { 
+		public string GetSign (int i)
+		{
+			return i < 0 ? ""-"" : ""+"";
+		}
+	}";
+		const string switchExample = @"class ClassDeclaration { 
+		public void Test (int i)
+		{
+			switch (i) {
+				case 0:
+					Console.WriteLine (""was zero"");
+					break;
+				case 1:
+					Console.WriteLine (""was one"");
+					break;
+				default:
+					Console.WriteLine (""was "" + i);
+					break;
+			}
+		}
+	}";
+		const string simpleFor = @"class ClassDeclaration { 
+		public void Test ()
+		{
+			for (int i = 0; i < 10; i++) {
+				Console.WriteLine (""Hello World!"");
+			}
+		}
+	}";
+		const string simpleForeach = @"class ClassDeclaration : ArrayList { 
+		public void Test ()
+		{
+			foreach (object o in this) {
+				Console.WriteLine (""Hello World!"");
+			}
+		}
+	}";
+		const string simpleLock = @"class ClassDeclaration { 
+		public void Test ()
+		{
+			lock (this) {
+				Console.WriteLine (""Hello World!"");
+			}
+		}
+	}";
+		const string operatorExample = @"class ClassDeclaration { 
+		public void TestMethod ()
+		{
+			int a = 5 << 5;
+			int b = (a + 5 - 3) * 6 / 2;
+			a += b;
+			a = a & ~255;
+			if (a == b || b < a >> 1) {
+				b -= a;
+			}
+		}
+	}";
+//		const string  = @"";
 		
 		#endregion
 		
@@ -514,7 +573,107 @@ delegate void BarFoo ();
 				new Option ("AfterDelegateDeclarationParameterComma", GettextCatalog.GetString ("after comma in parenthesis"))
 			));
 			
+			category = whiteSpaceCategory.AppendValues (GettextCatalog.GetString ("Statements"), null);
 			
+			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("'if'"), new Category (simpleIf,
+				new Option ("IfParentheses", GettextCatalog.GetString ("before opening parenthesis"))
+			));
+			
+			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("'while'"), new Category (simpleWhile,
+				new Option ("WhileParentheses", GettextCatalog.GetString ("before opening parenthesis"))
+			));
+			
+			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("'for'"), new Category (simpleFor,
+				new Option ("ForParentheses", GettextCatalog.GetString ("before opening parenthesis")),
+				new Option ("SpacesBeforeForSemicolon", GettextCatalog.GetString ("before semicolon")),
+				new Option ("SpacesAfterForSemicolon", GettextCatalog.GetString ("after semicolon"))
+			));
+			
+			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("'foreach'"), new Category (simpleFor,
+				new Option ("ForeachParentheses", GettextCatalog.GetString ("before opening parenthesis"))
+			));
+			
+			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("'catch'"), new Category (simpleCatch,
+				new Option ("CatchParentheses", GettextCatalog.GetString ("before opening parenthesis"))
+			));
+			
+			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("'switch'"), new Category (switchExample,
+				new Option ("SwitchParentheses", GettextCatalog.GetString ("before opening parenthesis"))
+			));
+			
+			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("'lock'"), new Category (simpleLock,
+				new Option ("SwitchParentheses", GettextCatalog.GetString ("before opening parenthesis"))
+			));
+			
+			category = whiteSpaceCategory.AppendValues (GettextCatalog.GetString ("Expressions"), null);
+			
+			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("Method invocations"), new Category (example,
+				new Option ("BeforeMethodCallParentheses", GettextCatalog.GetString ("before opening parenthesis")),
+				new Option ("WithinMethodCallParentheses", GettextCatalog.GetString ("within parenthesis")),
+				new Option ("BetweenEmptyMethodCallParentheses", GettextCatalog.GetString ("between empty parenthesis")),
+				new Option ("BeforeMethodCallParameterComma", GettextCatalog.GetString ("before comma in parenthesis")),
+				new Option ("AfterMethodCallParameterComma", GettextCatalog.GetString ("after comma in parenthesis"))
+			));
+			
+			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("Parentheses"), new Category (operatorExample,
+				new Option ("WithinParentheses", GettextCatalog.GetString ("within parenthesis"))
+			));
+			
+			example = @"class ClassDeclaration { 
+		public void Test (object o)
+		{
+			int i = (int)o;
+		}
+	}";
+			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("Type cast"), new Category (example,
+				new Option ("WithinCastParentheses", GettextCatalog.GetString ("within parenthesis")),
+				new Option ("SpacesAfterTypecast", GettextCatalog.GetString ("after type cast"))
+			));
+			
+			example = @"class ClassDeclaration { 
+		public void Test ()
+		{
+			int i = sizeof (ClassDeclaration);
+		}
+	}";
+			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("'sizeof'"), new Category (example,
+				new Option ("BeforeSizeOfParentheses", GettextCatalog.GetString ("before opening parenthesis")),
+				new Option ("WithinSizeOfParentheses", GettextCatalog.GetString ("within parenthesis"))
+			));
+			
+			example = @"class ClassDeclaration { 
+		public void Test ()
+		{
+			Type t = typeof (ClassDeclaration);
+		}
+	}";
+			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("'typeof'"), new Category (example,
+				new Option ("BeforeTypeOfParentheses", GettextCatalog.GetString ("before opening parenthesis")),
+				new Option ("WithinTypeOfParentheses", GettextCatalog.GetString ("within parenthesis"))
+			));
+			
+			
+			whiteSpaceCategory.AppendValues (GettextCatalog.GetString ("Around Operators"), new Category (operatorExample,
+				new Option ("AroundAssignmentParentheses", GettextCatalog.GetString ("Assignment (=, -=, ...)")),
+				new Option ("AroundLogicalOperatorParentheses", GettextCatalog.GetString ("Logical (&amp;&amp;,||) operators")),
+				new Option ("AroundEqualityOperatorParentheses", GettextCatalog.GetString ("Equality (==, !=) operators")),
+				new Option ("AroundRelationalOperatorParentheses", GettextCatalog.GetString ("Relational (&lt;,&gt;,&lt;=,&gt;=) operators")),
+				new Option ("AroundBitwiseOperatorParentheses", GettextCatalog.GetString ("Bitwise (&amp;,|,^) operators")),
+				new Option ("AroundAdditiveOperatorParentheses", GettextCatalog.GetString ("Additive (+,-) operators")),
+				new Option ("AroundMultiplicativeOperatorParentheses", GettextCatalog.GetString ("Multiplicative (*,/,%) operators")),
+				new Option ("AroundShiftOperatorParentheses", GettextCatalog.GetString ("Shift (&lt;&lt;,&gt;&gt;) operators"))
+			));
+			
+			whiteSpaceCategory.AppendValues (GettextCatalog.GetString ("Conditional Operator (?:)"), new Category (condOpExample,
+				new Option ("ConditionalOperatorBeforeConditionSpace", GettextCatalog.GetString ("before '?'")),
+				new Option ("ConditionalOperatorAfterConditionSpace", GettextCatalog.GetString ("after '?'")),
+				new Option ("ConditionalOperatorBeforeSeparatorSpace", GettextCatalog.GetString ("before ':'")),
+				new Option ("ConditionalOperatorAfterSeparatorSpace", GettextCatalog.GetString ("after ':'"))
+			));
+			
+			
+			category = whiteSpaceCategory.AppendValues (GettextCatalog.GetString ("Operators"), null);
+		
 			
 			whiteSpaceOptions= new ListStore (typeof (Option), typeof (bool), typeof (bool)); 
 			column = new TreeViewColumn ();

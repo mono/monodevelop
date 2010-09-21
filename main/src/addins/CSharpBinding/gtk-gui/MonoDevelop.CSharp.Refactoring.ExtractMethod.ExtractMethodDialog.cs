@@ -195,7 +195,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			// Container child hbox3.Gtk.Box+BoxChild
 			this.imageWarning = new global::Gtk.Image ();
 			this.imageWarning.Name = "imageWarning";
-			this.imageWarning.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-apply", global::Gtk.IconSize.Button);
+			this.imageWarning.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"gtk-apply",global::Gtk.IconSize.Button);
 			this.hbox3.Add (this.imageWarning);
 			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.imageWarning]));
 			w15.Position = 0;
@@ -231,7 +231,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			this.buttonCancel.UseStock = true;
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
-			this.AddActionWidget (this.buttonCancel, -6);
+			this.AddActionWidget (this.buttonCancel,-6);
 			global::Gtk.ButtonBox.ButtonBoxChild w20 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w19[this.buttonCancel]));
 			w20.Expand = false;
 			w20.Fill = false;
@@ -241,7 +241,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			this.buttonPreview.Name = "buttonPreview";
 			this.buttonPreview.UseUnderline = true;
 			this.buttonPreview.Label = global::Mono.Unix.Catalog.GetString ("_Preview");
-			this.AddActionWidget (this.buttonPreview, 0);
+			this.AddActionWidget (this.buttonPreview,0);
 			global::Gtk.ButtonBox.ButtonBoxChild w21 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w19[this.buttonPreview]));
 			w21.Position = 1;
 			w21.Expand = false;
@@ -254,7 +254,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			this.buttonOk.UseStock = true;
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
-			this.AddActionWidget (this.buttonOk, -5);
+			this.AddActionWidget (this.buttonOk,-5);
 			global::Gtk.ButtonBox.ButtonBoxChild w22 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w19[this.buttonOk]));
 			w22.Position = 2;
 			w22.Expand = false;

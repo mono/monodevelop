@@ -223,11 +223,6 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 		
-		void FormatCommas (AbstractNode parent)
-		{
-			FormatCommas (parent, policy.SpacesBeforeComma, policy.SpacesAfterComma);
-		}
-		
 		public override object VisitFieldDeclaration (FieldDeclaration fieldDeclaration, object data)
 		{
 			FormatCommas (fieldDeclaration, policy.BeforeFieldDeclarationComma, policy.AfterFieldDeclarationComma);
@@ -421,11 +416,15 @@ namespace MonoDevelop.CSharp.Formatting
 		public override object VisitInvocationExpression (InvocationExpression invocationExpression, object data)
 		{
 			ForceSpacesBefore (invocationExpression.LPar, policy.BeforeMethodCallParentheses);
-			
-			ForceSpacesAfter (invocationExpression.LPar, policy.WithinMethodCallParentheses);
-			ForceSpacesBefore (invocationExpression.RPar, policy.WithinMethodCallParentheses);
-			FormatCommas (invocationExpression);
-			
+			if (invocationExpression.Arguments.Any ()) {
+				ForceSpacesAfter (invocationExpression.LPar, policy.WithinMethodCallParentheses);
+				ForceSpacesBefore (invocationExpression.RPar, policy.WithinMethodCallParentheses);
+			} else {
+				ForceSpacesAfter (invocationExpression.LPar, policy.BetweenEmptyMethodCallParentheses);
+				ForceSpacesBefore (invocationExpression.RPar, policy.BetweenEmptyMethodCallParentheses);
+			}
+			FormatCommas (invocationExpression, policy.BeforeMethodCallParameterComma, policy.AfterMethodCallParameterComma);
+
 			return base.VisitInvocationExpression (invocationExpression, data);
 		}
 		
@@ -433,7 +432,8 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			ForceSpacesAfter (indexerExpression.LBracket, policy.SpacesWithinBrackets);
 			ForceSpacesBefore (indexerExpression.RBracket, policy.SpacesWithinBrackets);
-			FormatCommas (indexerExpression);
+			FormatCommas (indexerExpression, policy.BeforeMethodCallParameterComma, policy.AfterMethodCallParameterComma);
+
 			return base.VisitIndexerExpression (indexerExpression, data);
 		}
 
@@ -464,7 +464,8 @@ namespace MonoDevelop.CSharp.Formatting
 				if (node.Role == ForStatement.Roles.Semicolon) {
 					if (node.NextSibling is CSharpTokenNode || node.NextSibling is EmptyStatement)
 						continue;
-					ForceSpacesAfter (node, policy.SpacesAfterSemicolon);
+					ForceSpacesBefore (node, policy.SpacesBeforeForSemicolon);
+					ForceSpacesAfter (node, policy.SpacesAfterForSemicolon);
 				}
 			}
 			
@@ -541,6 +542,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitSizeOfExpression (SizeOfExpression sizeOfExpression, object data)
 		{
+			ForceSpacesBefore (sizeOfExpression.LPar, policy.BeforeSizeOfParentheses);
 			ForceSpacesAfter (sizeOfExpression.LPar, policy.WithinSizeOfParentheses);
 			ForceSpacesBefore (sizeOfExpression.RPar, policy.WithinSizeOfParentheses);
 			return base.VisitSizeOfExpression (sizeOfExpression, data);
@@ -548,6 +550,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitTypeOfExpression (TypeOfExpression typeOfExpression, object data)
 		{
+			ForceSpacesBefore (typeOfExpression.LPar, policy.BeforeTypeOfParentheses);
 			ForceSpacesAfter (typeOfExpression.LPar, policy.WithinTypeOfParentheses);
 			ForceSpacesBefore (typeOfExpression.RPar, policy.WithinTypeOfParentheses);
 			return base.VisitTypeOfExpression (typeOfExpression, data);
@@ -576,7 +579,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitArrayObjectCreateExpression (ArrayObjectCreateExpression arrayObjectCreateExpression, object data)
 		{
-			FormatCommas (arrayObjectCreateExpression);
+			FormatCommas (arrayObjectCreateExpression, policy.BeforeMethodCallParameterComma, policy.AfterMethodCallParameterComma);
 			return base.VisitArrayObjectCreateExpression (arrayObjectCreateExpression, data);
 		}
 		
