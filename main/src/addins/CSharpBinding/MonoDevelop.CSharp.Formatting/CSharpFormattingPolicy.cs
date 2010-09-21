@@ -372,6 +372,8 @@ namespace MonoDevelop.CSharp.Formatting
 		#endregion
 		
 		#region Spaces
+		
+		// Methods
 		[ItemProperty]
 		public bool BeforeMethodCallParentheses { // tested
 			get;
@@ -391,17 +393,52 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool BeforeMethodDeclarationParameterComma {
+		public bool BeforeMethodDeclarationParameterComma { // tested
 			get;
 			set;
 		}
 		
 		[ItemProperty]
-		public bool AfterMethodDeclarationParameterComma {
+		public bool AfterMethodDeclarationParameterComma { // tested
 			get;
 			set;
 		}
 		
+		[ItemProperty]
+		public bool WithinMethodDeclarationParentheses { // tested
+			get;
+			set;
+		}
+		
+		// fields
+		
+		[ItemProperty]
+		public bool BeforeFieldDeclarationComma { // tested
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public bool AfterFieldDeclarationComma { // tested
+			get;
+			set;
+		}
+		
+		// local variables
+		
+		[ItemProperty]
+		public bool BeforeLocalVariableDeclarationComma { // tested
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public bool AfterLocalVariableDeclarationComma { // tested
+			get;
+			set;
+		}
+		
+		// constructors
 		
 		[ItemProperty]
 		public bool BeforeConstructorDeclarationParentheses { // tested
@@ -410,10 +447,61 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
-		public bool BeforeDelegateDeclarationParentheses { // tested
+		public bool BetweenEmptyConstructorDeclarationParentheses { // tested
 			get;
 			set;
 		}
+		
+		[ItemProperty]
+		public bool BeforeConstructorDeclarationParameterComma { // tested
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public bool AfterConstructorDeclarationParameterComma { // tested
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public bool WithinConstructorDeclarationParentheses { // tested
+			get;
+			set;
+		}
+		
+		// delegates
+		
+		[ItemProperty]
+		public bool BeforeDelegateDeclarationParentheses {
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public bool BetweenEmptyDelegateDeclarationParentheses {
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public bool BeforeDelegateDeclarationParameterComma {
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public bool AfterDelegateDeclarationParameterComma {
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public bool WithinDelegateDeclarationParentheses {
+			get;
+			set;
+		}
+		
 		
 		[ItemProperty]
 		public bool NewParentheses { // tested
@@ -529,11 +617,6 @@ namespace MonoDevelop.CSharp.Formatting
 			set;
 		}
 		
-		[ItemProperty]
-		public bool WithinMethodDeclarationParentheses { // tested
-			get;
-			set;
-		}
 		
 		[ItemProperty]
 		public bool WithinIfParentheses { // tested
@@ -740,6 +823,13 @@ namespace MonoDevelop.CSharp.Formatting
 			AlignEmbeddedIfStatements = true;
 			AlignEmbeddedUsingStatements = true;
 			PropertyFormatting = PropertyFormatting.AllowOneLine;
+			BeforeMethodDeclarationParameterComma = false;
+			AfterMethodDeclarationParameterComma = true;
+			BeforeFieldDeclarationComma = false;
+			AfterFieldDeclarationComma = true;
+			BeforeLocalVariableDeclarationComma = false;
+			AfterLocalVariableDeclarationComma = true;
+			
 		}
 		
 		public static CSharpFormattingPolicy Load (FilePath selectedFile)

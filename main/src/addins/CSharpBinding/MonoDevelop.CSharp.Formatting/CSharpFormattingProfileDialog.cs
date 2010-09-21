@@ -37,8 +37,8 @@ namespace MonoDevelop.CSharp.Formatting
 		CSharpFormattingPolicy profile;
 		Gtk.TreeStore indentOptions, bacePositionOptions, newLineOptions;
 		
-		Gtk.TreeStore whiteSpaceCategory = new TreeStore (typeof (string), typeof (Category));
-		ListStore whiteSpaceOptions= new ListStore (typeof (Option)); 
+		Gtk.TreeStore whiteSpaceCategory;
+		ListStore whiteSpaceOptions; 
 		
 		#region Examples
 		const string methodSpaceExample = @"class ClassDeclaration { 
@@ -313,6 +313,7 @@ namespace MonoDevelop.CSharp.Formatting
 			column.SetCellDataFunc (pixbufCellRenderer, RenderIcon);
 			
 			// text column
+			cellRendererText = new CellRendererText ();
 			cellRendererText.Ypad = 1;
 			column.PackStart (cellRendererText, true);
 			column.SetAttributes (cellRendererText, "text", 1);
@@ -440,24 +441,26 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			
 			#region White space options
-			
+			whiteSpaceCategory = new TreeStore (typeof (string), typeof (Category));
+
 			column = new TreeViewColumn ();
 			// pixbuf column
 			column.PackStart (pixbufCellRenderer, false);
 			column.SetCellDataFunc (pixbufCellRenderer, RenderIcon);
 			
 			// text column
-			cellRendererText.Ypad = 1;
 			column.PackStart (cellRendererText, true);
 			column.SetAttributes (cellRendererText, "text", 0);
+			
+			treeviewInsertWhiteSpaceCategory.AppendColumn (column);
 			
 			treeviewInsertWhiteSpaceCategory.Model = whiteSpaceCategory;
 			treeviewInsertWhiteSpaceCategory.HeadersVisible = false;
 			treeviewInsertWhiteSpaceCategory.Selection.Changed += WhitespaceCategoryChanged;
-			treeviewInsertWhiteSpaceCategory.AppendColumn (column);
+			
 			treeviewInsertWhiteSpaceOptions.Model = whiteSpaceOptions;
 			
-			category = whiteSpaceCategory.AppendValues (whiteSpaceCategory, GettextCatalog.GetString ("Declarations"), null);
+			category = whiteSpaceCategory.AppendValues (GettextCatalog.GetString ("Declarations"), null);
 			string example = @"class Example {
 		void Test ()
 		{
@@ -467,7 +470,7 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 		}
 }";
-			whiteSpaceCategory.AppendValues (whiteSpaceCategory, category, GettextCatalog.GetString ("Methods"), new Category (example,
+			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("Methods"), new Category (example,
 				new Option ("BeforeMethodDeclarationParentheses", GettextCatalog.GetString ("before opening parenthesis")),
 				new Option ("WithinMethodDeclarationParentheses", GettextCatalog.GetString ("within parenthesis")),
 				new Option ("BetweenEmptyMethodDeclarationParentheses", GettextCatalog.GetString ("between empty parenthesis")),
@@ -475,13 +478,101 @@ namespace MonoDevelop.CSharp.Formatting
 				new Option ("AfterMethodDeclarationParameterComma", GettextCatalog.GetString ("after comma in parenthesis"))
 			));
 			
+			example = @"class Example {
+		int a, b, c;
+}";
+			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("Fields"), new Category (example,
+				new Option ("BeforeFieldDeclarationComma", GettextCatalog.GetString ("before comma in multiple field declarations")),
+				new Option ("AfterFieldDeclarationComma", GettextCatalog.GetString ("after comma in multiple field declarations"))
+			));
+			
+			example = @"class Example {
+	Example () 
+	{
+	}
+
+	Example (int a, b, c) 
+	{
+	}
+}";
+			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("Constructors"), new Category (example,
+				new Option ("BeforeConstructorDeclarationParentheses", GettextCatalog.GetString ("before opening parenthesis")),
+				new Option ("WithinConstructorDeclarationParentheses", GettextCatalog.GetString ("within parenthesis")),
+				new Option ("BetweenEmptyConstructorDeclarationParentheses", GettextCatalog.GetString ("between empty parenthesis")),
+				new Option ("BeforeConstructorDeclarationParameterComma", GettextCatalog.GetString ("before comma in parenthesis")),
+				new Option ("AfterConstructorDeclarationParameterComma", GettextCatalog.GetString ("after comma in parenthesis"))
+			));
+			
+			example = @"delegate void FooBar (int a, int b, int c);
+delegate void BarFoo ();
+";
+			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("Delegates"), new Category (example,
+				new Option ("BeforeDelegateeclarationParentheses", GettextCatalog.GetString ("before opening parenthesis")),
+				new Option ("WithinDelegateDeclarationParentheses", GettextCatalog.GetString ("within parenthesis")),
+				new Option ("BetweenEmptyDelegateDeclarationParentheses", GettextCatalog.GetString ("between empty parenthesis")),
+				new Option ("BeforeDelegateDeclarationParameterComma", GettextCatalog.GetString ("before comma in parenthesis")),
+				new Option ("AfterDelegateDeclarationParameterComma", GettextCatalog.GetString ("after comma in parenthesis"))
+			));
+			
+			
+			
+			whiteSpaceOptions= new ListStore (typeof (Option), typeof (bool), typeof (bool)); 
 			column = new TreeViewColumn ();
 			// text column
-			cellRendererText.Ypad = 1;
 			column.PackStart (cellRendererText, true);
-			column.SetAttributes (cellRendererText, "text", 0);
+			column.SetCellDataFunc (cellRendererText, delegate (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) {
+				((CellRendererText)cell).Text = ((Option)model.GetValue (iter, 0)).DisplayName;
+			});
+			treeviewInsertWhiteSpaceOptions.AppendColumn (column);
 			
+			column = new TreeViewColumn ();
+			cellRendererCombo = new CellRendererCombo ();
+			cellRendererCombo.Ypad = 1;
+			cellRendererCombo.Mode = CellRendererMode.Editable;
+			cellRendererCombo.TextColumn = 1;
+			cellRendererCombo.Model = comboBoxStore;
+			cellRendererCombo.HasEntry = false;
+			cellRendererCombo.Editable = true;
+
+			cellRendererCombo.EditingStarted += delegate(object o, EditingStartedArgs args) {
+		/*		CodeFormatType type = description.GetCodeFormatType (settings, option);
+				comboBoxStore.Clear ();
+				foreach (KeyValuePair<string, string> v in type.Values) {
+					comboBoxStore.AppendValues (v.Key, GettextCatalog.GetString (v.Value));
+				}*/
+			};
 			
+			column.PackStart (cellRendererCombo, false);
+			column.SetAttributes (cellRendererCombo, "visible", 2);
+			column.SetCellDataFunc (cellRendererCombo,  delegate (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) {
+				((CellRendererCombo)cell).Text = GetValue (((Option)model.GetValue (iter, 0)).PropertyName).ToString ();
+			});
+			
+			cellRendererToggle = new CellRendererToggle ();
+			cellRendererToggle.Ypad = 1;
+			cellRendererToggle.Toggled += delegate(object o, ToggledArgs args) {
+				TreeIter iter;
+				var model = whiteSpaceOptions;
+				if (model.GetIterFromString (out iter, args.Path)) {
+					var option = (Option)model.GetValue (iter, 0);
+					PropertyInfo info = typeof(CSharpFormattingPolicy).GetProperty (option.PropertyName);
+					if (info == null || info.PropertyType != typeof(bool))
+						return;
+					bool value = (bool)info.GetValue (this.profile, null);
+					info.SetValue (profile, !value, null);
+					UpdateExample (texteditor.Document.Text);
+				}
+			};
+			
+			column.PackStart (cellRendererToggle, false);
+			column.SetAttributes (cellRendererToggle, "visible", 1);
+			column.SetCellDataFunc (cellRendererToggle,  delegate (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) {
+				((CellRendererToggle)cell).Active = (bool)GetValue (((Option)model.GetValue (iter, 0)).PropertyName);
+			});
+			
+			treeviewInsertWhiteSpaceOptions.AppendColumn (column);
+			
+			treeviewInsertWhiteSpaceOptions.Model = whiteSpaceOptions;
 			
 			#endregion
 		}
@@ -489,20 +580,24 @@ namespace MonoDevelop.CSharp.Formatting
 		void WhitespaceCategoryChanged (object sender, EventArgs e)
 		{
 			Gtk.TreeSelection treeSelection = (Gtk.TreeSelection)sender;
-			var model = treeSelection.TreeView.Model;
+			Gtk.TreeModel model;
 			Gtk.TreeIter iter;
 			if (treeSelection.GetSelected (out model, out iter)) {
 				var category = (Category)model.GetValue (iter, 1);
+				Console.WriteLine ("category:" + model.GetValue (iter, 1));
 				if (category == null)
 					return;
 				whiteSpaceOptions.Clear ();
 				foreach (var option in category.Options) {
-					whiteSpaceOptions.AppendValues (option);
+					PropertyInfo info = typeof(CSharpFormattingPolicy).GetProperty (option.PropertyName);
+					bool isBool = info.PropertyType == typeof (bool);
+					whiteSpaceOptions.AppendValues (option, isBool, !isBool);
 				}
-				
 				UpdateExample (category.Example);
 			}
 		}
+		
+		
 		
 		Gtk.TreeIter AddOption (Gtk.TreeStore model, string propertyName, string displayName, string example)
 		{
@@ -565,6 +660,12 @@ namespace MonoDevelop.CSharp.Formatting
 			if (string.IsNullOrEmpty (propertyName))
 				return null;
 			return typeof(CSharpFormattingPolicy).GetProperty (propertyName);
+		}
+		
+		object GetValue (string propertyName)
+		{
+			var info = typeof(CSharpFormattingPolicy).GetProperty (propertyName);
+			return info.GetValue (this.profile, null);
 		}
 		
 		void RenderIcon (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) 

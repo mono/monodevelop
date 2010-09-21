@@ -230,16 +230,22 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitFieldDeclaration (FieldDeclaration fieldDeclaration, object data)
 		{
-			FormatCommas (fieldDeclaration);
+			FormatCommas (fieldDeclaration, policy.BeforeFieldDeclarationComma, policy.AfterFieldDeclarationComma);
 			return base.VisitFieldDeclaration (fieldDeclaration, data);
 		}
 		
 		public override object VisitDelegateDeclaration (DelegateDeclaration delegateDeclaration, object data)
 		{
-			CSharpTokenNode lParen = (CSharpTokenNode)delegateDeclaration.GetChildByRole (DelegateDeclaration.Roles.LPar);
-			int offset = this.data.Document.LocationToOffset (lParen.StartLocation.Line, lParen.StartLocation.Column);
-			ForceSpaceBefore (offset, policy.BeforeDelegateDeclarationParentheses);
-			FormatCommas (delegateDeclaration);
+			ForceSpacesBefore (delegateDeclaration.LPar, policy.BeforeDelegateDeclarationParentheses);
+			if (delegateDeclaration.Arguments.Any ()) {
+				ForceSpacesAfter (delegateDeclaration.LPar, policy.WithinDelegateDeclarationParentheses);
+				ForceSpacesBefore (delegateDeclaration.RPar, policy.WithinDelegateDeclarationParentheses);
+			} else {
+				ForceSpacesAfter (delegateDeclaration.LPar, policy.BetweenEmptyDelegateDeclarationParentheses);
+				ForceSpacesBefore (delegateDeclaration.RPar, policy.BetweenEmptyDelegateDeclarationParentheses);
+			}
+			FormatCommas (delegateDeclaration, policy.BeforeDelegateDeclarationParameterComma, policy.AfterDelegateDeclarationParameterComma);
+			
 			return base.VisitDelegateDeclaration (delegateDeclaration, data);
 		}
 		
@@ -260,10 +266,16 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitConstructorDeclaration (ConstructorDeclaration constructorDeclaration, object data)
 		{
-			CSharpTokenNode lParen = (CSharpTokenNode)constructorDeclaration.GetChildByRole (ConstructorDeclaration.Roles.LPar);
-			int offset = this.data.Document.LocationToOffset (lParen.StartLocation.Line, lParen.StartLocation.Column);
-			ForceSpaceBefore (offset, policy.BeforeConstructorDeclarationParentheses);
-			FormatCommas (constructorDeclaration);
+			ForceSpacesBefore (constructorDeclaration.LPar, policy.BeforeConstructorDeclarationParentheses);
+			if (constructorDeclaration.Arguments.Any ()) {
+				ForceSpacesAfter (constructorDeclaration.LPar, policy.WithinConstructorDeclarationParentheses);
+				ForceSpacesBefore (constructorDeclaration.RPar, policy.WithinConstructorDeclarationParentheses);
+			} else {
+				ForceSpacesAfter (constructorDeclaration.LPar, policy.BetweenEmptyConstructorDeclarationParentheses);
+				ForceSpacesBefore (constructorDeclaration.RPar, policy.BetweenEmptyConstructorDeclarationParentheses);
+			}
+			FormatCommas (constructorDeclaration, policy.BeforeConstructorDeclarationParameterComma, policy.AfterConstructorDeclarationParameterComma);
+
 			return base.VisitConstructorDeclaration (constructorDeclaration, data);
 		}
 		
@@ -402,7 +414,7 @@ namespace MonoDevelop.CSharp.Formatting
 			foreach (var initializer in variableDeclarationStatement.Variables) {
 				initializer.AcceptVisitor (this, data);
 			}
-			FormatCommas (variableDeclarationStatement);
+			FormatCommas (variableDeclarationStatement, policy.BeforeLocalVariableDeclarationComma, policy.AfterLocalVariableDeclarationComma);
 			return data;
 		}
 		

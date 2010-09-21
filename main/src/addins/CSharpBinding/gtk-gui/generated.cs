@@ -29,14 +29,14 @@ namespace Stetic
 			return bc;
 		}
 		
-		private void OnSizeRequested (object sender, Gtk.SizeRequestedArgs args)
+		private void OnSizeRequested (object sender,Gtk.SizeRequestedArgs args)
 		{
 			if ((this.child != null)) {
 				args.Requisition = this.child.SizeRequest ();
 			}
 		}
 		
-		private void OnSizeAllocated (object sender, Gtk.SizeAllocatedArgs args)
+		private void OnSizeAllocated (object sender,Gtk.SizeAllocatedArgs args)
 		{
 			if ((this.child != null)) {
 				this.child.Allocation = args.Allocation;
