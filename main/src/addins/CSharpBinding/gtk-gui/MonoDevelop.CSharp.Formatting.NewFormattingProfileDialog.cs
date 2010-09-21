@@ -24,9 +24,11 @@ namespace MonoDevelop.CSharp.Formatting
 			// Widget MonoDevelop.CSharp.Formatting.NewFormattingProfileDialog
 			this.Name = "MonoDevelop.CSharp.Formatting.NewFormattingProfileDialog";
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
+			this.BorderWidth = ((uint)(6));
 			// Internal child MonoDevelop.CSharp.Formatting.NewFormattingProfileDialog.VBox
 			global::Gtk.VBox w1 = this.VBox;
 			w1.Name = "dialog1_VBox";
+			w1.Spacing = 6;
 			w1.BorderWidth = ((uint)(2));
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
 			this.vbox4 = new global::Gtk.VBox ();
@@ -113,7 +115,7 @@ namespace MonoDevelop.CSharp.Formatting
 				this.Child.ShowAll ();
 			}
 			this.DefaultWidth = 370;
-			this.DefaultHeight = 162;
+			this.DefaultHeight = 179;
 			this.label3.MnemonicWidget = this.entryProfileName;
 			this.label4.MnemonicWidget = this.comboboxInitFrom;
 			this.Show ();

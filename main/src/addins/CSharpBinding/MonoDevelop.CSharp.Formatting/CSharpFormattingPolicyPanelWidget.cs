@@ -48,7 +48,6 @@ namespace MonoDevelop.CSharp.Formatting
 			texteditor.Options.ColorScheme = options.ColorScheme;
 			texteditor.Options.ShowFoldMargin = false;
 			texteditor.Options.ShowIconMargin = false;
-			
 			scrolledwindow1.Child = texteditor;
 			ShowAll ();
 			InitComboBox ();
@@ -102,8 +101,9 @@ namespace MonoDevelop.CSharp.Formatting
 		void InitComboBox ()
 		{
 			comboboxProfiles.Clear ();
-			foreach (var p in FormattingProfileService.Profiles)
+			foreach (var p in FormattingProfileService.Profiles) {
 				comboboxProfiles.AppendText (p.Name);
+			}
 			if (FormattingProfileService.Profiles.Count > 0) {
 				comboboxProfiles.Active = 0;
 			} else {

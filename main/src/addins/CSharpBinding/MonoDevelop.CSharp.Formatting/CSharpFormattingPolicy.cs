@@ -28,6 +28,9 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using System.Reflection;
+using System.Xml;
+using System.Text;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -858,12 +861,58 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public static CSharpFormattingPolicy Load (FilePath selectedFile)
 		{
-			throw new NotImplementedException ();
+			using (var stream = System.IO.File.OpenRead (selectedFile)) {
+				return Load (stream);
+			}
+		}
+		
+		public static CSharpFormattingPolicy Load (System.IO.Stream input)
+		{
+			CSharpFormattingPolicy result = new CSharpFormattingPolicy ();
+			result.Name = "noname";
+			using (XmlTextReader reader = new XmlTextReader (input)) {
+				while (reader.Read ()) {
+					if (reader.NodeType == XmlNodeType.Element) {
+						if (reader.LocalName == "Property") {
+							var info = typeof (CSharpFormattingPolicy).GetProperty (reader.GetAttribute ("name"));
+							string valString = reader.GetAttribute ("value");
+							object value;
+							if (info.PropertyType == typeof (bool)) {
+								value = Boolean.Parse (valString);
+							} else {
+								value = Enum.Parse (info.PropertyType, valString);
+							}
+							info.SetValue (result, value, null);
+						} else if (reader.LocalName == "FormattingProfile") {
+							result.Name = reader.GetAttribute ("name");
+						}
+					} else if (reader.NodeType == XmlNodeType.EndElement && reader.LocalName == "FormattingProfile") {
+						Console.WriteLine ("result:" + result.Name);
+						return result;
+					}
+				}
+			}
+			return result;
 		}
 		
 		public void Save (string fileName)
 		{
-			throw new NotImplementedException ();
+			using (var writer = new XmlTextWriter (fileName, Encoding.Default)) {
+				writer.Formatting = System.Xml.Formatting.Indented;
+				writer.Indentation = 1;
+				writer.IndentChar = '\t';
+				writer.WriteStartElement ("FormattingProfile");
+				writer.WriteAttributeString ("name", Name);
+				foreach (PropertyInfo info in typeof (CSharpFormattingPolicy).GetProperties ()) {
+					if (info.GetCustomAttributes (false).Any (o => o.GetType () == typeof(ItemPropertyAttribute))) {
+						writer.WriteStartElement ("Property");
+						writer.WriteAttributeString ("name", info.Name);
+						writer.WriteAttributeString ("value", info.GetValue (this, null).ToString ());
+						writer.WriteEndElement ();
+					}
+				}
+				writer.WriteEndElement ();
+			}
 		}
 		
 		public bool Equals (CSharpFormattingPolicy other)

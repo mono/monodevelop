@@ -33,6 +33,16 @@ namespace MonoDevelop.CSharp.Formatting
 	{
 		static List<CSharpFormattingPolicy> profiles = new List<CSharpFormattingPolicy> ();
 		
+		static FormattingProfileService ()
+		{
+			var asm = typeof (FormattingProfileService).Assembly;
+			foreach (string str in asm.GetManifestResourceNames ()) {
+				if (str.EndsWith ("FormattingProfiles.xml")) {
+					profiles.Add (CSharpFormattingPolicy.Load (asm.GetManifestResourceStream (str)));
+				}
+			}
+		}
+		
 		public static List<CSharpFormattingPolicy> Profiles {
 			get {
 				return profiles;

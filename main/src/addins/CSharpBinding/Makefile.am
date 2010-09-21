@@ -239,6 +239,7 @@ RES =  \
 	md1format.xml \
 	MonoCSharpPolicy.xml \
 	MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml \
+	MonoDevelop.CSharp.Formatting/FormattingProfiles.xml \
 	templates/AssemblyInfo.xft.xml \
 	templates/ConsoleProject.xpt.xml \
 	templates/EmptyCSharpFile.xft.xml \

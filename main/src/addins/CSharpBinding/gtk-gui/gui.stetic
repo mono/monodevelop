@@ -1184,7 +1184,7 @@ Itanium</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.CSharp.Formatting.CSharpFormattingPolicyPanelWidget" design-size="259 300">
+  <widget class="Gtk.Bin" id="MonoDevelop.CSharp.Formatting.CSharpFormattingPolicyPanelWidget" design-size="283 300">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox1">
@@ -1353,14 +1353,16 @@ Itanium</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.CSharp.Formatting.NewFormattingProfileDialog" design-size="370 162">
+  <widget class="Gtk.Dialog" id="MonoDevelop.CSharp.Formatting.NewFormattingProfileDialog" design-size="370 179">
     <property name="MemberName" />
     <property name="WindowPosition">CenterOnParent</property>
+    <property name="BorderWidth">6</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />
+        <property name="Spacing">6</property>
         <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.VBox" id="vbox4">
@@ -1479,11 +1481,13 @@ Itanium</property>
   <widget class="Gtk.Dialog" id="MonoDevelop.CSharp.Formatting.CSharpFormattingProfileDialog" design-size="880 551">
     <property name="MemberName" />
     <property name="WindowPosition">CenterOnParent</property>
+    <property name="BorderWidth">6</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />
+        <property name="Spacing">6</property>
         <property name="BorderWidth">2</property>
         <child>
           <widget class="Gtk.VBox" id="vbox5">

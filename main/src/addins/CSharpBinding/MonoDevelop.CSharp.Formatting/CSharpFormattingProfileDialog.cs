@@ -103,7 +103,7 @@ namespace MonoDevelop.CSharp.Formatting
 			} else {
 				using (object o = new object ()) {
 					while (b < a) {
-						Console.WriteLine (b++);
+						ConentryNamesole.WriteLine (b++);
 					}
 				}
 			}
@@ -268,6 +268,11 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			this.Build ();
 			this.profile = profile;
+			entryName.Text = profile.Name;
+			entryName.Changed += delegate {
+				profile.Name = entryName.Text;
+			};
+			
 			notebookCategories.ShowTabs = false;
 			comboboxCategories.AppendText (GettextCatalog.GetString ("Indentation"));
 			comboboxCategories.AppendText (GettextCatalog.GetString ("Braces"));

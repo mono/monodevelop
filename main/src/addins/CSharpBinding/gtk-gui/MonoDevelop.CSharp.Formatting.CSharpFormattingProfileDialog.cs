@@ -150,9 +150,11 @@ namespace MonoDevelop.CSharp.Formatting
 			// Widget MonoDevelop.CSharp.Formatting.CSharpFormattingProfileDialog
 			this.Name = "MonoDevelop.CSharp.Formatting.CSharpFormattingProfileDialog";
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
+			this.BorderWidth = ((uint)(6));
 			// Internal child MonoDevelop.CSharp.Formatting.CSharpFormattingProfileDialog.VBox
 			global::Gtk.VBox w1 = this.VBox;
 			w1.Name = "dialog1_VBox";
+			w1.Spacing = 6;
 			w1.BorderWidth = ((uint)(2));
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
 			this.vbox5 = new global::Gtk.VBox ();
