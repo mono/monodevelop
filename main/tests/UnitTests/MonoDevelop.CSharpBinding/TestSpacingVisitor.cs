@@ -635,7 +635,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 		
 		
 		[Test()]
-		public void TestSpacesAfterSemicolon ()
+		public void TestSpacesAfterForSemicolon ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
@@ -646,7 +646,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.SpacesAfterSemicolon = true;
+			policy.SpacesAfterForSemicolon = true;
 			
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
@@ -654,6 +654,27 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			
 			Assert.AreEqual (@"for (int i; true; i++)", data.Document.GetTextBetween (i1, i2));
+		}
+		[Test()]
+		public void TestSpacesBeforeForSemicolon ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		for (int i;true;i++) ;
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.SpacesBeforeForSemicolon = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
+			int i1 = data.Document.Text.LastIndexOf ("for");
+			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
+			
+			Assert.AreEqual (@"for (int i ;true ;i++)", data.Document.GetTextBetween (i1, i2));
 		}
 		
 		[Test()]
@@ -901,6 +922,27 @@ return (Test)null;
 		}
 		
 		[Test()]
+		public void TestBeforeSizeOfParentheses ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		a = sizeof(int);
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.WithinSizeOfParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
+			int i1 = data.Document.Text.LastIndexOf ("sizeof");
+			int i2 = data.Document.Text.LastIndexOf ("(") + "(".Length;
+			Assert.AreEqual (@"sizeof (", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		[Test()]
 		public void TestWithinTypeOfParenthesesSpace ()
 		{
 			TextEditorData data = new TextEditorData ();
@@ -919,6 +961,27 @@ return (Test)null;
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"( int )", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		[Test()]
+		public void TestBeforeTypeOfParentheses ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		a = typeof(int);
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.BeforeTypeOfParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
+			int i1 = data.Document.Text.LastIndexOf ("typeof");
+			int i2 = data.Document.Text.LastIndexOf ("(") + "(".Length;
+			Assert.AreEqual (@"typeof (", data.Document.GetTextBetween (i1, i2));
 		}
 		
 		[Test()]
@@ -1030,35 +1093,6 @@ return (Test)null;
 		}
 		
 		[Test()]
-		public void TestSpacesBeforeComma ()
-		{
-			TextEditorData data = new TextEditorData ();
-			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test {
-	void TestMe ()
-	{
-		int[] i = new int[] { 1,3,3,7 };
-	}
-}";
-			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.SpacesBeforeComma = true;
-			policy.SpacesAfterComma = false;
-			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
-			int i1 = data.Document.Text.LastIndexOf ("new");
-			int i2 = data.Document.Text.LastIndexOf (";") + ";".Length;
-			Assert.AreEqual (@"new int[] { 1 ,3 ,3 ,7 };", data.Document.GetTextBetween (i1, i2));
-			policy.SpacesBeforeComma = false;
-			
-			compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
-			i1 = data.Document.Text.LastIndexOf ("new");
-			i2 = data.Document.Text.LastIndexOf (";") + ";".Length;
-			Assert.AreEqual (@"new int[] { 1,3,3,7 };", data.Document.GetTextBetween (i1, i2));
-		}
-		
-		[Test()]
 		public void TestFieldDeclarationComma ()
 		{
 			TextEditorData data = new TextEditorData ();
@@ -1144,58 +1178,6 @@ return (Test)null;
 			Assert.AreEqual (@"(int a,int b,int c)", data.Document.GetTextBetween (i1, i2));
 		}
 		
-		[Test()]
-		public void TestCommaSpacesInMethodCall ()
-		{
-			TextEditorData data = new TextEditorData ();
-			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test {
-	int Test {
-		get {
-			return Foo (a,b,c);
-		}
-	}
-	
-}";
-			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.SpacesBeforeComma = true;
-			policy.SpacesAfterComma = true;
-			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
-			int i1 = data.Document.Text.LastIndexOf ("a");
-			int i2 = data.Document.Text.LastIndexOf ("c") + "c".Length;
-			Assert.AreEqual (@"a , b , c", data.Document.GetTextBetween (i1, i2));
-		}
-		
-		[Test()]
-		public void TestSpacesAfterComma ()
-		{
-			TextEditorData data = new TextEditorData ();
-			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test {
-	void TestMe ()
-	{
-		int[] i = new int[] { 1,3,3,7 };
-	}
-}";
-			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.SpacesBeforeComma = false;
-			policy.SpacesAfterComma = true;
-			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
-			int i1 = data.Document.Text.LastIndexOf ("new");
-			int i2 = data.Document.Text.LastIndexOf (";") + ";".Length;
-			Assert.AreEqual (@"new int[] { 1, 3, 3, 7 };", data.Document.GetTextBetween (i1, i2));
-			policy.SpacesAfterComma = false;
-			
-			compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
-			i1 = data.Document.Text.LastIndexOf ("new");
-			i2 = data.Document.Text.LastIndexOf (";") + ";".Length;
-			Assert.AreEqual (@"new int[] { 1,3,3,7 };", data.Document.GetTextBetween (i1, i2));
-		}
 		
 		[Test()]
 		public void TestSpacesInLambdaExpression ()
@@ -1373,7 +1355,6 @@ return (Test)null;
 		#endregion
 		
 		#region Delegates
-		
 		[Test()]
 		public void TestBeforeDelegateDeclarationParentheses ()
 		{
@@ -1476,6 +1457,140 @@ return (Test)null;
 			data.Document.Text = @"delegate void Test();";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.BetweenEmptyDelegateDeclarationParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
+			int i1 = data.Document.Text.LastIndexOf ("(");
+			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
+			Assert.AreEqual (@"( )", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		#endregion
+		
+		#region Method invocations
+		[Test()]
+		public void TestBeforeMethodCallParentheses ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class FooBar
+{
+	public void Foo ()
+	{
+		Test();
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.BeforeMethodCallParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
+			Assert.AreEqual (@"class FooBar
+{
+	public void Foo ()
+	{
+		Test ();
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestBeforeMethodCallParameterComma ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class FooBar
+{
+	public void Foo ()
+	{
+		Test(a,b,c);
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.BeforeMethodCallParameterComma = true;
+			policy.AfterMethodCallParameterComma = false;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
+			int i1 = data.Document.Text.LastIndexOf ("(");
+			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
+			Assert.AreEqual (@"(a ,b ,c)", data.Document.GetTextBetween (i1, i2));
+			compilationUnit = new CSharpParser ().Parse (data);
+			
+			policy.BeforeMethodCallParameterComma = false;
+			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
+			i1 = data.Document.Text.LastIndexOf ("(");
+			i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
+			Assert.AreEqual (@"(a,b,c)", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		[Test()]
+		public void TestAfterMethodCallParameterComma ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class FooBar
+{
+	public void Foo ()
+	{
+		Test(a,b,c);
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.BeforeMethodCallParameterComma = false;
+			policy.AfterMethodCallParameterComma = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
+			int i1 = data.Document.Text.LastIndexOf ("(");
+			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
+			Assert.AreEqual (@"(a, b, c)", data.Document.GetTextBetween (i1, i2));
+			compilationUnit = new CSharpParser ().Parse (data);
+			
+			policy.AfterMethodCallParameterComma = false;
+			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
+			i1 = data.Document.Text.LastIndexOf ("(");
+			i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
+			Assert.AreEqual (@"(a,b,c)", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		[Test()]
+		public void TestWithinMethodCallParentheses ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class FooBar
+{
+	public void Foo ()
+	{
+		Test(a);
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.WithinMethodCallParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
+			int i1 = data.Document.Text.LastIndexOf ("(");
+			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
+			Assert.AreEqual (@"( a )", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		[Test()]
+		public void TestBetweenEmptyMethodCallParentheses ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class FooBar
+{
+	public void Foo ()
+	{
+		Test();
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.BetweenEmptyMethodCallParentheses = true;
 			
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
