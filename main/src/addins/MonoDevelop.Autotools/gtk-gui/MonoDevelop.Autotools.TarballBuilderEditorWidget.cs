@@ -80,7 +80,6 @@ namespace MonoDevelop.Autotools
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.folderEntry = new global::MonoDevelop.Components.FolderEntry ();
 			this.folderEntry.Name = "folderEntry";
-			this.folderEntry.BrowserTitle = "Target Directory";
 			this.hbox1.Add (this.folderEntry);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.folderEntry]));
 			w2.Position = 1;
@@ -290,7 +289,6 @@ namespace MonoDevelop.Autotools
 				this.Child.ShowAll ();
 			}
 			this.Show ();
-			this.folderEntry.PathChanged += new global::System.EventHandler (this.OnFolderEntryPathChanged);
 			this.radioUseExisting.Clicked += new global::System.EventHandler (this.OnRadioUseExistingClicked);
 			this.radioGenerate.Clicked += new global::System.EventHandler (this.OnRadioGenerateClicked);
 			this.comboConfigs.Changed += new global::System.EventHandler (this.OnComboConfigsChanged);

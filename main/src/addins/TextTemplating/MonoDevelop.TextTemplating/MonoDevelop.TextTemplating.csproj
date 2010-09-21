@@ -45,7 +45,6 @@
     <Compile Include="TextTemplatingService.cs" />
     <Compile Include="TextTemplatingFilePreprocessor.cs" />
     <Compile Include="TextTemplatingFileGenerator.cs" />
-    <Compile Include="MonoDevelopTemplatingHost.cs" />
     <Compile Include="ThreadAsyncOperation.cs" />
   </ItemGroup>
   <ItemGroup>

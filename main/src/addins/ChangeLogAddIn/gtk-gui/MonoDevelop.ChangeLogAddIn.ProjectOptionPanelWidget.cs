@@ -193,9 +193,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			this.vbox1.Spacing = 6;
 			this.vbox1.BorderWidth = ((uint)(9));
 			// Container child vbox1.Gtk.Box+BoxChild
-			this.messageWidget = new global::MonoDevelop.VersionControl.CommitMessageStylePanelWidget ();
-			this.messageWidget.Events = ((global::Gdk.EventMask)(256));
-			this.messageWidget.Name = "messageWidget";
+			this.messageWidget = null;
 			this.vbox1.Add (this.messageWidget);
 			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.messageWidget]));
 			w15.Position = 0;
@@ -219,7 +217,6 @@ namespace MonoDevelop.ChangeLogAddIn
 			this.oneChangeLogInEachDirectoryRadioButton.Toggled += new global::System.EventHandler (this.ValueChanged);
 			this.checkVersionControl.Toggled += new global::System.EventHandler (this.ValueChanged);
 			this.checkRequireOnCommit.Toggled += new global::System.EventHandler (this.ValueChanged);
-			this.messageWidget.Changed += new global::System.EventHandler (this.OnMessageWidgetChanged);
 		}
 	}
 }

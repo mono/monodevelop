@@ -32,6 +32,7 @@ using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.AnalysisCore.Gui;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AnalysisCore
 {
@@ -91,8 +92,8 @@ namespace MonoDevelop.AnalysisCore
 		
 		protected override void Run (object dataItem)
 		{
-			var action = (IAnalysisFixAction) dataItem;
-			action.Fix ();
+			//var action = (IAnalysisFixAction) dataItem;
+			//action.Fix ();
 		}
 		
 		public static bool GetFixes (out Document document, out IList<FixableResult> results)

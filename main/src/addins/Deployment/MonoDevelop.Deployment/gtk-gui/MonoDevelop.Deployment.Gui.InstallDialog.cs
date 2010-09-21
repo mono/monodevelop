@@ -51,7 +51,6 @@ namespace MonoDevelop.Deployment.Gui
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.folderEntry = new global::MonoDevelop.Components.FolderEntry ();
 			this.folderEntry.Name = "folderEntry";
-			this.folderEntry.BrowserTitle = "Select Directory";
 			this.vbox1.Add (this.folderEntry);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.folderEntry]));
 			w3.Position = 1;
@@ -128,7 +127,6 @@ namespace MonoDevelop.Deployment.Gui
 			this.DefaultWidth = 453;
 			this.DefaultHeight = 193;
 			this.Show ();
-			this.folderEntry.PathChanged += new global::System.EventHandler (this.OnFolderEntryPathChanged);
 			this.nameEntry.Changed += new global::System.EventHandler (this.OnNameEntryChanged);
 		}
 	}

@@ -168,7 +168,6 @@ namespace MonoDevelop.Deployment.Gui
 			this.Show ();
 			this.entryZip.Changed += new global::System.EventHandler (this.OnEntryZipChanged);
 			this.comboZip.Changed += new global::System.EventHandler (this.OnComboZipChanged);
-			this.folderEntry.PathChanged += new global::System.EventHandler (this.OnFolderEntryPathChanged);
 			this.comboPlatform.Changed += new global::System.EventHandler (this.OnComboPlatformChanged);
 			this.comboConfiguration.Changed += new global::System.EventHandler (this.OnComboConfigurationChanged);
 		}

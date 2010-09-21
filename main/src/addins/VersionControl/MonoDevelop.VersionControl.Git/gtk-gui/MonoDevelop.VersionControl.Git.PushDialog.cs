@@ -81,7 +81,6 @@ namespace MonoDevelop.VersionControl.Git
 			this.changeList = new global::MonoDevelop.VersionControl.Views.ChangeSetView ();
 			this.changeList.CanFocus = true;
 			this.changeList.Name = "changeList";
-			this.changeList.ShadowType = ((global::Gtk.ShadowType)(1));
 			this.vbox2.Add (this.changeList);
 			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.changeList]));
 			w7.Position = 1;

@@ -159,6 +159,7 @@ namespace MonoDevelop.SourceEditor
 			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table[this.hbox1]));
 			w13.LeftAttach = ((uint)(1));
 			w13.RightAttach = ((uint)(2));
+			w13.XOptions = ((global::Gtk.AttachOptions)(4));
 			w13.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table.Gtk.Table+TableChild
 			this.hbox2 = new global::Gtk.HBox ();
@@ -240,6 +241,7 @@ namespace MonoDevelop.SourceEditor
 			w23.BottomAttach = ((uint)(2));
 			w23.LeftAttach = ((uint)(1));
 			w23.RightAttach = ((uint)(2));
+			w23.XOptions = ((global::Gtk.AttachOptions)(4));
 			w23.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.Add (this.table);
 			if ((this.Child != null)) {

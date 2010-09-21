@@ -62,23 +62,17 @@ namespace MonoDevelop.AnalysisCore.Rules
 		
 		public static IEnumerable<IMethod> GetMethods (IType input)
 		{
-			foreach (var meth in input.Methods) {
-				yield return meth;
-			}
+			return input.Methods;
 		}
 		
 		public static IEnumerable<IProperty> GetProperties (IType input)
 		{
-			foreach (var prop in input.Properties) {
-				yield return prop;
-			}	
+			return input.Properties;
 		}
 		
 		public static IEnumerable<IField> GetFields (IType input)
 		{
-			foreach (var field in input.Fields) {
-				yield return field;
-			}
+			return input.Fields;
 		}	
 	}
 }

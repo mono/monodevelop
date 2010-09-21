@@ -1,0 +1,33 @@
+
+<Addin id          = "Navigation"
+       namespace   = "MonoDevelop"
+       name        = "Navigation"
+       author      = "Nikhil Sarda"
+       copyright   = "MIT X11"
+       url         = "http://www.monodevelop.com"
+       description = "Code navigation" 
+       category    = "IDE extensions"
+       version     = "2.4">
+
+	<Dependencies>
+		<Addin id="Core" version="2.4"/>
+		<Addin id="Ide" version="2.4"/>
+		<Addin id="SourceEditor2" version="2.4"/>
+		<Addin id="Refactoring" version="2.4"/>
+	</Dependencies>
+	
+	<Extension path = "/MonoDevelop/Ide/Commands/Refactoring">
+		<Command id = "MonoDevelop.Navigation.NavigationCommands.ShowNavigationOptions" type="array"
+			defaultHandler="MonoDevelop.Navigation.NavigationCommandHandler"
+			_label = "Navigation"
+		/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
+		<ItemSet id = "Navigation" _label = "Navigation" autohide="true"
+			insertbefore="MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations">
+			<CommandItem id = "MonoDevelop.Navigation.NavigationCommands.ShowNavigationOptions" />
+		</ItemSet>
+	</Extension>
+
+</Addin>

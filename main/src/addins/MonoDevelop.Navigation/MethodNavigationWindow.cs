@@ -1,8 +1,8 @@
 // 
-// AssociationBetweenClasses.cs
+// MethodNavigationWindow.cs
 //  
 // Author:
-//       Nikhil Sarda <diff.operator@gmail.com>
+//       Nikhil Sarda <diff.operator>
 // 
 // Copyright (c) 2010 Nikhil Sarda
 // 
@@ -24,12 +24,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-namespace MonoDevelop.CodeMetrics
+using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Projects.Dom;
+namespace MonoDevelop.Navigation
 {
-	public class AssociationBetweenClasses
+	public partial class MethodNavigationWindow : Gtk.Window
 	{
-		public AssociationBetweenClasses ()
+		public MethodNavigationWindow (IType method, CodeCompletionContext completionContext) : base(Gtk.WindowType.Toplevel)
 		{
+			this.Build ();
+		}
+		
+		public static void ShowMethodNavigationWnd (IType method, CodeCompletionContext completionContext)
+		{
+			if (method != null) {
+				MethodNavigationWindow wnd = new MethodNavigationWindow (method, completionContext);
+			}
 		}
 	}
 }

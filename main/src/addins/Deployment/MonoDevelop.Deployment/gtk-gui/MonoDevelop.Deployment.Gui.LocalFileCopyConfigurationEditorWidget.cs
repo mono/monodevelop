@@ -44,7 +44,6 @@ namespace MonoDevelop.Deployment.Gui
 				this.Child.ShowAll ();
 			}
 			this.Show ();
-			this.folderEntry.PathChanged += new global::System.EventHandler (this.OnFolderEntryPathChanged);
 		}
 	}
 }

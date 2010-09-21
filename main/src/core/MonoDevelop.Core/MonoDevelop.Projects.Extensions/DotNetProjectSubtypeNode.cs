@@ -148,10 +148,10 @@ namespace MonoDevelop.Projects.Extensions
 			base.Read (elem);
 		}
 		
-		[NodeAttribute ("language")]
+		//[NodeAttribute ("language")]
 		public string Language { get; set; }
 		
-		[NodeAttribute ("projects")]
+		//[NodeAttribute ("projects")]
 		public string Projects { get; set; }
 		
 		public bool IsAdd { get; private set; }

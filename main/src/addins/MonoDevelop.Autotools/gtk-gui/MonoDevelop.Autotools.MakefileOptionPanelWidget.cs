@@ -248,7 +248,6 @@ namespace MonoDevelop.Autotools
 			this.fileEntryMakefilePath = new global::MonoDevelop.Components.FileEntry ();
 			this.fileEntryMakefilePath.CanFocus = true;
 			this.fileEntryMakefilePath.Name = "fileEntryMakefilePath";
-			this.fileEntryMakefilePath.BrowserTitle = "";
 			this.table1.Add (this.fileEntryMakefilePath);
 			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1[this.fileEntryMakefilePath]));
 			w6.LeftAttach = ((uint)(1));

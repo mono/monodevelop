@@ -99,10 +99,13 @@ namespace MonoDevelop.AnalysisCore.Extensions
 				var outputType = AnalysisExtensions.GetType (Output);
 				
 				string methodName = funcName.Substring (dotIdx + 1);
+				
 				var methodInfo = type.GetMethod (methodName,
 					BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
 					Type.DefaultBinder, new Type[] { inputType}, 
 					new ParameterModifier [] { new ParameterModifier () });
+				
+				Console.WriteLine(type.ToString() +" " + methodName + " " + outputType.ToString());
 				
 				if (methodInfo == null)
 					throw new InvalidOperationException ("Rule func ' " + funcName + "' could not be resolved " + GetErrSource ());
