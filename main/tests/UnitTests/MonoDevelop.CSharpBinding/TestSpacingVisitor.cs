@@ -668,6 +668,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.SpacesBeforeForSemicolon = true;
+			policy.SpacesAfterForSemicolon = false;
 			
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
@@ -933,7 +934,7 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.WithinSizeOfParentheses = true;
+			policy.BeforeSizeOfParentheses = true;
 			
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
