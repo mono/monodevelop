@@ -57,11 +57,18 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		// Todo: Arguments should not be nodes, instead it should be expressions, change when it's implemented.
-		public IEnumerable<INode> Arguments { 
+		public IEnumerable<ParameterDeclarationExpression> Arguments { 
 			get {
-				return base.GetChildrenByRole (Roles.Argument).Cast <INode>();
+				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclarationExpression> ();
 			}
+		}
+		
+		public CSharpTokenNode LPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
+		}
+		
+		public CSharpTokenNode RPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
 		}
 		
 		public IEnumerable<AttributeSection> Attributes { 

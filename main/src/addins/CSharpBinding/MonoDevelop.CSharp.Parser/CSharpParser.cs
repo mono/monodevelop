@@ -227,8 +227,11 @@ namespace MonoDevelop.CSharp.Parser
 						newDelegate.AddChild (new CSharpTokenNode (Convert (typeArgLocation[1]), 1), MemberReferenceExpression.Roles.RChevron);
 					AddConstraints (newDelegate, d);
 				}
-				if (location != null) {
+				if (location != null) 
 					newDelegate.AddChild (new CSharpTokenNode (Convert (location[1]), 1), DelegateDeclaration.Roles.LPar);
+				AddParameter (newDelegate, d.Parameters);
+				
+				if (location != null) {
 					newDelegate.AddChild (new CSharpTokenNode (Convert (location[2]), 1), DelegateDeclaration.Roles.RPar);
 					newDelegate.AddChild (new CSharpTokenNode (Convert (location[3]), 1), DelegateDeclaration.Roles.Semicolon);
 				}
@@ -659,10 +662,12 @@ namespace MonoDevelop.CSharp.Parser
 				var location = LocationsBag.GetMemberLocation (c);
 				AddModifiers (newConstructor, location);
 				newConstructor.AddChild (new Identifier (c.MemberName.Name, Convert (c.MemberName.Location)), AbstractNode.Roles.Identifier);
-				if (location != null) {
+				if (location != null) 
 					newConstructor.AddChild (new CSharpTokenNode (Convert (location[0]), 1), MethodDeclaration.Roles.LPar);
+				
+				AddParameter (newConstructor, c.ParameterInfo);
+				if (location != null) 
 					newConstructor.AddChild (new CSharpTokenNode (Convert (location[1]), 1), MethodDeclaration.Roles.RPar);
-				}
 				
 				if (c.Block != null)
 					newConstructor.AddChild ((INode)c.Block.Accept (this), ConstructorDeclaration.Roles.Body);
