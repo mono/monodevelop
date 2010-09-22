@@ -97,6 +97,7 @@ namespace MonoDevelop.CSharp.Formatting
 		public override void OnTheFlyFormat (PolicyContainer policyParent, object textEditorData, int startOffset, int endOffset)
 		{
 			TextEditorData data = (TextEditorData)textEditorData;
+			
 			CSharp.Dom.CompilationUnit compilationUnit = new MonoDevelop.CSharp.Parser.CSharpParser ().Parse (data);
 			IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
 			CSharpFormattingPolicy policy = policyParent != null ? policyParent.Get<CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
@@ -127,6 +128,7 @@ namespace MonoDevelop.CSharp.Formatting
 			line = data.GetLine (lineNumber);
 			if (line == null)
 				return;
+			bool wholeDocument = end >= data.Document.Length;
 			do {
 				string indent = line.GetIndentation (data.Document);
 				StringBuilder newIndent = new StringBuilder ();
@@ -140,7 +142,6 @@ namespace MonoDevelop.CSharp.Formatting
 						} else {
 							newIndent.Append (ch);
 						}
-							
 					}
 				} else {
 					for (int i = 0; i < indent.Length; i++) {
@@ -161,15 +162,26 @@ namespace MonoDevelop.CSharp.Formatting
 						}
 					}
 				}
-				string replaceWith = newIndent.ToString ();
-				if (indent != replaceWith)
-					data.Replace (line.Offset, (indent ?? "").Length, replaceWith);
-				if (line.DelimiterLength != 0)
+				
+				if (line.DelimiterLength != 0) {
 					data.Replace (line.Offset + line.EditableLength, line.DelimiterLength, data.EolMarker);
+					if (!wholeDocument) {
+						end -= line.DelimiterLength;
+						end += data.EolMarker.Length;
+					}
+				}
+				
+				string replaceWith = newIndent.ToString ();
+				if (indent != replaceWith) {
+					int count = (indent ?? "").Length;
+					data.Replace (line.Offset, count, replaceWith);
+					if (!wholeDocument)
+						end = end - count + replaceWith.Length;
+				}
 				
 				lineNumber++;
 				line = data.GetLine (lineNumber);
-			} while (line != null && line.EndOffset <= end);
+			} while (line != null && (wholeDocument || line.EndOffset <= end));
 		}
 		
 		protected override string InternalFormat (PolicyContainer policyParent, string mimeType, string input, int startOffset, int endOffset)
@@ -187,6 +199,9 @@ namespace MonoDevelop.CSharp.Formatting
 			data.Options.DefaultEolMarker = textPolicy.GetEolMarker ();
 			
 			CorrectFormatting (data, 0, data.Document.Length);
+			startOffset = 0;
+			endOffset = data.Document.Length;
+			
 			CSharp.Dom.CompilationUnit compilationUnit = new MonoDevelop.CSharp.Parser.CSharpParser ().Parse (data);
 			CSharpFormattingPolicy policy = policyParent != null ? policyParent.Get<CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
 			
