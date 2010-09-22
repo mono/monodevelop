@@ -268,7 +268,9 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			this.Build ();
 			this.profile = profile;
+			this.Title = profile.IsBuiltIn ? GettextCatalog.GetString ("Show built-in profile") : GettextCatalog.GetString ("Edit Profile");
 			entryName.Text = profile.Name;
+			entryName.Sensitive = !profile.IsBuiltIn;
 			entryName.Changed += delegate {
 				profile.Name = entryName.Text;
 			};
@@ -324,23 +326,18 @@ namespace MonoDevelop.CSharp.Formatting
 			cellRendererCombo.TextColumn = 1;
 			cellRendererCombo.Model = comboBoxStore;
 			cellRendererCombo.HasEntry = false;
-			cellRendererCombo.Editable = true;
+			cellRendererCombo.Editable = !profile.IsBuiltIn;
 
-			cellRendererCombo.EditingStarted += delegate(object o, EditingStartedArgs args) {
-		/*		CodeFormatType type = description.GetCodeFormatType (settings, option);
-				comboBoxStore.Clear ();
-				foreach (KeyValuePair<string, string> v in type.Values) {
-					comboBoxStore.AppendValues (v.Key, GettextCatalog.GetString (v.Value));
-				}*/
-			};
-						
+			cellRendererCombo.Edited +=  new ComboboxEditedHandler (this, indentOptions).ComboboxEdited;
+			
 			column.PackStart (cellRendererCombo, false);
 			column.SetAttributes (cellRendererCombo, "visible", comboVisibleColumn);
 			column.SetCellDataFunc (cellRendererCombo, ComboboxDataFunc);
 			
 			CellRendererToggle cellRendererToggle = new CellRendererToggle ();
 			cellRendererToggle.Ypad = 1;
-			cellRendererToggle.Toggled += CellRendererToggleToggled;
+			cellRendererToggle.Activatable = !profile.IsBuiltIn;
+			cellRendererToggle.Toggled += new CellRendererToggledHandler (this, indentOptions).Toggled;
 			column.PackStart (cellRendererToggle, false);
 			column.SetAttributes (cellRendererToggle, "visible", toggleVisibleColumn);
 			column.SetCellDataFunc (cellRendererToggle, ToggleDataFunc);
@@ -388,12 +385,23 @@ namespace MonoDevelop.CSharp.Formatting
 			treeviewBracePositions.AppendColumn (column);
 			
 			column = new TreeViewColumn ();
+			cellRendererCombo = new CellRendererCombo ();
+			cellRendererCombo.Ypad = 1;
+			cellRendererCombo.Mode = CellRendererMode.Editable;
+			cellRendererCombo.TextColumn = 1;
+			cellRendererCombo.Model = comboBoxStore;
+			cellRendererCombo.HasEntry = false;
+			cellRendererCombo.Editable = !profile.IsBuiltIn;
+			cellRendererCombo.Edited += new ComboboxEditedHandler (this, bacePositionOptions).ComboboxEdited;
+
 			column.PackStart (cellRendererCombo, false);
 			column.SetAttributes (cellRendererCombo, "visible", comboVisibleColumn);
 			column.SetCellDataFunc (cellRendererCombo, ComboboxDataFunc);
 			
+			cellRendererToggle = new CellRendererToggle ();
+			cellRendererToggle.Activatable = !profile.IsBuiltIn;
 			cellRendererToggle.Ypad = 1;
-			cellRendererToggle.Toggled += CellRendererToggleToggled;
+			cellRendererToggle.Toggled += new CellRendererToggledHandler (this, bacePositionOptions).Toggled;
 			column.PackStart (cellRendererToggle, false);
 			column.SetAttributes (cellRendererToggle, "visible", toggleVisibleColumn);
 			column.SetCellDataFunc (cellRendererToggle, ToggleDataFunc);
@@ -483,12 +491,23 @@ namespace MonoDevelop.CSharp.Formatting
 			treeviewNewLines.AppendColumn (column);
 			
 			column = new TreeViewColumn ();
+			cellRendererCombo = new CellRendererCombo ();
+			cellRendererCombo.Ypad = 1;
+			cellRendererCombo.Mode = CellRendererMode.Editable;
+			cellRendererCombo.TextColumn = 1;
+			cellRendererCombo.Model = comboBoxStore;
+			cellRendererCombo.HasEntry = false;
+			cellRendererCombo.Editable = !profile.IsBuiltIn;
+			cellRendererCombo.Edited += new ComboboxEditedHandler (this, newLineOptions).ComboboxEdited;
+
 			column.PackStart (cellRendererCombo, false);
 			column.SetAttributes (cellRendererCombo, "visible", comboVisibleColumn);
 			column.SetCellDataFunc (cellRendererCombo, ComboboxDataFunc);
 			
+			cellRendererToggle = new CellRendererToggle ();
+			cellRendererToggle.Activatable = !profile.IsBuiltIn;
 			cellRendererToggle.Ypad = 1;
-			cellRendererToggle.Toggled += CellRendererToggleToggled;
+			cellRendererToggle.Toggled += new CellRendererToggledHandler (this, newLineOptions).Toggled;
 			column.PackStart (cellRendererToggle, false);
 			column.SetAttributes (cellRendererToggle, "visible", toggleVisibleColumn);
 			column.SetCellDataFunc (cellRendererToggle, ToggleDataFunc);
@@ -696,14 +715,20 @@ delegate void BarFoo ();
 			cellRendererCombo.TextColumn = 1;
 			cellRendererCombo.Model = comboBoxStore;
 			cellRendererCombo.HasEntry = false;
-			cellRendererCombo.Editable = true;
+			cellRendererCombo.Editable = !profile.IsBuiltIn;
 
-			cellRendererCombo.EditingStarted += delegate(object o, EditingStartedArgs args) {
-		/*		CodeFormatType type = description.GetCodeFormatType (settings, option);
-				comboBoxStore.Clear ();
-				foreach (KeyValuePair<string, string> v in type.Values) {
-					comboBoxStore.AppendValues (v.Key, GettextCatalog.GetString (v.Value));
-				}*/
+			cellRendererCombo.Edited += delegate(object o, EditedArgs args) {
+				TreeIter iter;
+				var model = whiteSpaceOptions;
+				if (model.GetIterFromString (out iter, args.Path)) {
+					var option = (Option)model.GetValue (iter, 0);
+					PropertyInfo info = typeof(CSharpFormattingPolicy).GetProperty (option.PropertyName);
+					if (info == null)
+						return;
+					var value = Enum.Parse (info.PropertyType, args.NewText);
+					info.SetValue (profile, value, null);
+					UpdateExample (texteditor.Document.Text);
+				}
 			};
 			
 			column.PackStart (cellRendererCombo, false);
@@ -713,6 +738,7 @@ delegate void BarFoo ();
 			});
 			
 			cellRendererToggle = new CellRendererToggle ();
+			cellRendererToggle.Activatable = !profile.IsBuiltIn;
 			cellRendererToggle.Ypad = 1;
 			cellRendererToggle.Toggled += delegate(object o, ToggledArgs args) {
 				TreeIter iter;
@@ -864,17 +890,53 @@ delegate void BarFoo ();
 			cellRenderer.Active = value;
 		}
 		
-		void CellRendererToggleToggled (object o, ToggledArgs args)
+		class CellRendererToggledHandler
 		{
-			TreeIter iter;
-			var model = indentOptions;
-			if (model.GetIterFromString (out iter, args.Path)) {
-				var info = GetProperty (model, iter);
-				if (info == null || info.PropertyType != typeof(bool))
-					return;
-				bool value = (bool)info.GetValue (this.profile, null);
-				info.SetValue (profile, !value, null);
-				UpdateExample (model, iter);
+			CSharpFormattingProfileDialog dialog;
+			Gtk.TreeStore model;
+			
+			public CellRendererToggledHandler (CSharpFormattingProfileDialog dialog, Gtk.TreeStore model)
+			{
+				this.dialog = dialog;
+				this.model = model;
+			}
+			
+			public void Toggled (object o, ToggledArgs args)
+			{
+				TreeIter iter;
+				if (model.GetIterFromString (out iter, args.Path)) {
+					var info = GetProperty (model, iter);
+					if (info == null || info.PropertyType != typeof(bool))
+						return;
+					bool value = (bool)info.GetValue (dialog.profile, null);
+					info.SetValue (dialog.profile, !value, null);
+					dialog.UpdateExample (model, iter);
+				}
+			}
+		}
+		
+		class ComboboxEditedHandler
+		{
+			CSharpFormattingProfileDialog dialog;
+			Gtk.TreeStore model;
+			
+			public ComboboxEditedHandler (CSharpFormattingProfileDialog dialog, Gtk.TreeStore model)
+			{
+				this.dialog = dialog;
+				this.model = model;
+			}
+			
+			public void ComboboxEdited (object o, EditedArgs args)
+			{
+				TreeIter iter;
+				if (model.GetIterFromString (out iter, args.Path)) {
+					var info = GetProperty (model, iter);
+					if (info == null)
+						return;
+					var value = Enum.Parse (info.PropertyType, args.NewText);
+					info.SetValue (dialog.profile, value, null);
+					dialog.UpdateExample (dialog.texteditor.Document.Text);
+				}
 			}
 		}
 		

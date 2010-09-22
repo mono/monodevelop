@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+
 namespace MonoDevelop.CSharp.Formatting
 {
 	public partial class NewFormattingProfileDialog  : Gtk.Dialog
@@ -36,14 +38,21 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public CSharpFormattingPolicy InitializeFrom {
 			get {
-				return FormattingProfileService.GetProfile (comboboxInitFrom.ActiveText);
+				return policies[comboboxInitFrom.Active];
 			}
 		}
 		
-		public NewFormattingProfileDialog ()
+		List<CSharpFormattingPolicy> policies;
+		public NewFormattingProfileDialog (List<CSharpFormattingPolicy> policies)
 		{
 			this.Build ();
-			
+			this.policies = policies;
+			Gtk.ListStore model = new Gtk.ListStore (typeof(string));
+			foreach (var p in policies) {
+				model.AppendValues (p.Name);
+			}
+			comboboxInitFrom.Model = model;
+			comboboxInitFrom.Active = 0;
 		}
 	}
 }

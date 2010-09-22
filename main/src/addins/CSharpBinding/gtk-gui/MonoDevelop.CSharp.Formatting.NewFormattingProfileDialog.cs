@@ -23,6 +23,7 @@ namespace MonoDevelop.CSharp.Formatting
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.CSharp.Formatting.NewFormattingProfileDialog
 			this.Name = "MonoDevelop.CSharp.Formatting.NewFormattingProfileDialog";
+			this.Title = global::Mono.Unix.Catalog.GetString ("New Profile");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.BorderWidth = ((uint)(6));
 			// Internal child MonoDevelop.CSharp.Formatting.NewFormattingProfileDialog.VBox

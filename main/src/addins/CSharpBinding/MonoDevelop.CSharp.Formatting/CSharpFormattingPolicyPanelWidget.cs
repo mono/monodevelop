@@ -27,12 +27,35 @@ using System;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using System.Collections.Generic;
 namespace MonoDevelop.CSharp.Formatting
 {
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class CSharpFormattingPolicyPanelWidget : Gtk.Bin
 	{
 		Mono.TextEditor.TextEditor texteditor = new Mono.TextEditor.TextEditor ();
+		Gtk.ListStore model = new Gtk.ListStore (typeof(string));
+		List<CSharpFormattingPolicy> policies = new List<CSharpFormattingPolicy> ();
+		
+		public CSharpFormattingPolicy Policy {
+			get {
+				if (comboboxProfiles.Active < 0)
+					return null;
+				return policies[comboboxProfiles.Active];
+			}
+			set {
+				for (int i = 0; i < policies.Count; i++) {
+					if (policies[i].Equals (value)) {
+						comboboxProfiles.Active = i;
+						return;
+					}
+				}
+				comboboxProfiles.Active = policies.Count;
+				if (string.IsNullOrEmpty (value.Name))
+					value.Name = GettextCatalog.GetString ("Custom");
+				policies.Add (value);
+			}
+		}
 		
 		public CSharpFormattingPolicyPanelWidget ()
 		{
@@ -49,6 +72,8 @@ namespace MonoDevelop.CSharp.Formatting
 			texteditor.Options.ShowFoldMargin = false;
 			texteditor.Options.ShowIconMargin = false;
 			scrolledwindow1.Child = texteditor;
+			policies.AddRange (FormattingProfileService.Profiles);
+			comboboxProfiles.Model = model;
 			ShowAll ();
 			InitComboBox ();
 		}
@@ -57,7 +82,7 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			if (comboboxProfiles.Active < 0)
 				return;
-			FormattingProfileService.Remove (FormattingProfileService.Profiles[comboboxProfiles.Active]);
+			FormattingProfileService.Remove (policies[comboboxProfiles.Active]);
 			InitComboBox ();
 			comboboxProfiles.Active = 0;
 		}
@@ -66,7 +91,7 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			if (comboboxProfiles.Active < 0)
 				return;
-			var editDialog = new CSharpFormattingProfileDialog (FormattingProfileService.Profiles[comboboxProfiles.Active]);
+			var editDialog = new CSharpFormattingProfileDialog (policies[comboboxProfiles.Active]);
 			MessageService.ShowCustomDialog (editDialog);
 			editDialog.Destroy ();
 		}
@@ -80,7 +105,9 @@ namespace MonoDevelop.CSharp.Formatting
 			if (!dialog.Run ())
 				return;
 			int selection = comboboxProfiles.Active;
-			FormattingProfileService.AddProfile (CSharpFormattingPolicy.Load (dialog.SelectedFile));
+			var p = CSharpFormattingPolicy.Load (dialog.SelectedFile);
+			FormattingProfileService.AddProfile (p);
+			policies.Add (p);
 			InitComboBox ();
 			comboboxProfiles.Active = selection;
 		}
@@ -95,34 +122,32 @@ namespace MonoDevelop.CSharp.Formatting
 			dialog.AddFilter (null, "*.xml");
 			if (!dialog.Run ())
 				return;
-			FormattingProfileService.Profiles[comboboxProfiles.Active].Save (dialog.SelectedFile);
+			policies[comboboxProfiles.Active].Save (dialog.SelectedFile);
 		}
 		
 		void InitComboBox ()
 		{
-			comboboxProfiles.Clear ();
-			foreach (var p in FormattingProfileService.Profiles) {
-				comboboxProfiles.AppendText (p.Name);
+			model.Clear ();
+			foreach (var p in policies) {
+				model.AppendValues (p.Name);
 			}
-			if (FormattingProfileService.Profiles.Count > 0) {
-				comboboxProfiles.Active = 0;
-			} else {
-				comboboxProfiles.Active = -1;
-			}
+			if (comboboxProfiles.Active < 0)
+				comboboxProfiles.Active = policies.Count > 0 ? 0 : -1;
 			buttonEdit.Sensitive = buttonRemove.Sensitive = buttonExport.Sensitive = comboboxProfiles.Active >= 0;
 		}
 
 		void HandleButtonNewClicked (object sender, EventArgs e)
 		{
-			var newProfileDialog = new NewFormattingProfileDialog ();
+			var newProfileDialog = new NewFormattingProfileDialog (policies);
 			int result = MessageService.ShowCustomDialog (newProfileDialog);
 			if (result == (int)Gtk.ResponseType.Ok) {
 				var baseProfile = newProfileDialog.InitializeFrom ?? new CSharpFormattingPolicy ();
 				var newProfile = baseProfile.Clone ();
 				newProfile.Name = newProfileDialog.NewProfileName;
+				policies.Add (newProfile);
 				FormattingProfileService.AddProfile (newProfile);
 				InitComboBox ();
-				comboboxProfiles.Active = FormattingProfileService.Profiles.Count - 1;
+				comboboxProfiles.Active = policies.Count - 1;
 			}
 			newProfileDialog.Destroy ();
 		}

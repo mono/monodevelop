@@ -38,7 +38,9 @@ namespace MonoDevelop.CSharp.Formatting
 			var asm = typeof (FormattingProfileService).Assembly;
 			foreach (string str in asm.GetManifestResourceNames ()) {
 				if (str.EndsWith ("FormattingProfiles.xml")) {
-					profiles.Add (CSharpFormattingPolicy.Load (asm.GetManifestResourceStream (str)));
+					var p = CSharpFormattingPolicy.Load (asm.GetManifestResourceStream (str));
+					p.IsBuiltIn = true;
+					profiles.Add (p);
 				}
 			}
 		}

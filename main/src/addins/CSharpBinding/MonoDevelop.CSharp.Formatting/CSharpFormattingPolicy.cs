@@ -71,6 +71,11 @@ namespace MonoDevelop.CSharp.Formatting
 			set;
 		}
 		
+		public bool IsBuiltIn {
+			get;
+			set;
+		}
+		
 		public CSharpFormattingPolicy Clone ()
 		{
 			return (CSharpFormattingPolicy)MemberwiseClone ();
@@ -918,16 +923,18 @@ namespace MonoDevelop.CSharp.Formatting
 		public bool Equals (CSharpFormattingPolicy other)
 		{
 			foreach (PropertyInfo info in typeof (CSharpFormattingPolicy).GetProperties ()) {
-				object val = info.GetValue (this, null);
-				object otherVal = info.GetValue (other, null);
-				if (val == null) {
-					if (otherVal == null)
-						continue;
-					return false;
-				}
-				if (!val.Equals (otherVal)) {
-					//Console.WriteLine ("!equal");
-					return false;
+				if (info.GetCustomAttributes (false).Any (o => o.GetType () == typeof(ItemPropertyAttribute))) {
+					object val = info.GetValue (this, null);
+					object otherVal = info.GetValue (other, null);
+					if (val == null) {
+						if (otherVal == null)
+							continue;
+						return false;
+					}
+					if (!val.Equals (otherVal)) {
+						//Console.WriteLine ("!equal");
+						return false;
+					}
 				}
 			}
 			//Console.WriteLine ("== equal");

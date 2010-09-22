@@ -1355,6 +1355,7 @@ Itanium</property>
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.CSharp.Formatting.NewFormattingProfileDialog" design-size="370 179">
     <property name="MemberName" />
+    <property name="Title" translatable="yes">New Profile</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>
     <property name="Buttons">2</property>

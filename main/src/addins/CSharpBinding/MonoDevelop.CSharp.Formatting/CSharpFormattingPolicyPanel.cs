@@ -51,16 +51,14 @@ namespace MonoDevelop.CSharp.Formatting
 			return panel = new CSharpFormattingPolicyPanelWidget ();
 		}
 		
-		CSharpFormattingPolicy policy;
 		protected override void LoadFrom (CSharpFormattingPolicy policy)
 		{
-			this.policy = policy.Clone ();
-//			panel.SetFormat (CodeFormatDescription, this.policy);
+			panel.Policy = policy.Clone ();
 		}
 		
 		protected override CSharpFormattingPolicy GetPolicy ()
 		{
-			return policy;
+			return panel.Policy;
 		}
 	}
 }
