@@ -36,7 +36,18 @@ namespace MonoDevelop.CSharp.Formatting
 		Mono.TextEditor.TextEditor texteditor = new Mono.TextEditor.TextEditor ();
 		Gtk.ListStore model = new Gtk.ListStore (typeof(string));
 		List<CSharpFormattingPolicy> policies = new List<CSharpFormattingPolicy> ();
-		
+		const string example = @"using System;
+namespace Example { 
+	public class Test
+	{
+		public static void Main (string[] args)
+		{
+			for (int i = 0; i < 10; i++) {
+				Console.WriteLine (""{0}: Test"", i);
+			}
+		}
+	}
+}";
 		public CSharpFormattingPolicy Policy {
 			get {
 				if (comboboxProfiles.Active < 0)
@@ -44,8 +55,6 @@ namespace MonoDevelop.CSharp.Formatting
 				return policies[comboboxProfiles.Active];
 			}
 			set {
-				Console.WriteLine ("-----------");
-				Console.WriteLine (Environment.StackTrace);
 				for (int i = 0; i < policies.Count; i++) {
 					if (policies[i].Equals (value)) {
 						comboboxProfiles.Active = i;
@@ -76,9 +85,22 @@ namespace MonoDevelop.CSharp.Formatting
 			texteditor.Options.ColorScheme = options.ColorScheme;
 			texteditor.Options.ShowFoldMargin = false;
 			texteditor.Options.ShowIconMargin = false;
+			texteditor.Options.ShowLineNumberMargin = false;
+			texteditor.Options.ShowInvalidLines = false;
+			texteditor.Document.ReadOnly = true;
+			texteditor.Document.MimeType = CSharpFormatter.MimeType;
 			scrolledwindow1.Child = texteditor;
 			policies.AddRange (FormattingProfileService.Profiles);
 			comboboxProfiles.Model = model;
+			comboboxProfiles.Changed += delegate {
+				if (comboboxProfiles.Active < 0)
+					return;
+				var profile = policies[comboboxProfiles.Active];
+				CSharpFormatter formatter = new CSharpFormatter ();
+				var parent = new MonoDevelop.Projects.DotNetAssemblyProject ();
+				parent.Policies.Set<CSharpFormattingPolicy> (profile, CSharpFormatter.MimeType);
+				texteditor.Document.Text  = formatter.FormatText (parent.Policies, CSharpFormatter.MimeType, example);
+			};
 			ShowAll ();
 			InitComboBox ();
 		}
@@ -96,9 +118,15 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			if (comboboxProfiles.Active < 0)
 				return;
-			var editDialog = new CSharpFormattingProfileDialog (policies[comboboxProfiles.Active]);
+			var p = policies[comboboxProfiles.Active];
+			bool isFromService =!p.IsBuiltIn && FormattingProfileService.Profiles.Contains (p);
+			if (isFromService)
+				FormattingProfileService.Remove (p);
+			var editDialog = new CSharpFormattingProfileDialog (p);
 			MessageService.ShowCustomDialog (editDialog);
 			editDialog.Destroy ();
+			if (isFromService)
+				FormattingProfileService.AddProfile (p);
 			InitComboBox ();
 		}
 

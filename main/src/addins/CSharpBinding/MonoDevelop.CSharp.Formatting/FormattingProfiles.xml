@@ -56,7 +56,7 @@
 		<Property name="BeforeMethodCallParentheses" value="True" />
 		<Property name="BetweenEmptyMethodCallParentheses" value="False" />
 		<Property name="BeforeMethodCallParameterComma" value="False" />
-		<Property name="AfterMethodCallParameterComma" value="False" />
+		<Property name="AfterMethodCallParameterComma" value="True" />
 		<Property name="WithinMethodCallParentheses" value="False" />
 		<Property name="BeforeFieldDeclarationComma" value="False" />
 		<Property name="AfterFieldDeclarationComma" value="True" />

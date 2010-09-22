@@ -574,7 +574,7 @@ namespace MonoDevelop.CSharp.Formatting
 	{
 	}
 
-	Example (int a, b, c) 
+	Example (int a, int b, int c) 
 	{
 	}
 }";
@@ -590,7 +590,7 @@ namespace MonoDevelop.CSharp.Formatting
 delegate void BarFoo ();
 ";
 			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("Delegates"), new Category (example,
-				new Option ("BeforeDelegateeclarationParentheses", GettextCatalog.GetString ("before opening parenthesis")),
+				new Option ("BeforeDelegateDeclarationParentheses", GettextCatalog.GetString ("before opening parenthesis")),
 				new Option ("WithinDelegateDeclarationParentheses", GettextCatalog.GetString ("within parenthesis")),
 				new Option ("BetweenEmptyDelegateDeclarationParentheses", GettextCatalog.GetString ("between empty parenthesis")),
 				new Option ("BeforeDelegateDeclarationParameterComma", GettextCatalog.GetString ("before comma in parenthesis")),
@@ -630,7 +630,13 @@ delegate void BarFoo ();
 			));
 			
 			category = whiteSpaceCategory.AppendValues (GettextCatalog.GetString ("Expressions"), null);
-			
+			example = @"class Example {
+		void Test ()
+		{
+			Console.WriteLine();
+			Console.WriteLine(""{0} {1}!"", ""Hello"", ""World"");
+		}
+}";
 			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("Method invocations"), new Category (example,
 				new Option ("BeforeMethodCallParentheses", GettextCatalog.GetString ("before opening parenthesis")),
 				new Option ("WithinMethodCallParentheses", GettextCatalog.GetString ("within parenthesis")),
@@ -695,10 +701,6 @@ delegate void BarFoo ();
 				new Option ("ConditionalOperatorAfterSeparatorSpace", GettextCatalog.GetString ("after ':'"))
 			));
 			
-			
-			category = whiteSpaceCategory.AppendValues (GettextCatalog.GetString ("Operators"), null);
-		
-			
 			whiteSpaceOptions= new ListStore (typeof (Option), typeof (bool), typeof (bool)); 
 			column = new TreeViewColumn ();
 			// text column
@@ -722,7 +724,7 @@ delegate void BarFoo ();
 				var model = whiteSpaceOptions;
 				if (model.GetIterFromString (out iter, args.Path)) {
 					var option = (Option)model.GetValue (iter, 0);
-					PropertyInfo info = typeof(CSharpFormattingPolicy).GetProperty (option.PropertyName);
+					PropertyInfo info = GetPropertyByName (option.PropertyName);
 					if (info == null)
 						return;
 					var value = Enum.Parse (info.PropertyType, args.NewText);
@@ -745,7 +747,7 @@ delegate void BarFoo ();
 				var model = whiteSpaceOptions;
 				if (model.GetIterFromString (out iter, args.Path)) {
 					var option = (Option)model.GetValue (iter, 0);
-					PropertyInfo info = typeof(CSharpFormattingPolicy).GetProperty (option.PropertyName);
+					PropertyInfo info = GetPropertyByName (option.PropertyName);
 					if (info == null || info.PropertyType != typeof(bool))
 						return;
 					bool value = (bool)info.GetValue (this.profile, null);
@@ -779,7 +781,7 @@ delegate void BarFoo ();
 					return;
 				whiteSpaceOptions.Clear ();
 				foreach (var option in category.Options) {
-					PropertyInfo info = typeof(CSharpFormattingPolicy).GetProperty (option.PropertyName);
+					PropertyInfo info = GetPropertyByName (option.PropertyName);
 					bool isBool = info.PropertyType == typeof (bool);
 					whiteSpaceOptions.AppendValues (option, isBool, !isBool);
 				}
@@ -787,13 +789,20 @@ delegate void BarFoo ();
 			}
 		}
 		
+		static PropertyInfo GetPropertyByName (string name)
+		{
+			PropertyInfo info = typeof(CSharpFormattingPolicy).GetProperty (name);
+			if (info == null)
+				throw new Exception (name + " property not found");
+			return info;
+		}
 		
 		
 		Gtk.TreeIter AddOption (Gtk.TreeStore model, string propertyName, string displayName, string example)
 		{
 			bool isBool = false;
 			if (!string.IsNullOrEmpty (propertyName)) {
-				PropertyInfo info = typeof(CSharpFormattingPolicy).GetProperty (propertyName);
+				PropertyInfo info = GetPropertyByName (propertyName);
 				isBool = info.PropertyType == typeof (bool);
 			}
 			
@@ -804,7 +813,7 @@ delegate void BarFoo ();
 		{
 			bool isBool = false;
 			if (!string.IsNullOrEmpty (propertyName)) {
-				PropertyInfo info = typeof(CSharpFormattingPolicy).GetProperty (propertyName);
+				PropertyInfo info = GetPropertyByName (propertyName);
 				isBool = info.PropertyType == typeof (bool);
 			}
 			
@@ -849,12 +858,12 @@ delegate void BarFoo ();
 			string propertyName = (string)model.GetValue (iter, propertyColumn);
 			if (string.IsNullOrEmpty (propertyName))
 				return null;
-			return typeof(CSharpFormattingPolicy).GetProperty (propertyName);
+			return GetPropertyByName (propertyName);
 		}
 		
 		object GetValue (string propertyName)
 		{
-			var info = typeof(CSharpFormattingPolicy).GetProperty (propertyName);
+			var info = GetPropertyByName (propertyName);
 			return info.GetValue (this.profile, null);
 		}
 		
