@@ -25,16 +25,17 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Formatting
 {
 	public partial class NewFormattingProfileDialog  : Gtk.Dialog
 	{
 		public string NewProfileName {
-			get {
-				return entryProfileName.Text;
-			}
+			get;
+			private set;
 		}
+		
 		
 		public CSharpFormattingPolicy InitializeFrom {
 			get {
@@ -47,6 +48,11 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			this.Build ();
 			this.policies = policies;
+			this.entryProfileName.Changed += delegate {
+				NewProfileName = entryProfileName.Text;
+				buttonOk.Sensitive = !string.IsNullOrEmpty (NewProfileName) && !this.policies.Any (p => p.Name == NewProfileName);
+			};
+			
 			Gtk.ListStore model = new Gtk.ListStore (typeof(string));
 			foreach (var p in policies) {
 				model.AppendValues (p.Name);

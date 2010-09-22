@@ -44,16 +44,21 @@ namespace MonoDevelop.CSharp.Formatting
 				return policies[comboboxProfiles.Active];
 			}
 			set {
+				Console.WriteLine ("-----------");
+				Console.WriteLine (Environment.StackTrace);
 				for (int i = 0; i < policies.Count; i++) {
 					if (policies[i].Equals (value)) {
 						comboboxProfiles.Active = i;
 						return;
 					}
 				}
-				comboboxProfiles.Active = policies.Count;
+			
 				if (string.IsNullOrEmpty (value.Name))
 					value.Name = GettextCatalog.GetString ("Custom");
 				policies.Add (value);
+				InitComboBox ();
+				
+				comboboxProfiles.Active = policies.Count - 1;
 			}
 		}
 		
@@ -94,6 +99,7 @@ namespace MonoDevelop.CSharp.Formatting
 			var editDialog = new CSharpFormattingProfileDialog (policies[comboboxProfiles.Active]);
 			MessageService.ShowCustomDialog (editDialog);
 			editDialog.Destroy ();
+			InitComboBox ();
 		}
 
 		void HandleButtonImportClicked (object sender, EventArgs e)
@@ -143,6 +149,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (result == (int)Gtk.ResponseType.Ok) {
 				var baseProfile = newProfileDialog.InitializeFrom ?? new CSharpFormattingPolicy ();
 				var newProfile = baseProfile.Clone ();
+				newProfile.IsBuiltIn = false;
 				newProfile.Name = newProfileDialog.NewProfileName;
 				policies.Add (newProfile);
 				FormattingProfileService.AddProfile (newProfile);

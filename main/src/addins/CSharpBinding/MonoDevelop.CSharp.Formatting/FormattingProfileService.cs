@@ -26,6 +26,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -33,7 +35,14 @@ namespace MonoDevelop.CSharp.Formatting
 	{
 		static List<CSharpFormattingPolicy> profiles = new List<CSharpFormattingPolicy> ();
 		
-		static FormattingProfileService ()
+		
+		static string ProfilePath {
+			get {
+				return Path.Combine (PropertyService.ConfigPath, Path.Combine ("format", "csharp"));
+			}
+		}
+		
+		static void LoadBuiltInProfiles ()
 		{
 			var asm = typeof (FormattingProfileService).Assembly;
 			foreach (string str in asm.GetManifestResourceNames ()) {
@@ -43,6 +52,21 @@ namespace MonoDevelop.CSharp.Formatting
 					profiles.Add (p);
 				}
 			}
+		}
+		
+		static void LoadCustomProfiles ()
+		{
+			if (Directory.Exists (ProfilePath)) {
+				foreach (string file in Directory.GetFiles (ProfilePath, "*.xml")) {
+					profiles.Add (CSharpFormattingPolicy.Load (file));
+				}
+			}
+		}
+		
+		static FormattingProfileService ()
+		{
+			LoadBuiltInProfiles ();
+			LoadCustomProfiles ();
 		}
 		
 		public static List<CSharpFormattingPolicy> Profiles {
@@ -59,11 +83,24 @@ namespace MonoDevelop.CSharp.Formatting
 		public static void AddProfile (CSharpFormattingPolicy profile)
 		{
 			profiles.Add (profile);
+			if (!Directory.Exists (ProfilePath))
+				Directory.CreateDirectory (ProfilePath);
+			string fileName = Path.Combine (ProfilePath, profile.Name + ".xml");
+			profile.Save (fileName);
 		}
 		
 		public static void Remove (CSharpFormattingPolicy profile)
 		{
+			if (!profiles.Contains (profile))
+				return;
 			profiles.Remove (profile);
+			try {
+				string fileName = Path.Combine (ProfilePath, profile.Name + ".xml");
+				if (File.Exists (fileName)) 
+					File.Delete (fileName);
+			} catch (Exception e) {
+				
+			}
 		}
 	}
 }
