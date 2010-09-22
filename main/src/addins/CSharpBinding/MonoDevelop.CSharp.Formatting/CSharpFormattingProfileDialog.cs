@@ -72,7 +72,7 @@ namespace MonoDevelop.CSharp.Formatting
 		public void TestMethod ()
 		{
 			try {
-				TestMethod ("");
+				TestMethod ("""");
 			} catch (Exception e) {
 				// Do something
 			} finally {
