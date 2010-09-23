@@ -74,27 +74,21 @@ namespace MonoDevelop.CSharp.Refactoring
 			outputVisitor.Options.IndentSize = currentPolicy.TabWidth;
 
 			outputVisitor.Options.EolMarker = TextStylePolicy.GetEolMarker(currentPolicy.EolMarker);
-
-
-			CodeFormatDescription descr = CSharpFormattingPolicyPanel.CodeFormatDescription;
 			Type optionType = outputVisitor.Options.GetType ();
 
-			foreach (CodeFormatOption option in descr.AllOptions) {
-				KeyValuePair<string, string> val = descr.GetValue (codePolicy, option);
-				PropertyInfo info = optionType.GetProperty (option.Name);
-				if (info == null) {
-					System.Console.WriteLine ("option : " + option.Name + " not found.");
+			foreach (var property in typeof (CSharpFormattingPolicy).GetProperties ()) {
+				PropertyInfo info = optionType.GetProperty (property.Name);
+				if (info == null) 
 					continue;
-				}
+				object val = property.GetValue (codePolicy, null);
 				object cval = null;
 				if (info.PropertyType.IsEnum) {
-					cval = Enum.Parse (info.PropertyType, val.Key);
+					cval = Enum.Parse (info.PropertyType, val.ToString ());
 				} else if (info.PropertyType == typeof(bool)) {
-					cval = Convert.ToBoolean (val.Key);
+					cval = Convert.ToBoolean (val);
 				} else {
-					cval = Convert.ChangeType (val.Key, info.PropertyType);
+					cval = Convert.ChangeType (val, info.PropertyType);
 				}
-				//System.Console.WriteLine("set " + option.Name + " to " + cval);
 				info.SetValue (outputVisitor.Options, cval, null);
 			}
 		}

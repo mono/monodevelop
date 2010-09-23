@@ -36,16 +36,6 @@ namespace MonoDevelop.CSharp.Formatting
 	{
 		CSharpFormattingPolicyPanelWidget panel;
 		
-		public static CodeFormatDescription CodeFormatDescription {
-			get {
-				XmlReaderSettings settings = new XmlReaderSettings ();
-				settings.CloseInput = true;
-				using (XmlReader reader = XmlTextReader.Create (typeof (CSharpFormattingPolicy).Assembly.GetManifestResourceStream ("CSharpFormattingPolicy.xml"), settings)) {
-					return CodeFormatDescription.Read (reader);
-				}
-			}
-		}
-		
 		public override Widget CreatePanelWidget ()
 		{
 			return panel = new CSharpFormattingPolicyPanelWidget ();
