@@ -167,9 +167,15 @@ namespace MonoDevelop.CSharp.Resolver
 		
 		internal void SetupResolver (DomLocation resolvePosition)
 		{
+			SetupResolver (resolvePosition, true);
+		}
+		
+		internal void SetupResolver (DomLocation resolvePosition, bool clearCache)
+		{
 			this.lambdaResolver = null;
 			this.resolvePosition = resolvePosition;
-			this.resultTable.Clear ();
+			if (clearCache)
+				this.resultTable.Clear ();
 			if (unit == null)
 				unit = ProjectDomService.GetParsedDocument (dom, fileName).CompilationUnit;
 			callingType = GetTypeAtCursor (unit, fileName, resolvePosition);
@@ -429,8 +435,13 @@ namespace MonoDevelop.CSharp.Resolver
 		
 		public ResolveResult ResolveExpression (Expression expr, DomLocation resolvePosition)
 		{
+			return ResolveExpression (expr, resolvePosition, true);
+		}
+		
+		public ResolveResult ResolveExpression (Expression expr, DomLocation resolvePosition, bool clearCache)
+		{
 			this.expr = expr;
-			this.SetupResolver (resolvePosition);
+			this.SetupResolver (resolvePosition, clearCache);
 			ResolveVisitor visitor = new ResolveVisitor (this);
 			ResolveResult result = visitor.Resolve (expr);
 			return result;
