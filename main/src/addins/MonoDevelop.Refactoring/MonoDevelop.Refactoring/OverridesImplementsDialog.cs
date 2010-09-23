@@ -49,7 +49,7 @@ namespace MonoDevelop.Refactoring
 		TreeStore store;
 		CodeRefactorer refactorer;
 		Ambience ambience;
-		TextEditor editor;
+		MonoDevelop.Ide.Gui.Document editor;
 		
 		private const int colCheckedIndex = 0;
 		private const int colIconIndex = 1;
@@ -68,7 +68,7 @@ namespace MonoDevelop.Refactoring
 			OutputFlags.IncludeParameterName |
 			OutputFlags.IncludeReturnType;
 
-		public OverridesImplementsDialog (TextEditor editor, IType cls)
+		public OverridesImplementsDialog (MonoDevelop.Ide.Gui.Document editor, IType cls)
 		{
 			this.Build();
 			this.editor = editor;
@@ -241,7 +241,7 @@ namespace MonoDevelop.Refactoring
 		{
 			try {
 				StringBuilder code = new StringBuilder ();
-				CodeGenerator generator =  CodeGenerator.CreateGenerator (editor.Document.MimeType, editor.Options.TabsToSpaces, editor.Options.TabSize, editor.EolMarker);
+				CodeGenerator generator =  CodeGenerator.CreateGenerator (editor.Editor.Document.MimeType, editor.Editor.Options.TabsToSpaces, editor.Editor.Options.TabSize, editor.Editor.EolMarker);
 				
 				foreach (KeyValuePair<IType, IEnumerable<TreeIter>> kvp in GetAllClasses ()) {
 					if (code.Length > 0) {
@@ -265,7 +265,7 @@ namespace MonoDevelop.Refactoring
 					}
 				}
 				
-				InsertionCursorEditMode mode = new InsertionCursorEditMode (editor, HelperMethods.GetInsertionPoints (editor.Document, this.cls));
+				InsertionCursorEditMode mode = new InsertionCursorEditMode (editor.Editor.Parent, HelperMethods.GetInsertionPoints (editor, this.cls));
 				ModeHelpWindow helpWindow = new ModeHelpWindow ();
 				helpWindow.TransientFor = IdeApp.Workbench.RootWindow;
 				helpWindow.TitleText = GettextCatalog.GetString ("<b>Override -- Targeting</b>");
@@ -279,7 +279,7 @@ namespace MonoDevelop.Refactoring
 				mode.StartMode ();
 				mode.Exited += delegate(object s, InsertionCursorEventArgs args) {
 					if (args.Success)
-						args.InsertionPoint.Insert (editor, code.ToString ());
+						args.InsertionPoint.Insert (editor.Editor.Parent, code.ToString ());
 				};
 				
 			} finally {

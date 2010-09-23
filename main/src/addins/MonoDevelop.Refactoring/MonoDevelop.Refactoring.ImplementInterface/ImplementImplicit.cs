@@ -65,7 +65,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			
 			var editor = options.GetTextEditorData ().Parent;
 			
-			InsertionCursorEditMode mode = new InsertionCursorEditMode (editor, HelperMethods.GetInsertionPoints (editor.Document, declaringType));
+			InsertionCursorEditMode mode = new InsertionCursorEditMode (editor, HelperMethods.GetInsertionPoints (options.Document, declaringType));
 			ModeHelpWindow helpWindow = new ModeHelpWindow ();
 			helpWindow.TransientFor = IdeApp.Workbench.RootWindow;
 			helpWindow.TitleText = GettextCatalog.GetString ("<b>Implement Interface -- Targeting</b>");

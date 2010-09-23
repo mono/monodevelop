@@ -1018,16 +1018,16 @@ namespace MonoDevelop.Refactoring
 		{
 			EncapsulateFieldDialog dialog;
 			if (item is IField) {
-				dialog = new EncapsulateFieldDialog (IdeApp.Workbench.ActiveDocument.Editor.Parent, ctx, (IField) item);
+				dialog = new EncapsulateFieldDialog (IdeApp.Workbench.ActiveDocument, ctx, (IField) item);
 			} else {
-				dialog = new EncapsulateFieldDialog (IdeApp.Workbench.ActiveDocument.Editor.Parent, ctx, (IType) item);
+				dialog = new EncapsulateFieldDialog (IdeApp.Workbench.ActiveDocument, ctx, (IType) item);
 			}
 			MessageService.ShowCustomDialog (dialog);
 		}
 		
 		public void OverrideOrImplementMembers ()
 		{
-			MessageService.ShowCustomDialog (new OverridesImplementsDialog (IdeApp.Workbench.ActiveDocument.Editor.Parent, (IType)item));
+			MessageService.ShowCustomDialog (new OverridesImplementsDialog (IdeApp.Workbench.ActiveDocument, (IType)item));
 		}
 		
 		public void Rename ()

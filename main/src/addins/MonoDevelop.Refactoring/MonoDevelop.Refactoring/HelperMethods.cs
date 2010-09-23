@@ -89,21 +89,24 @@ namespace MonoDevelop.Refactoring
 			return result;
 		}
 		
-		public static List<InsertionPoint> GetInsertionPoints (Document doc, IType type)
+		public static List<InsertionPoint> GetInsertionPoints (MonoDevelop.Ide.Gui.Document document, IType type)
 		{
-			if (doc == null)
-				throw new ArgumentNullException ("doc");
+			if (document == null)
+				throw new ArgumentNullException ("document");
+			var doc = document.Editor;
 			if (type == null)
 				throw new ArgumentNullException ("type");
 			List<InsertionPoint> result = new List<InsertionPoint> ();
-			
 			int offset = doc.LocationToOffset (type.BodyRegion.Start.Line, type.BodyRegion.Start.Column);
 			if (offset < 0)
 				return result;
-			while (offset < doc.Length && doc.GetCharAt (offset) != '{' && char.IsWhiteSpace (doc.GetCharAt (offset)))
+			
+			while (offset < doc.Length && doc.GetCharAt (offset) != '{') {
 				offset++;
+			}
+			
 			var realStartLocation = doc.OffsetToLocation (offset);
-			result.Add (GetInsertionPosition (doc, realStartLocation.Line, realStartLocation.Column));
+			result.Add (GetInsertionPosition (doc.Document, realStartLocation.Line, realStartLocation.Column));
 			result[0].LineBefore = NewLineInsertion.None;
 			foreach (IMember member in type.Members) {
 				DomLocation domLocation = member.BodyRegion.End;
@@ -113,12 +116,18 @@ namespace MonoDevelop.Refactoring
 						continue;
 					domLocation = new DomLocation (member.Location.Line, lineSegment.EditableLength + 1);
 				}
-				result.Add (GetInsertionPosition (doc, domLocation.Line, domLocation.Column));
+				result.Add (GetInsertionPosition (doc.Document, domLocation.Line, domLocation.Column));
 			}
 			result[result.Count - 1].LineAfter = NewLineInsertion.None;
-			CheckStartPoint (doc, result[0], result.Count == 1);
+			CheckStartPoint (doc.Document, result[0], result.Count == 1);
 			if (result.Count > 1)
-				CheckEndPoint (doc, result[result.Count - 1], result.Count == 1);
+				CheckEndPoint (doc.Document, result[result.Count - 1], result.Count == 1);
+			foreach (var region in document.ParsedDocument.UserRegions.Where (r => type.BodyRegion.Contains (r.Region))) {
+				result.Add (new InsertionPoint (new DocumentLocation (region.Region.Start.Line + 1, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
+				result.Add (new InsertionPoint (new DocumentLocation (region.Region.End.Line, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
+				result.Add (new InsertionPoint (new DocumentLocation (region.Region.End.Line + 1, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
+			}
+			result.Sort ((left, right) => left.Location.CompareTo (right.Location));
 			return result;
 		}
 

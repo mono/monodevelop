@@ -50,7 +50,7 @@ namespace MonoDevelop.Refactoring {
 		IType declaringType;
 		ListStore store;
 		ListStore visibilityStore;
-		TextEditor editor;
+		MonoDevelop.Ide.Gui.Document editor;
 		
 		private const int colCheckedIndex = 0;
 		private const int colFieldNameIndex = 1;
@@ -59,15 +59,15 @@ namespace MonoDevelop.Refactoring {
 		private const int colReadOnlyIndex = 4;
 		private const int colFieldIndex = 5;
 
-		public EncapsulateFieldDialog (TextEditor editor, ProjectDom ctx, IType declaringType)
+		public EncapsulateFieldDialog (MonoDevelop.Ide.Gui.Document editor, ProjectDom ctx, IType declaringType)
 			: this (editor, declaringType, null)
 		{}
 
-		public EncapsulateFieldDialog (TextEditor editor, ProjectDom ctx, IField field)
+		public EncapsulateFieldDialog (MonoDevelop.Ide.Gui.Document editor, ProjectDom ctx, IField field)
 			: this (editor, field.DeclaringType, field)
 		{}
 
-		private EncapsulateFieldDialog (TextEditor editor, IType declaringType, IField field)
+		private EncapsulateFieldDialog (MonoDevelop.Ide.Gui.Document editor, IType declaringType, IField field)
 		{
 			this.editor = editor;
 			this.declaringType = declaringType;
@@ -408,7 +408,7 @@ namespace MonoDevelop.Refactoring {
 				data.Add (new FieldData (field, propertyName, read_only, mod));
 			} while (store.IterNext (ref iter));
 			
-			InsertionCursorEditMode mode = new InsertionCursorEditMode (editor, HelperMethods.GetInsertionPoints (editor.Document, declaringType));
+			InsertionCursorEditMode mode = new InsertionCursorEditMode (editor.Editor.Parent, HelperMethods.GetInsertionPoints (editor, declaringType));
 			ModeHelpWindow helpWindow = new ModeHelpWindow ();
 			helpWindow.TransientFor = IdeApp.Workbench.RootWindow;
 			helpWindow.TitleText = GettextCatalog.GetString ("<b>Encapsulate Field -- Targeting</b>");
@@ -432,7 +432,7 @@ namespace MonoDevelop.Refactoring {
 			mode.StartMode ();
 			mode.Exited += delegate(object s, InsertionCursorEventArgs args) {
 				if (args.Success) {
-					CodeGenerator generator =  CodeGenerator.CreateGenerator (editor.Document.MimeType, editor.Options.TabsToSpaces, editor.Options.TabSize, editor.EolMarker);
+					CodeGenerator generator =  CodeGenerator.CreateGenerator (editor.Editor.Document.MimeType, editor.Editor.Options.TabsToSpaces, editor.Editor.Options.TabSize, editor.Editor.EolMarker);
 					StringBuilder code = new StringBuilder ();
 					for (int j = 0; j < data.Count; j++) {
 						if (j > 0) {
@@ -442,7 +442,7 @@ namespace MonoDevelop.Refactoring {
 						var f = data[j];
 						code.Append (generator.CreateFieldEncapsulation (declaringType, f.Field, f.PropertyName, f.Modifiers, f.ReadOnly));
 					}
-					args.InsertionPoint.Insert (editor, code.ToString ());
+					args.InsertionPoint.Insert (editor.Editor.Parent, code.ToString ());
 				}
 			};
 			((Widget) this).Destroy ();
