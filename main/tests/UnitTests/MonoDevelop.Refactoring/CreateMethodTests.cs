@@ -249,6 +249,40 @@ class TestClass
 ", true);
 		}
 		
+		[Test()]
+		public void TestCreateInterfaceMethod ()
+		{
+			TestCreateMethod (
+@"
+interface FooBar
+{
+}
+
+class TestClass
+{
+	void TestMethod ()
+	{
+		FooBar fb;
+		fb.$NonExistantMethod ();
+	}
+}
+", @"
+interface FooBar
+{
+	void NonExistantMethod ();
+}
+
+class TestClass
+{
+	void TestMethod ()
+	{
+		FooBar fb;
+		fb.NonExistantMethod ();
+	}
+}
+", true);
+		}
+		
 		
 	}
 	
