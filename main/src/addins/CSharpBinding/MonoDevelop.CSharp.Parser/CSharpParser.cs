@@ -2045,7 +2045,9 @@ namespace MonoDevelop.CSharp.Parser
 				// TODO: select identifier
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[1]), "in".Length), QueryExpressionFromClause.InKeywordRole);
-				result.AddChild ((INode)((Mono.CSharp.Linq.AQueryClause)queryExpression.Expr).Expr.Accept (this), QueryExpressionFromClause.Roles.Expression);
+				var query = queryExpression.Expr as Mono.CSharp.Linq.AQueryClause;
+				if (query != null && query.Expr != null)
+					result.AddChild ((INode)query.Expr.Accept (this), QueryExpressionFromClause.Roles.Expression);
 				return result;
 			}
 			
