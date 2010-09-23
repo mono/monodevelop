@@ -47,7 +47,19 @@ namespace MonoDevelop.Refactoring.Tests
 	{
 		static void TestInsertionPoints (string text)
 		{
-			TextEditorData data = new TextEditorData ();
+			
+			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
+			TestViewContent sev = new TestViewContent ();
+			DotNetProject project = new DotNetAssemblyProject ("C#");
+			project.FileName = GetTempFile (".csproj");
+			
+			string file = GetTempFile (".cs");
+			project.AddFile (file);
+			sev.Project = project;
+			sev.ContentName = file;
+			tww.ViewContent = sev;
+			var doc = new MonoDevelop.Ide.Gui.Document (tww);
+			var data = doc.Editor;
 			List<InsertionPoint> loc = new List<InsertionPoint> ();
 			for (int i = 0; i < text.Length; i++) {
 				char ch = text[i];
@@ -105,9 +117,10 @@ namespace MonoDevelop.Refactoring.Tests
 				}
 			}
 			
-			var parseResult = new NRefactoryParser ().Parse (null, "a.cs", data.Document.Text);
 			
-			var foundPoints = HelperMethods.GetInsertionPoints (data.Document, parseResult.CompilationUnit.Types[0]);
+			doc.ParsedDocument =  new NRefactoryParser ().Parse (null, "a.cs", data.Document.Text);
+			
+			var foundPoints = HelperMethods.GetInsertionPoints (doc, doc.ParsedDocument.CompilationUnit.Types[0]);
 			Assert.AreEqual (loc.Count, foundPoints.Count, "point count doesn't match");
 			for (int i = 0; i < loc.Count; i++) {
 				Assert.AreEqual (loc[i].Location, foundPoints[i].Location, "point " + i + " doesn't match");
@@ -237,6 +250,21 @@ class Test {
 @s}
 ");
 		}
+		
+		
+		[Test()]
+		public void TestEmptyClassInsertion ()
+		{
+			TestInsertionPoints (@"
+public class EmptyClass
+{@s}");
+			
+			TestInsertionPoints (@"
+public class EmptyClass : Base
+{@s}");
+
+		}
+		
 
 	}
 }
