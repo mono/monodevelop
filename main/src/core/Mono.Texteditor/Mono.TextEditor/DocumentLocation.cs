@@ -29,7 +29,7 @@ using System;
 
 namespace Mono.TextEditor
 {
-	public struct DocumentLocation
+	public struct DocumentLocation : IComparable<DocumentLocation>
 	{
 		public static readonly DocumentLocation Empty = new DocumentLocation (0, 0);
 		
@@ -93,6 +93,17 @@ namespace Mono.TextEditor
 		public override bool Equals(object obj)
 		{
 			return obj is DocumentLocation && (DocumentLocation)obj == this; 
+		}
+		#endregion
+		
+		#region IComparable<DocumentLocation> implementation
+		public int CompareTo (DocumentLocation loc)
+		{
+			if (this < loc)
+				return -1;
+			if (this > loc)
+				return 1;
+			return 0;
 		}
 		#endregion
 	}
