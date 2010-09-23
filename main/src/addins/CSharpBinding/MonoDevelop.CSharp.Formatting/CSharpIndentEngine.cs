@@ -327,6 +327,8 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		string GetDirectiveKeyword (char currentChar)
 		{
+			if (currentChar != ' ' && currentChar != '\t' && currentChar != '\n')
+				return null;
 			string str = linebuf.ToString ().TrimStart ().Substring (1);
 			
 			if (str.Length == 0)
@@ -334,7 +336,7 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			for (int i = 0; i < directiveKeywords.Length; i++) {
 				if (directiveKeywords[i].StartsWith (str)) {
-					if (str + currentChar == directiveKeywords[i])
+					if (str == directiveKeywords[i])
 						return directiveKeywords[i];
 					else
 						return null;
@@ -906,11 +908,11 @@ namespace MonoDevelop.CSharp.Formatting
 				int peekLine = stack.PeekLineNr (0);
 				stack.Pop ();
 				stack.Push (Inside.PreProcessor, preProcessorKeyword, peekLine, 0);
-				
 				//regions need to pop back out
 				if (preProcessorKeyword == "region" || preProcessorKeyword == "endregion") {
 					curIndent = stack.PeekIndent (0);
 					needsReindent = true;
+					
 				}
 			}
 			
