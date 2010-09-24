@@ -704,10 +704,10 @@ namespace Mono.TextEditor
 				return;
 			if (start < 0)
 				start = 0;
-			double visualStart = -this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (start) * LineHeight;
+			double visualStart = -this.textEditorData.VAdjustment.Value +  LineToY (start);
 			if (end < 0)
 				end = Document.LineCount;
-			double visualEnd   = -this.textEditorData.VAdjustment.Value + Document.LogicalToVisualLine (end) * LineHeight + LineHeight;
+			double visualEnd   = -this.textEditorData.VAdjustment.Value + LineToY (end) + GetLineHeight (end);
 			QueueDrawArea (0, (int)visualStart, this.Allocation.Width, (int)(visualEnd - visualStart));
 		}
 		
