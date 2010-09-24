@@ -349,7 +349,7 @@ namespace MonoDevelop.SourceEditor
 					break;
 				}
 			}
-			if (Caret.Offset >= 0) {
+			if (Caret.Offset > 0) {
 				char c = GetCharAt (Caret.Offset - 1);
 				if (c == '"' || c == '\'')
 					inStringOrComment = inChar = inString = true;
