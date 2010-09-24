@@ -75,14 +75,25 @@ namespace MonoDevelop.VersionControl.Views
 			this.buttonDiff.Clicked += HandleButtonDiffhandleClicked;
 			diffTextEditor = new global::Mono.TextEditor.TextEditor ();
 			diffTextEditor.Document.MimeType = "text/x-diff";
-			diffTextEditor.Options.FontName = info.Document.Editor.Options.FontName;
-			diffTextEditor.Options.ColorScheme = info.Document.Editor.Options.ColorScheme;
+			if (info.Document != null) {
+				diffTextEditor.Options.FontName = info.Document.Editor.Options.FontName;
+				diffTextEditor.Options.ColorScheme = info.Document.Editor.Options.ColorScheme;
+				diffTextEditor.Options.ShowTabs = info.Document.Editor.Options.ShowTabs;
+				diffTextEditor.Options.ShowSpaces = info.Document.Editor.Options.ShowSpaces;
+				diffTextEditor.Options.ShowInvalidLines = info.Document.Editor.Options.ShowInvalidLines;
+				diffTextEditor.Options.ShowInvalidLines = info.Document.Editor.Options.ShowInvalidLines;
+			} else {
+				var options = MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance;
+				diffTextEditor.Options.FontName = options.FontName;
+				diffTextEditor.Options.ColorScheme = options.ColorScheme;
+				diffTextEditor.Options.ShowTabs = options.ShowTabs;
+				diffTextEditor.Options.ShowSpaces = options.ShowSpaces;
+				diffTextEditor.Options.ShowInvalidLines = options.ShowInvalidLines;
+				diffTextEditor.Options.ShowInvalidLines = options.ShowInvalidLines;
+			}
+			
 			diffTextEditor.Options.ShowFoldMargin = false;
 			diffTextEditor.Options.ShowIconMargin = false;
-			diffTextEditor.Options.ShowTabs = info.Document.Editor.Options.ShowTabs;
-			diffTextEditor.Options.ShowSpaces = info.Document.Editor.Options.ShowSpaces;
-			diffTextEditor.Options.ShowInvalidLines = info.Document.Editor.Options.ShowInvalidLines;
-			diffTextEditor.Options.ShowInvalidLines = info.Document.Editor.Options.ShowInvalidLines;
 			diffTextEditor.Document.ReadOnly = true;
 			scrolledwindow1.Child = diffTextEditor;
 			diffTextEditor.Show ();

@@ -11,15 +11,12 @@ namespace MonoDevelop.VersionControl.Views
 	internal class LogView : BaseView, IAttachableViewContent 
 	{
 		string filepath;
-		Widget widget;
-		Revision [] history;
+		LogWidget widget;
 		Repository vc;
 		VersionInfo vinfo;
 		Gtk.ToolButton revertButton, revertToButton;
 		
-		TreeView loglist;
 		ListStore changedpathstore;
-		Toolbar commandbar;
 		
 		public static void Show (VersionControlItemList items, Revision since)
 		{
@@ -75,19 +72,6 @@ namespace MonoDevelop.VersionControl.Views
 			return found;
 		}
 		
-		ListStore logstore;
-		public void ShowHistory ()
-		{
-			if (history == null)
-				return;
-			foreach (Revision d in history) {
-				logstore.AppendValues(
-					d.ToString (),
-					d.Time.ToString (),
-					d.Author,
-					d.Message == String.Empty ? GettextCatalog.GetString ("(No message)") : d.Message);
-			}
-		}
 		VersionControlDocumentInfo info;
 		public LogView (VersionControlDocumentInfo info) : base ("Log")
 		{
@@ -99,135 +83,28 @@ namespace MonoDevelop.VersionControl.Views
 			this.vc = info.Item.Repository;
 			this.filepath = info.Item.Path;
 			var lw = new LogWidget (info);
-			widget = lw;
-			info.Updated += delegate {
-				history = lw.History = this.info.History;
-				vinfo   = this.info.VersionInfo;
-			};
-			lw.History = history = this.info.History;
-			vinfo   = this.info.VersionInfo;
-			/*
-			// Widget setup
-			VBox box = new VBox (false, 6);
-			
-			widget = box;
-
-			// Create the toolbar
-			commandbar = new Toolbar ();
-			commandbar.ToolbarStyle = Gtk.ToolbarStyle.BothHoriz;
-			commandbar.IconSize = Gtk.IconSize.Menu;
-			box.PackStart (commandbar, false, false, 0);
-				
-			if (vinfo != null) {
-				Gtk.ToolButton button = new Gtk.ToolButton (new Gtk.Image ("vc-diff", Gtk.IconSize.Menu), GettextCatalog.GetString ("View Changes"));
-				button.IsImportant = true;
-				button.Clicked += new EventHandler (DiffButtonClicked);
-				commandbar.Insert (button, -1);
-				
-				button = new Gtk.ToolButton (new Gtk.Image (Gtk.Stock.Open, Gtk.IconSize.Menu), GettextCatalog.GetString ("View File"));
-				button.IsImportant = true;
-				button.Clicked += new EventHandler (ViewTextButtonClicked);
-				commandbar.Insert (button, -1);
-			}
 			
 			revertButton = new Gtk.ToolButton (new Gtk.Image ("vc-revert-command", Gtk.IconSize.Menu), GettextCatalog.GetString ("Revert changes from this revision"));
 			revertButton.IsImportant = true;
-			revertButton.Sensitive = false;
+//			revertButton.Sensitive = false;
 			revertButton.Clicked += new EventHandler (RevertRevisionClicked);
-			commandbar.Insert (revertButton, -1);
+			lw.CommandBar.Insert (revertButton, -1);
 			
 			revertToButton = new Gtk.ToolButton (new Gtk.Image ("vc-revert-command", Gtk.IconSize.Menu), GettextCatalog.GetString ("Revert to this revision"));
 			revertToButton.IsImportant = true;
-			revertToButton.Sensitive = false;
+//			revertToButton.Sensitive = false;
 			revertToButton.Clicked += new EventHandler (RevertToRevisionClicked);
-			commandbar.Insert (revertToButton, -1);
-
+			lw.CommandBar.Insert (revertToButton, -1);
+			lw.CommandBar.ShowAll ();
 			
-			// A paned with two trees
-			
-			Gtk.VPaned paned = new Gtk.VPaned ();
-			box.PackStart (paned, true, true, 0);
-			
-			// Create the log list
-			
-			loglist = new TreeView ();
-			ScrolledWindow loglistscroll = new ScrolledWindow ();
-			loglistscroll.ShadowType = Gtk.ShadowType.In;
-			loglistscroll.Add (loglist);
-			loglistscroll.HscrollbarPolicy = PolicyType.Automatic;
-			loglistscroll.VscrollbarPolicy = PolicyType.Automatic;
-			paned.Add1 (loglistscroll);
-			((Paned.PanedChild)paned [loglistscroll]).Resize = true;
-			
-			TreeView changedPaths = new TreeView ();
-			ScrolledWindow changedPathsScroll = new ScrolledWindow ();
-			changedPathsScroll.ShadowType = Gtk.ShadowType.In;
-			changedPathsScroll.HscrollbarPolicy = PolicyType.Automatic;
-			changedPathsScroll.VscrollbarPolicy = PolicyType.Automatic;
-			changedPathsScroll.Add (changedPaths);
-			paned.Add2 (changedPathsScroll);
-			((Paned.PanedChild)paned [changedPathsScroll]).Resize = false;
-
-			widget.ShowAll ();
-			
-			// Revision list setup
-			
-			CellRendererText textRenderer = new CellRendererText ();
-			textRenderer.Yalign = 0;
-			
-			TreeViewColumn colRevNum = new TreeViewColumn (GettextCatalog.GetString ("Revision"), textRenderer, "text", 0);
-			colRevNum.Resizable = true;
-			TreeViewColumn colRevDate = new TreeViewColumn (GettextCatalog.GetString ("Date"), textRenderer, "text", 1);
-			colRevDate.Resizable = true;
-			TreeViewColumn colRevAuthor = new TreeViewColumn (GettextCatalog.GetString ("Author"), textRenderer, "text", 2);
-			colRevAuthor.Resizable = true;
-			TreeViewColumn colRevMessage = new TreeViewColumn (GettextCatalog.GetString ("Message"), textRenderer, "text", 3);
-			colRevMessage.Resizable = true;
-			
-			loglist.AppendColumn (colRevNum);
-			loglist.AppendColumn (colRevDate);
-			loglist.AppendColumn (colRevAuthor);
-			loglist.AppendColumn (colRevMessage);
-			
-			logstore = new ListStore (typeof (string), typeof (string), typeof (string), typeof (string));
-			loglist.Model = logstore;
-
-			// Changed paths list setup
-			
-			changedpathstore = new ListStore (typeof(Gdk.Pixbuf), typeof (string), typeof(Gdk.Pixbuf), typeof (string));
-			changedPaths.Model = changedpathstore;
-			
-			TreeViewColumn colOperation = new TreeViewColumn ();
-			CellRendererText crt = new CellRendererText ();
-			var crp = new CellRendererPixbuf ();
-			colOperation.Title = GettextCatalog.GetString ("Operation");
-			colOperation.PackStart (crp, false);
-			colOperation.PackStart (crt, true);
-			colOperation.AddAttribute (crp, "pixbuf", 0);
-			colOperation.AddAttribute (crt, "text", 1);
-			changedPaths.AppendColumn (colOperation);
-			
-			TreeViewColumn colChangedPath = new TreeViewColumn ();
-			crp = new CellRendererPixbuf ();
-			crt = new CellRendererText ();
-			colChangedPath.Title = GettextCatalog.GetString ("File Path");
-			colChangedPath.PackStart (crp, false);
-			colChangedPath.PackStart (crt, true);
-			colChangedPath.AddAttribute (crp, "pixbuf", 2);
-			colChangedPath.AddAttribute (crt, "text", 3);
-			changedPaths.AppendColumn (colChangedPath);
-			
-			loglist.Selection.Changed += new EventHandler (TreeSelectionChanged);
-			
-			
+			widget = lw;
 			info.Updated += delegate {
-				history = this.info.History;
+				lw.History = this.info.History;
 				vinfo   = this.info.VersionInfo;
-				ShowHistory ();
 			};
-			history = this.info.History;
+			lw.History = this.info.History;
 			vinfo   = this.info.VersionInfo;
-			ShowHistory ();*/
+		
 		}
 		
 		public LogView (string filepath, bool isDirectory, Revision [] history, Repository vc) 
@@ -235,7 +112,6 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			this.vc = vc;
 			this.filepath = filepath;
-			this.history = history;
 			
 			try {
 				this.vinfo = vc.GetVersionInfo (filepath, false);
@@ -243,238 +119,39 @@ namespace MonoDevelop.VersionControl.Views
 			catch (Exception ex) {
 				MessageService.ShowException (ex, GettextCatalog.GetString ("Version control command failed."));
 			}
-
+			
 			// Widget setup
-			
-			VBox box = new VBox (false, 6);
-			
-			widget = box;
-
-			// Create the toolbar
-			commandbar = new Toolbar ();
-			commandbar.ToolbarStyle = Gtk.ToolbarStyle.BothHoriz;
-			commandbar.IconSize = Gtk.IconSize.Menu;
-			box.PackStart (commandbar, false, false, 0);
-				
-			if (vinfo != null) {
-				Gtk.ToolButton button = new Gtk.ToolButton (new Gtk.Image ("vc-diff", Gtk.IconSize.Menu), GettextCatalog.GetString ("View Changes"));
-				button.IsImportant = true;
-				if (isDirectory) {
-					button.Clicked += new EventHandler (DirDiffButtonClicked);
-					commandbar.Insert (button, -1);
-				} else {
-					button.Clicked += new EventHandler (DiffButtonClicked);
-					commandbar.Insert (button, -1);
-					
-					button = new Gtk.ToolButton (new Gtk.Image (Gtk.Stock.Open, Gtk.IconSize.Menu), GettextCatalog.GetString ("View File"));
-					button.IsImportant = true;
-					button.Clicked += new EventHandler (ViewTextButtonClicked);
-					commandbar.Insert (button, -1);
-				}
-			}
+			VersionControlDocumentInfo info  =new VersionControlDocumentInfo (null, null, vc);
+			info.History = history;
+			info.VersionInfo = vinfo;
+			var lw = new LogWidget (info);
 			
 			revertButton = new Gtk.ToolButton (new Gtk.Image ("vc-revert-command", Gtk.IconSize.Menu), GettextCatalog.GetString ("Revert changes from this revision"));
 			revertButton.IsImportant = true;
-			revertButton.Sensitive = false;
+//			revertButton.Sensitive = false;
 			revertButton.Clicked += new EventHandler (RevertRevisionClicked);
-			commandbar.Insert (revertButton, -1);
+			lw.CommandBar.Insert (revertButton, -1);
 			
 			revertToButton = new Gtk.ToolButton (new Gtk.Image ("vc-revert-command", Gtk.IconSize.Menu), GettextCatalog.GetString ("Revert to this revision"));
 			revertToButton.IsImportant = true;
-			revertToButton.Sensitive = false;
+//			revertToButton.Sensitive = false;
 			revertToButton.Clicked += new EventHandler (RevertToRevisionClicked);
-			commandbar.Insert (revertToButton, -1);
-
-			
-			// A paned with two trees
-			
-			Gtk.VPaned paned = new Gtk.VPaned ();
-			box.PackStart (paned, true, true, 0);
-			
-			// Create the log list
-			
-			loglist = new TreeView ();
-			ScrolledWindow loglistscroll = new ScrolledWindow ();
-			loglistscroll.ShadowType = Gtk.ShadowType.In;
-			loglistscroll.Add (loglist);
-			loglistscroll.HscrollbarPolicy = PolicyType.Automatic;
-			loglistscroll.VscrollbarPolicy = PolicyType.Automatic;
-			paned.Add1 (loglistscroll);
-			((Paned.PanedChild)paned [loglistscroll]).Resize = true;
-			
-			TreeView changedPaths = new TreeView ();
-			ScrolledWindow changedPathsScroll = new ScrolledWindow ();
-			changedPathsScroll.ShadowType = Gtk.ShadowType.In;
-			changedPathsScroll.HscrollbarPolicy = PolicyType.Automatic;
-			changedPathsScroll.VscrollbarPolicy = PolicyType.Automatic;
-			changedPathsScroll.Add (changedPaths);
-			paned.Add2 (changedPathsScroll);
-			((Paned.PanedChild)paned [changedPathsScroll]).Resize = false;
-
-			widget.ShowAll ();
-			
-			// Revision list setup
-			
-			CellRendererText textRenderer = new CellRendererText ();
-			textRenderer.Yalign = 0;
-			
-			TreeViewColumn colRevNum = new TreeViewColumn (GettextCatalog.GetString ("Revision"), textRenderer, "text", 0);
-			colRevNum.Resizable = true;
-			TreeViewColumn colRevDate = new TreeViewColumn (GettextCatalog.GetString ("Date"), textRenderer, "text", 1);
-			colRevDate.Resizable = true;
-			TreeViewColumn colFiles = new TreeViewColumn (GettextCatalog.GetString ("Files"), textRenderer, "text", 4);
-			colFiles.Resizable = true;
-			colFiles.Sizing = TreeViewColumnSizing.Fixed;
-			colFiles.FixedWidth = 100;
-			TreeViewColumn colRevAuthor = new TreeViewColumn (GettextCatalog.GetString ("Author"), textRenderer, "text", 2);
-			colRevAuthor.Resizable = true;
-			TreeViewColumn colRevMessage = new TreeViewColumn (GettextCatalog.GetString ("Message"), textRenderer, "text", 3);
-			colRevMessage.Resizable = true;
-			
-			loglist.AppendColumn (colRevNum);
-			loglist.AppendColumn (colRevDate);
-			loglist.AppendColumn (colRevAuthor);
-			loglist.AppendColumn (colFiles);
-			loglist.AppendColumn (colRevMessage);
-			
-			ListStore logstore = new ListStore (typeof (string), typeof (string), typeof (string), typeof (string), typeof(string));
-			loglist.Model = logstore;
-			 
-			foreach (Revision d in history) {
-				StringBuilder sb = new StringBuilder ();
-				foreach (RevisionPath rp in d.ChangedFiles) {
-					if (sb.Length != 0) sb.Append (", ");
-					sb.Append (Path.GetFileName (rp.Path));
-				}
-				logstore.AppendValues(
-					d.ToString (),
-					d.Time.ToString (),
-					d.Author,
-					d.Message == String.Empty ? GettextCatalog.GetString ("(No message)") : d.Message,
-					sb.ToString ()
-					);
-			}
-
-			// Changed paths list setup
-			
-			changedpathstore = new ListStore (typeof(Gdk.Pixbuf), typeof (string), typeof(Gdk.Pixbuf), typeof (string));
-			changedPaths.Model = changedpathstore;
-			
-			TreeViewColumn colOperation = new TreeViewColumn ();
-			CellRendererText crt = new CellRendererText ();
-			var crp = new CellRendererPixbuf ();
-			colOperation.Title = GettextCatalog.GetString ("Operation");
-			colOperation.PackStart (crp, false);
-			colOperation.PackStart (crt, true);
-			colOperation.AddAttribute (crp, "pixbuf", 0);
-			colOperation.AddAttribute (crt, "text", 1);
-			changedPaths.AppendColumn (colOperation);
-			
-			TreeViewColumn colChangedPath = new TreeViewColumn ();
-			crp = new CellRendererPixbuf ();
-			crt = new CellRendererText ();
-			colChangedPath.Title = GettextCatalog.GetString ("File Path");
-			colChangedPath.PackStart (crp, false);
-			colChangedPath.PackStart (crt, true);
-			colChangedPath.AddAttribute (crp, "pixbuf", 2);
-			colChangedPath.AddAttribute (crt, "text", 3);
-			changedPaths.AppendColumn (colChangedPath);
-			
-			loglist.Selection.Changed += new EventHandler (TreeSelectionChanged);
+			lw.CommandBar.Insert (revertToButton, -1);
+			lw.CommandBar.ShowAll ();
+			widget = lw;
+			lw.History = history;
 		}
 
-		Revision GetSelectedRev ()
-		{
-			int [] indices;
-			return GetSelectedRev (out indices);
-		}
-		
-		Revision GetSelectedRev (out int [] indices)
-		{
-			indices = null;
-			TreePath path;
-			TreeViewColumn col;
-			
-			loglist.GetCursor (out path, out col);
-			if (path == null)
-				return null;
-
-			indices = path.Indices;
-			return history [indices [0]];
-		}
-		
-		void TreeSelectionChanged (object o, EventArgs args) {
-			int [] indices;
-			Revision d = GetSelectedRev (out indices);
-			
-			revertButton.Sensitive = (d != null);
-			revertToButton.Sensitive = ((d != null) &&
-			                            (indices.Length == 1) && //no sense to revert to *many* revs
-			                            (indices [0] != 0)); //no sense to revert to *current* rev
-			
-			changedpathstore.Clear ();
-			foreach (RevisionPath rp in d.ChangedFiles) 
-			{
-				Gdk.Pixbuf actionIcon;
-				string action = null;
-				if (rp.Action == RevisionAction.Add) {
-					action = GettextCatalog.GetString ("Add");
-					actionIcon = ImageService.GetPixbuf (Gtk.Stock.Add, Gtk.IconSize.Menu);
-				}
-				else if (rp.Action == RevisionAction.Delete) {
-					action = GettextCatalog.GetString ("Delete");
-					actionIcon = ImageService.GetPixbuf (Gtk.Stock.Remove, Gtk.IconSize.Menu);
-				}
-				else if (rp.Action == RevisionAction.Modify) {
-					action = GettextCatalog.GetString ("Modify");
-					actionIcon = ImageService.GetPixbuf ("gtk-edit", Gtk.IconSize.Menu);
-				}
-				else if (rp.Action == RevisionAction.Replace) {
-					action = GettextCatalog.GetString ("Replace");
-					actionIcon = ImageService.GetPixbuf ("gtk-edit", Gtk.IconSize.Menu);
-				} else {
-					action = rp.ActionDescription;
-					actionIcon = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Empty, Gtk.IconSize.Menu);
-				}
-				
-				Gdk.Pixbuf fileIcon = DesktopService.GetPixbufForFile (rp.Path, Gtk.IconSize.Menu);
-				changedpathstore.AppendValues (actionIcon, action, fileIcon, rp.Path);
-			}
-		}
-		
-		void DiffButtonClicked (object src, EventArgs args) {
-			Revision d = GetSelectedRev ();
-			if (d == null)
-				return;
-			
-			
-			DiffView comparisonView = new DiffView (info, d.GetPrevious (), d);
-			IdeApp.Workbench.OpenDocument (comparisonView, true);
-		}
-		
-		void DirDiffButtonClicked (object src, EventArgs args) {
-			Revision d = GetSelectedRev ();
-			if (d == null)
-				return;
-			new DirectoryDiffWorker (filepath, vc, d).Start ();
-		}
-		
-		void ViewTextButtonClicked (object src, EventArgs args) {
-			Revision d = GetSelectedRev ();
-			if (d == null)
-				return;
-			HistoricalFileView.Show (filepath, vc, vinfo.RepositoryPath, d);
-		}
 		
 		void RevertToRevisionClicked (object src, EventArgs args) {
-			Revision d = GetSelectedRev ();
+			Revision d = widget.SelectedRevision;
 			if (RevertRevisionsCommands.RevertToRevision (vc, filepath, d, false))
 				VersionControlService.SetCommitComment (filepath, 
 				  string.Format ("(Revert to revision {0})", d.ToString ()), true);
 		}
 		
 		void RevertRevisionClicked (object src, EventArgs args) {
-			Revision d = GetSelectedRev ();
+			Revision d = widget.SelectedRevision;
 			if (RevertRevisionsCommands.RevertRevision (vc, filepath, d, false))
 				VersionControlService.SetCommitComment (filepath, 
 				  string.Format ("(Revert revision {0})", d.ToString ()), true);

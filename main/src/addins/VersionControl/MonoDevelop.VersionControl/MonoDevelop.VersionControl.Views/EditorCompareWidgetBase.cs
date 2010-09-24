@@ -248,21 +248,45 @@ namespace MonoDevelop.VersionControl.Views
 			ClearDiffCache ();
 		}
 		
+		public string MimeType {
+			get {
+				return editors[0].Document.MimeType;
+			}
+			set {
+				foreach (var editor in editors) {
+					editor.Document.MimeType = value;
+				}
+			}
+		}
+		
 		public void SetVersionControlInfo (VersionControlDocumentInfo info)
 		{
 			this.info = info;
 			
-			
-			foreach (var editor in editors) {
-				editor.Document.MimeType = info.Document.Editor.Document.MimeType;
-				editor.Options.FontName = info.Document.Editor.Options.FontName;
-				editor.Options.ColorScheme = info.Document.Editor.Options.ColorScheme;
-				editor.Options.ShowSpaces = info.Document.Editor.Options.ShowSpaces;
-				editor.Options.ShowTabs = info.Document.Editor.Options.ShowTabs;
-				editor.Options.ShowEolMarkers = info.Document.Editor.Options.ShowEolMarkers;
-				editor.Options.ShowInvalidLines = info.Document.Editor.Options.ShowInvalidLines;
-				editor.Options.ShowFoldMargin = false;
-				editor.Options.ShowIconMargin = false;
+			if (info.Document != null) {
+				foreach (var editor in editors) {
+					editor.Document.MimeType = info.Document.Editor.Document.MimeType;
+					editor.Options.FontName = info.Document.Editor.Options.FontName;
+					editor.Options.ColorScheme = info.Document.Editor.Options.ColorScheme;
+					editor.Options.ShowSpaces = info.Document.Editor.Options.ShowSpaces;
+					editor.Options.ShowTabs = info.Document.Editor.Options.ShowTabs;
+					editor.Options.ShowEolMarkers = info.Document.Editor.Options.ShowEolMarkers;
+					editor.Options.ShowInvalidLines = info.Document.Editor.Options.ShowInvalidLines;
+					editor.Options.ShowFoldMargin = false;
+					editor.Options.ShowIconMargin = false;
+				}
+			} else {
+				var options = MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance;
+				foreach (var editor in editors) {
+					editor.Options.FontName = options.FontName;
+					editor.Options.ColorScheme = options.ColorScheme;
+					editor.Options.ShowSpaces = options.ShowSpaces;
+					editor.Options.ShowTabs = options.ShowTabs;
+					editor.Options.ShowEolMarkers = options.ShowEolMarkers;
+					editor.Options.ShowInvalidLines = options.ShowInvalidLines;
+					editor.Options.ShowFoldMargin = false;
+					editor.Options.ShowIconMargin = false;
+				}
 			}
 		}
 		

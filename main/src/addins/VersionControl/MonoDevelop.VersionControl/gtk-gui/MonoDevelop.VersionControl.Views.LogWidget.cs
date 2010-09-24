@@ -4,37 +4,62 @@ namespace MonoDevelop.VersionControl.Views
 {
 	public partial class LogWidget
 	{
-		private global::Gtk.VPaned vpaned1;
-
-		private global::Gtk.HPaned hpaned1;
-
-		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-
-		private global::Gtk.TreeView treeviewLog;
-
+		private global::Gtk.UIManager UIManager;
+		
 		private global::Gtk.VBox vbox1;
-
+		
+		private global::Gtk.Toolbar commandBar;
+		
+		private global::Gtk.VPaned vpaned1;
+		
+		private global::Gtk.HPaned hpaned1;
+		
+		private global::Gtk.ScrolledWindow GtkScrolledWindow;
+		
+		private global::Gtk.TreeView treeviewLog;
+		
+		private global::Gtk.VBox vbox2;
+		
 		private global::Gtk.Label label1;
-
+		
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-
+		
 		private global::Gtk.TextView textviewDetails;
-
+		
 		private global::Gtk.HPaned hpaned2;
-
+		
 		private global::Gtk.ScrolledWindow GtkScrolledWindow1;
-
+		
 		private global::Gtk.TreeView treeviewFiles;
-
+		
 		private global::Gtk.VBox vboxCompareView;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.VersionControl.Views.LogWidget
-			global::Stetic.BinContainer.Attach (this);
+			Stetic.BinContainer w1 = global::Stetic.BinContainer.Attach (this);
+			this.UIManager = new global::Gtk.UIManager ();
+			global::Gtk.ActionGroup w2 = new global::Gtk.ActionGroup ("Default");
+			this.UIManager.InsertActionGroup (w2,0);
 			this.Name = "MonoDevelop.VersionControl.Views.LogWidget";
 			// Container child MonoDevelop.VersionControl.Views.LogWidget.Gtk.Container+ContainerChild
+			this.vbox1 = new global::Gtk.VBox ();
+			this.vbox1.Name = "vbox1";
+			this.vbox1.Spacing = 6;
+			// Container child vbox1.Gtk.Box+BoxChild
+			this.UIManager.AddUiFromString ("<ui><toolbar name='commandBar'/></ui>");
+			this.commandBar = ((global::Gtk.Toolbar)(this.UIManager.GetWidget ("/commandBar")));
+			this.commandBar.Name = "commandBar";
+			this.commandBar.ShowArrow = false;
+			this.commandBar.ToolbarStyle = ((global::Gtk.ToolbarStyle)(3));
+			this.commandBar.IconSize = ((global::Gtk.IconSize)(1));
+			this.vbox1.Add (this.commandBar);
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.commandBar]));
+			w3.Position = 0;
+			w3.Expand = false;
+			w3.Fill = false;
+			// Container child vbox1.Gtk.Box+BoxChild
 			this.vpaned1 = new global::Gtk.VPaned ();
 			this.vpaned1.CanFocus = true;
 			this.vpaned1.Name = "vpaned1";
@@ -54,23 +79,23 @@ namespace MonoDevelop.VersionControl.Views
 			this.treeviewLog.Name = "treeviewLog";
 			this.GtkScrolledWindow.Add (this.treeviewLog);
 			this.hpaned1.Add (this.GtkScrolledWindow);
-			global::Gtk.Paned.PanedChild w2 = ((global::Gtk.Paned.PanedChild)(this.hpaned1[this.GtkScrolledWindow]));
-			w2.Resize = false;
+			global::Gtk.Paned.PanedChild w5 = ((global::Gtk.Paned.PanedChild)(this.hpaned1[this.GtkScrolledWindow]));
+			w5.Resize = false;
 			// Container child hpaned1.Gtk.Paned+PanedChild
-			this.vbox1 = new global::Gtk.VBox ();
-			this.vbox1.Name = "vbox1";
-			this.vbox1.Spacing = 6;
-			// Container child vbox1.Gtk.Box+BoxChild
+			this.vbox2 = new global::Gtk.VBox ();
+			this.vbox2.Name = "vbox2";
+			this.vbox2.Spacing = 6;
+			// Container child vbox2.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Details");
-			this.vbox1.Add (this.label1);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.label1]));
-			w3.Position = 0;
-			w3.Expand = false;
-			w3.Fill = false;
-			// Container child vbox1.Gtk.Box+BoxChild
+			this.vbox2.Add (this.label1);
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.label1]));
+			w6.Position = 0;
+			w6.Expand = false;
+			w6.Fill = false;
+			// Container child vbox2.Gtk.Box+BoxChild
 			this.scrolledwindow1 = new global::Gtk.ScrolledWindow ();
 			this.scrolledwindow1.CanFocus = true;
 			this.scrolledwindow1.Name = "scrolledwindow1";
@@ -80,13 +105,13 @@ namespace MonoDevelop.VersionControl.Views
 			this.textviewDetails.CanFocus = true;
 			this.textviewDetails.Name = "textviewDetails";
 			this.scrolledwindow1.Add (this.textviewDetails);
-			this.vbox1.Add (this.scrolledwindow1);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.scrolledwindow1]));
-			w5.Position = 1;
-			this.hpaned1.Add (this.vbox1);
+			this.vbox2.Add (this.scrolledwindow1);
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.scrolledwindow1]));
+			w8.Position = 1;
+			this.hpaned1.Add (this.vbox2);
 			this.vpaned1.Add (this.hpaned1);
-			global::Gtk.Paned.PanedChild w7 = ((global::Gtk.Paned.PanedChild)(this.vpaned1[this.hpaned1]));
-			w7.Resize = false;
+			global::Gtk.Paned.PanedChild w10 = ((global::Gtk.Paned.PanedChild)(this.vpaned1[this.hpaned1]));
+			w10.Resize = false;
 			// Container child vpaned1.Gtk.Paned+PanedChild
 			this.hpaned2 = new global::Gtk.HPaned ();
 			this.hpaned2.CanFocus = true;
@@ -102,18 +127,22 @@ namespace MonoDevelop.VersionControl.Views
 			this.treeviewFiles.Name = "treeviewFiles";
 			this.GtkScrolledWindow1.Add (this.treeviewFiles);
 			this.hpaned2.Add (this.GtkScrolledWindow1);
-			global::Gtk.Paned.PanedChild w9 = ((global::Gtk.Paned.PanedChild)(this.hpaned2[this.GtkScrolledWindow1]));
-			w9.Resize = false;
+			global::Gtk.Paned.PanedChild w12 = ((global::Gtk.Paned.PanedChild)(this.hpaned2[this.GtkScrolledWindow1]));
+			w12.Resize = false;
 			// Container child hpaned2.Gtk.Paned+PanedChild
 			this.vboxCompareView = new global::Gtk.VBox ();
 			this.vboxCompareView.Name = "vboxCompareView";
 			this.vboxCompareView.Spacing = 6;
 			this.hpaned2.Add (this.vboxCompareView);
 			this.vpaned1.Add (this.hpaned2);
-			this.Add (this.vpaned1);
+			this.vbox1.Add (this.vpaned1);
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.vpaned1]));
+			w15.Position = 1;
+			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
+			w1.SetUiManager (UIManager);
 			this.Show ();
 		}
 	}

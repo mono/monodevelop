@@ -48,6 +48,14 @@ namespace MonoDevelop.VersionControl.Views
 				UpdateHistory ();
 			}
 		}
+		
+		public Toolbar CommandBar {
+			get {
+				return commandBar;
+			}
+		}
+		
+		
 		DiffWidget diffWidget;
 		ListStore logstore = new ListStore (typeof (Revision));
 		ListStore changedpathstore = new ListStore (typeof(Gdk.Pixbuf), typeof (string), typeof(Gdk.Pixbuf), typeof (string), typeof (string), typeof (string));
@@ -57,6 +65,16 @@ namespace MonoDevelop.VersionControl.Views
 		
 		class RevisionGraphCellRenderer : Gtk.CellRenderer
 		{
+			public bool FirstNode {
+				get;
+				set;
+			}
+
+			public bool LastNode {
+				get;
+				set;
+			}
+			
 			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 			{
 				x_offset = y_offset = 0;
@@ -71,14 +89,17 @@ namespace MonoDevelop.VersionControl.Views
 					cr.Color = new Cairo.Color (0, 0, 0);
 					cr.Stroke ();
 					double h = (cell_area.Height - 10) / 2;
+					if (!FirstNode) {
+						cr.MoveTo (cell_area.X + cell_area.Width / 2, cell_area.Y - 1);
+						cr.LineTo (cell_area.X + cell_area.Width / 2, cell_area.Y + h);
+						cr.Stroke ();
+					}
 					
-					cr.MoveTo (cell_area.X + cell_area.Width / 2, cell_area.Y - 1);
-					cr.LineTo (cell_area.X + cell_area.Width / 2, cell_area.Y + h);
-					cr.Stroke ();
-					
-					cr.MoveTo (cell_area.X + cell_area.Width / 2, cell_area.Y + cell_area.Height + 1);
-					cr.LineTo (cell_area.X + cell_area.Width / 2, cell_area.Y + cell_area.Height - h);
-					cr.Stroke ();
+					if (!LastNode) {
+						cr.MoveTo (cell_area.X + cell_area.Width / 2, cell_area.Y + cell_area.Height + 1);
+						cr.LineTo (cell_area.X + cell_area.Width / 2, cell_area.Y + cell_area.Height - h);
+						cr.Stroke ();
+					}
 				}
 				
 			}
@@ -89,16 +110,21 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			this.Build ();
 			this.info = info;
-			this.preselectFile = info.Document.FileName;
+			if (info.Document != null)
+				this.preselectFile = info.Document.FileName;
 			CellRendererText messageRenderer = new CellRendererText ();
 			messageRenderer.Ellipsize = Pango.EllipsizeMode.End;
 			TreeViewColumn colRevMessage = new TreeViewColumn ();
 			colRevMessage.Title = GettextCatalog.GetString ("Message");
-			colRevMessage.PackStart (new RevisionGraphCellRenderer (), false);
+			var graphRenderer = new RevisionGraphCellRenderer ();
+			colRevMessage.PackStart (graphRenderer, false);
+			colRevMessage.SetCellDataFunc (graphRenderer, GraphFunc);
+			
 			colRevMessage.PackStart (messageRenderer, true);
 			colRevMessage.SetCellDataFunc (messageRenderer, MessageFunc);
 			colRevMessage.Sizing = TreeViewColumnSizing.Autosize;
-			colRevMessage.MinWidth = 300;
+			
+			colRevMessage.MinWidth = 350;
 			colRevMessage.Resizable = true;
 			treeviewLog.AppendColumn (colRevMessage);
 
@@ -167,10 +193,11 @@ namespace MonoDevelop.VersionControl.Views
 				return;
 			string path = (string)changedpathstore.GetValue (iter, 5);
 			ThreadPool.QueueUserWorkItem (delegate {
-				string text = info.Item.Repository.GetTextAtRevision (path, rev);
-				string prevRevision = text; // info.Item.Repository.GetTextAtRevision (path, rev.GetPrevious ());
+				string text = info.Repository.GetTextAtRevision (path, rev);
+				string prevRevision = text; // info.Repository.GetTextAtRevision (path, rev.GetPrevious ());
 				
 				Application.Invoke (delegate {
+					diffWidget.ComparisonWidget.MimeType = DesktopService.GetMimeTypeForUri (path);
 					diffWidget.ComparisonWidget.OriginalEditor.Text = prevRevision;
 					diffWidget.ComparisonWidget.DiffEditor.Text = text;
 					diffWidget.ComparisonWidget.CreateDiff ();
@@ -201,6 +228,17 @@ namespace MonoDevelop.VersionControl.Views
 			string time = rev.Time.ToString ("HH:MM");
 			renderer.Text = day + " " + time;
 		}	
+		
+		static void GraphFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			var renderer = (RevisionGraphCellRenderer)cell;
+			Gtk.TreeIter node;
+			model.GetIterFirst (out node);
+			
+			renderer.FirstNode = node.Equals (iter);
+			model.IterNthChild (out node, model.IterNChildren () - 1);
+			renderer.LastNode =  node.Equals (iter);
+		}
 		
 		static void MessageFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
@@ -244,7 +282,8 @@ namespace MonoDevelop.VersionControl.Views
 				vpaned1.Position = allocation.Width / 3;
 			}
 		}
-		Revision SelectedRevision {
+		
+		public Revision SelectedRevision {
 			get {
 				TreeIter iter;
 				if (!treeviewLog.Selection.GetSelected (out iter))

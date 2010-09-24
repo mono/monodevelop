@@ -1691,26 +1691,88 @@
     </child>
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.VersionControl.Views.LogWidget" design-size="564 423">
+    <action-group name="Default" />
     <property name="MemberName" />
     <child>
-      <widget class="Gtk.VPaned" id="vpaned1">
+      <widget class="Gtk.VBox" id="vbox1">
         <property name="MemberName" />
-        <property name="CanFocus">True</property>
-        <property name="Position">212</property>
+        <property name="Spacing">6</property>
         <child>
-          <widget class="Gtk.HPaned" id="hpaned1">
+          <widget class="Gtk.Toolbar" id="commandBar">
+            <property name="MemberName" />
+            <property name="ShowArrow">False</property>
+            <property name="ButtonStyle">BothHoriz</property>
+            <property name="IconSize">Menu</property>
+            <node name="commandBar" type="Toolbar" />
+          </widget>
+          <packing>
+            <property name="Position">0</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.VPaned" id="vpaned1">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Position">236</property>
+            <property name="Position">212</property>
             <child>
-              <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
+              <widget class="Gtk.HPaned" id="hpaned1">
                 <property name="MemberName" />
-                <property name="ShadowType">In</property>
+                <property name="CanFocus">True</property>
+                <property name="Position">236</property>
                 <child>
-                  <widget class="Gtk.TreeView" id="treeviewLog">
+                  <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
                     <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="ShowScrollbars">True</property>
+                    <property name="ShadowType">In</property>
+                    <child>
+                      <widget class="Gtk.TreeView" id="treeviewLog">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="ShowScrollbars">True</property>
+                      </widget>
+                    </child>
+                  </widget>
+                  <packing>
+                    <property name="Resize">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.VBox" id="vbox2">
+                    <property name="MemberName" />
+                    <property name="Spacing">6</property>
+                    <child>
+                      <widget class="Gtk.Label" id="label1">
+                        <property name="MemberName" />
+                        <property name="Xalign">0</property>
+                        <property name="LabelProp" translatable="yes">Details</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">0</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="ShadowType">In</property>
+                        <child>
+                          <widget class="Gtk.TextView" id="textviewDetails">
+                            <property name="MemberName" />
+                            <property name="CanFocus">True</property>
+                            <property name="Text" translatable="yes" />
+                          </widget>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="Position">1</property>
+                        <property name="AutoSize">True</property>
+                      </packing>
+                    </child>
                   </widget>
                 </child>
               </widget>
@@ -1719,78 +1781,42 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.VBox" id="vbox1">
+              <widget class="Gtk.HPaned" id="hpaned2">
                 <property name="MemberName" />
-                <property name="Spacing">6</property>
+                <property name="CanFocus">True</property>
+                <property name="Position">237</property>
                 <child>
-                  <widget class="Gtk.Label" id="label1">
+                  <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow1">
                     <property name="MemberName" />
-                    <property name="Xalign">0</property>
-                    <property name="LabelProp" translatable="yes">Details</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">0</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.ScrolledWindow" id="scrolledwindow1">
-                    <property name="MemberName" />
-                    <property name="CanFocus">True</property>
                     <property name="ShadowType">In</property>
                     <child>
-                      <widget class="Gtk.TextView" id="textviewDetails">
+                      <widget class="Gtk.TreeView" id="treeviewFiles">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="Text" translatable="yes" />
+                        <property name="ShowScrollbars">True</property>
                       </widget>
                     </child>
                   </widget>
                   <packing>
-                    <property name="Position">1</property>
-                    <property name="AutoSize">True</property>
+                    <property name="Resize">False</property>
                   </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.VBox" id="vboxCompareView">
+                    <property name="MemberName" />
+                    <property name="Spacing">6</property>
+                    <child>
+                      <placeholder />
+                    </child>
+                  </widget>
                 </child>
               </widget>
             </child>
           </widget>
           <packing>
-            <property name="Resize">False</property>
+            <property name="Position">1</property>
+            <property name="AutoSize">True</property>
           </packing>
-        </child>
-        <child>
-          <widget class="Gtk.HPaned" id="hpaned2">
-            <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="Position">237</property>
-            <child>
-              <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow1">
-                <property name="MemberName" />
-                <property name="ShadowType">In</property>
-                <child>
-                  <widget class="Gtk.TreeView" id="treeviewFiles">
-                    <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="ShowScrollbars">True</property>
-                  </widget>
-                </child>
-              </widget>
-              <packing>
-                <property name="Resize">False</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.VBox" id="vboxCompareView">
-                <property name="MemberName" />
-                <property name="Spacing">6</property>
-                <child>
-                  <placeholder />
-                </child>
-              </widget>
-            </child>
-          </widget>
         </child>
       </widget>
     </child>

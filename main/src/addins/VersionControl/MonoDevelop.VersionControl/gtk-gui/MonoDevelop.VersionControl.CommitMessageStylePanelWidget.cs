@@ -5,35 +5,35 @@ namespace MonoDevelop.VersionControl
 	public partial class CommitMessageStylePanelWidget
 	{
 		private global::Gtk.VBox vbox1;
-
+		
 		private global::Gtk.Table table2;
-
+		
 		private global::Gtk.Entry entryHeader;
-
+		
 		private global::Gtk.Label label4;
-
+		
 		private global::Gtk.Table tableFlags;
-
+		
 		private global::Gtk.CheckButton checkIncludeDirs;
-
+		
 		private global::Gtk.CheckButton checkIndent;
-
+		
 		private global::Gtk.CheckButton checkIndentEntries;
-
+		
 		private global::Gtk.CheckButton checkLineSep;
-
+		
 		private global::Gtk.CheckButton checkMsgInNewLine;
-
+		
 		private global::Gtk.CheckButton checkOneLinePerFile;
-
+		
 		private global::Gtk.CheckButton checkUseBullets;
-
+		
 		private global::Gtk.Label label9;
-
+		
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-
+		
 		private global::Gtk.TextView textview;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -63,7 +63,7 @@ namespace MonoDevelop.VersionControl
 			// Container child table2.Gtk.Table+TableChild
 			this.label4 = new global::Gtk.Label ();
 			this.label4.Name = "label4";
-			this.label4.Xalign = 0f;
+			this.label4.Xalign = 0F;
 			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("Message Header:");
 			this.table2.Add (this.label4);
 			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table2[this.label4]));
@@ -173,7 +173,7 @@ namespace MonoDevelop.VersionControl
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.label9 = new global::Gtk.Label ();
 			this.label9.Name = "label9";
-			this.label9.Xalign = 0f;
+			this.label9.Xalign = 0F;
 			this.label9.LabelProp = global::Mono.Unix.Catalog.GetString ("Preview:");
 			this.vbox1.Add (this.label9);
 			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.label9]));

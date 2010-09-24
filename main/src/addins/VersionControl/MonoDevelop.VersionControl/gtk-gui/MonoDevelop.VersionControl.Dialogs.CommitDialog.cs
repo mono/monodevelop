@@ -5,25 +5,25 @@ namespace MonoDevelop.VersionControl.Dialogs
 	internal partial class CommitDialog
 	{
 		private global::Gtk.VBox mainBox;
-
+		
 		private global::Gtk.Label label1;
-
+		
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-
+		
 		private global::Gtk.TreeView fileList;
-
+		
 		private global::Gtk.VBox vboxExtensions;
-
+		
 		private global::Gtk.ScrolledWindow scrolledwindow2;
-
+		
 		private global::Gtk.TextView textview;
-
+		
 		private global::Gtk.Label label2;
-
+		
 		private global::Gtk.Button button29;
-
+		
 		private global::Gtk.Button button31;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -47,7 +47,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			// Container child mainBox.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("The following files will be committed:");
 			this.mainBox.Add (this.label1);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.mainBox[this.label1]));
@@ -96,7 +96,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			// Container child mainBox.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.Xalign = 0f;
+			this.label2.Xalign = 0F;
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Commit _message:");
 			this.label2.UseUnderline = true;
 			this.mainBox.Add (this.label2);
@@ -123,7 +123,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.button29.UseStock = true;
 			this.button29.UseUnderline = true;
 			this.button29.Label = "gtk-cancel";
-			this.AddActionWidget (this.button29, -6);
+			this.AddActionWidget (this.button29,-6);
 			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10[this.button29]));
 			w11.Expand = false;
 			w11.Fill = false;
@@ -134,13 +134,13 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.button31.Name = "button31";
 			this.button31.UseUnderline = true;
 			// Container child button31.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w12 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+			global::Gtk.Alignment w12 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
 			global::Gtk.HBox w13 = new global::Gtk.HBox ();
 			w13.Spacing = 2;
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Image w14 = new global::Gtk.Image ();
-			w14.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "vc-commit", global::Gtk.IconSize.Menu);
+			w14.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"vc-commit",global::Gtk.IconSize.Menu);
 			w13.Add (w14);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w16 = new global::Gtk.Label ();
@@ -149,7 +149,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			w13.Add (w16);
 			w12.Add (w13);
 			this.button31.Add (w12);
-			this.AddActionWidget (this.button31, -5);
+			this.AddActionWidget (this.button31,-5);
 			global::Gtk.ButtonBox.ButtonBoxChild w20 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10[this.button31]));
 			w20.Position = 1;
 			w20.Expand = false;

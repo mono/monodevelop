@@ -58,11 +58,17 @@ namespace MonoDevelop.VersionControl.Views
 			get;
 			set;
 		}
+		
+		public Repository Repository {
+			get;
+			set;
+		}
 
-		public VersionControlDocumentInfo (Document document, VersionControlItem item)
+		public VersionControlDocumentInfo (Document document, VersionControlItem item, Repository repository)
 		{
 			this.Document = document;
 			this.Item = item;
+			this.Repository = repository;
 		}
 
 		public void Start ()
@@ -130,7 +136,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (window.SubViewContents.Any (sub => sub is DiffView))
 				return;
 			
-			VersionControlDocumentInfo info = new VersionControlDocumentInfo (document, item);
+			VersionControlDocumentInfo info = new VersionControlDocumentInfo (document, item, item.Repository);
 			
 			DiffView comparisonView = new DiffView (info);
 			window.AttachViewContent (comparisonView);
