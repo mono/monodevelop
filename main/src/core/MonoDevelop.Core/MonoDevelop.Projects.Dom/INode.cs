@@ -174,6 +174,8 @@ namespace MonoDevelop.Projects.Dom
 		
 		public void AddChild (INode child)
 		{
+			if (child == null)
+				return;
 			child.Parent = this;
 			if (FirstChild == null) {
 				LastChild = FirstChild = child;
@@ -186,12 +188,17 @@ namespace MonoDevelop.Projects.Dom
 		
 		public void AddChild (INode child, int role)
 		{
+			if (child == null)
+				return;
 			child.Role = role;
 			AddChild (child);
 		}
 		
 		public void InsertChildBefore (INode nextSibling, INode child, int role)
 		{
+			if (child == null)
+				return;
+			
 			if (FirstChild == null || nextSibling == null) {
 				AddChild (child, role);
 				return;
