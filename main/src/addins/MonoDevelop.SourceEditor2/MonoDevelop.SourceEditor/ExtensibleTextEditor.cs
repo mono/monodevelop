@@ -336,6 +336,10 @@ namespace MonoDevelop.SourceEditor
 			foreach (Span span in stack) {
 				if (string.IsNullOrEmpty (span.Color))
 					continue;
+				if (span.Color == "string.other") {
+					inStringOrComment = inChar = inString = true;
+					break;
+				}
 				if (span.Color == "string.single" || span.Color == "string.double" || span.Color.StartsWith ("comment")) {
 					inStringOrComment = true;
 					inChar |= span.Color == "string.single";
@@ -345,14 +349,18 @@ namespace MonoDevelop.SourceEditor
 					break;
 				}
 			}
-			
+			if (Caret.Offset >= 0) {
+				char c = GetCharAt (Caret.Offset - 1);
+				if (c == '"' || c == '\'')
+					inStringOrComment = inChar = inString = true;
+			}
 			Document.BeginAtomicUndo ();
 
 			// insert template when space is typed (currently disabled - it's annoying).
 			bool templateInserted = false;
 			//!inStringOrComment && (key == Gdk.Key.space) && DoInsertTemplate ();
 			bool returnBetweenBraces = key == Gdk.Key.Return && (state & (Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask)) == Gdk.ModifierType.None && Caret.Offset > 0 && Caret.Offset < Document.Length && Document.GetCharAt (Caret.Offset - 1) == '{' && Document.GetCharAt (Caret.Offset) == '}' && !inStringOrComment;
-			int initialOffset = Caret.Offset;
+//			int initialOffset = Caret.Offset;
 			const string openBrackets = "{[('\"";
 			const string closingBrackets = "}])'\"";
 			int braceIndex = openBrackets.IndexOf ((char)ch);
