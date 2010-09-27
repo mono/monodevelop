@@ -91,7 +91,7 @@ namespace MonoDevelop.Projects.Text
 		{
 			if (string.IsNullOrEmpty (input))
 				return input;
-			return FormatText (policyParent, mimeType, input, 0, input.Length - 1);
+			return FormatText (policyParent, mimeType, input, 0, input.Length);
 		}
 		
 		public string FormatText (PolicyContainer policyParent, string mimeType, string input, int fromOffest, int toOffset)
