@@ -2336,6 +2336,7 @@ namespace Mono.TextEditor
 		
 		public double ColumnToX (LineSegment line, int column)
 		{
+			column--;
 			if (line == null || line.EditableLength == 0 || column < 0)
 				return 0;
 			int logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData(), textEditor.Options.RulerColumn);
