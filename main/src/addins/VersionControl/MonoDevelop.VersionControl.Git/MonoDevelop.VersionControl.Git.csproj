@@ -38,29 +38,13 @@
     <Reference Include="Mono.Posix" />
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="System.Core" />
-    <Reference Include="GitSharp.Core, Version=0.3.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="NGit, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>GitSharp.Core.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\ngit\bin\NGit.dll</HintPath>
     </Reference>
-    <Reference Include="GitSharp, Version=0.3.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="Sharpen, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>GitSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Tamir.SharpSSH, Version=1.1.1.13, Culture=neutral, PublicKeyToken=null">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Tamir.SharpSSH.dll</HintPath>
-    </Reference>
-    <Reference Include="Winterdom.IO.FileMap, Version=2.0.2.0, Culture=neutral, PublicKeyToken=4982617362e1edb5">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Winterdom.IO.FileMap.dll</HintPath>
-    </Reference>
-    <Reference Include="DiffieHellman, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>DiffieHellman.dll</HintPath>
-    </Reference>
-    <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.4.369, Culture=neutral, PublicKeyToken=null">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>ICSharpCode.SharpZipLib.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\ngit\bin\Sharpen.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -85,8 +69,10 @@
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.EditBranchDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\EditRemoteDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.EditRemoteDialog.cs" />
-    <Compile Include="MonoDevelop.VersionControl.Git\MergeDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.MergeDialog.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git\Change.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git\RepositoryStatus.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git\MergeDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -117,19 +103,9 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\tag_blue.png">
-      <LogicalName>tag_blue.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\arrow_branch.png">
-      <LogicalName>arrow_branch.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\server.png">
-      <LogicalName>server.png</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.VersionControl.Git\" />
-    <Folder Include="icons\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

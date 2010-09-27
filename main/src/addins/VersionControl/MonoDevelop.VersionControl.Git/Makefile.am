@@ -4,22 +4,17 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.VersionControl.Git.dll
 
 DEPS =  \
 	$(top_builddir)/build/AddIns/VersionControl/MonoDevelop.VersionControl.dll \
-	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:DiffieHellman.dll \
-	-r:GitSharp.Core.dll \
-	-r:GitSharp.dll \
-	-r:ICSharpCode.SharpZipLib.dll \
+	-r:../../../../../../ngit/bin/NGit.dll \
+	-r:../../../../../../ngit/bin/Sharpen.dll \
 	-r:Mono.Posix \
 	-r:System \
-	-r:System.Core \
-	-r:Tamir.SharpSSH.dll \
-	-r:Winterdom.IO.FileMap.dll
+	-r:System.Core
 
 FILES =  \
 	AssemblyInfo.cs \
@@ -31,6 +26,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.VersionControl.Git.MergeDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.PushDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.UserInfoConflictDialog.cs \
+	MonoDevelop.VersionControl.Git/Change.cs \
 	MonoDevelop.VersionControl.Git/Commands.cs \
 	MonoDevelop.VersionControl.Git/CommitDialogExtensionWidget.cs \
 	MonoDevelop.VersionControl.Git/ConflictResolutionDialog.cs \
@@ -44,13 +40,11 @@ FILES =  \
 	MonoDevelop.VersionControl.Git/GitVersionControl.cs \
 	MonoDevelop.VersionControl.Git/MergeDialog.cs \
 	MonoDevelop.VersionControl.Git/PushDialog.cs \
+	MonoDevelop.VersionControl.Git/RepositoryStatus.cs \
 	MonoDevelop.VersionControl.Git/UserInfoConflictDialog.cs
 
 RES =  \
 	gtk-gui/gui.stetic \
-	icons/arrow_branch.png \
-	icons/server.png \
-	icons/tag_blue.png \
 	MonoDevelop.VersionControl.Git.addin.xml
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)

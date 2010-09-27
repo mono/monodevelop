@@ -7,7 +7,6 @@
   <import>
     <widget-library name="../../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../../build/AddIns/VersionControl/MonoDevelop.VersionControl.dll" />
-    <widget-library name="../../../../../build/bin/Mono.TextEditor.dll" />
     <widget-library name="../../../../../build/AddIns/VersionControl/MonoDevelop.VersionControl.Git.dll" internal="true" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Git.PushDialog" design-size="730 540">
