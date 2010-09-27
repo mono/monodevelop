@@ -877,7 +877,7 @@ namespace MonoDevelop.CSharp.Formatting
 			string indentString = this.curIndent.IndentString;
 			if (indentString != lineIndent && location.Column - 1 == lineIndent.Length) {
 				AddChange (lineSegment.Offset, lineIndent.Length, indentString);
-			} else if (!string.IsNullOrEmpty (indentString)){
+			} else {
 				int offset = data.Document.LocationToOffset (location.Line, location.Column);
 				int start = SearchWhitespaceLineStart (offset);
 				if (start > 0) { 
