@@ -119,15 +119,16 @@ namespace MonoDevelop.CSharp.Formatting
 			CorrectFormatting (data, startOffset, endOffset);
 		}
 		
-		void CorrectFormatting (TextEditorData data, int start, int end)
+		int CorrectFormatting (TextEditorData data, int start, int end)
 		{
+			int delta = 0;
 			int lineNumber = data.OffsetToLineNumber (start);
 			LineSegment line = data.GetLine (lineNumber);
 			if (line.Offset < start)
 				lineNumber++;
 			line = data.GetLine (lineNumber);
 			if (line == null)
-				return;
+				return 0;
 			bool wholeDocument = end >= data.Document.Length;
 			do {
 				string indent = line.GetIndentation (data.Document);
@@ -164,6 +165,8 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 				
 				if (line.DelimiterLength != 0) {
+					delta -= line.DelimiterLength;
+					delta += data.EolMarker.Length;
 					data.Replace (line.Offset + line.EditableLength, line.DelimiterLength, data.EolMarker);
 					if (!wholeDocument) {
 						end -= line.DelimiterLength;
@@ -174,7 +177,8 @@ namespace MonoDevelop.CSharp.Formatting
 				string replaceWith = newIndent.ToString ();
 				if (indent != replaceWith) {
 					int count = (indent ?? "").Length;
-					data.Replace (line.Offset, count, replaceWith);
+					delta -= count;
+					delta += data.Replace (line.Offset, count, replaceWith);
 					if (!wholeDocument)
 						end = end - count + replaceWith.Length;
 				}
@@ -182,6 +186,7 @@ namespace MonoDevelop.CSharp.Formatting
 				lineNumber++;
 				line = data.GetLine (lineNumber);
 			} while (line != null && (wholeDocument || line.EndOffset <= end));
+			return delta;
 		}
 		
 		protected override string InternalFormat (PolicyContainer policyParent, string mimeType, string input, int startOffset, int endOffset)
@@ -198,9 +203,7 @@ namespace MonoDevelop.CSharp.Formatting
 			data.Options.OverrideDocumentEolMarker = true;
 			data.Options.DefaultEolMarker = textPolicy.GetEolMarker ();
 			
-			CorrectFormatting (data, 0, data.Document.Length);
-			startOffset = 0;
-			endOffset = data.Document.Length;
+			endOffset += CorrectFormatting (data, startOffset, endOffset);
 			
 			CSharp.Dom.CompilationUnit compilationUnit = new MonoDevelop.CSharp.Parser.CSharpParser ().Parse (data);
 			CSharpFormattingPolicy policy = policyParent != null ? policyParent.Get<CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
@@ -226,7 +229,8 @@ namespace MonoDevelop.CSharp.Formatting
 				if (c.InsertedText != null)
 					end += c.InsertedText.Length;
 			}
-			return data.Text.Substring (startOffset, Math.Min (end - startOffset + 1, data.Document.Length - startOffset));
+			string result = data.GetTextBetween (startOffset, end);
+			return result;
 		}
 	}
 }
