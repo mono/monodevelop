@@ -71,7 +71,8 @@ namespace MonoDevelop.VersionControl
 			if (ConfiguredSolutionItem != null)
 				uinfo = ConfiguredSolutionItem.AuthorInformation;
 			else
-				uinfo = ConfiguredSolution != null ? ConfiguredSolution.AuthorInformation : ConfiguredSolution.AuthorInformation;
+				uinfo = ConfiguredSolution != null ? ConfiguredSolution.AuthorInformation : AuthorInformation.Default;
+			
 			widget.Load (format, uinfo);
 		}
 	}
