@@ -818,6 +818,12 @@ namespace MonoDevelop.CSharp.Formatting
 			get;
 			set;
 		}
+		
+		[ItemProperty]
+		public bool SpacesBeforeArrayDeclarationBrackets { // tested
+			get;
+			set;
+		}
 		#endregion
 		
 		public CSharpFormattingPolicy ()

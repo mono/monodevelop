@@ -233,6 +233,15 @@ namespace MonoDevelop.CSharp.Formatting
 			return base.VisitFieldDeclaration (fieldDeclaration, data);
 		}
 		
+		public override object VisitComposedType (ComposedType composedType, object data)
+		{
+			var spec = composedType.Compositions.FirstOrDefault ();
+			if (spec != null)
+				ForceSpacesBefore (spec.LBracket, policy.SpacesBeforeArrayDeclarationBrackets);
+			
+			return base.VisitComposedType (composedType, data);
+		}
+		
 		public override object VisitDelegateDeclaration (DelegateDeclaration delegateDeclaration, object data)
 		{
 			ForceSpacesBefore (delegateDeclaration.LPar, policy.BeforeDelegateDeclarationParentheses);

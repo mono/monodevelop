@@ -49,8 +49,8 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public IEnumerable<ICSharpNode> Compositions {
-			get { return GetChildrenByRole (Roles.Argument).Cast<ICSharpNode> () ?? new ICSharpNode[0]; }
+		public IEnumerable<ArraySpecifier> Compositions {
+			get { return GetChildrenByRole (ArraySpecRole).Cast<ArraySpecifier> () ?? new ArraySpecifier[0]; }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
@@ -65,6 +65,15 @@ namespace MonoDevelop.CSharp.Dom
 					return NodeType.Unknown;
 				}
 			}
+			
+			public CSharpTokenNode LBracket {
+				get { return (CSharpTokenNode)GetChildByRole (Roles.LBracket); }
+			}
+			
+			public CSharpTokenNode RBracket {
+				get { return (CSharpTokenNode)GetChildByRole (Roles.RBracket); }
+			}
+		
 			
 			public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 			{

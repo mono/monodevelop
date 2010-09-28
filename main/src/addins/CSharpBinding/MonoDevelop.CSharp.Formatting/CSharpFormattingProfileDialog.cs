@@ -728,6 +728,14 @@ delegate void BarFoo ();
 				new Option ("ConditionalOperatorAfterSeparatorSpace", GettextCatalog.GetString ("after ':'"))
 			));
 			
+			example = @"class ClassDeclaration { 
+		string[][] field;
+		int[] test;
+	}";
+			whiteSpaceCategory.AppendValues (GettextCatalog.GetString ("Array Declarations"), new Category (example,
+				new Option ("SpacesBeforeArrayDeclarationBrackets", GettextCatalog.GetString ("before opening bracket"))
+			));
+			
 			whiteSpaceOptions= new ListStore (typeof (Option), typeof (bool), typeof (bool)); 
 			column = new TreeViewColumn ();
 			// text column
