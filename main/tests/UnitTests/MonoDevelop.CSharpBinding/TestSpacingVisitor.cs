@@ -1727,15 +1727,11 @@ return (Test)null;
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
 			
-			Assert.AreEqual (@"class Test {
-	void TestMe ()
-	{
-		this[1 ,2 ,3] = 5;
-	}
-}", data.Document.Text);
-			
-			
+			int i1 = data.Document.Text.LastIndexOf ("[");
+			int i2 = data.Document.Text.LastIndexOf ("]") + "]".Length;
+			Assert.AreEqual (@"[1 ,2 ,3]", data.Document.GetTextBetween (i1, i2));
 		}
+		
 		[Test()]
 		public void TestAfterBracketComma ()
 		{
@@ -1753,18 +1749,34 @@ return (Test)null;
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
 			
+			int i1 = data.Document.Text.LastIndexOf ("[");
+			int i2 = data.Document.Text.LastIndexOf ("]") + "]".Length;
+			Assert.AreEqual (@"[1, 2, 3]", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		#endregion
+		
+		[Test()]
+		public void TestSpacesBeforeArrayDeclarationBrackets ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	int[] a;
+	int[][] b;
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.SpacesBeforeArrayDeclarationBrackets = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
+			
 			Assert.AreEqual (@"class Test {
-	void TestMe ()
-	{
-		this[1, 2, 3] = 5;
-	}
+	int [] a;
+	int [][] b;
 }", data.Document.Text);
 			
 			
-		}
-		
-		
-		
-		#endregion
+		}		
 	}
 }
