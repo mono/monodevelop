@@ -1577,7 +1577,7 @@ Itanium</property>
                   <widget class="Gtk.Notebook" id="notebookCategories">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="CurrentPage">2</property>
+                    <property name="CurrentPage">3</property>
                     <child>
                       <widget class="Gtk.VBox" id="vbox8">
                         <property name="MemberName" />
@@ -2104,6 +2104,7 @@ Itanium</property>
                                         <property name="MemberName" />
                                         <property name="CanFocus">True</property>
                                         <property name="ShowScrollbars">True</property>
+                                        <property name="HeadersVisible">False</property>
                                       </widget>
                                     </child>
                                   </widget>

@@ -503,6 +503,31 @@ namespace MonoDevelop.CSharp.Formatting
 			set;
 		}
 		
+		// indexer
+		[ItemProperty]
+		public bool BeforeIndexerDeclarationBracket { // tested
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public bool WithinIndexerDeclarationBracket { // tested
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public bool BeforeIndexerDeclarationParameterComma {
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public bool AfterIndexerDeclarationParameterComma {
+			get;
+			set;
+		}
+		
 		// delegates
 		
 		[ItemProperty]
@@ -753,11 +778,28 @@ namespace MonoDevelop.CSharp.Formatting
 			set;
 		}
 		
+		// brackets
 		[ItemProperty]
 		public bool SpacesWithinBrackets { // tested
 			get;
 			set;
 		}
+		[ItemProperty]
+		public bool SpacesBeforeBrackets { // tested
+			get;
+			set;
+		}
+		[ItemProperty]
+		public bool BeforeBracketComma { // tested
+			get;
+			set;
+		}
+		[ItemProperty]
+		public bool AfterBracketComma { // tested
+			get;
+			set;
+		}
+		
 		
 		[ItemProperty]
 		public bool SpacesBeforeForSemicolon { // tested
@@ -848,6 +890,10 @@ namespace MonoDevelop.CSharp.Formatting
 			ConditionalOperatorAfterSeparatorSpace = true;
 
 			SpacesWithinBrackets = false;
+			SpacesBeforeBrackets = true;
+			BeforeBracketComma = false;
+			AfterBracketComma = true;
+					
 			SpacesBeforeForSemicolon = false;
 			SpacesAfterForSemicolon = true;
 			SpacesAfterTypecast = false;
@@ -862,6 +908,12 @@ namespace MonoDevelop.CSharp.Formatting
 			BeforeLocalVariableDeclarationComma = false;
 			AfterLocalVariableDeclarationComma = true;
 			
+			BeforeIndexerDeclarationBracket = true;
+			WithinIndexerDeclarationBracket = false;
+			BeforeIndexerDeclarationParameterComma = false;
+		
+		
+			AfterIndexerDeclarationParameterComma = true;
 		}
 		
 		public static CSharpFormattingPolicy Load (FilePath selectedFile)

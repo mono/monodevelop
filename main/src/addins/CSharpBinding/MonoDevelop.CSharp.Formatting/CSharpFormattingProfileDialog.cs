@@ -586,6 +586,20 @@ namespace MonoDevelop.CSharp.Formatting
 				new Option ("AfterConstructorDeclarationParameterComma", GettextCatalog.GetString ("after comma in parenthesis"))
 			));
 			
+			example = @"class Example {
+	public int this[int a, int b] {
+		get {
+			return a + b;
+		}
+	}
+}";
+			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("Indexer"), new Category (example,
+				new Option ("BeforeIndexerDeclarationBracket", GettextCatalog.GetString ("before opening bracket")),
+				new Option ("WithinIndexerDeclarationBracket", GettextCatalog.GetString ("within brackets")),
+				new Option ("BeforeIndexerDeclarationParameterComma", GettextCatalog.GetString ("before comma in brackets")),
+				new Option ("AfterIndexerDeclarationParameterComma", GettextCatalog.GetString ("after comma in brackets"))
+			));
+			
 			example = @"delegate void FooBar (int a, int b, int c);
 delegate void BarFoo ();
 ";
@@ -643,6 +657,19 @@ delegate void BarFoo ();
 				new Option ("BetweenEmptyMethodCallParentheses", GettextCatalog.GetString ("between empty parenthesis")),
 				new Option ("BeforeMethodCallParameterComma", GettextCatalog.GetString ("before comma in parenthesis")),
 				new Option ("AfterMethodCallParameterComma", GettextCatalog.GetString ("after comma in parenthesis"))
+			));
+			
+			example = @"class Example {
+		void Test ()
+		{
+			a[1,2] = b[3];
+		}
+}";
+			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("Element access"), new Category (example,
+				new Option ("SpacesBeforeBrackets", GettextCatalog.GetString ("before opening bracket")),
+				new Option ("SpacesWithinBrackets", GettextCatalog.GetString ("within brackets")),
+				new Option ("BeforeBracketComma", GettextCatalog.GetString ("before comma in brackets")),
+				new Option ("AfterBracketComma", GettextCatalog.GetString ("after comma in brackets"))
 			));
 			
 			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("Parentheses"), new Category (operatorExample,

@@ -94,8 +94,12 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitIndexerDeclaration (IndexerDeclaration indexerDeclaration, object data)
 		{
-			ForceSpacesAfter (indexerDeclaration.LBracket, policy.SpacesWithinBrackets);
-			ForceSpacesBefore (indexerDeclaration.RBracket, policy.SpacesWithinBrackets);
+			ForceSpacesBefore (indexerDeclaration.LBracket, policy.BeforeIndexerDeclarationBracket);
+			ForceSpacesAfter (indexerDeclaration.LBracket, policy.WithinIndexerDeclarationBracket);
+			ForceSpacesBefore (indexerDeclaration.RBracket, policy.WithinIndexerDeclarationBracket);
+			
+			FormatCommas (indexerDeclaration, policy.BeforeIndexerDeclarationParameterComma, policy.AfterIndexerDeclarationParameterComma);
+			
 			return base.VisitIndexerDeclaration (indexerDeclaration, data);
 		}
 		public override object VisitBlockStatement (BlockStatement blockStatement, object data)
@@ -430,10 +434,11 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitIndexerExpression (IndexerExpression indexerExpression, object data)
 		{
+			ForceSpacesBefore (indexerExpression.LBracket, policy.SpacesBeforeBrackets);
 			ForceSpacesAfter (indexerExpression.LBracket, policy.SpacesWithinBrackets);
 			ForceSpacesBefore (indexerExpression.RBracket, policy.SpacesWithinBrackets);
-			FormatCommas (indexerExpression, policy.BeforeMethodCallParameterComma, policy.AfterMethodCallParameterComma);
-
+			FormatCommas (indexerExpression, policy.BeforeBracketComma, policy.AfterBracketComma);
+			
 			return base.VisitIndexerExpression (indexerExpression, data);
 		}
 
