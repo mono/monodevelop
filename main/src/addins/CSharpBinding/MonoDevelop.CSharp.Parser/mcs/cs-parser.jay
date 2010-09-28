@@ -3569,10 +3569,12 @@ rank_specifier
 	: OPEN_BRACKET CLOSE_BRACKET
 	  {
 		$$ = ComposedTypeSpecifier.CreateArrayDimension (1, GetLocation ($1));
+		lbag.AddLocation ($$, GetLocation ($2));
 	  }
 	| OPEN_BRACKET dim_separators CLOSE_BRACKET
 	  {
 		$$ = ComposedTypeSpecifier.CreateArrayDimension ((int)$2, GetLocation ($1));
+		lbag.AddLocation ($$, GetLocation ($3));
 	  }
 	;
 

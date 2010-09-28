@@ -47,6 +47,7 @@ FILES =  \
 	MonoDevelop.CSharp.Dom/AbstractCSharpNode.cs \
 	MonoDevelop.CSharp.Dom/AbtractCSharpDomVisitor.cs \
 	MonoDevelop.CSharp.Dom/CompilationUnit.cs \
+	MonoDevelop.CSharp.Dom/ComposedType.cs \
 	MonoDevelop.CSharp.Dom/CSharpAmbience.cs \
 	MonoDevelop.CSharp.Dom/CSharpModifierToken.cs \
 	MonoDevelop.CSharp.Dom/CSharpTokenNode.cs \

@@ -55,6 +55,11 @@ namespace MonoDevelop.CSharp.Dom
 			return default (S);
 		}
 		
+		public virtual S VisitComposedType (ComposedType composedType, T data)
+		{
+			return default (S);
+		}
+		
 		public virtual S VisitAttribute (Attribute attribute, T data) 
 		{
 			return VisitChildren (attribute, data);

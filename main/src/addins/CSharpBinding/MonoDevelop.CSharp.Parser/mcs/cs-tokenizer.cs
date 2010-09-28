@@ -3070,6 +3070,7 @@ namespace Mono.CSharp
 							if (isDoc)
 								get_char ();
 						}
+						
 						d = peek_char ();
 						if (d == '\n' || d == '\r')
 							sbag.EndComment (line, col + 1);
@@ -3077,10 +3078,10 @@ namespace Mono.CSharp
 						while ((d = get_char ()) != -1 && (d != '\n') && d != '\r') {
 							sbag.PushCommentChar (d);
 							var pc = peek_char ();
-							if (pc == -1 || pc == '\n' || pc == '\r')
+							if (pc == -1 || pc == '\n' || pc == '\r') {
 								sbag.EndComment (line, col + 1);
+							}
 						}
-						
 						any_token_seen |= tokens_seen;
 						tokens_seen = false;
 						comments_seen = false;

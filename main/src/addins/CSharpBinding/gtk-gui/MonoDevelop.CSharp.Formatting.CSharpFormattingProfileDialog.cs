@@ -204,7 +204,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.notebookCategories = new global::Gtk.Notebook ();
 			this.notebookCategories.CanFocus = true;
 			this.notebookCategories.Name = "notebookCategories";
-			this.notebookCategories.CurrentPage = 2;
+			this.notebookCategories.CurrentPage = 3;
 			// Container child notebookCategories.Gtk.Notebook+NotebookChild
 			this.vbox8 = new global::Gtk.VBox ();
 			this.vbox8.Name = "vbox8";
@@ -521,6 +521,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.treeviewInsertWhiteSpaceOptions = new global::Gtk.TreeView ();
 			this.treeviewInsertWhiteSpaceOptions.CanFocus = true;
 			this.treeviewInsertWhiteSpaceOptions.Name = "treeviewInsertWhiteSpaceOptions";
+			this.treeviewInsertWhiteSpaceOptions.HeadersVisible = false;
 			this.GtkScrolledWindow3.Add (this.treeviewInsertWhiteSpaceOptions);
 			this.vpaned1.Add (this.GtkScrolledWindow3);
 			this.GtkAlignment4.Add (this.vpaned1);

@@ -1488,11 +1488,26 @@ namespace MonoDevelop.CSharp.Parser
 			
 			public override object Visit (ComposedCast composedCast)
 			{
-				var result = new PointerReferenceExpression ();
-// TODO:
-//				result.Dim = composedCast.Dim;
-//				result.AddChild (new CSharpTokenNode (Convert(composedCast.Location), composedCast.Dim.Length), PointerReferenceExpression.Roles.Argument);
-				result.AddChild ((INode)composedCast.Left.Accept (this), PointerReferenceExpression.Roles.TargetExpression);
+				var result = new ComposedType ();
+				result.AddChild ((INode)composedCast.Left.Accept (this), ComposedType.Roles.ReturnType);
+				
+				var spec = composedCast.Spec;
+				while (spec != null) {
+					if (spec.IsNullable) {
+						result.AddChild (new CSharpTokenNode (Convert (spec.Location), 1), ComposedType.NullableRole);
+					} else if (spec.IsPointer) {
+						result.AddChild (new CSharpTokenNode (Convert (spec.Location), 1), ComposedType.PointerRole);
+					} else {
+						var aSpec = new ComposedType.ArraySpecifier ();
+						aSpec.AddChild (new CSharpTokenNode (Convert (spec.Location), 1), ComposedType.Roles.LBracket);
+						var location = LocationsBag.GetLocations (spec);
+						if (location != null)
+							aSpec.AddChild (new CSharpTokenNode (Convert (spec.Location), 1), ComposedType.Roles.RBracket);
+						result.AddChild (aSpec, ComposedType.ArraySpecRole);
+					}
+					spec = spec.Next;
+				}
+				
 				return result;
 			}
 			
