@@ -453,6 +453,9 @@ namespace MonoDevelop.XmlEditor.Gui
 			}
 		}
 		
+		/// <summary>
+		/// Adds CDATA and comment begin tags.
+		/// </summary>
 		protected static void AddMiscBeginTags (CompletionDataList list)
 		{
 			list.Add ("!--",  "md-literal", GettextCatalog.GetString ("Comment"));

@@ -163,6 +163,7 @@ namespace MonoDevelop.XmlEditor
 			} else if (inferredCompletionData != null) {
 				list.AddRange (inferredCompletionData.GetElementCompletionData ());
 			}
+			AddMiscBeginTags (list);
 		}
 		
 		protected override CompletionDataList GetAttributeCompletions (IAttributedXObject attributedOb,
