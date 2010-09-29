@@ -16,7 +16,7 @@ namespace MonoDevelop.VersionControl.Views
 		int selectedLine = -1;
 		TreePath selctedPath;
 		TreePath path;
-
+		
 		public CellRendererDiff()
 		{
 			font = Pango.FontDescription.FromString (DesktopService.DefaultMonospaceFont);
@@ -50,6 +50,8 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			if (isDisposed)
 				return;
+			if (lines == null)
+				throw new ArgumentNullException ("lines");
 			this.lines = lines;
 			this.diffMode = diffMode;
 			this.path = path;
@@ -59,7 +61,10 @@ namespace MonoDevelop.VersionControl.Views
 					int maxlen = -1;
 					int maxlin = -1;
 					for (int n=0; n<lines.Length; n++) {
-						if (lines [n].Length > maxlen) {
+						string line = lines [n];
+						if (line == null)
+							throw new Exception ("Line " + n + " from diff was null.");
+						if (line.Length > maxlen) {
 							maxlen = lines [n].Length;
 							maxlin = n;
 						}
@@ -91,7 +96,11 @@ namespace MonoDevelop.VersionControl.Views
 				layout.SetMarkup (text);
 			return layout;
 		}
-
+		
+		const int leftSpace = 16;
+		public bool DrawLeft { get; set; }
+		public Gdk.Point? CursorLocation { get; set; }
+		
 		protected override void Render (Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
 		{
 			if (isDisposed)
@@ -105,9 +114,12 @@ namespace MonoDevelop.VersionControl.Views
 				
 				int w, maxy;
 				window.GetSize (out w, out maxy);
-				
+				if (DrawLeft) {
+					cell_area.Width += cell_area.X - leftSpace;
+					cell_area.X = leftSpace;
+				}
 				var treeview = widget as FileTreeView;
-				var p = treeview != null? treeview.CursorLocation : null;
+				var p = treeview != null? treeview.CursorLocation : CursorLocation;
 				
 				int recty = cell_area.Y;
 				int recth = cell_area.Height - 1;

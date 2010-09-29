@@ -56,7 +56,7 @@ namespace MonoDevelop.VersionControl
 			this.entryHeader.IsEditable = true;
 			this.entryHeader.InvisibleChar = '●';
 			this.table2.Add (this.entryHeader);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table2[this.entryHeader]));
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table2 [this.entryHeader]));
 			w1.LeftAttach = ((uint)(1));
 			w1.RightAttach = ((uint)(2));
 			w1.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -66,11 +66,11 @@ namespace MonoDevelop.VersionControl
 			this.label4.Xalign = 0F;
 			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("Message Header:");
 			this.table2.Add (this.label4);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table2[this.label4]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table2 [this.label4]));
 			w2.XOptions = ((global::Gtk.AttachOptions)(4));
 			w2.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox1.Add (this.table2);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.table2]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.table2]));
 			w3.Position = 0;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -87,7 +87,7 @@ namespace MonoDevelop.VersionControl
 			this.checkIncludeDirs.DrawIndicator = true;
 			this.checkIncludeDirs.UseUnderline = true;
 			this.tableFlags.Add (this.checkIncludeDirs);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.tableFlags[this.checkIncludeDirs]));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.tableFlags [this.checkIncludeDirs]));
 			w4.TopAttach = ((uint)(3));
 			w4.BottomAttach = ((uint)(4));
 			w4.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -99,7 +99,7 @@ namespace MonoDevelop.VersionControl
 			this.checkIndent.DrawIndicator = true;
 			this.checkIndent.UseUnderline = true;
 			this.tableFlags.Add (this.checkIndent);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.tableFlags[this.checkIndent]));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.tableFlags [this.checkIndent]));
 			w5.TopAttach = ((uint)(1));
 			w5.BottomAttach = ((uint)(2));
 			w5.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -111,7 +111,7 @@ namespace MonoDevelop.VersionControl
 			this.checkIndentEntries.DrawIndicator = true;
 			this.checkIndentEntries.UseUnderline = true;
 			this.tableFlags.Add (this.checkIndentEntries);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.tableFlags[this.checkIndentEntries]));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.tableFlags [this.checkIndentEntries]));
 			w6.LeftAttach = ((uint)(1));
 			w6.RightAttach = ((uint)(2));
 			w6.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -123,7 +123,7 @@ namespace MonoDevelop.VersionControl
 			this.checkLineSep.DrawIndicator = true;
 			this.checkLineSep.UseUnderline = true;
 			this.tableFlags.Add (this.checkLineSep);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.tableFlags[this.checkLineSep]));
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.tableFlags [this.checkLineSep]));
 			w7.TopAttach = ((uint)(1));
 			w7.BottomAttach = ((uint)(2));
 			w7.LeftAttach = ((uint)(1));
@@ -137,7 +137,7 @@ namespace MonoDevelop.VersionControl
 			this.checkMsgInNewLine.DrawIndicator = true;
 			this.checkMsgInNewLine.UseUnderline = true;
 			this.tableFlags.Add (this.checkMsgInNewLine);
-			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.tableFlags[this.checkMsgInNewLine]));
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.tableFlags [this.checkMsgInNewLine]));
 			w8.TopAttach = ((uint)(2));
 			w8.BottomAttach = ((uint)(3));
 			w8.LeftAttach = ((uint)(1));
@@ -151,7 +151,7 @@ namespace MonoDevelop.VersionControl
 			this.checkOneLinePerFile.DrawIndicator = true;
 			this.checkOneLinePerFile.UseUnderline = true;
 			this.tableFlags.Add (this.checkOneLinePerFile);
-			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.tableFlags[this.checkOneLinePerFile]));
+			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.tableFlags [this.checkOneLinePerFile]));
 			w9.TopAttach = ((uint)(2));
 			w9.BottomAttach = ((uint)(3));
 			w9.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -163,10 +163,10 @@ namespace MonoDevelop.VersionControl
 			this.checkUseBullets.DrawIndicator = true;
 			this.checkUseBullets.UseUnderline = true;
 			this.tableFlags.Add (this.checkUseBullets);
-			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.tableFlags[this.checkUseBullets]));
+			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.tableFlags [this.checkUseBullets]));
 			w10.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox1.Add (this.tableFlags);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.tableFlags]));
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.tableFlags]));
 			w11.Position = 1;
 			w11.Expand = false;
 			w11.Fill = false;
@@ -176,7 +176,7 @@ namespace MonoDevelop.VersionControl
 			this.label9.Xalign = 0F;
 			this.label9.LabelProp = global::Mono.Unix.Catalog.GetString ("Preview:");
 			this.vbox1.Add (this.label9);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.label9]));
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.label9]));
 			w12.Position = 2;
 			w12.Expand = false;
 			w12.Fill = false;
@@ -193,7 +193,7 @@ namespace MonoDevelop.VersionControl
 			this.textview.Name = "textview";
 			this.GtkScrolledWindow.Add (this.textview);
 			this.vbox1.Add (this.GtkScrolledWindow);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.GtkScrolledWindow]));
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.GtkScrolledWindow]));
 			w14.Position = 3;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {

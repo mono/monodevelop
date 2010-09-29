@@ -50,7 +50,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("The following files will be committed:");
 			this.mainBox.Add (this.label1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.mainBox[this.label1]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.mainBox [this.label1]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -65,14 +65,14 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.fileList.Name = "fileList";
 			this.scrolledwindow1.Add (this.fileList);
 			this.mainBox.Add (this.scrolledwindow1);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.mainBox[this.scrolledwindow1]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.mainBox [this.scrolledwindow1]));
 			w4.Position = 1;
 			// Container child mainBox.Gtk.Box+BoxChild
 			this.vboxExtensions = new global::Gtk.VBox ();
 			this.vboxExtensions.Name = "vboxExtensions";
 			this.vboxExtensions.Spacing = 6;
 			this.mainBox.Add (this.vboxExtensions);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.mainBox[this.vboxExtensions]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.mainBox [this.vboxExtensions]));
 			w5.PackType = ((global::Gtk.PackType)(1));
 			w5.Position = 2;
 			w5.Expand = false;
@@ -88,7 +88,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.textview.Name = "textview";
 			this.scrolledwindow2.Add (this.textview);
 			this.mainBox.Add (this.scrolledwindow2);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.mainBox[this.scrolledwindow2]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.mainBox [this.scrolledwindow2]));
 			w7.PackType = ((global::Gtk.PackType)(1));
 			w7.Position = 3;
 			w7.Expand = false;
@@ -100,13 +100,13 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Commit _message:");
 			this.label2.UseUnderline = true;
 			this.mainBox.Add (this.label2);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.mainBox[this.label2]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.mainBox [this.label2]));
 			w8.PackType = ((global::Gtk.PackType)(1));
 			w8.Position = 4;
 			w8.Expand = false;
 			w8.Fill = false;
 			w1.Add (this.mainBox);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(w1[this.mainBox]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(w1 [this.mainBox]));
 			w9.Position = 0;
 			// Internal child MonoDevelop.VersionControl.Dialogs.CommitDialog.ActionArea
 			global::Gtk.HButtonBox w10 = this.ActionArea;
@@ -124,7 +124,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.button29.UseUnderline = true;
 			this.button29.Label = "gtk-cancel";
 			this.AddActionWidget (this.button29,-6);
-			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10[this.button29]));
+			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.button29]));
 			w11.Expand = false;
 			w11.Fill = false;
 			// Container child VersionControlAddIn.CommitDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -150,7 +150,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			w12.Add (w13);
 			this.button31.Add (w12);
 			this.AddActionWidget (this.button31,-5);
-			global::Gtk.ButtonBox.ButtonBoxChild w20 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10[this.button31]));
+			global::Gtk.ButtonBox.ButtonBoxChild w20 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.button31]));
 			w20.Position = 1;
 			w20.Expand = false;
 			w20.Fill = false;

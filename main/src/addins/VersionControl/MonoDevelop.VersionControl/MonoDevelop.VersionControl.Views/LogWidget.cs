@@ -56,12 +56,12 @@ namespace MonoDevelop.VersionControl.Views
 		}
 		
 		
-		DiffWidget diffWidget;
 		ListStore logstore = new ListStore (typeof (Revision));
-		ListStore changedpathstore = new ListStore (typeof(Gdk.Pixbuf), typeof (string), typeof(Gdk.Pixbuf), typeof (string), typeof (string), typeof (string));
+		TreeStore changedpathstore;
+		
 		VersionControlDocumentInfo info;
 		string preselectFile;
-		
+		CellRendererDiff diffRenderer = new CellRendererDiff ();
 		
 		class RevisionGraphCellRenderer : Gtk.CellRenderer
 		{
@@ -101,9 +101,7 @@ namespace MonoDevelop.VersionControl.Views
 						cr.Stroke ();
 					}
 				}
-				
 			}
-			
 		}
 		
 		public LogWidget (VersionControlDocumentInfo info)
@@ -147,6 +145,13 @@ namespace MonoDevelop.VersionControl.Views
 			treeviewLog.Model = logstore;
 			treeviewLog.Selection.Changed += TreeSelectionChanged;
 			
+			changedpathstore = new TreeStore (typeof(Gdk.Pixbuf), typeof (string), // icon/file name
+				typeof(Gdk.Pixbuf), typeof (string), // icon/operation
+				typeof (string), // path
+				typeof (string), // revision path (invisible)
+				typeof (string[]) // diff
+				);
+			
 			TreeViewColumn colChangedFile = new TreeViewColumn ();
 			var crp = new CellRendererPixbuf ();
 			var crt = new CellRendererText ();
@@ -167,20 +172,50 @@ namespace MonoDevelop.VersionControl.Views
 			
 			TreeViewColumn colChangedPath = new TreeViewColumn ();
 			colChangedPath.Title = GettextCatalog.GetString ("Path");
-			colChangedPath.PackStart (crt, true);
-			colChangedPath.AddAttribute (crt, "text", 4);
-			treeviewFiles.AppendColumn (colChangedPath);
 			
+			diffRenderer.DrawLeft = true;
+			colChangedPath.PackStart (diffRenderer, true);
+			colChangedPath.SetCellDataFunc (diffRenderer, SetDiffCellData);
 			treeviewFiles.AppendColumn (colChangedPath);
 			treeviewFiles.Model = changedpathstore;
-			treeviewFiles.Selection.Changed += FileSelectionChanged;
-			diffWidget = new DiffWidget (info, true);
-			vboxCompareView.PackStart (diffWidget, true, true, 0);
-			vboxCompareView.ShowAll ();
+			treeviewFiles.TestExpandRow += HandleTreeviewFilesTestExpandRow;
+			treeviewFiles.Events |= Gdk.EventMask.PointerMotionMask;
+			treeviewFiles.MotionNotifyEvent += delegate (object sender, MotionNotifyEventArgs args) {
+				diffRenderer.CursorLocation = new Gdk.Point ((int)args.Event.X, (int)args.Event.Y);
+				treeviewFiles.QueueDraw ();
+				
+			};
+			
 			textviewDetails.WrapMode = Gtk.WrapMode.Word;
 		}
+		const int colPath = 5;
+		const int colDiff = 6;
+		
+		void HandleTreeviewFilesTestExpandRow (object o, TestExpandRowArgs args)
+		{
+			string[] diff = changedpathstore.GetValue (args.Iter, colDiff) as string[];
+			if (diff != null) {
+				return;
+			}
+			TreeIter iter;
+			if (changedpathstore.IterChildren (out iter, args.Iter)) {
+				string path = (string)changedpathstore .GetValue (args.Iter, colPath);
+				changedpathstore.SetValue (iter, colDiff, new string[] { GettextCatalog.GetString ("Loading data...") });
+				var rev = SelectedRevision;
+				ThreadPool.QueueUserWorkItem (delegate {
+					string text = info.Repository.GetTextAtRevision (path, rev);
+					string prevRevision = info.Repository.GetBaseText (path); // info.Repository.GetTextAtRevision (path, rev.GetPrevious ());
+					var originalDocument = new Mono.TextEditor.Document (prevRevision);
+					var changedDocument = new Mono.TextEditor.Document (text);
+					string[] lines = Mono.TextEditor.Utils.Diff.GetDiffString (originalDocument, changedDocument).Split ('\n');
+					Application.Invoke (delegate {
+						changedpathstore.SetValue (iter, colDiff, lines);
+					});
+				});
+			}
+		}
 
-		void FileSelectionChanged (object sender, EventArgs e)
+/*		void FileSelectionChanged (object sender, EventArgs e)
 		{
 			Revision rev = SelectedRevision;
 			if (rev == null) {
@@ -203,7 +238,7 @@ namespace MonoDevelop.VersionControl.Views
 					diffWidget.ComparisonWidget.CreateDiff ();
 				});
 			});
-		}
+		}*/
 		
 		public override void Destroy ()
 		{
@@ -272,14 +307,23 @@ namespace MonoDevelop.VersionControl.Views
 			var rev = (Revision)model.GetValue (iter, 0);
 			renderer.Text = rev.ToString ();
 		}
+		
+		void SetDiffCellData (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			CellRendererDiff rc = (CellRendererDiff)cell;
+			string[] lines = (string[])changedpathstore.GetValue (iter, colDiff);
+			if (lines == null)
+				lines = new string[] { (string)changedpathstore.GetValue (iter, 4) };
+			rc.InitCell (treeviewFiles, changedpathstore.IterDepth (iter) != 0, lines, changedpathstore.GetPath (iter));
+		}
+		
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
 			var old = Allocation;
 			base.OnSizeAllocated (allocation);
 			if (old.Width != allocation.Width || old.Height != allocation.Height) {
 				hpaned1.Position = allocation.Width - 380;
-				hpaned2.Position = 400;
-				vpaned1.Position = allocation.Width / 3;
+				vpaned1.Position = allocation.Height / 2;
 			}
 		}
 		
@@ -322,7 +366,8 @@ namespace MonoDevelop.VersionControl.Views
 					actionIcon = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Empty, Gtk.IconSize.Menu);
 				}
 				Gdk.Pixbuf fileIcon = DesktopService.GetPixbufForFile (rp.Path, Gtk.IconSize.Menu);
-				var iter = changedpathstore.AppendValues (actionIcon, action, fileIcon, System.IO.Path.GetFileName (rp.Path), System.IO.Path.GetDirectoryName (rp.Path), rp.Path);
+				var iter = changedpathstore.AppendValues (actionIcon, action, fileIcon, System.IO.Path.GetFileName (rp.Path), System.IO.Path.GetDirectoryName (rp.Path), rp.Path, null);
+				changedpathstore.AppendValues (iter, null, null, null, null, rp.Path, null);
 				if (rp.Path == preselectFile) {
 					selectIter = iter;
 					select = true;

@@ -62,12 +62,12 @@ namespace MonoDevelop.VersionControl
 			this.comboProtocol = global::Gtk.ComboBox.NewText ();
 			this.comboProtocol.Name = "comboProtocol";
 			this.hbox1.Add (this.comboProtocol);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.comboProtocol]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.comboProtocol]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
 			this.table1.Add (this.hbox1);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1[this.hbox1]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.hbox1]));
 			w2.TopAttach = ((uint)(2));
 			w2.BottomAttach = ((uint)(3));
 			w2.LeftAttach = ((uint)(1));
@@ -87,12 +87,12 @@ namespace MonoDevelop.VersionControl
 			this.repositoryPortSpin.Numeric = true;
 			this.repositoryPortSpin.Value = 1;
 			this.hbox2.Add (this.repositoryPortSpin);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.repositoryPortSpin]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.repositoryPortSpin]));
 			w3.Position = 0;
 			w3.Expand = false;
 			w3.Fill = false;
 			this.table1.Add (this.hbox2);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1[this.hbox2]));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.hbox2]));
 			w4.TopAttach = ((uint)(4));
 			w4.BottomAttach = ((uint)(5));
 			w4.LeftAttach = ((uint)(1));
@@ -103,7 +103,7 @@ namespace MonoDevelop.VersionControl
 			this.hseparator1 = new global::Gtk.HSeparator ();
 			this.hseparator1.Name = "hseparator1";
 			this.table1.Add (this.hseparator1);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1[this.hseparator1]));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.hseparator1]));
 			w5.TopAttach = ((uint)(6));
 			w5.BottomAttach = ((uint)(7));
 			w5.RightAttach = ((uint)(2));
@@ -114,7 +114,7 @@ namespace MonoDevelop.VersionControl
 			this.hseparator2 = new global::Gtk.HSeparator ();
 			this.hseparator2.Name = "hseparator2";
 			this.table1.Add (this.hseparator2);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1[this.hseparator2]));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.hseparator2]));
 			w6.TopAttach = ((uint)(1));
 			w6.BottomAttach = ((uint)(2));
 			w6.RightAttach = ((uint)(2));
@@ -127,7 +127,7 @@ namespace MonoDevelop.VersionControl
 			this.label11.Xalign = 0F;
 			this.label11.LabelProp = global::Mono.Unix.Catalog.GetString ("Server:");
 			this.table1.Add (this.label11);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1[this.label11]));
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.label11]));
 			w7.TopAttach = ((uint)(3));
 			w7.BottomAttach = ((uint)(4));
 			w7.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -138,7 +138,7 @@ namespace MonoDevelop.VersionControl
 			this.label4.Xalign = 0F;
 			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("Url:");
 			this.table1.Add (this.label4);
-			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1[this.label4]));
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1 [this.label4]));
 			w8.XOptions = ((global::Gtk.AttachOptions)(4));
 			w8.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child table1.Gtk.Table+TableChild
@@ -147,7 +147,7 @@ namespace MonoDevelop.VersionControl
 			this.label5.Xalign = 0F;
 			this.label5.LabelProp = global::Mono.Unix.Catalog.GetString ("Protocol:");
 			this.table1.Add (this.label5);
-			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.table1[this.label5]));
+			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.table1 [this.label5]));
 			w9.TopAttach = ((uint)(2));
 			w9.BottomAttach = ((uint)(3));
 			w9.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -158,7 +158,7 @@ namespace MonoDevelop.VersionControl
 			this.label6.Xalign = 0F;
 			this.label6.LabelProp = global::Mono.Unix.Catalog.GetString ("Port:");
 			this.table1.Add (this.label6);
-			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table1[this.label6]));
+			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table1 [this.label6]));
 			w10.TopAttach = ((uint)(4));
 			w10.BottomAttach = ((uint)(5));
 			w10.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -169,7 +169,7 @@ namespace MonoDevelop.VersionControl
 			this.label7.Xalign = 0F;
 			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("Path:");
 			this.table1.Add (this.label7);
-			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table1[this.label7]));
+			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table1 [this.label7]));
 			w11.TopAttach = ((uint)(5));
 			w11.BottomAttach = ((uint)(6));
 			w11.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -180,7 +180,7 @@ namespace MonoDevelop.VersionControl
 			this.label8.Xalign = 0F;
 			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("User:");
 			this.table1.Add (this.label8);
-			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table1[this.label8]));
+			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table1 [this.label8]));
 			w12.TopAttach = ((uint)(7));
 			w12.BottomAttach = ((uint)(8));
 			w12.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -191,7 +191,7 @@ namespace MonoDevelop.VersionControl
 			this.label9.Xalign = 0F;
 			this.label9.LabelProp = global::Mono.Unix.Catalog.GetString ("Password:");
 			this.table1.Add (this.label9);
-			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table1[this.label9]));
+			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table1 [this.label9]));
 			w13.TopAttach = ((uint)(8));
 			w13.BottomAttach = ((uint)(9));
 			w13.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -204,7 +204,7 @@ namespace MonoDevelop.VersionControl
 			this.repositoryPassEntry.Visibility = false;
 			this.repositoryPassEntry.InvisibleChar = '●';
 			this.table1.Add (this.repositoryPassEntry);
-			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.table1[this.repositoryPassEntry]));
+			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.table1 [this.repositoryPassEntry]));
 			w14.TopAttach = ((uint)(8));
 			w14.BottomAttach = ((uint)(9));
 			w14.LeftAttach = ((uint)(1));
@@ -217,7 +217,7 @@ namespace MonoDevelop.VersionControl
 			this.repositoryPathEntry.IsEditable = true;
 			this.repositoryPathEntry.InvisibleChar = '●';
 			this.table1.Add (this.repositoryPathEntry);
-			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.table1[this.repositoryPathEntry]));
+			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.table1 [this.repositoryPathEntry]));
 			w15.TopAttach = ((uint)(5));
 			w15.BottomAttach = ((uint)(6));
 			w15.LeftAttach = ((uint)(1));
@@ -230,7 +230,7 @@ namespace MonoDevelop.VersionControl
 			this.repositoryServerEntry.IsEditable = true;
 			this.repositoryServerEntry.InvisibleChar = '●';
 			this.table1.Add (this.repositoryServerEntry);
-			global::Gtk.Table.TableChild w16 = ((global::Gtk.Table.TableChild)(this.table1[this.repositoryServerEntry]));
+			global::Gtk.Table.TableChild w16 = ((global::Gtk.Table.TableChild)(this.table1 [this.repositoryServerEntry]));
 			w16.TopAttach = ((uint)(3));
 			w16.BottomAttach = ((uint)(4));
 			w16.LeftAttach = ((uint)(1));
@@ -243,7 +243,7 @@ namespace MonoDevelop.VersionControl
 			this.repositoryUrlEntry.IsEditable = true;
 			this.repositoryUrlEntry.InvisibleChar = '●';
 			this.table1.Add (this.repositoryUrlEntry);
-			global::Gtk.Table.TableChild w17 = ((global::Gtk.Table.TableChild)(this.table1[this.repositoryUrlEntry]));
+			global::Gtk.Table.TableChild w17 = ((global::Gtk.Table.TableChild)(this.table1 [this.repositoryUrlEntry]));
 			w17.LeftAttach = ((uint)(1));
 			w17.RightAttach = ((uint)(2));
 			w17.YOptions = ((global::Gtk.AttachOptions)(0));
@@ -254,7 +254,7 @@ namespace MonoDevelop.VersionControl
 			this.repositoryUserEntry.IsEditable = true;
 			this.repositoryUserEntry.InvisibleChar = '●';
 			this.table1.Add (this.repositoryUserEntry);
-			global::Gtk.Table.TableChild w18 = ((global::Gtk.Table.TableChild)(this.table1[this.repositoryUserEntry]));
+			global::Gtk.Table.TableChild w18 = ((global::Gtk.Table.TableChild)(this.table1 [this.repositoryUserEntry]));
 			w18.TopAttach = ((uint)(7));
 			w18.BottomAttach = ((uint)(8));
 			w18.LeftAttach = ((uint)(1));

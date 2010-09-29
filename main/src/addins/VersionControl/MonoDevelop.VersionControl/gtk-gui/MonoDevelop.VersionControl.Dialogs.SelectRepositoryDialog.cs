@@ -106,7 +106,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.label3.Name = "label3";
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Type:");
 			this.hbox1.Add (this.label3);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label3]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label3]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -114,10 +114,10 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.repCombo = global::Gtk.ComboBox.NewText ();
 			this.repCombo.Name = "repCombo";
 			this.hbox1.Add (this.repCombo);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.repCombo]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.repCombo]));
 			w3.Position = 1;
 			this.vbox2.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -125,7 +125,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.hseparator1 = new global::Gtk.HSeparator ();
 			this.hseparator1.Name = "hseparator1";
 			this.vbox2.Add (this.hseparator1);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hseparator1]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hseparator1]));
 			w5.Position = 1;
 			w5.Expand = false;
 			w5.Fill = false;
@@ -133,7 +133,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.repoContainer = new global::Gtk.EventBox ();
 			this.repoContainer.Name = "repoContainer";
 			this.vbox2.Add (this.repoContainer);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.repoContainer]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.repoContainer]));
 			w6.Position = 2;
 			this.notebook.Add (this.vbox2);
 			// Notebook tab
@@ -158,7 +158,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.repoTree.Name = "repoTree";
 			this.scrolledwindow2.Add (this.repoTree);
 			this.hbox2.Add (this.scrolledwindow2);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.scrolledwindow2]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.scrolledwindow2]));
 			w9.Position = 0;
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.vbuttonbox1 = new global::Gtk.VButtonBox ();
@@ -173,7 +173,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.buttonAdd.UseUnderline = true;
 			this.buttonAdd.Label = "gtk-add";
 			this.vbuttonbox1.Add (this.buttonAdd);
-			global::Gtk.ButtonBox.ButtonBoxChild w10 = ((global::Gtk.ButtonBox.ButtonBoxChild)(this.vbuttonbox1[this.buttonAdd]));
+			global::Gtk.ButtonBox.ButtonBoxChild w10 = ((global::Gtk.ButtonBox.ButtonBoxChild)(this.vbuttonbox1 [this.buttonAdd]));
 			w10.Expand = false;
 			w10.Fill = false;
 			// Container child vbuttonbox1.Gtk.ButtonBox+ButtonBoxChild
@@ -184,7 +184,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.buttonRemove.UseUnderline = true;
 			this.buttonRemove.Label = "gtk-remove";
 			this.vbuttonbox1.Add (this.buttonRemove);
-			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(this.vbuttonbox1[this.buttonRemove]));
+			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(this.vbuttonbox1 [this.buttonRemove]));
 			w11.Position = 1;
 			w11.Expand = false;
 			w11.Fill = false;
@@ -196,17 +196,17 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.buttonEdit.UseUnderline = true;
 			this.buttonEdit.Label = "gtk-edit";
 			this.vbuttonbox1.Add (this.buttonEdit);
-			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(this.vbuttonbox1[this.buttonEdit]));
+			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(this.vbuttonbox1 [this.buttonEdit]));
 			w12.Position = 2;
 			w12.Expand = false;
 			w12.Fill = false;
 			this.hbox2.Add (this.vbuttonbox1);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.vbuttonbox1]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.vbuttonbox1]));
 			w13.Position = 1;
 			w13.Expand = false;
 			w13.Fill = false;
 			this.notebook.Add (this.hbox2);
-			global::Gtk.Notebook.NotebookChild w14 = ((global::Gtk.Notebook.NotebookChild)(this.notebook[this.hbox2]));
+			global::Gtk.Notebook.NotebookChild w14 = ((global::Gtk.Notebook.NotebookChild)(this.notebook [this.hbox2]));
 			w14.Position = 1;
 			// Notebook tab
 			this.label2 = new global::Gtk.Label ();
@@ -215,7 +215,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.notebook.SetTabLabel (this.hbox2,this.label2);
 			this.label2.ShowAll ();
 			this.vbox1.Add (this.notebook);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.notebook]));
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.notebook]));
 			w15.Position = 0;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.table1 = new global::Gtk.Table (((uint)(4)), ((uint)(2)), false);
@@ -233,7 +233,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.entryFolder.IsEditable = true;
 			this.entryFolder.InvisibleChar = '●';
 			this.boxFolder.Add (this.entryFolder);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.boxFolder[this.entryFolder]));
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.boxFolder [this.entryFolder]));
 			w16.Position = 0;
 			// Container child boxFolder.Gtk.Box+BoxChild
 			this.buttonBrowse = new global::Gtk.Button ();
@@ -241,12 +241,12 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.buttonBrowse.Name = "buttonBrowse";
 			this.buttonBrowse.Label = global::Mono.Unix.Catalog.GetString ("Browse...");
 			this.boxFolder.Add (this.buttonBrowse);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.boxFolder[this.buttonBrowse]));
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.boxFolder [this.buttonBrowse]));
 			w17.Position = 1;
 			w17.Expand = false;
 			w17.Fill = false;
 			this.table1.Add (this.boxFolder);
-			global::Gtk.Table.TableChild w18 = ((global::Gtk.Table.TableChild)(this.table1[this.boxFolder]));
+			global::Gtk.Table.TableChild w18 = ((global::Gtk.Table.TableChild)(this.table1 [this.boxFolder]));
 			w18.TopAttach = ((uint)(1));
 			w18.BottomAttach = ((uint)(2));
 			w18.LeftAttach = ((uint)(1));
@@ -264,7 +264,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.entryMessage.IsEditable = true;
 			this.entryMessage.InvisibleChar = '●';
 			this.boxMessage.Add (this.entryMessage);
-			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.boxMessage[this.entryMessage]));
+			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.boxMessage [this.entryMessage]));
 			w19.Position = 0;
 			// Container child boxMessage.Gtk.Box+BoxChild
 			this.buttonEditMessage = new global::Gtk.Button ();
@@ -274,12 +274,12 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.buttonEditMessage.UseUnderline = true;
 			this.buttonEditMessage.Label = "gtk-edit";
 			this.boxMessage.Add (this.buttonEditMessage);
-			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.boxMessage[this.buttonEditMessage]));
+			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.boxMessage [this.buttonEditMessage]));
 			w20.Position = 1;
 			w20.Expand = false;
 			w20.Fill = false;
 			this.table1.Add (this.boxMessage);
-			global::Gtk.Table.TableChild w21 = ((global::Gtk.Table.TableChild)(this.table1[this.boxMessage]));
+			global::Gtk.Table.TableChild w21 = ((global::Gtk.Table.TableChild)(this.table1 [this.boxMessage]));
 			w21.TopAttach = ((uint)(3));
 			w21.BottomAttach = ((uint)(4));
 			w21.LeftAttach = ((uint)(1));
@@ -293,7 +293,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.entryName.IsEditable = true;
 			this.entryName.InvisibleChar = '●';
 			this.table1.Add (this.entryName);
-			global::Gtk.Table.TableChild w22 = ((global::Gtk.Table.TableChild)(this.table1[this.entryName]));
+			global::Gtk.Table.TableChild w22 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryName]));
 			w22.TopAttach = ((uint)(2));
 			w22.BottomAttach = ((uint)(3));
 			w22.LeftAttach = ((uint)(1));
@@ -306,7 +306,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.label5.Xalign = 0F;
 			this.label5.LabelProp = global::Mono.Unix.Catalog.GetString ("Repository:");
 			this.table1.Add (this.label5);
-			global::Gtk.Table.TableChild w23 = ((global::Gtk.Table.TableChild)(this.table1[this.label5]));
+			global::Gtk.Table.TableChild w23 = ((global::Gtk.Table.TableChild)(this.table1 [this.label5]));
 			w23.XOptions = ((global::Gtk.AttachOptions)(4));
 			w23.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
@@ -315,7 +315,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.labelMessage.Xalign = 0F;
 			this.labelMessage.LabelProp = global::Mono.Unix.Catalog.GetString ("Message:");
 			this.table1.Add (this.labelMessage);
-			global::Gtk.Table.TableChild w24 = ((global::Gtk.Table.TableChild)(this.table1[this.labelMessage]));
+			global::Gtk.Table.TableChild w24 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelMessage]));
 			w24.TopAttach = ((uint)(3));
 			w24.BottomAttach = ((uint)(4));
 			w24.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -326,7 +326,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.labelName.Xalign = 0F;
 			this.labelName.LabelProp = global::Mono.Unix.Catalog.GetString ("Module name:");
 			this.table1.Add (this.labelName);
-			global::Gtk.Table.TableChild w25 = ((global::Gtk.Table.TableChild)(this.table1[this.labelName]));
+			global::Gtk.Table.TableChild w25 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelName]));
 			w25.TopAttach = ((uint)(2));
 			w25.BottomAttach = ((uint)(3));
 			w25.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -336,7 +336,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.labelRepository.Name = "labelRepository";
 			this.labelRepository.Xalign = 0F;
 			this.table1.Add (this.labelRepository);
-			global::Gtk.Table.TableChild w26 = ((global::Gtk.Table.TableChild)(this.table1[this.labelRepository]));
+			global::Gtk.Table.TableChild w26 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelRepository]));
 			w26.LeftAttach = ((uint)(1));
 			w26.RightAttach = ((uint)(2));
 			w26.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -346,18 +346,18 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.labelTargetDir.Xalign = 0F;
 			this.labelTargetDir.LabelProp = global::Mono.Unix.Catalog.GetString ("Target directory:");
 			this.table1.Add (this.labelTargetDir);
-			global::Gtk.Table.TableChild w27 = ((global::Gtk.Table.TableChild)(this.table1[this.labelTargetDir]));
+			global::Gtk.Table.TableChild w27 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelTargetDir]));
 			w27.TopAttach = ((uint)(1));
 			w27.BottomAttach = ((uint)(2));
 			w27.XOptions = ((global::Gtk.AttachOptions)(4));
 			w27.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox1.Add (this.table1);
-			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.table1]));
+			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.table1]));
 			w28.Position = 1;
 			w28.Expand = false;
 			w28.Fill = false;
 			w1.Add (this.vbox1);
-			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(w1[this.vbox1]));
+			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox1]));
 			w29.Position = 0;
 			// Internal child MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.ActionArea
 			global::Gtk.HButtonBox w30 = this.ActionArea;
@@ -375,7 +375,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.button559.UseUnderline = true;
 			this.button559.Label = "gtk-cancel";
 			this.AddActionWidget (this.button559,-6);
-			global::Gtk.ButtonBox.ButtonBoxChild w31 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w30[this.button559]));
+			global::Gtk.ButtonBox.ButtonBoxChild w31 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w30 [this.button559]));
 			w31.Expand = false;
 			w31.Fill = false;
 			// Container child VersionControlAddIn.SelectRepositoryDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -387,7 +387,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk,-5);
-			global::Gtk.ButtonBox.ButtonBoxChild w32 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w30[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w32 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w30 [this.buttonOk]));
 			w32.Position = 1;
 			w32.Expand = false;
 			w32.Fill = false;

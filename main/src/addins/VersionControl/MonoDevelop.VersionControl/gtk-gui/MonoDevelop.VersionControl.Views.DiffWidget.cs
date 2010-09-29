@@ -53,14 +53,14 @@ namespace MonoDevelop.VersionControl.Views
 			this.fixed1.Name = "fixed1";
 			this.fixed1.HasWindow = false;
 			this.hbox2.Add (this.fixed1);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.fixed1]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.fixed1]));
 			w1.Position = 0;
 			w1.Expand = false;
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.labelOverview = new global::Gtk.Label ();
 			this.labelOverview.Name = "labelOverview";
 			this.hbox2.Add (this.labelOverview);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.labelOverview]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.labelOverview]));
 			w2.Position = 1;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -71,13 +71,13 @@ namespace MonoDevelop.VersionControl.Views
 			this.buttonDiff.UseUnderline = true;
 			this.buttonDiff.Label = global::Mono.Unix.Catalog.GetString ("_Diff");
 			this.hbox2.Add (this.buttonDiff);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.buttonDiff]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.buttonDiff]));
 			w3.PackType = ((global::Gtk.PackType)(1));
 			w3.Position = 2;
 			w3.Expand = false;
 			w3.Fill = false;
 			this.hbox1.Add (this.hbox2);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.hbox2]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.hbox2]));
 			w4.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.buttonNext = new global::Gtk.Button ();
@@ -87,7 +87,7 @@ namespace MonoDevelop.VersionControl.Views
 			this.buttonNext.UseUnderline = true;
 			this.buttonNext.Label = "gtk-go-forward";
 			this.hbox1.Add (this.buttonNext);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonNext]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonNext]));
 			w5.PackType = ((global::Gtk.PackType)(1));
 			w5.Position = 1;
 			w5.Expand = false;
@@ -100,13 +100,13 @@ namespace MonoDevelop.VersionControl.Views
 			this.buttonPrev.UseUnderline = true;
 			this.buttonPrev.Label = "gtk-go-back";
 			this.hbox1.Add (this.buttonPrev);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonPrev]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonPrev]));
 			w6.PackType = ((global::Gtk.PackType)(1));
 			w6.Position = 2;
 			w6.Expand = false;
 			w6.Fill = false;
 			this.vbox2.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
 			w7.Position = 0;
 			w7.Expand = false;
 			w7.Fill = false;
@@ -134,7 +134,7 @@ namespace MonoDevelop.VersionControl.Views
 			this.scrolledwindow1.Name = "scrolledwindow1";
 			this.scrolledwindow1.ShadowType = ((global::Gtk.ShadowType)(1));
 			this.notebook1.Add (this.scrolledwindow1);
-			global::Gtk.Notebook.NotebookChild w9 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1[this.scrolledwindow1]));
+			global::Gtk.Notebook.NotebookChild w9 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.scrolledwindow1]));
 			w9.Position = 1;
 			// Notebook tab
 			this.label3 = new global::Gtk.Label ();
@@ -143,7 +143,7 @@ namespace MonoDevelop.VersionControl.Views
 			this.notebook1.SetTabLabel (this.scrolledwindow1,this.label3);
 			this.label3.ShowAll ();
 			this.vbox2.Add (this.notebook1);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.notebook1]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.notebook1]));
 			w10.Position = 1;
 			this.Add (this.vbox2);
 			if ((this.Child != null)) {
