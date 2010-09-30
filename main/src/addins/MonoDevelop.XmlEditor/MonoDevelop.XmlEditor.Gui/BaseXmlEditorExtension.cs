@@ -41,6 +41,8 @@ using MonoDevelop.XmlEditor.Completion;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using Gtk;
+using System.Linq;
+using System.Text;
 
 namespace MonoDevelop.XmlEditor.Gui
 {
@@ -170,6 +172,31 @@ namespace MonoDevelop.XmlEditor.Gui
 		
 		protected virtual void OnDocTypeChanged ()
 		{
+		}
+		
+		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		{
+			if (TextEditorProperties.IndentStyle == IndentStyle.Smart) {
+				var newLine = Editor.Caret.Line + 1;
+				var ret = base.KeyPress (key, keyChar, modifier);
+				if (key == Gdk.Key.Return && Editor.Caret.Line == newLine) {
+					string indent = GetLineIndent (newLine);
+					var oldIndent = Editor.GetLineIndent (newLine);
+					var seg = Editor.GetLine (newLine);
+					if (oldIndent != indent) {
+						int newCaretOffset = Editor.Caret.Offset;
+						if (newCaretOffset > seg.Offset) {
+							newCaretOffset += (indent.Length - oldIndent.Length);
+						}
+						Editor.Document.BeginAtomicUndo ();
+						Editor.Replace (seg.Offset, oldIndent.Length, indent);
+						Editor.Caret.Offset = newCaretOffset;
+						Editor.Document.EndAtomicUndo ();
+					}
+				}
+				return ret;
+			}
+			return base.KeyPress (key, keyChar, modifier);
 		}
 		
 		#region Code completion
@@ -386,6 +413,44 @@ namespace MonoDevelop.XmlEditor.Gui
 		protected virtual CompletionDataList GetDocTypeCompletions ()
 		{
 			return null;
+		}
+		
+		protected string GetLineIndent (int line)
+		{
+			var seg = Editor.Document.GetLine (line);
+			
+			//reset the tracker to the beginning of the line
+			Tracker.UpdateEngine (seg.Offset);
+			
+			//calculate the indentation
+			var startElementDepth = GetElementIndentDepth (Tracker.Engine.Nodes);
+			var attributeDepth = GetAttributeIndentDepth (Tracker.Engine.Nodes);
+			
+			//update the tracker to the end of the line 
+			Tracker.UpdateEngine (seg.Offset + seg.EditableLength);
+			
+			//if end depth is less than start depth, then reduce start depth
+			//because that means there are closing tags on the line, and they de-indent the line they're on
+			var endElementDepth = GetElementIndentDepth (Tracker.Engine.Nodes);
+			var elementDepth = Math.Min (endElementDepth, startElementDepth);
+			
+			//FIXME: use policies
+			return new string ('\t', elementDepth + attributeDepth);
+		}
+		
+		static int GetElementIndentDepth (NodeStack nodes)
+		{
+			return nodes.OfType<XElement> ().Where (el => !el.IsClosed).Count ();
+		}
+		
+		static int GetAttributeIndentDepth (NodeStack nodes)
+		{
+			var node = nodes.Peek ();
+			if (node is XElement && !node.IsEnded)
+				return 1;
+			if (node is XAttribute)
+				return node.IsEnded? 1 : 2;
+			return 0;
 		}
 		
 		protected IEnumerable<XName> GetParentElementNames (int skip)
