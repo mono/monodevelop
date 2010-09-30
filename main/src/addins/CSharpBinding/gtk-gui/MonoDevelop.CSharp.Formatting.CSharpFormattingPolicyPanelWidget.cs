@@ -45,7 +45,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.labelActive.LabelProp = global::Mono.Unix.Catalog.GetString ("_Active profile:");
 			this.labelActive.UseUnderline = true;
 			this.vbox1.Add (this.labelActive);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.labelActive]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.labelActive]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -57,7 +57,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.comboboxProfiles = global::Gtk.ComboBox.NewText ();
 			this.comboboxProfiles.Name = "comboboxProfiles";
 			this.hbox1.Add (this.comboboxProfiles);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.comboboxProfiles]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.comboboxProfiles]));
 			w2.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.buttonEdit = new global::Gtk.Button ();
@@ -67,7 +67,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.buttonEdit.UseUnderline = true;
 			this.buttonEdit.Label = "gtk-edit";
 			this.hbox1.Add (this.buttonEdit);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonEdit]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonEdit]));
 			w3.Position = 1;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -79,12 +79,12 @@ namespace MonoDevelop.CSharp.Formatting
 			this.buttonRemove.UseUnderline = true;
 			this.buttonRemove.Label = "gtk-remove";
 			this.hbox1.Add (this.buttonRemove);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonRemove]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonRemove]));
 			w4.Position = 2;
 			w4.Expand = false;
 			w4.Fill = false;
 			this.vbox1.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.hbox1]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox1]));
 			w5.Position = 1;
 			w5.Expand = false;
 			w5.Fill = false;
@@ -100,7 +100,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.buttonNew.UseUnderline = true;
 			this.buttonNew.Label = "gtk-new";
 			this.hbox2.Add (this.buttonNew);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.buttonNew]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.buttonNew]));
 			w6.Position = 0;
 			w6.Expand = false;
 			w6.Fill = false;
@@ -111,7 +111,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.buttonImport.UseUnderline = true;
 			this.buttonImport.Label = global::Mono.Unix.Catalog.GetString ("_Import");
 			this.hbox2.Add (this.buttonImport);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.buttonImport]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.buttonImport]));
 			w7.Position = 1;
 			w7.Expand = false;
 			w7.Fill = false;
@@ -122,12 +122,12 @@ namespace MonoDevelop.CSharp.Formatting
 			this.buttonExport.UseUnderline = true;
 			this.buttonExport.Label = global::Mono.Unix.Catalog.GetString ("E_xport");
 			this.hbox2.Add (this.buttonExport);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.buttonExport]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.buttonExport]));
 			w8.Position = 2;
 			w8.Expand = false;
 			w8.Fill = false;
 			this.vbox1.Add (this.hbox2);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.hbox2]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox2]));
 			w9.Position = 2;
 			w9.Expand = false;
 			w9.Fill = false;
@@ -137,7 +137,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.label2.Xalign = 0F;
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Preview:");
 			this.vbox1.Add (this.label2);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.label2]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.label2]));
 			w10.Position = 3;
 			w10.Expand = false;
 			w10.Fill = false;
@@ -147,7 +147,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.scrolledwindow1.Name = "scrolledwindow1";
 			this.scrolledwindow1.ShadowType = ((global::Gtk.ShadowType)(1));
 			this.vbox1.Add (this.scrolledwindow1);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.scrolledwindow1]));
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.scrolledwindow1]));
 			w11.Position = 4;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {

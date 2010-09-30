@@ -380,7 +380,6 @@ namespace MonoDevelop.CSharp.Formatting
 		#endregion
 		
 		#region Spaces
-		
 		// Methods
 		[ItemProperty]
 		public bool BeforeMethodDeclarationParentheses { // tested
@@ -821,6 +820,44 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		[ItemProperty]
 		public bool SpacesBeforeArrayDeclarationBrackets { // tested
+			get;
+			set;
+		}
+		#endregion
+		
+		#region Blank Lines
+		[ItemProperty]
+		public int BlankLinesBeforeUsings {
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public int BlankLinesAfterUsings {
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public int BlankLinesBeforeFirstDeclaration {
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public int BlankLinesBetweenTypes {
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public int BlankLinesBetweenFields {
+			get;
+			set;
+		}
+		
+		[ItemProperty]
+		public int BlankLinesBetweenMembers {
 			get;
 			set;
 		}

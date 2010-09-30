@@ -69,7 +69,7 @@ namespace MonoDevelop.CSharp.Project
 			this.label82.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Code Generation</b>");
 			this.label82.UseMarkup = true;
 			this.vbox1.Add (this.label82);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.label82]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.label82]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -82,7 +82,7 @@ namespace MonoDevelop.CSharp.Project
 			this.label76.WidthRequest = 18;
 			this.label76.Name = "label76";
 			this.hbox5.Add (this.label76);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox5[this.label76]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.label76]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -99,7 +99,7 @@ namespace MonoDevelop.CSharp.Project
 			this.codepageEntry = global::Gtk.ComboBoxEntry.NewText ();
 			this.codepageEntry.Name = "codepageEntry";
 			this.table7.Add (this.codepageEntry);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table7[this.codepageEntry]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table7 [this.codepageEntry]));
 			w3.TopAttach = ((uint)(3));
 			w3.BottomAttach = ((uint)(4));
 			w3.LeftAttach = ((uint)(1));
@@ -113,12 +113,12 @@ namespace MonoDevelop.CSharp.Project
 			this.compileTargetCombo = new global::Gtk.ComboBox ();
 			this.compileTargetCombo.Name = "compileTargetCombo";
 			this.hbox57.Add (this.compileTargetCombo);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox57[this.compileTargetCombo]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox57 [this.compileTargetCombo]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
 			this.table7.Add (this.hbox57);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table7[this.hbox57]));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table7 [this.hbox57]));
 			w5.LeftAttach = ((uint)(1));
 			w5.RightAttach = ((uint)(2));
 			w5.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -127,7 +127,7 @@ namespace MonoDevelop.CSharp.Project
 			this.iconEntry = new global::MonoDevelop.Components.FileEntry ();
 			this.iconEntry.Name = "iconEntry";
 			this.table7.Add (this.iconEntry);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table7[this.iconEntry]));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table7 [this.iconEntry]));
 			w6.TopAttach = ((uint)(2));
 			w6.BottomAttach = ((uint)(3));
 			w6.LeftAttach = ((uint)(1));
@@ -139,7 +139,7 @@ namespace MonoDevelop.CSharp.Project
 			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Compiler Code Page:");
 			this.table7.Add (this.label1);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table7[this.label1]));
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table7 [this.label1]));
 			w7.TopAttach = ((uint)(3));
 			w7.BottomAttach = ((uint)(4));
 			w7.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -150,7 +150,7 @@ namespace MonoDevelop.CSharp.Project
 			this.label3.Xalign = 0F;
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Win32 Icon:");
 			this.table7.Add (this.label3);
-			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table7[this.label3]));
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table7 [this.label3]));
 			w8.TopAttach = ((uint)(2));
 			w8.BottomAttach = ((uint)(3));
 			w8.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -162,7 +162,7 @@ namespace MonoDevelop.CSharp.Project
 			this.label86.LabelProp = global::Mono.Unix.Catalog.GetString ("Compile _Target:");
 			this.label86.UseUnderline = true;
 			this.table7.Add (this.label86);
-			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.table7[this.label86]));
+			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.table7 [this.label86]));
 			w9.XOptions = ((global::Gtk.AttachOptions)(4));
 			w9.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child table7.Gtk.Table+TableChild
@@ -172,7 +172,7 @@ namespace MonoDevelop.CSharp.Project
 			this.label88.LabelProp = global::Mono.Unix.Catalog.GetString ("_Main Class:");
 			this.label88.UseUnderline = true;
 			this.table7.Add (this.label88);
-			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table7[this.label88]));
+			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table7 [this.label88]));
 			w10.TopAttach = ((uint)(1));
 			w10.BottomAttach = ((uint)(2));
 			w10.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -181,20 +181,20 @@ namespace MonoDevelop.CSharp.Project
 			this.mainClassEntry = new global::Gtk.ComboBoxEntry ();
 			this.mainClassEntry.Name = "mainClassEntry";
 			this.table7.Add (this.mainClassEntry);
-			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table7[this.mainClassEntry]));
+			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table7 [this.mainClassEntry]));
 			w11.TopAttach = ((uint)(1));
 			w11.BottomAttach = ((uint)(2));
 			w11.LeftAttach = ((uint)(1));
 			w11.RightAttach = ((uint)(2));
 			w11.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox2.Add (this.table7);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.table7]));
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.table7]));
 			w12.Position = 0;
 			this.hbox5.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox5[this.vbox2]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.vbox2]));
 			w13.Position = 1;
 			this.vbox1.Add (this.hbox5);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.hbox5]));
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox5]));
 			w14.Position = 1;
 			w14.Expand = false;
 			// Container child vbox1.Gtk.Box+BoxChild
@@ -204,7 +204,7 @@ namespace MonoDevelop.CSharp.Project
 			this.label83.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Language Options</b>");
 			this.label83.UseMarkup = true;
 			this.vbox1.Add (this.label83);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.label83]));
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.label83]));
 			w15.Position = 2;
 			w15.Expand = false;
 			w15.Fill = false;
@@ -213,7 +213,7 @@ namespace MonoDevelop.CSharp.Project
 			this.label75.WidthRequest = 18;
 			this.label75.Name = "label75";
 			this.vbox1.Add (this.label75);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.label75]));
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.label75]));
 			w16.PackType = ((global::Gtk.PackType)(1));
 			w16.Position = 3;
 			// Container child vbox1.Gtk.Box+BoxChild
@@ -225,7 +225,7 @@ namespace MonoDevelop.CSharp.Project
 			this.label74.WidthRequest = 18;
 			this.label74.Name = "label74";
 			this.hbox7.Add (this.label74);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.hbox7[this.label74]));
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.label74]));
 			w17.Position = 0;
 			w17.Expand = false;
 			w17.Fill = false;
@@ -244,20 +244,20 @@ namespace MonoDevelop.CSharp.Project
 			this.label2.Xalign = 0F;
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("C# Language Version:");
 			this.table2.Add (this.label2);
-			global::Gtk.Table.TableChild w18 = ((global::Gtk.Table.TableChild)(this.table2[this.label2]));
+			global::Gtk.Table.TableChild w18 = ((global::Gtk.Table.TableChild)(this.table2 [this.label2]));
 			w18.XOptions = ((global::Gtk.AttachOptions)(4));
 			w18.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table2.Gtk.Table+TableChild
 			this.langVerCombo = global::Gtk.ComboBox.NewText ();
 			this.langVerCombo.Name = "langVerCombo";
 			this.table2.Add (this.langVerCombo);
-			global::Gtk.Table.TableChild w19 = ((global::Gtk.Table.TableChild)(this.table2[this.langVerCombo]));
+			global::Gtk.Table.TableChild w19 = ((global::Gtk.Table.TableChild)(this.table2 [this.langVerCombo]));
 			w19.LeftAttach = ((uint)(1));
 			w19.RightAttach = ((uint)(2));
 			w19.XOptions = ((global::Gtk.AttachOptions)(4));
 			w19.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox3.Add (this.table2);
-			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.table2]));
+			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.table2]));
 			w20.Position = 0;
 			w20.Fill = false;
 			// Container child vbox3.Gtk.Box+BoxChild
@@ -268,15 +268,15 @@ namespace MonoDevelop.CSharp.Project
 			this.allowUnsafeCodeCheckButton.DrawIndicator = true;
 			this.allowUnsafeCodeCheckButton.UseUnderline = true;
 			this.vbox3.Add (this.allowUnsafeCodeCheckButton);
-			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.allowUnsafeCodeCheckButton]));
+			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.allowUnsafeCodeCheckButton]));
 			w21.Position = 1;
 			w21.Expand = false;
 			w21.Fill = false;
 			this.hbox7.Add (this.vbox3);
-			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.hbox7[this.vbox3]));
+			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.vbox3]));
 			w22.Position = 1;
 			this.vbox1.Add (this.hbox7);
-			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.hbox7]));
+			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox7]));
 			w23.PackType = ((global::Gtk.PackType)(1));
 			w23.Position = 4;
 			w23.Expand = false;

@@ -42,7 +42,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("_Profile name:");
 			this.label3.UseUnderline = true;
 			this.vbox4.Add (this.label3);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.label3]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.label3]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -53,7 +53,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.entryProfileName.IsEditable = true;
 			this.entryProfileName.InvisibleChar = '●';
 			this.vbox4.Add (this.entryProfileName);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.entryProfileName]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.entryProfileName]));
 			w3.Position = 1;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -64,7 +64,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("_Initialize from profile:");
 			this.label4.UseUnderline = true;
 			this.vbox4.Add (this.label4);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.label4]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.label4]));
 			w4.Position = 2;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -72,12 +72,12 @@ namespace MonoDevelop.CSharp.Formatting
 			this.comboboxInitFrom = global::Gtk.ComboBox.NewText ();
 			this.comboboxInitFrom.Name = "comboboxInitFrom";
 			this.vbox4.Add (this.comboboxInitFrom);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.comboboxInitFrom]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.comboboxInitFrom]));
 			w5.Position = 3;
 			w5.Expand = false;
 			w5.Fill = false;
 			w1.Add (this.vbox4);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(w1[this.vbox4]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox4]));
 			w6.Position = 0;
 			w6.Expand = false;
 			w6.Fill = false;
@@ -96,7 +96,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel,-6);
-			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7[this.buttonCancel]));
+			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7 [this.buttonCancel]));
 			w8.Expand = false;
 			w8.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -108,7 +108,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk,-5);
-			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7 [this.buttonOk]));
 			w9.Position = 1;
 			w9.Expand = false;
 			w9.Fill = false;

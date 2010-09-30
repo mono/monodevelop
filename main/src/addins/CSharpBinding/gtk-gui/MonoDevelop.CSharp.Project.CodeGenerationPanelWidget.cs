@@ -88,7 +88,7 @@ namespace MonoDevelop.CSharp.Project
 			this.label82.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>General Options</b>");
 			this.label82.UseMarkup = true;
 			this.vbox62.Add (this.label82);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox62[this.label82]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox62 [this.label82]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -100,7 +100,7 @@ namespace MonoDevelop.CSharp.Project
 			this.label81.WidthRequest = 18;
 			this.label81.Name = "label81";
 			this.hbox56.Add (this.label81);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox56[this.label81]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox56 [this.label81]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -116,7 +116,7 @@ namespace MonoDevelop.CSharp.Project
 			this.generateOverflowChecksCheckButton.DrawIndicator = true;
 			this.generateOverflowChecksCheckButton.UseUnderline = true;
 			this.vbox65.Add (this.generateOverflowChecksCheckButton);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox65[this.generateOverflowChecksCheckButton]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox65 [this.generateOverflowChecksCheckButton]));
 			w3.Position = 0;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -128,7 +128,7 @@ namespace MonoDevelop.CSharp.Project
 			this.enableOptimizationCheckButton.DrawIndicator = true;
 			this.enableOptimizationCheckButton.UseUnderline = true;
 			this.vbox65.Add (this.enableOptimizationCheckButton);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox65[this.enableOptimizationCheckButton]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox65 [this.enableOptimizationCheckButton]));
 			w4.Position = 1;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -140,7 +140,7 @@ namespace MonoDevelop.CSharp.Project
 			this.generateDebugInformationCheckButton.DrawIndicator = true;
 			this.generateDebugInformationCheckButton.UseUnderline = true;
 			this.vbox65.Add (this.generateDebugInformationCheckButton);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox65[this.generateDebugInformationCheckButton]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox65 [this.generateDebugInformationCheckButton]));
 			w5.Position = 2;
 			w5.Expand = false;
 			w5.Fill = false;
@@ -153,7 +153,7 @@ namespace MonoDevelop.CSharp.Project
 			this.generateXmlOutputCheckButton.DrawIndicator = true;
 			this.generateXmlOutputCheckButton.UseUnderline = true;
 			this.vbox65.Add (this.generateXmlOutputCheckButton);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox65[this.generateXmlOutputCheckButton]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox65 [this.generateXmlOutputCheckButton]));
 			w6.Position = 3;
 			w6.Expand = false;
 			w6.Fill = false;
@@ -162,11 +162,10 @@ namespace MonoDevelop.CSharp.Project
 			this.hbox4.Name = "hbox4";
 			this.hbox4.Spacing = 6;
 			this.vbox65.Add (this.hbox4);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox65[this.hbox4]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox65 [this.hbox4]));
 			w7.Position = 4;
 			// Container child vbox65.Gtk.Box+BoxChild
 			this.table1 = new global::Gtk.Table (((uint)(3)), ((uint)(2)), false);
-			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
@@ -182,12 +181,12 @@ namespace MonoDevelop.CSharp.Project
 			this.comboPlatforms.Name = "comboPlatforms";
 			this.comboPlatforms.Active = 0;
 			this.hbox1.Add (this.comboPlatforms);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.comboPlatforms]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.comboPlatforms]));
 			w8.Position = 0;
 			w8.Expand = false;
 			w8.Fill = false;
 			this.table1.Add (this.hbox1);
-			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.table1[this.hbox1]));
+			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.table1 [this.hbox1]));
 			w9.TopAttach = ((uint)(1));
 			w9.BottomAttach = ((uint)(2));
 			w9.LeftAttach = ((uint)(1));
@@ -199,7 +198,7 @@ namespace MonoDevelop.CSharp.Project
 			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Platform target:");
 			this.table1.Add (this.label1);
-			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table1[this.label1]));
+			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table1 [this.label1]));
 			w10.TopAttach = ((uint)(1));
 			w10.BottomAttach = ((uint)(2));
 			w10.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -211,7 +210,7 @@ namespace MonoDevelop.CSharp.Project
 			this.label87.LabelProp = global::Mono.Unix.Catalog.GetString ("Define S_ymbols:");
 			this.label87.UseUnderline = true;
 			this.table1.Add (this.label87);
-			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table1[this.label87]));
+			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table1 [this.label87]));
 			w11.XOptions = ((global::Gtk.AttachOptions)(4));
 			w11.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
@@ -221,18 +220,18 @@ namespace MonoDevelop.CSharp.Project
 			this.symbolsEntry.IsEditable = true;
 			this.symbolsEntry.InvisibleChar = '●';
 			this.table1.Add (this.symbolsEntry);
-			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table1[this.symbolsEntry]));
+			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table1 [this.symbolsEntry]));
 			w12.LeftAttach = ((uint)(1));
 			w12.RightAttach = ((uint)(2));
 			w12.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox65.Add (this.table1);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox65[this.table1]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox65 [this.table1]));
 			w13.Position = 5;
 			this.hbox56.Add (this.vbox65);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox56[this.vbox65]));
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox56 [this.vbox65]));
 			w14.Position = 1;
 			this.vbox62.Add (this.hbox56);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox62[this.hbox56]));
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox62 [this.hbox56]));
 			w15.Position = 1;
 			w15.Expand = false;
 			w15.Fill = false;
@@ -244,7 +243,7 @@ namespace MonoDevelop.CSharp.Project
 			this.label93.UseMarkup = true;
 			this.label93.UseUnderline = true;
 			this.vbox62.Add (this.label93);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox62[this.label93]));
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox62 [this.label93]));
 			w16.Position = 2;
 			w16.Expand = false;
 			w16.Fill = false;
@@ -256,7 +255,7 @@ namespace MonoDevelop.CSharp.Project
 			this.label73.WidthRequest = 18;
 			this.label73.Name = "label73";
 			this.hbox48.Add (this.label73);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.hbox48[this.label73]));
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.hbox48 [this.label73]));
 			w17.Position = 0;
 			w17.Expand = false;
 			w17.Fill = false;
@@ -274,7 +273,7 @@ namespace MonoDevelop.CSharp.Project
 			this.label85.LabelProp = global::Mono.Unix.Catalog.GetString ("_Warning Level:");
 			this.label85.UseUnderline = true;
 			this.hbox60.Add (this.label85);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.hbox60[this.label85]));
+			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.hbox60 [this.label85]));
 			w18.Position = 0;
 			w18.Expand = false;
 			w18.Fill = false;
@@ -287,12 +286,12 @@ namespace MonoDevelop.CSharp.Project
 			this.warningLevelSpinButton.Numeric = true;
 			this.warningLevelSpinButton.Value = 2;
 			this.hbox60.Add (this.warningLevelSpinButton);
-			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.hbox60[this.warningLevelSpinButton]));
+			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.hbox60 [this.warningLevelSpinButton]));
 			w19.Position = 1;
 			w19.Expand = false;
 			w19.Fill = false;
 			this.vbox67.Add (this.hbox60);
-			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.vbox67[this.hbox60]));
+			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.vbox67 [this.hbox60]));
 			w20.Position = 0;
 			w20.Expand = false;
 			w20.Fill = false;
@@ -306,7 +305,7 @@ namespace MonoDevelop.CSharp.Project
 			this.label86.LabelProp = global::Mono.Unix.Catalog.GetString ("_Ignore warnings:");
 			this.label86.UseUnderline = true;
 			this.hbox3.Add (this.label86);
-			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.label86]));
+			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.label86]));
 			w21.Position = 0;
 			w21.Expand = false;
 			w21.Fill = false;
@@ -317,10 +316,10 @@ namespace MonoDevelop.CSharp.Project
 			this.ignoreWarningsEntry.IsEditable = true;
 			this.ignoreWarningsEntry.InvisibleChar = '●';
 			this.hbox3.Add (this.ignoreWarningsEntry);
-			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.ignoreWarningsEntry]));
+			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.ignoreWarningsEntry]));
 			w22.Position = 1;
 			this.vbox67.Add (this.hbox3);
-			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.vbox67[this.hbox3]));
+			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.vbox67 [this.hbox3]));
 			w23.Position = 1;
 			w23.Expand = false;
 			w23.Fill = false;
@@ -332,15 +331,15 @@ namespace MonoDevelop.CSharp.Project
 			this.warningsAsErrorsCheckButton.DrawIndicator = true;
 			this.warningsAsErrorsCheckButton.UseUnderline = true;
 			this.vbox67.Add (this.warningsAsErrorsCheckButton);
-			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox67[this.warningsAsErrorsCheckButton]));
+			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox67 [this.warningsAsErrorsCheckButton]));
 			w24.Position = 2;
 			w24.Expand = false;
 			w24.Fill = false;
 			this.hbox48.Add (this.vbox67);
-			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.hbox48[this.vbox67]));
+			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.hbox48 [this.vbox67]));
 			w25.Position = 1;
 			this.vbox62.Add (this.hbox48);
-			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.vbox62[this.hbox48]));
+			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.vbox62 [this.hbox48]));
 			w26.Position = 3;
 			w26.Expand = false;
 			w26.Fill = false;
@@ -352,7 +351,7 @@ namespace MonoDevelop.CSharp.Project
 			this.label94.UseMarkup = true;
 			this.label94.UseUnderline = true;
 			this.vbox62.Add (this.label94);
-			global::Gtk.Box.BoxChild w27 = ((global::Gtk.Box.BoxChild)(this.vbox62[this.label94]));
+			global::Gtk.Box.BoxChild w27 = ((global::Gtk.Box.BoxChild)(this.vbox62 [this.label94]));
 			w27.Position = 4;
 			w27.Expand = false;
 			w27.Fill = false;
@@ -365,7 +364,7 @@ namespace MonoDevelop.CSharp.Project
 			this.label74.WidthRequest = 18;
 			this.label74.Name = "label74";
 			this.hbox5.Add (this.label74);
-			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.hbox5[this.label74]));
+			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.label74]));
 			w28.Position = 0;
 			w28.Expand = false;
 			w28.Fill = false;
@@ -379,7 +378,7 @@ namespace MonoDevelop.CSharp.Project
 			this.label88.LabelProp = global::Mono.Unix.Catalog.GetString ("_Additional arguments:");
 			this.label88.UseUnderline = true;
 			this.hbox6.Add (this.label88);
-			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.hbox6[this.label88]));
+			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.hbox6 [this.label88]));
 			w29.Position = 0;
 			w29.Expand = false;
 			w29.Fill = false;
@@ -390,13 +389,13 @@ namespace MonoDevelop.CSharp.Project
 			this.additionalArgsEntry.IsEditable = true;
 			this.additionalArgsEntry.InvisibleChar = '●';
 			this.hbox6.Add (this.additionalArgsEntry);
-			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.hbox6[this.additionalArgsEntry]));
+			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.hbox6 [this.additionalArgsEntry]));
 			w30.Position = 1;
 			this.hbox5.Add (this.hbox6);
-			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.hbox5[this.hbox6]));
+			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.hbox6]));
 			w31.Position = 1;
 			this.vbox62.Add (this.hbox5);
-			global::Gtk.Box.BoxChild w32 = ((global::Gtk.Box.BoxChild)(this.vbox62[this.hbox5]));
+			global::Gtk.Box.BoxChild w32 = ((global::Gtk.Box.BoxChild)(this.vbox62 [this.hbox5]));
 			w32.Position = 5;
 			w32.Expand = false;
 			w32.Fill = false;

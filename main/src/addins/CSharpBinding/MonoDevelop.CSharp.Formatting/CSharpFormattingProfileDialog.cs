@@ -252,8 +252,27 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 	}";
-//		const string  = @"";
-		
+		const string blankLineExample = @"// Example
+using System;
+using System.Collections;
+namespace TestSpace {
+	using MyNamespace;
+	class Test
+	{
+		int a;
+		string b;
+		public Test (int a, string b)
+		{
+			this.a = a;
+			this.b = b;
+		}
+		void Print ()
+		{
+			Console.WriteLine (""a: {0} b : {1}"", a, b);
+		}
+	}
+}
+";
 		#endregion
 		
 		const int propertyColumn   = 0;
@@ -274,7 +293,34 @@ namespace MonoDevelop.CSharp.Formatting
 			entryName.Changed += delegate {
 				profile.Name = entryName.Text;
 			};
-			
+			notebookCategories.SwitchPage += delegate {
+				TreeView treeView;
+				Console.WriteLine (notebookCategories.Page);
+				switch (notebookCategories.Page) {
+				case 0:
+					treeView = treeviewIndentOptions;
+					break;
+				case 1:
+					treeView = treeviewBracePositions;
+					break;
+				case 2: // Blank lines
+					UpdateExample (blankLineExample);
+					return;
+				case 3: // white spaces
+					WhitespaceCategoryChanged (treeviewInsertWhiteSpaceCategory.Selection, EventArgs.Empty);
+					return;
+				case 4:
+					treeView = treeviewNewLines;
+					break;
+				default:
+					return;
+				}
+				
+				var model = treeView.Model;
+				Gtk.TreeIter iter;
+				if (treeView.Selection.GetSelected (out model, out iter))
+					UpdateExample (model, iter);
+			};
 			notebookCategories.ShowTabs = false;
 			comboboxCategories.AppendText (GettextCatalog.GetString ("Indentation"));
 			comboboxCategories.AppendText (GettextCatalog.GetString ("Braces"));
@@ -363,6 +409,7 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			AddOption (indentOptions, category, "AlignEmbeddedIfStatements", GettextCatalog.GetString ("Align embedded 'if' statements"), "class AClass { void AMethod () { if (a) if (b) { int c; } } } ");
 			AddOption (indentOptions, category, "AlignEmbeddedUsingStatements", GettextCatalog.GetString ("Align embedded 'using' statements"), "class AClass { void AMethod () {using (IDisposable a = null) using (IDisposable b = null) { int c; } } }");
+			treeviewIndentOptions.ExpandAll ();
 			#endregion
 			
 			#region Brace options
@@ -469,7 +516,7 @@ namespace MonoDevelop.CSharp.Formatting
 	}");
 			AddOption (bacePositionOptions, category, "UsingBraceForcement", GettextCatalog.GetString ("'using' statement"), simpleUsingStatement);
 			AddOption (bacePositionOptions, category, "FixedBraceForcement", GettextCatalog.GetString ("'fixed' statement"), simpleFixedStatement);
-			
+			treeviewBracePositions.ExpandAll ();
 			#endregion
 			
 			#region New line options
@@ -520,8 +567,8 @@ namespace MonoDevelop.CSharp.Formatting
 			AddOption (newLineOptions, "PlaceFinallyOnNewLine", GettextCatalog.GetString ("Place 'finally' on new line"), simpleCatch);
 			AddOption (newLineOptions, "PlaceWhileOnNewLine", GettextCatalog.GetString ("Place 'while' on new line"), simpleDoWhile);
 			AddOption (newLineOptions, "PlaceArrayInitializersOnNewLine", GettextCatalog.GetString ("Place array initializers on new line"), simpleArrayInitializer);
+			treeviewNewLines.ExpandAll ();
 			#endregion
-			
 			
 			#region White space options
 			whiteSpaceCategory = new TreeStore (typeof (string), typeof (Category));
@@ -800,8 +847,25 @@ delegate void BarFoo ();
 			treeviewInsertWhiteSpaceOptions.AppendColumn (column);
 			
 			treeviewInsertWhiteSpaceOptions.Model = whiteSpaceOptions;
-			
+			treeviewInsertWhiteSpaceCategory.ExpandAll ();
 			#endregion
+			
+			#region Blank line options
+			entryBeforUsings.Text = profile.BlankLinesBeforeUsings.ToString ();
+			entryAfterUsings.Text = profile.BlankLinesAfterUsings.ToString ();
+			
+			entryBeforeFirstDeclaration.Text = profile.BlankLinesBeforeFirstDeclaration.ToString ();
+			entryBetweenTypes.Text = profile.BlankLinesBetweenTypes.ToString ();
+			
+			entryBetweenFields.Text = profile.BlankLinesBetweenFields.ToString ();
+			entryBetweenMembers.Text = profile.BlankLinesBetweenMembers.ToString ();
+			entryBeforUsings.Changed += HandleEntryBeforUsingsChanged;
+			#endregion
+		}
+
+		void HandleEntryBeforUsingsChanged (object sender, EventArgs e)
+		{
+			Console.WriteLine ("!!!!!!!!!!");
 		}
 
 		void WhitespaceCategoryChanged (object sender, EventArgs e)
