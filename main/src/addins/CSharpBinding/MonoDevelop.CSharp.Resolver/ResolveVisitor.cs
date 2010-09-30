@@ -771,7 +771,7 @@ namespace MonoDevelop.CSharp.Resolver
 				selectLambdaExpr.ExpressionBody = selectClause.Projection;
 				TypeReference typeRef = new TypeReference ("System.Func");
 				typeRef.GenericTypes.Add (TypeReference.Null);
-				ResolveResult result = resolver.ResolveExpression (selectLambdaExpr, resolver.ResolvePosition);
+				ResolveResult result = resolver.ResolveExpression (selectLambdaExpr, resolver.ResolvePosition, false);
 				
 				typeRef.GenericTypes.Add (result.ResolvedType.ConvertToTypeReference ());
 				
