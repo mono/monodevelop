@@ -26,9 +26,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		private global::Gtk.TextView textviewDetails;
 		
-		private global::Gtk.ScrolledWindow GtkScrolledWindow1;
-		
-		private global::Gtk.TreeView treeviewFiles;
+		private global::Gtk.ScrolledWindow scrolledwindowFiles;
 		
 		protected virtual void Build ()
 		{
@@ -58,6 +56,7 @@ namespace MonoDevelop.VersionControl.Views
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.vpaned1 = new global::Gtk.VPaned ();
 			this.vpaned1.CanFocus = true;
+			this.vpaned1.Name = "vpaned1";
 			this.vpaned1.Position = 204;
 			// Container child vpaned1.Gtk.Paned+PanedChild
 			this.hpaned1 = new global::Gtk.HPaned ();
@@ -108,18 +107,14 @@ namespace MonoDevelop.VersionControl.Views
 			global::Gtk.Paned.PanedChild w10 = ((global::Gtk.Paned.PanedChild)(this.vpaned1 [this.hpaned1]));
 			w10.Resize = false;
 			// Container child vpaned1.Gtk.Paned+PanedChild
-			this.GtkScrolledWindow1 = new global::Gtk.ScrolledWindow ();
-			this.GtkScrolledWindow1.Name = "GtkScrolledWindow1";
-			this.GtkScrolledWindow1.ShadowType = ((global::Gtk.ShadowType)(1));
-			// Container child GtkScrolledWindow1.Gtk.Container+ContainerChild
-			this.treeviewFiles = new global::Gtk.TreeView ();
-			this.treeviewFiles.CanFocus = true;
-			this.treeviewFiles.Name = "treeviewFiles";
-			this.GtkScrolledWindow1.Add (this.treeviewFiles);
-			this.vpaned1.Add (this.GtkScrolledWindow1);
+			this.scrolledwindowFiles = new global::Gtk.ScrolledWindow ();
+			this.scrolledwindowFiles.CanFocus = true;
+			this.scrolledwindowFiles.Name = "scrolledwindowFiles";
+			this.scrolledwindowFiles.ShadowType = ((global::Gtk.ShadowType)(1));
+			this.vpaned1.Add (this.scrolledwindowFiles);
 			this.vbox1.Add (this.vpaned1);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.vpaned1]));
-			w13.Position = 1;
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.vpaned1]));
+			w12.Position = 1;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

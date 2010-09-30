@@ -1781,14 +1781,17 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow1">
+              <widget class="Gtk.ScrolledWindow" id="scrolledwindowFiles">
                 <property name="MemberName" />
+                <property name="CanFocus">True</property>
                 <property name="ShadowType">In</property>
                 <child>
-                  <widget class="Gtk.TreeView" id="treeviewFiles">
+                  <widget class="Gtk.Viewport" id="GtkViewport">
                     <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="ShowScrollbars">True</property>
+                    <property name="ShadowType">None</property>
+                    <child>
+                      <placeholder />
+                    </child>
                   </widget>
                 </child>
               </widget>

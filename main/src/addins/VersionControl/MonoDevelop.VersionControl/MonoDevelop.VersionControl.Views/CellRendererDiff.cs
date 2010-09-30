@@ -99,7 +99,6 @@ namespace MonoDevelop.VersionControl.Views
 		
 		const int leftSpace = 16;
 		public bool DrawLeft { get; set; }
-		public Gdk.Point? CursorLocation { get; set; }
 		
 		protected override void Render (Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
 		{
@@ -119,7 +118,7 @@ namespace MonoDevelop.VersionControl.Views
 					cell_area.X = leftSpace;
 				}
 				var treeview = widget as FileTreeView;
-				var p = treeview != null? treeview.CursorLocation : CursorLocation;
+				var p = treeview != null? treeview.CursorLocation : null;
 				
 				int recty = cell_area.Y;
 				int recth = cell_area.Height - 1;

@@ -57,6 +57,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		
 		ListStore logstore = new ListStore (typeof (Revision));
+		FileTreeView treeviewFiles;
 		TreeStore changedpathstore;
 		
 		VersionControlDocumentInfo info;
@@ -111,6 +112,9 @@ namespace MonoDevelop.VersionControl.Views
 			if (info.Document != null)
 				this.preselectFile = info.Document.FileName;
 			CellRendererText messageRenderer = new CellRendererText ();
+			messageRenderer.Destroyed += delegate {
+				Console.WriteLine ("BÄM");
+			};
 			messageRenderer.Ellipsize = Pango.EllipsizeMode.End;
 			TreeViewColumn colRevMessage = new TreeViewColumn ();
 			colRevMessage.Title = GettextCatalog.GetString ("Message");
@@ -144,6 +148,11 @@ namespace MonoDevelop.VersionControl.Views
 
 			treeviewLog.Model = logstore;
 			treeviewLog.Selection.Changed += TreeSelectionChanged;
+			
+			treeviewFiles = new FileTreeView ();
+			treeviewFiles.DiffLineActivated += HandleTreeviewFilesDiffLineActivated;
+			scrolledwindowFiles.Child = treeviewFiles;
+			scrolledwindowFiles.ShowAll ();
 			
 			changedpathstore = new TreeStore (typeof(Gdk.Pixbuf), typeof (string), // icon/file name
 				typeof(Gdk.Pixbuf), typeof (string), // icon/operation
@@ -180,14 +189,43 @@ namespace MonoDevelop.VersionControl.Views
 			treeviewFiles.Model = changedpathstore;
 			treeviewFiles.TestExpandRow += HandleTreeviewFilesTestExpandRow;
 			treeviewFiles.Events |= Gdk.EventMask.PointerMotionMask;
-			treeviewFiles.MotionNotifyEvent += delegate (object sender, MotionNotifyEventArgs args) {
-				diffRenderer.CursorLocation = new Gdk.Point ((int)args.Event.X, (int)args.Event.Y);
-				treeviewFiles.QueueDraw ();
-				
-			};
 			
 			textviewDetails.WrapMode = Gtk.WrapMode.Word;
 		}
+
+		void HandleTreeviewFilesDiffLineActivated (object sender, EventArgs e)
+		{
+			Console.WriteLine ("line activated !!");
+			TreePath[] paths = treeviewFiles.Selection.GetSelectedRows ();
+			
+			if (paths.Length != 1)
+				return;
+			
+			TreeIter iter;
+			changedpathstore.GetIter (out iter, paths[0]);
+			
+			string fileName = (string)changedpathstore.GetValue (iter, colPath);
+			int line = diffRenderer.GetSelectedLine (paths[0]);
+			var doc = IdeApp.Workbench.OpenDocument (fileName, line, 0, true);
+			int i = 1;
+			foreach (var content in doc.Window.SubViewContents) {
+				DiffView diffView = content as DiffView;
+				if (diffView != null) {
+					doc.Window.SwitchView (i);
+					diffView.ComparisonWidget.info.RunAfterUpdate (delegate {
+						// TODO: Set previous revision
+	//					diffView.ComparisonWidget.SetRevision (diffView.ComparisonWidget.OriginalEditor, null);
+						diffView.ComparisonWidget.SetRevision (diffView.ComparisonWidget.DiffEditor, SelectedRevision);
+						
+						diffView.ComparisonWidget.DiffEditor.Caret.Location = new Mono.TextEditor.DocumentLocation (line, 1);
+						diffView.ComparisonWidget.DiffEditor.CenterToCaret ();
+					});
+					break;
+				}
+				i++;
+			}
+		}
+		
 		const int colPath = 5;
 		const int colDiff = 6;
 		
@@ -367,7 +405,7 @@ namespace MonoDevelop.VersionControl.Views
 				}
 				Gdk.Pixbuf fileIcon = DesktopService.GetPixbufForFile (rp.Path, Gtk.IconSize.Menu);
 				var iter = changedpathstore.AppendValues (actionIcon, action, fileIcon, System.IO.Path.GetFileName (rp.Path), System.IO.Path.GetDirectoryName (rp.Path), rp.Path, null);
-				changedpathstore.AppendValues (iter, null, null, null, null, rp.Path, null);
+				changedpathstore.AppendValues (iter, null, null, null, null, null, rp.Path, null);
 				if (rp.Path == preselectFile) {
 					selectIter = iter;
 					select = true;
