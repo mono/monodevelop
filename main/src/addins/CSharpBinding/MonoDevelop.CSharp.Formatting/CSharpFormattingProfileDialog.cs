@@ -271,6 +271,9 @@ namespace TestSpace {
 			Console.WriteLine (""a: {0} b : {1}"", a, b);
 		}
 	}
+	class MyTest 
+	{
+	}
 }
 ";
 		#endregion
@@ -674,7 +677,7 @@ delegate void BarFoo ();
 				new Option ("SpacesAfterForSemicolon", GettextCatalog.GetString ("after semicolon"))
 			));
 			
-			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("'foreach'"), new Category (simpleFor,
+			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("'foreach'"), new Category (simpleForeach,
 				new Option ("ForeachParentheses", GettextCatalog.GetString ("before opening parenthesis"))
 			));
 			
@@ -859,13 +862,35 @@ delegate void BarFoo ();
 			
 			entryBetweenFields.Text = profile.BlankLinesBetweenFields.ToString ();
 			entryBetweenMembers.Text = profile.BlankLinesBetweenMembers.ToString ();
+			
 			entryBeforUsings.Changed += HandleEntryBeforUsingsChanged;
+			entryAfterUsings.Changed += HandleEntryBeforUsingsChanged;
+			entryBeforeFirstDeclaration.Changed += HandleEntryBeforUsingsChanged;
+			entryBetweenTypes.Changed += HandleEntryBeforUsingsChanged;
+			entryBetweenFields.Changed += HandleEntryBeforUsingsChanged;
+			entryBetweenMembers.Changed += HandleEntryBeforUsingsChanged;
+			
 			#endregion
+		}
+		
+		int SetFlag (Gtk.Entry entry, int oldValue)
+		{
+			int newValue;
+			if (int.TryParse (entry.Text, out newValue)) 
+				return newValue;
+			return oldValue;
 		}
 
 		void HandleEntryBeforUsingsChanged (object sender, EventArgs e)
 		{
-			Console.WriteLine ("!!!!!!!!!!");
+			profile.BlankLinesBeforeUsings = SetFlag (entryBeforUsings, profile.BlankLinesBeforeUsings);
+			profile.BlankLinesAfterUsings = SetFlag (entryAfterUsings, profile.BlankLinesAfterUsings);
+			profile.BlankLinesBeforeFirstDeclaration = SetFlag (entryBeforeFirstDeclaration, profile.BlankLinesBeforeFirstDeclaration);
+			profile.BlankLinesBetweenTypes = SetFlag (entryBetweenTypes, profile.BlankLinesBetweenTypes);
+			profile.BlankLinesBetweenFields = SetFlag (entryBetweenFields, profile.BlankLinesBetweenFields);
+			profile.BlankLinesBetweenMembers = SetFlag (entryBetweenMembers, profile.BlankLinesBetweenMembers);
+			
+			UpdateExample (blankLineExample);
 		}
 
 		void WhitespaceCategoryChanged (object sender, EventArgs e)

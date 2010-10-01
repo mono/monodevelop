@@ -957,6 +957,15 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		
 			AfterIndexerDeclarationParameterComma = true;
+			
+			BlankLinesBeforeUsings = 0;
+			BlankLinesAfterUsings = 1;
+			
+			
+			BlankLinesBeforeFirstDeclaration = 0;
+			BlankLinesBetweenTypes = 1;
+			BlankLinesBetweenFields = 0;
+			BlankLinesBetweenMembers = 1;
 		}
 		
 		public static CSharpFormattingPolicy Load (FilePath selectedFile)
@@ -979,6 +988,8 @@ namespace MonoDevelop.CSharp.Formatting
 							object value;
 							if (info.PropertyType == typeof (bool)) {
 								value = Boolean.Parse (valString);
+							} else if (info.PropertyType == typeof (int)) {
+								value = Int32.Parse (valString);
 							} else {
 								value = Enum.Parse (info.PropertyType, valString);
 							}

@@ -79,8 +79,65 @@ namespace MonoDevelop.CSharp.Formatting
 			return null;
 		}
 		
+		public void EnsureBlankLinesAfter (ICSharpNode node, int blankLines)
+		{
+			var loc = node.EndLocation;
+			int line = loc.Line;
+			LineSegment lineSegment;
+			do {
+				line++;
+				lineSegment = data.Document.GetLine (line);
+			} while (lineSegment.EditableLength == lineSegment.GetIndentation (data.Document).Length);
+			int start = data.Document.GetLine (loc.Line).EndOffset;
+			StringBuilder sb = new StringBuilder ();
+			for (int i = 0; i < blankLines; i++)
+				sb.Append (data.EolMarker);
+			AddChange (start, lineSegment.Offset - start, sb.ToString ());
+		}
+		
+		public void EnsureBlankLinesBefore (ICSharpNode node, int blankLines)
+		{
+			var loc = node.StartLocation;
+			int line = loc.Line;
+			LineSegment lineSegment;
+			do {
+				line--;
+				lineSegment = data.GetLine (line);
+				if (lineSegment == null)
+					break;
+			} while (lineSegment.EditableLength == lineSegment.GetIndentation (data.Document).Length);
+			int end = data.GetLine (loc.Line).Offset;
+			int start = lineSegment != null ? lineSegment.EndOffset : 0;
+			StringBuilder sb = new StringBuilder ();
+			for (int i = 0; i < blankLines; i++)
+				sb.Append (data.EolMarker);
+			AddChange (start, end - start, sb.ToString ());
+		}
+
+		public override object VisitUsingDeclaration (UsingDeclaration usingDeclaration, object data)
+		{
+			if (!(usingDeclaration.NextSibling is UsingDeclaration || usingDeclaration.NextSibling  is UsingAliasDeclaration)) 
+				EnsureBlankLinesAfter (usingDeclaration, policy.BlankLinesAfterUsings);
+			if (!(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling  is UsingAliasDeclaration)) 
+				EnsureBlankLinesBefore (usingDeclaration, policy.BlankLinesBeforeUsings);
+
+			return null;
+		}
+		
+		public override object VisitUsingAliasDeclaration (UsingAliasDeclaration usingDeclaration, object data)
+		{
+			if (!(usingDeclaration.NextSibling is UsingDeclaration || usingDeclaration.NextSibling  is UsingAliasDeclaration)) 
+				EnsureBlankLinesAfter (usingDeclaration, policy.BlankLinesAfterUsings);
+			if (!(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling  is UsingAliasDeclaration)) 
+				EnsureBlankLinesBefore (usingDeclaration, policy.BlankLinesBeforeUsings);
+			return null;
+		}
+		
 		public override object VisitNamespaceDeclaration (NamespaceDeclaration namespaceDeclaration, object data)
 		{
+			var firstNsMember = namespaceDeclaration.GetChildByRole (NamespaceDeclaration.Roles.Member);
+			if (firstNsMember != null)
+				EnsureBlankLinesBefore ((ICSharpNode)firstNsMember, policy.BlankLinesBeforeFirstDeclaration);
 			FixIndentationForceNewLine (namespaceDeclaration.StartLocation);
 			EnforceBraceStyle (policy.NamespaceBraceStyle, namespaceDeclaration.LBrace, namespaceDeclaration.RBrace);
 			if (policy.IndentNamespaceBody)
@@ -124,6 +181,10 @@ namespace MonoDevelop.CSharp.Formatting
 			object result = base.VisitTypeDeclaration (typeDeclaration, data);
 			if (indentBody)
 				IndentLevel--;
+			
+			if (typeDeclaration.NextSibling is TypeDeclaration || typeDeclaration.NextSibling is DelegateDeclaration)
+				EnsureBlankLinesAfter (typeDeclaration, policy.BlankLinesBetweenTypes);
+			
 			return result;
 		}
 		
@@ -232,6 +293,8 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			if (policy.IndentPropertyBody)
 				IndentLevel--;
+			if (IsMember (propertyDeclaration.NextSibling))
+				EnsureBlankLinesAfter (propertyDeclaration, policy.BlankLinesBetweenMembers);
 			return null;
 		}
 		
@@ -267,6 +330,8 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 			if (policy.IndentPropertyBody)
 				IndentLevel--;
+			if (IsMember (indexerDeclaration.NextSibling))
+				EnsureBlankLinesAfter (indexerDeclaration, policy.BlankLinesBetweenMembers);
 			return null;
 		}
 		
@@ -305,6 +370,8 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			if (policy.IndentEventBody)
 				IndentLevel--;
+			if (IsMember (eventDeclaration.NextSibling))
+				EnsureBlankLinesAfter (eventDeclaration, policy.BlankLinesBetweenMembers);
 			return null;
 		}
 		
@@ -319,15 +386,33 @@ namespace MonoDevelop.CSharp.Formatting
 		public override object VisitFieldDeclaration (FieldDeclaration fieldDeclaration, object data)
 		{
 			FixIndentationForceNewLine (fieldDeclaration.StartLocation);
+			
+			if (fieldDeclaration.NextSibling is FieldDeclaration) {
+				EnsureBlankLinesAfter (fieldDeclaration, policy.BlankLinesBetweenFields);
+			} else if (IsMember (fieldDeclaration.NextSibling)) {
+				EnsureBlankLinesAfter (fieldDeclaration, policy.BlankLinesBetweenMembers);
+			}
+			
 			return base.VisitFieldDeclaration (fieldDeclaration, data);
 		}
 		
 		public override object VisitDelegateDeclaration (DelegateDeclaration delegateDeclaration, object data)
 		{
 			FixIndentation (delegateDeclaration.StartLocation);
+			if (delegateDeclaration.NextSibling is TypeDeclaration || delegateDeclaration.NextSibling is DelegateDeclaration) {
+				EnsureBlankLinesAfter (delegateDeclaration, policy.BlankLinesBetweenTypes);
+			} else if (IsMember (delegateDeclaration.NextSibling)) {
+				EnsureBlankLinesAfter (delegateDeclaration, policy.BlankLinesBetweenMembers);
+			}
+
 			return base.VisitDelegateDeclaration (delegateDeclaration, data);
 		}
 		
+		static bool IsMember (INode nextSibling)
+		{
+			return nextSibling != null && nextSibling.Role == AbstractNode.Roles.Member;
+		}
+
 		public override object VisitMethodDeclaration (MethodDeclaration methodDeclaration, object data)
 		{
 			FixIndentationForceNewLine (methodDeclaration.StartLocation);
@@ -339,7 +424,9 @@ namespace MonoDevelop.CSharp.Formatting
 				if (policy.IndentMethodBody)
 					IndentLevel--;
 			}
-			
+			if (IsMember (methodDeclaration.NextSibling))
+				EnsureBlankLinesAfter (methodDeclaration, policy.BlankLinesBetweenMembers);
+
 			return null;
 		}
 		
@@ -354,6 +441,8 @@ namespace MonoDevelop.CSharp.Formatting
 				if (policy.IndentMethodBody)
 					IndentLevel--;
 			}
+			if (IsMember (operatorDeclaration.NextSibling))
+				EnsureBlankLinesAfter (operatorDeclaration, policy.BlankLinesBetweenMembers);
 			
 			return null;
 		}
@@ -364,6 +453,8 @@ namespace MonoDevelop.CSharp.Formatting
 			if (constructorDeclaration.Body != null)
 				EnforceBraceStyle (policy.ConstructorBraceStyle, constructorDeclaration.Body.LBrace, constructorDeclaration.Body.RBrace);
 			object result = base.VisitConstructorDeclaration (constructorDeclaration, data);
+			if (IsMember (constructorDeclaration.NextSibling))
+				EnsureBlankLinesAfter (constructorDeclaration, policy.BlankLinesBetweenMembers);
 			return result;
 		}
 		
@@ -373,6 +464,8 @@ namespace MonoDevelop.CSharp.Formatting
 			if (destructorDeclaration.Body != null)
 				EnforceBraceStyle (policy.DestructorBraceStyle, destructorDeclaration.Body.LBrace, destructorDeclaration.Body.RBrace);
 			object result = base.VisitDestructorDeclaration (destructorDeclaration, data);
+			if (IsMember (destructorDeclaration.NextSibling))
+				EnsureBlankLinesAfter (destructorDeclaration, policy.BlankLinesBetweenMembers);
 			return result;
 		}
 		

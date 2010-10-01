@@ -250,7 +250,7 @@ namespace MonoDevelop.CSharp.Parser
 			void AddToNamespace (INode child)
 			{
 				if (namespaceStack.Count > 0) {
-					namespaceStack.Peek ().AddChild (child);
+					namespaceStack.Peek ().AddChild (child, NamespaceDeclaration.Roles.Member);
 				} else {
 					unit.AddChild (child);
 				}	
