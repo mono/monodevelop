@@ -61,6 +61,7 @@ FILES =  \
 	MonoDevelop.CSharpBinding/MemberTests.cs \
 	MonoDevelop.CSharpBinding/ParameterCompletionTests.cs \
 	MonoDevelop.CSharpBinding/ProjectDomTests.cs \
+	MonoDevelop.CSharpBinding/TestBlankLineFormatting.cs \
 	MonoDevelop.CSharpBinding/TestBraceStlye.cs \
 	MonoDevelop.CSharpBinding/TestFormattingBugs.cs \
 	MonoDevelop.CSharpBinding/TestSpacingVisitor.cs \
