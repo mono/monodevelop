@@ -37,15 +37,19 @@ namespace MonoDevelop.VersionControl.Git
 		static string gitExe;
 		const string msysGitX86 = @"C:\Program Files (x86)\Git\bin\git.exe";
 		const string msysGit = @"C:\Program Files\Git\bin\git.exe";
+		const string gitOsxInstaller = "/usr/local/git/bin/git";
 		
 		static GitVersionControl ()
 		{
 			string git = "git";
-			if (MonoDevelop.Core.PropertyService.IsWindows) {
+			if (PropertyService.IsWindows) {
 				if (File.Exists (msysGit))
 					git = msysGit;
 				else if (File.Exists (msysGitX86))
 					git = msysGitX86;
+			} else if (PropertyService.IsMac) {
+				if (File.Exists (gitOsxInstaller))
+					git = gitOsxInstaller;
 			}
 			
 			try {
