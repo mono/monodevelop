@@ -95,8 +95,7 @@ RES =  \
 	gtk-gui/gui.stetic \
 	gtk-gui/objects.xml \
 	MonoDevelop.Xml.Formatting/MonoXmlPolicy.xml \
-	MonoDevelop.XmlEditor.addin.xml \
-	XmlEditor.glade
+	MonoDevelop.XmlEditor.addin.xml
 
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/schemas/, $(notdir $(DATA_FILES)))
