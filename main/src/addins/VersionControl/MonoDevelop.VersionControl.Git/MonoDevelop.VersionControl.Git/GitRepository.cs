@@ -877,9 +877,53 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			return alist.ToArray ();
 		}
+		
+		internal GitRevision GetPreviousRevisionFor (GitRevision revision)
+		{
+			StringReader sr = RunCommand ("log -1 --name-status --date=iso " + revision + "^", true);
+			string rev = ReadWithPrefix (sr, "commit ");
+			string author = ReadWithPrefix  (sr, "Author: ");
+			string dateStr = ReadWithPrefix (sr, "Date:   ");
+			DateTime date;
+			DateTime.TryParse (dateStr, out date);
+			
+			List<RevisionPath> paths = new List<RevisionPath> ();
+			bool readingComment = true;
+			StringBuilder message = new StringBuilder ();
+			StringBuilder interline = new StringBuilder ();
+			
+			string line;
+			while ((line = sr.ReadLine ()) != null) {
+				if (line.Length > 2 && ("ADM".IndexOf (line[0]) != -1) && line [1] == '\t') {
+					readingComment = false;
+					string file = line.Substring (2);
+					RevisionAction ra;
+					switch (line[0]) {
+					case 'A': ra = RevisionAction.Add; break;
+					case 'D': ra = RevisionAction.Delete; break;
+					default: ra = RevisionAction.Modify; break;
+					}
+					RevisionPath p = new RevisionPath (path.Combine (file), ra, null);
+					paths.Add (p);
+				}
+				else if (readingComment) {
+					if (IsEmptyLine (line))
+						interline.AppendLine (line);
+					else {
+						message.Append (interline);
+						message.AppendLine (line);
+						interline = new StringBuilder ();
+					}
+				}
+				else
+					break;
+			}
+			
+			return new GitRevision (this, rev, date, author, message.ToString ().Trim ('\n','\r'), paths.ToArray ());
+		}
 	}
 	
-	class GitRevision: Revision
+	public class GitRevision: Revision
 	{
 		string rev;
 		
@@ -902,7 +946,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override Revision GetPrevious ()
 		{
-			throw new System.NotImplementedException();
+			return ((GitRepository) this.Repository).GetPreviousRevisionFor (this);
 		}
 	}
 	
