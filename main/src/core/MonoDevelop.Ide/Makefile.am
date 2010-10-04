@@ -40,6 +40,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.FindInFiles.FindInFilesDialog.cs \
 	gtk-gui/MonoDevelop.Ide.FindInFiles.SearchResultWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Fonts.FontChooserPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Components.ExecutionModeComboBox.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Components.StringTagSelectorButton.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs \
@@ -370,6 +371,10 @@ FILES =  \
 	MonoDevelop.Ide.FindInFiles/SearchResult.cs \
 	MonoDevelop.Ide.FindInFiles/SearchResultPad.cs \
 	MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs \
+	MonoDevelop.Ide.Fonts/FontChooserPanel.cs \
+	MonoDevelop.Ide.Fonts/FontChooserPanelWidget.cs \
+	MonoDevelop.Ide.Fonts/FontDescriptionCodon.cs \
+	MonoDevelop.Ide.Fonts/FontService.cs \
 	MonoDevelop.Ide.Gui.Components/CellRendererPixbuf.cs \
 	MonoDevelop.Ide.Gui.Components/CustomCommandTargetAttribute.cs \
 	MonoDevelop.Ide.Gui.Components/DragOperation.cs \
