@@ -5,9 +5,7 @@ namespace MonoDevelop.Ide.Execution
 	internal partial class MonoExecutionParametersPreview
 	{
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-
 		private global::Gtk.Label labelOps;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -33,8 +31,8 @@ namespace MonoDevelop.Ide.Execution
 			// Container child GtkViewport.Gtk.Container+ContainerChild
 			this.labelOps = new global::Gtk.Label ();
 			this.labelOps.Name = "labelOps";
-			this.labelOps.Xalign = 0f;
-			this.labelOps.Yalign = 0f;
+			this.labelOps.Xalign = 0F;
+			this.labelOps.Yalign = 0F;
 			this.labelOps.UseMarkup = true;
 			this.labelOps.Wrap = true;
 			this.labelOps.Selectable = true;
@@ -42,7 +40,7 @@ namespace MonoDevelop.Ide.Execution
 			w2.Add (this.labelOps);
 			this.GtkScrolledWindow.Add (w2);
 			w1.Add (this.GtkScrolledWindow);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(w1[this.GtkScrolledWindow]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(w1 [this.GtkScrolledWindow]));
 			w5.Position = 0;
 			// Internal child MonoDevelop.Ide.Execution.MonoExecutionParametersPreview.ActionArea
 			global::Gtk.HButtonBox w6 = this.ActionArea;
@@ -58,8 +56,8 @@ namespace MonoDevelop.Ide.Execution
 			this.buttonOk.UseStock = true;
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-close";
-			this.AddActionWidget (this.buttonOk, -7);
-			global::Gtk.ButtonBox.ButtonBoxChild w7 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6[this.buttonOk]));
+			this.AddActionWidget (this.buttonOk,-7);
+			global::Gtk.ButtonBox.ButtonBoxChild w7 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6 [this.buttonOk]));
 			w7.Expand = false;
 			w7.Fill = false;
 			if ((this.Child != null)) {

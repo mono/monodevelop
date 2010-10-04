@@ -5,11 +5,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	internal partial class CustomCommandPanelWidget
 	{
 		private global::Gtk.VBox vbox;
-
 		private global::Gtk.Label label3;
-
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-
 		private global::Gtk.VBox vboxCommands;
 
 		protected virtual void Build ()
@@ -27,11 +24,11 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.label3 = new global::Gtk.Label ();
 			this.label3.WidthRequest = 470;
 			this.label3.Name = "label3";
-			this.label3.Xalign = 0f;
+			this.label3.Xalign = 0F;
 			this.label3.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("MonoDevelop can execute user specified commands or scripts before, after or as a replacement of common project operations. It is also possible to enter custom commands which will be available in the project or solution menu.");
 			this.label3.Wrap = true;
 			this.vbox.Add (this.label3);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox[this.label3]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox [this.label3]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -50,7 +47,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			w2.Add (this.vboxCommands);
 			this.scrolledwindow1.Add (w2);
 			this.vbox.Add (this.scrolledwindow1);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox[this.scrolledwindow1]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox [this.scrolledwindow1]));
 			w5.Position = 1;
 			this.Add (this.vbox);
 			if ((this.Child != null)) {

@@ -5,7 +5,6 @@ namespace MonoDevelop.Ide.Gui.Components
 	public partial class StringTagSelectorButton
 	{
 		private global::Gtk.Button button;
-
 		private global::Gtk.Arrow arrow1;
 
 		protected virtual void Build ()

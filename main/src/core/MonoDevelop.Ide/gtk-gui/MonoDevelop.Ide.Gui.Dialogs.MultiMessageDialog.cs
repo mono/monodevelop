@@ -5,9 +5,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	public partial class MultiMessageDialog
 	{
 		private global::Gtk.ScrolledWindow scrolled;
-
 		private global::Gtk.VBox msgBox;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -36,7 +34,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			w2.Add (this.msgBox);
 			this.scrolled.Add (w2);
 			w1.Add (this.scrolled);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(w1[this.scrolled]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(w1 [this.scrolled]));
 			w5.Position = 0;
 			// Internal child MonoDevelop.Ide.Gui.Dialogs.MultiMessageDialog.ActionArea
 			global::Gtk.HButtonBox w6 = this.ActionArea;
@@ -52,8 +50,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.buttonOk.UseStock = true;
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
-			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w7 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6[this.buttonOk]));
+			this.AddActionWidget (this.buttonOk,-5);
+			global::Gtk.ButtonBox.ButtonBoxChild w7 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6 [this.buttonOk]));
 			w7.Expand = false;
 			w7.Fill = false;
 			if ((this.Child != null)) {

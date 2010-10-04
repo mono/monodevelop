@@ -5,13 +5,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	internal partial class CommonAssemblySigningPreferences
 	{
 		private global::Gtk.VBox vbox1;
-
 		private global::Gtk.CheckButton signAssemblyCheckbutton;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Label strongNameFileLabel;
-
 		private global::MonoDevelop.Components.FileEntry strongNameFileEntry;
 
 		protected virtual void Build ()
@@ -32,7 +28,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.signAssemblyCheckbutton.DrawIndicator = true;
 			this.signAssemblyCheckbutton.UseUnderline = true;
 			this.vbox1.Add (this.signAssemblyCheckbutton);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.signAssemblyCheckbutton]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.signAssemblyCheckbutton]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -46,7 +42,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.strongNameFileLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("S_trong Name File:");
 			this.strongNameFileLabel.UseUnderline = true;
 			this.hbox1.Add (this.strongNameFileLabel);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.strongNameFileLabel]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.strongNameFileLabel]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -54,10 +50,10 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.strongNameFileEntry = new global::MonoDevelop.Components.FileEntry ();
 			this.strongNameFileEntry.Name = "strongNameFileEntry";
 			this.hbox1.Add (this.strongNameFileEntry);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.strongNameFileEntry]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.strongNameFileEntry]));
 			w3.Position = 1;
 			this.vbox1.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.hbox1]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox1]));
 			w4.Position = 1;
 			w4.Expand = false;
 			w4.Fill = false;

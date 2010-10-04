@@ -5,19 +5,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	internal partial class NewLayoutDialog
 	{
 		private global::Gtk.Alignment alignment1;
-
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.HBox hbox45;
-
 		private global::Gtk.Label label72;
-
 		private global::Gtk.Entry layoutName;
-
 		private global::Gtk.Label validationMessage;
-
 		private global::Gtk.Button button309;
-
 		private global::Gtk.Button newButton;
 
 		protected virtual void Build ()
@@ -36,7 +29,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			w1.Spacing = 6;
 			w1.BorderWidth = ((uint)(2));
 			// Container child dialog-vbox4.Gtk.Box+BoxChild
-			this.alignment1 = new global::Gtk.Alignment (0.5f, 0.5f, 1f, 1f);
+			this.alignment1 = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
 			this.alignment1.Name = "alignment1";
 			// Container child alignment1.Gtk.Container+ContainerChild
 			this.vbox2 = new global::Gtk.VBox ();
@@ -50,10 +43,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			// Container child hbox45.Gtk.Box+BoxChild
 			this.label72 = new global::Gtk.Label ();
 			this.label72.Name = "label72";
-			this.label72.Xalign = 0f;
+			this.label72.Xalign = 0F;
 			this.label72.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Layout name:");
 			this.hbox45.Add (this.label72);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox45[this.label72]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox45 [this.label72]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -65,25 +58,25 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.layoutName.ActivatesDefault = true;
 			this.layoutName.InvisibleChar = '●';
 			this.hbox45.Add (this.layoutName);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox45[this.layoutName]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox45 [this.layoutName]));
 			w3.Position = 1;
 			this.vbox2.Add (this.hbox45);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox45]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox45]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.validationMessage = new global::Gtk.Label ();
 			this.validationMessage.Name = "validationMessage";
-			this.validationMessage.Xalign = 0f;
+			this.validationMessage.Xalign = 0F;
 			this.vbox2.Add (this.validationMessage);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.validationMessage]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.validationMessage]));
 			w5.Position = 1;
 			w5.Expand = false;
 			w5.Fill = false;
 			this.alignment1.Add (this.vbox2);
 			w1.Add (this.alignment1);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(w1[this.alignment1]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(w1 [this.alignment1]));
 			w7.Position = 0;
 			w7.Expand = false;
 			w7.Fill = false;
@@ -100,8 +93,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.button309.UseStock = true;
 			this.button309.UseUnderline = true;
 			this.button309.Label = "gtk-cancel";
-			this.AddActionWidget (this.button309, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8[this.button309]));
+			this.AddActionWidget (this.button309,-6);
+			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8 [this.button309]));
 			w9.Expand = false;
 			w9.Fill = false;
 			// Container child GtkDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -111,13 +104,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.newButton.Name = "newButton";
 			this.newButton.UseUnderline = true;
 			// Container child newButton.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w10 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+			global::Gtk.Alignment w10 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
 			global::Gtk.HBox w11 = new global::Gtk.HBox ();
 			w11.Spacing = 2;
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Image w12 = new global::Gtk.Image ();
-			w12.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-new", global::Gtk.IconSize.Menu);
+			w12.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"gtk-new",global::Gtk.IconSize.Menu);
 			w11.Add (w12);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w14 = new global::Gtk.Label ();
@@ -126,8 +119,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			w11.Add (w14);
 			w10.Add (w11);
 			this.newButton.Add (w10);
-			this.AddActionWidget (this.newButton, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w18 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8[this.newButton]));
+			this.AddActionWidget (this.newButton,-5);
+			global::Gtk.ButtonBox.ButtonBoxChild w18 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8 [this.newButton]));
 			w18.Position = 1;
 			w18.Expand = false;
 			w18.Fill = false;

@@ -5,11 +5,8 @@ namespace MonoDevelop.Ide.StandardHeader
 	internal partial class StandardHeaderPolicyPanelWidget
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-
 		private global::Gtk.TextView headerText;
-
 		private global::Gtk.CheckButton includeAutoCheck;
 
 		protected virtual void Build ()
@@ -32,7 +29,7 @@ namespace MonoDevelop.Ide.StandardHeader
 			this.headerText.Name = "headerText";
 			this.GtkScrolledWindow.Add (this.headerText);
 			this.vbox2.Add (this.GtkScrolledWindow);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.GtkScrolledWindow]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.GtkScrolledWindow]));
 			w2.Position = 0;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.includeAutoCheck = new global::Gtk.CheckButton ();
@@ -42,7 +39,7 @@ namespace MonoDevelop.Ide.StandardHeader
 			this.includeAutoCheck.DrawIndicator = true;
 			this.includeAutoCheck.UseUnderline = true;
 			this.vbox2.Add (this.includeAutoCheck);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.includeAutoCheck]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.includeAutoCheck]));
 			w3.Position = 1;
 			w3.Expand = false;
 			w3.Fill = false;

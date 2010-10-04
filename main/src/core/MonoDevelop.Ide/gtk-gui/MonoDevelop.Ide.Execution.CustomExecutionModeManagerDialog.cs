@@ -5,21 +5,13 @@ namespace MonoDevelop.Ide.Execution
 	internal partial class CustomExecutionModeManagerDialog
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-
 		private global::Gtk.TreeView listModes;
-
 		private global::Gtk.VBox vbox3;
-
 		private global::Gtk.Button buttonAdd;
-
 		private global::Gtk.Button buttonRemove;
-
 		private global::Gtk.Button buttonEdit;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -52,7 +44,7 @@ namespace MonoDevelop.Ide.Execution
 			this.listModes.Name = "listModes";
 			this.GtkScrolledWindow.Add (this.listModes);
 			this.hbox1.Add (this.GtkScrolledWindow);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.GtkScrolledWindow]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.GtkScrolledWindow]));
 			w3.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.vbox3 = new global::Gtk.VBox ();
@@ -66,7 +58,7 @@ namespace MonoDevelop.Ide.Execution
 			this.buttonAdd.UseUnderline = true;
 			this.buttonAdd.Label = "gtk-add";
 			this.vbox3.Add (this.buttonAdd);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.buttonAdd]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.buttonAdd]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -78,7 +70,7 @@ namespace MonoDevelop.Ide.Execution
 			this.buttonRemove.UseUnderline = true;
 			this.buttonRemove.Label = "gtk-remove";
 			this.vbox3.Add (this.buttonRemove);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.buttonRemove]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.buttonRemove]));
 			w5.Position = 1;
 			w5.Expand = false;
 			w5.Fill = false;
@@ -90,20 +82,20 @@ namespace MonoDevelop.Ide.Execution
 			this.buttonEdit.UseUnderline = true;
 			this.buttonEdit.Label = "gtk-edit";
 			this.vbox3.Add (this.buttonEdit);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.buttonEdit]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.buttonEdit]));
 			w6.Position = 2;
 			w6.Expand = false;
 			w6.Fill = false;
 			this.hbox1.Add (this.vbox3);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.vbox3]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox3]));
 			w7.Position = 1;
 			w7.Expand = false;
 			w7.Fill = false;
 			this.vbox2.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
 			w8.Position = 0;
 			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(w1[this.vbox2]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
 			w9.Position = 0;
 			// Internal child MonoDevelop.Ide.Execution.CustomExecutionModeManagerDialog.ActionArea
 			global::Gtk.HButtonBox w10 = this.ActionArea;
@@ -119,8 +111,8 @@ namespace MonoDevelop.Ide.Execution
 			this.buttonOk.UseStock = true;
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-close";
-			this.AddActionWidget (this.buttonOk, -7);
-			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10[this.buttonOk]));
+			this.AddActionWidget (this.buttonOk,-7);
+			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.buttonOk]));
 			w11.Expand = false;
 			w11.Fill = false;
 			if ((this.Child != null)) {

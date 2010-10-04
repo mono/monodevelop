@@ -5,17 +5,11 @@ namespace MonoDevelop.Ide.Projects
 	internal partial class DeleteConfigDialog
 	{
 		private global::Gtk.HBox hbox64;
-
 		private global::Gtk.Image image6;
-
 		private global::Gtk.VBox vbox80;
-
 		private global::Gtk.Label label107;
-
 		private global::Gtk.CheckButton deleteChildrenCheck;
-
 		private global::Gtk.Button button11;
-
 		private global::Gtk.Button button12;
 
 		protected virtual void Build ()
@@ -36,10 +30,10 @@ namespace MonoDevelop.Ide.Projects
 			// Container child hbox64.Gtk.Box+BoxChild
 			this.image6 = new global::Gtk.Image ();
 			this.image6.Name = "image6";
-			this.image6.Yalign = 0f;
-			this.image6.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-question", global::Gtk.IconSize.Dialog);
+			this.image6.Yalign = 0F;
+			this.image6.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"gtk-dialog-question",global::Gtk.IconSize.Dialog);
 			this.hbox64.Add (this.image6);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox64[this.image6]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox64 [this.image6]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -50,10 +44,10 @@ namespace MonoDevelop.Ide.Projects
 			// Container child vbox80.Gtk.Box+BoxChild
 			this.label107 = new global::Gtk.Label ();
 			this.label107.Name = "label107";
-			this.label107.Xalign = 0f;
+			this.label107.Xalign = 0F;
 			this.label107.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Are you sure you want to delete this configuration?");
 			this.vbox80.Add (this.label107);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox80[this.label107]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox80 [this.label107]));
 			w3.Position = 0;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -65,15 +59,15 @@ namespace MonoDevelop.Ide.Projects
 			this.deleteChildrenCheck.DrawIndicator = true;
 			this.deleteChildrenCheck.UseUnderline = true;
 			this.vbox80.Add (this.deleteChildrenCheck);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox80[this.deleteChildrenCheck]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox80 [this.deleteChildrenCheck]));
 			w4.Position = 1;
 			w4.Expand = false;
 			w4.Fill = false;
 			this.hbox64.Add (this.vbox80);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox64[this.vbox80]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox64 [this.vbox80]));
 			w5.Position = 1;
 			w1.Add (this.hbox64);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(w1[this.hbox64]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(w1 [this.hbox64]));
 			w6.Position = 2;
 			// Internal child MonoDevelop.Ide.Projects.DeleteConfigDialog.ActionArea
 			global::Gtk.HButtonBox w7 = this.ActionArea;
@@ -85,8 +79,8 @@ namespace MonoDevelop.Ide.Projects
 			this.button11.UseStock = true;
 			this.button11.UseUnderline = true;
 			this.button11.Label = "gtk-no";
-			this.AddActionWidget (this.button11, -9);
-			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7[this.button11]));
+			this.AddActionWidget (this.button11,-9);
+			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7 [this.button11]));
 			w8.Expand = false;
 			w8.Fill = false;
 			// Container child dialog-action_area7.Gtk.ButtonBox+ButtonBoxChild
@@ -96,8 +90,8 @@ namespace MonoDevelop.Ide.Projects
 			this.button12.UseStock = true;
 			this.button12.UseUnderline = true;
 			this.button12.Label = "gtk-yes";
-			this.AddActionWidget (this.button12, -8);
-			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7[this.button12]));
+			this.AddActionWidget (this.button12,-8);
+			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7 [this.button12]));
 			w9.Position = 1;
 			w9.Expand = false;
 			w9.Fill = false;

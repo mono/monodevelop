@@ -5,23 +5,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	internal partial class MonoRuntimePanelWidget
 	{
 		private global::Gtk.VBox vbox1;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.HBox hbox2;
-
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-
 		private global::Gtk.TreeView tree;
-
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Button buttonDefault;
-
 		private global::Gtk.Button buttonAdd;
-
 		private global::Gtk.Button buttonRemove;
-
 		private global::Gtk.Label labelRunning;
 
 		protected virtual void Build ()
@@ -38,12 +29,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label1 = new global::Gtk.Label ();
 			this.label1.WidthRequest = 500;
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("If you have a parallel installation of Mono you can register it here, so you can use it for building and running projects. The <b>default runtime</b> is the .NET runtime to be used for building and running applications when none is specifically selected.");
 			this.label1.UseMarkup = true;
 			this.label1.Wrap = true;
 			this.vbox1.Add (this.label1);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.label1]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.label1]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -61,7 +52,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.tree.Name = "tree";
 			this.GtkScrolledWindow.Add (this.tree);
 			this.hbox2.Add (this.GtkScrolledWindow);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.GtkScrolledWindow]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.GtkScrolledWindow]));
 			w3.Position = 0;
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.vbox2 = new global::Gtk.VBox ();
@@ -74,7 +65,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.buttonDefault.UseUnderline = true;
 			this.buttonDefault.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Set as Default");
 			this.vbox2.Add (this.buttonDefault);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.buttonDefault]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.buttonDefault]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -86,7 +77,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.buttonAdd.UseUnderline = true;
 			this.buttonAdd.Label = "gtk-add";
 			this.vbox2.Add (this.buttonAdd);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.buttonAdd]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.buttonAdd]));
 			w5.Position = 1;
 			w5.Expand = false;
 			w5.Fill = false;
@@ -98,25 +89,25 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.buttonRemove.UseUnderline = true;
 			this.buttonRemove.Label = "gtk-remove";
 			this.vbox2.Add (this.buttonRemove);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.buttonRemove]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.buttonRemove]));
 			w6.Position = 2;
 			w6.Expand = false;
 			w6.Fill = false;
 			this.hbox2.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.vbox2]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.vbox2]));
 			w7.Position = 1;
 			w7.Expand = false;
 			w7.Fill = false;
 			this.vbox1.Add (this.hbox2);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.hbox2]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox2]));
 			w8.Position = 1;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.labelRunning = new global::Gtk.Label ();
 			this.labelRunning.Name = "labelRunning";
-			this.labelRunning.Xalign = 0f;
+			this.labelRunning.Xalign = 0F;
 			this.labelRunning.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("label1");
 			this.vbox1.Add (this.labelRunning);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.labelRunning]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.labelRunning]));
 			w9.Position = 2;
 			w9.Expand = false;
 			w9.Fill = false;

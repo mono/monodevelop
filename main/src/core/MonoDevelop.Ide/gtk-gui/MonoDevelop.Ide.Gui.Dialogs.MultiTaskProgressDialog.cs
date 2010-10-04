@@ -5,19 +5,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	internal partial class MultiTaskProgressDialog
 	{
 		private global::Gtk.Label title;
-
 		private global::Gtk.ScrolledWindow progressScroll;
-
 		private global::Gtk.TreeView progressTreeView;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.ScrolledWindow detailsScroll;
-
 		private global::Gtk.TextView detailsTextView;
-
 		private global::Gtk.Button buttonCancel;
-
 		private global::Gtk.Button buttonClose;
 
 		protected virtual void Build ()
@@ -37,10 +30,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
 			this.title = new global::Gtk.Label ();
 			this.title.Name = "title";
-			this.title.Xalign = 0f;
+			this.title.Xalign = 0F;
 			this.title.UseMarkup = true;
 			w1.Add (this.title);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(w1[this.title]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(w1 [this.title]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -58,15 +51,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.progressTreeView.Name = "progressTreeView";
 			this.progressScroll.Add (this.progressTreeView);
 			w1.Add (this.progressScroll);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(w1[this.progressScroll]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(w1 [this.progressScroll]));
 			w4.Position = 1;
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Details:");
 			w1.Add (this.label1);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(w1[this.label1]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(w1 [this.label1]));
 			w5.Position = 2;
 			w5.Expand = false;
 			w5.Fill = false;
@@ -87,7 +80,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.detailsTextView.WrapMode = ((global::Gtk.WrapMode)(3));
 			this.detailsScroll.Add (this.detailsTextView);
 			w1.Add (this.detailsScroll);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(w1[this.detailsScroll]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(w1 [this.detailsScroll]));
 			w7.Position = 3;
 			// Internal child MonoDevelop.Ide.Gui.Dialogs.MultiTaskProgressDialog.ActionArea
 			global::Gtk.HButtonBox w8 = this.ActionArea;
@@ -103,8 +96,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.buttonCancel.UseStock = true;
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
-			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8[this.buttonCancel]));
+			this.AddActionWidget (this.buttonCancel,-6);
+			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8 [this.buttonCancel]));
 			w9.Expand = false;
 			w9.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -115,8 +108,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.buttonClose.UseStock = true;
 			this.buttonClose.UseUnderline = true;
 			this.buttonClose.Label = "gtk-close";
-			this.AddActionWidget (this.buttonClose, -7);
-			global::Gtk.ButtonBox.ButtonBoxChild w10 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8[this.buttonClose]));
+			this.AddActionWidget (this.buttonClose,-7);
+			global::Gtk.ButtonBox.ButtonBoxChild w10 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8 [this.buttonClose]));
 			w10.Position = 1;
 			w10.Expand = false;
 			w10.Fill = false;

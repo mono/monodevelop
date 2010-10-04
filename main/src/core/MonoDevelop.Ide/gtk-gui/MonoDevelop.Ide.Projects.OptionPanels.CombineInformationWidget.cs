@@ -5,17 +5,11 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	internal partial class CombineInformationWidget
 	{
 		private global::Gtk.VBox vbox86;
-
 		private global::Gtk.Table table14;
-
 		private global::Gtk.Label descLabel;
-
 		private global::Gtk.ScrolledWindow scrolledwindow14;
-
 		private global::Gtk.TextView descView;
-
 		private global::Gtk.Entry versEntry;
-
 		private global::Gtk.Label versLabel;
 
 		protected virtual void Build ()
@@ -35,12 +29,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			// Container child table14.Gtk.Table+TableChild
 			this.descLabel = new global::Gtk.Label ();
 			this.descLabel.Name = "descLabel";
-			this.descLabel.Xalign = 0f;
-			this.descLabel.Yalign = 0f;
+			this.descLabel.Xalign = 0F;
+			this.descLabel.Yalign = 0F;
 			this.descLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Description:");
 			this.descLabel.UseUnderline = true;
 			this.table14.Add (this.descLabel);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table14[this.descLabel]));
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table14 [this.descLabel]));
 			w1.TopAttach = ((uint)(1));
 			w1.BottomAttach = ((uint)(2));
 			w1.XOptions = ((global::Gtk.AttachOptions)(0));
@@ -56,7 +50,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.descView.Name = "descView";
 			this.scrolledwindow14.Add (this.descView);
 			this.table14.Add (this.scrolledwindow14);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table14[this.scrolledwindow14]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table14 [this.scrolledwindow14]));
 			w3.TopAttach = ((uint)(1));
 			w3.BottomAttach = ((uint)(2));
 			w3.LeftAttach = ((uint)(1));
@@ -67,22 +61,22 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.versEntry.IsEditable = true;
 			this.versEntry.InvisibleChar = '●';
 			this.table14.Add (this.versEntry);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table14[this.versEntry]));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table14 [this.versEntry]));
 			w4.LeftAttach = ((uint)(1));
 			w4.RightAttach = ((uint)(2));
 			w4.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child table14.Gtk.Table+TableChild
 			this.versLabel = new global::Gtk.Label ();
 			this.versLabel.Name = "versLabel";
-			this.versLabel.Xalign = 0f;
+			this.versLabel.Xalign = 0F;
 			this.versLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Version:");
 			this.versLabel.UseUnderline = true;
 			this.table14.Add (this.versLabel);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table14[this.versLabel]));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table14 [this.versLabel]));
 			w5.XOptions = ((global::Gtk.AttachOptions)(4));
 			w5.YOptions = ((global::Gtk.AttachOptions)(0));
 			this.vbox86.Add (this.table14);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox86[this.table14]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox86 [this.table14]));
 			w6.Position = 0;
 			w6.Expand = false;
 			this.Add (this.vbox86);

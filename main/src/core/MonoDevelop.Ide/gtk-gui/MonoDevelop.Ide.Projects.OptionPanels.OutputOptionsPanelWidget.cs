@@ -5,25 +5,15 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	internal partial class OutputOptionsPanelWidget
 	{
 		private global::Gtk.VBox vbox66;
-
 		private global::Gtk.VBox vbox67;
-
 		private global::Gtk.Label label93;
-
 		private global::Gtk.HBox hbox57;
-
 		private global::Gtk.Label label91;
-
 		private global::Gtk.VBox vbox69;
-
 		private global::Gtk.Table table10;
-
 		private global::Gtk.Entry assemblyNameEntry;
-
 		private global::Gtk.Label label98;
-
 		private global::Gtk.Label label99;
-
 		private global::MonoDevelop.Components.FolderEntry outputPathEntry;
 
 		protected virtual void Build ()
@@ -43,11 +33,11 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			// Container child vbox67.Gtk.Box+BoxChild
 			this.label93 = new global::Gtk.Label ();
 			this.label93.Name = "label93";
-			this.label93.Xalign = 0f;
+			this.label93.Xalign = 0F;
 			this.label93.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>Output</b>");
 			this.label93.UseMarkup = true;
 			this.vbox67.Add (this.label93);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox67[this.label93]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox67 [this.label93]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -59,7 +49,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.label91.WidthRequest = 18;
 			this.label91.Name = "label91";
 			this.hbox57.Add (this.label91);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox57[this.label91]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox57 [this.label91]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -78,28 +68,28 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.assemblyNameEntry.IsEditable = true;
 			this.assemblyNameEntry.InvisibleChar = '●';
 			this.table10.Add (this.assemblyNameEntry);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table10[this.assemblyNameEntry]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table10 [this.assemblyNameEntry]));
 			w3.LeftAttach = ((uint)(1));
 			w3.RightAttach = ((uint)(2));
 			w3.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child table10.Gtk.Table+TableChild
 			this.label98 = new global::Gtk.Label ();
 			this.label98.Name = "label98";
-			this.label98.Xalign = 0f;
+			this.label98.Xalign = 0F;
 			this.label98.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Assembly _name:");
 			this.label98.UseUnderline = true;
 			this.table10.Add (this.label98);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table10[this.label98]));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table10 [this.label98]));
 			w4.XOptions = ((global::Gtk.AttachOptions)(4));
 			w4.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child table10.Gtk.Table+TableChild
 			this.label99 = new global::Gtk.Label ();
 			this.label99.Name = "label99";
-			this.label99.Xalign = 0f;
+			this.label99.Xalign = 0F;
 			this.label99.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Output _path:");
 			this.label99.UseUnderline = true;
 			this.table10.Add (this.label99);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table10[this.label99]));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table10 [this.label99]));
 			w5.TopAttach = ((uint)(1));
 			w5.BottomAttach = ((uint)(2));
 			w5.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -108,7 +98,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.outputPathEntry = new global::MonoDevelop.Components.FolderEntry ();
 			this.outputPathEntry.Name = "outputPathEntry";
 			this.table10.Add (this.outputPathEntry);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table10[this.outputPathEntry]));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table10 [this.outputPathEntry]));
 			w6.TopAttach = ((uint)(1));
 			w6.BottomAttach = ((uint)(2));
 			w6.LeftAttach = ((uint)(1));
@@ -116,18 +106,18 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			w6.XOptions = ((global::Gtk.AttachOptions)(4));
 			w6.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox69.Add (this.table10);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox69[this.table10]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox69 [this.table10]));
 			w7.Position = 0;
 			w7.Expand = false;
 			w7.Fill = false;
 			this.hbox57.Add (this.vbox69);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox57[this.vbox69]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox57 [this.vbox69]));
 			w8.Position = 1;
 			this.vbox67.Add (this.hbox57);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox67[this.hbox57]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox67 [this.hbox57]));
 			w9.Position = 1;
 			this.vbox66.Add (this.vbox67);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox66[this.vbox67]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox66 [this.vbox67]));
 			w10.Position = 0;
 			w10.Expand = false;
 			w10.Fill = false;

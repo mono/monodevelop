@@ -5,39 +5,22 @@ namespace MonoDevelop.Ide.FindInFiles
 	public partial class FindInFilesDialog
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Table tableFindAndReplace;
-
 		private global::Gtk.ComboBoxEntry comboboxentryFind;
-
 		private global::Gtk.HBox hbox2;
-
 		private global::Gtk.ComboBox comboboxScope;
-
 		private global::Gtk.Label labelFileMask;
-
 		private global::Gtk.Label labelFind;
-
 		private global::Gtk.Label labelScope;
-
 		private global::MonoDevelop.Components.SearchEntry searchentry1;
-
 		private global::Gtk.Table table1;
-
 		private global::Gtk.CheckButton checkbuttonCaseSensitive;
-
 		private global::Gtk.CheckButton checkbuttonRegexSearch;
-
 		private global::Gtk.CheckButton checkbuttonWholeWordsOnly;
-
 		private global::Gtk.Button buttonStop;
-
 		private global::Gtk.Button buttonClose;
-
 		private global::Gtk.Button buttonReplace;
-
 		private global::Gtk.Button buttonSearch;
 
 		protected virtual void Build ()
@@ -74,7 +57,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.comboboxentryFind = global::Gtk.ComboBoxEntry.NewText ();
 			this.comboboxentryFind.Name = "comboboxentryFind";
 			this.tableFindAndReplace.Add (this.comboboxentryFind);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.tableFindAndReplace[this.comboboxentryFind]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.tableFindAndReplace [this.comboboxentryFind]));
 			w2.LeftAttach = ((uint)(1));
 			w2.RightAttach = ((uint)(2));
 			w2.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -86,12 +69,12 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.comboboxScope = global::Gtk.ComboBox.NewText ();
 			this.comboboxScope.Name = "comboboxScope";
 			this.hbox2.Add (this.comboboxScope);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.comboboxScope]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.comboboxScope]));
 			w3.Position = 0;
 			w3.Expand = false;
 			w3.Fill = false;
 			this.tableFindAndReplace.Add (this.hbox2);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.tableFindAndReplace[this.hbox2]));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.tableFindAndReplace [this.hbox2]));
 			w4.TopAttach = ((uint)(1));
 			w4.BottomAttach = ((uint)(2));
 			w4.LeftAttach = ((uint)(1));
@@ -101,11 +84,11 @@ namespace MonoDevelop.Ide.FindInFiles
 			// Container child tableFindAndReplace.Gtk.Table+TableChild
 			this.labelFileMask = new global::Gtk.Label ();
 			this.labelFileMask.Name = "labelFileMask";
-			this.labelFileMask.Xalign = 0f;
+			this.labelFileMask.Xalign = 0F;
 			this.labelFileMask.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_File Mask:");
 			this.labelFileMask.UseUnderline = true;
 			this.tableFindAndReplace.Add (this.labelFileMask);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.tableFindAndReplace[this.labelFileMask]));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.tableFindAndReplace [this.labelFileMask]));
 			w5.TopAttach = ((uint)(2));
 			w5.BottomAttach = ((uint)(3));
 			w5.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -113,21 +96,21 @@ namespace MonoDevelop.Ide.FindInFiles
 			// Container child tableFindAndReplace.Gtk.Table+TableChild
 			this.labelFind = new global::Gtk.Label ();
 			this.labelFind.Name = "labelFind";
-			this.labelFind.Xalign = 0f;
+			this.labelFind.Xalign = 0F;
 			this.labelFind.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Find:");
 			this.labelFind.UseUnderline = true;
 			this.tableFindAndReplace.Add (this.labelFind);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.tableFindAndReplace[this.labelFind]));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.tableFindAndReplace [this.labelFind]));
 			w6.XOptions = ((global::Gtk.AttachOptions)(4));
 			w6.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child tableFindAndReplace.Gtk.Table+TableChild
 			this.labelScope = new global::Gtk.Label ();
 			this.labelScope.Name = "labelScope";
-			this.labelScope.Xalign = 0f;
+			this.labelScope.Xalign = 0F;
 			this.labelScope.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Scope:");
 			this.labelScope.UseUnderline = true;
 			this.tableFindAndReplace.Add (this.labelScope);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.tableFindAndReplace[this.labelScope]));
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.tableFindAndReplace [this.labelScope]));
 			w7.TopAttach = ((uint)(1));
 			w7.BottomAttach = ((uint)(2));
 			w7.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -141,7 +124,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.searchentry1.Ready = false;
 			this.searchentry1.HasFocus = false;
 			this.tableFindAndReplace.Add (this.searchentry1);
-			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.tableFindAndReplace[this.searchentry1]));
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.tableFindAndReplace [this.searchentry1]));
 			w8.TopAttach = ((uint)(2));
 			w8.BottomAttach = ((uint)(3));
 			w8.LeftAttach = ((uint)(1));
@@ -149,10 +132,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			w8.XOptions = ((global::Gtk.AttachOptions)(4));
 			w8.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.hbox1.Add (this.tableFindAndReplace);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.tableFindAndReplace]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.tableFindAndReplace]));
 			w9.Position = 0;
 			this.vbox2.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
 			w10.Position = 0;
 			w10.Expand = false;
 			w10.Fill = false;
@@ -169,7 +152,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.checkbuttonCaseSensitive.DrawIndicator = true;
 			this.checkbuttonCaseSensitive.UseUnderline = true;
 			this.table1.Add (this.checkbuttonCaseSensitive);
-			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table1[this.checkbuttonCaseSensitive]));
+			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table1 [this.checkbuttonCaseSensitive]));
 			w11.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.checkbuttonRegexSearch = new global::Gtk.CheckButton ();
@@ -179,7 +162,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.checkbuttonRegexSearch.DrawIndicator = true;
 			this.checkbuttonRegexSearch.UseUnderline = true;
 			this.table1.Add (this.checkbuttonRegexSearch);
-			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table1[this.checkbuttonRegexSearch]));
+			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table1 [this.checkbuttonRegexSearch]));
 			w12.TopAttach = ((uint)(2));
 			w12.BottomAttach = ((uint)(3));
 			w12.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -191,17 +174,17 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.checkbuttonWholeWordsOnly.DrawIndicator = true;
 			this.checkbuttonWholeWordsOnly.UseUnderline = true;
 			this.table1.Add (this.checkbuttonWholeWordsOnly);
-			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table1[this.checkbuttonWholeWordsOnly]));
+			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table1 [this.checkbuttonWholeWordsOnly]));
 			w13.TopAttach = ((uint)(1));
 			w13.BottomAttach = ((uint)(2));
 			w13.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox2.Add (this.table1);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.table1]));
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.table1]));
 			w14.Position = 1;
 			w14.Expand = false;
 			w14.Fill = false;
 			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(w1[this.vbox2]));
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
 			w15.Position = 0;
 			w15.Expand = false;
 			w15.Fill = false;
@@ -218,8 +201,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.buttonStop.UseStock = true;
 			this.buttonStop.UseUnderline = true;
 			this.buttonStop.Label = "gtk-stop";
-			this.AddActionWidget (this.buttonStop, 0);
-			global::Gtk.ButtonBox.ButtonBoxChild w17 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w16[this.buttonStop]));
+			this.AddActionWidget (this.buttonStop,0);
+			global::Gtk.ButtonBox.ButtonBoxChild w17 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w16 [this.buttonStop]));
 			w17.Expand = false;
 			w17.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -230,8 +213,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.buttonClose.UseStock = true;
 			this.buttonClose.UseUnderline = true;
 			this.buttonClose.Label = "gtk-close";
-			this.AddActionWidget (this.buttonClose, -7);
-			global::Gtk.ButtonBox.ButtonBoxChild w18 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w16[this.buttonClose]));
+			this.AddActionWidget (this.buttonClose,-7);
+			global::Gtk.ButtonBox.ButtonBoxChild w18 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w16 [this.buttonClose]));
 			w18.Position = 1;
 			w18.Expand = false;
 			w18.Fill = false;
@@ -241,13 +224,13 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.buttonReplace.Name = "buttonReplace";
 			this.buttonReplace.UseUnderline = true;
 			// Container child buttonReplace.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w19 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+			global::Gtk.Alignment w19 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
 			global::Gtk.HBox w20 = new global::Gtk.HBox ();
 			w20.Spacing = 2;
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Image w21 = new global::Gtk.Image ();
-			w21.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-find-and-replace", global::Gtk.IconSize.Menu);
+			w21.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"gtk-find-and-replace",global::Gtk.IconSize.Menu);
 			w20.Add (w21);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w23 = new global::Gtk.Label ();
@@ -256,8 +239,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			w20.Add (w23);
 			w19.Add (w20);
 			this.buttonReplace.Add (w19);
-			this.AddActionWidget (this.buttonReplace, 0);
-			global::Gtk.ButtonBox.ButtonBoxChild w27 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w16[this.buttonReplace]));
+			this.AddActionWidget (this.buttonReplace,0);
+			global::Gtk.ButtonBox.ButtonBoxChild w27 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w16 [this.buttonReplace]));
 			w27.Position = 2;
 			w27.Expand = false;
 			w27.Fill = false;
@@ -269,8 +252,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.buttonSearch.UseStock = true;
 			this.buttonSearch.UseUnderline = true;
 			this.buttonSearch.Label = "gtk-find";
-			this.AddActionWidget (this.buttonSearch, 0);
-			global::Gtk.ButtonBox.ButtonBoxChild w28 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w16[this.buttonSearch]));
+			this.AddActionWidget (this.buttonSearch,0);
+			global::Gtk.ButtonBox.ButtonBoxChild w28 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w16 [this.buttonSearch]));
 			w28.Position = 3;
 			w28.Expand = false;
 			w28.Fill = false;

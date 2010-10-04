@@ -5,39 +5,22 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	public partial class IDEStyleOptionsPanelWidget
 	{
 		private global::Gtk.VBox vbox13;
-
 		private global::Gtk.Table table1;
-
 		private global::Gtk.ComboBox comboCompact;
-
 		private global::Gtk.ComboBox comboLanguage;
-
 		private global::Gtk.ComboBox comboTheme;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.Label label3;
-
 		private global::Gtk.Label label4;
-
 		private global::Gtk.ComboBox toolbarCombobox;
-
 		private global::Gtk.HBox hbox2;
-
 		private global::Gtk.CheckButton fontCheckbox;
-
 		private global::Gtk.FontButton fontButton;
-
 		private global::Gtk.HBox hbox3;
-
 		private global::Gtk.CheckButton fontOutputCheckbox;
-
 		private global::Gtk.FontButton fontOutputButton;
-
 		private global::Gtk.CheckButton hiddenButton;
-
 		private global::Gtk.CheckButton documentSwitcherButton;
 
 		protected virtual void Build ()
@@ -65,7 +48,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.comboCompact.Name = "comboCompact";
 			this.comboCompact.Active = 2;
 			this.table1.Add (this.comboCompact);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1[this.comboCompact]));
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.comboCompact]));
 			w1.LeftAttach = ((uint)(1));
 			w1.RightAttach = ((uint)(2));
 			w1.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -74,7 +57,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.comboLanguage = global::Gtk.ComboBox.NewText ();
 			this.comboLanguage.Name = "comboLanguage";
 			this.table1.Add (this.comboLanguage);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1[this.comboLanguage]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.comboLanguage]));
 			w2.TopAttach = ((uint)(1));
 			w2.BottomAttach = ((uint)(2));
 			w2.LeftAttach = ((uint)(1));
@@ -85,7 +68,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.comboTheme = global::Gtk.ComboBox.NewText ();
 			this.comboTheme.Name = "comboTheme";
 			this.table1.Add (this.comboTheme);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1[this.comboTheme]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.comboTheme]));
 			w3.TopAttach = ((uint)(2));
 			w3.BottomAttach = ((uint)(3));
 			w3.LeftAttach = ((uint)(1));
@@ -95,11 +78,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Container child table1.Gtk.Table+TableChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Toolbar icon size:");
 			this.label1.UseUnderline = true;
 			this.table1.Add (this.label1);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1[this.label1]));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.label1]));
 			w4.TopAttach = ((uint)(3));
 			w4.BottomAttach = ((uint)(4));
 			w4.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -107,10 +90,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Container child table1.Gtk.Table+TableChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.Xalign = 0f;
+			this.label2.Xalign = 0F;
 			this.label2.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("User Interface Language:");
 			this.table1.Add (this.label2);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1[this.label2]));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2]));
 			w5.TopAttach = ((uint)(1));
 			w5.BottomAttach = ((uint)(2));
 			w5.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -118,10 +101,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Container child table1.Gtk.Table+TableChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.Xalign = 0f;
+			this.label3.Xalign = 0F;
 			this.label3.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("User Interface Theme:");
 			this.table1.Add (this.label3);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1[this.label3]));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.label3]));
 			w6.TopAttach = ((uint)(2));
 			w6.BottomAttach = ((uint)(3));
 			w6.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -129,10 +112,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Container child table1.Gtk.Table+TableChild
 			this.label4 = new global::Gtk.Label ();
 			this.label4.Name = "label4";
-			this.label4.Xalign = 0f;
+			this.label4.Xalign = 0F;
 			this.label4.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Compactness:");
 			this.table1.Add (this.label4);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1[this.label4]));
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.label4]));
 			w7.XOptions = ((global::Gtk.AttachOptions)(4));
 			w7.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
@@ -143,7 +126,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.toolbarCombobox.Name = "toolbarCombobox";
 			this.toolbarCombobox.Active = 1;
 			this.table1.Add (this.toolbarCombobox);
-			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1[this.toolbarCombobox]));
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1 [this.toolbarCombobox]));
 			w8.TopAttach = ((uint)(3));
 			w8.BottomAttach = ((uint)(4));
 			w8.LeftAttach = ((uint)(1));
@@ -151,7 +134,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w8.XOptions = ((global::Gtk.AttachOptions)(4));
 			w8.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox13.Add (this.table1);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox13[this.table1]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox13 [this.table1]));
 			w9.Position = 0;
 			w9.Expand = false;
 			w9.Fill = false;
@@ -166,19 +149,19 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.fontCheckbox.DrawIndicator = true;
 			this.fontCheckbox.UseUnderline = true;
 			this.hbox2.Add (this.fontCheckbox);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.fontCheckbox]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.fontCheckbox]));
 			w10.Position = 0;
 			w10.Expand = false;
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.fontButton = new global::Gtk.FontButton ();
 			this.fontButton.Name = "fontButton";
 			this.hbox2.Add (this.fontButton);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.fontButton]));
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.fontButton]));
 			w11.Position = 1;
 			w11.Expand = false;
 			w11.Fill = false;
 			this.vbox13.Add (this.hbox2);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox13[this.hbox2]));
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox13 [this.hbox2]));
 			w12.Position = 1;
 			w12.Expand = false;
 			w12.Fill = false;
@@ -193,19 +176,19 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.fontOutputCheckbox.DrawIndicator = true;
 			this.fontOutputCheckbox.UseUnderline = true;
 			this.hbox3.Add (this.fontOutputCheckbox);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.fontOutputCheckbox]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.fontOutputCheckbox]));
 			w13.Position = 0;
 			w13.Expand = false;
 			// Container child hbox3.Gtk.Box+BoxChild
 			this.fontOutputButton = new global::Gtk.FontButton ();
 			this.fontOutputButton.Name = "fontOutputButton";
 			this.hbox3.Add (this.fontOutputButton);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.fontOutputButton]));
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.fontOutputButton]));
 			w14.Position = 1;
 			w14.Expand = false;
 			w14.Fill = false;
 			this.vbox13.Add (this.hbox3);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox13[this.hbox3]));
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox13 [this.hbox3]));
 			w15.Position = 2;
 			w15.Expand = false;
 			w15.Fill = false;
@@ -216,7 +199,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.hiddenButton.DrawIndicator = true;
 			this.hiddenButton.UseUnderline = true;
 			this.vbox13.Add (this.hiddenButton);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox13[this.hiddenButton]));
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox13 [this.hiddenButton]));
 			w16.Position = 3;
 			w16.Expand = false;
 			w16.Fill = false;
@@ -228,7 +211,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.documentSwitcherButton.DrawIndicator = true;
 			this.documentSwitcherButton.UseUnderline = true;
 			this.vbox13.Add (this.documentSwitcherButton);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox13[this.documentSwitcherButton]));
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox13 [this.documentSwitcherButton]));
 			w17.Position = 4;
 			w17.Expand = false;
 			w17.Fill = false;

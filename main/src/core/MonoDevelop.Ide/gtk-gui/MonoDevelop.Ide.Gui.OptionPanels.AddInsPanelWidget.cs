@@ -5,23 +5,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	internal partial class AddInsPanelWidget
 	{
 		private global::Gtk.VBox vbox72;
-
 		private global::Gtk.CheckButton lookCheck;
-
 		private global::Gtk.HBox hbox46;
-
 		private global::Gtk.Label label104;
-
 		private global::Gtk.Label label105;
-
 		private global::Gtk.SpinButton valueSpin;
-
 		private global::Gtk.ComboBox periodCombo;
-
 		private global::Gtk.HSeparator hseparator1;
-
 		private global::Gtk.HBox hbox47;
-
 		private global::Gtk.Button managerButton;
 
 		protected virtual void Build ()
@@ -41,7 +32,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.lookCheck.DrawIndicator = true;
 			this.lookCheck.UseUnderline = true;
 			this.vbox72.Add (this.lookCheck);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox72[this.lookCheck]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox72 [this.lookCheck]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -53,20 +44,20 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label104 = new global::Gtk.Label ();
 			this.label104.WidthRequest = 24;
 			this.label104.Name = "label104";
-			this.label104.Xalign = 0f;
-			this.label104.Yalign = 0f;
+			this.label104.Xalign = 0F;
+			this.label104.Yalign = 0F;
 			this.hbox46.Add (this.label104);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox46[this.label104]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox46 [this.label104]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
 			// Container child hbox46.Gtk.Box+BoxChild
 			this.label105 = new global::Gtk.Label ();
 			this.label105.Name = "label105";
-			this.label105.Xalign = 0f;
+			this.label105.Xalign = 0F;
 			this.label105.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Every");
 			this.hbox46.Add (this.label105);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox46[this.label105]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox46 [this.label105]));
 			w3.Position = 1;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -78,7 +69,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.valueSpin.Numeric = true;
 			this.valueSpin.Value = 1;
 			this.hbox46.Add (this.valueSpin);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox46[this.valueSpin]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox46 [this.valueSpin]));
 			w4.Position = 2;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -89,12 +80,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.periodCombo.Name = "periodCombo";
 			this.periodCombo.Active = 0;
 			this.hbox46.Add (this.periodCombo);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox46[this.periodCombo]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox46 [this.periodCombo]));
 			w5.Position = 3;
 			w5.Expand = false;
 			w5.Fill = false;
 			this.vbox72.Add (this.hbox46);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox72[this.hbox46]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox72 [this.hbox46]));
 			w6.Position = 1;
 			w6.Expand = false;
 			w6.Fill = false;
@@ -102,7 +93,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.hseparator1 = new global::Gtk.HSeparator ();
 			this.hseparator1.Name = "hseparator1";
 			this.vbox72.Add (this.hseparator1);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox72[this.hseparator1]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox72 [this.hseparator1]));
 			w7.Position = 2;
 			w7.Expand = false;
 			w7.Fill = false;
@@ -115,12 +106,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.managerButton.UseUnderline = true;
 			this.managerButton.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Add-in Manager...");
 			this.hbox47.Add (this.managerButton);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox47[this.managerButton]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox47 [this.managerButton]));
 			w8.Position = 0;
 			w8.Expand = false;
 			w8.Fill = false;
 			this.vbox72.Add (this.hbox47);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox72[this.hbox47]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox72 [this.hbox47]));
 			w9.Position = 3;
 			w9.Expand = false;
 			w9.Fill = false;

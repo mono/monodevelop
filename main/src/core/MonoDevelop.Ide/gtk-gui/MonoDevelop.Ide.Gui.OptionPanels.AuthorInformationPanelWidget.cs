@@ -5,23 +5,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	internal partial class AuthorInformationPanelWidget
 	{
 		private global::Gtk.VBox vbox1;
-
 		private global::Gtk.CheckButton checkCustom;
-
 		private global::Gtk.Alignment alignment1;
-
 		private global::Gtk.Table infoTable;
-
 		private global::Gtk.Entry copyrightEntry;
-
 		private global::Gtk.Entry emailEntry;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.Label label3;
-
 		private global::Gtk.Label label4;
-
 		private global::Gtk.Entry nameEntry;
 
 		protected virtual void Build ()
@@ -42,12 +33,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.checkCustom.DrawIndicator = true;
 			this.checkCustom.UseUnderline = true;
 			this.vbox1.Add (this.checkCustom);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.checkCustom]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.checkCustom]));
 			w1.Position = 1;
 			w1.Expand = false;
 			w1.Fill = false;
 			// Container child vbox1.Gtk.Box+BoxChild
-			this.alignment1 = new global::Gtk.Alignment (0f, 0f, 1f, 1f);
+			this.alignment1 = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
 			this.alignment1.Name = "alignment1";
 			this.alignment1.LeftPadding = ((uint)(24));
 			// Container child alignment1.Gtk.Container+ContainerChild
@@ -62,7 +53,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.copyrightEntry.IsEditable = true;
 			this.copyrightEntry.InvisibleChar = '●';
 			this.infoTable.Add (this.copyrightEntry);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.infoTable[this.copyrightEntry]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.infoTable [this.copyrightEntry]));
 			w2.TopAttach = ((uint)(2));
 			w2.BottomAttach = ((uint)(3));
 			w2.LeftAttach = ((uint)(1));
@@ -75,7 +66,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.emailEntry.IsEditable = true;
 			this.emailEntry.InvisibleChar = '●';
 			this.infoTable.Add (this.emailEntry);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.infoTable[this.emailEntry]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.infoTable [this.emailEntry]));
 			w3.TopAttach = ((uint)(1));
 			w3.BottomAttach = ((uint)(2));
 			w3.LeftAttach = ((uint)(1));
@@ -84,21 +75,21 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Container child infoTable.Gtk.Table+TableChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.Xalign = 0f;
+			this.label2.Xalign = 0F;
 			this.label2.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Name:");
 			this.label2.UseUnderline = true;
 			this.infoTable.Add (this.label2);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.infoTable[this.label2]));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.infoTable [this.label2]));
 			w4.XOptions = ((global::Gtk.AttachOptions)(4));
 			w4.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child infoTable.Gtk.Table+TableChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.Xalign = 0f;
+			this.label3.Xalign = 0F;
 			this.label3.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Copyright:");
 			this.label3.UseUnderline = true;
 			this.infoTable.Add (this.label3);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.infoTable[this.label3]));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.infoTable [this.label3]));
 			w5.TopAttach = ((uint)(2));
 			w5.BottomAttach = ((uint)(3));
 			w5.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -106,11 +97,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Container child infoTable.Gtk.Table+TableChild
 			this.label4 = new global::Gtk.Label ();
 			this.label4.Name = "label4";
-			this.label4.Xalign = 0f;
+			this.label4.Xalign = 0F;
 			this.label4.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Email:");
 			this.label4.UseUnderline = true;
 			this.infoTable.Add (this.label4);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.infoTable[this.label4]));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.infoTable [this.label4]));
 			w6.TopAttach = ((uint)(1));
 			w6.BottomAttach = ((uint)(2));
 			w6.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -122,13 +113,13 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.nameEntry.IsEditable = true;
 			this.nameEntry.InvisibleChar = '●';
 			this.infoTable.Add (this.nameEntry);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.infoTable[this.nameEntry]));
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.infoTable [this.nameEntry]));
 			w7.LeftAttach = ((uint)(1));
 			w7.RightAttach = ((uint)(2));
 			w7.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.alignment1.Add (this.infoTable);
 			this.vbox1.Add (this.alignment1);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.alignment1]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.alignment1]));
 			w9.Position = 2;
 			w9.Expand = false;
 			w9.Fill = false;

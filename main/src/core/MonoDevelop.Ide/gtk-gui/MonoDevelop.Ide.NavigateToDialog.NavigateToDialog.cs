@@ -5,17 +5,11 @@ namespace MonoDevelop.Ide.NavigateToDialog
 	internal partial class NavigateToDialog
 	{
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Label label1;
-
 		private global::MonoDevelop.Components.SearchEntry matchEntry;
-
 		private global::Gtk.Label labelResults;
-
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-
 		private global::Gtk.Button buttonCancel;
-
 		private global::Gtk.Button buttonOpen;
 
 		protected virtual void Build ()
@@ -42,11 +36,11 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Search for:");
 			this.label1.UseUnderline = true;
 			this.hbox1.Add (this.label1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label1]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -59,21 +53,21 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			this.matchEntry.Ready = false;
 			this.matchEntry.HasFocus = false;
 			this.hbox1.Add (this.matchEntry);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.matchEntry]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.matchEntry]));
 			w3.Position = 1;
 			w1.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(w1[this.hbox1]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(w1 [this.hbox1]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
 			this.labelResults = new global::Gtk.Label ();
 			this.labelResults.Name = "labelResults";
-			this.labelResults.Xalign = 0f;
+			this.labelResults.Xalign = 0F;
 			this.labelResults.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Results: Enter search term to start.");
 			this.labelResults.UseUnderline = true;
 			w1.Add (this.labelResults);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(w1[this.labelResults]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(w1 [this.labelResults]));
 			w5.Position = 1;
 			w5.Expand = false;
 			w5.Fill = false;
@@ -83,7 +77,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			this.scrolledwindow1.Name = "scrolledwindow1";
 			this.scrolledwindow1.ShadowType = ((global::Gtk.ShadowType)(1));
 			w1.Add (this.scrolledwindow1);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(w1[this.scrolledwindow1]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(w1 [this.scrolledwindow1]));
 			w6.Position = 2;
 			// Internal child MonoDevelop.Ide.NavigateToDialog.NavigateToDialog.ActionArea
 			global::Gtk.HButtonBox w7 = this.ActionArea;
@@ -98,8 +92,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			this.buttonCancel.UseStock = true;
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
-			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7[this.buttonCancel]));
+			this.AddActionWidget (this.buttonCancel,-6);
+			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7 [this.buttonCancel]));
 			w8.Expand = false;
 			w8.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -110,8 +104,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			this.buttonOpen.UseStock = true;
 			this.buttonOpen.UseUnderline = true;
 			this.buttonOpen.Label = "gtk-open";
-			this.AddActionWidget (this.buttonOpen, 0);
-			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7[this.buttonOpen]));
+			this.AddActionWidget (this.buttonOpen,0);
+			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7 [this.buttonOpen]));
 			w9.Position = 1;
 			w9.Expand = false;
 			w9.Fill = false;

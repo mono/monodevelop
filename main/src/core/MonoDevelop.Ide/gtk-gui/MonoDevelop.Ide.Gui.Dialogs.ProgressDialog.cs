@@ -5,25 +5,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	public partial class ProgressDialog
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Label label;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.ProgressBar progressBar;
-
 		private global::Gtk.Button btnCancel;
-
 		private global::Gtk.Button btnClose;
-
 		private global::Gtk.Expander expander;
-
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-
 		private global::Gtk.TextView detailsTextView;
-
 		private global::Gtk.Label expanderLabel;
-
 		private global::Gtk.Button button103;
 
 		protected virtual void Build ()
@@ -46,10 +36,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.label = new global::Gtk.Label ();
 			this.label.Name = "label";
-			this.label.Xalign = 0f;
+			this.label.Xalign = 0F;
 			this.label.LabelProp = "label";
 			this.vbox2.Add (this.label);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.label]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -61,7 +51,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.progressBar = new global::Gtk.ProgressBar ();
 			this.progressBar.Name = "progressBar";
 			this.hbox1.Add (this.progressBar);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.progressBar]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.progressBar]));
 			w3.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.btnCancel = new global::Gtk.Button ();
@@ -72,7 +62,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.btnCancel.UseUnderline = true;
 			this.btnCancel.Label = "gtk-cancel";
 			this.hbox1.Add (this.btnCancel);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.btnCancel]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.btnCancel]));
 			w4.Position = 1;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -85,12 +75,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.btnClose.UseUnderline = true;
 			this.btnClose.Label = "gtk-close";
 			this.hbox1.Add (this.btnClose);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.btnClose]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.btnClose]));
 			w5.Position = 2;
 			w5.Expand = false;
 			w5.Fill = false;
 			this.vbox2.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
 			w6.Position = 1;
 			w6.Expand = false;
 			w6.Fill = false;
@@ -115,10 +105,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.expanderLabel.UseUnderline = true;
 			this.expander.LabelWidget = this.expanderLabel;
 			this.vbox2.Add (this.expander);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.expander]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.expander]));
 			w9.Position = 2;
 			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(w1[this.vbox2]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
 			w10.Position = 0;
 			// Internal child MonoDevelop.Ide.Gui.Dialogs.ProgressDialog.ActionArea
 			global::Gtk.HButtonBox w11 = this.ActionArea;
@@ -132,8 +122,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.button103.Name = "button103";
 			this.button103.UseUnderline = true;
 			this.button103.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("GtkButton");
-			this.AddActionWidget (this.button103, 0);
-			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w11[this.button103]));
+			this.AddActionWidget (this.button103,0);
+			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w11 [this.button103]));
 			w12.Expand = false;
 			w12.Fill = false;
 			if ((this.Child != null)) {

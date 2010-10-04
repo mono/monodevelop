@@ -5,41 +5,23 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	internal partial class TextStylePolicyPanelWidget
 	{
 		private global::Gtk.VBox vbox1;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.SpinButton columnWidthSpin;
-
 		private global::Gtk.Label label5;
-
 		private global::Gtk.HBox hbox2;
-
 		private global::Gtk.Label label6;
-
 		private global::Gtk.ComboBox lineEndingCombo;
-
 		private global::Gtk.Alignment alignment2;
-
 		private global::Gtk.Label label3;
-
 		private global::Gtk.Alignment alignment1;
-
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.HBox hbox3;
-
 		private global::Gtk.Label label7;
-
 		private global::Gtk.SpinButton tabWidthSpin;
-
 		private global::Gtk.Label label8;
-
 		private global::Gtk.CheckButton tabsToSpaceCheck;
-
 		private global::Gtk.CheckButton tabsAfterNonTabsCheck;
-
 		private global::Gtk.CheckButton removeTrailingWhitespaceCheck;
 
 		protected virtual void Build ()
@@ -62,7 +44,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Desired _file width:");
 			this.label1.UseUnderline = true;
 			this.hbox1.Add (this.label1);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label1]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -75,7 +57,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.columnWidthSpin.Numeric = true;
 			this.columnWidthSpin.Value = 120;
 			this.hbox1.Add (this.columnWidthSpin);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.columnWidthSpin]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.columnWidthSpin]));
 			w2.Position = 1;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -84,12 +66,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label5.Name = "label5";
 			this.label5.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("columns");
 			this.hbox1.Add (this.label5);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label5]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label5]));
 			w3.Position = 2;
 			w3.Expand = false;
 			w3.Fill = false;
 			this.vbox1.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.hbox1]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox1]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -103,7 +85,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label6.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Line endings:");
 			this.label6.UseUnderline = true;
 			this.hbox2.Add (this.label6);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.label6]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.label6]));
 			w5.Position = 0;
 			w5.Expand = false;
 			w5.Fill = false;
@@ -111,33 +93,33 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.lineEndingCombo = global::Gtk.ComboBox.NewText ();
 			this.lineEndingCombo.Name = "lineEndingCombo";
 			this.hbox2.Add (this.lineEndingCombo);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.lineEndingCombo]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.lineEndingCombo]));
 			w6.Position = 1;
 			w6.Expand = false;
 			w6.Fill = false;
 			this.vbox1.Add (this.hbox2);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.hbox2]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox2]));
 			w7.Position = 1;
 			w7.Expand = false;
 			w7.Fill = false;
 			// Container child vbox1.Gtk.Box+BoxChild
-			this.alignment2 = new global::Gtk.Alignment (0.5f, 0.5f, 1f, 1f);
+			this.alignment2 = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
 			this.alignment2.Name = "alignment2";
 			this.alignment2.TopPadding = ((uint)(6));
 			// Container child alignment2.Gtk.Container+ContainerChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.Xalign = 0f;
+			this.label3.Xalign = 0F;
 			this.label3.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>Whitespace</b>");
 			this.label3.UseMarkup = true;
 			this.alignment2.Add (this.label3);
 			this.vbox1.Add (this.alignment2);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.alignment2]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.alignment2]));
 			w9.Position = 2;
 			w9.Expand = false;
 			w9.Fill = false;
 			// Container child vbox1.Gtk.Box+BoxChild
-			this.alignment1 = new global::Gtk.Alignment (0f, 0f, 1f, 1f);
+			this.alignment1 = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
 			this.alignment1.Name = "alignment1";
 			this.alignment1.LeftPadding = ((uint)(12));
 			// Container child alignment1.Gtk.Container+ContainerChild
@@ -154,7 +136,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label7.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Tab width:");
 			this.label7.UseUnderline = true;
 			this.hbox3.Add (this.label7);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.label7]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.label7]));
 			w10.Position = 0;
 			w10.Expand = false;
 			w10.Fill = false;
@@ -167,7 +149,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.tabWidthSpin.Numeric = true;
 			this.tabWidthSpin.Value = 4;
 			this.hbox3.Add (this.tabWidthSpin);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.tabWidthSpin]));
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.tabWidthSpin]));
 			w11.Position = 1;
 			w11.Expand = false;
 			w11.Fill = false;
@@ -176,12 +158,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label8.Name = "label8";
 			this.label8.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("spaces");
 			this.hbox3.Add (this.label8);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.label8]));
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.label8]));
 			w12.Position = 2;
 			w12.Expand = false;
 			w12.Fill = false;
 			this.vbox2.Add (this.hbox3);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox3]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox3]));
 			w13.Position = 0;
 			w13.Expand = false;
 			w13.Fill = false;
@@ -193,7 +175,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.tabsToSpaceCheck.DrawIndicator = true;
 			this.tabsToSpaceCheck.UseUnderline = true;
 			this.vbox2.Add (this.tabsToSpaceCheck);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.tabsToSpaceCheck]));
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.tabsToSpaceCheck]));
 			w14.Position = 1;
 			w14.Expand = false;
 			w14.Fill = false;
@@ -205,7 +187,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.tabsAfterNonTabsCheck.DrawIndicator = true;
 			this.tabsAfterNonTabsCheck.UseUnderline = true;
 			this.vbox2.Add (this.tabsAfterNonTabsCheck);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.tabsAfterNonTabsCheck]));
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.tabsAfterNonTabsCheck]));
 			w15.Position = 2;
 			w15.Expand = false;
 			w15.Fill = false;
@@ -217,13 +199,13 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.removeTrailingWhitespaceCheck.DrawIndicator = true;
 			this.removeTrailingWhitespaceCheck.UseUnderline = true;
 			this.vbox2.Add (this.removeTrailingWhitespaceCheck);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.removeTrailingWhitespaceCheck]));
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.removeTrailingWhitespaceCheck]));
 			w16.Position = 3;
 			w16.Expand = false;
 			w16.Fill = false;
 			this.alignment1.Add (this.vbox2);
 			this.vbox1.Add (this.alignment1);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.alignment1]));
+			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.alignment1]));
 			w18.Position = 3;
 			w18.Expand = false;
 			w18.Fill = false;

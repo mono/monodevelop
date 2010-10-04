@@ -5,25 +5,15 @@ namespace MonoDevelop.Components
 	public partial class FolderListSelector
 	{
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.VBox vbox1;
-
 		private global::MonoDevelop.Components.FolderEntry folderentry;
-
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-
 		private global::Gtk.TreeView dirList;
-
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Button buttonAdd;
-
 		private global::Gtk.Button buttonRemove;
-
 		private global::Gtk.Button buttonUpdate;
-
 		private global::Gtk.Button buttonUp;
-
 		private global::Gtk.Button buttonDown;
 
 		protected virtual void Build ()
@@ -44,7 +34,7 @@ namespace MonoDevelop.Components
 			this.folderentry = new global::MonoDevelop.Components.FolderEntry ();
 			this.folderentry.Name = "folderentry";
 			this.vbox1.Add (this.folderentry);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.folderentry]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.folderentry]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -59,10 +49,10 @@ namespace MonoDevelop.Components
 			this.dirList.HeadersVisible = false;
 			this.GtkScrolledWindow.Add (this.dirList);
 			this.vbox1.Add (this.GtkScrolledWindow);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.GtkScrolledWindow]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.GtkScrolledWindow]));
 			w3.Position = 1;
 			this.hbox1.Add (this.vbox1);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.vbox1]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox1]));
 			w4.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.vbox2 = new global::Gtk.VBox ();
@@ -76,7 +66,7 @@ namespace MonoDevelop.Components
 			this.buttonAdd.UseUnderline = true;
 			this.buttonAdd.Label = "gtk-add";
 			this.vbox2.Add (this.buttonAdd);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.buttonAdd]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.buttonAdd]));
 			w5.Position = 0;
 			w5.Expand = false;
 			w5.Fill = false;
@@ -88,7 +78,7 @@ namespace MonoDevelop.Components
 			this.buttonRemove.UseUnderline = true;
 			this.buttonRemove.Label = "gtk-remove";
 			this.vbox2.Add (this.buttonRemove);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.buttonRemove]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.buttonRemove]));
 			w6.Position = 1;
 			w6.Expand = false;
 			w6.Fill = false;
@@ -99,7 +89,7 @@ namespace MonoDevelop.Components
 			this.buttonUpdate.UseUnderline = true;
 			this.buttonUpdate.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Update");
 			this.vbox2.Add (this.buttonUpdate);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.buttonUpdate]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.buttonUpdate]));
 			w7.Position = 2;
 			w7.Expand = false;
 			w7.Fill = false;
@@ -111,7 +101,7 @@ namespace MonoDevelop.Components
 			this.buttonUp.UseUnderline = true;
 			this.buttonUp.Label = "gtk-go-up";
 			this.vbox2.Add (this.buttonUp);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.buttonUp]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.buttonUp]));
 			w8.Position = 3;
 			w8.Expand = false;
 			w8.Fill = false;
@@ -123,12 +113,12 @@ namespace MonoDevelop.Components
 			this.buttonDown.UseUnderline = true;
 			this.buttonDown.Label = "gtk-go-down";
 			this.vbox2.Add (this.buttonDown);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.buttonDown]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.buttonDown]));
 			w9.Position = 4;
 			w9.Expand = false;
 			w9.Fill = false;
 			this.hbox1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.vbox2]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox2]));
 			w10.Position = 1;
 			w10.Expand = false;
 			w10.Fill = false;

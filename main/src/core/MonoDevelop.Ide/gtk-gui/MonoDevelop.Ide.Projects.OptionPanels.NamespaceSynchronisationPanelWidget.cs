@@ -5,33 +5,19 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	internal partial class NamespaceSynchronisationPanelWidget
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.CheckButton checkAssociateNamespacesDirectories;
-
 		private global::Gtk.Alignment alignment1;
-
 		private global::Gtk.VBox namespaceAssociationBox;
-
 		private global::Gtk.CheckButton checkDefaultAsRoot;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.VBox vbox4;
-
 		private global::Gtk.RadioButton radioFlat;
-
 		private global::Gtk.RadioButton radioHierarch;
-
 		private global::Gtk.HBox hbox2;
-
 		private global::Gtk.Frame previewFrame;
-
 		private global::Gtk.Label GtkLabel6;
-
 		private global::Gtk.CheckButton checkVSStyleResourceNames;
-
 		private global::Gtk.Label label2;
 
 		protected virtual void Build ()
@@ -52,12 +38,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.checkAssociateNamespacesDirectories.DrawIndicator = true;
 			this.checkAssociateNamespacesDirectories.UseUnderline = true;
 			this.vbox2.Add (this.checkAssociateNamespacesDirectories);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.checkAssociateNamespacesDirectories]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.checkAssociateNamespacesDirectories]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.alignment1 = new global::Gtk.Alignment (0f, 0f, 1f, 1f);
+			this.alignment1 = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
 			this.alignment1.Name = "alignment1";
 			this.alignment1.LeftPadding = ((uint)(24));
 			// Container child alignment1.Gtk.Container+ContainerChild
@@ -72,7 +58,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.checkDefaultAsRoot.DrawIndicator = true;
 			this.checkDefaultAsRoot.UseUnderline = true;
 			this.namespaceAssociationBox.Add (this.checkDefaultAsRoot);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.namespaceAssociationBox[this.checkDefaultAsRoot]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.namespaceAssociationBox [this.checkDefaultAsRoot]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -83,11 +69,11 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
-			this.label1.Yalign = 0f;
+			this.label1.Xalign = 0F;
+			this.label1.Yalign = 0F;
 			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Directory structure:");
 			this.hbox1.Add (this.label1);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label1]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));
 			w3.Position = 0;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -103,7 +89,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.radioFlat.UseUnderline = true;
 			this.radioFlat.Group = new global::GLib.SList (global::System.IntPtr.Zero);
 			this.vbox4.Add (this.radioFlat);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.radioFlat]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.radioFlat]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -115,15 +101,15 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.radioHierarch.UseUnderline = true;
 			this.radioHierarch.Group = this.radioFlat.Group;
 			this.vbox4.Add (this.radioHierarch);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.radioHierarch]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.radioHierarch]));
 			w5.Position = 1;
 			w5.Expand = false;
 			w5.Fill = false;
 			this.hbox1.Add (this.vbox4);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.vbox4]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox4]));
 			w6.Position = 1;
 			this.namespaceAssociationBox.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.namespaceAssociationBox[this.hbox1]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.namespaceAssociationBox [this.hbox1]));
 			w7.Position = 1;
 			w7.Expand = false;
 			w7.Fill = false;
@@ -141,16 +127,16 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.GtkLabel6.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Preview");
 			this.previewFrame.LabelWidget = this.GtkLabel6;
 			this.hbox2.Add (this.previewFrame);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.previewFrame]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.previewFrame]));
 			w8.Position = 0;
 			w8.Expand = false;
 			w8.Fill = false;
 			this.namespaceAssociationBox.Add (this.hbox2);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.namespaceAssociationBox[this.hbox2]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.namespaceAssociationBox [this.hbox2]));
 			w9.Position = 2;
 			this.alignment1.Add (this.namespaceAssociationBox);
 			this.vbox2.Add (this.alignment1);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.alignment1]));
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.alignment1]));
 			w11.Position = 1;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.checkVSStyleResourceNames = new global::Gtk.CheckButton ();
@@ -169,7 +155,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.label2.Wrap = true;
 			this.checkVSStyleResourceNames.Add (this.label2);
 			this.vbox2.Add (this.checkVSStyleResourceNames);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.checkVSStyleResourceNames]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.checkVSStyleResourceNames]));
 			w13.Position = 2;
 			w13.Expand = false;
 			w13.Fill = false;

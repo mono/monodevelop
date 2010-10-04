@@ -5,17 +5,11 @@ namespace MonoDevelop.Ide.Projects
 	internal partial class RenameConfigDialog
 	{
 		private global::Gtk.VBox vbox79;
-
 		private global::Gtk.HBox hbox63;
-
 		private global::Gtk.Label label106;
-
 		private global::Gtk.Entry nameEntry;
-
 		private global::Gtk.CheckButton renameChildrenCheck;
-
 		private global::Gtk.Button button9;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -43,7 +37,7 @@ namespace MonoDevelop.Ide.Projects
 			this.label106.Name = "label106";
 			this.label106.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("New name:");
 			this.hbox63.Add (this.label106);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox63[this.label106]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox63 [this.label106]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -53,10 +47,10 @@ namespace MonoDevelop.Ide.Projects
 			this.nameEntry.IsEditable = true;
 			this.nameEntry.InvisibleChar = '●';
 			this.hbox63.Add (this.nameEntry);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox63[this.nameEntry]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox63 [this.nameEntry]));
 			w3.Position = 1;
 			this.vbox79.Add (this.hbox63);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox79[this.hbox63]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox79 [this.hbox63]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -68,12 +62,12 @@ namespace MonoDevelop.Ide.Projects
 			this.renameChildrenCheck.DrawIndicator = true;
 			this.renameChildrenCheck.UseUnderline = true;
 			this.vbox79.Add (this.renameChildrenCheck);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox79[this.renameChildrenCheck]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox79 [this.renameChildrenCheck]));
 			w5.Position = 1;
 			w5.Expand = false;
 			w5.Fill = false;
 			w1.Add (this.vbox79);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(w1[this.vbox79]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox79]));
 			w6.Position = 0;
 			// Internal child MonoDevelop.Ide.Projects.RenameConfigDialog.ActionArea
 			global::Gtk.HButtonBox w7 = this.ActionArea;
@@ -87,8 +81,8 @@ namespace MonoDevelop.Ide.Projects
 			this.button9.UseStock = true;
 			this.button9.UseUnderline = true;
 			this.button9.Label = "gtk-cancel";
-			this.AddActionWidget (this.button9, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7[this.button9]));
+			this.AddActionWidget (this.button9,-6);
+			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7 [this.button9]));
 			w8.Expand = false;
 			w8.Fill = false;
 			// Container child hbuttonbox2.Gtk.ButtonBox+ButtonBoxChild
@@ -98,7 +92,7 @@ namespace MonoDevelop.Ide.Projects
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			w7.Add (this.buttonOk);
-			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7 [this.buttonOk]));
 			w9.Position = 1;
 			w9.Expand = false;
 			w9.Fill = false;

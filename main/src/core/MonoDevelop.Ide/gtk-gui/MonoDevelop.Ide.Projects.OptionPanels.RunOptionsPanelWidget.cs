@@ -5,23 +5,14 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	public partial class RunOptionsPanelWidget
 	{
 		private global::Gtk.VBox vbox67;
-
 		private global::Gtk.VBox vbox69;
-
 		private global::Gtk.Table table10;
-
 		private global::Gtk.Label label100;
-
 		private global::Gtk.Entry parametersEntry;
-
 		private global::Gtk.CheckButton externalConsoleCheckButton;
-
 		private global::Gtk.CheckButton pauseConsoleOutputCheckButton;
-
 		private global::Gtk.HSeparator hseparator1;
-
 		private global::Gtk.Label label1;
-
 		private global::MonoDevelop.Ide.Gui.Components.EnvVarList envVarList;
 
 		protected virtual void Build ()
@@ -45,11 +36,11 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			// Container child table10.Gtk.Table+TableChild
 			this.label100 = new global::Gtk.Label ();
 			this.label100.Name = "label100";
-			this.label100.Xalign = 0f;
+			this.label100.Xalign = 0F;
 			this.label100.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Paramet_ers:");
 			this.label100.UseUnderline = true;
 			this.table10.Add (this.label100);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table10[this.label100]));
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table10 [this.label100]));
 			w1.XOptions = ((global::Gtk.AttachOptions)(4));
 			w1.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child table10.Gtk.Table+TableChild
@@ -58,12 +49,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.parametersEntry.IsEditable = true;
 			this.parametersEntry.InvisibleChar = '●';
 			this.table10.Add (this.parametersEntry);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table10[this.parametersEntry]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table10 [this.parametersEntry]));
 			w2.LeftAttach = ((uint)(1));
 			w2.RightAttach = ((uint)(2));
 			w2.YOptions = ((global::Gtk.AttachOptions)(0));
 			this.vbox69.Add (this.table10);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox69[this.table10]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox69 [this.table10]));
 			w3.Position = 0;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -74,7 +65,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.externalConsoleCheckButton.DrawIndicator = true;
 			this.externalConsoleCheckButton.UseUnderline = true;
 			this.vbox69.Add (this.externalConsoleCheckButton);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox69[this.externalConsoleCheckButton]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox69 [this.externalConsoleCheckButton]));
 			w4.Position = 1;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -85,7 +76,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.pauseConsoleOutputCheckButton.DrawIndicator = true;
 			this.pauseConsoleOutputCheckButton.UseUnderline = true;
 			this.vbox69.Add (this.pauseConsoleOutputCheckButton);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox69[this.pauseConsoleOutputCheckButton]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox69 [this.pauseConsoleOutputCheckButton]));
 			w5.Position = 2;
 			w5.Expand = false;
 			w5.Fill = false;
@@ -93,17 +84,17 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.hseparator1 = new global::Gtk.HSeparator ();
 			this.hseparator1.Name = "hseparator1";
 			this.vbox69.Add (this.hseparator1);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox69[this.hseparator1]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox69 [this.hseparator1]));
 			w6.Position = 3;
 			w6.Expand = false;
 			w6.Fill = false;
 			// Container child vbox69.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Environment Variables:");
 			this.vbox69.Add (this.label1);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox69[this.label1]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox69 [this.label1]));
 			w7.Position = 4;
 			w7.Expand = false;
 			w7.Fill = false;
@@ -112,10 +103,10 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.envVarList.CanFocus = true;
 			this.envVarList.Name = "envVarList";
 			this.vbox69.Add (this.envVarList);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox69[this.envVarList]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox69 [this.envVarList]));
 			w8.Position = 5;
 			this.vbox67.Add (this.vbox69);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox67[this.vbox69]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox67 [this.vbox69]));
 			w9.Position = 0;
 			this.Add (this.vbox67);
 			if ((this.Child != null)) {

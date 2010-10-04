@@ -5,33 +5,19 @@ namespace MonoDevelop.Ide.Projects
 	internal partial class SelectReferenceDialog
 	{
 		private global::Gtk.VBox vbox5;
-
 		private global::Gtk.VPaned vpaned1;
-
 		private global::Gtk.Notebook mainBook;
-
 		private global::Gtk.Label label7;
-
 		private global::Gtk.Label label6;
-
 		private global::Gtk.VBox vbox76;
-
 		private global::Gtk.Label label114;
-
 		private global::Gtk.HBox hbox4;
-
 		private global::Gtk.ScrolledWindow scrolledwindow2;
-
 		private global::Gtk.TreeView ReferencesTreeView;
-
 		private global::Gtk.VBox vbox70;
-
 		private global::Gtk.Button RemoveReferenceButton;
-
 		private global::Gtk.Image but;
-
 		private global::Gtk.Button cancelbutton;
-
 		private global::Gtk.Button okbutton;
 
 		protected virtual void Build ()
@@ -68,20 +54,20 @@ namespace MonoDevelop.Ide.Projects
 			// Container child mainBook.Gtk.Notebook+NotebookChild
 			this.label7 = new global::Gtk.Label ();
 			this.label7.Name = "label7";
-			this.label7.Xalign = 0f;
-			this.label7.Yalign = 0f;
+			this.label7.Xalign = 0F;
+			this.label7.Yalign = 0F;
 			this.label7.LabelProp = "label7";
 			this.mainBook.Add (this.label7);
 			// Notebook tab
 			this.label6 = new global::Gtk.Label ();
 			this.label6.Name = "label6";
-			this.label6.Xalign = 0f;
-			this.label6.Yalign = 0f;
+			this.label6.Xalign = 0F;
+			this.label6.Yalign = 0F;
 			this.label6.LabelProp = "label6";
-			this.mainBook.SetTabLabel (this.label7, this.label6);
+			this.mainBook.SetTabLabel (this.label7,this.label6);
 			this.label6.ShowAll ();
 			this.vpaned1.Add (this.mainBook);
-			global::Gtk.Paned.PanedChild w3 = ((global::Gtk.Paned.PanedChild)(this.vpaned1[this.mainBook]));
+			global::Gtk.Paned.PanedChild w3 = ((global::Gtk.Paned.PanedChild)(this.vpaned1 [this.mainBook]));
 			w3.Resize = false;
 			w3.Shrink = false;
 			// Container child vpaned1.Gtk.Paned+PanedChild
@@ -91,10 +77,10 @@ namespace MonoDevelop.Ide.Projects
 			// Container child vbox76.Gtk.Box+BoxChild
 			this.label114 = new global::Gtk.Label ();
 			this.label114.Name = "label114";
-			this.label114.Xalign = 0f;
+			this.label114.Xalign = 0F;
 			this.label114.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Selected references:");
 			this.vbox76.Add (this.label114);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox76[this.label114]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox76 [this.label114]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -112,7 +98,7 @@ namespace MonoDevelop.Ide.Projects
 			this.ReferencesTreeView.Name = "ReferencesTreeView";
 			this.scrolledwindow2.Add (this.ReferencesTreeView);
 			this.hbox4.Add (this.scrolledwindow2);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox4[this.scrolledwindow2]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.scrolledwindow2]));
 			w6.Position = 0;
 			// Container child hbox4.Gtk.Box+BoxChild
 			this.vbox70 = new global::Gtk.VBox ();
@@ -124,32 +110,32 @@ namespace MonoDevelop.Ide.Projects
 			// Container child RemoveReferenceButton.Gtk.Container+ContainerChild
 			this.but = new global::Gtk.Image ();
 			this.but.Name = "but";
-			this.but.Xalign = 0f;
-			this.but.Yalign = 0f;
-			this.but.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-remove", global::Gtk.IconSize.Button);
+			this.but.Xalign = 0F;
+			this.but.Yalign = 0F;
+			this.but.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"gtk-remove",global::Gtk.IconSize.Button);
 			this.RemoveReferenceButton.Add (this.but);
 			this.RemoveReferenceButton.Label = null;
 			this.vbox70.Add (this.RemoveReferenceButton);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox70[this.RemoveReferenceButton]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox70 [this.RemoveReferenceButton]));
 			w8.Position = 0;
 			w8.Expand = false;
 			w8.Fill = false;
 			this.hbox4.Add (this.vbox70);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox4[this.vbox70]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.vbox70]));
 			w9.Position = 1;
 			w9.Expand = false;
 			w9.Fill = false;
 			this.vbox76.Add (this.hbox4);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox76[this.hbox4]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox76 [this.hbox4]));
 			w10.Position = 1;
 			this.vpaned1.Add (this.vbox76);
-			global::Gtk.Paned.PanedChild w11 = ((global::Gtk.Paned.PanedChild)(this.vpaned1[this.vbox76]));
+			global::Gtk.Paned.PanedChild w11 = ((global::Gtk.Paned.PanedChild)(this.vpaned1 [this.vbox76]));
 			w11.Resize = false;
 			this.vbox5.Add (this.vpaned1);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.vpaned1]));
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.vpaned1]));
 			w12.Position = 0;
 			w1.Add (this.vbox5);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(w1[this.vbox5]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox5]));
 			w13.Position = 0;
 			// Internal child MonoDevelop.Ide.Projects.SelectReferenceDialog.ActionArea
 			global::Gtk.HButtonBox w14 = this.ActionArea;
@@ -163,8 +149,8 @@ namespace MonoDevelop.Ide.Projects
 			this.cancelbutton.UseStock = true;
 			this.cancelbutton.UseUnderline = true;
 			this.cancelbutton.Label = "gtk-cancel";
-			this.AddActionWidget (this.cancelbutton, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w15 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w14[this.cancelbutton]));
+			this.AddActionWidget (this.cancelbutton,-6);
+			global::Gtk.ButtonBox.ButtonBoxChild w15 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w14 [this.cancelbutton]));
 			w15.Expand = false;
 			w15.Fill = false;
 			// Container child dialog-action_area2.Gtk.ButtonBox+ButtonBoxChild
@@ -173,8 +159,8 @@ namespace MonoDevelop.Ide.Projects
 			this.okbutton.UseStock = true;
 			this.okbutton.UseUnderline = true;
 			this.okbutton.Label = "gtk-ok";
-			this.AddActionWidget (this.okbutton, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w16 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w14[this.okbutton]));
+			this.AddActionWidget (this.okbutton,-5);
+			global::Gtk.ButtonBox.ButtonBoxChild w16 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w14 [this.okbutton]));
 			w16.Position = 1;
 			w16.Expand = false;
 			w16.Fill = false;

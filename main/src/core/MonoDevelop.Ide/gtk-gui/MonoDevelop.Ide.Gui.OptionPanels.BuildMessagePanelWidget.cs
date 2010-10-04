@@ -5,23 +5,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	internal partial class BuildMessagePanelWidget
 	{
 		private global::Gtk.VBox vbox1;
-
 		private global::Gtk.Table table4;
-
 		private global::Gtk.ComboBox comboboxErrorPadAfter;
-
 		private global::Gtk.ComboBox comboboxJumpToFirst;
-
 		private global::Gtk.ComboBox comboboxMessageBubbles;
-
 		private global::Gtk.Label label3;
-
 		private global::Gtk.Label label5;
-
 		private global::Gtk.Label label6;
-
 		private global::Gtk.HBox hbox4;
-
 		private global::Gtk.Label label10;
 
 		protected virtual void Build ()
@@ -45,7 +36,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.comboboxErrorPadAfter.Name = "comboboxErrorPadAfter";
 			this.comboboxErrorPadAfter.Active = 0;
 			this.table4.Add (this.comboboxErrorPadAfter);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table4[this.comboboxErrorPadAfter]));
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table4 [this.comboboxErrorPadAfter]));
 			w1.TopAttach = ((uint)(1));
 			w1.BottomAttach = ((uint)(2));
 			w1.LeftAttach = ((uint)(1));
@@ -58,7 +49,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.comboboxJumpToFirst.Name = "comboboxJumpToFirst";
 			this.comboboxJumpToFirst.Active = 0;
 			this.table4.Add (this.comboboxJumpToFirst);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table4[this.comboboxJumpToFirst]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table4 [this.comboboxJumpToFirst]));
 			w2.LeftAttach = ((uint)(1));
 			w2.RightAttach = ((uint)(2));
 			w2.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -69,7 +60,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.comboboxMessageBubbles.Name = "comboboxMessageBubbles";
 			this.comboboxMessageBubbles.Active = 0;
 			this.table4.Add (this.comboboxMessageBubbles);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table4[this.comboboxMessageBubbles]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table4 [this.comboboxMessageBubbles]));
 			w3.TopAttach = ((uint)(2));
 			w3.BottomAttach = ((uint)(3));
 			w3.LeftAttach = ((uint)(1));
@@ -79,10 +70,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Container child table4.Gtk.Table+TableChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.Xalign = 0f;
+			this.label3.Xalign = 0F;
 			this.label3.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Show error pad:");
 			this.table4.Add (this.label3);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table4[this.label3]));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table4 [this.label3]));
 			w4.TopAttach = ((uint)(1));
 			w4.BottomAttach = ((uint)(2));
 			w4.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -90,10 +81,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Container child table4.Gtk.Table+TableChild
 			this.label5 = new global::Gtk.Label ();
 			this.label5.Name = "label5";
-			this.label5.Xalign = 0f;
+			this.label5.Xalign = 0F;
 			this.label5.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Show message bubbles:");
 			this.table4.Add (this.label5);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table4[this.label5]));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table4 [this.label5]));
 			w5.TopAttach = ((uint)(2));
 			w5.BottomAttach = ((uint)(3));
 			w5.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -101,14 +92,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Container child table4.Gtk.Table+TableChild
 			this.label6 = new global::Gtk.Label ();
 			this.label6.Name = "label6";
-			this.label6.Xalign = 0f;
+			this.label6.Xalign = 0F;
 			this.label6.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Jump to first error or warning:");
 			this.table4.Add (this.label6);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table4[this.label6]));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table4 [this.label6]));
 			w6.XOptions = ((global::Gtk.AttachOptions)(4));
 			w6.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox1.Add (this.table4);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.table4]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.table4]));
 			w7.Position = 0;
 			w7.Expand = false;
 			w7.Fill = false;
@@ -121,12 +112,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label10.Name = "label10";
 			this.label10.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("    ");
 			this.hbox4.Add (this.label10);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox4[this.label10]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.label10]));
 			w8.Position = 0;
 			w8.Expand = false;
 			w8.Fill = false;
 			this.vbox1.Add (this.hbox4);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.hbox4]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox4]));
 			w9.Position = 1;
 			w9.Expand = false;
 			w9.Fill = false;

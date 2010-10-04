@@ -5,21 +5,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	public partial class ErrorDialog
 	{
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Image image884;
-
 		private global::Gtk.VBox vbox3;
-
 		private global::Gtk.Label descriptionLabel;
-
 		private global::Gtk.Expander expander;
-
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-
 		private global::Gtk.TextView detailsTextView;
-
 		private global::Gtk.Label expanderLabel;
-
 		private global::Gtk.Button okButton;
 
 		protected virtual void Build ()
@@ -41,10 +33,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.image884 = new global::Gtk.Image ();
 			this.image884.Name = "image884";
-			this.image884.Yalign = 0f;
-			this.image884.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-error", global::Gtk.IconSize.Dialog);
+			this.image884.Yalign = 0F;
+			this.image884.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"gtk-dialog-error",global::Gtk.IconSize.Dialog);
 			this.hbox1.Add (this.image884);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.image884]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.image884]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -55,12 +47,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.descriptionLabel = new global::Gtk.Label ();
 			this.descriptionLabel.Name = "descriptionLabel";
-			this.descriptionLabel.Xalign = 0f;
+			this.descriptionLabel.Xalign = 0F;
 			this.descriptionLabel.LabelProp = "An exception has been thrown 1 2 3 4 5 6 7 8 9 10 11 12 13 14";
 			this.descriptionLabel.Wrap = true;
 			this.descriptionLabel.Selectable = true;
 			this.vbox3.Add (this.descriptionLabel);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.descriptionLabel]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.descriptionLabel]));
 			w3.Position = 0;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -85,13 +77,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.expanderLabel.UseUnderline = true;
 			this.expander.LabelWidget = this.expanderLabel;
 			this.vbox3.Add (this.expander);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.expander]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.expander]));
 			w6.Position = 1;
 			this.hbox1.Add (this.vbox3);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.vbox3]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox3]));
 			w7.Position = 1;
 			w1.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(w1[this.hbox1]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(w1 [this.hbox1]));
 			w8.Position = 0;
 			// Internal child MonoDevelop.Ide.Gui.Dialogs.ErrorDialog.ActionArea
 			global::Gtk.HButtonBox w9 = this.ActionArea;
@@ -107,8 +99,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.okButton.UseStock = true;
 			this.okButton.UseUnderline = true;
 			this.okButton.Label = "gtk-ok";
-			this.AddActionWidget (this.okButton, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w10 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w9[this.okButton]));
+			this.AddActionWidget (this.okButton,-5);
+			global::Gtk.ButtonBox.ButtonBoxChild w10 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w9 [this.okButton]));
 			w10.Expand = false;
 			w10.Fill = false;
 			if ((this.Child != null)) {

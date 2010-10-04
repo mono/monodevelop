@@ -5,25 +5,15 @@ namespace MonoDevelop.Ide.FindInFiles
 	public partial class SearchResultWidget
 	{
 		private global::Gtk.UIManager UIManager;
-
 		private global::Gtk.Action ViewModeAction;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.HPaned hpaned1;
-
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-
 		private global::Gtk.TreeView treeviewSearchResults;
-
 		private global::Gtk.ScrolledWindow scrolledwindowLogView;
-
 		private global::Gtk.TextView textviewLog;
-
 		private global::Gtk.Label labelStatus;
-
 		private global::Gtk.Toolbar toolbar;
 
 		protected virtual void Build ()
@@ -35,8 +25,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			global::Gtk.ActionGroup w2 = new global::Gtk.ActionGroup ("Default");
 			this.ViewModeAction = new global::Gtk.Action ("ViewModeAction", global::MonoDevelop.Core.GettextCatalog.GetString ("ViewMode"), null, null);
 			this.ViewModeAction.ShortLabel = global::MonoDevelop.Core.GettextCatalog.GetString ("ViewMode");
-			w2.Add (this.ViewModeAction, null);
-			this.UIManager.InsertActionGroup (w2, 0);
+			w2.Add (this.ViewModeAction,null);
+			this.UIManager.InsertActionGroup (w2,0);
 			this.Name = "MonoDevelop.Ide.FindInFiles.SearchResultWidget";
 			// Container child MonoDevelop.Ide.FindInFiles.SearchResultWidget.Gtk.Container+ContainerChild
 			this.hbox1 = new global::Gtk.HBox ();
@@ -59,7 +49,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.treeviewSearchResults.Name = "treeviewSearchResults";
 			this.GtkScrolledWindow.Add (this.treeviewSearchResults);
 			this.hpaned1.Add (this.GtkScrolledWindow);
-			global::Gtk.Paned.PanedChild w4 = ((global::Gtk.Paned.PanedChild)(this.hpaned1[this.GtkScrolledWindow]));
+			global::Gtk.Paned.PanedChild w4 = ((global::Gtk.Paned.PanedChild)(this.hpaned1 [this.GtkScrolledWindow]));
 			w4.Resize = false;
 			// Container child hpaned1.Gtk.Paned+PanedChild
 			this.scrolledwindowLogView = new global::Gtk.ScrolledWindow ();
@@ -74,20 +64,20 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.scrolledwindowLogView.Add (this.textviewLog);
 			this.hpaned1.Add (this.scrolledwindowLogView);
 			this.vbox2.Add (this.hpaned1);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hpaned1]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hpaned1]));
 			w7.Position = 0;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.labelStatus = new global::Gtk.Label ();
 			this.labelStatus.Name = "labelStatus";
-			this.labelStatus.Xalign = 0f;
+			this.labelStatus.Xalign = 0F;
 			this.vbox2.Add (this.labelStatus);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.labelStatus]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.labelStatus]));
 			w8.Position = 1;
 			w8.Expand = false;
 			w8.Fill = false;
 			w8.Padding = ((uint)(3));
 			this.hbox1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.vbox2]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox2]));
 			w9.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.UIManager.AddUiFromString ("<ui><toolbar name='toolbar'/></ui>");
@@ -98,7 +88,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.toolbar.ToolbarStyle = ((global::Gtk.ToolbarStyle)(0));
 			this.toolbar.IconSize = ((global::Gtk.IconSize)(1));
 			this.hbox1.Add (this.toolbar);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.toolbar]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.toolbar]));
 			w10.Position = 1;
 			w10.Expand = false;
 			w10.Fill = false;

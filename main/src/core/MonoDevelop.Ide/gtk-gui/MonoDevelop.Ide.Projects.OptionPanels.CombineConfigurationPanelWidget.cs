@@ -5,13 +5,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	internal partial class CombineConfigurationPanelWidget
 	{
 		private global::Gtk.VBox vbox74;
-
 		private global::Gtk.HBox hbox60;
-
 		private global::Gtk.Label label104;
-
 		private global::Gtk.ScrolledWindow scrolledwindow11;
-
 		private global::Gtk.TreeView configsList;
 
 		protected virtual void Build ()
@@ -33,12 +29,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.label104.Name = "label104";
 			this.label104.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Select a target configuration for each solution item:");
 			this.hbox60.Add (this.label104);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox60[this.label104]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox60 [this.label104]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
 			this.vbox74.Add (this.hbox60);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox74[this.hbox60]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox74 [this.hbox60]));
 			w2.Position = 0;
 			w2.Expand = false;
 			// Container child vbox74.Gtk.Box+BoxChild
@@ -50,7 +46,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.configsList.Name = "configsList";
 			this.scrolledwindow11.Add (this.configsList);
 			this.vbox74.Add (this.scrolledwindow11);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox74[this.scrolledwindow11]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox74 [this.scrolledwindow11]));
 			w4.Position = 1;
 			this.Add (this.vbox74);
 			if ((this.Child != null)) {
