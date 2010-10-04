@@ -5,123 +5,65 @@ namespace MonoDevelop.CSharp.Formatting
 	public partial class CSharpFormattingProfileDialog
 	{
 		private global::Gtk.VBox vbox5;
-		
 		private global::Gtk.HBox hbox3;
-		
 		private global::Gtk.Label label5;
-		
 		private global::Gtk.Entry entryName;
-		
 		private global::Gtk.HBox hbox4;
-		
 		private global::Gtk.Label label12;
-		
 		private global::Gtk.ComboBox comboboxCategories;
-		
 		private global::Gtk.HPaned hpaned1;
-		
 		private global::Gtk.Notebook notebookCategories;
-		
 		private global::Gtk.VBox vbox8;
-		
 		private global::Gtk.Frame frame1;
-		
 		private global::Gtk.Alignment GtkAlignment2;
-		
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-		
 		private global::Gtk.TreeView treeviewIndentOptions;
-		
 		private global::Gtk.Label GtkLabel;
-		
 		private global::Gtk.Label label8;
-		
 		private global::Gtk.Frame frame2;
-		
 		private global::Gtk.Alignment GtkAlignment3;
-		
 		private global::Gtk.ScrolledWindow GtkScrolledWindow1;
-		
 		private global::Gtk.TreeView treeviewBracePositions;
-		
 		private global::Gtk.Label GtkLabel4;
-		
 		private global::Gtk.Label label9;
-		
 		private global::Gtk.Table table4;
-		
 		private global::Gtk.Entry entryAfterUsings;
-		
 		private global::Gtk.Entry entryBeforeFirstDeclaration;
-		
 		private global::Gtk.Entry entryBeforUsings;
-		
 		private global::Gtk.Entry entryBetweenFields;
-		
 		private global::Gtk.Entry entryBetweenMembers;
-		
 		private global::Gtk.Entry entryBetweenTypes;
-		
 		private global::Gtk.Label GtkLabel8;
-		
 		private global::Gtk.Label GtkLabel9;
-		
 		private global::Gtk.Label label1;
-		
 		private global::Gtk.Label label15;
-		
 		private global::Gtk.Label label16;
-		
 		private global::Gtk.Label label19;
-		
 		private global::Gtk.Label label20;
-		
 		private global::Gtk.Label label21;
-		
 		private global::Gtk.Label label22;
-		
 		private global::Gtk.Label label14;
-		
 		private global::Gtk.Frame frame3;
-		
 		private global::Gtk.Alignment GtkAlignment4;
-		
 		private global::Gtk.VPaned vpaned1;
-		
 		private global::Gtk.ScrolledWindow GtkScrolledWindow2;
-		
 		private global::Gtk.TreeView treeviewInsertWhiteSpaceCategory;
-		
 		private global::Gtk.ScrolledWindow GtkScrolledWindow3;
-		
 		private global::Gtk.TreeView treeviewInsertWhiteSpaceOptions;
-		
 		private global::Gtk.Label GtkLabel5;
-		
 		private global::Gtk.Label label10;
-		
 		private global::Gtk.Frame frame4;
-		
 		private global::Gtk.Alignment GtkAlignment5;
-		
 		private global::Gtk.ScrolledWindow GtkScrolledWindow4;
-		
 		private global::Gtk.TreeView treeviewNewLines;
-		
 		private global::Gtk.Label GtkLabel6;
-		
 		private global::Gtk.Label label11;
-		
 		private global::Gtk.VBox vbox6;
-		
 		private global::Gtk.Label label13;
-		
 		private global::Gtk.ScrolledWindow scrolledwindow;
-		
 		private global::Gtk.Button buttonCancel;
-		
 		private global::Gtk.Button buttonOk;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

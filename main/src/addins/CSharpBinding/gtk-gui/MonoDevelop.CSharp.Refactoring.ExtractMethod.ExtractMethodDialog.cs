@@ -5,45 +5,26 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 	public partial class ExtractMethodDialog
 	{
 		private global::Gtk.VBox vbox2;
-		
 		private global::Gtk.Table table1;
-		
 		private global::Gtk.ComboBox comboboxModifiers;
-		
 		private global::Gtk.Entry entry;
-		
 		private global::Gtk.Label label1;
-		
 		private global::Gtk.Label labelNewName;
-		
 		private global::Gtk.Label label2;
-		
 		private global::Gtk.HBox hbox2;
-		
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-		
 		private global::Gtk.TreeView treeviewParameters;
-		
 		private global::Gtk.VBox vbox3;
-		
 		private global::Gtk.Button buttonUp;
-		
 		private global::Gtk.Button buttonDown;
-		
 		private global::Gtk.CheckButton checkbuttonGenerateComment;
-		
 		private global::Gtk.HBox hbox3;
-		
 		private global::Gtk.Image imageWarning;
-		
 		private global::Gtk.Label labelWarning;
-		
 		private global::Gtk.Button buttonCancel;
-		
 		private global::Gtk.Button buttonPreview;
-		
 		private global::Gtk.Button buttonOk;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

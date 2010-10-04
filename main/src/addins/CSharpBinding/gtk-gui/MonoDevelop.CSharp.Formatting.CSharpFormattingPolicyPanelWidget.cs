@@ -5,29 +5,18 @@ namespace MonoDevelop.CSharp.Formatting
 	public partial class CSharpFormattingPolicyPanelWidget
 	{
 		private global::Gtk.VBox vbox1;
-		
 		private global::Gtk.Label labelActive;
-		
 		private global::Gtk.HBox hbox1;
-		
 		private global::Gtk.ComboBox comboboxProfiles;
-		
 		private global::Gtk.Button buttonEdit;
-		
 		private global::Gtk.Button buttonRemove;
-		
 		private global::Gtk.HBox hbox2;
-		
 		private global::Gtk.Button buttonNew;
-		
 		private global::Gtk.Button buttonImport;
-		
 		private global::Gtk.Button buttonExport;
-		
 		private global::Gtk.Label label2;
-		
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

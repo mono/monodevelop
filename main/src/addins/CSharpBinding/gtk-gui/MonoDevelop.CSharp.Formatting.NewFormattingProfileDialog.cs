@@ -5,19 +5,13 @@ namespace MonoDevelop.CSharp.Formatting
 	public partial class NewFormattingProfileDialog
 	{
 		private global::Gtk.VBox vbox4;
-		
 		private global::Gtk.Label label3;
-		
 		private global::Gtk.Entry entryProfileName;
-		
 		private global::Gtk.Label label4;
-		
 		private global::Gtk.ComboBox comboboxInitFrom;
-		
 		private global::Gtk.Button buttonCancel;
-		
 		private global::Gtk.Button buttonOk;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

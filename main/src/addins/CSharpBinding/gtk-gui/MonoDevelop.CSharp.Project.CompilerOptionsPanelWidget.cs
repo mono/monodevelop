@@ -5,53 +5,30 @@ namespace MonoDevelop.CSharp.Project
 	public partial class CompilerOptionsPanelWidget
 	{
 		private global::Gtk.VBox vbox1;
-		
 		private global::Gtk.Label label82;
-		
 		private global::Gtk.HBox hbox5;
-		
 		private global::Gtk.Label label76;
-		
 		private global::Gtk.VBox vbox2;
-		
 		private global::Gtk.Table table7;
-		
 		private global::Gtk.ComboBoxEntry codepageEntry;
-		
 		private global::Gtk.HBox hbox57;
-		
 		private global::Gtk.ComboBox compileTargetCombo;
-		
 		private global::MonoDevelop.Components.FileEntry iconEntry;
-		
 		private global::Gtk.Label label1;
-		
 		private global::Gtk.Label label3;
-		
 		private global::Gtk.Label label86;
-		
 		private global::Gtk.Label label88;
-		
 		private global::Gtk.ComboBoxEntry mainClassEntry;
-		
 		private global::Gtk.Label label83;
-		
 		private global::Gtk.Label label75;
-		
 		private global::Gtk.HBox hbox7;
-		
 		private global::Gtk.Label label74;
-		
 		private global::Gtk.VBox vbox3;
-		
 		private global::Gtk.Table table2;
-		
 		private global::Gtk.Label label2;
-		
 		private global::Gtk.ComboBox langVerCombo;
-		
 		private global::Gtk.CheckButton allowUnsafeCodeCheckButton;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
