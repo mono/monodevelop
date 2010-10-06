@@ -41,6 +41,7 @@ namespace MonoDevelop.MonoDroid
 		static MonoDroidFramework ()
 		{
 			EnvironmentOverrides = new Dictionary<string, string> ();
+			DeviceManager = new DeviceManager ();
 			UpdateSdkLocations ();
 		}
 		
@@ -81,7 +82,6 @@ namespace MonoDevelop.MonoDroid
 					Environment.GetEnvironmentVariable ("PATH");
 				
 				Toolbox = new AndroidToolbox (AndroidBinDir, JavaBinDir);
-				
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error detecting MonoDroid SDK", ex);
 			}
@@ -146,15 +146,16 @@ namespace MonoDevelop.MonoDroid
 		
 		public static FilePath SharedRuntimePackage {
 			get {
-				return BinDir.ParentDirectory.Combine ("monoruntime.pkg");
+				return BinDir.Combine ("MonoRuntimeService-debug.apk");
 			}
 		}
 		
 		public static AndroidToolbox Toolbox { get; private set; }
+		public static DeviceManager DeviceManager { get; private set; }
 		
 		public static IList<AndroidDevice> Devices {
 			get {
-				//FIXME: make this cancellable
+				//FIXME: use DeviceManager
 				return new AndroidDevice[0];
 				//return Toolbox.GetDevices (new MonoDevelop.Core.ProgressMonitoring.SimpleProgressMonitor ());
 			}
