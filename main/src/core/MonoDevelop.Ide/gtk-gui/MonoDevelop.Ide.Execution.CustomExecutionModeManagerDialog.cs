@@ -111,7 +111,7 @@ namespace MonoDevelop.Ide.Execution
 			this.buttonOk.UseStock = true;
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-close";
-			this.AddActionWidget (this.buttonOk,-7);
+			this.AddActionWidget (this.buttonOk, -7);
 			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.buttonOk]));
 			w11.Expand = false;
 			w11.Fill = false;

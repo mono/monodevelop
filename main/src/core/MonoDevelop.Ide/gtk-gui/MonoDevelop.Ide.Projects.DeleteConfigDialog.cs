@@ -31,7 +31,7 @@ namespace MonoDevelop.Ide.Projects
 			this.image6 = new global::Gtk.Image ();
 			this.image6.Name = "image6";
 			this.image6.Yalign = 0F;
-			this.image6.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"gtk-dialog-question",global::Gtk.IconSize.Dialog);
+			this.image6.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-question", global::Gtk.IconSize.Dialog);
 			this.hbox64.Add (this.image6);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox64 [this.image6]));
 			w2.Position = 0;
@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.Projects
 			this.button11.UseStock = true;
 			this.button11.UseUnderline = true;
 			this.button11.Label = "gtk-no";
-			this.AddActionWidget (this.button11,-9);
+			this.AddActionWidget (this.button11, -9);
 			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7 [this.button11]));
 			w8.Expand = false;
 			w8.Fill = false;
@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.Projects
 			this.button12.UseStock = true;
 			this.button12.UseUnderline = true;
 			this.button12.Label = "gtk-yes";
-			this.AddActionWidget (this.button12,-8);
+			this.AddActionWidget (this.button12, -8);
 			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7 [this.button12]));
 			w9.Position = 1;
 			w9.Expand = false;

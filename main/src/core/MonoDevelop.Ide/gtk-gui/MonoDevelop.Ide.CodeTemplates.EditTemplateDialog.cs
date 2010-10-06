@@ -298,7 +298,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			this.buttonCancel.UseStock = true;
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
-			this.AddActionWidget (this.buttonCancel,-6);
+			this.AddActionWidget (this.buttonCancel, -6);
 			global::Gtk.ButtonBox.ButtonBoxChild w29 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w28 [this.buttonCancel]));
 			w29.Expand = false;
 			w29.Fill = false;
@@ -310,7 +310,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			this.buttonOk.UseStock = true;
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
-			this.AddActionWidget (this.buttonOk,-5);
+			this.AddActionWidget (this.buttonOk, -5);
 			global::Gtk.ButtonBox.ButtonBoxChild w30 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w28 [this.buttonOk]));
 			w30.Position = 1;
 			w30.Expand = false;

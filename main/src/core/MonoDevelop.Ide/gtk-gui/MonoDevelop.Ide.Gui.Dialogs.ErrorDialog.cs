@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.image884 = new global::Gtk.Image ();
 			this.image884.Name = "image884";
 			this.image884.Yalign = 0F;
-			this.image884.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"gtk-dialog-error",global::Gtk.IconSize.Dialog);
+			this.image884.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-error", global::Gtk.IconSize.Dialog);
 			this.hbox1.Add (this.image884);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.image884]));
 			w2.Position = 0;
@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.okButton.UseStock = true;
 			this.okButton.UseUnderline = true;
 			this.okButton.Label = "gtk-ok";
-			this.AddActionWidget (this.okButton,-5);
+			this.AddActionWidget (this.okButton, -5);
 			global::Gtk.ButtonBox.ButtonBoxChild w10 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w9 [this.okButton]));
 			w10.Expand = false;
 			w10.Fill = false;

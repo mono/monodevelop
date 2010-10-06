@@ -122,7 +122,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.button103.Name = "button103";
 			this.button103.UseUnderline = true;
 			this.button103.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("GtkButton");
-			this.AddActionWidget (this.button103,0);
+			this.AddActionWidget (this.button103, 0);
 			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w11 [this.button103]));
 			w12.Expand = false;
 			w12.Fill = false;

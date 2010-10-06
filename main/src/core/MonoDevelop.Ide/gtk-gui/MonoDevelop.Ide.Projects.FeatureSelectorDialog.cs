@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.Projects
 			this.button1547.Name = "button1547";
 			this.button1547.UseUnderline = true;
 			this.button1547.Label = "button1547";
-			this.AddActionWidget (this.button1547,0);
+			this.AddActionWidget (this.button1547, 0);
 			global::Gtk.ButtonBox.ButtonBoxChild w6 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w5 [this.button1547]));
 			w6.Expand = false;
 			w6.Fill = false;
@@ -71,7 +71,7 @@ namespace MonoDevelop.Ide.Projects
 			this.button1548.Name = "button1548";
 			this.button1548.UseUnderline = true;
 			this.button1548.Label = "button1548";
-			this.AddActionWidget (this.button1548,0);
+			this.AddActionWidget (this.button1548, 0);
 			global::Gtk.ButtonBox.ButtonBoxChild w7 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w5 [this.button1548]));
 			w7.Position = 1;
 			w7.Expand = false;

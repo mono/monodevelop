@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.image = new global::Gtk.Image ();
 			this.image.Name = "image";
-			this.image.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"gtk-preferences",global::Gtk.IconSize.LargeToolbar);
+			this.image.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-preferences", global::Gtk.IconSize.LargeToolbar);
 			this.hbox2.Add (this.image);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.image]));
 			w4.Position = 0;
@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.buttonCancel.UseStock = true;
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
-			this.AddActionWidget (this.buttonCancel,-6);
+			this.AddActionWidget (this.buttonCancel, -6);
 			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w11 [this.buttonCancel]));
 			w12.Expand = false;
 			w12.Fill = false;

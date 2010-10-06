@@ -201,7 +201,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.buttonStop.UseStock = true;
 			this.buttonStop.UseUnderline = true;
 			this.buttonStop.Label = "gtk-stop";
-			this.AddActionWidget (this.buttonStop,0);
+			this.AddActionWidget (this.buttonStop, 0);
 			global::Gtk.ButtonBox.ButtonBoxChild w17 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w16 [this.buttonStop]));
 			w17.Expand = false;
 			w17.Fill = false;
@@ -213,7 +213,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.buttonClose.UseStock = true;
 			this.buttonClose.UseUnderline = true;
 			this.buttonClose.Label = "gtk-close";
-			this.AddActionWidget (this.buttonClose,-7);
+			this.AddActionWidget (this.buttonClose, -7);
 			global::Gtk.ButtonBox.ButtonBoxChild w18 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w16 [this.buttonClose]));
 			w18.Position = 1;
 			w18.Expand = false;
@@ -230,7 +230,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			w20.Spacing = 2;
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Image w21 = new global::Gtk.Image ();
-			w21.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"gtk-find-and-replace",global::Gtk.IconSize.Menu);
+			w21.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-find-and-replace", global::Gtk.IconSize.Menu);
 			w20.Add (w21);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w23 = new global::Gtk.Label ();
@@ -239,7 +239,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			w20.Add (w23);
 			w19.Add (w20);
 			this.buttonReplace.Add (w19);
-			this.AddActionWidget (this.buttonReplace,0);
+			this.AddActionWidget (this.buttonReplace, 0);
 			global::Gtk.ButtonBox.ButtonBoxChild w27 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w16 [this.buttonReplace]));
 			w27.Position = 2;
 			w27.Expand = false;
@@ -252,7 +252,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.buttonSearch.UseStock = true;
 			this.buttonSearch.UseUnderline = true;
 			this.buttonSearch.Label = "gtk-find";
-			this.AddActionWidget (this.buttonSearch,0);
+			this.AddActionWidget (this.buttonSearch, 0);
 			global::Gtk.ButtonBox.ButtonBoxChild w28 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w16 [this.buttonSearch]));
 			w28.Position = 3;
 			w28.Expand = false;

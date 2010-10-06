@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.Projects
 			this.cancelbutton1.UseStock = true;
 			this.cancelbutton1.UseUnderline = true;
 			this.cancelbutton1.Label = "gtk-cancel";
-			this.AddActionWidget (this.cancelbutton1,-6);
+			this.AddActionWidget (this.cancelbutton1, -6);
 			global::Gtk.ButtonBox.ButtonBoxChild w10 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w9 [this.cancelbutton1]));
 			w10.Expand = false;
 			w10.Fill = false;

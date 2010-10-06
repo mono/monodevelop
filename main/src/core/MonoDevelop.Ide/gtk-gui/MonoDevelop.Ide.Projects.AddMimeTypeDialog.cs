@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.Projects
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.image = new global::Gtk.Image ();
 			this.image.Name = "image";
-			this.image.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"gtk-dialog-error",global::Gtk.IconSize.Menu);
+			this.image.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-error", global::Gtk.IconSize.Menu);
 			this.hbox1.Add (this.image);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.image]));
 			w4.Position = 0;
@@ -94,7 +94,7 @@ namespace MonoDevelop.Ide.Projects
 			this.buttonCancel.UseStock = true;
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
-			this.AddActionWidget (this.buttonCancel,-6);
+			this.AddActionWidget (this.buttonCancel, -6);
 			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8 [this.buttonCancel]));
 			w9.Expand = false;
 			w9.Fill = false;
@@ -106,7 +106,7 @@ namespace MonoDevelop.Ide.Projects
 			this.buttonOk.UseStock = true;
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-add";
-			this.AddActionWidget (this.buttonOk,-5);
+			this.AddActionWidget (this.buttonOk, -5);
 			global::Gtk.ButtonBox.ButtonBoxChild w10 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8 [this.buttonOk]));
 			w10.Position = 1;
 			w10.Expand = false;

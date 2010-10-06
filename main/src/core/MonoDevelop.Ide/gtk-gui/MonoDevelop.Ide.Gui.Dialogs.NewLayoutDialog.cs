@@ -93,7 +93,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.button309.UseStock = true;
 			this.button309.UseUnderline = true;
 			this.button309.Label = "gtk-cancel";
-			this.AddActionWidget (this.button309,-6);
+			this.AddActionWidget (this.button309, -6);
 			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8 [this.button309]));
 			w9.Expand = false;
 			w9.Fill = false;
@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			w11.Spacing = 2;
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Image w12 = new global::Gtk.Image ();
-			w12.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"gtk-new",global::Gtk.IconSize.Menu);
+			w12.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-new", global::Gtk.IconSize.Menu);
 			w11.Add (w12);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w14 = new global::Gtk.Label ();
@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			w11.Add (w14);
 			w10.Add (w11);
 			this.newButton.Add (w10);
-			this.AddActionWidget (this.newButton,-5);
+			this.AddActionWidget (this.newButton, -5);
 			global::Gtk.ButtonBox.ButtonBoxChild w18 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8 [this.newButton]));
 			w18.Position = 1;
 			w18.Expand = false;

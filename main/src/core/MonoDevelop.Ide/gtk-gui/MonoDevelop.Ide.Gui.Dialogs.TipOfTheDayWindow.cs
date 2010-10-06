@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.image5.Name = "image5";
 			this.image5.Xalign = 0F;
 			this.image5.Yalign = 0F;
-			this.image5.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"gtk-dialog-info",global::Gtk.IconSize.Dialog);
+			this.image5.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-info", global::Gtk.IconSize.Dialog);
 			this.hbox7.Add (this.image5);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.image5]));
 			w1.Position = 0;
@@ -113,7 +113,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			w9.Spacing = 2;
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Image w10 = new global::Gtk.Image ();
-			w10.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"gtk-go-forward",global::Gtk.IconSize.Button);
+			w10.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-go-forward", global::Gtk.IconSize.Button);
 			w9.Add (w10);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w12 = new global::Gtk.Label ();

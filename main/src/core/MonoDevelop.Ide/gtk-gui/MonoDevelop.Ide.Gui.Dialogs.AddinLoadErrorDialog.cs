@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.image1.Name = "image1";
 			this.image1.Xalign = 0F;
 			this.image1.Yalign = 0F;
-			this.image1.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"gtk-dialog-error",global::Gtk.IconSize.Dialog);
+			this.image1.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-error", global::Gtk.IconSize.Dialog);
 			this.hbox1.Add (this.image1);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.image1]));
 			w2.Position = 0;
@@ -129,7 +129,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.noButton.UseStock = true;
 			this.noButton.UseUnderline = true;
 			this.noButton.Label = "gtk-no";
-			this.AddActionWidget (this.noButton,-9);
+			this.AddActionWidget (this.noButton, -9);
 			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w11 [this.noButton]));
 			w12.Expand = false;
 			w12.Fill = false;
@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.yesButton.UseStock = true;
 			this.yesButton.UseUnderline = true;
 			this.yesButton.Label = "gtk-yes";
-			this.AddActionWidget (this.yesButton,-8);
+			this.AddActionWidget (this.yesButton, -8);
 			global::Gtk.ButtonBox.ButtonBoxChild w13 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w11 [this.yesButton]));
 			w13.Position = 1;
 			w13.Expand = false;
@@ -152,7 +152,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.closeButton.UseStock = true;
 			this.closeButton.UseUnderline = true;
 			this.closeButton.Label = "gtk-close";
-			this.AddActionWidget (this.closeButton,-7);
+			this.AddActionWidget (this.closeButton, -7);
 			global::Gtk.ButtonBox.ButtonBoxChild w14 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w11 [this.closeButton]));
 			w14.Position = 2;
 			w14.Expand = false;

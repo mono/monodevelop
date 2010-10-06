@@ -25,8 +25,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			global::Gtk.ActionGroup w2 = new global::Gtk.ActionGroup ("Default");
 			this.ViewModeAction = new global::Gtk.Action ("ViewModeAction", global::MonoDevelop.Core.GettextCatalog.GetString ("ViewMode"), null, null);
 			this.ViewModeAction.ShortLabel = global::MonoDevelop.Core.GettextCatalog.GetString ("ViewMode");
-			w2.Add (this.ViewModeAction,null);
-			this.UIManager.InsertActionGroup (w2,0);
+			w2.Add (this.ViewModeAction, null);
+			this.UIManager.InsertActionGroup (w2, 0);
 			this.Name = "MonoDevelop.Ide.FindInFiles.SearchResultWidget";
 			// Container child MonoDevelop.Ide.FindInFiles.SearchResultWidget.Gtk.Container+ContainerChild
 			this.hbox1 = new global::Gtk.HBox ();

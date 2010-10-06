@@ -104,7 +104,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Container child clearFilterButton.Gtk.Container+ContainerChild
 			this.image25 = new global::Gtk.Image ();
 			this.image25.Name = "image25";
-			this.image25.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"gtk-clear",global::Gtk.IconSize.Menu);
+			this.image25.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-clear", global::Gtk.IconSize.Menu);
 			this.clearFilterButton.Add (this.image25);
 			this.clearFilterButton.Label = null;
 			this.hbox2.Add (this.clearFilterButton);
@@ -135,7 +135,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Container child warningBox.Gtk.Box+BoxChild
 			this.image3 = new global::Gtk.Image ();
 			this.image3.Name = "image3";
-			this.image3.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"gtk-dialog-warning",global::Gtk.IconSize.Menu);
+			this.image3.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-warning", global::Gtk.IconSize.Menu);
 			this.warningBox.Add (this.image3);
 			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.warningBox [this.image3]));
 			w10.Position = 0;
@@ -231,7 +231,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w23.Spacing = 2;
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Image w24 = new global::Gtk.Image ();
-			w24.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"gtk-apply",global::Gtk.IconSize.Button);
+			w24.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-apply", global::Gtk.IconSize.Button);
 			w23.Add (w24);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w26 = new global::Gtk.Label ();

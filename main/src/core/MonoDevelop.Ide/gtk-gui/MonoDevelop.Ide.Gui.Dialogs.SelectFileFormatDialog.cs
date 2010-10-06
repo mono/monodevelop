@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.image146 = new global::Gtk.Image ();
 			this.image146.Name = "image146";
-			this.image146.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"gtk-dialog-warning",global::Gtk.IconSize.Dialog);
+			this.image146.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-warning", global::Gtk.IconSize.Dialog);
 			this.vbox3.Add (this.image146);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.image146]));
 			w2.Position = 0;
@@ -189,7 +189,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.buttonCancel.UseStock = true;
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
-			this.AddActionWidget (this.buttonCancel,-6);
+			this.AddActionWidget (this.buttonCancel, -6);
 			global::Gtk.ButtonBox.ButtonBoxChild w18 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w17 [this.buttonCancel]));
 			w18.Expand = false;
 			w18.Fill = false;
@@ -201,7 +201,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.buttonOk.UseStock = true;
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
-			this.AddActionWidget (this.buttonOk,-5);
+			this.AddActionWidget (this.buttonOk, -5);
 			global::Gtk.ButtonBox.ButtonBoxChild w19 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w17 [this.buttonOk]));
 			w19.Position = 1;
 			w19.Expand = false;

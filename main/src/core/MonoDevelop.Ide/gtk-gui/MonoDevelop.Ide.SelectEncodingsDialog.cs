@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide
 			w10.Spacing = 2;
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Image w11 = new global::Gtk.Image ();
-			w11.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"gtk-go-forward",global::Gtk.IconSize.Button);
+			w11.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-go-forward", global::Gtk.IconSize.Button);
 			w10.Add (w11);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w13 = new global::Gtk.Label ();
@@ -141,7 +141,7 @@ namespace MonoDevelop.Ide
 			w19.Spacing = 2;
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Image w20 = new global::Gtk.Image ();
-			w20.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"gtk-go-back",global::Gtk.IconSize.SmallToolbar);
+			w20.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-go-back", global::Gtk.IconSize.SmallToolbar);
 			w19.Add (w20);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w22 = new global::Gtk.Label ();
@@ -181,7 +181,7 @@ namespace MonoDevelop.Ide
 			this.image9.Name = "image9";
 			this.image9.Xalign = 0F;
 			this.image9.Yalign = 0F;
-			this.image9.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"gtk-go-up",global::Gtk.IconSize.Button);
+			this.image9.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-go-up", global::Gtk.IconSize.Button);
 			this.btnUp.Add (this.image9);
 			this.btnUp.Label = null;
 			this.vbox75.Add (this.btnUp);
@@ -197,7 +197,7 @@ namespace MonoDevelop.Ide
 			this.image10.Name = "image10";
 			this.image10.Xalign = 0F;
 			this.image10.Yalign = 0F;
-			this.image10.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"gtk-go-down",global::Gtk.IconSize.Button);
+			this.image10.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-go-down", global::Gtk.IconSize.Button);
 			this.btnDown.Add (this.image10);
 			this.btnDown.Label = null;
 			this.vbox75.Add (this.btnDown);
@@ -228,7 +228,7 @@ namespace MonoDevelop.Ide
 			this.cancelbutton1.UseStock = true;
 			this.cancelbutton1.UseUnderline = true;
 			this.cancelbutton1.Label = "gtk-cancel";
-			this.AddActionWidget (this.cancelbutton1,-6);
+			this.AddActionWidget (this.cancelbutton1, -6);
 			global::Gtk.ButtonBox.ButtonBoxChild w36 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w35 [this.cancelbutton1]));
 			w36.Expand = false;
 			w36.Fill = false;
@@ -238,7 +238,7 @@ namespace MonoDevelop.Ide
 			this.okbutton1.UseStock = true;
 			this.okbutton1.UseUnderline = true;
 			this.okbutton1.Label = "gtk-ok";
-			this.AddActionWidget (this.okbutton1,-5);
+			this.AddActionWidget (this.okbutton1, -5);
 			global::Gtk.ButtonBox.ButtonBoxChild w37 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w35 [this.okbutton1]));
 			w37.Position = 1;
 			w37.Expand = false;

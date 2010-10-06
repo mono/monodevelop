@@ -288,7 +288,7 @@ namespace MonoDevelop.Ide.Projects
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.LabelProp = "page1";
-			this.notebook.SetTabLabel (this.vbox1,this.label1);
+			this.notebook.SetTabLabel (this.vbox1, this.label1);
 			this.label1.ShowAll ();
 			// Container child notebook.Gtk.Notebook+NotebookChild
 			this.vbox5 = new global::Gtk.VBox ();
@@ -325,7 +325,7 @@ namespace MonoDevelop.Ide.Projects
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.label2.LabelProp = "page2";
-			this.notebook.SetTabLabel (this.vbox5,this.label2);
+			this.notebook.SetTabLabel (this.vbox5, this.label2);
 			this.label2.ShowAll ();
 			w1.Add (this.notebook);
 			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(w1 [this.notebook]));
@@ -343,7 +343,7 @@ namespace MonoDevelop.Ide.Projects
 			this.btn_close.UseStock = true;
 			this.btn_close.UseUnderline = true;
 			this.btn_close.Label = "gtk-cancel";
-			this.AddActionWidget (this.btn_close,-6);
+			this.AddActionWidget (this.btn_close, -6);
 			global::Gtk.ButtonBox.ButtonBoxChild w33 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w32 [this.btn_close]));
 			w33.Expand = false;
 			w33.Fill = false;

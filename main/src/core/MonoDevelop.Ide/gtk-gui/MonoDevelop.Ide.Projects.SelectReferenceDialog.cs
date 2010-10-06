@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide.Projects
 			this.label6.Xalign = 0F;
 			this.label6.Yalign = 0F;
 			this.label6.LabelProp = "label6";
-			this.mainBook.SetTabLabel (this.label7,this.label6);
+			this.mainBook.SetTabLabel (this.label7, this.label6);
 			this.label6.ShowAll ();
 			this.vpaned1.Add (this.mainBook);
 			global::Gtk.Paned.PanedChild w3 = ((global::Gtk.Paned.PanedChild)(this.vpaned1 [this.mainBook]));
@@ -112,7 +112,7 @@ namespace MonoDevelop.Ide.Projects
 			this.but.Name = "but";
 			this.but.Xalign = 0F;
 			this.but.Yalign = 0F;
-			this.but.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"gtk-remove",global::Gtk.IconSize.Button);
+			this.but.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-remove", global::Gtk.IconSize.Button);
 			this.RemoveReferenceButton.Add (this.but);
 			this.RemoveReferenceButton.Label = null;
 			this.vbox70.Add (this.RemoveReferenceButton);
@@ -149,7 +149,7 @@ namespace MonoDevelop.Ide.Projects
 			this.cancelbutton.UseStock = true;
 			this.cancelbutton.UseUnderline = true;
 			this.cancelbutton.Label = "gtk-cancel";
-			this.AddActionWidget (this.cancelbutton,-6);
+			this.AddActionWidget (this.cancelbutton, -6);
 			global::Gtk.ButtonBox.ButtonBoxChild w15 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w14 [this.cancelbutton]));
 			w15.Expand = false;
 			w15.Fill = false;
@@ -159,7 +159,7 @@ namespace MonoDevelop.Ide.Projects
 			this.okbutton.UseStock = true;
 			this.okbutton.UseUnderline = true;
 			this.okbutton.Label = "gtk-ok";
-			this.AddActionWidget (this.okbutton,-5);
+			this.AddActionWidget (this.okbutton, -5);
 			global::Gtk.ButtonBox.ButtonBoxChild w16 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w14 [this.okbutton]));
 			w16.Position = 1;
 			w16.Expand = false;
