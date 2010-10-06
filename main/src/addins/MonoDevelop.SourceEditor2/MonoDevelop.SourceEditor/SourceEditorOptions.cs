@@ -29,21 +29,10 @@ using Mono.TextEditor;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.SourceEditor
 {
-	public enum EditorFontType {
-		/// <summary>
-		/// Default Monospace font as set in the user's GNOME font properties
-		/// </summary>
-		DefaultMonospace,
-		
-		/// <summary>
-		/// Custom font, will need to get the FontName property for more specifics
-		/// </summary>
-		UserSpecified
-	}
-
 	public enum ControlLeftRightMode {
 		MonoDevelop,
 		Emacs,
@@ -88,11 +77,21 @@ namespace MonoDevelop.SourceEditor
 			LoadAllPrefs ();
 			UpdateStylePolicy (currentPolicy);
 			PropertyService.PropertyChanged += UpdatePreferences;
+			FontService.RegisterFontChangedCallback ("Editor", UpdateFont);
+			
 		}
 		
 		public override void Dispose()
 		{
 			PropertyService.PropertyChanged -= UpdatePreferences;
+			FontService.RemoveCallback (UpdateFont);
+		}
+		
+		void UpdateFont ()
+		{
+			base.FontName = FontName;
+			this.OnChanged (EventArgs.Empty);
+		
 		}
 		
 		void UpdateStylePolicy (MonoDevelop.Ide.Gui.Content.TextStylePolicy currentPolicy)
@@ -139,9 +138,6 @@ namespace MonoDevelop.SourceEditor
 					this.IndentStyle = (MonoDevelop.Ide.Gui.Content.IndentStyle)Enum.Parse (typeof (MonoDevelop.Ide.Gui.Content.IndentStyle), args.NewValue.ToString ());
 				} else 
 					this.IndentStyle = (MonoDevelop.Ide.Gui.Content.IndentStyle) args.NewValue;
-				break;
-			case "EditorFontType":
-				this.EditorFontType = (MonoDevelop.SourceEditor.EditorFontType) args.NewValue;
 				break;
 			case "ShowLineNumberMargin":
 				base.ShowLineNumberMargin = (bool) args.NewValue;
@@ -220,7 +216,6 @@ namespace MonoDevelop.SourceEditor
 			this.enableParameterInsight = PropertyService.Get ("EnableParameterInsight", true);
 			this.underlineErrors = PropertyService.Get ("UnderlineErrors", true);
 			this.indentStyle = PropertyService.Get ("IndentStyle", MonoDevelop.Ide.Gui.Content.IndentStyle.Smart);
-			this.editorFontType = PropertyService.Get ("EditorFontType", MonoDevelop.SourceEditor.EditorFontType.DefaultMonospace);
 			base.ShowLineNumberMargin = PropertyService.Get ("ShowLineNumberMargin", true);
 			base.ShowFoldMargin = PropertyService.Get ("ShowFoldMargin", true);
 			base.ShowInvalidLines = PropertyService.Get ("ShowInvalidLines", true);
@@ -656,19 +651,10 @@ namespace MonoDevelop.SourceEditor
 		
 		public override string FontName {
 			get {
-				if (EditorFontType == EditorFontType.DefaultMonospace) {
-					string font = DesktopService.DefaultMonospaceFont;
-					if (String.IsNullOrEmpty (font))
-						return DEFAULT_FONT;
-					else
-						return font;
-				}
-				return base.FontName;
+				return FontService.FilterFontName (FontService.GetUnderlyingFontName ("Editor"));
 			}
 			set {
-				string newName = !String.IsNullOrEmpty (value) ? value : DEFAULT_FONT;
-				PropertyService.Set ("FontName", newName);
-				base.FontName = newName;
+				throw new InvalidOperationException ("Set font through font service");
 			}
 		}
 		

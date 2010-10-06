@@ -5,19 +5,12 @@ namespace MonoDevelop.SourceEditor
 	internal partial class GotoLineNumberWidget
 	{
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Entry entryLineNumber;
-
 		private global::Gtk.Button buttonGoToLine;
-
 		private global::Gtk.EventBox eventbox2;
-
 		private global::Gtk.Image image2;
-
 		private global::Gtk.Button closeButton;
-
 		private global::Gtk.EventBox eventbox1;
-
 		private global::Gtk.Image image1;
 
 		protected virtual void Build ()
@@ -36,7 +29,7 @@ namespace MonoDevelop.SourceEditor
 			this.entryLineNumber.IsEditable = true;
 			this.entryLineNumber.InvisibleChar = '●';
 			this.hbox1.Add (this.entryLineNumber);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.entryLineNumber]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.entryLineNumber]));
 			w1.Position = 0;
 			w1.Expand = false;
 			// Container child hbox1.Gtk.Box+BoxChild
@@ -58,7 +51,7 @@ namespace MonoDevelop.SourceEditor
 			this.buttonGoToLine.Add (this.eventbox2);
 			this.buttonGoToLine.Label = null;
 			this.hbox1.Add (this.buttonGoToLine);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonGoToLine]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonGoToLine]));
 			w4.Position = 1;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -80,7 +73,7 @@ namespace MonoDevelop.SourceEditor
 			this.closeButton.Add (this.eventbox1);
 			this.closeButton.Label = null;
 			this.hbox1.Add (this.closeButton);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.closeButton]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.closeButton]));
 			w7.Position = 2;
 			w7.Expand = false;
 			w7.Fill = false;

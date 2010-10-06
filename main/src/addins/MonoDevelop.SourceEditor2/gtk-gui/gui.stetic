@@ -12,7 +12,7 @@
     <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.SourceEditor2.dll" internal="true" />
   </import>
-  <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel" design-size="452 484">
+  <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel" design-size="447 250">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <child>
@@ -260,102 +260,6 @@
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>
-        </child>
-        <child>
-          <widget class="Gtk.Label" id="GtkLabel15">
-            <property name="MemberName" />
-            <property name="Xalign">0</property>
-            <property name="LabelProp" translatable="yes">&lt;b&gt;Font&lt;/b&gt;</property>
-            <property name="UseMarkup">True</property>
-          </widget>
-          <packing>
-            <property name="Position">4</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.Alignment" id="GtkAlignment1">
-            <property name="MemberName" />
-            <property name="Xalign">0</property>
-            <property name="Yalign">0</property>
-            <property name="LeftPadding">12</property>
-            <child>
-              <widget class="Gtk.VBox" id="vbox3">
-                <property name="MemberName" />
-                <property name="Spacing">6</property>
-                <child>
-                  <widget class="Gtk.RadioButton" id="radiobutton1">
-                    <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="Label" translatable="yes">_Default monospace</property>
-                    <property name="DrawIndicator">True</property>
-                    <property name="HasLabel">True</property>
-                    <property name="UseUnderline">True</property>
-                    <property name="Group">group1</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">0</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.HBox" id="hbox1">
-                    <property name="MemberName" />
-                    <property name="Spacing">12</property>
-                    <child>
-                      <widget class="Gtk.RadioButton" id="radiobutton2">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="Label" translatable="yes">_Custom</property>
-                        <property name="DrawIndicator">True</property>
-                        <property name="HasLabel">True</property>
-                        <property name="UseUnderline">True</property>
-                        <property name="Group">group1</property>
-                      </widget>
-                      <packing>
-                        <property name="Position">0</property>
-                        <property name="AutoSize">False</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="Gtk.FontButton" id="fontselection">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                      </widget>
-                      <packing>
-                        <property name="Position">1</property>
-                        <property name="AutoSize">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <placeholder />
-                    </child>
-                  </widget>
-                  <packing>
-                    <property name="Position">1</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-              </widget>
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">5</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <placeholder />
         </child>
       </widget>
     </child>
