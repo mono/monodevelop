@@ -440,7 +440,7 @@ namespace MonoDevelop.VersionControl.Git
 			try {
 				File.WriteAllText (file, changeSet.GlobalComment);
 				string paths = ToCmdPathList (changeSet.Items.Select (it => it.LocalPath));
-				RunCommand ("commit -F " + file + " " + paths, true, monitor);
+				RunCommand ("commit -F \"" + file + "\" " + paths, true, monitor);
 			} finally {
 				File.Delete (file);
 			}
