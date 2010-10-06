@@ -3,3 +3,5 @@ In addition, you will probably need to configure the Android SDK location in MD 
 
 MSBuildExtensionsPath=/Users/michael/Mono/mondroid/tools/msbuild/build
 MONODROID_PATH=/Users/michael/Mono/mondroid/ make run
+
+Also, the shared runtime APK must be copied to $MONODROID_PATH/bin/
