@@ -177,6 +177,20 @@ namespace MonoDevelop.MonoDroid
 			foreach (var el in list)
 				el.Remove ();
 		}
+
+		public string GetLaunchableActivityName ()
+		{
+			var aName = aNS + "name";
+			foreach (var activity in application.Elements ("activity")) {
+				var filter = activity.Element ("intent-filter");
+				if (filter != null) {
+					var category = filter.Element ("category");
+					if (category != null && (string)category.Attribute (aName) == "android.intent.category.LAUNCHER")
+						return (string) activity.Attribute (aName);
+				}
+			}
+			return null;
+		}
 	}
 	
 	class AndroidPackageNameCache : ProjectFileCache<MonoDroidProject,string>
