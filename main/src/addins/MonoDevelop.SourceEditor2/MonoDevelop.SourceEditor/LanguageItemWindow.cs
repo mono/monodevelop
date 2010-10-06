@@ -35,13 +35,12 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.SourceEditor
 {
 	public class LanguageItemWindow: MonoDevelop.Components.TooltipWindow
 	{
-		Pango.FontDescription fontDescription;
-		
 		public bool IsEmpty { get; set; }
 		
 		public LanguageItemWindow (ExtensibleTextEditor ed, Gdk.ModifierType modifierState, ResolveResult result, string errorInformations, ICompilationUnit unit)
@@ -108,37 +107,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (label == null)
 				return;
-			if (fontDescription != null) {
-				fontDescription.Dispose ();
-			}
-			fontDescription = new Gtk.Label ("").Style.FontDescription.Copy ();
-			fontDescription.Size = DefaultSourceEditorOptions.Instance.Font.Size;
-			label.FontDescription = fontDescription;
+			label.FontDescription = FontService.GetFontDescription ("LanguageTooltips");
+			
 		}
-		
-		protected override void OnDestroyed ()
-		{
-			base.OnDestroyed ();
-			
-			if (fontDescription != null) {
-				fontDescription.Dispose ();
-				fontDescription = null;
-			}
-		}
-		
-		
-/*		static string GetCref (string cref)
-		{
-			if (cref == null)
-				return "";
-			
-			if (cref.Length < 2)
-				return cref;
-			
-			if (cref.Substring(1, 1) == ":")
-				return cref.Substring (2, cref.Length - 2);
-			
-			return cref;
-		}*/
 	}
 }

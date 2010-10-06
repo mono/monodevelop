@@ -78,6 +78,7 @@ namespace MonoDevelop.SourceEditor
 			UpdateStylePolicy (currentPolicy);
 			PropertyService.PropertyChanged += UpdatePreferences;
 			FontService.RegisterFontChangedCallback ("Editor", UpdateFont);
+			FontService.RegisterFontChangedCallback ("MessageBubbles", UpdateFont);
 			
 		}
 		

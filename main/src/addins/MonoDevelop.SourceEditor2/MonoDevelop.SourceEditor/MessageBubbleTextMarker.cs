@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using MonoDevelop.Ide;
 using System.Text.RegularExpressions;
 using Mono.TextEditor.Highlighting;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -319,11 +320,8 @@ namespace MonoDevelop.SourceEditor
 				return;
 			
 			layouts = new List<LayoutDescriptor> ();
-			fontDescription = Pango.FontDescription.FromString (editor.Options.FontName);
-			var label = new Gtk.Label ("");
-			fontDescription.Family = label.Style.FontDescription.Family;
-			label.Destroy ();
-			fontDescription.Size = (int)(fontDescription.Size * 0.9f * editor.Options.Zoom);
+			fontDescription = FontService.GetFontDescription ("MessageBubbles");
+			
 			foreach (ErrorText errorText in errors) {
 				Pango.Layout layout = new Pango.Layout (editor.PangoContext);
 				layout.FontDescription = fontDescription;

@@ -179,7 +179,10 @@
 			<SeparatorItem id = "Separator1" />
 			<CommandItem id = "MonoDevelop.SourceEditor.MessageBubbleCommands.ToggleIssues" />
 		</ItemSet>
-
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Ide/Fonts">
+		<Font name ="MessageBubbles" _displayName="Message bubbles" default ="_DEFAULT_SANS"/>
+		<Font name ="LanguageTooltips" _displayName="Editor tooltips" default ="_DEFAULT_SANS"/>
+	</Extension>
 </Addin>
