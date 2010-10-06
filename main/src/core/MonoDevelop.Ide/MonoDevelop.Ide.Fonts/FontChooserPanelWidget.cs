@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Core;
 using Gtk;
 
@@ -37,7 +38,23 @@ namespace MonoDevelop.Ide.Fonts
 		
 		Gtk.CellRendererText textRenderer = new Gtk.CellRendererText ();
 		Gtk.CellRendererCombo comboRenderer = new Gtk.CellRendererCombo ();
+		Dictionary<string, string> customFonts = new Dictionary<string, string> ();
 		
+		
+		public void SetFont (string fontName, string fontDescription)
+		{
+			customFonts [fontName] = fontDescription;
+		}
+		
+		
+		public string GetFont (string fontName)
+		{
+			if (customFonts.ContainsKey (fontName))
+				return customFonts [fontName];
+			
+			return FontService.GetUnderlyingFontName (fontName);
+		}
+
 		public FontChooserPanelWidget ()
 		{
 			this.Build ();
@@ -51,36 +68,57 @@ namespace MonoDevelop.Ide.Fonts
 				if (!fontStore.GetIterFromString (out iter, args.Path))
 					return;
 				string fontName = (string)fontStore.GetValue (iter, colName);
-				if (args.NewText == GettextCatalog.GetString ("Default")) {
-					FontService.SetFont (fontName, FontService.GetFont (fontName).FontDescription);
+				
+				if (args.NewText == GettextCatalog.GetString ("Default")) { 
+					SetFont (fontName, FontService.GetFont (fontName).FontDescription);
+					fontStore.SetValue (iter, colValue, GettextCatalog.GetString ("Default"));
 					return;
 				}
-				var selection = new FontSelectionDialog (GettextCatalog.GetString ("Select Font"));
-				
-				if (MessageService.ShowCustomDialog (selection) == (int)Gtk.ResponseType.Ok) {
-					FontService.SetFont (fontName, selection.FontName);
-					fontStore.SetValue (iter, 2, selection.FontName);
-				}
-				selection.Destroy ();
+				var selectionDialog = new FontSelectionDialog (GettextCatalog.GetString ("Select Font"));
+				string fontValue = FontService.FilterFontName (GetFont (fontName));
+				selectionDialog.SetFontName (fontValue);
+				selectionDialog.OkButton.Clicked += delegate {
+					fontValue = selectionDialog.FontName;
+					if (fontValue ==  FontService.FilterFontName (FontService.GetFont (fontName).FontDescription))
+						fontValue = FontService.GetFont (fontName).FontDescription;
+					SetFont (fontName, fontValue);
+					fontStore.SetValue (iter, colValue, selectionDialog.FontName);
+				};
+				MessageService.ShowCustomDialog (selectionDialog);
+				selectionDialog.Destroy ();
 			};
-  
+			
+			comboRenderer.EditingStarted += delegate(object o, EditingStartedArgs args) {
+				TreeIter iter;
+				if (!fontStore.GetIterFromString (out iter, args.Path))
+					return;
+				string fontName = (string)fontStore.GetValue (iter, colName);
+				string fontValue = GetFont (fontName);
+				comboBoxStore.Clear ();
+				if (fontValue != FontService.GetFont (fontName).FontDescription) 
+					comboBoxStore.AppendValues (fontValue);
+				
+				comboBoxStore.AppendValues (GettextCatalog.GetString ("Default"));
+				comboBoxStore.AppendValues (GettextCatalog.GetString ("Edit..."));
+			};
+			
 			var fontCol = new TreeViewColumn ();
+			fontCol.Title = GettextCatalog.GetString ("Font");
 			
 			comboRenderer.HasEntry = false;
 			comboRenderer.Mode = CellRendererMode.Activatable;
 			comboRenderer.TextColumn = 0;
 			comboRenderer.Editable = true;
 			fontCol.PackStart (comboRenderer, true);
-			
 			fontCol.SetCellDataFunc (comboRenderer, delegate (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter) {
 				string fontValue = (string)fontStore.GetValue (iter, colValue);
 				string fontName = (string)fontStore.GetValue (iter, colName);
 				var d = FontService.GetFont (fontName);
-				comboBoxStore.Clear ();
-				if (d == null || d.FontDescription != fontValue)
-					comboBoxStore.AppendValues (fontValue);
-				comboBoxStore.AppendValues (GettextCatalog.GetString ("Default"));
-				comboBoxStore.AppendValues (GettextCatalog.GetString ("Edit..."));
+				if (d == null || d.FontDescription != fontValue) {
+					comboRenderer.Text = fontValue;
+				} else {
+					comboRenderer.Text = GettextCatalog.GetString ("Default");
+				}
 			});
 			
 			treeviewFonts.AppendColumn (fontCol);
@@ -99,12 +137,15 @@ namespace MonoDevelop.Ide.Fonts
 		public void LoadFonts ()
 		{
 			foreach (var desc in FontService.FontDescriptions) {
-				fontStore.AppendValues (GettextCatalog.GetString (desc.DisplayName), FontService.GetFontDescriptionName (desc.Name), desc.Name);
+				fontStore.AppendValues (GettextCatalog.GetString (desc.DisplayName), FontService.GetUnderlyingFontName (desc.Name), desc.Name);
 			}
 		}
 		
 		public void Store ()
 		{
+			foreach (var val in customFonts) {
+				FontService.SetFont (val.Key, val.Value);
+			}
 		}
 	}
 }
