@@ -73,6 +73,14 @@ namespace MonoDevelop.Ide.Fonts
 		{
 			if (name == "_DEFAULT_MONOSPACE")
 				return DesktopService.DefaultMonospaceFont;
+			if (name == "_DEFAULT_SANS") {
+				var label = new Gtk.Label ("");
+				string result = label.Style.FontDescription.Family + " " + ((int)label.Style.FontDesc.Size / Pango.Scale.PangoScale);
+				label.Destroy ();
+				Console.WriteLine (result);
+				return result;
+			}
+			
 			return name;
 		}
 		
