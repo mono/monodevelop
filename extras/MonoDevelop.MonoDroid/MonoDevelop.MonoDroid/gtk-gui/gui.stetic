@@ -746,23 +746,6 @@ have not been found automatically, you must specify the locations below.</proper
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
                 <child>
-                  <widget class="Gtk.Button" id="refreshButton">
-                    <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="Type">TextAndIcon</property>
-                    <property name="Icon">stock:gtk-refresh Menu</property>
-                    <property name="Label" translatable="yes">_Refresh List</property>
-                    <property name="UseUnderline">True</property>
-                    <property name="Relief">None</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">0</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-                <child>
                   <widget class="Gtk.Button" id="startEmulatorButton">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
@@ -773,7 +756,7 @@ have not been found automatically, you must specify the locations below.</proper
                     <property name="Relief">None</property>
                   </widget>
                   <packing>
-                    <property name="Position">1</property>
+                    <property name="Position">0</property>
                     <property name="AutoSize">True</property>
                     <property name="Expand">False</property>
                     <property name="Fill">False</property>
@@ -790,7 +773,7 @@ have not been found automatically, you must specify the locations below.</proper
                     <property name="Relief">None</property>
                   </widget>
                   <packing>
-                    <property name="Position">2</property>
+                    <property name="Position">1</property>
                     <property name="AutoSize">True</property>
                     <property name="Expand">False</property>
                     <property name="Fill">False</property>
@@ -802,6 +785,19 @@ have not been found automatically, you must specify the locations below.</proper
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Alignment" id="statusPlaceholder">
+                <property name="MemberName" />
+                <child>
+                  <placeholder />
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">3</property>
+                <property name="AutoSize">False</property>
+                <property name="Expand">False</property>
               </packing>
             </child>
           </widget>
