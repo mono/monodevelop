@@ -93,6 +93,7 @@
     <Compile Include="Adb\AndroidToolbox.cs" />
     <Compile Include="Gui\DeviceChooserDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.MonoDroid.Gui.DeviceChooserDialog.cs" />
+    <Compile Include="Adb\DeviceManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MonoDroid.addin.xml">
@@ -106,6 +107,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="banner.png">
       <LogicalName>banner.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="spinner-big.gif">
+      <LogicalName>spinner-big.gif</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

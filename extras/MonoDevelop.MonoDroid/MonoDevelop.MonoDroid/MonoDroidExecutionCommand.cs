@@ -43,15 +43,21 @@ namespace MonoDevelop.MonoDroid
 			this.Runtime = runtime;
 			this.Framework = framework;
 			this.DebugMode = debugMode;
+			
+			DebugPort = MonoDroidSettings.DebuggerPort;
+			OutputPort = MonoDroidSettings.DebuggerOutputPort;
 		}
 		
 		public string ApkPath { get; private set; }
+		public string Activity { get; set; }
 		public FilePath PackageName { get; private set; }
 		public AndroidDevice Device { get; set; }
 		public TargetRuntime Runtime { get; private set; }
 		public TargetFramework Framework { get; private set; }
 		public IList<string> UserAssemblyPaths { get; set; }
 		public bool DebugMode { get; private set; }
+		public int DebugPort { get; private set; }
+		public int OutputPort { get; private set; }
 		
 		public override string CommandString {
 			get { return "[monodroid]"; }

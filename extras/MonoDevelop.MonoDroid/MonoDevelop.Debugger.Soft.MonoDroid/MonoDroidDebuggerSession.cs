@@ -36,6 +36,7 @@ using MonoDevelop.Core;
 using System.Net.Sockets;
 using System.Net;
 using System.Text;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Debugger.Soft.MonoDroid
 {
@@ -43,15 +44,36 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 
 	public class MonoDroidDebuggerSession : RemoteSoftDebuggerSession
 	{
+		IProcessAsyncOperation process;
+		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
 			var dsi = (MonoDroidDebuggerStartInfo) startInfo;
 			var cmd = dsi.ExecutionCommand;
 			
-			//start app
-			throw new NotImplementedException ();
+			string monoOptions = string.Format ("debug={0}:{1}:{2}", dsi.Address, dsi.DebugPort, dsi.OutputPort);
+			process = MonoDroidFramework.Toolbox.StartActivity (cmd.Device, cmd.Activity, monoOptions,
+				ProcessOutput, ProcessError);
+			
+			process.Completed += delegate {
+				process = null;
+			};
+			
+			TargetExited += delegate {
+				EndProcess ();
+			};
 			
 			StartListening (dsi);
+		}
+		
+		void ProcessOutput (object sender, string message)
+		{
+			OnTargetOutput (true, message);
+		}
+		
+		void ProcessError (object sender, string message)
+		{
+			OnTargetOutput (false, message);
 		}
 		
 		protected override string GetListenMessage (RemoteDebuggerStartInfo dsi)
@@ -60,14 +82,37 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 			string message = GettextCatalog.GetString ("Waiting for debugger to connect on {0}:{1}...", dsi.Address, dsi.DebugPort);
 			return message;
 		}
+		
+		protected override void EndSession ()
+		{
+			base.EndSession ();
+			EndProcess ();
+		}
+		
+		void EndProcess ()
+		{
+			if (process == null)
+				return;
+			if (!process.IsCompleted) {
+				try {
+					process.Cancel ();
+				} catch {}
+			}
+		}
+		
+		protected override void OnExit ()
+		{
+			base.OnExit ();
+			EndProcess ();
+		}
 	}
 	
 	class MonoDroidDebuggerStartInfo : RemoteDebuggerStartInfo
 	{
 		public MonoDroidExecutionCommand ExecutionCommand { get; private set; }
 		
-		public MonoDroidDebuggerStartInfo (IPAddress address, int debugPort, int outputPort, MonoDroidExecutionCommand cmd)
-			: base (cmd.PackageName, address, debugPort, outputPort)
+		public MonoDroidDebuggerStartInfo (IPAddress address, MonoDroidExecutionCommand cmd)
+			: base (cmd.PackageName, address, cmd.DebugPort, cmd.OutputPort)
 		{
 			ExecutionCommand = cmd;
 		}

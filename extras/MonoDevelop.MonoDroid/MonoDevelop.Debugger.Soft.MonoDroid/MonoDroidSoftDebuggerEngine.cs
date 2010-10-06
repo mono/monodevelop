@@ -50,9 +50,7 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 		{
 			var cmd = (MonoDroidExecutionCommand) command;
 			
-			var startInfo = new MonoDroidDebuggerStartInfo (MonoDroidSettings.GetDebuggerHostIP (false),
-								     MonoDroidSettings.DebuggerPort,
-								     MonoDroidSettings.DebuggerOutputPort, cmd);
+			var startInfo = new MonoDroidDebuggerStartInfo (MonoDroidSettings.GetDebuggerHostIP (false), cmd);
 			startInfo.SetUserAssemblies (cmd.UserAssemblyPaths);
 			return startInfo;
 		}

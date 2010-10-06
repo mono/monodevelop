@@ -38,6 +38,7 @@ using System.Reflection;
 using System.Text;
 using System.Linq;
 using System.Xml.Linq;
+using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.MonoDroid
 {
@@ -199,8 +200,24 @@ namespace MonoDevelop.MonoDroid
 			return "AndroidDevice-" + conf.Id;
 		}
 		
+		bool HackGetUserAssemblyPaths = false;
+		
+		//HACK: base.GetUserAssemblyPaths depends on GetOutputFileName being an assembly
+		new IList<string> GetUserAssemblyPaths (ConfigurationSelector configuration)
+		{
+			try {
+				HackGetUserAssemblyPaths = true;
+				return base.GetUserAssemblyPaths (configuration);
+			} finally {
+				HackGetUserAssemblyPaths = false;
+			}
+		}
+		
 		public override FilePath GetOutputFileName (ConfigurationSelector configuration)
 		{
+			if (HackGetUserAssemblyPaths)
+				return base.GetOutputFileName (configuration);
+			
 			var cfg = GetConfiguration (configuration);
 			if (cfg == null)
 				return FilePath.Null;
@@ -285,16 +302,41 @@ namespace MonoDevelop.MonoDroid
 		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configSel)
 		{
 			var conf = (MonoDroidProjectConfiguration) GetConfiguration (configSel);
-			
 			var toolbox = MonoDroidFramework.Toolbox;
+			
+			if (OnGetNeedsBuilding (configSel)) {
+				monitor.ReportError ("MonoDroid projects must be built before executing", null);
+				return;
+			}
+			
+			var manifestFile = BaseDirectory.Combine ("obj").Combine (conf.Name)
+				.Combine ("android").Combine ("AndroidManifest.xml");
+			if (!File.Exists (manifestFile)) {
+				monitor.ReportError ("Intermediate manifest file is missing", null);
+				return;
+			}
+			
+			var manifest = AndroidAppManifest.Load (manifestFile);
+			var activity = manifest.GetLaunchableActivityName ();
+			if (string.IsNullOrEmpty (activity)) {
+				monitor.ReportError ("Application does not contain a launchable activity", null);
+				return;
+			}
+			activity = manifest.PackageName + "/" + activity;
 			
 			AndroidDevice device = InvokeSynch (GetDevice);
 			if (device == null)
 				return;
 			
-			var opMon = new AggregatedOperationMonitor (monitor);
+			var parentMonitor = monitor;
+			monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
+				GettextCatalog.GetString ("Deploy to Device"), MonoDevelop.Ide.Gui.Stock.RunProgramIcon, true, true);
+			
+			var opMon = new AggregatedOperationMonitor (parentMonitor);
 			try {
-				var command = CreateExecutionCommand (configSel, conf);
+				var command = (MonoDroidExecutionCommand) CreateExecutionCommand (configSel, conf);
+				command.Device = device;
+				command.Activity = activity;
 				
 				monitor.BeginTask ("Starting adb server", 0);
 				using (var ensureServerOp = toolbox.EnsureServerRunning (monitor.Log, monitor.Log)) {
@@ -306,7 +348,7 @@ namespace MonoDevelop.MonoDroid
 				}
 				monitor.EndTask ();
 				
-				if (monitor.IsCancelRequested)
+				if (parentMonitor.IsCancelRequested)
 					return;
 				
 				monitor.BeginTask ("Waiting for device", 0);
@@ -319,7 +361,7 @@ namespace MonoDevelop.MonoDroid
 				}
 				monitor.EndTask ();
 				
-				if (monitor.IsCancelRequested)
+				if (parentMonitor.IsCancelRequested)
 					return;
 				
 				monitor.BeginTask ("Getting package list from device", 0);
@@ -335,12 +377,17 @@ namespace MonoDevelop.MonoDroid
 					monitor.EndTask ();
 				}
 				
-				if (monitor.IsCancelRequested)
+				if (parentMonitor.IsCancelRequested)
 					return;
 				
 				if (!toolbox.IsSharedRuntimeInstalled (packages)) {
 					monitor.BeginTask ("Installing shared runtime package on device", 0);
 					var pkg = MonoDroidFramework.SharedRuntimePackage;
+					if (!File.Exists (pkg)) {
+						monitor.ReportError ("Could not find shared runtime package file", null);
+						LoggingService.LogError ("Could not find MonoDroid shared runtime package '{0}'", pkg);
+						return;
+					}
 					using (var installRuntimeOp = toolbox.Install (device, pkg, monitor.Log, monitor.Log)) {
 						opMon.AddOperation (installRuntimeOp);
 						installRuntimeOp.WaitForCompleted ();
@@ -351,7 +398,7 @@ namespace MonoDevelop.MonoDroid
 						monitor.EndTask ();
 					}
 					
-					if (monitor.IsCancelRequested)
+					if (parentMonitor.IsCancelRequested)
 						return;
 				}
 				
@@ -362,15 +409,37 @@ namespace MonoDevelop.MonoDroid
 					var signResults = OnRunTarget (monitor, "SignAndroidPackage", configSel);
 					if (signResults.ErrorCount > 0) {
 						monitor.ReportError ("Signing failed", null);
+						TaskService.Errors.Clear ();
+						foreach (var err in signResults.Errors)
+							TaskService.Errors.Add (new Task (
+									err.FileName, err.ErrorText, err.Column, err.Line,
+								err.IsWarning? TaskSeverity.Warning : TaskSeverity.Error));
+						TaskService.ShowErrors ();
 						return;
 					}
 					monitor.EndTask ();
 					
-					if (monitor.IsCancelRequested)
+					if (parentMonitor.IsCancelRequested)
 						return;
 				}
 				
 				//TODO: use per-device flag file and installed packages list to skip re-installing unchanged packages
+				
+				if (packages.Contains ("package:" + conf.PackageName)) {
+					monitor.BeginTask ("Uninstalling old version of package", 0);
+					using (var uninstallOp = toolbox.Uninstall (device, conf.PackageName, monitor.Log, monitor.Log)) {
+						opMon.AddOperation (uninstallOp);
+						uninstallOp.WaitForCompleted ();
+						if (!uninstallOp.Success) {
+							monitor.ReportError ("Failed to install package", null);
+							return;
+						}
+						monitor.EndTask ();
+					}
+					
+					if (parentMonitor.IsCancelRequested)
+						return;
+				}
 				
 				monitor.BeginTask ("Installing package", 0);
 				using (var installOp = toolbox.Install (device, conf.ApkSignedPath, monitor.Log, monitor.Log)) {
@@ -383,7 +452,7 @@ namespace MonoDevelop.MonoDroid
 					monitor.EndTask ();
 				}
 				
-				if (monitor.IsCancelRequested)
+				if (parentMonitor.IsCancelRequested)
 					return;
 				
 				using (var console = context.ConsoleFactory.CreateConsole (false)) {
@@ -393,6 +462,7 @@ namespace MonoDevelop.MonoDroid
 				}
 			} finally {
 				opMon.Dispose ();
+				monitor.Dispose ();
 			}
 		}
 		
