@@ -114,6 +114,19 @@ namespace MonoDevelop.MonoDroid
 			return Runtime.ProcessService.StartProcess (psi, outputLog, outputLog, null);
 		}
 		
+		ProcessWrapper StartProcess (string name, string args, ProcessEventHandler outputLog, ProcessEventHandler errorLog)
+		{
+			var psi = new ProcessStartInfo (name, args) {
+				UseShellExecute = false,
+			};
+			if (outputLog != null)
+				psi.RedirectStandardOutput = true;
+			if (errorLog != null)
+				psi.RedirectStandardError = true;
+			psi.EnvironmentVariables["PATH"] = pathOverride;
+			return Runtime.ProcessService.StartProcess (psi, outputLog, outputLog, null);
+		}
+		
 		public IProcessAsyncOperation EnsureServerRunning (TextWriter outputLog, TextWriter errorLog)
 		{
 			return StartProcess (AdbExe, "start-server", outputLog, errorLog);
@@ -134,7 +147,7 @@ namespace MonoDevelop.MonoDroid
 		public StartAvdOperation StartAvd (AndroidVirtualDevice avd)
 		{
 			var error = new StringWriter ();
-			string args = string.Format ("partition-size 512 -avd '{0}'", avd.Name);
+			string args = string.Format ("-partition-size 512 -avd '{0}'", avd.Name);
 			var process = StartProcess (EmulatorExe, args, null, error);
 			return new StartAvdOperation (process, error);
 		}
@@ -173,13 +186,25 @@ namespace MonoDevelop.MonoDroid
 
 		public IProcessAsyncOperation Uninstall (AndroidDevice device, string package, TextWriter outputLog, TextWriter errorLog)
 		{
-			var args = string.Format ("-s '{0}' uninstall '{1}", device.ID, package);
+			var args = string.Format ("-s '{0}' uninstall '{1}'", device.ID, package);
 			return StartProcess (AdbExe, args, outputLog, errorLog);
 		}
 		
 		//monoRuntimeArgs: debug={0}:{1}:{2}", DebuggerHost, SdbPort, StdoutPort
 		public IProcessAsyncOperation StartActivity (AndroidDevice device, string activity, string monoRuntimeArgs,
 			TextWriter outputLog, TextWriter errorLog)
+		{
+			var args = string.Format ("-s '{0}' shell am start -a android.intent.action.MAIN -n '{1}'",
+				device.ID, activity);
+			
+			if (!string.IsNullOrEmpty (monoRuntimeArgs)) {
+				args = args + " -e mono:runtime-args " + monoRuntimeArgs;
+			}
+			return StartProcess (AdbExe, args, outputLog, errorLog);
+		}
+		
+		public IProcessAsyncOperation StartActivity (AndroidDevice device, string activity, string monoRuntimeArgs,
+			ProcessEventHandler outputLog, ProcessEventHandler errorLog)
 		{
 			var args = string.Format ("-s '{0}' shell am start -a android.intent.action.MAIN -n '{1}'",
 				device.ID, activity);
@@ -314,7 +339,7 @@ namespace MonoDevelop.MonoDroid
 			protected override List<AndroidDevice> Parse (string output)
 			{
 				var devices = new List<AndroidDevice> ();
-			
+				
 				using (var sr = new StringReader (output)) {
 					string s;
 		
@@ -388,6 +413,25 @@ namespace MonoDevelop.MonoDroid
 		{
 			return string.Format ("Device: {0} [{1}]", ID, State);
 		}
+		
+		public override bool Equals (object obj)
+		{
+			if (obj == null)
+				return false;
+			if (ReferenceEquals (this, obj))
+				return true;
+			var other = obj as MonoDevelop.MonoDroid.AndroidDevice;
+			return other != null && ID == other.ID && State == other.State && IsEmulator == other.IsEmulator;
+		}
+		
+		public override int GetHashCode ()
+		{
+			unchecked {
+				return (ID != null ? ID.GetHashCode () : 0) 
+					^ (State != null ? State.GetHashCode () : 0)
+					^ IsEmulator.GetHashCode ();
+			}
+		}
 	}
 	
 	public class AndroidVirtualDevice
@@ -409,6 +453,50 @@ namespace MonoDevelop.MonoDroid
 		public override string ToString ()
 		{
 			return string.Format ("Virtual Device: {0} - {2} [{1}]", Name, Path, Target);
+		}
+		
+		public override bool Equals (object obj)
+		{
+			if (obj == null)
+				return false;
+			if (ReferenceEquals (this, obj))
+				return true;
+			var other = obj as MonoDevelop.MonoDroid.AndroidVirtualDevice;
+			return other != null && DictEqual (Properties, other.Properties);
+		}
+		
+		internal static bool DictEqual<K,V> (Dictionary<K,V> a, Dictionary<K,V> b)
+		{
+			if (a == null && b == null)
+				return true;
+			if (a == null || b == null)
+				return false;
+			if (a.Count != b.Count)
+				return false;
+			foreach (var kv in a) {
+				V otherVal;
+				if (!b.TryGetValue (kv.Key, out otherVal) || !object.Equals (otherVal, kv.Value))
+					return false;
+			}
+			return true;
+		}
+		
+		static int GetStringDictHash (Dictionary<string, string> a)
+		{
+			int val = 0;
+			if (a != null) {
+				foreach (var kvp in a) {
+					unchecked {
+						val = val ^ kvp.Key.GetHashCode () ^ (kvp.Value == null? 0 : kvp.Value.GetHashCode ());
+					}
+				}
+			}
+			return val;
+		}
+	
+		public override int GetHashCode ()
+		{
+			return GetStringDictHash (Properties);
 		}
 	}
 	
