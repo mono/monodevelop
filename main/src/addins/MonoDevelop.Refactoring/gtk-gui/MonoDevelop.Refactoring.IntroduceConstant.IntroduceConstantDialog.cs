@@ -5,27 +5,16 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 	public partial class IntroduceConstantDialog
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Table table1;
-
 		private global::Gtk.ComboBox comboboxModifiers;
-
 		private global::Gtk.Entry entry;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.Label labelNewName;
-
 		private global::Gtk.HBox hbox3;
-
 		private global::Gtk.Image imageWarning;
-
 		private global::Gtk.Label labelWarning;
-
 		private global::Gtk.Button buttonCancel;
-
 		private global::Gtk.Button buttonPreview;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -54,7 +43,7 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			this.comboboxModifiers = global::Gtk.ComboBox.NewText ();
 			this.comboboxModifiers.Name = "comboboxModifiers";
 			this.table1.Add (this.comboboxModifiers);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1[this.comboboxModifiers]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.comboboxModifiers]));
 			w2.TopAttach = ((uint)(1));
 			w2.BottomAttach = ((uint)(2));
 			w2.LeftAttach = ((uint)(1));
@@ -68,18 +57,18 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			this.entry.IsEditable = true;
 			this.entry.InvisibleChar = '●';
 			this.table1.Add (this.entry);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1[this.entry]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.entry]));
 			w3.LeftAttach = ((uint)(1));
 			w3.RightAttach = ((uint)(2));
 			w3.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("_Access modifier:");
 			this.label1.UseUnderline = true;
 			this.table1.Add (this.label1);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1[this.label1]));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.label1]));
 			w4.TopAttach = ((uint)(1));
 			w4.BottomAttach = ((uint)(2));
 			w4.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -87,15 +76,15 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			// Container child table1.Gtk.Table+TableChild
 			this.labelNewName = new global::Gtk.Label ();
 			this.labelNewName.Name = "labelNewName";
-			this.labelNewName.Xalign = 0f;
+			this.labelNewName.Xalign = 0F;
 			this.labelNewName.LabelProp = global::Mono.Unix.Catalog.GetString ("_Constant name:");
 			this.labelNewName.UseUnderline = true;
 			this.table1.Add (this.labelNewName);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1[this.labelNewName]));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelNewName]));
 			w5.XOptions = ((global::Gtk.AttachOptions)(4));
 			w5.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox2.Add (this.table1);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.table1]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.table1]));
 			w6.Position = 0;
 			w6.Expand = false;
 			w6.Fill = false;
@@ -108,7 +97,7 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			this.imageWarning.Name = "imageWarning";
 			this.imageWarning.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-apply", global::Gtk.IconSize.Button);
 			this.hbox3.Add (this.imageWarning);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.imageWarning]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.imageWarning]));
 			w7.Position = 0;
 			w7.Expand = false;
 			w7.Fill = false;
@@ -116,17 +105,17 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			this.labelWarning = new global::Gtk.Label ();
 			this.labelWarning.Name = "labelWarning";
 			this.hbox3.Add (this.labelWarning);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.labelWarning]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.labelWarning]));
 			w8.Position = 1;
 			w8.Expand = false;
 			w8.Fill = false;
 			this.vbox2.Add (this.hbox3);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox3]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox3]));
 			w9.Position = 1;
 			w9.Expand = false;
 			w9.Fill = false;
 			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(w1[this.vbox2]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
 			w10.Position = 0;
 			w10.Expand = false;
 			w10.Fill = false;
@@ -145,7 +134,7 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w11[this.buttonCancel]));
+			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w11 [this.buttonCancel]));
 			w12.Expand = false;
 			w12.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -155,7 +144,7 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			this.buttonPreview.UseUnderline = true;
 			this.buttonPreview.Label = global::Mono.Unix.Catalog.GetString ("_Preview");
 			this.AddActionWidget (this.buttonPreview, 0);
-			global::Gtk.ButtonBox.ButtonBoxChild w13 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w11[this.buttonPreview]));
+			global::Gtk.ButtonBox.ButtonBoxChild w13 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w11 [this.buttonPreview]));
 			w13.Position = 1;
 			w13.Expand = false;
 			w13.Fill = false;
@@ -168,7 +157,7 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w14 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w11[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w14 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w11 [this.buttonOk]));
 			w14.Position = 2;
 			w14.Expand = false;
 			w14.Fill = false;
