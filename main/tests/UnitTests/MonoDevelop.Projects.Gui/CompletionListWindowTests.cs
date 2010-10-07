@@ -440,9 +440,6 @@ namespace MonoDevelop.Projects.Gui
 			string output = RunSimulation ("", "/\n", true, false, false, punctuationData);
 			Assert.AreEqual ("/AbAb", output);
 			
-			output = RunSimulation ("", ".\n", true, false, false, punctuationData);
-			Assert.AreEqual (",A.bAb", output);
-			
 			output = RunSimulation ("", "A\n", true, false, false, punctuationData);
 			Assert.AreEqual ("AbAb", output);
 			
