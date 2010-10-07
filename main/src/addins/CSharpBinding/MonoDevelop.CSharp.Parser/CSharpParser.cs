@@ -1718,7 +1718,19 @@ namespace MonoDevelop.CSharp.Parser
 				var commaLocations = LocationsBag.GetLocations (args);
 				
 				for (int i = 0; i < args.Count; i++) {
-					parent.AddChild ((INode)args[i].Expr.Accept (this), InvocationExpression.Roles.Argument);
+					Argument arg = args[i];
+					if (arg.ArgType == Argument.AType.Out || arg.ArgType == Argument.AType.Ref) {
+						DirectionExpression direction = new DirectionExpression ();
+						direction.FieldDirection = arg.ArgType == Argument.AType.Out ? FieldDirection.Out : FieldDirection.Ref;
+						var argLocation = LocationsBag.GetLocations (arg);
+						if (location != null)
+							direction.AddChild (new CSharpTokenNode (Convert (argLocation[0]), "123".Length), InvocationExpression.Roles.Keyword);
+						direction.AddChild ((INode)arg.Expr.Accept (this), InvocationExpression.Roles.Expression);
+						
+						parent.AddChild (direction, InvocationExpression.Roles.Argument);
+					} else {
+						parent.AddChild ((INode)arg.Expr.Accept (this), InvocationExpression.Roles.Argument);
+					}
 					if (commaLocations != null && i > 0) {
 						int idx = commaLocations.Count - i;
 						if (idx >= 0)

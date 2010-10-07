@@ -80,7 +80,8 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 				var memberReference = (MemberReferenceExpression)target.Parent;
 				target = (ICSharpNode)memberReference.Target;
 				var targetResult = options.GetResolver ().Resolve (new ExpressionResult (data.GetTextBetween (target.StartLocation.Line, target.StartLocation.Column, target.EndLocation.Line, target.EndLocation.Column)), resolvePosition);
-				modifiers = MonoDevelop.Projects.Dom.Modifiers.Static;
+				if (targetResult.StaticResolve)
+					modifiers = MonoDevelop.Projects.Dom.Modifiers.Static;
 				declaringType = options.Dom.GetType (targetResult.ResolvedType);
 				methodName = memberReference.Identifier.Name;
 			} else if (target is Identifier) {
@@ -341,10 +342,18 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			DomMethod result = new DomMethod (methodName, modifiers, MethodModifier.None, DomLocation.Empty, DomRegion.Empty, returnType);
 			result.DeclaringType = new DomType ("GeneratedType") { ClassType = declaringType.ClassType };
 			int i = 1;
-			foreach (ICSharpNode argument in invocation.Arguments) {
+			foreach (ICSharpNode curArg in invocation.Arguments) {
+				ICSharpNode argument = curArg;
 				DomParameter arg = new DomParameter ();
+				if (argument is DirectionExpression) {
+					var de = (DirectionExpression)argument;
+					arg.ParameterModifiers = de.FieldDirection == FieldDirection.Out ? ParameterModifiers.Out : ParameterModifiers.Ref; 
+					argument = de.Expression;
+				}
+				
 				string argExpression = data.GetTextBetween (argument.StartLocation.Line, argument.StartLocation.Column, argument.EndLocation.Line, argument.EndLocation.Column);
 				var resolveResult = resolver.Resolve (new ExpressionResult (argExpression), resolvePosition);
+				
 				if (argument is MemberReferenceExpression) {
 					arg.Name = ((MemberReferenceExpression)argument).Identifier.Name;
 				} else if (argument is IdentifierExpression) {

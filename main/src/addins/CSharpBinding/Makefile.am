@@ -62,6 +62,7 @@ FILES =  \
 	MonoDevelop.CSharp.Dom/Expressions/CheckedExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/ConditionalExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/DefaultValueExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/DirectionExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/IdentifierExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/IndexerExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/InvocationExpression.cs \

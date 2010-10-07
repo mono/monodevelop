@@ -363,6 +363,7 @@
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Formatting.CSharpFormattingProfileDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\FormattingProfileService.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\ComposedType.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\DirectionExpression.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

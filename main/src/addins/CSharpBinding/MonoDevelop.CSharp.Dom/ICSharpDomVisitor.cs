@@ -106,6 +106,7 @@ namespace MonoDevelop.CSharp.Dom
 		S VisitIdentifierExpression (IdentifierExpression identifierExpression, T data);
 		S VisitIndexerExpression (IndexerExpression indexerExpression, T data);
 		S VisitInvocationExpression (InvocationExpression invocationExpression, T data);
+		S VisitDirectionExpression (DirectionExpression directionExpression, T data);
 		S VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression, T data);
 		S VisitNullReferenceExpression (NullReferenceExpression nullReferenceExpression, T data);
 		S VisitObjectCreateExpression (ObjectCreateExpression objectCreateExpression, T data);

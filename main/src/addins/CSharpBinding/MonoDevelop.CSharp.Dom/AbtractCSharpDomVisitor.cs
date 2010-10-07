@@ -358,6 +358,11 @@ namespace MonoDevelop.CSharp.Dom
 			return VisitChildren (invocationExpression, data);
 		}
 		
+		public virtual S VisitDirectionExpression (DirectionExpression directionExpression, T data)
+		{
+			return VisitChildren (directionExpression, data);
+		}
+		
 		public virtual S VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression, T data) 
 		{
 			return VisitChildren (memberReferenceExpression, data);
