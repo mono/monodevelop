@@ -283,6 +283,28 @@ class TestClass
 ", true);
 		}
 		
+			[Test()]
+		public void TestCreateInStaticClassMethod ()
+		{
+			TestCreateMethod (
+@"
+static class FooBar
+{
+}
+
+class TestClass
+{
+	void TestMethod ()
+	{
+		FooBar.$NonExistantMethod ();
+	}
+}
+", @"public static void NonExistantMethod ()
+{
+	throw new System.NotImplementedException ();
+}");
+		}
+		
 		
 	}
 	
