@@ -72,7 +72,7 @@ namespace Mono.TextEditor
 				if (offset < delimiter.Offset)
 					return i + 1;
 			}
-			return -1;
+			return delimiters.Count;
 		}
 
 		public void TextReplaced (object sender, ReplaceEventArgs args)
