@@ -426,12 +426,22 @@ namespace MonoDevelop.Ide.FindInFiles
 				return;
 			var textRenderer = (CellRendererText)cell;
 			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
-			if (searchResult == null)
+			if (searchResult == null || searchResult.Offset < 0) {
+				textRenderer.Markup = "Invalid search result";
 				return;
+			}
 			
 			Document doc = GetDocument (searchResult);
+			if (doc == null) {
+				textRenderer.Markup = "Can't create document for:" + searchResult.FileName;
+				return;
+			}
 			int lineNr = doc.OffsetToLineNumber (searchResult.Offset);
 			LineSegment line = doc.GetLine (lineNr);
+			if (line == null) {
+				textRenderer.Markup = "Invalid line number " + lineNr + " from offset: " + searchResult.Offset;
+				return;
+			}
 			bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
 			int indent = line.GetIndentation (doc).Length;
 			string markup = doc.SyntaxMode != null ? 
