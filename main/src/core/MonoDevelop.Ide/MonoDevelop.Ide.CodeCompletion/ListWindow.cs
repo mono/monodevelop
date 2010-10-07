@@ -377,7 +377,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 				bool hasMismatches;
 				int match = FindMatchedEntry (CurrentPartialWord, out hasMismatches);
-				
+				if (match >= 0 && System.Char.IsPunctuation (keyChar)) {
+					string text = DataProvider.GetCompletionText (FilteredItems [match]);
+					if (!text.ToUpper ().StartsWith (word.ToString ().ToUpper ()))
+						match =-1;	 
+				}
 				if (match >= 0 && !hasMismatches && keyChar != '<') {
 					ResetSizes ();
 					UpdateWordSelection ();
