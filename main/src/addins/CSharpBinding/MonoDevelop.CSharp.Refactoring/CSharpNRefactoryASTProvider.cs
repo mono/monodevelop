@@ -108,8 +108,8 @@ namespace MonoDevelop.CSharp.Refactoring
 		}
 		static int GetNextTabstop (int currentColumn, int tabSize)
 		{
-			int result = currentColumn - 1 + tabSize;
-			return 1 + (result / tabSize) * tabSize;
+			int result = currentColumn + tabSize;
+			return (result / tabSize) * tabSize;
 		}
 		
 		public ICSharpCode.NRefactory.Parser.Errors LastErrors {
