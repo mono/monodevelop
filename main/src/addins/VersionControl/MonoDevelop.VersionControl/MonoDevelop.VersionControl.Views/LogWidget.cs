@@ -242,9 +242,23 @@ namespace MonoDevelop.VersionControl.Views
 				var rev = SelectedRevision;
 				ThreadPool.QueueUserWorkItem (delegate {
 					string text = info.Repository.GetTextAtRevision (path, rev);
-					string prevRevision = info.Repository.GetBaseText (path); // info.Repository.GetTextAtRevision (path, rev.GetPrevious ());
-					var originalDocument = new Mono.TextEditor.Document (prevRevision);
+					Revision prevRev = null;
+					try {
+						prevRev = rev.GetPrevious ();
+					} catch (Exception e) {
+						Application.Invoke (delegate {
+							LoggingService.LogError ("Error while getting previous revision", e);
+							MessageService.ShowException (e, "Error while getting previous revision");
+						});
+						return;
+					}
+					
+					string prevRevisionText = info.Repository.GetTextAtRevision (path, prevRev);
+					
+					var originalDocument = new Mono.TextEditor.Document (prevRevisionText);
+					originalDocument.FileName = "Revision " + prevRev.ToString ();
 					var changedDocument = new Mono.TextEditor.Document (text);
+					changedDocument.FileName = "Revision " + rev.ToString ();
 					string[] lines = Mono.TextEditor.Utils.Diff.GetDiffString (originalDocument, changedDocument).Split ('\n');
 					Application.Invoke (delegate {
 						changedpathstore.SetValue (iter, colDiff, lines);
