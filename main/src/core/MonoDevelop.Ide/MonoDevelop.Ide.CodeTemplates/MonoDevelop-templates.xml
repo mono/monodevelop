@@ -123,8 +123,11 @@ public sealed class $name$Attribute : $SystemAttribute$
 				<_ToolTip>Class name</_ToolTip>
 				<Function>GetCurrentClassName()</Function>
 			</Variable>
+			<Variable name="modifier" isEditable="false">
+				<Function>GetConstructorModifier()</Function>
+			</Variable>
 		</Variables>
-		<Code><![CDATA[public $classname$ ()
+		<Code><![CDATA[$modifier$$classname$ ()
 {
 	$end$
 }]]></Code>

@@ -97,6 +97,20 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return type.Name;
 		}
 		
+		public string GetConstructorModifier ()
+		{
+			Console.WriteLine (CurrentContext);
+			Console.WriteLine ("doc:" + CurrentContext.ParsedDocument);
+			if (CurrentContext.ParsedDocument == null)
+				return null;
+			IType type = CurrentContext.ParsedDocument.CompilationUnit.GetTypeAt (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column);
+			Console.WriteLine ("pos:" + CurrentContext.InsertPosition);
+			Console.WriteLine ("type:" + type);
+			if (type == null)
+				return "";
+			return type.IsStatic ? "static " : "public ";
+		}
+		
 		public string GetLengthProperty (Func<string, string> callback, string varName)
 		{
 			if (callback == null)
@@ -196,6 +210,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				return new string[] {
 					"",
 					"GetCurrentClassName()",
+					"GetConstructorModifier()",
 					"GetSimpleTypeName(\"LongName\")",
 					"GetLengthProperty(\"Var\")",
 					"GetComponentTypeOf(\"Var\")",
@@ -216,6 +231,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 				return GetCollections ();
 			case "GetCurrentClassName":
 				return new CodeTemplateListDataProvider (GetCurrentClassName ());
+			case "GetConstructorModifier":
+				return new CodeTemplateListDataProvider (GetConstructorModifier ());
+				
 			case "GetSimpleTypeName":
 				return new CodeTemplateListDataProvider (GetSimpleTypeName (match.Groups[2].Value.Trim ('"')));
 			case "GetLengthProperty":
