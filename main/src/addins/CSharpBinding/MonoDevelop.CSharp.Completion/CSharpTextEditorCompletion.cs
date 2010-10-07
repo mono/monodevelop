@@ -1385,9 +1385,9 @@ namespace MonoDevelop.CSharp.Completion
 					if (FullyQualify || !foundNamespace && (NamePrefix.Length == 0 || !rt.Namespace.StartsWith (NamePrefix)) && !rt.Namespace.EndsWith ("." + NamePrefix))
 						flags |= OutputFlags.UseFullName;
 					IType resolvedType = dom.GetType (rt);
-					if (inheritanceTree == null)
+					if (inheritanceTree == null && declaringType != null)
 						inheritanceTree = new List<IType>(dom.GetInheritanceTree (declaringType));
-					if (resolvedType != null && resolvedType.DeclaringType != null &&inheritanceTree.Any (t => resolvedType.DeclaringType.DecoratedFullName == t.DecoratedFullName)) {
+					if (resolvedType != null && resolvedType.DeclaringType != null && inheritanceTree != null && inheritanceTree.Any (t => resolvedType.DeclaringType.DecoratedFullName == t.DecoratedFullName)) {
 						return CompletionList.Add (rt.Name, "md-class");
 					}
 					string returnTypeString = ambience.GetString (rt, flags);
