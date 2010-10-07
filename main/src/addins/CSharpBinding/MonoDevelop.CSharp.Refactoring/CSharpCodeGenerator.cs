@@ -378,25 +378,23 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			static string GetModifiers (IType implementingType, IMember member)
 			{
-				if (member.IsPublic || member.DeclaringType.ClassType == ClassType.Interface) 
-					return "public ";
-				if (member.IsPrivate) 
-					return "";
-					
-				if (member.IsProtectedAndInternal) 
-					return "protected internal ";
-				if (member.IsProtectedOrInternal && implementingType.SourceProjectDom == member.DeclaringType.SourceProjectDom) 
-					return "internal protected ";
-				
-				if (member.IsProtected) 
-					return "protected ";
-				if (member.IsInternal) 
-					return "internal ";
+				StringBuilder result = new StringBuilder ();
+				if (member.IsPublic || member.DeclaringType.ClassType == ClassType.Interface) {
+					result.Append ("public ");
+				} else if (member.IsProtectedAndInternal) {
+					result.Append ("protected internal ");
+				} else if (member.IsProtectedOrInternal && implementingType.SourceProjectDom == member.DeclaringType.SourceProjectDom) {
+					result.Append ("internal protected ");
+				} else if (member.IsProtected) {
+					result.Append ("protected ");
+				} else if (member.IsInternal) {
+					result.Append ("internal ");
+				}
 					
 				if (member.IsStatic) 
-					return "static ";
+					result.Append ("static ");
 				
-				return "";
+				return result.ToString ();
 			}
 			
 			void AppendModifiers (StringBuilder result, CSharpCodeGenerator.CodeGenerationOptions options, IMember member)

@@ -80,6 +80,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 				var memberReference = (MemberReferenceExpression)target.Parent;
 				target = (ICSharpNode)memberReference.Target;
 				var targetResult = options.GetResolver ().Resolve (new ExpressionResult (data.GetTextBetween (target.StartLocation.Line, target.StartLocation.Column, target.EndLocation.Line, target.EndLocation.Column)), resolvePosition);
+				modifiers = MonoDevelop.Projects.Dom.Modifiers.Static;
 				declaringType = options.Dom.GetType (targetResult.ResolvedType);
 				methodName = memberReference.Identifier.Name;
 			} else if (target is Identifier) {
@@ -196,14 +197,16 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			if (isInInterface) {
 				modifiers = MonoDevelop.Projects.Dom.Modifiers.None;
 			} else {
+				bool isStatic = (modifiers & MonoDevelop.Projects.Dom.Modifiers.Static) != 0;
 				modifiers = options.ResolveResult.CallingMember.Modifiers;
 				if (declaringType.DecoratedFullName != options.ResolveResult.CallingType.DecoratedFullName) {
 					modifiers = MonoDevelop.Projects.Dom.Modifiers.Public;
 					if (options.ResolveResult.CallingMember.IsStatic)
-						modifiers |= MonoDevelop.Projects.Dom.Modifiers.Static;
+						isStatic = true;
 				}
+				if (isStatic)
+					modifiers |= MonoDevelop.Projects.Dom.Modifiers.Static;
 			}
-			
 			returnType = GuessReturnType (options);
 			
 			return true;
