@@ -269,8 +269,8 @@ namespace Mono.TextEditor
 						int endCol = System.Math.Max (visStart.Column, visEnd.Column);
 						for (int lineNr = selection.MinLine; lineNr <= selection.MaxLine; lineNr++) {
 							LineSegment curLine = data.Document.GetLine (lineNr);
-							int col1 = curLine.GetLogicalColumn (data, startCol);
-							int col2 = System.Math.Min (curLine.GetLogicalColumn (data, endCol), curLine.EditableLength);
+							int col1 = curLine.GetLogicalColumn (data, startCol) - 1;
+							int col2 = System.Math.Min (curLine.GetLogicalColumn (data, endCol) - 1, curLine.EditableLength);
 							if (col1 < col2) {
 								((IBuffer)copiedDocument).Insert (copiedDocument.Length, data.Document.GetTextAt (curLine.Offset + col1, col2 - col1));
 								((IBuffer)monoDocument).Insert (monoDocument.Length, data.Document.GetTextAt (curLine.Offset + col1, col2 - col1));

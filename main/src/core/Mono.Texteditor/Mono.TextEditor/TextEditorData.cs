@@ -626,8 +626,8 @@ namespace Mono.TextEditor
 				Caret.PreserveSelection = true;
 				for (int lineNr = selection.MinLine; lineNr <= selection.MaxLine; lineNr++) {
 					LineSegment curLine = Document.GetLine (lineNr);
-					int col1 = curLine.GetLogicalColumn (this, startCol);
-					int col2 = System.Math.Min (curLine.GetLogicalColumn (this, endCol), curLine.EditableLength);
+					int col1 = curLine.GetLogicalColumn (this, startCol) - 1;
+					int col2 = System.Math.Min (curLine.GetLogicalColumn (this, endCol) - 1, curLine.EditableLength);
 					if (col1 >= col2)
 						continue;
 					Remove (curLine.Offset + col1, col2 - col1);

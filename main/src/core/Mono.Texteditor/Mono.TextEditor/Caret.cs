@@ -99,7 +99,8 @@ namespace Mono.TextEditor
 			}
 			set {
 				int line   = TextEditorData.Document.OffsetToLineNumber (value);
-				int column = value - TextEditorData.Document.GetLine (line).Offset + 1;
+				var lineSegment = TextEditorData.Document.GetLine (line);
+				int column = lineSegment != null ? value - lineSegment.Offset + 1 : 1;
 				Location = new DocumentLocation (line, column);
 			}
 		}
