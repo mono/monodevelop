@@ -39,6 +39,16 @@ namespace MonoDevelop.CSharp.Formatting
 			set;
 		}
 		
+		public bool TabsToSpaces {
+			get;
+			set;
+		}
+		
+		public int TabSize {
+			get;
+			set;
+		}
+		
 		public Indent ()
 		{
 		}
@@ -61,13 +71,13 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public string IndentString {
 			get {
-				return new string ('\t', Level) + new string (' ', ExtraSpaces);
+				return (TabsToSpaces ? new string (' ', Level * TabSize) : new string ('\t', Level)) + new string (' ', ExtraSpaces);
 			}
 		}
 		
 		public string SingleIndent {
 			get {
-				return "\t";
+				return TabsToSpaces ? new string (' ', TabSize) : "\t";
 			}
 		}
 		

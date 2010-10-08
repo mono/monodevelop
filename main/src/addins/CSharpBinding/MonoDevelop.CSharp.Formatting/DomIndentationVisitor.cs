@@ -68,6 +68,8 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			this.policy = policy;
 			this.data = data;
+			this.curIndent.TabsToSpaces = this.data.Options.TabsToSpaces;
+			this.curIndent.TabSize = this.data.Options.TabSize;
 			AutoAcceptChanges = true;
 		}
 		
