@@ -97,7 +97,13 @@ namespace MonoDevelop.MonoDroid
 				if (packageName == null)
 					return null;
 				else
-					return OutputDirectory.Combine (packageName) + "-signed.apk";
+					return OutputDirectory.Combine (packageName) + "-Signed.apk";
+			}
+		}
+		
+		public FilePath ObjDir {
+			get {
+				return ParentItem.BaseDirectory.Combine ("obj", this.Name);
 			}
 		}
 		
