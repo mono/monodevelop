@@ -109,8 +109,8 @@
     <EmbeddedResource Include="banner.png">
       <LogicalName>banner.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="spinner-big.gif">
-      <LogicalName>spinner-big.gif</LogicalName>
+    <EmbeddedResource Include="spinner.gif">
+      <LogicalName>spinner.gif</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

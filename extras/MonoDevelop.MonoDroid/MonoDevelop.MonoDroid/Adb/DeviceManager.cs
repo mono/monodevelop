@@ -34,7 +34,6 @@ namespace MonoDevelop.MonoDroid
 {
 	public class DeviceManager
 	{
-		Dictionary<string,string> knownEmulators = new Dictionary<string, string> ();
 		EventHandler devicesUpdated;
 		List<AndroidToolbox.StartAvdOperation> emulatorHandles = new List<AndroidToolbox.StartAvdOperation> ();
 		

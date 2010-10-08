@@ -37,10 +37,6 @@ namespace MonoDevelop.MonoDroid.Gui
 	public partial class DeviceChooserDialog : Gtk.Dialog
 	{	
 		ListStore store = new ListStore (typeof (object));
-		StatusLabel status = new StatusLabel ();
-		
-		//we only allow use of emulators that were started from this MD instance
-		static Dictionary<string,string> runningEmulators = new Dictionary<string,string> ();
 		
 		public DeviceChooserDialog ()
 		{
@@ -259,7 +255,7 @@ namespace MonoDevelop.MonoDroid.Gui
 			this.PackStart (label, true, true, 0);
 			this.PackStart (cancelButton, false, false, 0);
 			this.PackStart (detailsButton, false, false, 0);
-			spinner = Gdk.PixbufAnimation.LoadFromResource ("spinner-big.gif");
+			spinner = Gdk.PixbufAnimation.LoadFromResource ("spinner.gif");
 			this.HeightRequest = spinner.Height;
 			label.Ellipsize = Pango.EllipsizeMode.End;
 			label.Xalign = 0;
