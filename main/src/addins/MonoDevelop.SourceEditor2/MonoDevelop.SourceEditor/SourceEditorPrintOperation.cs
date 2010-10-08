@@ -108,8 +108,7 @@ namespace MonoDevelop.SourceEditor
 			
 			//FIXME: use proper 1-layout-per-line
 			for (int i = startLine; i < endLine; i++) {
-				var line = doc.GetLine (i);
-				
+				var line = doc.GetLine (i + 1);
 				if (!settings.UseHighlighting) {
 					string text = doc.GetTextAt (line);
 					text = text.Replace ("\t", new string (' ', settings.TabSize));
