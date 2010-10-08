@@ -91,9 +91,20 @@ namespace MonoDevelop.MonoDroid
 		
 		protected override void Run ()
 		{
+			var configSel = IdeApp.Workspace.ActiveConfiguration;
 			var proj = GetActiveExecutableMonoDroidProject ();
 			
-			throw new NotImplementedException ();
+			OperationHandler upload = delegate {
+				using (var monitor = new MonoDevelop.Ide.ProgressMonitoring.MessageDialogProgressMonitor ()) {
+					AndroidDevice device;
+					MonoDroidUtility.SignAndUpload (monitor, proj, configSel, true, out device);
+				}
+			};
+			
+			if (proj.NeedsBuilding (configSel))
+				IdeApp.ProjectOperations.Build (proj).Completed += upload;
+			else
+				upload (null);
 		}
 		
 		public static MonoDroidProject GetActiveExecutableMonoDroidProject ()
@@ -104,7 +115,7 @@ namespace MonoDevelop.MonoDroid
 			var sln = IdeApp.ProjectOperations.CurrentSelectedSolution;
 			if (sln != null) {
 				proj = sln.StartupItem as MonoDroidProject;
-				if (proj == null && proj.IsAndroidApplication)
+				if (proj != null && proj.IsAndroidApplication)
 					return proj;
 			}
 			return null;

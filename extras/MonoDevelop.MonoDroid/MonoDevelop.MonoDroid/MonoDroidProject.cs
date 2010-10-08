@@ -271,45 +271,17 @@ namespace MonoDevelop.MonoDroid
 			return context.ExecutionHandler.CanExecute (cmd);
 		}
 		
-		AndroidDevice GetDevice ()
-		{
-			var dlg = new MonoDevelop.MonoDroid.Gui.DeviceChooserDialog ();
-			try {
-				var result = MessageService.ShowCustomDialog (dlg);
-				if (result != (int)Gtk.ResponseType.Ok)
-					return null;
-				return dlg.Device;
-			} finally {
-				dlg.Destroy ();
-			}
-		}
-		
-		T InvokeSynch<T> (Func<T> func)
-		{
-			if (DispatchService.IsGuiThread)
-				return func ();
-			
-			var ev = new System.Threading.AutoResetEvent (false);
-			T val = default (T);
-			Gtk.Application.Invoke (delegate {
-				val = func ();
-				ev.Set ();
-			});
-			System.Threading.WaitHandle.WaitAll (new[] { ev });
-			return val;
-		}
-		
 		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configSel)
 		{
 			var conf = (MonoDroidProjectConfiguration) GetConfiguration (configSel);
 			
-			if (OnGetNeedsBuilding (configSel)) {
-				monitor.ReportError ("MonoDroid projects must be built before executing", null);
+			if (NeedsBuilding (configSel)) {
+				monitor.ReportError (
+					GettextCatalog.GetString ("MonoDroid projects must be built before uploading"), null);
 				return;
 			}
 			
-			var manifestFile = BaseDirectory.Combine ("obj").Combine (conf.Name)
-				.Combine ("android").Combine ("AndroidManifest.xml");
+			var manifestFile = conf.ObjDir.Combine ("android", "AndroidManifest.xml");
 			if (!File.Exists (manifestFile)) {
 				monitor.ReportError ("Intermediate manifest file is missing", null);
 				return;
@@ -324,19 +296,9 @@ namespace MonoDevelop.MonoDroid
 			activity = manifest.PackageName + "/" + activity;
 			
 			var opMon = new AggregatedOperationMonitor (monitor);
-			try {
-				IAsyncOperation signOp = null;
-				
-				if (PackageNeedsSigning (conf)) {
-					signOp = SignPackage (configSel);
-					opMon.AddOperation (signOp);
-				}
-				
-				AndroidDevice device = InvokeSynch (GetDevice);
-				if (device == null)
-					return;
-				
-				var uploadOp = MonoDroidUtility.Upload (device, conf.ApkSignedPath, conf.PackageName, signOp);
+			try {				
+				AndroidDevice device;
+				var uploadOp = MonoDroidUtility.SignAndUpload (monitor, this, configSel, false, out device);
 				opMon.AddOperation (uploadOp);
 				uploadOp.WaitForCompleted ();
 				if (!uploadOp.Success)
@@ -356,7 +318,7 @@ namespace MonoDevelop.MonoDroid
 			}
 		}
 		
-		bool PackageNeedsSigning (MonoDroidProjectConfiguration conf)
+		public bool PackageNeedsSigning (MonoDroidProjectConfiguration conf)
 		{
 			return !File.Exists (conf.ApkSignedPath) ||
 				File.GetLastWriteTime (conf.ApkSignedPath) < File.GetLastWriteTime (conf.ApkPath);
@@ -543,18 +505,21 @@ namespace MonoDevelop.MonoDroid
 		
 		FilePath[] MonoDroidResourcePrefixes {
 			get {
-				if (resPrefixes == null) {
-					var split = MonoDroidResourcePrefix.Split (new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-					var list = new List<FilePath> ();
-					for (int i = 0; i < split.Length; i++) {
-						var s = split[i].Trim ();
-						if (s.Length == 0)
-							continue;
-						list.Add (MakePathNative (s));
-					}
-					resPrefixes = list.ToArray ();
+				if (resPrefixes != null)
+					return resPrefixes;
+				
+				if (string.IsNullOrEmpty (MonoDroidResourcePrefix))
+					return (resPrefixes = new FilePath[] { "Resources" });
+				
+				var split = MonoDroidResourcePrefix.Split (new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+				var list = new List<FilePath> ();
+				for (int i = 0; i < split.Length; i++) {
+					var s = split[i].Trim ();
+					if (s.Length == 0)
+						continue;
+					list.Add (MakePathNative (s));
 				}
-				return resPrefixes;
+				return (resPrefixes = list.ToArray ());
 			}
 		}
 		

@@ -32,13 +32,96 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Projects;
 using System;
+using System.Threading;
+using System.Linq;
 
 namespace MonoDevelop.MonoDroid
 {
 	public static class MonoDroidUtility
 	{
-		public static IAsyncOperation Upload (AndroidDevice device, FilePath packageFile, string packageName,
-			IAsyncOperation signingOperation)
+		//simple flag used to determine whether the current binary has been uploaded to the device
+		//we clear it before signing, and set it for each device after successful upload
+		static bool GetUploadFlag (MonoDroidProjectConfiguration conf, AndroidDevice device)
+		{
+			try {
+				var file = GetUploadFlagFileName (conf);
+				if (File.Exists (file)) {
+					var deviceIds = File.ReadAllLines (file);
+					return deviceIds.Contains (device.ID);
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error reading upload flag", ex);
+			}
+			return true;
+		}
+		
+		static void SetUploadFlag (MonoDroidProjectConfiguration conf, AndroidDevice device)
+		{
+			try {
+				var file = GetUploadFlagFileName (conf);
+				if (!File.Exists (file)) {
+					File.WriteAllText (file, device.ID);
+				} else {
+					File.AppendAllText (file, "\n" + device.ID);
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error setting upload flag", ex);
+			}
+		}
+		
+		static string GetUploadFlagFileName (MonoDroidProjectConfiguration conf)
+		{
+			return conf.ObjDir.Combine ("uploadflags.txt");
+		}
+		
+		static void ClearUploadFlags (MonoDroidProjectConfiguration conf)
+		{
+			try {
+				var file = GetUploadFlagFileName (conf);
+				if (!File.Exists (file))
+					File.Delete (file);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error clearing upload flags", ex);
+			}
+		}
+		
+		//may block while it's showing a GUI. project MUST be built before calling this
+		public static IAsyncOperation SignAndUpload (IProgressMonitor monitor, MonoDroidProject project,
+			ConfigurationSelector configSel, bool forceReplace, out AndroidDevice device)
+		{	
+			var conf = project.GetConfiguration (configSel);
+			var opMon = new AggregatedOperationMonitor (monitor);
+			
+			IAsyncOperation signOp = null;
+			if (project.PackageNeedsSigning (conf)) {
+				ClearUploadFlags (conf);
+				signOp = project.SignPackage (configSel);
+				opMon.AddOperation (signOp);
+			}
+			
+			//copture the device for a later anonymous method
+			AndroidDevice dev = device = InvokeSynch (GetDevice);
+			
+			if (device == null) {
+				opMon.Dispose ();
+				return NullAsyncOperation.Failure;
+			}
+			
+			bool replaceIfExists = forceReplace || !GetUploadFlag (conf, device);
+			
+			var uploadOp = Upload (device, conf.ApkSignedPath, conf.PackageName, signOp, replaceIfExists);
+			opMon.AddOperation (uploadOp);
+			uploadOp.Completed += delegate (IAsyncOperation op) {
+				if (op.Success) {
+					SetUploadFlag (conf, dev);
+				}
+				opMon.Dispose ();
+			};
+			return uploadOp;
+		}
+		
+		static IAsyncOperation Upload (AndroidDevice device, FilePath packageFile, string packageName,
+			IAsyncOperation signingOperation, bool replaceIfExists)
 		{
 			var toolbox = MonoDroidFramework.Toolbox;
 			
@@ -46,6 +129,8 @@ namespace MonoDevelop.MonoDroid
 				GettextCatalog.GetString ("Deploy to Device"), MonoDevelop.Ide.Gui.Stock.RunProgramIcon, true, true);
 			
 			List<string> packages = null;
+			
+			replaceIfExists = replaceIfExists || signingOperation != null;
 			
 			var chop = new ChainedAsyncOperationSequence (monitor,
 				new ChainedAsyncOperation () {
@@ -68,7 +153,7 @@ namespace MonoDevelop.MonoDroid
 				},
 				new ChainedAsyncOperation () {
 					TaskName = GettextCatalog.GetString ("Installing shared runtime package on device"),
-					Condition = () => !toolbox.IsSharedRuntimeInstalled (packages),
+					Skip = () => toolbox.IsSharedRuntimeInstalled (packages)? "" : null,
 					Create = () => {
 						var pkg = MonoDroidFramework.SharedRuntimePackage;
 						if (!File.Exists (pkg)) {
@@ -81,20 +166,21 @@ namespace MonoDevelop.MonoDroid
 					},
 					Error = GettextCatalog.GetString ("Failed to install shared runtime package")
 				},
-				//TODO: use per-device flag file and installed packages list to skip re-installing unchanged packages
 				new ChainedAsyncOperation () {
 					TaskName = GettextCatalog.GetString ("Uninstalling old version of package"),
-					Condition = () => packages.Contains ("package:" + packageName),
+					Skip = () => (!replaceIfExists || !packages.Contains ("package:" + packageName))? "" : null,
 					Create = () => toolbox.Uninstall (device, packageName, monitor.Log, monitor.Log),
 					Error = GettextCatalog.GetString ("Failed to uninstall package")
 				},
 				new ChainedAsyncOperation () {
 					TaskName = GettextCatalog.GetString ("Waiting for packaging signing to complete"),
-					Condition = () => signingOperation != null && !signingOperation.IsCompleted,
+					Skip = () => (signingOperation == null || signingOperation.IsCompleted) ? "" : null,
 					Create = () => signingOperation,
 					Error = GettextCatalog.GetString ("Package signing failed"),
 				},
 				new ChainedAsyncOperation () {
+					Skip = () => (packages.Contains ("package:" + packageName) && !replaceIfExists)
+						? GettextCatalog.GetString ("Package is already up to date") : null,
 					TaskName = GettextCatalog.GetString ("Installing package"),
 					Create = () => toolbox.Install (device, packageFile, monitor.Log, monitor.Log),
 					Error = GettextCatalog.GetString ("Failed to install package")
@@ -104,6 +190,34 @@ namespace MonoDevelop.MonoDroid
 				monitor.Dispose ();
 			};
 			return chop;
+		}
+		
+		static AndroidDevice GetDevice ()
+		{
+			var dlg = new MonoDevelop.MonoDroid.Gui.DeviceChooserDialog ();
+			try {
+				var result = MessageService.ShowCustomDialog (dlg);
+				if (result != (int)Gtk.ResponseType.Ok)
+					return null;
+				return dlg.Device;
+			} finally {
+				dlg.Destroy ();
+			}
+		}
+		
+		static T InvokeSynch<T> (Func<T> func)
+		{
+			if (DispatchService.IsGuiThread)
+				return func ();
+			
+			var ev = new ManualResetEvent (false);
+			T val = default (T);
+			Gtk.Application.Invoke (delegate {
+				val = func ();
+				ev.Set ();
+			});
+			ev.WaitOne ();
+			return val;
 		}
 	}
 	
@@ -134,7 +248,13 @@ namespace MonoDevelop.MonoDroid
 		void RunNext ()
 		{
 			var chop = chain[index];
-			while (chop.Condition != null && !chop.Condition ()) {
+			string skipmsg = null;
+			while (chop.Skip != null && (skipmsg = chop.Skip ()) != null) {
+				if (skipmsg.Length > 0) {
+					monitor.BeginTask (chop.TaskName, 0);
+					monitor.Log.WriteLine (skipmsg);
+					monitor.EndTask ();
+				}
 				index++;
 				if (IsCompleted) {
 					OnCompleted ();
@@ -164,9 +284,7 @@ namespace MonoDevelop.MonoDroid
 					monitor.EndTask ();
 				index++;
 				
-				if (IsCompleted) {
-					success = op.Success;
-				}
+				success = op.Success;
 				
 				DisposeOp ();
 				
@@ -225,13 +343,13 @@ namespace MonoDevelop.MonoDroid
 
 		public bool Success {
 			get {
-				return index > 0 && IsCompleted && success;
+				return IsCompleted && success;
 			}
 		}
 
 		public bool SuccessWithWarnings {
 			get {
-				return index > 0 && IsCompleted && success;
+				return IsCompleted && success;
 			}
 		}
 		
@@ -242,7 +360,8 @@ namespace MonoDevelop.MonoDroid
 	
 	class ChainedAsyncOperation	
 	{
-		public Func<bool> Condition { get; set; }
+		// null = don't skip, string = skip with message, string.empty = skip silently
+		public Func<string> Skip { get; set; }
 		public Func<IAsyncOperation> Create { get; set; }
 		public Action<IAsyncOperation> Completed { get; set; }
 		public string TaskName { get; set; }
