@@ -28,6 +28,7 @@ using Android.Widget;
 
 namespace ${Namespace}$
 {
+	[Activity (Label = "My Activity")]			
 	public class ${Name} : Activity
 	{
 		public ${Name} (IntPtr handle) : base (handle)

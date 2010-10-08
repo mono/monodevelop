@@ -2,7 +2,7 @@ namespace ${Namespace}
 {
 
 
-	public partial class R
+	public partial class Resource
 	{
 
 		public class attr

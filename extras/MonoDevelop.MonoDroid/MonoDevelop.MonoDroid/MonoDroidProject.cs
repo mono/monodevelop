@@ -302,7 +302,6 @@ namespace MonoDevelop.MonoDroid
 		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configSel)
 		{
 			var conf = (MonoDroidProjectConfiguration) GetConfiguration (configSel);
-			var toolbox = MonoDroidFramework.Toolbox;
 			
 			if (OnGetNeedsBuilding (configSel)) {
 				monitor.ReportError ("MonoDroid projects must be built before executing", null);
@@ -324,136 +323,28 @@ namespace MonoDevelop.MonoDroid
 			}
 			activity = manifest.PackageName + "/" + activity;
 			
-			AndroidDevice device = InvokeSynch (GetDevice);
-			if (device == null)
-				return;
-			
-			var parentMonitor = monitor;
-			monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
-				GettextCatalog.GetString ("Deploy to Device"), MonoDevelop.Ide.Gui.Stock.RunProgramIcon, true, true);
-			
-			var opMon = new AggregatedOperationMonitor (parentMonitor);
+			var opMon = new AggregatedOperationMonitor (monitor);
 			try {
+				IAsyncOperation signOp = null;
+				
+				if (PackageNeedsSigning (conf)) {
+					signOp = SignPackage (configSel);
+					opMon.AddOperation (signOp);
+				}
+				
+				AndroidDevice device = InvokeSynch (GetDevice);
+				if (device == null)
+					return;
+				
+				var uploadOp = MonoDroidUtility.Upload (device, conf.ApkSignedPath, conf.PackageName, signOp);
+				opMon.AddOperation (uploadOp);
+				uploadOp.WaitForCompleted ();
+				if (!uploadOp.Success)
+					return;
+				
 				var command = (MonoDroidExecutionCommand) CreateExecutionCommand (configSel, conf);
 				command.Device = device;
 				command.Activity = activity;
-				
-				monitor.BeginTask ("Starting adb server", 0);
-				using (var ensureServerOp = toolbox.EnsureServerRunning (monitor.Log, monitor.Log)) {
-					ensureServerOp.WaitForCompleted ();
-					if (!ensureServerOp.Success) {
-						monitor.ReportError ("Failed to start adb server", null);
-						return;
-					}
-				}
-				monitor.EndTask ();
-				
-				if (parentMonitor.IsCancelRequested)
-					return;
-				
-				monitor.BeginTask ("Waiting for device", 0);
-				using (var waitForDeviceOp = toolbox.WaitForDevice (device, monitor.Log, monitor.Log)) {
-					waitForDeviceOp.WaitForCompleted ();
-					if (!waitForDeviceOp.Success) {
-						monitor.ReportError ("Failed to get device", null);
-						return;
-					}
-				}
-				monitor.EndTask ();
-				
-				if (parentMonitor.IsCancelRequested)
-					return;
-				
-				monitor.BeginTask ("Getting package list from device", 0);
-				List<string> packages;
-				using (var getPackagesOp = toolbox.GetInstalledPackagesOnDevice (device, monitor.Log)) {
-					opMon.AddOperation (getPackagesOp);
-					getPackagesOp.WaitForCompleted ();
-					if (!getPackagesOp.Success) {
-						monitor.ReportError ("Failed to get package list", null);
-						return;
-					}
-					packages = getPackagesOp.Result;
-					monitor.EndTask ();
-				}
-				
-				if (parentMonitor.IsCancelRequested)
-					return;
-				
-				if (!toolbox.IsSharedRuntimeInstalled (packages)) {
-					monitor.BeginTask ("Installing shared runtime package on device", 0);
-					var pkg = MonoDroidFramework.SharedRuntimePackage;
-					if (!File.Exists (pkg)) {
-						monitor.ReportError ("Could not find shared runtime package file", null);
-						LoggingService.LogError ("Could not find MonoDroid shared runtime package '{0}'", pkg);
-						return;
-					}
-					using (var installRuntimeOp = toolbox.Install (device, pkg, monitor.Log, monitor.Log)) {
-						opMon.AddOperation (installRuntimeOp);
-						installRuntimeOp.WaitForCompleted ();
-						if (!installRuntimeOp.Success) {
-							monitor.ReportError ("Failed to install shared runtime package", null);
-							return;
-						}
-						monitor.EndTask ();
-					}
-					
-					if (parentMonitor.IsCancelRequested)
-						return;
-				}
-				
-				if (!File.Exists (conf.ApkSignedPath)
-					|| File.GetLastWriteTime (conf.ApkSignedPath) <= File.GetLastWriteTime (conf.ApkPath))
-				{
-					monitor.BeginTask ("Signing package", 0);
-					var signResults = OnRunTarget (monitor, "SignAndroidPackage", configSel);
-					if (signResults.ErrorCount > 0) {
-						monitor.ReportError ("Signing failed", null);
-						TaskService.Errors.Clear ();
-						foreach (var err in signResults.Errors)
-							TaskService.Errors.Add (new Task (
-									err.FileName, err.ErrorText, err.Column, err.Line,
-								err.IsWarning? TaskSeverity.Warning : TaskSeverity.Error));
-						TaskService.ShowErrors ();
-						return;
-					}
-					monitor.EndTask ();
-					
-					if (parentMonitor.IsCancelRequested)
-						return;
-				}
-				
-				//TODO: use per-device flag file and installed packages list to skip re-installing unchanged packages
-				
-				if (packages.Contains ("package:" + conf.PackageName)) {
-					monitor.BeginTask ("Uninstalling old version of package", 0);
-					using (var uninstallOp = toolbox.Uninstall (device, conf.PackageName, monitor.Log, monitor.Log)) {
-						opMon.AddOperation (uninstallOp);
-						uninstallOp.WaitForCompleted ();
-						if (!uninstallOp.Success) {
-							monitor.ReportError ("Failed to install package", null);
-							return;
-						}
-						monitor.EndTask ();
-					}
-					
-					if (parentMonitor.IsCancelRequested)
-						return;
-				}
-				
-				monitor.BeginTask ("Installing package", 0);
-				using (var installOp = toolbox.Install (device, conf.ApkSignedPath, monitor.Log, monitor.Log)) {
-					opMon.AddOperation (installOp);
-					installOp.WaitForCompleted ();
-					if (!installOp.Success) {
-						monitor.ReportError ("Failed to install package", null);
-						return;
-					}
-					monitor.EndTask ();
-				}
-				
-				if (parentMonitor.IsCancelRequested)
-					return;
 				
 				using (var console = context.ConsoleFactory.CreateConsole (false)) {
 					var executeOp = context.ExecutionHandler.Execute (command, console);
@@ -462,8 +353,60 @@ namespace MonoDevelop.MonoDroid
 				}
 			} finally {
 				opMon.Dispose ();
-				monitor.Dispose ();
 			}
+		}
+		
+		bool PackageNeedsSigning (MonoDroidProjectConfiguration conf)
+		{
+			return !File.Exists (conf.ApkSignedPath) ||
+				File.GetLastWriteTime (conf.ApkSignedPath) < File.GetLastWriteTime (conf.ApkPath);
+		}
+		
+		public IAsyncOperation SignPackage (ConfigurationSelector configSel)
+		{
+			TaskService.Errors.ClearByOwner (this);
+			
+			var monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
+			
+			DispatchService.ThreadDispatch (delegate {
+            	 SignPackageAsync (monitor, configSel);
+            }, null);
+			
+			return monitor.AsyncOperation;
+		}
+		
+		void SignPackageAsync (IProgressMonitor monitor, ConfigurationSelector configSel)
+		{
+			monitor.BeginTask ("Signing package", 0);
+			
+			BuildResult result = null;
+			try {
+				result = this.OnRunTarget (monitor, "SignAndroidPackage", configSel);
+				if (result.ErrorCount > 0) {
+					monitor.ReportError ("Signing failed", null);
+				}
+			} catch (Exception ex) {
+				monitor.ReportError (GettextCatalog.GetString ("Signing failed."), ex);
+			}
+			DispatchService.GuiDispatch (delegate {
+				SignPackageDone (monitor, result); // disposes the monitor
+			});
+		}
+		
+		void SignPackageDone (IProgressMonitor monitor, BuildResult result)
+		{
+			monitor.EndTask ();
+			
+			if (result != null && result.Errors.Count > 0) {
+				var tasks = new Task [result.Errors.Count];
+				for (int n = 0; n < tasks.Length; n++) {
+					tasks [n] = new Task (result.Errors [n], this);
+				}
+				TaskService.Errors.AddRange (tasks);
+				TaskService.ShowErrors ();
+			}
+			
+			monitor.Dispose ();
 		}
 		
 		#endregion

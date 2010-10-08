@@ -9,8 +9,23 @@
        version     = "2.4">
 	
 	<Runtime>
-		<Import file = "templates/MonoDroidLibraryProject.xpt.xml" />
-		<Import file = "templates/MonoDroidProjectEmpty.xpt.xml"/>
+		<import file = "templates/MonoDroidActivity.xft.xml"/>
+		<import file = "templates/MonoDroidApplication/AboutResources.txt"/>
+		<import file = "templates/MonoDroidApplication/Activity1.cs"/>
+		<import file = "templates/MonoDroidApplication/AndroidManifest.xml"/>
+		<import file = "templates/MonoDroidApplication/icon-hd.png"/>
+		<import file = "templates/MonoDroidApplication/icon-ld.png"/>
+		<import file = "templates/MonoDroidApplication/icon-md.png"/>
+		<import file = "templates/MonoDroidApplication/main.xml"/>
+		<import file = "templates/MonoDroidApplication/R.cs"/>
+		<import file = "templates/MonoDroidApplicationProject.xpt.xml"/>
+		<import file = "templates/MonoDroidLibraryProject.xpt.xml"/>
+		<import file = "templates/MonoDroidOpenGLProject.xpt.xml"/>
+		<import file = "templates/MonoDroidView.xft.xml"/>
+		<import file = "templates/OpenGLApplication/Activity1.cs"/>
+		<import file = "templates/OpenGLApplication/GLView1.cs"/>
+		<import file = "templates/OpenGLApplication/main.xml"/>
+		<import file = "templates/OpenGLApplication/R.cs"/>
 	</Runtime>
 	
 	<Dependencies>

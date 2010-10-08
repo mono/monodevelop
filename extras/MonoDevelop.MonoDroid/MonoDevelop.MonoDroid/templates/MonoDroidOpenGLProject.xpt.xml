@@ -31,7 +31,7 @@
 				<File name="Activity1.cs" src="OpenGLApplication/Activity1.cs" />
 				<File name="GLView1.cs" src="OpenGLApplication/GLView1.cs" />
 				<Directory name="Resources">
-					<File name="Resource.designer.cs" src="OpenGLApplication/R.cs" />
+					<File name="Resource.designer.cs" src="OpenGLApplication/Resource.cs" />
 					<RawFile name="AboutResources.txt" src="MonoDroidApplication/AboutResources.txt" />
 					<Directory name="layout">
 						<File name="main.xml" src="OpenGLApplication/main.xml" />

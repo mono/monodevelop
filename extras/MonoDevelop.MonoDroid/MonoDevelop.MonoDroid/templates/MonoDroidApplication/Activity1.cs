@@ -9,6 +9,7 @@ using Android.OS;
 
 namespace ${Namespace}
 {
+	[Activity (Label = "My Activity", MainLauncher = true)]
 	public class Activity1 : Activity
 	{
 		int count = 1;
