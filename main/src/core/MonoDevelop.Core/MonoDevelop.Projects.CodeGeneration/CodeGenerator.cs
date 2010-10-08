@@ -155,8 +155,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 			SetIndentTo (implementingType);
 			StringBuilder result = new StringBuilder ();
 			foreach (IType baseInterface in interfaceType.SourceProjectDom.GetInheritanceTree (interfaceType)) {
-				if (baseInterface.FullName == DomReturnType.Object.FullName)
-					break;
+				if (baseInterface.ClassType != ClassType.Interface)
+					continue;
 				if (result.Length > 0) {
 					AppendLine (result);
 					AppendLine (result);
