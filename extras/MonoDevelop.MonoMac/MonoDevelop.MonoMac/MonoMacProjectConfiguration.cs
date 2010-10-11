@@ -44,7 +44,7 @@ namespace MonoDevelop.MonoMac
 		{
 		}
 		
-		string AppName {
+		public string AppName {
 			get {
 				return Path.GetFileNameWithoutExtension (OutputAssembly);
 			}

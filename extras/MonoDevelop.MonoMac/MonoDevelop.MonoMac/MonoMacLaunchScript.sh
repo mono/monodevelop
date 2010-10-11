@@ -3,8 +3,8 @@
 
 ##### Determine app name and locations #####
 
-APP_ROOT=$(cd "$(dirname "$0")"; pwd)
-APP_ROOT=${APP_ROOT%%/Contents/MacOS}
+MACOS_DIR=$(cd "$(dirname "$0")"; pwd)
+APP_ROOT=${MACOS_DIR%%/Contents/MacOS}
  
 CONTENTS_DIR="$APP_ROOT/Contents"
 RESOURCES_PATH="$CONTENTS_DIR/Resources"
@@ -15,33 +15,13 @@ ASSEMBLY=`echo $0 | awk -F"/" '{ printf("%s.exe", $NF); }'`
 ##### Environment setup #####
 
 MONO_FRAMEWORK_PATH=/Library/Frameworks/Mono.framework/Versions/Current
-export DYLD_FALLBACK_LIBRARY_PATH="$MONO_FRAMEWORK_PATH/lib:/lib:/usr/lib"
+export DYLD_FALLBACK_LIBRARY_PATH="$MONO_FRAMEWORK_PATH/lib:$DYLD_FALLBACK_LIBRARY_PATH"
 export PATH="$MONO_FRAMEWORK_PATH/bin:$PATH"
 export DYLD_LIBRARY_PATH="$RESOURCES_PATH:$DYLD_LIBRARY_PATH"
 
 ##### Mono check #####
- 
-REQUIRED_MAJOR=2
-REQUIRED_MINOR=6
- 
-VERSION_TITLE="Cannot launch $APP_NAME"
-VERSION_MSG="$APP_NAME requires the Mono Framework version $REQUIRED_MAJOR.$REQUIRED_MINOR or later."
-DOWNLOAD_URL="http://www.go-mono.com/mono-downloads/download.html"
- 
-MONO_VERSION="$(mono --version | grep 'Mono JIT compiler version ' |  cut -f5 -d\ )"
-MONO_VERSION_MAJOR="$(echo $MONO_VERSION | cut -f1 -d.)"
-MONO_VERSION_MINOR="$(echo $MONO_VERSION | cut -f2 -d.)"
-if [ -z "$MONO_VERSION" ] \
-	|| [ $MONO_VERSION_MAJOR -lt $REQUIRED_MAJOR ] \
-	|| [ $MONO_VERSION_MAJOR -eq $REQUIRED_MAJOR -a $MONO_VERSION_MINOR -lt $REQUIRED_MINOR ] 
-then
-	osascript \
-	-e "set question to display dialog \"$VERSION_MSG\" with title \"$VERSION_TITLE\" buttons {\"Cancel\", \"Download...\"} default button 2" \
-	-e "if button returned of question is equal to \"Download...\" then open location \"$DOWNLOAD_URL\""
-	echo "$VERSION_TITLE"
-	echo "$VERSION_MSG"
-	exit 1
-fi
+
+"$MACOS_DIR/mono-version-check" "$APP_NAME" 2 6 7
 
 ##### Run the exe using Mono #####
 
@@ -53,10 +33,4 @@ else
 	EXEC="exec -a \"$APP_NAME\""
 fi
 
-# I don't know why this crazyness is required, but it doesn't work without.
-MONO_BIN=`which mono`
-EXEC_PATH="$APP_ROOT"/"$APP_NAME"
-if [ -f "$EXEC_PATH" ]; then rm -f "$EXEC_PATH" ; fi
-ln -s $MONO_BIN "$EXEC_PATH"
-
-$EXEC "$EXEC_PATH" $MONO_OPTIONS "$RESOURCES_PATH"/"$ASSEMBLY"
+$EXEC "$APP_ROOT/$APP_NAME" $MONO_OPTIONS "$RESOURCES_PATH"/"$ASSEMBLY"

@@ -77,6 +77,7 @@ namespace MonoDevelop.MonoMac
 				monitor.EndTask ();
 			}
 			
+			//FIXME: only do this check if there are actually xib files
 			if (!PropertyService.IsMac) {
 				res.AddWarning ("Cannot compile xib files on non-Mac platforms");
 			} else {
@@ -93,16 +94,18 @@ namespace MonoDevelop.MonoMac
 				if (res.Append (MergeInfoPlist (monitor, proj, conf, appInfoIn, plistOut)).ErrorCount > 0)
 					return res;
 			
-			//launch script
-			var ls = conf.LaunchScript;
-			if (!File.Exists (ls)) {
-				if (!Directory.Exists (ls.ParentDirectory))
-					Directory.CreateDirectory (ls.ParentDirectory);
-				var src = AddinManager.CurrentAddin.GetFilePath ("MonoMacLaunchScript.sh");
-				File.Copy (src, ls, true);
-				var fi = new UnixFileInfo (ls);
-				fi.FileAccessPermissions |= FileAccessPermissions.UserExecute
-					| FileAccessPermissions.GroupExecute | FileAccessPermissions.OtherExecute;
+			if (PropertyService.IsWindows) {
+				res.AddWarning ("Cannot create app bundle on Windows");
+			} else {	
+				//launch script
+				var macOSDir = appDir.Combine ("Contents", "MacOS");
+				CopyExecutableFile (AddinManager.CurrentAddin.GetFilePath ("MonoMacLaunchScript.sh"), conf.LaunchScript);
+				CopyExecutableFile (AddinManager.CurrentAddin.GetFilePath ("mono-version-check"),
+					macOSDir.Combine ("mono-version-check"));
+				
+				var si = new UnixSymbolicLinkInfo (appDir.Combine (conf.AppName));
+				if (!si.Exists)
+					si.CreateSymbolicLinkTo ("/Library/Frameworks/Mono.framework/Versions/Current/bin/mono");
 			}
 			
 			//pkginfo
@@ -112,6 +115,19 @@ namespace MonoDevelop.MonoMac
 					f.Write (new byte [] { 0X41, 0X50, 0X50, 0X4C, 0x3f, 0x3f, 0x3f, 0x3f}, 0, 8); // "APPL???"
 			
 			return res;
+		}
+		
+		static void CopyExecutableFile (FilePath src, FilePath dest)
+		{
+			if (File.Exists (dest))
+				return;
+			
+			if (!Directory.Exists (dest.ParentDirectory))
+				Directory.CreateDirectory (dest.ParentDirectory);
+			File.Copy (src, dest, true);
+			var fi = new UnixFileInfo (dest);
+			fi.FileAccessPermissions |= FileAccessPermissions.UserExecute
+				| FileAccessPermissions.GroupExecute | FileAccessPermissions.OtherExecute;
 		}
 		
 		BuildResult MergeInfoPlist (IProgressMonitor monitor, MonoMacProject proj, MonoMacProjectConfiguration conf, 
