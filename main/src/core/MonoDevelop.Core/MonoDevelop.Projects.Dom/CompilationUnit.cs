@@ -236,8 +236,8 @@ namespace MonoDevelop.Projects.Dom
 				}
 				if (lastAlias != null)
 					return new DomReturnType (lastAlias);
-				if (longest.Length > 0) 
-					returnType.Namespace = returnType.Namespace == longest ? "" : returnType.Namespace.Substring (longest.Length + 1);
+				if (longest.Length > 0 && returnType.Namespace == longest) 
+					returnType.Namespace = "";
 				return returnType;
 			}
 		}
