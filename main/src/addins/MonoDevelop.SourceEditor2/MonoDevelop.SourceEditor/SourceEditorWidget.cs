@@ -490,7 +490,7 @@ namespace MonoDevelop.SourceEditor
 					GLib.Source.Remove (resetTimerId);
 					resetTimerId = 0;
 				}
-				const uint timeout = 900;
+				const uint timeout = 500;
 				resetTimerId = GLib.Timeout.Add (timeout, delegate {
 					lock (this) { // this runs in the gtk main loop.
 						ResetUnderlineChangement ();
@@ -512,8 +512,8 @@ namespace MonoDevelop.SourceEditor
 						error.RemoveFromLine (doc);
 					}
 				}
-				errors.Clear ();
 			}
+			errors.Clear ();
 		}
 		
 		void ParseCompilationUnit (ParsedDocument cu)
