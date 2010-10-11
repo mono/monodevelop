@@ -154,6 +154,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		{
 			SetIndentTo (implementingType);
 			StringBuilder result = new StringBuilder ();
+			List<IMember> implementedMembers = new List<IMember> ();
 			foreach (IType baseInterface in interfaceType.SourceProjectDom.GetInheritanceTree (interfaceType)) {
 				if (baseInterface.ClassType != ClassType.Interface)
 					continue;
@@ -161,13 +162,13 @@ namespace MonoDevelop.Projects.CodeGeneration
 					AppendLine (result);
 					AppendLine (result);
 				}
-				string implementation = InternalCreateInterfaceImplementation (implementingType, baseInterface, explicitly);
+				string implementation = InternalCreateInterfaceImplementation (implementingType, baseInterface, explicitly, implementedMembers);
 				result.Append (WrapInRegions (baseInterface.Name + " implementation", implementation));
 			}
 			return result.ToString ();
 		}
 		
-		protected string InternalCreateInterfaceImplementation (IType implementingType, IType interfaceType, bool explicitly)
+		protected string InternalCreateInterfaceImplementation (IType implementingType, IType interfaceType, bool explicitly, List<IMember> implementedMembers)
 		{
 			StringBuilder result = new StringBuilder ();
 			
@@ -240,7 +241,28 @@ namespace MonoDevelop.Projects.CodeGeneration
 				} else {
 					first = false;
 				}
-				result.Append (CreateMemberImplementation (implementingType, pair.Key, pair.Value).Code);
+				bool isExplicit = pair.Value;
+				foreach (IMember member in implementedMembers.Where (m => m.Name == pair.Key.Name && m.MemberType == pair.Key.MemberType)) {
+					if (member.MemberType == MemberType.Method) {
+						isExplicit = member.ReturnType.ToInvariantString () != pair.Key.ReturnType.ToInvariantString ();
+						
+						if (member.Parameters.Count == pair.Key.Parameters.Count && pair.Key.Parameters.Count > 0) {
+							for (int i = 0; i < member.Parameters.Count; i++) {
+								if (member.Parameters[i].ReturnType.ToInvariantString () != pair.Key.Parameters[i].ReturnType.ToInvariantString ()) {
+									isExplicit = true;
+									break;
+								}
+							}
+						} else {
+							isExplicit = true;
+						}
+					} else {
+						isExplicit = true;
+					}
+				}
+				
+				result.Append (CreateMemberImplementation (implementingType, pair.Key, isExplicit).Code);
+				implementedMembers.Add (pair.Key);
 			}
 			
 			return result.ToString ();
