@@ -64,9 +64,17 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 					: prefix.Combine ("lib", "mono", "2.0", "winhack", "xsp2.exe");
 			}
 			else {
-				startInfo.Command = (cmd.ClrVersion == ClrVersion.Net_1_1)
-					? prefix.Combine ("lib", "mono", "1.0", "xsp.exe")
-					: prefix.Combine ("lib", "mono", "2.0", "xsp2.exe");
+				switch (cmd.ClrVersion) {
+				case ClrVersion.Net_1_1:
+					startInfo.Command = prefix.Combine ("lib", "mono", "1.0", "xsp.exe");
+					break;
+				case ClrVersion.Net_2_0:
+					startInfo.Command = prefix.Combine ("lib", "mono", "2.0", "xsp2.exe");
+					break;
+				case ClrVersion.Net_4_0:
+					startInfo.Command = prefix.Combine ("lib", "mono", "4.0", "xsp4.exe");
+					break;
+				}
 			}
 			
 			string error;
