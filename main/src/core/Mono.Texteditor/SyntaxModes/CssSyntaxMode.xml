@@ -23,7 +23,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
  
-<SyntaxMode name = "CSS" mimeTypes="text/x-css">
+<SyntaxMode name = "CSS" mimeTypes="text/css">
 	<Delimiters>&amp;&lt;&gt;~!@%^*()+=|\#/{}[]:;"' ,	?</Delimiters>
 	
 	<Property name="BlockCommentStart">/*</Property>
