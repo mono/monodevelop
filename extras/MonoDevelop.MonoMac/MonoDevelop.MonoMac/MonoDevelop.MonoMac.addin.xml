@@ -6,7 +6,7 @@
        url         = "http://monodevelop.com/"
        description = "Support for developing MonoMac applications"
        category    = "Mac Development"
-       version     = "2.4.0.5">
+       version     = "2.4.0.6">
 	
 	<Runtime>
 		<Import file = "templates/MonoMacProject.xpt.xml"/>
@@ -22,6 +22,7 @@
 		<Import file = "MonoMac.dll"/>
 		<Import file = "MonoMac.dll.mdb"/>
 		<Import file = "MonoMacLaunchScript.sh"/>
+		<Import file = "mono-version-check"/>
 	</Runtime>
 	
 	<Dependencies>
