@@ -437,7 +437,7 @@ namespace MonoDevelop.CSharp.Parser
 					var cc = (ComposedCast)typeName;
 					var baseType = (DomReturnType)ConvertReturnType (cc.Left);
 					if (cc.Spec.IsNullable) {
-						baseType.IsNullable = true;
+						return new DomReturnType ("System.Nullable", true, new IReturnType[] { baseType });
 					} else if (cc.Spec.IsPointer) {
 						baseType.PointerNestingLevel++;
 					} else {
