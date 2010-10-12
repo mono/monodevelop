@@ -69,6 +69,11 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 			case ClrVersion.Net_4_0:
 				startInfo.Command = prefix.Combine ("lib", "mono", "4.0", subdirectory, "xsp4.exe");
 				break;
+			default:
+				MonoDevelop.Core.LoggingService.LogWarning ("Unknown clr version ({0}). Using the latest known xsp: xsp4.",
+					cmd.ClrVersion);
+				startInfo.Command = prefix.Combine ("lib", "mono", "4.0", subdirectory, "xsp4.exe");
+				break;
 			}
 		
 			string error;
