@@ -58,25 +58,19 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 			};
 			
 			FilePath prefix = runtime.Prefix;
-			if (MonoDevelop.Core.PropertyService.IsWindows) {
-				startInfo.Command = (cmd.ClrVersion == ClrVersion.Net_1_1)
-					? prefix.Combine ("lib", "mono", "1.0", "winhack", "xsp.exe")
-					: prefix.Combine ("lib", "mono", "2.0", "winhack", "xsp2.exe");
+			string subdirectory = MonoDevelop.Core.PropertyService.IsWindows ? "winhack" : "";
+			switch (cmd.ClrVersion) {
+			case ClrVersion.Net_1_1:
+				startInfo.Command = prefix.Combine ("lib", "mono", "1.0", subdirectory, "xsp.exe");
+				break;
+			case ClrVersion.Net_2_0:
+				startInfo.Command = prefix.Combine ("lib", "mono", "2.0", subdirectory, "xsp2.exe");
+				break;
+			case ClrVersion.Net_4_0:
+				startInfo.Command = prefix.Combine ("lib", "mono", "4.0", subdirectory, "xsp4.exe");
+				break;
 			}
-			else {
-				switch (cmd.ClrVersion) {
-				case ClrVersion.Net_1_1:
-					startInfo.Command = prefix.Combine ("lib", "mono", "1.0", "xsp.exe");
-					break;
-				case ClrVersion.Net_2_0:
-					startInfo.Command = prefix.Combine ("lib", "mono", "2.0", "xsp2.exe");
-					break;
-				case ClrVersion.Net_4_0:
-					startInfo.Command = prefix.Combine ("lib", "mono", "4.0", "xsp4.exe");
-					break;
-				}
-			}
-			
+		
 			string error;
 			startInfo.UserAssemblyNames = SoftDebuggerEngine.GetAssemblyNames (cmd.UserAssemblyPaths, out error);
 			startInfo.LogMessage = error;
