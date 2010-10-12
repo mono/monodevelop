@@ -63,6 +63,8 @@ namespace MonoDevelop.VersionControl.Views
 		VersionControlDocumentInfo info;
 		string preselectFile;
 		CellRendererDiff diffRenderer = new CellRendererDiff ();
+		CellRendererText messageRenderer = new CellRendererText ();
+		CellRendererText textRenderer = new CellRendererText ();
 		
 		class RevisionGraphCellRenderer : Gtk.CellRenderer
 		{
@@ -111,10 +113,7 @@ namespace MonoDevelop.VersionControl.Views
 			this.info = info;
 			if (info.Document != null)
 				this.preselectFile = info.Document.FileName;
-			CellRendererText messageRenderer = new CellRendererText ();
-			messageRenderer.Destroyed += delegate {
-				Console.WriteLine ("BÄM");
-			};
+			
 			messageRenderer.Ellipsize = Pango.EllipsizeMode.End;
 			TreeViewColumn colRevMessage = new TreeViewColumn ();
 			colRevMessage.Title = GettextCatalog.GetString ("Message");
@@ -130,7 +129,7 @@ namespace MonoDevelop.VersionControl.Views
 			colRevMessage.Resizable = true;
 			treeviewLog.AppendColumn (colRevMessage);
 
-			CellRendererText textRenderer = new CellRendererText ();
+			
 			TreeViewColumn colRevDate = new TreeViewColumn (GettextCatalog.GetString ("Date"), textRenderer);
 			colRevDate.SetCellDataFunc (textRenderer, DateFunc);
 			colRevDate.Resizable = true;
@@ -252,14 +251,22 @@ namespace MonoDevelop.VersionControl.Views
 						});
 						return;
 					}
-					
-					string prevRevisionText = info.Repository.GetTextAtRevision (path, prevRev);
-					
-					var originalDocument = new Mono.TextEditor.Document (prevRevisionText);
-					originalDocument.FileName = "Revision " + prevRev.ToString ();
+					string[] lines;
 					var changedDocument = new Mono.TextEditor.Document (text);
-					changedDocument.FileName = "Revision " + rev.ToString ();
-					string[] lines = Mono.TextEditor.Utils.Diff.GetDiffString (originalDocument, changedDocument).Split ('\n');
+					if (prevRev == null) {
+						lines = new string[changedDocument.LineCount];
+						for (int i = 0; i < changedDocument.LineCount; i++) {
+							lines[i] = "+ " + changedDocument.GetLineText (i);
+						}
+						
+					} else {
+						string prevRevisionText = info.Repository.GetTextAtRevision (path, prevRev);
+						
+						var originalDocument = new Mono.TextEditor.Document (prevRevisionText);
+						originalDocument.FileName = "Revision " + prevRev.ToString ();
+						changedDocument.FileName = "Revision " + rev.ToString ();
+						lines = Mono.TextEditor.Utils.Diff.GetDiffString (originalDocument, changedDocument).Split ('\n');
+					}
 					Application.Invoke (delegate {
 						changedpathstore.SetValue (iter, colDiff, lines);
 					});
@@ -297,6 +304,10 @@ namespace MonoDevelop.VersionControl.Views
 			base.Destroy ();
 			logstore.Dispose ();
 			changedpathstore.Dispose ();
+			
+			diffRenderer.Dispose ();
+			messageRenderer.Dispose ();
+			textRenderer.Dispose ();
 		}
 		
 		static void DateFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
