@@ -73,6 +73,8 @@
     <Compile Include="MonoDevelop.VersionControl.Git\Change.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\RepositoryStatus.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\MergeDialog.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git\Stash.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git\GitUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

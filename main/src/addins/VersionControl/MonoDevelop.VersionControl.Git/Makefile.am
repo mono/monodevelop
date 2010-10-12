@@ -37,10 +37,12 @@ FILES =  \
 	MonoDevelop.VersionControl.Git/GitNodeBuilderExtension.cs \
 	MonoDevelop.VersionControl.Git/GitRepository.cs \
 	MonoDevelop.VersionControl.Git/GitService.cs \
+	MonoDevelop.VersionControl.Git/GitUtil.cs \
 	MonoDevelop.VersionControl.Git/GitVersionControl.cs \
 	MonoDevelop.VersionControl.Git/MergeDialog.cs \
 	MonoDevelop.VersionControl.Git/PushDialog.cs \
 	MonoDevelop.VersionControl.Git/RepositoryStatus.cs \
+	MonoDevelop.VersionControl.Git/Stash.cs \
 	MonoDevelop.VersionControl.Git/UserInfoConflictDialog.cs
 
 RES =  \
