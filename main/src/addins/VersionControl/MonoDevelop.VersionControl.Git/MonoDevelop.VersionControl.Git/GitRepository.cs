@@ -1196,10 +1196,16 @@ namespace MonoDevelop.VersionControl.Git
 				}
 			}
 			return alist.ToArray ();
-			*/			
-			}
-
-	class GitRevision : Revision
+			*/
+		
+		internal GitRevision GetPreviousRevisionFor (GitRevision revision)
+		{
+			// TODO
+			throw new NotImplementedException ();
+		}
+	}
+	
+	public class GitRevision: Revision
 	{
 		string rev;
 
@@ -1220,7 +1226,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		public override Revision GetPrevious ()
 		{
-			throw new System.NotImplementedException ();
+			return ((GitRepository) this.Repository).GetPreviousRevisionFor (this);
 		}
 	}
 
