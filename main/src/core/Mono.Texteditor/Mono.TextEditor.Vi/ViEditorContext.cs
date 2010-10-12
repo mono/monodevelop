@@ -34,6 +34,8 @@ namespace Mono.TextEditor.Vi
 {
 	public class ViEditor
 	{
+		NewViEditMode editMode;
+		
 		#region Register constants
 		const char REG_YANK_DEFAULT = '0';
 		const char REG_DELETE_DEFAULT = '1';
@@ -51,10 +53,10 @@ namespace Mono.TextEditor.Vi
 		#endregion
 
 		Dictionary<char,string> registers = new Dictionary<char,string> ();
-		Dictionary<char,ViMark> marks = new Dictionary<char, ViMark>();
+		Dictionary<char,ViMark> marks = new Dictionary<char, ViMark> ();
 		
-		public TextEditor Editor { get; private set; }
-		public TextEditorData Data { get; private set; }
+		public TextEditor Editor { get { return editMode.Editor; } }
+		public TextEditorData Data { get { return editMode.Data; } }
 		public Document Document { get { return Data.Document; } }
 		ViBuilderContext Context { get; set; }
 		public string Message { get; private set; }
@@ -83,13 +85,13 @@ namespace Mono.TextEditor.Vi
 		
 		public void Reset (string message)
 		{
-			Context = ViBuilderContext.CreateNormal ();
+			Context = ViBuilderContext.Create ();
 			Message = message;
 		}
 		
 		public void ProcessKey (Gdk.ModifierType modifiers, Key key, char ch)
 		{
-			Context.Build (modifiers, key, ch);
+			Context.Build (this, key, ch, modifiers);
 			if (Context.Error != null) {
 				Reset (Context.Error);
 			} else if (Context.Action != null) {
@@ -105,10 +107,9 @@ namespace Mono.TextEditor.Vi
 		public bool SearchBackward { get; set; }
 		public string LastReplacement { get; set; }
 
-		public ViEditor (TextEditor editor, TextEditorData data)
+		public ViEditor (NewViEditMode editMode)
 		{
-			this.Editor = editor;
-			this.Data = data;
+			this.editMode = editMode;
 			Reset ("");
 		}
 

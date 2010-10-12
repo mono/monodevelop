@@ -34,6 +34,14 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.SourceEditor
 {
+	public class NewIdeViMode : Mono.TextEditor.Vi.NewViEditMode
+	{
+		public NewIdeViMode (ExtensibleTextEditor editor)
+		{
+			this.editor = editor;
+		}
+	}
+	
 	public class IdeViMode : Mono.TextEditor.Vi.ViEditMode
 	{
 		ExtensibleTextEditor editor;

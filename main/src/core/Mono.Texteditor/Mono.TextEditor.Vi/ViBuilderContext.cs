@@ -1,5 +1,5 @@
 // 
-// ViCommandBuilder.cs
+// ViBuilderContext.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -47,7 +47,7 @@ namespace Mono.TextEditor.Vi
 			Multiplier = 1;
 		}
 		
-		public void Build (ModifierType modifiers, Key key, char ch)
+		public void Build (ViEditor editor, Key key, char ch, ModifierType modifiers)
 		{
 			var k = ch == '\0'? new ViKey (modifiers, key) : new ViKey (modifiers, ch);
 			Keys.Add (k);
@@ -100,24 +100,22 @@ namespace Mono.TextEditor.Vi
 			get { return Keys[Keys.Count - 1]; }
 		}
 		
-		public static ViBuilderContext CreateNormal ()
+		public static ViBuilderContext Create ()
 		{
 			return new ViBuilderContext () {
 				Builder = normalBuilder
 			};
 		}
 		
-		//WORKAROUND: we used to use a static initializer but that triggered a gmcs 2.6.4 bug
-		//so instead use a lazy pattern
-		static ViBuilder normalBuilder {
-			get {
-				return _normalBuilder ?? (_normalBuilder = 
-					ViBuilders.RegisterBuilder (
-						ViBuilders.MultiplierBuilder (
-							ViBuilders.First (normalActions.Builder, motions.Builder))));
-			}
+		static ViBuilderContext ()
+		{
+			normalBuilder = 
+				ViBuilders.RegisterBuilder (
+					ViBuilders.MultiplierBuilder (
+						ViBuilders.First (normalActions.Builder, motions.Builder)));
 		}
-		static ViBuilder _normalBuilder;
+		
+		static ViBuilder normalBuilder;
 		
 		static ViCommandMap normalActions = new ViCommandMap () {
 			{ 'J', ViActions.Join },
@@ -207,201 +205,6 @@ namespace Mono.TextEditor.Vi
 			{ new ViKey (ModifierType.ShiftMask,   Key.Tab),       MiscActions.RemoveTab },
 			{ new ViKey (ModifierType.ShiftMask,   Key.BackSpace),       DeleteActions.Backspace },
 		};
-	}
-	
-	class ViCommandMap : IEnumerable<KeyValuePair<ViKey,ViBuilder>>
-	{
-		Dictionary<ViKey,ViBuilder> builders = new Dictionary<ViKey,ViBuilder> ();
-		Dictionary<ViKey,Action<ViEditor>> actions  = new Dictionary<ViKey,Action<ViEditor>> ();
-		
-		public bool Builder (ViBuilderContext ctx)
-		{
-			Action<ViEditor> a;
-			if (actions.TryGetValue (ctx.LastKey, out a)) {
-				ctx.Action = a;
-				return true;
-			} else {
-				ViBuilder b;
-				if (builders.TryGetValue (ctx.LastKey, out b)) {
-					ctx.Builder = b;
-					return true;
-				}
-			}
-			return false;
-		}
-		
-		public void Add (ViKey key, ViCommandMap map)
-		{
-			Add (key, map.Builder);
-		}
-		
-		public void Add (ViKey key, Action<ViEditor> action)
-		{
-			this.actions[key] = action;
-		}
-		
-		public void Add (ViKey key, Action<TextEditorData> action)
-		{
-			this.actions[key] = (ViEditor ed) => action (ed.Data);
-		}
-		
-		public void Add (ViKey key, ViBuilder builder)
-		{
-			this.builders[key] = builder;
-		}
-		
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
-		{
-			return builders.GetEnumerator ();
-		}
-		
-		public IEnumerator<KeyValuePair<ViKey,ViBuilder>> GetEnumerator ()
-		{
-			return builders.GetEnumerator ();
-		}
-	}
-	
-	class ViBuilders
-	{
-		public static bool Mark (ViBuilderContext ctx)
-		{
-			char c = ctx.LastKey.Char;
-			if (!char.IsLetterOrDigit (c)) {
-				ctx.Error = "Invalid Mark";
-				return true;
-			}
-			
-			ctx.Action = (ViEditor ed) => {
-				ViMark mark;
-				if (!ed.Marks.TryGetValue (c, out mark))
-					ed.Marks [c] = mark = new ViMark (c);
-				mark.SaveMark (ed.Data);
-			};
-			return true;
-		}
-		
-		public static bool GoToMark (ViBuilderContext ctx)
-		{
-			char c = ctx.LastKey.Char;
-			if (!char.IsLetterOrDigit (c)) {
-				ctx.Error = "Invalid Mark";
-				return true;
-			}
-			
-			ctx.Action = (ViEditor ed) => {
-				ViMark mark;
-				if (ed.Marks.TryGetValue (c, out mark))
-					mark.LoadMark (ed.Data);
-				else
-					ed.Reset ("Unknown Mark");
-			};
-			return true;
-		}
-		
-		
-		public static bool ReplaceChar (ViBuilderContext ctx)
-		{
-			if (ctx.LastKey.Char != '\0')
-				ctx.Action = (ViEditor ed) => ed.Data.Replace (ed.Data.Caret.Offset, 1, ctx.LastKey.Char.ToString ());
-			else
-				ctx.Error = "Expecting a character";
-			return true;
-		}
-		
-		static void StartRegisterBuilder (ViBuilderContext ctx, ViBuilder nextBuilder)
-		{
-			if (ctx.Register != '\0') {
-				ctx.Error = "Register already set";
-				return;
-			}
-			ctx.Builder = (ViBuilderContext x) => {
-				char c = x.LastKey.Char;
-				if (!ViEditor.IsValidRegister (c)) {
-					x.Error = "Invalid register";
-					return true;
-				}
-				x.Register = c;
-				x.Builder = nextBuilder;
-				return true;
-			};
-		}
-		
-		static void StartMultiplierBuilder (ViBuilderContext ctx, ViBuilder nextBuilder)
-		{
-			int factor = 1;
-			int multiplier = 0;
-			ctx.Builder = (ViBuilderContext x) => {
-				int c = (int)x.LastKey.Char;
-				if (c >= (int)'0' && c <= (int)'9') {
-					int d = c - (int)'0';
-					multiplier = multiplier * factor + d;
-					factor *= 10;
-					return true;
-				} else {
-					ctx.Multiplier *= multiplier;
-					ctx.Builder = nextBuilder;
-					return ctx.Builder (ctx);
-				}
-			};
-			ctx.Builder (ctx);
-		}
-		
-		public static ViBuilder MultiplierBuilder (ViBuilder nextBuilder)
-		{
-			return (ViBuilderContext ctx) => {
-				var k = ctx.LastKey;
-				if (char.IsDigit (k.Char)) {
-					ViBuilders.StartMultiplierBuilder (ctx, nextBuilder);
-					return true;
-				} else {
-					ctx.Builder = nextBuilder;
-					return ctx.Builder (ctx);
-				}
-			};
-		}
-		
-		public static ViBuilder RegisterBuilder (ViBuilder nextBuilder)
-		{
-			return (ViBuilderContext ctx) => {
-				var k = ctx.LastKey;
-				if (k.Char == '"') {
-					ViBuilders.StartRegisterBuilder (ctx, nextBuilder);
-					return true;
-				} else {
-					ctx.Builder = nextBuilder;
-					return ctx.Builder (ctx);
-				}
-			};
-		}
-		
-		public static ViBuilder First (params ViBuilder[] builders)
-		{
-			return (ViBuilderContext ctx) => builders.Any (b => b (ctx));
-		}
-	}
-	
-	class ViEditorActions
-	{
-		public static void CaretToScreenCenter (ViEditor ed)
-		{
-			var line = ed.Editor.PointToLocation (0, ed.Editor.Allocation.Height/2).Line;
-			if (line < 0)
-				line = ed.Data.Document.LineCount;
-			ed.Data.Caret.Line = line;
-		}
-		
-		public static void CaretToScreenBottom (ViEditor ed)
-		{
-			int line = ed.Editor.PointToLocation (0, ed.Editor.Allocation.Height - ed.Editor.LineHeight * 2 - 2).Line;
-			if (line < 0)
-				line = ed.Data.Document.LineCount;
-			ed.Data.Caret.Line = line;
-		}
-		
-		public static void CaretToScreenTop (ViEditor ed)
-		{
-			ed.Data.Caret.Line = System.Math.Max (0, ed.Editor.PointToLocation (0, ed.Editor.LineHeight - 1).Line);
-		}
 	}
 }
 

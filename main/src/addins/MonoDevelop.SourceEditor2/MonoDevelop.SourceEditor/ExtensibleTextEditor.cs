@@ -135,9 +135,20 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
+		static bool? testNewViMode = null;
+		static bool TestNewViMode {
+			get {
+				if (!testNewViMode.HasValue)
+					testNewViMode = System.Environment.GetEnvironmentVariable ("TEST_NEW_VI_MODE") != null;
+				return testNewViMode.Value;
+			}
+		}
+		
 		void UpdateEditMode ()
 		{
-			if (Options.UseViModes) {
+			if (TestNewViMode && !(CurrentMode is NewIdeViMode)) {
+				CurrentMode = new NewIdeViMode (this);
+			} else if (Options.UseViModes) {
 				if (!(CurrentMode is IdeViMode))
 					CurrentMode = new IdeViMode (this);
 			} else {

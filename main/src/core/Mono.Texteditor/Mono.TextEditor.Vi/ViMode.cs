@@ -34,7 +34,24 @@ using System.Linq;
 
 namespace Mono.TextEditor.Vi
 {
-
+	public class NewViEditMode : EditMode
+	{
+		ViEditor viEditor;
+		
+		public NewViEditMode ()
+		{
+			viEditor = new ViEditor (this);
+		}
+		
+		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
+		{
+			viEditor.ProcessKey (modifier, key, (char)unicodeKey);
+		}
+		
+		public new TextEditor Editor { get { return base.Editor; } }
+		public new TextEditorData Data { get { return base.Data; } }
+	}
+	
 	public class ViEditMode : EditMode
 	{
 		bool searchBackward;
