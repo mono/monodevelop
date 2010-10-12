@@ -47,6 +47,20 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 			return cmd != null && SoftDebuggerEngine.CanDebugRuntime (cmd.TargetRuntime);
 		}
 		
+		FilePath GetFxDir (MonoTargetRuntime runtime, ClrVersion version)
+		{
+			FilePath prefix = runtime.Prefix;
+			switch (version) {
+			case ClrVersion.Net_1_1:
+				return prefix.Combine ("lib", "mono", "1.0");
+			case ClrVersion.Net_2_0:
+				return prefix.Combine ("lib", "mono", "2.0");
+			case ClrVersion.Net_4_0:
+				return prefix.Combine ("lib", "mono", "4.0");
+			}
+			throw new InvalidOperationException (string.Format ("Unknown runtime version '{0}'", version));
+		}
+		
 		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand command)
 		{
 			var cmd = (AspNetExecutionCommand) command;
@@ -57,17 +71,23 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 				Arguments = cmd.XspParameters.GetXspParameters ().Trim (),
 			};
 			
-			FilePath prefix = runtime.Prefix;
-			if (MonoDevelop.Core.PropertyService.IsWindows) {
-				startInfo.Command = (cmd.ClrVersion == ClrVersion.Net_1_1)
-					? prefix.Combine ("lib", "mono", "1.0", "winhack", "xsp.exe")
-					: prefix.Combine ("lib", "mono", "2.0", "winhack", "xsp2.exe");
+			var xspName = AspNetExecutionHandler.GetXspName (cmd);
+			
+			FilePath fxDir = GetFxDir (runtime, cmd.ClrVersion);
+			FilePath xspPath = fxDir.Combine (xspName).ChangeExtension (".exe");
+			
+			//no idea why xsp is sometimes relocated to a "winhack" dir on Windows
+			if (MonoDevelop.Core.PropertyService.IsWindows && !File.Exists (xspPath)) {
+				var winhack = fxDir.Combine ("winhack");
+				if (Directory.Exists (winhack))
+					xspPath = winhack.Combine (xspName).ChangeExtension (".exe");
 			}
-			else {
-				startInfo.Command = (cmd.ClrVersion == ClrVersion.Net_1_1)
-					? prefix.Combine ("lib", "mono", "1.0", "xsp.exe")
-					: prefix.Combine ("lib", "mono", "2.0", "xsp2.exe");
-			}
+			
+			if (!File.Exists (xspPath))
+				throw new UserException (GettextCatalog.GetString (
+					"The \"{0}\" web server cannot be started. Please ensure that it is installed.", xspName), null);
+			
+			startInfo.Command = xspPath;
 			
 			string error;
 			startInfo.UserAssemblyNames = SoftDebuggerEngine.GetAssemblyNames (cmd.UserAssemblyPaths, out error);
