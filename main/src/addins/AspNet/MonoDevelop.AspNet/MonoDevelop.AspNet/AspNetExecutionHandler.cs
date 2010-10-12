@@ -36,7 +36,7 @@ namespace MonoDevelop.AspNet
 {
 	public class AspNetExecutionHandler: IExecutionHandler
 	{
-		string GetXspName (AspNetExecutionCommand cmd)
+		public static string GetXspName (AspNetExecutionCommand cmd)
 		{
 			string xspName;
 			switch (cmd.ClrVersion) {
@@ -47,12 +47,15 @@ namespace MonoDevelop.AspNet
 			case ClrVersion.Net_4_0:
 				return "xsp4";
 			default:
-				return null;
+				throw new UserException (GettextCatalog.GetString (
+					"ASP.NET is not supported for unknown runtime version '{0}'.", cmd.ClrVersion));
 			}
 		}
 		
-		FilePath GetXspPath (AspNetExecutionCommand cmd, string xspName)
+		public static FilePath GetXspPath (AspNetExecutionCommand cmd)
 		{
+			var xspName = GetXspName (cmd);
+			
 			FilePath xspPath = cmd.TargetRuntime.GetToolPath (cmd.TargetFramework, xspName);
 			
 			if (xspPath.IsNullOrEmpty && cmd.ClrVersion == ClrVersion.Net_1_1)
@@ -60,7 +63,11 @@ namespace MonoDevelop.AspNet
 			
 			//if the current runtime doesn't provide XSP, use one bundled alongside the addin
 			if (xspPath.IsNullOrEmpty)
-				 xspPath = Path.Combine (Path.GetDirectoryName (typeof (AspNetExecutionHandler).Assembly.CodeBase), xspName);
+				xspPath = Path.Combine (Path.GetDirectoryName (typeof (AspNetExecutionHandler).Assembly.CodeBase), xspName);
+			
+			if (xspPath.IsNullOrEmpty || !File.Exists (xspPath))
+				throw new UserException (GettextCatalog.GetString (
+					"The \"{0}\" web server cannot be started. Please ensure that it is installed.", xspName), null);
 			
 			return xspPath;
 		}
@@ -74,12 +81,8 @@ namespace MonoDevelop.AspNet
 		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
 			var cmd = (AspNetExecutionCommand) command;
-			var xspName = GetXspName (cmd);
-			var xspPath = GetXspPath (cmd, xspName);
+			var xspPath = GetXspPath (cmd);
 			
-			if (xspPath.IsNullOrEmpty || !File.Exists (xspPath))
-				throw new UserException (string.Format ("The \"{0}\" web server cannot be started. Please ensure that it is installed.", xspName), null);
-		
 			//if it's a script, use a native execution handler
 			if (xspPath.Extension != ".exe") {
 				//set mono debug mode if project's in debug mode
