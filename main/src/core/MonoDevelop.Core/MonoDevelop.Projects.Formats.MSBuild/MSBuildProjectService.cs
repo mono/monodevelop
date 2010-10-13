@@ -516,6 +516,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					}
 				}
 				asm.Runtime = runtime;
+				
+				//run in 32-bit mode because usually msbuild targets are installed for 32-bit only
+				asm.MainModule.Image.CLIHeader.Flags |= Mono.Cecil.Binary.RuntimeImage.F32BitsRequired;
+				
 				Cecil.AssemblyFactory.SaveAssembly (asm, p);
 			}
 			
