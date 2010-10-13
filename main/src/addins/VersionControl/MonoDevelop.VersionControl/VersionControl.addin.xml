@@ -151,6 +151,13 @@
 			_label = "Create _Patch"
 			icon = "vc-diff"
 			description = "Create a patch representing local changes."/>
+			
+		<Command id = "MonoDevelop.VersionControl.Views.BlameCommands.CopyRevision"  
+			_label = "_Copy revision"/>
+		<Command id = "MonoDevelop.VersionControl.Views.BlameCommands.ShowDiff" 
+			_label = "_Show diff"/>
+		<Command id = "MonoDevelop.VersionControl.Views.BlameCommands.ShowLog" 
+			_label = "S_how log"/>
 		</Category>
 	</Extension>
 	
@@ -240,7 +247,8 @@
 		<SeparatorItem id = "CommandSeparator3" />
 	</Extension>
 	<!--
-	<Extension path="/MonoDevelop/SourceEditor2/ContextMenu/Editor"> 
+	<Extension path="/MonoDevelop/SourceEditor2/ContextMenu/Editor">
+ 
 		<CommandItem id = "MonoDevelop.VersionControl.Commands.ShowAnnotations"/>
 		<CommandItem id = "MonoDevelop.VersionControl.Commands.HideAnnotations"/>
 	</Extension>	-->
@@ -279,4 +287,3 @@
 		<Class class = "MonoDevelop.VersionControl.Views.SubviewAttachmentHandler"/>
 	</Extension>
 </Addin>
-	

@@ -35,9 +35,16 @@ using System.Threading;
 using MonoDevelop.Core;
 using System.Text.RegularExpressions;
 using System.Text;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.VersionControl.Views
 {
+	public enum BlameCommands {
+		CopyRevision,
+		ShowDiff,
+		ShowLog
+	}
+	
 	public class BlameWidget : Bin
 	{
 		Adjustment vAdjustment;
@@ -245,20 +252,33 @@ namespace MonoDevelop.VersionControl.Views
 			double curY = startY - Editor.VAdjustment.Value;
 			int line = startLine;
 			JumpOverFoldings (ref line);
+			var color = Style.Dark (State);
+			
 			while (curY < editor.Allocation.Bottom) {
 				Annotation ann = line <= overview.annotations.Count ? overview.annotations[line - 1] : null;
-				
+				double curStart = curY;
 				do {
 					double lineHeight = Editor.GetLineHeight (line);
 					curY += lineHeight;
 					line++;
 					JumpOverFoldings (ref  line);
 				} while (line + 1 <= overview.annotations.Count && ann != null && overview.annotations[line - 1] != null && overview.annotations[line - 1].Revision == ann.Revision);
-				
+				if (overview.highlightAnnotation != null) {
+					if (overview.highlightAnnotation.Revision == ann.Revision && curStart <= overview.highlightPositon && overview.highlightPositon < curY) {
+					} else {
+						cr.Rectangle (Editor.TextViewMargin.XOffset, curStart + cr.LineWidth, Editor.Allocation.Width - Editor.TextViewMargin.XOffset, curY - curStart - cr.LineWidth);
+						cr.Color = new Cairo.Color (color.Red / (double)ushort.MaxValue, 
+							color.Green / (double)ushort.MaxValue,
+							color.Blue / (double)ushort.MaxValue,
+							0.1);
+						cr.Fill ();
+						
+					}
+				}
 				if (ann != null) {
 					cr.MoveTo (Editor.TextViewMargin.XOffset, curY + 0.5);
 					cr.LineTo (Editor.Allocation.Width, curY + 0.5);
-					var color = Style.Dark (State);
+					
 					cr.Color = new Cairo.Color (color.Red / (double)ushort.MaxValue, 
 					                            color.Green / (double)ushort.MaxValue,
 					                            color.Blue / (double)ushort.MaxValue,
@@ -343,7 +363,7 @@ namespace MonoDevelop.VersionControl.Views
 				};
 				
 				layout = new Pango.Layout (PangoContext);
-				Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.ButtonMotionMask;
+				Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.ButtonMotionMask | EventMask.LeaveNotifyMask;
 				OptionsChanged ();
 				Show ();
 			}
@@ -367,6 +387,8 @@ namespace MonoDevelop.VersionControl.Views
 				}
 			}
 			
+			internal double highlightPositon;
+			internal Annotation highlightAnnotation;
 			protected override bool OnMotionNotifyEvent (EventMotion evnt)
 			{
 				TooltipText = null;
@@ -378,28 +400,103 @@ namespace MonoDevelop.VersionControl.Views
 					
 					WidthRequest = newWidthRequest;
 					QueueResize ();
-				} else {
-					int startLine = widget.Editor.YToLine (widget.Editor.VAdjustment.Value + evnt.Y);
-					var ann = annotations[startLine];
-					if (ann != null)
-						TooltipText = GetCommitMessage (startLine);
+				}
+				int startLine = widget.Editor.YToLine (widget.Editor.VAdjustment.Value + evnt.Y);
+				var ann = startLine > 0 && startLine <= annotations.Count ? annotations[startLine - 1] : null;
+				if (ann != null)
+					TooltipText = GetCommitMessage (startLine);
+				
+				highlightPositon = evnt.Y;
+				if (highlightAnnotation != ann) {
+					highlightAnnotation = ann;
+					widget.QueueDraw ();
 				}
 				
 				return base.OnMotionNotifyEvent (evnt);
 			}
 			
+			
+			protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
+			{
+				highlightAnnotation = null;
+				widget.QueueDraw ();
+				return base.OnLeaveNotifyEvent (evnt);
+			}
+			
 			uint grabTime;
 			protected override bool OnButtonPressEvent (EventButton evnt)
 			{
-				if (evnt.X < leftSpacer) {
-					grabTime = evnt.Time;
-					var status = Gdk.Pointer.Grab (this.GdkWindow, false, EventMask.PointerMotionHintMask | EventMask.Button1MotionMask | EventMask.ButtonReleaseMask | EventMask.EnterNotifyMask | EventMask.LeaveNotifyMask, null, null, grabTime);
-					if (status == GrabStatus.Success) {
-						dragPosition = evnt.X;
+				if (evnt.Button == 3) {
+					CommandEntrySet opset = new CommandEntrySet ();
+					opset.AddItem (BlameCommands.ShowDiff);
+					opset.AddItem (BlameCommands.ShowLog);
+					opset.AddItem (Command.Separator);
+					opset.AddItem (BlameCommands.CopyRevision);
+					IdeApp.CommandService.ShowContextMenu (opset, this);
+				} else {
+					if (evnt.X < leftSpacer) {
+						grabTime = evnt.Time;
+						var status = Gdk.Pointer.Grab (this.GdkWindow, false, EventMask.PointerMotionHintMask | EventMask.Button1MotionMask | EventMask.ButtonReleaseMask | EventMask.EnterNotifyMask | EventMask.LeaveNotifyMask, null, null, grabTime);
+						if (status == GrabStatus.Success) {
+							dragPosition = evnt.X;
+						}
 					}
 				}
 				return base.OnButtonPressEvent (evnt);
 			}
+			
+			[CommandHandler (BlameCommands.CopyRevision)]
+			protected void OnCopyRevision ()
+			{
+				if (highlightAnnotation == null)
+					return;
+				var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+				clipboard.Text = highlightAnnotation.Revision.ToString ();
+				clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
+				clipboard.Text = highlightAnnotation.Revision.ToString ();
+			}
+		
+			[CommandHandler (BlameCommands.ShowDiff)]
+			protected void OnShowDiff ()
+			{
+				if (highlightAnnotation == null)
+					return;
+				int i = 1;
+				foreach (var content in widget.info.Document.Window.SubViewContents) {
+					DiffView diffView = content as DiffView;
+					if (diffView != null) {
+						widget.info.Document.Window.SwitchView (i);
+						var rev = widget.info.History.FirstOrDefault (h => h.ToString () == highlightAnnotation.Revision);
+						if (rev == null)
+							return;
+						diffView.ComparisonWidget.SetRevision (diffView.ComparisonWidget.OriginalEditor, rev.GetPrevious ());
+						diffView.ComparisonWidget.SetRevision (diffView.ComparisonWidget.DiffEditor, rev);
+						break;
+					}
+					i++;
+				}
+			}
+		
+			[CommandHandler (BlameCommands.ShowLog)]
+			protected void OnShowLog ()
+			{
+				if (highlightAnnotation == null)
+					return;
+				int i = 1;
+				foreach (var content in widget.info.Document.Window.SubViewContents) {
+					LogView logView = content as LogView;
+					if (logView != null) {
+						widget.info.Document.Window.SwitchView (i);
+						var rev = widget.info.History.FirstOrDefault (h => h.ToString () == highlightAnnotation.Revision);
+						if (rev == null)
+							return;
+						logView.LogWidget.SelectedRevision = rev;
+						break;
+					}
+					i++;
+				}
+			}
+		
 			
 			protected override bool OnButtonReleaseEvent (EventButton evnt)
 			{
@@ -575,7 +672,6 @@ namespace MonoDevelop.VersionControl.Views
 					
 					int startLine = widget.Editor.YToLine ((int)widget.Editor.VAdjustment.Value);
 					double startY = widget.Editor.LineToY (startLine);
-					
 					while (startLine > 1 && startLine < annotations.Count && annotations[startLine - 1] != null && annotations[startLine] != null && annotations[startLine - 1].Revision == annotations[startLine].Revision) {
 						startLine--;
 						startY -= widget.Editor.GetLineHeight (widget.Editor.Document.GetLine (startLine));
@@ -590,6 +686,19 @@ namespace MonoDevelop.VersionControl.Views
 						int w = 0, w2 = 0, h = 16;
 						Annotation ann = line <= annotations.Count ? annotations[line - 1] : null;
 						if (ann != null) {
+							double nextY = curY;
+							do {
+								double lineHeight = widget.Editor.GetLineHeight (line);
+								nextY += lineHeight;
+								line++;
+								widget.JumpOverFoldings (ref line);
+							} while (line + 1 <= annotations.Count && annotations[line - 1] != null && annotations[line - 1].Revision == ann.Revision);
+							
+							if (highlightAnnotation != null && highlightAnnotation.Revision == ann.Revision && curStart <= highlightPositon && highlightPositon < nextY) {
+								cr.Rectangle (leftSpacer, curStart + cr.LineWidth, Allocation.Width - leftSpacer, nextY - curStart - cr.LineWidth);
+								cr.Color = new Cairo.Color (1, 1, 1);
+								cr.Fill ();
+							}
 							layout.SetText (ann.Author);
 							layout.GetPixelSize (out w, out h);
 							e.Window.DrawLayout (Style.BlackGC, leftSpacer + margin, (int)(curY + (widget.Editor.LineHeight - h) / 2), layout);
@@ -606,13 +715,7 @@ namespace MonoDevelop.VersionControl.Views
 								layout.GetPixelSize (out w, out h);
 								e.Window.DrawLayout (Style.BlackGC, leftSpacer + margin + middle - w / 2, (int)(curY + (widget.Editor.LineHeight - h) / 2), layout);
 							}
-						
-							do {
-								double lineHeight = widget.Editor.GetLineHeight (line);
-								curY += lineHeight;
-								line++;
-								widget.JumpOverFoldings (ref line);
-							} while (line + 1 <= annotations.Count && annotations[line - 1] != null && annotations[line - 1].Revision == ann.Revision);
+							curY = nextY;
 						} else {
 							curY += widget.Editor.GetLineHeight (line);
 							line++;
@@ -643,7 +746,6 @@ namespace MonoDevelop.VersionControl.Views
 							} else {
 								a = 1;
 							}
-							
 							HslColor color = new Cairo.Color (0.90, 0.90, 1);
 							color.L = 0.4 + a / 2;
 							color.S = 1 - a / 2;

@@ -18,6 +18,12 @@ namespace MonoDevelop.VersionControl.Views
 		
 		ListStore changedpathstore;
 		
+		public LogWidget LogWidget {
+			get {
+				return this.widget;
+			}
+		}
+		
 		public static void Show (VersionControlItemList items, Revision since)
 		{
 			foreach (VersionControlItem item in items) {

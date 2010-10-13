@@ -194,7 +194,6 @@ namespace MonoDevelop.VersionControl.Views
 
 		void HandleTreeviewFilesDiffLineActivated (object sender, EventArgs e)
 		{
-			Console.WriteLine ("line activated !!");
 			TreePath[] paths = treeviewFiles.Selection.GetSelectedRows ();
 			
 			if (paths.Length != 1)
@@ -212,8 +211,7 @@ namespace MonoDevelop.VersionControl.Views
 				if (diffView != null) {
 					doc.Window.SwitchView (i);
 					diffView.ComparisonWidget.info.RunAfterUpdate (delegate {
-						// TODO: Set previous revision
-	//					diffView.ComparisonWidget.SetRevision (diffView.ComparisonWidget.OriginalEditor, null);
+						diffView.ComparisonWidget.SetRevision (diffView.ComparisonWidget.OriginalEditor, SelectedRevision.GetPrevious ());
 						diffView.ComparisonWidget.SetRevision (diffView.ComparisonWidget.DiffEditor, SelectedRevision);
 						
 						diffView.ComparisonWidget.DiffEditor.Caret.Location = new Mono.TextEditor.DocumentLocation (line, 1);
@@ -396,6 +394,18 @@ namespace MonoDevelop.VersionControl.Views
 				if (!treeviewLog.Selection.GetSelected (out iter))
 					return null;
 				return (Revision)logstore.GetValue (iter, 0);
+			}
+			set {
+				TreeIter iter;
+				if (!treeviewLog.Model.GetIterFirst (out iter))
+					return;
+				do {
+					var rev = (Revision)logstore.GetValue (iter, 0);
+					if (rev.ToString () == value.ToString ()) {
+						treeviewLog.Selection.SelectIter (iter);
+						return;
+					}
+				} while (treeviewLog.Model.IterNext (ref iter));
 			}
 		}
 		
