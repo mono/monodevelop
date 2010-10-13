@@ -161,7 +161,7 @@ namespace MonoDevelop.MonoDroid.Gui
 			}
 			this.DefaultWidth = 407;
 			this.DefaultHeight = 300;
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

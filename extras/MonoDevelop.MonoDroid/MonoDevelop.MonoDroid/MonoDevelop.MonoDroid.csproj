@@ -95,6 +95,7 @@
     <Compile Include="gtk-gui\MonoDevelop.MonoDroid.Gui.DeviceChooserDialog.cs" />
     <Compile Include="Adb\DeviceManager.cs" />
     <Compile Include="MonoDroidUtility.cs" />
+    <Compile Include="MonoDroidDeviceConsole.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MonoDroid.addin.xml">

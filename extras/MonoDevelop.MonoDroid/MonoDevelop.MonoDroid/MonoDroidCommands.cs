@@ -134,4 +134,16 @@ namespace MonoDevelop.MonoDroid
 			MonoDroidFramework.Toolbox.StartAvdManager ();
 		}
 	}
+	
+	class ViewDeviceConsoleHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+		}
+		
+		protected override void Run ()
+		{
+			MonoDroidDeviceConsole.Run ();
+		}
+	}
 }

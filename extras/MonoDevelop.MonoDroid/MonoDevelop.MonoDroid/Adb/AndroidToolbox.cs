@@ -228,6 +228,13 @@ namespace MonoDevelop.MonoDroid
 			var args = string.Format ("-s '{0}' shell pm list packages", device.ID);
 			return new GetPackagesOperation (StartProcess (AdbExe, args, output, errorWriter), output);
 		}
+		
+		public ProcessWrapper LogCat (AndroidDevice device, ProcessEventHandler outputLog,
+			ProcessEventHandler errorLog)
+		{
+			var args = string.Format ("-s '{0}' logcat", device.ID);
+			return StartProcess (AdbExe, args, outputLog, errorLog);
+		}
 
 		public bool IsSharedRuntimeInstalled (List<string> packages)
 		{

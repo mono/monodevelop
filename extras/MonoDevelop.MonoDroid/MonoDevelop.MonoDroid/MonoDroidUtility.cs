@@ -100,7 +100,7 @@ namespace MonoDevelop.MonoDroid
 			}
 			
 			//copture the device for a later anonymous method
-			AndroidDevice dev = device = InvokeSynch (GetDevice);
+			AndroidDevice dev = device = InvokeSynch (() => ChooseDevice (null));
 			
 			if (device == null) {
 				opMon.Dispose ();
@@ -192,11 +192,11 @@ namespace MonoDevelop.MonoDroid
 			return chop;
 		}
 		
-		static AndroidDevice GetDevice ()
+		public static AndroidDevice ChooseDevice (Gtk.Window parent)
 		{
 			var dlg = new MonoDevelop.MonoDroid.Gui.DeviceChooserDialog ();
 			try {
-				var result = MessageService.ShowCustomDialog (dlg);
+				var result = MessageService.ShowCustomDialog (dlg, parent);
 				if (result != (int)Gtk.ResponseType.Ok)
 					return null;
 				return dlg.Device;

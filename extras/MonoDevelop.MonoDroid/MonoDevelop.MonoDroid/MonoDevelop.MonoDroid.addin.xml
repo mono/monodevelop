@@ -121,6 +121,10 @@
 				_description = "Open the Android Virtual Device Manager" 
 				defaultHandler = "MonoDevelop.MonoDroid.DefaultOpenAvdManagerHandler"
 				_label = "Open AVD Manager" />
+			<Command id = "MonoDevelop.MonoDroid.MonoDroidCommands.ViewDeviceConsole" 
+				_description = "View the MonoDroid Device Console" 
+				defaultHandler = "MonoDevelop.MonoDroid.ViewDeviceConsoleHandler"
+				_label = "MonoDroid Console" />
 		</Condition>
 	</Extension>
 	
@@ -143,6 +147,7 @@
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Tools">
 		<Condition id="MonoDroidInstalled">
 			<CommandItem id = "MonoDevelop.MonoDroid.MonoDroidCommands.OpenAvdManager" />
+			<CommandItem id = "MonoDevelop.MonoDroid.MonoDroidCommands.ViewDeviceConsole" />
 		</Condition>
 	</Extension>
 	
