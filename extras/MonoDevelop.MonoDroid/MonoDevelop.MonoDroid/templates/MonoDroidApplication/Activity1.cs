@@ -23,7 +23,7 @@ namespace ${Namespace}
 			base.OnCreate (bundle);
 
 			// Set our view from the "main" layout resource
-			SetContentView (R.layout.main);
+			SetContentView (Resource.layout.main);
 
 			// Get our button from the layout resource,
 			// and attach an event to it
