@@ -316,7 +316,9 @@ build/MacOSX/Makefile
 contrib/Makefile
 contrib/Mono.Cecil/Makefile
 contrib/NRefactory/Makefile
-contrib/GitSharp/Makefile
+contrib/Sharpen/Makefile
+contrib/NGit/Makefile
+contrib/NSch/Makefile
 src/Makefile
 src/core/Makefile
 src/core/Mono.Texteditor/Makefile
