@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{72944A6C-45FF-4EF8-B349-8C9CABF519D4}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Sharpen</RootNamespace>
+    <AssemblyName>Sharpen</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="ICSharpCode.SharpZipLib" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Sharpen\AccessController.cs" />
+    <Compile Include="Sharpen\AList.cs" />
+    <Compile Include="Sharpen\Arrays.cs" />
+    <Compile Include="Sharpen\AtomicInteger.cs" />
+    <Compile Include="Sharpen\AtomicLong.cs" />
+    <Compile Include="Sharpen\AtomicReference.cs" />
+    <Compile Include="Sharpen\AtomicReferenceArray.cs" />
+    <Compile Include="Sharpen\BufferedInputStream.cs" />
+    <Compile Include="Sharpen\BufferedOutputStream.cs" />
+    <Compile Include="Sharpen\BufferedReader.cs" />
+    <Compile Include="Sharpen\ByteArrayInputStream.cs" />
+    <Compile Include="Sharpen\ByteArrayOutputStream.cs" />
+    <Compile Include="Sharpen\Callable.cs" />
+    <Compile Include="Sharpen\CharBuffer.cs" />
+    <Compile Include="Sharpen\CharsetDecoder.cs" />
+    <Compile Include="Sharpen\CharsetEncoder.cs" />
+    <Compile Include="Sharpen\CodingErrorAction.cs" />
+    <Compile Include="Sharpen\Collections.cs" />
+    <Compile Include="Sharpen\ConcurrentHashMap.cs" />
+    <Compile Include="Sharpen\ConcurrentMap.cs" />
+    <Compile Include="Sharpen\CopyOnWriteArrayList.cs" />
+    <Compile Include="Sharpen\CountDownLatch.cs" />
+    <Compile Include="Sharpen\CRC32.cs" />
+    <Compile Include="Sharpen\CyclicBarrier.cs" />
+    <Compile Include="Sharpen\DataConverter.cs" />
+    <Compile Include="Sharpen\DeflaterOutputStream.cs" />
+    <Compile Include="Sharpen\EnumerableWrapper.cs" />
+    <Compile Include="Sharpen\EnumeratorWrapper.cs" />
+    <Compile Include="Sharpen\Executors.cs" />
+    <Compile Include="Sharpen\ExecutorService.cs" />
+    <Compile Include="Sharpen\Extensions.cs" />
+    <Compile Include="Sharpen\FileChannel.cs" />
+    <Compile Include="Sharpen\FileInputStream.cs" />
+    <Compile Include="Sharpen\FileLock.cs" />
+    <Compile Include="Sharpen\FileOutputStream.cs" />
+    <Compile Include="Sharpen\FileReader.cs" />
+    <Compile Include="Sharpen\FileWriter.cs" />
+    <Compile Include="Sharpen\Future.cs" />
+    <Compile Include="Sharpen\GZIPInputStream.cs" />
+    <Compile Include="Sharpen\GZIPOutputStream.cs" />
+    <Compile Include="Sharpen\InflaterInputStream.cs" />
+    <Compile Include="Sharpen\InheritableThreadLocal.cs" />
+    <Compile Include="Sharpen\InputStreamReader.cs" />
+    <Compile Include="Sharpen\LinkageError.cs" />
+    <Compile Include="Sharpen\LinkedHashMap.cs" />
+    <Compile Include="Sharpen\ListIterator.cs" />
+    <Compile Include="Sharpen\MappedByteBuffer.cs" />
+    <Compile Include="Sharpen\Matcher.cs" />
+    <Compile Include="Sharpen\MessageFormat.cs" />
+    <Compile Include="Sharpen\ObjectInputStream.cs" />
+    <Compile Include="Sharpen\ObjectOutputStream.cs" />
+    <Compile Include="Sharpen\OutputStreamWriter.cs" />
+    <Compile Include="Sharpen\Pattern.cs" />
+    <Compile Include="Sharpen\PipedInputStream.cs" />
+    <Compile Include="Sharpen\PipedOutputStream.cs" />
+    <Compile Include="Sharpen\PrintWriter.cs" />
+    <Compile Include="Sharpen\PrivilegedAction.cs" />
+    <Compile Include="Sharpen\RandomAccessFile.cs" />
+    <Compile Include="Sharpen\ReentrantLock.cs" />
+    <Compile Include="Sharpen\Reference.cs" />
+    <Compile Include="Sharpen\ReferenceQueue.cs" />
+    <Compile Include="Sharpen\Runtime.cs" />
+    <Compile Include="Sharpen\SimpleDateFormat.cs" />
+    <Compile Include="Sharpen\SingletonList.cs" />
+    <Compile Include="Sharpen\SoftReference.cs" />
+    <Compile Include="Sharpen\SynchronizedList.cs" />
+    <Compile Include="Sharpen\Thread.cs" />
+    <Compile Include="Sharpen\TimeUnit.cs" />
+    <Compile Include="Sharpen\WrappedSystemStream.cs" />
+    <Compile Include="Sharpen\AbstractCollection.cs" />
+    <Compile Include="Sharpen\AbstractList.cs" />
+    <Compile Include="Sharpen\AbstractMap.cs" />
+    <Compile Include="Sharpen\AbstractSet.cs" />
+    <Compile Include="Sharpen\Authenticator.cs" />
+    <Compile Include="Sharpen\ByteBuffer.cs" />
+    <Compile Include="Sharpen\ByteOrder.cs" />
+    <Compile Include="Sharpen\CharSequence.cs" />
+    <Compile Include="Sharpen\DigestOutputStream.cs" />
+    <Compile Include="Sharpen\EnumSet.cs" />
+    <Compile Include="Sharpen\Exceptions.cs" />
+    <Compile Include="Sharpen\Executor.cs" />
+    <Compile Include="Sharpen\FilenameFilter.cs" />
+    <Compile Include="Sharpen\FilePath.cs" />
+    <Compile Include="Sharpen\FilterInputStream.cs" />
+    <Compile Include="Sharpen\FilterOutputStream.cs" />
+    <Compile Include="Sharpen\InputStream.cs" />
+    <Compile Include="Sharpen\Iterable.cs" />
+    <Compile Include="Sharpen\Iterator.cs" />
+    <Compile Include="Sharpen\MessageDigest.cs" />
+    <Compile Include="Sharpen\OutputStream.cs" />
+    <Compile Include="Sharpen\PasswordAuthentication.cs" />
+    <Compile Include="Sharpen\ResourceBundle.cs" />
+    <Compile Include="Sharpen\Runnable.cs" />
+    <Compile Include="Sharpen\TreeSet.cs" />
+    <Compile Include="Sharpen\LinkedHashSet.cs" />
+    <Compile Include="Sharpen\ProxySelector.cs" />
+    <Compile Include="Sharpen\Proxy.cs" />
+    <Compile Include="Sharpen\HttpURLConnection.cs" />
+    <Compile Include="Sharpen\URLEncoder.cs" />
+    <Compile Include="Sharpen\BitSet.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Sharpen\" />
+  </ItemGroup>
+</Project>

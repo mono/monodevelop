@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E3BFF8B4-189C-496A-A817-7E8B31E22B91}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>NGit</RootNamespace>
+    <AssemblyName>NGit</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="ICSharpCode.SharpZipLib" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="NGit\AbbreviatedObjectId.cs" />
+    <Compile Include="NGit\AbstractIndexTreeVisitor.cs" />
+    <Compile Include="NGit\AnyObjectId.cs" />
+    <Compile Include="NGit\AsyncObjectLoaderQueue.cs" />
+    <Compile Include="NGit\AsyncObjectSizeQueue.cs" />
+    <Compile Include="NGit\AsyncOperation.cs" />
+    <Compile Include="NGit\BaseRepositoryBuilder.cs" />
+    <Compile Include="NGit\BlobBasedConfig.cs" />
+    <Compile Include="NGit\CommitBuilder.cs" />
+    <Compile Include="NGit\Config.cs" />
+    <Compile Include="NGit\ConfigConstants.cs" />
+    <Compile Include="NGit\Constants.cs" />
+    <Compile Include="NGit\CoreConfig.cs" />
+    <Compile Include="NGit\FileMode.cs" />
+    <Compile Include="NGit\FileTreeEntry.cs" />
+    <Compile Include="NGit\ForceModified.cs" />
+    <Compile Include="NGit\GitIndex.cs" />
+    <Compile Include="NGit\GitlinkTreeEntry.cs" />
+    <Compile Include="NGit\IndexDiff.cs" />
+    <Compile Include="NGit\IndexTreeVisitor.cs" />
+    <Compile Include="NGit\IndexTreeWalker.cs" />
+    <Compile Include="NGit\InflaterCache.cs" />
+    <Compile Include="NGit\JGitText.cs" />
+    <Compile Include="NGit\MutableObjectId.cs" />
+    <Compile Include="NGit\NullProgressMonitor.cs" />
+    <Compile Include="NGit\ObjectChecker.cs" />
+    <Compile Include="NGit\ObjectDatabase.cs" />
+    <Compile Include="NGit\ObjectId.cs" />
+    <Compile Include="NGit\ObjectIdRef.cs" />
+    <Compile Include="NGit\ObjectIdSubclassMap.cs" />
+    <Compile Include="NGit\ObjectInserter.cs" />
+    <Compile Include="NGit\ObjectLoader.cs" />
+    <Compile Include="NGit\ObjectReader.cs" />
+    <Compile Include="NGit\ObjectStream.cs" />
+    <Compile Include="NGit\PersonIdent.cs" />
+    <Compile Include="NGit\ProgressMonitor.cs" />
+    <Compile Include="NGit\Ref.cs" />
+    <Compile Include="NGit\RefComparator.cs" />
+    <Compile Include="NGit\RefDatabase.cs" />
+    <Compile Include="NGit\RefRename.cs" />
+    <Compile Include="NGit\RefUpdate.cs" />
+    <Compile Include="NGit\RefWriter.cs" />
+    <Compile Include="NGit\Repository.cs" />
+    <Compile Include="NGit\RepositoryBuilder.cs" />
+    <Compile Include="NGit\RepositoryCache.cs" />
+    <Compile Include="NGit\RepositoryState.cs" />
+    <Compile Include="NGit\StoredConfig.cs" />
+    <Compile Include="NGit\SymbolicRef.cs" />
+    <Compile Include="NGit\SymlinkTreeEntry.cs" />
+    <Compile Include="NGit\TagBuilder.cs" />
+    <Compile Include="NGit\TextProgressMonitor.cs" />
+    <Compile Include="NGit\ThreadSafeProgressMonitor.cs" />
+    <Compile Include="NGit\TransferConfig.cs" />
+    <Compile Include="NGit\Tree.cs" />
+    <Compile Include="NGit\TreeEntry.cs" />
+    <Compile Include="NGit\TreeIterator.cs" />
+    <Compile Include="NGit\TreeVisitor.cs" />
+    <Compile Include="NGit\TreeVisitorWithCurrentDirectory.cs" />
+    <Compile Include="NGit\Treeish.cs" />
+    <Compile Include="NGit\UserConfig.cs" />
+    <Compile Include="NGit\WorkDirCheckout.cs" />
+    <Compile Include="NGit\WriteTree.cs" />
+    <Compile Include="NGit.Api\AddCommand.cs" />
+    <Compile Include="NGit.Api\CommitCommand.cs" />
+    <Compile Include="NGit.Api\Git.cs" />
+    <Compile Include="NGit.Api\GitCommand.cs" />
+    <Compile Include="NGit.Api\LogCommand.cs" />
+    <Compile Include="NGit.Api\MergeCommand.cs" />
+    <Compile Include="NGit.Api\TagCommand.cs" />
+    <Compile Include="NGit.Api.Errors\CheckoutConflictException.cs" />
+    <Compile Include="NGit.Api.Errors\ConcurrentRefUpdateException.cs" />
+    <Compile Include="NGit.Api.Errors\GitAPIException.cs" />
+    <Compile Include="NGit.Api.Errors\InvalidMergeHeadsException.cs" />
+    <Compile Include="NGit.Api.Errors\InvalidTagNameException.cs" />
+    <Compile Include="NGit.Api.Errors\JGitInternalException.cs" />
+    <Compile Include="NGit.Api.Errors\NoFilepatternException.cs" />
+    <Compile Include="NGit.Api.Errors\NoHeadException.cs" />
+    <Compile Include="NGit.Api.Errors\NoMessageException.cs" />
+    <Compile Include="NGit.Api.Errors\WrongRepositoryStateException.cs" />
+    <Compile Include="NGit.Diff\DiffConfig.cs" />
+    <Compile Include="NGit.Diff\DiffEntry.cs" />
+    <Compile Include="NGit.Diff\DiffFormatter.cs" />
+    <Compile Include="NGit.Diff\Edit.cs" />
+    <Compile Include="NGit.Diff\EditList.cs" />
+    <Compile Include="NGit.Diff\MyersDiff.cs" />
+    <Compile Include="NGit.Diff\RawText.cs" />
+    <Compile Include="NGit.Diff\RenameDetector.cs" />
+    <Compile Include="NGit.Diff\Sequence.cs" />
+    <Compile Include="NGit.Diff\SimilarityIndex.cs" />
+    <Compile Include="NGit.Diff\SimilarityRenameDetector.cs" />
+    <Compile Include="NGit.Dircache\BaseDirCacheEditor.cs" />
+    <Compile Include="NGit.Dircache\DirCache.cs" />
+    <Compile Include="NGit.Dircache\DirCacheBuildIterator.cs" />
+    <Compile Include="NGit.Dircache\DirCacheBuilder.cs" />
+    <Compile Include="NGit.Dircache\DirCacheCheckout.cs" />
+    <Compile Include="NGit.Dircache\DirCacheEditor.cs" />
+    <Compile Include="NGit.Dircache\DirCacheEntry.cs" />
+    <Compile Include="NGit.Dircache\DirCacheIterator.cs" />
+    <Compile Include="NGit.Dircache\DirCacheTree.cs" />
+    <Compile Include="NGit.Errors\AmbiguousObjectException.cs" />
+    <Compile Include="NGit.Errors\CheckoutConflictException.cs" />
+    <Compile Include="NGit.Errors\CompoundException.cs" />
+    <Compile Include="NGit.Errors\ConfigInvalidException.cs" />
+    <Compile Include="NGit.Errors\CorruptObjectException.cs" />
+    <Compile Include="NGit.Errors\EntryExistsException.cs" />
+    <Compile Include="NGit.Errors\GitlinksNotSupportedException.cs" />
+    <Compile Include="NGit.Errors\IncorrectObjectTypeException.cs" />
+    <Compile Include="NGit.Errors\IndexWriteException.cs" />
+    <Compile Include="NGit.Errors\InvalidObjectIdException.cs" />
+    <Compile Include="NGit.Errors\InvalidPatternException.cs" />
+    <Compile Include="NGit.Errors\LargeObjectException.cs" />
+    <Compile Include="NGit.Errors\MissingObjectException.cs" />
+    <Compile Include="NGit.Errors\NoClosingBracketException.cs" />
+    <Compile Include="NGit.Errors\NoWorkTreeException.cs" />
+    <Compile Include="NGit.Errors\ObjectWritingException.cs" />
+    <Compile Include="NGit.Errors\PackInvalidException.cs" />
+    <Compile Include="NGit.Errors\PackMismatchException.cs" />
+    <Compile Include="NGit.Errors\RevWalkException.cs" />
+    <Compile Include="NGit.Errors\RevisionSyntaxException.cs" />
+    <Compile Include="NGit.Errors\StopWalkException.cs" />
+    <Compile Include="NGit.Errors\StoredObjectRepresentationNotAvailableException.cs" />
+    <Compile Include="NGit.Errors\SymlinksNotSupportedException.cs" />
+    <Compile Include="NGit.Errors\TranslationBundleException.cs" />
+    <Compile Include="NGit.Errors\TranslationBundleLoadingException.cs" />
+    <Compile Include="NGit.Errors\TranslationStringMissingException.cs" />
+    <Compile Include="NGit.Errors\UnmergedPathException.cs" />
+    <Compile Include="NGit.Events\ConfigChangedEvent.cs" />
+    <Compile Include="NGit.Events\ConfigChangedListener.cs" />
+    <Compile Include="NGit.Events\IndexChangedEvent.cs" />
+    <Compile Include="NGit.Events\IndexChangedListener.cs" />
+    <Compile Include="NGit.Events\ListenerHandle.cs" />
+    <Compile Include="NGit.Events\ListenerList.cs" />
+    <Compile Include="NGit.Events\RefsChangedEvent.cs" />
+    <Compile Include="NGit.Events\RefsChangedListener.cs" />
+    <Compile Include="NGit.Events\RepositoryEvent.cs" />
+    <Compile Include="NGit.Events\RepositoryListener.cs" />
+    <Compile Include="NGit.Fnmatch\AbstractHead.cs" />
+    <Compile Include="NGit.Fnmatch\CharacterHead.cs" />
+    <Compile Include="NGit.Fnmatch\FileNameMatcher.cs" />
+    <Compile Include="NGit.Fnmatch\GroupHead.cs" />
+    <Compile Include="NGit.Fnmatch\Head.cs" />
+    <Compile Include="NGit.Fnmatch\LastHead.cs" />
+    <Compile Include="NGit.Fnmatch\RestrictedWildCardHead.cs" />
+    <Compile Include="NGit.Fnmatch\WildCardHead.cs" />
+    <Compile Include="NGit.Ignore\IgnoreNode.cs" />
+    <Compile Include="NGit.Ignore\IgnoreRule.cs" />
+    <Compile Include="NGit.Merge\MergeAlgorithm.cs" />
+    <Compile Include="NGit.Merge\MergeChunk.cs" />
+    <Compile Include="NGit.Merge\MergeFormatter.cs" />
+    <Compile Include="NGit.Merge\MergeResult.cs" />
+    <Compile Include="NGit.Merge\MergeStrategy.cs" />
+    <Compile Include="NGit.Merge\Merger.cs" />
+    <Compile Include="NGit.Merge\ResolveMerger.cs" />
+    <Compile Include="NGit.Merge\StrategyOneSided.cs" />
+    <Compile Include="NGit.Merge\StrategyResolve.cs" />
+    <Compile Include="NGit.Merge\StrategySimpleTwoWayInCore.cs" />
+    <Compile Include="NGit.Merge\ThreeWayMergeStrategy.cs" />
+    <Compile Include="NGit.Merge\ThreeWayMerger.cs" />
+    <Compile Include="NGit.Nls\GlobalBundleCache.cs" />
+    <Compile Include="NGit.Nls\NLS.cs" />
+    <Compile Include="NGit.Nls\TranslationBundle.cs" />
+    <Compile Include="NGit.Patch\BinaryHunk.cs" />
+    <Compile Include="NGit.Patch\CombinedFileHeader.cs" />
+    <Compile Include="NGit.Patch\CombinedHunkHeader.cs" />
+    <Compile Include="NGit.Patch\FileHeader.cs" />
+    <Compile Include="NGit.Patch\FormatError.cs" />
+    <Compile Include="NGit.Patch\HunkHeader.cs" />
+    <Compile Include="NGit.Patch\Patch.cs" />
+    <Compile Include="NGit.Revplot\AbstractPlotRenderer.cs" />
+    <Compile Include="NGit.Revplot\PlotCommit.cs" />
+    <Compile Include="NGit.Revplot\PlotCommitList.cs" />
+    <Compile Include="NGit.Revplot\PlotLane.cs" />
+    <Compile Include="NGit.Revplot\PlotWalk.cs" />
+    <Compile Include="NGit.Revwalk\AbstractRevQueue.cs" />
+    <Compile Include="NGit.Revwalk\AsyncRevObjectQueue.cs" />
+    <Compile Include="NGit.Revwalk\BlockObjQueue.cs" />
+    <Compile Include="NGit.Revwalk\BlockRevQueue.cs" />
+    <Compile Include="NGit.Revwalk\BoundaryGenerator.cs" />
+    <Compile Include="NGit.Revwalk\DateRevQueue.cs" />
+    <Compile Include="NGit.Revwalk\DelayRevQueue.cs" />
+    <Compile Include="NGit.Revwalk\EndGenerator.cs" />
+    <Compile Include="NGit.Revwalk\FIFORevQueue.cs" />
+    <Compile Include="NGit.Revwalk\FixUninterestingGenerator.cs" />
+    <Compile Include="NGit.Revwalk\FollowFilter.cs" />
+    <Compile Include="NGit.Revwalk\FooterKey.cs" />
+    <Compile Include="NGit.Revwalk\FooterLine.cs" />
+    <Compile Include="NGit.Revwalk\Generator.cs" />
+    <Compile Include="NGit.Revwalk\LIFORevQueue.cs" />
+    <Compile Include="NGit.Revwalk\MergeBaseGenerator.cs" />
+    <Compile Include="NGit.Revwalk\ObjectWalk.cs" />
+    <Compile Include="NGit.Revwalk\PendingGenerator.cs" />
+    <Compile Include="NGit.Revwalk\RevBlob.cs" />
+    <Compile Include="NGit.Revwalk\RevCommit.cs" />
+    <Compile Include="NGit.Revwalk\RevCommitList.cs" />
+    <Compile Include="NGit.Revwalk\RevFlag.cs" />
+    <Compile Include="NGit.Revwalk\RevFlagSet.cs" />
+    <Compile Include="NGit.Revwalk\RevObject.cs" />
+    <Compile Include="NGit.Revwalk\RevObjectList.cs" />
+    <Compile Include="NGit.Revwalk\RevSort.cs" />
+    <Compile Include="NGit.Revwalk\RevTag.cs" />
+    <Compile Include="NGit.Revwalk\RevTree.cs" />
+    <Compile Include="NGit.Revwalk\RevWalk.cs" />
+    <Compile Include="NGit.Revwalk\RewriteGenerator.cs" />
+    <Compile Include="NGit.Revwalk\RewriteTreeFilter.cs" />
+    <Compile Include="NGit.Revwalk\StartGenerator.cs" />
+    <Compile Include="NGit.Revwalk\TopoSortGenerator.cs" />
+    <Compile Include="NGit.Revwalk.Filter\AndRevFilter.cs" />
+    <Compile Include="NGit.Revwalk.Filter\AuthorRevFilter.cs" />
+    <Compile Include="NGit.Revwalk.Filter\CommitTimeRevFilter.cs" />
+    <Compile Include="NGit.Revwalk.Filter\CommitterRevFilter.cs" />
+    <Compile Include="NGit.Revwalk.Filter\MessageRevFilter.cs" />
+    <Compile Include="NGit.Revwalk.Filter\NotRevFilter.cs" />
+    <Compile Include="NGit.Revwalk.Filter\OrRevFilter.cs" />
+    <Compile Include="NGit.Revwalk.Filter\PatternMatchRevFilter.cs" />
+    <Compile Include="NGit.Revwalk.Filter\RevFilter.cs" />
+    <Compile Include="NGit.Revwalk.Filter\RevFlagFilter.cs" />
+    <Compile Include="NGit.Revwalk.Filter\SubStringRevFilter.cs" />
+    <Compile Include="NGit.Storage.File\ByteArrayWindow.cs" />
+    <Compile Include="NGit.Storage.File\ByteBufferWindow.cs" />
+    <Compile Include="NGit.Storage.File\ByteWindow.cs" />
+    <Compile Include="NGit.Storage.File\CachedObjectDirectory.cs" />
+    <Compile Include="NGit.Storage.File\FileBasedConfig.cs" />
+    <Compile Include="NGit.Storage.File\FileObjectDatabase.cs" />
+    <Compile Include="NGit.Storage.File\FileRepository.cs" />
+    <Compile Include="NGit.Storage.File\FileRepositoryBuilder.cs" />
+    <Compile Include="NGit.Storage.File\LargePackedDeltaObject.cs" />
+    <Compile Include="NGit.Storage.File\LargePackedWholeObject.cs" />
+    <Compile Include="NGit.Storage.File\LocalObjectRepresentation.cs" />
+    <Compile Include="NGit.Storage.File\LocalObjectToPack.cs" />
+    <Compile Include="NGit.Storage.File\LockFile.cs" />
+    <Compile Include="NGit.Storage.File\ObjectDirectory.cs" />
+    <Compile Include="NGit.Storage.File\ObjectDirectoryInserter.cs" />
+    <Compile Include="NGit.Storage.File\PackFile.cs" />
+    <Compile Include="NGit.Storage.File\PackIndex.cs" />
+    <Compile Include="NGit.Storage.File\PackIndexV1.cs" />
+    <Compile Include="NGit.Storage.File\PackIndexV2.cs" />
+    <Compile Include="NGit.Storage.File\PackIndexWriter.cs" />
+    <Compile Include="NGit.Storage.File\PackIndexWriterV1.cs" />
+    <Compile Include="NGit.Storage.File\PackIndexWriterV2.cs" />
+    <Compile Include="NGit.Storage.File\PackInputStream.cs" />
+    <Compile Include="NGit.Storage.File\PackLock.cs" />
+    <Compile Include="NGit.Storage.File\PackReverseIndex.cs" />
+    <Compile Include="NGit.Storage.File\RefDirectory.cs" />
+    <Compile Include="NGit.Storage.File\RefDirectoryRename.cs" />
+    <Compile Include="NGit.Storage.File\RefDirectoryUpdate.cs" />
+    <Compile Include="NGit.Storage.File\ReflogReader.cs" />
+    <Compile Include="NGit.Storage.File\UnpackedObject.cs" />
+    <Compile Include="NGit.Storage.File\UnpackedObjectCache.cs" />
+    <Compile Include="NGit.Storage.File\WindowCache.cs" />
+    <Compile Include="NGit.Storage.File\WindowCacheConfig.cs" />
+    <Compile Include="NGit.Storage.File\WindowCursor.cs" />
+    <Compile Include="NGit.Storage.Pack\BinaryDelta.cs" />
+    <Compile Include="NGit.Storage.Pack\DeltaCache.cs" />
+    <Compile Include="NGit.Storage.Pack\DeltaEncoder.cs" />
+    <Compile Include="NGit.Storage.Pack\DeltaIndex.cs" />
+    <Compile Include="NGit.Storage.Pack\DeltaIndexScanner.cs" />
+    <Compile Include="NGit.Storage.Pack\DeltaStream.cs" />
+    <Compile Include="NGit.Storage.Pack\DeltaTask.cs" />
+    <Compile Include="NGit.Storage.Pack\DeltaWindow.cs" />
+    <Compile Include="NGit.Storage.Pack\DeltaWindowEntry.cs" />
+    <Compile Include="NGit.Storage.Pack\ObjectReuseAsIs.cs" />
+    <Compile Include="NGit.Storage.Pack\ObjectToPack.cs" />
+    <Compile Include="NGit.Storage.Pack\PackConfig.cs" />
+    <Compile Include="NGit.Storage.Pack\PackOutputStream.cs" />
+    <Compile Include="NGit.Storage.Pack\PackWriter.cs" />
+    <Compile Include="NGit.Storage.Pack\StoredObjectRepresentation.cs" />
+    <Compile Include="NGit.Storage.Pack\ThreadSafeDeltaCache.cs" />
+    <Compile Include="NGit.Treewalk\AbstractTreeIterator.cs" />
+    <Compile Include="NGit.Treewalk\CanonicalTreeParser.cs" />
+    <Compile Include="NGit.Treewalk\EmptyTreeIterator.cs" />
+    <Compile Include="NGit.Treewalk\FileTreeIterator.cs" />
+    <Compile Include="NGit.Treewalk\NameConflictTreeWalk.cs" />
+    <Compile Include="NGit.Treewalk\TreeWalk.cs" />
+    <Compile Include="NGit.Treewalk\WorkingTreeIterator.cs" />
+    <Compile Include="NGit.Treewalk\WorkingTreeOptions.cs" />
+    <Compile Include="NGit.Treewalk.Filter\AndTreeFilter.cs" />
+    <Compile Include="NGit.Treewalk.Filter\NotIgnoredFilter.cs" />
+    <Compile Include="NGit.Treewalk.Filter\NotTreeFilter.cs" />
+    <Compile Include="NGit.Treewalk.Filter\OrTreeFilter.cs" />
+    <Compile Include="NGit.Treewalk.Filter\PathFilter.cs" />
+    <Compile Include="NGit.Treewalk.Filter\PathFilterGroup.cs" />
+    <Compile Include="NGit.Treewalk.Filter\PathSuffixFilter.cs" />
+    <Compile Include="NGit.Treewalk.Filter\SkipWorkTreeFilter.cs" />
+    <Compile Include="NGit.Treewalk.Filter\TreeFilter.cs" />
+    <Compile Include="NGit.Util\Base64.cs" />
+    <Compile Include="NGit.Util\CachedAuthenticator.cs" />
+    <Compile Include="NGit.Util\ChangeIdUtil.cs" />
+    <Compile Include="NGit.Util\FS.cs" />
+    <Compile Include="NGit.Util\FS_POSIX_Java5.cs" />
+    <Compile Include="NGit.Util\FS_POSIX_Java6.cs" />
+    <Compile Include="NGit.Util\FS_Win32.cs" />
+    <Compile Include="NGit.Util\FS_Win32_Cygwin.cs" />
+    <Compile Include="NGit.Util\IntList.cs" />
+    <Compile Include="NGit.Util\LongList.cs" />
+    <Compile Include="NGit.Util\MutableInteger.cs" />
+    <Compile Include="NGit.Util\NB.cs" />
+    <Compile Include="NGit.Util\QuotedString.cs" />
+    <Compile Include="NGit.Util\RawCharSequence.cs" />
+    <Compile Include="NGit.Util\RawCharUtil.cs" />
+    <Compile Include="NGit.Util\RawParseUtils.cs" />
+    <Compile Include="NGit.Util\RawSubStringPattern.cs" />
+    <Compile Include="NGit.Util\RefList.cs" />
+    <Compile Include="NGit.Util\RefMap.cs" />
+    <Compile Include="NGit.Util\StringUtils.cs" />
+    <Compile Include="NGit.Util\SystemReader.cs" />
+    <Compile Include="NGit.Util\TemporaryBuffer.cs" />
+    <Compile Include="NGit.Util.IO\DisabledOutputStream.cs" />
+    <Compile Include="NGit.Util.IO\EolCanonicalizingInputStream.cs" />
+    <Compile Include="NGit.Util.IO\InterruptTimer.cs" />
+    <Compile Include="NGit.Util.IO\MessageWriter.cs" />
+    <Compile Include="NGit.Util.IO\StreamCopyThread.cs" />
+    <Compile Include="NGit.Util.IO\TeeInputStream.cs" />
+    <Compile Include="NGit.Util.IO\TimeoutInputStream.cs" />
+    <Compile Include="NGit.Util.IO\TimeoutOutputStream.cs" />
+    <Compile Include="NGit.Util.IO\UnionInputStream.cs" />
+    <Compile Include="NGit.Transport\PackedObjectInfo.cs" />
+    <Compile Include="NGit.Errors\RepositoryNotFoundException.cs" />
+    <Compile Include="NGit.Errors\TransportException.cs" />
+    <Compile Include="NGit.Transport\URIish.cs" />
+    <Compile Include="NGit.Api\MergeCommandResult.cs" />
+    <Compile Include="NGit.Transport\IndexPack.cs" />
+    <Compile Include="NGit.Transport\LongMap.cs" />
+    <Compile Include="NGit.Util\IOUtil.cs" />
+    <Compile Include="NGit.Transport\RemoteConfig.cs" />
+    <Compile Include="NGit.Transport\RefSpec.cs" />
+    <Compile Include="NGit.Transport\TagOpt.cs" />
+    <Compile Include="NGit.Transport\BaseConnection.cs" />
+    <Compile Include="NGit.Transport\Connection.cs" />
+    <Compile Include="NGit.Transport\FetchConnection.cs" />
+    <Compile Include="NGit.Transport\BaseFetchConnection.cs" />
+    <Compile Include="NGit.Transport\PacketLineIn.cs" />
+    <Compile Include="NGit.Transport\SideBandInputStream.cs" />
+    <Compile Include="NGit.Transport\SideBandOutputStream.cs" />
+    <Compile Include="NGit.Transport\PacketLineOut.cs" />
+    <Compile Include="NGit.Transport\Transport.cs" />
+    <Compile Include="NGit.Transport\RemoteRefUpdate.cs" />
+    <Compile Include="NGit.Transport\FetchResult.cs" />
+    <Compile Include="NGit.Transport\OperationResult.cs" />
+    <Compile Include="NGit.Transport\PushResult.cs" />
+    <Compile Include="NGit.Transport\PushConnection.cs" />
+    <Compile Include="NGit.Transport\TrackingRefUpdate.cs" />
+    <Compile Include="NGit.Transport\FetchHeadRecord.cs" />
+    <Compile Include="NGit.Transport\FetchProcess.cs" />
+    <Compile Include="NGit.Transport\PushProcess.cs" />
+    <Compile Include="NGit.Transport\BasePackConnection.cs" />
+    <Compile Include="NGit.Transport\PackTransport.cs" />
+    <Compile Include="NGit.Errors\RemoteRepositoryException.cs" />
+    <Compile Include="NGit.Errors\NoRemoteRepositoryException.cs" />
+    <Compile Include="NGit.Errors\PackProtocolException.cs" />
+    <Compile Include="NGit.Errors\MissingBundlePrerequisiteException.cs" />
+    <Compile Include="NGit.Transport\BasePackFetchConnection.cs" />
+    <Compile Include="NGit.Transport\BasePackPushConnection.cs" />
+    <Compile Include="NGit.Transport\BundleFetchConnection.cs" />
+    <Compile Include="NGit.Transport\TransportBundle.cs" />
+    <Compile Include="NGit.Transport\BundleWriter.cs" />
+    <Compile Include="NGit.Transport\HttpTransport.cs" />
+    <Compile Include="NGit.Transport\PostReceiveHook.cs" />
+    <Compile Include="NGit.Transport\PreReceiveHook.cs" />
+    <Compile Include="NGit.Transport\ReceivePack.cs" />
+    <Compile Include="NGit.Transport\ReceiveCommand.cs" />
+    <Compile Include="NGit.Transport\RefFilter.cs" />
+    <Compile Include="NGit.Transport\RefAdvertiser.cs" />
+    <Compile Include="NGit.Transport\SideBandProgressMonitor.cs" />
+    <Compile Include="NGit.Transport\TcpTransport.cs" />
+    <Compile Include="NGit.Transport\TransportBundleFile.cs" />
+    <Compile Include="NGit.Transport\TransportBundleStream.cs" />
+    <Compile Include="NGit.Transport\UploadPack.cs" />
+    <Compile Include="NGit.Transport\WalkFetchConnection.cs" />
+    <Compile Include="NGit.Transport\WalkRemoteObjectDatabase.cs" />
+    <Compile Include="NGit.Transport\WalkTransport.cs" />
+    <Compile Include="NGit.Transport\WalkPushConnection.cs" />
+    <Compile Include="NGit.Transport\Daemon.cs" />
+    <Compile Include="NGit.Transport\DaemonClient.cs" />
+    <Compile Include="NGit.Transport\DaemonService.cs" />
+    <Compile Include="NGit.Transport\OpenSshConfig.cs" />
+    <Compile Include="NGit.Transport\TransportGitAnon.cs" />
+    <Compile Include="NGit.Transport\TransportHttp.cs" />
+    <Compile Include="NGit.Util\HttpSupport.cs" />
+    <Compile Include="NGit.Transport\TransportLocal.cs" />
+    <Compile Include="NGit.Transport\DefaultSshSessionFactory.cs" />
+    <Compile Include="NGit.Transport\SshConfigSessionFactory.cs" />
+    <Compile Include="NGit.Transport\SshSessionFactory.cs" />
+    <Compile Include="NGit.Transport\SshTransport.cs" />
+    <Compile Include="NGit.Transport\TransportGitSsh.cs" />
+    <Compile Include="NGit.Transport\TransportSftp.cs" />
+    <Compile Include="NGit.Diff\ContentSource.cs" />
+    <Compile Include="NGit.Diff\DiffAlgorithm.cs" />
+    <Compile Include="NGit.Diff\HashedSequence.cs" />
+    <Compile Include="NGit.Diff\HashedSequenceComparator.cs" />
+    <Compile Include="NGit.Diff\HashedSequencePair.cs" />
+    <Compile Include="NGit.Diff\HistogramDiff.cs" />
+    <Compile Include="NGit.Diff\HistogramDiffIndex.cs" />
+    <Compile Include="NGit.Diff\PatienceDiff.cs" />
+    <Compile Include="NGit.Diff\PatienceDiffIndex.cs" />
+    <Compile Include="NGit.Diff\RawTextComparator.cs" />
+    <Compile Include="NGit.Diff\SequenceComparator.cs" />
+    <Compile Include="NGit.Diff\Subsequence.cs" />
+    <Compile Include="NGit.Diff\SubsequenceComparator.cs" />
+    <Compile Include="NGit.Api\FetchCommand.cs" />
+    <Compile Include="NGit.Errors\UnpackException.cs" />
+    <Compile Include="NGit.Storage.File\DeltaBaseCache.cs" />
+    <Compile Include="NGit.Api.Errors\InvalidRemoteException.cs" />
+    <Compile Include="NGit.Api\PushCommand.cs" />
+    <Compile Include="NGit.Api\PullCommand.cs" />
+    <Compile Include="NGit.Api\PullResult.cs" />
+    <Compile Include="NGit.Api\CreateBranchCommand.cs" />
+    <Compile Include="NGit.Api\DeleteBranchCommand.cs" />
+    <Compile Include="NGit.Api\ListBranchCommand.cs" />
+    <Compile Include="NGit.Api\RenameBranchCommand.cs" />
+    <Compile Include="NGit.Transport\HttpAuthMethod.cs" />
+    <Compile Include="NGit.Api.Errors\DetachedHeadException.cs" />
+    <Compile Include="NGit.Api.Errors\CanceledException.cs" />
+    <Compile Include="NGit.Api.Errors\CannotDeleteCurrentBranchException.cs" />
+    <Compile Include="NGit.Api.Errors\InvalidConfigurationException.cs" />
+    <Compile Include="NGit.Api.Errors\InvalidRefNameException.cs" />
+    <Compile Include="NGit.Api.Errors\NotMergedException.cs" />
+    <Compile Include="NGit.Api.Errors\RefAlreadyExistsException.cs" />
+    <Compile Include="NGit.Api.Errors\RefNotFoundException.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <EmbeddedResource Include="resources\JGitText.properties">
+      <LogicalName>NGit.JGitText.properties</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sharpen\Sharpen.csproj">
+      <Project>{72944A6C-45FF-4EF8-B349-8C9CABF519D4}</Project>
+      <Name>Sharpen</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NSch\NSch.csproj">
+      <Project>{A19E6F3F-A25B-4B01-8922-CF0CC35C781D}</Project>
+      <Name>NSch</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

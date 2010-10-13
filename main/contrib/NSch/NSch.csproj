@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A19E6F3F-A25B-4B01-8922-CF0CC35C781D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>NSch</RootNamespace>
+    <AssemblyName>NSch</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="Mono.Security" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="NSch\Buffer.cs" />
+    <Compile Include="NSch\Channel.cs" />
+    <Compile Include="NSch\ChannelAgentForwarding.cs" />
+    <Compile Include="NSch\ChannelDirectTCPIP.cs" />
+    <Compile Include="NSch\ChannelExec.cs" />
+    <Compile Include="NSch\ChannelForwardedTCPIP.cs" />
+    <Compile Include="NSch\ChannelSession.cs" />
+    <Compile Include="NSch\ChannelSftp.cs" />
+    <Compile Include="NSch\ChannelShell.cs" />
+    <Compile Include="NSch\ChannelSubsystem.cs" />
+    <Compile Include="NSch\ChannelX11.cs" />
+    <Compile Include="NSch\Cipher.cs" />
+    <Compile Include="NSch\CipherNone.cs" />
+    <Compile Include="NSch\Compression.cs" />
+    <Compile Include="NSch\DH.cs" />
+    <Compile Include="NSch\DHG1.cs" />
+    <Compile Include="NSch\DHGEX.cs" />
+    <Compile Include="NSch\ForwardedTCPIPDaemon.cs" />
+    <Compile Include="NSch\GSSContext.cs" />
+    <Compile Include="NSch\HASH.cs" />
+    <Compile Include="NSch\HostKey.cs" />
+    <Compile Include="NSch\HostKeyRepository.cs" />
+    <Compile Include="NSch\IO.cs" />
+    <Compile Include="NSch\Identity.cs" />
+    <Compile Include="NSch\IdentityFile.cs" />
+    <Compile Include="NSch\JSch.cs" />
+    <Compile Include="NSch\JSchAuthCancelException.cs" />
+    <Compile Include="NSch\JSchException.cs" />
+    <Compile Include="NSch\JSchPartialAuthException.cs" />
+    <Compile Include="NSch\KeyExchange.cs" />
+    <Compile Include="NSch\KeyPair.cs" />
+    <Compile Include="NSch\KeyPairDSA.cs" />
+    <Compile Include="NSch\KeyPairGenDSA.cs" />
+    <Compile Include="NSch\KeyPairGenRSA.cs" />
+    <Compile Include="NSch\KeyPairRSA.cs" />
+    <Compile Include="NSch\KnownHosts.cs" />
+    <Compile Include="NSch\Logger.cs" />
+    <Compile Include="NSch\MAC.cs" />
+    <Compile Include="NSch\Packet.cs" />
+    <Compile Include="NSch\PortWatcher.cs" />
+    <Compile Include="NSch\Proxy.cs" />
+    <Compile Include="NSch\ProxyHTTP.cs" />
+    <Compile Include="NSch\ProxySOCKS4.cs" />
+    <Compile Include="NSch\ProxySOCKS5.cs" />
+    <Compile Include="NSch\Random.cs" />
+    <Compile Include="NSch\Request.cs" />
+    <Compile Include="NSch\RequestAgentForwarding.cs" />
+    <Compile Include="NSch\RequestEnv.cs" />
+    <Compile Include="NSch\RequestExec.cs" />
+    <Compile Include="NSch\RequestPtyReq.cs" />
+    <Compile Include="NSch\RequestSftp.cs" />
+    <Compile Include="NSch\RequestShell.cs" />
+    <Compile Include="NSch\RequestSignal.cs" />
+    <Compile Include="NSch\RequestSubsystem.cs" />
+    <Compile Include="NSch\RequestWindowChange.cs" />
+    <Compile Include="NSch\RequestX11.cs" />
+    <Compile Include="NSch\ServerSocketFactory.cs" />
+    <Compile Include="NSch\Session.cs" />
+    <Compile Include="NSch\SftpATTRS.cs" />
+    <Compile Include="NSch\SftpException.cs" />
+    <Compile Include="NSch\SftpProgressMonitor.cs" />
+    <Compile Include="NSch\SignatureDSA.cs" />
+    <Compile Include="NSch\SignatureRSA.cs" />
+    <Compile Include="NSch\SocketFactory.cs" />
+    <Compile Include="NSch\UIKeyboardInteractive.cs" />
+    <Compile Include="NSch\UserAuth.cs" />
+    <Compile Include="NSch\UserAuthGSSAPIWithMIC.cs" />
+    <Compile Include="NSch\UserAuthKeyboardInteractive.cs" />
+    <Compile Include="NSch\UserAuthNone.cs" />
+    <Compile Include="NSch\UserAuthPassword.cs" />
+    <Compile Include="NSch\UserAuthPublicKey.cs" />
+    <Compile Include="NSch\UserInfo.cs" />
+    <Compile Include="NSch\Util.cs" />
+    <Compile Include="NSch.Jce\AES128CBC.cs" />
+    <Compile Include="NSch.Jce\AES128CTR.cs" />
+    <Compile Include="NSch.Jce\AES192CBC.cs" />
+    <Compile Include="NSch.Jce\AES192CTR.cs" />
+    <Compile Include="NSch.Jce\AES256CBC.cs" />
+    <Compile Include="NSch.Jce\AES256CTR.cs" />
+    <Compile Include="NSch.Jce\ARCFOUR.cs" />
+    <Compile Include="NSch.Jce\ARCFOUR128.cs" />
+    <Compile Include="NSch.Jce\ARCFOUR256.cs" />
+    <Compile Include="NSch.Jce\BlowfishCBC.cs" />
+    <Compile Include="NSch.Jce\DH.cs" />
+    <Compile Include="NSch.Jce\HMACMD5.cs" />
+    <Compile Include="NSch.Jce\HMACMD596.cs" />
+    <Compile Include="NSch.Jce\HMACSHA1.cs" />
+    <Compile Include="NSch.Jce\HMACSHA196.cs" />
+    <Compile Include="NSch.Jce\KeyPairGenDSA.cs" />
+    <Compile Include="NSch.Jce\KeyPairGenRSA.cs" />
+    <Compile Include="NSch.Jce\MD5.cs" />
+    <Compile Include="NSch.Jce\Random.cs" />
+    <Compile Include="NSch.Jce\SHA1.cs" />
+    <Compile Include="NSch.Jce\SignatureDSA.cs" />
+    <Compile Include="NSch.Jce\SignatureRSA.cs" />
+    <Compile Include="NSch.Jce\TripleDESCBC.cs" />
+    <Compile Include="NSch.Jce\TripleDESCTR.cs" />
+    <Compile Include="NSch.Jcraft\Compression.cs" />
+    <Compile Include="NSch.Jcraft\HMAC.cs" />
+    <Compile Include="NSch.Jcraft\HMACMD5.cs" />
+    <Compile Include="NSch.Jcraft\HMACMD596.cs" />
+    <Compile Include="NSch.Jcraft\HMACSHA1.cs" />
+    <Compile Include="NSch.Jcraft\HMACSHA196.cs" />
+    <Compile Include="NSch.Jgss\GSSContextKrb5.cs" />
+    <Compile Include="NSch.ZLib\Adler32.cs" />
+    <Compile Include="NSch.ZLib\InfBlocks.cs" />
+    <Compile Include="NSch.ZLib\InfCodes.cs" />
+    <Compile Include="NSch.ZLib\InfTree.cs" />
+    <Compile Include="NSch.ZLib\Inflate.cs" />
+    <Compile Include="NSch.ZLib\JZlib.cs" />
+    <Compile Include="NSch.ZLib\StaticTree.cs" />
+    <Compile Include="NSch.ZLib\Tree.cs" />
+    <Compile Include="NSch.ZLib\ZInputStream.cs" />
+    <Compile Include="NSch.ZLib\ZOutputStream.cs" />
+    <Compile Include="NSch.ZLib\ZStream.cs" />
+    <Compile Include="NSch.ZLib\ZStreamException.cs" />
+    <Compile Include="NSch\Sharpen\Cipher.cs" />
+    <Compile Include="NSch\Sharpen\KeyPairGenerator.cs" />
+    <Compile Include="NSch\Sharpen\KeyAgreement.cs" />
+    <Compile Include="NSch\Sharpen\Mac.cs" />
+    <Compile Include="NSch\Sharpen\SecureRandom.cs" />
+    <Compile Include="NSch\Sharpen\Properties.cs" />
+    <Compile Include="NSch\Sharpen\KeyFactory.cs" />
+    <Compile Include="NSch.ZLib\Deflate.cs" />
+    <Compile Include="NSch\Sharpen\Signature.cs" />
+    <Compile Include="NSch\Sharpen\Oid.cs" />
+    <Compile Include="NSch\Sharpen\SecretKeySpec.cs" />
+    <Compile Include="NSch\Sharpen\IvParameterSpec.cs" />
+    <Compile Include="NSch\Sharpen\DHParameterSpec.cs" />
+    <Compile Include="NSch\Sharpen\DHPublicKeySpec.cs" />
+    <Compile Include="NSch\Sharpen\KeySpec.cs" />
+    <Compile Include="NSch\Sharpen\PublicKey.cs" />
+    <Compile Include="NSch\Sharpen\DESedeKeySpec.cs" />
+    <Compile Include="NSch\Sharpen\SecretKeyFactory.cs" />
+    <Compile Include="NSch\Sharpen\SecretKey.cs" />
+    <Compile Include="NSch\Sharpen\AlgorithmParameterSpec.cs" />
+    <Compile Include="NSch\Sharpen\KeyPair.cs" />
+    <Compile Include="NSch\Sharpen\DHPublicKey.cs" />
+    <Compile Include="NSch\Sharpen\PrivateKey.cs" />
+    <Compile Include="NSch\Sharpen\RSAPrivateKey.cs" />
+    <Compile Include="NSch\Sharpen\RSAPublicKey.cs" />
+    <Compile Include="NSch\Sharpen\RSAPrivateCrtKey.cs" />
+    <Compile Include="NSch\Sharpen\RSAPublicKeySpec.cs" />
+    <Compile Include="NSch\Sharpen\Key.cs" />
+    <Compile Include="NSch\Sharpen\DSAParams.cs" />
+    <Compile Include="NSch\Sharpen\DSAPublicKeySpec.cs" />
+    <Compile Include="NSch\Sharpen\DSAPrivateKeySpec.cs" />
+    <Compile Include="NSch\Sharpen\DSAPrivateKey.cs" />
+    <Compile Include="NSch\Sharpen\DSAKey.cs" />
+    <Compile Include="NSch\Sharpen\DSAPublicKey.cs" />
+    <Compile Include="NSch\Sharpen\RSAPrivateKeySpec.cs" />
+    <Compile Include="NSch\Sharpen\GSSManager.cs" />
+    <Compile Include="NSch\Sharpen\GSSCredential.cs" />
+    <Compile Include="NSch\Sharpen\GSSName.cs" />
+    <Compile Include="NSch\Sharpen\GSSContext.cs" />
+    <Compile Include="NSch\Sharpen\GSSException.cs" />
+    <Compile Include="NSch\Sharpen\MessageProp.cs" />
+    <Compile Include="NSch\Sharpen\DHPrivateKey.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="NSch\Sharpen\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sharpen\Sharpen.csproj">
+      <Project>{72944A6C-45FF-4EF8-B349-8C9CABF519D4}</Project>
+      <Name>Sharpen</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>
