@@ -4,14 +4,16 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.VersionControl.Git.dll
 
 DEPS =  \
 	$(top_builddir)/build/AddIns/VersionControl/MonoDevelop.VersionControl.dll \
+	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Ide.dll
+	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
+	$(top_builddir)/contrib/bin/NGit.dll \
+	$(top_builddir)/contrib/bin/NSch.dll \
+	$(top_builddir)/contrib/bin/Sharpen.dll
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:../../../../../../ngit/bin/NGit.dll \
-	-r:../../../../../../ngit/bin/Sharpen.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core
@@ -51,11 +53,14 @@ RES =  \
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
+	cp $(top_builddir)/contrib/bin/NGit.dll $(ADDIN_BUILD)
+	cp $(top_builddir)/contrib/bin/NSch.dll $(ADDIN_BUILD)
+	cp $(top_builddir)/contrib/bin/Sharpen.dll $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(build_sources) $(REFS) $(build_deps) $(build_resources:%=/resource:%) -out:$@ -target:library
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)
 
-CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(ADDIN_BUILD)/NGit.dll $(ADDIN_BUILD)/NSch.dll $(ADDIN_BUILD)/Sharpen.dll
 EXTRA_DIST = $(FILES) $(RES)
 
 if ENABLE_GIT
@@ -66,7 +71,7 @@ endif
 
 if ENABLE_GIT
 addindir = $(MD_ADDIN_DIR)/VersionControl
-addin_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
+addin_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(ADDIN_BUILD)/NGit.dll $(ADDIN_BUILD)/NSch.dll $(ADDIN_BUILD)/Sharpen.dll
 endif
 
 include $(top_srcdir)/Makefile.include
