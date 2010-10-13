@@ -45,6 +45,7 @@ using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
 using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.CSharp.Resolver;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -105,7 +106,12 @@ namespace MonoDevelop.CSharp.Refactoring
 				this.searchedMemberLocation = ((IMember)searchedMember).Location;
 				
 				if (searchedMember is IType) {
-					this.searchedMemberFile = ((IType)searchedMember).CompilationUnit.FileName;
+					var unit = ((IType)searchedMember).CompilationUnit;
+					if (unit != null) {
+						this.searchedMemberFile = unit.FileName;
+					} else {
+						LoggingService.LogWarning (searchedMember + " has no compilation unit.");
+					}
 				} else {
 					if (((IMember)searchedMember).DeclaringType != null && ((IMember)searchedMember).DeclaringType.CompilationUnit != null)
 						this.searchedMemberFile = ((IMember)searchedMember).DeclaringType.CompilationUnit.FileName;
