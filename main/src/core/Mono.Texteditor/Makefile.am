@@ -56,7 +56,10 @@ FILES =  \
 	Mono.TextEditor.Utils/Diff.cs \
 	Mono.TextEditor.Vi/ViActionMaps.cs \
 	Mono.TextEditor.Vi/ViActions.cs \
-	Mono.TextEditor.Vi/ViCommandBuilder.cs \
+	Mono.TextEditor.Vi/ViBuilderContext.cs \
+	Mono.TextEditor.Vi/ViBuilders.cs \
+	Mono.TextEditor.Vi/ViCommandMap.cs \
+	Mono.TextEditor.Vi/ViEditorActions.cs \
 	Mono.TextEditor.Vi/ViEditorContext.cs \
 	Mono.TextEditor.Vi/ViKeyNotation.cs \
 	Mono.TextEditor.Vi/ViMacro.cs \
