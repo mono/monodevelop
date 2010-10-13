@@ -180,7 +180,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				} else {
 					bool visible = allVisible
 						|| IsSearchMatch ((string) keyStore.GetValue (iter, labelCol))
-						|| IsSearchMatch ((string) keyStore.GetValue (iter, descCol));
+						|| IsSearchMatch ((string) keyStore.GetValue (iter, descCol))
+						|| IsSearchMatch ((string) keyStore.GetValue (iter, bindingCol));
 					keyStore.SetValue (iter, visibleCol, visible);
 					if (visible)
 						visibleCount++;
