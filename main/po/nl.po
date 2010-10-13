@@ -8,13 +8,14 @@ msgstr ""
 "Project-Id-Version: MonoDevelop\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-05-21 20:55:03+0200\n"
-"PO-Revision-Date: 2008-01-02 02:23+0100\n"
+"PO-Revision-Date: 2010-10-13 23:48:17+0200\n"
 "Last-Translator: André Offringa <offringa@gmail.com>\n"
 "Language-Team: Dutch\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"X-Generator: MonoDevelop Gettext addin\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:211
 msgid "MonoDevelop External Console"
@@ -90,7 +91,7 @@ msgstr "Het project kon niet gemaakt worden"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectService.cs:332
 msgid "Write permission has not been granted for file '{0}'"
-msgstr ""
+msgstr "Schrijftoegang werd niet verleend voor bestand '{0}'"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectService.cs:440
 #, fuzzy
@@ -183,11 +184,11 @@ msgstr[1] "{0} waarschuwingen"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectReference.cs:204
 msgid "Specified version not found: expected {0}, found {1}"
-msgstr ""
+msgstr "Aangegeven versie niet gevonden: verwacht {0}, aangetroffen {1}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectReference.cs:207
 msgid "Assembly not available for {0} (in {1})"
-msgstr ""
+msgstr "Assembly niet beschikbaar voor {0} (in {1})"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectReference.cs:209
 #, fuzzy
@@ -196,7 +197,7 @@ msgstr "Assembly-informatie"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectReference.cs:216
 msgid "Incompatible target framework ({0})"
-msgstr ""
+msgstr "Incompatibel doel-framework ({0})"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectReference.cs:221
 #, fuzzy
@@ -229,7 +230,7 @@ msgstr "Werkmap:"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:503
 msgid "Startup item not set"
-msgstr ""
+msgstr "Geen opstart-onderdeel ingesteld"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Solution.cs:763
 #, fuzzy
@@ -295,15 +296,15 @@ msgstr "Resources"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/BuildAction.cs:91
 msgid "Splash screen"
-msgstr ""
+msgstr "Splash screen"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/BuildAction.cs:92
 msgid "Entity deploy"
-msgstr ""
+msgstr "Uitrol entiteit"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/FileCopyMode.cs:35
 msgid "Do not copy"
-msgstr ""
+msgstr "Niet kopiëren"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/FileCopyMode.cs:37
 #, fuzzy
@@ -312,7 +313,7 @@ msgstr "Altijd weergeven"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/FileCopyMode.cs:39
 msgid "Copy if newer"
-msgstr ""
+msgstr "Kopiëren indien nieuwer"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:436
 #, fuzzy
@@ -329,9 +330,11 @@ msgstr "Bezig met uitvoeren "
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1006
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:167
 msgid ""
-"Can not execute \"{0}\". The selected execution mode is not supported for ."
-"NET projects."
+"Can not execute \"{0}\". The selected execution mode is not supported for "
+".NET projects."
 msgstr ""
+"Kan \"{0}\" niet uitvoeren. De geselecteerde uitvoerings modus wordt niet "
+"ondersteund voor .NET projecten."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:1020
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:181
@@ -341,7 +344,7 @@ msgstr "Kan map '{0}' niet binnenkomen"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CyclicDependencyException.cs:33
 msgid "A cyclic build dependency has been detected."
-msgstr ""
+msgstr "Een cyclische afhankelijkheid is aan het licht gekomen."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:136
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.CodeGeneration/CodeRefactorer.cs:504
@@ -421,11 +424,15 @@ msgid ""
 "Assembly '{0}' not found. Make sure that the assembly exists in disk. If the "
 "reference is required to build the project you may get compilation errors."
 msgstr ""
+"Assembly '{0}' niet gevonden. Controleer dat de assembly op de schijf "
+"bestaat. Wanneer de referentie vereist is voor het bouwen van het project treden "
+"mogelijk compilatie fouten op."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:163
 msgid ""
 "The reference '{0}' is not valid for the target framework of the project."
 msgstr ""
+"De referentie '{0}' is niet geldig voor het doel-framework van het project."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:263
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:264
@@ -451,8 +458,7 @@ msgid ""
 "Error while trying to invoke '{0}' to compile resource '{1}' :\n"
 " {2}"
 msgstr ""
-"Foutmelding tijdens het aanroepen van '{0}' om resource '{1}' te "
-"compileren:\n"
+"Foutmelding tijdens het aanroepen van '{0}' om resource '{1}' te compileren:\n"
 " {2}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Formats.MD1/MD1DotNetProjectHandler.cs:314
@@ -583,6 +589,9 @@ msgid ""
 "version of Visual Studio does not support the framework that the project is "
 "targetting ({2})"
 msgstr ""
+"Het project '{0}' wordt opgeslagen in het bestandsformaat '{1}', maar deze "
+"versie van Visual Studio biedt geen ondersteuning voor het framework waar het "
+"project op is gericht ({2})"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Formats.MSBuild/MSBuildProjectHandler.cs:471
 #, fuzzy
@@ -640,9 +649,11 @@ msgstr "Fout bij het inladen van project {0}. Exceptie : {1}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs:770
 msgid ""
-"Invalid solution file. There are two projects with the same GUID. The "
-"project {0} will be ignored."
+"Invalid solution file. There are two projects with the same GUID. The project "
+"{0} will be ignored."
 msgstr ""
+"Ongeldige oplossing bestand. Er zijn twee projecten met dezelfde GUID. Het "
+"project {0} zal worden genegeerd."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs:891
 msgid "{0} ({1}) : Unknown action. Only ActiveCfg & Build.0 supported."
@@ -861,7 +872,7 @@ msgstr "Visual Studio"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:245
 msgid "Invariant"
-msgstr ""
+msgstr "Invariant"
 
 #: ../src/core/MonoDevelop.Ide/templates/AppConfigFile.xft.xml:4
 msgid "Application Configuration File"
@@ -1190,7 +1201,7 @@ msgstr "Broncode"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:618
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:639
 msgid ".NET Naming Policies"
-msgstr ""
+msgstr ".NET Naamgevings Conventies"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:623
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:626
@@ -1240,7 +1251,7 @@ msgstr "_Plakken"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:697
 msgid "Paste the clipboard"
-msgstr ""
+msgstr "Plakken van het plakbord"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:703
 msgid "Delete the selection"
@@ -1282,7 +1293,7 @@ msgstr "Selecteer alles"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:732
 msgid "Comment/Uncomment selected lines of code"
-msgstr ""
+msgstr "In-/Uitcommentariëren geselecteerde code-regels"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:733
 #, fuzzy
@@ -1309,7 +1320,7 @@ msgstr "_Minder inspringen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:748
 msgid "Convert the selected text to uppercase"
-msgstr ""
+msgstr "Selectie omzetten naar hoofdletters"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:749
 msgid "_Uppercase Selection"
@@ -1317,7 +1328,7 @@ msgstr "Selectie naar _hoofdletters"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:751
 msgid "Convert the selected text to lowercase"
-msgstr ""
+msgstr "Selectie omzetten naar kleine letters"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:752
 msgid "_Lowercase Selection"
@@ -1330,7 +1341,7 @@ msgstr "C_onverteer tabs naar spaties"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:758
 msgid "Join the current line with the next line"
-msgstr ""
+msgstr "Regel samenvoegen met volgende regel"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:759
 #, fuzzy
@@ -1370,7 +1381,7 @@ msgstr "Voeg de standaard koptekst in"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:776
 msgid "Add the user defined header to the top of the file"
-msgstr ""
+msgstr "Gebruikers gedefinieerde koptekst invoegen bovenaan het bestand"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:779
 #, fuzzy
@@ -1379,7 +1390,7 @@ msgstr "Verander actie"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:782
 msgid "Toggles the folding at caret position."
-msgstr ""
+msgstr "In-/uitvouwen op cursor positie."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:784
 #, fuzzy
@@ -1388,15 +1399,15 @@ msgstr "Alles invouwen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:786
 msgid "Toggles all the foldings in the document."
-msgstr ""
+msgstr "In-/uitvouwen omschakelen voor het document"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:788
 msgid "Show _Definitions Only"
-msgstr ""
+msgstr "Alleen _definities tonen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:789
 msgid "Folds all method and property bodies."
-msgstr ""
+msgstr "Alle methoden en properties invouwen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:793
 #, fuzzy
@@ -1420,7 +1431,7 @@ msgstr "Voeg nieuw project toe..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:805
 msgid "Add a new child workspace to the selected workspace"
-msgstr ""
+msgstr "Nieuwe subwerkruimte toevoegen aan de geselecteerde werkruimte"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:808
 #, fuzzy
@@ -1439,7 +1450,7 @@ msgstr "Voeg aan oplossing toe"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:813
 msgid "Add a new solution folder to the selected solution"
-msgstr ""
+msgstr "Voeg een nieuwe oplossing map toe aan de geselecteerde oplossing"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:816
 #, fuzzy
@@ -1453,7 +1464,7 @@ msgstr "Voeg bestaand _project toe"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:819
 msgid "Add an existing item to the selected workspace"
-msgstr ""
+msgstr "Bestaande werkruimte toevoegen aan geselecteerde werkruimte"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:820
 #, fuzzy
@@ -1641,7 +1652,7 @@ msgstr "_Open map"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:918
 msgid "Copy the assembly to the output directory when building the project"
-msgstr ""
+msgstr "Kopieer de assembly naar de uitvoer map bij het bouwen van het project"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:919
 #, fuzzy
@@ -1786,7 +1797,7 @@ msgstr "Werkruimte"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1009
 msgid "Close all solutions open in the current workspace"
-msgstr ""
+msgstr "Alle oplossingen binnen de huidige werkruimte sluiten"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1013
 #, fuzzy
@@ -1795,7 +1806,7 @@ msgstr "Sluit _alles"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1014
 msgid "Close the active solution or workspace item"
-msgstr ""
+msgstr "Sluit de actieve oplossing of werkruimte"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1017
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:94
@@ -1805,7 +1816,7 @@ msgstr "Herstel"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1018
 msgid "Revert to a saved version of the file"
-msgstr ""
+msgstr "Teruggaan naar een bewaarde versie van het bestand"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1022
 msgid "Save _As..."
@@ -1813,7 +1824,7 @@ msgstr "Opslaan _als..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1026
 msgid "Save the current file with a different name"
-msgstr ""
+msgstr "Het huidige bestand opslaan met een andere naam"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1029
 msgid "_Print..."
@@ -1834,7 +1845,7 @@ msgstr "Print_voorbeeld"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1042
 msgid "Page Set_up"
-msgstr ""
+msgstr "Pagina _Instellingen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1043
 #, fuzzy
@@ -1882,7 +1893,7 @@ msgstr "_Open in terminal"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1072
 msgid "Opens a terminal in this folder"
-msgstr ""
+msgstr "Opent een terminal in deze map"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1074
 msgid "_Open Folder"
@@ -1890,7 +1901,7 @@ msgstr "_Open map"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1075
 msgid "Opens the folder in a file manager."
-msgstr ""
+msgstr "Opent de map in de bestands verkenner"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1077
 #, fuzzy
@@ -1934,7 +1945,7 @@ msgstr "Sluit alle geopende bestanden exclusief het actieve bestand"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1097
 msgid "Copy the file path to the clipboard"
-msgstr ""
+msgstr "Kopieert de locaite van het bestand naar het plakbord"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1098
 #, fuzzy
@@ -1991,7 +2002,7 @@ msgstr "_Volledig scherm"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1134
 msgid "Set full screen mode"
-msgstr ""
+msgstr "Volledig scherm instellen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1136
 #, fuzzy
@@ -2036,7 +2047,7 @@ msgstr "Volgende weergeven ({0})"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1154
 msgid "Move cursor to next error or search match"
-msgstr ""
+msgstr "Verplaats cursor naar de volgende fout of zoekresultaat"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1159
 #, fuzzy
@@ -2045,7 +2056,7 @@ msgstr "Vorige weergeven ({0})"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1160
 msgid "Move cursor to previous error or search match"
-msgstr ""
+msgstr "Verplaats cursor naar de vorige fout of zoekresultaat"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1165
 msgid "Navigate _Back"
@@ -2053,7 +2064,7 @@ msgstr "Navigeer _terug"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1170
 msgid "Move to previous point in code navigation history"
-msgstr ""
+msgstr "Verplaatsen naar het vorige punt in de code navigatie geschiedenis"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1172
 msgid "Navigate _Forward"
@@ -2061,7 +2072,7 @@ msgstr "Navigeer _vooruit"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1177
 msgid "Move to next point in code navigation history"
-msgstr ""
+msgstr "Verplaatsen naar het volgende punt in de code navigatie geschiedenis"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1180
 #, fuzzy
@@ -2071,31 +2082,31 @@ msgstr "Navigeer _vooruit"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1182
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:2091
 msgid "Select a point from the navigation history"
-msgstr ""
+msgstr "Selecteer een punt in de code navigatie geschiedenis"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1184
 msgid "_Clear Navigation History"
-msgstr ""
+msgstr "_Leegmaken Navigatie Geschiedenis"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1186
 msgid "Clear the navigation history"
-msgstr ""
+msgstr "Leegmaken Navigatie Geschiedenis"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1190
 msgid "_Zoom In"
-msgstr ""
+msgstr "In_zoomen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1193
 msgid "Zooms view in"
-msgstr ""
+msgstr "Zoomt de weergave in"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1196
 msgid "Zoom _Out"
-msgstr ""
+msgstr "Uitz_oomen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1199
 msgid "Zooms view out"
-msgstr ""
+msgstr "Zoomt de weergave uit"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1202
 #, fuzzy
@@ -2176,7 +2187,7 @@ msgstr "Sorteer alfabetisch"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1260
 msgid "Split _Horizontally"
-msgstr ""
+msgstr "_Horizontaal Splitsen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1263
 #, fuzzy
@@ -2185,7 +2196,7 @@ msgstr "NUnit"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1267
 msgid "_Switch Between Splits"
-msgstr ""
+msgstr "Omschakelen tussen _Splits"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1272
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1273
@@ -2258,7 +2269,7 @@ msgstr "Zoek vol_gende"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1322
 msgid "Search forwards for the same text"
-msgstr ""
+msgstr "Vooruit zoeken naar dezelfde tekst"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1326
 msgid "Find _Previous"
@@ -2271,11 +2282,11 @@ msgstr "_Start een blok van broncode op dezelfde regel"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1332
 msgid "Find _Next (Emacs behavior)"
-msgstr ""
+msgstr "Zoek _Volgende (Emacs stijl)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1334
 msgid "Search forwards for the same text with emacs behavior"
-msgstr ""
+msgstr "Vooruit zoeken naar dezelfde tekst in emacs stijl"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1336
 #, fuzzy
@@ -2293,7 +2304,7 @@ msgstr "Zoek volgende selectie"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1341
 msgid "Search forwards for the selected text"
-msgstr ""
+msgstr "Vooruit zoeken naar de geselecteerde tekst"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1345
 msgid "Find _Previous Selection"
@@ -2301,7 +2312,7 @@ msgstr "Zoek vori_ge selectie"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1346
 msgid "Search backwards for the selected text"
-msgstr ""
+msgstr "Terug zoeken naar de geselecteerde tekst"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1351
 msgid "F_ind in Files..."
@@ -2318,7 +2329,7 @@ msgstr "V_ervang in bestand..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1361
 msgid "Search for and replace text in all files of a directory"
-msgstr ""
+msgstr "Zoeken naar en vervangen van tekst in alle bestanden of een map"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1365
 msgid "Go to Type..."
@@ -2326,7 +2337,7 @@ msgstr "Ga naar type..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1366
 msgid "Jump to the declaration of type in the current workspace"
-msgstr ""
+msgstr "Spring naar declaratie van het type binnen de huidige werkruimte"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1371
 #, fuzzy
@@ -2402,7 +2413,7 @@ msgstr "Selectie naar _hoofdletters"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1412
 msgid "Uses the current selection as find string"
-msgstr ""
+msgstr "Gebruikt de huidige selectie als de zoektekst"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1414
 #, fuzzy
@@ -2411,7 +2422,7 @@ msgstr "Selecteer sjabloon:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1415
 msgid "Uses the current selection as replace string"
-msgstr ""
+msgstr "Gebruikt de huidige selectie als de vervangings tekst"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1421
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1818
@@ -2510,6 +2521,8 @@ msgstr "Tot het eind van de regel verwijderen"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1475
 msgid "Deletes to end of line, or if at end, deletes line ending"
 msgstr ""
+"Verwijderen tot het einde van de regel, of, indien aan het einde, verwijder "
+"regel-einde"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1479
 msgid "Move the line or highlighted selection up"
@@ -2529,11 +2542,11 @@ msgstr "Ga naar ander _haakje"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1493
 msgid "Expand selection to the left"
-msgstr ""
+msgstr "Selectie uitbreiden naar links"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1495
 msgid "Expand selection to the right"
-msgstr ""
+msgstr "Selectie uitbreiden naar rechts"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1497
 #, fuzzy
@@ -2587,23 +2600,23 @@ msgstr "Ga naar de volgende regel"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1517
 msgid "Expand selection to line start"
-msgstr ""
+msgstr "Selectie uitbreiden tot regel aanvang"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1519
 msgid "Expand selection to line end"
-msgstr ""
+msgstr "Selectie uitbreiden tot regel einde"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1521
 msgid "Expand selection to document start"
-msgstr ""
+msgstr "Selectie uitbreiden tot begin van document"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1523
 msgid "Expand selection to document end"
-msgstr ""
+msgstr "Selectie uitbreiden tot einde van document"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1525
 msgid "Switch caret mode"
-msgstr ""
+msgstr "Schakel cursor modus"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1528
 #, fuzzy
@@ -2622,19 +2635,19 @@ msgstr "Voor toevoegen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1534
 msgid "Insert line break after the caret"
-msgstr ""
+msgstr "Voeg een regeleinde in na de cursor"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1537
 msgid "Move caret to EOL and insert new line"
-msgstr ""
+msgstr "Cursor naar regeleinde en voeg een nieuwe regel in"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1539
 msgid "Completes the current statement"
-msgstr ""
+msgstr "Het huidige statement completeren"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1542
 msgid "Delete previous word"
-msgstr ""
+msgstr "Verwijder vorig woord"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1544
 #, fuzzy
@@ -2653,11 +2666,11 @@ msgstr "Verwijder map"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1550
 msgid "Expand selection to page down"
-msgstr ""
+msgstr "Selectie uitbreiden een pagina naar beneden"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1552
 msgid "Expand selection to page up"
-msgstr ""
+msgstr "Selectie uitbreiden een pagina omhoog"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1554
 #, fuzzy
@@ -2666,7 +2679,7 @@ msgstr "Ga een karakter naar rechts"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1555
 msgid "Swaps the characters on either side of the caret"
-msgstr ""
+msgstr "Omwisselen karakters aan weerszijden van de cursor"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1558
 #, fuzzy
@@ -2675,7 +2688,7 @@ msgstr "Een tekstbewerker"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1559
 msgid "Scrolls the editor so that the caret is centered"
-msgstr ""
+msgstr "Scrollt de editor zo dat de cursor gecentreerd wordt"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1562
 #, fuzzy
@@ -2875,7 +2888,7 @@ msgstr "Standaard koptekst"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1845
 msgid "Text Style"
-msgstr ""
+msgstr "Text Stijl"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1864
 #, fuzzy
@@ -3083,7 +3096,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:2180
 #: ../src/addins/WelcomePage/WelcomePageContent.xml:19
 msgid "Report a Bug"
-msgstr ""
+msgstr "Rapporteer een Bug"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:2259
 #, fuzzy
@@ -3113,7 +3126,7 @@ msgstr "Een lege werkruimte"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:8
 msgid "Template for destructor"
-msgstr ""
+msgstr "Sjabloon voor destructor"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:13
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:122
@@ -3124,23 +3137,23 @@ msgstr "Klassen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:29
 msgid "Template for an attribute."
-msgstr ""
+msgstr "Sjabloon voor een attribuut."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:35
 msgid "The name of the attribute"
-msgstr ""
+msgstr "De naam van het attribuut"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:117
 msgid "Template for constructor"
-msgstr ""
+msgstr "Sjabloon voor constructor"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:138
 msgid "Template for Console.WriteLine"
-msgstr ""
+msgstr "Sjabloon voor Console.WriteLine"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:156
 msgid "Template for switch statement"
-msgstr ""
+msgstr "Sjabloon voor switch statement"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:162
 #, fuzzy
@@ -3149,15 +3162,15 @@ msgstr "Expressie"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:177
 msgid "Template for void Main method."
-msgstr ""
+msgstr "Sjabloon voor void Main methode."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:193
 msgid "Template for int Main method."
-msgstr ""
+msgstr "Sjabloon voor int Main methode."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:209
 msgid "Template for exception"
-msgstr ""
+msgstr "Sjabloon voor exception"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:215
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:368
@@ -3179,11 +3192,11 @@ msgstr "_Tip van de dag"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:289
 msgid "Type to index with"
-msgstr ""
+msgstr "Type om mee te indexeren"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:312
 msgid "Template for a short property"
-msgstr ""
+msgstr "Sjabloon voor een korte property"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:322
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:347
@@ -3193,7 +3206,7 @@ msgstr "_Property-naam:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:337
 msgid "Template for a short property with private set."
-msgstr ""
+msgstr "Sjabloon voor een korte property met een private set."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:362
 #, fuzzy
@@ -3244,11 +3257,11 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:505
 msgid "Template checked block"
-msgstr ""
+msgstr "Sjabloon voor checked blok"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:520
 msgid "Template for class declaration"
-msgstr ""
+msgstr "Sjabloon voor class declaratie"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:541
 #, fuzzy
@@ -3282,7 +3295,7 @@ msgstr "Lege enumeration"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:604
 msgid "Template for 'for' loop"
-msgstr ""
+msgstr "Sjabloon voor 'for' lus"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:610
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:634
@@ -3300,7 +3313,7 @@ msgstr "Nieuwe configuratie"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:628
 msgid "Template for reverse 'for' loop"
-msgstr ""
+msgstr "Sjabloon voor achterwaartse 'for' lus"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:652
 #, fuzzy
@@ -3317,13 +3330,13 @@ msgstr "Expressie"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:672
 msgid "Template for iterating through a collection"
-msgstr ""
+msgstr "Sjabloon voor het itereren door een collectie"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:682
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:720
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:797
 msgid "Collection to iterate through"
-msgstr ""
+msgstr "Collectie om te itereren"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:687
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:725
@@ -3333,11 +3346,11 @@ msgstr "Variabele hernoemen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:710
 msgid "Template for iterating reverse through a collection"
-msgstr ""
+msgstr "Sjabloon voor het achterwaarts itereren door een collectie"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:748
 msgid "Template for 'do...while' loop"
-msgstr ""
+msgstr "Sjabloon voor 'do...while' lus"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:768
 #, fuzzy
@@ -3346,27 +3359,27 @@ msgstr "Sjabloon"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:782
 msgid "Template for 'foreach' loop"
-msgstr ""
+msgstr "Sjabloon voor 'foreach' lus"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:788
 msgid "The type of objects to iterate through"
-msgstr ""
+msgstr "Type van de object om te itereren"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:793
 msgid "Identifier for the current element"
-msgstr ""
+msgstr "Identifier voor het huidige element"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:812
 msgid "Template for 'if' statement"
-msgstr ""
+msgstr "Sjabloon voor 'if' statement"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:832
 msgid "Template for 'lock' statement"
-msgstr ""
+msgstr "Sjabloon voor 'lock' statement"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:838
 msgid "Object to lock"
-msgstr ""
+msgstr "Object om te locken"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:852
 #, fuzzy
@@ -3380,7 +3393,7 @@ msgstr "Naamruimte: "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:872
 msgid "Template for try...catch"
-msgstr ""
+msgstr "Sjabloon voor try...catch"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:895
 #, fuzzy
@@ -3389,19 +3402,19 @@ msgstr "_Vraag om argumenten"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:908
 msgid "Template for type cast"
-msgstr ""
+msgstr "Sjabloon voor type cast"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:925
 msgid "Template for try...finally"
-msgstr ""
+msgstr "Sjabloon voor try...finally"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:941
 msgid "Template for 'unchecked' block"
-msgstr ""
+msgstr "Sjabloon voor 'unchecked' blok"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:955
 msgid "Template for 'unsafe' block"
-msgstr ""
+msgstr "Sjabloon voor 'unsafe' blok"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:966
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:978
@@ -3416,7 +3429,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:970
 msgid "bold block"
-msgstr ""
+msgstr "vetgedrukt blok"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:982
 #, fuzzy
@@ -3425,27 +3438,27 @@ msgstr "Kopiëer commentaartaak"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:994
 msgid "heading 1 block"
-msgstr ""
+msgstr "koptekst 1 blok"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1006
 msgid "heading 2 block"
-msgstr ""
+msgstr "koptekst 2 blok"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1018
 msgid "heading 3 block"
-msgstr ""
+msgstr "koptekst 3 blok"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1030
 msgid "heading 4 block"
-msgstr ""
+msgstr "koptekst 4 blok"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1042
 msgid "italic block"
-msgstr ""
+msgstr "cursief blok"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1054
 msgid "paragraph block"
-msgstr ""
+msgstr "paragraaf blok"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1063
 msgid "Xml"
@@ -3474,7 +3487,7 @@ msgstr "Sjabloon"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1098
 msgid "Template for function block"
-msgstr ""
+msgstr "Sjabloon voor functie blok"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1104
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1126
@@ -3490,7 +3503,7 @@ msgstr "_Extra argumenten:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1120
 msgid "Template for class function block"
-msgstr ""
+msgstr "Sjabloon voor klasse functie blok"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1142
 #, fuzzy
@@ -3509,24 +3522,24 @@ msgstr "Sjabloon"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1172
 msgid "Template for a class deriving from gtk.Window"
-msgstr ""
+msgstr "Sjabloon voor klasse afgeleid van gtk.Window"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1178
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1202
 msgid "Window class name"
-msgstr ""
+msgstr "Venster klasse naam"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1196
 msgid "Template for a class loading contents from a gtkbuilder file"
-msgstr ""
+msgstr "Sjabloon voor klasse die de inhoud laadt van een gtkbuilder bestand"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1206
 msgid "Path to ui description file (widgets.ui)"
-msgstr ""
+msgstr "Pad naar ui omschrijvings bestand (widgets.ui)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1210
 msgid "The top-most child of the window within the gtk.Builder file."
-msgstr ""
+msgstr "Het bovenste kind van het venster in het gtk.Builder bestand."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:80
 msgid "File to Open"
@@ -3573,7 +3586,7 @@ msgstr "laad oplossing {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:347
 msgid "Hold Control to open in current workspace."
-msgstr ""
+msgstr "Controltoets vasthouden om te openen in huidige werkruimte."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:367
 msgid "Clear recent projects"
@@ -3623,7 +3636,7 @@ msgstr "Bouw {0} opnieuw"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:253
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:148
 msgid "_Run again"
-msgstr ""
+msgstr "Opnieuw uitvoe_ren"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ProjectCommands.cs:271
 #, fuzzy
@@ -3660,11 +3673,11 @@ msgstr "Bezig met uitvoeren "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:114
 msgid "Process '{0}' has completed succesfully"
-msgstr ""
+msgstr "Proces '{0}' succesvol voltooid"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:116
 msgid "Process '{0}' has exited with error code {1}"
-msgstr ""
+msgstr "Proces '{0}' is beëindigd met fout code {1}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ToolsCommands.cs:119
 msgid ""
@@ -3681,7 +3694,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:426
 #, fuzzy
 msgid "Show {0}"
-msgstr "Volgende weergeven ({0})"
+msgstr "Toon {0} "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:124
 #, fuzzy
@@ -3694,7 +3707,7 @@ msgstr "Weet u zeker dat u de actieve layout wilt verwijderen?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:193
 msgid "Show Next ({0})"
-msgstr "Volgende weergeven ({0})"
+msgstr "Toon volgende ({0})"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:211
 msgid "Show Previous ({0})"
@@ -3717,7 +3730,7 @@ msgstr "Gebruikerstaken"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/TaskService.cs:111
 msgid "No more errors or warnings"
-msgstr ""
+msgstr "Geen verdere fouten of waarschuwingen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalTool.cs:111
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:256
@@ -3727,6 +3740,7 @@ msgstr "Nieuw hulpmiddel"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:77
 msgid "Only single-file templates allowed to generate resource files"
 msgstr ""
+"Slechts zelfstandige sjablonen toegestaan om resource files te genereren"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Templates/ProjectDescriptor.cs:115
 #, fuzzy
@@ -3769,12 +3783,16 @@ msgstr "Bewaar _geen wijzigingen in open documenten"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:109
 msgid "All changes made to the document will be permanently lost."
 msgstr ""
+"Alle wijzigingen aangebracht aan het document zullen permanent verloren gaan."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:168
 msgid ""
 "<b>Contributors to this Release</b>\n"
 "\n"
 msgstr ""
+"<b>Bijgedragen aan deze Release hebben</b>\n"
+"\\\n"
+"\n"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:178
 #, fuzzy
@@ -3796,6 +3814,7 @@ msgstr ""
 "\n"
 "\n"
 "<b>Vertaald door:</b>\n"
+"\n"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:194
 #, fuzzy
@@ -3836,15 +3855,15 @@ msgstr "Nieuwe layout aanmaken"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewLayoutDialog.cs:40
 msgid "Name must start with a letter or number"
-msgstr ""
+msgstr "Naam dient te beginnen met een letter of cijfer"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewLayoutDialog.cs:42
 msgid "Name must contain only letters, numbers and spaces"
-msgstr ""
+msgstr "Naam mag alleen letters, cijfers en spaties bevatten"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewLayoutDialog.cs:44
 msgid "There is already a layout with that name"
-msgstr ""
+msgstr "Er bestaat al een layout met die naam"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewLayoutDialog.cs:46
 #, fuzzy
@@ -4032,7 +4051,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:281
 msgid "Don't Save"
-msgstr ""
+msgstr "Niet Opslaan"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:291
 msgid "Save operation failed."
@@ -4051,35 +4070,35 @@ msgstr "_Kopiëren"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:339
 msgid "another copy"
-msgstr ""
+msgstr "nog een kopie"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:340
 msgid "3rd copy"
-msgstr ""
+msgstr "3e kopie"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:341
 msgid "4th copy"
-msgstr ""
+msgstr "4e kopie"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:342
 msgid "5th copy"
-msgstr ""
+msgstr "5e kopie"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:343
 msgid "6th copy"
-msgstr ""
+msgstr "6e kopie"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:344
 msgid "7th copy"
-msgstr ""
+msgstr "7e kopie"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:345
 msgid "8th copy"
-msgstr ""
+msgstr "8ste kopie"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:346
 msgid "9th copy"
-msgstr ""
+msgstr "9e kopie"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/FolderNodeBuilder.cs:347
 #, fuzzy
@@ -4115,7 +4134,7 @@ msgstr "Bestand of mapnaam wordt al gebruikt, kies een andere."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:173
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SystemFileNodeBuilder.cs:109
 msgid "There was an error renaming the file."
-msgstr ""
+msgstr "Er trad een fout op bij het hernoemen van het bestand."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:221
 #, fuzzy
@@ -4127,6 +4146,9 @@ msgid ""
 "The Delete option permanently removes the file from your hard disk. Click "
 "Remove from Project if you only want to remove it from your current solution."
 msgstr ""
+"De optie Verwijderen verwijdert het bestand permanent van uw harde schijf. "
+"Klik Verwijderen uit Project om het alleen uit uw huidige oplossing wilt "
+"verwijderen."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFileNodeBuilder.cs:229
 #, fuzzy
@@ -4167,7 +4189,7 @@ msgstr "Bezig met openen van {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:167
 msgid "There was an error renaming the directory."
-msgstr ""
+msgstr "Er trad een fout op bij het hernoemen van de map."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectFolderNodeBuilder.cs:186
 msgid "Are you sure you want to permanently delete the folder {0}?"
@@ -4242,6 +4264,8 @@ msgstr "Standaard C-compiler:"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:236
 msgid "The file could not be saved. Write permission has not been granted."
 msgstr ""
+"Het bestand kon niet worden opgeslagen. Schrijf bevoegdheid werd niet "
+"verleend."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:276
 msgid "Save as..."
@@ -4278,6 +4302,7 @@ msgstr "_Bewaar wijzigingen in open documenten"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:631
 msgid "If you don't save, all changes will be permanently lost."
 msgstr ""
+"Indien u niet opslaat, zullen alle wijzigingen permanent verloren gaan."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:646
 msgid "The document could not be saved."
@@ -4606,7 +4631,7 @@ msgstr "Anders"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:496
 msgid "This key combination is already bound to command '{0}'"
-msgstr ""
+msgstr "Deze toestcombinatie is al toegewezen aan het commando '{0}'"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs:72
 msgid "Scheme:"
@@ -4620,7 +4645,7 @@ msgstr "_Zoek"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs:170
 msgid "The current scheme has conflicting key bindings"
-msgstr ""
+msgstr "De huidige indeling bevat conflicterende toets toewijzingen"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs:227
 msgid "Edit Binding"
@@ -4632,7 +4657,7 @@ msgstr "Toepassen"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:42
 msgid "Build solution before running"
-msgstr ""
+msgstr "Oplossing bouwen alvorens uit te voeren"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:54
 #, fuzzy
@@ -4644,6 +4669,9 @@ msgid ""
 "Compile projects using MSBuild / XBuild\n"
 "(this is an experimental feature and may not work for some projects)"
 msgstr ""
+"Compileren middels MSBuild / XBuild\n"
+"(deze feature is experimenteel en zou voor bepaalde projecten niet kunnen "
+"werken)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget.cs:79
 #, fuzzy
@@ -4665,6 +4693,7 @@ msgstr "Bewaar _geen wijzigingen in open documenten"
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs:66
 msgid "Project file format to use when creating new projects:"
 msgstr ""
+"Project bestandsformaat om te gebruiken bij het creëren van nieuwe projecten:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanelWidget.cs:94
 msgid "Default _Solution location"
@@ -4781,8 +4810,8 @@ msgid ""
 "You can start MonoDevelop without these add-ins, but the functionality they "
 "provide will be missing. Do you wish to continue?"
 msgstr ""
-"U kan MonoDevelop starten zonder deze add-ins, maar de functionaliteit die "
-"de add-ins bieden zal worden gemist. Wilt u doorgaan?"
+"U kan MonoDevelop starten zonder deze add-ins, maar de functionaliteit die de "
+"add-ins bieden zal worden gemist. Wilt u doorgaan?"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs:105
 msgid "MonoDevelop cannot start because a fatal error has been detected."
@@ -4792,15 +4821,15 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs:116
 msgid ""
-"MonoDevelop can run without these add-ins, but the functionality they "
-"provide will be missing."
+"MonoDevelop can run without these add-ins, but the functionality they provide "
+"will be missing."
 msgstr ""
 "MonoDevelop kan uitgevoerd worden zonder deze add-ins, maar de "
 "functionaliteit die de add-ins bieden zal worden gemist. Wilt u doorgaan?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Content/CompletionTextEditorExtension.cs:253
 msgid "_Surround With..."
-msgstr ""
+msgstr "Om_ringen Met..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:292
 msgid "Control not found!"
@@ -4868,6 +4897,8 @@ msgid ""
 "The user interface language change will take effect the next time you start "
 "MonoDevelop"
 msgstr ""
+"De taal wijziging voor de gebruikers interface  zal van kracht worden vanaf "
+"de volgende keer dat u MonoDevelop opstart"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:59
 #, fuzzy
@@ -5005,7 +5036,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanelWidget.cs:40
 msgid "_Include standard header in new files"
-msgstr ""
+msgstr "_Invoegen van standaard koptekst in nieuwe bestanden"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/TextStylePolicyPanel.cs:68
 #, fuzzy
@@ -5030,7 +5061,7 @@ msgstr "Vori_g venster"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs:61
 msgid "Desired _file width:"
-msgstr ""
+msgstr "Gewenste bestands breedte:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs:84
 #, fuzzy
@@ -5049,7 +5080,7 @@ msgstr "<b>Sjabloon</b>"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs:153
 msgid "_Tab width:"
-msgstr ""
+msgstr "_Tab breedte:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs:176
 #, fuzzy
@@ -5063,11 +5094,11 @@ msgstr "C_onverteer tabs naar spaties"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs:203
 msgid "_Allow tabs after non-tabs"
-msgstr ""
+msgstr "Toest_aan tabs na niet-tabs"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs:215
 msgid "_Remove trailing whitespace"
-msgstr ""
+msgstr "Achteropkomende witruimte verwijderen"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget.cs:64
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs:121
@@ -5126,11 +5157,11 @@ msgstr "_Zet koptest in sjabloon"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:188
 msgid "Is _surround with template"
-msgstr ""
+msgstr "Betreft een 'omringen met' sjabloon"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:205
 msgid "_Shortcut:"
-msgstr ""
+msgstr "_Afkorting:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:215
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CombineInformationWidget.cs:39
@@ -5172,11 +5203,11 @@ msgstr "Definieert een koptekst voor een lijst of tabel."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs:48
 msgid "The tooltip to display to the user for this variable."
-msgstr ""
+msgstr "De tooltip om de gebruiker te tonen voor deze variabele."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs:54
 msgid "A function to be evaluated for the contents of this variable."
-msgstr ""
+msgstr "Een functie om te evalueren voor de inhoud van deze variabele."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs:61
 msgid "Whether the variable is an editable region."
@@ -5190,11 +5221,11 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs:74
 msgid "A list of values for the user to choose from."
-msgstr ""
+msgstr "Een lijst van waarde waar de gebruiker uit kan kiezen."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:64
 msgid "MonoDevelop is currently running on <b>{0}</b>."
-msgstr ""
+msgstr "MonoDevelop draait momenteel op <b>{0}</b>."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:112
 #, fuzzy
@@ -5208,17 +5239,23 @@ msgstr "Bestand niet gevonden: {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:126
 msgid ""
-"Please provide a valid directory prefix where mono is installed (for "
-"example, /usr)"
+"Please provide a valid directory prefix where mono is installed (for example, "
+"/usr)"
 msgstr ""
+"Gelieve een geldige map prefix te verschaffen waar mono geïnstalleerd is "
+"(bijv. /usr)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs:41
 msgid ""
 "If you have a parallel installation of Mono you can register it here, so you "
 "can use it for building and running projects. The <b>default runtime</b> is "
-"the .NET runtime to be used for building and running applications when none "
-"is specifically selected."
+"the .NET runtime to be used for building and running applications when none is "
+"specifically selected."
 msgstr ""
+"Als u een parallelle installatie van Mono heeft kunt u deze hier registreren, "
+"zodat deze gebruikt kan worden voor het bouwen en uitvoeren van projecten. "
+"De <b>standaard runtime</b> is de .NET runtime om te gebruiken voor het bouwen "
+"en uitvoeren van applicaties wanneer er geen specifieke selectie is gemaakt."
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs:74
 #, fuzzy
@@ -5305,7 +5342,7 @@ msgstr "Pad:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:263
 msgid "Re_cursively"
-msgstr ""
+msgstr "Re_cursief"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:302
 msgid "Select directory"
@@ -5320,7 +5357,7 @@ msgstr "In oplossing aanmaken:"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:462
 msgid ""
 "Currently there is no project selected. Search in the solution instead ?"
-msgstr ""
+msgstr "Er is momenteel geen project geselecteerd. Zoeken in de oplossing ?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:474
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/BaseDirectoryPanel.cs:63
@@ -5509,7 +5546,7 @@ msgstr "Weergeven"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:77
 msgid "Hold Control key to display the execution parameters dialog."
-msgstr ""
+msgstr "Control toets vasthouden om de uitvoerings parameter dialoog te tonen."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:85
 msgid "Edit Custom Modes..."
@@ -5532,7 +5569,7 @@ msgstr "Debug"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:172
 msgid "MDB Mode"
-msgstr ""
+msgstr "MDB Modus"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:180
 #, fuzzy
@@ -5541,7 +5578,7 @@ msgstr "Programma bestanden"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:187
 msgid "Verbose Level"
-msgstr ""
+msgstr "Uitvoerig Niveau"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:193
 #, fuzzy
@@ -5555,7 +5592,7 @@ msgstr "Een beveiligingshulpmiddel"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:207
 msgid "Verify All"
-msgstr ""
+msgstr "Alle verifiëren"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:215
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:136
@@ -5570,7 +5607,7 @@ msgstr "Waarschuwingsniveau:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:241
 msgid "Log Mask"
-msgstr ""
+msgstr "Log Masker"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:255
 #, fuzzy
@@ -5608,7 +5645,7 @@ msgstr "Prefix:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:322
 msgid "Strip Drive Letters"
-msgstr ""
+msgstr "Station Aanduidingen Weglaten"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:328
 #, fuzzy
@@ -5621,7 +5658,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:342
 msgid "No SMP"
-msgstr ""
+msgstr "Geen SMP"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:350
 #, fuzzy
@@ -5664,18 +5701,21 @@ msgstr "GTK#-ondersteuning inschakelen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:167
 msgid "Enable more detailed InvalidCastException messages."
-msgstr ""
+msgstr "Meer gedetailleerde InvalidCastException meldingen inschakelen."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:173
 msgid ""
 "Disable some JIT optimizations which are normally disabled when running "
-"inside the debugger. This is useful if you plan to attach to the running "
-"process with the debugger."
+"inside the debugger. This is useful if you plan to attach to the running process "
+"with the debugger."
 msgstr ""
+"Sommige JIT optimalisaties uitschakelen die normaal uitgeschakeld zijn bij "
+"uitvoering in de de debugger. Dit is nuttig als u van plan bent het draaiende "
+"proces aan te koppelen met de debugger."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:181
 msgid "Runs in profiling mode with the specified profiler module."
-msgstr ""
+msgstr "Draait in profiling modus met de aangegeven profiler module."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:188
 msgid "Increases the verbosity level."
@@ -5684,58 +5724,83 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:194
 msgid "Use the specified runtime version, instead of autodetecting"
 msgstr ""
+"Gebruik de aangegeven runtime versie, in plaats van automatische detectie"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:201
 msgid "Turns on the unsupported security manager (off by default)."
-msgstr ""
+msgstr "Schakel de niet-ondersteunde security manager in (standaard uit)."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:208
 msgid ""
 "Verifies mscorlib and assemblies in the global assembly cache for valid IL, "
 "and all user code for IL verifiability."
 msgstr ""
+"Verifieert mscorlib en assemblies in de global assembly cache op valide IL, "
+"en alle user code voor IL verifieerbaarheid."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:216
 msgid ""
 "Comma separated list of expressions to trace. 'all' all assemlies, 'none' no "
-"assemblies, 'program' entry point assembly, 'assembly' specifies an "
-"assembly, 'T:Type' specifies a type, 'M:Type:Method'  a method, 'N:"
-"Namespace' a namespace. 'disabled' don't print any output until toggled via "
-"SIGUSR2. Prefix with '-' to exclude and expression."
+"assemblies, 'program' entry point assembly, 'assembly' specifies an assembly, "
+"'T:Type' specifies a type, 'M:Type:Method'  a method, 'N:Namespace' a "
+"namespace. 'disabled' don't print any output until toggled via SIGUSR2. Prefix with "
+"'-' to exclude and expression."
 msgstr ""
+"Kommagescheiden lijst van expressies om te traceren.  'all' alle assemblies, "
+"'none' geen assemblies, 'program' start ingang assembly, 'assembly' "
+"specificeert een assembly. 'T:Type' specificeert een type, 'M:Type:Method' een "
+"methode, 'N:Namespace' een namespace, 'disabled' geen uitvoer afdrukken tot "
+"inschakelen via SIGUSR2. Prefix met '-' om een expressie uit te sluiten."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:232
 msgid ""
 "Possible values are 'error', 'critical', 'warning', 'message', 'info', "
-"'debug'. The default  value  is  'error'. Messages with a logging level "
-"greater then or equal to the log level will be printed to stdout/stderr."
+"'debug'. The default  value  is  'error'. Messages with a logging level greater "
+"then or equal to the log level will be printed to stdout/stderr."
 msgstr ""
+"Mogelijke waarden zijn 'error', 'critical', 'warning', 'message', 'info', "
+"'debug'. De standaard waarde is 'error'. Meldingen met een logging niveau groter "
+"dan of gelijk aan het log niveau zullen naar stdout/stderr worden afgedrukt."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:242
 msgid ""
 "Possible values are 'asm'  (assembly  loader),  'type',  'dll'  (native "
-"library  loader), 'gc' (garbage collector), 'cfg' (config file loader), "
-"'aot' (precompiler) and 'all'. The default value is 'all'. Changing the mask "
-"value allows you to display only messages for a certain component. You can "
-"use multiple masks by comma separating them. For example to  see config file "
-"messages and assembly loader messages set you mask to 'asm,cfg'."
+"library  loader), 'gc' (garbage collector), 'cfg' (config file loader), 'aot' "
+"(precompiler) and 'all'. The default value is 'all'. Changing the mask value "
+"allows you to display only messages for a certain component. You can use multiple "
+"masks by comma separating them. For example to  see config file messages and "
+"assembly loader messages set you mask to 'asm,cfg'."
 msgstr ""
+"Mogelijke waarden zijn 'asm'  (assembly  loader),  'type',  'dll'  (native "
+"library loader), 'gc' (garbage collector), 'cfg' (config file loader), 'aot' "
+"(precompiler) en 'all'. De standaard waarde is 'all'. Wijzigen van het masker "
+"stelt u instaat om slechts de meldingen voor een bepaalde component te tonen. "
+"U kunt meerdere maskers opgeven door deze met komma's te scheiden. Bij "
+"voorbeeld, om config file meldingen en assembly loader meldingen te tonen, stelt u "
+"het masker in op 'asm,cfg'."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:256
 msgid ""
 "The  possible values are `no' to disable the use of a C# customized "
-"serializer, or an integer that is the minimum number of uses before the "
-"runtime will produce a custom serializer (0 will produce a custom serializer "
-"on the first access, 50 will produce a serializer on the 50th use). Mono "
-"will fallback to an interpreted serializer if the serializer generation "
-"somehow fails. This behavior can be disabled by setting the option "
-"`nofallback' (for example: '0,nofallback')."
+"serializer, or an integer that is the minimum number of uses before the runtime will "
+"produce a custom serializer (0 will produce a custom serializer on the first "
+"access, 50 will produce a serializer on the 50th use). Mono will fallback to "
+"an interpreted serializer if the serializer generation somehow fails. This "
+"behavior can be disabled by setting the option `nofallback' (for example: "
+"'0,nofallback')."
 msgstr ""
+"De mogelijke waarden zijn `no' om het gebruik van een C# customized "
+"serializer uit te schakelen, of een geheel getal dat het minimum aantal gebruiken "
+"aangeeft voordat de runtime een custom serializer zal maken (0 zal een custom "
+"serializer produceren bij de eerste aangreep, 50 zal deze produceren bij de 50e "
+"keer). Mono zal terugvallen op een geïnterpreteerde serializer mocht het "
+"genereren van de serializer onverhoopt falen. Dit gedrag kan worden uitgeschakeld "
+"door de optie `nofallback' in te stellen (bij voorbeeld: '0,nofallback')."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:269
 msgid ""
-"Overrides the default system configuration directory ($PREFIX/etc). It's "
-"used to locate machine.config file."
+"Overrides the default system configuration directory ($PREFIX/etc). It's used "
+"to locate machine.config file."
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:277
@@ -5745,32 +5810,31 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:284
 msgid ""
-"If  set, tells mono NOT to attempt using native asynchronous I/O services. "
-"In that case, a default select/poll implementation is used. Currently only "
+"If  set, tells mono NOT to attempt using native asynchronous I/O services. In "
+"that case, a default select/poll implementation is used. Currently only "
 "epoll() is supported."
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:293
 msgid ""
 "If set, the runtime uses unmanaged collation (which actually means no "
-"culture-sensitive collation). It internally disables managed collation "
-"functionality invoked via the members of System.Globalization.CompareInfo "
-"class."
+"culture-sensitive collation). It internally disables managed collation functionality "
+"invoked via the members of System.Globalization.CompareInfo class."
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:303
 msgid ""
-"A colon-separated list of text encodings to try when turning externally-"
-"generated text (e.g. command-line arguments or filenames) into Unicode."
+"A colon-separated list of text encodings to try when turning "
+"externally-generated text (e.g. command-line arguments or filenames) into Unicode."
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:312
 msgid ""
 "Provides a prefix the runtime uses to look for Global Assembly Caches. "
 "Directories are separated by the platform path separator (colons on unix). "
-"MONO_GAC_PREFIX should point to the top directory of a prefixed install. Or "
-"to the directory provided in the gacutil /gacdir command. Example: /home/"
-"username/.mono:/usr/local/mono/"
+"MONO_GAC_PREFIX should point to the top directory of a prefixed install. Or to the "
+"directory provided in the gacutil /gacdir command. Example: "
+"/home/username/.mono:/usr/local/mono/"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:323
@@ -5800,8 +5864,8 @@ msgid ""
 "Provides a search path to the runtime where to look for library files. This "
 "is a tool convenient for debugging applications, but should not be used by "
 "deployed applications as it breaks the assembly loader in subtle ways. "
-"Directories are separated by the platform path separator (colons on unix). "
-"Example: /home/username/lib:/usr/local/mono/lib"
+"Directories are separated by the platform path separator (colons on unix). Example: "
+"/home/username/lib:/usr/local/mono/lib"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:363
@@ -5824,12 +5888,12 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:389
 msgid ""
-"If set, enables the System.Diagnostics.DefaultTraceListener, which will "
-"print the output of the System.Diagnostics Trace and Debug classes. It can "
-"be set to a filename, and to Console.Out or Console.Error to display output "
-"to standard output or standard error, respectively. If it's set to Console."
-"Out or Console.Error you can append an optional prefix that will be used "
-"when writing messages like this: Console.Error:MyProgramName."
+"If set, enables the System.Diagnostics.DefaultTraceListener, which will print "
+"the output of the System.Diagnostics Trace and Debug classes. It can be set "
+"to a filename, and to Console.Out or Console.Error to display output to "
+"standard output or standard error, respectively. If it's set to Console.Out or "
+"Console.Error you can append an optional prefix that will be used when writing "
+"messages like this: Console.Error:MyProgramName."
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:402
@@ -5841,8 +5905,8 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:410
 msgid ""
 "When the the MONO_XDEBUG env var is set, debugging info for JITted code is "
-"emitted into a shared library, loadable into gdb. This enables, for example, "
-"to see managed frame names on gdb backtraces."
+"emitted into a shared library, loadable into gdb. This enables, for example, to "
+"see managed frame names on gdb backtraces."
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:447
@@ -5929,6 +5993,8 @@ msgid ""
 "The current file format for project {0} is not compatible with some settings "
 "of the project."
 msgstr ""
+"Het huidige bestands formaat voor project {0} is niet compatibel met sommige "
+"instellingen van het project."
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectFileFormatDialog.cs:115
 #, fuzzy
@@ -5998,7 +6064,7 @@ msgstr "Fouten weergeven"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildMessagePanel.cs:82
 msgid "For Errors and Warnings"
-msgstr ""
+msgstr "Voor Fouten en Waarschuwingen"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs:43
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs:56
@@ -6019,11 +6085,11 @@ msgstr "Berichten weergeven"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs:104
 msgid "Jump to first error or warning:"
-msgstr ""
+msgstr "Spring naar de eerste fout of waarschuwing:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:448
 msgid "Console input not supported"
-msgstr ""
+msgstr "Console invoer is niet ondersteund"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:449
 msgid ""
@@ -6031,6 +6097,10 @@ msgid ""
 "your applications needs to read data from the standard input, please set the "
 "'Run in External Console' option in the project options."
 msgstr ""
+"Console invoer is niet ondersteund bij het gebruik van de MonoDevelop uitvoer "
+"console. Als uw applicaties invoer van de standaard input nodig hebben, "
+"stelt u dan a.u.b. de optie 'In externe console uitvoeren' optie in bij de "
+"project opties."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CustomTools/CustomToolService.cs:111
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:95
@@ -6312,7 +6382,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AlertDialog.cs:139
 msgid "Apply to all"
-msgstr ""
+msgstr "Toepassen op alle"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:163
 msgid "Loading Workbench"
@@ -6333,7 +6403,7 @@ msgstr "Opslaan is mislukt."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:316
 msgid "No solution has been selected"
-msgstr ""
+msgstr "Geen oplossing geselecteerd"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:316
 msgid "The solution to be executed must be selected in the solution pad."
@@ -6365,8 +6435,8 @@ msgstr "Oplossing opgevraagd."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:883
 msgid ""
-"WARNING: Some documents may need to be closed, and unsaved data will be "
-"lost. You will be asked to save the unsaved documents."
+"WARNING: Some documents may need to be closed, and unsaved data will be lost. "
+"You will be asked to save the unsaved documents."
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:885
@@ -6632,8 +6702,8 @@ msgstr "Project opgeslagen"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:466
 #, fuzzy
 msgid ""
-"Some project files have been changed from outside MonoDevelop. Do you want "
-"to overwrite them?"
+"Some project files have been changed from outside MonoDevelop. Do you want to "
+"overwrite them?"
 msgstr ""
 "Dit bestand {0} is gewijzigd buiten MonoDevelop. Weet u zeker dat u dit "
 "bestand wilt overschrijven?"
@@ -6945,8 +7015,8 @@ msgid ""
 msgstr ""
 "MonoDevelop kan gebruikerspecifieke commando's of scripts zowel voor, na of "
 "als vervanging van een standaard projectoperatie uitvoeren. Het is ook "
-"mogelijk om alternatieve commando's in te voeren welke beschikbaar worden in "
-"het project of het oplossingmenu."
+"mogelijk om alternatieve commando's in te voeren welke beschikbaar worden in het "
+"project of het oplossingmenu."
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CustomCommandWidget.cs:74
 msgid "(Select a project operation)"
@@ -7521,8 +7591,7 @@ msgstr "Meer..."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderFileNodeBuilder.cs:85
 msgid ""
 "The Delete option permanently removes the file from your hard disk. Click "
-"Remove from Solution if you only want to remove it from your current "
-"solution."
+"Remove from Solution if you only want to remove it from your current solution."
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderFileNodeBuilder.cs:86
@@ -8688,8 +8757,8 @@ msgid ""
 "Please select the class you want to bind to the design:"
 msgstr ""
 "De klasse die al verbonden was aan een ontwerp dat op het moment bewerkt "
-"wordt kon niet worden gevonden. Kies aub een klasse die u wilt verbinden aan "
-"het ontwerp:"
+"wordt kon niet worden gevonden. Kies aub een klasse die u wilt verbinden aan het "
+"ontwerp:"
 
 #: ../src/addins/MonoDevelop.GtkCore/gui.glade:143
 msgid "Bind Widget Design"
@@ -8753,13 +8822,12 @@ msgstr "GUI-bouwer"
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:212
 msgid ""
 "ERROR: MonoDevelop could not find the Gtk# 2.0 development package. "
-"Compilation of projects depending on Gtk# libraries will fail. You may need "
-"to install development packages for gtk-sharp-2.0."
+"Compilation of projects depending on Gtk# libraries will fail. You may need to install "
+"development packages for gtk-sharp-2.0."
 msgstr ""
 "FOUT: MonoDevelop kon de Gtk#-2.0 ontwerppakket niet vinden. Het compileren "
-"van projecten die afhankelijk zijn van de Gtk#-bibliotheken zal mislukken. "
-"Het is misschien nodig dat u de ontwerppakketten van gtk-sharp-2.0 "
-"installeerd."
+"van projecten die afhankelijk zijn van de Gtk#-bibliotheken zal mislukken. Het "
+"is misschien nodig dat u de ontwerppakketten van gtk-sharp-2.0 installeerd."
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:384
 msgid ""
@@ -8780,15 +8848,14 @@ msgstr "Resources"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderService.cs:500
 msgid ""
-"You are requesting the file '{0}' to be used as source for an image. "
-"However, this file is already added to the project as a resource. Are you "
-"sure you want to continue (the file will have to be removed from the "
-"resource list)?"
+"You are requesting the file '{0}' to be used as source for an image. However, "
+"this file is already added to the project as a resource. Are you sure you "
+"want to continue (the file will have to be removed from the resource list)?"
 msgstr ""
 "U bent aan het verzoeken om bestand '{0}' te gebruiken als bron voor een "
-"afbeelding. Echter, dit bestand is al toegevoegd aan het project als een "
-"bron. Weet u zeker dat u door wilt gaan (het bestand zal moeten worden "
-"verwijderd van de bronnenlijst)?"
+"afbeelding. Echter, dit bestand is al toegevoegd aan het project als een bron. "
+"Weet u zeker dat u door wilt gaan (het bestand zal moeten worden verwijderd van "
+"de bronnenlijst)?"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderView.cs:69
 msgid "Designer"
@@ -8845,8 +8912,8 @@ msgstr "Weet u zeker dat u '{0}' wilt verwijderen?"
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/CodeBinder.cs:302
 msgid ""
-"The class bound to the component '{0}' could not be found. This may be due "
-"to syntax errors in the source code file."
+"The class bound to the component '{0}' could not be found. This may be due to "
+"syntax errors in the source code file."
 msgstr ""
 "De klasse die verbonden is met component '{0}' kon niet worden gevonden. Dit "
 "kan komen door syntax-fouten in het broncodebestand."
@@ -8929,8 +8996,8 @@ msgid ""
 "windows, and the creation of a GTK# widget library."
 msgstr ""
 "Schakelt ondersteuning voor GTK# in dit project in. Maakt visueel ontwerpen "
-"of GTK#-vensters mogelijk, en tevens het aanmaken van eenGTK#-"
-"widgetbibliotheek."
+"of GTK#-vensters mogelijk, en tevens het aanmaken van "
+"eenGTK#-widgetbibliotheek."
 
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore/ReferenceManager.cs:221
 msgid ""
@@ -8967,8 +9034,8 @@ msgstr "Klik om een actie aan te maken"
 
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/ActionGroupEditor.cs:390
 msgid ""
-"Are you sure you want to delete the action '{0}'? It will be removed from "
-"all menus and toolbars."
+"Are you sure you want to delete the action '{0}'? It will be removed from all "
+"menus and toolbars."
 msgstr ""
 "Weet u zeker dat u actie '{0}' wilt verwijderen? Het zal ook verwijderd "
 "worden van alle menu's en gereedschapsbalken."
@@ -9232,16 +9299,16 @@ msgstr "Widget-ontwerper"
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/stetic.glade:1993
 msgid ""
 "You are trying to add a non-container widget into the main window. In "
-"<b>GTK#</b>, widget positioning is controlled by a special type of widgets "
-"called <b>Container</b> widgets. If you don't place the widget into a "
-"container, it will fill the all the available space in the window. Are you "
-"sure you want to continue?"
+"<b>GTK#</b>, widget positioning is controlled by a special type of widgets called "
+"<b>Container</b> widgets. If you don't place the widget into a container, it "
+"will fill the all the available space in the window. Are you sure you want to "
+"continue?"
 msgstr ""
 "U probeert een non-container widget toe te voegen aan het hoofdvenster. In "
-"<b>GTK#</b>, widget positionering wordt bestuurd door een speciaal type "
-"widgets genaamd <b>container</b> widgets. Wanneer u het widget niet binnen "
-"een container plaats, zal het de volledige ruimte binnen het venster vullen. "
-"Weet u zeker dat u door wilt gaan?"
+"<b>GTK#</b>, widget positionering wordt bestuurd door een speciaal type widgets "
+"genaamd <b>container</b> widgets. Wanneer u het widget niet binnen een "
+"container plaats, zal het de volledige ruimte binnen het venster vullen. Weet u "
+"zeker dat u door wilt gaan?"
 
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/stetic.glade:2024
 msgid "To know more about this topic see the article:"
@@ -9345,9 +9412,10 @@ msgstr "Welkom"
 msgid "Open solution {0}"
 msgstr "Oplossing openen"
 
+# Duplicate of 'Hold Control to open in current workspace.'
 #: ../src/addins/WelcomePage/WelcomePageView.cs:281
 msgid "Hold Control key to open in current workspace."
-msgstr ""
+msgstr "Controltoets vasthouden om te openen in huidige werkruimte."
 
 #: ../src/addins/WelcomePage/WelcomePageView.cs:310
 msgid "Less than a minute"
@@ -9515,8 +9583,8 @@ msgstr ""
 #: ../src/addins/prj2make-sharp-lib/VS2003ProjectFileFormat.cs:266
 #, fuzzy
 msgid ""
-"The project file {0} is a Visual Studio 2003 project. It must be converted "
-"to a MSBuild project."
+"The project file {0} is a Visual Studio 2003 project. It must be converted to "
+"a MSBuild project."
 msgstr ""
 "Het projectbestand {0} is een VS2003-project. Het moet geconverteerd worden "
 "naar een MonoDevelop- of VS2005-project. Converteren?"
@@ -9760,8 +9828,8 @@ msgid ""
 "There are {0} files without a comment.\n"
 "The ChangeLog entry for those files will not be generated."
 msgstr ""
-"De parser rapporteerde foutmelding {0}. Er zullen geen CodeBehind members "
-"aan dit bestand worden toegevoegd."
+"De parser rapporteerde foutmelding {0}. Er zullen geen CodeBehind members aan "
+"dit bestand worden toegevoegd."
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:114
 msgid ""
@@ -9816,13 +9884,13 @@ msgstr ""
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.cs:225
 msgid ""
-"To change the ChangeLog creation and update policies, open the options "
-"dialog of the project or solution and click on the 'ChangeLog Integration\" "
+"To change the ChangeLog creation and update policies, open the options dialog "
+"of the project or solution and click on the 'ChangeLog Integration\" "
 "section."
 msgstr ""
-"Om het beleid van het aanmaken en updaten van wijzigingslogboeken te "
-"wijzigen kun u het optiescherm van het project of de oplossing openen en "
-"naar het 'Wijzigingslogboek-integratie'-gedeelte gaan."
+"Om het beleid van het aanmaken en updaten van wijzigingslogboeken te wijzigen "
+"kun u het optiescherm van het project of de oplossing openen en naar het "
+"'Wijzigingslogboek-integratie'-gedeelte gaan."
 
 #: ../src/addins/ChangeLogAddIn/ProjectOptionPanel.cs:55
 #, fuzzy
@@ -9866,9 +9934,9 @@ msgid ""
 msgstr ""
 "<b>Een wijzigingslogboek voor het project</b>\n"
 "Alle veranderingen die gedaan worden in de projectbestanden zullen worden "
-"gelogd in een enkel wijzigingslogboekbestand, dat zich in de hoofdmap van "
-"het project bevindt. Het wijzigingslogboekbestand zal worden aangemaakt "
-"wanneer het nog niet bestaat."
+"gelogd in een enkel wijzigingslogboekbestand, dat zich in de hoofdmap van het "
+"project bevindt. Het wijzigingslogboekbestand zal worden aangemaakt wanneer "
+"het nog niet bestaat."
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:123
 msgid "One ChangeLog in each directory"
@@ -9971,8 +10039,8 @@ msgstr "Zoeken naar componenten..."
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport/MemberExistsException.cs:109
 #, fuzzy
 msgid ""
-"Cannot add {0} '{1}' to class '{2}', because there is already a {3} with "
-"that name with an incompatible return type."
+"Cannot add {0} '{1}' to class '{2}', because there is already a {3} with that "
+"name with an incompatible return type."
 msgstr ""
 "Kon {0} '{1}' niet toevoegen aan klasse '{2}', want er is al een {3} met die "
 "naam{4}."
@@ -9980,8 +10048,8 @@ msgstr ""
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport/MemberExistsException.cs:112
 #, fuzzy
 msgid ""
-"Cannot add {0} '{1}' to class '{2}', because there is already a {3} with "
-"that name."
+"Cannot add {0} '{1}' to class '{2}', because there is already a {3} with that "
+"name."
 msgstr ""
 "Kon {0} '{1}' niet toevoegen aan klasse '{2}', want er is al een {3} met die "
 "naam{4}."
@@ -10257,8 +10325,8 @@ msgid ""
 "Generating Makefiles is not supported for single projects. Do you want to "
 "generate them for the full solution - '{0}' ?"
 msgstr ""
-"Het genereren van Makefiles wordt niet ondersteund voor een los project. "
-"Wilt u ze genereren voor de volledige oplossing - '{0}' ?"
+"Het genereren van Makefiles wordt niet ondersteund voor een los project. Wilt "
+"u ze genereren voor de volledige oplossing - '{0}' ?"
 
 #: ../src/addins/MonoDevelop.Autotools/Commands.cs:82
 msgid "{0} already exist for this solution.  Would you like to overwrite them?"
@@ -10318,8 +10386,8 @@ msgstr "Bezig met genereren van {0} voor oplossing {1}"
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:101
 msgid ""
-"MonoDevelop does not currently support generating {0} for one (or more) "
-"child projects."
+"MonoDevelop does not currently support generating {0} for one (or more) child "
+"projects."
 msgstr ""
 "MonoDevelop ondersteund op het moment niet het gereren van {0} voor een (of "
 "meerdere) subprojecten."
@@ -10385,8 +10453,8 @@ msgstr "Bezig met creëeren van {0} voor oplossing {1}"
 #, fuzzy
 msgid "Child projects must be in sub-directories of their parent"
 msgstr ""
-"Subprojecten of -oplossingen moeten zich in submappen van hun hoofdproject/-"
-"oplossingen bevinden."
+"Subprojecten of -oplossingen moeten zich in submappen van hun "
+"hoofdproject/-oplossingen bevinden."
 
 #: ../src/addins/MonoDevelop.Autotools/SolutionMakefileHandler.cs:131
 msgid ""
@@ -10429,8 +10497,10 @@ msgid "Loading solution file {0}"
 msgstr "Bezig met laden van oplossingsbestand {0}"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:54
-msgid "Error: Makefile generation supported only for solutions.\n"
-msgstr "Fout: makefile-generatie wordt enkel ondersteund voor oplossingen.\n"
+msgid ""
+"Error: Makefile generation supported only for solutions.\n"
+msgstr ""
+"Fout: makefile-generatie wordt enkel ondersteund voor oplossingen.\n"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:59
 msgid ""
@@ -10453,23 +10523,22 @@ msgstr "{0} bestaat al voor deze oplossing. Wilt u deze overschrijven? (J/N)"
 msgid ""
 " --simple-makefiles -s\n"
 "\tGenerates set of Makefiles with the most common targets, and a "
-"configuration script that does a basic check of package dependencies. "
-"Default is to generate Makefile structure based on Autotools with the "
-"standard targets and configuration scripts."
+"configuration script that does a basic check of package dependencies. Default is to "
+"generate Makefile structure based on Autotools with the standard targets and "
+"configuration scripts."
 msgstr ""
 " --simple-makefiles -s\n"
 "\tGenereert een verzameling makefiles met de meest gebruikelijke doelen, en "
 "een configuratiescript dat een basiscontrole uitvoert op de "
-"pakketafhankelijkheden. De standaardinstelling is om de Makefilestructuur te "
-"genereren gebaseerd op Autotools met de standaard doelen en configuratie "
-"scripten."
+"pakketafhankelijkheden. De standaardinstelling is om de Makefilestructuur te genereren "
+"gebaseerd op Autotools met de standaard doelen en configuratie scripten."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:133
 msgid ""
 " -d:default-config\n"
 "\tConfiguration that the Makefile will build by default. Other "
-"configurations can be selected via the '--config' or '--enable-*' option of "
-"the generated configure script."
+"configurations can be selected via the '--config' or '--enable-*' option of the generated "
+"configure script."
 msgstr ""
 " -d:default-config\n"
 "\tDe configuratie die de makefile standaard zal bouwen. Andere configuraties "
@@ -10509,8 +10578,8 @@ msgid ""
 "File variable ({0}) is set for sync'ing, but no valid variable is selected. "
 "Either disable the sync'ing or select a variable name."
 msgstr ""
-"Bestand variabele ({0}) is ingesteld om gesynchroniseerd te worden, maar "
-"geen geldige variabele is geselecteerd. Ofwel schakel het synchroniseren uit "
+"Bestand variabele ({0}) is ingesteld om gesynchroniseerd te worden, maar geen "
+"geldige variabele is geselecteerd. Ofwel schakel het synchroniseren uit "
 "ofwel selecteer een variabelenaam."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:379
@@ -10525,8 +10594,8 @@ msgid ""
 "Notice that generation of makefiles is not supported for single projects. A "
 "set of makefiles will have to be generated for the whole solution."
 msgstr ""
-"Het genereren van Makefiles wordt niet ondersteund voor een los project. "
-"Wilt u ze genereren voor de volledige oplossing - '{0}' ?"
+"Het genereren van Makefiles wordt niet ondersteund voor een los project. Wilt "
+"u ze genereren voor de volledige oplossing - '{0}' ?"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:381
 #, fuzzy
@@ -10609,13 +10678,13 @@ msgstr "Ongeldige makefile '{0}'. Makefile-integratie wordt uitgeschakeld."
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:673
 msgid ""
 "Enabling Makefile integration. You can choose to have either the Project or "
-"the Makefile be used as the master copy. This is done only when enabling "
-"this feature. After this, the Makefile will be taken as the master copy."
+"the Makefile be used as the master copy. This is done only when enabling this "
+"feature. After this, the Makefile will be taken as the master copy."
 msgstr ""
 "Makefile-integratie wordt ingeschakeld. U kunt ervoor kiezen om het project "
 "of de Makefile als originele kopie te gebruiken. Dit wordt alleen gedaan "
-"terwijl deze functie ingeschakeld wordt, daarna zal de Makefile als "
-"origineel gebruikt worden."
+"terwijl deze functie ingeschakeld wordt, daarna zal de Makefile als origineel "
+"gebruikt worden."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:715
 #, fuzzy
@@ -10646,12 +10715,12 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:872
 msgid ""
-"Files in variable '{0}' contains variables which cannot be parsed without "
-"the path to configure.in being set. Ignoring such files."
+"Files in variable '{0}' contains variables which cannot be parsed without the "
+"path to configure.in being set. Ignoring such files."
 msgstr ""
 "Bestanden in variabele '{0}' bevatten variabelen die niet geparsed kunnen "
-"worden zonder dat het pad naar configure.in ingesteld is. Zulke bestanden "
-"worden overgeslagen."
+"worden zonder dat het pad naar configure.in ingesteld is. Zulke bestanden worden "
+"overgeslagen."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:897
 msgid "Ignoring invalid file '{0}' found in '{1}' for project '{2}'."
@@ -10691,17 +10760,17 @@ msgstr ""
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:1539
 #, fuzzy
 msgid ""
-"A reference to the pkg-config package '{0}' is being emitted to the "
-"Makefile, because at least one assembly from the package is used in the "
-"project '{1}'. However, this dependency is not specified in the configure.in "
-"file, so you might need to add it to ensure that the project builds "
-"successfully on other systems."
+"A reference to the pkg-config package '{0}' is being emitted to the Makefile, "
+"because at least one assembly from the package is used in the project '{1}'. "
+"However, this dependency is not specified in the configure.in file, so you "
+"might need to add it to ensure that the project builds successfully on other "
+"systems."
 msgstr ""
 "Een referentie naar het pkg-config pakket '{0}' wordt geproduceerd in het "
-"Makefile-bestand, omdat op zijn minst één assembly van het pakket gebruikt "
-"wordt in het project. Echter, deze afhankelijkheid wordt niet gespecificeerd "
-"in het configure.in-bestand, dus het zou kunnen dat deze toegevoegd moet "
-"worden om het project te kunnen bouwen op andere systemen."
+"Makefile-bestand, omdat op zijn minst één assembly van het pakket gebruikt wordt "
+"in het project. Echter, deze afhankelijkheid wordt niet gespecificeerd in "
+"het configure.in-bestand, dus het zou kunnen dat deze toegevoegd moet worden om "
+"het project te kunnen bouwen op andere systemen."
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileData.cs:1672
 msgid "Unable to find configure.in at '{0}'."
@@ -10754,8 +10823,8 @@ msgid ""
 "Select the makefile targets that should be executed for the build and clean "
 "operations:"
 msgstr ""
-"Kies de makefile-doelen die uitgevoerd zouden moeten worden tijdens het "
-"bouw- en schoonmaakoperaties:"
+"Kies de makefile-doelen die uitgevoerd zouden moeten worden tijdens het bouw- "
+"en schoonmaakoperaties:"
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:393
 #, fuzzy
@@ -10797,8 +10866,8 @@ msgid ""
 "optionally a prefix to be prepended to each file name."
 msgstr ""
 "Kies het soort bestanden dat u wilt synchroniseren met de makefile. Geef aub "
-"voor ieder soort bestand de variabele op die de lijst bevat en geef "
-"eventueel een prefix op dat voor het bestandsnaam wordt geplakt."
+"voor ieder soort bestand de variabele op die de lijst bevat en geef eventueel "
+"een prefix op dat voor het bestandsnaam wordt geplakt."
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:658
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:859
@@ -10821,14 +10890,14 @@ msgstr "Zoek naar pakketten in configure.in"
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:836
 msgid ""
 "Select the kind of references you want to synchronize with the makefile. For "
-"each reference type please specify the makefile variable that holds the "
-"list, and optionally a prefix to be prepended to each reference name. You "
-"can specify the same variable name for several types of references."
+"each reference type please specify the makefile variable that holds the list, "
+"and optionally a prefix to be prepended to each reference name. You can "
+"specify the same variable name for several types of references."
 msgstr ""
-"Kies het soort referentie dat u wilt synchroniseren met de makefile. Geef "
-"aub voor ieder referentiesoort op in welke makefile-variabele de lijst wordt "
-"opgeslagen, en geef optioneel een prefix op dat voor iedere referentienaam "
-"moet worden geplakt. U kunt de dezelfde variabelenaam opgeven bij meerdere "
+"Kies het soort referentie dat u wilt synchroniseren met de makefile. Geef aub "
+"voor ieder referentiesoort op in welke makefile-variabele de lijst wordt "
+"opgeslagen, en geef optioneel een prefix op dat voor iedere referentienaam moet "
+"worden geplakt. U kunt de dezelfde variabelenaam opgeven bij meerdere "
 "referentiesoorten."
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:848
@@ -10850,17 +10919,17 @@ msgstr "Projectreferenties"
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:937
 msgid ""
 "Select the Compiler message format for parsing the compiler errors and "
-"warnings. You can either select one of the built-in options, or specify "
-"custom regular expressions for errors and warnings. The regex must be the ."
-"net style regex. The following named groups are relevant : file, line, "
-"column, number (error number) and message."
+"warnings. You can either select one of the built-in options, or specify custom "
+"regular expressions for errors and warnings. The regex must be the .net style "
+"regex. The following named groups are relevant : file, line, column, number "
+"(error number) and message."
 msgstr ""
 "Kies het formaat van de compilerberichten voor het parsen van de compiler "
 "foutmeldingen en waarschuwingen. U kunt ofwel een van de ingebouwde opties "
 "kiezen, ofwel een aangepaste reguliere expressie voor foutmeldingen en "
-"waarschuwingen opgeven. De regex moet een .net-type regex zijn. De volgende "
-"benoemde groepen zijn relevant: file (bestand), line (regel), column "
-"(kolom), number (nummer van foutmelding) en message (bericht)."
+"waarschuwingen opgeven. De regex moet een .net-type regex zijn. De volgende benoemde "
+"groepen zijn relevant: file (bestand), line (regel), column (kolom), number "
+"(nummer van foutmelding) en message (bericht)."
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:1003
 msgid "Error regex :"
@@ -10962,8 +11031,8 @@ msgid ""
 "configure script."
 msgstr ""
 "Kies de configuratie die de makefile standaard zal bouwen. Andere "
-"configuraties kunnen geselecteerd worden via de '--config'-optie van het "
-"gegenereerde configure-script."
+"configuraties kunnen geselecteerd worden via de '--config'-optie van het gegenereerde "
+"configure-script."
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileSwitchEditorWidget.cs:53
 #, fuzzy
@@ -10972,9 +11041,9 @@ msgstr "<b>Opslaan</b>"
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileSwitchEditorWidget.cs:68
 msgid ""
-"Use the following list to define new switches usable with autotools "
-"configure script. Each switch is mapped to a define that you can use to do "
-"conditional compilation in your source files."
+"Use the following list to define new switches usable with autotools configure "
+"script. Each switch is mapped to a define that you can use to do conditional "
+"compilation in your source files."
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileSwitchEditor.cs:17
@@ -12309,8 +12378,8 @@ msgstr "Vertaling updaten"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/GettextFeature.cs:45
 msgid ""
-"Add a Translation Project to the solution that will use gettext to generate "
-"a set of PO files for the new project."
+"Add a Translation Project to the solution that will use gettext to generate a "
+"set of PO files for the new project."
 msgstr ""
 "Voeg een vertalingsproject toe aan de oplossing dat gebruikmaakt van gettext "
 "voor het genereren van een verzameling PO-bestanden voor het nieuwe project."
@@ -12576,8 +12645,10 @@ msgid "Matches a form feed \\u000C."
 msgstr "Komt overeen met een formfeed \\u000C."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:9
-msgid "\\n"
-msgstr "\\n"
+msgid ""
+"\\n"
+msgstr ""
+"\\n"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:9
 msgid "Matches a new line \\u000A."
@@ -12658,8 +12729,8 @@ msgstr "$nummer"
 msgid ""
 "Substitutes the last substring matched by group number 'number' (decimal)."
 msgstr ""
-"Substitueert de laatste substring overeengekomen door een nummer "
-"'nummer' (decimaal)."
+"Substitueert de laatste substring overeengekomen door een nummer 'nummer' "
+"(decimaal)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:27
 msgid "${name}"
@@ -13247,7 +13318,8 @@ msgid "Backreference Constructs"
 msgstr "Terugverwijzingscontructies"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:172
-msgid "\\number"
+msgid ""
+"\\number"
 msgstr "\\getal"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:172
@@ -13288,8 +13360,7 @@ msgid ""
 "Matches any one of the terms separated by the | (vertical bar) character; \n"
 "for example, cat|dog|tiger. The leftmost successful match wins."
 msgstr ""
-"Komt overeen met iedere term gescheiden door | (verticale streep) "
-"karakter; \n"
+"Komt overeen met iedere term gescheiden door | (verticale streep) karakter; \n"
 "bijvoorbeeld kat|poes|tijger. De meest linkse overeenkomst wint."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:186
@@ -13751,8 +13822,8 @@ msgstr "_Ongedaan maken"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:952
 msgid ""
-"You are about to undo past the last point this file was saved. Do you want "
-"to do this?"
+"You are about to undo past the last point this file was saved. Do you want to "
+"do this?"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:953
@@ -14430,7 +14501,8 @@ msgid "Comments Loc"
 msgstr "Commentaar"
 
 #: ../src/addins/MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:214
-msgid "Finished calculating metrics\n"
+msgid ""
+"Finished calculating metrics\n"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:360
@@ -14642,8 +14714,8 @@ msgstr ""
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:67
 msgid ""
-"Use the relative path of the file in the project when deploying to the "
-"target directory."
+"Use the relative path of the file in the project when deploying to the target "
+"directory."
 msgstr ""
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:75
@@ -14940,9 +15012,9 @@ msgstr ""
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:142
 msgid ""
-"There is already a file in the target directory that has the same name as "
-"the source file. You can keep the existing target file, or overwrite it with "
-"the source file."
+"There is already a file in the target directory that has the same name as the "
+"source file. You can keep the existing target file, or overwrite it with the "
+"source file."
 msgstr ""
 "Er is al een bestand in de doelmap met dezelfde naam als het bronbestand. U "
 "kan het bestaande doelbestand behouden of overschrijven met het bronbestand."
@@ -14954,8 +15026,8 @@ msgstr "Gewijzigd:"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:378
 msgid ""
-"The source file will replace the existing target file if it has been "
-"modified more recently."
+"The source file will replace the existing target file if it has been modified "
+"more recently."
 msgstr ""
 "Het bronbestand zal het huidige doelbestand vervangen wanneer het recenter "
 "gewijzigd is."
@@ -14999,9 +15071,9 @@ msgid ""
 "authentication daemon, such as <i>ssh-agent</i> or <i>seahorse-agent</i>."
 msgstr ""
 "Opmerking: de SSH-sleutel voor deze host moet geinstalleerd worden op uw "
-"systeem. Wanneer het beveiligd is met een wachtwoord moet het wachtwoord "
-"geladen worden in draaiende SSH-authenticatie daemon, zoals <i>ssh-agent</i> "
-"of <i>seahorse-agent</i>."
+"systeem. Wanneer het beveiligd is met een wachtwoord moet het wachtwoord geladen "
+"worden in draaiende SSH-authenticatie daemon, zoals <i>ssh-agent</i> of "
+"<i>seahorse-agent</i>."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/templates/PackagingProject.xpt.xml:5
 msgid "Packaging project"
@@ -17567,8 +17639,8 @@ msgid ""
 "Parser failed with error {0}. CodeBehind members for this file will not be "
 "added."
 msgstr ""
-"De parser rapporteerde foutmelding {0}. Er zullen geen CodeBehind members "
-"aan dit bestand worden toegevoegd."
+"De parser rapporteerde foutmelding {0}. Er zullen geen CodeBehind members aan "
+"dit bestand worden toegevoegd."
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/XspOptionsPanelWidget.cs:47
 msgid "Enabled"
@@ -17688,7 +17760,8 @@ msgid "Certificate location:"
 msgstr "Locatie van certificaat:"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:391
-msgid "Required for ASP.NET controls.\n"
+msgid ""
+"Required for ASP.NET controls.\n"
 msgstr ""
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:392
@@ -17698,7 +17771,8 @@ msgid ""
 msgstr ""
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:398
-msgid "Unique identifier.\n"
+msgid ""
+"Unique identifier.\n"
 msgstr ""
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:399
@@ -17745,7 +17819,8 @@ msgid "Error launching web browser"
 msgstr "Een webbrowser"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs:68
-msgid "A suggested event handler method name.\n"
+msgid ""
+"A suggested event handler method name.\n"
 msgstr ""
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs:69
@@ -18303,8 +18378,8 @@ msgstr "Configuratie"
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.AddTracePointDialog.cs:100
 msgid ""
 "<small>Expressions to be evaluated by the debugger can be included in the "
-"text by surrounding them with curly braces, for example: \"Value is {n}\".</"
-"small>"
+"text by surrounding them with curly braces, for example: \"Value is "
+"{n}\".</small>"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.AddTracePointDialog.cs:116
@@ -19768,3 +19843,4 @@ msgstr "Categoriën"
 
 #~ msgid "RegexLibraryWindow"
 #~ msgstr "Regex bibliotheekvenster"
+
