@@ -184,6 +184,13 @@
 		<StockIcon stockid = "monodroid-project" file = "icons/monodroid-project-32.png" size="Dnd" />
 	</Extension>
 
+	<Extension path = "/MonoDevelop/Ide/Updater">
+		<Condition id="Platform" value="mac">
+			<UpdateInfo file="/Developer/MonoDroid/updateinfo" />
+			<UpdateInfo file="/Developer/MonoDroid/Source/updateinfo" />
+		</Condition>
+	</Extension>
+
 	<!-- debugger addin -->
 	<Module>
 		<Runtime>
