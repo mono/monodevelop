@@ -110,7 +110,7 @@ namespace MonoDroid
 				if (ValidateMonoDroidSdkLocation (loc))
 					return loc;
 			} else if (IsMac) {
-				loc = "/Developer/MonoDroid";
+				loc = "/Developer/MonoDroid/usr";
 				if (Directory.Exists (loc) && ValidateMonoDroidSdkLocation (loc))
 					return loc;
 			} else {
