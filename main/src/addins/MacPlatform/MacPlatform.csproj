@@ -69,12 +69,6 @@
     <Compile Include="Framework\CoreFoundation.cs" />
     <Compile Include="Framework\HIToolbox.cs" />
     <Compile Include="Commands.cs" />
-    <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="Updater\UpdateService.cs" />
-    <Compile Include="Updater\UpdateDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Platform.Updater.UpdateDialog.cs" />
-    <Compile Include="Updater\UpdateResult.cs" />
-    <Compile Include="Updater\Commands.cs" />
     <Compile Include="Framework\ApplicationEvents.cs" />
     <Compile Include="MacSelectFileDialogHandler.cs" />
     <Compile Include="Framework\NavDialog.cs" />
@@ -91,9 +85,6 @@
   <ItemGroup>
     <EmbeddedResource Include="MacPlatform.addin.xml">
       <LogicalName>MacPlatform.addin.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
-      <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ProjectExtensions>

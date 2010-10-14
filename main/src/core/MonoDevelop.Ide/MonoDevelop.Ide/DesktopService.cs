@@ -171,5 +171,15 @@ namespace MonoDevelop.Ide
 				platformService.RecentFiles.NotifyFileRenamed (e.SourceFile, e.TargetFile);
 			}
 		}
+		
+		internal static string GetUpdaterUrl ()
+		{
+			return platformService.GetUpdaterUrl ();
+		}
+		
+		internal static IEnumerable<string> GetUpdaterEnvironmentFlags ()
+		{
+			return platformService.GetUpdaterEnviromentFlags ();
+		}
 	}
 }

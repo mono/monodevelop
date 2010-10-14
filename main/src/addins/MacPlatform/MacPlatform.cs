@@ -288,5 +288,23 @@ activate
 do script with command ""cd {0}""
 end tell", directory.ToString ().Replace ("\"", "\\\"")));
 		}
+		
+		public override string GetUpdaterUrl ()
+		{
+			return "http://go-mono.com/macupdate/update";
+		}
+		
+		public override IEnumerable<string> GetUpdaterEnviromentFlags ()
+		{
+			var sdkDir = "/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs";
+			if (Directory.Exists (sdkDir)) {
+				foreach (var dir in Directory.GetDirectories (sdkDir, "iPhoneSimulator*")) {
+					var name = Path.GetFileNameWithoutExtension (dir);
+					int len = "iPhoneSimulator".Length;
+					if (name != null && name.Length > len) 
+						yield return "iphsdk" + name.Substring (len);
+				}
+			}
+		}
 	}
 }

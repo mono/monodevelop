@@ -1,5 +1,5 @@
 // 
-// Commands.cs
+// UpdateCommands.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -27,14 +27,14 @@
 using System;
 using MonoDevelop.Components.Commands;
 
-namespace MonoDevelop.Platform.Updater
+namespace MonoDevelop.Ide.Updater
 {
-	public enum Commands
+	public enum UpdateCommands
 	{
 		CheckForUpdates,
 	}
 	
-	internal class CheckForUpdatesHandler : CommandHandler
+	class CheckForUpdatesHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -43,7 +43,7 @@ namespace MonoDevelop.Platform.Updater
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Visible = UpdateService.DefaultUpdateInfos.Length > 0;
+			info.Visible = info.Enabled = UpdateService.CanUpdate;
 		}
 	}
 	
@@ -51,7 +51,8 @@ namespace MonoDevelop.Platform.Updater
 	{
 		protected override void Run()
 		{
-			UpdateService.RunCheckDialog (true);
+			if (UpdateService.CanUpdate)
+				UpdateService.RunCheckDialog (true);
 		}
 	}
 }

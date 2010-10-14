@@ -33,10 +33,8 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 
-namespace MonoDevelop.Platform.Updater
+namespace MonoDevelop.Ide.Updater
 {
-
-
 	partial class UpdateDialog : Gtk.Dialog
 	{
 		const int PAGE_MESSAGE = 0;

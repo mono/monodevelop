@@ -76,6 +76,7 @@
     </Reference>
     <Reference Include="Mono.Cairo" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -1366,6 +1367,12 @@
     <Compile Include="MonoDevelop.Ide.Fonts\FontChooserPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Fonts\FontService.cs" />
     <Compile Include="MonoDevelop.Ide.Fonts\FontDescriptionCodon.cs" />
+    <Compile Include="MonoDevelop.Ide.Updater\UpdateDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.Updater\UpdateResult.cs" />
+    <Compile Include="MonoDevelop.Ide.Updater\UpdateService.cs" />
+    <Compile Include="MonoDevelop.Ide.Updater\UpdateCommands.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Ide.Updater.UpdateDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.Updater\UpdateInfoExtensionNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -1428,5 +1435,6 @@
     <Folder Include="MonoDevelop.Ide.Navigation\" />
     <Folder Include="MonoDevelop.Components.AutoTest\" />
     <Folder Include="MonoDevelop.Ide.Fonts\" />
+    <Folder Include="MonoDevelop.Ide.Updater\" />
   </ItemGroup>
 </Project>

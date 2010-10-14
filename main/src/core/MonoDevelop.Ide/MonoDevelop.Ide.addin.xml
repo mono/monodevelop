@@ -296,7 +296,10 @@
 		<ExtensionNode name="Font" type="MonoDevelop.Ide.Fonts.FontDescriptionCodon"/>
 	</ExtensionPoint>
 	
-	
+	<ExtensionPoint path = "/MonoDevelop/Ide/Updater" name = "Updater information">
+		<Description>Path of an updateinfo file.</Description>
+		<ExtensionNode name="UpdateInfo" type="MonoDevelop.Ide.Updater.UpdateInfoExtensionNode"/>
+	</ExtensionPoint>
 	
 	<!-- Extensions -->
 	
@@ -663,6 +666,7 @@
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
 		<Class class = "MonoDevelop.Ide.Gui.AddinUpdateHandler"/>
 		<Class class = "MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayStartup"/>
+		<Class class = "MonoDevelop.Ide.Updater.CheckForUpdatesOnStartUpHandler" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands">
@@ -1322,6 +1326,10 @@
 				_label = "_About" 
 				icon = "gtk-about" 
 				_description = "Show about dialog" />
+		<Command id  = "MonoDevelop.Ide.Updater.UpdateCommands.CheckForUpdates"
+				defaultHandler = "MonoDevelop.Ide.Updater.CheckForUpdatesHandler"
+				_label = "_Check for Updates"
+				_description = "Check for updates to MonoDevelop and packages it requires" />
 		</Category>
 		
 		<!-- SearchCommands -->
@@ -2192,6 +2200,7 @@
 		<ItemSet id = "Help" _label = "_Help">
 			<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.Help" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay" />
+			<CommandItem id = "MonoDevelop.Ide.Updater.UpdateCommands.CheckForUpdates" />
 			<SeparatorItem id = "Separator2" />
 			<ItemSet id = "Web" _label = "_Web">
 				<LinkItem id = "MonoDevelop" _label = "MonoDevelop" link = "http://www.monodevelop.com" />
