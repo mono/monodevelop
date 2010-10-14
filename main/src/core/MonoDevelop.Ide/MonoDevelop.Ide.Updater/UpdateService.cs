@@ -33,10 +33,9 @@ using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 
-namespace MonoDevelop.Platform.Updater
+namespace MonoDevelop.Ide.Updater
 {
-
-	public enum UpdateLevel
+	enum UpdateLevel
 	{
 		Stable = 0,
 		Beta = 1,
@@ -44,7 +43,7 @@ namespace MonoDevelop.Platform.Updater
 		Test = 3
 	}
 	
-	public static class UpdateService
+	static class UpdateService
 	{
 		const int formatVersion = 1;
 		const string updateAutoPropertyKey = "AppUpdater.CheckAutomatically";
@@ -52,31 +51,40 @@ namespace MonoDevelop.Platform.Updater
 		
 		static UpdateInfo[] updateInfos;
 		
-		//FIXME: populate from an extension point
-		public static UpdateInfo[] DefaultUpdateInfos {
-			get {
-				if (updateInfos == null) {
-					var files = new string[] {
-						"/Developer/MonoTouch/updateinfo",
-						"/Developer/MonoTouch/Source/updateinfo",
-						"/Library/Frameworks/Mono.framework/Versions/Current/updateinfo",
-						"/Library/Frameworks/Mono.framework/Versions/Current/updateinfo.csdk",
-						Path.GetDirectoryName (typeof (MacPlatform).Assembly.Location) + "/../../../updateinfo",
-					}.Where (File.Exists);
-					
-					var list = new List<UpdateInfo> ();
-					foreach (string file in files) {
-						try {
-							list.Add (UpdateInfo.FromFile (file));
-						} catch (Exception ex) {
-							LoggingService.LogError ("Error reading update info file '" + file + "'", ex);
-						}
-					}
-					updateInfos = list.ToArray ();
-				}
+		static UpdateInfo[] LoadUpdateInfos ()
+		{
+			if (string.IsNullOrEmpty (DesktopService.GetUpdaterUrl ()))
+				return new UpdateInfo[0];
+			
+			var list = new List<UpdateInfo> ();
+			foreach (var node in Mono.Addins.AddinManager.GetExtensionNodes ("/MonoDevelop/Ide/Updater")) {
+				var n = node as UpdateInfoExtensionNode;
+				if (n == null)
+					continue;
+				string file = n.File;
+				if (!File.Exists (file))
+					continue;
 				
-				return updateInfos;
+				try {
+					list.Add (UpdateInfo.FromFile (file));
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error reading update info file '" + file + "'", ex);
+				}
 			}
+			return list.ToArray ();
+		}
+		
+		static UpdateService ()
+		{
+			updateInfos = LoadUpdateInfos ();
+		}
+		
+		public static bool CanUpdate {
+			get { return DefaultUpdateInfos.Length > 0; }
+		}
+		
+		public static UpdateInfo[] DefaultUpdateInfos {
+			get { return updateInfos; }
 		}
 		
 		public static bool CheckAutomatically {
@@ -104,7 +112,7 @@ namespace MonoDevelop.Platform.Updater
 		
 		public static void RunCheckDialog (UpdateInfo[] updateInfos, bool automatic)
 		{
-			if (updateInfos == null || updateInfos.Length == 0 || (automatic && !CheckAutomatically))
+			if (!CanUpdate || (automatic && !CheckAutomatically))
 				return;
 			
 			if (!automatic) {
@@ -157,8 +165,10 @@ namespace MonoDevelop.Platform.Updater
 				return;
 			}
 			
-			var query = new StringBuilder ("http://go-mono.com/macupdate/update?v=");
+			var query = new StringBuilder (DesktopService.GetUpdaterUrl ());
+			query.Append ("?v=");
 			query.Append (formatVersion);
+			
 			foreach (var info in updateInfos)
 				query.AppendFormat ("&{0}={1}", info.AppId, info.VersionId);
 			
@@ -170,19 +180,24 @@ namespace MonoDevelop.Platform.Updater
 				query.Append (level.ToString ().ToLower ());
 			}
 			
-			var sdkDir = "/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs";
-			if (Directory.Exists (sdkDir)) {
-				foreach (var dir in Directory.GetDirectories (sdkDir, "iPhoneSimulator*")) {
-					var name = Path.GetFileNameWithoutExtension (dir);
-					int len = "iPhoneSimulator".Length;
-					if (name != null && name.Length > len) 
-						query.Append ("&env=iphsdk" + name.Substring (len));
+			bool hasEnv = false;
+			foreach (string flag in DesktopService.GetUpdaterEnvironmentFlags ()) {
+				if (!hasEnv) {
+					hasEnv = true;
+					query.Append ("&env=");
+					query.Append (flag);
+				} else {
+					query.Append (",");
+					query.Append (flag);
 				}
 			}
 			
-			var request = (HttpWebRequest) WebRequest.Create (query.ToString ());
+			var requestUrl = query.ToString ();
+			var request = (HttpWebRequest) WebRequest.Create (requestUrl);
 			
-			//FIXME: use IfModifiedSince
+			LoggingService.LogDebug ("Checking for updates: {0}", requestUrl);
+			
+			//FIXME: use IfModifiedSince, with a cached value
 			//request.IfModifiedSince = somevalue;
 			
 			request.BeginGetResponse (delegate (IAsyncResult ar) {

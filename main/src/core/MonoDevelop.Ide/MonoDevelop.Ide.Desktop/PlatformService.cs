@@ -327,5 +327,15 @@ namespace MonoDevelop.Ide.Desktop
 				return recentFiles ?? (recentFiles = CreateRecentFilesProvider ());
 			}
 		}
+		
+		public virtual string GetUpdaterUrl ()
+		{
+			return null;
+		}
+		
+		public virtual IEnumerable<string> GetUpdaterEnviromentFlags ()
+		{
+			return new string[0];
+		}
 	}
 }

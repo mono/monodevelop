@@ -28,19 +28,11 @@ FILES =  \
 	Framework/CoreFoundation.cs \
 	Framework/HIToolbox.cs \
 	Framework/NavDialog.cs \
-	gtk-gui/generated.cs \
-	gtk-gui/MonoDevelop.Platform.Updater.UpdateDialog.cs \
 	MacPlatform.cs \
 	MacSelectFileDialogHandler.cs \
-	Menus/OSXMenu.cs \
-	Updater/Commands.cs \
-	Updater/UpdateDialog.cs \
-	Updater/UpdateResult.cs \
-	Updater/UpdateService.cs
+	Menus/OSXMenu.cs
 
-RES =  \
-	gtk-gui/gui.stetic \
-	MacPlatform.addin.xml
+RES = MacPlatform.addin.xml
 
 if ENABLE_MACPLATFORM
 all: $(ASSEMBLY) $(ASSEMBLY).mdb

@@ -43,23 +43,12 @@
 		             insertbefore = "MonoDevelop.Ide.Commands.WindowCommands.NextWindow" />
 	</Extension>
 	
-	<!-- Updater -->
-	
-	<Extension path = "/MonoDevelop/Ide/Commands/Help">
-		<Command id  = "MonoDevelop.Platform.Updater.Commands.CheckForUpdates"
-				defaultHandler = "MonoDevelop.Platform.Updater.CheckForUpdatesHandler"
-				_label = "_Check for Updates"
-				_description = "Check for updates to MonoDevelop and packages it requires" />
+	<Extension path = "/MonoDevelop/Ide/Updater">
+		<UpdateInfo file="../../updateinfo" />
+		<UpdateInfo file="/Library/Frameworks/Mono.framework/Versions/Current/updateinfo" />
+		<UpdateInfo file="/Library/Frameworks/Mono.framework/Versions/Current/updateinfo.csdk" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/MainMenu/Help">
-		<CommandItem id = "MonoDevelop.Platform.Updater.Commands.CheckForUpdates"
-		             insertafter = "MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay" />
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
-		<Class class="MonoDevelop.Platform.Updater.CheckForUpdatesOnStartUpHandler" />
-	</Extension>
 	<!--
 	<Extension path = "/MonoDevelop/Components/DialogHandlers">
 		<Class class="MonoDevelop.Platform.Mac.MacSelectFileDialogHandler" />

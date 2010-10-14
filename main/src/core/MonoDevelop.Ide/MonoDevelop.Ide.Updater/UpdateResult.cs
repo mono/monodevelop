@@ -32,9 +32,9 @@ using MonoDevelop.Core;
 using System.Net;
 using System.Collections.Generic;
 
-namespace MonoDevelop.Platform.Updater
+namespace MonoDevelop.Ide.Updater
 {
-	public class Update
+	class Update
 	{
 		public string Name;
 		public string Url;
@@ -44,14 +44,14 @@ namespace MonoDevelop.Platform.Updater
 		public UpdateLevel Level;
 	}
 	
-	public class Release
+	class Release
 	{
 		public string Version;
 		public DateTime Date;
 		public string Notes;
 	}
 	
-	public class UpdateInfo
+	class UpdateInfo
 	{
 		UpdateInfo ()
 		{
@@ -76,7 +76,7 @@ namespace MonoDevelop.Platform.Updater
 		}
 	}
 	
-	public class UpdateResult
+	class UpdateResult
 	{
 		public UpdateResult (List<Update> updates, UpdateLevel level, string errorMessage, Exception errorDetail)
 		{

@@ -213,4 +213,9 @@
 			<Source directory="/Developer/MonoTouch/usr/share/doc/MonoTouch/" />
 		</Condition>
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/Updater">
+		<UpdateInfo file="/Developer/MonoTouch/updateinfo" />
+		<UpdateInfo file="/Developer/MonoTouch/Source/updateinfo" />
+	</Extension>
 </Addin>
