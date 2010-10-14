@@ -40,10 +40,9 @@ namespace MonoDevelop.Projects
 	public static class HelpService
 	{
 		static RootTree helpTree;
-		static bool helpTreeInitialized, cacheInitialized;
+		static bool helpTreeInitialized;
 		static object helpTreeLock = new object ();
-		static object cacheLock = new object ();
-		static FilePath cacheRoot;
+		static HashSet<string> sources = new HashSet<string> ();
 		
 		/// <summary>
 		/// Starts loading the MonoDoc tree in the background.
@@ -61,17 +60,26 @@ namespace MonoDevelop.Projects
 			});
 		}
 		
+		//FIXME: allow adding sources without restart when extension installed (will need to be async)
+		// will also be tricky we cause we'll also have update any running MonoDoc viewer
 		static void InitializeHelpTree ()
 		{
 			lock (helpTreeLock) {
 				if (helpTreeInitialized)
 					return;
 				try {
-					var cacheDir = GetMonoDocCacheRoot ();
-					if (!cacheDir.IsNullOrEmpty)
-						helpTree = RootTree.LoadTree (cacheDir);
-					else
-						helpTree = RootTree.LoadTree (); 
+					helpTree = RootTree.LoadTree ();
+					
+					//FIXME: don't do this when monodoc itself does it or we'll get duplicates!
+					if (PropertyService.IsMac)
+						sources.Add ("/Library/Frameworks/Mono.framework/External/monodoc");
+					
+					foreach (var node in AddinManager.GetExtensionNodes ("/MonoDevelop/ProjectModel/MonoDocSources"))
+						sources.Add (((MonoDocSourceNode)node).Directory);
+					
+					foreach (var s in sources)
+						helpTree.AddSource (s);
+							
 				} catch (Exception ex) {
 					if (!(ex is ThreadAbortException) && !(ex.InnerException is ThreadAbortException))
 						LoggingService.LogError ("Monodoc documentation tree could not be loaded.", ex);
@@ -108,107 +116,8 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		/// <summary>
-		/// If non-null, this is the path of an MonoDoc root directory that contains a merged "cache" of the main 
-		/// system doc source and the doc sources provided by addins. This root is used by MonoDevelop itself and by 
-		/// the instance of the MonoDoc browser that MonoDevelop launches.
-		/// </summary>
-		/// <remarks>
-		/// The cache is background-initialized by the help service, and accessing this method will block until it 
-		/// is initialized. If you don't wish to block, check the <see cref="CacheInitialized"/> property first.
-		//  </remarks>
-		public static FilePath GetMonoDocCacheRoot ()
-		{
-			if (cacheInitialized)
-				return cacheRoot;
-			
-			lock (cacheLock) {
-				if (cacheInitialized)
-					return cacheRoot;
-				
-				//FIXME; the help cache doesn't work on Windows because it uses symlinks
-				if (!PropertyService.IsWindows)
-					cacheRoot = PropertyService.ConfigPath.Combine ("MonoDocCache");
-				else
-					cacheRoot = null;
-				
-				var sources = GetSources ();
-				if (sources == null)
-					cacheRoot = null;
-				else
-					UpdateHelpCache (cacheRoot, sources);
-				cacheInitialized = true;
-				return cacheRoot;
-			}
-		}
-		
-		static IList<string> GetSources ()
-		{
-			var sources = new List<string> ();
-			
-			if (Type.GetType ("Mono.Runtime") != null) {
-				FilePath corlib = typeof (object).Assembly.Location;
-				sources.Add (corlib.ParentDirectory.Combine ("..", "..", "monodoc", "sources").FullPath);
-			}
-			
-			foreach (MonoDocSourceNode node in AddinManager.GetExtensionNodes ("/MonoDevelop/ProjectModel/MonoDocSources"))
-				sources.Add (node.Directory);
-			
-			sources = sources.Select (p => Path.GetFullPath (p)).Where (Directory.Exists).Distinct ().ToList ();
-			if (sources.Count > 0)
-				return sources;
-			else
-				return null;
-		}
-		
-		static void UpdateHelpCache (FilePath cacheDir, IList<string> mergeSources)
-		{
-			//build a map of all doc files. later merge sources override earlier ones
-			var map = new Dictionary<string,string> ();
-			foreach (var dir in mergeSources) {
-				foreach (var file in Directory.GetFiles (dir)) {
-					if (file.EndsWith (".source") || file.EndsWith (".zip") || file.EndsWith (".tree"))
-						map[Path.GetFileName (file)] = file;
-				}
-			}
-			
-			var cacheSourcesDir = cacheDir.Combine ("sources");
-			if (Directory.Exists (cacheDir)) {
-				string[] existing = Directory.GetFiles (cacheSourcesDir);
-				for (int i = 0; i < existing.Length; i++)
-					existing[i] = Path.GetFileName (existing[i]);
-				
-				DateTime lastModified = Directory.GetLastWriteTime (cacheDir);
-				if (existing.Length == map.Count
-				    && existing.All (map.ContainsKey)
-				    && map.Values.All (f => File.GetLastWriteTime (f) < lastModified))
-					return;
-				Directory.Delete (cacheDir, true);
-			}
-			
-			Directory.CreateDirectory (cacheSourcesDir);
-			
-			foreach (var kvp in map)
-				new Mono.Unix.UnixFileInfo (kvp.Value).CreateSymbolicLink (Path.Combine (cacheSourcesDir, kvp.Key));
-			
-			File.WriteAllText (Path.Combine (cacheDir, "monodoc.xml"), @"<?xml version=""1.0""?>
-<node label=""Mono Documentation"" name=""libraries"">
-  <node label=""Commands and Files"" name=""man"" />
-  <node label=""Languages"" name=""languages"" />
-  <node label=""Tools"" name=""tools"" />
-  <node label=""Various"" name=""various"" />
-</node>");
-			
-			Directory.SetLastWriteTime (cacheDir, DateTime.Now);
-		}
-		
-		/// <summary>
-		/// Whether the MonoDoc cache directory has been initialized yet.
-		/// </summary>
-		public static bool CacheInitialized {
-			get {
-				return cacheInitialized;
-			}
+		public static IEnumerable<string> Sources {
+			get { return sources; }
 		}
 		
 		//note: this method is very careful to check that the generated URLs exist in MonoDoc
