@@ -34,7 +34,36 @@ namespace MonoDroid
 {
 	internal static class MonoDroidSdk
 	{
-		static bool IsWindows = Path.DirectorySeparatorChar == '\\';
+		public static readonly bool IsWindows, IsMac;
+		
+		//From Managed.Windows.Forms/XplatUI
+		static bool IsRunningOnMac ()
+		{
+			IntPtr buf = IntPtr.Zero;
+			try {
+				buf = System.Runtime.InteropServices.Marshal.AllocHGlobal (8192);
+				// This is a hacktastic way of getting sysname from uname ()
+				if (uname (buf) == 0) {
+					string os = System.Runtime.InteropServices.Marshal.PtrToStringAnsi (buf);
+					if (os == "Darwin")
+						return true;
+				}
+			} catch {
+			} finally {
+				if (buf != IntPtr.Zero)
+					System.Runtime.InteropServices.Marshal.FreeHGlobal (buf);
+			}
+			return false;
+		}
+		
+		[System.Runtime.InteropServices.DllImport ("libc")]
+		static extern int uname (IntPtr buf);
+		
+		static MonoDroidSdk ()
+		{
+			IsWindows = Path.DirectorySeparatorChar == '\\';
+			IsMac = !IsWindows && IsRunningOnMac ();
+		}
 		
 		public static void GetPaths (out string monoDroidPath, out string androidSdkPath, out string javaSdkPath)
 		{
@@ -71,6 +100,7 @@ namespace MonoDroid
 		/// <returns>SDK location, or null if it was not found.</returns>
 		static string GetMonoDroidSdk ()
 		{
+			
 			string loc = Environment.GetEnvironmentVariable ("MONODROID_PATH");
 			if (ValidateMonoDroidSdkLocation (loc))
 				return loc;
@@ -78,6 +108,10 @@ namespace MonoDroid
 			if (IsWindows) {
 				loc = (RegistryEx.GetValueString (RegistryEx.LocalMachine, MDREG_KEY, MDREG_MONODROID, RegistryEx.Wow64.Key32));
 				if (ValidateMonoDroidSdkLocation (loc))
+					return loc;
+			} else if (IsMac) {
+				loc = "/Developer/MonoDroid";
+				if (Directory.Exists (loc) && ValidateMonoDroidSdkLocation (loc))
 					return loc;
 			} else {
 				loc = "/opt/monodroid";
