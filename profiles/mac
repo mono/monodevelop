@@ -2,3 +2,4 @@ main --disable-update-mimedb --disable-update-desktopdb --disable-gnomeplatform 
 extras/MonoDevelop.IPhone
 extras/MonoDevelop.MonoMac
 extras/MonoDevelop.Database
+extras/MonoDevelop.MonoDroid

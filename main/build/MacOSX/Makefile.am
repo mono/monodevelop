@@ -62,7 +62,7 @@ MonoDevelop.app:
 	  $(MACOS)/lib/monodevelop/AddIns/MonoDevelop.TextTemplating/Mono.TextTemplating.Tests*
 
 # add extras known to work on Mac, if they exist
-	for ADDIN in MonoDevelop.IPhone MonoDevelop.MonoMac MonoDevelop.Database; do \
+	for ADDIN in MonoDevelop.IPhone MonoDevelop.MonoMac MonoDevelop.Database MonoDevelop.MonoDroid; do \
 		(ls $(EXTRAS)/$${ADDIN}/build/* > /dev/null 2>&1 && \
 			echo "Copying $${ADDIN}" && \
 			mkdir -p $(MAC_APP_LIB_DIR)/AddIns/$${ADDIN} && \

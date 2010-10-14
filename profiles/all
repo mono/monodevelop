@@ -15,3 +15,4 @@ extras/PyBinding
 extras/MonoDevelop.IPhone
 extras/MonoDevelop.MonoMac
 extras/MonoDevelop.MeeGo
+extras/MonoDevelop.MonoDroid
