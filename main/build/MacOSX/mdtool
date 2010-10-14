@@ -27,6 +27,15 @@ else
 	MONO_EXEC="exec -a monodevelop mono"
 fi
 
+# The Mono "External" folder allows users (such as MonoDroid) to install
+# things without worrying that they'll be removed next time mono is upgraded
+# Mono doesn't support it get so we hack it via env vars for now.
+MONO_FRAMEWORK_EXT=/Library/Frameworks/Mono.framework/External
+export PKG_CONFIG_PATH="$MONO_FRAMEWORK_EXT/pkgconfig:$PKG_CONFIG_PATH"
+export MSBuildExtensionsPath="$MONO_FRAMEWORK_EXT/xbuild:$MSBuildExtensionPath"
+# N.B. MONO_FRAMEWORK_EXT/monodoc is handled inside MD itself
+# N.B.  no point in hacking MONO_FRAMEWORK_EXT/gac because it's for runtime
+
 ## use an app-specific registry if possible
 #if [ -w "$DIR" ]; then
 #	export MONO_ADDINS_REGISTRY="$DIR"
