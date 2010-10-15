@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		Engine engine;
 		string file;
 		ILogWriter currentLogWriter;
-		ConsoleLogger consoleLogger;
+		MDConsoleLogger consoleLogger;
 
 		AutoResetEvent moreWorkEvent = new AutoResetEvent (false);
 		AutoResetEvent wordDoneEvent = new AutoResetEvent (false);
@@ -59,7 +59,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				engine = new Engine (binDir);
 				engine.GlobalProperties.SetProperty ("BuildingInsideVisualStudio", "true");
 
-				consoleLogger = new ConsoleLogger (LoggerVerbosity.Normal, LogWriteLine, null, null);
+				consoleLogger = new MDConsoleLogger (LoggerVerbosity.Normal, LogWriteLine, null, null);
 				engine.RegisterLogger (consoleLogger);
 			});
 			
