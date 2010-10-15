@@ -44,7 +44,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		ILogWriter currentLogWriter;
 		MDConsoleLogger consoleLogger;
 
-		AutoResetEvent moreWorkEvent = new AutoResetEvent (false);
 		AutoResetEvent wordDoneEvent = new AutoResetEvent (false);
 		ThreadStart workDelegate;
 		object workLock = new object ();
@@ -164,7 +163,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					workError = null;
 					if (workThread == null) {
 						workThread = new Thread (STARunner);
-						workThread.ApartmentState = ApartmentState.STA;
+						workThread.SetApartmentState (ApartmentState.STA);
 						workThread.IsBackground = true;
 						workThread.Start ();
 					}
