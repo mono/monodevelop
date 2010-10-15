@@ -936,6 +936,7 @@ namespace MonoDevelop.Refactoring
 		
 		void FindDerivedThread (object state)
 		{
+			monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 			using (monitor) {
 				IType cls = (IType) item;
 				if (cls == null) return;
