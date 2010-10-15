@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?define ProductVersion = "2.6" ?>
+<?define UpgradeCode = "c9f41dc6-ad54-41e0-bd14-33e366ac4170" ?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="Mono Libraries for .Net" Language="1033" Version="$(var.ProductVersion)" Manufacturer="Novell, Inc." UpgradeCode="$(var.UpgradeCode)">
+    <Package InstallerVersion="100" Compressed="yes" Description="Mono Libraries for .Net" Comments="Provides Managed libraries from Mono for use on .Net." />
+    <Media Id="1" Cabinet="WixProject1.cab" EmbedCab="yes" />
+    <Condition Message="This setup requires the .NET Framework 2.0 or higher.">
+      <![CDATA[MsiNetAssemblySupport >= "1.1.4322"]]>
+    </Condition>
+
+    <!-- Major upgrade -->
+    <Upgrade Id="$(var.UpgradeCode)">
+      <UpgradeVersion Minimum="$(var.ProductVersion)" OnlyDetect="yes" Property="NEWERVERSIONDETECTED" />
+      <UpgradeVersion Minimum="0.0.0" IncludeMinimum="yes" IncludeMaximum="no" Property="OLDERVERSIONBEINGUPGRADED" />
+    </Upgrade>
+    
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="PFiles">
+        <Directory Id="MonoLibraries" Name="MonoLibraries">
+          <Directory Id="INSTALLLOCATION" Name="$(var.ProductVersion)">
+            <Directory Id="gac">
+              <!-- not an explicit directory, Assembly=".net" GACs the assemblies -->
+              <Component Id="monodoc_gac" Guid="35d46001-6c8c-496b-a5bc-29571058c5b6">
+                <File Id="monodocdll" Name="monodoc.dll" Assembly=".net" KeyPath="yes" Source="lib\monodoc.dll" Vital="yes" />
+              </Component>
+              <Component Id="MonoGetOptions_gac" Guid="7a7f48a9-f805-4bcf-8121-cf9d99e6af22">
+                <File Id="MonoGetOptionsdll" Name="Mono.GetOptions.dll" Assembly=".net" KeyPath="yes" Source="lib\Mono.GetOptions.dll" Vital="yes" />
+              </Component>
+              <Component Id="SharpZipLib_gac" Guid="7cd4f9d3-7814-475e-b766-edbeecd58211">
+                <File Id="ICSharpCodeSharpZipLibdll" Name="ICSharpCode.SharpZipLib.dll" Assembly=".net" KeyPath="yes" Source="lib\ICSharpCode.SharpZipLib.dll" Vital="yes" />
+              </Component>
+              <Component Id="MonoAddins_gac" Guid="21122e97-3b44-4872-a5d2-f5af4a1d1971">
+                <File Id="MonoAddinsdll" Name="Mono.Addins.dll" Assembly=".net" KeyPath="yes" Source="lib\Mono.Addins.dll" Vital="yes" />
+              </Component>
+              <Component Id="MonoAddinsCecilReflector_gac" Guid="a4565d32-9ce8-4a7f-a870-5c1bcdcc8a2c">
+                <File Id="MonoAddinsCecilReflectordll" Name="Mono.Addins.CecilReflector.dll" Assembly=".net" KeyPath="yes" Source="lib\Mono.Addins.CecilReflector.dll" Vital="yes" />
+              </Component>
+              <Component Id="MonoAddinsGui_gac" Guid="3ee218ee-e6a5-4cf2-a407-bb9f5a0306c8">
+                <File Id="MonoAddinsGuidll" Name="Mono.Addins.Gui.dll" Assembly=".net" KeyPath="yes" Source="lib\Mono.Addins.Gui.dll" Vital="yes" />
+              </Component>
+              <Component Id="MonoAddinsSetup_gac" Guid="e9a9fc89-23b3-4e54-bfee-f18767f16955">
+                <File Id="MonoAddinsSetupdll" Name="Mono.Addins.Setup.dll" Assembly=".net" KeyPath="yes" Source="lib\Mono.Addins.Setup.dll" Vital="yes" />
+              </Component>
+            </Directory>
+            <Directory Id="lib" Name="lib">
+              <Directory Id="mono" Name="mono">
+                <Directory Id="TwoDotZero" Name="2.0">
+                  <!-- Installs GACd assemblies to an addressable location - see http://blogs.msdn.com/astebner/archive/2007/06/21/3450539.aspx -->
+                  <Component Id="instassembly" Guid="f846a63c-d97a-4b30-ab27-d2bd4ac1e8b3">
+                    <RegistryKey Root='HKLM' Key='SOFTWARE\Microsoft\.NetFramework\AssemblyFolders\MonoLibraries' Action="createAndRemoveOnUninstall">
+                      <RegistryValue Type="string" Value='[INSTALLLOCATION]lib\mono\2.0' />
+                    </RegistryKey>
+                    <File Id="monodocdll_inst" Name="monodoc.dll" Source="lib\monodoc.dll" Vital="yes" />
+                    <File Id="MonoGetOptionsdll_inst" Name="Mono.GetOptions.dll" Source="lib\Mono.GetOptions.dll" Vital="yes" />
+                    <File Id="SharpZipLibdll_inst" Name="ICSharpCode.SharpZipLib.dll" Source="lib\ICSharpCode.SharpZipLib.dll" Vital="yes" />
+                    <File Id="MonoAddinsdll_inst" Name="Mono.Addins.dll" Source="lib\Mono.Addins.dll" Vital="yes" />
+                    <File Id="MonoAddinsCecilReflectordll_inst" Name="Mono.Addins.CecilReflector.dll" Source="lib\Mono.Addins.CecilReflector.dll" Vital="yes" />
+                    <File Id="MonoAddinsGuidll_inst" Name="Mono.Addins.Gui.dll" Source="lib\Mono.Addins.Gui.dll" Vital="yes" />
+                    <File Id="MonoAddinsSetupdll_inst" Name="Mono.Addins.Setup.dll" Source="lib\Mono.Addins.Setup.dll" Vital="yes" />
+                  </Component>
+                </Directory>
+              </Directory>
+            </Directory>
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+    <Feature Id="Default" Title="Default" Level="1">
+      <ComponentRef Id="monodoc_gac" />
+      <ComponentRef Id="MonoGetOptions_gac" />
+      <ComponentRef Id="SharpZipLib_gac" />
+      <ComponentRef Id="MonoAddins_gac" />
+      <ComponentRef Id="MonoAddinsCecilReflector_gac" />
+      <ComponentRef Id="MonoAddinsGui_gac" />
+      <ComponentRef Id="MonoAddinsSetup_gac" />
+      <ComponentRef Id="instassembly" />
+    </Feature>
+
+    <!-- Sequences -->
+    <InstallExecuteSequence>
+      <RemoveExistingProducts After="InstallValidate" />
+    </InstallExecuteSequence>
+
+    <InstallUISequence>
+      <!-- Because we have a launch condition that uses the results of FindRelatedProducts, put it first. -->
+      <LaunchConditions After="FindRelatedProducts" />
+    </InstallUISequence>
+
+    <!-- This enables the license screen and where to install screen -->
+    <Property Id="WIXUI_INSTALLDIR">INSTALLLOCATION</Property>
+    <UIRef Id="WixUI_InstallDir"/>
+    
+    <WixVariable Id="WixUILicenseRtf" Value="license.rtf" />
+  </Product>
+</Wix>
