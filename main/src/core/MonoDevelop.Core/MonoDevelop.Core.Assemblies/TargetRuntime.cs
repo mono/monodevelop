@@ -216,7 +216,7 @@ namespace MonoDevelop.Core.Assemblies
 					}
 				}
 				if (!IsInstalled (fx))
-					throw new InvalidOperationException (string.Format ("No compatible framework found for assembly '{0}'", pinfo.FileName));
+					throw new InvalidOperationException (string.Format ("No compatible framework found for assembly '{0}' (required framework: {1})", pinfo.FileName, fxId));
 			}
 			
 			// Make a copy of the ProcessStartInfo because we are going to modify it
