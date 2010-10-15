@@ -46,6 +46,7 @@
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IProjectBuilder.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\BuildEngine.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IBuildEngine.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\ConsoleLogger.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

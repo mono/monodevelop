@@ -12,6 +12,7 @@ FILES =  \
 	AssemblyInfo.cs \
 	Main.cs \
 	MonoDevelop.Projects.Formats.MSBuild/BuildEngine.cs \
+	MonoDevelop.Projects.Formats.MSBuild/ConsoleLogger.cs \
 	MonoDevelop.Projects.Formats.MSBuild/IBuildEngine.cs \
 	MonoDevelop.Projects.Formats.MSBuild/ILogWriter.cs \
 	MonoDevelop.Projects.Formats.MSBuild/IProjectBuilder.cs \
