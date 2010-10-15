@@ -504,10 +504,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (!File.Exists (p) || File.GetLastWriteTime (p) < File.GetLastWriteTime (sourceExe)) {
 				if (!Directory.Exists (p.ParentDirectory))
 					Directory.CreateDirectory (p.ParentDirectory);
-				File.Copy (typeof(ProjectBuilder).Assembly.Location, p, true);
 				
 				// Update the references to msbuild
-				Cecil.AssemblyDefinition asm = Cecil.AssemblyFactory.GetAssembly (p);
+				Cecil.AssemblyDefinition asm = Cecil.AssemblyFactory.GetAssembly (sourceExe);
 				foreach (Cecil.AssemblyNameReference ar in asm.MainModule.AssemblyReferences) {
 					string[] replacement;
 					if (newVersions.TryGetValue (ar.Name, out replacement)) {
@@ -519,6 +518,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 				//run in 32-bit mode because usually msbuild targets are installed for 32-bit only
 				asm.MainModule.Image.CLIHeader.Flags |= Mono.Cecil.Binary.RuntimeImage.F32BitsRequired;
+				
+				// Workaround to a bug in mcs. The ILOnly flag is not emitted when using /platform:x86
+				asm.MainModule.Image.CLIHeader.Flags |= Mono.Cecil.Binary.RuntimeImage.ILOnly;
 				
 				Cecil.AssemblyFactory.SaveAssembly (asm, p);
 			}
