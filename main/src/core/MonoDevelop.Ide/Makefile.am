@@ -12,8 +12,8 @@ REFS =  \
 	$(MONO_ADDINS_SETUP_LIBS) \
 	$(MONODOC_LIBS) \
 	-r:ICSharpCode.SharpZipLib \
-	-r:Mono.Posix \
 	-r:Mono.Cairo \
+	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \
 	-r:System.Data \
