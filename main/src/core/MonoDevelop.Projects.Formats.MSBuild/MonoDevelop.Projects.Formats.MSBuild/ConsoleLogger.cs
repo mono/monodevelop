@@ -444,7 +444,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild {
 			errorCount++;
 		}
 		
-		[MonoTODO]
 		public void CustomEventHandler (object sender, CustomBuildEventArgs args)
 		{
 		}
