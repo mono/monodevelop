@@ -170,8 +170,27 @@ namespace MonoDevelop.VersionControl.Views
 			foreach (VersionControlItem item in items) {
 				var document = IdeApp.Workbench.OpenDocument (item.Path);
 				DiffView.AttachViewContents (document, item);
-				document.Window.SwitchView (1);
+				int viewNum = FindDiffView (document.Window.SubViewContents) + 1;
+				document.Window.SwitchView (viewNum);
 			}
+		}
+		
+		private static int FindDiffView (IEnumerable<IAttachableViewContent> subContents)
+		{
+			int idx = -1;
+			int i = 0;
+			
+			foreach (IAttachableViewContent item in subContents) {
+				if (item is DiffView)
+				{
+					idx = i;
+					break;
+				}
+				
+				i++;
+			}
+			
+			return idx;
 		}
 		
 		public static bool CanShow (VersionControlItemList items)
