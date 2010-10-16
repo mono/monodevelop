@@ -146,11 +146,14 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateEditMode ()
 		{
-			if (TestNewViMode && !(CurrentMode is NewIdeViMode)) {
-				CurrentMode = new NewIdeViMode (this);
-			} else if (Options.UseViModes) {
-				if (!(CurrentMode is IdeViMode))
-					CurrentMode = new IdeViMode (this);
+			if (Options.UseViModes) {
+				if (TestNewViMode) {
+					if (!(CurrentMode is NewIdeViMode))
+					CurrentMode = new NewIdeViMode (this);
+				} else {
+					if (!(CurrentMode is IdeViMode))
+						CurrentMode = new IdeViMode (this);
+				}
 			} else {
 		//		if (!(CurrentMode is SimpleEditMode)){
 					SimpleEditMode simpleMode = new SimpleEditMode ();
