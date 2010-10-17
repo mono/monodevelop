@@ -59,8 +59,8 @@ FILES =  \
 	Mono.TextEditor.Vi/ViBuilderContext.cs \
 	Mono.TextEditor.Vi/ViBuilders.cs \
 	Mono.TextEditor.Vi/ViCommandMap.cs \
+	Mono.TextEditor.Vi/ViEditor.cs \
 	Mono.TextEditor.Vi/ViEditorActions.cs \
-	Mono.TextEditor.Vi/ViEditorContext.cs \
 	Mono.TextEditor.Vi/ViKeyNotation.cs \
 	Mono.TextEditor.Vi/ViMacro.cs \
 	Mono.TextEditor.Vi/ViMark.cs \

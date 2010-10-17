@@ -40,6 +40,12 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.editor = editor;
 		}
+		
+		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
+		{
+			base.HandleKeypress (key, unicodeKey, modifier);
+			IdeApp.Workbench.StatusBar.ShowMessage (ViEditor.Message);
+		}
 	}
 	
 	public class IdeViMode : Mono.TextEditor.Vi.ViEditMode

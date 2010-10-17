@@ -41,46 +41,109 @@ namespace Mono.TextEditor.Vi
 	
 	public class ViBuilderContext
 	{
-		ViBuilderContext ()
+		readonly ViEditor editor;
+		readonly List<ViKey> keys = new List<ViKey> ();
+		
+		ViBuilderContext (ViEditor editor)
 		{
-			Keys = new List<ViKey> ();
+			this.editor = editor;
 			Multiplier = 1;
 		}
 		
-		public void Build (ViEditor editor, Key key, char ch, ModifierType modifiers)
+		public void ProcessKey (Key key, char ch, ModifierType modifiers)
 		{
 			var k = ch == '\0'? new ViKey (modifiers, key) : new ViKey (modifiers, ch);
 			Keys.Add (k);
 			if (!Builder (this)) {
-				Error = "Unknown command";
+				SetError ("Unknown command");
 			}
 		}
 		
-		public string Error { get; set; }
+		public void SetError (string error)
+		{
+			Completed = Error = true;
+			Message = error;
+		}
+		
 		public string Message { get; set; }
-		public IList<ViKey> Keys { get; private set; }
 		public int Multiplier { get; set; }
 		public char Register { get; set; }
+		protected ViEditor Editor { get { return editor; } }
+		public List<ViKey> Keys { get { return keys; } }
+		public bool Completed { get; private set; }
+		public bool Error { get; private set; }
 		
-		Action<ViEditor> action;
-		
-		public Action<ViEditor> Action {
-			get { return action; }
-			set {
-				if (action != null)
-					throw new InvalidOperationException ("Action already set");
-				
-				//FALLBACK for builders that don't handler multipliers directly
-				//we cap these at 100, to reduce the length of time MD could be unresponsive
-				if (Multiplier > 1) {
-					action = (ViEditor v) => {
-						for (int i = 0; i < System.Math.Min (100, Multiplier); i++)
-							value (v);
-					};
-				} else {
-					action = value;
+		//copied from EditMode.cs, with the undo stack handling code removed
+		public void InsertChar (char ch)
+		{
+			var data = Editor.Data;
+			var doc = Editor.Document;
+			var caret = Editor.Data.Caret;
+			
+			if (!data.CanEdit (data.Caret.Line))
+				return;
+			
+			if (Editor.Editor != null)
+				Editor.Editor.HideMouseCursor ();
+			
+			if (data.IsSomethingSelected && data.MainSelection.SelectionMode == SelectionMode.Block) {
+				data.Caret.PreserveSelection = true;
+				if (!data.MainSelection.IsDirty) {
+					data.DeleteSelectedText (false);
+					data.MainSelection.IsDirty = true;
 				}
+			} else {
+				data.DeleteSelectedText ();
 			}
+			
+			if (!char.IsControl (ch) && data.CanEdit (caret.Line)) {
+				LineSegment line = doc.GetLine (caret.Line);
+				if (caret.IsInInsertMode || caret.Column >= line.EditableLength + 1) {
+					string text = caret.Column > line.EditableLength + 1 ? data.GetVirtualSpaces (caret.Line, caret.Column) + ch.ToString () : ch.ToString ();
+					if (data.IsSomethingSelected && data.MainSelection.SelectionMode == SelectionMode.Block) {
+						int length = 0;
+						for (int lineNumber = data.MainSelection.MinLine; lineNumber <= data.MainSelection.MaxLine; lineNumber++) {
+							length = data.Insert (doc.GetLine (lineNumber).Offset + caret.Column, text);
+						}
+						caret.Column += length - 1;
+						data.MainSelection.Lead = new DocumentLocation (data.MainSelection.Lead.Line, caret.Column + 1);
+						data.MainSelection.IsDirty = true;
+						doc.CommitMultipleLineUpdate (data.MainSelection.MinLine, data.MainSelection.MaxLine);
+					} else {
+						int length = data.Insert (caret.Offset, text);
+						caret.Column += length - 1;
+					}
+				} else {
+					int length = data.Replace (caret.Offset, 1, ch.ToString ());
+					if (length > 1)
+						caret.Offset += length - 1;
+				}
+				caret.Column++;
+			}
+			if (data.IsSomethingSelected && data.MainSelection.SelectionMode == SelectionMode.Block)
+				data.Caret.PreserveSelection = false;
+		}
+		
+		public void RunAction (Action<ViEditor> action)
+		{
+			Completed = true;
+			
+			//FALLBACK for builders that don't handler multipliers directly
+			//we cap these at 100, to reduce the length of time MD could be unresponsive
+			if (Multiplier > 1) {
+				for (int i = 0; i < System.Math.Min (100, Multiplier); i++)
+					action (editor);
+			} else {
+				action (editor);
+			}
+		}
+		
+		public ViEditorMode Mode { get { return Editor.Mode; } }
+		
+		//HACK: this is really inelegant
+		public void SuppressCompleted ()
+		{
+			Completed = false;
 		}
 		
 		public ViBuilder builder;
@@ -90,8 +153,8 @@ namespace Mono.TextEditor.Vi
 			set {
 				if (value == null)
 					throw new ArgumentException ("builder cannot be null");
-				if (action != null)
-					throw new InvalidOperationException ("builder cannot be set after action has been set");
+				if (Completed)
+					throw new InvalidOperationException ("builder cannot be set after context is completed");
 				builder = value;
 			}
 		}
@@ -100,9 +163,9 @@ namespace Mono.TextEditor.Vi
 			get { return Keys[Keys.Count - 1]; }
 		}
 		
-		public static ViBuilderContext Create ()
+		public static ViBuilderContext Create (ViEditor editor)
 		{
-			return new ViBuilderContext () {
+			return new ViBuilderContext (editor) {
 				Builder = normalBuilder
 			};
 		}
@@ -112,10 +175,11 @@ namespace Mono.TextEditor.Vi
 			normalBuilder = 
 				ViBuilders.RegisterBuilder (
 					ViBuilders.MultiplierBuilder (
-						ViBuilders.First (normalActions.Builder, motions.Builder)));
+						ViBuilders.First (normalActions.Builder, motions.Builder, nonCharMotions.Builder)));
+			insertActions = ViBuilders.First (nonCharMotions.Builder, insertEditActions.Builder);
 		}
 		
-		static ViBuilder normalBuilder;
+		static ViBuilder normalBuilder, insertActions;
 		
 		static ViCommandMap normalActions = new ViCommandMap () {
 			{ 'J', ViActions.Join },
@@ -139,6 +203,10 @@ namespace Mono.TextEditor.Vi
 			{ 'H', ViEditorActions.CaretToScreenTop },
 			{ 'L', ViEditorActions.CaretToScreenBottom },
 			{ 'u', MiscActions.Undo },
+			{ 'i', Insert, true },
+			{ 'R', Replace, true },
+			{ 'o', Open, true },
+			{ 'O', OpenAbove, true },
 			{ new ViKey (ModifierType.ControlMask, Key.Up),       ScrollActions.Up },
 			{ new ViKey (ModifierType.ControlMask, Key.KP_Up),    ScrollActions.Up },
 			{ new ViKey (ModifierType.ControlMask, Key.Down),     ScrollActions.Down },
@@ -163,6 +231,9 @@ namespace Mono.TextEditor.Vi
 			{ 'G', CaretMoveActions.ToDocumentEnd },
 			{ '{', ViActions.MoveToPreviousEmptyLine },
 			{ '}', ViActions.MoveToNextEmptyLine },
+		};
+		
+		static ViCommandMap nonCharMotions = new ViCommandMap () {
 			{ Key.Left,         ViActions.Left },
 			{ Key.KP_Left,      ViActions.Left },
 			{ Key.Right,        ViActions.Right },
@@ -191,7 +262,7 @@ namespace Mono.TextEditor.Vi
 			{ new ViKey (ModifierType.ControlMask, 'd'),  CaretMoveActions.PageDown },
 		};
 		
-		static ViCommandMap insertActions = new ViCommandMap () {
+		static ViCommandMap insertEditActions = new ViCommandMap () {
 			{ Key.Tab,       MiscActions.InsertTab },
 			{ Key.Return,    MiscActions.InsertNewLine },
 			{ Key.KP_Enter,  MiscActions.InsertNewLine },
@@ -205,6 +276,36 @@ namespace Mono.TextEditor.Vi
 			{ new ViKey (ModifierType.ShiftMask,   Key.Tab),       MiscActions.RemoveTab },
 			{ new ViKey (ModifierType.ShiftMask,   Key.BackSpace),       DeleteActions.Backspace },
 		};
+		
+		static bool Insert (ViBuilderContext ctx)
+		{
+			ctx.RunAction ((ViEditor e) => e.SetMode (ViEditorMode.Insert));
+			ctx.SuppressCompleted ();
+			
+			ctx.Builder = ViBuilders.InsertBuilder (insertActions);
+			return true;
+		}
+		
+		static bool Replace (ViBuilderContext ctx)
+		{
+			ctx.RunAction ((ViEditor e) => e.SetMode (ViEditorMode.Replace));
+			ctx.SuppressCompleted ();
+			
+			ctx.Builder = ViBuilders.InsertBuilder (insertActions);
+			return true;
+		}
+		
+		static bool Open (ViBuilderContext ctx)
+		{
+			ctx.RunAction ((ViEditor e) => MiscActions.InsertNewLineAtEnd (e.Data));
+			return Insert (ctx);
+		}
+		
+		static bool OpenAbove (ViBuilderContext ctx)
+		{
+			ctx.RunAction ((ViEditor e) => ViActions.Up (e.Data));
+			return Open (ctx);
+		}
 	}
 }
 

@@ -30,21 +30,23 @@ using Mono.TextEditor;
 
 namespace Mono.TextEditor.Vi
 {
-	class ViCommandMap : IEnumerable<KeyValuePair<ViKey,ViBuilder>>
+	class ViCommandMap : IEnumerable<KeyValuePair<ViKey,Action<ViEditor>>>
 	{
-		Dictionary<ViKey,ViBuilder> builders = new Dictionary<ViKey,ViBuilder> ();
+		Dictionary<ViKey,BuilderAction> builders = new Dictionary<ViKey, BuilderAction> ();
 		Dictionary<ViKey,Action<ViEditor>> actions  = new Dictionary<ViKey,Action<ViEditor>> ();
 		
 		public bool Builder (ViBuilderContext ctx)
 		{
 			Action<ViEditor> a;
 			if (actions.TryGetValue (ctx.LastKey, out a)) {
-				ctx.Action = a;
+				ctx.RunAction (a);
 				return true;
 			} else {
-				ViBuilder b;
+				BuilderAction b;
 				if (builders.TryGetValue (ctx.LastKey, out b)) {
-					ctx.Builder = b;
+					ctx.Builder = b.Builder;
+					if (b.RunInstantly)
+						ctx.Builder (ctx);
 					return true;
 				}
 			}
@@ -68,7 +70,12 @@ namespace Mono.TextEditor.Vi
 		
 		public void Add (ViKey key, ViBuilder builder)
 		{
-			this.builders[key] = builder;
+			Add (key, builder, false);
+		}
+		
+		public void Add (ViKey key, ViBuilder builder, bool runInstantly)
+		{
+			this.builders[key] = new BuilderAction (builder, true);
 		}
 		
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
@@ -76,9 +83,21 @@ namespace Mono.TextEditor.Vi
 			return builders.GetEnumerator ();
 		}
 		
-		public IEnumerator<KeyValuePair<ViKey,ViBuilder>> GetEnumerator ()
+		public IEnumerator<KeyValuePair<ViKey,Action<ViEditor>>> GetEnumerator ()
 		{
-			return builders.GetEnumerator ();
+			return actions.GetEnumerator ();
+		}
+		
+		struct BuilderAction
+		{
+			public BuilderAction (ViBuilder builder, bool runInstantly)
+			{
+				this.Builder = builder;
+				this.RunInstantly = runInstantly;
+			}
+			
+			public readonly ViBuilder Builder;
+			public readonly bool RunInstantly;
 		}
 	}
 }

@@ -36,20 +36,63 @@ namespace Mono.TextEditor.Vi
 {
 	public class NewViEditMode : EditMode
 	{
-		ViEditor viEditor;
+		protected ViEditor ViEditor { get ; private set ;}
 		
 		public NewViEditMode ()
 		{
-			viEditor = new ViEditor (this);
+			ViEditor = new ViEditor (this);
 		}
 		
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{
-			viEditor.ProcessKey (modifier, key, (char)unicodeKey);
+			ViEditor.ProcessKey (modifier, key, (char)unicodeKey);
 		}
 		
 		public new TextEditor Editor { get { return base.Editor; } }
 		public new TextEditorData Data { get { return base.Data; } }
+		
+		public override bool WantsToPreemptIM {
+			get {
+				switch (ViEditor.Mode) {
+				case ViEditorMode.Insert:
+				case ViEditorMode.Replace:
+					return false;
+				default:
+					return true;
+				}
+			}
+		}
+		
+		protected override void OnAddedToEditor (TextEditorData data)
+		{
+			ViEditor.SetMode (ViEditorMode.Normal);
+			SetCaretMode (CaretMode.Block, data);
+			ViActions.RetreatFromLineEnd (data);
+		}
+		
+		protected override void OnRemovedFromEditor (TextEditorData data)
+		{
+			SetCaretMode (CaretMode.Insert, data);
+		}
+		
+		protected override void CaretPositionChanged ()
+		{
+			ViEditor.OnCaretPositionChanged ();
+		}
+		
+		public void SetCaretMode (CaretMode mode)
+		{
+			SetCaretMode (mode, Data);
+		}
+		
+		static void SetCaretMode (CaretMode mode, TextEditorData data)
+		{
+			if (data.Caret.Mode == mode)
+				return;
+			data.Caret.Mode = mode;
+			data.Document.RequestUpdate (new SinglePositionUpdate (data.Caret.Line, data.Caret.Column));
+			data.Document.CommitDocumentUpdate ();
+		}
 	}
 	
 	public class ViEditMode : EditMode

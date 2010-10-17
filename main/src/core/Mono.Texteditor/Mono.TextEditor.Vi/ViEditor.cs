@@ -60,6 +60,7 @@ namespace Mono.TextEditor.Vi
 		public Document Document { get { return Data.Document; } }
 		ViBuilderContext Context { get; set; }
 		public string Message { get; private set; }
+		public ViEditorMode Mode { get; private set; }
 
 		//shared between editors in the same process
 		//TODO: maybe move these into some kind of shared context to pass around expliictly
@@ -85,18 +86,65 @@ namespace Mono.TextEditor.Vi
 		
 		public void Reset (string message)
 		{
-			Context = ViBuilderContext.Create ();
+			Context = ViBuilderContext.Create (this);
 			Message = message;
+			
+			if (Data.Caret.Mode != CaretMode.Block) {
+				Data.Caret.Mode = CaretMode.Block;
+				if (Data.Caret.Column > DocumentLocation.MinColumn)
+					Data.Caret.Column--;
+			}
+			ViActions.RetreatFromLineEnd (Data);
+		}
+		
+		public void SetMode (ViEditorMode mode)
+		{
+			if (this.Mode == mode)
+				return;
+			this.Mode = mode;
+			
+			if (Data == null)
+				return;
+			
+			switch (mode) {
+			case ViEditorMode.Insert:
+				Message = "-- INSERT --";
+				editMode.SetCaretMode (CaretMode.Insert);
+				break;
+			case ViEditorMode.Normal:
+				editMode.SetCaretMode (CaretMode.Block);
+				break;
+			case ViEditorMode.Replace:
+				Message = "-- REPLACE --";
+				editMode.SetCaretMode (CaretMode.Underscore);
+				break;
+			}
+		}
+		
+		public void OnCaretPositionChanged ()
+		{
+			switch (Mode) {
+			case ViEditorMode.Insert:
+			case ViEditorMode.Replace:
+			case ViEditorMode.Visual:
+				return;
+			case ViEditorMode.Normal:
+				ViActions.RetreatFromLineEnd (Data);
+				break;
+			default:
+				Reset ("");
+				break;
+			}
 		}
 		
 		public void ProcessKey (Gdk.ModifierType modifiers, Key key, char ch)
 		{
-			Context.Build (this, key, ch, modifiers);
-			if (Context.Error != null) {
-				Reset (Context.Error);
-			} else if (Context.Action != null) {
-				Context.Action (this);
+			if (Context == null)
 				Reset ("");
+			
+			Context.ProcessKey (key, ch, modifiers);
+			if (Context.Completed) {
+				Reset (Context.Message);
 			} else {
 				Message = Context.Message;
 			}
@@ -110,7 +158,7 @@ namespace Mono.TextEditor.Vi
 		public ViEditor (NewViEditMode editMode)
 		{
 			this.editMode = editMode;
-			Reset ("");
+			SetMode (ViEditorMode.Normal);
 		}
 
 		public string GetRegisterContents (char register)
@@ -223,6 +271,15 @@ namespace Mono.TextEditor.Vi
 			lastRegisterUsed = register;
 			registers[register] = value;
 		}
+	}
+	
+	public enum ViEditorMode
+	{
+		Normal = 0,
+		Insert,
+		Replace,
+		Visual,
+		VisualLine
 	}
 }
 

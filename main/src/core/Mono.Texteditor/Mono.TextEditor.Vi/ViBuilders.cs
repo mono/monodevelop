@@ -26,6 +26,8 @@
 
 using System;
 using System.Linq;
+using Gdk;
+using System.Text;
 
 namespace Mono.TextEditor.Vi
 {
@@ -35,34 +37,69 @@ namespace Mono.TextEditor.Vi
 		{
 			char c = ctx.LastKey.Char;
 			if (!char.IsLetterOrDigit (c)) {
-				ctx.Error = "Invalid Mark";
+				ctx.SetError ("Invalid Mark");
 				return true;
 			}
 			
-			ctx.Action = (ViEditor ed) => {
+			ctx.RunAction ((ViEditor ed) => {
 				ViMark mark;
 				if (!ed.Marks.TryGetValue (c, out mark))
 					ed.Marks [c] = mark = new ViMark (c);
 				mark.SaveMark (ed.Data);
-			};
+			});
 			return true;
+		}
+		
+		public static ViBuilder InsertBuilder (ViBuilder preInsertActions)
+		{	
+			var lastInserted = new StringBuilder ();
+			return (ViBuilderContext ctx) => {
+				var l = ctx.LastKey;
+				bool noModifiers = l.Modifiers == ModifierType.None;
+				
+				ctx.Message = ctx.Mode == ViEditorMode.Replace? "-- REPLACE --" : "-- INSERT --";
+				
+				if ((noModifiers && l.Key == Key.Escape) || (l.Char == 'c' && (l.Modifiers & ModifierType.ControlMask) != 0)) {
+					ctx.RunAction ((ViEditor ed) => {
+						ed.Document.EndAtomicUndo ();
+						ed.LastInsertedText = lastInserted.ToString ();
+						ed.SetMode (ViEditorMode.Normal);
+					});
+					return true;
+				}
+				
+				//keypad motions etc
+				if (preInsertActions (ctx)) {
+					ctx.SuppressCompleted ();
+					lastInserted.Length = 0;
+					return true;
+				}
+				
+				if (l.Char != '\0' && noModifiers) {
+					lastInserted.Append (l.Char);
+					ctx.InsertChar (l.Char);
+					return true;
+				}
+				
+				return false;
+			};
 		}
 		
 		public static bool GoToMark (ViBuilderContext ctx)
 		{
 			char c = ctx.LastKey.Char;
 			if (!char.IsLetterOrDigit (c)) {
-				ctx.Error = "Invalid Mark";
+				ctx.SetError ("Invalid Mark");
 				return true;
 			}
 			
-			ctx.Action = (ViEditor ed) => {
+			ctx.RunAction ((ViEditor ed) => {
 				ViMark mark;
 				if (ed.Marks.TryGetValue (c, out mark))
 					mark.LoadMark (ed.Data);
 				else
 					ed.Reset ("Unknown Mark");
-			};
+			});
 			return true;
 		}
 		
@@ -70,22 +107,22 @@ namespace Mono.TextEditor.Vi
 		public static bool ReplaceChar (ViBuilderContext ctx)
 		{
 			if (ctx.LastKey.Char != '\0')
-				ctx.Action = (ViEditor ed) => ed.Data.Replace (ed.Data.Caret.Offset, 1, ctx.LastKey.Char.ToString ());
+				ctx.RunAction ((ViEditor ed) => ed.Data.Replace (ed.Data.Caret.Offset, 1, ctx.LastKey.Char.ToString ()));
 			else
-				ctx.Error = "Expecting a character";
+				ctx.SetError ("Expecting a character");
 			return true;
 		}
 		
 		static void StartRegisterBuilder (ViBuilderContext ctx, ViBuilder nextBuilder)
 		{
 			if (ctx.Register != '\0') {
-				ctx.Error = "Register already set";
+				ctx.SetError ("Register already set");
 				return;
 			}
 			ctx.Builder = (ViBuilderContext x) => {
 				char c = x.LastKey.Char;
 				if (!ViEditor.IsValidRegister (c)) {
-					x.Error = "Invalid register";
+					x.SetError ("Invalid register");
 					return true;
 				}
 				x.Register = c;

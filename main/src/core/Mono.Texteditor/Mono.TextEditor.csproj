@@ -165,7 +165,6 @@
     <Compile Include="Mono.TextEditor\MarginDrawer.cs" />
     <Compile Include="Mono.TextEditor\TextEditorAccessibility.cs" />
     <Compile Include="Mono.TextEditor.Vi\ViKeyNotation.cs" />
-    <Compile Include="Mono.TextEditor.Vi\ViEditorContext.cs" />
     <Compile Include="Mono.TextEditor.PopupWindow\ModeHelpWindow.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\CloneableStack.cs" />
     <Compile Include="Mono.TextEditor.Utils\Diff.cs" />
@@ -180,6 +179,7 @@
     <Compile Include="Mono.TextEditor.Vi\ViBuilderContext.cs" />
     <Compile Include="Mono.TextEditor.Vi\ViBuilders.cs" />
     <Compile Include="Mono.TextEditor.Vi\ViCommandMap.cs" />
+    <Compile Include="Mono.TextEditor.Vi\ViEditor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
