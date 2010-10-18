@@ -55,6 +55,8 @@ namespace MonoDevelop.Platform
 			//make sure the menu app name is correct even when running Mono 2.6 preview, or not running from the .app
 			Carbon.SetProcessName ("MonoDevelop");
 			
+			MonoMac.AppKit.NSApplication.Init ();
+			
 			GlobalSetup ();
 			mimemap = new Dictionary<string, string> ();
 			LoadMimeMap ();

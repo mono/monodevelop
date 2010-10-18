@@ -47,6 +47,10 @@
     </Reference>
     <Reference Include="Mono.Posix" />
     <Reference Include="System.Web" />
+    <Reference Include="MonoMac, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\extras\MonoDevelop.MonoMac\MonoDevelop.MonoMac\MonoMac.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -105,6 +109,5 @@
   <ItemGroup>
     <Folder Include="Menus\" />
     <Folder Include="Framework\" />
-    <Folder Include="Updater\" />
   </ItemGroup>
 </Project>
