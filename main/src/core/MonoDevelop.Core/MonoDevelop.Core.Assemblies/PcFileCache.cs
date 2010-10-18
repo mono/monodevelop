@@ -159,7 +159,7 @@ namespace Mono.PkgConfig
 			try {
 				info = ParsePackageInfo (file);
 			} catch (Exception ex) {
-				ctx.ReportError ("Error while parsing .pc file", ex);
+				ctx.ReportError ("Error while parsing .pc file: " + file, ex);
 				info = new TP ();
 			}
 			
@@ -561,7 +561,7 @@ namespace Mono.PkgConfig
 				} else
 					last = i++;
 				
-				if (i < value.Length - 1)
+				if (i < value.Length)
 					i = value.IndexOf ("${", i);
 			}
 			sb.Append (value.Substring (last, value.Length - last));
