@@ -441,12 +441,12 @@ namespace MonoDevelop.XmlEditor
 		/// <returns>The schema filename the user selected; otherwise null.</returns>
 		public static string BrowseForSchemaFile ()
 		{
-			var dlg = new SelectFileDialog (GettextCatalog.GetString ("Select XML Schema")) {
-				TransientFor = IdeApp.Workbench.RootWindow,
-			};
-			dlg.AddFilter (new SelectFileDialogFilter (GettextCatalog.GetString ("XML Files"), "*.xsd") {
-				MimeTypes = { "text/xml", "application/xml" },
-			});
+			var dlg = new SelectFileDialog (GettextCatalog.GetString ("Select XML Schema"));
+			dlg.AddFilter (new SelectFileDialogFilter (
+				GettextCatalog.GetString ("XML Files"),
+				new string[] { "*.xsd" },
+				new string[] { "text/xml", "application/xml" }
+			));
 			dlg.AddAllFilesFilter ();
 			
 			if (dlg.Run ())

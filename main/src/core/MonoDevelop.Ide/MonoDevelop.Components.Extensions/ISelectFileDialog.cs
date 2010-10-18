@@ -67,6 +67,13 @@ namespace MonoDevelop.Components.Extensions
 			this.Patterns = patterns;
 		}
 		
+		public SelectFileDialogFilter (string name, IList<string> patterns, IList<string> mimetypes)
+		{
+			this.Name = name;
+			this.Patterns = patterns;
+			this.MimeTypes = mimetypes;
+		}
+		
 		/// <summary>Label for the filter</summary>
 		public string Name { get; private set; }
 		
