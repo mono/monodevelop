@@ -28,12 +28,12 @@ using System;
 using MonoDevelop.Components.Extensions;
 using OSXIntegration.Framework;
 using MonoDevelop.Ide.Extensions;
-using Gtk;
 using MonoMac.AppKit;
 using MonoDevelop.Core;
 using System.Collections.Generic;
 using MonoMac.Foundation;
 using System.Linq;
+using System.Drawing;
 
 namespace MonoDevelop.Platform.Mac
 {
@@ -45,21 +45,21 @@ namespace MonoDevelop.Platform.Mac
 			
 			try {
 				switch (data.Action) {
-				case FileChooserAction.Save:
+				case Gtk.FileChooserAction.Save:
 					panel = new NSSavePanel ();
 					break;
-				case FileChooserAction.Open:
+				case Gtk.FileChooserAction.Open:
 					panel = new NSOpenPanel () {
 						CanChooseDirectories = false,
 						CanChooseFiles = true,
 					};
 					break;
-				case FileChooserAction.SelectFolder:
-				case FileChooserAction.CreateFolder:
+				case Gtk.FileChooserAction.SelectFolder:
+				case Gtk.FileChooserAction.CreateFolder:
 					panel = new NSOpenPanel () {
 						CanChooseDirectories = true,
 						CanChooseFiles = false,
-						CanCreateDirectories = (data.Action == FileChooserAction.CreateFolder),
+						CanCreateDirectories = (data.Action == Gtk.FileChooserAction.CreateFolder),
 					};
 					break;
 				default:
@@ -81,17 +81,17 @@ namespace MonoDevelop.Platform.Mac
 			}
 		}
 		
-		static FilePath[] GetSelectedFiles (NSSavePanel panel)
+		internal static FilePath[] GetSelectedFiles (NSSavePanel panel)
 		{
 			var openPanel = panel as NSOpenPanel;
 			if (openPanel != null && openPanel.AllowsMultipleSelection) {
 				 return openPanel.Urls.Select (u => (FilePath) u.Path).ToArray ();
 			} else {
-				 return new FilePath[] { panel.URL.Path };
+				 return new FilePath[] { panel.Url.Path };
 			}
 		}
 		
-		static void SetCommonPanelProperties (SelectFileDialogData data, NSSavePanel panel)
+		internal static void SetCommonPanelProperties (SelectFileDialogData data, NSSavePanel panel)
 		{
 			if (!string.IsNullOrEmpty (data.Title))
 				panel.Title = data.Title;
@@ -101,7 +101,7 @@ namespace MonoDevelop.Platform.Mac
 			
 			//TODO: add a combo box so that the user can actually use different filters?
 			if (data.Filters.Count > 0)
-				panel.ShouldEnableURL = GetFileFilter (data.Filters);
+				panel.ShouldEnableUrl = GetFileFilter (data.Filters);
 			
 			if (!string.IsNullOrEmpty (data.CurrentFolder))
 				panel.DirectoryUrl = new MonoMac.Foundation.NSUrl (data.CurrentFolder, true);
@@ -118,7 +118,7 @@ namespace MonoDevelop.Platform.Mac
 			var mimetypes = filters.Where (f => f.MimeTypes != null && f.MimeTypes.Count > 0)
 				.SelectMany (f => f.MimeTypes).ToList ();
 			
-			return (NSObject sender, NSUrl url) => {
+			return (NSSavePanel sender, NSUrl url) => {
 				//never show non-file URLs
 				if (!url.IsFileUrl)
 					return false;
@@ -168,7 +168,72 @@ namespace MonoDevelop.Platform.Mac
 	{
 		public bool Run (AddFileDialogData data)
 		{
-			throw new NotImplementedException ();
+			using (var panel = new NSOpenPanel () {
+				CanChooseDirectories = false,
+				CanChooseFiles = true,
+			}) {
+				MacSelectFileDialogHandler.SetCommonPanelProperties (data, panel);
+				
+				var view = new NSView (new RectangleF (0, 0, 200, 28)) {
+					AutoresizesSubviews = true,
+					AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.MaxXMargin,
+				};
+				
+				var text = new NSTextField (new RectangleF (0, 6, 100, 20)) {
+					StringValue = GettextCatalog.GetString ("Override build action:"),
+					DrawsBackground = false,
+					Bordered = false,
+					Editable = false,
+					Selectable = false
+				};
+				text.SizeToFit ();
+				float textWidth = text.Frame.Width;
+				
+				var combo = new NSPopUpButton (new RectangleF (0, 6, 200, 18), false) {
+					AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.MaxXMargin,
+				};
+				combo.SizeToFit ();
+				var rect = combo.Frame;
+				combo.Frame = new RectangleF (textWidth + 5, 0, 200, rect.Height);
+				
+				rect = view.Frame;
+				rect.Width = combo.Frame.Width + textWidth + 5;
+				view.Frame = rect;
+				
+				view.AddSubview (text);
+				view.AddSubview (combo);
+				panel.AccessoryView = view;
+				
+				var defaultTitle = GettextCatalog.GetString ("(Default)");
+				/*
+				var attribStr = new NSMutableAttributedString (defaultTitle);
+				var boldFont = NSFontManager.SharedFontManager.ConvertFont (combo.Menu.Font, NSFontTraitMask.Bold);
+				attribStr.AddAttribute (NSAttributedString.FontAttributeName, boldFont, new NSRange (0, defaultTitle.Length));
+				
+				combo.Menu.AddItem (new NSMenuItem () { AttributedTitle = attribStr });
+				*/
+				combo.AddItem (defaultTitle);
+				combo.Menu.AddItem (NSMenuItem.SeparatorItem);
+				
+				foreach (var b in data.BuildActions) {
+					if (b == "--")
+						combo.Menu.AddItem (NSMenuItem.SeparatorItem);
+					else
+						combo.AddItem (b);
+				}
+				
+				var action = panel.RunModal ();
+				if (action == 0)
+					return false;
+				
+				data.SelectedFiles = MacSelectFileDialogHandler.GetSelectedFiles (panel);
+				
+				var comboIndex = combo.IndexOfSelectedItem - 2;
+				if (comboIndex >= 0)
+					data.OverrideAction = data.BuildActions[comboIndex];
+				
+				return true;
+			}
 		}
 	}
 	

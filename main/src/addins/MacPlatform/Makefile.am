@@ -2,9 +2,6 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns
 ASSEMBLY = $(ADDIN_BUILD)/MacPlatform.dll
 
-MONOMAC=../../../../extras/MonoDevelop.MonoMac/MonoDevelop.MonoMac/MonoMac.dll
-MONOMAC_BUILD = $(ADDIN_BUILD)/MonoMac.dll
-
 DEPS =  \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll
@@ -16,6 +13,7 @@ REFS =  \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \
+	-r:System.Drawing \
 	-r:System.Web \
 	-r:System.Xml \
 	-r:System.Xml.Linq
@@ -39,7 +37,7 @@ FILES =  \
 RES = MacPlatform.addin.xml
 
 if ENABLE_MACPLATFORM
-all: $(MONOMAC_BUILD) $(ASSEMBLY) $(ASSEMBLY).mdb
+all: $(ASSEMBLY) $(ASSEMBLY).mdb
 else
 all:
 endif
@@ -50,16 +48,12 @@ $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)
 
-$(MONOMAC_BUILD): $(MONOMAC)
-	mkdir -p $(ADDIN_BUILD)
-	cp $(MONOMAC) $(MONOMAC_BUILD)
-
 if ENABLE_MACPLATFORM
 assemblydir = $(MD_ADDIN_DIR)/MacPlatform
-assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(MONOMAC_BUILD)
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 endif
 
-CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(MONOMAC_BUILD)
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 EXTRA_DIST = $(FILES) $(RES)
 
 include $(top_srcdir)/Makefile.include
