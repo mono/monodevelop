@@ -43,6 +43,7 @@ FILES =  \
 	MonoDevelop.VersionControl.Git/GitVersionControl.cs \
 	MonoDevelop.VersionControl.Git/MergeDialog.cs \
 	MonoDevelop.VersionControl.Git/PushDialog.cs \
+	MonoDevelop.VersionControl.Git/RebaseOperation.cs \
 	MonoDevelop.VersionControl.Git/RepositoryStatus.cs \
 	MonoDevelop.VersionControl.Git/Stash.cs \
 	MonoDevelop.VersionControl.Git/UserInfoConflictDialog.cs

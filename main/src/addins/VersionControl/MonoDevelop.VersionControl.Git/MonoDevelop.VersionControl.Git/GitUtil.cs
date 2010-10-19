@@ -186,18 +186,20 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public static void HardReset (NGit.Repository repo, ObjectId newHead)
 		{
-			DirCache dc = repo.LockDirCache ();
+			DirCache dc = null;
 			
 			try {
 				// Reset head to upstream
 				RefUpdate ru = repo.UpdateRef (Constants.HEAD);
 				ru.SetNewObjectId (newHead);
+				ru.SetForceUpdate (true);
 				RefUpdate.Result rc = ru.Update ();
 	
 				switch (rc) {
 				case RefUpdate.Result.NO_CHANGE:
 				case RefUpdate.Result.NEW:
 				case RefUpdate.Result.FAST_FORWARD:
+				case RefUpdate.Result.FORCED:
 					break;
 				
 				case RefUpdate.Result.REJECTED:
@@ -208,12 +210,14 @@ namespace MonoDevelop.VersionControl.Git
 					throw new JGitInternalException ("Reference update failed: " + rc);
 				}
 				
+				dc = repo.LockDirCache ();
 				RevWalk rw = new RevWalk (repo);
 				RevCommit c = rw.ParseCommit (newHead);
 				DirCacheCheckout checkout = new DirCacheCheckout (repo, null, dc, c.Tree);
 				checkout.Checkout ();
 			} catch {
-				dc.Unlock ();
+				if (dc != null)
+					dc.Unlock ();
 				throw;
 			}
 		}
@@ -229,7 +233,7 @@ namespace MonoDevelop.VersionControl.Git
 			return new StashCollection (repo);
 		}
 		
-		public static List<string> GetChangedFiles (NGit.Repository repo, string refRev)
+		public static IEnumerable<Change> GetChangedFiles (NGit.Repository repo, string refRev)
 		{
 			// Get a list of files that are different in the target branch
 			RevWalk rw = new RevWalk (repo);
@@ -243,8 +247,7 @@ namespace MonoDevelop.VersionControl.Git
 				return null;
 			RevCommit headCommit = rw.ParseCommit (headId);
 			
-			IEnumerable<Change> changes = GitUtil.CompareCommits (repo, headCommit, remCommit);
-			return new List<string> (changes.Select (c => c.Path));
+			return GitUtil.CompareCommits (repo, headCommit, remCommit);
 		}
 		
 		public static string GetUpstreamSource (NGit.Repository repo, string branch)
@@ -356,110 +359,6 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			
 			return repo;
-		}
-	}
-	
-	public class RebaseOperation
-	{
-		NGit.Repository repo;
-		RevWalk rw;
-		bool starting;
-		string upstreamRef;
-		RevCommit oldHead;
-		MergeCommandResult mergeResult;
-		List<RevCommit> commitChain;
-		int currentMergeIndex;
-		ObjectId lastGoodHead;
-		
-		public RebaseOperation (NGit.Repository repo, string upstreamRef)
-		{
-			this.repo = repo;
-			this.upstreamRef = upstreamRef;
-			rw = new RevWalk (repo);
-			starting = true;
-		}
-		
-		public bool Rebase ()
-		{
-			if (starting) {
-				// Reset head to upstream
-				GitUtil.HardReset (repo, upstreamRef);
-				
-				ObjectId headId = repo.Resolve (Constants.HEAD + "^{commit}");
-				RevCommit headCommit = rw.ParseCommit (headId);
-				oldHead = headCommit;
-				ObjectId upstreamId = repo.Resolve (upstreamRef);
-				RevCommit upstreamCommit = rw.ParseCommit (upstreamId);
-				
-				oldHead = headCommit;
-				lastGoodHead = upstreamId;
-			
-				// Find the first commit that diverged from upstream
-				int fd;
-				commitChain = FindDivergentCommitChain (repo, upstreamCommit, headCommit, 0, int.MaxValue, out fd);
-				if (commitChain == null)
-					throw new InvalidOperationException ("Current branch and upstream branch don't have a common ancestor");
-				currentMergeIndex = 0;
-			}
-			
-			// Merge commit by commit until the current head
-			
-			NGit.Api.Git git = new NGit.Api.Git (repo);
-			while (currentMergeIndex < commitChain.Count) {
-				mergeResult = git.Merge ().SetStrategy (MergeStrategy.RESOLVE).Include (commitChain[currentMergeIndex++]).Call ();
-				if (mergeResult.GetMergeStatus () == MergeStatus.CONFLICTING || mergeResult.GetMergeStatus () == MergeStatus.FAILED)
-					return false;
-				lastGoodHead = mergeResult.GetNewHead ();
-			}
-			return true;
-		}
-		
-		public MergeCommandResult LastMergeResult {
-			get { return mergeResult; }
-		}
-		
-		public void Abort ()
-		{
-			GitUtil.HardReset (repo, oldHead);
-		}
-		
-		public void Skip ()
-		{
-			GitUtil.HardReset (repo, lastGoodHead);
-		}
-		
-		static List<RevCommit> FindDivergentCommitChain (NGit.Repository repo, RevCommit upstream, RevCommit branch, int currentDistance, int maxDistance, out int foundDistance)
-		{
-			foundDistance = -1;
-			
-			if (currentDistance + 1 >= maxDistance)
-				return null;
-			
-			RevWalk rw = new RevWalk (repo);
-			foreach (RevCommit pc in branch.Parents) {
-				if (rw.IsMergedInto (pc, upstream)) {
-					foundDistance = currentDistance + 1;
-					List<RevCommit> commitChain = new List<RevCommit> ();
-					commitChain.Add (branch);
-					return commitChain;
-				}
-			}
-			
-			List<RevCommit> foundCommitChain = null;
-			
-			foreach (RevCommit pc in branch.Parents) {
-				List<RevCommit> commitChain = FindDivergentCommitChain (repo, upstream, pc, currentDistance + 1, maxDistance, out foundDistance);
-				if (commitChain != null) {
-					maxDistance = foundDistance;
-					foundCommitChain = commitChain;
-				}
-			}
-			if (foundCommitChain != null) {
-				foundCommitChain.Add (branch);
-				return foundCommitChain;
-			}
-			
-			return null;
 		}
 	}
 }

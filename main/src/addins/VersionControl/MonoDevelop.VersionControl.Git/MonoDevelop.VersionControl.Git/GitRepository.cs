@@ -115,7 +115,8 @@ namespace MonoDevelop.VersionControl.Git
 			foreach (RevCommit commit in walk) {
 				List<RevisionPath> paths = new List<RevisionPath> ();
 				foreach (Change change in GitUtil.GetCommitChanges (repo, commit)) {
-					if (change.Path != filePath)
+					FilePath cpath = FromGitPath (change.Path);
+					if (cpath != filePath && !cpath.IsChildPathOf (localFile))
 						continue;
 					RevisionAction ra;
 					switch (change.ChangeType) {
@@ -129,11 +130,13 @@ namespace MonoDevelop.VersionControl.Git
 						ra = RevisionAction.Modify;
 						break;
 					}
-					RevisionPath p = new RevisionPath (path.Combine (change.Path), ra, null);
+					RevisionPath p = new RevisionPath (cpath, ra, null);
 					paths.Add (p);
 				}
-				PersonIdent author = commit.GetAuthorIdent ();
-				revs.Add (new GitRevision (this, commit.Id.Name, author.GetWhen().ToLocalTime (), author.GetName (), commit.GetShortMessage (), paths.ToArray ()));
+				if (paths.Count > 0) {
+					PersonIdent author = commit.GetAuthorIdent ();
+					revs.Add (new GitRevision (this, commit.Id.Name, author.GetWhen().ToLocalTime (), author.GetName (), commit.GetShortMessage (), paths.ToArray ()));
+				}
 			}
 			return revs.ToArray ();
 		}
@@ -287,7 +290,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		public override void Update (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
-			List<string> statusList = null;
+			IEnumerable<Change> statusList = null;
 			
 			StashCollection stashes = GitUtil.GetStashes (repo);
 			Stash stash = null;
@@ -305,16 +308,23 @@ namespace MonoDevelop.VersionControl.Git
 				stash = stashes.Create (GetStashName ("_tmp_"));
 				
 				RebaseOperation rebaser = new RebaseOperation (repo, GetCurrentRemote () + "/" + GetCurrentBranch ());
-				while (!rebaser.Rebase ()) {
-					var conflicts = rebaser.LastMergeResult.GetConflicts ();
-					foreach (string conflictFile in conflicts.Keys) {
-						ConflictResult res = ResolveConflict (conflictFile);
-						if (res == ConflictResult.Abort) {
-							rebaser.Abort ();
-							break;
-						} else if (res == ConflictResult.Skip)
-							rebaser.Skip ();
+				try {
+					while (!rebaser.Rebase ()) {
+						var conflicts = rebaser.LastMergeResult.GetConflicts ();
+						foreach (string conflictFile in conflicts.Keys) {
+							ConflictResult res = ResolveConflict (FromGitPath (conflictFile));
+							if (res == ConflictResult.Abort) {
+								rebaser.Abort ();
+								break;
+							} else if (res == ConflictResult.Skip) {
+								rebaser.Skip ();
+								break;
+							}
+						}
 					}
+				} catch {
+					rebaser.Abort ();
+					throw;
 				}
 				
 			} finally {
@@ -332,7 +342,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		public void Merge (string branch, IProgressMonitor monitor)
 		{
-			List<string> statusList = null;
+			IEnumerable<Change> statusList = null;
 			Stash stash = null;
 			StashCollection stashes = new StashCollection (repo);
 			
@@ -768,6 +778,8 @@ namespace MonoDevelop.VersionControl.Git
 		string GetCommitContent (RevCommit c, FilePath file)
 		{
 			TreeWalk tw = TreeWalk.ForPath (repo, ToGitPath (file), c.Tree);
+			if (tw == null)
+				return string.Empty;
 			ObjectId id = tw.GetObjectId (0);
 			byte[] data = repo.ObjectDatabase.Open (id).GetBytes ();
 			return Encoding.UTF8.GetString (data);
@@ -967,7 +979,7 @@ namespace MonoDevelop.VersionControl.Git
 				stashes.Remove (stash);
 			
 			// Get a list of files that are different in the target branch
-			List<string> statusList = GitUtil.GetChangedFiles (repo, branch);
+			IEnumerable<Change> statusList = GitUtil.GetChangedFiles (repo, branch);
 			
 			// Create a new stash for the branch. This allows switching branches
 			// without losing local changes
@@ -1011,16 +1023,14 @@ namespace MonoDevelop.VersionControl.Git
 				BranchSelectionChanged (this, EventArgs.Empty);
 		}
 
-		void NotifyFileChanges (List<string> statusList)
+		void NotifyFileChanges (IEnumerable<Change> statusList)
 		{
-			foreach (string line in statusList) {
-				char s = line[0];
-				FilePath file = path.Combine (line.Substring (2));
-				if (s == 'A')
+			foreach (Change change in statusList) {
+				if (change.ChangeType == ChangeType.Added)
 					// File added to source branch not present to target branch.
-					FileService.NotifyFileRemoved (file);
+					FileService.NotifyFileRemoved (FromGitPath (change.Path));
 				else
-					FileService.NotifyFileChanged (file);
+					FileService.NotifyFileChanged (FromGitPath (change.Path));
 			}
 		}
 
@@ -1200,8 +1210,10 @@ namespace MonoDevelop.VersionControl.Git
 		
 		internal GitRevision GetPreviousRevisionFor (GitRevision revision)
 		{
-			// TODO
-			throw new NotImplementedException ();
+			ObjectId id = repo.Resolve (revision.ToString () + "^");
+			if (id == null)
+				return null;
+			return new GitRevision (this, id.Name);
 		}
 	}
 	

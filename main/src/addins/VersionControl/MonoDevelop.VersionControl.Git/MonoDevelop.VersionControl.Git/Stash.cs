@@ -260,12 +260,13 @@ namespace MonoDevelop.VersionControl.Git
 			RevWalk rw = new RevWalk (_repo);
 			RevCommit wip = rw.ParseCommit (cid);
 			RevCommit index = wip.Parents.Last ();
-			ObjectId headTree = _repo.Resolve (Constants.HEAD + "^{tree}");
+//			ObjectId headTree = _repo.Resolve (Constants.HEAD + "^{tree}");
+			ObjectId headTree = rw.ParseCommit (wip.Parents.First ()).Tree;
 			RevTree wipTree =  wip.Tree;
 			
 			DirCache dc = _repo.LockDirCache ();
 			try {
-				DirCacheCheckout co = new DirCacheCheckout (_repo, headTree, dc, wip.Tree, new FileTreeIterator (_repo));
+				DirCacheCheckout co = new DirCacheCheckout (_repo, headTree, dc, wipTree, new FileTreeIterator (_repo));
 				co.SetFailOnConflict (false);
 				co.Checkout ();
 			} catch {

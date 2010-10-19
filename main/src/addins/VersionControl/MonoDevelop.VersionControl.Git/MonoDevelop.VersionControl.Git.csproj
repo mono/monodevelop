@@ -67,6 +67,7 @@
     <Compile Include="MonoDevelop.VersionControl.Git\MergeDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\Stash.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitUtil.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git\RebaseOperation.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
