@@ -461,10 +461,15 @@ namespace MonoDevelop.MonoDroid
 			if (baseAction == BuildAction.Compile)
 				return baseAction;
 			
-			var parentOfParentDir = ((FilePath)fileName).ToRelative (BaseDirectory).ParentDirectory.ParentDirectory;
-			foreach (var prefix in MonoDroidResourcePrefixes)
-				if (prefix == parentOfParentDir)
-					return MonoDroidBuildAction.AndroidResource;
+			var parentDir = ((FilePath)fileName).ToRelative (BaseDirectory).ParentDirectory;
+			if (!parentDir.IsNullOrEmpty) {
+				var parentOfParentDir = parentDir.ParentDirectory;
+				if (!parentOfParentDir.IsNullOrEmpty) {
+					foreach (var prefix in MonoDroidResourcePrefixes)
+						if (prefix == parentOfParentDir)
+							return MonoDroidBuildAction.AndroidResource;
+				}
+			}
 				
 			return baseAction;
 		}
