@@ -39,6 +39,7 @@ using NGit.Api;
 using NGit.Merge;
 using NGit.Storage.File;
 using NGit.Transport;
+using NGit.Diff;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -359,6 +360,53 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			
 			return repo;
+		}
+		
+		public static RevCommit[] Blame (NGit.Repository repo, RevCommit c, string file)
+		{
+			TreeWalk tw = TreeWalk.ForPath (repo, ToGitPath (repo, file), c.Tree);
+			if (tw == null)
+				return new RevCommit [0];
+			ObjectId id = tw.GetObjectId (0);
+			byte[] data = repo.ObjectDatabase.Open (id).GetBytes ();
+			
+			int lineCount = NGit.Util.RawParseUtils.LineMap (data, 0, data.Length).Size ();
+			RevCommit[] lines = new RevCommit [lineCount];
+			var curText = new RawText (data);
+			RevCommit prevAncestor = c;
+			
+			ObjectId prevObjectId = null;
+			RevCommit prevCommit = null;
+			int emptyLines = lineCount;
+			RevWalk rw = new RevWalk (repo);
+			
+			foreach (ObjectId ancestorId in c.Parents) {
+				RevCommit ancestor = rw.ParseCommit (ancestorId);
+				tw = TreeWalk.ForPath (repo, ToGitPath (repo, file), ancestor.Tree);
+				if (prevCommit != null && (tw == null || tw.GetObjectId (0) != prevObjectId)) {
+					if (prevObjectId == null)
+						break;
+					byte[] prevData = repo.ObjectDatabase.Open (prevObjectId).GetBytes ();
+					var prevText = new RawText (prevData);
+					var differ = MyersDiff<RawText>.INSTANCE;
+					foreach (Edit e in differ.Diff (RawTextComparator.DEFAULT, prevText, curText)) {
+						for (int n = e.GetBeginB (); n < e.GetEndB (); n++) {
+							if (lines [n] == null) {
+								lines [n] = prevCommit;
+								emptyLines--;
+							}
+						}
+					}
+					if (tw == null || emptyLines <= 0)
+						break;
+				}
+				prevCommit = ancestor;
+				prevObjectId = tw != null ? tw.GetObjectId (0) : null;
+			}
+			for (int n=0; n<lines.Length; n++)
+				if (lines [n] == null)
+					lines [n] = prevAncestor;
+			return lines;
 		}
 	}
 }

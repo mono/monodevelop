@@ -46,6 +46,7 @@ using NGit.Transport;
 using NGit.Errors;
 using NGit.Api.Errors;
 using NGit.Diff;
+using NGit.Merge;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -157,44 +158,6 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		StringReader RunCommand (string cmd, bool checkExitCode)
-		{
-			return RunCommand (cmd, checkExitCode, null);
-		}
-
-		StringReader RunCommand (string cmd, bool checkExitCode, IProgressMonitor monitor)
-		{
-			#if DEBUG_GIT
-			Console.WriteLine ("> git " + cmd);
-			#endif
-			var psi = new System.Diagnostics.ProcessStartInfo (GitVersionControl.GitExe, "--no-pager " + cmd) { WorkingDirectory = path, RedirectStandardOutput = true, RedirectStandardError = true, RedirectStandardInput = false, UseShellExecute = false };
-			if (PropertyService.IsWindows) {
-				//msysgit needs this to read global config
-				psi.EnvironmentVariables["HOME"] = Environment.GetEnvironmentVariable ("USERPROFILE");
-			}
-			
-			StringWriter outw = new StringWriter ();
-			ProcessWrapper proc = Runtime.ProcessService.StartProcess (psi, outw, outw, null);
-			proc.WaitForOutput ();
-			if (monitor != null)
-				monitor.Log.Write (outw.ToString ());
-			#if DEBUG_GIT
-			Console.WriteLine (outw.ToString ());
-			#endif
-			if (checkExitCode && proc.ExitCode != 0)
-				throw new InvalidOperationException ("Git operation failed");
-			return new StringReader (outw.ToString ());
-		}
-
-		List<string> ToList (StringReader sr)
-		{
-			List<string> list = new List<string> ();
-			string line;
-			while ((line = sr.ReadLine ()) != null)
-				list.Add (line);
-			return list;
-		}
-
 		public override VersionInfo[] GetDirectoryVersionInfo (FilePath localDirectory, bool getRemoteStatus, bool recursive)
 		{
 			return GetDirectoryVersionInfo (localDirectory, null, getRemoteStatus, recursive);
@@ -203,19 +166,6 @@ namespace MonoDevelop.VersionControl.Git
 		string ToGitPath (FilePath filePath)
 		{
 			return filePath.FullPath.ToRelative (path).ToString ().Replace ('\\', '/');
-		}
-
-		string ToCmdPath (FilePath filePath)
-		{
-			return "\"" + filePath.ToRelative (path) + "\"";
-		}
-
-		string ToCmdPathList (IEnumerable<FilePath> paths)
-		{
-			StringBuilder sb = new StringBuilder ();
-			foreach (FilePath it in paths)
-				sb.Append (' ').Append (ToCmdPath (it));
-			return sb.ToString ();
 		}
 
 		VersionInfo[] GetDirectoryVersionInfo (FilePath localDirectory, string fileName, bool getRemoteStatus, bool recursive)
@@ -281,7 +231,6 @@ namespace MonoDevelop.VersionControl.Git
 					CollectFiles (files, sub, true);
 			}
 		}
-
 
 		public override Repository Publish (string serverPath, FilePath localPath, FilePath[] files, string message, IProgressMonitor monitor)
 		{
@@ -354,25 +303,27 @@ namespace MonoDevelop.VersionControl.Git
 				stash = stashes.Create (GetStashName ("_tmp_"));
 				
 				// Apply changes
-				StringReader sr = RunCommand ("merge " + branch, false, monitor);
 				
-				var conflicts = GetConflictFiles (sr);
-				if (conflicts.Count != 0) {
-					foreach (string conflictFile in conflicts) {
-						ConflictResult res = ResolveConflict (conflictFile);
+				ObjectId branchId = repo.Resolve (branch);
+				
+				NGit.Api.Git git = new NGit.Api.Git (repo);
+				MergeCommandResult mergeResult = git.Merge ().SetStrategy (MergeStrategy.RESOLVE).Include (branchId).Call ();
+				if (mergeResult.GetMergeStatus () == MergeStatus.CONFLICTING || mergeResult.GetMergeStatus () == MergeStatus.FAILED) {
+					var conflicts = mergeResult.GetConflicts ();
+					bool commit = true;
+					foreach (string conflictFile in conflicts.Keys) {
+						ConflictResult res = ResolveConflict (FromGitPath (conflictFile));
 						if (res == ConflictResult.Abort) {
-							sr = RunCommand ("reset --merge", false, monitor);
-							return;
+							GitUtil.HardReset (repo, GetHeadCommit ());
+							commit = false;
+							break;
 						} else if (res == ConflictResult.Skip) {
-							RunCommand ("reset " + ToCmdPath (conflictFile), false, monitor);
-							RunCommand ("reset " + ToCmdPath (conflictFile), false, monitor);
-							RunCommand ("checkout " + ToCmdPath (conflictFile), false, monitor);
-						} else {
-							// Do nothing. The change will be committed with the -a option
+							Revert (FromGitPath (conflictFile), false, monitor);
+							break;
 						}
 					}
-					string msg = "Merge branch '" + branch + "'";
-					RunCommand ("commit -a -m \"" + msg + "\"", true, monitor);
+					if (commit)
+						git.Commit ().Call ();
 				}
 				
 			} finally {
@@ -386,19 +337,6 @@ namespace MonoDevelop.VersionControl.Git
 			// Notify changes
 			if (statusList != null)
 				NotifyFileChanges (statusList);
-		}
-
-		List<string> GetConflictFiles (StringReader reader)
-		{
-			List<string> list = new List<string> ();
-			foreach (string line in ToList (reader)) {
-				if (line.StartsWith ("CONFLICT ")) {
-					string s = "Merge conflict in ";
-					int i = line.IndexOf (s) + s.Length;
-					list.Add (path.Combine (line.Substring (i)));
-				}
-			}
-			return list;
 		}
 
 		ConflictResult ResolveConflict (string file)
@@ -686,14 +624,11 @@ namespace MonoDevelop.VersionControl.Git
 
 		public override void Checkout (FilePath targetLocalPath, Revision rev, bool recurse, IProgressMonitor monitor)
 		{
-			// TODO
-			//GitSharp.Git.Clone (Url, targetLocalPath);
+			GitUtil.Clone (targetLocalPath, Url, monitor);
 		}
 
 		public override void Revert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
-			// TODO verify it works
-			
 			GitIndex index = repo.GetIndex ();
 			index.RereadIfNecessary ();
 			RevWalk rw = new RevWalk (repo);
@@ -741,7 +676,6 @@ namespace MonoDevelop.VersionControl.Git
 
 		public override string GetTextAtRevision (FilePath repositoryPath, Revision revision)
 		{
-			// TODO verify it works
 			ObjectId id = repo.Resolve (revision.ToString ());
 			RevWalk rw = new RevWalk (repo);
 			RevCommit c = rw.ParseCommit (id);
@@ -1113,23 +1047,27 @@ namespace MonoDevelop.VersionControl.Git
 
 		public override void MoveFile (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
 		{
-			// TODO move command
 			if (!IsVersioned (localSrcPath)) {
 				base.MoveFile (localSrcPath, localDestPath, force, monitor);
 				return;
 			}
-			RunCommand ("mv " + ToCmdPath (localSrcPath) + " " + ToCmdPath (localDestPath), true, monitor);
+			base.MoveFile (localSrcPath, localDestPath, force, monitor);
+			Add (localDestPath, false, monitor);
 		}
 
 		public override void MoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
 		{
-			// TODO move command
-			try {
-				RunCommand ("mv " + ToCmdPath (localSrcPath) + " " + ToCmdPath (localDestPath), true, monitor);
-			} catch {
-				// If the move can't be done using git, do a regular move
-				base.MoveDirectory (localSrcPath, localDestPath, force, monitor);
+			VersionInfo[] versionedFiles = GetDirectoryVersionInfo (localSrcPath, false, true);
+			base.MoveDirectory (localSrcPath, localDestPath, force, monitor);
+			monitor.BeginTask ("Moving files", versionedFiles.Length);
+			foreach (VersionInfo vif in versionedFiles) {
+				if (vif.IsDirectory)
+					continue;
+				FilePath newDestPath = vif.LocalPath.ToRelative (localSrcPath).ToAbsolute (localDestPath);
+				Add (newDestPath, false, monitor);
+				monitor.Step (1);
 			}
+			monitor.EndTask ();
 		}
 
 		public override bool CanGetAnnotations (FilePath localPath)
@@ -1139,74 +1077,15 @@ namespace MonoDevelop.VersionControl.Git
 
 		public override Annotation[] GetAnnotations (FilePath repositoryPath)
 		{
-			// TODO
-/*			Commit[] lineCommits = repo.CurrentBranch.CurrentCommit.Blame (ToGitPath (repositoryPath));
+			RevCommit hc = GetHeadCommit ();
+			RevCommit[] lineCommits = GitUtil.Blame (repo, hc, repositoryPath);
 			Annotation[] lines = new Annotation[lineCommits.Length];
 			for (int n = 0; n < lines.Length; n++) {
-				Commit c = lineCommits[n];
-				lines[n] = new Annotation (c.Hash, c.Author.Name + "<" + c.Author.EmailAddress + ">", c.CommitDate.DateTime);
+				RevCommit c = lineCommits[n];
+				lines[n] = new Annotation (c.Name, c.GetAuthorIdent ().GetName () + "<" + c.GetAuthorIdent().GetEmailAddress () + ">", c.GetCommitterIdent ().GetWhen ());
 			}
-			return lines;*/
-			throw new NotImplementedException ();
-			
+			return lines;
 		}
-			/*
-			List<Annotation> alist = new List<Annotation> ();
-			StringReader sr = RunCommand ("blame -p " + ToCmdPath (repositoryPath), true);
-			
-			string author = null;
-			string mail = null;
-			string date = null;
-			string tz = null;
-				
-			
-			string line;
-			while ((line = sr.ReadLine ()) != null) {
-				string[] header = line.Split (' ');
-				string rev = header[0];
-				int lcount = int.Parse (header[3]);
-				
-				line = sr.ReadLine ();
-				while (line != null && line.Length > 0 && line[0] != '\t') {
-					int i = line.IndexOf (' ');
-					string val;
-					string field;
-					if (i != -1) {
-						val = line.Substring (i + 1);
-						field = line.Substring (0, i);
-					} else {
-						val = null;
-						field = line;
-					}
-					switch (field) {
-					case "author": author = val; break;
-					case "author-mail": mail = val; break;
-					case "author-time": date = val; break;
-					case "author-tz": tz = val; break;
-					}
-					line = sr.ReadLine ();
-				}
-				
-				// Convert from git date format
-				double secs = double.Parse (date);
-				DateTime t = new DateTime (1970, 1, 1) + TimeSpan.FromSeconds (secs);
-				string st = t.ToString ("yyyy-MM-ddTHH:mm:ss") + tz.Substring (0, 3) + ":" + tz.Substring (3);
-				DateTime sdate = DateTime.Parse (st);
-				
-				string sauthor = author;
-				if (!string.IsNullOrEmpty (mail))
-					sauthor += " " + mail;
-				Annotation a = new Annotation (rev, sauthor, sdate);
-				while (lcount-- > 0) {
-					alist.Add (a);
-					if (lcount > 0) {
-						sr.ReadLine (); // Next header
-						sr.ReadLine (); // Next line content
-					}
-				}
-			}
-			return alist.ToArray ();
-			*/
 		
 		internal GitRevision GetPreviousRevisionFor (GitRevision revision)
 		{
