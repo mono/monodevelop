@@ -31,6 +31,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 using System.Diagnostics;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.MonoDroid
 {
@@ -178,10 +179,12 @@ namespace MonoDevelop.MonoDroid
 			return StartProcess (AdbExe, args, outputLog, errorLog);
 		}
 
-		public IProcessAsyncOperation Install (AndroidDevice device, string package, TextWriter outputLog, TextWriter errorLog)
+		public InstallPackageOperation Install (AndroidDevice device, string package, TextWriter outputLog, TextWriter errorLog)
 		{
 			var args = string.Format ("-s '{0}' install '{1}'", device.ID, package);
-			return StartProcess (AdbExe, args, outputLog, errorLog);
+			var errorCapture = new StringWriter ();
+			var errorWriter = TeeTextWriter.ForNonNull (errorCapture, errorCapture);
+			return new InstallPackageOperation (StartProcess (AdbExe, args, outputLog, errorWriter), errorCapture);
 		}
 
 		public IProcessAsyncOperation Uninstall (AndroidDevice device, string package, TextWriter outputLog, TextWriter errorLog)
@@ -389,6 +392,41 @@ namespace MonoDevelop.MonoDroid
 				get { return error.ToString (); }
 			}
 		}
+		
+		public class InstallPackageOperation : WrapperOperation
+		{
+			IProcessAsyncOperation process;
+			StringWriter error;
+			
+			public InstallPackageOperation (IProcessAsyncOperation process, StringWriter error)
+			{
+				this.process = process;
+				this.error = error;
+			}
+			
+			protected override IAsyncOperation Wrapped {
+				get { return process; }
+			}
+			
+			public override bool Success {
+				get {
+					// adb exit code is 0 with some errors
+					return base.Success && !error.ToString ().Contains ("[INSTALL_FAILED");
+				}
+			}
+			
+			//FIXME: use this
+			public string FriendlyError {
+				get {
+					string err = error.ToString ();
+					if (err.Contains ("[INSTALL_FAILED_INSUFFICIENT_STORAGE]"))
+						return "There is not enough storage space on the device to store the package.";
+					if (err.Contains ("[INSTALL_FAILED_ALREADY_EXISTS]"))
+						return "The package already exists on the device.";
+					return null;
+				}
+			}
+		}
 	}
 	
 	public class AndroidSigningOptions
@@ -562,6 +600,41 @@ namespace MonoDevelop.MonoDroid
 		~WrapperOperation ()
 		{
 			
+		}
+	}
+	
+	class TeeTextWriter : TextWriter
+	{
+		TextWriter [] writers;
+		
+		public TeeTextWriter (params TextWriter [] writers)
+		{
+			this.writers = writers;
+			foreach (var w in writers)
+				if (w.Encoding != writers[0].Encoding)
+					throw new ArgumentException ("writers must have same encoding");
+		}
+		
+		public override void Write (string value)
+		{
+			foreach (var writer in writers)
+				writer.Write (value);
+		}
+		
+		public static TextWriter ForNonNull (params TextWriter [] writers)
+		{
+			var nonNull = writers.Where (w => w != null).ToArray ();
+			if (nonNull.Length == 0)
+				return null;
+			if (nonNull.Length == 1)
+				return nonNull[0];
+			return new TeeTextWriter (nonNull);
+		}
+		
+		public override System.Text.Encoding Encoding {
+			get {
+				return writers[0].Encoding;
+			}
 		}
 	}
 }
