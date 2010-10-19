@@ -4,7 +4,7 @@
 #         Michael Hutchinson (mhutchinson@novell.com)
 
 MONO_FRAMEWORK_PATH=/Library/Frameworks/Mono.framework/Versions/Current
-export DYLD_FALLBACK_LIBRARY_PATH="$MONO_FRAMEWORK_PATH/lib:$DYLD_FALLBACK_LIBRARY_PATH"
+export DYLD_FALLBACK_LIBRARY_PATH="$MONO_FRAMEWORK_PATH/lib:/lib:/usr/lib:$DYLD_FALLBACK_LIBRARY_PATH"
 
 #we need lots of file handles
 ulimit -n 1024
