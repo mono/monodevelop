@@ -1,0 +1,32 @@
+High priority:
+* Prompt the user for the SDK locations if they're not set/found
+* Check target Mono runtime's xbuild is 2.8+
+* Package publishing wizard to sign release build with release key
+
+Medium priority:
+* Run with->(Device listing). Complications caused by need to refresh
+  the devices and update the menus. Not sure how.
+* Check whether target device had enough temp space (e.g. emulator)
+* Figure out how to associate virtual devices and running emulators, 
+  and improve the device selector GUI.
+* Set asset build action automatically when adding files to Asset folder
+* Remember last used device for a project so the user doesn't have to 
+  pick the device every time. Will need to give the user a way to 
+  change it - Project->Default Android device? - and prompt the user
+  if the device is not longer found.
+* More options GUIs as needed - add options GUIs for any 
+  additional build options, such as the linker.
+
+Low priority:
+* Make the device log view window into a pad, like the VS addin.
+* Filtering for the device log. Not sure whether to handle it with
+  args to adb, or filtering adb's output.
+* Unify the android and iphone device log pads.
+* Code completion for GUI definition xml files. Should be possible
+  to drive it from code completion db like the XAML completion.
+* Code completion schema for AndroidManifest.xml (maybe Eclipse
+  has one?)
+* Debugger visualizers & formatters for android types
+* Unit testing integration & templates
+
+There are also misc minor FIXMEs and TODOs in the source.
