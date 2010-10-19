@@ -68,6 +68,11 @@ namespace MonoDevelop.Platform.Mac
 				
 				SetCommonPanelProperties (data, panel);
 				
+				var popup = CreateFileFilterPopup (data, panel);
+				if (popup != null) {
+					panel.AccessoryView = popup;
+				}
+				
 				var action = panel.RunModal ();
 				if (action == 0)
 					return false;
@@ -99,10 +104,6 @@ namespace MonoDevelop.Platform.Mac
 			if (!string.IsNullOrEmpty (data.InitialFileName))
 				panel.NameFieldStringValue = data.InitialFileName;
 			
-			//TODO: add a combo box so that the user can actually use different filters?
-			if (data.Filters.Count > 0)
-				panel.ShouldEnableUrl = GetFileFilter (data.Filters);
-			
 			if (!string.IsNullOrEmpty (data.CurrentFolder))
 				panel.DirectoryUrl = new MonoMac.Foundation.NSUrl (data.CurrentFolder, true);
 			
@@ -112,11 +113,12 @@ namespace MonoDevelop.Platform.Mac
 			}
 		}
 		
-		static NSOpenSavePanelUrl GetFileFilter (IList<SelectFileDialogFilter> filters)
+		static NSOpenSavePanelUrl GetFileFilter (SelectFileDialogFilter filter)
 		{
-			var globRegexes = filters.Select (f => CreateGlobRegex (f.Patterns)).ToList ();
-			var mimetypes = filters.Where (f => f.MimeTypes != null && f.MimeTypes.Count > 0)
-				.SelectMany (f => f.MimeTypes).ToList ();
+			var globRegex = filter.Patterns == null || filter.Patterns.Count == 0?
+				null : CreateGlobRegex (filter.Patterns);
+			var mimetypes = filter.MimeTypes == null || filter.MimeTypes.Count == 0?
+				null : filter.MimeTypes;
 			
 			return (NSSavePanel sender, NSUrl url) => {
 				//never show non-file URLs
@@ -129,10 +131,10 @@ namespace MonoDevelop.Platform.Mac
 				if (System.IO.Directory.Exists (path))
 					return !path.EndsWith (".app", StringComparison.OrdinalIgnoreCase);
 				
-				if (globRegexes.Any (r => r.IsMatch (path)))
+				if (globRegex != null && globRegex.IsMatch (path))
 					return true;
 				
-				if (mimetypes.Count > 0) {
+				if (mimetypes != null) {
 					var mimetype = MonoDevelop.Ide.DesktopService.GetMimeTypeForUri (path);
 					if (mimetype != null) {
 						var chain = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (mimetype);
@@ -162,6 +164,106 @@ namespace MonoDevelop.Platform.Mac
 			return new System.Text.RegularExpressions.Regex (globalPattern.ToString (),
 				System.Text.RegularExpressions.RegexOptions.Compiled);
 		}
+		
+		static NSPopUpButton CreateFileFilterPopup (SelectFileDialogData data, NSSavePanel panel)
+		{
+			var filters = data.Filters;
+			
+			//no filtering
+			if (filters == null || filters.Count == 0) {
+				return null;
+			}
+			
+			//filter, but no choice
+			if (filters.Count == 1) {
+				panel.ShouldEnableUrl = GetFileFilter (filters[0]);
+				return null;
+			}
+			
+			var popup = new NSPopUpButton (new RectangleF (0, 6, 200, 18), false);
+			popup.SizeToFit ();
+			var rect = popup.Frame;
+			popup.Frame = new RectangleF (rect.X, rect.Y, 200, rect.Height);
+			
+			foreach (var filter in filters)
+				popup.AddItem (filter.Name);
+			
+			var defaultIndex = data.DefaultFilter == null? 0 : Math.Max (0, filters.IndexOf (data.DefaultFilter));
+			if (defaultIndex > 0) {
+				popup.SelectItem (defaultIndex);
+			}
+			panel.ShouldEnableUrl = GetFileFilter (filters[defaultIndex]);
+			
+			ActivationReceiver.Bind (popup).Activated += delegate {
+				panel.ShouldEnableUrl = GetFileFilter (filters[popup.IndexOfSelectedItem]);
+				panel.Display ();
+			};
+			
+			return popup;
+		}
+		
+		class ActivationReceiver : NSObject
+		{
+			NSControl parent;
+			
+			public static ActivationReceiver Bind (NSControl parent)
+			{
+				return new ActivationReceiver (parent);
+			}
+			
+			ActivationReceiver (NSControl parent)
+			{
+				this.parent = parent;
+				parent.Target = this;
+				parent.Action = new MonoMac.ObjCRuntime.Selector ("activated");
+			}
+			
+			[Export ("activated")]
+			void OnActivated ()
+			{
+				if (Activated != null)
+					Activated (parent, EventArgs.Empty);
+			}
+			
+			public event EventHandler Activated;
+		}
+		
+		internal static NSView CreateLabelledDropdown (string label, float popupWidth, out NSPopUpButton popup)
+		{
+			var view = new NSView (new RectangleF (0, 0, popupWidth, 28)) {
+				AutoresizesSubviews = true,
+				AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.MaxXMargin,
+			};
+			
+			var text = new NSTextField (new RectangleF (0, 6, 100, 20)) {
+				StringValue = label,
+				DrawsBackground = false,
+				Bordered = false,
+				Editable = false,
+				Selectable = false
+			};
+			text.SizeToFit ();
+			float textWidth = text.Frame.Width;
+			float textHeight = text.Frame.Height;
+			
+			popup = new NSPopUpButton (new RectangleF (0, 6, popupWidth, 18), false) {
+				AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.MaxXMargin,
+			};
+			popup.SizeToFit ();
+			var rect = popup.Frame;
+			float popupHeight = rect.Height;
+			popup.Frame = new RectangleF (textWidth + 5, 0, popupWidth, rect.Height);
+			
+			rect = view.Frame;
+			rect.Width = popup.Frame.Width + textWidth + 5;
+			rect.Height = Math.Max (popupHeight, textHeight);
+			view.Frame = rect;
+			
+			view.AddSubview (text);
+			view.AddSubview (popup);
+			
+			return view;
+		}
 	}
 	
 	class MacAddFileDialogHandler : IAddFileDialogHandler
@@ -174,52 +276,18 @@ namespace MonoDevelop.Platform.Mac
 			}) {
 				MacSelectFileDialogHandler.SetCommonPanelProperties (data, panel);
 				
-				var view = new NSView (new RectangleF (0, 0, 200, 28)) {
-					AutoresizesSubviews = true,
-					AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.MaxXMargin,
-				};
+				NSPopUpButton popup;
+				panel.AccessoryView = MacSelectFileDialogHandler.CreateLabelledDropdown (
+					GettextCatalog.GetString ("Override build action:"), 200, out popup);
 				
-				var text = new NSTextField (new RectangleF (0, 6, 100, 20)) {
-					StringValue = GettextCatalog.GetString ("Override build action:"),
-					DrawsBackground = false,
-					Bordered = false,
-					Editable = false,
-					Selectable = false
-				};
-				text.SizeToFit ();
-				float textWidth = text.Frame.Width;
-				
-				var combo = new NSPopUpButton (new RectangleF (0, 6, 200, 18), false) {
-					AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.MaxXMargin,
-				};
-				combo.SizeToFit ();
-				var rect = combo.Frame;
-				combo.Frame = new RectangleF (textWidth + 5, 0, 200, rect.Height);
-				
-				rect = view.Frame;
-				rect.Width = combo.Frame.Width + textWidth + 5;
-				view.Frame = rect;
-				
-				view.AddSubview (text);
-				view.AddSubview (combo);
-				panel.AccessoryView = view;
-				
-				var defaultTitle = GettextCatalog.GetString ("(Default)");
-				/*
-				var attribStr = new NSMutableAttributedString (defaultTitle);
-				var boldFont = NSFontManager.SharedFontManager.ConvertFont (combo.Menu.Font, NSFontTraitMask.Bold);
-				attribStr.AddAttribute (NSAttributedString.FontAttributeName, boldFont, new NSRange (0, defaultTitle.Length));
-				
-				combo.Menu.AddItem (new NSMenuItem () { AttributedTitle = attribStr });
-				*/
-				combo.AddItem (defaultTitle);
-				combo.Menu.AddItem (NSMenuItem.SeparatorItem);
+				popup.AddItem (GettextCatalog.GetString ("(Default)"));
+				popup.Menu.AddItem (NSMenuItem.SeparatorItem);
 				
 				foreach (var b in data.BuildActions) {
 					if (b == "--")
-						combo.Menu.AddItem (NSMenuItem.SeparatorItem);
+						popup.Menu.AddItem (NSMenuItem.SeparatorItem);
 					else
-						combo.AddItem (b);
+						popup.AddItem (b);
 				}
 				
 				var action = panel.RunModal ();
@@ -228,9 +296,9 @@ namespace MonoDevelop.Platform.Mac
 				
 				data.SelectedFiles = MacSelectFileDialogHandler.GetSelectedFiles (panel);
 				
-				var comboIndex = combo.IndexOfSelectedItem - 2;
-				if (comboIndex >= 0)
-					data.OverrideAction = data.BuildActions[comboIndex];
+				var idx = popup.IndexOfSelectedItem - 2;
+				if (idx >= 0)
+					data.OverrideAction = data.BuildActions[idx];
 				
 				return true;
 			}
