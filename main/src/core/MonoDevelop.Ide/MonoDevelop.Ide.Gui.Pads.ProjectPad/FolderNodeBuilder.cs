@@ -328,14 +328,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			ProjectFolder folder = CurrentNode.GetParentDataItem (typeof(ProjectFolder), true) as ProjectFolder;
 			FilePath baseDirectory = folder != null ? folder.Path : project.BaseDirectory;
 			
-			var addedFiles = IdeApp.ProjectOperations.AddFilesToProject (project, files, baseDirectory);
-			
-			//override the build action of the added files if needed
-			if (!string.IsNullOrEmpty (overrideAction)) {
-				foreach (var pf in addedFiles)
-					if (pf != null)
-						pf.BuildAction = overrideAction;
-			}
+			IdeApp.ProjectOperations.AddFilesToProject (project, files, baseDirectory, overrideAction);
 			
 			IdeApp.ProjectOperations.Save (project);
 		}

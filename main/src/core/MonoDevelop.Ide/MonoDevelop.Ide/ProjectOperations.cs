@@ -1215,10 +1215,16 @@ namespace MonoDevelop.Ide
 			return AddFilesToProject (project, files.ToFilePathArray (), targetDirectory);
 		}
 		
+		public IList<ProjectFile> AddFilesToProject (Project project, FilePath[] files, FilePath targetDirectory)
+		{
+			return AddFilesToProject (project, files, targetDirectory, null);
+		}
+		
 		/// <summary>
 		/// Adds files to a project, potentially asking the user whether to move, copy or link the files.
 		/// </summary>
-		public IList<ProjectFile> AddFilesToProject (Project project, FilePath[] files, FilePath targetDirectory)
+		public IList<ProjectFile> AddFilesToProject (Project project, FilePath[] files, FilePath targetDirectory,
+			string buildAction)
 		{
 			int action = -1;
 			IProgressMonitor monitor = null;
@@ -1245,7 +1251,7 @@ namespace MonoDevelop.Ide
 					
 					//files in the project directory get added directly in their current location without moving/copying
 					if (file.IsChildPathOf (project.BaseDirectory)) {
-						newFileList.Add (project.AddFile (file));
+						newFileList.Add (project.AddFile (file, buildAction));
 						continue;
 					}
 					
@@ -1286,7 +1292,7 @@ namespace MonoDevelop.Ide
 						var targetName = targetDirectory.Combine (file.FileName);
 						
 						if (ret == ACTION_LINK) {
-							var pf = project.AddFile (file);
+							var pf = project.AddFile (file, buildAction);
 							pf.Link = project.GetRelativeChildPath (targetName);
 							newFileList.Add (pf);
 							continue;
@@ -1294,7 +1300,7 @@ namespace MonoDevelop.Ide
 						
 						try {
 							if (MoveCopyFile (file, targetName, ret == ACTION_MOVE))
-								newFileList.Add (project.AddFile (targetName));
+								newFileList.Add (project.AddFile (targetName, buildAction));
 							else
 								newFileList.Add (null);
 						}
