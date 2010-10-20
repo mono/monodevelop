@@ -122,7 +122,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			
 			if ((ka & KeyActions.Complete) != 0) {
-				bool completed = CompleteWord ();
+				//bool completed =
+				CompleteWord ();
 				//NOTE: this passes the enter keystroke through to the editor if the current item is an exact match
 				//if (!completed) {
 				//	CompletionWindowManager.HideWindow ();

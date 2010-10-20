@@ -43,7 +43,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	class FileSelectorDialog: FileSelector
 	{
-		Hashtable filterPairs;
 		int selectOption;
 		int firstEncIndex;
 		

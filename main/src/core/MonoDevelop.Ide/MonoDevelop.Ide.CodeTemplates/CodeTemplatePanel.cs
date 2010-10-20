@@ -36,7 +36,6 @@ namespace MonoDevelop.Ide.CodeTemplates
 	[System.ComponentModel.ToolboxItem(true)]
 	internal partial class CodeTemplatePanelWidget : Gtk.Bin
 	{
-		OptionsDialog parent;
 		List<CodeTemplate> templates;
 		Gtk.TreeStore templateStore;
 		CellRendererText   templateCellRenderer;
@@ -46,7 +45,6 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public CodeTemplatePanelWidget (OptionsDialog parent)
 		{
-			this.parent = parent;
 			this.Build();
 			scrolledwindow1.Child = textEditor;
 			textEditor.ShowAll ();

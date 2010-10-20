@@ -56,9 +56,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		IWorkbenchWindow window;
 		TextEditorExtension editorExtension;
-		bool closed;
 		
-		bool parsing;
 		const int ParseDelay = 600;
 
 		public IWorkbenchWindow Window {
@@ -373,7 +371,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		void OnClosed (object s, EventArgs a)
 		{
-			closed = true;
 			if (parseTimeout != 0) {
 				GLib.Source.Remove (parseTimeout);
 				parseTimeout = 0;
@@ -555,7 +552,6 @@ namespace MonoDevelop.Ide.Gui
 		/// </returns>
 		public ParsedDocument UpdateParseDocument ()
 		{
-			parsing = true;
 			try {
 				string currentParseFile = FileName;
 				string currentParseText = Editor.Text;
@@ -564,7 +560,6 @@ namespace MonoDevelop.Ide.Gui
 				if (this.parsedDocument != null && !this.parsedDocument.HasErrors)
 					this.lastErrorFreeParsedDocument = parsedDocument;
 			} finally {
-				parsing = false;
 				OnDocumentParsed (EventArgs.Empty);
 			}
 			return this.parsedDocument;

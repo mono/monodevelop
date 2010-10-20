@@ -52,7 +52,6 @@ namespace MonoDevelop.Ide.Gui
 		TabLabel tabLabel;
 		Widget    tabPage;
 		Notebook  tabControl;
-		SeparatorToolItem separatorItem;
 		
 		string myUntitledTitle     = null;
 		string _titleHolder = "";

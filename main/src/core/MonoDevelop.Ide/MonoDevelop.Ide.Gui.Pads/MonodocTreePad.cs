@@ -111,15 +111,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 				Node n = (Node)store.GetValue (iter, 1);
 				
-				//PublicUrl property only exists in Mono 2.6+
-				string url;
-				System.Reflection.PropertyInfo pi = typeof (Node).GetProperty ("PublicUrl");
-				if (pi != null)
-					url = (string)pi.GetValue (n, null);
-				else
-					url = n.URL;
-				
-				IdeApp.HelpOperations.ShowHelp (url);
+				IdeApp.HelpOperations.ShowHelp (n.PublicUrl);
 			}
 		}
 
