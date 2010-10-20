@@ -35,12 +35,8 @@ namespace MonoDevelop.Ide.Extensions
 	/// This interface can be implemented to provide a custom implementation
 	/// for the OpenFileDialog (used to select a file or project to open)
 	/// </summary>
-	public interface IOpenFileDialogHandler
+	public interface IOpenFileDialogHandler : IDialogHandler<OpenFileDialogData>
 	{
-		/// <summary>
-		/// Show the dialog
-		/// </summary>
-		bool Run (OpenFileDialogData data);
 	}
 
 	/// <summary>

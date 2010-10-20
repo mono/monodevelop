@@ -33,8 +33,10 @@ FILES =  \
 	Framework/CoreFoundation.cs \
 	Framework/HIToolbox.cs \
 	Framework/NavDialog.cs \
+	MacAddFileDialogHandler.cs \
 	MacPlatform.cs \
 	MacSelectFileDialogHandler.cs \
+	MDBox.cs \
 	Menus/OSXMenu.cs
 
 RES = MacPlatform.addin.xml

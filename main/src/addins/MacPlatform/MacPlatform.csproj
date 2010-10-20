@@ -81,6 +81,8 @@
     <Compile Include="Framework\AppleScript.cs" />
     <Compile Include="Framework\ComponentManager.cs" />
     <Compile Include="ExternalConsoleProcess.cs" />
+    <Compile Include="MDBox.cs" />
+    <Compile Include="MacAddFileDialogHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

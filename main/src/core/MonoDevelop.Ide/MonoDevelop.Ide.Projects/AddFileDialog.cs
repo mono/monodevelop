@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.Projects
 	/// <summary>
 	/// Dialog which allows selecting files to be added to a project
 	/// </summary>
-	public class AddFileDialog: SelectFileDialog<IAddFileDialogHandler, AddFileDialogData>
+	public class AddFileDialog: SelectFileDialog<AddFileDialogData>
 	{
 		public AddFileDialog (string title)
 		{
@@ -61,17 +61,8 @@ namespace MonoDevelop.Ide.Projects
 			get { return data.OverrideAction; }
 		}
 		
-		/// <summary>
-		/// Shows the dialog
-		/// </summary>
-		/// <returns>
-		/// True if the user clicked on OK.
-		/// </returns>
-		public bool Run ()
+		protected override bool RunDefault ()
 		{
-			if (Handler != null)
-				return Handler.Run (data);
-			
 			FileSelector fdiag  = new FileSelector (data.Title);
 			
 			//add a combo that can be used to override the default build action

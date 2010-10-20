@@ -35,7 +35,7 @@ namespace MonoDevelop.Components
 	/// <summary>
 	/// Dialog which can be used to select a folder
 	/// </summary>
-	public class SelectFolderDialog: SelectFileDialog<ISelectFileDialogHandler,SelectFileDialogData>
+	public class SelectFolderDialog: SelectFileDialog<SelectFileDialogData>
 	{
 		public SelectFolderDialog ()
 		{
@@ -49,14 +49,6 @@ namespace MonoDevelop.Components
 		{
 			Title = title;
 			Action = action;
-		}
-		
-		public bool Run ()
-		{
-			if (Handler != null)
-				return Handler.Run (data);
-			else
-				return RunDefault ();
 		}
 	}
 }

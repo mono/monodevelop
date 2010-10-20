@@ -34,12 +34,8 @@ namespace MonoDevelop.Ide.Extensions
 	/// This interface can be implemented to provide a custom implementation
 	/// for the AddFileDialog dialog (used to add files to a project)
 	/// </summary>
-	public interface IAddFileDialogHandler
+	public interface IAddFileDialogHandler : IDialogHandler<AddFileDialogData>
 	{
-		/// <summary>
-		/// Show the dialog
-		/// </summary>
-		bool Run (AddFileDialogData data);
 	}
 
 	/// <summary>

@@ -34,7 +34,7 @@ namespace MonoDevelop.Components
 	/// <summary>
 	/// Dialog which can be used to select a file for opening or saving
 	/// </summary>
-	public class SelectFileDialog: SelectFileDialog<ISelectFileDialogHandler,SelectFileDialogData>
+	public class SelectFileDialog: SelectFileDialog<SelectFileDialogData>
 	{
 		public SelectFileDialog ()
 		{
@@ -48,20 +48,6 @@ namespace MonoDevelop.Components
 		{
 			Title = title;
 			Action = action;
-		}
-		
-		/// <summary>
-		/// Shows the dialog
-		/// </summary>
-		/// <returns>
-		/// True if the user clicked OK.
-		/// </returns>
-		public bool Run ()
-		{
-			if (Handler != null)
-				return Handler.Run (data);
-			else
-				return RunDefault ();
 		}
 	}
 }

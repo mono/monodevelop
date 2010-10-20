@@ -165,7 +165,7 @@ namespace MonoDevelop.Platform.Mac
 				System.Text.RegularExpressions.RegexOptions.Compiled);
 		}
 		
-		static NSPopUpButton CreateFileFilterPopup (SelectFileDialogData data, NSSavePanel panel)
+		internal static NSPopUpButton CreateFileFilterPopup (SelectFileDialogData data, NSSavePanel panel)
 		{
 			var filters = data.Filters;
 			
@@ -263,45 +263,6 @@ namespace MonoDevelop.Platform.Mac
 			view.AddSubview (popup);
 			
 			return view;
-		}
-	}
-	
-	class MacAddFileDialogHandler : IAddFileDialogHandler
-	{
-		public bool Run (AddFileDialogData data)
-		{
-			using (var panel = new NSOpenPanel () {
-				CanChooseDirectories = false,
-				CanChooseFiles = true,
-			}) {
-				MacSelectFileDialogHandler.SetCommonPanelProperties (data, panel);
-				
-				NSPopUpButton popup;
-				panel.AccessoryView = MacSelectFileDialogHandler.CreateLabelledDropdown (
-					GettextCatalog.GetString ("Override build action:"), 200, out popup);
-				
-				popup.AddItem (GettextCatalog.GetString ("(Default)"));
-				popup.Menu.AddItem (NSMenuItem.SeparatorItem);
-				
-				foreach (var b in data.BuildActions) {
-					if (b == "--")
-						popup.Menu.AddItem (NSMenuItem.SeparatorItem);
-					else
-						popup.AddItem (b);
-				}
-				
-				var action = panel.RunModal ();
-				if (action == 0)
-					return false;
-				
-				data.SelectedFiles = MacSelectFileDialogHandler.GetSelectedFiles (panel);
-				
-				var idx = popup.IndexOfSelectedItem - 2;
-				if (idx >= 0)
-					data.OverrideAction = data.BuildActions[idx];
-				
-				return true;
-			}
 		}
 	}
 	

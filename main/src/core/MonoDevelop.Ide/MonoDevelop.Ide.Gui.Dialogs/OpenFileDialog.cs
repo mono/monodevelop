@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	/// <summary>
 	/// Dialog which allows selecting a file to be opened or saved
 	/// </summary>
-	public class OpenFileDialog: SelectFileDialog<IOpenFileDialogHandler, OpenFileDialogData>
+	public class OpenFileDialog: SelectFileDialog<OpenFileDialogData>
 	{
 		public OpenFileDialog ()
 		{
@@ -90,30 +90,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			get { return data.SelectedViewer; }
 		}
 		
-		/// <summary>
-		/// Shows the dialog
-		/// </summary>
-		/// <returns>
-		/// True if the user clicked OK.
-		/// </returns>
-		public bool Run ()
-		{
-			if (Handler != null)
-				return Handler.Run (data);
-			else
-				return RunDefault ();
-		}
-		
-		bool RunDefault ()
+		protected override bool RunDefault ()
 		{	
 			var win = new FileSelectorDialog (Title, Action);
 			win.Encoding = Encoding;
 			win.ShowEncodingSelector = ShowEncodingSelector;
 			win.ShowViewerSelector = ShowViewerSelector;
-			
-			//FIXME: should these be optional? they were hardcoded into the dialog - at least they're factored out now
-			AddDefaultFileFilters ();
-			LoadDefaultFilter ();
 			
 			SetDefaultProperties (win);
 			
@@ -124,63 +106,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					data.Encoding = win.Encoding;
 					data.CloseCurrentWorkspace = win.CloseCurrentWorkspace;
 					data.SelectedViewer = win.SelectedViewer;
-					SaveDefaultFilter ();
 					return true;
 				} else
 					return false;
 			} finally {
 				win.Destroy ();
-			}
-		}
-		
-		/// <summary>
-		/// Adds the default file filters registered by MD core and addins. Includes the All Files filter.
-		/// </summary>
-		void AddDefaultFileFilters ()
-		{
-			foreach (var f in GetDefaultFilters ())
-				data.Filters.Add (f);
-			AddAllFilesFilter ();
-		}
-		
-		//loads last default filter from MD prefs
-		void LoadDefaultFilter ()
-		{
-			// Load last used filter pattern
-			var lastPattern = PropertyService.Get ("Monodevelop.FileSelector.LastPattern", "*");
-			foreach (var filter in Filters) {
-				if (filter.Patterns != null && filter.Patterns.Contains (lastPattern)) {
-					DefaultFilter = filter;
-					break;
-				}
-			}
-		}
-		
-		//saves last default filter to MD prefs
-		void SaveDefaultFilter ()
-		{
-			// Save active filter
-			//it may be null if e.g. SetSelectedFile was used
-			if (DefaultFilter != null && DefaultFilter.Patterns != null && DefaultFilter.Patterns.Count > 0)
-				PropertyService.Set ("Monodevelop.FileSelector.LastPattern", DefaultFilter.Patterns[0]);
-		}
-		
-		static IEnumerable<SelectFileDialogFilter> GetDefaultFilters ()
-		{
-			foreach (var f in ParseFilters (AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/ProjectFileFilters")))
-				yield return f;
-			foreach (var f in ParseFilters (AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/FileFilters")))
-				yield return f;
-		}
-		
-		static IEnumerable<SelectFileDialogFilter> ParseFilters (System.Collections.IEnumerable filterStrings)
-		{
-			if (filterStrings == null)
-				yield break;
-			foreach (string filterStr in filterStrings) {
-				var parts = filterStr.Split ('|');
-				var f = new SelectFileDialogFilter (parts[0], parts[1].Split (';'));
-				yield return f;
 			}
 		}
 	}
