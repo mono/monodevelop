@@ -760,6 +760,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					UnknownSolutionItem uitem = new UnknownSolutionItem ();
 					uitem.FileName = projectPath;
 					uitem.LoadError = e.Message;
+					MSBuildHandler h = new MSBuildHandler (projTypeGuid, projectGuid);
+					h.Item = uitem;
+					uitem.SetItemHandler (h);
 					item = uitem;
 				}
 				
