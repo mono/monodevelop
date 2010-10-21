@@ -48,7 +48,7 @@ namespace MonoDevelop.Components.Extensions
 	/// T is the handler type.
 	/// U is the data type where data will be hold.
 	/// </summary>
-	public class PlatformDialog<T> where T: PlatformDialogData, new()
+	public abstract class PlatformDialog<T> where T: PlatformDialogData, new()
 	{
 		IDialogHandler<T> handler;
 		bool gotHandler;
@@ -88,5 +88,18 @@ namespace MonoDevelop.Components.Extensions
 			get { return data.TransientFor; }
 			set { data.TransientFor = value; }
 		}
+		
+		
+		/// <summary>Shows the dialog </summary>
+		/// <returns> True if the user clicked OK or equivalent.</returns>
+		public virtual bool Run ()
+		{
+			if (Handler != null)
+				return Handler.Run (data);
+			else
+				return RunDefault ();
+		}
+		
+		protected abstract bool RunDefault ();
 	}
 }

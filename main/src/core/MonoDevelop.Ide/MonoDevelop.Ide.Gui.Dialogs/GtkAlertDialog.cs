@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	/// <summary>
 	/// A Gnome HIG compliant alert dialog.
 	/// </summary>
-	internal class AlertDialog : Gtk.Dialog
+	internal class GtkAlertDialog : Gtk.Dialog
 	{
 		AlertButton resultButton = null;
 		AlertButton[] buttons;
@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.label.Xalign    = 0.00f;
 		}
 		
-		public AlertDialog (MessageDescription message)
+		public GtkAlertDialog (MessageDescription message)
 		{
 			Init ();
 			this.buttons = message.buttons.ToArray ();
@@ -145,7 +145,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				};
 			}
 			
-			this.ShowAll ();
+			//don't show this yet, let the consumer decide when
+			this.Child.ShowAll ();
 		}
 		
 		public void FocusButton (int buttonNumber)

@@ -194,6 +194,7 @@ FILES =  \
 	MonoDevelop.Components.DockToolbars/FloatingPosition.cs \
 	MonoDevelop.Components.DockToolbars/IDockBar.cs \
 	MonoDevelop.Components.DockToolbars/PlaceholderWindow.cs \
+	MonoDevelop.Components.Extensions/AlertDialog.cs \
 	MonoDevelop.Components.Extensions/ISelectFileDialog.cs \
 	MonoDevelop.Components.Extensions/PlatformDialog.cs \
 	MonoDevelop.Components.PropertyGrid.Editors/BooleanEditorCell.cs \
@@ -430,11 +431,11 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Content/TextStylePolicy.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs \
 	MonoDevelop.Ide.Gui.Dialogs/AddinLoadErrorDialog.cs \
-	MonoDevelop.Ide.Gui.Dialogs/AlertDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/DirtyFilesDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ErrorDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs \
+	MonoDevelop.Ide.Gui.Dialogs/GtkAlertDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/IOptionsPanel.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ItemOptionsDialog.cs \
 	MonoDevelop.Ide.Gui.Dialogs/ItemOptionsPanel.cs \

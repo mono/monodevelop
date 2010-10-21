@@ -329,18 +329,12 @@ namespace MonoDevelop.Components.Extensions
 			}
 		}
 		
-		/// <summary>Shows the dialog </summary>
-		/// <returns> True if the user clicked OK.</returns>
-		public virtual bool Run ()
+		public override bool Run ()
 		{
 			if (!HasFilters)
 				AddDefaultFileFilters ();
 			
-			bool success;
-			if (Handler != null)
-				success = Handler.Run (data);
-			else
-				success = RunDefault ();
+			bool success = base.Run ();
 			
 			if (success && useDefaultFilters)
 				SaveDefaultFilter ();
@@ -349,7 +343,7 @@ namespace MonoDevelop.Components.Extensions
 		}
 		
 		/// <summary>Runs the default implementation of the dialog.</summary>
-		protected virtual bool RunDefault ()
+		protected override bool RunDefault ()
 		{
 			var fdiag = new FileSelector ();
 			SetDefaultProperties (fdiag);

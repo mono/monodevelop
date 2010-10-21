@@ -32,6 +32,8 @@ using Gtk;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Dialogs;
 using System.Collections.Generic;
+using MonoDevelop.Components.Extensions;
+using Mono.Addins;
 
 namespace MonoDevelop.Ide
 {
@@ -376,14 +378,8 @@ namespace MonoDevelop.Ide
 			
 			public AlertButton GenericAlert (MessageDescription message)
 			{
-				if (message.ApplyToAllButton != null)
-					return message.ApplyToAllButton;
-				AlertDialog alertDialog = new AlertDialog (message);
-				alertDialog.FocusButton (message.DefaultButton);
-				ShowCustomDialog (alertDialog);
-				if (alertDialog.ApplyToAll)
-					message.ApplyToAllButton = alertDialog.ResultButton;
-				return alertDialog.ResultButton;
+				var dialog = new AlertDialog (message);
+				return dialog.Run ();
 			}
 			
 			public string GetTextResponse (string question, string caption, string initialValue, bool isPassword)

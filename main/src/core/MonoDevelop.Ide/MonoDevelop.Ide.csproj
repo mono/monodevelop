@@ -1217,7 +1217,6 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.MultiTaskProgressDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.OptionsDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.ProgressDialog.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\AlertDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\CellRendererPixbuf.cs" />
     <Compile Include="MonoDevelop.Ide\DesktopService.cs" />
     <Compile Include="MonoDevelop.Ide\DispatchService.cs" />
@@ -1373,6 +1372,8 @@
     <Compile Include="MonoDevelop.Ide.Updater\UpdateCommands.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Updater.UpdateDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Updater\UpdateInfoExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Components.Extensions\AlertDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\GtkAlertDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
