@@ -1416,9 +1416,9 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 			
-			if (TextEditor.Caret.Column != 0) {
+			if (TextEditor.Caret.Column != DocumentLocation.MinColumn) {
 				TextEditor.Caret.PreserveSelection = true;
-				TextEditor.Caret.Column = System.Math.Max (0, TextEditor.Caret.Column - last);
+				TextEditor.Caret.Column = System.Math.Max (DocumentLocation.MinColumn, TextEditor.Caret.Column - last);
 				TextEditor.Caret.PreserveSelection = false;
 			}
 			
