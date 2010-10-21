@@ -248,6 +248,10 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			fileName = declaringType.CompilationUnit.FileName;
 			
 			var openDocument = IdeApp.Workbench.OpenDocument (fileName);
+			if (openDocument == null) {
+				MessageService.ShowError (string.Format (GettextCatalog.GetString ("Can't open file {0}."), fileName));
+				return;
+			}
 			data = openDocument.Editor;
 			if (data == null)
 				return;
