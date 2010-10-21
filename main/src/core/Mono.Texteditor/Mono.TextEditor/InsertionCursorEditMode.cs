@@ -286,7 +286,7 @@ namespace Mono.TextEditor
 				}
 				if (lineBelow != null) {
 					var wrapper = editor.TextViewMargin.GetLayout (lineBelow);
-					int index = lineAbove.GetIndentation (editor.Document).Length;
+					int index = lineAbove != null ? lineAbove.GetIndentation (editor.Document).Length : 0;
 					if (index == 0) {
 						tmp = 0;
 					} else if (index >= lineBelow.EditableLength) {
