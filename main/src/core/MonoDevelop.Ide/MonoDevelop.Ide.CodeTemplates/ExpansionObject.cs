@@ -99,13 +99,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public string GetConstructorModifier ()
 		{
-			Console.WriteLine (CurrentContext);
-			Console.WriteLine ("doc:" + CurrentContext.ParsedDocument);
 			if (CurrentContext.ParsedDocument == null)
 				return null;
 			IType type = CurrentContext.ParsedDocument.CompilationUnit.GetTypeAt (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column);
-			Console.WriteLine ("pos:" + CurrentContext.InsertPosition);
-			Console.WriteLine ("type:" + type);
 			if (type == null)
 				return "";
 			return type.IsStatic ? "static " : "public ";
