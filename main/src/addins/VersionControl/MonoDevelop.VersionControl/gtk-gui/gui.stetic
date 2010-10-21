@@ -1569,7 +1569,7 @@
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="Type">TextOnly</property>
-                    <property name="Label" translatable="yes">_Diff</property>
+                    <property name="Label" translatable="yes">_Patch</property>
                     <property name="UseUnderline">True</property>
                   </widget>
                   <packing>

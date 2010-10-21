@@ -118,7 +118,7 @@ namespace MonoDevelop.VersionControl.Views
 				
 				notebook1.Page = 1;
 			} else {
-				buttonDiff.Label = GettextCatalog.GetString ("_Diff");
+				buttonDiff.Label = GettextCatalog.GetString ("_Patch");
 				notebook1.Page = 0;
 			}
 			
