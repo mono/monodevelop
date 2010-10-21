@@ -144,6 +144,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public override TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit unit)
 		{
+			if (string.IsNullOrEmpty (unit.FileName))
+				throw new ArgumentException ("Compilation unit has no file name set.", "unit");
 			ProjectCodeCompletionDatabase db = database as ProjectCodeCompletionDatabase;
 			if (db != null)
 				return db.UpdateFromParseInfo (unit, unit.FileName);

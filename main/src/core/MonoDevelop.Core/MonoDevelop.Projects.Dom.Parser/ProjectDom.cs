@@ -799,7 +799,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public IType MergeTypeWithTemporary (IType type)
 		{
-			if (type == null || type.CompilationUnit == null)
+			if (type == null || type.CompilationUnit == null || string.IsNullOrEmpty (type.CompilationUnit.FileName))
 				return type;
 			
 			if (temporaryCompilationUnits.ContainsKey (type.CompilationUnit.FileName)) {
