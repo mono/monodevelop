@@ -151,6 +151,7 @@ namespace Mono.TextEditor
 				this.OnTextReplaced (args);
 				this.OnTextSet (EventArgs.Empty);
 				this.CommitUpdateAll ();
+				this.ClearUndoBuffer ();
 			}
 		}
 		
@@ -827,6 +828,11 @@ namespace Mono.TextEditor
 				BeginUndo (this, EventArgs.Empty);
 		}
 		
+		public void ClearUndoBuffer ()
+		{
+			undoStack.Clear ();
+			redoStack.Clear ();
+		}
 		
 		[Serializable]
 		public sealed class UndoOperationEventArgs : EventArgs
