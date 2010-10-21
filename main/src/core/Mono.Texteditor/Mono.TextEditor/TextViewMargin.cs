@@ -1912,7 +1912,7 @@ namespace Mono.TextEditor
 			cr.Color = color;
 			
 			if (textEditor.Options.ShowRuler) {
-				double divider = System.Math.Max (area.X, System.Math.Min (x + rulerX, area.X + area.Width));
+				double divider = System.Math.Max (area.X, System.Math.Min (x + TextStartPosition + rulerX, area.X + area.Width));
 				if (divider < area.X + area.Width) {
 					cr.Rectangle (area.X, area.Y, divider - area.X, area.Height);
 					cr.Fill ();
