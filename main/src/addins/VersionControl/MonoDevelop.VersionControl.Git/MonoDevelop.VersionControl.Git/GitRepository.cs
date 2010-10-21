@@ -846,6 +846,7 @@ namespace MonoDevelop.VersionControl.Git
 			RemoteConfig rc = new RemoteConfig (c, remote.Name);
 			c.Save ();
 			remote.RepoRemote = rc;
+			remote.cfg = c;
 			UpdateRemote (remote);
 		}
 
@@ -858,6 +859,7 @@ namespace MonoDevelop.VersionControl.Git
 				throw new InvalidOperationException ("Remote not created");
 			
 			remote.Update ();
+			remote.cfg.Save ();
 		}
 
 		public void RemoveRemote (string name)
@@ -1130,7 +1132,7 @@ namespace MonoDevelop.VersionControl.Git
 	public class RemoteSource
 	{
 		internal RemoteConfig RepoRemote;
-		Config cfg;
+		internal StoredConfig cfg;
 
 		public RemoteSource ()
 		{

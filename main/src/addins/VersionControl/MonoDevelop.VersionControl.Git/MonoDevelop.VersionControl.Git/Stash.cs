@@ -41,7 +41,6 @@ namespace MonoDevelop.VersionControl.Git
 {
 	public class Stash
 	{
-		internal string PrevStashCommitId { get; private set; }
 		internal string CommitId { get; private set; }
 		internal string FullLine { get; private set; }
 		internal StashCollection StashCollection { get; set; }
@@ -91,6 +90,21 @@ namespace MonoDevelop.VersionControl.Git
 			sb.Append (secs).Append (' ').Append (tz).Append ('\t');
 			sb.Append (comment);
 			FullLine = sb.ToString ();
+		}
+		
+		string prevStashCommitId;
+		
+		internal string PrevStashCommitId {
+			get { return prevStashCommitId; }
+			set {
+				prevStashCommitId = value;
+				if (FullLine != null) {
+					if (prevStashCommitId != null)
+						FullLine = prevStashCommitId + FullLine.Substring (40);
+					else
+						FullLine = new string ('0', 40) + FullLine.Substring (40);
+				}
+			}
 		}
 
 		
@@ -198,7 +212,7 @@ namespace MonoDevelop.VersionControl.Git
 			string prevCommit = null;
 			FileInfo sf = StashRefFile;
 			if (sf.Exists)
-				prevCommit = File.ReadAllText (sf.FullName);
+				prevCommit = File.ReadAllText (sf.FullName).Trim (' ','\t','\r','\n');
 			
 			Stash s = new Stash (prevCommit, wipCommit.Name, author, commitMsg);
 			
@@ -373,6 +387,8 @@ namespace MonoDevelop.VersionControl.Git
 			int i = stashes.FindIndex (st => st.CommitId == s.CommitId);
 			if (i != -1) {
 				stashes.RemoveAt (i);
+				Stash next = stashes.FirstOrDefault (ns => ns.PrevStashCommitId == s.CommitId);
+				next.PrevStashCommitId = s.PrevStashCommitId;
 				if (stashes.Count == 0) {
 					// No more stashes. The ref and log files can be deleted.
 					StashRefFile.Delete ();
