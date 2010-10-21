@@ -203,6 +203,9 @@ namespace MonoDevelop.CSharp.Completion
 				int idx = result.Expression.LastIndexOf ('.');
 				if (idx > 0)
 					result.Expression = result.Expression.Substring (0, idx);
+				// don't parse expressions that end with more than 1 dot - see #646820
+				if (result.Expression.EndsWith ("."))
+					return null;
 				NRefactoryResolver resolver = CreateResolver ();
 				ResolveResult resolveResult = resolver.Resolve (result, location);
 				if (resolver.ResolvedExpression is ICSharpCode.NRefactory.Ast.PrimitiveExpression) {
