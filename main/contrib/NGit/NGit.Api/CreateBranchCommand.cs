@@ -64,7 +64,7 @@ namespace NGit.Api
 
 		private CreateBranchCommand.SetupUpstreamMode upstreamMode;
 
-		private string startPoint;
+		private string startPoint = Constants.HEAD;
 
 		private RevCommit startCommit;
 
@@ -90,8 +90,6 @@ namespace NGit.Api
 		/// that already exists
 		/// </exception>
 		/// <exception cref="NGit.Api.Errors.RefNotFoundException">if the start point can not be found
-		/// 	</exception>
-		/// <exception cref="NGit.Errors.AmbiguousObjectException">if the start point is ambiguous
 		/// 	</exception>
 		/// <exception cref="NGit.Api.Errors.InvalidRefNameException">
 		/// if the provided name is <code>null</code> or otherwise
@@ -292,10 +290,6 @@ namespace NGit.Api
 				}
 				return result;
 			}
-			catch (AmbiguousObjectException e)
-			{
-				throw;
-			}
 			catch (IOException ioe)
 			{
 				throw new JGitInternalException(ioe.Message, ioe);
@@ -314,11 +308,7 @@ namespace NGit.Api
 			ObjectId result = null;
 			try
 			{
-				if (startPoint == null)
-				{
-					result = repo.Resolve(Constants.HEAD);
-				}
-				result = repo.Resolve(startPoint);
+				result = repo.Resolve((startPoint == null) ? Constants.HEAD : startPoint);
 			}
 			catch (AmbiguousObjectException e)
 			{

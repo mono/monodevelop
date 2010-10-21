@@ -313,6 +313,27 @@ namespace NGit.Api
 			return new PushCommand(repo);
 		}
 
+		/// <summary>
+		/// Returns a command object to execute a
+		/// <code>cherry-pick</code>
+		/// command
+		/// </summary>
+		/// <seealso><a
+		/// *      href="http://www.kernel.org/pub/software/scm/git/docs/git-cherry-pick.html"
+		/// *      >Git documentation about cherry-pick</a></seealso>
+		/// <returns>
+		/// a
+		/// <see cref="CherryPickCommand">CherryPickCommand</see>
+		/// used to collect all optional
+		/// parameters and to finally execute the
+		/// <code>cherry-pick</code>
+		/// command
+		/// </returns>
+		public virtual CherryPickCommand CherryPick()
+		{
+			return new CherryPickCommand(repo);
+		}
+
 		/// <returns>the git repository this class is interacting with</returns>
 		public virtual Repository GetRepository()
 		{

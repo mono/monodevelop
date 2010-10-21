@@ -59,14 +59,6 @@ namespace NGit.Transport
 	/// <remarks>Indexes Git pack files for local use.</remarks>
 	public class IndexPack
 	{
-		/// <summary>Progress message when reading raw data from the pack.</summary>
-		/// <remarks>Progress message when reading raw data from the pack.</remarks>
-		public static readonly string PROGRESS_DOWNLOAD = JGitText.Get().receivingObjects;
-
-		/// <summary>Progress message when computing names of delta compressed objects.</summary>
-		/// <remarks>Progress message when computing names of delta compressed objects.</remarks>
-		public static readonly string PROGRESS_RESOLVE_DELTA = JGitText.Get().resolvingDeltas;
-
 		/// <summary>Size of the internal stream buffer.</summary>
 		/// <remarks>
 		/// Size of the internal stream buffer.
@@ -418,7 +410,7 @@ namespace NGit.Transport
 					entries = new PackedObjectInfo[(int)objectCount];
 					baseById = new ObjectIdSubclassMap<IndexPack.DeltaChain>();
 					baseByPos = new LongMap<IndexPack.UnresolvedDelta>();
-					progress.BeginTask(PROGRESS_DOWNLOAD, (int)objectCount);
+					progress.BeginTask(JGitText.Get().receivingObjects, (int)objectCount);
 					for (int done = 0; done < objectCount; done++)
 					{
 						IndexOneObject();
@@ -517,7 +509,7 @@ namespace NGit.Transport
 		/// <exception cref="System.IO.IOException"></exception>
 		private void ResolveDeltas(ProgressMonitor progress)
 		{
-			progress.BeginTask(PROGRESS_RESOLVE_DELTA, deltaCount);
+			progress.BeginTask(JGitText.Get().resolvingDeltas, deltaCount);
 			int last = entryCount;
 			for (int i = 0; i < last; i++)
 			{

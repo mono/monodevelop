@@ -120,11 +120,6 @@ namespace NGit.Storage.File
 		}
 
 		// Don't close anything.
-		public override ObjectInserter NewInserter()
-		{
-			return ((ObjectDirectoryInserter)wrapped.NewInserter());
-		}
-
 		public override ObjectDatabase NewCachedDatabase()
 		{
 			return this;
@@ -138,6 +133,11 @@ namespace NGit.Storage.File
 		internal override FilePath GetDirectory()
 		{
 			return wrapped.GetDirectory();
+		}
+
+		internal override Config GetConfig()
+		{
+			return wrapped.GetConfig();
 		}
 
 		internal override FileObjectDatabase.AlternateHandle[] MyAlternates()

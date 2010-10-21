@@ -187,16 +187,9 @@ namespace NGit.Storage.File
 		/// <remarks>Compute the location of a loose object file.</remarks>
 		/// <param name="objectId">identity of the loose object to map to the directory.</param>
 		/// <returns>location of the object, if it were to exist as a loose object.</returns>
-		public virtual FilePath FileFor(AnyObjectId objectId)
+		internal override FilePath FileFor(AnyObjectId objectId)
 		{
-			return FileFor(objectId.Name);
-		}
-
-		private FilePath FileFor(string objectName)
-		{
-			string d = Sharpen.Runtime.Substring(objectName, 0, 2);
-			string f = Sharpen.Runtime.Substring(objectName, 2);
-			return new FilePath(new FilePath(objects, d), f);
+			return base.FileFor(objectId);
 		}
 
 		/// <returns>
@@ -208,7 +201,12 @@ namespace NGit.Storage.File
 		/// </returns>
 		public virtual ICollection<PackFile> GetPacks()
 		{
-			PackFile[] packs = packList.Get().packs;
+			ObjectDirectory.PackList list = packList.Get();
+			if (list == NO_PACKS)
+			{
+				list = ScanPacks(list);
+			}
+			PackFile[] packs = list.packs;
 			return Sharpen.Collections.UnmodifiableCollection(Arrays.AsList(packs));
 		}
 
@@ -594,6 +592,11 @@ SEARCH_break: ;
 				return old != ScanPacks(old);
 			}
 			return false;
+		}
+
+		internal override Config GetConfig()
+		{
+			return config;
 		}
 
 		private void InsertPack(PackFile pf)

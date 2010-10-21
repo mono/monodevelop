@@ -66,9 +66,6 @@ namespace NGit.Api
 	/// used for one invocation of the command (means: one call to
 	/// <see cref="Call()">Call()</see>
 	/// )
-	/// <p>
-	/// This is currently a very basic implementation which takes only one commits to
-	/// merge with as option. Furthermore it does supports only fast forward.
 	/// </summary>
 	/// <seealso><a href="http://www.kernel.org/pub/software/scm/git/docs/git-merge.html"
 	/// *      >Git documentation about Merge</a></seealso>
@@ -166,7 +163,7 @@ namespace NGit.Api
 						{
 							ResolveMerger resolveMerger = (ResolveMerger)merger;
 							resolveMerger.SetCommitNames(new string[] { "BASE", "HEAD", @ref.GetName() });
-							resolveMerger.SetWorkingTreeIt(new FileTreeIterator(repo));
+							resolveMerger.SetWorkingTreeIterator(new FileTreeIterator(repo));
 							noProblems = merger.Merge(headCommit, srcCommit);
 							lowLevelResults = resolveMerger.GetMergeResults();
 							failingPaths = resolveMerger.GetFailingPathes();

@@ -95,26 +95,27 @@ namespace NGit.Diff
 	/// <?></?>
 	public class MyersDiff<S> where S:Sequence
 	{
-		private sealed class _DiffAlgorithm_110 : DiffAlgorithm
+		private sealed class _LowLevelDiffAlgorithm_110 : LowLevelDiffAlgorithm
 		{
-			public _DiffAlgorithm_110()
+			public _LowLevelDiffAlgorithm_110()
 			{
 			}
 
-			public override EditList DiffNonCommon<S>(SequenceComparator<S> cmp, S a, 
-				S b)
+			public override void DiffNonCommon<S>(EditList edits, HashedSequenceComparator<S>
+				 cmp, HashedSequence<S> a, HashedSequence<S> b, Edit region)
 			{
-				return new NGit.Diff.MyersDiff<S>(cmp, a, b).edits;
+				new NGit.Diff.MyersDiff<S>(edits, cmp, a, b, region);
 			}
 		}
 
 		/// <summary>Singleton instance of MyersDiff.</summary>
 		/// <remarks>Singleton instance of MyersDiff.</remarks>
-		public static readonly DiffAlgorithm INSTANCE = new _DiffAlgorithm_110();
+		public static readonly DiffAlgorithm INSTANCE = new _LowLevelDiffAlgorithm_110();
 
 		/// <summary>
 		/// The list of edits found during the last call to
-		/// <see cref="MyersDiff{S}.CalculateEdits()">MyersDiff&lt;S&gt;.CalculateEdits()</see>
+		/// <see cref="MyersDiff{S}.CalculateEdits(Edit)">MyersDiff&lt;S&gt;.CalculateEdits(Edit)
+		/// 	</see>
 		/// </summary>
 		protected internal EditList edits;
 
@@ -130,15 +131,15 @@ namespace NGit.Diff
 		/// <remarks>The second text to be compared. Referred to as "Text B" in the comments</remarks>
 		protected internal HashedSequence<S> b;
 
-		private MyersDiff(SequenceComparator<S> cmp, S a, S b)
+		private MyersDiff(EditList edits, HashedSequenceComparator<S> cmp, HashedSequence
+			<S> a, HashedSequence<S> b, Edit region)
 		{
 			middle = new MyersDiff<S>.MiddleEdit(this);
-			HashedSequencePair<S> pair;
-			pair = new HashedSequencePair<S>(cmp, a, b);
-			this.cmp = pair.GetComparator();
-			this.a = pair.GetA();
-			this.b = pair.GetB();
-			CalculateEdits();
+			this.edits = edits;
+			this.cmp = cmp;
+			this.a = a;
+			this.b = b;
+			CalculateEdits(region);
 		}
 
 		internal MyersDiff<S>.MiddleEdit middle;
@@ -149,10 +150,10 @@ namespace NGit.Diff
 		/// Entrypoint into the algorithm this class is all about. This method triggers that the
 		/// differences between A and B are calculated in form of a list of edits.
 		/// </remarks>
-		protected internal virtual void CalculateEdits()
+		/// <param name="r">portion of the sequences to examine.</param>
+		private void CalculateEdits(Edit r)
 		{
-			edits = new EditList();
-			middle.Initialize(0, a.Size(), 0, b.Size());
+			middle.Initialize(r.beginA, r.endA, r.beginB, r.endB);
 			if (middle.beginA >= middle.endA && middle.beginB >= middle.endB)
 			{
 				return;

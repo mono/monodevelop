@@ -430,8 +430,6 @@
     <Compile Include="NGit.Diff\HashedSequencePair.cs" />
     <Compile Include="NGit.Diff\HistogramDiff.cs" />
     <Compile Include="NGit.Diff\HistogramDiffIndex.cs" />
-    <Compile Include="NGit.Diff\PatienceDiff.cs" />
-    <Compile Include="NGit.Diff\PatienceDiffIndex.cs" />
     <Compile Include="NGit.Diff\RawTextComparator.cs" />
     <Compile Include="NGit.Diff\SequenceComparator.cs" />
     <Compile Include="NGit.Diff\Subsequence.cs" />
@@ -456,6 +454,9 @@
     <Compile Include="NGit.Api.Errors\NotMergedException.cs" />
     <Compile Include="NGit.Api.Errors\RefAlreadyExistsException.cs" />
     <Compile Include="NGit.Api.Errors\RefNotFoundException.cs" />
+    <Compile Include="NGit.Diff\LowLevelDiffAlgorithm.cs" />
+    <Compile Include="NGit.Api\CherryPickCommand.cs" />
+    <Compile Include="NGit.Api.Errors\MultipleParentsNotAllowedException.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

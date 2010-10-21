@@ -278,10 +278,14 @@ namespace NGit.Dircache
 					}
 					else
 					{
-						// ... and the working dir contained a file or folder ->
-						// add it to the removed set and remove it from conflicts set
-						Remove(f.GetEntryPathString());
-						conflicts.Remove(f.GetEntryPathString());
+						if (i != null)
+						{
+							// ... and the working dir contained a file or folder ->
+							// add it to the removed set and remove it from
+							// conflicts set
+							Remove(i.GetEntryPathString());
+							conflicts.Remove(i.GetEntryPathString());
+						}
 					}
 				}
 				else

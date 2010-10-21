@@ -200,6 +200,8 @@ namespace NGit
 
 		public string cannotWorkWithOtherStagesThanZeroRightNow;
 
+		public string canOnlyCherryPickCommitsWithOneParent;
+
 		public string cantFindObjectInReversePackIndexForTheSpecifiedOffset;
 
 		public string cantPassMeATree;
@@ -371,6 +373,8 @@ namespace NGit
 		public string errorReadingInfoRefs;
 
 		public string exceptionCaughtDuringExecutionOfAddCommand;
+
+		public string exceptionCaughtDuringExecutionOfCherryPickCommand;
 
 		public string exceptionCaughtDuringExecutionOfCommitCommand;
 

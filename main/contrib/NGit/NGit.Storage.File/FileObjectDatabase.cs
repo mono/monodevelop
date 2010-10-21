@@ -64,7 +64,10 @@ namespace NGit.Storage.File
 			return new WindowCursor(this);
 		}
 
-		public abstract override ObjectInserter NewInserter();
+		public override ObjectInserter NewInserter()
+		{
+			return new ObjectDirectoryInserter(this, GetConfig());
+		}
 
 		/// <summary>
 		/// Does the requested object exist in this database?
@@ -84,6 +87,22 @@ namespace NGit.Storage.File
 		public override bool Has(AnyObjectId objectId)
 		{
 			return HasObjectImpl1(objectId) || HasObjectImpl2(objectId.Name);
+		}
+
+		/// <summary>Compute the location of a loose object file.</summary>
+		/// <remarks>Compute the location of a loose object file.</remarks>
+		/// <param name="objectId">identity of the loose object to map to the directory.</param>
+		/// <returns>location of the object, if it were to exist as a loose object.</returns>
+		internal virtual FilePath FileFor(AnyObjectId objectId)
+		{
+			return FileFor(objectId.Name);
+		}
+
+		internal virtual FilePath FileFor(string objectName)
+		{
+			string d = Sharpen.Runtime.Substring(objectName, 0, 2);
+			string f = Sharpen.Runtime.Substring(objectName, 2);
+			return new FilePath(new FilePath(GetDirectory(), d), f);
 		}
 
 		internal bool HasObjectImpl1(AnyObjectId objectId)
@@ -121,6 +140,8 @@ namespace NGit.Storage.File
 		/// <exception cref="System.IO.IOException"></exception>
 		internal abstract void Resolve(ICollection<ObjectId> matches, AbbreviatedObjectId
 			 id);
+
+		internal abstract Config GetConfig();
 
 		/// <summary>Open an object from this database.</summary>
 		/// <remarks>

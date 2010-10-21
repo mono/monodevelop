@@ -45,7 +45,8 @@ namespace Sharpen
 			if ((matches == null) || (current >= matches.Count)) {
 				throw new InvalidOperationException ();
 			}
-			return matches[current].Groups[n].Value;
+			Group grp = matches[current].Groups[n];
+			return grp.Success ? grp.Value : null;
 		}
 
 		public bool Matches ()

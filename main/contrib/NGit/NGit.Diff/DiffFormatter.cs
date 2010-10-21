@@ -84,7 +84,7 @@ namespace NGit.Diff
 
 		private int abbreviationLength = 7;
 
-		private DiffAlgorithm diffAlgorithm = MyersDiff<Sequence>.INSTANCE;
+		private DiffAlgorithm diffAlgorithm = new HistogramDiff();
 
 		private RawTextComparator comparator = RawTextComparator.DEFAULT;
 
@@ -177,7 +177,7 @@ namespace NGit.Diff
 		/// <summary>Set the algorithm that constructs difference output.</summary>
 		/// <remarks>Set the algorithm that constructs difference output.</remarks>
 		/// <param name="alg">the algorithm to produce text file differences.</param>
-		/// <seealso cref="MyersDiff{S}.INSTANCE">MyersDiff&lt;S&gt;.INSTANCE</seealso>
+		/// <seealso cref="HistogramDiff">HistogramDiff</seealso>
 		public virtual void SetDiffAlgorithm(DiffAlgorithm alg)
 		{
 			diffAlgorithm = alg;

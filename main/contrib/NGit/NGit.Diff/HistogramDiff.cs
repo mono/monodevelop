@@ -97,7 +97,7 @@ namespace NGit.Diff
 	/// This implementation has an internal limitation that prevents it from handling
 	/// sequences with more than 268,435,456 (2^28) elements.
 	/// </remarks>
-	public class HistogramDiff : DiffAlgorithm
+	public class HistogramDiff : LowLevelDiffAlgorithm
 	{
 		/// <summary>Algorithm to use when there are too many element occurrences.</summary>
 		/// <remarks>Algorithm to use when there are too many element occurrences.</remarks>
@@ -136,13 +136,10 @@ namespace NGit.Diff
 			maxChainLength = maxLen;
 		}
 
-		public override EditList DiffNonCommon<S>(SequenceComparator<S> cmp, S a, 
-			S b)
+		public override void DiffNonCommon<S>(EditList edits, HashedSequenceComparator<S>
+			 cmp, HashedSequence<S> a, HashedSequence<S> b, Edit region)
 		{
-			HistogramDiff.State<S> s = new HistogramDiff.State<S>(this, new HashedSequencePair
-				<S>(cmp, a, b));
-			s.DiffReplace(new Edit(0, s.a.Size(), 0, s.b.Size()));
-			return s.edits;
+			new HistogramDiff.State<S>(this, edits, cmp, a, b).DiffReplace(region);
 		}
 
 		private class State<S> where S:Sequence
@@ -157,13 +154,14 @@ namespace NGit.Diff
 			/// <remarks>Result edits we have determined that must be made to convert a to b.</remarks>
 			internal readonly EditList edits;
 
-			internal State(HistogramDiff _enclosing, HashedSequencePair<S> p)
+			internal State(HistogramDiff _enclosing, EditList edits, HashedSequenceComparator
+				<S> cmp, HashedSequence<S> a, HashedSequence<S> b)
 			{
 				this._enclosing = _enclosing;
-				this.cmp = p.GetComparator();
-				this.a = p.GetA();
-				this.b = p.GetB();
-				this.edits = new EditList();
+				this.cmp = cmp;
+				this.a = a;
+				this.b = b;
+				this.edits = edits;
 			}
 
 			internal virtual void DiffReplace(Edit r)
@@ -189,17 +187,25 @@ namespace NGit.Diff
 				}
 				else
 				{
-					if (this._enclosing.fallback != null)
+					if (this._enclosing.fallback is LowLevelDiffAlgorithm)
 					{
-						SubsequenceComparator<HashedSequence<S>> cs = this.Subcmp();
-						Subsequence<HashedSequence<S>> @as = Subsequence<S>.A(this.a, r);
-						Subsequence<HashedSequence<S>> bs = Subsequence<S>.B(this.b, r);
-						EditList res = this._enclosing.fallback.DiffNonCommon(cs, @as, bs);
-						Sharpen.Collections.AddAll(this.edits, Subsequence<S>.ToBase(res, @as, bs));
+						LowLevelDiffAlgorithm fb = (LowLevelDiffAlgorithm)this._enclosing.fallback;
+						fb.DiffNonCommon(this.edits, this.cmp, this.a, this.b, r);
 					}
 					else
 					{
-						this.edits.AddItem(r);
+						if (this._enclosing.fallback != null)
+						{
+							SubsequenceComparator<HashedSequence<S>> cs = this.Subcmp();
+							Subsequence<HashedSequence<S>> @as = Subsequence<S>.A(this.a, r);
+							Subsequence<HashedSequence<S>> bs = Subsequence<S>.B(this.b, r);
+							EditList res = this._enclosing.fallback.DiffNonCommon(cs, @as, bs);
+							Sharpen.Collections.AddAll(this.edits, Subsequence<S>.ToBase(res, @as, bs));
+						}
+						else
+						{
+							this.edits.AddItem(r);
+						}
 					}
 				}
 			}

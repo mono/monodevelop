@@ -57,13 +57,13 @@ namespace NGit.Storage.File
 	/// </summary>
 	internal class ObjectDirectoryInserter : ObjectInserter
 	{
-		private readonly ObjectDirectory db;
+		private readonly FileObjectDatabase db;
 
 		private readonly Config config;
 
 		private Deflater deflate;
 
-		internal ObjectDirectoryInserter(ObjectDirectory dest, Config cfg)
+		internal ObjectDirectoryInserter(FileObjectDatabase dest, Config cfg)
 		{
 			db = dest;
 			config = cfg;

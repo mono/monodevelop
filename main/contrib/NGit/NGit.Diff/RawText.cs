@@ -90,21 +90,7 @@ namespace NGit.Diff
 		/// the content array. The array is never modified, so passing
 		/// through cached arrays is safe.
 		/// </param>
-		public RawText(byte[] input) : this(RawTextComparator.DEFAULT, input)
-		{
-		}
-
-		/// <summary>Create a new sequence from an existing content byte array.</summary>
-		/// <remarks>
-		/// Create a new sequence from an existing content byte array.
-		/// The entire array (indexes 0 through length-1) is used as the content.
-		/// </remarks>
-		/// <param name="cmp">comparator that will later be used to compare texts.</param>
-		/// <param name="input">
-		/// the content array. The array is never modified, so passing
-		/// through cached arrays is safe.
-		/// </param>
-		public RawText(RawTextComparator cmp, byte[] input)
+		public RawText(byte[] input)
 		{
 			content = input;
 			lines = RawParseUtils.LineMap(content, 0, content.Length);
@@ -152,8 +138,8 @@ namespace NGit.Diff
 		/// <exception cref="System.IO.IOException">the stream write operation failed.</exception>
 		public virtual void WriteLine(OutputStream @out, int i)
 		{
-			int start = lines.Get(i + 1);
-			int end = lines.Get(i + 2);
+			int start = GetStart(i);
+			int end = GetEnd(i);
 			if (content[end - 1] == '\n')
 			{
 				end--;
@@ -172,6 +158,78 @@ namespace NGit.Diff
 				return true;
 			}
 			return content[end - 1] != '\n';
+		}
+
+		/// <summary>Get the text for a single line.</summary>
+		/// <remarks>Get the text for a single line.</remarks>
+		/// <param name="i">
+		/// index of the line to extract. Note this is 0-based, so line
+		/// number 1 is actually index 0.
+		/// </param>
+		/// <returns>the text for the line, without a trailing LF.</returns>
+		public virtual string GetString(int i)
+		{
+			return GetString(i, i + 1, true);
+		}
+
+		/// <summary>Get the text for a region of lines.</summary>
+		/// <remarks>Get the text for a region of lines.</remarks>
+		/// <param name="begin">
+		/// index of the first line to extract. Note this is 0-based, so
+		/// line number 1 is actually index 0.
+		/// </param>
+		/// <param name="end">index of one past the last line to extract.</param>
+		/// <param name="dropLF">
+		/// if true the trailing LF ('\n') of the last returned line is
+		/// dropped, if present.
+		/// </param>
+		/// <returns>
+		/// the text for lines
+		/// <code>[begin, end)</code>
+		/// .
+		/// </returns>
+		public virtual string GetString(int begin, int end, bool dropLF)
+		{
+			if (begin == end)
+			{
+				return string.Empty;
+			}
+			int s = GetStart(begin);
+			int e = GetEnd(end - 1);
+			if (dropLF && content[e - 1] == '\n')
+			{
+				e--;
+			}
+			return Decode(s, e);
+		}
+
+		/// <summary>Decode a region of the text into a String.</summary>
+		/// <remarks>
+		/// Decode a region of the text into a String.
+		/// The default implementation of this method tries to guess the character
+		/// set by considering UTF-8, the platform default, and falling back on
+		/// ISO-8859-1 if neither of those can correctly decode the region given.
+		/// </remarks>
+		/// <param name="start">first byte of the content to decode.</param>
+		/// <param name="end">one past the last byte of the content to decode.</param>
+		/// <returns>
+		/// the region
+		/// <code>[start, end)</code>
+		/// decoded as a String.
+		/// </returns>
+		protected internal virtual string Decode(int start, int end)
+		{
+			return RawParseUtils.Decode(content, start, end);
+		}
+
+		private int GetStart(int i)
+		{
+			return lines.Get(i + 1);
+		}
+
+		private int GetEnd(int i)
+		{
+			return lines.Get(i + 2);
 		}
 
 		/// <summary>

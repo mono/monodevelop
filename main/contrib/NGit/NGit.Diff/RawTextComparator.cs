@@ -367,7 +367,16 @@ namespace NGit.Diff
 			e.beginA = FindForwardLine(a.lines, e.beginA, aPtr);
 			e.beginB = FindForwardLine(b.lines, e.beginB, bPtr);
 			e.endA = FindReverseLine(a.lines, e.endA, aEnd);
+			bool partialA = aEnd < a.lines.Get(e.endA + 1);
+			if (partialA)
+			{
+				bEnd += a.lines.Get(e.endA + 1) - aEnd;
+			}
 			e.endB = FindReverseLine(b.lines, e.endB, bEnd);
+			if (!partialA && bEnd < b.lines.Get(e.endB + 1))
+			{
+				e.endA++;
+			}
 			return base.ReduceCommonStartEnd(a, b, e);
 		}
 

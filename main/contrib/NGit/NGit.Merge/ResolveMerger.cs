@@ -106,7 +106,7 @@ namespace NGit.Merge
 
 		private DirCache dircache;
 
-		private WorkingTreeIterator workingTreeIt;
+		private WorkingTreeIterator workingTreeIterator;
 
 		/// <param name="local"></param>
 		/// <param name="inCore"></param>
@@ -145,16 +145,16 @@ namespace NGit.Merge
 				tw.AddTree(sourceTrees[0]);
 				tw.AddTree(sourceTrees[1]);
 				tw.AddTree(buildIt);
-				if (workingTreeIt != null)
+				if (workingTreeIterator != null)
 				{
-					tw.AddTree(workingTreeIt);
+					tw.AddTree(workingTreeIterator);
 				}
 				while (tw.Next())
 				{
 					if (!ProcessEntry(tw.GetTree<CanonicalTreeParser>(T_BASE), tw.GetTree<CanonicalTreeParser
 						>(T_OURS), tw.GetTree<CanonicalTreeParser>(T_THEIRS), tw.GetTree<DirCacheBuildIterator
-						>(T_INDEX), (workingTreeIt == null) ? null : tw.GetTree<WorkingTreeIterator>(T_FILE
-						)))
+						>(T_INDEX), (workingTreeIterator == null) ? null : tw.GetTree<WorkingTreeIterator
+						>(T_FILE)))
 					{
 						CleanUp();
 						return false;
@@ -650,10 +650,11 @@ namespace NGit.Merge
 		/// TODO: enhance WorkingTreeIterator to support write operations. Then this
 		/// merger will be able to merge with a different working tree abstraction.
 		/// </remarks>
-		/// <param name="workingTreeIt">the workingTreeIt to set</param>
-		public virtual void SetWorkingTreeIt(WorkingTreeIterator workingTreeIt)
+		/// <param name="workingTreeIterator">the workingTreeIt to set</param>
+		public virtual void SetWorkingTreeIterator(WorkingTreeIterator workingTreeIterator
+			)
 		{
-			this.workingTreeIt = workingTreeIt;
+			this.workingTreeIterator = workingTreeIterator;
 		}
 	}
 }

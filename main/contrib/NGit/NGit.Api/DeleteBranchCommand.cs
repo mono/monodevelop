@@ -129,12 +129,13 @@ namespace NGit.Api
 					{
 						continue;
 					}
-					if (currentRef.GetName().Equals(currentBranch))
+					string fullName = currentRef.GetName();
+					if (fullName.Equals(currentBranch))
 					{
 						throw new CannotDeleteCurrentBranchException(MessageFormat.Format(JGitText.Get().
 							cannotDeleteCheckedOutBranch, branchName_1));
 					}
-					RefUpdate update = repo.UpdateRef(currentRef.GetName());
+					RefUpdate update = repo.UpdateRef(fullName);
 					update.SetRefLogMessage("branch deleted", false);
 					update.SetForceUpdate(true);
 					RefUpdate.Result deleteResult = update.Delete();
@@ -157,11 +158,16 @@ namespace NGit.Api
 					}
 					if (ok)
 					{
-						result.AddItem(currentRef.GetName());
-						// remove upstream configuration if any
-						repo.GetConfig().UnsetSection(ConfigConstants.CONFIG_BRANCH_SECTION, branchName_1
-							);
-						repo.GetConfig().Save();
+						result.AddItem(fullName);
+						if (fullName.StartsWith(Constants.R_HEADS))
+						{
+							string shortenedName = Sharpen.Runtime.Substring(fullName, Constants.R_HEADS.Length
+								);
+							// remove upstream configuration if any
+							repo.GetConfig().UnsetSection(ConfigConstants.CONFIG_BRANCH_SECTION, shortenedName
+								);
+							repo.GetConfig().Save();
+						}
 					}
 					else
 					{
