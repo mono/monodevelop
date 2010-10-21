@@ -1910,21 +1910,21 @@ namespace Mono.TextEditor
 			if (isDefaultColor && !drawDefaultBackground)
 				return;
 			cr.Color = color;
+			double xp = System.Math.Floor (area.X);
 			
 			if (textEditor.Options.ShowRuler) {
-				double divider = System.Math.Max (area.X, System.Math.Min (x + TextStartPosition + rulerX, area.X + area.Width));
+				double divider = System.Math.Max (xp, System.Math.Min (x + TextStartPosition + rulerX + 0.5, xp + area.Width));
 				if (divider < area.X + area.Width) {
-					cr.Rectangle (area.X, area.Y, divider - area.X, area.Height);
+					cr.Rectangle (xp, area.Y, divider - xp, area.Height);
 					cr.Fill ();
-					cr.Rectangle (divider, area.Y, area.X + area.Width - divider, area.Height);
+					cr.Rectangle (divider, area.Y, xp + area.Width - divider + 1, area.Height);
 					cr.Color = DimColor (color);
 					cr.Fill ();
 					cr.DrawLine (ColorStyle.Ruler, divider, area.Y, divider, area.Y + area.Height);
 					return;
 				}
 			}
-			
-			cr.Rectangle (area.X + 0.5, area.Y, area.Width + 0.5, area.Height);
+			cr.Rectangle (xp, area.Y, area.Width, area.Height);
 			cr.Fill ();
 		}
 

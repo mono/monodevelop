@@ -174,7 +174,7 @@ namespace Mono.TextEditor
 			@from = System.Math.Max (@from, editor.TextViewMargin.XOffset);
 			to = System.Math.Max (to, editor.TextViewMargin.XOffset);
 			if (@from < to) {
-				cr.DrawLine (selected ? editor.ColorStyle.Selection.CairoColor : editor.ColorStyle.GetChunkStyle (style).CairoColor, @from, y + editor.LineHeight - 1, to, y + editor.LineHeight - 1);
+				cr.DrawLine (selected ? editor.ColorStyle.Selection.CairoColor : editor.ColorStyle.GetChunkStyle (style).CairoColor, @from + 0.5, y + editor.LineHeight - 1.5, to + 0.5, y + editor.LineHeight - 1.5);
 			}
 		}
 	}
