@@ -1001,6 +1001,8 @@ namespace MonoDevelop.CSharp.Completion
 						break;
 				}
 				IType overrideCls = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
+				if (overrideCls == null)
+					overrideCls = overrideCls = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new DomLocation (completionContext.TriggerLine - 1, 1));
 				if (overrideCls != null && (overrideCls.ClassType == ClassType.Class || overrideCls.ClassType == ClassType.Struct)) {
 					string modifiers = textEditorData.GetTextBetween (firstMod, wordStart);
 					return GetOverrideCompletionData (completionContext, overrideCls, modifiers);

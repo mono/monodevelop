@@ -269,7 +269,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				AppendReturnType (result, options.ImplementingType, method.ReturnType);
 				result.Append (" ");
 				if (options.ExplicitDeclaration) {
-					result.Append (ambience.GetString (new DomReturnType (method.DeclaringType), OutputFlags.IncludeGenerics));
+					AppendReturnType (result, options.ImplementingType, new DomReturnType (method.DeclaringType));
 					result.Append (".");
 				}
 				result.Append (method.Name);

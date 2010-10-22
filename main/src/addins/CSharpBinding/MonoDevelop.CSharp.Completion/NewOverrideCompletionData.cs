@@ -68,7 +68,16 @@ namespace MonoDevelop.CSharp.Completion
 		public override void InsertCompletionText (CompletionListWindow window)
 		{
 			CodeGenerator generator = CodeGenerator.CreateGenerator (editor.Document.MimeType, editor.Options.TabsToSpaces, editor.Options.TabSize, editor.EolMarker);
-			var result = generator.CreateMemberImplementation (type, member, false);
+			bool isExplicit = false;
+			if (member.DeclaringType.ClassType == ClassType.Interface) {
+				foreach (var m in type.Members) {
+					if (m.Name == member.Name && m.ReturnType.ToInvariantString () != member.ReturnType.ToInvariantString ()) {
+						isExplicit = true;
+						break;
+					}
+				}
+			}
+			var result = generator.CreateMemberImplementation (type, member, isExplicit);
 			string sb = result.Code.TrimStart ();
 			int trimStart = result.Code.Length - sb.Length;
 			sb = sb.TrimEnd ();
