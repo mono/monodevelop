@@ -197,6 +197,7 @@ FILES =  \
 	MonoDevelop.Components.Extensions/AlertDialog.cs \
 	MonoDevelop.Components.Extensions/ISelectFileDialog.cs \
 	MonoDevelop.Components.Extensions/PlatformDialog.cs \
+	MonoDevelop.Components.Extensions/TextQuestionDialog.cs \
 	MonoDevelop.Components.PropertyGrid.Editors/BooleanEditorCell.cs \
 	MonoDevelop.Components.PropertyGrid.Editors/CharPropertyEditor.cs \
 	MonoDevelop.Components.PropertyGrid.Editors/CollectionEditor.cs \

@@ -384,43 +384,15 @@ namespace MonoDevelop.Ide
 			
 			public string GetTextResponse (string question, string caption, string initialValue, bool isPassword)
 			{
-				string returnValue = null;
-				
-				Dialog md = new Dialog (caption, rootWindow, DialogFlags.Modal | DialogFlags.DestroyWithParent);
-				try {
-					// add a label with the question
-					Label questionLabel = new Label(question);
-					questionLabel.UseMarkup = true;
-					questionLabel.Xalign = 0.0F;
-					md.VBox.PackStart(questionLabel, true, false, 6);
-					
-					// add an entry with initialValue
-					Entry responseEntry = (initialValue != null) ? new Entry(initialValue) : new Entry();
-					md.VBox.PackStart(responseEntry, false, true, 6);
-					responseEntry.Visibility = !isPassword;
-					
-					// add action widgets
-					md.AddActionWidget(new Button(Gtk.Stock.Cancel), ResponseType.Cancel);
-					md.AddActionWidget(new Button(Gtk.Stock.Ok), ResponseType.Ok);
-					
-					md.VBox.ShowAll();
-					md.ActionArea.ShowAll();
-					md.HasSeparator = false;
-					md.BorderWidth = 6;
-					
-					PlaceDialog (md, rootWindow);
-					
-					int response = md.Run ();
-					md.Hide ();
-					
-					if ((ResponseType) response == ResponseType.Ok) {
-						returnValue =  responseEntry.Text;
-					}
-					
-					return returnValue;
-				} finally {
-					md.Destroy ();
-				}
+				var dialog = new TextQuestionDialog () {
+					Question = question,
+					Caption = caption,
+					Value = initialValue,
+					IsPassword = isPassword,
+				};
+				if (dialog.Run ())
+					return dialog.Value;
+				return null;
 			}
 		}
 		#endregion
