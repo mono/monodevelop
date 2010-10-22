@@ -30,7 +30,7 @@
 
 using System;
 using System.Security.Cryptography;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using System.IO;
 
@@ -179,7 +179,7 @@ namespace Mono.CompilerServices.SymbolWriter
 		}
 	}
 
-	public struct LineNumberEntry
+	public class LineNumberEntry
 	{
 		#region This is actually written to the symbol file
 		public readonly int Row;
@@ -202,13 +202,10 @@ namespace Mono.CompilerServices.SymbolWriter
 
 		public static LineNumberEntry Null = new LineNumberEntry (0, 0, 0);
 
-		private class OffsetComparerClass : IComparer
+		private class OffsetComparerClass : IComparer<LineNumberEntry>
 		{
-			public int Compare (object a, object b)
+			public int Compare (LineNumberEntry l1, LineNumberEntry l2)
 			{
-				LineNumberEntry l1 = (LineNumberEntry) a;
-				LineNumberEntry l2 = (LineNumberEntry) b;
-
 				if (l1.Offset < l2.Offset)
 					return -1;
 				else if (l1.Offset > l2.Offset)
@@ -218,13 +215,10 @@ namespace Mono.CompilerServices.SymbolWriter
 			}
 		}
 
-		private class RowComparerClass : IComparer
+		private class RowComparerClass : IComparer<LineNumberEntry>
 		{
-			public int Compare (object a, object b)
+			public int Compare (LineNumberEntry l1, LineNumberEntry l2)
 			{
-				LineNumberEntry l1 = (LineNumberEntry) a;
-				LineNumberEntry l2 = (LineNumberEntry) b;
-
 				if (l1.Row < l2.Row)
 					return -1;
 				else if (l1.Row > l2.Row)
@@ -234,8 +228,8 @@ namespace Mono.CompilerServices.SymbolWriter
 			}
 		}
 
-		public static readonly IComparer OffsetComparer = new OffsetComparerClass ();
-		public static readonly IComparer RowComparer = new RowComparerClass ();
+		public static readonly IComparer<LineNumberEntry> OffsetComparer = new OffsetComparerClass ();
+		public static readonly IComparer<LineNumberEntry> RowComparer = new RowComparerClass ();
 
 		public override string ToString ()
 		{
@@ -336,7 +330,7 @@ namespace Mono.CompilerServices.SymbolWriter
 		public override string ToString ()
 		{
 			return String.Format ("[LocalVariable {0}:{1}:{2}]",
-					      Name, Index, BlockIndex);
+					      Name, Index, BlockIndex - 1);
 		}
 	}
 
@@ -453,8 +447,8 @@ namespace Mono.CompilerServices.SymbolWriter
 		public readonly int ID;
 		#endregion
 
-		ArrayList captured_vars = new ArrayList ();
-		ArrayList captured_scopes = new ArrayList ();
+		List<CapturedVariable> captured_vars = new List<CapturedVariable> ();
+		List<CapturedScope> captured_scopes = new List<CapturedScope> ();
 
 		public AnonymousScopeEntry (int id)
 		{
@@ -529,8 +523,8 @@ namespace Mono.CompilerServices.SymbolWriter
 
 		MonoSymbolFile file;
 		SourceFileEntry source;
-		ArrayList include_files;
-		ArrayList namespaces;
+		List<SourceFileEntry> include_files;
+		List<NamespaceEntry> namespaces;
 
 		bool creating;
 
@@ -550,7 +544,7 @@ namespace Mono.CompilerServices.SymbolWriter
 			this.Index = file.AddCompileUnit (this);
 
 			creating = true;
-			namespaces = new ArrayList ();
+			namespaces = new List<NamespaceEntry> ();
 		}
 
 		public void AddFile (SourceFileEntry file)
@@ -559,7 +553,7 @@ namespace Mono.CompilerServices.SymbolWriter
 				throw new InvalidOperationException ();
 
 			if (include_files == null)
-				include_files = new ArrayList ();
+				include_files = new List<SourceFileEntry> ();
 
 			include_files.Add (file);
 		}
@@ -635,15 +629,13 @@ namespace Mono.CompilerServices.SymbolWriter
 
 				int count_includes = reader.ReadLeb128 ();
 				if (count_includes > 0) {
-					include_files = new ArrayList ();
-					for (int i = 0; i < count_includes; i++) {
-						// FIXME: The debugger will need this later on.
-						reader.ReadLeb128 ();
-					}
+					include_files = new List<SourceFileEntry> ();
+					for (int i = 0; i < count_includes; i++)
+						include_files.Add (file.GetSourceFile (reader.ReadLeb128 ()));
 				}
 
 				int count_ns = reader.ReadLeb128 ();
-				namespaces = new ArrayList ();
+				namespaces = new List<NamespaceEntry> ();
 				for (int i = 0; i < count_ns; i ++)
 					namespaces.Add (new NamespaceEntry (file, reader));
 
@@ -656,6 +648,18 @@ namespace Mono.CompilerServices.SymbolWriter
 				ReadData ();
 				NamespaceEntry[] retval = new NamespaceEntry [namespaces.Count];
 				namespaces.CopyTo (retval, 0);
+				return retval;
+			}
+		}
+
+		public SourceFileEntry[] IncludeFiles {
+			get {
+				ReadData ();
+				if (include_files == null)
+					return new SourceFileEntry [0];
+
+				SourceFileEntry[] retval = new SourceFileEntry [include_files.Count];
+				include_files.CopyTo (retval, 0);
 				return retval;
 			}
 		}
@@ -812,6 +816,9 @@ namespace Mono.CompilerServices.SymbolWriter
 		// MONO extensions.
 		public const byte DW_LNE_MONO_negate_is_hidden = 0x40;
 
+		internal const byte DW_LNE_MONO__extensions_start = 0x40;
+		internal const byte DW_LNE_MONO__extensions_end   = 0x7f;
+
 		protected LineNumberTable (MonoSymbolFile file)
 		{
 			this.LineBase = file.OffsetTable.LineNumberTable_LineBase;
@@ -900,7 +907,7 @@ namespace Mono.CompilerServices.SymbolWriter
 
 		void DoRead (MonoSymbolFile file, MyBinaryReader br)
 		{
-			ArrayList lines = new ArrayList ();
+			var lines = new List<LineNumberEntry> ();
 
 			bool is_hidden = false, modified = false;
 			int stm_line = 1, stm_offset = 0, stm_file = 1;
@@ -920,10 +927,14 @@ namespace Mono.CompilerServices.SymbolWriter
 					} else if (opcode == DW_LNE_MONO_negate_is_hidden) {
 						is_hidden = !is_hidden;
 						modified = true;
-					} else
+					} else if ((opcode >= DW_LNE_MONO__extensions_start) &&
+						   (opcode <= DW_LNE_MONO__extensions_end)) {
+						; // reserved for future extensions
+					} else {
 						throw new MonoSymbolFileException (
 							"Unknown extended opcode {0:x} in LNT ({1})",
 							opcode, file.FileName);
+					}
 
 					br.BaseStream.Position = end_pos;
 					continue;
@@ -1101,9 +1112,9 @@ namespace Mono.CompilerServices.SymbolWriter
 			locals_check_done :
 				;
 			} else {
-				Hashtable local_names = new Hashtable ();
+				var local_names = new Dictionary<string, LocalVariableEntry> ();
 				foreach (LocalVariableEntry local in locals) {
-					if (local_names.Contains (local.Name)) {
+					if (local_names.ContainsKey (local.Name)) {
 						flags |= Flags.LocalNamesAmbiguous;
 						break;
 					}
