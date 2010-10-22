@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -37,7 +38,7 @@ namespace Cecil.Decompiler {
 
 		MethodDefinition method;
 		MethodBody body;
-		VariableDefinitionCollection variables;
+		IList<VariableDefinition> variables;
 		ControlFlowGraph cfg;
 
 		public MethodDefinition Method {
@@ -48,7 +49,7 @@ namespace Cecil.Decompiler {
 			get { return body; }
 		}
 
-		public VariableDefinitionCollection Variables {
+		public IList<VariableDefinition> Variables {
 			get { return variables; }
 		}
 
@@ -78,9 +79,9 @@ namespace Cecil.Decompiler {
 			variables.RemoveAt (index);
 		}
 
-		static VariableDefinitionCollection CloneCollection (VariableDefinitionCollection variables)
+		static IList<VariableDefinition> CloneCollection (IList<VariableDefinition> variables)
 		{
-			var collection = new VariableDefinitionCollection (variables.Container);
+			var collection = new List<VariableDefinition> ();
 
 			foreach (VariableDefinition variable in variables)
 				collection.Add (variable);

@@ -23,6 +23,7 @@
     <Execution>
       <Execution clr-version="Net_1_1" />
     </Execution>
+    <DefineConstants>NET_3_5</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -34,6 +35,7 @@
     <Execution>
       <Execution clr-version="Net_1_1" />
     </Execution>
+    <DefineConstants>NET_3_5</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
