@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<Template
+	Originator="Levi Bard"
+	Language="Objective C"
+	Created="07/10/2010"
+	LastModified="07/10/2010">
+	
+	<TemplateConfiguration>
+		<_Name>Empty Objective C Source File</_Name>
+		<Icon>res:text-x-csrc.32x32.png</Icon>
+		<_Category>General</_Category>
+		<LanguageName>Objective C</LanguageName>
+		<_Description>Creates an empty Objective C source file.</_Description>
+	</TemplateConfiguration>
+	
+	<TemplateFiles>
+		<File DefaultExtension=".m" DefaultName="EmptyObjCSourceFile" AddStandardHeader="True"/>
+	</TemplateFiles>
+	
+	<FileOptions/>
+	
+</Template>
