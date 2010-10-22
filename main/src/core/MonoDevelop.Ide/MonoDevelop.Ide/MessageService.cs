@@ -365,15 +365,12 @@ namespace MonoDevelop.Ide
 		{
 			public void ShowException (Gtk.Window parent, Exception e, string primaryText)
 			{
-				var errorDialog = new MonoDevelop.Ide.Gui.Dialogs.ErrorDialog (parent);
-				try {
-					errorDialog.Message = primaryText;
-					errorDialog.AddDetails (e.ToString (), false);
-					PlaceDialog (errorDialog, parent);
-					errorDialog.Run ();
-				} finally {
-					errorDialog.Destroy ();
-				}
+				var exceptionDialog = new ExceptionDialog () {
+					Message = primaryText,
+					Exception = e,
+					TransientFor = parent,
+				};
+				exceptionDialog.Run ();
 			}
 			
 			public AlertButton GenericAlert (MessageDescription message)

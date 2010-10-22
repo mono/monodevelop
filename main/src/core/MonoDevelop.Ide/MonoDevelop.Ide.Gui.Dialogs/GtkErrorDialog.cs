@@ -29,12 +29,12 @@ using Gtk;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-	public partial class ErrorDialog : Gtk.Dialog
+	internal partial class GtkErrorDialog : Gtk.Dialog
 	{
 		TextTag tagNoWrap;
 		TextTag tagWrap;
 		
-		public ErrorDialog (Window parent)
+		public GtkErrorDialog (Window parent)
 		{
 			this.Build ();
 			TransientFor = parent;
