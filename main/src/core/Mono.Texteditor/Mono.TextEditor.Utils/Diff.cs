@@ -440,13 +440,23 @@ namespace Mono.TextEditor.Utils
 			sb.AppendLine ("+++ " + changedFileName);
 			
 			foreach (var item in diff) {
-				sb.AppendLine ("@@ -" + item.RemoveStart + "," + item.Removed + " +" + item.InsertStart + "," + item.Inserted + " @@");
+				int remStart = System.Math.Max (1, item.RemoveStart - 3);
+				int remEnd   = System.Math.Min (baseDocument.LineCount, item.RemoveStart + item.Removed + 3);
+				int insStart = System.Math.Max (1, item.InsertStart - 3);
+				int insEnd   = System.Math.Min (changedDocument.LineCount, item.InsertStart + item.Inserted + 3);
 				
+				sb.AppendLine ("@@ -" + remStart + "," + (remEnd - remStart) + " +" + insStart + "," + (insEnd - insStart) + " @@");
+				for (int i = System.Math.Min (remStart, insStart); i < item.RemoveStart; i++) {
+					sb.AppendLine (baseDocument.GetLineText (i, false));
+				}
 				for (int i = item.RemoveStart; i < item.RemoveStart + item.Removed; i++) {
 					sb.AppendLine ("-" + baseDocument.GetLineText (i, false));
 				}
 				for (int i = item.InsertStart; i < item.InsertStart + item.Inserted; i++) {
 					sb.AppendLine ("+" + changedDocument.GetLineText (i, false));
+				}
+				for (int i = item.RemoveStart + item.Removed; i < remEnd; i++) {
+					sb.AppendLine (baseDocument.GetLineText (i, false));
 				}
 			}
 			return sb.ToString ();
