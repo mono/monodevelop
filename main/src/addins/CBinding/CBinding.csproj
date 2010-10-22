@@ -221,6 +221,15 @@
     <EmbeddedResource Include="md1format.xml">
       <LogicalName>md1format.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="templates\ConsoleObjCProject.xpt.xml">
+      <LogicalName>ConsoleObjCProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\EmptyObjCSourceFile.xft.xml">
+      <LogicalName>EmptyObjCSourceFile.xft.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\EmptyObjCppSourceFile.xft.xml">
+      <LogicalName>EmptyObjCppSourceFile.xft.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Project\CProject.cs" />
@@ -292,6 +301,8 @@
     <Compile Include="gtk-gui\CBinding.PackageDetails.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Parser\CDocumentParser.cs" />
+    <Compile Include="ObjCLanguageBinding.cs" />
+    <Compile Include="ObjCppLanguageBinding.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

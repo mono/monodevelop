@@ -51,7 +51,9 @@ namespace CBinding
 {
 	public enum Language {
 		C,
-		CPP
+		CPP,
+		OBJC,
+		OBJCPP
 	}
 	
 	public enum CProjectCommands {
@@ -80,7 +82,7 @@ namespace CBinding
 		/// <summary>
 		/// Extensions for C/C++ source files
 		/// </summary>
-		public static string[] SourceExtensions = { ".C", ".CC", ".CPP", ".CXX" };
+		public static string[] SourceExtensions = { ".C", ".CC", ".CPP", ".CXX", ".M", ".MM" };
 		
 		/// <summary>
 		/// Extensions for C/C++ header files
@@ -117,6 +119,12 @@ namespace CBinding
 				break;
 			case "CPP":
 				this.language = Language.CPP;
+				break;
+			case "Objective C":
+				this.language = Language.OBJC;
+				break;
+			case "Objective C++":
+				this.language = Language.OBJCPP;
 				break;
 			}
 			
@@ -172,7 +180,7 @@ namespace CBinding
 		}
 		
 		public override string[] SupportedLanguages {
-			get { return new string[] { "C", "CPP" }; }
+			get { return new string[] { "C", "CPP", "Objective C", "Objective C++" }; }
 		}
 		
 		public CompileTarget CompileTarget {
