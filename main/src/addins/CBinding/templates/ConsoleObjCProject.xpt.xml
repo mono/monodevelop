@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<Template
+	originator   = "Levi Bard" 
+    created      = "07/30/2010"
+    lastModified = "07/30/2010">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>Console Project</_Name>
+		<_Category>C</_Category>
+		<Icon>md-project-console|res:c-icon-32.png</Icon>
+		<LanguageName>Objective C</LanguageName>
+		<_Description>Creates simple hello world Objective C project.</_Description>
+	</TemplateConfiguration>
+	
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Project name = "${ProjectName}" directory = "." type = "C/C++">
+			<Options
+				Target = "Bin"
+				ExternalConsole = "True"
+				CompilerArgs = ""
+				LinkerArgs = ""/>
+			
+			<Files>
+				<File name = "main.m" AddStandardHeader="True"><![CDATA[#import <stdio.h>
+
+int main( int argc, const char *argv[] ) {
+	printf( "hello world\n" );
+	return 0;
+}
+]]></File>
+			</Files>
+		</Project>
+	</Combine>
+</Template>
