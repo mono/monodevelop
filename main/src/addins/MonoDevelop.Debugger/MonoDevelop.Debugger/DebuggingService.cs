@@ -301,7 +301,6 @@ namespace MonoDevelop.Debugger
 			session.TargetStarted += OnStarted;
 			session.OutputWriter = OutputWriter;
 			session.LogWriter = LogWriter;
-			session.ExceptionHandler = ExceptionHandler;
 			session.BusyStateChanged += OnBusyStateChanged;
 			session.TypeResolverHandler = ResolveType;
 			session.BreakpointTraceHandler = BreakpointTraceHandler;
@@ -331,7 +330,6 @@ namespace MonoDevelop.Debugger
 			session.TargetStarted -= OnStarted;
 			session.OutputWriter = null;
 			session.LogWriter = null;
-			session.ExceptionHandler = null;
 			session.BusyStateChanged -= OnBusyStateChanged;
 			session.TypeResolverHandler = null;
 			session.BreakpointTraceHandler = null;
@@ -398,6 +396,7 @@ namespace MonoDevelop.Debugger
 		{
 			currentEngine = debugger;
 			session = debugger.CreateSession ();
+			session.ExceptionHandler = ExceptionHandler;
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
 			console = monitor as IConsole;
 			SetupSession ();
@@ -460,6 +459,7 @@ namespace MonoDevelop.Debugger
 			startInfo.CloseExternalConsoleOnExit = c.CloseOnDispose;
 			currentEngine = factory;
 			session = factory.CreateSession ();
+			session.ExceptionHandler = ExceptionHandler;
 			session.Initialize ();
 			console = c;
 			
