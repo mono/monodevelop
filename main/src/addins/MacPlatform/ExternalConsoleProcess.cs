@@ -88,7 +88,8 @@ bash pause on exit trick
 			
 			//build the sh command
 			var sb = new StringBuilder ();
-			sb.AppendFormat ("cd \"{0}\"; ", Escape (workingDirectory));
+			if (!string.IsNullOrEmpty (workingDirectory))
+				sb.AppendFormat ("cd \"{0}\"; ", Escape (workingDirectory));
 			foreach (string env in environmentVariables.Keys)
 				sb.AppendFormat ("{0}=\"{1}\" ", env, Escape (environmentVariables[env]));
 			sb.AppendFormat ("{0} {1}", Escape (command), arguments);
@@ -96,7 +97,6 @@ bash pause on exit trick
 				sb.Append ("; echo; read -p 'Press any key to continue...' -n1");
 			sb.Append ("; exit");
 			var cmd = Escape (sb.ToString ());
-			Console.WriteLine (cmd);
 			
 			//run the command in Terminal.app and extrac tab and window handles
 			var ret = AppleScript.Run ("tell app \"Terminal\" to do script \"{0}\"", cmd);
