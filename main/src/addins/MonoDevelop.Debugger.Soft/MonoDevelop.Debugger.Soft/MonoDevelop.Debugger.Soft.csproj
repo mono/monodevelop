@@ -49,6 +49,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="SoftDebuggerEngine.cs" />
     <Compile Include="RemoteSoftDebuggerSession.cs" />
+    <Compile Include="CustomSoftDebuggerEngine.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Manifest.addin.xml">
