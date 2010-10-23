@@ -46,7 +46,9 @@ namespace MonoDevelop.Debugger.Soft
 		ProcessInfo[] procs;
 		Gtk.Dialog dialog;
 		string appName;
+		Func<bool> retryConnection;
 		
+		/// <summary>Subclasses must implement this to start the session </summary>
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
 			throw new NotImplementedException ();
@@ -55,36 +57,129 @@ namespace MonoDevelop.Debugger.Soft
 		/// <summary>Starts the debugger listening for a connection over TCP/IP</summary>
 		protected void StartListening (RemoteDebuggerStartInfo dsi)
 		{
+			IPEndPoint dbgEP, conEP;
+			PreConnectionInit (dsi, out dbgEP, out conEP);
+			
+			var callback = HandleConnectionCallbackErrors (ListenCallback);
+			OnConnecting (VirtualMachineManager.BeginListen (dbgEP, conEP, callback));
+			ShowConnectingDialog (dsi);
+		}
+		
+		/// <summary>Starts the debugger connecting to a remote IP</summary>
+		protected void StartConnecting (RemoteDebuggerStartInfo dsi, int maxAttempts, int timeBetweenAttempts)
+		{
+			if (timeBetweenAttempts < 0 || timeBetweenAttempts > 10000)
+				throw new ArgumentException ("timeBetweenAttempts");
+			
+			IPEndPoint dbgEP, conEP;
+			PreConnectionInit (dsi, out dbgEP, out conEP);
+			
+			var callback = HandleConnectionCallbackErrors (ConnectCallback);
+			
+			retryConnection = () => {
+				if (maxAttempts == 1 || Exited) {
+					return false;
+				}
+				if (maxAttempts > 1)
+					maxAttempts--;
+				try {
+					if (timeBetweenAttempts > 0)
+						System.Threading.Thread.Sleep (timeBetweenAttempts);
+					
+					OnConnecting (VirtualMachineManager.BeginConnect (dbgEP, conEP, callback));
+				} catch (Exception ex2) {
+					retryConnection = null;
+					OnConnectionError (ex2);
+					return false;
+				}
+				return true;
+			};
+			
+			ShowConnectingDialog (dsi);
+			
+			OnConnecting (VirtualMachineManager.BeginConnect (dbgEP, conEP, callback));
+		}
+		
+		void PreConnectionInit (RemoteDebuggerStartInfo dsi, out IPEndPoint dbgEP, out IPEndPoint conEP)
+		{
+			if (appName != null)
+				throw new InvalidOperationException ("Cannot initialize connection more than once");
+			
 			appName = dsi.AppName;
 			RegisterUserAssemblies (dsi.UserAssemblyNames);
 			
-			IPEndPoint dbgEP = new IPEndPoint (dsi.Address, dsi.DebugPort);
-			IPEndPoint conEP = dsi.RedirectOutput? new IPEndPoint (dsi.Address, dsi.OutputPort) : null;
+			dbgEP = new IPEndPoint (dsi.Address, dsi.DebugPort);
+			conEP = dsi.RedirectOutput? new IPEndPoint (dsi.Address, dsi.OutputPort) : null;
 			
 			if (!String.IsNullOrEmpty (dsi.LogMessage))
 				LogWriter (false, dsi.LogMessage + "\n");
-			
-			OnConnecting (VirtualMachineManager.BeginListen (dbgEP, conEP, HandleCallbackErrors (ListenCallback)));
-			ShowListenDialog (dsi);
 		}
 		
-		void ListenCallback (IAsyncResult ar)
+		protected override void OnConnectionError (Exception ex)
 		{
-			HandleConnection (VirtualMachineManager.EndListen (ar));
+			if (retryConnection != null) {
+				var sx = ex as SocketException;
+				if (sx != null) {
+					bool retry = sx.ErrorCode == 10061; //connection refused
+					if (retry && retryConnection ())
+						return;
+				}
+				retryConnection = null;
+			}
+			
+			base.OnConnectionError (ex);
+		}
+		
+		void PressOk ()
+		{
 			Gtk.Application.Invoke (delegate {
 				if (dialog != null)
 					dialog.Respond (Gtk.ResponseType.Ok);
 			});
 		}
 		
+		//get rid of the dialog if there's an exception while connecting
+		protected override bool HandleException (Exception ex)
+		{
+			if (dialog != null) {
+				Gtk.Application.Invoke (delegate {
+					if (dialog != null)
+						dialog.Respond (Gtk.ResponseType.Ok);
+				});
+			}
+			return base.HandleException (ex);
+		}
+		
+		void ListenCallback (IAsyncResult ar)
+		{
+			HandleConnection (VirtualMachineManager.EndListen (ar));
+			PressOk ();
+		}
+		
+		void ConnectCallback (IAsyncResult ar)
+		{
+			HandleConnection (VirtualMachineManager.EndConnect (ar));
+			retryConnection = null;
+			PressOk ();
+		}
+		
+		//[Obsolete]
 		protected virtual string GetListenMessage (RemoteDebuggerStartInfo dsi)
 		{
 			return GettextCatalog.GetString ("Waiting for debugger to connect...");
 		}
 		
-		void ShowListenDialog (RemoteDebuggerStartInfo dsi)
+		protected virtual string GetConnectingMessage (RemoteDebuggerStartInfo dsi)
 		{
-			string message = GetListenMessage (dsi);
+			//ignore the Obsolete warning
+			#pragma warning disable 0612
+			return GetListenMessage (dsi);
+			#pragma warning restore 0612
+		}
+		
+		void ShowConnectingDialog (RemoteDebuggerStartInfo dsi)
+		{
+			string message = GetConnectingMessage (dsi);
 			
 			Gtk.Application.Invoke (delegate {
 				if (VirtualMachine != null || Exited)
@@ -105,10 +200,11 @@ namespace MonoDevelop.Debugger.Soft
 				
 				int response = MonoDevelop.Ide.MessageService.ShowCustomDialog (dialog);
 				
+				dialog = null;
+				
 				if (response != (int) Gtk.ResponseType.Ok) {
 					EndSession ();
 				}
-				dialog = null;
 			});
 		}
 		
@@ -155,7 +251,7 @@ namespace MonoDevelop.Debugger.Soft
 			: this (appName, address, debugPort, false, 0) {}
 		
 		public RemoteDebuggerStartInfo (string appName, IPAddress address, int debugPort, int outputPort)
-			: this (appName, address, debugPort, true, outputPort) {}
+			: this (appName, address, debugPort, outputPort > 0, outputPort) {}
 
 		RemoteDebuggerStartInfo (string appName, IPAddress address, int debugPort,  bool redirectOutput, int outputPort)
 		{
