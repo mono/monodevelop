@@ -19,6 +19,7 @@ REFS =  \
 
 FILES =  \
 	AssemblyInfo.cs \
+	CustomSoftDebuggerEngine.cs \
 	RemoteSoftDebuggerSession.cs \
 	SoftDebuggerEngine.cs
 
