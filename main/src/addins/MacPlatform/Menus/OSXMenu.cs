@@ -47,9 +47,10 @@ namespace OSXIntegration
 		
 		static CommandManager manager;
 		
-		//reserve 0, since it gets used by submenus' parent items
+		const uint submenuCommandId = 0;
 		const uint linkCommandId = 1;
-		static uint cmdSeq = 2;
+		const uint autohideSubmenuCommandId = 2;
+		static uint cmdSeq = 3;
 		
 		static ushort idSeq;
 		
@@ -192,10 +193,11 @@ namespace OSXIntegration
 					
 					pos = HIToolbox.AppendMenuItem (parentMenu, (cmd.Text ?? "").Replace ("_", ""), 0, macCmdId);
 				} else {
+					var macCmdId = (ces.AutoHide) ? autohideSubmenuCommandId : submenuCommandId;
 					IntPtr menuRef = HIToolbox.CreateMenu (idSeq++, GetName (ces), MenuAttributes.CondenseSeparators);
 					mainMenus.Add (menuRef);
 					CreateChildren (menuRef, ces, ignoreCommands);
-					ushort pos = HIToolbox.AppendMenuItem (parentMenu, GetName (ces), 0, 0);
+					ushort pos = HIToolbox.AppendMenuItem (parentMenu, GetName (ces), 0, macCmdId);
 					HIToolbox.CheckResult (HIToolbox.SetMenuItemHierarchicalMenu (parentMenu, pos, menuRef));
 				}
 			}
@@ -502,6 +504,14 @@ namespace OSXIntegration
 						continue;
 					}
 					
+					if (macCmdID == submenuCommandId)
+						continue;
+					
+					if (macCmdID == autohideSubmenuCommandId) {
+						UpdateAutoHide (new HIMenuItem (menuRef, i));
+						continue;
+					}
+					
 					//items that map to command objects
 					if (!commands.TryGetValue (macCmdID, out cmdID) || cmdID == null)
 						continue;
@@ -515,6 +525,48 @@ namespace OSXIntegration
 			}
 			
 			return CarbonEventHandlerStatus.NotHandled;
+		}
+		
+		static void UpdateAutoHide (HIMenuItem item)
+		{
+			IntPtr submenu;
+			if (HIToolbox.GetMenuItemHierarchicalMenu (item.MenuRef, item.Index, out submenu) != CarbonMenuStatus.Ok)
+				return;
+			
+			if (HasVisibleItems (submenu)) {
+				HIToolbox.ChangeMenuItemAttributes (item, 0, MenuItemAttributes.Hidden);
+			} else {
+				HIToolbox.ChangeMenuItemAttributes (item, MenuItemAttributes.Hidden, 0);
+			}
+		}
+		
+		static bool HasVisibleItems (IntPtr submenu)
+		{
+			var route = new CommandTargetRoute ();
+			ushort count = HIToolbox.CountMenuItems (submenu);
+			
+			for (ushort i = 1; i <= count; i++) {
+				HIMenuItem mi = new HIMenuItem (submenu, i);
+				uint macCmdID = HIToolbox.GetMenuItemCommandID (mi);
+				object cmdID;
+				
+				if (macCmdID == linkCommandId)
+					return true;
+				
+				if (!commands.TryGetValue (macCmdID, out cmdID) || cmdID == null)
+					continue;
+				
+				CommandInfo cinfo = manager.GetCommandInfo (cmdID, route);
+				if (cinfo.ArrayInfo != null) {
+					foreach (CommandInfo ci in cinfo.ArrayInfo)
+						if (ci.Visible)
+							return true;
+				} else if (cinfo.Visible) {
+					return true;
+				}
+			}
+			
+			return false;
 		}
 		
 		static void BuildDynamicSubMenu (IntPtr rootMenu, IntPtr parentMenu, ushort index, uint macCmdID, CommandInfoSet cinfoSet)
