@@ -141,7 +141,10 @@ namespace OSXIntegration.Framework
 		
 		[DllImport (hiToolboxLib)]
 		internal static extern CarbonMenuStatus SetMenuItemHierarchicalMenu (IntPtr parentMenu, ushort parent_index, IntPtr submenu);
-
+		
+		[DllImport (hiToolboxLib)]
+		internal static extern CarbonMenuStatus GetMenuItemHierarchicalMenu (IntPtr parentMenu, ushort parent_index, out IntPtr submenu);
+		
 		[DllImport (hiToolboxLib)]
 		static extern CarbonMenuStatus SetMenuTitleWithCFString (IntPtr menuRef, IntPtr cfstring);
 		
