@@ -122,33 +122,38 @@ namespace MonoDevelop.Debugger.Soft
 					return;
 				}
 				
-				if (info.Listen) {
+				if (info.Listen)
 					StartListening (info);
-				}
 				
-				if (!string.IsNullOrEmpty (info.Command)) {
-					if (info.UseExternalConsole) {
-						usingExternalConsole = true;
-						var console = ExternalConsoleFactory.Instance.CreateConsole (info.CloseExternalConsoleOnExit);
-						process = Runtime.ProcessService.StartConsoleProcess (
-							info.Command, info.Arguments, info.WorkingDirectory, info.EnvironmentVariables,
-							console, null);
-					} else {
-						var psi = new ProcessStartInfo (info.Command, info.Arguments) {
-							WorkingDirectory = info.WorkingDirectory,
-						};
-						foreach (KeyValuePair<string,string> kvp in info.EnvironmentVariables)
-							psi.EnvironmentVariables [kvp.Key] = kvp.Value;
-						
-						process = Runtime.ProcessService.StartProcess (psi, ProcessOutput, ProcessError, null);
-					}
-				}
+				StartProcess (info);
 				
 				if (!info.Listen) {
 					//connecting to the process, so give it a moment to start listening
 					System.Threading.Thread.Sleep (200);
 					//infinite connection retries (user can cancel), 800ms between them
 					StartConnecting (info, -1, 800);
+				}
+			}
+			
+			void StartProcess (CustomSoftDebuggerStartInfo info)
+			{
+				if (string.IsNullOrEmpty (info.Command))
+					return;
+			
+				if (info.UseExternalConsole) {
+					usingExternalConsole = true;
+					var console = ExternalConsoleFactory.Instance.CreateConsole (info.CloseExternalConsoleOnExit);
+					process = Runtime.ProcessService.StartConsoleProcess (
+						info.Command, info.Arguments, info.WorkingDirectory, info.EnvironmentVariables,
+						console, null);
+				} else {
+					var psi = new ProcessStartInfo (info.Command, info.Arguments) {
+						WorkingDirectory = info.WorkingDirectory,
+					};
+					foreach (KeyValuePair<string,string> kvp in info.EnvironmentVariables)
+						psi.EnvironmentVariables [kvp.Key] = kvp.Value;
+					
+					process = Runtime.ProcessService.StartProcess (psi, ProcessOutput, ProcessError, null);
 				}
 			}
 			
@@ -288,13 +293,14 @@ namespace MonoDevelop.Debugger.Soft
 				
 				command = properties.Get ("Command", "");
 				args = properties.Get ("Arguments", "");
-				ip = properties.Get ("IpAddress", IPAddress.Loopback);
+				if (!IPAddress.TryParse (properties.Get ("IpAddress", "127.0.0.1"), out ip) || ip == null)
+					ip = IPAddress.Loopback;
 				port = properties.Get ("Port", 10000);
 				consolePort = properties.Get ("ConsolePort", 0);
 				
 				commandEntry.Path = command;
 				argsEntry.Text = args;
-				ipEntry.Text = ip == null? "127.0.0.1" : ip.ToString ();
+				ipEntry.Text = ip.ToString ();
 				portEntry.Text = port.ToString ();
 				consolePortEntry.Text = consolePort > 0? consolePort.ToString () : "";
 				
@@ -311,16 +317,25 @@ namespace MonoDevelop.Debugger.Soft
 				
 				properties.Set ("Command", command);
 				properties.Set ("Arguments", args);
-				properties.Set ("IpAddress", ip);
+				properties.Set ("IpAddress", ip.ToString ());
 				properties.Set ("Port", port);
 				properties.Set ("ConsolePort", consolePort);
 				
 				var name = string.IsNullOrEmpty (command)? "" : command;
+				bool listen = response == listenResponse;
+				var agentArgs = string.Format ("transport=dt_socket,address={0}:{1}{2}", ip, port, listen?"":",server=y");
+				
+				var customArgsTags = new string[,] {
+					{ "AgentArgs", agentArgs },
+					{ "IP", ip.ToString () },
+					{ "Port", port.ToString () },
+					{ "Console", consolePort.ToString () },
+				};
 				
 				var dsi = new CustomSoftDebuggerStartInfo (name, ip, port, consolePort) {
 					Command = StringParserService.Parse (command),
-					Arguments = StringParserService.Parse (args),
-					Listen = response == listenResponse,
+					Arguments = StringParserService.Parse (args, customArgsTags),
+					Listen = listen,
 				};
 				
 				//FIXME: GUI for env vars
