@@ -25,6 +25,7 @@
   <Assembly name="System.Core" version="4.0.0.0" publicKeyToken="b77a5c561934e089" />
   <Assembly name="System.AddIn.Contract" version="2.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
   <Assembly name="System.AddIn" version="4.0.0.0" publicKeyToken="b77a5c561934e089" />
+  <Assembly name="System.ComponentModel.Composition" version="4.0.0.0" publicKeyToken="b77a5c561934e089" />
   <Assembly name="System.ComponentModel.DataAnnotations" version="4.0.0.0" publicKeyToken="31bf3856ad364e35" />
   <Assembly name="System.Data.DataSetExtensions" version="4.0.0.0" publicKeyToken="b77a5c561934e089" />
   <Assembly name="System.Data.Entity.Design" version="4.0.0.0" publicKeyToken="b77a5c561934e089" />
@@ -36,6 +37,7 @@
   <Assembly name="System.DirectoryServices.AccountManagement" version="4.0.0.0" publicKeyToken="b77a5c561934e089" />
   <Assembly name="System.Management.Instrumentation" version="4.0.0.0" publicKeyToken="b77a5c561934e089" />
   <Assembly name="System.Net" version="4.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+  <Assembly name="System.Numerics" version="4.0.0.0" publicKeyToken="b77a5c561934e089" />
   <Assembly name="System.ServiceModel.Web" version="4.0.0.0" publicKeyToken="31bf3856ad364e35" />
   <Assembly name="System.Web.Abstractions" version="4.0.0.0" publicKeyToken="31bf3856ad364e35" />
   <Assembly name="System.Web.ApplicationServices" version="4.0.0.0" publicKeyToken="31bf3856ad364e35" />
@@ -64,6 +66,8 @@
   <Assembly name="System.IO.Log" version="4.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
   <Assembly name="System.Printing" version="4.0.0.0" publicKeyToken="31bf3856ad364e35" />
   <Assembly name="System.Runtime.Serialization" version="4.0.0.0" publicKeyToken="b77a5c561934e089" />
+  <Assembly name="System.Runtime.Caching" version="4.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
+  <Assembly name="System.Runtime.DurableInstancing" version="4.0.0.0" publicKeyToken="31bf3856ad364e35" />
   <Assembly name="System.ServiceModel" version="4.0.0.0" publicKeyToken="b77a5c561934e089" />
   <Assembly name="System.Speech" version="3.0.0.0" publicKeyToken="31bf3856ad364e35" />
   <Assembly name="System.Workflow.Activities" version="4.0.0.0" publicKeyToken="31bf3856ad364e35" />
