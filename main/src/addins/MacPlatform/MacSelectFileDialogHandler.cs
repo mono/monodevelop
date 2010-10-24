@@ -68,9 +68,11 @@ namespace MonoDevelop.Platform.Mac
 				
 				SetCommonPanelProperties (data, panel);
 				
-				var popup = CreateFileFilterPopup (data, panel);
-				if (popup != null) {
-					panel.AccessoryView = popup;
+				if (data.Action == Gtk.FileChooserAction.Open || data.Action == Gtk.FileChooserAction.Save) {
+					var popup = CreateFileFilterPopup (data, panel);
+					if (popup != null) {
+						panel.AccessoryView = popup;
+					}
 				}
 				
 				var action = panel.RunModal ();
