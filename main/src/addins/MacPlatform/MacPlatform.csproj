@@ -76,13 +76,13 @@
     <Compile Include="Commands.cs" />
     <Compile Include="Framework\ApplicationEvents.cs" />
     <Compile Include="MacSelectFileDialogHandler.cs" />
-    <Compile Include="Framework\NavDialog.cs" />
     <Compile Include="Framework\AppleEvent.cs" />
     <Compile Include="Framework\AppleScript.cs" />
     <Compile Include="Framework\ComponentManager.cs" />
     <Compile Include="ExternalConsoleProcess.cs" />
     <Compile Include="MDBox.cs" />
     <Compile Include="MacAddFileDialogHandler.cs" />
+    <Compile Include="MacOpenFileDialogHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

@@ -310,6 +310,7 @@ namespace OSXIntegration.Framework
 	[StructLayout(LayoutKind.Sequential, Pack = 2)]
 	internal struct MenuItemData
 	{
+		#pragma warning disable 0169
 		MenuItemDataFlags whichData; //8
 		IntPtr text; //Str255 //12
 		[MarshalAs (UnmanagedType.U2)] //14
@@ -344,6 +345,7 @@ namespace OSXIntegration.Framework
 		//these aren't documented
 		IntPtr attributedText; //84
 		IntPtr font; //88
+		#pragma warning restore 0169
 		
 		#region Properties
 		

@@ -78,14 +78,12 @@ where running an explicit exec causes it to quit after the exec runs, so we can'
 bash pause on exit trick
 */ 
 		string tabId, windowId;
-		bool pauseWhenFinished, cancelled;
+		bool cancelled;
 		
 		public ExternalConsoleProcess (string command, string arguments, string workingDirectory,
 		                               IDictionary<string, string> environmentVariables,
 		                               string title, bool pauseWhenFinished)
 		{
-			this.pauseWhenFinished = pauseWhenFinished;
-			
 			//build the sh command
 			var sb = new StringBuilder ();
 			if (!string.IsNullOrEmpty (workingDirectory))
@@ -162,6 +160,7 @@ end tell", tabId, windowId);
 		public void Cancel ()
 		{
 			cancelled = true;
+			//FIXME: try to kill the process without closing the window, if pauseWhenFinished is true
 			CloseTerminalWindow ();
 		}
 		
@@ -172,9 +171,9 @@ end tell", tabId, windowId);
 			}
 		}
 		
-		
 		public bool IsCompleted {
 			get {
+				//FIXME: get the status of the process, not the whole script
 				var ret = AppleScript.Run ("tell app \"Terminal\" to get exists of {0} of {1}", tabId, windowId);
 				return ret != "true";
 			}

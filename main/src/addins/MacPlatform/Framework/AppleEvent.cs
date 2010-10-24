@@ -189,8 +189,8 @@ namespace OSXIntegration.Framework
 	[StructLayout(LayoutKind.Sequential, Pack = 2)]
 	struct AEDesc
 	{
-		uint descriptorType;
-		IntPtr dataHandle;
+		public uint descriptorType;
+		public IntPtr dataHandle;
 	}
 	
 	enum AEDescStatus

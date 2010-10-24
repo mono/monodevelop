@@ -217,38 +217,6 @@ namespace OSXIntegration.Framework
 		
 		#endregion
 		
-		#region Navigation services
-		
-		[DllImport (CarbonLib)]
-		static extern NavStatus NavDialogSetFilterTypeIdentifiers (IntPtr getFileDialogRef, IntPtr typeIdentifiersCFArray);
-		
-		
-		[DllImport (CarbonLib)]
-		static extern NavEventUPP NewNavEventUPP (NavEventProc userRoutine);
-		
-		[DllImport (CarbonLib)]
-		static extern NavObjectFilterUPP NewNavObjectFilterUPP (NavObjectFilterProc userRoutine);
-		
-		[DllImport (CarbonLib)]
-		static extern NavPreviewUPP NewNavPreviewUPP (NavPreviewProc userRoutine);
-		
-		delegate void NavEventProc (NavEventCallbackMessage callBackSelector, ref NavCBRec callBackParms, IntPtr callBackUD);
-		
-		delegate bool NavObjectFilterProc (ref AEDesc theItem, IntPtr info, IntPtr callBackUD, NavFilterModes filterMode);
-		
-		delegate bool NavPreviewProc (ref NavCBRec callBackParms, IntPtr callBackUD);
-		
-		[DllImport (CarbonLib)]
-		static extern void DisposeNavEventUPP (NavEventUPP userUPP);
-		
-		[DllImport (CarbonLib)]
-		static extern void DisposeNavObjectFilterUPP (NavObjectFilterUPP userUPP);
-		
-		[DllImport (CarbonLib)]
-		static extern void DisposeNavPreviewUPP (NavPreviewUPP userUPP);
-		
-		#endregion
-		
 		#region Internal Mac API for setting process name
 		
 		[DllImport (CarbonLib)]
@@ -312,7 +280,9 @@ namespace OSXIntegration.Framework
 	struct FSRef
 	{
 		//this is an 80-char opaque byte array
+		#pragma warning disable 0169
 		private byte hidden;
+		#pragma warning restore 0169
 	}
 	
 	[StructLayout(LayoutKind.Sequential)]
@@ -599,26 +569,6 @@ namespace OSXIntegration.Framework
 		FromMenu = 1,
 		FromControl = 1 << 1,
 		FromWindow  = 1 << 2,
-	}
-
-	[StructLayout(LayoutKind.Sequential, Pack = 2)]
-	struct FileTranslationSpec
-	{
-		uint componentSignature; // OSType
-		IntPtr translationSystemInfo; // void*
-		FileTypeSpec src;
-		FileTypeSpec dst;
-	}
-	
-	[StructLayout(LayoutKind.Sequential, Pack = 2)]
-	struct FileTypeSpec
-	{/*
-		uint format; // FileType
-		long hint;
-		TranslationAttributes flags;
-		uint catInfoType; // OSType
-		uint catInfoCreator; // OSType
-		*/
 	}
 	
 	struct OSType {

@@ -91,7 +91,7 @@ namespace OSXIntegration.Framework
 		
 		public static string Run (byte[] compiledBytes)
 		{
-			AEDesc sourceData = new AEDesc (), resultData = new AEDesc ();
+			AEDesc sourceData = new AEDesc ();
 			try {
 				AppleEvent.AECreateDesc ((OSType)(int)OsaType.OsaGenericStorage, compiledBytes, out sourceData);
 				return Run (false, ref sourceData);
@@ -167,9 +167,14 @@ namespace OSXIntegration.Framework
 		}
 	}
 	
+	[StructLayout (LayoutKind.Sequential,Pack=2)]
 	struct OsaId : IEquatable<OsaId>
 	{
 		IntPtr value;
+		
+		public IntPtr Value {
+			get { return value; }
+		}
 		
 		public bool Equals (OsaId other)
 		{

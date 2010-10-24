@@ -43,8 +43,13 @@ namespace OSXIntegration.Framework
 		public static extern int GetComponentInstanceError (ComponentInstance componentInstance); //returns an oserr
 	}
 	
-	struct ComponentInstance {
-		IntPtr Handle;
+	[StructLayout (LayoutKind.Sequential, Pack=2)]
+	struct ComponentInstance
+	{
+		IntPtr handle;
+		
+		public IntPtr Handle { get { return handle; } }
+		
 		public bool IsNull {
 			get { return Handle == IntPtr.Zero; }
 		}

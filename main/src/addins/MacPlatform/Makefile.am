@@ -32,8 +32,8 @@ FILES =  \
 	Framework/ComponentManager.cs \
 	Framework/CoreFoundation.cs \
 	Framework/HIToolbox.cs \
-	Framework/NavDialog.cs \
 	MacAddFileDialogHandler.cs \
+	MacOpenFileDialogHandler.cs \
 	MacPlatform.cs \
 	MacSelectFileDialogHandler.cs \
 	MDBox.cs \

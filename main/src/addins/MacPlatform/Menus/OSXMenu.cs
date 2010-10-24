@@ -189,7 +189,6 @@ namespace OSXIntegration
 					}
 					
 					uint macCmdId = GetNewMenuItemId (cmd);
-					bool isArray = acmd.CommandArray;
 					
 					pos = HIToolbox.AppendMenuItem (parentMenu, (cmd.Text ?? "").Replace ("_", ""), 0, macCmdId);
 				} else {
@@ -353,7 +352,6 @@ namespace OSXIntegration
 					
 					ushort glyphCode, charCode, hardwareCode; 
 					MenuAccelModifier mod;
-					bool isVirtual;
 					if (GetAcceleratorKeys (ci.AccelKey, out glyphCode, out charCode, out hardwareCode, out mod)) {
 						data.CommandKeyModifiers = mod;
 						if (glyphCode != 0) {
