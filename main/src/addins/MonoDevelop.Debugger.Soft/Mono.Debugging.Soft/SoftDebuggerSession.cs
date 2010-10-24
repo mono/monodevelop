@@ -38,6 +38,7 @@ using System.Net.Sockets;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Net;
 
 namespace Mono.Debugging.Soft
 {
@@ -57,6 +58,7 @@ namespace Mono.Debugging.Soft
 		internal int StackVersion;
 		StepEventRequest currentStepRequest;
 		ExceptionEventRequest unhandledExceptionRequest;
+		string remoteProcessName;
 		
 		Dictionary<long,ObjectMirror> activeExceptionsByThread = new Dictionary<long, ObjectMirror> ();
 		
@@ -124,13 +126,84 @@ namespace Mono.Debugging.Soft
 				OnDebuggerOutput (false, dsi.LogMessage + "\n");
 			
 			var callback = HandleConnectionCallbackErrors ((IAsyncResult ar) => {
-				HandleConnection (VirtualMachineManager.EndLaunch (ar));
+				ConnectionStarted (VirtualMachineManager.EndLaunch (ar));
 			});
-			OnConnecting (VirtualMachineManager.BeginLaunch (psi, callback, options));
+			ConnectionStarting (VirtualMachineManager.BeginLaunch (psi, callback, options), dsi);
+		}
+		
+		/// <summary>Starts the debugger listening for a connection over TCP/IP</summary>
+		protected void StartListening (RemoteSoftDebuggerStartInfo dsi)
+		{
+			IPEndPoint dbgEP, conEP;
+			InitForRemoteSession (dsi, out dbgEP, out conEP);
+			
+			var callback = HandleConnectionCallbackErrors (delegate (IAsyncResult ar) {
+				ConnectionStarted (VirtualMachineManager.EndListen (ar));
+			});
+			ConnectionStarting (VirtualMachineManager.BeginListen (dbgEP, conEP, callback), dsi);
+		}
+		
+		/// <summary>Starts the debugger connecting to a remote IP</summary>
+		protected void StartConnecting (RemoteSoftDebuggerStartInfo dsi, int maxAttempts, int timeBetweenAttempts)
+		{
+			if (timeBetweenAttempts < 0 || timeBetweenAttempts > 10000)
+				throw new ArgumentException ("timeBetweenAttempts");
+			
+			IPEndPoint dbgEP, conEP;
+			InitForRemoteSession (dsi, out dbgEP, out conEP);
+			
+			AsyncCallback callback = null;
+			callback = delegate (IAsyncResult ar) {
+				try {
+					ConnectionStarted (VirtualMachineManager.EndConnect (ar));
+					return;
+				} catch (Exception ex) {
+					bool retry = false;
+					var sx = ex as SocketException;
+					if (sx != null)
+						retry = sx.ErrorCode == 10061; //connection refused
+					
+					if (!retry || maxAttempts == 1 || Exited) {
+						OnConnectionError (ex);
+						return;
+					}
+				}
+				if (maxAttempts > 1)
+					maxAttempts--;
+				try {
+					if (timeBetweenAttempts > 0)
+						System.Threading.Thread.Sleep (timeBetweenAttempts);
+					
+					ConnectionStarting (VirtualMachineManager.BeginConnect (dbgEP, conEP, callback), dsi);
+					
+				} catch (Exception ex2) {
+					OnConnectionError (ex2);
+				}
+			};
+			
+			ConnectionStarting (VirtualMachineManager.BeginConnect (dbgEP, conEP, callback), dsi);
+		}
+		
+		void InitForRemoteSession (RemoteSoftDebuggerStartInfo dsi, out IPEndPoint dbgEP, out IPEndPoint conEP)
+		{
+			if (remoteProcessName != null)
+				throw new InvalidOperationException ("Cannot initialize connection more than once");
+			
+			remoteProcessName = dsi.AppName;
+			if (string.IsNullOrEmpty (remoteProcessName))
+				remoteProcessName = "mono";
+			
+			RegisterUserAssemblies (dsi.UserAssemblyNames);
+			
+			dbgEP = new IPEndPoint (dsi.Address, dsi.DebugPort);
+			conEP = dsi.RedirectOutput? new IPEndPoint (dsi.Address, dsi.OutputPort) : null;
+			
+			if (!String.IsNullOrEmpty (dsi.LogMessage))
+				LogWriter (false, dsi.LogMessage + "\n");
 		}
 		
 		///<summary>Catches errors in async callbacks and hands off to OnConnectionError</summary>
-		protected AsyncCallback HandleConnectionCallbackErrors (AsyncCallback callback)
+		AsyncCallback HandleConnectionCallbackErrors (AsyncCallback callback)
 		{
 			return delegate (IAsyncResult ar) {
 				connectionHandle = null;
@@ -140,6 +213,20 @@ namespace Mono.Debugging.Soft
 					OnConnectionError (ex);
 				}
 			};
+		}
+		
+		/// <summary>
+		/// Called when the debugger starts connecting.
+		/// </summary>
+		protected virtual void OnConnectionStarting (DebuggerStartInfo dsi, bool retrying)
+		{
+		}
+		
+		/// <summary>
+		/// Called when the debugger succeeds connecting.
+		/// </summary>
+		protected virtual void OnConnectionStarted ()
+		{
 		}
 		
 		/// <summary>
@@ -157,15 +244,13 @@ namespace Mono.Debugging.Soft
 			}
 		}
 		
-		/// <summary>
-		/// Subclasses should pass any handles they get from the VirtualMachineManager to this
-		/// so that they will be closed if the connection attempt is aborted before OnConnected is called.
-		/// </summary>
-		public void OnConnecting (IAsyncResult connectionHandle)
+		void ConnectionStarting (IAsyncResult connectionHandle, DebuggerStartInfo dsi) 
 		{
-			if (this.connectionHandle != null)
+			if (this.connectionHandle != null && !this.connectionHandle.IsCompleted)
 				throw new InvalidOperationException ("Already connecting");
+			bool retrying = this.connectionHandle != null;
 			this.connectionHandle = connectionHandle;
+			OnConnectionStarting (dsi, retrying);
 		}
 		
 		void EndLaunch ()
@@ -193,7 +278,7 @@ namespace Mono.Debugging.Soft
 		/// If subclasses do an async connect in OnRun, they should pass the resulting VM to this method.
 		/// If the vm is null, the session will be closed.
 		/// </summary>
-		protected void HandleConnection (VirtualMachine vm)
+		void ConnectionStarted (VirtualMachine vm)
 		{
 			if (this.vm != null)
 				throw new InvalidOperationException ("The VM has already connected");
@@ -210,7 +295,7 @@ namespace Mono.Debugging.Soft
 			ConnectOutput (vm.StandardOutput, false);
 			ConnectOutput (vm.StandardError, true);
 			
-			OnConnected ();
+			OnConnectionStarted ();
 			
 			vm.EnableEvents (EventType.AssemblyLoad, EventType.TypeLoad, EventType.ThreadStart, EventType.ThreadDeath, EventType.AssemblyUnload);
 			try {
@@ -229,10 +314,6 @@ namespace Mono.Debugging.Soft
 			eventHandler = new Thread (EventHandler);
 			eventHandler.Name = "SDB event handler";
 			eventHandler.Start ();
-		}
-		
-		protected virtual void OnConnected ()
-		{
 		}
 		
 		protected void RegisterUserAssemblies (List<AssemblyName> userAssemblyNames)
@@ -369,9 +450,13 @@ namespace Mono.Debugging.Soft
 				var t = new System.Timers.Timer ();
 				t.Interval = 10000;
 				t.Elapsed += delegate {
-					EnsureExited ();
-					t.Enabled = false;
-					t.Dispose ();
+					try {
+						EnsureExited ();
+						t.Enabled = false;
+						t.Dispose ();
+					} catch (Exception ex) {
+						LoggingService.LogError ("Failed to force-terminate process", ex);
+					}
 				};
 				t.Enabled = true;
 			}	
@@ -408,14 +493,18 @@ namespace Mono.Debugging.Soft
 		protected override ProcessInfo[] OnGetProcesses ()
 		{
 			if (procs == null) {
-				try {
-					procs = new ProcessInfo[] { new ProcessInfo (vm.TargetProcess.Id, vm.TargetProcess.ProcessName) };
-				} catch (Exception ex) {
-					if (!loggedSymlinkedRuntimesBug) {
-						loggedSymlinkedRuntimesBug = true;
-						LoggingService.LogError ("Error getting debugger process info. Known Mono bug with symlinked runtimes.", ex);
+				if (remoteProcessName != null) {
+					procs = new ProcessInfo[] { new ProcessInfo (0, remoteProcessName) };
+				} else {
+					try {
+						procs = new ProcessInfo[] { new ProcessInfo (vm.TargetProcess.Id, vm.TargetProcess.ProcessName) };
+					} catch (Exception ex) {
+						if (!loggedSymlinkedRuntimesBug) {
+							loggedSymlinkedRuntimesBug = true;
+							LoggingService.LogError ("Error getting debugger process info. Known Mono bug with symlinked runtimes.", ex);
+						}
+						procs = new ProcessInfo[] { new ProcessInfo (0, "mono") };
 					}
-					procs = new ProcessInfo[] { new ProcessInfo (0, "mono") };
 				}
 			}
 			return new ProcessInfo[] { new ProcessInfo (procs[0].Id, procs[0].Name) };

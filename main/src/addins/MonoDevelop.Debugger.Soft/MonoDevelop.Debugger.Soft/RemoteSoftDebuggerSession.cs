@@ -43,10 +43,7 @@ namespace MonoDevelop.Debugger.Soft
 
 	public abstract class RemoteSoftDebuggerSession : SoftDebuggerSession
 	{
-		ProcessInfo[] procs;
 		Gtk.Dialog dialog;
-		string appName;
-		Func<bool> retryConnection;
 		
 		/// <summary>Subclasses must implement this to start the session </summary>
 		protected override void OnRun (DebuggerStartInfo startInfo)
@@ -54,84 +51,10 @@ namespace MonoDevelop.Debugger.Soft
 			throw new NotImplementedException ();
 		}
 		
-		/// <summary>Starts the debugger listening for a connection over TCP/IP</summary>
-		protected void StartListening (RemoteDebuggerStartInfo dsi)
-		{
-			IPEndPoint dbgEP, conEP;
-			PreConnectionInit (dsi, out dbgEP, out conEP);
-			
-			var callback = HandleConnectionCallbackErrors (ListenCallback);
-			OnConnecting (VirtualMachineManager.BeginListen (dbgEP, conEP, callback));
-			ShowConnectingDialog (dsi);
-		}
-		
-		/// <summary>Starts the debugger connecting to a remote IP</summary>
-		protected void StartConnecting (RemoteDebuggerStartInfo dsi, int maxAttempts, int timeBetweenAttempts)
-		{
-			if (timeBetweenAttempts < 0 || timeBetweenAttempts > 10000)
-				throw new ArgumentException ("timeBetweenAttempts");
-			
-			IPEndPoint dbgEP, conEP;
-			PreConnectionInit (dsi, out dbgEP, out conEP);
-			
-			var callback = HandleConnectionCallbackErrors (ConnectCallback);
-			
-			retryConnection = () => {
-				if (maxAttempts == 1 || Exited) {
-					return false;
-				}
-				if (maxAttempts > 1)
-					maxAttempts--;
-				try {
-					if (timeBetweenAttempts > 0)
-						System.Threading.Thread.Sleep (timeBetweenAttempts);
-					
-					OnConnecting (VirtualMachineManager.BeginConnect (dbgEP, conEP, callback));
-				} catch (Exception ex2) {
-					retryConnection = null;
-					OnConnectionError (ex2);
-					return false;
-				}
-				return true;
-			};
-			
-			ShowConnectingDialog (dsi);
-			
-			OnConnecting (VirtualMachineManager.BeginConnect (dbgEP, conEP, callback));
-		}
-		
-		void PreConnectionInit (RemoteDebuggerStartInfo dsi, out IPEndPoint dbgEP, out IPEndPoint conEP)
-		{
-			if (appName != null)
-				throw new InvalidOperationException ("Cannot initialize connection more than once");
-			
-			appName = dsi.AppName;
-			RegisterUserAssemblies (dsi.UserAssemblyNames);
-			
-			dbgEP = new IPEndPoint (dsi.Address, dsi.DebugPort);
-			conEP = dsi.RedirectOutput? new IPEndPoint (dsi.Address, dsi.OutputPort) : null;
-			
-			if (!String.IsNullOrEmpty (dsi.LogMessage))
-				LogWriter (false, dsi.LogMessage + "\n");
-		}
-		
-		protected override void OnConnectionError (Exception ex)
-		{
-			if (retryConnection != null) {
-				var sx = ex as SocketException;
-				if (sx != null) {
-					bool retry = sx.ErrorCode == 10061; //connection refused
-					if (retry && retryConnection ())
-						return;
-				}
-				retryConnection = null;
-			}
-			
-			base.OnConnectionError (ex);
-		}
-		
 		void PressOk ()
 		{
+			if (dialog == null)
+				return;
 			Gtk.Application.Invoke (delegate {
 				if (dialog != null)
 					dialog.Respond (Gtk.ResponseType.Ok);
@@ -141,40 +64,46 @@ namespace MonoDevelop.Debugger.Soft
 		//get rid of the dialog if there's an exception while connecting
 		protected override bool HandleException (Exception ex)
 		{
-			if (dialog != null) {
-				Gtk.Application.Invoke (delegate {
-					if (dialog != null)
-						dialog.Respond (Gtk.ResponseType.Ok);
-				});
-			}
+			PressOk ();
 			return base.HandleException (ex);
 		}
 		
-		void ListenCallback (IAsyncResult ar)
+		protected override void OnConnectionStarted ()
 		{
-			HandleConnection (VirtualMachineManager.EndListen (ar));
 			PressOk ();
+			OnConnected ();
 		}
 		
-		void ConnectCallback (IAsyncResult ar)
+		[Obsolete]
+		protected virtual void OnConnected ()
 		{
-			HandleConnection (VirtualMachineManager.EndConnect (ar));
-			retryConnection = null;
-			PressOk ();
 		}
 		
-		//[Obsolete]
+		protected override void OnConnectionStarting (DebuggerStartInfo dsi, bool retrying)
+		{
+			if (!retrying)
+				ShowConnectingDialog ((RemoteDebuggerStartInfo)dsi);
+		}
+		
+		[Obsolete]
 		protected virtual string GetListenMessage (RemoteDebuggerStartInfo dsi)
 		{
-			return GettextCatalog.GetString ("Waiting for debugger to connect...");
+			return DefaultListenMessage;
 		}
 		
-		protected virtual string GetConnectingMessage (RemoteDebuggerStartInfo dsi)
+		protected virtual string GetConnectingMessage (RemoteSoftDebuggerStartInfo dsi)
 		{
 			//ignore the Obsolete warning
 			#pragma warning disable 0612
-			return GetListenMessage (dsi);
+			if (dsi is RemoteDebuggerStartInfo)
+				return GetListenMessage ((RemoteDebuggerStartInfo)dsi);
 			#pragma warning restore 0612
+			
+			return DefaultListenMessage;
+		}
+		
+		string DefaultListenMessage {
+			get { return GettextCatalog.GetString ("Waiting for debugger to connect..."); }
 		}
 		
 		void ShowConnectingDialog (RemoteDebuggerStartInfo dsi)
@@ -210,26 +139,8 @@ namespace MonoDevelop.Debugger.Soft
 		
 		protected override void EndSession ()
 		{
-			if (dialog != null) {
-				Gtk.Application.Invoke (delegate {
-					if (dialog != null)
-						dialog.Respond (Gtk.ResponseType.Cancel);
-				});
-			}
+			PressOk ();
 			base.EndSession ();
-		}
-		
-		protected override void OnResumed ()
-		{
-			procs = null;
-			base.OnResumed ();
-		}
-		
-		protected override ProcessInfo[] OnGetProcesses ()
-		{
-			if (procs == null)
-				procs = new ProcessInfo[] { new ProcessInfo (0, appName) };
-			return procs;
 		}
 		
 		protected override void EnsureExited ()
@@ -238,32 +149,19 @@ namespace MonoDevelop.Debugger.Soft
 		}
 	}
 	
-	public class RemoteDebuggerStartInfo : DebuggerStartInfo
+	[Obsolete]
+	public class RemoteDebuggerStartInfo : RemoteSoftDebuggerStartInfo
 	{
-		public IPAddress Address { get; private set; }
-		public int DebugPort { get; private set; }
-		public int OutputPort { get; private set; }
-		public bool RedirectOutput { get; private set; }
-		public string AppName { get; set; }
-		public List<AssemblyName> UserAssemblyNames { get; set; }
-		
-		public RemoteDebuggerStartInfo (string appName, IPAddress address, int debugPort)
-			: this (appName, address, debugPort, false, 0) {}
-		
-		public RemoteDebuggerStartInfo (string appName, IPAddress address, int debugPort, int outputPort)
-			: this (appName, address, debugPort, outputPort > 0, outputPort) {}
-
-		RemoteDebuggerStartInfo (string appName, IPAddress address, int debugPort,  bool redirectOutput, int outputPort)
+		static RemoteDebuggerStartInfo ()
 		{
 			SoftDebuggerEngine.EnsureSdbLoggingService ();
-			this.AppName = appName;
-			this.Address = address;
-			this.DebugPort = debugPort;
-			this.OutputPort = outputPort;
-			this.RedirectOutput = redirectOutput;
 		}
 		
-		internal string LogMessage { get; private set; }
+		public RemoteDebuggerStartInfo (string appName, IPAddress address, int debugPort)
+			: base (appName, address, debugPort) {}
+		
+		public RemoteDebuggerStartInfo (string appName, IPAddress address, int debugPort, int outputPort)
+			: base (appName, address, debugPort, outputPort) {}
 		
 		public void SetUserAssemblies (IList<string> files)
 		{

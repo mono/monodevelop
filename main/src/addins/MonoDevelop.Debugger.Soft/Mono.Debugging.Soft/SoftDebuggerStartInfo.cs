@@ -28,6 +28,7 @@ using Mono.Debugging.Client;
 using System.Collections.Generic;
 using System.Reflection;
 using System.IO;
+using System.Net;
 
 namespace Mono.Debugging.Soft
 {
@@ -51,6 +52,35 @@ namespace Mono.Debugging.Soft
 		public string LogMessage { get; set; }
 		
 		public Mono.Debugger.Soft.LaunchOptions.TargetProcessLauncher ExternalConsoleLauncher;
+	}
+	
+	public class RemoteSoftDebuggerStartInfo : DebuggerStartInfo
+	{
+		public IPAddress Address { get; private set; }
+		public int DebugPort { get; private set; }
+		public int OutputPort { get; private set; }
+		
+		public bool RedirectOutput { get { return OutputPort > 0; } }
+		
+		public string AppName { get; set; }
+		public List<AssemblyName> UserAssemblyNames { get; set; }
+		
+		/// <summary>
+		/// The session will output this to the debug log as soon as it starts. It can be used to log warnings from
+		/// creating the SoftDebuggerStartInfo
+		/// </summary>
+		public string LogMessage { get; set; }
+		
+		public RemoteSoftDebuggerStartInfo (string appName, IPAddress address, int debugPort)
+			: this (appName, address, debugPort, 0) {}
+		
+		public RemoteSoftDebuggerStartInfo (string appName, IPAddress address, int debugPort, int outputPort)
+		{
+			this.AppName = appName;
+			this.Address = address;
+			this.DebugPort = debugPort;
+			this.OutputPort = outputPort;
+		}
 	}
 }
 
