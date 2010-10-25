@@ -7554,6 +7554,7 @@ All solutions</property>
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.MultiMessageDialog" design-size="563 346">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>
     <property name="Buttons">1</property>
@@ -7619,6 +7620,8 @@ All solutions</property>
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.ErrorDialog" design-size="624 142">
     <property name="MemberName" />
+    <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">MonoDevelop</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">1</property>
