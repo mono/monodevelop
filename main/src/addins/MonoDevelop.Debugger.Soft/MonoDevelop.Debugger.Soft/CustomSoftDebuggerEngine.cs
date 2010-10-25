@@ -61,7 +61,8 @@ namespace MonoDevelop.Debugger.Soft
 		
 		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand c)
 		{
-			return InvokeSynch (GetDebuggerInfo) ??
+			//WORKAROUND: explicit generic type argument works around a gmcs 2.6.x type inference bug 
+			return InvokeSynch<CustomSoftDebuggerStartInfo> (GetDebuggerInfo) ??
 				//HACK: flag object so we can cancel the session
 				new DebuggerStartInfo ();
 		}
