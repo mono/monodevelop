@@ -231,6 +231,27 @@ namespace MonoDevelop.CSharp.Completion
 					string signature2 = ambience.GetString (overload.Member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics);
 					if (signature1 == signature2)
 						return;
+					
+					// template can't be compared by name (void Foo<T> (T t); and void Foo<U> (U u); are equal
+					IMethod m1 = (IMethod)Member;
+					IMethod m2 = (IMethod)overload.Member;
+					if (m1.Parameters.Count == m2.Parameters.Count) {
+						bool areEqual = true;
+						for (int i = 0; i < m1.Parameters.Count; i++) {
+							var p1 = m1.Parameters[i];
+							var p2 = m2.Parameters[i];
+							if (p1.ReturnType.ToInvariantString () != p2.ReturnType.ToInvariantString ()) {
+								int i1 = m1.GetTypeParameterIndex (p1.ReturnType.FullName);
+								int i2 = m2.GetTypeParameterIndex (p2.ReturnType.FullName);
+								if (i1 >= 0 && i2 >= 0 && i1 == i2) 
+									continue;
+								areEqual = false;
+								break;
+							}
+						}
+						if (areEqual)
+							return;
+					}
 				}
 				
 				if (MemberId != (this.Member as IMember).HelpUrl && !overloads.ContainsKey (MemberId)) {
