@@ -7391,6 +7391,7 @@ All solutions</property>
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.OptionsDialog" design-size="722 502">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Options</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Modal">True</property>

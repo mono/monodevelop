@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			this.DefaultWidth = 722;
 			this.DefaultHeight = 502;
-			this.Show ();
+			this.Hide ();
 			this.buttonOk.Clicked += new global::System.EventHandler (this.OnButtonOkClicked);
 		}
 	}
