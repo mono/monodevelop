@@ -122,7 +122,7 @@ namespace OSXIntegration.Framework
 		}
 		
 		//FIXME: this might not work in some encodings. need to test more.
-		static string GetUtfs8StringFromAEPtr (ref AEDesc descList, int index)
+		static string GetUtf8StringFromAEPtr (ref AEDesc descList, int index)
 		{
 			int size;
 			var type = (OSType)(int)CarbonEventParameterType.UnicodeText;
@@ -158,7 +158,7 @@ namespace OSXIntegration.Framework
 			long count = AppleEvent.AECountItems (ref list);
 			var items = new List<string> ();
 			for (int i = 1; i <= count; i++) {
-				string str = AppleEvent.GetUtfs8StringFromAEPtr (ref list, i); 
+				string str = AppleEvent.GetUtf8StringFromAEPtr (ref list, i);
 				if (!string.IsNullOrEmpty (str))
 					items.Add (str);
 			}
