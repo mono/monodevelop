@@ -573,6 +573,8 @@ namespace MonoDevelop.CSharp.Resolver
 					foreach (IMember foundMember in curType.SearchMember (memberReferenceExpression.MemberName, true)) {
 						if (foundMember.IsExplicitDeclaration)
 							continue;
+						if (result is BaseResolveResult && foundMember.IsAbstract)
+							continue;
 						member.Add (foundMember);
 					}
 				} 
