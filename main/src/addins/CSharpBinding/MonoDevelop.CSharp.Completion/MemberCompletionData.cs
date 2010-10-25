@@ -202,15 +202,6 @@ namespace MonoDevelop.CSharp.Completion
 			if (overloads == null)
 				overloads = new Dictionary<string, CompletionData> ();
 			
-			// always set the member with the least type parameters as the main member.
-			if (Member is ITypeParameterMember && overload.Member is ITypeParameterMember) {
-				if (((ITypeParameterMember)Member).TypeParameters.Count > ((ITypeParameterMember)overload.Member).TypeParameters.Count) {
-					INode member = Member;
-					SetMember (overload.Member);
-					overload.Member = member;
-				}
-			}
-			
 			if (overload.Member is IMember && Member is IMember) {
 				// filter virtual & overriden members that came from base classes
 				// note that the overload tree is traversed top down.
@@ -227,31 +218,10 @@ namespace MonoDevelop.CSharp.Completion
 				
 				string MemberId = (overload.Member as IMember).HelpUrl;
 				if (Member is IMethod && overload.Member is IMethod) {
-					string signature1 = ambience.GetString (Member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics);
-					string signature2 = ambience.GetString (overload.Member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics);
+					string signature1 = ambience.GetString (Member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.GeneralizeGenerics);
+					string signature2 = ambience.GetString (overload.Member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.GeneralizeGenerics);
 					if (signature1 == signature2)
 						return;
-					
-					// template can't be compared by name (void Foo<T> (T t); and void Foo<U> (U u); are equal
-					IMethod m1 = (IMethod)Member;
-					IMethod m2 = (IMethod)overload.Member;
-					if (m1.Parameters.Count == m2.Parameters.Count) {
-						bool areEqual = true;
-						for (int i = 0; i < m1.Parameters.Count; i++) {
-							var p1 = m1.Parameters[i];
-							var p2 = m2.Parameters[i];
-							if (p1.ReturnType.ToInvariantString () != p2.ReturnType.ToInvariantString ()) {
-								int i1 = m1.GetTypeParameterIndex (p1.ReturnType.FullName);
-								int i2 = m2.GetTypeParameterIndex (p2.ReturnType.FullName);
-								if (i1 >= 0 && i2 >= 0 && i1 == i2) 
-									continue;
-								areEqual = false;
-								break;
-							}
-						}
-						if (areEqual)
-							return;
-					}
 				}
 				
 				if (MemberId != (this.Member as IMember).HelpUrl && !overloads.ContainsKey (MemberId)) {
@@ -272,6 +242,17 @@ namespace MonoDevelop.CSharp.Completion
 					}*/
 				}
 			}
+			
+			
+			// always set the member with the least type parameters as the main member.
+			if (Member is ITypeParameterMember && overload.Member is ITypeParameterMember) {
+				if (((ITypeParameterMember)Member).TypeParameters.Count > ((ITypeParameterMember)overload.Member).TypeParameters.Count) {
+					INode member = Member;
+					SetMember (overload.Member);
+					overload.Member = member;
+				}
+			}
+			
 		}
 		
 		#endregion
