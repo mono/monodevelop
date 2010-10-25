@@ -82,6 +82,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				this.Resize (10, 10);
 			}
 			MessageService.PlaceDialog (this, TransientFor ?? MessageService.RootWindow);
+			Show ();
 			return base.Run ();
 		}
 	}
