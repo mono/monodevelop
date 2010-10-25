@@ -25,4 +25,10 @@
     <Class class = "MonoDevelop.Platform.SelectFileDialogHandler"/>
     <Class class = "MonoDevelop.Platform.AddFileDialogHandler"/>
   </Extension>-->
+	
+	<!--
+	<Extension path = "/MonoDevelop/Ide/Updater">
+		<UpdateInfo file="../../updateinfo" />
+	</Extension>
+	-->
 </Addin>
