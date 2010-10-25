@@ -156,7 +156,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 			List<string> vars = template.ParseVariables (textEditor.Document.Text);
 			foreach (string var in vars) {
 				if (!variables.Any (v => v.Name == var) && !template.Variables.Any (v => v.Name == var)) {
-					variables.Add (new CodeTemplateVariable (var));
+					variables.Add (new CodeTemplateVariable (var) {
+						Default = GettextCatalog.GetString ("notset")
+					});
 				}
 			}
 			for (int i = 0; i < variables.Count; i++) {
