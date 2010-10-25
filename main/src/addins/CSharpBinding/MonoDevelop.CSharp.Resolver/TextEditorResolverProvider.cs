@@ -122,14 +122,12 @@ namespace MonoDevelop.CSharp.Resolver
 					}
 				}
 			}
-			
 			if (expressionResult.ExpressionContext == ExpressionContext.Attribute) {
 				savedExpression = expressionResult.Expression;
-				expressionResult.Expression += "Attribute";
+				expressionResult.Expression = expressionResult.Expression.Trim () + "Attribute";
 				expressionResult.ExpressionContext = ExpressionContext.ObjectCreation;
 			} 
 			resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line, loc.Column));
-			
 			if (savedExpression != null && resolveResult == null) {
 				expressionResult.Expression = savedExpression;
 				resolveResult = resolver.Resolve (expressionResult, new DomLocation (loc.Line, loc.Column));
