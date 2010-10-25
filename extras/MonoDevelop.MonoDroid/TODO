@@ -1,4 +1,5 @@
 High priority:
+* TargetFramework that binds to the .NET target runtime
 * Prompt the user for the SDK locations if they're not set/found
 * Check target Mono runtime's xbuild is 2.8+
 * Package publishing wizard to sign release build with release key
