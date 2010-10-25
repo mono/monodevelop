@@ -455,7 +455,9 @@ namespace MonoDevelop.CSharp.Completion
 							}
 							completionList.AutoCompleteEmptyMatch = false;
 							return completionList;
-						} else if (resolvedType.FullName == DomReturnType.Bool.FullName) {
+						}
+						
+						if (resolvedType.FullName == DomReturnType.Bool.FullName) {
 							CompletionDataList completionList = new ProjectDomCompletionDataList ();
 							CompletionDataCollector cdc = new CompletionDataCollector (dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
 							completionList.AutoCompleteEmptyMatch = false;
@@ -477,6 +479,53 @@ namespace MonoDevelop.CSharp.Completion
 								if (returnType != null && returnType.FullName == DomReturnType.Bool.FullName)
 									completionList.Add (memberData);
 							}
+							return completionList;
+						}
+							
+						if (resolvedType.ClassType == ClassType.Delegate && token == "=") {
+							IMethod delegateMethod = resolvedType.Methods.First ();
+							CompletionDataList completionList = new ProjectDomCompletionDataList ();
+								
+							completionList.Add ("delegate", "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate {" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent  + TextEditorProperties.IndentString + "|" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent +"};");
+							StringBuilder sb = new StringBuilder ("(");
+							for (int k = 0; k < delegateMethod.Parameters.Count; k++) {
+								if (k > 0)
+									sb.Append (", ");
+								IType parameterType = dom.GetType (delegateMethod.Parameters[k].ReturnType);
+								IReturnType returnType = parameterType != null ? new DomReturnType (parameterType) : delegateMethod.Parameters[k].ReturnType;
+								sb.Append (CompletionDataCollector.ambience.GetString (Document.CompilationUnit.ShortenTypeName (returnType, textEditorData.Caret.Line, textEditorData.Caret.Column), OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName  | OutputFlags.UseFullInnerTypeName));
+								sb.Append (" ");
+								sb.Append (delegateMethod.Parameters[k].Name);
+							}
+							sb.Append (")");
+							completionList.Add ("delegate" + sb, "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate" + sb + " {" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent  + TextEditorProperties.IndentString + "|" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent +"};");
+							string varName = GetPreviousToken (ref tokenIndex, false);
+							varName = GetPreviousToken (ref tokenIndex, false);
+							if (varName != ".") {
+								varName = null;
+							} else {
+								List<string> names = new List<string> ();
+								while (varName == ".") {
+									varName = GetPreviousToken (ref tokenIndex, false);
+									if (varName == "this") {
+										names.Add ("handle");
+									} else if (varName != null) {
+										string trimmedName = varName.Trim ();
+										if (trimmedName.Length == 0)
+											break;
+										names.Insert (0, trimmedName);
+									}
+									varName = GetPreviousToken (ref tokenIndex, false);
+								}
+								varName = String.Join ("", names.ToArray ());
+								foreach (char ch in varName) {
+									if (!char.IsLetterOrDigit (ch) && ch != '_') {
+										varName = "";
+										break;
+									}
+								}
+							}
+							completionList.Add (new EventCreationCompletionData (textEditorData, varName, resolvedType, null, sb.ToString (), resolver.CallingMember, resolvedType));
 							return completionList;
 						}
 					}
@@ -519,7 +568,7 @@ namespace MonoDevelop.CSharp.Completion
 						}
 						if (token == "+=") {
 							IMethod delegateMethod = delegateType.Methods.First ();
-							completionList.Add ("delegate", "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate {\n" + stateTracker.Engine.ThisLineIndent  + TextEditorProperties.IndentString + "|\n" + stateTracker.Engine.ThisLineIndent +"};");
+							completionList.Add ("delegate", "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate {" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent  + TextEditorProperties.IndentString + "|" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent +"};");
 							StringBuilder sb = new StringBuilder ("(");
 							for (int k = 0; k < delegateMethod.Parameters.Count; k++) {
 								if (k > 0)
@@ -531,7 +580,7 @@ namespace MonoDevelop.CSharp.Completion
 								sb.Append (delegateMethod.Parameters[k].Name);
 							}
 							sb.Append (")");
-							completionList.Add ("delegate" + sb, "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate" + sb + " {\n" + stateTracker.Engine.ThisLineIndent  + TextEditorProperties.IndentString + "|\n" + stateTracker.Engine.ThisLineIndent +"};");
+							completionList.Add ("delegate" + sb, "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate" + sb + " {" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent  + TextEditorProperties.IndentString + "|" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent +"};");
 							string varName = GetPreviousToken (ref tokenIndex, false);
 							varName = GetPreviousToken (ref tokenIndex, false);
 							if (varName != ".") {

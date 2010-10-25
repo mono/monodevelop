@@ -52,7 +52,7 @@ namespace MonoDevelop.CSharp.Completion
 			if (string.IsNullOrEmpty (varName)) {
 				this.DisplayText   = "Handle" + evt.Name;
 			} else {
-				this.DisplayText   = "Handle" + Char.ToUpper (varName[0]) + varName.Substring (1) + evt.Name;
+				this.DisplayText   = "Handle" + Char.ToUpper (varName[0]) + varName.Substring (1) + (evt != null ? evt.Name : "");
 			}
 			
 			if (declaringType != null && declaringType.SearchMember (this.DisplayText, true).Count > 0) {
