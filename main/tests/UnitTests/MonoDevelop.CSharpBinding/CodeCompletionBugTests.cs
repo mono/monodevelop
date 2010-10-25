@@ -2768,5 +2768,32 @@ class TestClass
 			Assert.IsNull (provider.Find ("System.IO.Path"), "'System.IO.Path' found but shouldn't.");
 			Assert.IsNotNull (provider.Find ("Path"), "property 'Path' not found.");
 		}
+		
+		
+		/// <summary>
+		/// Bug 648562 – Abstract members are allowed by base call
+		/// </summary>
+		[Test()]
+		public void TestBug648562 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"using System;
+
+abstract class A
+{
+    public abstract void Foo<T> (T type);
+}
+
+class B : A
+{
+    public override void Foo<U> (U type)
+    {
+        $base.$
+    }
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNull (provider.Find ("Foo"), "method 'Foo' found, but shouldn't.");
+		}
 	}
 }
