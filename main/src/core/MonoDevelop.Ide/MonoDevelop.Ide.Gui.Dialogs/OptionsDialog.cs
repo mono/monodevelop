@@ -226,8 +226,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			// Remove the section if it doesn't have children nor panels
 			SectionPage page = CreatePage (it, section, dataObject);
 			TreeIter cit;
-			if (removeEmptySections && page.Panels.Count == 0 && !store.IterChildren (out cit, it))
+			if (removeEmptySections && page.Panels.Count == 0 && !store.IterChildren (out cit, it)) {
 				store.Remove (ref it);
+				return TreeIter.Zero;
+			}
 			return it;
 		}
 		
@@ -295,6 +297,22 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 		
+		bool HasVisiblePanel (OptionsDialogSection section)
+		{
+			SectionPage page;
+			if (!pages.TryGetValue (section, out page))
+				return false;
+			if (page.Panels.Count > 0)
+				return true;
+			foreach (ExtensionNode node in section.ChildNodes) {
+				if (node is OptionsDialogSection) {
+					if (HasVisiblePanel ((OptionsDialogSection) node))
+						return true;
+				}
+			}
+			return false;
+		}
+		
 		public void ShowPage (OptionsDialogSection section)
 		{
 			SectionPage page;
@@ -304,8 +322,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (page.Panels.Count == 0) {
 				foreach (ExtensionNode node in section.ChildNodes) {
 					if (node is OptionsDialogSection) {
-						ShowPage ((OptionsDialogSection) node);
-						return;
+						if (HasVisiblePanel ((OptionsDialogSection) node)) {
+							ShowPage ((OptionsDialogSection) node);
+							return;
+						}
 					}
 				}
 			}
