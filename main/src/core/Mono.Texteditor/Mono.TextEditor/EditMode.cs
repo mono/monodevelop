@@ -123,7 +123,7 @@ namespace Mono.TextEditor
 					if (textEditorData.IsSomethingSelected && textEditorData.MainSelection.SelectionMode == SelectionMode.Block) {
 						int length = 0;
 						for (int lineNumber = textEditorData.MainSelection.MinLine; lineNumber <= textEditorData.MainSelection.MaxLine; lineNumber++) {
-							length = textEditorData.Insert (textEditorData.Document.GetLine (lineNumber).Offset + Caret.Column, text);
+							length = textEditorData.Insert (textEditorData.Document.GetLine (lineNumber).Offset + Caret.Column - 1, text);
 						}
 						Caret.Column += length - 1;
 						textEditorData.MainSelection.Lead = new DocumentLocation (textEditorData.MainSelection.Lead.Line, Caret.Column + 1);

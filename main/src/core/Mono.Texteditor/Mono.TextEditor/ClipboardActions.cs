@@ -408,7 +408,7 @@ namespace Mono.TextEditor
 						int minLine = data.MainSelection.MinLine;
 						int maxLine = data.MainSelection.MaxLine;
 						for (int lineNumber = minLine; lineNumber <= maxLine; lineNumber++) {
-							int offset = data.Document.GetLine (lineNumber).Offset + column;
+							int offset = data.Document.GetLine (lineNumber).Offset + column - 1;
 							textLength = data.Insert (offset, text);
 							data.PasteText (offset, text);
 						}
