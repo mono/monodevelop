@@ -70,19 +70,8 @@ namespace MonoDevelop.Core
 				setupService = new SetupService (AddinManager.Registry);
 				Counters.RuntimeInitialization.Trace ("Initialized Addin Manager");
 				
-				string prefix = string.Empty;
-				if (PropertyService.IsWindows)
-					prefix = "win-";
-	
-				string mainRep = "http://monodevelop.com/files/addins/" + prefix + AddinManager.CurrentAddin.Version + "/main.mrep";
+				RegisterAddinRepositories ();
 				
-				AddinRepository[] repos = setupService.Repositories.GetRepositories ();
-				foreach (AddinRepository rep in repos) {
-					if (rep.Url.StartsWith ("http://go-mono.com/md/") || (rep.Url.StartsWith ("http://monodevelop.com/files/addins/") && rep.Url != mainRep))
-						setupService.Repositories.RemoveRepository (rep.Url);
-				}
-				setupService.Repositories.RegisterRepository (null, mainRep, false);
-	
 				Counters.RuntimeInitialization.Trace ("Initializing Assembly Service");
 				systemAssemblyService = new SystemAssemblyService ();
 				systemAssemblyService.Initialize ();
@@ -97,6 +86,45 @@ namespace MonoDevelop.Core
 			} finally {
 				Counters.RuntimeInitialization.EndTiming ();
 			}
+		}
+		
+		static void RegisterAddinRepositories ()
+		{
+			string stableUrl = GetRepoUrl ("Stable");
+			string betaUrl = GetRepoUrl ("Beta");
+			string alphaUrl = GetRepoUrl ("Alpha");
+			
+			IList validUrls = new string[] { stableUrl, betaUrl, alphaUrl };
+			
+			// Remove old repositories
+			
+			var reps = setupService.Repositories;
+			
+			foreach (AddinRepository rep in reps.GetRepositories ()) {
+				if (rep.Url.StartsWith ("http://go-mono.com/md/") || 
+					(rep.Url.StartsWith ("http://monodevelop.com/files/addins/")) ||
+					(rep.Url.StartsWith ("http://addins.monodevelop.com/") && !validUrls.Contains (rep.Url)))
+					reps.RemoveRepository (rep.Url);
+			}
+			
+			if (!reps.ContainsRepository (stableUrl)) {
+				// Add the stable and beta channels. Don't add alpha.
+				reps.RegisterRepository (null, stableUrl, false);
+				reps.RegisterRepository (null, betaUrl, false);
+			}
+		}
+		
+		internal static string GetRepoUrl (string quality)
+		{
+			string platform;
+			if (PropertyService.IsWindows)
+				platform = "Windows";
+			else if (PropertyService.IsMac)
+				platform = "Mac";
+			else
+				platform = "Linux";
+			
+			return "http://addins.monodevelop.com/" + quality + "/" + platform + "/" + AddinManager.CurrentAddin.Version + "/main.mrep";
 		}
 		
 		static void SetupInstrumentation ()
