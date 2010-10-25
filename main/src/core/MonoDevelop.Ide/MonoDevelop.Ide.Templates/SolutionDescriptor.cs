@@ -31,6 +31,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Diagnostics;
+using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.ProgressMonitoring;
@@ -162,6 +163,12 @@ namespace MonoDevelop.Ide.Templates
                 }
             }
 
+			if (!workspaceItem.FileFormat.CanWrite (workspaceItem)) {
+				// The default format can't write solutions of this type. Find a compatible format.
+				FileFormat f = IdeApp.Services.ProjectService.FileFormats.GetFileFormatsForObject (workspaceItem).First ();
+				workspaceItem.ConvertToFormat (f, true);
+			}
+			
             return workspaceItem;
         }
 	}
