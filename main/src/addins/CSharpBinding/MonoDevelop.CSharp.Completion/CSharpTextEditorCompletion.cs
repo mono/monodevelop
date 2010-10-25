@@ -914,6 +914,8 @@ namespace MonoDevelop.CSharp.Completion
 						if (type != null && (type.IsStatic || type.IsSealed || baseTypeNames.Contains (type.Name) || isInterface && type.ClassType != ClassType.Interface)) {
 							continue;
 						}
+						if (o is Namespace && !namespaceList.Any (ns => ns.StartsWith (((Namespace)o).FullName)))
+							continue;
 						col.Add (o);
 					}
 					// Add inner classes
