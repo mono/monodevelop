@@ -330,7 +330,8 @@ namespace MonoDevelop.Ide
 		public void Save (IProgressMonitor monitor)
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Saving Workspace..."), Items.Count);
-			foreach (WorkspaceItem it in Items) {
+			List<WorkspaceItem> items = new List<WorkspaceItem> (Items);
+			foreach (WorkspaceItem it in items) {
 				it.Save (monitor);
 				monitor.Step (1);
 			}
@@ -340,7 +341,8 @@ namespace MonoDevelop.Ide
 		BuildResult IBuildTarget.RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
 			BuildResult result = null;
-			foreach (WorkspaceItem it in Items) {
+			List<WorkspaceItem> items = new List<WorkspaceItem> (Items);
+			foreach (WorkspaceItem it in items) {
 				BuildResult res = it.RunTarget (monitor, target, configuration);
 				if (res != null) {
 					if (result == null)
