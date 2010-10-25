@@ -1924,7 +1924,7 @@ namespace Mono.TextEditor
 					return;
 				}
 			}
-			cr.Rectangle (xp + 0.5, area.Y, System.Math.Floor (area.Width) + 0.5, area.Height);
+			cr.Rectangle (xp, area.Y, System.Math.Floor (area.Width), area.Height);
 			cr.Fill ();
 		}
 
