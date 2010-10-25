@@ -661,17 +661,21 @@ namespace Mono.Debugging.Soft
 		protected override void OnNextLine ()
 		{
 			ThreadPool.QueueUserWorkItem (delegate {
-				Adaptor.CancelAsyncOperations (); // This call can block, so it has to run in background thread to avoid keeping the main session lock
-				var req = vm.CreateStepRequest (current_thread);
-				req.Depth = StepDepth.Over;
-				req.Size = StepSize.Line;
-				if (assemblyFilters != null && assemblyFilters.Count > 0)
-					req.AssemblyFilter = assemblyFilters;
-				req.Enabled = true;
-				currentStepRequest = req;
-				OnResumed ();
-				vm.Resume ();
-				DequeueEventsForFirstThread ();
+				try {
+					Adaptor.CancelAsyncOperations (); // This call can block, so it has to run in background thread to avoid keeping the main session lock
+					var req = vm.CreateStepRequest (current_thread);
+					req.Depth = StepDepth.Over;
+					req.Size = StepSize.Line;
+					if (assemblyFilters != null && assemblyFilters.Count > 0)
+						req.AssemblyFilter = assemblyFilters;
+					req.Enabled = true;
+					currentStepRequest = req;
+					OnResumed ();
+					vm.Resume ();
+					DequeueEventsForFirstThread ();
+				} catch (Exception ex) {
+					LoggingService.LogError ("Next Line command failed", ex);
+				}
 			});
 		}
 
@@ -795,8 +799,11 @@ namespace Mono.Debugging.Soft
 			}
 			
 			if (e is ExceptionEvent) {
-				etype = TargetEventType.ExceptionThrown;
 				var ev = (ExceptionEvent)e;
+				if (ev.Request == unhandledExceptionRequest)
+					etype = TargetEventType.UnhandledException;
+				else
+					etype = TargetEventType.ExceptionThrown;
 				exception = ev.Exception;
 				if (ev.Request != unhandledExceptionRequest || exception.Type.FullName != "System.Threading.ThreadAbortException")
 					resume = false;
