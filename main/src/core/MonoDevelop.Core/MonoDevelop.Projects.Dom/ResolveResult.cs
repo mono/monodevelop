@@ -260,6 +260,11 @@ namespace MonoDevelop.Projects.Dom
 		
 		internal static void AddType (ProjectDom dom, List<object> result, IType type, IMember callingMember, bool showStatic)
 		{
+			AddType (dom, result, type, callingMember, showStatic, null);
+		}
+		
+		internal static void AddType (ProjectDom dom, List<object> result, IType type, IMember callingMember, bool showStatic, Func<IMember, bool> filter)
+		{
 //			System.Console.WriteLine("Add Type:" + type);
 			if (type == null)
 				return;
@@ -295,6 +300,8 @@ namespace MonoDevelop.Projects.Dom
 					if (member is IMethod && (((IMethod)member).IsConstructor || ((IMethod)member).IsFinalizer))
 						continue;
 					if (!showStatic && member is IType)
+						continue;
+					if (filter != null && filter (member))
 						continue;
 					if (member is IType || !(showStatic ^ (member.IsStatic || member.IsConst))) {
 						result.Add (member);
@@ -646,7 +653,7 @@ namespace MonoDevelop.Projects.Dom
 			List<object> result = new List<object> ();
 			if (CallingMember != null && !CallingMember.IsStatic) {
 				IType baseType = dom.SearchType (CallingMember ?? CallingType, CallingType.BaseType ?? DomReturnType.Object);
-				MemberResolveResult.AddType (dom, result, baseType, new BaseMemberDecorator (CallingMember, baseType), StaticResolve);
+				MemberResolveResult.AddType (dom, result, baseType, new BaseMemberDecorator (CallingMember, baseType), StaticResolve, m => m.IsAbstract);
 			}
 			return result;
 		}
