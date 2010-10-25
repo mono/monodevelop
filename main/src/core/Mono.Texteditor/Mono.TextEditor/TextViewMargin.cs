@@ -1924,7 +1924,7 @@ namespace Mono.TextEditor
 					return;
 				}
 			}
-			cr.Rectangle (xp, area.Y, System.Math.Floor (area.Width), area.Height);
+			cr.Rectangle (xp, area.Y, System.Math.Ceiling (area.Width), area.Height);
 			cr.Fill ();
 		}
 
@@ -2004,7 +2004,7 @@ namespace Mono.TextEditor
 		{
 //			double xStart = System.Math.Max (area.X, XOffset);
 //			xStart = System.Math.Max (0, xStart);
-			var lineArea = new Cairo.Rectangle (XOffset - 1, y, textEditor.Allocation.Width - XOffset, textEditor.LineHeight);
+			var lineArea = new Cairo.Rectangle (XOffset - 1, y, textEditor.Allocation.Width - XOffset + 1, textEditor.LineHeight);
 			int width, height;
 			double pangoPosition = (x - textEditor.HAdjustment.Value + TextStartPosition) * Pango.Scale.PangoScale;
 
