@@ -153,27 +153,6 @@ namespace OSXIntegration.Framework
 		
 		#endregion
 		
-		[DllImport (CarbonLib)]
-		static extern int FSRefMakePath (ref FSRef fsRef, IntPtr buffer, uint bufferSize);
-		
-		public static string FSRefToPath (ref FSRef fsRef)
-		{
-			//FIXME: is this big enough?
-			const int MAX_LENGTH = 4096;
-			IntPtr buf = IntPtr.Zero;
-			string ret;
-			try {
-				buf = Marshal.AllocHGlobal (MAX_LENGTH);
-				CheckReturn (FSRefMakePath (ref fsRef, buf, (uint)MAX_LENGTH));
-				//FIXME: on Mono, auto is UTF-8, which is correct but I'd prefer to be more explicit
-				ret = Marshal.PtrToStringAuto (buf, MAX_LENGTH);
-			} finally {
-				if (buf != IntPtr.Zero)
-					Marshal.FreeHGlobal (buf);
-			}
-			return ret;
-		}
-		
 		#region Error checking
 		
 		public static void CheckReturn (EventStatus status)
@@ -252,8 +231,8 @@ namespace OSXIntegration.Framework
 				} catch {
 				}
 				
-				var arr = AppleEvent.GetListFromAEDesc<string,FSRef> (ref list, (ref FSRef t) => FSRefToPath (ref t),
-				                                                      (OSType)(int)CarbonEventParameterType.FSRef);
+				var arr = AppleEvent.GetListFromAEDesc<string,FSRef> (ref list, CoreFoundation.FSRefToString,
+					(OSType)(int)CarbonEventParameterType.FSRef);
 				var files = new Dictionary<string,int> ();
 				foreach (var s in arr) {
 					if (!string.IsNullOrEmpty (s))

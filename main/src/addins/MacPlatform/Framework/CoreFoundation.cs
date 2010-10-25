@@ -48,7 +48,7 @@ namespace OSXIntegration.Framework
 		[DllImport (CFLib, EntryPoint="CFRelease")]
 		public static extern void Release (IntPtr cfRef);
 		
-				struct CFRange {
+		struct CFRange {
 			public int Location, Length;
 			public CFRange (int l, int len)
 			{
@@ -91,5 +91,38 @@ namespace OSXIntegration.Framework
 			
 			return str;
 		}
+		
+		public static string FSRefToString (ref FSRef fsref)
+		{
+			IntPtr url = IntPtr.Zero;
+			IntPtr str = IntPtr.Zero;
+			try {
+				url = CFURLCreateFromFSRef (IntPtr.Zero, ref fsref);
+				if (url == IntPtr.Zero)
+					return null;
+				str = CFURLCopyFileSystemPath (url, CFUrlPathStyle.Posix);
+				if (str == IntPtr.Zero)
+					return null;
+				return FetchString (str);
+			} finally {
+				if (url != IntPtr.Zero)
+					Release (url);
+				if (str != IntPtr.Zero)
+					Release (str);
+			}
+		}
+		
+		[DllImport (CFLib)]
+		extern static IntPtr CFURLCreateFromFSRef (IntPtr allocator, ref FSRef fsref);
+		
+		[DllImport (CFLib)]
+		extern static IntPtr CFURLCopyFileSystemPath (IntPtr urlRef, CFUrlPathStyle pathStyle);
+		
+		enum CFUrlPathStyle
+		{
+			Posix = 0,
+			Hfs = 1,
+			Windows = 2
+		};
 	}
 }
