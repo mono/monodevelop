@@ -209,6 +209,12 @@ namespace MonoDevelop.Projects.Dom.Output
 			}
 		}
 		
+		public bool GeneralizeGenerics {
+			get {
+				return (OutputFlags & OutputFlags.GeneralizeGenerics) != 0;
+			}
+		}
+		
 		public bool UseNETTypeNames {
 			get {
 				return (OutputFlags & OutputFlags.UseNETTypeNames) != 0;

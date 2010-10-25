@@ -52,6 +52,7 @@ namespace MonoDevelop.Projects.Dom.Output
 		UseNETTypeNames          = 0x4000, // print 'System.Int32' intead of 'int'
 		UseFullInnerTypeName     = 0x8000,
 		ReformatDelegates        = 0x10000,
+		GeneralizeGenerics       = 0x20000,
 		
 		ClassBrowserEntries        = IncludeReturnType | IncludeParameters | IncludeGenerics,
 		AssemblyBrowserDescription = IncludeGenerics | IncludeBaseTypes | IncludeReturnType | IncludeParameters | IncludeParameterName | IncludeMarkup | IncludeKeywords | IncludeModifiers

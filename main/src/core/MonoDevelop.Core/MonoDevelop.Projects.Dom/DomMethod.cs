@@ -223,13 +223,13 @@ namespace MonoDevelop.Projects.Dom
 			return result;
 		}
 		
-		internal class GenericMethodInstanceResolver: CopyDomVisitor<IMethod>
+		public class GenericMethodInstanceResolver: CopyDomVisitor<IMethod>
 		{
 			public Dictionary<string, IReturnType> typeTable = new Dictionary<string,IReturnType> ();
 			
 			public void Add (IReturnType parameterType, IReturnType type)
 			{
-				//Console.WriteLine ("Add:" + parameterType +"->" + type);
+//				Console.WriteLine ("Add:" + parameterType +"->" + type);
 				if (type == null || string.IsNullOrEmpty (type.FullName))
 					return;
 				string name = parameterType.Name;
