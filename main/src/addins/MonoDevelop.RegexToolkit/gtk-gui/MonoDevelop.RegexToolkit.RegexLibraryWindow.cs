@@ -5,65 +5,35 @@ namespace MonoDevelop.RegexToolkit
 	public partial class RegexLibraryWindow
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.HBox hbox4;
-
 		private global::Gtk.Label label7;
-
 		private global::Gtk.Entry searchEntry;
-
 		private global::Gtk.VPaned vpaned1;
-
 		private global::Gtk.VBox vbox6;
-
 		private global::Gtk.Label label8;
-
 		private global::Gtk.ScrolledWindow scrolledwindow2;
-
 		private global::Gtk.TreeView expressionsTreeview;
-
 		private global::Gtk.VBox vbox3;
-
 		private global::Gtk.Table table2;
-
 		private global::Gtk.HBox hbox3;
-
 		private global::Gtk.Entry authorEntry;
-
 		private global::Gtk.Label label6;
-
 		private global::Gtk.Entry sourceEntry;
-
 		private global::Gtk.Label label3;
-
 		private global::Gtk.Label label5;
-
 		private global::Gtk.Entry patternEntry;
-
 		private global::Gtk.VBox vbox7;
-
 		private global::Gtk.Label label9;
-
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-
 		private global::Gtk.TextView descriptionTextview;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.Entry matchingEntry;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.Entry nonMatchingEntry;
-
 		private global::Gtk.HSeparator hseparator1;
-
 		private global::Gtk.HButtonBox hbuttonbox2;
-
 		private global::Gtk.Button buttonUpdate;
-
 		private global::Gtk.Button buttonCancel;
 
 		protected virtual void Build ()
@@ -90,7 +60,7 @@ namespace MonoDevelop.RegexToolkit
 			this.label7.Name = "label7";
 			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("Search:");
 			this.hbox4.Add (this.label7);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox4[this.label7]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.label7]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -101,10 +71,10 @@ namespace MonoDevelop.RegexToolkit
 			this.searchEntry.IsEditable = true;
 			this.searchEntry.InvisibleChar = '●';
 			this.hbox4.Add (this.searchEntry);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox4[this.searchEntry]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.searchEntry]));
 			w2.Position = 1;
 			this.vbox2.Add (this.hbox4);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox4]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox4]));
 			w3.Position = 0;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -120,10 +90,10 @@ namespace MonoDevelop.RegexToolkit
 			// Container child vbox6.Gtk.Box+BoxChild
 			this.label8 = new global::Gtk.Label ();
 			this.label8.Name = "label8";
-			this.label8.Xalign = 0f;
+			this.label8.Xalign = 0F;
 			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("Expressions");
 			this.vbox6.Add (this.label8);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox6[this.label8]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.label8]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -138,10 +108,10 @@ namespace MonoDevelop.RegexToolkit
 			this.expressionsTreeview.Name = "expressionsTreeview";
 			this.scrolledwindow2.Add (this.expressionsTreeview);
 			this.vbox6.Add (this.scrolledwindow2);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox6[this.scrolledwindow2]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.scrolledwindow2]));
 			w6.Position = 1;
 			this.vpaned1.Add (this.vbox6);
-			global::Gtk.Paned.PanedChild w7 = ((global::Gtk.Paned.PanedChild)(this.vpaned1[this.vbox6]));
+			global::Gtk.Paned.PanedChild w7 = ((global::Gtk.Paned.PanedChild)(this.vpaned1 [this.vbox6]));
 			w7.Resize = false;
 			// Container child vpaned1.Gtk.Paned+PanedChild
 			this.vbox3 = new global::Gtk.VBox ();
@@ -163,14 +133,14 @@ namespace MonoDevelop.RegexToolkit
 			this.authorEntry.IsEditable = false;
 			this.authorEntry.InvisibleChar = '●';
 			this.hbox3.Add (this.authorEntry);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.authorEntry]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.authorEntry]));
 			w8.Position = 0;
 			// Container child hbox3.Gtk.Box+BoxChild
 			this.label6 = new global::Gtk.Label ();
 			this.label6.Name = "label6";
 			this.label6.LabelProp = global::Mono.Unix.Catalog.GetString ("Source:");
 			this.hbox3.Add (this.label6);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.label6]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.label6]));
 			w9.Position = 1;
 			w9.Expand = false;
 			w9.Fill = false;
@@ -181,10 +151,10 @@ namespace MonoDevelop.RegexToolkit
 			this.sourceEntry.IsEditable = false;
 			this.sourceEntry.InvisibleChar = '●';
 			this.hbox3.Add (this.sourceEntry);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.sourceEntry]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.sourceEntry]));
 			w10.Position = 2;
 			this.table2.Add (this.hbox3);
-			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table2[this.hbox3]));
+			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table2 [this.hbox3]));
 			w11.LeftAttach = ((uint)(1));
 			w11.RightAttach = ((uint)(2));
 			w11.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -193,7 +163,7 @@ namespace MonoDevelop.RegexToolkit
 			this.label3.Name = "label3";
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Pattern:");
 			this.table2.Add (this.label3);
-			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table2[this.label3]));
+			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table2 [this.label3]));
 			w12.TopAttach = ((uint)(1));
 			w12.BottomAttach = ((uint)(2));
 			w12.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -203,7 +173,7 @@ namespace MonoDevelop.RegexToolkit
 			this.label5.Name = "label5";
 			this.label5.LabelProp = global::Mono.Unix.Catalog.GetString ("Author:");
 			this.table2.Add (this.label5);
-			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table2[this.label5]));
+			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table2 [this.label5]));
 			w13.XOptions = ((global::Gtk.AttachOptions)(4));
 			w13.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table2.Gtk.Table+TableChild
@@ -213,14 +183,14 @@ namespace MonoDevelop.RegexToolkit
 			this.patternEntry.IsEditable = false;
 			this.patternEntry.InvisibleChar = '●';
 			this.table2.Add (this.patternEntry);
-			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.table2[this.patternEntry]));
+			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.table2 [this.patternEntry]));
 			w14.TopAttach = ((uint)(1));
 			w14.BottomAttach = ((uint)(2));
 			w14.LeftAttach = ((uint)(1));
 			w14.RightAttach = ((uint)(2));
 			w14.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox3.Add (this.table2);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.table2]));
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.table2]));
 			w15.Position = 0;
 			w15.Expand = false;
 			w15.Fill = false;
@@ -231,10 +201,10 @@ namespace MonoDevelop.RegexToolkit
 			// Container child vbox7.Gtk.Box+BoxChild
 			this.label9 = new global::Gtk.Label ();
 			this.label9.Name = "label9";
-			this.label9.Xalign = 0f;
+			this.label9.Xalign = 0F;
 			this.label9.LabelProp = global::Mono.Unix.Catalog.GetString ("Description");
 			this.vbox7.Add (this.label9);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox7[this.label9]));
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox7 [this.label9]));
 			w16.Position = 0;
 			w16.Expand = false;
 			w16.Fill = false;
@@ -252,10 +222,10 @@ namespace MonoDevelop.RegexToolkit
 			this.descriptionTextview.WrapMode = ((global::Gtk.WrapMode)(2));
 			this.scrolledwindow1.Add (this.descriptionTextview);
 			this.vbox7.Add (this.scrolledwindow1);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox7[this.scrolledwindow1]));
+			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox7 [this.scrolledwindow1]));
 			w18.Position = 1;
 			this.vbox3.Add (this.vbox7);
-			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.vbox7]));
+			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.vbox7]));
 			w19.Position = 1;
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.hbox1 = new global::Gtk.HBox ();
@@ -266,7 +236,7 @@ namespace MonoDevelop.RegexToolkit
 			this.label1.Name = "label1";
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Matching:");
 			this.hbox1.Add (this.label1);
-			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label1]));
+			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));
 			w20.Position = 0;
 			w20.Expand = false;
 			w20.Fill = false;
@@ -277,14 +247,14 @@ namespace MonoDevelop.RegexToolkit
 			this.matchingEntry.IsEditable = false;
 			this.matchingEntry.InvisibleChar = '●';
 			this.hbox1.Add (this.matchingEntry);
-			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.matchingEntry]));
+			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.matchingEntry]));
 			w21.Position = 1;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Non Matching:");
 			this.hbox1.Add (this.label2);
-			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label2]));
+			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label2]));
 			w22.Position = 2;
 			w22.Expand = false;
 			w22.Fill = false;
@@ -295,22 +265,22 @@ namespace MonoDevelop.RegexToolkit
 			this.nonMatchingEntry.IsEditable = false;
 			this.nonMatchingEntry.InvisibleChar = '●';
 			this.hbox1.Add (this.nonMatchingEntry);
-			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.nonMatchingEntry]));
+			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.nonMatchingEntry]));
 			w23.Position = 3;
 			this.vbox3.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.hbox1]));
+			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.hbox1]));
 			w24.Position = 2;
 			w24.Expand = false;
 			w24.Fill = false;
 			this.vpaned1.Add (this.vbox3);
 			this.vbox2.Add (this.vpaned1);
-			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.vpaned1]));
+			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.vpaned1]));
 			w26.Position = 1;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.hseparator1 = new global::Gtk.HSeparator ();
 			this.hseparator1.Name = "hseparator1";
 			this.vbox2.Add (this.hseparator1);
-			global::Gtk.Box.BoxChild w27 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hseparator1]));
+			global::Gtk.Box.BoxChild w27 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hseparator1]));
 			w27.Position = 2;
 			w27.Expand = false;
 			w27.Fill = false;
@@ -325,7 +295,7 @@ namespace MonoDevelop.RegexToolkit
 			this.buttonUpdate.Name = "buttonUpdate";
 			this.buttonUpdate.UseUnderline = true;
 			// Container child buttonUpdate.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w28 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+			global::Gtk.Alignment w28 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
 			global::Gtk.HBox w29 = new global::Gtk.HBox ();
 			w29.Spacing = 2;
@@ -341,7 +311,7 @@ namespace MonoDevelop.RegexToolkit
 			w28.Add (w29);
 			this.buttonUpdate.Add (w28);
 			this.hbuttonbox2.Add (this.buttonUpdate);
-			global::Gtk.ButtonBox.ButtonBoxChild w36 = ((global::Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox2[this.buttonUpdate]));
+			global::Gtk.ButtonBox.ButtonBoxChild w36 = ((global::Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox2 [this.buttonUpdate]));
 			w36.Expand = false;
 			w36.Fill = false;
 			// Container child hbuttonbox2.Gtk.ButtonBox+ButtonBoxChild
@@ -352,12 +322,12 @@ namespace MonoDevelop.RegexToolkit
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-close";
 			this.hbuttonbox2.Add (this.buttonCancel);
-			global::Gtk.ButtonBox.ButtonBoxChild w37 = ((global::Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox2[this.buttonCancel]));
+			global::Gtk.ButtonBox.ButtonBoxChild w37 = ((global::Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox2 [this.buttonCancel]));
 			w37.Position = 1;
 			w37.Expand = false;
 			w37.Fill = false;
 			this.vbox2.Add (this.hbuttonbox2);
-			global::Gtk.Box.BoxChild w38 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbuttonbox2]));
+			global::Gtk.Box.BoxChild w38 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbuttonbox2]));
 			w38.Position = 3;
 			w38.Expand = false;
 			w38.Fill = false;

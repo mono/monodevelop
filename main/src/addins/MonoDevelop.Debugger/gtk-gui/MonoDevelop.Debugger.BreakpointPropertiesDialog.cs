@@ -5,77 +5,41 @@ namespace MonoDevelop.Debugger
 	public partial class BreakpointPropertiesDialog
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.Table table1;
-
 		private global::Gtk.Entry entryFile;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Entry entryLine;
-
 		private global::Gtk.Label label4;
-
 		private global::Gtk.Label label5;
-
 		private global::Gtk.Label label6;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.HBox hbox4;
-
 		private global::Gtk.Label label14;
-
 		private global::Gtk.VBox boxConditionOptions;
-
 		private global::Gtk.RadioButton radioBreakAlways;
-
 		private global::Gtk.RadioButton radioBreakTrue;
-
 		private global::Gtk.RadioButton radioBreakChange;
-
 		private global::Gtk.HBox boxCondition;
-
 		private global::Gtk.Label label15;
-
 		private global::Gtk.Label label7;
-
 		private global::Gtk.Entry entryCondition;
-
 		private global::Gtk.HSeparator hseparator1;
-
 		private global::Gtk.HBox hbox7;
-
 		private global::Gtk.Label label8;
-
 		private global::Gtk.SpinButton spinHitCount;
-
 		private global::Gtk.Label label3;
-
 		private global::Gtk.HBox hbox2;
-
 		private global::Gtk.Label label10;
-
 		private global::Gtk.VBox boxAction;
-
 		private global::Gtk.Label label11;
-
 		private global::Gtk.RadioButton radioActionBreak;
-
 		private global::Gtk.RadioButton radioActionTrace;
-
 		private global::Gtk.HBox boxTraceExpression;
-
 		private global::Gtk.Label label13;
-
 		private global::Gtk.Label label12;
-
 		private global::Gtk.Entry entryTraceExpr;
-
 		private global::Gtk.Button buttonCancel;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -98,11 +62,11 @@ namespace MonoDevelop.Debugger
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Location</b>");
 			this.label1.UseMarkup = true;
 			this.vbox2.Add (this.label1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.label1]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label1]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -118,7 +82,7 @@ namespace MonoDevelop.Debugger
 			this.entryFile.IsEditable = true;
 			this.entryFile.InvisibleChar = '●';
 			this.table1.Add (this.entryFile);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1[this.entryFile]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryFile]));
 			w3.LeftAttach = ((uint)(2));
 			w3.RightAttach = ((uint)(3));
 			w3.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -134,10 +98,10 @@ namespace MonoDevelop.Debugger
 			this.entryLine.WidthChars = 10;
 			this.entryLine.InvisibleChar = '●';
 			this.hbox1.Add (this.entryLine);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.entryLine]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.entryLine]));
 			w4.Position = 0;
 			this.table1.Add (this.hbox1);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1[this.hbox1]));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.hbox1]));
 			w5.TopAttach = ((uint)(1));
 			w5.BottomAttach = ((uint)(2));
 			w5.LeftAttach = ((uint)(2));
@@ -146,10 +110,10 @@ namespace MonoDevelop.Debugger
 			// Container child table1.Gtk.Table+TableChild
 			this.label4 = new global::Gtk.Label ();
 			this.label4.Name = "label4";
-			this.label4.Xalign = 0f;
+			this.label4.Xalign = 0F;
 			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("File:");
 			this.table1.Add (this.label4);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1[this.label4]));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.label4]));
 			w6.LeftAttach = ((uint)(1));
 			w6.RightAttach = ((uint)(2));
 			w6.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -159,7 +123,7 @@ namespace MonoDevelop.Debugger
 			this.label5.Name = "label5";
 			this.label5.LabelProp = global::Mono.Unix.Catalog.GetString ("Line:");
 			this.table1.Add (this.label5);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1[this.label5]));
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.label5]));
 			w7.TopAttach = ((uint)(1));
 			w7.BottomAttach = ((uint)(2));
 			w7.LeftAttach = ((uint)(1));
@@ -171,22 +135,22 @@ namespace MonoDevelop.Debugger
 			this.label6.WidthRequest = 12;
 			this.label6.Name = "label6";
 			this.table1.Add (this.label6);
-			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1[this.label6]));
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1 [this.label6]));
 			w8.XOptions = ((global::Gtk.AttachOptions)(4));
 			w8.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox2.Add (this.table1);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.table1]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.table1]));
 			w9.Position = 1;
 			w9.Expand = false;
 			w9.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.Xalign = 0f;
+			this.label2.Xalign = 0F;
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Condition</b>");
 			this.label2.UseMarkup = true;
 			this.vbox2.Add (this.label2);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.label2]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label2]));
 			w10.Position = 2;
 			w10.Expand = false;
 			w10.Fill = false;
@@ -199,7 +163,7 @@ namespace MonoDevelop.Debugger
 			this.label14.WidthRequest = 12;
 			this.label14.Name = "label14";
 			this.hbox4.Add (this.label14);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox4[this.label14]));
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.label14]));
 			w11.Position = 0;
 			w11.Expand = false;
 			w11.Fill = false;
@@ -211,11 +175,12 @@ namespace MonoDevelop.Debugger
 			this.radioBreakAlways = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Always break"));
 			this.radioBreakAlways.CanFocus = true;
 			this.radioBreakAlways.Name = "radioBreakAlways";
+			this.radioBreakAlways.Active = true;
 			this.radioBreakAlways.DrawIndicator = true;
 			this.radioBreakAlways.UseUnderline = true;
 			this.radioBreakAlways.Group = new global::GLib.SList (global::System.IntPtr.Zero);
 			this.boxConditionOptions.Add (this.radioBreakAlways);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.boxConditionOptions[this.radioBreakAlways]));
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.boxConditionOptions [this.radioBreakAlways]));
 			w12.Position = 0;
 			w12.Expand = false;
 			w12.Fill = false;
@@ -227,7 +192,7 @@ namespace MonoDevelop.Debugger
 			this.radioBreakTrue.UseUnderline = true;
 			this.radioBreakTrue.Group = this.radioBreakAlways.Group;
 			this.boxConditionOptions.Add (this.radioBreakTrue);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.boxConditionOptions[this.radioBreakTrue]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.boxConditionOptions [this.radioBreakTrue]));
 			w13.Position = 1;
 			w13.Expand = false;
 			w13.Fill = false;
@@ -239,7 +204,7 @@ namespace MonoDevelop.Debugger
 			this.radioBreakChange.UseUnderline = true;
 			this.radioBreakChange.Group = this.radioBreakAlways.Group;
 			this.boxConditionOptions.Add (this.radioBreakChange);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.boxConditionOptions[this.radioBreakChange]));
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.boxConditionOptions [this.radioBreakChange]));
 			w14.Position = 2;
 			w14.Expand = false;
 			w14.Fill = false;
@@ -252,17 +217,17 @@ namespace MonoDevelop.Debugger
 			this.label15.WidthRequest = 12;
 			this.label15.Name = "label15";
 			this.boxCondition.Add (this.label15);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.boxCondition[this.label15]));
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.boxCondition [this.label15]));
 			w15.Position = 0;
 			w15.Expand = false;
 			w15.Fill = false;
 			// Container child boxCondition.Gtk.Box+BoxChild
 			this.label7 = new global::Gtk.Label ();
 			this.label7.Name = "label7";
-			this.label7.Xalign = 0f;
+			this.label7.Xalign = 0F;
 			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("Condition expression:");
 			this.boxCondition.Add (this.label7);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.boxCondition[this.label7]));
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.boxCondition [this.label7]));
 			w16.Position = 1;
 			w16.Expand = false;
 			w16.Fill = false;
@@ -273,16 +238,16 @@ namespace MonoDevelop.Debugger
 			this.entryCondition.IsEditable = true;
 			this.entryCondition.InvisibleChar = '●';
 			this.boxCondition.Add (this.entryCondition);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.boxCondition[this.entryCondition]));
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.boxCondition [this.entryCondition]));
 			w17.Position = 2;
 			this.boxConditionOptions.Add (this.boxCondition);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.boxConditionOptions[this.boxCondition]));
+			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.boxConditionOptions [this.boxCondition]));
 			w18.Position = 3;
 			// Container child boxConditionOptions.Gtk.Box+BoxChild
 			this.hseparator1 = new global::Gtk.HSeparator ();
 			this.hseparator1.Name = "hseparator1";
 			this.boxConditionOptions.Add (this.hseparator1);
-			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.boxConditionOptions[this.hseparator1]));
+			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.boxConditionOptions [this.hseparator1]));
 			w19.Position = 4;
 			w19.Expand = false;
 			w19.Fill = false;
@@ -293,10 +258,10 @@ namespace MonoDevelop.Debugger
 			// Container child hbox7.Gtk.Box+BoxChild
 			this.label8 = new global::Gtk.Label ();
 			this.label8.Name = "label8";
-			this.label8.Xalign = 0f;
+			this.label8.Xalign = 0F;
 			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("Hit count before breaking:");
 			this.hbox7.Add (this.label8);
-			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.hbox7[this.label8]));
+			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.label8]));
 			w20.Position = 0;
 			w20.Expand = false;
 			w20.Fill = false;
@@ -309,31 +274,31 @@ namespace MonoDevelop.Debugger
 			this.spinHitCount.Numeric = true;
 			this.spinHitCount.Value = 1;
 			this.hbox7.Add (this.spinHitCount);
-			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.hbox7[this.spinHitCount]));
+			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.spinHitCount]));
 			w21.Position = 1;
 			w21.Expand = false;
 			w21.Fill = false;
 			this.boxConditionOptions.Add (this.hbox7);
-			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.boxConditionOptions[this.hbox7]));
+			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.boxConditionOptions [this.hbox7]));
 			w22.Position = 5;
 			w22.Expand = false;
 			w22.Fill = false;
 			this.hbox4.Add (this.boxConditionOptions);
-			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.hbox4[this.boxConditionOptions]));
+			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.boxConditionOptions]));
 			w23.Position = 1;
 			this.vbox2.Add (this.hbox4);
-			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox4]));
+			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox4]));
 			w24.Position = 3;
 			w24.Expand = false;
 			w24.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.Xalign = 0f;
+			this.label3.Xalign = 0F;
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Action</b>");
 			this.label3.UseMarkup = true;
 			this.vbox2.Add (this.label3);
-			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.label3]));
+			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label3]));
 			w25.Position = 4;
 			w25.Expand = false;
 			w25.Fill = false;
@@ -346,7 +311,7 @@ namespace MonoDevelop.Debugger
 			this.label10.WidthRequest = 12;
 			this.label10.Name = "label10";
 			this.hbox2.Add (this.label10);
-			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.label10]));
+			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.label10]));
 			w26.Position = 0;
 			w26.Expand = false;
 			w26.Fill = false;
@@ -357,10 +322,10 @@ namespace MonoDevelop.Debugger
 			// Container child boxAction.Gtk.Box+BoxChild
 			this.label11 = new global::Gtk.Label ();
 			this.label11.Name = "label11";
-			this.label11.Xalign = 0f;
+			this.label11.Xalign = 0F;
 			this.label11.LabelProp = global::Mono.Unix.Catalog.GetString ("When the breakpoint is hit:");
 			this.boxAction.Add (this.label11);
-			global::Gtk.Box.BoxChild w27 = ((global::Gtk.Box.BoxChild)(this.boxAction[this.label11]));
+			global::Gtk.Box.BoxChild w27 = ((global::Gtk.Box.BoxChild)(this.boxAction [this.label11]));
 			w27.Position = 0;
 			w27.Expand = false;
 			w27.Fill = false;
@@ -373,7 +338,7 @@ namespace MonoDevelop.Debugger
 			this.radioActionBreak.UseUnderline = true;
 			this.radioActionBreak.Group = new global::GLib.SList (global::System.IntPtr.Zero);
 			this.boxAction.Add (this.radioActionBreak);
-			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.boxAction[this.radioActionBreak]));
+			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.boxAction [this.radioActionBreak]));
 			w28.Position = 1;
 			w28.Expand = false;
 			w28.Fill = false;
@@ -385,7 +350,7 @@ namespace MonoDevelop.Debugger
 			this.radioActionTrace.UseUnderline = true;
 			this.radioActionTrace.Group = this.radioActionBreak.Group;
 			this.boxAction.Add (this.radioActionTrace);
-			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.boxAction[this.radioActionTrace]));
+			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.boxAction [this.radioActionTrace]));
 			w29.Position = 2;
 			w29.Expand = false;
 			w29.Fill = false;
@@ -398,7 +363,7 @@ namespace MonoDevelop.Debugger
 			this.label13.WidthRequest = 12;
 			this.label13.Name = "label13";
 			this.boxTraceExpression.Add (this.label13);
-			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.boxTraceExpression[this.label13]));
+			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.boxTraceExpression [this.label13]));
 			w30.Position = 0;
 			w30.Expand = false;
 			w30.Fill = false;
@@ -407,7 +372,7 @@ namespace MonoDevelop.Debugger
 			this.label12.Name = "label12";
 			this.label12.LabelProp = global::Mono.Unix.Catalog.GetString ("Expression:");
 			this.boxTraceExpression.Add (this.label12);
-			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.boxTraceExpression[this.label12]));
+			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.boxTraceExpression [this.label12]));
 			w31.Position = 1;
 			w31.Expand = false;
 			w31.Fill = false;
@@ -418,23 +383,23 @@ namespace MonoDevelop.Debugger
 			this.entryTraceExpr.IsEditable = true;
 			this.entryTraceExpr.InvisibleChar = '●';
 			this.boxTraceExpression.Add (this.entryTraceExpr);
-			global::Gtk.Box.BoxChild w32 = ((global::Gtk.Box.BoxChild)(this.boxTraceExpression[this.entryTraceExpr]));
+			global::Gtk.Box.BoxChild w32 = ((global::Gtk.Box.BoxChild)(this.boxTraceExpression [this.entryTraceExpr]));
 			w32.Position = 2;
 			this.boxAction.Add (this.boxTraceExpression);
-			global::Gtk.Box.BoxChild w33 = ((global::Gtk.Box.BoxChild)(this.boxAction[this.boxTraceExpression]));
+			global::Gtk.Box.BoxChild w33 = ((global::Gtk.Box.BoxChild)(this.boxAction [this.boxTraceExpression]));
 			w33.Position = 3;
 			w33.Expand = false;
 			w33.Fill = false;
 			this.hbox2.Add (this.boxAction);
-			global::Gtk.Box.BoxChild w34 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.boxAction]));
+			global::Gtk.Box.BoxChild w34 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.boxAction]));
 			w34.Position = 1;
 			this.vbox2.Add (this.hbox2);
-			global::Gtk.Box.BoxChild w35 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox2]));
+			global::Gtk.Box.BoxChild w35 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox2]));
 			w35.Position = 5;
 			w35.Expand = false;
 			w35.Fill = false;
 			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w36 = ((global::Gtk.Box.BoxChild)(w1[this.vbox2]));
+			global::Gtk.Box.BoxChild w36 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
 			w36.Position = 0;
 			w36.Expand = false;
 			w36.Fill = false;
@@ -453,7 +418,7 @@ namespace MonoDevelop.Debugger
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w38 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w37[this.buttonCancel]));
+			global::Gtk.ButtonBox.ButtonBoxChild w38 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w37 [this.buttonCancel]));
 			w38.Expand = false;
 			w38.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -465,7 +430,7 @@ namespace MonoDevelop.Debugger
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			w37.Add (this.buttonOk);
-			global::Gtk.ButtonBox.ButtonBoxChild w39 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w37[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w39 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w37 [this.buttonOk]));
 			w39.Position = 1;
 			w39.Expand = false;
 			w39.Fill = false;

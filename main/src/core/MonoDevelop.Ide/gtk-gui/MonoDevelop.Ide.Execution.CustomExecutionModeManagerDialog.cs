@@ -120,7 +120,7 @@ namespace MonoDevelop.Ide.Execution
 			}
 			this.DefaultWidth = 645;
 			this.DefaultHeight = 409;
-			this.Show ();
+			this.Hide ();
 			this.buttonAdd.Clicked += new global::System.EventHandler (this.OnButtonAddClicked);
 			this.buttonRemove.Clicked += new global::System.EventHandler (this.OnButtonRemoveClicked);
 			this.buttonEdit.Clicked += new global::System.EventHandler (this.OnButtonEditClicked);

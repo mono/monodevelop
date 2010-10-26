@@ -66,7 +66,7 @@ namespace MonoDevelop.CodeGeneration
 			}
 			this.DefaultWidth = 288;
 			this.DefaultHeight = 369;
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

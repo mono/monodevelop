@@ -167,7 +167,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			
 			DefaultWidth  = PropertyService.Get ("NavigateToDialog.DialogWidth", 620);
 			DefaultHeight = PropertyService.Get ("NavigateToDialog.DialogHeight", 440);
-			Show ();
+			
 			this.SizeAllocated += delegate(object o, SizeAllocatedArgs args) {
 				PropertyService.Set ("NavigateToDialog.DialogWidth", args.Allocation.Width);
 				PropertyService.Set ("NavigateToDialog.DialogHeight", args.Allocation.Height);

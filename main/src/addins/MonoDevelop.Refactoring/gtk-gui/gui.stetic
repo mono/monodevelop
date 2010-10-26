@@ -107,7 +107,6 @@
       </widget>
     </child>
   </widget>
- 
   <widget class="Gtk.Dialog" id="MonoDevelop.Refactoring.Rename.RenameItemDialog" design-size="365 154">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Rename {0}</property>
@@ -503,6 +502,7 @@
   </widget>
   <widget class="Gtk.Window" id="MonoDevelop.CodeGeneration.GenerateCodeWindow" design-size="288 369">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">GenerateCodeWindow</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Decorated">False</property>

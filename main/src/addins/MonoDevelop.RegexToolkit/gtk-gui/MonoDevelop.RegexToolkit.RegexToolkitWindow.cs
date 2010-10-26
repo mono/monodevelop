@@ -5,75 +5,40 @@ namespace MonoDevelop.RegexToolkit
 	public partial class RegexToolkitWindow
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.VPaned vpaned1;
-
 		private global::Gtk.VBox vbox1;
-
 		private global::Gtk.HPaned hpaned1;
-
 		private global::Gtk.VBox vbox6;
-
 		private global::Gtk.Label label8;
-
 		private global::Gtk.Entry entryRegEx;
-
 		private global::Gtk.VBox vbox3;
-
 		private global::Gtk.CheckButton checkbuttonReplace;
-
 		private global::Gtk.Entry entryReplace;
-
 		private global::Gtk.HBox hbox7;
-
 		private global::Gtk.Button buttonStart;
-
 		private global::Gtk.ScrolledWindow scrolledwindow5;
-
 		private global::Gtk.TreeView optionsTreeview;
-
 		private global::Gtk.Label label10;
-
 		private global::Gtk.VBox vbox4;
-
 		private global::Gtk.Label label11;
-
 		private global::Gtk.ScrolledWindow elementsscrolledwindow;
-
 		private global::Gtk.TreeView elementsTreeview;
-
 		private global::Gtk.VBox HelpWidget;
-
 		private global::Gtk.Label label9;
-
 		private global::Gtk.HBox hbox5;
-
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-
 		private global::Gtk.TextView inputTextview;
-
 		private global::Gtk.HBox hbox4;
-
 		private global::Gtk.Notebook notebook2;
-
 		private global::Gtk.ScrolledWindow scrolledwindow2;
-
 		private global::Gtk.TreeView resultsTreeview;
-
 		private global::Gtk.Label label3;
-
 		private global::Gtk.ScrolledWindow scrolledwindow4;
-
 		private global::Gtk.TextView replaceResultTextview;
-
 		private global::Gtk.Label label4;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Label labelStatus;
-
 		private global::Gtk.Button buttonCancel;
-
 		private global::Gtk.Button buttonLibrary;
 
 		protected virtual void Build ()
@@ -112,11 +77,11 @@ namespace MonoDevelop.RegexToolkit
 			// Container child vbox6.Gtk.Box+BoxChild
 			this.label8 = new global::Gtk.Label ();
 			this.label8.Name = "label8";
-			this.label8.Xalign = 0f;
+			this.label8.Xalign = 0F;
 			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("_Regular Expression");
 			this.label8.UseUnderline = true;
 			this.vbox6.Add (this.label8);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox6[this.label8]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.label8]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -127,7 +92,7 @@ namespace MonoDevelop.RegexToolkit
 			this.entryRegEx.IsEditable = true;
 			this.entryRegEx.InvisibleChar = '●';
 			this.vbox6.Add (this.entryRegEx);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox6[this.entryRegEx]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.entryRegEx]));
 			w2.Position = 1;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -144,7 +109,7 @@ namespace MonoDevelop.RegexToolkit
 			this.checkbuttonReplace.DrawIndicator = true;
 			this.checkbuttonReplace.UseUnderline = true;
 			this.vbox3.Add (this.checkbuttonReplace);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.checkbuttonReplace]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.checkbuttonReplace]));
 			w3.Position = 0;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -155,7 +120,7 @@ namespace MonoDevelop.RegexToolkit
 			this.entryReplace.IsEditable = true;
 			this.entryReplace.InvisibleChar = '●';
 			this.vbox3.Add (this.entryReplace);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.entryReplace]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.entryReplace]));
 			w4.Position = 1;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -170,7 +135,7 @@ namespace MonoDevelop.RegexToolkit
 			this.buttonStart.Name = "buttonStart";
 			this.buttonStart.UseUnderline = true;
 			// Container child buttonStart.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w5 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+			global::Gtk.Alignment w5 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
 			global::Gtk.HBox w6 = new global::Gtk.HBox ();
 			w6.Spacing = 2;
@@ -186,19 +151,19 @@ namespace MonoDevelop.RegexToolkit
 			w5.Add (w6);
 			this.buttonStart.Add (w5);
 			this.hbox7.Add (this.buttonStart);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox7[this.buttonStart]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.buttonStart]));
 			w13.PackType = ((global::Gtk.PackType)(1));
 			w13.Position = 0;
 			w13.Expand = false;
 			w13.Fill = false;
 			this.vbox3.Add (this.hbox7);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.hbox7]));
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.hbox7]));
 			w14.PackType = ((global::Gtk.PackType)(1));
 			w14.Position = 2;
 			w14.Expand = false;
 			w14.Fill = false;
 			this.vbox6.Add (this.vbox3);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox6[this.vbox3]));
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.vbox3]));
 			w15.Position = 2;
 			w15.Expand = false;
 			w15.Fill = false;
@@ -213,24 +178,24 @@ namespace MonoDevelop.RegexToolkit
 			this.optionsTreeview.Name = "optionsTreeview";
 			this.scrolledwindow5.Add (this.optionsTreeview);
 			this.vbox6.Add (this.scrolledwindow5);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox6[this.scrolledwindow5]));
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.scrolledwindow5]));
 			w17.PackType = ((global::Gtk.PackType)(1));
 			w17.Position = 3;
 			// Container child vbox6.Gtk.Box+BoxChild
 			this.label10 = new global::Gtk.Label ();
 			this.label10.Name = "label10";
-			this.label10.Xalign = 0f;
+			this.label10.Xalign = 0F;
 			this.label10.LabelProp = global::Mono.Unix.Catalog.GetString ("_Options:");
 			this.label10.UseMarkup = true;
 			this.label10.UseUnderline = true;
 			this.vbox6.Add (this.label10);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox6[this.label10]));
+			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.label10]));
 			w18.PackType = ((global::Gtk.PackType)(1));
 			w18.Position = 4;
 			w18.Expand = false;
 			w18.Fill = false;
 			this.hpaned1.Add (this.vbox6);
-			global::Gtk.Paned.PanedChild w19 = ((global::Gtk.Paned.PanedChild)(this.hpaned1[this.vbox6]));
+			global::Gtk.Paned.PanedChild w19 = ((global::Gtk.Paned.PanedChild)(this.hpaned1 [this.vbox6]));
 			w19.Resize = false;
 			// Container child hpaned1.Gtk.Paned+PanedChild
 			this.vbox4 = new global::Gtk.VBox ();
@@ -239,12 +204,12 @@ namespace MonoDevelop.RegexToolkit
 			// Container child vbox4.Gtk.Box+BoxChild
 			this.label11 = new global::Gtk.Label ();
 			this.label11.Name = "label11";
-			this.label11.Xalign = 0f;
+			this.label11.Xalign = 0F;
 			this.label11.LabelProp = global::Mono.Unix.Catalog.GetString ("_Elements:");
 			this.label11.UseMarkup = true;
 			this.label11.UseUnderline = true;
 			this.vbox4.Add (this.label11);
-			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.label11]));
+			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.label11]));
 			w20.Position = 0;
 			w20.Expand = false;
 			w20.Fill = false;
@@ -259,11 +224,11 @@ namespace MonoDevelop.RegexToolkit
 			this.elementsTreeview.Name = "elementsTreeview";
 			this.elementsscrolledwindow.Add (this.elementsTreeview);
 			this.vbox4.Add (this.elementsscrolledwindow);
-			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.elementsscrolledwindow]));
+			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.elementsscrolledwindow]));
 			w22.Position = 1;
 			this.hpaned1.Add (this.vbox4);
 			this.vbox1.Add (this.hpaned1);
-			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.hpaned1]));
+			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hpaned1]));
 			w24.Position = 0;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.HelpWidget = new global::Gtk.VBox ();
@@ -273,12 +238,12 @@ namespace MonoDevelop.RegexToolkit
 			// Container child HelpWidget.Gtk.Box+BoxChild
 			this.label9 = new global::Gtk.Label ();
 			this.label9.Name = "label9";
-			this.label9.Xalign = 0f;
+			this.label9.Xalign = 0F;
 			this.label9.LabelProp = global::Mono.Unix.Catalog.GetString ("_Input:");
 			this.label9.UseMarkup = true;
 			this.label9.UseUnderline = true;
 			this.HelpWidget.Add (this.label9);
-			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.HelpWidget[this.label9]));
+			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.HelpWidget [this.label9]));
 			w25.Position = 0;
 			w25.Expand = false;
 			w25.Fill = false;
@@ -297,16 +262,16 @@ namespace MonoDevelop.RegexToolkit
 			this.inputTextview.Name = "inputTextview";
 			this.scrolledwindow1.Add (this.inputTextview);
 			this.hbox5.Add (this.scrolledwindow1);
-			global::Gtk.Box.BoxChild w27 = ((global::Gtk.Box.BoxChild)(this.hbox5[this.scrolledwindow1]));
+			global::Gtk.Box.BoxChild w27 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.scrolledwindow1]));
 			w27.Position = 0;
 			this.HelpWidget.Add (this.hbox5);
-			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.HelpWidget[this.hbox5]));
+			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.HelpWidget [this.hbox5]));
 			w28.Position = 1;
 			this.vbox1.Add (this.HelpWidget);
-			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.HelpWidget]));
+			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.HelpWidget]));
 			w29.Position = 1;
 			this.vpaned1.Add (this.vbox1);
-			global::Gtk.Paned.PanedChild w30 = ((global::Gtk.Paned.PanedChild)(this.vpaned1[this.vbox1]));
+			global::Gtk.Paned.PanedChild w30 = ((global::Gtk.Paned.PanedChild)(this.vpaned1 [this.vbox1]));
 			w30.Resize = false;
 			// Container child vpaned1.Gtk.Paned+PanedChild
 			this.hbox4 = new global::Gtk.HBox ();
@@ -347,7 +312,7 @@ namespace MonoDevelop.RegexToolkit
 			this.replaceResultTextview.CursorVisible = false;
 			this.scrolledwindow4.Add (this.replaceResultTextview);
 			this.notebook2.Add (this.scrolledwindow4);
-			global::Gtk.Notebook.NotebookChild w34 = ((global::Gtk.Notebook.NotebookChild)(this.notebook2[this.scrolledwindow4]));
+			global::Gtk.Notebook.NotebookChild w34 = ((global::Gtk.Notebook.NotebookChild)(this.notebook2 [this.scrolledwindow4]));
 			w34.Position = 1;
 			// Notebook tab
 			this.label4 = new global::Gtk.Label ();
@@ -356,11 +321,11 @@ namespace MonoDevelop.RegexToolkit
 			this.notebook2.SetTabLabel (this.scrolledwindow4, this.label4);
 			this.label4.ShowAll ();
 			this.hbox4.Add (this.notebook2);
-			global::Gtk.Box.BoxChild w35 = ((global::Gtk.Box.BoxChild)(this.hbox4[this.notebook2]));
+			global::Gtk.Box.BoxChild w35 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.notebook2]));
 			w35.Position = 0;
 			this.vpaned1.Add (this.hbox4);
 			this.vbox2.Add (this.vpaned1);
-			global::Gtk.Box.BoxChild w37 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.vpaned1]));
+			global::Gtk.Box.BoxChild w37 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.vpaned1]));
 			w37.Position = 0;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.hbox1 = new global::Gtk.HBox ();
@@ -369,11 +334,11 @@ namespace MonoDevelop.RegexToolkit
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.labelStatus = new global::Gtk.Label ();
 			this.labelStatus.Name = "labelStatus";
-			this.labelStatus.Xalign = 0f;
+			this.labelStatus.Xalign = 0F;
 			this.labelStatus.UseMarkup = true;
 			this.labelStatus.UseUnderline = true;
 			this.hbox1.Add (this.labelStatus);
-			global::Gtk.Box.BoxChild w38 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.labelStatus]));
+			global::Gtk.Box.BoxChild w38 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.labelStatus]));
 			w38.Position = 0;
 			w38.Expand = false;
 			w38.Fill = false;
@@ -386,7 +351,7 @@ namespace MonoDevelop.RegexToolkit
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-close";
 			this.hbox1.Add (this.buttonCancel);
-			global::Gtk.Box.BoxChild w39 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonCancel]));
+			global::Gtk.Box.BoxChild w39 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonCancel]));
 			w39.PackType = ((global::Gtk.PackType)(1));
 			w39.Position = 1;
 			w39.Expand = false;
@@ -399,13 +364,13 @@ namespace MonoDevelop.RegexToolkit
 			this.buttonLibrary.UseUnderline = true;
 			this.buttonLibrary.Label = global::Mono.Unix.Catalog.GetString ("Regex Library");
 			this.hbox1.Add (this.buttonLibrary);
-			global::Gtk.Box.BoxChild w40 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonLibrary]));
+			global::Gtk.Box.BoxChild w40 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonLibrary]));
 			w40.PackType = ((global::Gtk.PackType)(1));
 			w40.Position = 2;
 			w40.Expand = false;
 			w40.Fill = false;
 			this.vbox2.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w41 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+			global::Gtk.Box.BoxChild w41 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
 			w41.Position = 1;
 			w41.Expand = false;
 			w41.Fill = false;
@@ -420,7 +385,7 @@ namespace MonoDevelop.RegexToolkit
 			this.label11.MnemonicWidget = this.elementsTreeview;
 			this.label9.MnemonicWidget = this.inputTextview;
 			this.labelStatus.MnemonicWidget = this.inputTextview;
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

@@ -5,25 +5,15 @@ namespace MonoDevelop.Debugger
 	public partial class ExceptionCaughtDialog
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Label labelType;
-
 		private global::Gtk.Label labelMessage;
-
 		private global::Gtk.Notebook notebook1;
-
 		private global::Gtk.ScrolledWindow GtkScrolledWindow1;
-
 		private global::Gtk.TreeView treeStack;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-
 		private global::MonoDevelop.Debugger.ObjectValueTreeView valueView;
-
 		private global::Gtk.Label page1;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -45,11 +35,11 @@ namespace MonoDevelop.Debugger
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.labelType = new global::Gtk.Label ();
 			this.labelType.Name = "labelType";
-			this.labelType.Xalign = 0f;
+			this.labelType.Xalign = 0F;
 			this.labelType.LabelProp = "<b>Exception</b> has been thrown";
 			this.labelType.UseMarkup = true;
 			this.vbox2.Add (this.labelType);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.labelType]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.labelType]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -57,11 +47,11 @@ namespace MonoDevelop.Debugger
 			this.labelMessage = new global::Gtk.Label ();
 			this.labelMessage.WidthRequest = 500;
 			this.labelMessage.Name = "labelMessage";
-			this.labelMessage.Xalign = 0f;
+			this.labelMessage.Xalign = 0F;
 			this.labelMessage.LabelProp = "test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test";
 			this.labelMessage.Wrap = true;
 			this.vbox2.Add (this.labelMessage);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.labelMessage]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.labelMessage]));
 			w3.Position = 1;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -105,7 +95,7 @@ namespace MonoDevelop.Debugger
 			this.valueView.CompactView = false;
 			this.GtkScrolledWindow.Add (this.valueView);
 			this.notebook1.Add (this.GtkScrolledWindow);
-			global::Gtk.Notebook.NotebookChild w7 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1[this.GtkScrolledWindow]));
+			global::Gtk.Notebook.NotebookChild w7 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.GtkScrolledWindow]));
 			w7.Position = 1;
 			// Notebook tab
 			this.page1 = new global::Gtk.Label ();
@@ -114,10 +104,10 @@ namespace MonoDevelop.Debugger
 			this.notebook1.SetTabLabel (this.GtkScrolledWindow, this.page1);
 			this.page1.ShowAll ();
 			this.vbox2.Add (this.notebook1);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.notebook1]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.notebook1]));
 			w8.Position = 2;
 			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(w1[this.vbox2]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
 			w9.Position = 0;
 			// Internal child MonoDevelop.Debugger.ExceptionCaughtDialog.ActionArea
 			global::Gtk.HButtonBox w10 = this.ActionArea;
@@ -134,7 +124,7 @@ namespace MonoDevelop.Debugger
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-close";
 			this.AddActionWidget (this.buttonOk, -7);
-			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.buttonOk]));
 			w11.Expand = false;
 			w11.Fill = false;
 			if ((this.Child != null)) {

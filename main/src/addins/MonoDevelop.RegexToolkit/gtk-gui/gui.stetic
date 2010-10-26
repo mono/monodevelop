@@ -11,6 +11,7 @@
   </import>
   <widget class="Gtk.Window" id="MonoDevelop.RegexToolkit.RegexToolkitWindow" design-size="613 623">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Regular Expression Toolkit</property>
     <property name="TypeHint">Dialog</property>
     <property name="WindowPosition">CenterOnParent</property>

@@ -47,6 +47,7 @@
       </action>
     </action-group>
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Events">ButtonPressMask</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Add Web Reference</property>
@@ -391,6 +392,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.WebReferences.Dialogs.UserPasswordDialog" design-size="400 174">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Credentials</property>
     <property name="WindowPosition">CenterOnParent</property>

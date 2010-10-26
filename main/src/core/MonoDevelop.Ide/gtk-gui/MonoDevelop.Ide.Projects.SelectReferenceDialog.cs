@@ -167,7 +167,7 @@ namespace MonoDevelop.Ide.Projects
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.Show ();
+			this.Hide ();
 			this.RemoveReferenceButton.Clicked += new global::System.EventHandler (this.RemoveReference);
 		}
 	}

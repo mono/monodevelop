@@ -221,7 +221,7 @@ namespace MonoDevelop.Ide.Execution
 			this.DefaultHeight = 525;
 			this.boxName.Hide ();
 			this.checkPrompt.Hide ();
-			this.Show ();
+			this.Hide ();
 			this.comboTargetMode.SelectionChanged += new global::System.EventHandler (this.OnComboTargetModeSelectionChanged);
 			this.checkSave.Toggled += new global::System.EventHandler (this.OnCheckSaveToggled);
 			this.entryModeName.Changed += new global::System.EventHandler (this.OnEntryModeNameChanged);

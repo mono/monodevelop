@@ -264,7 +264,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.DefaultHeight = 289;
 			this.labelFind.MnemonicWidget = this.comboboxentryFind;
 			this.labelScope.MnemonicWidget = this.comboboxScope;
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

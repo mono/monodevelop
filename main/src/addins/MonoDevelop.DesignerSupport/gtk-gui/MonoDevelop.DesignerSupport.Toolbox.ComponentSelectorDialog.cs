@@ -5,25 +5,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	internal partial class ComponentSelectorDialog
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.ComboBox comboType;
-
 		private global::Gtk.VSeparator vseparator1;
-
 		private global::Gtk.Button button24;
-
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-
 		private global::Gtk.TreeView listView;
-
 		private global::Gtk.CheckButton checkGroupByCat;
-
 		private global::Gtk.Button buttonCancel;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -49,10 +39,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Type of component:");
 			this.hbox1.Add (this.label1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label1]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -60,13 +50,13 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			this.comboType = global::Gtk.ComboBox.NewText ();
 			this.comboType.Name = "comboType";
 			this.hbox1.Add (this.comboType);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.comboType]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.comboType]));
 			w3.Position = 1;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.vseparator1 = new global::Gtk.VSeparator ();
 			this.vseparator1.Name = "vseparator1";
 			this.hbox1.Add (this.vseparator1);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.vseparator1]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vseparator1]));
 			w4.Position = 2;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -76,7 +66,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			this.button24.Name = "button24";
 			this.button24.UseUnderline = true;
 			// Container child button24.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w5 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+			global::Gtk.Alignment w5 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
 			global::Gtk.HBox w6 = new global::Gtk.HBox ();
 			w6.Spacing = 2;
@@ -92,12 +82,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			w5.Add (w6);
 			this.button24.Add (w5);
 			this.hbox1.Add (this.button24);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.button24]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.button24]));
 			w13.Position = 3;
 			w13.Expand = false;
 			w13.Fill = false;
 			this.vbox2.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
 			w14.Position = 0;
 			w14.Expand = false;
 			w14.Fill = false;
@@ -112,7 +102,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			this.listView.Name = "listView";
 			this.scrolledwindow1.Add (this.listView);
 			this.vbox2.Add (this.scrolledwindow1);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.scrolledwindow1]));
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.scrolledwindow1]));
 			w16.Position = 1;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.checkGroupByCat = new global::Gtk.CheckButton ();
@@ -122,12 +112,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			this.checkGroupByCat.DrawIndicator = true;
 			this.checkGroupByCat.UseUnderline = true;
 			this.vbox2.Add (this.checkGroupByCat);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.checkGroupByCat]));
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.checkGroupByCat]));
 			w17.Position = 2;
 			w17.Expand = false;
 			w17.Fill = false;
 			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(w1[this.vbox2]));
+			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
 			w18.Position = 0;
 			// Internal child MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog.ActionArea
 			global::Gtk.HButtonBox w19 = this.ActionArea;
@@ -144,7 +134,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w20 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w19[this.buttonCancel]));
+			global::Gtk.ButtonBox.ButtonBoxChild w20 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w19 [this.buttonCancel]));
 			w20.Expand = false;
 			w20.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -156,7 +146,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			w19.Add (this.buttonOk);
-			global::Gtk.ButtonBox.ButtonBoxChild w21 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w19[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w21 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w19 [this.buttonOk]));
 			w21.Position = 1;
 			w21.Expand = false;
 			w21.Fill = false;

@@ -5,17 +5,11 @@ namespace MonoDevelop.Debugger
 	public partial class ExpressionEvaluatorDialog
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Entry entry;
-
 		private global::Gtk.Button buttonEval;
-
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-
 		private global::MonoDevelop.Debugger.ObjectValueTreeView valueTree;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -47,7 +41,7 @@ namespace MonoDevelop.Debugger
 			this.entry.ActivatesDefault = true;
 			this.entry.InvisibleChar = '●';
 			this.hbox1.Add (this.entry);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.entry]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.entry]));
 			w2.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.buttonEval = new global::Gtk.Button ();
@@ -57,12 +51,12 @@ namespace MonoDevelop.Debugger
 			this.buttonEval.UseUnderline = true;
 			this.buttonEval.Label = global::Mono.Unix.Catalog.GetString ("Evaluate");
 			this.hbox1.Add (this.buttonEval);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonEval]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonEval]));
 			w3.Position = 1;
 			w3.Expand = false;
 			w3.Fill = false;
 			this.vbox2.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -82,10 +76,10 @@ namespace MonoDevelop.Debugger
 			this.valueTree.CompactView = false;
 			this.GtkScrolledWindow.Add (this.valueTree);
 			this.vbox2.Add (this.GtkScrolledWindow);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.GtkScrolledWindow]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.GtkScrolledWindow]));
 			w6.Position = 1;
 			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(w1[this.vbox2]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
 			w7.Position = 0;
 			// Internal child MonoDevelop.Debugger.ExpressionEvaluatorDialog.ActionArea
 			global::Gtk.HButtonBox w8 = this.ActionArea;
@@ -102,7 +96,7 @@ namespace MonoDevelop.Debugger
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-close";
 			this.AddActionWidget (this.buttonOk, -7);
-			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8 [this.buttonOk]));
 			w9.Expand = false;
 			w9.Fill = false;
 			if ((this.Child != null)) {

@@ -5583,6 +5583,7 @@ Large</property>
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.FindInFiles.FindInFilesDialog" design-size="456 289">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="TypeHint">Dialog</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>
@@ -6166,6 +6167,7 @@ Large</property>
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Execution.CustomExecutionModeDialog" design-size="655 525">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Execution Arguments</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -6439,6 +6441,7 @@ All solutions</property>
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Execution.CustomExecutionModeManagerDialog" design-size="645 409">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Custom Execution Modes</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -11089,6 +11092,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
     <property name="MemberName" />
     <property name="WidthRequest">640</property>
     <property name="HeightRequest">520</property>
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Edit References</property>
     <property name="TypeHint">Dialog</property>
