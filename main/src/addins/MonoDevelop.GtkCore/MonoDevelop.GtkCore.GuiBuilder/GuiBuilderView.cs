@@ -46,7 +46,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class GuiBuilderView : CombinedDesignView, MonoDevelop.DesignerSupport.IOutlinedDocument, ISupportsProjectReload
+	public class GuiBuilderView : CombinedDesignView, ISupportsProjectReload
 	{
 		Stetic.WidgetDesigner designer;
 		Stetic.ActionGroupDesigner actionsBox;
@@ -404,19 +404,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			else
 				return null;
 		}
-		
-		Widget MonoDevelop.DesignerSupport.IOutlinedDocument.GetOutlineWidget ()
-		{
-			return GuiBuilderDocumentOutline.Instance;
-		}
-
-		void MonoDevelop.DesignerSupport.IOutlinedDocument.ReleaseOutlineWidget ()
-		{
-			//Do nothing. We keep the instance to avoid creation cost when switching documents.
-		}
 	}
 	
-	class DesignerPage: Gtk.EventBox, ICustomPropertyPadProvider, IToolboxConsumer
+	class DesignerPage: Gtk.EventBox, ICustomPropertyPadProvider, IToolboxConsumer, MonoDevelop.DesignerSupport.IOutlinedDocument
 	{
 		GuiBuilderProject gproject;
 		
@@ -602,6 +592,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		protected void OnUpdateRedo (CommandInfo cinfo)
 		{
 			cinfo.Enabled = Designer != null && Designer.UndoQueue.CanRedo;
+		}
+		
+		Widget MonoDevelop.DesignerSupport.IOutlinedDocument.GetOutlineWidget ()
+		{
+			return GuiBuilderDocumentOutline.Instance;
+		}
+
+		void MonoDevelop.DesignerSupport.IOutlinedDocument.ReleaseOutlineWidget ()
+		{
+			//Do nothing. We keep the instance to avoid creation cost when switching documents.
 		}
 	}
 }
