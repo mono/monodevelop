@@ -406,7 +406,8 @@ namespace MonoDevelop.CSharp.Dom
 			} else {
 				result.Append (settings.EmitName (method, Format (FilterName (method.Name))));
 			}
-			DomMethod.GenericMethodInstanceResolver resolver;
+			//this is only ever used if GeneralizeGenerics is true
+			DomMethod.GenericMethodInstanceResolver resolver = null;
 			if (settings.GeneralizeGenerics) {
 				resolver = new DomMethod.GenericMethodInstanceResolver ();
 			}
