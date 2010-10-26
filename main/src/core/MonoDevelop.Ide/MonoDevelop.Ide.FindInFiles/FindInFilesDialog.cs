@@ -169,6 +169,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			checkMenuItem1.Toggled += delegate {
 				properties.Set ("IncludeHiddenFiles", checkMenuItem1.Active);
 			};
+			
+			Child.Show ();
 		}
 
 		public override void Destroy ()

@@ -179,7 +179,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			}
 
 			frmBrowser.Show();
-			this.ShowAll();
+			this.Child.ShowAll ();
 		}
 		
 		/// <summary>Execute the event when any of the buttons on the action panel has been clicked</summary>

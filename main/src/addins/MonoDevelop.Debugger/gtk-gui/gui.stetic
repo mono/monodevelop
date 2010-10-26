@@ -169,6 +169,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Debugger.ExceptionsDialog" design-size="910 451">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Exceptions</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">3</property>

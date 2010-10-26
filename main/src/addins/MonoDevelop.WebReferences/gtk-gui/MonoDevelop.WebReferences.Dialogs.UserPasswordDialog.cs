@@ -5,21 +5,13 @@ namespace MonoDevelop.WebReferences.Dialogs
 	internal partial class UserPasswordDialog
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Label labelServer;
-
 		private global::Gtk.Table table1;
-
 		private global::Gtk.Entry entryPwd;
-
 		private global::Gtk.Entry entryUser;
-
 		private global::Gtk.Label label3;
-
 		private global::Gtk.Label labelUser;
-
 		private global::Gtk.Button buttonCancel;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -41,10 +33,10 @@ namespace MonoDevelop.WebReferences.Dialogs
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.labelServer = new global::Gtk.Label ();
 			this.labelServer.Name = "labelServer";
-			this.labelServer.Xalign = 0f;
+			this.labelServer.Xalign = 0F;
 			this.labelServer.LabelProp = "Server info";
 			this.vbox2.Add (this.labelServer);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.labelServer]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.labelServer]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -61,7 +53,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			this.entryPwd.Visibility = false;
 			this.entryPwd.InvisibleChar = '●';
 			this.table1.Add (this.entryPwd);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1[this.entryPwd]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryPwd]));
 			w3.TopAttach = ((uint)(1));
 			w3.BottomAttach = ((uint)(2));
 			w3.LeftAttach = ((uint)(1));
@@ -74,17 +66,17 @@ namespace MonoDevelop.WebReferences.Dialogs
 			this.entryUser.IsEditable = true;
 			this.entryUser.InvisibleChar = '●';
 			this.table1.Add (this.entryUser);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1[this.entryUser]));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryUser]));
 			w4.LeftAttach = ((uint)(1));
 			w4.RightAttach = ((uint)(2));
 			w4.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.Xalign = 0f;
+			this.label3.Xalign = 0F;
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Password:");
 			this.table1.Add (this.label3);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1[this.label3]));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.label3]));
 			w5.TopAttach = ((uint)(1));
 			w5.BottomAttach = ((uint)(2));
 			w5.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -92,19 +84,19 @@ namespace MonoDevelop.WebReferences.Dialogs
 			// Container child table1.Gtk.Table+TableChild
 			this.labelUser = new global::Gtk.Label ();
 			this.labelUser.Name = "labelUser";
-			this.labelUser.Xalign = 0f;
+			this.labelUser.Xalign = 0F;
 			this.labelUser.LabelProp = global::Mono.Unix.Catalog.GetString ("User:");
 			this.table1.Add (this.labelUser);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1[this.labelUser]));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelUser]));
 			w6.XOptions = ((global::Gtk.AttachOptions)(4));
 			w6.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox2.Add (this.table1);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.table1]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.table1]));
 			w7.Position = 1;
 			w7.Expand = false;
 			w7.Fill = false;
 			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(w1[this.vbox2]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
 			w8.Position = 0;
 			w8.Expand = false;
 			w8.Fill = false;
@@ -123,7 +115,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w10 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w9[this.buttonCancel]));
+			global::Gtk.ButtonBox.ButtonBoxChild w10 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w9 [this.buttonCancel]));
 			w10.Expand = false;
 			w10.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -135,7 +127,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w9[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w9 [this.buttonOk]));
 			w11.Position = 1;
 			w11.Expand = false;
 			w11.Fill = false;
@@ -144,7 +136,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			}
 			this.DefaultWidth = 400;
 			this.DefaultHeight = 174;
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

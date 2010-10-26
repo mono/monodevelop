@@ -5,17 +5,11 @@ namespace MonoDevelop.Debugger
 	public partial class BusyEvaluatorDialog
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.Label labelMethod;
-
 		private global::Gtk.Button buttonCancel;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -37,10 +31,10 @@ namespace MonoDevelop.Debugger
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("The Debugger is waiting for an expression evaluation to finish.");
 			this.vbox2.Add (this.label1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.label1]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label1]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -51,30 +45,30 @@ namespace MonoDevelop.Debugger
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.Xalign = 0f;
+			this.label2.Xalign = 0F;
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Method:");
 			this.hbox1.Add (this.label2);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label2]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label2]));
 			w3.Position = 0;
 			w3.Expand = false;
 			w3.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.labelMethod = new global::Gtk.Label ();
 			this.labelMethod.Name = "labelMethod";
-			this.labelMethod.Xalign = 0f;
+			this.labelMethod.Xalign = 0F;
 			this.labelMethod.LabelProp = "<mehtod>";
 			this.hbox1.Add (this.labelMethod);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.labelMethod]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.labelMethod]));
 			w4.Position = 1;
 			w4.Expand = false;
 			w4.Fill = false;
 			this.vbox2.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
 			w5.Position = 1;
 			w5.Expand = false;
 			w5.Fill = false;
 			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(w1[this.vbox2]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
 			w6.Position = 0;
 			w6.Expand = false;
 			w6.Fill = false;
@@ -92,7 +86,7 @@ namespace MonoDevelop.Debugger
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = global::Mono.Unix.Catalog.GetString ("Stop Debugger");
 			w7.Add (this.buttonCancel);
-			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7[this.buttonCancel]));
+			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7 [this.buttonCancel]));
 			w8.Expand = false;
 			w8.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -103,7 +97,7 @@ namespace MonoDevelop.Debugger
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = global::Mono.Unix.Catalog.GetString ("Keep Waiting");
 			w7.Add (this.buttonOk);
-			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7 [this.buttonOk]));
 			w9.Position = 1;
 			w9.Expand = false;
 			w9.Fill = false;

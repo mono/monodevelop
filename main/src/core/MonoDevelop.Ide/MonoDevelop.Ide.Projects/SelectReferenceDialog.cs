@@ -172,7 +172,7 @@ namespace MonoDevelop.Ide.Projects
 			mainBook.AppendPage (assemblyRefPanel, new Label (GettextCatalog.GetString (".Net Assembly")));
 			mainBook.Page = 0;
 			ReferencesTreeView.Selection.Changed += new EventHandler (OnChanged);
-			ShowAll ();
+			Child.ShowAll ();
 			OnChanged (null, null);
 		}
 

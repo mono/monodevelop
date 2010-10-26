@@ -5,15 +5,10 @@ namespace MonoDevelop.Debugger.Viewers
 	public partial class ValueVisualizerDialog
 	{
 		private global::Gtk.VBox mainBox;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.ComboBox comboVisualizers;
-
 		private global::Gtk.Button buttonCancel;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -41,7 +36,7 @@ namespace MonoDevelop.Debugger.Viewers
 			this.label1.Name = "label1";
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("View as:");
 			this.hbox1.Add (this.label1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label1]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -49,15 +44,15 @@ namespace MonoDevelop.Debugger.Viewers
 			this.comboVisualizers = global::Gtk.ComboBox.NewText ();
 			this.comboVisualizers.Name = "comboVisualizers";
 			this.hbox1.Add (this.comboVisualizers);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.comboVisualizers]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.comboVisualizers]));
 			w3.Position = 1;
 			this.mainBox.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.mainBox[this.hbox1]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.mainBox [this.hbox1]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
 			w1.Add (this.mainBox);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(w1[this.mainBox]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(w1 [this.mainBox]));
 			w5.Position = 0;
 			// Internal child MonoDevelop.Debugger.Viewers.ValueVisualizerDialog.ActionArea
 			global::Gtk.HButtonBox w6 = this.ActionArea;
@@ -74,7 +69,7 @@ namespace MonoDevelop.Debugger.Viewers
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w7 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6[this.buttonCancel]));
+			global::Gtk.ButtonBox.ButtonBoxChild w7 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6 [this.buttonCancel]));
 			w7.Expand = false;
 			w7.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -86,7 +81,7 @@ namespace MonoDevelop.Debugger.Viewers
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			w6.Add (this.buttonOk);
-			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6 [this.buttonOk]));
 			w8.Position = 1;
 			w8.Expand = false;
 			w8.Fill = false;
