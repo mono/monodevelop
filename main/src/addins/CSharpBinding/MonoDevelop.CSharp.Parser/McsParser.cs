@@ -530,9 +530,15 @@ namespace MonoDevelop.CSharp.Parser
 				newType.Location = Convert (c.MemberName.Location);
 				newType.ClassType = classType;
 				var location = LocationsBag.GetMemberLocation (c);
+				
 				if (location != null && location.Count > 2) {
 					var region = ConvertRegion (c.MemberName.Location, location[2]);
 					region.Start = new DomLocation (region.Start.Line, region.Start.Column + c.MemberName.Name.Length);
+					newType.BodyRegion =  region;
+				} else {
+					var region = ConvertRegion (c.MemberName.Location, c.MemberName.Location);
+					region.Start = new DomLocation (region.Start.Line, region.Start.Column + c.MemberName.Name.Length);
+					region.End = new DomLocation (int.MaxValue, int.MaxValue);
 					newType.BodyRegion =  region;
 				}
 				
@@ -945,8 +951,7 @@ namespace MonoDevelop.CSharp.Parser
 				method.DeclaringType = typeStack.Peek ();
 				typeStack.Peek ().Add (method);
 			}
-			
-			
+
 			public override void Visit (Constructor c)
 			{
 				DomMethod method = new DomMethod ();
@@ -969,7 +974,7 @@ namespace MonoDevelop.CSharp.Parser
 				method.DeclaringType = typeStack.Peek ();
 				typeStack.Peek ().Add (method);
 			}
-			
+
 			public override void Visit (Destructor d)
 			{
 				DomMethod method = new DomMethod ();

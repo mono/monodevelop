@@ -571,7 +571,6 @@ namespace_member_declaration
 	  {
 		if ($1 != null) {
 			DeclSpace ds = (DeclSpace)$1;
-			ubag.AddTypeDeclaration (ds);
 			if ((ds.ModFlags & (Modifiers.PRIVATE|Modifiers.PROTECTED)) != 0){
 				Report.Error (1527, ds.Location, 
 				"Namespace elements cannot be explicitly declared as private, protected or protected internal");
@@ -6087,6 +6086,7 @@ void push_current_class (TypeContainer tc, object partial_token)
 
 	++lexer.parsing_declaration;
 	current_class = tc;
+	ubag.AddTypeDeclaration (tc);
 }
 
 DeclSpace pop_current_class ()
