@@ -90,7 +90,8 @@ namespace Mono.CSharp
 		//
 		// Last time we took the time
 		//
-		DateTime last_time, first_time;
+		Stopwatch stopwatch;
+		DateTime first_time;
 
 		//
 		// Encoding.
@@ -131,13 +132,11 @@ namespace Mono.CSharp
 			if (!timestamps)
 				return;
 
-			DateTime now = DateTime.Now;
-			TimeSpan span = now - last_time;
-			last_time = now;
+			stopwatch.Stop ();
 
-			Console.WriteLine (
-				"[{0:00}:{1:000}] {2}",
-				(int) span.TotalSeconds, span.Milliseconds, msg);
+			Console.WriteLine ("{0,5}ms {1}", stopwatch.ElapsedMilliseconds, msg);
+
+			stopwatch = Stopwatch.StartNew ();
 		}
 
 		void ShowTotalTime (string msg)
@@ -147,7 +146,6 @@ namespace Mono.CSharp
 
 			DateTime now = DateTime.Now;
 			TimeSpan span = now - first_time;
-			last_time = now;
 
 			Console.WriteLine (
 				"[{0:00}:{1:000}] {2}",
@@ -243,7 +241,7 @@ namespace Mono.CSharp
 				"   -help                Lists all compiler options (short: -?)\n" + 
 				"   -keycontainer:NAME   The key pair container used to sign the output assembly\n" +
 				"   -keyfile:FILE        The key file used to strongname the ouput assembly\n" +
-				"   -langversion:TEXT    Specifies language version: ISO-1, ISO-2, Default, or Future\n" + 
+				"   -langversion:TEXT    Specifies language version: ISO-1, ISO-2, 3, Default, or Future\n" + 
 				"   -lib:PATH1[,PATHn]   Specifies the location of referenced assemblies\n" +
 				"   -main:CLASS          Specifies the class with the Main method (short: -m)\n" +
 				"   -noconfig            Disables implicitly referenced assemblies\n" +
@@ -413,9 +411,9 @@ namespace Mono.CSharp
 
 				// Extern aliased refs require special handling
 				if (alias == null)
-					GlobalRootNamespace.Instance.AddAssemblyReference (a);
+					ctx.GlobalRootNamespace.AddAssemblyReference (a);
 				else
-					GlobalRootNamespace.Instance.DefineRootNamespace (alias, a, ctx);
+					ctx.GlobalRootNamespace.DefineRootNamespace (alias, a, ctx);
 
 			} catch (BadImageFormatException f) {
 				// .NET 2.0 throws this if we try to load a module without an assembly manifest ...
@@ -455,7 +453,7 @@ namespace Mono.CSharp
 					}
 				}
 
-				GlobalRootNamespace.Instance.AddModuleReference (m);
+				ctx.GlobalRootNamespace.AddModuleReference (m);
 
 			} catch (BadImageFormatException f) {
 				Error9 ("module", f.FileName, f.FusionLog);
@@ -486,8 +484,13 @@ namespace Mono.CSharp
 
 			foreach (var entry in external_aliases)
 				LoadAssembly (entry.Value, entry.Key, false);
+
+			if (modules.Count > 0) {
+				foreach (string module in modules)
+					LoadModule (module);
+			}
 				
-			GlobalRootNamespace.Instance.ComputeNamespaces (ctx);
+			ctx.GlobalRootNamespace.ComputeNamespaces (ctx);
 		}
 
 		static string [] LoadArgs (string file)
@@ -1050,7 +1053,6 @@ namespace Mono.CSharp
 				
 			case "--timestamp":
 				timestamps = true;
-				last_time = first_time = DateTime.Now;
 				return true;
 
 			case "--debug": case "-g":
@@ -1652,7 +1654,14 @@ namespace Mono.CSharp
 			RootContext.ToplevelTypes = new ModuleCompiled (ctx, RootContext.Unsafe);
 			var ctypes = TypeManager.InitCoreTypes ();
 
+			if (timestamps) {
+				stopwatch = Stopwatch.StartNew ();
+				first_time = DateTime.Now;
+			}
+
 			Parse ();
+			ShowTime ("Parsing source files");
+
 			if (Report.Errors > 0)
 				return false;
 
@@ -1695,46 +1704,36 @@ namespace Mono.CSharp
 				set_method.Invoke (CodeGen.Assembly.Builder, BindingFlags.Default, null, new object[]{true}, null);
 			}
 
-			GlobalRootNamespace.Instance.AddModuleReference (RootContext.ToplevelTypes.Builder);
+			ctx.GlobalRootNamespace.AddModuleReference (RootContext.ToplevelTypes.Builder);
 
 			//
 			// Load assemblies required
 			//
 			if (timestamps)
-				ShowTime ("Loading references");
+				stopwatch = Stopwatch.StartNew ();
 
 			ctx.MetaImporter.Initialize ();
-			LoadReferences ();
-			
-			if (modules.Count > 0) {
-				foreach (string module in modules)
-					LoadModule (module);
-			}
-			
-			if (timestamps)
-				ShowTime ("References loaded");
+			LoadReferences ();		
+		
+			ShowTime ("Imporing referenced assemblies");
 			
 			if (!TypeManager.InitCoreTypes (ctx, ctypes))
 				return false;
 
 			TypeManager.InitOptionalCoreTypes (ctx);
 
-			if (timestamps)
-				ShowTime ("   Core Types done");
+			ShowTime ("Initializing predefined types");
 
-			//
-			// The second pass of the compiler
-			//
-			if (timestamps)
-				ShowTime ("Resolving tree");
 			RootContext.ResolveTree ();
+
+			ShowTime ("Types definition");
 
 			if (Report.Errors > 0)
 				return false;
-			if (timestamps)
-				ShowTime ("Populate tree");
 
 			RootContext.PopulateTypes ();
+
+			ShowTime ("Type members definition");
 
 			if (Report.Errors == 0 &&
 				RootContext.Documentation != null &&
@@ -1765,20 +1764,19 @@ namespace Mono.CSharp
 			// The code generator
 			//
 			if (timestamps)
-				ShowTime ("Emitting code");
-			ShowTotalTime ("Total so far");
+				stopwatch = Stopwatch.StartNew ();
+
 			RootContext.EmitCode ();
-			if (timestamps)
-				ShowTime ("   done");
+
+			ShowTime ("Resolving and emitting members blocks");
 
 			if (Report.Errors > 0){
 				return false;
 			}
 
-			if (timestamps)
-				ShowTime ("Closing types");
-
 			RootContext.CloseTypes (ctx);
+
+			ShowTime ("Closing types");
 
 			PEFileKinds k = PEFileKinds.ConsoleApplication;
 
@@ -1857,19 +1855,23 @@ namespace Mono.CSharp
 
 			if (Report.Errors > 0)
 				return false;
+
+			if (timestamps)
+				stopwatch = Stopwatch.StartNew ();
 			
-			CodeGen.Save (output_file, want_debugging_support, Report);
-			if (timestamps) {
-				ShowTime ("Saved output");
-				ShowTotalTime ("Total");
+			CodeGen.Save (output_file, Report);
+
+			ShowTime ("Saving output assembly");
+
+			if (want_debugging_support) {
+				SymbolWriter.WriteSymbolFile ();
+				ShowTime ("Saving debug symbols");
 			}
+
+			ShowTotalTime ("Total");
 
 			Timer.ShowTimers ();
 
-#if DEBUGME
-			Console.WriteLine ("Size of strings held: " + DeclSpace.length);
-			Console.WriteLine ("Size of strings short: " + DeclSpace.small);
-#endif
 			return (Report.Errors == 0);
 		}
 	}
@@ -2050,8 +2052,8 @@ namespace Mono.CSharp
 			PointerContainer.Reset ();
 			Parameter.Reset ();
 
-			GlobalRootNamespace.Reset ();
 			Unary.Reset ();
+			UnaryMutator.Reset ();
 			Binary.Reset ();
 			ConstantFold.Reset ();
 			CastFromDecimal.Reset ();

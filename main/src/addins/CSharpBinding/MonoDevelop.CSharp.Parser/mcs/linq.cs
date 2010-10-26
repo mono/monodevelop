@@ -645,7 +645,7 @@ namespace Mono.CSharp.Linq
 				if (IdentifierType != null)
 					expr = CreateCastExpression (expr);
 
-				base.CreateArguments (ec, parameter, ref args);
+				base.CreateArguments (ec, parameter.Clone (), ref args);
 			}
 
 			Expression result_selector_expr;

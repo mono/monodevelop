@@ -475,7 +475,7 @@ namespace_declaration
 			Report.Error(1671, name.Location, "A namespace declaration cannot have modifiers or attributes");
 		}
 
-		current_namespace = new NamespaceEntry (
+		current_namespace = new NamespaceEntry (compiler,
 			current_namespace, file, name.GetName ());
 		current_class = current_namespace.SlaveDeclSpace;
 		current_container = current_class.PartialContainer;
@@ -503,7 +503,7 @@ qualified_identifier
 	  }
 	| error
 	  {
-		syntax_error (lexer.Location, "`.' expected");
+		Error_SyntaxError (yyToken);
 		$$ = new MemberName ("<invalid>", lexer.Location);
 	  }
 	;
@@ -538,26 +538,11 @@ namespace_body
 		ubag.OpenNamespace (GetLocation ($1));
 			
 	  }
-	  namespace_body_body
-	;
-	
-namespace_body_body
-	: opt_extern_alias_directives
+	  opt_extern_alias_directives
 	  opt_using_directives
 	  opt_namespace_member_declarations
 	  CLOSE_BRACE {
 		ubag.CloseNamespace (GetLocation ($4));
-	  }
-	| error
-	  {
-		Report.Error (1518, lexer.Location, "Expected `class', `delegate', `enum', `interface', or `struct'");
-	  }
-	| opt_extern_alias_directives
-	  opt_using_directives
-	  opt_namespace_member_declarations
-	  EOF
-	  {
-		Report.Error (1513, lexer.Location, "Expected `}'");
 	  }
 	;
 
@@ -604,6 +589,10 @@ namespace_member_declaration
 	| method_declaration {
 		Report.Error (116, ((MemberCore) $1).Location, "A namespace can only contain types and namespace declarations");
 	  }
+	| error
+	 {
+		Error_SyntaxError (yyToken);
+	 }
 	;
 
 type_declaration
@@ -2263,8 +2252,9 @@ constructor_initializer
 		$$ = new ConstructorThisInitializer ((Arguments) $5, GetLocation ($2));
 		lbag.AddLocation ($$, GetLocation ($1), GetLocation ($3), GetLocation ($6));
 	  }
-	| COLON error {
-		Report.Error (1018, GetLocation ($1), "Keyword `this' or `base' expected");
+	| error
+	  {
+		Error_SyntaxError (yyToken);
 		$$ = null;
 	  }
 	;
@@ -3366,6 +3356,9 @@ expression_list_arguments
 	| expression_list_arguments COMMA expression_list_argument
 	  {
 		Arguments args = (Arguments) $1;
+		if (args [args.Count - 1] is NamedArgument && !($3 is NamedArgument))
+			Error_NamedArgumentExpected ((NamedArgument) args [args.Count - 1]);
+	  
 		args.Add ((Argument) $3);
 		lbag.AppendTo (args, GetLocation ($2));
 		$$ = args;	  
@@ -3813,11 +3806,6 @@ cast_expression
 		$$ = new Cast ((FullNamedExpression) $2, (Expression) $4, GetLocation ($1));
 		lbag.AddLocation ($$, GetLocation ($3));
 	  }
-	| OPEN_PARENS builtin_types CLOSE_PARENS prefixed_unary_expression
-	  {
-		$$ = new Cast ((FullNamedExpression) $2, (Expression) $4, GetLocation ($1));
-		lbag.AddLocation ($$, GetLocation ($3));
-	  }
 	;
 
 	//
@@ -4121,19 +4109,29 @@ opt_lambda_parameter_list
 	;
 
 lambda_expression_body
+	: lambda_expression_body_simple
+	| block
+	;
+	
+lambda_expression_body_simple
 	: {
 		start_block (lexer.Location);
 	  }
-	  expression 
+	  expression_or_error	// Have to close block when error occurs
 	  {
 		Block b = end_block (lexer.Location);
 		b.AddStatement (new ContextualReturn ((Expression) $2));
 		$$ = b;
 	  } 
-	| block
-	  { 
-	  	$$ = $1; 
-	  } 
+	;
+	
+expression_or_error
+	: expression
+	| error
+	  {
+		Error_SyntaxError (yyToken);	
+		$$ = EmptyExpression.Null;
+	  }
 	;
 
 lambda_expression
@@ -4636,7 +4634,8 @@ embedded_statement
 empty_statement
 	: SEMICOLON
 	  {
-		$$ = new EmptyStatement (GetLocation ($1));
+		// Uses lexer.Location because semicolon location is not kept in quick mode
+		$$ = new EmptyStatement (lexer.Location);
 	  }
 	;
 
@@ -6192,7 +6191,7 @@ public CSharpParser (SeekableStreamReader reader, CompilationUnit file, Compiler
 
 	this.file = file;
 	this.compiler = ctx;
-	current_namespace = new NamespaceEntry (null, file, null);
+	current_namespace = new NamespaceEntry (ctx, null, file, null);
 	current_class = current_namespace.SlaveDeclSpace;
 	current_container = current_class.PartialContainer; // == RootContest.ToplevelTypes
 	oob_stack.Clear ();
@@ -6363,6 +6362,10 @@ void Error_SyntaxError (int token)
 
 void Error_SyntaxError (int error_code, int token, string msg)
 {
+	// An error message has been reported by tokenizer
+	if (token == Token.ERROR)
+		return;
+
 	string symbol = GetSymbolName (token);
 	string expecting = GetExpecting ();
 	var loc = lexer.Location - symbol.Length;

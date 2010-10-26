@@ -1762,11 +1762,11 @@ namespace MonoDevelop.CSharp.Parser
 				var location = LocationsBag.GetLocations (newExpression);
 				result.AddChild (new CSharpTokenNode (Convert (newExpression.Location), "new".Length), ObjectCreateExpression.Roles.Keyword);
 				
-				if (newExpression.NewType != null)
-					result.AddChild ((INode)newExpression.NewType.Accept (this), ObjectCreateExpression.Roles.ReturnType);
+				if (newExpression.TypeRequested != null)
+					result.AddChild ((INode)newExpression.TypeRequested.Accept (this), ObjectCreateExpression.Roles.ReturnType);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), ObjectCreateExpression.Roles.LPar);
-				AddArguments (result, location, newExpression.NewArguments);
+				AddArguments (result, location, newExpression.Arguments);
 				
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), ObjectCreateExpression.Roles.RPar);
@@ -1782,13 +1782,13 @@ namespace MonoDevelop.CSharp.Parser
 				var result = new ObjectCreateExpression ();
 				result.AddChild (new CSharpTokenNode (Convert (newInitializeExpression.Location), "new".Length), ObjectCreateExpression.Roles.Keyword);
 				
-				if (newInitializeExpression.NewType != null)
-					result.AddChild ((INode)newInitializeExpression.NewType.Accept (this), ObjectCreateExpression.Roles.ReturnType);
+				if (newInitializeExpression.TypeRequested != null)
+					result.AddChild ((INode)newInitializeExpression.TypeRequested.Accept (this), ObjectCreateExpression.Roles.ReturnType);
 				
 				var location = LocationsBag.GetLocations (newInitializeExpression);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), ObjectCreateExpression.Roles.LPar);
-				AddArguments (result, location, newInitializeExpression.NewArguments);
+				AddArguments (result, location, newInitializeExpression.Arguments);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), ObjectCreateExpression.Roles.RPar);
 				

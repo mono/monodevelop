@@ -1272,6 +1272,12 @@ namespace Mono.CSharp {
 				this.initializer = initializer;
 			}
 
+			public Declarator (Declarator clone, Expression initializer)
+			{
+				this.li = clone.li;
+				this.initializer = initializer;
+			}
+
 			#region Properties
 
 			public LocalVariable Variable {
@@ -1495,7 +1501,7 @@ namespace Mono.CSharp {
 			if (declarators != null) {
 				t.declarators = null;
 				foreach (var d in declarators)
-					t.AddDeclarator (new Declarator (d.Variable, d.Initializer == null ? null : d.Initializer.Clone (clonectx)));
+					t.AddDeclarator (new Declarator (d, d.Initializer == null ? null : d.Initializer.Clone (clonectx)));
 			}
 		}
 
@@ -2282,7 +2288,7 @@ namespace Mono.CSharp {
 		{
 			if (am_storey != null) {
 				DefineAnonymousStorey (ec);
-				am_storey.EmitStoreyInstantiation (ec);
+				am_storey.EmitStoreyInstantiation (ec, this);
 			}
 
 			bool emit_debug_info = SymbolWriter.HasSymbolWriter && Parent != null && !(am_storey is IteratorStorey);
@@ -5016,24 +5022,23 @@ namespace Mono.CSharp {
 
 			protected override Expression ResolveInitializer (BlockContext bc, LocalVariable li, Expression initializer)
 			{
-				Assign assign;
 				if (li.Type == InternalType.Dynamic) {
 					initializer = initializer.Resolve (bc);
 					if (initializer == null)
 						return null;
 
-					initializer = Convert.ImplicitConversionRequired (bc, initializer, TypeManager.idisposable_type, loc);
+					// Once there is dynamic used defer conversion to runtime even if we know it will never succeed
+					Arguments args = new Arguments (1);
+					args.Add (new Argument (initializer));
+					initializer = new DynamicConversion (TypeManager.idisposable_type, 0, args, initializer.Location).Resolve (bc);
 					if (initializer == null)
 						return null;
 
 					var var = LocalVariable.CreateCompilerGenerated (TypeManager.idisposable_type, bc.CurrentBlock, loc);
-					assign = new SimpleAssign (var.CreateReferenceExpression (bc, loc), initializer, loc);
-					assign.ResolveStatement (bc);
-
 					dispose_call = CreateDisposeCall (bc, var);
 					dispose_call.Resolve (bc);
 
-					return assign;
+					return base.ResolveInitializer (bc, li, new SimpleAssign (var.CreateReferenceExpression (bc, loc), initializer, loc));
 				}
 
 				if (li == Variable) {

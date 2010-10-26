@@ -59,7 +59,10 @@ namespace Mono.CSharp {
 		// Exclude static
 		InstanceOnly = 1 << 2,
 
-		NoAccessors = 1 << 3
+		NoAccessors = 1 << 3,
+
+		// Member has to be override
+		OverrideOnly = 1 << 4
 	}
 
 	public struct MemberFilter : IEquatable<MemberSpec>
@@ -364,6 +367,9 @@ namespace Mono.CSharp {
 						if ((restrictions & BindingRestriction.NoAccessors) != 0 && entry.IsAccessor)
 							continue;
 
+						if ((restrictions & BindingRestriction.OverrideOnly) != 0 && (entry.Modifiers & Modifiers.OVERRIDE) == 0)
+							continue;
+
 						if (!filter.Equals (entry))
 							continue;
 
@@ -486,8 +492,13 @@ namespace Mono.CSharp {
 		{
 			bestCandidate = null;
 			var container = member.Parent.PartialContainer.Definition;
-			if (!container.IsInterface)
+			if (!container.IsInterface) {
 				container = container.BaseType;
+
+				// It can happen for a user definition of System.Object
+				if (container == null)
+					return null;
+			}
 
 			string name = GetLookupName (member);
 			IList<MemberSpec> applicable;
@@ -510,10 +521,18 @@ namespace Mono.CSharp {
 						}
 
 						//
-						// Is the member of the correct type ?
-						// Destructors are ignored as they cannot be overridden by user
+						// Is the member of same type ?
+						//
 						if ((entry.Kind & ~MemberKind.Destructor & mkind & MemberKind.MaskType) == 0) {
-							if ((entry.Kind & MemberKind.Destructor) == 0 && (member_param == null || !(entry is IParametersMember))) {
+							// Destructors are ignored as they cannot be overridden by user
+							if ((entry.Kind & MemberKind.Destructor) != 0)
+								continue;
+
+							// Only different arity methods hide
+							if (mkind != MemberKind.Method && member.MemberName.Arity != entry.Arity)
+								continue;
+							
+							if ((member_param == null || !(entry is IParametersMember))) {
 								bestCandidate = entry;
 								return null;
 							}
@@ -535,13 +554,21 @@ namespace Mono.CSharp {
 								continue;
 
 							var pm = entry as IParametersMember;
-							if (pm == null)
-								continue;
+							AParametersCollection entry_parameters;
+							if (pm == null) {
+								if (entry.Kind != MemberKind.Delegate)
+									continue;
+
+								// TODO: I don't have DelegateSpec
+								entry_parameters = Delegate.GetParameters (member.Compiler, (TypeSpec) entry);
+							} else {
+								entry_parameters = pm.Parameters;
+							}
 
 							if (entry.IsAccessor != member is AbstractPropertyEventMethod)
 								continue;
 
-							if (!TypeSpecComparer.Override.IsEqual (pm.Parameters, member_param))
+							if (!TypeSpecComparer.Override.IsEqual (entry_parameters, member_param))
 								continue;
 						}
 

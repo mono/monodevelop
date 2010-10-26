@@ -357,7 +357,7 @@ namespace Mono.CSharp {
 		//
 		// Initializes all hoisted variables
 		//
-		public void EmitStoreyInstantiation (EmitContext ec)
+		public void EmitStoreyInstantiation (EmitContext ec, ExplicitBlock block)
 		{
 			// There can be only one instance variable for each storey type
 			if (Instance != null)
@@ -371,26 +371,25 @@ namespace Mono.CSharp {
 			var storey_type_expr = CreateStoreyTypeExpression (ec);
 
 			ResolveContext rc = new ResolveContext (ec.MemberContext);
+			rc.CurrentBlock = block;
 			Expression e = new New (storey_type_expr, null, Location).Resolve (rc);
 			e.Emit (ec);
 
 			Instance = new LocalTemporary (storey_type_expr.Type);
 			Instance.Store (ec);
 
-			EmitHoistedFieldsInitialization (ec);
+			EmitHoistedFieldsInitialization (rc, ec);
 
 			SymbolWriter.DefineScopeVariable (ID, Instance.Builder);
 			SymbolWriter.CloseCompilerGeneratedBlock (ec);
 		}
 
-		void EmitHoistedFieldsInitialization (EmitContext ec)
+		void EmitHoistedFieldsInitialization (ResolveContext rc, EmitContext ec)
 		{
 			//
 			// Initialize all storey reference fields by using local or hoisted variables
 			//
 			if (used_parent_storeys != null) {
-				var rc = new ResolveContext (ec.MemberContext);
-
 				foreach (StoreyFieldPair sf in used_parent_storeys) {
 					//
 					// Get instance expression of storey field
@@ -414,7 +413,7 @@ namespace Mono.CSharp {
 			//
 			if (OriginalSourceBlock.Explicit.HasCapturedThis && !(Parent is AnonymousMethodStorey)) {
 				AddCapturedThisField (ec);
-				OriginalSourceBlock.AddScopeStatement (new ThisInitializer (hoisted_this));
+				rc.CurrentBlock.AddScopeStatement (new ThisInitializer (hoisted_this));
 			}
 
 			//
@@ -1308,7 +1307,6 @@ namespace Mono.CSharp {
 			BlockContext aec = new BlockContext (ec, block, ReturnType);
 			aec.CurrentAnonymousMethod = ae;
 
-			ResolveContext.FlagsHandle? aec_dispose = null;
 			ResolveContext.Options flags = 0;
 
 			var am = this as AnonymousMethodBody;
@@ -1326,9 +1324,7 @@ namespace Mono.CSharp {
 			if (ec.HasSet (ResolveContext.Options.ExpressionTreeConversion))
 				flags |= ResolveContext.Options.ExpressionTreeConversion;
 
-			// HACK: Flag with 0 cannot be set 
-			if (flags != 0)
-				aec_dispose = aec.Set (flags);
+			aec.Set (flags);
 
 			var errors = ec.Report.Errors;
 
@@ -1341,10 +1337,6 @@ namespace Mono.CSharp {
 				am.ReturnTypeInference.FixAllTypes (ec);
 				ReturnType = am.ReturnTypeInference.InferredTypeArguments [0];
 				am.ReturnTypeInference = null;
-			}
-
-			if (aec_dispose != null) {
-				aec_dispose.Value.Dispose ();
 			}
 
 			if (res && errors != ec.Report.Errors)
@@ -1755,8 +1747,14 @@ namespace Mono.CSharp {
 				return true;
 			}
 
-			Report.SymbolRelatedToPreviousError (mc);
-			return false;
+			// A conflict between anonymous type members will be reported
+			if (symbol is TypeParameter) {
+				Report.SymbolRelatedToPreviousError (symbol);
+				return false;
+			}
+
+			// Ignore other conflicts
+			return true;
 		}
 
 		protected override bool DoDefineMembers ()

@@ -22,10 +22,10 @@ namespace Mono.CSharp {
 	//
 	// Delegate container implementation
 	//
-	public class Delegate : TypeContainer
+	public class Delegate : TypeContainer, IParametersMember
 	{
- 		public FullNamedExpression ReturnType { get; private set; }
-		public readonly ParametersCompiled Parameters;
+ 		public FullNamedExpression ReturnType;
+		readonly ParametersCompiled parameters;
 
 		Constructor Constructor;
 		Method InvokeBuilder;
@@ -59,9 +59,23 @@ namespace Mono.CSharp {
 			ModFlags        = ModifiersExtensions.Check (AllowedModifiers, mod_flags,
 							   IsTopLevel ? Modifiers.INTERNAL :
 							   Modifiers.PRIVATE, name.Location, Report);
-			Parameters      = param_list;
+			parameters      = param_list;
 			spec = new TypeSpec (Kind, null, this, null, ModFlags | Modifiers.SEALED);
 		}
+
+		#region Properties
+		public TypeSpec MemberType {
+			get {
+				return ReturnType.Type;
+			}
+		}
+
+		public AParametersCollection Parameters {
+			get {
+				return parameters;
+			}
+		}
+		#endregion
 
 		public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
 		{
@@ -105,7 +119,7 @@ namespace Mono.CSharp {
 			// First, call the `out of band' special method for
 			// defining recursively any types we need:
 			//
-			var p = Parameters;
+			var p = parameters;
 
 			if (!p.Resolve (this))
 				return false;
@@ -222,7 +236,7 @@ namespace Mono.CSharp {
 
 				int param = 0;
 				for (int i = 0; i < Parameters.FixedParameters.Length; ++i) {
-					Parameter p = Parameters [i];
+					Parameter p = parameters [i];
 					if ((p.ModFlags & Parameter.Modifier.ISBYREF) == 0)
 						continue;
 
@@ -251,28 +265,23 @@ namespace Mono.CSharp {
 		public override void DefineConstants ()
 		{
 			if (!Parameters.IsEmpty) {
-				Parameters.ResolveDefaultValues (this);
+				parameters.ResolveDefaultValues (this);
 			}
 		}
 
 		public override void EmitType ()
 		{
-			if (ReturnType.Type == InternalType.Dynamic) {
-				return_attributes = new ReturnParameter (this, InvokeBuilder.MethodBuilder, Location);
-				Compiler.PredefinedAttributes.Dynamic.EmitAttribute (return_attributes.Builder);
-			} else {
-				var trans_flags = TypeManager.HasDynamicTypeUsed (ReturnType.Type);
-				if (trans_flags != null) {
-					var pa = Compiler.PredefinedAttributes.DynamicTransform;
-					if (pa.Constructor != null || pa.ResolveConstructor (Location, ArrayContainer.MakeType (TypeManager.bool_type))) {
-						return_attributes = new ReturnParameter (this, InvokeBuilder.MethodBuilder, Location);
-						return_attributes.Builder.SetCustomAttribute (
-							new CustomAttributeBuilder (pa.Constructor, new object [] { trans_flags }));
-					}
+			if (ReturnType.Type != null) {
+				if (ReturnType.Type == InternalType.Dynamic) {
+					return_attributes = new ReturnParameter (this, InvokeBuilder.MethodBuilder, Location);
+					Compiler.PredefinedAttributes.Dynamic.EmitAttribute (return_attributes.Builder);
+				} else if (ReturnType.Type.HasDynamicElement) {
+					return_attributes = new ReturnParameter (this, InvokeBuilder.MethodBuilder, Location);
+					Compiler.PredefinedAttributes.Dynamic.EmitAttribute (return_attributes.Builder, ReturnType.Type);
 				}
 			}
 
-			Parameters.ApplyAttributes (this, InvokeBuilder.MethodBuilder);
+			parameters.ApplyAttributes (this, InvokeBuilder.MethodBuilder);
 			
 			Constructor.ConstructorBuilder.SetImplementationFlags (MethodImplAttributes.Runtime);
 			InvokeBuilder.MethodBuilder.SetImplementationFlags (MethodImplAttributes.Runtime);
@@ -319,7 +328,7 @@ namespace Mono.CSharp {
 				return false;
 			}
 
-			Parameters.VerifyClsCompliance (this);
+			parameters.VerifyClsCompliance (this);
 
 			if (!ReturnType.Type.IsCLSCompliant ()) {
 				Report.Warning (3002, 1, Location, "Return type of `{0}' is not CLS-compliant",
