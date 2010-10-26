@@ -95,7 +95,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			// it's not really worth micro-updating the tables speed-wise.
 			typeEntriesIgnoreCase.Clear ();
 			foreach (var pair in typeEntries) {
-				typeEntriesIgnoreCase.Add (pair.Key, pair.Value);
+				typeEntriesIgnoreCase [pair.Key] = pair.Value;
 			}
 
 			classEntries.Clear ();
