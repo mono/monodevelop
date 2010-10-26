@@ -306,13 +306,7 @@ namespace Mono.TextEditor.Highlighting
 					if (worker != null && worker.Doc == doc)
 						worker.ManualResetEvent.WaitOne ();
 				} catch (Exception e) {
-					Console.WriteLine ("Worker:" + worker);
-					Console.WriteLine ("------");
 					Console.WriteLine (e);
-					Console.WriteLine ("------");
-					Console.WriteLine ("worker.Doc:" + worker.Doc);
-					Console.WriteLine ("worker.IsFinished:" + worker.IsFinished);
-					Console.WriteLine ("worker.ManualResetEvent:" + worker.ManualResetEvent);
 				}
 			}
 		}
