@@ -196,6 +196,7 @@ namespace MonoDevelop.CSharp.Formatting
 			TextEditorData data = new TextEditorData ();
 			data.Text = input;
 			data.Document.MimeType = mimeType;
+			data.Document.SurpressHighlightUpdate = true;
 			data.Document.FileName = "toformat.cs";
 			var textPolicy = policyParent != null ? policyParent.Get<TextStylePolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (types);
 			data.Options.TabsToSpaces = textPolicy.TabsToSpaces;
