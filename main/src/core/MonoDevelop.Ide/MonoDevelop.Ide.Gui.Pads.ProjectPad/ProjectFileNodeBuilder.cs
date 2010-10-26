@@ -95,10 +95,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override object GetParentObject (object dataObject)
 		{
 			ProjectFile file = (ProjectFile) dataObject;
-			string dir = Path.GetDirectoryName (file.FilePath);
+			FilePath dir = !file.IsLink ? file.FilePath : file.Project.BaseDirectory.Combine (file.ProjectVirtualPath).ParentDirectory;
 			
 			if (!string.IsNullOrEmpty (file.DependsOn)) {
-				ProjectFile groupUnder = file.Project.Files.GetFile (Path.Combine (dir, file.DependsOn));
+				ProjectFile groupUnder = file.Project.Files.GetFile (file.FilePath.ParentDirectory.Combine (file.DependsOn));
 				if (groupUnder != null)
 					return groupUnder;
 			}
