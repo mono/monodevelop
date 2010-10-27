@@ -46,6 +46,8 @@ using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using ICSharpCode.SharpZipLib.Tar;
 using ICSharpCode.SharpZipLib.Zip;
 using System.Reflection;
+using Mono.Unix.Native;
+using Mono.Unix;
 
 namespace MonoDevelop.Deployment
 {
@@ -139,8 +141,15 @@ namespace MonoDevelop.Deployment
 						TarEntry entry = TarEntry.CreateEntryFromFile (f);
 						entry.Name = f.ToRelative (folder);
 						if (!PropertyService.IsWindows) {
-							Mono.Unix.UnixFileInfo fi = new Mono.Unix.UnixFileInfo (f);
-							entry.TarHeader.Mode = (int) fi.Protection;
+							UnixFileInfo fi = new UnixFileInfo (f);
+							entry.TarHeader.Mode = (int)fi.Protection;
+						}
+						else {
+							entry.Name = entry.Name.Replace ('\\', '/');
+							FilePermissions p = FilePermissions.S_IFREG | FilePermissions.S_IROTH | FilePermissions.S_IRGRP | FilePermissions.S_IRUSR;
+							if (!new FileInfo (f).IsReadOnly)
+								p |= FilePermissions.S_IWUSR;
+							entry.TarHeader.Mode = (int) p;
 						}
 						archive.WriteEntry(entry, false);
 					}
@@ -158,11 +167,13 @@ namespace MonoDevelop.Deployment
 				case ".zip":
 					ZipOutputStream zs = new ZipOutputStream (outStream);
 					zs.SetLevel(5);
-					FilePath baseDir = folder;
 					
 					byte[] buffer = new byte [8092];
 					foreach (FilePath f in GetFilesRec (new DirectoryInfo (folder))) {
-						ZipEntry infoEntry = new ZipEntry (f.ToRelative (baseDir));
+						string name = f.ToRelative (folder);
+						if (PropertyService.IsWindows)
+							name = name.Replace ('\\', '/');
+						ZipEntry infoEntry = new ZipEntry (name);
 						zs.PutNextEntry (infoEntry);
 						using (Stream s = File.OpenRead (f)) {
 							int nr;
