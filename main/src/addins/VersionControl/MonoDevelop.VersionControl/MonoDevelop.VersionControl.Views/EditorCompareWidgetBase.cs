@@ -671,14 +671,14 @@ namespace MonoDevelop.VersionControl.Views
 			var start = toEditor.Document.GetLine (hunk.InsertStart);
 			int toOffset = start != null ? start.Offset : toEditor.Document.Length;
 			if (start != null && hunk.Inserted > 0) {
-				int line = Math.Min (hunk.InsertStart + hunk.Inserted, toEditor.Document.LineCount);
+				int line = Math.Min (hunk.InsertStart + hunk.Inserted - 1, toEditor.Document.LineCount);
 				var end = toEditor.Document.GetLine (line);
 				toEditor.Remove (start.Offset, end.EndOffset - start.Offset);
 			}
 
 			if (hunk.Removed > 0) {
 				start = fromEditor.Document.GetLine (Math.Min (hunk.RemoveStart, fromEditor.Document.LineCount));
-				int line = Math.Min (hunk.RemoveStart + hunk.Removed, fromEditor.Document.LineCount);
+				int line = Math.Min (hunk.RemoveStart + hunk.Removed - 1, fromEditor.Document.LineCount);
 				var end = fromEditor.Document.GetLine (line);
 				toEditor.Insert (toOffset, start.Offset == end.EndOffset ? toEditor.EolMarker : fromEditor.Document.GetTextBetween (start.Offset, end.EndOffset));
 			}
