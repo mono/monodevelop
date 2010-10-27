@@ -77,6 +77,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.curIndent.TabsToSpaces = this.data.Options.TabsToSpaces;
 			this.curIndent.TabSize = this.data.Options.TabSize;
 			AutoAcceptChanges = true;
+			CorrectBlankLines = true;
 		}
 		
 		public override object VisitCompilationUnit (MonoDevelop.CSharp.Dom.CompilationUnit unit,     object data)
