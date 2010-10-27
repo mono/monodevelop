@@ -20,6 +20,10 @@
 	<Extension path = "/MonoDevelop/Core/PlatformService">
 		<Class class = "MonoDevelop.Platform.WindowsPlatform"/>
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/Updater">
+		<UpdateInfo file="..\bin\updateinfo" />
+	</Extension>
 
 <!--  <Extension path = "/MonoDevelop/Components/DialogHandlers">
     <Class class = "MonoDevelop.Platform.SelectFileDialogHandler"/>
