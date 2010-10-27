@@ -1,0 +1,68 @@
+2010-09-20  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* WidgetFileDescriptionTemplate.cs: 
+
+2010-09-17  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* GtkDesignInfo.cs: 
+
+2010-09-09  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* GtkDesignInfo.cs: 
+
+2010-09-08  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* WidgetFileDescriptionTemplate.cs: 
+
+2010-08-30  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* GtkDesignInfo.cs: 
+
+2010-08-27  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* GtkDesignInfo.cs: 
+
+2010-08-17  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* GtkDesignInfo.cs: 
+
+2010-08-16  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* GtkDesignInfo.cs: 
+
+2010-08-15  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* WidgetFileDescriptionTemplate.cs: 
+
+2010-08-15  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* GtkDesignInfo.cs: 
+
+2010-08-13  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* GtkDesignInfo.cs: 
+
+2010-08-09  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* GtkDesignInfo.cs:  Add ComponentNeedsCodeGeneration method,
+
+2010-08-04  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* WidgetFileDescriptionTemplate.cs: Bump Api
+
+2010-07-06  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* GtkDesignInfo.cs: Remove gtk-gui folder after project conversion
+
+2010-06-23  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* GtkDesignInfo.cs: 
+
+2010-06-16  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* GtkDesignInfo.cs: 
+
+2010-06-07  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* GtkDesignInfo.cs:  Transition from project file name to project folder.
+

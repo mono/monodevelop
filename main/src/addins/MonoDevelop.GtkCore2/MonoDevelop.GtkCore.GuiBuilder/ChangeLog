@@ -1,0 +1,101 @@
+2010-10-28  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* GuiBuilderView.cs:
+	* GuiBuilderWindow.cs:
+	* GuiBuilderProject.cs: 
+
+2010-09-08  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* GuiBuilderWindow.cs:
+	* GuiBuilderService.cs:
+	* CombinedDesignView.cs: 
+
+2010-08-30  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* GuiBuilderProject.cs: 
+
+2010-08-16  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* GuiBuilderView.cs:
+	* ActionGroupView.cs:
+	* GuiBuilderProject.cs:
+	* GuiBuilderService.cs:
+	* GuiBuilderDisplayBinding.cs:
+	* ActionGroupDisplayBinding.cs:
+	* GtkProjectServiceExtension.cs: 
+
+2010-08-15  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* GuiBuilderProject.cs: 
+
+2010-08-15  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* GuiBuilderProject.cs:
+	* GuiBuilderService.cs: 
+
+2010-08-13  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* GuiBuilderView.cs:
+	* GuiBuilderProject.cs:
+	* GuiBuilderService.cs:
+	* GuiBuilderDisplayBinding.cs:
+	* ActionGroupDisplayBinding.cs: 
+
+2010-08-09  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* GuiBuilderProject.cs: Generate stetic code after a project converting
+	* GuiBuilderService.cs:
+	* GuiBuilderDisplayBinding.cs: Don't use component display binding for
+	generated partial files
+
+2010-08-07  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* GuiBuilderView.cs: Raise OnDirtyChanged after saving.
+	* CombinedDesignView.cs: Track Api Changes.
+
+2010-08-05  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* GuiBuilderView.cs: Remove ModifiedChanged handler
+
+2010-08-04  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* CodeBinder.cs: Bump Api
+	* GuiBuilderWindow.cs:
+	* GuiBuilderService.cs:
+	* CombinedDesignView.cs:
+	* ActionGroupDisplayBinding.cs: 
+
+2010-08-03  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* GuiBuilderProject.cs: When Updatinglibraries don't save 
+							if Stetic.Project was uninitialized
+
+2010-07-27  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* GuiBuilderView.cs:
+	* CombinedDesignView.cs: 
+
+2010-07-06  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* GuiBuilderProject.cs:
+	* GuiBuilderService.cs: 
+
+2010-07-05  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* GuiBuilderProject.cs:
+	* CombinedDesignView.cs: 
+
+2010-06-23  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* GuiBuilderProject.cs: 
+
+2010-06-21  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* GuiBuilderProject.cs: Add Convert method
+
+2010-06-07  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* GuiBuilderProject.cs:
+	* GuiBuilderService.cs:
+	* GtkProjectServiceExtension.cs: 
+

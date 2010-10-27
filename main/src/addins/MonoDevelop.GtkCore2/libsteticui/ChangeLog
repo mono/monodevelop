@@ -1,0 +1,431 @@
+2010-10-28  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* ApplicationBackend.cs: 
+
+2010-10-04  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* Makefile.am:
+	* libsteticui2.csproj:
+	* ApplicationBackend.cs: 
+
+2010-09-30  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* ApplicationBackend.cs: 
+
+2010-09-30  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* Makefile.am:
+	* libsteticui2.csproj:
+	* ApplicationBackend.cs: 
+
+2010-09-22  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* Project.cs: Add ReloadComponent method
+	* ProjectBackend.cs: 
+
+2010-09-21  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* Project.cs: Code cleanup
+	* ProjectBackend.cs: 
+
+2010-09-20  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* ProjectBackend.cs: 
+
+2010-09-17  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* libsteticui2.csproj: 
+
+2010-09-17  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* libsteticui2.csproj: 
+
+2010-09-15  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* libsteticui2.csproj: 
+
+2010-09-08  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* SignalsEditorBackend.cs: 
+
+2010-08-17  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* Application.cs:
+	* ProjectBackend.cs: 
+
+2010-08-16  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* ProjectBackend.cs:
+	* WidgetEditSession.cs:
+	* IProjectDesignInfo.cs: 
+
+2010-08-15  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* CodeGenerator.cs:
+	* ProjectBackend.cs:
+	* WidgetEditSession.cs:
+	* CodeGeneratorPartialClass.cs: 
+
+2010-08-13  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* Project.cs: 
+	* Makefile.am:
+	* CodeGenerator.cs:
+	* libsteticui2.csproj:
+	* ActionGroupEditSession.cs: 
+	* CodeGeneratorPartialClass.cs:
+	* CodeGeneratorInternalClass.cs: Remove class
+
+2010-08-09  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* Project.cs: Add ComponentNeedsCodeGeneration method
+	* ProjectBackend.cs:
+	* IProjectDesignInfo.cs:
+	* CodeGeneratorPartialClass.cs: Only generate code for components that
+	have been changed
+
+2010-08-07  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* Project.cs: Remove Modifies property
+	* ProjectBackend.cs: Add modifiedTopLevel list, handled on project loading, saving.
+	* libsteticui2.csproj:
+	* WidgetEditSession.cs: Use ProjectBackend.WasModified to determine if it was modified
+
+2010-08-05  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* WidgetDesigner.cs:
+	* ProjectBackend.cs: 
+
+2010-08-05  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+	Remove ModifiedChanged event, 
+	change Changed event to ProjectChangedEventHandler (pass name of changed widget)
+	* Project.cs: 
+	* WidgetDesigner.cs:
+	* ProjectBackend.cs:
+	* WidgetEditSession.cs: 
+
+2010-08-04  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* Project.cs: Pass root widget name in NotifyChanged
+	* Makefile.am:
+	* ProjectBackend.cs:
+	* libsteticui2.csproj: 
+
+2010-08-03  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* Glade.cs:
+	* Makefile.am:
+	* ProjectBackend.cs: 
+
+2010-08-03  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* Makefile.am:
+	* ProjectBackend.cs: Return empty string when GtktargetVersion
+						 is not initialized
+
+2010-07-27  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* Project.cs: Remove autoCommit argument 
+	* Makefile.am:
+	* WidgetDesigner.cs: Remove temporary project
+	* ProjectBackend.cs: Do not clear libraries on Close
+	* WidgetEditSession.cs: Remove temporary project
+
+2010-07-27  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* Project.cs:
+	* WidgetDesigner.cs:
+	* ProjectBackend.cs: 
+
+2010-07-06  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* Project.cs: Add parameter to Convert method for passing
+				  a new gtk gui folder name.  
+	* ProjectBackend.cs: 
+
+2010-07-05  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* Glade.cs:
+	* Project.cs: AddComponent method 
+	* Makefile.am:
+	* ProjectBackend.cs: 
+	* libsteticui2.csproj: 
+
+2010-06-28  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* Project.cs: Find class name for given .gtkx file
+	* Makefile.am:
+	* ProjectBackend.cs:
+	* IProjectDesignInfo.cs: 
+
+2010-06-28  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* Makefile.am:
+	* ProjectBackend.cs:
+	* libsteticui2.csproj: 
+
+2010-06-23  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* Makefile.am:
+	* libsteticui2.csproj: 
+
+2010-06-23  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* Makefile.am:
+	* libsteticui2.csproj: 
+
+2010-06-22  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* Makefile.am: 
+
+2010-06-16  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* Makefile.am: 
+
+2010-06-15  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* Project.cs: Create backend for Convert
+
+2010-06-09  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* Makefile.am:
+	* libsteticui2.csproj: 
+
+2010-06-07  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* Project.cs: Transition from project file name to project folder.
+	* Makefile.am:
+	* Application.cs:
+	* ProjectBackend.cs:
+	* WidgetEditSession.cs: 
+
+2010-06-07  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* Project.cs:
+	* Makefile.am:
+	* ProjectBackend.cs: 
+	* IProjectDesignInfo.cs: 
+
+2010-06-02  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* Makefile.am:
+	* libsteticui2.csproj: 
+
+2010-04-16  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* CecilSignalDescriptor.cs: Cecil uses '/' as separator for
+	  inner classes. Convert to the standard '+' separator.
+
+2010-01-18  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* CodeGenerator.cs:
+	* libsteticui.csproj:
+	* CodeGeneratorPartialClass.cs:
+	* CodeGeneratorInternalClass.cs: Use global:: for type
+	  references in generated code. 
+
+2010-01-15  Mike Krüger  <mkrueger@novell.com>
+
+	* libsteticui.csproj: upgraded to v3.5 framework.
+
+2009-12-18  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* WidgetDesignerBackend.cs: Disable checkerboard background
+	  because redraw is super-inefficient and makes resizing
+	  unbearably slow. It needs to do more selective invalidation
+	  in resizes (like GTK viewport), and take the exposed area
+	  into account in expose events.
+
+2009-11-12  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* WidgetDesignerBackend.cs: Don't try to realize the child if
+	  the widget is not anchored. Fixes bug #553475 -
+	  "Gtk-Critical: gtk_widget_realize: assertion" when running a
+	  gtk# app inside MD.
+
+2009-11-05  Mike Kestner  <mkestner@novell.com>
+
+	* Application.cs:
+	* ApplicationBackend.cs:
+	* CodeGenerator.cs: some warning cleanup.
+
+2009-10-21  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* libsteticui.csproj: Flush.
+
+2009-10-16  Mike Krüger  <mkrueger@novell.com>
+
+	* ActionComponent.cs: Handled icon loading failures.
+
+2009-10-08  Ankit Jain  <jankit@novell.com>
+
+	* libsteticui.csproj: Mark Mono.Cecil project referece
+	as private.
+
+2009-09-10  Christian Hergert  <chris@dronelabs.com>
+
+	* libsteticui/libsteticui.dll.config: Use quartz on osx.
+
+2009-09-04  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* Metacity/Preview.cs: Use Assembly.LoadWithPartialName. It's
+	  obsolete, but at least it works.
+
+2009-08-27  Mike Krüger  <mkrueger@novell.com>
+
+	* Metacity/Preview.cs:
+	* WidgetDesignerBackend.cs: Worked on designer decoration.
+
+2009-08-27  Mike Krüger  <mkrueger@novell.com>
+
+	* Grid.cs:
+	* LibraryCache.cs:
+	* Windows/Preview.cs:
+	* WidgetActionBar.cs:
+	* ApplicationBackend.cs: Fixed some warnings.
+
+2009-08-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* libsteticui.csproj: Updated dependencies. We now depend on
+	  gtk# 2.12.8, Mono 2.4, and Mono.Addins 0.4.
+
+2009-08-24  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Project.cs:
+	* UndoQueue.cs:
+	* WidgetDesigner.cs:
+	* ProjectBackend.cs:
+	* WidgetEditSession.cs: Added support for saving and restoring
+	  the status of the designer, including the undo queue. This
+	  allows implenting ISupportsProjectReload.
+
+2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Metacity/Preview.cs: Remove debug code.
+
+2009-07-31  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Windows/Preview.cs: Dont try to create a Win32 preview
+	  window when not running on Windows.
+
+2009-07-01  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* WidgetDesigner.cs:
+	* ActionGroupDesigner.cs:
+	* WidgetDesignerBackend.cs:
+	* ActionGroupEditSession.cs: No more missing IntPtr
+	  constructor exceptions.
+
+2009-06-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* WidgetDesignerBackend.cs: Fix rendering of the window
+	  decoration.
+
+2009-06-25  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* WidgetDesigner.cs:
+	* WidgetDesignerBackend.cs: Dispose is not guaranteed to be
+	  called when destroying a widget. Use OnDestroyed instead.
+
+2009-06-25  Mike Krüger  <mkrueger@novell.com>
+
+	* WidgetDesignerBackend.cs: Draw dialog background.
+
+2009-06-25  Mike Krüger  <mkrueger@novell.com>
+
+	* WidgetDesignerBackend.cs: Draw checkboard background in the
+	  gui designer instead of monochrome dialog background.
+
+2009-06-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* PluggableWidget.cs: When replacing the child widget (because
+	  of reloading of the project for example), make sure the old
+	  one is destroyed.
+
+2009-05-07  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* Makefile.am:
+	* libsteticui.csproj: Updated.
+
+	* Metacity/Theme.cs:
+	* Metacity/FrameType.cs:
+	* Metacity/FrameFlags.cs:
+	* Metacity/ButtonLayout.cs:
+	* Metacity/ObjectManager.cs:
+	* Metacity/ButtonFunction.cs: Use a better namespace.
+
+	* Metacity/Preview.cs: Use the new TopLevelWindow class. Track
+	  changes in the title of the window.
+
+	* Windows:
+	* Windows/Preview.cs:
+	* Windows/WindowsTheme.cs:
+	* WidgetDesignerBackend.cs: Added support for win32 window
+	  decorations.
+
+	* EmbedWindow.cs:
+	* UserInterface.cs: EmbedWindow is not required anymore.
+
+2009-05-04  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* libsteticui.csproj: Copy the config file to the output dir.
+	  Set project type to library.
+
+	* Metacity/Preview.cs:
+	* WidgetDesignerBackend.cs: Avoid exception in the
+	  MetacityPreview class constructor, since it crashes MD under
+	  ms.net.
+
+2009-04-29  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* libsteticui.csproj: Don't require a specific gtk# version.
+
+2009-03-03  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* LibraryCache.cs: Avoid recursive loading of
+	  AssemblyDefinition. Rely on cache info to check if a
+	  referenced library contains widget definitions.
+
+	* AssemblyResolver.cs: Make sure the resolver returns full
+	  paths.
+
+	* CecilWidgetLibrary.cs: Use the full path to query info from
+	  the cache. Properly unsubscribe the Changed event from the
+	  cache. Resolve assemblies using the provided assembly
+	  resolver.
+
+	* ApplicationBackend.cs:
+	* AssemblyWidgetLibrary.cs: From now on the registry and the
+	  library cache only handle libraries with full paths.
+
+	* Project.cs: Make sure unused project backends are properly
+	  disposed.
+
+2009-02-26  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* libsteticui.csproj: Flush.
+
+2009-02-12  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* PropertyTree.cs:
+	* WidgetDesignerBackend.cs: Dispose Gdk cursors, else
+	  finalisers destroy them outside of the GUI thread and often
+	  crash MD due to X asserts resulting in _XCBUnlockDisplay
+	  errors.
+
+2009-02-10  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* libsteticui.csproj: Don't build with make, since MD can
+	  build these just fine.
+
+2009-02-07  Michael Hutchinson  <mhutchinson@novell.com>
+
+	* libsteticui.csproj: Allow unsafe code, since Shadow.cs has
+	  unsafe code.
+
+2009-02-06  Lluis Sanchez Gual  <lluis@novell.com>
+
+	* libsteticui.mdp:
+	* libsteticui.csproj: Migrated to MSBuild file format.
+

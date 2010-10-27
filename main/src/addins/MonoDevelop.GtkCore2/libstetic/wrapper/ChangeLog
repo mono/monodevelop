@@ -1,0 +1,12 @@
+2010-08-03  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* Frame.cs: Pass root wrapper as an argument for ObjectWrapper.Create
+	* Action.cs:
+	* Window.cs:
+	* Button.cs:
+	* Widget.cs:
+	* Expander.cs:
+	* Container.cs:
+	* ActionGroup.cs:
+	* ScrolledWindow.cs: 
+

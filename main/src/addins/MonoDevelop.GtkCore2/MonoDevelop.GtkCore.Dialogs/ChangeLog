@@ -1,0 +1,18 @@
+2010-08-15  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* ProjectConversionDialog.cs: 
+
+2010-08-13  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* ProjectConversionDialog.cs:
+	* WidgetBuilderOptionPanel.cs: 
+
+2010-07-06  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* ProjectConversionDialog.cs: 
+
+2010-06-23  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* ProjectConversionDialog.cs: Initial commit
+	* WidgetBuilderOptionPanel.cs: 
+

@@ -1,0 +1,16 @@
+2010-08-07  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* SelectIconDialog.cs: Remove setting Project.Modified property
+	* EditIconFactoryDialog.cs: Remove setting Project.Modified property
+
+2010-08-03  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* ActionMenu.cs: Pass root wrapper as an argument for ObjectWrapper.Create
+	* ActionToolbar.cs:
+	* ActionMenuBar.cs:
+	* ActionGroupEditor.cs: 
+
+2010-06-07  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* SelectImageDialog.cs: 
+

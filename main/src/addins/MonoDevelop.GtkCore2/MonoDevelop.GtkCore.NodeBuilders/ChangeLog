@@ -1,0 +1,83 @@
+2010-09-17  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* GuiProjectFolderNodeBuilder.cs: 
+
+2010-09-09  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* ProjectNodeBuilder.cs: 
+
+2010-08-30  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* ProjectFileNodeBuilderExtension.cs: 
+
+2010-08-17  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* WindowsFolder.cs:
+	* WidgetNodeBuilder.cs:
+	* WindowsFolderNodeBuilder.cs:
+	* ProjectFileNodeBuilderExtension.cs: 
+
+2010-08-16  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* ProjectNodeBuilder.cs:
+	* GuiProjectFolderNodeBuilder.cs:
+	* ProjectFolderNodeBuilderExtension.cs: 
+
+2010-08-15  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* ProjectNodeBuilder.cs:
+	* GuiProjectFolderNodeBuilder.cs: 
+
+2010-08-15  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* ProjectFileExtension.cs:
+	* GuiProjectFolderNodeBuilder.cs:
+	* ProjectFileNodeBuilderExtension.cs:
+	* ProjectFolderNodeBuilderExtension.cs: 
+
+2010-08-13  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* ProjectNodeBuilder.cs:
+	* StockIconsNodeBuilder.cs:
+	* ProjectFileNodeBuilderExtension.cs:
+	* ProjectFolderNodeBuilderExtension.cs: 
+
+2010-08-09  Krzysztof Marecki  <freefirma@gmail.com>
+
+	* GuiProjectFolder.cs: Put gui project folder directly below References
+	in the project pad
+	* ProjectNodeBuilder.cs:
+	* GuiProjectFolderNodeBuilder.cs:
+	* ProjectFolderNodeBuilderExtension.cs: 
+
+2010-07-06  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* ProjectFileExtension.cs: Move cursor in entryFolder to the end.
+
+2010-07-05  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* ProjectFileExtension.cs: Better approach for obtaining GtkComponentType
+	* ProjectFileNodeBuilderExtension.cs:
+	* ProjectFolderNodeBuilderExtension.cs: 
+
+2010-06-28  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* ProjectNodeBuilder.cs:
+	* ProjectFileNodeBuilderExtension.cs:
+	* ProjectFolderNodeBuilderExtension.cs: 
+
+2010-06-23  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* ProjectNodeBuilder.cs:
+	* ProjectFileNodeBuilderExtension.cs: Show ProjectConversionDialog before
+	conversion
+
+2010-06-21  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* ProjectNodeBuilder.cs: Convert a project file layout on open	
+	* ProjectFileNodeBuilderExtension.cs: Group components files
+
+2010-06-16  Krzysztof Marecki  <marecki.krzysztof@gmail.com>
+
+	* ProjectFileNodeBuilderExtension.cs: 
+
