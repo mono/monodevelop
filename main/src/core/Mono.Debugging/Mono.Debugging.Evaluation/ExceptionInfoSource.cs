@@ -60,15 +60,19 @@ namespace Mono.Debugging.Evaluation
 			if (withTimeout) {
 				messageValue = ctx.Adapter.CreateObjectValueAsync ("Message", ObjectValueFlags.None, delegate {
 					ValueReference mref = exception.GetChild ("Message", options);
-					if (mref != null)
-						return mref.CreateObjectValue (false, options);
+					if (mref != null) {
+						string val = (string) mref.ObjectValue;
+						return ObjectValue.CreatePrimitive (null, new ObjectPath ("Message"), "System.String", new EvaluationResult (val), ObjectValueFlags.Literal);
+					}
 					else
 						return ObjectValue.CreateUnknown ("Message");
 				});
 			} else {
 				ValueReference mref = exception.GetChild ("Message", options);
-				if (mref != null)
-					messageValue = mref.CreateObjectValue (false, options);
+				if (mref != null) {
+					string val = (string) mref.ObjectValue;
+					messageValue = ObjectValue.CreatePrimitive (null, new ObjectPath ("Message"), "System.String", new EvaluationResult (val), ObjectValueFlags.Literal);
+				}
 			}
 			if (messageValue == null)
 				messageValue = ObjectValue.CreateUnknown ("Message");
