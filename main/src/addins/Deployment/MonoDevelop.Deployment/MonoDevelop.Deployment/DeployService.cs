@@ -40,6 +40,12 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.Execution;
+using ICSharpCode.SharpZipLib.GZip;
+using ICSharpCode.SharpZipLib.BZip2;
+using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+using ICSharpCode.SharpZipLib.Tar;
+using ICSharpCode.SharpZipLib.Zip;
+using System.Reflection;
 
 namespace MonoDevelop.Deployment
 {
@@ -108,22 +114,82 @@ namespace MonoDevelop.Deployment
 			
 			if (File.Exists (targetFile))
 				File.Delete (targetFile);
-			                 
-			// Create the zip file
-			ProcessWrapper pw;
-			if (targetFile.EndsWith (".tar"))
-				pw = Runtime.ProcessService.StartProcess ("tar", "-cvf \"" + targetFile + "\" .", folder, mon.Log, mon.Log, null);
-			else if (targetFile.EndsWith (".tar.gz"))
-				pw = Runtime.ProcessService.StartProcess ("tar", "-cvzf \"" + targetFile + "\" .", folder, mon.Log, mon.Log, null);
-			else if (targetFile.EndsWith (".tar.bz2"))
-				pw = Runtime.ProcessService.StartProcess ("tar", "-cvjf \"" + targetFile + "\" .", folder, mon.Log, mon.Log, null);
-			else if (targetFile.EndsWith (".zip"))
-				pw = Runtime.ProcessService.StartProcess ("zip", "-r \"" + targetFile + "\" .", folder, mon.Log, mon.Log, null);
-			else {
-				mon.Log.WriteLine ("Unsupported file format: " + Path.GetFileName (targetFile));
-				return;
+			
+			using (Stream os = File.Create (targetFile)) {
+	
+				Stream outStream = os;
+				// Create the zip file
+				switch (GetArchiveExtension (targetFile)) {
+				case ".tar.gz":
+					outStream = new GZipOutputStream(outStream);
+					goto case ".tar";
+				case ".tar.bz2":
+					outStream = new BZip2OutputStream(outStream, 9);
+					goto case ".tar";
+				case ".tar":
+					TarArchive archive = TarArchive.CreateOutputTarArchive (outStream);
+					archive.SetAsciiTranslation (false);
+					archive.RootPath = folder;
+					archive.ProgressMessageEvent += delegate (TarArchive ac, TarEntry e, string message) {
+						if (message != null)
+							mon.Log.WriteLine (message);
+					};
+
+					foreach (FilePath f in GetFilesRec (new DirectoryInfo (folder))) {
+						TarEntry entry = TarEntry.CreateEntryFromFile (f);
+						entry.Name = f.ToRelative (folder);
+						if (!PropertyService.IsWindows) {
+							Mono.Unix.UnixFileInfo fi = new Mono.Unix.UnixFileInfo (f);
+							entry.TarHeader.Mode = (int) fi.Protection;
+						}
+						archive.WriteEntry(entry, false);
+					}
+					
+					// HACK: GNU tar expects to find a double zero record at the end of the archive. TarArchive only emits one.
+					// This hack generates the second zero block.
+					FieldInfo tarOutField = typeof(TarArchive).GetField ("tarOut", BindingFlags.Instance | BindingFlags.NonPublic);
+					if (tarOutField != null) {
+						TarOutputStream tarOut = (TarOutputStream) tarOutField.GetValue (archive);
+						tarOut.Finish ();
+					}
+					
+					archive.CloseArchive ();
+					break;
+				case ".zip":
+					ZipOutputStream zs = new ZipOutputStream (outStream);
+					zs.SetLevel(5);
+					FilePath baseDir = folder;
+					
+					byte[] buffer = new byte [8092];
+					foreach (FilePath f in GetFilesRec (new DirectoryInfo (folder))) {
+						ZipEntry infoEntry = new ZipEntry (f.ToRelative (baseDir));
+						zs.PutNextEntry (infoEntry);
+						using (Stream s = File.OpenRead (f)) {
+							int nr;
+							while ((nr = s.Read (buffer, 0, buffer.Length)) > 0)
+								zs.Write (buffer, 0, nr);
+						}
+					}
+					zs.Finish ();
+					zs.Close ();
+					break;
+				default:
+					mon.Log.WriteLine ("Unsupported file format: " + Path.GetFileName (targetFile));
+					return;
+				}
 			}
-			pw.WaitForOutput ();
+		}
+		
+		static IEnumerable<FilePath> GetFilesRec (DirectoryInfo dir)
+		{
+			foreach (FileSystemInfo si in dir.GetFileSystemInfos ()) {
+				if (si is FileInfo)
+					yield return si.FullName;
+				else {
+					foreach (FilePath f in GetFilesRec ((DirectoryInfo)si))
+						yield return f;
+				}
+			}
 		}
 		
 		internal static string GetArchiveExtension (string fileName)
