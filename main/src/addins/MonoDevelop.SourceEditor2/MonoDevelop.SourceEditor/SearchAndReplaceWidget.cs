@@ -53,7 +53,7 @@ namespace MonoDevelop.SourceEditor
 		bool isReplaceMode = true;
 		Widget [] replaceWidgets;
 		
-		public static bool IsCaseSensitive {
+		public bool IsCaseSensitive {
 			get { return PropertyService.Get ("IsCaseSensitive", true); }
 			set { 
 				if (IsCaseSensitive != value)
@@ -140,8 +140,8 @@ namespace MonoDevelop.SourceEditor
 			FilterHistory (seachHistoryProperty);
 			FilterHistory (replaceHistoryProperty);
 			//HACK: GTK rendering issue on Mac, images don't repaint unless we put them in visible eventboxes
-			if (Platform.IsMac) {
-				foreach (var eb in new [] { eventbox2, eventbox3, eventbox4, eventbox5, eventbox6 }) {
+			if (Platform.IsMac) {
+				foreach (var eb in new [] { eventbox2, eventbox3, eventbox4, eventbox5, eventbox6 }) {
 					eb.VisibleWindow = true;
 					eb.ModifyBg (StateType.Normal, new Gdk.Color (230, 230, 230));
 				}
@@ -547,7 +547,7 @@ But I leave it in in the case I've missed something. Mike
 				widget.TextEditor.SetSelection (result.Offset, result.EndOffset);
 				widget.TextEditor.CenterToCaret ();
 				widget.TextEditor.AnimateSearchResult (result);
-			} catch (System.Exception) { 
+			} catch (System.Exception) {
 			}
 		}
 		
