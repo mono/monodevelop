@@ -374,6 +374,7 @@ namespace Mono.TextEditor.Highlighting
 					RegexMatch match = cur.End.TryMatch (CurText, textOffset);
 					if (match.Success) {
 						FoundSpanEnd (cur, i, match.Length);
+						i += match.Length - 1;
 						return true;
 					}
 				}
@@ -382,6 +383,7 @@ namespace Mono.TextEditor.Highlighting
 					RegexMatch match = cur.Exit.TryMatch (CurText, textOffset);
 					if (match.Success) {
 						FoundSpanExit (cur, i, match.Length);
+						i += match.Length - 1;
 						return true;
 					}
 				}
