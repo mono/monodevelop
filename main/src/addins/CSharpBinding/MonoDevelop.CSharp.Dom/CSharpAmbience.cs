@@ -430,7 +430,7 @@ namespace MonoDevelop.CSharp.Dom
 									result.Append (generalizedName);
 									var t = new DomReturnType ();
 									t.Name = generalizedName;
-									resolver.Add (new DomReturnType (method.TypeParameters[i].Name), t);
+									resolver.Add (method.DeclaringType.SourceProjectDom, new DomReturnType (method.TypeParameters[i].Name), t);
 								} else {
 									result.Append (NetToCSharpTypeName (method.TypeParameters[i].Name));
 								}
