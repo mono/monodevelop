@@ -295,13 +295,15 @@ namespace Mono.Debugging.Client
 			
 			if (children == null) {
 				children = new List<ObjectValue> ();
-				try {
-					ObjectValue[] cs = source.GetChildren (path, -1, -1, options);
-					ConnectCallbacks (parentFrame, cs);
-					children.AddRange (cs);
-				} catch (Exception ex) {
-					children = null;
-					return CreateFatalError ("", ex.Message, ObjectValueFlags.ReadOnly);
+				if (source != null) {
+					try {
+						ObjectValue[] cs = source.GetChildren (path, -1, -1, options);
+						ConnectCallbacks (parentFrame, cs);
+						children.AddRange (cs);
+					} catch (Exception ex) {
+						children = null;
+						return CreateFatalError ("", ex.Message, ObjectValueFlags.ReadOnly);
+					}
 				}
 			}
 			foreach (ObjectValue ob in children)
@@ -326,13 +328,15 @@ namespace Mono.Debugging.Client
 			} else {
 				if (children == null) {
 					children = new List<ObjectValue> ();
-					try {
-						ObjectValue[] cs = source.GetChildren (path, -1, -1, options);
-						ConnectCallbacks (parentFrame, cs);
-						children.AddRange (cs);
-					} catch (Exception ex) {
-						Console.WriteLine (ex);
-						children.Add (CreateFatalError ("", ex.Message, ObjectValueFlags.ReadOnly));
+					if (source != null) {
+						try {
+							ObjectValue[] cs = source.GetChildren (path, -1, -1, options);
+							ConnectCallbacks (parentFrame, cs);
+							children.AddRange (cs);
+						} catch (Exception ex) {
+							Console.WriteLine (ex);
+							children.Add (CreateFatalError ("", ex.Message, ObjectValueFlags.ReadOnly));
+						}
 					}
 				}
 				return children.ToArray ();
