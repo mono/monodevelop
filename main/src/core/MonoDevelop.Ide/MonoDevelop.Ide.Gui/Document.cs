@@ -131,6 +131,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		public Project Project {
 			get { return Window.ViewContent.Project; }
+			set { 
+				Window.ViewContent.Project = value; 
+				dom = null;
+			}
 		}
 		
 		ProjectDom dom;

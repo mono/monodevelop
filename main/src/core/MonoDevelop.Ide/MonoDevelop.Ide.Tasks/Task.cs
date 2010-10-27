@@ -208,7 +208,9 @@ namespace MonoDevelop.Ide.Tasks
 		public virtual void JumpToPosition()
 		{
 			if (!file.IsNullOrEmpty) {
-				IdeApp.Workbench.OpenDocument (file, Math.Max (1, line), Math.Max (1, column), true);
+				var doc = IdeApp.Workbench.OpenDocument (file, Math.Max (1, line), Math.Max (1, column), true);
+				if (WorkspaceObject is Project)
+					doc.Project = WorkspaceObject as Project;
 			} else if (parentObject != null) {
 				Pad pad = IdeApp.Workbench.GetPad<ProjectSolutionPad> ();
 				ProjectSolutionPad spad = pad.Content as ProjectSolutionPad;
