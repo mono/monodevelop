@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 using System.Xml;
+using System.Linq;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Core;
 
@@ -179,7 +180,7 @@ namespace MonoDevelop.Projects.Dom
 			GenericMethodInstanceResolver resolver = new GenericMethodInstanceResolver ();
 			if (genericArguments != null) {
 				for (int i = 0; i < method.TypeParameters.Count && i < genericArguments.Count; i++) 
-					resolver.Add (new DomReturnType (method.TypeParameters[i].Name), genericArguments[i]);
+					resolver.Add (method.DeclaringType.SourceProjectDom, new DomReturnType (method.TypeParameters[i].Name), genericArguments[i]);
 			}
 			IMethod result = (IMethod)method.AcceptVisitor (resolver, method);
 			resolver = new GenericMethodInstanceResolver ();
@@ -191,7 +192,7 @@ namespace MonoDevelop.Projects.Dom
 					returnTypeStack.Push (new KeyValuePair<IReturnType, IReturnType> (method.Parameters[i].ReturnType, methodArguments[i]));
 					while (returnTypeStack.Count > 0) {
 						KeyValuePair<IReturnType, IReturnType> curReturnType = returnTypeStack.Pop ();
-//						Console.WriteLine ("key:" + curReturnType.Key + "/ val:" + curReturnType.Value);
+						Console.WriteLine ("key:" + curReturnType.Key + "\n val:" + curReturnType.Value);
 						bool found = false;
 						for (int j = 0; j < method.TypeParameters.Count; j++) {
 							if (method.TypeParameters[j].Name == curReturnType.Key.FullName) {
@@ -200,7 +201,7 @@ namespace MonoDevelop.Projects.Dom
 							}
 						}
 						if (found) {
-							resolver.Add (curReturnType.Key, curReturnType.Value);
+							resolver.Add (method.DeclaringType.SourceProjectDom, curReturnType.Key, curReturnType.Value);
 							continue;
 						}
 						//Console.WriteLine ("key:" + curReturnType.Key);
@@ -227,23 +228,31 @@ namespace MonoDevelop.Projects.Dom
 		{
 			public Dictionary<string, IReturnType> typeTable = new Dictionary<string,IReturnType> ();
 			
-			public void Add (IReturnType parameterType, IReturnType type)
+			public void Add (ProjectDom dom, IReturnType parameterType, IReturnType type)
 			{
 //				Console.WriteLine ("Add:" + parameterType +"->" + type);
 				if (type == null || string.IsNullOrEmpty (type.FullName))
 					return;
 				string name = parameterType.Name;
-				if (!typeTable.ContainsKey (name)) {
-					DomReturnType newType = new DomReturnType (type.FullName);
-					newType.ArrayDimensions     = Math.Max (0, type.ArrayDimensions - parameterType.ArrayDimensions);
-					newType.PointerNestingLevel = Math.Max (0, type.PointerNestingLevel - parameterType.PointerNestingLevel);
-					newType.Type  = type.Type; // May be anonymous type
-					for (int i = 0; i < newType.ArrayDimensions; i++)
-						newType.SetDimension (i, parameterType.GetDimension (i));
-					foreach (var generic in type.GenericArguments)
-						newType.AddTypeParameter (generic);
-					typeTable[name] = newType;
+				bool contains = typeTable.ContainsKey (name);
+				
+				// when the type is already in the table use the type that is more general in the inheritance tree.
+				if (contains) {
+					var t1 = dom.GetType (typeTable[name]);
+					var t2 = dom.GetType (type);
+					if (!dom.GetInheritanceTree (t1).Any (t => t.DecoratedFullName == t2.DecoratedFullName))
+						return;
 				}
+				
+				DomReturnType newType = new DomReturnType (type.FullName);
+				newType.ArrayDimensions     = Math.Max (0, type.ArrayDimensions - parameterType.ArrayDimensions);
+				newType.PointerNestingLevel = Math.Max (0, type.PointerNestingLevel - parameterType.PointerNestingLevel);
+				newType.Type  = type.Type; // May be anonymous type
+				for (int i = 0; i < newType.ArrayDimensions; i++)
+					newType.SetDimension (i, parameterType.GetDimension (i));
+				foreach (var generic in type.GenericArguments)
+					newType.AddTypeParameter (generic);
+				typeTable[name] = newType;
 			}
 			
 			public override INode Visit (IMethod source, IMethod data)
