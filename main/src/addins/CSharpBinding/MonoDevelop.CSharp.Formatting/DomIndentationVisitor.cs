@@ -203,7 +203,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		bool IsSimpleAccessor (Accessor accessor)
 		{
-			if (accessor.Body == null || accessor.Body.FirstChild == null)
+			if (accessor == null || accessor.Body == null || accessor.Body.FirstChild == null)
 				return true;
 			if (accessor.Body.Children.Count () != 1)
 				return false;
