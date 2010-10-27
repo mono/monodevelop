@@ -89,12 +89,13 @@ namespace MonoDevelop.CSharp.Formatting
 			do {
 				line++;
 				lineSegment = data.Document.GetLine (line);
-			} while (lineSegment.EditableLength == lineSegment.GetIndentation (data.Document).Length);
+			} while (lineSegment != null && lineSegment.EditableLength == lineSegment.GetIndentation (data.Document).Length);
 			int start = data.Document.GetLine (loc.Line).EndOffset;
 			StringBuilder sb = new StringBuilder ();
 			for (int i = 0; i < blankLines; i++)
 				sb.Append (data.EolMarker);
-			AddChange (start, lineSegment.Offset - start, sb.ToString ());
+			int removedChars = lineSegment != null ? lineSegment.Offset - start : 0;
+			AddChange (start, removedChars, sb.ToString ());
 		}
 		
 		public void EnsureBlankLinesBefore (ICSharpNode node, int blankLines)
