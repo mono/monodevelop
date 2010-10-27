@@ -87,6 +87,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						Process.GetProcessById (id);
 					}
 					catch {
+						exitEvent.Set ();
 						break;
 					}
 				}
