@@ -142,6 +142,16 @@ namespace Mono.Debugging.Soft
 			});
 			ConnectionStarting (VirtualMachineManager.BeginListen (dbgEP, conEP, callback), dsi);
 		}
+
+		protected virtual bool ShouldRetryConnection (Exception ex, int attemptNumber)
+		{
+			var sx = ex as SocketException;
+			if (sx != null) {
+				if (sx.ErrorCode == 10061) //connection refused
+					return true;
+			}
+			return false;
+		}
 		
 		/// <summary>Starts the debugger connecting to a remote IP</summary>
 		protected void StartConnecting (RemoteSoftDebuggerStartInfo dsi, int maxAttempts, int timeBetweenAttempts)
@@ -153,23 +163,18 @@ namespace Mono.Debugging.Soft
 			InitForRemoteSession (dsi, out dbgEP, out conEP);
 			
 			AsyncCallback callback = null;
+			int attemptNumber = 0;
 			callback = delegate (IAsyncResult ar) {
 				try {
 					ConnectionStarted (VirtualMachineManager.EndConnect (ar));
 					return;
 				} catch (Exception ex) {
-					bool retry = false;
-					var sx = ex as SocketException;
-					if (sx != null)
-						retry = sx.ErrorCode == 10061; //connection refused
-					
-					if (!retry || maxAttempts == 1 || Exited) {
+					attemptNumber++;
+					if (!ShouldRetryConnection(ex, attemptNumber) || attemptNumber == maxAttempts || Exited) {
 						OnConnectionError (ex);
 						return;
 					}
 				}
-				if (maxAttempts > 1)
-					maxAttempts--;
 				try {
 					if (timeBetweenAttempts > 0)
 						System.Threading.Thread.Sleep (timeBetweenAttempts);
