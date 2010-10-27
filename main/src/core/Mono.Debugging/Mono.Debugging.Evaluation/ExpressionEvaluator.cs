@@ -159,39 +159,6 @@ namespace Mono.Debugging.Evaluation
 			return sb.ToString ();
 		}
 
-		public static string UnEscapeString (string text)
-		{
-			StringBuilder sb = new StringBuilder ();
-			for (int i = 0; i < text.Length; i++) {
-				char escape = text[i];
-				if ('\\' == escape && i+1 < text.Length) {
-					char c = text[i+1];
-					char replacement = c;
-					switch (c) {
-						case '"':
-						case '\\':
-							break;
-						case '0': replacement = '\0'; break;
-						case 'a': replacement = '\a'; break;
-						case 'b': replacement = '\b'; break;
-						case 'f': replacement = '\f'; break;
-						case 'v': replacement = '\v'; break;
-						case 'n': replacement = '\n'; break;
-						case 'r': replacement = '\r'; break;
-						case 't': replacement = '\t'; break;
-						default:
-							sb.Append (escape);
-							break;
-					}
-					sb.Append (replacement);
-					++i;
-					continue;
-				}
-				sb.Append (escape);
-			}
-			return sb.ToString ();
-		}
-
 		public abstract string Resolve (DebuggerSession session, SourceLocation location, string exp);
 	}
 	
