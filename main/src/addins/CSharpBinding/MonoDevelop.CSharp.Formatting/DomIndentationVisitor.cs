@@ -60,9 +60,15 @@ namespace MonoDevelop.CSharp.Formatting
 			get { return this.changes; }
 		}
 		
-		public bool AutoAcceptChanges { get; set;
+		public bool AutoAcceptChanges {
+			get;
+			set;
 		}
 		
+		public bool CorrectBlankLines {
+			get;
+			set;
+		}
 		
 		public DomIndentationVisitor (CSharpFormattingPolicy policy, TextEditorData data)
 		{
@@ -83,6 +89,8 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public void EnsureBlankLinesAfter (ICSharpNode node, int blankLines)
 		{
+			if (!CorrectBlankLines)
+				return;
 			var loc = node.EndLocation;
 			int line = loc.Line;
 			LineSegment lineSegment;
@@ -100,6 +108,8 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public void EnsureBlankLinesBefore (ICSharpNode node, int blankLines)
 		{
+			if (!CorrectBlankLines)
+				return;
 			var loc = node.StartLocation;
 			int line = loc.Line;
 			LineSegment lineSegment;
