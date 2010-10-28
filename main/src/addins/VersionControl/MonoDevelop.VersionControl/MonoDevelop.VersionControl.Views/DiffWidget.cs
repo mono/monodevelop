@@ -50,6 +50,12 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
+		public Mono.TextEditor.TextEditor FocusedEditor {
+			get {
+				return comparisonWidget.FocusedEditor;
+			}
+		}
+		
 		public DiffWidget (VersionControlDocumentInfo info) : this (info, false)
 		{
 		}

@@ -196,7 +196,6 @@ namespace MonoDevelop.VersionControl.Views
 //				StatusBox.ShowNavigationBarContextMenu ();
 				return base.OnButtonPressEvent (e);
 			}
-			Console.WriteLine (e.Type);
 			if (e.Type == Gdk.EventType.ButtonPress) {
 				if (window != null) {
 					DestroyWindow ();

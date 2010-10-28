@@ -134,9 +134,50 @@ namespace MonoDevelop.VersionControl.Views
 			editor.Document.FoldTreeUpdated += delegate {
 				QueueDraw ();
 			};
+			editor.ButtonPressEvent += OnPopupMenu;
 			Show ();
 		}
-
+		
+		void OnPopupMenu (object sender, Gtk.ButtonPressEventArgs args)
+		{
+			if (args.Event.Button == 3) {
+				int textEditorXOffset = (int)args.Event.X - (int)editor.TextViewMargin.XOffset;
+				if (textEditorXOffset < 0)
+					return;
+				this.menuPopupLocation = new Cairo.Point ((int)args.Event.X, (int)args.Event.Y);
+				DocumentLocation loc = editor.PointToLocation (textEditorXOffset, (int)args.Event.Y);
+				if (!editor.IsSomethingSelected || !editor.SelectionRange.Contains (editor.Document.LocationToOffset (loc)))
+					editor.Caret.Location = loc;
+				
+				this.ShowPopup ();
+			}
+		}
+		
+		void ShowPopup ()
+		{
+			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/VersionControl/BlameView/ContextMenu");
+			Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
+			menu.Destroyed += delegate {
+				this.QueueDraw ();
+			};
+			
+			menu.Popup (null, null, new Gtk.MenuPositionFunc (PositionPopupMenu), 0, Gtk.Global.CurrentEventTime);
+		}
+		
+		Cairo.Point menuPopupLocation;
+		void PositionPopupMenu (Menu menu, out int x, out int y, out bool pushIn)
+		{
+			this.GdkWindow.GetOrigin (out x, out y);
+			x += this.menuPopupLocation.X;
+			y += this.menuPopupLocation.Y;
+			Requisition request = menu.SizeRequest ();
+			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtPoint (x, y));
+			
+			y = Math.Max (geometry.Top, Math.Min (y, geometry.Bottom - request.Height));
+			x = Math.Max (geometry.Left, Math.Min (x, geometry.Right - request.Width));
+			pushIn = true;
+		}
+		
 		void HandleAdjustmentChanged (object sender, EventArgs e)
 		{
 			Adjustment adjustment = (Adjustment)sender;

@@ -49,6 +49,16 @@
 		<ExtensionNode name="SeparatorItem" type="MonoDevelop.Components.Commands.ExtensionNodes.SeparatorItemCodon" />
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/VersionControl/BlameView/ContextMenu" name = "Blame view context menu">
+		<Description>Context menu for the blame view.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/VersionControl/DiffView/ContextMenu" name = "Diff view context menu">
+		<Description>Context menu for the diff view.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
+	</ExtensionPoint>
+	
 	<Extension path = "/MonoDevelop/Core/FileSystemExtensions">
 		<Class class = "MonoDevelop.VersionControl.VersionControlFileSystemExtension" />
 	</Extension>
@@ -286,4 +296,17 @@
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
 		<Class class = "MonoDevelop.VersionControl.Views.SubviewAttachmentHandler"/>
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/VersionControl/BlameView/ContextMenu">
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/VersionControl/DiffView/ContextMenu">
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />
+	</Extension>
+	
 </Addin>

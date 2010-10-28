@@ -118,7 +118,7 @@ namespace MonoDevelop.VersionControl.Views
 
 	}
 	
-	class DiffView : BaseView, IAttachableViewContent, IUndoHandler
+	class DiffView : BaseView, IAttachableViewContent, IUndoHandler, IClipboardHandler
 	{
 		DiffWidget widget;
 
@@ -288,6 +288,94 @@ namespace MonoDevelop.VersionControl.Views
 		bool IUndoHandler.EnableRedo {
 			get {
 				return this.ComparisonWidget.OriginalEditor.Document.CanRedo;
+			}
+		}
+		#endregion
+
+		#region IClipboardHandler implementation
+		void IClipboardHandler.Cut ()
+		{
+			var editor = this.widget.FocusedEditor;
+			if (editor == null)
+				return;
+			editor.RunAction (Mono.TextEditor.ClipboardActions.Cut);
+		}
+
+		void IClipboardHandler.Copy ()
+		{
+			var editor = this.widget.FocusedEditor;
+			if (editor == null)
+				return;
+			editor.RunAction (Mono.TextEditor.ClipboardActions.Copy);
+		}
+
+		void IClipboardHandler.Paste ()
+		{
+			var editor = this.widget.FocusedEditor;
+			if (editor == null)
+				return;
+			editor.RunAction (Mono.TextEditor.ClipboardActions.Paste);
+		}
+
+		void IClipboardHandler.Delete ()
+		{
+			var editor = this.widget.FocusedEditor;
+			if (editor == null)
+				return;
+			if (editor.IsSomethingSelected) {
+				editor.DeleteSelectedText ();
+			} else {
+				editor.RunAction (Mono.TextEditor.DeleteActions.Delete);
+			}
+		}
+
+		void IClipboardHandler.SelectAll ()
+		{
+			var editor = this.widget.FocusedEditor;
+			if (editor == null)
+				return;
+			editor.RunAction (Mono.TextEditor.SelectionActions.SelectAll);
+		}
+
+		bool IClipboardHandler.EnableCut {
+			get {
+				var editor = this.widget.FocusedEditor;
+				if (editor == null)
+					return false;
+				return editor.IsSomethingSelected && !editor.Document.ReadOnly;
+			}
+		}
+
+		bool IClipboardHandler.EnableCopy {
+			get {
+				var editor = this.widget.FocusedEditor;
+				if (editor == null)
+					return false;
+				return editor.IsSomethingSelected;
+			}
+		}
+
+		bool IClipboardHandler.EnablePaste {
+			get {
+				var editor = this.widget.FocusedEditor;
+				if (editor == null)
+					return false;
+				return !editor.Document.ReadOnly;
+			}
+		}
+
+		bool IClipboardHandler.EnableDelete {
+			get {
+				var editor = this.widget.FocusedEditor;
+				if (editor == null)
+					return false;
+				return !editor.Document.ReadOnly;
+			}
+		}
+
+		bool IClipboardHandler.EnableSelectAll {
+			get {
+				return true;
 			}
 		}
 		#endregion
