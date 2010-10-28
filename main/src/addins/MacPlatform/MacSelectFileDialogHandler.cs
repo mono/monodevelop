@@ -57,12 +57,12 @@ namespace MonoDevelop.Platform.Mac
 				
 				SetCommonPanelProperties (data, panel);
 				
-				//if (!directoryMode) {
+				if (!directoryMode) {
 					var popup = CreateFileFilterPopup (data, panel);
 					if (popup != null) {
 						panel.AccessoryView = popup;
 					}
-				//}
+				}
 				
 				var action = panel.RunModal ();
 				if (action == 0)

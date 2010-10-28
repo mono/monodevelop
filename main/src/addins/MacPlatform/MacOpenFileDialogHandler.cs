@@ -202,6 +202,14 @@ namespace MonoDevelop.Platform.Mac
 	
 	class SelectEncodingPanel : NSPanel
 	{
+		NSTableView allTable;
+		NSTableView selectedTable;
+		EncodingAllDelegate allDelegate;
+		EncodingSelectedDelegate selectedDelegate;
+		EncodingSource allSource;
+		EncodingSource selectedSource;
+		NSButton addButton, removeButton, upButton, downButton;
+		
 		public SelectEncodingPanel () : base ()	
 		{
 			var size = new SizeF (600, 400);
@@ -251,7 +259,7 @@ namespace MonoDevelop.Platform.Mac
 			var tableHeight = labelBottom - buttonAreaTop - padding;
 			var tableWidth = size.Width / 2 - padding * 3 - moveButtonWidth + padding / 2;
 			
-			var allTable = new NSTableView (new RectangleF (padding, buttonAreaTop, tableWidth, tableHeight));
+			allTable = new NSTableView (new RectangleF (padding, buttonAreaTop, tableWidth, tableHeight));
 			allTable.HeaderView = null;
 			var allScroll = new NSScrollView (allTable.Frame) {
 				BorderType = NSBorderType.BezelBorder,
@@ -268,7 +276,7 @@ namespace MonoDevelop.Platform.Mac
 			selectedLabel.Frame = new RectangleF (center, labelBottom, selectedLabelSize.Width, selectedLabelSize.Height);
 			view.AddSubview (selectedLabel);
 			
-			var selectedTable = new NSTableView (new RectangleF (center, buttonAreaTop, tableWidth, tableHeight));
+			selectedTable = new NSTableView (new RectangleF (center, buttonAreaTop, tableWidth, tableHeight));
 			selectedTable.HeaderView = null;
 			var selectedScroll = new NSScrollView (selectedTable.Frame) {
 				BorderType = NSBorderType.BezelBorder,
@@ -280,7 +288,7 @@ namespace MonoDevelop.Platform.Mac
 			
 			float buttonLevel = tableHeight / 2 + buttonAreaTop;
 				
-			var addButton = new NSButton (
+			addButton = new NSButton (
 				new RectangleF (tableWidth + padding * 2, buttonLevel + padding / 2,
 					moveButtonWidth, moveButtonWidth)) {
 				Title = ">",
@@ -288,7 +296,7 @@ namespace MonoDevelop.Platform.Mac
 			};
 			view.AddSubview (addButton);
 			
-			var removeButton = new NSButton (
+			removeButton = new NSButton (
 				new RectangleF (tableWidth + padding * 2, buttonLevel - padding / 2 - moveButtonWidth,
 					moveButtonWidth, moveButtonWidth)) {
 				Title = "<",
@@ -296,7 +304,7 @@ namespace MonoDevelop.Platform.Mac
 			};
 			view.AddSubview (removeButton);
 			
-			var upButton = new NSButton (
+			upButton = new NSButton (
 				new RectangleF (center + tableWidth + padding, buttonLevel + padding / 2,
 					moveButtonWidth, moveButtonWidth)) {
 				Title = "/\\",
@@ -304,7 +312,7 @@ namespace MonoDevelop.Platform.Mac
 			};
 			view.AddSubview (upButton);
 			
-			var downButton = new NSButton (
+			downButton = new NSButton (
 				new RectangleF (center + tableWidth + padding, buttonLevel - padding / 2 - moveButtonWidth,
 					moveButtonWidth, moveButtonWidth)) {
 				Title = "\\/",
@@ -317,16 +325,32 @@ namespace MonoDevelop.Platform.Mac
 				Width = tableWidth
 			};
 			allTable.AddColumn (allColumn);
-			allTable.DataSource = new EncodingSource (TextEncoding.SupportedEncodings);
+			allTable.DataSource = allSource = new EncodingSource (TextEncoding.SupportedEncodings);
+			allTable.Delegate = allDelegate = new EncodingAllDelegate (this);
 			
 			var selectedColumn = new NSTableColumn () {
 				DataCell = new NSTextFieldCell () { Wraps = true },
 				Width = tableWidth
 			};
 			selectedTable.AddColumn (selectedColumn);
-			selectedTable.DataSource = new EncodingSource (TextEncoding.ConversionEncodings);
+			selectedTable.DataSource = selectedSource = new EncodingSource (TextEncoding.ConversionEncodings);
+			selectedTable.Delegate = selectedDelegate = new EncodingSelectedDelegate (this);
+			
+			UpdateButtons ();
 			
 			this.ContentView = view;
+		}
+		
+		void UpdateButtons ()
+		{
+			var allIndex = allTable.SelectedRow;
+			var allEncoding = allIndex >= 0? allSource.encodings[allIndex] : null;
+			addButton.Enabled = allEncoding != null && !selectedSource.encodings.Any (e => e.Id == allEncoding.Id);
+			
+			var selectedIndex = selectedTable.SelectedRow;
+			removeButton.Enabled = selectedIndex >= 0 && selectedSource.encodings.Count > 0;
+			upButton.Enabled = selectedIndex > 0;
+			downButton.Enabled = selectedIndex >= 0 && selectedIndex < selectedSource.encodings.Count - 1;
 		}
 		
 		static NSTextField CreateLabel (string text)
@@ -391,7 +415,7 @@ namespace MonoDevelop.Platform.Mac
 		
 		class EncodingSource : NSTableViewDataSource
 		{
-			List<TextEncoding> encodings;
+			public List<TextEncoding> encodings;
 			
 			public EncodingSource (IEnumerable<TextEncoding> encodings)
 			{
@@ -421,6 +445,22 @@ namespace MonoDevelop.Platform.Mac
 			
 			public override void SelectionDidChange (NSNotification notification)
 			{
+				parent.UpdateButtons ();
+			}
+		}
+		
+		class EncodingSelectedDelegate : NSTableViewDelegate
+		{
+			SelectEncodingPanel parent;
+			
+			public EncodingSelectedDelegate (SelectEncodingPanel parent)
+			{
+				this.parent = parent;
+			}
+			
+			public override void SelectionDidChange (NSNotification notification)
+			{
+				parent.UpdateButtons ();
 			}
 		}
 	}
