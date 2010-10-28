@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?define ProductShortName = "MonoDevelop" ?>
-<?define ProductVersion = "2.1.0" ?>
-<?define ProductVersionText = "2.1" ?>
+<?define ProductVersion = "2.4.1" ?>
+<?define ProductVersionText = "2.4.1" ?>
 <?define Manufacturer = "Novell" ?>
 <?define UpgradeCode = "9134F74C-E7E3-471A-9833-C86FB45CD38E" ?>
 
@@ -68,6 +68,8 @@
               <File Name="Mono.GetOptions.dll" Source="Libraries\Mono.GetOptions.dll" />
               <File Name="monodoc.dll" Source="Libraries\monodoc.dll" />
 
+              <File Name="updateinfo" Source="updateinfo" />
+              
               <File Id="file396" Name="Mono.Security.dll" Source="$(var.BuildRoot)\bin\Mono.Security.dll" />
               <File Id="file399" Name="Mono.WebServer2.dll" Source="$(var.BuildRoot)\bin\Mono.WebServer2.dll" />
               <File Id="file421" Name="monodoc.index" Source="$(var.BuildRoot)\bin\monodoc.index" />
@@ -653,8 +655,6 @@
     </InstallExecuteSequence>
 
     <InstallUISequence>
-      <!-- Because we have a launch condition that uses the results of FindRelatedProducts, put it first. -->
-      <LaunchConditions After="FindRelatedProducts" />
     </InstallUISequence>
 
     <!-- This enables the license screen and where to install screen -->
