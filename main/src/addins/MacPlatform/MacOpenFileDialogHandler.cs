@@ -294,6 +294,7 @@ namespace MonoDevelop.Platform.Mac
 				Title = ">",
 				BezelStyle = NSBezelStyle.SmallSquare,
 			};
+			addButton.Activated += Add;
 			view.AddSubview (addButton);
 			
 			removeButton = new NSButton (
@@ -302,6 +303,7 @@ namespace MonoDevelop.Platform.Mac
 				Title = "<",
 				BezelStyle = NSBezelStyle.SmallSquare,
 			};
+			removeButton.Activated += Remove;
 			view.AddSubview (removeButton);
 			
 			upButton = new NSButton (
@@ -310,6 +312,7 @@ namespace MonoDevelop.Platform.Mac
 				Title = "/\\",
 				BezelStyle = NSBezelStyle.SmallSquare,
 			};
+			upButton.Activated += MoveUp;
 			view.AddSubview (upButton);
 			
 			downButton = new NSButton (
@@ -318,6 +321,7 @@ namespace MonoDevelop.Platform.Mac
 				Title = "\\/",
 				BezelStyle = NSBezelStyle.SmallSquare,
 			};
+			downButton.Activated += MoveDown;
 			view.AddSubview (downButton);
 			
 			var allColumn = new NSTableColumn () {
@@ -339,6 +343,52 @@ namespace MonoDevelop.Platform.Mac
 			UpdateButtons ();
 			
 			this.ContentView = view;
+		}
+
+		void Add (object sender, EventArgs e)
+		{
+			var fromIndex = allTable.SelectedRow;
+			var encoding = allSource.encodings[fromIndex];
+			var toIndex = selectedTable.SelectedRow + 1;
+			if (toIndex <= 0)
+				toIndex = selectedSource.encodings.Count;
+			selectedSource.encodings.Insert (toIndex, encoding);
+			selectedTable.ReloadData ();
+			selectedTable.SelectRows (new NSIndexSet ((uint)(toIndex)), false);
+			UpdateButtons ();
+		}
+		
+		void Remove (object sender, EventArgs e)
+		{
+			var index = selectedTable.SelectedRow;
+			selectedSource.encodings.RemoveAt (index);
+			selectedTable.ReloadData ();
+			if (index >= selectedSource.encodings.Count)
+				index--;
+			selectedTable.SelectRows (new NSIndexSet ((uint)(index)), false);
+			UpdateButtons ();
+		}
+
+		void MoveUp (object sender, EventArgs e)
+		{
+			var index = selectedTable.SelectedRow;
+			var selected = selectedSource.encodings[index];
+			selectedSource.encodings[index] = selectedSource.encodings[index - 1];
+			selectedSource.encodings[index - 1] = selected;
+			selectedTable.ReloadData ();
+			selectedTable.SelectRows (new NSIndexSet ((uint)(index - 1)), false);
+			UpdateButtons ();
+		}
+		
+		void MoveDown (object sender, EventArgs e)
+		{
+			var index = selectedTable.SelectedRow;
+			var selected = selectedSource.encodings[index];
+			selectedSource.encodings[index] = selectedSource.encodings[index + 1];
+			selectedSource.encodings[index + 1] = selected;
+			selectedTable.ReloadData ();
+			selectedTable.SelectRows (new NSIndexSet ((uint)(index + 1)), false);
+			UpdateButtons ();
 		}
 		
 		void UpdateButtons ()
@@ -370,7 +420,7 @@ namespace MonoDevelop.Platform.Mac
 		{
 			this.DidResignKey += StopSharedAppModal;
 			try {
-				return NSApplication.SharedApplication.RunModalForWindow (this);
+				return SaveIfOk (NSApplication.SharedApplication.RunModalForWindow (this));
 			} finally {
 				this.DidResignKey -= StopSharedAppModal;
 			}
@@ -390,11 +440,18 @@ namespace MonoDevelop.Platform.Mac
 			this.DidResignKey += StopSharedAppModal;
 			try {
 				sheet = true;
-				return NSApplication.SharedApplication.RunModalForWindow (this);
+				return SaveIfOk (NSApplication.SharedApplication.RunModalForWindow (this));
 			} finally {
 				sheet = false;
 				this.DidResignKey -= StopSharedAppModal;
 			}
+		}
+		
+		int SaveIfOk (int ret)
+		{
+			if (ret != 0)
+				TextEncoding.ConversionEncodings = selectedSource.encodings.ToArray ();
+			return ret;
 		}
 
 		static void StopSharedAppModal (object sender, EventArgs e)
