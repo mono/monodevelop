@@ -44,36 +44,25 @@ namespace MonoDevelop.Platform.Mac
 			NSSavePanel panel = null;
 			
 			try {
-				switch (data.Action) {
-				case Gtk.FileChooserAction.Save:
+				bool directoryMode = data.Action != Gtk.FileChooserAction.Open;
+				
+				if (data.Action == Gtk.FileChooserAction.Save) {
 					panel = new NSSavePanel ();
-					break;
-				case Gtk.FileChooserAction.Open:
+				} else {
 					panel = new NSOpenPanel () {
-						CanChooseDirectories = false,
-						CanChooseFiles = true,
+						CanChooseDirectories = directoryMode,
+						CanChooseFiles = !directoryMode,
 					};
-					break;
-				case Gtk.FileChooserAction.SelectFolder:
-				case Gtk.FileChooserAction.CreateFolder:
-					panel = new NSOpenPanel () {
-						CanChooseDirectories = true,
-						CanChooseFiles = false,
-						CanCreateDirectories = (data.Action == Gtk.FileChooserAction.CreateFolder),
-					};
-					break;
-				default:
-					throw new InvalidOperationException ("Unknown action " + data.Action.ToString ());
 				}
 				
 				SetCommonPanelProperties (data, panel);
 				
-				if (data.Action == Gtk.FileChooserAction.Open || data.Action == Gtk.FileChooserAction.Save) {
+				//if (!directoryMode) {
 					var popup = CreateFileFilterPopup (data, panel);
 					if (popup != null) {
 						panel.AccessoryView = popup;
 					}
-				}
+				//}
 				
 				var action = panel.RunModal ();
 				if (action == 0)
@@ -206,6 +195,14 @@ namespace MonoDevelop.Platform.Mac
 		
 		internal static NSView CreateLabelledDropdown (string label, float popupWidth, out NSPopUpButton popup)
 		{
+			popup = new NSPopUpButton (new RectangleF (0, 6, popupWidth, 18), false) {
+				AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.MaxXMargin,
+			};
+			return LabelPopUp (label, 200, popup);
+		}
+		
+		internal static NSView LabelPopUp (string label, float popupWidth, NSPopUpButton popup)
+		{
 			var view = new NSView (new RectangleF (0, 0, popupWidth, 28)) {
 				AutoresizesSubviews = true,
 				AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.MaxXMargin,
@@ -222,9 +219,6 @@ namespace MonoDevelop.Platform.Mac
 			float textWidth = text.Frame.Width;
 			float textHeight = text.Frame.Height;
 			
-			popup = new NSPopUpButton (new RectangleF (0, 6, popupWidth, 18), false) {
-				AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.MaxXMargin,
-			};
 			popup.SizeToFit ();
 			var rect = popup.Frame;
 			float popupHeight = rect.Height;

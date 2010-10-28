@@ -46,6 +46,8 @@ namespace MonoDevelop.Platform.Mac
 			this.Spacing = spacing;
 		}
 		
+		public int Count { get { return children.Count; } }
+		
 		bool IsHorizontal { get { return Direction == MDBoxDirection.Horizontal; } }
 		
 		public NSView CreateView ()
