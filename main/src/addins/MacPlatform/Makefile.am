@@ -24,6 +24,12 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	Commands.cs \
+	Dialogs/MacAddFileDialogHandler.cs \
+	Dialogs/MacOpenFileDialogHandler.cs \
+	Dialogs/MacSelectFileDialogHandler.cs \
+	Dialogs/MDBox.cs \
+	Dialogs/SelectEncodingPanel.cs \
+	Dialogs/SelectEncodingPopUpButton.cs \
 	ExternalConsoleProcess.cs \
 	Framework/AppleEvent.cs \
 	Framework/AppleScript.cs \
@@ -32,11 +38,7 @@ FILES =  \
 	Framework/ComponentManager.cs \
 	Framework/CoreFoundation.cs \
 	Framework/HIToolbox.cs \
-	MacAddFileDialogHandler.cs \
-	MacOpenFileDialogHandler.cs \
 	MacPlatform.cs \
-	MacSelectFileDialogHandler.cs \
-	MDBox.cs \
 	Menus/OSXMenu.cs
 
 RES = MacPlatform.addin.xml

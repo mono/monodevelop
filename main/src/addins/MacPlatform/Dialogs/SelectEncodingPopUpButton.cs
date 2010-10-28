@@ -1,0 +1,146 @@
+// 
+// MacOpenFileDialogHandler.cs
+//  
+// Author:
+//       Michael Hutchinson <mhutchinson@novell.com>
+// 
+// Copyright (c) 2010 Novell, Inc.
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+using System;
+using MonoDevelop.Components.Extensions;
+using OSXIntegration.Framework;
+using MonoDevelop.Ide.Extensions;
+using MonoMac.AppKit;
+using MonoDevelop.Core;
+using System.Collections.Generic;
+using MonoMac.Foundation;
+using System.Linq;
+using System.Drawing;
+using MonoDevelop.Projects.Text;
+namespace MonoDevelop.Platform.Mac
+{
+	class SelectEncodingPopUpButton : NSPopUpButton
+	{
+		int lastIndex = 0;
+		
+		MonoMac.ObjCRuntime.Selector itemActivationSel = new MonoMac.ObjCRuntime.Selector ("itemActivated:");
+		MonoMac.ObjCRuntime.Selector addRemoveActivationSel = new MonoMac.ObjCRuntime.Selector ("addRemoveActivated:");
+		
+		NSMenuItem autoDetectedItem, addRemoveItem;
+		TextEncoding[] encodings;
+		
+		public SelectEncodingPopUpButton (bool showAutoDetected)
+		{
+			Cell.UsesItemFromMenu = false;
+			
+			if (showAutoDetected) {
+				autoDetectedItem = new NSMenuItem () {
+					Title = GettextCatalog.GetString ("Auto Detected"),
+					Tag = -1,
+					Target = this,
+					Action = itemActivationSel,
+				};
+			}
+			
+			addRemoveItem = new NSMenuItem () {
+				Title = GettextCatalog.GetString ("Add or Remove..."),
+				Tag = -20,
+				Target = this,
+				Action = addRemoveActivationSel,
+			};
+			
+			Populate (false);
+			SelectedEncodingId = null;
+		}
+		
+		public string SelectedEncodingId {
+			get {
+				var idx = Cell.MenuItem.Tag;
+				if (idx <= 0)
+					return null;
+				return encodings[idx - 1].Id;
+			}
+			set {
+				NSMenuItem item = null;
+				if (!string.IsNullOrEmpty (value)) {
+					int i = 1;
+					foreach (var e in encodings) {
+						if (e.Id == value) {
+							item = Menu.ItemWithTag (i);
+							break;
+						}
+						i++;
+					}
+				}
+				Cell.SelectItem (Cell.MenuItem = item ?? Cell.Menu.ItemAt (0));
+			}
+		}
+		
+		void Populate (bool clear)
+		{
+			if (clear)
+				Menu.RemoveAllItems ();
+				
+			encodings = TextEncoding.ConversionEncodings;
+			if (encodings == null || encodings.Length == 0)
+				encodings = new TextEncoding [] { TextEncoding.GetEncoding (TextEncoding.DefaultEncoding) };
+			
+			if (autoDetectedItem != null) {
+				Menu.AddItem (autoDetectedItem);
+				Cell.MenuItem = autoDetectedItem;
+				Menu.AddItem (NSMenuItem.SeparatorItem);
+			}
+			
+			int i = 1;
+			foreach (var e in MonoDevelop.Projects.Text.TextEncoding.ConversionEncodings) {
+				Menu.AddItem (new NSMenuItem () {
+					Title = string.Format ("{0} ({1})", e.Name, e.Id),
+					Tag = i++,
+					Target = this,
+					Action = itemActivationSel,
+				});
+			}
+			
+			Menu.AddItem (NSMenuItem.SeparatorItem);
+			Menu.AddItem (addRemoveItem);
+		}
+		
+		[Export ("addRemoveActivated:")]
+		void HandleAddRemoveItemActivated (NSObject sender)
+		{
+			Cell.SelectItem (Cell.MenuItem);
+			
+			var selection = SelectedEncodingId;
+			var dlg = new SelectEncodingPanel ();
+			if (dlg.RunModalSheet (this.Window) != 0) {
+				Populate (true);
+				SelectedEncodingId = selection;
+			}
+		}
+		
+		[Export ("itemActivated:")]
+		void HandleItemActivated (NSObject sender)
+		{
+			lastIndex = ((NSMenuItem)sender).Tag;
+			Cell.MenuItem = (NSMenuItem)sender;
+		}
+	}
+}

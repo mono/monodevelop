@@ -1,5 +1,5 @@
 // 
-// MacSelectFileDialogHandler.cs
+// MacOpenFileDialogHandler.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -25,181 +25,16 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Components.Extensions;
-using OSXIntegration.Framework;
-using MonoDevelop.Ide.Extensions;
-using MonoMac.AppKit;
-using MonoDevelop.Core;
 using System.Collections.Generic;
-using MonoMac.Foundation;
-using System.Linq;
 using System.Drawing;
+using System.Linq;
+using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
+using MonoMac.AppKit;
+using MonoMac.Foundation;
 
 namespace MonoDevelop.Platform.Mac
 {
-	class MacOpenFileDialogHandler : IOpenFileDialogHandler
-	{
-		public bool Run (OpenFileDialogData data)
-		{
-			NSSavePanel panel = null;
-			
-			try {
-				bool directoryMode = data.Action != Gtk.FileChooserAction.Open;
-				
-				if (data.Action == Gtk.FileChooserAction.Save) {
-					panel = new NSSavePanel ();
-				} else {
-					panel = new NSOpenPanel () {
-						CanChooseDirectories = directoryMode,
-						CanChooseFiles = !directoryMode,
-					};
-				}
-				
-				MacSelectFileDialogHandler.SetCommonPanelProperties (data, panel);
-				
-				SelectEncodingPopUpButton encodingSelector = null;
-				
-				var box = new MDBox (MDBoxDirection.Vertical, 2);
-				
-				if (!directoryMode) {
-					var filterPopup = MacSelectFileDialogHandler.CreateFileFilterPopup (data, panel);
-					box.Add (filterPopup);
-					
-					if (data.ShowEncodingSelector) {
-						encodingSelector = new SelectEncodingPopUpButton (data.Action != Gtk.FileChooserAction.Save);
-						encodingSelector.SelectedEncodingId = data.Encoding;
-						box.Add (MacSelectFileDialogHandler.LabelPopUp (
-							GettextCatalog.GetString ("Encoding:"), 200, encodingSelector));
-					}
-				}
-				
-				if (box.Count > 0)
-					panel.AccessoryView = box.CreateView ();
-				
-				var action = panel.RunModal ();
-				if (action == 0)
-					return false;
-				
-				data.SelectedFiles = MacSelectFileDialogHandler.GetSelectedFiles (panel);
-				if (encodingSelector != null)
-					data.Encoding = encodingSelector.SelectedEncodingId;
-				
-				return true;
-			} finally {
-				if (panel != null)
-					panel.Dispose ();
-			}
-		}
-	}
-	
-	class SelectEncodingPopUpButton : NSPopUpButton
-	{
-		int lastIndex = 0;
-		
-		MonoMac.ObjCRuntime.Selector itemActivationSel = new MonoMac.ObjCRuntime.Selector ("itemActivated:");
-		MonoMac.ObjCRuntime.Selector addRemoveActivationSel = new MonoMac.ObjCRuntime.Selector ("addRemoveActivated:");
-		
-		NSMenuItem autoDetectedItem, addRemoveItem;
-		TextEncoding[] encodings;
-		
-		public SelectEncodingPopUpButton (bool showAutoDetected)
-		{
-			Cell.UsesItemFromMenu = false;
-			
-			if (showAutoDetected) {
-				autoDetectedItem = new NSMenuItem () {
-					Title = GettextCatalog.GetString ("Auto Detected"),
-					Tag = -1,
-					Target = this,
-					Action = itemActivationSel,
-				};
-			}
-			
-			addRemoveItem = new NSMenuItem () {
-				Title = GettextCatalog.GetString ("Add or Remove..."),
-				Tag = -20,
-				Target = this,
-				Action = addRemoveActivationSel,
-			};
-			
-			Populate (false);
-			SelectedEncodingId = null;
-		}
-		
-		public string SelectedEncodingId {
-			get {
-				var idx = Cell.MenuItem.Tag;
-				if (idx <= 0)
-					return null;
-				return encodings[idx - 1].Id;
-			}
-			set {
-				NSMenuItem item = null;
-				if (!string.IsNullOrEmpty (value)) {
-					int i = 1;
-					foreach (var e in encodings) {
-						if (e.Id == value) {
-							item = Menu.ItemWithTag (i);
-							break;
-						}
-						i++;
-					}
-				}
-				Cell.SelectItem (Cell.MenuItem = item ?? Cell.Menu.ItemAt (0));
-			}
-		}
-		
-		void Populate (bool clear)
-		{
-			if (clear)
-				Menu.RemoveAllItems ();
-				
-			encodings = TextEncoding.ConversionEncodings;
-			if (encodings == null || encodings.Length == 0)
-				encodings = new TextEncoding [] { TextEncoding.GetEncoding (TextEncoding.DefaultEncoding) };
-			
-			if (autoDetectedItem != null) {
-				Menu.AddItem (autoDetectedItem);
-				Cell.MenuItem = autoDetectedItem;
-				Menu.AddItem (NSMenuItem.SeparatorItem);
-			}
-			
-			int i = 1;
-			foreach (var e in MonoDevelop.Projects.Text.TextEncoding.ConversionEncodings) {
-				Menu.AddItem (new NSMenuItem () {
-					Title = string.Format ("{0} ({1})", e.Name, e.Id),
-					Tag = i++,
-					Target = this,
-					Action = itemActivationSel,
-				});
-			}
-			
-			Menu.AddItem (NSMenuItem.SeparatorItem);
-			Menu.AddItem (addRemoveItem);
-		}
-		
-		[Export ("addRemoveActivated:")]
-		void HandleAddRemoveItemActivated (NSObject sender)
-		{
-			Cell.SelectItem (Cell.MenuItem);
-			
-			var selection = SelectedEncodingId;
-			var dlg = new SelectEncodingPanel ();
-			if (dlg.RunModalSheet (this.Window) != 0) {
-				Populate (true);
-				SelectedEncodingId = selection;
-			}
-		}
-		
-		[Export ("itemActivated:")]
-		void HandleItemActivated (NSObject sender)
-		{
-			lastIndex = ((NSMenuItem)sender).Tag;
-			Cell.MenuItem = (NSMenuItem)sender;
-		}
-	}
-	
 	class SelectEncodingPanel : NSPanel
 	{
 		NSTableView allTable;

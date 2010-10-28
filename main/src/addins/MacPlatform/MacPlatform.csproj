@@ -75,14 +75,16 @@
     <Compile Include="Framework\HIToolbox.cs" />
     <Compile Include="Commands.cs" />
     <Compile Include="Framework\ApplicationEvents.cs" />
-    <Compile Include="MacSelectFileDialogHandler.cs" />
     <Compile Include="Framework\AppleEvent.cs" />
     <Compile Include="Framework\AppleScript.cs" />
     <Compile Include="Framework\ComponentManager.cs" />
     <Compile Include="ExternalConsoleProcess.cs" />
-    <Compile Include="MDBox.cs" />
-    <Compile Include="MacAddFileDialogHandler.cs" />
-    <Compile Include="MacOpenFileDialogHandler.cs" />
+    <Compile Include="Dialogs\MacAddFileDialogHandler.cs" />
+    <Compile Include="Dialogs\MacOpenFileDialogHandler.cs" />
+    <Compile Include="Dialogs\MacSelectFileDialogHandler.cs" />
+    <Compile Include="Dialogs\MDBox.cs" />
+    <Compile Include="Dialogs\SelectEncodingPanel.cs" />
+    <Compile Include="Dialogs\SelectEncodingPopUpButton.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -112,5 +114,6 @@
   <ItemGroup>
     <Folder Include="Menus\" />
     <Folder Include="Framework\" />
+    <Folder Include="Dialogs\" />
   </ItemGroup>
 </Project>
