@@ -192,7 +192,7 @@ namespace MonoDevelop.Projects.Dom
 					returnTypeStack.Push (new KeyValuePair<IReturnType, IReturnType> (method.Parameters[i].ReturnType, methodArguments[i]));
 					while (returnTypeStack.Count > 0) {
 						KeyValuePair<IReturnType, IReturnType> curReturnType = returnTypeStack.Pop ();
-						Console.WriteLine ("key:" + curReturnType.Key + "\n val:" + curReturnType.Value);
+						//Console.WriteLine ("key:" + curReturnType.Key + "\n val:" + curReturnType.Value);
 						bool found = false;
 						for (int j = 0; j < method.TypeParameters.Count; j++) {
 							if (method.TypeParameters[j].Name == curReturnType.Key.FullName) {
