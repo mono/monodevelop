@@ -412,15 +412,21 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			StringBuilder methodText = new StringBuilder ();
 			string indent = options.GetIndent (param.DeclaringMember);
 			
-			switch (param.InsertionPoint.LineBefore) {
-			case NewLineInsertion.Eol:
-				methodText.AppendLine ();
-				break;
-			case NewLineInsertion.BlankLine:
+			if (param.InsertionPoint != null) {
+				switch (param.InsertionPoint.LineBefore) {
+				case NewLineInsertion.Eol:
+					methodText.AppendLine ();
+					break;
+				case NewLineInsertion.BlankLine:
+					methodText.AppendLine ();
+					methodText.Append (indent);
+					methodText.AppendLine ();
+					break;
+				}
+			} else {
 				methodText.AppendLine ();
 				methodText.Append (indent);
 				methodText.AppendLine ();
-				break;
 			}
 			var codeGenerator = new CSharpCodeGenerator () {
 				UseSpaceIndent = options.Document.Editor.Options.TabsToSpaces,
@@ -470,15 +476,21 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			}
 
 			methodText.AppendLine (code.Substring (idx2 + 1));
-			switch (param.InsertionPoint.LineAfter) {
-			case NewLineInsertion.Eol:
-				methodText.AppendLine ();
-				break;
-			case NewLineInsertion.BlankLine:
+			if (param.InsertionPoint != null) {
+				switch (param.InsertionPoint.LineAfter) {
+				case NewLineInsertion.Eol:
+					methodText.AppendLine ();
+					break;
+				case NewLineInsertion.BlankLine:
+					methodText.AppendLine ();
+					methodText.AppendLine ();
+					methodText.Append (indent);
+					break;
+				}
+			} else {
 				methodText.AppendLine ();
 				methodText.AppendLine ();
 				methodText.Append (indent);
-				break;
 			}
 			return methodText.ToString ();
 		}
@@ -502,8 +514,16 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			TextReplaceChange insertNewMethod = new TextReplaceChange ();
 			insertNewMethod.FileName = options.Document.FileName;
 			insertNewMethod.Description = string.Format (GettextCatalog.GetString ("Create new method {0} from selected statement(s)"), param.Name);
-			insertNewMethod.RemovedChars = param.InsertionPoint.LineBefore == NewLineInsertion.Eol ? 0 : param.InsertionPoint.Location.Column - 1;
-			insertNewMethod.Offset = data.Document.LocationToOffset (param.InsertionPoint.Location) - insertNewMethod.RemovedChars;
+			var insertionPoint = param.InsertionPoint;
+			if (insertionPoint == null) {
+				var points = MonoDevelop.Refactoring.HelperMethods.GetInsertionPoints (options.Document, param.DeclaringMember.DeclaringType);
+				insertionPoint = points.LastOrDefault (p => p.Location.Line < param.DeclaringMember.Location.Line);
+				if (insertionPoint == null)
+					insertionPoint = points.FirstOrDefault ();
+			}
+				
+			insertNewMethod.RemovedChars = insertionPoint.LineBefore == NewLineInsertion.Eol ? 0 : insertionPoint.Location.Column - 1;
+			insertNewMethod.Offset = data.Document.LocationToOffset (insertionPoint.Location) - insertNewMethod.RemovedChars;
 			insertNewMethod.InsertedText = GenerateMethodDeclaration (options, param);
 			result.Add (insertNewMethod);
 			

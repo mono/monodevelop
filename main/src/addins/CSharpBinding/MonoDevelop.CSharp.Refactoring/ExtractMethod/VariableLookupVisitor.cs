@@ -201,7 +201,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 		{
 			if (CutRegion.Contains (unaryOperatorExpression.StartLocation)) {
 				var left = unaryOperatorExpression.Expression as MonoDevelop.CSharp.Dom.IdentifierExpression;
-				if (left != null && !variables.ContainsKey (left.Identifier.Name)) {
+				if (left != null && variables.ContainsKey (left.Identifier.Name)) {
 					variables[left.Identifier.Name].IsChangedInsideCutRegion = true;
 				}
 			}

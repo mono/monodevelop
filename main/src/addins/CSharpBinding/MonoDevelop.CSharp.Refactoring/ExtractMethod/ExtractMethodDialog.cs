@@ -213,6 +213,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 		
 		void OnPreviewClicked (object sender, EventArgs e)
 		{
+			methodName = entry.Text;
 			SetProperties ();
 			List<Change> changes = extractMethod.PerformChanges (options, properties);
 			((Widget)this).Destroy ();
