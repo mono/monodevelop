@@ -559,7 +559,7 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				string currentParseFile = FileName;
 				string currentParseText = Editor.Text;
-					Project curentParseProject = Project;
+				Project curentParseProject = Project;
 				this.parsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, currentParseText);
 				if (this.parsedDocument != null && !this.parsedDocument.HasErrors)
 					this.lastErrorFreeParsedDocument = parsedDocument;
@@ -570,6 +570,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		uint parseTimeout = 0;
+		object parseLock = new object ();
 		void OnDocumentChanged (object sender, Mono.TextEditor.ReplaceEventArgs e)
 		{
 			// Don't directly parse the document because doing it at every key press is
@@ -582,12 +583,15 @@ namespace MonoDevelop.Ide.Gui
 				string currentParseText = Editor.Text;
 				Project curentParseProject = Project;
 				ProjectDomService.QueueParseJob (dom, delegate (string name, IProgressMonitor monitor) {
-					this.parsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, currentParseText);
-					if (this.parsedDocument != null && !this.parsedDocument.HasErrors)
-						this.lastErrorFreeParsedDocument = parsedDocument;
-					DispatchService.GuiSyncDispatch (delegate {
-						OnDocumentParsed (EventArgs.Empty);
-					});
+					lock (parseLock) {
+						var currentParsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, currentParseText);
+						Application.Invoke (delegate {
+							this.parsedDocument = currentParsedDocument;
+							if (this.parsedDocument != null && !this.parsedDocument.HasErrors)
+								this.lastErrorFreeParsedDocument = parsedDocument;
+							OnDocumentParsed (EventArgs.Empty);
+						});
+					}
 				}, FileName);
 				parseTimeout = 0;
 				return false;
