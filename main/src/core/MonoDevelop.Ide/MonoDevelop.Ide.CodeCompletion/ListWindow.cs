@@ -253,7 +253,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				
 			case Gdk.Key.Up:
 				if ((modifier & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask) {
-					if (!SelectionEnabled && !CompletionWindowManager.ForceSuggestionMode)
+					if (!SelectionEnabled /*&& !CompletionWindowManager.ForceSuggestionMode*/)
 						AutoCompleteEmptyMatch = AutoSelect = true;
 					if (!List.InCategoryMode) {
 						List.InCategoryMode = true;
@@ -264,7 +264,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 				if (SelectionEnabled && list.filteredItems.Count < 2)
 					return KeyActions.CloseWindow | KeyActions.Process;
-				if (!SelectionEnabled && !CompletionWindowManager.ForceSuggestionMode) {
+				if (!SelectionEnabled /*&& !CompletionWindowManager.ForceSuggestionMode*/) {
 					AutoCompleteEmptyMatch = AutoSelect = true;
 				} else {
 					list.MoveCursor (-1);
@@ -273,7 +273,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			case Gdk.Key.Down:
 				if ((modifier & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask) {
-					if (!SelectionEnabled && !CompletionWindowManager.ForceSuggestionMode)
+					if (!SelectionEnabled /*&& !CompletionWindowManager.ForceSuggestionMode*/)
 						AutoCompleteEmptyMatch = AutoSelect = true;
 					if (!List.InCategoryMode) {
 						List.InCategoryMode = true;
@@ -285,7 +285,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (SelectionEnabled && list.filteredItems.Count < 2)
 					return KeyActions.CloseWindow | KeyActions.Process;
 				
-				if (!SelectionEnabled && !CompletionWindowManager.ForceSuggestionMode) {
+				if (!SelectionEnabled /*&& !CompletionWindowManager.ForceSuggestionMode*/) {
 					AutoCompleteEmptyMatch = AutoSelect = true;
 				} else {
 					list.MoveCursor (1);
