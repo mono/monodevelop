@@ -30,7 +30,6 @@ using System.Runtime.InteropServices;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security;
 using System.Text;
 using Microsoft.Build.Framework;
