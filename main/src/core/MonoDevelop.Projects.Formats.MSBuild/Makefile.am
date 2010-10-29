@@ -6,7 +6,6 @@ REFS =  \
 	-r:Microsoft.Build.Framework \
 	-r:Microsoft.Build.Utilities \
 	-r:System \
-	-r:System.Core \
 	-r:System.Runtime.Remoting
 
 FILES =  \
