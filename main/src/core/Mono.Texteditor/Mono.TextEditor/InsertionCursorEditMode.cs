@@ -126,8 +126,14 @@ namespace Mono.TextEditor
 			if (HelpWindow == null) 
 				return;
 			editor.SizeAllocated -= MoveHelpWindow;
+			editor.Destroyed -= HandleEditorDestroy;
 			HelpWindow.Destroy ();
 			HelpWindow = null;
+		}
+		
+		void HandleEditorDestroy (object sender, EventArgs e)
+		{
+			DestroyHelpWindow ();
 		}
 		
 		void MoveHelpWindow (object o, Gtk.SizeAllocatedArgs args)
@@ -136,12 +142,11 @@ namespace Mono.TextEditor
 				return;
 			int ox, oy;
 			editor.GdkWindow.GetOrigin (out ox, out oy);
-			
+			editor.Destroyed += HandleEditorDestroy;
 			Gdk.Rectangle geometry = editor.Screen.GetMonitorGeometry (editor.Screen.GetMonitorAtPoint (ox, oy));
 			var req = HelpWindow.SizeRequest ();
-			
-			int x = System.Math.Min (ox + editor.Allocation.Width - req.Width / 2, geometry.Width - req.Width);
-			int y = System.Math.Min (oy + editor.Allocation.Height - req.Height / 2, geometry.Height - req.Height);
+			int x = System.Math.Min (ox + editor.Allocation.Width - req.Width / 2, geometry.X + geometry.Width - req.Width);
+			int y = System.Math.Min (oy + editor.Allocation.Height - req.Height / 2, geometry.Y + geometry.Height - req.Height);
 			HelpWindow.Move (x, y);
 		}
 	}
