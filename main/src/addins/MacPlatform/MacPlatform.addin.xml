@@ -51,7 +51,7 @@
 	
 	<Extension path = "/MonoDevelop/Components/DialogHandlers">
 		<Class class="MonoDevelop.Platform.Mac.MacSelectFileDialogHandler" />
-		<Class class="MonoDevelop.Platform.Mac.MacAddFileDialogHandler" /><!--
-		<Class class="MonoDevelop.Platform.Mac.MacOpenFileDialogHandler" />-->
+		<Class class="MonoDevelop.Platform.Mac.MacAddFileDialogHandler" />
+		<Class class="MonoDevelop.Platform.Mac.MacOpenFileDialogHandler" />
 	</Extension>
 </Addin>
