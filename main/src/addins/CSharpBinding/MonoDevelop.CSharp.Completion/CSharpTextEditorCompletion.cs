@@ -1825,6 +1825,7 @@ namespace MonoDevelop.CSharp.Completion
 					IReturnType objectInitializer = ((ExpressionContext.TypeExpressionContext)exactContext).UnresolvedType;
 					if (objectInitializer.ArrayDimensions > 0 || objectInitializer.PointerNestingLevel > 0) {
 						col.Add ("global", "md-keyword");
+						col.Add ("new", "md-keyword");
 						AddPrimitiveTypes (col);
 						resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, col);
 						return result;
@@ -1840,6 +1841,11 @@ namespace MonoDevelop.CSharp.Completion
 							foreach (IProperty property in type.Properties) {
 								if (property.IsAccessibleFrom (dom, resolver.CallingType, resolver.CallingMember, includeProtected)) {
 									col.Add (property);
+								}
+							}
+							foreach (var field in type.Fields) {
+								if (field.IsAccessibleFrom (dom, resolver.CallingType, resolver.CallingMember, includeProtected)) {
+									col.Add (field);
 								}
 							}
 						}

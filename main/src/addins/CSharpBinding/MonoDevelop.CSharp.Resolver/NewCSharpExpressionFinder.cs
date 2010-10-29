@@ -178,6 +178,9 @@ namespace MonoDevelop.CSharp.Resolver
 					
 					ExpressionResult firstExprs = FindExpression (editor, j);
 					if (firstExprs.Expression != null) {
+						// skip ws
+						while (j < caretOffset && Char.IsWhiteSpace (editor.GetCharAt (j)))
+							j++;
 						if (editor.GetCharAt (j) == '[') {
 							StringBuilder expr = new StringBuilder (firstExprs.Expression);
 							while (j < caretOffset) {
