@@ -119,7 +119,10 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		public bool HasCompatibleMethod (IType type, string methodName, InvocationExpression invocation)
 		{
 			// TODO: add argument type check for overloads. 
-			return type.SearchMember (methodName, true).Any (m => m is IMethod && ((IMethod)m).Parameters.Count == invocation.Arguments.Count ());
+			if (invocation == null || type == null)
+				return false;
+			int invocationArguments = invocation.Arguments.Count ();
+			return type.SearchMember (methodName, true).Any (m => m is IMethod && m.Parameters.Count == invocationArguments);
 		}
 		
 		ResolveResult ResolveAssignment (RefactoringOptions options, AssignmentExpression assignment)
