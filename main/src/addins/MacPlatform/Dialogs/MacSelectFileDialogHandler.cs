@@ -83,7 +83,11 @@ namespace MonoDevelop.Platform.Mac
 			if (openPanel != null && openPanel.AllowsMultipleSelection) {
 				 return openPanel.Urls.Select (u => (FilePath) u.Path).ToArray ();
 			} else {
-				 return new FilePath[] { panel.Url.Path };
+				var url = panel.Url;
+				if (url != null)
+					 return new FilePath[] { panel.Url.Path };
+				else
+					return new FilePath[0];
 			}
 		}
 		
@@ -198,12 +202,12 @@ namespace MonoDevelop.Platform.Mac
 			popup = new NSPopUpButton (new RectangleF (0, 6, popupWidth, 18), false) {
 				AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.MaxXMargin,
 			};
-			return LabelPopUp (label, 200, popup);
+			return LabelControl (label, 200, popup);
 		}
 		
-		internal static NSView LabelPopUp (string label, float popupWidth, NSPopUpButton popup)
+		internal static NSView LabelControl (string label, float controlWidth, NSControl control)
 		{
-			var view = new NSView (new RectangleF (0, 0, popupWidth, 28)) {
+			var view = new NSView (new RectangleF (0, 0, controlWidth, 28)) {
 				AutoresizesSubviews = true,
 				AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.MaxXMargin,
 			};
@@ -219,18 +223,18 @@ namespace MonoDevelop.Platform.Mac
 			float textWidth = text.Frame.Width;
 			float textHeight = text.Frame.Height;
 			
-			popup.SizeToFit ();
-			var rect = popup.Frame;
-			float popupHeight = rect.Height;
-			popup.Frame = new RectangleF (textWidth + 5, 0, popupWidth, rect.Height);
+			control.SizeToFit ();
+			var rect = control.Frame;
+			float controlHeight = rect.Height;
+			control.Frame = new RectangleF (textWidth + 5, 0, controlWidth, rect.Height);
 			
 			rect = view.Frame;
-			rect.Width = popup.Frame.Width + textWidth + 5;
-			rect.Height = Math.Max (popupHeight, textHeight);
+			rect.Width = control.Frame.Width + textWidth + 5;
+			rect.Height = Math.Max (controlHeight, textHeight);
 			view.Frame = rect;
 			
 			view.AddSubview (text);
-			view.AddSubview (popup);
+			view.AddSubview (control);
 			
 			return view;
 		}
