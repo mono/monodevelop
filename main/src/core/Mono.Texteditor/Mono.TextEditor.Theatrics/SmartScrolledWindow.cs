@@ -84,6 +84,16 @@ namespace Mono.TextEditor.Theatrics
 			
 		}
 		
+		protected override void OnDestroyed ()
+		{
+			if (Child != null)
+				Child.Destroy ();
+			foreach (var c in children) {
+				c.Child.Destroy ();
+			}
+			base.OnDestroyed ();
+		}
+		
 		void HandleAdjustmentChanged (object sender, EventArgs e)
 		{
 			Adjustment adjustment = (Adjustment)sender;
