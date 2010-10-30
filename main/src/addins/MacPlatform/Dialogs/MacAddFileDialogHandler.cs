@@ -52,12 +52,13 @@ namespace MonoDevelop.Platform.Mac
 				
 				var filterPopup = MacSelectFileDialogHandler.CreateFileFilterPopup (data, panel);
 				if (filterPopup != null) {
-					var box = new MDBox (MDBoxDirection.Vertical, 2) {
+					var box = new MDBox (LayoutDirection.Vertical, 2, 2) {
 						dropdownView,
 						filterPopup,
 					};
 					box.Layout ();
-					panel.AccessoryView = box;
+					panel.AccessoryView = box.View;
+					box.Layout (box.View.Superview.Frame.Size);
 				} else {
 					panel.AccessoryView = dropdownView;
 				}

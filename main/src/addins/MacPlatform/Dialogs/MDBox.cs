@@ -32,69 +32,35 @@ using System.Linq;
 
 namespace MonoDevelop.Platform.Mac
 {
-	public class MDLayoutRequest
+	interface IMDLayout : ILayout
 	{
-		public SizeF Size { get; set; }
-		public bool Visible { get; set; }
-		public bool ExpandWidth { get; set; }
-		public bool ExpandHeight { get; set; }
-	}
-	
-	interface IMDLayout
-	{
-		MDLayoutRequest BeginLayout ();
 		NSView View { get; }
-		void EndLayout (MDLayoutRequest request, PointF origin, SizeF allocation);
 	}
 	
-	class MDBox : NSView, IEnumerable<IMDLayout>, IMDLayout
+	class MDBox : LayoutBox, IMDLayout
 	{
-		List<IMDLayout> children = new List<IMDLayout> ();
+		bool ownsView = false;
 		
-		public float Spacing { get; set; }
-		public float PadLeft { get; set; }
-		public float PadRight { get; set; }
-		public float PadTop { get; set; }
-		public float PadBottom { get; set; }
-		public MDAlign Align { get; set; }
-		
-		public MDBoxDirection Direction { get; set; }
-		
-		public MDBox (MDBoxDirection direction, float spacing) : this (direction, spacing, 0)
+		public MDBox (LayoutDirection direction, float spacing, float padding) : this (null, direction, spacing, padding)
 		{
 		}
 		
-		public MDBox (MDBoxDirection direction, float spacing, float padding)
+		public MDBox (NSView unownedView, LayoutDirection direction, float spacing, float padding) : base (direction, spacing, padding)
 		{
-			PadLeft = PadRight = PadTop = PadBottom = padding;
-			this.Direction = direction;
-			this.Spacing = spacing;
-			this.Align = MDAlign.Center;
+			View = unownedView ?? new NSView ();
+			ownsView = unownedView == null;
 		}
 		
-		public int Count { get { return children.Count; } }
-		
-		bool IsHorizontal { get { return Direction == MDBoxDirection.Horizontal; } }
-		
-		IEnumerable<IMDLayout> VisibleChildren ()
+		public void Layout ()
 		{
-			return children.Where (c => !c.View.Hidden);
+			var request = BeginLayout ();
+			EndLayout (request, PointF.Empty, request.Size);
 		}
 		
-		public IEnumerator<IMDLayout> GetEnumerator ()
+		public void Layout (SizeF allocation)
 		{
-			return children.GetEnumerator ();
-		}
-		
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
-		{
-			return children.GetEnumerator ();
-		}
-		
-		public void Add (IMDLayout child)
-		{
-			children.Add (child);
-			AddSubview (child.View);
+			var request = BeginLayout ();
+			EndLayout (request, PointF.Empty, allocation);
 		}
 		
 		public void Add (NSView view)
@@ -107,245 +73,67 @@ namespace MonoDevelop.Platform.Mac
 			Add (new MDAlignment (view, autosize));
 		}
 		
-		public void Layout ()
+		public override void EndLayout (LayoutRequest request, PointF origin, SizeF allocation)
 		{
-			var request = ((IMDLayout)this).BeginLayout ();
-			((IMDLayout)this).EndLayout (request, PointF.Empty, request.Size);
-		}
-		
-		public void Layout (SizeF allocation)
-		{
-			var request = ((IMDLayout)this).BeginLayout ();
-			((IMDLayout)this).EndLayout (request, PointF.Empty, allocation);
-		}
-		
-		NSView IMDLayout.View {
-			get { return this; }
-		}
-		
-		MDContainerLayoutRequest request = new MDContainerLayoutRequest ();
-		
-		MDLayoutRequest IMDLayout.BeginLayout ()
-		{
-			float width = 0;
-			float height = 0;
-			
-			request.ChildRequests.Clear ();
-			request.ChildRequests.AddRange (children.Select (c => c.BeginLayout ()));
-			
-			foreach (var r in request.ChildRequests) {
-				if (!r.Visible)
-					continue;
-				request.Visible = true;
-				if (r.ExpandWidth)
-					request.ExpandWidth = true;
-				if (r.ExpandHeight)
-					request.ExpandHeight = true;
-				
-				if (IsHorizontal) {
-					if (width != 0)
-						width += Spacing;
-					width += r.Size.Width;
-					height = Math.Max (height, r.Size.Height);
-				} else {
-					if (height != 0)
-						height += Spacing;
-					height += r.Size.Height;
-					width = Math.Max (width, r.Size.Width);
-				}
-			}
-			
-			request.Size = new SizeF (width + PadLeft + PadRight, height + PadTop + PadBottom);
-			return request;
-		}
-		
-		void IMDLayout.EndLayout (MDLayoutRequest request, PointF origin, SizeF allocation)
-		{
-			var childRequests =  ((MDContainerLayoutRequest) request).ChildRequests;
-			
-			Frame = new RectangleF (origin, allocation);
-			
-			allocation = new SizeF (allocation.Width - PadLeft - PadRight, allocation.Height - PadBottom - PadTop);
-			origin = new PointF (PadLeft, PadBottom);
-			
-			var size = request.Size;
-			size.Height -= (PadTop + PadBottom);
-			size.Width -= (PadLeft + PadRight);
-			
-			int wExpandCount = 0;
-			int hExpandCount = 0;
-			int visibleCount = 0;
-			foreach (var childRequest in childRequests) {
-				if (childRequest.Visible)
-					visibleCount++;
-				else
-					continue;
-				if (childRequest.ExpandWidth)
-					wExpandCount++;
-				if (childRequest.ExpandHeight)
-					hExpandCount++;
-			}
-			
-			float wExpand = 0;
-			if (allocation.Width > size.Width) {
-				wExpand = allocation.Width - size.Width;
-				if (wExpandCount > 0)
-					wExpand /= wExpandCount;
-			}
-			float hExpand = 0;
-			if (allocation.Height > size.Height) {
-				hExpand = allocation.Height - size.Height;
-				if (hExpandCount > 0)
-					hExpand /= hExpandCount;
-			}
-			
-			if (Direction == MDBoxDirection.Horizontal) {
-				float pos = PadLeft;
-				if (wExpandCount == 0) {
-					if (Align == MDAlign.End)
-						pos += wExpand;
-					else if (Align == MDAlign.Center)
-						pos += wExpand / 2;
-				}
-				for (int i = 0; i < childRequests.Count; i++) {
-					var child = children[i];
-					var childReq = childRequests[i];
-					if (!childReq.Visible)
-						continue;
-					
-					var childSize = new SizeF (childReq.Size.Width, allocation.Height);
-					if (childReq.ExpandWidth) {
-						childSize.Width += wExpand;
-					} else if (hExpandCount == 0 && Align == MDAlign.Fill) {
-						childSize.Width += wExpand / visibleCount;
-					}
-					
-					child.EndLayout (childReq, new PointF (pos, origin.Y), childSize);
-					pos += childSize.Width + Spacing;
-				}
+			if (ownsView) {
+				View.Frame = new RectangleF (origin, allocation);
+				base.EndLayout (request, PointF.Empty, allocation);
 			} else {
-				float pos = PadBottom;
-				if (hExpandCount == 0) {
-					if (Align == MDAlign.End)
-						pos += hExpand;
-					else if (Align == MDAlign.Center)
-						pos += hExpand / 2;
-				}
-				for (int i = 0; i < childRequests.Count; i++) {
-					var child = children[i];
-					var childReq = childRequests[i];
-					if (!childReq.Visible)
-						continue;
-					
-					var childSize = new SizeF (allocation.Width, childReq.Size.Height);
-					if (childReq.ExpandHeight) {
-						childSize.Height += hExpand;
-					} else if (hExpandCount == 0 && Align == MDAlign.Fill) {
-						childSize.Height += hExpand / visibleCount;
-					}
-					
-					child.EndLayout (childReq, new PointF (origin.X, pos), childSize);
-					pos += childSize.Height + Spacing;
-				}
+				base.EndLayout (request, origin, allocation);
 			}
 		}
 		
-		class MDContainerLayoutRequest : MDLayoutRequest
+		protected override void OnChildAdded (ILayout child)
 		{
-			public List<MDLayoutRequest> ChildRequests = new List<MDLayoutRequest> ();
+			var l = child as IMDLayout;
+			//if child is viewless, its view may be the same view as this
+			if (l != null && l.View.Handle != View.Handle)
+				View.AddSubview (l.View);
 		}
+		
+		public NSView View { get; private set; }
 	}
 	
-	public enum MDAlign
-	{
-		Begin, Center, End, Fill
-	}
-	
-	public enum MDBoxDirection
-	{
-		Horizontal, Vertical
-	}
-	
-	public class MDAlignment : IMDLayout
+	class MDAlignment : LayoutAlignment, IMDLayout
 	{
 		public MDAlignment (NSView view) : this (view, false)
 		{
 		}
 		
-		public MDAlignment (NSView view, bool autosize)
+		public MDAlignment (NSView view, bool autosize) : base ()
 		{
 			this.View = view;
 			if (autosize) {
+				if (!(view is NSControl))
+					throw new ArgumentException ("Only NSControls can be autosized", "");
 				Autosize ();
 			} else {
 				var size = view.Frame.Size;
 				MinHeight = size.Height;
 				MinWidth = size.Width;
 			}
-			XAlign = YAlign = MDAlign.Center;
+		}
+		
+		public override LayoutRequest BeginLayout ()
+		{
+			this.Visible = !View.Hidden;
+			return base.BeginLayout ();
 		}
 		
 		public NSView View { get; private set; }
-		public MDAlign XAlign { get; set; }
-		public MDAlign YAlign { get; set; }
-		public bool  ExpandHeight { get; set; }
-		public bool  ExpandWidth { get; set; }
-		public float MinHeight { get; set; }
-		public float MinWidth { get; set; }
-		public float PadLeft { get; set; }
-		public float PadRight { get; set; }
-		public float PadTop { get; set; }
-		public float PadBottom { get; set; }
 		
 		public void Autosize ()
 		{
-			var control = View as NSControl;
+			var control = (NSControl)View as NSControl;
 			if (control == null)
-				throw new InvalidOperationException ("Only NSControls can be autosized");
 			control.SizeToFit ();
 			var size = control.Frame.Size;
 			MinHeight = size.Height;
 			MinWidth = size.Width;
 		}
 		
-		MDLayoutRequest request = new MDLayoutRequest ();
-		
-		MDLayoutRequest IMDLayout.BeginLayout ()
+		protected override void OnLayoutEnded (RectangleF frame)
 		{
-			request.Size = new SizeF (MinWidth + PadLeft + PadRight, MinHeight + PadTop + PadBottom);
-			request.ExpandHeight = this.ExpandHeight;
-			request.ExpandWidth = this.ExpandWidth;
-			request.Visible = !View.Hidden;
-			return request;
-		}
-		
-		void IMDLayout.EndLayout (MDLayoutRequest request, PointF origin, SizeF allocation)
-		{
-			var frame = new RectangleF (origin.X + PadLeft, origin.Y + PadBottom, 
-				allocation.Width - PadLeft - PadRight, allocation.Height - PadTop - PadBottom);
-			
-			if (allocation.Height > request.Size.Height) {
-				if (YAlign != MDAlign.Fill) {
-					frame.Height = request.Size.Height - PadTop - PadBottom;
-					if (YAlign == MDAlign.Center) {
-						frame.Y += (allocation.Height - request.Size.Height) / 2;
-					} else if (YAlign == MDAlign.End) {
-						frame.Y += (allocation.Height - request.Size.Height);
-					}
-				}
-			}
-			
-			if (allocation.Width > request.Size.Width) {
-				if (XAlign != MDAlign.Fill) {
-					frame.Width = request.Size.Width - PadLeft - PadRight;
-					if (XAlign == MDAlign.Center) {
-						frame.X += (allocation.Width - request.Size.Width) / 2;
-					} else if (XAlign == MDAlign.End) {
-						frame.X += (allocation.Width - request.Size.Width);
-					}
-				}
-			}
-			
 			View.Frame = frame;
 		}
 	}

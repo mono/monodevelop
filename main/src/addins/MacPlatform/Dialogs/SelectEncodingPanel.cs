@@ -39,8 +39,6 @@ namespace MonoDevelop.Platform.Mac
 	{
 		NSTableView allTable;
 		NSTableView selectedTable;
-		EncodingAllDelegate allDelegate;
-		EncodingSelectedDelegate selectedDelegate;
 		EncodingSource allSource;
 		EncodingSource selectedSource;
 		NSButton addButton, removeButton, upButton, downButton;
@@ -71,12 +69,12 @@ namespace MonoDevelop.Platform.Mac
 			cancelButton.Activated += delegate {
 				Dismiss (0);
 			};
-			var buttonBox = new MDBox (MDBoxDirection.Horizontal, padding) {
+			var buttonBox = new MDBox (LayoutDirection.Horizontal, padding, 0) {
 				new MDAlignment (cancelButton, true) { MinWidth = 96, MinHeight = 32 },
 				new MDAlignment (okButton, true) { MinWidth = 96, MinHeight = 32 },
 			};
 			buttonBox.Layout ();
-			var buttonView = buttonBox;
+			var buttonView = buttonBox.View;
 			var buttonRect = buttonView.Frame;
 			buttonRect.Y = 12;
 			buttonRect.X = size.Width - buttonRect.Width - padding;
@@ -166,7 +164,7 @@ namespace MonoDevelop.Platform.Mac
 			};
 			allTable.AddColumn (allColumn);
 			allTable.DataSource = allSource = new EncodingSource (TextEncoding.SupportedEncodings);
-			allTable.Delegate = allDelegate = new EncodingAllDelegate (this);
+			allTable.Delegate = new EncodingAllDelegate (this);
 			
 			var selectedColumn = new NSTableColumn () {
 				DataCell = new NSTextFieldCell () { Wraps = true },
@@ -174,7 +172,7 @@ namespace MonoDevelop.Platform.Mac
 			};
 			selectedTable.AddColumn (selectedColumn);
 			selectedTable.DataSource = selectedSource = new EncodingSource (TextEncoding.ConversionEncodings);
-			selectedTable.Delegate = selectedDelegate = new EncodingSelectedDelegate (this);
+			selectedTable.Delegate = new EncodingSelectedDelegate (this);
 			
 			UpdateButtons ();
 			

@@ -65,7 +65,7 @@ namespace MonoDevelop.Platform.Mac
 				NSButton closeSolutionButton = null;
 				NSView viewSelLabelled = null;
 				
-				var box = new MDBox (MDBoxDirection.Vertical, 2, 2);
+				var box = new MDBox (LayoutDirection.Vertical, 2, 2);
 				
 				List<FileViewer> currentViewers = null;
 				
@@ -106,18 +106,18 @@ namespace MonoDevelop.Platform.Mac
 						viewSelLabelled = MacSelectFileDialogHandler.LabelControl (
 								GettextCatalog.GetString ("Open with:"), 200, viewerSelector);
 						
-						var hbox = new MDBox (MDBoxDirection.Horizontal, 5) {
+						var hbox = new MDBox (box.View, LayoutDirection.Horizontal, 5, 0) {
 							viewSelLabelled,
 							closeSolutionButton,
 						};
-						box.Add ((IMDLayout)hbox);
+						box.Add (hbox);
 					}
 				}
 				
 				if (box.Count > 0) {
 					box.Layout ();
-					panel.AccessoryView = box;
-					box.Layout (box.Superview.Frame.Size);
+					panel.AccessoryView = box.View;
+					box.Layout (box.View.Superview.Frame.Size);
 				}
 				
 				panel.SelectionDidChange += delegate(object sender, EventArgs e) {
@@ -132,7 +132,7 @@ namespace MonoDevelop.Platform.Mac
 							closeSolutionButton.Hidden = false;
 							slnViewerSelected = true;
 						}
-						box.Layout (box.Superview.Frame.Size);
+						box.Layout (box.View.Superview.Frame.Size);
 					} 
 					if (encodingSelector != null)
 						encodingSelector.Enabled = !slnViewerSelected;

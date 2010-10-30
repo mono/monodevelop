@@ -39,8 +39,6 @@ namespace MonoDevelop.Platform.Mac
 {
 	class SelectEncodingPopUpButton : NSPopUpButton
 	{
-		int lastIndex = 0;
-		
 		MonoMac.ObjCRuntime.Selector itemActivationSel = new MonoMac.ObjCRuntime.Selector ("itemActivated:");
 		MonoMac.ObjCRuntime.Selector addRemoveActivationSel = new MonoMac.ObjCRuntime.Selector ("addRemoveActivated:");
 		
@@ -139,7 +137,6 @@ namespace MonoDevelop.Platform.Mac
 		[Export ("itemActivated:")]
 		void HandleItemActivated (NSObject sender)
 		{
-			lastIndex = ((NSMenuItem)sender).Tag;
 			Cell.MenuItem = (NSMenuItem)sender;
 		}
 	}

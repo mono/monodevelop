@@ -85,6 +85,7 @@
     <Compile Include="Dialogs\MDBox.cs" />
     <Compile Include="Dialogs\SelectEncodingPanel.cs" />
     <Compile Include="Dialogs\SelectEncodingPopUpButton.cs" />
+    <Compile Include="Dialogs\Layout.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

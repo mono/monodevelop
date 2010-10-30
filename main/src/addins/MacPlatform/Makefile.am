@@ -24,6 +24,7 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	Commands.cs \
+	Dialogs/Layout.cs \
 	Dialogs/MacAddFileDialogHandler.cs \
 	Dialogs/MacOpenFileDialogHandler.cs \
 	Dialogs/MacSelectFileDialogHandler.cs \
