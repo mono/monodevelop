@@ -94,23 +94,27 @@ namespace MonoDevelop.Platform.Mac
 							};
 						}
 						
-						closeSolutionButton = new NSButton () {
-							Title = GettextCatalog.GetString ("Close current workspace"),
-							Hidden = true,
-							State = 1,
-						};
-						
-						closeSolutionButton.SetButtonType (NSButtonType.Switch);
-						closeSolutionButton.SizeToFit ();
-						
 						viewSelLabelled = MacSelectFileDialogHandler.LabelControl (
 								GettextCatalog.GetString ("Open with:"), 200, viewerSelector);
 						
-						var hbox = new MDBox (box.View, LayoutDirection.Horizontal, 5, 0) {
-							viewSelLabelled,
-							closeSolutionButton,
-						};
-						box.Add (hbox);
+						if (IdeApp.Workspace.IsOpen) {
+							closeSolutionButton = new NSButton () {
+								Title = GettextCatalog.GetString ("Close current workspace"),
+								Hidden = true,
+								State = 1,
+							};
+							
+							closeSolutionButton.SetButtonType (NSButtonType.Switch);
+							closeSolutionButton.SizeToFit ();
+							
+							var hbox = new MDBox (box.View, LayoutDirection.Horizontal, 5, 0) {
+								viewSelLabelled,
+								closeSolutionButton,
+							};
+							box.Add (hbox);
+						} else {
+							box.Add (viewSelLabelled);
+						}
 					}
 				}
 				
@@ -126,10 +130,12 @@ namespace MonoDevelop.Platform.Mac
 					if (viewerSelector != null) {
 						FillViewers (currentViewers, viewerSelector, selection);
 						if (currentViewers.Count == 0 || currentViewers[0] != null) {
-							closeSolutionButton.Hidden = true;
+							if (closeSolutionButton != null)
+								closeSolutionButton.Hidden = true;
 							slnViewerSelected = false;
 						} else {
-							closeSolutionButton.Hidden = false;
+							if (closeSolutionButton != null)
+								closeSolutionButton.Hidden = false;
 							slnViewerSelected = true;
 						}
 						box.Layout (box.View.Superview.Frame.Size);
@@ -153,7 +159,8 @@ namespace MonoDevelop.Platform.Mac
 					data.Encoding = encodingSelector.SelectedEncodingId;
 				
 				if (viewerSelector != null ) {
-					data.CloseCurrentWorkspace = closeSolutionButton.State != 0;
+					if (closeSolutionButton != null)
+						data.CloseCurrentWorkspace = closeSolutionButton.State != 0;
 					data.SelectedViewer = currentViewers[viewerSelector.IndexOfSelectedItem];
 				}
 				
