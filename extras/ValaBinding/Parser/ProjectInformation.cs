@@ -73,8 +73,9 @@ namespace MonoDevelop.ValaBinding.Parser
 						Afrodite.Utils.GetPackagePaths ("glib-2.0");
 						return (vtgInstalled = true);
 					} catch (DllNotFoundException) {
-						LoggingService.LogWarning ("Cannot update Vala parser database because libafrodite (VTG) is not installed: {0}{1}", 
-						                           Environment.NewLine, "http://code.google.com/p/vtg/");
+						LoggingService.LogWarning ("Cannot update Vala parser database because libafrodite (VTG) is not installed: {0}{1}{2}{3}", 
+						                           Environment.NewLine, "http://code.google.com/p/vtg/",
+						                           Environment.NewLine, "Note: If you're using Vala 0.10 or higher, you may need to symlink libvala-YOUR_VERSION.so to libvala.so");
 					} catch (Exception ex) {
 						LoggingService.LogError ("ValaBinding: Error while checking for libafrodite", ex);
 					}
