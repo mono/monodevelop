@@ -51,15 +51,11 @@ namespace MonoDevelop.ValaBinding
 		Document document;
 		private IList<Symbol> functions;
 		private string functionName;
-		private string returnType;
-		private ProjectInformation info;
 		
-		private static Regex identifierRegex = new Regex(@"^[^\w\d]*(?<identifier>\w[\w\d\.<>]*)", RegexOptions.Compiled);
 		public ParameterDataProvider (Document document, ProjectInformation info, string functionName)
 		{
 			this.document = document;
 			this.functionName = functionName;
-			this.info = info;
 
 			functions = new List<Symbol> ();
 			Symbol function = info.GetFunction (functionName, document.FileName, document.Editor.Caret.Line + 1, document.Editor.Caret.Column + 1);
@@ -76,7 +72,6 @@ namespace MonoDevelop.ValaBinding
 		{
 			this.functionName = constructorOverload;
 			this.document = document;
-			this.info = info;
 			
 			List<Symbol> myfunctions = info.GetConstructorsForType (typename, document.FileName, document.Editor.Caret.Line + 1, document.Editor.Caret.Column + 1, null); // bottleneck
 			if (1 < myfunctions.Count) {

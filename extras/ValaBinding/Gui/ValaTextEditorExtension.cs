@@ -239,7 +239,6 @@ namespace MonoDevelop.ValaBinding
 			ProjectInformation info = Parser;
 			if (null == info){ return null; }
 			
-			int line = Editor.Caret.Line + 1, column = Editor.Caret.Column + 1;
 			int position = Editor.Document.GetLine (Editor.Caret.Line).Offset;
 			string lineText = Editor.GetTextBetween (position, Editor.Caret.Offset - 1).TrimEnd ();
 			string functionName = string.Empty;
