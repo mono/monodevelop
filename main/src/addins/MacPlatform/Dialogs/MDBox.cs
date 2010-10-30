@@ -32,6 +32,18 @@ using System.Linq;
 
 namespace MonoDevelop.Platform.Mac
 {
+	class MDLabel : NSTextField
+	{
+		public MDLabel (string text): base (new RectangleF (0, 6, 100, 20))
+		{
+			StringValue = text;
+			DrawsBackground = false;
+			Bordered = false;
+			Editable = false;
+			Selectable = false;
+		}
+	}
+	
 	interface IMDLayout : ILayout
 	{
 		NSView View { get; }
@@ -124,10 +136,8 @@ namespace MonoDevelop.Platform.Mac
 		
 		public void Autosize ()
 		{
-			var control = (NSControl)View as NSControl;
-			if (control == null)
-			control.SizeToFit ();
-			var size = control.Frame.Size;
+			((NSControl)View).SizeToFit ();
+			var size = View.Frame.Size;
 			MinHeight = size.Height;
 			MinWidth = size.Width;
 		}

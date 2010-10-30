@@ -46,21 +46,24 @@ namespace MonoDevelop.Platform.Mac
 			}) {
 				MacSelectFileDialogHandler.SetCommonPanelProperties (data, panel);
 				
-				NSPopUpButton popup;
-				var dropdownView = MacSelectFileDialogHandler.CreateLabelledDropdown (
-					GettextCatalog.GetString ("Override build action:"), 200, out popup);
+				var popup = new NSPopUpButton (new RectangleF (0, 0, 200, 28), false);
+				var dropdownBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
+					{ new MDLabel (GettextCatalog.GetString ("Override build action:")), true },
+					{ new MDAlignment (popup, true) { MinWidth = 200 }  }
+				};
 				
 				var filterPopup = MacSelectFileDialogHandler.CreateFileFilterPopup (data, panel);
 				if (filterPopup != null) {
 					var box = new MDBox (LayoutDirection.Vertical, 2, 2) {
-						dropdownView,
+						dropdownBox.View,
 						filterPopup,
 					};
 					box.Layout ();
 					panel.AccessoryView = box.View;
 					box.Layout (box.View.Superview.Frame.Size);
 				} else {
-					panel.AccessoryView = dropdownView;
+					dropdownBox.Layout ();
+					panel.AccessoryView = dropdownBox.View;
 				}
 				
 				popup.AddItem (GettextCatalog.GetString ("(Default)"));

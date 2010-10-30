@@ -68,17 +68,30 @@ namespace MonoDevelop.Platform.Mac
 				var box = new MDBox (LayoutDirection.Vertical, 2, 2);
 				
 				List<FileViewer> currentViewers = null;
+				List<MDAlignment> labels = new List<MDAlignment> ();
 				
 				if (!directoryMode) {
 					var filterPopup = MacSelectFileDialogHandler.CreateFileFilterPopup (data, panel);
-					box.Add (MacSelectFileDialogHandler.LabelControl (
-						GettextCatalog.GetString ("Show files:"), 200, filterPopup));
+					
+					var filterLabel = new MDAlignment (new MDLabel (GettextCatalog.GetString ("Show files:")), true);
+					var filterBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
+						{ filterLabel },
+						{ new MDAlignment (filterPopup, true) { MinWidth = 200 }  }
+					};
+					labels.Add (filterLabel);
+					box.Add (filterBox);
 					
 					if (data.ShowEncodingSelector) {
 						encodingSelector = new SelectEncodingPopUpButton (data.Action != Gtk.FileChooserAction.Save);
 						encodingSelector.SelectedEncodingId = data.Encoding;
-						box.Add (MacSelectFileDialogHandler.LabelControl (
-							GettextCatalog.GetString ("Encoding:"), 200, encodingSelector));
+						
+						var encodingLabel = new MDAlignment (new MDLabel (GettextCatalog.GetString ("Encoding:")), true);
+						var encodingBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
+							{ encodingLabel },
+							{ new MDAlignment (encodingSelector, true) { MinWidth = 200 }  }
+						};
+						labels.Add (encodingLabel);
+						box.Add (encodingBox);
 					}
 					
 					if (data.ShowViewerSelector && panel is NSOpenPanel) {
@@ -94,8 +107,11 @@ namespace MonoDevelop.Platform.Mac
 							};
 						}
 						
-						viewSelLabelled = MacSelectFileDialogHandler.LabelControl (
-								GettextCatalog.GetString ("Open with:"), 200, viewerSelector);
+						var viewSelLabel = new MDLabel (GettextCatalog.GetString ("Open with:"));
+						var viewSelBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
+							{ viewSelLabel, true },
+							{ new MDAlignment (viewerSelector, true) { MinWidth = 200 }  }
+						};
 						
 						if (IdeApp.Workspace.IsOpen) {
 							closeSolutionButton = new NSButton () {
@@ -107,15 +123,17 @@ namespace MonoDevelop.Platform.Mac
 							closeSolutionButton.SetButtonType (NSButtonType.Switch);
 							closeSolutionButton.SizeToFit ();
 							
-							var hbox = new MDBox (box.View, LayoutDirection.Horizontal, 5, 0) {
-								viewSelLabelled,
-								closeSolutionButton,
-							};
-							box.Add (hbox);
-						} else {
-							box.Add (viewSelLabelled);
+							viewSelBox.Add (closeSolutionButton, true);
 						}
+						
+						box.Add (viewSelBox);
 					}
+				}
+				
+				float w = labels.Max (l => l.MinWidth);
+				foreach (var l in labels) {
+					l.MinWidth = w;
+					l.XAlign = LayoutAlign.Begin;
 				}
 				
 				if (box.Count > 0) {
