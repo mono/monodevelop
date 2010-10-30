@@ -65,7 +65,8 @@ namespace MonoDevelop.Platform.Mac
 				NSButton closeSolutionButton = null;
 				NSView viewSelLabelled = null;
 				
-				var box = new MDBox (MDBoxDirection.Vertical, 2);
+				var box = new MDBox (MDBoxDirection.Vertical, 2, 2);
+				
 				List<FileViewer> currentViewers = null;
 				
 				if (!directoryMode) {
@@ -109,14 +110,15 @@ namespace MonoDevelop.Platform.Mac
 							viewSelLabelled,
 							closeSolutionButton,
 						};
-						box.Add (hbox.CreateView ());
-						MoveHCenter (viewSelLabelled);
+						box.Add ((IMDLayout)hbox);
 					}
 				}
 				
-				if (box.Count > 0)
-					panel.AccessoryView = box.CreateView ();
-				
+				if (box.Count > 0) {
+					box.Layout ();
+					panel.AccessoryView = box;
+					box.Layout (box.Superview.Frame.Size);
+				}
 				
 				panel.SelectionDidChange += delegate(object sender, EventArgs e) {
 					var selection = MacSelectFileDialogHandler.GetSelectedFiles (panel);
@@ -125,13 +127,12 @@ namespace MonoDevelop.Platform.Mac
 						FillViewers (currentViewers, viewerSelector, selection);
 						if (currentViewers.Count == 0 || currentViewers[0] != null) {
 							closeSolutionButton.Hidden = true;
-							MoveHCenter (viewSelLabelled);
 							slnViewerSelected = false;
 						} else {
 							closeSolutionButton.Hidden = false;
-							MoveLeftmost (viewSelLabelled);
 							slnViewerSelected = true;
 						}
+						box.Layout (box.Superview.Frame.Size);
 					} 
 					if (encodingSelector != null)
 						encodingSelector.Enabled = !slnViewerSelected;
@@ -161,20 +162,6 @@ namespace MonoDevelop.Platform.Mac
 				if (panel != null)
 					panel.Dispose ();
 			}
-		}
-		
-		static void MoveLeftmost (NSView view)
-		{
-			var rect = view.Frame;
-			view.Frame = new RectangleF (0, rect.Y, rect.Width, rect.Height);
-		}
-		
-		static void MoveHCenter (NSView view)
-		{
-			var rect = view.Frame;
-			var parentRect = view.Superview.Frame;
-			var x = parentRect.Width / 2 - rect.Width / 2;
-			view.Frame = new RectangleF (x, rect.Y, rect.Width, rect.Height);
 		}
 		
 		static void FillViewers (List<FileViewer> currentViewers, NSPopUpButton button, FilePath[] filenames)

@@ -56,7 +56,8 @@ namespace MonoDevelop.Platform.Mac
 						dropdownView,
 						filterPopup,
 					};
-					panel.AccessoryView = box.CreateView ();
+					box.Layout ();
+					panel.AccessoryView = box;
 				} else {
 					panel.AccessoryView = dropdownView;
 				}

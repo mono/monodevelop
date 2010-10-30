@@ -71,11 +71,12 @@ namespace MonoDevelop.Platform.Mac
 			cancelButton.Activated += delegate {
 				Dismiss (0);
 			};
-			MDBox buttonBox = new MDBox (MDBoxDirection.Horizontal, padding) {
-				new MDBoxChild (cancelButton, true) { MinWidth = 96, MinHeight = 32 },
-				new MDBoxChild (okButton, true) { MinWidth = 96, MinHeight = 32 },
+			var buttonBox = new MDBox (MDBoxDirection.Horizontal, padding) {
+				new MDAlignment (cancelButton, true) { MinWidth = 96, MinHeight = 32 },
+				new MDAlignment (okButton, true) { MinWidth = 96, MinHeight = 32 },
 			};
-			var buttonView = buttonBox.CreateView ();
+			buttonBox.Layout ();
+			var buttonView = buttonBox;
 			var buttonRect = buttonView.Frame;
 			buttonRect.Y = 12;
 			buttonRect.X = size.Width - buttonRect.Width - padding;
