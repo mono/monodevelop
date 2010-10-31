@@ -60,7 +60,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			IWorkspaceObject ob = (IWorkspaceObject) dataObject;
 			GitRepository rep = VersionControlService.GetRepository (ob) as GitRepository;
-			if (rep != null && rep.RootPath.CanonicalPath == ob.BaseDirectory.CanonicalPath) {
+			if (rep != null) {
 				IWorkspaceObject rob;
 				if (repos.TryGetValue (rep.RootPath.CanonicalPath, out rob)) {
 					if (ob == rob)
