@@ -86,6 +86,7 @@
     <Compile Include="Dialogs\SelectEncodingPanel.cs" />
     <Compile Include="Dialogs\SelectEncodingPopUpButton.cs" />
     <Compile Include="Dialogs\Layout.cs" />
+    <Compile Include="Dialogs\MacAlertDialogHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

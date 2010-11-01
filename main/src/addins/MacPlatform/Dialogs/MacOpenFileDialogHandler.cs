@@ -223,6 +223,7 @@ namespace MonoDevelop.Platform.Mac
 	
 	static class GtkQuartz
 	{
+		//this may be needed to work around focusing issues in GTK/Cocoa interop
 		public static void FocusWindow (Gtk.Window widget)
 		{
 			var window = GetWindow (widget);
