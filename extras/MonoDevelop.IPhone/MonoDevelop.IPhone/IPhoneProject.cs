@@ -410,16 +410,16 @@ namespace MonoDevelop.IPhone
 		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configSel)
 		{
 			var conf = (IPhoneProjectConfiguration) GetConfiguration (configSel);
+			bool isDevice = conf.Platform == PLAT_IPHONE;
 			
-			if (!Directory.Exists (conf.AppDirectory)) {
-				Gtk.Application.Invoke (delegate {
-					MessageService.ShowError (GettextCatalog.GetString ("The application has not been built."));
-				});
+			if (isDevice || (conf.Platform == PLAT_IPHONE && !File.Exists (conf.AppDirectory.Combine ("PkgInfo")))) {
+				MessageService.ShowError (GettextCatalog.GetString ("The application has not been built."));
 				return;
 			}
 			
-			if (conf.Platform == PLAT_IPHONE) {
-				if (NeedsUploading (conf)) {
+			if (isDevice) {
+				var deviceId = "default";
+				if (NeedsUploading (conf, deviceId)) {
 					using (var opMon = new AggregatedOperationMonitor (monitor)) {
 						using (var op = IPhoneUtility.Upload (TargetRuntime, TargetFramework, conf.AppDirectory)) {
 							opMon.AddOperation (op);
@@ -427,7 +427,7 @@ namespace MonoDevelop.IPhone
 							if (op.ExitCode != 0)
 								return;
 						}
-						TouchUploadMarker (conf);
+						TouchUploadMarker (conf, deviceId);
 					}
 				}
 			}
@@ -435,20 +435,43 @@ namespace MonoDevelop.IPhone
 			base.OnExecute (monitor, context, configSel);
 		}
 		
-		static bool NeedsUploading (IPhoneProjectConfiguration conf)
+		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			var markerFile = conf.OutputDirectory.Combine (".monotouch_last_uploaded");
-			return Directory.Exists (conf.AppDirectory) && (!File.Exists (markerFile) 
-				|| File.GetLastWriteTime (markerFile) < Directory.GetLastWriteTime (conf.AppDirectory));
+			RemoveUploadMarker ();
+			return base.OnBuild (monitor, configuration);
+		}
+		
+		protected override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			RemoveUploadMarker ();
+			base.OnClean (monitor, configuration);
+		}
+		
+		static bool NeedsUploading (IPhoneProjectConfiguration conf, string deviceId)
+		{
+			var markerFile = conf.OutputDirectory.Combine (".monotouch_uploaded");
+			if (File.Exists (markerFile))
+				foreach (var line in File.ReadAllLines (markerFile))
+					if (!line.StartsWith ("# ") && line == deviceId)
+						return false;
+			return true;
 		}
 				
-		static void TouchUploadMarker (IPhoneProjectConfiguration conf)
+		static void TouchUploadMarker (IPhoneProjectConfiguration conf, string deviceId)
 		{
-			var markerFile = conf.OutputDirectory.Combine (".monotouch_last_uploaded");
+			var markerFile = conf.OutputDirectory.Combine (".monotouch_uploaded");
 			if (File.Exists (markerFile))
-				File.SetLastWriteTime (markerFile, DateTime.Now);
+				File.AppendAllText (markerFile, "\n" + deviceId);
 			else
-				File.WriteAllText (markerFile, "This file is used to determine when the app was last uploaded to a device");
+				File.WriteAllText (markerFile,
+					"# This file is used to determine when the app was last uploaded to a device\n" + deviceId);
+		}
+		
+		static void RemoveUploadMarker (IPhoneProjectConfiguration conf)
+		{
+			var markerFile = conf.OutputDirectory.Combine (".monotouch_uploaded");
+			if (File.Exists (markerFile))
+				File.Delete (markerFile);
 		}
 		
 		#endregion
