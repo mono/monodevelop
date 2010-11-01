@@ -137,9 +137,13 @@ namespace MonoDevelop.Refactoring
 		{
 			Initialize ();
 			string text = insertNamespace ? type.Namespace + "." + type.Name : type.Name;
-			if (text != GetCurrentWord (window)) 
+			if (text != GetCurrentWord (window)) {
+				if (window.WasShiftPressed && generateUsing) 
+					text = type.Namespace + "." + text;
 				window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, GetCurrentWord (window), text);
-			if (generateUsing) {
+			}
+			
+			if (!window.WasShiftPressed && generateUsing) {
 				CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
 				refactorer.AddGlobalNamespaceImport (dom, data.Document.FileName, type.Namespace);
 				// add using to compilation unit (this way the using is valid before the parser thread updates)
