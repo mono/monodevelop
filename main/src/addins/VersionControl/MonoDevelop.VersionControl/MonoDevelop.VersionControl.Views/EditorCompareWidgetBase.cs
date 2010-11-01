@@ -330,6 +330,7 @@ namespace MonoDevelop.VersionControl.Views
 					editor.Options.ShowTabs = info.Document.Editor.Options.ShowTabs;
 					editor.Options.ShowEolMarkers = info.Document.Editor.Options.ShowEolMarkers;
 					editor.Options.ShowInvalidLines = info.Document.Editor.Options.ShowInvalidLines;
+					editor.Options.TabSize = info.Document.Editor.Options.TabSize;
 					editor.Options.ShowFoldMargin = false;
 					editor.Options.ShowIconMargin = false;
 				}
@@ -342,6 +343,7 @@ namespace MonoDevelop.VersionControl.Views
 					editor.Options.ShowTabs = options.ShowTabs;
 					editor.Options.ShowEolMarkers = options.ShowEolMarkers;
 					editor.Options.ShowInvalidLines = options.ShowInvalidLines;
+					editor.Options.TabSize = options.TabSize;
 					editor.Options.ShowFoldMargin = false;
 					editor.Options.ShowIconMargin = false;
 				}
