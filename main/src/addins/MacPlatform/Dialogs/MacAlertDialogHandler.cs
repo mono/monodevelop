@@ -56,7 +56,7 @@ namespace MonoDevelop.Platform.Mac
 				}
 				
 				alert.MessageText = data.Message.Text;
-				alert.InformativeText = data.Message.SecondaryText;
+				alert.InformativeText = data.Message.SecondaryText ?? "";
 				
 				var buttons = data.Buttons.Reverse ().ToList ();
 				
@@ -94,7 +94,7 @@ namespace MonoDevelop.Platform.Mac
 					for (int i = data.Options.Count - 1; i >= 0; i--) {
 						var option = data.Options[i];
 						var button = new NSButton () {
-							Title = GettextCatalog.GetString ("Apply to all"),
+							Title = option.Text,
 							Tag = i,
 							State = option.Value? 1 : 0
 						};
@@ -120,9 +120,11 @@ namespace MonoDevelop.Platform.Mac
 				
 				data.ResultButton = buttons [result];
 				
-				foreach (var button in optionButtons) {
-					var option = data.Options[button.Tag];
-					data.Message.SetOptionValue (option.Id, button.State != 0);
+				if (optionButtons != null) {
+					foreach (var button in optionButtons) {
+						var option = data.Options[button.Tag];
+						data.Message.SetOptionValue (option.Id, button.State != 0);
+					}
 				}
 				
 				if (applyToAllCheck != null && applyToAllCheck.State != 0)
