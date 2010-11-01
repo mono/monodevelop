@@ -237,6 +237,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get;
 			set;
 		}
+		
+		/// <summary>
+		/// Gets or sets a value indicating that shift was pressed during enter.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if was shift pressed; otherwise, <c>false</c>.
+		/// </value>
+		public bool WasShiftPressed {
+			get;
+			private set;
+		}
 
 		public KeyActions ProcessKey (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
@@ -345,6 +356,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			case Gdk.Key.ISO_Enter:
 			case Gdk.Key.Key_3270_Enter:
 			case Gdk.Key.KP_Enter:
+				WasShiftPressed = (modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask;
 				return (!list.AutoSelect ? KeyActions.Process : (KeyActions.Complete | KeyActions.Ignore)) | KeyActions.CloseWindow;
 
 			case Gdk.Key.Escape:
