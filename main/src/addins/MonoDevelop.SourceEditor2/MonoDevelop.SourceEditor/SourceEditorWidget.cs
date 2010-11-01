@@ -1071,8 +1071,8 @@ namespace MonoDevelop.SourceEditor
 				if (!(this.textEditor.SearchEngine is RegexSearchEngine))
 					this.textEditor.SearchEngine = new RegexSearchEngine ();
 			}
-			
-			this.textEditor.IsCaseSensitive = searchAndReplaceWidget.IsCaseSensitive;
+			if (searchAndReplaceWidget != null) 
+				this.textEditor.IsCaseSensitive = searchAndReplaceWidget.IsCaseSensitive;
 			this.textEditor.IsWholeWordOnly = SearchAndReplaceWidget.IsWholeWordOnly;
 			
 			string error;
