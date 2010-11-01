@@ -131,7 +131,7 @@ namespace MonoDevelop.IPhone
 				return NullProcessAsyncOperation.Success;
 			}
 			
-			var psi = CreateMtouchSimStartInfo (cmd, true, SimulatorTarget ?? cmd.SimulatorTarget);;
+			var psi = CreateMtouchSimStartInfo (cmd, true, SimulatorTarget ?? cmd.SimulatorTarget);
 			
 			psi.RedirectStandardOutput = true;
 			psi.RedirectStandardError = true;

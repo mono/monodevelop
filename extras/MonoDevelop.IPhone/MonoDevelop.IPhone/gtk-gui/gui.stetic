@@ -7,6 +7,7 @@
   <import>
     <widget-library name="MonoDevelop.Ide, Version=2.4.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.DesignerSupport, Version=2.4.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.AspNet, Version=2.4.0.0, Culture=neutral" />
     <widget-library name="../../build/MonoDevelop.MacDev.dll" />
     <widget-library name="../../build/MonoDevelop.IPhone.dll" internal="true" />
   </import>
