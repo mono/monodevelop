@@ -37,6 +37,7 @@ using System.Drawing;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
+using System.Runtime.InteropServices;
 
 namespace MonoDevelop.Platform.Mac
 {
@@ -63,7 +64,6 @@ namespace MonoDevelop.Platform.Mac
 				SelectEncodingPopUpButton encodingSelector = null;
 				NSPopUpButton viewerSelector = null;
 				NSButton closeSolutionButton = null;
-				NSView viewSelLabelled = null;
 				
 				var box = new MDBox (LayoutDirection.Vertical, 2, 2);
 				
@@ -164,8 +164,10 @@ namespace MonoDevelop.Platform.Mac
 				
 				try {
 					var action = panel.RunModal ();
-					if (action == 0)
+					if (action == 0) {
+						GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 						return false;
+					}
 				} catch (Exception ex) {
 					System.Console.WriteLine (ex);
 					throw;
@@ -182,6 +184,7 @@ namespace MonoDevelop.Platform.Mac
 					data.SelectedViewer = currentViewers[viewerSelector.IndexOfSelectedItem];
 				}
 				
+				GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 				return true;
 			} finally {
 				if (panel != null)
@@ -216,5 +219,37 @@ namespace MonoDevelop.Platform.Mac
 			button.Enabled = currentViewers.Count > 1;
 			button.SelectItem (0);
 		}
+	}
+	
+	static class GtkQuartz
+	{
+		public static void FocusWindow (Gtk.Window widget)
+		{
+			var window = GetWindow (widget);
+			if (window != null)
+				window.MakeKeyAndOrderFront (window);
+		}
+		
+		public static NSWindow GetWindow (Gtk.Window window)
+		{
+			var ptr = gdk_quartz_window_get_nswindow (window.GdkWindow.Handle);
+			if (ptr == IntPtr.Zero)
+				return null;
+			return MonoMac.ObjCRuntime.Runtime.GetNSObject (ptr) as NSWindow;
+		}
+		
+		public static NSView GetView (Gtk.Widget widget)
+		{
+			var ptr = gdk_quartz_window_get_nsview (widget.GdkWindow.Handle);
+			if (ptr == IntPtr.Zero)
+				return null;
+			return MonoMac.ObjCRuntime.Runtime.GetNSObject (ptr) as NSView;
+		}
+		
+		[DllImport ("libgtk-quartz-2.0.dylib")]
+        static extern IntPtr gdk_quartz_window_get_nsview (IntPtr window);
+		
+        [DllImport ("libgtk-quartz-2.0.dylib")]
+        static extern IntPtr gdk_quartz_window_get_nswindow (IntPtr window);
 	}
 }

@@ -34,6 +34,7 @@ using System.Collections.Generic;
 using MonoMac.Foundation;
 using System.Linq;
 using System.Drawing;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Platform.Mac
 {
@@ -65,11 +66,14 @@ namespace MonoDevelop.Platform.Mac
 				}
 				
 				var action = panel.RunModal ();
-				if (action == 0)
+				if (action == 0) {
+					GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 					return false;
+				}
 				
 				data.SelectedFiles = GetSelectedFiles (panel);
 				
+				GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 				return true;
 			} finally {
 				if (panel != null)

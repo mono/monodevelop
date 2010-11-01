@@ -34,6 +34,7 @@ using System.Collections.Generic;
 using MonoMac.Foundation;
 using System.Linq;
 using System.Drawing;
+using MonoDevelop.Ide;
 namespace MonoDevelop.Platform.Mac
 {
 	class MacAddFileDialogHandler : IAddFileDialogHandler
@@ -77,8 +78,10 @@ namespace MonoDevelop.Platform.Mac
 				}
 				
 				var action = panel.RunModal ();
-				if (action == 0)
+				if (action == 0) {
+					GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 					return false;
+				}
 				
 				data.SelectedFiles = MacSelectFileDialogHandler.GetSelectedFiles (panel);
 				
@@ -86,6 +89,7 @@ namespace MonoDevelop.Platform.Mac
 				if (idx >= 0)
 					data.OverrideAction = data.BuildActions[idx];
 				
+				GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 				return true;
 			}
 		}
