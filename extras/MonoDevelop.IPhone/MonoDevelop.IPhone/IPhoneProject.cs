@@ -412,8 +412,10 @@ namespace MonoDevelop.IPhone
 			var conf = (IPhoneProjectConfiguration) GetConfiguration (configSel);
 			bool isDevice = conf.Platform == PLAT_IPHONE;
 			
-			if (isDevice || (conf.Platform == PLAT_IPHONE && !File.Exists (conf.AppDirectory.Combine ("PkgInfo")))) {
-				MessageService.ShowError (GettextCatalog.GetString ("The application has not been built."));
+			if (!Directory.Exists (conf.AppDirectory) || (isDevice && !File.Exists (conf.AppDirectory.Combine ("PkgInfo")))) {
+				Gtk.Application.Invoke (delegate {
+					MessageService.ShowError (GettextCatalog.GetString ("The application has not been built."));
+				});
 				return;
 			}
 			
@@ -437,13 +439,13 @@ namespace MonoDevelop.IPhone
 		
 		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			RemoveUploadMarker ();
+			RemoveUploadMarker ((IPhoneProjectConfiguration)GetConfiguration (configuration));
 			return base.OnBuild (monitor, configuration);
 		}
 		
 		protected override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			RemoveUploadMarker ();
+			RemoveUploadMarker ((IPhoneProjectConfiguration)GetConfiguration (configuration));
 			base.OnClean (monitor, configuration);
 		}
 		
