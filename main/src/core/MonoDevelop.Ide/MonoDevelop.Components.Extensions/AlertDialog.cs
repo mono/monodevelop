@@ -27,6 +27,7 @@
 using System;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Dialogs;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Components.Extensions
 {
@@ -36,9 +37,12 @@ namespace MonoDevelop.Components.Extensions
 	
 	public class AlertDialogData : PlatformDialogData
 	{
-		public MessageDescription Message { get; set; }
+		public MessageDescription Message { get; internal set; }
 		public bool ApplyToAll { get; set; }
 		public AlertButton ResultButton { get; set; }
+		
+		public IList<AlertButton> Buttons { get { return Message.Buttons; } }
+		public IList<AlertOption> Options { get { return Message.Options; } }
 	}
 	
 	public class AlertDialog : PlatformDialog<AlertDialogData>

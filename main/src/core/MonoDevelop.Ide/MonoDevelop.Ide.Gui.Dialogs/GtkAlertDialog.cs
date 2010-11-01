@@ -30,6 +30,7 @@ using System;
 using System.Text;
 using Gtk;
 using MonoDevelop.Core;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -89,7 +90,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public GtkAlertDialog (MessageDescription message)
 		{
 			Init ();
-			this.buttons = message.buttons.ToArray ();
+			this.buttons = message.Buttons.ToArray ();
 			
 			string primaryText;
 			string secondaryText;
@@ -117,7 +118,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			label.Markup = markup.ToString ();
 			label.Selectable = true;
 			
-			foreach (AlertButton button in message.buttons) {
+			foreach (AlertButton button in message.Buttons) {
 				Button newButton = new Button ();
 				newButton.Label        = button.Label;
 				newButton.UseUnderline = true;
@@ -128,7 +129,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				ActionArea.Add (newButton);
 			}
 			
-			foreach (MessageDescription.Option op in message.Options) {
+			foreach (var op in message.Options) {
 				CheckButton check = new CheckButton (op.Text);
 				check.Active = op.Value;
 				labelsBox.PackStart (check, false, false, 0);
