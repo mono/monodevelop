@@ -152,23 +152,21 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		static Dictionary<string, KeyValuePair<int, int>> textWidthDictionary = new Dictionary<string, KeyValuePair<int, int>> ();
-		static Dictionary<LineSegment, KeyValuePair<int, int>> lineWidthDictionary = new Dictionary<LineSegment, KeyValuePair<int, int>> ();
+		static Dictionary<LineSegment, double> lineWidthDictionary = new Dictionary<LineSegment, double> ();
 
 		void CalculateLineFit (TextEditor editor, LineSegment lineSegment)
 		{
-			KeyValuePair<int, int> textSize;
-			if (!lineWidthDictionary.TryGetValue (lineSegment, out textSize)) {
-				Pango.Layout textLayout = editor.TextViewMargin.GetLayout (lineSegment).Layout;
-				int textWidth, textHeight;
-				textLayout.GetPixelSize (out textWidth, out textHeight);
-				textSize = new KeyValuePair<int, int> (textWidth, textHeight);
+			double textWidth;
+			if (!lineWidthDictionary.TryGetValue (lineSegment, out textWidth)) {
+				var textLayout = editor.TextViewMargin.GetLayout (lineSegment);
+				textWidth = textLayout.PangoWidth / Pango.Scale.PangoScale;
 				if (textWidthDictionary.Count > 10000)
 					textWidthDictionary.Clear ();
 				
-				lineWidthDictionary[lineSegment] = textSize;
+				lineWidthDictionary[lineSegment] = textWidth;
 			}
 			EnsureLayoutCreated (editor);
-			fitsInSameLine = editor.TextViewMargin.XOffset + textSize.Key + LayoutWidth + errorPixbuf.Width + border + editor.LineHeight / 2 < editor.Allocation.Width;
+			fitsInSameLine = editor.TextViewMargin.XOffset + textWidth + LayoutWidth + errorPixbuf.Width + border + editor.LineHeight / 2 < editor.Allocation.Width;
 		}
 
 		string initialText;
@@ -259,61 +257,73 @@ namespace MonoDevelop.SourceEditor
 			get { return layouts; }
 		}
 		Pango.FontDescription fontDescription;
-		internal Cairo.Color[,,,,] colorMatrix = new Cairo.Color[2, 2, 3, 2, 2];
+		internal Cairo.Color[,,,,] colorMatrix;	
+		static	Cairo.Color[,,,,] warningMatrix, errorMatrix;
+		static Cairo.Color errorGc, warningGc;
+	
+		static Cairo.Color[,,,,] CreateColorMatrix (TextEditor editor, bool isError)
+		{
+			string typeString = isError ? "error" : "warning";
+			Cairo.Color[,,,,] colorMatrix = new Cairo.Color[2, 2, 3, 2, 2];
+			
+			colorMatrix[0, 0, 0, 0, 0] = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("bubble." + typeString + ".light.color1").Color);
+			colorMatrix[0, 1, 0, 0, 0] = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("bubble." + typeString + ".light.color2").Color);
+			
+			colorMatrix[0, 0, 1, 0, 0] = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("bubble." + typeString + ".dark.color1").Color);
+			colorMatrix[0, 1, 1, 0, 0] = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("bubble." + typeString + ".dark.color2").Color);
+			
+			colorMatrix[0, 0, 2, 0, 0] = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("bubble." + typeString + ".line.top").Color);
+			colorMatrix[0, 1, 2, 0, 0] = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("bubble." + typeString + ".line.bottom").Color);
+			
+			colorMatrix[1, 0, 0, 0, 0] = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("bubble.inactive." + typeString + ".light.color1").Color);
+			colorMatrix[1, 1, 0, 0, 0] = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("bubble.inactive." + typeString + ".light.color2").Color);
+			
+			colorMatrix[1, 0, 1, 0, 0] = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("bubble.inactive." + typeString + ".dark.color1").Color);
+			colorMatrix[1, 1, 1, 0, 0] = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("bubble.inactive." + typeString + ".dark.color2").Color);
+			
+			colorMatrix[1, 0, 2, 0, 0] = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("bubble.inactive." + typeString + ".line.top").Color);
+			colorMatrix[1, 1, 2, 0, 0] = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("bubble.inactive." + typeString + ".line.bottom").Color);
+			
+			double factor = 1.03;
+			for (int i = 0; i < 2; i++) {
+				for (int j = 0; j < 2; j++) {
+					for (int k = 0; k < 3; k++) {
+						HslColor color = colorMatrix[i, j, k, 0, 0];
+						color.L *= factor;
+						colorMatrix[i, j, k, 1, 0] = color;
+					}
+				}
+			}
+			var selectionColor = Style.ToCairoColor (editor.ColorStyle.Selection.BackgroundColor);
+			for (int i = 0; i < 2; i++) {
+				for (int j = 0; j < 2; j++) {
+					for (int k = 0; k < 3; k++) {
+						for (int l = 0; l < 2; l++) {
+							var color = colorMatrix[i, j, k, l, 0];
+							colorMatrix[i, j, k, l, 1] = new Cairo.Color ((color.R + selectionColor.R * 1.5) / 2.5, (color.G + selectionColor.G * 1.5) / 2.5, (color.B + selectionColor.B * 1.5) / 2.5);
+						}
+					}
+				}
+			}
+			return colorMatrix;
+		}
 		
 		void EnsureLayoutCreated (TextEditor editor)
 		{
-			if (editor.ColorStyle != null) {
+			if (colorMatrix == null && editor.ColorStyle != null) {
 				bool isError = errors.Any (e => e.IsError);
+				if (errorMatrix == null) {
+					errorGc =  (HslColor)(editor.ColorStyle.GetChunkStyle ("bubble.error.text").Color);
+					warningGc =  (HslColor)(editor.ColorStyle.GetChunkStyle ("bubble.warning.text").Color);
+					errorMatrix = CreateColorMatrix (editor, true);
+					warningMatrix = CreateColorMatrix (editor, false);
+				}
+				colorMatrix = isError ? errorMatrix : warningMatrix;
 				
-				string typeString = isError ? "error" : "warning";
-				
-				gc = (HslColor)(editor.ColorStyle.GetChunkStyle ("bubble." + typeString + ".text").Color);
-				
+				gc = isError ? errorGc : warningGc;
 				gcSelected = (HslColor)editor.ColorStyle.Selection.Color;
-				
 				gcLight = new Cairo.Color (1, 1, 1);
-				
-				
-				colorMatrix[0, 0, 0, 0, 0] = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("bubble." + typeString + ".light.color1").Color);
-				colorMatrix[0, 1, 0, 0, 0] = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("bubble." + typeString + ".light.color2").Color);
-				
-				colorMatrix[0, 0, 1, 0, 0] = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("bubble." + typeString + ".dark.color1").Color);
-				colorMatrix[0, 1, 1, 0, 0] = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("bubble." + typeString + ".dark.color2").Color);
-				
-				colorMatrix[0, 0, 2, 0, 0] = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("bubble." + typeString + ".line.top").Color);
-				colorMatrix[0, 1, 2, 0, 0] = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("bubble." + typeString + ".line.bottom").Color);
-				
-				colorMatrix[1, 0, 0, 0, 0] = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("bubble.inactive." + typeString + ".light.color1").Color);
-				colorMatrix[1, 1, 0, 0, 0] = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("bubble.inactive." + typeString + ".light.color2").Color);
-				
-				colorMatrix[1, 0, 1, 0, 0] = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("bubble.inactive." + typeString + ".dark.color1").Color);
-				colorMatrix[1, 1, 1, 0, 0] = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("bubble.inactive." + typeString + ".dark.color2").Color);
-				
-				colorMatrix[1, 0, 2, 0, 0] = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("bubble.inactive." + typeString + ".line.top").Color);
-				colorMatrix[1, 1, 2, 0, 0] = Mono.TextEditor.Highlighting.Style.ToCairoColor (editor.ColorStyle.GetChunkStyle ("bubble.inactive." + typeString + ".line.bottom").Color);
-				
-				double factor = 1.03;
-				for (int i = 0; i < 2; i++) {
-					for (int j = 0; j < 2; j++) {
-						for (int k = 0; k < 3; k++) {
-							HslColor color = colorMatrix[i, j, k, 0, 0];
-							color.L *= factor;
-							colorMatrix[i, j, k, 1, 0] = color;
-						}
-					}
-				}
-				var selectionColor = Style.ToCairoColor (editor.ColorStyle.Selection.BackgroundColor);
-				for (int i = 0; i < 2; i++) {
-					for (int j = 0; j < 2; j++) {
-						for (int k = 0; k < 3; k++) {
-							for (int l = 0; l < 2; l++) {
-								var color = colorMatrix[i, j, k, l, 0];
-								colorMatrix[i, j, k, l, 1] = new Cairo.Color ((color.R + selectionColor.R * 1.5) / 2.5, (color.G + selectionColor.G * 1.5) / 2.5, (color.B + selectionColor.B * 1.5) / 2.5);
-							}
-						}
-					}
-				}
+					
 			}
 			
 			if (layouts != null)
@@ -874,7 +884,7 @@ namespace MonoDevelop.SourceEditor
 			g.MoveTo (new Cairo.PointD (x2 + 0.5, y));
 			g.LineTo (new Cairo.PointD (x2 + 0.5, y + editor.LineHeight));
 			if (errorNumber == errors.Count - 1)
-				g.LineTo (new Cairo.PointD (lineArea.X + lineArea.Width, y + editor.LineHeight));
+				g.LineTo (new Cairo.PointD (lineArea.X + lineArea.Width, y + editor.LineHeight));
 			g.Stroke ();
 			
 			if (editor.Options.ShowRuler) {
