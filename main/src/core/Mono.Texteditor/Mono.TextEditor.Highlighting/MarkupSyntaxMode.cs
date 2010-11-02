@@ -162,13 +162,9 @@ namespace Mono.TextEditor.Highlighting
 			while (curOffset < endOffset) {
 				LineSegment curLine = doc.GetLineByOffset (curOffset);
 				for (Chunk chunk = GetChunks (doc, style, curLine, curOffset, System.Math.Min (endOffset - curOffset, curLine.EndOffset - curOffset)); chunk != null; chunk = chunk.Next) {
-					for (int i = 0; i < chunk.Length; i++) {
-						result.Append (chunk.GetCharAt (doc, chunk.Offset + i));
-					}
+					result.Append (chunk.GetText (doc));
 				}
-				curOffset += curLine.Length;
-				if (curOffset < endOffset)
-					result.AppendLine ();
+				curOffset = curLine.EndOffset;
 			}
 			return result.ToString ();
 		}
