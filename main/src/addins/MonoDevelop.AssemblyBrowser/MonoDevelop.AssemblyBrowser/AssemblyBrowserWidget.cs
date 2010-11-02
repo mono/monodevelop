@@ -90,7 +90,7 @@ namespace MonoDevelop.AssemblyBrowser
 			});
 			TreeView.Tree.Selection.Mode = Gtk.SelectionMode.Single;
 			TreeView.Tree.CursorChanged += HandleCursorChanged;
-			
+			inspectEditor.ButtonPressEvent += HandleInspectEditorButtonPressEvent;
 			TreeView.ShadowType = ShadowType.In;
 			treeViewPlaceholder.Add (TreeView);
 			treeViewPlaceholder.ShowAll ();
@@ -193,6 +193,28 @@ namespace MonoDevelop.AssemblyBrowser
 			this.buttonBack.Clicked += this.OnNavigateBackwardActionActivated;
 			this.buttonForeward.Clicked += this.OnNavigateForwardActionActivated;
 			
+		}
+		
+		[CommandHandler (EditCommands.Copy)]
+		protected void OnCopyCommand ()
+		{
+			inspectEditor.RunAction (Mono.TextEditor.ClipboardActions.Copy);
+		}
+		
+		[CommandHandler (EditCommands.SelectAll)]
+		protected void OnSelectAllCommand ()
+		{
+			inspectEditor.RunAction (Mono.TextEditor.SelectionActions.SelectAll);
+		}
+		
+		void HandleInspectEditorButtonPressEvent (object o, ButtonPressEventArgs args)
+		{
+			if (args.Event.Button != 3)
+				return;
+			var menuSet = new CommandEntrySet ();
+			menuSet.AddItem (EditCommands.SelectAll);
+			menuSet.AddItem (EditCommands.Copy);
+			IdeApp.CommandService.ShowContextMenu (menuSet, this);
 		}
 
 		void SearchTreeviewhandleRowActivated (object o, RowActivatedArgs args)
