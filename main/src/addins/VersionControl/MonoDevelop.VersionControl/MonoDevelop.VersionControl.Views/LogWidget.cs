@@ -238,14 +238,23 @@ namespace MonoDevelop.VersionControl.Views
 				changedpathstore.SetValue (iter, colDiff, new string[] { GettextCatalog.GetString ("Loading data...") });
 				var rev = SelectedRevision;
 				ThreadPool.QueueUserWorkItem (delegate {
-					string text = info.Repository.GetTextAtRevision (path, rev);
+					string text;
+					try {
+						text = info.Repository.GetTextAtRevision (path, rev);
+					} catch (Exception e) {
+						Application.Invoke (delegate {
+							LoggingService.LogError ("Error while getting revision text", e);
+							MessageService.ShowError ("Error while getting revision text.", "The file may not be part of the working copy.");
+						});
+						return;
+					}
 					Revision prevRev = null;
 					try {
 						prevRev = rev.GetPrevious ();
 					} catch (Exception e) {
 						Application.Invoke (delegate {
 							LoggingService.LogError ("Error while getting previous revision", e);
-							MessageService.ShowException (e, "Error while getting previous revision");
+							MessageService.ShowException (e, "Error while getting previous revision.");
 						});
 						return;
 					}
