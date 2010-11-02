@@ -245,7 +245,7 @@ namespace MonoDevelop.VBNetBinding {
 			string compilerName = configuration.TargetRuntime.GetToolPath (configuration.TargetFramework, "vbc");
 			if (compilerName == null) {
 				BuildResult res = new BuildResult ();
-				res.AddError (string.Format ("Visual Basict .NET compiler not found ({0})", configuration.TargetRuntime.DisplayName));
+				res.AddError (string.Format ("Visual Basic .NET compiler not found ({0})", configuration.TargetRuntime.DisplayName));
 				return res;
 			}
 			
