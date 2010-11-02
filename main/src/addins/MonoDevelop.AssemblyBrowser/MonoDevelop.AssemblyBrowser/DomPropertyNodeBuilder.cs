@@ -33,6 +33,7 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
+using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -123,13 +124,26 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
+		static string GetBody (string text)
+		{
+			
+			int idx = text.IndexOf ('{') + 1;
+			int idx2 = text.LastIndexOf ('}');
+			if (idx2 - idx <= 0)
+				return text;
+			string result = text.Substring (idx, idx2 - idx);
+			if (result.StartsWith ("\n"))
+				result = result.Substring (1);
+			return result;
+		}
+
 		string IAssemblyBrowserNodeBuilder.GetDecompiledCode (ITreeNavigator navigator)
 		{
 			IProperty property = (IProperty)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append (DomMethodNodeBuilder.GetAttributes (Ambience, property.Attributes));
 			result.Append (Ambience.GetString (property, DomTypeNodeBuilder.settings));
-			result.Append ("{");result.AppendLine ();
+			result.Append (" {");result.AppendLine ();
 			DomCecilProperty cecilProperty = property as DomCecilProperty;
 			if (property.HasGet) {
 				result.Append ("\t");
@@ -139,7 +153,9 @@ namespace MonoDevelop.AssemblyBrowser
 					result.Append ("</span> ");
 				}
 				result.Append ("<b>get</b> {");result.AppendLine ();
-				result.Append (DomMethodNodeBuilder.Decompile (cecilProperty.GetMethod as DomCecilMethod, true).Replace ("\t", "\t\t"));
+				string text = DomMethodNodeBuilder.Decompile (cecilProperty.GetMethod as DomCecilMethod, true).Replace ("\t", "\t\t");
+				
+				result.Append (GetBody (text));
 				result.Append ("\t}");result.AppendLine ();
 			}
 			if (property.HasSet) {
@@ -150,8 +166,8 @@ namespace MonoDevelop.AssemblyBrowser
 					result.Append ("</span> ");
 				}
 				result.Append ("<b>set</b> {");result.AppendLine ();
-				
-				result.Append (DomMethodNodeBuilder.Decompile (cecilProperty.SetMethod as DomCecilMethod, true).Replace ("\t", "\t\t"));
+				string text = DomMethodNodeBuilder.Decompile (cecilProperty.SetMethod as DomCecilMethod, true).Replace ("\t", "\t\t");
+				result.Append (GetBody (text));
 				result.Append ("\t}");result.AppendLine ();
 			}
 			result.Append ("}");
