@@ -140,11 +140,11 @@ namespace MonoDevelop.CSharp.Parser
 						newType.AddChild (new CSharpTokenNode (Convert (typeArgLocation[1]), 1), MemberReferenceExpression.Roles.RChevron);
 					AddConstraints (newType, c);
 				}
-				if (location != null)
+				if (location != null && location.Count > 1)
 					newType.AddChild (new CSharpTokenNode (Convert (location[1]), 1), AbstractCSharpNode.Roles.LBrace);
 				typeStack.Push (newType);
 				base.Visit (c);
-				if (location != null)
+				if (location != null && location.Count > 2)
 					newType.AddChild (new CSharpTokenNode (Convert (location[2]), 1), AbstractCSharpNode.Roles.RBrace);
 				typeStack.Pop ();
 				AddType (newType);
@@ -169,11 +169,11 @@ namespace MonoDevelop.CSharp.Parser
 						newType.AddChild (new CSharpTokenNode (Convert (typeArgLocation[1]), 1), MemberReferenceExpression.Roles.RChevron);
 					AddConstraints (newType, s);
 				}
-				if (location != null)
+				if (location != null && location.Count > 1)
 					newType.AddChild (new CSharpTokenNode (Convert (location[1]), 1), AbstractCSharpNode.Roles.LBrace);
 				typeStack.Push (newType);
 				base.Visit (s);
-				if (location != null)
+				if (location != null && location.Count > 2)
 					newType.AddChild (new CSharpTokenNode  (Convert (location[2]), 1), AbstractCSharpNode.Roles.RBrace);
 				typeStack.Pop ();
 				AddType (newType);
@@ -198,11 +198,11 @@ namespace MonoDevelop.CSharp.Parser
 						newType.AddChild (new CSharpTokenNode (Convert (typeArgLocation[1]), 1), MemberReferenceExpression.Roles.RChevron);
 					AddConstraints (newType, i);
 				}
-				if (location != null)
+				if (location != null && location.Count > 1)
 					newType.AddChild (new CSharpTokenNode (Convert (location[1]), 1), AbstractCSharpNode.Roles.LBrace);
 				typeStack.Push (newType);
 				base.Visit (i);
-				if (location != null)
+				if (location != null && location.Count > 2)
 					newType.AddChild (new CSharpTokenNode  (Convert (location[2]), 1), AbstractCSharpNode.Roles.RBrace);
 				typeStack.Pop ();
 				AddType (newType);
@@ -266,11 +266,11 @@ namespace MonoDevelop.CSharp.Parser
 				if (location != null)
 					newType.AddChild (new CSharpTokenNode (Convert (location[0]), "enum".Length), TypeDeclaration.TypeKeyword);
 				newType.AddChild (new Identifier (e.Name, Convert (e.MemberName.Location)), AbstractNode.Roles.Identifier);
-				if (location != null)
+				if (location != null && location.Count > 1)
 					newType.AddChild (new CSharpTokenNode (Convert (location[1]), 1), AbstractCSharpNode.Roles.LBrace);
 				typeStack.Push (newType);
 				base.Visit (e);
-				if (location != null)
+				if (location != null && location.Count > 2)
 					newType.AddChild (new CSharpTokenNode  (Convert (location[2]), 1), AbstractCSharpNode.Roles.RBrace);
 				typeStack.Pop ();
 				AddType (newType);
