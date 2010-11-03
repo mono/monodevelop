@@ -355,7 +355,7 @@ namespace MonoDevelop.Platform
 			get { return Id; }
 		}
 		
-		public abstract void Launch (params string[] files)
+		public override void Launch (params string[] files)
 		{
 			// TODO: implement all other cases
 			if (Command.IndexOf ("%f") != -1) {

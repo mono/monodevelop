@@ -101,7 +101,7 @@ namespace MonoDevelop.Platform {
 			return ret == IntPtr.Zero ? null : AppFromAppInfoPtr (ret, null);
 		}
 
-		public static System.Collections.IList<DesktopApplication> GetAllForType (string mime_type)
+		public static System.Collections.Generic.IList<DesktopApplication> GetAllForType (string mime_type)
 		{
 			var def = GetDefaultForType (mime_type);
 			
