@@ -396,7 +396,8 @@ namespace MonoDevelop.Ide.Tasks
 			}
 			
 			// Jump over tasks with different severity or with no file name
-			while (n != -1 && n < tasks.Count && (iteratingSeverity != tasks [n].Severity || string.IsNullOrEmpty (tasks [n].FileName)))
+			while (n != -1 && n < tasks.Count && 
+				(iteratingSeverity != tasks [n].Severity || !IsProjectTaskFile (tasks [n])))
 				n++;
 			
 			Task ct = n != -1 && n < tasks.Count ? tasks [n] : null;
@@ -420,6 +421,16 @@ namespace MonoDevelop.Ide.Tasks
 				IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("End of list"));
 				return null;
 			}
+		}
+		
+		bool IsProjectTaskFile (Task t)
+		{
+			if (t.FileName.IsNullOrEmpty)
+				return false;
+			Project p = t.WorkspaceObject as Project;
+			if (p == null)
+				return false;
+			return p.GetProjectFile (t.FileName) != null;
 		}
 		
 		
