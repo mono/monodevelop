@@ -35,57 +35,39 @@ using System.Diagnostics;
 
 namespace MonoDevelop.Ide.Desktop
 {
-	public struct DesktopApplication
+	public abstract class DesktopApplication
 	{
-		internal string id;
-		string displayName;
-		string command;
-		
-		public DesktopApplication (string id, string displayName, string command)
+		public DesktopApplication (string id, string displayName, bool isDefault)
 		{
-			this.id = id;
-			this.displayName = displayName;
-			this.command = command;
+			if (string.IsNullOrEmpty (displayName))
+				throw new ArgumentException ("displayName cannot be empty");
+			if (string.IsNullOrEmpty (id))
+				throw new ArgumentException ("id cannot be empty");
+			this.DisplayName = displayName;
+			this.Id = id;
+			this.IsDefault = isDefault;
 		}
 
-		public string DisplayName {
-			get { return displayName; }
-		}
+		public string DisplayName { get; private set; }
 		
-		public string Command {
-			get { return command; }
-		}
+		/// <summary>
+		/// Used to uniquely identify the application or command.
+		/// </summary>
+		public string Id { get; private set; }
 		
-		public void Launch (params string[] files)
+		public bool IsDefault { get; private set; }
+		
+		public abstract void Launch (params string[] files);
+		
+		public override int GetHashCode ()
 		{
-			if (!IsValid)
-				throw new InvalidOperationException ("DesktopApplication is invalid");
-			
-			// TODO: implement all other cases
-			if (command.IndexOf ("%f") != -1) {
-				foreach (string s in files) {
-					string cmd = command.Replace ("%f", "\"" + s + "\"");
-					Process.Start (cmd);
-				}
-			}
-			else if (command.IndexOf ("%F") != -1) {
-				string[] fs = new string [files.Length];
-				for (int n=0; n<files.Length; n++) {
-					fs [n] = "\"" + files [n] + "\"";
-				}
-				string cmd = command.Replace ("%F", string.Join (" ", fs));
-				Process.Start (cmd);
-			} else {
-				foreach (string s in files) {
-					Process.Start (command, "\"" + s + "\"");
-				}
-			}
+			return Id.GetHashCode ();
 		}
 		
-		public bool IsValid {
-			get {
-				return !string.IsNullOrEmpty (command) && !string.IsNullOrEmpty (displayName); 
-			}
+		public override bool Equals (object obj)
+		{
+			var other = obj as DesktopApplication;
+			return other != null && other.Id == Id;
 		}
 	}
 }

@@ -56,14 +56,9 @@ namespace MonoDevelop.Ide
 				new EventHandler<FileCopyEventArgs> (NotifyFileRenamed));
 		}
 		
-		public static DesktopApplication GetDefaultApplication (string mimetype)
+		public static IEnumerable<DesktopApplication> GetApplications (string filename)
 		{
-			return platformService.GetDefaultApplication (mimetype);
-		}
-		
-		public static DesktopApplication [] GetAllApplications (string mimetype)
-		{
-			return platformService.GetAllApplications (mimetype);
+			return platformService.GetApplications (filename);
 		}
 		
 		public static string DefaultMonospaceFont {
@@ -87,6 +82,11 @@ namespace MonoDevelop.Ide
 		public static void ShowUrl (string url)
 		{
 			platformService.ShowUrl (url);
+		}
+		
+		public static void OpenFile (string filename)
+		{
+			platformService.OpenFile (filename);
 		}
 
 		public static string GetMimeTypeForUri (string uri)
