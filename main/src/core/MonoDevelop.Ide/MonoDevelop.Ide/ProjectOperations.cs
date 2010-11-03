@@ -541,6 +541,11 @@ namespace MonoDevelop.Ide
 						}
 						Save (selectedProject);
 						IdeApp.Workspace.SavePreferences ();
+						
+						// since project options alter the way a document is parsed, we need to reparse after option change.
+						foreach (var doc in IdeApp.Workbench.Documents) {
+							doc.UpdateParseDocument ();
+						}
 					}
 				} finally {
 					optionsDialog.Destroy ();
