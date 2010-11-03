@@ -29,16 +29,6 @@ namespace MonoDevelop.Platform
 			}
 		}
 
-		public override DesktopApplication[] GetAllApplications (string mimetype)
-		{
-			return new DesktopApplication [0];
-		}
-
-		public override DesktopApplication GetDefaultApplication (string mimetype)
-		{
-			return new DesktopApplication ();
-		}
-
 		public override string Name {
 			get { return "Windows"; }
 		}
