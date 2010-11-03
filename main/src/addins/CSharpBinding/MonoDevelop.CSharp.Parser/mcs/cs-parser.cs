@@ -6797,7 +6797,7 @@ void case_627()
 #line 4164 "cs-parser.jay"
 {
 		yyVal = end_anonymous ((ParametersBlock) yyVals[0+yyTop]);
-		lbag.AddLocation (yyVal, GetLocation (yyVals[-4+yyTop]), GetLocation (yyVals[-3+yyTop]));
+		lbag.AddLocation (yyVal, GetLocation (yyVals[-3+yyTop]), GetLocation (yyVals[-2+yyTop]));
 	  }
 
 void case_637()

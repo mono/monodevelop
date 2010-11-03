@@ -4163,7 +4163,7 @@ lambda_expression
 	  lambda_expression_body 
 	  {
 		$$ = end_anonymous ((ParametersBlock) $7);
-		lbag.AddLocation ($$, GetLocation ($3), GetLocation ($4));
+		lbag.AddLocation ($$, GetLocation ($4), GetLocation ($5));
 	  }
 	;
 

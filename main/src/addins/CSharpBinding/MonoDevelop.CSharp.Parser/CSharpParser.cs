@@ -2040,13 +2040,12 @@ namespace MonoDevelop.CSharp.Parser
 					if (location != null)
 						result.AddChild (new CSharpTokenNode (Convert (location[0]), "=>".Length), AssignmentExpression.Roles.Assign);
 				} else {
-					if (location != null && location.Count >= 1)
-						result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), AssignmentExpression.Roles.LPar);
+					result.AddChild (new CSharpTokenNode (Convert (lambdaExpression.Location), 1), AssignmentExpression.Roles.LPar);
 					AddParameter (result, lambdaExpression.Parameters);
-					if (location != null && location.Count >= 3)
-						result.AddChild (new CSharpTokenNode (Convert (location[2]), 1), AssignmentExpression.Roles.RPar);
-					if (location != null)
-						result.AddChild (new CSharpTokenNode (Convert (location[0]), "=>".Length), AssignmentExpression.Roles.Assign);
+					if (location != null) {
+						result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), AssignmentExpression.Roles.RPar);
+						result.AddChild (new CSharpTokenNode (Convert (location[1]), "=>".Length), AssignmentExpression.Roles.Assign);
+					}
 				}
 				if (lambdaExpression.Block.IsCompilerGenerated) {
 					ContextualReturn generatedReturn = (ContextualReturn)lambdaExpression.Block.Statements[0];
