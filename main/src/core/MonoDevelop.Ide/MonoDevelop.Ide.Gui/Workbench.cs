@@ -311,9 +311,10 @@ namespace MonoDevelop.Ide.Gui
 			foreach (IDisplayBinding bin in DisplayBindingService.GetBindingsForMimeType (mimeType))
 				list.Add (new FileViewer (bin));
 
-			foreach (var app in DesktopService.GetApplications (fileName))
-				list.Add (new FileViewer (app));
-			
+			foreach (DesktopApplication app in DesktopService.GetAllApplications (mimeType))
+				if (app.IsValid && app.Command != "monodevelop")
+					list.Add (new FileViewer (app));
+				
 			return list.ToArray ();
 		}
 
@@ -757,7 +758,13 @@ namespace MonoDevelop.Ide.Gui
 				} else {
 					try {
 						Counters.OpenDocumentTimer.Trace ("Showing in browser");
-						DesktopService.OpenFile (fileName);
+						// FIXME: this doesn't seem finished yet in Gtk#
+						//MimeType mimetype = new MimeType (new Uri ("file://" + fileName));
+						//if (mimetype != null) {
+						//	mimetype.DefaultAction.Launch ();
+						//} else {
+							DesktopService.ShowUrl ("file://" + fileName);
+						//}
 					} catch (Exception ex) {
 						LoggingService.LogError ("Error opening file: " + fileName, ex);
 						MessageService.ShowError (GettextCatalog.GetString ("File '{0}' could not be opened", fileName));

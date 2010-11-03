@@ -46,6 +46,8 @@ namespace MonoDevelop.Ide.Desktop
 	{
 		Hashtable iconHash = new Hashtable ();
 		
+		public abstract DesktopApplication GetDefaultApplication (string mimetype);
+		public abstract DesktopApplication [] GetAllApplications (string mimetype);
 		public abstract string DefaultMonospaceFont { get; }
 		public abstract string Name { get; }
 
@@ -57,11 +59,6 @@ namespace MonoDevelop.Ide.Desktop
 			get {
 				return "MonoDevelop";
 			}
-		}
-		
-		public virtual void OpenFile (string filename)
-		{
-			Process.Start ("file://" + filename);
 		}
 		
 		public virtual void ShowUrl (string url)
@@ -339,11 +336,6 @@ namespace MonoDevelop.Ide.Desktop
 		public virtual IEnumerable<string> GetUpdaterEnviromentFlags ()
 		{
 			return new string[0];
-		}
-		
-		public virtual IEnumerable<DesktopApplication> GetApplications (string filename)
-		{
-			return new DesktopApplication[0];
 		}
 	}
 }

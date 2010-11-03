@@ -55,43 +55,32 @@ namespace MonoDevelop.Platform
 			//apparently Gnome.Icon needs GnomeVFS initialized even when we're using GIO.
 			Gnome.Vfs.Vfs.Initialize ();
 		}
-		
-		DesktopApplication GetGnomeVfsDefaultApplication (string mimeType)
+
+
+		public override DesktopApplication GetDefaultApplication (string mimeType)
 		{
+			if (useGio)
+				return Gio.GetDefaultForType (mimeType);
+
 			var app = Gnome.Vfs.Mime.GetDefaultApplication (mimeType);
 			if (app != null)
 				return (DesktopApplication) Marshal.PtrToStructure (app.Handle, typeof(DesktopApplication));
 			else
-				return null;
+				return new DesktopApplication ();
 		}
 		
-		IEnumerable<DesktopApplication> GetGnomeVfsApplications ()
+		public override DesktopApplication [] GetAllApplications (string mimeType)
 		{
-			var def = GetGnomeVfsDefaultApplication (mimeType);
+			if (useGio)
+				return Gio.GetAllForType (mimeType);
+
 			var list = new List<DesktopApplication> ();
 			var apps = Gnome.Vfs.Mime.GetAllApplications (mimeType);
 			foreach (var app in apps) {
-				var dap = (GnomeVfsApp) Marshal.PtrToStructure (app.Handle, typeof(GnomeVfsApp));
-				if (!string.IsNullOrEmpty (dap.Command) && !string.IsNullOrEmpty (dap.DisplayName) && !dap.Command.Contains ("monodevelop ")) {
-					var isDefault = def != null && def.Id == dap.Command;
-					list.Add (new GnomeDesktopApplication (dap.Command, dap.DisplayName, isDefault));
-				}
+				var dap = (DesktopApplication) Marshal.PtrToStructure (app.Handle, typeof(DesktopApplication));
+				list.Add (dap);
 			}
-			return list;
-		}
-		
-		public override IEnumerable<DesktopApplication> GetApplications (string filename)
-		{
-			var mimeType = DesktopService.GetMimeTypeForUri (fileName);
-			
-			if (useGio)
-				return Gio.GetAllForType (mimeType);
-			else
-				return GetGnomeVfsApplications (mimeType);
-		}
-		
-		struct GnomeVfsApp {
-			public string Id, DisplayName, Command;
+			return list.ToArray ();
 		}
 
 		protected override string OnGetMimeTypeDescription (string mt)
@@ -344,37 +333,4 @@ namespace MonoDevelop.Platform
 			Runtime.ProcessService.StartProcess (TerminalCommand, "", directory, null);
 		}
 	}
-	
-	class GnomeDesktopApplication : DesktopApplication
-	{
-		public GnomeDesktopApplication (string command, string displayName) : base (command, displayName)
-		{
-		}
-		
-		string Command {
-			get { return Id; }
-		}
-		
-		public abstract void Launch (params string[] files)
-		{
-			// TODO: implement all other cases
-			if (Command.IndexOf ("%f") != -1) {
-				foreach (string s in files) {
-					string cmd = Command.Replace ("%f", "\"" + s + "\"");
-					Process.Start (cmd);
-				}
-			}
-			else if (Command.IndexOf ("%F") != -1) {
-				string[] fs = new string [files.Length];
-				for (int n=0; n<files.Length; n++) {
-					fs [n] = "\"" + files [n] + "\"";
-				}
-				string cmd = Command.Replace ("%F", string.Join (" ", fs));
-				Process.Start (cmd);
-			} else {
-				foreach (string s in files) {
-					Process.Start (Command, "\"" + s + "\"");
-				}
-			}
-		}
 }

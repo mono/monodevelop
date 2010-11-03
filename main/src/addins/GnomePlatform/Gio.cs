@@ -70,14 +70,12 @@ namespace MonoDevelop.Platform {
 			public IntPtr prev;
 		}
 
-		static GnomeDesktopApplication AppFromAppInfoPtr (IntPtr handle, DesktopApplication defaultApp)
+		static DesktopApplication AppFromAppInfoPtr (IntPtr handle)
 		{
 			string id = GLib.Marshaller.Utf8PtrToString (g_app_info_get_id (handle));
 			string name = GLib.Marshaller.Utf8PtrToString (g_app_info_get_name (handle));
 			string executable = GLib.Marshaller.Utf8PtrToString (g_app_info_get_executable (handle));
-			
-			if (!string.IsNullOrEmpty (name) && !string.IsNullOrEmpty (executable) && !executable.Contains ("monodevelop "))
-				return new GnomeDesktopApplication (executable, name, defaultApp != null && defaultApp.Id == id);
+			return new DesktopApplication (id, name, executable);
 		}
 
 		static IntPtr ContentTypeFromMimeType (string mime_type)
@@ -93,31 +91,29 @@ namespace MonoDevelop.Platform {
 			return content_type;
 		}
 
-		static DesktopApplication GetDefaultForType (string mime_type) 
+		public static DesktopApplication GetDefaultForType (string mime_type) 
 		{
 			IntPtr content_type = ContentTypeFromMimeType (mime_type);
 			IntPtr ret = g_app_info_get_default_for_type (content_type, false);
 			GLib.Marshaller.Free (content_type);
-			return ret == IntPtr.Zero ? null : AppFromAppInfoPtr (ret, null);
+			return ret == IntPtr.Zero ? new DesktopApplication () : AppFromAppInfoPtr (ret);
 		}
 
-		public static System.Collections.IList<DesktopApplication> GetAllForType (string mime_type)
+		public static DesktopApplication[] GetAllForType (string mime_type)
 		{
-			var def = GetDefaultForType (mime_type);
-			
 			IntPtr content_type = ContentTypeFromMimeType (mime_type);
 			IntPtr ret = g_app_info_get_all_for_type (content_type);
 			GLib.Marshaller.Free (content_type);
 			IntPtr l = ret;
-			var apps = new System.Collections.Generic.List<DesktopApplication> ();
+			ArrayList apps = new ArrayList ();
 			while (l != IntPtr.Zero) {
 				GList node = (GList) Marshal.PtrToStructure (l, typeof (GList));
 				if (node.data != IntPtr.Zero)
-					apps.Add (AppFromAppInfoPtr (node.data, def));
+					apps.Add (AppFromAppInfoPtr (node.data));
 				l = node.next;
 			}
 			g_list_free (ret);
-			return apps;
+			return (DesktopApplication[]) apps.ToArray (typeof (DesktopApplication));
 		}
 
 		public static string GetMimeTypeDescription (string mime_type)

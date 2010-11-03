@@ -41,8 +41,6 @@ using System.Linq;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Platform.Mac;
 using MonoDevelop.Core;
-using MonoMac.Foundation;
-using MonoMac.AppKit;
 
 namespace MonoDevelop.Platform
 {
@@ -90,6 +88,14 @@ namespace MonoDevelop.Platform
 			}
 		}
 
+		public override DesktopApplication GetDefaultApplication (string mimetype) {
+			return new DesktopApplication ();
+		}
+		
+		public override DesktopApplication [] GetAllApplications (string mimetype) {
+			return new DesktopApplication [0];
+		}
+
 		protected override string OnGetMimeTypeForUri (string uri)
 		{
 			FileInfo file = new FileInfo (uri);
@@ -107,12 +113,11 @@ namespace MonoDevelop.Platform
 		
 		internal static void OpenUrl (string url)
 		{
-			NSWorkspace.SharedWorkspace.OpenUrl (new NSUrl (url));
-		}
-		
-		public override void OpenFile (string filename)
-		{
-			NSWorkspace.SharedWorkspace.OpenFile (filename);
+			//WORKAROUND: don't pass URL directly - Mono currently uses 'open -W' which means 'open' hangs until target app exits
+			var psi = new ProcessStartInfo ("open", string.Format ("\"{0}\"", url.Replace ("\"", "\\\""))) {
+				UseShellExecute = false
+			};
+			Process.Start (psi);
 		}
 
 		public override string DefaultMonospaceFont {
@@ -263,26 +268,6 @@ namespace MonoDevelop.Platform
 			IdeApp.Workbench.RootWindow.Visible = false;
 		}
 		
-		protected override Gdk.Pixbuf OnGetPixbufForFile (string filename, Gtk.IconSize size)
-		{
-			var icon = NSWorkspace.SharedWorkspace.IconForFile (filename);
-			if (icon != null) {
-				int w, h;
-				if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out w, out h))
-					w = h = 22;
-				var rect = new System.Drawing.RectangleF (0, 0, w, h);
-				var ctx = NSGraphicsContext.CurrentContext;
-				var rep = icon.BestRepresentation (rect, ctx, new NSDictionary ()) as NSBitmapImageRep;
-				if (rep != null) {
-					var tiff = rep.TiffRepresentation;
-					byte[] arr = new byte[tiff.Length];
-					System.Runtime.InteropServices.Marshal.Copy (tiff.Bytes, arr, 0, arr.Length);
-					return new Gdk.Pixbuf (arr, rep.PixelsWide, rep.PixelsHigh);
-				}
-			}
-			return base.OnGetPixbufForFile (filename, size);
-		}
-		
 		public override IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
 		                                                            IDictionary<string, string> environmentVariables,
 		                                                            string title, bool pauseWhenFinished)
@@ -321,54 +306,6 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 					if (name != null && name.Length > len) 
 						yield return "iphsdk" + name.Substring (len);
 				}
-			}
-		}
-		
-		public override IEnumerable<DesktopApplication> GetApplications (string filename)
-		{
-			//FIXME: we should disambiguate dupliacte apps in different locations and display both
-			//for now, just filter out the duplicates
-			var checkUniqueName = new HashSet<string> ();
-			var checkUniquePath = new HashSet<string> ();
-			
-			//FIXME: bundle path is wrong because of how MD is built into an app
-			//var thisPath = NSBundle.MainBundle.BundleUrl.Path;
-			//checkUniquePath.Add (thisPath);
-			
-			checkUniqueName.Add ("MonoDevelop");
-			
-			string def = CoreFoundation.GetApplicationUrl (filename, CoreFoundation.LSRolesMask.All);
-			
-			var apps = new List<DesktopApplication> ();
-			
-			foreach (var app in CoreFoundation.GetApplicationUrls (filename, CoreFoundation.LSRolesMask.All)) {
-				if (string.IsNullOrEmpty (app) || !checkUniquePath.Add (app))
-					continue;
-				var name = NSFileManager.DefaultManager.DisplayName (app);
-				if (checkUniqueName.Add (name))
-					apps.Add (new MacDesktopApplication (app, name, def != null && def == app));
-			}
-			
-			apps.Sort ((DesktopApplication a, DesktopApplication b) => {
-				int r = a.IsDefault.CompareTo (b.IsDefault);
-				if (r != 0)
-					return -r;
-				return a.DisplayName.CompareTo (b.DisplayName);
-			});
-			
-			return apps;
-		}
-		
-		class MacDesktopApplication : DesktopApplication
-		{
-			public MacDesktopApplication (string app, string name, bool isDefault) : base (app, name, isDefault)
-			{
-			}
-			
-			public override void Launch (params string[] files)
-			{
-				foreach (var file in files)
-					NSWorkspace.SharedWorkspace.OpenFile (file, Id);
 			}
 		}
 	}

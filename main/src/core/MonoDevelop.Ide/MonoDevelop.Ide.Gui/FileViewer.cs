@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			FileViewer fv = ob as FileViewer;
 			if (fv == null) return false;
-			return binding == fv.binding || app.Equals (fv.app);
+			return binding == fv.binding || app.Command == fv.app.Command;
 		}
 		
 		public override int GetHashCode ()
@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.Gui
 			if (binding != null)
 				return binding.GetHashCode ();
 			else
-				return app.GetHashCode ();
+				return app.Command.GetHashCode ();
 		}
 		
 		public Document OpenFile (string filePath)
