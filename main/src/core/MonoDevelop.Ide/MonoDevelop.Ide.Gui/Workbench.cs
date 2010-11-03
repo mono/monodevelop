@@ -957,8 +957,14 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		public event EventHandler<DocumentEventArgs> DocumentOpened;
+
+		public void ReparseOpenDocuments ()
+		{
+			foreach (var doc in Documents) {
+				doc.UpdateParseDocument ();
+			}
+		}
 	}
-	
 
 	public class FileOpenInformation
 	{
