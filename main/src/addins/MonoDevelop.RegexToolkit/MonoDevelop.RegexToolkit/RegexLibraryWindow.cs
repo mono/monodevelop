@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Xml;
+using System.Text;
 
 namespace MonoDevelop.RegexToolkit
 {
@@ -218,6 +219,17 @@ namespace MonoDevelop.RegexToolkit
 			this.expressions = expressionList.ToArray ();
 		}
 		
+		string Validate (string text)
+		{
+			StringBuilder result = new StringBuilder ();
+			foreach (char c in text) {
+				if (c < ' ')
+					continue;
+				result.Append (c);
+			}
+			return result.ToString ();
+		}
+		
 		void WriteRegexes ()
 		{
 			Stream stream = new FileStream (LibraryLocation, FileMode.Create);
@@ -237,8 +249,8 @@ namespace MonoDevelop.RegexToolkit
 					writer.WriteAttributeString (PatternAttribute, expr.Pattern);
 					writer.WriteAttributeString (RatingAttribute, expr.Rating.ToString ());
 					writer.WriteAttributeString (TitleAttribute, expr.Title);
-					writer.WriteAttributeString (MatchingAttribute, expr.MatchingText);
-					writer.WriteAttributeString (NonMatchingAttribute, expr.NonMatchingText);
+					writer.WriteAttributeString (MatchingAttribute, Validate (expr.MatchingText));
+					writer.WriteAttributeString (NonMatchingAttribute, Validate (expr.NonMatchingText));
 					writer.WriteEndElement (); // ExpressionNode
 				}
 				
