@@ -65,7 +65,7 @@ namespace MonoDevelop.Platform
 				return null;
 		}
 		
-		IEnumerable<DesktopApplication> GetGnomeVfsApplications ()
+		IEnumerable<DesktopApplication> GetGnomeVfsApplications (string mimeType)
 		{
 			var def = GetGnomeVfsDefaultApplication (mimeType);
 			var list = new List<DesktopApplication> ();
@@ -82,8 +82,12 @@ namespace MonoDevelop.Platform
 		
 		public override IEnumerable<DesktopApplication> GetApplications (string filename)
 		{
-			var mimeType = DesktopService.GetMimeTypeForUri (fileName);
-			
+			var mimeType = GetMimeTypeForUri (filename);
+			return GetApplicationsForMimeType (mimeType);
+		}
+
+		IEnumerable<DesktopApplication> GetApplicationsForMimeType (string mimeType)
+		{
 			if (useGio)
 				return Gio.GetAllForType (mimeType);
 			else
@@ -118,8 +122,8 @@ namespace MonoDevelop.Platform
 		protected override bool OnGetMimeTypeIsText (string mimeType)
 		{
 			// If gedit can open the file, this editor also can do it
-			foreach (DesktopApplication app in GetAllApplications (mimeType))
-				if (app.Command == "gedit")
+			foreach (DesktopApplication app in GetApplicationsForMimeType (mimeType))
+				if (app.Id == "gedit")
 					return true;
 			return base.OnGetMimeTypeIsText (mimeType);
 		}
@@ -347,7 +351,7 @@ namespace MonoDevelop.Platform
 	
 	class GnomeDesktopApplication : DesktopApplication
 	{
-		public GnomeDesktopApplication (string command, string displayName) : base (command, displayName)
+		public GnomeDesktopApplication (string command, string displayName, bool isDefault) : base (command, displayName, isDefault)
 		{
 		}
 		

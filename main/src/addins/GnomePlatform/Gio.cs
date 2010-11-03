@@ -78,6 +78,7 @@ namespace MonoDevelop.Platform {
 			
 			if (!string.IsNullOrEmpty (name) && !string.IsNullOrEmpty (executable) && !executable.Contains ("monodevelop "))
 				return new GnomeDesktopApplication (executable, name, defaultApp != null && defaultApp.Id == id);
+			return null;
 		}
 
 		static IntPtr ContentTypeFromMimeType (string mime_type)
@@ -93,7 +94,7 @@ namespace MonoDevelop.Platform {
 			return content_type;
 		}
 
-		static DesktopApplication GetDefaultForType (string mime_type) 
+		public static DesktopApplication GetDefaultForType (string mime_type) 
 		{
 			IntPtr content_type = ContentTypeFromMimeType (mime_type);
 			IntPtr ret = g_app_info_get_default_for_type (content_type, false);
@@ -112,8 +113,11 @@ namespace MonoDevelop.Platform {
 			var apps = new System.Collections.Generic.List<DesktopApplication> ();
 			while (l != IntPtr.Zero) {
 				GList node = (GList) Marshal.PtrToStructure (l, typeof (GList));
-				if (node.data != IntPtr.Zero)
-					apps.Add (AppFromAppInfoPtr (node.data, def));
+				if (node.data != IntPtr.Zero) {
+					var app = AppFromAppInfoPtr (node.data, def);
+					if (app != null)
+						apps.Add (app);
+				}
 				l = node.next;
 			}
 			g_list_free (ret);
