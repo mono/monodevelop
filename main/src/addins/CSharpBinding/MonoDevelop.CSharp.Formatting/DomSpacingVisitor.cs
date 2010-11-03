@@ -303,6 +303,8 @@ namespace MonoDevelop.CSharp.Formatting
 			string currentText = data.Document.GetTextAt (offset, removedChars);
 			if (currentText == insertedText)
 				return;
+			if (currentText.Any (c => !(char.IsWhiteSpace (c) || c == '\r' || c == '\t')))
+				throw new InvalidOperationException ("Tried to remove non ws chars: '" + currentText + "'");
 			foreach (MyTextReplaceChange change in changes) {
 				if (change.Offset == offset) {
 					if (removedChars > 0 && insertedText == change.InsertedText) {
