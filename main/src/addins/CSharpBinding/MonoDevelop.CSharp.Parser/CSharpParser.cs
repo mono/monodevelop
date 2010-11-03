@@ -241,7 +241,7 @@ namespace MonoDevelop.CSharp.Parser
 			void AddType (INode child)
 			{
 				if (typeStack.Count > 0) {
-					typeStack.Peek ().AddChild (child);
+					typeStack.Peek ().AddChild (child, AbstractNode.Roles.Member);
 				} else {
 					AddToNamespace (child);
 				}
