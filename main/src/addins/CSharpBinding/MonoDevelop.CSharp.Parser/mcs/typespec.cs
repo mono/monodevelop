@@ -27,8 +27,8 @@ namespace Mono.CSharp
 		public static readonly TypeSpec[] EmptyTypes = new TypeSpec[0];
 
 		// Reflection Emit hacking
-		static Type TypeBuilder;
-		static Type GenericTypeBuilder;
+		static readonly Type TypeBuilder;
+		static readonly Type GenericTypeBuilder;
 
 		static TypeSpec ()
 		{
@@ -367,8 +367,9 @@ namespace Mono.CSharp
 			// When inflating nested type from inside the type instance will be same
 			// because type parameters are same for all nested types
 			//
-			if (DeclaringType == inflator.TypeInstance)
+			if (DeclaringType == inflator.TypeInstance) {
 				return MakeGenericType (targs);
+			}
 
 			return new InflatedTypeSpec (this, inflator.TypeInstance, targs);
 		}
@@ -380,8 +381,21 @@ namespace Mono.CSharp
 
 			InflatedTypeSpec instance;
 
-			if (inflated_instances == null)
+			if (inflated_instances == null) {
 				inflated_instances = new Dictionary<TypeSpec[], InflatedTypeSpec> (TypeSpecComparer.Default);
+
+				if (IsNested) {
+					instance = this as InflatedTypeSpec;
+					if (instance != null) {
+						//
+						// Nested types could be inflated on already inflated instances
+						// Caching this type ensured we are using same instance for
+						// inside/outside inflation using local type parameters
+						//
+						inflated_instances.Add (TypeArguments, instance);
+					}
+				}
+			}
 
 			if (!inflated_instances.TryGetValue (targs, out instance)) {
 				if (GetDefinition () != this && !IsNested)
@@ -565,21 +579,6 @@ namespace Mono.CSharp
 					return tp_b != null && tp_a.IsMethodOwned == tp_b.IsMethodOwned && tp_a.DeclaredPosition == tp_b.DeclaredPosition;
 				}
 
-				if (a.TypeArguments.Length != b.TypeArguments.Length)
-					return false;
-
-				if (a.TypeArguments.Length != 0) {
-					if (a.MemberDefinition != b.MemberDefinition)
-						return false;
-
-					for (int i = 0; i < a.TypeArguments.Length; ++i) {
-						if (!IsEqual (a.TypeArguments[i], b.TypeArguments[i]))
-							return false;
-					}
-
-					return true;
-				}
-
 				var ac_a = a as ArrayContainer;
 				if (ac_a != null) {
 					var ac_b = b as ArrayContainer;
@@ -589,7 +588,20 @@ namespace Mono.CSharp
 				if (a == InternalType.Dynamic || b == InternalType.Dynamic)
 					return b == TypeManager.object_type || a == TypeManager.object_type;
 
-				return false;
+				if (a.MemberDefinition != b.MemberDefinition)
+					return false;
+
+				do {
+					for (int i = 0; i < a.TypeArguments.Length; ++i) {
+						if (!IsEqual (a.TypeArguments[i], b.TypeArguments[i]))
+							return false;
+					}
+
+					a = a.DeclaringType;
+					b = b.DeclaringType;
+				} while (a != null);
+
+				return true;
 			}
 
 			//

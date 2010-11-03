@@ -1356,14 +1356,20 @@ namespace Mono.CSharp
 					case MemberTypes.Constructor:
 					case MemberTypes.Method:
 						MethodBase mb = (MethodBase) member;
+						var attrs = mb.Attributes;
 
-						// Ignore explicitly implemented members
-						if ((mb.Attributes & explicit_impl) == explicit_impl && (mb.Attributes & MethodAttributes.MemberAccessMask) == MethodAttributes.Private)
-							continue;
+						if ((attrs & MethodAttributes.MemberAccessMask) == MethodAttributes.Private) {
+							if (meta_import.IgnorePrivateMembers)
+								continue;
 
-						// Ignore compiler generated methods
-						if (mb.IsPrivate && mb.IsDefined (typeof (CompilerGeneratedAttribute), false))
-							continue;
+							// Ignore explicitly implemented members
+							if ((attrs & explicit_impl) == explicit_impl)
+								continue;
+
+							// Ignore compiler generated methods
+							if (mb.IsDefined (typeof (CompilerGeneratedAttribute), false))
+								continue;
+						}
 
 						imported = meta_import.CreateMethod (mb, declaringType);
 						if (imported.Kind == MemberKind.Method && !imported.IsGeneric) {

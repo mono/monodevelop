@@ -5581,7 +5581,7 @@ void case_341()
 
 		Delegate del = new Delegate (current_namespace, current_class, (FullNamedExpression) yyVals[-5+yyTop],
 					     (Modifiers) yyVals[-7+yyTop], name, p, (Attributes) yyVals[-8+yyTop]);
-		ubag.AddTypeDeclaration (del);
+
 		if (RootContext.Documentation != null) {
 			del.DocComment = Lexer.consume_doc_comment ();
 			Lexer.doc_state = XmlCommentState.Allowed;
@@ -11475,7 +11475,7 @@ void push_current_class (TypeContainer tc, object partial_token)
 
 	++lexer.parsing_declaration;
 	current_class = tc;
-	ubag.AddTypeDeclaration (tc);
+	ubag.PushTypeDeclaration (tc);
 }
 
 DeclSpace pop_current_class ()
@@ -11484,7 +11484,8 @@ DeclSpace pop_current_class ()
 
 	current_class = current_class.Parent;
 	current_container = current_class.PartialContainer;
-
+	ubag.PopTypeDeclaration ();
+	
 	return retval;
 }
 

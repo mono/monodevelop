@@ -846,10 +846,19 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 			curNamespace.Push (newNamespace);
 		}
 		
+		int typeLevel = 0;
 		[Conditional ("FULL_AST")]
-		public void AddTypeDeclaration (object type)
+		public void PushTypeDeclaration (object type)
 		{
-			curNamespace.Peek ().members.Add (type);
+			if (typeLevel == 0)
+				curNamespace.Peek ().members.Add (type);
+			typeLevel++;
+		}
+		
+		[Conditional ("FULL_AST")]
+		public void PopTypeDeclaration ()
+		{
+			typeLevel--;
 		}
 		
 		[Conditional ("FULL_AST")]
