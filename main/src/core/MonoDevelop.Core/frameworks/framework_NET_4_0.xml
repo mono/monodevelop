@@ -142,7 +142,6 @@
   <Assembly name="System.Web.Services" version="4.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
   <Assembly name="System.Windows.Forms" version="4.0.0.0" publicKeyToken="b77a5c561934e089" />
   <Assembly name="System.Xml" version="4.0.0.0" publicKeyToken="b77a5c561934e089" />
-  <Assembly name="System.Web.Mvc" version="1.0.0.0" publicKeyToken="31bf3856ad364e35" />
   <Assembly name="Commons.Xml.Relaxng" version="4.0.0.0" publicKeyToken="0738eb9f132ed756" />
   <Assembly name="Mono.C5" version="1.1.0.0" publicKeyToken="ba07f434b1c35cbd" />
   <Assembly name="Mono.CSharp" version="2.1.0.0" publicKeyToken="0738eb9f132ed756" />
