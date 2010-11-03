@@ -2645,6 +2645,9 @@ delegate_declaration
 			Lexer.doc_state = XmlCommentState.Allowed;
 		}
 
+		ubag.PushTypeDeclaration (del);
+		ubag.PopTypeDeclaration ();
+
 		current_container.AddDelegate (del);
 		current_delegate = del;
 		lexer.ConstraintsParsing = true;
