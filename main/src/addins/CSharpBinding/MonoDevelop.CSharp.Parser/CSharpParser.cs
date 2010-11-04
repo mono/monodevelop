@@ -723,7 +723,7 @@ namespace MonoDevelop.CSharp.Parser
 					newEvent.AddChild (new CSharpTokenNode (Convert (location[0]), "event".Length), EventDeclaration.Roles.Keyword);
 				newEvent.AddChild ((INode)ep.TypeName.Accept (this), EventDeclaration.Roles.ReturnType);
 				newEvent.AddChild (new Identifier (ep.MemberName.Name, Convert (ep.MemberName.Location)), EventDeclaration.Roles.Identifier);
-				if (location != null)
+				if (location != null && location.Count >= 2)
 					newEvent.AddChild (new CSharpTokenNode (Convert (location[1]), 1), EventDeclaration.Roles.LBrace);
 				
 				if (ep.Add != null) {
@@ -746,7 +746,7 @@ namespace MonoDevelop.CSharp.Parser
 						removeAccessor.AddChild ((INode)ep.Remove.Block.Accept (this), EventDeclaration.Roles.Body);
 					newEvent.AddChild (removeAccessor, EventDeclaration.EventRemoveRole);
 				}
-				if (location != null)
+				if (location != null && location.Count >= 3)
 					newEvent.AddChild (new CSharpTokenNode (Convert (location[2]), 1), EventDeclaration.Roles.RBrace);
 				
 				typeStack.Peek ().AddChild (newEvent, TypeDeclaration.Roles.Member);

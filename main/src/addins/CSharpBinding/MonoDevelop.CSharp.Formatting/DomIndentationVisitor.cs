@@ -755,6 +755,8 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		int SearchWhitespaceStart (int startOffset)
 		{
+			if (startOffset < 0)
+				throw new ArgumentOutOfRangeException ("startoffset", "value : " + startOffset);
 			for (int offset = startOffset - 1; offset >= 0; offset--) {
 				char ch = data.Document.GetCharAt (offset);
 				if (!Char.IsWhiteSpace (ch)) {
@@ -766,6 +768,8 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		int SearchWhitespaceEnd (int startOffset)
 		{
+			if (startOffset > data.Document.Length)
+				throw new ArgumentOutOfRangeException ("startoffset", "value : " + startOffset);
 			for (int offset = startOffset + 1; offset < data.Document.Length; offset++) {
 				char ch = data.Document.GetCharAt (offset);
 				if (!Char.IsWhiteSpace (ch)) {
@@ -777,6 +781,8 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		int SearchWhitespaceLineStart (int startOffset)
 		{
+			if (startOffset < 0)
+				throw new ArgumentOutOfRangeException ("startoffset", "value : " + startOffset);
 			for (int offset = startOffset - 1; offset >= 0; offset--) {
 				char ch = data.Document.GetCharAt (offset);
 				if (ch != ' ' && ch != '\t') {
@@ -968,7 +974,7 @@ namespace MonoDevelop.CSharp.Formatting
 		void FixStatementIndentation (MonoDevelop.Projects.Dom.DomLocation location)
 		{
 			int offset = data.Document.LocationToOffset (location.Line, location.Column);
-			if (offset == 0) {
+			if (offset <= 0) {
 				Console.WriteLine ("possible wrong offset");
 				Console.WriteLine (Environment.StackTrace);
 				return;
