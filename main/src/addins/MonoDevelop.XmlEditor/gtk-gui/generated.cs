@@ -6,7 +6,7 @@ namespace Stetic
 	{
 		private static bool initialized;
 
-		static internal void Initialize (Gtk.Widget iconRenderer)
+		internal static void Initialize (Gtk.Widget iconRenderer)
 		{
 			if ((Stetic.Gui.initialized == false)) {
 				Stetic.Gui.initialized = true;
@@ -17,7 +17,6 @@ namespace Stetic
 	internal class BinContainer
 	{
 		private Gtk.Widget child;
-
 		private Gtk.UIManager uimanager;
 
 		public static BinContainer Attach (Gtk.Bin bin)

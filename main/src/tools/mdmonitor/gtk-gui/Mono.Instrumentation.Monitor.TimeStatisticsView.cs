@@ -5,15 +5,10 @@ namespace Mono.Instrumentation.Monitor
 	public partial class TimeStatisticsView
 	{
 		private global::Gtk.VBox vbox3;
-
 		private global::Gtk.HBox hbox3;
-
 		private global::Gtk.Button buttonUpdate;
-
 		private global::Gtk.CheckButton checkShowCats;
-
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-
 		private global::Gtk.TreeView treeView;
 
 		protected virtual void Build ()
@@ -38,7 +33,7 @@ namespace Mono.Instrumentation.Monitor
 			this.buttonUpdate.UseUnderline = true;
 			this.buttonUpdate.Label = "gtk-refresh";
 			this.hbox3.Add (this.buttonUpdate);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.buttonUpdate]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.buttonUpdate]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -50,10 +45,10 @@ namespace Mono.Instrumentation.Monitor
 			this.checkShowCats.DrawIndicator = true;
 			this.checkShowCats.UseUnderline = true;
 			this.hbox3.Add (this.checkShowCats);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.checkShowCats]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.checkShowCats]));
 			w2.Position = 1;
 			this.vbox3.Add (this.hbox3);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.hbox3]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.hbox3]));
 			w3.Position = 0;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -68,7 +63,7 @@ namespace Mono.Instrumentation.Monitor
 			this.treeView.RulesHint = true;
 			this.GtkScrolledWindow.Add (this.treeView);
 			this.vbox3.Add (this.GtkScrolledWindow);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.GtkScrolledWindow]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.GtkScrolledWindow]));
 			w5.Position = 1;
 			this.Add (this.vbox3);
 			if ((this.Child != null)) {

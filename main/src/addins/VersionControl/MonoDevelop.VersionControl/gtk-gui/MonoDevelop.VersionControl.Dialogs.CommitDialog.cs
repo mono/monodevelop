@@ -5,25 +5,16 @@ namespace MonoDevelop.VersionControl.Dialogs
 	internal partial class CommitDialog
 	{
 		private global::Gtk.VBox mainBox;
-		
 		private global::Gtk.Label label1;
-		
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-		
 		private global::Gtk.TreeView fileList;
-		
 		private global::Gtk.VBox vboxExtensions;
-		
 		private global::Gtk.ScrolledWindow scrolledwindow2;
-		
 		private global::Gtk.TextView textview;
-		
 		private global::Gtk.Label label2;
-		
 		private global::Gtk.Button button29;
-		
 		private global::Gtk.Button button31;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -123,7 +114,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.button29.UseStock = true;
 			this.button29.UseUnderline = true;
 			this.button29.Label = "gtk-cancel";
-			this.AddActionWidget (this.button29,-6);
+			this.AddActionWidget (this.button29, -6);
 			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.button29]));
 			w11.Expand = false;
 			w11.Fill = false;
@@ -140,7 +131,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			w13.Spacing = 2;
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Image w14 = new global::Gtk.Image ();
-			w14.Pixbuf = global::Stetic.IconLoader.LoadIcon (this,"vc-commit",global::Gtk.IconSize.Menu);
+			w14.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "vc-commit", global::Gtk.IconSize.Menu);
 			w13.Add (w14);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w16 = new global::Gtk.Label ();
@@ -149,7 +140,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			w13.Add (w16);
 			w12.Add (w13);
 			this.button31.Add (w12);
-			this.AddActionWidget (this.button31,-5);
+			this.AddActionWidget (this.button31, -5);
 			global::Gtk.ButtonBox.ButtonBoxChild w20 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.button31]));
 			w20.Position = 1;
 			w20.Expand = false;

@@ -5,59 +5,32 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 	public partial class AddViewDialog
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Table table1;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.Label label4;
-
 		private global::Gtk.Entry nameEntry;
-
 		private global::Gtk.ComboBox templateCombo;
-
 		private global::Gtk.Frame frame1;
-
 		private global::Gtk.Alignment alignment1;
-
 		private global::Gtk.VBox vbox4;
-
 		private global::Gtk.CheckButton partialCheck;
-
 		private global::Gtk.CheckButton stronglyTypedCheck;
-
 		private global::Gtk.Alignment typePanel;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Label label3;
-
 		private global::Gtk.Alignment dataClassAlignment;
-
 		private global::Gtk.CheckButton masterCheck;
-
 		private global::Gtk.Alignment masterPanel;
-
 		private global::Gtk.VBox vbox3;
-
 		private global::Gtk.HBox hbox4;
-
 		private global::Gtk.Label label5;
-
 		private global::Gtk.Entry masterEntry;
-
 		private global::Gtk.Button masterButton;
-
 		private global::Gtk.HBox hbox3;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.ComboBoxEntry primaryPlaceholderCombo;
-
 		private global::Gtk.Label GtkLabel6;
-
 		private global::Gtk.Button buttonCancel;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -86,21 +59,21 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			// Container child table1.Gtk.Table+TableChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("_Name:");
 			this.label1.UseUnderline = true;
 			this.table1.Add (this.label1);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1[this.label1]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.label1]));
 			w2.XOptions = ((global::Gtk.AttachOptions)(4));
 			w2.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label4 = new global::Gtk.Label ();
 			this.label4.Name = "label4";
-			this.label4.Xalign = 0f;
+			this.label4.Xalign = 0F;
 			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("_Template:");
 			this.label4.UseUnderline = true;
 			this.table1.Add (this.label4);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1[this.label4]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.label4]));
 			w3.TopAttach = ((uint)(1));
 			w3.BottomAttach = ((uint)(2));
 			w3.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -112,7 +85,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			this.nameEntry.IsEditable = true;
 			this.nameEntry.InvisibleChar = '●';
 			this.table1.Add (this.nameEntry);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1[this.nameEntry]));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.nameEntry]));
 			w4.LeftAttach = ((uint)(1));
 			w4.RightAttach = ((uint)(2));
 			w4.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -120,7 +93,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			this.templateCombo = global::Gtk.ComboBox.NewText ();
 			this.templateCombo.Name = "templateCombo";
 			this.table1.Add (this.templateCombo);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1[this.templateCombo]));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.templateCombo]));
 			w5.TopAttach = ((uint)(1));
 			w5.BottomAttach = ((uint)(2));
 			w5.LeftAttach = ((uint)(1));
@@ -128,7 +101,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			w5.XOptions = ((global::Gtk.AttachOptions)(4));
 			w5.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox2.Add (this.table1);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.table1]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.table1]));
 			w6.Position = 0;
 			w6.Expand = false;
 			w6.Fill = false;
@@ -138,7 +111,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			this.frame1.ShadowType = ((global::Gtk.ShadowType)(1));
 			this.frame1.BorderWidth = ((uint)(2));
 			// Container child frame1.Gtk.Container+ContainerChild
-			this.alignment1 = new global::Gtk.Alignment (0.5f, 0.5f, 1f, 1f);
+			this.alignment1 = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
 			this.alignment1.Name = "alignment1";
 			this.alignment1.LeftPadding = ((uint)(4));
 			this.alignment1.TopPadding = ((uint)(4));
@@ -156,7 +129,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			this.partialCheck.DrawIndicator = true;
 			this.partialCheck.UseUnderline = true;
 			this.vbox4.Add (this.partialCheck);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.partialCheck]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.partialCheck]));
 			w7.Position = 0;
 			w7.Expand = false;
 			w7.Fill = false;
@@ -168,12 +141,12 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			this.stronglyTypedCheck.DrawIndicator = true;
 			this.stronglyTypedCheck.UseUnderline = true;
 			this.vbox4.Add (this.stronglyTypedCheck);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.stronglyTypedCheck]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.stronglyTypedCheck]));
 			w8.Position = 1;
 			w8.Expand = false;
 			w8.Fill = false;
 			// Container child vbox4.Gtk.Box+BoxChild
-			this.typePanel = new global::Gtk.Alignment (0f, 0f, 1f, 1f);
+			this.typePanel = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
 			this.typePanel.Name = "typePanel";
 			this.typePanel.LeftPadding = ((uint)(24));
 			// Container child typePanel.Gtk.Container+ContainerChild
@@ -183,23 +156,23 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.Xalign = 0f;
+			this.label3.Xalign = 0F;
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("_Data class:");
 			this.label3.UseUnderline = true;
 			this.hbox1.Add (this.label3);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label3]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label3]));
 			w9.Position = 0;
 			w9.Expand = false;
 			w9.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.dataClassAlignment = new global::Gtk.Alignment (0.5f, 0.5f, 1f, 1f);
+			this.dataClassAlignment = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
 			this.dataClassAlignment.Name = "dataClassAlignment";
 			this.hbox1.Add (this.dataClassAlignment);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.dataClassAlignment]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.dataClassAlignment]));
 			w10.Position = 1;
 			this.typePanel.Add (this.hbox1);
 			this.vbox4.Add (this.typePanel);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.typePanel]));
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.typePanel]));
 			w12.Position = 2;
 			w12.Fill = false;
 			// Container child vbox4.Gtk.Box+BoxChild
@@ -210,12 +183,12 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			this.masterCheck.DrawIndicator = true;
 			this.masterCheck.UseUnderline = true;
 			this.vbox4.Add (this.masterCheck);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.masterCheck]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.masterCheck]));
 			w13.Position = 3;
 			w13.Expand = false;
 			w13.Fill = false;
 			// Container child vbox4.Gtk.Box+BoxChild
-			this.masterPanel = new global::Gtk.Alignment (0f, 0f, 1f, 1f);
+			this.masterPanel = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
 			this.masterPanel.Name = "masterPanel";
 			this.masterPanel.LeftPadding = ((uint)(24));
 			// Container child masterPanel.Gtk.Container+ContainerChild
@@ -232,7 +205,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			this.label5.LabelProp = global::Mono.Unix.Catalog.GetString ("_File:");
 			this.label5.UseUnderline = true;
 			this.hbox4.Add (this.label5);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox4[this.label5]));
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.label5]));
 			w14.Position = 0;
 			w14.Expand = false;
 			w14.Fill = false;
@@ -243,7 +216,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			this.masterEntry.IsEditable = true;
 			this.masterEntry.InvisibleChar = '●';
 			this.hbox4.Add (this.masterEntry);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.hbox4[this.masterEntry]));
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.masterEntry]));
 			w15.Position = 1;
 			// Container child hbox4.Gtk.Box+BoxChild
 			this.masterButton = new global::Gtk.Button ();
@@ -252,12 +225,12 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			this.masterButton.UseUnderline = true;
 			this.masterButton.Label = global::Mono.Unix.Catalog.GetString ("...");
 			this.hbox4.Add (this.masterButton);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.hbox4[this.masterButton]));
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.masterButton]));
 			w16.Position = 2;
 			w16.Expand = false;
 			w16.Fill = false;
 			this.vbox3.Add (this.hbox4);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.hbox4]));
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.hbox4]));
 			w17.Position = 0;
 			w17.Expand = false;
 			w17.Fill = false;
@@ -271,7 +244,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("P_rimary placeholder: ");
 			this.label2.UseUnderline = true;
 			this.hbox3.Add (this.label2);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.label2]));
+			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.label2]));
 			w18.Position = 0;
 			w18.Expand = false;
 			w18.Fill = false;
@@ -280,16 +253,16 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			this.primaryPlaceholderCombo.WidthRequest = 250;
 			this.primaryPlaceholderCombo.Name = "primaryPlaceholderCombo";
 			this.hbox3.Add (this.primaryPlaceholderCombo);
-			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.primaryPlaceholderCombo]));
+			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.primaryPlaceholderCombo]));
 			w19.Position = 1;
 			this.vbox3.Add (this.hbox3);
-			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.hbox3]));
+			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.hbox3]));
 			w20.Position = 1;
 			w20.Expand = false;
 			w20.Fill = false;
 			this.masterPanel.Add (this.vbox3);
 			this.vbox4.Add (this.masterPanel);
-			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.masterPanel]));
+			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.masterPanel]));
 			w22.Position = 4;
 			w22.Expand = false;
 			w22.Fill = false;
@@ -300,12 +273,12 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			this.GtkLabel6.LabelProp = global::Mono.Unix.Catalog.GetString ("Options");
 			this.frame1.LabelWidget = this.GtkLabel6;
 			this.vbox2.Add (this.frame1);
-			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.frame1]));
+			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.frame1]));
 			w25.Position = 1;
 			w25.Expand = false;
 			w25.Fill = false;
 			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(w1[this.vbox2]));
+			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
 			w26.Position = 0;
 			w26.Expand = false;
 			w26.Fill = false;
@@ -324,7 +297,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w28 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w27[this.buttonCancel]));
+			global::Gtk.ButtonBox.ButtonBoxChild w28 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w27 [this.buttonCancel]));
 			w28.Expand = false;
 			w28.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -336,7 +309,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w29 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w27[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w29 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w27 [this.buttonOk]));
 			w29.Position = 1;
 			w29.Expand = false;
 			w29.Fill = false;

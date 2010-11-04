@@ -5,19 +5,12 @@ namespace MonoDevelop.Deployment.Gui
 	internal partial class InstallDialog
 	{
 		private global::Gtk.VBox vbox1;
-
 		private global::Gtk.Label label1;
-
 		private global::MonoDevelop.Components.FolderEntry folderEntry;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Entry nameEntry;
-
 		private global::Gtk.Button button19;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -41,10 +34,10 @@ namespace MonoDevelop.Deployment.Gui
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Directory prefix:");
 			this.vbox1.Add (this.label1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.label1]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.label1]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -53,17 +46,17 @@ namespace MonoDevelop.Deployment.Gui
 			this.folderEntry.Name = "folderEntry";
 			this.folderEntry.BrowserTitle = "Select Directory";
 			this.vbox1.Add (this.folderEntry);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.folderEntry]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.folderEntry]));
 			w3.Position = 1;
 			w3.Expand = false;
 			w3.Fill = false;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.Xalign = 0f;
+			this.label2.Xalign = 0F;
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Application name (to use as subdirectory name in the installation prefix):");
 			this.vbox1.Add (this.label2);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.label2]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.label2]));
 			w4.Position = 2;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -78,16 +71,16 @@ namespace MonoDevelop.Deployment.Gui
 			this.nameEntry.IsEditable = true;
 			this.nameEntry.InvisibleChar = '●';
 			this.hbox1.Add (this.nameEntry);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.nameEntry]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.nameEntry]));
 			w5.Position = 0;
 			w5.Expand = false;
 			this.vbox1.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.hbox1]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox1]));
 			w6.Position = 3;
 			w6.Expand = false;
 			w6.Fill = false;
 			w1.Add (this.vbox1);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(w1[this.vbox1]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox1]));
 			w7.Position = 0;
 			w7.Expand = false;
 			w7.Fill = false;
@@ -106,7 +99,7 @@ namespace MonoDevelop.Deployment.Gui
 			this.button19.UseUnderline = true;
 			this.button19.Label = "gtk-cancel";
 			this.AddActionWidget (this.button19, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8[this.button19]));
+			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8 [this.button19]));
 			w9.Expand = false;
 			w9.Fill = false;
 			// Container child MonoDevelop.Deployment.InstallDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -118,7 +111,7 @@ namespace MonoDevelop.Deployment.Gui
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w10 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w10 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8 [this.buttonOk]));
 			w10.Position = 1;
 			w10.Expand = false;
 			w10.Fill = false;

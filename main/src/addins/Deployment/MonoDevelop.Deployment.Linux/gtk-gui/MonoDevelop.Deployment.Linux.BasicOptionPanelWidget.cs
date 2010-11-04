@@ -5,23 +5,14 @@ namespace MonoDevelop.Deployment.Linux
 	public partial class BasicOptionPanelWidget
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.VBox boxExe;
-
 		private global::Gtk.CheckButton checkScript;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Label label3;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.Entry entryScript;
-
 		private global::Gtk.CheckButton checkDesktop;
-
 		private global::Gtk.VBox boxLibrary;
-
 		private global::Gtk.CheckButton checkPcFile;
 
 		protected virtual void Build ()
@@ -48,7 +39,7 @@ namespace MonoDevelop.Deployment.Linux
 			this.checkScript.Label = global::Mono.Unix.Catalog.GetString ("Generate launch script");
 			this.checkScript.DrawIndicator = true;
 			this.boxExe.Add (this.checkScript);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.boxExe[this.checkScript]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.boxExe [this.checkScript]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -63,7 +54,7 @@ namespace MonoDevelop.Deployment.Linux
 			this.label3.CanFocus = true;
 			this.label3.Name = "label3";
 			this.hbox1.Add (this.label3);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label3]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label3]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -72,7 +63,7 @@ namespace MonoDevelop.Deployment.Linux
 			this.label2.Name = "label2";
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Script name:");
 			this.hbox1.Add (this.label2);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label2]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label2]));
 			w3.Position = 1;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -83,10 +74,10 @@ namespace MonoDevelop.Deployment.Linux
 			this.entryScript.IsEditable = true;
 			this.entryScript.InvisibleChar = '●';
 			this.hbox1.Add (this.entryScript);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.entryScript]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.entryScript]));
 			w4.Position = 2;
 			this.boxExe.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.boxExe[this.hbox1]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.boxExe [this.hbox1]));
 			w5.Position = 1;
 			w5.Expand = false;
 			w5.Fill = false;
@@ -97,12 +88,12 @@ namespace MonoDevelop.Deployment.Linux
 			this.checkDesktop.Label = global::Mono.Unix.Catalog.GetString ("Generate .desktop file");
 			this.checkDesktop.DrawIndicator = true;
 			this.boxExe.Add (this.checkDesktop);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.boxExe[this.checkDesktop]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.boxExe [this.checkDesktop]));
 			w6.Position = 2;
 			w6.Expand = false;
 			w6.Fill = false;
 			this.vbox2.Add (this.boxExe);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.boxExe]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.boxExe]));
 			w7.Position = 0;
 			w7.Expand = false;
 			w7.Fill = false;
@@ -117,12 +108,12 @@ namespace MonoDevelop.Deployment.Linux
 			this.checkPcFile.Label = global::Mono.Unix.Catalog.GetString ("Generate .pc file for the library");
 			this.checkPcFile.DrawIndicator = true;
 			this.boxLibrary.Add (this.checkPcFile);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.boxLibrary[this.checkPcFile]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.boxLibrary [this.checkPcFile]));
 			w8.Position = 0;
 			w8.Expand = false;
 			w8.Fill = false;
 			this.vbox2.Add (this.boxLibrary);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.boxLibrary]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.boxLibrary]));
 			w9.Position = 1;
 			w9.Expand = false;
 			w9.Fill = false;

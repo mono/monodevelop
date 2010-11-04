@@ -5,35 +5,20 @@ namespace MonoDevelop.XmlEditor.Gui
 	public partial class XmlSchemasPanelWidget
 	{
 		private global::Gtk.VBox vbox1;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-
 		private global::Gtk.TreeView registeredSchemasView;
-
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Button registeredSchemasAddButton;
-
 		private global::Gtk.Button registeredSchemasRemoveButton;
-
 		private global::Gtk.Label label3;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.HBox hbox2;
-
 		private global::Gtk.ScrolledWindow GtkScrolledWindow1;
-
 		private global::Gtk.TreeView defaultAssociationsView;
-
 		private global::Gtk.VBox vbox3;
-
 		private global::Gtk.Button defaultAssociationsAddButton;
-
 		private global::Gtk.Button defaultAssociationsRemoveButton;
 
 		protected virtual void Build ()
@@ -49,11 +34,11 @@ namespace MonoDevelop.XmlEditor.Gui
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Registered Schemas</b>");
 			this.label1.UseMarkup = true;
 			this.vbox1.Add (this.label1);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.label1]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.label1]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -71,7 +56,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			this.registeredSchemasView.Name = "registeredSchemasView";
 			this.GtkScrolledWindow.Add (this.registeredSchemasView);
 			this.hbox1.Add (this.GtkScrolledWindow);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.GtkScrolledWindow]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.GtkScrolledWindow]));
 			w3.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.vbox2 = new global::Gtk.VBox ();
@@ -85,7 +70,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			this.registeredSchemasAddButton.UseUnderline = true;
 			this.registeredSchemasAddButton.Label = "gtk-add";
 			this.vbox2.Add (this.registeredSchemasAddButton);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.registeredSchemasAddButton]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.registeredSchemasAddButton]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -97,34 +82,34 @@ namespace MonoDevelop.XmlEditor.Gui
 			this.registeredSchemasRemoveButton.UseUnderline = true;
 			this.registeredSchemasRemoveButton.Label = "gtk-remove";
 			this.vbox2.Add (this.registeredSchemasRemoveButton);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.registeredSchemasRemoveButton]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.registeredSchemasRemoveButton]));
 			w5.Position = 1;
 			w5.Expand = false;
 			w5.Fill = false;
 			this.hbox1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.vbox2]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox2]));
 			w6.Position = 1;
 			w6.Expand = false;
 			w6.Fill = false;
 			this.vbox1.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.hbox1]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox1]));
 			w7.Position = 1;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
 			this.vbox1.Add (this.label3);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.label3]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.label3]));
 			w8.Position = 2;
 			w8.Expand = false;
 			w8.Fill = false;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.Xalign = 0f;
+			this.label2.Xalign = 0F;
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Default File Associations</b>");
 			this.label2.UseMarkup = true;
 			this.vbox1.Add (this.label2);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.label2]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.label2]));
 			w9.Position = 3;
 			w9.Expand = false;
 			w9.Fill = false;
@@ -142,7 +127,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			this.defaultAssociationsView.Name = "defaultAssociationsView";
 			this.GtkScrolledWindow1.Add (this.defaultAssociationsView);
 			this.hbox2.Add (this.GtkScrolledWindow1);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.GtkScrolledWindow1]));
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.GtkScrolledWindow1]));
 			w11.Position = 0;
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.vbox3 = new global::Gtk.VBox ();
@@ -156,7 +141,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			this.defaultAssociationsAddButton.UseUnderline = true;
 			this.defaultAssociationsAddButton.Label = "gtk-add";
 			this.vbox3.Add (this.defaultAssociationsAddButton);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.defaultAssociationsAddButton]));
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.defaultAssociationsAddButton]));
 			w12.Position = 0;
 			w12.Expand = false;
 			w12.Fill = false;
@@ -168,17 +153,17 @@ namespace MonoDevelop.XmlEditor.Gui
 			this.defaultAssociationsRemoveButton.UseUnderline = true;
 			this.defaultAssociationsRemoveButton.Label = "gtk-remove";
 			this.vbox3.Add (this.defaultAssociationsRemoveButton);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.defaultAssociationsRemoveButton]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.defaultAssociationsRemoveButton]));
 			w13.Position = 1;
 			w13.Expand = false;
 			w13.Fill = false;
 			this.hbox2.Add (this.vbox3);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.vbox3]));
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.vbox3]));
 			w14.Position = 1;
 			w14.Expand = false;
 			w14.Fill = false;
 			this.vbox1.Add (this.hbox2);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.hbox2]));
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox2]));
 			w15.Position = 4;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {

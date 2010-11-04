@@ -5,15 +5,10 @@ namespace MonoDevelop.AspNet.Gui
 	internal partial class AspNetConfigurationPanelWidget
 	{
 		private global::Gtk.VBox vbox1;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.CheckButton disableCodeBehindGeneration;
 
 		protected virtual void Build ()
@@ -29,10 +24,10 @@ namespace MonoDevelop.AspNet.Gui
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Code Generation");
 			this.vbox1.Add (this.label1);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.label1]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.label1]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -45,7 +40,7 @@ namespace MonoDevelop.AspNet.Gui
 			this.label2.WidthRequest = 18;
 			this.label2.Name = "label2";
 			this.hbox1.Add (this.label2);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label2]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label2]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -61,15 +56,15 @@ namespace MonoDevelop.AspNet.Gui
 			this.disableCodeBehindGeneration.DrawIndicator = true;
 			this.disableCodeBehindGeneration.UseUnderline = true;
 			this.vbox2.Add (this.disableCodeBehindGeneration);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.disableCodeBehindGeneration]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.disableCodeBehindGeneration]));
 			w3.Position = 0;
 			w3.Expand = false;
 			w3.Fill = false;
 			this.hbox1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.vbox2]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox2]));
 			w4.Position = 1;
 			this.vbox1.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.hbox1]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox1]));
 			w5.Position = 1;
 			w5.Expand = false;
 			w5.Fill = false;

@@ -5,55 +5,30 @@ namespace MonoDevelop.DocFood.Options
 	public partial class OfTheReorderingWidget
 	{
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.ScrolledWindow GtkScrolledWindow1;
-
 		private global::Gtk.TextView textview1;
-
 		private global::Gtk.VBox vbox5;
-
 		private global::Gtk.VBox vbox1;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.HBox hbox3;
-
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-
 		private global::Gtk.TreeView treeviewAcronyms;
-
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Button button2;
-
 		private global::Gtk.HBox hbox2;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.Entry entry1;
-
 		private global::Gtk.Button button1;
-
 		private global::Gtk.VBox vbox3;
-
 		private global::Gtk.Label label3;
-
 		private global::Gtk.HBox hbox4;
-
 		private global::Gtk.ScrolledWindow GtkScrolledWindow2;
-
 		private global::Gtk.TreeView treeviewAcronyms1;
-
 		private global::Gtk.VBox vbox4;
-
 		private global::Gtk.Button button3;
-
 		private global::Gtk.HBox hbox5;
-
 		private global::Gtk.Label label4;
-
 		private global::Gtk.Entry entry2;
-
 		private global::Gtk.Button button4;
 
 		protected virtual void Build ()
@@ -80,7 +55,7 @@ namespace MonoDevelop.DocFood.Options
 			this.textview1.WrapMode = ((global::Gtk.WrapMode)(2));
 			this.GtkScrolledWindow1.Add (this.textview1);
 			this.hbox1.Add (this.GtkScrolledWindow1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.GtkScrolledWindow1]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.GtkScrolledWindow1]));
 			w2.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.vbox5 = new global::Gtk.VBox ();
@@ -93,11 +68,11 @@ namespace MonoDevelop.DocFood.Options
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("\"of the\" reordering words:");
 			this.label1.UseUnderline = true;
 			this.vbox1.Add (this.label1);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.label1]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.label1]));
 			w3.Position = 0;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -115,7 +90,7 @@ namespace MonoDevelop.DocFood.Options
 			this.treeviewAcronyms.Name = "treeviewAcronyms";
 			this.GtkScrolledWindow.Add (this.treeviewAcronyms);
 			this.hbox3.Add (this.GtkScrolledWindow);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.GtkScrolledWindow]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.GtkScrolledWindow]));
 			w5.Position = 0;
 			// Container child hbox3.Gtk.Box+BoxChild
 			this.vbox2 = new global::Gtk.VBox ();
@@ -129,17 +104,17 @@ namespace MonoDevelop.DocFood.Options
 			this.button2.UseUnderline = true;
 			this.button2.Label = "gtk-remove";
 			this.vbox2.Add (this.button2);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.button2]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.button2]));
 			w6.Position = 0;
 			w6.Expand = false;
 			w6.Fill = false;
 			this.hbox3.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.vbox2]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.vbox2]));
 			w7.Position = 1;
 			w7.Expand = false;
 			w7.Fill = false;
 			this.vbox1.Add (this.hbox3);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.hbox3]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox3]));
 			w8.Position = 1;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.hbox2 = new global::Gtk.HBox ();
@@ -151,7 +126,7 @@ namespace MonoDevelop.DocFood.Options
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("A_cronym:");
 			this.label2.UseUnderline = true;
 			this.hbox2.Add (this.label2);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.label2]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.label2]));
 			w9.Position = 0;
 			w9.Expand = false;
 			w9.Fill = false;
@@ -162,7 +137,7 @@ namespace MonoDevelop.DocFood.Options
 			this.entry1.IsEditable = true;
 			this.entry1.InvisibleChar = '●';
 			this.hbox2.Add (this.entry1);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.entry1]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.entry1]));
 			w10.Position = 1;
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.button1 = new global::Gtk.Button ();
@@ -172,17 +147,17 @@ namespace MonoDevelop.DocFood.Options
 			this.button1.UseUnderline = true;
 			this.button1.Label = "gtk-add";
 			this.hbox2.Add (this.button1);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.button1]));
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.button1]));
 			w11.Position = 2;
 			w11.Expand = false;
 			w11.Fill = false;
 			this.vbox1.Add (this.hbox2);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.hbox2]));
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox2]));
 			w12.Position = 2;
 			w12.Expand = false;
 			w12.Fill = false;
 			this.vbox5.Add (this.vbox1);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.vbox1]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.vbox1]));
 			w13.Position = 0;
 			// Container child vbox5.Gtk.Box+BoxChild
 			this.vbox3 = new global::Gtk.VBox ();
@@ -191,11 +166,11 @@ namespace MonoDevelop.DocFood.Options
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.Xalign = 0f;
+			this.label3.Xalign = 0F;
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Prefix words for the reordering:");
 			this.label3.UseUnderline = true;
 			this.vbox3.Add (this.label3);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.label3]));
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.label3]));
 			w14.Position = 0;
 			w14.Expand = false;
 			w14.Fill = false;
@@ -213,7 +188,7 @@ namespace MonoDevelop.DocFood.Options
 			this.treeviewAcronyms1.Name = "treeviewAcronyms1";
 			this.GtkScrolledWindow2.Add (this.treeviewAcronyms1);
 			this.hbox4.Add (this.GtkScrolledWindow2);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.hbox4[this.GtkScrolledWindow2]));
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.GtkScrolledWindow2]));
 			w16.Position = 0;
 			// Container child hbox4.Gtk.Box+BoxChild
 			this.vbox4 = new global::Gtk.VBox ();
@@ -227,17 +202,17 @@ namespace MonoDevelop.DocFood.Options
 			this.button3.UseUnderline = true;
 			this.button3.Label = "gtk-remove";
 			this.vbox4.Add (this.button3);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.button3]));
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.button3]));
 			w17.Position = 0;
 			w17.Expand = false;
 			w17.Fill = false;
 			this.hbox4.Add (this.vbox4);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.hbox4[this.vbox4]));
+			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.vbox4]));
 			w18.Position = 1;
 			w18.Expand = false;
 			w18.Fill = false;
 			this.vbox3.Add (this.hbox4);
-			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.hbox4]));
+			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.hbox4]));
 			w19.Position = 1;
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.hbox5 = new global::Gtk.HBox ();
@@ -249,7 +224,7 @@ namespace MonoDevelop.DocFood.Options
 			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("A_cronym:");
 			this.label4.UseUnderline = true;
 			this.hbox5.Add (this.label4);
-			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.hbox5[this.label4]));
+			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.label4]));
 			w20.Position = 0;
 			w20.Expand = false;
 			w20.Fill = false;
@@ -260,7 +235,7 @@ namespace MonoDevelop.DocFood.Options
 			this.entry2.IsEditable = true;
 			this.entry2.InvisibleChar = '●';
 			this.hbox5.Add (this.entry2);
-			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.hbox5[this.entry2]));
+			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.entry2]));
 			w21.Position = 1;
 			// Container child hbox5.Gtk.Box+BoxChild
 			this.button4 = new global::Gtk.Button ();
@@ -270,20 +245,20 @@ namespace MonoDevelop.DocFood.Options
 			this.button4.UseUnderline = true;
 			this.button4.Label = "gtk-add";
 			this.hbox5.Add (this.button4);
-			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.hbox5[this.button4]));
+			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.button4]));
 			w22.Position = 2;
 			w22.Expand = false;
 			w22.Fill = false;
 			this.vbox3.Add (this.hbox5);
-			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.hbox5]));
+			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.hbox5]));
 			w23.Position = 2;
 			w23.Expand = false;
 			w23.Fill = false;
 			this.vbox5.Add (this.vbox3);
-			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.vbox3]));
+			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.vbox3]));
 			w24.Position = 1;
 			this.hbox1.Add (this.vbox5);
-			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.vbox5]));
+			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox5]));
 			w25.Position = 1;
 			w25.Expand = false;
 			w25.Fill = false;

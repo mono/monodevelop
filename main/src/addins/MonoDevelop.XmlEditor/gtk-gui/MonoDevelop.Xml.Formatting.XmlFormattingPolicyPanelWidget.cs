@@ -5,31 +5,18 @@ namespace MonoDevelop.Xml.Formatting
 	internal partial class XmlFormattingPolicyPanelWidget
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.VBox boxScopes;
-
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-
 		private global::Gtk.TreeView listView;
-
 		private global::Gtk.HBox hbox2;
-
 		private global::Gtk.Button buttonAdd;
-
 		private global::Gtk.Button buttonRemove;
-
 		private global::Gtk.VBox vbox4;
-
 		private global::Gtk.Label labelScopes;
-
 		private global::Gtk.Table tableScopes;
-
 		private global::MonoDevelop.Components.PropertyGrid.PropertyGrid propertyGrid;
-
 		private global::Gtk.HBox hbox3;
-
 		private global::Gtk.Button buttonAdvanced;
 
 		protected virtual void Build ()
@@ -61,7 +48,7 @@ namespace MonoDevelop.Xml.Formatting
 			this.listView.HeadersVisible = false;
 			this.GtkScrolledWindow.Add (this.listView);
 			this.boxScopes.Add (this.GtkScrolledWindow);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.boxScopes[this.GtkScrolledWindow]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.boxScopes [this.GtkScrolledWindow]));
 			w2.Position = 0;
 			// Container child boxScopes.Gtk.Box+BoxChild
 			this.hbox2 = new global::Gtk.HBox ();
@@ -75,7 +62,7 @@ namespace MonoDevelop.Xml.Formatting
 			this.buttonAdd.UseUnderline = true;
 			this.buttonAdd.Label = "gtk-add";
 			this.hbox2.Add (this.buttonAdd);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.buttonAdd]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.buttonAdd]));
 			w3.Position = 0;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -87,17 +74,17 @@ namespace MonoDevelop.Xml.Formatting
 			this.buttonRemove.UseUnderline = true;
 			this.buttonRemove.Label = "gtk-remove";
 			this.hbox2.Add (this.buttonRemove);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.buttonRemove]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.buttonRemove]));
 			w4.Position = 1;
 			w4.Expand = false;
 			w4.Fill = false;
 			this.boxScopes.Add (this.hbox2);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.boxScopes[this.hbox2]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.boxScopes [this.hbox2]));
 			w5.Position = 1;
 			w5.Expand = false;
 			w5.Fill = false;
 			this.hbox1.Add (this.boxScopes);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.boxScopes]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.boxScopes]));
 			w6.Position = 0;
 			w6.Expand = false;
 			w6.Fill = false;
@@ -108,10 +95,10 @@ namespace MonoDevelop.Xml.Formatting
 			// Container child vbox4.Gtk.Box+BoxChild
 			this.labelScopes = new global::Gtk.Label ();
 			this.labelScopes.Name = "labelScopes";
-			this.labelScopes.Xalign = 0f;
+			this.labelScopes.Xalign = 0F;
 			this.labelScopes.LabelProp = global::Mono.Unix.Catalog.GetString ("Enter one or several xpath expressions to which this format applies:");
 			this.vbox4.Add (this.labelScopes);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.labelScopes]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.labelScopes]));
 			w7.Position = 0;
 			w7.Expand = false;
 			w7.Fill = false;
@@ -121,7 +108,7 @@ namespace MonoDevelop.Xml.Formatting
 			this.tableScopes.RowSpacing = ((uint)(6));
 			this.tableScopes.ColumnSpacing = ((uint)(6));
 			this.vbox4.Add (this.tableScopes);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.tableScopes]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.tableScopes]));
 			w8.Position = 1;
 			w8.Expand = false;
 			w8.Fill = false;
@@ -131,13 +118,13 @@ namespace MonoDevelop.Xml.Formatting
 			this.propertyGrid.ShowToolbar = false;
 			this.propertyGrid.ShowHelp = false;
 			this.vbox4.Add (this.propertyGrid);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.propertyGrid]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.propertyGrid]));
 			w9.Position = 2;
 			this.hbox1.Add (this.vbox4);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.vbox4]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox4]));
 			w10.Position = 1;
 			this.vbox2.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
 			w11.Position = 0;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.hbox3 = new global::Gtk.HBox ();
@@ -150,12 +137,12 @@ namespace MonoDevelop.Xml.Formatting
 			this.buttonAdvanced.UseUnderline = true;
 			this.buttonAdvanced.Label = global::Mono.Unix.Catalog.GetString ("Advanced Settings");
 			this.hbox3.Add (this.buttonAdvanced);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.buttonAdvanced]));
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.buttonAdvanced]));
 			w12.Position = 0;
 			w12.Expand = false;
 			w12.Fill = false;
 			this.vbox2.Add (this.hbox3);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox3]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox3]));
 			w13.Position = 1;
 			w13.Expand = false;
 			w13.Fill = false;

@@ -5,17 +5,11 @@ namespace CBinding
 	public partial class GeneralOptionsPanel
 	{
 		private global::Gtk.Table table1;
-
 		private global::Gtk.ComboBox cCombo;
-
 		private global::Gtk.ComboBox cppCombo;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.CheckButton parseLocalVariablesCheck;
-
 		private global::Gtk.CheckButton parseSystemTagsCheck;
 
 		protected virtual void Build ()
@@ -34,7 +28,7 @@ namespace CBinding
 			this.cCombo.TooltipMarkup = "Default compiler to use for new C projects.";
 			this.cCombo.Name = "cCombo";
 			this.table1.Add (this.cCombo);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1[this.cCombo]));
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.cCombo]));
 			w1.LeftAttach = ((uint)(1));
 			w1.RightAttach = ((uint)(2));
 			w1.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -44,7 +38,7 @@ namespace CBinding
 			this.cppCombo.TooltipMarkup = "Default compiler to use for new C++ projects.";
 			this.cppCombo.Name = "cppCombo";
 			this.table1.Add (this.cppCombo);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1[this.cppCombo]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.cppCombo]));
 			w2.TopAttach = ((uint)(1));
 			w2.BottomAttach = ((uint)(2));
 			w2.LeftAttach = ((uint)(1));
@@ -55,20 +49,20 @@ namespace CBinding
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.Xpad = 10;
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Default C Compiler:");
 			this.table1.Add (this.label1);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1[this.label1]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.label1]));
 			w3.XOptions = ((global::Gtk.AttachOptions)(4));
 			w3.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.label2.Xpad = 10;
-			this.label2.Xalign = 0f;
+			this.label2.Xalign = 0F;
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Default C++ Compiler:");
 			this.table1.Add (this.label2);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1[this.label2]));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2]));
 			w4.TopAttach = ((uint)(1));
 			w4.BottomAttach = ((uint)(2));
 			w4.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -81,7 +75,7 @@ namespace CBinding
 			this.parseLocalVariablesCheck.DrawIndicator = true;
 			this.parseLocalVariablesCheck.UseUnderline = true;
 			this.table1.Add (this.parseLocalVariablesCheck);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1[this.parseLocalVariablesCheck]));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.parseLocalVariablesCheck]));
 			w5.TopAttach = ((uint)(3));
 			w5.BottomAttach = ((uint)(4));
 			w5.XPadding = ((uint)(10));
@@ -96,7 +90,7 @@ namespace CBinding
 			this.parseSystemTagsCheck.DrawIndicator = true;
 			this.parseSystemTagsCheck.UseUnderline = true;
 			this.table1.Add (this.parseSystemTagsCheck);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1[this.parseSystemTagsCheck]));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.parseSystemTagsCheck]));
 			w6.TopAttach = ((uint)(2));
 			w6.BottomAttach = ((uint)(3));
 			w6.XPadding = ((uint)(10));

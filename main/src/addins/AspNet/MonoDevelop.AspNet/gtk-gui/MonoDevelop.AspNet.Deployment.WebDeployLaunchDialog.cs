@@ -5,17 +5,11 @@ namespace MonoDevelop.AspNet.Deployment
 	public partial class WebDeployLaunchDialog
 	{
 		private global::Gtk.Label titleLabel;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.ScrolledWindow scrolledwindow4;
-
 		private global::Gtk.TreeView targetView;
-
 		private global::Gtk.Button button6;
-
 		private global::Gtk.Button buttonCancel;
-
 		private global::Gtk.Button buttonDeploy;
 
 		protected virtual void Build ()
@@ -35,21 +29,21 @@ namespace MonoDevelop.AspNet.Deployment
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
 			this.titleLabel = new global::Gtk.Label ();
 			this.titleLabel.Name = "titleLabel";
-			this.titleLabel.Xalign = 0f;
+			this.titleLabel.Xalign = 0F;
 			this.titleLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<big><b>Deploying Web Project...</b></big>");
 			this.titleLabel.UseMarkup = true;
 			w1.Add (this.titleLabel);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(w1[this.titleLabel]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(w1 [this.titleLabel]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Targets to which the project should be deployed:");
 			w1.Add (this.label1);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(w1[this.label1]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(w1 [this.label1]));
 			w3.Position = 1;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -65,7 +59,7 @@ namespace MonoDevelop.AspNet.Deployment
 			this.targetView.Name = "targetView";
 			this.scrolledwindow4.Add (this.targetView);
 			w1.Add (this.scrolledwindow4);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(w1[this.scrolledwindow4]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(w1 [this.scrolledwindow4]));
 			w5.Position = 2;
 			// Internal child MonoDevelop.AspNet.Deployment.WebDeployLaunchDialog.ActionArea
 			global::Gtk.HButtonBox w6 = this.ActionArea;
@@ -79,7 +73,7 @@ namespace MonoDevelop.AspNet.Deployment
 			this.button6.Name = "button6";
 			this.button6.UseUnderline = true;
 			// Container child button6.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w7 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+			global::Gtk.Alignment w7 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
 			global::Gtk.HBox w8 = new global::Gtk.HBox ();
 			w8.Spacing = 2;
@@ -95,7 +89,7 @@ namespace MonoDevelop.AspNet.Deployment
 			w7.Add (w8);
 			this.button6.Add (w7);
 			this.AddActionWidget (this.button6, -11);
-			global::Gtk.ButtonBox.ButtonBoxChild w15 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6[this.button6]));
+			global::Gtk.ButtonBox.ButtonBoxChild w15 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6 [this.button6]));
 			w15.Expand = false;
 			w15.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -107,7 +101,7 @@ namespace MonoDevelop.AspNet.Deployment
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w16 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6[this.buttonCancel]));
+			global::Gtk.ButtonBox.ButtonBoxChild w16 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6 [this.buttonCancel]));
 			w16.Position = 1;
 			w16.Expand = false;
 			w16.Fill = false;
@@ -118,7 +112,7 @@ namespace MonoDevelop.AspNet.Deployment
 			this.buttonDeploy.Name = "buttonDeploy";
 			this.buttonDeploy.UseUnderline = true;
 			// Container child buttonDeploy.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w17 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+			global::Gtk.Alignment w17 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
 			global::Gtk.HBox w18 = new global::Gtk.HBox ();
 			w18.Spacing = 2;
@@ -134,7 +128,7 @@ namespace MonoDevelop.AspNet.Deployment
 			w17.Add (w18);
 			this.buttonDeploy.Add (w17);
 			this.AddActionWidget (this.buttonDeploy, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w25 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6[this.buttonDeploy]));
+			global::Gtk.ButtonBox.ButtonBoxChild w25 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6 [this.buttonDeploy]));
 			w25.Position = 2;
 			w25.Expand = false;
 			w25.Fill = false;

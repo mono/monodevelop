@@ -5,125 +5,65 @@ namespace CBinding
 	public partial class CodeGenerationPanel
 	{
 		private global::Gtk.Notebook notebook1;
-
 		private global::Gtk.VBox vbox6;
-
 		private global::Gtk.Table table1;
-
 		private global::Gtk.Label label4;
-
 		private global::Gtk.Label label5;
-
 		private global::Gtk.Label label6;
-
 		private global::Gtk.SpinButton optimizationSpinButton;
-
 		private global::Gtk.ComboBox targetComboBox;
-
 		private global::Gtk.VBox vbox1;
-
 		private global::Gtk.RadioButton noWarningRadio;
-
 		private global::Gtk.RadioButton normalWarningRadio;
-
 		private global::Gtk.RadioButton allWarningRadio;
-
 		private global::Gtk.CheckButton warningsAsErrorsCheckBox;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Label label12;
-
 		private global::Gtk.Entry defineSymbolsTextEntry;
-
 		private global::Gtk.Frame frame2;
-
 		private global::Gtk.Alignment GtkAlignment;
-
 		private global::Gtk.Table table5;
-
 		private global::Gtk.Label label11;
-
 		private global::Gtk.Label label7;
-
 		private global::Gtk.ScrolledWindow scrolledwindow4;
-
 		private global::Gtk.TextView extraCompilerTextView;
-
 		private global::Gtk.ScrolledWindow scrolledwindow5;
-
 		private global::Gtk.TextView extraLinkerTextView;
-
 		private global::Gtk.Label GtkLabel12;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.Table table2;
-
 		private global::Gtk.Button addLibButton;
-
 		private global::Gtk.Label label8;
-
 		private global::Gtk.Entry libAddEntry;
-
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-
 		private global::Gtk.TreeView libTreeView;
-
 		private global::Gtk.VBox vbox4;
-
 		private global::Gtk.Button browseButton;
-
 		private global::Gtk.Button removeLibButton;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.VBox vbox7;
-
 		private global::Gtk.Table table4;
-
 		private global::Gtk.HBox hbox2;
-
 		private global::Gtk.Entry libPathEntry;
-
 		private global::Gtk.Button quickInsertLibButton;
-
 		private global::Gtk.Label label10;
-
 		private global::Gtk.Button libPathAddButton;
-
 		private global::Gtk.ScrolledWindow scrolledwindow3;
-
 		private global::Gtk.TreeView libPathTreeView;
-
 		private global::Gtk.VBox vbox3;
-
 		private global::Gtk.Button libPathBrowseButton;
-
 		private global::Gtk.Button libPathRemoveButton;
-
 		private global::Gtk.Table table3;
-
 		private global::Gtk.HBox hbox3;
-
 		private global::Gtk.Entry includePathEntry;
-
 		private global::Gtk.Button quickInsertIncludeButton;
-
 		private global::Gtk.Button includePathAddButton;
-
 		private global::Gtk.Label label9;
-
 		private global::Gtk.ScrolledWindow scrolledwindow2;
-
 		private global::Gtk.TreeView includePathTreeView;
-
 		private global::Gtk.VBox vbox5;
-
 		private global::Gtk.Button includePathBrowseButton;
-
 		private global::Gtk.Button includePathRemoveButton;
-
 		private global::Gtk.Label label3;
 
 		protected virtual void Build ()
@@ -151,20 +91,20 @@ namespace CBinding
 			this.label4 = new global::Gtk.Label ();
 			this.label4.Name = "label4";
 			this.label4.Xpad = 10;
-			this.label4.Xalign = 0f;
+			this.label4.Xalign = 0F;
 			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("Warning Level:");
 			this.table1.Add (this.label4);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1[this.label4]));
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.label4]));
 			w1.XOptions = ((global::Gtk.AttachOptions)(4));
 			w1.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label5 = new global::Gtk.Label ();
 			this.label5.Name = "label5";
 			this.label5.Xpad = 10;
-			this.label5.Xalign = 0f;
+			this.label5.Xalign = 0F;
 			this.label5.LabelProp = global::Mono.Unix.Catalog.GetString ("Optimization Level:");
 			this.table1.Add (this.label5);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1[this.label5]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.label5]));
 			w2.TopAttach = ((uint)(1));
 			w2.BottomAttach = ((uint)(2));
 			w2.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -173,10 +113,10 @@ namespace CBinding
 			this.label6 = new global::Gtk.Label ();
 			this.label6.Name = "label6";
 			this.label6.Xpad = 10;
-			this.label6.Xalign = 0f;
+			this.label6.Xalign = 0F;
 			this.label6.LabelProp = global::Mono.Unix.Catalog.GetString ("Target:");
 			this.table1.Add (this.label6);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1[this.label6]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.label6]));
 			w3.TopAttach = ((uint)(2));
 			w3.BottomAttach = ((uint)(3));
 			w3.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -189,7 +129,7 @@ namespace CBinding
 			this.optimizationSpinButton.ClimbRate = 1;
 			this.optimizationSpinButton.Numeric = true;
 			this.table1.Add (this.optimizationSpinButton);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1[this.optimizationSpinButton]));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.optimizationSpinButton]));
 			w4.TopAttach = ((uint)(1));
 			w4.BottomAttach = ((uint)(2));
 			w4.LeftAttach = ((uint)(1));
@@ -203,7 +143,7 @@ namespace CBinding
 			this.targetComboBox.AppendText (global::Mono.Unix.Catalog.GetString ("Shared Object"));
 			this.targetComboBox.Name = "targetComboBox";
 			this.table1.Add (this.targetComboBox);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1[this.targetComboBox]));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.targetComboBox]));
 			w5.TopAttach = ((uint)(2));
 			w5.BottomAttach = ((uint)(3));
 			w5.LeftAttach = ((uint)(1));
@@ -223,7 +163,7 @@ namespace CBinding
 			this.noWarningRadio.UseUnderline = true;
 			this.noWarningRadio.Group = new global::GLib.SList (global::System.IntPtr.Zero);
 			this.vbox1.Add (this.noWarningRadio);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.noWarningRadio]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.noWarningRadio]));
 			w6.Position = 0;
 			w6.Expand = false;
 			w6.Fill = false;
@@ -235,7 +175,7 @@ namespace CBinding
 			this.normalWarningRadio.UseUnderline = true;
 			this.normalWarningRadio.Group = this.noWarningRadio.Group;
 			this.vbox1.Add (this.normalWarningRadio);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.normalWarningRadio]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.normalWarningRadio]));
 			w7.Position = 1;
 			w7.Expand = false;
 			w7.Fill = false;
@@ -247,7 +187,7 @@ namespace CBinding
 			this.allWarningRadio.UseUnderline = true;
 			this.allWarningRadio.Group = this.noWarningRadio.Group;
 			this.vbox1.Add (this.allWarningRadio);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.allWarningRadio]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.allWarningRadio]));
 			w8.Position = 2;
 			w8.Expand = false;
 			w8.Fill = false;
@@ -259,18 +199,18 @@ namespace CBinding
 			this.warningsAsErrorsCheckBox.DrawIndicator = true;
 			this.warningsAsErrorsCheckBox.UseUnderline = true;
 			this.vbox1.Add (this.warningsAsErrorsCheckBox);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.warningsAsErrorsCheckBox]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.warningsAsErrorsCheckBox]));
 			w9.Position = 3;
 			w9.Expand = false;
 			w9.Fill = false;
 			this.table1.Add (this.vbox1);
-			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table1[this.vbox1]));
+			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table1 [this.vbox1]));
 			w10.LeftAttach = ((uint)(1));
 			w10.RightAttach = ((uint)(2));
 			w10.XOptions = ((global::Gtk.AttachOptions)(4));
 			w10.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox6.Add (this.table1);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox6[this.table1]));
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.table1]));
 			w11.Position = 0;
 			w11.Expand = false;
 			w11.Fill = false;
@@ -282,10 +222,10 @@ namespace CBinding
 			this.label12 = new global::Gtk.Label ();
 			this.label12.Name = "label12";
 			this.label12.Xpad = 13;
-			this.label12.Xalign = 0f;
+			this.label12.Xalign = 0F;
 			this.label12.LabelProp = global::Mono.Unix.Catalog.GetString ("Define Symbols:");
 			this.hbox1.Add (this.label12);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label12]));
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label12]));
 			w12.Position = 0;
 			w12.Expand = false;
 			w12.Fill = false;
@@ -297,11 +237,11 @@ namespace CBinding
 			this.defineSymbolsTextEntry.IsEditable = true;
 			this.defineSymbolsTextEntry.InvisibleChar = '●';
 			this.hbox1.Add (this.defineSymbolsTextEntry);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.defineSymbolsTextEntry]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.defineSymbolsTextEntry]));
 			w13.Position = 1;
 			w13.Padding = ((uint)(14));
 			this.vbox6.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox6[this.hbox1]));
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.hbox1]));
 			w14.Position = 1;
 			w14.Expand = false;
 			w14.Fill = false;
@@ -309,9 +249,9 @@ namespace CBinding
 			this.frame2 = new global::Gtk.Frame ();
 			this.frame2.Name = "frame2";
 			this.frame2.ShadowType = ((global::Gtk.ShadowType)(0));
-			this.frame2.LabelYalign = 0f;
+			this.frame2.LabelYalign = 0F;
 			// Container child frame2.Gtk.Container+ContainerChild
-			this.GtkAlignment = new global::Gtk.Alignment (0f, 0f, 1f, 1f);
+			this.GtkAlignment = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
 			this.GtkAlignment.Name = "GtkAlignment";
 			this.GtkAlignment.LeftPadding = ((uint)(12));
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
@@ -323,10 +263,10 @@ namespace CBinding
 			// Container child table5.Gtk.Table+TableChild
 			this.label11 = new global::Gtk.Label ();
 			this.label11.Name = "label11";
-			this.label11.Xalign = 0f;
+			this.label11.Xalign = 0F;
 			this.label11.LabelProp = global::Mono.Unix.Catalog.GetString ("Extra Linker Options");
 			this.table5.Add (this.label11);
-			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.table5[this.label11]));
+			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.table5 [this.label11]));
 			w15.LeftAttach = ((uint)(1));
 			w15.RightAttach = ((uint)(2));
 			w15.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -334,10 +274,10 @@ namespace CBinding
 			// Container child table5.Gtk.Table+TableChild
 			this.label7 = new global::Gtk.Label ();
 			this.label7.Name = "label7";
-			this.label7.Xalign = 0f;
+			this.label7.Xalign = 0F;
 			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("Extra Compiler Options");
 			this.table5.Add (this.label7);
-			global::Gtk.Table.TableChild w16 = ((global::Gtk.Table.TableChild)(this.table5[this.label7]));
+			global::Gtk.Table.TableChild w16 = ((global::Gtk.Table.TableChild)(this.table5 [this.label7]));
 			w16.XOptions = ((global::Gtk.AttachOptions)(4));
 			w16.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table5.Gtk.Table+TableChild
@@ -352,7 +292,7 @@ namespace CBinding
 			this.extraCompilerTextView.Name = "extraCompilerTextView";
 			this.scrolledwindow4.Add (this.extraCompilerTextView);
 			this.table5.Add (this.scrolledwindow4);
-			global::Gtk.Table.TableChild w18 = ((global::Gtk.Table.TableChild)(this.table5[this.scrolledwindow4]));
+			global::Gtk.Table.TableChild w18 = ((global::Gtk.Table.TableChild)(this.table5 [this.scrolledwindow4]));
 			w18.TopAttach = ((uint)(1));
 			w18.BottomAttach = ((uint)(2));
 			// Container child table5.Gtk.Table+TableChild
@@ -367,7 +307,7 @@ namespace CBinding
 			this.extraLinkerTextView.Name = "extraLinkerTextView";
 			this.scrolledwindow5.Add (this.extraLinkerTextView);
 			this.table5.Add (this.scrolledwindow5);
-			global::Gtk.Table.TableChild w20 = ((global::Gtk.Table.TableChild)(this.table5[this.scrolledwindow5]));
+			global::Gtk.Table.TableChild w20 = ((global::Gtk.Table.TableChild)(this.table5 [this.scrolledwindow5]));
 			w20.TopAttach = ((uint)(1));
 			w20.BottomAttach = ((uint)(2));
 			w20.LeftAttach = ((uint)(1));
@@ -381,7 +321,7 @@ namespace CBinding
 			this.GtkLabel12.UseMarkup = true;
 			this.frame2.LabelWidget = this.GtkLabel12;
 			this.vbox6.Add (this.frame2);
-			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.vbox6[this.frame2]));
+			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.frame2]));
 			w23.Position = 2;
 			this.notebook1.Add (this.vbox6);
 			// Notebook tab
@@ -404,7 +344,7 @@ namespace CBinding
 			this.addLibButton.UseUnderline = true;
 			this.addLibButton.Label = global::Mono.Unix.Catalog.GetString ("Add");
 			this.table2.Add (this.addLibButton);
-			global::Gtk.Table.TableChild w25 = ((global::Gtk.Table.TableChild)(this.table2[this.addLibButton]));
+			global::Gtk.Table.TableChild w25 = ((global::Gtk.Table.TableChild)(this.table2 [this.addLibButton]));
 			w25.LeftAttach = ((uint)(2));
 			w25.RightAttach = ((uint)(3));
 			w25.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -414,7 +354,7 @@ namespace CBinding
 			this.label8.Name = "label8";
 			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("Library:");
 			this.table2.Add (this.label8);
-			global::Gtk.Table.TableChild w26 = ((global::Gtk.Table.TableChild)(this.table2[this.label8]));
+			global::Gtk.Table.TableChild w26 = ((global::Gtk.Table.TableChild)(this.table2 [this.label8]));
 			w26.XOptions = ((global::Gtk.AttachOptions)(4));
 			w26.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table2.Gtk.Table+TableChild
@@ -424,7 +364,7 @@ namespace CBinding
 			this.libAddEntry.IsEditable = true;
 			this.libAddEntry.InvisibleChar = '●';
 			this.table2.Add (this.libAddEntry);
-			global::Gtk.Table.TableChild w27 = ((global::Gtk.Table.TableChild)(this.table2[this.libAddEntry]));
+			global::Gtk.Table.TableChild w27 = ((global::Gtk.Table.TableChild)(this.table2 [this.libAddEntry]));
 			w27.LeftAttach = ((uint)(1));
 			w27.RightAttach = ((uint)(2));
 			w27.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -439,7 +379,7 @@ namespace CBinding
 			this.libTreeView.Name = "libTreeView";
 			this.scrolledwindow1.Add (this.libTreeView);
 			this.table2.Add (this.scrolledwindow1);
-			global::Gtk.Table.TableChild w29 = ((global::Gtk.Table.TableChild)(this.table2[this.scrolledwindow1]));
+			global::Gtk.Table.TableChild w29 = ((global::Gtk.Table.TableChild)(this.table2 [this.scrolledwindow1]));
 			w29.TopAttach = ((uint)(1));
 			w29.BottomAttach = ((uint)(2));
 			w29.LeftAttach = ((uint)(1));
@@ -455,7 +395,7 @@ namespace CBinding
 			this.browseButton.UseUnderline = true;
 			this.browseButton.Label = global::Mono.Unix.Catalog.GetString ("Browse...");
 			this.vbox4.Add (this.browseButton);
-			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.browseButton]));
+			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.browseButton]));
 			w30.Position = 0;
 			w30.Expand = false;
 			w30.Fill = false;
@@ -467,19 +407,19 @@ namespace CBinding
 			this.removeLibButton.UseUnderline = true;
 			this.removeLibButton.Label = global::Mono.Unix.Catalog.GetString ("Remove");
 			this.vbox4.Add (this.removeLibButton);
-			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.removeLibButton]));
+			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.removeLibButton]));
 			w31.Position = 1;
 			w31.Expand = false;
 			w31.Fill = false;
 			this.table2.Add (this.vbox4);
-			global::Gtk.Table.TableChild w32 = ((global::Gtk.Table.TableChild)(this.table2[this.vbox4]));
+			global::Gtk.Table.TableChild w32 = ((global::Gtk.Table.TableChild)(this.table2 [this.vbox4]));
 			w32.TopAttach = ((uint)(1));
 			w32.BottomAttach = ((uint)(2));
 			w32.LeftAttach = ((uint)(2));
 			w32.RightAttach = ((uint)(3));
 			w32.XOptions = ((global::Gtk.AttachOptions)(4));
 			this.notebook1.Add (this.table2);
-			global::Gtk.Notebook.NotebookChild w33 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1[this.table2]));
+			global::Gtk.Notebook.NotebookChild w33 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.table2]));
 			w33.Position = 1;
 			// Notebook tab
 			this.label2 = new global::Gtk.Label ();
@@ -508,7 +448,7 @@ namespace CBinding
 			this.libPathEntry.IsEditable = true;
 			this.libPathEntry.InvisibleChar = '●';
 			this.hbox2.Add (this.libPathEntry);
-			global::Gtk.Box.BoxChild w34 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.libPathEntry]));
+			global::Gtk.Box.BoxChild w34 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.libPathEntry]));
 			w34.Position = 0;
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.quickInsertLibButton = new global::Gtk.Button ();
@@ -518,12 +458,12 @@ namespace CBinding
 			this.quickInsertLibButton.UseUnderline = true;
 			this.quickInsertLibButton.Label = global::Mono.Unix.Catalog.GetString (">");
 			this.hbox2.Add (this.quickInsertLibButton);
-			global::Gtk.Box.BoxChild w35 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.quickInsertLibButton]));
+			global::Gtk.Box.BoxChild w35 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.quickInsertLibButton]));
 			w35.Position = 1;
 			w35.Expand = false;
 			w35.Fill = false;
 			this.table4.Add (this.hbox2);
-			global::Gtk.Table.TableChild w36 = ((global::Gtk.Table.TableChild)(this.table4[this.hbox2]));
+			global::Gtk.Table.TableChild w36 = ((global::Gtk.Table.TableChild)(this.table4 [this.hbox2]));
 			w36.LeftAttach = ((uint)(1));
 			w36.RightAttach = ((uint)(2));
 			w36.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -532,7 +472,7 @@ namespace CBinding
 			this.label10.Name = "label10";
 			this.label10.LabelProp = global::Mono.Unix.Catalog.GetString ("Library:");
 			this.table4.Add (this.label10);
-			global::Gtk.Table.TableChild w37 = ((global::Gtk.Table.TableChild)(this.table4[this.label10]));
+			global::Gtk.Table.TableChild w37 = ((global::Gtk.Table.TableChild)(this.table4 [this.label10]));
 			w37.XOptions = ((global::Gtk.AttachOptions)(4));
 			w37.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table4.Gtk.Table+TableChild
@@ -543,7 +483,7 @@ namespace CBinding
 			this.libPathAddButton.UseUnderline = true;
 			this.libPathAddButton.Label = global::Mono.Unix.Catalog.GetString ("Add");
 			this.table4.Add (this.libPathAddButton);
-			global::Gtk.Table.TableChild w38 = ((global::Gtk.Table.TableChild)(this.table4[this.libPathAddButton]));
+			global::Gtk.Table.TableChild w38 = ((global::Gtk.Table.TableChild)(this.table4 [this.libPathAddButton]));
 			w38.LeftAttach = ((uint)(2));
 			w38.RightAttach = ((uint)(3));
 			w38.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -559,7 +499,7 @@ namespace CBinding
 			this.libPathTreeView.Name = "libPathTreeView";
 			this.scrolledwindow3.Add (this.libPathTreeView);
 			this.table4.Add (this.scrolledwindow3);
-			global::Gtk.Table.TableChild w40 = ((global::Gtk.Table.TableChild)(this.table4[this.scrolledwindow3]));
+			global::Gtk.Table.TableChild w40 = ((global::Gtk.Table.TableChild)(this.table4 [this.scrolledwindow3]));
 			w40.TopAttach = ((uint)(1));
 			w40.BottomAttach = ((uint)(2));
 			w40.LeftAttach = ((uint)(1));
@@ -575,7 +515,7 @@ namespace CBinding
 			this.libPathBrowseButton.UseUnderline = true;
 			this.libPathBrowseButton.Label = global::Mono.Unix.Catalog.GetString ("Browse...");
 			this.vbox3.Add (this.libPathBrowseButton);
-			global::Gtk.Box.BoxChild w41 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.libPathBrowseButton]));
+			global::Gtk.Box.BoxChild w41 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.libPathBrowseButton]));
 			w41.Position = 0;
 			w41.Expand = false;
 			w41.Fill = false;
@@ -587,19 +527,19 @@ namespace CBinding
 			this.libPathRemoveButton.UseUnderline = true;
 			this.libPathRemoveButton.Label = global::Mono.Unix.Catalog.GetString ("Remove");
 			this.vbox3.Add (this.libPathRemoveButton);
-			global::Gtk.Box.BoxChild w42 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.libPathRemoveButton]));
+			global::Gtk.Box.BoxChild w42 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.libPathRemoveButton]));
 			w42.Position = 1;
 			w42.Expand = false;
 			w42.Fill = false;
 			this.table4.Add (this.vbox3);
-			global::Gtk.Table.TableChild w43 = ((global::Gtk.Table.TableChild)(this.table4[this.vbox3]));
+			global::Gtk.Table.TableChild w43 = ((global::Gtk.Table.TableChild)(this.table4 [this.vbox3]));
 			w43.TopAttach = ((uint)(1));
 			w43.BottomAttach = ((uint)(2));
 			w43.LeftAttach = ((uint)(2));
 			w43.RightAttach = ((uint)(3));
 			w43.XOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox7.Add (this.table4);
-			global::Gtk.Box.BoxChild w44 = ((global::Gtk.Box.BoxChild)(this.vbox7[this.table4]));
+			global::Gtk.Box.BoxChild w44 = ((global::Gtk.Box.BoxChild)(this.vbox7 [this.table4]));
 			w44.Position = 0;
 			// Container child vbox7.Gtk.Box+BoxChild
 			this.table3 = new global::Gtk.Table (((uint)(2)), ((uint)(3)), false);
@@ -617,7 +557,7 @@ namespace CBinding
 			this.includePathEntry.IsEditable = true;
 			this.includePathEntry.InvisibleChar = '●';
 			this.hbox3.Add (this.includePathEntry);
-			global::Gtk.Box.BoxChild w45 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.includePathEntry]));
+			global::Gtk.Box.BoxChild w45 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.includePathEntry]));
 			w45.Position = 0;
 			// Container child hbox3.Gtk.Box+BoxChild
 			this.quickInsertIncludeButton = new global::Gtk.Button ();
@@ -627,12 +567,12 @@ namespace CBinding
 			this.quickInsertIncludeButton.UseUnderline = true;
 			this.quickInsertIncludeButton.Label = global::Mono.Unix.Catalog.GetString (">");
 			this.hbox3.Add (this.quickInsertIncludeButton);
-			global::Gtk.Box.BoxChild w46 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.quickInsertIncludeButton]));
+			global::Gtk.Box.BoxChild w46 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.quickInsertIncludeButton]));
 			w46.Position = 1;
 			w46.Expand = false;
 			w46.Fill = false;
 			this.table3.Add (this.hbox3);
-			global::Gtk.Table.TableChild w47 = ((global::Gtk.Table.TableChild)(this.table3[this.hbox3]));
+			global::Gtk.Table.TableChild w47 = ((global::Gtk.Table.TableChild)(this.table3 [this.hbox3]));
 			w47.LeftAttach = ((uint)(1));
 			w47.RightAttach = ((uint)(2));
 			w47.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -644,7 +584,7 @@ namespace CBinding
 			this.includePathAddButton.UseUnderline = true;
 			this.includePathAddButton.Label = global::Mono.Unix.Catalog.GetString ("Add");
 			this.table3.Add (this.includePathAddButton);
-			global::Gtk.Table.TableChild w48 = ((global::Gtk.Table.TableChild)(this.table3[this.includePathAddButton]));
+			global::Gtk.Table.TableChild w48 = ((global::Gtk.Table.TableChild)(this.table3 [this.includePathAddButton]));
 			w48.LeftAttach = ((uint)(2));
 			w48.RightAttach = ((uint)(3));
 			w48.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -654,7 +594,7 @@ namespace CBinding
 			this.label9.Name = "label9";
 			this.label9.LabelProp = global::Mono.Unix.Catalog.GetString ("Include:");
 			this.table3.Add (this.label9);
-			global::Gtk.Table.TableChild w49 = ((global::Gtk.Table.TableChild)(this.table3[this.label9]));
+			global::Gtk.Table.TableChild w49 = ((global::Gtk.Table.TableChild)(this.table3 [this.label9]));
 			w49.XOptions = ((global::Gtk.AttachOptions)(4));
 			w49.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table3.Gtk.Table+TableChild
@@ -668,7 +608,7 @@ namespace CBinding
 			this.includePathTreeView.Name = "includePathTreeView";
 			this.scrolledwindow2.Add (this.includePathTreeView);
 			this.table3.Add (this.scrolledwindow2);
-			global::Gtk.Table.TableChild w51 = ((global::Gtk.Table.TableChild)(this.table3[this.scrolledwindow2]));
+			global::Gtk.Table.TableChild w51 = ((global::Gtk.Table.TableChild)(this.table3 [this.scrolledwindow2]));
 			w51.TopAttach = ((uint)(1));
 			w51.BottomAttach = ((uint)(2));
 			w51.LeftAttach = ((uint)(1));
@@ -684,7 +624,7 @@ namespace CBinding
 			this.includePathBrowseButton.UseUnderline = true;
 			this.includePathBrowseButton.Label = global::Mono.Unix.Catalog.GetString ("Browse...");
 			this.vbox5.Add (this.includePathBrowseButton);
-			global::Gtk.Box.BoxChild w52 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.includePathBrowseButton]));
+			global::Gtk.Box.BoxChild w52 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.includePathBrowseButton]));
 			w52.Position = 0;
 			w52.Expand = false;
 			w52.Fill = false;
@@ -696,22 +636,22 @@ namespace CBinding
 			this.includePathRemoveButton.UseUnderline = true;
 			this.includePathRemoveButton.Label = global::Mono.Unix.Catalog.GetString ("Remove");
 			this.vbox5.Add (this.includePathRemoveButton);
-			global::Gtk.Box.BoxChild w53 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.includePathRemoveButton]));
+			global::Gtk.Box.BoxChild w53 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.includePathRemoveButton]));
 			w53.Position = 1;
 			w53.Expand = false;
 			w53.Fill = false;
 			this.table3.Add (this.vbox5);
-			global::Gtk.Table.TableChild w54 = ((global::Gtk.Table.TableChild)(this.table3[this.vbox5]));
+			global::Gtk.Table.TableChild w54 = ((global::Gtk.Table.TableChild)(this.table3 [this.vbox5]));
 			w54.TopAttach = ((uint)(1));
 			w54.BottomAttach = ((uint)(2));
 			w54.LeftAttach = ((uint)(2));
 			w54.RightAttach = ((uint)(3));
 			w54.XOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox7.Add (this.table3);
-			global::Gtk.Box.BoxChild w55 = ((global::Gtk.Box.BoxChild)(this.vbox7[this.table3]));
+			global::Gtk.Box.BoxChild w55 = ((global::Gtk.Box.BoxChild)(this.vbox7 [this.table3]));
 			w55.Position = 1;
 			this.notebook1.Add (this.vbox7);
-			global::Gtk.Notebook.NotebookChild w56 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1[this.vbox7]));
+			global::Gtk.Notebook.NotebookChild w56 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.vbox7]));
 			w56.Position = 2;
 			// Notebook tab
 			this.label3 = new global::Gtk.Label ();

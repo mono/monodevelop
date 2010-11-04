@@ -5,15 +5,10 @@ namespace MonoDevelop.Deployment.Linux
 	public partial class MenuCategorySelectorDialog
 	{
 		private global::Gtk.VBox vbox5;
-
 		private global::Gtk.Label label19;
-
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-
 		private global::Gtk.TreeView tree;
-
 		private global::Gtk.Button buttonCancel;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -36,10 +31,10 @@ namespace MonoDevelop.Deployment.Linux
 			// Container child vbox5.Gtk.Box+BoxChild
 			this.label19 = new global::Gtk.Label ();
 			this.label19.Name = "label19";
-			this.label19.Xalign = 0f;
+			this.label19.Xalign = 0F;
 			this.label19.LabelProp = global::Mono.Unix.Catalog.GetString ("Select the categories you want to assign to the desktop entry:");
 			this.vbox5.Add (this.label19);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.label19]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.label19]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -54,10 +49,10 @@ namespace MonoDevelop.Deployment.Linux
 			this.tree.Name = "tree";
 			this.scrolledwindow1.Add (this.tree);
 			this.vbox5.Add (this.scrolledwindow1);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.scrolledwindow1]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.scrolledwindow1]));
 			w4.Position = 1;
 			w1.Add (this.vbox5);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(w1[this.vbox5]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox5]));
 			w5.Position = 0;
 			// Internal child MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog.ActionArea
 			global::Gtk.HButtonBox w6 = this.ActionArea;
@@ -74,7 +69,7 @@ namespace MonoDevelop.Deployment.Linux
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w7 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6[this.buttonCancel]));
+			global::Gtk.ButtonBox.ButtonBoxChild w7 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6 [this.buttonCancel]));
 			w7.Expand = false;
 			w7.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -86,7 +81,7 @@ namespace MonoDevelop.Deployment.Linux
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6 [this.buttonOk]));
 			w8.Position = 1;
 			w8.Expand = false;
 			w8.Fill = false;

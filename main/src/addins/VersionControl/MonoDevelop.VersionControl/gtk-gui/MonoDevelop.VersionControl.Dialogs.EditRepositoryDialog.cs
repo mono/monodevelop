@@ -5,25 +5,16 @@ namespace MonoDevelop.VersionControl.Dialogs
 	internal partial class EditRepositoryDialog
 	{
 		private global::Gtk.VBox vbox1;
-		
 		private global::Gtk.Table table1;
-		
 		private global::Gtk.Entry entryName;
-		
 		private global::Gtk.Label label11;
-		
 		private global::Gtk.Label label8;
-		
 		private global::Gtk.ComboBox versionControlType;
-		
 		private global::Gtk.HSeparator hseparator2;
-		
 		private global::Gtk.EventBox repoEditorContainer;
-		
 		private global::Gtk.Button button10;
-		
 		private global::Gtk.Button button24;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -127,7 +118,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.button10.UseStock = true;
 			this.button10.UseUnderline = true;
 			this.button10.Label = "gtk-cancel";
-			this.AddActionWidget (this.button10,-6);
+			this.AddActionWidget (this.button10, -6);
 			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.button10]));
 			w11.Expand = false;
 			w11.Fill = false;
@@ -139,7 +130,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.button24.UseStock = true;
 			this.button24.UseUnderline = true;
 			this.button24.Label = "gtk-ok";
-			this.AddActionWidget (this.button24,-5);
+			this.AddActionWidget (this.button24, -5);
 			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.button24]));
 			w12.Position = 1;
 			w12.Expand = false;

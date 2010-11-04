@@ -5,27 +5,16 @@ namespace MonoDevelop.VersionControl.Git
 	public partial class UserInfoConflictDialog
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.RadioButton radioMD;
-
 		private global::Gtk.Alignment alignment1;
-
 		private global::Gtk.Label labelMD;
-
 		private global::Gtk.Alignment alignment3;
-
 		private global::Gtk.Label label6;
-
 		private global::Gtk.RadioButton radiobutton2;
-
 		private global::Gtk.Alignment alignment2;
-
 		private global::Gtk.Label labelGit;
-
 		private global::Gtk.Button buttonCancel;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -48,11 +37,11 @@ namespace MonoDevelop.VersionControl.Git
 			this.label1 = new global::Gtk.Label ();
 			this.label1.WidthRequest = 503;
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("The user name and email configured for the Git repository does not match the user information configured in MonoDevelop. Which user information do you want to use?");
 			this.label1.Wrap = true;
 			this.vbox2.Add (this.label1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.label1]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label1]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -65,37 +54,37 @@ namespace MonoDevelop.VersionControl.Git
 			this.radioMD.UseUnderline = true;
 			this.radioMD.Group = new global::GLib.SList (global::System.IntPtr.Zero);
 			this.vbox2.Add (this.radioMD);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.radioMD]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.radioMD]));
 			w3.Position = 1;
 			w3.Expand = false;
 			w3.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.alignment1 = new global::Gtk.Alignment (0.5f, 0.5f, 1f, 1f);
+			this.alignment1 = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
 			this.alignment1.Name = "alignment1";
 			this.alignment1.LeftPadding = ((uint)(27));
 			// Container child alignment1.Gtk.Container+ContainerChild
 			this.labelMD = new global::Gtk.Label ();
 			this.labelMD.Name = "labelMD";
-			this.labelMD.Xalign = 0f;
+			this.labelMD.Xalign = 0F;
 			this.labelMD.LabelProp = "name <email>";
 			this.alignment1.Add (this.labelMD);
 			this.vbox2.Add (this.alignment1);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.alignment1]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.alignment1]));
 			w5.Position = 2;
 			w5.Expand = false;
 			w5.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.alignment3 = new global::Gtk.Alignment (0.5f, 0.5f, 1f, 1f);
+			this.alignment3 = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
 			this.alignment3.Name = "alignment3";
 			this.alignment3.LeftPadding = ((uint)(27));
 			// Container child alignment3.Gtk.Container+ContainerChild
 			this.label6 = new global::Gtk.Label ();
 			this.label6.Name = "label6";
-			this.label6.Xalign = 0f;
+			this.label6.Xalign = 0F;
 			this.label6.LabelProp = global::Mono.Unix.Catalog.GetString ("If you chose this option the Git configuration will be overwritten.");
 			this.alignment3.Add (this.label6);
 			this.vbox2.Add (this.alignment3);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.alignment3]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.alignment3]));
 			w7.Position = 3;
 			w7.Expand = false;
 			w7.Fill = false;
@@ -107,27 +96,27 @@ namespace MonoDevelop.VersionControl.Git
 			this.radiobutton2.UseUnderline = true;
 			this.radiobutton2.Group = this.radioMD.Group;
 			this.vbox2.Add (this.radiobutton2);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.radiobutton2]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.radiobutton2]));
 			w8.Position = 4;
 			w8.Expand = false;
 			w8.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.alignment2 = new global::Gtk.Alignment (0.5f, 0.5f, 1f, 1f);
+			this.alignment2 = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
 			this.alignment2.Name = "alignment2";
 			this.alignment2.LeftPadding = ((uint)(27));
 			// Container child alignment2.Gtk.Container+ContainerChild
 			this.labelGit = new global::Gtk.Label ();
 			this.labelGit.Name = "labelGit";
-			this.labelGit.Xalign = 0f;
+			this.labelGit.Xalign = 0F;
 			this.labelGit.LabelProp = "name <email>";
 			this.alignment2.Add (this.labelGit);
 			this.vbox2.Add (this.alignment2);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.alignment2]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.alignment2]));
 			w10.Position = 5;
 			w10.Expand = false;
 			w10.Fill = false;
 			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(w1[this.vbox2]));
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
 			w11.Position = 0;
 			w11.Expand = false;
 			w11.Fill = false;
@@ -146,7 +135,7 @@ namespace MonoDevelop.VersionControl.Git
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w13 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w12[this.buttonCancel]));
+			global::Gtk.ButtonBox.ButtonBoxChild w13 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w12 [this.buttonCancel]));
 			w13.Expand = false;
 			w13.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -158,7 +147,7 @@ namespace MonoDevelop.VersionControl.Git
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w14 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w12[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w14 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w12 [this.buttonOk]));
 			w14.Position = 1;
 			w14.Expand = false;
 			w14.Fill = false;

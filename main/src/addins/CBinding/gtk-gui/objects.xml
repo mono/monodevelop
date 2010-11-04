@@ -1,6 +1,0 @@
-<objects attr-sync="on">
-  <object type="CBinding.GeneralOptionsPanel" palette-category="MonoDevelop.CBinding" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals />
-  </object>
-</objects>

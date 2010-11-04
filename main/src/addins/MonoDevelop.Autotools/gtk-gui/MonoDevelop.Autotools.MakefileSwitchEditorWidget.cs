@@ -5,29 +5,17 @@ namespace MonoDevelop.Autotools
 	public partial class MakefileSwitchEditorWidget
 	{
 		private global::Gtk.VBox dialog1_VBox;
-
 		private global::Gtk.Alignment alignment1;
-
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.Alignment alignment2;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.Alignment alignment4;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Button addBtn;
-
 		private global::Gtk.Button remBtn;
-
 		private global::Gtk.Alignment alignment3;
-
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-
 		private global::Gtk.TreeView itemTv;
 
 		protected virtual void Build ()
@@ -41,7 +29,7 @@ namespace MonoDevelop.Autotools
 			this.dialog1_VBox.Name = "dialog1_VBox";
 			this.dialog1_VBox.BorderWidth = ((uint)(11));
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
-			this.alignment1 = new global::Gtk.Alignment (0.5f, 0.5f, 1f, 1f);
+			this.alignment1 = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
 			this.alignment1.Name = "alignment1";
 			// Container child alignment1.Gtk.Container+ContainerChild
 			this.vbox2 = new global::Gtk.VBox ();
@@ -50,33 +38,33 @@ namespace MonoDevelop.Autotools
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Switch list</b>");
 			this.label1.UseMarkup = true;
 			this.vbox2.Add (this.label1);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.label1]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label1]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.alignment2 = new global::Gtk.Alignment (0.5f, 0.5f, 1f, 1f);
+			this.alignment2 = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
 			this.alignment2.Name = "alignment2";
 			this.alignment2.BorderWidth = ((uint)(3));
 			// Container child alignment2.Gtk.Container+ContainerChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.Xalign = 0f;
+			this.label2.Xalign = 0F;
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Use the following list to define new switches usable with autotools configure script. Each switch is mapped to a define that you can use to do conditional compilation in your source files.");
 			this.label2.Wrap = true;
 			this.label2.WidthChars = 78;
 			this.alignment2.Add (this.label2);
 			this.vbox2.Add (this.alignment2);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.alignment2]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.alignment2]));
 			w3.Position = 1;
 			w3.Expand = false;
 			w3.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.alignment4 = new global::Gtk.Alignment (1f, 0.5f, 1f, 1f);
+			this.alignment4 = new global::Gtk.Alignment (1F, 0.5F, 1F, 1F);
 			this.alignment4.Name = "alignment4";
 			// Container child alignment4.Gtk.Container+ContainerChild
 			this.hbox1 = new global::Gtk.HBox ();
@@ -91,7 +79,7 @@ namespace MonoDevelop.Autotools
 			this.addBtn.UseUnderline = true;
 			this.addBtn.Label = "gtk-add";
 			this.hbox1.Add (this.addBtn);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.addBtn]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.addBtn]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -103,18 +91,18 @@ namespace MonoDevelop.Autotools
 			this.remBtn.UseUnderline = true;
 			this.remBtn.Label = "gtk-remove";
 			this.hbox1.Add (this.remBtn);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.remBtn]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.remBtn]));
 			w5.Position = 1;
 			w5.Expand = false;
 			w5.Fill = false;
 			this.alignment4.Add (this.hbox1);
 			this.vbox2.Add (this.alignment4);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.alignment4]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.alignment4]));
 			w7.Position = 2;
 			w7.Expand = false;
 			w7.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.alignment3 = new global::Gtk.Alignment (0.5f, 0.5f, 1f, 1f);
+			this.alignment3 = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
 			this.alignment3.Name = "alignment3";
 			this.alignment3.BottomPadding = ((uint)(8));
 			this.alignment3.BorderWidth = ((uint)(3));
@@ -129,11 +117,11 @@ namespace MonoDevelop.Autotools
 			this.GtkScrolledWindow.Add (this.itemTv);
 			this.alignment3.Add (this.GtkScrolledWindow);
 			this.vbox2.Add (this.alignment3);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.alignment3]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.alignment3]));
 			w10.Position = 3;
 			this.alignment1.Add (this.vbox2);
 			this.dialog1_VBox.Add (this.alignment1);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.dialog1_VBox[this.alignment1]));
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.dialog1_VBox [this.alignment1]));
 			w12.Position = 0;
 			this.Add (this.dialog1_VBox);
 			if ((this.Child != null)) {

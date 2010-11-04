@@ -5,11 +5,8 @@ namespace MonoDevelop.XmlEditor.Gui
 	public partial class XmlEditorOptionsPanelWidget
 	{
 		private global::Gtk.VBox vbox1;
-
 		private global::Gtk.CheckButton autoCompleteElementsCheck;
-
 		private global::Gtk.CheckButton autoAddPunctuationCheck;
-
 		private global::Gtk.CheckButton showSchemaAnnotationCheck;
 
 		protected virtual void Build ()
@@ -30,7 +27,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			this.autoCompleteElementsCheck.DrawIndicator = true;
 			this.autoCompleteElementsCheck.UseUnderline = true;
 			this.vbox1.Add (this.autoCompleteElementsCheck);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.autoCompleteElementsCheck]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.autoCompleteElementsCheck]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -43,7 +40,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			this.autoAddPunctuationCheck.DrawIndicator = true;
 			this.autoAddPunctuationCheck.UseUnderline = true;
 			this.vbox1.Add (this.autoAddPunctuationCheck);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.autoAddPunctuationCheck]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.autoAddPunctuationCheck]));
 			w2.Position = 1;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -56,7 +53,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			this.showSchemaAnnotationCheck.DrawIndicator = true;
 			this.showSchemaAnnotationCheck.UseUnderline = true;
 			this.vbox1.Add (this.showSchemaAnnotationCheck);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.showSchemaAnnotationCheck]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.showSchemaAnnotationCheck]));
 			w3.Position = 2;
 			w3.Expand = false;
 			w3.Fill = false;

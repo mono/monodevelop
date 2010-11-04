@@ -5,47 +5,26 @@ namespace MonoDevelop.Gettext.Translator
 	public partial class LanguageChooserDialog
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.VBox vbox3;
-
 		private global::Gtk.Frame frame1;
-
 		private global::Gtk.Alignment GtkAlignment2;
-
 		private global::Gtk.HBox tableKnown;
-
 		private global::Gtk.VBox vbox4;
-
 		private global::Gtk.Label label3;
-
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-
 		private global::Gtk.TreeView languageTreeView;
-
 		private global::Gtk.VBox vbox5;
-
 		private global::Gtk.CheckButton checkbuttonUseCoutry;
-
 		private global::Gtk.ScrolledWindow scrolledwindow2;
-
 		private global::Gtk.TreeView countryTreeView;
-
 		private global::Gtk.RadioButton radiobuttonKnown;
-
 		private global::Gtk.Frame frame2;
-
 		private global::Gtk.Alignment GtkAlignment3;
-
 		private global::Gtk.HBox hboxUser;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.Entry entryLocale;
-
 		private global::Gtk.RadioButton radiobuttonCustom;
-
 		private global::Gtk.Button button1;
-
 		private global::Gtk.Button buttonOK;
 
 		protected virtual void Build ()
@@ -82,7 +61,7 @@ namespace MonoDevelop.Gettext.Translator
 			this.frame1.Name = "frame1";
 			this.frame1.ShadowType = ((global::Gtk.ShadowType)(0));
 			// Container child frame1.Gtk.Container+ContainerChild
-			this.GtkAlignment2 = new global::Gtk.Alignment (0f, 0f, 1f, 1f);
+			this.GtkAlignment2 = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
 			this.GtkAlignment2.Name = "GtkAlignment2";
 			this.GtkAlignment2.LeftPadding = ((uint)(12));
 			// Container child GtkAlignment2.Gtk.Container+ContainerChild
@@ -98,11 +77,11 @@ namespace MonoDevelop.Gettext.Translator
 			this.label3 = new global::Gtk.Label ();
 			this.label3.WidthRequest = 170;
 			this.label3.Name = "label3";
-			this.label3.Xalign = 0f;
+			this.label3.Xalign = 0F;
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("_Language:");
 			this.label3.UseUnderline = true;
 			this.vbox4.Add (this.label3);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.label3]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.label3]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -119,10 +98,10 @@ namespace MonoDevelop.Gettext.Translator
 			this.languageTreeView.HeadersVisible = false;
 			this.scrolledwindow1.Add (this.languageTreeView);
 			this.vbox4.Add (this.scrolledwindow1);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.scrolledwindow1]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.scrolledwindow1]));
 			w4.Position = 1;
 			this.tableKnown.Add (this.vbox4);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.tableKnown[this.vbox4]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.tableKnown [this.vbox4]));
 			w5.Position = 0;
 			w5.Expand = false;
 			w5.Fill = false;
@@ -140,7 +119,7 @@ namespace MonoDevelop.Gettext.Translator
 			this.checkbuttonUseCoutry.DrawIndicator = true;
 			this.checkbuttonUseCoutry.UseUnderline = true;
 			this.vbox5.Add (this.checkbuttonUseCoutry);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.checkbuttonUseCoutry]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.checkbuttonUseCoutry]));
 			w6.Position = 0;
 			w6.Expand = false;
 			w6.Fill = false;
@@ -156,10 +135,10 @@ namespace MonoDevelop.Gettext.Translator
 			this.countryTreeView.HeadersVisible = false;
 			this.scrolledwindow2.Add (this.countryTreeView);
 			this.vbox5.Add (this.scrolledwindow2);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.scrolledwindow2]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.scrolledwindow2]));
 			w8.Position = 1;
 			this.tableKnown.Add (this.vbox5);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.tableKnown[this.vbox5]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.tableKnown [this.vbox5]));
 			w9.Position = 1;
 			this.GtkAlignment2.Add (this.tableKnown);
 			this.frame1.Add (this.GtkAlignment2);
@@ -171,14 +150,14 @@ namespace MonoDevelop.Gettext.Translator
 			this.radiobuttonKnown.Group = new global::GLib.SList (global::System.IntPtr.Zero);
 			this.frame1.LabelWidget = this.radiobuttonKnown;
 			this.vbox3.Add (this.frame1);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.frame1]));
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.frame1]));
 			w12.Position = 0;
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.frame2 = new global::Gtk.Frame ();
 			this.frame2.Name = "frame2";
 			this.frame2.ShadowType = ((global::Gtk.ShadowType)(0));
 			// Container child frame2.Gtk.Container+ContainerChild
-			this.GtkAlignment3 = new global::Gtk.Alignment (0f, 0f, 1f, 1f);
+			this.GtkAlignment3 = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
 			this.GtkAlignment3.Name = "GtkAlignment3";
 			this.GtkAlignment3.LeftPadding = ((uint)(12));
 			// Container child GtkAlignment3.Gtk.Container+ContainerChild
@@ -188,11 +167,11 @@ namespace MonoDevelop.Gettext.Translator
 			// Container child hboxUser.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.Xalign = 0f;
+			this.label2.Xalign = 0F;
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("L_ocale:");
 			this.label2.UseUnderline = true;
 			this.hboxUser.Add (this.label2);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hboxUser[this.label2]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hboxUser [this.label2]));
 			w13.Position = 0;
 			w13.Expand = false;
 			w13.Fill = false;
@@ -203,7 +182,7 @@ namespace MonoDevelop.Gettext.Translator
 			this.entryLocale.IsEditable = true;
 			this.entryLocale.InvisibleChar = '●';
 			this.hboxUser.Add (this.entryLocale);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hboxUser[this.entryLocale]));
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hboxUser [this.entryLocale]));
 			w14.Position = 1;
 			this.GtkAlignment3.Add (this.hboxUser);
 			this.frame2.Add (this.GtkAlignment3);
@@ -214,15 +193,15 @@ namespace MonoDevelop.Gettext.Translator
 			this.radiobuttonCustom.Group = this.radiobuttonKnown.Group;
 			this.frame2.LabelWidget = this.radiobuttonCustom;
 			this.vbox3.Add (this.frame2);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.frame2]));
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.frame2]));
 			w17.Position = 1;
 			w17.Expand = false;
 			w17.Fill = false;
 			this.vbox2.Add (this.vbox3);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.vbox3]));
+			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.vbox3]));
 			w18.Position = 0;
 			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(w1[this.vbox2]));
+			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
 			w19.Position = 0;
 			w19.Expand = false;
 			w19.Fill = false;
@@ -241,7 +220,7 @@ namespace MonoDevelop.Gettext.Translator
 			this.button1.UseUnderline = true;
 			this.button1.Label = "gtk-cancel";
 			this.AddActionWidget (this.button1, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w21 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w20[this.button1]));
+			global::Gtk.ButtonBox.ButtonBoxChild w21 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w20 [this.button1]));
 			w21.Expand = false;
 			w21.Fill = false;
 			// Container child MonoDevelop.Gettext.LanguageChooserDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -253,7 +232,7 @@ namespace MonoDevelop.Gettext.Translator
 			this.buttonOK.UseUnderline = true;
 			this.buttonOK.Label = "gtk-add";
 			this.AddActionWidget (this.buttonOK, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w22 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w20[this.buttonOK]));
+			global::Gtk.ButtonBox.ButtonBoxChild w22 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w20 [this.buttonOK]));
 			w22.Position = 1;
 			w22.Expand = false;
 			w22.Fill = false;

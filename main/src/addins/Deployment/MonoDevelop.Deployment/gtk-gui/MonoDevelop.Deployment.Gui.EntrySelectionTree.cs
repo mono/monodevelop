@@ -5,7 +5,6 @@ namespace MonoDevelop.Deployment.Gui
 	internal partial class EntrySelectionTree
 	{
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-
 		private global::Gtk.TreeView tree;
 
 		protected virtual void Build ()

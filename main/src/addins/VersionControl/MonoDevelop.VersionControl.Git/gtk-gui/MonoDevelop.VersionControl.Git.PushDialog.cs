@@ -5,21 +5,13 @@ namespace MonoDevelop.VersionControl.Git
 	public partial class PushDialog
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.ComboBox remoteCombo;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.ComboBox branchCombo;
-
 		private global::MonoDevelop.VersionControl.Views.ChangeSetView changeList;
-
 		private global::Gtk.Button buttonCancel;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -47,7 +39,7 @@ namespace MonoDevelop.VersionControl.Git
 			this.label1.Name = "label1";
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Push to:");
 			this.hbox1.Add (this.label1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label1]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -55,14 +47,14 @@ namespace MonoDevelop.VersionControl.Git
 			this.remoteCombo = global::Gtk.ComboBox.NewText ();
 			this.remoteCombo.Name = "remoteCombo";
 			this.hbox1.Add (this.remoteCombo);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.remoteCombo]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.remoteCombo]));
 			w3.Position = 1;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Branch:");
 			this.hbox1.Add (this.label2);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label2]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label2]));
 			w4.Position = 2;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -70,10 +62,10 @@ namespace MonoDevelop.VersionControl.Git
 			this.branchCombo = global::Gtk.ComboBox.NewText ();
 			this.branchCombo.Name = "branchCombo";
 			this.hbox1.Add (this.branchCombo);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.branchCombo]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.branchCombo]));
 			w5.Position = 3;
 			this.vbox2.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
 			w6.Position = 0;
 			w6.Expand = false;
 			w6.Fill = false;
@@ -83,10 +75,10 @@ namespace MonoDevelop.VersionControl.Git
 			this.changeList.Name = "changeList";
 			this.changeList.ShadowType = ((global::Gtk.ShadowType)(1));
 			this.vbox2.Add (this.changeList);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.changeList]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.changeList]));
 			w7.Position = 1;
 			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(w1[this.vbox2]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
 			w8.Position = 0;
 			// Internal child MonoDevelop.VersionControl.Git.PushDialog.ActionArea
 			global::Gtk.HButtonBox w9 = this.ActionArea;
@@ -103,7 +95,7 @@ namespace MonoDevelop.VersionControl.Git
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w10 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w9[this.buttonCancel]));
+			global::Gtk.ButtonBox.ButtonBoxChild w10 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w9 [this.buttonCancel]));
 			w10.Expand = false;
 			w10.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -114,7 +106,7 @@ namespace MonoDevelop.VersionControl.Git
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = global::Mono.Unix.Catalog.GetString ("Push Changes");
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w9[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w9 [this.buttonOk]));
 			w11.Position = 1;
 			w11.Expand = false;
 			w11.Fill = false;

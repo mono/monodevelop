@@ -5,31 +5,18 @@ namespace MonoDevelop.Autotools
 	public partial class GenerateMakefilesDialog
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.VBox vbox3;
-
 		private global::Gtk.RadioButton rbSimple;
-
 		private global::Gtk.Label label4;
-
 		private global::Gtk.RadioButton rbAutotools;
-
 		private global::Gtk.Label label5;
-
 		private global::Gtk.HSeparator hseparator1;
-
 		private global::Gtk.Label label3;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.ComboBox comboConfigs;
-
 		private global::Gtk.Button buttonCancel;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -53,10 +40,10 @@ namespace MonoDevelop.Autotools
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.Xalign = 0f;
+			this.label2.Xalign = 0F;
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Select the kind of Makefile you want to generate:");
 			this.vbox2.Add (this.label2);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.label2]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label2]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -81,7 +68,7 @@ namespace MonoDevelop.Autotools
 			this.label4.Wrap = true;
 			this.rbSimple.Add (this.label4);
 			this.vbox3.Add (this.rbSimple);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.rbSimple]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.rbSimple]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -102,12 +89,12 @@ namespace MonoDevelop.Autotools
 			this.label5.Wrap = true;
 			this.rbAutotools.Add (this.label5);
 			this.vbox3.Add (this.rbAutotools);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.rbAutotools]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.rbAutotools]));
 			w6.Position = 1;
 			w6.Expand = false;
 			w6.Fill = false;
 			this.vbox2.Add (this.vbox3);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.vbox3]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.vbox3]));
 			w7.Position = 1;
 			w7.Expand = false;
 			w7.Fill = false;
@@ -115,7 +102,7 @@ namespace MonoDevelop.Autotools
 			this.hseparator1 = new global::Gtk.HSeparator ();
 			this.hseparator1.Name = "hseparator1";
 			this.vbox2.Add (this.hseparator1);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hseparator1]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hseparator1]));
 			w8.Position = 2;
 			w8.Expand = false;
 			w8.Fill = false;
@@ -123,11 +110,11 @@ namespace MonoDevelop.Autotools
 			this.label3 = new global::Gtk.Label ();
 			this.label3.WidthRequest = 580;
 			this.label3.Name = "label3";
-			this.label3.Xalign = 0f;
+			this.label3.Xalign = 0F;
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Select the configuration that the Makefile will build by default. Other configurations can be selected via the '--config' option of the generated configure script.");
 			this.label3.Wrap = true;
 			this.vbox2.Add (this.label3);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.label3]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label3]));
 			w9.Position = 3;
 			w9.Expand = false;
 			w9.Fill = false;
@@ -140,7 +127,7 @@ namespace MonoDevelop.Autotools
 			this.label1.Name = "label1";
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Default configuration:");
 			this.hbox1.Add (this.label1);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label1]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));
 			w10.Position = 0;
 			w10.Expand = false;
 			w10.Fill = false;
@@ -148,18 +135,18 @@ namespace MonoDevelop.Autotools
 			this.comboConfigs = global::Gtk.ComboBox.NewText ();
 			this.comboConfigs.Name = "comboConfigs";
 			this.hbox1.Add (this.comboConfigs);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.comboConfigs]));
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.comboConfigs]));
 			w11.Position = 1;
 			w11.Expand = false;
 			w11.Fill = false;
 			this.vbox2.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
 			w12.PackType = ((global::Gtk.PackType)(1));
 			w12.Position = 4;
 			w12.Expand = false;
 			w12.Fill = false;
 			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(w1[this.vbox2]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
 			w13.Position = 0;
 			w13.Expand = false;
 			w13.Fill = false;
@@ -178,7 +165,7 @@ namespace MonoDevelop.Autotools
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w15 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w14[this.buttonCancel]));
+			global::Gtk.ButtonBox.ButtonBoxChild w15 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w14 [this.buttonCancel]));
 			w15.Expand = false;
 			w15.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -190,7 +177,7 @@ namespace MonoDevelop.Autotools
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w16 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w14[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w16 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w14 [this.buttonOk]));
 			w16.Position = 1;
 			w16.Expand = false;
 			w16.Fill = false;

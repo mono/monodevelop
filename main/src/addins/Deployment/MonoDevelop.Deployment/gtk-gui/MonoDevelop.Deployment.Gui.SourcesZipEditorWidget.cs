@@ -5,25 +5,15 @@ namespace MonoDevelop.Deployment.Gui
 	internal partial class SourcesZipEditorWidget
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Label label4;
-
 		private global::Gtk.Table table1;
-
 		private global::Gtk.ComboBox comboFormat;
-
 		private global::MonoDevelop.Components.FolderEntry folderEntry;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Entry entryZip;
-
 		private global::Gtk.ComboBox comboZip;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.Label label3;
 
 		protected virtual void Build ()
@@ -40,10 +30,10 @@ namespace MonoDevelop.Deployment.Gui
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.label4 = new global::Gtk.Label ();
 			this.label4.Name = "label4";
-			this.label4.Xalign = 0f;
+			this.label4.Xalign = 0F;
 			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("Select the archive file name and format:");
 			this.vbox2.Add (this.label4);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.label4]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label4]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -56,7 +46,7 @@ namespace MonoDevelop.Deployment.Gui
 			this.comboFormat = global::Gtk.ComboBox.NewText ();
 			this.comboFormat.Name = "comboFormat";
 			this.table1.Add (this.comboFormat);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1[this.comboFormat]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.comboFormat]));
 			w2.LeftAttach = ((uint)(1));
 			w2.RightAttach = ((uint)(2));
 			w2.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -64,7 +54,7 @@ namespace MonoDevelop.Deployment.Gui
 			this.folderEntry = new global::MonoDevelop.Components.FolderEntry ();
 			this.folderEntry.Name = "folderEntry";
 			this.table1.Add (this.folderEntry);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1[this.folderEntry]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.folderEntry]));
 			w3.TopAttach = ((uint)(1));
 			w3.BottomAttach = ((uint)(2));
 			w3.LeftAttach = ((uint)(1));
@@ -82,18 +72,18 @@ namespace MonoDevelop.Deployment.Gui
 			this.entryZip.IsEditable = true;
 			this.entryZip.InvisibleChar = '●';
 			this.hbox1.Add (this.entryZip);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.entryZip]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.entryZip]));
 			w4.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.comboZip = global::Gtk.ComboBox.NewText ();
 			this.comboZip.Name = "comboZip";
 			this.hbox1.Add (this.comboZip);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.comboZip]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.comboZip]));
 			w5.Position = 1;
 			w5.Expand = false;
 			w5.Fill = false;
 			this.table1.Add (this.hbox1);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1[this.hbox1]));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.hbox1]));
 			w6.TopAttach = ((uint)(2));
 			w6.BottomAttach = ((uint)(3));
 			w6.LeftAttach = ((uint)(1));
@@ -103,10 +93,10 @@ namespace MonoDevelop.Deployment.Gui
 			// Container child table1.Gtk.Table+TableChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("File:");
 			this.table1.Add (this.label1);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1[this.label1]));
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.label1]));
 			w7.TopAttach = ((uint)(2));
 			w7.BottomAttach = ((uint)(3));
 			w7.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -114,10 +104,10 @@ namespace MonoDevelop.Deployment.Gui
 			// Container child table1.Gtk.Table+TableChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.Xalign = 0f;
+			this.label2.Xalign = 0F;
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Target folder:");
 			this.table1.Add (this.label2);
-			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1[this.label2]));
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2]));
 			w8.TopAttach = ((uint)(1));
 			w8.BottomAttach = ((uint)(2));
 			w8.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -125,14 +115,14 @@ namespace MonoDevelop.Deployment.Gui
 			// Container child table1.Gtk.Table+TableChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.Xalign = 0f;
+			this.label3.Xalign = 0F;
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("File format:");
 			this.table1.Add (this.label3);
-			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.table1[this.label3]));
+			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.table1 [this.label3]));
 			w9.XOptions = ((global::Gtk.AttachOptions)(4));
 			w9.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox2.Add (this.table1);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.table1]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.table1]));
 			w10.Position = 1;
 			w10.Expand = false;
 			w10.Fill = false;

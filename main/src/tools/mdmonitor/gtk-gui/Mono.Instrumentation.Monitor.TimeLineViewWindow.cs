@@ -5,31 +5,18 @@ namespace Mono.Instrumentation.Monitor
 	internal partial class TimeLineViewWindow
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Button buttonExpand;
-
 		private global::Gtk.Button buttonCollapse;
-
 		private global::Gtk.CheckButton checkSingleThread;
-
 		private global::Gtk.HBox hbox2;
-
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-
 		private global::Mono.Instrumentation.Monitor.TimeLineView timeView;
-
 		private global::Gtk.VBox vbox1;
-
 		private global::Gtk.Button button3;
-
 		private global::Gtk.VScale vscaleZoom;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.Button buttonResetScale;
-
 		private global::Gtk.VScale vscaleScale;
 
 		protected virtual void Build ()
@@ -55,7 +42,7 @@ namespace Mono.Instrumentation.Monitor
 			this.buttonExpand.UseUnderline = true;
 			this.buttonExpand.Label = global::Mono.Unix.Catalog.GetString ("Expand All");
 			this.hbox1.Add (this.buttonExpand);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonExpand]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonExpand]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -66,7 +53,7 @@ namespace Mono.Instrumentation.Monitor
 			this.buttonCollapse.UseUnderline = true;
 			this.buttonCollapse.Label = global::Mono.Unix.Catalog.GetString ("Collapse All");
 			this.hbox1.Add (this.buttonCollapse);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonCollapse]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonCollapse]));
 			w2.Position = 1;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -78,12 +65,12 @@ namespace Mono.Instrumentation.Monitor
 			this.checkSingleThread.DrawIndicator = true;
 			this.checkSingleThread.UseUnderline = true;
 			this.hbox1.Add (this.checkSingleThread);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.checkSingleThread]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.checkSingleThread]));
 			w3.Position = 2;
 			w3.Expand = false;
 			w3.Fill = false;
 			this.vbox2.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -108,7 +95,7 @@ namespace Mono.Instrumentation.Monitor
 			w5.Add (this.timeView);
 			this.GtkScrolledWindow.Add (w5);
 			this.hbox2.Add (this.GtkScrolledWindow);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.GtkScrolledWindow]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.GtkScrolledWindow]));
 			w8.Position = 0;
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.vbox1 = new global::Gtk.VBox ();
@@ -120,7 +107,7 @@ namespace Mono.Instrumentation.Monitor
 			this.button3.Name = "button3";
 			this.button3.UseUnderline = true;
 			// Container child button3.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w9 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+			global::Gtk.Alignment w9 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
 			global::Gtk.HBox w10 = new global::Gtk.HBox ();
 			w10.Spacing = 2;
@@ -134,7 +121,7 @@ namespace Mono.Instrumentation.Monitor
 			w9.Add (w10);
 			this.button3.Add (w9);
 			this.vbox1.Add (this.button3);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.button3]));
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.button3]));
 			w17.Position = 0;
 			w17.Expand = false;
 			w17.Fill = false;
@@ -152,7 +139,7 @@ namespace Mono.Instrumentation.Monitor
 			this.vscaleZoom.Digits = 0;
 			this.vscaleZoom.ValuePos = ((global::Gtk.PositionType)(2));
 			this.vbox1.Add (this.vscaleZoom);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.vscaleZoom]));
+			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.vscaleZoom]));
 			w18.Position = 1;
 			w18.Expand = false;
 			w18.Fill = false;
@@ -160,7 +147,7 @@ namespace Mono.Instrumentation.Monitor
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.vbox1.Add (this.label2);
-			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.label2]));
+			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.label2]));
 			w19.Position = 2;
 			w19.Expand = false;
 			w19.Fill = false;
@@ -170,7 +157,7 @@ namespace Mono.Instrumentation.Monitor
 			this.buttonResetScale.Name = "buttonResetScale";
 			this.buttonResetScale.UseUnderline = true;
 			// Container child buttonResetScale.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w20 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+			global::Gtk.Alignment w20 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
 			global::Gtk.HBox w21 = new global::Gtk.HBox ();
 			w21.Spacing = 2;
@@ -184,7 +171,7 @@ namespace Mono.Instrumentation.Monitor
 			w20.Add (w21);
 			this.buttonResetScale.Add (w20);
 			this.vbox1.Add (this.buttonResetScale);
-			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.buttonResetScale]));
+			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.buttonResetScale]));
 			w28.Position = 3;
 			w28.Expand = false;
 			w28.Fill = false;
@@ -202,17 +189,17 @@ namespace Mono.Instrumentation.Monitor
 			this.vscaleScale.Digits = 0;
 			this.vscaleScale.ValuePos = ((global::Gtk.PositionType)(2));
 			this.vbox1.Add (this.vscaleScale);
-			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.vscaleScale]));
+			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.vscaleScale]));
 			w29.Position = 4;
 			w29.Expand = false;
 			w29.Fill = false;
 			this.hbox2.Add (this.vbox1);
-			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.vbox1]));
+			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.vbox1]));
 			w30.Position = 1;
 			w30.Expand = false;
 			w30.Fill = false;
 			this.vbox2.Add (this.hbox2);
-			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox2]));
+			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox2]));
 			w31.Position = 1;
 			this.Add (this.vbox2);
 			if ((this.Child != null)) {

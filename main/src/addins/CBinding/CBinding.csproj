@@ -215,9 +215,6 @@
     <EmbeddedResource Include="icons\cpp-icon-32.png">
       <LogicalName>cpp-icon-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="gtk-gui\objects.xml">
-      <LogicalName>objects.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="md1format.xml">
       <LogicalName>md1format.xml</LogicalName>
     </EmbeddedResource>

@@ -5,163 +5,84 @@ namespace MonoDevelop.Autotools
 	public partial class MakefileOptionPanelWidget
 	{
 		private global::Gtk.Notebook notebook1;
-
 		private global::Gtk.VBox vbox1;
-
 		private global::Gtk.CheckButton cbEnableMakefileIntegration;
-
 		private global::Gtk.HSeparator headerSep1;
-
 		private global::Gtk.Table table1;
-
 		private global::Gtk.CheckButton cbBuildTarget;
-
 		private global::Gtk.CheckButton cbCleanTarget;
-
 		private global::Gtk.CheckButton cbRunTarget;
-
 		private global::MonoDevelop.Components.FileEntry fileEntryMakefilePath;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.ComboBox comboAssemblyName;
-
 		private global::Gtk.HBox hbox2;
-
 		private global::Gtk.ComboBox comboOutputDir;
-
 		private global::Gtk.HBox hbox3;
-
 		private global::Gtk.Entry BuildTargetName;
-
 		private global::Gtk.HBox hbox4;
-
 		private global::Gtk.Entry ExecuteTargetName;
-
 		private global::Gtk.HBox hbox5;
-
 		private global::Gtk.Entry CleanTargetName;
-
 		private global::Gtk.HSeparator headerSep2;
-
 		private global::Gtk.Label label8;
-
 		private global::Gtk.Label label9;
-
 		private global::Gtk.Label lblAssemblyNameVar;
-
 		private global::Gtk.Label lblMakefileName;
-
 		private global::Gtk.Label lblOutputDirVar;
-
 		private global::Gtk.SpinButton spinProcesses;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.CheckButton cbFileSync;
-
 		private global::Gtk.HSeparator hseparator2;
-
 		private global::Gtk.Table table3;
-
 		private global::Gtk.CheckButton cbKeepDeployFilesSync;
-
 		private global::Gtk.CheckButton cbKeepFilesSync;
-
 		private global::Gtk.CheckButton cbKeepOthersSync;
-
 		private global::Gtk.CheckButton cbKeepResourcesSync;
-
 		private global::Gtk.ComboBox comboDeployFilesVar;
-
 		private global::Gtk.ComboBox comboFilesVar;
-
 		private global::Gtk.ComboBox comboOthersVar;
-
 		private global::Gtk.ComboBox comboResourcesVar;
-
 		private global::Gtk.Entry entryDeployFilesPattern;
-
 		private global::Gtk.Entry entryFilesPattern;
-
 		private global::Gtk.Entry entryResourcesPattern;
-
 		private global::Gtk.EventBox eventbox1;
-
 		private global::Gtk.Entry entryOthersPattern;
-
 		private global::Gtk.Label label5;
-
 		private global::Gtk.Label lblCol2;
-
 		private global::Gtk.Label lblCol3;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.VBox vbox4;
-
 		private global::Gtk.CheckButton cbKeepRefSync;
-
 		private global::Gtk.HSeparator hseparator5;
-
 		private global::Gtk.Table table4;
-
 		private global::Gtk.CheckButton cbAutotoolsProject;
-
 		private global::Gtk.ComboBox comboAsmRefVar;
-
 		private global::Gtk.ComboBox comboGacRefVar;
-
 		private global::Gtk.ComboBox comboProjectRefVar;
-
 		private global::Gtk.Entry entryAsmRefPattern;
-
 		private global::Gtk.Entry entryGacRefPattern;
-
 		private global::Gtk.Entry entryProjectRefPattern;
-
 		private global::MonoDevelop.Components.FolderEntry fileEntryConfigureInPath;
-
 		private global::Gtk.HSeparator hseparator1;
-
 		private global::Gtk.Label label6;
-
 		private global::Gtk.Label lblAsmRef;
-
 		private global::Gtk.Label lblCol5;
-
 		private global::Gtk.Label lblCol6;
-
 		private global::Gtk.Label lblConfigureInPath;
-
 		private global::Gtk.Label lblGacRef;
-
 		private global::Gtk.Label lblProjectRef;
-
 		private global::Gtk.Label label3;
-
 		private global::Gtk.VBox vbox3;
-
 		private global::Gtk.Label label7;
-
 		private global::Gtk.Table table2;
-
 		private global::Gtk.Entry entryErrorRegex;
-
 		private global::Gtk.Entry entryWarningRegex;
-
 		private global::Gtk.HBox hbox6;
-
 		private global::Gtk.ComboBox comboMessageType;
-
 		private global::Gtk.Label lblErrorRegex;
-
 		private global::Gtk.Label lblMessageType;
-
 		private global::Gtk.Label lblWarningRegex;
-
 		private global::Gtk.Label label4;
 
 		protected virtual void Build ()
@@ -188,7 +109,7 @@ namespace MonoDevelop.Autotools
 			this.cbEnableMakefileIntegration.Label = global::Mono.Unix.Catalog.GetString ("Enable makefile Integration in this project");
 			this.cbEnableMakefileIntegration.DrawIndicator = true;
 			this.vbox1.Add (this.cbEnableMakefileIntegration);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.cbEnableMakefileIntegration]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.cbEnableMakefileIntegration]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -196,7 +117,7 @@ namespace MonoDevelop.Autotools
 			this.headerSep1 = new global::Gtk.HSeparator ();
 			this.headerSep1.Name = "headerSep1";
 			this.vbox1.Add (this.headerSep1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.headerSep1]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.headerSep1]));
 			w2.Position = 1;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -213,7 +134,7 @@ namespace MonoDevelop.Autotools
 			this.cbBuildTarget.DrawIndicator = true;
 			this.cbBuildTarget.UseUnderline = true;
 			this.table1.Add (this.cbBuildTarget);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1[this.cbBuildTarget]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.cbBuildTarget]));
 			w3.TopAttach = ((uint)(3));
 			w3.BottomAttach = ((uint)(4));
 			w3.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -226,7 +147,7 @@ namespace MonoDevelop.Autotools
 			this.cbCleanTarget.DrawIndicator = true;
 			this.cbCleanTarget.UseUnderline = true;
 			this.table1.Add (this.cbCleanTarget);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1[this.cbCleanTarget]));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.cbCleanTarget]));
 			w4.TopAttach = ((uint)(4));
 			w4.BottomAttach = ((uint)(5));
 			w4.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -239,7 +160,7 @@ namespace MonoDevelop.Autotools
 			this.cbRunTarget.DrawIndicator = true;
 			this.cbRunTarget.UseUnderline = true;
 			this.table1.Add (this.cbRunTarget);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1[this.cbRunTarget]));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.cbRunTarget]));
 			w5.TopAttach = ((uint)(5));
 			w5.BottomAttach = ((uint)(6));
 			w5.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -250,7 +171,7 @@ namespace MonoDevelop.Autotools
 			this.fileEntryMakefilePath.Name = "fileEntryMakefilePath";
 			this.fileEntryMakefilePath.BrowserTitle = "";
 			this.table1.Add (this.fileEntryMakefilePath);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1[this.fileEntryMakefilePath]));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.fileEntryMakefilePath]));
 			w6.LeftAttach = ((uint)(1));
 			w6.RightAttach = ((uint)(2));
 			w6.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -262,12 +183,12 @@ namespace MonoDevelop.Autotools
 			this.comboAssemblyName.WidthRequest = 300;
 			this.comboAssemblyName.Name = "comboAssemblyName";
 			this.hbox1.Add (this.comboAssemblyName);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.comboAssemblyName]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.comboAssemblyName]));
 			w7.Position = 0;
 			w7.Expand = false;
 			w7.Fill = false;
 			this.table1.Add (this.hbox1);
-			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1[this.hbox1]));
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1 [this.hbox1]));
 			w8.TopAttach = ((uint)(6));
 			w8.BottomAttach = ((uint)(7));
 			w8.LeftAttach = ((uint)(1));
@@ -282,12 +203,12 @@ namespace MonoDevelop.Autotools
 			this.comboOutputDir.WidthRequest = 300;
 			this.comboOutputDir.Name = "comboOutputDir";
 			this.hbox2.Add (this.comboOutputDir);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.comboOutputDir]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.comboOutputDir]));
 			w9.Position = 0;
 			w9.Expand = false;
 			w9.Fill = false;
 			this.table1.Add (this.hbox2);
-			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table1[this.hbox2]));
+			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table1 [this.hbox2]));
 			w10.TopAttach = ((uint)(7));
 			w10.BottomAttach = ((uint)(8));
 			w10.LeftAttach = ((uint)(1));
@@ -305,12 +226,12 @@ namespace MonoDevelop.Autotools
 			this.BuildTargetName.IsEditable = true;
 			this.BuildTargetName.InvisibleChar = '●';
 			this.hbox3.Add (this.BuildTargetName);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.BuildTargetName]));
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.BuildTargetName]));
 			w11.Position = 0;
 			w11.Expand = false;
 			w11.Fill = false;
 			this.table1.Add (this.hbox3);
-			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table1[this.hbox3]));
+			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table1 [this.hbox3]));
 			w12.TopAttach = ((uint)(3));
 			w12.BottomAttach = ((uint)(4));
 			w12.LeftAttach = ((uint)(1));
@@ -328,12 +249,12 @@ namespace MonoDevelop.Autotools
 			this.ExecuteTargetName.IsEditable = true;
 			this.ExecuteTargetName.InvisibleChar = '●';
 			this.hbox4.Add (this.ExecuteTargetName);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox4[this.ExecuteTargetName]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.ExecuteTargetName]));
 			w13.Position = 0;
 			w13.Expand = false;
 			w13.Fill = false;
 			this.table1.Add (this.hbox4);
-			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.table1[this.hbox4]));
+			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.table1 [this.hbox4]));
 			w14.TopAttach = ((uint)(5));
 			w14.BottomAttach = ((uint)(6));
 			w14.LeftAttach = ((uint)(1));
@@ -351,12 +272,12 @@ namespace MonoDevelop.Autotools
 			this.CleanTargetName.IsEditable = true;
 			this.CleanTargetName.InvisibleChar = '●';
 			this.hbox5.Add (this.CleanTargetName);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.hbox5[this.CleanTargetName]));
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.CleanTargetName]));
 			w15.Position = 0;
 			w15.Expand = false;
 			w15.Fill = false;
 			this.table1.Add (this.hbox5);
-			global::Gtk.Table.TableChild w16 = ((global::Gtk.Table.TableChild)(this.table1[this.hbox5]));
+			global::Gtk.Table.TableChild w16 = ((global::Gtk.Table.TableChild)(this.table1 [this.hbox5]));
 			w16.TopAttach = ((uint)(4));
 			w16.BottomAttach = ((uint)(5));
 			w16.LeftAttach = ((uint)(1));
@@ -367,7 +288,7 @@ namespace MonoDevelop.Autotools
 			this.headerSep2 = new global::Gtk.HSeparator ();
 			this.headerSep2.Name = "headerSep2";
 			this.table1.Add (this.headerSep2);
-			global::Gtk.Table.TableChild w17 = ((global::Gtk.Table.TableChild)(this.table1[this.headerSep2]));
+			global::Gtk.Table.TableChild w17 = ((global::Gtk.Table.TableChild)(this.table1 [this.headerSep2]));
 			w17.TopAttach = ((uint)(1));
 			w17.BottomAttach = ((uint)(2));
 			w17.RightAttach = ((uint)(2));
@@ -377,11 +298,11 @@ namespace MonoDevelop.Autotools
 			this.label8 = new global::Gtk.Label ();
 			this.label8.WidthRequest = 500;
 			this.label8.Name = "label8";
-			this.label8.Xalign = 0f;
+			this.label8.Xalign = 0F;
 			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("Select the makefile targets that should be executed for the build and clean operations:");
 			this.label8.Wrap = true;
 			this.table1.Add (this.label8);
-			global::Gtk.Table.TableChild w18 = ((global::Gtk.Table.TableChild)(this.table1[this.label8]));
+			global::Gtk.Table.TableChild w18 = ((global::Gtk.Table.TableChild)(this.table1 [this.label8]));
 			w18.TopAttach = ((uint)(2));
 			w18.BottomAttach = ((uint)(3));
 			w18.RightAttach = ((uint)(2));
@@ -390,10 +311,10 @@ namespace MonoDevelop.Autotools
 			// Container child table1.Gtk.Table+TableChild
 			this.label9 = new global::Gtk.Label ();
 			this.label9.Name = "label9";
-			this.label9.Xalign = 1f;
+			this.label9.Xalign = 1F;
 			this.label9.LabelProp = global::Mono.Unix.Catalog.GetString ("Build processes:");
 			this.table1.Add (this.label9);
-			global::Gtk.Table.TableChild w19 = ((global::Gtk.Table.TableChild)(this.table1[this.label9]));
+			global::Gtk.Table.TableChild w19 = ((global::Gtk.Table.TableChild)(this.table1 [this.label9]));
 			w19.TopAttach = ((uint)(8));
 			w19.BottomAttach = ((uint)(9));
 			w19.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -401,10 +322,10 @@ namespace MonoDevelop.Autotools
 			// Container child table1.Gtk.Table+TableChild
 			this.lblAssemblyNameVar = new global::Gtk.Label ();
 			this.lblAssemblyNameVar.Name = "lblAssemblyNameVar";
-			this.lblAssemblyNameVar.Xalign = 0f;
+			this.lblAssemblyNameVar.Xalign = 0F;
 			this.lblAssemblyNameVar.LabelProp = global::Mono.Unix.Catalog.GetString ("Assembly Name variable:");
 			this.table1.Add (this.lblAssemblyNameVar);
-			global::Gtk.Table.TableChild w20 = ((global::Gtk.Table.TableChild)(this.table1[this.lblAssemblyNameVar]));
+			global::Gtk.Table.TableChild w20 = ((global::Gtk.Table.TableChild)(this.table1 [this.lblAssemblyNameVar]));
 			w20.TopAttach = ((uint)(6));
 			w20.BottomAttach = ((uint)(7));
 			w20.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -412,19 +333,19 @@ namespace MonoDevelop.Autotools
 			// Container child table1.Gtk.Table+TableChild
 			this.lblMakefileName = new global::Gtk.Label ();
 			this.lblMakefileName.Name = "lblMakefileName";
-			this.lblMakefileName.Xalign = 0f;
+			this.lblMakefileName.Xalign = 0F;
 			this.lblMakefileName.LabelProp = global::Mono.Unix.Catalog.GetString ("Makefile path:");
 			this.table1.Add (this.lblMakefileName);
-			global::Gtk.Table.TableChild w21 = ((global::Gtk.Table.TableChild)(this.table1[this.lblMakefileName]));
+			global::Gtk.Table.TableChild w21 = ((global::Gtk.Table.TableChild)(this.table1 [this.lblMakefileName]));
 			w21.XOptions = ((global::Gtk.AttachOptions)(4));
 			w21.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.lblOutputDirVar = new global::Gtk.Label ();
 			this.lblOutputDirVar.Name = "lblOutputDirVar";
-			this.lblOutputDirVar.Xalign = 0f;
+			this.lblOutputDirVar.Xalign = 0F;
 			this.lblOutputDirVar.LabelProp = global::Mono.Unix.Catalog.GetString ("Output directory variable:");
 			this.table1.Add (this.lblOutputDirVar);
-			global::Gtk.Table.TableChild w22 = ((global::Gtk.Table.TableChild)(this.table1[this.lblOutputDirVar]));
+			global::Gtk.Table.TableChild w22 = ((global::Gtk.Table.TableChild)(this.table1 [this.lblOutputDirVar]));
 			w22.TopAttach = ((uint)(7));
 			w22.BottomAttach = ((uint)(8));
 			w22.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -438,7 +359,7 @@ namespace MonoDevelop.Autotools
 			this.spinProcesses.Numeric = true;
 			this.spinProcesses.Value = 1;
 			this.table1.Add (this.spinProcesses);
-			global::Gtk.Table.TableChild w23 = ((global::Gtk.Table.TableChild)(this.table1[this.spinProcesses]));
+			global::Gtk.Table.TableChild w23 = ((global::Gtk.Table.TableChild)(this.table1 [this.spinProcesses]));
 			w23.TopAttach = ((uint)(8));
 			w23.BottomAttach = ((uint)(9));
 			w23.LeftAttach = ((uint)(1));
@@ -446,7 +367,7 @@ namespace MonoDevelop.Autotools
 			w23.XOptions = ((global::Gtk.AttachOptions)(4));
 			w23.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox1.Add (this.table1);
-			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.table1]));
+			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.table1]));
 			w24.Position = 2;
 			w24.Expand = false;
 			w24.Fill = false;
@@ -470,7 +391,7 @@ namespace MonoDevelop.Autotools
 			this.cbFileSync.DrawIndicator = true;
 			this.cbFileSync.UseUnderline = true;
 			this.vbox2.Add (this.cbFileSync);
-			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.cbFileSync]));
+			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.cbFileSync]));
 			w26.Position = 0;
 			w26.Expand = false;
 			w26.Fill = false;
@@ -478,7 +399,7 @@ namespace MonoDevelop.Autotools
 			this.hseparator2 = new global::Gtk.HSeparator ();
 			this.hseparator2.Name = "hseparator2";
 			this.vbox2.Add (this.hseparator2);
-			global::Gtk.Box.BoxChild w27 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hseparator2]));
+			global::Gtk.Box.BoxChild w27 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hseparator2]));
 			w27.Position = 1;
 			w27.Expand = false;
 			w27.Fill = false;
@@ -494,7 +415,7 @@ namespace MonoDevelop.Autotools
 			this.cbKeepDeployFilesSync.Label = global::Mono.Unix.Catalog.GetString ("Deployment files");
 			this.cbKeepDeployFilesSync.DrawIndicator = true;
 			this.table3.Add (this.cbKeepDeployFilesSync);
-			global::Gtk.Table.TableChild w28 = ((global::Gtk.Table.TableChild)(this.table3[this.cbKeepDeployFilesSync]));
+			global::Gtk.Table.TableChild w28 = ((global::Gtk.Table.TableChild)(this.table3 [this.cbKeepDeployFilesSync]));
 			w28.TopAttach = ((uint)(4));
 			w28.BottomAttach = ((uint)(5));
 			w28.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -506,7 +427,7 @@ namespace MonoDevelop.Autotools
 			this.cbKeepFilesSync.Label = global::Mono.Unix.Catalog.GetString ("Source code files");
 			this.cbKeepFilesSync.DrawIndicator = true;
 			this.table3.Add (this.cbKeepFilesSync);
-			global::Gtk.Table.TableChild w29 = ((global::Gtk.Table.TableChild)(this.table3[this.cbKeepFilesSync]));
+			global::Gtk.Table.TableChild w29 = ((global::Gtk.Table.TableChild)(this.table3 [this.cbKeepFilesSync]));
 			w29.TopAttach = ((uint)(2));
 			w29.BottomAttach = ((uint)(3));
 			w29.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -518,7 +439,7 @@ namespace MonoDevelop.Autotools
 			this.cbKeepOthersSync.Label = global::Mono.Unix.Catalog.GetString ("Other Files");
 			this.cbKeepOthersSync.DrawIndicator = true;
 			this.table3.Add (this.cbKeepOthersSync);
-			global::Gtk.Table.TableChild w30 = ((global::Gtk.Table.TableChild)(this.table3[this.cbKeepOthersSync]));
+			global::Gtk.Table.TableChild w30 = ((global::Gtk.Table.TableChild)(this.table3 [this.cbKeepOthersSync]));
 			w30.TopAttach = ((uint)(5));
 			w30.BottomAttach = ((uint)(6));
 			w30.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -530,7 +451,7 @@ namespace MonoDevelop.Autotools
 			this.cbKeepResourcesSync.Label = global::Mono.Unix.Catalog.GetString ("Resources");
 			this.cbKeepResourcesSync.DrawIndicator = true;
 			this.table3.Add (this.cbKeepResourcesSync);
-			global::Gtk.Table.TableChild w31 = ((global::Gtk.Table.TableChild)(this.table3[this.cbKeepResourcesSync]));
+			global::Gtk.Table.TableChild w31 = ((global::Gtk.Table.TableChild)(this.table3 [this.cbKeepResourcesSync]));
 			w31.TopAttach = ((uint)(3));
 			w31.BottomAttach = ((uint)(4));
 			w31.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -540,7 +461,7 @@ namespace MonoDevelop.Autotools
 			this.comboDeployFilesVar.WidthRequest = 200;
 			this.comboDeployFilesVar.Name = "comboDeployFilesVar";
 			this.table3.Add (this.comboDeployFilesVar);
-			global::Gtk.Table.TableChild w32 = ((global::Gtk.Table.TableChild)(this.table3[this.comboDeployFilesVar]));
+			global::Gtk.Table.TableChild w32 = ((global::Gtk.Table.TableChild)(this.table3 [this.comboDeployFilesVar]));
 			w32.TopAttach = ((uint)(4));
 			w32.BottomAttach = ((uint)(5));
 			w32.LeftAttach = ((uint)(1));
@@ -551,7 +472,7 @@ namespace MonoDevelop.Autotools
 			this.comboFilesVar.WidthRequest = 200;
 			this.comboFilesVar.Name = "comboFilesVar";
 			this.table3.Add (this.comboFilesVar);
-			global::Gtk.Table.TableChild w33 = ((global::Gtk.Table.TableChild)(this.table3[this.comboFilesVar]));
+			global::Gtk.Table.TableChild w33 = ((global::Gtk.Table.TableChild)(this.table3 [this.comboFilesVar]));
 			w33.TopAttach = ((uint)(2));
 			w33.BottomAttach = ((uint)(3));
 			w33.LeftAttach = ((uint)(1));
@@ -562,7 +483,7 @@ namespace MonoDevelop.Autotools
 			this.comboOthersVar.WidthRequest = 200;
 			this.comboOthersVar.Name = "comboOthersVar";
 			this.table3.Add (this.comboOthersVar);
-			global::Gtk.Table.TableChild w34 = ((global::Gtk.Table.TableChild)(this.table3[this.comboOthersVar]));
+			global::Gtk.Table.TableChild w34 = ((global::Gtk.Table.TableChild)(this.table3 [this.comboOthersVar]));
 			w34.TopAttach = ((uint)(5));
 			w34.BottomAttach = ((uint)(6));
 			w34.LeftAttach = ((uint)(1));
@@ -573,7 +494,7 @@ namespace MonoDevelop.Autotools
 			this.comboResourcesVar.WidthRequest = 200;
 			this.comboResourcesVar.Name = "comboResourcesVar";
 			this.table3.Add (this.comboResourcesVar);
-			global::Gtk.Table.TableChild w35 = ((global::Gtk.Table.TableChild)(this.table3[this.comboResourcesVar]));
+			global::Gtk.Table.TableChild w35 = ((global::Gtk.Table.TableChild)(this.table3 [this.comboResourcesVar]));
 			w35.TopAttach = ((uint)(3));
 			w35.BottomAttach = ((uint)(4));
 			w35.LeftAttach = ((uint)(1));
@@ -586,7 +507,7 @@ namespace MonoDevelop.Autotools
 			this.entryDeployFilesPattern.IsEditable = true;
 			this.entryDeployFilesPattern.InvisibleChar = '●';
 			this.table3.Add (this.entryDeployFilesPattern);
-			global::Gtk.Table.TableChild w36 = ((global::Gtk.Table.TableChild)(this.table3[this.entryDeployFilesPattern]));
+			global::Gtk.Table.TableChild w36 = ((global::Gtk.Table.TableChild)(this.table3 [this.entryDeployFilesPattern]));
 			w36.TopAttach = ((uint)(4));
 			w36.BottomAttach = ((uint)(5));
 			w36.LeftAttach = ((uint)(2));
@@ -600,7 +521,7 @@ namespace MonoDevelop.Autotools
 			this.entryFilesPattern.IsEditable = true;
 			this.entryFilesPattern.InvisibleChar = '●';
 			this.table3.Add (this.entryFilesPattern);
-			global::Gtk.Table.TableChild w37 = ((global::Gtk.Table.TableChild)(this.table3[this.entryFilesPattern]));
+			global::Gtk.Table.TableChild w37 = ((global::Gtk.Table.TableChild)(this.table3 [this.entryFilesPattern]));
 			w37.TopAttach = ((uint)(2));
 			w37.BottomAttach = ((uint)(3));
 			w37.LeftAttach = ((uint)(2));
@@ -614,7 +535,7 @@ namespace MonoDevelop.Autotools
 			this.entryResourcesPattern.IsEditable = true;
 			this.entryResourcesPattern.InvisibleChar = '●';
 			this.table3.Add (this.entryResourcesPattern);
-			global::Gtk.Table.TableChild w38 = ((global::Gtk.Table.TableChild)(this.table3[this.entryResourcesPattern]));
+			global::Gtk.Table.TableChild w38 = ((global::Gtk.Table.TableChild)(this.table3 [this.entryResourcesPattern]));
 			w38.TopAttach = ((uint)(3));
 			w38.BottomAttach = ((uint)(4));
 			w38.LeftAttach = ((uint)(2));
@@ -632,7 +553,7 @@ namespace MonoDevelop.Autotools
 			this.entryOthersPattern.InvisibleChar = '●';
 			this.eventbox1.Add (this.entryOthersPattern);
 			this.table3.Add (this.eventbox1);
-			global::Gtk.Table.TableChild w40 = ((global::Gtk.Table.TableChild)(this.table3[this.eventbox1]));
+			global::Gtk.Table.TableChild w40 = ((global::Gtk.Table.TableChild)(this.table3 [this.eventbox1]));
 			w40.TopAttach = ((uint)(5));
 			w40.BottomAttach = ((uint)(6));
 			w40.LeftAttach = ((uint)(2));
@@ -643,11 +564,11 @@ namespace MonoDevelop.Autotools
 			this.label5 = new global::Gtk.Label ();
 			this.label5.WidthRequest = 500;
 			this.label5.Name = "label5";
-			this.label5.Xalign = 0f;
+			this.label5.Xalign = 0F;
 			this.label5.LabelProp = global::Mono.Unix.Catalog.GetString ("Select the kind of files you want to synchronize with the makefile. For each file kind please specify the makefile variable that holds the list and optionally a prefix to be prepended to each file name.");
 			this.label5.Wrap = true;
 			this.table3.Add (this.label5);
-			global::Gtk.Table.TableChild w41 = ((global::Gtk.Table.TableChild)(this.table3[this.label5]));
+			global::Gtk.Table.TableChild w41 = ((global::Gtk.Table.TableChild)(this.table3 [this.label5]));
 			w41.RightAttach = ((uint)(3));
 			w41.YPadding = ((uint)(9));
 			w41.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -655,10 +576,10 @@ namespace MonoDevelop.Autotools
 			// Container child table3.Gtk.Table+TableChild
 			this.lblCol2 = new global::Gtk.Label ();
 			this.lblCol2.Name = "lblCol2";
-			this.lblCol2.Xalign = 0f;
+			this.lblCol2.Xalign = 0F;
 			this.lblCol2.LabelProp = global::Mono.Unix.Catalog.GetString ("Makefile variable name:");
 			this.table3.Add (this.lblCol2);
-			global::Gtk.Table.TableChild w42 = ((global::Gtk.Table.TableChild)(this.table3[this.lblCol2]));
+			global::Gtk.Table.TableChild w42 = ((global::Gtk.Table.TableChild)(this.table3 [this.lblCol2]));
 			w42.TopAttach = ((uint)(1));
 			w42.BottomAttach = ((uint)(2));
 			w42.LeftAttach = ((uint)(1));
@@ -668,10 +589,10 @@ namespace MonoDevelop.Autotools
 			// Container child table3.Gtk.Table+TableChild
 			this.lblCol3 = new global::Gtk.Label ();
 			this.lblCol3.Name = "lblCol3";
-			this.lblCol3.Xalign = 0f;
+			this.lblCol3.Xalign = 0F;
 			this.lblCol3.LabelProp = global::Mono.Unix.Catalog.GetString ("Prefix:");
 			this.table3.Add (this.lblCol3);
-			global::Gtk.Table.TableChild w43 = ((global::Gtk.Table.TableChild)(this.table3[this.lblCol3]));
+			global::Gtk.Table.TableChild w43 = ((global::Gtk.Table.TableChild)(this.table3 [this.lblCol3]));
 			w43.TopAttach = ((uint)(1));
 			w43.BottomAttach = ((uint)(2));
 			w43.LeftAttach = ((uint)(2));
@@ -679,12 +600,12 @@ namespace MonoDevelop.Autotools
 			w43.XOptions = ((global::Gtk.AttachOptions)(4));
 			w43.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox2.Add (this.table3);
-			global::Gtk.Box.BoxChild w44 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.table3]));
+			global::Gtk.Box.BoxChild w44 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.table3]));
 			w44.Position = 2;
 			w44.Expand = false;
 			w44.Fill = false;
 			this.notebook1.Add (this.vbox2);
-			global::Gtk.Notebook.NotebookChild w45 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1[this.vbox2]));
+			global::Gtk.Notebook.NotebookChild w45 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.vbox2]));
 			w45.Position = 1;
 			// Notebook tab
 			this.label2 = new global::Gtk.Label ();
@@ -704,7 +625,7 @@ namespace MonoDevelop.Autotools
 			this.cbKeepRefSync.Label = global::Mono.Unix.Catalog.GetString ("Enable references synchronization");
 			this.cbKeepRefSync.DrawIndicator = true;
 			this.vbox4.Add (this.cbKeepRefSync);
-			global::Gtk.Box.BoxChild w46 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.cbKeepRefSync]));
+			global::Gtk.Box.BoxChild w46 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.cbKeepRefSync]));
 			w46.Position = 0;
 			w46.Expand = false;
 			w46.Fill = false;
@@ -712,7 +633,7 @@ namespace MonoDevelop.Autotools
 			this.hseparator5 = new global::Gtk.HSeparator ();
 			this.hseparator5.Name = "hseparator5";
 			this.vbox4.Add (this.hseparator5);
-			global::Gtk.Box.BoxChild w47 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.hseparator5]));
+			global::Gtk.Box.BoxChild w47 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.hseparator5]));
 			w47.Position = 1;
 			w47.Expand = false;
 			w47.Fill = false;
@@ -728,7 +649,7 @@ namespace MonoDevelop.Autotools
 			this.cbAutotoolsProject.Label = global::Mono.Unix.Catalog.GetString ("Look for packages in configure.in");
 			this.cbAutotoolsProject.DrawIndicator = true;
 			this.table4.Add (this.cbAutotoolsProject);
-			global::Gtk.Table.TableChild w48 = ((global::Gtk.Table.TableChild)(this.table4[this.cbAutotoolsProject]));
+			global::Gtk.Table.TableChild w48 = ((global::Gtk.Table.TableChild)(this.table4 [this.cbAutotoolsProject]));
 			w48.TopAttach = ((uint)(6));
 			w48.BottomAttach = ((uint)(7));
 			w48.RightAttach = ((uint)(3));
@@ -738,7 +659,7 @@ namespace MonoDevelop.Autotools
 			this.comboAsmRefVar.WidthRequest = 200;
 			this.comboAsmRefVar.Name = "comboAsmRefVar";
 			this.table4.Add (this.comboAsmRefVar);
-			global::Gtk.Table.TableChild w49 = ((global::Gtk.Table.TableChild)(this.table4[this.comboAsmRefVar]));
+			global::Gtk.Table.TableChild w49 = ((global::Gtk.Table.TableChild)(this.table4 [this.comboAsmRefVar]));
 			w49.TopAttach = ((uint)(3));
 			w49.BottomAttach = ((uint)(4));
 			w49.LeftAttach = ((uint)(1));
@@ -749,7 +670,7 @@ namespace MonoDevelop.Autotools
 			this.comboGacRefVar.WidthRequest = 200;
 			this.comboGacRefVar.Name = "comboGacRefVar";
 			this.table4.Add (this.comboGacRefVar);
-			global::Gtk.Table.TableChild w50 = ((global::Gtk.Table.TableChild)(this.table4[this.comboGacRefVar]));
+			global::Gtk.Table.TableChild w50 = ((global::Gtk.Table.TableChild)(this.table4 [this.comboGacRefVar]));
 			w50.TopAttach = ((uint)(2));
 			w50.BottomAttach = ((uint)(3));
 			w50.LeftAttach = ((uint)(1));
@@ -760,7 +681,7 @@ namespace MonoDevelop.Autotools
 			this.comboProjectRefVar.WidthRequest = 200;
 			this.comboProjectRefVar.Name = "comboProjectRefVar";
 			this.table4.Add (this.comboProjectRefVar);
-			global::Gtk.Table.TableChild w51 = ((global::Gtk.Table.TableChild)(this.table4[this.comboProjectRefVar]));
+			global::Gtk.Table.TableChild w51 = ((global::Gtk.Table.TableChild)(this.table4 [this.comboProjectRefVar]));
 			w51.TopAttach = ((uint)(4));
 			w51.BottomAttach = ((uint)(5));
 			w51.LeftAttach = ((uint)(1));
@@ -773,7 +694,7 @@ namespace MonoDevelop.Autotools
 			this.entryAsmRefPattern.IsEditable = true;
 			this.entryAsmRefPattern.InvisibleChar = '●';
 			this.table4.Add (this.entryAsmRefPattern);
-			global::Gtk.Table.TableChild w52 = ((global::Gtk.Table.TableChild)(this.table4[this.entryAsmRefPattern]));
+			global::Gtk.Table.TableChild w52 = ((global::Gtk.Table.TableChild)(this.table4 [this.entryAsmRefPattern]));
 			w52.TopAttach = ((uint)(3));
 			w52.BottomAttach = ((uint)(4));
 			w52.LeftAttach = ((uint)(2));
@@ -787,7 +708,7 @@ namespace MonoDevelop.Autotools
 			this.entryGacRefPattern.IsEditable = true;
 			this.entryGacRefPattern.InvisibleChar = '●';
 			this.table4.Add (this.entryGacRefPattern);
-			global::Gtk.Table.TableChild w53 = ((global::Gtk.Table.TableChild)(this.table4[this.entryGacRefPattern]));
+			global::Gtk.Table.TableChild w53 = ((global::Gtk.Table.TableChild)(this.table4 [this.entryGacRefPattern]));
 			w53.TopAttach = ((uint)(2));
 			w53.BottomAttach = ((uint)(3));
 			w53.LeftAttach = ((uint)(2));
@@ -801,7 +722,7 @@ namespace MonoDevelop.Autotools
 			this.entryProjectRefPattern.IsEditable = true;
 			this.entryProjectRefPattern.InvisibleChar = '●';
 			this.table4.Add (this.entryProjectRefPattern);
-			global::Gtk.Table.TableChild w54 = ((global::Gtk.Table.TableChild)(this.table4[this.entryProjectRefPattern]));
+			global::Gtk.Table.TableChild w54 = ((global::Gtk.Table.TableChild)(this.table4 [this.entryProjectRefPattern]));
 			w54.TopAttach = ((uint)(4));
 			w54.BottomAttach = ((uint)(5));
 			w54.LeftAttach = ((uint)(2));
@@ -812,7 +733,7 @@ namespace MonoDevelop.Autotools
 			this.fileEntryConfigureInPath = new global::MonoDevelop.Components.FolderEntry ();
 			this.fileEntryConfigureInPath.Name = "fileEntryConfigureInPath";
 			this.table4.Add (this.fileEntryConfigureInPath);
-			global::Gtk.Table.TableChild w55 = ((global::Gtk.Table.TableChild)(this.table4[this.fileEntryConfigureInPath]));
+			global::Gtk.Table.TableChild w55 = ((global::Gtk.Table.TableChild)(this.table4 [this.fileEntryConfigureInPath]));
 			w55.TopAttach = ((uint)(7));
 			w55.BottomAttach = ((uint)(8));
 			w55.LeftAttach = ((uint)(1));
@@ -823,7 +744,7 @@ namespace MonoDevelop.Autotools
 			this.hseparator1 = new global::Gtk.HSeparator ();
 			this.hseparator1.Name = "hseparator1";
 			this.table4.Add (this.hseparator1);
-			global::Gtk.Table.TableChild w56 = ((global::Gtk.Table.TableChild)(this.table4[this.hseparator1]));
+			global::Gtk.Table.TableChild w56 = ((global::Gtk.Table.TableChild)(this.table4 [this.hseparator1]));
 			w56.TopAttach = ((uint)(5));
 			w56.BottomAttach = ((uint)(6));
 			w56.RightAttach = ((uint)(3));
@@ -833,11 +754,11 @@ namespace MonoDevelop.Autotools
 			this.label6 = new global::Gtk.Label ();
 			this.label6.WidthRequest = 500;
 			this.label6.Name = "label6";
-			this.label6.Xalign = 0f;
+			this.label6.Xalign = 0F;
 			this.label6.LabelProp = global::Mono.Unix.Catalog.GetString ("Select the kind of references you want to synchronize with the makefile. For each reference type please specify the makefile variable that holds the list, and optionally a prefix to be prepended to each reference name. You can specify the same variable name for several types of references.");
 			this.label6.Wrap = true;
 			this.table4.Add (this.label6);
-			global::Gtk.Table.TableChild w57 = ((global::Gtk.Table.TableChild)(this.table4[this.label6]));
+			global::Gtk.Table.TableChild w57 = ((global::Gtk.Table.TableChild)(this.table4 [this.label6]));
 			w57.RightAttach = ((uint)(3));
 			w57.YPadding = ((uint)(9));
 			w57.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -845,10 +766,10 @@ namespace MonoDevelop.Autotools
 			// Container child table4.Gtk.Table+TableChild
 			this.lblAsmRef = new global::Gtk.Label ();
 			this.lblAsmRef.Name = "lblAsmRef";
-			this.lblAsmRef.Xalign = 0f;
+			this.lblAsmRef.Xalign = 0F;
 			this.lblAsmRef.LabelProp = global::Mono.Unix.Catalog.GetString ("Assembly References");
 			this.table4.Add (this.lblAsmRef);
-			global::Gtk.Table.TableChild w58 = ((global::Gtk.Table.TableChild)(this.table4[this.lblAsmRef]));
+			global::Gtk.Table.TableChild w58 = ((global::Gtk.Table.TableChild)(this.table4 [this.lblAsmRef]));
 			w58.TopAttach = ((uint)(3));
 			w58.BottomAttach = ((uint)(4));
 			w58.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -856,10 +777,10 @@ namespace MonoDevelop.Autotools
 			// Container child table4.Gtk.Table+TableChild
 			this.lblCol5 = new global::Gtk.Label ();
 			this.lblCol5.Name = "lblCol5";
-			this.lblCol5.Xalign = 0f;
+			this.lblCol5.Xalign = 0F;
 			this.lblCol5.LabelProp = global::Mono.Unix.Catalog.GetString ("Makefile variable name:");
 			this.table4.Add (this.lblCol5);
-			global::Gtk.Table.TableChild w59 = ((global::Gtk.Table.TableChild)(this.table4[this.lblCol5]));
+			global::Gtk.Table.TableChild w59 = ((global::Gtk.Table.TableChild)(this.table4 [this.lblCol5]));
 			w59.TopAttach = ((uint)(1));
 			w59.BottomAttach = ((uint)(2));
 			w59.LeftAttach = ((uint)(1));
@@ -869,10 +790,10 @@ namespace MonoDevelop.Autotools
 			// Container child table4.Gtk.Table+TableChild
 			this.lblCol6 = new global::Gtk.Label ();
 			this.lblCol6.Name = "lblCol6";
-			this.lblCol6.Xalign = 0f;
+			this.lblCol6.Xalign = 0F;
 			this.lblCol6.LabelProp = global::Mono.Unix.Catalog.GetString ("Prefix:");
 			this.table4.Add (this.lblCol6);
-			global::Gtk.Table.TableChild w60 = ((global::Gtk.Table.TableChild)(this.table4[this.lblCol6]));
+			global::Gtk.Table.TableChild w60 = ((global::Gtk.Table.TableChild)(this.table4 [this.lblCol6]));
 			w60.TopAttach = ((uint)(1));
 			w60.BottomAttach = ((uint)(2));
 			w60.LeftAttach = ((uint)(2));
@@ -882,10 +803,10 @@ namespace MonoDevelop.Autotools
 			// Container child table4.Gtk.Table+TableChild
 			this.lblConfigureInPath = new global::Gtk.Label ();
 			this.lblConfigureInPath.Name = "lblConfigureInPath";
-			this.lblConfigureInPath.Xalign = 0f;
+			this.lblConfigureInPath.Xalign = 0F;
 			this.lblConfigureInPath.LabelProp = global::Mono.Unix.Catalog.GetString ("Path for configure.in");
 			this.table4.Add (this.lblConfigureInPath);
-			global::Gtk.Table.TableChild w61 = ((global::Gtk.Table.TableChild)(this.table4[this.lblConfigureInPath]));
+			global::Gtk.Table.TableChild w61 = ((global::Gtk.Table.TableChild)(this.table4 [this.lblConfigureInPath]));
 			w61.TopAttach = ((uint)(7));
 			w61.BottomAttach = ((uint)(8));
 			w61.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -893,10 +814,10 @@ namespace MonoDevelop.Autotools
 			// Container child table4.Gtk.Table+TableChild
 			this.lblGacRef = new global::Gtk.Label ();
 			this.lblGacRef.Name = "lblGacRef";
-			this.lblGacRef.Xalign = 0f;
+			this.lblGacRef.Xalign = 0F;
 			this.lblGacRef.LabelProp = global::Mono.Unix.Catalog.GetString ("Package References");
 			this.table4.Add (this.lblGacRef);
-			global::Gtk.Table.TableChild w62 = ((global::Gtk.Table.TableChild)(this.table4[this.lblGacRef]));
+			global::Gtk.Table.TableChild w62 = ((global::Gtk.Table.TableChild)(this.table4 [this.lblGacRef]));
 			w62.TopAttach = ((uint)(2));
 			w62.BottomAttach = ((uint)(3));
 			w62.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -904,21 +825,21 @@ namespace MonoDevelop.Autotools
 			// Container child table4.Gtk.Table+TableChild
 			this.lblProjectRef = new global::Gtk.Label ();
 			this.lblProjectRef.Name = "lblProjectRef";
-			this.lblProjectRef.Xalign = 0f;
+			this.lblProjectRef.Xalign = 0F;
 			this.lblProjectRef.LabelProp = global::Mono.Unix.Catalog.GetString ("Project References");
 			this.table4.Add (this.lblProjectRef);
-			global::Gtk.Table.TableChild w63 = ((global::Gtk.Table.TableChild)(this.table4[this.lblProjectRef]));
+			global::Gtk.Table.TableChild w63 = ((global::Gtk.Table.TableChild)(this.table4 [this.lblProjectRef]));
 			w63.TopAttach = ((uint)(4));
 			w63.BottomAttach = ((uint)(5));
 			w63.XOptions = ((global::Gtk.AttachOptions)(4));
 			w63.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox4.Add (this.table4);
-			global::Gtk.Box.BoxChild w64 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.table4]));
+			global::Gtk.Box.BoxChild w64 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.table4]));
 			w64.Position = 2;
 			w64.Expand = false;
 			w64.Fill = false;
 			this.notebook1.Add (this.vbox4);
-			global::Gtk.Notebook.NotebookChild w65 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1[this.vbox4]));
+			global::Gtk.Notebook.NotebookChild w65 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.vbox4]));
 			w65.Position = 2;
 			// Notebook tab
 			this.label3 = new global::Gtk.Label ();
@@ -934,12 +855,12 @@ namespace MonoDevelop.Autotools
 			this.label7 = new global::Gtk.Label ();
 			this.label7.WidthRequest = 500;
 			this.label7.Name = "label7";
-			this.label7.Xalign = 0f;
+			this.label7.Xalign = 0F;
 			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("Select the Compiler message format for parsing the compiler errors and warnings. You can either select one of the built-in options, or specify custom regular expressions for errors and warnings. The regex must be the .net style regex. The following named groups are relevant : file, line, column, number (error number) and message.");
 			this.label7.Wrap = true;
 			this.label7.Justify = ((global::Gtk.Justification)(3));
 			this.vbox3.Add (this.label7);
-			global::Gtk.Box.BoxChild w66 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.label7]));
+			global::Gtk.Box.BoxChild w66 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.label7]));
 			w66.Position = 0;
 			w66.Expand = false;
 			w66.Fill = false;
@@ -957,7 +878,7 @@ namespace MonoDevelop.Autotools
 			this.entryErrorRegex.IsEditable = true;
 			this.entryErrorRegex.InvisibleChar = '●';
 			this.table2.Add (this.entryErrorRegex);
-			global::Gtk.Table.TableChild w67 = ((global::Gtk.Table.TableChild)(this.table2[this.entryErrorRegex]));
+			global::Gtk.Table.TableChild w67 = ((global::Gtk.Table.TableChild)(this.table2 [this.entryErrorRegex]));
 			w67.TopAttach = ((uint)(1));
 			w67.BottomAttach = ((uint)(2));
 			w67.LeftAttach = ((uint)(1));
@@ -972,7 +893,7 @@ namespace MonoDevelop.Autotools
 			this.entryWarningRegex.IsEditable = true;
 			this.entryWarningRegex.InvisibleChar = '●';
 			this.table2.Add (this.entryWarningRegex);
-			global::Gtk.Table.TableChild w68 = ((global::Gtk.Table.TableChild)(this.table2[this.entryWarningRegex]));
+			global::Gtk.Table.TableChild w68 = ((global::Gtk.Table.TableChild)(this.table2 [this.entryWarningRegex]));
 			w68.TopAttach = ((uint)(2));
 			w68.BottomAttach = ((uint)(3));
 			w68.LeftAttach = ((uint)(1));
@@ -987,12 +908,12 @@ namespace MonoDevelop.Autotools
 			this.comboMessageType.WidthRequest = 150;
 			this.comboMessageType.Name = "comboMessageType";
 			this.hbox6.Add (this.comboMessageType);
-			global::Gtk.Box.BoxChild w69 = ((global::Gtk.Box.BoxChild)(this.hbox6[this.comboMessageType]));
+			global::Gtk.Box.BoxChild w69 = ((global::Gtk.Box.BoxChild)(this.hbox6 [this.comboMessageType]));
 			w69.Position = 0;
 			w69.Expand = false;
 			w69.Fill = false;
 			this.table2.Add (this.hbox6);
-			global::Gtk.Table.TableChild w70 = ((global::Gtk.Table.TableChild)(this.table2[this.hbox6]));
+			global::Gtk.Table.TableChild w70 = ((global::Gtk.Table.TableChild)(this.table2 [this.hbox6]));
 			w70.LeftAttach = ((uint)(1));
 			w70.RightAttach = ((uint)(2));
 			w70.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -1000,10 +921,10 @@ namespace MonoDevelop.Autotools
 			// Container child table2.Gtk.Table+TableChild
 			this.lblErrorRegex = new global::Gtk.Label ();
 			this.lblErrorRegex.Name = "lblErrorRegex";
-			this.lblErrorRegex.Xalign = 0f;
+			this.lblErrorRegex.Xalign = 0F;
 			this.lblErrorRegex.LabelProp = global::Mono.Unix.Catalog.GetString ("Error regex :");
 			this.table2.Add (this.lblErrorRegex);
-			global::Gtk.Table.TableChild w71 = ((global::Gtk.Table.TableChild)(this.table2[this.lblErrorRegex]));
+			global::Gtk.Table.TableChild w71 = ((global::Gtk.Table.TableChild)(this.table2 [this.lblErrorRegex]));
 			w71.TopAttach = ((uint)(1));
 			w71.BottomAttach = ((uint)(2));
 			w71.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -1011,28 +932,28 @@ namespace MonoDevelop.Autotools
 			// Container child table2.Gtk.Table+TableChild
 			this.lblMessageType = new global::Gtk.Label ();
 			this.lblMessageType.Name = "lblMessageType";
-			this.lblMessageType.Xalign = 0f;
+			this.lblMessageType.Xalign = 0F;
 			this.lblMessageType.LabelProp = global::Mono.Unix.Catalog.GetString ("Compiler :");
 			this.table2.Add (this.lblMessageType);
-			global::Gtk.Table.TableChild w72 = ((global::Gtk.Table.TableChild)(this.table2[this.lblMessageType]));
+			global::Gtk.Table.TableChild w72 = ((global::Gtk.Table.TableChild)(this.table2 [this.lblMessageType]));
 			w72.XOptions = ((global::Gtk.AttachOptions)(4));
 			w72.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table2.Gtk.Table+TableChild
 			this.lblWarningRegex = new global::Gtk.Label ();
 			this.lblWarningRegex.Name = "lblWarningRegex";
-			this.lblWarningRegex.Xalign = 0f;
+			this.lblWarningRegex.Xalign = 0F;
 			this.lblWarningRegex.LabelProp = global::Mono.Unix.Catalog.GetString ("Warnings regex :");
 			this.table2.Add (this.lblWarningRegex);
-			global::Gtk.Table.TableChild w73 = ((global::Gtk.Table.TableChild)(this.table2[this.lblWarningRegex]));
+			global::Gtk.Table.TableChild w73 = ((global::Gtk.Table.TableChild)(this.table2 [this.lblWarningRegex]));
 			w73.TopAttach = ((uint)(2));
 			w73.BottomAttach = ((uint)(3));
 			w73.XOptions = ((global::Gtk.AttachOptions)(4));
 			w73.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox3.Add (this.table2);
-			global::Gtk.Box.BoxChild w74 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.table2]));
+			global::Gtk.Box.BoxChild w74 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.table2]));
 			w74.Position = 1;
 			this.notebook1.Add (this.vbox3);
-			global::Gtk.Notebook.NotebookChild w75 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1[this.vbox3]));
+			global::Gtk.Notebook.NotebookChild w75 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.vbox3]));
 			w75.Position = 3;
 			// Notebook tab
 			this.label4 = new global::Gtk.Label ();

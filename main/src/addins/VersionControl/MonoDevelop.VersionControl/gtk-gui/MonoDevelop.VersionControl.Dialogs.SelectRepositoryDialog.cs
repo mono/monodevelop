@@ -5,69 +5,38 @@ namespace MonoDevelop.VersionControl.Dialogs
 	internal partial class SelectRepositoryDialog
 	{
 		private global::Gtk.VBox vbox1;
-		
 		private global::Gtk.Notebook notebook;
-		
 		private global::Gtk.VBox vbox2;
-		
 		private global::Gtk.HBox hbox1;
-		
 		private global::Gtk.Label label3;
-		
 		private global::Gtk.ComboBox repCombo;
-		
 		private global::Gtk.HSeparator hseparator1;
-		
 		private global::Gtk.EventBox repoContainer;
-		
 		private global::Gtk.Label label1;
-		
 		private global::Gtk.HBox hbox2;
-		
 		private global::Gtk.ScrolledWindow scrolledwindow2;
-		
 		private global::Gtk.TreeView repoTree;
-		
 		private global::Gtk.VButtonBox vbuttonbox1;
-		
 		private global::Gtk.Button buttonAdd;
-		
 		private global::Gtk.Button buttonRemove;
-		
 		private global::Gtk.Button buttonEdit;
-		
 		private global::Gtk.Label label2;
-		
 		private global::Gtk.Table table1;
-		
 		private global::Gtk.HBox boxFolder;
-		
 		private global::Gtk.Entry entryFolder;
-		
 		private global::Gtk.Button buttonBrowse;
-		
 		private global::Gtk.HBox boxMessage;
-		
 		private global::Gtk.Entry entryMessage;
-		
 		private global::Gtk.Button buttonEditMessage;
-		
 		private global::Gtk.Entry entryName;
-		
 		private global::Gtk.Label label5;
-		
 		private global::Gtk.Label labelMessage;
-		
 		private global::Gtk.Label labelName;
-		
 		private global::Gtk.Label labelRepository;
-		
 		private global::Gtk.Label labelTargetDir;
-		
 		private global::Gtk.Button button559;
-		
 		private global::Gtk.Button buttonOk;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -140,7 +109,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Connect to Repository");
-			this.notebook.SetTabLabel (this.vbox2,this.label1);
+			this.notebook.SetTabLabel (this.vbox2, this.label1);
 			this.label1.ShowAll ();
 			// Container child notebook.Gtk.Notebook+NotebookChild
 			this.hbox2 = new global::Gtk.HBox ();
@@ -212,7 +181,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Registered Repositories");
-			this.notebook.SetTabLabel (this.hbox2,this.label2);
+			this.notebook.SetTabLabel (this.hbox2, this.label2);
 			this.label2.ShowAll ();
 			this.vbox1.Add (this.notebook);
 			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.notebook]));
@@ -374,7 +343,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.button559.UseStock = true;
 			this.button559.UseUnderline = true;
 			this.button559.Label = "gtk-cancel";
-			this.AddActionWidget (this.button559,-6);
+			this.AddActionWidget (this.button559, -6);
 			global::Gtk.ButtonBox.ButtonBoxChild w31 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w30 [this.button559]));
 			w31.Expand = false;
 			w31.Fill = false;
@@ -386,7 +355,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.buttonOk.UseStock = true;
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
-			this.AddActionWidget (this.buttonOk,-5);
+			this.AddActionWidget (this.buttonOk, -5);
 			global::Gtk.ButtonBox.ButtonBoxChild w32 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w30 [this.buttonOk]));
 			w32.Position = 1;
 			w32.Expand = false;

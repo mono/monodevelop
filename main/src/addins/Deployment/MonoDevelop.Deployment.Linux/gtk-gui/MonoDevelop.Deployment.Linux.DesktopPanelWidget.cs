@@ -5,7 +5,6 @@ namespace MonoDevelop.Deployment.Linux
 	public partial class DesktopPanelWidget
 	{
 		private global::Gtk.Notebook notebook2;
-
 		private global::Gtk.Label label6;
 
 		protected virtual void Build ()

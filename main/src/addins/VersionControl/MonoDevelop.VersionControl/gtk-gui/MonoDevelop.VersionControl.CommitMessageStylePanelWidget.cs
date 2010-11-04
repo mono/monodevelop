@@ -5,35 +5,21 @@ namespace MonoDevelop.VersionControl
 	public partial class CommitMessageStylePanelWidget
 	{
 		private global::Gtk.VBox vbox1;
-		
 		private global::Gtk.Table table2;
-		
 		private global::Gtk.Entry entryHeader;
-		
 		private global::Gtk.Label label4;
-		
 		private global::Gtk.Table tableFlags;
-		
 		private global::Gtk.CheckButton checkIncludeDirs;
-		
 		private global::Gtk.CheckButton checkIndent;
-		
 		private global::Gtk.CheckButton checkIndentEntries;
-		
 		private global::Gtk.CheckButton checkLineSep;
-		
 		private global::Gtk.CheckButton checkMsgInNewLine;
-		
 		private global::Gtk.CheckButton checkOneLinePerFile;
-		
 		private global::Gtk.CheckButton checkUseBullets;
-		
 		private global::Gtk.Label label9;
-		
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-		
 		private global::Gtk.TextView textview;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

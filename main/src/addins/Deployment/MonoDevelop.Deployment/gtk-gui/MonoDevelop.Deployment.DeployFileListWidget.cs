@@ -5,17 +5,11 @@ namespace MonoDevelop.Deployment
 	internal partial class DeployFileListWidget
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Label labelFiles;
-
 		private global::Gtk.ComboBox comboConfigs;
-
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-
 		private global::Gtk.TreeView fileList;
-
 		private global::Gtk.HBox hbox2;
 
 		protected virtual void Build ()
@@ -35,10 +29,10 @@ namespace MonoDevelop.Deployment
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.labelFiles = new global::Gtk.Label ();
 			this.labelFiles.Name = "labelFiles";
-			this.labelFiles.Xalign = 0f;
+			this.labelFiles.Xalign = 0F;
 			this.labelFiles.LabelProp = global::Mono.Unix.Catalog.GetString ("The following files will be included in the package:");
 			this.hbox1.Add (this.labelFiles);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.labelFiles]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.labelFiles]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -46,12 +40,12 @@ namespace MonoDevelop.Deployment
 			this.comboConfigs = global::Gtk.ComboBox.NewText ();
 			this.comboConfigs.Name = "comboConfigs";
 			this.hbox1.Add (this.comboConfigs);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.comboConfigs]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.comboConfigs]));
 			w2.Position = 1;
 			w2.Expand = false;
 			w2.Fill = false;
 			this.vbox2.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
 			w3.Position = 0;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -67,14 +61,14 @@ namespace MonoDevelop.Deployment
 			this.fileList.RulesHint = true;
 			this.scrolledwindow1.Add (this.fileList);
 			this.vbox2.Add (this.scrolledwindow1);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.scrolledwindow1]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.scrolledwindow1]));
 			w5.Position = 1;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.hbox2 = new global::Gtk.HBox ();
 			this.hbox2.Name = "hbox2";
 			this.hbox2.Spacing = 6;
 			this.vbox2.Add (this.hbox2);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox2]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox2]));
 			w6.Position = 2;
 			w6.Expand = false;
 			w6.Fill = false;

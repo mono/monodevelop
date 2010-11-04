@@ -5,25 +5,15 @@ namespace MonoDevelop.DocFood.Options
 	public partial class OptionsPanelWidget
 	{
 		private global::Gtk.VBox vbox1;
-
 		private global::Gtk.CheckButton checkbutton1;
-
 		private global::Gtk.Frame frame1;
-
 		private global::Gtk.Alignment GtkAlignment;
-
 		private global::Gtk.VBox vbox3;
-
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-
 		private global::Gtk.TreeView treeview1;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Button button1;
-
 		private global::Gtk.Button button2;
-
 		private global::Gtk.Label GtkLabel2;
 
 		protected virtual void Build ()
@@ -44,7 +34,7 @@ namespace MonoDevelop.DocFood.Options
 			this.checkbutton1.DrawIndicator = true;
 			this.checkbutton1.UseUnderline = true;
 			this.vbox1.Add (this.checkbutton1);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.checkbutton1]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.checkbutton1]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -53,7 +43,7 @@ namespace MonoDevelop.DocFood.Options
 			this.frame1.Name = "frame1";
 			this.frame1.ShadowType = ((global::Gtk.ShadowType)(0));
 			// Container child frame1.Gtk.Container+ContainerChild
-			this.GtkAlignment = new global::Gtk.Alignment (0f, 0f, 1f, 1f);
+			this.GtkAlignment = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
 			this.GtkAlignment.Name = "GtkAlignment";
 			this.GtkAlignment.LeftPadding = ((uint)(12));
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
@@ -70,7 +60,7 @@ namespace MonoDevelop.DocFood.Options
 			this.treeview1.Name = "treeview1";
 			this.GtkScrolledWindow.Add (this.treeview1);
 			this.vbox3.Add (this.GtkScrolledWindow);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.GtkScrolledWindow]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.GtkScrolledWindow]));
 			w3.Position = 0;
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.hbox1 = new global::Gtk.HBox ();
@@ -84,7 +74,7 @@ namespace MonoDevelop.DocFood.Options
 			this.button1.UseUnderline = true;
 			this.button1.Label = "gtk-add";
 			this.hbox1.Add (this.button1);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.button1]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.button1]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -96,12 +86,12 @@ namespace MonoDevelop.DocFood.Options
 			this.button2.UseUnderline = true;
 			this.button2.Label = "gtk-remove";
 			this.hbox1.Add (this.button2);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.button2]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.button2]));
 			w5.Position = 1;
 			w5.Expand = false;
 			w5.Fill = false;
 			this.vbox3.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.hbox1]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.hbox1]));
 			w6.Position = 1;
 			w6.Expand = false;
 			w6.Fill = false;
@@ -113,7 +103,7 @@ namespace MonoDevelop.DocFood.Options
 			this.GtkLabel2.UseMarkup = true;
 			this.frame1.LabelWidget = this.GtkLabel2;
 			this.vbox1.Add (this.frame1);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.frame1]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.frame1]));
 			w9.Position = 1;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {

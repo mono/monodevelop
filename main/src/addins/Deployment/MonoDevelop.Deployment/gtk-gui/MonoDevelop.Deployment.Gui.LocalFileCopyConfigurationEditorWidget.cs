@@ -5,9 +5,7 @@ namespace MonoDevelop.Deployment.Gui
 	internal partial class LocalFileCopyConfigurationEditorWidget
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Label label1;
-
 		private global::MonoDevelop.Components.FolderEntry folderEntry;
 
 		protected virtual void Build ()
@@ -24,10 +22,10 @@ namespace MonoDevelop.Deployment.Gui
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Target directory:");
 			this.vbox2.Add (this.label1);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.label1]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label1]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -35,7 +33,7 @@ namespace MonoDevelop.Deployment.Gui
 			this.folderEntry = new global::MonoDevelop.Components.FolderEntry ();
 			this.folderEntry.Name = "folderEntry";
 			this.vbox2.Add (this.folderEntry);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.folderEntry]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.folderEntry]));
 			w2.Position = 1;
 			w2.Expand = false;
 			w2.Fill = false;

@@ -5,15 +5,10 @@ namespace MonoDevelop.CodeMetrics
 	public partial class CodeMetricsWidget
 	{
 		private global::Gtk.VBox vbox1;
-
 		private global::Gtk.VPaned vpaned1;
-
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-
 		private global::Gtk.TreeView treeviewMetrics;
-
 		private global::Gtk.ScrolledWindow GtkScrolledWindow1;
-
 		private global::Gtk.TextView textviewReport;
 
 		protected virtual void Build ()
@@ -41,7 +36,7 @@ namespace MonoDevelop.CodeMetrics
 			this.treeviewMetrics.Name = "treeviewMetrics";
 			this.GtkScrolledWindow.Add (this.treeviewMetrics);
 			this.vpaned1.Add (this.GtkScrolledWindow);
-			global::Gtk.Paned.PanedChild w2 = ((global::Gtk.Paned.PanedChild)(this.vpaned1[this.GtkScrolledWindow]));
+			global::Gtk.Paned.PanedChild w2 = ((global::Gtk.Paned.PanedChild)(this.vpaned1 [this.GtkScrolledWindow]));
 			w2.Resize = false;
 			// Container child vpaned1.Gtk.Paned+PanedChild
 			this.GtkScrolledWindow1 = new global::Gtk.ScrolledWindow ();
@@ -54,7 +49,7 @@ namespace MonoDevelop.CodeMetrics
 			this.GtkScrolledWindow1.Add (this.textviewReport);
 			this.vpaned1.Add (this.GtkScrolledWindow1);
 			this.vbox1.Add (this.vpaned1);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.vpaned1]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.vpaned1]));
 			w5.Position = 0;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {

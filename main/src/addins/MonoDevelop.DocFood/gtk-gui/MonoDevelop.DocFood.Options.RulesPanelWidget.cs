@@ -5,13 +5,9 @@ namespace MonoDevelop.DocFood.Options
 	public partial class RulesPanelWidget
 	{
 		private global::Gtk.VBox vbox4;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-
 		private global::Gtk.HBox hbox2;
-
 		private global::Gtk.Button button3;
 
 		protected virtual void Build ()
@@ -27,10 +23,10 @@ namespace MonoDevelop.DocFood.Options
 			// Container child vbox4.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.Xalign = 0f;
+			this.label2.Xalign = 0F;
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("The rules are defined using XML. Click HELP for a full explaination.");
 			this.vbox4.Add (this.label2);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.label2]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.label2]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -40,7 +36,7 @@ namespace MonoDevelop.DocFood.Options
 			this.scrolledwindow1.Name = "scrolledwindow1";
 			this.scrolledwindow1.ShadowType = ((global::Gtk.ShadowType)(1));
 			this.vbox4.Add (this.scrolledwindow1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.scrolledwindow1]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.scrolledwindow1]));
 			w2.Position = 1;
 			// Container child vbox4.Gtk.Box+BoxChild
 			this.hbox2 = new global::Gtk.HBox ();
@@ -54,12 +50,12 @@ namespace MonoDevelop.DocFood.Options
 			this.button3.UseUnderline = true;
 			this.button3.Label = "gtk-help";
 			this.hbox2.Add (this.button3);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.button3]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.button3]));
 			w3.Position = 0;
 			w3.Expand = false;
 			w3.Fill = false;
 			this.vbox4.Add (this.hbox2);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.hbox2]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.hbox2]));
 			w4.Position = 2;
 			w4.Expand = false;
 			w4.Fill = false;

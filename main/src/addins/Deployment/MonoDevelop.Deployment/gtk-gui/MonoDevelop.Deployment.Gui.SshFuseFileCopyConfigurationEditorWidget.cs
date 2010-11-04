@@ -5,19 +5,12 @@ namespace MonoDevelop.Deployment.Gui
 	internal partial class SshFuseFileCopyConfigurationEditorWidget
 	{
 		private global::Gtk.Table table1;
-
 		private global::Gtk.Entry entryDirectory;
-
 		private global::Gtk.Entry entryHostName;
-
 		private global::Gtk.Entry entryUserName;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.Label label3;
-
 		private global::Gtk.Label label4;
 
 		protected virtual void Build ()
@@ -38,7 +31,7 @@ namespace MonoDevelop.Deployment.Gui
 			this.entryDirectory.IsEditable = true;
 			this.entryDirectory.InvisibleChar = '●';
 			this.table1.Add (this.entryDirectory);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1[this.entryDirectory]));
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryDirectory]));
 			w1.TopAttach = ((uint)(1));
 			w1.BottomAttach = ((uint)(2));
 			w1.LeftAttach = ((uint)(1));
@@ -51,7 +44,7 @@ namespace MonoDevelop.Deployment.Gui
 			this.entryHostName.IsEditable = true;
 			this.entryHostName.InvisibleChar = '●';
 			this.table1.Add (this.entryHostName);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1[this.entryHostName]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryHostName]));
 			w2.LeftAttach = ((uint)(1));
 			w2.RightAttach = ((uint)(2));
 			w2.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -62,7 +55,7 @@ namespace MonoDevelop.Deployment.Gui
 			this.entryUserName.IsEditable = true;
 			this.entryUserName.InvisibleChar = '●';
 			this.table1.Add (this.entryUserName);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1[this.entryUserName]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryUserName]));
 			w3.TopAttach = ((uint)(2));
 			w3.BottomAttach = ((uint)(3));
 			w3.LeftAttach = ((uint)(1));
@@ -71,19 +64,19 @@ namespace MonoDevelop.Deployment.Gui
 			// Container child table1.Gtk.Table+TableChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Host name:");
 			this.table1.Add (this.label1);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1[this.label1]));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.label1]));
 			w4.XOptions = ((global::Gtk.AttachOptions)(4));
 			w4.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.Xalign = 0f;
+			this.label2.Xalign = 0F;
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Directory:");
 			this.table1.Add (this.label2);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1[this.label2]));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2]));
 			w5.TopAttach = ((uint)(1));
 			w5.BottomAttach = ((uint)(2));
 			w5.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -91,10 +84,10 @@ namespace MonoDevelop.Deployment.Gui
 			// Container child table1.Gtk.Table+TableChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.Xalign = 0f;
+			this.label3.Xalign = 0F;
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Username:");
 			this.table1.Add (this.label3);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1[this.label3]));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.label3]));
 			w6.TopAttach = ((uint)(2));
 			w6.BottomAttach = ((uint)(3));
 			w6.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -107,7 +100,7 @@ namespace MonoDevelop.Deployment.Gui
 			this.label4.Wrap = true;
 			this.label4.Justify = ((global::Gtk.Justification)(3));
 			this.table1.Add (this.label4);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1[this.label4]));
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.label4]));
 			w7.TopAttach = ((uint)(3));
 			w7.BottomAttach = ((uint)(4));
 			w7.RightAttach = ((uint)(2));

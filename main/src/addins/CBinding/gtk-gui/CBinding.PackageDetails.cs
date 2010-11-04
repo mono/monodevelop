@@ -5,51 +5,28 @@ namespace CBinding
 	public partial class PackageDetails
 	{
 		private global::Gtk.VBox vbox3;
-
 		private global::Gtk.Table table1;
-
 		private global::Gtk.Label descriptionLabel;
-
 		private global::Gtk.Label label7;
-
 		private global::Gtk.Label label8;
-
 		private global::Gtk.Label label9;
-
 		private global::Gtk.Label nameLabel;
-
 		private global::Gtk.Label versionLabel;
-
 		private global::Gtk.VBox vbox4;
-
 		private global::Gtk.Label label13;
-
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-
 		private global::Gtk.TreeView requiresTreeView;
-
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.ScrolledWindow scrolledwindow2;
-
 		private global::Gtk.TreeView libPathsTreeView;
-
 		private global::Gtk.ScrolledWindow scrolledwindow3;
-
 		private global::Gtk.TreeView libsTreeView;
-
 		private global::Gtk.VBox vbox5;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.ScrolledWindow scrolledwindow4;
-
 		private global::Gtk.TreeView cflagsTreeView;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -76,11 +53,11 @@ namespace CBinding
 			// Container child table1.Gtk.Table+TableChild
 			this.descriptionLabel = new global::Gtk.Label ();
 			this.descriptionLabel.Name = "descriptionLabel";
-			this.descriptionLabel.Xalign = 0f;
-			this.descriptionLabel.Yalign = 0f;
+			this.descriptionLabel.Xalign = 0F;
+			this.descriptionLabel.Yalign = 0F;
 			this.descriptionLabel.LabelProp = "label12";
 			this.table1.Add (this.descriptionLabel);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1[this.descriptionLabel]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.descriptionLabel]));
 			w2.TopAttach = ((uint)(2));
 			w2.BottomAttach = ((uint)(3));
 			w2.LeftAttach = ((uint)(1));
@@ -90,19 +67,19 @@ namespace CBinding
 			// Container child table1.Gtk.Table+TableChild
 			this.label7 = new global::Gtk.Label ();
 			this.label7.Name = "label7";
-			this.label7.Xalign = 0f;
+			this.label7.Xalign = 0F;
 			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("Name:");
 			this.table1.Add (this.label7);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1[this.label7]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.label7]));
 			w3.XOptions = ((global::Gtk.AttachOptions)(4));
 			w3.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label8 = new global::Gtk.Label ();
 			this.label8.Name = "label8";
-			this.label8.Xalign = 0f;
+			this.label8.Xalign = 0F;
 			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("Version:");
 			this.table1.Add (this.label8);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1[this.label8]));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.label8]));
 			w4.TopAttach = ((uint)(1));
 			w4.BottomAttach = ((uint)(2));
 			w4.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -110,11 +87,11 @@ namespace CBinding
 			// Container child table1.Gtk.Table+TableChild
 			this.label9 = new global::Gtk.Label ();
 			this.label9.Name = "label9";
-			this.label9.Xalign = 0f;
-			this.label9.Yalign = 0f;
+			this.label9.Xalign = 0F;
+			this.label9.Yalign = 0F;
 			this.label9.LabelProp = global::Mono.Unix.Catalog.GetString ("Description:");
 			this.table1.Add (this.label9);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1[this.label9]));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.label9]));
 			w5.TopAttach = ((uint)(2));
 			w5.BottomAttach = ((uint)(3));
 			w5.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -122,10 +99,10 @@ namespace CBinding
 			// Container child table1.Gtk.Table+TableChild
 			this.nameLabel = new global::Gtk.Label ();
 			this.nameLabel.Name = "nameLabel";
-			this.nameLabel.Xalign = 0f;
+			this.nameLabel.Xalign = 0F;
 			this.nameLabel.LabelProp = "label10";
 			this.table1.Add (this.nameLabel);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1[this.nameLabel]));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.nameLabel]));
 			w6.LeftAttach = ((uint)(1));
 			w6.RightAttach = ((uint)(2));
 			w6.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -133,10 +110,10 @@ namespace CBinding
 			// Container child table1.Gtk.Table+TableChild
 			this.versionLabel = new global::Gtk.Label ();
 			this.versionLabel.Name = "versionLabel";
-			this.versionLabel.Xalign = 0f;
+			this.versionLabel.Xalign = 0F;
 			this.versionLabel.LabelProp = "label11";
 			this.table1.Add (this.versionLabel);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1[this.versionLabel]));
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.versionLabel]));
 			w7.TopAttach = ((uint)(1));
 			w7.BottomAttach = ((uint)(2));
 			w7.LeftAttach = ((uint)(1));
@@ -144,7 +121,7 @@ namespace CBinding
 			w7.XOptions = ((global::Gtk.AttachOptions)(4));
 			w7.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox3.Add (this.table1);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.table1]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.table1]));
 			w8.Position = 0;
 			w8.Expand = false;
 			w8.Fill = false;
@@ -155,10 +132,10 @@ namespace CBinding
 			// Container child vbox4.Gtk.Box+BoxChild
 			this.label13 = new global::Gtk.Label ();
 			this.label13.Name = "label13";
-			this.label13.Xalign = 0f;
+			this.label13.Xalign = 0F;
 			this.label13.LabelProp = global::Mono.Unix.Catalog.GetString ("Requires:");
 			this.vbox4.Add (this.label13);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.label13]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.label13]));
 			w9.Position = 0;
 			w9.Expand = false;
 			w9.Fill = false;
@@ -177,10 +154,10 @@ namespace CBinding
 			w10.Add (this.requiresTreeView);
 			this.scrolledwindow1.Add (w10);
 			this.vbox4.Add (this.scrolledwindow1);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.scrolledwindow1]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.scrolledwindow1]));
 			w13.Position = 1;
 			this.vbox3.Add (this.vbox4);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.vbox4]));
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.vbox4]));
 			w14.Position = 1;
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.vbox2 = new global::Gtk.VBox ();
@@ -189,10 +166,10 @@ namespace CBinding
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Libs:");
 			this.vbox2.Add (this.label1);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.label1]));
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label1]));
 			w15.Position = 0;
 			w15.Expand = false;
 			w15.Fill = false;
@@ -215,7 +192,7 @@ namespace CBinding
 			w16.Add (this.libPathsTreeView);
 			this.scrolledwindow2.Add (w16);
 			this.hbox1.Add (this.scrolledwindow2);
-			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.scrolledwindow2]));
+			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.scrolledwindow2]));
 			w19.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.scrolledwindow3 = new global::Gtk.ScrolledWindow ();
@@ -232,13 +209,13 @@ namespace CBinding
 			w20.Add (this.libsTreeView);
 			this.scrolledwindow3.Add (w20);
 			this.hbox1.Add (this.scrolledwindow3);
-			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.scrolledwindow3]));
+			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.scrolledwindow3]));
 			w23.Position = 1;
 			this.vbox2.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
 			w24.Position = 1;
 			this.vbox3.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.vbox2]));
+			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.vbox2]));
 			w25.Position = 2;
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.vbox5 = new global::Gtk.VBox ();
@@ -247,10 +224,10 @@ namespace CBinding
 			// Container child vbox5.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.Xalign = 0f;
+			this.label2.Xalign = 0F;
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("CFlags:");
 			this.vbox5.Add (this.label2);
-			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.label2]));
+			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.label2]));
 			w26.Position = 0;
 			w26.Expand = false;
 			w26.Fill = false;
@@ -269,13 +246,13 @@ namespace CBinding
 			w27.Add (this.cflagsTreeView);
 			this.scrolledwindow4.Add (w27);
 			this.vbox5.Add (this.scrolledwindow4);
-			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.scrolledwindow4]));
+			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.scrolledwindow4]));
 			w30.Position = 1;
 			this.vbox3.Add (this.vbox5);
-			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.vbox5]));
+			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.vbox5]));
 			w31.Position = 3;
 			w1.Add (this.vbox3);
-			global::Gtk.Box.BoxChild w32 = ((global::Gtk.Box.BoxChild)(w1[this.vbox3]));
+			global::Gtk.Box.BoxChild w32 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox3]));
 			w32.Position = 0;
 			// Internal child CBinding.PackageDetails.ActionArea
 			global::Gtk.HButtonBox w33 = this.ActionArea;
@@ -292,7 +269,7 @@ namespace CBinding
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w34 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w33[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w34 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w33 [this.buttonOk]));
 			w34.Expand = false;
 			w34.Fill = false;
 			if ((this.Child != null)) {

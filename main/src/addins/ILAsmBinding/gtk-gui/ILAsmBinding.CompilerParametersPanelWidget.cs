@@ -5,23 +5,14 @@ namespace ILAsmBinding
 	public partial class CompilerParametersPanelWidget
 	{
 		private global::Gtk.VBox vbox1;
-
 		private global::Gtk.Frame frame1;
-
 		private global::Gtk.Alignment GtkAlignment;
-
 		private global::Gtk.VBox vbox3;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Label label86;
-
 		private global::Gtk.HBox hbox57;
-
 		private global::Gtk.ComboBox compileTargetCombo;
-
 		private global::Gtk.CheckButton checkbuttonIncludeDebugInfo;
-
 		private global::Gtk.Label GtkLabel1;
 
 		protected virtual void Build ()
@@ -39,7 +30,7 @@ namespace ILAsmBinding
 			this.frame1.Name = "frame1";
 			this.frame1.ShadowType = ((global::Gtk.ShadowType)(0));
 			// Container child frame1.Gtk.Container+ContainerChild
-			this.GtkAlignment = new global::Gtk.Alignment (0f, 0f, 1f, 1f);
+			this.GtkAlignment = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
 			this.GtkAlignment.Name = "GtkAlignment";
 			this.GtkAlignment.LeftPadding = ((uint)(12));
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
@@ -53,11 +44,11 @@ namespace ILAsmBinding
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.label86 = new global::Gtk.Label ();
 			this.label86.Name = "label86";
-			this.label86.Xalign = 0f;
+			this.label86.Xalign = 0F;
 			this.label86.LabelProp = global::Mono.Unix.Catalog.GetString ("Compile _Target:");
 			this.label86.UseUnderline = true;
 			this.hbox1.Add (this.label86);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label86]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label86]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -68,17 +59,17 @@ namespace ILAsmBinding
 			this.compileTargetCombo = new global::Gtk.ComboBox ();
 			this.compileTargetCombo.Name = "compileTargetCombo";
 			this.hbox57.Add (this.compileTargetCombo);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox57[this.compileTargetCombo]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox57 [this.compileTargetCombo]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
 			this.hbox1.Add (this.hbox57);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.hbox57]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.hbox57]));
 			w3.Position = 1;
 			w3.Expand = false;
 			w3.Fill = false;
 			this.vbox3.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.hbox1]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.hbox1]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -90,7 +81,7 @@ namespace ILAsmBinding
 			this.checkbuttonIncludeDebugInfo.DrawIndicator = true;
 			this.checkbuttonIncludeDebugInfo.UseUnderline = true;
 			this.vbox3.Add (this.checkbuttonIncludeDebugInfo);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.checkbuttonIncludeDebugInfo]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.checkbuttonIncludeDebugInfo]));
 			w5.Position = 1;
 			w5.Expand = false;
 			w5.Fill = false;
@@ -102,7 +93,7 @@ namespace ILAsmBinding
 			this.GtkLabel1.UseMarkup = true;
 			this.frame1.LabelWidget = this.GtkLabel1;
 			this.vbox1.Add (this.frame1);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.frame1]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.frame1]));
 			w8.Position = 0;
 			w8.Expand = false;
 			w8.Fill = false;

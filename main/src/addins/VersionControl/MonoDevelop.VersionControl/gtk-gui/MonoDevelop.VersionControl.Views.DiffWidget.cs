@@ -5,31 +5,19 @@ namespace MonoDevelop.VersionControl.Views
 	public partial class DiffWidget
 	{
 		private global::Gtk.VBox vbox2;
-		
 		private global::Gtk.HBox hbox1;
-		
 		private global::Gtk.HBox hbox2;
-		
 		private global::Gtk.Fixed fixed1;
-		
 		private global::Gtk.Label labelOverview;
-		
 		private global::Gtk.Button buttonDiff;
-		
 		private global::Gtk.Button buttonNext;
-		
 		private global::Gtk.Button buttonPrev;
-		
 		private global::Gtk.Notebook notebook1;
-		
 		private global::Gtk.VBox vboxComparisonView;
-		
 		private global::Gtk.Label label1;
-		
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-		
 		private global::Gtk.Label label3;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -126,7 +114,7 @@ namespace MonoDevelop.VersionControl.Views
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("page2");
-			this.notebook1.SetTabLabel (this.vboxComparisonView,this.label1);
+			this.notebook1.SetTabLabel (this.vboxComparisonView, this.label1);
 			this.label1.ShowAll ();
 			// Container child notebook1.Gtk.Notebook+NotebookChild
 			this.scrolledwindow1 = new global::Gtk.ScrolledWindow ();
@@ -140,7 +128,7 @@ namespace MonoDevelop.VersionControl.Views
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("page2");
-			this.notebook1.SetTabLabel (this.scrolledwindow1,this.label3);
+			this.notebook1.SetTabLabel (this.scrolledwindow1, this.label3);
 			this.label3.ShowAll ();
 			this.vbox2.Add (this.notebook1);
 			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.notebook1]));

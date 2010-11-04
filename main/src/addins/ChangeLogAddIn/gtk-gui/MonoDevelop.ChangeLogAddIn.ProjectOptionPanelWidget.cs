@@ -5,41 +5,23 @@ namespace MonoDevelop.ChangeLogAddIn
 	internal partial class ProjectOptionPanelWidget
 	{
 		private global::Gtk.Notebook notebook1;
-
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.RadioButton noneRadioButton;
-
 		private global::Gtk.Label label3;
-
 		private global::Gtk.RadioButton nearestRadioButton;
-
 		private global::Gtk.Label label5;
-
 		private global::Gtk.RadioButton oneChangeLogInProjectRootDirectoryRadioButton;
-
 		private global::Gtk.Label label6;
-
 		private global::Gtk.RadioButton oneChangeLogInEachDirectoryRadioButton;
-
 		private global::Gtk.Label label7;
-
 		private global::Gtk.Alignment alignment1;
-
 		private global::Gtk.Alignment alignment2;
-
 		private global::Gtk.CheckButton checkVersionControl;
-
 		private global::Gtk.Alignment alignment3;
-
 		private global::Gtk.CheckButton checkRequireOnCommit;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.VBox vbox1;
-
 		private global::MonoDevelop.VersionControl.CommitMessageStylePanelWidget messageWidget;
-
 		private global::Gtk.Label label2;
 
 		protected virtual void Build ()
@@ -74,7 +56,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			this.label3.UseMarkup = true;
 			this.noneRadioButton.Add (this.label3);
 			this.vbox2.Add (this.noneRadioButton);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.noneRadioButton]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.noneRadioButton]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -95,7 +77,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			this.label5.Wrap = true;
 			this.nearestRadioButton.Add (this.label5);
 			this.vbox2.Add (this.nearestRadioButton);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.nearestRadioButton]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.nearestRadioButton]));
 			w4.Position = 1;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -116,7 +98,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			this.label6.Wrap = true;
 			this.oneChangeLogInProjectRootDirectoryRadioButton.Add (this.label6);
 			this.vbox2.Add (this.oneChangeLogInProjectRootDirectoryRadioButton);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.oneChangeLogInProjectRootDirectoryRadioButton]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.oneChangeLogInProjectRootDirectoryRadioButton]));
 			w6.Position = 2;
 			w6.Expand = false;
 			w6.Fill = false;
@@ -137,15 +119,15 @@ namespace MonoDevelop.ChangeLogAddIn
 			this.label7.Wrap = true;
 			this.oneChangeLogInEachDirectoryRadioButton.Add (this.label7);
 			this.vbox2.Add (this.oneChangeLogInEachDirectoryRadioButton);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.oneChangeLogInEachDirectoryRadioButton]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.oneChangeLogInEachDirectoryRadioButton]));
 			w8.Position = 3;
 			w8.Expand = false;
 			w8.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.alignment1 = new global::Gtk.Alignment (0.5f, 0.5f, 1f, 1f);
+			this.alignment1 = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
 			this.alignment1.Name = "alignment1";
 			// Container child alignment1.Gtk.Container+ContainerChild
-			this.alignment2 = new global::Gtk.Alignment (0f, 0f, 1f, 1f);
+			this.alignment2 = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
 			this.alignment2.Name = "alignment2";
 			this.alignment2.TopPadding = ((uint)(18));
 			// Container child alignment2.Gtk.Container+ContainerChild
@@ -158,12 +140,12 @@ namespace MonoDevelop.ChangeLogAddIn
 			this.alignment2.Add (this.checkVersionControl);
 			this.alignment1.Add (this.alignment2);
 			this.vbox2.Add (this.alignment1);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.alignment1]));
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.alignment1]));
 			w11.Position = 4;
 			w11.Expand = false;
 			w11.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.alignment3 = new global::Gtk.Alignment (0f, 0f, 1f, 1f);
+			this.alignment3 = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
 			this.alignment3.Name = "alignment3";
 			this.alignment3.LeftPadding = ((uint)(24));
 			// Container child alignment3.Gtk.Container+ContainerChild
@@ -175,7 +157,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			this.checkRequireOnCommit.UseUnderline = true;
 			this.alignment3.Add (this.checkRequireOnCommit);
 			this.vbox2.Add (this.alignment3);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.alignment3]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.alignment3]));
 			w13.PackType = ((global::Gtk.PackType)(1));
 			w13.Position = 6;
 			w13.Expand = false;
@@ -197,10 +179,10 @@ namespace MonoDevelop.ChangeLogAddIn
 			this.messageWidget.Events = ((global::Gdk.EventMask)(256));
 			this.messageWidget.Name = "messageWidget";
 			this.vbox1.Add (this.messageWidget);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.messageWidget]));
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.messageWidget]));
 			w15.Position = 0;
 			this.notebook1.Add (this.vbox1);
-			global::Gtk.Notebook.NotebookChild w16 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1[this.vbox1]));
+			global::Gtk.Notebook.NotebookChild w16 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.vbox1]));
 			w16.Position = 1;
 			// Notebook tab
 			this.label2 = new global::Gtk.Label ();

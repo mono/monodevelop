@@ -5,59 +5,32 @@ namespace MonoDevelop.Gettext
 	public partial class TranslationProjectOptionsDialog
 	{
 		private global::Gtk.Notebook notebook1;
-
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.HBox hbox4;
-
 		private global::Gtk.Label label3;
-
 		private global::Gtk.Entry entryPackageName;
-
 		private global::Gtk.Frame frame1;
-
 		private global::Gtk.Alignment GtkAlignment2;
-
 		private global::Gtk.Table table1;
-
 		private global::Gtk.Entry entryRelPath;
-
 		private global::MonoDevelop.Components.FolderEntry folderentrySystemPath;
-
 		private global::Gtk.RadioButton radiobuttonRelPath;
-
 		private global::Gtk.RadioButton radiobuttonSystemPath;
-
 		private global::Gtk.Label GtkLabel4;
-
 		private global::Gtk.Frame frame2;
-
 		private global::Gtk.Alignment GtkAlignment3;
-
 		private global::Gtk.VBox vbox4;
-
 		private global::Gtk.Label label4;
-
 		private global::Gtk.Frame frame3;
-
 		private global::Gtk.Alignment GtkAlignment4;
-
 		private global::Gtk.Label labelInitString;
-
 		private global::Gtk.Label GtkLabel6;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-
 		private global::Gtk.TreeView treeviewProjectList;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.HSeparator hseparator1;
-
 		private global::Gtk.Button buttonCancel;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -93,7 +66,7 @@ namespace MonoDevelop.Gettext
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("_Package name:");
 			this.label3.UseUnderline = true;
 			this.hbox4.Add (this.label3);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox4[this.label3]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.label3]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -104,10 +77,10 @@ namespace MonoDevelop.Gettext
 			this.entryPackageName.IsEditable = true;
 			this.entryPackageName.InvisibleChar = '●';
 			this.hbox4.Add (this.entryPackageName);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox4[this.entryPackageName]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.entryPackageName]));
 			w3.Position = 1;
 			this.vbox2.Add (this.hbox4);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox4]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox4]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -116,7 +89,7 @@ namespace MonoDevelop.Gettext
 			this.frame1.Name = "frame1";
 			this.frame1.ShadowType = ((global::Gtk.ShadowType)(0));
 			// Container child frame1.Gtk.Container+ContainerChild
-			this.GtkAlignment2 = new global::Gtk.Alignment (0f, 0f, 1f, 1f);
+			this.GtkAlignment2 = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
 			this.GtkAlignment2.Name = "GtkAlignment2";
 			this.GtkAlignment2.LeftPadding = ((uint)(12));
 			// Container child GtkAlignment2.Gtk.Container+ContainerChild
@@ -131,7 +104,7 @@ namespace MonoDevelop.Gettext
 			this.entryRelPath.IsEditable = true;
 			this.entryRelPath.InvisibleChar = '●';
 			this.table1.Add (this.entryRelPath);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1[this.entryRelPath]));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryRelPath]));
 			w5.LeftAttach = ((uint)(1));
 			w5.RightAttach = ((uint)(2));
 			w5.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -139,7 +112,7 @@ namespace MonoDevelop.Gettext
 			this.folderentrySystemPath = new global::MonoDevelop.Components.FolderEntry ();
 			this.folderentrySystemPath.Name = "folderentrySystemPath";
 			this.table1.Add (this.folderentrySystemPath);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1[this.folderentrySystemPath]));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.folderentrySystemPath]));
 			w6.TopAttach = ((uint)(1));
 			w6.BottomAttach = ((uint)(2));
 			w6.LeftAttach = ((uint)(1));
@@ -154,7 +127,7 @@ namespace MonoDevelop.Gettext
 			this.radiobuttonRelPath.UseUnderline = true;
 			this.radiobuttonRelPath.Group = new global::GLib.SList (global::System.IntPtr.Zero);
 			this.table1.Add (this.radiobuttonRelPath);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1[this.radiobuttonRelPath]));
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.radiobuttonRelPath]));
 			w7.XOptions = ((global::Gtk.AttachOptions)(4));
 			w7.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
@@ -165,7 +138,7 @@ namespace MonoDevelop.Gettext
 			this.radiobuttonSystemPath.UseUnderline = true;
 			this.radiobuttonSystemPath.Group = this.radiobuttonRelPath.Group;
 			this.table1.Add (this.radiobuttonSystemPath);
-			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1[this.radiobuttonSystemPath]));
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1 [this.radiobuttonSystemPath]));
 			w8.TopAttach = ((uint)(1));
 			w8.BottomAttach = ((uint)(2));
 			w8.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -178,7 +151,7 @@ namespace MonoDevelop.Gettext
 			this.GtkLabel4.UseMarkup = true;
 			this.frame1.LabelWidget = this.GtkLabel4;
 			this.vbox2.Add (this.frame1);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.frame1]));
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.frame1]));
 			w11.Position = 1;
 			w11.Expand = false;
 			w11.Fill = false;
@@ -187,7 +160,7 @@ namespace MonoDevelop.Gettext
 			this.frame2.Name = "frame2";
 			this.frame2.ShadowType = ((global::Gtk.ShadowType)(0));
 			// Container child frame2.Gtk.Container+ContainerChild
-			this.GtkAlignment3 = new global::Gtk.Alignment (0f, 0f, 1f, 1f);
+			this.GtkAlignment3 = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
 			this.GtkAlignment3.Name = "GtkAlignment3";
 			this.GtkAlignment3.LeftPadding = ((uint)(12));
 			// Container child GtkAlignment3.Gtk.Container+ContainerChild
@@ -197,10 +170,10 @@ namespace MonoDevelop.Gettext
 			// Container child vbox4.Gtk.Box+BoxChild
 			this.label4 = new global::Gtk.Label ();
 			this.label4.Name = "label4";
-			this.label4.Xalign = 0f;
+			this.label4.Xalign = 0F;
 			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("The catalog initialization string should look like:");
 			this.vbox4.Add (this.label4);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.label4]));
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.label4]));
 			w12.Position = 0;
 			w12.Expand = false;
 			w12.Fill = false;
@@ -209,18 +182,18 @@ namespace MonoDevelop.Gettext
 			this.frame3.Name = "frame3";
 			this.frame3.ShadowType = ((global::Gtk.ShadowType)(1));
 			// Container child frame3.Gtk.Container+ContainerChild
-			this.GtkAlignment4 = new global::Gtk.Alignment (0f, 0f, 1f, 1f);
+			this.GtkAlignment4 = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
 			this.GtkAlignment4.Name = "GtkAlignment4";
 			this.GtkAlignment4.LeftPadding = ((uint)(12));
 			// Container child GtkAlignment4.Gtk.Container+ContainerChild
 			this.labelInitString = new global::Gtk.Label ();
 			this.labelInitString.Name = "labelInitString";
-			this.labelInitString.Xalign = 0f;
+			this.labelInitString.Xalign = 0F;
 			this.labelInitString.LabelProp = "Mono.Unix.Catalog.Init (\"i18n\", \"./locale\");";
 			this.GtkAlignment4.Add (this.labelInitString);
 			this.frame3.Add (this.GtkAlignment4);
 			this.vbox4.Add (this.frame3);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.frame3]));
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.frame3]));
 			w15.Position = 1;
 			w15.Expand = false;
 			w15.Fill = false;
@@ -232,7 +205,7 @@ namespace MonoDevelop.Gettext
 			this.GtkLabel6.UseMarkup = true;
 			this.frame2.LabelWidget = this.GtkLabel6;
 			this.vbox2.Add (this.frame2);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.frame2]));
+			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.frame2]));
 			w18.Position = 2;
 			w18.Expand = false;
 			w18.Fill = false;
@@ -255,7 +228,7 @@ namespace MonoDevelop.Gettext
 			this.treeviewProjectList.Name = "treeviewProjectList";
 			this.scrolledwindow1.Add (this.treeviewProjectList);
 			this.notebook1.Add (this.scrolledwindow1);
-			global::Gtk.Notebook.NotebookChild w21 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1[this.scrolledwindow1]));
+			global::Gtk.Notebook.NotebookChild w21 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.scrolledwindow1]));
 			w21.Position = 1;
 			// Notebook tab
 			this.label2 = new global::Gtk.Label ();
@@ -264,13 +237,13 @@ namespace MonoDevelop.Gettext
 			this.notebook1.SetTabLabel (this.scrolledwindow1, this.label2);
 			this.label2.ShowAll ();
 			w1.Add (this.notebook1);
-			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(w1[this.notebook1]));
+			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(w1 [this.notebook1]));
 			w22.Position = 0;
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
 			this.hseparator1 = new global::Gtk.HSeparator ();
 			this.hseparator1.Name = "hseparator1";
 			w1.Add (this.hseparator1);
-			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(w1[this.hseparator1]));
+			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(w1 [this.hseparator1]));
 			w23.PackType = ((global::Gtk.PackType)(1));
 			w23.Position = 2;
 			w23.Expand = false;
@@ -290,7 +263,7 @@ namespace MonoDevelop.Gettext
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w25 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w24[this.buttonCancel]));
+			global::Gtk.ButtonBox.ButtonBoxChild w25 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w24 [this.buttonCancel]));
 			w25.Expand = false;
 			w25.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -302,7 +275,7 @@ namespace MonoDevelop.Gettext
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w26 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w24[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w26 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w24 [this.buttonOk]));
 			w26.Position = 1;
 			w26.Expand = false;
 			w26.Fill = false;

@@ -5,29 +5,18 @@ namespace MonoDevelop.VersionControl.Views
 	public partial class LogWidget
 	{
 		private global::Gtk.UIManager UIManager;
-		
 		private global::Gtk.VBox vbox1;
-		
 		private global::Gtk.Toolbar commandBar;
-		
 		private global::Gtk.VPaned vpaned1;
-		
 		private global::Gtk.HPaned hpaned1;
-		
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-		
 		private global::Gtk.TreeView treeviewLog;
-		
 		private global::Gtk.VBox vbox2;
-		
 		private global::Gtk.Label label1;
-		
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-		
 		private global::Gtk.TextView textviewDetails;
-		
 		private global::Gtk.ScrolledWindow scrolledwindowFiles;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -35,7 +24,7 @@ namespace MonoDevelop.VersionControl.Views
 			Stetic.BinContainer w1 = global::Stetic.BinContainer.Attach (this);
 			this.UIManager = new global::Gtk.UIManager ();
 			global::Gtk.ActionGroup w2 = new global::Gtk.ActionGroup ("Default");
-			this.UIManager.InsertActionGroup (w2,0);
+			this.UIManager.InsertActionGroup (w2, 0);
 			this.Name = "MonoDevelop.VersionControl.Views.LogWidget";
 			// Container child MonoDevelop.VersionControl.Views.LogWidget.Gtk.Container+ContainerChild
 			this.vbox1 = new global::Gtk.VBox ();

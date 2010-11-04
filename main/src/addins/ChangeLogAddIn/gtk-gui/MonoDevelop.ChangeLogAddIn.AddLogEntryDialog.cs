@@ -5,47 +5,26 @@ namespace MonoDevelop.ChangeLogAddIn
 	internal partial class AddLogEntryDialog
 	{
 		private global::Gtk.VBox vbox1;
-
 		private global::Gtk.VPaned vpaned1;
-
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.ScrolledWindow scrolledwindow2;
-
 		private global::Gtk.TreeView fileList;
-
 		private global::Gtk.VBox vbox3;
-
 		private global::Gtk.Label label3;
-
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-
 		private global::Gtk.TextView textview;
-
 		private global::Gtk.HBox boxNewFile;
-
 		private global::Gtk.Image image36;
-
 		private global::Gtk.Label label7;
-
 		private global::Gtk.HBox boxNoFile;
-
 		private global::Gtk.Image image37;
-
 		private global::Gtk.Label label8;
-
 		private global::Gtk.HBox hbox3;
-
 		private global::Gtk.VBox vbox4;
-
 		private global::Gtk.Image image38;
-
 		private global::Gtk.Label label9;
-
 		private global::Gtk.Button button7;
-
 		private global::Gtk.Button button119;
 
 		protected virtual void Build ()
@@ -80,10 +59,10 @@ namespace MonoDevelop.ChangeLogAddIn
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Modified ChangeLog files:");
 			this.vbox2.Add (this.label1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.label1]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label1]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -99,10 +78,10 @@ namespace MonoDevelop.ChangeLogAddIn
 			this.fileList.HeadersVisible = false;
 			this.scrolledwindow2.Add (this.fileList);
 			this.vbox2.Add (this.scrolledwindow2);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.scrolledwindow2]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.scrolledwindow2]));
 			w4.Position = 1;
 			this.vpaned1.Add (this.vbox2);
-			global::Gtk.Paned.PanedChild w5 = ((global::Gtk.Paned.PanedChild)(this.vpaned1[this.vbox2]));
+			global::Gtk.Paned.PanedChild w5 = ((global::Gtk.Paned.PanedChild)(this.vpaned1 [this.vbox2]));
 			w5.Resize = false;
 			// Container child vpaned1.Gtk.Paned+PanedChild
 			this.vbox3 = new global::Gtk.VBox ();
@@ -111,10 +90,10 @@ namespace MonoDevelop.ChangeLogAddIn
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.Xalign = 0f;
+			this.label3.Xalign = 0F;
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("ChangeLog entry:");
 			this.vbox3.Add (this.label3);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.label3]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.label3]));
 			w6.Position = 0;
 			w6.Expand = false;
 			w6.Fill = false;
@@ -129,11 +108,11 @@ namespace MonoDevelop.ChangeLogAddIn
 			this.textview.Name = "textview";
 			this.scrolledwindow1.Add (this.textview);
 			this.vbox3.Add (this.scrolledwindow1);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.scrolledwindow1]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.scrolledwindow1]));
 			w8.Position = 1;
 			this.vpaned1.Add (this.vbox3);
 			this.vbox1.Add (this.vpaned1);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.vpaned1]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.vpaned1]));
 			w10.Position = 0;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.boxNewFile = new global::Gtk.HBox ();
@@ -144,7 +123,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			this.image36.Name = "image36";
 			this.image36.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-new", global::Gtk.IconSize.SmallToolbar);
 			this.boxNewFile.Add (this.image36);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.boxNewFile[this.image36]));
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.boxNewFile [this.image36]));
 			w11.Position = 0;
 			w11.Expand = false;
 			w11.Fill = false;
@@ -152,16 +131,16 @@ namespace MonoDevelop.ChangeLogAddIn
 			this.label7 = new global::Gtk.Label ();
 			this.label7.WidthRequest = 500;
 			this.label7.Name = "label7";
-			this.label7.Xalign = 0f;
+			this.label7.Xalign = 0F;
 			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("This ChangeLog file does not exist and will be created.");
 			this.label7.Wrap = true;
 			this.boxNewFile.Add (this.label7);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.boxNewFile[this.label7]));
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.boxNewFile [this.label7]));
 			w12.Position = 1;
 			w12.Expand = false;
 			w12.Fill = false;
 			this.vbox1.Add (this.boxNewFile);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.boxNewFile]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.boxNewFile]));
 			w13.Position = 1;
 			w13.Expand = false;
 			w13.Fill = false;
@@ -174,7 +153,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			this.image37.Name = "image37";
 			this.image37.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-warning", global::Gtk.IconSize.SmallToolbar);
 			this.boxNoFile.Add (this.image37);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.boxNoFile[this.image37]));
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.boxNoFile [this.image37]));
 			w14.Position = 0;
 			w14.Expand = false;
 			w14.Fill = false;
@@ -182,17 +161,17 @@ namespace MonoDevelop.ChangeLogAddIn
 			this.label8 = new global::Gtk.Label ();
 			this.label8.WidthRequest = 500;
 			this.label8.Name = "label8";
-			this.label8.Xalign = 0f;
+			this.label8.Xalign = 0F;
 			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("This ChangeLog file does not exist and will <b>not</b> be created.");
 			this.label8.UseMarkup = true;
 			this.label8.Wrap = true;
 			this.boxNoFile.Add (this.label8);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.boxNoFile[this.label8]));
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.boxNoFile [this.label8]));
 			w15.Position = 1;
 			w15.Expand = false;
 			w15.Fill = false;
 			this.vbox1.Add (this.boxNoFile);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.boxNoFile]));
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.boxNoFile]));
 			w16.Position = 2;
 			w16.Expand = false;
 			w16.Fill = false;
@@ -209,12 +188,12 @@ namespace MonoDevelop.ChangeLogAddIn
 			this.image38.Name = "image38";
 			this.image38.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-info", global::Gtk.IconSize.SmallToolbar);
 			this.vbox4.Add (this.image38);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.image38]));
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.image38]));
 			w17.Position = 0;
 			w17.Expand = false;
 			w17.Fill = false;
 			this.hbox3.Add (this.vbox4);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.vbox4]));
+			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.vbox4]));
 			w18.Position = 0;
 			w18.Expand = false;
 			w18.Fill = false;
@@ -222,22 +201,22 @@ namespace MonoDevelop.ChangeLogAddIn
 			this.label9 = new global::Gtk.Label ();
 			this.label9.WidthRequest = 500;
 			this.label9.Name = "label9";
-			this.label9.Xalign = 0f;
+			this.label9.Xalign = 0F;
 			this.label9.LabelProp = global::Mono.Unix.Catalog.GetString ("To change the ChangeLog creation and update policies, open the options dialog of the project or solution and click on the 'ChangeLog Integration\" section.");
 			this.label9.UseMarkup = true;
 			this.label9.Wrap = true;
 			this.hbox3.Add (this.label9);
-			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.label9]));
+			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.label9]));
 			w19.Position = 1;
 			w19.Expand = false;
 			w19.Fill = false;
 			this.vbox1.Add (this.hbox3);
-			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.hbox3]));
+			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox3]));
 			w20.Position = 3;
 			w20.Expand = false;
 			w20.Fill = false;
 			w1.Add (this.vbox1);
-			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(w1[this.vbox1]));
+			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox1]));
 			w21.Position = 0;
 			// Internal child MonoDevelop.ChangeLogAddIn.AddLogEntryDialog.ActionArea
 			global::Gtk.HButtonBox w22 = this.ActionArea;
@@ -255,7 +234,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			this.button7.UseUnderline = true;
 			this.button7.Label = "gtk-cancel";
 			this.AddActionWidget (this.button7, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w23 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w22[this.button7]));
+			global::Gtk.ButtonBox.ButtonBoxChild w23 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w22 [this.button7]));
 			w23.Expand = false;
 			w23.Fill = false;
 			// Container child ChangeLogAddIn.AddLogEntryDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -267,7 +246,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			this.button119.UseUnderline = true;
 			this.button119.Label = "gtk-ok";
 			this.AddActionWidget (this.button119, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w24 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w22[this.button119]));
+			global::Gtk.ButtonBox.ButtonBoxChild w24 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w22 [this.button119]));
 			w24.Position = 1;
 			w24.Expand = false;
 			w24.Fill = false;

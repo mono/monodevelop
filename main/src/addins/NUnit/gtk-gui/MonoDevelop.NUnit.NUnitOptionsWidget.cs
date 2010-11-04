@@ -5,41 +5,23 @@ namespace MonoDevelop.NUnit
 	internal partial class NUnitOptionsWidget
 	{
 		private global::Gtk.VBox vbox1;
-
 		private global::Gtk.CheckButton useParentCheck;
-
 		private global::Gtk.HSeparator hseparator1;
-
 		private global::Gtk.VBox vbox3;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.HBox hbox2;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.VBox vbox4;
-
 		private global::Gtk.RadioButton noFilterRadio;
-
 		private global::Gtk.RadioButton includeRadio;
-
 		private global::Gtk.RadioButton excludeRadio;
-
 		private global::Gtk.Label label3;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Label label4;
-
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-
 		private global::Gtk.TreeView categoryTree;
-
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Button addButton;
-
 		private global::Gtk.Button removeButton;
 
 		protected virtual void Build ()
@@ -59,7 +41,7 @@ namespace MonoDevelop.NUnit
 			this.useParentCheck.DrawIndicator = true;
 			this.useParentCheck.UseUnderline = true;
 			this.vbox1.Add (this.useParentCheck);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.useParentCheck]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.useParentCheck]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -67,7 +49,7 @@ namespace MonoDevelop.NUnit
 			this.hseparator1 = new global::Gtk.HSeparator ();
 			this.hseparator1.Name = "hseparator1";
 			this.vbox1.Add (this.hseparator1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.hseparator1]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hseparator1]));
 			w2.Position = 1;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -78,10 +60,10 @@ namespace MonoDevelop.NUnit
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("The following filter will be applied when running the tests:");
 			this.vbox3.Add (this.label1);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.label1]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.label1]));
 			w3.Position = 0;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -93,7 +75,7 @@ namespace MonoDevelop.NUnit
 			this.label2.WidthRequest = 18;
 			this.label2.Name = "label2";
 			this.hbox2.Add (this.label2);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.label2]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.label2]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -109,7 +91,7 @@ namespace MonoDevelop.NUnit
 			this.noFilterRadio.UseUnderline = true;
 			this.noFilterRadio.Group = new global::GLib.SList (global::System.IntPtr.Zero);
 			this.vbox4.Add (this.noFilterRadio);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.noFilterRadio]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.noFilterRadio]));
 			w5.Position = 0;
 			w5.Expand = false;
 			w5.Fill = false;
@@ -120,7 +102,7 @@ namespace MonoDevelop.NUnit
 			this.includeRadio.UseUnderline = true;
 			this.includeRadio.Group = this.noFilterRadio.Group;
 			this.vbox4.Add (this.includeRadio);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.includeRadio]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.includeRadio]));
 			w6.Position = 1;
 			w6.Expand = false;
 			w6.Fill = false;
@@ -131,28 +113,28 @@ namespace MonoDevelop.NUnit
 			this.excludeRadio.UseUnderline = true;
 			this.excludeRadio.Group = this.noFilterRadio.Group;
 			this.vbox4.Add (this.excludeRadio);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.excludeRadio]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.excludeRadio]));
 			w7.Position = 2;
 			w7.Expand = false;
 			w7.Fill = false;
 			this.hbox2.Add (this.vbox4);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.vbox4]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.vbox4]));
 			w8.Position = 1;
 			this.vbox3.Add (this.hbox2);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.hbox2]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.hbox2]));
 			w9.Position = 1;
 			this.vbox1.Add (this.vbox3);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.vbox3]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.vbox3]));
 			w10.Position = 2;
 			w10.Expand = false;
 			w10.Fill = false;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.Xalign = 0f;
+			this.label3.Xalign = 0F;
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Categories:");
 			this.vbox1.Add (this.label3);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.label3]));
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.label3]));
 			w11.Position = 3;
 			w11.Expand = false;
 			w11.Fill = false;
@@ -165,7 +147,7 @@ namespace MonoDevelop.NUnit
 			this.label4.WidthRequest = 18;
 			this.label4.Name = "label4";
 			this.hbox1.Add (this.label4);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label4]));
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label4]));
 			w12.Position = 0;
 			w12.Expand = false;
 			w12.Fill = false;
@@ -178,7 +160,7 @@ namespace MonoDevelop.NUnit
 			this.categoryTree.Name = "categoryTree";
 			this.scrolledwindow1.Add (this.categoryTree);
 			this.hbox1.Add (this.scrolledwindow1);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.scrolledwindow1]));
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.scrolledwindow1]));
 			w14.Position = 1;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.vbox2 = new global::Gtk.VBox ();
@@ -191,7 +173,7 @@ namespace MonoDevelop.NUnit
 			this.addButton.UseUnderline = true;
 			this.addButton.Label = "gtk-add";
 			this.vbox2.Add (this.addButton);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.addButton]));
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.addButton]));
 			w15.Position = 0;
 			w15.Expand = false;
 			w15.Fill = false;
@@ -202,17 +184,17 @@ namespace MonoDevelop.NUnit
 			this.removeButton.UseUnderline = true;
 			this.removeButton.Label = "gtk-remove";
 			this.vbox2.Add (this.removeButton);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.removeButton]));
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.removeButton]));
 			w16.Position = 1;
 			w16.Expand = false;
 			w16.Fill = false;
 			this.hbox1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.vbox2]));
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox2]));
 			w17.Position = 2;
 			w17.Expand = false;
 			w17.Fill = false;
 			this.vbox1.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.hbox1]));
+			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox1]));
 			w18.Position = 4;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {

@@ -5,43 +5,24 @@ namespace CBinding
 	public partial class EditPackagesDialog
 	{
 		private global::Gtk.VPaned vpaned1;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Notebook notebook1;
-
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-
 		private global::Gtk.TreeView normalPackageTreeView;
-
 		private global::Gtk.Label labelSystemPackages;
-
 		private global::Gtk.ScrolledWindow scrolledwindow3;
-
 		private global::Gtk.TreeView projectPackageTreeView;
-
 		private global::Gtk.Label labelProjectPackages;
-
 		private global::Gtk.VBox vbox3;
-
 		private global::Gtk.Fixed fixed1;
-
 		private global::Gtk.Button detailsButton;
-
 		private global::Gtk.Table table1;
-
 		private global::Gtk.Label label3;
-
 		private global::Gtk.ScrolledWindow scrolledwindow2;
-
 		private global::Gtk.TreeView selectedPackageTreeView;
-
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Button removeButton;
-
 		private global::Gtk.Button buttonCancel;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -98,7 +79,7 @@ namespace CBinding
 			this.projectPackageTreeView.Name = "projectPackageTreeView";
 			this.scrolledwindow3.Add (this.projectPackageTreeView);
 			this.notebook1.Add (this.scrolledwindow3);
-			global::Gtk.Notebook.NotebookChild w5 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1[this.scrolledwindow3]));
+			global::Gtk.Notebook.NotebookChild w5 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.scrolledwindow3]));
 			w5.Position = 1;
 			// Notebook tab
 			this.labelProjectPackages = new global::Gtk.Label ();
@@ -107,7 +88,7 @@ namespace CBinding
 			this.notebook1.SetTabLabel (this.scrolledwindow3, this.labelProjectPackages);
 			this.labelProjectPackages.ShowAll ();
 			this.hbox1.Add (this.notebook1);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.notebook1]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.notebook1]));
 			w6.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.vbox3 = new global::Gtk.VBox ();
@@ -119,7 +100,7 @@ namespace CBinding
 			this.fixed1.Name = "fixed1";
 			this.fixed1.HasWindow = false;
 			this.vbox3.Add (this.fixed1);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.fixed1]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.fixed1]));
 			w7.Position = 0;
 			w7.Expand = false;
 			w7.Fill = false;
@@ -133,17 +114,17 @@ namespace CBinding
 			this.detailsButton.UseUnderline = true;
 			this.detailsButton.Label = global::Mono.Unix.Catalog.GetString ("...");
 			this.vbox3.Add (this.detailsButton);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.detailsButton]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.detailsButton]));
 			w8.Position = 1;
 			w8.Expand = false;
 			w8.Fill = false;
 			this.hbox1.Add (this.vbox3);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.vbox3]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox3]));
 			w9.Position = 1;
 			w9.Expand = false;
 			w9.Fill = false;
 			this.vpaned1.Add (this.hbox1);
-			global::Gtk.Paned.PanedChild w10 = ((global::Gtk.Paned.PanedChild)(this.vpaned1[this.hbox1]));
+			global::Gtk.Paned.PanedChild w10 = ((global::Gtk.Paned.PanedChild)(this.vpaned1 [this.hbox1]));
 			w10.Resize = false;
 			// Container child vpaned1.Gtk.Paned+PanedChild
 			this.table1 = new global::Gtk.Table (((uint)(2)), ((uint)(2)), false);
@@ -153,11 +134,11 @@ namespace CBinding
 			// Container child table1.Gtk.Table+TableChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.Xalign = 0f;
-			this.label3.Yalign = 0f;
+			this.label3.Xalign = 0F;
+			this.label3.Yalign = 0F;
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Selected packages:");
 			this.table1.Add (this.label3);
-			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table1[this.label3]));
+			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table1 [this.label3]));
 			w11.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.scrolledwindow2 = new global::Gtk.ScrolledWindow ();
@@ -170,7 +151,7 @@ namespace CBinding
 			this.selectedPackageTreeView.Name = "selectedPackageTreeView";
 			this.scrolledwindow2.Add (this.selectedPackageTreeView);
 			this.table1.Add (this.scrolledwindow2);
-			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table1[this.scrolledwindow2]));
+			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table1 [this.scrolledwindow2]));
 			w13.TopAttach = ((uint)(1));
 			w13.BottomAttach = ((uint)(2));
 			w13.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -188,7 +169,7 @@ namespace CBinding
 			this.removeButton.Name = "removeButton";
 			this.removeButton.UseUnderline = true;
 			// Container child removeButton.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w14 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+			global::Gtk.Alignment w14 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
 			global::Gtk.HBox w15 = new global::Gtk.HBox ();
 			w15.Spacing = 2;
@@ -202,12 +183,12 @@ namespace CBinding
 			w14.Add (w15);
 			this.removeButton.Add (w14);
 			this.vbox2.Add (this.removeButton);
-			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.removeButton]));
+			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.removeButton]));
 			w22.Position = 0;
 			w22.Expand = false;
 			w22.Fill = false;
 			this.table1.Add (this.vbox2);
-			global::Gtk.Table.TableChild w23 = ((global::Gtk.Table.TableChild)(this.table1[this.vbox2]));
+			global::Gtk.Table.TableChild w23 = ((global::Gtk.Table.TableChild)(this.table1 [this.vbox2]));
 			w23.TopAttach = ((uint)(1));
 			w23.BottomAttach = ((uint)(2));
 			w23.LeftAttach = ((uint)(1));
@@ -215,7 +196,7 @@ namespace CBinding
 			w23.XOptions = ((global::Gtk.AttachOptions)(4));
 			this.vpaned1.Add (this.table1);
 			w1.Add (this.vpaned1);
-			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(w1[this.vpaned1]));
+			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(w1 [this.vpaned1]));
 			w25.Position = 0;
 			w25.Padding = ((uint)(3));
 			// Internal child CBinding.EditPackagesDialog.ActionArea
@@ -233,7 +214,7 @@ namespace CBinding
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w27 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w26[this.buttonCancel]));
+			global::Gtk.ButtonBox.ButtonBoxChild w27 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w26 [this.buttonCancel]));
 			w27.Expand = false;
 			w27.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -245,7 +226,7 @@ namespace CBinding
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w28 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w26[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w28 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w26 [this.buttonOk]));
 			w28.Position = 1;
 			w28.Expand = false;
 			w28.Fill = false;

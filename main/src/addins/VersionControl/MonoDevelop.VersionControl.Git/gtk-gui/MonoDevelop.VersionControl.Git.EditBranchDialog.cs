@@ -5,23 +5,14 @@ namespace MonoDevelop.VersionControl.Git
 	public partial class EditBranchDialog
 	{
 		private global::Gtk.VBox vbox5;
-
 		private global::Gtk.Table table4;
-
 		private global::Gtk.Entry entryName;
-
 		private global::Gtk.Label label4;
-
 		private global::Gtk.Label labelError;
-
 		private global::Gtk.CheckButton checkTrack;
-
 		private global::Gtk.Alignment alignment1;
-
 		private global::Gtk.ComboBox comboSources;
-
 		private global::Gtk.Button buttonCancel;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -52,7 +43,7 @@ namespace MonoDevelop.VersionControl.Git
 			this.entryName.IsEditable = true;
 			this.entryName.InvisibleChar = '●';
 			this.table4.Add (this.entryName);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table4[this.entryName]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table4 [this.entryName]));
 			w2.LeftAttach = ((uint)(1));
 			w2.RightAttach = ((uint)(2));
 			w2.YOptions = ((global::Gtk.AttachOptions)(4));
@@ -61,23 +52,23 @@ namespace MonoDevelop.VersionControl.Git
 			this.label4.Name = "label4";
 			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("Name:");
 			this.table4.Add (this.label4);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table4[this.label4]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table4 [this.label4]));
 			w3.XOptions = ((global::Gtk.AttachOptions)(4));
 			w3.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table4.Gtk.Table+TableChild
 			this.labelError = new global::Gtk.Label ();
 			this.labelError.Name = "labelError";
-			this.labelError.Xalign = 0f;
+			this.labelError.Xalign = 0F;
 			this.labelError.LabelProp = "Error";
 			this.table4.Add (this.labelError);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table4[this.labelError]));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table4 [this.labelError]));
 			w4.TopAttach = ((uint)(1));
 			w4.BottomAttach = ((uint)(2));
 			w4.LeftAttach = ((uint)(1));
 			w4.RightAttach = ((uint)(2));
 			w4.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox5.Add (this.table4);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.table4]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.table4]));
 			w5.Position = 0;
 			w5.Expand = false;
 			w5.Fill = false;
@@ -89,12 +80,12 @@ namespace MonoDevelop.VersionControl.Git
 			this.checkTrack.DrawIndicator = true;
 			this.checkTrack.UseUnderline = true;
 			this.vbox5.Add (this.checkTrack);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.checkTrack]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.checkTrack]));
 			w6.Position = 1;
 			w6.Expand = false;
 			w6.Fill = false;
 			// Container child vbox5.Gtk.Box+BoxChild
-			this.alignment1 = new global::Gtk.Alignment (0.5f, 0.5f, 1f, 1f);
+			this.alignment1 = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
 			this.alignment1.Name = "alignment1";
 			this.alignment1.LeftPadding = ((uint)(18));
 			// Container child alignment1.Gtk.Container+ContainerChild
@@ -102,12 +93,12 @@ namespace MonoDevelop.VersionControl.Git
 			this.comboSources.Name = "comboSources";
 			this.alignment1.Add (this.comboSources);
 			this.vbox5.Add (this.alignment1);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.alignment1]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.alignment1]));
 			w8.Position = 2;
 			w8.Expand = false;
 			w8.Fill = false;
 			w1.Add (this.vbox5);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(w1[this.vbox5]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox5]));
 			w9.Position = 0;
 			w9.Expand = false;
 			w9.Fill = false;
@@ -126,7 +117,7 @@ namespace MonoDevelop.VersionControl.Git
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10[this.buttonCancel]));
+			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.buttonCancel]));
 			w11.Expand = false;
 			w11.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -138,7 +129,7 @@ namespace MonoDevelop.VersionControl.Git
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.buttonOk]));
 			w12.Position = 1;
 			w12.Expand = false;
 			w12.Fill = false;

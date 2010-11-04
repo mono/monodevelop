@@ -5,23 +5,14 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 	public partial class ClientCertificateDialog
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.Label labelRealm;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Label label3;
-
 		private global::MonoDevelop.Components.FileEntry fileentry;
-
 		private global::Gtk.CheckButton checkSave;
-
 		private global::Gtk.Button button34;
-
 		private global::Gtk.Button button24;
 
 		protected virtual void Build ()
@@ -44,31 +35,31 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>A client certificate is needed to connect to the repository</b>");
 			this.label1.UseMarkup = true;
 			this.vbox2.Add (this.label1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.label1]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label1]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.labelRealm = new global::Gtk.Label ();
 			this.labelRealm.Name = "labelRealm";
-			this.labelRealm.Xalign = 0f;
+			this.labelRealm.Xalign = 0F;
 			this.labelRealm.LabelProp = "Realm";
 			this.vbox2.Add (this.labelRealm);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.labelRealm]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.labelRealm]));
 			w3.Position = 1;
 			w3.Expand = false;
 			w3.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.Xalign = 0f;
+			this.label2.Xalign = 0F;
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Please provide a path to the required certificate:");
 			this.vbox2.Add (this.label2);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.label2]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label2]));
 			w4.Position = 2;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -82,7 +73,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			this.label3.Name = "label3";
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("File:");
 			this.hbox1.Add (this.label3);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label3]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label3]));
 			w5.Position = 0;
 			w5.Expand = false;
 			w5.Fill = false;
@@ -90,10 +81,10 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			this.fileentry = new global::MonoDevelop.Components.FileEntry ();
 			this.fileentry.Name = "fileentry";
 			this.hbox1.Add (this.fileentry);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.fileentry]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.fileentry]));
 			w6.Position = 1;
 			this.vbox2.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
 			w7.Position = 3;
 			w7.Expand = false;
 			w7.Fill = false;
@@ -105,12 +96,12 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			this.checkSave.DrawIndicator = true;
 			this.checkSave.UseUnderline = true;
 			this.vbox2.Add (this.checkSave);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.checkSave]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.checkSave]));
 			w8.Position = 4;
 			w8.Expand = false;
 			w8.Fill = false;
 			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(w1[this.vbox2]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
 			w9.Position = 0;
 			w9.Expand = false;
 			w9.Fill = false;
@@ -130,7 +121,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			this.button34.UseUnderline = true;
 			this.button34.Label = "gtk-cancel";
 			this.AddActionWidget (this.button34, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10[this.button34]));
+			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.button34]));
 			w11.Expand = false;
 			w11.Fill = false;
 			// Container child MonoDevelop.VersionControl.Subversion.ClientCertificateDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -142,7 +133,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			this.button24.UseUnderline = true;
 			this.button24.Label = "gtk-ok";
 			this.AddActionWidget (this.button24, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10[this.button24]));
+			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.button24]));
 			w12.Position = 1;
 			w12.Expand = false;
 			w12.Fill = false;

@@ -5,53 +5,29 @@ namespace MonoDevelop.Autotools
 	public partial class TarballBuilderEditorWidget
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Label label2;
-
 		private global::MonoDevelop.Components.FolderEntry folderEntry;
-
 		private global::Gtk.RadioButton radioUseExisting;
-
 		private global::Gtk.RadioButton radioGenerate;
-
 		private global::Gtk.VBox boxGenerate;
-
 		private global::Gtk.HBox boxConfig;
-
 		private global::Gtk.Label label4;
-
 		private global::Gtk.Label label3;
-
 		private global::Gtk.ComboBox comboConfigs;
-
 		private global::Gtk.HBox boxConfig1;
-
 		private global::Gtk.Label label5;
-
 		private global::Gtk.Label label6;
-
 		private global::Gtk.HBox hbox3;
-
 		private global::Gtk.Label label8;
-
 		private global::Gtk.RadioButton rbAutotools;
-
 		private global::Gtk.Label label9;
-
 		private global::Gtk.HBox hbox2;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.RadioButton rbSimple;
-
 		private global::Gtk.Label label7;
-
 		private global::Gtk.Alignment alignment1;
-
 		private global::Gtk.HBox hbox4;
-
 		private global::Gtk.Button autofooProperties;
 
 		protected virtual void Build ()
@@ -73,7 +49,7 @@ namespace MonoDevelop.Autotools
 			this.label2.Name = "label2";
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Deploy directory:");
 			this.hbox1.Add (this.label2);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label2]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label2]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -82,10 +58,10 @@ namespace MonoDevelop.Autotools
 			this.folderEntry.Name = "folderEntry";
 			this.folderEntry.BrowserTitle = "Target Directory";
 			this.hbox1.Add (this.folderEntry);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.folderEntry]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.folderEntry]));
 			w2.Position = 1;
 			this.vbox2.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
 			w3.Position = 0;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -98,7 +74,7 @@ namespace MonoDevelop.Autotools
 			this.radioUseExisting.UseUnderline = true;
 			this.radioUseExisting.Group = new global::GLib.SList (global::System.IntPtr.Zero);
 			this.vbox2.Add (this.radioUseExisting);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.radioUseExisting]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.radioUseExisting]));
 			w4.Position = 1;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -110,7 +86,7 @@ namespace MonoDevelop.Autotools
 			this.radioGenerate.UseUnderline = true;
 			this.radioGenerate.Group = this.radioUseExisting.Group;
 			this.vbox2.Add (this.radioGenerate);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.radioGenerate]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.radioGenerate]));
 			w5.Position = 2;
 			w5.Expand = false;
 			w5.Fill = false;
@@ -127,7 +103,7 @@ namespace MonoDevelop.Autotools
 			this.label4.WidthRequest = 24;
 			this.label4.Name = "label4";
 			this.boxConfig.Add (this.label4);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.boxConfig[this.label4]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.boxConfig [this.label4]));
 			w6.Position = 0;
 			w6.Expand = false;
 			w6.Fill = false;
@@ -136,7 +112,7 @@ namespace MonoDevelop.Autotools
 			this.label3.Name = "label3";
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Default configuration:");
 			this.boxConfig.Add (this.label3);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.boxConfig[this.label3]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.boxConfig [this.label3]));
 			w7.Position = 1;
 			w7.Expand = false;
 			w7.Fill = false;
@@ -144,10 +120,10 @@ namespace MonoDevelop.Autotools
 			this.comboConfigs = global::Gtk.ComboBox.NewText ();
 			this.comboConfigs.Name = "comboConfigs";
 			this.boxConfig.Add (this.comboConfigs);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.boxConfig[this.comboConfigs]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.boxConfig [this.comboConfigs]));
 			w8.Position = 2;
 			this.boxGenerate.Add (this.boxConfig);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.boxGenerate[this.boxConfig]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.boxGenerate [this.boxConfig]));
 			w9.Position = 0;
 			w9.Expand = false;
 			w9.Fill = false;
@@ -160,7 +136,7 @@ namespace MonoDevelop.Autotools
 			this.label5.WidthRequest = 24;
 			this.label5.Name = "label5";
 			this.boxConfig1.Add (this.label5);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.boxConfig1[this.label5]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.boxConfig1 [this.label5]));
 			w10.Position = 0;
 			w10.Expand = false;
 			w10.Fill = false;
@@ -169,12 +145,12 @@ namespace MonoDevelop.Autotools
 			this.label6.Name = "label6";
 			this.label6.LabelProp = global::Mono.Unix.Catalog.GetString ("Select the kind of Makefile to generate:");
 			this.boxConfig1.Add (this.label6);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.boxConfig1[this.label6]));
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.boxConfig1 [this.label6]));
 			w11.Position = 1;
 			w11.Expand = false;
 			w11.Fill = false;
 			this.boxGenerate.Add (this.boxConfig1);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.boxGenerate[this.boxConfig1]));
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.boxGenerate [this.boxConfig1]));
 			w12.Position = 1;
 			w12.Expand = false;
 			w12.Fill = false;
@@ -187,7 +163,7 @@ namespace MonoDevelop.Autotools
 			this.label8.WidthRequest = 24;
 			this.label8.Name = "label8";
 			this.hbox3.Add (this.label8);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.label8]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.label8]));
 			w13.Position = 0;
 			w13.Expand = false;
 			w13.Fill = false;
@@ -209,10 +185,10 @@ namespace MonoDevelop.Autotools
 			this.label9.Wrap = true;
 			this.rbAutotools.Add (this.label9);
 			this.hbox3.Add (this.rbAutotools);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.rbAutotools]));
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.rbAutotools]));
 			w15.Position = 1;
 			this.boxGenerate.Add (this.hbox3);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.boxGenerate[this.hbox3]));
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.boxGenerate [this.hbox3]));
 			w16.Position = 2;
 			w16.Expand = false;
 			w16.Fill = false;
@@ -225,7 +201,7 @@ namespace MonoDevelop.Autotools
 			this.label1.WidthRequest = 24;
 			this.label1.Name = "label1";
 			this.hbox2.Add (this.label1);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.label1]));
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.label1]));
 			w17.Position = 0;
 			w17.Expand = false;
 			w17.Fill = false;
@@ -246,15 +222,15 @@ namespace MonoDevelop.Autotools
 			this.label7.Wrap = true;
 			this.rbSimple.Add (this.label7);
 			this.hbox2.Add (this.rbSimple);
-			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.rbSimple]));
+			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.rbSimple]));
 			w19.Position = 1;
 			this.boxGenerate.Add (this.hbox2);
-			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.boxGenerate[this.hbox2]));
+			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.boxGenerate [this.hbox2]));
 			w20.Position = 3;
 			w20.Expand = false;
 			w20.Fill = false;
 			// Container child boxGenerate.Gtk.Box+BoxChild
-			this.alignment1 = new global::Gtk.Alignment (0.5f, 0.5f, 1f, 1f);
+			this.alignment1 = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
 			this.alignment1.Name = "alignment1";
 			this.alignment1.LeftPadding = ((uint)(24));
 			this.alignment1.TopPadding = ((uint)(8));
@@ -270,18 +246,18 @@ namespace MonoDevelop.Autotools
 			this.autofooProperties.UseUnderline = true;
 			this.autofooProperties.Label = global::Mono.Unix.Catalog.GetString ("Edit configure switches");
 			this.hbox4.Add (this.autofooProperties);
-			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.hbox4[this.autofooProperties]));
+			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.autofooProperties]));
 			w21.Position = 0;
 			w21.Expand = false;
 			w21.Fill = false;
 			this.alignment1.Add (this.hbox4);
 			this.boxGenerate.Add (this.alignment1);
-			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.boxGenerate[this.alignment1]));
+			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.boxGenerate [this.alignment1]));
 			w23.Position = 4;
 			w23.Expand = false;
 			w23.Fill = false;
 			this.vbox2.Add (this.boxGenerate);
-			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.boxGenerate]));
+			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.boxGenerate]));
 			w24.Position = 3;
 			w24.Expand = false;
 			w24.Fill = false;

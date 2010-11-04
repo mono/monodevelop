@@ -5,11 +5,8 @@ namespace Mono.Instrumentation.Monitor
 	public partial class CounterSelectorDialog
 	{
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-
 		private global::Gtk.TreeView treeCounters;
-
 		private global::Gtk.Button buttonCancel;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -34,7 +31,7 @@ namespace Mono.Instrumentation.Monitor
 			this.treeCounters.Name = "treeCounters";
 			this.GtkScrolledWindow.Add (this.treeCounters);
 			w1.Add (this.GtkScrolledWindow);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(w1[this.GtkScrolledWindow]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(w1 [this.GtkScrolledWindow]));
 			w3.Position = 0;
 			// Internal child Mono.Instrumentation.Monitor.CounterSelectorDialog.ActionArea
 			global::Gtk.HButtonBox w4 = this.ActionArea;
@@ -51,7 +48,7 @@ namespace Mono.Instrumentation.Monitor
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w5 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w4[this.buttonCancel]));
+			global::Gtk.ButtonBox.ButtonBoxChild w5 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w4 [this.buttonCancel]));
 			w5.Expand = false;
 			w5.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -63,7 +60,7 @@ namespace Mono.Instrumentation.Monitor
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w6 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w4[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w6 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w4 [this.buttonOk]));
 			w6.Position = 1;
 			w6.Expand = false;
 			w6.Fill = false;

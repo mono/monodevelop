@@ -5,43 +5,25 @@ namespace MonoDevelop.VersionControl
 	public partial class UrlBasedRepositoryEditor
 	{
 		private global::Gtk.Table table1;
-		
 		private global::Gtk.HBox hbox1;
-		
 		private global::Gtk.ComboBox comboProtocol;
-		
 		private global::Gtk.HBox hbox2;
-		
 		private global::Gtk.SpinButton repositoryPortSpin;
-		
 		private global::Gtk.HSeparator hseparator1;
-		
 		private global::Gtk.HSeparator hseparator2;
-		
 		private global::Gtk.Label label11;
-		
 		private global::Gtk.Label label4;
-		
 		private global::Gtk.Label label5;
-		
 		private global::Gtk.Label label6;
-		
 		private global::Gtk.Label label7;
-		
 		private global::Gtk.Label label8;
-		
 		private global::Gtk.Label label9;
-		
 		private global::Gtk.Entry repositoryPassEntry;
-		
 		private global::Gtk.Entry repositoryPathEntry;
-		
 		private global::Gtk.Entry repositoryServerEntry;
-		
 		private global::Gtk.Entry repositoryUrlEntry;
-		
 		private global::Gtk.Entry repositoryUserEntry;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

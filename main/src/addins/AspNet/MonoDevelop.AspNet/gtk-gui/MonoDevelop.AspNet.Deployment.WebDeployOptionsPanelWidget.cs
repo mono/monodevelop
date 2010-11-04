@@ -5,17 +5,11 @@ namespace MonoDevelop.AspNet.Deployment
 	public partial class WebDeployOptionsPanelWidget
 	{
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-
 		private global::Gtk.TreeView targetView;
-
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Button addButton;
-
 		private global::Gtk.Button editButton;
-
 		private global::Gtk.Button removeButton;
 
 		protected virtual void Build ()
@@ -39,7 +33,7 @@ namespace MonoDevelop.AspNet.Deployment
 			this.targetView.Name = "targetView";
 			this.scrolledwindow1.Add (this.targetView);
 			this.hbox1.Add (this.scrolledwindow1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.scrolledwindow1]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.scrolledwindow1]));
 			w2.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.vbox2 = new global::Gtk.VBox ();
@@ -53,7 +47,7 @@ namespace MonoDevelop.AspNet.Deployment
 			this.addButton.UseUnderline = true;
 			this.addButton.Label = "gtk-add";
 			this.vbox2.Add (this.addButton);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.addButton]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.addButton]));
 			w3.Position = 0;
 			w3.Expand = false;
 			w3.Fill = false;
@@ -65,7 +59,7 @@ namespace MonoDevelop.AspNet.Deployment
 			this.editButton.UseUnderline = true;
 			this.editButton.Label = "gtk-edit";
 			this.vbox2.Add (this.editButton);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.editButton]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.editButton]));
 			w4.Position = 1;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -77,12 +71,12 @@ namespace MonoDevelop.AspNet.Deployment
 			this.removeButton.UseUnderline = true;
 			this.removeButton.Label = "gtk-remove";
 			this.vbox2.Add (this.removeButton);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.removeButton]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.removeButton]));
 			w5.Position = 2;
 			w5.Expand = false;
 			w5.Fill = false;
 			this.hbox1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.vbox2]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox2]));
 			w6.Position = 1;
 			w6.Expand = false;
 			w6.Fill = false;

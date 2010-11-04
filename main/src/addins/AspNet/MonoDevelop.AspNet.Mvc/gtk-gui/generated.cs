@@ -6,7 +6,7 @@ namespace Stetic
 	{
 		private static bool initialized;
 
-		static internal void Initialize (Gtk.Widget iconRenderer)
+		internal static void Initialize (Gtk.Widget iconRenderer)
 		{
 			if ((Stetic.Gui.initialized == false)) {
 				Stetic.Gui.initialized = true;
