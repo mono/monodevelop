@@ -27,6 +27,9 @@ namespace MonoDevelop.VersionControl
 		void IViewContent.Save() {
 			throw new InvalidOperationException();
 		}
+		void IViewContent.DiscardChanges() {
+		}
+		
 		void IViewContent.Save(string fileName) {
 			SaveAs(fileName);
 		}
