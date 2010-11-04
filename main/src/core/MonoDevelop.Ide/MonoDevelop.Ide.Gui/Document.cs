@@ -558,7 +558,10 @@ namespace MonoDevelop.Ide.Gui
 		{
 			try {
 				string currentParseFile = FileName;
-				string currentParseText = Editor.Text;
+				var editor = Editor;
+				if (editor == null)
+					return null;
+				string currentParseText = editor.Text;
 				Project curentParseProject = Project;
 				this.parsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, currentParseText);
 				if (this.parsedDocument != null && !this.parsedDocument.HasErrors)
