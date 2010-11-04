@@ -3930,8 +3930,12 @@ namespace Mono.CSharp {
 					if (score > 0)
 						score = IsArgumentCompatible (ec, a, Parameter.Modifier.NONE, pt);
 
-					if (score <= 0)
+					if (score == 0) {
 						params_expanded_form = true;
+					} else if (score < 0) {
+						params_expanded_form = true;
+						dynamicArgument = true;
+					}
 				}
 
 				if (score > 0) {
@@ -5658,6 +5662,14 @@ namespace Mono.CSharp {
 			this.li = li;
 			this.type = li.Type;
 			this.loc = loc;
+		}
+
+		public override bool IsLockedByStatement {
+			get {
+				return false;
+			}
+			set {
+			}
 		}
 
 		public LocalVariable LocalInfo {

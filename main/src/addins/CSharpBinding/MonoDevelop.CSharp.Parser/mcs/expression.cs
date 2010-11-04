@@ -4538,6 +4538,9 @@ namespace Mono.CSharp {
 
 		#region Abstract
 		public abstract HoistedVariable GetHoistedVariable (AnonymousExpression ae);
+
+		public abstract bool IsLockedByStatement { get; set; }
+
 		public abstract bool IsFixed { get; }
 		public abstract bool IsRef { get; }
 		public abstract string Name { get; }
@@ -4565,19 +4568,15 @@ namespace Mono.CSharp {
 			Variable.EmitAddressOf (ec);
 		}
 
-		public HoistedVariable GetHoistedVariable (ResolveContext rc)
+		public override Expression DoResolveLValue (ResolveContext rc, Expression right_side)
 		{
-			return GetHoistedVariable (rc.CurrentAnonymousMethod);
-		}
+			if (IsLockedByStatement) {
+				rc.Report.Warning (728, 2, loc,
+					"Possibly incorrect assignment to `{0}' which is the argument to a using or lock statement",
+					Name);
+			}
 
-		public HoistedVariable GetHoistedVariable (EmitContext ec)
-		{
-			return GetHoistedVariable (ec.CurrentAnonymousMethod);
-		}
-
-		public override string GetSignatureForError ()
-		{
-			return Name;
+			return this;
 		}
 
 		public override void Emit (EmitContext ec)
@@ -4676,6 +4675,22 @@ namespace Mono.CSharp {
 			}
 		}
 
+
+		public HoistedVariable GetHoistedVariable (ResolveContext rc)
+		{
+			return GetHoistedVariable (rc.CurrentAnonymousMethod);
+		}
+
+		public HoistedVariable GetHoistedVariable (EmitContext ec)
+		{
+			return GetHoistedVariable (ec.CurrentAnonymousMethod);
+		}
+
+		public override string GetSignatureForError ()
+		{
+			return Name;
+		}
+
 		public bool IsHoisted {
 			get { return GetHoistedVariable ((AnonymousExpression) null) != null; }
 		}
@@ -4703,11 +4718,24 @@ namespace Mono.CSharp {
 			return local_info.HoistedVariant;
 		}
 
+		#region Properties
+
 		//		
 		// A local variable is always fixed
 		//
 		public override bool IsFixed {
-			get { return true; }
+			get {
+				return true;
+			}
+		}
+
+		public override bool IsLockedByStatement {
+			get {
+				return local_info.IsLocked;
+			}
+			set {
+				local_info.IsLocked = value;
+			}
 		}
 
 		public override bool IsRef {
@@ -4717,6 +4745,8 @@ namespace Mono.CSharp {
 		public override string Name {
 			get { return local_info.Name; }
 		}
+
+		#endregion
 
 		public bool VerifyAssigned (ResolveContext ec)
 		{
@@ -4740,7 +4770,7 @@ namespace Mono.CSharp {
 			return CreateExpressionFactoryCall (ec, "Constant", arg);
 		}
 
-		Expression DoResolveBase (ResolveContext ec)
+		void DoResolveBase (ResolveContext ec)
 		{
 			VerifyAssigned (ec);
 
@@ -4760,14 +4790,14 @@ namespace Mono.CSharp {
 
 			eclass = ExprClass.Variable;
 			type = local_info.Type;
-			return this;
 		}
 
 		protected override Expression DoResolve (ResolveContext ec)
 		{
 			local_info.SetIsUsed ();
 
-			return DoResolveBase (ec);
+			DoResolveBase (ec);
+			return this;
 		}
 
 		public override Expression DoResolveLValue (ResolveContext ec, Expression right_side)
@@ -4795,7 +4825,9 @@ namespace Mono.CSharp {
 				VariableInfo.SetAssigned (ec);
 			}
 
-			return DoResolveBase (ec);
+			DoResolveBase (ec);
+
+			return base.DoResolveLValue (ec, right_side);
 		}
 
 		public override int GetHashCode ()
@@ -4847,6 +4879,15 @@ namespace Mono.CSharp {
 		}
 
 		#region Properties
+
+		public override bool IsLockedByStatement {
+			get {
+				return pi.IsLocked;
+			}
+			set	{
+				pi.IsLocked = value;
+			}
+		}
 
 		public override bool IsRef {
 			get { return (pi.Parameter.ModFlags & Parameter.Modifier.ISBYREF) != 0; }
@@ -5009,13 +5050,13 @@ namespace Mono.CSharp {
 			return this;
 		}
 
-		override public Expression DoResolveLValue (ResolveContext ec, Expression right_side)
+		public override Expression DoResolveLValue (ResolveContext ec, Expression right_side)
 		{
 			if (!DoResolveBase (ec))
 				return null;
 
 			SetAssigned (ec);
-			return this;
+			return base.DoResolveLValue (ec, right_side);
 		}
 
 		static public void EmitLdArg (EmitContext ec, int x)
@@ -6787,6 +6828,14 @@ namespace Mono.CSharp {
 			get { return "this"; }
 		}
 
+		public override bool IsLockedByStatement {
+			get {
+				return false;
+			}
+			set {
+			}
+		}
+
 		public override bool IsRef {
 			get { return type.IsStruct; }
 		}
@@ -7097,7 +7146,15 @@ namespace Mono.CSharp {
 
 		protected override Expression DoResolve (ResolveContext ec)
 		{
-			TypeExpr texpr = QueriedType.ResolveAsTypeTerminal (ec, false);
+			TypeExpr texpr;
+
+			//
+			// Pointer types are allowed without explicit unsafe, they are just tokens
+			//
+			using (ec.Set (ResolveContext.Options.UnsafeScope)) {
+				texpr = QueriedType.ResolveAsTypeTerminal (ec, false);
+			}
+
 			if (texpr == null)
 				return null;
 
@@ -7105,8 +7162,6 @@ namespace Mono.CSharp {
 
 			if (typearg == TypeManager.void_type && !(QueriedType is TypeExpression)) {
 				ec.Report.Error (673, loc, "System.Void cannot be used from C#. Use typeof (void) to get the void type object");
-			} else if (typearg.IsPointer && !ec.IsUnsafe){
-				UnsafeError (ec, loc);
 			} else if (texpr is DynamicTypeExpr) {
 				ec.Report.Error (1962, QueriedType.Location,
 					"The typeof operator cannot be used on the dynamic type");

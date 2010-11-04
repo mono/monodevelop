@@ -1562,6 +1562,7 @@ namespace Mono.CSharp {
 			FixedVariable = 1 << 6,
 			UsingVariable = 1 << 7,
 //			DefinitelyAssigned = 1 << 8,
+			IsLocked = 1 << 9,
 
 			ReadonlyMask = ForeachVariable | FixedVariable | UsingVariable
 		}
@@ -1601,6 +1602,11 @@ namespace Mono.CSharp {
 
 		#region Properties
 
+		public bool AddressTaken {
+			get { return (flags & Flags.AddressTaken) != 0; }
+			set { flags |= Flags.AddressTaken; }
+		}
+
 		public Block Block {
 			get {
 				return block;
@@ -1637,6 +1643,15 @@ namespace Mono.CSharp {
 		public bool IsConstant {
 			get {
 				return (flags & Flags.Constant) != 0;
+			}
+		}
+
+		public bool IsLocked {
+			get {
+				return (flags & Flags.IsLocked) != 0;
+			}
+			set {
+				flags = value ? flags | Flags.IsLocked : flags & ~Flags.IsLocked;
 			}
 		}
 
@@ -1752,6 +1767,20 @@ namespace Mono.CSharp {
 			ec.Emit (OpCodes.Ldloca, builder);
 		}
 
+		public string GetReadOnlyContext ()
+		{
+			switch (flags & Flags.ReadonlyMask) {
+			case Flags.FixedVariable:
+				return "fixed variable";
+			case Flags.ForeachVariable:
+				return "foreach iteration variable";
+			case Flags.UsingVariable:
+				return "using variable";
+			}
+
+			throw new InternalErrorException ("Variable is not readonly");
+		}
+
 		public bool IsThisAssigned (BlockContext ec, Block block)
 		{
 			if (VariableInfo == null)
@@ -1791,28 +1820,9 @@ namespace Mono.CSharp {
 			flags |= Flags.Used;
 		}
 
-		public bool AddressTaken {
-			get { return (flags & Flags.AddressTaken) != 0; }
-			set { flags |= Flags.AddressTaken; }
-		}
-
 		public override string ToString ()
 		{
 			return string.Format ("LocalInfo ({0},{1},{2},{3})", name, type, VariableInfo, Location);
-		}
-
-		public string GetReadOnlyContext ()
-		{
-			switch (flags & Flags.ReadonlyMask) {
-			case Flags.FixedVariable:
-				return "fixed variable";
-			case Flags.ForeachVariable:
-				return "foreach iteration variable";
-			case Flags.UsingVariable:
-				return "using variable";
-			}
-
-			throw new InternalErrorException ("Variable is not readonly");
 		}
 	}
 
@@ -2377,6 +2387,7 @@ namespace Mono.CSharp {
 			readonly ParametersBlock block;
 			readonly int index;
 			public VariableInfo VariableInfo;
+			bool is_locked;
 
 			public ParameterInfo (ParametersBlock block, int index)
 			{
@@ -2395,6 +2406,15 @@ namespace Mono.CSharp {
 			public bool IsDeclared {
 				get {
 					return true;
+				}
+			}
+
+			public bool IsLocked {
+				get {
+					return is_locked;
+				}
+				set {
+					is_locked = value;
 				}
 			}
 
@@ -4200,20 +4220,37 @@ namespace Mono.CSharp {
 				ec.Report.Error (185, loc,
 					"`{0}' is not a reference type as required by the lock statement",
 					expr.Type.GetSignatureForError ());
-				return false;
+			}
+
+			if (expr.Type.IsGenericParameter) {
+				expr = Convert.ImplicitTypeParameterConversion (expr, TypeManager.object_type);
+			}
+
+			VariableReference lv = expr as VariableReference;
+			bool locked;
+			if (lv != null) {
+				locked = lv.IsLockedByStatement;
+				lv.IsLockedByStatement = true;
+			} else {
+				lv = null;
+				locked = false;
 			}
 
 			ec.StartFlowBranching (this);
-			bool ok = Statement.Resolve (ec);
+			Statement.Resolve (ec);
 			ec.EndFlowBranching ();
 
-			ok &= base.Resolve (ec);
+			if (lv != null) {
+				lv.IsLockedByStatement = locked;
+			}
+
+			base.Resolve (ec);
 
 			//
 			// Have to keep original lock value around to unlock same location
 			// in the case the original has changed or is null
 			//
-			expr_copy = TemporaryVariableReference.Create (expr.Type, ec.CurrentBlock.Parent, loc);
+			expr_copy = TemporaryVariableReference.Create (TypeManager.object_type, ec.CurrentBlock.Parent, loc);
 			expr_copy.Resolve (ec);
 
 			//
@@ -4224,12 +4261,19 @@ namespace Mono.CSharp {
 				lock_taken.Resolve (ec);
 			}
 
-			return ok;
+			return true;
 		}
 		
 		protected override void EmitPreTryBody (EmitContext ec)
 		{
 			expr_copy.EmitAssign (ec, expr);
+
+			if (lock_taken != null) {
+				//
+				// Initialize ref variable
+				//
+				lock_taken.EmitAssign (ec, new BoolLiteral (false, loc));
+			}
 		}
 
 		protected override void EmitTryBody (EmitContext ec)
@@ -5068,14 +5112,15 @@ namespace Mono.CSharp {
 				return base.Resolve (bc);
 			}
 
-			public void ResolveExpression (BlockContext bc)
+			public Expression ResolveExpression (BlockContext bc)
 			{
 				var e = Initializer.Resolve (bc);
 				if (e == null)
-					return;
+					return null;
 
 				li = LocalVariable.CreateCompilerGenerated (e.Type, bc.CurrentBlock, loc);
 				Initializer = ResolveInitializer (bc, Variable, e);
+				return e;
 			}
 
 			protected override Expression ResolveInitializer (BlockContext bc, LocalVariable li, Expression initializer)
@@ -5222,9 +5267,16 @@ namespace Mono.CSharp {
 
 		public override bool Resolve (BlockContext ec)
 		{
+			VariableReference vr;
+			bool vr_locked = false;
+
 			using (ec.Set (ResolveContext.Options.UsingInitializerScope)) {
 				if (decl.Variable == null) {
-					decl.ResolveExpression (ec);
+					vr = decl.ResolveExpression (ec) as VariableReference;
+					if (vr != null) {
+						vr_locked = vr.IsLockedByStatement;
+						vr.IsLockedByStatement = true;
+					}
 				} else {
 					if (!decl.Resolve (ec))
 						return false;
@@ -5232,18 +5284,23 @@ namespace Mono.CSharp {
 					if (decl.Declarators != null) {
 						stmt = decl.RewriteForDeclarators (ec, stmt);
 					}
+
+					vr = null;
 				}
 			}
 
 			ec.StartFlowBranching (this);
 
-			bool ok = stmt.Resolve (ec);
+			stmt.Resolve (ec);
 
 			ec.EndFlowBranching ();
 
-			ok &= base.Resolve (ec);
+			if (vr != null)
+				vr.IsLockedByStatement = vr_locked;
 
-			return ok;
+			base.Resolve (ec);
+
+			return true;
 		}
 
 		protected override void CloneTo (CloneContext clonectx, Statement t)
