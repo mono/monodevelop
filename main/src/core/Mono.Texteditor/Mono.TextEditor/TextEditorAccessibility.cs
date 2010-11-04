@@ -23,6 +23,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
+#if ATK
+
 using System;
 using Atk;
 using System.Collections.Generic;
@@ -351,7 +354,6 @@ namespace Mono.TextEditor
 			}
 		}
 		#endregion
-		
 		internal sealed class Factory : Atk.ObjectFactory
 		{
 			public static void Init (object editor)
@@ -595,5 +597,6 @@ namespace Mono.TextEditor
 		#endregion Atk.Component
 		
 	}
-	
+
 }
+#endif

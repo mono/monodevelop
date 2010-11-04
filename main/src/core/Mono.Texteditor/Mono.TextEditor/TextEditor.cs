@@ -297,7 +297,9 @@ namespace Mono.TextEditor
 			
 			InitAnimations ();
 			this.Document.EndUndo += HandleDocumenthandleEndUndo;
+#if ATK
 			TextEditorAccessible.Factory.Init (this);
+#endif
 		}
 
 		void HandleDocumenthandleEndUndo (object sender, Document.UndoOperationEventArgs e)
