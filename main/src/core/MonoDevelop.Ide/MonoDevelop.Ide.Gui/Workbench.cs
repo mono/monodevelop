@@ -644,6 +644,8 @@ namespace MonoDevelop.Ide.Gui
 					}
 				} else {
 					args.Cancel = result != AlertButton.CloseWithoutSave;
+					if (!args.Cancel)
+						window.ViewContent.DiscardChanges ();
 				}
 			}
 		}

@@ -99,6 +99,11 @@ namespace MonoDevelop.Ide.Gui
 		{
 			throw new NotImplementedException ();
 		}
+		
+		public virtual void DiscardChanges ()
+		{
+			
+		}
 
 		public abstract void Load (string fileName);
 

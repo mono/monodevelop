@@ -48,6 +48,12 @@ namespace MonoDevelop.Ide.Gui
         void Load (string fileName);
         void Save (string fileName);
         void Save ();
+		
+		/// <summary>
+		/// Discards all changes. This method is called before a dirty file is closed. It tells the view 
+		/// content to remove all autosave data of the file.
+		/// </summary>
+		void DiscardChanges ();
 
         event EventHandler ContentNameChanged;
         event EventHandler ContentChanged;
