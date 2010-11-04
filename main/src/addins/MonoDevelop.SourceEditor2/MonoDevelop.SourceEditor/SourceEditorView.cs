@@ -412,6 +412,12 @@ namespace MonoDevelop.SourceEditor
 			this.IsDirty = false;
 		}
 		
+		public override void DiscardChanges ()
+		{
+			if (!string.IsNullOrEmpty (ContentName))
+				AutoSave.RemoveAutoSaveFile (ContentName);
+		}
+		
 		public override void Load (string fileName)
 		{
 			Load (fileName, null);
