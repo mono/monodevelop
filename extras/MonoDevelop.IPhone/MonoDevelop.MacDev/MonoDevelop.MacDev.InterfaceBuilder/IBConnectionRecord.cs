@@ -113,23 +113,36 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 		public NSMutableDictionary Outlets { get; set; }
 		public Unref<IBClassDescriptionSource> SourceIdentifier { get; set; }
 		public NSMutableDictionary ToOneOutletInfosByName { get; set; }
+		public NSMutableDictionary ActionInfosByName { get; set; }
 		
 		protected override void OnPropertyDeserialized (string name, object value)
 		{
-			if (name == "className")
+			switch (name) {
+			case "className":
 				ClassName = (string) value;
-			else if (name == "superclassName")
+				break;
+			case "superclassName":
 				SuperclassName = (string) value;
-			else if (name == "actions")
+				break;
+			case "actions":
 				Actions = (NSMutableDictionary) value;
-			else if (name == "outlets")
+				break;
+			case "outlets":
 				Outlets = (NSMutableDictionary) value;
-			else if (name == "sourceIdentifier")
+				break;
+			case "sourceIdentifier":
 				SourceIdentifier = new Unref<IBClassDescriptionSource> (value);
-			else if (name == "toOneOutletInfosByName")
+				break;
+			case "toOneOutletInfosByName":
 				ToOneOutletInfosByName = (NSMutableDictionary) value;
-			else
+				break;
+			case "actionInfosByName":
+				ActionInfosByName = (NSMutableDictionary) value;
+				break;
+			default:
 				base.OnPropertyDeserialized (name, value);
+				break;
+			}
 		}
 	}
 }
