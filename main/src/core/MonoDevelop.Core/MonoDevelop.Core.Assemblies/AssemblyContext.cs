@@ -82,8 +82,10 @@ namespace MonoDevelop.Core.Assemblies
 			
 			SystemPackage p = new SystemPackage ();
 			List<SystemAssembly> asms = new List<SystemAssembly> ();
-			foreach (PackageAssemblyInfo asm in assemblyFiles)
-				asms.Add (AddAssembly (asm.File, new AssemblyInfo (asm), p));
+			foreach (PackageAssemblyInfo asm in assemblyFiles) {
+				if (pinfo.IsFrameworkPackage || !GetAssembliesFromFullNameInternal (asm.FullName, false).Any (a => a.Package != null && a.Package.IsFrameworkPackage))
+					asms.Add (AddAssembly (asm.File, new AssemblyInfo (asm), p));
+			}
 			p.Initialize (pinfo, asms, isInternal);
 			packages.Add (p);
 			packagesHash [pinfo.Name] = p;
@@ -158,7 +160,13 @@ namespace MonoDevelop.Core.Assemblies
 		
 		IEnumerable<SystemAssembly> GetAssembliesFromFullNameInternal (string fullname)
 		{
-			Initialize ();
+			return GetAssembliesFromFullNameInternal (fullname, true);
+		}
+		
+		IEnumerable<SystemAssembly> GetAssembliesFromFullNameInternal (string fullname, bool initialize)
+		{
+			if (initialize)
+				Initialize ();
 			fullname = NormalizeAsmName (fullname);
 			SystemAssembly asm;
 			if (!assemblyFullNameToAsm.TryGetValue (fullname, out asm))
