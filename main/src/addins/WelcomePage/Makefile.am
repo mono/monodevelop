@@ -26,7 +26,6 @@ FILES =  \
 
 RES =  \
 	gtk-gui/gui.stetic \
-	gtk-gui/objects.xml \
 	WelcomePage.addin.xml \
 	WelcomePageContent.xml
  

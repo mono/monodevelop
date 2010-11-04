@@ -40,7 +40,6 @@ FILES =  \
 
 RES =  \
 	gtk-gui/gui.stetic \
-	gtk-gui/objects.xml \
 	icons/VB.FileIcon \
 	icons/vb-icon-32.png \
 	md1format.xml \

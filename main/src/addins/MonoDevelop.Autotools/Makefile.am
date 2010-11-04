@@ -57,7 +57,6 @@ FILES =  \
 
 RES =  \
 	gtk-gui/gui.stetic \
-	gtk-gui/objects.xml \
 	MonoDevelop.Autotools.addin.xml
 
 DATA_FILES =  \

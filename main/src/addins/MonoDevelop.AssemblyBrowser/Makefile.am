@@ -38,7 +38,6 @@ FILES =  \
 
 RES =  \
 	gtk-gui/gui.stetic \
-	gtk-gui/objects.xml \
 	MonoDevelop.AssemblyBrowser.addin.xml
 
 DEPS =  \
