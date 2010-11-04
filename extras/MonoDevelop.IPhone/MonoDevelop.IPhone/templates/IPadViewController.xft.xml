@@ -40,7 +40,7 @@ namespace ${Namespace}
 		}
 		
 		[Export ("initWithCoder:")]
-		public TempViewController (NSCoder coder) : base (coder)
+		public ${Name} (NSCoder coder) : base (coder)
 		{
 			Initialize ();
 		}
