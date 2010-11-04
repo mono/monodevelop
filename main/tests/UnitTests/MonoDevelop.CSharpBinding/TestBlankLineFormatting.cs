@@ -238,6 +238,43 @@ namespace Test
 		}
 		
 		[Test()]
+		public void TestBlankLinesBetweenEventFields ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	public event EventHandler a;
+	public event EventHandler b;
+	public event EventHandler c;
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.BlankLinesBetweenEventFields = 1;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test
+{
+	public event EventHandler a;
+
+	public event EventHandler b;
+
+	public event EventHandler c;
+}", data.Document.Text);
+			
+		policy.BlankLinesBetweenEventFields = 0;
+		compilationUnit = new CSharpParser ().Parse (data);
+		compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+		Assert.AreEqual (@"class Test
+{
+	public event EventHandler a;
+	public event EventHandler b;
+	public event EventHandler c;
+}", data.Document.Text);
+		}
+		
+		
+		[Test()]
 		public void TestBlankLinesBetweenMembers ()
 		{
 			TextEditorData data = new TextEditorData ();
