@@ -121,12 +121,15 @@ namespace MonoDevelop.Platform.Mac
 			view.AddSubview (selectedScroll);
 			
 			float buttonLevel = tableHeight / 2 + buttonAreaTop;
-				
+			
+			var goRightImage = NSImage.ImageNamed ("NSGoRightTemplate");
+			
 			addButton = new NSButton (
 				new RectangleF (tableWidth + padding * 2, buttonLevel + padding / 2,
 					moveButtonWidth, moveButtonWidth)) {
-				Title = ">",
+				//Title = "\u2192",
 				BezelStyle = NSBezelStyle.SmallSquare,
+				Image = goRightImage
 			};
 			addButton.Activated += Add;
 			view.AddSubview (addButton);
@@ -134,8 +137,9 @@ namespace MonoDevelop.Platform.Mac
 			removeButton = new NSButton (
 				new RectangleF (tableWidth + padding * 2, buttonLevel - padding / 2 - moveButtonWidth,
 					moveButtonWidth, moveButtonWidth)) {
-				Title = "<",
+				//Title = "\u2190",
 				BezelStyle = NSBezelStyle.SmallSquare,
+				Image = NSImage.ImageNamed ("NSGoLeftTemplate"),
 			};
 			removeButton.Activated += Remove;
 			view.AddSubview (removeButton);
@@ -143,8 +147,9 @@ namespace MonoDevelop.Platform.Mac
 			upButton = new NSButton (
 				new RectangleF (center + tableWidth + padding, buttonLevel + padding / 2,
 					moveButtonWidth, moveButtonWidth)) {
-				Title = "/\\",
+				//Title = "\u2191",
 				BezelStyle = NSBezelStyle.SmallSquare,
+				Image = MakeRotatedCopy (goRightImage, 90),
 			};
 			upButton.Activated += MoveUp;
 			view.AddSubview (upButton);
@@ -152,8 +157,9 @@ namespace MonoDevelop.Platform.Mac
 			downButton = new NSButton (
 				new RectangleF (center + tableWidth + padding, buttonLevel - padding / 2 - moveButtonWidth,
 					moveButtonWidth, moveButtonWidth)) {
-				Title = "\\/",
+				//Title = "\u2193",
 				BezelStyle = NSBezelStyle.SmallSquare,
+				Image = MakeRotatedCopy (goRightImage, -90),
 			};
 			downButton.Activated += MoveDown;
 			view.AddSubview (downButton);
@@ -177,6 +183,23 @@ namespace MonoDevelop.Platform.Mac
 			UpdateButtons ();
 			
 			this.ContentView = view;
+		}
+		
+		NSImage MakeRotatedCopy (NSImage original, float degrees)
+		{
+			var copy = new NSImage (original.Size);
+			copy.LockFocus ();
+			try {
+				var rot = new NSAffineTransform ();
+				rot.Translate (original.Size.Width / 2, original.Size.Height / 2);
+				rot.RotateByDegrees (degrees);
+				rot.Translate (-original.Size.Width / 2, -original.Size.Height / 2);
+				rot.Concat ();
+				original.Draw (PointF.Empty, RectangleF.Empty, NSCompositingOperation.Copy, 1);
+			} finally {
+				copy.UnlockFocus ();
+			}
+			return copy;
 		}
 
 		void Add (object sender, EventArgs e)
