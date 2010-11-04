@@ -963,7 +963,8 @@ namespace MonoDevelop.Ide.Gui
 		public void ReparseOpenDocuments ()
 		{
 			foreach (var doc in Documents) {
-				doc.UpdateParseDocument ();
+				if (doc.ParsedDocument != null)
+					doc.UpdateParseDocument ();
 			}
 		}
 	}
