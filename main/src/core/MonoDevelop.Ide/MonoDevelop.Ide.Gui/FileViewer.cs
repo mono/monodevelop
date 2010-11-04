@@ -55,11 +55,24 @@ namespace MonoDevelop.Ide.Gui
 			get { return binding == null; }
 		}
 		
+		public bool CanUseAsDefault {
+			get {
+				if (binding != null)
+					return binding.CanUseAsDefault;
+				else
+					return app.IsDefault;
+			}
+		}
+		
 		public override bool Equals (object ob)
 		{
 			FileViewer fv = ob as FileViewer;
-			if (fv == null) return false;
-			return binding == fv.binding || app.Equals (fv.app);
+			if (fv == null)
+				return false;
+			if (binding != null)
+				return binding == fv.binding;
+			else
+				return app.Equals (fv.app);
 		}
 		
 		public override int GetHashCode ()

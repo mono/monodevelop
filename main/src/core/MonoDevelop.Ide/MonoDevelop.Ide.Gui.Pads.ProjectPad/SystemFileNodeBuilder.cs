@@ -191,14 +191,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[CommandUpdateHandler (ViewCommands.OpenWithList)]
 		public void OnOpenWithUpdate (CommandArrayInfo info)
 		{
-			SystemFile file = CurrentNode.DataItem as SystemFile;
-			FileViewer prev = null; 
-			foreach (FileViewer fv in IdeApp.Workbench.GetFileViewers (file.Path)) {
-				if (prev != null && fv.IsExternal != prev.IsExternal)
-					info.AddSeparator ();
-				info.Add (fv.Title, fv);
-				prev = fv;
-			}
+			ProjectFileNodeCommandHandler.PopulateOpenWithViewers (info, ((SystemFile) CurrentNode.DataItem).Path);
 		}
 	}
 }
