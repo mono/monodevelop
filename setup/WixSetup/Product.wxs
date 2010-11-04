@@ -77,6 +77,8 @@
               <File Id="file425" Name="resgen.exe" Source="$(var.BuildRoot)\bin\resgen.exe" />
               <File Id="file426" Name="xsp2.exe" Source="$(var.BuildRoot)\bin\xsp2.exe" />
               <File Id="file427" Name="xsp2.exe.config" Source="$(var.BuildRoot)\bin\xsp2.exe.config" />
+              <File Id="file428" Name="xsp4.exe" Source="$(var.BuildRoot)\bin\xsp4.exe" />
+              <File Id="file429" Name="xsp4.exe.config" Source="$(var.BuildRoot)\bin\xsp4.exe.config" />
 
               <!-- Program Menu Shortcut -->
               <RemoveFolder Id='ProgramMenuDir' Directory="ProgramMenuDir" On='uninstall' />
