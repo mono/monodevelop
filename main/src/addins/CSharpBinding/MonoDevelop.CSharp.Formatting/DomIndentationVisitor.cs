@@ -349,7 +349,12 @@ namespace MonoDevelop.CSharp.Formatting
 			return null;
 		}
 		
-
+		static bool IsSimpleEvent (INode node)
+		{
+			var evt = (EventDeclaration)node;
+			return evt.AddAccessor == null;
+		}
+		
 		public override object VisitEventDeclaration (EventDeclaration eventDeclaration, object data)
 		{
 			FixIndentationForceNewLine (eventDeclaration.StartLocation);
@@ -384,8 +389,12 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			if (policy.IndentEventBody)
 				IndentLevel--;
-			if (IsMember (eventDeclaration.NextSibling))
+			
+			if (eventDeclaration.NextSibling is EventDeclaration && IsSimpleEvent (eventDeclaration) && IsSimpleEvent (eventDeclaration.NextSibling)) {
+				EnsureBlankLinesAfter (eventDeclaration, policy.BlankLinesBetweenEventFields);
+			} else if (IsMember (eventDeclaration.NextSibling)) {
 				EnsureBlankLinesAfter (eventDeclaration, policy.BlankLinesBetweenMembers);
+			}
 			return null;
 		}
 		

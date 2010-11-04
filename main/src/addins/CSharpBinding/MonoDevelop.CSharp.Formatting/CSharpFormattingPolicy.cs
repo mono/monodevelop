@@ -857,6 +857,12 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
+		public int BlankLinesBetweenEventFields {
+			get;
+			set;
+		}
+		
+		[ItemProperty]
 		public int BlankLinesBetweenMembers {
 			get;
 			set;
@@ -966,6 +972,7 @@ namespace MonoDevelop.CSharp.Formatting
 			BlankLinesBeforeFirstDeclaration = 0;
 			BlankLinesBetweenTypes = 1;
 			BlankLinesBetweenFields = 0;
+			BlankLinesBetweenEventFields = 0;
 			BlankLinesBetweenMembers = 1;
 		}
 		

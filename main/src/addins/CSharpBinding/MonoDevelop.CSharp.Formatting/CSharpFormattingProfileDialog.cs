@@ -861,6 +861,7 @@ delegate void BarFoo ();
 			entryBetweenTypes.Text = profile.BlankLinesBetweenTypes.ToString ();
 			
 			entryBetweenFields.Text = profile.BlankLinesBetweenFields.ToString ();
+			entryBetweenEvents.Text = profile.BlankLinesBetweenEventFields.ToString ();
 			entryBetweenMembers.Text = profile.BlankLinesBetweenMembers.ToString ();
 			
 			entryBeforUsings.Changed += HandleEntryBeforUsingsChanged;
@@ -868,6 +869,7 @@ delegate void BarFoo ();
 			entryBeforeFirstDeclaration.Changed += HandleEntryBeforUsingsChanged;
 			entryBetweenTypes.Changed += HandleEntryBeforUsingsChanged;
 			entryBetweenFields.Changed += HandleEntryBeforUsingsChanged;
+			entryBetweenEvents.Changed += HandleEntryBeforUsingsChanged;
 			entryBetweenMembers.Changed += HandleEntryBeforUsingsChanged;
 			
 			#endregion
@@ -889,7 +891,7 @@ delegate void BarFoo ();
 			profile.BlankLinesBetweenTypes = SetFlag (entryBetweenTypes, profile.BlankLinesBetweenTypes);
 			profile.BlankLinesBetweenFields = SetFlag (entryBetweenFields, profile.BlankLinesBetweenFields);
 			profile.BlankLinesBetweenMembers = SetFlag (entryBetweenMembers, profile.BlankLinesBetweenMembers);
-			
+			profile.BlankLinesBetweenEventFields = SetFlag (entryBetweenEvents, profile.BlankLinesBetweenMembers);
 			UpdateExample (blankLineExample);
 		}
 
