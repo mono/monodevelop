@@ -49,10 +49,17 @@ namespace MonoDevelop.Platform.Mac
 					alert.AlertStyle = NSAlertStyle.Warning;
 				} else if (data.Message.Icon == MonoDevelop.Ide.Gui.Stock.Information) {
 					alert.AlertStyle = NSAlertStyle.Informational;
-				} else if (data.Message.Icon == MonoDevelop.Ide.Gui.Stock.Question) {
-					//FIXME: custom icon?
-				} else {
-					//FIXME: custom icon?
+				}
+				
+				//FIXME: use correct size so we don't get horrible scaling?
+				if (!string.IsNullOrEmpty (data.Message.Icon)) {
+					var pix = ImageService.GetPixbuf (data.Message.Icon, Gtk.IconSize.Dialog);
+					byte[] buf = pix.SaveToBuffer ("tiff");
+					unsafe {
+						fixed (byte* b = buf) {
+							alert.Icon = new NSImage (NSData.FromBytes ((IntPtr)b, (uint)buf.Length));
+						}
+					}
 				}
 				
 				alert.MessageText = data.Message.Text;
