@@ -312,21 +312,31 @@ namespace MonoDevelop.IPhone
 		
 		static string GetTypeName (Dictionary<int,string> customTypeNames, IBObject obj)
 		{
-			string name;
-			if (obj != null && customTypeNames != null && obj.Id.HasValue && customTypeNames.TryGetValue (obj.Id.Value, out name))
-			    return name;
-			if (obj is UnknownIBObject) {
+			string name = null;
+			
+			// First resolve custom classes. Seems Apple also uses these for some framework classes,
+			// maybe for classes without direct desktop equivalents?
+			if (obj != null && obj.Id.HasValue && customTypeNames != null)
+				customTypeNames.TryGetValue (obj.Id.Value, out name);
+			
+			//else, try to handle the interface builder built-in types
+			if (name == null && obj is UnknownIBObject) {
 				string ibType = ((UnknownIBObject)obj).Class;
 				if (ibType.StartsWith ("NS")) {
-					return "MonoTouch.Foundation." + ibType;
+					name = ibType;
 				} else if (ibType.StartsWith ("IB") && ibType.Length > 2 && ibType != "IBUICustomObject") {
 					name = ibType.Substring (2);
-					string typeName;
-					if (typeNameMap.TryGetValue (name, out typeName))
-						return typeName;
 				}
 			}
-			return null;
+			
+			//now try to resolve the obj-c name to a fully qualified class
+			if (name != null) {
+				string resolvedName;
+				if (typeNameMap.TryGetValue (name, out resolvedName))
+					return resolvedName;
+			}
+			
+			return name;
 		}
 		
 		public static void AddOutletProperty (CodeTypeDeclaration type, string name, CodeTypeReference typeRef)
