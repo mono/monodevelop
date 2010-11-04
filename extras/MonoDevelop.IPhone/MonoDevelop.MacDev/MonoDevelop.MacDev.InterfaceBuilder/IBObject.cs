@@ -38,8 +38,8 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 		
 		public int? Id { get; private set; }
 		
-		protected void DeserializeContents (IEnumerable<XElement> children, Dictionary<string, Func<IBObject>> constructors,
-		                                            IReferenceResolver resolver)
+		protected void DeserializeContents (IEnumerable<XElement> children,
+			Dictionary<string, Func<IBObject>> constructors, IReferenceResolver resolver)
 		{
 			foreach (XElement child in children) {
 				XAttribute keyAtt = child.Attribute ("key");
@@ -51,7 +51,9 @@ namespace MonoDevelop.MacDev.InterfaceBuilder
 					try {
 						OnPropertyDeserialized (keyStr, val);
 					} catch (Exception ex) {
-						Console.WriteLine ("Error assigning {0}={1} to {2} in id {3}:\n{4}", keyStr, val, GetType (), Id, ex);
+						MonoDevelop.Core.LoggingService.LogWarning (
+							"IB Parser: Error assigning {0}={1} to {2} in id {3}:\n{4}",
+							keyStr, val, GetType (), Id, ex);
 					}
 				}
 			}
