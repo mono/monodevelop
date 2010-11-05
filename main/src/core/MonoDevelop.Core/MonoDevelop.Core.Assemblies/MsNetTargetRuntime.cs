@@ -36,17 +36,16 @@ namespace MonoDevelop.Core.Assemblies
 	{
 		FilePath rootDir;
 		FilePath newFxDir;
-		FilePath gacDir;
 		bool running;
 		MsNetExecutionHandler execHandler;
+		string winDir;
 		
 		public MsNetTargetRuntime (bool running)
 		{
-			string winDir = Path.GetFullPath (Environment.SystemDirectory + "\\..");
+			winDir = Path.GetFullPath (Environment.SystemDirectory + "\\..");
 			rootDir = winDir + "\\Microsoft.NET\\Framework";
 			newFxDir = Environment.GetFolderPath (Environment.SpecialFolder.ProgramFiles);
 			newFxDir = newFxDir + "\\Reference Assemblies\\Microsoft\\Framework";
-			gacDir = winDir + "\\assembly\\GAC";
 			this.running = running;
 			execHandler = new MsNetExecutionHandler ();
 		}
@@ -168,7 +167,25 @@ namespace MonoDevelop.Core.Assemblies
 
 		internal protected override IEnumerable<string> GetGacDirectories ()
 		{
-			yield return gacDir;
+			FilePath gacDir = winDir + "\\assembly\\GAC";
+			if (Directory.Exists (gacDir))
+				yield return gacDir;
+			if (Directory.Exists (gacDir + "_32"))
+				yield return gacDir + "_32";
+			if (Directory.Exists (gacDir + "_64"))
+				yield return gacDir + "_64";
+			if (Directory.Exists (gacDir + "_MSIL"))
+				yield return gacDir + "_MSIL";
+			
+			gacDir = winDir + "\\Microsoft.NET\\assembly\\GAC";
+			if (Directory.Exists (gacDir))
+				yield return gacDir;
+			if (Directory.Exists (gacDir + "_32"))
+				yield return gacDir + "_32";
+			if (Directory.Exists (gacDir + "_64"))
+				yield return gacDir + "_64";
+			if (Directory.Exists (gacDir + "_MSIL"))
+				yield return gacDir + "_MSIL";
 		}
 
 		public override IExecutionHandler GetExecutionHandler ()
