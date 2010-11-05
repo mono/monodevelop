@@ -265,7 +265,12 @@ namespace MonoDevelop.Platform
 		
 		protected override Gdk.Pixbuf OnGetPixbufForFile (string filename, Gtk.IconSize size)
 		{
-			var icon = NSWorkspace.SharedWorkspace.IconForFile (filename);
+			NSImage icon = null;
+			
+			//FIXME: handle names of files that haven't been saved yet
+			if (!Path.IsPathRooted (filename))
+				icon = NSWorkspace.SharedWorkspace.IconForFile (filename);
+			
 			if (icon != null) {
 				int w, h;
 				if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out w, out h))
