@@ -209,7 +209,11 @@ namespace MonoDevelop.IPhone
 			foreach (string asm in proj.GetReferencedAssemblies (slnConf).Distinct ())
 				args.AppendFormat (" -r=\"{0}\"", asm);
 			
-			IPhoneBuildExtension.AppendExtrasMtouchArgs (args, proj, conf);
+			var sdkVersion = IPhoneSdkVersion.Parse (conf.MtouchSdkVersion);
+			if (!IPhoneFramework.SdkIsInstalled (sdkVersion))
+				sdkVersion = IPhoneFramework.GetClosestInstalledSdk (sdkVersion);
+			
+			IPhoneBuildExtension.AppendExtrasMtouchArgs (args, sdkVersion, proj, conf);
 			args.AppendFormat (" \"{0}\"", conf.CompiledOutputName);
 			
 			string argStr = args.ToString ();
