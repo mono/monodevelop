@@ -199,8 +199,7 @@ namespace MonoDevelop.CSharp.Formatting
 				return false;
 			}
 			lastInsertedSemicolon = -1;
-			
-			if (key == Gdk.Key.semicolon && !(textEditorData.CurrentMode is TextLinkEditMode) && !DoInsertTemplate () && !isSomethingSelected && PropertyService.Get ("AutoInsertMatchingBracket", false) && PropertyService.Get ("SmartSemicolonPlacement", false)) {
+			if (keyChar == ';' && !(textEditorData.CurrentMode is TextLinkEditMode) && !DoInsertTemplate () && !isSomethingSelected && PropertyService.Get ("SmartSemicolonPlacement", false)) {
 				bool retval = base.KeyPress (key, keyChar, modifier);
 				LineSegment curLine = textEditorData.Document.GetLine (textEditorData.Caret.Line);
 				string text = textEditorData.Document.GetTextAt (curLine);
@@ -208,7 +207,6 @@ namespace MonoDevelop.CSharp.Formatting
 					return retval;
 				
 				int guessedOffset = GuessSemicolonInsertionOffset (textEditorData, curLine);
-				
 				if (guessedOffset != textEditorData.Caret.Offset) {
 					textEditorData.Document.EndAtomicUndo ();
 					textEditorData.Document.BeginAtomicUndo ();
