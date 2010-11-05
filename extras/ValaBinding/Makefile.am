@@ -27,11 +27,13 @@ FILES =  \
 	Gui/AddLibraryDialog.cs \
 	Gui/AddPathDialog.cs \
 	Gui/CodeGenerationPanel.cs \
+	Gui/CompilationUnitDataProvider.cs \
 	Gui/DataProvider.cs \
 	Gui/EditPackagesDialog.cs \
 	Gui/GeneralOptionsPanel.cs \
 	Gui/OutputOptionsPanel.cs \
 	Gui/PackageDetails.cs \
+	Gui/ParameterDataProvider.cs \
 	Gui/ValaTextEditorExtension.cs \
 	Navigation/ClassPadEventArgs.cs \
 	Navigation/LanguageItemCommandHandler.cs \

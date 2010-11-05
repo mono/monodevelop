@@ -1,5 +1,5 @@
 // 
-//  DataProvider.cs
+//  CompilationUnitDataProvider.cs
 //  
 //  Author:
 //       Levi Bard <taktaktaktaktaktaktaktaktaktak@gmail.com>
@@ -28,7 +28,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System;
-using System.Collections.Generic;
+using System.Linq;
 
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
@@ -36,83 +36,63 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Components;
 using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
 
 using Gtk;
 
 namespace MonoDevelop.ValaBinding
 {
 	// Yoinked from C# binding
-	public class DataProvider : DropDownBoxListWindow.IListDataProvider
+	public class CompilationUnitDataProvider : DropDownBoxListWindow.IListDataProvider
 	{
-		object tag;
-		Ambience amb;
-		List<IMember> memberList = new List<IMember> ();
-		
 		Document Document { get; set; }
 		
-		public DataProvider (Document doc, object tag, Ambience amb)
+		public CompilationUnitDataProvider (Document document)
 		{
-			this.Document = doc;
-			this.tag = ((INode)tag).Parent;
-			this.amb = amb;
-			Reset ();
+			this.Document = document;
 		}// constructor
 		
 		#region IListDataProvider implementation
-		public void Reset ()
-		{
-			memberList.Clear ();
-			if (tag is ICompilationUnit) {
-				Stack<IType> types = new Stack<IType> (((ICompilationUnit)tag).Types);
-				while (types.Count > 0) {
-					IType type = types.Pop ();
-					memberList.Add (type);
-					foreach (IType innerType in type.InnerTypes)
-						types.Push (innerType);
-				}
-			} else  if (tag is IType) {
-				memberList.AddRange (((IType)tag).Members);
-			}
-			memberList.Sort ((x, y) => String.Compare (GetString (amb, x), GetString (amb, y), StringComparison.OrdinalIgnoreCase));
-		}// Reset
-		
-		string GetString (Ambience amb, IMember x)
-		{
-			if (tag is ICompilationUnit)
-				return amb.GetString (x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName | OutputFlags.ReformatDelegates);
-			return amb.GetString (x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates);
-		}// GetString
+		public void Reset () { }
 		
 		public string GetText (int n)
 		{
-			return GetString (amb, memberList[n]);
+			return Document.ParsedDocument.UserRegions.ElementAt (n).Name;
 		}// GetText
-
+		
+		internal static Gdk.Pixbuf Pixbuf
+		{
+			get { return ImageService.GetPixbuf (Gtk.Stock.Add, IconSize.Menu); }
+		}// Pixbuf
+		
 		public Gdk.Pixbuf GetIcon (int n)
 		{
-			return ImageService.GetPixbuf (memberList[n].StockIcon, IconSize.Menu);
+			return Pixbuf;
 		}// GetIcon
-
+		
 		public object GetTag (int n)
 		{
-			return memberList[n];
+			return Document.ParsedDocument.UserRegions.ElementAt (n);
 		}// GetTag
-
+		
+		
 		public void ActivateItem (int n)
 		{
-			var member = memberList[n];
+			var reg = Document.ParsedDocument.UserRegions.ElementAt (n);
 			MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor extEditor = Document.GetContent<MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor> ();
 			if (extEditor != null)
-				extEditor.SetCaretTo (Math.Max (1, member.Location.Line), member.Location.Column);
+				extEditor.SetCaretTo (Math.Max (1, reg.Region.Start.Line), reg.Region.Start.Column);
 		}// ActivateItem
-
-		public int IconCount {
+		
+		public int IconCount
+		{
 			get {
-				return memberList.Count;
+				if (Document.ParsedDocument == null)
+					return 0;
+				return Document.ParsedDocument.UserRegions.Count ();
 			}
 		}// IconCount
+		
 		#endregion
-	}// DataProvider
+	}// CompilationUnitDataProvider
 }
 
