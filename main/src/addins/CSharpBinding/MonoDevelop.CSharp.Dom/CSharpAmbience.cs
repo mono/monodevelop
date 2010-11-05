@@ -333,6 +333,8 @@ namespace MonoDevelop.CSharp.Dom
 		
 		public string Visit (IReturnType returnType, OutputSettings settings)
 		{
+			if (returnType.IsNullable && returnType.GenericArguments.Count == 1)
+				return Visit (returnType.GenericArguments[0], settings) + "?";
 			if (returnType.Type is AnonymousType)
 				return returnType.Type.AcceptVisitor (this, settings);
 			StringBuilder result = new StringBuilder ();
