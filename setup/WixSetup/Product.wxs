@@ -70,15 +70,11 @@
 
               <File Name="updateinfo" Source="updateinfo" />
               
-              <File Id="file396" Name="Mono.Security.dll" Source="$(var.BuildRoot)\bin\Mono.Security.dll" />
-              <File Id="file399" Name="Mono.WebServer2.dll" Source="$(var.BuildRoot)\bin\Mono.WebServer2.dll" />
               <File Id="file421" Name="monodoc.index" Source="$(var.BuildRoot)\bin\monodoc.index" />
               <File Id="file422" Name="monodoc.xml" Source="$(var.BuildRoot)\bin\monodoc.xml" />
               <File Id="file425" Name="resgen.exe" Source="$(var.BuildRoot)\bin\resgen.exe" />
               <File Id="file426" Name="xsp2.exe" Source="$(var.BuildRoot)\bin\xsp2.exe" />
-              <File Id="file427" Name="xsp2.exe.config" Source="$(var.BuildRoot)\bin\xsp2.exe.config" />
-              <File Id="file428" Name="xsp4.exe" Source="$(var.BuildRoot)\bin\xsp4.exe" />
-              <File Id="file429" Name="xsp4.exe.config" Source="$(var.BuildRoot)\bin\xsp4.exe.config" />
+              <File Id="file427" Name="xsp4.exe" Source="$(var.BuildRoot)\bin\xsp4.exe" />
 
               <!-- Program Menu Shortcut -->
               <RemoveFolder Id='ProgramMenuDir' Directory="ProgramMenuDir" On='uninstall' />
@@ -91,8 +87,14 @@
               <RegistryValue Root='HKLM' Key='SOFTWARE\Novell\MonoDevelop' Type='string' Name='Path' Value='[INSTALLLOCATION]' />
 
             </Component>
+            
+            <Directory Id="gac">
+              <Component Id="MonoDevelop_xsp" Guid="CE794E36-4DE7-4f9d-A633-7EB87A7164FB">
+                <File Id="MonoDevelop.Xsp" Name="MonoDevelop.Xsp.dll" Source="$(var.BuildRoot)\bin\MonoDevelop.Xsp.dll" KeyPath="yes" Assembly=".net"/>
+              </Component>
+            </Directory>
 
-            <Directory Id="dir196" Name="locale">
+              <Directory Id="dir196" Name="locale">
               <Directory Id="dir197" Name="ca">
                 <Directory Id="dir198" Name="LC_MESSAGES">
                   <Component Id="comp199" Guid="7b8e623e-8462-44ad-a1ac-59f0ea741098">
@@ -627,6 +629,8 @@
       <ComponentRef Id="MonoDevelop_AddIns" />
       <ComponentRef Id="MonoDevelop_data_options" />
 
+      <ComponentRef Id="MonoDevelop_xsp" />
+      
       <ComponentRef Id="comp199" />
       <ComponentRef Id="comp203" />
       <ComponentRef Id="comp207" />
