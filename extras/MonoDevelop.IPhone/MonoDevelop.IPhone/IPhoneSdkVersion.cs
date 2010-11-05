@@ -43,7 +43,7 @@ namespace MonoDevelop.IPhone
 		static IPhoneSdkVersion GetDefaultSdkVersion ()
 		{
 			var v = IPhoneFramework.InstalledSdkVersions;
-			return v.Count > 0? v[0] : new IPhoneSdkVersion (new int[] { 3, 0 });
+			return v.Count > 0? v[v.Count - 1] : Invalid;
 		}
 		
 		int[] version;
@@ -114,6 +114,8 @@ namespace MonoDevelop.IPhone
 			}
 		}
 		
+		public static readonly IPhoneSdkVersion Invalid = new IPhoneSdkVersion ();
+		public static readonly IPhoneSdkVersion V3_0 = new IPhoneSdkVersion (3, 0);
 		public static readonly IPhoneSdkVersion V3_2 = new IPhoneSdkVersion (3, 2);
 		public static readonly IPhoneSdkVersion V4_0 = new IPhoneSdkVersion (4, 0);
 		public static readonly IPhoneSdkVersion V4_1 = new IPhoneSdkVersion (4, 1);
