@@ -130,10 +130,12 @@ namespace MonoDevelop.Platform.Mac
 					}
 				}
 				
-				float w = labels.Max (l => l.MinWidth);
-				foreach (var l in labels) {
-					l.MinWidth = w;
-					l.XAlign = LayoutAlign.Begin;
+				if (labels.Count > 0) {
+					float w = labels.Max (l => l.MinWidth);
+					foreach (var l in labels) {
+						l.MinWidth = w;
+						l.XAlign = LayoutAlign.Begin;
+					}
 				}
 				
 				if (box.Count > 0) {
