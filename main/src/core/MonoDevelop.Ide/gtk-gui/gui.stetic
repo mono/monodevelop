@@ -235,6 +235,7 @@
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Projects.NewProjectDialog" design-size="735 539">
     <property name="MemberName" />
     <property name="WidthRequest">630</property>
+    <property name="Visible">False</property>
     <property name="Title">New Solution</property>
     <property name="TypeHint">Dialog</property>
     <property name="WindowPosition">Center</property>
@@ -3274,6 +3275,7 @@ Months</property>
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Projects.NewFileDialog" design-size="718 524">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">New File</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -8749,6 +8751,7 @@ Custom Command</property>
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Projects.NewConfigurationDialog" design-size="407 187">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">New Configuration</property>
     <property name="TypeHint">Dialog</property>
@@ -10809,6 +10812,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Projects.IncludeNewFilesDialog" design-size="410 323">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>

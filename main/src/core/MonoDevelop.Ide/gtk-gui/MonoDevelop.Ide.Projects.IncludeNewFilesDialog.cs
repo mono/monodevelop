@@ -124,7 +124,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 			this.DefaultWidth = 410;
 			this.DefaultHeight = 323;
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

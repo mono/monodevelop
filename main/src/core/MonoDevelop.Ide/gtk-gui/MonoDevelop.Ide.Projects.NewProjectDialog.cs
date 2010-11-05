@@ -366,7 +366,7 @@ namespace MonoDevelop.Ide.Projects
 			this.DefaultHeight = 539;
 			this.lbl_name.MnemonicWidget = this.txt_name;
 			this.lbl_subdirectory.MnemonicWidget = this.txt_subdirectory;
-			this.Show ();
+			this.Hide ();
 			this.scrolledInfo.SizeAllocated += new global::Gtk.SizeAllocatedHandler (this.OnScrolledInfoSizeAllocated);
 			this.boxInfo.SizeAllocated += new global::Gtk.SizeAllocatedHandler (this.OnBoxInfoSizeAllocated);
 			this.txt_name.Changed += new global::System.EventHandler (this.NameChanged);

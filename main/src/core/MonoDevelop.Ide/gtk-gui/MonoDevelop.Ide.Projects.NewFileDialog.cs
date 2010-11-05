@@ -264,7 +264,7 @@ namespace MonoDevelop.Ide.Projects
 			this.DefaultWidth = 718;
 			this.DefaultHeight = 524;
 			this.boxProject.Hide ();
-			this.Show ();
+			this.Hide ();
 			this.scrolledInfo.SizeAllocated += new global::Gtk.SizeAllocatedHandler (this.OnScrolledInfoSizeAllocated);
 		}
 	}
