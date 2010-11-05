@@ -88,12 +88,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				Array array = Enum.GetValues (typeof (CustomCommandType));
 				comboType.Active = Array.IndexOf (array, cmd.Type);
 				labelName.Visible = entryName.Visible = (cmd.Type == CustomCommandType.Custom);
-				entryName.Text = cmd.Name;
-				entryCommand.Text = cmd.Command;
+				entryName.Text = cmd.Name ?? "";
+				entryCommand.Text = cmd.Command ?? "";
 				checkExternalCons.Active = cmd.ExternalConsole;
 				checkPauseCons.Active = cmd.PauseExternalConsole;
 				checkPauseCons.Sensitive = cmd.ExternalConsole;
-				workingdirEntry.Text = cmd.WorkingDir;
+				workingdirEntry.Text = cmd.WorkingDir ?? "";
 			}
 			updating = false;
 		}
