@@ -1093,8 +1093,8 @@
                         <child>
                           <widget class="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" id="entitlementsEntry">
                             <property name="MemberName" />
-                            <property name="EntryIsEditable">False</property>
                             <property name="VerifyFileExistsInProject">False</property>
+                            <property name="EntryIsEditable">False</property>
                           </widget>
                           <packing>
                             <property name="TopAttach">2</property>
@@ -1262,8 +1262,8 @@
                         <child>
                           <widget class="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" id="resourceRulesEntry">
                             <property name="MemberName" />
-                            <property name="EntryIsEditable">False</property>
                             <property name="VerifyFileExistsInProject">False</property>
+                            <property name="EntryIsEditable">False</property>
                           </widget>
                           <packing>
                             <property name="TopAttach">3</property>

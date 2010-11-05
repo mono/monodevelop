@@ -37,15 +37,16 @@ using MonoDevelop.Ide;
 using System.Reflection;
 using MonoDevelop.MacDev.Plist;
 using System.Text;
+using MonoDevelop.Core.StringParsing;
 namespace MonoDevelop.IPhone
 {
 	[Mono.Addins.Extension]
-	class IPhoneProjectStringTagProvider : MonoDevelop.Core.StringParsing.StringTagProvider<IPhoneProject>  
+	class IPhoneProjectStringTagProvider : StringTagProvider<IPhoneProject>  
 	{
-		public override IEnumerable<MonoDevelop.Core.StringParsing.StringTagDescription> GetTags ()
+		public override IEnumerable<StringTagDescription> GetTags ()
 		{
-			yield return new MonoDevelop.Core.StringParsing.StringTagDescription ("BundleIdentifier", GettextCatalog.GetString ("iPhone Bundle Identifier"));
-			yield return new MonoDevelop.Core.StringParsing.StringTagDescription ("BundleVersion", GettextCatalog.GetString ("iPhone Bundle Version"));
+			yield return new StringTagDescription ("BundleIdentifier", GettextCatalog.GetString ("iPhone Bundle Identifier"));
+			yield return new StringTagDescription ("BundleVersion", GettextCatalog.GetString ("iPhone Bundle Version"));
 		}
 		
 		public override object GetTagValue (IPhoneProject instance, string tag)
@@ -55,6 +56,27 @@ namespace MonoDevelop.IPhone
 				return instance.BundleIdentifier;
 			case "BUNDLEVERSION":
 				return instance.BundleVersion;
+			}
+			throw new NotSupportedException ();
+		}
+	}
+	
+	[Mono.Addins.Extension]
+	class IPhoneProjectConfigurationStringTagProvider : StringTagProvider<IPhoneProjectConfiguration>  
+	{
+		public override IEnumerable<StringTagDescription> GetTags ()
+		{
+			yield return new StringTagDescription ("SdkVersion", GettextCatalog.GetString ("iPhone Sdk Version"));
+			yield return new StringTagDescription ("AppDirectory", GettextCatalog.GetString ("iPhone App Directory"));
+		}
+		
+		public override object GetTagValue (IPhoneProjectConfiguration instance, string tag)
+		{
+			switch (tag) {
+			case "SDKVERSION":
+				return instance.MtouchSdkVersion;
+			case "APPDIRECTORY":
+				return instance.AppDirectory;
 			}
 			throw new NotSupportedException ();
 		}
