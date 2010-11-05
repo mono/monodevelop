@@ -48,7 +48,8 @@ namespace MonoDevelop.Platform.Mac
 			NSSavePanel panel = null;
 			
 			try {
-				bool directoryMode = data.Action != Gtk.FileChooserAction.Open;
+				bool directoryMode = data.Action != Gtk.FileChooserAction.Open
+					&& data.Action != Gtk.FileChooserAction.Save;
 				
 				if (data.Action == Gtk.FileChooserAction.Save) {
 					panel = new NSSavePanel ();
@@ -76,7 +77,7 @@ namespace MonoDevelop.Platform.Mac
 					var filterLabel = new MDAlignment (new MDLabel (GettextCatalog.GetString ("Show files:")), true);
 					var filterBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
 						{ filterLabel },
-						{ new MDAlignment (filterPopup, true) { MinWidth = 200 }  }
+						{ new MDAlignment (filterPopup, true) { MinWidth = 200 } }
 					};
 					labels.Add (filterLabel);
 					box.Add (filterBox);
@@ -165,8 +166,8 @@ namespace MonoDevelop.Platform.Mac
 				};
 				
 				try {
-					var action = panel.RunModal ();
-					if (action == 0) {
+					var action = MacSelectFileDialogHandler.RunPanel (data, panel);
+					if (!action) {
 						GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 						return false;
 					}

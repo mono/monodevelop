@@ -77,8 +77,8 @@ namespace MonoDevelop.Platform.Mac
 						popup.AddItem (b);
 				}
 				
-				var action = panel.RunModal ();
-				if (action == 0) {
+				var action = MacSelectFileDialogHandler.RunPanel (data, panel);
+				if (!action) {
 					GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 					return false;
 				}

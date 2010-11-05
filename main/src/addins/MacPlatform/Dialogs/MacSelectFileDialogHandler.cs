@@ -65,16 +65,15 @@ namespace MonoDevelop.Platform.Mac
 					}
 				}
 				
-				var action = panel.RunModal ();
-				if (action == 0) {
+				var action = RunPanel (data, panel);
+				
+				if (action) {
+					data.SelectedFiles = GetSelectedFiles (panel);
 					GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
-					return false;
+				} else {
+					GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 				}
-				
-				data.SelectedFiles = GetSelectedFiles (panel);
-				
-				GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
-				return true;
+				return action;
 			} finally {
 				if (panel != null)
 					panel.Dispose ();
@@ -97,18 +96,35 @@ namespace MonoDevelop.Platform.Mac
 		
 		internal static void SetCommonPanelProperties (SelectFileDialogData data, NSSavePanel panel)
 		{
+			panel.TreatsFilePackagesAsDirectories = true;
+			
 			if (!string.IsNullOrEmpty (data.Title))
 				panel.Title = data.Title;
 			
-			if (!string.IsNullOrEmpty (data.InitialFileName))
-				panel.NameFieldStringValue = data.InitialFileName;
+			//FIXME: 10.6 only
+			//if (!string.IsNullOrEmpty (data.InitialFileName))
+			//	panel.NameFieldStringValue = data.InitialFileName;
 			
 			if (!string.IsNullOrEmpty (data.CurrentFolder))
-				panel.DirectoryUrl = new MonoMac.Foundation.NSUrl (data.CurrentFolder, true);
+				panel.Directory = data.CurrentFolder;
+			//FIXME: 10.6 only
+			//	panel.DirectoryUrl = new NSUrl (data.CurrentFolder, true);
 			
 			var openPanel = panel as NSOpenPanel;
 			if (openPanel != null) {
 				openPanel.AllowsMultipleSelection = data.SelectMultiple;
+			}
+		}
+		
+		internal static bool RunPanel (SelectFileDialogData data, NSSavePanel panel)
+		{
+			var dir = string.IsNullOrEmpty (data.CurrentFolder)? null : data.CurrentFolder;
+			var file = string.IsNullOrEmpty (data.InitialFileName)? null : data.InitialFileName;
+			if (panel is NSOpenPanel) {
+				return ((NSOpenPanel)panel).RunModal (dir, file, null) != 0;
+			} else {
+				//FIXME: deprecated on 10.6, alternatives only on 10.6
+				return panel.RunModal (dir, file) != 0;
 			}
 		}
 		
