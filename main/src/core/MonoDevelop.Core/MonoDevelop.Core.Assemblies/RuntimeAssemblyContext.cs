@@ -112,6 +112,9 @@ namespace MonoDevelop.Core.Assemblies
 							string file = Path.Combine (dir, name + ".dll");
 							if (File.Exists (file))
 								return file;
+							file = Path.Combine (dir, name + ".exe");
+							if (File.Exists (file))
+								return file;
 						}
 					}
 				}
