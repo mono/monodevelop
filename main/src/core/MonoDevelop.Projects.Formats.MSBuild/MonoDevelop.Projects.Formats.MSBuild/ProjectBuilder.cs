@@ -130,7 +130,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			{
 				SetupEngine (configuration, platform);
 
-				project.Build ("ResolveReferences");
+				project.Build ("ResolveAssemblyReferences");
 				BuildItemGroup grp = project.GetEvaluatedItemsByName ("ReferencePath");
 				List<string> refs = new List<string> ();
 				foreach (BuildItem item in grp)
