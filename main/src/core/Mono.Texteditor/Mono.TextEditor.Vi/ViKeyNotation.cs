@@ -99,10 +99,22 @@ namespace Mono.TextEditor.Vi
 				return modifiers.GetHashCode () ^ ch.GetHashCode () ^ key.GetHashCode ();
 			}
 		}
+		
+		public override string ToString()
+		{
+			return ViKeyNotation.IsValid(this)? ViKeyNotation.ToString(this) : "<Invalid>";
+		}
 	}
 	
 	public static class ViKeyNotation
 	{
+		public static string ToString(ViKey key)
+		{
+			var sb = new StringBuilder();
+			ViKeyNotation.AppendToString(key, sb);
+			return sb.ToString();
+		}
+
 		public static string ToString (IList<ViKey> keys)
 		{
 			var sb = new StringBuilder ();
@@ -206,6 +218,7 @@ namespace Mono.TextEditor.Vi
 			{ Gdk.Key.F12,          "F12"       },
 			{ Gdk.Key.Insert,       "Insert"    },
 			{ Gdk.Key.Delete,       "Del"       },
+			{ Gdk.Key.KP_Delete,    "kDel"		},
 			{ Gdk.Key.Home,         "Home"      },
 			{ Gdk.Key.End,          "End"       },
 			{ Gdk.Key.Page_Up,      "PageUp"    },
