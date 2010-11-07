@@ -53,6 +53,7 @@ namespace Mono.TextEditor.Vi
 		public static ViBuilder InsertBuilder (ViBuilder preInsertActions)
 		{	
 			var lastInserted = new StringBuilder ();
+			bool inUndoTx = false;
 			return (ViBuilderContext ctx) => {
 				var l = ctx.LastKey;
 				bool noModifiers = l.Modifiers == ModifierType.None;
@@ -61,7 +62,11 @@ namespace Mono.TextEditor.Vi
 				
 				if ((noModifiers && l.Key == Key.Escape) || (l.Char == 'c' && (l.Modifiers & ModifierType.ControlMask) != 0)) {
 					ctx.RunAction ((ViEditor ed) => {
-						ed.Document.EndAtomicUndo ();
+						if (inUndoTx)
+						{
+							ed.Document.EndAtomicUndo ();
+							inUndoTx = false;
+						}
 						ed.LastInsertedText = lastInserted.ToString ();
 						ed.SetMode (ViEditorMode.Normal);
 					});
@@ -70,12 +75,19 @@ namespace Mono.TextEditor.Vi
 				
 				//keypad motions etc
 				if (preInsertActions (ctx)) {
+					if (inUndoTx)
+						ctx.RunAction ( (ed) => ed.Document.EndAtomicUndo () );
+					inUndoTx = false;
 					ctx.SuppressCompleted ();
 					lastInserted.Length = 0;
 					return true;
 				}
 				
 				if (l.Char != '\0' && noModifiers) {
+					if (!inUndoTx)
+						ctx.RunAction ( (ed) => ed.Document.BeginAtomicUndo () );
+					inUndoTx = true;
+					ctx.SuppressCompleted ();
 					lastInserted.Append (l.Char);
 					ctx.InsertChar (l.Char);
 					return true;
