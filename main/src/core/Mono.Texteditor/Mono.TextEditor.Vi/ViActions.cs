@@ -228,7 +228,7 @@ namespace Mono.TextEditor.Vi
 		internal static void RetreatFromLineEnd (TextEditorData data)
 		{
 			if (data.Caret.Mode == CaretMode.Block && !data.IsSomethingSelected && !data.Caret.PreserveSelection) {
-				while (DocumentLocation.MinLine < data.Caret.Column && (data.Caret.Offset >= data.Document.Length
+				while (DocumentLocation.MinColumn < data.Caret.Column && (data.Caret.Offset >= data.Document.Length
 				                                 || IsEol (data.Document.GetCharAt (data.Caret.Offset)))) {
 					Left (data);
 				}
