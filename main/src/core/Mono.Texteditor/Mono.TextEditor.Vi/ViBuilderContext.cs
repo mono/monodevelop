@@ -196,7 +196,7 @@ namespace Mono.TextEditor.Vi
 				{ 'o', FoldActions.OpenFold },
 			}},
 			{ 'g', new ViCommandMap () {
-				{ 'g', CaretMoveActions.LineStart },
+				{ 'g', CaretMoveActions.ToDocumentStart },
 			}},
 			{ 'r', ViBuilders.ReplaceChar },
 			{ '~', ViActions.ToggleCase },
