@@ -1,4 +1,5 @@
 // 
+
 // ViBuilderContext.cs
 //  
 // Author:
@@ -305,6 +306,7 @@ namespace Mono.TextEditor.Vi
 		
 		static bool OpenAbove (ViBuilderContext ctx)
 		{
+			// FIXME: this doesn't work correctly on the first line
 			ctx.RunAction ((ViEditor e) => ViActions.Up (e.Data));
 			return Open (ctx);
 		}
