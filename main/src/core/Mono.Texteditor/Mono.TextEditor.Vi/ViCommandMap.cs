@@ -75,7 +75,7 @@ namespace Mono.TextEditor.Vi
 		
 		public void Add (ViKey key, ViBuilder builder, bool runInstantly)
 		{
-			this.builders[key] = new BuilderAction (builder, true);
+			this.builders[key] = new BuilderAction (builder, runInstantly);
 		}
 		
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
