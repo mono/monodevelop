@@ -146,16 +146,18 @@ namespace Mono.TextEditor.Vi
 			Completed = false;
 		}
 		
-		public ViBuilder builder;
+		private ViBuilder _builder;
 		
 		public ViBuilder Builder {
-			get { return builder; }
+			get { return _builder; }
 			set {
+				if (_builder == value)
+					return;
 				if (value == null)
 					throw new ArgumentException ("builder cannot be null");
 				if (Completed)
 					throw new InvalidOperationException ("builder cannot be set after context is completed");
-				builder = value;
+				_builder = value;
 			}
 		}
 		
