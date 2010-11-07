@@ -63,7 +63,7 @@ namespace Mono.TextEditor.Vi
 		public ViEditorMode Mode { get; private set; }
 
 		//shared between editors in the same process
-		//TODO: maybe move these into some kind of shared context to pass around expliictly
+		//TODO: maybe move these into some kind of shared context to pass around explicitly
 		static char lastRegisterUsed = '0';
 		static string lastPattern;
 		static string lastCommandline;
@@ -276,10 +276,11 @@ namespace Mono.TextEditor.Vi
 	public enum ViEditorMode
 	{
 		Normal = 0,
-		Insert,
-		Replace,
-		Visual,
-		VisualLine
+		Insert,						// I
+		Replace,					// R
+		Visual,						// v
+		VisualLine,					// V
+		VisualBlock	      			// ^V TODO
 	}
 }
 

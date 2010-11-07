@@ -57,6 +57,9 @@ namespace Mono.TextEditor.Vi
 				case ViEditorMode.Insert:
 				case ViEditorMode.Replace:
 					return false;
+				case ViEditorMode.Normal:
+				case ViEditorMode.Visual:
+				case ViEditorMode.VisualLine:
 				default:
 					return true;
 				}
