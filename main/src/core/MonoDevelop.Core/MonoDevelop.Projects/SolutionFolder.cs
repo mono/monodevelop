@@ -29,6 +29,7 @@
 using System;
 using System.Xml;
 using System.IO;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -526,6 +527,13 @@ namespace MonoDevelop.Projects
 
 		protected internal override BuildResult OnRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
+			if (target == ProjectService.BuildTarget)
+				return OnBuild (monitor, configuration);
+			else if (target == ProjectService.CleanTarget) {
+				OnClean (monitor, configuration);
+				return new BuildResult ();
+			}
+			
 			ReadOnlyCollection<SolutionItem> allProjects;
 				
 			try {
@@ -597,13 +605,15 @@ namespace MonoDevelop.Projects
 			}
 			
 			try {
-				monitor.BeginTask (GettextCatalog.GetString ("Building Solution {0}", Name), allProjects.Count);
+				List<SolutionItem> toBuild = new List<SolutionItem> (allProjects.Where (p => p.NeedsBuilding (configuration)));
+				
+				monitor.BeginTask (GettextCatalog.GetString ("Building Solution {0}", Name), toBuild.Count);
 				
 				BuildResult cres = new BuildResult ();
 				cres.BuildCount = 0;
 				HashSet<SolutionItem> failedItems = new HashSet<SolutionItem> ();
 				
-				foreach (SolutionItem item in allProjects) {
+				foreach (SolutionItem item in toBuild) {
 					if (monitor.IsCancelRequested)
 						break;
 
