@@ -423,7 +423,7 @@ namespace MonoDevelop.SourceEditor
 					
 				}
 				doc.UpdateFoldSegments (foldSegments, false);
-				UpdateAutocorTimer ();
+				UpdateErrorUndelines (parsedDocument);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
 			}
@@ -479,9 +479,9 @@ namespace MonoDevelop.SourceEditor
 				Thread.Sleep (20);
 		}
 		
-		void UpdateAutocorTimer ()
+		void UpdateErrorUndelines (ParsedDocument parsedDocument)
 		{
-			if (!options.UnderlineErrors)
+			if (!options.UnderlineErrors || parsedDocument == null)
 				return;
 			// this may be run in another thread, therefore we've to synchronize
 			// with the gtk main loop.
@@ -493,9 +493,14 @@ namespace MonoDevelop.SourceEditor
 				const uint timeout = 500;
 				resetTimerId = GLib.Timeout.Add (timeout, delegate {
 					lock (this) { // this runs in the gtk main loop.
-						ResetUnderlineChangement ();
-						if (parsedDocument != null)
-							ParseCompilationUnit (parsedDocument);
+						RemoveErrorUnderlines ();
+						
+						// Else we underline the error
+						if (parsedDocument.Errors != null) {
+							foreach (MonoDevelop.Projects.Dom.Error info in parsedDocument.Errors)
+								UnderLineError (info);
+						}
+						
 						resetTimerId = 0;
 					}
 					return false;
@@ -503,28 +508,15 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		void ResetUnderlineChangement ()
+		void RemoveErrorUnderlines ()
 		{
-			if (errors.Count > 0) {
-				Document doc = this.TextEditor != null ? this.TextEditor.Document : null;
-				if (doc != null) {
-					foreach (ErrorMarker error in this.errors.Values) {
-						error.RemoveFromLine (doc);
-					}
-				}
+			Document doc = this.TextEditor != null ? this.TextEditor.Document : null;
+			if (errors.Count == 0 || doc == null)
+				return;
+			foreach (ErrorMarker error in errors.Values.ToArray ()) {
+				error.RemoveFromLine (doc);
 			}
 			errors.Clear ();
-		}
-		
-		void ParseCompilationUnit (ParsedDocument cu)
-		{
-			// No new errors
-			if (cu.Errors == null || cu.Errors.Count < 1)
-				return;
-			
-			// Else we underline the error
-			foreach (MonoDevelop.Projects.Dom.Error info in cu.Errors)
-				UnderLineError (info);
 		}
 		
 		void UnderLineError (Error info)
