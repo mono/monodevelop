@@ -168,6 +168,8 @@ namespace MonoDevelop.SourceEditor
 				if (wasEdited)
 					AutoSave.InformAutoSaveThread (Document);
 			};
+			widget.TextEditor.Document.Undone += (o, a) => AutoSave.InformAutoSaveThread (Document);
+			widget.TextEditor.Document.Redone += (o, a) => AutoSave.InformAutoSaveThread (Document);
 			
 			widget.TextEditor.Document.TextReplacing += OnTextReplacing;
 			widget.TextEditor.Document.TextReplaced += OnTextReplaced;

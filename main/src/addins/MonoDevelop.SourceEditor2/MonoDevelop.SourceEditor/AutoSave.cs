@@ -140,8 +140,12 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (content == null)
 				return;
-			queue.Enqueue (new FileContent (content.FileName, content));
-			resetEvent.Set ();
+			if (content.IsDirty) {
+				queue.Enqueue (new FileContent (content.FileName, content));
+				resetEvent.Set ();
+			} else {
+				RemoveAutoSaveFile (content.FileName);
+			}
 		}
 
 /*		public static void Dispose ()
