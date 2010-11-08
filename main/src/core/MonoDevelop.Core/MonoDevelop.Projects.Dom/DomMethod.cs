@@ -180,7 +180,7 @@ namespace MonoDevelop.Projects.Dom
 			GenericMethodInstanceResolver resolver = new GenericMethodInstanceResolver ();
 			if (genericArguments != null) {
 				for (int i = 0; i < method.TypeParameters.Count && i < genericArguments.Count; i++) 
-					resolver.Add (method.DeclaringType.SourceProjectDom, new DomReturnType (method.TypeParameters[i].Name), genericArguments[i]);
+					resolver.Add (method.DeclaringType != null ? method.DeclaringType.SourceProjectDom : null, new DomReturnType (method.TypeParameters[i].Name), genericArguments[i]);
 			}
 			IMethod result = (IMethod)method.AcceptVisitor (resolver, method);
 			resolver = new GenericMethodInstanceResolver ();
@@ -201,7 +201,7 @@ namespace MonoDevelop.Projects.Dom
 							}
 						}
 						if (found) {
-							resolver.Add (method.DeclaringType.SourceProjectDom, curReturnType.Key, curReturnType.Value);
+							resolver.Add (method.DeclaringType != null ? method.DeclaringType.SourceProjectDom : null, curReturnType.Key, curReturnType.Value);
 							continue;
 						}
 						//Console.WriteLine ("key:" + curReturnType.Key);
@@ -237,7 +237,7 @@ namespace MonoDevelop.Projects.Dom
 				bool contains = typeTable.ContainsKey (name);
 				
 				// when the type is already in the table use the type that is more general in the inheritance tree.
-				if (contains) {
+				if (contains && dom != null) {
 					var t1 = dom.GetType (typeTable[name]);
 					var t2 = dom.GetType (type);
 					if (!dom.GetInheritanceTree (t1).Any (t => t.DecoratedFullName == t2.DecoratedFullName))
