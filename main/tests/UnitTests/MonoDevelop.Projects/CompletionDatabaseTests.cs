@@ -855,5 +855,33 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (1, method.Attributes.Count ());
 			Assert.AreEqual ("Obsolete", method.Attributes.First ().Name);
 		}
+		
+		[Test]
+		public void CustomAttributeTest ()
+		{
+			// Simple get
+			IType type = mainProject.GetType ("CompletionDbTest.AttributeTest3");
+			Assert.IsNotNull (type);
+			Assert.AreEqual (1, type.Attributes.Count ());
+			
+			var att = type.Attributes.First ();
+			Assert.AreEqual ("Library1.TestAttribute", att.AttributeType.FullName);
+			Assert.AreEqual (2, att.PositionalArguments.Count);
+			
+			var expr1 = att.PositionalArguments[0] as System.CodeDom.CodePrimitiveExpression;
+			Assert.IsNotNull (expr1);
+			Assert.AreEqual ("str1", expr1.Value);
+			
+			var expr2 = att.PositionalArguments[1] as System.CodeDom.CodePrimitiveExpression;
+			Assert.IsNotNull (expr2);
+			Assert.AreEqual (5, expr2.Value);
+			
+			Assert.AreEqual (1, att.NamedArguments.Count);
+			Assert.IsTrue (att.NamedArguments.ContainsKey ("Foo"));
+			var expr3 = att.NamedArguments["Foo"] as System.CodeDom.CodePrimitiveExpression;
+			Assert.IsNotNull (expr3);
+			Assert.AreEqual ("str2", expr3.Value);
+		}
+		
 	}
 }

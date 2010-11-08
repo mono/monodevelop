@@ -78,4 +78,13 @@ namespace Library1
 	public interface ISimple: IObject
 	{
 	}
+	
+	public class TestAttribute : Attribute
+	{
+		public TestAttribute (string foo, int bar)
+		{
+		}
+		
+		public string Blah { get; set; }
+	}
 }

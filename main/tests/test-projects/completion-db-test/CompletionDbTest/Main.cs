@@ -132,6 +132,7 @@ namespace CompletionDbTest
 #endregion
 	
 	#region Attributes
+	
 	[Serializable]
 	public class AttributeTest {}
 	
@@ -143,6 +144,10 @@ namespace CompletionDbTest
 		public void Method () 
 		{}
 	}
+	
+	[Test ("str1", 5, Blah="str2")]
+	public class AttributeTest3 {}
+	
 	#endregion
 }
 
