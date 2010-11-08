@@ -1309,7 +1309,7 @@ namespace Mono.TextEditor
 		
 		public void RemoveMarker (TextMarker marker, bool updateLine)
 		{
-			if (marker == null || line == null)
+			if (marker == null)
 				return;
 			var line = marker.LineSegment;
 			if (line == null)
