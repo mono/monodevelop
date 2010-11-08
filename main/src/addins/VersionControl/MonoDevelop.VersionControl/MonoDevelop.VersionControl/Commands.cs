@@ -113,11 +113,11 @@ namespace MonoDevelop.VersionControl
 			return true;
 		}
 	}	
+
 	class UpdateCommandHandler: SolutionVersionControlCommandHalder
 	{
 		protected override bool RunCommand (VersionControlItemList items, bool test)
 		{
-			Console.WriteLine ("pp3:");
 			return UpdateCommand.Update (items, test);
 		}
 	}
