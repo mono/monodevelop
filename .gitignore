@@ -10,6 +10,9 @@ obj/
 /extras/*/build
 /main/src/tools/SharpCoco/SharpCoco.exe*
 /main/vcrevision
+/main/tests/tmp
+/main/tests/config
+/main/tests/UnitTests/test-results
 
 # globs
 Makefile.in
