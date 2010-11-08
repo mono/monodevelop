@@ -104,16 +104,8 @@ namespace MonoDevelop.DesignerSupport
 				if (!outlineTreeView.Selection.GetSelected (out iter))
 					return;
 				object o = outlineTreeStore.GetValue (iter, 0);
-				int line = -1, col = -1;
-				if (o is IType) {
-					line = ((IType)o).BodyRegion.Start.Line;
-					col = ((IType)o).BodyRegion.Start.Column;
-				} else if (o is IMember) {
-					line = ((IMember)o).BodyRegion.Start.Line;
-					col = ((IMember)o).BodyRegion.Start.Column;
-				}
-				if (line > -1)
-					Editor.SetCaretTo (line, Math.Max (1, col));
+				
+				IdeApp.ProjectOperations.JumpToDeclaration (o as INode);
 			};
 
 			this.lastCU = Document.ParsedDocument;
@@ -264,6 +256,11 @@ namespace MonoDevelop.DesignerSupport
 
 		static DomRegion GetRegion (object o)
 		{
+			if (o is IField) {
+				var f = (IField)o;
+				return new DomRegion (f.Location, f.Location);
+			}
+			
 			if (o is IMember)
 				return ((IMember)o).BodyRegion;
 			throw new InvalidOperationException (o.GetType ().ToString ());
