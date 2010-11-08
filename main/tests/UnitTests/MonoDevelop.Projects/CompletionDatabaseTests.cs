@@ -33,6 +33,8 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using NUnit.Framework;
 using UnitTests;
+using Mono.CSharp;
+using System.Linq;
 
 namespace MonoDevelop.Projects
 {
@@ -826,6 +828,32 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (mainProject.NamespaceExists ("Level1.Level2.Level3.Level4"), "Level1.Level2.Level3.Level4 doesn't exist.");
 			Assert.IsFalse (mainProject.NamespaceExists ("Level1.Level2.Level3.Level4.Level5"), "Level5 shouldn't exist.");
 			Assert.IsFalse (mainProject.NamespaceExists ("Level1.Level3"), "level1.level3 shouldn't exist.");
+		}
+		
+		[Test]
+		public void ClassAttributeTest ()
+		{
+			// Simple get
+			IType type = mainProject.GetType ("CompletionDbTest.AttributeTest");
+			Assert.IsNotNull (type);
+			Assert.AreEqual (1, type.Attributes.Count ());
+			Assert.AreEqual ("Serializable", type.Attributes.First ().Name);
+		}
+		
+		[Test]
+		public void MemberAttributeTest ()
+		{
+			// Simple get
+			IType type = mainProject.GetType ("CompletionDbTest.AttributeTest2");
+			Assert.IsNotNull (type);
+			
+			var prop = type.Properties.First ();
+			Assert.AreEqual (1, prop.Attributes.Count ());
+			Assert.AreEqual ("Obsolete", prop.Attributes.First ().Name);
+			
+			var method = type.Methods.First ();
+			Assert.AreEqual (1, method.Attributes.Count ());
+			Assert.AreEqual ("Obsolete", method.Attributes.First ().Name);
 		}
 	}
 }
