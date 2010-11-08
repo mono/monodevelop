@@ -171,10 +171,15 @@ namespace MonoDevelop.IPhone.Gui
 				return null;
 			}
 			set {
-				if (string.IsNullOrEmpty (value) && identityStore.IterNChildren () > 0)
+				if (string.IsNullOrEmpty (value) && identityStore.IterNChildren () > 0) {
 					identityCombo.Active = 0;
-				else
-					SelectMatchingItem (identityCombo, 1, value);
+				} else {
+					if (!SelectMatchingItem (identityCombo, 1, value)) {
+						var name = GettextCatalog.GetString ("Unknown ({0})", value);
+						identityStore.AppendValues (GLib.Markup.EscapeText (name), value, new object ());
+						SelectMatchingItem (identityCombo, 1, value);
+					}
+				}
 				UpdateProfiles ();
 			}
 		}
@@ -191,10 +196,16 @@ namespace MonoDevelop.IPhone.Gui
 				return null;
 			}
 			set {
-				if (string.IsNullOrEmpty (value) && profileStore.IterNChildren () > 0)
+				if (string.IsNullOrEmpty (value) && profileStore.IterNChildren () > 0) {
 					provisioningCombo.Active = 0;
-				else
-					SelectMatchingItem (provisioningCombo, 1, value);
+				} else {
+					if (!SelectMatchingItem (provisioningCombo, 1, value)) {
+						var name = GettextCatalog.GetString ("Unknown ({0})", value);
+						profileStore.AppendValues (GLib.Markup.EscapeText (name), value, new object ());
+						SelectMatchingItem (provisioningCombo, 1, value);
+						provisioningCombo.Sensitive = true;
+					}
+				}
 			}
 		}
 		
@@ -206,12 +217,20 @@ namespace MonoDevelop.IPhone.Gui
 			int active = identityCombo.Active;
 			if (active >= 0 && identityStore.GetIter (out iter, new TreePath (new int[] { active }))) {
 				var name = (string) identityStore.GetValue (iter, 1);
-				var cert = identityStore.GetValue (iter, 2) as X509Certificate2;
+				var identityObj = identityStore.GetValue (iter, 2);
+				var cert = identityObj as X509Certificate2;
 				
 				Func<X509Certificate2, bool> matchIdentity;
+				//known identity
 				if (cert != null) {
 					matchIdentity = c => c.Thumbprint == cert.Thumbprint;
-				} else {
+				}
+				//unknown identity
+				else if (identityObj != null) {
+					matchIdentity = c => false;
+				}
+				//auto identity
+				else {
 					string autoPrefix = name.StartsWith (Keychain.DIST_CERT_PREFIX)?
 						Keychain.DIST_CERT_PREFIX : Keychain.DEV_CERT_PREFIX;
 					matchIdentity = c => Keychain.GetCertificateCommonName (c).StartsWith (autoPrefix);
@@ -242,7 +261,7 @@ namespace MonoDevelop.IPhone.Gui
 				}
 			}
 			
-			profileStore.AppendValues (GettextCatalog.GetString ("None found"), null, null);
+			profileStore.AppendValues (GettextCatalog.GetString ("No matching profiles found"), null, null);
 			provisioningCombo.Active = 0;
 			provisioningCombo.Sensitive = false;
 		}
