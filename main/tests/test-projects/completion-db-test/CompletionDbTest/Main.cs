@@ -131,5 +131,18 @@ namespace CompletionDbTest
 	public struct TestStruct {}
 #endregion
 	
+	#region Attributes
+	[Serializable]
+	public class AttributeTest {}
+	
+	public class AttributeTest2 {
+		[Obsolete]
+		public int Property { get; set; }
+		
+		[Obsolete]
+		public void Method () 
+		{}
+	}
+	#endregion
 }
 
