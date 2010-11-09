@@ -118,7 +118,7 @@ namespace MonoDevelop.Platform.Mac
 							closeSolutionButton = new NSButton () {
 								Title = GettextCatalog.GetString ("Close current workspace"),
 								Hidden = true,
-								State = 1,
+								State = NSCellStateValue.On,
 							};
 							
 							closeSolutionButton.SetButtonType (NSButtonType.Switch);
@@ -183,7 +183,7 @@ namespace MonoDevelop.Platform.Mac
 				
 				if (viewerSelector != null ) {
 					if (closeSolutionButton != null)
-						data.CloseCurrentWorkspace = closeSolutionButton.State != 0;
+						data.CloseCurrentWorkspace = closeSolutionButton.State != NSCellStateValue.Off;
 					data.SelectedViewer = currentViewers[viewerSelector.IndexOfSelectedItem];
 				}
 				

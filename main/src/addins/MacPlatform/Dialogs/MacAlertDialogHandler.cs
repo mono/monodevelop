@@ -103,7 +103,7 @@ namespace MonoDevelop.Platform.Mac
 						var button = new NSButton () {
 							Title = option.Text,
 							Tag = i,
-							State = option.Value? 1 : 0
+							State = option.Value? NSCellStateValue.On : NSCellStateValue.Off,
 						};
 						button.SetButtonType (NSButtonType.Switch);
 						optionButtons[i] = button;
