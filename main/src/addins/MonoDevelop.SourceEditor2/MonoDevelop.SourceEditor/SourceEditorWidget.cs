@@ -739,6 +739,7 @@ namespace MonoDevelop.SourceEditor
 					try {
 						AutoSave.RemoveAutoSaveFile (fileName);
 						view.Load (fileName);
+						view.WorkbenchWindow.Document.UpdateParseDocument ();
 					} catch (Exception ex) {
 						MessageService.ShowException (ex, "Could not remove the autosave file.");
 					} finally {
@@ -754,6 +755,7 @@ namespace MonoDevelop.SourceEditor
 						string content = AutoSave.LoadAutoSave (fileName);
 						AutoSave.RemoveAutoSaveFile (fileName);
 						view.Load (fileName, content, null);
+						view.WorkbenchWindow.Document.UpdateParseDocument ();
 						view.IsDirty = true;
 					} catch (Exception ex) {
 						MessageService.ShowException (ex, "Could not remove the autosave file.");
