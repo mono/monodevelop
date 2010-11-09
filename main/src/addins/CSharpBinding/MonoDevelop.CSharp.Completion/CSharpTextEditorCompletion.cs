@@ -679,7 +679,11 @@ namespace MonoDevelop.CSharp.Completion
 				break;
 			}
 			} catch (Exception e) {
-				System.Console.WriteLine("cce: " +e);
+				LoggingService.LogError ("Unexpected code completion exception." + Environment.NewLine + 
+					"FileName: " + Document.FileName + Environment.NewLine + 
+					"Position: line=" + completionContext.TriggerLine + " col=" + completionContext.TriggerLineOffset + Environment.NewLine + 
+					"Line text: " + Document.Editor.GetLineText (completionContext.TriggerLine),
+					e);
 			} finally {
 	//			if (timer != null)
 	//				timer.Dispose ();

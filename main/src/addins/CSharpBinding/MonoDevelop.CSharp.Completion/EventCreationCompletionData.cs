@@ -50,7 +50,7 @@ namespace MonoDevelop.CSharp.Completion
 		public EventCreationCompletionData (TextEditorData editor, string varName, IType delegateType, IEvent evt, string parameterList, IMember callingMember, IType declaringType) : base (null)
 		{
 			if (string.IsNullOrEmpty (varName)) {
-				this.DisplayText   = "Handle" + evt.Name;
+				this.DisplayText   = "Handle" + (evt != null ? evt.Name : "");
 			} else {
 				this.DisplayText   = "Handle" + Char.ToUpper (varName[0]) + varName.Substring (1) + (evt != null ? evt.Name : "");
 			}
