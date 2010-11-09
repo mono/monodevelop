@@ -34,5 +34,6 @@ namespace MonoDevelop.GtkCore
 		public static Counter GuiProjectsInMemory = InstrumentationService.CreateCounter ("GUI Projects in Memory", "GTK# Designer");
 		public static Counter GuiProjectsLoaded = InstrumentationService.CreateCounter ("GUI Projects Loaded", "GTK# Designer");
 		public static Counter SteticProjectsLoaded = InstrumentationService.CreateCounter ("Stetic Projects Loaded", "GTK# Designer");
+		public static TimerCounter SteticFileGeneratedTimer = InstrumentationService.CreateTimerCounter ("Stetic File Generated", "GTK# Designer");
 	}
 }
