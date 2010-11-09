@@ -1008,12 +1008,12 @@ namespace Mono.TextEditor
 				dragContents = new ClipboardActions.CopyOperation ();
 				dragContents.CopyData (textEditorData);
 				DragContext context = Gtk.Drag.Begin (this, ClipboardActions.CopyOperation.targetList, DragAction.Move | DragAction.Copy, 1, e);
-				CodeSegmentPreviewWindow window = new CodeSegmentPreviewWindow (this, true, textEditorData.SelectionRange, 300, 300);
-
-				Gtk.Drag.SetIconWidget (context, window, 0, 0);
+				if (!Platform.IsMac) {
+					CodeSegmentPreviewWindow window = new CodeSegmentPreviewWindow (this, true, textEditorData.SelectionRange, 300, 300);
+					Gtk.Drag.SetIconWidget (context, window, 0, 0);
+				}
 				selection = Selection.Clone (MainSelection);
 				textViewMargin.inDrag = false;
-				
 			} else {
 				FireMotionEvent (x, y, mod);
 				if (mouseButtonPressed != 0) {
