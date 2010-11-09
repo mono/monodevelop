@@ -80,8 +80,8 @@ namespace Mono.CSharp {
 		public AttributeTargets Target;
 		readonly ATypeNameExpression expression;
 
-		Arguments PosArguments;
-		Arguments NamedArguments;
+		public Arguments PosArguments;
+		public Arguments NamedArguments;
 
 		bool resolve_error;
 		bool arg_resolved;

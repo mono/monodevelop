@@ -37,6 +37,7 @@ using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.Projects;
 using MonoDevelop.CSharp.Project;
+using System.CodeDom;
 
 namespace MonoDevelop.CSharp.Parser
 {
@@ -596,6 +597,24 @@ namespace MonoDevelop.CSharp.Parser
 					domAttribute.Name = attr.Name;
 					domAttribute.Region = ConvertRegion (attr.Location, attr.Location);
 					domAttribute.AttributeType = new DomReturnType (attr.Name);
+					if (attr.PosArguments != null) {
+						for (int i = 0; i < attr.PosArguments.Count; i++) {
+							var val = attr.PosArguments[i].Expr as Constant;
+							if (val == null) {
+								continue;
+							}
+							domAttribute.AddPositionalArgument (new CodePrimitiveExpression (val.GetValue ()));
+						}
+					}
+					if (attr.NamedArguments != null) {
+						for (int i = 0; i < attr.NamedArguments.Count; i++) {
+							var val = attr.NamedArguments[i].Expr as Constant;
+							if (val == null)
+								continue;
+							domAttribute.AddNamedArgument (((NamedArgument)attr.NamedArguments[i]).Name, new CodePrimitiveExpression (val.GetValue ()));
+						}
+					}
+					
 					member.Add (domAttribute);
 				}
 			}
