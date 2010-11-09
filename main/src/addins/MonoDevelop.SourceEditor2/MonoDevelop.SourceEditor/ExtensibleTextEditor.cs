@@ -51,7 +51,6 @@ namespace MonoDevelop.SourceEditor
 		internal object MemoryProbe = Counters.EditorsInMemory.CreateMemoryProbe ();
 		
 		SourceEditorView view;
-		Dictionary<int, ErrorMarker> errors;
 		
 		Cairo.Point menuPopupLocation;
 		
@@ -77,11 +76,6 @@ namespace MonoDevelop.SourceEditor
 		
 		internal SourceEditorView View {
 			get { return view; }
-		}
-
-		internal Dictionary<int, ErrorMarker> Errors {
-			get { return errors; }
-			set { errors = value; }
 		}
 		
 		void Initialize (SourceEditorView view)
@@ -461,9 +455,13 @@ namespace MonoDevelop.SourceEditor
 		
 		internal string GetErrorInformationAt (int offset)
 		{
-			ErrorMarker error;
 			DocumentLocation location = Document.OffsetToLocation (offset);
-			if (errors != null && errors.TryGetValue (location.Line, out error)) {
+			LineSegment line = Document.GetLine (location.Line);
+			if (line == null)
+				return null;
+			var error = line.Markers.FirstOrDefault (m => m is ErrorMarker) as ErrorMarker;
+			
+			if (error != null) {
 				if (error.Info.ErrorType == ErrorType.Warning)
 					return GettextCatalog.GetString ("<b>Parser Warning</b>: {0}",
 					                                 GLib.Markup.EscapeText (error.Info.Message));
