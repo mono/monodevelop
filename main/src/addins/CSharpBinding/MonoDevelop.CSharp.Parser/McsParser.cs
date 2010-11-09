@@ -588,6 +588,79 @@ namespace MonoDevelop.CSharp.Parser
 				VisitType (e, ClassType.Enum);
 			}
 			
+			class CodeDomVisitor : StructuralVisitor
+			{
+				public override object Visit (Constant constant)
+				{
+					return new CodePrimitiveExpression (constant.GetValue ());
+				}
+				
+				public override object Visit (Unary unaryExpression)
+				{
+					var exprResult = (CodeExpression)unaryExpression.Expr.Accept (this);
+					
+					switch (unaryExpression.Oper) {
+					case Unary.Operator.UnaryPlus:
+						return exprResult;
+					case Unary.Operator.UnaryNegation: // -a => 0 - a
+						return new CodeBinaryOperatorExpression (new CodePrimitiveExpression (0), CodeBinaryOperatorType.Subtract, exprResult);
+					case Unary.Operator.LogicalNot: // !a => a == false
+						return new CodeBinaryOperatorExpression (exprResult, CodeBinaryOperatorType.ValueEquality, new CodePrimitiveExpression (false));
+					}
+					return exprResult;
+				}
+				static CodeBinaryOperatorType Convert (Binary.Operator o)
+				{
+					switch (o) {
+					case Binary.Operator.Multiply:
+						return CodeBinaryOperatorType.Multiply;
+					case Binary.Operator.Division:
+						return CodeBinaryOperatorType.Divide;
+					case Binary.Operator.Modulus:
+						return CodeBinaryOperatorType.Modulus;
+					case Binary.Operator.Addition:
+						return CodeBinaryOperatorType.Add;
+					case Binary.Operator.Subtraction:
+						return CodeBinaryOperatorType.Subtract;
+					case Binary.Operator.LeftShift:
+					case Binary.Operator.RightShift:
+						return CodeBinaryOperatorType.Multiply; // unsupported
+					case Binary.Operator.LessThan:
+						return CodeBinaryOperatorType.LessThan;
+					case Binary.Operator.GreaterThan:
+						return CodeBinaryOperatorType.GreaterThan;
+					case Binary.Operator.LessThanOrEqual:
+						return CodeBinaryOperatorType.LessThanOrEqual;
+					case Binary.Operator.GreaterThanOrEqual:
+						return CodeBinaryOperatorType.GreaterThanOrEqual;
+					case Binary.Operator.Equality:
+						return CodeBinaryOperatorType.IdentityEquality;
+					case Binary.Operator.Inequality:
+						return CodeBinaryOperatorType.IdentityInequality;
+					case Binary.Operator.BitwiseAnd:
+						return CodeBinaryOperatorType.BitwiseAnd;
+					case Binary.Operator.ExclusiveOr:
+						return CodeBinaryOperatorType.BitwiseOr; // unsupported
+					case Binary.Operator.BitwiseOr:
+						return CodeBinaryOperatorType.BitwiseOr;
+					case Binary.Operator.LogicalAnd:
+						return CodeBinaryOperatorType.BooleanAnd;
+					case Binary.Operator.LogicalOr:
+						return CodeBinaryOperatorType.BooleanOr;
+							
+					}
+					return CodeBinaryOperatorType.Add;
+				}
+				
+				public override object Visit (Binary binaryExpression)
+				{
+					return new CodeBinaryOperatorExpression (
+						(CodeExpression)binaryExpression.Left.Accept (this),
+						Convert (binaryExpression.Oper),
+						(CodeExpression)binaryExpression.Right.Accept (this));
+				}
+			}
+			
 			public void AddAttributes (MonoDevelop.Projects.Dom.AbstractMember member, Attributes optAttributes)
 			{
 				if (optAttributes == null || optAttributes.Attrs == null)
