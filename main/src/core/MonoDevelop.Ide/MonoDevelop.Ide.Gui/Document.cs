@@ -530,9 +530,7 @@ namespace MonoDevelop.Ide.Gui
 			if (editorExtension != null)
 				last.Next = editor.AttachExtension (editorExtension);
 			window.Document = this;
-			this.parsedDocument = MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetParsedDocument (this.dom, FileName);
-			OnDocumentParsed (EventArgs.Empty);
-			
+			UpdateParseDocument ();
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());
 		}
