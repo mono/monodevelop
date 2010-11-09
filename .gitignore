@@ -13,6 +13,7 @@ obj/
 /main/tests/tmp
 /main/tests/config
 /main/tests/UnitTests/test-results
+/main/build/MacOSX/monostub
 
 # globs
 Makefile.in

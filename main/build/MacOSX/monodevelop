@@ -19,14 +19,6 @@ EXE_PATH="$DIR/lib/monodevelop/bin/MonoDevelop.exe"
 
 export PKG_CONFIG_PATH="$DIR/lib/pkgconfig:$PKG_CONFIG_PATH"
 
-# Work around a bug in 'exec' in older versions of macosx
-OSX_VERSION=$(uname -r | cut -f1 -d.)
-if [ $OSX_VERSION -lt 9 ]; then  # If OSX version is 10.4
-	MONO_EXEC="exec mono"
-else
-	MONO_EXEC="exec -a monodevelop mono"
-fi
-
 #mono version check
 if ! "$DIR/mono-version-check" MonoDevelop 2 6 7 ; then exit 1; fi
 
@@ -60,8 +52,8 @@ fi
 
 if [ -z "$MD_DONT_REDIRECT_OUTPUT" ]; then
 	mkdir -p "`dirname \"$_MD_LOG_FILE\"`"
-	$MONO_EXEC $_MONO_OPTIONS "$EXE_PATH" $* 2>&1 1> "$_MD_LOG_FILE"
+	exec "$DIR/bin/monodevelop" $_MONO_OPTIONS "$EXE_PATH" $* 2>&1 1> "$_MD_LOG_FILE"
 else
-	$MONO_EXEC $_MONO_OPTIONS "$EXE_PATH" $*
+	exec "$DIR/bin/monodevelop" $_MONO_OPTIONS "$EXE_PATH" $*
 fi
 

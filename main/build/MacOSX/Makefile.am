@@ -20,7 +20,7 @@ clean-local:
 	rm -f MonoDevelop.dmg
 	rm -f MonoDevelop.app.zip
 
-MonoDevelop.app: 
+MonoDevelop.app: monostub
 	mkdir -p $(MAC_APP_DIR)/Contents/{MacOS,Resources}
 	mkdir -p $(MAC_APP_DIR)/Contents/MacOS/{lib,share}
 	mkdir -p $(MAC_APP_LIB_DIR)
@@ -76,6 +76,11 @@ MonoDevelop.app:
 	test ! -d $(ARTIFACTS)/MoonSDK ||  cp -pR $(ARTIFACTS)/MoonSDK/* $(MACOS)/lib/moonlight/
 	test ! -d $(ARTIFACTS)/MonoDoc.app ||  cp -pR $(ARTIFACTS)/MonoDoc.app/* $(MACOS)/MonoDoc.app/
 
+# Mono stubs to make the process name and bundle location correct
+	mkdir -p "$(MACOS)/bin"
+	cp monostub "$(MACOS)/bin/monodevelop" 
+	cp monostub "$(MACOS)/bin/mdtool" 
+
 # update revision in updateinfo
 	echo "a3140c14-ef90-4019-ae6c-9d93804d6611 $$(cat release-info)" > "$(MACOS)/updateinfo"
 
@@ -91,5 +96,8 @@ MonoDevelop.app:
 
 MonoDevelop.app.zip: MonoDevelop.app
 	zip -r9uq MonoDevelop.app.zip MonoDevelop.app
+
+monostub: monostub.c
+	gcc -m32 monostub.c -o monostub -framework CoreFoundation
 
 .PHONY: MonoDevelop.app

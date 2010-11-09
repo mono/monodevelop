@@ -19,14 +19,6 @@ EXE_PATH="$DIR/lib/monodevelop/bin/mdrun.exe"
 PKG_CONFIG_PATH="$DIR/lib/pkgconfig:$PKG_CONFIG_PATH"
 export PKG_CONFIG_PATH
 
-# Work around a bug in 'exec' in older versions of macosx
-OSX_VERSION=$(uname -r | cut -f1 -d.)
-if [ $OSX_VERSION -lt 9 ]; then  # If OSX version is 10.4
-	MONO_EXEC="mono"
-else
-	MONO_EXEC="exec -a monodevelop mono"
-fi
-
 # The Mono "External" folder allows users (such as MonoDroid) to install
 # things without worrying that they'll be removed next time mono is upgraded
 # Mono doesn't support it get so we hack it via env vars for now.
@@ -56,5 +48,5 @@ else
 	_MONO_OPTIONS=$MONO_OPTIONS
 fi
 
-$MONO_EXEC $_MONO_OPTIONS "$EXE_PATH" $*
+exec "$DIR/bin/mdtool" $_MONO_OPTIONS "$EXE_PATH" $*
 
