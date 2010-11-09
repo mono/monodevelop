@@ -227,6 +227,9 @@ namespace Mono.TextEditor
 	
 	public class UnderlineMarker: TextMarker
 	{
+		protected UnderlineMarker ()
+		{}
+		
 		public UnderlineMarker (string colorName, int start, int end)
 		{
 			this.ColorName = colorName;
