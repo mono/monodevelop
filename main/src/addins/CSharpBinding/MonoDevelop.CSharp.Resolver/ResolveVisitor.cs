@@ -544,7 +544,7 @@ namespace MonoDevelop.CSharp.Resolver
 				}
 			} else {
 				if (result != null)
-					MonoDevelop.Core.LoggingService.LogWarning ("Couldn't resolve type " + result.ResolvedType);
+					MonoDevelop.Core.LoggingService.LogWarning ("Couldn't resolve type " + result);
 			}
 			
 			return null;
