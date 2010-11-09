@@ -187,7 +187,9 @@ namespace MonoDevelop.Ide.Gui
 		public void SwitchView (IAttachableViewContent view)
 		{
 			if (subViewNotebook != null)
-				ShowPage (subViewContents.IndexOf (view));
+				// adding 1 because subviews start at the position 1 of the tab strip. Position 0 is
+				// for the main view
+				ShowPage (subViewContents.IndexOf (view) + 1);
 		}
 		
 		public void SelectWindow()	

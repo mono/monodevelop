@@ -144,8 +144,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public void ShowPage (int npage)
 		{
 			if (WorkbenchWindow != null) {
-				var view = tabs [npage];
-				WorkbenchWindow.SwitchView (view);
+				if (npage == 0)
+					WorkbenchWindow.SwitchView (0);
+				else {
+					var view = tabs [npage - 1];
+					WorkbenchWindow.SwitchView (view);
+				}
 			}
 		}
 		
