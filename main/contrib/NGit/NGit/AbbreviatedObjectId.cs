@@ -62,8 +62,11 @@ namespace NGit
 	/// This class converts the hex string into a binary form, to make it more
 	/// efficient for matching against an object.
 	/// </summary>
+	[System.Serializable]
 	public sealed class AbbreviatedObjectId
 	{
+		private const long serialVersionUID = 1L;
+
 		/// <summary>Test a string of characters to verify it is a hex format.</summary>
 		/// <remarks>
 		/// Test a string of characters to verify it is a hex format.

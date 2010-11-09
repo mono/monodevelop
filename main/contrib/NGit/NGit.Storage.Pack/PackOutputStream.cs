@@ -57,7 +57,7 @@ namespace NGit.Storage.Pack
 	/// </summary>
 	public sealed class PackOutputStream : OutputStream
 	{
-		private readonly int BYTES_TO_WRITE_BEFORE_CANCEL_CHECK = 128 * 1024;
+		private const int BYTES_TO_WRITE_BEFORE_CANCEL_CHECK = 128 * 1024;
 
 		private readonly ProgressMonitor writeMonitor;
 

@@ -82,6 +82,10 @@ namespace NGit
 		/// <remarks>Special name for the "HEAD" symbolic-ref.</remarks>
 		public static readonly string HEAD = "HEAD";
 
+		/// <summary>Special name for the "FETCH_HEAD" symbolic-ref.</summary>
+		/// <remarks>Special name for the "FETCH_HEAD" symbolic-ref.</remarks>
+		public static readonly string FETCH_HEAD = "FETCH_HEAD";
+
 		/// <summary>Text string that identifies an object as a commit.</summary>
 		/// <remarks>
 		/// Text string that identifies an object as a commit.
@@ -641,6 +645,12 @@ namespace NGit
 
 		/// <summary>name of the file containing the IDs of the parents of a merge commit</summary>
 		public static readonly string MERGE_HEAD = "MERGE_HEAD";
+
+		/// <summary>
+		/// name of the ref ORIG_HEAD used by certain commands to store the original
+		/// value of HEAD
+		/// </summary>
+		public static readonly string ORIG_HEAD = "ORIG_HEAD";
 
 		/// <summary>objectid for the empty blob</summary>
 		public static readonly ObjectId EMPTY_BLOB_ID = ObjectId.FromString("e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"

@@ -76,7 +76,8 @@ namespace NGit.Storage.File
 
 		/// <summary>Sorts PackFiles to be most recently created to least recently created.</summary>
 		/// <remarks>Sorts PackFiles to be most recently created to least recently created.</remarks>
-		public static IComparer<NGit.Storage.File.PackFile> SORT = new _IComparer_90();
+		public static readonly IComparer<NGit.Storage.File.PackFile> SORT = new _IComparer_90
+			();
 
 		private readonly FilePath idxFile;
 
@@ -717,7 +718,7 @@ namespace NGit.Storage.File
 					, packCnt, idx.GetObjectCount(), GetPackFile()));
 			}
 			fd.Seek(length - 20);
-			fd.Read(buf, 0, 20);
+			fd.ReadFully(buf, 0, 20);
 			if (!Arrays.Equals(buf, packChecksum))
 			{
 				throw new PackMismatchException(MessageFormat.Format(JGitText.Get().packObjectCountMismatch

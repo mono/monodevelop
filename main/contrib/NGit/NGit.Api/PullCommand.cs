@@ -137,15 +137,6 @@ namespace NGit.Api
 				throw new InvalidConfigurationException(MessageFormat.Format(JGitText.Get().missingConfigurationForKey
 					, missingKey));
 			}
-			string remoteUri = repo.GetConfig().GetString("remote", remote, ConfigConstants.CONFIG_KEY_URL
-				);
-			if (remoteUri == null)
-			{
-				string missingKey = ConfigConstants.CONFIG_REMOTE_SECTION + DOT + remote + DOT + 
-					ConfigConstants.CONFIG_KEY_URL;
-				throw new InvalidConfigurationException(MessageFormat.Format(JGitText.Get().missingConfigurationForKey
-					, missingKey));
-			}
 			// get the name of the branch in the remote repository
 			// stored in configuration key branch.<branch name>.merge
 			string remoteBranchName = repoConfig.GetString(ConfigConstants.CONFIG_BRANCH_SECTION
@@ -154,7 +145,7 @@ namespace NGit.Api
 			{
 				// check if the branch is configured for pull-rebase
 				remoteBranchName = repoConfig.GetString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName
-					, ConfigConstants.CONFIG_KEY_MERGE);
+					, ConfigConstants.CONFIG_KEY_REBASE);
 				if (remoteBranchName != null)
 				{
 					// TODO implement pull-rebase
@@ -168,47 +159,73 @@ namespace NGit.Api
 				throw new InvalidConfigurationException(MessageFormat.Format(JGitText.Get().missingConfigurationForKey
 					, missingKey));
 			}
-			if (monitor.IsCancelled())
+			bool isRemote = !remote.Equals(".");
+			string remoteUri;
+			FetchResult fetchRes;
+			if (isRemote)
 			{
-				throw new CanceledException(MessageFormat.Format(JGitText.Get().operationCanceled
-					, JGitText.Get().pullTaskName));
-			}
-			FetchCommand fetch = new FetchCommand(repo);
-			fetch.SetRemote(remote);
-			if (monitor != null)
-			{
+				remoteUri = repo.GetConfig().GetString("remote", remote, ConfigConstants.CONFIG_KEY_URL
+					);
+				if (remoteUri == null)
+				{
+					string missingKey = ConfigConstants.CONFIG_REMOTE_SECTION + DOT + remote + DOT + 
+						ConfigConstants.CONFIG_KEY_URL;
+					throw new InvalidConfigurationException(MessageFormat.Format(JGitText.Get().missingConfigurationForKey
+						, missingKey));
+				}
+				if (monitor.IsCancelled())
+				{
+					throw new CanceledException(MessageFormat.Format(JGitText.Get().operationCanceled
+						, JGitText.Get().pullTaskName));
+				}
+				FetchCommand fetch = new FetchCommand(repo);
+				fetch.SetRemote(remote);
 				fetch.SetProgressMonitor(monitor);
+				fetch.SetTimeout(this.timeout);
+				fetchRes = fetch.Call();
 			}
-			fetch.SetTimeout(this.timeout);
-			FetchResult fetchRes = fetch.Call();
+			else
+			{
+				// we can skip the fetch altogether
+				remoteUri = "local repository";
+				fetchRes = null;
+			}
 			monitor.Update(1);
 			// we check the updates to see which of the updated branches corresponds
 			// to the remote branch name
-			AnyObjectId commitToMerge = null;
-			Ref r = fetchRes.GetAdvertisedRef(remoteBranchName);
-			if (r == null)
+			AnyObjectId commitToMerge;
+			if (isRemote)
 			{
-				r = fetchRes.GetAdvertisedRef(Constants.R_HEADS + remoteBranchName);
+				Ref r = null;
+				if (fetchRes != null)
+				{
+					r = fetchRes.GetAdvertisedRef(remoteBranchName);
+					if (r == null)
+					{
+						r = fetchRes.GetAdvertisedRef(Constants.R_HEADS + remoteBranchName);
+					}
+				}
+				if (r == null)
+				{
+					throw new JGitInternalException(MessageFormat.Format(JGitText.Get().couldNotGetAdvertisedRef
+						, remoteBranchName));
+				}
+				else
+				{
+					commitToMerge = r.GetObjectId();
+				}
 			}
-			if (r == null)
+			else
 			{
-				// TODO: we should be able to get the mapping also if nothing was
-				// updated by the fetch; for the time being, use the naming
-				// convention as fall back
-				string remoteTrackingBranch = Constants.R_REMOTES + remote + '/' + branchName;
 				try
 				{
-					commitToMerge = repo.Resolve(remoteTrackingBranch);
+					commitToMerge = repo.Resolve(remoteBranchName);
 				}
 				catch (IOException e)
 				{
 					throw new JGitInternalException(JGitText.Get().exceptionCaughtDuringExecutionOfPullCommand
 						, e);
 				}
-			}
-			else
-			{
-				commitToMerge = r.GetObjectId();
 			}
 			if (monitor.IsCancelled())
 			{

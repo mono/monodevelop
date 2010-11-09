@@ -665,7 +665,7 @@ SEND_HAVES_break: ;
 						// A solitary ACK at this point means the remote won't
 						// speak anymore, but is going to send us a pack now.
 						//
-						goto READ_RESULT_break;
+						goto READ_RESULT_break2;
 					}
 
 					case PacketLineIn.AckNackResult.ACK_CONTINUE:
@@ -684,7 +684,7 @@ SEND_HAVES_break: ;
 				}
 READ_RESULT_continue: ;
 			}
-READ_RESULT_break: ;
+READ_RESULT_break2: ;
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>

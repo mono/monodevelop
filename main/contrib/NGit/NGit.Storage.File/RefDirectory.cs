@@ -91,6 +91,10 @@ namespace NGit.Storage.File
 		/// <remarks>If in the header, denotes the file has peeled data.</remarks>
 		public static readonly string PACKED_REFS_PEELED = " peeled";
 
+		/// <summary>The names of the additional refs supported by this class</summary>
+		private static readonly string[] additionalRefsNames = new string[] { Constants.MERGE_HEAD
+			, Constants.FETCH_HEAD, Constants.ORIG_HEAD };
+
 		private readonly FileRepository parent;
 
 		private readonly FilePath gitDir;
@@ -299,6 +303,21 @@ namespace NGit.Storage.File
 				}
 			}
 			return new RefMap(prefix, packed, Upcast(loose), symbolic.ToRefList());
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
+		public override IList<Ref> GetAdditionalRefs()
+		{
+			IList<Ref> ret = new List<Ref>();
+			foreach (string name in additionalRefsNames)
+			{
+				Ref r = GetRef(name);
+				if (r != null)
+				{
+					ret.AddItem(r);
+				}
+			}
+			return ret;
 		}
 
 		private RefList<Ref> Upcast<_T0>(RefList<_T0> loose) where _T0:Ref
@@ -910,12 +929,12 @@ namespace NGit.Storage.File
 		private void CommitPackedRefs(LockFile lck, RefList<Ref> refs, RefDirectory.PackedRefList
 			 oldPackedList)
 		{
-			new _RefWriter_739(this, lck, oldPackedList, refs, refs).WritePackedRefs();
+			new _RefWriter_756(this, lck, oldPackedList, refs, refs).WritePackedRefs();
 		}
 
-		private sealed class _RefWriter_739 : RefWriter
+		private sealed class _RefWriter_756 : RefWriter
 		{
-			public _RefWriter_739(RefDirectory _enclosing, LockFile lck, RefDirectory.PackedRefList
+			public _RefWriter_756(RefDirectory _enclosing, LockFile lck, RefDirectory.PackedRefList
 				 oldPackedList, RefList<Ref> refs, RefList<Ref> baseArg1) : base(baseArg1)
 			{
 				this._enclosing = _enclosing;
@@ -996,6 +1015,15 @@ namespace NGit.Storage.File
 			if (n_1 == null)
 			{
 				return packed.Get(name);
+			}
+			// check whether the found new ref is the an additional ref. These refs
+			// should not go into looseRefs
+			for (int i = 0; i < additionalRefsNames.Length; i++)
+			{
+				if (name.Equals(additionalRefsNames[i]))
+				{
+					return n_1;
+				}
 			}
 			if (looseRefs.CompareAndSet(curList, curList.Add(idx, n_1)))
 			{

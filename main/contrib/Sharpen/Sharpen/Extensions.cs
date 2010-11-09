@@ -746,5 +746,11 @@ namespace Sharpen
 				return true;
 			}
 		}
+		
+		public static System.Threading.Semaphore CreateSemaphore (int count)
+		{
+			return new System.Threading.Semaphore (count, int.MaxValue);
+		}
+		
 	}
 }

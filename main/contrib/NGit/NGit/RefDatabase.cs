@@ -213,6 +213,19 @@ namespace NGit
 		/// <exception cref="System.IO.IOException">the reference space cannot be accessed.</exception>
 		public abstract IDictionary<string, Ref> GetRefs(string prefix);
 
+		/// <summary>Get the additional reference-like entities from the repository.</summary>
+		/// <remarks>
+		/// Get the additional reference-like entities from the repository.
+		/// <p>
+		/// The result list includes non-ref items such as MERGE_HEAD and
+		/// FETCH_RESULT cast to be refs. The names of these refs are not returned by
+		/// <code>getRefs(ALL)</code> but are accepted by
+		/// <see cref="GetRef(string)">GetRef(string)</see>
+		/// </remarks>
+		/// <returns>a list of additional refs</returns>
+		/// <exception cref="System.IO.IOException">the reference space cannot be accessed.</exception>
+		public abstract IList<Ref> GetAdditionalRefs();
+
 		/// <summary>Peel a possibly unpeeled reference by traversing the annotated tags.</summary>
 		/// <remarks>
 		/// Peel a possibly unpeeled reference by traversing the annotated tags.

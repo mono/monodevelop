@@ -209,7 +209,7 @@ namespace NGit.Transport
 				if ("auth".Equals(qop))
 				{
 					string c = p.Get("cnonce");
-					string nc = string.Format("%8.8x", ++requestCount);
+					string nc = string.Format("%08x", ++requestCount);
 					p.Put("nc", nc);
 					expect = KD(H(A1), nonce + ":" + nc + ":" + c + ":" + qop + ":" + H(A2));
 				}

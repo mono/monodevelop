@@ -15,6 +15,17 @@ namespace Sharpen
 		{
 			this.val = val;
 		}
+		
+		public int GetAndSet (int newValue)
+		{
+			return Interlocked.Exchange (ref val, newValue);
+		}
+		
+		public int GetAndAdd (int addval)
+		{
+			int res = Interlocked.Add (ref val, addval);
+			return res - addval;
+		}
 
 		public int AddAndGet (int addval)
 		{

@@ -128,12 +128,12 @@ namespace NGit.Diff
 		/// For
 		/// <code>ptr</code>
 		/// ,
-		/// <code>next[ptr - nextShift]</code>
+		/// <code>next[ptr - ptrShift]</code>
 		/// has subsequent index.
 		/// For the sequence element
 		/// <code>ptr</code>
 		/// , the value stored at location
-		/// <code>next[ptr - nextShift]</code>
+		/// <code>next[ptr - ptrShift]</code>
 		/// is the next occurrence of the exact same
 		/// element in the sequence.
 		/// Chains always run from the lowest index to the largest index. Therefore
@@ -149,24 +149,42 @@ namespace NGit.Diff
 		/// would never
 		/// be a valid next element.
 		/// The array is sized to be
-		/// <code>region.getLenghtA()</code>
+		/// <code>region.getLengthA()</code>
 		/// and element indexes
 		/// are converted to array indexes by subtracting
-		/// <see cref="HistogramDiffIndex{S}.nextShift">HistogramDiffIndex&lt;S&gt;.nextShift
-		/// 	</see>
-		/// , which
-		/// is just a cached version of
+		/// <see cref="HistogramDiffIndex{S}.ptrShift">HistogramDiffIndex&lt;S&gt;.ptrShift</see>
+		/// , which is
+		/// just a cached version of
 		/// <code>region.beginA</code>
 		/// .
 		/// </summary>
 		private int[] next;
 
 		/// <summary>
+		/// For element
+		/// <code>ptr</code>
+		/// in A, index of the record in
+		/// <see cref="HistogramDiffIndex{S}.recs">HistogramDiffIndex&lt;S&gt;.recs</see>
+		/// array.
+		/// The record at
+		/// <code>recs[recIdx[ptr - ptrShift]]</code>
+		/// is the record
+		/// describing all occurrences of the element appearing in sequence A at
+		/// position
+		/// <code>ptr</code>
+		/// . The record is needed to get the occurrence count of
+		/// the element, or to locate all other occurrences of that element within
+		/// sequence A. This index provides constant-time access to the record, and
+		/// avoids needing to scan the hash chain.
+		/// </summary>
+		private int[] recIdx;
+
+		/// <summary>
 		/// Value to subtract from element indexes to key
 		/// <see cref="HistogramDiffIndex{S}.next">HistogramDiffIndex&lt;S&gt;.next</see>
 		/// array.
 		/// </summary>
-		private int nextShift;
+		private int ptrShift;
 
 		private Edit lcs;
 
@@ -190,9 +208,10 @@ namespace NGit.Diff
 			int tableBits = TableBits(sz);
 			table = new int[1 << tableBits];
 			keyShift = 32 - tableBits;
-			nextShift = r.beginA;
+			ptrShift = r.beginA;
 			recs = new long[Math.Max(4, (int)(((uint)sz) >> 3))];
 			next = new int[sz];
+			recIdx = new int[sz];
 		}
 
 		internal Edit FindLongestCommonSequence()
@@ -235,7 +254,8 @@ namespace NGit.Diff
 							newCnt = MAX_CNT;
 						}
 						recs[rIdx] = RecCreate(RecNext(rec), ptr, newCnt);
-						next[ptr - nextShift] = RecPtr(rec);
+						next[ptr - ptrShift] = RecPtr(rec);
+						recIdx[ptr - ptrShift] = rIdx;
 						goto SCAN_continue;
 					}
 					rIdx = RecNext(rec);
@@ -257,6 +277,7 @@ namespace NGit.Diff
 					recs = n;
 				}
 				recs[rIdx_1] = RecCreate(table[tIdx], ptr, 1);
+				recIdx[ptr - ptrShift] = rIdx_1;
 				table[tIdx] = rIdx_1;
 SCAN_continue: ;
 			}
@@ -288,18 +309,27 @@ SCAN_break: ;
 				hasCommon = true;
 				for (; ; )
 				{
-					int np = next[@as - nextShift];
+					int np = next[@as - ptrShift];
 					int bs = bPtr;
 					int ae = @as + 1;
 					int be = bs + 1;
+					int rc = RecCnt(rec);
 					while (region.beginA < @as && region.beginB < bs && cmp.Equals(a, @as - 1, b, bs 
 						- 1))
 					{
 						@as--;
 						bs--;
+						if (1 < rc)
+						{
+							rc = Math.Min(rc, RecCnt(recs[recIdx[@as - ptrShift]]));
+						}
 					}
 					while (ae < region.endA && be < region.endB && cmp.Equals(a, ae, b, be))
 					{
+						if (1 < rc)
+						{
+							rc = Math.Min(rc, RecCnt(recs[recIdx[ae - ptrShift]]));
+						}
 						ae++;
 						be++;
 					}
@@ -307,7 +337,7 @@ SCAN_break: ;
 					{
 						bNext = be;
 					}
-					if (lcs.GetLengthA() < ae - @as || RecCnt(rec) < cnt)
+					if (lcs.GetLengthA() < ae - @as || rc < cnt)
 					{
 						// If this region is the longest, or there are less
 						// occurrences of it in A, its now our LCS.
@@ -316,7 +346,7 @@ SCAN_break: ;
 						lcs.beginB = bs;
 						lcs.endA = ae;
 						lcs.endB = be;
-						cnt = RecCnt(rec);
+						cnt = rc;
 					}
 					// Because we added elements in reverse order index 0
 					// cannot possibly be the next position. Its the first
@@ -332,7 +362,7 @@ SCAN_break: ;
 						// The next location to consider was actually within
 						// the LCS we examined above. Don't reconsider it.
 						//
-						np = next[np - nextShift];
+						np = next[np - ptrShift];
 						if (np == 0)
 						{
 							goto TRY_LOCATIONS_break;

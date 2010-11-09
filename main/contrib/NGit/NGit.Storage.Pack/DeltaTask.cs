@@ -55,7 +55,7 @@ namespace NGit.Storage.Pack
 
 		private readonly DeltaCache dc;
 
-		private readonly ProgressMonitor pm;
+		private readonly ThreadSafeProgressMonitor pm;
 
 		private readonly int batchSize;
 
@@ -63,7 +63,7 @@ namespace NGit.Storage.Pack
 
 		private readonly ObjectToPack[] list;
 
-		internal DeltaTask(PackConfig config, ObjectReader reader, DeltaCache dc, ProgressMonitor
+		internal DeltaTask(PackConfig config, ObjectReader reader, DeltaCache dc, ThreadSafeProgressMonitor
 			 pm, int batchSize, int start, ObjectToPack[] list)
 		{
 			this.config = config;
@@ -88,6 +88,7 @@ namespace NGit.Storage.Pack
 			finally
 			{
 				or.Release();
+				pm.EndWorker();
 			}
 			return null;
 		}

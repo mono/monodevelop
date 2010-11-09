@@ -266,7 +266,15 @@ namespace NGit.Dircache
 		{
 			if (m != null)
 			{
-				Update(m.GetEntryPathString(), m.GetEntryObjectId(), m.GetEntryFileMode());
+				if (i == null || f == null || !m.IdEqual(i) || f.IsModified(i.GetDirCacheEntry(), 
+					true, Config_filemode(), repo.FileSystem))
+				{
+					Update(m.GetEntryPathString(), m.GetEntryObjectId(), m.GetEntryFileMode());
+				}
+				else
+				{
+					Keep(i.GetDirCacheEntry());
+				}
 			}
 			else
 			{
@@ -418,7 +426,7 @@ namespace NGit.Dircache
 				if (walk.IsDirectoryFileConflict())
 				{
 					// TODO: check whether it is always correct to report a conflict here
-					Conflict(name, null, h, m);
+					Conflict(name, null, null, null);
 				}
 				// file only exists in working tree -> ignore it
 				return;
@@ -536,7 +544,6 @@ namespace NGit.Dircache
 					case unchecked((int)(0xFDF)):
 					{
 						// 7 8 9
-						dce = i.GetDirCacheEntry();
 						if (hId.Equals(mId))
 						{
 							if (IsModified(name))

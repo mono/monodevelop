@@ -284,7 +284,7 @@ namespace NGit.Diff
 				internal int GetIndex(int d, int k)
 				{
 					// TODO: remove
-					if (((d + k - this.middleK) % 2) == 1)
+					if (((d + k - this.middleK) % 2) != 0)
 					{
 						throw new RuntimeException(MessageFormat.Format(JGitText.Get().unexpectedOddResult
 							, d, k, this.middleK));
@@ -510,7 +510,7 @@ namespace NGit.Diff
 						return false;
 					}
 					// TODO: move out of loop
-					if (((d - 1 + k - this._enclosing.backward.middleK) % 2) == 1)
+					if (((d - 1 + k - this._enclosing.backward.middleK) % 2) != 0)
 					{
 						return false;
 					}
@@ -582,7 +582,7 @@ namespace NGit.Diff
 						return false;
 					}
 					// TODO: move out of loop
-					if (((d + k - this._enclosing.forward.middleK) % 2) == 1)
+					if (((d + k - this._enclosing.forward.middleK) % 2) != 0)
 					{
 						return false;
 					}

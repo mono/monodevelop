@@ -286,6 +286,8 @@ namespace NGit
 
 		public string couldNotDeleteTemporaryIndexFileShouldNotHappen;
 
+		public string couldNotGetAdvertisedRef;
+
 		public string couldNotLockHEAD;
 
 		public string couldNotReadIndexInOneGo;

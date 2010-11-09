@@ -152,7 +152,7 @@ namespace NGit.Patch
 		{
 			endOffset = headerLines.Length;
 			int ptr = ParseGitFileName(NGit.Patch.Patch.DIFF_GIT.Length, headerLines.Length);
-			ptr = ParseGitHeaders(ptr, headerLines.Length);
+			ParseGitHeaders(ptr, headerLines.Length);
 			this.patchType = type;
 			AddHunk(new HunkHeader(this, edits));
 		}

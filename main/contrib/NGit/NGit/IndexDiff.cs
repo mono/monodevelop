@@ -78,6 +78,8 @@ namespace NGit
 
 		private readonly RevTree tree;
 
+		private TreeFilter filter = null;
+
 		private readonly WorkingTreeIterator initialWorkingTreeIterator;
 
 		private HashSet<string> added = new HashSet<string>();
@@ -136,6 +138,17 @@ namespace NGit
 			this.initialWorkingTreeIterator = workingTreeIterator;
 		}
 
+		/// <summary>Sets a filter.</summary>
+		/// <remarks>
+		/// Sets a filter. Can be used e.g. for restricting the tree walk to a set of
+		/// files.
+		/// </remarks>
+		/// <param name="filter"></param>
+		public virtual void SetFilter(TreeFilter filter)
+		{
+			this.filter = filter;
+		}
+
 		/// <summary>Run the diff operation.</summary>
 		/// <remarks>Run the diff operation. Until this is called, all lists will be empty</remarks>
 		/// <returns>if anything is different between index, tree, and workdir</returns>
@@ -158,9 +171,15 @@ namespace NGit
 			}
 			treeWalk.AddTree(new DirCacheIterator(dirCache));
 			treeWalk.AddTree(initialWorkingTreeIterator);
-			treeWalk.Filter = TreeFilter.ANY_DIFF;
-			treeWalk.Filter = AndTreeFilter.Create(new TreeFilter[] { new NotIgnoredFilter(WORKDIR
-				), new SkipWorkTreeFilter(INDEX), TreeFilter.ANY_DIFF });
+			ICollection<TreeFilter> filters = new AList<TreeFilter>(filter == null ? 3 : 4);
+			if (filter != null)
+			{
+				filters.AddItem(filter);
+			}
+			filters.AddItem(new NotIgnoredFilter(WORKDIR));
+			filters.AddItem(new SkipWorkTreeFilter(INDEX));
+			filters.AddItem(TreeFilter.ANY_DIFF);
+			treeWalk.Filter = AndTreeFilter.Create(filters);
 			while (treeWalk.Next())
 			{
 				AbstractTreeIterator treeIterator = treeWalk.GetTree<AbstractTreeIterator>(TREE);

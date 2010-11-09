@@ -41,6 +41,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System;
+using System.Threading;
 using NGit;
 using Sharpen;
 
@@ -50,12 +52,36 @@ namespace NGit
 	/// Wrapper around the general
 	/// <see cref="ProgressMonitor">ProgressMonitor</see>
 	/// to make it thread safe.
+	/// Updates to the underlying ProgressMonitor are made only from the thread that
+	/// allocated this wrapper. Callers are responsible for ensuring the allocating
+	/// thread uses
+	/// <see cref="PollForUpdates()">PollForUpdates()</see>
+	/// or
+	/// <see cref="WaitForCompletion()">WaitForCompletion()</see>
+	/// to
+	/// update the underlying ProgressMonitor.
+	/// Only
+	/// <see cref="Update(int)">Update(int)</see>
+	/// ,
+	/// <see cref="IsCancelled()">IsCancelled()</see>
+	/// , and
+	/// <see cref="EndWorker()">EndWorker()</see>
+	/// may be invoked from a worker thread. All other methods of the ProgressMonitor
+	/// interface can only be called from the thread that allocates this wrapper.
 	/// </summary>
 	public class ThreadSafeProgressMonitor : ProgressMonitor
 	{
 		private readonly ProgressMonitor pm;
 
 		private readonly ReentrantLock Lock;
+
+		private readonly Sharpen.Thread mainThread;
+
+		private readonly AtomicInteger workers;
+
+		private readonly AtomicInteger pendingUpdates;
+
+		private readonly Semaphore process;
 
 		/// <summary>Wrap a ProgressMonitor to be thread safe.</summary>
 		/// <remarks>Wrap a ProgressMonitor to be thread safe.</remarks>
@@ -64,44 +90,110 @@ namespace NGit
 		{
 			this.pm = pm;
 			this.Lock = new ReentrantLock();
+			this.mainThread = Sharpen.Thread.CurrentThread();
+			this.workers = new AtomicInteger(0);
+			this.pendingUpdates = new AtomicInteger(0);
+			this.process = Sharpen.Extensions.CreateSemaphore(0);
 		}
 
 		public override void Start(int totalTasks)
 		{
-			Lock.Lock();
-			try
+			if (!IsMainThread())
 			{
-				pm.Start(totalTasks);
+				throw new InvalidOperationException();
 			}
-			finally
-			{
-				Lock.Unlock();
-			}
+			pm.Start(totalTasks);
 		}
 
 		public override void BeginTask(string title, int totalWork)
 		{
-			Lock.Lock();
-			try
+			if (!IsMainThread())
 			{
-				pm.BeginTask(title, totalWork);
+				throw new InvalidOperationException();
 			}
-			finally
+			pm.BeginTask(title, totalWork);
+		}
+
+		/// <summary>Notify the monitor a worker is starting.</summary>
+		/// <remarks>Notify the monitor a worker is starting.</remarks>
+		public virtual void StartWorker()
+		{
+			StartWorkers(1);
+		}
+
+		/// <summary>Notify the monitor of workers starting.</summary>
+		/// <remarks>Notify the monitor of workers starting.</remarks>
+		/// <param name="count">the number of worker threads that are starting.</param>
+		public virtual void StartWorkers(int count)
+		{
+			workers.AddAndGet(count);
+		}
+
+		/// <summary>Notify the monitor a worker is finished.</summary>
+		/// <remarks>Notify the monitor a worker is finished.</remarks>
+		public virtual void EndWorker()
+		{
+			if (workers.DecrementAndGet() == 0)
 			{
-				Lock.Unlock();
+				process.Release();
+			}
+		}
+
+		/// <summary>Non-blocking poll for pending updates.</summary>
+		/// <remarks>
+		/// Non-blocking poll for pending updates.
+		/// This method can only be invoked by the same thread that allocated this
+		/// ThreadSafeProgressMonior.
+		/// </remarks>
+		public virtual void PollForUpdates()
+		{
+			//assert isMainThread();
+			DoUpdates();
+		}
+
+		/// <summary>Process pending updates and wait for workers to finish.</summary>
+		/// <remarks>
+		/// Process pending updates and wait for workers to finish.
+		/// This method can only be invoked by the same thread that allocated this
+		/// ThreadSafeProgressMonior.
+		/// </remarks>
+		/// <exception cref="System.Exception">
+		/// if the main thread is interrupted while waiting for
+		/// completion of workers.
+		/// </exception>
+		public virtual void WaitForCompletion()
+		{
+			//assert isMainThread();
+			while (0 < workers.Get())
+			{
+				DoUpdates();
+				process.WaitOne();
+			}
+			DoUpdates();
+		}
+
+		private void DoUpdates()
+		{
+			int cnt = pendingUpdates.GetAndSet(0);
+			if (0 < cnt)
+			{
+				pm.Update(cnt);
 			}
 		}
 
 		public override void Update(int completed)
 		{
-			Lock.Lock();
-			try
+			int old = pendingUpdates.GetAndAdd(completed);
+			if (IsMainThread())
 			{
-				pm.Update(completed);
+				DoUpdates();
 			}
-			finally
+			else
 			{
-				Lock.Unlock();
+				if (old == 0)
+				{
+					process.Release();
+				}
 			}
 		}
 
@@ -120,15 +212,16 @@ namespace NGit
 
 		public override void EndTask()
 		{
-			Lock.Lock();
-			try
+			if (!IsMainThread())
 			{
-				pm.EndTask();
+				throw new InvalidOperationException();
 			}
-			finally
-			{
-				Lock.Unlock();
-			}
+			pm.EndTask();
+		}
+
+		private bool IsMainThread()
+		{
+			return Sharpen.Thread.CurrentThread() == mainThread;
 		}
 	}
 }

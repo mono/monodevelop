@@ -64,7 +64,8 @@ namespace NGit.Merge
 		public enum MergeFailureReason
 		{
 			DIRTY_INDEX,
-			DIRTY_WORKTREE
+			DIRTY_WORKTREE,
+			COULD_NOT_DELETE
 		}
 
 		private NameConflictTreeWalk tw;
@@ -213,8 +214,18 @@ namespace NGit.Merge
 			foreach (KeyValuePair<string, DirCacheEntry> entry in toBeCheckedOut.EntrySet())
 			{
 				FilePath f = new FilePath(db.WorkTree, entry.Key);
-				CreateDir(f.GetParentFile());
-				DirCacheCheckout.CheckoutEntry(db, f, entry.Value, true);
+				if (entry.Value != null)
+				{
+					CreateDir(f.GetParentFile());
+					DirCacheCheckout.CheckoutEntry(db, f, entry.Value, true);
+				}
+				else
+				{
+					if (!f.Delete())
+					{
+						failingPathes.Put(entry.Key, ResolveMerger.MergeFailureReason.COULD_NOT_DELETE);
+					}
+				}
 				modifiedFiles.AddItem(entry.Key);
 			}
 		}
@@ -370,16 +381,29 @@ namespace NGit.Merge
 				Add(tw.RawPath, ours, DirCacheEntry.STAGE_0);
 				return true;
 			}
-			if (NonTree(modeT) && modeB == modeO && tw.IdEqual(T_BASE, T_OURS))
+			if (modeB == modeO && tw.IdEqual(T_BASE, T_OURS))
 			{
 				// OURS was not changed compared to base. All changes must be in
 				// THEIRS. Choose THEIRS.
-				DirCacheEntry e = Add(tw.RawPath, theirs, DirCacheEntry.STAGE_0);
-				if (e != null)
+				if (NonTree(modeT))
 				{
-					toBeCheckedOut.Put(tw.PathString, e);
+					DirCacheEntry e = Add(tw.RawPath, theirs, DirCacheEntry.STAGE_0);
+					if (e != null)
+					{
+						toBeCheckedOut.Put(tw.PathString, e);
+					}
+					return true;
 				}
-				return true;
+				else
+				{
+					if (modeT == 0)
+					{
+						// we want THEIRS ... but THEIRS contains the deletion of the
+						// file
+						toBeCheckedOut.Put(tw.PathString, null);
+						return true;
+					}
+				}
 			}
 			if (tw.IsSubtree)
 			{

@@ -126,9 +126,10 @@ namespace NGit.Api
 			this.description = description;
 			if (lowLevelResults != null)
 			{
-				foreach (string path in lowLevelResults.Keys)
+				foreach (KeyValuePair<string, NGit.Merge.MergeResult<Sequence>> result in lowLevelResults
+					.EntrySet())
 				{
-					AddConflict(path, lowLevelResults.Get(path));
+					AddConflict(result.Key, result.Value);
 				}
 			}
 		}

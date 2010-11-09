@@ -704,7 +704,7 @@ namespace NGit.Storage.Pack
 			// applies "Linus' Law" which states that newer files tend to be the
 			// bigger ones, because source files grow and hardly ever shrink.
 			//
-			Arrays.Sort(list, 0, cnt, new _IComparer_615());
+			Arrays.Sort(list, 0, cnt, new _IComparer_614());
 			// Above we stored the objects we cannot delta onto the end.
 			// Remove them from the list so we don't waste time on them.
 			while (0 < cnt && list[cnt - 1].IsDoNotDelta())
@@ -720,9 +720,9 @@ namespace NGit.Storage.Pack
 			monitor.EndTask();
 		}
 
-		private sealed class _IComparer_615 : IComparer<ObjectToPack>
+		private sealed class _IComparer_614 : IComparer<ObjectToPack>
 		{
-			public _IComparer_615()
+			public _IComparer_614()
 			{
 			}
 
@@ -793,7 +793,7 @@ namespace NGit.Storage.Pack
 				return;
 			}
 			DeltaCache dc_1 = new ThreadSafeDeltaCache(config);
-			ProgressMonitor pm = new ThreadSafeProgressMonitor(monitor);
+			ThreadSafeProgressMonitor pm = new ThreadSafeProgressMonitor(monitor);
 			// Guess at the size of batch we want. Because we don't really
 			// have a way for a thread to steal work from another thread if
 			// it ends early, we over partition slightly so the work units
@@ -839,6 +839,7 @@ namespace NGit.Storage.Pack
 				i += batchSize;
 				myTasks.AddItem(new DeltaTask(config, reader, dc_1, pm, batchSize, start, list));
 			}
+			pm.StartWorkers(myTasks.Count);
 			Executor executor = config.GetExecutor();
 			IList<Exception> errors = Sharpen.Collections.SynchronizedList(new AList<Exception
 				>());
@@ -846,7 +847,7 @@ namespace NGit.Storage.Pack
 			{
 				// Caller supplied us a service, use it directly.
 				//
-				RunTasks((ExecutorService)executor, myTasks, errors);
+				RunTasks((ExecutorService)executor, pm, myTasks, errors);
 			}
 			else
 			{
@@ -858,7 +859,7 @@ namespace NGit.Storage.Pack
 					ExecutorService pool = Executors.NewFixedThreadPool(threads);
 					try
 					{
-						RunTasks(pool, myTasks, errors);
+						RunTasks(pool, pm, myTasks, errors);
 					}
 					finally
 					{
@@ -885,14 +886,13 @@ namespace NGit.Storage.Pack
 					// asynchronous execution.  Wrap everything and hope it
 					// can schedule these for us.
 					//
-					CountDownLatch done = new CountDownLatch(myTasks.Count);
 					foreach (DeltaTask task in myTasks)
 					{
-						executor.Execute(new _Runnable_751(task, errors, done));
+						executor.Execute(new _Runnable_750(task, errors));
 					}
 					try
 					{
-						done.Await();
+						pm.WaitForCompletion();
 					}
 					catch (Exception)
 					{
@@ -927,14 +927,12 @@ namespace NGit.Storage.Pack
 			}
 		}
 
-		private sealed class _Runnable_751 : Runnable
+		private sealed class _Runnable_750 : Runnable
 		{
-			public _Runnable_751(DeltaTask task, IList<Exception> errors, CountDownLatch done
-				)
+			public _Runnable_750(DeltaTask task, IList<Exception> errors)
 			{
 				this.task = task;
 				this.errors = errors;
-				this.done = done;
 			}
 
 			public void Run()
@@ -947,22 +945,16 @@ namespace NGit.Storage.Pack
 				{
 					errors.AddItem(failure);
 				}
-				finally
-				{
-					done.CountDown();
-				}
 			}
 
 			private readonly DeltaTask task;
 
 			private readonly IList<Exception> errors;
-
-			private readonly CountDownLatch done;
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
-		private void RunTasks(ExecutorService pool, IList<DeltaTask> tasks, IList<Exception
-			> errors)
+		private void RunTasks(ExecutorService pool, ThreadSafeProgressMonitor pm, IList<DeltaTask
+			> tasks, IList<Exception> errors)
 		{
 			IList<Future<object>> futures = new AList<Future<object>>(tasks.Count);
 			foreach (DeltaTask task in tasks)
@@ -971,6 +963,7 @@ namespace NGit.Storage.Pack
 			}
 			try
 			{
+				pm.WaitForCompletion();
 				foreach (Future<object> f in futures)
 				{
 					try
