@@ -316,7 +316,8 @@ namespace MonoDevelop.CSharp.Resolver
 				
 				if (CallingMember is IProperty) {
 					IProperty property = (IProperty)callingMember;
-					if (property.HasSet && editor != null && property.SetRegion.Contains (resolvePosition.Line, editor.Caret.Column))
+					Console.WriteLine ("has set: "+ property.HasSet);
+					if (property.HasSet && editor != null && (!property.HasGet || !property.GetRegion.Contains (resolvePosition.Line, editor.Caret.Column)))
 						col.Add ("value");
 				}
 				
