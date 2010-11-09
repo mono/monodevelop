@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2010-05-21 20:55:03+0200\n"
-"PO-Revision-Date: 2010-11-09 03:35:00+0100\n"
+"PO-Revision-Date: 2010-11-09 04:54:59+0100\n"
 "Last-Translator: Lluis Sanchez Gual <lluis@novell.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1760,7 +1760,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1105
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:425
 msgid "View"
-msgstr ""
+msgstr "Vis"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1110
 msgid "View List"
@@ -1921,7 +1921,7 @@ msgstr ""
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:68
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:69
 msgid "Tools"
-msgstr ""
+msgstr "Verktøy"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1219
 msgid "Manage add-ins"
@@ -1943,15 +1943,15 @@ msgstr ""
 #: ../src/addins/MonoDevelop.GtkCore/templates/Window.xft.xml:4
 #: ../src/addins/MonoDevelop.GtkCore/templates/WindowPartial.xft.xml:4
 msgid "Window"
-msgstr ""
+msgstr "Vindu"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1238
 msgid "_Next Window"
-msgstr ""
+msgstr "_Neste Vindu"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1240
 msgid "Show next window"
-msgstr ""
+msgstr "Vis neste vindu"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1245
 msgid "_Previous Window"
@@ -1996,11 +1996,11 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1746
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/MonodocTreePad.cs:48
 msgid "Help"
-msgstr ""
+msgstr "Hjelp"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1288
 msgid "Show help"
-msgstr ""
+msgstr "Vis hjelp"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1294
 msgid "_Tip of the Day"
@@ -2022,7 +2022,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1916
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:171
 msgid "Search"
-msgstr ""
+msgstr "Søk"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1308
 msgid "_Find..."
@@ -2030,7 +2030,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1310
 msgid "Search for text"
-msgstr ""
+msgstr "Søk etter tekst"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1314
 msgid "_Replace..."
@@ -2038,7 +2038,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1316
 msgid "Search for and replace text"
-msgstr ""
+msgstr "Søk og erstatt tekst"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1320
 msgid "Find _Next"
@@ -2046,7 +2046,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1322
 msgid "Search forwards for the same text"
-msgstr ""
+msgstr "Søk fremmover etter samme tekst"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1326
 msgid "Find _Previous"
@@ -2054,7 +2054,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1327
 msgid "Search backwards for the same text"
-msgstr ""
+msgstr "Søk bakover etter samme tekst"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:1332
 msgid "Find _Next (Emacs behavior)"
@@ -2718,7 +2718,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:2165
 msgid "_Help"
-msgstr ""
+msgstr "_Hjelp"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:2169
 msgid "_Web"
@@ -2788,7 +2788,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:2173
 msgid "C# Help"
-msgstr ""
+msgstr "C# Hjelp"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.addin.xml:2174
 msgid "C# Corner"
@@ -4406,15 +4406,17 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs:162
 msgid "_Arguments:"
-msgstr ""
+msgstr "_Argumenter:"
 
+# Shortcut C?
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs:186
+#, fuzzy
 msgid "_Command:"
-msgstr ""
+msgstr "Kommando:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs:259
 msgid "_Title:"
-msgstr ""
+msgstr "_Tittel:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs:280
 msgid "_Working directory:"
@@ -4468,19 +4470,20 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:62
 msgid "Compact"
-msgstr ""
+msgstr "Kompakt"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:63
 msgid "Very compact"
-msgstr ""
+msgstr "Meget kompakt"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:98
 msgid "_Toolbar icon size:"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:110
+#, fuzzy
 msgid "User Interface Language:"
-msgstr ""
+msgstr "Språk på programmet"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs:121
 msgid "User Interface Theme:"
@@ -5700,16 +5703,17 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ProgressMonitoring/MessageDialogProgressMonitor.cs:123
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ProgressMonitoring/MultiTaskDialogProgressMonitor.cs:135
 msgid "WARNING: "
-msgstr ""
+msgstr "ADVARSEL:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ProgressMonitoring/MessageDialogProgressMonitor.cs:145
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ProgressMonitoring/MultiTaskDialogProgressMonitor.cs:157
 msgid "ERROR: "
-msgstr ""
+msgstr "FEIL:"
 
+# Single or multiple class?
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/CompletionListWindow.cs:620
 msgid "Gathering class information..."
-msgstr ""
+msgstr "Samler informasjon om klassen.."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/DeclarationViewWindow.cs:100
 msgid "{0} of {1} overloads"
@@ -5726,13 +5730,13 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ListWidget.cs:330
 msgid "No suggestions"
-msgstr ""
+msgstr "Ingen forslag"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ErrorDialog.cs:83
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ProgressDialog.cs:113
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.ExceptionCaughtDialog.cs:112
 msgid "Details"
-msgstr ""
+msgstr "Detaljer"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.MultiTaskProgressDialog.cs:27
 msgid "Progress"
@@ -5740,17 +5744,17 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.MultiTaskProgressDialog.cs:66
 msgid "Details:"
-msgstr ""
+msgstr "Detaljer:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OptionsDialog.cs:33
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:130
 #: ../src/addins/AspNet/MonoDevelop.AspNet.Mvc/gtk-gui/MonoDevelop.AspNet.Mvc.Gui.AddViewDialog.cs:299
 msgid "Options"
-msgstr ""
+msgstr "Alternativer"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.OptionsDialog.cs:80
 msgid "<span weight=\"bold\" size=\"x-large\">Title</span>"
-msgstr ""
+msgstr "<span weight=\"bold\" size=\"x-large\">Tittel</span>"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.ProgressDialog.cs:133
 msgid "GtkButton"
@@ -5774,7 +5778,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:428
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:456
 msgid "Save failed."
-msgstr ""
+msgstr "Lagring feilet."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:316
 msgid "No solution has been selected"
@@ -5839,14 +5843,18 @@ msgstr ""
 msgid "_Reload"
 msgstr ""
 
+# Shortcut M?
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/MessageService.cs:50
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1267
+#, fuzzy
 msgid "_Move"
-msgstr ""
+msgstr "Flytt"
 
+# Shortcut w?
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/MessageService.cs:53
+#, fuzzy
 msgid "Close _without Saving"
-msgstr ""
+msgstr "Lukk uten å lagre"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/MessageService.cs:54
 msgid "Build _without Saving"
@@ -5860,10 +5868,12 @@ msgstr ""
 msgid "_Proceed"
 msgstr ""
 
+# Shortcut R?
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/MessageService.cs:58
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:141
+#, fuzzy
 msgid "_Replace"
-msgstr ""
+msgstr "Erstatt"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/MessageService.cs:60
 msgid "_Overwrite file"
@@ -5871,7 +5881,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MimeTypePolicyOptionsPanel.cs:242
 msgid "Use default settings from '{0}'"
-msgstr ""
+msgstr "Bruk standard innstillinger fra '{0}'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MimeTypePolicyOptionsSection.cs:78
 msgid "_Policy:"
@@ -5889,12 +5899,12 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:105
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.NewConfigurationDialog.cs:76
 msgid "Platform:"
-msgstr ""
+msgstr "Plattform:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:155
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:228
 msgid "All Configurations"
-msgstr ""
+msgstr "Alle konfigurasjoner"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:326
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:333
@@ -5904,7 +5914,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectOptionsDialog.cs:47
 msgid "Project Options"
-msgstr ""
+msgstr "Prosjekt Alternativer"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectOptionsDialog.cs:56
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectDialog.cs:397
@@ -5914,8 +5924,9 @@ msgid ""
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectOptionsDialog.cs:87
+#, fuzzy
 msgid "The project could not be renamed."
-msgstr ""
+msgstr "Klarte ikke å endre navn på prosjektet."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectOptionsDialog.cs:96
 msgid "The file '{0}' already exist. Do you want to replace it?"
@@ -5924,7 +5935,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/RenameConfigDialog.cs:70
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewConfigurationDialog.cs:81
 msgid "Please enter a valid configuration name."
-msgstr ""
+msgstr "Vennligst skriv inn ett gyldig konfigurasjonsnavn"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/RenameConfigDialog.cs:72
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewConfigurationDialog.cs:83
@@ -5937,11 +5948,11 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectDialog.cs:87
 msgid "New Project"
-msgstr ""
+msgstr "Nytt Prosjekt"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectDialog.cs:297
 msgid "Project will be saved at"
-msgstr ""
+msgstr "Prosjektet vil bli lagret i"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectDialog.cs:402
 msgid "A Project with that name is already in your Project Space"
@@ -5969,7 +5980,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/AddMimeTypeDialog.cs:73
 msgid "Unknown type"
-msgstr ""
+msgstr "Ukjent type"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/AddMimeTypeDialog.cs:78
 msgid "Type '{0}' already registered"
@@ -6018,20 +6029,20 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectFileSelectorDialog.cs:48
 msgid "All files"
-msgstr ""
+msgstr "Alle filer"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectFileSelectorDialog.cs:66
 msgid "Project Folders"
-msgstr ""
+msgstr "Prosjektmapper"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:315
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.ExportProjectDialog.cs:32
 msgid "Export Project"
-msgstr ""
+msgstr "Eksporter Prosjekt"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:350
 msgid "Project saved."
-msgstr ""
+msgstr "Prosjektet ble lagret."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:371
 msgid "Solution saved."
@@ -6078,7 +6089,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:801
 msgid "Deleting Files..."
-msgstr ""
+msgstr "Sletter filer.."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:809
 msgid "The file or directory '{0}' could not be deleted."
@@ -6148,7 +6159,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1265
 msgid "_Link"
-msgstr ""
+msgstr "_Link"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1297
 msgid ""
@@ -6184,7 +6195,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1518
 msgid "Close Project"
-msgstr ""
+msgstr "Lukk Prosjekt"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1567
 msgid "Code completion database generation"
@@ -6213,7 +6224,7 @@ msgstr ""
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:141
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ThreadsPad.cs:87
 msgid "Name"
-msgstr ""
+msgstr "Navn"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/CustomExecutionModeManagerDialog.cs:53
 msgid "Execution Mode"
@@ -6221,7 +6232,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/CustomExecutionModeManagerDialog.cs:54
 msgid "Available for"
-msgstr ""
+msgstr "Tilgjengelig for"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/CustomExecutionModeManagerDialog.cs:76
 msgid "Current solution"
@@ -6242,7 +6253,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParametersPreview.cs:54
 msgid "Command Line Options"
-msgstr ""
+msgstr "Kommandolinje Alternativer"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParametersPreview.cs:61
 msgid "Environment Variables"
@@ -6256,7 +6267,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:138
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:188
 msgid "Directory"
-msgstr ""
+msgstr "Mappe"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectReferencePanel.cs:158
 msgid "(Cyclic dependencies not allowed)"
@@ -6274,16 +6285,16 @@ msgstr ""
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:105
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:134
 msgid "Reference"
-msgstr ""
+msgstr "Referanse"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:169
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:454
 msgid "Packages"
-msgstr ""
+msgstr "Pakker"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:170
 msgid "Projects"
-msgstr ""
+msgstr "Prosjekter"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:171
 msgid ".Net Assembly"
@@ -6295,7 +6306,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.BaseDirectoryPanelWidget.cs:55
 msgid "Root directory:"
-msgstr ""
+msgstr "Rotmappe:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CodeFormattingPanelWidget.cs:38
 msgid "This is a summary of all file types used in the project or solution:"
@@ -6311,7 +6322,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CombineInformationWidget.cs:77
 msgid "_Version:"
-msgstr ""
+msgstr "_Versjon:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CommonAssemblySigningPreferences.cs:30
 msgid "_Sign this assembly"
@@ -6358,11 +6369,11 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CustomCommandWidget.cs:82
 msgid "Clean"
-msgstr ""
+msgstr "Rens"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CustomCommandWidget.cs:83
 msgid "After Clean"
-msgstr ""
+msgstr "Etter rens"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CustomCommandWidget.cs:84
 msgid "Custom Command"
@@ -6374,7 +6385,7 @@ msgstr ""
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:575
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:684
 msgid "Browse..."
-msgstr ""
+msgstr "Bla igjennom.."
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CustomCommandWidget.cs:197
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Execution.CustomExecutionModeWidget.cs:63
@@ -6385,7 +6396,7 @@ msgstr ""
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.CommandDeployEditorWidget.cs:35
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:417
 msgid "Command:"
-msgstr ""
+msgstr "Kommando:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CustomCommandWidget.cs:219
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.NewConfigurationDialog.cs:68
@@ -6400,7 +6411,7 @@ msgstr ""
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:340
 #: ../src/addins/AspNet/MonoDevelop.AspNet/gtk-gui/MonoDevelop.AspNet.Deployment.WebDeployTargetEditor.cs:85
 msgid "Name:"
-msgstr ""
+msgstr "Navn:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CustomCommandWidget.cs:250
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.RunOptionsPanelWidget.cs:72
@@ -6429,7 +6440,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.GeneralProjectOptionsWidget.cs:164
 #: ../src/addins/CBinding/gtk-gui/CBinding.PackageDetails.cs:102
 msgid "Version:"
-msgstr ""
+msgstr "Versjon:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.GeneralProjectOptionsWidget.cs:243
 msgid "<b>On Project Load</b>"
@@ -6453,7 +6464,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanelWidget.cs:87
 msgid "Directory structure:"
-msgstr ""
+msgstr "Mappestruktur:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanelWidget.cs:98
 msgid "_Flat"
@@ -6465,7 +6476,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanelWidget.cs:140
 msgid "Preview"
-msgstr ""
+msgstr "Forhåndsvisning:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanelWidget.cs:158
 msgid ""
@@ -6497,7 +6508,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.RunOptionsPanelWidget.cs:48
 msgid "Paramet_ers:"
-msgstr ""
+msgstr "Param_etere:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.RunOptionsPanelWidget.cs:103
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Execution.CustomExecutionModeWidget.cs:88
@@ -6510,7 +6521,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CombineEntryConfigurationsPanelWidget.cs:89
 msgid "Rename"
-msgstr ""
+msgstr "Endre navn"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.StartupOptionsPanelWidget.cs:43
 msgid "Single startup project:"
@@ -6522,7 +6533,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:222
 msgid "File Type"
-msgstr ""
+msgstr "Filtype"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:232
 msgid "Policy"
@@ -6543,7 +6554,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CustomCommandWidget.cs:102
 msgid "Select File"
-msgstr ""
+msgstr "Velg fil"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:50
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/PolicyOptionsPanel.cs:57
@@ -6592,7 +6603,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.AddMimeTypeDialog.cs:27
 msgid "Add File Type"
-msgstr ""
+msgstr "Legg til filtype"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.AddMimeTypeDialog.cs:42
 msgid "Enter a file extension or a mime type name:"
@@ -6600,7 +6611,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.ConfirmProjectDeleteDialog.cs:33
 msgid "Delete Project"
-msgstr ""
+msgstr "Slett prosjekt"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.ConfirmProjectDeleteDialog.cs:49
 msgid "Please select which files and folders you want to delete:"
@@ -6634,11 +6645,11 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.ExportProjectDialog.cs:87
 msgid "New format:"
-msgstr ""
+msgstr "Nytt format:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.ExportProjectDialog.cs:98
 msgid "Current format:"
-msgstr ""
+msgstr "Nåværende format:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.FeatureSelectorDialog.cs:21
 msgid "New Project Features"
@@ -6654,15 +6665,15 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.IncludeNewFilesDialog.cs:71
 msgid "_Exclude All"
-msgstr ""
+msgstr "_Eksluder Alle"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.IncludeNewFilesDialog.cs:83
 msgid "_Include All"
-msgstr ""
+msgstr "_Inkluder Alle"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.NewConfigurationDialog.cs:29
 msgid "New Configuration"
-msgstr ""
+msgstr "Ny konfigurasjon"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.NewConfigurationDialog.cs:91
 msgid "Create configurations for all solution items"
@@ -6670,7 +6681,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.NewFileDialog.cs:57
 msgid "New File"
-msgstr ""
+msgstr "Ny fil"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.NewFileDialog.cs:121
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.NewProjectDialog.cs:156
@@ -6701,7 +6712,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.NewProjectDialog.cs:265
 msgid "N_ame:"
-msgstr ""
+msgstr "N_avn:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.NewProjectDialog.cs:275
 msgid "_Solution name:"
@@ -6768,11 +6779,11 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Execution.CustomExecutionModeDialog.cs:158
 msgid "Available for:"
-msgstr ""
+msgstr "Tilgjengelig for:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Execution.CustomExecutionModeDialog.cs:166
 msgid "Only this project"
-msgstr ""
+msgstr "Kun dette prosjektet"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Execution.CustomExecutionModeDialog.cs:167
 msgid "Only this solution"
@@ -6789,27 +6800,27 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Execution.CustomExecutionModeWidget.cs:74
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.CommandDeployEditorWidget.cs:56
 msgid "Arguments:"
-msgstr ""
+msgstr "Argumenter:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Execution.MonoExecutionParametersPreview.cs:17
 msgid "Options Preview"
-msgstr ""
+msgstr "Forhåndsvisning av alternativer"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Execution.MonoExecutionParametersWidget.cs:55
 msgid "Clear All Options"
-msgstr ""
+msgstr "Fjern alle alternativer"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Execution.MonoExecutionParametersWidget.cs:70
 msgid "Preview Options"
-msgstr ""
+msgstr "Forhåndsvis alternativer"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/EnvVarList.cs:51
 msgid "Variable"
-msgstr ""
+msgstr "Variabel"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/EnvVarList.cs:62
 msgid "Click here to add a new variable"
-msgstr ""
+msgstr "Klikk her for å legge til en ny variabel"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/HelpOperations.cs:106
 msgid ""
@@ -6841,7 +6852,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/StringTagSelectorButton.cs:85
 msgid "More"
-msgstr ""
+msgstr "Mer"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderFileNodeBuilder.cs:85
 msgid ""
@@ -6864,15 +6875,16 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs:102
 msgid "Include _Files"
-msgstr ""
+msgstr "Inkluder _Filer"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs:114
 msgid "Include _Types"
-msgstr ""
+msgstr "Inkluder _Typer"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs:127
+#, fuzzy
 msgid "Include _Members"
-msgstr ""
+msgstr "Inkluder _Medlemmer"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs:273
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.NavigateToDialog.NavigateToDialog.cs:72
@@ -6891,7 +6903,7 @@ msgstr[1] ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.NavigateToDialog.NavigateToDialog.cs:25
 msgid "Navigate to"
-msgstr ""
+msgstr "Naviger til"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.NavigateToDialog.NavigateToDialog.cs:45
 msgid "_Search for:"
@@ -6899,46 +6911,46 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.NavigateToDialog/NavigateToCommand.cs:41
 msgid "Go to Type"
-msgstr ""
+msgstr "Gå til Type"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.NavigateToDialog/NavigateToCommand.cs:65
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:79
 msgid "Go to File"
-msgstr ""
+msgstr "Gå til Fil"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.NavigateToDialog/SearchResult.cs:119
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.NavigateToDialog/SearchResult.cs:169
 msgid "from Project \"{0}\""
-msgstr ""
+msgstr "fra Prosjekt '{0}'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.NavigateToDialog/SearchResult.cs:119
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.NavigateToDialog/SearchResult.cs:168
 msgid "from \"{0}\""
-msgstr ""
+msgstr "fra '{0}'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.NavigateToDialog/SearchResult.cs:121
 msgid "from Project \"{0} in {1}\""
-msgstr ""
+msgstr "fra Prosjekt '{0}' i '{1}'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.NavigateToDialog/SearchResult.cs:122
 msgid "from \"{0} in {1}\""
-msgstr ""
+msgstr "fra '{0}' i '{1}'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.NavigateToDialog/SearchResult.cs:168
 msgid "from \"{0}\" in Project \"{1}\""
-msgstr ""
+msgstr "fra '{0}' i prosjekt '{1}'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.NavigateToDialog/SearchResult.cs:234
 msgid "from Type \"{0}\""
-msgstr ""
+msgstr "fra Type '{0}'"
 
 #: ../src/core/Mono.Texteditor/Styles/BrownStyle.xml:24
 msgid "Light color scheme using brownish colors."
-msgstr ""
+msgstr "Lysebrune farger"
 
 #: ../src/core/Mono.Texteditor/Styles/C64Style.xml:24
 msgid "A style that uses the old Commodore 64 colors"
-msgstr ""
+msgstr "Commodore 64 farger"
 
 #: ../src/core/Mono.Texteditor/Styles/OblivionStyle.xml:24
 msgid "Dark color scheme using tango colors."
@@ -6950,11 +6962,11 @@ msgstr ""
 
 #: ../src/core/Mono.Texteditor/Styles/VisualStudioStyle.xml:23
 msgid "Microsoft Visual Studio color scheme."
-msgstr ""
+msgstr "Microsoft Visual Studio farger"
 
 #: ../src/core/Mono.Texteditor/Styles/IrBlackStyle.xml:24
 msgid "IR Black style from Vim"
-msgstr ""
+msgstr "IR Black stil fra Vim"
 
 #: ../src/addins/ILAsmBinding/ILAsmConsoleProject.xpt.xml:7
 #: ../src/addins/VBNetBinding/templates/VBConsoleApplicationProject.xpt.xml:7
@@ -6962,7 +6974,7 @@ msgstr ""
 #: ../src/addins/CBinding/templates/ConsoleCProject.xpt.xml:8
 #: ../src/addins/CBinding/templates/ConsoleCppProject.xpt.xml:8
 msgid "Console Project"
-msgstr ""
+msgstr "Konsoll Prosjekt"
 
 #: ../src/addins/ILAsmBinding/ILAsmConsoleProject.xpt.xml:8
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:129
@@ -6983,7 +6995,7 @@ msgstr ""
 
 #: ../src/addins/ILAsmBinding/ILAsmCompilerManager.cs:94
 msgid "You may need to install the .NET SDK."
-msgstr ""
+msgstr "Det kan hende du må installere .NET SDK."
 
 #: ../src/addins/ILAsmBinding/Gui/CompilerParametersPanelWidget.cs:41
 #: ../src/addins/VBNetBinding/Gui/ProjectOptionsPanelWidget.cs:55
@@ -6999,7 +7011,7 @@ msgstr ""
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:59
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs:99
 msgid "Library"
-msgstr ""
+msgstr "Bibliotek"
 
 #: ../src/addins/ILAsmBinding/gtk-gui/ILAsmBinding.CompilerParametersPanelWidget.cs:56
 #: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ProjectOptionsPanelWidget.cs:227
@@ -7034,7 +7046,7 @@ msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:98
 msgid "_Log"
-msgstr ""
+msgstr "_Logg"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:102
 msgid "_Review Changes"
@@ -7046,7 +7058,7 @@ msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:110
 msgid "_Publish..."
-msgstr ""
+msgstr "_Publiser.."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:114
 msgid "C_heckout..."
@@ -7054,11 +7066,11 @@ msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:118
 msgid "Lock"
-msgstr ""
+msgstr "Lås"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:121
 msgid "Release Lock"
-msgstr ""
+msgstr "Lås opp"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:124
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:128
@@ -7096,11 +7108,11 @@ msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:93
 msgid "View Changes"
-msgstr ""
+msgstr "Vis Endringer"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:102
 msgid "View File"
-msgstr ""
+msgstr "Vis Fil"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:109
 msgid "Revert changes from this revision"
@@ -7116,19 +7128,19 @@ msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:155
 msgid "Date"
-msgstr ""
+msgstr "Dato"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:156
 msgid "Author"
-msgstr ""
+msgstr "Forfatter"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:157
 msgid "Message"
-msgstr ""
+msgstr "Melding"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:172
 msgid "(No message)"
-msgstr ""
+msgstr "(Ingen melding)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:183
 msgid "Operation"
@@ -7138,7 +7150,7 @@ msgstr ""
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/SolutionItemDescriptor.cs:56
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/WorkspaceItemDescriptor.cs:53
 msgid "File Path"
-msgstr ""
+msgstr "Filbane"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:238
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:160
@@ -7147,24 +7159,24 @@ msgstr ""
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:543
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:644
 msgid "Add"
-msgstr ""
+msgstr "Legg til"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:242
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:162
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.addin.xml:50
 msgid "Delete"
-msgstr ""
+msgstr "Slett"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:246
 msgid "Modify"
-msgstr ""
+msgstr "Endre"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:250
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs:354
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:114
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanelWidget.cs:398
 msgid "Replace"
-msgstr ""
+msgstr "Erstatt"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:330
 msgid "Retrieving changes in {0} at revision {1}..."
@@ -7189,7 +7201,7 @@ msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:119
 msgid "Revert"
-msgstr ""
+msgstr "Reverser"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:124
 msgid "Show Remote Status"
@@ -7201,7 +7213,7 @@ msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:136
 msgid "Open"
-msgstr ""
+msgstr "Åpne"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:143
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.TimeLineViewWindow.cs:55
@@ -7217,20 +7229,21 @@ msgstr ""
 #: ../src/addins/MonoDevelop.Refactoring/gtk-gui/MonoDevelop.Refactoring.OverridesImplementsDialog.cs:61
 #: ../src/addins/MonoDevelop.Refactoring/gtk-gui/MonoDevelop.Refactoring.EncapsulateFieldDialog.cs:82
 msgid "Select All"
-msgstr ""
+msgstr "Velg alle"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:160
+#, fuzzy
 msgid "Select None"
-msgstr ""
+msgstr "Fjern alle"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:196
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:32
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:218
 msgid "Remote Status"
-msgstr ""
+msgstr "Ekstern status"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:239
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:98
@@ -7299,11 +7312,11 @@ msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/AddRemoveMoveCommand.cs:47
 msgid "Adding..."
-msgstr ""
+msgstr "Legger til..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/AddRemoveMoveCommand.cs:142
 msgid "Removing..."
-msgstr ""
+msgstr "Fjerner..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CheckoutCommand.cs:40
 msgid "Checkout {0}..."
@@ -7356,7 +7369,7 @@ msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:56
 msgid "Reverting ..."
-msgstr ""
+msgstr "Reverserer..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:64
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:117
@@ -7385,16 +7398,16 @@ msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:156
 msgid "Modified"
-msgstr ""
+msgstr "Endret"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:158
 msgid "Conflict"
-msgstr ""
+msgstr "Konflikt"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:164
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:173
 msgid "Missing"
-msgstr ""
+msgstr "Mangler"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:488
 msgid "Updating version control repository"
@@ -7413,7 +7426,7 @@ msgstr ""
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:106
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog.cs:67
 msgid "Type:"
-msgstr ""
+msgstr "Type:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:141
 msgid "Connect to Repository"
@@ -7429,11 +7442,11 @@ msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:315
 msgid "Message:"
-msgstr ""
+msgstr "Melding:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:326
 msgid "Module name:"
-msgstr ""
+msgstr "Modulnavn:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog.cs:346
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.LocalFileCopyConfigurationEditorWidget.cs:27
@@ -7446,26 +7459,26 @@ msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs:127
 msgid "Server:"
-msgstr ""
+msgstr "Tjener:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs:138
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:457
 msgid "Url:"
-msgstr ""
+msgstr "Url:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs:147
 msgid "Protocol:"
-msgstr ""
+msgstr "Protokoll:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs:158
 msgid "Port:"
-msgstr ""
+msgstr "Port:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs:180
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.UserPasswordDialog.cs:103
 #: ../src/addins/MonoDevelop.WebReferences/gtk-gui/MonoDevelop.WebReferences.Dialogs.UserPasswordDialog.cs:95
 msgid "User:"
-msgstr ""
+msgstr "Bruker:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs:191
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.ClientCertificatePasswordDialog.cs:82
@@ -7473,7 +7486,7 @@ msgstr ""
 #: ../src/addins/MonoDevelop.WebReferences/gtk-gui/MonoDevelop.WebReferences.Dialogs.UserPasswordDialog.cs:84
 #: ../src/addins/AspNet/MonoDevelop.AspNet/gtk-gui/MonoDevelop.AspNet.Gui.XspOptionsPanelWidget.cs:399
 msgid "Password:"
-msgstr ""
+msgstr "Passord:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:32
 msgid "Commit Files"
@@ -7515,19 +7528,19 @@ msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/LockCommand.cs:56
 msgid "Locking..."
-msgstr ""
+msgstr "Låser..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/LockCommand.cs:64
 msgid "Lock operation completed."
-msgstr ""
+msgstr "Låsing fullført."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/UnlockCommand.cs:58
 msgid "Unlocking..."
-msgstr ""
+msgstr "Låser opp..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/UnlockCommand.cs:66
 msgid "Unlock operation completed."
-msgstr ""
+msgstr "Lås opp fullført."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.CommitMessageStylePanelWidget.cs:64
 msgid "Message Header:"
@@ -7551,7 +7564,7 @@ msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.CommitMessageStylePanelWidget.cs:135
 msgid "One line per file"
-msgstr ""
+msgstr "En linje per fil"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.CommitMessageStylePanelWidget.cs:147
 msgid "Use bullets"
@@ -16789,7 +16802,7 @@ msgstr ""
 
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumenationChartView.cs:85
 msgid "List View"
-msgstr ""
+msgstr "Listevisning"
 
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.NewProfile.cs:21
 msgid "New View"
