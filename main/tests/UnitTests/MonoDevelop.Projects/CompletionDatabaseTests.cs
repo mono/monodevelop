@@ -879,8 +879,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (5, expr2.Value);
 			
 			Assert.AreEqual (1, att.NamedArguments.Count);
-			Assert.IsTrue (att.NamedArguments.ContainsKey ("Foo"));
-			var expr3 = att.NamedArguments["Foo"] as System.CodeDom.CodePrimitiveExpression;
+			Assert.IsTrue (att.NamedArguments.ContainsKey ("Blah"));
+			var expr3 = att.NamedArguments["Blah"] as System.CodeDom.CodePrimitiveExpression;
 			Assert.IsNotNull (expr3);
 			Assert.AreEqual ("str2", expr3.Value);
 		}
