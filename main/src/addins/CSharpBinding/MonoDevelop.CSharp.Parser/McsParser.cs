@@ -800,8 +800,12 @@ namespace MonoDevelop.CSharp.Parser
 				property.GetterModifier = property.SetterModifier = ConvertModifiers (p.ModFlags);
 				
 				var location = LocationsBag.GetMemberLocation (p);
-				if (location != null)
-					property.BodyRegion = ConvertRegion (location[0], location[1]);
+				if (location != null && location.Count >= 1) {
+					var endLoc = location.Count == 1 ? location[0] : location[1];
+					property.BodyRegion = ConvertRegion (location[0], endLoc);
+				} else {
+					property.BodyRegion = DomRegion.Empty;
+				}
 				property.ReturnType = ConvertReturnType (p.TypeName);
 				
 				AddAttributes (property, p.OptAttributes);
@@ -864,8 +868,12 @@ namespace MonoDevelop.CSharp.Parser
 				indexer.Location = Convert (i.Location);
 				indexer.GetterModifier = indexer.SetterModifier = ConvertModifiers (i.ModFlags);
 				var location = LocationsBag.GetMemberLocation (i);
-				if (location != null)
-					indexer.BodyRegion = ConvertRegion (location[0], location[1]);
+				if (location != null && location.Count >= 1) {
+					var endLoc = location.Count == 1 ? location[0] : location[1];
+					indexer.BodyRegion = ConvertRegion (location[0], endLoc);
+				} else {
+					indexer.BodyRegion = DomRegion.Empty;
+				}
 				
 				indexer.ReturnType = ConvertReturnType (i.TypeName);
 				AddParameter (indexer, i.Parameters);
