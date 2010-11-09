@@ -263,7 +263,9 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (types.Contains ("Library1.CExtraContainerSub"));
 			Assert.IsTrue (types.Contains ("Library1.CExtraContainerInnerSub"));
 			Assert.IsTrue (types.Contains ("Library1.ISimple"));
-			Assert.AreEqual (7, types.Count);
+			Assert.IsTrue (types.Contains ("Library1.TestAttribute"));
+			
+			Assert.AreEqual (8, types.Count);
 		}
 		
 		[Test]
