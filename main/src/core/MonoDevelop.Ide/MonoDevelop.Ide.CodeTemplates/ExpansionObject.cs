@@ -117,7 +117,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			ITextEditorResolver textEditorResolver = CurrentContext.Document.GetContent <ITextEditorResolver> ();
 			if (textEditorResolver != null) {
 				ResolveResult result = textEditorResolver.GetLanguageItem (CurrentContext.Document.Editor.Document.LocationToOffset (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column), var);
-				if (result != null && (result.ResolvedType.ArrayDimensions > 0 || result.ResolvedType.FullName == DomReturnType.String.FullName))
+				if (result != null && result.ResolvedType != null && (result.ResolvedType.ArrayDimensions > 0 || result.ResolvedType.FullName == DomReturnType.String.FullName))
 					return "Length";
 			}
 			return "Count";
@@ -233,7 +233,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			case "GetSimpleTypeName":
 				return new CodeTemplateListDataProvider (GetSimpleTypeName (match.Groups[2].Value.Trim ('"')));
 			case "GetLengthProperty":
-				return new CodeTemplateListDataProvider (GetLengthProperty (callback, match.Groups[2].Value.Trim ('"')));
+				return new CodeTemplateListDataProvider (GetLengthProperty (callback, match.Groups == null || match.Groups.Count < 3 ? null : match.Groups[2].Value.Trim ('"')));
 			case "GetComponentTypeOf":
 				return new CodeTemplateListDataProvider (GetComponentTypeOf (callback, match.Groups[2].Value.Trim ('"')));
 			}
