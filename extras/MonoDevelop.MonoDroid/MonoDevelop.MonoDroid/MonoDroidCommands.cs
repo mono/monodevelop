@@ -126,11 +126,13 @@ namespace MonoDevelop.MonoDroid
 	{
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = MonoDroidFramework.HasAndroidJavaSdks;
 		}
 		
 		protected override void Run ()
 		{
+			if (!MonoDroidFramework.EnsureSdksInstalled ())
+				return;
+
 			MonoDroidFramework.Toolbox.StartAvdManager ();
 		}
 	}
@@ -143,6 +145,9 @@ namespace MonoDevelop.MonoDroid
 		
 		protected override void Run ()
 		{
+			if (!MonoDroidFramework.EnsureSdksInstalled ())
+				return;
+
 			MonoDroidDeviceConsole.Run ();
 		}
 	}

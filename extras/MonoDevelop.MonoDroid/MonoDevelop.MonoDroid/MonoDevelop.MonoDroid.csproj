@@ -96,6 +96,8 @@
     <Compile Include="Adb\DeviceManager.cs" />
     <Compile Include="MonoDroidUtility.cs" />
     <Compile Include="MonoDroidDeviceConsole.cs" />
+    <Compile Include="Gui\MonoDroidSdkSettingsDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.MonoDroid.Gui.MonoDroidSdkSettingsDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MonoDroid.addin.xml">

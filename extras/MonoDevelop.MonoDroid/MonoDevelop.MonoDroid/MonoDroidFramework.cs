@@ -96,9 +96,16 @@ namespace MonoDevelop.MonoDroid
 			if (HasAndroidJavaSdks)
 				return true;
 			
-			//FIXME: prompt user for locations
+			var dialog = new MonoDevelop.MonoDroid.Gui.MonoDroidSdkSettingsDialog ();
+			try {
+				int response = dialog.Run ();
+				if (response == (int)Gtk.ResponseType.Ok)
+					dialog.ApplyChanges ();
+			} finally {
+				dialog.Destroy ();
+			}
 			
-			return false;
+			return HasAndroidJavaSdks;
 		}
 		
 		/// <summary>

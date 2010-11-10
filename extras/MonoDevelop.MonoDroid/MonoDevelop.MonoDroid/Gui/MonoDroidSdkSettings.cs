@@ -49,6 +49,8 @@ namespace MonoDevelop.MonoDroid.Gui
 	partial class MonoDroidSdkSettingsWidget : Gtk.Bin
 	{
 		string[] pathDirs;
+		bool isAndroidPathValid;
+		bool isJavaPathValid;
 		
 		public MonoDroidSdkSettingsWidget ()
 		{
@@ -66,13 +68,27 @@ namespace MonoDevelop.MonoDroid.Gui
 			
 			androidFolderEntry.PathChanged += delegate {
 				ValidateAndroid ();
+				OnSettingsChanged (EventArgs.Empty);
 			};
 			javaFolderEntry.PathChanged += delegate {
 				ValidateJava ();
+				OnSettingsChanged (EventArgs.Empty);
 			};
 			
 			ValidateAndroid ();
 			ValidateJava ();
+		}
+		
+		public bool IsAndroidPathValid {
+			get {
+				return isAndroidPathValid;
+			}
+		}
+		
+		public bool IsJavaPathValid {
+			get {
+				return isJavaPathValid;
+			}
 		}
 		
 		void ValidateAndroid ()
@@ -83,9 +99,11 @@ namespace MonoDevelop.MonoDroid.Gui
 				if (!MonoDroidSdk.ValidateAndroidSdkLocation (location)) {
 					androidLocationMessage.Text = GettextCatalog.GetString ("No SDK found at specified location.");
 					androidLocationIcon.Stock = Gtk.Stock.Cancel;
+					isAndroidPathValid = false;
 				} else {
 					androidLocationMessage.Text = GettextCatalog.GetString ("SDK found at specified location.");
 					androidLocationIcon.Stock = Gtk.Stock.Apply;
+					isAndroidPathValid = true;
 				}
 				return;
 			}
@@ -94,9 +112,11 @@ namespace MonoDevelop.MonoDroid.Gui
 			if (location.IsNullOrEmpty) {
 				androidLocationMessage.Text = GettextCatalog.GetString ("SDK not found. Please specify location.");
 				androidLocationIcon.Stock = Gtk.Stock.Cancel;
+				isAndroidPathValid = false;
 			} else {
 				androidLocationMessage.Text = GettextCatalog.GetString ("SDK found automatically.");
 				androidLocationIcon.Stock = Gtk.Stock.Apply;
+				isAndroidPathValid = true;
 			}
 		}
 		
@@ -108,9 +128,11 @@ namespace MonoDevelop.MonoDroid.Gui
 				if (!MonoDroidSdk.ValidateJavaSdkLocation (location)) {
 					javaLocationMessage.Text = GettextCatalog.GetString ("No SDK found at specified location.");
 					javaLocationIcon.Stock = Gtk.Stock.Cancel;
+					isJavaPathValid = false;
 				} else {
 					javaLocationMessage.Text = GettextCatalog.GetString ("SDK found at specified location.");
 					javaLocationIcon.Stock = Gtk.Stock.Apply;
+					isJavaPathValid = true;
 				}
 				return;
 			}
@@ -119,9 +141,11 @@ namespace MonoDevelop.MonoDroid.Gui
 			if (location.IsNullOrEmpty) {
 				javaLocationMessage.Text = GettextCatalog.GetString ("SDK not found. Please specify location.");
 				javaLocationIcon.Stock = Gtk.Stock.Cancel;
+				isAndroidPathValid = false;
 			} else {
 				javaLocationMessage.Text = GettextCatalog.GetString ("SDK found automatically.");
 				javaLocationIcon.Stock = Gtk.Stock.Apply;
+				isJavaPathValid = true;
 			}
 		}
 		
@@ -129,6 +153,14 @@ namespace MonoDevelop.MonoDroid.Gui
 		{
 			MonoDroidSdk.SetConfiguredSdkLocations (androidFolderEntry.Path, javaFolderEntry.Path);
 		}
+		
+		protected virtual void OnSettingsChanged (EventArgs args)
+		{
+			if (SettingsChanged != null)
+				SettingsChanged (this, args);
+		}
+		
+		public event EventHandler SettingsChanged;
 	}
 }
 
