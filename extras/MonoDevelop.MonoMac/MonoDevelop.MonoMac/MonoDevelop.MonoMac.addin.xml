@@ -6,7 +6,7 @@
        url         = "http://monodevelop.com/"
        description = "Support for developing MonoMac applications"
        category    = "Mac Development"
-       version     = "2.4.0.7">
+       version     = "2.4.0.8">
 	
 	<Runtime>
 		<Import file = "templates/MonoMacProject.xpt.xml"/>
