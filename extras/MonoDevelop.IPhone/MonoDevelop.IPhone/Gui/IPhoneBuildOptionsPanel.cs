@@ -77,7 +77,8 @@ namespace MonoDevelop.IPhone.Gui
 		
 		string[] i18n = { "cjk", "mideast", "other", "rare", "west" };
 		
-		ListStore store;
+		ListStore i18nStore = new ListStore (typeof (string), typeof (bool));
+		ListStore sdkStore = new ListStore (typeof (string), typeof (IPhoneSdkVersion));
 		
 		public IPhoneBuildOptionsWidget ()
 		{
@@ -88,13 +89,14 @@ namespace MonoDevelop.IPhone.Gui
 			linkCombo.AppendText ("Link SDK assemblies only"); //MtouchLinkMode.SdkOnly
 			linkCombo.AppendText ("Link all assemblies"); //MtouchLinkMode.All
 			
-			foreach (var v in IPhoneFramework.InstalledSdkVersions)
-				sdkComboEntry.AppendText (v.ToString ());
+			//FIXME: have a "default SDK" entry
 			
-			sdkComboEntry.Changed += HandleSdkComboEntryChanged;
 			
-			store = new ListStore (typeof (string), typeof (bool));
-			i18nTreeView.Model = store;
+			
+			sdkCombo.Changed += HandleSdkComboChanged;
+			
+			i18nTreeView.Model = i18nStore;
+			sdkCombo.Model = sdkStore;
 			
 			var toggle = new CellRendererToggle ();
 			i18nTreeView.AppendColumn ("", toggle, "active", 1);
@@ -102,8 +104,8 @@ namespace MonoDevelop.IPhone.Gui
 			i18nTreeView.HeadersVisible = false;
 			toggle.Toggled += delegate (object o, ToggledArgs args) {
 				TreeIter iter;
-				if (store.GetIter (out iter, new TreePath (args.Path)))
-					store.SetValue (iter, 1, !(bool)store.GetValue (iter, 1));
+				if (i18nStore.GetIter (out iter, new TreePath (args.Path)))
+					i18nStore.SetValue (iter, 1, !(bool)i18nStore.GetValue (iter, 1));
 			};
 			
 			this.ShowAll ();
@@ -112,13 +114,11 @@ namespace MonoDevelop.IPhone.Gui
 		/// <summary>
 		/// Populates the minOSComboEntry with value valid for the current sdkComboEntry value.
 		/// </summary>
-		void HandleSdkComboEntryChanged (object sender, EventArgs e)
+		void HandleSdkComboChanged (object sender, EventArgs e)
 		{
 			((ListStore)minOSComboEntry.Model).Clear ();
-			IPhoneSdkVersion sdkVer = IPhoneSdkVersion.Default;
-			try {
-				sdkVer = IPhoneSdkVersion.Parse (sdkComboEntry.Entry.Text);
-			} catch {}
+			var sdkVer = GetSdkValue ().ResolveIfDefault ();
+			
 			foreach (var v in IPhoneFramework.KnownOSVersions)
 				if (v.CompareTo (sdkVer) <= 0)
 					minOSComboEntry.AppendText (v.ToString ());
@@ -129,7 +129,7 @@ namespace MonoDevelop.IPhone.Gui
 			extraArgsEntry.Entry.Text = cfg.MtouchExtraArgs ?? "";
 			debugCheck.Active = cfg.MtouchDebug;
 			linkCombo.Active = (int) cfg.MtouchLink;
-			sdkComboEntry.Entry.Text = cfg.MtouchSdkVersion;
+			LoadSdkValues (cfg.MtouchSdkVersion);
 			minOSComboEntry.Entry.Text = cfg.MtouchMinimumOSVersion;
 			LoadI18nValues (cfg.MtouchI18n);
 		}
@@ -137,23 +137,55 @@ namespace MonoDevelop.IPhone.Gui
 		public void StorePanelContents (IPhoneProjectConfiguration cfg)
 		{
 			cfg.MtouchExtraArgs = NullIfEmpty (extraArgsEntry.Entry.Text);
-			cfg.MtouchSdkVersion = sdkComboEntry.Entry.Text; //FIXME: validate this?
+			cfg.MtouchSdkVersion = GetSdkValue ();
 			cfg.MtouchMinimumOSVersion = minOSComboEntry.Entry.Text; //FIXME: validate this?
 			cfg.MtouchDebug = debugCheck.Active;
 			cfg.MtouchLink = (MtouchLinkMode) linkCombo.Active;
 			cfg.MtouchI18n = GetI18nValues ();
 		}
 		
+		void LoadSdkValues (IPhoneSdkVersion selectedVersion)
+		{
+			sdkStore.Clear ();
+			sdkStore.AppendValues (GettextCatalog.GetString ("Default"), IPhoneSdkVersion.UseDefault);
+			
+			int idx = 0;
+			var sdks = IPhoneFramework.InstalledSdkVersions;
+			for (int i = 0; i < sdks.Count; i++) {
+				var v = sdks[i];
+				if (selectedVersion.Equals (v))
+					idx = i + 1;
+				sdkStore.AppendValues (v.ToString (), v);
+			}
+			
+			if (idx == 0 && !selectedVersion.IsUseDefault) {
+				sdkStore.AppendValues (GettextCatalog.GetString ("{0} (not installed)", selectedVersion), selectedVersion);
+				idx = sdks.Count + 1;
+			}
+			
+			sdkCombo.Active = idx;
+		}
+		
+		IPhoneSdkVersion GetSdkValue ()
+		{
+			int idx = sdkCombo.Active;
+			TreeIter iter;
+			sdkStore.GetIterFirst (out iter);
+			for (int i = 0; i < idx; i++)
+				sdkStore.IterNext (ref iter);
+			return (IPhoneSdkVersion) sdkStore.GetValue (iter, 1);
+		}
+		
 		void LoadI18nValues (string values)
 		{
-			store.Clear ();
+			i18nStore.Clear ();
 			if (values == null) {
 				foreach (string s in i18n)
-					store.AppendValues (s, false);
+					i18nStore.AppendValues (s, false);
 			} else {
 				var arr = values.Split (',');
 				foreach (string s in i18n)
-					store.AppendValues (s, arr.Contains (s));
+					i18nStore.AppendValues (s, arr.Contains (s));
 			}
 		}
 		
@@ -161,14 +193,14 @@ namespace MonoDevelop.IPhone.Gui
 		{
 			var sb = new StringBuilder ();
 			TreeIter iter;
-			if (store.GetIterFirst (out iter)) {
+			if (i18nStore.GetIterFirst (out iter)) {
 				do {
-					if ((bool)store.GetValue (iter, 1)) {
+					if ((bool)i18nStore.GetValue (iter, 1)) {
 						if (sb.Length != 0)
 							sb.Append (",");
-						sb.Append ((string)store.GetValue (iter, 0));
+						sb.Append ((string)i18nStore.GetValue (iter, 0));
 					}
-				} while (store.IterNext (ref iter));
+				} while (i18nStore.IterNext (ref iter));
 			}
 			return sb.ToString ();
 		}

@@ -278,7 +278,9 @@ namespace MonoDevelop.IPhone
 			}
 			
 			var sdkVersionAtt = projectOptions.Attributes ["SdkVersion"];
-			string sdkVersion = sdkVersionAtt != null? sdkVersionAtt.InnerText : null;
+			IPhoneSdkVersion? sdkVersion = null;
+			if (sdkVersionAtt != null)
+				sdkVersion = IPhoneSdkVersion.Parse (sdkVersionAtt.InnerText);
 			
 			FilePath binPath = (info != null)? info.BinPath : new FilePath ("bin");
 			
@@ -291,8 +293,7 @@ namespace MonoDevelop.IPhone
 				deviceConf.CodesignKey = Keychain.DEV_CERT_PREFIX;
 				Configurations.Add (deviceConf);
 				
-				deviceConf.MtouchSdkVersion = simConf.MtouchSdkVersion = (sdkVersion != null)?
-					sdkVersion : IPhoneSdkVersion.Default.ToString ();
+				deviceConf.MtouchSdkVersion = simConf.MtouchSdkVersion = sdkVersion ?? IPhoneSdkVersion.UseDefault;
 				
 				if (simConf.Name == "Debug")
 					simConf.MtouchDebug = deviceConf.MtouchDebug = true;
@@ -388,16 +389,14 @@ namespace MonoDevelop.IPhone
 			IPhoneSimulatorTarget simTarget = null;
 			
 			var minOS = string.IsNullOrEmpty (conf.MtouchMinimumOSVersion)?
-				IPhoneSdkVersion.Default : IPhoneSdkVersion.Parse (conf.MtouchMinimumOSVersion);
+				IPhoneSdkVersion.GetDefault () : IPhoneSdkVersion.Parse (conf.MtouchMinimumOSVersion);
 			
 			if (conf.Platform != PLAT_IPHONE) {
 				simTarget = GetSimulatorTarget (conf);
 				if (simTarget == null) {
 					var defaultDevice = ((IPhoneProject)conf.ParentItem).SupportedDevices == TargetDevice.IPad?
 						TargetDevice.IPad : TargetDevice.IPhone;
-					var sdk = string.IsNullOrEmpty (conf.MtouchSdkVersion)?
-						IPhoneSdkVersion.Default : IPhoneSdkVersion.Parse (conf.MtouchSdkVersion);
-					simTarget = new IPhoneSimulatorTarget (defaultDevice, sdk);
+					simTarget = new IPhoneSimulatorTarget (defaultDevice, conf.MtouchSdkVersion.ResolveIfDefault ());
 				}
 			}
 			

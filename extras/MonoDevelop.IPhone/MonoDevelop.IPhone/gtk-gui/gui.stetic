@@ -8,7 +8,6 @@
     <widget-library name="MonoDevelop.Ide, Version=2.4.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.DesignerSupport, Version=2.4.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.AspNet, Version=2.4.0.0, Culture=neutral" />
-    <widget-library name="../../build/MonoDevelop.MacDev.dll" />
     <widget-library name="../../build/MonoDevelop.IPhone.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.IPhone.Gui.IPhoneOptionsWidget" design-size="613 388">
@@ -178,8 +177,8 @@
                 <child>
                   <widget class="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" id="iPadNibPicker">
                     <property name="MemberName" />
-                    <property name="EntryIsEditable">False</property>
                     <property name="VerifyFileExistsInProject">False</property>
+                    <property name="EntryIsEditable">False</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">6</property>
@@ -470,8 +469,8 @@
                 <child>
                   <widget class="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" id="mainNibPicker">
                     <property name="MemberName" />
-                    <property name="EntryIsEditable">False</property>
                     <property name="VerifyFileExistsInProject">False</property>
+                    <property name="EntryIsEditable">False</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">5</property>
@@ -612,8 +611,8 @@
             <child>
               <widget class="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" id="ipadIconPicker">
                 <property name="MemberName" />
-                <property name="EntryIsEditable">False</property>
                 <property name="VerifyFileExistsInProject">False</property>
+                <property name="EntryIsEditable">False</property>
               </widget>
               <packing>
                 <property name="TopAttach">3</property>
@@ -678,8 +677,8 @@
             <child>
               <widget class="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" id="ipadSpotlightIconPicker">
                 <property name="MemberName" />
-                <property name="EntryIsEditable">False</property>
                 <property name="VerifyFileExistsInProject">False</property>
+                <property name="EntryIsEditable">False</property>
               </widget>
               <packing>
                 <property name="TopAttach">6</property>
@@ -744,8 +743,8 @@
             <child>
               <widget class="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" id="iphoneIconHighPicker">
                 <property name="MemberName" />
-                <property name="EntryIsEditable">False</property>
                 <property name="VerifyFileExistsInProject">False</property>
+                <property name="EntryIsEditable">False</property>
               </widget>
               <packing>
                 <property name="TopAttach">2</property>
@@ -810,8 +809,8 @@
             <child>
               <widget class="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" id="iphoneIconPicker">
                 <property name="MemberName" />
-                <property name="EntryIsEditable">False</property>
                 <property name="VerifyFileExistsInProject">False</property>
+                <property name="EntryIsEditable">False</property>
               </widget>
               <packing>
                 <property name="TopAttach">1</property>
@@ -915,8 +914,8 @@
             <child>
               <widget class="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" id="settingsIconHighPicker">
                 <property name="MemberName" />
-                <property name="EntryIsEditable">False</property>
                 <property name="VerifyFileExistsInProject">False</property>
+                <property name="EntryIsEditable">False</property>
               </widget>
               <packing>
                 <property name="TopAttach">5</property>
@@ -981,8 +980,8 @@
             <child>
               <widget class="MonoDevelop.Ide.Gui.Components.ProjectFileEntry" id="settingsIconPicker">
                 <property name="MemberName" />
-                <property name="EntryIsEditable">False</property>
                 <property name="VerifyFileExistsInProject">False</property>
+                <property name="EntryIsEditable">False</property>
               </widget>
               <packing>
                 <property name="TopAttach">4</property>
@@ -1560,7 +1559,7 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.ComboBoxEntry" id="sdkComboEntry">
+                      <widget class="Gtk.ComboBox" id="sdkCombo">
                         <property name="MemberName" />
                         <property name="IsTextCombo">True</property>
                         <property name="Items" translatable="yes" />

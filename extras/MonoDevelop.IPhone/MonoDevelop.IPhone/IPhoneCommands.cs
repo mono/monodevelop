@@ -209,7 +209,7 @@ namespace MonoDevelop.IPhone
 			foreach (string asm in proj.GetReferencedAssemblies (slnConf).Distinct ())
 				args.AppendFormat (" -r=\"{0}\"", asm);
 			
-			var sdkVersion = IPhoneSdkVersion.Parse (conf.MtouchSdkVersion);
+			var sdkVersion = conf.MtouchSdkVersion.ResolveIfDefault ();
 			if (!IPhoneFramework.SdkIsInstalled (sdkVersion))
 				sdkVersion = IPhoneFramework.GetClosestInstalledSdk (sdkVersion);
 			
