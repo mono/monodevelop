@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		{
 			//FIXME: this GetAllItems lookup is kinda expensive, maybe it should be cached in ParentDialog
 			var item = ParentDialog.DataObject;
-			if (item is DotNetProject)
+			if (item is PolicySet || item is DotNetProject)
 				return true;
 			var slnFolder = item as SolutionFolder ?? ((item is Solution)? ((Solution)item).RootFolder : null);
 			if (slnFolder != null)
