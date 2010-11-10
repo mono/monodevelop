@@ -20,7 +20,7 @@ namespace MonoDevelop.IPhone.Gui
 		private global::Gtk.Label label6;
 		private global::Gtk.ComboBox linkCombo;
 		private global::Gtk.ComboBoxEntry minOSComboEntry;
-		private global::Gtk.ComboBoxEntry sdkComboEntry;
+		private global::Gtk.ComboBox sdkCombo;
 
 		protected virtual void Build ()
 		{
@@ -175,10 +175,10 @@ namespace MonoDevelop.IPhone.Gui
 			w12.XOptions = ((global::Gtk.AttachOptions)(4));
 			w12.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.sdkComboEntry = global::Gtk.ComboBoxEntry.NewText ();
-			this.sdkComboEntry.Name = "sdkComboEntry";
-			this.table1.Add (this.sdkComboEntry);
-			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table1 [this.sdkComboEntry]));
+			this.sdkCombo = global::Gtk.ComboBox.NewText ();
+			this.sdkCombo.Name = "sdkCombo";
+			this.table1.Add (this.sdkCombo);
+			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table1 [this.sdkCombo]));
 			w13.TopAttach = ((uint)(1));
 			w13.BottomAttach = ((uint)(2));
 			w13.LeftAttach = ((uint)(1));
@@ -199,7 +199,9 @@ namespace MonoDevelop.IPhone.Gui
 				this.Child.ShowAll ();
 			}
 			this.label3.MnemonicWidget = this.linkCombo;
+			this.label4.MnemonicWidget = this.sdkCombo;
 			this.label5.MnemonicWidget = this.i18nTreeView;
+			this.label6.MnemonicWidget = this.sdkCombo;
 			this.Hide ();
 		}
 	}

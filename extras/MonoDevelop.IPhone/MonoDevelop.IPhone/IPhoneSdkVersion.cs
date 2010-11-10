@@ -38,12 +38,10 @@ namespace MonoDevelop.IPhone
 {
 	public struct IPhoneSdkVersion : IComparable<IPhoneSdkVersion>, IEquatable<IPhoneSdkVersion>
 	{
-		public static readonly IPhoneSdkVersion Default = GetDefaultSdkVersion ();
-		
-		static IPhoneSdkVersion GetDefaultSdkVersion ()
+		public static IPhoneSdkVersion GetDefault ()
 		{
 			var v = IPhoneFramework.InstalledSdkVersions;
-			return v.Count > 0? v[v.Count - 1] : Invalid;
+			return v.Count > 0? v[v.Count - 1] : UseDefault;
 		}
 		
 		int[] version;
@@ -64,10 +62,12 @@ namespace MonoDevelop.IPhone
 			return new IPhoneSdkVersion (vint);
 		}
 		
-		public int[] Version { get { return version ?? Default.version; } }
+		public int[] Version { get { return version; } }
 		
 		public override string ToString ()
 		{
+			if (IsUseDefault)
+				return "";
 			string[] v = new string [version.Length];
 			for (int i = 0; i < v.Length; i++)
 				v[i] = version[i].ToString ();
@@ -114,7 +114,22 @@ namespace MonoDevelop.IPhone
 			}
 		}
 		
-		public static readonly IPhoneSdkVersion Invalid = new IPhoneSdkVersion ();
+		public bool IsUseDefault {
+			get {
+				return version == null || version.Length == 0;
+			}
+		}
+		
+		public IPhoneSdkVersion ResolveIfDefault ()
+		{
+			if (IsUseDefault)
+				return GetDefault ();
+			else
+				return this;
+		}
+		
+		public static readonly IPhoneSdkVersion UseDefault = new IPhoneSdkVersion (new int[0]);
+		
 		public static readonly IPhoneSdkVersion V3_0 = new IPhoneSdkVersion (3, 0);
 		public static readonly IPhoneSdkVersion V3_2 = new IPhoneSdkVersion (3, 2);
 		public static readonly IPhoneSdkVersion V4_0 = new IPhoneSdkVersion (4, 0);

@@ -125,17 +125,26 @@ namespace MonoDevelop.IPhone
 			set { mtouchLink = value; }
 		}
 		
+		//for serialization
 		[ItemProperty ("MtouchSdkVersion")]
 		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
-		string mtouchSdkVersion = "3.0";
-		public string MtouchSdkVersion {
-			get { return mtouchSdkVersion; }
+		private string mtouchSdkVersion {
+			get {
+				return MtouchSdkVersion.IsUseDefault ? null : MtouchSdkVersion.ToString ();
+			}	
 			set {
-				if (string.IsNullOrEmpty (value))
-					value = "3.0";
-				mtouchSdkVersion = value;
+				MtouchSdkVersion = IPhoneSdkVersion.UseDefault;
+				if (value != null) {
+					try {
+						MtouchSdkVersion = IPhoneSdkVersion.Parse (value);
+					} catch {
+						LoggingService.LogWarning ("Discarding invalid SDK version '{0}'", value);
+					}
+				}
 			}
 		}
+		
+		public IPhoneSdkVersion MtouchSdkVersion { get; set; }
 		
 		[ItemProperty ("MtouchMinimumOS")]
 		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]

@@ -68,15 +68,19 @@ namespace MonoDevelop.IPhone
 			
 			var result = new BuildResult ();
 			
-			var sdkVersion = IPhoneSdkVersion.Parse (conf.MtouchSdkVersion);
+			var sdkVersion = conf.MtouchSdkVersion.ResolveIfDefault ();
 			
 			if (!IPhoneFramework.SdkIsInstalled (sdkVersion)) {
 				sdkVersion = IPhoneFramework.GetClosestInstalledSdk (sdkVersion);
 				
-				if (!IPhoneFramework.SdkIsInstalled (sdkVersion)) {
-					result.AddError (
-						string.Format ("Apple iPhone SDK version '{0}' is not installed, and no newer version was found.",
-						conf.MtouchSdkVersion));
+				if (sdkVersion.IsUseDefault || !IPhoneFramework.SdkIsInstalled (sdkVersion)) {
+					if (conf.MtouchSdkVersion.IsUseDefault)
+						result.AddError (
+							string.Format ("The Apple iPhone SDK is not installed."));
+					else
+						result.AddError (
+							string.Format ("Apple iPhone SDK version '{0}' is not installed, and no newer version was found.",
+							conf.MtouchSdkVersion));
 					return result;
 				}
 					
@@ -477,7 +481,7 @@ namespace MonoDevelop.IPhone
 			var projFiles = buildData.Items.OfType<ProjectFile> ();
 			string appDir = cfg.AppDirectory;
 			
-			var sdkVersion = IPhoneSdkVersion.Parse (cfg.MtouchSdkVersion);
+			var sdkVersion = cfg.MtouchSdkVersion.ResolveIfDefault ();
 			if (!IPhoneFramework.SdkIsInstalled (sdkVersion))
 				sdkVersion = IPhoneFramework.GetClosestInstalledSdk (sdkVersion);
 			

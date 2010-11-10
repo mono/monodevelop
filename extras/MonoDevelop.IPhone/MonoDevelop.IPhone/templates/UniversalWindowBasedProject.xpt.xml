@@ -23,7 +23,7 @@
 		</Options>
 		
 		<Project name = "${ProjectName}" directory = "." type = "IPhone">
-			<Options MainNibFile="MainWindowIPhone.xib" MainNibFileIPad="MainWindowIPad.xib" SdkVersion="3.2" SupportedDevices="IPhoneAndIPad" />
+			<Options MainNibFile="MainWindowIPhone.xib" MainNibFileIPad="MainWindowIPad.xib" SupportedDevices="IPhoneAndIPad" />
 			<References>
 				<Reference type="Gac" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
 				<Reference type="Gac" refto="System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />

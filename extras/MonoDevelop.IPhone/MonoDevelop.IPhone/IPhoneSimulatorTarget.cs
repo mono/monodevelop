@@ -60,9 +60,9 @@ namespace MonoDevelop.IPhone
 			}	
 			set {
 				Version = string.IsNullOrEmpty (value)
-					? IPhoneSdkVersion.Default
+					? IPhoneSdkVersion.UseDefault
 					: IPhoneSdkVersion.Parse (value);
-			}	
+			}
 		}
 		
 		public bool Supports (IPhoneSdkVersion minVersion, TargetDevice appTargetDevice)
