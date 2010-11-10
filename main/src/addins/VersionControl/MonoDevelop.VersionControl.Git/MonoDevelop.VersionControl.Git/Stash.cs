@@ -78,7 +78,6 @@ namespace MonoDevelop.VersionControl.Git
 			// Create the text line to be written in the stash log
 			
 			int secs = (int) (this.DateTime - new DateTimeOffset (1970, 1, 1, 0, 0, 0, TimeSpan.Zero)).TotalSeconds;
-			Console.WriteLine ();
 			
 			TimeSpan ofs = this.DateTime.Offset;
 			string tz = string.Format ("{0}{1:00}{2:00}", (ofs.Hours >= 0 ? '+':'-'), Math.Abs (ofs.Hours), Math.Abs (ofs.Minutes));
@@ -198,14 +197,16 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			
 			// Create the index tree commit
-			GitIndex index = _repo.GetIndex ();
-			index.RereadIfNecessary();
-			var tree_id = index.WriteTree ();
+			ObjectInserter inserter = _repo.NewObjectInserter ();
+			DirCache dc = _repo.ReadDirCache ();
+			var tree_id = dc.WriteTree (inserter);
+			inserter.Release ();
+			
 			string commitMsg = "index on " + _repo.GetBranch () + ": " + message;
 			ObjectId indexCommit = GitUtil.CreateCommit (_repo, commitMsg + "\n", new ObjectId[] {headId}, tree_id, author, author);
 
 			// Create the working dir commit
-			tree_id = WriteWorkingDirectoryTree (parent.Tree, index);
+			tree_id = WriteWorkingDirectoryTree (parent.Tree, dc);
 			commitMsg = "WIP on " + _repo.GetBranch () + ": " + message;
 			var wipCommit = GitUtil.CreateCommit(_repo, commitMsg + "\n", new ObjectId[] { headId, indexCommit }, tree_id, author, author);
 			
@@ -227,7 +228,7 @@ namespace MonoDevelop.VersionControl.Git
 			return s;
 		}
 		
-		ObjectId WriteWorkingDirectoryTree (RevTree headTree, GitIndex index)
+		ObjectId WriteWorkingDirectoryTree (RevTree headTree, DirCache index)
 		{
 			DirCache dc = DirCache.NewInCore ();
 			DirCacheBuilder cb = dc.Builder ();
@@ -246,16 +247,26 @@ namespace MonoDevelop.VersionControl.Git
 						tw.EnterSubtree ();
 					else if (tw.GetFileMode (0) != NGit.FileMode.MISSING && (tw.GetFileMode (1) != NGit.FileMode.MISSING || tw.GetFileMode (2) != NGit.FileMode.MISSING)) {
 						WorkingTreeIterator f = tw.GetTree<WorkingTreeIterator>(0);
+						DirCacheIterator dcIter = tw.GetTree<DirCacheIterator>(2);
+						DirCacheEntry currentEntry = dcIter.GetDirCacheEntry ();
 						DirCacheEntry ce = new DirCacheEntry (tw.PathString);
-						long sz = f.GetEntryLength();
-						ce.SetLength (sz);
-						ce.SetLastModified (f.GetEntryLastModified());
-						ce.SetFileMode (f.GetEntryFileMode());
-						var data = f.OpenEntryStream();
-						try {
-							ce.SetObjectId (oi.Insert (Constants.OBJ_BLOB, sz, data));
-						} finally {
-							data.Close ();
+						if (dcIter.IdEqual (f)) {
+							ce.SetLength (currentEntry.GetLength ());
+							ce.SetLastModified (currentEntry.GetLastModified ());
+							ce.SetFileMode (currentEntry.GetFileMode ());
+							ce.SetObjectId (currentEntry.GetObjectId ());
+						}
+						else {
+							long sz = f.GetEntryLength();
+							ce.SetLength (sz);
+							ce.SetLastModified (f.GetEntryLastModified());
+							ce.SetFileMode (f.GetEntryFileMode());
+							var data = f.OpenEntryStream();
+							try {
+								ce.SetObjectId (oi.Insert (Constants.OBJ_BLOB, sz, data));
+							} finally {
+								data.Close ();
+							}
 						}
 						cb.Add (ce);
 					}
@@ -388,7 +399,8 @@ namespace MonoDevelop.VersionControl.Git
 			if (i != -1) {
 				stashes.RemoveAt (i);
 				Stash next = stashes.FirstOrDefault (ns => ns.PrevStashCommitId == s.CommitId);
-				next.PrevStashCommitId = s.PrevStashCommitId;
+				if (next != null)
+					next.PrevStashCommitId = s.PrevStashCommitId;
 				if (stashes.Count == 0) {
 					// No more stashes. The ref and log files can be deleted.
 					StashRefFile.Delete ();
