@@ -305,7 +305,7 @@ namespace MonoDevelop.VersionControl.Views
 					JumpOverFoldings (ref  line);
 				} while (line + 1 <= overview.annotations.Count && ann != null && overview.annotations[line - 1] != null && overview.annotations[line - 1].Revision == ann.Revision);
 				if (overview.highlightAnnotation != null) {
-					if (overview.highlightAnnotation.Revision == ann.Revision && curStart <= overview.highlightPositon && overview.highlightPositon < curY) {
+					if (ann != null && overview.highlightAnnotation.Revision == ann.Revision && curStart <= overview.highlightPositon && overview.highlightPositon < curY) {
 					} else {
 						cr.Rectangle (Editor.TextViewMargin.XOffset, curStart + cr.LineWidth, Editor.Allocation.Width - Editor.TextViewMargin.XOffset, curY - curStart - cr.LineWidth);
 						cr.Color = new Cairo.Color (color.Red / (double)ushort.MaxValue, 
