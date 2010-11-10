@@ -71,21 +71,16 @@
       <Package>monodevelop-core-addins</Package>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Mono.Debugging.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=889ced0135e7a3f3">
+    <Reference Include="Mono.Debugging.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e9ce85b0923c84f">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\main\build\AddIns\MonoDevelop.Debugger.Soft\Mono.Debugging.Soft.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=777769bbe9a538f6">
+    <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e9ce85b0923c84f">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\main\build\bin\Mono.Debugging.dll</HintPath>
       <Private>False</Private>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Manifest.addin.xml">
-      <LogicalName>Manifest.addin.xml</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
