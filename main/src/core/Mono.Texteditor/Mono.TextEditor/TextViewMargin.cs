@@ -196,6 +196,7 @@ namespace Mono.TextEditor
 			public int FirstLine { get; set; }
 			public int LastLine { get; set; }
 			public List<ISegment> OldRegions { get; set; }
+			public ISearchEngine Engine { get; set; }
 		}
 
 		public void RefreshSearchMarker ()
@@ -206,7 +207,8 @@ namespace Mono.TextEditor
 				SearchWorkerArguments args = new SearchWorkerArguments () {
 					FirstLine = this.YToLine (textEditor.VAdjustment.Value),
 					LastLine = this.YToLine (textEditor.Allocation.Height + textEditor.VAdjustment.Value),
-					OldRegions = selectedRegions
+					OldRegions = selectedRegions,
+					Engine = this.textEditor.GetTextEditorData ().SearchEngine.Clone ()
 				};
 
 				if (string.IsNullOrEmpty (this.textEditor.SearchPattern)) {
@@ -235,7 +237,7 @@ namespace Mono.TextEditor
 					return;
 				SearchResult result = null;
 				try {
-					result = this.textEditor.GetTextEditorData ().SearchEngine.SearchForward (worker, offset);
+					result = args.Engine.SearchForward (worker, offset);
 				} catch (Exception ex) {
 					Console.WriteLine ("Got exception while search forward:" + ex);
 					break;

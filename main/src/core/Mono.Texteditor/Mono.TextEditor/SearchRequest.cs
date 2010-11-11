@@ -71,6 +71,14 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public SearchRequest Clone ()
+		{
+			return new SearchRequest () {
+				WholeWordOnly = this.WholeWordOnly,
+				SearchPattern = this.SearchPattern,
+				CaseSensitive = this.CaseSensitive
+			};
+		}
 		
 		void OnChanged ()
 		{

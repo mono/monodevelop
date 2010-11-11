@@ -56,6 +56,8 @@ namespace Mono.TextEditor
 		SearchResult SearchBackward (int fromOffset);
 		
 		void Replace (SearchResult result, string pattern);
+		
+		ISearchEngine Clone ();
 	}
 	
 	public abstract class AbstractSearchEngine : ISearchEngine
@@ -121,6 +123,12 @@ namespace Mono.TextEditor
 			return SearchBackward (null, fromOffset);
 		}
 		public abstract void Replace (SearchResult result, string pattern);
+		public virtual ISearchEngine Clone ()
+		{
+			ISearchEngine result = (ISearchEngine)MemberwiseClone ();
+			result.SearchRequest = searchRequest.Clone ();
+			return result;
+		}
 	}
 	
 	public class BasicSearchEngine : AbstractSearchEngine
