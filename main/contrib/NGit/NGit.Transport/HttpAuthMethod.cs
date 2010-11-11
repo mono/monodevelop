@@ -80,13 +80,13 @@ namespace NGit.Transport
 				return NONE;
 			}
 			string type = Sharpen.Runtime.Substring(hdr, 0, sp);
-			if (HttpAuthMethod.Basic.NAME.Equals(type))
+			if (Sharpen.Runtime.EqualsIgnoreCase(HttpAuthMethod.Basic.NAME, type))
 			{
 				return new HttpAuthMethod.Basic();
 			}
 			else
 			{
-				if (HttpAuthMethod.Digest.NAME.Equals(type))
+				if (Sharpen.Runtime.EqualsIgnoreCase(HttpAuthMethod.Digest.NAME, type))
 				{
 					return new HttpAuthMethod.Digest(Sharpen.Runtime.Substring(hdr, sp + 1));
 				}

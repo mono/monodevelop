@@ -266,8 +266,8 @@ namespace NGit.Dircache
 		{
 			if (m != null)
 			{
-				if (i == null || f == null || !m.IdEqual(i) || f.IsModified(i.GetDirCacheEntry(), 
-					true, Config_filemode(), repo.FileSystem))
+				if (i == null || f == null || !m.IdEqual(i) || (i.GetDirCacheEntry() != null && f
+					.IsModified(i.GetDirCacheEntry(), true, Config_filemode(), repo.FileSystem)))
 				{
 					Update(m.GetEntryPathString(), m.GetEntryObjectId(), m.GetEntryFileMode());
 				}
@@ -792,7 +792,7 @@ namespace NGit.Dircache
 			}
 		}
 
-		private bool filemode;
+		private bool? filemode;
 
 		private bool Config_filemode()
 		{
@@ -804,7 +804,7 @@ namespace NGit.Dircache
 				filemode = Sharpen.Extensions.ValueOf(config.GetBoolean("core", null, "filemode", 
 					true));
 			}
-			return filemode;
+			return filemode.Value;
 		}
 
 		/// <summary>

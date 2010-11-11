@@ -119,7 +119,7 @@ namespace NGit.Api
 				// Check for FAST_FORWARD, ALREADY_UP_TO_DATE
 				revWalk = new RevWalk(repo);
 				RevCommit headCommit = revWalk.LookupCommit(head.GetObjectId());
-				// we know for know there is only one commit
+				// we know for now there is only one commit
 				Ref @ref = commits[0];
 				refLogMessage.Append(@ref.GetName());
 				// handle annotated tags
@@ -153,7 +153,7 @@ namespace NGit.Api
 					}
 					else
 					{
-						repo.WriteMergeCommitMsg("merging " + @ref.GetName() + " into " + head.GetName());
+						repo.WriteMergeCommitMsg(new MergeMessageFormatter().Format(commits, head));
 						repo.WriteMergeHeads(Arrays.AsList(@ref.GetObjectId()));
 						ThreeWayMerger merger = (ThreeWayMerger)mergeStrategy.NewMerger(repo);
 						bool noProblems;

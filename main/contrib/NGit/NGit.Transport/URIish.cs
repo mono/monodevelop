@@ -156,8 +156,13 @@ namespace NGit.Transport
 			("^" + "(file):(/(?!/)" + PATH_P + ")$");
 
 		/// <summary>A pattern matching a SCP URI's of the form user@host:path/to/repo.git</summary>
-		private static readonly Sharpen.Pattern SCP_URI = Sharpen.Pattern.Compile("^" + OPT_USER_PWD_P
-			 + HOST_P + ":(" + ("(?:" + USER_HOME_P + "/)?") + RELATIVE_PATH_P + ")$");
+		private static readonly Sharpen.Pattern RELATIVE_SCP_URI = Sharpen.Pattern.Compile
+			("^" + OPT_USER_PWD_P + HOST_P + ":(" + ("(?:" + USER_HOME_P + "/)?") + RELATIVE_PATH_P
+			 + ")$");
+
+		/// <summary>A pattern matching a SCP URI's of the form user@host:/path/to/repo.git</summary>
+		private static readonly Sharpen.Pattern ABSOLUTE_SCP_URI = Sharpen.Pattern.Compile
+			("^" + OPT_USER_PWD_P + "([^/:]{2,})" + ":(" + "/" + RELATIVE_PATH_P + ")$");
 
 		private string scheme;
 
@@ -203,6 +208,11 @@ namespace NGit.Transport
 			//
 			//
 			//
+			//
+			//
+			//
+			//
+			//
 			s = s.Replace('\\', '/');
 			Matcher matcher = SINGLE_SLASH_FILE_URI.Matcher(s);
 			if (matcher.Matches())
@@ -227,7 +237,7 @@ namespace NGit.Transport
 				}
 				else
 				{
-					matcher = SCP_URI.Matcher(s);
+					matcher = RELATIVE_SCP_URI.Matcher(s);
 					if (matcher.Matches())
 					{
 						user = matcher.Group(1);
@@ -237,14 +247,25 @@ namespace NGit.Transport
 					}
 					else
 					{
-						matcher = LOCAL_FILE.Matcher(s);
+						matcher = ABSOLUTE_SCP_URI.Matcher(s);
 						if (matcher.Matches())
 						{
-							path = matcher.Group(1);
+							user = matcher.Group(1);
+							pass = matcher.Group(2);
+							host = matcher.Group(3);
+							path = matcher.Group(4);
 						}
 						else
 						{
-							throw new URISyntaxException(s, JGitText.Get().cannotParseGitURIish);
+							matcher = LOCAL_FILE.Matcher(s);
+							if (matcher.Matches())
+							{
+								path = matcher.Group(1);
+							}
+							else
+							{
+								throw new URISyntaxException(s, JGitText.Get().cannotParseGitURIish);
+							}
 						}
 					}
 				}

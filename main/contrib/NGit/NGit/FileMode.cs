@@ -333,6 +333,25 @@ namespace NGit
 			os.Write(octalBytes);
 		}
 
+		/// <summary>Copy this mode as a sequence of octal US-ASCII bytes.</summary>
+		/// <remarks>
+		/// Copy this mode as a sequence of octal US-ASCII bytes.
+		/// The mode is copied as a sequence of octal digits using the US-ASCII
+		/// character encoding. The sequence does not use a leading '0' prefix to
+		/// indicate octal notation. This method is suitable for generation of a mode
+		/// string within a GIT tree object.
+		/// </remarks>
+		/// <param name="buf">buffer to copy the mode to.</param>
+		/// <param name="ptr">
+		/// position within
+		/// <code>buf</code>
+		/// for first digit.
+		/// </param>
+		public virtual void CopyTo(byte[] buf, int ptr)
+		{
+			System.Array.Copy(octalBytes, 0, buf, ptr, octalBytes.Length);
+		}
+
 		/// <returns>
 		/// the number of bytes written by
 		/// <see cref="CopyTo(Sharpen.OutputStream)">CopyTo(Sharpen.OutputStream)</see>

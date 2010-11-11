@@ -94,14 +94,98 @@ namespace NGit
 
 		internal int w5;
 
-		/// <summary>For ObjectIdMap</summary>
-		/// <returns>a discriminator usable for a fan-out style map</returns>
+		/// <summary>Get the first 8 bits of the ObjectId.</summary>
+		/// <remarks>
+		/// Get the first 8 bits of the ObjectId.
+		/// This is a faster version of
+		/// <code>getByte(0)</code>
+		/// .
+		/// </remarks>
+		/// <returns>
+		/// a discriminator usable for a fan-out style map. Returned values
+		/// are unsigned and thus are in the range [0,255] rather than the
+		/// signed byte range of [-128, 127].
+		/// </returns>
 		public int FirstByte
 		{
 			get
 			{
 				return (int)(((uint)w1) >> 24);
 			}
+		}
+
+		/// <summary>Get any byte from the ObjectId.</summary>
+		/// <remarks>
+		/// Get any byte from the ObjectId.
+		/// Callers hard-coding
+		/// <code>getByte(0)</code>
+		/// should instead use the much faster
+		/// special case variant
+		/// <see cref="FirstByte()">FirstByte()</see>
+		/// .
+		/// </remarks>
+		/// <param name="index">
+		/// index of the byte to obtain from the raw form of the ObjectId.
+		/// Must be in range [0,
+		/// <see cref="Constants.OBJECT_ID_LENGTH">Constants.OBJECT_ID_LENGTH</see>
+		/// ).
+		/// </param>
+		/// <returns>
+		/// the value of the requested byte at
+		/// <code>index</code>
+		/// . Returned values
+		/// are unsigned and thus are in the range [0,255] rather than the
+		/// signed byte range of [-128, 127].
+		/// </returns>
+		/// <exception cref="System.IndexOutOfRangeException">
+		/// <code>index</code>
+		/// is less than 0, equal to
+		/// <see cref="Constants.OBJECT_ID_LENGTH">Constants.OBJECT_ID_LENGTH</see>
+		/// , or greater than
+		/// <see cref="Constants.OBJECT_ID_LENGTH">Constants.OBJECT_ID_LENGTH</see>
+		/// .
+		/// </exception>
+		public int GetByte(int index)
+		{
+			int w;
+			switch (index >> 2)
+			{
+				case 0:
+				{
+					w = w1;
+					break;
+				}
+
+				case 1:
+				{
+					w = w2;
+					break;
+				}
+
+				case 2:
+				{
+					w = w3;
+					break;
+				}
+
+				case 3:
+				{
+					w = w4;
+					break;
+				}
+
+				case 4:
+				{
+					w = w5;
+					break;
+				}
+
+				default:
+				{
+					throw Sharpen.Extensions.CreateIndexOutOfRangeException(index);
+				}
+			}
+			return ((int)(((uint)w) >> (8 * (3 - (index & 3))))) & unchecked((int)(0xff));
 		}
 
 		/// <summary>Compare this ObjectId to another and obtain a sort ordering.</summary>

@@ -43,6 +43,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
 using System.IO;
+using System.Text;
 using NGit;
 using NGit.Errors;
 using NGit.Transport;
@@ -53,8 +54,7 @@ namespace NGit.Transport
 {
 	public class PacketLineIn
 	{
-		internal static readonly string END = Sharpen.Extensions.CreateString(string.Empty
-			);
+		internal static readonly string END = new StringBuilder(0).ToString();
 
 		internal enum AckNackResult
 		{

@@ -76,15 +76,14 @@ namespace NGit
 		{
 			source = src;
 			destination = dst;
-			Repository repo = destination.GetRepository();
 			string cmd = string.Empty;
 			if (source.GetName().StartsWith(Constants.R_HEADS) && destination.GetName().StartsWith
 				(Constants.R_HEADS))
 			{
 				cmd = "Branch: ";
 			}
-			SetRefLogMessage(cmd + "renamed " + repo.ShortenRefName(source.GetName()) + " to "
-				 + repo.ShortenRefName(destination.GetName()));
+			SetRefLogMessage(cmd + "renamed " + Repository.ShortenRefName(source.GetName()) +
+				 " to " + Repository.ShortenRefName(destination.GetName()));
 		}
 
 		/// <returns>identity of the user making the change in the reflog.</returns>

@@ -743,8 +743,9 @@ namespace NGit.Treewalk
 			// only. Otherwise we compare the timestamp at millisecond precision.
 			long cacheLastModified = entry.GetLastModified();
 			long fileLastModified = GetEntryLastModified();
-			if (cacheLastModified % 1000 == 0)
+			if (cacheLastModified % 1000 == 0 || fileLastModified % 1000 == 0)
 			{
+				cacheLastModified = cacheLastModified - cacheLastModified % 1000;
 				fileLastModified = fileLastModified - fileLastModified % 1000;
 			}
 			if (fileLastModified != cacheLastModified)

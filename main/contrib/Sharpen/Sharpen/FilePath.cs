@@ -4,6 +4,7 @@ namespace Sharpen
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Threading;
+	using Mono.Unix;
 
 	public class FilePath
 	{
@@ -97,6 +98,8 @@ namespace Sharpen
 		{
 			try {
 				if (Directory.Exists (path)) {
+					if (Directory.GetFileSystemEntries (path).Length != 0)
+						return false;
 					MakeDirWritable (path);
 					Directory.Delete (path, true);
 				} else {
@@ -175,6 +178,8 @@ namespace Sharpen
 
 		public long LastModified ()
 		{
+			if (!Exists ())
+				return 0;
 			return File.GetLastWriteTimeUtc (path).ToMillisecondsSinceEpoch ();
 		}
 
@@ -296,6 +301,32 @@ namespace Sharpen
 		public Uri ToURI ()
 		{
 			return new Uri (path);
+		}
+		
+		// Don't change the case of this method, since ngit does reflection on it
+		public bool canExecute ()
+		{
+			UnixFileInfo fi = new UnixFileInfo (path);
+			return 0 != (fi.FileAccessPermissions & (FileAccessPermissions.UserExecute | FileAccessPermissions.GroupExecute | FileAccessPermissions.OtherExecute));
+		}
+		
+		// Don't change the case of this method, since ngit does reflection on it
+		public bool setExecutable (bool exec)
+		{
+			try {
+				UnixFileInfo fi = new UnixFileInfo (path);
+				FileAccessPermissions perms = fi.FileAccessPermissions;
+				if ((perms & FileAccessPermissions.UserRead) != 0)
+					perms |= FileAccessPermissions.UserExecute;
+				if ((perms & FileAccessPermissions.OtherRead) != 0)
+					perms |= FileAccessPermissions.OtherExecute;
+				if ((perms & FileAccessPermissions.GroupRead) != 0)
+					perms |= FileAccessPermissions.GroupExecute;
+				fi.FileAccessPermissions = perms;
+				return true;
+			} catch {
+				return false;
+			}
 		}
 
 		public override string ToString ()

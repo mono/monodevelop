@@ -36,6 +36,7 @@
     <Reference Include="ICSharpCode.SharpZipLib" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
+    <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />

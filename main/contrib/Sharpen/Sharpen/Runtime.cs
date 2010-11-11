@@ -184,5 +184,10 @@ namespace Sharpen
 		{
 			sb [index] = c;
 		}
+		
+		public static bool EqualsIgnoreCase (string s1, string s2)
+		{
+			return s1.Equals (s2, StringComparison.CurrentCultureIgnoreCase);
+		}
 	}
 }

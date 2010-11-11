@@ -457,6 +457,8 @@
     <Compile Include="NGit.Diff\LowLevelDiffAlgorithm.cs" />
     <Compile Include="NGit.Api\CherryPickCommand.cs" />
     <Compile Include="NGit.Api.Errors\MultipleParentsNotAllowedException.cs" />
+    <Compile Include="NGit\TreeFormatter.cs" />
+    <Compile Include="NGit.Merge\MergeMessageFormatter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

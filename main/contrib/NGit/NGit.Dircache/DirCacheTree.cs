@@ -368,8 +368,7 @@ namespace NGit.Dircache
 			if (id == null)
 			{
 				int endIdx = cIdx + entrySpan;
-				int size = ComputeSize(cache, cIdx, pathOffset, ow);
-				ByteArrayOutputStream @out = new ByteArrayOutputStream(size);
+				TreeFormatter fmt = new TreeFormatter(ComputeSize(cache, cIdx, pathOffset, ow));
 				int childIdx = 0;
 				int entryIdx = cIdx;
 				while (entryIdx < endIdx)
@@ -381,24 +380,17 @@ namespace NGit.Dircache
 						NGit.Dircache.DirCacheTree st = children[childIdx];
 						if (st.Contains(ep, pathOffset, ep.Length))
 						{
-							FileMode.TREE.CopyTo(@out);
-							@out.Write(' ');
-							@out.Write(st.encodedName);
-							@out.Write(0);
-							st.id.CopyRawTo(@out);
+							fmt.Append(st.encodedName, FileMode.TREE, st.id);
 							entryIdx += st.entrySpan;
 							childIdx++;
 							continue;
 						}
 					}
-					e.GetFileMode().CopyTo(@out);
-					@out.Write(' ');
-					@out.Write(ep, pathOffset, ep.Length - pathOffset);
-					@out.Write(0);
-					@out.Write(e.IdBuffer(), e.IdOffset(), Constants.OBJECT_ID_LENGTH);
+					fmt.Append(ep, pathOffset, ep.Length - pathOffset, e.GetFileMode(), e.IdBuffer(), 
+						e.IdOffset());
 					entryIdx++;
 				}
-				id = ow.Insert(Constants.OBJ_TREE, @out.ToByteArray());
+				id = fmt.Insert(ow);
 			}
 			return id;
 		}
@@ -427,18 +419,13 @@ namespace NGit.Dircache
 					{
 						int stOffset = pathOffset + st.NameLength() + 1;
 						st.WriteTree(cache, entryIdx, stOffset, ow);
-						size += FileMode.TREE.CopyToLength();
-						size += st.NameLength();
-						size += Constants.OBJECT_ID_LENGTH + 2;
+						size += TreeFormatter.EntrySize(FileMode.TREE, st.NameLength());
 						entryIdx += st.entrySpan;
 						childIdx++;
 						continue;
 					}
 				}
-				FileMode mode = e.GetFileMode();
-				size += mode.CopyToLength();
-				size += ep.Length - pathOffset;
-				size += Constants.OBJECT_ID_LENGTH + 2;
+				size += TreeFormatter.EntrySize(e.GetFileMode(), ep.Length - pathOffset);
 				entryIdx++;
 			}
 			return size;

@@ -1441,7 +1441,7 @@ namespace NGit
 
 		/// <param name="refName"></param>
 		/// <returns>a more user friendly ref name</returns>
-		public virtual string ShortenRefName(string refName)
+		public static string ShortenRefName(string refName)
 		{
 			if (refName.StartsWith(Constants.R_HEADS))
 			{

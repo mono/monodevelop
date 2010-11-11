@@ -205,6 +205,10 @@ namespace NGit
 						{
 							removed.AddItem(treeIterator.GetEntryPathString());
 							changesExist = true;
+							if (workingTreeIterator != null)
+							{
+								untracked.AddItem(workingTreeIterator.GetEntryPathString());
+							}
 						}
 					}
 				}

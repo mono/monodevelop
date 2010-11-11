@@ -42,6 +42,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using System;
+using System.Collections.Generic;
 using System.Text;
 using NGit;
 using Sharpen;
@@ -207,6 +208,55 @@ namespace NGit.Util
 						));
 				}
 			}
+		}
+
+		/// <summary>Join a collection of Strings together using the specified separator.</summary>
+		/// <remarks>Join a collection of Strings together using the specified separator.</remarks>
+		/// <param name="parts">Strings to join</param>
+		/// <param name="separator">used to join</param>
+		/// <returns>a String with all the joined parts</returns>
+		public static string Join(ICollection<string> parts, string separator)
+		{
+			return NGit.Util.StringUtils.Join(parts, separator, separator);
+		}
+
+		/// <summary>
+		/// Join a collection of Strings together using the specified separator and a
+		/// lastSeparator which is used for joining the second last and the last
+		/// part.
+		/// </summary>
+		/// <remarks>
+		/// Join a collection of Strings together using the specified separator and a
+		/// lastSeparator which is used for joining the second last and the last
+		/// part.
+		/// </remarks>
+		/// <param name="parts">Strings to join</param>
+		/// <param name="separator">separator used to join all but the two last elements</param>
+		/// <param name="lastSeparator">separator to use for joining the last two elements</param>
+		/// <returns>a String with all the joined parts</returns>
+		public static string Join(ICollection<string> parts, string separator, string lastSeparator
+			)
+		{
+			StringBuilder sb = new StringBuilder();
+			int i = 0;
+			int lastIndex = parts.Count - 1;
+			foreach (string part in parts)
+			{
+				sb.Append(part);
+				if (i == lastIndex - 1)
+				{
+					sb.Append(lastSeparator);
+				}
+				else
+				{
+					if (i != lastIndex)
+					{
+						sb.Append(separator);
+					}
+				}
+				i++;
+			}
+			return sb.ToString();
 		}
 
 		public StringUtils()

@@ -762,7 +762,7 @@ namespace NGit
 		/// 	</exception>
 		public virtual byte[] Format()
 		{
-			ByteArrayOutputStream o = new ByteArrayOutputStream();
+			TreeFormatter fmt = new TreeFormatter();
 			foreach (TreeEntry e in Members())
 			{
 				ObjectId id = e.GetId();
@@ -771,13 +771,9 @@ namespace NGit
 					throw new ObjectWritingException(MessageFormat.Format(JGitText.Get().objectAtPathDoesNotHaveId
 						, e.GetFullName()));
 				}
-				e.GetMode().CopyTo(o);
-				o.Write(' ');
-				o.Write(e.GetNameUTF8());
-				o.Write(0);
-				id.CopyRawTo(o);
+				fmt.Append(e.GetNameUTF8(), e.GetMode(), id);
 			}
-			return o.ToByteArray();
+			return fmt.ToByteArray();
 		}
 
 		public override string ToString()
