@@ -73,7 +73,7 @@ public static class IPhoneFramework
 		public static bool SdkIsInstalled (string version)
 		{
 			return File.Exists ("/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS"
-			                    + version + ".sdk/ResourceRules.plist");
+			                    + version + ".sdk/SDKSettings.plist");
 		}
 		
 		public static bool SdkIsInstalled (IPhoneSdkVersion version)
@@ -210,6 +210,9 @@ public static class IPhoneFramework
 			
 			var sdks = new List<string> ();
 			foreach (var dir in Directory.GetDirectories (sdkDir)) {
+				if (!File.Exists (dir + "/SDKSettings.plist"))
+					continue;
+				
 				string d = dir.Substring (sdkDir.Length);
 				if (d.StartsWith ("iPhoneOS"))
 					d = d.Substring ("iPhoneOS".Length);
