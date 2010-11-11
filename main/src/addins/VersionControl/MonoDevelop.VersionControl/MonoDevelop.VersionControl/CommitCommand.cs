@@ -39,6 +39,11 @@ namespace MonoDevelop.VersionControl
 						MessageService.ShowMessage (GettextCatalog.GetString ("There are no changes to be committed."));
 					return false;
 				}
+				if (VersionControlService.IsCommitRunning) {
+					MessageService.ShowMessage (GettextCatalog.GetString ("Another commit is already in progress."));
+					return false;
+				}
+					
 				if (vc.CanCommit (changeSet.BaseLocalPath)) {
 					if (test) return true;
 
