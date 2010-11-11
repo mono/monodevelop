@@ -26,7 +26,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			store = new ListStore(typeof (Gdk.Pixbuf), typeof (string), typeof (string), typeof(bool), typeof(object));
 			fileList.Model = store;
 			this.changeSet = changeSet;
-			oldMessage = ChangeSet.GlobalComment;
+			oldMessage = changeSet.GlobalComment;
 
 			CellRendererText crt = new CellRendererText ();
 			var crp = new CellRendererPixbuf ();
@@ -86,13 +86,13 @@ namespace MonoDevelop.VersionControl.Dialogs
 				selected.Add (info.LocalPath);
 			}
 			
-			if (string.IsNullOrEmpty (ChangeSet.GlobalComment)) {
+			if (string.IsNullOrEmpty (changeSet.GlobalComment)) {
 				AuthorInformation aInfo;
 				CommitMessageFormat fmt = VersionControlService.GetCommitMessageFormat (changeSet, out aInfo);
 				Message = changeSet.GenerateGlobalComment (fmt, aInfo);
 			}
 			else
-				Message = ChangeSet.GlobalComment;
+				Message = changeSet.GlobalComment;
 				
 			textview.Buffer.Changed += OnTextChanged;
 			
@@ -123,7 +123,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				}
 				foreach (string file in todel)
 					changeSet.RemoveFile (file);
-				ChangeSet.GlobalComment = Message;
+				changeSet.GlobalComment = Message;
 				
 				// Perform the commit
 				
@@ -151,14 +151,14 @@ namespace MonoDevelop.VersionControl.Dialogs
 					Hide ();
 				}
 			} else {
-				ChangeSet.GlobalComment = oldMessage;
+				changeSet.GlobalComment = oldMessage;
 			}
 			base.OnResponse (type);
 		}
 		
 		void OnTextChanged (object s, EventArgs args)
 		{
-			ChangeSet.GlobalComment = Message;
+			changeSet.GlobalComment = Message;
 		}
 		
 		public void EndCommit (bool success)

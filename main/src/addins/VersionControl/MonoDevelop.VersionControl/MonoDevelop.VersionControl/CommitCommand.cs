@@ -17,7 +17,9 @@ namespace MonoDevelop.VersionControl
 			VersionControlItem item = items [0];
 			if (item.Repository.CanCommit (item.Path)) {
 				if (test) return true;
-				ChangeSet cset = item.Repository.CreateChangeSet (item.Path);
+				ChangeSet cset  = item.Repository.CreateChangeSet (item.Path);
+				cset.GlobalComment = VersionControlService.GetCommitComment (cset.BaseLocalPath);
+				
 				foreach (VersionInfo vi in item.Repository.GetDirectoryVersionInfo (item.Path, false, true))
 					if (vi.HasLocalChanges)
 						cset.AddFile (vi);
@@ -39,11 +41,7 @@ namespace MonoDevelop.VersionControl
 						MessageService.ShowMessage (GettextCatalog.GetString ("There are no changes to be committed."));
 					return false;
 				}
-				if (VersionControlService.IsCommitRunning) {
-					MessageService.ShowMessage (GettextCatalog.GetString ("Another commit is already in progress."));
-					return false;
-				}
-					
+				
 				if (vc.CanCommit (changeSet.BaseLocalPath)) {
 					if (test) return true;
 
@@ -97,10 +95,14 @@ namespace MonoDevelop.VersionControl
 			{
 				success = true;
 				try {
+					// store global comment before commit.
+					VersionControlService.SetCommitComment (changeSet.BaseLocalPath, changeSet.GlobalComment, true);
+					
 					vc.Commit (changeSet, Monitor);
 					Monitor.ReportSuccess (GettextCatalog.GetString ("Commit operation completed."));
+					
 					// Reset the global comment on successful commit.
-					ChangeSet.GlobalComment = "";
+					VersionControlService.SetCommitComment (changeSet.BaseLocalPath, "", true);
 				} catch {
 					success = false;
 					throw;

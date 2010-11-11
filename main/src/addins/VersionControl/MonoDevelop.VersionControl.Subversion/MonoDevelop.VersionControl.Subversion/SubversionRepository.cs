@@ -200,7 +200,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			List<FilePath> list = new List<FilePath> ();
 			foreach (ChangeSetItem it in changeSet.Items)
 				list.Add (it.LocalPath);
-			Svn.Commit (list.ToArray (), ChangeSet.GlobalComment, monitor);
+			Svn.Commit (list.ToArray (), changeSet.GlobalComment, monitor);
 		}
 
 		void CreateDirectory (string[] paths, string message, IProgressMonitor monitor)

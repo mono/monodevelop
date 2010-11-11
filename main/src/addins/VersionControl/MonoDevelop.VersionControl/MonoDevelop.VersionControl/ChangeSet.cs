@@ -10,13 +10,12 @@ namespace MonoDevelop.VersionControl
 {
 	public class ChangeSet
 	{
-		public static string globalComment = string.Empty;
-		public static string GlobalComment {
+		public string globalComment = string.Empty;
+		public string GlobalComment {
 			get { return globalComment; }
 			set { globalComment = value; }
 		}
 		
-
 		List<ChangeSetItem> items = new List<ChangeSetItem> ();
 		Repository repo;
 		FilePath basePath;

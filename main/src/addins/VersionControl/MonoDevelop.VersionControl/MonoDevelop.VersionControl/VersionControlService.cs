@@ -50,13 +50,6 @@ namespace MonoDevelop.VersionControl
 		public static event CommitEventHandler BeginCommit;
 		public static event CommitEventHandler EndCommit;
 		
-		static int commitDepth = 0;
-		public static bool IsCommitRunning {
-			get {
-				return commitDepth > 0;
-			}
-		}
-		
 		static VersionControlService ()
 		{
 			try {
@@ -339,7 +332,6 @@ namespace MonoDevelop.VersionControl
 		
 		internal static bool NotifyBeforeCommit (Repository repo, ChangeSet changeSet)
 		{
-			commitDepth++;
 			if (BeginCommit != null) {
 				try {
 					BeginCommit (null, new CommitEventArgs (repo, changeSet, false));
@@ -353,9 +345,6 @@ namespace MonoDevelop.VersionControl
 		
 		internal static bool NotifyAfterCommit (Repository repo, ChangeSet changeSet, bool success)
 		{
-			commitDepth--;
-			if (commitDepth < 0)
-				throw new InvalidOperationException ("no commit running");
 			if (EndCommit != null) {
 				try {
 					EndCommit (null, new CommitEventArgs (repo, changeSet, success));
