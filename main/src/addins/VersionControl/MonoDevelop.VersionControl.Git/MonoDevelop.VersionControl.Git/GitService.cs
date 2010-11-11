@@ -27,6 +27,7 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.ProgressMonitoring;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -80,11 +81,23 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public static void SwitchToBranch (GitRepository repo, string branch)
 		{
-			IdeApp.Workbench.AutoReloadDocuments = true;
+			MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
 			try {
-				repo.SwitchToBranch (branch);
+				IdeApp.Workbench.AutoReloadDocuments = true;
+				IdeApp.Workbench.LockGui ();
+				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+					try {
+						repo.SwitchToBranch (monitor, branch);
+					} catch (Exception ex) {
+						monitor.ReportError ("Branch switch failed", ex);
+					} finally {
+						monitor.Dispose ();
+					}
+				});
+				monitor.AsyncOperation.WaitForCompleted ();
 			} finally {
 				IdeApp.Workbench.AutoReloadDocuments = false;
+				IdeApp.Workbench.UnlockGui ();
 			}
 		}
 	}

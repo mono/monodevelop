@@ -244,17 +244,22 @@ namespace MonoDevelop.VersionControl.Git
 			StashCollection stashes = GitUtil.GetStashes (repo);
 			Stash stash = null;
 			
+			monitor.BeginTask (null, 5);
+			
 			try {
 				// Fetch remote commits
 				RemoteConfig remoteConfig = new RemoteConfig (repo.GetConfig (), GetCurrentRemote ());
 				Transport tn = Transport.Open (repo, remoteConfig);
 				tn.Fetch (new GitMonitor (monitor), null);
+				monitor.Step (1);
 				
 				// Get a list of files that are different in the target branch
 				statusList = GitUtil.GetChangedFiles (repo, GetCurrentRemote () + "/" + GetCurrentBranch ());
+				monitor.Step (1);
 				
 				// Save local changes
 				stash = stashes.Create (GetStashName ("_tmp_"));
+				monitor.Step (1);
 				
 				RebaseOperation rebaser = new RebaseOperation (repo, GetCurrentRemote () + "/" + GetCurrentBranch ());
 				try {
@@ -283,10 +288,13 @@ namespace MonoDevelop.VersionControl.Git
 					stashes.Remove (stash);
 				}
 			}
+			monitor.Step (1);
 			
 			// Notify changes
 			if (statusList != null)
-				NotifyFileChanges (statusList);
+				NotifyFileChanges (monitor, statusList);
+			
+			monitor.EndTask ();
 		}
 
 		public void Merge (string branch, IProgressMonitor monitor)
@@ -294,13 +302,16 @@ namespace MonoDevelop.VersionControl.Git
 			IEnumerable<Change> statusList = null;
 			Stash stash = null;
 			StashCollection stashes = new StashCollection (repo);
+			monitor.BeginTask (null, 4);
 			
 			try {
 				// Get a list of files that are different in the target branch
 				statusList = GitUtil.GetChangedFiles (repo, branch);
+				monitor.Step (1);
 				
 				// Save local changes
 				stash = stashes.Create (GetStashName ("_tmp_"));
+				monitor.Step (1);
 				
 				// Apply changes
 				
@@ -333,10 +344,13 @@ namespace MonoDevelop.VersionControl.Git
 					stashes.Remove (stash);
 				}
 			}
+			monitor.Step (1);
 			
 			// Notify changes
 			if (statusList != null)
-				NotifyFileChanges (statusList);
+				NotifyFileChanges (monitor, statusList);
+			
+			monitor.EndTask ();
 		}
 
 		ConflictResult ResolveConflict (string file)
@@ -876,7 +890,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			IDictionary<string, NGit.Ref> refs = repo.RefDatabase.GetRefs (Constants.R_HEADS);
 			foreach (var pair in refs) {
-				string name = repo.ShortenRefName (pair.Key);
+				string name = NGit.Repository.ShortenRefName (pair.Key);
 				Branch br = new Branch ();
 				br.Name = name;
 				br.Tracking = GitUtil.GetUpstreamSource (repo, name);
@@ -893,7 +907,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			var refs = repo.RefDatabase.GetRefs (Constants.R_REMOTES);
 			foreach (var pair in refs) {
-				string name = repo.ShortenRefName (pair.Key);
+				string name = NGit.Repository.ShortenRefName (pair.Key);
 				if (name.StartsWith (remoteName + "/"))
 					yield return name.Substring (remoteName.Length + 1);
 			}
@@ -904,8 +918,10 @@ namespace MonoDevelop.VersionControl.Git
 			return repo.GetBranch ();
 		}
 
-		public void SwitchToBranch (string branch)
+		public void SwitchToBranch (IProgressMonitor monitor, string branch)
 		{
+			monitor.BeginTask (GettextCatalog.GetString ("Switching to branch {0}", branch), 4);
+			
 			StashCollection stashes = GitUtil.GetStashes (repo);
 			
 			// Remove the stash for this branch, if exists
@@ -921,6 +937,8 @@ namespace MonoDevelop.VersionControl.Git
 			// without losing local changes
 			stash = stashes.Create (GetStashName (currentBranch));
 			
+			monitor.Step (1);
+			
 			// Switch to the target branch
 			DirCache dc = repo.LockDirCache ();
 			try {
@@ -935,6 +953,7 @@ namespace MonoDevelop.VersionControl.Git
 				
 				RefUpdate u = repo.UpdateRef(Constants.HEAD);
 				u.Link ("refs/heads/" + branch);
+				monitor.Step (1);
 			} catch {
 				dc.Unlock ();
 				// If something goes wrong, restore the work tree status
@@ -950,24 +969,31 @@ namespace MonoDevelop.VersionControl.Git
 				stash.Apply ();
 				stashes.Remove (stash);
 			}
+			monitor.Step (1);
 			
 			// Notify file changes
 			
-			NotifyFileChanges (statusList);
+			NotifyFileChanges (monitor, statusList);
 			
 			if (BranchSelectionChanged != null)
 				BranchSelectionChanged (this, EventArgs.Empty);
+			
+			monitor.EndTask ();
 		}
 
-		void NotifyFileChanges (IEnumerable<Change> statusList)
+		void NotifyFileChanges (IProgressMonitor monitor, IEnumerable<Change> statusList)
 		{
-			foreach (Change change in statusList) {
+			List<Change> changes = new List<Change> (statusList);
+			monitor.BeginTask (null, changes.Count);
+			foreach (Change change in changes) {
 				if (change.ChangeType == ChangeType.Added)
 					// File added to source branch not present to target branch.
 					FileService.NotifyFileRemoved (FromGitPath (change.Path));
 				else
 					FileService.NotifyFileChanged (FromGitPath (change.Path));
+				monitor.Step (1);
 			}
+			monitor.EndTask ();
 		}
 
 		string GetStashName (string branchName)
