@@ -538,6 +538,11 @@ namespace MonoDevelop.Projects
 		{
 			yield return new StringTagDescription ("ProjectName", "Project Name");
 			yield return new StringTagDescription ("ProjectDir", "Project Directory");
+			yield return new StringTagDescription ("AuthorName", "Project Author Name");
+			yield return new StringTagDescription ("AuthorEmail", "Project Author Email");
+			yield return new StringTagDescription ("AuthorCopyright", "Project Author Copyright");
+			yield return new StringTagDescription ("AuthorCompany", "Project Author Company");
+			yield return new StringTagDescription ("AuthorTrademark", "Project Trademark");
 		}
 		
 		public override object GetTagValue (SolutionItem item, string tag)
@@ -546,6 +551,21 @@ namespace MonoDevelop.Projects
 				case "ITEMNAME":
 				case "PROJECTNAME":
 					return item.Name;
+				case "AUTHORCOPYRIGHT":
+					AuthorInformation authorInfo = item.AuthorInformation ?? AuthorInformation.Default;
+					return authorInfo.Copyright;
+				case "AUTHORCOMPANY":
+					authorInfo = item.AuthorInformation ?? AuthorInformation.Default;
+					return authorInfo.Company;
+				case "AUTHORTRADEMARK":
+					authorInfo = item.AuthorInformation ?? AuthorInformation.Default;
+					return authorInfo.Trademark;
+				case "AUTHOREMAIL":
+					authorInfo = item.AuthorInformation ?? AuthorInformation.Default;
+					return authorInfo.Email;
+				case "AUTHORNAME":
+					authorInfo = item.AuthorInformation ?? AuthorInformation.Default;
+					return authorInfo.Name;
 				case "ITEMDIR":
 				case "PROJECTDIR":
 					return item.BaseDirectory;

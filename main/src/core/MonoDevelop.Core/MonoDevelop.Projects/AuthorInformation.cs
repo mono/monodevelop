@@ -37,11 +37,13 @@ namespace MonoDevelop.Projects
 	public sealed class AuthorInformation
 	{
 		
-		public AuthorInformation (string name, string email, string copyright)
+		public AuthorInformation (string name, string email, string copyright, string company, string trademark)
 		{
 			this.Name = name;
 			this.Email = email;
 			this.Copyright = copyright;
+			this.Company = company;
+			this.Trademark = trademark;
 		}
 		
 		internal AuthorInformation ()
@@ -57,12 +59,20 @@ namespace MonoDevelop.Projects
 		[ItemProperty]
 		public string Copyright { get; private set; }
 		
+		[ItemProperty]
+		public string Company { get; private set; }
+		
+		[ItemProperty]
+		public string Trademark { get; private set; }
+		
 		public static AuthorInformation Default {
 			get {
 				string name = GetValueOrMigrate<string> ("Author.Name", "ChangeLogAddIn.Name") ?? Environment.UserName;
 				string email = GetValueOrMigrate<string> ("Author.Email", "ChangeLogAddIn.Email");
 				string copyright = PropertyService.Get<string> ("Author.Copyright", name);
-				return new AuthorInformation (name, email, copyright);
+				string company = PropertyService.Get<string> ("Author.Company", "");
+				string trademark = PropertyService.Get<string> ("Author.Trademark", "");
+				return new AuthorInformation (name, email, copyright, company, trademark);
 			}
 		}
 		
