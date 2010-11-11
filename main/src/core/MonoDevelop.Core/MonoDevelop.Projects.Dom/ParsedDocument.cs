@@ -352,7 +352,7 @@ namespace MonoDevelop.Projects.Dom
 						int idx = cmtText.IndexOf ("<summary>");
 						if (idx >= 0) {
 							int maxOffset = cmtText.IndexOf ("</summary>");
-							while (cmtText[maxOffset-1] == ' ')
+							while (maxOffset > 0 && cmtText[maxOffset-1] == ' ')
 								maxOffset--;
 							if (maxOffset < 0)
 								maxOffset = cmtText.Length;

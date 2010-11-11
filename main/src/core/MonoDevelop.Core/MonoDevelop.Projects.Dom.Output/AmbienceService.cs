@@ -166,6 +166,7 @@ namespace MonoDevelop.Projects.Dom.Output
 				} else {
 					result = member.Documentation;
 				}
+				
 				return CleanEmpty (result);
 			}
 			XmlElement node = (XmlElement)member.GetMonodocDocumentation ();
@@ -188,9 +189,10 @@ namespace MonoDevelop.Projects.Dom.Output
 						break;
 					}
 				}
+				
+			
 				return CleanEmpty (sb.ToString ());
 			}
-			
 			return CleanEmpty (member.Documentation);
 		}
 		
@@ -382,7 +384,6 @@ namespace MonoDevelop.Projects.Dom.Output
 		{
 			if (string.IsNullOrEmpty (doc))
 				return null;
-			
 			System.IO.StringReader reader = new System.IO.StringReader ("<docroot>" + doc + "</docroot>");
 			XmlTextReader xml = new XmlTextReader (reader);
 			StringBuilder ret = new StringBuilder (70);
@@ -477,7 +478,7 @@ namespace MonoDevelop.Projects.Dom.Output
 			
 			} catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError (ex.ToString ());
-				return doc;
+				return EscapeText (doc);
 			}
 			if (IsEmptyDocumentation (ret.ToString ()))
 				return null;
