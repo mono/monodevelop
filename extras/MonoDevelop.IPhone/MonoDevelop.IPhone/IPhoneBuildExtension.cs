@@ -531,7 +531,7 @@ namespace MonoDevelop.IPhone
 			bool supportsIPad = (proj.SupportedDevices & TargetDevice.IPad) != 0;
 			var appDir = conf.AppDirectory;
 			
-			if (supportsIPhone && proj.BundleIcon.IsNullOrEmpty)
+			if (supportsIPhone && !proj.BundleIcon.IsNullOrEmpty)
 					yield return new FilePair (proj.BundleIcon, appDir.Combine ("Icon.png"));
 			
 			if (!proj.BundleIconSpotlight.IsNullOrEmpty)
