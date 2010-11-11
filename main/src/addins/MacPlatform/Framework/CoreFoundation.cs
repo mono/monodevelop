@@ -206,7 +206,7 @@ namespace OSXIntegration.Framework
 				url = CreatePathUrl (filePath);
 				arr = LSCopyApplicationURLsForURL (url, roles);
 				if (arr == IntPtr.Zero)
-					return null;
+					return new string[0];
 				int count = CFArrayGetCount (arr);
 				string[] values = new string [count];
 				for (int i = 0; i < values.Length; i++ ) {
