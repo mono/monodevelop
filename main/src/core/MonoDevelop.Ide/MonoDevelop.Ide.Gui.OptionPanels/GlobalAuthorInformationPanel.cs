@@ -58,6 +58,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			nameEntry.Text = AuthorInformation.Default.Name ?? "";
 			emailEntry.Text = AuthorInformation.Default.Email ?? "";
 			copyrightEntry.Text = AuthorInformation.Default.Copyright ?? "";
+			companyEntry.Text = AuthorInformation.Default.Company ?? "";
+			trademarkEntry.Text = AuthorInformation.Default.Trademark ?? "";
 		}
 		
 		public void Save ()
@@ -65,6 +67,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			PropertyService.Set ("Author.Name", nameEntry.Text);
 			PropertyService.Set ("Author.Email", emailEntry.Text);
 			PropertyService.Set ("Author.Copyright", copyrightEntry.Text);
+			PropertyService.Set ("Author.Company", companyEntry.Text);
+			PropertyService.Set ("Author.Trademark", trademarkEntry.Text);
 		}
 	}
 }

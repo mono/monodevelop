@@ -339,6 +339,12 @@ namespace MonoDevelop.Ide.Templates
 			if (project != null) {
 				tags ["ProjectName"] = project.Name;
 				tags ["SafeProjectName"] = CreateIdentifierName (project.Name);
+				var info = project.AuthorInformation ?? AuthorInformation.Default;
+				tags ["AuthorCopyright"] = info.Copyright;
+				tags ["AuthorCompany"] = info.Company;
+				tags ["AuthorTrademark"] = info.Trademark;
+				tags ["AuthorEmail"] = info.Email;
+				tags ["AuthorName"] = info.Name;
 			}
 			if ((language != null) && (language.Length > 0))
 				tags ["Language"] = language;

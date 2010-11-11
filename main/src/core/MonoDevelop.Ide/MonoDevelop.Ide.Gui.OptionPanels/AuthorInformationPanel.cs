@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public AuthorInformation Get ()
 		{
-			return checkCustom.Active? new AuthorInformation (nameEntry.Text, emailEntry.Text, copyrightEntry.Text) : null;
+			return checkCustom.Active? new AuthorInformation (nameEntry.Text, emailEntry.Text, copyrightEntry.Text, companyEntry.Text, trademarkEntry.Text) : null;
 		}
 
 		void UseDefaultToggled (object sender, System.EventArgs e)
@@ -88,10 +88,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					nameEntry.Text = info.Name ?? "";
 					emailEntry.Text = info.Email ?? "";
 					copyrightEntry.Text = info.Copyright ?? "";
+					companyEntry.Text = info.Company ?? "";
+					trademarkEntry.Text = info.Trademark ?? "";
 				}
 			} else {
 				infoTable.Sensitive = false;
-				info = new AuthorInformation (nameEntry.Text, emailEntry.Text, copyrightEntry.Text);
+				info = new AuthorInformation (nameEntry.Text, emailEntry.Text, copyrightEntry.Text, companyEntry.Text, trademarkEntry.Text);
 				if (String.IsNullOrEmpty (info.Name) && String.IsNullOrEmpty (info.Email))
 					info = null;
 				nameEntry.Text = AuthorInformation.Default.Name ?? "";
