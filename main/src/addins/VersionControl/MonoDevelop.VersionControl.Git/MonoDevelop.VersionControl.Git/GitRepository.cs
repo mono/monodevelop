@@ -438,7 +438,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			string file = Path.GetTempFileName ();
 			try {
-				File.WriteAllText (file, changeSet.GlobalComment);
+				File.WriteAllText (file, ChangeSet.GlobalComment);
 				string paths = ToCmdPathList (changeSet.Items.Select (it => it.LocalPath));
 				RunCommand ("commit -F \"" + file + "\" " + paths, true, monitor);
 			} finally {

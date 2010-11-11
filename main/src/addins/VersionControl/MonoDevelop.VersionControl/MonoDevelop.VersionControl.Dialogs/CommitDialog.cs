@@ -26,7 +26,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			store = new ListStore(typeof (Gdk.Pixbuf), typeof (string), typeof (string), typeof(bool), typeof(object));
 			fileList.Model = store;
 			this.changeSet = changeSet;
-			oldMessage = changeSet.GlobalComment;
+			oldMessage = ChangeSet.GlobalComment;
 
 			CellRendererText crt = new CellRendererText ();
 			var crp = new CellRendererPixbuf ();
@@ -86,13 +86,13 @@ namespace MonoDevelop.VersionControl.Dialogs
 				selected.Add (info.LocalPath);
 			}
 			
-			if (changeSet.GlobalComment.Length == 0) {
+			if (string.IsNullOrEmpty (ChangeSet.GlobalComment)) {
 				AuthorInformation aInfo;
 				CommitMessageFormat fmt = VersionControlService.GetCommitMessageFormat (changeSet, out aInfo);
 				Message = changeSet.GenerateGlobalComment (fmt, aInfo);
 			}
 			else
-				Message = changeSet.GlobalComment;
+				Message = ChangeSet.GlobalComment;
 				
 			textview.Buffer.Changed += OnTextChanged;
 			
@@ -123,7 +123,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				}
 				foreach (string file in todel)
 					changeSet.RemoveFile (file);
-				changeSet.GlobalComment = Message;
+				ChangeSet.GlobalComment = Message;
 				
 				// Perform the commit
 				
@@ -137,7 +137,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 						MessageService.ShowException (ex);
 						res = false;
 					}
-					
+					System.Console.WriteLine ("RES: " + res);
 					if (!res) {
 						// Commit failed. Rollback the previous extensions
 						for (int m=0; m<n; m++) {
@@ -151,14 +151,14 @@ namespace MonoDevelop.VersionControl.Dialogs
 					Hide ();
 				}
 			} else {
-				changeSet.GlobalComment = oldMessage;
+				ChangeSet.GlobalComment = oldMessage;
 			}
 			base.OnResponse (type);
 		}
 		
 		void OnTextChanged (object s, EventArgs args)
 		{
-			changeSet.GlobalComment = Message;
+			ChangeSet.GlobalComment = Message;
 		}
 		
 		public void EndCommit (bool success)

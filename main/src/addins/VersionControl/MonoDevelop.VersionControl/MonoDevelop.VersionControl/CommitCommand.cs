@@ -94,6 +94,8 @@ namespace MonoDevelop.VersionControl
 				try {
 					vc.Commit (changeSet, Monitor);
 					Monitor.ReportSuccess (GettextCatalog.GetString ("Commit operation completed."));
+					// Reset the global comment on successful commit.
+					ChangeSet.GlobalComment = "";
 				} catch {
 					success = false;
 					throw;

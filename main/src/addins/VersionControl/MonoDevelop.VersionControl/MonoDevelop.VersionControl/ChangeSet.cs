@@ -10,7 +10,13 @@ namespace MonoDevelop.VersionControl
 {
 	public class ChangeSet
 	{
-		string globalComment = string.Empty;
+		public static string globalComment = string.Empty;
+		public static string GlobalComment {
+			get { return globalComment; }
+			set { globalComment = value; }
+		}
+		
+
 		List<ChangeSetItem> items = new List<ChangeSetItem> ();
 		Repository repo;
 		FilePath basePath;
@@ -57,11 +63,6 @@ namespace MonoDevelop.VersionControl
 			}
 			
 			return writer.ToString ();
-		}
-		
-		public string GlobalComment {
-			get { return globalComment; }
-			set { globalComment = value; }
 		}
 		
 		public FilePath BaseLocalPath {
@@ -134,7 +135,6 @@ namespace MonoDevelop.VersionControl
 		
 		public virtual void CopyFrom (ChangeSet other)
 		{
-			globalComment = other.globalComment;
 			repo = other.repo;
 			basePath = other.basePath;
 			items = new List<ChangeSetItem> ();

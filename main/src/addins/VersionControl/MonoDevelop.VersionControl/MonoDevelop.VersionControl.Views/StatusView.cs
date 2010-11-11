@@ -641,9 +641,6 @@ namespace MonoDevelop.VersionControl.Views
 					return;
 			}
 			
-			// Reset the global comment. It may be already set from previous commits.
-			changeSet.GlobalComment = string.Empty;
-			
 			if (!CommitCommand.Commit (vc, changeSet.Clone (), false))
 				return;
 		}
