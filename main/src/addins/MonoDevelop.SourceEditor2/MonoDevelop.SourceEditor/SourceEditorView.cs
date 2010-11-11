@@ -521,7 +521,8 @@ namespace MonoDevelop.SourceEditor
 			foreach (var f in widget.TextEditor.Document.FoldSegments) {
 				foldingStates[f.Offset] = f.IsFolded;
 			}
-			
+			if (string.IsNullOrEmpty (ContentName))
+				return;
 			settingStore[ContentName] = new Settings () {
 				CaretOffset = widget.TextEditor.Caret.Offset,
 				vAdjustment = widget.TextEditor.VAdjustment.Value,
