@@ -81,6 +81,11 @@ namespace MonoDevelop.IPhone
 			if (ReferenceEquals (x, y))
 				return 0;
 			
+			if (x == null)
+				return -1;
+			if (y == null)
+				return 1;
+			
 			for (int i = 0; i < Math.Min (x.Length,y.Length); i++) {
 				int res = x[i] - y[i];
 				if (res != 0)
@@ -95,7 +100,7 @@ namespace MonoDevelop.IPhone
 			var y = other.Version;
 			if (ReferenceEquals (x, y))
 				return true;
-			if (x.Length != y.Length)
+			if (x == null || y == null || x.Length != y.Length)
 				return false;
 			for (int i = 0; i < x.Length; i++)
 				if (x[i] != y[i])

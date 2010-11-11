@@ -89,12 +89,6 @@ namespace MonoDevelop.IPhone.Gui
 			linkCombo.AppendText ("Link SDK assemblies only"); //MtouchLinkMode.SdkOnly
 			linkCombo.AppendText ("Link all assemblies"); //MtouchLinkMode.All
 			
-			//FIXME: have a "default SDK" entry
-			
-			
-			
-			sdkCombo.Changed += HandleSdkComboChanged;
-			
 			i18nTreeView.Model = i18nStore;
 			sdkCombo.Model = sdkStore;
 			
@@ -108,6 +102,8 @@ namespace MonoDevelop.IPhone.Gui
 					i18nStore.SetValue (iter, 1, !(bool)i18nStore.GetValue (iter, 1));
 			};
 			
+			sdkCombo.Changed += HandleSdkComboChanged;
+			
 			this.ShowAll ();
 		}
 
@@ -116,6 +112,10 @@ namespace MonoDevelop.IPhone.Gui
 		/// </summary>
 		void HandleSdkComboChanged (object sender, EventArgs e)
 		{
+			//skip this event while the sdkStore is being loaded
+			if (sdkStore.IterNChildren () == 0)
+				return;
+			
 			((ListStore)minOSComboEntry.Model).Clear ();
 			var sdkVer = GetSdkValue ().ResolveIfDefault ();
 			

@@ -128,15 +128,10 @@ public static class IPhoneFramework
 		
 		public static IPhoneSdkVersion GetClosestInstalledSdk (IPhoneSdkVersion v)
 		{
-			IPhoneSdkVersion? previous = null;
+			//sorted low to high, so get first that's >= requested version
 			foreach (var i in InstalledSdkVersions) {
-				var cmp = v.CompareTo (i);
-				if (cmp == 0) {
+				if (i.CompareTo (v) >= 0)
 					return i;
-				} else if (cmp < 0) {
-					return previous ?? i;	
-				}
-				previous = i;
 			}
 			return IPhoneSdkVersion.UseDefault;
 		}
