@@ -152,10 +152,10 @@ namespace Mono.TextEditor.Highlighting
 		public class KeyTable 
 		{
 			public Keywords   keywords = null;
-			public KeyTable[] table    = new KeyTable[255];
+			public KeyTable[] table    = new KeyTable[tableLength];
 		}
-		
-		protected KeyTable[] table = new KeyTable[255];
+		const int tableLength = 255;
+		protected KeyTable[] table = new KeyTable[tableLength];
 		public KeyTable[] Table {
 			get {
 				return table;
@@ -166,7 +166,7 @@ namespace Mono.TextEditor.Highlighting
 			KeyTable[] curTable = table;
 			for (int i = 0; i < word.Length; i++) {
 				uint idx = (uint)word[i];
-				if (idx >= 255)
+				if (idx >= tableLength)
 					throw new ArgumentOutOfRangeException (word + " contains invalid chars.");
 				if (curTable[idx] == null)
 					curTable[idx] = new KeyTable ();
@@ -185,12 +185,12 @@ namespace Mono.TextEditor.Highlighting
 			uint idx;
 			for (int i = offset; i < max; i++) {
 				idx = (uint)(IgnoreCase ? Char.ToUpper (doc.GetCharAt (i)) : doc.GetCharAt (i));
-				if (idx >= curTable.Length || curTable[idx] == null)
+				if (idx >= tableLength || curTable[idx] == null)
 					return null;
 				curTable = curTable[idx].table;
 			}
 			idx = (uint)(IgnoreCase ? Char.ToUpper (doc.GetCharAt (max)) : doc.GetCharAt (max));
-			if (idx >= 255 || curTable[idx] == null)
+			if (idx >= tableLength || curTable[idx] == null)
 				return null;
 			return curTable[idx].keywords;
 		}
