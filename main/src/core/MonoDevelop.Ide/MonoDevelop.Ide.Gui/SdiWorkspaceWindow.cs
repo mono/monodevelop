@@ -192,6 +192,21 @@ namespace MonoDevelop.Ide.Gui
 				ShowPage (subViewContents.IndexOf (view) + 1);
 		}
 		
+		public int FindView (Type viewType)
+		{
+			if (viewType.Equals (ViewContent.GetType ()))
+				return 0;
+				
+			int i = 1;
+			foreach (IAttachableViewContent item in SubViewContents) {
+				if (viewType.Equals (item.GetType ()))
+					return i;
+				i++;
+			}
+			
+			return -1;
+		}
+		
 		public void SelectWindow()	
 		{
 			if (this.Parent == null)
@@ -505,7 +520,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		protected void ShowPage (int npage)
 		{
-			if (updating) return;
+			if (updating || npage < 0) return;
 			updating = true;
 			subViewToolbar.ActiveTab = npage;
 			updating = false;

@@ -46,7 +46,8 @@ namespace MonoDevelop.Ide.Gui
 		void AttachViewContent (IAttachableViewContent subViewContent);
 		void SwitchView (int index);
 		void SwitchView (IAttachableViewContent subViewContent);
-
+		int FindView (Type viewType);
+		
 		bool CloseWindow (bool force, bool fromMenu, int pageNum);
 		void SelectWindow ();
 		
