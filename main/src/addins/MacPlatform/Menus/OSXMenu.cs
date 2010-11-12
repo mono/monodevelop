@@ -475,6 +475,7 @@ namespace OSXIntegration
 		#region Event handlers
 		
 		//updates commands and populates arrays and dynamic menus
+		//NOTE: when Help menu is opened, Mac OS calls this for ALL menus because the Help menu can search menu items
 		static CarbonEventHandlerStatus HandleMenuOpening (IntPtr callRef, IntPtr eventRef, IntPtr user_data)
 		{
 			DestroyOldMenuObjects ();
