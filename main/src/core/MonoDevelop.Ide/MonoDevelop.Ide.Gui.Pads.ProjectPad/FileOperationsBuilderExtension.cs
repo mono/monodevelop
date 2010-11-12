@@ -71,7 +71,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			foreach (ITreeNavigator node in CurrentNodes) {
 				string path = GetDir (node.DataItem);
 				if (!string.IsNullOrEmpty (path) && paths.Add (path))
-					System.Diagnostics.Process.Start ("file://" + path);
+					DesktopService.OpenFolder (path);
 			}
 		}
 		

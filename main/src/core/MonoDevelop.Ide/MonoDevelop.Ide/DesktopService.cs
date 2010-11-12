@@ -89,6 +89,11 @@ namespace MonoDevelop.Ide
 			platformService.OpenFile (filename);
 		}
 
+		public static void OpenFolder (FilePath folderPath)
+		{
+			platformService.OpenFolder (folderPath);
+		}
+
 		public static string GetMimeTypeForUri (string uri)
 		{
 			return platformService.GetMimeTypeForUri (uri);

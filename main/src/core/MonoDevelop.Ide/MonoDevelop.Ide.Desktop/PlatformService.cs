@@ -64,6 +64,11 @@ namespace MonoDevelop.Ide.Desktop
 			Process.Start ("file://" + filename);
 		}
 		
+		public virtual void OpenFolder (FilePath folderPath)
+		{
+			Process.Start ("file://" + folderPath);
+		}
+		
 		public virtual void ShowUrl (string url)
 		{
 			Process.Start (url);
