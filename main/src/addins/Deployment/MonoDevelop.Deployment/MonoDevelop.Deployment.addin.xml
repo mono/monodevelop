@@ -107,7 +107,9 @@
 	
 	<Extension path = "/MonoDevelop/Deployment/DeployFileCopiers">
 		<Class class = "MonoDevelop.Deployment.Targets.LocalFileCopyHandler" />
-		<Class class = "MonoDevelop.Deployment.Targets.SshFuseFileCopyHandler" />
+		<Condition id="Platform" value="!windows">
+			<Class class = "MonoDevelop.Deployment.Targets.SshFuseFileCopyHandler" />
+		</Condition>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Deployment/DeployServiceExtensions">
@@ -122,7 +124,9 @@
 	
 	<Extension path = "/MonoDevelop/Deployment/FileCopyConfigurationEditors">
 		<Class class = "MonoDevelop.Deployment.Gui.LocalFileCopyConfigurationEditor" />
-		<Class class = "MonoDevelop.Deployment.Gui.SshFuseFileCopyConfigurationEditor" />
+		<Condition id="Platform" value="!windows">
+			<Class class = "MonoDevelop.Deployment.Gui.SshFuseFileCopyConfigurationEditor" />
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/DesignerSupport/PropertyProviders">
