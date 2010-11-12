@@ -297,10 +297,37 @@ namespace MonoDevelop.Ide
 		/// </summary>
 		public static int RunCustomDialog (Gtk.Dialog dialog, Window parent)
 		{
-			dialog.TransientFor      = parent;
+			if (parent == null) {
+				if (dialog.TransientFor != null)
+					parent = dialog.TransientFor;
+				else
+					parent = GetDefaultParent (dialog);
+			}
+			dialog.TransientFor = parent;
 			dialog.DestroyWithParent = true;
-			PlaceDialog (dialog, rootWindow);
+			PlaceDialog (dialog, parent);
 			return dialog.Run ();
+		}
+		
+		//make sure modal children are parented on top of other modal children
+		static Window GetDefaultParent (Window child)
+		{
+			if (child.Modal) {
+				return GetDefaultModalParent ();
+			} else {
+				return RootWindow;
+			}
+		}
+		
+		/// <summary>
+		/// Gets a default parent for modal dialogs.
+		/// </summary>
+		public static Window GetDefaultModalParent ()
+		{
+			foreach (Gtk.Window w in Gtk.Window.ListToplevels ())
+				if (w.Visible && w.HasToplevelFocus && w.Modal)
+					return w;
+			return RootWindow;
 		}
 		
 		/// <summary>
@@ -310,7 +337,7 @@ namespace MonoDevelop.Ide
 		{
 			//HACK: Mac GTK automatic window placement is broken
 			if (PropertyService.IsMac)
-				CenterWindow (child, parent ?? RootWindow);
+				CenterWindow (child, parent ?? GetDefaultParent (child));
 		}
 		
 		/// <summary>Centers a window relative to its parent.</summary>
