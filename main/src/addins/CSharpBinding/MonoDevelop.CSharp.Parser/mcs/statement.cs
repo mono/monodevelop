@@ -1511,7 +1511,7 @@ namespace Mono.CSharp {
 		}
 	}
 
-	class BlockConstantDeclaration : BlockVariableDeclaration
+	public class BlockConstantDeclaration : BlockVariableDeclaration
 	{
 		public BlockConstantDeclaration (FullNamedExpression type, LocalVariable li)
 			: base (type, li)
@@ -1542,6 +1542,11 @@ namespace Mono.CSharp {
 
 			li.ConstantValue = c;
 			return initializer;
+		}
+		
+		public override object Accept (StructuralVisitor visitor)
+		{
+			return visitor.Visit (this);
 		}
 	}
 

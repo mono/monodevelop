@@ -53,6 +53,7 @@ FILES =  \
 	MonoDevelop.CSharp.Dom/CSharpTokenNode.cs \
 	MonoDevelop.CSharp.Dom/Expressions/AnonymousMethodExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/ArgListExpression.cs \
+	MonoDevelop.CSharp.Dom/Expressions/ArrayInitializerExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/ArrayObjectCreateExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/AsExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/AssignmentExpression.cs \

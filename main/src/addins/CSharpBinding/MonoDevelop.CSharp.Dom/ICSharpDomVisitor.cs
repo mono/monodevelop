@@ -125,6 +125,7 @@ namespace MonoDevelop.CSharp.Dom
 		S VisitIsExpression (IsExpression isExpression, T data);
 		S VisitDefaultValueExpression (DefaultValueExpression defaultValueExpression, T data);
 		S VisitArgListExpression (ArgListExpression argListExpression, T data);
+		S VisitArrayInitializerExpression (ArrayInitializerExpression arrayInitializerExpression, T data);
 		#endregion
 		
 		#region Query Expressions

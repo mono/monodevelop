@@ -6013,6 +6013,11 @@ namespace Mono.CSharp {
 		{
 			throw new InternalErrorException ("Missing Resolve call");
 		}
+		
+		public override object Accept (StructuralVisitor visitor)
+		{
+			return visitor.Visit (this);
+		}
 	}
 
 	/// <summary>

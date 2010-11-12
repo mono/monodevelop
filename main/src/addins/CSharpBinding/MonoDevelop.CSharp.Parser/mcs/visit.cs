@@ -154,12 +154,17 @@ namespace Mono.CSharp
 			Console.WriteLine ("unknown statement:" + stmt);
 			return null;
 		}
-
+		
 		public virtual object Visit (BlockVariableDeclaration blockVariableDeclaration)
 		{
 			return null;
 		}
-
+		
+		public virtual object Visit (BlockConstantDeclaration blockConstantDeclaration)
+		{
+			return null;
+		}
+		
 		public virtual object Visit (EmptyStatement emptyStatement)
 		{
 			return null;
@@ -508,12 +513,17 @@ namespace Mono.CSharp
 		{
 			return null;
 		}
-
+		
 		public virtual object Visit (ConstInitializer constInitializer)
 		{
 			return null;
 		}
-
+		
+		public virtual object Visit (ArrayInitializer arrayInitializer)
+		{
+			return null;
+		}
+		
 		public virtual object Visit (Linq.QueryExpression queryExpression)
 		{
 			return null;

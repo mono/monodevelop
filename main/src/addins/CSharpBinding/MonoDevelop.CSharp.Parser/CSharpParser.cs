@@ -284,7 +284,7 @@ namespace MonoDevelop.CSharp.Parser
 				variable.AddChild (new Identifier (em.Name, Convert (em.Location)), AbstractNode.Roles.Identifier);
 				
 				if (em.Initializer != null) {
-					INode initializer = (INode)Visit (em.Initializer);
+					INode initializer = (INode)em.Initializer.Accept (this);
 					if (initializer != null)
 						variable.AddChild (initializer, AbstractNode.Roles.Initializer);
 				}
@@ -772,6 +772,47 @@ namespace MonoDevelop.CSharp.Parser
 				if (blockVariableDeclaration.Initializer != null) {
 					if (location != null)
 						varInit.AddChild (new CSharpTokenNode (Convert (location[0]), 1), VariableInitializer.Roles.Assign);
+					varInit.AddChild ((INode)blockVariableDeclaration.Initializer.Accept (this), VariableInitializer.Roles.Initializer);
+				}
+				
+				result.AddChild (varInit, VariableDeclarationStatement.Roles.Initializer);
+				
+				if (blockVariableDeclaration.Declarators != null) {
+					foreach (var decl in blockVariableDeclaration.Declarators) {
+						var loc = LocationsBag.GetLocations (decl);
+						var init = new VariableInitializer ();
+						init.AddChild (new Identifier (decl.Variable.Name, Convert (decl.Variable.Location)), VariableInitializer.Roles.Identifier);
+						if (decl.Initializer != null) {
+							if (loc != null)
+								init.AddChild (new CSharpTokenNode (Convert (loc[0]), 1), VariableInitializer.Roles.Assign);
+							init.AddChild ((INode)decl.Initializer.Accept (this), VariableInitializer.Roles.Initializer);
+							if (loc != null && loc.Count > 1)
+								result.AddChild (new CSharpTokenNode (Convert (loc[1]), 1), VariableInitializer.Roles.Comma);
+						} else {
+							if (loc != null && loc.Count > 0)
+								result.AddChild (new CSharpTokenNode (Convert (loc[0]), 1), VariableInitializer.Roles.Comma);
+						}
+						result.AddChild (init, VariableDeclarationStatement.Roles.Initializer);
+					}
+				}
+				if (location != null)
+					result.AddChild (new CSharpTokenNode (Convert (location[location.Count - 1]), 1), VariableDeclarationStatement.Roles.Semicolon);
+				return result;
+			}
+			
+			public override object Visit (BlockConstantDeclaration blockVariableDeclaration)
+			{
+				var result = new VariableDeclarationStatement ();
+				result.AddChild ((INode)blockVariableDeclaration.TypeExpression.Accept (this), VariableDeclarationStatement.Roles.ReturnType);
+				
+				var varInit = new VariableInitializer ();
+				var location = LocationsBag.GetLocations (blockVariableDeclaration);
+				if (location != null)
+					varInit.AddChild (new CSharpTokenNode (Convert (location[0]), "const".Length), VariableInitializer.Roles.Modifier);
+				varInit.AddChild (new Identifier (blockVariableDeclaration.Variable.Name, Convert (blockVariableDeclaration.Variable.Location)), VariableInitializer.Roles.Identifier);
+				if (blockVariableDeclaration.Initializer != null) {
+					if (location != null)
+						varInit.AddChild (new CSharpTokenNode (Convert (location[1]), 1), VariableInitializer.Roles.Assign);
 					varInit.AddChild ((INode)blockVariableDeclaration.Initializer.Accept (this), VariableInitializer.Roles.Initializer);
 				}
 				
@@ -1307,6 +1348,7 @@ namespace MonoDevelop.CSharp.Parser
 			public override object Visit (Expression expression)
 			{
 				Console.WriteLine ("Visit unknown expression:" + expression);
+				System.Console.WriteLine (Environment.StackTrace);
 				return null;
 			}
 			
@@ -2060,6 +2102,26 @@ namespace MonoDevelop.CSharp.Parser
 			public override object Visit (ConstInitializer constInitializer)
 			{
 				return new Identifier (constInitializer.Name, Convert (constInitializer.Location));
+			}
+			
+			public override object Visit (ArrayInitializer arrayInitializer)
+			{
+				var result = new ArrayInitializerExpression ();
+				var location = LocationsBag.GetLocations (arrayInitializer);
+				result.AddChild (new CSharpTokenNode (Convert (arrayInitializer.Location), "[".Length), ArrayInitializerExpression.Roles.LBracket);
+				var commaLocations = LocationsBag.GetLocations (arrayInitializer.Elements);
+				for (int i = 0; i < arrayInitializer.Count; i++) {
+					result.AddChild ((INode)arrayInitializer[i].Accept (this), ArrayInitializerExpression.Roles.Initializer);
+					if (commaLocations != null && i < commaLocations.Count)
+						result.AddChild (new CSharpTokenNode (Convert (commaLocations[i]), ",".Length), ArrayInitializerExpression.Roles.Comma);
+				}
+				
+				if (location != null) {
+					if (location.Count == 2) // optional comma
+						result.AddChild (new CSharpTokenNode (Convert (location[1]), ",".Length), ArrayInitializerExpression.Roles.Comma);
+					result.AddChild (new CSharpTokenNode (Convert (location[location.Count - 1]), "]".Length), ArrayInitializerExpression.Roles.RBracket);
+				}
+				return result;
 			}
 			
 			#endregion

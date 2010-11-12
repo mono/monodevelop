@@ -364,6 +364,7 @@
     <Compile Include="MonoDevelop.CSharp.Formatting\FormattingProfileService.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\ComposedType.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\DirectionExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\ArrayInitializerExpression.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

@@ -487,5 +487,10 @@ namespace MonoDevelop.CSharp.Dom
 		{
 			return VisitChildren (argListExpression, data);
 		}
+		
+		public S VisitArrayInitializerExpression (ArrayInitializerExpression arrayInitializerExpression, T data)
+		{
+			return VisitChildren (arrayInitializerExpression, data);
+		}
 	}
 }
