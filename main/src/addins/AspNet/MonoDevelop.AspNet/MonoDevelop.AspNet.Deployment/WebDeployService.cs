@@ -68,7 +68,7 @@ namespace MonoDevelop.AspNet.Deployment
 				taskAliases.Add (target.LocationName, target.GetMarkup ());
 			}
 			
-			MultiTaskDialogProgressMonitor monitor = new MultiTaskDialogProgressMonitor (true, true, true, taskAliases);
+			var monitor = new MultiTaskDialogProgressMonitor (true, true, true, taskAliases);
 			monitor.SetDialogTitle (MonoDevelop.Core.GettextCatalog.GetString ("Web Deployment Progress"));
 			monitor.SetOperationTitle (MonoDevelop.Core.GettextCatalog.GetString ("Deploying {0}...", project.Name));
 			threadParams.Monitor = monitor;
@@ -81,7 +81,7 @@ namespace MonoDevelop.AspNet.Deployment
 		
 		static void DoDeploy (object o)
 		{
-			DeployThreadParams threadParams = (DeployThreadParams) o;
+			var threadParams = (DeployThreadParams) o;
 			try {
 				IFileReplacePolicy replacePolicy = new DialogFileReplacePolicy ();
 				
@@ -104,9 +104,13 @@ namespace MonoDevelop.AspNet.Deployment
 				}
 			} catch (Exception e) {
 				MonoDevelop.Core.LoggingService.LogError ("Unhandled exception in the web deploy thread", e);
-				 MonoDevelop.Ide.MessageService.ShowException (e, "Web deploy failed due to unhandled exception");
+				MonoDevelop.Ide.MessageService.ShowException (e, "Web deploy failed due to unhandled exception");
 			} finally {
-				threadParams.Monitor.Dispose ();
+				try {
+					threadParams.Monitor.Dispose ();
+				} catch (Exception ex2) {
+					MonoDevelop.Core.LoggingService.LogError ("Unhandled exception disposing the web deploy thread", ex2);
+				}
 			}
 		}
 		
@@ -115,7 +119,6 @@ namespace MonoDevelop.AspNet.Deployment
 			var dialog = new WebDeployLaunchDialog (project) {
 				Modal = true,
 			};
-			dialog.Show ();
 			
 			ICollection<WebDeployTarget> targets = null;
 			
