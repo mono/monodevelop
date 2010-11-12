@@ -59,7 +59,8 @@ namespace MonoDevelop.Deployment.Gui
 			//IFileReplacePolicy is not likely to be running in the GUI thread
 			//so use some DispatchService magic to synchronously call the dialog in the GUI thread
 			DispatchService.GuiSyncDispatch (delegate {
-				response = (FileReplaceDialog.ReplaceResponse) MessageService.ShowCustomDialog (new FileReplaceDialog (response, source, sourceModified.ToString (), target, targetModified.ToString ()));
+				var dialog = new FileReplaceDialog (response, source, sourceModified.ToString (), target, targetModified.ToString ());
+				response = (FileReplaceDialog.ReplaceResponse) MessageService.ShowCustomDialog (dialog);
 			});
 			
 			switch (response) {
