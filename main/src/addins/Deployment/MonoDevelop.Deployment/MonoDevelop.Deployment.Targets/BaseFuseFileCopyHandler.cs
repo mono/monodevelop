@@ -29,6 +29,7 @@ using System.IO;
 using mun = Mono.Unix.Native;
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Deployment.Targets
 {
@@ -54,7 +55,7 @@ namespace MonoDevelop.Deployment.Targets
 			}
 			
 			try {
-				MountTempDirectory (copyConfig, tempDir.FullName);
+				MountTempDirectory (monitor, copyConfig, tempDir.FullName);
 			} catch (Exception e) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not mount FUSE filesystem."), e);
 				RemoveTempDirIfEmpty (tempDir);
@@ -76,7 +77,7 @@ namespace MonoDevelop.Deployment.Targets
 						cmd = "fusermount";
 						args = string.Format ("-u \"{0}\"", escapedDir);
 					}
-					RunFuseCommand (cmd, args);
+					RunFuseCommand (monitor, cmd, args);
 				} catch (Exception e) {
 					LoggingService.LogError (GettextCatalog.GetString ("Could not unmount FUSE filesystem."), e);
 					monitor.ReportError (GettextCatalog.GetString ("Could not unmount FUSE filesystem."), e);
@@ -92,9 +93,9 @@ namespace MonoDevelop.Deployment.Targets
 				tempDir.Delete ();
 		}
 		
-		public abstract void MountTempDirectory (FileCopyConfiguration copyConfig, string tempPath);
+		public abstract void MountTempDirectory (IProgressMonitor monitor, FileCopyConfiguration copyConfig, string tempPath);
 		
-		protected void RunFuseCommand (string command, string args)
+		protected void RunFuseCommand (IProgressMonitor monitor, string command, string args)
 		{
 			LoggingService.LogInfo ("Running FUSE command: {0} {1}", command, args);
 			var log = new StringWriter ();
@@ -103,11 +104,13 @@ namespace MonoDevelop.Deployment.Targets
 				RedirectStandardOutput = true,
 				UseShellExecute = false,
 			};
-			using (var pWrapper = MonoDevelop.Core.Runtime.ProcessService.StartProcess (psi, log, log, null)) {
-				pWrapper.WaitForOutput ();
-				System.Console.WriteLine (log.ToString ());
-				if (pWrapper.ExitCode != 0)
-					throw new Exception (log.ToString ());
+			using (var opMon = new AggregatedOperationMonitor (monitor)) {
+				using (var pWrapper = MonoDevelop.Core.Runtime.ProcessService.StartProcess (psi, log, log, null)) {
+					opMon.AddOperation (pWrapper);
+					pWrapper.WaitForOutput ();
+					if (pWrapper.ExitCode != 0)
+						throw new Exception (log.ToString ());
+				}
 			}
 		}
 
