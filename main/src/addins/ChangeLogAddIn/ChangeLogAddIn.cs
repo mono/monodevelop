@@ -89,12 +89,13 @@ namespace MonoDevelop.ChangeLogAddIn
 			string changeLogFileNameDirectory = Path.GetDirectoryName(changeLogFileName);
 			string selectedFileName = GetSelectedFile();
 			string selectedFileNameDirectory = Path.GetDirectoryName(selectedFileName);
+			string eol = document.Editor != null ? document.Editor.EolMarker : Environment.NewLine;
 			
 			int pos = GetHeaderEndPosition (document);
 			if (pos > 0 && selectedFileNameDirectory.StartsWith(changeLogFileNameDirectory)) {
 				string text = "\t* " 
 					+ selectedFileName.Substring(changeLogFileNameDirectory.Length + 1) + ": "
-					+ Environment.NewLine + Environment.NewLine;
+					+ eol + eol;
 				int insertPos = Math.Min (pos + 2, textBuffer.Length);
 				textBuffer.InsertText (insertPos, text);
 				
@@ -119,10 +120,10 @@ namespace MonoDevelop.ChangeLogAddIn
 				MessageService.ShowError (title, detail);
 				return false;
 			}
-			
+			string eol = document.Editor != null ? document.Editor.EolMarker : Environment.NewLine;
 			string date = DateTime.Now.ToString("yyyy-MM-dd");
 			string text = date + "  " + userInfo.Name + "  <" + userInfo.Email + ">" 
-			    + Environment.NewLine + Environment.NewLine;
+			    + eol + eol;
 
 			// Read the first line and compare it with the header: if they are
 			// the same don't insert a new header.
@@ -140,7 +141,9 @@ namespace MonoDevelop.ChangeLogAddIn
 			// This is less than optimal, we simply read 1024 chars hoping to
 			// find a newline there: if we don't find it we just return 0.
 			string text = textBuffer.GetText (0, Math.Min (textBuffer.Length, 1023));
-			return text.IndexOf (Environment.NewLine + Environment.NewLine);
+			string eol = document.Editor != null ? document.Editor.EolMarker : Environment.NewLine;
+			
+			return text.IndexOf (eol + eol);
 		}
         
 		private Document GetActiveChangeLogDocument()
