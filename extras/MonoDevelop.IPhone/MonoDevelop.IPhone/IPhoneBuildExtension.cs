@@ -189,7 +189,7 @@ namespace MonoDevelop.IPhone
 				if (result.Append (ProcessPackaging (monitor, sdkVersion, proj, conf, identity)).ErrorCount > 0)
 					return result;
 			} finally {
-				//if packaging failed, make sure that it's marked as needing buildind
+				//if packaging failed, make sure that it's marked as needing building
 				if (result.ErrorCount > 0 && File.Exists (conf.AppDirectory.Combine ("PkgInfo")))
 					File.Delete (conf.AppDirectory.Combine ("PkgInfo"));	
 			}	
