@@ -151,7 +151,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.DefaultWidth = 628;
 			this.DefaultHeight = 481;
 			this.label2.MnemonicWidget = this.textview;
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

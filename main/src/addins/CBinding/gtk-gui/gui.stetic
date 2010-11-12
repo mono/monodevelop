@@ -6,7 +6,6 @@
   </configuration>
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.Linux.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.SourceEditor2.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
@@ -1098,6 +1097,7 @@ Example:
   </widget>
   <widget class="Gtk.Dialog" id="CBinding.EditPackagesDialog" design-size="580 449">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Edit packages</property>
     <property name="Modal">True</property>
     <property name="Buttons">2</property>
@@ -1767,6 +1767,7 @@ Example:
   </widget>
   <widget class="Gtk.Dialog" id="CBinding.PackageDetails" design-size="608 518">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Package Details</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">1</property>

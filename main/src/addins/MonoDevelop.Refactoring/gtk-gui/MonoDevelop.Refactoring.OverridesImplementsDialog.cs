@@ -120,7 +120,7 @@ namespace MonoDevelop.Refactoring
 			}
 			this.DefaultWidth = 595;
 			this.DefaultHeight = 469;
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

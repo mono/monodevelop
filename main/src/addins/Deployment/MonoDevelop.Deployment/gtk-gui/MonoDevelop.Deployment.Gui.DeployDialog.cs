@@ -561,7 +561,7 @@ namespace MonoDevelop.Deployment.Gui
 			}
 			this.DefaultWidth = 573;
 			this.DefaultHeight = 433;
-			this.Show ();
+			this.Hide ();
 			this.notebook.SelectPage += new global::Gtk.SelectPageHandler (this.OnNotebookSelectPage);
 			this.checkSave.Clicked += new global::System.EventHandler (this.OnCheckSaveClicked);
 			this.radioCreateProject.Clicked += new global::System.EventHandler (this.OnRadioCreateProjectClicked);

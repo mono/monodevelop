@@ -34,11 +34,14 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		public static void Push (GitRepository repo)
 		{
-			PushDialog dlg = new PushDialog (repo);
-			if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+			var dlg = new PushDialog (repo);
+			try {
+				if (MessageService.RunCustomDialog (dlg) != (int) Gtk.ResponseType.Ok)
+					return;
+				
 				string remote = dlg.SelectedRemote;
 				string branch = dlg.SelectedRemoteBranch;
-				dlg.Destroy ();
+				
 				IProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Pushing changes..."));
 				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 					try {
@@ -49,22 +52,22 @@ namespace MonoDevelop.VersionControl.Git
 						monitor.Dispose ();
 					}
 				});
-			} else
+			} finally {
 				dlg.Destroy ();
+			}
 		}
 	
 		public static void ShowConfigurationDialog (GitRepository repo)
 		{
-			GitConfigurationDialog dlg = new GitConfigurationDialog (repo);
-			dlg.Run ();
-			dlg.Destroy ();
+			var dlg = new GitConfigurationDialog (repo);
+			MessageService.ShowCustomDialog (dlg);
 		}
 	
 		public static void ShowMergeDialog (GitRepository repo)
 		{
 			MergeDialog dlg = new MergeDialog (repo);
 			try {
-				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 					dlg.Hide ();
 					using (IProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Merging branch '{0}'...", dlg.SelectedBranch))) {
 						repo.Merge (dlg.SelectedBranch, monitor);

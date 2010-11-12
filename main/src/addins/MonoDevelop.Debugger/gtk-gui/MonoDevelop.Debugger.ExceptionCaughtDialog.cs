@@ -132,7 +132,7 @@ namespace MonoDevelop.Debugger
 			}
 			this.DefaultWidth = 541;
 			this.DefaultHeight = 358;
-			this.Show ();
+			this.Hide ();
 			this.buttonOk.Clicked += new global::System.EventHandler (this.OnButtonOkClicked);
 		}
 	}

@@ -235,7 +235,7 @@ namespace CBinding
 			}
 			this.DefaultWidth = 580;
 			this.DefaultHeight = 449;
-			this.Show ();
+			this.Hide ();
 			this.notebook1.SwitchPage += new global::Gtk.SwitchPageHandler (this.OnNotebook1SwitchPage);
 			this.normalPackageTreeView.CursorChanged += new global::System.EventHandler (this.OnNonSelectedPackageCursorChanged);
 			this.projectPackageTreeView.CursorChanged += new global::System.EventHandler (this.OnNonSelectedPackageCursorChanged);

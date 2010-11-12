@@ -174,7 +174,7 @@ namespace MonoDevelop.AspNet.Deployment
 			this.DefaultWidth = 400;
 			this.DefaultHeight = 300;
 			this.buttonOk.HasDefault = true;
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

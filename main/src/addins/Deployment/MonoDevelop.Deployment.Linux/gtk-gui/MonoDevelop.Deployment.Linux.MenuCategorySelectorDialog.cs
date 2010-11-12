@@ -90,7 +90,7 @@ namespace MonoDevelop.Deployment.Linux
 			}
 			this.DefaultWidth = 652;
 			this.DefaultHeight = 484;
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

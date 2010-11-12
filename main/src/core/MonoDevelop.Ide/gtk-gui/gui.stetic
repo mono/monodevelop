@@ -11,6 +11,7 @@
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Projects.ExportProjectDialog" design-size="509 195">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Events">ButtonPressMask</property>
     <property name="Title" translatable="yes">Export Project</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -710,6 +711,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Projects.FeatureSelectorDialog" design-size="585 435">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">New Project Features</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>
@@ -2154,6 +2156,7 @@ Diagnostic</property>
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog" design-size="459 162">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">New Layout</property>
     <property name="TypeHint">Dialog</property>
@@ -2787,6 +2790,7 @@ Months</property>
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.SelectEncodingsDialog" design-size="595 465">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="Title">Select Text Encodings</property>
     <property name="TypeHint">Dialog</property>
@@ -3089,6 +3093,7 @@ Months</property>
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog" design-size="575 394">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="Title">MonoDevelop</property>
     <property name="TypeHint">Dialog</property>
@@ -5204,6 +5209,7 @@ Large</property>
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.CodeTemplates.EditTemplateDialog" design-size="859 494">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes" />
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>
@@ -6756,6 +6762,7 @@ All solutions</property>
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Projects.ConfirmProjectDeleteDialog" design-size="512 387">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Delete Project</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Modal">True</property>
@@ -6915,6 +6922,7 @@ All solutions</property>
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.SelectFileFormatDialog" design-size="638 246">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Select File Format</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
@@ -7435,6 +7443,7 @@ All solutions</property>
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.MultiTaskProgressDialog" design-size="491 418">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Progress</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -9097,6 +9106,7 @@ Custom Command</property>
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Projects.DeleteConfigDialog" design-size="381 128">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Delete Configuration</property>
     <property name="TypeHint">Dialog</property>
@@ -10446,6 +10456,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Projects.ProjectFileSelectorDialog" design-size="522 416">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Select Project File...</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
@@ -10592,6 +10603,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Projects.AddMimeTypeDialog" design-size="400 164">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Add File Type</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -10869,6 +10881,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Projects.RenameConfigDialog" design-size="371 149">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Rename Configuration</property>
     <property name="TypeHint">Dialog</property>
@@ -11126,6 +11139,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Execution.MonoExecutionParametersPreview" design-size="501 341">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Options Preview</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -11655,6 +11669,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Updater.UpdateDialog" design-size="450 373">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">MonoDevelop Updater</property>
     <property name="WindowPosition">CenterOnParent</property>

@@ -7,7 +7,6 @@
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.Autotools.MakefileOptionPanelWidget" design-size="589 368">
@@ -1848,6 +1847,7 @@ Generates set of Makefiles with the most common targets, and a configuration scr
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Autotools.GenerateMakefilesDialog" design-size="614 359">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Generate Makefiles</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Resizable">False</property>
@@ -2201,6 +2201,7 @@ Generates a Makefile structure based on Autotools, with the standard targets and
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Autotools.MakefileSwitchEditor" design-size="400 300">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Switch editor</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>

@@ -105,7 +105,7 @@ namespace MonoDevelop.Debugger
 			this.DefaultWidth = 716;
 			this.DefaultHeight = 410;
 			this.buttonEval.HasDefault = true;
-			this.Show ();
+			this.Hide ();
 			this.buttonEval.Clicked += new global::System.EventHandler (this.OnButtonEvalClicked);
 		}
 	}

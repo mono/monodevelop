@@ -130,7 +130,7 @@ namespace MonoDevelop.Ide.Projects
 			this.DefaultHeight = 416;
 			this.label2.MnemonicWidget = this.fileTypeCombo;
 			this.typeBox.Hide ();
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

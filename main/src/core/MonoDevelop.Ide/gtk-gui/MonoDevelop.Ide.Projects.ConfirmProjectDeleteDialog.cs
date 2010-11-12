@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 			this.DefaultWidth = 512;
 			this.DefaultHeight = 387;
-			this.Show ();
+			this.Hide ();
 			this.radioDeleteAll.Toggled += new global::System.EventHandler (this.OnRadioDeleteAllToggled);
 		}
 	}

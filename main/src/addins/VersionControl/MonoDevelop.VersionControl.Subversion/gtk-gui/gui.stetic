@@ -7,10 +7,12 @@
   <import>
     <widget-library name="../../../../../build/AddIns/VersionControl/MonoDevelop.VersionControl.dll" />
     <widget-library name="../../../../../build/bin/MonoDevelop.Ide.dll" />
+    <widget-library name="../../../../../build/bin/Mono.TextEditor.dll" />
     <widget-library name="../../../../../build/AddIns/VersionControl/MonoDevelop.VersionControl.Subversion.dll" internal="true" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Subversion.Gui.UserPasswordDialog" design-size="433 229">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Events">ButtonPressMask</property>
     <property name="Title" translatable="yes">Subversion</property>
     <property name="Modal">True</property>
@@ -190,7 +192,6 @@
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-cancel</property>
-            <property name="IsDialogButton">True</property>
             <property name="ResponseId">-6</property>
             <property name="label">gtk-cancel</property>
           </widget>
@@ -207,7 +208,6 @@
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-ok</property>
-            <property name="IsDialogButton">True</property>
             <property name="ResponseId">-5</property>
             <property name="label">gtk-ok</property>
           </widget>
@@ -222,6 +222,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Subversion.Gui.SslServerTrustDialog" design-size="508 415">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Events">ButtonPressMask</property>
     <property name="Title" translatable="yes">Repository Certified by an Unknown Authority</property>
     <property name="Modal">True</property>
@@ -678,7 +679,6 @@
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-cancel</property>
-            <property name="IsDialogButton">True</property>
             <property name="ResponseId">-6</property>
             <property name="label">gtk-cancel</property>
           </widget>
@@ -695,7 +695,6 @@
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-ok</property>
-            <property name="IsDialogButton">True</property>
             <property name="ResponseId">-5</property>
             <property name="label">gtk-ok</property>
           </widget>
@@ -710,6 +709,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Subversion.Gui.ClientCertificateDialog" design-size="492 213">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Events">ButtonPressMask</property>
     <property name="Title" translatable="yes">Client Certificate Required</property>
     <property name="Buttons">2</property>
@@ -870,6 +870,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Subversion.Gui.ClientCertificatePasswordDialog" design-size="414 217">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Events">ButtonPressMask</property>
     <property name="Title" translatable="yes">Password for client certificate</property>
     <property name="Buttons">2</property>
@@ -1004,7 +1005,6 @@
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-cancel</property>
-            <property name="IsDialogButton">True</property>
             <property name="ResponseId">-6</property>
             <property name="label">gtk-cancel</property>
           </widget>
@@ -1021,7 +1021,6 @@
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-ok</property>
-            <property name="IsDialogButton">True</property>
             <property name="ResponseId">-5</property>
             <property name="label">gtk-ok</property>
           </widget>

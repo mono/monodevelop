@@ -115,7 +115,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			this.DefaultWidth = 730;
 			this.DefaultHeight = 540;
-			this.Show ();
+			this.Hide ();
 			this.remoteCombo.Changed += new global::System.EventHandler (this.OnRemoteComboChanged);
 			this.branchCombo.Changed += new global::System.EventHandler (this.OnBranchComboChanged);
 		}

@@ -139,7 +139,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				this.Child.ShowAll ();
 			}
 			this.DefaultHeight = 414;
-			this.Show ();
+			this.Hide ();
 			this.versionControlType.Changed += new global::System.EventHandler (this.OnVersionControlTypeChanged);
 			this.entryName.Changed += new global::System.EventHandler (this.OnEntryNameChanged);
 		}

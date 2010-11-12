@@ -581,7 +581,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.DefaultWidth = 880;
 			this.DefaultHeight = 551;
 			this.label5.MnemonicWidget = this.entryName;
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

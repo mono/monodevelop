@@ -103,9 +103,9 @@ namespace MonoDevelop.VersionControl.Git
 		
 		protected virtual void OnButtonAddBranchClicked (object sender, System.EventArgs e)
 		{
-			EditBranchDialog dlg = new EditBranchDialog (repo, null, true);
+			var dlg = new EditBranchDialog (repo, null, true);
 			try {
-				if (dlg.Run () == (int) ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
 					repo.CreateBranch (dlg.BranchName, dlg.TrackSource);
 					FillBranches ();
 				}
@@ -120,9 +120,9 @@ namespace MonoDevelop.VersionControl.Git
 			if (!listBranches.Selection.GetSelected (out it))
 				return;
 			Branch b = (Branch) storeBranches.GetValue (it, 0);
-			EditBranchDialog dlg = new EditBranchDialog (repo, b, false);
+			var dlg = new EditBranchDialog (repo, b, false);
 			try {
-				if (dlg.Run () == (int) ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
 					if (dlg.BranchName != b.Name)
 						repo.RenameBranch (b.Name, dlg.BranchName);
 					repo.SetBranchTrackSource (dlg.BranchName, dlg.TrackSource);
@@ -157,10 +157,10 @@ namespace MonoDevelop.VersionControl.Git
 		
 		protected virtual void OnButtonAddRemoteClicked (object sender, System.EventArgs e)
 		{
-			RemoteSource remote = new RemoteSource ();
-			EditRemoteDialog dlg = new EditRemoteDialog (remote, true);
+			var remote = new RemoteSource ();
+			var dlg = new EditRemoteDialog (remote, true);
 			try {
-				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 					repo.AddRemote (remote, dlg.ImportTags);
 					FillRemotes ();
 				}
@@ -178,9 +178,9 @@ namespace MonoDevelop.VersionControl.Git
 			RemoteSource remote = (RemoteSource) storeRemotes.GetValue (it, 0);
 			string oldName = remote.Name;
 			
-			EditRemoteDialog dlg = new EditRemoteDialog (remote, false);
+			var dlg = new EditRemoteDialog (remote, false);
 			try {
-				if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 					if (remote.Name != oldName)
 						repo.RenameRemote (oldName, remote.Name);
 					repo.UpdateRemote (remote);
@@ -231,9 +231,9 @@ namespace MonoDevelop.VersionControl.Git
 			b.Name = branchName;
 			b.Tracking = remote.Name + "/" + branchName;
 			
-			EditBranchDialog dlg = new EditBranchDialog (repo, b, true);
+			var dlg = new EditBranchDialog (repo, b, true);
 			try {
-				if (dlg.Run () == (int) ResponseType.Ok) {
+				if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
 					repo.CreateBranch (dlg.BranchName, dlg.TrackSource);
 					FillBranches ();
 				}

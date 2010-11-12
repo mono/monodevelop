@@ -14,6 +14,7 @@
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.AspNet.Mvc.Gui.AddViewDialog" design-size="470 387">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Add View</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>

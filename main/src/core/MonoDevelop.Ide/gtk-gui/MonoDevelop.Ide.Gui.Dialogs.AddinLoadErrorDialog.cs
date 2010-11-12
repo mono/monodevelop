@@ -164,7 +164,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.labelFatal.Hide ();
 			this.labelWarning.Hide ();
 			this.closeButton.Hide ();
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

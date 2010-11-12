@@ -138,7 +138,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			this.DefaultWidth = 400;
 			this.DefaultHeight = 200;
-			this.Show ();
+			this.Hide ();
 			this.entryName.Changed += new global::System.EventHandler (this.OnEntryNameChanged);
 			this.checkTrack.Toggled += new global::System.EventHandler (this.OnCheckTrackToggled);
 		}

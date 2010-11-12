@@ -101,7 +101,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			this.DefaultWidth = 469;
 			this.DefaultHeight = 487;
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

@@ -120,7 +120,7 @@ namespace MonoDevelop.Deployment.Gui
 			}
 			this.DefaultWidth = 453;
 			this.DefaultHeight = 193;
-			this.Show ();
+			this.Hide ();
 			this.folderEntry.PathChanged += new global::System.EventHandler (this.OnFolderEntryPathChanged);
 			this.nameEntry.Changed += new global::System.EventHandler (this.OnNameEntryChanged);
 		}

@@ -117,7 +117,7 @@ namespace MonoDevelop.Ide.Projects
 			this.DefaultWidth = 400;
 			this.DefaultHeight = 164;
 			this.image.Hide ();
-			this.Show ();
+			this.Hide ();
 			this.entry.Changed += new global::System.EventHandler (this.OnEntryChanged);
 		}
 	}

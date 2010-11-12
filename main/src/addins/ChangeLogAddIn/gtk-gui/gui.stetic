@@ -11,6 +11,7 @@
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.ChangeLogAddIn.AddLogEntryDialog" design-size="573 510">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Events">ButtonPressMask</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">ChangeLog</property>

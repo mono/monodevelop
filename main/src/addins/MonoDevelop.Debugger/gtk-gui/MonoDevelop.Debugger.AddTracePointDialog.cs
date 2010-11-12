@@ -162,7 +162,7 @@ namespace MonoDevelop.Debugger
 			this.DefaultWidth = 540;
 			this.DefaultHeight = 208;
 			this.buttonOk.HasDefault = true;
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

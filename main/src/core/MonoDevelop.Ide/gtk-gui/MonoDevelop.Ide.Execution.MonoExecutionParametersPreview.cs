@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Execution
 			}
 			this.DefaultWidth = 501;
 			this.DefaultHeight = 341;
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

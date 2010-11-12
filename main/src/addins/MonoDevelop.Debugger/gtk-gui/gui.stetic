@@ -11,6 +11,7 @@
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.Debugger.AttachToProcessDialog" design-size="656 413">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Attach to Process</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">3</property>
@@ -424,6 +425,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Debugger.ExpressionEvaluatorDialog" design-size="716 410">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Expression Evaluator</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Modal">True</property>
@@ -540,6 +542,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Debugger.BreakpointPropertiesDialog" design-size="512 438">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Breakpoint Properties</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Modal">True</property>
@@ -1522,6 +1525,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Debugger.AddTracePointDialog" design-size="540 208">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Add Tracepoint</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
@@ -1745,6 +1749,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Debugger.ExceptionCaughtDialog" design-size="541 358">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Exception Caught</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">1</property>
@@ -1891,6 +1896,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Debugger.Viewers.ValueVisualizerDialog" design-size="628 433">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Value Visualizer</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>

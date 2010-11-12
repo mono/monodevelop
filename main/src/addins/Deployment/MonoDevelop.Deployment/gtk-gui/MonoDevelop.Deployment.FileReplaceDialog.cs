@@ -428,7 +428,7 @@ namespace MonoDevelop.Deployment
 			}
 			this.DefaultWidth = 425;
 			this.DefaultHeight = 420;
-			this.Show ();
+			this.Hide ();
 			this.DeleteEvent += new global::Gtk.DeleteEventHandler (this.DeleteActivated);
 			this.cancelButton.Clicked += new global::System.EventHandler (this.CancelClicked);
 			this.okButton.Clicked += new global::System.EventHandler (this.OkClicked);

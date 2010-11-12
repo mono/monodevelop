@@ -154,7 +154,7 @@ namespace MonoDevelop.Refactoring.Rename
 			this.DefaultHeight = 154;
 			this.labelNewName.MnemonicWidget = this.entry;
 			this.renameFileFlag.Hide ();
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

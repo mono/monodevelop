@@ -12,6 +12,7 @@
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.Refactoring.RefactoringPreviewDialog" design-size="400 300">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Refactoring Preview</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>
@@ -109,6 +110,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Refactoring.Rename.RenameItemDialog" design-size="365 154">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Rename {0}</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>
@@ -284,6 +286,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Refactoring.IntroduceConstant.IntroduceConstantDialog" design-size="390 162">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Introduce Constant</property>
     <property name="WindowPosition">Center</property>
     <property name="BorderWidth">6</property>
@@ -584,6 +587,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Refactoring.EncapsulateFieldDialog" design-size="465 427">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Encapsulate Fields</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>
@@ -846,6 +850,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Refactoring.OverridesImplementsDialog" design-size="595 469">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes" />
     <property name="WindowPosition">CenterOnParent</property>

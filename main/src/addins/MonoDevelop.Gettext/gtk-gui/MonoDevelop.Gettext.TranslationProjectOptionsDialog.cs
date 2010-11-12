@@ -285,7 +285,7 @@ namespace MonoDevelop.Gettext
 			this.DefaultWidth = 519;
 			this.DefaultHeight = 426;
 			this.folderentrySystemPath.Hide ();
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

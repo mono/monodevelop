@@ -101,7 +101,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 			this.DefaultWidth = 371;
 			this.DefaultHeight = 149;
-			this.Show ();
+			this.Hide ();
 			this.buttonOk.Clicked += new global::System.EventHandler (this.OnButtonOkClicked);
 		}
 	}

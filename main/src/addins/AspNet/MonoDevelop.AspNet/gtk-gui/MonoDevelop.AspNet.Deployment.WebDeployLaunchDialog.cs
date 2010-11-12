@@ -137,7 +137,7 @@ namespace MonoDevelop.AspNet.Deployment
 			}
 			this.DefaultWidth = 511;
 			this.DefaultHeight = 353;
-			this.Show ();
+			this.Hide ();
 			this.button6.Clicked += new global::System.EventHandler (this.editTargetsClicked);
 		}
 	}

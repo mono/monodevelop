@@ -142,7 +142,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			}
 			this.DefaultWidth = 492;
 			this.DefaultHeight = 213;
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

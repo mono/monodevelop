@@ -167,7 +167,7 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 			this.DefaultWidth = 390;
 			this.DefaultHeight = 162;
 			this.labelNewName.MnemonicWidget = this.entry;
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

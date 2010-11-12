@@ -365,7 +365,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			}
 			this.DefaultWidth = 617;
 			this.DefaultHeight = 438;
-			this.Show ();
+			this.Hide ();
 			this.notebook.ChangeCurrentPage += new global::Gtk.ChangeCurrentPageHandler (this.OnNotebookChangeCurrentPage);
 			this.repCombo.Changed += new global::System.EventHandler (this.OnRepComboChanged);
 			this.repoTree.CursorChanged += new global::System.EventHandler (this.OnRepoTreeCursorChanged);

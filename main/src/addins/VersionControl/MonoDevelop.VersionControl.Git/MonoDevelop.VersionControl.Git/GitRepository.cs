@@ -416,10 +416,10 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			ConflictResult res = ConflictResult.Abort;
 			DispatchService.GuiSyncDispatch (delegate {
-				ConflictResolutionDialog dlg = new ConflictResolutionDialog ();
-				dlg.Load (file);
-				Gtk.ResponseType dres = (Gtk.ResponseType) dlg.Run ();
+				var dlg = new ConflictResolutionDialog ();
 				try {
+					dlg.Load (file);
+					var dres = (Gtk.ResponseType) MessageService.RunCustomDialog (dlg);
 					dlg.Hide ();
 					switch (dres) {
 					case Gtk.ResponseType.Cancel: res = ConflictResult.Abort; break;

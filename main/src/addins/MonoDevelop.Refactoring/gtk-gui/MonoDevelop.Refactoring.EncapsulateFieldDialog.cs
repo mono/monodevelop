@@ -218,7 +218,7 @@ namespace MonoDevelop.Refactoring
 			}
 			this.DefaultWidth = 465;
 			this.DefaultHeight = 427;
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

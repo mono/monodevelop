@@ -320,7 +320,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			}
 			this.DefaultWidth = 859;
 			this.DefaultHeight = 494;
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

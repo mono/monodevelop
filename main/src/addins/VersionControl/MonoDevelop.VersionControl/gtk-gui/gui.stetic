@@ -21,6 +21,7 @@
   </icon-factory>
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog" design-size="617 438">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Events">ButtonPressMask</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Select Repository</property>
@@ -509,6 +510,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog" design-size="537 414">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Repository Configuration</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -1080,6 +1082,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Dialogs.CommitDialog" design-size="628 481">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Events">ButtonPressMask</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Commit Files</property>

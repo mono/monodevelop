@@ -870,6 +870,7 @@ Itanium</property>
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog" design-size="461 368">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Extract Method</property>
     <property name="WindowPosition">Center</property>
     <property name="BorderWidth">6</property>
@@ -1355,6 +1356,7 @@ Itanium</property>
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.CSharp.Formatting.NewFormattingProfileDialog" design-size="370 179">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">New Profile</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>
@@ -1481,6 +1483,7 @@ Itanium</property>
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.CSharp.Formatting.CSharpFormattingProfileDialog" design-size="880 551">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>
     <property name="Buttons">2</property>

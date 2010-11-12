@@ -7,7 +7,6 @@
   <import>
     <widget-library name="../../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
-    <widget-library name="../../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll" />
     <widget-library name="../../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.Linux.dll" />
     <widget-library name="../../../../../build/AddIns/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.dll" />
     <widget-library name="../../../../../build/bin/Mono.TextEditor.dll" />
@@ -755,7 +754,7 @@
   </widget>
   <widget class="Gtk.Window" id="MonoDevelop.AspNet.Deployment.WebTargetEditor" design-size="400 300">
     <property name="MemberName" />
-    <property name="Title" translatable="no">WebTargetEditor</property>
+    <property name="Title">WebTargetEditor</property>
     <property name="WindowPosition">CenterOnParent</property>
     <child>
       <placeholder />
@@ -763,6 +762,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.AspNet.Deployment.WebDeployTargetEditor" design-size="400 300">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Edit Web Deployment Target</property>
     <property name="TypeHint">Dialog</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -770,7 +770,6 @@
     <property name="BorderWidth">9</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
-    <property name="HasSeparator">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />
@@ -992,6 +991,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.AspNet.Deployment.WebDeployLaunchDialog" design-size="511 353">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Deploy to Web</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Modal">True</property>
@@ -1068,6 +1068,10 @@
             <property name="ResponseId">-11</property>
             <signal name="Clicked" handler="editTargetsClicked" />
           </widget>
+          <packing>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
         </child>
         <child>
           <widget class="Gtk.Button" id="buttonCancel">

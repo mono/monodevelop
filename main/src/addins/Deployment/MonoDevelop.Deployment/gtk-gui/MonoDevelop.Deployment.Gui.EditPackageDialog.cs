@@ -186,7 +186,7 @@ namespace MonoDevelop.Deployment.Gui
 			}
 			this.DefaultWidth = 599;
 			this.DefaultHeight = 450;
-			this.Show ();
+			this.Hide ();
 			this.notebook.SwitchPage += new global::Gtk.SwitchPageHandler (this.OnNotebookSwitchPage);
 			this.entryName.Changed += new global::System.EventHandler (this.OnEntryNameChanged);
 			this.entrySelector.SelectionChanged += new global::System.EventHandler (this.OnEntrySelectorSelectionChanged);

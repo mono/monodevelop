@@ -192,13 +192,8 @@ namespace MonoDevelop.Debugger
 		
 		public static void ShowValueVisualizer (ObjectValue val)
 		{
-			ValueVisualizerDialog dlg = new ValueVisualizerDialog ();
-			try {
-				dlg.Show (val);
-				dlg.Run ();
-			} finally {
-				dlg.Destroy ();
-			}
+			var dlg = new ValueVisualizerDialog ();
+			MessageService.ShowCustomDialog (dlg);
 		}
 		
 		public static bool ShowBreakpointProperties (Breakpoint bp, bool editNew)

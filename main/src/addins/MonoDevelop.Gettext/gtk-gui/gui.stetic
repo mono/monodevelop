@@ -8,7 +8,6 @@
     <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll" />
     <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Gettext/MonoDevelop.Gettext.dll" internal="true" />
   </import>
@@ -615,6 +614,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Gettext.Translator.LanguageChooserDialog" design-size="466 415">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Events">ButtonPressMask</property>
     <property name="Title" translatable="yes">Create New Localization</property>
     <property name="Icon">resource:locale_16x16.png</property>
@@ -902,6 +902,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Gettext.TranslationProjectOptionsDialog" design-size="519 426">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Translation Options</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>

@@ -246,7 +246,7 @@ namespace MonoDevelop.Ide
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.Show ();
+			this.Hide ();
 			this.Response += new global::Gtk.ResponseHandler (this.OnRespond);
 			this.btnUp.Clicked += new global::System.EventHandler (this.OnUpClicked);
 			this.btnDown.Clicked += new global::System.EventHandler (this.OnDownClicked);

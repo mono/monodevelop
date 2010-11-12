@@ -186,7 +186,7 @@ namespace MonoDevelop.Autotools
 			}
 			this.DefaultWidth = 614;
 			this.DefaultHeight = 359;
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

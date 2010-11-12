@@ -247,7 +247,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			this.DefaultHeight = 368;
 			this.labelNewName.MnemonicWidget = this.entry;
 			this.label2.MnemonicWidget = this.treeviewParameters;
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

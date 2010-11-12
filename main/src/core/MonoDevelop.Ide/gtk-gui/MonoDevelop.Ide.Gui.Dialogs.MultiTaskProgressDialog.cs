@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.DefaultWidth = 491;
 			this.DefaultHeight = 418;
 			this.title.Hide ();
-			this.Show ();
+			this.Hide ();
 			this.DeleteEvent += new global::Gtk.DeleteEventHandler (this.DeleteActivated);
 			this.buttonCancel.Clicked += new global::System.EventHandler (this.OnCancel);
 			this.buttonClose.Clicked += new global::System.EventHandler (this.OnClose);

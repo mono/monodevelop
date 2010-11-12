@@ -113,7 +113,7 @@ namespace MonoDevelop.CSharp.Formatting
 			this.DefaultHeight = 179;
 			this.label3.MnemonicWidget = this.entryProfileName;
 			this.label4.MnemonicWidget = this.comboboxInitFrom;
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

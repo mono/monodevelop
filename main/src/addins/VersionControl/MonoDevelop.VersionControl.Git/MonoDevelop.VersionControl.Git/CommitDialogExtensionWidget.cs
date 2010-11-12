@@ -85,7 +85,7 @@ namespace MonoDevelop.VersionControl.Git
 					
 					UserInfoConflictDialog dlg = new UserInfoConflictDialog (mdInfo, gitInfo);
 					try {
-						if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
+						if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 							if (dlg.UseMonoDevelopConfig) {
 								repo.SetUserInfo (sol.AuthorInformation.Name, sol.AuthorInformation.Email);
 								sol.UserProperties.SetValue ("GitUserInfo", "UsingMD");

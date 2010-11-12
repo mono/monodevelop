@@ -11,6 +11,7 @@
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog" design-size="642 433">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Toolbox Item Selector</property>
     <property name="WindowPosition">CenterOnParent</property>

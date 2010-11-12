@@ -12,6 +12,7 @@
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Git.PushDialog" design-size="730 540">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Push to Repository</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
@@ -148,6 +149,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Git.UserInfoConflictDialog" design-size="529 249">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">User Information Conflict</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
@@ -323,6 +325,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Git.ConflictResolutionDialog" design-size="991 534">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Merge Conflict Resolution</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -427,6 +430,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Git.GitConfigurationDialog" design-size="602 410">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Git Repository Configuration</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">1</property>
@@ -738,6 +742,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Git.EditBranchDialog" design-size="400 200">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Branch Properties</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
@@ -919,6 +924,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Git.EditRemoteDialog" design-size="422 206">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="Title" translatable="yes">Remote Source</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
@@ -1143,6 +1149,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Git.MergeDialog" design-size="469 487">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
     <property name="HelpButton">False</property>

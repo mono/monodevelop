@@ -71,9 +71,9 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			CommonAboutDialog dlg = new CommonAboutDialog ();
-			dlg.TransientFor = IdeApp.Workbench.RootWindow;
+			var dlg = new CommonAboutDialog ();
 			try {
+				MessageService.PlaceDialog (dlg, null);
 				dlg.Run ();
 			}
 			finally {

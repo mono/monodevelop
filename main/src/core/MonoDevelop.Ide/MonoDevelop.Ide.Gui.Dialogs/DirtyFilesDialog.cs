@@ -92,7 +92,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.ActionArea.PackStart (btnQuit);
 			this.ActionArea.PackStart (btnSaveAndQuit);
 			this.SetDefaultSize (300, 200);
-			this.ShowAll ();
+			this.Child.ShowAll ();
 		}
 		
 		protected override void OnDestroyed ()

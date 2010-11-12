@@ -90,7 +90,7 @@ namespace MonoDevelop.Debugger.Viewers
 			}
 			this.DefaultWidth = 628;
 			this.DefaultHeight = 433;
-			this.Show ();
+			this.Hide ();
 			this.comboVisualizers.Changed += new global::System.EventHandler (this.OnComboVisualizersChanged);
 			this.buttonOk.Clicked += new global::System.EventHandler (this.OnButtonOkClicked);
 		}

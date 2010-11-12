@@ -137,7 +137,7 @@ namespace MonoDevelop.Debugger
 			}
 			this.DefaultWidth = 656;
 			this.DefaultHeight = 413;
-			this.Show ();
+			this.Hide ();
 			this.entryFilter.Changed += new global::System.EventHandler (this.OnEntryFilterChanged);
 		}
 	}

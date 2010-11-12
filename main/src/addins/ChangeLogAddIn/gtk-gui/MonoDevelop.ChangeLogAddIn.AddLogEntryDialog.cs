@@ -257,7 +257,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			this.DefaultHeight = 510;
 			this.boxNewFile.Hide ();
 			this.boxNoFile.Hide ();
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

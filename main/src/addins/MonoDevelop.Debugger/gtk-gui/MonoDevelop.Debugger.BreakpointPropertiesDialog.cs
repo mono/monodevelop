@@ -439,7 +439,7 @@ namespace MonoDevelop.Debugger
 			}
 			this.DefaultWidth = 512;
 			this.DefaultHeight = 438;
-			this.Show ();
+			this.Hide ();
 			this.radioBreakAlways.Toggled += new global::System.EventHandler (this.OnRadioBreakAlwaysToggled);
 			this.radioBreakTrue.Toggled += new global::System.EventHandler (this.OnRadioBreakAlwaysToggled);
 			this.radioBreakChange.Toggled += new global::System.EventHandler (this.OnRadioBreakAlwaysToggled);

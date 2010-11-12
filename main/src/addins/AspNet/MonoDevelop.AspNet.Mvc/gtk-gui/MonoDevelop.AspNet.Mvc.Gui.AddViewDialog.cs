@@ -321,7 +321,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			this.label1.MnemonicWidget = this.nameEntry;
 			this.label4.MnemonicWidget = this.templateCombo;
 			this.label5.MnemonicWidget = this.masterEntry;
-			this.Show ();
+			this.Hide ();
 			this.templateCombo.Changed += new global::System.EventHandler (this.Validate);
 			this.nameEntry.Changed += new global::System.EventHandler (this.Validate);
 			this.partialCheck.Toggled += new global::System.EventHandler (this.UpdateMasterPanelSensitivity);

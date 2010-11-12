@@ -243,7 +243,7 @@ namespace MonoDevelop.Gettext.Translator
 			this.DefaultHeight = 415;
 			this.label3.MnemonicWidget = this.languageTreeView;
 			this.label2.MnemonicWidget = this.entryLocale;
-			this.Show ();
+			this.Hide ();
 			this.checkbuttonUseCoutry.Clicked += new global::System.EventHandler (this.ChangeSensitivity);
 			this.entryLocale.Changed += new global::System.EventHandler (this.OnEntryLocaleChanged);
 		}

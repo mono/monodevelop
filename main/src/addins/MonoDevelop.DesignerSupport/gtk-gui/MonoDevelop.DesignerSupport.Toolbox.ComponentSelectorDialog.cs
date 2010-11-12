@@ -155,7 +155,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 			this.DefaultWidth = 642;
 			this.DefaultHeight = 433;
-			this.Show ();
+			this.Hide ();
 			this.comboType.Changed += new global::System.EventHandler (this.OnComboTypeChanged);
 			this.button24.Clicked += new global::System.EventHandler (this.OnButton24Clicked);
 			this.checkGroupByCat.Clicked += new global::System.EventHandler (this.OnCheckbutton1Clicked);

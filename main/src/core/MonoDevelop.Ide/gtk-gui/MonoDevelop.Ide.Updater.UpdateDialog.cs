@@ -159,7 +159,7 @@ namespace MonoDevelop.Ide.Updater
 			this.DefaultWidth = 450;
 			this.DefaultHeight = 373;
 			this.label1.MnemonicWidget = this.updateLevelCombo;
-			this.Show ();
+			this.Hide ();
 		}
 	}
 }

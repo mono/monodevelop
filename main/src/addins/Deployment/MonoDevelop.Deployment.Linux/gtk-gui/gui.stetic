@@ -6,7 +6,6 @@
   </configuration>
   <import>
     <widget-library name="../../../../../build/bin/MonoDevelop.Ide.dll" />
-    <widget-library name="../../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll" />
     <widget-library name="../../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.Linux.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.Deployment.Linux.BasicOptionPanelWidget" design-size="409 245">
@@ -871,6 +870,7 @@ Directory</property>
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Label" translatable="yes">Always show</property>
+                <property name="Active">True</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">True</property>
                 <property name="Group">group1</property>
@@ -1186,6 +1186,7 @@ Directory</property>
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog" design-size="652 484">
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="CanFocus">True</property>
     <property name="Title" translatable="yes">Menu Category Selection</property>
     <property name="WindowPosition">CenterOnParent</property>
