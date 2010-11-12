@@ -95,7 +95,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override object GetParentObject (object dataObject)
 		{
 			ProjectFile file = (ProjectFile) dataObject;
-			FilePath dir = !file.IsLink ? file.FilePath : file.Project.BaseDirectory.Combine (file.ProjectVirtualPath).ParentDirectory;
+			FilePath dir = !file.IsLink ? file.FilePath.ParentDirectory : file.Project.BaseDirectory.Combine (file.ProjectVirtualPath).ParentDirectory;
 			
 			if (!string.IsNullOrEmpty (file.DependsOn)) {
 				ProjectFile groupUnder = file.Project.Files.GetFile (file.FilePath.ParentDirectory.Combine (file.DependsOn));
