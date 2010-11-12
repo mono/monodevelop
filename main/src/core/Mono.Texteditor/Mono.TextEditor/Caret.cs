@@ -98,7 +98,7 @@ namespace Mono.TextEditor
 				return result;
 			}
 			set {
-				int line   = Math.Max (1, TextEditorData.Document.OffsetToLineNumber (value));
+				int line   = System.Math.Max (1, TextEditorData.Document.OffsetToLineNumber (value));
 				var lineSegment = TextEditorData.Document.GetLine (line);
 				int column = lineSegment != null ? value - lineSegment.Offset + 1 : 1;
 				Location = new DocumentLocation (line, column);
