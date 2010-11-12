@@ -267,9 +267,12 @@ namespace MonoDevelop.Platform
 		{
 			NSImage icon = null;
 			
-			//FIXME: handle names of files that haven't been saved yet
-			if (!Path.IsPathRooted (filename))
+			//FIXME: better handling of names of files that haven't been saved yet
+			if (Path.IsPathRooted (filename)) {
 				icon = NSWorkspace.SharedWorkspace.IconForFile (filename);
+			} else {
+				icon = NSWorkspace.SharedWorkspace.IconForFile ("/tmp/" + filename);
+			}
 			
 			if (icon != null) {
 				int w, h;
