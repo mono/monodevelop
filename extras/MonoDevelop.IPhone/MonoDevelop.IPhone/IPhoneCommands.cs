@@ -35,6 +35,7 @@ using System.IO;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.IPhone
 {
@@ -44,7 +45,8 @@ namespace MonoDevelop.IPhone
 		UploadToDevice,
 		ExportToXcode,
 		SelectSimulatorTarget,
-		ViewDeviceConsole
+		ViewDeviceConsole,
+		ZipApp,
 	}
 	
 	class SelectSimulatorTargetHandler : CommandHandler
@@ -234,6 +236,89 @@ namespace MonoDevelop.IPhone
 		protected override void Run ()
 		{
 			IPhoneDeviceConsole.Run ();
+		}
+	}
+	
+	class ZipAppCommandHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableIPhoneProject ();
+			if (proj == null) {
+				info.Visible = info.Enabled = false;
+				return;
+			}
+			info.Visible = true;
+			
+			var conf = (IPhoneProjectConfiguration)proj.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
+			info.Enabled = conf.Platform == IPhoneProject.PLAT_IPHONE;
+		}
+		
+		protected override void Run ()
+		{
+			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableIPhoneProject ();
+			var conf = (IPhoneProjectConfiguration)proj.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
+			
+			IdeApp.ProjectOperations.Build (proj).Completed += delegate (IAsyncOperation op) {
+				if (!op.Success) {
+					MessageService.ShowError (
+						GettextCatalog.GetString ("Cannot zip app bundle"),
+						GettextCatalog.GetString ("Project did not build successfully"));
+					return;
+				}
+				
+				var dlg = new MonoDevelop.Components.SelectFileDialog (
+					GettextCatalog.GetString ("Save zipped app bundle"), Gtk.FileChooserAction.Save);
+					dlg.InitialFileName = string.Format ("{0}-{1}.zip", conf.CompiledOutputName.FileNameWithoutExtension, proj.BundleVersion);
+					dlg.DefaultFilter = dlg.AddFilter ("Zip file", "*.zip");
+				
+				if (!dlg.Run ())
+					return;
+				
+				var zipFile = dlg.SelectedFile;
+				var cmd = string.Format ("-r '{0}' '{1}'", zipFile, conf.AppDirectory);
+				
+				new System.Threading.Thread (delegate () {
+					IProgressMonitor monitor = null;
+					AggregatedOperationMonitor opMon = null;
+					IProcessAsyncOperation procOp = null;
+					
+					try {
+						monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
+							GettextCatalog.GetString ("Zip App Bundle"), MonoDevelop.Ide.Gui.Stock.RunProgramIcon, true, true);
+						monitor.BeginTask (GettextCatalog.GetString ("Zipping app bundle"), 0);
+						
+						var console = (IConsole) monitor;
+						console.Log.WriteLine ("zip " + cmd);
+						
+						//don't use StartConsoleProcess, it disposes the pad
+						procOp = Runtime.ProcessService.StartProcess (
+							"zip", cmd, conf.AppDirectory.ParentDirectory, console.Out, console.Error, null);
+						opMon = new AggregatedOperationMonitor (monitor, procOp);
+						
+						procOp.WaitForCompleted ();
+						
+						monitor.EndTask ();
+							
+						if (procOp.ExitCode != 0)
+							monitor.ReportError (GettextCatalog.GetString ("Failed to zip app"), null);
+						else
+							monitor.ReportSuccess (GettextCatalog.GetString ("Saved zipped app to '{0}'", zipFile));
+					} catch (Exception ex) {
+						LoggingService.LogError ("Error in app zipper", ex);
+						//be super-safe, crashing thread crashes whole app
+						try {
+							monitor.ReportError ("App zipping failed", ex);
+						} catch {}
+					}
+					if (opMon != null)
+						opMon.Dispose ();
+					if (procOp != null)
+						procOp.Dispose ();
+					if (monitor != null)
+						monitor.Dispose ();
+				}).Start ();
+			};
 		}
 	}
 	
