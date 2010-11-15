@@ -201,6 +201,7 @@ namespace MonoDevelop.VersionControl.Git
 			AddFiles (status.Added, VersionStatus.Versioned | VersionStatus.ScheduledAdd);
 			AddFiles (status.Modified, VersionStatus.Versioned | VersionStatus.Modified);
 			AddFiles (status.Removed, VersionStatus.Versioned | VersionStatus.ScheduledDelete);
+			AddFiles (status.Missing, VersionStatus.Versioned | VersionStatus.ScheduledDelete);
 			AddFiles (status.MergeConflict, VersionStatus.Versioned | VersionStatus.Conflicted);
 			AddFiles (status.Untracked, VersionStatus.Unversioned);
 			
@@ -649,22 +650,42 @@ namespace MonoDevelop.VersionControl.Git
 			var c = GetHeadCommit ();
 			RevTree tree = c.Tree;
 			
+			List<FilePath> changedFiles = new List<FilePath> ();
+			List<FilePath> removedFiles = new List<FilePath> ();
+			
+			monitor.BeginTask (GettextCatalog.GetString ("Revering files"), 3);
+			monitor.BeginStepTask (GettextCatalog.GetString ("Revering files"), localPaths.Length, 2);
+			
 			foreach (FilePath fp in localPaths) {
 				string p = ToGitPath (fp);
 				TreeWalk tw = TreeWalk.ForPath (repo, p, tree);
-				RevBlob blob = rw.LookupBlob (tw.GetObjectId (0));
-				if (blob == null)
-					index.Remove (repo.WorkTree, p);
-				else {
-					MemoryStream ms = new MemoryStream ();
-					blob.CopyRawTo (ms);
-					index.Add (repo.WorkTree, p, ms.ToArray ());
-					index.Write ();
+				if (tw == null) {
+					index.Remove (repo.WorkTree, (string)fp);
+					File.Delete (fp);
+					removedFiles.Add (fp);
 				}
+				else {
+					byte[] data = repo.ObjectDatabase.Open (tw.GetObjectId (0)).GetBytes ();
+					index.Add (repo.WorkTree, (string)fp, data);
+					index.Write ();
+					File.WriteAllBytes (fp, data);
+					changedFiles.Add (fp);
+				}
+				monitor.Step (1);
 			}
+			
+			monitor.EndTask ();
+			monitor.BeginTask (null, localPaths.Length);
 
-			foreach (FilePath p in localPaths)
+			foreach (FilePath p in changedFiles) {
 				FileService.NotifyFileChanged (p);
+				monitor.Step (1);
+			}
+			foreach (FilePath p in removedFiles) {
+				FileService.NotifyFileRemoved (p);
+				monitor.Step (1);
+			}
+			monitor.EndTask ();
 		}
 
 		public override void RevertRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)

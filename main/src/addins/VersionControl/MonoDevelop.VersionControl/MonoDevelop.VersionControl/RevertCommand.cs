@@ -68,7 +68,7 @@ namespace MonoDevelop.VersionControl
 						if (!item.IsDirectory) {
 							// Reload reverted files
 							Document doc = IdeApp.Workbench.GetDocument (item.Path);
-							if (doc != null)
+							if (doc != null && System.IO.File.Exists (item.Path))
 								doc.Reload ();
 							FileService.NotifyFileChanged (item.Path);
 						}
