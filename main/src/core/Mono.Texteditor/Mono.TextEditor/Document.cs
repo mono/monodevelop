@@ -791,6 +791,13 @@ namespace Mono.TextEditor
 		public event EventHandler<UndoOperationEventArgs> Redone;
 		
 		int atomicUndoLevel;
+		
+		public bool IsInAtomicUndo {
+			get {
+				return atomicUndoLevel > 0;
+			}
+		}
+		
 		public void BeginAtomicUndo ()
 		{
 			if (currentAtomicOperation == null) {
