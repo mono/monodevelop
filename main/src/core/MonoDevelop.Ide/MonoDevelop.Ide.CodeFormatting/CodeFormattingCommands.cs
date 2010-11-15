@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 				return;
 			doc.Editor.Document.BeginAtomicUndo ();
 			var loc = doc.Editor.Caret.Location;
-			doc.Editor.Text = formatter.FormatText (doc.Project != null ? doc.Project.Policies : null, doc.Editor.Text);
+			doc.Editor.Replace (0, doc.Editor.Length, formatter.FormatText (doc.Project != null ? doc.Project.Policies : null, doc.Editor.Text));
 			doc.Editor.Caret.Location = loc;
 			doc.Editor.Document.EndAtomicUndo ();
 		}
