@@ -43,27 +43,37 @@ using MonoDevelop.Platform.Mac;
 using MonoDevelop.Core;
 using MonoMac.Foundation;
 using MonoMac.AppKit;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Platform
 {
 	public class MacPlatform : PlatformService
 	{
+		static TimerCounter timer = InstrumentationService.CreateTimerCounter ("Mac Platform Initialization", "Platform Service");
+		static TimerCounter mimeTimer = InstrumentationService.CreateTimerCounter ("Mac Mime Database", "Platform Service");
+		
 		static bool setupFail, initedApp, initedGlobal;
 		
 		static Dictionary<string, string> mimemap;
 
 		static MacPlatform ()
 		{
+			timer.BeginTiming ();
+			
+			LoadMimeMapAsync ();
+			
+			CheckGtkVersion (2, 17, 9);
+			
 			//make sure the menu app name is correct even when running Mono 2.6 preview, or not running from the .app
 			Carbon.SetProcessName ("MonoDevelop");
 			
+			timer.Trace ("Initializing NSApplication");
 			MonoMac.AppKit.NSApplication.Init ();
 			
+			timer.Trace ("Installing App Event Handlers");
 			GlobalSetup ();
-			mimemap = new Dictionary<string, string> ();
-			LoadMimeMap ();
 			
-			CheckGtkVersion (2, 17, 9);
+			timer.EndTiming ();
 		}
 		
 		//Mac GTK+ is unstable, even between micro releases
@@ -92,11 +102,9 @@ namespace MonoDevelop.Platform
 
 		protected override string OnGetMimeTypeForUri (string uri)
 		{
-			FileInfo file = new FileInfo (uri);
-			
-			if (mimemap.ContainsKey (file.Extension))
-				return mimemap [file.Extension];
-
+			var ext = System.IO.Path.GetExtension (uri);
+			if (mimemap != null && mimemap.ContainsKey (ext))
+				return mimemap [ext];
 			return null;
 		}
 
@@ -123,30 +131,35 @@ namespace MonoDevelop.Platform
 			get { return "OSX"; }
 		}
 		
-		private static void LoadMimeMap ()
+		private static void LoadMimeMapAsync ()
 		{
-			LoggingService.Trace ("Mac Platform Service", "Loading MIME map");
-			
 			// All recent Macs should have this file; if not we'll just die silently
 			if (!File.Exists ("/etc/apache2/mime.types")) {
 				MonoDevelop.Core.LoggingService.LogError ("Apache mime database is missing");
 				return;
 			}
 			
-			try {
-				StreamReader reader = new StreamReader (File.OpenRead ("/etc/apache2/mime.types"));
-				Regex mime = new Regex ("([a-zA-Z]+/[a-zA-z0-9+-_.]+)\t+([a-zA-Z]+)", RegexOptions.Compiled);
-				string line;
-				while ((line = reader.ReadLine ()) != null) {
-					Match m = mime.Match (line);
-					if (m.Success)
-						mimemap ["." + m.Groups [2].Captures [0].Value] = m.Groups [1].Captures [0].Value; 
+			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+				mimeTimer.BeginTiming ();
+				try {
+					var map = new Dictionary<string, string> ();
+					using (var file = File.OpenRead ("/etc/apache2/mime.types")) {
+						using (var reader = new StreamReader (file)) {
+							var mime = new Regex ("([a-zA-Z]+/[a-zA-z0-9+-_.]+)\t+([a-zA-Z]+)", RegexOptions.Compiled);
+							string line;
+							while ((line = reader.ReadLine ()) != null) {
+								Match m = mime.Match (line);
+								if (m.Success)
+									map ["." + m.Groups [2].Captures [0].Value] = m.Groups [1].Captures [0].Value; 
+							}
+						}
+					}
+					mimemap = map;
+				} catch (Exception ex){
+					MonoDevelop.Core.LoggingService.LogError ("Could not load Apache mime database", ex);
 				}
-			} catch (Exception ex){
-				MonoDevelop.Core.LoggingService.LogError ("Could not load Apache mime database", ex);
-			}
-			
-			LoggingService.Trace ("Mac Platform Service", "Loaded MIME map");
+				mimeTimer.EndTiming ();
+			});
 		}
 		
 		HashSet<object> ignoreCommands = new HashSet<object> () {

@@ -38,7 +38,6 @@ namespace MonoDevelop.Core
 	{
 		static List<ILogger> loggers = new List<ILogger> ();
 		static RemoteLogger remoteLogger;
-		static bool trace;
 		
 		static LoggingService ()
 		{
@@ -71,9 +70,6 @@ namespace MonoDevelop.Core
 					LogError (e.ToString ());
 				}
 			}
-			
-			var traceEnv = Environment.GetEnvironmentVariable ("MONODEVELOP_TRACE");
-			trace = !string.IsNullOrEmpty (traceEnv);
 		}
 		
 		internal static RemoteLogger RemoteLogger {
@@ -217,15 +213,6 @@ namespace MonoDevelop.Core
 			Log (LogLevel.Fatal, message + System.Environment.NewLine + (ex != null? ex.ToString () : string.Empty));
 		}
 		
-#endregion		
-		
-		public static void Trace (string group, string format, params object[] args)
-		{
-			if (!trace || PropertyService.IsWindows)
-				return;
-			string message = String.Format (format, args);
-			string str = String.Format ("MARK: {0}: {1}", group, message);
-			Mono.Unix.Native.Syscall.access(str, Mono.Unix.Native.AccessModes.F_OK);
-		}
+#endregion
 	}
 }

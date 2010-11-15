@@ -794,5 +794,8 @@ namespace MonoDevelop.Projects
 		public static TimerCounter DatabasesWritten = InstrumentationService.CreateTimerCounter ("Parser database written", "Parser Service");
 		public static TimerCounter FileParse = InstrumentationService.CreateTimerCounter ("File parsed", "Parser Service");
 		public static TimerCounter AssemblyParseTime = InstrumentationService.CreateTimerCounter ("Assembly parsed", "Parser Service");
+		
+		public static TimerCounter HelpServiceInitialization = InstrumentationService.CreateTimerCounter ("Help Service initialization", "IDE");
+		public static TimerCounter ParserServiceInitialization = InstrumentationService.CreateTimerCounter ("Parser Service initialization", "IDE");
 	}
 }
