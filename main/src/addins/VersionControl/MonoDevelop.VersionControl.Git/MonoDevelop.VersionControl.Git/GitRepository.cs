@@ -493,7 +493,8 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			
 			// Read the tree of the last commit. We are going to update it.
-			NGit.Tree tree = repo.MapTree (GetHeadCommit ());
+			var hc = GetHeadCommit ();
+			NGit.Tree tree = hc != null ? repo.MapTree (hc) : new Tree (repo);
 
 			// Keep a list of trees that have been modified, since they have to be written.
 			HashSet<NGit.Tree> modifiedTrees = new HashSet<NGit.Tree> ();
