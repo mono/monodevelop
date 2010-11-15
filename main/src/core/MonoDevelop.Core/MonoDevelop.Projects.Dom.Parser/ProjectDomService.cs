@@ -935,6 +935,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 				
 				if (fileContent == null) {
 					try {
+						if (!File.Exists (fileName))
+							return null;
 						using (StreamReader sr = File.OpenText (fileName)) {
 							fileContent = sr.ReadToEnd();
 						}
