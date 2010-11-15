@@ -108,4 +108,27 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 
 	}
+	
+	class ItemSlnData
+	{
+		List<string> configLines;
+		
+		public List<string> ConfigLines {
+			get {
+				if (configLines == null)
+					configLines = new List<string> ();
+				return configLines;
+			}
+		}
+		
+		public static ItemSlnData ForItem (SolutionItem item)
+		{
+			ItemSlnData data = (ItemSlnData) item.ExtendedProperties [typeof(ItemSlnData)];
+			if (data == null) {
+				data = new ItemSlnData ();
+				item.ExtendedProperties [typeof(ItemSlnData)] = data;
+			}
+			return data;
+		}
+	}
 }
