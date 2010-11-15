@@ -93,6 +93,8 @@ namespace MonoDevelop.VersionControl.Git
 		public override string GetBaseText (FilePath localFile)
 		{
 			RevCommit c = GetHeadCommit ();
+			if (c == null)
+				return string.Empty;
 			return GetCommitContent (c, localFile);
 		}
 				
@@ -110,7 +112,10 @@ namespace MonoDevelop.VersionControl.Git
 			List<Revision> revs = new List<Revision> ();
 			
 			RevWalk walk = new RevWalk (repo);
-			walk.MarkStart (GetHeadCommit ());
+			var hc = GetHeadCommit ();
+			if (hc == null)
+				return new GitRevision [0];
+			walk.MarkStart (hc);
 			string filePath = ToGitPath (localFile);
 			
 			foreach (RevCommit commit in walk) {
@@ -178,7 +183,12 @@ namespace MonoDevelop.VersionControl.Git
 			} else
 				CollectFiles (existingFiles, localDirectory, recursive);
 			
-			GitRevision rev = new GitRevision (this, GetHeadCommit ().Id.Name);
+			GitRevision rev;
+			var headCommit = GetHeadCommit ();
+			if (headCommit != null)
+				rev = new GitRevision (this, headCommit.Id.Name);
+			else
+				rev = null;
 			List<VersionInfo> versions = new List<VersionInfo> ();
 			FilePath p = fileName != null ? localDirectory.Combine (fileName) : localDirectory;
 			p = p.CanonicalPath;
@@ -648,7 +658,7 @@ namespace MonoDevelop.VersionControl.Git
 			index.RereadIfNecessary ();
 			RevWalk rw = new RevWalk (repo);
 			var c = GetHeadCommit ();
-			RevTree tree = c.Tree;
+			RevTree tree = c != null ? c.Tree : null;
 			
 			List<FilePath> changedFiles = new List<FilePath> ();
 			List<FilePath> removedFiles = new List<FilePath> ();
@@ -658,7 +668,7 @@ namespace MonoDevelop.VersionControl.Git
 			
 			foreach (FilePath fp in localPaths) {
 				string p = ToGitPath (fp);
-				TreeWalk tw = TreeWalk.ForPath (repo, p, tree);
+				TreeWalk tw = tree != null ? TreeWalk.ForPath (repo, p, tree) : null;
 				if (tw == null) {
 					index.Remove (repo.WorkTree, (string)fp);
 					File.Delete (fp);
@@ -1127,6 +1137,8 @@ namespace MonoDevelop.VersionControl.Git
 		public override Annotation[] GetAnnotations (FilePath repositoryPath)
 		{
 			RevCommit hc = GetHeadCommit ();
+			if (hc == null)
+				return new Annotation [0];
 			RevCommit[] lineCommits = GitUtil.Blame (repo, hc, repositoryPath);
 			Annotation[] lines = new Annotation[lineCommits.Length];
 			for (int n = 0; n < lines.Length; n++) {

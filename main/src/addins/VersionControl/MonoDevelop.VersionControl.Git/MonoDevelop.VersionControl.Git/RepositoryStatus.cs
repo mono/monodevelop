@@ -147,7 +147,8 @@ namespace MonoDevelop.VersionControl.Git
 		private void UpdateDirectory (string path, bool recursive)
 		{
 			RevWalk rw = new RevWalk (Repository);
-			var commit = rw.ParseCommit (Repository.Resolve (Constants.HEAD));
+			ObjectId id = Repository.Resolve (Constants.HEAD);
+			var commit = id != null ? rw.ParseCommit (id) : null;
 			
 			TreeWalk treeWalk = new TreeWalk (Repository);
 			treeWalk.Reset ();
