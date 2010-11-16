@@ -51,7 +51,6 @@ FILES =  \
 
 RES =  \
 	gtk-gui/gui.stetic \
-	gtk-gui/objects.xml \
 	MonoDevelop.SourceEditor.addin.xml \
 	MonoDevelop.SourceEditor/searchoptions.png
 
