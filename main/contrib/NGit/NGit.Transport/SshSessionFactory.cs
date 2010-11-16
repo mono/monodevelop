@@ -122,6 +122,8 @@ namespace NGit.Transport
 		/// port number the server is listening for connections on. May be &lt;=
 		/// 0 to indicate the IANA registered port of 22 should be used.
 		/// </param>
+		/// <param name="credentialsProvider">provider to support authentication, may be null.
+		/// 	</param>
 		/// <param name="fs">
 		/// the file system abstraction which will be necessary to
 		/// perform certain file system operations.
@@ -129,15 +131,15 @@ namespace NGit.Transport
 		/// <returns>a session that can contact the remote host.</returns>
 		/// <exception cref="NSch.JSchException">the session could not be created.</exception>
 		public abstract Session GetSession(string user, string pass, string host, int port
-			, FS fs);
+			, CredentialsProvider credentialsProvider, FS fs);
 
 		/// <summary>Close (or recycle) a session to a host.</summary>
 		/// <remarks>Close (or recycle) a session to a host.</remarks>
 		/// <param name="session">
 		/// a session previously obtained from this factory's
-		/// <see cref="GetSession(string, string, string, int, NGit.Util.FS)">GetSession(string, string, string, int, NGit.Util.FS)
-		/// 	</see>
-		/// method.s
+		/// <see cref="GetSession(string, string, string, int, CredentialsProvider, NGit.Util.FS)
+		/// 	">GetSession(string, string, string, int, CredentialsProvider, NGit.Util.FS)</see>
+		/// method.
 		/// </param>
 		public virtual void ReleaseSession(Session session)
 		{

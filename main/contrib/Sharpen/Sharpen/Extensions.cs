@@ -657,6 +657,16 @@ namespace Sharpen
 			return asm.GetName ().Version.ToString ();
 		}
 		
+		public static string GetHost (this Uri uri)
+		{
+			return string.IsNullOrEmpty (uri.Host) ? null : uri.Host;
+		}
+		
+		public static string GetUserInfo (this Uri uri)
+		{
+			return string.IsNullOrEmpty (uri.UserInfo) ? null : uri.UserInfo;
+		}
+		
 		public static HttpURLConnection OpenConnection (this Uri uri, Proxy p)
 		{
 			return new HttpURLConnection (uri, p);

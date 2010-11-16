@@ -724,6 +724,7 @@ namespace NGit.Storage.File
 			}
 			if (write)
 			{
+				WriteConfig wc = GetRepository().GetConfig().Get(WriteConfig.KEY);
 				FileOutputStream @out;
 				try
 				{
@@ -745,7 +746,20 @@ namespace NGit.Storage.File
 				}
 				try
 				{
-					@out.Write(rec);
+					if (wc.GetFSyncRefFiles())
+					{
+						FileChannel fc = @out.GetChannel();
+						ByteBuffer buf = ByteBuffer.Wrap(rec);
+						while (0 < buf.Remaining())
+						{
+							fc.Write(buf);
+						}
+						fc.Force(true);
+					}
+					else
+					{
+						@out.Write(rec);
+					}
 				}
 				finally
 				{
@@ -929,12 +943,12 @@ namespace NGit.Storage.File
 		private void CommitPackedRefs(LockFile lck, RefList<Ref> refs, RefDirectory.PackedRefList
 			 oldPackedList)
 		{
-			new _RefWriter_756(this, lck, oldPackedList, refs, refs).WritePackedRefs();
+			new _RefWriter_767(this, lck, oldPackedList, refs, refs).WritePackedRefs();
 		}
 
-		private sealed class _RefWriter_756 : RefWriter
+		private sealed class _RefWriter_767 : RefWriter
 		{
-			public _RefWriter_756(RefDirectory _enclosing, LockFile lck, RefDirectory.PackedRefList
+			public _RefWriter_767(RefDirectory _enclosing, LockFile lck, RefDirectory.PackedRefList
 				 oldPackedList, RefList<Ref> refs, RefList<Ref> baseArg1) : base(baseArg1)
 			{
 				this._enclosing = _enclosing;
@@ -946,6 +960,7 @@ namespace NGit.Storage.File
 			/// <exception cref="System.IO.IOException"></exception>
 			protected internal override void WriteFile(string name, byte[] content)
 			{
+				lck.SetFSync(true);
 				lck.SetNeedStatInformation(true);
 				try
 				{

@@ -130,7 +130,8 @@ namespace NGit.Transport
 			int port = uri.GetPort();
 			try
 			{
-				sock = sch.GetSession(user, pass, host, port, local.FileSystem);
+				sock = sch.GetSession(user, pass, host, port, GetCredentialsProvider(), local.FileSystem
+					);
 				if (!sock.IsConnected())
 				{
 					sock.Connect(tms);

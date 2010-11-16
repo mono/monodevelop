@@ -51,9 +51,9 @@ namespace NGit
 	/// <remarks>This class keeps git repository core parameters.</remarks>
 	public class CoreConfig
 	{
-		private sealed class _SectionParser_58 : Config.SectionParser<NGit.CoreConfig>
+		private sealed class _SectionParser_59 : Config.SectionParser<NGit.CoreConfig>
 		{
-			public _SectionParser_58()
+			public _SectionParser_59()
 			{
 			}
 
@@ -69,7 +69,7 @@ namespace NGit
 		/// 	</see>
 		/// .
 		/// </summary>
-		public static readonly Config.SectionParser<NGit.CoreConfig> KEY = new _SectionParser_58
+		public static readonly Config.SectionParser<NGit.CoreConfig> KEY = new _SectionParser_59
 			();
 
 		/// <summary>
@@ -90,6 +90,8 @@ namespace NGit
 
 		private readonly bool logAllRefUpdates;
 
+		private readonly bool fileMode;
+
 		private readonly CoreConfig.AutoCRLF autoCRLF;
 
 		private CoreConfig(Config rc)
@@ -97,6 +99,7 @@ namespace NGit
 			compression = rc.GetInt("core", "compression", Deflater.DEFAULT_COMPRESSION);
 			packIndexVersion = rc.GetInt("pack", "indexversion", 2);
 			logAllRefUpdates = rc.GetBoolean("core", "logallrefupdates", true);
+			fileMode = rc.GetBoolean("core", "filemode", true);
 			autoCRLF = rc.GetEnum("core", null, "autocrlf", CoreConfig.AutoCRLF.FALSE);
 		}
 
@@ -117,6 +120,12 @@ namespace NGit
 		public virtual bool IsLogAllRefUpdates()
 		{
 			return logAllRefUpdates;
+		}
+
+		/// <returns>whether to trust file modes</returns>
+		public virtual bool IsFileMode()
+		{
+			return fileMode;
 		}
 
 		/// <returns>whether automatic CRLF conversion has been configured</returns>

@@ -49,7 +49,7 @@ namespace NGit.Revwalk
 {
 	/// <summary>A queue of commits in FIFO order.</summary>
 	/// <remarks>A queue of commits in FIFO order.</remarks>
-	public class FIFORevQueue : BlockRevQueue
+	internal class FIFORevQueue : BlockRevQueue
 	{
 		private BlockRevQueue.Block head;
 

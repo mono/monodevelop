@@ -49,7 +49,7 @@ namespace NGit.Revwalk
 {
 	/// <summary>A queue of commits in LIFO order.</summary>
 	/// <remarks>A queue of commits in LIFO order.</remarks>
-	public class LIFORevQueue : BlockRevQueue
+	internal class LIFORevQueue : BlockRevQueue
 	{
 		private BlockRevQueue.Block head;
 

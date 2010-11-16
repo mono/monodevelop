@@ -107,6 +107,8 @@ namespace NGit.Storage.File
 		/// <exception cref="System.IO.IOException"></exception>
 		protected internal override RefUpdate.Result DoUpdate(RefUpdate.Result status)
 		{
+			WriteConfig wc = database.GetRepository().GetConfig().Get(WriteConfig.KEY);
+			Lock.SetFSync(wc.GetFSyncRefFiles());
 			Lock.SetNeedStatInformation(true);
 			Lock.Write(GetNewObjectId());
 			string msg = GetRefLogMessage();
@@ -177,6 +179,8 @@ namespace NGit.Storage.File
 		/// <exception cref="System.IO.IOException"></exception>
 		protected internal override RefUpdate.Result DoLink(string target)
 		{
+			WriteConfig wc = database.GetRepository().GetConfig().Get(WriteConfig.KEY);
+			Lock.SetFSync(wc.GetFSyncRefFiles());
 			Lock.SetNeedStatInformation(true);
 			Lock.Write(Constants.Encode(RefDirectory.SYMREF + target + '\n'));
 			string msg = GetRefLogMessage();

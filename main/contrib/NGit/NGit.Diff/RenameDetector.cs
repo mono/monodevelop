@@ -55,9 +55,9 @@ namespace NGit.Diff
 	{
 		private const int EXACT_RENAME_SCORE = 100;
 
-		private sealed class _IComparer_71 : IComparer<DiffEntry>
+		private sealed class _IComparer_72 : IComparer<DiffEntry>
 		{
-			public _IComparer_71()
+			public _IComparer_72()
 			{
 			}
 
@@ -111,7 +111,7 @@ namespace NGit.Diff
 			}
 		}
 
-		private static readonly IComparer<DiffEntry> DIFF_COMPARATOR = new _IComparer_71(
+		private static readonly IComparer<DiffEntry> DIFF_COMPARATOR = new _IComparer_72(
 			);
 
 		private IList<DiffEntry> entries;
@@ -409,10 +409,22 @@ namespace NGit.Diff
 				{
 					pm = NullProgressMonitor.INSTANCE;
 				}
-				BreakModifies(reader, pm);
-				FindExactRenames(pm);
-				FindContentRenames(reader, pm);
-				RejoinModifies(pm);
+				if (0 < breakScore)
+				{
+					BreakModifies(reader, pm);
+				}
+				if (!added.IsEmpty() && !deleted.IsEmpty())
+				{
+					FindExactRenames(pm);
+				}
+				if (!added.IsEmpty() && !deleted.IsEmpty())
+				{
+					FindContentRenames(reader, pm);
+				}
+				if (0 < breakScore && !added.IsEmpty() && !deleted.IsEmpty())
+				{
+					RejoinModifies(pm);
+				}
 				Sharpen.Collections.AddAll(entries, added);
 				added = null;
 				Sharpen.Collections.AddAll(entries, deleted);
@@ -435,10 +447,6 @@ namespace NGit.Diff
 		/// <exception cref="System.IO.IOException"></exception>
 		private void BreakModifies(ContentSource.Pair reader, ProgressMonitor pm)
 		{
-			if (breakScore <= 0)
-			{
-				return;
-			}
 			AList<DiffEntry> newEntries = new AList<DiffEntry>(entries.Count);
 			pm.BeginTask(JGitText.Get().renamesBreakingModifies, entries.Count);
 			for (int i = 0; i < entries.Count; i++)
@@ -509,29 +517,38 @@ namespace NGit.Diff
 		/// <exception cref="System.IO.IOException"></exception>
 		private int CalculateModifyScore(ContentSource.Pair reader, DiffEntry d)
 		{
-			SimilarityIndex src = new SimilarityIndex();
-			src.Hash(reader.Open(DiffEntry.Side.OLD, d));
-			src.Sort();
-			SimilarityIndex dst = new SimilarityIndex();
-			dst.Hash(reader.Open(DiffEntry.Side.NEW, d));
-			dst.Sort();
-			return src.Score(dst, 100);
+			try
+			{
+				SimilarityIndex src = new SimilarityIndex();
+				src.Hash(reader.Open(DiffEntry.Side.OLD, d));
+				src.Sort();
+				SimilarityIndex dst = new SimilarityIndex();
+				dst.Hash(reader.Open(DiffEntry.Side.NEW, d));
+				dst.Sort();
+				return src.Score(dst, 100);
+			}
+			catch (SimilarityIndex.TableFullException)
+			{
+				// If either table overflowed while being constructed, don't allow
+				// the pair to be broken. Returning 1 higher than breakScore will
+				// ensure its not similar, but not quite dissimilar enough to break.
+				//
+				overRenameLimit = true;
+				return breakScore + 1;
+			}
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
 		private void FindContentRenames(ContentSource.Pair reader, ProgressMonitor pm)
 		{
 			int cnt = Math.Max(added.Count, deleted.Count);
-			if (cnt == 0)
-			{
-				return;
-			}
 			if (GetRenameLimit() == 0 || cnt <= GetRenameLimit())
 			{
 				SimilarityRenameDetector d;
 				d = new SimilarityRenameDetector(reader, deleted, added);
 				d.SetRenameScore(GetRenameScore());
 				d.Compute(pm);
+				overRenameLimit |= d.IsTableOverflow();
 				deleted = d.GetLeftOverSources();
 				added = d.GetLeftOverDestinations();
 				Sharpen.Collections.AddAll(entries, d.GetMatches());
@@ -544,10 +561,6 @@ namespace NGit.Diff
 
 		private void FindExactRenames(ProgressMonitor pm)
 		{
-			if (added.IsEmpty() || deleted.IsEmpty())
-			{
-				return;
-			}
 			pm.BeginTask(JGitText.Get().renamesFindingExact, added.Count + added.Count + deleted
 				.Count + added.Count * deleted.Count);
 			//

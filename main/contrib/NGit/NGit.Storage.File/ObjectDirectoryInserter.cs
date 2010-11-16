@@ -59,14 +59,14 @@ namespace NGit.Storage.File
 	{
 		private readonly FileObjectDatabase db;
 
-		private readonly Config config;
+		private readonly WriteConfig config;
 
 		private Deflater deflate;
 
 		internal ObjectDirectoryInserter(FileObjectDatabase dest, Config cfg)
 		{
 			db = dest;
-			config = cfg;
+			config = cfg.Get(WriteConfig.KEY);
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
@@ -125,10 +125,16 @@ namespace NGit.Storage.File
 			FilePath tmp = NewTempFile();
 			try
 			{
-				DigestOutputStream dOut = new DigestOutputStream(Compress(new FileOutputStream(tmp
-					)), md);
+				FileOutputStream fOut = new FileOutputStream(tmp);
 				try
 				{
+					OutputStream @out = fOut;
+					if (config.GetFSyncObjectFiles())
+					{
+						@out = Channels.NewOutputStream(fOut.GetChannel());
+					}
+					DeflaterOutputStream cOut = Compress(@out);
+					DigestOutputStream dOut = new DigestOutputStream(cOut, md);
 					WriteHeader(dOut, type, len);
 					byte[] buf = Buffer();
 					while (len > 0)
@@ -141,10 +147,16 @@ namespace NGit.Storage.File
 						dOut.Write(buf, 0, n);
 						len -= n;
 					}
+					dOut.Flush();
+					cOut.Finish();
 				}
 				finally
 				{
-					dOut.Close();
+					if (config.GetFSyncObjectFiles())
+					{
+						fOut.GetChannel().Force(true);
+					}
+					fOut.Close();
 				}
 				delete = false;
 				return tmp;
@@ -177,7 +189,7 @@ namespace NGit.Storage.File
 		{
 			if (deflate == null)
 			{
-				deflate = new Deflater(config.Get(CoreConfig.KEY).GetCompression());
+				deflate = new Deflater(config.GetCompression());
 			}
 			else
 			{

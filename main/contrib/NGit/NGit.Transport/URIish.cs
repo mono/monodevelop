@@ -313,7 +313,7 @@ namespace NGit.Transport
 		{
 			scheme = u.Scheme;
 			path = u.AbsolutePath;
-			string ui = u.UserInfo;
+			string ui = u.GetUserInfo();
 			if (ui != null)
 			{
 				int d = ui.IndexOf(':');
@@ -321,7 +321,7 @@ namespace NGit.Transport
 				pass = d < 0 ? null : Sharpen.Runtime.Substring(ui, d + 1);
 			}
 			port = u.Port;
-			host = u.Host;
+			host = u.GetHost();
 		}
 
 		/// <summary>Create an empty, non-configured URI.</summary>

@@ -85,13 +85,13 @@ namespace NGit.Storage.File
 
 		private readonly FilePath lck;
 
-		private FileLock fLck;
-
 		private bool haveLck;
 
 		private FileOutputStream os;
 
 		private bool needStatInformation;
+
+		private bool fsync;
 
 		private long commitLastModified;
 
@@ -130,31 +130,6 @@ namespace NGit.Storage.File
 				try
 				{
 					os = new FileOutputStream(lck);
-					try
-					{
-						fLck = os.GetChannel().TryLock();
-						if (fLck == null)
-						{
-							throw new OverlappingFileLockException();
-						}
-					}
-					catch (OverlappingFileLockException)
-					{
-						// We cannot use unlock() here as this file is not
-						// held by us, but we thought we created it. We must
-						// not delete it, as it belongs to some other process.
-						//
-						haveLck = false;
-						try
-						{
-							os.Close();
-						}
-						catch (IOException)
-						{
-						}
-						// Fail by returning haveLck = false.
-						os = null;
-					}
 				}
 				catch (IOException ioe)
 				{
@@ -214,11 +189,26 @@ namespace NGit.Storage.File
 				FileInputStream fis = new FileInputStream(@ref);
 				try
 				{
-					byte[] buf = new byte[2048];
-					int r;
-					while ((r = fis.Read(buf)) >= 0)
+					if (fsync)
 					{
-						os.Write(buf, 0, r);
+						FileChannel @in = fis.GetChannel();
+						long pos = 0;
+						long cnt = @in.Size();
+						while (0 < cnt)
+						{
+							long r = os.GetChannel().TransferFrom(@in, pos, cnt);
+							pos += r;
+							cnt -= r;
+						}
+					}
+					else
+					{
+						byte[] buf = new byte[2048];
+						int r;
+						while ((r = fis.Read(buf)) >= 0)
+						{
+							os.Write(buf, 0, r);
+						}
 					}
 				}
 				finally
@@ -265,33 +255,10 @@ namespace NGit.Storage.File
 		/// </exception>
 		public virtual void Write(ObjectId id)
 		{
-			RequireLock();
-			try
-			{
-				BufferedOutputStream b;
-				b = new BufferedOutputStream(os, Constants.OBJECT_ID_STRING_LENGTH + 1);
-				id.CopyTo(b);
-				b.Write('\n');
-				b.Flush();
-				fLck.Release();
-				b.Close();
-				os = null;
-			}
-			catch (IOException ioe)
-			{
-				Unlock();
-				throw;
-			}
-			catch (RuntimeException ioe)
-			{
-				Unlock();
-				throw;
-			}
-			catch (Error ioe)
-			{
-				Unlock();
-				throw;
-			}
+			byte[] buf = new byte[Constants.OBJECT_ID_STRING_LENGTH + 1];
+			id.CopyTo(buf, 0);
+			buf[Constants.OBJECT_ID_STRING_LENGTH] = (byte)('\n');
+			Write(buf);
 		}
 
 		/// <summary>Write arbitrary data to the temporary file.</summary>
@@ -314,9 +281,20 @@ namespace NGit.Storage.File
 			RequireLock();
 			try
 			{
-				os.Write(content);
-				os.Flush();
-				fLck.Release();
+				if (fsync)
+				{
+					FileChannel fc = os.GetChannel();
+					ByteBuffer buf = ByteBuffer.Wrap(content);
+					while (0 < buf.Remaining())
+					{
+						fc.Write(buf);
+					}
+					fc.Force(true);
+				}
+				else
+				{
+					os.Write(content);
+				}
 				os.Close();
 				os = null;
 			}
@@ -353,38 +331,42 @@ namespace NGit.Storage.File
 		public virtual OutputStream GetOutputStream()
 		{
 			RequireLock();
-			return new _OutputStream_299(this);
+			OutputStream @out;
+			if (fsync)
+			{
+				@out = Channels.NewOutputStream(os.GetChannel());
+			}
+			else
+			{
+				@out = os;
+			}
+			return new _OutputStream_290(this, @out);
 		}
 
-		private sealed class _OutputStream_299 : OutputStream
+		private sealed class _OutputStream_290 : OutputStream
 		{
-			public _OutputStream_299(LockFile _enclosing)
+			public _OutputStream_290(LockFile _enclosing, OutputStream @out)
 			{
 				this._enclosing = _enclosing;
+				this.@out = @out;
 			}
 
 			/// <exception cref="System.IO.IOException"></exception>
 			public override void Write(byte[] b, int o, int n)
 			{
-				this._enclosing.os.Write(b, o, n);
+				@out.Write(b, o, n);
 			}
 
 			/// <exception cref="System.IO.IOException"></exception>
 			public override void Write(byte[] b)
 			{
-				this._enclosing.os.Write(b);
+				@out.Write(b);
 			}
 
 			/// <exception cref="System.IO.IOException"></exception>
 			public override void Write(int b)
 			{
-				this._enclosing.os.Write(b);
-			}
-
-			/// <exception cref="System.IO.IOException"></exception>
-			public override void Flush()
-			{
-				this._enclosing.os.Flush();
+				@out.Write(b);
 			}
 
 			/// <exception cref="System.IO.IOException"></exception>
@@ -392,9 +374,11 @@ namespace NGit.Storage.File
 			{
 				try
 				{
-					this._enclosing.os.Flush();
-					this._enclosing.fLck.Release();
-					this._enclosing.os.Close();
+					if (this._enclosing.fsync)
+					{
+						this._enclosing.os.GetChannel().Force(true);
+					}
+					@out.Close();
 					this._enclosing.os = null;
 				}
 				catch (IOException ioe)
@@ -415,6 +399,8 @@ namespace NGit.Storage.File
 			}
 
 			private readonly LockFile _enclosing;
+
+			private readonly OutputStream @out;
 		}
 
 		private void RequireLock()
@@ -436,6 +422,17 @@ namespace NGit.Storage.File
 		public virtual void SetNeedStatInformation(bool on)
 		{
 			needStatInformation = on;
+		}
+
+		/// <summary>
+		/// Request that
+		/// <see cref="Commit()">Commit()</see>
+		/// force dirty data to the drive.
+		/// </summary>
+		/// <param name="on">true if dirty data should be forced to the drive.</param>
+		public virtual void SetFSync(bool on)
+		{
+			fsync = on;
 		}
 
 		/// <summary>Wait until the lock file information differs from the old file.</summary>
@@ -555,18 +552,6 @@ namespace NGit.Storage.File
 		{
 			if (os != null)
 			{
-				if (fLck != null)
-				{
-					try
-					{
-						fLck.Release();
-					}
-					catch (IOException)
-					{
-					}
-					// Huh?
-					fLck = null;
-				}
 				try
 				{
 					os.Close();

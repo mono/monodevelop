@@ -67,6 +67,102 @@ namespace NGit
 			FromObjectId(src);
 		}
 
+		/// <summary>Set any byte in the id.</summary>
+		/// <remarks>Set any byte in the id.</remarks>
+		/// <param name="index">
+		/// index of the byte to set in the raw form of the ObjectId. Must
+		/// be in range [0,
+		/// <see cref="Constants.OBJECT_ID_LENGTH">Constants.OBJECT_ID_LENGTH</see>
+		/// ).
+		/// </param>
+		/// <param name="value">
+		/// the value of the specified byte at
+		/// <code>index</code>
+		/// . Values are
+		/// unsigned and thus are in the range [0,255] rather than the
+		/// signed byte range of [-128, 127].
+		/// </param>
+		/// <exception cref="System.IndexOutOfRangeException">
+		/// <code>index</code>
+		/// is less than 0, equal to
+		/// <see cref="Constants.OBJECT_ID_LENGTH">Constants.OBJECT_ID_LENGTH</see>
+		/// , or greater than
+		/// <see cref="Constants.OBJECT_ID_LENGTH">Constants.OBJECT_ID_LENGTH</see>
+		/// .
+		/// </exception>
+		public virtual void SetByte(int index, int value)
+		{
+			switch (index >> 2)
+			{
+				case 0:
+				{
+					w1 = Set(w1, index & 3, value);
+					break;
+				}
+
+				case 1:
+				{
+					w2 = Set(w2, index & 3, value);
+					break;
+				}
+
+				case 2:
+				{
+					w3 = Set(w3, index & 3, value);
+					break;
+				}
+
+				case 3:
+				{
+					w4 = Set(w4, index & 3, value);
+					break;
+				}
+
+				case 4:
+				{
+					w5 = Set(w5, index & 3, value);
+					break;
+				}
+
+				default:
+				{
+					throw Sharpen.Extensions.CreateIndexOutOfRangeException(index);
+				}
+			}
+		}
+
+		private static int Set(int w, int index, int value)
+		{
+			value &= unchecked((int)(0xff));
+			switch (index)
+			{
+				case 0:
+				{
+					return (w & unchecked((int)(0x00ffffff))) | (value << 24);
+				}
+
+				case 1:
+				{
+					return (w & unchecked((int)(0xff00ffff))) | (value << 16);
+				}
+
+				case 2:
+				{
+					return (w & unchecked((int)(0xffff00ff))) | (value << 8);
+				}
+
+				case 3:
+				{
+					return (w & unchecked((int)(0xffffff00))) | value;
+				}
+
+				default:
+				{
+					throw new IndexOutOfRangeException();
+				}
+			}
+		}
+
 		/// <summary>
 		/// Make this id match
 		/// <see cref="ObjectId.ZeroId()">ObjectId.ZeroId()</see>

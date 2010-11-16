@@ -6,10 +6,15 @@ namespace Sharpen
 	internal class FileChannel
 	{
 		private FileStream s;
+		byte[] buffer;
 
 		internal FileChannel (FileStream s)
 		{
 			this.s = s;
+		}
+		
+		internal FileStream Stream {
+			get { return s; }
 		}
 
 		public void Close ()
@@ -72,6 +77,18 @@ namespace Sharpen
 			int count = (buffer.Limit () + buffer.ArrayOffset ()) - offset;
 			s.Write (buffer.Array (), offset, count);
 			return count;
+		}
+		
+		public long TransferFrom (FileChannel src, long pos, long count)
+		{
+			if (buffer == null)
+				buffer = new byte [8092];
+			int nr = src.s.Read (buffer, 0, (int) Math.Min (buffer.Length, count));
+			long curPos = s.Position;
+			s.Position = pos;
+			s.Write (buffer, 0, nr);
+			s.Position = curPos;
+			return nr;
 		}
 
 		public enum MapMode

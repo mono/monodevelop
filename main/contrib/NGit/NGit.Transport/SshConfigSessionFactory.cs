@@ -79,7 +79,7 @@ namespace NGit.Transport
 
 		/// <exception cref="NSch.JSchException"></exception>
 		public override Session GetSession(string user, string pass, string host, int port
-			, FS fs)
+			, CredentialsProvider credentialsProvider, FS fs)
 		{
 			lock (this)
 			{
@@ -111,6 +111,12 @@ namespace NGit.Transport
 				if (pauth != null)
 				{
 					session.SetConfig("PreferredAuthentications", pauth);
+				}
+				if (credentialsProvider != null && (!hc.IsBatchMode() || !credentialsProvider.IsInteractive
+					()))
+				{
+					session.SetUserInfo(new CredentialsProviderUserInfo(session, credentialsProvider)
+						);
 				}
 				Configure(hc, session);
 				return session;

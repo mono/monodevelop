@@ -118,6 +118,13 @@ namespace NGit.Diff
 		/// <remarks>Score a pair must exceed to be considered a rename.</remarks>
 		private int renameScore = 60;
 
+		/// <summary>
+		/// Set if any
+		/// <see cref="TableFullException">TableFullException</see>
+		/// occurs.
+		/// </summary>
+		private bool tableOverflow;
+
 		private IList<DiffEntry> @out;
 
 		internal SimilarityRenameDetector(ContentSource.Pair reader, IList<DiffEntry> srcs
@@ -199,6 +206,11 @@ namespace NGit.Diff
 			return dsts;
 		}
 
+		internal virtual bool IsTableOverflow()
+		{
+			return tableOverflow;
+		}
+
 		private static IList<DiffEntry> CompactSrcList(IList<DiffEntry> @in)
 		{
 			AList<DiffEntry> r = new AList<DiffEntry>(@in.Count);
@@ -234,10 +246,7 @@ namespace NGit.Diff
 			matrix = new long[srcs.Count * dsts.Count];
 			long[] srcSizes = new long[srcs.Count];
 			long[] dstSizes = new long[dsts.Count];
-			// Init the size arrays to some value that indicates that we haven't
-			// calculated the size yet. Since sizes cannot be negative, -1 will work
-			Arrays.Fill(srcSizes, -1);
-			Arrays.Fill(dstSizes, -1);
+			BitSet dstTooLarge = null;
 			// Consider each pair of files, if the score is above the minimum
 			// threshold we need record that scoring in the matrix so we can
 			// later find the best matches.
@@ -251,7 +260,7 @@ namespace NGit.Diff
 					pm.Update(dsts.Count);
 					continue;
 				}
-				SimilarityIndex s = Hash(DiffEntry.Side.OLD, srcEnt);
+				SimilarityIndex s = null;
 				for (int dstIdx = 0; dstIdx < dsts.Count; dstIdx++)
 				{
 					DiffEntry dstEnt = dsts[dstIdx];
@@ -265,16 +274,21 @@ namespace NGit.Diff
 						pm.Update(1);
 						continue;
 					}
-					long srcSize = srcSizes[srcIdx];
-					if (srcSize < 0)
+					if (dstTooLarge != null && dstTooLarge.Get(dstIdx))
 					{
-						srcSize = Size(DiffEntry.Side.OLD, srcEnt);
+						pm.Update(1);
+						continue;
+					}
+					long srcSize = srcSizes[srcIdx];
+					if (srcSize == 0)
+					{
+						srcSize = Size(DiffEntry.Side.OLD, srcEnt) + 1;
 						srcSizes[srcIdx] = srcSize;
 					}
 					long dstSize = dstSizes[dstIdx];
-					if (dstSize < 0)
+					if (dstSize == 0)
 					{
-						dstSize = Size(DiffEntry.Side.NEW, dstEnt);
+						dstSize = Size(DiffEntry.Side.NEW, dstEnt) + 1;
 						dstSizes[dstIdx] = dstSize;
 					}
 					long max = Math.Max(srcSize, dstSize);
@@ -285,7 +299,34 @@ namespace NGit.Diff
 						pm.Update(1);
 						continue;
 					}
-					SimilarityIndex d = Hash(DiffEntry.Side.NEW, dstEnt);
+					if (s == null)
+					{
+						try
+						{
+							s = Hash(DiffEntry.Side.OLD, srcEnt);
+						}
+						catch (SimilarityIndex.TableFullException)
+						{
+							tableOverflow = true;
+							goto SRC_continue;
+						}
+					}
+					SimilarityIndex d;
+					try
+					{
+						d = Hash(DiffEntry.Side.NEW, dstEnt);
+					}
+					catch (SimilarityIndex.TableFullException)
+					{
+						if (dstTooLarge == null)
+						{
+							dstTooLarge = new BitSet(dsts.Count);
+						}
+						dstTooLarge.Set(dstIdx);
+						tableOverflow = true;
+						pm.Update(1);
+						continue;
+					}
 					int contentScore = s.Score(d, 10000);
 					// nameScore returns a value between 0 and 100, but we want it
 					// to be in the same range as the content score. This allows it
@@ -300,7 +341,9 @@ namespace NGit.Diff
 					matrix[mNext++] = Encode(score, srcIdx, dstIdx);
 					pm.Update(1);
 				}
+SRC_continue: ;
 			}
+SRC_break: ;
 			// Sort everything in the range we populated, which might be the
 			// entire matrix, or just a smaller slice if we had some bad low
 			// scoring pairs.
@@ -364,6 +407,7 @@ namespace NGit.Diff
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
+		/// <exception cref="NGit.Diff.SimilarityIndex.TableFullException"></exception>
 		private SimilarityIndex Hash(DiffEntry.Side side, DiffEntry ent)
 		{
 			SimilarityIndex r = new SimilarityIndex();

@@ -100,9 +100,46 @@ namespace NGit.Transport
 		/// <summary>Update this method with the credentials from the URIish.</summary>
 		/// <remarks>Update this method with the credentials from the URIish.</remarks>
 		/// <param name="uri">the URI used to create the connection.</param>
-		internal virtual void Authorize(URIish uri)
+		/// <param name="credentialsProvider">
+		/// the credentials provider, or null. If provided,
+		/// <see cref="URIish.GetPass()">credentials in the URI</see>
+		/// are ignored.
+		/// </param>
+		/// <returns>
+		/// true if the authentication method is able to provide
+		/// authorization for the given URI
+		/// </returns>
+		internal virtual bool Authorize(URIish uri, CredentialsProvider credentialsProvider
+			)
 		{
-			Authorize(uri.GetUser(), uri.GetPass());
+			string username;
+			string password;
+			if (credentialsProvider != null)
+			{
+				CredentialItem.Username u = new CredentialItem.Username();
+				CredentialItem.Password p = new CredentialItem.Password();
+				if (credentialsProvider.Supports(u, p) && credentialsProvider.Get(uri, u, p))
+				{
+					username = u.GetValue();
+					password = Sharpen.Extensions.CreateString(p.GetValue());
+					p.Clear();
+				}
+				else
+				{
+					return false;
+				}
+			}
+			else
+			{
+				username = uri.GetUser();
+				password = uri.GetPass();
+			}
+			if (username != null)
+			{
+				Authorize(username, password);
+				return true;
+			}
+			return false;
 		}
 
 		/// <summary>Update this method with the given username and password pair.</summary>

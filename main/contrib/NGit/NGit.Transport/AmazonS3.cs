@@ -716,7 +716,7 @@ namespace NGit.Transport
 				s.Append(e.Value);
 				s.Append('\n');
 			}
-			string host = c.GetURL().Host;
+			string host = c.GetURL().GetHost();
 			s.Append('/');
 			s.Append(Sharpen.Runtime.Substring(host, 0, host.Length - DOMAIN.Length - 1));
 			s.Append(c.GetURL().AbsolutePath);

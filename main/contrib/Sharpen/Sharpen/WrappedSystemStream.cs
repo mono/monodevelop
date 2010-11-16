@@ -35,7 +35,8 @@ namespace Sharpen
 
 		public override int Read (byte[] buffer, int offset, int count)
 		{
-			return this.ist.Read (buffer, offset, count);
+			int res = this.ist.Read (buffer, offset, count);
+			return res != -1 ? res : 0;
 		}
 
 		public override int ReadByte ()

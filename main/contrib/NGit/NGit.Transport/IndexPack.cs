@@ -1156,7 +1156,10 @@ namespace NGit.Transport
 				{
 					// The +1 is a workaround to a bug in SharpZipLib: RemainingInput won't be properly updated if the inflate
 					// length is 0.
-					int r = inf.Inflate(dst, off, dst.Length - off + 1);
+					int rl = dst.Length - off;
+					if (rl == 0)
+						rl++;
+					int r = inf.Inflate(dst, off, rl);
 					if (r == 0)
 					{
 						if (inf.IsFinished)

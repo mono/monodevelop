@@ -130,9 +130,13 @@ namespace NGit.Dircache
 		}
 
 		/// <summary>
-		/// Constructs a DirCacheCeckout for fast-forwarding from one tree to
-		/// another, merging it with the index
+		/// Constructs a DirCacheCeckout for merging and checking out two trees (HEAD
+		/// and mergeCommitTree) and the index.
 		/// </summary>
+		/// <remarks>
+		/// Constructs a DirCacheCeckout for merging and checking out two trees (HEAD
+		/// and mergeCommitTree) and the index.
+		/// </remarks>
 		/// <param name="repo">the repository in which we do the checkout</param>
 		/// <param name="headCommitTree">the id of the tree of the head commit</param>
 		/// <param name="dc">the (already locked) Dircache for this repo</param>
@@ -150,13 +154,13 @@ namespace NGit.Dircache
 		}
 
 		/// <summary>
-		/// Constructs a DirCacheCeckout for checking out one tree, merging with the
-		/// index.
+		/// Constructs a DirCacheCeckout for merging and checking out two trees (HEAD
+		/// and mergeCommitTree) and the index.
 		/// </summary>
 		/// <remarks>
-		/// Constructs a DirCacheCeckout for checking out one tree, merging with the
-		/// index. As iterator over the working tree this constructor creates a
-		/// standard
+		/// Constructs a DirCacheCeckout for merging and checking out two trees (HEAD
+		/// and mergeCommitTree) and the index. As iterator over the working tree
+		/// this constructor creates a standard
 		/// <see cref="NGit.Treewalk.FileTreeIterator">NGit.Treewalk.FileTreeIterator</see>
 		/// </remarks>
 		/// <param name="repo">the repository in which we do the checkout</param>
@@ -167,6 +171,44 @@ namespace NGit.Dircache
 		public DirCacheCheckout(Repository repo, ObjectId headCommitTree, DirCache dc, ObjectId
 			 mergeCommitTree) : this(repo, headCommitTree, dc, mergeCommitTree, new FileTreeIterator
 			(repo.WorkTree, repo.FileSystem, WorkingTreeOptions.CreateDefaultInstance()))
+		{
+		}
+
+		/// <summary>
+		/// Constructs a DirCacheCeckout for checking out one tree, merging with the
+		/// index.
+		/// </summary>
+		/// <remarks>
+		/// Constructs a DirCacheCeckout for checking out one tree, merging with the
+		/// index.
+		/// </remarks>
+		/// <param name="repo">the repository in which we do the checkout</param>
+		/// <param name="dc">the (already locked) Dircache for this repo</param>
+		/// <param name="mergeCommitTree">the id of the tree we want to fast-forward to</param>
+		/// <param name="workingTree">an iterator over the repositories Working Tree</param>
+		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
+		public DirCacheCheckout(Repository repo, DirCache dc, ObjectId mergeCommitTree, WorkingTreeIterator
+			 workingTree) : this(repo, null, dc, mergeCommitTree, workingTree)
+		{
+		}
+
+		/// <summary>
+		/// Constructs a DirCacheCeckout for checking out one tree, merging with the
+		/// index.
+		/// </summary>
+		/// <remarks>
+		/// Constructs a DirCacheCeckout for checking out one tree, merging with the
+		/// index. As iterator over the working tree this constructor creates a
+		/// standard
+		/// <see cref="NGit.Treewalk.FileTreeIterator">NGit.Treewalk.FileTreeIterator</see>
+		/// </remarks>
+		/// <param name="repo">the repository in which we do the checkout</param>
+		/// <param name="dc">the (already locked) Dircache for this repo</param>
+		/// <param name="mergeCommitTree">the id of the tree of the</param>
+		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
+		public DirCacheCheckout(Repository repo, DirCache dc, ObjectId mergeCommitTree) : 
+			this(repo, null, dc, mergeCommitTree, new FileTreeIterator(repo.WorkTree, repo.FileSystem
+			, WorkingTreeOptions.CreateDefaultInstance()))
 		{
 		}
 
@@ -266,8 +308,9 @@ namespace NGit.Dircache
 		{
 			if (m != null)
 			{
-				if (i == null || f == null || !m.IdEqual(i) || (i.GetDirCacheEntry() != null && f
-					.IsModified(i.GetDirCacheEntry(), true, Config_filemode(), repo.FileSystem)))
+				if (i == null || f == null || !m.IdEqual(i) || (i.GetDirCacheEntry() != null && (
+					f.IsModified(i.GetDirCacheEntry(), true, Config_filemode(), repo.FileSystem) || 
+					i.GetDirCacheEntry().GetStage() != 0)))
 				{
 					Update(m.GetEntryPathString(), m.GetEntryObjectId(), m.GetEntryFileMode());
 				}
@@ -298,7 +341,10 @@ namespace NGit.Dircache
 				}
 				else
 				{
-					Keep(i.GetDirCacheEntry());
+					if (i.GetDirCacheEntry().GetStage() == 0)
+					{
+						Keep(i.GetDirCacheEntry());
+					}
 				}
 			}
 		}
@@ -344,10 +390,14 @@ namespace NGit.Dircache
 			builder.Finish();
 			FilePath file = null;
 			string last = string.Empty;
-			foreach (string r in removed)
+			// when deleting files process them in the opposite order as they have
+			// been reported. This ensures the files are deleted before we delete
+			// their parent folders
+			for (int i = removed.Count - 1; i >= 0; i--)
 			{
+				string r = removed[i];
 				file = new FilePath(repo.WorkTree, r);
-				if (!file.Delete())
+				if (!file.Delete() && file.Exists())
 				{
 					toBeDeleted.AddItem(r);
 				}

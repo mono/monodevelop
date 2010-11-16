@@ -876,7 +876,7 @@ namespace NGit.Treewalk
 
 		/// <summary>A single entry within a working directory tree.</summary>
 		/// <remarks>A single entry within a working directory tree.</remarks>
-		protected internal abstract class Entry
+		public abstract class Entry
 		{
 			internal byte[] encodedName;
 

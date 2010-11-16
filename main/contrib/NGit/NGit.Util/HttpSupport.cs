@@ -265,7 +265,7 @@ namespace NGit.Util
 			}
 			catch (ConnectException ce)
 			{
-				string host = c.GetURL().Host;
+				string host = c.GetURL().GetHost();
 				// The standard J2SE error message is not very useful.
 				//
 				if ("Connection timed out: connect".Equals(ce.Message))

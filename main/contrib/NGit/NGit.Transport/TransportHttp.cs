@@ -439,11 +439,10 @@ namespace NGit.Transport
 								throw new TransportException(uri, MessageFormat.Format(JGitText.Get().authenticationNotSupported
 									, uri));
 							}
-							if (1 < authAttempts || uri.GetUser() == null)
+							if (1 < authAttempts || !authMethod.Authorize(uri, GetCredentialsProvider()))
 							{
 								throw new TransportException(uri, JGitText.Get().notAuthorized);
 							}
-							authMethod.Authorize(uri);
 							authAttempts++;
 							continue;
 							goto case HttpURLConnection.HTTP_FORBIDDEN;

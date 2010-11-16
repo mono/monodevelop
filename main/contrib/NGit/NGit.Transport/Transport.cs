@@ -681,6 +681,10 @@ namespace NGit.Transport
 		/// <remarks>Pack configuration used by this transport to make pack file.</remarks>
 		private PackConfig packConfig;
 
+		/// <summary>Assists with authentication the connection.</summary>
+		/// <remarks>Assists with authentication the connection.</remarks>
+		private CredentialsProvider credentialsProvider;
+
 		/// <summary>Create a new transport instance.</summary>
 		/// <remarks>Create a new transport instance.</remarks>
 		/// <param name="local">
@@ -701,6 +705,7 @@ namespace NGit.Transport
 			this.local = local;
 			this.uri = uri;
 			this.checkFetchedObjects = tc.IsFsckObjects();
+			this.credentialsProvider = CredentialsProvider.GetDefault();
 		}
 
 		/// <summary>Get the URI this transport connects to.</summary>
@@ -973,6 +978,27 @@ namespace NGit.Transport
 		public virtual void SetPackConfig(PackConfig pc)
 		{
 			packConfig = pc;
+		}
+
+		/// <summary>A credentials provider to assist with authentication connections..</summary>
+		/// <remarks>A credentials provider to assist with authentication connections..</remarks>
+		/// <param name="credentialsProvider">the credentials provider, or null if there is none
+		/// 	</param>
+		public virtual void SetCredentialsProvider(CredentialsProvider credentialsProvider
+			)
+		{
+			this.credentialsProvider = credentialsProvider;
+		}
+
+		/// <summary>The configured credentials provider.</summary>
+		/// <remarks>The configured credentials provider.</remarks>
+		/// <returns>
+		/// the credentials provider, or null if no credentials provider is
+		/// associated with this transport.
+		/// </returns>
+		public virtual CredentialsProvider GetCredentialsProvider()
+		{
+			return credentialsProvider;
 		}
 
 		/// <summary>Fetch objects and refs from the remote repository to the local one.</summary>

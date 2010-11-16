@@ -308,7 +308,9 @@ namespace NGit
 
 		public string createBranchUnexpectedResult;
 
-		public string creatingDeltasIsNotImplemented;
+		public string credentialPassword;
+
+		public string credentialUsername;
 
 		public string daemonAlreadyRunning;
 

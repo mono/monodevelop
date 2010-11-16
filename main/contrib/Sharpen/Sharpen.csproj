@@ -140,6 +140,7 @@
     <Compile Include="Sharpen\HttpURLConnection.cs" />
     <Compile Include="Sharpen\URLEncoder.cs" />
     <Compile Include="Sharpen\BitSet.cs" />
+    <Compile Include="Sharpen\Channels.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

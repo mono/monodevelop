@@ -43,6 +43,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
 using NGit;
+using NGit.Diff;
 using Sharpen;
 
 namespace NGit.Diff
@@ -65,13 +66,12 @@ namespace NGit.Diff
 	internal class SimilarityIndex
 	{
 		/// <summary>
-		/// The
-		/// <see cref="idHash">idHash</see>
-		/// table stops growing at
-		/// <code>1 &lt;&lt; MAX_HASH_BITS</code>
-		/// .
+		/// A special
+		/// <see cref="TableFullException">TableFullException</see>
+		/// used in place of OutOfMemoryError.
 		/// </summary>
-		private const int MAX_HASH_BITS = 17;
+		private static readonly SimilarityIndex.TableFullException TABLE_FULL_OUT_OF_MEMORY
+			 = new SimilarityIndex.TableFullException();
 
 		/// <summary>Shift to apply before storing a key.</summary>
 		/// <remarks>
@@ -81,6 +81,10 @@ namespace NGit.Diff
 		/// all values are positive. The lower 32 bits to count bytes.
 		/// </remarks>
 		private const int KEY_SHIFT = 32;
+
+		/// <summary>Maximum value of the count field, also mask to extract the count.</summary>
+		/// <remarks>Maximum value of the count field, also mask to extract the count.</remarks>
+		private const long MAX_COUNT = (1L << KEY_SHIFT) - 1;
 
 		/// <summary>Total size of the file we hashed into the structure.</summary>
 		/// <remarks>Total size of the file we hashed into the structure.</remarks>
@@ -93,17 +97,23 @@ namespace NGit.Diff
 		/// </summary>
 		private int idSize;
 
+		/// <summary>
+		/// <see cref="idSize">idSize</see>
+		/// that triggers
+		/// <see cref="idHash">idHash</see>
+		/// to double in size.
+		/// </summary>
+		private int idGrowAt;
+
 		/// <summary>Pairings of content keys and counters.</summary>
 		/// <remarks>
 		/// Pairings of content keys and counters.
 		/// <p>
 		/// Slots in the table are actually two ints wedged into a single long. The
-		/// upper
-		/// <see cref="MAX_HASH_BITS">MAX_HASH_BITS</see>
-		/// bits stores the content key, and the
-		/// remaining lower bits stores the number of bytes associated with that key.
-		/// Empty slots are denoted by 0, which cannot occur because the count cannot
-		/// be 0. Values can only be positive, which we enforce during key addition.
+		/// upper 32 bits stores the content key, and the remaining lower bits stores
+		/// the number of bytes associated with that key. Empty slots are denoted by
+		/// 0, which cannot occur because the count cannot be 0. Values can only be
+		/// positive, which we enforce during key addition.
 		/// </remarks>
 		private long[] idHash;
 
@@ -117,6 +127,7 @@ namespace NGit.Diff
 		{
 			idHashBits = 8;
 			idHash = new long[1 << idHashBits];
+			idGrowAt = GrowAt(idHashBits);
 		}
 
 		internal virtual long GetFileSize()
@@ -131,6 +142,7 @@ namespace NGit.Diff
 
 		/// <exception cref="NGit.Errors.MissingObjectException"></exception>
 		/// <exception cref="System.IO.IOException"></exception>
+		/// <exception cref="NGit.Diff.SimilarityIndex.TableFullException"></exception>
 		internal virtual void Hash(ObjectLoader obj)
 		{
 			if (obj.IsLarge())
@@ -154,6 +166,7 @@ namespace NGit.Diff
 			}
 		}
 
+		/// <exception cref="NGit.Diff.SimilarityIndex.TableFullException"></exception>
 		internal virtual void Hash(byte[] raw, int ptr, int end)
 		{
 			while (ptr < end)
@@ -176,6 +189,7 @@ namespace NGit.Diff
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
+		/// <exception cref="NGit.Diff.SimilarityIndex.TableFullException"></exception>
 		internal virtual void Hash(InputStream @in, long remaining)
 		{
 			byte[] buf = new byte[4096];
@@ -236,12 +250,12 @@ namespace NGit.Diff
 			return (int)((Common(dst) * maxScore) / max);
 		}
 
-		internal virtual int Common(NGit.Diff.SimilarityIndex dst)
+		internal virtual long Common(NGit.Diff.SimilarityIndex dst)
 		{
 			return Common(this, dst);
 		}
 
-		private static int Common(NGit.Diff.SimilarityIndex src, NGit.Diff.SimilarityIndex
+		private static long Common(NGit.Diff.SimilarityIndex src, NGit.Diff.SimilarityIndex
 			 dst)
 		{
 			int srcIdx = src.PackedIndex(0);
@@ -251,14 +265,15 @@ namespace NGit.Diff
 			return Common(srcHash, srcIdx, dstHash, dstIdx);
 		}
 
-		private static int Common(long[] srcHash, int srcIdx, long[] dstHash, int dstIdx)
+		private static long Common(long[] srcHash, int srcIdx, long[] dstHash, int dstIdx
+			)
 		{
 			//
 			if (srcIdx == srcHash.Length || dstIdx == dstHash.Length)
 			{
 				return 0;
 			}
-			int common = 0;
+			long common = 0;
 			int srcKey = KeyOf(srcHash[srcIdx]);
 			int dstKey = KeyOf(dstHash[dstIdx]);
 			for (; ; )
@@ -290,7 +305,7 @@ namespace NGit.Diff
 					}
 					else
 					{
-						// Regions of dst which do not appear in dst.
+						// Regions of dst which do not appear in src.
 						if (++dstIdx == dstHash.Length)
 						{
 							break;
@@ -338,6 +353,7 @@ namespace NGit.Diff
 			return (idHash.Length - idSize) + idx;
 		}
 
+		/// <exception cref="NGit.Diff.SimilarityIndex.TableFullException"></exception>
 		internal virtual void Add(int key, int cnt)
 		{
 			key = (int)(((uint)(key * unchecked((int)(0x9e370001)))) >> 1);
@@ -349,13 +365,13 @@ namespace NGit.Diff
 				if (v == 0)
 				{
 					// Empty slot in the table, store here.
-					if (ShouldGrow())
+					if (idGrowAt <= idSize)
 					{
 						Grow();
 						j = Slot(key);
 						continue;
 					}
-					idHash[j] = (((long)key) << KEY_SHIFT) | cnt;
+					idHash[j] = Pair(key, cnt);
 					idSize++;
 					return;
 				}
@@ -363,8 +379,10 @@ namespace NGit.Diff
 				{
 					if (KeyOf(v) == key)
 					{
-						// Same key, increment the counter.
-						idHash[j] = v + cnt;
+						// Same key, increment the counter. If it overflows, fail
+						// indexing to prevent the key from being impacted.
+						//
+						idHash[j] = Pair(key, CountOf(v) + cnt);
 						return;
 					}
 					else
@@ -378,6 +396,16 @@ namespace NGit.Diff
 			}
 		}
 
+		/// <exception cref="NGit.Diff.SimilarityIndex.TableFullException"></exception>
+		private static long Pair(int key, long cnt)
+		{
+			if (MAX_COUNT < cnt)
+			{
+				throw new SimilarityIndex.TableFullException();
+			}
+			return (((long)key) << KEY_SHIFT) | cnt;
+		}
+
 		private int Slot(int key)
 		{
 			// We use 31 - idHashBits because the upper bit was already forced
@@ -387,17 +415,30 @@ namespace NGit.Diff
 			return (int)(((uint)key) >> (31 - idHashBits));
 		}
 
-		private bool ShouldGrow()
+		private static int GrowAt(int idHashBits)
 		{
-			return idHashBits < MAX_HASH_BITS && idHash.Length <= idSize * 2;
+			return (1 << idHashBits) * (idHashBits - 3) / idHashBits;
 		}
 
+		/// <exception cref="NGit.Diff.SimilarityIndex.TableFullException"></exception>
 		private void Grow()
 		{
+			if (idHashBits == 30)
+			{
+				throw new SimilarityIndex.TableFullException();
+			}
 			long[] oldHash = idHash;
 			int oldSize = idHash.Length;
 			idHashBits++;
-			idHash = new long[1 << idHashBits];
+			idGrowAt = GrowAt(idHashBits);
+			try
+			{
+				idHash = new long[1 << idHashBits];
+			}
+			catch (OutOfMemoryException)
+			{
+				throw TABLE_FULL_OUT_OF_MEMORY;
+			}
 			for (int i = 0; i < oldSize; i++)
 			{
 				long v = oldHash[i];
@@ -421,9 +462,15 @@ namespace NGit.Diff
 			return (int)((long)(((ulong)v) >> KEY_SHIFT));
 		}
 
-		private static int CountOf(long v)
+		private static long CountOf(long v)
 		{
-			return (int)v;
+			return v & MAX_COUNT;
+		}
+
+		[System.Serializable]
+		internal class TableFullException : Exception
+		{
+			private const long serialVersionUID = 1L;
 		}
 	}
 }
