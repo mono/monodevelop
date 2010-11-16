@@ -291,6 +291,7 @@ namespace MonoDevelop.Core
 	internal static class Counters
 	{
 		public static TimerCounter RuntimeInitialization = InstrumentationService.CreateTimerCounter ("Runtime initialization", "Runtime");
+		public static TimerCounter PropertyServiceInitialization = InstrumentationService.CreateTimerCounter ("Property Service initialization", "Runtime");
 		
 		public static Counter AddinsLoaded = InstrumentationService.CreateCounter ("Add-ins loaded", "Add-in Engine", true);
 		

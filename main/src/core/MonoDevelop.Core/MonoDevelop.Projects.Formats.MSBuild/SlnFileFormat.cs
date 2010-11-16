@@ -302,6 +302,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 				foreach (SolutionConfigurationEntry cce in cc.Configurations) {
 					SolutionEntityItem p = cce.Item;
+					
+					// Ignore unknown projects. We deal with them below
+					if (p is UnknownSolutionItem)
+						continue;
+					
 					list.Add (String.Format (
 						"\t\t{0}.{1}.ActiveCfg = {2}", p.ItemId, ToSlnConfigurationId (cc), ToSlnConfigurationId (cce.ItemConfiguration)));
 
@@ -309,6 +314,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						list.Add (String.Format (
 							"\t\t{0}.{1}.Build.0 = {2}", p.ItemId, ToSlnConfigurationId (cc), ToSlnConfigurationId (cce.ItemConfiguration)));
 				}
+			}
+			
+			// Dump config lines for unknown projects
+			foreach (UnknownSolutionItem item in sol.GetAllSolutionItems<UnknownSolutionItem> ()) {
+				ItemSlnData data = ItemSlnData.ForItem (item);
+				list.AddRange (data.ConfigLines);
 			}
 		}
 
@@ -920,6 +931,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 				SolutionEntityItem item;
 				if (slnData.ItemsByGuid.TryGetValue (projGuid, out item)) {
+					if (item is UnknownSolutionItem) {
+						ItemSlnData data = ItemSlnData.ForItem (item);
+						data.ConfigLines.Add (lines [lineNum]);
+						extras.RemoveAt (extras.Count - 1);
+						continue;
+					}
 					string key = projGuid + "." + slnConfig;
 					SolutionConfigurationEntry combineConfigEntry = null;
 					if (cache.ContainsKey (key)) {
