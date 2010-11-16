@@ -43,11 +43,6 @@ namespace MonoDevelop.Deployment
 				if (props.ShouldDeploy) {
 					DeployFile dp = new DeployFile (file);
 					deployFiles.Add (dp);
-					
-					if (string.Compare (Path.GetFileName (dp.SourcePath), "app.config", true)==0 && string.Compare (Path.GetFileName (dp.RelativeTargetPath), "app.config", true)==0) {
-						string newName = Path.GetFileName (outputFile) + ".config";
-						dp.RelativeTargetPath = Path.Combine (Path.GetDirectoryName (dp.RelativeTargetPath), newName);
-					}
 				}
 			}
 			
