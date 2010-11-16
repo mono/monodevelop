@@ -292,13 +292,33 @@ namespace MonoDevelop.Platform
 				if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out w, out h))
 					w = h = 22;
 				var rect = new System.Drawing.RectangleF (0, 0, w, h);
-				var ctx = NSGraphicsContext.CurrentContext;
-				var rep = icon.BestRepresentation (rect, ctx, new NSDictionary ()) as NSBitmapImageRep;
+				var rep = icon.BestRepresentation (rect, null, null) as NSBitmapImageRep;
 				if (rep != null) {
 					var tiff = rep.TiffRepresentation;
 					byte[] arr = new byte[tiff.Length];
 					System.Runtime.InteropServices.Marshal.Copy (tiff.Bytes, arr, 0, arr.Length);
-					return new Gdk.Pixbuf (arr, rep.PixelsWide, rep.PixelsHigh);
+					int pw = rep.PixelsWide, ph = rep.PixelsHigh;
+					var px = new Gdk.Pixbuf (arr, pw, ph);
+					
+					//if one dimension matches, and the other is same or smaller, use as-is
+					if ((pw == w && ph <= h) || (ph == h && pw <= w))
+						return px;
+					
+					//else scale proportionally such that the largest dimension matches the desired size
+					if (pw == ph) {
+						pw = w;
+						ph = h;
+					} else if (pw > ph) {
+						ph = (int) (w * ((float) ph / pw));
+						pw = w;
+					} else {
+						pw = (int) (h * ((float) pw / ph));
+						ph = h;
+					}
+					
+					var scaled = px.ScaleSimple (pw, ph, Gdk.InterpType.Bilinear);
+					px.Dispose ();
+					return scaled;
 				}
 			}
 			return base.OnGetPixbufForFile (filename, size);
