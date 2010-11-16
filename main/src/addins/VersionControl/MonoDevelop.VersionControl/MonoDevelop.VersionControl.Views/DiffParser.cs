@@ -89,7 +89,7 @@ namespace MonoDevelop.VersionControl.Views
 					cu.Add (currentFile);
 				} else {
 					lineMatch = chunkExpression.Match (line);
-					if (lineMatch != null && lineMatch.Success) {
+					if (lineMatch != null && lineMatch.Success && currentFile != null) {
 						if (currentRegion != null) // Close out previous chunk region
 							currentRegion.BodyRegion = new DomRegion (currentRegion.BodyRegion.Start.Line,
 							                                          currentRegion.BodyRegion.Start.Column,
