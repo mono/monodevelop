@@ -29,7 +29,6 @@
 	<Property name="BlockCommentEnd">]--</Property>
 
 	<EolSpan color = "comment.line" rule="Comment" tagColor="comment.tag.line">--</EolSpan>
-	<EolSpan color = "comment.line" rule="Comment" tagColor="comment.tag.line">#</EolSpan>
 	
 	<Span color = "comment.block" rule="Comment" tagColor="comment.tag.block">
 		<Begin>--[[</Begin>
