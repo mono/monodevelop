@@ -20,6 +20,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -27,6 +28,7 @@
     <OutputPath>..\..\..\build\bin</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -60,6 +62,25 @@
     <Compile Include="gtk-gui\Mono.Instrumentation.Monitor.TimeStatisticsView.cs" />
     <Compile Include="ChartView.cs" />
     <Compile Include="ChartSerieInfo.cs" />
+    <Compile Include="MacIntegration\MacIntegration.cs" />
+    <Compile Include="..\..\addins\MacPlatform\Framework\ApplicationEvents.cs">
+      <Link>MacIntegration\ApplicationEvents.cs</Link>
+    </Compile>
+    <Compile Include="..\..\addins\MacPlatform\Framework\Carbon.cs">
+      <Link>MacIntegration\Carbon.cs</Link>
+    </Compile>
+    <Compile Include="..\..\addins\MacPlatform\Framework\CoreFoundation.cs">
+      <Link>MacIntegration\CoreFoundation.cs</Link>
+    </Compile>
+    <Compile Include="..\..\addins\MacPlatform\Framework\AppleEvent.cs">
+      <Link>MacIntegration\AppleEvent.cs</Link>
+    </Compile>
+    <Compile Include="..\..\addins\MacPlatform\Framework\AppleScript.cs">
+      <Link>MacIntegration\AppleScript.cs</Link>
+    </Compile>
+    <Compile Include="..\..\addins\MacPlatform\Framework\ComponentManager.cs">
+      <Link>MacIntegration\ComponentManager.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -93,5 +114,8 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MacIntegration\" />
   </ItemGroup>
 </Project>

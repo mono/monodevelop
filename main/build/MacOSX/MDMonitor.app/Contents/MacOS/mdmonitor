@@ -1,0 +1,10 @@
+#!/bin/sh
+# Author: Michael Hutchinson (mhutchinson@novell.com)
+
+DIR=$(cd "$(dirname "$0")"; pwd)
+
+MONO_FRAMEWORK_PATH=/Library/Frameworks/Mono.framework/Versions/Current
+export DYLD_FALLBACK_LIBRARY_PATH="$DIR:$MONO_FRAMEWORK_PATH/lib:/lib:/usr/lib"
+export PATH="$MONO_FRAMEWORK_PATH/bin:$PATH"
+
+exec mono "$DIR/../../../lib/monodevelop/bin/mdmonitor.exe" $*

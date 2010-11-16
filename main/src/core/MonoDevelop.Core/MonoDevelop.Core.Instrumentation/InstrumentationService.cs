@@ -88,6 +88,18 @@ namespace MonoDevelop.Core.Instrumentation
 			if (publicPort == -1)
 				throw new InvalidOperationException ("Service not published");
 			
+			if (PropertyService.IsMac) {
+				var macOSDir = PropertyService.EntryAssemblyPath.ParentDirectory.ParentDirectory.ParentDirectory;
+				var app = macOSDir.Combine ("MDMonitor.app");
+				if (Directory.Exists (app)) {
+					var psi = new ProcessStartInfo ("open", string.Format ("-n '{0}' --args -c localhost:{1} ", app, publicPort)) {
+						UseShellExecute = false,
+					};
+					Process.Start (psi);
+					return;
+				}
+			}	
+			
 			string exe = Path.Combine (Path.GetDirectoryName (Assembly.GetEntryAssembly ().Location), "mdmonitor.exe");
 			string args = "-c localhost:" + publicPort;
 			Runtime.SystemAssemblyService.CurrentRuntime.ExecuteAssembly (exe, args);

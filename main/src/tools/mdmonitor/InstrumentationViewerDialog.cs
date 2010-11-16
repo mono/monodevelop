@@ -299,6 +299,17 @@ namespace Mono.Instrumentation.Monitor
 				fdiag.Destroy ();
 			}
 		}
+		
+		public void InstallMacGlobalMenu ()
+		{
+			MacIntegration.IgeMacMenu.GlobalKeyHandlerEnabled = true;
+			MacIntegration.IgeMacMenu.MenuBar = menubar1;
+			var quitItem = (MenuItem) UIManager.GetWidget ("/menubar1/ExitAction");
+			MacIntegration.IgeMacMenu.QuitMenuItem = quitItem;
+			var appGroup = MacIntegration.IgeMacMenu.AddAppMenuGroup ();
+			appGroup.AddMenuItem (quitItem, null);
+			menubar1.Hide ();
+		}
 	}		
 	
 	internal static class CounterColor

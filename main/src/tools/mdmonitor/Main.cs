@@ -26,6 +26,7 @@
 using System;
 using Gtk;
 using MonoDevelop.Core.Instrumentation;
+using OSXIntegration.Framework;
 
 namespace Mono.Instrumentation.Monitor
 {
@@ -63,6 +64,31 @@ namespace Mono.Instrumentation.Monitor
 			
 			InstrumentationViewerDialog win = new InstrumentationViewerDialog ();
 			win.Show ();
+			
+			if (MacIntegration.PlatformDetection.IsMac) {
+				try {
+					ApplicationEvents.Quit += delegate (object sender, ApplicationQuitEventArgs e) {
+						Application.Quit ();
+						e.Handled = true;
+					};
+					
+					ApplicationEvents.Reopen += delegate (object sender, ApplicationEventArgs e) {
+						if (win != null) {
+							win.Deiconify ();
+							win.Visible = true;
+							e.Handled = true;
+						}
+					};
+				} catch (Exception ex) {
+					Console.Error.WriteLine ("Installing Mac AppleEvent handlers failed. Skipping.\n" + ex);
+				}
+				try {
+					win.InstallMacGlobalMenu ();
+				} catch (Exception ex) {
+					Console.Error.WriteLine ("Installing Mac IGE Main Menu failed. Skipping.\n" + ex);
+				}
+			}
+			
 			Application.Run ();
 		}
 		

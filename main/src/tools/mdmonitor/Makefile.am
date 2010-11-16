@@ -2,6 +2,12 @@
 ASSEMBLY = $(top_builddir)/build/bin/mdmonitor.exe
 
 FILES =  \
+	../../addins/MacPlatform/Framework/AppleEvent.cs \
+	../../addins/MacPlatform/Framework/AppleScript.cs \
+	../../addins/MacPlatform/Framework/ApplicationEvents.cs \
+	../../addins/MacPlatform/Framework/Carbon.cs \
+	../../addins/MacPlatform/Framework/ComponentManager.cs \
+	../../addins/MacPlatform/Framework/CoreFoundation.cs \
 	AssemblyInfo.cs \
 	ChartSerieInfo.cs \
 	ChartView.cs \
@@ -15,6 +21,7 @@ FILES =  \
 	gtk-gui/Mono.Instrumentation.Monitor.TimeStatisticsView.cs \
 	InstrumenationChartView.cs \
 	InstrumentationViewerDialog.cs \
+	MacIntegration/MacIntegration.cs \
 	Main.cs \
 	NewProfile.cs \
 	TimeLineView.cs \
@@ -38,7 +45,7 @@ REFS =  \
 	-r:System.Xml
 	
 $(ASSEMBLY): $(build_sources) $(build_resources)
-	$(CSC) $(CSC_FLAGS) $(build_sources) $(REFS) $(build_resources:%=/resource:%) -out:$(ASSEMBLY)
+	$(CSC) /unsafe $(CSC_FLAGS) $(build_sources) $(REFS) $(build_resources:%=/resource:%) -out:$(ASSEMBLY)
 
 assemblydir = $(MD_ASSEMBLY_DIR)
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb           

@@ -76,6 +76,8 @@ MonoDevelop.app:
 	test ! -d $(ARTIFACTS)/MoonSDK ||  cp -pR $(ARTIFACTS)/MoonSDK/* $(MACOS)/lib/moonlight/
 	test ! -d $(ARTIFACTS)/MonoDoc.app ||  cp -pR $(ARTIFACTS)/MonoDoc.app/* $(MACOS)/MonoDoc.app/
 
+	cp -r MDMonitor.app $(MACOS)
+
 # Mono stubs to make the process name and bundle location correct
 	mkdir -p "$(MACOS)/bin"
 	ln -s /Library/Frameworks/Mono.framework/Versions/Current/bin/mono "$(MACOS)/bin/monodevelop"
