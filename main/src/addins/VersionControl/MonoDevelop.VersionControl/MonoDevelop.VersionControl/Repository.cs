@@ -494,7 +494,7 @@ namespace MonoDevelop.VersionControl
 		{
 			this.basePath = basePath;
 			this.fileName = fileName;
-			this.content = content;
+			this.content = content.Replace ("\r","");
 		}
 		
 		public FilePath FileName {
