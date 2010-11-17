@@ -235,6 +235,7 @@ namespace MonoDevelop.Ide.Updater
 					}
 				}
 			} catch (Exception ex) {
+				LoggingService.LogError ("Could not retrieve update information", ex);
 				error = GettextCatalog.GetString ("Error retrieving update information");
 				errorDetail = ex;
 			}
