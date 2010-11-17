@@ -199,8 +199,12 @@ namespace MonoDevelop.VersionControl.Git
 			else
 				status = GitUtil.GetDirectoryStatus (repo, localDirectory, recursive);
 			
+			HashSet<string> added = new HashSet<string> ();
+			
 			Action<IEnumerable<string>, VersionStatus> AddFiles = delegate(IEnumerable<string> files, VersionStatus fstatus) {
 				foreach (string file in files) {
+					if (!added.Add (file))
+						continue;
 					FilePath statFile = FromGitPath (file);
 					existingFiles.Remove (statFile.CanonicalPath);
 					VersionInfo vi = new VersionInfo (statFile, "", false, fstatus, rev, VersionStatus.Versioned, null);
@@ -676,7 +680,9 @@ namespace MonoDevelop.VersionControl.Git
 				TreeWalk tw = tree != null ? TreeWalk.ForPath (repo, p, tree) : null;
 				if (tw == null) {
 					index.Remove (repo.WorkTree, (string)fp);
-					File.Delete (fp);
+					index.Write ();
+					if (File.Exists (fp))
+						File.Delete (fp);
 					removedFiles.Add (fp);
 				}
 				else {
@@ -743,16 +749,20 @@ namespace MonoDevelop.VersionControl.Git
 				List<DiffInfo> diffs = new List<DiffInfo> ();
 				VersionInfo[] vinfos = GetDirectoryVersionInfo (baseLocalPath, null, false, true);
 				foreach (VersionInfo vi in vinfos) {
-					if ((vi.Status & VersionStatus.ScheduledAdd) != 0) {
-						string ctxt = File.ReadAllText (vi.LocalPath);
-						diffs.Add (new DiffInfo (baseLocalPath, vi.LocalPath, GenerateDiff ("", ctxt)));
-					} else if ((vi.Status & VersionStatus.ScheduledDelete) != 0) {
-						string ctxt = GetCommitContent (GetHeadCommit (), vi.LocalPath);
-						diffs.Add (new DiffInfo (baseLocalPath, vi.LocalPath, GenerateDiff (ctxt, "")));
-					} else if ((vi.Status & VersionStatus.Modified) != 0) {
-						string ctxt1 = GetCommitContent (GetHeadCommit (), vi.LocalPath);
-						string ctxt2 = File.ReadAllText (vi.LocalPath);
-						diffs.Add (new DiffInfo (baseLocalPath, vi.LocalPath, GenerateDiff (ctxt1, ctxt2)));
+					try {
+						if ((vi.Status & VersionStatus.ScheduledAdd) != 0) {
+							string ctxt = File.ReadAllText (vi.LocalPath);
+							diffs.Add (new DiffInfo (baseLocalPath, vi.LocalPath, GenerateDiff ("", ctxt)));
+						} else if ((vi.Status & VersionStatus.ScheduledDelete) != 0) {
+							string ctxt = GetCommitContent (GetHeadCommit (), vi.LocalPath);
+							diffs.Add (new DiffInfo (baseLocalPath, vi.LocalPath, GenerateDiff (ctxt, "")));
+						} else if ((vi.Status & VersionStatus.Modified) != 0) {
+							string ctxt1 = GetCommitContent (GetHeadCommit (), vi.LocalPath);
+							string ctxt2 = File.ReadAllText (vi.LocalPath);
+							diffs.Add (new DiffInfo (baseLocalPath, vi.LocalPath, GenerateDiff (ctxt1, ctxt2)));
+						}
+					} catch (Exception ex) {
+						LoggingService.LogError ("Could not get diff for file '" + vi.LocalPath + "'", ex);
 					}
 				}
 				return diffs.ToArray ();
@@ -835,7 +845,14 @@ namespace MonoDevelop.VersionControl.Git
 			case RemoteRefUpdate.Status.UP_TO_DATE: monitor.ReportSuccess (GettextCatalog.GetString ("Remote branch is up to date.")); break;
 			case RemoteRefUpdate.Status.REJECTED_NODELETE: monitor.ReportError (GettextCatalog.GetString ("The server is configured to deny deletion of the branch"), null); break;
 			case RemoteRefUpdate.Status.REJECTED_NONFASTFORWARD: monitor.ReportError (GettextCatalog.GetString ("The update is a non-fast-forward update. Merge the remote changes before pushing again."), null); break;
-			case RemoteRefUpdate.Status.OK: monitor.ReportSuccess (GettextCatalog.GetString ("Push operation successfully completed.")); break;
+			case RemoteRefUpdate.Status.OK:
+				monitor.ReportSuccess (GettextCatalog.GetString ("Push operation successfully completed."));
+				// Update the remote branch
+				ObjectId headId = rr.GetNewObjectId ();
+				RefUpdate updateRef = repo.UpdateRef (Constants.R_REMOTES + remote + "/" + remoteBranch);
+				updateRef.SetNewObjectId(headId);
+				updateRef.Update();
+				break;
 			default:
 				string msg = rr.GetMessage ();
 				msg = !string.IsNullOrEmpty (msg) ? msg : GettextCatalog.GetString ("Push operation failed");
