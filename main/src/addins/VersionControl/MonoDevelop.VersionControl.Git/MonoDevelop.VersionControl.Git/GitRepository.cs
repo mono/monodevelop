@@ -1073,7 +1073,7 @@ namespace MonoDevelop.VersionControl.Git
 			RevCommit c1 = rw.ParseCommit (cid1);
 			RevCommit c2 = rw.ParseCommit (cid2);
 			
-			foreach (Change change in GitUtil.CompareCommits (repo, c1, c2)) {
+			foreach (Change change in GitUtil.CompareCommits (repo, c2, c1)) {
 				VersionStatus status;
 				switch (change.ChangeType) {
 				case ChangeType.Added:
