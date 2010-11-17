@@ -408,6 +408,89 @@ namespace MonoDevelop.VersionControl.Git
 					lines [n] = prevAncestor;
 			return lines;
 		}
+		
+		public static MergeCommandResult CherryPick (NGit.Repository repo, RevCommit srcCommit)
+		{
+			RevCommit newHead = null;
+			RevWalk revWalk = new RevWalk(repo);
+			try
+			{
+				// get the head commit
+				Ref headRef = repo.GetRef(Constants.HEAD);
+				if (headRef == null)
+				{
+					throw new NoHeadException(JGitText.Get().commitOnRepoWithoutHEADCurrentlyNotSupported
+						);
+				}
+				RevCommit headCommit = revWalk.ParseCommit(headRef.GetObjectId());
+				
+				// get the parent of the commit to cherry-pick
+				if (srcCommit.ParentCount != 1)
+				{
+					throw new MultipleParentsNotAllowedException(JGitText.Get().canOnlyCherryPickCommitsWithOneParent
+						);
+				}
+				RevCommit srcParent = srcCommit.GetParent(0);
+				revWalk.ParseHeaders(srcParent);
+				ResolveMerger merger = (ResolveMerger)((ThreeWayMerger)MergeStrategy.RESOLVE.NewMerger
+					(repo));
+				merger.SetWorkingTreeIterator(new FileTreeIterator(repo));
+				merger.SetBase(srcParent.Tree);
+				
+				bool noProblems;
+				IDictionary<string, MergeResult<NGit.Diff.Sequence>> lowLevelResults = null;
+				IDictionary<string, ResolveMerger.MergeFailureReason> failingPaths = null;
+				if (merger is ResolveMerger)
+				{
+					ResolveMerger resolveMerger = (ResolveMerger)merger;
+					resolveMerger.SetCommitNames(new string[] { "BASE", "HEAD", srcCommit.Name });
+					resolveMerger.SetWorkingTreeIterator(new FileTreeIterator(repo));
+					noProblems = merger.Merge(headCommit, srcCommit);
+					lowLevelResults = resolveMerger.GetMergeResults();
+					failingPaths = resolveMerger.GetFailingPathes();
+				}
+				else
+				{
+					noProblems = merger.Merge(headCommit, srcCommit);
+				}
+				
+				if (noProblems)
+				{
+					DirCacheCheckout dco = new DirCacheCheckout(repo, headCommit.Tree, repo.LockDirCache
+						(), merger.GetResultTreeId());
+					dco.SetFailOnConflict(true);
+					dco.Checkout();
+					newHead = new NGit.Api.Git(repo).Commit().SetMessage(srcCommit.GetFullMessage()
+						).SetAuthor(srcCommit.GetAuthorIdent()).Call();
+					return new MergeCommandResult(newHead.Id, null, new ObjectId[] { headCommit.Id, srcCommit
+						.Id }, MergeStatus.MERGED, MergeStrategy.RESOLVE, null, null);
+				}
+				else
+				{
+					if (failingPaths != null)
+					{
+						return new MergeCommandResult(null, merger.GetBaseCommit(0, 1), new ObjectId[] { 
+							headCommit.Id, srcCommit.Id }, MergeStatus.FAILED, MergeStrategy.RESOLVE, lowLevelResults
+							, null);
+					}
+					else
+					{
+						return new MergeCommandResult(null, merger.GetBaseCommit(0, 1), new ObjectId[] { 
+							headCommit.Id, srcCommit.Id }, MergeStatus.CONFLICTING, MergeStrategy.RESOLVE, lowLevelResults
+							, null);
+					}
+				}
+			}
+			catch (IOException e)
+			{
+				throw new Exception ("Commit failed", e);
+			}
+			finally
+			{
+				revWalk.Release();
+			}
+		}
+
 	}
 }
 

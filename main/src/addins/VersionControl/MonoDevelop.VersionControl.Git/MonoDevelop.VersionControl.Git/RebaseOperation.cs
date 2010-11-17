@@ -57,9 +57,11 @@ namespace MonoDevelop.VersionControl.Git
 		RevCommit currentMergeCommit;
 		ObjectId lastGoodHead;
 		bool aborted;
+		IProgressMonitor monitor;
 		
-		public RebaseOperation (NGit.Repository repo, string upstreamRef)
+		public RebaseOperation (NGit.Repository repo, string upstreamRef, IProgressMonitor monitor)
 		{
+			this.monitor = monitor;
 			this.repo = repo;
 			this.upstreamRef = upstreamRef;
 			rw = new RevWalk (repo);
@@ -104,6 +106,7 @@ namespace MonoDevelop.VersionControl.Git
 					File.WriteAllBytes (rebasingFile, new byte[0]);
 				
 				starting = false;
+				monitor.BeginTask ("Applying local commits", commitChain.Count);
 			}
 			else {
 				// Conflicts resolved. Continue.
@@ -124,12 +127,15 @@ namespace MonoDevelop.VersionControl.Git
 			
 			while (currentMergeIndex < commitChain.Count) {
 				currentMergeCommit = commitChain[currentMergeIndex++];
-				mergeResult = git.Merge ().SetStrategy (MergeStrategy.RESOLVE).Include (currentMergeCommit).Call ();
+				mergeResult = GitUtil.CherryPick (repo, currentMergeCommit);
+				monitor.Log.WriteLine ("Applied '{0}'", currentMergeCommit.GetShortMessage ());
+				monitor.Step (1);
 				if (mergeResult.GetMergeStatus () == MergeStatus.CONFLICTING || mergeResult.GetMergeStatus () == MergeStatus.FAILED)
 					return false;
 				lastGoodHead = mergeResult.GetNewHead ();
 			}
 			
+			monitor.EndTask ();
 			CleanRebaseFile ();
 			return true;
 		}
@@ -142,6 +148,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			aborted = true;
 			GitUtil.HardReset (repo, oldHead);
+			monitor.EndTask ();
 			CleanRebaseFile ();
 		}
 		
@@ -166,7 +173,8 @@ namespace MonoDevelop.VersionControl.Git
 			
 			RevWalk rw = new RevWalk (repo);
 			foreach (RevCommit pc in branch.Parents) {
-				if (rw.IsMergedInto (pc, upstream)) {
+				rw.ParseHeaders (pc);
+				if (pc.ParentCount > 1 && IsAncestor (rw, pc, upstream)) {
 					foundDistance = currentDistance + 1;
 					List<RevCommit> commitChain = new List<RevCommit> ();
 					commitChain.Add (branch);
@@ -177,6 +185,7 @@ namespace MonoDevelop.VersionControl.Git
 			List<RevCommit> foundCommitChain = null;
 			
 			foreach (RevCommit pc in branch.Parents) {
+				rw.ParseHeaders (pc);
 				List<RevCommit> commitChain = FindDivergentCommitChain (repo, upstream, pc, currentDistance + 1, maxDistance, out foundDistance);
 				if (commitChain != null) {
 					maxDistance = foundDistance;
@@ -189,6 +198,26 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			
 			return null;
+		}
+		
+		static bool IsAncestor (RevWalk rw, RevCommit ancestor, RevCommit c)
+		{
+			do {
+				rw.ParseHeaders (c);
+				if (c.Id.Equals (ancestor.Id))
+					return true;
+				if (c.Parents.Length == 0)
+					return false;
+				else if (c.Parents.Length == 1) {
+					c = c.Parents [0];
+				}
+				else {
+					foreach (RevCommit p in c.Parents) {
+						if (IsAncestor (rw, ancestor, p))
+							return true;
+					}
+				}
+			} while (true);
 		}
 	}
 }

@@ -255,11 +255,13 @@ namespace MonoDevelop.VersionControl.Git
 			StashCollection stashes = GitUtil.GetStashes (repo);
 			Stash stash = null;
 			
-			monitor.BeginTask (null, 5);
+			monitor.BeginTask (GettextCatalog.GetString ("Updating"), 5);
 			
 			try {
 				// Fetch remote commits
-				RemoteConfig remoteConfig = new RemoteConfig (repo.GetConfig (), GetCurrentRemote ());
+				string remote = GetCurrentRemote ();
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Fetching from '{0}'", remote));
+				RemoteConfig remoteConfig = new RemoteConfig (repo.GetConfig (), remote);
 				Transport tn = Transport.Open (repo, remoteConfig);
 				tn.Fetch (new GitMonitor (monitor), null);
 				monitor.Step (1);
@@ -269,10 +271,11 @@ namespace MonoDevelop.VersionControl.Git
 				monitor.Step (1);
 				
 				// Save local changes
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Saving local changes"));
 				stash = stashes.Create (GetStashName ("_tmp_"));
 				monitor.Step (1);
 				
-				RebaseOperation rebaser = new RebaseOperation (repo, GetCurrentRemote () + "/" + GetCurrentBranch ());
+				RebaseOperation rebaser = new RebaseOperation (repo, remote + "/" + GetCurrentBranch (), monitor);
 				try {
 					while (!rebaser.Rebase ()) {
 						var conflicts = rebaser.LastMergeResult.GetConflicts ();
@@ -295,6 +298,7 @@ namespace MonoDevelop.VersionControl.Git
 			} finally {
 				// Restore local changes
 				if (stash != null) {
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Restoring local changes"));
 					stash.Apply ();
 					stashes.Remove (stash);
 				}

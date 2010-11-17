@@ -34,7 +34,7 @@ namespace MonoDevelop.VersionControl
 		
 		public void Start() {
 			tracker = VersionControlService.GetProgressMonitor (GetDescription ());
-			tracker.BeginTask(GetDescription(), 0);
+			tracker.BeginTask(GetDescription(), 1);
 			ThreadPool.QueueUserWorkItem (BackgroundWorker);
 		}
 		
