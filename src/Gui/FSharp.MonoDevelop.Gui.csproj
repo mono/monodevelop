@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{FD0D1033-9145-48E5-8ED8-E2365252878C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>FSharpBinding.Gui</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>FSharp.MonoDevelop.Gui</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\monodevelop-2.4\monodevelop\main\build\bin\Mono.TextEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Core, Version=2.4.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\bin\MonoDevelop.Core.dll</HintPath>
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="MonoDevelop.Ide, Version=2.4.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\bin\MonoDevelop.Ide.dll</HintPath>
+      <Package>monodevelop</Package>
+    </Reference>
+    <Reference Include="Mono.Posix" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="FSharpCompilerOptionsWidget.cs" />
+    <Compile Include="gtk-gui\FSharp.MonoDevelop.Gui.FSharpCompilerOptionsWidget.cs" />
+    <Compile Include="FSharpBuildOrderWidget.cs" />
+    <Compile Include="gtk-gui\FSharp.MonoDevelop.Gui.FSharpBuildOrderWidget.cs" />
+    <Compile Include="FSharpSettingsWidget.cs" />
+    <Compile Include="gtk-gui\FSharp.MonoDevelop.Gui.FSharpSettingsWidget.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

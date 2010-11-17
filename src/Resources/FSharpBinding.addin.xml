@@ -1,0 +1,164 @@
+<Addin id="FSharpBinding" namespace="MonoDevelop" name="F# Language Binding"
+       author="Community" copyright="???" url="http://www.fsharp.net"
+       description="F# Language Binding" category="Language bindings" version="2.4">
+
+  <Runtime>
+    <Import assembly="FSharpBinding.dll" />
+    <Import assembly="FSharpBinding.Gui.dll" />
+  </Runtime>
+
+	<Dependencies>
+		<Addin id="Core" version="2.4"/>
+		<Addin id="Ide" version="2.4"/>
+    <Addin id="SourceEditor2" version="2.4"/>
+  </Dependencies>
+
+	<Extension path="/MonoDevelop/ProjectModel/MSBuildItemTypes">
+		<DotNetProject language="F#" extension="fsproj" 
+			guid="{4925A630-B079-445d-BCD4-3A9C94FE9307}" 
+			import="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets"
+			resourceHandler="FSharp.MonoDevelop.FSharpResourceIdBuilder"/>
+	</Extension>
+
+  <Extension path="/MonoDevelop/Ide/GlobalOptionsDialog/Other">
+    <Section id="FSharpSettings" _label="F# Interactive" class = "FSharp.MonoDevelop.FSharpSettingsPanel" />
+  </Extension>
+  
+  <Extension path="/MonoDevelop/ProjectModel/DomParser">
+    <Class class="FSharp.MonoDevelop.FSharpParser" />
+  </Extension>
+
+  <Extension path="/MonoDevelop/Ide/TextEditorResolver">
+    <Resolver class="FSharp.MonoDevelop.FSharpResolverProvider" mimeType="text/x-fsharp" />
+  </Extension>
+
+  <Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
+    <DataType class = "FSharp.MonoDevelop.FSharpCompilerParameters" />
+  </Extension>
+
+  <!--
+	<Extension path="/MonoDevelop/ProjectModel/MD1SerializationMaps">
+		<SerializationMap resource="md1format.xml" />
+	</Extension>
+  -->
+  
+  <Extension path="/MonoDevelop/Ide/FileFilters">
+		<FileFilter id="F#" insertbefore="AllFiles" _label="F# Source Files" extensions="*.fs;*.fsi;*.fsx;*.fsscript"/>
+  </Extension>
+
+	<Extension path="/MonoDevelop/Ide/FileTemplates">
+		<FileTemplate id="EmptyFSharpSource" resource="EmptyFSharpSource.xft.xml"/>
+    <FileTemplate id="EmptyFSharpScript" resource="EmptyFSharpScript.xft.xml"/>
+  </Extension>
+
+  <Extension path="/MonoDevelop/Ide/ProjectTemplates">
+		<ProjectTemplate id="FSharpConsoleProject" resource="FSharpConsoleProject.xpt.xml"/>
+	</Extension>
+
+  <Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
+    <DataType class = "FSharp.MonoDevelop.FSharpCompilerParameters" />
+    <DataType class = "FSharp.MonoDevelop.FSharpProjectParameters" />
+  </Extension>
+
+  <Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build/Compiler">
+    <Condition id="ActiveLanguage" value="F#">
+      <Panel id = "FSharpCodeGenerationPanel" _label = "Compiler" class = "FSharp.MonoDevelop.CodeGenerationPanel"/>
+    </Condition>
+  </Extension>
+
+  <Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build/General">
+    <Condition id="ActiveLanguage" value="F#">
+      <Panel id = "FSharpBuildOrderPanel" _label = "General" class = "FSharp.MonoDevelop.BuildOrderPanel"/>
+    </Condition>
+  </Extension>
+  
+	<Extension path="/MonoDevelop/Core/StockIcons">
+    <StockIcon stockid="md-fs-logo32" resource="fsharp-icon-32.png" />
+    <StockIcon stockid="md-fs-script32" resource="fsharp-script-32.png" />
+    
+    <StockIcon stockid="md-fs-file" resource="fsharp-file-icon.png" />
+    <StockIcon stockid="md-fs-script" resource="fsharp-script-icon.png" />
+    <StockIcon stockid="md-fs-project" resource="fsharp-project-icon.png" />
+  </Extension>
+	
+	<Extension path="/MonoDevelop/Core/MimeTypes">
+		<MimeType id="text/x-fsharp" _description="F# Source File" icon="md-fs-file" isText="true">
+			<File pattern="*.fs" />
+		</MimeType>
+    <MimeType id="text/x-fsharp" _description="F# Script File" icon="md-fs-script" isText="true">
+      <File pattern="*.fsx" />
+    </MimeType>
+    <MimeType id="text/x-fsharp" _description="F# Script File" icon="md-fs-script" isText="true">
+      <File pattern="*.fsscript" />
+    </MimeType>
+    <MimeType id="text/x-fsharp" _description="F# Signature File" icon="md-fs-file" isText="true">
+      <File pattern="*.fsi" />
+    </MimeType>
+  </Extension>
+
+	<Extension path="/MonoDevelop/ProjectModel/LanguageBindings">
+		<LanguageBinding id="F#" supportedextensions=".fs,.fsi,.fsx,.fsscript" 
+                     class="FSharp.MonoDevelop.FSharpLanguageBinding" />
+	</Extension>
+
+  <!--
+  <Extension path="/MonoDevelop/ProjectModel/DomParser">
+    <Class class="MonoDevelop.FSharpBinding.DomParser" />
+  </Extension>
+  -->
+  
+  <Extension path = "/MonoDevelop/SourceEditor2/CustomModes">
+    <SyntaxMode mimeTypes="text/x-fsharp" class="FSharp.MonoDevelop.FSharpSyntaxMode"/>
+  </Extension>
+
+  <Extension path="/MonoDevelop/SourceEditor2/SyntaxModes">
+    <Templates resource="FSharpSyntaxMode.xml" />
+  </Extension>
+
+  <Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
+    <Class fileExtensions=".fs,.fsi,.fsx,.fsscript" class="FSharp.MonoDevelop.FSharpTextEditorCompletion" />
+  </Extension>
+
+  <!-- F# interactive -->
+  
+  <Extension path="/MonoDevelop/Ide/Pads">
+    <Pad id="FSharp.MonoDevelop.FSharpInteractivePad" defaultLayout="*" defaultPlacement="Bottom" _label="F# Interactive" icon="md-fs-project" class="FSharp.MonoDevelop.FSharpInteractivePad" />
+  </Extension>
+
+  <Extension path="/MonoDevelop/Ide/Commands">
+    <Category _name = "F# Integration" id="F# Integration">
+      <Command id="FSharp.MonoDevelop.FSharpCommands.ShowFSharpInteractive"
+        _label = "F# Interactive"
+        type="check"
+        _description="Show F# Interactive pad."
+        shortcut="Control|Alt|F"
+        macShortcut="Meta|Control|F"
+        defaultHandler="FSharp.MonoDevelop.ShowFSharpInteractive" />
+      
+      <Command id="FSharp.MonoDevelop.FSharpCommands.SendSelection"
+        _label = "Send selection to F# Interactive"
+        _description="Send the selected text to F# Interactive"
+        shortcut="Ctrl|Return"
+        macShortcut="Alt|Return"
+        defaultHandler="FSharp.MonoDevelop.SendSelection" />
+
+      <Command id="FSharp.MonoDevelop.FSharpCommands.SendLine"
+        _label = "Send line to F# Interactive"
+        _description="Send the current line to F# Interactive"
+        shortcut="Ctrl|Alt|L"
+        macShortcut="Meta|Control|L"
+        defaultHandler="FSharp.MonoDevelop.SendLine" />
+    </Category>
+  </Extension>
+
+
+  <Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
+    <CommandItem id = "FSharp.MonoDevelop.FSharpCommands.SendSelection" />
+    <CommandItem id = "FSharp.MonoDevelop.FSharpCommands.SendLine" />
+  </Extension>
+
+  <Extension path = "/MonoDevelop/Ide/MainMenu/Edit">
+    <CommandItem id = "FSharp.MonoDevelop.FSharpCommands.SendSelection" />
+    <CommandItem id = "FSharp.MonoDevelop.FSharpCommands.SendLine" />
+  </Extension>
+</Addin>

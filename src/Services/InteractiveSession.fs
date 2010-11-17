@@ -1,0 +1,72 @@
+﻿namespace FSharp.MonoDevelop
+
+open System
+open System.IO
+open System.Diagnostics
+open MonoDevelop.Ide
+open MonoDevelop.Core
+
+type InteractiveSession() =
+  let server = "MonoDevelop" + Guid.NewGuid().ToString("n")
+  let args = "--fsi-server:" + server + " "
+  
+  // Get F# Interactive path and command line args from settings
+  let args = args + PropertyService.Get<string>("FSharpBinding.FsiArguments", "")
+  let path = PropertyService.Get<string>("FSharpBinding.FsiPath", "")
+  let path = if String.IsNullOrEmpty(path) then Common.fsiPath else path
+  
+  let mutable waitingForResponse = false
+  
+  let fsiProcess = 
+    let startInfo = 
+      new ProcessStartInfo
+        (FileName = path, UseShellExecute = false, Arguments = args, 
+         RedirectStandardError = true, CreateNoWindow = true, RedirectStandardOutput = true,
+         RedirectStandardInput = true) 
+    try
+      Debug.tracef "Interactive" "Starting file=%s, Args=%A" Common.fsiPath args
+      Process.Start(startInfo)
+    with e ->
+      Debug.tracee "Interactive" e
+      reraise()
+    
+  let client = 
+      try Microsoft.FSharp.Compiler.Server.Shared.FSharpInteractiveServer.StartClient(server)
+      with e -> failwithf "oops! %A" e
+
+  let textReceived = new Event<_>()  
+  let promptReady = new Event<_>()  
+  
+  do 
+    Event.merge fsiProcess.OutputDataReceived fsiProcess.ErrorDataReceived
+      |> Event.filter (fun de -> de.Data <> null)
+      |> Event.add (fun de -> 
+          Debug.tracef "Interactive" "received %s" de.Data
+          if de.Data.Trim() = "SERVER-PROMPT>" then
+            DispatchService.GuiDispatch(fun () -> promptReady.Trigger())
+          elif de.Data.Trim() <> "" then
+            let str = (if waitingForResponse then waitingForResponse <- false; "\n" else "") + de.Data + "\n"
+            DispatchService.GuiDispatch(fun () -> textReceived.Trigger(str)) )
+    fsiProcess.EnableRaisingEvents <- true
+  
+  member x.Interrupt() =
+    Debug.tracef "Interactive" "Break!" 
+    client.Interrupt()
+    
+  member x.StartReceiving() = 
+    fsiProcess.BeginOutputReadLine()  
+    fsiProcess.BeginErrorReadLine()
+    
+  member x.TextReceived = textReceived.Publish
+  member x.PromptReady = promptReady.Publish
+  
+  member x.Kill() = 
+    fsiProcess.Kill()
+    
+  member x.SendCommand(str:string) = 
+    waitingForResponse <- true
+    Debug.tracef "Interactive" "sending %s" str
+    fsiProcess.StandardInput.Write(str + ";;\n")
+
+  member x.Exited = fsiProcess.Exited
+    
