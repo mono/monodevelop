@@ -304,10 +304,8 @@ namespace Mono.Instrumentation.Monitor
 		{
 			MacIntegration.IgeMacMenu.GlobalKeyHandlerEnabled = true;
 			MacIntegration.IgeMacMenu.MenuBar = menubar1;
-			var quitItem = (MenuItem) UIManager.GetWidget ("/menubar1/ExitAction");
+			var quitItem = (MenuItem) UIManager.GetWidget ("/menubar1/FileAction/ExitAction");
 			MacIntegration.IgeMacMenu.QuitMenuItem = quitItem;
-			var appGroup = MacIntegration.IgeMacMenu.AddAppMenuGroup ();
-			appGroup.AddMenuItem (quitItem, null);
 			menubar1.Hide ();
 		}
 	}		
