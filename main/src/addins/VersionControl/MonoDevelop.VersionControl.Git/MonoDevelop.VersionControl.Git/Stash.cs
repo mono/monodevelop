@@ -239,7 +239,7 @@ namespace MonoDevelop.VersionControl.Git
 				tw.Reset ();
 				tw.AddTree (new FileTreeIterator (_repo));
 				tw.AddTree (headTree);
-				tw.AddTree (new DirCacheIterator (_repo.ReadDirCache ()));
+				tw.AddTree (new DirCacheIterator (index));
 				
 				while (tw.Next ()) {
 					// Ignore untracked files
@@ -250,7 +250,7 @@ namespace MonoDevelop.VersionControl.Git
 						DirCacheIterator dcIter = tw.GetTree<DirCacheIterator>(2);
 						DirCacheEntry currentEntry = dcIter.GetDirCacheEntry ();
 						DirCacheEntry ce = new DirCacheEntry (tw.PathString);
-						if (dcIter.IdEqual (f)) {
+						if (!f.IsModified (currentEntry, true, true, _repo.FileSystem)) {
 							ce.SetLength (currentEntry.GetLength ());
 							ce.SetLastModified (currentEntry.GetLastModified ());
 							ce.SetFileMode (currentEntry.GetFileMode ());

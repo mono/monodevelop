@@ -440,6 +440,7 @@ namespace MonoDevelop.VersionControl.Git
 				bool noProblems;
 				IDictionary<string, MergeResult<NGit.Diff.Sequence>> lowLevelResults = null;
 				IDictionary<string, ResolveMerger.MergeFailureReason> failingPaths = null;
+				IList<string> modifiedFiles = null;
 				if (merger is ResolveMerger)
 				{
 					ResolveMerger resolveMerger = (ResolveMerger)merger;
@@ -447,6 +448,7 @@ namespace MonoDevelop.VersionControl.Git
 					resolveMerger.SetWorkingTreeIterator(new FileTreeIterator(repo));
 					noProblems = merger.Merge(headCommit, srcCommit);
 					lowLevelResults = resolveMerger.GetMergeResults();
+					modifiedFiles = resolveMerger.GetModifiedFiles();
 					failingPaths = resolveMerger.GetFailingPathes();
 				}
 				else
@@ -456,6 +458,10 @@ namespace MonoDevelop.VersionControl.Git
 				
 				if (noProblems)
 				{
+					if (modifiedFiles != null && modifiedFiles.Count == 0) {
+						return new MergeCommandResult(headCommit, null, new ObjectId[] { headCommit.Id, srcCommit
+							.Id }, MergeStatus.ALREADY_UP_TO_DATE, MergeStrategy.RESOLVE, null, null);
+					}
 					DirCacheCheckout dco = new DirCacheCheckout(repo, headCommit.Tree, repo.LockDirCache
 						(), merger.GetResultTreeId());
 					dco.SetFailOnConflict(true);

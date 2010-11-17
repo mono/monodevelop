@@ -283,16 +283,20 @@ namespace MonoDevelop.VersionControl.Git
 				try {
 					while (!rebaser.Rebase ()) {
 						var conflicts = rebaser.LastMergeResult.GetConflicts ();
-						foreach (string conflictFile in conflicts.Keys) {
-							ConflictResult res = ResolveConflict (FromGitPath (conflictFile));
-							if (res == ConflictResult.Abort) {
-								rebaser.Abort ();
-								break;
-							} else if (res == ConflictResult.Skip) {
-								rebaser.Skip ();
-								break;
+						if (conflicts != null) {
+							foreach (string conflictFile in conflicts.Keys) {
+								ConflictResult res = ResolveConflict (FromGitPath (conflictFile));
+								if (res == ConflictResult.Abort) {
+									rebaser.Abort ();
+									break;
+								} else if (res == ConflictResult.Skip) {
+									rebaser.Skip ();
+									break;
+								}
 							}
 						}
+						else
+							throw new Exception ("Rebase commit failed");
 					}
 				} catch {
 					rebaser.Abort ();
@@ -771,7 +775,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		string GetCommitContent (RevCommit c, FilePath file)
 		{
-			TreeWalk tw = TreeWalk.ForPath (repo, ToGitPath (file), c.Tree);
+			TreeWalk tw = TreeWalk.ForPath (repo, (string)file, c.Tree);
 			if (tw == null)
 				return string.Empty;
 			ObjectId id = tw.GetObjectId (0);
@@ -1110,10 +1114,10 @@ namespace MonoDevelop.VersionControl.Git
 			foreach (Change change in GitUtil.CompareCommits (repo, c1, c2)) {
 				string diff;
 				switch (change.ChangeType) {
-				case ChangeType.Added:
+				case ChangeType.Deleted:
 					diff = GenerateDiff ("", GetCommitContent (c2, change.Path));
 					break;
-				case ChangeType.Deleted:
+				case ChangeType.Added:
 					diff = GenerateDiff (GetCommitContent (c1, change.Path), "");
 					break;
 				default:

@@ -174,7 +174,7 @@ namespace MonoDevelop.VersionControl.Git
 			RevWalk rw = new RevWalk (repo);
 			foreach (RevCommit pc in branch.Parents) {
 				rw.ParseHeaders (pc);
-				if (pc.ParentCount > 1 && IsAncestor (rw, pc, upstream)) {
+				if (IsAncestor (rw, pc, upstream)) {
 					foundDistance = currentDistance + 1;
 					List<RevCommit> commitChain = new List<RevCommit> ();
 					commitChain.Add (branch);
