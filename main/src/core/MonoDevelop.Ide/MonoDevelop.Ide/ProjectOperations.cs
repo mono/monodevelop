@@ -770,7 +770,7 @@ namespace MonoDevelop.Ide
 		public void RemoveSolutionItem (SolutionItem item)
 		{
 			string question = GettextCatalog.GetString ("Do you really want to remove project '{0}' from '{1}'?", item.Name, item.ParentFolder.Name);
-			string secondaryText = GettextCatalog.GetString ("The Delete option physically removes the project files from disc.");
+			string secondaryText = GettextCatalog.GetString ("The Remove option remove the project from the solution, but it will not physically delete any file from disk.");
 			
 			SolutionEntityItem prj = item as SolutionEntityItem;
 			if (prj == null) {
@@ -779,9 +779,10 @@ namespace MonoDevelop.Ide
 				return;
 			}
 			
+			AlertButton delete = new AlertButton (GettextCatalog.GetString ("Delete from Disk"));
 			AlertButton result = MessageService.AskQuestion (question, secondaryText,
-			                                                 AlertButton.Delete, AlertButton.Cancel, AlertButton.Remove);
-			if (result == AlertButton.Delete) {
+			                                                 delete, AlertButton.Cancel, AlertButton.Remove);
+			if (result == delete) {
 				if (!IdeApp.Workspace.RequestItemUnload (prj))
 					return;
 				ConfirmProjectDeleteDialog dlg = new ConfirmProjectDeleteDialog (prj);
