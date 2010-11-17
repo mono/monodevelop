@@ -246,10 +246,21 @@ namespace MonoDevelop.XmlEditor.Gui
 				if (el != null && el.Region.End >= currentLocation && !el.IsClosed && el.IsNamed) {
 					string tag = String.Concat ("</", el.Name.FullName, ">");
 					if (XmlEditorOptions.AutoCompleteElements) {
+						
+						//make sure we have a clean atomic undo so the user can undo the tag insertion
+						//independently of the >
+						bool wasInAtomicUndo = this.Editor.Document.IsInAtomicUndo;
+						if (wasInAtomicUndo)
+							this.Editor.Document.EndAtomicUndo ();
+						
 						buf.BeginAtomicUndo ();
 						buf.InsertText (buf.CursorPosition, tag);
 						buf.CursorPosition -= tag.Length;
 						buf.EndAtomicUndo ();
+						
+						if (wasInAtomicUndo)
+							this.Editor.Document.BeginAtomicUndo ();
+						
 						return null;
 					} else {
 						CompletionDataList cp = new CompletionDataList ();
