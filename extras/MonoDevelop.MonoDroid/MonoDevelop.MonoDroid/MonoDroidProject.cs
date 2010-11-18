@@ -215,6 +215,9 @@ namespace MonoDevelop.MonoDroid
 		
 		public override FilePath GetOutputFileName (ConfigurationSelector configuration)
 		{
+			if (!IsAndroidApplication)
+				return base.GetOutputFileName (configuration);
+				
 			if (HackGetUserAssemblyPaths)
 				return base.GetOutputFileName (configuration);
 			
