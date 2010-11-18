@@ -96,7 +96,7 @@ public class BooBindingCompilerServices:
 				if finfo.BuildAction == BuildAction.Compile:
 					parameters.Append (" ${finfo.FilePath} ")
 				elif finfo.BuildAction == BuildAction.EmbeddedResource:
-					parameters.Append ("  -resource:${finfo.FilePath}[${finfo.ResourceId}]")
+					parameters.Append ("  -embedres:${finfo.FilePath},${finfo.ResourceId}")
 
 		# if the assembly is signed we point to the file
 		if configuration.SignAssembly:
