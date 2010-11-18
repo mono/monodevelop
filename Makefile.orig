@@ -15,10 +15,6 @@ GLIBDIR = INSERT_GLIB_DIR
 MONO = INSERT_MONO
 MDRUN = $(MONO) $(MDROOT)/bin/mdrun.exe
 
-# Settings for Windows
-MDRUN = $(MDROOT)/bin/mdrun
-
-# The following should be the default configuration (no need to change these)
 FSC = INSERT_FSHARP_COMPILER
 CSC = INSERT_CSHARP_COMPILER
 MDBIN = $(MDROOT)/bin
@@ -77,7 +73,7 @@ REFERENCES = \
 	-r:$(GLIBDIR)/glib-sharp.dll
 
 OPTIONS = \
-	--noframework --debug --optimize- --target:library -r:src/bin/FSharpBinding.Gui.dll --out:src/bin/FSharpBinding.dll
+	--noframework --debug --optimize- --target:library -r:bin/FSharpBinding.Gui.dll --out:bin/FSharpBinding.dll
 
 # CSharp project that contains designer generated GTK stuff for project options
 
@@ -91,23 +87,25 @@ GUIFILES = \
 	src/Gui/gtk-gui/generated.cs
 
 GUIOPTIONS = \
-	-debug+ -out:src/bin/FSharpBinding.Gui.dll -target:library
+	-debug+ -out:bin/FSharpBinding.Gui.dll -target:library
 
 all: gui
 	$(FSC) $(OPTIONS) $(REFERENCES) $(RESOURCES) $(FILES) 
 
 gui:
+	mkdir -p bin
 	$(CSC) $(GUIOPTIONS) $(REFERENCES) $(GUIFILES) 
 
 install:
-	cp src/bin/FSharpBinding.* $(MDROOT)/AddIns/BackendBindings/
+	cp bin/FSharpBinding.* $(MDROOT)/AddIns/BackendBindings/
 
 uninstall:
 	rm $(MDROOT)/AddIns/BackendBindings/FSharpBinding.*
 
 package:
-	mkdir -p src/bin/repository
-	cp src/bin/FSharpBinding.* src/bin/repository
-	cp src/Resources/FSharpBinding.addin.xml src/bin/repository
-	$(MDRUN) setup pack src/bin/repository/FSharpBinding.addin.xml -d:Repository
+	mkdir -p bin/repository
+	mkdir -p repository
+	cp bin/FSharpBinding.* bin/repository
+	cp src/Resources/FSharpBinding.addin.xml bin/repository
+	$(MDRUN) setup pack bin/repository/FSharpBinding.addin.xml -d:repository
 
