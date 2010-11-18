@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -14,28 +14,28 @@
     <UsePartialTypes>false</UsePartialTypes>
     <BuildOrder>
       <BuildOrder>
-        <String>/Users/tomas/Projects/FSharp.CrossPlatform/fsxplat/monodevelop/FSharp.MonoDevelop/PowerPack/CodeDomVisitor.fs</String>
-        <String>/Users/tomas/Projects/FSharp.CrossPlatform/fsxplat/monodevelop/FSharp.MonoDevelop/PowerPack/CodeDomGenerator.fs</String>
-        <String>/Users/tomas/Projects/FSharp.CrossPlatform/fsxplat/monodevelop/FSharp.MonoDevelop/PowerPack/CodeProvider.fs</String>
-        <String>/Users/tomas/Projects/FSharp.CrossPlatform/fsxplat/monodevelop/FSharp.MonoDevelop/PowerPack/LazyList.fsi</String>
-        <String>/Users/tomas/Projects/FSharp.CrossPlatform/fsxplat/monodevelop/FSharp.MonoDevelop/PowerPack/LazyList.fs</String>
-        <String>/Users/tomas/Projects/FSharp.CrossPlatform/fsxplat/monodevelop/FSharp.MonoDevelop/Services/Mailbox.fs</String>
-        <String>/Users/tomas/Projects/FSharp.CrossPlatform/fsxplat/monodevelop/FSharp.MonoDevelop/Services/Parser.fs</String>
-        <String>/Users/tomas/Projects/FSharp.CrossPlatform/fsxplat/monodevelop/FSharp.MonoDevelop/Services/CompilerLocationUtils.fs</String>
-        <String>/Users/tomas/Projects/FSharp.CrossPlatform/fsxplat/monodevelop/FSharp.MonoDevelop/Services/FSharpCompiler.fs</String>
-        <String>/Users/tomas/Projects/FSharp.CrossPlatform/fsxplat/monodevelop/FSharp.MonoDevelop/Services/Parameters.fs</String>
-        <String>/Users/tomas/Projects/FSharp.CrossPlatform/fsxplat/monodevelop/FSharp.MonoDevelop/Services/Common.fs</String>
-        <String>/Users/tomas/Projects/FSharp.CrossPlatform/fsxplat/monodevelop/FSharp.MonoDevelop/Services/CompilerService.fs</String>
-        <String>/Users/tomas/Projects/FSharp.CrossPlatform/fsxplat/monodevelop/FSharp.MonoDevelop/Services/InteractiveSession.fs</String>
-        <String>/Users/tomas/Projects/FSharp.CrossPlatform/fsxplat/monodevelop/FSharp.MonoDevelop/Services/LanguageService.fs</String>
-        <String>/Users/tomas/Projects/FSharp.CrossPlatform/fsxplat/monodevelop/FSharp.MonoDevelop/FSharpParser.fs</String>
-        <String>/Users/tomas/Projects/FSharp.CrossPlatform/fsxplat/monodevelop/FSharp.MonoDevelop/FSharpResourceIdBuilder.fs</String>
-        <String>/Users/tomas/Projects/FSharp.CrossPlatform/fsxplat/monodevelop/FSharp.MonoDevelop/FSharpResolverProvider.fs</String>
-        <String>/Users/tomas/Projects/FSharp.CrossPlatform/fsxplat/monodevelop/FSharp.MonoDevelop/FSharpSyntaxMode.fs</String>
-        <String>/Users/tomas/Projects/FSharp.CrossPlatform/fsxplat/monodevelop/FSharp.MonoDevelop/FSharpInteractivePad.fs</String>
-        <String>/Users/tomas/Projects/FSharp.CrossPlatform/fsxplat/monodevelop/FSharp.MonoDevelop/FSharpOptionsPanels.fs</String>
-        <String>/Users/tomas/Projects/FSharp.CrossPlatform/fsxplat/monodevelop/FSharp.MonoDevelop/FSharpTextEditorCompletion.fs</String>
-        <String>/Users/tomas/Projects/FSharp.CrossPlatform/fsxplat/monodevelop/FSharp.MonoDevelop/FSharpLanguageBinding.fs</String>
+        <String>PowerPack/CodeDomVisitor.fs</String>
+        <String>PowerPack/CodeDomGenerator.fs</String>
+        <String>PowerPack/CodeProvider.fs</String>
+        <String>PowerPack/LazyList.fsi</String>
+        <String>PowerPack/LazyList.fs</String>
+        <String>Services/Mailbox.fs</String>
+        <String>Services/Parser.fs</String>
+        <String>Services/CompilerLocationUtils.fs</String>
+        <String>Services/FSharpCompiler.fs</String>
+        <String>Services/Parameters.fs</String>
+        <String>Services/Common.fs</String>
+        <String>Services/CompilerService.fs</String>
+        <String>Services/InteractiveSession.fs</String>
+        <String>Services/LanguageService.fs</String>
+        <String>FSharpParser.fs</String>
+        <String>FSharpResourceIdBuilder.fs</String>
+        <String>FSharpResolverProvider.fs</String>
+        <String>FSharpSyntaxMode.fs</String>
+        <String>FSharpInteractivePad.fs</String>
+        <String>FSharpOptionsPanels.fs</String>
+        <String>FSharpTextEditorCompletion.fs</String>
+        <String>FSharpLanguageBinding.fs</String>
       </BuildOrder>
     </BuildOrder>
   </PropertyGroup>
@@ -44,12 +44,9 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
-    <OutputPath>bin</OutputPath>
+    <OutputPath>..\bin\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <StartAction>Program</StartAction>
-    <StartProgram>C:\Tomas\Projects\FSharp.MonoDevelop\build\monodevelop\main\build\bin\MonoDevelop.exe</StartProgram>
-    <StartWorkingDirectory>C:\Tomas\Projects\FSharp.MonoDevelop\build\monodevelop\main\build\bin</StartWorkingDirectory>
     <Externalconsole>true</Externalconsole>
     <GenerateDebugInfo>false</GenerateDebugInfo>
     <OptimizeCode>false</OptimizeCode>
@@ -60,13 +57,27 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <GenerateDebugInfo>false</GenerateDebugInfo>
     <OptimizeCode>false</OptimizeCode>
     <GenerateXmlDoc>false</GenerateXmlDoc>
     <GenerateTailCalls>false</GenerateTailCalls>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugInstall|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <Tailcalls>false</Tailcalls>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <WarningLevel>3</WarningLevel>
+    <Externalconsole>true</Externalconsole>
+    <GenerateDebugInfo>false</GenerateDebugInfo>
+    <OptimizeCode>false</OptimizeCode>
+    <GenerateXmlDoc>false</GenerateXmlDoc>
+    <GenerateTailCalls>false</GenerateTailCalls>
+    <OutputPath>..\bin\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\fsharp-icon-32.png" />
@@ -115,22 +126,30 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\usr\lib\mono\mono-addins\Mono.Addins.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.TextEditor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\monodevelop-2.4\monodevelop\main\build\bin\Mono.TextEditor.dll</HintPath>
-    </Reference>
-    <Reference Include="FSharpBinding.Gui, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\FSharpBinding.Gui.dll</HintPath>
-    </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
-    <Reference Include="MonoDevelop.Core, Version=2.4.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\monodevelop-2.4\monodevelop\main\build\bin\MonoDevelop.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoDevelop.Ide, Version=2.4.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\monodevelop-2.4\monodevelop\main\build\bin\MonoDevelop.Ide.dll</HintPath>
-    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\monodevelop-2.4\monodevelop\main\src\core\Mono.Texteditor\Mono.TextEditor.csproj">
+      <Name>Mono.TextEditor</Name>
+      <Project>{a2329308-3751-4dbd-9a75-5f7b8b024625}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\monodevelop-2.4\monodevelop\main\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
+      <Name>MonoDevelop.Core</Name>
+      <Project>{7525bb88-6142-4a26-93b9-a30c6983390a}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\monodevelop-2.4\monodevelop\main\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
+      <Name>MonoDevelop.Ide</Name>
+      <Project>{27096e7f-c91c-4ac6-b289-6897a701df21}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="Gui\FSharp.MonoDevelop.Gui.csproj">
+      <Name>FSharp.MonoDevelop.Gui</Name>
+      <Project>{fd0d1033-9145-48e5-8ed8-e2365252878c}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" />
   <!--  <Import Project="$(MSBuildBinPath)\Microsoft.FSharp.targets" /> -->
@@ -141,11 +160,7 @@
 	<Target Name="AfterBuild">
 	</Target>
 	-->
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugInstall|AnyCPU' ">
     <PostBuildEvent>copy "$(TargetDir)FSharpBinding.*" "$(ProjectDir)..\..\..\monodevelop-2.4\monodevelop\main\build\AddIns\BackendBindings"</PostBuildEvent>
   </PropertyGroup>
 </Project>

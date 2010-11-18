@@ -1,3 +1,6 @@
+src/obj/*
+src/Gui/obj/*
 bin/*
 repository/*
+*.suo
 Makefile
