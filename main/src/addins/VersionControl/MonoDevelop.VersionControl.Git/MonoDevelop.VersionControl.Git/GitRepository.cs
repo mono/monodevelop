@@ -170,6 +170,8 @@ namespace MonoDevelop.VersionControl.Git
 
 		string ToGitPath (FilePath filePath)
 		{
+			if (!filePath.IsAbsolute)
+				return filePath;
 			return filePath.FullPath.ToRelative (path).ToString ().Replace ('\\', '/');
 		}
 
@@ -775,7 +777,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		string GetCommitContent (RevCommit c, FilePath file)
 		{
-			TreeWalk tw = TreeWalk.ForPath (repo, (string)file, c.Tree);
+			TreeWalk tw = TreeWalk.ForPath (repo, ToGitPath (file), c.Tree);
 			if (tw == null)
 				return string.Empty;
 			ObjectId id = tw.GetObjectId (0);
