@@ -46,7 +46,7 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			CSharp.Dom.CompilationUnit compilationUnit = new MonoDevelop.CSharp.Parser.CSharpParser ().Parse (data);
 			IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
-			CSharpFormattingPolicy policy = dom.Project.Policies != null ? dom.Project.Policies.Get<CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
+			CSharpFormattingPolicy policy = dom != null && dom.Project.Policies != null ? dom.Project.Policies.Get<CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
 			DomSpacingVisitor domSpacingVisitor = new DomSpacingVisitor (policy, data);
 			domSpacingVisitor.AutoAcceptChanges = false;
 			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
