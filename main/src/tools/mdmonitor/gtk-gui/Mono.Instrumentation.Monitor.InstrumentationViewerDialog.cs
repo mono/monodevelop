@@ -131,6 +131,8 @@ namespace Mono.Instrumentation.Monitor
 			w7.Add (w8);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w10 = new global::Gtk.Label ();
+			w10.LabelProp = global::Mono.Unix.Catalog.GetString ("Save");
+			w10.UseUnderline = true;
 			w7.Add (w10);
 			w6.Add (w7);
 			this.buttonSave.Add (w6);
@@ -152,10 +154,12 @@ namespace Mono.Instrumentation.Monitor
 			w16.Spacing = 2;
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Image w17 = new global::Gtk.Image ();
-			w17.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-save-as", global::Gtk.IconSize.Button);
+			w17.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-copy", global::Gtk.IconSize.Button);
 			w16.Add (w17);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w19 = new global::Gtk.Label ();
+			w19.LabelProp = global::Mono.Unix.Catalog.GetString ("Copy");
+			w19.UseUnderline = true;
 			w16.Add (w19);
 			w15.Add (w16);
 			this.buttonSaveAs.Add (w15);
@@ -181,6 +185,8 @@ namespace Mono.Instrumentation.Monitor
 			w25.Add (w26);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w28 = new global::Gtk.Label ();
+			w28.LabelProp = global::Mono.Unix.Catalog.GetString ("Delete");
+			w28.UseUnderline = true;
 			w25.Add (w28);
 			w24.Add (w25);
 			this.buttonDelete.Add (w24);

@@ -31,6 +31,7 @@ namespace Mono.Instrumentation.Monitor
 			this.buttonUpdate.Name = "buttonUpdate";
 			this.buttonUpdate.UseStock = true;
 			this.buttonUpdate.UseUnderline = true;
+			this.buttonUpdate.Relief = ((global::Gtk.ReliefStyle)(2));
 			this.buttonUpdate.Label = "gtk-refresh";
 			this.hbox3.Add (this.buttonUpdate);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.buttonUpdate]));

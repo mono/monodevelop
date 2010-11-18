@@ -372,7 +372,7 @@
                                     <property name="CanFocus">True</property>
                                     <property name="Type">TextAndIcon</property>
                                     <property name="Icon">stock:gtk-save Button</property>
-                                    <property name="Label" translatable="yes" />
+                                    <property name="Label" translatable="yes">Save</property>
                                     <property name="UseUnderline">True</property>
                                     <property name="Relief">None</property>
                                     <signal name="Clicked" handler="OnButtonSaveClicked" />
@@ -389,8 +389,8 @@
                                     <property name="MemberName" />
                                     <property name="CanFocus">True</property>
                                     <property name="Type">TextAndIcon</property>
-                                    <property name="Icon">stock:gtk-save-as Button</property>
-                                    <property name="Label" translatable="yes" />
+                                    <property name="Icon">stock:gtk-copy Button</property>
+                                    <property name="Label" translatable="yes">Copy</property>
                                     <property name="UseUnderline">True</property>
                                     <property name="Relief">None</property>
                                     <signal name="Clicked" handler="OnButtonSaveAsClicked" />
@@ -408,7 +408,7 @@
                                     <property name="CanFocus">True</property>
                                     <property name="Type">TextAndIcon</property>
                                     <property name="Icon">stock:gtk-delete Button</property>
-                                    <property name="Label" translatable="yes" />
+                                    <property name="Label" translatable="yes">Delete</property>
                                     <property name="UseUnderline">True</property>
                                     <property name="Relief">None</property>
                                     <signal name="Clicked" handler="OnButtonDeleteClicked" />
@@ -582,6 +582,7 @@
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="ShowScrollbars">True</property>
+                <property name="HeadersVisible">False</property>
               </widget>
             </child>
           </widget>
@@ -941,6 +942,7 @@
                 <property name="UseStock">True</property>
                 <property name="Type">StockItem</property>
                 <property name="StockId">gtk-refresh</property>
+                <property name="Relief">None</property>
                 <signal name="Clicked" handler="OnButtonUpdateClicked" />
                 <property name="label">gtk-refresh</property>
               </widget>
