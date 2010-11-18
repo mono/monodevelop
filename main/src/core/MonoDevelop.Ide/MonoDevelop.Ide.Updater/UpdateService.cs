@@ -213,7 +213,7 @@ namespace MonoDevelop.Ide.Updater
 			
 			try {
 				using (var response = (HttpWebResponse) request.EndGetResponse (ar)) {
-					var encoding = Encoding.GetEncoding (response.CharacterSet);
+					var encoding = !string.IsNullOrEmpty (response.CharacterSet) ? Encoding.GetEncoding (response.CharacterSet) : Encoding.UTF8;
 					using (var reader = new StreamReader (response.GetResponseStream(), encoding)) {
 						var doc = System.Xml.Linq.XDocument.Load (reader);
 						updates = (from x in doc.Root.Elements ("Application")
