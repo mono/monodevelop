@@ -1,0 +1,113 @@
+# Makefile for compiling and installing F# MonoDevelop plugin on Mono
+#   run 'make' to compile the plugin (dll + debug info)
+#   run 'make install' to copy the compiled plugin to MonoDevelop folders
+#   run 'make package' to create a deployment binary package with addin (for repository)
+
+# Here are a few paths that need to be configured first:
+MDROOT  = INSERT_MD_ROOT
+MONOBIN = INSERT_MONO_BIN
+FSBIN = INSERT_FSHARP_BIN
+ATKDIR = INSERT_ATK_DIR
+PANGODIR = INSERT_PANGO_DIR
+GTKDIR = INSERT_GTK_DIR
+GDKDIR = INSERT_GDK_DIR
+GLIBDIR = INSERT_GLIB_DIR
+MONO = INSERT_MONO
+MDRUN = $(MONO) $(MDROOT)/bin/mdrun.exe
+
+# Settings for Windows
+MDRUN = $(MDROOT)/bin/mdrun
+
+# The following should be the default configuration (no need to change these)
+FSC = INSERT_FSHARP_COMPILER
+CSC = INSERT_CSHARP_COMPILER
+MDBIN = $(MDROOT)/bin
+
+# Resources and files to be compiled/included as part of the project
+RESOURCES = \
+	--resource:src/Resources/FSharpBinding.addin.xml \
+	--resource:src/Resources/EmptyFSharpSource.xft.xml \
+	--resource:src/Resources/EmptyFSharpScript.xft.xml \
+	--resource:src/Resources/FSharpConsoleProject.xpt.xml \
+	--resource:src/Resources/fsharp-icon-32.png \
+	--resource:src/Resources/fsharp-script-32.png \
+	--resource:src/Resources/fsharp-file-icon.png \
+	--resource:src/Resources/fsharp-project-icon.png \
+	--resource:src/Resources/fsharp-script-icon.png \
+	--resource:src/Resources/FSharpSyntaxMode.xml
+
+FILES = \
+	src/PowerPack/CodeDomVisitor.fs \
+	src/PowerPack/CodeDomGenerator.fs \
+	src/PowerPack/CodeProvider.fs \
+	src/PowerPack/LazyList.fsi \
+	src/PowerPack/LazyList.fs \
+	src/Services/Mailbox.fs \
+	src/Services/Parameters.fs \
+	src/Services/FSharpCompiler.fs \
+	src/Services/CompilerLocationUtils.fs \
+	src/Services/Common.fs \
+	src/Services/Parser.fs \
+	src/Services/LanguageService.fs \
+	src/Services/CompilerService.fs \
+	src/Services/InteractiveSession.fs \
+	src/FSharpInteractivePad.fs \
+	src/FSharpOptionsPanels.fs \
+	src/FSharpSyntaxMode.fs \
+	src/FSharpResourceIdBuilder.fs \
+	src/FSharpLanguageBinding.fs \
+	src/FSharpParser.fs \
+	src/FSharpTextEditorCompletion.fs \
+	src/FSharpResolverProvider.fs
+
+REFERENCES = \
+	-r:$(MONOBIN)/mscorlib.dll \
+	-r:System.dll -r:System.Xml.dll \
+	-r:$(MDBIN)/MonoDevelop.Core.dll \
+	-r:$(MDBIN)/MonoDevelop.Ide.dll \
+	-r:$(MDBIN)/Mono.TextEditor.dll \
+	-r:$(FSBIN)/FSharp.Core.dll \
+	-r:$(FSBIN)/FSharp.Compiler.dll \
+	-r:$(FSBIN)/FSharp.Compiler.Interactive.Settings.dll \
+	-r:$(FSBIN)/FSharp.Compiler.Server.Shared.dll \
+	-r:$(ATKDIR)/atk-sharp.dll \
+	-r:$(PANGODIR)/pango-sharp.dll \
+	-r:$(GTKDIR)/gtk-sharp.dll \
+	-r:$(GDKDIR)/gdk-sharp.dll \
+	-r:$(GLIBDIR)/glib-sharp.dll
+
+OPTIONS = \
+	--noframework --debug --optimize- --target:library -r:src/bin/FSharpBinding.Gui.dll --out:src/bin/FSharpBinding.dll
+
+# CSharp project that contains designer generated GTK stuff for project options
+
+GUIFILES = \
+	src/Gui/FSharpBuildOrderWidget.cs \
+	src/Gui/FSharpSettingsWidget.cs \
+	src/Gui/FSharpCompilerOptionsWidget.cs \
+	src/Gui/gtk-gui/FSharp.MonoDevelop.Gui.FSharpBuildOrderWidget.cs \
+	src/Gui/gtk-gui/FSharp.MonoDevelop.Gui.FSharpSettingsWidget.cs \
+	src/Gui/gtk-gui/FSharp.MonoDevelop.Gui.FSharpCompilerOptionsWidget.cs \
+	src/Gui/gtk-gui/generated.cs
+
+GUIOPTIONS = \
+	-debug+ -out:src/bin/FSharpBinding.Gui.dll -target:library
+
+all: gui
+	$(FSC) $(OPTIONS) $(REFERENCES) $(RESOURCES) $(FILES) 
+
+gui:
+	$(CSC) $(GUIOPTIONS) $(REFERENCES) $(GUIFILES) 
+
+install:
+	cp src/bin/FSharpBinding.* $(MDROOT)/AddIns/BackendBindings/
+
+uninstall:
+	rm $(MDROOT)/AddIns/BackendBindings/FSharpBinding.*
+
+package:
+	mkdir -p src/bin/repository
+	cp src/bin/FSharpBinding.* src/bin/repository
+	cp src/Resources/FSharpBinding.addin.xml src/bin/repository
+	$(MDRUN) setup pack src/bin/repository/FSharpBinding.addin.xml -d:Repository
+
