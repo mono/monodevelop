@@ -25,9 +25,6 @@
 //
 //
 
-// Uncomment to see the commands sent to gdb and the output it generates
-// #define GDB_OUTPUT
-
 using System;
 using System.Globalization;
 using System.Text;
@@ -66,10 +63,16 @@ namespace MonoDevelop.Debugger.Gdb
 		const int BreakEventUpdateNotifyDelay = 500;
 
 		bool internalStop;
+		bool logGdb;
 			
 		object syncLock = new object ();
 		object eventLock = new object ();
 		object gdbLock = new object ();
+		
+		public GdbSession ()
+		{
+			logGdb = !string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("MONODEVELOP_GDB_LOG"));
+		}
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
@@ -541,9 +544,10 @@ namespace MonoDevelop.Debugger.Gdb
 					lock (eventLock) {
 						running = true;
 					}
-#if GDB_OUTPUT
-					Console.WriteLine ("gdb<: " + command + " " + string.Join (" ", args));
-#endif
+					
+					if (logGdb)
+						Console.WriteLine ("gdb<: " + command + " " + string.Join (" ", args));
+					
 					sin.WriteLine (command + " " + string.Join (" ", args));
 					
 					if (!Monitor.Wait (syncLock, 4000))
@@ -588,9 +592,8 @@ namespace MonoDevelop.Debugger.Gdb
 		
 		void ProcessOutput (string line)
 		{
-#if GDB_OUTPUT
-			Console.WriteLine ("dbg>: '" + line + "'");
-#endif
+			if (logGdb)
+				Console.WriteLine ("dbg>: '" + line + "'");
 			switch (line [0]) {
 				case '^':
 					lock (syncLock) {
