@@ -205,7 +205,7 @@ namespace MonoDevelop.Core.Execution
 					foreach (var kvp in environmentVariables)
 						dict[kvp.Key] = kvp.Value;
 				if (environmentVariableOverrides != null)
-					foreach (var kvp in environmentVariables)
+					foreach (var kvp in environmentVariableOverrides)
 						dict[kvp.Key] = kvp.Value;
 				
 				var p = externalConsoleHandler (command, arguments, workingDirectory, dict,
