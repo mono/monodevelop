@@ -377,7 +377,7 @@ module Common =
   /// .NET or we use "fsharpc" command on Mono (installed by the package)
   let fscPath = 
     match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler with
-    | _ when Environment.runningOnMono && ScriptOptions.safeExists("/usr/bin/fsharpc") ->
+    | _ when Environment.runningOnMono && ((ScriptOptions.safeExists "/usr/bin/fsharpc") || (ScriptOptions.safeExists "/usr/local/bin/fsharpc")) ->
         // On Mono, we always prefer 'fsharpc' script, especially if we can find it
         "fsharpc"
     | Some(dir) when File.Exists(Path.Combine(dir, "fsc.exe")) ->  

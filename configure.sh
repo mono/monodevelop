@@ -118,6 +118,8 @@ echo "Successfully found Pango root directory."
 # ------------------------------------------------------------------------------
 # Write Makefile
 
+sed "s,INSERT_MD_ROOT,$MDDIR,g" src/FSharp.MonoDevelop.fsproj.orig > src/FSharp.MonoDevelop.fsproj
+
 cp Makefile.orig Makefile.1
 sed "s,INSERT_MD_ROOT,$MDDIR,g" Makefile.1 > Makefile.2
 sed "s,INSERT_MONO_BIN,$MONODIR,g" Makefile.2 > Makefile.1
