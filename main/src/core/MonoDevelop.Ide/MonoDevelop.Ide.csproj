@@ -74,6 +74,8 @@
     <Reference Include="ICSharpCode.SharpZipLib" />
     <Reference Include="Mono.Cairo" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq">
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -1364,6 +1366,12 @@
     <Compile Include="MonoDevelop.Components.AutoTest\AutoTestService.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\AutoTestSession.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\AutoTestClientSession.cs" />
+    <Compile Include="MonoDevelop.Ide.Updater\UpdateCommands.cs" />
+    <Compile Include="MonoDevelop.Ide.Updater\UpdateDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.Updater\UpdateInfoExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Ide.Updater\UpdateResult.cs" />
+    <Compile Include="MonoDevelop.Ide.Updater\UpdateService.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Ide.Updater.UpdateDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
