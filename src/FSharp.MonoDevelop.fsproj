@@ -130,7 +130,12 @@
       <HintPath>C:\Program Files\MonoDevelop\bin\Mono.TextEditor.dll</HintPath>
       <HintPath>C:\Program Files (x86)\MonoDevelop\bin\Mono.TextEditor.dll</HintPath>
     </Reference>
-    <Reference Include="MonoDevelop.Core" />
+    <Reference Include="MonoDevelop.Core">
+      <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/MonoDevelop.Core.dll</HintPath>
+      <HintPath>/usr/lib/monodevelo/bin/MonoDevelop.Core.dll</HintPath>
+      <HintPath>C:\Program Files\MonoDevelop\bin\MonoDevelop.Core.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\MonoDevelop\bin\MonoDevelop.Core.dll</HintPath>
+    </Reference>
     <Reference Include="MonoDevelop.Ide">
       <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/MonoDevelop.Ide.dll</HintPath>
       <HintPath>/usr/lib/monodevelo/bin/MonoDevelop.Ide.dll</HintPath>

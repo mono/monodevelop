@@ -3,5 +3,7 @@ src/Gui/obj/*
 bin/*
 repository/*
 *.suo
+*.pidb
+*.userprefs
 Makefile
 src/FSharp.MonoDevelop.fsproj
