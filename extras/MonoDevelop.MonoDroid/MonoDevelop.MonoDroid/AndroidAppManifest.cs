@@ -50,10 +50,8 @@ namespace MonoDevelop.MonoDroid
 			if (manifest.Name != "manifest")
 				throw new Exception ("App manifest does not have 'manifest' root element");
 			
+			// NOTE: Maybe we should create this element for the manifest if needed.
 			application = manifest.Element ("application");
-			if (application == null)
-				throw new Exception ("App manifest does not have 'application' element");
-			
 			
 			usesSdk = manifest.Element ("uses-sdk");
 			if (usesSdk == null)
