@@ -126,19 +126,19 @@
     <Reference Include="Mono.Cairo, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <Reference Include="Mono.TextEditor">
       <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/Mono.TextEditor.dll</HintPath>
-      <HintPath>/usr/lib/monodevelo/bin/Mono.TextEditor.dll</HintPath>
+      <HintPath>/usr/lib/monodevelop/bin/Mono.TextEditor.dll</HintPath>
       <HintPath>C:\Program Files\MonoDevelop\bin\Mono.TextEditor.dll</HintPath>
       <HintPath>C:\Program Files (x86)\MonoDevelop\bin\Mono.TextEditor.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Core">
       <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/MonoDevelop.Core.dll</HintPath>
-      <HintPath>/usr/lib/monodevelo/bin/MonoDevelop.Core.dll</HintPath>
+      <HintPath>/usr/lib/monodevelop/bin/MonoDevelop.Core.dll</HintPath>
       <HintPath>C:\Program Files\MonoDevelop\bin\MonoDevelop.Core.dll</HintPath>
       <HintPath>C:\Program Files (x86)\MonoDevelop\bin\MonoDevelop.Core.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Ide">
       <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/MonoDevelop.Ide.dll</HintPath>
-      <HintPath>/usr/lib/monodevelo/bin/MonoDevelop.Ide.dll</HintPath>
+      <HintPath>/usr/lib/monodevelop/bin/MonoDevelop.Ide.dll</HintPath>
       <HintPath>C:\Program Files\MonoDevelop\bin\MonoDevelop.Ide.dll</HintPath>
       <HintPath>C:\Program Files (x86)\MonoDevelop\bin\MonoDevelop.Ide.dll</HintPath>
     </Reference>
