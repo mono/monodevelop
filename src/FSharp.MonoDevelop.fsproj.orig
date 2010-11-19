@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{4c10f8f9-3816-4647-ba6e-85f5de39883a}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>FSharp.MonoDevelop</RootNamespace>
+    <AssemblyName>FSharpBinding</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <Name>FSharp.MonoDevelop</Name>
+    <UsePartialTypes>false</UsePartialTypes>
+    <BuildOrder>
+      <BuildOrder>
+        <String>PowerPack/CodeDomVisitor.fs</String>
+        <String>PowerPack/CodeDomGenerator.fs</String>
+        <String>PowerPack/CodeProvider.fs</String>
+        <String>PowerPack/LazyList.fsi</String>
+        <String>PowerPack/LazyList.fs</String>
+        <String>Services/Mailbox.fs</String>
+        <String>Services/Parser.fs</String>
+        <String>Services/CompilerLocationUtils.fs</String>
+        <String>Services/FSharpCompiler.fs</String>
+        <String>Services/Parameters.fs</String>
+        <String>Services/Common.fs</String>
+        <String>Services/CompilerService.fs</String>
+        <String>Services/InteractiveSession.fs</String>
+        <String>Services/LanguageService.fs</String>
+        <String>FSharpParser.fs</String>
+        <String>FSharpResourceIdBuilder.fs</String>
+        <String>FSharpResolverProvider.fs</String>
+        <String>FSharpSyntaxMode.fs</String>
+        <String>FSharpInteractivePad.fs</String>
+        <String>FSharpOptionsPanels.fs</String>
+        <String>FSharpTextEditorCompletion.fs</String>
+        <String>FSharpLanguageBinding.fs</String>
+      </BuildOrder>
+    </BuildOrder>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <Tailcalls>false</Tailcalls>
+    <OutputPath>..\bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <WarningLevel>3</WarningLevel>
+    <Externalconsole>true</Externalconsole>
+    <GenerateDebugInfo>false</GenerateDebugInfo>
+    <OptimizeCode>false</OptimizeCode>
+    <GenerateXmlDoc>false</GenerateXmlDoc>
+    <GenerateTailCalls>false</GenerateTailCalls>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <Tailcalls>true</Tailcalls>
+    <OutputPath>..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <WarningLevel>3</WarningLevel>
+    <GenerateDebugInfo>false</GenerateDebugInfo>
+    <OptimizeCode>false</OptimizeCode>
+    <GenerateXmlDoc>false</GenerateXmlDoc>
+    <GenerateTailCalls>false</GenerateTailCalls>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugInstall|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <Tailcalls>false</Tailcalls>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <WarningLevel>3</WarningLevel>
+    <Externalconsole>true</Externalconsole>
+    <GenerateDebugInfo>false</GenerateDebugInfo>
+    <OptimizeCode>false</OptimizeCode>
+    <GenerateXmlDoc>false</GenerateXmlDoc>
+    <GenerateTailCalls>false</GenerateTailCalls>
+    <OutputPath>..\bin\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\fsharp-icon-32.png" />
+    <EmbeddedResource Include="Resources\fsharp-script-32.png" />
+    <EmbeddedResource Include="Resources\fsharp-file-icon.png" />
+    <EmbeddedResource Include="Resources\fsharp-project-icon.png" />
+    <EmbeddedResource Include="Resources\fsharp-script-icon.png" />
+    <EmbeddedResource Include="Resources\FSharpBinding.addin.xml" />
+    <EmbeddedResource Include="Resources\EmptyFSharpSource.xft.xml" />
+    <EmbeddedResource Include="Resources\EmptyFSharpScript.xft.xml" />
+    <EmbeddedResource Include="Resources\FSharpConsoleProject.xpt.xml" />
+    <EmbeddedResource Include="Resources\FSharpSyntaxMode.xml" />
+    <Compile Include="PowerPack\CodeDomVisitor.fs" />
+    <Compile Include="PowerPack\CodeDomGenerator.fs" />
+    <Compile Include="PowerPack\CodeProvider.fs" />
+    <Compile Include="PowerPack\LazyList.fsi" />
+    <Compile Include="PowerPack\LazyList.fs" />
+    <Compile Include="Services\Mailbox.fs" />
+    <Compile Include="Services\Parameters.fs" />
+    <Compile Include="Services\FSharpCompiler.fs" />
+    <Compile Include="Services\CompilerLocationUtils.fs" />
+    <Compile Include="Services\Common.fs" />
+    <Compile Include="Services\Parser.fs" />
+    <Compile Include="Services\LanguageService.fs" />
+    <Compile Include="Services\CompilerService.fs" />
+    <Compile Include="Services\InteractiveSession.fs" />
+    <Compile Include="FSharpInteractivePad.fs" />
+    <Compile Include="FSharpOptionsPanels.fs" />
+    <Compile Include="FSharpSyntaxMode.fs" />
+    <Compile Include="FSharpResourceIdBuilder.fs" />
+    <Compile Include="FSharpLanguageBinding.fs" />
+    <Compile Include="FSharpParser.fs" />
+    <Compile Include="FSharpTextEditorCompletion.fs" />
+    <Compile Include="FSharpResolverProvider.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="System.Core" />
+    <Reference Include="Mono.Cairo, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <Reference Include="Mono.TextEditor">
+      <HintPath>INSERT_MD_ROOT/bin/Mono.TextEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Core" />
+    <Reference Include="MonoDevelop.Ide">
+      <HintPath>INSERT_MD_ROOT/bin/MonoDevelop.Ide.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Gui\FSharp.MonoDevelop.Gui.csproj">
+      <Name>FSharp.MonoDevelop.Gui</Name>
+      <Project>{fd0d1033-9145-48e5-8ed8-e2365252878c}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugInstall|AnyCPU' ">
+    <PostBuildEvent>copy "$(TargetDir)FSharpBinding.*" "INSERT_MD_ROOT/AddIns/BackendBindings"</PostBuildEvent>
+  </PropertyGroup>
+</Project>
