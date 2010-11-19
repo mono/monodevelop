@@ -4,3 +4,4 @@ bin/*
 repository/*
 *.suo
 Makefile
+src/FSharp.MonoDevelop.fsproj
