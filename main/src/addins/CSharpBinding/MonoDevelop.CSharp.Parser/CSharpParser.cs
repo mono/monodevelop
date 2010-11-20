@@ -868,7 +868,8 @@ namespace MonoDevelop.CSharp.Parser
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), IfElseStatement.Roles.RPar);
 				
-				result.AddChild ((INode)ifStatement.TrueStatement.Accept (this), IfElseStatement.TrueEmbeddedStatementRole);
+				if (ifStatement.TrueStatement != null)
+					result.AddChild ((INode)ifStatement.TrueStatement.Accept (this), IfElseStatement.TrueEmbeddedStatementRole);
 				
 				if (ifStatement.FalseStatement != null) {
 					if (location != null)
