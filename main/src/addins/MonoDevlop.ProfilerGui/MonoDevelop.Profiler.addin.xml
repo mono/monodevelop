@@ -1,0 +1,28 @@
+<Addin
+        id = "Profiler"
+        namespace = "MonoDevelop"
+        name = "Profiler"
+        author = "Mike Krüger"
+        copyright = "X11"
+        url = "http://www.monodevelop.com/"
+        description = "Provides a gui for the mono logging profiler"
+        category = "IDE extensions"
+        version = "2.4">
+
+	<Runtime>
+		<Import assembly = "MonoDevelop.Profiler.dll"/>
+	</Runtime>
+
+	<Dependencies>
+		<Addin id="Core" version="2.4"/>
+		<Addin id="Ide" version="2.4"/>
+	</Dependencies>
+	
+	<!-- Extension Points -->
+	
+	<!-- Extensions -->
+	
+	<Extension path = "/MonoDevelop/Core/ExecutionModes">
+		<ModeSetType class="MonoDevelop.Profiler.Gui.ProfilerExecutionModeSet"/>
+	</Extension>
+</Addin>
