@@ -126,7 +126,7 @@ namespace MonoDevelop.Debugger.Soft
 					return null;
 				}
 				try {
-					var asm = Mono.Cecil.AssemblyFactory.GetAssemblyManifest (file);
+					var asm = Mono.Cecil.AssemblyDefinition.ReadAssembly (file);
 					if (string.IsNullOrEmpty (asm.Name.Name))
 						throw new InvalidOperationException ("Assembly has no assembly name");
 					names.Add (new AssemblyName (asm.Name.FullName));
