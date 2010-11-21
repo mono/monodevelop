@@ -31,7 +31,7 @@ namespace MonoDevelop.CodeAnalysis.Gendarme {
 			
 			// assemblies
 			base.Assemblies.Clear ();
-			AssemblyDefinition ad = AssemblyFactory.GetAssembly (inspectedFile);
+			AssemblyDefinition ad = AssemblyDefinition.ReadAssembly (inspectedFile);
 			base.Assemblies.Add (ad);
 
 			// rules
