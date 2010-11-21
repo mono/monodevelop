@@ -41,7 +41,7 @@ namespace Stetic
 							}
 						}
 						if (mi != null) {
-							handlerReturnTypeName = CecilWidgetLibrary.GetInstanceType (td, sinfo.EventType, mi.ReturnType.ReturnType);
+							handlerReturnTypeName = CecilWidgetLibrary.GetInstanceType (td, sinfo.EventType, mi.ReturnType);
 							handlerParameters = new ParameterDescriptor [mi.Parameters.Count];
 							for (int n=0; n<handlerParameters.Length; n++) {
 								ParameterDefinition par = mi.Parameters [n];

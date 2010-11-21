@@ -95,7 +95,7 @@ namespace Stetic
 			if (cache_info == null || !File.Exists (filename))
 				return;
 			
-			assembly = AssemblyFactory.GetAssembly (filename);
+			assembly = AssemblyDefinition.ReadAssembly (filename);
 
 			objects_dirty = false;
 			Load (cache_info.ObjectsDocument);
@@ -149,7 +149,7 @@ namespace Stetic
 				tname = element.GetAttribute ("baseClassType");
 				typeClassDescriptor = Stetic.Registry.LookupClassByName (tname);
 			} else {
-				cls = assembly.MainModule.Types [name];
+				cls = assembly.MainModule.GetType (name);
 				if (cls != null) {
 					// Find the nearest type that can be loaded
 					typeClassDescriptor = FindType (assembly, cls);
@@ -213,14 +213,14 @@ namespace Stetic
 				
 			visited [asm] = asm;
 			
-			TypeDefinition cls = asm.MainModule.Types [fullName];
+			TypeDefinition cls = asm.MainModule.GetType (fullName);
 			if (cls != null)
 				return cls;
 			
 			foreach (AssemblyNameReference aref in asm.MainModule.AssemblyReferences) {
 				AssemblyDefinition basm = ResolveAssembly (aref);
 				if (basm != null) {
-					cls = basm.MainModule.Types [fullName];
+					cls = basm.MainModule.GetType (fullName);
 					if (cls != null)
 						return cls;
 /*					cls = FindTypeDefinition (visited, basm, fullName);
@@ -293,7 +293,7 @@ namespace Stetic
 			if (defTargetGtkVersion.Length == 0)
 				defTargetGtkVersion = "2.4";
 			
-			AssemblyDefinition adef = AssemblyFactory.GetAssembly (filename);
+			AssemblyDefinition adef = AssemblyDefinition.ReadAssembly (filename);
 			
 			foreach (XmlElement elem in info.ObjectsDocument.SelectNodes ("objects/object")) {
 				if (elem.GetAttribute ("internal") == "true" || elem.HasAttribute ("deprecated") || !elem.HasAttribute ("palette-category"))
@@ -333,7 +333,7 @@ namespace Stetic
 				try {
 					// Using the pixbuf resource constructor generates a gdk warning.
 					EmbeddedResource res = GetResource (asm, iconname);
-					Gdk.PixbufLoader loader = new Gdk.PixbufLoader (res.Data);
+					Gdk.PixbufLoader loader = new Gdk.PixbufLoader (res.GetResourceData ());
 					icon = loader.Pixbuf;
 				} catch {
 					// Ignore

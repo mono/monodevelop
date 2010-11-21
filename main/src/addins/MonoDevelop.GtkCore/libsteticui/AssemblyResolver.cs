@@ -67,18 +67,16 @@ namespace Stetic {
 				if (app != null) {
 					string ares = app.ResolveAssembly (name.Name);
 					if (ares != null) {
-						asm = AssemblyFactory.GetAssembly (ares);
-						asm.Resolver = this;
+						asm = AssemblyDefinition.ReadAssembly (ares, new ReaderParameters { AssemblyResolver = this });
 						_assemblies [name.FullName] = asm;
 						return asm;
 					}
 				}
 				string file = Resolve (name.FullName, basePath);
 				if (file != null)
-					asm = AssemblyFactory.GetAssembly (file);
+					asm = AssemblyDefinition.ReadAssembly (file, new ReaderParameters { AssemblyResolver = this });
 				else
 					asm = base.Resolve (name);
-				asm.Resolver = this;
 				_assemblies [name.FullName] = asm;
 			}
 
@@ -98,20 +96,14 @@ namespace Stetic {
 			AssemblyNameReference reference = type.Scope as AssemblyNameReference;
 			if (reference != null) {
 				AssemblyDefinition assembly = Resolve (reference);
-				return assembly.MainModule.Types [type.FullName];
+				return assembly.MainModule.GetType (type.FullName);
 			}
 
 			ModuleDefinition module = type.Scope as ModuleDefinition;
 			if (module != null)
-				return module.Types [type.FullName];
+				return module.GetType (type.FullName);
 
 			throw new NotImplementedException ();
-		}
-
-		public void CacheAssembly (AssemblyDefinition assembly)
-		{
-			_assemblies [assembly.Name.FullName] = assembly;
-			assembly.Resolver = this;
 		}
 
 		public string Resolve (string assemblyName, string basePath)
@@ -237,6 +229,11 @@ namespace Stetic {
 						typeof (Uri).Module.FullyQualifiedName)
 					).FullName
 				).FullName;
+		}
+
+		static bool OnMono ()
+		{
+			return Type.GetType ("Mono.Runtime") != null;
 		}
 	}
 }

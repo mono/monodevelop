@@ -165,10 +165,10 @@ namespace Stetic
 			if (t != null) {
 				PropertyInfo prop = t.GetProperty (name);
 				if (prop != null) {
-					TypeReference tref  = new TypeReference (prop.PropertyType.Name, prop.PropertyType.Namespace, null, prop.PropertyType.IsValueType);
-					PropertyDefinition pdef = new PropertyDefinition (name, tref, (Mono.Cecil.PropertyAttributes) 0);
-					PropertyDefinition.CreateGetMethod (pdef);
-					PropertyDefinition.CreateSetMethod (pdef);
+					TypeReference tref  = new TypeReference (prop.PropertyType.Namespace, prop.PropertyType.Name, cls.Module, cls.Module, prop.PropertyType.IsValueType);
+					PropertyDefinition pdef = new PropertyDefinition (name, Mono.Cecil.PropertyAttributes.None, tref);
+					CreateGetMethod (pdef);
+					CreateSetMethod (pdef);
 					return pdef;
 				}
 			}
@@ -178,6 +178,22 @@ namespace Stetic
 				return FindProperty (bcls, name);
 			else
 				return null;
+		}
+
+		static MethodDefinition CreateGetMethod (PropertyDefinition prop)
+		{
+			MethodDefinition get = new MethodDefinition (
+				string.Concat ("get_", prop.Name), (Mono.Cecil.MethodAttributes) 0, prop.PropertyType);
+			prop.GetMethod = get;
+			return get;
+		}
+
+		static MethodDefinition CreateSetMethod (PropertyDefinition prop)
+		{
+			MethodDefinition set = new MethodDefinition (
+				string.Concat ("set_", prop.Name), (Mono.Cecil.MethodAttributes) 0, prop.PropertyType);
+			prop.SetMethod = set;
+			return set;
 		}
 		
 		EventDefinition FindEvent (TypeDefinition cls, string name)
@@ -194,8 +210,8 @@ namespace Stetic
 			if (t != null) {
 				EventInfo ev = t.GetEvent (name);
 				if (ev != null) {
-					TypeReference tref  = new TypeReference (ev.EventHandlerType.Name, ev.EventHandlerType.Namespace, null, ev.EventHandlerType.IsValueType);
-					return new EventDefinition (name, tref, (Mono.Cecil.EventAttributes) 0);
+					TypeReference tref  = new TypeReference (ev.EventHandlerType.Name, ev.EventHandlerType.Namespace, cls.Module, cls.Module, ev.EventHandlerType.IsValueType);
+					return new EventDefinition (name, Mono.Cecil.EventAttributes.None, tref);
 				}
 			}
 			
