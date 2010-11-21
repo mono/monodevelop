@@ -29,6 +29,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+
 using MC = Mono.Cecil;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
@@ -45,27 +47,26 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		public IList<ItemToolboxNode> Load (LoaderContext ctx, string filename)
 		{
-			MC.AssemblyDefinition assem = MC.AssemblyFactory.GetAssembly (filename);
 			Mono.Linker.AssemblyResolver resolver = new Mono.Linker.AssemblyResolver ();
-			assem.Resolver = resolver;
-			
+			MC.AssemblyDefinition assem = MC.AssemblyDefinition.ReadAssembly (filename, new MC.ReaderParameters { AssemblyResolver = resolver });
+
 			//Grab types that should be in System.dll
 			Version runtimeVersion;
-			switch (assem.Runtime) {
-			case MC.TargetRuntime.NET_1_0:
-			case MC.TargetRuntime.NET_1_1:
+			switch (assem.MainModule.Runtime) {
+			case MC.TargetRuntime.Net_1_0:
+			case MC.TargetRuntime.Net_1_1:
 				runtimeVersion = new Version (1, 0, 5000, 0); break;
-			case MC.TargetRuntime.NET_2_0:
+			case MC.TargetRuntime.Net_2_0:
 				runtimeVersion = new Version (2, 0, 0, 0); break;
 			default:
-				throw new NotSupportedException ("Runtime '" + assem.Runtime + "' is not supported.");
+				throw new NotSupportedException ("Runtime '" + assem.MainModule.Runtime + "' is not supported.");
 			}
 			
-			MC.AssemblyNameReference sysAssem = new MC.AssemblyNameReference ("System", string.Empty, runtimeVersion);
+			MC.AssemblyNameReference sysAssem = new MC.AssemblyNameReference ("System", runtimeVersion);
 			MC.TypeReference toolboxItemType 
-				= new MC.TypeReference ("ToolboxItemAttribute", "System.ComponentModel", sysAssem, false);
+				= new MC.TypeReference ("System.ComponentModel", "ToolboxItemAttribute", assem.MainModule, sysAssem, false);
 			MC.TypeReference categoryType 
-				= new MC.TypeReference ("CategoryAttribute", "System.ComponentModel", sysAssem, false);
+				= new MC.TypeReference ("ToolboxItemAttribute", "CategoryAttribute", assem.MainModule, sysAssem, false);
 			
 			if (resolver.Resolve (toolboxItemType) == null)
 				return null;
@@ -89,7 +90,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 						    && IsEqualOrSubclass (resolver, att.Constructor.DeclaringType, toolboxItemType)) {
 							
 							//check if it's ToolboxItemAttribute(false) (or null)
-							att.Resolve ();
+
 							IList args = GetArgumentsToBaseConstructor (att, toolboxItemType);
 							if (args != null) {
 								if (args.Count != 1)
@@ -102,7 +103,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 									string typeName = (string) o;
 									toolboxItem = null;
 									try {
-										resolver.Resolve (TypeReferenceFromString (typeName));
+										resolver.Resolve (TypeReferenceFromString (module, typeName));
 									} catch (Exception ex) {
 										System.Diagnostics.Debug.WriteLine (ex);
 									}
@@ -119,7 +120,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 						//find the value of the category attribute
 						if (category == null
 						    && IsEqualOrSubclass (resolver, att.Constructor.DeclaringType, categoryType)) {
-							att.Resolve ();
+
 							IList args = GetArgumentsToBaseConstructor (att, categoryType);
 							if (args != null && args.Count == 1)
 								category = (string) args[0];
@@ -141,9 +142,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			return list;
 		}
 		
-		protected static MC.TypeReference TypeReferenceFromString (string fullname)
+		protected static MC.TypeReference TypeReferenceFromString (MC.ModuleDefinition module, string fullname)
 		{
-			
 			string[] split = fullname.Split (',');
 			
 			int lastTypeDot = split[0].LastIndexOf ('.');
@@ -165,14 +165,16 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				//PublicKeyToken=
 			}
 			
-			MC.AssemblyNameReference itemAssem = new MC.AssemblyNameReference (assem, culture, version);
-			return new MC.TypeReference (type, namespc, itemAssem, false);
+			MC.AssemblyNameReference itemAssem = new MC.AssemblyNameReference (assem, version) {
+				Culture = culture,
+			};
+			return new MC.TypeReference (type, namespc, module, itemAssem, false);
 		}
 		
 		protected static IList GetArgumentsToBaseConstructor (MC.CustomAttribute att, MC.TypeReference baseType)
 		{
-			if (att.Constructor.DeclaringType.FullName == baseType.FullName)
-				return att.ConstructorParameters;
+			if (att.AttributeType.FullName == baseType.FullName)
+				return att.ConstructorArguments.Select (arg => arg.Value).ToList ();
 			else
 				//FIXME: Implement
 				throw new NotImplementedException ();
@@ -184,7 +186,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			while (true) {
 				foreach (MC.CustomAttribute attr in currentType.CustomAttributes)
 					yield return attr;
-				if (currentType.BaseType.FullName == MC.Constants.Object)
+				if (currentType.BaseType.FullName == "System.Object")
 					yield break;
 				currentType = resolver.Resolve (currentType.BaseType);
 			}
@@ -197,7 +199,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			while (true) {
 				if (baseClass.FullName == currentType.FullName)
 					return true;
-				if (currentType.BaseType.FullName == MC.Constants.Object)
+				if (currentType.BaseType.FullName == "System.Object")
 					return false;
 				currentType = resolver.Resolve (currentType.BaseType);
 			}
