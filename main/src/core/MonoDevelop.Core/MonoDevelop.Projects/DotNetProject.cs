@@ -624,7 +624,7 @@ namespace MonoDevelop.Projects
 			yield return fileName;
 			Mono.Cecil.AssemblyDefinition adef;
 			try {
-				adef = Mono.Cecil.AssemblyFactory.GetAssemblyManifest (fileName);
+				adef = Mono.Cecil.AssemblyDefinition.ReadAssembly (fileName);
 			} catch {
 				yield break;
 			}

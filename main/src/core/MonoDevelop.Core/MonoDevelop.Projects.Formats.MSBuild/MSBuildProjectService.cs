@@ -480,21 +480,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				newVersions.Add ("Microsoft.Build.Engine", new string[] {"Microsoft.Build.Engine", version});
 				newVersions.Add ("Microsoft.Build.Framework", new string[] {"Microsoft.Build.Framework", version});
 				newVersions.Add ("Microsoft.Build.Utilities", new string[] {"Microsoft.Build.Utilities", version});
-				runtime = Mono.Cecil.TargetRuntime.NET_2_0;
+				runtime = Mono.Cecil.TargetRuntime.Net_2_0;
 				break;
 			case "3.5":
 				version = "3.5.0.0";
 				newVersions.Add ("Microsoft.Build.Engine", new string[] {"Microsoft.Build.Engine", version});
 				newVersions.Add ("Microsoft.Build.Framework", new string[] {"Microsoft.Build.Framework", version});
 				newVersions.Add ("Microsoft.Build.Utilities", new string[] {"Microsoft.Build.Utilities.v3.5", version});
-				runtime = Mono.Cecil.TargetRuntime.NET_2_0;
+				runtime = Mono.Cecil.TargetRuntime.Net_2_0;
 				break;
 			case "4.0":
 				version = "4.0.0.0";
 				newVersions.Add ("Microsoft.Build.Engine", new string[] {"Microsoft.Build.Engine", version});
 				newVersions.Add ("Microsoft.Build.Framework", new string[] {"Microsoft.Build.Framework", version});
 				newVersions.Add ("Microsoft.Build.Utilities", new string[] {"Microsoft.Build.Utilities.v4.0", version});
-				runtime = Mono.Cecil.TargetRuntime.NET_4_0;
+				runtime = Mono.Cecil.TargetRuntime.Net_4_0;
 				break;
 			default:
 				throw new InvalidOperationException ("Unknown MSBuild ToolsVersion '" + toolsVersion + "'");
@@ -506,7 +506,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					Directory.CreateDirectory (p.ParentDirectory);
 				
 				// Update the references to msbuild
-				Cecil.AssemblyDefinition asm = Cecil.AssemblyFactory.GetAssembly (sourceExe);
+				Cecil.AssemblyDefinition asm = Cecil.AssemblyDefinition.ReadAssembly (sourceExe);
 				foreach (Cecil.AssemblyNameReference ar in asm.MainModule.AssemblyReferences) {
 					string[] replacement;
 					if (newVersions.TryGetValue (ar.Name, out replacement)) {
@@ -514,15 +514,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						ar.Version = new Version (replacement[1]);
 					}
 				}
-				asm.Runtime = runtime;
+				asm.MainModule.Runtime = runtime;
 				
 				//run in 32-bit mode because usually msbuild targets are installed for 32-bit only
-				asm.MainModule.Image.CLIHeader.Flags |= Mono.Cecil.Binary.RuntimeImage.F32BitsRequired;
+				asm.MainModule.Attributes |= Mono.Cecil.ModuleAttributes.Required32Bit;
 				
 				// Workaround to a bug in mcs. The ILOnly flag is not emitted when using /platform:x86
-				asm.MainModule.Image.CLIHeader.Flags |= Mono.Cecil.Binary.RuntimeImage.ILOnly;
+				asm.MainModule.Attributes |= Mono.Cecil.ModuleAttributes.ILOnly;
 				
-				Cecil.AssemblyFactory.SaveAssembly (asm, p);
+				asm.Write (p);
 			}
 			
 			FilePath configFile = p + ".config";

@@ -48,7 +48,7 @@ namespace MonoDevelop.Projects.Dom
 //			base.modifiers           = DomCecilType.GetModifiers (parameterDefinition..Attributes);
 			base.ReturnType          = DomCecilMethod.GetReturnType (parameterDefinition.ParameterType);
 			
-			if (parameterDefinition.ParameterType is Mono.Cecil.ReferenceType) {
+			if (parameterDefinition.ParameterType is Mono.Cecil.ByReferenceType) {
 				this.ParameterModifiers = (parameterDefinition.Attributes & ParameterAttributes.Out) == ParameterAttributes.Out ? ParameterModifiers.Out : ParameterModifiers.Ref;
 			} else {
 				this.ParameterModifiers = ParameterModifiers.In;

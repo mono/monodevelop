@@ -134,7 +134,7 @@ namespace MonoDevelop.Projects.Dom
 					continue;
 				base.Add (new DomCecilField (fieldDefinition));
 			}
-			foreach (MethodDefinition methodDefinition in typeDefinition.Methods) {
+			foreach (MethodDefinition methodDefinition in typeDefinition.Methods.Where (m => !m.IsConstructor)) {
 				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (methodDefinition)))
 					continue;
 				base.Add (new DomCecilMethod (methodDefinition));
@@ -142,7 +142,7 @@ namespace MonoDevelop.Projects.Dom
 			
 			bool internalOnly    = true;
 			bool hasConstructors = false;
-			foreach (MethodDefinition methodDefinition in typeDefinition.Constructors) {
+			foreach (MethodDefinition methodDefinition in typeDefinition.Methods.Where (m => m.IsConstructor)) {
 				hasConstructors = true;
 				if (!loadInternal && DomCecilCompilationUnit.IsInternal (DomCecilType.GetModifiers (methodDefinition)))
 					continue;

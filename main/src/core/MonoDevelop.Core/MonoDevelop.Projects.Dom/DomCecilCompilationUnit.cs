@@ -126,8 +126,8 @@ namespace MonoDevelop.Projects.Dom
 			if (String.IsNullOrEmpty (fileName))
 				return null;
 			string xmlFileName = System.IO.Path.ChangeExtension (fileName, ".xml");
-			//FIXME: should assign a custom resolver to the AssemblyDefinition so that it resolves from the correct GAC
-			DomCecilCompilationUnit result = new DomCecilCompilationUnit (AssemblyFactory.GetAssembly (fileName), xmlFileName, loadInternals, instantiateTypeParameter);
+			//FIXME: should pass a custom resolver to the AssemblyDefinition so that it resolves from the correct GAC
+			DomCecilCompilationUnit result = new DomCecilCompilationUnit (AssemblyDefinition.ReadAssembly (fileName), xmlFileName, loadInternals, instantiateTypeParameter);
 			result.fileName = fileName;
 			return result;
 		}
@@ -144,13 +144,6 @@ namespace MonoDevelop.Projects.Dom
 			InstantiatedParamResolver resolver = new InstantiatedParamResolver (xmlDocumentation);
 			Module module = new Module (moduleDefinition);
 			foreach (TypeDefinition type in moduleDefinition.Types) {
-				// filter nested types, they're handled in DomCecilType.
-				if ((type.Attributes & TypeAttributes.NestedPublic) == TypeAttributes.NestedPublic ||
-				    (type.Attributes & TypeAttributes.NestedFamily) == TypeAttributes.NestedFamily || 
-				    (type.Attributes & TypeAttributes.NestedAssembly) == TypeAttributes.NestedAssembly ||
-				    (type.Attributes & TypeAttributes.NestedPrivate) == TypeAttributes.NestedPrivate || 
-				    (type.Attributes & TypeAttributes.NestedFamANDAssem) == TypeAttributes.NestedFamANDAssem)
-					continue;
 				if (!loadInternal && IsInternal (DomCecilType.GetModifiers (type.Attributes)))
 					continue;
 //				if (type.Name == "SimplePropertyDescriptor")
