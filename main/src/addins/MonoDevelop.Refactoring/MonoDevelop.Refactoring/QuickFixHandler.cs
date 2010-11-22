@@ -70,7 +70,14 @@ namespace MonoDevelop.Refactoring
 				namespaces = new List<string> (options.Dom.ResolvePossibleNamespaces (returnType));
 				resolveDirect = true;
 			}
-			
+			for (int i = 0; i < namespaces.Count; i++) {
+				for (int j = i + 1; j < namespaces.Count; j++) {
+					if (namespaces[j] == namespaces[i]) {
+						namespaces.RemoveAt (j);
+						j--;
+					}
+				}
+			}
 			return namespaces;
 		}
 		
