@@ -160,7 +160,10 @@ namespace MonoDevelop.Refactoring.Rename
 					
 					string oldFileName = System.IO.Path.GetFileNameWithoutExtension (part.CompilationUnit.FileName);
 					string newFileName;
-					
+					System.Console.WriteLine ("old: " + oldFileName);
+					System.Console.WriteLine ("new:" + properties.NewName);
+					if (oldFileName.ToUpper () == properties.NewName.ToUpper () || oldFileName.ToUpper ().EndsWith ("." + properties.NewName.ToUpper ()))
+						continue;
 					int idx = oldFileName.IndexOf (cls.Name);
 					if (idx >= 0) {
 						newFileName = oldFileName.Substring (0, idx) + properties.NewName + oldFileName.Substring (idx + cls.Name.Length);
