@@ -152,6 +152,7 @@ namespace MonoDevelop.MonoDroid.Gui
 		public void ApplyChanges ()
 		{
 			MonoDroidSdk.SetConfiguredSdkLocations (androidFolderEntry.Path, javaFolderEntry.Path);
+			MonoDroidFramework.UpdateSdkLocations ();
 		}
 		
 		protected virtual void OnSettingsChanged (EventArgs args)
