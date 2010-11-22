@@ -13,7 +13,7 @@ vcrevision:
 	@if test -d ../.git; then \
 		version=$$(cd ..; \
 			LANG=C; export LANG; \
-			git describe --dirty --always --abbrev=0; \
+			git describe --dirty --always --abbrev=0 --match nothing; \
 		); \
 		echo "git revision: $$version" > "vcrevision"; \
 	else \
