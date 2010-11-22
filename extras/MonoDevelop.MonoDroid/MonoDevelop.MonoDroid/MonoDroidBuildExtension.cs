@@ -29,8 +29,10 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Core.Assemblies;
 using System.Xml;
 using System.Text;
 using System.Diagnostics;
@@ -43,6 +45,29 @@ namespace MonoDevelop.MonoDroid
 		
 		public MonoDroidBuildExtension ()
 		{
+		}
+
+		protected override BuildResult Build (IProgressMonitor monitor, IBuildTarget item, ConfigurationSelector configuration)
+		{
+			if (!(item is MonoDroidProject))
+				return base.Build (monitor, item, configuration);
+
+			MonoDroidProject project = (MonoDroidProject) item;
+			TargetFramework requiredFramework = Runtime.SystemAssemblyService.GetTargetFramework ("4.0");
+
+			// Check that we support 4.0 to infer we are at Mono 2.8 at least.
+			if (!project.TargetRuntime.IsInstalled (requiredFramework)) {
+				var message = "Mono 2.8 or newer is required.";
+				MessageService.GenericAlert (MonoDevelop.Ide.Gui.Stock.MonoDevelop, message,
+						"Mono 2.8 or newer is requiered. Please go to http://www.mono-project.com to update your installation.",
+						AlertButton.Ok);
+
+				var buildResult = new BuildResult ();
+				buildResult.AddError (message);
+				return buildResult;
+			}
+
+			return base.Build (monitor, item, configuration);
 		}
 	}
 }
