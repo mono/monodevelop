@@ -31,7 +31,6 @@ namespace MonoDevelop.Profiler
 {
 	public partial class ProfileDialog : Gtk.Window
 	{
-		const int MethodInfoColumn = 4;
 		
 		TimeLineWidget timeLineWidget;
 		TreeStore store;
@@ -48,6 +47,10 @@ namespace MonoDevelop.Profiler
 			base.OnDestroyed ();
 		}
 		
+		const int TimeSelfColumn = 4;
+		const int TotalTimeColumn = 5;
+		const int MethodInfoColumn = 6;
+
 		public ProfileDialog (string fileName) : base(Gtk.WindowType.Toplevel)
 		{
 			this.Build ();
@@ -61,7 +64,9 @@ namespace MonoDevelop.Profiler
 			store = new TreeStore (typeof(string), // name
 				typeof(string), // icon
 				typeof(ulong), // call count
-				typeof(double), // time with children
+				typeof(double), // time with children %
+				typeof(double), // time self (ms)
+				typeof(double), // total time (ms)
 				typeof(AnalyseVisitor.MethodInfo) // method info
 			);
 			profileResultsView.Model = store;
@@ -77,10 +82,34 @@ namespace MonoDevelop.Profiler
 			methodColumn.AddAttribute (textRender, "text", 0);
 			profileResultsView.AppendColumn (methodColumn);
 			
+			var timeSelfColumn = new TreeViewColumn ();
+			timeSelfColumn.SortColumnId = TimeSelfColumn;
+			timeSelfColumn.SortIndicator = true;
+			timeSelfColumn.Title = "Time self (ms)";
+			timeSelfColumn.Resizable = true;
+			timeSelfColumn.PackStart (textRender, true);
+			timeSelfColumn.SetCellDataFunc (textRender, delegate (Gtk.TreeViewColumn column, Gtk.CellRenderer cell,Gtk.TreeModel model, Gtk.TreeIter iter) {
+				double time = (double)model.GetValue (iter, TimeSelfColumn);
+				((CellRendererText)cell).Text = string.Format ("{0:0.0}", time);
+			});
+			profileResultsView.AppendColumn (timeSelfColumn);
+			
+			var totalTimeColumn = new TreeViewColumn ();
+			totalTimeColumn.SortColumnId = TimeSelfColumn;
+			totalTimeColumn.SortIndicator = true;
+			totalTimeColumn.Title = "Total time (ms)";
+			totalTimeColumn.Resizable = true;
+			totalTimeColumn.PackStart (textRender, true);
+			totalTimeColumn.SetCellDataFunc (textRender, delegate (Gtk.TreeViewColumn column, Gtk.CellRenderer cell,Gtk.TreeModel model, Gtk.TreeIter iter) {
+				double time = (double)model.GetValue (iter, TotalTimeColumn);
+				((CellRendererText)cell).Text = string.Format ("{0:0.0}", time);
+			});
+			profileResultsView.AppendColumn (totalTimeColumn);
+			
 			var timeWithChidrenColumn = new TreeViewColumn ();
 			timeWithChidrenColumn.SortColumnId = 3;
 			timeWithChidrenColumn.SortIndicator = true;
-			timeWithChidrenColumn.Title = "Time with children (%)";
+			timeWithChidrenColumn.Title = "Time from parent (%)";
 			timeWithChidrenColumn.Resizable = true;
 			var timeCellRenderer = new TimeCellRenderer ();
 			timeWithChidrenColumn.PackStart (timeCellRenderer, true);
@@ -103,11 +132,11 @@ namespace MonoDevelop.Profiler
 			profileResultsView.ShowExpanders = true;
 			
 //		timeout = GLib.Timeout.Add (500, delegate {
-				try {
-					buffer = LogBuffer.Read (fileName);
-				} catch (Exception) {
-				}
-				AnalyzeBuffer ();
+			try {
+				buffer = LogBuffer.Read (fileName);
+			} catch (Exception) {
+			}
+			AnalyzeBuffer ();
 /*				return true;
 			});*/
 		}
@@ -148,7 +177,7 @@ namespace MonoDevelop.Profiler
 				store.Remove (ref child);
 			}
 			
-			foreach (var methodCall in info.CallStack) {
+			foreach (var methodCall in info.MethodCalls.Values) {
 				AppendMethodInfo (args.Iter, methodCall);
 			}
 		}
@@ -157,10 +186,13 @@ namespace MonoDevelop.Profiler
 		{
 			if (buffer == null)
 				return;
-			ulong t0 = buffer.buffers [0].Header.TimeBase;
-			visitor.StartTime = t0 + start;
-			visitor.EndTime = t0 + end;
-			System.Console.WriteLine ("set time:" + visitor.StartTime + " - " + visitor.EndTime);
+			if (start == 0 && end == 0) {
+				visitor.StartTime = visitor.EndTime = 0;
+			} else {
+				ulong t0 = buffer.buffers [0].Header.TimeBase;
+				visitor.StartTime = t0 + start;
+				visitor.EndTime = t0 + end;
+			}
 			AnalyzeBuffer ();
 		}
 		
@@ -169,6 +201,7 @@ namespace MonoDevelop.Profiler
 		{
 			if (buffer == null)
 				return;
+			expandedRows.Clear ();
 			long selectedID = SelectedThreadID;
 			visitor.LookupThread = selectedID;
 			visitor.Reset ();
@@ -200,38 +233,50 @@ namespace MonoDevelop.Profiler
 			comboboxThreads.Changed += HandleComboboxThreadsChanged;
 			store.Clear ();
 			
-			foreach (var info in visitor.methodDictionary.Values) {
-				if (info.Calls == 0)
+			foreach (var threadContext in visitor.threadDictionary.Values) {
+				if (selectedID != 0 && threadContext.ThreadId != selectedID)
 					continue;
-				AppendMethodInfo (TreeIter.Zero, info);
+				foreach (var info in threadContext.MethodCalls.Values) {
+					AppendMethodInfo (TreeIter.Zero, info);
+				}
 			}
+			timeLineWidget.Update ();
 		}
 		
 		void AppendMethodInfo (TreeIter iter, AnalyseVisitor.MethodInfo info)
 		{
 			TreeIter subiter;
 			double time = (double)totalTime;
-			if (visitor.StartTime != 0) {
-				time = (visitor.EndTime - visitor.StartTime);
-				System.Console.WriteLine (totalTime + ":" + time);
+			if (info.Parent != null) {
+				time = info.Parent.TimeWithChildren;
+			} else {
+				if (visitor.StartTime != 0) {
+					time = Math.Min (totalTime, visitor.EndTime - visitor.StartTime);
+				}
 			}
 			if (iter.Equals (TreeIter.Zero)) {
-				subiter = store.AppendValues (info.Name, 
+				subiter = store.AppendValues (visitor.LookupName (info.MethodBase), 
 						"", 
 						info.Calls, 
 						100.0 * (double)info.TimeWithChildren / time, 
+						(info.TimeWithChildren - info.CalleeTime) / 1000.0, 
+						info.TimeWithChildren / 1000.0, 
 						info);
 			} else {
-				subiter = store.AppendValues (iter, info.Name, 
+				subiter = store.AppendValues (iter, visitor.LookupName (info.MethodBase), 
 						"", 
 						info.Calls, 
 						100.0 * (double)info.TimeWithChildren / time, 
+						(info.TimeWithChildren - info.CalleeTime) / 1000.0, 
+						info.TimeWithChildren / 1000.0, 
 						info);
 			}
-			if (info.CallStack.Count > 0) {
+			if (info.MethodCalls.Count > 0) {
 				store.AppendValues (subiter, "", 
 						"", 
 						0UL, 
+						0d, 
+						0d, 
 						0d, 
 						null);
 			}
@@ -246,14 +291,19 @@ namespace MonoDevelop.Profiler
 			ulong timeBase;
 			ulong eventCount = 0;
 			ulong lastTimeBase = 0;
-			const int interval = 100000;
-			public List<ulong> Events = new List<ulong> ();
-			public ulong StartTime {
+			const
+				int interval = 100000 ; 
+			public
+				List<ulong> Events = new List<ulong> ();
+			
+			public
+				ulong StartTime {
 				get;
 				set;
 			}
 
-			public ulong EndTime {
+			public
+			ulong EndTime {
 				get;
 				set;
 			}
@@ -296,31 +346,49 @@ namespace MonoDevelop.Profiler
 			{
 				public long ThreadId { get; set; }
 				public string Name { get; set; }
-
+				
+				public Dictionary<long, MethodInfo> MethodCalls = new Dictionary<long, MethodInfo> ();
+				
 				public Stack<MethodInfo> Stack = new Stack<MethodInfo> ();
 				public Stack<ulong> timeStack = new Stack<ulong> ();
 				public Stack<ulong> calleeTimeStack = new Stack<ulong> ();
 
 				public long LastTime { get; set; }
-			
-				public void PushMethod (MethodInfo methodInfo, ulong timeStamp)
+				
+				MethodInfo GetInfo (long methodBase)
 				{
+					Dictionary<long, MethodInfo> dict;
 					if (Stack.Count > 0) {
-						Stack.Peek ().CallStack.Add (methodInfo);
+						dict = Stack.Peek ().MethodCalls;
+					} else {
+						dict = MethodCalls;
 					}
-					methodInfo.RecurseCount++;
-					methodInfo.Calls++;
+					MethodInfo info;
+					if (!dict.TryGetValue (methodBase, out info)) {
+						dict [methodBase] = info = new MethodInfo (methodBase);
+						if (Stack.Count > 0)
+							info.Parent = Stack.Peek ();
+					}
+					return info;
+				}
+				
+				public void PushMethod (long methodBase, ulong timeStamp)
+				{
+					MethodInfo info = GetInfo (methodBase);
+					
+					info.RecurseCount++;
+					info.Calls++;
 					
 					timeStack.Push (timeStamp);
 					calleeTimeStack.Push (0);
-					Stack.Push (methodInfo);
+					Stack.Push (info);
 				}
 
-				public void PopMethod (MethodInfo methodInfo, ulong timeStamp)
+				public void PopMethod (long methodBase, ulong timeStamp)
 				{
-					methodInfo.RecurseCount--;
-					if (Stack.Count > 0 && Stack.Peek () == methodInfo) {
-						Stack.Pop ();
+					if (Stack.Count > 0 && Stack.Peek ().MethodBase == methodBase) {
+						MethodInfo methodInfo = Stack.Pop ();
+						methodInfo.RecurseCount--;
 						ulong timeDiff = timeStamp - timeStack.Pop ();
 						methodInfo.TimeWithChildren += timeDiff;
 						methodInfo.CalleeTime = calleeTimeStack.Pop ();
@@ -332,6 +400,11 @@ namespace MonoDevelop.Profiler
 			
 			public class MethodInfo
 			{
+				public MethodInfo Parent {
+					get;
+					set;
+				}
+				
 				public long RecurseCount {
 					get;
 					set;
@@ -342,7 +415,7 @@ namespace MonoDevelop.Profiler
 					set;
 				}
 				
-				public string Name {
+				public long MethodBase {
 					get;
 					set;
 				}
@@ -357,21 +430,28 @@ namespace MonoDevelop.Profiler
 					set;
 				}
 				
-				public HashSet<MethodInfo> CallStack = new HashSet<MethodInfo> ();
+				public Dictionary<long, MethodInfo> MethodCalls = new Dictionary<long, MethodInfo> ();
 				
-				public MethodInfo (string name)
+				public MethodInfo (long methodBase)
 				{
-					this.Name = name;
+					this.MethodBase = methodBase;
 				}
 			}
 			
-			public Dictionary<long, MethodInfo> methodDictionary = new Dictionary<long, MethodInfo> ();
+			public Dictionary<long, string> nameDictionary = new Dictionary<long, string> ();
 			public Dictionary<long, ThreadContext> threadDictionary = new Dictionary<long, ThreadContext> ();
 			
+			public string LookupName (long methodBase)
+			{
+				string name;
+				if (nameDictionary.TryGetValue (methodBase, out name))
+					return name;
+				return "Unknown method";
+			}
+
 			public void Reset ()
 			{
 				Events.Clear ();
-				methodDictionary.Clear ();
 				threadDictionary.Clear ();
 			}
 			
@@ -381,23 +461,23 @@ namespace MonoDevelop.Profiler
 				TimeBase += methodEvent.TimeDiff;
 				switch (methodEvent.Type) {
 				case MethodEvent.MethodType.Jit:
-					methodDictionary [methodBase] = new MethodInfo (methodEvent.Name);
+					nameDictionary [methodBase] = methodEvent.Name;
 					break;
 				
 				case MethodEvent.MethodType.Enter:
 					if (ShouldLog) {
-						if (!methodDictionary.ContainsKey (methodBase))
-							methodDictionary [methodBase] = new MethodInfo ("Unknown method.");
+						if (!nameDictionary.ContainsKey (methodBase))
+							nameDictionary [methodBase] = "[Unknown method]";
 						
-						currentThread.PushMethod (methodDictionary [methodBase], TimeBase);
+						currentThread.PushMethod (methodBase, TimeBase);
 					}
 					break;
 				
 				case MethodEvent.MethodType.Leave:
 					if (ShouldLog) {
-						if (!methodDictionary.ContainsKey (methodBase))
-							methodDictionary [methodBase] = new MethodInfo ("Unknown method.");
-						currentThread.PopMethod (methodDictionary [methodBase], TimeBase);
+						if (!nameDictionary.ContainsKey (methodBase))
+							nameDictionary [methodBase] = "[Unknown method]";
+						currentThread.PopMethod (methodBase, TimeBase);
 					}
 					break;
 				}

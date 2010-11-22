@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 using System.ComponentModel;
 using Gtk;
 using Cairo;
@@ -36,38 +37,71 @@ namespace MonoDevelop.Profiler
 	{
 		ProfileDialog dialog;
 		int maxEvents = 230;
+		int slider = 0;
 		
 		public TimeLineWidget (ProfileDialog dialog)
 		{
 			this.dialog = dialog;
 			Events |= Gdk.EventMask.ButtonMotionMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask;
 		}
+		
+		public void Update ()
+		{
+			maxEvents = (int)(Math.Round (dialog.visitor.Events.Max () / 100.0) * 100 + 30);
+			QueueDraw ();
+		}
+		
 		double pressStart, pressEnd;
 		bool pressed;
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
-			if (evnt.Button == 1) {
+			if (evnt.Button == 1)
 				pressed = true;
-				pressStart = pressEnd = Math.Max (boxWidth, evnt.X);
+			if (evnt.Y > Allocation.Height - scrollBarHeight) {
+				MoveSlider (evnt.X);
+			} else {
+				if (evnt.Button == 1) {
+					pressStart = pressEnd = slider + Math.Max (boxWidth, evnt.X) / 2;
+				} else {
+					pressStart = pressEnd = 0;
+					dialog.SetTime (0, 0);
+				}
 			}
 			return base.OnButtonPressEvent (evnt);
 		}
 		
 		protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
 		{
-			var min = 100000 * (Math.Min (pressStart, pressEnd) - boxWidth);
-			var max = 100000 * (Math.Max (pressStart, pressEnd) - boxWidth);
-			dialog.SetTime ((ulong)min, (ulong)max);
-			pressed = false;
+			if (evnt.Button == 1) {
+				var min = 100000 * (Math.Min (pressStart, pressEnd) - boxWidth);
+				var max = 100000 * (Math.Max (pressStart, pressEnd) - boxWidth);
+				dialog.SetTime ((ulong)min, (ulong)max);
+				pressed = false;
+			}
 			return base.OnButtonReleaseEvent (evnt);
 		}
 		
+		void MoveSlider (double x)
+		{
+			if (x >= boxWidth) {
+				double length = Allocation.Width - boxWidth;
+				double displayLength = length / 2;
+			
+				slider = Math.Max (0, (int)(dialog.visitor.Events.Count * (x - boxWidth) / length - displayLength / 2));
+				QueueDraw ();
+			}
+		}
+
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion evnt)
 		{
 			if (pressed) {
-				pressEnd = Math.Max (boxWidth, evnt.X);
-				QueueDraw ();
+				if (evnt.Y > Allocation.Height - scrollBarHeight) {
+					MoveSlider (evnt.X);
+				} else {
+					pressEnd = slider + Math.Max (boxWidth, evnt.X) / 2;
+					QueueDraw ();
+				}
 			}
 			return base.OnMotionNotifyEvent (evnt);
 		}
@@ -76,7 +110,8 @@ namespace MonoDevelop.Profiler
 		{
 			base.OnSizeRequested (ref requisition);
 		}
-
+		
+		const double scrollBarHeight = 22;
 		const double timeHeight = 28;
 		const double eventHeight = 20;
 		const double boxWidth = 60;
@@ -113,10 +148,32 @@ namespace MonoDevelop.Profiler
 			gr.LineTo (boxWidth + 0.5, Allocation.Height);
 			gr.Stroke ();
 		}
+		
+		void DrawScrollBar (Context gr)
+		{
+			gr.LineWidth = 1;
+			
+			gr.Rectangle (boxWidth, Allocation.Height - scrollBarHeight, Allocation.Width - boxWidth, scrollBarHeight);
+			gr.Color = new Color (0.7, 0.7, 0.7);
+			gr.Fill ();
+			
+			double length = Allocation.Width - boxWidth;
+			double displayLength = length / 2;
+			double f = (double)displayLength / dialog.visitor.Events.Count;
+			double s = slider * 2 * f;
+			double w = length * f;
+			
+			gr.Rectangle (boxWidth + s + 0.5, Allocation.Height - scrollBarHeight + 0.5, w, scrollBarHeight);
+			gr.Color = new Color (1, 1, 1);
+			gr.FillPreserve ();
+			gr.Color = new Color (0, 0, 0);
+			gr.Stroke ();
+		}
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			using (var gr = Gdk.CairoHelper.Create (evnt.Window)) {
+				
 				DrawBackground (gr);
 				
 				var layout = gr.CreateLayout ();
@@ -143,12 +200,14 @@ namespace MonoDevelop.Profiler
 					gr.LineTo (boxWidth, y);
 					gr.Stroke ();
 				}
-				var eventMetricHeight = Allocation.Height - timeHeight - eventHeight;
-				gr.MoveTo (boxWidth + 1, Allocation.Height);
+				var eventMetricHeight = Allocation.Height - timeHeight - eventHeight - scrollBarHeight;
+				gr.MoveTo (boxWidth + 1, Allocation.Height - scrollBarHeight);
 				gr.Color = new Color (1, 0, 0);
-				for (int i = 0; i < dialog.visitor.Events.Count; i++) {
+				double x = boxWidth + 1;
+				for (int i = slider; i < dialog.visitor.Events.Count && x < Allocation.Width; i++) {
 					var e = dialog.visitor.Events [i];
-					gr.LineTo (boxWidth + 1 + i * 2, Allocation.Height - (eventMetricHeight * e / (double)maxEvents));
+					gr.LineTo (x, Allocation.Height - scrollBarHeight - (eventMetricHeight * e / (double)maxEvents));
+					x += 2;
 				}
 				gr.Stroke ();
 				
@@ -163,17 +222,32 @@ namespace MonoDevelop.Profiler
 				gr.ShowLayout (layout);
 				
 				layout.Dispose ();
-				
-				gr.Rectangle (pressStart, 0, pressEnd - pressStart, Allocation.Height);
-				gr.Color = new Color (0, 1, 1, 0.2);
-				gr.Fill ();
+				x = (pressStart - slider) * 2;
+				double delta = 0;
+				if (x < boxWidth)
+					delta = boxWidth - x;
+				double width = pressEnd * 2 - pressStart * 2 - delta;
+				if (width > 0) {
+					gr.Rectangle (x + delta, 0, width, Allocation.Height - scrollBarHeight);
+					gr.Color = new Color (0, 1, 1, 0.2);
+					gr.Fill ();
+				}
 				
 				gr.Color = new Color (0, 1, 1, 0.3);
-				gr.MoveTo (pressStart, 0);
-				gr.LineTo (pressStart, Allocation.Height);
-				gr.MoveTo (pressEnd, 0);
-				gr.LineTo (pressEnd, Allocation.Height);
-				gr.Stroke ();
+				if (x > boxWidth) {
+					gr.MoveTo (x, 0);
+					gr.LineTo (x, Allocation.Height);
+					gr.Stroke ();
+				}
+				
+				x = (pressEnd - slider) * 2;
+				if (x > boxWidth) {
+					gr.MoveTo (x, 0);
+					gr.LineTo (x, Allocation.Height);
+					gr.Stroke ();
+				}
+				
+				DrawScrollBar (gr);
 			}
 
 			return base.OnExposeEvent (evnt);
