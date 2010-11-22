@@ -182,9 +182,9 @@ namespace MonoDevelop.MonoDroid
 			foreach (var activity in application.Elements ("activity")) {
 				var filter = activity.Element ("intent-filter");
 				if (filter != null) {
-					var category = filter.Element ("category");
-					if (category != null && (string)category.Attribute (aName) == "android.intent.category.LAUNCHER")
-						return (string) activity.Attribute (aName);
+					foreach (var category in filter.Elements ("category"))
+						if (category != null && (string)category.Attribute (aName) == "android.intent.category.LAUNCHER")
+							return (string) activity.Attribute (aName);
 				}
 			}
 			return null;
