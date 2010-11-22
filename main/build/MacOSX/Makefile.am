@@ -92,4 +92,7 @@ MonoDevelop.app:
 MonoDevelop.app.zip: MonoDevelop.app
 	zip -r9uq MonoDevelop.app.zip MonoDevelop.app
 
+update-png:
+	/Applications/Inkscape.app/Contents/Resources/script --without-gui --export-png=`pwd`/dmg-bg.png `pwd`/dmg-bg.svg
+
 .PHONY: MonoDevelop.app
