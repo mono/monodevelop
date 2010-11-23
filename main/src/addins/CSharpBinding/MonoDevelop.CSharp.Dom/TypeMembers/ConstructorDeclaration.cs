@@ -59,7 +59,7 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitConstructorDeclaration (this, data);
 		}
@@ -70,7 +70,7 @@ namespace MonoDevelop.CSharp.Dom
 		This
 	}
 	
-	public class ConstructorInitializer : AstNode
+	public class ConstructorInitializer : DomNode
 	{
 		public static readonly new ConstructorInitializer Null = new NullConstructorInitializer ();
 		class NullConstructorInitializer : ConstructorInitializer
@@ -87,7 +87,7 @@ namespace MonoDevelop.CSharp.Dom
 				}
 			}
 			
-			public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+			public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 			{
 				return default (S);
 			}
@@ -110,7 +110,7 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitConstructorInitializer (this, data);
 		}

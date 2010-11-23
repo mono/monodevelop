@@ -30,7 +30,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class Identifier : AstNode
+	public class Identifier : DomNode
 	{
 		public static readonly new Identifier Null = new NullIdentifier ();
 		class NullIdentifier : Identifier
@@ -41,7 +41,7 @@ namespace MonoDevelop.CSharp.Dom
 				}
 			}
 			
-			public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+			public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 			{
 				return default (S);
 			}
@@ -87,7 +87,7 @@ namespace MonoDevelop.CSharp.Dom
 			this.startLocation = location;
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitIdentifier (this, data);
 		}

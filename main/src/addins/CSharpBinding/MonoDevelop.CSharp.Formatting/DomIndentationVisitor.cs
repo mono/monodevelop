@@ -35,7 +35,7 @@ using System.Linq;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	public class DomIndentationVisitor : AbtractCSharpDomVisitor<object, object>
+	public class DomIndentationVisitor : DomVisitor<object, object>
 	{
 		CSharpFormattingPolicy policy;
 		TextEditorData data;
@@ -88,7 +88,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return null;
 		}
 		
-		public void EnsureBlankLinesAfter (AstNode node, int blankLines)
+		public void EnsureBlankLinesAfter (DomNode node, int blankLines)
 		{
 			if (!CorrectBlankLines)
 				return;
@@ -108,7 +108,7 @@ namespace MonoDevelop.CSharp.Formatting
 			AddChange (start, removedChars, sb.ToString ());
 		}
 		
-		public void EnsureBlankLinesBefore (AstNode node, int blankLines)
+		public void EnsureBlankLinesBefore (DomNode node, int blankLines)
 		{
 			if (!CorrectBlankLines)
 				return;
@@ -349,7 +349,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return null;
 		}
 		
-		static bool IsSimpleEvent (AstNode node)
+		static bool IsSimpleEvent (DomNode node)
 		{
 			var evt = (EventDeclaration)node;
 			return evt.AddAccessor.IsNull;
@@ -431,9 +431,9 @@ namespace MonoDevelop.CSharp.Formatting
 			return base.VisitDelegateDeclaration (delegateDeclaration, data);
 		}
 		
-		static bool IsMember (AstNode nextSibling)
+		static bool IsMember (DomNode nextSibling)
 		{
-			return nextSibling != null && nextSibling.Role == AstNode.Roles.Member;
+			return nextSibling != null && nextSibling.Role == DomNode.Roles.Member;
 		}
 
 		public override object VisitMethodDeclaration (MethodDeclaration methodDeclaration, object data)
@@ -553,12 +553,12 @@ namespace MonoDevelop.CSharp.Formatting
 			return FixEmbeddedStatment (policy.StatementBraceStyle, policy.ForEachBraceForcement, foreachStatement.EmbeddedStatement);
 		}
 
-		object FixEmbeddedStatment (MonoDevelop.CSharp.Formatting.BraceStyle braceStyle, MonoDevelop.CSharp.Formatting.BraceForcement braceForcement, AstNode node)
+		object FixEmbeddedStatment (MonoDevelop.CSharp.Formatting.BraceStyle braceStyle, MonoDevelop.CSharp.Formatting.BraceForcement braceForcement, DomNode node)
 		{
 			return FixEmbeddedStatment (braceStyle, braceForcement, null, false, node);
 		}
 		
-		object FixEmbeddedStatment (MonoDevelop.CSharp.Formatting.BraceStyle braceStyle, MonoDevelop.CSharp.Formatting.BraceForcement braceForcement, CSharpTokenNode token, bool allowInLine, AstNode node)
+		object FixEmbeddedStatment (MonoDevelop.CSharp.Formatting.BraceStyle braceStyle, MonoDevelop.CSharp.Formatting.BraceForcement braceForcement, CSharpTokenNode token, bool allowInLine, DomNode node)
 		{
 			if (node == null)
 				return null;
@@ -664,7 +664,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return result;
 		}
 		
-		void EnforceBraceStyle (MonoDevelop.CSharp.Formatting.BraceStyle braceStyle, AstNode lbrace, AstNode rbrace)
+		void EnforceBraceStyle (MonoDevelop.CSharp.Formatting.BraceStyle braceStyle, DomNode lbrace, DomNode rbrace)
 		{
 			if (lbrace.IsNull || rbrace.IsNull)
 				return;
@@ -959,7 +959,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		#endregion
 		
-		void PlaceOnNewLine (bool newLine, AstNode keywordNode)
+		void PlaceOnNewLine (bool newLine, DomNode keywordNode)
 		{
 			if (keywordNode == null)
 				return;

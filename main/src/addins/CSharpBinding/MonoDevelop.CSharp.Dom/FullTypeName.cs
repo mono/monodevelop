@@ -30,7 +30,7 @@ using System.Linq;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class FullTypeName : AstNode
+	public class FullTypeName : DomNode
 	{
 		public static readonly new FullTypeName Null = new NullFullTypeName ();
 		class NullFullTypeName : FullTypeName
@@ -41,7 +41,7 @@ namespace MonoDevelop.CSharp.Dom
 				}
 			}
 			
-			public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+			public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 			{
 				return default (S);
 			}
@@ -59,11 +59,11 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 			
-		public IEnumerable<AstNode> TypeArguments {
-			get { return GetChildrenByRole (Roles.TypeArgument) ?? new AstNode[0]; }
+		public IEnumerable<DomNode> TypeArguments {
+			get { return GetChildrenByRole (Roles.TypeArgument) ?? new DomNode[0]; }
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitFullTypeName (this, data);
 		}

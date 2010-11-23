@@ -44,13 +44,13 @@ FILES =  \
 	MonoDevelop.CSharp.Completion/NRefactoryIndexerParameterDataProvider.cs \
 	MonoDevelop.CSharp.Completion/NRefactoryParameterDataProvider.cs \
 	MonoDevelop.CSharp.Completion/NRefactoryTemplateParameterDataProvider.cs \
-	MonoDevelop.CSharp.Dom/AbtractCSharpDomVisitor.cs \
-	MonoDevelop.CSharp.Dom/AstNode.cs \
 	MonoDevelop.CSharp.Dom/CompilationUnit.cs \
 	MonoDevelop.CSharp.Dom/ComposedType.cs \
 	MonoDevelop.CSharp.Dom/CSharpAmbience.cs \
 	MonoDevelop.CSharp.Dom/CSharpModifierToken.cs \
 	MonoDevelop.CSharp.Dom/CSharpTokenNode.cs \
+	MonoDevelop.CSharp.Dom/DomNode.cs \
+	MonoDevelop.CSharp.Dom/DomVisitor.cs \
 	MonoDevelop.CSharp.Dom/Expressions/AnonymousMethodExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/ArgListExpression.cs \
 	MonoDevelop.CSharp.Dom/Expressions/ArrayCreateExpression.cs \
@@ -92,7 +92,6 @@ FILES =  \
 	MonoDevelop.CSharp.Dom/GeneralScope/TypeDeclaration.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/UsingAliasDeclaration.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/UsingDeclaration.cs \
-	MonoDevelop.CSharp.Dom/ICSharpDomVisitor.cs \
 	MonoDevelop.CSharp.Dom/Identifier.cs \
 	MonoDevelop.CSharp.Dom/NodeType.cs \
 	MonoDevelop.CSharp.Dom/QualifiedIdentifier.cs \

@@ -30,7 +30,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class QualifiedIdentifier : AstNode
+	public class QualifiedIdentifier : DomNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -54,7 +54,7 @@ namespace MonoDevelop.CSharp.Dom
 		{
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return default (S);
 		}

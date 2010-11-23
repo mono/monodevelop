@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public abstract class AbstractMemberBase : AstNode
+	public abstract class AbstractMemberBase : DomNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -39,7 +39,7 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public IEnumerable<AstNode> Modifiers { 
+		public IEnumerable<DomNode> Modifiers { 
 			get {
 				return base.GetChildrenByRole (Roles.Modifier);
 			}

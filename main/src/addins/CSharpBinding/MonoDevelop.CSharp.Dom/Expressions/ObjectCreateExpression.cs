@@ -30,7 +30,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class ObjectCreateExpression : AstNode
+	public class ObjectCreateExpression : DomNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -38,8 +38,8 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public AstNode Type {
-			get { return GetChildByRole (Roles.ReturnType) ?? AstNode.Null; }
+		public DomNode Type {
+			get { return GetChildByRole (Roles.ReturnType) ?? DomNode.Null; }
 		}
 		
 		public CSharpTokenNode LPar {
@@ -50,11 +50,11 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
 		}
 		
-		public IEnumerable<AstNode> Arguments {
+		public IEnumerable<DomNode> Arguments {
 			get { return GetChildrenByRole (Roles.Argument); }
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitObjectCreateExpression (this, data);
 		}

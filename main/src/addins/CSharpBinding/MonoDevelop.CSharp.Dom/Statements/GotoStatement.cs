@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class GotoStatement : AstNode
+	public class GotoStatement : DomNode
 	{
 		public const int DefaultKeywordRole = 100;
 		public const int CaseKeywordRole = 101;
@@ -49,11 +49,11 @@ namespace MonoDevelop.CSharp.Dom
 			get { return ((Identifier)LabelExpression).Name; }
 		}
 
-		public AstNode LabelExpression {
-			get { return GetChildByRole (Roles.Expression) ?? AstNode.Null; }
+		public DomNode LabelExpression {
+			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitGotoStatement (this, data);
 		}

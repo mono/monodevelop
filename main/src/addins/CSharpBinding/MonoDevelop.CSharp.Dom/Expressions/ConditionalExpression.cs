@@ -32,7 +32,7 @@ namespace MonoDevelop.CSharp.Dom
 	/// <summary>
 	/// cond ? true : false
 	/// </summary>
-	public class ConditionalExpression : AstNode
+	public class ConditionalExpression : DomNode
 	{
 		public const int TrueExpressionRole = 100;
 		public const int FalseExpressionRole = 101;
@@ -43,16 +43,16 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public AstNode TrueExpression {
-			get { return GetChildByRole (TrueExpressionRole) ?? AstNode.Null; }
+		public DomNode TrueExpression {
+			get { return GetChildByRole (TrueExpressionRole) ?? DomNode.Null; }
 		}
 		
-		public AstNode FalseExpression {
-			get { return GetChildByRole (FalseExpressionRole) ?? AstNode.Null; }
+		public DomNode FalseExpression {
+			get { return GetChildByRole (FalseExpressionRole) ?? DomNode.Null; }
 		}
 
-		public AstNode Condition {
-			get { return GetChildByRole (Roles.Condition) ?? AstNode.Null; }
+		public DomNode Condition {
+			get { return GetChildByRole (Roles.Condition) ?? DomNode.Null; }
 		}
 		
 		public CSharpTokenNode QuestionMark {
@@ -63,7 +63,7 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (CSharpTokenNode)GetChildByRole (Roles.Colon) ?? CSharpTokenNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitConditionalExpression (this, data);
 		}

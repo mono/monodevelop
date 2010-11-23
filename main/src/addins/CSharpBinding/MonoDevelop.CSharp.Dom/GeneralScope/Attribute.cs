@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class Attribute : AstNode
+	public class Attribute : DomNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -52,13 +52,13 @@ namespace MonoDevelop.CSharp.Dom
 		}
 		
 		// Todo: Arguments should not be nodes, instead it should be expressions, change when it's implemented.
-		public IEnumerable<AstNode> Arguments { 
+		public IEnumerable<DomNode> Arguments { 
 			get {
 				return base.GetChildrenByRole (Roles.Argument);
 			}
 		}
 
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitAttribute (this, data);
 		}

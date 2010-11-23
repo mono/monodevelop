@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class UncheckedExpression : AstNode
+	public class UncheckedExpression : DomNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -37,8 +37,8 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public AstNode Expression {
-			get { return GetChildByRole (Roles.Expression) ?? AstNode.Null; }
+		public DomNode Expression {
+			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
 		}
 		
 		public CSharpTokenNode LPar {
@@ -49,7 +49,7 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitUncheckedExpression (this, data);
 		}

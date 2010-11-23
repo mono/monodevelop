@@ -32,7 +32,7 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class MethodDeclaration : AbstractMember
 	{
-		public IEnumerable<AstNode> TypeArguments {
+		public IEnumerable<DomNode> TypeArguments {
 			get { return GetChildrenByRole (Roles.TypeArgument); }
 		}
 		
@@ -64,7 +64,7 @@ namespace MonoDevelop.CSharp.Dom
 		
 		
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitMethodDeclaration (this, data);
 		}

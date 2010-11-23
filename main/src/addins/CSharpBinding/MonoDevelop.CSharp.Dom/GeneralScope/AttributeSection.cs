@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class AttributeSection : AstNode
+	public class AttributeSection : DomNode
 	{
 		const int TargetRole = 101;
 		
@@ -54,7 +54,7 @@ namespace MonoDevelop.CSharp.Dom
 			get { return base.GetChildrenByRole (Roles.Attribute).Cast<Attribute> (); }
 		}
 
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitAttributeSection (this, data);
 		}

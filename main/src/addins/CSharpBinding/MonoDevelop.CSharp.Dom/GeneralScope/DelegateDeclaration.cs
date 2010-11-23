@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class DelegateDeclaration : AstNode
+	public class DelegateDeclaration : DomNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -51,9 +51,9 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public AstNode ReturnType {
+		public DomNode ReturnType {
 			get {
-				return GetChildByRole (Roles.ReturnType) ?? AstNode.Null;
+				return GetChildByRole (Roles.ReturnType) ?? DomNode.Null;
 			}
 		}
 		
@@ -77,13 +77,13 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public IEnumerable<AstNode> Modifiers { 
+		public IEnumerable<DomNode> Modifiers { 
 			get {
 				return base.GetChildrenByRole (Roles.Modifier);
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitDelegateDeclaration (this, data);
 		}

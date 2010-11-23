@@ -36,7 +36,7 @@ namespace MonoDevelop.CSharp.Dom
 		This
 	}
 	
-	public class ParameterDeclarationExpression : AstNode
+	public class ParameterDeclarationExpression : DomNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -55,13 +55,13 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public AstNode DefaultExpression {
+		public DomNode DefaultExpression {
 			get {
-				return GetChildByRole (Roles.Expression) ?? AstNode.Null;
+				return GetChildByRole (Roles.Expression) ?? DomNode.Null;
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitParameterDeclarationExpression (this, data);
 		}

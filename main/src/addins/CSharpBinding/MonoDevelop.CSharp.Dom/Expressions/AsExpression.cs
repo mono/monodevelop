@@ -28,7 +28,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class AsExpression : AstNode
+	public class AsExpression : DomNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -40,11 +40,11 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (FullTypeName)GetChildByRole (Roles.ReturnType) ?? FullTypeName.Null; }
 		}
 		
-		public AstNode Expression {
-			get { return GetChildByRole (Roles.Expression) ?? AstNode.Null; }
+		public DomNode Expression {
+			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitAsExpression (this, data);
 		}

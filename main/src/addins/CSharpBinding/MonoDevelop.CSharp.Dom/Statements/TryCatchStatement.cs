@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class TryCatchStatement : AstNode
+	public class TryCatchStatement : DomNode
 	{
 		public const int TryKeywordRole     = 100;
 		public const int FinallyKeywordRole = 101;
@@ -65,13 +65,13 @@ namespace MonoDevelop.CSharp.Dom
 			get { return GetChildrenByRole (CatchClauseRole).Cast<CatchClause> (); }
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitTryCatchStatement (this, data);
 		}
 	}
 	
-	public class CatchClause : AstNode
+	public class CatchClause : DomNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -79,7 +79,7 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public AstNode ReturnType {
+		public DomNode ReturnType {
 			get { return GetChildByRole (Roles.ReturnType); }
 		}
 		
@@ -107,7 +107,7 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitCatchClause (this, data);
 		}

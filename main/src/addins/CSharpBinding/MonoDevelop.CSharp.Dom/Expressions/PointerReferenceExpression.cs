@@ -42,8 +42,8 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public AstNode Expression {
-			get { return GetChildByRole (Roles.TargetExpression) ?? AstNode.Null; }
+		public DomNode Expression {
+			get { return GetChildByRole (Roles.TargetExpression) ?? DomNode.Null; }
 		}
 		
 		public string Dim {
@@ -51,7 +51,7 @@ namespace MonoDevelop.CSharp.Dom
 			set;
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitPointerReferenceExpression (this, data);
 		}

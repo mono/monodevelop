@@ -31,7 +31,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class QueryExpressionFromClause : AstNode
+	public class QueryExpressionFromClause : DomNode
 	{
 		public const int FromKeywordRole = 100;
 		public const int InKeywordRole = 101;
@@ -42,9 +42,9 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public AstNode Type {
+		public DomNode Type {
 			get {
-				return GetChildByRole (Roles.ReturnType) ?? AstNode.Null;
+				return GetChildByRole (Roles.ReturnType) ?? DomNode.Null;
 			}
 		}
 		
@@ -60,11 +60,11 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public AstNode Expression {
-			get { return GetChildByRole (Roles.Expression) ?? AstNode.Null; }
+		public DomNode Expression {
+			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpressionFromClause (this, data);
 		}
@@ -99,13 +99,13 @@ namespace MonoDevelop.CSharp.Dom
 		}
 		
 		
-		public AstNode OnExpression {
+		public DomNode OnExpression {
 			get {
 				return GetChildByRole (OnExpressionRole);
 			}
 		}
 		
-		public AstNode EqualsExpression {
+		public DomNode EqualsExpression {
 			get {
 				return GetChildByRole (EqualsExpressionRole);
 			}
@@ -123,19 +123,19 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public AstNode InExpression {
+		public DomNode InExpression {
 			get {
 				return GetChildByRole (Roles.Expression);
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpressionJoinClause (this, data);
 		}
 	}
 	
-	public class QueryExpressionGroupClause : AstNode
+	public class QueryExpressionGroupClause : DomNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -157,25 +157,25 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (CSharpTokenNode)GetChildByRole (ByKeywordRole); }
 		}
 		
-		public AstNode Projection {
+		public DomNode Projection {
 			get {
 				return GetChildByRole (ProjectionExpressionRole);
 			}
 		}
 		
-		public AstNode GroupBy {
+		public DomNode GroupBy {
 			get {
 				return GetChildByRole (GroupByExpressionRole);
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpressionGroupClause (this, data);
 		}
 	}
 	
-	public class QueryExpressionLetClause : AstNode 
+	public class QueryExpressionLetClause : DomNode 
 	{
 		public override NodeType NodeType {
 			get {
@@ -195,7 +195,7 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public AstNode Expression {
+		public DomNode Expression {
 			get {
 				return GetChildByRole (Roles.Expression);
 			}
@@ -205,19 +205,19 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
 		}
 		
-		public AstNode Assign {
+		public DomNode Assign {
 			get {
 				return GetChildByRole (Roles.Assign);
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpressionLetClause (this, data);
 		}
 	}
 	
-	public class QueryExpressionOrderClause : AstNode
+	public class QueryExpressionOrderClause : DomNode
 	{
 		public const int OrderingRole = 100;
 		
@@ -232,7 +232,7 @@ namespace MonoDevelop.CSharp.Dom
 			set;
 		}
 		
-		public AstNode Expression {
+		public DomNode Expression {
 			get {
 				return GetChildByRole (Roles.Expression);
 			}
@@ -242,14 +242,13 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
 		}
 		
-		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpressionOrderClause (this, data);
 		}
 	}
 	
-	public class QueryExpressionOrdering : AstNode
+	public class QueryExpressionOrdering : DomNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -262,13 +261,13 @@ namespace MonoDevelop.CSharp.Dom
 			set;
 		}
 		
-		public AstNode Criteria {
+		public DomNode Criteria {
 			get {
 				return GetChildByRole (Roles.Expression);
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpressionOrdering (this, data);
 		}
@@ -281,7 +280,7 @@ namespace MonoDevelop.CSharp.Dom
 		Descending
 	}
 	
-	public class QueryExpressionSelectClause : AstNode 
+	public class QueryExpressionSelectClause : DomNode 
 	{
 		public override NodeType NodeType {
 			get {
@@ -293,19 +292,19 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
 		}
 		
-		public AstNode Projection {
+		public DomNode Projection {
 			get {
 				return GetChildByRole (Roles.Expression);
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpressionSelectClause (this, data);
 		}
 	}
 	
-	public class QueryExpressionWhereClause : AstNode 
+	public class QueryExpressionWhereClause : DomNode 
 	{
 		public override NodeType NodeType {
 			get {
@@ -317,16 +316,17 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
 		}
 		
-		public AstNode Condition {
+		public DomNode Condition {
 			get {
 				return GetChildByRole (Roles.Condition);
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpressionWhereClause (this, data);
 		}
+		
 	}
 	
 }

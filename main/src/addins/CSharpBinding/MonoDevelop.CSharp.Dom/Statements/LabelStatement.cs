@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class LabelStatement : AstNode
+	public class LabelStatement : DomNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -45,7 +45,7 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitLabelStatement (this, data);
 		}

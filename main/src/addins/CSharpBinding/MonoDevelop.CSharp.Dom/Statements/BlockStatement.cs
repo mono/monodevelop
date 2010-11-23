@@ -30,7 +30,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class BlockStatement : AstNode
+	public class BlockStatement : DomNode
 	{
 		public static readonly new BlockStatement Null = new NullBlockStatement ();
 		class NullBlockStatement : BlockStatement
@@ -41,7 +41,7 @@ namespace MonoDevelop.CSharp.Dom
 				}
 			}
 			
-			public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+			public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 			{
 				return default (S);
 			}
@@ -66,13 +66,13 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public IEnumerable<AstNode> Statements {
+		public IEnumerable<DomNode> Statements {
 			get {
 				return GetChildrenByRole (Roles.Statement);
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitBlockStatement (this, data);
 		}

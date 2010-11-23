@@ -27,7 +27,7 @@ using System;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class DefaultValueExpression : AstNode
+	public class DefaultValueExpression : DomNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -39,7 +39,7 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (FullTypeName)GetChildByRole (Roles.ReturnType) ?? FullTypeName.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitDefaultValueExpression (this, data);
 		}

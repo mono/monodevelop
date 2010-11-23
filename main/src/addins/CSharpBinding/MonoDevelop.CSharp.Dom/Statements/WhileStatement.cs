@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class WhileStatement : AstNode
+	public class WhileStatement : DomNode
 	{
 		public const int DoKeywordRole = 101;
 		public const int WhileKeywordRole = 102;
@@ -45,12 +45,12 @@ namespace MonoDevelop.CSharp.Dom
 			set;
 		}
 		
-		public AstNode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement) ?? AstNode.Null; }
+		public DomNode EmbeddedStatement {
+			get { return GetChildByRole (Roles.EmbeddedStatement) ?? DomNode.Null; }
 		}
 		
-		public AstNode Condition {
-			get { return GetChildByRole (Roles.Condition) ?? AstNode.Null; }
+		public DomNode Condition {
+			get { return GetChildByRole (Roles.Condition) ?? DomNode.Null; }
 		}
 		
 		public CSharpTokenNode DoKeyword {
@@ -69,7 +69,7 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitWhileStatement (this, data);
 		}

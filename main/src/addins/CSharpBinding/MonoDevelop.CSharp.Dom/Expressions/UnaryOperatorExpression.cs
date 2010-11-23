@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class UnaryOperatorExpression : AstNode
+	public class UnaryOperatorExpression : DomNode
 	{
 		public const int Operator = 100;
 		
@@ -44,11 +44,11 @@ namespace MonoDevelop.CSharp.Dom
 			set;
 		}
 		
-		public AstNode Expression {
-			get { return GetChildByRole (Roles.Expression) ?? AstNode.Null; }
+		public DomNode Expression {
+			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitUnaryOperatorExpression (this, data);
 		}

@@ -83,7 +83,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 
 	}
 	
-	public class VariableLookupVisitor : AbtractCSharpDomVisitor<object, object>
+	public class VariableLookupVisitor : DomVisitor<object, object>
 	{
 		List<KeyValuePair <string, IReturnType>> unknownVariables = new List<KeyValuePair <string, IReturnType>> ();
 		Dictionary<string, VariableDescriptor> variables = new Dictionary<string, VariableDescriptor> ();

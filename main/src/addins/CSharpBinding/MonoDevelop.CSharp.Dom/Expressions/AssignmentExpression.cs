@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class AssignmentExpression : AstNode
+	public class AssignmentExpression : DomNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -46,12 +46,12 @@ namespace MonoDevelop.CSharp.Dom
 			set;
 		}
 		
-		public AstNode Left {
-			get { return GetChildByRole (LeftExpressionRole) ?? AstNode.Null; }
+		public DomNode Left {
+			get { return GetChildByRole (LeftExpressionRole) ?? DomNode.Null; }
 		}
 		
-		public AstNode Right {
-			get { return GetChildByRole (RightExpressionRole) ?? AstNode.Null; }
+		public DomNode Right {
+			get { return GetChildByRole (RightExpressionRole) ?? DomNode.Null; }
 		}
 		
 		public CSharpTokenNode Operator {
@@ -59,7 +59,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 	
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitAssignmentExpression (this, data);
 		}

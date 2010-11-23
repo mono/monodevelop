@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class ExpressionStatement : AstNode
+	public class ExpressionStatement : DomNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -37,7 +37,7 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitExpressionStatement (this, data);
 		}

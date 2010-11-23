@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class Constraint : AstNode
+	public class Constraint : DomNode
 	{
 		
 		public override NodeType NodeType {
@@ -52,11 +52,11 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (CSharpTokenNode)GetChildByRole (Roles.Colon) ?? CSharpTokenNode.Null; }
 		}
 		
-		public IEnumerable<AstNode> TypeParameters {
+		public IEnumerable<DomNode> TypeParameters {
 			get { return GetChildrenByRole (Roles.TypeArgument); }
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitConstraint (this, data);
 		}

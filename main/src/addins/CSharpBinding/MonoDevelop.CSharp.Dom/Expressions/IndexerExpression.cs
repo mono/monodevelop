@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class IndexerExpression : AstNode
+	public class IndexerExpression : DomNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -39,7 +39,7 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public AstNode Target {
+		public DomNode Target {
 			get { return GetChildByRole (Roles.TargetExpression); }
 		}
 		
@@ -55,11 +55,11 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public IEnumerable<AstNode> Arguments {
+		public IEnumerable<DomNode> Arguments {
 			get { return GetChildrenByRole (Roles.Argument); }
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitIndexerExpression (this, data);
 		}

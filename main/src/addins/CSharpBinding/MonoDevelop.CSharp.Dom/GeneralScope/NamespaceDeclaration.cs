@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class NamespaceDeclaration : AstNode
+	public class NamespaceDeclaration : DomNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -79,7 +79,7 @@ namespace MonoDevelop.CSharp.Dom
 			return name1 + "." + name2;
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitNamespaceDeclaration (this, data);
 		}

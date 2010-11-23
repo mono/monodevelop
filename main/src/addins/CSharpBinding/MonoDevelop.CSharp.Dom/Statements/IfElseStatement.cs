@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class IfElseStatement : AstNode
+	public class IfElseStatement : DomNode
 	{
 		public const int TrueEmbeddedStatementRole = 100;
 		public const int FalseEmbeddedStatementRole = 101;
@@ -42,16 +42,16 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public AstNode TrueEmbeddedStatement {
-			get { return GetChildByRole (TrueEmbeddedStatementRole) ?? AstNode.Null; }
+		public DomNode TrueEmbeddedStatement {
+			get { return GetChildByRole (TrueEmbeddedStatementRole) ?? DomNode.Null; }
 		}
 		
-		public AstNode FalseEmbeddedStatement {
-			get { return GetChildByRole (FalseEmbeddedStatementRole) ?? AstNode.Null; }
+		public DomNode FalseEmbeddedStatement {
+			get { return GetChildByRole (FalseEmbeddedStatementRole) ?? DomNode.Null; }
 		}
 
-		public AstNode Condition {
-			get { return GetChildByRole (Roles.Condition) ?? AstNode.Null; }
+		public DomNode Condition {
+			get { return GetChildByRole (Roles.Condition) ?? DomNode.Null; }
 		}
 		
 		public CSharpTokenNode LPar {
@@ -70,7 +70,7 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (CSharpTokenNode)GetChildByRole (ElseKeywordRole) ?? CSharpTokenNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitIfElseStatement (this, data);
 		}

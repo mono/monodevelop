@@ -31,7 +31,7 @@ using System.Linq;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class ComposedType : AstNode
+	public class ComposedType : DomNode
 	{
 		public const int NullableRole  = 100;
 		public const int PointerRole   = 101;
@@ -43,7 +43,7 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public AstNode BaseType {
+		public DomNode BaseType {
 			get {
 				return GetChildByRole (Roles.ReturnType);
 			}
@@ -53,12 +53,12 @@ namespace MonoDevelop.CSharp.Dom
 			get { return GetChildrenByRole (ArraySpecRole).Cast<ArraySpecifier> () ?? new ArraySpecifier[0]; }
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitComposedType (this, data);
 		}
 		
-		public class ArraySpecifier : AstNode
+		public class ArraySpecifier : DomNode
 		{
 			public override NodeType NodeType {
 				get {
@@ -75,7 +75,7 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		
 			
-			public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+			public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 			{
 				return default (S);
 			}

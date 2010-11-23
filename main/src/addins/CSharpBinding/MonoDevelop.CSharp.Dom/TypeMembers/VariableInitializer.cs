@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class VariableInitializer : AstNode
+	public class VariableInitializer : DomNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -54,13 +54,13 @@ namespace MonoDevelop.CSharp.Dom
 		}
 		
 		
-		public AstNode Initializer {
+		public DomNode Initializer {
 			get {
-				return GetChildByRole (Roles.Initializer) ?? AstNode.Null;
+				return GetChildByRole (Roles.Initializer) ?? DomNode.Null;
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitVariableInitializer (this, data);
 		}

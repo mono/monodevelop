@@ -143,7 +143,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		{
 			var resolver = options.GetResolver ();
 			var data = options.GetTextEditorData ();
-			AstNode node = invocation;
+			DomNode node = invocation;
 			while (node != null) {
 				if (node.Parent is VariableInitializer) {
 					var initializer = (VariableInitializer)node.Parent;

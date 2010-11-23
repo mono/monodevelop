@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class UsingStatement : AstNode
+	public class UsingStatement : DomNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -37,12 +37,12 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public AstNode Statement {
-			get { return GetChildByRole (Roles.Statement) ?? AstNode.Null; }
+		public DomNode Statement {
+			get { return GetChildByRole (Roles.Statement) ?? DomNode.Null; }
 		}
 		
-		public AstNode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement) ?? AstNode.Null; }
+		public DomNode EmbeddedStatement {
+			get { return GetChildByRole (Roles.EmbeddedStatement) ?? DomNode.Null; }
 		}
 		
 		public CSharpTokenNode LPar {
@@ -54,7 +54,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 		
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitUsingStatement (this, data);
 		}

@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class UncheckedStatement : AstNode
+	public class UncheckedStatement : DomNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -37,11 +37,11 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public AstNode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement) ?? AstNode.Null; }
+		public DomNode EmbeddedStatement {
+			get { return GetChildByRole (Roles.EmbeddedStatement) ?? DomNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitUncheckedStatement (this, data);
 		}

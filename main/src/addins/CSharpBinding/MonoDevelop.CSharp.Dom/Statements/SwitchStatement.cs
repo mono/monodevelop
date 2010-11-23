@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class SwitchStatement : AstNode
+	public class SwitchStatement : DomNode
 	{
 		public const int SwitchSectionRole = 100;
 		
@@ -41,8 +41,8 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public AstNode Expression {
-			get { return GetChildByRole (Roles.Expression) ?? AstNode.Null; }
+		public DomNode Expression {
+			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
 		}
 		
 		public IEnumerable<SwitchSection> SwitchSections {
@@ -65,13 +65,13 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (CSharpTokenNode)GetChildByRole (Roles.RBrace) ?? CSharpTokenNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitSwitchStatement (this, data);
 		}
 	}
 	
-	public class SwitchSection : AstNode
+	public class SwitchSection : DomNode
 	{
 		public const int CaseLabelRole = 100;
 		
@@ -85,22 +85,22 @@ namespace MonoDevelop.CSharp.Dom
 			get { return GetChildrenByRole (CaseLabelRole).Cast<CaseLabel> (); }
 		}
 		
-		public IEnumerable<AstNode> Statements {
+		public IEnumerable<DomNode> Statements {
 			get {
 				var body = GetChildByRole (Roles.Body);
 				if (body is BlockStatement)
 					return ((BlockStatement)body).Statements;
-				return new AstNode[] { body };
+				return new DomNode[] { body };
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitSwitchSection (this, data);
 		}
 	}
 	
-	public class CaseLabel : AstNode
+	public class CaseLabel : DomNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -108,11 +108,11 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public AstNode Expression {
-			get { return GetChildByRole (Roles.Expression) ?? AstNode.Null; }
+		public DomNode Expression {
+			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitCaseLabel (this, data);
 		}

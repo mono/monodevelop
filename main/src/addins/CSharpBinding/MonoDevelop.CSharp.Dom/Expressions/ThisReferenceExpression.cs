@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class ThisReferenceExpression : AstNode
+	public class ThisReferenceExpression : DomNode
 	{
 		public DomLocation Location {
 			get;
@@ -54,7 +54,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 
 
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitThisReferenceExpression (this, data);
 		}

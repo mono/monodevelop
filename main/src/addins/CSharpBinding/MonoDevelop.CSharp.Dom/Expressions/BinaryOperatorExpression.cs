@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class BinaryOperatorExpression : AstNode
+	public class BinaryOperatorExpression : DomNode
 	{
 		public const int LeftExpressionRole = 100;
 		public const int RightExpressionRole = 101;
@@ -50,15 +50,15 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (CSharpTokenNode)GetChildByRole (OperatorRole) ?? CSharpTokenNode.Null; }
 		}
 		
-		public AstNode Left {
-			get { return GetChildByRole (LeftExpressionRole) ?? AstNode.Null; }
+		public DomNode Left {
+			get { return GetChildByRole (LeftExpressionRole) ?? DomNode.Null; }
 		}
 		
-		public AstNode Right {
-			get { return GetChildByRole (RightExpressionRole) ?? AstNode.Null; }
+		public DomNode Right {
+			get { return GetChildByRole (RightExpressionRole) ?? DomNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitBinaryOperatorExpression (this, data);
 		}

@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class ForeachStatement : AstNode
+	public class ForeachStatement : DomNode
 	{
 		public const int ForEachKeywordRole = 100;
 		public const int InKeywordRole = 101;
@@ -40,16 +40,16 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public AstNode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement) ?? AstNode.Null; }
+		public DomNode EmbeddedStatement {
+			get { return GetChildByRole (Roles.EmbeddedStatement) ?? DomNode.Null; }
 		}
 		
-		public AstNode Expression {
-			get { return GetChildByRole (Roles.Initializer) ?? AstNode.Null; }
+		public DomNode Expression {
+			get { return GetChildByRole (Roles.Initializer) ?? DomNode.Null; }
 		}
 		
-		public AstNode VariableType {
-			get { return GetChildByRole (Roles.ReturnType) ?? AstNode.Null; }
+		public DomNode VariableType {
+			get { return GetChildByRole (Roles.ReturnType) ?? DomNode.Null; }
 		}
 		
 		public CSharpTokenNode LPar {
@@ -72,7 +72,7 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitForeachStatement (this, data);
 		}

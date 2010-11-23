@@ -35,7 +35,7 @@ using System.Linq;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	public class DomSpacingVisitor : AbtractCSharpDomVisitor<object, object>
+	public class DomSpacingVisitor : DomVisitor<object, object>
 	{
 		CSharpFormattingPolicy policy;
 		TextEditorData data;
@@ -175,7 +175,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return base.VisitCastExpression (castExpression, data);
 		}
 		
-		void ForceSpacesAround (AstNode node, bool forceSpaces)
+		void ForceSpacesAround (DomNode node, bool forceSpaces)
 		{
 			ForceSpacesBefore (node, forceSpaces);
 			ForceSpacesAfter (node, forceSpaces);
@@ -186,7 +186,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return ch == ' ' || ch == '\t';
 		}
 
-		void ForceSpacesAfter (AstNode n, bool forceSpaces)
+		void ForceSpacesAfter (DomNode n, bool forceSpaces)
 		{
 			if (n == null)
 				return;
@@ -199,7 +199,7 @@ namespace MonoDevelop.CSharp.Formatting
 			ForceSpace (offset - 1, i, forceSpaces);
 		}
 		
-		int ForceSpacesBefore (AstNode n, bool forceSpaces)
+		int ForceSpacesBefore (DomNode n, bool forceSpaces)
 		{
 			if (n == null)
 				return 0;
@@ -215,7 +215,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return i;
 		}
 		
-		void FormatCommas (AstNode parent, bool before, bool after)
+		void FormatCommas (DomNode parent, bool before, bool after)
 		{
 			if (parent.IsNull)
 				return;
@@ -474,7 +474,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitForStatement (ForStatement forStatement, object data)
 		{
-			foreach (AstNode node in forStatement.Children) {
+			foreach (DomNode node in forStatement.Children) {
 				if (node.Role == ForStatement.Roles.Semicolon) {
 					if (node.NextSibling is CSharpTokenNode || node.NextSibling is EmptyStatement)
 						continue;

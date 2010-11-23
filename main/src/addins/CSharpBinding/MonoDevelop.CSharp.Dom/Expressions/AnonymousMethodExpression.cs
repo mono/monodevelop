@@ -30,7 +30,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class AnonymousMethodExpression : AstNode
+	public class AnonymousMethodExpression : DomNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -65,7 +65,7 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitAnonymousMethodExpression (this, data);
 		}

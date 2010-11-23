@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class FixedStatement : AstNode
+	public class FixedStatement : DomNode
 	{
 		public const int PointerDeclarationRole = 100;
 		public const int FixedKeywordRole = 101;
@@ -41,15 +41,15 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public AstNode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement) ?? AstNode.Null; }
+		public DomNode EmbeddedStatement {
+			get { return GetChildByRole (Roles.EmbeddedStatement) ?? DomNode.Null; }
 		}
 		
-		public AstNode PointerDeclaration {
-			get { return GetChildByRole (PointerDeclarationRole) ?? AstNode.Null; }
+		public DomNode PointerDeclaration {
+			get { return GetChildByRole (PointerDeclarationRole) ?? DomNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitFixedStatement (this, data);
 		}

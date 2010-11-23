@@ -27,7 +27,7 @@ using System;
 using MonoDevelop.Projects.Dom;
 namespace MonoDevelop.CSharp.Dom
 {
-	public class CSharpTokenNode : AstNode
+	public class CSharpTokenNode : DomNode
 	{
 		public static new readonly CSharpTokenNode Null = new NullCSharpTokenNode ();
 		class NullCSharpTokenNode : CSharpTokenNode
@@ -42,7 +42,7 @@ namespace MonoDevelop.CSharp.Dom
 			{
 			}
 			
-			public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+			public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 			{
 				return default (S);
 			}
@@ -75,7 +75,7 @@ namespace MonoDevelop.CSharp.Dom
 			this.tokenLength = tokenLength;
 		}
 		
-		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return default (S);
 		}
