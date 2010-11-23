@@ -526,7 +526,7 @@ namespace MonoDevelop.CSharp.Formatting
 		public override object VisitCheckedStatement (CheckedStatement checkedStatement, object data)
 		{
 			FixStatementIndentation (checkedStatement.StartLocation);
-			return FixEmbeddedStatment (policy.StatementBraceStyle, policy.FixedBraceForcement, checkedStatement.EmbeddedStatement);
+			return FixEmbeddedStatment (policy.StatementBraceStyle, policy.FixedBraceForcement, checkedStatement.Block);
 		}
 		
 		public override object VisitContinueStatement (ContinueStatement continueStatement, object data)
@@ -918,7 +918,7 @@ namespace MonoDevelop.CSharp.Formatting
 		public override object VisitUncheckedStatement (UncheckedStatement uncheckedStatement, object data)
 		{
 			FixStatementIndentation (uncheckedStatement.StartLocation);
-			return FixEmbeddedStatment (policy.StatementBraceStyle, policy.FixedBraceForcement, uncheckedStatement.EmbeddedStatement);
+			return FixEmbeddedStatment (policy.StatementBraceStyle, policy.FixedBraceForcement, uncheckedStatement.Block);
 		}
 		
 		public override object VisitUnsafeStatement (UnsafeStatement unsafeStatement, object data)
