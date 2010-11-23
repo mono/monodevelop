@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class SwitchStatement : AbstractCSharpNode
+	public class SwitchStatement : AstNode
 	{
 		public const int SwitchSectionRole = 100;
 		
@@ -41,7 +41,7 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public INode Expression {
+		public AstNode Expression {
 			get { return GetChildByRole (Roles.Expression); }
 		}
 		
@@ -70,7 +70,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 	}
 	
-	public class SwitchSection : AbstractCSharpNode
+	public class SwitchSection : AstNode
 	{
 		public const int CaseLabelRole = 100;
 		
@@ -84,12 +84,12 @@ namespace MonoDevelop.CSharp.Dom
 			get { return GetChildrenByRole (CaseLabelRole).Cast<CaseLabel> (); }
 		}
 		
-		public IEnumerable<INode> Statements {
+		public IEnumerable<AstNode> Statements {
 			get {
 				var body = GetChildByRole (Roles.Body);
 				if (body is BlockStatement)
 					return ((BlockStatement)body).Statements;
-				return new INode[] { body };
+				return new AstNode[] { body };
 			}
 		}
 		
@@ -99,7 +99,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 	}
 	
-	public class CaseLabel : AbstractCSharpNode
+	public class CaseLabel : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -107,7 +107,7 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public INode Expression {
+		public AstNode Expression {
 			get { return GetChildByRole (Roles.Expression); }
 		}
 		

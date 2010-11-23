@@ -178,7 +178,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 		
 		public override object VisitAssignmentExpression (MonoDevelop.CSharp.Dom.AssignmentExpression assignmentExpression, object data)
 		{
-			((ICSharpNode)assignmentExpression.Right).AcceptVisitor(this, data);
+			assignmentExpression.Right.AcceptVisitor(this, data);
 //			valueGetsChanged = true;
 
 			var left = assignmentExpression.Left as MonoDevelop.CSharp.Dom.IdentifierExpression;

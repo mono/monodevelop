@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class MemberReferenceExpression : AbstractCSharpNode
+	public class MemberReferenceExpression : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -39,7 +39,7 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public INode Target {
+		public AstNode Target {
 			get { return GetChildByRole (Roles.TargetExpression); }
 		}
 		
@@ -49,8 +49,8 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public IEnumerable<ICSharpNode> TypeArguments {
-			get { return GetChildrenByRole (Roles.TypeArgument).Cast<ICSharpNode> (); }
+		public IEnumerable<AstNode> TypeArguments {
+			get { return GetChildrenByRole (Roles.TypeArgument); }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

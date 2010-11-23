@@ -34,7 +34,7 @@ namespace MonoDevelop.CSharp.Dom
 	/// <summary>
 	/// Represents the undocumented __arglist keyword.
 	/// </summary>
-	public class ArgListExpression : AbstractCSharpNode
+	public class ArgListExpression : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -59,8 +59,8 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
 		}
 		
-		public IEnumerable<ICSharpNode> Arguments {
-			get { return GetChildrenByRole (Roles.Argument).Cast<ICSharpNode> (); }
+		public IEnumerable<AstNode> Arguments {
+			get { return GetChildrenByRole (Roles.Argument); }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

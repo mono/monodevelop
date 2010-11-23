@@ -30,7 +30,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class AnonymousMethodExpression : AbstractCSharpNode
+	public class AnonymousMethodExpression : AstNode
 	{
 		public override NodeType NodeType {
 			get {

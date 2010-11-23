@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class IfElseStatement : AbstractCSharpNode
+	public class IfElseStatement : AstNode
 	{
 		public const int TrueEmbeddedStatementRole = 100;
 		public const int FalseEmbeddedStatementRole = 101;
@@ -42,16 +42,16 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public ICSharpNode TrueEmbeddedStatement {
-			get { return (ICSharpNode)GetChildByRole (TrueEmbeddedStatementRole); }
+		public AstNode TrueEmbeddedStatement {
+			get { return GetChildByRole (TrueEmbeddedStatementRole); }
 		}
 		
-		public ICSharpNode FalseEmbeddedStatement {
-			get { return (ICSharpNode)GetChildByRole (FalseEmbeddedStatementRole); }
+		public AstNode FalseEmbeddedStatement {
+			get { return GetChildByRole (FalseEmbeddedStatementRole); }
 		}
 
-		public ICSharpNode Condition {
-			get { return (ICSharpNode)GetChildByRole (Roles.Condition); }
+		public AstNode Condition {
+			get { return GetChildByRole (Roles.Condition); }
 		}
 		
 		public CSharpTokenNode LPar {

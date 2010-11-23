@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class TryCatchStatement : AbstractCSharpNode
+	public class TryCatchStatement : AstNode
 	{
 		public const int TryKeywordRole     = 100;
 		public const int FinallyKeywordRole = 101;
@@ -71,7 +71,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 	}
 	
-	public class CatchClause : AbstractCSharpNode
+	public class CatchClause : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -79,8 +79,8 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public ICSharpNode ReturnType {
-			get { return (ICSharpNode)GetChildByRole (Roles.ReturnType); }
+		public AstNode ReturnType {
+			get { return GetChildByRole (Roles.ReturnType); }
 		}
 		
 		public string VariableName {

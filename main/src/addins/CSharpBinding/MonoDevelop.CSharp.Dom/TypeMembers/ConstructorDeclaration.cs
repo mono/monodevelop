@@ -70,7 +70,7 @@ namespace MonoDevelop.CSharp.Dom
 		This
 	}
 	
-	public class ConstructorInitializer : AbstractCSharpNode
+	public class ConstructorInitializer : AstNode
 	{
 		public override NodeType NodeType {
 			get {

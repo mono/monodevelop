@@ -31,7 +31,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class QueryExpressionFromClause : AbstractCSharpNode
+	public class QueryExpressionFromClause : AstNode
 	{
 		public const int FromKeywordRole = 100;
 		public const int InKeywordRole = 101;
@@ -42,9 +42,9 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public ICSharpNode Type {
+		public AstNode Type {
 			get {
-				return (ICSharpNode)GetChildByRole (Roles.ReturnType);
+				return GetChildByRole (Roles.ReturnType);
 			}
 		}
 		
@@ -60,7 +60,7 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public INode Expression {
+		public AstNode Expression {
 			get { return GetChildByRole (Roles.Expression); }
 		}
 		
@@ -99,13 +99,13 @@ namespace MonoDevelop.CSharp.Dom
 		}
 		
 		
-		public INode OnExpression {
+		public AstNode OnExpression {
 			get {
 				return GetChildByRole (OnExpressionRole);
 			}
 		}
 		
-		public INode EqualsExpression {
+		public AstNode EqualsExpression {
 			get {
 				return GetChildByRole (EqualsExpressionRole);
 			}
@@ -123,12 +123,11 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public ICSharpNode InExpression {
+		public AstNode InExpression {
 			get {
-				return (ICSharpNode)GetChildByRole (Roles.Expression);
+				return GetChildByRole (Roles.Expression);
 			}
 		}
-
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
@@ -136,7 +135,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 	}
 	
-	public class QueryExpressionGroupClause : AbstractCSharpNode
+	public class QueryExpressionGroupClause : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -158,13 +157,13 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (CSharpTokenNode)GetChildByRole (ByKeywordRole); }
 		}
 		
-		public INode Projection {
+		public AstNode Projection {
 			get {
 				return GetChildByRole (ProjectionExpressionRole);
 			}
 		}
 		
-		public INode GroupBy {
+		public AstNode GroupBy {
 			get {
 				return GetChildByRole (GroupByExpressionRole);
 			}
@@ -176,7 +175,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 	}
 	
-	public class QueryExpressionLetClause : AbstractCSharpNode 
+	public class QueryExpressionLetClause : AstNode 
 	{
 		public override NodeType NodeType {
 			get {
@@ -196,7 +195,7 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public INode Expression {
+		public AstNode Expression {
 			get {
 				return GetChildByRole (Roles.Expression);
 			}
@@ -206,9 +205,9 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
 		}
 		
-		public ICSharpNode Assign {
+		public AstNode Assign {
 			get {
-				return (ICSharpNode)GetChildByRole (Roles.Assign);
+				return GetChildByRole (Roles.Assign);
 			}
 		}
 		
@@ -218,7 +217,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 	}
 	
-	public class QueryExpressionOrderClause : AbstractCSharpNode
+	public class QueryExpressionOrderClause : AstNode
 	{
 		public const int OrderingRole = 100;
 		
@@ -233,7 +232,7 @@ namespace MonoDevelop.CSharp.Dom
 			set;
 		}
 		
-		public INode Expression {
+		public AstNode Expression {
 			get {
 				return GetChildByRole (Roles.Expression);
 			}
@@ -250,7 +249,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 	}
 	
-	public class QueryExpressionOrdering : AbstractCSharpNode
+	public class QueryExpressionOrdering : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -263,7 +262,7 @@ namespace MonoDevelop.CSharp.Dom
 			set;
 		}
 		
-		public INode Criteria {
+		public AstNode Criteria {
 			get {
 				return GetChildByRole (Roles.Expression);
 			}
@@ -282,7 +281,7 @@ namespace MonoDevelop.CSharp.Dom
 		Descending
 	}
 	
-	public class QueryExpressionSelectClause : AbstractCSharpNode 
+	public class QueryExpressionSelectClause : AstNode 
 	{
 		public override NodeType NodeType {
 			get {
@@ -294,9 +293,9 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
 		}
 		
-		public ICSharpNode Projection {
+		public AstNode Projection {
 			get {
-				return (ICSharpNode)GetChildByRole (Roles.Expression);
+				return GetChildByRole (Roles.Expression);
 			}
 		}
 		
@@ -306,7 +305,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 	}
 	
-	public class QueryExpressionWhereClause : AbstractCSharpNode 
+	public class QueryExpressionWhereClause : AstNode 
 	{
 		public override NodeType NodeType {
 			get {
@@ -318,9 +317,9 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
 		}
 		
-		public ICSharpNode Condition {
+		public AstNode Condition {
 			get {
-				return (ICSharpNode)GetChildByRole (Roles.Condition);
+				return GetChildByRole (Roles.Condition);
 			}
 		}
 		

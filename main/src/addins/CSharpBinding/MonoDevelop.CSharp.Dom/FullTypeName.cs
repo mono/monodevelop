@@ -30,7 +30,7 @@ using System.Linq;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class FullTypeName : AbstractCSharpNode
+	public class FullTypeName : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -44,8 +44,8 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 			
-		public IEnumerable<ICSharpNode> TypeArguments {
-			get { return GetChildrenByRole (Roles.TypeArgument).Cast<ICSharpNode> () ?? new ICSharpNode[0]; }
+		public IEnumerable<AstNode> TypeArguments {
+			get { return GetChildrenByRole (Roles.TypeArgument) ?? new AstNode[0]; }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

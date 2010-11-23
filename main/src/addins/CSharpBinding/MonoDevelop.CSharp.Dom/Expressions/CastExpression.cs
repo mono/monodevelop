@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class CastExpression : AbstractCSharpNode
+	public class CastExpression : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -37,11 +37,11 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public ICSharpNode CastTo {
-			get { return (ICSharpNode)GetChildByRole (Roles.ReturnType); }
+		public AstNode CastTo {
+			get { return GetChildByRole (Roles.ReturnType); }
 		}
 		
-		public INode Expression {
+		public AstNode Expression {
 			get { return GetChildByRole (Roles.Expression); }
 		}
 		

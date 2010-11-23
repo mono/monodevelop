@@ -175,7 +175,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return base.VisitCastExpression (castExpression, data);
 		}
 		
-		void ForceSpacesAround (INode node, bool forceSpaces)
+		void ForceSpacesAround (AstNode node, bool forceSpaces)
 		{
 			ForceSpacesBefore (node, forceSpaces);
 			ForceSpacesAfter (node, forceSpaces);
@@ -186,9 +186,8 @@ namespace MonoDevelop.CSharp.Formatting
 			return ch == ' ' || ch == '\t';
 		}
 
-		void ForceSpacesAfter (INode node, bool forceSpaces)
+		void ForceSpacesAfter (AstNode n, bool forceSpaces)
 		{
-			var n = node as ICSharpNode;
 			if (n == null)
 				return;
 			DomLocation location = n.EndLocation;
@@ -200,9 +199,8 @@ namespace MonoDevelop.CSharp.Formatting
 			ForceSpace (offset - 1, i, forceSpaces);
 		}
 		
-		int ForceSpacesBefore (INode node, bool forceSpaces)
+		int ForceSpacesBefore (AstNode n, bool forceSpaces)
 		{
-			var n = node as ICSharpNode;
 			if (n == null)
 				return 0;
 			DomLocation location = n.StartLocation;
@@ -217,7 +215,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return i;
 		}
 		
-		void FormatCommas (AbstractNode parent, bool before, bool after)
+		void FormatCommas (AstNode parent, bool before, bool after)
 		{
 			if (parent == null)
 				return;
@@ -476,7 +474,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitForStatement (ForStatement forStatement, object data)
 		{
-			foreach (INode node in forStatement.Children) {
+			foreach (AstNode node in forStatement.Children) {
 				if (node.Role == ForStatement.Roles.Semicolon) {
 					if (node.NextSibling is CSharpTokenNode || node.NextSibling is EmptyStatement)
 						continue;

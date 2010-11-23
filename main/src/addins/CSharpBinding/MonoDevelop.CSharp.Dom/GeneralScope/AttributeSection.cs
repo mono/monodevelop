@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class AttributeSection : AbstractCSharpNode
+	public class AttributeSection : AstNode
 	{
 		const int TargetRole = 101;
 		

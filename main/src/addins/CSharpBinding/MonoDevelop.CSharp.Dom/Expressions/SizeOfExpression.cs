@@ -28,7 +28,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class SizeOfExpression : AbstractCSharpNode
+	public class SizeOfExpression : AstNode
 	{
 		public override NodeType NodeType {
 			get {

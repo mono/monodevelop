@@ -30,7 +30,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class Identifier : AbstractCSharpNode
+	public class Identifier : AstNode
 	{
 		public override NodeType NodeType {
 			get {

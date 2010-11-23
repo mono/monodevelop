@@ -165,7 +165,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				set;
 			}
 			
-			public List<ICSharpNode> Nodes {
+			public List<AstNode> Nodes {
 				get;
 				set;
 			}
@@ -247,7 +247,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			
 			var startLocation = data.Document.OffsetToLocation (data.SelectionRange.Offset);
 			var endLocation = data.Document.OffsetToLocation (data.SelectionRange.EndOffset);
-			param.Nodes = new List<ICSharpNode> (unit.GetNodesBetween (startLocation.Line, startLocation.Column, endLocation.Line, endLocation.Column));
+			param.Nodes = new List<AstNode> (unit.GetNodesBetween (startLocation.Line, startLocation.Column, endLocation.Line, endLocation.Column));
 			
 			string text = options.Document.Editor.GetTextAt (options.Document.Editor.SelectionRange);
 			

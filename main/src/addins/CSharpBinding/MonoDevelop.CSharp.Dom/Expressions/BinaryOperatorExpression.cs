@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class BinaryOperatorExpression : AbstractCSharpNode
+	public class BinaryOperatorExpression : AstNode
 	{
 		public const int LeftExpressionRole = 100;
 		public const int RightExpressionRole = 101;
@@ -50,11 +50,11 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (CSharpTokenNode)GetChildByRole (OperatorRole); }
 		}
 		
-		public INode Left {
+		public AstNode Left {
 			get { return GetChildByRole (LeftExpressionRole); }
 		}
 		
-		public INode Right {
+		public AstNode Right {
 			get { return GetChildByRole (RightExpressionRole); }
 		}
 		

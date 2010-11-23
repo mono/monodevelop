@@ -32,7 +32,7 @@ namespace MonoDevelop.CSharp.Dom
 	/// <summary>
 	/// cond ? true : false
 	/// </summary>
-	public class ConditionalExpression : AbstractCSharpNode
+	public class ConditionalExpression : AstNode
 	{
 		public const int TrueExpressionRole = 100;
 		public const int FalseExpressionRole = 101;
@@ -43,15 +43,15 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public INode TrueExpression {
+		public AstNode TrueExpression {
 			get { return GetChildByRole (TrueExpressionRole); }
 		}
 		
-		public INode FalseExpression {
+		public AstNode FalseExpression {
 			get { return GetChildByRole (FalseExpressionRole); }
 		}
 
-		public INode Condition {
+		public AstNode Condition {
 			get { return GetChildByRole (Roles.Condition); }
 		}
 		

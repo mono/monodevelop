@@ -88,7 +88,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return null;
 		}
 		
-		public void EnsureBlankLinesAfter (ICSharpNode node, int blankLines)
+		public void EnsureBlankLinesAfter (AstNode node, int blankLines)
 		{
 			if (!CorrectBlankLines)
 				return;
@@ -108,7 +108,7 @@ namespace MonoDevelop.CSharp.Formatting
 			AddChange (start, removedChars, sb.ToString ());
 		}
 		
-		public void EnsureBlankLinesBefore (ICSharpNode node, int blankLines)
+		public void EnsureBlankLinesBefore (AstNode node, int blankLines)
 		{
 			if (!CorrectBlankLines)
 				return;
@@ -152,7 +152,7 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			var firstNsMember = namespaceDeclaration.GetChildByRole (NamespaceDeclaration.Roles.Member);
 			if (firstNsMember != null)
-				EnsureBlankLinesBefore ((ICSharpNode)firstNsMember, policy.BlankLinesBeforeFirstDeclaration);
+				EnsureBlankLinesBefore (firstNsMember, policy.BlankLinesBeforeFirstDeclaration);
 			FixIndentationForceNewLine (namespaceDeclaration.StartLocation);
 			EnforceBraceStyle (policy.NamespaceBraceStyle, namespaceDeclaration.LBrace, namespaceDeclaration.RBrace);
 			if (policy.IndentNamespaceBody)
@@ -349,7 +349,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return null;
 		}
 		
-		static bool IsSimpleEvent (INode node)
+		static bool IsSimpleEvent (AstNode node)
 		{
 			var evt = (EventDeclaration)node;
 			return evt.AddAccessor == null;
@@ -431,9 +431,9 @@ namespace MonoDevelop.CSharp.Formatting
 			return base.VisitDelegateDeclaration (delegateDeclaration, data);
 		}
 		
-		static bool IsMember (INode nextSibling)
+		static bool IsMember (AstNode nextSibling)
 		{
-			return nextSibling != null && nextSibling.Role == AbstractNode.Roles.Member;
+			return nextSibling != null && nextSibling.Role == AstNode.Roles.Member;
 		}
 
 		public override object VisitMethodDeclaration (MethodDeclaration methodDeclaration, object data)
@@ -553,12 +553,12 @@ namespace MonoDevelop.CSharp.Formatting
 			return FixEmbeddedStatment (policy.StatementBraceStyle, policy.ForEachBraceForcement, foreachStatement.EmbeddedStatement);
 		}
 
-		object FixEmbeddedStatment (MonoDevelop.CSharp.Formatting.BraceStyle braceStyle, MonoDevelop.CSharp.Formatting.BraceForcement braceForcement, ICSharpNode node)
+		object FixEmbeddedStatment (MonoDevelop.CSharp.Formatting.BraceStyle braceStyle, MonoDevelop.CSharp.Formatting.BraceForcement braceForcement, AstNode node)
 		{
 			return FixEmbeddedStatment (braceStyle, braceForcement, null, false, node);
 		}
 		
-		object FixEmbeddedStatment (MonoDevelop.CSharp.Formatting.BraceStyle braceStyle, MonoDevelop.CSharp.Formatting.BraceForcement braceForcement, CSharpTokenNode token, bool allowInLine, ICSharpNode node)
+		object FixEmbeddedStatment (MonoDevelop.CSharp.Formatting.BraceStyle braceStyle, MonoDevelop.CSharp.Formatting.BraceForcement braceForcement, CSharpTokenNode token, bool allowInLine, AstNode node)
 		{
 			if (node == null)
 				return null;
@@ -604,7 +604,7 @@ namespace MonoDevelop.CSharp.Formatting
 						
 						AddChange (start, offset1 - start + 1, null);
 						AddChange (end + 1, offset2 - end, null);
-						node = (ICSharpNode)block.FirstChild;
+						node = block.FirstChild;
 						isBlock = false;
 					}
 				}
@@ -664,7 +664,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return result;
 		}
 		
-		void EnforceBraceStyle (MonoDevelop.CSharp.Formatting.BraceStyle braceStyle, ICSharpNode lbrace, ICSharpNode rbrace)
+		void EnforceBraceStyle (MonoDevelop.CSharp.Formatting.BraceStyle braceStyle, AstNode lbrace, AstNode rbrace)
 		{
 			if (lbrace == null || rbrace == null)
 				return;
@@ -864,7 +864,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (policy.IndentCaseBody)
 				curIndent.Level++;
 			
-			foreach (ICSharpNode stmt in switchSection.Statements) {
+			foreach (var stmt in switchSection.Statements) {
 				stmt.AcceptVisitor (this, null);
 			}
 			if (policy.IndentCaseBody)
@@ -959,7 +959,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		#endregion
 		
-		void PlaceOnNewLine (bool newLine, ICSharpNode keywordNode)
+		void PlaceOnNewLine (bool newLine, AstNode keywordNode)
 		{
 			if (keywordNode == null)
 				return;

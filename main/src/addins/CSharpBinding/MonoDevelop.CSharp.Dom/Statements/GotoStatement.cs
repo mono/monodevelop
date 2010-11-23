@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class GotoStatement : AbstractCSharpNode
+	public class GotoStatement : AstNode
 	{
 		public const int DefaultKeywordRole = 100;
 		public const int CaseKeywordRole = 101;
@@ -49,7 +49,7 @@ namespace MonoDevelop.CSharp.Dom
 			get { return ((Identifier)LabelExpression).Name; }
 		}
 
-		public INode LabelExpression {
+		public AstNode LabelExpression {
 			get { return GetChildByRole (Roles.Expression); }
 		}
 		

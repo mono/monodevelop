@@ -27,7 +27,7 @@ using System;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class DefaultValueExpression : AbstractCSharpNode
+	public class DefaultValueExpression : AstNode
 	{
 		public override NodeType NodeType {
 			get {

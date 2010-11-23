@@ -36,7 +36,7 @@ namespace MonoDevelop.CSharp.Dom
 		Ref
 	}
 	
-	public class DirectionExpression  : AbstractCSharpNode
+	public class DirectionExpression  : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -54,8 +54,8 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
 		}
 		
-		public ICSharpNode Expression {
-			get { return (ICSharpNode)GetChildByRole (Roles.Expression); }
+		public AstNode Expression {
+			get { return GetChildByRole (Roles.Expression); }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

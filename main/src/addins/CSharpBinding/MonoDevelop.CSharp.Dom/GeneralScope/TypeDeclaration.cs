@@ -53,9 +53,9 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public IEnumerable<ICSharpNode> TypeParameters {
+		public IEnumerable<AstNode> TypeParameters {
 			get {
-				return GetChildrenByRole (Roles.TypeArgument).Cast<ICSharpNode> ();
+				return GetChildrenByRole (Roles.TypeArgument);
 			}
 		}
 		

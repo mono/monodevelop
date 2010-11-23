@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class TypeOfExpression : AbstractCSharpNode
+	public class TypeOfExpression : AstNode
 	{
 		public override NodeType NodeType {
 			get {

@@ -30,7 +30,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class BlockStatement : AbstractCSharpNode
+	public class BlockStatement : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -50,7 +50,7 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public IEnumerable<INode> Statements {
+		public IEnumerable<AstNode> Statements {
 			get {
 				return GetChildrenByRole (Roles.Statement);
 			}

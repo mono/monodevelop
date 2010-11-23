@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class YieldStatement : AbstractCSharpNode
+	public class YieldStatement : AstNode
 	{
 		public const int YieldKeywordRole = 100;
 		public const int ReturnKeywordRole = 101;
@@ -41,7 +41,7 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public INode Expression {
+		public AstNode Expression {
 			get { return GetChildByRole (Roles.Expression); }
 		}
 		

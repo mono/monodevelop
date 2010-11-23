@@ -30,12 +30,12 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public abstract class AbtractCSharpDomVisitor<T, S> : ICSharpDomVisitor<T, S>
 	{
-		protected S VisitChildren (ICSharpNode node, T data)
+		protected S VisitChildren (AstNode node, T data)
 		{
-			ICSharpNode child = node.FirstChild as ICSharpNode;
+			var child = node.FirstChild;
 			while (child != null) {
 				child.AcceptVisitor (this, data);
-				child = child.NextSibling as ICSharpNode;
+				child = child.NextSibling;
 			}
 			return default (S);
 		}
@@ -82,7 +82,7 @@ namespace MonoDevelop.CSharp.Dom
 		
 		public virtual S VisitTypeDeclaration (TypeDeclaration typeDeclaration, T data) 
 		{
-			foreach (ICSharpNode node in typeDeclaration.GetChildrenByRole (TypeDeclaration.Roles.Member)) {
+			foreach (var node in typeDeclaration.GetChildrenByRole (TypeDeclaration.Roles.Member)) {
 				node.AcceptVisitor (this, data);
 			}
 			return default (S);

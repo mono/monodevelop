@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class VariableDeclarationStatement : AbstractCSharpNode
+	public class VariableDeclarationStatement : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -39,12 +39,12 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public IEnumerable<INode> Modifiers {
+		public IEnumerable<AstNode> Modifiers {
 			get { return base.GetChildrenByRole (Roles.Modifier); }
 		}
 		
-		public ICSharpNode ReturnType {
-			get { return (ICSharpNode)GetChildByRole (Roles.ReturnType); }
+		public AstNode ReturnType {
+			get { return GetChildByRole (Roles.ReturnType); }
 		}
 		
 		public IEnumerable<VariableInitializer> Variables {

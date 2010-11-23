@@ -65,7 +65,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			var containingNode = unit.GetNodeAt (data.Caret.Line, data.Caret.Column);
 			var curNode = containingNode;
 			while (curNode != null && !(curNode is InvocationExpression)) {
-				curNode = (ICSharpNode)curNode.Parent;
+				curNode = curNode.Parent;
 			}
 			return curNode as InvocationExpression;
 		}
@@ -73,12 +73,12 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		bool AnalyzeTargetExpression (RefactoringOptions options, MonoDevelop.CSharp.Dom.CompilationUnit unit)
 		{
 			var data = options.GetTextEditorData ();
-			var target = (ICSharpNode)unit.GetNodeAt (data.Caret.Line, data.Caret.Column);
+			var target = unit.GetNodeAt (data.Caret.Line, data.Caret.Column);
 			if (target == null)
 				return false;
 			if (target.Parent is MemberReferenceExpression && ((MemberReferenceExpression)target.Parent).Identifier == target) {
 				var memberReference = (MemberReferenceExpression)target.Parent;
-				target = (ICSharpNode)memberReference.Target;
+				target = memberReference.Target;
 				var targetResult = options.GetResolver ().Resolve (new ExpressionResult (data.GetTextBetween (target.StartLocation.Line, target.StartLocation.Column, target.EndLocation.Line, target.EndLocation.Column)), resolvePosition);
 				if (targetResult.StaticResolve)
 					modifiers = MonoDevelop.Projects.Dom.Modifiers.Static;
@@ -133,7 +133,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			if (assignment.Left is IdentifierExpression) {
 				expression = ((IdentifierExpression)assignment.Left).Identifier.Name;
 			} else {
-				ICSharpNode left = assignment.Left as ICSharpNode;
+				var left = assignment.Left;
 				expression = data.GetTextBetween (left.StartLocation.Line, left.StartLocation.Column, left.EndLocation.Line, left.EndLocation.Column);
 			}
 			return resolver.Resolve (new ExpressionResult (expression), resolvePosition);
@@ -143,7 +143,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		{
 			var resolver = options.GetResolver ();
 			var data = options.GetTextEditorData ();
-			ICSharpNode node = invocation;
+			AstNode node = invocation;
 			while (node != null) {
 				if (node.Parent is VariableInitializer) {
 					var initializer = (VariableInitializer)node.Parent;
@@ -171,7 +171,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 					return DomReturnType.Object;
 				}
 				
-				node = node.Parent as ICSharpNode;
+				node = node.Parent;
 			}
 			return DomReturnType.Void;
 		}
@@ -349,8 +349,8 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			DomMethod result = new DomMethod (methodName, modifiers, MethodModifier.None, DomLocation.Empty, DomRegion.Empty, returnType);
 			result.DeclaringType = new DomType ("GeneratedType") { ClassType = declaringType.ClassType };
 			int i = 1;
-			foreach (ICSharpNode curArg in invocation.Arguments) {
-				ICSharpNode argument = curArg;
+			foreach (var curArg in invocation.Arguments) {
+				var argument = curArg;
 				DomParameter arg = new DomParameter ();
 				if (argument is DirectionExpression) {
 					var de = (DirectionExpression)argument;

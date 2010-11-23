@@ -225,9 +225,7 @@
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\AsExpression.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\IsExpression.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\DefaultValueExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\ICSharpNode.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\ICSharpDomVisitor.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\AbstractCSharpNode.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\Identifier.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\QualifiedIdentifier.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\IdentifierExpression.cs" />
@@ -365,6 +363,8 @@
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\DirectionExpression.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\ArrayInitializerExpression.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\ArrayCreateExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\NodeType.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\AstNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

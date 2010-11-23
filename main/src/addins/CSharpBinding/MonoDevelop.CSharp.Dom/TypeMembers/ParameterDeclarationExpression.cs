@@ -36,7 +36,7 @@ namespace MonoDevelop.CSharp.Dom
 		This
 	}
 	
-	public class ParameterDeclarationExpression : AbstractCSharpNode
+	public class ParameterDeclarationExpression : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -55,9 +55,9 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public ICSharpNode DefaultExpression {
+		public AstNode DefaultExpression {
 			get {
-				return (ICSharpNode)GetChildByRole (Roles.Expression);
+				return GetChildByRole (Roles.Expression);
 			}
 		}
 		

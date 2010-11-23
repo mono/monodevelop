@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class StackAllocExpression : AbstractCSharpNode
+	public class StackAllocExpression : AstNode
 	{
 		public const int StackAllocKeywordRole = 100;
 		
@@ -45,8 +45,8 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public ICSharpNode CountExpression {
-			get { return (ICSharpNode)GetChildByRole (Roles.Expression); }
+		public AstNode CountExpression {
+			get { return GetChildByRole (Roles.Expression); }
 		}
 		
 		public CSharpTokenNode StackAllocKeyword {

@@ -29,7 +29,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class LambdaExpression : AbstractCSharpNode
+	public class LambdaExpression : AstNode
 	{
 		public override NodeType NodeType {
 			get {

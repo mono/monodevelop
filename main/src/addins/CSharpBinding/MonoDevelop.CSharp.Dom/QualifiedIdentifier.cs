@@ -30,8 +30,14 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class QualifiedIdentifier : AbstractNode
+	public class QualifiedIdentifier : AstNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public string QualifiedName {
 			get {
 				StringBuilder builder = new StringBuilder ();
@@ -46,6 +52,11 @@ namespace MonoDevelop.CSharp.Dom
 		
 		public QualifiedIdentifier ()
 		{
+		}
+		
+		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+		{
+			return default (S);
 		}
 	}
 }

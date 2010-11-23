@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class CheckedStatement : AbstractCSharpNode
+	public class CheckedStatement : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -37,8 +37,8 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public ICSharpNode EmbeddedStatement {
-			get { return (ICSharpNode)GetChildByRole (Roles.EmbeddedStatement); }
+		public AstNode EmbeddedStatement {
+			get { return GetChildByRole (Roles.EmbeddedStatement); }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class InvocationExpression : AbstractCSharpNode
+	public class InvocationExpression : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -39,12 +39,12 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public INode Target {
+		public AstNode Target {
 			get { return GetChildByRole (Roles.TargetExpression); }
 		}
 		
-		public IEnumerable<ICSharpNode> Arguments {
-			get { return GetChildrenByRole (Roles.Argument).Cast<ICSharpNode> (); }
+		public IEnumerable<AstNode> Arguments {
+			get { return GetChildrenByRole (Roles.Argument); }
 		}
 		
 		public CSharpTokenNode LPar {

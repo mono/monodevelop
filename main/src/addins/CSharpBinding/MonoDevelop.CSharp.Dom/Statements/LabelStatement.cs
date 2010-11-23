@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class LabelStatement : AbstractCSharpNode
+	public class LabelStatement : AstNode
 	{
 		public override NodeType NodeType {
 			get {

@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class UnaryOperatorExpression : AbstractCSharpNode
+	public class UnaryOperatorExpression : AstNode
 	{
 		public const int Operator = 100;
 		
@@ -44,7 +44,7 @@ namespace MonoDevelop.CSharp.Dom
 			set;
 		}
 		
-		public INode Expression {
+		public AstNode Expression {
 			get { return GetChildByRole (Roles.Expression); }
 		}
 		

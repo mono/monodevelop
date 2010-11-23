@@ -28,7 +28,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class AsExpression : AbstractCSharpNode
+	public class AsExpression : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -40,7 +40,7 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (FullTypeName)GetChildByRole (Roles.ReturnType); }
 		}
 		
-		public INode Expression {
+		public AstNode Expression {
 			get { return GetChildByRole (Roles.Expression); }
 		}
 		

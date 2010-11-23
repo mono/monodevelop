@@ -30,7 +30,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class ForStatement : AbstractCSharpNode
+	public class ForStatement : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -38,19 +38,19 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public ICSharpNode EmbeddedStatement {
-			get { return (ICSharpNode)GetChildByRole (Roles.EmbeddedStatement); }
+		public AstNode EmbeddedStatement {
+			get { return GetChildByRole (Roles.EmbeddedStatement); }
 		}
 		
-		public INode Condition {
+		public AstNode Condition {
 			get { return GetChildByRole (Roles.Condition); }
 		}
 		
-		public IEnumerable<INode> Initializers {
+		public IEnumerable<AstNode> Initializers {
 			get { return GetChildrenByRole (Roles.Initializer); }
 		}
 		
-		public IEnumerable<INode> Iterators {
+		public IEnumerable<AstNode> Iterators {
 			get { return GetChildrenByRole (Roles.Iterator); }
 		}
 		

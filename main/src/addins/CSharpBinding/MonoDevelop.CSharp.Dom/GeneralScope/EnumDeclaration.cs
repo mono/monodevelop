@@ -59,7 +59,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 	}
 	
-	public class EnumMemberDeclaration : AbstractCSharpNode
+	public class EnumMemberDeclaration : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -85,7 +85,7 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public INode Initializer {
+		public AstNode Initializer {
 			get {
 				return GetChildByRole (Roles.Initializer);
 			}

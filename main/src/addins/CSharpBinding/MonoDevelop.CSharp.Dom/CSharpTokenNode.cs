@@ -27,7 +27,7 @@ using System;
 using MonoDevelop.Projects.Dom;
 namespace MonoDevelop.CSharp.Dom
 {
-	public class CSharpTokenNode : AbstractCSharpNode
+	public class CSharpTokenNode : AstNode
 	{
 		public override NodeType NodeType {
 			get {

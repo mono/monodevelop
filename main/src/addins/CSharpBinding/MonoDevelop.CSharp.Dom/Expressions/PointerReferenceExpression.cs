@@ -42,7 +42,7 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public INode Expression {
+		public AstNode Expression {
 			get { return GetChildByRole (Roles.TargetExpression); }
 		}
 		

@@ -30,7 +30,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class ObjectCreateExpression : AbstractCSharpNode
+	public class ObjectCreateExpression : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -38,8 +38,8 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public ICSharpNode Type {
-			get { return (ICSharpNode)GetChildByRole (Roles.ReturnType); }
+		public AstNode Type {
+			get { return GetChildByRole (Roles.ReturnType); }
 		}
 		
 		public CSharpTokenNode LPar {
@@ -50,7 +50,7 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
 		}
 		
-		public IEnumerable<INode> Arguments {
+		public IEnumerable<AstNode> Arguments {
 			get { return GetChildrenByRole (Roles.Argument); }
 		}
 		

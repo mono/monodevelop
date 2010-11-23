@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class ForeachStatement : AbstractCSharpNode
+	public class ForeachStatement : AstNode
 	{
 		public const int ForEachKeywordRole = 100;
 		public const int InKeywordRole = 101;
@@ -40,16 +40,16 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public ICSharpNode EmbeddedStatement {
-			get { return (ICSharpNode)GetChildByRole (Roles.EmbeddedStatement); }
+		public AstNode EmbeddedStatement {
+			get { return GetChildByRole (Roles.EmbeddedStatement); }
 		}
 		
-		public INode Expression {
+		public AstNode Expression {
 			get { return GetChildByRole (Roles.Initializer); }
 		}
 		
-		public ICSharpNode VariableType {
-			get { return (ICSharpNode)GetChildByRole (Roles.ReturnType); }
+		public AstNode VariableType {
+			get { return GetChildByRole (Roles.ReturnType); }
 		}
 		
 		public CSharpTokenNode LPar {

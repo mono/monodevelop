@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class ContinueStatement : AbstractCSharpNode
+	public class ContinueStatement : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -37,8 +37,8 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public INode ContinueKeyword {
-			get { return GetChildByRole (Roles.Keyword); }
+		public CSharpTokenNode ContinueKeyword {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

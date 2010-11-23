@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class UsingStatement : AbstractCSharpNode
+	public class UsingStatement : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -37,12 +37,12 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public INode Statement {
+		public AstNode Statement {
 			get { return GetChildByRole (Roles.Statement); }
 		}
 		
-		public ICSharpNode EmbeddedStatement {
-			get { return (ICSharpNode)GetChildByRole (Roles.EmbeddedStatement); }
+		public AstNode EmbeddedStatement {
+			get { return GetChildByRole (Roles.EmbeddedStatement); }
 		}
 		
 		public CSharpTokenNode LPar {

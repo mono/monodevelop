@@ -44,8 +44,8 @@ FILES =  \
 	MonoDevelop.CSharp.Completion/NRefactoryIndexerParameterDataProvider.cs \
 	MonoDevelop.CSharp.Completion/NRefactoryParameterDataProvider.cs \
 	MonoDevelop.CSharp.Completion/NRefactoryTemplateParameterDataProvider.cs \
-	MonoDevelop.CSharp.Dom/AbstractCSharpNode.cs \
 	MonoDevelop.CSharp.Dom/AbtractCSharpDomVisitor.cs \
+	MonoDevelop.CSharp.Dom/AstNode.cs \
 	MonoDevelop.CSharp.Dom/CompilationUnit.cs \
 	MonoDevelop.CSharp.Dom/ComposedType.cs \
 	MonoDevelop.CSharp.Dom/CSharpAmbience.cs \
@@ -93,8 +93,8 @@ FILES =  \
 	MonoDevelop.CSharp.Dom/GeneralScope/UsingAliasDeclaration.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/UsingDeclaration.cs \
 	MonoDevelop.CSharp.Dom/ICSharpDomVisitor.cs \
-	MonoDevelop.CSharp.Dom/ICSharpNode.cs \
 	MonoDevelop.CSharp.Dom/Identifier.cs \
+	MonoDevelop.CSharp.Dom/NodeType.cs \
 	MonoDevelop.CSharp.Dom/QualifiedIdentifier.cs \
 	MonoDevelop.CSharp.Dom/Statements/BlockStatement.cs \
 	MonoDevelop.CSharp.Dom/Statements/BreakStatement.cs \

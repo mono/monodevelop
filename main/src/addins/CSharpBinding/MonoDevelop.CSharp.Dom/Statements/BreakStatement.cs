@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class BreakStatement : AbstractCSharpNode
+	public class BreakStatement : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -37,9 +37,9 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public INode BreakKeyword {
+		public CSharpTokenNode BreakKeyword {
 			get {
-				return GetChildByRole (Roles.Keyword);
+				return (CSharpTokenNode)GetChildByRole (Roles.Keyword);
 			}
 		}
 		

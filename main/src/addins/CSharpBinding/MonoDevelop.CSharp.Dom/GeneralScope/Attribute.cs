@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class Attribute : AbstractCSharpNode
+	public class Attribute : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -52,9 +52,9 @@ namespace MonoDevelop.CSharp.Dom
 		}
 		
 		// Todo: Arguments should not be nodes, instead it should be expressions, change when it's implemented.
-		public IEnumerable<INode> Arguments { 
+		public IEnumerable<AstNode> Arguments { 
 			get {
-				return base.GetChildrenByRole (Roles.Argument).Cast <INode>();
+				return base.GetChildrenByRole (Roles.Argument);
 			}
 		}
 

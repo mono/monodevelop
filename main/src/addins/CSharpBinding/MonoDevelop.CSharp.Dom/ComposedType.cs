@@ -31,7 +31,7 @@ using System.Linq;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class ComposedType : AbstractCSharpNode
+	public class ComposedType : AstNode
 	{
 		public const int NullableRole  = 100;
 		public const int PointerRole   = 101;
@@ -43,9 +43,9 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public ICSharpNode BaseType {
+		public AstNode BaseType {
 			get {
-				return (ICSharpNode)GetChildByRole (Roles.ReturnType);
+				return GetChildByRole (Roles.ReturnType);
 			}
 		}
 		
@@ -58,7 +58,7 @@ namespace MonoDevelop.CSharp.Dom
 			return visitor.VisitComposedType (this, data);
 		}
 		
-		public class ArraySpecifier : AbstractCSharpNode
+		public class ArraySpecifier : AstNode
 		{
 			public override NodeType NodeType {
 				get {

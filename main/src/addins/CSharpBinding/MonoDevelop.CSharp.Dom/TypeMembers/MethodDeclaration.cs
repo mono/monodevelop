@@ -32,8 +32,8 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class MethodDeclaration : AbstractMember
 	{
-		public IEnumerable<ICSharpNode> TypeArguments {
-			get { return GetChildrenByRole (Roles.TypeArgument).Cast<ICSharpNode> (); }
+		public IEnumerable<AstNode> TypeArguments {
+			get { return GetChildrenByRole (Roles.TypeArgument); }
 		}
 		
 		public IEnumerable<Constraint> Constraints { 

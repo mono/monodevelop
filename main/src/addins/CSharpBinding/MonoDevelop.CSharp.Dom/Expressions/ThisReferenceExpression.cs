@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class ThisReferenceExpression : AbstractCSharpNode
+	public class ThisReferenceExpression : AstNode
 	{
 		public DomLocation Location {
 			get;

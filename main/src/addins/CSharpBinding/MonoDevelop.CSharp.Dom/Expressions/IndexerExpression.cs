@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class IndexerExpression : AbstractCSharpNode
+	public class IndexerExpression : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -39,8 +39,8 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public ICSharpNode Target {
-			get { return (ICSharpNode)GetChildByRole (Roles.TargetExpression); }
+		public AstNode Target {
+			get { return GetChildByRole (Roles.TargetExpression); }
 		}
 		
 		public CSharpTokenNode LBracket {
@@ -55,7 +55,7 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public IEnumerable<INode> Arguments {
+		public IEnumerable<AstNode> Arguments {
 			get { return GetChildrenByRole (Roles.Argument); }
 		}
 		
