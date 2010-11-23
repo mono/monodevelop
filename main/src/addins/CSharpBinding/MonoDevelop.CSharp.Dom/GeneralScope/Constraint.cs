@@ -52,7 +52,7 @@ namespace MonoDevelop.CSharp.Dom
 			get { return (CSharpTokenNode)GetChildByRole (Roles.Colon); }
 		}
 		
-		public IEnumerable<ICSharpNode> TypeArguments {
+		public IEnumerable<ICSharpNode> TypeParameters {
 			get { return GetChildrenByRole (Roles.TypeArgument).Cast<ICSharpNode> (); }
 		}
 		

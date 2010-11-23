@@ -238,7 +238,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 		{
 			if (!MemberLocation.IsEmpty && methodDeclaration.StartLocation.Line != MemberLocation.Line)
 				return null;
-			foreach (var param in methodDeclaration.Arguments) {
+			foreach (var param in methodDeclaration.Parameters) {
 				
 				variables[param.Identifier.Name] = new VariableDescriptor (param.Identifier.Name);
 				

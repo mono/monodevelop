@@ -245,7 +245,7 @@ namespace MonoDevelop.CSharp.Formatting
 		public override object VisitDelegateDeclaration (DelegateDeclaration delegateDeclaration, object data)
 		{
 			ForceSpacesBefore (delegateDeclaration.LPar, policy.BeforeDelegateDeclarationParentheses);
-			if (delegateDeclaration.Arguments.Any ()) {
+			if (delegateDeclaration.Parameters.Any ()) {
 				ForceSpacesAfter (delegateDeclaration.LPar, policy.WithinDelegateDeclarationParentheses);
 				ForceSpacesBefore (delegateDeclaration.RPar, policy.WithinDelegateDeclarationParentheses);
 			} else {
@@ -260,7 +260,7 @@ namespace MonoDevelop.CSharp.Formatting
 		public override object VisitMethodDeclaration (MethodDeclaration methodDeclaration, object data)
 		{
 			ForceSpacesBefore (methodDeclaration.LPar, policy.BeforeMethodDeclarationParentheses);
-			if (methodDeclaration.Arguments.Any ()) {
+			if (methodDeclaration.Parameters.Any ()) {
 				ForceSpacesAfter (methodDeclaration.LPar, policy.WithinMethodDeclarationParentheses);
 				ForceSpacesBefore (methodDeclaration.RPar, policy.WithinMethodDeclarationParentheses);
 			} else {
@@ -275,7 +275,7 @@ namespace MonoDevelop.CSharp.Formatting
 		public override object VisitConstructorDeclaration (ConstructorDeclaration constructorDeclaration, object data)
 		{
 			ForceSpacesBefore (constructorDeclaration.LPar, policy.BeforeConstructorDeclarationParentheses);
-			if (constructorDeclaration.Arguments.Any ()) {
+			if (constructorDeclaration.Parameters.Any ()) {
 				ForceSpacesAfter (constructorDeclaration.LPar, policy.WithinConstructorDeclarationParentheses);
 				ForceSpacesBefore (constructorDeclaration.RPar, policy.WithinConstructorDeclarationParentheses);
 			} else {
