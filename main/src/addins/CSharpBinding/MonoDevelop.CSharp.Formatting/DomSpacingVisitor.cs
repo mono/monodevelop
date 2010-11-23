@@ -217,7 +217,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		void FormatCommas (AstNode parent, bool before, bool after)
 		{
-			if (parent == null)
+			if (parent.IsNull)
 				return;
 			foreach (CSharpTokenNode comma in parent.Children.Where (node => node.Role == FieldDeclaration.Roles.Comma)) {
 				ForceSpacesAfter (comma, after);
@@ -410,9 +410,9 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitVariableInitializer (VariableInitializer variableInitializer, object data)
 		{
-			if (variableInitializer.Assign != null)
+			if (!variableInitializer.Assign.IsNull)
 				ForceSpacesAround (variableInitializer.Assign, policy.AroundAssignmentParentheses);
-			if (variableInitializer.Initializer != null)
+			if (!variableInitializer.Initializer.IsNull)
 				variableInitializer.Initializer.AcceptVisitor (this, data);
 			return data;
 		}
