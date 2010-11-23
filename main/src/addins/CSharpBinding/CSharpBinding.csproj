@@ -281,7 +281,6 @@
     <Compile Include="MonoDevelop.CSharp.Formatting\Indent.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\DomSpacingVisitor.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\CSharpModifierToken.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\ArrayObjectCreateExpression.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\ArgListExpression.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\LambdaExpression.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\ParameterDeclarationExpression.cs" />
@@ -365,6 +364,7 @@
     <Compile Include="MonoDevelop.CSharp.Dom\ComposedType.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\DirectionExpression.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\ArrayInitializerExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\ArrayCreateExpression.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

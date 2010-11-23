@@ -593,10 +593,10 @@ namespace MonoDevelop.CSharp.Formatting
 			return base.VisitObjectCreateExpression (objectCreateExpression, data);
 		}
 		
-		public override object VisitArrayObjectCreateExpression (ArrayObjectCreateExpression arrayObjectCreateExpression, object data)
+		public override object VisitArrayCreateExpression (ArrayCreateExpression arrayObjectCreateExpression, object data)
 		{
 			FormatCommas (arrayObjectCreateExpression, policy.BeforeMethodCallParameterComma, policy.AfterMethodCallParameterComma);
-			return base.VisitArrayObjectCreateExpression (arrayObjectCreateExpression, data);
+			return base.VisitArrayCreateExpression (arrayObjectCreateExpression, data);
 		}
 		
 		public override object VisitLambdaExpression (LambdaExpression lambdaExpression, object data)

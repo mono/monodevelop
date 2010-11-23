@@ -1841,15 +1841,15 @@ namespace MonoDevelop.CSharp.Parser
 			
 			public override object Visit (ArrayCreation arrayCreationExpression)
 			{
-				var result = new ArrayObjectCreateExpression ();
+				var result = new ArrayCreateExpression ();
 				
 				var location = LocationsBag.GetLocations (arrayCreationExpression);
-				result.AddChild (new CSharpTokenNode (Convert (arrayCreationExpression.Location), "new".Length), ArrayObjectCreateExpression.Roles.Keyword);
+				result.AddChild (new CSharpTokenNode (Convert (arrayCreationExpression.Location), "new".Length), ArrayCreateExpression.Roles.Keyword);
 				
 				if (arrayCreationExpression.NewType != null)
-					result.AddChild ((INode)arrayCreationExpression.NewType.Accept (this), ArrayObjectCreateExpression.Roles.ReturnType);
+					result.AddChild ((INode)arrayCreationExpression.NewType.Accept (this), ArrayCreateExpression.Roles.ReturnType);
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), ArrayObjectCreateExpression.Roles.LBracket);
+					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), ArrayCreateExpression.Roles.LBracket);
 				if (arrayCreationExpression.Arguments != null) {
 					var commaLocations = LocationsBag.GetLocations (arrayCreationExpression.Arguments);
 					for (int i = 0 ;i < arrayCreationExpression.Arguments.Count; i++) {
@@ -1859,11 +1859,11 @@ namespace MonoDevelop.CSharp.Parser
 					}
 				}
 				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), ArrayObjectCreateExpression.Roles.RBracket);
+					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), ArrayCreateExpression.Roles.RBracket);
 				
 				if (arrayCreationExpression.Initializers != null && arrayCreationExpression.Initializers.Count != 0) {
 					var initLocation = LocationsBag.GetLocations (arrayCreationExpression.Initializers);
-					result.AddChild (new CSharpTokenNode (Convert (arrayCreationExpression.Initializers.Location), 1), ArrayObjectCreateExpression.Roles.LBrace);
+					result.AddChild (new CSharpTokenNode (Convert (arrayCreationExpression.Initializers.Location), 1), ArrayCreateExpression.Roles.LBrace);
 					var commaLocations = LocationsBag.GetLocations (arrayCreationExpression.Initializers.Elements);
 					for (int i = 0; i < arrayCreationExpression.Initializers.Count; i++) {
 						result.AddChild ((INode)arrayCreationExpression.Initializers[i].Accept (this), ObjectCreateExpression.Roles.Initializer);
@@ -1873,7 +1873,7 @@ namespace MonoDevelop.CSharp.Parser
 					}
 					
 					if (initLocation != null)
-						result.AddChild (new CSharpTokenNode (Convert (initLocation[initLocation.Count - 1]), 1), ArrayObjectCreateExpression.Roles.RBrace);
+						result.AddChild (new CSharpTokenNode (Convert (initLocation[initLocation.Count - 1]), 1), ArrayCreateExpression.Roles.RBrace);
 				}
 				
 				return result;

@@ -378,7 +378,7 @@ namespace MonoDevelop.CSharp.Dom
 			return VisitChildren (objectCreateExpression, data);
 		}
 		
-		public virtual S VisitArrayObjectCreateExpression (ArrayObjectCreateExpression arrayObjectCreateExpression, T data) 
+		public virtual S VisitArrayCreateExpression (ArrayCreateExpression arrayObjectCreateExpression, T data) 
 		{
 			return VisitChildren (arrayObjectCreateExpression, data);
 		}
