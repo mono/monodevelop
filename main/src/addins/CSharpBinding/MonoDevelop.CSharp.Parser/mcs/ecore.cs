@@ -129,11 +129,6 @@ namespace Mono.CSharp {
 			get { return loc; }
 		}
 
-		// Not nice but we have broken hierarchy.
-		public virtual void CheckMarshalByRefAccess (ResolveContext ec)
-		{
-		}
-
 		public virtual string GetSignatureForError ()
 		{
 			if (type == null)
@@ -219,7 +214,7 @@ namespace Mono.CSharp {
 				return null;
 			}
 
-			if (!te.CheckAccessLevel (ec)) {
+			if (!te.type.IsAccessible (ec.CurrentType)) {
 				ec.Compiler.Report.SymbolRelatedToPreviousError (te.Type);
 				ErrorIsInaccesible (ec, te.Type.GetSignatureForError (), loc);
 			}
@@ -556,7 +551,7 @@ namespace Mono.CSharp {
 
 		protected static MethodSpec ConstructorLookup (ResolveContext rc, TypeSpec type, ref Arguments args, Location loc)
 		{
-			var ctors = MemberCache.FindMembers (type, ConstructorInfo.ConstructorName, true);
+			var ctors = MemberCache.FindMembers (type, Constructor.ConstructorName, true);
 			if (ctors == null) {
 				rc.Report.SymbolRelatedToPreviousError (type);
 				if (type.IsStruct) {
@@ -607,8 +602,27 @@ namespace Mono.CSharp {
 					if ((arity > 0 || (restrictions & MemberLookupRestrictions.ExactArity) != 0) && member.Arity != arity)
 						continue;
 
-					if (rc != null && !member.IsAccessible (currentType))
-						continue;
+					if (rc != null) {
+						if (!member.IsAccessible (currentType))
+							continue;
+
+						//
+						// With runtime binder we can have a situation where queried type is inaccessible
+						// because it came via dynamic object, the check about inconsisted accessibility
+						// had no effect as the type was unknown during compilation
+						//
+						// class A {
+						//		private class N { }
+						//
+						//		public dynamic Foo ()
+						//		{
+						//			return new N ();
+						//		}
+						//	}
+						//
+						if (rc.Compiler.IsRuntimeBinder && !member.DeclaringType.IsAccessible (currentType))
+							continue;
+					}
 
 					if ((restrictions & MemberLookupRestrictions.InvocableOnly) != 0) {
 						if (member is MethodSpec)
@@ -672,7 +686,7 @@ namespace Mono.CSharp {
 		///   Returns an expression that can be used to invoke operator false
 		///   on the expression if it exists.
 		/// </summary>
-		static public Expression GetOperatorFalse (ResolveContext ec, Expression e, Location loc)
+		protected static Expression GetOperatorFalse (ResolveContext ec, Expression e, Location loc)
 		{
 			return GetOperatorTrueOrFalse (ec, e, false, loc);
 		}
@@ -1491,13 +1505,6 @@ namespace Mono.CSharp {
 			// initialized state.
 
 			return this;
-		}
-
-		public override Expression DoResolveLValue (ResolveContext ec, Expression right_side)
-		{
-			if (right_side == EmptyExpression.LValueMemberAccess || right_side == EmptyExpression.LValueMemberOutAccess)
-				ec.Report.Error (445, loc, "Cannot modify the result of an unboxing conversion");
-			return base.DoResolveLValue (ec, right_side);
 		}
 
 		public override void Emit (EmitContext ec)
@@ -2504,15 +2511,6 @@ namespace Mono.CSharp {
 			return ResolveAsTypeTerminal (ec, false);
 		}
 
-		public virtual bool CheckAccessLevel (IMemberContext mc)
-		{
-			DeclSpace c = mc.CurrentMemberDefinition as DeclSpace;
-			if (c == null)
-				c = mc.CurrentMemberDefinition.Parent;
-
-			return c.CheckAccessLevel (Type);
-		}
-
 		protected abstract TypeExpr DoResolveAsTypeStep (IMemberContext ec);
 
 		public override bool Equals (object obj)
@@ -2649,7 +2647,7 @@ namespace Mono.CSharp {
 					// get/set member expressions second call would fail to proxy because left expression
 					// would be of 'this' and not 'base'
 					if (rc.CurrentType.IsStruct)
-						InstanceExpression = rc.GetThis (loc);
+						InstanceExpression = new This (loc).Resolve (rc);
 				}
 
 				if (targs != null)
@@ -2749,7 +2747,7 @@ namespace Mono.CSharp {
 			return left;
 		}
 
-		public bool ResolveInstanceExpression (ResolveContext rc)
+		public bool ResolveInstanceExpression (ResolveContext rc, Expression rhs)
 		{
 			if (IsStatic) {
 				if (InstanceExpression != null) {
@@ -2793,13 +2791,21 @@ namespace Mono.CSharp {
 						DeclaringType.GetSignatureForError (), rc.CurrentType.GetSignatureForError ());
 				}
 
-				InstanceExpression = rc.GetThis (loc);
+				InstanceExpression = new This (loc);
+				if (this is FieldExpr && rc.CurrentType.IsStruct) {
+					using (rc.Set (ResolveContext.Options.OmitStructFlowAnalysis)) {
+						InstanceExpression = InstanceExpression.Resolve (rc);
+					}
+				} else {
+					InstanceExpression = InstanceExpression.Resolve (rc);
+				}
+
 				return false;
 			}
 
 			var me = InstanceExpression as MemberExpr;
 			if (me != null) {
-				me.ResolveInstanceExpression (rc);
+				me.ResolveInstanceExpression (rc, rhs);
 
 				var fe = me as FieldExpr;
 				if (fe != null && fe.IsMarshalByRefAccess ()) {
@@ -2807,6 +2813,29 @@ namespace Mono.CSharp {
 					rc.Report.Warning (1690, 1, loc,
 						"Cannot call methods, properties, or indexers on `{0}' because it is a value type member of a marshal-by-reference class",
 						me.GetSignatureForError ());
+				}
+
+				return true;
+			}
+
+			//
+			// Run member-access postponed check once we know that
+			// the expression is not field expression which is the only
+			// expression which can use uninitialized this
+			//
+			if (InstanceExpression is This && !(this is FieldExpr) && rc.CurrentType.IsStruct) {
+				((This)InstanceExpression).CheckStructThisDefiniteAssignment (rc);
+			}
+
+			//
+			// Additional checks for l-value member access
+			//
+			if (rhs != null) {
+				//
+				// TODO: It should be recursive but that would break csc compatibility
+				//
+				if (InstanceExpression is UnboxCast) {
+					rc.Report.Error (445, InstanceExpression.Location, "Cannot modify the result of an unboxing conversion");
 				}
 			}
 
@@ -2910,7 +2939,7 @@ namespace Mono.CSharp {
 
 			var me = ExtensionExpression as MemberExpr;
 			if (me != null)
-				me.ResolveInstanceExpression (ec);
+				me.ResolveInstanceExpression (ec, null);
 
 			InstanceExpression = null;
 			return this;
@@ -3156,7 +3185,7 @@ namespace Mono.CSharp {
 					}
 				}
 
-				ResolveInstanceExpression (ec);
+				ResolveInstanceExpression (ec, null);
 				if (InstanceExpression != null)
 					CheckProtectedMemberAccess (ec, best_candidate);
 			}
@@ -3466,6 +3495,8 @@ namespace Mono.CSharp {
 				return 1;
 			}
 
+			// FIXME: handle lifted operators
+
 			// TODO: this is expensive
 			Expression p_tmp = new EmptyExpression (p);
 			Expression q_tmp = new EmptyExpression (q);
@@ -3501,9 +3532,10 @@ namespace Mono.CSharp {
 			bool same = true;
 			int args_count = args == null ? 0 : args.Count;
 			int j = 0;
+			Argument a = null;
 			TypeSpec ct, bt;
 			for (int c_idx = 0, b_idx = 0; j < args_count; ++j, ++c_idx, ++b_idx) {
-				Argument a = args[j];
+				a = args[j];
 
 				// Default arguments are ignored for better decision
 				if (a.IsDefaultArgument)
@@ -3539,7 +3571,7 @@ namespace Mono.CSharp {
 					}
 				}
 
-				if (ct == bt)
+				if (TypeSpecComparer.IsEqual (ct, bt))
 					continue;
 
 				same = false;
@@ -3568,7 +3600,7 @@ namespace Mono.CSharp {
 			// The call Add (3, 4, 5) should be ambiguous.  Without this check, the
 			// first candidate would've chosen as better.
 			//
-			if (!same)
+			if (!same && !a.IsDefaultArgument)
 				return false;
 
 			//
@@ -3650,9 +3682,6 @@ namespace Mono.CSharp {
 
 			if (specific_at_least_once)
 				return true;
-
-			// FIXME: handle lifted operators
-			// ...
 
 			return false;
 		}
@@ -4108,8 +4137,13 @@ namespace Mono.CSharp {
 							if ((member.Modifiers & Modifiers.OVERRIDE) != 0)
 								continue;
 
-							if (!member.IsAccessible (current_type) && !error_mode)
-								continue;
+							if (!error_mode) {
+								if (!member.IsAccessible (current_type))
+									continue;
+
+								if (rc.Compiler.IsRuntimeBinder && !member.DeclaringType.IsAccessible (current_type))
+									continue;
+							}
 
 							IParametersMember pm = member as IParametersMember;
 							if (pm == null) {
@@ -4248,7 +4282,7 @@ namespace Mono.CSharp {
 				for (int ix = 0; ix < ambiguous_candidates.Count; ix++) {
 					var candidate = ambiguous_candidates [ix];
 
-					if (!BetterFunction (rc, candidate_args, best_candidate, best_parameter_member.Parameters, best_candidate_params, candidate.Member, candidate.Parameters, candidate.Expanded)) {
+					if (!BetterFunction (rc, best_candidate_args, best_candidate, best_parameter_member.Parameters, best_candidate_params, candidate.Member, candidate.Parameters, candidate.Expanded)) {
 						var ambiguous = candidate.Member;
 						if (custom_errors == null || !custom_errors.AmbiguousCandidates (rc, best_candidate, ambiguous)) {
 							rc.Report.SymbolRelatedToPreviousError (best_candidate);
@@ -4375,7 +4409,7 @@ namespace Mono.CSharp {
 				int unexpanded_count = pm.Parameters.HasParams ? pm.Parameters.Count - 1 : pm.Parameters.Count;
 				if (pm.Parameters.Count == arg_count || params_expanded || unexpanded_count == arg_count) {
 					// Reject any inaccessible member
-					if (!best_candidate.IsAccessible (rc.CurrentType)) {
+					if (!best_candidate.IsAccessible (rc.CurrentType) || !best_candidate.DeclaringType.IsAccessible (rc.CurrentType)) {
 						rc.Report.SymbolRelatedToPreviousError (best_candidate);
 						Expression.ErrorIsInaccesible (rc, best_candidate.GetSignatureForError (), loc);
 						return;
@@ -4617,7 +4651,7 @@ namespace Mono.CSharp {
 
 		protected override Expression DoResolve (ResolveContext rc)
 		{
-			ResolveInstanceExpression (rc);
+			ResolveInstanceExpression (rc, null);
 			DoBestMemberChecks (rc, constant);
 
 			var c = constant.GetConstant (rc);
@@ -4670,7 +4704,7 @@ namespace Mono.CSharp {
 		{
 		}
 
-#region Properties
+		#region Properties
 
 		public override string Name {
 			get {
@@ -4760,18 +4794,22 @@ namespace Mono.CSharp {
 
 		protected override Expression DoResolve (ResolveContext ec)
 		{
-			return DoResolve (ec, false, false);
+			return DoResolve (ec, null);
 		}
 
-		Expression DoResolve (ResolveContext ec, bool lvalue_instance, bool out_access)
+		Expression DoResolve (ResolveContext ec, Expression rhs)
 		{
-			if (ResolveInstanceExpression (ec)) {
+			bool lvalue_instance = rhs != null && IsInstance && spec.DeclaringType.IsStruct;
+
+			if (ResolveInstanceExpression (ec, rhs)) {
 				// Resolve the field's instance expression while flow analysis is turned
 				// off: when accessing a field "a.b", we must check whether the field
 				// "a.b" is initialized, not whether the whole struct "a" is initialized.
 
 				if (lvalue_instance) {
 					using (ec.With (ResolveContext.Options.DoFlowAnalysis, false)) {
+						bool out_access = rhs == EmptyExpression.OutAccess.Instance || rhs == EmptyExpression.LValueMemberOutAccess;
+
 						Expression right_side =
 							out_access ? EmptyExpression.LValueMemberOutAccess : EmptyExpression.LValueMemberAccess;
 
@@ -4785,10 +4823,6 @@ namespace Mono.CSharp {
 
 				if (InstanceExpression == null)
 					return null;
-
-				using (ec.Set (ResolveContext.Options.OmitStructFlowAnalysis)) {
-					InstanceExpression.CheckMarshalByRefAccess (ec);
-				}
 			}
 
 			DoBestMemberChecks (ec, spec);
@@ -4870,10 +4904,7 @@ namespace Mono.CSharp {
 		
 		override public Expression DoResolveLValue (ResolveContext ec, Expression right_side)
 		{
-			bool lvalue_instance = IsInstance && spec.DeclaringType.IsStruct;
-			bool out_access = right_side == EmptyExpression.OutAccess.Instance || right_side == EmptyExpression.LValueMemberOutAccess;
-
-			Expression e = DoResolve (ec, lvalue_instance, out_access);
+			Expression e = DoResolve (ec, right_side);
 
 			if (e == null)
 				return null;
@@ -5276,10 +5307,7 @@ namespace Mono.CSharp {
 				Error_PropertyNotValid (rc);
 			}
 
-			if (ResolveInstanceExpression (rc)) {
-				if (right_side != null && best_candidate.DeclaringType.IsStruct)
-					InstanceExpression.DoResolveLValue (rc, EmptyExpression.LValueMemberAccess);
-			}
+			ResolveInstanceExpression (rc, right_side);
 
 			if ((best_candidate.Modifiers & (Modifiers.ABSTRACT | Modifiers.VIRTUAL)) != 0 && best_candidate.DeclaringType != InstanceExpression.Type) {
 				var filter = new MemberFilter (best_candidate.Name, 0, MemberKind.Property, null, null);
@@ -5341,9 +5369,6 @@ namespace Mono.CSharp {
 				var expr = OverloadResolve (ec, null);
 				if (expr == null)
 					return null;
-
-				if (InstanceExpression != null)
-					InstanceExpression.CheckMarshalByRefAccess (ec);
 
 				if (expr != this)
 					return expr.Resolve (ec);
@@ -5533,8 +5558,6 @@ namespace Mono.CSharp {
 
 					return ml.ResolveMemberAccess (ec, left, original);
 				}
-
-				Error_AssignmentEventOnly (ec);
 			}
 
 			return base.ResolveMemberAccess (ec, left, original);
@@ -5567,10 +5590,10 @@ namespace Mono.CSharp {
 			eclass = ExprClass.EventAccess;
 			type = spec.MemberType;
 
-			ResolveInstanceExpression (ec);
+			ResolveInstanceExpression (ec, null);
 
 			if (!ec.HasSet (ResolveContext.Options.CompoundAssignmentScope)) {
-				Error_CannotAssign (ec);
+				Error_AssignmentEventOnly (ec);
 			}
 
 			DoBestMemberChecks (ec, spec);
@@ -5604,15 +5627,15 @@ namespace Mono.CSharp {
 
 		void Error_AssignmentEventOnly (ResolveContext ec)
 		{
-			ec.Report.Error (79, loc, "The event `{0}' can only appear on the left hand side of `+=' or `-=' operator",
-				GetSignatureForError ());
-		}
-
-		public void Error_CannotAssign (ResolveContext ec)
-		{
-			ec.Report.Error (70, loc,
-				"The event `{0}' can only appear on the left hand side of += or -= when used outside of the type `{1}'",
-				GetSignatureForError (), TypeManager.CSharpName (spec.DeclaringType));
+			if (spec.DeclaringType == ec.CurrentType || TypeManager.IsNestedChildOf (ec.CurrentType, spec.DeclaringType)) {
+				ec.Report.Error (79, loc,
+					"The event `{0}' can only appear on the left hand side of `+=' or `-=' operator",
+					GetSignatureForError ());
+			} else {
+				ec.Report.Error (70, loc,
+					"The event `{0}' can only appear on the left hand side of += or -= when used outside of the type `{1}'",
+					GetSignatureForError (), spec.DeclaringType.GetSignatureForError ());
+			}
 		}
 
 		protected override void Error_CannotCallAbstractBase (ResolveContext rc, string name)

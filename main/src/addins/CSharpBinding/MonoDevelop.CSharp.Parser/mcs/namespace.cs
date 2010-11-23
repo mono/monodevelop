@@ -17,46 +17,21 @@ namespace Mono.CSharp {
 
 	public class RootNamespace : Namespace {
 
-		protected readonly string alias_name;
-		protected Assembly [] referenced_assemblies;
-
-		Dictionary<string, Namespace> all_namespaces;
+		readonly string alias_name;
+		readonly Dictionary<string, Namespace> all_namespaces;
 
 		public RootNamespace (string alias_name)
 			: base (null, String.Empty)
 		{
 			this.alias_name = alias_name;
-			referenced_assemblies = new Assembly [0];
 
 			all_namespaces = new Dictionary<string, Namespace> ();
 			all_namespaces.Add ("", this);
 		}
 
-		public void AddAssemblyReference (Assembly a)
-		{
-			foreach (Assembly assembly in referenced_assemblies) {
-				if (a == assembly)
-					return;
-			}
-
-			int top = referenced_assemblies.Length;
-			Assembly [] n = new Assembly [top + 1];
-			referenced_assemblies.CopyTo (n, 0);
-			n [top] = a;
-			referenced_assemblies = n;
-		}
-
-		public virtual void ImportTypes (CompilerContext ctx)
-		{
-			foreach (Assembly a in referenced_assemblies) {
-				try {
-					ctx.MetaImporter.ImportAssembly (a, this);
-				} catch (TypeLoadException e) {
-					ctx.Report.Error (11, Location.Null, e.Message);
-				} catch (System.IO.FileNotFoundException) {
-					ctx.Report.Error (12, Location.Null, "An assembly `{0}' is used without being referenced",
-						a.FullName);
-				}
+		public string Alias {
+			get {
+				return alias_name;
 			}
 		}
 
@@ -83,63 +58,11 @@ namespace Mono.CSharp {
 		}
 	}
 
-	// TODO: It should go to AssemblyClass or AssemblySpec
-	public class GlobalRootNamespace : RootNamespace {
-		Module [] modules;
-		Dictionary<string, RootNamespace> root_namespaces;
-
+	public class GlobalRootNamespace : RootNamespace
+	{
 		public GlobalRootNamespace ()
 			: base ("global")
 		{
-			root_namespaces = new Dictionary<string, RootNamespace> ();
-			root_namespaces.Add (alias_name, this);
-		}
-
-		public Assembly [] Assemblies {
-		    get { return referenced_assemblies; }
-		}
-
-		public Module [] Modules {
-			get { return modules; }
-		}
-
-		public void AddModuleReference (Module m)
-		{
-			int top = modules != null ? modules.Length : 0;
-			Module [] n = new Module [top + 1];
-			if (modules != null)
-				modules.CopyTo (n, 0);
-			n [top] = m;
-			modules = n;
-
-			if (m == RootContext.ToplevelTypes.Builder)
-				return;
-
-			foreach (var t in m.GetTypes ())
-				RegisterNamespace (t.Namespace);
-		}
-
-		public void ComputeNamespaces (CompilerContext ctx)
-		{
-			foreach (RootNamespace rn in root_namespaces.Values) {
-				rn.ImportTypes (ctx);
-			}
-		}
-
-		public void DefineRootNamespace (string alias, Assembly assembly, CompilerContext ctx)
-		{
-			if (alias == alias_name) {
-				NamespaceEntry.Error_GlobalNamespaceRedefined (Location.Null, ctx.Report);
-				return;
-			}
-
-			RootNamespace retval = GetRootNamespace (alias);
-			if (retval == null) {
-				retval = new RootNamespace (alias);
-				root_namespaces.Add (alias, retval);
-			}
-
-			retval.AddAssemblyReference (assembly);
 		}
 
 		public override void Error_NamespaceDoesNotExist (Location loc, string name, int arity, IMemberContext ctx)
@@ -147,27 +70,6 @@ namespace Mono.CSharp {
 			ctx.Compiler.Report.Error (400, loc,
 				"The type or namespace name `{0}' could not be found in the global namespace (are you missing an assembly reference?)",
 				name);
-		}
-
-		public RootNamespace GetRootNamespace (string name)
-		{
-			RootNamespace rn;
-			if (!root_namespaces.TryGetValue (name, out rn))
-				return null;
-
-			return rn;
-		}
-
-		public override void ImportTypes (CompilerContext ctx)
-		{
-			base.ImportTypes (ctx);
-
-			if (modules != null) {
-				// 0 is this module
-				for (int i = 1; i < modules.Length; ++i) {
-					ctx.MetaImporter.ImportModule (modules[i], this);
-				}
-			}
 		}
 	}
 
@@ -350,7 +252,7 @@ namespace Mono.CSharp {
 						if (silent) {
 							ctx.Report.Warning (1685, 1, loc,
 								"The predefined type `{0}' is defined in multiple assemblies. Using definition from `{1}'",
-								ts.GetSignatureForError (), best.Assembly.GetName ().Name);
+								ts.GetSignatureForError (), best.MemberDefinition.DeclaringAssembly.Name);
 						} else {
 							ctx.Report.Error (433, loc, "The imported type `{0}' is defined multiple times", ts.GetSignatureForError ());
 						}
@@ -361,7 +263,7 @@ namespace Mono.CSharp {
 					if (best.MemberDefinition.IsImported)
 						best = ts;
 
-					if ((best.Modifiers & Modifiers.INTERNAL) != 0 && !TypeManager.IsThisOrFriendAssembly (CodeGen.Assembly.Builder, best.MemberDefinition.Assembly))
+					if ((best.Modifiers & Modifiers.INTERNAL) != 0 && !best.MemberDefinition.IsInternalAsPublic (RootContext.ToplevelTypes.DeclaringAssembly))
 						continue;
 
 					if (silent)
@@ -390,7 +292,7 @@ namespace Mono.CSharp {
 			if (best == null)
 				return null;
 
-			if ((best.Modifiers & Modifiers.INTERNAL) != 0 && !TypeManager.IsThisOrFriendAssembly (CodeGen.Assembly.Builder, best.MemberDefinition.Assembly))
+			if ((best.Modifiers & Modifiers.INTERNAL) != 0 && !best.MemberDefinition.IsInternalAsPublic (RootContext.ToplevelTypes.DeclaringAssembly))
 				return null;
 
 			te = new TypeExpression (best, Location.Null);
@@ -462,14 +364,12 @@ namespace Mono.CSharp {
 		/// 
 		/// Looks for extension method in this namespace
 		/// 
-		public List<MethodSpec> LookupExtensionMethod (TypeSpec extensionType, ClassOrStruct currentClass, string name, int arity)
+		public List<MethodSpec> LookupExtensionMethod (TypeSpec extensionType, TypeContainer invocationContext, string name, int arity)
 		{
 			if (types == null)
 				return null;
 
 			List<MethodSpec> found = null;
-
-			var invocation_type = currentClass == null ? InternalType.FakeInternalType : currentClass.CurrentType;
 
 			// TODO: Add per namespace flag when at least 1 type has extension
 
@@ -478,7 +378,7 @@ namespace Mono.CSharp {
 					if ((ts.Modifiers & Modifiers.METHOD_EXTENSION) == 0)
 						continue;
 
-					var res = ts.MemberCache.FindExtensionMethods (invocation_type, extensionType, name, arity);
+					var res = ts.MemberCache.FindExtensionMethods (invocationContext, extensionType, name, arity);
 					if (res == null)
 						continue;
 
@@ -551,8 +451,8 @@ namespace Mono.CSharp {
 		//
 		public static TypeSpec IsImportedTypeOverride (TypeSpec ts, TypeSpec found)
 		{
-			var ts_accessible = (ts.Modifiers & Modifiers.PUBLIC) != 0 || TypeManager.IsThisOrFriendAssembly (CodeGen.Assembly.Builder, ts.MemberDefinition.Assembly);
-			var found_accessible = (found.Modifiers & Modifiers.PUBLIC) != 0 || TypeManager.IsThisOrFriendAssembly (CodeGen.Assembly.Builder, found.MemberDefinition.Assembly);
+			var ts_accessible = (ts.Modifiers & Modifiers.PUBLIC) != 0 || ts.MemberDefinition.IsInternalAsPublic (RootContext.ToplevelTypes.DeclaringAssembly);
+			var found_accessible = (found.Modifiers & Modifiers.PUBLIC) != 0 || found.MemberDefinition.IsInternalAsPublic (RootContext.ToplevelTypes.DeclaringAssembly);
 
 			if (ts_accessible && !found_accessible)
 				return ts;
@@ -705,7 +605,7 @@ namespace Mono.CSharp {
 
 			public virtual FullNamedExpression Resolve (IMemberContext rc, bool local)
 			{
-				FullNamedExpression fne = rc.Compiler.GlobalRootNamespace.GetRootNamespace (Alias);
+				FullNamedExpression fne = rc.CurrentMemberDefinition.Module.GetRootNamespace (Alias);
 				if (fne == null) {
 					rc.Compiler.Report.Error (430, Location,
 						"The extern alias `{0}' was not specified in -reference option",
@@ -773,7 +673,7 @@ namespace Mono.CSharp {
 		public readonly DeclSpace SlaveDeclSpace;
 		static readonly Namespace [] empty_namespaces = new Namespace [0];
 		Namespace [] namespace_using_table;
-		CompilerContext ctx;
+		ModuleContainer ctx;
 
 		static List<NamespaceEntry> entries = new List<NamespaceEntry> ();
 
@@ -782,8 +682,7 @@ namespace Mono.CSharp {
 			entries = new List<NamespaceEntry> ();
 		}
 
-		// TODO: ctx should be a module
-		public NamespaceEntry (CompilerContext ctx, NamespaceEntry parent, CompilationUnit file, string name)
+		public NamespaceEntry (ModuleContainer ctx, NamespaceEntry parent, CompilationUnit file, string name)
 		{
 			this.ctx = ctx;
 			this.parent = parent;
@@ -793,13 +692,14 @@ namespace Mono.CSharp {
 			if (parent != null)
 				ns = parent.NS.GetNamespace (name, true);
 			else if (name != null)
-				ns = Compiler.GlobalRootNamespace.GetNamespace (name, true);
+				ns = ctx.GlobalRootNamespace.GetNamespace (name, true);
 			else
-				ns = Compiler.GlobalRootNamespace;
+				ns = ctx.GlobalRootNamespace;
+
 			SlaveDeclSpace = new RootDeclSpace (this);
 		}
 
-		private NamespaceEntry (CompilerContext ctx, NamespaceEntry parent, CompilationUnit file, Namespace ns, bool slave)
+		private NamespaceEntry (ModuleContainer ctx, NamespaceEntry parent, CompilationUnit file, Namespace ns, bool slave)
 		{
 			this.ctx = ctx;
 			this.parent = parent;
@@ -1000,7 +900,7 @@ namespace Mono.CSharp {
 		{
 			List<MethodSpec> candidates = null;
 			foreach (Namespace n in GetUsingTable ()) {
-				var a = n.LookupExtensionMethod (extensionType, null, name, arity);
+				var a = n.LookupExtensionMethod (extensionType, RootContext.ToplevelTypes, name, arity);
 				if (a == null)
 					continue;
 
@@ -1022,7 +922,7 @@ namespace Mono.CSharp {
 			//
 			Namespace parent_ns = ns.Parent;
 			do {
-				candidates = parent_ns.LookupExtensionMethod (extensionType, null, name, arity);
+				candidates = parent_ns.LookupExtensionMethod (extensionType, RootContext.ToplevelTypes, name, arity);
 				if (candidates != null)
 					return candidates;
 
@@ -1116,7 +1016,7 @@ namespace Mono.CSharp {
 			}
 
 			if (fne != null) {
-				if (!((fne.Type.Modifiers & Modifiers.INTERNAL) != 0 && !TypeManager.IsThisOrFriendAssembly (CodeGen.Assembly.Builder, fne.Type.Assembly)))
+				if (!((fne.Type.Modifiers & Modifiers.INTERNAL) != 0 && !fne.Type.MemberDefinition.IsInternalAsPublic (RootContext.ToplevelTypes.DeclaringAssembly)))
 					return fne;
 			}
 
@@ -1225,7 +1125,7 @@ namespace Mono.CSharp {
 
 		public static void Error_GlobalNamespaceRedefined (Location loc, Report Report)
 		{
-			Report.Error (1681, loc, "You cannot redefine the global extern alias");
+			Report.Error (1681, loc, "The global extern alias cannot be redefined");
 		}
 
 		public static void Error_NamespaceNotFound (Location loc, string name, Report Report)
@@ -1296,7 +1196,7 @@ namespace Mono.CSharp {
 		#region IMemberContext Members
 
 		public CompilerContext Compiler {
-			get { return ctx; }
+			get { return ctx.Compiler; }
 		}
 
 		public TypeSpec CurrentType {

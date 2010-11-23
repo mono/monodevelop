@@ -127,6 +127,8 @@ namespace Mono.CSharp
 		// A counter to create new class names in interactive mode
 		static int class_count;
 		
+		ModuleContainer module;
+		
 		CompilerContext compiler;
 		
 		//
@@ -252,6 +254,7 @@ namespace Mono.CSharp
 %token INTO
 %token INTERR_NULLABLE
 %token EXTERN_ALIAS
+%token ASYNC
 
 /* C# keywords which are not really keywords */
 %token GET
@@ -475,7 +478,7 @@ namespace_declaration
 			Report.Error(1671, name.Location, "A namespace declaration cannot have modifiers or attributes");
 		}
 
-		current_namespace = new NamespaceEntry (compiler,
+		current_namespace = new NamespaceEntry (module,
 			current_namespace, file, name.GetName ());
 		current_class = current_namespace.SlaveDeclSpace;
 		current_container = current_class.PartialContainer;
@@ -619,7 +622,7 @@ global_attributes
 		if ($1 != null) {
 			Attributes attrs = (Attributes)$1;
 			if (global_attrs_enabled) {
-				CodeGen.Assembly.AddAttributes (attrs.Attrs, current_namespace);
+				module.AddAttributes (attrs.Attrs, current_namespace);
 			} else {
 				foreach (Attribute a in attrs.Attrs) {
 					Report.Error (1730, a.Location, "Assembly and module attributes must precede all other elements except using clauses and extern alias declarations");
@@ -651,11 +654,8 @@ attribute_sections
 			var sect = (List<Attribute>) $1;
 
 			if (global_attrs_enabled) {
-				if (current_attr_target == "module") {
-					current_container.Module.Compiled.AddAttributes (sect);
-					$$ = null;
-				} else if (current_attr_target != null && current_attr_target.Length > 0) {
-					CodeGen.Assembly.AddAttributes (sect, current_namespace);
+				if (!string.IsNullOrEmpty (current_attr_target)) {
+					module.AddAttributes (sect, current_namespace);
 					$$ = null;
 				} else {
 					$$ = new Attributes (sect);
@@ -682,11 +682,8 @@ attribute_sections
 			var sect = (List<Attribute>) $2;
 
 			if (global_attrs_enabled) {
-				if (current_attr_target == "module") {
-					current_container.Module.Compiled.AddAttributes (sect);
-					$$ = null;
-				} else if (current_attr_target == "assembly") {
-					CodeGen.Assembly.AddAttributes (sect, current_namespace);
+				if (!string.IsNullOrEmpty (current_attr_target)) {
+					module.AddAttributes (sect);
 					$$ = null;
 				} else {
 					if (attrs == null)
@@ -4347,6 +4344,11 @@ modifier
 		if (!RootContext.Unsafe)
 			Error_UnsafeCodeNotAllowed (GetLocation ($1));
 	  }
+	| ASYNC
+	  {
+		$$ = Modifiers.ASYNC;
+		StoreModifierLocation ($$, GetLocation ($1));
+	  }
 	;
 
 opt_class_base
@@ -6188,18 +6190,19 @@ static CSharpParser ()
 	oob_stack = new Stack<object> ();
 }
 
-public CSharpParser (SeekableStreamReader reader, CompilationUnit file, CompilerContext ctx)
+public CSharpParser (SeekableStreamReader reader, CompilationUnit file, ModuleContainer module)
 {
 	if (RootContext.EvalMode)
 		undo = new Undo ();
 
 	this.file = file;
-	this.compiler = ctx;
-	current_namespace = new NamespaceEntry (ctx, null, file, null);
+	this.module = module;
+	this.compiler = module.Compiler;
+	current_namespace = new NamespaceEntry (module, null, file, null);
 	current_class = current_namespace.SlaveDeclSpace;
 	current_container = current_class.PartialContainer; // == RootContest.ToplevelTypes
 	oob_stack.Clear ();
-	lexer = new Tokenizer (reader, file, ctx);
+	lexer = new Tokenizer (reader, file, compiler);
 	
 	use_global_stacks = true;
 }
@@ -6566,6 +6569,8 @@ static string GetTokenName (int token)
 		return "as";
 	case Token.ADD:
 		return "add";
+	case Token.ASYNC:
+		return "async";
 	case Token.BASE:
 		return "base";
 	case Token.BREAK:

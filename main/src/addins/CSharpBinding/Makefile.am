@@ -154,6 +154,7 @@ FILES =  \
 	MonoDevelop.CSharp.Parser/CSharpParser.cs \
 	MonoDevelop.CSharp.Parser/mcs/anonymous.cs \
 	MonoDevelop.CSharp.Parser/mcs/argument.cs \
+	MonoDevelop.CSharp.Parser/mcs/assembly.cs \
 	MonoDevelop.CSharp.Parser/mcs/assign.cs \
 	MonoDevelop.CSharp.Parser/mcs/attribute.cs \
 	MonoDevelop.CSharp.Parser/mcs/cfold.cs \

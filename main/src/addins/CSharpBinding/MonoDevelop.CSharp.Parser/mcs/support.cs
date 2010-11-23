@@ -14,8 +14,6 @@ using System;
 using System.Linq;
 using System.IO;
 using System.Text;
-using System.Reflection;
-using System.Reflection.Emit;
 using System.Globalization;
 using System.Collections.Generic;
 
@@ -72,6 +70,25 @@ namespace Mono.CSharp {
 		public static Tuple<T1, T2> Create<T1, T2> (T1 item1, T2 item2)
 		{
 			return new Tuple<T1, T2> (item1, item2);
+		}
+	}
+
+	static class ArrayComparer
+	{
+		public static bool IsEqual<T> (T[] array1, T[] array2)
+		{
+			if (array1 == null || array2 == null)
+				return array1 == array2;
+
+			var eq = EqualityComparer<T>.Default;
+
+			for (int i = 0; i < array1.Length; ++i) {
+				if (!eq.Equals (array1[i], array2[i])) {
+					return false;
+				}
+			}
+
+			return true;
 		}
 	}
 

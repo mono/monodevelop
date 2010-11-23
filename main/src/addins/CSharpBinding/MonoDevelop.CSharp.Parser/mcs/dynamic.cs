@@ -50,11 +50,6 @@ namespace Mono.CSharp
 			eclass = ExprClass.Type;
 		}
 
-		public override bool CheckAccessLevel (IMemberContext ds)
-		{
-			return true;
-		}
-
 		protected override TypeExpr DoResolveAsTypeStep (IMemberContext ec)
 		{
 			return this;
@@ -562,6 +557,8 @@ namespace Mono.CSharp
 
 	class DynamicIndexBinder : DynamicMemberAssignable
 	{
+		bool can_be_mutator;
+
 		public DynamicIndexBinder (Arguments args, Location loc)
 			: base (args, loc)
 		{
@@ -571,6 +568,12 @@ namespace Mono.CSharp
 			: this (args, loc)
 		{
 			base.flags = flags;
+		}
+
+		protected override Expression DoResolve (ResolveContext ec)
+		{
+			can_be_mutator = true;
+			return base.DoResolve (ec);
 		}
 
 		protected override Expression CreateCallSiteBinder (ResolveContext ec, Arguments args, bool isSet)
@@ -583,6 +586,38 @@ namespace Mono.CSharp
 
 			isSet |= (flags & CSharpBinderFlags.ValueFromCompoundAssignment) != 0;
 			return new Invocation (GetBinder (isSet ? "SetIndex" : "GetIndex", loc), binder_args);
+		}
+
+		protected override Arguments CreateSetterArguments (ResolveContext rc, Expression rhs)
+		{
+			//
+			// Indexer has arguments which complicates things as the setter and getter
+			// are called in two steps when unary mutator is used. We have to make a
+			// copy of all variable arguments to not duplicate any side effect.
+			//
+			// ++d[++arg, Foo ()]
+			//
+
+			if (!can_be_mutator)
+				return base.CreateSetterArguments (rc, rhs);
+
+			var setter_args = new Arguments (Arguments.Count + 1);
+			for (int i = 0; i < Arguments.Count; ++i) {
+				var expr = Arguments[i].Expr;
+
+				if (expr is Constant || expr is VariableReference || expr is This) {
+					setter_args.Add (Arguments [i]);
+					continue;
+				}
+
+				LocalVariable temp = LocalVariable.CreateCompilerGenerated (expr.Type, rc.CurrentBlock, loc);
+				expr = new SimpleAssign (temp.CreateReferenceExpression (rc, expr.Location), expr).Resolve (rc);
+				Arguments[i].Expr = temp.CreateReferenceExpression (rc, expr.Location).Resolve (rc);
+				setter_args.Add (Arguments [i].Clone (expr));
+			}
+
+			setter_args.Add (new Argument (rhs));
+			return setter_args;
 		}
 	}
 
@@ -722,6 +757,14 @@ namespace Mono.CSharp
 
 		protected abstract Expression CreateCallSiteBinder (ResolveContext ec, Arguments args, bool isSet);
 
+		protected virtual Arguments CreateSetterArguments (ResolveContext rc, Expression rhs)
+		{
+			var setter_args = new Arguments (Arguments.Count + 1);
+			setter_args.AddRange (Arguments);
+			setter_args.Add (new Argument (rhs));
+			return setter_args;
+		}
+
 		public override Expression DoResolveLValue (ResolveContext rc, Expression right_side)
 		{
 			if (right_side == EmptyExpression.OutAccess.Instance) {
@@ -730,9 +773,7 @@ namespace Mono.CSharp
 			}
 
 			if (DoResolveCore (rc)) {
-				setter_args = new Arguments (Arguments.Count + 1);
-				setter_args.AddRange (Arguments);
-				setter_args.Add (new Argument (right_side));
+				setter_args = CreateSetterArguments (rc, right_side);
 				setter = CreateCallSiteBinder (rc, setter_args, true);
 			}
 
@@ -775,15 +816,23 @@ namespace Mono.CSharp
 
 	class DynamicUnaryConversion : DynamicExpressionStatement, IDynamicBinder
 	{
-		string name;
+		readonly string name;
 
 		public DynamicUnaryConversion (string name, Arguments args, Location loc)
 			: base (null, args, loc)
 		{
 			this.name = name;
 			base.binder = this;
-			if (name == "IsTrue" || name == "IsFalse")
-				type = TypeManager.bool_type;
+		}
+
+		public static DynamicUnaryConversion CreateIsTrue (Arguments args, Location loc)
+		{
+			return new DynamicUnaryConversion ("IsTrue", args, loc) { type = TypeManager.bool_type };
+		}
+
+		public static DynamicUnaryConversion CreateIsFalse (Arguments args, Location loc)
+		{
+			return new DynamicUnaryConversion ("IsFalse", args, loc) { type = TypeManager.bool_type };
 		}
 
 		public Expression CreateCallSiteBinder (ResolveContext ec, Arguments args)

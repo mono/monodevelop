@@ -152,6 +152,11 @@ namespace Mono.CSharp
 			FieldBuilder.SetCustomAttribute ((ConstructorInfo) ctor.GetMetaInfo (), cdata);
 		}
 
+		public void SetCustomAttribute (MethodSpec ctor, byte[] data)
+		{
+			FieldBuilder.SetCustomAttribute ((ConstructorInfo) ctor.GetMetaInfo (), data);
+		}
+
  		protected override bool CheckBase ()
 		{
  			if (!base.CheckBase ())
@@ -214,7 +219,7 @@ namespace Mono.CSharp
 		{
 			if (member_type == InternalType.Dynamic) {
 				Compiler.PredefinedAttributes.Dynamic.EmitAttribute (FieldBuilder);
-			} else if (member_type.HasDynamicElement) {
+			} else if (!(Parent is CompilerGeneratedClass) && member_type.HasDynamicElement) {
 				Compiler.PredefinedAttributes.Dynamic.EmitAttribute (FieldBuilder, member_type);
 			}
 
@@ -267,7 +272,7 @@ namespace Mono.CSharp
 			this.memberType = memberType;
 		}
 
-#region Properties
+		#region Properties
 
 		public bool IsReadOnly {
 			get {
@@ -338,8 +343,6 @@ namespace Mono.CSharp
 	{
 		public const string FixedElementName = "FixedElementField";
 		static int GlobalCounter = 0;
-		static object[] ctor_args = new object[] { (short)LayoutKind.Sequential };
-		static FieldInfo[] fi;
 
 		TypeBuilder fixed_buffer_type;
 
@@ -355,6 +358,17 @@ namespace Mono.CSharp
 			: base (parent, type, mod, AllowedModifiers, name, attrs)
 		{
 		}
+
+		#region Properties
+
+		//
+		// Explicit struct layout set by parent
+		//
+		public CharSet? CharSet {
+			get; set;
+		}		
+
+		#endregion
 
 		public override Constant ConvertInitializer (ResolveContext rc, Constant expr)
 		{
@@ -387,7 +401,6 @@ namespace Mono.CSharp
 				TypeAttributes.NestedPublic | TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit, TypeManager.value_type.GetMetaInfo ());
 
 			fixed_buffer_type.DefineField (FixedElementName, MemberType.GetMetaInfo (), FieldAttributes.Public);
-			RootContext.RegisterCompilerGeneratedType (fixed_buffer_type);
 			
 			FieldBuilder = Parent.TypeBuilder.DefineField (Name, fixed_buffer_type, ModifiersExtensions.FieldAttr (ModFlags));
 			var element_spec = new FieldSpec (null, this, MemberType, FieldBuilder, ModFlags);
@@ -437,35 +450,44 @@ namespace Mono.CSharp
 				return;
 			}
 
-			buffer_size *= type_size;
 			EmitFieldSize (buffer_size);
 
 			Compiler.PredefinedAttributes.UnsafeValueType.EmitAttribute (fixed_buffer_type);
+			Compiler.PredefinedAttributes.CompilerGenerated.EmitAttribute (fixed_buffer_type);
+			fixed_buffer_type.CreateType ();
 
 			base.Emit ();
 		}
 
 		void EmitFieldSize (int buffer_size)
 		{
-			CustomAttributeBuilder cab;
 			PredefinedAttribute pa;
+			AttributeEncoder encoder;
 
 			pa = Compiler.PredefinedAttributes.StructLayout;
-			if (pa.Constructor == null &&
-				!pa.ResolveConstructor (Location, TypeManager.short_type))
-					return;
+			if (pa.Constructor == null && !pa.ResolveConstructor (Location, TypeManager.short_type))
+				return;
 
-			// TODO: It's not cleared
-			if (fi == null) {
-				var field = (FieldSpec) MemberCache.FindMember (pa.Type, MemberFilter.Field ("Size", null), BindingRestriction.DeclaredOnly);
-				fi = new FieldInfo[] { field.GetMetaInfo () };
-			}
+			var interop_charset = TypeManager.CoreLookupType (Compiler, "System.Runtime.InteropServices", "CharSet", MemberKind.Enum, true);
+			if (interop_charset == null)
+				return;
 
-			object[] fi_val = new object[] { buffer_size };
-			cab = new CustomAttributeBuilder (pa.Constructor,
-				ctor_args, fi, fi_val);
-			fixed_buffer_type.SetCustomAttribute (cab);
-			
+			var field_size = pa.GetField ("Size", TypeManager.int32_type, Location);
+			var field_charset = pa.GetField ("CharSet", interop_charset, Location);
+			if (field_size == null || field_charset == null)
+				return;
+
+			var char_set = CharSet ?? Module.DefaultCharSet;
+
+			encoder = new AttributeEncoder (false);
+			encoder.Encode ((short)LayoutKind.Sequential);
+			encoder.EncodeNamedArguments (
+				new [] { field_size, field_charset },
+				new Constant [] { new IntConstant (buffer_size, Location), new IntConstant ((int) char_set, Location) }
+			);
+
+			pa.EmitAttribute (fixed_buffer_type, encoder);
+
 			//
 			// Don't emit FixedBufferAttribute attribute for private types
 			//
@@ -473,33 +495,15 @@ namespace Mono.CSharp
 				return;
 
 			pa = Compiler.PredefinedAttributes.FixedBuffer;
-			if (pa.Constructor == null &&
-				!pa.ResolveConstructor (Location, TypeManager.type_type, TypeManager.int32_type))
+			if (pa.Constructor == null && !pa.ResolveConstructor (Location, TypeManager.type_type, TypeManager.int32_type))
 				return;
 
-			cab = new CustomAttributeBuilder (pa.Constructor, new object[] { MemberType.GetMetaInfo (), buffer_size });
-			FieldBuilder.SetCustomAttribute (cab);
-		}
+			encoder = new AttributeEncoder (false);
+			encoder.EncodeTypeName (MemberType);
+			encoder.Encode (buffer_size);
+			encoder.EncodeEmptyNamedArguments ();
 
-		public void SetCharSet (TypeAttributes ta)
-		{
-			TypeAttributes cta = fixed_buffer_type.Attributes;
-			if ((cta & TypeAttributes.UnicodeClass) != (ta & TypeAttributes.UnicodeClass))
-				SetTypeBuilderCharSet ((cta & ~TypeAttributes.AutoClass) | TypeAttributes.UnicodeClass);
-			else if ((cta & TypeAttributes.AutoClass) != (ta & TypeAttributes.AutoClass))
-				SetTypeBuilderCharSet ((cta & ~TypeAttributes.UnicodeClass) | TypeAttributes.AutoClass);
-			else if (cta == 0 && ta != 0)
-				SetTypeBuilderCharSet (cta & ~(TypeAttributes.UnicodeClass | TypeAttributes.AutoClass));
-		}
-
-		void SetTypeBuilderCharSet (TypeAttributes ta)
-		{
-			MethodInfo mi = typeof (TypeBuilder).GetMethod ("SetCharSet", BindingFlags.Instance | BindingFlags.NonPublic);
-			if (mi == null) {
-				Report.RuntimeMissingSupport (Location, "TypeBuilder::SetCharSet");
-			} else {
-				mi.Invoke (fixed_buffer_type, new object [] { ta });
-			}
+			pa.EmitAttribute (FieldBuilder, encoder);
 		}
 	}
 

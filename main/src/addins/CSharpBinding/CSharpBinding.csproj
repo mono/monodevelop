@@ -366,6 +366,7 @@
     <Compile Include="MonoDevelop.CSharp.Dom\NodeType.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\AstNode.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\Accessor.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\mcs\assembly.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

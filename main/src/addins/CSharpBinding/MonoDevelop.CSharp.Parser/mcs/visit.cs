@@ -20,7 +20,7 @@ namespace Mono.CSharp
 			Console.WriteLine ("unknown member type: " + member.GetType ());
 		}
 
-		public virtual void Visit (ModuleCompiled mc)
+		public virtual void Visit (ModuleContainer mc)
 		{/*
 			if (mc.Delegates != null) {
 				foreach (TypeContainer tc in mc.Delegates) {

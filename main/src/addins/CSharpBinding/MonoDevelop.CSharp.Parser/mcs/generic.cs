@@ -353,6 +353,12 @@ namespace Mono.CSharp {
 			}
 		}
 
+		public IAssemblyDefinition DeclaringAssembly {
+			get	{
+				return Module.DeclaringAssembly;
+			}
+		}
+
 		public override string DocCommentHeader {
 			get {
 				throw new InvalidOperationException (
@@ -556,6 +562,11 @@ namespace Mono.CSharp {
 		public override string GetSignatureForError ()
 		{
 			return MemberName.Name;
+		}
+
+		bool ITypeDefinition.IsInternalAsPublic (IAssemblyDefinition assembly)
+		{
+			throw new NotImplementedException ();
 		}
 
 		public void LoadMembers (TypeSpec declaringType, bool onlyTypes, ref MemberCache cache)
@@ -1294,11 +1305,6 @@ namespace Mono.CSharp {
 		{
 			return this;
 		}
-
-		public override bool CheckAccessLevel (IMemberContext ds)
-		{
-			return true;
-		}
 	}
 
 	public class InflatedTypeSpec : TypeSpec
@@ -1836,15 +1842,6 @@ namespace Mono.CSharp {
 				return true;
 
 			return new ConstraintChecker(ec).CheckAll (open_type, args.Arguments, constraints, loc);
-		}
-	
-		public override bool CheckAccessLevel (IMemberContext mc)
-		{
-			DeclSpace c = mc.CurrentMemberDefinition as DeclSpace;
-			if (c == null)
-				c = mc.CurrentMemberDefinition.Parent;
-
-			return c.CheckAccessLevel (open_type);
 		}
 
 		public bool HasDynamicArguments ()
@@ -2487,7 +2484,7 @@ namespace Mono.CSharp {
 			#endregion
 		}
 
-		readonly TypeSpec[] unfixed_types;
+		readonly TypeSpec[] tp_args;
 		readonly TypeSpec[] fixed_types;
 		readonly List<BoundInfo>[] bounds;
 		bool failed;
@@ -2503,9 +2500,9 @@ namespace Mono.CSharp {
 				if (typeArguments [i].IsGenericParameter) {
 					if (bounds == null) {
 						bounds = new List<BoundInfo> [typeArguments.Length];
-						unfixed_types = new TypeSpec [typeArguments.Length];
+						tp_args = new TypeSpec [typeArguments.Length];
 					}
-					unfixed_types [i] = typeArguments [i];
+					tp_args [i] = typeArguments [i];
 				} else {
 					fixed_types [i] = typeArguments [i];
 				}
@@ -2519,8 +2516,8 @@ namespace Mono.CSharp {
 		public TypeInferenceContext ()
 		{
 			fixed_types = new TypeSpec [1];
-			unfixed_types = new TypeSpec [1];
-			unfixed_types[0] = InternalType.Arglist; // it can be any internal type
+			tp_args = new TypeSpec [1];
+			tp_args[0] = InternalType.Arglist; // it can be any internal type
 			bounds = new List<BoundInfo> [1];
 		}
 
@@ -2618,7 +2615,7 @@ namespace Mono.CSharp {
 
 		public bool FixAllTypes (ResolveContext ec)
 		{
-			for (int i = 0; i < unfixed_types.Length; ++i) {
+			for (int i = 0; i < tp_args.Length; ++i) {
 				if (!FixType (ec, i))
 					return false;
 			}
@@ -2632,8 +2629,8 @@ namespace Mono.CSharp {
 		// 
 		public bool FixDependentTypes (ResolveContext ec, ref bool fixed_any)
 		{
-			for (int i = 0; i < unfixed_types.Length; ++i) {
-				if (unfixed_types[i] == null)
+			for (int i = 0; i < tp_args.Length; ++i) {
+				if (fixed_types[i] != null)
 					continue;
 
 				if (bounds[i] == null)
@@ -2653,7 +2650,7 @@ namespace Mono.CSharp {
 		//
 		public bool FixIndependentTypeArguments (ResolveContext ec, TypeSpec[] methodParameters, ref bool fixed_any)
 		{
-			var types_to_fix = new List<TypeSpec> (unfixed_types);
+			var types_to_fix = new List<TypeSpec> (tp_args);
 			for (int i = 0; i < methodParameters.Length; ++i) {
 				TypeSpec t = methodParameters[i];
 
@@ -2696,7 +2693,7 @@ namespace Mono.CSharp {
 		public bool FixType (ResolveContext ec, int i)
 		{
 			// It's already fixed
-			if (unfixed_types[i] == null)
+			if (fixed_types[i] != null)
 				throw new InternalErrorException ("Type argument has been already fixed");
 
 			if (failed)
@@ -2707,7 +2704,6 @@ namespace Mono.CSharp {
 				return false;
 
 			if (candidates.Count == 1) {
-				unfixed_types[i] = null;
 				TypeSpec t = candidates[0].Type;
 				if (t == InternalType.Null)
 					return false;
@@ -2816,26 +2812,31 @@ namespace Mono.CSharp {
 			if (best_candidate == null)
 				return false;
 
-			unfixed_types[i] = null;
 			fixed_types[i] = best_candidate;
 			return true;
 		}
 		
 		//
 		// Uses inferred or partially infered types to inflate delegate type argument. Returns
-		// null when type parameter was not yet inferres
+		// null when type parameter has not been fixed
 		//
 		public TypeSpec InflateGenericArgument (TypeSpec parameter)
 		{
 			var tp = parameter as TypeParameterSpec;
 			if (tp != null) {
 				//
-				// Type inference work on generic arguments (MVAR) only
+				// Type inference works on generic arguments (MVAR) only
 				//
 				if (!tp.IsMethodOwned)
 					return parameter;
 
-				return fixed_types [tp.DeclaredPosition] ?? parameter;
+				//
+				// Ensure the type parameter belongs to same container
+				//
+				if (tp.DeclaredPosition < tp_args.Length && tp_args[tp.DeclaredPosition] == parameter)
+					return fixed_types[tp.DeclaredPosition] ?? parameter;
+
+				return parameter;
 			}
 
 			var gt = parameter as InflatedTypeSpec;
@@ -2894,10 +2895,13 @@ namespace Mono.CSharp {
 			if (!type.IsGenericParameter)
 				return -1;
 
-			//return unfixed_types[type.GenericParameterPosition] != null;
-			for (int i = 0; i < unfixed_types.Length; ++i) {
-				if (unfixed_types [i] == type)
+			for (int i = 0; i < tp_args.Length; ++i) {
+				if (tp_args[i] == type) {
+					if (fixed_types[i] != null)
+						break;
+
 					return i;
+				}
 			}
 
 			return -1;
@@ -3134,12 +3138,11 @@ namespace Mono.CSharp {
 
 		public bool UnfixedVariableExists {
 			get {
-				if (unfixed_types == null)
-					return false;
-
-				foreach (TypeSpec ut in unfixed_types)
-					if (ut != null)
+				foreach (TypeSpec ut in fixed_types) {
+					if (ut == null)
 						return true;
+				}
+
 				return false;
 			}
 		}

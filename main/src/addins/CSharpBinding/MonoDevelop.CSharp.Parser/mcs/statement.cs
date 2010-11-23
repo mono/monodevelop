@@ -12,7 +12,6 @@
 
 using System;
 using System.Text;
-using System.Reflection;
 using System.Reflection.Emit;
 using System.Diagnostics;
 using System.Collections.Generic;
@@ -4278,6 +4277,12 @@ namespace Mono.CSharp {
 				// Initialize ref variable
 				//
 				lock_taken.EmitAssign (ec, new BoolLiteral (false, loc));
+			} else {
+				//
+				// Monitor.Enter (expr_copy)
+				//
+				expr_copy.Emit (ec);
+				ec.Emit (OpCodes.Call, TypeManager.void_monitor_enter_object);
 			}
 		}
 
@@ -4286,14 +4291,12 @@ namespace Mono.CSharp {
 			//
 			// Monitor.Enter (expr_copy, ref lock_taken)
 			//
-			expr_copy.Emit (ec);
-
 			if (lock_taken != null) {
+				expr_copy.Emit (ec);
 				lock_taken.LocalInfo.CreateBuilder (ec);
 				lock_taken.AddressOf (ec, AddressOp.Load);
+				ec.Emit (OpCodes.Call, TypeManager.void_monitor_enter_object);
 			}
-
-			ec.Emit (OpCodes.Call, TypeManager.void_monitor_enter_object);
 
 			Statement.Emit (ec);
 		}
@@ -5008,13 +5011,18 @@ namespace Mono.CSharp {
 			}
 
 			if (General != null) {
-				if (CodeGen.Assembly.WrapNonExceptionThrows) {
-					foreach (Catch c in Specific){
-						if (c.CatchType == TypeManager.exception_type && ec.Compiler.PredefinedAttributes.RuntimeCompatibility.IsDefined) {
-							ec.Report.Warning (1058, 1, c.loc,
-								"A previous catch clause already catches all exceptions. All non-exceptions thrown will be wrapped in a `System.Runtime.CompilerServices.RuntimeWrappedException'");
-						}
-					}
+				foreach (Catch c in Specific) {
+					if (c.CatchType != TypeManager.exception_type)
+						continue;
+
+					if (!ec.CurrentMemberDefinition.Module.DeclaringAssembly.WrapNonExceptionThrows)
+						continue;
+
+					if (!ec.Compiler.PredefinedAttributes.RuntimeCompatibility.IsDefined)
+						continue;
+
+					ec.Report.Warning (1058, 1, c.loc,
+						"A previous catch clause already catches all exceptions. All non-exceptions thrown will be wrapped in a `System.Runtime.CompilerServices.RuntimeWrappedException'");
 				}
 
 				ec.CurrentBranching.CreateSibling (General.Block, FlowBranching.SiblingType.Catch);

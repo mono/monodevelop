@@ -22,14 +22,22 @@ namespace Mono.CSharp
 	{
 		Dictionary<Type, TypeSpec> import_cache;
 		Dictionary<Type, PredefinedTypeSpec> type_2_predefined;
+		Dictionary<Assembly, ImportedAssemblyDefinition> assembly_2_definition;
 
 		public ReflectionMetaImporter ()
 		{
 			import_cache = new Dictionary<Type, TypeSpec> (1024, ReferenceEquality<Type>.Default);
+			assembly_2_definition = new Dictionary<Assembly, ImportedAssemblyDefinition> (ReferenceEquality<Assembly>.Default);
 			IgnorePrivateMembers = true;
 		}
 
 		#region Properties
+
+		public ICollection<ImportedAssemblyDefinition> Assemblies {
+			get {
+				return assembly_2_definition.Values;
+			}
+		}
 
 		public bool IgnorePrivateMembers { get; set; }
 
@@ -112,7 +120,7 @@ namespace Mono.CSharp
 				// TODO: I should construct fake TypeSpec based on TypeRef signature
 				// but there is no way to do it with System.Reflection
 				throw new InternalErrorException (e, "Cannot import field `{0}.{1}' referenced in assembly `{2}'",
-					declaringType.GetSignatureForError (), fi.Name, declaringType.Assembly);
+					declaringType.GetSignatureForError (), fi.Name, declaringType.MemberDefinition.DeclaringAssembly);
 			}
 
 			if ((fa & FieldAttributes.Literal) != 0) {
@@ -224,7 +232,7 @@ namespace Mono.CSharp
 					throw new NotImplementedException ("Unknown element type " + type.ToString ());
 				}
 
-				tspec [index] = (T) CreateType (type, ca, dynamicCursor + index + 1);
+				tspec [index] = (T) CreateType (type, ca, dynamicCursor + index + 1, true);
 			}
 
 			return tspec;
@@ -335,7 +343,7 @@ namespace Mono.CSharp
 					//
 					var el = p.ParameterType.GetElementType ();
 					types[i] = ImportType (el, p, 0);	// TODO: 1 to be csc compatible
-				} else if (i == 0 && method.IsStatic && parent.IsStatic && // TODO: parent.Assembly.IsExtension &&
+				} else if (i == 0 && method.IsStatic && parent.IsStatic && parent.MemberDefinition.DeclaringAssembly.HasExtensionMethod &&
 					HasExtensionAttribute (CustomAttributeData.GetCustomAttributes (method)) != null) {
 					mod = Parameter.Modifier.This;
 					types[i] = ImportType (p.ParameterType);
@@ -497,21 +505,21 @@ namespace Mono.CSharp
 
 		public TypeSpec CreateType (Type type)
 		{
-			return CreateType (type, null, 0);
+			return CreateType (type, null, 0, true);
 		}
 
-		TypeSpec CreateType (Type type, ICustomAttributeProvider ca, int dynamicCursor)
+		TypeSpec CreateType (Type type, ICustomAttributeProvider ca, int dynamicCursor, bool canImportBaseType)
 		{
 			TypeSpec declaring_type;
 			if (type.IsNested && !type.IsGenericParameter)
-				declaring_type = CreateType (type.DeclaringType, type.DeclaringType, 0);
+				declaring_type = CreateType (type.DeclaringType, type.DeclaringType, 0, true);
 			else
 				declaring_type = null;
 
-			return CreateType (type, declaring_type, ca, dynamicCursor);
+			return CreateType (type, declaring_type, ca, dynamicCursor, canImportBaseType);
 		}
 
-		public TypeSpec CreateType (Type type, TypeSpec declaringType, ICustomAttributeProvider ca, int dynamicCursor)
+		public TypeSpec CreateType (Type type, TypeSpec declaringType, ICustomAttributeProvider ca, int dynamicCursor, bool canImportBaseType)
 		{
 			TypeSpec spec;
 			if (import_cache.TryGetValue (type, out spec)) {
@@ -543,7 +551,7 @@ namespace Mono.CSharp
 				var targs = CreateGenericParameters<TypeSpec> (0, type.GetGenericArguments (), ca, dynamicCursor);
 				if (declaringType == null) {
 					// Simple case, no nesting
-					spec = CreateType (type_def, null, null, 0);
+					spec = CreateType (type_def, null, null, 0, canImportBaseType);
 					spec = spec.MakeGenericType (targs);
 				} else {
 					//
@@ -683,12 +691,29 @@ namespace Mono.CSharp
 			import_cache.Add (type, spec);
 
 			//
-			// Two stage setup as the base type can be inflated declaring type
+			// Two stage setup as the base type can be inflated declaring type or
+			// another nested type inside same declaring type which has not been
+			// loaded, therefore we can import a base type of nested types once
+			// the types have been imported
 			//
-			if (declaringType == null || !IgnorePrivateMembers)
+			if (canImportBaseType)
 				ImportTypeBase (spec, type);
 
 			return spec;
+		}
+
+		public ImportedAssemblyDefinition GetAssemblyDefinition (Assembly assembly)
+		{
+			ImportedAssemblyDefinition def;
+			if (!assembly_2_definition.TryGetValue (assembly, out def)) {
+
+				// This can happen in dynamic context only
+				def = new ImportedAssemblyDefinition (assembly);
+				assembly_2_definition.Add (assembly, def);
+				def.ReadAttributes ();
+			}
+
+			return def;
 		}
 
 		public void ImportTypeBase (Type type)
@@ -704,7 +729,7 @@ namespace Mono.CSharp
 				spec.BaseType = TypeManager.object_type;
 			else if (type.BaseType != null) {
 				if (type.BaseType.IsGenericType)
-					spec.BaseType = CreateType (type.BaseType, type, 0);
+					spec.BaseType = CreateType (type.BaseType, type, 0, true);
 				else
 					spec.BaseType = CreateType (type.BaseType);
 			}
@@ -800,9 +825,19 @@ namespace Mono.CSharp
 			return null;
 		}
 
-		public void ImportAssembly (Assembly assembly, Namespace targetNamespace)
+		public void ImportAssembly (Assembly assembly, RootNamespace targetNamespace)
 		{
-			Type extension_type = HasExtensionAttribute (CustomAttributeData.GetCustomAttributes (assembly));
+			// It can be used more than once when importing same assembly
+			// into 2 or more global aliases
+			ImportedAssemblyDefinition definition;
+			if (!assembly_2_definition.TryGetValue (assembly, out definition)) {
+				definition = new ImportedAssemblyDefinition (assembly);
+				assembly_2_definition.Add (assembly, definition);
+
+				definition.ReadAttributes ();
+			}
+
+			Type extension_type = definition.HasExtensionMethod ? HasExtensionAttribute (CustomAttributeData.GetCustomAttributes (assembly)) : null;
 
 			//
 			// This part tries to simulate loading of top-level
@@ -820,8 +855,11 @@ namespace Mono.CSharp
 			ImportTypes (all_types, targetNamespace, extension_type);
 		}
 
-		public void ImportModule (Module module, Namespace targetNamespace)
+		public ImportedModuleDefinition ImportModule (Module module, RootNamespace targetNamespace)
 		{
+			var module_definition = new ImportedModuleDefinition (module, this);
+			module_definition.ReadAttributes ();
+
 			Type extension_type = HasExtensionAttribute (CustomAttributeData.GetCustomAttributes (module));
 
 			Type[] all_types;
@@ -829,10 +867,11 @@ namespace Mono.CSharp
 				all_types = module.GetTypes ();
 			} catch (ReflectionTypeLoadException e) {
 				all_types = e.Types;
-				throw;
 			}
 
 			ImportTypes (all_types, targetNamespace, extension_type);
+
+			return module_definition;
 		}
 
 		void ImportTypes (Type[] types, Namespace targetNamespace, Type extension_type)
@@ -850,7 +889,7 @@ namespace Mono.CSharp
 				if (t.Name[0] == '<')
 					continue;
 
-				var it = CreateType (t, null, t, 0);
+				var it = CreateType (t, null, t, 0, true);
 				if (it == null)
 					continue;
 
@@ -888,7 +927,7 @@ namespace Mono.CSharp
 				throw new NotImplementedException ("Unknown element type " + type.ToString ());
 			}
 
-			return CreateType (type, ca, dynamicCursor);
+			return CreateType (type, ca, dynamicCursor, true);
 		}
 
 		static bool IsDynamicType (ICustomAttributeProvider ca, int index)
@@ -979,7 +1018,7 @@ namespace Mono.CSharp
 			public string[] Conditionals;
 			public string DefaultIndexerName;
 			public bool IsNotCLSCompliant;
-
+			
 			public static AttributesBag Read (MemberInfo mi)
 			{
 				AttributesBag bag = null;
@@ -1027,26 +1066,28 @@ namespace Mono.CSharp
 					}
 
 					// Type only attributes
-					if (type == typeof (DefaultMemberAttribute)) {
-						if (bag == null)
-							bag = new AttributesBag ();
+					if (mi.MemberType == MemberTypes.TypeInfo || mi.MemberType == MemberTypes.NestedType) {
+						if (type == typeof (DefaultMemberAttribute)) {
+							if (bag == null)
+								bag = new AttributesBag ();
 
-						bag.DefaultIndexerName = (string) a.ConstructorArguments[0].Value;
-						continue;
-					}
-
-					if (type == typeof (AttributeUsageAttribute)) {
-						if (bag == null)
-							bag = new AttributesBag ();
-
-						bag.AttributeUsage = new AttributeUsageAttribute ((AttributeTargets) a.ConstructorArguments[0].Value);
-						foreach (var named in a.NamedArguments) {
-							if (named.MemberInfo.Name == "AllowMultiple")
-								bag.AttributeUsage.AllowMultiple = (bool) named.TypedValue.Value;
-							else if (named.MemberInfo.Name == "Inherited")
-								bag.AttributeUsage.Inherited = (bool) named.TypedValue.Value;
+							bag.DefaultIndexerName = (string) a.ConstructorArguments[0].Value;
+							continue;
 						}
-						continue;
+
+						if (type == typeof (AttributeUsageAttribute)) {
+							if (bag == null)
+								bag = new AttributesBag ();
+
+							bag.AttributeUsage = new AttributeUsageAttribute ((AttributeTargets) a.ConstructorArguments[0].Value);
+							foreach (var named in a.NamedArguments) {
+								if (named.MemberInfo.Name == "AllowMultiple")
+									bag.AttributeUsage.AllowMultiple = (bool) named.TypedValue.Value;
+								else if (named.MemberInfo.Name == "Inherited")
+									bag.AttributeUsage.Inherited = (bool) named.TypedValue.Value;
+							}
+							continue;
+						}
 					}
 				}
 
@@ -1055,7 +1096,7 @@ namespace Mono.CSharp
 
 				if (conditionals != null)
 					bag.Conditionals = conditionals.ToArray ();
-
+				
 				return bag;
 			}
 		}
@@ -1069,12 +1110,6 @@ namespace Mono.CSharp
 		}
 
 		#region Properties
-
-		public Assembly Assembly {
-			get { 
-				return provider.Module.Assembly;
-			}
-		}
 
 		public bool IsImported {
 			get {
@@ -1127,6 +1162,228 @@ namespace Mono.CSharp
 		public void SetIsUsed ()
 		{
 			// Unused for imported members
+		}
+	}
+
+	public class ImportedModuleDefinition
+	{
+		readonly Module module;
+		bool cls_compliant;
+		//ReflectionMetaImporter metaImporter;
+		
+		public ImportedModuleDefinition (Module module, ReflectionMetaImporter metaImporter)
+		{
+			this.module = module;
+			//this.metaImporter = metaImporter;
+		}
+
+		#region Properties
+
+		public bool IsCLSCompliant {
+			get {
+				return cls_compliant;
+			}
+		}
+
+		public string Name {
+			get {
+				return module.Name;
+			}
+		}
+
+		#endregion
+
+		public void ReadAttributes ()
+		{
+			IList<CustomAttributeData> attrs = CustomAttributeData.GetCustomAttributes (module);
+			foreach (var a in attrs) {
+				var type = a.Constructor.DeclaringType;
+				if (type == typeof (CLSCompliantAttribute)) {
+					cls_compliant = (bool) a.ConstructorArguments[0].Value;
+					continue;
+				}
+			}
+		}
+
+		//
+		// Reads assembly attributes which where attached to a special type because
+		// module does have assembly manifest
+		//
+		public List<Attribute> ReadAssemblyAttributes ()
+		{
+			var t = module.GetType (AssemblyAttributesPlaceholder.GetGeneratedName (Name));
+			if (t == null)
+				return null;
+
+			var field = t.GetField (AssemblyAttributesPlaceholder.AssemblyFieldName, BindingFlags.NonPublic | BindingFlags.Static);
+			if (field == null)
+				return null;
+
+			// TODO: implement, the idea is to fabricate specil Attribute class and
+			// add it to OptAttributes before resolving the source code attributes
+			// Need to build module location as well for correct error reporting
+
+			//var assembly_attributes = CustomAttributeData.GetCustomAttributes (field);
+			//var attrs = new List<Attribute> (assembly_attributes.Count);
+			//foreach (var a in assembly_attributes)
+			//{
+			//    var type = metaImporter.ImportType (a.Constructor.DeclaringType);
+			//    var ctor = metaImporter.CreateMethod (a.Constructor, type);
+
+			//    foreach (var carg in a.ConstructorArguments) {
+			//        carg.Value
+			//    }
+
+			//    attrs.Add (new Attribute ("assembly", ctor, null, Location.Null, true));
+			//}
+
+			return null;
+		}
+	}
+
+	public class ImportedAssemblyDefinition : IAssemblyDefinition
+	{
+		readonly Assembly assembly;
+		readonly AssemblyName aname;
+		bool cls_compliant;
+		bool contains_extension_methods;
+
+		List<AssemblyName> internals_visible_to;
+		Dictionary<IAssemblyDefinition, AssemblyName> internals_visible_to_cache;
+
+		public ImportedAssemblyDefinition (Assembly assembly)
+		{
+			this.assembly = assembly;
+			this.aname = assembly.GetName ();
+		}
+
+		#region Properties
+
+		public Assembly Assembly {
+			get {
+				return assembly;
+			}
+		}
+
+		public string FullName {
+			get {
+				return aname.FullName;
+			}
+		}
+
+		public bool HasExtensionMethod {
+			get {
+				return contains_extension_methods;
+			}
+		}
+
+		public bool HasStrongName {
+			get {
+				return aname.GetPublicKey ().Length != 0;
+			}
+		}
+
+		public bool IsCLSCompliant {
+			get {
+				return cls_compliant;
+			}
+		}
+
+		public string Location {
+			get {
+				return assembly.Location;
+			}
+		}
+
+		public string Name {
+			get {
+				return aname.Name;
+			}
+		}
+
+		#endregion
+
+		public byte[] GetPublicKeyToken ()
+		{
+			return aname.GetPublicKeyToken ();
+		}
+
+		public AssemblyName GetAssemblyVisibleToName (IAssemblyDefinition assembly)
+		{
+			return internals_visible_to_cache [assembly];
+		}
+
+		public bool IsFriendAssemblyTo (IAssemblyDefinition assembly)
+		{
+			if (internals_visible_to == null)
+				return false;
+
+			AssemblyName is_visible = null;
+			if (internals_visible_to_cache == null) {
+				internals_visible_to_cache = new Dictionary<IAssemblyDefinition, AssemblyName> ();
+			} else {
+				if (internals_visible_to_cache.TryGetValue (assembly, out is_visible))
+					return is_visible != null;
+			}
+
+			var token = assembly.GetPublicKeyToken ();
+			if (token != null && token.Length == 0)
+				token = null;
+
+			foreach (var internals in internals_visible_to) {
+				if (internals.Name != assembly.Name)
+					continue;
+
+				if (token == null && assembly is AssemblyDefinition) {
+					is_visible = internals;
+					break;
+				}
+
+				if (!ArrayComparer.IsEqual (token, internals.GetPublicKeyToken ()))
+					continue;
+
+				is_visible = internals;
+				break;
+			}
+
+			internals_visible_to_cache.Add (assembly, is_visible);
+			return is_visible != null;
+		}
+
+		public void ReadAttributes ()
+		{
+			IList<CustomAttributeData> attrs = CustomAttributeData.GetCustomAttributes (assembly);
+
+			foreach (var a in attrs) {
+				var type = a.Constructor.DeclaringType;
+				if (type == typeof (CLSCompliantAttribute)) {
+					cls_compliant = (bool) a.ConstructorArguments[0].Value;
+					continue;
+				}
+
+				if (type == typeof (InternalsVisibleToAttribute)) {
+					string s = a.ConstructorArguments[0].Value as string;
+					if (s == null)
+						continue;
+
+					var an = new AssemblyName (s);
+					if (internals_visible_to == null)
+						internals_visible_to = new List<AssemblyName> ();
+
+					internals_visible_to.Add (an);
+					continue;
+				}
+
+				if (type.Name == "ExtensionAttribute" && type.Namespace == "System.Runtime.CompilerServices") {
+					contains_extension_methods = true;
+					continue;
+				}
+			}
+		}
+
+		public override string ToString ()
+		{
+			return FullName;
 		}
 	}
 
@@ -1225,6 +1482,12 @@ namespace Mono.CSharp
 
 		#region Properties
 
+		public IAssemblyDefinition DeclaringAssembly {
+			get {
+				return meta_import.GetAssemblyDefinition (provider.Module.Assembly);
+			}
+		}
+
 		public override string Name {
 			get {
 				if (name == null) {
@@ -1286,6 +1549,12 @@ namespace Mono.CSharp
 			return cattrs.AttributeUsage;
 		}
 
+		bool ITypeDefinition.IsInternalAsPublic (IAssemblyDefinition assembly)
+		{
+			var a = meta_import.GetAssemblyDefinition (provider.Module.Assembly);
+			return a == assembly || a.IsFriendAssemblyTo (assembly);
+		}
+
 		public void LoadMembers (TypeSpec declaringType, bool onlyTypes, ref MemberCache cache)
 		{
 			//
@@ -1315,7 +1584,7 @@ namespace Mono.CSharp
 				all = loading_type.GetMembers (all_members);
 			} catch (Exception e) {
 				throw new InternalErrorException (e, "Could not import type `{0}' from `{1}'",
-					declaringType.GetSignatureForError (), declaringType.Assembly.Location);
+					declaringType.GetSignatureForError (), declaringType.MemberDefinition.DeclaringAssembly.FullName);
 			}
 
 			if (cache == null) {
@@ -1335,7 +1604,7 @@ namespace Mono.CSharp
 					if (t.IsNotPublic && t.IsDefined (typeof (CompilerGeneratedAttribute), false))
 						continue;
 
-					imported = meta_import.CreateType (t, declaringType, t, 0);
+					imported = meta_import.CreateType (t, declaringType, t, 0, false);
 					cache.AddMember (imported);
 				}
 
@@ -1489,6 +1758,12 @@ namespace Mono.CSharp
 
 		#region Properties
 
+		public IAssemblyDefinition DeclaringAssembly {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+
 		public string Namespace {
 			get {
 				return null;
@@ -1522,6 +1797,11 @@ namespace Mono.CSharp
 		public AttributeUsageAttribute GetAttributeUsage (PredefinedAttribute pa)
 		{
 			throw new NotSupportedException ();
+		}
+
+		bool ITypeDefinition.IsInternalAsPublic (IAssemblyDefinition assembly)
+		{
+			throw new NotImplementedException ();
 		}
 
 		public void LoadMembers (TypeSpec declaringType, bool onlyTypes, ref MemberCache cache)

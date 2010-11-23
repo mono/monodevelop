@@ -35,6 +35,8 @@ namespace Mono.CSharp
 		// A member definition of the context. For partial types definition use
 		// CurrentTypeDefinition.PartialContainer otherwise the context is local
 		//
+		// TODO: Obsolete it in this context, dynamic context cannot guarantee sensible value
+		//
 		MemberCore CurrentMemberDefinition { get; }
 
 		bool IsObsolete { get; }
@@ -417,14 +419,6 @@ namespace Mono.CSharp
 			get { return (flags & Options.OmitStructFlowAnalysis) != 0; }
 		}
 
-		// TODO: Merge with CompilerGeneratedThis
-		public Expression GetThis (Location loc)
-		{
-			This my_this = new This (loc);
-			my_this.ResolveBase (this);
-			return my_this;
-		}
-
 		public bool MustCaptureVariable (INamedBlockVariable local)
 		{
 			if (CurrentAnonymousMethod == null)
@@ -553,7 +547,6 @@ namespace Mono.CSharp
 		readonly Report report;
 		readonly ReflectionMetaImporter meta_importer;
 		readonly PredefinedAttributes attributes;
-		readonly GlobalRootNamespace root;
 
 		public CompilerContext (ReflectionMetaImporter metaImporter, Report report)
 		{
@@ -561,14 +554,12 @@ namespace Mono.CSharp
 			this.report = report;
 
 			this.attributes = new PredefinedAttributes ();
-			this.root = new GlobalRootNamespace ();
 		}
 
-		public GlobalRootNamespace GlobalRootNamespace {
-			get {
-				return root;
-			}
-		}
+		#region Properties
+
+		// TODO: Obsolete, it has to go
+		public RootNamespace GlobalRootNamespace { get; set; }
 
 		public bool IsRuntimeBinder { get; set; }
 
@@ -589,6 +580,8 @@ namespace Mono.CSharp
 				return report;
 			}
 		}
+
+		#endregion
 	}
 
 	//

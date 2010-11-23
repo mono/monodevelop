@@ -30,6 +30,7 @@ namespace Mono.CSharp
 		//
 		PROPERTY_CUSTOM 		= 0x4000,
 
+		ASYNC					= 0x10000,
 		PARTIAL					= 0x20000,
 		DEFAULT_ACCESS_MODIFER	= 0x40000,
 		METHOD_EXTENSION		= 0x80000,
