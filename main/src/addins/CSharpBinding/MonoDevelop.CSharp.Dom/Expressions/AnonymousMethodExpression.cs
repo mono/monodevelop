@@ -37,10 +37,25 @@ namespace MonoDevelop.CSharp.Dom
 				return NodeType.Expression;
 			}
 		}
-
+		
+		// used to make a difference between delegate {} and delegate () {} 
+		public bool HasParameters {
+			get {
+				return GetChildByRole (Roles.LPar) != null;
+			}
+		}
+		
+		public CSharpTokenNode LPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
+		}
+		
+		public CSharpTokenNode RPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
+		}
+		
 		public IEnumerable<ParameterDeclarationExpression> Parameters { 
 			get {
-				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclarationExpression>();
+				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclarationExpression> ();
 			}
 		}
 		
