@@ -24,8 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-
 namespace MonoDevelop.CSharp.Dom
 {
 	public enum OperatorType {
@@ -86,6 +84,11 @@ namespace MonoDevelop.CSharp.Dom
 		
 		public CSharpTokenNode OperatorTypeKeyword {
 			get { return (CSharpTokenNode)GetChildByRole (OperatorTypeRole); }
+		}
+		
+		public static string GetName(OperatorType type)
+		{
+			return Mono.CSharp.Operator.GetMetadataName((Mono.CSharp.Operator.OpType)type);
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

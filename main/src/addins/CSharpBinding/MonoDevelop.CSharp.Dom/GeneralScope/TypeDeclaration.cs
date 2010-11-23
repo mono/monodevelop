@@ -24,10 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
+using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Projects.Dom;
-using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
@@ -80,6 +79,12 @@ namespace MonoDevelop.CSharp.Dom
 		public virtual ClassType ClassType {
 			get;
 			set;
+		}
+		
+		public IEnumerable<AbstractMemberBase> Members {
+			get {
+				return GetChildrenByRole (Roles.Member).Cast<AbstractMemberBase> ();
+			}
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

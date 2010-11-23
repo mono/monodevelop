@@ -24,10 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Linq;
-using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Dom
 {
@@ -104,9 +102,9 @@ namespace MonoDevelop.CSharp.Dom
 			set;
 		}
 		
-		public IEnumerable<ParameterDeclaration> Parameters { 
+		public IEnumerable<DomNode> Arguments { 
 			get {
-				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclaration>();
+				return base.GetChildrenByRole (Roles.Argument);
 			}
 		}
 		

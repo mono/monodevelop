@@ -30,7 +30,7 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public abstract class DomVisitor<T, S>
 	{
-		protected S VisitChildren (DomNode node, T data)
+		protected virtual S VisitChildren (DomNode node, T data)
 		{
 			var child = node.FirstChild;
 			while (child != null) {

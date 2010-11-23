@@ -24,9 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using MonoDevelop.Projects.Dom;
-
 namespace MonoDevelop.CSharp.Dom
 {
 	public class CheckedStatement : DomNode
@@ -37,9 +34,10 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public DomNode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement) ?? DomNode.Null; }
+		public BlockStatement Block {
+			get { return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null; }
 		}
+		
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{

@@ -27,6 +27,8 @@
 using System;
 using System.Text;
 using MonoDevelop.Projects.Dom;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
@@ -48,6 +50,16 @@ namespace MonoDevelop.CSharp.Dom
 				}
 				return builder.ToString ();
 			}
+		}
+		
+		public IEnumerable<Identifier> NameParts {
+			get { 
+				return GetChildrenByRole (Roles.Identifier).Cast<Identifier>();
+			}
+		}
+		
+		public bool HasDoubleColon {
+			get { return false; } // TODO
 		}
 		
 		public QualifiedIdentifier ()

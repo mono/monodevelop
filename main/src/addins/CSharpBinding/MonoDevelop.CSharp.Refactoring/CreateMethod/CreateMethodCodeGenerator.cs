@@ -131,7 +131,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			var data = options.GetTextEditorData ();
 			string expression;
 			if (assignment.Left is IdentifierExpression) {
-				expression = ((IdentifierExpression)assignment.Left).Identifier.Name;
+				expression = ((IdentifierExpression)assignment.Left).Identifier;
 			} else {
 				var left = assignment.Left;
 				expression = data.GetTextBetween (left.StartLocation.Line, left.StartLocation.Column, left.EndLocation.Line, left.EndLocation.Column);
@@ -364,7 +364,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 				if (argument is MemberReferenceExpression) {
 					arg.Name = ((MemberReferenceExpression)argument).Identifier.Name;
 				} else if (argument is IdentifierExpression) {
-					arg.Name = ((IdentifierExpression)argument).Identifier.Name;
+					arg.Name = ((IdentifierExpression)argument).Identifier;
 					int idx = arg.Name.LastIndexOf ('.');
 					if (idx >= 0)
 						arg.Name = arg.Name.Substring (idx + 1);

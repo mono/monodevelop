@@ -24,14 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Linq;
-using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class DelegateDeclaration : DomNode
+	public class DelegateDeclaration : AbstractMemberBase
 	{
 		public override NodeType NodeType {
 			get {
@@ -74,12 +72,6 @@ namespace MonoDevelop.CSharp.Dom
 		public IEnumerable<AttributeSection> Attributes { 
 			get {
 				return base.GetChildrenByRole (Roles.Attribute).Cast <AttributeSection>();
-			}
-		}
-		
-		public IEnumerable<DomNode> Modifiers { 
-			get {
-				return base.GetChildrenByRole (Roles.Modifier);
 			}
 		}
 		

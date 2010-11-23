@@ -24,15 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Dom
 {
 	public class MethodDeclaration : AbstractMember
 	{
-		public IEnumerable<DomNode> TypeArguments {
+		public IEnumerable<DomNode> TypeParameters {
 			get { return GetChildrenByRole (Roles.TypeArgument); }
 		}
 		
@@ -62,6 +61,12 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
+		public bool IsExtensionMethod {
+			get {
+				ParameterDeclaration pd = (ParameterDeclaration)GetChildByRole (Roles.Argument);
+				return pd != null && pd.ParameterModifier == ParameterModifier.This;
+			}
+		}
 		
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

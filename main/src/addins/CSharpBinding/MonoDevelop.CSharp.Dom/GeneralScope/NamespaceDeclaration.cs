@@ -24,9 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using MonoDevelop.Projects.Dom;
-
 namespace MonoDevelop.CSharp.Dom
 {
 	public class NamespaceDeclaration : DomNode
@@ -70,14 +67,19 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
+		public IEnumerable<DomNode> Members {
+			get { return GetChildrenByRole(Roles.Member); }
+		}
+		
 		public static string BuildQualifiedName (string name1, string name2)
 		{
 			if (string.IsNullOrEmpty (name1))
-				return name1;
-			if (string.IsNullOrEmpty (name2))
 				return name2;
+			if (string.IsNullOrEmpty (name2))
+				return name1;
 			return name1 + "." + name2;
 		}
+		
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{

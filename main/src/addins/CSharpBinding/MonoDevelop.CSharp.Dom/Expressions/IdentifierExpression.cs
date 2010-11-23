@@ -24,9 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using MonoDevelop.Projects.Dom;
-
 namespace MonoDevelop.CSharp.Dom
 {
 	public class IdentifierExpression : DomNode
@@ -37,9 +34,16 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
-		public Identifier Identifier {
+		public  Identifier IdentifierToken {
 			get {
-				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
+				return (Identifier)GetChildByRole (Roles.Identifier) ?? MonoDevelop.CSharp.Dom.Identifier.Null;
+			}
+		}
+		
+		public string Identifier {
+			get {
+				Identifier i = this.IdentifierToken;
+				return !i.IsNull ? i.Name : null;
 			}
 		}
 		

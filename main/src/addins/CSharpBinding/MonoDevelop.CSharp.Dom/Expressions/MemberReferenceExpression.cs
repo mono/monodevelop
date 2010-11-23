@@ -24,9 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Linq;
-using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
@@ -46,6 +43,12 @@ namespace MonoDevelop.CSharp.Dom
 		public Identifier Identifier {
 			get {
 				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
+			}
+		}
+		
+		public string MemberName {
+			get {
+				return this.Identifier.Name;
 			}
 		}
 		
