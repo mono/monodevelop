@@ -1,10 +1,10 @@
 // 
-// AnonymousMethodExpression.cs
+// ParameterDeclarationExpression.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,51 +23,48 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class AnonymousMethodExpression : DomNode
+	
+	public enum ParameterModifier {
+		None,
+		Ref,
+		Out,
+		Params,
+		This
+	}
+	
+	public class ParameterDeclaration : DomNode
 	{
 		public override NodeType NodeType {
 			get {
-				return NodeType.Expression;
+				return NodeType.Unknown;
 			}
 		}
 		
-		// used to make a difference between delegate {} and delegate () {} 
-		public bool HasParameters {
+		public ParameterModifier ParameterModifier {
+			get;
+			set;
+		}
+		
+		public Identifier Identifier {
 			get {
-				return GetChildByRole (Roles.LPar) != null;
+				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
 			}
 		}
 		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public IEnumerable<ParameterDeclaration> Parameters { 
+		public DomNode DefaultExpression {
 			get {
-				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclaration> ();
-			}
-		}
-		
-		public BlockStatement Body {
-			get {
-				return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null;
+				return GetChildByRole (Roles.Expression) ?? DomNode.Null;
 			}
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
-			return visitor.VisitAnonymousMethodExpression (this, data);
+			return visitor.VisitParameterDeclaration (this, data);
 		}
 	}
 }
+

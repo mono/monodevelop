@@ -39,9 +39,9 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
-		public IEnumerable<ParameterDeclarationExpression> Parameters { 
+		public IEnumerable<ParameterDeclaration> Parameters { 
 			get {
-				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclarationExpression> ();
+				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclaration> ();
 			}
 		}
 		
@@ -104,9 +104,9 @@ namespace MonoDevelop.CSharp.Dom
 			set;
 		}
 		
-		public IEnumerable<ParameterDeclarationExpression> Parameters { 
+		public IEnumerable<ParameterDeclaration> Parameters { 
 			get {
-				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclarationExpression>();
+				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclaration>();
 			}
 		}
 		

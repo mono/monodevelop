@@ -33,9 +33,9 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class IndexerDeclaration : PropertyDeclaration
 	{
-		public IEnumerable<ParameterDeclarationExpression> Parameters { 
+		public IEnumerable<ParameterDeclaration> Parameters { 
 			get {
-				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclarationExpression>();
+				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclaration>();
 			}
 		}
 		

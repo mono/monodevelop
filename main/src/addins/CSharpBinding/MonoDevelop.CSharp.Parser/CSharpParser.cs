@@ -1676,40 +1676,40 @@ namespace MonoDevelop.CSharp.Parser
 			
 				for (int i = 0; i < parameters.Count; i++) {
 					if (paramLocation != null && i > 0 && i - 1 < paramLocation.Count) 
-						parent.AddChild (new CSharpTokenNode (Convert (paramLocation[i - 1]), 1), ParameterDeclarationExpression.Roles.Comma);
+						parent.AddChild (new CSharpTokenNode (Convert (paramLocation[i - 1]), 1), ParameterDeclaration.Roles.Comma);
 					var p = (Parameter)parameters.FixedParameters[i];
 					var location = LocationsBag.GetLocations (p);
 					
-					ParameterDeclarationExpression parameterDeclarationExpression = new ParameterDeclarationExpression ();
+					ParameterDeclaration parameterDeclarationExpression = new ParameterDeclaration ();
 					switch (p.ModFlags) {
 					case Parameter.Modifier.OUT:
 						parameterDeclarationExpression.ParameterModifier = ParameterModifier.Out;
 						if (location != null)
-							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[0]), "out".Length), ParameterDeclarationExpression.Roles.Keyword);
+							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[0]), "out".Length), ParameterDeclaration.Roles.Keyword);
 						break;
 					case Parameter.Modifier.REF:
 						parameterDeclarationExpression.ParameterModifier = ParameterModifier.Ref;
 						if (location != null)
-							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[0]), "ref".Length), ParameterDeclarationExpression.Roles.Keyword);
+							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[0]), "ref".Length), ParameterDeclaration.Roles.Keyword);
 						break;
 					case Parameter.Modifier.PARAMS:
 						parameterDeclarationExpression.ParameterModifier = ParameterModifier.Params;
 						if (location != null)
-							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[0]), "params".Length), ParameterDeclarationExpression.Roles.Keyword);
+							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[0]), "params".Length), ParameterDeclaration.Roles.Keyword);
 						break;
 					case Parameter.Modifier.This:
 						parameterDeclarationExpression.ParameterModifier = ParameterModifier.This;
 						if (location != null)
-							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[0]), "this".Length), ParameterDeclarationExpression.Roles.Keyword);
+							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[0]), "this".Length), ParameterDeclaration.Roles.Keyword);
 						break;
 					}
 					if (p.TypeExpression != null) // lambdas may have no types (a, b) => ...
-						parameterDeclarationExpression.AddChild ((DomNode)p.TypeExpression.Accept (this), ParameterDeclarationExpression.Roles.ReturnType);
-					parameterDeclarationExpression.AddChild (new Identifier (p.Name, Convert (p.Location)), ParameterDeclarationExpression.Roles.Identifier);
+						parameterDeclarationExpression.AddChild ((DomNode)p.TypeExpression.Accept (this), ParameterDeclaration.Roles.ReturnType);
+					parameterDeclarationExpression.AddChild (new Identifier (p.Name, Convert (p.Location)), ParameterDeclaration.Roles.Identifier);
 					if (p.HasDefaultValue) {
 						if (location != null)
-							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[1]), 1), ParameterDeclarationExpression.Roles.Assign);
-						parameterDeclarationExpression.AddChild ((DomNode)p.DefaultValue.Accept (this), ParameterDeclarationExpression.Roles.Expression);
+							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[1]), 1), ParameterDeclaration.Roles.Assign);
+						parameterDeclarationExpression.AddChild ((DomNode)p.DefaultValue.Accept (this), ParameterDeclaration.Roles.Expression);
 					}
 					parent.AddChild (parameterDeclarationExpression, InvocationExpression.Roles.Argument);
 				}

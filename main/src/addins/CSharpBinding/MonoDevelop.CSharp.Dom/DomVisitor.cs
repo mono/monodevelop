@@ -163,9 +163,9 @@ namespace MonoDevelop.CSharp.Dom
 			return VisitChildren (variableInitializer, data);
 		}
 		
-		public virtual S VisitParameterDeclarationExpression (ParameterDeclarationExpression parameterDeclarationExpression, T data)
+		public virtual S VisitParameterDeclaration (ParameterDeclaration parameterDeclaration, T data)
 		{
-			return VisitChildren (parameterDeclarationExpression, data);
+			return VisitChildren (parameterDeclaration, data);
 		}
 		
 		public virtual S VisitConstraint (Constraint constraint, T data)

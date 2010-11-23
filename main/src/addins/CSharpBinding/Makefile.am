@@ -128,7 +128,7 @@ FILES =  \
 	MonoDevelop.CSharp.Dom/TypeMembers/IndexerDeclaration.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/MethodDeclaration.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/OperatorDeclaration.cs \
-	MonoDevelop.CSharp.Dom/TypeMembers/ParameterDeclarationExpression.cs \
+	MonoDevelop.CSharp.Dom/TypeMembers/ParameterDeclaration.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/PropertyDeclaration.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/VariableInitializer.cs \
 	MonoDevelop.CSharp.Formatting/CSharpFormatter.cs \
