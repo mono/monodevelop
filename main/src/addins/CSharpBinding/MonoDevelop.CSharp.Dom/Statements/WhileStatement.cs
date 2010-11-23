@@ -46,27 +46,27 @@ namespace MonoDevelop.CSharp.Dom
 		}
 		
 		public AstNode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement); }
+			get { return GetChildByRole (Roles.EmbeddedStatement) ?? AstNode.Null; }
 		}
 		
 		public AstNode Condition {
-			get { return GetChildByRole (Roles.Condition); }
+			get { return GetChildByRole (Roles.Condition) ?? AstNode.Null; }
 		}
 		
 		public CSharpTokenNode DoKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (DoKeywordRole); }
+			get { return (CSharpTokenNode)GetChildByRole (DoKeywordRole) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode WhileKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (WhileKeywordRole); }
+			get { return (CSharpTokenNode)GetChildByRole (WhileKeywordRole) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

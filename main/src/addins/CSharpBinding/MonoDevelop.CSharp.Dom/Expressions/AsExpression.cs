@@ -37,11 +37,11 @@ namespace MonoDevelop.CSharp.Dom
 		}
 
 		public FullTypeName TypeReference {
-			get { return (FullTypeName)GetChildByRole (Roles.ReturnType); }
+			get { return (FullTypeName)GetChildByRole (Roles.ReturnType) ?? FullTypeName.Null; }
 		}
 		
 		public AstNode Expression {
-			get { return GetChildByRole (Roles.Expression); }
+			get { return GetChildByRole (Roles.Expression) ?? AstNode.Null; }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

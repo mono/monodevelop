@@ -32,6 +32,21 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class FullTypeName : AstNode
 	{
+		public static readonly new FullTypeName Null = new NullFullTypeName ();
+		class NullFullTypeName : FullTypeName
+		{
+			public override bool IsNull {
+				get {
+					return true;
+				}
+			}
+			
+			public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+			{
+				return default (S);
+			}
+		}
+		
 		public override NodeType NodeType {
 			get {
 				return NodeType.Unknown;

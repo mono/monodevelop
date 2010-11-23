@@ -81,13 +81,13 @@ namespace MonoDevelop.CSharp.Dom
 		
 		public Identifier NameIdentifier {
 			get {
-				return (Identifier)GetChildByRole (Roles.Identifier);
+				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
 			}
 		}
 		
 		public AstNode Initializer {
 			get {
-				return GetChildByRole (Roles.Initializer);
+				return GetChildByRole (Roles.Initializer) ?? AstNode.Null;
 			}
 		}
 		

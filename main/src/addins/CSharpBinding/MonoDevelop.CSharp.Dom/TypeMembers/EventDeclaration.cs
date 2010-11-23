@@ -36,25 +36,25 @@ namespace MonoDevelop.CSharp.Dom
 		
 		public CSharpTokenNode LBrace {
 			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.LBrace);
+				return (CSharpTokenNode)GetChildByRole (Roles.LBrace) ?? CSharpTokenNode.Null;
 			}
 		}
 		
 		public CSharpTokenNode RBrace {
 			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.RBrace);
+				return (CSharpTokenNode)GetChildByRole (Roles.RBrace) ?? CSharpTokenNode.Null;
 			}
 		}
 		
 		public Accessor AddAccessor {
 			get {
-				return (Accessor)GetChildByRole (EventAddRole);
+				return (Accessor)GetChildByRole (EventAddRole) ?? Accessor.Null;
 			}
 		}
 		
 		public Accessor RemoveAccessor {
 			get {
-				return (Accessor)GetChildByRole (EventRemoveRole);
+				return (Accessor)GetChildByRole (EventRemoveRole) ?? Accessor.Null;
 			}
 		}
 		

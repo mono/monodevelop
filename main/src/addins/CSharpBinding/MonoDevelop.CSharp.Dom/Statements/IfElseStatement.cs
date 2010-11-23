@@ -43,31 +43,31 @@ namespace MonoDevelop.CSharp.Dom
 		}
 
 		public AstNode TrueEmbeddedStatement {
-			get { return GetChildByRole (TrueEmbeddedStatementRole); }
+			get { return GetChildByRole (TrueEmbeddedStatementRole) ?? AstNode.Null; }
 		}
 		
 		public AstNode FalseEmbeddedStatement {
-			get { return GetChildByRole (FalseEmbeddedStatementRole); }
+			get { return GetChildByRole (FalseEmbeddedStatementRole) ?? AstNode.Null; }
 		}
 
 		public AstNode Condition {
-			get { return GetChildByRole (Roles.Condition); }
+			get { return GetChildByRole (Roles.Condition) ?? AstNode.Null; }
 		}
 		
 		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode IfKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (IfKeywordRole); }
+			get { return (CSharpTokenNode)GetChildByRole (IfKeywordRole) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode ElseKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (ElseKeywordRole); }
+			get { return (CSharpTokenNode)GetChildByRole (ElseKeywordRole) ?? CSharpTokenNode.Null; }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

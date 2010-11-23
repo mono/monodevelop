@@ -41,29 +41,29 @@ namespace MonoDevelop.CSharp.Dom
 
 		public FullTypeName Type {
 			get {
-				return (FullTypeName)GetChildByRole (Roles.ReturnType);
+				return (FullTypeName)GetChildByRole (Roles.ReturnType) ?? FullTypeName.Null;
 			}
 		}
 		
 		public AstNode CountExpression {
-			get { return GetChildByRole (Roles.Expression); }
+			get { return GetChildByRole (Roles.Expression) ?? AstNode.Null; }
 		}
 		
 		public CSharpTokenNode StackAllocKeyword {
 			get {
-				return (CSharpTokenNode)GetChildByRole (StackAllocKeywordRole);
+				return (CSharpTokenNode)GetChildByRole (StackAllocKeywordRole) ?? CSharpTokenNode.Null;
 			}
 		}
 		
 		public CSharpTokenNode LBracket {
 			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.LBracket);
+				return (CSharpTokenNode)GetChildByRole (Roles.LBracket) ?? CSharpTokenNode.Null;
 			}
 		}
 		
 		public CSharpTokenNode RBracket {
 			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.RBracket);
+				return (CSharpTokenNode)GetChildByRole (Roles.RBracket) ?? CSharpTokenNode.Null;
 			}
 		}
 		

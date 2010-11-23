@@ -40,12 +40,12 @@ namespace MonoDevelop.CSharp.Dom
 		}
 
 		public AstNode Target {
-			get { return GetChildByRole (Roles.TargetExpression); }
+			get { return GetChildByRole (Roles.TargetExpression) ?? AstNode.Null; }
 		}
 		
 		public Identifier Identifier {
 			get {
-				return (Identifier)GetChildByRole (Roles.Identifier);
+				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
 			}
 		}
 		

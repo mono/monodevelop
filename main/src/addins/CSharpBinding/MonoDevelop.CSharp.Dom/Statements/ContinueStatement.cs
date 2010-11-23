@@ -38,7 +38,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 
 		public CSharpTokenNode ContinueKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword) ?? CSharpTokenNode.Null; }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

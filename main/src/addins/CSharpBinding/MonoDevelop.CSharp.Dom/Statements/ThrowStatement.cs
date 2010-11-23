@@ -38,7 +38,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 
 		public AstNode Expression {
-			get { return GetChildByRole (Roles.Expression); }
+			get { return GetChildByRole (Roles.Expression) ?? AstNode.Null; }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

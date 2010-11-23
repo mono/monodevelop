@@ -38,7 +38,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 
 		public BlockStatement Block {
-			get { return (BlockStatement)GetChildByRole (Roles.Body); }
+			get { return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null; }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

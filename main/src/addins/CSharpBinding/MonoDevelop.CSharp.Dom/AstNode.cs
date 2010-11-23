@@ -32,10 +32,37 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public abstract class AstNode
 	{
+		public static readonly AstNode Null = new NullAstNode ();
+		class NullAstNode : AstNode
+		{
+			public override NodeType NodeType {
+				get {
+					return NodeType.Unknown;
+				}
+			}
+			
+			public override bool IsNull {
+				get {
+					return true;
+				}
+			}
+			
+			public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+			{
+				return default (S);
+			}
+		}
+		
 		public abstract NodeType NodeType {
 			get;
 		}
-
+		
+		public virtual bool IsNull {
+			get {
+				return false;
+			}
+		}
+		
 		public virtual DomLocation StartLocation {
 			get { 
 				var child = FirstChild;
@@ -53,7 +80,6 @@ namespace MonoDevelop.CSharp.Dom
 				return child.EndLocation;
 			}
 		}
-		
 		
 		public AstNode Parent {
 			get;

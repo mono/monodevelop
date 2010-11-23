@@ -34,7 +34,7 @@ namespace MonoDevelop.CSharp.Dom
 	public class FieldDeclaration : AbstractMember
 	{
 		public CSharpTokenNode Semicolon {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Semicolon); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.Semicolon) ?? CSharpTokenNode.Null; }
 		}
 		
 		public IEnumerable<VariableInitializer> Variables { 

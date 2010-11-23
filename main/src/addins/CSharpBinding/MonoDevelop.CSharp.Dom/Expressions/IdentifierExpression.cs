@@ -39,7 +39,7 @@ namespace MonoDevelop.CSharp.Dom
 
 		public Identifier Identifier {
 			get {
-				return (Identifier)GetChildByRole (Roles.Identifier);
+				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
 			}
 		}
 		

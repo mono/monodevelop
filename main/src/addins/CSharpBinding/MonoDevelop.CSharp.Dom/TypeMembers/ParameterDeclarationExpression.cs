@@ -51,13 +51,13 @@ namespace MonoDevelop.CSharp.Dom
 		
 		public Identifier Identifier {
 			get {
-				return (Identifier)GetChildByRole (Roles.Identifier);
+				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
 			}
 		}
 		
 		public AstNode DefaultExpression {
 			get {
-				return GetChildByRole (Roles.Expression);
+				return GetChildByRole (Roles.Expression) ?? AstNode.Null;
 			}
 		}
 		

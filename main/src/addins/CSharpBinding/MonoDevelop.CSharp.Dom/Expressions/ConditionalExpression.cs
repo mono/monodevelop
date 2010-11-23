@@ -44,23 +44,23 @@ namespace MonoDevelop.CSharp.Dom
 		}
 
 		public AstNode TrueExpression {
-			get { return GetChildByRole (TrueExpressionRole); }
+			get { return GetChildByRole (TrueExpressionRole) ?? AstNode.Null; }
 		}
 		
 		public AstNode FalseExpression {
-			get { return GetChildByRole (FalseExpressionRole); }
+			get { return GetChildByRole (FalseExpressionRole) ?? AstNode.Null; }
 		}
 
 		public AstNode Condition {
-			get { return GetChildByRole (Roles.Condition); }
+			get { return GetChildByRole (Roles.Condition) ?? AstNode.Null; }
 		}
 		
 		public CSharpTokenNode QuestionMark {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.QuestionMark); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.QuestionMark) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode Colon {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Colon); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.Colon) ?? CSharpTokenNode.Null; }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

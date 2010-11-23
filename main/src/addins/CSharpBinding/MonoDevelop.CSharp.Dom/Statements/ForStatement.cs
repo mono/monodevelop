@@ -39,11 +39,11 @@ namespace MonoDevelop.CSharp.Dom
 		}
 
 		public AstNode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement); }
+			get { return GetChildByRole (Roles.EmbeddedStatement) ?? AstNode.Null; }
 		}
 		
 		public AstNode Condition {
-			get { return GetChildByRole (Roles.Condition); }
+			get { return GetChildByRole (Roles.Condition) ?? AstNode.Null; }
 		}
 		
 		public IEnumerable<AstNode> Initializers {
@@ -55,11 +55,11 @@ namespace MonoDevelop.CSharp.Dom
 		}
 		
 		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

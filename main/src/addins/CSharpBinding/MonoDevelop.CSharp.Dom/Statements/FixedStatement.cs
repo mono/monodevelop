@@ -42,11 +42,11 @@ namespace MonoDevelop.CSharp.Dom
 		}
 
 		public AstNode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement); }
+			get { return GetChildByRole (Roles.EmbeddedStatement) ?? AstNode.Null; }
 		}
 		
 		public AstNode PointerDeclaration {
-			get { return GetChildByRole (PointerDeclarationRole); }
+			get { return GetChildByRole (PointerDeclarationRole) ?? AstNode.Null; }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

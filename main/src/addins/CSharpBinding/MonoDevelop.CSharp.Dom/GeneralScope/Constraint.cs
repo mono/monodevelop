@@ -41,15 +41,15 @@ namespace MonoDevelop.CSharp.Dom
 		}
 		
 		public CSharpTokenNode WhereKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword) ?? CSharpTokenNode.Null; }
 		}
 		
 		public Identifier TypeParameter {
-			get { return (Identifier)GetChildByRole (Roles.Identifier); }
+			get { return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null; }
 		}
 		
 		public CSharpTokenNode Colon {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Colon); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.Colon) ?? CSharpTokenNode.Null; }
 		}
 		
 		public IEnumerable<AstNode> TypeParameters {

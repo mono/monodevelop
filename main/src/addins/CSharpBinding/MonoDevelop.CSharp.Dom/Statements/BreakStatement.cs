@@ -39,7 +39,7 @@ namespace MonoDevelop.CSharp.Dom
 
 		public CSharpTokenNode BreakKeyword {
 			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.Keyword);
+				return (CSharpTokenNode)GetChildByRole (Roles.Keyword) ?? CSharpTokenNode.Null;
 			}
 		}
 		

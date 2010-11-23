@@ -35,7 +35,7 @@ namespace MonoDevelop.CSharp.Dom
 	{
 		public BlockStatement Body {
 			get {
-				return (BlockStatement)GetChildByRole (Roles.Body);
+				return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null;
 			}
 		}
 		
@@ -46,16 +46,16 @@ namespace MonoDevelop.CSharp.Dom
 		}
 		
 		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public ConstructorInitializer Initializer {
 			get {
-				return (ConstructorInitializer)base.GetChildByRole (Roles.Initializer);
+				return (ConstructorInitializer)base.GetChildByRole (Roles.Initializer) ?? ConstructorInitializer.Null;
 			}
 		}
 		
@@ -72,6 +72,27 @@ namespace MonoDevelop.CSharp.Dom
 	
 	public class ConstructorInitializer : AstNode
 	{
+		public static readonly new ConstructorInitializer Null = new NullConstructorInitializer ();
+		class NullConstructorInitializer : ConstructorInitializer
+		{
+			public override NodeType NodeType {
+				get {
+					return NodeType.Unknown;
+				}
+			}
+			
+			public override bool IsNull {
+				get {
+					return true;
+				}
+			}
+			
+			public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+			{
+				return default (S);
+			}
+		}
+		
 		public override NodeType NodeType {
 			get {
 				return NodeType.Unknown;

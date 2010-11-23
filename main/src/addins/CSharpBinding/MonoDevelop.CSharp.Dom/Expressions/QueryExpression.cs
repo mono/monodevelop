@@ -44,7 +44,7 @@ namespace MonoDevelop.CSharp.Dom
 
 		public AstNode Type {
 			get {
-				return GetChildByRole (Roles.ReturnType);
+				return GetChildByRole (Roles.ReturnType) ?? AstNode.Null;
 			}
 		}
 		
@@ -56,12 +56,12 @@ namespace MonoDevelop.CSharp.Dom
 		
 		public Identifier QueryIdentifier {
 			get {
-				return (Identifier)GetChildByRole (Roles.Identifier);
+				return (Identifier)GetChildByRole (Roles.Identifier) ?? MonoDevelop.CSharp.Dom.Identifier.Null;
 			}
 		}
 		
 		public AstNode Expression {
-			get { return GetChildByRole (Roles.Expression); }
+			get { return GetChildByRole (Roles.Expression) ?? AstNode.Null; }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

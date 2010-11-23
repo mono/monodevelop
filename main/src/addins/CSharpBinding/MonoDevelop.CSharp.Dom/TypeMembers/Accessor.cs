@@ -1,5 +1,5 @@
 // 
-// ArgListExpression.cs
+// PropertyDeclaration.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -24,49 +24,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Projects.Dom;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-
+using MonoDevelop.Projects.Dom;
 namespace MonoDevelop.CSharp.Dom
 {
-	/// <summary>
-	/// Represents the undocumented __arglist keyword.
-	/// </summary>
-	public class ArgListExpression : AstNode
+	public class Accessor : AbstractMember
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
+		public static readonly new Accessor Null = new NullAccessor ();
+		class NullAccessor : Accessor
+		{
+			public override bool IsNull {
+				get {
+					return true;
+				}
+			}
+			
+			public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+			{
+				return default (S);
 			}
 		}
-
-		public bool IsAccess { // access is __arglist, otherwise it's __arlist (a1, a2, ..., an)
+		
+		public DomLocation Location {
 			get;
 			set;
 		}
 		
-		public CSharpTokenNode Keyword {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public IEnumerable<AstNode> Arguments {
-			get { return GetChildrenByRole (Roles.Argument); }
+		public BlockStatement Body {
+			get {
+				return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null;
+			}
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
 		{
-			return visitor.VisitArgListExpression (this, data);
+			return visitor.VisitAccessorDeclaration (this, data);
 		}
 	}
 }
-

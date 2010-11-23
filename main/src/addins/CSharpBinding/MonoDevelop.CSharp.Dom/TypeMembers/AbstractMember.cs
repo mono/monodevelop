@@ -35,7 +35,7 @@ namespace MonoDevelop.CSharp.Dom
 		
 		public AstNode ReturnType {
 			get {
-				return GetChildByRole (Roles.ReturnType);
+				return GetChildByRole (Roles.ReturnType) ?? AstNode.Null;
 			}
 		}
 		
@@ -44,13 +44,13 @@ namespace MonoDevelop.CSharp.Dom
 		/// </summary>
 		public AstNode PrivateImplementationType {
 			get {
-				return GetChildByRole (PrivateImplementationTypeRole);
+				return GetChildByRole (PrivateImplementationTypeRole) ?? AstNode.Null;
 			}
 		}
 		
 		public Identifier NameIdentifier {
 			get {
-				return (Identifier)GetChildByRole (Roles.Identifier);
+				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
 			}
 		}
 		

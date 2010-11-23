@@ -42,7 +42,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 
 		public Identifier LabelIdentifier {
-			get { return (Identifier)GetChildByRole (Roles.Identifier); }
+			get { return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null; }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

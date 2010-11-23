@@ -44,7 +44,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 		
 		public AstNode ReturnType {
-			get { return GetChildByRole (Roles.ReturnType); }
+			get { return GetChildByRole (Roles.ReturnType) ?? AstNode.Null; }
 		}
 		
 		public IEnumerable<VariableInitializer> Variables {
@@ -52,7 +52,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 		
 		public CSharpTokenNode Semicolon {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Semicolon); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.Semicolon) ?? CSharpTokenNode.Null; }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

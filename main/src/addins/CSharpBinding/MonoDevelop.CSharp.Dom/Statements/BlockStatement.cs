@@ -32,6 +32,22 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class BlockStatement : AstNode
 	{
+		public static readonly new BlockStatement Null = new NullBlockStatement ();
+		class NullBlockStatement : BlockStatement
+		{
+			public override bool IsNull {
+				get {
+					return true;
+				}
+			}
+			
+			public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+			{
+				return default (S);
+			}
+		}
+		
+		
 		public override NodeType NodeType {
 			get {
 				return NodeType.Statement;
@@ -40,13 +56,13 @@ namespace MonoDevelop.CSharp.Dom
 
 		public CSharpTokenNode LBrace {
 			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.LBrace);
+				return (CSharpTokenNode)GetChildByRole (Roles.LBrace) ?? CSharpTokenNode.Null;
 			}
 		}
 		
 		public CSharpTokenNode RBrace {
 			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.RBrace);
+				return (CSharpTokenNode)GetChildByRole (Roles.RBrace) ?? CSharpTokenNode.Null;
 			}
 		}
 		

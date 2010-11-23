@@ -42,7 +42,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 
 		public AstNode Expression {
-			get { return GetChildByRole (Roles.Expression); }
+			get { return GetChildByRole (Roles.Expression) ?? AstNode.Null; }
 		}
 		
 		public IEnumerable<SwitchSection> SwitchSections {
@@ -50,18 +50,19 @@ namespace MonoDevelop.CSharp.Dom
 		}
 		
 		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
 		}
+		
 		public CSharpTokenNode LBrace {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LBrace); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LBrace) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode RBrace {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RBrace); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RBrace) ?? CSharpTokenNode.Null; }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
@@ -108,7 +109,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 		
 		public AstNode Expression {
-			get { return GetChildByRole (Roles.Expression); }
+			get { return GetChildByRole (Roles.Expression) ?? AstNode.Null; }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

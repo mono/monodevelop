@@ -41,23 +41,23 @@ namespace MonoDevelop.CSharp.Dom
 		}
 
 		public AstNode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement); }
+			get { return GetChildByRole (Roles.EmbeddedStatement) ?? AstNode.Null; }
 		}
 		
 		public AstNode Expression {
-			get { return GetChildByRole (Roles.Initializer); }
+			get { return GetChildByRole (Roles.Initializer) ?? AstNode.Null; }
 		}
 		
 		public AstNode VariableType {
-			get { return GetChildByRole (Roles.ReturnType); }
+			get { return GetChildByRole (Roles.ReturnType) ?? AstNode.Null; }
 		}
 		
 		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public string VariableName {
@@ -68,7 +68,7 @@ namespace MonoDevelop.CSharp.Dom
 		
 		public Identifier VariableNameIdentifier {
 			get {
-				return (Identifier)GetChildByRole (Roles.Identifier);
+				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
 			}
 		}
 		

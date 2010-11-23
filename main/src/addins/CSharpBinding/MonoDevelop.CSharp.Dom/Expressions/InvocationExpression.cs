@@ -40,7 +40,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 
 		public AstNode Target {
-			get { return GetChildByRole (Roles.TargetExpression); }
+			get { return GetChildByRole (Roles.TargetExpression) ?? AstNode.Null; }
 		}
 		
 		public IEnumerable<AstNode> Arguments {
@@ -48,11 +48,11 @@ namespace MonoDevelop.CSharp.Dom
 		}
 		
 		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

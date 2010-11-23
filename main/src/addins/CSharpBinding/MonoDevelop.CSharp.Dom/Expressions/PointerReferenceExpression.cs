@@ -43,7 +43,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 
 		public AstNode Expression {
-			get { return GetChildByRole (Roles.TargetExpression); }
+			get { return GetChildByRole (Roles.TargetExpression) ?? AstNode.Null; }
 		}
 		
 		public string Dim {

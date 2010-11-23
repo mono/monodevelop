@@ -47,13 +47,13 @@ namespace MonoDevelop.CSharp.Dom
 		
 		public Identifier NameIdentifier {
 			get {
-				return (Identifier)GetChildByRole (Roles.Identifier);
+				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
 			}
 		}
 		
 		public AstNode ReturnType {
 			get {
-				return GetChildByRole (Roles.ReturnType);
+				return GetChildByRole (Roles.ReturnType) ?? AstNode.Null;
 			}
 		}
 		
@@ -64,11 +64,11 @@ namespace MonoDevelop.CSharp.Dom
 		}
 		
 		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public IEnumerable<AttributeSection> Attributes { 

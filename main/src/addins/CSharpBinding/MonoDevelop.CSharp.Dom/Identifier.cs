@@ -32,6 +32,21 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class Identifier : AstNode
 	{
+		public static readonly new Identifier Null = new NullIdentifier ();
+		class NullIdentifier : Identifier
+		{
+			public override bool IsNull {
+				get {
+					return true;
+				}
+			}
+			
+			public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+			{
+				return default (S);
+			}
+		}
+		
 		public override NodeType NodeType {
 			get {
 				return NodeType.Unknown;

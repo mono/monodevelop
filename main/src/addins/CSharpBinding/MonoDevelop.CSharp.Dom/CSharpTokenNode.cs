@@ -29,6 +29,26 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class CSharpTokenNode : AstNode
 	{
+		public static new readonly CSharpTokenNode Null = new NullCSharpTokenNode ();
+		class NullCSharpTokenNode : CSharpTokenNode
+		{
+			public override bool IsNull {
+				get {
+					return true;
+				}
+			}
+			
+			public NullCSharpTokenNode () : base (DomLocation.Empty, 0)
+			{
+			}
+			
+			public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)
+			{
+				return default (S);
+			}
+		}
+		
+		
 		public override NodeType NodeType {
 			get {
 				return NodeType.Token;

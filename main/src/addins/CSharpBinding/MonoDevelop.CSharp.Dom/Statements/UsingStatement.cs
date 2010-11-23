@@ -38,19 +38,19 @@ namespace MonoDevelop.CSharp.Dom
 		}
 
 		public AstNode Statement {
-			get { return GetChildByRole (Roles.Statement); }
+			get { return GetChildByRole (Roles.Statement) ?? AstNode.Null; }
 		}
 		
 		public AstNode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement); }
+			get { return GetChildByRole (Roles.EmbeddedStatement) ?? AstNode.Null; }
 		}
 		
 		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		

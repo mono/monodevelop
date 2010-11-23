@@ -121,6 +121,7 @@ FILES =  \
 	MonoDevelop.CSharp.Dom/Statements/YieldStatement.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/AbstractMember.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/AbstractMemberBase.cs \
+	MonoDevelop.CSharp.Dom/TypeMembers/Accessor.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/ConstructorDeclaration.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/DestructorDeclaration.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/EventDeclaration.cs \

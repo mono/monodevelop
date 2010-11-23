@@ -47,15 +47,15 @@ namespace MonoDevelop.CSharp.Dom
 		}
 		
 		public CSharpTokenNode Operator {
-			get { return (CSharpTokenNode)GetChildByRole (OperatorRole); }
+			get { return (CSharpTokenNode)GetChildByRole (OperatorRole) ?? CSharpTokenNode.Null; }
 		}
 		
 		public AstNode Left {
-			get { return GetChildByRole (LeftExpressionRole); }
+			get { return GetChildByRole (LeftExpressionRole) ?? AstNode.Null; }
 		}
 		
 		public AstNode Right {
-			get { return GetChildByRole (RightExpressionRole); }
+			get { return GetChildByRole (RightExpressionRole) ?? AstNode.Null; }
 		}
 		
 		public override S AcceptVisitor<T, S> (ICSharpDomVisitor<T, S> visitor, T data)

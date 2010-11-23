@@ -47,7 +47,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 
 		public Identifier TargetIdentifier {
-			get { return (Identifier)GetChildByRole (TargetRole); }
+			get { return (Identifier)GetChildByRole (TargetRole) ?? Identifier.Null; }
 		}
 
 		public IEnumerable<Attribute> Attributes {

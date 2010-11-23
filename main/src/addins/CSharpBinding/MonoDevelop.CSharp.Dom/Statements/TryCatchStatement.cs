@@ -46,19 +46,19 @@ namespace MonoDevelop.CSharp.Dom
 		}
 
 		public CSharpTokenNode TryKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (TryKeywordRole); }
+			get { return (CSharpTokenNode)GetChildByRole (TryKeywordRole) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode FinallyKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (FinallyKeywordRole); }
+			get { return (CSharpTokenNode)GetChildByRole (FinallyKeywordRole) ?? CSharpTokenNode.Null; }
 		}
 		
 		public BlockStatement TryBlock {
-			get { return (BlockStatement)GetChildByRole (TryBlockRole); }
+			get { return (BlockStatement)GetChildByRole (TryBlockRole) ?? BlockStatement.Null; }
 		}
 		
 		public BlockStatement FinallyBlock {
-			get { return (BlockStatement)GetChildByRole (FinallyBlockRole); }
+			get { return (BlockStatement)GetChildByRole (FinallyBlockRole) ?? BlockStatement.Null; }
 		}
 		
 		public IEnumerable<CatchClause> CatchClauses {
