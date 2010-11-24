@@ -2324,6 +2324,29 @@ namespace MonoDevelop.CSharp.Parser
 			}
 			#endregion
 		}
+		
+
+		public void InsertComment (DomNode node, MonoDevelop.CSharp.Dom.Comment comment)
+		{
+			if (node.EndLocation < comment.StartLocation) {
+				node.AddChild (comment);
+				return;
+			}
+			
+			foreach (var child in node.Children) {
+				if (child.StartLocation < comment.StartLocation && comment.StartLocation < child.EndLocation) {
+					InsertComment (child, comment);
+					return;
+				}
+				if (comment.StartLocation < child.StartLocation) {
+					node.InsertChildBefore (child, comment, DomNode.Roles.Comment);
+					return;
+				}
+			}
+			
+			node.AddChild (comment);
+		}
+
 		public MonoDevelop.CSharp.Dom.CompilationUnit Parse (TextEditorData data)
 		{
 			lock (CompilerCallableEntryPoint.parseLock) {
@@ -2336,6 +2359,21 @@ namespace MonoDevelop.CSharp.Parser
 					return null;
 				CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (top.LocationsBag);
 				top.UsingsBag.Global.Accept (conversionVisitor);
+				
+				foreach (var special in top.SpecialsBag.Specials) {
+					var comment = special as SpecialsBag.Comment;
+					
+					if (comment != null) {
+						var type  = (MonoDevelop.CSharp.Dom.CommentType)comment.CommentType;
+						var start =  new DomLocation (comment.Line, comment.Col);
+						var end =  new DomLocation (comment.EndLine, comment.EndCol);
+						var domComment = new MonoDevelop.CSharp.Dom.Comment (type, start, end);
+						domComment.StartsLine = comment.StartsLine;
+						domComment.Content = comment.Content;
+						InsertComment (conversionVisitor.Unit, domComment);
+					}
+				}
+				
 				return conversionVisitor.Unit;
 			}
 		}

@@ -146,20 +146,20 @@ namespace MonoDevelop.CSharp.Parser
 		
 		void VisitComment (ParsedDocument result, SpecialsBag.Comment comment)
 		{
-			var cmt = new Comment (comment.Content);
+			var cmt = new MonoDevelop.Projects.Dom.Comment (comment.Content);
 			cmt.CommentStartsLine = comment.StartsLine;
 			switch (comment.CommentType) {
 			case SpecialsBag.CommentType.Multi:
-				cmt.CommentType = CommentType.MultiLine;
+				cmt.CommentType = MonoDevelop.Projects.Dom.CommentType.MultiLine;
 				cmt.OpenTag = "/*";
 				cmt.ClosingTag = "*/";
 				break;
 			case SpecialsBag.CommentType.Single:
-				cmt.CommentType = CommentType.SingleLine;
+				cmt.CommentType = MonoDevelop.Projects.Dom.CommentType.SingleLine;
 				cmt.OpenTag = "//";
 				break;
 			case SpecialsBag.CommentType.Documentation:
-				cmt.CommentType = CommentType.SingleLine;
+				cmt.CommentType = MonoDevelop.Projects.Dom.CommentType.SingleLine;
 				cmt.IsDocumentation = true;
 				cmt.OpenTag = "///";
 				break;

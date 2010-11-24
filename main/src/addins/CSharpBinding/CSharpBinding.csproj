@@ -366,6 +366,7 @@
     <Compile Include="MonoDevelop.CSharp.Dom\DomVisitor.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\ParameterDeclaration.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\EnumMemberDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\Comment.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

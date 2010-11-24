@@ -523,6 +523,15 @@ namespace MonoDevelop.CSharp.Formatting
 			return result;
 		}
 		
+		public override object VisitComment (MonoDevelop.CSharp.Dom.Comment comment, object data)
+		{
+			System.Console.WriteLine (comment.StartLocation);
+			System.Console.WriteLine (comment.StartsLine);
+			if (comment.StartsLine)
+				FixIndentation (comment.StartLocation);
+			return null;
+		}
+		
 		public override object VisitBreakStatement (BreakStatement breakStatement, object data)
 		{
 			FixStatementIndentation (breakStatement.StartLocation);

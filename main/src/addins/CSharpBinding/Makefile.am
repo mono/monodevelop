@@ -85,6 +85,7 @@ FILES =  \
 	MonoDevelop.CSharp.Dom/FullTypeName.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/Attribute.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/AttributeSection.cs \
+	MonoDevelop.CSharp.Dom/GeneralScope/Comment.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/Constraint.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/DelegateDeclaration.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/NamespaceDeclaration.cs \
