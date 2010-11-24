@@ -118,10 +118,17 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				store.AppendValues (var.ReturnType != null ? var.ReturnType.ToInvariantString () : "<null>" , var.Name);
 			}
 		}
-		
+
 		bool ValidateName ()
 		{
 			string fileName = properties.DeclaringMember.DeclaringType.CompilationUnit.FileName;
+			string methodName = entry.Text;
+			if (HasMember (methodName)) {
+				labelWarning.Text = GettextCatalog.GetString ("A member with the name '{0}' already exists.", methodName);
+				imageWarning.IconName = Gtk.Stock.DialogError;
+				return false;
+			}
+
 			INameValidator nameValidator = MonoDevelop.Projects.LanguageBindingService.GetRefactorerForFile (fileName ?? "default.cs");
 			if (nameValidator == null)
 				return true;
@@ -135,6 +142,11 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			}
 			labelWarning.Text = result.Message;
 			return result.IsValid;
+		}
+
+		bool HasMember (string name)
+		{
+			return properties.DeclaringMember.DeclaringType.SearchMember (name, true).Count > 0;
 		}
 		
 		void OnCancelClicked (object sender, EventArgs e)
