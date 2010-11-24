@@ -85,12 +85,13 @@ namespace MonoDevelop.VersionControl.Git
 				
 				oldHead = headCommit;
 				lastGoodHead = upstreamId;
+				commitChain = new List<RevCommit> ();
 			
-				// Find the first commit that diverged from upstream
-				int fd;
-				commitChain = FindDivergentCommitChain (repo, upstreamCommit, headCommit, 0, int.MaxValue, out fd);
-				if (commitChain == null)
-					throw new InvalidOperationException ("Current branch and upstream branch don't have a common ancestor");
+				LogCommand cmd = new NGit.Api.Git(repo).Log().AddRange(upstreamId, headCommit);
+				foreach (RevCommit commit in cmd.Call())
+					commitChain.Add(commit);
+				
+				commitChain.Reverse ();
 				currentMergeIndex = 0;
 				
 				// Checkout the upstream commit
@@ -144,6 +145,12 @@ namespace MonoDevelop.VersionControl.Git
 			get { return mergeResult; }
 		}
 		
+		public bool Aborted {
+			get {
+				return this.aborted;
+			}
+		}
+		
 		public void Abort ()
 		{
 			aborted = true;
@@ -162,62 +169,6 @@ namespace MonoDevelop.VersionControl.Git
 			string rebaseDir = Path.Combine (repo.Directory, "rebase-apply");
 			if (Directory.Exists (rebaseDir))
 				Directory.Delete (rebaseDir, true);
-		}
-		
-		static List<RevCommit> FindDivergentCommitChain (NGit.Repository repo, RevCommit upstream, RevCommit branch, int currentDistance, int maxDistance, out int foundDistance)
-		{
-			foundDistance = -1;
-			
-			if (currentDistance + 1 >= maxDistance)
-				return null;
-			
-			RevWalk rw = new RevWalk (repo);
-			foreach (RevCommit pc in branch.Parents) {
-				rw.ParseHeaders (pc);
-				if (IsAncestor (rw, pc, upstream)) {
-					foundDistance = currentDistance + 1;
-					List<RevCommit> commitChain = new List<RevCommit> ();
-					commitChain.Add (branch);
-					return commitChain;
-				}
-			}
-			
-			List<RevCommit> foundCommitChain = null;
-			
-			foreach (RevCommit pc in branch.Parents) {
-				rw.ParseHeaders (pc);
-				List<RevCommit> commitChain = FindDivergentCommitChain (repo, upstream, pc, currentDistance + 1, maxDistance, out foundDistance);
-				if (commitChain != null) {
-					maxDistance = foundDistance;
-					foundCommitChain = commitChain;
-				}
-			}
-			if (foundCommitChain != null) {
-				foundCommitChain.Add (branch);
-				return foundCommitChain;
-			}
-			
-			return null;
-		}
-		
-		static bool IsAncestor (RevWalk rw, RevCommit ancestor, RevCommit c)
-		{
-			do {
-				rw.ParseHeaders (c);
-				if (c.Id.Equals (ancestor.Id))
-					return true;
-				if (c.Parents.Length == 0)
-					return false;
-				else if (c.Parents.Length == 1) {
-					c = c.Parents [0];
-				}
-				else {
-					foreach (RevCommit p in c.Parents) {
-						if (IsAncestor (rw, ancestor, p))
-							return true;
-					}
-				}
-			} while (true);
 		}
 	}
 }

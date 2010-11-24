@@ -434,7 +434,11 @@ namespace MonoDevelop.VersionControl.Git
 				revWalk.ParseHeaders(srcParent);
 				ResolveMerger merger = (ResolveMerger)((ThreeWayMerger)MergeStrategy.RESOLVE.NewMerger
 					(repo));
-				merger.SetWorkingTreeIterator(new FileTreeIterator(repo));
+				
+				// CherryPick command sets the working tree, but this should not be necessary, and when setting it
+				// untracked files are deleted during the merge
+				// merger.SetWorkingTreeIterator(new FileTreeIterator(repo));
+				
 				merger.SetBase(srcParent.Tree);
 				
 				bool noProblems;
@@ -445,7 +449,6 @@ namespace MonoDevelop.VersionControl.Git
 				{
 					ResolveMerger resolveMerger = (ResolveMerger)merger;
 					resolveMerger.SetCommitNames(new string[] { "BASE", "HEAD", srcCommit.Name });
-					resolveMerger.SetWorkingTreeIterator(new FileTreeIterator(repo));
 					noProblems = merger.Merge(headCommit, srcCommit);
 					lowLevelResults = resolveMerger.GetMergeResults();
 					modifiedFiles = resolveMerger.GetModifiedFiles();

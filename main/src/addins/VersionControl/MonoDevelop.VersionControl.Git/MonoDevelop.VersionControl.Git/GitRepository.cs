@@ -116,13 +116,12 @@ namespace MonoDevelop.VersionControl.Git
 			if (hc == null)
 				return new GitRevision [0];
 			walk.MarkStart (hc);
-			string filePath = ToGitPath (localFile);
 			
 			foreach (RevCommit commit in walk) {
 				List<RevisionPath> paths = new List<RevisionPath> ();
 				foreach (Change change in GitUtil.GetCommitChanges (repo, commit)) {
 					FilePath cpath = FromGitPath (change.Path);
-					if (cpath != filePath && !cpath.IsChildPathOf (localFile))
+					if (cpath != localFile && !cpath.IsChildPathOf (localFile))
 						continue;
 					RevisionAction ra;
 					switch (change.ChangeType) {
@@ -253,6 +252,11 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			throw new System.NotImplementedException ();
 		}
+		
+		public override bool CanUpdate (FilePath localPath)
+		{
+			return base.CanUpdate (localPath) && GetCurrentRemote () != null;
+		}
 
 		public override void Update (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
@@ -266,14 +270,24 @@ namespace MonoDevelop.VersionControl.Git
 			try {
 				// Fetch remote commits
 				string remote = GetCurrentRemote ();
+				if (remote == null)
+					throw new InvalidOperationException ("No remotes defined");
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Fetching from '{0}'", remote));
 				RemoteConfig remoteConfig = new RemoteConfig (repo.GetConfig (), remote);
 				Transport tn = Transport.Open (repo, remoteConfig);
 				tn.Fetch (new GitMonitor (monitor), null);
 				monitor.Step (1);
 				
+				string upstreamRef = GitUtil.GetUpstreamSource (repo, GetCurrentBranch ());
+				if (upstreamRef == null)
+					upstreamRef = GetCurrentRemote () + "/" + GetCurrentBranch ();
+				
+				ObjectId upstreamId = repo.Resolve (upstreamRef);
+				if (upstreamId == null)
+					throw new UserException (GettextCatalog.GetString ("Branch '{0}' not found. Please set a valid upstream reference to be tracked by branch '{1}'", upstreamRef, GetCurrentBranch ()));
+				
 				// Get a list of files that are different in the target branch
-				statusList = GitUtil.GetChangedFiles (repo, GetCurrentRemote () + "/" + GetCurrentBranch ());
+				statusList = GitUtil.GetChangedFiles (repo, upstreamRef);
 				monitor.Step (1);
 				
 				// Save local changes
@@ -281,7 +295,7 @@ namespace MonoDevelop.VersionControl.Git
 				stash = stashes.Create (GetStashName ("_tmp_"));
 				monitor.Step (1);
 				
-				RebaseOperation rebaser = new RebaseOperation (repo, remote + "/" + GetCurrentBranch (), monitor);
+				RebaseOperation rebaser = new RebaseOperation (repo, upstreamRef, monitor);
 				try {
 					while (!rebaser.Rebase ()) {
 						var conflicts = rebaser.LastMergeResult.GetConflicts ();
@@ -296,12 +310,15 @@ namespace MonoDevelop.VersionControl.Git
 									break;
 								}
 							}
+							if (rebaser.Aborted)
+								break;
 						}
 						else
 							throw new Exception ("Rebase commit failed");
 					}
 				} catch {
-					rebaser.Abort ();
+					if (!rebaser.Aborted)
+						rebaser.Abort ();
 					throw;
 				}
 				
@@ -828,7 +845,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			List<string> remotes = new List<string> (GetRemotes ().Select (r => r.Name));
 			if (remotes.Count == 0)
-				throw new InvalidOperationException ("There are no remote repositories defined");
+				return null;
 			
 			if (remotes.Contains ("origin"))
 				return "origin";
