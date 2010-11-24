@@ -393,7 +393,7 @@ namespace DebuggerServer
 				object declaringType = GetProp (methodHandle, "DeclaringType");
 				object module = GetProp (declaringType, "Module");
 				object assembly = GetProp (module, "Assembly");
-				object resolver = GetProp (assembly, "Resolver");
+				object resolver = GetProp (module, "AssemblyResolver");
 				
 				foreach (object typeDefinition in GetAllTypeDefinitions (includePrivate, resolver, visited, assembly))
 					yield return typeDefinition;

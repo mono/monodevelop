@@ -30,6 +30,7 @@ using System.Collections.Generic;
 
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Mono.Cecil.Metadata;
 
 namespace Cecil.Decompiler.Cil {
 
@@ -70,17 +71,17 @@ namespace Cecil.Decompiler.Cil {
 			MarkBlockEnds (instructions);
 		}
 
-		void MarkBlockStarts (ExceptionHandlerCollection handlers)
+		void MarkBlockStarts (IList<ExceptionHandler> handlers)
 		{
 			for (int i = 0; i < handlers.Count; i++) {
 				var handler = handlers [i];
 				MarkBlockStart (handler.TryStart);
 				MarkBlockStart (handler.HandlerStart);
 
-				if (handler.Type == ExceptionHandlerType.Filter) {
+				if (handler.HandlerType == ExceptionHandlerType.Filter) {
 					MarkExceptionObjectPosition (handler.FilterStart);
 					MarkBlockStart (handler.FilterStart);
-				} else if (handler.Type == ExceptionHandlerType.Catch)
+				} else if (handler.HandlerType == ExceptionHandlerType.Catch)
 					MarkExceptionObjectPosition (handler.HandlerStart);
 			}
 		}
@@ -90,7 +91,7 @@ namespace Cecil.Decompiler.Cil {
 			exception_objects_offsets.Add (instruction.Offset);
 		}
 
-		void MarkBlockStarts (InstructionCollection instructions)
+		void MarkBlockStarts (IList<Instruction> instructions)
 		{
 			// the first instruction starts a block
 			for (int i = 0; i < instructions.Count; ++i) {
@@ -120,7 +121,7 @@ namespace Cecil.Decompiler.Cil {
 			}
 		}
 
-		void MarkBlockEnds (InstructionCollection instructions)
+		void MarkBlockEnds (IList<Instruction> instructions)
 		{
 			var blocks = ToArray ();
 			var current = blocks [0];
@@ -225,7 +226,7 @@ namespace Cecil.Decompiler.Cil {
 			case StackBehaviour.Varpush:
 				if (code.FlowControl == FlowControl.Call) {
 					var method = (IMethodSignature) instruction.Operand;
-					return IsVoid (method.ReturnType.ReturnType) ? 0 : 1;
+					return IsVoid (method.ReturnType) ? 0 : 1;
 				}
 
 				break;
@@ -285,12 +286,12 @@ namespace Cecil.Decompiler.Cil {
 
 		bool IsVoidMethod ()
 		{
-			return IsVoid (body.Method.ReturnType.ReturnType);
+			return IsVoid (body.Method.ReturnType);
 		}
 
 		static bool IsVoid (TypeReference type)
 		{
-			return type.FullName == Constants.Void;
+			return type.MetadataType == MetadataType.Void;
 		}
 
 		InstructionBlock [] ToArray ()
@@ -437,7 +438,7 @@ namespace Cecil.Decompiler.Cil {
 		{
 			var range = ComputeRange (handler.HandlerStart, handler.HandlerEnd);
 
-			switch (handler.Type) {
+			switch (handler.HandlerType) {
 			case ExceptionHandlerType.Catch:
 				data.Catches.Add (new CatchHandlerData (handler.CatchType, range));
 				break;

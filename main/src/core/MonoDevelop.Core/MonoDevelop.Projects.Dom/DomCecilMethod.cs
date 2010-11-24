@@ -27,6 +27,8 @@
 //
 
 using System;
+using System.Collections.Generic;
+
 using Mono.Cecil;
 
 namespace MonoDevelop.Projects.Dom
@@ -118,8 +120,8 @@ namespace MonoDevelop.Projects.Dom
 					result.PointerNestingLevel++;
 				return result;
 			}
-			if (typeReference is Mono.Cecil.ReferenceType)
-				return GetReturnType (((Mono.Cecil.ReferenceType)typeReference).ElementType);
+			if (typeReference is Mono.Cecil.ByReferenceType)
+				return GetReturnType (((Mono.Cecil.ByReferenceType)typeReference).ElementType);
 			
 			if (typeReference is Mono.Cecil.TypeDefinition) {
 				Mono.Cecil.TypeDefinition typeDefinition = (Mono.Cecil.TypeDefinition)typeReference;
@@ -146,7 +148,7 @@ namespace MonoDevelop.Projects.Dom
 			return DomReturnType.GetSharedReturnType (DomCecilType.RemoveGenericParamSuffix (methodReference.DeclaringType.FullName));
 		}
 		
-		public static void AddAttributes (AbstractMember member, CustomAttributeCollection attributes)
+		public static void AddAttributes (AbstractMember member, IList<CustomAttribute> attributes)
 		{
 			foreach (CustomAttribute customAttribute in attributes) {
 				member.Add (new DomCecilAttribute (customAttribute));
@@ -171,7 +173,7 @@ namespace MonoDevelop.Projects.Dom
 				
 			AddAttributes (this, methodDefinition.CustomAttributes);
 			base.Modifiers  = DomCecilType.GetModifiers (methodDefinition);
-			base.ReturnType = DomCecilMethod.GetReturnType (methodDefinition.ReturnType.ReturnType);
+			base.ReturnType = DomCecilMethod.GetReturnType (methodDefinition.ReturnType);
 			foreach (ParameterDefinition paramDef in methodDefinition.Parameters) {
 				Add (new DomCecilParameter (paramDef));
 			}

@@ -286,7 +286,7 @@ namespace Stetic {
 			try {
 				EmbeddedResource res = GetResource (adef, "gui.stetic");
 				if (res != null) {
-					MemoryStream stream = new MemoryStream (res.Data);
+					MemoryStream stream = new MemoryStream (res.GetResourceData ());
 					doc = new XmlDocument ();
 					using (stream)
 						doc.Load (stream);
@@ -338,16 +338,10 @@ namespace Stetic {
 			string category = "General";
 			
 			foreach (CustomAttribute attr in tdef.CustomAttributes) {
-				switch (attr.Constructor.DeclaringType.FullName) {
+				switch (attr.AttributeType.FullName) {
 				case "System.ComponentModel.ToolboxItemAttribute":
-					try {
-						attr.Resolve ();
-					} catch {
-						// Ignore
-						return null;
-					}
-					if (attr.ConstructorParameters.Count > 0) {
-						object param = attr.ConstructorParameters [0];
+					if (attr.ConstructorArguments.Count > 0) {
+						object param = attr.ConstructorArguments [0].Value;
 						if (param == null)
 							return null;
 						else if (param.GetType () == typeof (bool)) {
@@ -355,21 +349,15 @@ namespace Stetic {
 								info = new ToolboxItemInfo ("Gtk.Widget");
 							else 
 								return null;
-						} else if (param.GetType () == typeof (System.Type))
+						} else if (param.GetType () == typeof (TypeReference))
 							info = new ToolboxItemInfo ("Gtk.Widget");
 						else
 							return null;
 					}
 					break;
 				case "System.ComponentModel.CategoryAttribute":
-					try {
-						attr.Resolve ();
-					} catch {
-						// Ignore
-						return null;
-					}
-					if (attr.ConstructorParameters.Count > 0) {
-						object param = attr.ConstructorParameters [0];
+					if (attr.ConstructorArguments.Count > 0) {
+						object param = attr.ConstructorArguments [0].Value;
 						if (param.GetType () == typeof (string))
 							category = (string) param;
 					}
@@ -469,17 +457,15 @@ namespace Stetic {
 				foreach (CustomAttribute attr in prop.CustomAttributes) {
 					switch (attr.Constructor.DeclaringType.FullName) {
 					case "System.ComponentModel.BrowsableAttribute":
-						attr.Resolve ();
-						if (attr.ConstructorParameters.Count > 0) {
-							object param = attr.ConstructorParameters [0];
+						if (attr.ConstructorArguments.Count > 0) {
+							object param = attr.ConstructorArguments [0];
 							if (param.GetType () == typeof (bool))
 								browsable = (bool) param;
 						}
 						break;
 					case "System.ComponentModel.CategoryAttribute":
-						attr.Resolve ();
-						if (attr.ConstructorParameters.Count > 0) {
-							object param = attr.ConstructorParameters [0];
+						if (attr.ConstructorArguments.Count > 0) {
+							object param = attr.ConstructorArguments [0];
 							if (param.GetType () == typeof (string))
 								category = (string) param;
 						}
@@ -520,17 +506,15 @@ namespace Stetic {
 				foreach (CustomAttribute attr in ev.CustomAttributes) {
 					switch (attr.Constructor.DeclaringType.FullName) {
 					case "System.ComponentModel.BrowsableAttribute":
-						attr.Resolve ();
-						if (attr.ConstructorParameters.Count > 0) {
-							object param = attr.ConstructorParameters [0];
+						if (attr.ConstructorArguments.Count > 0) {
+							object param = attr.ConstructorArguments [0];
 							if (param.GetType () == typeof (bool))
 								browsable = (bool) param;
 						}
 						break;
 					case "System.ComponentModel.CategoryAttribute":
-						attr.Resolve ();
-						if (attr.ConstructorParameters.Count > 0) {
-							object param = attr.ConstructorParameters [0];
+						if (attr.ConstructorArguments.Count > 0) {
+							object param = attr.ConstructorArguments [0];
 							if (param.GetType () == typeof (string))
 								category = (string) param;
 						}
@@ -545,20 +529,28 @@ namespace Stetic {
 					AddEvent (ev, category, obj);
 			}
 		}
+
+		void AddObject (TypeDefinition tdef, Dictionary<TypeDefinition,ToolboxItemInfo> localObjects, AssemblyResolver resolver, string basePath, AssemblyDefinition adef)
+		{
+			if (tdef.IsAbstract || !tdef.IsClass) 
+				return;
+
+			ToolboxItemInfo tbinfo = GetToolboxItemInfo (resolver, basePath, adef, tdef, true);
+			if (tbinfo == null)
+				return;
+			
+			localObjects [tdef] = tbinfo;
+
+			foreach (var nestedType in tdef.NestedTypes)
+				AddObject (nestedType, localObjects, resolver, basePath, adef);
+		}
 	
 		void AddObjects (XmlDocument doc, AssemblyResolver resolver, string basePath, AssemblyDefinition adef)
 		{
 			Dictionary<TypeDefinition,ToolboxItemInfo> localObjects = new Dictionary<TypeDefinition, ToolboxItemInfo> ();
 			
 			foreach (TypeDefinition tdef in adef.MainModule.Types) {
-				if (tdef.IsAbstract || !tdef.IsClass) 
-					continue;
-
-				ToolboxItemInfo tbinfo = GetToolboxItemInfo (resolver, basePath, adef, tdef, true);
-				if (tbinfo == null)
-					continue;
-				
-				localObjects [tdef] = tbinfo;
+				AddObject (tdef, localObjects, resolver, basePath, adef);
 			}
 			
 			foreach (KeyValuePair<TypeDefinition,ToolboxItemInfo> item in localObjects) {
@@ -588,7 +580,7 @@ namespace Stetic {
 					}
 					if (curDef.Module.Assembly != adef) {
 						
-						LibraryInfo li = Refresh (resolver, curDef.Module.Image.FileInformation.FullName, basePath);
+						LibraryInfo li = Refresh (resolver, curDef.Module.FullyQualifiedName, basePath);
 						if (li.HasWidgets && li.GetToolboxItem (curDef.FullName, curDef.Module.Assembly.Name.Name) != null) {
 							tbinfo.BaseType = curDef.FullName;
 							break;
@@ -614,7 +606,7 @@ namespace Stetic {
 			try {
 				EmbeddedResource res = GetResource (adef, "objects.xml");
 				if (res != null) {
-					MemoryStream stream = new MemoryStream (res.Data);
+					MemoryStream stream = new MemoryStream (res.GetResourceData ());
 					doc = new XmlDocument ();
 					using (stream)
 						doc.Load (stream);
@@ -708,7 +700,7 @@ namespace Stetic {
 			info.Timestamp = File.GetLastWriteTime (info.File).ToUniversalTime ();
 			info.Guid = Guid.NewGuid ();
 			Save ();
-			AssemblyDefinition adef = AssemblyFactory.GetAssembly (info.File);
+			AssemblyDefinition adef = AssemblyDefinition.ReadAssembly (info.File);
 			XmlDocument objects = GetObjectsDoc (resolver, adef, info.File, baseDirectory);
 			if (objects != null) {
 				info.ObjectsDocument = objects;
@@ -775,14 +767,14 @@ namespace Stetic {
 				
 			visited [asm] = asm;
 			
-			TypeDefinition cls = asm.MainModule.Types [fullName];
+			TypeDefinition cls = asm.MainModule.GetType (fullName);
 			if (cls != null)
 				return cls;
 			
 			foreach (AssemblyNameReference aref in asm.MainModule.AssemblyReferences) {
 				AssemblyDefinition basm = resolver.Resolve (aref, basePath);
 				if (basm != null) {
-					cls = basm.MainModule.Types [fullName];
+					cls = basm.MainModule.GetType (fullName);
 					if (cls != null)
 						return cls;
 				}

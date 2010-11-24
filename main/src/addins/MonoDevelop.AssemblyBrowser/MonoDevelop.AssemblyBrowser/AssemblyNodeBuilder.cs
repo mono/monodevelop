@@ -91,14 +91,14 @@ namespace MonoDevelop.AssemblyBrowser
 			result.AppendLine ();
 		}
 		
-		static string GetTypeString (AssemblyKind kind)
+		static string GetTypeString (ModuleKind kind)
 		{
 			switch (kind) {
-			case AssemblyKind.Console:
+			case ModuleKind.Console:
 				return GettextCatalog.GetString ("Console application");
-			case AssemblyKind.Dll:
+			case ModuleKind.Dll:
 				return GettextCatalog.GetString ("Library");
-			case AssemblyKind.Windows:
+			case ModuleKind.Windows:
 				return GettextCatalog.GetString ("Application");
 			}
 			return GettextCatalog.GetString ("Unknown");
@@ -114,7 +114,7 @@ namespace MonoDevelop.AssemblyBrowser
 			                              compilationUnit.AssemblyDefinition.Name.FullName));
 			result.AppendLine ();
 			result.Append (String.Format (GettextCatalog.GetString ("<b>Type:</b>\t{0}"),
-			                              GetTypeString (compilationUnit.AssemblyDefinition.Kind)));
+			                              GetTypeString (compilationUnit.AssemblyDefinition.MainModule.Kind)));
 			result.AppendLine ();
 			return result.ToString ();
 		}

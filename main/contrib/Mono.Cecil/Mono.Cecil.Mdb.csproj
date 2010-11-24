@@ -39,19 +39,14 @@
     <DefineConstants>CECIL</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="Mono.Cecil.Mdb\AUTHORS" />
-    <Content Include="Mono.Cecil.Mdb\Mono.Cecil.Mdb.csproj" />
     <Content Include="Mono.Cecil.Mdb\Mono.Cecil.Mdb.dll.sources" />
-    <Content Include="Mono.Cecil.Mdb\README" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Mono.Cecil.Mdb\ChangeLog" />
     <None Include="Mono.CompilerServices.SymbolWriter\ChangeLog" />
     <None Include="ChangeLog" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mono.Cecil.Mdb\Mono.Cecil.Mdb\AssemblyInfo.cs" />
-    <Compile Include="Mono.Cecil.Mdb\Mono.Cecil.Mdb\MdbFactory.cs" />
     <Compile Include="Mono.Cecil.Mdb\Mono.Cecil.Mdb\MdbReader.cs" />
     <Compile Include="Mono.Cecil.Mdb\Mono.Cecil.Mdb\MdbWriter.cs" />
     <Compile Include="Mono.CompilerServices.SymbolWriter\MonoSymbolFile.cs" />

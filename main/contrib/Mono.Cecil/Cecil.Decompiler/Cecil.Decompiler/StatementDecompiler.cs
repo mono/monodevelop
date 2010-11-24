@@ -46,7 +46,7 @@ namespace Cecil.Decompiler {
 
 		ExpressionDecompiler expression_decompiler;
 		MethodBody body;
-		VariableDefinitionCollection variables;
+		IList<VariableDefinition> variables;
 		ControlFlowGraph cfg;
 		BlockOptimization optimization;
 

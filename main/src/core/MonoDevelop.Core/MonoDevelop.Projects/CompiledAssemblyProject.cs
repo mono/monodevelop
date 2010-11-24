@@ -84,11 +84,11 @@ namespace MonoDevelop.Projects
 			if (tid != null)
 				targetFramework = Runtime.SystemAssemblyService.GetTargetFramework (tid);
 			
-			AssemblyDefinition adef = AssemblyFactory.GetAssembly (assemblyPath);
-			MdbFactory mdbFactory = new MdbFactory ();
+			AssemblyDefinition adef = AssemblyDefinition.ReadAssembly (assemblyPath);
+			MdbReaderProvider mdbProvider = new MdbReaderProvider ();
 			try {
-				ISymbolReader reader = mdbFactory.CreateReader (adef.MainModule, assemblyPath);
-				adef.MainModule.LoadSymbols (reader);
+				ISymbolReader reader = mdbProvider.GetSymbolReader (adef.MainModule, assemblyPath);
+				adef.MainModule.ReadSymbols (reader);
 			} catch {
 				// Ignore
 			}

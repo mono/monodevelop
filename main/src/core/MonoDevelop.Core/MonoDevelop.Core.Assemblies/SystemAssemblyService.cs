@@ -202,7 +202,7 @@ namespace MonoDevelop.Core.Assemblies
 		internal static System.Reflection.AssemblyName GetAssemblyNameObj (string file)
 		{
 			try {
-				AssemblyDefinition asm = AssemblyFactory.GetAssemblyManifest (file);
+				AssemblyDefinition asm = AssemblyDefinition.ReadAssembly (file);
 				return new AssemblyName (asm.Name.FullName);
 				
 				// Don't use reflection to get the name since it is a common cause for deadlocks
@@ -217,7 +217,7 @@ namespace MonoDevelop.Core.Assemblies
 				}
 				throw;
 			} catch (BadImageFormatException) {
-				AssemblyDefinition asm = AssemblyFactory.GetAssemblyManifest (file);
+				AssemblyDefinition asm = AssemblyDefinition.ReadAssembly (file);
 				return new AssemblyName (asm.Name.FullName);
 			}
 		}
@@ -337,10 +337,9 @@ namespace MonoDevelop.Core.Assemblies
 		public string GetTargetFrameworkForAssembly (TargetRuntime tr, string file)
 		{
 			try {
-				AssemblyDefinition asm = AssemblyFactory.GetAssemblyManifest (file);
-			
-				AssemblyNameReferenceCollection names = asm.MainModule.AssemblyReferences;
-				foreach (AssemblyNameReference aname in names) {
+				AssemblyDefinition asm = AssemblyDefinition.ReadAssembly (file);
+
+				foreach (AssemblyNameReference aname in asm.MainModule.AssemblyReferences) {
 					if (aname.Name == "mscorlib") {
 						foreach (TargetFramework tf in GetTargetFrameworks ()) {
 							if (tf.GetCorlibVersion () == aname.Version.ToString ())

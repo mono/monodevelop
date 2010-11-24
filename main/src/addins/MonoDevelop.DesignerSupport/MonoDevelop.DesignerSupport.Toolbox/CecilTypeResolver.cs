@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 using Mono.Cecil;
 
@@ -51,7 +52,6 @@ namespace Mono.Linker {
 			AssemblyDefinition asm = (AssemblyDefinition) _assemblies [name.Name];
 			if (asm == null) {
 				asm = base.Resolve (name);
-				asm.Resolver = this;
 				_assemblies [name.Name] = asm;
 			}
 
@@ -60,7 +60,7 @@ namespace Mono.Linker {
 
 		public TypeDefinition Resolve (TypeReference type)
 		{
-			type = type.GetOriginalType ();
+			type = type.GetElementType ();
 
 			if (type is TypeDefinition)
 				return (TypeDefinition) type;
@@ -68,12 +68,12 @@ namespace Mono.Linker {
 			AssemblyNameReference reference = type.Scope as AssemblyNameReference;
 			if (reference != null) {
 				AssemblyDefinition assembly = Resolve (reference);
-				return assembly.MainModule.Types [type.FullName];
+				return assembly.MainModule.GetType (type.FullName);
 			}
 
 			ModuleDefinition module = type.Scope as ModuleDefinition;
 			if (module != null)
-				return module.Types [type.FullName];
+				return module.GetType (type.FullName);
 
 			throw new NotImplementedException ();
 		}
@@ -102,11 +102,8 @@ namespace Mono.Linker {
 		public MethodDefinition Resolve (MethodReference method)
 		{
 			TypeDefinition type = Resolve (method.DeclaringType);
-			method = method.GetOriginalMethod ();
-			if (method.Name == MethodDefinition.Cctor || method.Name == MethodDefinition.Ctor)
-				return GetMethod (type.Constructors, method);
-			else
-				return GetMethod (type, method);
+			method = method.GetElementMethod ();
+			return GetMethod (type, method);
 		}
 
 		MethodDefinition GetMethod (TypeDefinition type, MethodReference reference)
@@ -128,7 +125,7 @@ namespace Mono.Linker {
 				if (meth.Name != reference.Name)
 					continue;
 
-				if (!AreSame (meth.ReturnType.ReturnType, reference.ReturnType.ReturnType))
+				if (!AreSame (meth.ReturnType, reference.ReturnType))
 					continue;
 
 				if (!AreSame (meth.Parameters, reference.Parameters))
@@ -140,7 +137,7 @@ namespace Mono.Linker {
 			return null;
 		}
 
-		static bool AreSame (ParameterDefinitionCollection a, ParameterDefinitionCollection b)
+		static bool AreSame (IList<ParameterDefinition> a, IList<ParameterDefinition> b)
 		{
 			if (a.Count != b.Count)
 				return false;
@@ -176,12 +173,6 @@ namespace Mono.Linker {
 			}
 
 			return a.FullName == b.FullName;
-		}
-
-		public void CacheAssembly (AssemblyDefinition assembly)
-		{
-			_assemblies [assembly.Name.FullName] = assembly;
-			assembly.Resolver = this;
 		}
 	}
 }
