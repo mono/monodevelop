@@ -318,12 +318,27 @@ namespace MonoDevelop.IPhone
 				SetIfNotPresent (dict,  "CFBundleSupportedPlatforms",
 					new PlistArray () { sim? "iPhoneSimulator" : "iPhoneOS" });
 				SetIfNotPresent (dict, "CFBundleVersion", proj.BundleVersion ?? "1.0");
+				
+				var sdkSettings = IPhoneFramework.GetSdkSettings (sdkVersion);
+				var dtSettings = IPhoneFramework.GetDTSettings ();
+				
+				if (!sim) {
+					SetIfNotPresent (dict, "DTCompiler", sdkSettings.DTCompiler);
+					SetIfNotPresent (dict, "DTPlatformBuild", sdkSettings.DTPlatformBuild);
+				}
 				SetIfNotPresent (dict, "DTPlatformName", sim? "iphonesimulator" : "iphoneos");
-				SetIfNotPresent (dict, "DTSDKName", IPhoneFramework.GetDTSdkName (sdkVersion, sim));
+				if (!sim) {
+					SetIfNotPresent (dict, "DTPlatformVersion", dtSettings.DTPlatformVersion);
+				}
+				SetIfNotPresent (dict, "DTSDKName", sim? sdkSettings.AlternateSDK : sdkSettings.CanonicalName);
+				if (!sim) {
+					SetIfNotPresent (dict, "DTXcode", dtSettings.DTXcode);
+					SetIfNotPresent (dict, "DTXcodeBuild", dtSettings.DTXcodeBuild);
+				}
+				
 				SetIfNotPresent (dict,  "LSRequiresIPhoneOS", true);
 				if (v3_2_orNewer)
 					SetIfNotPresent (dict,  "UIDeviceFamily", GetSupportedDevices (proj.SupportedDevices));
-				SetIfNotPresent (dict, "DTPlatformVersion", IPhoneFramework.DTPlatformVersion);
 				
 				SetIfNotPresent (dict, "MinimumOSVersion", conf.MtouchMinimumOSVersion);
 				
