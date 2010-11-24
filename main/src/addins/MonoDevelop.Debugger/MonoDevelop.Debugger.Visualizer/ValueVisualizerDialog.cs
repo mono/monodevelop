@@ -50,6 +50,10 @@ namespace MonoDevelop.Debugger.Viewers
 			foreach (IValueVisualizer vis in visualizers)
 				comboVisualizers.AppendText (vis.Name);
 			comboVisualizers.Active = 0;
+			if (val.IsReadOnly || visualizers.Count == 0) {
+				buttonCancel.Hide ();
+				buttonOk.Label = Gtk.Stock.Close;
+			}
 		}
 		
 		protected virtual void OnComboVisualizersChanged (object sender, System.EventArgs e)
@@ -69,7 +73,7 @@ namespace MonoDevelop.Debugger.Viewers
 		
 		protected virtual void OnButtonOkClicked (object sender, System.EventArgs e)
 		{
-			if (currentVisualizer.StoreValue (value))
+			if (value.IsReadOnly || currentVisualizer == null || currentVisualizer.StoreValue (value))
 				Respond (Gtk.ResponseType.Ok);
 		}
 	}
