@@ -528,9 +528,9 @@ namespace MonoDevelop.Core
 			}
 			IEventArgsChain argsChain = new TC ();
 			argsChain.Add (args);
-			d.DynamicInvoke (thisObj, args);
+			d.DynamicInvoke (thisObj, argsChain);
 		}
-}
+	}
 	
 	[Serializable]
 	public struct FilePath: IComparable<FilePath>, IComparable, IEquatable<FilePath>
