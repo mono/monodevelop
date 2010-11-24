@@ -44,7 +44,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Updater">
-		<UpdateInfo file="../../updateinfo" />
+		<UpdateInfo file="../../../updateinfo" />
 		<UpdateInfo file="/Library/Frameworks/Mono.framework/Versions/Current/updateinfo" />
 		<UpdateInfo file="/Library/Frameworks/Mono.framework/Versions/Current/updateinfo.csdk" />
 	</Extension>
