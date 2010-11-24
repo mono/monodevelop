@@ -110,8 +110,29 @@ using (IDisposable b = null) {
 }");
 		}
 		
+		/// <summary>
+		/// Bug 655635 - Auto format document doesn't indent comments as well
+		/// </summary>
+		[Test()]
+		public void TestBug655635 ()
+		{
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			TestStatementFormatting (policy,
+@"try {
+// Comment 1
+	myObject.x = Run ();
+} catch (InvalidOperationException e) {
+	Console.WriteLine (e.Message);
+}", @"try {
+	// Comment 1
+	myObject.x = Run ();
+} catch (InvalidOperationException e) {
+	Console.WriteLine (e.Message);
+}");
+		}
 		
-
+		
 
 		
 		static void TestStatementFormatting (CSharpFormattingPolicy policy, string input, string expectedOutput)
