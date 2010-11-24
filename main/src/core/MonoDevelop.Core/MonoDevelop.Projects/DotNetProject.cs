@@ -417,7 +417,8 @@ namespace MonoDevelop.Projects
 		internal override void OnFileChanged (object source, MonoDevelop.Core.FileEventArgs e)
 		{
 			base.OnFileChanged (source, e);
-			CheckReferenceChange (e.FileName);
+			foreach (FileEventInfo ei in e)
+				CheckReferenceChange (ei.FileName);
 		}
 
 
@@ -1080,7 +1081,8 @@ namespace MonoDevelop.Projects
 
 		private void OnFileRemoved (Object o, FileEventArgs e)
 		{
-			CheckReferenceChange (e.FileName);
+			foreach (FileEventInfo ei in e)
+				CheckReferenceChange (ei.FileName);
 		}
 
 		protected override void DoExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)

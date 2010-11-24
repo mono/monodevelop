@@ -163,17 +163,21 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		static void NotifyFileRemoved (object sender, FileEventArgs e)
+		static void NotifyFileRemoved (object sender, FileEventArgs args)
 		{
-			if (!e.IsDirectory) {
-				platformService.RecentFiles.NotifyFileRemoved (e.FileName);
+			foreach (FileEventInfo e in args) {
+				if (!e.IsDirectory) {
+					platformService.RecentFiles.NotifyFileRemoved (e.FileName);
+				}
 			}
 		}
 		
-		static void NotifyFileRenamed (object sender, FileCopyEventArgs e)
+		static void NotifyFileRenamed (object sender, FileCopyEventArgs args)
 		{
-			if (!e.IsDirectory) {
-				platformService.RecentFiles.NotifyFileRenamed (e.SourceFile, e.TargetFile);
+			foreach (FileCopyEventInfo e in args) {
+				if (!e.IsDirectory) {
+					platformService.RecentFiles.NotifyFileRenamed (e.SourceFile, e.TargetFile);
+				}
 			}
 		}
 		

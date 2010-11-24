@@ -240,67 +240,73 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			return FindParentFolderNode (basePath, project, out lastChildPath);
 		}
 		
-		void OnSystemFileAdded (object sender, FileEventArgs e)
+		void OnSystemFileAdded (object sender, FileEventArgs args)
 		{
-			Project project = GetProjectForFile (e.FileName);
-			if (project == null) return;
-			
-			if (e.IsDirectory) {
-				EnsureReachable (project, e.FileName + "/");
-			} else {
-				if (project.Files.GetFile (e.FileName) == null)
-					AddFile (e.FileName, project);
+			foreach (FileEventInfo e in args) {
+				Project project = GetProjectForFile (e.FileName);
+				if (project == null) return;
+				
+				if (e.IsDirectory) {
+					EnsureReachable (project, e.FileName + "/");
+				} else {
+					if (project.Files.GetFile (e.FileName) == null)
+						AddFile (e.FileName, project);
+				}
 			}
 		}
 		
-		void OnSystemFileDeleted (object sender, FileEventArgs e)
+		void OnSystemFileDeleted (object sender, FileEventArgs args)
 		{
-			Project project = GetProjectForFile (e.FileName);
-			if (project == null) return;
-			
-			ITreeBuilder tb = Context.GetTreeBuilder ();
-			
-			if (e.IsDirectory) {
-				if (tb.MoveToObject (new ProjectFolder (e.FileName, project))) {
-					if (tb.Options ["ShowAllFiles"] && !ProjectFolderCommandHandler.PathExistsInProject (project, e.FileName)) {
+			foreach (FileEventInfo e in args) {
+				Project project = GetProjectForFile (e.FileName);
+				if (project == null) return;
+				
+				ITreeBuilder tb = Context.GetTreeBuilder ();
+				
+				if (e.IsDirectory) {
+					if (tb.MoveToObject (new ProjectFolder (e.FileName, project))) {
+						if (tb.Options ["ShowAllFiles"] && !ProjectFolderCommandHandler.PathExistsInProject (project, e.FileName)) {
+							tb.Remove ();
+							return;
+						}
+					}
+				}
+				else {
+					if (tb.MoveToObject (new SystemFile (e.FileName, project))) {
 						tb.Remove ();
 						return;
 					}
 				}
-			}
-			else {
-				if (tb.MoveToObject (new SystemFile (e.FileName, project))) {
-					tb.Remove ();
-					return;
+				
+				// Find the parent folder, and update it's children count
+				
+				string parentPath = Path.GetDirectoryName (e.FileName);
+				if (tb.MoveToObject (new ProjectFolder (parentPath, project))) {
+					if (tb.Options ["ShowAllFiles"] && Directory.Exists (parentPath))
+						tb.UpdateChildren ();
 				}
-			}
-			
-			// Find the parent folder, and update it's children count
-			
-			string parentPath = Path.GetDirectoryName (e.FileName);
-			if (tb.MoveToObject (new ProjectFolder (parentPath, project))) {
-				if (tb.Options ["ShowAllFiles"] && Directory.Exists (parentPath))
-					tb.UpdateChildren ();
 			}
 		}
 		
-		void OnSystemFileRenamed (object sender, FileCopyEventArgs e)
+		void OnSystemFileRenamed (object sender, FileCopyEventArgs args)
 		{
-			Project project = GetProjectForFile (e.SourceFile);
-			if (project == null) return;
-			
-			if (e.IsDirectory) {
-/*				string childPath;
-				ITreeBuilder tb = FindParentFolderNode (e.SourceFile, project, out childPath);
-				if (tb != null && tb.Options ["ShowAllFiles"]) {
-					tb.UpdateAll ();
-				}
-*/
-			} else {
-				ITreeBuilder tb = Context.GetTreeBuilder (new SystemFile (e.SourceFile, project));
-				if (tb != null) {
-					tb.Remove (true);
-					tb.AddChild (new SystemFile (e.TargetFile, project));
+			foreach (FileCopyEventInfo e in args) {
+				Project project = GetProjectForFile (e.SourceFile);
+				if (project == null) return;
+				
+				if (e.IsDirectory) {
+	/*				string childPath;
+					ITreeBuilder tb = FindParentFolderNode (e.SourceFile, project, out childPath);
+					if (tb != null && tb.Options ["ShowAllFiles"]) {
+						tb.UpdateAll ();
+					}
+	*/
+				} else {
+					ITreeBuilder tb = Context.GetTreeBuilder (new SystemFile (e.SourceFile, project));
+					if (tb != null) {
+						tb.Remove (true);
+						tb.AddChild (new SystemFile (e.TargetFile, project));
+					}
 				}
 			}
 		}

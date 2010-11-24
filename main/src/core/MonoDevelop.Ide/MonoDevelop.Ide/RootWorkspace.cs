@@ -774,20 +774,12 @@ namespace MonoDevelop.Ide
 		
 		void CheckWorkspaceItems (object sender, FileEventArgs args)
 		{
-			Solution solution = GetAllSolutions ().FirstOrDefault (sol =>
-				StringComparer.OrdinalIgnoreCase.Equals (args.FileName, sol.FileName.FullPath)
-			);
-			if (solution != null) {
-				OnCheckWorkspaceItem (solution);
-				return;
-			}
+			List<FilePath> files = args.Select (e => e.FileName.CanonicalPath).ToList ();
+			foreach (Solution s in GetAllSolutions ().Where (sol => files.Contains (sol.FileName.CanonicalPath)))
+				OnCheckWorkspaceItem (s);
 			
-			Project project = GetAllProjects ().FirstOrDefault (proj =>
-				StringComparer.OrdinalIgnoreCase.Equals (args.FileName, proj.FileName.FullPath)
-			);
-			if (project != null) {
-				OnCheckProject (project);
-			}
+			foreach (Project p in GetAllProjects ().Where (proj => files.Contains (proj.FileName.CanonicalPath)))
+				OnCheckProject (p);
 		}
 		
 		bool OnRunProjectChecks ()
@@ -1211,14 +1203,18 @@ namespace MonoDevelop.Ide
 
 		void CheckFileRemove(object sender, FileEventArgs e)
 		{
-			foreach (Solution sol in GetAllSolutions ())
-				sol.RootFolder.RemoveFileFromProjects (e.FileName);
+			foreach (Solution sol in GetAllSolutions ()) {
+				foreach (FilePath p in e.Select (fi => fi.FileName))
+					sol.RootFolder.RemoveFileFromProjects (p);
+			}
 		}
 		
-		void CheckFileRename(object sender, FileCopyEventArgs e)
+		void CheckFileRename(object sender, FileCopyEventArgs args)
 		{
-			foreach (Solution sol in GetAllSolutions ())
-				sol.RootFolder.RenameFileInProjects (e.SourceFile, e.TargetFile);
+			foreach (Solution sol in GetAllSolutions ()) {
+				foreach (FileCopyEventInfo e in args)
+					sol.RootFolder.RenameFileInProjects (e.SourceFile, e.TargetFile);
+			}
 		}
 		
 #endregion

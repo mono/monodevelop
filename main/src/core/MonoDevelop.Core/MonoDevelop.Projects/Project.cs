@@ -753,18 +753,19 @@ namespace MonoDevelop.Projects
 
 		internal virtual void OnFileChanged (object source, FileEventArgs e)
 		{
-			ProjectFile file = GetProjectFile (e.FileName);
-			if (file != null) {
-				SetDirty ();
-				try {
-					NotifyFileChangedInProject (file);
-				} catch {
-					// Workaround Mono bug. The watcher seems to
-					// stop watching if an exception is thrown in
-					// the event handler
+			foreach (FileEventInfo fi in e) {
+				ProjectFile file = GetProjectFile (fi.FileName);
+				if (file != null) {
+					SetDirty ();
+					try {
+						NotifyFileChangedInProject (file);
+					} catch {
+						// Workaround Mono bug. The watcher seems to
+						// stop watching if an exception is thrown in
+						// the event handler
+					}
 				}
 			}
-
 		}
 
 		protected internal override List<FilePath> OnGetItemFiles (bool includeReferencedFiles)

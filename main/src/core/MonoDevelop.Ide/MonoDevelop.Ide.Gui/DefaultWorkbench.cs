@@ -578,41 +578,45 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		void CheckRemovedFile(object sender, FileEventArgs e)
+		void CheckRemovedFile(object sender, FileEventArgs args)
 		{
-			if (e.IsDirectory) {
-				IViewContent[] views = new IViewContent [viewContentCollection.Count];
-				viewContentCollection.CopyTo (views, 0);
-				foreach (IViewContent content in views) {
-					if (content.ContentName.StartsWith(e.FileName)) {
-						content.WorkbenchWindow.CloseWindow(true, true, 0);
+			foreach (FileEventInfo e in args) {
+				if (e.IsDirectory) {
+					IViewContent[] views = new IViewContent [viewContentCollection.Count];
+					viewContentCollection.CopyTo (views, 0);
+					foreach (IViewContent content in views) {
+						if (content.ContentName.StartsWith(e.FileName)) {
+							content.WorkbenchWindow.CloseWindow(true, true, 0);
+						}
 					}
-				}
-			} else {
-				foreach (IViewContent content in viewContentCollection) {
-					if (content.ContentName != null &&
-					    content.ContentName == e.FileName) {
-						content.WorkbenchWindow.CloseWindow(true, true, 0);
-						return;
+				} else {
+					foreach (IViewContent content in viewContentCollection) {
+						if (content.ContentName != null &&
+						    content.ContentName == e.FileName) {
+							content.WorkbenchWindow.CloseWindow(true, true, 0);
+							return;
+						}
 					}
 				}
 			}
 		}
 		
-		void CheckRenamedFile(object sender, FileCopyEventArgs e)
+		void CheckRenamedFile(object sender, FileCopyEventArgs args)
 		{
-			if (e.IsDirectory) {
-				foreach (IViewContent content in viewContentCollection) {
-					if (content.ContentName != null && content.ContentName.StartsWith(e.SourceFile)) {
-						content.ContentName = e.TargetFile + content.ContentName.Substring(e.SourceFile.Length);
+			foreach (FileCopyEventInfo e in args) {
+				if (e.IsDirectory) {
+					foreach (IViewContent content in viewContentCollection) {
+						if (content.ContentName != null && ((FilePath)content.ContentName).IsChildPathOf (e.SourceFile)) {
+							content.ContentName = e.TargetFile + content.ContentName.Substring(e.SourceFile.FileName.Length);
+						}
 					}
-				}
-			} else {
-				foreach (IViewContent content in viewContentCollection) {
-					if (content.ContentName != null &&
-					    content.ContentName == e.SourceFile) {
-						content.ContentName = e.TargetFile;
-						return;
+				} else {
+					foreach (IViewContent content in viewContentCollection) {
+						if (content.ContentName != null &&
+						    content.ContentName == e.SourceFile) {
+							content.ContentName = e.TargetFile;
+							return;
+						}
 					}
 				}
 			}

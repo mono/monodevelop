@@ -664,8 +664,10 @@ namespace MonoDevelop.SourceEditor
 		
 		void GotFileChanged (object sender, FileEventArgs args)
 		{
-			if (!isDisposed)
-				HandleFileChanged (args.FileName);
+			if (!isDisposed) {
+				foreach (FileEventInfo f in args)
+					HandleFileChanged (f.FileName);
+			}
 		}
 		
 		void OnFileChanged (object sender, FileSystemEventArgs args)

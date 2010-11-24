@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Linq;
 using System.IO;
 using System.Collections;
 
@@ -129,13 +130,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 		void OnFileRenamed (object sender, FileCopyEventArgs e)
 		{
-			if (!e.IsDirectory || e.SourceFile != absolutePath) return;
-
 			// The folder path can't be updated because we would be changing
 			// the identity of the object. Another folder object will need
 			// to be created by updating the tree.
 			
-			if (FolderRenamed != null) 
+			var e2 = new FileCopyEventArgs (e.Where (i => i.IsDirectory && i.SourceFile == absolutePath));
+			if (e2.Count > 0 && FolderRenamed != null) 
 				FolderRenamed (this, e);
 		}
 

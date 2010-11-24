@@ -96,14 +96,16 @@ namespace MonoDevelop.Refactoring
 			{
 				this.changes = changes;
 			}
-			public void FileRename (object sender, FileCopyEventArgs args)
+			public void FileRename (object sender, FileCopyEventArgs e)
 			{
-				foreach (Change change in changes) {
-					TextReplaceChange replaceChange = change as TextReplaceChange;
-					if (replaceChange == null)
-						continue;
-					if (args.SourceFile == replaceChange.FileName)
-						replaceChange.FileName = args.TargetFile;
+				foreach (FileCopyEventInfo args in e) {
+					foreach (Change change in changes) {
+						TextReplaceChange replaceChange = change as TextReplaceChange;
+						if (replaceChange == null)
+							continue;
+						if (args.SourceFile == replaceChange.FileName)
+							replaceChange.FileName = args.TargetFile;
+					}
 				}
 			}
 		}

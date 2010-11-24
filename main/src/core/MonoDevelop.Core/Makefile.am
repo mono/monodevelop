@@ -141,6 +141,7 @@ FILES =  \
 	MonoDevelop.Core/ClrVersion.cs \
 	MonoDevelop.Core/ComponentModelLocalization.cs \
 	MonoDevelop.Core/DefaultAddinLocalizer.cs \
+	MonoDevelop.Core/EventArgsChain.cs \
 	MonoDevelop.Core/FileEventArgs.cs \
 	MonoDevelop.Core/FileService.cs \
 	MonoDevelop.Core/Gettext.cs \

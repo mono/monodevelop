@@ -34,6 +34,8 @@ using System.Text;
 
 using Mono.Addins;
 using MonoDevelop.Core.FileSystem;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace MonoDevelop.Core
 {
@@ -46,6 +48,8 @@ namespace MonoDevelop.Core
 		
 		static FileSystemExtension fileSystemChain;
 		static FileSystemExtension defaultExtension = new DefaultFileSystemExtension ();
+		
+		static EventQueue eventQueue = new EventQueue ();
 		
 		static string applicationRootPath = Path.Combine (PropertyService.EntryAssemblyPath, "..");
 		public static string ApplicationRootPath {
@@ -92,7 +96,7 @@ namespace MonoDevelop.Core
 					throw;
 				return;
 			}
-			OnFileRemoved (new FileEventArgs (fileName, false));
+			OnFileRemoved (new FileEventInfo (fileName, false));
 		}
 		
 		public static void DeleteDirectory (string path)
@@ -105,7 +109,7 @@ namespace MonoDevelop.Core
 					throw;
 				return;
 			}
-			OnFileRemoved (new FileEventArgs (path, true));
+			OnFileRemoved (new FileEventInfo (path, true));
 		}
 		
 		public static void RenameFile (string oldName, string newName)
@@ -115,9 +119,9 @@ namespace MonoDevelop.Core
 			if (Path.GetFileName (oldName) != newName) {
 				string newPath = Path.Combine (Path.GetDirectoryName (oldName), newName);
 				InternalMoveFile (oldName, newPath);
-				OnFileRenamed (new FileCopyEventArgs (oldName, newPath, false));
-				OnFileCreated (new FileEventArgs (newPath, false));
-				OnFileRemoved (new FileEventArgs (oldName, false));
+				OnFileRenamed (new FileCopyEventInfo (oldName, newPath, false));
+				OnFileCreated (new FileEventInfo (newPath, false));
+				OnFileRemoved (new FileEventInfo (oldName, false));
 			}
 		}
 		
@@ -128,9 +132,9 @@ namespace MonoDevelop.Core
 			if (Path.GetFileName (oldName) != newName) {
 				string newPath = Path.Combine (Path.GetDirectoryName (oldName), newName);
 				InternalMoveDirectory (oldName, newPath);
-				OnFileRenamed (new FileCopyEventArgs (oldName, newPath, true));
-				OnFileCreated (new FileEventArgs (newPath, false));
-				OnFileRemoved (new FileEventArgs (oldName, false));
+				OnFileRenamed (new FileCopyEventInfo (oldName, newPath, true));
+				OnFileCreated (new FileEventInfo (newPath, false));
+				OnFileRemoved (new FileEventInfo (oldName, false));
 			}
 		}
 		
@@ -139,7 +143,7 @@ namespace MonoDevelop.Core
 			Debug.Assert (!String.IsNullOrEmpty (srcFile));
 			Debug.Assert (!String.IsNullOrEmpty (dstFile));
 			GetFileSystemForPath (dstFile, false).CopyFile (srcFile, dstFile, true);
-			OnFileCreated (new FileEventArgs (dstFile, false));
+			OnFileCreated (new FileEventInfo (dstFile, false));
 		}
 
 		public static void MoveFile (string srcFile, string dstFile)
@@ -147,8 +151,8 @@ namespace MonoDevelop.Core
 			Debug.Assert (!String.IsNullOrEmpty (srcFile));
 			Debug.Assert (!String.IsNullOrEmpty (dstFile));
 			InternalMoveFile (srcFile, dstFile);
-			OnFileCreated (new FileEventArgs (dstFile, false));
-			OnFileRemoved (new FileEventArgs (srcFile, false));
+			OnFileCreated (new FileEventInfo (dstFile, false));
+			OnFileRemoved (new FileEventInfo (srcFile, false));
 		}
 		
 		static void InternalMoveFile (string srcFile, string dstFile)
@@ -174,7 +178,7 @@ namespace MonoDevelop.Core
 		{
 			Debug.Assert (!String.IsNullOrEmpty (path));
 			GetFileSystemForPath (path, true).CreateDirectory (path);
-			OnFileCreated (new FileEventArgs (path, true));
+			OnFileCreated (new FileEventInfo (path, true));
 		}
 		
 		public static void CopyDirectory (string srcPath, string dstPath)
@@ -189,8 +193,8 @@ namespace MonoDevelop.Core
 			Debug.Assert (!String.IsNullOrEmpty (srcPath));
 			Debug.Assert (!String.IsNullOrEmpty (dstPath));
 			InternalMoveDirectory (srcPath, dstPath);
-			OnFileCreated (new FileEventArgs (dstPath, true));
-			OnFileRemoved (new FileEventArgs (srcPath, true));
+			OnFileCreated (new FileEventInfo (dstPath, true));
+			OnFileRemoved (new FileEventInfo (srcPath, true));
 		}
 		
 		static void InternalMoveDirectory (string srcPath, string dstPath)
@@ -223,7 +227,7 @@ namespace MonoDevelop.Core
 			Debug.Assert (!String.IsNullOrEmpty (fileName));
 			try {
 				GetFileSystemForPath (fileName, false).NotifyFileChanged (fileName);
-				OnFileChanged (new FileEventArgs (fileName, false));
+				OnFileChanged (new FileEventInfo (fileName, false));
 			} catch (Exception ex) {
 				LoggingService.LogError ("File change notification failed", ex);
 			}
@@ -233,7 +237,7 @@ namespace MonoDevelop.Core
 		{
 			Debug.Assert (!String.IsNullOrEmpty (fileName));
 			try {
-				OnFileRemoved (new FileEventArgs (fileName, false));
+				OnFileRemoved (new FileEventInfo (fileName, false));
 			} catch (Exception ex) {
 				LoggingService.LogError ("File remove notification failed", ex);
 			}
@@ -392,53 +396,142 @@ namespace MonoDevelop.Core
 			get { return errorHandler; }
 			set { errorHandler = value; }
 		}
+		
+		public static void FreezeEvents ()
+		{
+			eventQueue.Freeze ();
+		}
+		
+		public static void ThawEvents ()
+		{
+			eventQueue.Thaw ();
+		}
 
 		public static event EventHandler<FileEventArgs> FileCreated;
-		static void OnFileCreated (FileEventArgs args)
+		static void OnFileCreated (FileEventInfo args)
 		{
 			if (args.IsDirectory)
 				Counters.DirectoriesCreated++;
 			else
 				Counters.FilesCreated++;
-			
-			if (FileCreated != null) 
-				FileCreated (null, args);
+
+			eventQueue.Add<FileEventArgs> (FileCreated, null, args);
 		}
 		
 		public static event EventHandler<FileCopyEventArgs> FileRenamed;
-		static void OnFileRenamed (FileCopyEventArgs args)
+		static void OnFileRenamed (FileCopyEventInfo args)
 		{
 			if (args.IsDirectory)
 				Counters.DirectoriesRenamed++;
 			else
 				Counters.FilesRenamed++;
 			
-			if (FileRenamed != null) 
-				FileRenamed (null, args);
+			eventQueue.Add<FileCopyEventArgs> (FileRenamed, null, args);
 		}
 		
 		public static event EventHandler<FileEventArgs> FileRemoved;
-		static void OnFileRemoved (FileEventArgs args)
+		static void OnFileRemoved (FileEventInfo args)
 		{
 			if (args.IsDirectory)
 				Counters.DirectoriesRemoved++;
 			else
 				Counters.FilesRemoved++;
 			
-			if (FileRemoved != null) 
-				FileRemoved (null, args);
+			eventQueue.Add<FileEventArgs> (FileRemoved, null, args);
 		}
 		
 		public static event EventHandler<FileEventArgs> FileChanged;
-		static void OnFileChanged (FileEventArgs args)
+		static void OnFileChanged (FileEventInfo args)
 		{
 			Counters.FileChangeNotifications++;
-			
-			if (FileChanged != null) 
-				FileChanged (null, args);
+			eventQueue.Add<FileEventArgs> (FileChanged, null, args);
 		}
 	}
+	
+	class EventQueue
+	{
+		class EventData
+		{
+			public Delegate Delegate;
+			public object ThisObject;
+			public IEventArgsChain Args;
+		}
+		
+		List<EventData> events = new List<EventData> ();
+		
+		int frozen;
+		
+		public void Freeze ()
+		{
+			lock (events) {
+				frozen++;
+			}
+		}
+		
+		public void Thaw ()
+		{
+			List<EventData> pendingEvents = null;
+			lock (events) {
+				if (--frozen == 0) {
+					pendingEvents = events;
+					events = new List<EventData> ();
+				}
+			}
+			if (pendingEvents != null) {
+				foreach (EventData ed in pendingEvents) {
+					ed.Delegate.DynamicInvoke (ed.ThisObject, ed.Args);
+				}
+			}
+		}
+		
+		public void Add (Delegate d, object thisObj, object args)
+		{
+			lock (events) {
+				if (frozen > 0) {
+					EventData lastEvent = events.Count > 0 ? events [events.Count - 1] : null;
+					if (lastEvent != null && lastEvent.Delegate == d && lastEvent.ThisObject == thisObj)
+						lastEvent.Args.Add (args);
+					else {
+						EventData ed = new EventData ();
+						ed.Delegate = d;
+						ed.ThisObject = thisObj;
+						Type t = typeof(EventArgsChain<>).MakeGenericType (args.GetType ());
+						ed.Args = (IEventArgsChain) Activator.CreateInstance (t);
+						ed.Args.Add (args);
+						events.Add (ed);
+					}
+					return;
+				}
+			}
+			Type ct = typeof(EventArgsChain<>).MakeGenericType (args.GetType ());
+			IEventArgsChain argsChain = (IEventArgsChain) Activator.CreateInstance (ct);
+			d.DynamicInvoke (thisObj, argsChain);
+		}
 
+		public void Add<TC> (Delegate d, object thisObj, object args) where TC:IEventArgsChain, new()
+		{
+			lock (events) {
+				if (frozen > 0) {
+					EventData lastEvent = events.Count > 0 ? events [events.Count - 1] : null;
+					if (lastEvent != null && lastEvent.Delegate == d && lastEvent.ThisObject == thisObj)
+						lastEvent.Args.Add (args);
+					else {
+						EventData ed = new EventData ();
+						ed.Delegate = d;
+						ed.ThisObject = thisObj;
+						ed.Args = new TC ();
+						ed.Args.Add (args);
+						events.Add (ed);
+					}
+					return;
+				}
+			}
+			IEventArgsChain argsChain = new TC ();
+			argsChain.Add (args);
+			d.DynamicInvoke (thisObj, args);
+		}
+}
+	
 	[Serializable]
 	public struct FilePath: IComparable<FilePath>, IComparable, IEquatable<FilePath>
 	{

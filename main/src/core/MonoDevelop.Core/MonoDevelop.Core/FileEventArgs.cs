@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 //
 // FileEventArgs.cs
 //
@@ -28,12 +29,24 @@
 
 namespace MonoDevelop.Core
 {
-	public class FileEventArgs : System.EventArgs
+	public class FileEventArgs : EventArgsChain<FileEventInfo>
 	{
-		string fileName;
+		public FileEventArgs ()
+		{
+		}
+		
+		public FileEventArgs (FilePath fileName, bool isDirectory)
+		{
+			Add (new FileEventInfo (fileName, isDirectory));
+		}
+	}
+	
+	public class FileEventInfo
+	{
+		FilePath fileName;
 		bool   isDirectory;
 		
-		public string FileName {
+		public FilePath FileName {
 			get {
 				return fileName;
 			}
@@ -45,26 +58,37 @@ namespace MonoDevelop.Core
 			}
 		}
 		
-		public FileEventArgs(string fileName, bool isDirectory)
+		public FileEventInfo (FilePath fileName, bool isDirectory)
 		{
 			this.fileName = fileName;
 			this.isDirectory = isDirectory;
 		}
 	}
 	
-	public class FileCopyEventArgs : System.EventArgs
+	public class FileCopyEventArgs : EventArgsChain<FileCopyEventInfo>
 	{
-		string sourceFile;
-		string targetFile;
+		public FileCopyEventArgs (IEnumerable<FileCopyEventInfo> args): base (args)
+		{
+		}
+		
+		public FileCopyEventArgs ()
+		{
+		}
+	}
+	
+	public class FileCopyEventInfo : System.EventArgs
+	{
+		FilePath sourceFile;
+		FilePath targetFile;
 		bool   isDirectory;
 		
-		public string SourceFile {
+		public FilePath SourceFile {
 			get {
 				return sourceFile;
 			}
 		}
 		
-		public string TargetFile {
+		public FilePath TargetFile {
 			get {
 				return targetFile;
 			}
@@ -76,7 +100,7 @@ namespace MonoDevelop.Core
 			}
 		}
 		
-		public FileCopyEventArgs (string sourceFile, string targetFile, bool isDirectory)
+		public FileCopyEventInfo (FilePath sourceFile, FilePath targetFile, bool isDirectory)
 		{
 			this.sourceFile = sourceFile;
 			this.targetFile = targetFile;
