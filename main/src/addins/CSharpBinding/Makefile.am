@@ -87,7 +87,6 @@ FILES =  \
 	MonoDevelop.CSharp.Dom/GeneralScope/AttributeSection.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/Constraint.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/DelegateDeclaration.cs \
-	MonoDevelop.CSharp.Dom/GeneralScope/EnumDeclaration.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/NamespaceDeclaration.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/TypeDeclaration.cs \
 	MonoDevelop.CSharp.Dom/GeneralScope/UsingAliasDeclaration.cs \
@@ -123,6 +122,7 @@ FILES =  \
 	MonoDevelop.CSharp.Dom/TypeMembers/Accessor.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/ConstructorDeclaration.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/DestructorDeclaration.cs \
+	MonoDevelop.CSharp.Dom/TypeMembers/EnumMemberDeclaration.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/EventDeclaration.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/FieldDeclaration.cs \
 	MonoDevelop.CSharp.Dom/TypeMembers/IndexerDeclaration.cs \

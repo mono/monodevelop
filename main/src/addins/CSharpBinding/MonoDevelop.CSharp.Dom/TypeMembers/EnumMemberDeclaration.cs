@@ -1,5 +1,5 @@
 // 
-// ExpressionStatement.cs
+// EnumMemberDeclaration.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -23,26 +23,34 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
 
 namespace MonoDevelop.CSharp.Dom
 {
-	public class ExpressionStatement : DomNode
+	public class EnumMemberDeclaration : AbstractMemberBase
 	{
-		public override NodeType NodeType {
+		public string Name {
 			get {
-				return NodeType.Statement;
+				return NameIdentifier.Name;
 			}
 		}
-
-		public DomNode Expression {
+		
+		public Identifier NameIdentifier {
 			get {
-				return GetChildByRole (Roles.Expression);
+				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
 			}
 		}
-
+		
+		public DomNode Initializer {
+			get {
+				return GetChildByRole (Roles.Initializer) ?? DomNode.Null;
+			}
+		}
+		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
-			return visitor.VisitExpressionStatement (this, data);
+			return visitor.VisitEnumMemberDeclaration (this, data);
 		}
 	}
 }
+

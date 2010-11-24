@@ -57,7 +57,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 		
 		public IEnumerable<DomNode> Arguments {
-			get { return GetChildrenByRole (Roles.Argument); }
+			get { return GetChildrenByRole (Roles.Parameter); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

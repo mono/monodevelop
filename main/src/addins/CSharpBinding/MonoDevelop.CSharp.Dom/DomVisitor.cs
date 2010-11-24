@@ -88,11 +88,6 @@ namespace MonoDevelop.CSharp.Dom
 			return default (S);
 		}
 		
-		public virtual S VisitEnumDeclaration (EnumDeclaration enumDeclaration, T data) 
-		{
-			return VisitChildren (enumDeclaration, data);
-		}
-		
 		public virtual S VisitEnumMemberDeclaration (EnumMemberDeclaration enumMemberDeclaration, T data) 
 		{
 			return VisitChildren (enumMemberDeclaration, data);

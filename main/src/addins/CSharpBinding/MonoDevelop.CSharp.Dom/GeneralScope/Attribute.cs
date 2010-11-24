@@ -51,7 +51,7 @@ namespace MonoDevelop.CSharp.Dom
 		// Todo: Arguments should not be nodes, instead it should be expressions, change when it's implemented.
 		public IEnumerable<DomNode> Arguments { 
 			get {
-				return base.GetChildrenByRole (Roles.Argument);
+				return base.GetChildrenByRole (Roles.Parameter);
 			}
 		}
 

@@ -54,7 +54,7 @@ namespace MonoDevelop.CSharp.Dom
 		
 		public IEnumerable<DomNode> TypeParameters {
 			get {
-				return GetChildrenByRole (Roles.TypeArgument);
+				return GetChildrenByRole (Roles.TypeParameter);
 			}
 		}
 		

@@ -32,7 +32,7 @@ namespace MonoDevelop.CSharp.Dom
 	public class MethodDeclaration : AbstractMember
 	{
 		public IEnumerable<DomNode> TypeParameters {
-			get { return GetChildrenByRole (Roles.TypeArgument); }
+			get { return GetChildrenByRole (Roles.TypeParameter); }
 		}
 		
 		public IEnumerable<Constraint> Constraints { 
@@ -43,7 +43,7 @@ namespace MonoDevelop.CSharp.Dom
 		
 		public IEnumerable<ParameterDeclaration> Parameters { 
 			get {
-				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclaration> ();
+				return base.GetChildrenByRole (Roles.Parameter).Cast <ParameterDeclaration> ();
 			}
 		}
 		
@@ -63,7 +63,7 @@ namespace MonoDevelop.CSharp.Dom
 		
 		public bool IsExtensionMethod {
 			get {
-				ParameterDeclaration pd = (ParameterDeclaration)GetChildByRole (Roles.Argument);
+				ParameterDeclaration pd = (ParameterDeclaration)GetChildByRole (Roles.Parameter);
 				return pd != null && pd.ParameterModifier == ParameterModifier.This;
 			}
 		}

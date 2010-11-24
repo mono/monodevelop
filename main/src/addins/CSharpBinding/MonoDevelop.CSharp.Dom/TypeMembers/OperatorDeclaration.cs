@@ -24,6 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
+using System.Linq;
+
 namespace MonoDevelop.CSharp.Dom
 {
 	public enum OperatorType {
@@ -63,7 +66,7 @@ namespace MonoDevelop.CSharp.Dom
 		Explicit
 	}
 	
-	public class OperatorDeclaration : MethodDeclaration
+	public class OperatorDeclaration : AbstractMember
 	{
 		public const int OperatorKeywordRole = 100;
 		public const int OperatorTypeRole = 101;
@@ -84,6 +87,26 @@ namespace MonoDevelop.CSharp.Dom
 		
 		public CSharpTokenNode OperatorTypeKeyword {
 			get { return (CSharpTokenNode)GetChildByRole (OperatorTypeRole); }
+		}
+		
+		public IEnumerable<ParameterDeclaration> Parameters { 
+			get {
+				return base.GetChildrenByRole (Roles.Parameter).Cast <ParameterDeclaration> ();
+			}
+		}
+		
+		public CSharpTokenNode LPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
+		}
+		
+		public CSharpTokenNode RPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		}
+		
+		public BlockStatement Body {
+			get {
+				return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null;
+			}
 		}
 		
 		public static string GetName(OperatorType type)

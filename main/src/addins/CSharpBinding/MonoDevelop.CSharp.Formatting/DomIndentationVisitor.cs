@@ -419,6 +419,12 @@ namespace MonoDevelop.CSharp.Formatting
 			return base.VisitFieldDeclaration (fieldDeclaration, data);
 		}
 		
+		public override object VisitEnumMemberDeclaration (EnumMemberDeclaration enumMemberDeclaration, object data)
+		{
+			FixIndentationForceNewLine (enumMemberDeclaration.StartLocation);
+			return base.VisitEnumMemberDeclaration (enumMemberDeclaration, data);
+		}
+		
 		public override object VisitDelegateDeclaration (DelegateDeclaration delegateDeclaration, object data)
 		{
 			FixIndentation (delegateDeclaration.StartLocation);

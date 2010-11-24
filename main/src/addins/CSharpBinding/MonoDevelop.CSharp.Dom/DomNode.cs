@@ -192,7 +192,7 @@ namespace MonoDevelop.CSharp.Dom
 			// some pre defined constants for common roles
 			public const int Identifier    = 1;
 			public const int Keyword   = 2;
-			public const int Argument  = 3;
+			public const int Parameter  = 3;
 			public const int Attribute = 4;
 			public const int ReturnType = 5;
 			public const int Modifier  = 6;
@@ -228,7 +228,7 @@ namespace MonoDevelop.CSharp.Dom
 			
 			public const int Assign = 63; // =
 			
-			public const int TypeArgument = 64;
+			public const int TypeParameter = 64;
 			public const int Constraint = 65;
 		}
 	}

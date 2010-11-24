@@ -50,7 +50,7 @@ namespace MonoDevelop.CSharp.Dom
 		}
 		
 		public IEnumerable<DomNode> TypeParameters {
-			get { return GetChildrenByRole (Roles.TypeArgument); }
+			get { return GetChildrenByRole (Roles.TypeParameter); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

@@ -233,7 +233,6 @@
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\ObjectCreateExpression.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\QueryExpression.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\CSharpParser.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\EnumDeclaration.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\NRefactoryResolver.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\ResolveVisitor.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\NewCSharpExpressionFinder.cs" />
@@ -366,6 +365,7 @@
     <Compile Include="MonoDevelop.CSharp.Dom\DomNode.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\DomVisitor.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\ParameterDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\EnumMemberDeclaration.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

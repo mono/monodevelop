@@ -23,7 +23,10 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Dom
 {
@@ -55,9 +58,26 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 		
+		public string Name {
+			get {
+				Identifier i = this.Identifier;
+				return i != null ? i.Name : null;
+			}
+		}
+		
 		public DomNode DefaultExpression {
 			get {
 				return GetChildByRole (Roles.Expression) ?? DomNode.Null;
+			}
+		}
+		
+		public DomNode Type {
+			get { return GetChildByRole (Roles.ReturnType) ?? DomNode.Null; }
+		}
+		
+		public IEnumerable<AttributeSection> Attributes {
+			get {
+				return base.GetChildrenByRole (Roles.Attribute).Cast <AttributeSection>();
 			}
 		}
 		
