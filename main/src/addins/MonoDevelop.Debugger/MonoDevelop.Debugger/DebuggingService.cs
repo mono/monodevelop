@@ -193,6 +193,7 @@ namespace MonoDevelop.Debugger
 		public static void ShowValueVisualizer (ObjectValue val)
 		{
 			var dlg = new ValueVisualizerDialog ();
+			dlg.Show (val);
 			MessageService.ShowCustomDialog (dlg);
 		}
 		
