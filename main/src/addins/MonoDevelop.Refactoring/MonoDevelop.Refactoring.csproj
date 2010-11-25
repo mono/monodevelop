@@ -126,8 +126,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
-    <Folder Include="MonoDevelop.Refactoring.ExtractMethod\" />
-    <Folder Include="MonoDevelop.Refactoring.CreateMethod\" />
     <Folder Include="MonoDevelop.Refactoring.Rename\" />
     <Folder Include="MonoDevelop.Refactoring.DeclareLocal\" />
     <Folder Include="MonoDevelop.Refactoring.IntroduceConstant\" />
