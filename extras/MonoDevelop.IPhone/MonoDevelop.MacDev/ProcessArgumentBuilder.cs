@@ -35,6 +35,7 @@ namespace MonoDevelop.MacDev
 	{
 		System.Text.StringBuilder sb = new System.Text.StringBuilder ();
 		
+		static string escapeQuoteCharsStr = "\\\"'";
 		static char[] escapeQuoteChars = { '\\', '"', '\'' };
 		
 		/// <summary>
@@ -78,7 +79,7 @@ namespace MonoDevelop.MacDev
 				sb.Append (' ');
 			
 			sb.Append ('"');
-			AppendEscaped (sb, escapeQuoteChars, argument);
+			AppendEscaped (sb, escapeQuoteCharsStr, argument);
 			sb.Append ('"');
 		}
 		
@@ -100,7 +101,7 @@ namespace MonoDevelop.MacDev
 				return s;
 			
 			var sb = new StringBuilder ();
-			AppendEscaped (sb, escapeQuoteChars, s);
+			AppendEscaped (sb, escapeQuoteCharsStr, s);
 			return sb.ToString ();
 		}
 		
@@ -111,7 +112,7 @@ namespace MonoDevelop.MacDev
 		{
 			var sb = new StringBuilder ();
 			sb.Append ('"');
-			AppendEscaped (sb, escapeQuoteChars, s);
+			AppendEscaped (sb, escapeQuoteCharsStr, s);
 			sb.Append ('"');
 			return sb.ToString ();
 		}
@@ -119,7 +120,7 @@ namespace MonoDevelop.MacDev
 		//FIXME: this doesn't work in Mono 2.8.1 (and 2.8?); escaped spaces get discarded
 		/*
 		
-		static char[] escapeChars = { '\\', '"', '\'', ' ', '(', '(' };
+		static string escapeAllChars = "\\\"' ()";
 		
 		/// <summary>
 		/// Escapes all special characters.
@@ -127,7 +128,7 @@ namespace MonoDevelop.MacDev
 		public static string Escape (string s)
 		{
 			var sb = new StringBuilder ();
-			AppendEscaped (sb, escapeChars, s);
+			AppendEscaped (sb, escapeAllChars, s);
 			return sb.ToString ();
 		}
 		*/
@@ -137,16 +138,12 @@ namespace MonoDevelop.MacDev
 			return sb.ToString ();
 		}
 		
-		static void AppendEscaped (StringBuilder sb, char[] toEscape, string s)
+		static void AppendEscaped (StringBuilder sb, string escapeChars, string s)
 		{
 			for (int i = 0; i < s.Length; i++) {
 				char c = s[i];
-				for (int j = 0; j < toEscape.Length; j++) {
-					if (c == j) {
-						sb.Append ('\\');
-						break;
-					}
-				}
+				if (escapeChars.IndexOf (c) > -1)
+					sb.Append ('\\');
 				sb.Append (c);
 			}
 		}
