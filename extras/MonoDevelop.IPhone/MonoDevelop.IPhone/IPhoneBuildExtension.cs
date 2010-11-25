@@ -119,25 +119,27 @@ namespace MonoDevelop.IPhone
 				if (error != null)
 					return error.Append (result);
 				
-				var args = new StringBuilder ();
+				var args = new ProcessArgumentBuilder ();
 				//FIXME: make verbosity configurable?
-				args.Append (" -v");
+				args.Add ("-v");
 				
-				args.Append (" --nomanifest --nosign");
+				args.Add ("--nomanifest", "--nosign");
 					
 				//FIXME: should we error out if the platform is invalid?
 				if (conf.Platform == IPhoneProject.PLAT_IPHONE) {
-					args.AppendFormat (" -dev \"{0}\" ", conf.AppDirectory);
+					args.Add ("-dev");
+					args.AddQuoted (conf.AppDirectory);
 				} else {
-					args.AppendFormat (" -sim \"{0}\" ", conf.AppDirectory);
+					args.Add ("-sim");
+					args.AddQuoted (conf.AppDirectory);
 				}
 				
 				foreach (string asm in proj.GetReferencedAssemblies (configuration).Distinct ())
-					args.AppendFormat (" -r=\"{0}\"", asm);
+					args.AddQuotedFormat ("-r={0}", asm);
 				
 				AppendExtrasMtouchArgs (args, sdkVersion, proj, conf);
 				
-				args.AppendFormat (" \"{0}\"", conf.CompiledOutputName);
+				args.AddQuoted (conf.CompiledOutputName);
 				
 				mtouch.WorkingDirectory = conf.OutputDirectory;
 				mtouch.Arguments = args.ToString ();
@@ -197,19 +199,19 @@ namespace MonoDevelop.IPhone
 			//TODO: create/update the xcode project
 			return result;
 		}
-
-		static internal void AppendExtrasMtouchArgs (StringBuilder args, IPhoneSdkVersion sdkVersion, 
+		
+		static internal void AppendExtrasMtouchArgs (ProcessArgumentBuilder args, IPhoneSdkVersion sdkVersion, 
 			IPhoneProject proj, IPhoneProjectConfiguration conf)
 		{
 			if (conf.MtouchDebug)
-				args.Append (" -debug");
+				args.Add ("-debug");
 			
 			switch (conf.MtouchLink) {
 			case MtouchLinkMode.SdkOnly:
-				args.Append (" -linksdkonly");
+				args.Add ("-linksdkonly");
 				break;
 			case MtouchLinkMode.None:
-				args.Append (" -nolink");
+				args.Add ("-nolink");
 				break;
 			case MtouchLinkMode.Full:
 			default:
@@ -217,37 +219,33 @@ namespace MonoDevelop.IPhone
 			}
 			
 			if (!string.IsNullOrEmpty (conf.MtouchI18n)) {
-				args.Append (" -i18n=");
-				args.Append (conf.MtouchI18n);
+				args.AddQuotedFormat ("-i18n={0}", conf.MtouchI18n);
 			}
 			
 			if (!sdkVersion.Equals (IPhoneSdkVersion.V3_0))
-				args.AppendFormat (" -sdk=\"{0}\"", sdkVersion);
+				args.AddQuotedFormat ("-sdk={0}", sdkVersion);
 			
 			if (conf.MtouchMinimumOSVersion != "3.0")
-				args.AppendFormat (" -targetver=\"{0}\"", conf.MtouchMinimumOSVersion);
+				args.AddQuotedFormat ("-targetver={0}", conf.MtouchMinimumOSVersion);
 			
 			
-			AppendExtraArgs (args, conf.MtouchExtraArgs, proj, conf);
+			AddExtraArgs (args, conf.MtouchExtraArgs, proj, conf);
 		}
 		
-		static void AppendExtraArgs (StringBuilder args, string extraArgs, IPhoneProject proj,
-		                             IPhoneProjectConfiguration conf)
+		static void AddExtraArgs (ProcessArgumentBuilder args, string extraArgs, IPhoneProject proj,
+			IPhoneProjectConfiguration conf)
 		{
-			if (!String.IsNullOrEmpty (extraArgs)) {
-				args.Append (" ");
+			if (!string.IsNullOrEmpty (extraArgs)) {
 				var customTags = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase) {
-					{ "projectdir", proj.BaseDirectory },
-					{ "solutiondir", proj.ParentSolution.BaseDirectory },
-					{ "appbundledir", conf.AppDirectory },
-					{ "targetpath", conf.CompiledOutputName },
-					{ "targetdir", conf.CompiledOutputName.ParentDirectory },
-					{ "targetname", conf.CompiledOutputName.FileName },
-					{ "targetext", conf.CompiledOutputName.Extension },
+					{ "projectdir",   ProcessArgumentBuilder.EscapeQuotes (proj.BaseDirectory) },
+					{ "solutiondir",  ProcessArgumentBuilder.EscapeQuotes (proj.ParentSolution.BaseDirectory) },
+					{ "appbundledir", ProcessArgumentBuilder.EscapeQuotes (conf.AppDirectory) },
+					{ "targetpath",   ProcessArgumentBuilder.EscapeQuotes (conf.CompiledOutputName) },
+					{ "targetdir",    ProcessArgumentBuilder.EscapeQuotes (conf.CompiledOutputName.ParentDirectory) },
+					{ "targetname",   ProcessArgumentBuilder.EscapeQuotes (conf.CompiledOutputName.FileName) },
+					{ "targetext",    ProcessArgumentBuilder.EscapeQuotes (conf.CompiledOutputName.Extension) },
 				};
-				string substExtraArgs = StringParserService.Parse (extraArgs, customTags);
-				args.Append (" ");
-				args.Append (substExtraArgs);
+				args.Add (StringParserService.Parse (extraArgs, customTags));
 			}
 		}
 		
@@ -606,10 +604,9 @@ namespace MonoDevelop.IPhone
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Compressing resources"), 0);
 			
-			var optTool = new ProcessStartInfo () {
-				FileName = "/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/iphoneos-optimize",
-				Arguments = conf.AppDirectory,
-			};
+			var optTool = new ProcessStartInfo (
+				"/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/iphoneos-optimize",
+				 ProcessArgumentBuilder.Quote (conf.AppDirectory));
 			
 			monitor.Log.WriteLine (optTool.FileName + " " + optTool.Arguments);
 			string errorOutput;
@@ -976,14 +973,15 @@ namespace MonoDevelop.IPhone
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Signing application"), 0);
 			
-			var args = new StringBuilder ();
-			args.AppendFormat ("-v -f -s \"{0}\"", Keychain.GetCertificateCommonName (key));
-			args.AppendFormat (" --resource-rules=\"{0}\" --entitlements \"{1}\"", resRules, xcent);
+			var args = new ProcessArgumentBuilder ();
+			args.Add ("-v", "-f", "-s");
+			args.AddQuoted (Keychain.GetCertificateCommonName (key));
+			args.AddQuotedFormat ("--resource-rules={0}", resRules);
+			args.Add ("--entitlements");
+			args.AddQuoted (xcent);
+			args.AddQuoted (conf.AppDirectory);
 			
-			args.Append (" ");
-			args.Append (conf.AppDirectory);
-			
-			AppendExtraArgs (args, conf.CodesignExtraArgs, proj, conf);
+			AddExtraArgs (args, conf.CodesignExtraArgs, proj, conf);
 				
 			int signResultCode;
 			var psi = new ProcessStartInfo ("codesign") {

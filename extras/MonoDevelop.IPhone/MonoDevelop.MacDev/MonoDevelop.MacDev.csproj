@@ -32,9 +32,11 @@
   <ItemGroup>
     <Reference Include="MonoDevelop.Ide, Version=2.4.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
+      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="MonoDevelop.Core, Version=2.4.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
+      <Package>monodevelop</Package>
     </Reference>
     <Reference Include="System">
       <SpecificVersion>False</SpecificVersion>
@@ -48,6 +50,7 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="MonoDevelop.DesignerSupport, Version=2.4.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -77,6 +80,7 @@
     <Compile Include="MonoDevelop.MacDev.Plist\PlistString.cs" />
     <Compile Include="MacBuildUtilities.cs" />
     <Compile Include="XibCodeBehind.cs" />
+    <Compile Include="ProcessArgumentBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">
