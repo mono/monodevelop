@@ -349,8 +349,13 @@ namespace Mono.TextEditor.Highlighting
 				for (int j = 0; j < CurRule.Spans.Length; j++) {
 					Span span = CurRule.Spans[j];
 
-					if ((span.BeginFlags & SpanBeginFlags.StartsLine) == SpanBeginFlags.StartsLine && (textOffset == 0 || CurText[textOffset - 1] == '\n'|| CurText[textOffset - 1] == '\r'))
-						continue;
+					if ((span.BeginFlags & SpanBeginFlags.StartsLine) == SpanBeginFlags.StartsLine) {
+						if (textOffset != 0) {
+							char ch = CurText[textOffset - 1];
+							if (ch != '\n'&& ch != '\r')
+								continue;
+						}
+					} 
 
 					RegexMatch match = span.Begin.TryMatch (CurText, textOffset);
 					if (!match.Success)
