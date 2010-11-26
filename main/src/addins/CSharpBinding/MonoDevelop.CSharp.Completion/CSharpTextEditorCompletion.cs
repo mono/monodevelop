@@ -87,7 +87,7 @@ namespace MonoDevelop.CSharp.Completion
 			InitTracker ();
 			IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
 			if (dom != null && dom.Project != null)
-				policy = base.Document.Project.Policies.Get<CSharpFormattingPolicy> (types);
+				policy = dom.Project.Policies.Get<CSharpFormattingPolicy> (types);
 			UpdatePath (null, null);
 			textEditorData.Caret.PositionChanged += UpdatePath;
 			Document.DocumentParsed += delegate {
