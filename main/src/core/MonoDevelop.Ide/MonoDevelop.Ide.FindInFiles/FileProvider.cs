@@ -122,7 +122,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		public void EndReplace ()
 		{
 			if (document != null) {
-				Gtk.Application.Invoke (delegate { document.Editor.Document.EndAtomicUndo (); });
+				Gtk.Application.Invoke (delegate { document.Editor.Document.EndAtomicUndo (); document.Editor.Document.CommitUpdateAll (); });
 				return;
 			}
 			if (buffer != null && somethingReplaced) {

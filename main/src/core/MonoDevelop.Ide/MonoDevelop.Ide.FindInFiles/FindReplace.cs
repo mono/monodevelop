@@ -178,19 +178,15 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (string.IsNullOrEmpty (content))
 				yield break;
 			int idx = provider.SelectionStartPosition < 0 ? 0 : Math.Max (0, provider.SelectionStartPosition);
-			int lastPossibleIndex = content.Length - pattern.Length + 1;
-			if (lastPossibleIndex < 0)
-				yield break;
-			int end = provider.SelectionEndPosition < 0 ? lastPossibleIndex : Math.Min (lastPossibleIndex, provider.SelectionEndPosition - pattern.Length);
+			int delta = 0;
 			var comparison = filter.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
 			
-			while ((idx = content.IndexOf (pattern, idx, end - idx, comparison)) >= 0) {
+			while ((idx = content.IndexOf (pattern, idx, content.Length - idx, comparison)) >= 0) {
 				if (!filter.WholeWordsOnly || FilterOptions.IsWholeWordAt (content, idx, pattern.Length)) {
 					if (replacePattern != null) {
-						int delta = replacePattern.Length - pattern.Length;
-						provider.Replace (idx, pattern.Length, replacePattern);
-						yield return new SearchResult (provider, idx, replacePattern.Length);
-						idx += delta;
+						provider.Replace (idx + delta, pattern.Length, replacePattern);
+						yield return new SearchResult (provider, idx + delta, replacePattern.Length);
+						delta += replacePattern.Length - pattern.Length;
 					} else {
 						yield return new SearchResult (provider, idx, pattern.Length);
 					}

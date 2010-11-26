@@ -103,6 +103,8 @@ namespace MonoDevelop.Ide.FindInFiles
 				foreach (Project project in IdeApp.Workspace.GetAllProjects ()) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in project '{0}'", project.Name));
 					foreach (ProjectFile file in project.Files) {
+						if (!File.Exists (file.Name))
+							continue;
 						if (filterOptions.NameMatches (file.Name))
 							yield return new FileProvider (file.Name, project);
 					}
@@ -140,6 +142,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (IdeApp.Workspace.IsOpen) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in project '{0}'", project.Name));
 				foreach (ProjectFile file in project.Files) {
+					if (!File.Exists (file.Name))
+						continue;
 					if (filterOptions.NameMatches (file.Name))
 						yield return new FileProvider (file.Name, project);
 				}
