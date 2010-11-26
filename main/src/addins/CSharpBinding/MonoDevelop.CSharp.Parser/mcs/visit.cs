@@ -257,14 +257,17 @@ namespace Mono.CSharp
 		{
 			return null;
 		}
-
-
+		
 		public virtual object Visit (Switch switchStatement)
 		{
 			return null;
 		}
-
-
+		
+		public virtual object Visit (StatementList statementList)
+		{
+			return null;
+		}
+		
 		public virtual object Visit (Lock lockStatement)
 		{
 			return null;

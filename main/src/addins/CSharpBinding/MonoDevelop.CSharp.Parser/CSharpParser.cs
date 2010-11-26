@@ -925,6 +925,19 @@ namespace MonoDevelop.CSharp.Parser
 				return result;
 			}
 			
+			void AddStatementOrList (ForStatement forStatement, Statement init, int role)
+			{
+				if (init == null) 
+					return;
+				if (init is StatementList) {
+					foreach (var stmt in ((StatementList)init).Statements) {
+						forStatement.AddChild ((DomNode)stmt.Accept (this), role);
+					}
+				} else {
+					forStatement.AddChild ((DomNode)init.Accept (this), role);
+				}
+			}
+
 			public override object Visit (For forStatement)
 			{
 				var result = new ForStatement ();
@@ -934,16 +947,18 @@ namespace MonoDevelop.CSharp.Parser
 				result.AddChild (new CSharpTokenNode (Convert (forStatement.loc), "for".Length), ForStatement.Roles.Keyword);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), ForStatement.Roles.LPar);
-				if (forStatement.InitStatement != null)
-					result.AddChild ((DomNode)forStatement.InitStatement.Accept (this), ForStatement.Roles.Initializer);
+				
+				AddStatementOrList (result, forStatement.InitStatement, ForStatement.Roles.Initializer);
+				
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), ForStatement.Roles.Semicolon);
 				if (forStatement.Test != null)
 					result.AddChild ((DomNode)forStatement.Test.Accept (this), ForStatement.Roles.Condition);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[2]), 1), ForStatement.Roles.Semicolon);
-				if (forStatement.Increment != null)
-					result.AddChild ((DomNode)forStatement.Increment.Accept (this), ForStatement.Roles.Iterator);
+				
+				AddStatementOrList (result, forStatement.Increment, ForStatement.Roles.Iterator);
+				
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[3]), 1), ForStatement.Roles.RPar);
 				

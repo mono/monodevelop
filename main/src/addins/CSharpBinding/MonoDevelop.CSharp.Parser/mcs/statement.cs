@@ -721,6 +721,11 @@ namespace Mono.CSharp {
 			foreach (Statement s in statements)
 				t.statements.Add (s.Clone (clonectx));
 		}
+		
+		public override object Accept (StructuralVisitor visitor)
+		{
+			return visitor.Visit (this);
+		}
 	}
 
 	// A 'return' or a 'yield break'
