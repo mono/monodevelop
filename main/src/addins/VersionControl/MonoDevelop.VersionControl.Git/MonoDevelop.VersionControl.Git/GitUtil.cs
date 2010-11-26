@@ -432,6 +432,34 @@ namespace MonoDevelop.VersionControl.Git
 				}
 				RevCommit srcParent = srcCommit.GetParent(0);
 				revWalk.ParseHeaders(srcParent);
+				
+				return MergeTrees (repo, srcParent, srcCommit, srcCommit.Name, true);
+			}
+			catch (IOException e)
+			{
+				throw new Exception ("Commit failed", e);
+			}
+			finally
+			{
+				revWalk.Release();
+			}
+		}
+		
+		public static MergeCommandResult MergeTrees (NGit.Repository repo, RevCommit srcBase, RevCommit srcCommit, string sourceDisplayName, bool commitResult)
+		{
+			RevCommit newHead = null;
+			RevWalk revWalk = new RevWalk(repo);
+			try
+			{
+				// get the head commit
+				Ref headRef = repo.GetRef(Constants.HEAD);
+				if (headRef == null)
+				{
+					throw new NoHeadException(JGitText.Get().commitOnRepoWithoutHEADCurrentlyNotSupported
+						);
+				}
+				RevCommit headCommit = revWalk.ParseCommit(headRef.GetObjectId());
+				
 				ResolveMerger merger = (ResolveMerger)((ThreeWayMerger)MergeStrategy.RESOLVE.NewMerger
 					(repo));
 				
@@ -439,25 +467,19 @@ namespace MonoDevelop.VersionControl.Git
 				// untracked files are deleted during the merge
 				// merger.SetWorkingTreeIterator(new FileTreeIterator(repo));
 				
-				merger.SetBase(srcParent.Tree);
+				merger.SetBase(srcBase);
 				
 				bool noProblems;
 				IDictionary<string, MergeResult<NGit.Diff.Sequence>> lowLevelResults = null;
 				IDictionary<string, ResolveMerger.MergeFailureReason> failingPaths = null;
 				IList<string> modifiedFiles = null;
-				if (merger is ResolveMerger)
-				{
-					ResolveMerger resolveMerger = (ResolveMerger)merger;
-					resolveMerger.SetCommitNames(new string[] { "BASE", "HEAD", srcCommit.Name });
-					noProblems = merger.Merge(headCommit, srcCommit);
-					lowLevelResults = resolveMerger.GetMergeResults();
-					modifiedFiles = resolveMerger.GetModifiedFiles();
-					failingPaths = resolveMerger.GetFailingPathes();
-				}
-				else
-				{
-					noProblems = merger.Merge(headCommit, srcCommit);
-				}
+				
+				ResolveMerger resolveMerger = (ResolveMerger)merger;
+				resolveMerger.SetCommitNames(new string[] { "BASE", "HEAD", sourceDisplayName });
+				noProblems = merger.Merge(headCommit, srcCommit);
+				lowLevelResults = resolveMerger.GetMergeResults();
+				modifiedFiles = resolveMerger.GetModifiedFiles();
+				failingPaths = resolveMerger.GetFailingPathes();
 				
 				if (noProblems)
 				{
@@ -469,10 +491,15 @@ namespace MonoDevelop.VersionControl.Git
 						(), merger.GetResultTreeId());
 					dco.SetFailOnConflict(true);
 					dco.Checkout();
-					newHead = new NGit.Api.Git(repo).Commit().SetMessage(srcCommit.GetFullMessage()
-						).SetAuthor(srcCommit.GetAuthorIdent()).Call();
-					return new MergeCommandResult(newHead.Id, null, new ObjectId[] { headCommit.Id, srcCommit
-						.Id }, MergeStatus.MERGED, MergeStrategy.RESOLVE, null, null);
+					if (commitResult) {
+						newHead = new NGit.Api.Git(repo).Commit().SetMessage(srcCommit.GetFullMessage()
+							).SetAuthor(srcCommit.GetAuthorIdent()).Call();
+						return new MergeCommandResult(newHead.Id, null, new ObjectId[] { headCommit.Id, srcCommit
+							.Id }, MergeStatus.MERGED, MergeStrategy.RESOLVE, null, null);
+					} else {
+						return new MergeCommandResult(headCommit, null, new ObjectId[] { headCommit.Id, srcCommit
+							.Id }, MergeStatus.MERGED, MergeStrategy.RESOLVE, null, null);
+					}
 				}
 				else
 				{
@@ -490,16 +517,12 @@ namespace MonoDevelop.VersionControl.Git
 					}
 				}
 			}
-			catch (IOException e)
-			{
-				throw new Exception ("Commit failed", e);
-			}
 			finally
 			{
 				revWalk.Release();
 			}
 		}
-
+		
 	}
 }
 

@@ -36,6 +36,7 @@ using NGit.Treewalk;
 using NGit.Diff;
 using NGit.Dircache;
 using NGit.Revwalk;
+using NGit.Api;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -144,9 +145,9 @@ namespace MonoDevelop.VersionControl.Git
 			return s;
 		}
 		
-		public void Apply ()
+		public MergeCommandResult Apply ()
 		{
-			StashCollection.Apply (this);
+			return StashCollection.Apply (this);
 		}
 	}
 	
@@ -279,96 +280,14 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 		
-		internal void Apply (Stash stash)
+		internal MergeCommandResult Apply (Stash stash)
 		{
 			ObjectId cid = _repo.Resolve (stash.CommitId);
 			RevWalk rw = new RevWalk (_repo);
 			RevCommit wip = rw.ParseCommit (cid);
 			RevCommit index = wip.Parents.Last ();
-//			ObjectId headTree = _repo.Resolve (Constants.HEAD + "^{tree}");
-			ObjectId headTree = rw.ParseCommit (wip.Parents.First ()).Tree;
-			RevTree wipTree =  wip.Tree;
-			
-			DirCache dc = _repo.LockDirCache ();
-			try {
-				DirCacheCheckout co = new DirCacheCheckout (_repo, headTree, dc, wipTree, new FileTreeIterator (_repo));
-				co.SetFailOnConflict (false);
-				co.Checkout ();
-			} catch {
-				dc.Unlock ();
-				throw;
-			}
-			
-/*			List<DirCacheEntry> toAdd = new List<DirCacheEntry> ();
-			
-			DirCache dc = DirCache.Lock (_repo._internal_repo);
-			try {
-				var cacheEditor = dc.editor ();
-				
-				// The WorkDirCheckout class doesn't check if there are conflicts in modified files,
-				// so we have to do it here.
-				
-				foreach (var c in co.Updated) {
-					
-					var baseEntry = wip.Parents.First ().Tree[c.Key] as Leaf;
-					var oursEntry = wipTree [c.Key] as Leaf;
-					var theirsEntry = headTree [c.Key] as Leaf;
-					
-					if (baseEntry != null && oursEntry != null && currentIndexTree [c.Key] == null) {
-						// If a file was reported as updated but that file is not present in the stashed index,
-						// it means that the file was scheduled to be deleted.
-						cacheEditor.@add (new DirCacheEditor.DeletePath (c.Key));
-						File.Delete (_repo.FromGitPath (c.Key));
-					}
-					else if (baseEntry != null && oursEntry != null && theirsEntry != null) {
-						MergeResult res = MergeAlgorithm.merge (new RawText (baseEntry.RawData), new RawText (oursEntry.RawData), new RawText (theirsEntry.RawData));
-						MergeFormatter f = new MergeFormatter ();
-						using (BinaryWriter bw = new BinaryWriter (File.OpenWrite (_repo.FromGitPath (c.Key)))) {
-							f.formatMerge (bw, res, "Base", "Stash", "Head", Constants.CHARSET.WebName);
-						}
-						if (res.containsConflicts ()) {
-							// Remove the entry from the index. It will be added later on.
-							cacheEditor.@add (new DirCacheEditor.DeletePath (c.Key));
-					
-							// Generate index entries for each merge stage
-							// Those entries can't be added right now to the index because a DirCacheEditor
-							// can't be used at the same time as a DirCacheBuilder.
-							var e = new DirCacheEntry(c.Key, DirCacheEntry.STAGE_1);
-							e.setObjectId (baseEntry.InternalEntry.Id);
-							e.setFileMode (baseEntry.InternalEntry.Mode);
-							toAdd.Add (e);
-							
-							e = new DirCacheEntry(c.Key, DirCacheEntry.STAGE_2);
-							e.setObjectId (oursEntry.InternalEntry.Id);
-							e.setFileMode (oursEntry.InternalEntry.Mode);
-							toAdd.Add (e);
-							
-							e = new DirCacheEntry(c.Key, DirCacheEntry.STAGE_3);
-							e.setObjectId (theirsEntry.InternalEntry.Id);
-							e.setFileMode (theirsEntry.InternalEntry.Mode);
-							toAdd.Add (e);
-						}
-					}
-				}
-				
-				cacheEditor.finish ();
-				
-				if (toAdd.Count > 0) {
-					// Add the index entries generated above
-					var cacheBuilder = dc.builder ();
-					for (int n=0; n<dc.getEntryCount (); n++)
-						cacheBuilder.@add (dc.getEntry (n));
-					foreach (var entry in toAdd)
-						cacheBuilder.@add (entry);
-					cacheBuilder.finish ();
-				}
-				
-				dc.write ();
-				dc.commit ();
-			} catch {
-				dc.unlock ();
-				throw;
-			}*/
+			rw.ParseHeaders (index);
+			return GitUtil.MergeTrees (_repo, index, wip, "Stash", false);
 		}
 		
 		public void Remove (Stash s)
@@ -377,12 +296,13 @@ namespace MonoDevelop.VersionControl.Git
 			Remove (stashes, s);
 		}
 		
-		public void Pop ()
+		public MergeCommandResult Pop ()
 		{
 			List<Stash> stashes = ReadStashes ();
 			Stash last = stashes.Last ();
-			last.Apply ();
+			MergeCommandResult res = last.Apply ();
 			Remove (stashes, last);
+			return res;
 		}
 		
 		public void Clear ()
