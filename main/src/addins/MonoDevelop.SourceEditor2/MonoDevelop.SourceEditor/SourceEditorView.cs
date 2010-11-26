@@ -138,8 +138,13 @@ namespace MonoDevelop.SourceEditor
 			
 			widget = new SourceEditorWidget (this);
 			widget.TextEditor.Document.TextReplaced += delegate(object sender, ReplaceEventArgs args) {
-				if (!inLoad)
-					wasEdited = true;
+				if (!inLoad) {
+					if (widget.TextEditor.Document.IsInAtomicUndo) {
+						wasEdited = true;
+					} else {
+						AutoSave.InformAutoSaveThread (Document);
+					}
+				}
 				int startIndex = args.Offset;
 				int endIndex = startIndex + Math.Max (args.Count, args.Value != null ? args.Value.Length : 0);
 				if (TextChanged != null)
