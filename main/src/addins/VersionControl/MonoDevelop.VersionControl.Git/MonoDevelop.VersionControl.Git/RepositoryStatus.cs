@@ -179,6 +179,16 @@ namespace MonoDevelop.VersionControl.Git
 				DirCacheIterator dirCacheIterator = treeWalk.GetTree<DirCacheIterator>(1);
 				WorkingTreeIterator workingTreeIterator = treeWalk.GetTree<WorkingTreeIterator>(2);
 				NGit.FileMode fileModeTree = treeWalk.GetFileMode(0);
+				
+				int stage = dirCacheIterator != null ? dirCacheIterator.GetDirCacheEntry ().GetStage () : 0;
+				if (stage > 1)
+					continue;
+				else if (stage == 1) {
+					MergeConflict.Add(dirCacheIterator.GetEntryPathString());
+					changesExist = true;
+					continue;
+				}
+				
 				if (treeIterator != null)
 				{
 					if (dirCacheIterator != null)
