@@ -495,7 +495,13 @@ namespace MonoDevelop.Ide.Gui
 			if (editor == null)
 				return;
 			
-			Editor.Document.TextReplaced += (o, a) => wasEdited = true;
+			Editor.Document.TextReplaced += (o, a) => {
+				if (Editor.Document.IsInAtomicUndo) {
+					wasEdited = true;
+				} else {
+					StartReparseThread ();
+				}
+			};
 			
 			Editor.Document.BeginUndo += delegate {
 				wasEdited = false;
