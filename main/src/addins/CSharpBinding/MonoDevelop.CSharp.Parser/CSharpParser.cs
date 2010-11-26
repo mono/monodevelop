@@ -1742,23 +1742,29 @@ namespace MonoDevelop.CSharp.Parser
 			
 			void AddTypeArguments (DomNode parent, LocationsBag.MemberLocations location, Mono.CSharp.TypeArguments typeArguments)
 			{
-				if (typeArguments == null)
+				if (typeArguments == null || typeArguments.IsEmpty)
 					return;
 				for (int i = 0; i < typeArguments.Count; i++) {
 					if (location != null && i > 0 && i - 1 < location.Count)
 						parent.AddChild (new CSharpTokenNode (Convert (location[i - 1]), 1), InvocationExpression.Roles.Comma);
-					parent.AddChild ((DomNode)typeArguments.Args[i].Accept (this), InvocationExpression.Roles.TypeParameter);
+					var arg = typeArguments.Args[i];
+					if (arg == null)
+						continue;
+					parent.AddChild ((DomNode)arg.Accept (this), InvocationExpression.Roles.TypeParameter);
 				}
 			}
 			
 			void AddTypeArguments (DomNode parent, List<Location> location, Mono.CSharp.TypeArguments typeArguments)
 			{
-				if (typeArguments == null)
+				if (typeArguments == null || typeArguments.IsEmpty)
 					return;
 				for (int i = 0; i < typeArguments.Count; i++) {
 					if (location != null && i > 0 && i - 1 < location.Count)
 						parent.AddChild (new CSharpTokenNode (Convert (location[i - 1]), 1), InvocationExpression.Roles.Comma);
-					parent.AddChild ((DomNode)typeArguments.Args[i].Accept (this), InvocationExpression.Roles.TypeParameter);
+					var arg = typeArguments.Args[i];
+					if (arg == null)
+						continue;
+					parent.AddChild ((DomNode)arg.Accept (this), InvocationExpression.Roles.TypeParameter);
 				}
 			}
 			
