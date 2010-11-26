@@ -33,4 +33,7 @@ else
 	EXEC="exec -a \"$APP_NAME\""
 fi
 
-$EXEC "$APP_ROOT/$APP_NAME" $MONO_OPTIONS "$RESOURCES_PATH"/"$ASSEMBLY"
+# Pass the executable name as the last parameter of MONO_ENV_OPTIONS
+# since some NSApplication APIs will poke at the startup arguments and do not
+# like the .exe there
+MONO_ENV_OPTIONS="$MONO_OPTIONS $RESOURCES_PATH/$ASSEMBLY" $EXEC "$APP_ROOT/$APP_NAME"
