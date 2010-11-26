@@ -698,24 +698,77 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.BeginTask (GettextCatalog.GetString ("Revering files"), 3);
 			monitor.BeginStepTask (GettextCatalog.GetString ("Revering files"), localPaths.Length, 2);
 			
-			foreach (FilePath fp in localPaths) {
-				string p = ToGitPath (fp);
-				TreeWalk tw = tree != null ? TreeWalk.ForPath (repo, p, tree) : null;
-				if (tw == null) {
-					index.Remove (repo.WorkTree, (string)fp);
-					index.Write ();
-					if (File.Exists (fp))
-						File.Delete (fp);
-					removedFiles.Add (fp);
+			DirCache dc = repo.LockDirCache ();
+			DirCacheEditor editor = dc.Editor ();
+			DirCacheBuilder builder = dc.Builder ();
+			
+			try {
+				HashSet<string> entriesToRemove = new HashSet<string> ();
+				HashSet<string> foldersToRemove = new HashSet<string> ();
+				
+				// Add the new entries
+				foreach (FilePath fp in localPaths) {
+					string p = ToGitPath (fp);
+					
+					// Register entries to be removed from the index
+					if (Directory.Exists (fp))
+						foldersToRemove.Add (p);
+					else
+						entriesToRemove.Add (p);
+					
+					TreeWalk tw = tree != null ? TreeWalk.ForPath (repo, p, tree) : null;
+					if (tw == null) {
+						// Removed from the index
+					}
+					else {
+						// Add new entries
+						
+						TreeWalk r;
+						if (tw.IsSubtree) {
+							// It's a directory. Make sure we remove existing index entries of this directory
+							foldersToRemove.Add (p);
+							
+							// We have to iterate through all folder files. We need a new iterator since the
+							// existing rw is not recursive
+							r = new NGit.Treewalk.TreeWalk(repo);
+							r.Reset (tree);
+							r.Filter = PathFilterGroup.CreateFromStrings(new string[]{p});
+							r.Recursive = true;
+							r.Next ();
+						} else {
+							r = tw;
+						}
+						
+						do {
+							// There can be more than one entry if reverting a whole directory
+							string rpath = FromGitPath (r.PathString);
+							DirCacheEntry e = new DirCacheEntry (r.PathString);
+							e.SetObjectId (r.GetObjectId (0));
+							e.SetFileMode (r.GetFileMode (0));
+							if (!Directory.Exists (Path.GetDirectoryName (rpath)))
+								Directory.CreateDirectory (rpath);
+							DirCacheCheckout.CheckoutEntry (repo, rpath, e, true);
+							builder.Add (e);
+							changedFiles.Add (rpath);
+						} while (r.Next ());
+					}
+					monitor.Step (1);
 				}
-				else {
-					byte[] data = repo.ObjectDatabase.Open (tw.GetObjectId (0)).GetBytes ();
-					index.Add (repo.WorkTree, (string)fp, data);
-					index.Write ();
-					File.WriteAllBytes (fp, data);
-					changedFiles.Add (fp);
+				
+				// Add entries we want to keep
+				int count = dc.GetEntryCount ();
+				for (int n=0; n<count; n++) {
+					DirCacheEntry e = dc.GetEntry (n);
+					string path = e.GetPathString ();
+					if (!entriesToRemove.Contains (path) && !foldersToRemove.Any (f => IsSubpath (f,path)))
+						builder.Add (e);
 				}
-				monitor.Step (1);
+				
+				builder.Commit ();
+			}
+			catch {
+				dc.Unlock ();
+				throw;
 			}
 			
 			monitor.EndTask ();
@@ -730,6 +783,13 @@ namespace MonoDevelop.VersionControl.Git
 				monitor.Step (1);
 			}
 			monitor.EndTask ();
+		}
+		
+		bool IsSubpath (string basePath, string childPath)
+		{
+			if (basePath [basePath.Length - 1] == '/')
+				return childPath.StartsWith (basePath);
+			return childPath.StartsWith (basePath + "/");
 		}
 
 		public override void RevertRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
@@ -779,7 +839,7 @@ namespace MonoDevelop.VersionControl.Git
 						} else if ((vi.Status & VersionStatus.ScheduledDelete) != 0) {
 							string ctxt = GetCommitContent (GetHeadCommit (), vi.LocalPath);
 							diffs.Add (new DiffInfo (baseLocalPath, vi.LocalPath, GenerateDiff (ctxt, "")));
-						} else if ((vi.Status & VersionStatus.Modified) != 0) {
+						} else if ((vi.Status & VersionStatus.Modified) != 0 || (vi.Status & VersionStatus.Conflicted) != 0) {
 							string ctxt1 = GetCommitContent (GetHeadCommit (), vi.LocalPath);
 							string ctxt2 = File.ReadAllText (vi.LocalPath);
 							diffs.Add (new DiffInfo (baseLocalPath, vi.LocalPath, GenerateDiff (ctxt1, ctxt2)));
