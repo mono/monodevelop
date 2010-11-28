@@ -50,9 +50,14 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 		{
 			var dsi = (MonoDroidDebuggerStartInfo) startInfo;
 			var cmd = dsi.ExecutionCommand;
+
+			long deviceDate = GetDate (cmd.Device);
+			long expireDate = deviceDate + 30; // 30 seconds
 			
-			string monoOptions = string.Format ("debug={0}:{1}:{2}", dsi.Address, dsi.DebugPort, dsi.OutputPort);
-			process = MonoDroidFramework.Toolbox.StartActivity (cmd.Device, cmd.Activity, monoOptions,
+			string monoOptions = string.Format ("debug={0}:{1}:{2},timeout={3}", dsi.Address, dsi.DebugPort, dsi.OutputPort, expireDate);
+			SetProperty (cmd.Device, "debug.mono.extra", monoOptions);
+
+			process = MonoDroidFramework.Toolbox.StartActivity (cmd.Device, cmd.Activity,
 				ProcessOutput, ProcessError);
 			
 			process.Completed += delegate {
@@ -65,7 +70,7 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 			
 			StartListening (dsi);
 		}
-		
+
 		void ProcessOutput (object sender, string message)
 		{
 			OnTargetOutput (true, message);
@@ -74,6 +79,32 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 		void ProcessError (object sender, string message)
 		{
 			OnTargetOutput (false, message);
+		}
+
+		void SetProperty (AndroidDevice device, string property, string value)
+		{
+			var output = new StringWriter ();
+			ProcessWrapper process = MonoDroidFramework.Toolbox.SetProperty (device, property, value, output, output);
+			process.WaitForOutput ();
+
+			if (process.ExitCode != 0) {
+				string message = GettextCatalog.GetString ("Failed to set property on device: {0}", output.ToString ());
+				throw new InvalidOperationException (message);
+			}
+		}
+
+		long GetDate (AndroidDevice device)
+		{
+			var output = new StringWriter ();
+			ProcessWrapper process = MonoDroidFramework.Toolbox.GetDeviceDate (device, output, output);
+			process.WaitForOutput ();
+
+			if (process.ExitCode != 0) {
+				string message = GettextCatalog.GetString ("Failed to get device date: {0}", output.ToString ());
+				throw new InvalidOperationException (message);
+			}
+
+			return long.Parse (output.ToString ());
 		}
 		
 		protected override string GetListenMessage (RemoteDebuggerStartInfo dsi)

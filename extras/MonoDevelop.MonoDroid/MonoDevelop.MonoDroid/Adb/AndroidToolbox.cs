@@ -158,6 +158,23 @@ namespace MonoDevelop.MonoDroid
 			//FIXME: don't create multiple instances. if it's running, focus it.
 			return Runtime.ProcessService.StartProcess (AndroidExe, "", null, (TextWriter)null, null, null);
 		}
+
+		public ProcessWrapper GetDeviceDate (AndroidDevice device, TextWriter outputLog, TextWriter errorLog)
+		{
+			var args = String.Format ("-s '{0}' shell date +%s", device.ID);
+			return StartProcess (AdbExe, args, outputLog, errorLog);
+		}
+
+		public ProcessWrapper SetProperty (AndroidDevice device, string property, string value, TextWriter outputLog, TextWriter errorLog)
+		{
+			if (property == null)
+				throw new ArgumentNullException ("property");
+			if (value == null)
+				throw new ArgumentNullException ("value");
+
+			var args = String.Format ("-s '{0}' shell setprop '{1}' '{2}'", device.ID, property, value);
+			return StartProcess (AdbExe, args, outputLog, errorLog);
+		}
 		
 		public IProcessAsyncOperation PushFile (AndroidDevice device, string source, string destination,
 			TextWriter outputLog, TextWriter errorLog)
@@ -193,28 +210,21 @@ namespace MonoDevelop.MonoDroid
 			return StartProcess (AdbExe, args, outputLog, errorLog);
 		}
 		
-		//monoRuntimeArgs: debug={0}:{1}:{2}", DebuggerHost, SdbPort, StdoutPort
-		public IProcessAsyncOperation StartActivity (AndroidDevice device, string activity, string monoRuntimeArgs,
+		public IProcessAsyncOperation StartActivity (AndroidDevice device, string activity,
 			TextWriter outputLog, TextWriter errorLog)
 		{
 			var args = string.Format ("-s '{0}' shell am start -a android.intent.action.MAIN -n '{1}'",
 				device.ID, activity);
 			
-			if (!string.IsNullOrEmpty (monoRuntimeArgs)) {
-				args = args + " -e mono:runtime-args " + monoRuntimeArgs;
-			}
 			return StartProcess (AdbExe, args, outputLog, errorLog);
 		}
 		
-		public IProcessAsyncOperation StartActivity (AndroidDevice device, string activity, string monoRuntimeArgs,
+		public IProcessAsyncOperation StartActivity (AndroidDevice device, string activity,
 			ProcessEventHandler outputLog, ProcessEventHandler errorLog)
 		{
 			var args = string.Format ("-s '{0}' shell am start -a android.intent.action.MAIN -n '{1}'",
 				device.ID, activity);
 			
-			if (!string.IsNullOrEmpty (monoRuntimeArgs)) {
-				args = args + " -e mono:runtime-args " + monoRuntimeArgs;
-			}
 			return StartProcess (AdbExe, args, outputLog, errorLog);
 		}
 
