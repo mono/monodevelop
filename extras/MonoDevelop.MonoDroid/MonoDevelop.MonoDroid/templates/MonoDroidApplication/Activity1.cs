@@ -14,10 +14,6 @@ namespace ${Namespace}
 	{
 		int count = 1;
 
-		public Activity1 (IntPtr handle) : base (handle)
-		{
-		}
-
 		protected override void OnCreate (Bundle bundle)
 		{
 			base.OnCreate (bundle);
@@ -27,7 +23,7 @@ namespace ${Namespace}
 
 			// Get our button from the layout resource,
 			// and attach an event to it
-			Button button = FindViewById<Button> (R.id.myButton);
+			Button button = FindViewById<Button> (Resource.id.myButton);
 			
 			button.Click += delegate { button.Text = string.Format ("{0} clicks!", count++); };
 		}

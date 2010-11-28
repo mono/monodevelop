@@ -12,10 +12,6 @@ namespace ${Namespace}
 	[Activity (Label = "My OpenGL Activity", MainLauncher = true)]
 	public class Activity1 : Activity
 	{
-		public Activity1 (IntPtr handle) : base (handle)
-		{
-		}
-
 		protected override void OnCreate (Bundle bundle)
 		{
 			base.OnCreate (bundle);
