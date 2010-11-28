@@ -131,6 +131,12 @@
     <None Include="templates\MonoMacPlist.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="templates\MonoMacApplicationDocumentManifest.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="templates\MonoMacDocument.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="mono-version-check">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

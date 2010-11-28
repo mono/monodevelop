@@ -19,6 +19,8 @@
 		<Import file = "templates/MonoMacEmptyXib.xft.xml"/>
 		<Import file = "templates/MonoMacApplicationManifest.xft.xml"/>
 		<Import file = "templates/MonoMacPlist.xft.xml"/>
+		<Import file = "templates/MonoMacApplicationDocumentManifest.xft.xml"/>
+		<Import file = "templates/MonoMacDocument.xpt.xml"/>
 		<Import file = "MonoMac.dll"/>
 		<Import file = "MonoMac.dll.mdb"/>
 		<Import file = "MonoMacLaunchScript.sh"/>
@@ -48,6 +50,9 @@
 		            file = "templates/MonoMacDocumentWindowXib.xft.xml"/>
 		<FileTemplate id = "MonoMacEmptyXib"
 		            file = "templates/MonoMacEmptyXib.xft.xml"/>
+		<FileTemplate id = "MonoMacApplicationDocumentManifest"
+			    file = "templates/MonoMacApplicationDocumentManifest.xft.xml"/>
+
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
@@ -55,6 +60,8 @@
 				       file = "templates/MonoMacProject.xpt.xml"/>
 		<ProjectTemplate id = "MonoMacProjectEmpty"
 				       file = "templates/MonoMacProjectEmpty.xpt.xml"/>
+		<ProjectTemplate id = "MonoMacDocument"
+				       file = "templates/MonoMacDocument.xpt.xml"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
