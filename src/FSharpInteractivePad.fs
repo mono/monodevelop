@@ -27,11 +27,19 @@ type FSharpInteractivePad() =
   let mutable lastCommand = ""
   let mutable currentPath = ""
   let mutable enterHandler = { new IDisposable with member x.Dispose() = () }
-  
+
+  let AddSourceToSelection selection =
+     let line = ref 0
+     let col  = ref 0
+     let stap = IdeApp.Workbench.ActiveDocument.TextEditor.SelectionStartPosition
+     IdeApp.Workbench.ActiveDocument.TextEditor.GetLineColumnFromPosition(stap, line, col)
+     let file = IdeApp.Workbench.ActiveDocument.FileName
+     String.Format("# {0} \"{1}\"\n{2}" ,line.Value ,file.FullPath,selection)  
+
   let rec setupReleaseHandler (ea:Gtk.KeyReleaseEventArgs) =
     enterHandler.Dispose()
     enterHandler <- view.Child.KeyReleaseEvent.Subscribe releaseHandler
-    
+  
   and releaseHandler (ea:Gtk.KeyReleaseEventArgs) =
     if ea.Event.Key = Key.Return && view.InputLine = "" then  
       Debug.tracef "Interactive" "Handling enter for empty line"
@@ -117,7 +125,7 @@ type FSharpInteractivePad() =
     if x.IsSelectionNonEmpty then
       let sel = IdeApp.Workbench.ActiveDocument.TextEditor.SelectedText
       x.EnsureCorrectDirectory()
-      sendCommand sel false
+      sendCommand (AddSourceToSelection sel) false
       
   member x.SendLine() = 
     if IdeApp.Workbench.ActiveDocument = null then () 
@@ -125,7 +133,9 @@ type FSharpInteractivePad() =
       x.EnsureCorrectDirectory()
       let line = IdeApp.Workbench.ActiveDocument.TextEditor.CursorLine
       let text = IdeApp.Workbench.ActiveDocument.TextEditor.GetLineText(line)
-      sendCommand text false
+      let file = IdeApp.Workbench.ActiveDocument.FileName
+      let sel = String.Format("# {0} \"{1}\"\n{2}" ,line ,file.FullPath,text) 
+      sendCommand sel false
 
   member x.IsSelectionNonEmpty = 
     if IdeApp.Workbench.ActiveDocument = null || 
