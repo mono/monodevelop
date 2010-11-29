@@ -100,7 +100,7 @@ namespace MonoDevelop.MonoDroid
 			}
 			
 			//copture the device for a later anonymous method
-			AndroidDevice dev = device = InvokeSynch (() => ChooseDevice (null));
+			AndroidDevice dev = device = InvokeSynch (() => GetTargetDevice ());
 			
 			if (device == null) {
 				opMon.Dispose ();
@@ -191,7 +191,7 @@ namespace MonoDevelop.MonoDroid
 			};
 			return chop;
 		}
-		
+
 		public static AndroidDevice ChooseDevice (Gtk.Window parent)
 		{
 			var dlg = new MonoDevelop.MonoDroid.Gui.DeviceChooserDialog ();
@@ -203,6 +203,20 @@ namespace MonoDevelop.MonoDroid
 			} finally {
 				dlg.Destroy ();
 			}
+		}
+
+		static AndroidDevice GetTargetDevice ()
+		{
+			var defaultDevice = MonoDroidFramework.DefaultDevice;
+
+			// Check that this device is still alive.
+			if (defaultDevice != null && MonoDroidFramework.DeviceManager.Devices != null &&
+					MonoDroidFramework.DeviceManager.Devices.Contains (defaultDevice))
+				return defaultDevice;
+
+			var device = ChooseDevice (null);
+			MonoDroidFramework.DefaultDevice = device;
+			return device;
 		}
 		
 		static T InvokeSynch<T> (Func<T> func)

@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using System.Text;
 using System.Runtime.InteropServices;
 using MonoDroid;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.MonoDroid
 {
@@ -160,6 +161,21 @@ namespace MonoDevelop.MonoDroid
 		public static AndroidToolbox Toolbox { get; private set; }
 		public static DeviceManager DeviceManager { get; private set; }
 		
+		static AndroidDevice defaultDevice;
+
+		public static AndroidDevice DefaultDevice {
+			get {
+				return defaultDevice;
+			}
+			set {
+				defaultDevice = value;
+
+				var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
+				var conf = (MonoDroidProjectConfiguration) proj.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
+				proj.SetDeviceTarget (conf, value);
+			}
+		}
+
 		public static IList<AndroidDevice> Devices {
 			get {
 				//FIXME: use DeviceManager

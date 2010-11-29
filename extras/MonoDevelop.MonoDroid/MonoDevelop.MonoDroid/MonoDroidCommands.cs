@@ -49,6 +49,9 @@ namespace MonoDevelop.MonoDroid
 		OpenAvdManager,
 	}
 	
+	//
+	// We may use this one in the future if we properly support full dynamic device listing
+	//
 	class SelectDeviceTargetHandler : CommandHandler
 	{
 		protected override void Update (CommandArrayInfo info)
@@ -78,6 +81,20 @@ namespace MonoDevelop.MonoDroid
 				return;
 			
 			throw new NotImplementedException ();
+		}
+	}
+
+	class ChangeDeviceTargetHandler : CommandHandler
+	{
+		protected override void Update (CommandArrayInfo info)
+		{
+		}
+
+		protected override void Run (object dataItem)
+		{
+			var device = MonoDroidUtility.ChooseDevice (null);
+			if (device != null)
+				MonoDroidFramework.DefaultDevice = device;
 		}
 	}
 	
