@@ -51,6 +51,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		//NOTE: default toolsversion should match the default format.
 		public const string DefaultFormat = "MSBuild08";
 		const string REFERENCED_MSBUILD_TOOLS = "3.5";
+		const string REFERENCED_MSBUILD_UTILS = "Microsoft.Build.Utilities.v3.5";
 		internal const string DefaultToolsVersion = REFERENCED_MSBUILD_TOOLS;
 		
 		static DataContext dataContext;
@@ -473,29 +474,27 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			var newVersions = new Dictionary<string, string[]> ();
 			string version;
 			Mono.Cecil.TargetRuntime runtime;
-			var utilsAssemblyName = REFERENCED_MSBUILD_TOOLS == "2.0"? "Microsoft.Build.Utilities"
-				: "Microsoft.Build.Utilities.v" + REFERENCED_MSBUILD_TOOLS;
 			
 			switch (toolsVersion) {
 			case "2.0":
 				version = "2.0.0.0";
 				newVersions.Add ("Microsoft.Build.Engine", new string[] {"Microsoft.Build.Engine", version});
 				newVersions.Add ("Microsoft.Build.Framework", new string[] {"Microsoft.Build.Framework", version});
-				newVersions.Add (utilsAssemblyName, new string[] {"Microsoft.Build.Utilities", version});
+				newVersions.Add (REFERENCED_MSBUILD_UTILS, new string[] {"Microsoft.Build.Utilities", version});
 				runtime = Mono.Cecil.TargetRuntime.Net_2_0;
 				break;
 			case "3.5":
 				version = "3.5.0.0";
 				newVersions.Add ("Microsoft.Build.Engine", new string[] {"Microsoft.Build.Engine", version});
 				newVersions.Add ("Microsoft.Build.Framework", new string[] {"Microsoft.Build.Framework", version});
-				newVersions.Add (utilsAssemblyName, new string[] {"Microsoft.Build.Utilities.v3.5", version});
+				newVersions.Add (REFERENCED_MSBUILD_UTILS, new string[] {"Microsoft.Build.Utilities.v3.5", version});
 				runtime = Mono.Cecil.TargetRuntime.Net_2_0;
 				break;
 			case "4.0":
 				version = "4.0.0.0";
 				newVersions.Add ("Microsoft.Build.Engine", new string[] {"Microsoft.Build.Engine", version});
 				newVersions.Add ("Microsoft.Build.Framework", new string[] {"Microsoft.Build.Framework", version});
-				newVersions.Add (utilsAssemblyName, new string[] {"Microsoft.Build.Utilities.v4.0", version});
+				newVersions.Add (REFERENCED_MSBUILD_UTILS, new string[] {"Microsoft.Build.Utilities.v4.0", version});
 				runtime = Mono.Cecil.TargetRuntime.Net_4_0;
 				break;
 			default:
