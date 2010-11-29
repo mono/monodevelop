@@ -92,6 +92,9 @@ namespace MonoDevelop.MonoDroid
 
 		protected override void Run (object dataItem)
 		{
+			if (!MonoDroidFramework.EnsureSdksInstalled ())
+				return;
+
 			var device = MonoDroidUtility.ChooseDevice (null);
 			if (device != null)
 				MonoDroidFramework.DefaultDevice = device;
@@ -108,6 +111,9 @@ namespace MonoDevelop.MonoDroid
 		
 		protected override void Run ()
 		{
+			if (!MonoDroidFramework.EnsureSdksInstalled ())
+				return;
+
 			var configSel = IdeApp.Workspace.ActiveConfiguration;
 			var proj = GetActiveExecutableMonoDroidProject ();
 			
