@@ -118,7 +118,7 @@ namespace MonoDevelop.Core
 		{
 			string platform;
 			if (PropertyService.IsWindows)
-				platform = "Windows";
+				platform = "Win32";
 			else if (PropertyService.IsMac)
 				platform = "Mac";
 			else
