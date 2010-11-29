@@ -21,7 +21,7 @@ export DYLD_LIBRARY_PATH="$RESOURCES_PATH:$DYLD_LIBRARY_PATH"
 
 ##### Mono check #####
 
-"$MACOS_DIR/mono-version-check" "$APP_NAME" 2 6 7
+"$MACOS_DIR/mono-version-check" "$APP_NAME" 2 8
 
 ##### Run the exe using Mono #####
 
