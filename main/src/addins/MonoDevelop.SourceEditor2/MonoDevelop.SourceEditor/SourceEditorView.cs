@@ -255,9 +255,10 @@ namespace MonoDevelop.SourceEditor
 		void HandleTaskServiceJumpedToTask (object sender, TaskEventArgs e)
 		{
 			Task task = e.Tasks.FirstOrDefault ();
-			if (task == null || task.FileName != Document.FileName)
+			var doc = Document;
+			if (task == null || doc == null || task.FileName != doc.FileName)
 				return;
-			LineSegment lineSegment = Document.GetLine (task.Line);
+			LineSegment lineSegment = doc.GetLine (task.Line);
 			if (lineSegment == null)
 				return;
 			MessageBubbleTextMarker marker = (MessageBubbleTextMarker)lineSegment.Markers.FirstOrDefault (m => m is MessageBubbleTextMarker);
