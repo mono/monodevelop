@@ -156,8 +156,13 @@ namespace MonoDevelop.Core
 				return ((float)val).ToString (format);
 			else if (val is double)
 				return ((double)val).ToString (format);
-			else
-				return val.ToString ();
+			else if (val is string) {
+				if (format == "upper")
+					return val.ToString ().ToUpper ();
+				if (format == "lower")
+					return val.ToString ().ToLower ();
+			}
+			return val.ToString ();
 		}
 		
 		public static string Parse<T> (string input, Dictionary<string,T> customTags)
