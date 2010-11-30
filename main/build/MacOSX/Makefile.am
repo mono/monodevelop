@@ -79,6 +79,7 @@ MonoDevelop.app:
 	cp -r MDMonitor.app $(MACOS)
 
 # Mono stubs to make the process name and bundle location correct
+	rm -rf "$(MACOS)/bin"
 	mkdir -p "$(MACOS)/bin"
 	ln -s /Library/Frameworks/Mono.framework/Versions/Current/bin/mono "$(MACOS)/bin/monodevelop"
 	ln -s /Library/Frameworks/Mono.framework/Versions/Current/bin/mono "$(MACOS)/bin/mdtool"
