@@ -401,7 +401,6 @@ namespace MonoDevelop.VersionControl.Git
 			DispatchService.GuiSyncDispatch (delegate {
 				ConflictResolutionDialog dlg = new ConflictResolutionDialog ();
 				dlg.Load (file);
-				Gtk.ResponseType dres = (Gtk.ResponseType)dlg.Run ();
 				try {
 					dlg.Load (file);
 					var dres = (Gtk.ResponseType) MessageService.RunCustomDialog (dlg);
