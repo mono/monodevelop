@@ -110,12 +110,12 @@ namespace NGit.Revwalk.Filter
 	/// </remarks>
 	public abstract class RevFilter
 	{
-		private sealed class _RevFilter_97 : RevFilter
-		{
-			public _RevFilter_97()
-			{
-			}
+		/// <summary>Default filter that always returns true (thread safe).</summary>
+		/// <remarks>Default filter that always returns true (thread safe).</remarks>
+		public static readonly RevFilter ALL = new RevFilter.AllFilter();
 
+		private sealed class AllFilter : RevFilter
+		{
 			public override bool Include(RevWalk walker, RevCommit c)
 			{
 				return true;
@@ -132,16 +132,12 @@ namespace NGit.Revwalk.Filter
 			}
 		}
 
-		/// <summary>Default filter that always returns true (thread safe).</summary>
-		/// <remarks>Default filter that always returns true (thread safe).</remarks>
-		public static readonly RevFilter ALL = new _RevFilter_97();
+		/// <summary>Default filter that always returns false (thread safe).</summary>
+		/// <remarks>Default filter that always returns false (thread safe).</remarks>
+		public static readonly RevFilter NONE = new RevFilter.NoneFilter();
 
-		private sealed class _RevFilter_115 : RevFilter
+		private sealed class NoneFilter : RevFilter
 		{
-			public _RevFilter_115()
-			{
-			}
-
 			public override bool Include(RevWalk walker, RevCommit c)
 			{
 				return false;
@@ -158,16 +154,12 @@ namespace NGit.Revwalk.Filter
 			}
 		}
 
-		/// <summary>Default filter that always returns false (thread safe).</summary>
-		/// <remarks>Default filter that always returns false (thread safe).</remarks>
-		public static readonly RevFilter NONE = new _RevFilter_115();
+		/// <summary>Excludes commits with more than one parent (thread safe).</summary>
+		/// <remarks>Excludes commits with more than one parent (thread safe).</remarks>
+		public static readonly RevFilter NO_MERGES = new RevFilter.NoMergesFilter();
 
-		private sealed class _RevFilter_133 : RevFilter
+		private sealed class NoMergesFilter : RevFilter
 		{
-			public _RevFilter_133()
-			{
-			}
-
 			public override bool Include(RevWalk walker, RevCommit c)
 			{
 				return c.ParentCount < 2;
@@ -184,16 +176,19 @@ namespace NGit.Revwalk.Filter
 			}
 		}
 
-		/// <summary>Excludes commits with more than one parent (thread safe).</summary>
-		/// <remarks>Excludes commits with more than one parent (thread safe).</remarks>
-		public static readonly RevFilter NO_MERGES = new _RevFilter_133();
+		/// <summary>Selects only merge bases of the starting points (thread safe).</summary>
+		/// <remarks>
+		/// Selects only merge bases of the starting points (thread safe).
+		/// <p>
+		/// This is a special case filter that cannot be combined with any other
+		/// filter. Its include method always throws an exception as context
+		/// information beyond the arguments is necessary to determine if the
+		/// supplied commit is a merge base.
+		/// </remarks>
+		public static readonly RevFilter MERGE_BASE = new RevFilter.MergeBaseFilter();
 
-		private sealed class _RevFilter_158 : RevFilter
+		private sealed class MergeBaseFilter : RevFilter
 		{
-			public _RevFilter_158()
-			{
-			}
-
 			public override bool Include(RevWalk walker, RevCommit c)
 			{
 				throw new NotSupportedException(JGitText.Get().cannotBeCombined);
@@ -209,17 +204,6 @@ namespace NGit.Revwalk.Filter
 				return "MERGE_BASE";
 			}
 		}
-
-		/// <summary>Selects only merge bases of the starting points (thread safe).</summary>
-		/// <remarks>
-		/// Selects only merge bases of the starting points (thread safe).
-		/// <p>
-		/// This is a special case filter that cannot be combined with any other
-		/// filter. Its include method always throws an exception as context
-		/// information beyond the arguments is necessary to determine if the
-		/// supplied commit is a merge base.
-		/// </remarks>
-		public static readonly RevFilter MERGE_BASE = new _RevFilter_158();
 
 		/// <summary>Create a new filter that does the opposite of this filter.</summary>
 		/// <remarks>Create a new filter that does the opposite of this filter.</remarks>

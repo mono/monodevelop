@@ -334,6 +334,69 @@ namespace NGit.Api
 			return new CherryPickCommand(repo);
 		}
 
+		/// <summary>
+		/// Returns a command object to execute a
+		/// <code>Rebase</code>
+		/// command
+		/// </summary>
+		/// <seealso><a
+		/// *      href="http://www.kernel.org/pub/software/scm/git/docs/git-rebase.html"
+		/// *      >Git documentation about rebase</a></seealso>
+		/// <returns>
+		/// a
+		/// <see cref="RebaseCommand">RebaseCommand</see>
+		/// used to collect all optional parameters
+		/// and to finally execute the
+		/// <code>rebase</code>
+		/// command
+		/// </returns>
+		public virtual RebaseCommand Rebase()
+		{
+			return new RebaseCommand(repo);
+		}
+
+		/// <summary>
+		/// Returns a command object to execute a
+		/// <code>rm</code>
+		/// command
+		/// </summary>
+		/// <seealso><a
+		/// *      href="http://www.kernel.org/pub/software/scm/git/docs/git-rm.html"
+		/// *      >Git documentation about rm</a></seealso>
+		/// <returns>
+		/// a
+		/// <see cref="RmCommand">RmCommand</see>
+		/// used to collect all optional parameters and
+		/// to finally execute the
+		/// <code>rm</code>
+		/// command
+		/// </returns>
+		public virtual RmCommand Rm()
+		{
+			return new RmCommand(repo);
+		}
+
+		/// <summary>
+		/// Returns a command object to execute a
+		/// <code>checkout</code>
+		/// command
+		/// </summary>
+		/// <seealso><a
+		/// *      href="http://www.kernel.org/pub/software/scm/git/docs/git-checkout.html"
+		/// *      >Git documentation about checkout</a></seealso>
+		/// <returns>
+		/// a
+		/// <see cref="CheckoutCommand">CheckoutCommand</see>
+		/// used to collect all optional parameters
+		/// and to finally execute the
+		/// <code>checkout</code>
+		/// command
+		/// </returns>
+		public virtual CheckoutCommand Checkout()
+		{
+			return new CheckoutCommand(repo);
+		}
+
 		/// <returns>the git repository this class is interacting with</returns>
 		public virtual Repository GetRepository()
 		{

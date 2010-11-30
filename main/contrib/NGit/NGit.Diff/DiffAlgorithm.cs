@@ -63,6 +63,39 @@ namespace NGit.Diff
 	/// </summary>
 	public abstract class DiffAlgorithm
 	{
+		/// <summary>Supported diff algorithm</summary>
+		public enum SupportedAlgorithm
+		{
+			MYERS,
+			HISTOGRAM
+		}
+
+		/// <param name="alg">
+		/// the diff algorithm for which an implementation should be
+		/// returned
+		/// </param>
+		/// <returns>an implementation of the specified diff algorithm</returns>
+		public static DiffAlgorithm GetAlgorithm(DiffAlgorithm.SupportedAlgorithm alg)
+		{
+			switch (alg)
+			{
+				case DiffAlgorithm.SupportedAlgorithm.MYERS:
+				{
+					return MyersDiff<RawText>.INSTANCE;
+				}
+
+				case DiffAlgorithm.SupportedAlgorithm.HISTOGRAM:
+				{
+					return new HistogramDiff();
+				}
+
+				default:
+				{
+					throw new ArgumentException();
+				}
+			}
+		}
+
 		/// <summary>Compare two sequences and identify a list of edits between them.</summary>
 		/// <remarks>Compare two sequences and identify a list of edits between them.</remarks>
 		/// <?></?>

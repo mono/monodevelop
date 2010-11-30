@@ -4,7 +4,7 @@ namespace Sharpen
 
 	internal interface Future<T>
 	{
-		void Cancel (bool b);
-		void Get ();
+		bool Cancel (bool b);
+		T Get ();
 	}
 }

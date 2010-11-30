@@ -473,6 +473,10 @@
     <Compile Include="NGit.Notes\NoteBucket.cs" />
     <Compile Include="NGit.Notes\NoteMap.cs" />
     <Compile Include="NGit.Notes\NoteParser.cs" />
+    <Compile Include="NGit.Api\RebaseCommand.cs" />
+    <Compile Include="NGit.Api\RebaseResult.cs" />
+    <Compile Include="NGit.Api\RmCommand.cs" />
+    <Compile Include="NGit.Api\CheckoutCommand.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

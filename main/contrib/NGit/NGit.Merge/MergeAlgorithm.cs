@@ -55,22 +55,29 @@ namespace NGit.Merge
 	/// </summary>
 	/// <remarks>
 	/// Provides the merge algorithm which does a three-way merge on content provided
-	/// as RawText. Makes use of
-	/// <see cref="NGit.Diff.MyersDiff{S}">NGit.Diff.MyersDiff&lt;S&gt;</see>
-	/// to compute the diffs.
+	/// as RawText. By default
+	/// <see cref="NGit.Diff.HistogramDiff">NGit.Diff.HistogramDiff</see>
+	/// is used as diff algorithm.
 	/// </remarks>
 	public sealed class MergeAlgorithm
 	{
+		private readonly DiffAlgorithm diffAlg;
+
 		/// <summary>
-		/// Since this class provides only static methods I add a private default
-		/// constructor to prevent instantiation.
+		/// Creates a new MergeAlgorithm which uses
+		/// <see cref="NGit.Diff.HistogramDiff">NGit.Diff.HistogramDiff</see>
+		/// as diff
+		/// algorithm
 		/// </summary>
-		/// <remarks>
-		/// Since this class provides only static methods I add a private default
-		/// constructor to prevent instantiation.
-		/// </remarks>
-		public MergeAlgorithm()
+		public MergeAlgorithm() : this(new HistogramDiff())
 		{
+		}
+
+		/// <summary>Creates a new MergeAlgorithm</summary>
+		/// <param name="diff">the diff algorithm used by this merge</param>
+		public MergeAlgorithm(DiffAlgorithm diff)
+		{
+			this.diffAlg = diff;
 		}
 
 		private static readonly Edit END_EDIT = new Edit(int.MaxValue, int.MaxValue);
@@ -85,17 +92,17 @@ namespace NGit.Merge
 		/// <param name="ours">the first sequence to be merged</param>
 		/// <param name="theirs">the second sequence to be merged</param>
 		/// <returns>the resulting content</returns>
-		public static MergeResult<S> Merge<S>(SequenceComparator<S> cmp, S @base, S ours, 
-			S theirs) where S:Sequence
+		public MergeResult<S> Merge<S>(SequenceComparator<S> cmp, S @base, S ours, S theirs
+			) where S:Sequence
 		{
 			IList<S> sequences = new AList<S>(3);
 			sequences.AddItem(@base);
 			sequences.AddItem(ours);
 			sequences.AddItem(theirs);
 			MergeResult<S> result = new MergeResult<S>(sequences);
-			EditList oursEdits = MyersDiff<S>.INSTANCE.Diff(cmp, @base, ours);
+			EditList oursEdits = diffAlg.Diff(cmp, @base, ours);
 			Iterator<Edit> baseToOurs = oursEdits.Iterator();
-			EditList theirsEdits = MyersDiff<S>.INSTANCE.Diff(cmp, @base, theirs);
+			EditList theirsEdits = diffAlg.Diff(cmp, @base, theirs);
 			Iterator<Edit> baseToTheirs = theirsEdits.Iterator();
 			int current = 0;
 			// points to the next line (first line is 0) of base

@@ -81,7 +81,7 @@ namespace NGit.Treewalk
 
 		/// <summary>Size we perform file IO in if we have to read and hash a file.</summary>
 		/// <remarks>Size we perform file IO in if we have to read and hash a file.</remarks>
-		private const int BUFFER_SIZE = 2048;
+		internal const int BUFFER_SIZE = 2048;
 
 		/// <summary>
 		/// Maximum size of files which may be read fully into memory for performance
@@ -92,6 +92,10 @@ namespace NGit.Treewalk
 		/// reasons.
 		/// </remarks>
 		private const long MAXIMUM_FILE_SIZE_TO_READ_FULLY = 65536;
+
+		/// <summary>Inherited state of this iterator, describing working tree, etc.</summary>
+		/// <remarks>Inherited state of this iterator, describing working tree, etc.</remarks>
+		private readonly WorkingTreeIterator.IteratorState state;
 
 		/// <summary>
 		/// The
@@ -108,24 +112,6 @@ namespace NGit.Treewalk
 		/// came from.
 		/// </summary>
 		private int contentIdFromPtr;
-
-		/// <summary>
-		/// Buffer used to perform
-		/// <see cref="contentId">contentId</see>
-		/// computations.
-		/// </summary>
-		private byte[] contentReadBuffer;
-
-		/// <summary>
-		/// Digest computer for
-		/// <see cref="contentId">contentId</see>
-		/// computations.
-		/// </summary>
-		private MessageDigest contentDigest;
-
-		/// <summary>File name character encoder.</summary>
-		/// <remarks>File name character encoder.</remarks>
-		private readonly CharsetEncoder nameEncoder;
 
 		/// <summary>List of entries obtained from the subclass.</summary>
 		/// <remarks>List of entries obtained from the subclass.</remarks>
@@ -149,17 +135,12 @@ namespace NGit.Treewalk
 		/// <remarks>If there is a .gitignore file present, the parsed rules from it.</remarks>
 		private IgnoreNode ignoreNode;
 
-		/// <summary>Options used to process the working tree.</summary>
-		/// <remarks>Options used to process the working tree.</remarks>
-		private readonly WorkingTreeOptions options;
-
 		/// <summary>Create a new iterator with no parent.</summary>
 		/// <remarks>Create a new iterator with no parent.</remarks>
 		/// <param name="options">working tree options to be used</param>
 		protected internal WorkingTreeIterator(WorkingTreeOptions options) : base()
 		{
-			nameEncoder = Constants.CHARSET.NewEncoder();
-			this.options = options;
+			state = new WorkingTreeIterator.IteratorState(options);
 		}
 
 		/// <summary>Create a new iterator with no parent and a prefix.</summary>
@@ -182,8 +163,7 @@ namespace NGit.Treewalk
 		protected internal WorkingTreeIterator(string prefix, WorkingTreeOptions options)
 			 : base(prefix)
 		{
-			nameEncoder = Constants.CHARSET.NewEncoder();
-			this.options = options;
+			state = new WorkingTreeIterator.IteratorState(options);
 		}
 
 		/// <summary>Create an iterator for a subtree of an existing iterator.</summary>
@@ -192,8 +172,7 @@ namespace NGit.Treewalk
 		protected internal WorkingTreeIterator(NGit.Treewalk.WorkingTreeIterator p) : base
 			(p)
 		{
-			nameEncoder = p.nameEncoder;
-			options = p.options;
+			state = p.state;
 		}
 
 		/// <summary>Initialize this iterator for the root level of a repository.</summary>
@@ -262,26 +241,6 @@ namespace NGit.Treewalk
 			return zeroid;
 		}
 
-		private void InitializeDigestAndReadBuffer()
-		{
-			if (contentDigest != null)
-			{
-				return;
-			}
-			if (parent == null)
-			{
-				contentReadBuffer = new byte[BUFFER_SIZE];
-				contentDigest = Constants.NewMessageDigest();
-			}
-			else
-			{
-				NGit.Treewalk.WorkingTreeIterator p = (NGit.Treewalk.WorkingTreeIterator)parent;
-				p.InitializeDigestAndReadBuffer();
-				contentReadBuffer = p.contentReadBuffer;
-				contentDigest = p.contentDigest;
-			}
-		}
-
 		private static readonly byte[] digits = new byte[] { (byte)('0'), (byte)('1'), (byte
 			)('2'), (byte)('3'), (byte)('4'), (byte)('5'), (byte)('6'), (byte)('7'), (byte)(
 			'8'), (byte)('9') };
@@ -300,7 +259,7 @@ namespace NGit.Treewalk
 				}
 				try
 				{
-					InitializeDigestAndReadBuffer();
+					state.InitializeDigestAndReadBuffer();
 					long len = e.GetLength();
 					if (!MightNeedCleaning(e))
 					{
@@ -363,7 +322,7 @@ namespace NGit.Treewalk
 		// outstanding data to flush or anything like that.
 		private bool MightNeedCleaning(WorkingTreeIterator.Entry entry)
 		{
-			switch (options.GetAutoCRLF())
+			switch (GetOptions().GetAutoCRLF())
 			{
 				case CoreConfig.AutoCRLF.FALSE:
 				default:
@@ -417,7 +376,7 @@ namespace NGit.Treewalk
 		/// <returns>working tree options</returns>
 		public virtual WorkingTreeOptions GetOptions()
 		{
-			return options;
+			return state.options;
 		}
 
 		public override int IdOffset()
@@ -580,9 +539,9 @@ namespace NGit.Treewalk
 			return ignoreNode;
 		}
 
-		internal sealed class _IComparer_482 : IComparer<WorkingTreeIterator.Entry>
+		internal sealed class _IComparer_455 : IComparer<WorkingTreeIterator.Entry>
 		{
-			public _IComparer_482()
+			public _IComparer_455()
 			{
 			}
 
@@ -616,7 +575,7 @@ namespace NGit.Treewalk
 			}
 		}
 
-		private static readonly IComparer<WorkingTreeIterator.Entry> ENTRY_CMP = new _IComparer_482
+		private static readonly IComparer<WorkingTreeIterator.Entry> ENTRY_CMP = new _IComparer_455
 			();
 
 		internal static int LastPathChar(WorkingTreeIterator.Entry e)
@@ -639,6 +598,7 @@ namespace NGit.Treewalk
 			entries = list;
 			int i;
 			int o;
+			CharsetEncoder nameEncoder = state.nameEncoder;
 			for (i = 0, o = 0; i < entries.Length; i++)
 			{
 				WorkingTreeIterator.Entry e = entries[i];
@@ -836,6 +796,8 @@ namespace NGit.Treewalk
 		/// <exception cref="System.IO.IOException"></exception>
 		private byte[] ComputeHash(InputStream @in, long length)
 		{
+			MessageDigest contentDigest = state.contentDigest;
+			byte[] contentReadBuffer = state.contentReadBuffer;
 			contentDigest.Reset();
 			contentDigest.Update(hblob);
 			contentDigest.Update(unchecked((byte)' '));
@@ -1054,6 +1016,46 @@ namespace NGit.Treewalk
 					}
 				}
 				return r.GetRules().IsEmpty() ? null : r;
+			}
+		}
+
+		private sealed class IteratorState
+		{
+			/// <summary>Options used to process the working tree.</summary>
+			/// <remarks>Options used to process the working tree.</remarks>
+			internal readonly WorkingTreeOptions options;
+
+			/// <summary>File name character encoder.</summary>
+			/// <remarks>File name character encoder.</remarks>
+			internal readonly CharsetEncoder nameEncoder;
+
+			/// <summary>
+			/// Digest computer for
+			/// <see cref="WorkingTreeIterator.contentId">WorkingTreeIterator.contentId</see>
+			/// computations.
+			/// </summary>
+			internal MessageDigest contentDigest;
+
+			/// <summary>
+			/// Buffer used to perform
+			/// <see cref="WorkingTreeIterator.contentId">WorkingTreeIterator.contentId</see>
+			/// computations.
+			/// </summary>
+			internal byte[] contentReadBuffer;
+
+			internal IteratorState(WorkingTreeOptions options)
+			{
+				this.options = options;
+				this.nameEncoder = Constants.CHARSET.NewEncoder();
+			}
+
+			internal void InitializeDigestAndReadBuffer()
+			{
+				if (contentDigest == null)
+				{
+					contentDigest = Constants.NewMessageDigest();
+					contentReadBuffer = new byte[BUFFER_SIZE];
+				}
 			}
 		}
 	}

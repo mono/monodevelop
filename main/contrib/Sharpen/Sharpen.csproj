@@ -141,6 +141,7 @@
     <Compile Include="Sharpen\URLEncoder.cs" />
     <Compile Include="Sharpen\BitSet.cs" />
     <Compile Include="Sharpen\Channels.cs" />
+    <Compile Include="Sharpen\BufferedWriter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

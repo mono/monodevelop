@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Net;
 using System.Linq;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace Sharpen
 {
@@ -720,7 +721,7 @@ namespace Sharpen
 		{
 			try {
 				IAsyncResult res = socket.BeginConnect (ep,null, null);
-				if (!res.AsyncWaitHandle.WaitOne (timeout, true))
+				if (!res.AsyncWaitHandle.WaitOne (timeout > 0 ? timeout : Timeout.Infinite, true))
 					throw new IOException ("Connection timeout");
 			} catch (SocketException se) {
 				throw new IOException (se.Message);

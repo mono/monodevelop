@@ -84,7 +84,7 @@ namespace NGit.Diff
 
 		private int abbreviationLength = 7;
 
-		private DiffAlgorithm diffAlgorithm = new HistogramDiff();
+		private DiffAlgorithm diffAlgorithm;
 
 		private RawTextComparator comparator = RawTextComparator.DEFAULT;
 
@@ -144,6 +144,9 @@ namespace NGit.Diff
 				SetNewPrefix(string.Empty);
 			}
 			SetDetectRenames(dc.IsRenameDetectionEnabled());
+			diffAlgorithm = DiffAlgorithm.GetAlgorithm(db.GetConfig().GetEnum(ConfigConstants
+				.CONFIG_DIFF_SECTION, null, ConfigConstants.CONFIG_KEY_ALGORITHM, DiffAlgorithm.SupportedAlgorithm
+				.HISTOGRAM));
 		}
 
 		/// <summary>Change the number of lines of context to display.</summary>

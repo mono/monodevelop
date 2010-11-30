@@ -61,6 +61,12 @@ namespace NGit
 		/// <summary>The "remote" section</summary>
 		public static readonly string CONFIG_REMOTE_SECTION = "remote";
 
+		/// <summary>The "diff" section</summary>
+		public static readonly string CONFIG_DIFF_SECTION = "diff";
+
+		/// <summary>The "algorithm" key</summary>
+		public static readonly string CONFIG_KEY_ALGORITHM = "algorithm";
+
 		/// <summary>The "autocrlf" key</summary>
 		public static readonly string CONFIG_KEY_AUTOCRLF = "autocrlf";
 

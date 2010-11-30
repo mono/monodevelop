@@ -94,12 +94,12 @@ namespace NGit.Treewalk.Filter
 	/// </remarks>
 	public abstract class TreeFilter
 	{
-		private sealed class _TreeFilter_87 : TreeFilter
-		{
-			public _TreeFilter_87()
-			{
-			}
+		/// <summary>Selects all tree entries.</summary>
+		/// <remarks>Selects all tree entries.</remarks>
+		public static readonly TreeFilter ALL = new TreeFilter.AllFilter();
 
+		private sealed class AllFilter : TreeFilter
+		{
 			public override bool Include(TreeWalk walker)
 			{
 				return true;
@@ -121,16 +121,25 @@ namespace NGit.Treewalk.Filter
 			}
 		}
 
-		/// <summary>Selects all tree entries.</summary>
-		/// <remarks>Selects all tree entries.</remarks>
-		public static readonly TreeFilter ALL = new _TreeFilter_87();
+		/// <summary>Selects only tree entries which differ between at least 2 trees.</summary>
+		/// <remarks>
+		/// Selects only tree entries which differ between at least 2 trees.
+		/// <p>
+		/// This filter also prevents a TreeWalk from recursing into a subtree if all
+		/// parent trees have the identical subtree at the same path. This
+		/// dramatically improves walk performance as only the changed subtrees are
+		/// entered into.
+		/// <p>
+		/// If this filter is applied to a walker with only one tree it behaves like
+		/// <see cref="ALL">ALL</see>
+		/// , or as though the walker was matching a virtual empty tree
+		/// against the single tree it was actually given. Applications may wish to
+		/// treat such a difference as "all names added".
+		/// </remarks>
+		public static readonly TreeFilter ANY_DIFF = new TreeFilter.AnyDiffFilter();
 
-		private sealed class _TreeFilter_122 : TreeFilter
+		private sealed class AnyDiffFilter : TreeFilter
 		{
-			public _TreeFilter_122()
-			{
-			}
-
 			public override bool Include(TreeWalk walker)
 			{
 				int n = walker.TreeCount;
@@ -165,23 +174,6 @@ namespace NGit.Treewalk.Filter
 				return "ANY_DIFF";
 			}
 		}
-
-		/// <summary>Selects only tree entries which differ between at least 2 trees.</summary>
-		/// <remarks>
-		/// Selects only tree entries which differ between at least 2 trees.
-		/// <p>
-		/// This filter also prevents a TreeWalk from recursing into a subtree if all
-		/// parent trees have the identical subtree at the same path. This
-		/// dramatically improves walk performance as only the changed subtrees are
-		/// entered into.
-		/// <p>
-		/// If this filter is applied to a walker with only one tree it behaves like
-		/// <see cref="ALL">ALL</see>
-		/// , or as though the walker was matching a virtual empty tree
-		/// against the single tree it was actually given. Applications may wish to
-		/// treat such a difference as "all names added".
-		/// </remarks>
-		public static readonly TreeFilter ANY_DIFF = new _TreeFilter_122();
 
 		/// <summary>Create a new filter that does the opposite of this filter.</summary>
 		/// <remarks>Create a new filter that does the opposite of this filter.</remarks>

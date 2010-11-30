@@ -76,6 +76,9 @@ namespace Sharpen
 
 	public class ExecutionException : Exception
 	{
+		public ExecutionException (Exception inner): base ("Execution failed", inner)
+		{
+		}
 	}
 
 	public class InstantiationException : Exception
