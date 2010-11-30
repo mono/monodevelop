@@ -140,6 +140,39 @@ namespace NGit.Util
 
 		/// <summary>Parse a string as a standard Git boolean value.</summary>
 		/// <remarks>
+		/// Parse a string as a standard Git boolean value. See
+		/// <see cref="ToBooleanOrNull(string)">ToBooleanOrNull(string)</see>
+		/// .
+		/// </remarks>
+		/// <param name="stringValue">the string to parse.</param>
+		/// <returns>
+		/// the boolean interpretation of
+		/// <code>value</code>
+		/// .
+		/// </returns>
+		/// <exception cref="System.ArgumentException">
+		/// if
+		/// <code>value</code>
+		/// is not recognized as one of the standard
+		/// boolean names.
+		/// </exception>
+		public static bool ToBoolean(string stringValue)
+		{
+			if (stringValue == null)
+			{
+				throw new ArgumentNullException(JGitText.Get().expectedBooleanStringValue);
+			}
+			bool? @bool = ToBooleanOrNull(stringValue);
+			if (@bool == null)
+			{
+				throw new ArgumentException(MessageFormat.Format(JGitText.Get().notABoolean, stringValue
+					));
+			}
+			return @bool.Value;
+		}
+
+		/// <summary>Parse a string as a standard Git boolean value.</summary>
+		/// <remarks>
 		/// Parse a string as a standard Git boolean value.
 		/// <p>
 		/// The terms
@@ -176,19 +209,14 @@ namespace NGit.Util
 		/// <returns>
 		/// the boolean interpretation of
 		/// <code>value</code>
-		/// .
+		/// or null in case the
+		/// string does not represent a boolean value
 		/// </returns>
-		/// <exception cref="System.ArgumentException">
-		/// if
-		/// <code>value</code>
-		/// is not recognized as one of the standard
-		/// boolean names.
-		/// </exception>
-		public static bool ToBoolean(string stringValue)
+		public static bool? ToBooleanOrNull(string stringValue)
 		{
 			if (stringValue == null)
 			{
-				throw new ArgumentNullException(JGitText.Get().expectedBooleanStringValue);
+				return null;
 			}
 			if (EqualsIgnoreCase("yes", stringValue) || EqualsIgnoreCase("true", stringValue)
 				 || EqualsIgnoreCase("1", stringValue) || EqualsIgnoreCase("on", stringValue))
@@ -204,8 +232,7 @@ namespace NGit.Util
 				}
 				else
 				{
-					throw new ArgumentException(MessageFormat.Format(JGitText.Get().notABoolean, stringValue
-						));
+					return null;
 				}
 			}
 		}

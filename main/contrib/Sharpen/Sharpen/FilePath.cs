@@ -306,6 +306,8 @@ namespace Sharpen
 		// Don't change the case of this method, since ngit does reflection on it
 		public bool canExecute ()
 		{
+			if (!File.Exists (path))
+				return false;
 			UnixFileInfo fi = new UnixFileInfo (path);
 			return 0 != (fi.FileAccessPermissions & (FileAccessPermissions.UserExecute | FileAccessPermissions.GroupExecute | FileAccessPermissions.OtherExecute));
 		}

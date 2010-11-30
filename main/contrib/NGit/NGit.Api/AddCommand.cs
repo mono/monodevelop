@@ -170,31 +170,39 @@ namespace NGit.Api
 						{
 							if (!(update && tw.GetTree<DirCacheIterator>(0) == null))
 							{
+								c = tw.GetTree<DirCacheIterator>(0);
 								if (f != null)
 								{
 									// the file exists
 									long sz = f.GetEntryLength();
 									DirCacheEntry entry = new DirCacheEntry(path);
-									entry.SetLength(sz);
-									entry.SetLastModified(f.GetEntryLastModified());
-									entry.SetFileMode(f.GetEntryFileMode());
-									InputStream @in = f.OpenEntryStream();
-									try
+									if (c == null || c.GetDirCacheEntry() == null || !c.GetDirCacheEntry().IsAssumeValid
+										())
 									{
-										entry.SetObjectId(inserter.Insert(Constants.OBJ_BLOB, sz, @in));
+										entry.SetLength(sz);
+										entry.SetLastModified(f.GetEntryLastModified());
+										entry.SetFileMode(f.GetEntryFileMode());
+										InputStream @in = f.OpenEntryStream();
+										try
+										{
+											entry.SetObjectId(inserter.Insert(Constants.OBJ_BLOB, sz, @in));
+										}
+										finally
+										{
+											@in.Close();
+										}
+										builder.Add(entry);
+										lastAddedFile = path;
 									}
-									finally
+									else
 									{
-										@in.Close();
+										builder.Add(c.GetDirCacheEntry());
 									}
-									builder.Add(entry);
-									lastAddedFile = path;
 								}
 								else
 								{
 									if (!update)
 									{
-										c = tw.GetTree<DirCacheIterator>(0);
 										builder.Add(c.GetDirCacheEntry());
 									}
 								}

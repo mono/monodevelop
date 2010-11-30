@@ -41,7 +41,10 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System;
 using NGit;
+using NGit.Diff;
+using NGit.Util;
 using Sharpen;
 
 namespace NGit.Diff
@@ -50,10 +53,10 @@ namespace NGit.Diff
 	/// <remarks>Keeps track of diff related configuration options.</remarks>
 	public class DiffConfig
 	{
-		private sealed class _SectionParser_52 : Config.SectionParser<NGit.Diff.DiffConfig
+		private sealed class _SectionParser_56 : Config.SectionParser<NGit.Diff.DiffConfig
 			>
 		{
-			public _SectionParser_52()
+			public _SectionParser_56()
 			{
 			}
 
@@ -69,19 +72,32 @@ namespace NGit.Diff
 		/// 	</see>
 		/// .
 		/// </summary>
-		public static readonly Config.SectionParser<NGit.Diff.DiffConfig> KEY = new _SectionParser_52
+		public static readonly Config.SectionParser<NGit.Diff.DiffConfig> KEY = new _SectionParser_56
 			();
+
+		/// <summary>
+		/// Permissible values for
+		/// <code>diff.renames</code>
+		/// .
+		/// </summary>
+		public enum RenameDetectionType
+		{
+			FALSE,
+			TRUE,
+			COPY
+		}
 
 		private readonly bool noPrefix;
 
-		private readonly bool renames;
+		private readonly DiffConfig.RenameDetectionType renameDetectionType;
 
 		private readonly int renameLimit;
 
 		private DiffConfig(Config rc)
 		{
 			noPrefix = rc.GetBoolean("diff", "noprefix", false);
-			renames = rc.GetBoolean("diff", "renames", false);
+			renameDetectionType = ParseRenameDetectionType(rc.GetString("diff", null, "renames"
+				));
 			renameLimit = rc.GetInt("diff", "renamelimit", 200);
 		}
 
@@ -94,13 +110,56 @@ namespace NGit.Diff
 		/// <returns>true if rename detection is enabled by default.</returns>
 		public virtual bool IsRenameDetectionEnabled()
 		{
-			return renames;
+			return renameDetectionType != DiffConfig.RenameDetectionType.FALSE;
+		}
+
+		/// <returns>type of rename detection to perform.</returns>
+		public virtual DiffConfig.RenameDetectionType GetRenameDetectionType()
+		{
+			return renameDetectionType;
 		}
 
 		/// <returns>limit on number of paths to perform inexact rename detection.</returns>
 		public virtual int GetRenameLimit()
 		{
 			return renameLimit;
+		}
+
+		private static DiffConfig.RenameDetectionType ParseRenameDetectionType(string renameString
+			)
+		{
+			if (renameString == null)
+			{
+				return DiffConfig.RenameDetectionType.FALSE;
+			}
+			else
+			{
+				if (StringUtils.EqualsIgnoreCase("copy", renameString) || StringUtils.EqualsIgnoreCase
+					("copies", renameString))
+				{
+					return DiffConfig.RenameDetectionType.COPY;
+				}
+				else
+				{
+					bool? renameBoolean = StringUtils.ToBooleanOrNull(renameString);
+					if (renameBoolean == null)
+					{
+						throw new ArgumentException(MessageFormat.Format(JGitText.Get().enumValueNotSupported2
+							, "diff", "renames", renameString));
+					}
+					else
+					{
+						if (renameBoolean.Value)
+						{
+							return DiffConfig.RenameDetectionType.TRUE;
+						}
+						else
+						{
+							return DiffConfig.RenameDetectionType.FALSE;
+						}
+					}
+				}
+			}
 		}
 	}
 }
