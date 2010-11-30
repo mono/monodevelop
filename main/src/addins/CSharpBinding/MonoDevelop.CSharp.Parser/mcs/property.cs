@@ -15,19 +15,12 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Security;
-using System.Security.Permissions;
 using System.Text;
 
 #if NET_2_1
 using XmlElement = System.Object;
-#else
-using System.Xml;
 #endif
 
-using Mono.CompilerServices.SymbolWriter;
 
 namespace Mono.CSharp
 {
@@ -325,8 +318,8 @@ namespace Mono.CSharp
 
 			public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
 			{
-				if (a.IsInternalMethodImplAttribute) {
-					method.is_external_implementation = true;
+				if (a.Type == pa.MethodImpl) {
+					method.is_external_implementation = a.IsInternalCall ();
 				}
 
 				base.ApplyAttributeBuilder (a, ctor, cdata, pa);
@@ -1159,8 +1152,8 @@ namespace Mono.CSharp
 
 			public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
 			{
-				if (a.IsInternalMethodImplAttribute) {
-					method.is_external_implementation = true;
+				if (a.Type == pa.MethodImpl) {
+					method.is_external_implementation = a.IsInternalCall ();
 				}
 
 				base.ApplyAttributeBuilder (a, ctor, cdata, pa);

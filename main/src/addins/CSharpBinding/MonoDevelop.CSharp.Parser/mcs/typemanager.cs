@@ -12,14 +12,9 @@
 //
 
 using System;
-using System.IO;
 using System.Globalization;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Text;
-using System.Runtime.CompilerServices;
-using System.Diagnostics;
-using System.Linq;
 
 namespace Mono.CSharp {
 
@@ -68,6 +63,7 @@ namespace Mono.CSharp {
 	static public TypeSpec asynccallback_type;
 	static public TypeSpec runtime_argument_handle_type;
 	static public TypeSpec void_ptr_type;
+	static public TypeSpec interop_charset;
 
 	// 
 	// C# 2.0
@@ -173,7 +169,7 @@ namespace Mono.CSharp {
 		runtime_helpers_type = iasyncresult_type = asynccallback_type =
 		runtime_argument_handle_type = void_ptr_type = isvolatile_type =
 		generic_ilist_type = generic_icollection_type = generic_ienumerator_type =
-		generic_ienumerable_type = generic_nullable_type = expression_type =
+		generic_ienumerable_type = generic_nullable_type = expression_type = interop_charset =
 		parameter_expression_type = fieldinfo_type = methodinfo_type = ctorinfo_type = null;
 
 		expression_type_expr = null;
@@ -410,6 +406,8 @@ namespace Mono.CSharp {
 		generic_icollection_type = CoreLookupType (ctx, "System.Collections.Generic", "ICollection", 1, MemberKind.Interface, false);
 		generic_ienumerable_type = CoreLookupType (ctx, "System.Collections.Generic", "IEnumerable", 1, MemberKind.Interface, false);
 		generic_nullable_type = CoreLookupType (ctx, "System", "Nullable", 1, MemberKind.Struct, false);
+
+		isvolatile_type = CoreLookupType (ctx, "System.Runtime.CompilerServices", "IsVolatile", MemberKind.Class, false);
 
 		//
 		// Optional types which are used as types and for member lookup

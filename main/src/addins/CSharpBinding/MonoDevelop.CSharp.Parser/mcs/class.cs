@@ -15,20 +15,17 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
-using System.Text;
 using System.Linq;
 
 #if NET_2_1
 using XmlElement = System.Object;
 #else
-using System.Xml;
+
 #endif
 
-using Mono.CompilerServices.SymbolWriter;
 
 namespace Mono.CSharp {
 
@@ -475,8 +472,7 @@ namespace Mono.CSharp {
 		{
 			orderedAllMembers.Add (c);
 			bool is_static = (c.ModFlags & Modifiers.STATIC) != 0;
-			if (!AddToContainer (c, is_static ?
-				ConstructorBuilder.ConstructorName : ConstructorBuilder.TypeConstructorName))
+			if (!AddToContainer (c, is_static ? Constructor.ConstructorName : Constructor.TypeConstructorName))
 				return;
 			
 			if (is_static && c.ParameterInfo.IsEmpty){
@@ -1038,9 +1034,7 @@ namespace Mono.CSharp {
 
 				TypeBuilder = Module.CreateBuilder (Name, TypeAttr, type_size);
 			} else {
-				TypeBuilder builder = Parent.TypeBuilder;
-
-				TypeBuilder = builder.DefineNestedType (Basename, TypeAttr, null, type_size);
+				TypeBuilder = Parent.TypeBuilder.DefineNestedType (Basename, TypeAttr, null, type_size);
 			}
 
 			spec.SetMetaInfo (TypeBuilder);
@@ -1282,17 +1276,17 @@ namespace Mono.CSharp {
 		//
 		// Defines the type in the appropriate ModuleBuilder or TypeBuilder.
 		//
-		public TypeBuilder CreateType ()
+		public bool CreateType ()
 		{
 			if (TypeBuilder != null)
-				return TypeBuilder;
+				return !error;
 
 			if (error)
-				return null;
+				return false;
 
 			if (!CreateTypeBuilder ()) {
 				error = true;
-				return null;
+				return false;
 			}
 
 			if (partial_parts != null) {
@@ -1305,36 +1299,31 @@ namespace Mono.CSharp {
 
 			if (Types != null) {
 				foreach (TypeContainer tc in Types) {
-					if (tc.CreateType () == null) {
-						error = true;
-						return null;
-					}
+					tc.CreateType ();
 				}
 			}
 
-			return TypeBuilder;
+			return true;
 		}
 
-		public override TypeBuilder DefineType ()
+		public override void DefineType ()
 		{
 			if (error)
-				return null;
+				return;
 			if (type_defined)
-				return TypeBuilder;
+				return;
 
 			type_defined = true;
 
 			if (!DefineBaseTypes ()) {
 				error = true;
-				return null;
+				return;
 			}
 
 			if (!DefineNestedTypes ()) {
 				error = true;
-				return null;
+				return;
 			}
-
-			return TypeBuilder;
 		}
 
 		public override void SetParameterInfo (List<Constraints> constraints_list)
@@ -1433,8 +1422,7 @@ namespace Mono.CSharp {
 		{
 			if (Types != null) {
 				foreach (TypeContainer tc in Types)
-					if (tc.DefineType () == null)
-						return false;
+					tc.DefineType ();
 			}
 
 			return true;
@@ -2279,8 +2267,7 @@ namespace Mono.CSharp {
 
 			if (a.Type == pa.StructLayout) {
 				PartialContainer.HasStructLayout = true;
-
-				if (a.GetLayoutKindValue () == LayoutKind.Explicit)
+				if (a.IsExplicitLayoutKind ())
 					PartialContainer.HasExplicitLayout = true;
 			}
 

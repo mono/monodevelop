@@ -15,8 +15,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
 using System.Text;
@@ -461,8 +459,8 @@ namespace Mono.CSharp {
 				return;
 			}
 
-			if (a.IsInternalMethodImplAttribute) {
-				is_external_implementation = true;
+			if (a.Type == pa.MethodImpl) {
+				is_external_implementation = a.IsInternalCall ();
 			}
 
 			if (a.Type == pa.DllImport) {
@@ -1387,8 +1385,8 @@ namespace Mono.CSharp {
 				return;
 			}
 
-			if (a.IsInternalMethodImplAttribute) {
-				is_external_implementation = true;
+			if (a.Type == pa.MethodImpl) {
+				is_external_implementation = a.IsInternalCall ();
 			}
 
 			ConstructorBuilder.SetCustomAttribute ((ConstructorInfo) ctor.GetMetaInfo (), cdata);

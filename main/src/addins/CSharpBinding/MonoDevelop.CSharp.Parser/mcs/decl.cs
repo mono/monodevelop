@@ -12,9 +12,7 @@
 //
 
 using System;
-using System.Text;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Reflection.Emit;
 using System.Reflection;
 
@@ -1314,7 +1312,7 @@ namespace Mono.CSharp {
 		/// <remarks>
 		///  Should be overriten by the appropriate declaration space
 		/// </remarks>
-		public abstract TypeBuilder DefineType ();
+		public abstract void DefineType ();
 
 		protected void Error_MissingPartialModifier (MemberCore type)
 		{
