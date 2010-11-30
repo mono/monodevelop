@@ -13,6 +13,7 @@ obj/
 /main/tests/tmp
 /main/tests/config
 /main/tests/UnitTests/test-results
+/main/contrib/bin/
 
 # globs
 Makefile.in
@@ -121,6 +122,9 @@ autom4te.cache/
 /main/tests/Makefile
 /main/tests/UnitTests/Makefile
 /main/theme-icons/Makefile
+/main/contrib/NGit/Makefile
+/main/contrib/NSch/Makefile
+/main/contrib/Sharpen/Makefile
 
 # extras configure junk
 /extras/MonoDevelop.Database/INSTALL
