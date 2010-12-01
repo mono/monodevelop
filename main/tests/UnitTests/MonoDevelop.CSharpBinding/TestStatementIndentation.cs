@@ -1203,6 +1203,78 @@ if (b) {
 		}
 		
 		[Test()]
+		public void TestIfElseForcementAdd ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	void TestMethod ()
+	{
+		if (true)
+			Call ();
+		else
+			Call2 ();
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.EndOfLine;
+			policy.IfElseBraceForcement = BraceForcement.AddBraces;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			System.Console.WriteLine (data.Document.Text);
+			Assert.AreEqual (@"class Test
+{
+	void TestMethod ()
+	{
+		if (true) {
+			Call ();
+		} else {
+			Call2 ();
+		}
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestIfElseIFForcementAdd ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	void TestMethod ()
+	{
+		if (true)
+			Call ();
+		else if (false)
+			Call2 ();
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.EndOfLine;
+			policy.IfElseBraceForcement = BraceForcement.AddBraces;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			System.Console.WriteLine (data.Document.Text);
+			Assert.AreEqual (@"class Test
+{
+	void TestMethod ()
+	{
+		if (true) {
+			Call ();
+		} else if (false) {
+			Call2 ();
+		}
+	}
+}", data.Document.Text);
+		}
+		
+		[Test()]
 		public void TestElseOnNewLine ()
 		{
 			TextEditorData data = new TextEditorData ();
