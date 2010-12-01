@@ -60,8 +60,22 @@ namespace MonoDevelop.MonoDroid
 		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
 			var cmd = (MonoDroidExecutionCommand) command;
+			SetProperty (cmd.Device, "debug.mono.extra", String.Empty);
+
 			return MonoDroidFramework.Toolbox.StartActivity (cmd.Device, cmd.Activity,
 				console.Out, console.Error);
+		}
+
+		void SetProperty (AndroidDevice device, string property, string value)
+		{
+			var output = new StringWriter ();
+			ProcessWrapper process = MonoDroidFramework.Toolbox.SetProperty (device, property, value, output, output);
+			process.WaitForOutput ();
+
+			if (process.ExitCode != 0) {
+				string message = GettextCatalog.GetString ("Failed to set property on device: {0}", output.ToString ());
+				throw new InvalidOperationException (message);
+			}
 		}
 	}
 }
