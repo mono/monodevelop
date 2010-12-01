@@ -135,6 +135,13 @@ namespace NGit.Treewalk
 		/// <remarks>If there is a .gitignore file present, the parsed rules from it.</remarks>
 		private IgnoreNode ignoreNode;
 
+		/// <summary>Cached value of isEntryIgnored().</summary>
+		/// <remarks>
+		/// Cached value of isEntryIgnored(). 0 if not ignored, 1 if ignored, -1 if
+		/// the value is not yet cached.
+		/// </remarks>
+		private int ignoreStatus = -1;
+
 		/// <summary>Create a new iterator with no parent.</summary>
 		/// <remarks>Create a new iterator with no parent.</remarks>
 		/// <param name="options">working tree options to be used</param>
@@ -491,6 +498,10 @@ namespace NGit.Treewalk
 		/// 	</exception>
 		protected internal virtual bool IsEntryIgnored(int pLen)
 		{
+			if (ignoreStatus != -1)
+			{
+				return ignoreStatus == 1;
+			}
 			IgnoreNode rules = GetIgnoreNode();
 			if (rules != null)
 			{
@@ -508,11 +519,13 @@ namespace NGit.Treewalk
 				{
 					case IgnoreNode.MatchResult.IGNORED:
 					{
+						ignoreStatus = 1;
 						return true;
 					}
 
 					case IgnoreNode.MatchResult.NOT_IGNORED:
 					{
+						ignoreStatus = 0;
 						return false;
 					}
 
@@ -524,8 +537,11 @@ namespace NGit.Treewalk
 			}
 			if (parent is NGit.Treewalk.WorkingTreeIterator)
 			{
-				return ((NGit.Treewalk.WorkingTreeIterator)parent).IsEntryIgnored(pLen);
+				ignoreStatus = ((NGit.Treewalk.WorkingTreeIterator)parent).IsEntryIgnored(pLen) ? 
+					1 : 0;
+				return ignoreStatus == 1;
 			}
+			ignoreStatus = 0;
 			return false;
 		}
 
@@ -539,9 +555,9 @@ namespace NGit.Treewalk
 			return ignoreNode;
 		}
 
-		internal sealed class _IComparer_455 : IComparer<WorkingTreeIterator.Entry>
+		private sealed class _IComparer_468 : IComparer<WorkingTreeIterator.Entry>
 		{
-			public _IComparer_455()
+			public _IComparer_468()
 			{
 			}
 
@@ -575,7 +591,7 @@ namespace NGit.Treewalk
 			}
 		}
 
-		private static readonly IComparer<WorkingTreeIterator.Entry> ENTRY_CMP = new _IComparer_455
+		private static readonly IComparer<WorkingTreeIterator.Entry> ENTRY_CMP = new _IComparer_468
 			();
 
 		internal static int LastPathChar(WorkingTreeIterator.Entry e)
