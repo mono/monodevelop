@@ -832,10 +832,12 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			if (!ifElseStatement.FalseEmbeddedStatement.IsNull) {
 				PlaceOnNewLine (policy.PlaceElseOnNewLine, ifElseStatement.ElseKeyword);
+				var forcement = policy.IfElseBraceForcement;
 				if (ifElseStatement.FalseEmbeddedStatement is IfElseStatement) {
+					forcement = BraceForcement.DoNotChange;
 					PlaceOnNewLine (policy.PlaceElseIfOnNewLine, ((IfElseStatement)ifElseStatement.FalseEmbeddedStatement).IfKeyword);
 				}
-				FixEmbeddedStatment (policy.StatementBraceStyle, policy.IfElseBraceForcement, ifElseStatement.ElseKeyword, policy.AllowIfBlockInline, ifElseStatement.FalseEmbeddedStatement);
+				FixEmbeddedStatment (policy.StatementBraceStyle, forcement, ifElseStatement.ElseKeyword, policy.AllowIfBlockInline, ifElseStatement.FalseEmbeddedStatement);
 			}
 			
 			return null;
