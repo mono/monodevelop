@@ -86,8 +86,10 @@ namespace MonoDevelop.MonoDroid
 
 	class ChangeDeviceTargetHandler : CommandHandler
 	{
-		protected override void Update (CommandArrayInfo info)
+		protected override void Update (CommandInfo info)
 		{
+			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
+			info.Visible = info.Enabled = proj != null;
 		}
 
 		protected override void Run (object dataItem)
@@ -149,6 +151,8 @@ namespace MonoDevelop.MonoDroid
 	{
 		protected override void Update (CommandInfo info)
 		{
+			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
+			info.Visible = info.Enabled = proj != null;
 		}
 		
 		protected override void Run ()
@@ -164,6 +168,8 @@ namespace MonoDevelop.MonoDroid
 	{
 		protected override void Update (CommandInfo info)
 		{
+			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
+			info.Visible = info.Enabled = proj != null;
 		}
 		
 		protected override void Run ()
