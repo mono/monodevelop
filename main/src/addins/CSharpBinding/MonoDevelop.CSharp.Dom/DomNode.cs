@@ -164,6 +164,35 @@ namespace MonoDevelop.CSharp.Dom
 			AddChild (child);
 		}
 		
+		public DomNode GetNextNode ()
+		{
+			if (NextSibling != null)
+				return NextSibling;
+			if (Parent != null)
+				return Parent.GetNextNode ();
+			return null;
+		}
+		
+		public DomNode GetPrevNode ()
+		{
+			if (PrevSibling != null)
+				return PrevSibling;
+			if (Parent != null)
+				return Parent.GetPrevNode ();
+			return null;
+		}
+		
+		public DomNode GetAstNodeBefore (DomNode node)
+		{
+			var n = node.PrevSibling;
+			while (n != null) {
+				if (n.Role != Roles.Comment)
+					return n;
+				n = n.GetPrevNode ();
+			}
+			return null;
+		}
+		
 		public void InsertChildBefore (DomNode nextSibling, DomNode child, int role)
 		{
 			if (child == null)

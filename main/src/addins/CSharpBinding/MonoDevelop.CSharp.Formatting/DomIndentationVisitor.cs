@@ -582,8 +582,10 @@ namespace MonoDevelop.CSharp.Formatting
 				break;
 			case BraceForcement.AddBraces:
 				if (!isBlock) {
-					int offset = data.Document.LocationToOffset (node.StartLocation.Line, node.StartLocation.Column);
-					int start = SearchWhitespaceStart (offset);
+					DomNode n = node.Parent.GetAstNodeBefore (node);
+					int start = data.Document.LocationToOffset (n.EndLocation.Line, n.EndLocation.Column);
+					var next = n.GetNextNode ();
+					int offset = data.Document.LocationToOffset (next.StartLocation.Line, next.StartLocation.Column);
 					string startBrace = "";
 					switch (braceStyle) {
 					case BraceStyle.EndOfLineWithoutSpace:

@@ -5425,6 +5425,7 @@ fixed_statement
 	  
 		Fixed f = new Fixed ((Fixed.VariableDeclaration) $9, (Statement) $10, GetLocation ($1));
 		current_block.AddStatement (f);
+		lbag.AddStatement (f, GetLocation ($2), GetLocation ($8));
 		$$ = end_block (GetLocation ($8));
 	  }
 	;
