@@ -166,12 +166,13 @@ namespace MonoDevelop.VersionControl.Git
 			treeWalk.AddTree (workTree);
 
 			List<TreeFilter> filters = new List<TreeFilter> ();
-			filters.Add (new NotIgnoredFilter(2));
 			filters.Add (new SkipWorkTreeFilter(1));
 			if (path != ".")
 				filters.Add (PathFilter.Create (path));
-			filters.Add (TreeFilter.ANY_DIFF);
-			treeWalk.Filter = AndTreeFilter.Create(filters);
+			if (filters.Count > 1)
+				treeWalk.Filter = AndTreeFilter.Create(filters);
+			else
+				treeWalk.Filter = filters[0];
 			
 			while (treeWalk.Next())
 			{
@@ -238,11 +239,16 @@ namespace MonoDevelop.VersionControl.Git
 					}
 					else
 					{
-						if (!dirCacheIterator.IdEqual(workingTreeIterator))
-						{
-							// in index, in workdir, content differs => modified
-							Modified.Add(dirCacheIterator.GetEntryPathString());
-							changesExist = true;
+						// Workaround to file time resolution issues
+						long itime = dirCacheIterator.GetDirCacheEntry ().GetLastModified ();
+						long ftime = workingTreeIterator.GetEntryLastModified ();
+						if (itime / 1000 != ftime / 1000) {
+							if (!dirCacheIterator.IdEqual(workingTreeIterator))
+							{
+								// in index, in workdir, content differs => modified
+								Modified.Add(dirCacheIterator.GetEntryPathString());
+								changesExist = true;
+							}
 						}
 					}
 				}
