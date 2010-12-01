@@ -1167,7 +1167,41 @@ if (b) {
 			}
 	}
 }", data.Document.Text);
-		}		
+		}
+		
+		
+		[Test()]
+		public void TestIfForcementAdd ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	void TestMethod ()
+	{
+		if (true)
+			Call ();
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.EndOfLine;
+			policy.IfElseBraceForcement = BraceForcement.AddBraces;
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			System.Console.WriteLine (data.Document.Text);
+			Assert.AreEqual (@"class Test
+{
+	void TestMethod ()
+	{
+		if (true) {
+			Call ();
+		}
+	}
+}", data.Document.Text);
+		}
+		
 		[Test()]
 		public void TestElseOnNewLine ()
 		{
