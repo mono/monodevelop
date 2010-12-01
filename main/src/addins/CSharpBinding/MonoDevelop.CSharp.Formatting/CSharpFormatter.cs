@@ -192,10 +192,8 @@ namespace MonoDevelop.CSharp.Formatting
 		protected override string InternalFormat (PolicyContainer policyParent, string mimeType, string input, int startOffset, int endOffset)
 		{
 			IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
-			
 			TextEditorData data = new TextEditorData ();
 			data.Document.SuppressHighlightUpdate = true;
-			data.Text = input;
 			data.Document.MimeType = mimeType;
 			data.Document.FileName = "toformat.cs";
 			var textPolicy = policyParent != null ? policyParent.Get<TextStylePolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (types);
@@ -203,8 +201,14 @@ namespace MonoDevelop.CSharp.Formatting
 			data.Options.TabSize = textPolicy.TabWidth;
 			data.Options.OverrideDocumentEolMarker = true;
 			data.Options.DefaultEolMarker = textPolicy.GetEolMarker ();
+			data.Text = input;
 			
+//			System.Console.WriteLine ("TABS:" + textPolicy.TabsToSpaces);
 			endOffset += CorrectFormatting (data, startOffset, endOffset);
+			
+/*			System.Console.WriteLine ("-----");
+			System.Console.WriteLine (data.Text.Replace (" ", ".").Replace ("\t", "->"));
+			System.Console.WriteLine ("-----");*/
 			
 			CSharp.Dom.CompilationUnit compilationUnit = new MonoDevelop.CSharp.Parser.CSharpParser ().Parse (data);
 			CSharpFormattingPolicy policy = policyParent != null ? policyParent.Get<CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
@@ -230,7 +234,10 @@ namespace MonoDevelop.CSharp.Formatting
 				if (c.InsertedText != null)
 					end += c.InsertedText.Length;
 			}
-			string result = data.GetTextBetween (startOffset, end);
+/*			System.Console.WriteLine ("-----");
+			System.Console.WriteLine (data.Text.Replace (" ", "^").Replace ("\t", "->"));
+			System.Console.WriteLine ("-----");*/
+			string result = data.GetTextBetween (startOffset, Math.Min (data.Length, end));
 			return result;
 		}
 	}

@@ -525,8 +525,6 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitComment (MonoDevelop.CSharp.Dom.Comment comment, object data)
 		{
-			System.Console.WriteLine (comment.StartLocation);
-			System.Console.WriteLine (comment.StartsLine);
 			if (comment.StartsLine)
 				FixIndentation (comment.StartLocation);
 			return null;
@@ -603,7 +601,7 @@ namespace MonoDevelop.CSharp.Formatting
 						break;
 					}
 					if (IsLineIsEmptyUpToEol (data.Document.LocationToOffset (node.StartLocation.Line, node.StartLocation.Column)))
-						startBrace += data.EolMarker;
+						startBrace += data.EolMarker + data.Document.GetLineIndent (node.StartLocation.Line);
 					AddChange (start, offset - start, startBrace);
 				}
 				break;
@@ -651,7 +649,9 @@ namespace MonoDevelop.CSharp.Formatting
 				break;
 			case BraceForcement.AddBraces:
 				if (!isBlock) {
-					int offset = data.Document.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column) + 1;
+					int offset = data.Document.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column);
+					if (!char.IsWhiteSpace (data.GetCharAt (offset)))
+						offset++;
 					string startBrace = "";
 					switch (braceStyle) {
 					case BraceStyle.DoNotChange:
