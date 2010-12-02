@@ -239,7 +239,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			timer.Trace ("Read project guids");
 			
-			MSBuildPropertyGroup globalGroup = p.GetGlobalPropertyGroup ();
+			MSBuildPropertySet globalGroup = p.GetGlobalPropertyGroup ();
 			
 			// Avoid crash if there is not global group
 			if (globalGroup == null)
@@ -329,7 +329,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			ser.SerializationContext.BaseFile = EntityItem.FileName;
 			ser.SerializationContext.ProgressMonitor = monitor;
 			
-			MSBuildPropertyGroup globalGroup = msproject.GetGlobalPropertyGroup ();
+			MSBuildPropertySet globalGroup = msproject.GetGlobalPropertyGroup ();
 			
 			Item.SetItemHandler (this);
 			
@@ -387,7 +387,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (conf == Unspecified || platform == Unspecified)
 					continue;
 				
-				MSBuildPropertyGroup grp = CreateMergedConfiguration (readConfigData, conf, platform);
+				MSBuildPropertySet grp = GetMergedConfiguration (readConfigData, conf, platform, null);
 				SolutionItemConfiguration config = EntityItem.CreateConfiguration (conf);
 				
 				config.Platform = platform;
@@ -436,10 +436,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			Item.NeedsReload = false;
 		}
 
-		MSBuildPropertyGroup ExtractMergedtoprojectProperties (MSBuildSerializer ser, MSBuildPropertyGroup pgroup, object ob)
+		MSBuildPropertyGroup ExtractMergedtoprojectProperties (MSBuildSerializer ser, MSBuildPropertySet pgroup, object ob)
 		{
 			XmlDocument doc = new XmlDocument ();
-			MSBuildPropertyGroup res = new MSBuildPropertyGroup (doc.CreateElement ("PropGroup"));
+			MSBuildPropertyGroup res = new MSBuildPropertyGroup (null, doc.CreateElement ("PropGroup"));
 			
 			foreach (string propName in GetMergeToProjectProperties (ser, ob)) {
 				MSBuildProperty bp = pgroup.GetProperty (propName);
@@ -565,16 +565,24 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			public bool Exists;
 		}
 
-		MSBuildPropertyGroup CreateMergedConfiguration (List<ConfigData> configData, string conf, string platform)
+		MSBuildPropertySet GetMergedConfiguration (List<ConfigData> configData, string conf, string platform, MSBuildPropertyGroup propGroupLimit)
 		{
-			MSBuildPropertyGroup merged = null;
+			MSBuildPropertySet merged = null;
 			
 			foreach (ConfigData grp in configData) {
+				if (grp.Group == propGroupLimit)
+					break;
 				if ((grp.Config == conf || grp.Config == Unspecified) && (grp.Platform == platform || grp.Platform == Unspecified)) {
 					if (merged == null)
 						merged = grp.Group;
-					else
-						merged = MSBuildPropertyGroup.Merge (merged, grp.Group);
+					else if (merged is MSBuildPropertyGroupMerged)
+						((MSBuildPropertyGroupMerged)merged).Add (grp.Group);
+					else {
+						MSBuildPropertyGroupMerged m = new MSBuildPropertyGroupMerged ();
+						m.Add ((MSBuildPropertyGroup)merged);
+						m.Add (grp.Group);
+						merged = m;
+					}
 				}
 			}
 			return merged;
@@ -613,7 +621,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			// Global properties
 			
-			MSBuildPropertyGroup globalGroup = msproject.GetGlobalPropertyGroup ();
+			MSBuildPropertySet globalGroup = msproject.GetGlobalPropertyGroup ();
 			if (globalGroup == null) {
 				globalGroup = msproject.AddNewPropertyGroup (false);
 			}
@@ -1068,18 +1076,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		void UnmergeBaseConfiguration (List<ConfigData> configData, MSBuildPropertyGroup propGroup, string conf, string platform)
 		{
-			MSBuildPropertyGroup baseGroup = null;
-			
-			foreach (ConfigData data in configData) {
-				if (data.Group == propGroup)
-					break;
-				if ((data.Config == conf || data.Config == Unspecified) && (data.Platform == platform || data.Platform == Unspecified)) {
-					if (baseGroup == null)
-						baseGroup = data.Group;
-					else
-						baseGroup = MSBuildPropertyGroup.Merge (baseGroup, data.Group);
-				}
-			}
+			MSBuildPropertySet baseGroup = GetMergedConfiguration (configData, conf, platform, propGroup);
 			if (baseGroup != null)
 				propGroup.UnMerge (baseGroup);
 		}
@@ -1136,7 +1133,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return msproject.AddNewItem (name, include);
 		}
 		
-		DataItem ReadPropertyGroupMetadata (DataSerializer ser, MSBuildPropertyGroup propGroup, object dataItem)
+		DataItem ReadPropertyGroupMetadata (DataSerializer ser, MSBuildPropertySet propGroup, object dataItem)
 		{
 			DataItem ditem = new DataItem ();
 
@@ -1158,7 +1155,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return ditem;
 		}
 		
-		void WritePropertyGroupMetadata (MSBuildPropertyGroup propGroup, DataCollection itemData, MSBuildSerializer ser, params object[] itemsToReplace)
+		void WritePropertyGroupMetadata (MSBuildPropertySet propGroup, DataCollection itemData, MSBuildSerializer ser, params object[] itemsToReplace)
 		{
 			var notWrittenProps = new HashSet<string> ();
 			
@@ -1216,7 +1213,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return configData;
 		}
 		
-		MSBuildProperty SetGroupProperty (MSBuildPropertyGroup propGroup, string name, string value, bool isLiteral)
+		MSBuildProperty SetGroupProperty (MSBuildPropertySet propGroup, string name, string value, bool isLiteral)
 		{
 			propGroup.SetPropertyValue (name, value);
 			return propGroup.GetProperty (name);
