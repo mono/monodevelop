@@ -9,7 +9,6 @@
     <widget-library name="MonoDevelop.Ide, Version=2.4.0.0, Culture=neutral" />
     <widget-library name="Mono.TextEditor, Version=1.0.0.0, Culture=neutral" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Profiler.dll" internal="true" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.GtkCore/libstetic.dll" />
   </import>
   <widget class="Gtk.Window" id="MonoDevelop.Profiler.ProfileDialog" design-size="400 300">
     <property name="MemberName" />

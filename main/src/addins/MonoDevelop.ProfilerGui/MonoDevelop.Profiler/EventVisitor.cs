@@ -29,6 +29,11 @@ namespace MonoDevelop.Profiler
 {
 	public abstract class EventVisitor
 	{
+		public abstract Buffer CurrentBuffer {
+			get;
+			set;
+		}
+					
 		public virtual object Visit (AllocEvent allocEvent)
 		{
 			return null;

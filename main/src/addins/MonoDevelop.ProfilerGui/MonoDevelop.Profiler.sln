@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Profiler", "MonoDevelop.Profiler.csproj", "{EB37652A-0E94-4AFE-BAD6-72586628FF3A}"
 EndProject
 Global
@@ -15,6 +15,6 @@ Global
 		{EB37652A-0E94-4AFE-BAD6-72586628FF3A}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Mono.ProfilerGui\MonoDevelop.Profiler.csproj
+		StartupItem = MonoDevelop.Profiler.csproj
 	EndGlobalSection
 EndGlobal

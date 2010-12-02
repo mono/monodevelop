@@ -26,12 +26,12 @@
 using System;
 using Gtk;
 using System.Collections.Generic;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Profiler
 {
 	public partial class ProfileDialog : Gtk.Window
 	{
-		
 		TimeLineWidget timeLineWidget;
 		TreeStore store;
 		ListStore threadStore;
@@ -40,9 +40,14 @@ namespace MonoDevelop.Profiler
 
 		protected override void OnDestroyed ()
 		{
+			System.Console.WriteLine ("DESTROYED !!!");
 			if (timeout != 0) {
 				GLib.Source.Remove (timeout);
 				timeout = 0;
+			}
+			try {
+				System.IO.File.Delete (buffer.FileName);
+			} catch (Exception) {
 			}
 			base.OnDestroyed ();
 		}
@@ -54,6 +59,8 @@ namespace MonoDevelop.Profiler
 		public ProfileDialog (string fileName) : base(Gtk.WindowType.Toplevel)
 		{
 			this.Build ();
+			this.TransientFor = IdeApp.Workbench.RootWindow;
+			this.DestroyWithParent = true;
 			timeLineWidget = new TimeLineWidget (this);
 			scrolledwindow1.AddWithViewport (timeLineWidget);
 			scrolledwindow1.ShowAll ();
@@ -130,15 +137,14 @@ namespace MonoDevelop.Profiler
 			profileResultsView.AppendColumn (callCountColumn);
 			profileResultsView.TestExpandRow += HandleProfileResultsViewTestExpandRow;
 			profileResultsView.ShowExpanders = true;
-			
-//		timeout = GLib.Timeout.Add (500, delegate {
-			try {
-				buffer = LogBuffer.Read (fileName);
-			} catch (Exception) {
-			}
+			buffer = new LogBuffer (fileName, visitor);
+
+			buffer.Updated += delegate {
+				Application.Invoke (delegate {
+					AnalyzeBuffer ();
+				});
+			};
 			AnalyzeBuffer ();
-/*				return true;
-			});*/
 		}
 		
 		
@@ -181,17 +187,22 @@ namespace MonoDevelop.Profiler
 				AppendMethodInfo (args.Iter, methodCall);
 			}
 		}
-		
+		public ulong T0 {
+			get {
+				return buffer.ReadBuffer (0).Header.TimeBase;
+			}
+		}
+		ulong startTime, endTime;
 		public void SetTime (ulong start, ulong end)
 		{
 			if (buffer == null)
 				return;
 			if (start == 0 && end == 0) {
-				visitor.StartTime = visitor.EndTime = 0;
+				startTime = endTime = 0;
 			} else {
-				ulong t0 = buffer.buffers [0].Header.TimeBase;
-				visitor.StartTime = t0 + start;
-				visitor.EndTime = t0 + end;
+				ulong t0 = T0;
+				startTime = t0 + start;
+				endTime = t0 + end;
 			}
 			AnalyzeBuffer ();
 		}
@@ -202,14 +213,24 @@ namespace MonoDevelop.Profiler
 			if (buffer == null)
 				return;
 			expandedRows.Clear ();
+			
 			long selectedID = SelectedThreadID;
-			visitor.LookupThread = selectedID;
-			visitor.Reset ();
-			totalTime = 0;
-			foreach (var b in buffer.buffers) {
-				visitor.CurrentBuffer = b;
-				b.RunVisitor (visitor);
-				totalTime += visitor.TimeBase - b.Header.TimeBase;
+			var v = visitor;
+			
+			if (startTime > 0) {
+				v = new AnalyseVisitor ();
+				v.LookupThread = selectedID;
+				v.nameDictionary = visitor.nameDictionary;
+				v.StartTime = startTime;
+				v.EndTime = endTime;
+				for (int i = 0; i < buffer.BufferCount; i++) {
+					var b = buffer.ReadBuffer (i);
+					if (startTime <= b.Header.TimeBase) {
+						System.Console.WriteLine ("analyze !!! " + b);
+						v.CurrentBuffer = b;
+						b.RunVisitor (v);
+					}
+				}
 			}
 			
 			comboboxThreads.Changed -= HandleComboboxThreadsChanged;
@@ -217,7 +238,7 @@ namespace MonoDevelop.Profiler
 			threadStore.AppendValues ("[All Threads]", null);
 			bool first = true;
 			int active = 0;
-			int i = 1;
+			int j = 1;
 			foreach (var thread in visitor.threadDictionary.Values) {
 				string name = thread.Name;
 				if (string.IsNullOrEmpty (name) && first) {
@@ -225,15 +246,15 @@ namespace MonoDevelop.Profiler
 				}
 				first = false;
 				if (thread.ThreadId == selectedID)
-					active = i;
+					active = j;
 				threadStore.AppendValues (name + " (" + thread.ThreadId + ")", thread);
-				i++;
+				j++;
 			}
 			comboboxThreads.Active = active;
 			comboboxThreads.Changed += HandleComboboxThreadsChanged;
 			store.Clear ();
 			
-			foreach (var threadContext in visitor.threadDictionary.Values) {
+			foreach (var threadContext in v.threadDictionary.Values) {
 				if (selectedID != 0 && threadContext.ThreadId != selectedID)
 					continue;
 				foreach (var info in threadContext.MethodCalls.Values) {
@@ -280,7 +301,6 @@ namespace MonoDevelop.Profiler
 						0d, 
 						null);
 			}
-			
 		}
 
 		public class AnalyseVisitor : EventVisitor
@@ -291,19 +311,15 @@ namespace MonoDevelop.Profiler
 			ulong timeBase;
 			ulong eventCount = 0;
 			ulong lastTimeBase = 0;
-			const
-				int interval = 100000 ; 
-			public
-				List<ulong> Events = new List<ulong> ();
+			const int interval = 100000; 
+			public List<KeyValuePair<ulong, ulong>> Events = new List<KeyValuePair<ulong,ulong>> ();
 			
-			public
-				ulong StartTime {
+			public ulong StartTime {
 				get;
 				set;
 			}
 
-			public
-			ulong EndTime {
+			public ulong EndTime {
 				get;
 				set;
 			}
@@ -313,10 +329,9 @@ namespace MonoDevelop.Profiler
 					return timeBase;
 				}
 				set { 
-					eventCount++;
 					timeBase = value;
 					if (timeBase - lastTimeBase > interval) {
-						Events.Add (eventCount);
+						Events.Add (new KeyValuePair<ulong, ulong> (timeBase, eventCount));
 						eventCount = 0;
 						lastTimeBase = timeBase;
 					}
@@ -329,7 +344,7 @@ namespace MonoDevelop.Profiler
 				set { lookupThread = value; }
 			}
 			
-			public Buffer CurrentBuffer {
+			public override Buffer CurrentBuffer {
 				get { return currentBuffer; }
 				set {
 					currentBuffer = value;
@@ -466,6 +481,7 @@ namespace MonoDevelop.Profiler
 				
 				case MethodEvent.MethodType.Enter:
 					if (ShouldLog) {
+						eventCount++;
 						if (!nameDictionary.ContainsKey (methodBase))
 							nameDictionary [methodBase] = "[Unknown method]";
 						

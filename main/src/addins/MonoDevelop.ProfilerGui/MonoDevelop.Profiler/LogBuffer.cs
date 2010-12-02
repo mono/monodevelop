@@ -27,31 +27,127 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Security.AccessControl;
+using System.Threading;
 
 namespace MonoDevelop.Profiler
 {
-	public class LogBuffer
+	public class LogBuffer : IDisposable
 	{
-		public readonly Header Header;
-		public readonly List<Buffer> buffers = new List<Buffer> ();
-
-		public static LogBuffer Read (string fileName)
+		public Header Header { get; private set; }
+		public List<long> bufferPositions = new List<long> ();
+		
+		FileStream stream;
+		BinaryReader reader;
+		Thread thread;
+		bool running = true;
+		object fileLock = new object ();
+		string fileName;
+		
+		public string FileName {
+			get {
+				return this.fileName;
+			}
+		}
+		
+		public EventVisitor Visitor {
+			get;
+			private set;
+		}
+		
+		public LogBuffer (string fileName, EventVisitor visitor)
 		{
-			if (!File.Exists (fileName))
-				return null;
-			BinaryReader reader = new BinaryReader (File.OpenRead (fileName));
-			LogBuffer result = new LogBuffer (reader);
-			reader.Close ();
+			this.fileName = fileName;
+			this.Visitor = visitor;
+			
+	//		thread = new Thread (delegate () {
+			
+				long position = 0;
+//				while (running) {
+					bool shouldUpdate = false;
+//					lock (fileLock) {
+						do {
+							try {
+								stream = new FileStream (fileName, FileMode.Open, FileSystemRights.Read, FileShare.Read, 1024, FileOptions.RandomAccess);
+							} catch (Exception) {
+						//		Thread.Sleep (100);
+							}
+						} while (running && stream == null);
+						if (!running)
+							return;
+						reader = new BinaryReader (stream);
+						
+						if (this.Header == null) {
+								try {
+									stream.Position = 0;
+									this.Header = Header.Read (reader);
+									position = reader.BaseStream.Position;
+								} catch (Exception e) {
+									System.Console.WriteLine (e);
+									Thread.Sleep (200);
+//									continue;
+								}
+						}
+						stream.Position = position;
+						while (stream.Position < stream.Length) {
+							try {
+								var buffer = Buffer.Read (reader);
+								bufferPositions.Add (position);
+								position = stream.Position;
+								if (Visitor != null) {
+									Visitor.CurrentBuffer = buffer;
+									buffer.Events.ForEach (e => e.Accept (Visitor));
+								}
+								shouldUpdate = true;
+							} catch (Exception e) {
+								System.Console.WriteLine (e);
+								Thread.Sleep (200);
+								continue;
+							}
+						}
+//						reader.Close ();
+//						stream.Close ();
+//					}
+					if (shouldUpdate)
+						OnUpdated (EventArgs.Empty);
+//					Thread.Sleep (1000);
+//				}
+//			});
+//			thread.IsBackground = true;
+//			thread.Start ();
+		}
+		
+		public int BufferCount {
+			get {
+				return bufferPositions.Count;
+			}
+		}
+		
+		public Buffer ReadBuffer (int bufferNumber)
+		{
+			stream.Position = bufferPositions [bufferNumber];
+			var result = Buffer.Read (reader);
 			return result;
 		}
 
-		LogBuffer (BinaryReader reader)
+		#region IDisposable implementation
+		public void Dispose ()
 		{
-			this.Header = Header.Read (reader);
-			while (reader.BaseStream.Position < reader.BaseStream.Length) {
-				buffers.Add (Buffer.Read (reader));
+			if (running) {
+				running = false;
+				thread.Join ();
 			}
 		}
+		#endregion
+		
+		protected virtual void OnUpdated (EventArgs e)
+		{
+			EventHandler handler = this.Updated;
+			if (handler != null)
+				handler (this, e);
+		}
+
+		public event EventHandler Updated;
 	}
 }
 

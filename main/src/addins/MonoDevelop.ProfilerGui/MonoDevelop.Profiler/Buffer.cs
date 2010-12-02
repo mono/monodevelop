@@ -52,7 +52,7 @@ namespace MonoDevelop.Profiler
 			ObjBase = reader.ReadInt64 ();
 			ThreadId = reader.ReadInt64 ();
 			MethodBase = reader.ReadInt64 ();
-			System.Console.WriteLine ("Buffer: Thread:{0:X}, len:{1}, time: {2}", ThreadId, Length, TimeBase);
+//			System.Console.WriteLine ("Buffer: Thread:{0:X}, len:{1}, time: {2}", ThreadId, Length, TimeBase);
 		}
 
 		public static BufferHeader Read (BinaryReader reader)
@@ -73,7 +73,6 @@ namespace MonoDevelop.Profiler
 			while (reader.BaseStream.Position < endPos) {
 				Events.Add (Event.Read (reader));
 			}
-			System.Console.WriteLine ("Buffer loaded.");
 		}
 		
 		public void RunVisitor (EventVisitor visitor)

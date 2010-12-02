@@ -65,7 +65,7 @@ namespace MonoDevelop.Profiler
 
 		public bool CloseExternalConsoleOnExit { get; set; }
 		
-		public ProfilerStartInfo (string monoRuntimePrefix, Dictionary<string,string> monoRuntimeEnvironmentVariables)
+		public ProfilerStartInfo (string monoRuntimePrefix,Dictionary<string,string> monoRuntimeEnvironmentVariables)
 		{
 			this.MonoRuntimePrefix = monoRuntimePrefix;
 			this.MonoRuntimeEnvironmentVariables = monoRuntimeEnvironmentVariables;
@@ -99,11 +99,13 @@ namespace MonoDevelop.Profiler
 			if (File.Exists (tmpfile))
 				File.Delete (tmpfile);
 			var result = cmd.TargetRuntime.GetExecutionHandler ().Execute (cmd, console);
+//			new ProfileDialog (tmpfile);
+			
 			result.Completed += delegate {
 				if (File.Exists (tmpfile)) {
 					Application.Invoke (delegate {
 						new ProfileDialog (tmpfile);
-						File.Delete (tmpfile);
+						
 					});
 				}
 			};
