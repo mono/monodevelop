@@ -67,6 +67,7 @@
               <File Name="Mono.Addins.CecilReflector.dll" Source="Libraries\Mono.Addins.CecilReflector.dll" />
               <File Name="Mono.GetOptions.dll" Source="Libraries\Mono.GetOptions.dll" />
               <File Name="monodoc.dll" Source="Libraries\monodoc.dll" />
+              <File Name="Mono.Security.dll" Source="Libraries\Mono.Security.dll" />
 
               <File Name="updateinfo" Source="updateinfo" />
               

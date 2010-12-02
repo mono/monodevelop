@@ -43,6 +43,9 @@
               <Component Id="MonoAddinsSetup_gac" Guid="e9a9fc89-23b3-4e54-bfee-f18767f16955">
                 <File Id="MonoAddinsSetupdll" Name="Mono.Addins.Setup.dll" Assembly=".net" KeyPath="yes" Source="lib\Mono.Addins.Setup.dll" Vital="yes" />
               </Component>
+              <Component Id="MonoSecurity_gac" Guid="e16ac265-7933-421e-8cd1-88cf31fe35d0">
+                <File Id="MonoSecuritydll" Name="Mono.Security.dll" Assembly=".net" KeyPath="yes" Source="lib\Mono.Security.dll" Vital="yes" />
+              </Component>
             </Directory>
             <Directory Id="lib" Name="lib">
               <Directory Id="mono" Name="mono">
@@ -59,6 +62,7 @@
                     <File Id="MonoAddinsCecilReflectordll_inst" Name="Mono.Addins.CecilReflector.dll" Source="lib\Mono.Addins.CecilReflector.dll" Vital="yes" />
                     <File Id="MonoAddinsGuidll_inst" Name="Mono.Addins.Gui.dll" Source="lib\Mono.Addins.Gui.dll" Vital="yes" />
                     <File Id="MonoAddinsSetupdll_inst" Name="Mono.Addins.Setup.dll" Source="lib\Mono.Addins.Setup.dll" Vital="yes" />
+                    <File Id="MonoSecuritydll_inst" Name="Mono.Security.dll" Source="lib\Mono.Security.dll" Vital="yes" />
                   </Component>
                 </Directory>
               </Directory>
@@ -75,6 +79,7 @@
       <ComponentRef Id="MonoAddinsCecilReflector_gac" />
       <ComponentRef Id="MonoAddinsGui_gac" />
       <ComponentRef Id="MonoAddinsSetup_gac" />
+      <ComponentRef Id="MonoSecurity_gac" />
       <ComponentRef Id="instassembly" />
     </Feature>
 

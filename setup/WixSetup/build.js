@@ -33,6 +33,7 @@ fs.CopyFile (MONO_LIBS + "\\Mono.Addins.CecilReflector.dll", "Libraries\\Mono.Ad
 fs.CopyFile (MONO_LIBS + "\\ICSharpCode.SharpZipLib.dll", "Libraries\\ICSharpCode.SharpZipLib.dll");
 fs.CopyFile (MONO_LIBS + "\\Mono.GetOptions.dll", "Libraries\\Mono.GetOptions.dll");
 fs.CopyFile (MONO_LIBS + "\\monodoc.dll", "Libraries\\monodoc.dll");
+fs.CopyFile (MONO_LIBS + "\\Mono.Security.dll", "Libraries\\Mono.Security.dll");
 
 // Copy support files
 
