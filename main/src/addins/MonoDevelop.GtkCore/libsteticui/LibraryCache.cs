@@ -453,6 +453,7 @@ namespace Stetic {
 			"System.Double",
 			"System.DateTime",
 			"System.String",
+			"System.String[]",
 			"System.TimeSpan",
 			"Gtk.Adjustment",
 		};
