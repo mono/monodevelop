@@ -49,6 +49,9 @@ namespace MonoDevelop.MonoDroid
 		
 		#region Properties
 		
+		[ItemProperty ("AndroidApplication")]
+		string androidApplicationUnparsed;
+		
 		[ProjectPathItemProperty ("AndroidResgenFile")]
 		string androidResgenFile;
 		
@@ -67,6 +70,19 @@ namespace MonoDevelop.MonoDroid
 		
 		public override bool IsLibraryBasedProjectType {
 			get { return true; }
+		}
+		
+		bool isAndroidApplication;
+			
+		public bool IsAndroidApplication {
+			get { return isAndroidApplication; }
+			set {
+				if (value == isAndroidApplication)
+					return;
+				isAndroidApplication = value;
+				androidApplicationUnparsed = value.ToString ();
+				NotifyModified ("IsAndroidApplication");
+			}
 		}
 		
 		public FilePath AndroidResgenFile {
@@ -146,8 +162,14 @@ namespace MonoDevelop.MonoDroid
 			if (androidResgenClassAtt != null)
 				this.androidResgenClass = androidResgenClassAtt.Value;
 			
+			var androidApplicationAtt = projectOptions.Attributes ["AndroidApplication"];
+			if (androidApplicationAtt != null) {
+				this.IsAndroidApplication = bool.Parse (androidApplicationAtt.Value);
+			}
+			
 			var androidManifestAtt = projectOptions.Attributes ["AndroidManifest"];
 			if (androidManifestAtt != null) {
+				this.IsAndroidApplication = true;
 				this.AndroidManifest = MakePathNative (androidManifestAtt.Value);
 			}
 			
@@ -176,6 +198,23 @@ namespace MonoDevelop.MonoDroid
 		public override bool SupportsFormat (FileFormat format)
 		{
 			return format.Id == "MSBuild10";
+		}
+		
+		protected override void OnEndLoad ()
+		{
+			// Migration logic for AndroidManifest element is run if it exists and AndroidApplication is empty
+			// In order to do this, we don't let the deserializer handle AndroidApplicatio, but parse it here
+			if (!string.IsNullOrEmpty (androidApplicationUnparsed)) {
+				isAndroidApplication = string.Equals (androidApplicationUnparsed, "true", StringComparison.OrdinalIgnoreCase);
+			}
+			else if (!string.IsNullOrEmpty (androidManifest)) {
+				androidApplicationUnparsed = "True";
+				isAndroidApplication = true;
+				if (!File.Exists (androidManifest))
+					androidManifest = null;
+			}
+			
+			base.OnEndLoad ();
 		}
 
 		#endregion
@@ -532,10 +571,6 @@ namespace MonoDevelop.MonoDroid
 		}
 		
 		AndroidPackageNameCache packageNameCache;
-		
-		public bool IsAndroidApplication {
-			get { return !AndroidManifest.IsNullOrEmpty; }
-		}
 		
 		public string GetPackageName (MonoDroidProjectConfiguration conf)
 		{
