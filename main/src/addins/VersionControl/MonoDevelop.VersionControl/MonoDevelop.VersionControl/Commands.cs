@@ -88,6 +88,8 @@ namespace MonoDevelop.VersionControl
 				return null;
 			
 			Project project = doc.Project ?? IdeApp.ProjectOperations.CurrentSelectedProject;
+			if (project == null)
+				return null;
 			
 			Repository repo = VersionControlService.GetRepository (project);
 			if (repo == null || repo.VersionControlSystem == null || !repo.VersionControlSystem.IsInstalled)
