@@ -486,6 +486,8 @@ namespace MonoDevelop.Core
 		
 		public void Add (Delegate d, object thisObj, object args)
 		{
+			if (d == null)
+				return;
 			lock (events) {
 				if (frozen > 0) {
 					EventData lastEvent = events.Count > 0 ? events [events.Count - 1] : null;
@@ -510,6 +512,8 @@ namespace MonoDevelop.Core
 
 		public void Add<TC> (Delegate d, object thisObj, object args) where TC:IEventArgsChain, new()
 		{
+			if (d == null)
+				return;
 			lock (events) {
 				if (frozen > 0) {
 					EventData lastEvent = events.Count > 0 ? events [events.Count - 1] : null;
