@@ -558,7 +558,7 @@ namespace CBinding
 		{
 			string lineText = d.GetLineText (lineNumber);
 			if(terminateIndex > 0)
-				lineText = lineText.Substring(0, terminateIndex);
+				lineText = terminateIndex < lineText.Length ? lineText.Substring(0, terminateIndex) : lineText;
 			
 			StringBuilder whitespaces = new StringBuilder ();
 			
