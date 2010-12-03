@@ -110,7 +110,14 @@ namespace MonoDevelop.SourceEditor
 				while (queue.Count > 0) {
 					var content = queue.Dequeue ();
 					lock (contentLock) {
-						CreateAutoSave (content.FileName, content.Content.Text);
+						string text;
+						try {
+							text = content.Content.Text;
+						} catch (Exception e) {
+							LoggingService.LogError (e);
+							continue;
+						}
+						CreateAutoSave (content.FileName, text);
 					}
 				}
 			}
