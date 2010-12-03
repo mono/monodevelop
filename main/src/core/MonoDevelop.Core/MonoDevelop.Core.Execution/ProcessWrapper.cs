@@ -74,9 +74,11 @@ namespace MonoDevelop.Core.Execution
 
 				OnExited (this, EventArgs.Empty);
 
-				//call this AFTER the exit event, or the ProcessWrapper may get disposed and abort this thread
-				if (endEventOut != null)
-					endEventOut.Set ();
+				lock (lockObj) {
+					//call this AFTER the exit event, or the ProcessWrapper may get disposed and abort this thread
+					if (endEventOut != null)
+						endEventOut.Set ();
+				}
 			}
 		}
 		
@@ -90,8 +92,10 @@ namespace MonoDevelop.Core.Execution
 						ErrorStreamChanged (this, new string (buffer, 0, nr));
 				}					
 			} finally {
-				if (endEventErr != null)
-					endEventErr.Set ();
+				lock (lockObj) {
+					if (endEventErr != null)
+						endEventErr.Set ();
+				}
 			}
 		}
 		
@@ -100,15 +104,15 @@ namespace MonoDevelop.Core.Execution
 			lock (lockObj) {
 				if (endEventOut == null)
 					return;
+				
+				if (!done)
+					((IAsyncOperation)this).Cancel ();
+				
+				captureOutputThread = captureErrorThread = null;
+				endEventOut.Close ();
+				endEventErr.Close ();
+				endEventOut = endEventErr = null;
 			}
-			
-			if (!done)
-				((IAsyncOperation)this).Cancel ();
-			
-			captureOutputThread = captureErrorThread = null;
-			endEventOut.Close ();
-			endEventErr.Close ();
-			endEventOut = endEventErr = null;
 			
 			base.Dispose (disposing);
 		}
