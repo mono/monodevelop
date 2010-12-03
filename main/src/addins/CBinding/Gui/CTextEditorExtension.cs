@@ -145,68 +145,67 @@ namespace CBinding
 			var line = Editor.Document.GetLine (Editor.Caret.Line);
 			int lineCursorIndex = Editor.Caret.Column;
 			string lineText = Editor.GetLineText (Editor.Caret.Line);
-			
 			// Smart Indentation
 			if (TextEditorProperties.IndentStyle == IndentStyle.Smart)
 			{
-				switch(key)
-				{
-					case Gdk.Key.Return:
-						// Calculate additional indentation, if any.
-						char finalChar = '\0';
-						char nextChar = '\0';
-						string indent = String.Empty;
-						if (!String.IsNullOrEmpty (Editor.SelectedText)) {
-							int cursorPos = Editor.SelectionRange.Offset;
-						
-							Editor.DeleteSelectedText ();
-							Editor.Caret.Offset = cursorPos;
-							
-							lineText = Editor.GetLineText (Editor.Caret.Line);
-							lineCursorIndex = Editor.Caret.Column;
-//							System.Console.WriteLine(TextEditorData.Caret.Offset);
-						}
-						if(lineText.Length > 0)
-						{
-							if(lineCursorIndex > 0)
-								finalChar = lineText[Math.Min(lineCursorIndex, lineText.Length) - 1];
-							
-							if(lineCursorIndex < lineText.Length)
-								nextChar = lineText[lineCursorIndex];
-
-							if(finalChar == '{')
-								indent = TextEditorProperties.IndentString;
-						}
-
-						// If the next character is an closing brace, indent it appropriately.
-						if(IsBrace(nextChar) && !IsOpenBrace(nextChar))
-						{
-							int openingLine;
-							if(GetClosingBraceForLine (Editor, line, out openingLine) >= 0)
-							{
-								Editor.InsertAtCaret (Editor.EolMarker + GetIndent(Editor, openingLine, 0));
-								return false;
-							}
-						}
-
-						// Default indentation method
-						Editor.InsertAtCaret (Editor.EolMarker + indent + GetIndent(Editor, Editor.Document.OffsetToLineNumber (line.Offset), lineCursorIndex));
-						
-						return false;
-
-					case Gdk.Key.braceright:
-						// Only indent if the brace is preceeded by whitespace.
-						if(AllWhiteSpace(lineText.Substring(0, lineCursorIndex)) == false)
-							break;
-
+				if (keyChar == '}') {
+					// Only indent if the brace is preceeded by whitespace.
+					if(AllWhiteSpace(lineText.Substring(0, lineCursorIndex))) {
 						int braceOpeningLine;
 						if(GetClosingBraceForLine(Editor, line, out braceOpeningLine) >= 0)
 						{
-							Editor.Replace (line.Offset, line.Length, GetIndent(Editor, braceOpeningLine, 0) + "}" + lineText.Substring(lineCursorIndex));
+							Editor.Replace (line.Offset, line.EditableLength, GetIndent(Editor, braceOpeningLine, 0) + "}" + lineText.Substring(lineCursorIndex));
+							Editor.Document.CommitLineUpdate (line);
 							return false;
 						}
-
-						break;
+					}
+				} else {
+					switch(key)
+					{
+						case Gdk.Key.Return:
+							// Calculate additional indentation, if any.
+							char finalChar = '\0';
+							char nextChar = '\0';
+							string indent = String.Empty;
+							if (!String.IsNullOrEmpty (Editor.SelectedText)) {
+								int cursorPos = Editor.SelectionRange.Offset;
+							
+								Editor.DeleteSelectedText ();
+								Editor.Caret.Offset = cursorPos;
+								
+								lineText = Editor.GetLineText (Editor.Caret.Line);
+								lineCursorIndex = Editor.Caret.Column;
+	//							System.Console.WriteLine(TextEditorData.Caret.Offset);
+							}
+							if(lineText.Length > 0)
+							{
+								if(lineCursorIndex > 0)
+									finalChar = lineText[Math.Min(lineCursorIndex, lineText.Length) - 1];
+								
+								if(lineCursorIndex < lineText.Length)
+									nextChar = lineText[lineCursorIndex];
+	
+								if(finalChar == '{')
+									indent = TextEditorProperties.IndentString;
+							}
+	
+							// If the next character is an closing brace, indent it appropriately.
+							if(IsBrace(nextChar) && !IsOpenBrace(nextChar))
+							{
+								int openingLine;
+								if(GetClosingBraceForLine (Editor, line, out openingLine) >= 0)
+								{
+									Editor.InsertAtCaret (Editor.EolMarker + GetIndent(Editor, openingLine, 0));
+									return false;
+								}
+							}
+						
+							// Default indentation method
+							Editor.InsertAtCaret (Editor.EolMarker + indent + GetIndent(Editor, Editor.Document.OffsetToLineNumber (line.Offset), lineCursorIndex));
+							
+							return false;
+						
+					}
 				}
 			}
 			
