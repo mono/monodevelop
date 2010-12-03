@@ -669,7 +669,7 @@ namespace MonoDevelop.IPhone
 		protected override BuildResult Compile (IProgressMonitor monitor, SolutionEntityItem item, BuildData buildData)
 		{
 			IPhoneProject proj = item as IPhoneProject;
-			if (proj == null && proj.CompileTarget != CompileTarget.Exe && proj.CompileTarget != CompileTarget.Library)
+			if (proj == null || (proj.CompileTarget != CompileTarget.Exe && proj.CompileTarget != CompileTarget.Library))
 				return base.Compile (monitor, item, buildData);
 			
 			var cfg = (IPhoneProjectConfiguration) buildData.Configuration;
