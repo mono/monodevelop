@@ -210,7 +210,7 @@ namespace Stetic
 			if (t != null) {
 				EventInfo ev = t.GetEvent (name);
 				if (ev != null) {
-					TypeReference tref  = new TypeReference (ev.EventHandlerType.Name, ev.EventHandlerType.Namespace, cls.Module, cls.Module, ev.EventHandlerType.IsValueType);
+					TypeReference tref  = new TypeReference (ev.EventHandlerType.Namespace, ev.EventHandlerType.Name, cls.Module, cls.Module, ev.EventHandlerType.IsValueType);
 					return new EventDefinition (name, Mono.Cecil.EventAttributes.None, tref);
 				}
 			}
