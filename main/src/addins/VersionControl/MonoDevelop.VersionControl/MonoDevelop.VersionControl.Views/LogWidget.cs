@@ -125,10 +125,10 @@ namespace MonoDevelop.VersionControl.Views
 			colRevMessage.SetCellDataFunc (messageRenderer, MessageFunc);
 			colRevMessage.Sizing = TreeViewColumnSizing.Autosize;
 			
+			treeviewLog.AppendColumn (colRevMessage);
 			colRevMessage.MinWidth = 350;
 			colRevMessage.Resizable = true;
-			treeviewLog.AppendColumn (colRevMessage);
-
+			
 			
 			TreeViewColumn colRevDate = new TreeViewColumn (GettextCatalog.GetString ("Date"), textRenderer);
 			colRevDate.SetCellDataFunc (textRenderer, DateFunc);
