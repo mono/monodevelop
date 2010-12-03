@@ -198,6 +198,7 @@ FILES =  \
 	MonoDevelop.CSharp.Parser/mcs/parameter.cs \
 	MonoDevelop.CSharp.Parser/mcs/pending.cs \
 	MonoDevelop.CSharp.Parser/mcs/property.cs \
+	MonoDevelop.CSharp.Parser/mcs/reflection.cs \
 	MonoDevelop.CSharp.Parser/mcs/report.cs \
 	MonoDevelop.CSharp.Parser/mcs/rootcontext.cs \
 	MonoDevelop.CSharp.Parser/mcs/roottypes.cs \
