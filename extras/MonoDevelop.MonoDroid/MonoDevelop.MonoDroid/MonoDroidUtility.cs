@@ -136,20 +136,18 @@ namespace MonoDevelop.MonoDroid
 				new ChainedAsyncOperation () {
 					TaskName = GettextCatalog.GetString ("Starting adb server"),
 					Create = () => toolbox.EnsureServerRunning (monitor.Log, monitor.Log),
-					Error = GettextCatalog.GetString ("Failed to start adb server")
+					ErrorMessage = GettextCatalog.GetString ("Failed to start adb server")
 				},
 				new ChainedAsyncOperation () {
 					TaskName = GettextCatalog.GetString ("Waiting for device"),
 					Create = () => toolbox.WaitForDevice (device, monitor.Log, monitor.Log),
-					Error = GettextCatalog.GetString ("Failed to get device")
+					ErrorMessage = GettextCatalog.GetString ("Failed to get device")
 				},
-				new ChainedAsyncOperation () {
+				new ChainedAsyncOperation<AndroidToolbox.GetPackagesOperation> () {
 					TaskName = GettextCatalog.GetString ("Getting package list from device"),
 					Create = () => toolbox.GetInstalledPackagesOnDevice (device, monitor.Log),
-					Completed = (IAsyncOperation op) => {
-						packages = ((AndroidToolbox.GetPackagesOperation)op).Result;
-					},
-					Error = GettextCatalog.GetString ("Failed to get package list")
+					Completed = op => { packages = op.Result; },
+					ErrorMessage = GettextCatalog.GetString ("Failed to get package list")
 				},
 				new ChainedAsyncOperation () {
 					TaskName = GettextCatalog.GetString ("Installing shared runtime package on device"),
@@ -164,31 +162,32 @@ namespace MonoDevelop.MonoDroid
 						}
 						return toolbox.Install (device, pkg, monitor.Log, monitor.Log);
 					},
-					Error = GettextCatalog.GetString ("Failed to install shared runtime package")
+					ErrorMessage = GettextCatalog.GetString ("Failed to install shared runtime package")
 				},
 				new ChainedAsyncOperation () {
 					TaskName = GettextCatalog.GetString ("Uninstalling old version of package"),
 					Skip = () => (!replaceIfExists || !packages.Contains ("package:" + packageName))? "" : null,
 					Create = () => toolbox.Uninstall (device, packageName, monitor.Log, monitor.Log),
-					Error = GettextCatalog.GetString ("Failed to uninstall package")
+					ErrorMessage = GettextCatalog.GetString ("Failed to uninstall package")
 				},
 				new ChainedAsyncOperation () {
 					TaskName = GettextCatalog.GetString ("Waiting for packaging signing to complete"),
 					Skip = () => (signingOperation == null || signingOperation.IsCompleted) ? "" : null,
 					Create = () => signingOperation,
-					Error = GettextCatalog.GetString ("Package signing failed"),
+					ErrorMessage = GettextCatalog.GetString ("Package signing failed"),
 				},
 				new ChainedAsyncOperation () {
 					Skip = () => (packages.Contains ("package:" + packageName) && !replaceIfExists)
 						? GettextCatalog.GetString ("Package is already up to date") : null,
 					TaskName = GettextCatalog.GetString ("Installing package"),
 					Create = () => toolbox.Install (device, packageFile, monitor.Log, monitor.Log),
-					Error = GettextCatalog.GetString ("Failed to install package")
+					ErrorMessage = GettextCatalog.GetString ("Failed to install package")
 				}
 			);
 			chop.Completed += delegate {
 				monitor.Dispose ();
 			};
+			chop.Start ();
 			return chop;
 		}
 
@@ -235,7 +234,7 @@ namespace MonoDevelop.MonoDroid
 		}
 	}
 	
-	class ChainedAsyncOperationSequence : IAsyncOperation, IDisposable
+	public class ChainedAsyncOperationSequence : IAsyncOperation, IDisposable
 	{
 		ChainedAsyncOperation[] chain;
 		IAsyncOperation op;
@@ -244,11 +243,23 @@ namespace MonoDevelop.MonoDroid
 		IProgressMonitor monitor;
 		bool success;
 		
+		public ChainedAsyncOperationSequence (params ChainedAsyncOperation[] chain) : this (null, chain)
+		{
+		}
+		
 		public ChainedAsyncOperationSequence (IProgressMonitor monitor, params ChainedAsyncOperation[] chain)
 		{
 			this.chain = chain;
-			this.monitor = monitor;
-			monitor.CancelRequested += CancelRequested;
+			if (monitor != null) {
+				this.monitor = monitor;
+				monitor.CancelRequested += CancelRequested;
+			}
+		}
+		
+		public void Start ()
+		{
+			if (index != 0 || op != null)
+				throw new InvalidOperationException ("Already started");
 			RunNext ();
 		}
 
@@ -264,7 +275,7 @@ namespace MonoDevelop.MonoDroid
 			var chop = chain[index];
 			string skipmsg = null;
 			while (chop.Skip != null && (skipmsg = chop.Skip ()) != null) {
-				if (skipmsg.Length > 0) {
+				if (skipmsg.Length > 0 && monitor != null) {
 					monitor.BeginTask (chop.TaskName, 0);
 					monitor.Log.WriteLine (skipmsg);
 					monitor.EndTask ();
@@ -276,7 +287,7 @@ namespace MonoDevelop.MonoDroid
 				}
 				chop = chain[index];
 			}
-			if (chop.TaskName != null)
+			if (chop.TaskName != null && monitor != null)
 				monitor.BeginTask (chop.TaskName, 0);
 			op = chop.Create ();
 			if (op == null) {
@@ -294,15 +305,23 @@ namespace MonoDevelop.MonoDroid
 				if (chop.Completed != null) {
 					chop.Completed (this.op);
 				}
-				if (chop.TaskName != null)
+				
+				if (chop.TaskName != null && monitor != null)
 					monitor.EndTask ();
-				index++;
 				
 				success = op.Success;
+				if (success) {
+					index++;
+				} else {
+					index = -1;
+					if (chop.ErrorMessage != null && monitor != null) {
+						monitor.ReportError (chop.ErrorMessage, null);
+					}
+				}
 				
 				DisposeOp ();
 				
-				if (monitor.IsCancelRequested)
+				if (monitor != null && monitor.IsCancelRequested)
 					index = -1;
 				
 				if (IsCompleted) {
@@ -311,7 +330,8 @@ namespace MonoDevelop.MonoDroid
 					RunNext ();
 				}
 			} catch (Exception ex) {
-				monitor.ReportError ("Internal error", ex);
+				if (monitor != null)
+					monitor.ReportError ("Internal error", ex);
 				LoggingService.LogError ("Error in async operation chain", ex);
 				index = -1;
 				OnCompleted ();
@@ -324,7 +344,8 @@ namespace MonoDevelop.MonoDroid
 				completedEvent.Set ();
 			if (Completed != null)
 				Completed (this);
-			monitor.CancelRequested -= CancelRequested;
+			if (monitor != null)
+				monitor.CancelRequested -= CancelRequested;
 		}
 		
 		void DisposeOp ()
@@ -341,6 +362,7 @@ namespace MonoDevelop.MonoDroid
 		public void Cancel ()
 		{
 			op.Cancel ();
+			index = -1;
 		}
 
 		public void WaitForCompleted ()
@@ -372,14 +394,27 @@ namespace MonoDevelop.MonoDroid
 		}
 	}
 	
-	class ChainedAsyncOperation	
+	public class ChainedAsyncOperation	
 	{
 		// null = don't skip, string = skip with message, string.empty = skip silently
 		public Func<string> Skip { get; set; }
 		public Func<IAsyncOperation> Create { get; set; }
 		public Action<IAsyncOperation> Completed { get; set; }
 		public string TaskName { get; set; }
-		public string Error { get; set; }
+		public string ErrorMessage { get; set; }
+	}
+	
+	public class ChainedAsyncOperation<T> : ChainedAsyncOperation where T : IAsyncOperation	
+	{
+		public ChainedAsyncOperation ()
+		{
+			base.Create = () => Create ();
+			base.Completed = (op) => Completed ((T)op);
+		}
+		
+		// null = don't skip, string = skip with message, string.empty = skip silently
+		public new Func<T> Create { get; set; }
+		public new Action<T> Completed { get; set; }
 	}
 }
 

@@ -44,29 +44,61 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 
 	public class MonoDroidDebuggerSession : RemoteSoftDebuggerSession
 	{
-		IProcessAsyncOperation process;
+		ChainedAsyncOperationSequence launchOp;
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
 			var dsi = (MonoDroidDebuggerStartInfo) startInfo;
 			var cmd = dsi.ExecutionCommand;
-
-			long deviceDate = GetDate (cmd.Device);
-			long expireDate = deviceDate + 30; // 30 seconds
 			
-			string monoOptions = string.Format ("debug={0}:{1}:{2},timeout={3}", dsi.Address, dsi.DebugPort, dsi.OutputPort, expireDate);
-			SetProperty (cmd.Device, "debug.mono.extra", monoOptions);
-
-			process = MonoDroidFramework.Toolbox.StartActivity (cmd.Device, cmd.Activity,
-				ProcessOutput, ProcessError);
-			
-			process.Completed += delegate {
-				process = null;
+			long date = 0;
+			launchOp = new ChainedAsyncOperationSequence (
+				new ChainedAsyncOperation<AndroidToolbox.GetDateOperation> () {
+					Create = () => MonoDroidFramework.Toolbox.GetDeviceDate (cmd.Device),
+					Completed = (op) => {
+						if (op.Success) {
+							date = op.Date;
+						} else {
+							this.OnDebuggerOutput (true, GettextCatalog.GetString ("Failed to get date from device"));
+							this.OnDebuggerOutput (true, op.GetOutput ());
+						}
+					},
+				},
+				new ChainedAsyncOperation<AndroidToolbox.AdbOutputOperation> () {
+					Create = () => {
+						long expireDate = date + 30; // 30 seconds
+						string monoOptions = string.Format ("debug={0}:{1}:{2},timeout={3}", dsi.Address, dsi.DebugPort, dsi.OutputPort, expireDate);
+						return MonoDroidFramework.Toolbox.SetProperty (cmd.Device, "debug.mono.extra", monoOptions);
+					},
+					Completed = (op) => {
+						if (!op.Success) {
+							this.OnDebuggerOutput (true, GettextCatalog.GetString ("Failed to set debug property on device"));
+							this.OnDebuggerOutput (true, op.GetOutput ());
+						}
+					}
+				},
+				new ChainedAsyncOperation () {
+					Create = () => MonoDroidFramework.Toolbox.StartActivity (cmd.Device, cmd.Activity,
+						(s, m) => OnTargetOutput (false, m),
+						(s, m) => OnTargetOutput (true, m)
+					),
+					Completed = (op) => {
+						if (!op.Success)
+							this.OnDebuggerOutput (true, GettextCatalog.GetString ("Failed to start activity"));
+					}
+				}
+			);
+			launchOp.Completed += delegate(IAsyncOperation op) {
+				if (!op.Success)
+					EndSession ();
+				launchOp = null;
 			};
 			
 			TargetExited += delegate {
-				EndProcess ();
+				EndLaunch ();
 			};
+			
+			launchOp.Start ();
 			
 			StartListening (dsi);
 		}
@@ -80,32 +112,6 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 		{
 			OnTargetOutput (false, message);
 		}
-
-		void SetProperty (AndroidDevice device, string property, string value)
-		{
-			var output = new StringWriter ();
-			ProcessWrapper process = MonoDroidFramework.Toolbox.SetProperty (device, property, value, output, output);
-			process.WaitForOutput ();
-
-			if (process.ExitCode != 0) {
-				string message = GettextCatalog.GetString ("Failed to set property on device: {0}", output.ToString ());
-				throw new InvalidOperationException (message);
-			}
-		}
-
-		long GetDate (AndroidDevice device)
-		{
-			var output = new StringWriter ();
-			ProcessWrapper process = MonoDroidFramework.Toolbox.GetDeviceDate (device, output, output);
-			process.WaitForOutput ();
-
-			if (process.ExitCode != 0) {
-				string message = GettextCatalog.GetString ("Failed to get device date: {0}", output.ToString ());
-				throw new InvalidOperationException (message);
-			}
-
-			return long.Parse (output.ToString ());
-		}
 		
 		protected override string GetListenMessage (RemoteDebuggerStartInfo dsi)
 		{
@@ -117,16 +123,17 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 		protected override void EndSession ()
 		{
 			base.EndSession ();
-			EndProcess ();
+			EndLaunch ();
 		}
 		
-		void EndProcess ()
+		void EndLaunch ()
 		{
-			if (process == null)
+			if (launchOp == null)
 				return;
-			if (!process.IsCompleted) {
+			if (!launchOp.IsCompleted) {
 				try {
-					process.Cancel ();
+					launchOp.Cancel ();
+					launchOp = null;
 				} catch {}
 			}
 		}
@@ -134,7 +141,7 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 		protected override void OnExit ()
 		{
 			base.OnExit ();
-			EndProcess ();
+			EndLaunch ();
 		}
 	}
 	

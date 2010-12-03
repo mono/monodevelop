@@ -159,13 +159,20 @@ namespace MonoDevelop.MonoDroid
 			return Runtime.ProcessService.StartProcess (AndroidExe, "", null, (TextWriter)null, null, null);
 		}
 
-		public ProcessWrapper GetDeviceDate (AndroidDevice device, TextWriter outputLog, TextWriter errorLog)
+		public GetDateOperation GetDeviceDate (AndroidDevice device)
 		{
 			var args = String.Format ("-s '{0}' shell date +%s", device.ID);
-			return StartProcess (AdbExe, args, outputLog, errorLog);
+			var sw = new StringWriter ();
+			return new GetDateOperation (StartProcess (AdbExe, args, sw, sw), sw);
 		}
-
-		public ProcessWrapper SetProperty (AndroidDevice device, string property, string value, TextWriter outputLog, TextWriter errorLog)
+		
+		public AdbOutputOperation SetProperty (AndroidDevice device, string property, string value)
+		{
+			var sw = new StringWriter ();
+			return new AdbOutputOperation (SetProperty (device, property, value, sw, sw), sw);
+		}
+		
+		public IProcessAsyncOperation SetProperty (AndroidDevice device, string property, string value, TextWriter outputLog, TextWriter errorLog)
 		{
 			if (property == null)
 				throw new ArgumentNullException ("property");
@@ -374,6 +381,55 @@ namespace MonoDevelop.MonoDroid
 					}
 				}
 				return devices;
+			}
+		}
+		
+		public class AdbOutputOperation : WrapperOperation
+		{
+			StringWriter output;
+			IProcessAsyncOperation process;
+			
+			public AdbOutputOperation (IProcessAsyncOperation process, StringWriter output)
+			{
+			}
+			
+			protected override IAsyncOperation Wrapped {
+				get { return process; }
+			}
+			
+			public string GetOutput ()
+			{
+				return output.ToString ();
+			}
+		}
+		
+		public class GetDateOperation : AdbOutputOperation
+		{
+			long? date;
+			
+			public GetDateOperation (IProcessAsyncOperation process, StringWriter output) : base (process, output)
+			{
+			}
+			
+			public override bool Success {
+				get {
+					if (!base.Success)
+						return false;
+					if (!date.HasValue) {
+						long value;
+						date = long.TryParse (GetOutput (), out value)? value : -1;
+					}
+					return date >= 0;
+				}
+			}
+			
+			public long Date {
+				get {
+					if (!Success)
+						throw new InvalidOperationException ("Error getting date from device:\n" + GetOutput ());
+					//Success will have parsed the value 
+					return date.Value;
+				}
 			}
 		}
 		
