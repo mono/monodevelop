@@ -228,6 +228,12 @@ namespace MonoDevelop.IPhone
 				MtouchDebug = mtouchDebugData.Value.Equals ("true", StringComparison.OrdinalIgnoreCase);
 			}
 		}
+		
+		public FilePath ObjDir {
+			get {
+				return ParentItem.BaseDirectory.Combine ("obj", this.Name);
+			}
+		}
 	}
 	
 	public enum MtouchLinkMode
