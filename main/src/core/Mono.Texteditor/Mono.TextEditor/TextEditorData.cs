@@ -633,7 +633,7 @@ namespace Mono.TextEditor
 					Remove (curLine.Offset + col1, col2 - col1);
 					
 					if (Caret.Line == lineNr && Caret.Column >= col1)
-						Caret.Column -= col2 - col1;
+						Caret.Column = col1 + 1;
 				}
 				int column = System.Math.Min (selection.Anchor.Column, selection.Lead.Column);
 				selection.Anchor = new DocumentLocation (selection.Anchor.Line, column);
