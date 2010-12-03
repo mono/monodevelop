@@ -337,6 +337,7 @@ namespace MonoDevelop.MonoDroid
 			}
 			activity = manifest.PackageName + "/" + activity;
 			
+			IConsole console = null;
 			var opMon = new AggregatedOperationMonitor (monitor);
 			try {				
 				AndroidDevice device;
@@ -350,13 +351,25 @@ namespace MonoDevelop.MonoDroid
 				command.Device = device;
 				command.Activity = activity;
 				
-				using (var console = context.ConsoleFactory.CreateConsole (false)) {
-					var executeOp = context.ExecutionHandler.Execute (command, console);
-					opMon.AddOperation (executeOp);
-					executeOp.WaitForCompleted ();
+				//FIXME: would be nice to skip this if it's a debug handler, which will set another value later
+				var propOp = MonoDroidFramework.Toolbox.SetProperty (device, "debug.mono.extra", string.Empty);
+				opMon.AddOperation (propOp);
+				propOp.WaitForCompleted ();
+				if (!propOp.Success) {
+					monitor.ReportError (GettextCatalog.GetString ("Count not clear debug settings on device"),
+						new Exception (propOp.GetOutput ()));
+					return;
 				}
+				
+				console = context.ConsoleFactory.CreateConsole (false);
+				var executeOp = context.ExecutionHandler.Execute (command, console);
+				opMon.AddOperation (executeOp);
+				executeOp.WaitForCompleted ();
+				
 			} finally {
 				opMon.Dispose ();
+				if (console != null)
+					console.Dispose ();
 			}
 		}
 		

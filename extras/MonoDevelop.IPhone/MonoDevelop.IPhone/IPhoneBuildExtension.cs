@@ -112,6 +112,8 @@ namespace MonoDevelop.IPhone
 			if (!Directory.Exists (conf.AppDirectory))
 				Directory.CreateDirectory (conf.AppDirectory);
 			
+			var assemblyRefs = proj.GetReferencedAssemblies (configuration).Distinct ().ToList ();
+			
 			FilePath mtouchOutput = conf.NativeExe;
 			if (new FilePair (conf.CompiledOutputName, mtouchOutput).NeedsBuilding ()) {
 				BuildResult error;
@@ -134,7 +136,7 @@ namespace MonoDevelop.IPhone
 					args.AddQuoted (conf.AppDirectory);
 				}
 				
-				foreach (string asm in proj.GetReferencedAssemblies (configuration).Distinct ())
+				foreach (string asm in assemblyRefs)
 					args.AddQuotedFormat ("-r={0}", asm);
 				
 				AppendExtrasMtouchArgs (args, sdkVersion, proj, conf);
@@ -160,6 +162,9 @@ namespace MonoDevelop.IPhone
 				
 				monitor.EndTask ();
 			}
+			
+			if (result.Append (UnpackContent (monitor, conf, assemblyRefs)).ErrorCount > 0)
+				return result;
 			
 			//create the info.plist, merging in the template if it exists
 			var plistOut = conf.AppDirectory.Combine ("Info.plist");
@@ -197,6 +202,95 @@ namespace MonoDevelop.IPhone
 			}	
 			
 			//TODO: create/update the xcode project
+			return result;
+		}
+		
+		//FIXME: mtouch copies dlls to the app bundle, need to have it strip them for non-sim builds
+		static BuildResult UnpackContent (IProgressMonitor monitor, IPhoneProjectConfiguration cfg, List<string> assemblies)
+		{
+			//remove framework references, they don't contain embedded content
+			List<string> toProcess = new List<string> ();
+			for (int i = 0; i < assemblies.Count; i++) {
+				var asm = assemblies[i];
+				if (!asm.StartsWith ("/Developer/MonoTouch/usr/lib/mono/2.1") && asm != "mscorlib")
+					toProcess.Add (asm);
+			}
+			//optimize the case where there are no non-framework references
+			if (toProcess.Count == 0)
+				return null;
+			
+			//determine which dlls have been processed already
+			var previouslyProcessedDlls = new HashSet<string> ();
+			var infoFile = cfg.ObjDir.Combine ("monotouch_dll_content_processed");
+			bool hasInfoFile = File.Exists (infoFile);
+			DateTime infoFileWritten = DateTime.MinValue;
+			if (hasInfoFile) {
+				File.GetLastWriteTimeUtc (infoFile);
+				foreach (var line in File.ReadAllLines (infoFile))
+					previouslyProcessedDlls.Add (line);
+				
+				//remove logged dlls that are no longer in the build
+				previouslyProcessedDlls.IntersectWith (toProcess);
+				
+				//don't re-process dlls that were written before the info file
+				toProcess = toProcess.Where (asm =>
+					previouslyProcessedDlls.Add (asm)
+					|| infoFileWritten < File.GetLastWriteTimeUtc (asm)).ToList ();
+			}
+			previouslyProcessedDlls.UnionWith (toProcess);
+			
+			if (toProcess.Count == 0)
+				return null;
+			
+			var result = new BuildResult ();
+			var appDir = cfg.AppDirectory;
+			
+			monitor.BeginTask ("Extracting embedded content", 0);
+			
+			foreach (var asmFile in toProcess) {
+				try {
+					Mono.Cecil.AssemblyDefinition a = Mono.Cecil.AssemblyDefinition.ReadAssembly (asmFile);
+					foreach (Mono.Cecil.ModuleDefinition m in a.Modules) {
+						foreach (Mono.Cecil.Resource res in m.Resources) {
+							var er = res as Mono.Cecil.EmbeddedResource;
+							if (er != null) {
+								FilePath sname;
+								if (er.Name.StartsWith ("__monotouch_content_")) {
+									var s = er.Name.Substring ("__monotouch_content_".Length);
+									sname = UnescapeMangledResource (s);
+								} else if (er.Name.StartsWith ("__monotouch_page_")) {
+									var s = er.Name.Substring ("__monotouch_page_".Length);
+									sname = UnescapeMangledResource (s);
+								} else {
+									continue;
+								}
+								var file = sname.ToAbsolute (appDir);
+								monitor.Log.WriteLine ("{0}: {1}", Path.GetFileName (asmFile), sname);
+								
+								var parentDir = file.ParentDirectory;
+								if (!Directory.Exists (parentDir))
+									Directory.CreateDirectory (parentDir);
+								
+								//FIXME: do a stream copy when we use new cecil in MD 2.6
+								File.WriteAllBytes (file, er.GetResourceData ());
+							}
+						}
+					}
+				} catch (Exception ex) {
+					string message = string.Format ("Error extracting content from assembly '{0}'", asmFile);
+					monitor.ReportError (message, ex);
+					result.AddError (message);
+					monitor.EndTask ();
+					return result;
+				}
+			}
+			monitor.EndTask ();
+			
+			var dir = infoFile.ParentDirectory;
+			if (!Directory.Exists (dir))
+				Directory.CreateDirectory (dir);
+			File.WriteAllLines (infoFile, previouslyProcessedDlls.ToArray ());
+			
 			return result;
 		}
 		
@@ -425,10 +519,24 @@ namespace MonoDevelop.IPhone
 				return true;
 			
 			IPhoneProject proj = item as IPhoneProject;
-			if (proj == null || proj.CompileTarget != CompileTarget.Exe)
+			if (proj == null)
 				return false;
 			
 			var conf = (IPhoneProjectConfiguration) proj.GetConfiguration (configuration);
+			
+			if (proj.CompileTarget == CompileTarget.Library) {
+				var nibDir = conf.ObjDir.Combine ("nibs");
+				if (MacBuildUtilities.GetIBFilePairs (proj.Files, nibDir).Where (NeedsBuilding).Any ())
+					return true;
+				
+				var dllWriteTime = File.GetLastWriteTimeUtc (conf.CompiledOutputName);
+				foreach (var cp in GetContentFilePairs (proj.Files, conf.AppDirectory))
+					if (File.Exists (cp.Input) && File.GetLastWriteTimeUtc (cp.Input) > dllWriteTime)
+						return true;
+			}
+			
+			if (proj.CompileTarget != CompileTarget.Exe)
+				return false;
 			
 			if (!Directory.Exists (conf.AppDirectory))
 				return true;
@@ -470,28 +578,111 @@ namespace MonoDevelop.IPhone
 		{
 			base.Clean (monitor, item, configuration);
 			IPhoneProject proj = item as IPhoneProject;
-			if (proj == null || proj.CompileTarget != CompileTarget.Exe)
+			if (proj == null)
 				return;
 			
 			var conf = (IPhoneProjectConfiguration) proj.GetConfiguration (configuration);
 			
+			if (proj.CompileTarget == CompileTarget.Library) {
+				var nibDir = conf.ObjDir.Combine ("nibs");
+				if (Directory.Exists (nibDir))
+					Directory.Delete (nibDir, true);
+			}
+			
+			if (proj.CompileTarget != CompileTarget.Exe)
+				return;
+			
 			//contains mtouch output, nibs, plist
 			if (Directory.Exists (conf.AppDirectory))
 				Directory.Delete (conf.AppDirectory, true);
+			
+			string embeddedContentInfoFile = conf.ObjDir.Combine ("monotouch_dll_content_processed");
+			if (File.Exists (embeddedContentInfoFile))
+				File.Delete (embeddedContentInfoFile);
 			
 			//remove the xcode project
 			if (Directory.Exists (conf.OutputDirectory.Combine ("XcodeProject")))
 				Directory.Delete (conf.OutputDirectory.Combine ("XcodeProject"), true);
 		}
 		
+		void MangleLibraryResourceNames (BuildData buildData, FilePath tempNibDir)
+		{
+			for (int i = 0; i < buildData.Items.Count; i++) {
+				var pf = buildData.Items[i] as ProjectFile;
+				if (pf != null) {
+					if (pf.BuildAction == BuildAction.Content) {
+						buildData.Items[i] = new ProjectFile (pf.FilePath, BuildAction.EmbeddedResource) {
+							ResourceId = "__monotouch_content_" + EscapeMangledResource (pf.ProjectVirtualPath)
+						};
+					} else if (pf.BuildAction == BuildAction.Page) {
+						var vpath = pf.ProjectVirtualPath;
+						if (vpath.Extension != ".xib")
+							continue;
+						vpath = vpath.ChangeExtension (".nib");
+						var nibPath = vpath.ToAbsolute (tempNibDir);
+						buildData.Items[i] = new ProjectFile (nibPath, BuildAction.EmbeddedResource) {
+							ResourceId = "__monotouch_page_" + EscapeMangledResource (vpath)
+						};
+					}
+				}
+			}
+		}
+		
+		static string EscapeMangledResource (string filename)
+		{
+			var sb = new StringBuilder (filename);
+			sb.Replace ("_", "__");
+			sb.Replace ("/", "_f");
+			sb.Replace ("\\", "_b");
+			return sb.ToString ();
+		}
+		
+		static string UnescapeMangledResource (string mangled)
+		{
+			var sb = new StringBuilder (mangled.Length);
+			for (int i = 0; i < mangled.Length; i++) {
+				char c = mangled[i];
+				if (c == '_') {
+					i++;
+					char c2 = mangled[i];
+					switch (c2) {
+					case '_':
+						sb.Append ('_');
+						break;
+					case 'f':
+						sb.Append ('/');
+						break;
+					case 'b':
+						sb.Append ('\\');
+						break;
+					default:
+						throw new Exception ("Unkmow resource escape char '" + c2 + "'");
+					}
+					continue;
+				}
+				sb.Append (c);
+			}
+			return sb.ToString ();
+		}
+		
 		protected override BuildResult Compile (IProgressMonitor monitor, SolutionEntityItem item, BuildData buildData)
 		{
 			IPhoneProject proj = item as IPhoneProject;
-			if (proj == null || proj.CompileTarget != CompileTarget.Exe)
+			if (proj == null && proj.CompileTarget != CompileTarget.Exe && proj.CompileTarget != CompileTarget.Library)
 				return base.Compile (monitor, item, buildData);
 			
 			var cfg = (IPhoneProjectConfiguration) buildData.Configuration;
 			var projFiles = buildData.Items.OfType<ProjectFile> ();
+			
+			if (proj.CompileTarget == CompileTarget.Library) {
+				var nibDir = cfg.ObjDir.Combine ("nibs");
+				var xibRes = MacBuildUtilities.CompileXibFiles (monitor, projFiles, nibDir);
+				if (xibRes.ErrorCount > 0)
+					return xibRes;
+				MangleLibraryResourceNames (buildData, nibDir);
+				return xibRes.Append (base.Compile (monitor, item, buildData));
+			}	
+			
 			string appDir = cfg.AppDirectory;
 			
 			var sdkVersion = cfg.MtouchSdkVersion.ResolveIfDefault ();

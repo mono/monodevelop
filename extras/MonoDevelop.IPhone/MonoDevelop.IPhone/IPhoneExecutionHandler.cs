@@ -341,10 +341,12 @@ namespace MonoDevelop.IPhone
 		{
 			if (mtouchProcess == null)
 				return;
-			mtouchProcess.Dispose ();
-			outTail.Dispose ();
-			errTail.Dispose ();
-			mtouchProcess = null;
+			if (disposing) {
+				mtouchProcess.Dispose ();
+				outTail.Dispose ();
+				errTail.Dispose ();
+				mtouchProcess = null;
+			}
 		}
 		
 		~IPhoneProcess ()
