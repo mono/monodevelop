@@ -810,7 +810,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			List<string> currentImports = msproject.Imports;
 			List<string> imports = new List<string> (currentImports);
-			UpdateImports (imports);
+			
+			// If the project is not new, don't add the default project imports,
+			// just assume that the current imports are correct
+			UpdateImports (imports, newProject);
 			foreach (string imp in imports) {
 				if (!currentImports.Contains (imp)) {
 					msproject.AddNewImport (imp, null);
@@ -1047,9 +1050,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			buildItem.Condition = pref.Condition;
 		}
 		
-		void UpdateImports (List<string> imports)
+		void UpdateImports (List<string> imports, bool addItemTypeImports)
 		{
-			if (targetImports != null) {
+			if (targetImports != null && addItemTypeImports) {
 				foreach (string imp in targetImports)
 					if (!imports.Contains (imp))
 						imports.Add (imp);
