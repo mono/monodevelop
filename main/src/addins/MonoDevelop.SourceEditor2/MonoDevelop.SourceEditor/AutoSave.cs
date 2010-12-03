@@ -114,7 +114,7 @@ namespace MonoDevelop.SourceEditor
 						try {
 							text = content.Content.Text;
 						} catch (Exception e) {
-							LoggingService.LogError (e);
+							LoggingService.LogError ("Exception in auto save thread.", e);
 							continue;
 						}
 						CreateAutoSave (content.FileName, text);
