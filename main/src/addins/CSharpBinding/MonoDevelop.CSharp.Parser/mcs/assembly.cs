@@ -138,6 +138,11 @@ namespace Mono.CSharp
 			}
 		}
 
+		// TODO: This should not exist here but will require more changes
+		public MetadataImporter Importer {
+			get ; set;
+		}
+
 		public bool IsCLSCompliant {
 			get {
 				return is_cls_compliant;
@@ -167,7 +172,7 @@ namespace Mono.CSharp
 		public void AddModule (string moduleFile)
 		{
 			var mod = builder_extra.AddModule (moduleFile);
-			var imported = Compiler.MetaImporter.ImportModule (mod, module.GlobalRootNamespace);
+			var imported = Importer.ImportModule (mod, module.GlobalRootNamespace);
 
 			if (added_modules == null) {
 				added_modules = new List<ImportedModuleDefinition> ();
@@ -348,7 +353,7 @@ namespace Mono.CSharp
 		{
 			// TODO: It should check only references assemblies but there is
 			// no working SRE API
-			foreach (var a in Compiler.MetaImporter.Assemblies) {
+			foreach (var a in Importer.Assemblies) {
 				if (public_key != null && !a.HasStrongName) {
 					Report.Error (1577, "Referenced assembly `{0}' does not have a strong name",
 						a.FullName);
@@ -466,14 +471,14 @@ namespace Mono.CSharp
 			module.Emit ();
 
 			if (module.HasExtensionMethod) {
-				var pa = Compiler.PredefinedAttributes.Extension;
+				var pa = module.PredefinedAttributes.Extension;
 				if (pa.IsDefined) {
 					SetCustomAttribute (pa.Constructor, AttributeEncoder.Empty);
 				}
 			}
 
 			if (!wrap_non_exception_throws_custom) {
-				PredefinedAttribute pa = Compiler.PredefinedAttributes.RuntimeCompatibility;
+				PredefinedAttribute pa = module.PredefinedAttributes.RuntimeCompatibility;
 				if (pa.IsDefined && pa.ResolveBuilder ()) {
 					var prop = pa.GetProperty ("WrapNonExceptionThrows", TypeManager.bool_type, Location.Null);
 					if (prop != null) {
@@ -652,7 +657,7 @@ namespace Mono.CSharp
 			if (!module.OptAttributes.CheckTargets())
 				return;
 
-			cls_attribute = module.ResolveAssemblyAttribute (Compiler.PredefinedAttributes.CLSCompliant);
+			cls_attribute = module.ResolveAssemblyAttribute (module.PredefinedAttributes.CLSCompliant);
 
 			if (cls_attribute != null) {
 				is_cls_compliant = cls_attribute.GetClsCompliantAttributeValue ();
@@ -668,7 +673,7 @@ namespace Mono.CSharp
 				}
 			}
 
-			Attribute a = module.ResolveAssemblyAttribute (Compiler.PredefinedAttributes.RuntimeCompatibility);
+			Attribute a = module.ResolveAssemblyAttribute (module.PredefinedAttributes.RuntimeCompatibility);
 			if (a != null) {
 				var val = a.GetNamedValue ("WrapNonExceptionThrows") as BoolConstant;
 				if (val != null)
@@ -919,6 +924,35 @@ namespace Mono.CSharp
 
 			return new Version (v.Major, System.Math.Max (0, v.Minor), System.Math.Max (0, v.Build), System.Math.Max (0, v.Revision)).ToString (4);
 		}
+	}
+
+	public class AssemblyResource : IEquatable<AssemblyResource>
+	{
+		public AssemblyResource (string fileName, string name)
+			: this (fileName, name, false)
+		{
+		}
+
+		public AssemblyResource (string fileName, string name, bool isPrivate)
+		{
+			FileName = fileName;
+			Name = name;
+			Attributes = isPrivate ? ResourceAttributes.Private : ResourceAttributes.Public;
+		}
+
+		public ResourceAttributes Attributes { get; private set; }
+		public string Name { get; private set; }
+		public string FileName { get; private set; }
+		public bool IsEmbeded { get; set; }
+
+		#region IEquatable<AssemblyResource> Members
+
+		public bool Equals (AssemblyResource other)
+		{
+			return Name == other.Name;
+		}
+
+		#endregion
 	}
 
 	//

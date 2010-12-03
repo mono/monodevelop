@@ -43,6 +43,7 @@ namespace Mono.CSharp
 		bool IsUnsafe { get; }
 		bool IsStatic { get; }
 		bool HasUnresolvedConstraints { get; }
+		ModuleContainer Module { get; }
 
 		string GetSignatureForError ();
 
@@ -50,6 +51,7 @@ namespace Mono.CSharp
 		FullNamedExpression LookupNamespaceOrType (string name, int arity, Location loc, bool ignore_cs0104);
 		FullNamedExpression LookupNamespaceAlias (string name);
 
+		// TODO: It has been replaced by module
 		CompilerContext Compiler { get; }
 	}
 
@@ -328,7 +330,7 @@ namespace Mono.CSharp
 
 		public Block CurrentBlock;
 
-		public IMemberContext MemberContext;
+		public readonly IMemberContext MemberContext;
 
 		/// <summary>
 		///   If this is non-null, points to the current switch statement
@@ -412,6 +414,12 @@ namespace Mono.CSharp
 		public bool IsVariableCapturingRequired {
 			get {
 				return !IsInProbingMode && (CurrentBranching == null || !CurrentBranching.CurrentUsageVector.IsUnreachable);
+			}
+		}
+
+		public ModuleContainer Module {
+			get {
+				return MemberContext.Module;
 			}
 		}
 
@@ -545,35 +553,23 @@ namespace Mono.CSharp
 	public class CompilerContext
 	{
 		readonly Report report;
-		readonly ReflectionMetaImporter meta_importer;
-		readonly PredefinedAttributes attributes;
+		readonly BuildinTypes buildin_types;
 
-		public CompilerContext (ReflectionMetaImporter metaImporter, Report report)
+		public CompilerContext (Report report)
 		{
-			this.meta_importer = metaImporter;
 			this.report = report;
-
-			this.attributes = new PredefinedAttributes ();
+			this.buildin_types = new BuildinTypes ();
 		}
 
 		#region Properties
 
-		// TODO: Obsolete, it has to go
-		public RootNamespace GlobalRootNamespace { get; set; }
+		public BuildinTypes BuildinTypes {
+			get {
+				return buildin_types;
+			}
+		}
 
 		public bool IsRuntimeBinder { get; set; }
-
-		public ReflectionMetaImporter MetaImporter {
-			get {
-				return meta_importer;
-			}
-		}
-
-		public PredefinedAttributes PredefinedAttributes {
-			get {
-				return attributes;
-			}
-		}
 
 		public Report Report {
 			get {

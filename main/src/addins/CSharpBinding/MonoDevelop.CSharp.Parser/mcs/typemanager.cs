@@ -16,84 +16,438 @@ using System.Globalization;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Mono.CSharp {
+namespace Mono.CSharp
+{
+	//
+	// All compiler build-in types (they have to exist otherwise the compile will not work)
+	//
+	public class BuildinTypes
+	{
+		public readonly BuildinTypeSpec Object;
+		public readonly BuildinTypeSpec ValueType;
+		public readonly BuildinTypeSpec Attribute;
+
+		public readonly BuildinTypeSpec Int;
+		public readonly BuildinTypeSpec UInt;
+		public readonly BuildinTypeSpec Long;
+		public readonly BuildinTypeSpec ULong;
+		public readonly BuildinTypeSpec Float;
+		public readonly BuildinTypeSpec Double;
+		public readonly BuildinTypeSpec Char;
+		public readonly BuildinTypeSpec Short;
+		public readonly BuildinTypeSpec Decimal;
+		public readonly BuildinTypeSpec Bool;
+		public readonly BuildinTypeSpec SByte;
+		public readonly BuildinTypeSpec Byte;
+		public readonly BuildinTypeSpec UShort;
+		public readonly BuildinTypeSpec String;
+
+		public readonly BuildinTypeSpec Enum;
+		public readonly BuildinTypeSpec Delegate;
+		public readonly BuildinTypeSpec MulticastDelegate;
+		public readonly BuildinTypeSpec Void;
+		public readonly BuildinTypeSpec Array;
+		public readonly BuildinTypeSpec Type;
+		public readonly BuildinTypeSpec IEnumerator;
+		public readonly BuildinTypeSpec IEnumerable;
+		public readonly BuildinTypeSpec IDisposable;
+		public readonly BuildinTypeSpec IntPtr;
+		public readonly BuildinTypeSpec UIntPtr;
+		public readonly BuildinTypeSpec RuntimeFieldHandle;
+		public readonly BuildinTypeSpec RuntimeTypeHandle;
+		public readonly BuildinTypeSpec Exception;
+
+		//
+		// These are internal buil-in types which depend on other
+		// build-in type (mostly object)
+		//
+		public readonly BuildinTypeSpec Dynamic;
+		public readonly BuildinTypeSpec Null;
+
+		readonly BuildinTypeSpec[] types;
+
+		public BuildinTypes ()
+		{
+			Object = new BuildinTypeSpec (MemberKind.Class, "System", "Object", BuildinTypeSpec.Type.Object);
+			ValueType = new BuildinTypeSpec (MemberKind.Class, "System", "ValueType", BuildinTypeSpec.Type.ValueType);
+			Attribute = new BuildinTypeSpec (MemberKind.Class, "System", "Attribute", BuildinTypeSpec.Type.Attribute);
+
+			Int = new BuildinTypeSpec (MemberKind.Struct, "System", "Int32", BuildinTypeSpec.Type.Int);
+			Long = new BuildinTypeSpec (MemberKind.Struct, "System", "Int64", BuildinTypeSpec.Type.Long);
+			UInt = new BuildinTypeSpec (MemberKind.Struct, "System", "UInt32", BuildinTypeSpec.Type.UInt);
+			ULong = new BuildinTypeSpec (MemberKind.Struct, "System", "UInt64", BuildinTypeSpec.Type.ULong);
+			Byte = new BuildinTypeSpec (MemberKind.Struct, "System", "Byte", BuildinTypeSpec.Type.Byte);
+			SByte = new BuildinTypeSpec (MemberKind.Struct, "System", "SByte", BuildinTypeSpec.Type.SByte);
+			Short = new BuildinTypeSpec (MemberKind.Struct, "System", "Int16", BuildinTypeSpec.Type.Short);
+			UShort = new BuildinTypeSpec (MemberKind.Struct, "System", "UInt16", BuildinTypeSpec.Type.UShort);
+
+			IEnumerator = new BuildinTypeSpec (MemberKind.Interface, "System.Collections", "IEnumerator", BuildinTypeSpec.Type.IEnumerator);
+			IEnumerable = new BuildinTypeSpec (MemberKind.Interface, "System.Collections", "IEnumerable", BuildinTypeSpec.Type.IEnumerable);
+			IDisposable = new BuildinTypeSpec (MemberKind.Interface, "System", "IDisposable", BuildinTypeSpec.Type.IDisposable);
+
+			Char = new BuildinTypeSpec (MemberKind.Struct, "System", "Char", BuildinTypeSpec.Type.Char);
+			String = new BuildinTypeSpec (MemberKind.Class, "System", "String", BuildinTypeSpec.Type.String);
+			Float = new BuildinTypeSpec (MemberKind.Struct, "System", "Single", BuildinTypeSpec.Type.Float);
+			Double = new BuildinTypeSpec (MemberKind.Struct, "System", "Double", BuildinTypeSpec.Type.Double);
+			Decimal = new BuildinTypeSpec (MemberKind.Struct, "System", "Decimal", BuildinTypeSpec.Type.Decimal);
+			Bool = new BuildinTypeSpec (MemberKind.Struct, "System", "Boolean", BuildinTypeSpec.Type.Bool);
+			IntPtr = new BuildinTypeSpec (MemberKind.Struct, "System", "IntPtr", BuildinTypeSpec.Type.IntPtr);
+			UIntPtr = new BuildinTypeSpec (MemberKind.Struct, "System", "UIntPtr", BuildinTypeSpec.Type.UIntPtr);
+
+			MulticastDelegate = new BuildinTypeSpec (MemberKind.Class, "System", "MulticastDelegate", BuildinTypeSpec.Type.MulticastDelegate);
+			Delegate = new BuildinTypeSpec (MemberKind.Class, "System", "Delegate", BuildinTypeSpec.Type.Delegate);
+			Enum = new BuildinTypeSpec (MemberKind.Class, "System", "Enum", BuildinTypeSpec.Type.Enum);
+			Array = new BuildinTypeSpec (MemberKind.Class, "System", "Array", BuildinTypeSpec.Type.Array);
+			Void = new BuildinTypeSpec (MemberKind.Struct, "System", "Void", BuildinTypeSpec.Type.Void);
+			Type = new BuildinTypeSpec (MemberKind.Class, "System", "Type", BuildinTypeSpec.Type.Type);
+			Exception = new BuildinTypeSpec (MemberKind.Class, "System", "Exception", BuildinTypeSpec.Type.Exception);
+			RuntimeFieldHandle = new BuildinTypeSpec (MemberKind.Struct, "System", "RuntimeFieldHandle", BuildinTypeSpec.Type.RuntimeFieldHandle);
+			RuntimeTypeHandle = new BuildinTypeSpec (MemberKind.Struct, "System", "RuntimeTypeHandle", BuildinTypeSpec.Type.RuntimeTypeHandle);
+
+			Dynamic = new BuildinTypeSpec ("dynamic", BuildinTypeSpec.Type.Dynamic);
+			Null = new BuildinTypeSpec ("null", BuildinTypeSpec.Type.Null);
+			Null.MemberCache = MemberCache.Empty;
+
+			types = new BuildinTypeSpec[] {
+				Object, ValueType, Attribute,
+				Int, UInt, Long, ULong, Float, Double, Char, Short, Decimal, Bool, SByte, Byte, UShort, String,
+				Enum, Delegate, MulticastDelegate, Void, Array, Type, IEnumerator, IEnumerable, IDisposable,
+				IntPtr, UIntPtr, RuntimeFieldHandle, RuntimeTypeHandle, Exception };
+
+			// Deal with obsolete static types
+			// TODO: remove
+			TypeManager.object_type = Object;
+			TypeManager.value_type = ValueType;
+			TypeManager.string_type = String;
+			TypeManager.int32_type = Int;
+			TypeManager.uint32_type = UInt;
+			TypeManager.int64_type = Long;
+			TypeManager.uint64_type = ULong;
+			TypeManager.float_type = Float;
+			TypeManager.double_type = Double;
+			TypeManager.char_type = Char;
+			TypeManager.short_type = Short;
+			TypeManager.decimal_type = Decimal;
+			TypeManager.bool_type = Bool;
+			TypeManager.sbyte_type = SByte;
+			TypeManager.byte_type = Byte;
+			TypeManager.ushort_type = UShort;
+			TypeManager.enum_type = Enum;
+			TypeManager.delegate_type = Delegate;
+			TypeManager.multicast_delegate_type = MulticastDelegate; ;
+			TypeManager.void_type = Void;
+			TypeManager.array_type = Array; ;
+			TypeManager.runtime_handle_type = RuntimeTypeHandle;
+			TypeManager.type_type = Type;
+			TypeManager.ienumerator_type = IEnumerator;
+			TypeManager.ienumerable_type = IEnumerable;
+			TypeManager.idisposable_type = IDisposable;
+			TypeManager.intptr_type = IntPtr;
+			TypeManager.uintptr_type = UIntPtr;
+			TypeManager.runtime_field_handle_type = RuntimeFieldHandle;
+			TypeManager.attribute_type = Attribute;
+			TypeManager.exception_type = Exception;
+
+			InternalType.Dynamic = Dynamic;
+			InternalType.Null = Null;
+		}
+
+		public bool CheckDefinitions (ModuleContainer module)
+		{
+			var ctx = module.Compiler;
+			foreach (var p in types) {
+				var found = PredefinedType.Resolve (module, p.Kind, p.Namespace, p.Name, p.Arity, Location.Null);
+				if (found == null || found == p)
+					continue;
+
+				if (!RootContext.StdLib) {
+					var ns = module.GlobalRootNamespace.GetNamespace (p.Namespace, false);
+					ns.ReplaceTypeWithPredefined (found, p);
+
+					var tc = found.MemberDefinition as TypeContainer;
+					tc.SetPredefinedSpec (p);
+					p.SetDefinition (found);
+				}
+			}
+
+			if (ctx.Report.Errors != 0)
+				return false;
+
+			// Set internal build-in types
+			Dynamic.SetDefinition (Object);
+			Null.SetDefinition (Object);
+
+			return true;
+		}
+	}
+
+	//
+	// Compiler predefined types. Usually used for compiler generated
+	// code or for comparison against well known framework type
+	//
+	class PredefinedTypes
+	{
+		// TODO: These two exist only to reject type comparison
+		public readonly PredefinedType TypedReference;
+		public readonly PredefinedType ArgIterator;
+
+		public readonly PredefinedType MarshalByRefObject;
+		public readonly PredefinedType RuntimeHelpers;
+		public readonly PredefinedType IAsyncResult;
+		public readonly PredefinedType AsyncCallback;
+		public readonly PredefinedType RuntimeArgumentHandle;
+		public readonly PredefinedType CharSet;
+		public readonly PredefinedType IsVolatile;
+		public readonly PredefinedType IEnumeratorGeneric;
+		public readonly PredefinedType IListGeneric;
+		public readonly PredefinedType ICollectionGeneric;
+		public readonly PredefinedType IEnumerableGeneric;
+		public readonly PredefinedType Nullable;
+		public readonly PredefinedType Activator;
+		public readonly PredefinedType Interlocked;
+		public readonly PredefinedType Monitor;
+		public readonly PredefinedType NotSupportedException;
+		public readonly PredefinedType RuntimeFieldHandle;
+		public readonly PredefinedType RuntimeMethodHandle;
+
+		//
+		// C# 3.0
+		//
+		public readonly PredefinedType Expression;
+		public readonly PredefinedType ExpressionGeneric;
+		public readonly PredefinedType ParameterExpression;
+		public readonly PredefinedType FieldInfo;
+		public readonly PredefinedType MethodBase;
+		public readonly PredefinedType MethodInfo;
+		public readonly PredefinedType ConstructorInfo;
+
+		//
+		// C# 4.0
+		//
+		public readonly PredefinedType Binder;
+		public readonly PredefinedType CallSite;
+		public readonly PredefinedType CallSiteGeneric;
+		public readonly PredefinedType BinderFlags;
+
+		public PredefinedTypes (ModuleContainer module)
+		{
+			TypedReference = new PredefinedType (module, MemberKind.Struct, "System", "TypedReference");
+			ArgIterator = new PredefinedType (module, MemberKind.Struct, "System", "ArgIterator");
+			MarshalByRefObject = new PredefinedType (module, MemberKind.Class, "System", "MarshalByRefObject");
+			RuntimeHelpers = new PredefinedType (module, MemberKind.Class, "System.Runtime.CompilerServices", "RuntimeHelpers");
+			IAsyncResult = new PredefinedType (module, MemberKind.Interface, "System", "IAsyncResult");
+			AsyncCallback = new PredefinedType (module, MemberKind.Delegate, "System", "AsyncCallback");
+			RuntimeArgumentHandle = new PredefinedType (module, MemberKind.Struct, "System", "RuntimeArgumentHandle");
+			CharSet = new PredefinedType (module, MemberKind.Enum, "System.Runtime.InteropServices", "CharSet");
+			IsVolatile = new PredefinedType (module, MemberKind.Class, "System.Runtime.CompilerServices", "IsVolatile");
+			IEnumeratorGeneric = new PredefinedType (module, MemberKind.Interface, "System.Collections.Generic", "IEnumerator", 1);
+			IListGeneric = new PredefinedType (module, MemberKind.Interface, "System.Collections.Generic", "IList", 1);
+			ICollectionGeneric = new PredefinedType (module, MemberKind.Interface, "System.Collections.Generic", "ICollection", 1);
+			IEnumerableGeneric = new PredefinedType (module, MemberKind.Interface, "System.Collections.Generic", "IEnumerable", 1);
+			Nullable = new PredefinedType (module, MemberKind.Struct, "System", "Nullable", 1);
+			Activator = new PredefinedType (module, MemberKind.Class, "System", "Activator");
+			Interlocked = new PredefinedType (module, MemberKind.Class, "System.Threading", "Interlocked");
+			Monitor = new PredefinedType (module, MemberKind.Class, "System.Threading", "Monitor");
+			NotSupportedException = new PredefinedType (module, MemberKind.Class, "System", "NotSupportedException");
+			RuntimeFieldHandle = new PredefinedType (module, MemberKind.Struct, "System", "RuntimeFieldHandle");
+			RuntimeMethodHandle = new PredefinedType (module, MemberKind.Struct, "System", "RuntimeMethodHandle");
+
+			Expression = new PredefinedType (module, MemberKind.Class, "System.Linq.Expressions", "Expression");
+			ExpressionGeneric = new PredefinedType (module, MemberKind.Class, "System.Linq.Expressions", "Expression", 1);
+			ParameterExpression = new PredefinedType (module, MemberKind.Class, "System.Linq.Expressions", "ParameterExpression");
+			FieldInfo = new PredefinedType (module, MemberKind.Class, "System.Reflection", "FieldInfo");
+			MethodBase = new PredefinedType (module, MemberKind.Class, "System.Reflection", "MethodBase");
+			MethodInfo = new PredefinedType (module, MemberKind.Class, "System.Reflection", "MethodInfo");
+			ConstructorInfo = new PredefinedType (module, MemberKind.Class, "System.Reflection", "ConstructorInfo");
+
+			CallSite = new PredefinedType (module, MemberKind.Class, "System.Runtime.CompilerServices", "CallSite");
+			CallSiteGeneric = new PredefinedType (module, MemberKind.Class, "System.Runtime.CompilerServices", "CallSite", 1);
+			Binder = new PredefinedType (module, MemberKind.Class, "Microsoft.CSharp.RuntimeBinder", "Binder");
+			BinderFlags = new PredefinedType (module, MemberKind.Enum, "Microsoft.CSharp.RuntimeBinder", "CSharpBinderFlags");
+
+			//
+			// Define types which are used for comparison. It does not matter
+			// if they don't exist as no error report is needed
+			//
+			TypedReference.Define ();
+			ArgIterator.Define ();
+			MarshalByRefObject.Define ();
+			CharSet.Define ();
+
+			IEnumerableGeneric.Define ();
+			IListGeneric.Define ();
+			ICollectionGeneric.Define ();
+			IEnumerableGeneric.Define ();
+			IEnumeratorGeneric.Define ();
+			Nullable.Define ();
+			ExpressionGeneric.Define ();
+
+			// Deal with obsolete static types
+			// TODO: remove
+			TypeManager.typed_reference_type = TypedReference.TypeSpec;
+			TypeManager.arg_iterator_type = ArgIterator.TypeSpec;
+			TypeManager.mbr_type = MarshalByRefObject.TypeSpec;
+			TypeManager.generic_ilist_type = IListGeneric.TypeSpec;
+			TypeManager.generic_icollection_type = ICollectionGeneric.TypeSpec;
+			TypeManager.generic_ienumerator_type = IEnumeratorGeneric.TypeSpec;
+			TypeManager.generic_ienumerable_type = IEnumerableGeneric.TypeSpec;
+			TypeManager.generic_nullable_type = Nullable.TypeSpec;
+			TypeManager.expression_type = ExpressionGeneric.TypeSpec;
+		}
+	}
+
+	public class PredefinedType
+	{
+		string name;
+		string ns;
+		int arity;
+		MemberKind kind;
+		ModuleContainer module;
+		protected TypeSpec type;
+
+		public PredefinedType (ModuleContainer module, MemberKind kind, string ns, string name, int arity)
+			: this (module, kind, ns, name)
+		{
+			this.arity = arity;
+		}
+
+		public PredefinedType (ModuleContainer module, MemberKind kind, string ns, string name)
+		{
+			this.module = module;
+			this.kind = kind;
+			this.name = name;
+			this.ns = ns;
+		}
+
+		#region Properties
+
+		public int Arity {
+			get {
+				return arity;
+			}
+		}
+
+		public bool IsDefined {
+			get {
+				return type != null;
+			}
+		}
+
+		public string Name {
+			get {
+				return name;
+			}
+		}
+
+		public string Namespace {
+			get {
+				return ns;
+			}
+		}
+
+		public TypeSpec TypeSpec {
+			get {
+				return type;
+			}
+		}
+
+		#endregion
+
+		public bool Define ()
+		{
+			if (type != null)
+				return true;
+
+			Namespace type_ns = module.GlobalRootNamespace.GetNamespace (ns, true);
+			var te = type_ns.LookupType (module.Compiler, name, arity, true, Location.Null);
+			if (te == null)
+				return false;
+
+			if (te.Type.Kind != kind)
+				return false;
+
+			type = te.Type;
+			return true;
+		}
+
+		public string GetSignatureForError ()
+		{
+			return ns + "." + name;
+		}
+
+		public static TypeSpec Resolve (ModuleContainer module, MemberKind kind, string ns, string name, int arity, Location loc)
+		{
+			Namespace type_ns = module.GlobalRootNamespace.GetNamespace (ns, true);
+			var te = type_ns.LookupType (module.Compiler, name, arity, false, Location.Null);
+			if (te == null) {
+				module.Compiler.Report.Error (518, loc, "The predefined type `{0}.{1}' is not defined or imported", ns, name);
+				return null;
+			}
+
+			var type = te.Type;
+			if (type.Kind != kind) {
+				module.Compiler.Report.Error (520, loc, "The predefined type `{0}.{1}' is not declared correctly", ns, name);
+				return null;
+			}
+
+			return type;
+		}
+
+		public TypeSpec Resolve (Location loc)
+		{
+			if (type == null)
+				type = Resolve (module, kind, ns, name, arity, loc);
+
+			return type;
+		}
+	}
 
 	partial class TypeManager {
 	//
 	// A list of core types that the compiler requires or uses
 	//
-	static public PredefinedTypeSpec object_type;
-	static public PredefinedTypeSpec value_type;
-	static public PredefinedTypeSpec string_type;
-	static public PredefinedTypeSpec int32_type;
-	static public PredefinedTypeSpec uint32_type;
-	static public PredefinedTypeSpec int64_type;
-	static public PredefinedTypeSpec uint64_type;
-	static public PredefinedTypeSpec float_type;
-	static public PredefinedTypeSpec double_type;
-	static public PredefinedTypeSpec char_type;
-	static public PredefinedTypeSpec short_type;
-	static public PredefinedTypeSpec decimal_type;
-	static public PredefinedTypeSpec bool_type;
-	static public PredefinedTypeSpec sbyte_type;
-	static public PredefinedTypeSpec byte_type;
-	static public PredefinedTypeSpec ushort_type;
-	static public PredefinedTypeSpec enum_type;
-	static public PredefinedTypeSpec delegate_type;
-	static public PredefinedTypeSpec multicast_delegate_type;
-	static public PredefinedTypeSpec void_type;
-	static public PredefinedTypeSpec array_type;
-	static public PredefinedTypeSpec runtime_handle_type;
-	static public PredefinedTypeSpec type_type;
-	static public PredefinedTypeSpec ienumerator_type;
-	static public PredefinedTypeSpec ienumerable_type;
-	static public PredefinedTypeSpec idisposable_type;
-	static public PredefinedTypeSpec intptr_type;
-	static public PredefinedTypeSpec uintptr_type;
-	static public PredefinedTypeSpec runtime_field_handle_type;
-	static public PredefinedTypeSpec attribute_type;
-	static public PredefinedTypeSpec exception_type;
+	static public BuildinTypeSpec object_type;
+	static public BuildinTypeSpec value_type;
+	static public BuildinTypeSpec string_type;
+	static public BuildinTypeSpec int32_type;
+	static public BuildinTypeSpec uint32_type;
+	static public BuildinTypeSpec int64_type;
+	static public BuildinTypeSpec uint64_type;
+	static public BuildinTypeSpec float_type;
+	static public BuildinTypeSpec double_type;
+	static public BuildinTypeSpec char_type;
+	static public BuildinTypeSpec short_type;
+	static public BuildinTypeSpec decimal_type;
+	static public BuildinTypeSpec bool_type;
+	static public BuildinTypeSpec sbyte_type;
+	static public BuildinTypeSpec byte_type;
+	static public BuildinTypeSpec ushort_type;
+	static public BuildinTypeSpec enum_type;
+	static public BuildinTypeSpec delegate_type;
+	static public BuildinTypeSpec multicast_delegate_type;
+	static public BuildinTypeSpec void_type;
+	static public BuildinTypeSpec array_type;
+	static public BuildinTypeSpec runtime_handle_type;
+	static public BuildinTypeSpec type_type;
+	static public BuildinTypeSpec ienumerator_type;
+	static public BuildinTypeSpec ienumerable_type;
+	static public BuildinTypeSpec idisposable_type;
+	static public BuildinTypeSpec intptr_type;
+	static public BuildinTypeSpec uintptr_type;
+	static public BuildinTypeSpec runtime_field_handle_type;
+	static public BuildinTypeSpec attribute_type;
+	static public BuildinTypeSpec exception_type;
 
 
 	static public TypeSpec typed_reference_type;
 	static public TypeSpec arg_iterator_type;
 	static public TypeSpec mbr_type;
-	public static TypeSpec runtime_helpers_type;
-	static public TypeSpec iasyncresult_type;
-	static public TypeSpec asynccallback_type;
-	static public TypeSpec runtime_argument_handle_type;
-	static public TypeSpec void_ptr_type;
-	static public TypeSpec interop_charset;
-
-	// 
-	// C# 2.0
-	//
-	static internal TypeSpec isvolatile_type;
 	static public TypeSpec generic_ilist_type;
 	static public TypeSpec generic_icollection_type;
 	static public TypeSpec generic_ienumerator_type;
 	static public TypeSpec generic_ienumerable_type;
 	static public TypeSpec generic_nullable_type;
-
-	//
-	// C# 3.0
-	//
 	static internal TypeSpec expression_type;
-	public static TypeSpec parameter_expression_type;
-	public static TypeSpec fieldinfo_type;
-	public static TypeSpec methodinfo_type;
-	public static TypeSpec ctorinfo_type;
-
-	//
-	// C# 4.0
-	//
-	public static TypeSpec call_site_type;
-	public static TypeSpec generic_call_site_type;
-	public static TypeExpr binder_type;
-	public static TypeSpec binder_flags;
-
-	public static TypeExpr expression_type_expr;
-
 
 	//
 	// These methods are called by code generated by the compiler
@@ -159,20 +513,9 @@ namespace Mono.CSharp {
 
 		string_empty = null;
 
-		call_site_type =
-		generic_call_site_type =
-		binder_flags = null;
-
-		binder_type = null;
-
 		typed_reference_type = arg_iterator_type = mbr_type =
-		runtime_helpers_type = iasyncresult_type = asynccallback_type =
-		runtime_argument_handle_type = void_ptr_type = isvolatile_type =
 		generic_ilist_type = generic_icollection_type = generic_ienumerator_type =
-		generic_ienumerable_type = generic_nullable_type = expression_type = interop_charset =
-		parameter_expression_type = fieldinfo_type = methodinfo_type = ctorinfo_type = null;
-
-		expression_type_expr = null;
+		generic_ienumerable_type = generic_nullable_type = expression_type = null;
 	}
 
 	/// <summary>
@@ -206,39 +549,6 @@ namespace Mono.CSharp {
 	static public string CSharpSignature (MemberSpec mb)
 	{
 		return mb.GetSignatureForError ();
-	}
-
-	//
-	// Looks up a type, and aborts if it is not found.  This is used
-	// by predefined types required by the compiler
-	//
-	public static TypeSpec CoreLookupType (CompilerContext ctx, string ns_name, string name, MemberKind kind, bool required)
-	{
-		return CoreLookupType (ctx, ns_name, name, 0, kind, required);
-	}
-
-	public static TypeSpec CoreLookupType (CompilerContext ctx, string ns_name, string name, int arity, MemberKind kind, bool required)
-	{
-		Namespace ns = ctx.GlobalRootNamespace.GetNamespace (ns_name, true);
-		var te = ns.LookupType (ctx, name, arity, !required, Location.Null);
-		var ts = te == null ? null : te.Type;
-
-		if (!required)
-			return ts;
-
-		if (ts == null) {
-			ctx.Report.Error (518, "The predefined type `{0}.{1}' is not defined or imported",
-				ns_name, name);
-			return null;
-		}
-
-		if (ts.Kind != kind) {
-			ctx.Report.Error (520, "The predefined type `{0}.{1}' is not declared correctly",
-				ns_name, name);
-			return null;
-		}
-
-		return ts;
 	}
 
 	static MemberSpec GetPredefinedMember (TypeSpec t, MemberFilter filter, bool optional, Location loc)
@@ -298,125 +608,6 @@ namespace Mono.CSharp {
 	public static PropertySpec GetPredefinedProperty (TypeSpec t, string name, Location loc, TypeSpec type)
 	{
 		return GetPredefinedMember (t, MemberFilter.Property (name, type), false, loc) as PropertySpec;
-	}
-
-	public static IList<PredefinedTypeSpec> InitCoreTypes ()
-	{
-		var core_types = new PredefinedTypeSpec[] {
-			object_type = new PredefinedTypeSpec (MemberKind.Class, "System", "Object"),
-			value_type = new PredefinedTypeSpec (MemberKind.Class, "System", "ValueType"),
-			attribute_type = new PredefinedTypeSpec (MemberKind.Class, "System", "Attribute"),
-
-			int32_type = new PredefinedTypeSpec (MemberKind.Struct, "System", "Int32"),
-			int64_type = new PredefinedTypeSpec (MemberKind.Struct, "System", "Int64"),
-			uint32_type = new PredefinedTypeSpec (MemberKind.Struct, "System", "UInt32"),
-			uint64_type = new PredefinedTypeSpec (MemberKind.Struct, "System", "UInt64"),
-			byte_type = new PredefinedTypeSpec (MemberKind.Struct, "System", "Byte"),
-			sbyte_type = new PredefinedTypeSpec (MemberKind.Struct, "System", "SByte"),
-			short_type = new PredefinedTypeSpec (MemberKind.Struct, "System", "Int16"),
-			ushort_type = new PredefinedTypeSpec (MemberKind.Struct, "System", "UInt16"),
-
-			ienumerator_type = new PredefinedTypeSpec (MemberKind.Interface, "System.Collections", "IEnumerator"),
-			ienumerable_type = new PredefinedTypeSpec (MemberKind.Interface, "System.Collections", "IEnumerable"),
-			idisposable_type = new PredefinedTypeSpec (MemberKind.Interface, "System", "IDisposable"),
-
-			char_type = new PredefinedTypeSpec (MemberKind.Struct, "System", "Char"),
-			string_type = new PredefinedTypeSpec (MemberKind.Class, "System", "String"),
-			float_type = new PredefinedTypeSpec (MemberKind.Struct, "System", "Single"),
-			double_type = new PredefinedTypeSpec (MemberKind.Struct, "System", "Double"),
-			decimal_type = new PredefinedTypeSpec (MemberKind.Struct, "System", "Decimal"),
-			bool_type = new PredefinedTypeSpec (MemberKind.Struct, "System", "Boolean"),
-			intptr_type = new PredefinedTypeSpec (MemberKind.Struct, "System", "IntPtr"),
-			uintptr_type = new PredefinedTypeSpec (MemberKind.Struct, "System", "UIntPtr"),
-
-			multicast_delegate_type = new PredefinedTypeSpec (MemberKind.Class, "System", "MulticastDelegate"),
-			delegate_type = new PredefinedTypeSpec (MemberKind.Class, "System", "Delegate"),
-			enum_type = new PredefinedTypeSpec (MemberKind.Class, "System", "Enum"),
-			array_type = new PredefinedTypeSpec (MemberKind.Class, "System", "Array"),
-			void_type = new PredefinedTypeSpec (MemberKind.Struct, "System", "Void"),
-			type_type = new PredefinedTypeSpec (MemberKind.Class, "System", "Type"),
-			exception_type = new PredefinedTypeSpec (MemberKind.Class, "System", "Exception"),
-			runtime_field_handle_type = new PredefinedTypeSpec (MemberKind.Struct, "System", "RuntimeFieldHandle"),
-			runtime_handle_type = new PredefinedTypeSpec (MemberKind.Struct, "System", "RuntimeTypeHandle"),
-		};
-
-		return core_types;
-	}
-
-	/// <remarks>
-	///   The types have to be initialized after the initial
-	///   population of the type has happened (for example, to
-	///   bootstrap the corlib.dll
-	/// </remarks>
-	public static bool InitCoreTypes (ModuleContainer module, IList<PredefinedTypeSpec> predefined)
-	{
-		var ctx = module.Compiler;
-		foreach (var p in predefined) {
-			var found = CoreLookupType (ctx, p.Namespace, p.Name, p.Kind, true);
-			if (found == null || found == p)
-				continue;
-
-			if (!RootContext.StdLib) {
-				var ns = module.GlobalRootNamespace.GetNamespace (p.Namespace, false);
-				ns.ReplaceTypeWithPredefined (found, p);
-
-				var tc = found.MemberDefinition as TypeContainer;
-				tc.SetPredefinedSpec (p);
-				p.SetDefinition (found);
-			}
-		}
-
-		ctx.PredefinedAttributes.ParamArray.Initialize (ctx, false);
-		ctx.PredefinedAttributes.Out.Initialize (ctx, false);
-
-		if (InternalType.Dynamic.GetMetaInfo () == null) {
-			InternalType.Dynamic.SetMetaInfo (object_type.GetMetaInfo ());
-
-			if (object_type.MemberDefinition.IsImported)
-				InternalType.Dynamic.MemberCache = object_type.MemberCache;
-
-			InternalType.Null.SetMetaInfo (object_type.GetMetaInfo ());
-		}
-
-		return ctx.Report.Errors == 0;
-	}
-
-	//
-	// Initializes optional core types
-	//
-	public static void InitOptionalCoreTypes (CompilerContext ctx)
-	{
-		void_ptr_type = PointerContainer.MakeType (void_type);
-
-		//
-		// Initialize InternalsVisibleTo as the very first optional type. Otherwise we would populate
-		// types cache with incorrect accessiblity when any of optional types is internal.
-		//
-		ctx.PredefinedAttributes.Initialize (ctx);
-
-		runtime_argument_handle_type = CoreLookupType (ctx, "System", "RuntimeArgumentHandle", MemberKind.Struct, false);
-		asynccallback_type = CoreLookupType (ctx, "System", "AsyncCallback", MemberKind.Delegate, false);
-		iasyncresult_type = CoreLookupType (ctx, "System", "IAsyncResult", MemberKind.Interface, false);
-		typed_reference_type = CoreLookupType (ctx, "System", "TypedReference", MemberKind.Struct, false);
-		arg_iterator_type = CoreLookupType (ctx, "System", "ArgIterator", MemberKind.Struct, false);
-		mbr_type = CoreLookupType (ctx, "System", "MarshalByRefObject", MemberKind.Class, false);
-
-		generic_ienumerator_type = CoreLookupType (ctx, "System.Collections.Generic", "IEnumerator", 1, MemberKind.Interface, false);
-		generic_ilist_type = CoreLookupType (ctx, "System.Collections.Generic", "IList", 1, MemberKind.Interface, false);
-		generic_icollection_type = CoreLookupType (ctx, "System.Collections.Generic", "ICollection", 1, MemberKind.Interface, false);
-		generic_ienumerable_type = CoreLookupType (ctx, "System.Collections.Generic", "IEnumerable", 1, MemberKind.Interface, false);
-		generic_nullable_type = CoreLookupType (ctx, "System", "Nullable", 1, MemberKind.Struct, false);
-
-		isvolatile_type = CoreLookupType (ctx, "System.Runtime.CompilerServices", "IsVolatile", MemberKind.Class, false);
-
-		//
-		// Optional types which are used as types and for member lookup
-		//
-		runtime_helpers_type = CoreLookupType (ctx, "System.Runtime.CompilerServices", "RuntimeHelpers", MemberKind.Class, false);
-
-		// New in .NET 3.5
-		// Note: extension_attribute_type is already loaded
-		expression_type = CoreLookupType (ctx, "System.Linq.Expressions", "Expression", 1, MemberKind.Class, false);
 	}
 
 	public static bool IsBuiltinType (TypeSpec t)

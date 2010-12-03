@@ -66,6 +66,12 @@ namespace Mono.CSharp
 			}
 		}
 
+		public virtual BuildinTypeSpec.Type BuildinType {
+			get {
+				return BuildinTypeSpec.Type.None;
+			}
+		}
+
 		public bool HasDynamicElement {
 			get {
 				return (state & StateFlags.HasDynamicElement) != 0;
@@ -428,19 +434,69 @@ namespace Mono.CSharp
 		}
 	}
 
-	public class PredefinedTypeSpec : TypeSpec
+	public sealed class BuildinTypeSpec : TypeSpec
 	{
-		string name;
-		string ns;
+		public enum Type
+		{
+			None = 0,
 
-		public PredefinedTypeSpec (MemberKind kind, string ns, string name)
+			// TODO: Reorder it more carefully so we can do fast compares
+			Object,
+			ValueType,
+			Attribute,
+			Int,
+			UInt,
+			Long,
+			ULong,
+			Float,
+			Double,
+			Char,
+			Short,
+			Decimal,
+			Bool,
+			SByte,
+			Byte,
+			UShort,
+			String,
+			Enum,
+			Delegate,
+			MulticastDelegate,
+			Void,
+			Array,
+			Type,
+			IEnumerator,
+			IEnumerable,
+			IDisposable,
+			IntPtr,
+			UIntPtr,
+			RuntimeFieldHandle,
+			RuntimeTypeHandle,
+			Exception,
+
+			Null,
+			Dynamic
+		}
+
+		readonly Type type;
+		readonly string ns;
+		readonly string name;
+
+		public BuildinTypeSpec (MemberKind kind, string ns, string name, Type buildinKind)
 			: base (kind, null, null, null, Modifiers.PUBLIC)
 		{
 			if (kind == MemberKind.Struct)
 				modifiers |= Modifiers.SEALED;
 
-			this.name = name;
+			this.type = buildinKind;
 			this.ns = ns;
+			this.name = name;
+		}
+
+		public BuildinTypeSpec (string name, Type buildinKind)
+			: this (MemberKind.InternalCompilerType, "", name, buildinKind)
+		{
+			// Make all internal types CLS-compliant, non-obsolete
+			state = (state & ~(StateFlags.CLSCompliant_Undetected | StateFlags.Obsolete_Undetected)) | StateFlags.CLSCompliant;
 		}
 
 		#region Properties
@@ -448,6 +504,12 @@ namespace Mono.CSharp
 		public override int Arity {
 			get {
 				return 0;
+			}
+		}
+
+		public override BuildinTypeSpec.Type BuildinType {
+			get {
+				return type;
 			}
 		}
 
@@ -467,7 +529,7 @@ namespace Mono.CSharp
 
 		public override string GetSignatureForError ()
 		{
-			switch (name) {
+			switch (Name) {
 			case "Int32": return "int";
 			case "Int64": return "long";
 			case "String": return "string";
@@ -486,10 +548,13 @@ namespace Mono.CSharp
 			case "SByte": return "sbyte";
 			}
 
+			if (ns.Length == 0)
+				return name;
+
 			return ns + "." + name;
 		}
 
-		public void SetDefinition (ITypeDefinition td, Type type)
+		public void SetDefinition (ITypeDefinition td, System.Type type)
 		{
 			this.definition = td;
 			this.info = type;
@@ -888,9 +953,9 @@ namespace Mono.CSharp
 	{
 		public static readonly InternalType AnonymousMethod = new InternalType ("anonymous method");
 		public static readonly InternalType Arglist = new InternalType ("__arglist");
-		public static readonly InternalType Dynamic = new InternalType ("dynamic", null);
+		public static BuildinTypeSpec Dynamic;
 		public static readonly InternalType MethodGroup = new InternalType ("method group");
-		public static readonly InternalType Null = new InternalType ("null");
+		public static BuildinTypeSpec Null;
 		public static readonly InternalType FakeInternalType = new InternalType ("<fake$type>");
 
 		readonly string name;
