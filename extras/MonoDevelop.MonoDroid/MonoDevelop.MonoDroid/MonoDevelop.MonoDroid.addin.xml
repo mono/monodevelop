@@ -88,7 +88,8 @@
 	
 	<Extension path = "/MonoDevelop/Core/Frameworks">
 		<Framework id="MonoDroid" resource="framework_MonoDroid.xml">
-			<Backend class="MonoDevelop.MonoDroid.MonoDroidFrameworkBackend" />
+			<Backend class="MonoDevelop.MonoDroid.MonoDroidMonoFrameworkBackend" />
+			<Backend class="MonoDevelop.MonoDroid.MonoDroidMsNetFrameworkBackend" />
 		</Framework>
 	</Extension>
 	

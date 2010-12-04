@@ -158,6 +158,14 @@ namespace MonoDevelop.MonoDroid
 			}
 		}
 		
+		public static IEnumerable<string> GetToolsPaths ()
+		{
+			yield return MonoDroidFramework.FrameworkDir;
+			yield return MonoDroidFramework.BinDir;
+			yield return MonoDroidFramework.AndroidBinDir;
+			yield return MonoDroidFramework.JavaBinDir;
+		}
+		
 		public static AndroidToolbox Toolbox { get; private set; }
 		public static DeviceManager DeviceManager { get; private set; }
 		

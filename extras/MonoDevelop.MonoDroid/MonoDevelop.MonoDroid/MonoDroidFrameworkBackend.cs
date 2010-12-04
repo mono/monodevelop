@@ -38,25 +38,41 @@ using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.MonoDroid
 {
-	public class MonoDroidFrameworkBackend : MonoFrameworkBackend
+	public class MonoDroidMonoFrameworkBackend : MonoFrameworkBackend
 	{
-		public MonoDroidFrameworkBackend ()
-		{
-		}
-		
 		public override IEnumerable<string> GetToolsPaths ()
 		{
-			yield return MonoDroidFramework.FrameworkDir;
-			yield return MonoDroidFramework.BinDir;
-			yield return MonoDroidFramework.AndroidBinDir;
-			yield return MonoDroidFramework.JavaBinDir;
-			foreach (var path in BaseGetToolsPaths ())
-				yield return path;
+			return MonoDroidFramework.GetToolsPaths ().Concat (base.GetToolsPaths ());
 		}
 		
-		IEnumerable<string> BaseGetToolsPaths ()
+		public override Dictionary<string, string> GetToolsEnvironmentVariables ()
 		{
-			return base.GetToolsPaths ();
+			return MonoDroidFramework.EnvironmentOverrides;
+		}
+		
+		public override IEnumerable<string> GetFrameworkFolders ()
+		{
+			yield return MonoDroidFramework.FrameworkDir;
+		}
+		
+		public override SystemPackageInfo GetFrameworkPackageInfo (string packageName)
+		{
+			SystemPackageInfo info = base.GetFrameworkPackageInfo ("monodroid");
+			info.Name = "monodroid";
+			return info;
+		}
+		
+		public override bool IsInstalled {
+			get { return MonoDroidFramework.IsInstalled; }
+		}
+	}
+	
+	
+	public class MonoDroidMsNetFrameworkBackend : MsNetFrameworkBackend
+	{
+		public override IEnumerable<string> GetToolsPaths ()
+		{
+			return MonoDroidFramework.GetToolsPaths ().Concat (base.GetToolsPaths ());
 		}
 		
 		public override Dictionary<string, string> GetToolsEnvironmentVariables ()
