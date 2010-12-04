@@ -505,7 +505,9 @@ namespace MonoDevelop.MonoDroid
 	
 	public class AndroidDevice
 	{
+		[MonoDevelop.Core.Serialization.ItemProperty ("id")]
 		public string ID { get; set; }
+		
 		public string State { get; set; }
 
 		public AndroidDevice () {}

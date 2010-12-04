@@ -226,6 +226,7 @@ namespace MonoDevelop.MonoDroid
 		/// </summary>
 		public AndroidDevice GetDeviceTarget (MonoDroidProjectConfiguration conf)
 		{
+			//FIXME: do we really want this to be per-project/per-configuration? or should it be a global MD setting?
 			return UserProperties.GetValue<AndroidDevice> (GetDeviceTargetKey (conf));
 		}
 		
@@ -339,13 +340,38 @@ namespace MonoDevelop.MonoDroid
 			
 			IConsole console = null;
 			var opMon = new AggregatedOperationMonitor (monitor);
-			try {				
-				AndroidDevice device;
-				var uploadOp = MonoDroidUtility.SignAndUpload (monitor, this, configSel, false, out device);
+			try {
+				var persistedDevice = GetDeviceTarget (conf);
+				
+				//try running the upload with the presisted device, if any
+				AndroidDevice device = persistedDevice;
+				var uploadOp = MonoDroidUtility.SignAndUpload (monitor, this, configSel, false, ref device);
+				if (device == null)
+					return;
+				
 				opMon.AddOperation (uploadOp);
 				uploadOp.WaitForCompleted ();
-				if (!uploadOp.Success)
+				
+				//if a persisted device was used, but failed, try again, but this time make the user pick a device
+				if (!uploadOp.Success && !monitor.IsCancelRequested && uploadOp.DeviceNotFound && persistedDevice != null) {
+					device = null;
+					uploadOp = MonoDroidUtility.SignAndUpload (monitor, this, configSel, false, ref device);
+					if (device == null)
+						return;
+					opMon.AddOperation (uploadOp);
+					uploadOp.WaitForCompleted ();
+				}
+				
+				if (!uploadOp.Success) {
+					SetDeviceTarget (conf, null);
 					return;
+				}
+				
+				if (monitor.IsCancelRequested)
+					return;
+				
+				//successful, persist the device choice
+				SetDeviceTarget (conf, device);
 				
 				var command = (MonoDroidExecutionCommand) CreateExecutionCommand (configSel, conf);
 				command.Device = device;

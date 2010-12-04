@@ -37,7 +37,9 @@ namespace MonoDevelop.MonoDroid
 		
 		public IEnumerable<IExecutionMode> ExecutionModes {
 			get {
-				return MonoDroidFramework.Devices.Select (t => (IExecutionMode) new MonoDroidExecutionMode (t));
+				yield break;
+				//FIXME: figure out how to refresh this sanely
+				//return MonoDroidFramework.DeviceManager.Devices.Select (t => (IExecutionMode) new MonoDroidExecutionMode (t));
 			}
 		}
 	}

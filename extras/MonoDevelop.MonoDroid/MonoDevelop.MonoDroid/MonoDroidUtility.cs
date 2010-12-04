@@ -86,8 +86,8 @@ namespace MonoDevelop.MonoDroid
 		}
 		
 		//may block while it's showing a GUI. project MUST be built before calling this
-		public static IAsyncOperation SignAndUpload (IProgressMonitor monitor, MonoDroidProject project,
-			ConfigurationSelector configSel, bool forceReplace, out AndroidDevice device)
+		public static MonoDroidUploadOperation SignAndUpload (IProgressMonitor monitor, MonoDroidProject project,
+			ConfigurationSelector configSel, bool forceReplace, ref AndroidDevice device)
 		{	
 			var conf = project.GetConfiguration (configSel);
 			var opMon = new AggregatedOperationMonitor (monitor);
@@ -99,13 +99,16 @@ namespace MonoDevelop.MonoDroid
 				opMon.AddOperation (signOp);
 			}
 			
-			//copture the device for a later anonymous method
-			AndroidDevice dev = device = InvokeSynch (() => GetTargetDevice ());
+			if (device == null)
+				device = InvokeSynch (() => ChooseDevice (null));
 			
 			if (device == null) {
 				opMon.Dispose ();
-				return NullAsyncOperation.Failure;
+				return null;
 			}
+			
+			//copture the device for a later anonymous method
+			AndroidDevice dev = device;
 			
 			bool replaceIfExists = forceReplace || !GetUploadFlag (conf, device);
 			
@@ -120,19 +123,63 @@ namespace MonoDevelop.MonoDroid
 			return uploadOp;
 		}
 		
-		static IAsyncOperation Upload (AndroidDevice device, FilePath packageFile, string packageName,
+		static MonoDroidUploadOperation Upload (AndroidDevice device, FilePath packageFile, string packageName,
 			IAsyncOperation signingOperation, bool replaceIfExists)
 		{
-			var toolbox = MonoDroidFramework.Toolbox;
 			
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
 				GettextCatalog.GetString ("Deploy to Device"), MonoDevelop.Ide.Gui.Stock.RunProgramIcon, true, true);
 			
+			var op = new MonoDroidUploadOperation (monitor, device, packageFile, packageName, signingOperation, replaceIfExists);
+			op.Completed += delegate {
+				monitor.Dispose ();
+			};
+			op.Start ();
+			return op;
+		}
+
+		public static AndroidDevice ChooseDevice (Gtk.Window parent)
+		{
+			var dlg = new MonoDevelop.MonoDroid.Gui.DeviceChooserDialog ();
+			try {
+				var result = MessageService.ShowCustomDialog (dlg, parent);
+				if (result != (int)Gtk.ResponseType.Ok)
+					return null;
+				return dlg.Device;
+			} finally {
+				dlg.Destroy ();
+			}
+		}
+		
+		static T InvokeSynch<T> (Func<T> func)
+		{
+			if (DispatchService.IsGuiThread)
+				return func ();
+			
+			var ev = new ManualResetEvent (false);
+			T val = default (T);
+			Gtk.Application.Invoke (delegate {
+				val = func ();
+				ev.Set ();
+			});
+			ev.WaitOne ();
+			return val;
+		}
+	}
+	
+	public class MonoDroidUploadOperation : IAsyncOperation
+	{
+		ChainedAsyncOperationSequence chop;
+		
+		public MonoDroidUploadOperation (IProgressMonitor monitor, AndroidDevice device, FilePath packageFile, string packageName,
+			IAsyncOperation signingOperation, bool replaceIfExists)
+		{
+			var toolbox = MonoDroidFramework.Toolbox;
 			List<string> packages = null;
 			
 			replaceIfExists = replaceIfExists || signingOperation != null;
 			
-			var chop = new ChainedAsyncOperationSequence (monitor,
+			chop = new ChainedAsyncOperationSequence (monitor,
 				new ChainedAsyncOperation () {
 					TaskName = GettextCatalog.GetString ("Starting adb server"),
 					Create = () => toolbox.EnsureServerRunning (monitor.Log, monitor.Log),
@@ -141,6 +188,7 @@ namespace MonoDevelop.MonoDroid
 				new ChainedAsyncOperation () {
 					TaskName = GettextCatalog.GetString ("Waiting for device"),
 					Create = () => toolbox.WaitForDevice (device, monitor.Log, monitor.Log),
+					Completed = op => { DeviceNotFound = !op.Success; },
 					ErrorMessage = GettextCatalog.GetString ("Failed to get device")
 				},
 				new ChainedAsyncOperation<AndroidToolbox.GetPackagesOperation> () {
@@ -184,57 +232,49 @@ namespace MonoDevelop.MonoDroid
 					ErrorMessage = GettextCatalog.GetString ("Failed to install package")
 				}
 			);
-			chop.Completed += delegate {
-				monitor.Dispose ();
-			};
-			chop.Start ();
-			return chop;
-		}
-
-		public static AndroidDevice ChooseDevice (Gtk.Window parent)
-		{
-			var dlg = new MonoDevelop.MonoDroid.Gui.DeviceChooserDialog ();
-			try {
-				var result = MessageService.ShowCustomDialog (dlg, parent);
-				if (result != (int)Gtk.ResponseType.Ok)
-					return null;
-				return dlg.Device;
-			} finally {
-				dlg.Destroy ();
-			}
-		}
-
-		static AndroidDevice GetTargetDevice ()
-		{
-			var defaultDevice = MonoDroidFramework.DefaultDevice;
-
-			// Check that this device is still alive.
-			if (defaultDevice != null && MonoDroidFramework.DeviceManager.Devices != null &&
-					MonoDroidFramework.DeviceManager.Devices.Contains (defaultDevice))
-				return defaultDevice;
-
-			var device = ChooseDevice (null);
-			MonoDroidFramework.DefaultDevice = device;
-			return device;
 		}
 		
-		static T InvokeSynch<T> (Func<T> func)
-		{
-			if (DispatchService.IsGuiThread)
-				return func ();
-			
-			var ev = new ManualResetEvent (false);
-			T val = default (T);
-			Gtk.Application.Invoke (delegate {
-				val = func ();
-				ev.Set ();
-			});
-			ev.WaitOne ();
-			return val;
+		public bool DeviceNotFound {
+			get; private set;
 		}
+
+		public void Start ()
+		{
+			chop.Start ();
+		}
+
+		#region IAsyncOperation implementation
+		
+		public event OperationHandler Completed {
+			add { chop.Completed += value; }
+			remove { chop.Completed -= value; }
+		}
+
+		public void Cancel ()
+		{
+			chop.Cancel ();
+		}
+
+		public void WaitForCompleted ()
+		{
+			chop.WaitForCompleted ();
+		}
+
+		public bool IsCompleted {
+			get { return chop.IsCompleted; }
+		}
+
+		public bool Success {
+			get { return chop.Success; }
+		}
+
+		public bool SuccessWithWarnings {
+			get { return chop.SuccessWithWarnings; }
+		}
+		#endregion
 	}
 	
-	public class ChainedAsyncOperationSequence : IAsyncOperation, IDisposable
+	public class ChainedAsyncOperationSequence : IAsyncOperation
 	{
 		ChainedAsyncOperation[] chain;
 		IAsyncOperation op;

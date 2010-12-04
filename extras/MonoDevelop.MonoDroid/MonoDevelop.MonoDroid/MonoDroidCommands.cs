@@ -56,6 +56,9 @@ namespace MonoDevelop.MonoDroid
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
+			return;
+			//FIXME: figure out how to poll the device list sanely
+			/*
 			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
 			if (proj == null || !MonoDroidFramework.HasAndroidJavaSdks)
 				return;
@@ -67,20 +70,18 @@ namespace MonoDevelop.MonoDroid
 			if (projSetting == null)
 				def.Checked  = true;
 			
-			foreach (var st in MonoDroidFramework.Devices) {
+			foreach (var st in MonoDroidFramework.DeviceManager.Devices) {
 				var i = info.Add (st.ToString (), st);
 				if (projSetting != null && projSetting.Equals (st))
 					i.Checked  = true;
-			}
+			}*/
 		}
 
 		protected override void Run (object dataItem)
 		{
 			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
-			if (proj == null)
-				return;
-			
-			throw new NotImplementedException ();
+			var conf = (MonoDroidProjectConfiguration) proj.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
+			proj.SetDeviceTarget (conf, (AndroidDevice)dataItem);
 		}
 	}
 
@@ -96,10 +97,13 @@ namespace MonoDevelop.MonoDroid
 		{
 			if (!MonoDroidFramework.EnsureSdksInstalled ())
 				return;
-
+			
+			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
+			var conf = (MonoDroidProjectConfiguration) proj.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
+			
 			var device = MonoDroidUtility.ChooseDevice (null);
 			if (device != null)
-				MonoDroidFramework.DefaultDevice = device;
+				proj.SetDeviceTarget (conf, device);
 		}
 	}
 	
@@ -121,8 +125,8 @@ namespace MonoDevelop.MonoDroid
 			
 			OperationHandler upload = delegate {
 				using (var monitor = new MonoDevelop.Ide.ProgressMonitoring.MessageDialogProgressMonitor ()) {
-					AndroidDevice device;
-					MonoDroidUtility.SignAndUpload (monitor, proj, configSel, true, out device);
+					AndroidDevice device = null;
+					MonoDroidUtility.SignAndUpload (monitor, proj, configSel, true, ref device);
 				}
 			};
 			
