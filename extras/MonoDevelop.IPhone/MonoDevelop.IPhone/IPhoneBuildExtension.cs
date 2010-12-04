@@ -206,9 +206,10 @@ namespace MonoDevelop.IPhone
 			return result;
 		}
 		
-		//FIXME: mtouch copies dlls to the app bundle, need to have it strip them for non-sim builds
 		static BuildResult UnpackContent (IProgressMonitor monitor, IPhoneProjectConfiguration cfg, List<string> assemblies)
 		{
+			bool isDevice = cfg.Platform == IPhoneProject.PLAT_IPHONE;
+			
 			//remove framework references, they don't contain embedded content
 			List<string> toProcess = new List<string> ();
 			for (int i = 0; i < assemblies.Count; i++) {
@@ -220,63 +221,57 @@ namespace MonoDevelop.IPhone
 			if (toProcess.Count == 0)
 				return null;
 			
-			//determine which dlls have been processed already
+			var result = new BuildResult ();
+			var appDir = cfg.AppDirectory;
+			
+			//check that the dlls are also in the app bundle
+			for (int i = 0; i < toProcess.Count; i++) {
+				var asmInBundle = appDir.Combine (Path.GetFileName (toProcess[i]));
+				if (!File.Exists (asmInBundle)) {
+					var m = GettextCatalog.GetString ("Library '{0}' missing in app bundle, cannot extract content", asmInBundle.FileName);
+					result.AddWarning (m);
+					toProcess.RemoveAt (i--);
+				}
+			}
+			
+			//determine which dlls have been extracted, so we can skip re-extracting their content
 			var previouslyProcessedDlls = new HashSet<string> ();
 			var infoFile = cfg.ObjDir.Combine ("monotouch_dll_content_processed");
 			bool hasInfoFile = File.Exists (infoFile);
 			DateTime infoFileWritten = DateTime.MinValue;
+			List<bool> skipExtractList = null;
 			if (hasInfoFile) {
-				File.GetLastWriteTimeUtc (infoFile);
+				infoFileWritten = File.GetLastWriteTimeUtc (infoFile);
 				foreach (var line in File.ReadAllLines (infoFile))
 					previouslyProcessedDlls.Add (line);
 				
 				//remove logged dlls that are no longer in the build
 				previouslyProcessedDlls.IntersectWith (toProcess);
 				
-				//don't re-process dlls that were written before the info file
-				toProcess = toProcess.Where (asm =>
-					previouslyProcessedDlls.Add (asm)
-					|| infoFileWritten < File.GetLastWriteTimeUtc (asm)).ToList ();
+				//don't re-process dlls that were written before the info file and are in the info file
+				skipExtractList = toProcess.Select (asm =>
+					!previouslyProcessedDlls.Add (asm)
+					&& infoFileWritten > File.GetLastWriteTimeUtc (asm)
+				).ToList ();
+			} else {
+				previouslyProcessedDlls.UnionWith (toProcess);
 			}
-			previouslyProcessedDlls.UnionWith (toProcess);
 			
-			if (toProcess.Count == 0)
-				return null;
-			
-			var result = new BuildResult ();
-			var appDir = cfg.AppDirectory;
+			//early exit if nothing needs to be extracted or stripped
+			if (toProcess.Count == 0 || (!isDevice && skipExtractList != null && skipExtractList.All (b => b)))
+				return result;
 			
 			monitor.BeginTask ("Extracting embedded content", 0);
-			
-			foreach (var asmFile in toProcess) {
+			for (int i = 0; i < toProcess.Count; i++) {
+				//despite doing the deps checks with the original dlls, we do the extraction on the copies
+				//that are in the app bundle, so that in the device case we can also strip the resoucres from them
+				FilePath asmFile = toProcess[i];
+				bool skipExtract = skipExtractList != null && skipExtractList[i];
+				if (skipExtract && !isDevice)
+					continue;
 				try {
-					Mono.Cecil.AssemblyDefinition a = Mono.Cecil.AssemblyDefinition.ReadAssembly (asmFile);
-					foreach (Mono.Cecil.ModuleDefinition m in a.Modules) {
-						foreach (Mono.Cecil.Resource res in m.Resources) {
-							var er = res as Mono.Cecil.EmbeddedResource;
-							if (er != null) {
-								FilePath sname;
-								if (er.Name.StartsWith ("__monotouch_content_")) {
-									var s = er.Name.Substring ("__monotouch_content_".Length);
-									sname = UnescapeMangledResource (s);
-								} else if (er.Name.StartsWith ("__monotouch_page_")) {
-									var s = er.Name.Substring ("__monotouch_page_".Length);
-									sname = UnescapeMangledResource (s);
-								} else {
-									continue;
-								}
-								var file = sname.ToAbsolute (appDir);
-								monitor.Log.WriteLine ("{0}: {1}", Path.GetFileName (asmFile), sname);
-								
-								var parentDir = file.ParentDirectory;
-								if (!Directory.Exists (parentDir))
-									Directory.CreateDirectory (parentDir);
-								
-								//FIXME: do a stream copy when we use new cecil in MD 2.6
-								File.WriteAllBytes (file, er.GetResourceData ());
-							}
-						}
-					}
+					var asmInBundle = appDir.Combine (asmFile.FileName);
+					ProcessContentAssembly (monitor, appDir, asmInBundle, isDevice, !skipExtract);
 				} catch (Exception ex) {
 					string message = string.Format ("Error extracting content from assembly '{0}'", asmFile);
 					monitor.ReportError (message, ex);
@@ -293,6 +288,50 @@ namespace MonoDevelop.IPhone
 			File.WriteAllLines (infoFile, previouslyProcessedDlls.ToArray ());
 			
 			return result;
+		}
+		
+		static void ProcessContentAssembly (IProgressMonitor monitor, FilePath appDir, FilePath asmInBundle, bool strip, bool extract)
+		{
+			bool foundContent = false;
+			Mono.Cecil.AssemblyDefinition a = Mono.Cecil.AssemblyDefinition.ReadAssembly (asmInBundle);
+			foreach (Mono.Cecil.ModuleDefinition m in a.Modules) {
+				for (int i = 0; i < m.Resources.Count; i++) {
+					var er = m.Resources[i] as Mono.Cecil.EmbeddedResource;
+					if (er != null) {
+						FilePath sname;
+						if (er.Name.StartsWith ("__monotouch_content_")) {
+							var s = er.Name.Substring ("__monotouch_content_".Length);
+							sname = UnescapeMangledResource (s);
+						} else if (er.Name.StartsWith ("__monotouch_page_")) {
+							var s = er.Name.Substring ("__monotouch_page_".Length);
+							sname = UnescapeMangledResource (s);
+						} else {
+							continue;
+						}
+						foundContent = true;
+						
+						if (extract) {
+							monitor.Log.WriteLine ("Extracted {0} from {1}", sname, asmInBundle.FileName);
+							
+							var file = sname.ToAbsolute (appDir);
+							var parentDir = file.ParentDirectory;
+							if (!Directory.Exists (parentDir))
+								Directory.CreateDirectory (parentDir);
+							
+							//FIXME: do a stream copy when we use new cecil in MD 2.6
+							File.WriteAllBytes (file, er.GetResourceData ());
+						}
+						
+						if (strip) {
+							m.Resources.RemoveAt (i--);
+						}
+					}
+				}
+			}
+			if (strip && foundContent) {
+				monitor.Log.WriteLine ("Stripping content from assembly {0}", asmInBundle.FileName);
+				a.Write (asmInBundle);
+			}
 		}
 		
 		static internal void AppendExtrasMtouchArgs (ProcessArgumentBuilder args, IPhoneSdkVersion sdkVersion, 
