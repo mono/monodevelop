@@ -391,6 +391,8 @@ namespace MonoDevelop.MonoDroid
 			
 			public AdbOutputOperation (IProcessAsyncOperation process, StringWriter output)
 			{
+				this.process = process;
+				this.output = output;
 			}
 			
 			protected override IAsyncOperation Wrapped {
