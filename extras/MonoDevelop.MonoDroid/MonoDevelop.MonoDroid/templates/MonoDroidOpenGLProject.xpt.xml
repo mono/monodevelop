@@ -18,6 +18,7 @@
 		
 		<Project name = "${ProjectName}" directory = "." type = "MonoDroid">
 			<Options
+				AndroidApplication="true"
 				AndroidManifest="Properties/AndroidManifest.xml"
 				AndroidResgenFile="Resources/Resource.designer.cs"
 				AndroidResgenClass="Resource" />
