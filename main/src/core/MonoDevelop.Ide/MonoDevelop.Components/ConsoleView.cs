@@ -217,7 +217,7 @@ namespace MonoDevelop.Components
 			get { return Buffer.GetIterAtMark (Buffer.InsertMark); }
 		}
 		
-		Gtk.TextBuffer Buffer {
+		public Gtk.TextBuffer Buffer {
 			get { return textView.Buffer; }
 		}
 		
