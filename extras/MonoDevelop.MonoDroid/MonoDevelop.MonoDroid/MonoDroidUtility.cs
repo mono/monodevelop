@@ -401,6 +401,8 @@ namespace MonoDevelop.MonoDroid
 
 		public void Cancel ()
 		{
+			if (op == null)
+				return;
 			op.Cancel ();
 			index = -1;
 		}
