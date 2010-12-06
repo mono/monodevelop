@@ -623,22 +623,23 @@ namespace MonoDevelop.Ide
 		{
 			WorkspaceItem res = null;
 			
-			FileSelector fdiag = new FileSelector (GettextCatalog.GetString ("Add to Workspace"));
-			try {
-				fdiag.SetCurrentFolder (parentWorkspace.BaseDirectory);
-				fdiag.SelectMultiple = false;
-				if (MessageService.RunCustomDialog (fdiag) == (int) Gtk.ResponseType.Ok) {
-					try {
-						res = AddWorkspaceItem (parentWorkspace, fdiag.Filename);
-					}
-					catch (Exception ex) {
-						MessageService.ShowException (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", fdiag.Filename));
-					}
-				}
-			} finally {
-				fdiag.Destroy ();
-			}
+			var dlg = new SelectFileDialog () {
+				Action = Gtk.FileChooserAction.Open,
+				CurrentFolder = parentWorkspace.BaseDirectory,
+				SelectMultiple = false,
+			};
+		
+			dlg.AddAllFilesFilter ();
+			dlg.DefaultFilter = dlg.AddFilter (GettextCatalog.GetString ("Solution Files"), "*.mds", "*.sln");
 			
+			if (dlg.Run ()) {
+				try {
+					res = AddWorkspaceItem (parentWorkspace, dlg.SelectedFile.FileName);
+				} catch (Exception ex) {
+					MessageService.ShowException (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", dlg.SelectedFile.FileName));
+				}
+			}
+
 			return res;
 		}
 		
@@ -667,20 +668,21 @@ namespace MonoDevelop.Ide
 		{
 			SolutionItem res = null;
 			
-			FileSelector fdiag = new FileSelector (GettextCatalog.GetString ("Add to Solution"));
-			try {
-				fdiag.SetCurrentFolder (parentFolder.BaseDirectory);
-				fdiag.SelectMultiple = false;
-				if (MessageService.RunCustomDialog (fdiag) == (int) Gtk.ResponseType.Ok) {
-					try {
-						res = AddSolutionItem (parentFolder, fdiag.Filename);
-					}
-					catch (Exception ex) {
-						MessageService.ShowException (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", fdiag.Filename));
-					}
+			var dlg = new SelectFileDialog () {
+				Action = Gtk.FileChooserAction.Open,
+				CurrentFolder = parentFolder.BaseDirectory,
+				SelectMultiple = false,
+			};
+		
+			dlg.AddAllFilesFilter ();
+			dlg.DefaultFilter = dlg.AddFilter (GettextCatalog.GetString ("Project Files"), "*.*proj", "*.mdp");
+			
+			if (dlg.Run ()) {
+				try {
+					res = AddSolutionItem (parentFolder, dlg.SelectedFile.FileName);
+				} catch (Exception ex) {
+					MessageService.ShowException (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", dlg.SelectedFile.FileName));
 				}
-			} finally {
-				fdiag.Destroy ();
 			}
 			
 			if (res != null)
