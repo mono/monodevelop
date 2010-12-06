@@ -216,12 +216,10 @@
 		</Dependencies>
 	
 		<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
-			<Condition id="Platform" value="mac">
-				<DebuggerEngine id="Mono.Debugger.Soft.MonoDroid"
-					name="Mono Soft Debugger for MonoDroid"
-					features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints"
-					type="MonoDevelop.Debugger.Soft.MonoDroid.MonoDroidSoftDebuggerEngine" />
-			</Condition>
+			<DebuggerEngine id="Mono.Debugger.Soft.MonoDroid"
+				name="Mono Soft Debugger for MonoDroid"
+				features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints"
+				type="MonoDevelop.Debugger.Soft.MonoDroid.MonoDroidSoftDebuggerEngine" />
 		</Extension>
 	</Module>
 </Addin>
