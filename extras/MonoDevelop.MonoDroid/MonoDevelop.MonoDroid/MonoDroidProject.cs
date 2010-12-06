@@ -227,7 +227,11 @@ namespace MonoDevelop.MonoDroid
 		public AndroidDevice GetDeviceTarget (MonoDroidProjectConfiguration conf)
 		{
 			//FIXME: do we really want this to be per-project/per-configuration? or should it be a global MD setting?
-			return UserProperties.GetValue<AndroidDevice> (GetDeviceTargetKey (conf));
+			var device = UserProperties.GetValue<AndroidDevice> (GetDeviceTargetKey (conf));
+			if (device != null && (device.ID == null || device.ID.Length == 0))
+				return null;
+
+			return device;
 		}
 		
 		public void SetDeviceTarget (MonoDroidProjectConfiguration conf, AndroidDevice value)
