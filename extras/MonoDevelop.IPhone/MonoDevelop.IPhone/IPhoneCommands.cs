@@ -36,6 +36,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.MacDev;
 
 namespace MonoDevelop.IPhone
 {
@@ -278,7 +279,12 @@ namespace MonoDevelop.IPhone
 					return;
 				
 				var zipFile = dlg.SelectedFile;
-				var cmd = string.Format ("-r '{0}' '{1}'", zipFile, conf.AppDirectory);
+				var builder = new ProcessArgumentBuilder ();
+				builder.Add ("-r");
+				builder.AddQuoted (zipFile);
+				builder.AddQuoted (conf.AppDirectory.FileName);
+				var cmd = builder.ToString ();
+				var workingDirectory = conf.AppDirectory.ParentDirectory;
 				
 				new System.Threading.Thread (delegate () {
 					IProgressMonitor monitor = null;
@@ -295,7 +301,7 @@ namespace MonoDevelop.IPhone
 						
 						//don't use StartConsoleProcess, it disposes the pad
 						procOp = Runtime.ProcessService.StartProcess (
-							"zip", cmd, conf.AppDirectory.ParentDirectory, console.Out, console.Error, null);
+							"zip", cmd, workingDirectory, console.Out, console.Error, null);
 						opMon = new AggregatedOperationMonitor (monitor, procOp);
 						
 						procOp.WaitForCompleted ();
