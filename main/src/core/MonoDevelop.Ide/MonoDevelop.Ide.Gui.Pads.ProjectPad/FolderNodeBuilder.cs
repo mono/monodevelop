@@ -342,6 +342,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			IdeApp.ProjectOperations.CreateProjectFile (project, GetFolderPath (CurrentNode.DataItem));
 			IdeApp.ProjectOperations.Save (project);
 			CurrentNode.Expanded = true;
+			if (IdeApp.Workbench.ActiveDocument != null)
+				IdeApp.Workbench.ActiveDocument.Window.SelectWindow ();
 		}
 		
 		void OnFileInserted (ITreeNavigator nav)
