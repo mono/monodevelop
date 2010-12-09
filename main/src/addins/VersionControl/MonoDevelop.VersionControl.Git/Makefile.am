@@ -22,6 +22,7 @@ FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.ConflictResolutionDialog.cs \
+	gtk-gui/MonoDevelop.VersionControl.Git.CredentialsDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.EditBranchDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.EditRemoteDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.GitConfigurationDialog.cs \
@@ -32,10 +33,12 @@ FILES =  \
 	MonoDevelop.VersionControl.Git/Commands.cs \
 	MonoDevelop.VersionControl.Git/CommitDialogExtensionWidget.cs \
 	MonoDevelop.VersionControl.Git/ConflictResolutionDialog.cs \
+	MonoDevelop.VersionControl.Git/CredentialsDialog.cs \
 	MonoDevelop.VersionControl.Git/EditBranchDialog.cs \
 	MonoDevelop.VersionControl.Git/EditRemoteDialog.cs \
 	MonoDevelop.VersionControl.Git/GitClient.cs \
 	MonoDevelop.VersionControl.Git/GitConfigurationDialog.cs \
+	MonoDevelop.VersionControl.Git/GitCredentials.cs \
 	MonoDevelop.VersionControl.Git/GitNodeBuilderExtension.cs \
 	MonoDevelop.VersionControl.Git/GitRepository.cs \
 	MonoDevelop.VersionControl.Git/GitService.cs \
