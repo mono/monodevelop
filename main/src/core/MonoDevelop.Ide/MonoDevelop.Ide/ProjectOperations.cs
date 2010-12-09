@@ -634,9 +634,9 @@ namespace MonoDevelop.Ide
 			
 			if (dlg.Run ()) {
 				try {
-					res = AddWorkspaceItem (parentWorkspace, dlg.SelectedFile.FileName);
+					res = AddWorkspaceItem (parentWorkspace, dlg.SelectedFile);
 				} catch (Exception ex) {
-					MessageService.ShowException (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", dlg.SelectedFile.FileName));
+					MessageService.ShowException (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", dlg.SelectedFile));
 				}
 			}
 
@@ -679,9 +679,9 @@ namespace MonoDevelop.Ide
 			
 			if (dlg.Run ()) {
 				try {
-					res = AddSolutionItem (parentFolder, dlg.SelectedFile.FileName);
+					res = AddSolutionItem (parentFolder, dlg.SelectedFile);
 				} catch (Exception ex) {
-					MessageService.ShowException (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", dlg.SelectedFile.FileName));
+					MessageService.ShowException (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", dlg.SelectedFile));
 				}
 			}
 			
