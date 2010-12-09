@@ -38,11 +38,13 @@ namespace MonoDevelop.MonoDroid
 	public class AndroidToolbox
 	{
 		FilePath androidToolsPath, javaBinPath;
+		FilePath androidPlatformToolsPath;
 		string pathOverride;
 		
-		public AndroidToolbox (FilePath androidToolsPath, FilePath javaBinPath)
+		public AndroidToolbox (FilePath androidPath, FilePath javaBinPath)
 		{
-			this.androidToolsPath = androidToolsPath;
+			this.androidToolsPath = androidToolsPath.Combine ("tools");
+			this.androidPlatformToolsPath = androidToolsPath.Combine ("platform-tools");
 			this.javaBinPath = javaBinPath;
 			
 			pathOverride = Environment.GetEnvironmentVariable ("PATH");
@@ -54,7 +56,7 @@ namespace MonoDevelop.MonoDroid
 		
 		public string AdbExe {
 			get {
-				return androidToolsPath.Combine (PropertyService.IsWindows? "adb.exe" : "adb");
+				return androidPlatformToolsPath.Combine (PropertyService.IsWindows? "adb.exe" : "adb");
 			}
 		}
 		

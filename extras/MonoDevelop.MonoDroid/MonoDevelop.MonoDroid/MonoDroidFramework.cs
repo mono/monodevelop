@@ -75,7 +75,7 @@ namespace MonoDevelop.MonoDroid
 				}
 				
 				JavaBinDir = Path.Combine (javaPath, "bin");
-				AndroidBinDir = Path.Combine (androidPath, "tools");
+				AndroidBinDir = androidPath;
 				
 				EnvironmentOverrides ["PATH"] =
 					AndroidBinDir + Path.PathSeparator + 

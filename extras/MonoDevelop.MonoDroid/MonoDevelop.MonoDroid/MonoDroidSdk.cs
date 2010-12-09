@@ -171,7 +171,7 @@ namespace MonoDroid
 		/// </summary>
 		public static bool ValidateAndroidSdkLocation (string loc)
 		{
-			return !string.IsNullOrEmpty (loc) && File.Exists (Path.Combine (Path.Combine (loc, "tools"), AdbTool));
+			return !string.IsNullOrEmpty (loc) && File.Exists (Path.Combine (Path.Combine (loc, "platform-tools"), AdbTool));
 		}
 		
 		/// <summary>
