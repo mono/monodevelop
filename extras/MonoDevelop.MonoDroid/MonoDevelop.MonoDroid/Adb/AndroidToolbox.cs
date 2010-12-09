@@ -43,8 +43,8 @@ namespace MonoDevelop.MonoDroid
 		
 		public AndroidToolbox (FilePath androidPath, FilePath javaBinPath)
 		{
-			this.androidToolsPath = androidToolsPath.Combine ("tools");
-			this.androidPlatformToolsPath = androidToolsPath.Combine ("platform-tools");
+			this.androidToolsPath = androidPath.Combine ("tools");
+			this.androidPlatformToolsPath = androidPath.Combine ("platform-tools");
 			this.javaBinPath = javaBinPath;
 			
 			pathOverride = Environment.GetEnvironmentVariable ("PATH");
