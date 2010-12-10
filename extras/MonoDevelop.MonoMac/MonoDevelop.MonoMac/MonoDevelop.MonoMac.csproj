@@ -86,14 +86,21 @@
     <Compile Include="MonoMacProject.cs" />
     <Compile Include="MonoMacCodeBehind.cs" />
     <Compile Include="Interop.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.MonoMac.Gui.MonoMacPackagingSettingsWidget.cs" />
+    <Compile Include="Gui\MacPackagingSettingsWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MonoMac.addin.xml">
       <LogicalName>MonoDevelop.MonoMac.addin.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="templates\" />
+    <Folder Include="Gui\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
