@@ -11,13 +11,13 @@ namespace MonoDevelop.IPhone.Gui
 		private global::Gtk.Table signingTable;
 		private global::MonoDevelop.Components.MenuButtonEntry additionalArgsEntry;
 		private global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry entitlementsEntry;
-		private global::Gtk.ComboBox identityCombo;
+		private global::MonoDevelop.MacDev.SigningIdentityCombo identityCombo;
 		private global::Gtk.Label label4;
 		private global::Gtk.Label label6;
 		private global::Gtk.Label label7;
 		private global::Gtk.Label label8;
 		private global::Gtk.Label label9;
-		private global::Gtk.ComboBox provisioningCombo;
+		private global::MonoDevelop.MacDev.SigningIdentityCombo provisioningCombo;
 		private global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry resourceRulesEntry;
 
 		protected virtual void Build ()
@@ -68,14 +68,14 @@ namespace MonoDevelop.IPhone.Gui
 			w2.RightAttach = ((uint)(2));
 			w2.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child signingTable.Gtk.Table+TableChild
-			this.identityCombo = new global::Gtk.ComboBox ();
+			this.identityCombo = new global::MonoDevelop.MacDev.SigningIdentityCombo ();
 			this.identityCombo.Name = "identityCombo";
 			this.signingTable.Add (this.identityCombo);
 			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.signingTable [this.identityCombo]));
 			w3.LeftAttach = ((uint)(1));
 			w3.RightAttach = ((uint)(2));
 			w3.XOptions = ((global::Gtk.AttachOptions)(4));
-			w3.YOptions = ((global::Gtk.AttachOptions)(0));
+			w3.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child signingTable.Gtk.Table+TableChild
 			this.label4 = new global::Gtk.Label ();
 			this.label4.Name = "label4";
@@ -135,7 +135,7 @@ namespace MonoDevelop.IPhone.Gui
 			w8.XOptions = ((global::Gtk.AttachOptions)(4));
 			w8.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child signingTable.Gtk.Table+TableChild
-			this.provisioningCombo = new global::Gtk.ComboBox ();
+			this.provisioningCombo = new global::MonoDevelop.MacDev.SigningIdentityCombo ();
 			this.provisioningCombo.Name = "provisioningCombo";
 			this.signingTable.Add (this.provisioningCombo);
 			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.signingTable [this.provisioningCombo]));
@@ -143,7 +143,8 @@ namespace MonoDevelop.IPhone.Gui
 			w9.BottomAttach = ((uint)(2));
 			w9.LeftAttach = ((uint)(1));
 			w9.RightAttach = ((uint)(2));
-			w9.YOptions = ((global::Gtk.AttachOptions)(0));
+			w9.XOptions = ((global::Gtk.AttachOptions)(4));
+			w9.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child signingTable.Gtk.Table+TableChild
 			this.resourceRulesEntry = new global::MonoDevelop.Ide.Gui.Components.ProjectFileEntry ();
 			this.resourceRulesEntry.Name = "resourceRulesEntry";

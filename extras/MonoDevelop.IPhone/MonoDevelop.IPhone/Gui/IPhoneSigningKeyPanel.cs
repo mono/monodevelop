@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects;
 using System.Security.Cryptography.X509Certificates;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.MacDev;
 
 namespace MonoDevelop.IPhone.Gui
 {
@@ -80,9 +81,8 @@ namespace MonoDevelop.IPhone.Gui
 	partial class IPhoneSigningKeyPanelWidget : Gtk.Bin
 	{
 		IList<MobileProvision> profiles;
-		
-		ListStore identityStore = new ListStore (typeof (string), typeof (string), typeof (X509Certificate2));
-		ListStore profileStore = new ListStore (typeof (string), typeof (string), typeof (MobileProvision));
+		Dictionary<string,string> profileSelections = new Dictionary<string, string> ();
+		bool suppressSelectionSnapshot;
 		
 		public IPhoneSigningKeyPanelWidget (IPhoneProject project)
 		{
@@ -100,54 +100,29 @@ namespace MonoDevelop.IPhone.Gui
 			
 			profiles = MobileProvision.GetAllInstalledProvisions ();
 			
-			var txtRenderer = new CellRendererText ();
-			txtRenderer.Ellipsize = Pango.EllipsizeMode.End;
+			FillIdentities ();
 			
-			identityCombo.Model = identityStore;
-			identityCombo.PackStart (txtRenderer, true);
-			identityCombo.AddAttribute (txtRenderer, "markup", 0);
-			
-			identityCombo.RowSeparatorFunc = delegate (TreeModel model, TreeIter iter) {
-				return (string)model.GetValue (iter, 0) == "-";
+			identityCombo.Changed += delegate {
+				UpdateProfiles ();
 			};
 			
-			identityCombo.Changed += delegate { UpdateProfiles (); };
-			
-			provisioningCombo.Model = profileStore;
-			provisioningCombo.PackStart (txtRenderer, true);
-			provisioningCombo.AddAttribute (txtRenderer, "markup", 0);
-			
-			var signingCerts = Keychain.FindNamedSigningCertificates (x => x.StartsWith ("iPhone")).ToList ();
-			signingCerts.Sort ((x , y) => Keychain.GetCertificateCommonName (x).CompareTo (Keychain.GetCertificateCommonName (x)));
-			
-			identityStore.AppendValues ("<b>Developer (Automatic)</b>", Keychain.DEV_CERT_PREFIX, null);
-			identityStore.AppendValues ("<b>Distribution (Automatic)</b>", Keychain.DIST_CERT_PREFIX, null);
-			
-			int trimStart = "iPhone ".Length;
-			
-			identityStore.AppendValues ("-", "-", null);
-			foreach (var cert in signingCerts) {
-				string cn = Keychain.GetCertificateCommonName (cert);
-				if (cn.StartsWith (Keychain.DEV_CERT_PREFIX))
-					identityStore.AppendValues (GLib.Markup.EscapeText (cn.Substring (trimStart, cn.Length - trimStart)), cn, cert);
-			}
-			
-			identityStore.AppendValues ("-", "-", null);
-			foreach (var cert in signingCerts) {
-				string cn = Keychain.GetCertificateCommonName (cert);
-				if (cn.StartsWith (Keychain.DIST_CERT_PREFIX))
-					identityStore.AppendValues (GLib.Markup.EscapeText (cn.Substring (trimStart, cn.Length - trimStart)), cn, cert);
-			}
+			provisioningCombo.Changed += delegate {
+				if (!suppressSelectionSnapshot)
+					profileSelections[identityCombo.SelectedName] = provisioningCombo.SelectedName;
+			};
 			
 			this.ShowAll ();
 		}
 		
 		public void LoadPanelContents (IPhoneProjectConfiguration cfg)
 		{
+			profileSelections.Clear ();
+			provisioningCombo.ClearList ();
+			
 			signingTable.Sensitive = cfg.Platform == IPhoneProject.PLAT_IPHONE;
 			
-			SigningKey = cfg.CodesignKey;
-			ProvisionFingerprint = cfg.CodesignProvision;
+			identityCombo.SelectedName = cfg.CodesignKey;
+			provisioningCombo.SelectedName = cfg.CodesignProvision;
 			entitlementsEntry.SelectedFile = cfg.CodesignEntitlements;
 			resourceRulesEntry.SelectedFile = cfg.CodesignResourceRules;
 			additionalArgsEntry.Text = cfg.CodesignExtraArgs ?? "";
@@ -155,69 +130,52 @@ namespace MonoDevelop.IPhone.Gui
 		
 		public void StorePanelContents (IPhoneProjectConfiguration cfg)
 		{
-			cfg.CodesignKey = SigningKey;
-			cfg.CodesignProvision = ProvisionFingerprint;
+			cfg.CodesignKey = identityCombo.SelectedName;
+			cfg.CodesignProvision = provisioningCombo.SelectedName;
 			cfg.CodesignEntitlements = entitlementsEntry.SelectedFile;
 			cfg.CodesignResourceRules = resourceRulesEntry.SelectedFile;
 			cfg.CodesignExtraArgs = NullIfEmpty (additionalArgsEntry.Entry.Text);
 		}
 		
-		string SigningKey {
-			get {
-				TreeIter iter;
-				int active = identityCombo.Active;
-				if (active >= 0 && identityStore.GetIter (out iter, new TreePath (new int[] { active })))
-					return (string) identityStore.GetValue (iter, 1);
-				return null;
+		void FillIdentities ()
+		{
+			var signingCerts = Keychain.FindNamedSigningCertificates (x => x.StartsWith ("iPhone")).ToList ();
+			signingCerts.Sort ((x , y) => Keychain.GetCertificateCommonName (x).CompareTo (Keychain.GetCertificateCommonName (x)));
+			
+			identityCombo.AddItemWithMarkup ("<b>Developer (Automatic)</b>", IPhoneProject.DEV_CERT_PREFIX, null);
+			identityCombo.AddItemWithMarkup ("<b>Distribution (Automatic)</b>", IPhoneProject.DIST_CERT_PREFIX, null);
+			
+			int trimStart = "iPhone ".Length;
+			
+			identityCombo.AddSeparator ();
+			foreach (var cert in signingCerts) {
+				string cn = Keychain.GetCertificateCommonName (cert);
+				if (cn.StartsWith (IPhoneProject.DEV_CERT_PREFIX))
+					identityCombo.AddItem (cn.Substring (trimStart, cn.Length - trimStart), cn, cert);
 			}
-			set {
-				if (string.IsNullOrEmpty (value) && identityStore.IterNChildren () > 0) {
-					identityCombo.Active = 0;
-				} else {
-					if (!SelectMatchingItem (identityCombo, 1, value)) {
-						var name = GettextCatalog.GetString ("Unknown ({0})", value);
-						identityStore.AppendValues (GLib.Markup.EscapeText (name), value, new object ());
-						SelectMatchingItem (identityCombo, 1, value);
-					}
-				}
-				UpdateProfiles ();
-			}
-		}
-		
-		string ProvisionFingerprint {
-			get {
-				if (!provisioningCombo.Sensitive)
-					return null;
-				
-				TreeIter iter;
-				int active = provisioningCombo.Active;
-				if (active >= 0 && profileStore.GetIter (out iter, new TreePath (new int[] { active })))
-					return (string) profileStore.GetValue (iter, 1);
-				return null;
-			}
-			set {
-				if (string.IsNullOrEmpty (value) && profileStore.IterNChildren () > 0) {
-					provisioningCombo.Active = 0;
-				} else {
-					if (!SelectMatchingItem (provisioningCombo, 1, value)) {
-						var name = GettextCatalog.GetString ("Unknown ({0})", value);
-						profileStore.AppendValues (GLib.Markup.EscapeText (name), value, new object ());
-						SelectMatchingItem (provisioningCombo, 1, value);
-						provisioningCombo.Sensitive = true;
-					}
-				}
+			
+			identityCombo.AddSeparator ();
+			foreach (var cert in signingCerts) {
+				string cn = Keychain.GetCertificateCommonName (cert);
+				if (cn.StartsWith (IPhoneProject.DIST_CERT_PREFIX))
+					identityCombo.AddItem (cn.Substring (trimStart, cn.Length - trimStart), cn, cert);
 			}
 		}
 		
 		void UpdateProfiles ()
 		{
-			profileStore.Clear ();
+			suppressSelectionSnapshot = true;
+			provisioningCombo.ClearList ();
 			
-			TreeIter iter;
-			int active = identityCombo.Active;
-			if (active >= 0 && identityStore.GetIter (out iter, new TreePath (new int[] { active }))) {
-				var name = (string) identityStore.GetValue (iter, 1);
-				var identityObj = identityStore.GetValue (iter, 2);
+			var identityName = identityCombo.SelectedName;
+			string previousSelection = null;
+			if (identityName != null)
+				profileSelections.TryGetValue (identityName, out previousSelection);
+			
+			suppressSelectionSnapshot = false;
+			
+			if (identityName != null) {
+				var identityObj = identityCombo.SelectedItem;
 				var cert = identityObj as X509Certificate2;
 				
 				Func<X509Certificate2, bool> matchIdentity;
@@ -231,8 +189,8 @@ namespace MonoDevelop.IPhone.Gui
 				}
 				//auto identity
 				else {
-					string autoPrefix = name.StartsWith (Keychain.DIST_CERT_PREFIX)?
-						Keychain.DIST_CERT_PREFIX : Keychain.DEV_CERT_PREFIX;
+					string autoPrefix = identityName.StartsWith (IPhoneProject.DIST_CERT_PREFIX)?
+						IPhoneProject.DIST_CERT_PREFIX : IPhoneProject.DEV_CERT_PREFIX;
 					matchIdentity = c => Keychain.GetCertificateCommonName (c).StartsWith (autoPrefix);
 				}
 				
@@ -247,45 +205,30 @@ namespace MonoDevelop.IPhone.Gui
 				}).ToList ();
 				
 				if (filtered.Any ()) {
-					profileStore.AppendValues (GettextCatalog.GetString ("<b>Automatic</b>"), null, null);
+					provisioningCombo.AddItemWithMarkup (GettextCatalog.GetString ("<b>Automatic</b>"), null, null);
 					
 					foreach (var f in filtered) {
 						var displayName = isDuplicate[f.Name]
 							? string.Format ("{0} ({1})", f.Name, f.CreationDate)
 							: f.Name;
-						profileStore.AppendValues (GLib.Markup.EscapeText (displayName), f.Uuid, f);
+						provisioningCombo.AddItem (displayName, f.Uuid, f);
 					}
-					provisioningCombo.Active = 0;
-					provisioningCombo.Sensitive = true;
+					provisioningCombo.SelectedName = previousSelection;
 					return;
 				}
 			}
 			
-			profileStore.AppendValues (GettextCatalog.GetString ("No matching profiles found"), null, null);
-			provisioningCombo.Active = 0;
-			provisioningCombo.Sensitive = false;
-		}
-		
-		bool SelectMatchingItem (ComboBox combo, int column, object value)
-		{
-			var m = combo.Model;
-			TreeIter iter;
-			int i = 0;
-			if (m.GetIterFirst (out iter)) {
-				do {
-					if (value.Equals (m.GetValue (iter, column))) {
-						combo.Active = i;
-						return true;
-					}
-					i++;
-				} while (m.IterNext (ref iter));
+			if (previousSelection != null) {
+				provisioningCombo.SelectedName = previousSelection;
+			} else {
+				provisioningCombo.AddItem (GettextCatalog.GetString ("No matching profiles found"), null, null);
+				provisioningCombo.Active = 0;
 			}
-			return false;
 		}
 		
-		string NullIfEmpty (string s)
+		static string NullIfEmpty (string s)
 		{
-			return (s == null || s.Length == 0)? null : s;
+			return s == null || s.Length == 0? null : s;
 		}
 	}
 }

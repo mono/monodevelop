@@ -54,6 +54,8 @@ namespace MonoDevelop.IPhone
 		internal const string PLAT_IPHONE = "iPhone";
 		internal const string PLAT_SIM = "iPhoneSimulator";
 		internal const string FX_IPHONE = "IPhone";
+		internal const string DEV_CERT_PREFIX  = "iPhone Developer";
+		internal const string DIST_CERT_PREFIX = "iPhone Distribution";
 		
 		#region Properties
 		
@@ -290,7 +292,7 @@ namespace MonoDevelop.IPhone
 				simConf.Platform = PLAT_SIM;
 				var deviceConf = (IPhoneProjectConfiguration) simConf.Clone ();
 				deviceConf.Platform = PLAT_IPHONE;
-				deviceConf.CodesignKey = Keychain.DEV_CERT_PREFIX;
+				deviceConf.CodesignKey = DEV_CERT_PREFIX;
 				Configurations.Add (deviceConf);
 				
 				deviceConf.MtouchSdkVersion = simConf.MtouchSdkVersion = sdkVersion ?? IPhoneSdkVersion.UseDefault;
@@ -351,7 +353,7 @@ namespace MonoDevelop.IPhone
 			conf.CopyFrom (base.CreateConfiguration (name));
 			
 			if (conf.Platform == PLAT_IPHONE) {
-				conf.CodesignKey = Keychain.DEV_CERT_PREFIX;
+				conf.CodesignKey = DEV_CERT_PREFIX;
 			} else if (conf.Platform == PLAT_SIM) {
 				conf.MtouchLink = MtouchLinkMode.None;
 			}
