@@ -634,11 +634,11 @@ namespace MonoDevelop.IPhone
 			
 			//treat empty as "developer automatic"
 			if (string.IsNullOrEmpty (conf.CodesignKey)) {
-				conf.CodesignKey = Keychain.DEV_CERT_PREFIX;
+				conf.CodesignKey = IPhoneProject.DEV_CERT_PREFIX;
 			}
 			
 			IList<X509Certificate2> certs = null;
-			if (conf.CodesignKey == Keychain.DEV_CERT_PREFIX || conf.CodesignKey == Keychain.DIST_CERT_PREFIX) {
+			if (conf.CodesignKey == IPhoneProject.DEV_CERT_PREFIX || conf.CodesignKey == IPhoneProject.DIST_CERT_PREFIX) {
 				certs = Keychain.FindNamedSigningCertificates (x => x.StartsWith (conf.CodesignKey)).ToList ();
 				if (certs.Count == 0) {
 					result.AddError ("No valid iPhone code signing keys found in keychain.");

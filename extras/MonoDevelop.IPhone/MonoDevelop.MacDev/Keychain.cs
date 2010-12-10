@@ -32,10 +32,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using System.Security.Cryptography.X509Certificates;
 
-namespace MonoDevelop.IPhone
+namespace MonoDevelop.MacDev
 {
-
-
 	public static class Keychain
 	{
 		
@@ -319,20 +317,6 @@ namespace MonoDevelop.IPhone
 			return cert.GetNameInfo (X509NameType.SimpleName, false);
 		}
 		
-		public const string DEV_CERT_PREFIX  = "iPhone Developer";
-		public const string DIST_CERT_PREFIX = "iPhone Distribution";
-		
-		public static string GetStoredCertificateName (IPhoneProject project, bool distribution)
-		{
-			var keys = project.UserProperties.GetValue<SigningKeyInformation> ("IPhoneSigningKeys");
-			if (keys != null) {
-				string key = distribution? keys.Distribution : keys.Developer;
-				if (!String.IsNullOrEmpty (key))
-					return key;
-			}
-			return null;
-		}
-		
 		enum SecItemClass : uint
 		{
 			InternetPassword = 1768842612, // 'inet'
@@ -405,38 +389,6 @@ namespace MonoDevelop.IPhone
 			IsInAnchors     = 0x00000008,
 			IsRoot          = 0x00000010,
 			IsFromNet       = 0x00000020
-		}
-	}
-	
-	[DataItem]
-	sealed class SigningKeyInformation
-	{
-		
-		public SigningKeyInformation (string developer, string distribution)
-		{
-			this.Distribution = NullIfEmpty (distribution);
-			this.Developer = NullIfEmpty (developer);
-		}
-		
-		public SigningKeyInformation ()
-		{
-		}
-		
-		[ItemProperty]
-		public string Developer { get; private set; }
-		
-		[ItemProperty]
-		public string Distribution { get; private set; }
-		
-		public static SigningKeyInformation Default {
-			get {
-				return new SigningKeyInformation (IPhoneSettings.SigningKeyDeveloper, IPhoneSettings.SigningKeyDistribution);
-			}
-		}
-		
-		string NullIfEmpty (string s)
-		{
-			return (s == null || s.Length == 0)? null : s;
 		}
 	}
 }

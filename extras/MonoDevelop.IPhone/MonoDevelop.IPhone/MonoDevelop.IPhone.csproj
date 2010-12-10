@@ -82,7 +82,6 @@
     <Compile Include="Gui\IPhoneOptionsPanel.cs" />
     <Compile Include="IPhoneExecutionCommand.cs" />
     <Compile Include="IPhoneExecutionHandler.cs" />
-    <Compile Include="Keychain.cs" />
     <Compile Include="Gui\IPhoneSigningKeyPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.IPhone.Gui.IPhoneSigningKeyPanelWidget.cs" />
     <Compile Include="IPhoneCommands.cs" />
