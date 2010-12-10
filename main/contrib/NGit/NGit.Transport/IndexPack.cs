@@ -116,7 +116,9 @@ namespace NGit.Transport
 		/// <summary>Object database used for loading existing objects</summary>
 		private readonly ObjectDatabase objectDatabase;
 
-		private Inflater inflater;
+		private IndexPack.InflaterStream inflater;
+
+		private byte[] readBuffer;
 
 		private readonly MessageDigest objectDigest;
 
@@ -184,7 +186,9 @@ namespace NGit.Transport
 
 		private LongMap<IndexPack.UnresolvedDelta> baseByPos;
 
-		private byte[] skipBuffer;
+		/// <summary>Blobs whose contents need to be double-checked after indexing.</summary>
+		/// <remarks>Blobs whose contents need to be double-checked after indexing.</remarks>
+		private IList<PackedObjectInfo> deferredCheckBlobs;
 
 		private MessageDigest packDigest;
 
@@ -218,10 +222,10 @@ namespace NGit.Transport
 			repo = db;
 			objectDatabase = db.ObjectDatabase.NewCachedDatabase();
 			@in = src;
-			inflater = InflaterCache.Get();
+			inflater = new IndexPack.InflaterStream(this);
 			readCurs = objectDatabase.NewReader();
 			buf = new byte[BUFFER_SIZE];
-			skipBuffer = new byte[512];
+			readBuffer = new byte[BUFFER_SIZE];
 			objectDigest = Constants.NewMessageDigest();
 			tempObjectId = new MutableObjectId();
 			packDigest = Constants.NewMessageDigest();
@@ -410,6 +414,7 @@ namespace NGit.Transport
 					entries = new PackedObjectInfo[(int)objectCount];
 					baseById = new ObjectIdSubclassMap<IndexPack.DeltaChain>();
 					baseByPos = new LongMap<IndexPack.UnresolvedDelta>();
+					deferredCheckBlobs = new AList<PackedObjectInfo>();
 					progress.BeginTask(JGitText.Get().receivingObjects, (int)objectCount);
 					for (int done = 0; done < objectCount; done++)
 					{
@@ -422,6 +427,10 @@ namespace NGit.Transport
 					}
 					ReadPackFooter();
 					EndInput();
+					if (!deferredCheckBlobs.IsEmpty())
+					{
+						DoDeferredCheckBlobs();
+					}
 					progress.EndTask();
 					if (deltaCount > 0)
 					{
@@ -467,7 +476,7 @@ namespace NGit.Transport
 					}
 					try
 					{
-						InflaterCache.Release(inflater);
+						inflater.Release();
 					}
 					finally
 					{
@@ -496,11 +505,11 @@ namespace NGit.Transport
 			{
 				if (dstPack != null)
 				{
-					dstPack.Delete();
+					FileUtils.Delete(dstPack);
 				}
 				if (dstIdx != null)
 				{
-					dstIdx.Delete();
+					FileUtils.Delete(dstIdx);
 				}
 				throw;
 			}
@@ -897,7 +906,6 @@ namespace NGit.Transport
 		private void EndInput()
 		{
 			@in = null;
-			skipBuffer = null;
 		}
 
 		// Read one entire object or delta from the input.
@@ -976,16 +984,43 @@ namespace NGit.Transport
 		/// <exception cref="System.IO.IOException"></exception>
 		private void Whole(int type, long pos, long sz)
 		{
-			byte[] data = InflateAndReturn(IndexPack.Source.INPUT, sz);
 			objectDigest.Update(Constants.EncodedTypeString(type));
 			objectDigest.Update(unchecked((byte)' '));
 			objectDigest.Update(Constants.EncodeASCII(sz));
 			objectDigest.Update(unchecked((byte)0));
-			objectDigest.Update(data);
-			tempObjectId.FromRaw(objectDigest.Digest(), 0);
-			VerifySafeObject(tempObjectId, type, data);
+			bool checkContentLater = false;
+			if (type == Constants.OBJ_BLOB)
+			{
+				InputStream inf = Inflate(IndexPack.Source.INPUT, sz);
+				long cnt = 0;
+				while (cnt < sz)
+				{
+					int r = inf.Read(readBuffer);
+					if (r <= 0)
+					{
+						break;
+					}
+					objectDigest.Update(readBuffer, 0, r);
+					cnt += r;
+				}
+				inf.Close();
+				tempObjectId.FromRaw(objectDigest.Digest(), 0);
+				checkContentLater = readCurs.Has(tempObjectId);
+			}
+			else
+			{
+				byte[] data = InflateAndReturn(IndexPack.Source.INPUT, sz);
+				objectDigest.Update(data);
+				tempObjectId.FromRaw(objectDigest.Digest(), 0);
+				VerifySafeObject(tempObjectId, type, data);
+			}
 			int crc32 = (int)crc.GetValue();
-			AddObjectAndTrack(new PackedObjectInfo(pos, crc32, tempObjectId));
+			PackedObjectInfo obj = new PackedObjectInfo(pos, crc32, tempObjectId);
+			AddObjectAndTrack(obj);
+			if (checkContentLater)
+			{
+				deferredCheckBlobs.AddItem(obj);
+			}
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
@@ -1006,7 +1041,7 @@ namespace NGit.Transport
 			try
 			{
 				ObjectLoader ldr = readCurs.Open(id, type);
-				byte[] existingData = ldr.GetCachedBytes(int.MaxValue);
+				byte[] existingData = ldr.GetCachedBytes(data.Length);
 				if (!Arrays.Equals(data, existingData))
 				{
 					throw new IOException(MessageFormat.Format(JGitText.Get().collisionOn, id.Name));
@@ -1020,6 +1055,59 @@ namespace NGit.Transport
 		// This is OK, we don't have a copy of the object locally
 		// but the API throws when we try to read it as usually its
 		// an error to read something that doesn't exist.
+		/// <exception cref="System.IO.IOException"></exception>
+		private void DoDeferredCheckBlobs()
+		{
+			byte[] curBuffer = new byte[readBuffer.Length];
+			foreach (PackedObjectInfo obj in deferredCheckBlobs)
+			{
+				Position(obj.GetOffset());
+				int c = ReadFrom(IndexPack.Source.FILE);
+				int type = (c >> 4) & 7;
+				long sz = c & 15;
+				int shift = 4;
+				while ((c & unchecked((int)(0x80))) != 0)
+				{
+					c = ReadFrom(IndexPack.Source.FILE);
+					sz += (c & unchecked((int)(0x7f))) << shift;
+					shift += 7;
+				}
+				if (type != Constants.OBJ_BLOB)
+				{
+					throw new IOException(MessageFormat.Format(JGitText.Get().unknownObjectType, type
+						));
+				}
+				ObjectStream cur = readCurs.Open(obj, type).OpenStream();
+				try
+				{
+					if (cur.GetSize() != sz)
+					{
+						throw new IOException(MessageFormat.Format(JGitText.Get().collisionOn, obj.Name));
+					}
+					InputStream pck = Inflate(IndexPack.Source.FILE, sz);
+					while (0 < sz)
+					{
+						int n = (int)Math.Min(readBuffer.Length, sz);
+						IOUtil.ReadFully(cur, curBuffer, 0, n);
+						IOUtil.ReadFully(pck, readBuffer, 0, n);
+						for (int i = 0; i < n; i++)
+						{
+							if (curBuffer[i] != readBuffer[i])
+							{
+								throw new IOException(MessageFormat.Format(JGitText.Get().collisionOn, obj.Name));
+							}
+						}
+						sz -= n;
+					}
+					pck.Close();
+				}
+				finally
+				{
+					cur.Close();
+				}
+			}
+		}
+
 		// Current position of {@link #bOffset} within the entire file.
 		private long Position()
 		{
@@ -1130,86 +1218,26 @@ namespace NGit.Transport
 		/// <exception cref="System.IO.IOException"></exception>
 		private void InflateAndSkip(IndexPack.Source src, long inflatedSize)
 		{
-			Inflate(src, inflatedSize, skipBuffer, false);
+			InputStream inf = Inflate(src, inflatedSize);
+			IOUtil.SkipFully(inf, inflatedSize);
+			inf.Close();
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
 		private byte[] InflateAndReturn(IndexPack.Source src, long inflatedSize)
 		{
 			byte[] dst = new byte[(int)inflatedSize];
-			Inflate(src, inflatedSize, dst, true);
+			InputStream inf = Inflate(src, inflatedSize);
+			IOUtil.ReadFully(inf, dst, 0, dst.Length);
+			inf.Close();
 			return dst;
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
-		private void Inflate(IndexPack.Source src, long inflatedSize, byte[] dst, bool keep
-			)
+		private InputStream Inflate(IndexPack.Source src, long inflatedSize)
 		{
-			Inflater inf = inflater;
-			try
-			{
-				int off = 0;
-				long cnt = 0;
-				int p = Fill(src, 24);
-				inf.SetInput(buf, p, bAvail);
-				for (; ; )
-				{
-					// The +1 is a workaround to a bug in SharpZipLib: RemainingInput won't be properly updated if the inflate
-					// length is 0.
-					int rl = dst.Length - off;
-					if (rl == 0)
-						rl++;
-					int r = inf.Inflate(dst, off, rl);
-					if (r == 0)
-					{
-						if (inf.IsFinished)
-						{
-							break;
-						}
-						if (inf.IsNeedingInput)
-						{
-							if (p >= 0)
-							{
-								crc.Update(buf, p, bAvail);
-								Use(bAvail);
-							}
-							p = Fill(src, 24);
-							inf.SetInput(buf, p, bAvail);
-						}
-						else
-						{
-							break;
-//							throw new CorruptObjectException(MessageFormat.Format(JGitText.Get().packfileCorruptionDetected
-//								, JGitText.Get().unknownZlibError));
-						}
-					}
-					cnt += r;
-					if (keep)
-					{
-						off += r;
-					}
-				}
-				if (cnt != inflatedSize)
-				{
-					throw new CorruptObjectException(MessageFormat.Format(JGitText.Get().packfileCorruptionDetected
-						, JGitText.Get().wrongDecompressedLength));
-				}
-				int left = bAvail - inf.RemainingInput;
-				if (left > 0)
-				{
-					crc.Update(buf, p, left);
-					Use(left);
-				}
-			}
-			catch (DataFormatException dfe)
-			{
-				throw new CorruptObjectException(MessageFormat.Format(JGitText.Get().packfileCorruptionDetected
-					, dfe.Message));
-			}
-			finally
-			{
-				inf.Reset();
-			}
+			inflater.Open(src, inflatedSize);
+			return inflater;
 		}
 
 		[System.Serializable]
@@ -1369,8 +1397,8 @@ namespace NGit.Transport
 			catch (IOException err)
 			{
 				keep.Unlock();
-				finalPack.Delete();
-				finalIdx.Delete();
+				FileUtils.Delete(finalPack);
+				FileUtils.Delete(finalIdx);
 				throw;
 			}
 			return lockMessage != null ? keep : null;
@@ -1395,6 +1423,134 @@ namespace NGit.Transport
 			{
 				newObjectIds.Add(oe);
 			}
+		}
+
+		private class InflaterStream : InputStream
+		{
+			private readonly Inflater inf;
+
+			private readonly byte[] skipBuffer;
+
+			private IndexPack.Source src;
+
+			private long expectedSize;
+
+			private long actualSize;
+
+			private int p;
+
+			public InflaterStream(IndexPack _enclosing)
+			{
+				this._enclosing = _enclosing;
+				this.inf = InflaterCache.Get();
+				this.skipBuffer = new byte[512];
+			}
+
+			internal virtual void Release()
+			{
+				this.inf.Reset();
+				InflaterCache.Release(this.inf);
+			}
+
+			/// <exception cref="System.IO.IOException"></exception>
+			internal virtual void Open(IndexPack.Source source, long inflatedSize)
+			{
+				this.src = source;
+				this.expectedSize = inflatedSize;
+				this.actualSize = 0;
+				this.p = this._enclosing.Fill(this.src, 24);
+				this.inf.SetInput(this._enclosing.buf, this.p, this._enclosing.bAvail);
+			}
+
+			/// <exception cref="System.IO.IOException"></exception>
+			public override long Skip(long toSkip)
+			{
+				long n = 0;
+				while (n < toSkip)
+				{
+					int cnt = (int)Math.Min(this.skipBuffer.Length, toSkip - n);
+					int r = this.Read(this.skipBuffer, 0, cnt);
+					if (r <= 0)
+					{
+						break;
+					}
+					n += r;
+				}
+				return n;
+			}
+
+			/// <exception cref="System.IO.IOException"></exception>
+			public override int Read()
+			{
+				int n = this.Read(this.skipBuffer, 0, 1);
+				return n == 1 ? this.skipBuffer[0] & unchecked((int)(0xff)) : -1;
+			}
+
+			/// <exception cref="System.IO.IOException"></exception>
+			public override int Read(byte[] dst, int pos, int cnt)
+			{
+				try
+				{
+					int n = 0;
+					while (n < cnt)
+					{
+						int r = this.inf.Inflate(dst, pos + n, cnt - n);
+						if (r == 0)
+						{
+							if (this.inf.IsFinished)
+							{
+								break;
+							}
+							if (this.inf.IsNeedingInput)
+							{
+								this._enclosing.crc.Update(this._enclosing.buf, this.p, this._enclosing.bAvail);
+								this._enclosing.Use(this._enclosing.bAvail);
+								this.p = this._enclosing.Fill(this.src, 24);
+								this.inf.SetInput(this._enclosing.buf, this.p, this._enclosing.bAvail);
+							}
+							else
+							{
+								throw new CorruptObjectException(MessageFormat.Format(JGitText.Get().packfileCorruptionDetected
+									, JGitText.Get().unknownZlibError));
+							}
+						}
+						else
+						{
+							n += r;
+						}
+					}
+					this.actualSize += n;
+					return 0 < n ? n : -1;
+				}
+				catch (DataFormatException dfe)
+				{
+					throw new CorruptObjectException(MessageFormat.Format(JGitText.Get().packfileCorruptionDetected
+						, dfe.Message));
+				}
+			}
+
+			/// <exception cref="System.IO.IOException"></exception>
+			public override void Close()
+			{
+				// We need to read here to enter the loop above and pump the
+				// trailing checksum into the Inflater. It should return -1 as the
+				// caller was supposed to consume all content.
+				//
+				if (this.Read(this.skipBuffer) != -1 || this.actualSize != this.expectedSize)
+				{
+					throw new CorruptObjectException(MessageFormat.Format(JGitText.Get().packfileCorruptionDetected
+						, JGitText.Get().wrongDecompressedLength));
+				}
+				int used = this._enclosing.bAvail - this.inf.RemainingInput;
+				if (0 < used)
+				{
+					this._enclosing.crc.Update(this._enclosing.buf, this.p, used);
+					this._enclosing.Use(used);
+				}
+				this.inf.Reset();
+			}
+
+			private readonly IndexPack _enclosing;
 		}
 	}
 }

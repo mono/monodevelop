@@ -237,6 +237,7 @@ namespace NGit.Storage.File
 			return -1;
 		}
 
+		/// <exception cref="System.IO.IOException"></exception>
 		internal override FileObjectDatabase.InsertLooseObjectResult InsertUnpackedObject
 			(FilePath tmp, ObjectId objectId, bool createDuplicate)
 		{

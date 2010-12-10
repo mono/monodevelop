@@ -639,8 +639,8 @@ namespace MonoDevelop.VersionControl.Git
 		
 		IEnumerable<string> GetDirectoryFiles (DirectoryInfo dir)
 		{
-			FileTreeIterator iter = new FileTreeIterator (dir.FullName, repo.FileSystem, WorkingTreeOptions.CreateConfigurationInstance(repo.GetConfig()));
-			while (!iter.Eof ()) {
+			FileTreeIterator iter = new FileTreeIterator (dir.FullName, repo.FileSystem, WorkingTreeOptions.KEY.Parse(repo.GetConfig()));
+			while (!iter.Eof) {
 				var file = iter.GetEntryFile ();
 				if (file != null && !iter.IsEntryIgnored ())
 					yield return file.GetPath ();
@@ -743,10 +743,10 @@ namespace MonoDevelop.VersionControl.Git
 							string rpath = FromGitPath (r.PathString);
 							DirCacheEntry e = new DirCacheEntry (r.PathString);
 							e.SetObjectId (r.GetObjectId (0));
-							e.SetFileMode (r.GetFileMode (0));
+							e.FileMode = r.GetFileMode (0);
 							if (!Directory.Exists (Path.GetDirectoryName (rpath)))
 								Directory.CreateDirectory (rpath);
-							DirCacheCheckout.CheckoutEntry (repo, rpath, e, true);
+							DirCacheCheckout.CheckoutEntry (repo, rpath, e);
 							builder.Add (e);
 							changedFiles.Add (rpath);
 						} while (r.Next ());
@@ -758,7 +758,7 @@ namespace MonoDevelop.VersionControl.Git
 				int count = dc.GetEntryCount ();
 				for (int n=0; n<count; n++) {
 					DirCacheEntry e = dc.GetEntry (n);
-					string path = e.GetPathString ();
+					string path = e.PathString;
 					if (!entriesToRemove.Contains (path) && !foldersToRemove.Any (f => IsSubpath (f,path)))
 						builder.Add (e);
 				}

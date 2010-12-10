@@ -45,6 +45,7 @@ using System.IO;
 using NGit;
 using NGit.Revwalk;
 using NGit.Storage.File;
+using NGit.Util;
 using Sharpen;
 
 namespace NGit.Storage.File
@@ -208,7 +209,7 @@ namespace NGit.Storage.File
 				}
 				catch (IOException)
 				{
-					refdb.FileFor(tmp.GetName()).Delete();
+					FileUtils.Delete(refdb.FileFor(tmp.GetName()));
 				}
 				rw.Release();
 			}

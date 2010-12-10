@@ -312,6 +312,7 @@ namespace NGit.Storage.File
 		internal abstract long GetObjectSize2(WindowCursor curs, string objectName, AnyObjectId
 			 objectId);
 
+		/// <exception cref="System.IO.IOException"></exception>
 		internal abstract FileObjectDatabase.InsertLooseObjectResult InsertUnpackedObject
 			(FilePath tmp, ObjectId id, bool createDuplicate);
 

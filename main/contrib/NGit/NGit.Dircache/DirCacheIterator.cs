@@ -131,7 +131,7 @@ namespace NGit.Dircache
 			treeStart = 0;
 			treeEnd = tree.GetEntrySpan();
 			subtreeId = new byte[Constants.OBJECT_ID_LENGTH];
-			if (!Eof())
+			if (!Eof)
 			{
 				ParseEntry();
 			}
@@ -155,7 +155,7 @@ namespace NGit.Dircache
 		{
 			if (currentSubtree == null)
 			{
-				throw new IncorrectObjectTypeException(GetEntryObjectId(), Constants.TYPE_TREE);
+				throw new IncorrectObjectTypeException(EntryObjectId, Constants.TYPE_TREE);
 			}
 			return new NGit.Dircache.DirCacheIterator(this, currentSubtree);
 		}
@@ -168,61 +168,76 @@ namespace NGit.Dircache
 			return new EmptyTreeIterator(this, n, pathLen + 1);
 		}
 
-		public override bool HasId()
+		public override bool HasId
 		{
-			if (currentSubtree != null)
+			get
 			{
-				return currentSubtree.IsValid();
+				if (currentSubtree != null)
+				{
+					return currentSubtree.IsValid();
+				}
+				return currentEntry != null;
 			}
-			return currentEntry != null;
 		}
 
-		public override byte[] IdBuffer()
+		public override byte[] IdBuffer
 		{
-			if (currentSubtree != null)
+			get
 			{
-				return currentSubtree.IsValid() ? subtreeId : zeroid;
+				if (currentSubtree != null)
+				{
+					return currentSubtree.IsValid() ? subtreeId : zeroid;
+				}
+				if (currentEntry != null)
+				{
+					return currentEntry.IdBuffer;
+				}
+				return zeroid;
 			}
-			if (currentEntry != null)
-			{
-				return currentEntry.IdBuffer();
-			}
-			return zeroid;
 		}
 
-		public override int IdOffset()
+		public override int IdOffset
 		{
-			if (currentSubtree != null)
+			get
 			{
+				if (currentSubtree != null)
+				{
+					return 0;
+				}
+				if (currentEntry != null)
+				{
+					return currentEntry.IdOffset;
+				}
 				return 0;
 			}
-			if (currentEntry != null)
-			{
-				return currentEntry.IdOffset();
-			}
-			return 0;
 		}
 
 		public override void Reset()
 		{
-			if (!First())
+			if (!First)
 			{
 				ptr = treeStart;
-				if (!Eof())
+				if (!Eof)
 				{
 					ParseEntry();
 				}
 			}
 		}
 
-		public override bool First()
+		public override bool First
 		{
-			return ptr == treeStart;
+			get
+			{
+				return ptr == treeStart;
+			}
 		}
 
-		public override bool Eof()
+		public override bool Eof
 		{
-			return ptr == treeEnd;
+			get
+			{
+				return ptr == treeEnd;
+			}
 		}
 
 		public override void Next(int delta)
@@ -237,7 +252,7 @@ namespace NGit.Dircache
 				{
 					ptr++;
 				}
-				if (Eof())
+				if (Eof)
 				{
 					break;
 				}
@@ -289,7 +304,7 @@ namespace NGit.Dircache
 			// The current position is a file/symlink/gitlink so we
 			// do not have a subtree located here.
 			//
-			mode = currentEntry.GetRawMode();
+			mode = currentEntry.RawMode;
 			path = cep;
 			pathLen = cep.Length;
 			currentSubtree = null;

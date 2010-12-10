@@ -146,11 +146,11 @@ namespace NGit.Treewalk
 			fastMinHasMatch = true;
 			int i = 0;
 			AbstractTreeIterator minRef = trees[i];
-			while (minRef.Eof() && ++i < trees.Length)
+			while (minRef.Eof && ++i < trees.Length)
 			{
 				minRef = trees[i];
 			}
-			if (minRef.Eof())
+			if (minRef.Eof)
 			{
 				return minRef;
 			}
@@ -159,7 +159,7 @@ namespace NGit.Treewalk
 			while (++i < trees.Length)
 			{
 				AbstractTreeIterator t = trees[i];
-				if (t.Eof())
+				if (t.Eof)
 				{
 					continue;
 				}
@@ -245,7 +245,7 @@ namespace NGit.Treewalk
 			//
 			foreach (AbstractTreeIterator t in trees)
 			{
-				if (t.matches == minRef || t.First())
+				if (t.matches == minRef || t.First)
 				{
 					continue;
 				}
@@ -264,7 +264,7 @@ namespace NGit.Treewalk
 					}
 					else
 					{
-						if (cmp < 0 || t.First())
+						if (cmp < 0 || t.First)
 						{
 							// We cannot find "$path" in t; it will never appear.
 							//
@@ -289,7 +289,7 @@ namespace NGit.Treewalk
 			AbstractTreeIterator treeMatch = null;
 			foreach (AbstractTreeIterator t in trees)
 			{
-				if (t.matches == minRef || t.Eof())
+				if (t.matches == minRef || t.Eof)
 				{
 					continue;
 				}
@@ -302,7 +302,7 @@ namespace NGit.Treewalk
 						//
 						t.matchShift++;
 						t.Next(1);
-						if (t.Eof())
+						if (t.Eof)
 						{
 							t.Back(t.matchShift);
 							t.matchShift = 0;

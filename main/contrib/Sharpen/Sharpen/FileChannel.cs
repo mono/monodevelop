@@ -76,6 +76,7 @@ namespace Sharpen
 			int offset = buffer.Position () + buffer.ArrayOffset ();
 			int count = (buffer.Limit () + buffer.ArrayOffset ()) - offset;
 			s.Write (buffer.Array (), offset, count);
+			buffer.Position (buffer.Position () + count);
 			return count;
 		}
 		

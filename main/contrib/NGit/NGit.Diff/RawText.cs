@@ -62,6 +62,10 @@ namespace NGit.Diff
 	/// </remarks>
 	public class RawText : Sequence
 	{
+		/// <summary>A Rawtext of length 0</summary>
+		public static readonly NGit.Diff.RawText EMPTY_TEXT = new NGit.Diff.RawText(new byte
+			[0]);
+
 		/// <summary>
 		/// Number of bytes to check for heuristics in
 		/// <see cref="IsBinary(byte[])">IsBinary(byte[])</see>

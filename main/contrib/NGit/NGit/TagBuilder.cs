@@ -66,8 +66,6 @@ namespace NGit
 	/// </remarks>
 	public class TagBuilder
 	{
-		private ObjectId tagId;
-
 		private ObjectId @object;
 
 		private int type = Constants.OBJ_BAD;
@@ -77,20 +75,6 @@ namespace NGit
 		private PersonIdent tagger;
 
 		private string message;
-
-		/// <returns>this tag's object id.</returns>
-		public virtual ObjectId GetTagId()
-		{
-			return tagId;
-		}
-
-		/// <summary>Set the id of this tag object.</summary>
-		/// <remarks>Set the id of this tag object.</remarks>
-		/// <param name="id">the id that we calculated for this object.</param>
-		public virtual void SetTagId(ObjectId id)
-		{
-			tagId = id;
-		}
 
 		/// <returns>the type of object this tag refers to.</returns>
 		public virtual int GetObjectType()
@@ -116,7 +100,6 @@ namespace NGit
 		{
 			@object = obj.Copy();
 			type = objType;
-			tagId = null;
 		}
 
 		/// <summary>Set the object this tag refers to, and infer its type.</summary>
@@ -151,7 +134,6 @@ namespace NGit
 		public virtual void SetTag(string shortName)
 		{
 			this.tag = shortName;
-			tagId = null;
 		}
 
 		/// <returns>creator of this tag. May be null.</returns>
@@ -166,7 +148,6 @@ namespace NGit
 		public virtual void SetTagger(PersonIdent taggerIdent)
 		{
 			tagger = taggerIdent;
-			tagId = null;
 		}
 
 		/// <returns>the complete commit message.</returns>
@@ -181,44 +162,15 @@ namespace NGit
 		public virtual void SetMessage(string newMessage)
 		{
 			message = newMessage;
-			tagId = null;
 		}
 
 		/// <summary>Format this builder's state as an annotated tag object.</summary>
-		/// <remarks>
-		/// Format this builder's state as an annotated tag object.
-		/// As a side effect,
-		/// <see cref="GetTagId()">GetTagId()</see>
-		/// will be populated with the proper
-		/// ObjectId for the formatted content.
-		/// </remarks>
+		/// <remarks>Format this builder's state as an annotated tag object.</remarks>
 		/// <returns>
 		/// this object in the canonical annotated tag format, suitable for
 		/// storage in a repository.
 		/// </returns>
-		public virtual byte[] Format()
-		{
-			return Format(new ObjectInserter.Formatter());
-		}
-
-		/// <summary>Format this builder's state as an annotated tag object.</summary>
-		/// <remarks>
-		/// Format this builder's state as an annotated tag object.
-		/// As a side effect,
-		/// <see cref="GetTagId()">GetTagId()</see>
-		/// will be populated with the proper
-		/// ObjectId for the formatted content.
-		/// </remarks>
-		/// <param name="oi">
-		/// the inserter whose formatting support will be reused. The
-		/// inserter itself is not affected, and the annotated tag is not
-		/// actually inserted into the repository.
-		/// </param>
-		/// <returns>
-		/// this object in the canonical annotated tag format, suitable for
-		/// storage in a repository.
-		/// </returns>
-		public virtual byte[] Format(ObjectInserter oi)
+		public virtual byte[] Build()
 		{
 			ByteArrayOutputStream os = new ByteArrayOutputStream();
 			OutputStreamWriter w = new OutputStreamWriter(os, Constants.CHARSET);
@@ -253,19 +205,24 @@ namespace NGit
 				//
 				throw new RuntimeException(err);
 			}
-			byte[] content = os.ToByteArray();
-			SetTagId(oi.IdFor(Constants.OBJ_TAG, content));
-			return content;
+			return os.ToByteArray();
+		}
+
+		/// <summary>Format this builder's state as an annotated tag object.</summary>
+		/// <remarks>Format this builder's state as an annotated tag object.</remarks>
+		/// <returns>
+		/// this object in the canonical annotated tag format, suitable for
+		/// storage in a repository.
+		/// </returns>
+		public virtual byte[] ToByteArray()
+		{
+			return Build();
 		}
 
 		public override string ToString()
 		{
 			StringBuilder r = new StringBuilder();
 			r.Append("Tag");
-			if (tagId != null)
-			{
-				r.Append("[" + tagId.Name + "]");
-			}
 			r.Append("={\n");
 			r.Append("object ");
 			r.Append(@object != null ? @object.Name : "NOT_SET");

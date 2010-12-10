@@ -789,6 +789,7 @@ namespace NGit.Transport
 			private readonly ReceivePack _enclosing;
 		}
 
+		/// <exception cref="System.IO.IOException"></exception>
 		private void UnlockPack()
 		{
 			if (packLock != null)

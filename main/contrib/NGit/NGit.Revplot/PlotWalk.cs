@@ -134,13 +134,17 @@ namespace NGit.Revplot
 					{
 						return 1;
 					}
-					return 0;
 				}
 				catch (IOException)
 				{
-					// ignore
-					return 0;
 				}
+				// ignore
+				int cmp = this.Kind(o1) - this.Kind(o2);
+				if (cmp == 0)
+				{
+					cmp = o1.GetName().CompareTo(o2.GetName());
+				}
+				return cmp;
 			}
 
 			internal virtual long Timeof(RevObject o)
@@ -156,6 +160,23 @@ namespace NGit.Revplot
 					return who != null ? who.GetWhen().GetTime() : 0;
 				}
 				return 0;
+			}
+
+			internal virtual int Kind(Ref r)
+			{
+				if (r.GetName().StartsWith(Constants.R_TAGS))
+				{
+					return 0;
+				}
+				if (r.GetName().StartsWith(Constants.R_HEADS))
+				{
+					return 1;
+				}
+				if (r.GetName().StartsWith(Constants.R_REMOTES))
+				{
+					return 2;
+				}
+				return 3;
 			}
 
 			internal PlotRefComparator(PlotWalk _enclosing)

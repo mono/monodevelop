@@ -46,65 +46,52 @@ using Sharpen;
 
 namespace NGit.Treewalk
 {
-	/// <summary>Contains options used by the WorkingTreeIterator.</summary>
-	/// <remarks>Contains options used by the WorkingTreeIterator.</remarks>
+	/// <summary>
+	/// Options used by the
+	/// <see cref="WorkingTreeIterator">WorkingTreeIterator</see>
+	/// .
+	/// </summary>
 	public class WorkingTreeOptions
 	{
-		/// <summary>
-		/// Creates default options which reflect the original configuration of Git
-		/// on Unix systems.
-		/// </summary>
-		/// <remarks>
-		/// Creates default options which reflect the original configuration of Git
-		/// on Unix systems.
-		/// </remarks>
-		/// <returns>created working tree options</returns>
-		public static NGit.Treewalk.WorkingTreeOptions CreateDefaultInstance()
+		private sealed class _SectionParser_52 : Config.SectionParser<NGit.Treewalk.WorkingTreeOptions
+			>
 		{
-			return new NGit.Treewalk.WorkingTreeOptions(CoreConfig.AutoCRLF.FALSE);
-		}
+			public _SectionParser_52()
+			{
+			}
 
-		/// <summary>Creates options based on the specified repository configuration.</summary>
-		/// <remarks>Creates options based on the specified repository configuration.</remarks>
-		/// <param name="config">repository configuration to create options for</param>
-		/// <returns>created working tree options</returns>
-		public static NGit.Treewalk.WorkingTreeOptions CreateConfigurationInstance(Config
-			 config)
-		{
-			return new NGit.Treewalk.WorkingTreeOptions(config.Get(CoreConfig.KEY).GetAutoCRLF
-				());
+			public NGit.Treewalk.WorkingTreeOptions Parse(Config cfg)
+			{
+				return new NGit.Treewalk.WorkingTreeOptions(cfg);
+			}
 		}
 
 		/// <summary>
-		/// Indicates whether EOLs of text files should be converted to '\n' before
-		/// calculating the blob ID.
+		/// Key for
+		/// <see cref="NGit.Config.Get{T}(NGit.Config.SectionParser{T})">NGit.Config.Get&lt;T&gt;(NGit.Config.SectionParser&lt;T&gt;)
+		/// 	</see>
+		/// .
 		/// </summary>
-		/// <remarks>
-		/// Indicates whether EOLs of text files should be converted to '\n' before
-		/// calculating the blob ID.
-		/// </remarks>
+		public static readonly Config.SectionParser<NGit.Treewalk.WorkingTreeOptions> KEY
+			 = new _SectionParser_52();
+
+		private readonly bool fileMode;
+
 		private readonly CoreConfig.AutoCRLF autoCRLF;
 
-		/// <summary>Creates new options.</summary>
-		/// <remarks>Creates new options.</remarks>
-		/// <param name="autoCRLF">
-		/// indicates whether EOLs of text files should be converted to
-		/// '\n' before calculating the blob ID.
-		/// </param>
-		public WorkingTreeOptions(CoreConfig.AutoCRLF autoCRLF)
+		private WorkingTreeOptions(Config rc)
 		{
-			this.autoCRLF = autoCRLF;
+			fileMode = rc.GetBoolean("core", "filemode", true);
+			autoCRLF = rc.GetEnum("core", null, "autocrlf", CoreConfig.AutoCRLF.FALSE);
 		}
 
-		/// <summary>
-		/// Indicates whether EOLs of text files should be converted to '\n' before
-		/// calculating the blob ID.
-		/// </summary>
-		/// <remarks>
-		/// Indicates whether EOLs of text files should be converted to '\n' before
-		/// calculating the blob ID.
-		/// </remarks>
-		/// <returns>true if EOLs should be canonicalized.</returns>
+		/// <returns>true if the execute bit on working files should be trusted.</returns>
+		public virtual bool IsFileMode()
+		{
+			return fileMode;
+		}
+
+		/// <returns>how automatic CRLF conversion has been configured.</returns>
 		public virtual CoreConfig.AutoCRLF GetAutoCRLF()
 		{
 			return autoCRLF;

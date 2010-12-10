@@ -61,7 +61,7 @@ namespace NGit.Errors
 		/// <remarks>Create a new unmerged path exception.</remarks>
 		/// <param name="dce">the first non-zero stage of the unmerged path.</param>
 		public UnmergedPathException(DirCacheEntry dce) : base(MessageFormat.Format(JGitText
-			.Get().unmergedPath, dce.GetPathString()))
+			.Get().unmergedPath, dce.PathString))
 		{
 			entry = dce;
 		}

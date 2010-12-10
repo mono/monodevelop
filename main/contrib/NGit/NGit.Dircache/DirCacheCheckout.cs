@@ -170,7 +170,7 @@ namespace NGit.Dircache
 		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
 		public DirCacheCheckout(Repository repo, ObjectId headCommitTree, DirCache dc, ObjectId
 			 mergeCommitTree) : this(repo, headCommitTree, dc, mergeCommitTree, new FileTreeIterator
-			(repo.WorkTree, repo.FileSystem, WorkingTreeOptions.CreateDefaultInstance()))
+			(repo))
 		{
 		}
 
@@ -207,8 +207,7 @@ namespace NGit.Dircache
 		/// <param name="mergeCommitTree">the id of the tree of the</param>
 		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
 		public DirCacheCheckout(Repository repo, DirCache dc, ObjectId mergeCommitTree) : 
-			this(repo, null, dc, mergeCommitTree, new FileTreeIterator(repo.WorkTree, repo.FileSystem
-			, WorkingTreeOptions.CreateDefaultInstance()))
+			this(repo, null, dc, mergeCommitTree, new FileTreeIterator(repo))
 		{
 		}
 
@@ -227,7 +226,6 @@ namespace NGit.Dircache
 			conflicts.Clear();
 			walk = new NameConflictTreeWalk(repo);
 			builder = dc.Builder();
-			walk.Reset();
 			AddTree(walk, headCommitTree);
 			AddTree(walk, mergeCommitTree);
 			walk.AddTree(new DirCacheBuildIterator(builder));
@@ -278,7 +276,6 @@ namespace NGit.Dircache
 			conflicts.Clear();
 			builder = dc.Builder();
 			walk = new NameConflictTreeWalk(repo);
-			walk.Reset();
 			walk.AddTree(mergeCommitTree);
 			walk.AddTree(new DirCacheBuildIterator(builder));
 			walk.AddTree(workingTree);
@@ -309,10 +306,9 @@ namespace NGit.Dircache
 			if (m != null)
 			{
 				if (i == null || f == null || !m.IdEqual(i) || (i.GetDirCacheEntry() != null && (
-					f.IsModified(i.GetDirCacheEntry(), true, Config_filemode(), repo.FileSystem) || 
-					i.GetDirCacheEntry().GetStage() != 0)))
+					f.IsModified(i.GetDirCacheEntry(), true) || i.GetDirCacheEntry().Stage != 0)))
 				{
-					Update(m.GetEntryPathString(), m.GetEntryObjectId(), m.GetEntryFileMode());
+					Update(m.EntryPathString, m.EntryObjectId, m.EntryFileMode);
 				}
 				else
 				{
@@ -334,14 +330,14 @@ namespace NGit.Dircache
 							// ... and the working dir contained a file or folder ->
 							// add it to the removed set and remove it from
 							// conflicts set
-							Remove(i.GetEntryPathString());
-							conflicts.Remove(i.GetEntryPathString());
+							Remove(i.EntryPathString);
+							conflicts.Remove(i.EntryPathString);
 						}
 					}
 				}
 				else
 				{
-					if (i.GetDirCacheEntry().GetStage() == 0)
+					if (i.GetDirCacheEntry().Stage == 0)
 					{
 						Keep(i.GetDirCacheEntry());
 					}
@@ -421,7 +417,7 @@ namespace NGit.Dircache
 				file.GetParentFile().Mkdirs();
 				file.CreateNewFile();
 				DirCacheEntry entry = dc.GetEntry(path);
-				CheckoutEntry(repo, file, entry, Config_filemode());
+				CheckoutEntry(repo, file, entry);
 			}
 			// commit the index builder - a new index is persisted
 			if (!builder.Commit())
@@ -481,9 +477,9 @@ namespace NGit.Dircache
 				// file only exists in working tree -> ignore it
 				return;
 			}
-			ObjectId iId = (i == null ? null : i.GetEntryObjectId());
-			ObjectId mId = (m == null ? null : m.GetEntryObjectId());
-			ObjectId hId = (h == null ? null : h.GetEntryObjectId());
+			ObjectId iId = (i == null ? null : i.EntryObjectId);
+			ObjectId mId = (m == null ? null : m.EntryObjectId);
+			ObjectId hId = (h == null ? null : h.EntryObjectId);
 			// The information whether head,index,merge iterators are currently
 			// pointing to file/folder/non-existing is encoded into this variable.
 			//
@@ -501,18 +497,18 @@ namespace NGit.Dircache
 			int ffMask = 0;
 			if (h != null)
 			{
-				ffMask = FileMode.TREE.Equals(h.GetEntryFileMode()) ? unchecked((int)(0xD00)) : unchecked(
+				ffMask = FileMode.TREE.Equals(h.EntryFileMode) ? unchecked((int)(0xD00)) : unchecked(
 					(int)(0xF00));
 			}
 			if (i != null)
 			{
-				ffMask |= FileMode.TREE.Equals(i.GetEntryFileMode()) ? unchecked((int)(0x0D0)) : 
-					unchecked((int)(0x0F0));
+				ffMask |= FileMode.TREE.Equals(i.EntryFileMode) ? unchecked((int)(0x0D0)) : unchecked(
+					(int)(0x0F0));
 			}
 			if (m != null)
 			{
-				ffMask |= FileMode.TREE.Equals(m.GetEntryFileMode()) ? unchecked((int)(0x00D)) : 
-					unchecked((int)(0x00F));
+				ffMask |= FileMode.TREE.Equals(m.EntryFileMode) ? unchecked((int)(0x00D)) : unchecked(
+					(int)(0x00F));
 			}
 			// Check whether we have a possible file/folder conflict. Therefore we
 			// need a least one file and one folder.
@@ -537,7 +533,7 @@ namespace NGit.Dircache
 						else
 						{
 							// 1
-							Update(name, m.GetEntryObjectId(), m.GetEntryFileMode());
+							Update(name, m.EntryObjectId, m.EntryFileMode);
 						}
 						// 2
 						break;
@@ -578,7 +574,7 @@ namespace NGit.Dircache
 					case unchecked((int)(0xD0F)):
 					{
 						// 19
-						Update(name, mId, m.GetEntryFileMode());
+						Update(name, mId, m.EntryFileMode);
 						break;
 					}
 
@@ -603,7 +599,7 @@ namespace NGit.Dircache
 							else
 							{
 								// 8
-								Update(name, mId, m.GetEntryFileMode());
+								Update(name, mId, m.EntryFileMode);
 							}
 						}
 						else
@@ -611,7 +607,7 @@ namespace NGit.Dircache
 							// 7
 							if (!IsModified(name))
 							{
-								Update(name, mId, m.GetEntryFileMode());
+								Update(name, mId, m.EntryFileMode);
 							}
 							else
 							{
@@ -636,7 +632,7 @@ namespace NGit.Dircache
 						if (hId.Equals(iId))
 						{
 							dce = i.GetDirCacheEntry();
-							if (f == null || f.IsModified(dce, true, Config_filemode(), repo.FileSystem))
+							if (f == null || f.IsModified(dce, true))
 							{
 								Conflict(name, i.GetDirCacheEntry(), h, m);
 							}
@@ -657,7 +653,7 @@ namespace NGit.Dircache
 						// 16 17
 						if (!IsModified(name))
 						{
-							Update(name, mId, m.GetEntryFileMode());
+							Update(name, mId, m.EntryFileMode);
 						}
 						else
 						{
@@ -679,8 +675,8 @@ namespace NGit.Dircache
 			{
 				return;
 			}
-			if ((ffMask == unchecked((int)(0x00F))) && f != null && FileMode.TREE.Equals(f.GetEntryFileMode
-				()))
+			if ((ffMask == unchecked((int)(0x00F))) && f != null && FileMode.TREE.Equals(f.EntryFileMode
+				))
 			{
 				// File/Directory conflict case #20
 				Conflict(name, null, h, m);
@@ -689,7 +685,7 @@ namespace NGit.Dircache
 			{
 				if (h == null)
 				{
-					Update(name, mId, m.GetEntryFileMode());
+					Update(name, mId, m.EntryFileMode);
 				}
 				else
 				{
@@ -701,7 +697,7 @@ namespace NGit.Dircache
 					else
 					{
 						// 2
-						Update(name, mId, m.GetEntryFileMode());
+						Update(name, mId, m.EntryFileMode);
 					}
 				}
 			}
@@ -715,8 +711,7 @@ namespace NGit.Dircache
 					{
 						if (m == null && walk.IsDirectoryFileConflict())
 						{
-							if (dce != null && (f == null || f.IsModified(dce, true, Config_filemode(), repo.
-								FileSystem)))
+							if (dce != null && (f == null || f.IsModified(dce, true)))
 							{
 								Conflict(name, i.GetDirCacheEntry(), h, m);
 							}
@@ -741,7 +736,7 @@ namespace NGit.Dircache
 					{
 						if (hId.Equals(iId))
 						{
-							if (f == null || f.IsModified(dce, true, Config_filemode(), repo.FileSystem))
+							if (f == null || f.IsModified(dce, true))
 							{
 								Conflict(name, i.GetDirCacheEntry(), h, m);
 							}
@@ -765,14 +760,13 @@ namespace NGit.Dircache
 						{
 							if (hId.Equals(iId) && !mId.Equals(iId))
 							{
-								if (dce != null && (f == null || f.IsModified(dce, true, Config_filemode(), repo.
-									FileSystem)))
+								if (dce != null && (f == null || f.IsModified(dce, true)))
 								{
 									Conflict(name, i.GetDirCacheEntry(), h, m);
 								}
 								else
 								{
-									Update(name, mId, m.GetEntryFileMode());
+									Update(name, mId, m.EntryFileMode);
 								}
 							}
 							else
@@ -797,29 +791,29 @@ namespace NGit.Dircache
 			DirCacheEntry entry;
 			if (e != null)
 			{
-				entry = new DirCacheEntry(e.GetPathString(), DirCacheEntry.STAGE_1);
+				entry = new DirCacheEntry(e.PathString, DirCacheEntry.STAGE_1);
 				entry.CopyMetaData(e);
 				builder.Add(entry);
 			}
-			if (h != null && !FileMode.TREE.Equals(h.GetEntryFileMode()))
+			if (h != null && !FileMode.TREE.Equals(h.EntryFileMode))
 			{
-				entry = new DirCacheEntry(h.GetEntryPathString(), DirCacheEntry.STAGE_2);
-				entry.SetFileMode(h.GetEntryFileMode());
-				entry.SetObjectId(h.GetEntryObjectId());
+				entry = new DirCacheEntry(h.EntryPathString, DirCacheEntry.STAGE_2);
+				entry.FileMode = h.EntryFileMode;
+				entry.SetObjectId(h.EntryObjectId);
 				builder.Add(entry);
 			}
-			if (m != null && !FileMode.TREE.Equals(m.GetEntryFileMode()))
+			if (m != null && !FileMode.TREE.Equals(m.EntryFileMode))
 			{
-				entry = new DirCacheEntry(m.GetEntryPathString(), DirCacheEntry.STAGE_3);
-				entry.SetFileMode(m.GetEntryFileMode());
-				entry.SetObjectId(m.GetEntryObjectId());
+				entry = new DirCacheEntry(m.EntryPathString, DirCacheEntry.STAGE_3);
+				entry.FileMode = m.EntryFileMode;
+				entry.SetObjectId(m.EntryObjectId);
 				builder.Add(entry);
 			}
 		}
 
 		private void Keep(DirCacheEntry e)
 		{
-			if (e != null && !FileMode.TREE.Equals(e.GetFileMode()))
+			if (e != null && !FileMode.TREE.Equals(e.FileMode))
 			{
 				builder.Add(e);
 			}
@@ -837,24 +831,9 @@ namespace NGit.Dircache
 				updated.Put(path, mId);
 				DirCacheEntry entry = new DirCacheEntry(path, DirCacheEntry.STAGE_0);
 				entry.SetObjectId(mId);
-				entry.SetFileMode(mode);
+				entry.FileMode = mode;
 				builder.Add(entry);
 			}
-		}
-
-		private bool? filemode;
-
-		private bool Config_filemode()
-		{
-			// TODO: temporary till we can actually set parameters. We need to be
-			// able to change this for testing.
-			if (filemode == null)
-			{
-				StoredConfig config = repo.GetConfig();
-				filemode = Sharpen.Extensions.ValueOf(config.GetBoolean("core", null, "filemode", 
-					true));
-			}
-			return filemode.Value;
 		}
 
 		/// <summary>
@@ -894,7 +873,11 @@ namespace NGit.Dircache
 			foreach (string r in removed)
 			{
 				FilePath file = new FilePath(repo.WorkTree, r);
-				file.Delete();
+				if (!file.Delete())
+				{
+					throw new CheckoutConflictException(MessageFormat.Format(JGitText.Get().cannotDeleteFile
+						, file.GetAbsolutePath()));
+				}
 				RemoveEmptyParents(file);
 			}
 		}
@@ -904,10 +887,8 @@ namespace NGit.Dircache
 		private bool IsModified(string path)
 		{
 			NameConflictTreeWalk tw = new NameConflictTreeWalk(repo);
-			tw.Reset();
 			tw.AddTree(new DirCacheIterator(dc));
-			tw.AddTree(new FileTreeIterator(repo.WorkTree, repo.FileSystem, WorkingTreeOptions
-				.CreateDefaultInstance()));
+			tw.AddTree(new FileTreeIterator(repo));
 			tw.Recursive = true;
 			tw.Filter = PathFilter.Create(path);
 			DirCacheIterator dcIt;
@@ -920,8 +901,7 @@ namespace NGit.Dircache
 				{
 					return true;
 				}
-				if (wtIt.IsModified(dcIt.GetDirCacheEntry(), true, Config_filemode(), repo.FileSystem
-					))
+				if (wtIt.IsModified(dcIt.GetDirCacheEntry(), true))
 				{
 					return true;
 				}
@@ -948,38 +928,27 @@ namespace NGit.Dircache
 		/// has to exist already
 		/// </param>
 		/// <param name="entry">the entry containing new mode and content</param>
-		/// <param name="config_filemode">whether the mode bits should be handled at all.</param>
 		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
 		public static void CheckoutEntry(Repository repo, FilePath f, DirCacheEntry entry
-			, bool config_filemode)
+			)
 		{
 			ObjectLoader ol = repo.Open(entry.GetObjectId());
-			if (ol == null)
-			{
-				throw new MissingObjectException(entry.GetObjectId(), Constants.TYPE_BLOB);
-			}
-			byte[] bytes = ol.GetCachedBytes();
 			FilePath parentDir = f.GetParentFile();
 			FilePath tmpFile = FilePath.CreateTempFile("._" + f.GetName(), null, parentDir);
-			FileChannel channel = new FileOutputStream(tmpFile).GetChannel();
-			ByteBuffer buffer = ByteBuffer.Wrap(bytes);
+			FileOutputStream channel = new FileOutputStream(tmpFile);
 			try
 			{
-				int j = channel.Write(buffer);
-				if (j != bytes.Length)
-				{
-					throw new IOException(MessageFormat.Format(JGitText.Get().couldNotWriteFile, tmpFile
-						));
-				}
+				ol.CopyTo(channel);
 			}
 			finally
 			{
 				channel.Close();
 			}
 			FS fs = repo.FileSystem;
-			if (config_filemode && fs.SupportsExecute())
+			WorkingTreeOptions opt = repo.GetConfig().Get(WorkingTreeOptions.KEY);
+			if (opt.IsFileMode() && fs.SupportsExecute())
 			{
-				if (FileMode.EXECUTABLE_FILE.Equals(entry.GetRawMode()))
+				if (FileMode.EXECUTABLE_FILE.Equals(entry.RawMode))
 				{
 					if (!fs.CanExecute(tmpFile))
 					{
@@ -998,14 +967,14 @@ namespace NGit.Dircache
 			{
 				// tried to rename which failed. Let' delete the target file and try
 				// again
-				f.Delete();
+				FileUtils.Delete(f);
 				if (!tmpFile.RenameTo(f))
 				{
 					throw new IOException(MessageFormat.Format(JGitText.Get().couldNotWriteFile, tmpFile
 						.GetPath(), f.GetPath()));
 				}
 			}
-			entry.SetLastModified(f.LastModified());
+			entry.LastModified = f.LastModified();
 			entry.SetLength((int)ol.GetSize());
 		}
 	}

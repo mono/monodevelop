@@ -169,10 +169,10 @@ namespace NGit.Dircache
 				{
 					ent = new DirCacheEntry(e.path);
 					e.Apply(ent);
-					if (ent.GetRawMode() == 0)
+					if (ent.RawMode == 0)
 					{
 						throw new ArgumentException(MessageFormat.Format(JGitText.Get().fileModeNotSetForPath
-							, ent.GetPathString()));
+							, ent.PathString));
 					}
 				}
 				else

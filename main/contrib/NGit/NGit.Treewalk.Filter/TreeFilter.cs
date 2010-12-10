@@ -135,6 +135,14 @@ namespace NGit.Treewalk.Filter
 		/// , or as though the walker was matching a virtual empty tree
 		/// against the single tree it was actually given. Applications may wish to
 		/// treat such a difference as "all names added".
+		/// <p>
+		/// When comparing
+		/// <see cref="NGit.Treewalk.WorkingTreeIterator">NGit.Treewalk.WorkingTreeIterator</see>
+		/// and
+		/// <see cref="NGit.Dircache.DirCacheIterator">NGit.Dircache.DirCacheIterator</see>
+		/// applications should use
+		/// <see cref="IndexDiffFilter">IndexDiffFilter</see>
+		/// .
 		/// </remarks>
 		public static readonly TreeFilter ANY_DIFF = new TreeFilter.AnyDiffFilter();
 

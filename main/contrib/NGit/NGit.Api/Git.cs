@@ -92,6 +92,27 @@ namespace NGit.Api
 		private readonly Repository repo;
 
 		/// <summary>
+		/// Returns a command object to execute a
+		/// <code>init</code>
+		/// command
+		/// </summary>
+		/// <seealso><a
+		/// *      href="http://www.kernel.org/pub/software/scm/git/docs/git-init.html"
+		/// *      >Git documentation about init</a></seealso>
+		/// <returns>
+		/// a
+		/// <see cref="InitCommand">InitCommand</see>
+		/// used to collect all optional parameters and
+		/// to finally execute the
+		/// <code>init</code>
+		/// command
+		/// </returns>
+		public static InitCommand Init()
+		{
+			return new InitCommand();
+		}
+
+		/// <summary>
 		/// Constructs a new
 		/// <see cref="Git">Git</see>
 		/// object which can interact with the specified

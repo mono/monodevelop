@@ -3,6 +3,7 @@ using System.Net;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
+using System.Collections.Specialized;
 
 namespace Sharpen
 {
@@ -207,8 +208,14 @@ namespace Sharpen
 
 		public static object Put (this Hashtable d, object key, object value)
 		{
-			object old;
-			old = d [key];
+			object old = d [key];
+			d[key] = value;
+			return old;
+		}
+
+		public static string Put (this StringDictionary d, string key, string value)
+		{
+			string old = d [key];
 			d[key] = value;
 			return old;
 		}
@@ -763,5 +770,15 @@ namespace Sharpen
 			return new System.Threading.Semaphore (count, int.MaxValue);
 		}
 		
+		public static void SetCommand (this ProcessStartInfo si, IList<string> args)
+		{
+			si.FileName = args[0];
+			si.Arguments = string.Join (" ", args.Select (a => "\"" + a + "\"").ToArray ());
+		}
+		
+		public static Process Start (this ProcessStartInfo si)
+		{
+			return Process.Start (si);
+		}
 	}
 }

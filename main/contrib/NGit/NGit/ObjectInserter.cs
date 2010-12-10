@@ -191,37 +191,39 @@ namespace NGit
 			return ObjectId.FromRaw(md.Digest());
 		}
 
+		/// <summary>Insert a single tree into the store, returning its unique name.</summary>
+		/// <remarks>Insert a single tree into the store, returning its unique name.</remarks>
+		/// <param name="formatter">the formatter containing the proposed tree's data.</param>
+		/// <returns>the name of the tree object.</returns>
+		/// <exception cref="System.IO.IOException">the object could not be stored.</exception>
+		public ObjectId Insert(TreeFormatter formatter)
+		{
+			// Delegate to the formatter, as then it can pass the raw internal
+			// buffer back to this inserter, avoiding unnecessary data copying.
+			//
+			return formatter.InsertTo(this);
+		}
+
 		/// <summary>Insert a single commit into the store, returning its unique name.</summary>
-		/// <remarks>
-		/// Insert a single commit into the store, returning its unique name.
-		/// As a side effect,
-		/// <see cref="CommitBuilder.CommitId()">CommitBuilder.CommitId()</see>
-		/// will also be
-		/// populated with the returned ObjectId.
-		/// </remarks>
+		/// <remarks>Insert a single commit into the store, returning its unique name.</remarks>
 		/// <param name="builder">the builder containing the proposed commit's data.</param>
 		/// <returns>the name of the commit object.</returns>
 		/// <exception cref="System.IO.IOException">the object could not be stored.</exception>
 		public ObjectId Insert(NGit.CommitBuilder builder)
 		{
-			return Insert(Constants.OBJ_COMMIT, builder.Format(this));
+			return Insert(Constants.OBJ_COMMIT, builder.Build());
 		}
 
 		/// <summary>Insert a single annotated tag into the store, returning its unique name.
 		/// 	</summary>
-		/// <remarks>
-		/// Insert a single annotated tag into the store, returning its unique name.
-		/// As a side effect,
-		/// <see cref="TagBuilder.GetTagId()">TagBuilder.GetTagId()</see>
-		/// will also be populated
-		/// with the returned ObjectId.
-		/// </remarks>
+		/// <remarks>Insert a single annotated tag into the store, returning its unique name.
+		/// 	</remarks>
 		/// <param name="builder">the builder containing the proposed tag's data.</param>
 		/// <returns>the name of the tag object.</returns>
 		/// <exception cref="System.IO.IOException">the object could not be stored.</exception>
 		public ObjectId Insert(TagBuilder builder)
 		{
-			return Insert(Constants.OBJ_TAG, builder.Format(this));
+			return Insert(Constants.OBJ_TAG, builder.Build());
 		}
 
 		/// <summary>Insert a single object into the store, returning its unique name.</summary>

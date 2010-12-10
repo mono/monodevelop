@@ -162,7 +162,7 @@ namespace MonoDevelop.VersionControl.Git
 			DirCache dc = Repository.ReadDirCache ();
 			treeWalk.AddTree (new DirCacheIterator (dc));
 			
-			FileTreeIterator workTree = new FileTreeIterator (Repository.WorkTree, Repository.FileSystem, WorkingTreeOptions.CreateConfigurationInstance(Repository.GetConfig()));
+			FileTreeIterator workTree = new FileTreeIterator (Repository.WorkTree, Repository.FileSystem, WorkingTreeOptions.KEY.Parse(Repository.GetConfig()));
 			treeWalk.AddTree (workTree);
 
 			List<TreeFilter> filters = new List<TreeFilter> ();
@@ -181,11 +181,11 @@ namespace MonoDevelop.VersionControl.Git
 				WorkingTreeIterator workingTreeIterator = treeWalk.GetTree<WorkingTreeIterator>(2);
 				NGit.FileMode fileModeTree = treeWalk.GetFileMode(0);
 				
-				int stage = dirCacheIterator != null ? dirCacheIterator.GetDirCacheEntry ().GetStage () : 0;
+				int stage = dirCacheIterator != null ? dirCacheIterator.GetDirCacheEntry ().Stage : 0;
 				if (stage > 1)
 					continue;
 				else if (stage == 1) {
-					MergeConflict.Add(dirCacheIterator.GetEntryPathString());
+					MergeConflict.Add(dirCacheIterator.EntryPathString);
 					changesExist = true;
 					continue;
 				}
@@ -194,10 +194,10 @@ namespace MonoDevelop.VersionControl.Git
 				{
 					if (dirCacheIterator != null)
 					{
-						if (!treeIterator.GetEntryObjectId().Equals(dirCacheIterator.GetEntryObjectId()))
+						if (!treeIterator.EntryObjectId.Equals(dirCacheIterator.EntryObjectId))
 						{
 							// in repo, in index, content diff => changed
-							Modified.Add(dirCacheIterator.GetEntryPathString());
+							Modified.Add(dirCacheIterator.EntryPathString);
 							changesExist = true;
 						}
 					}
@@ -206,7 +206,7 @@ namespace MonoDevelop.VersionControl.Git
 						// in repo, not in index => removed
 						if (!fileModeTree.Equals(NGit.FileMode.TYPE_TREE))
 						{
-							Removed.Add(treeIterator.GetEntryPathString());
+							Removed.Add(treeIterator.EntryPathString);
 							changesExist = true;
 						}
 					}
@@ -216,7 +216,7 @@ namespace MonoDevelop.VersionControl.Git
 					if (dirCacheIterator != null)
 					{
 						// not in repo, in index => added
-						Added.Add(dirCacheIterator.GetEntryPathString());
+						Added.Add(dirCacheIterator.EntryPathString);
 						changesExist = true;
 					}
 					else
@@ -224,7 +224,7 @@ namespace MonoDevelop.VersionControl.Git
 						// not in repo, not in index => untracked
 						if (workingTreeIterator != null && !workingTreeIterator.IsEntryIgnored())
 						{
-							Untracked.Add(workingTreeIterator.GetEntryPathString());
+							Untracked.Add(workingTreeIterator.EntryPathString);
 							changesExist = true;
 						}
 					}
@@ -234,19 +234,19 @@ namespace MonoDevelop.VersionControl.Git
 					if (workingTreeIterator == null)
 					{
 						// in index, not in workdir => missing
-						Missing.Add(dirCacheIterator.GetEntryPathString());
+						Missing.Add(dirCacheIterator.EntryPathString);
 						changesExist = true;
 					}
 					else
 					{
 						// Workaround to file time resolution issues
-						long itime = dirCacheIterator.GetDirCacheEntry ().GetLastModified ();
+						long itime = dirCacheIterator.GetDirCacheEntry ().LastModified;
 						long ftime = workingTreeIterator.GetEntryLastModified ();
 						if (itime / 1000 != ftime / 1000) {
 							if (!dirCacheIterator.IdEqual(workingTreeIterator))
 							{
 								// in index, in workdir, content differs => modified
-								Modified.Add(dirCacheIterator.GetEntryPathString());
+								Modified.Add(dirCacheIterator.EntryPathString);
 								changesExist = true;
 							}
 						}

@@ -90,17 +90,11 @@ namespace NGit
 
 		private readonly bool logAllRefUpdates;
 
-		private readonly bool fileMode;
-
-		private readonly CoreConfig.AutoCRLF autoCRLF;
-
 		private CoreConfig(Config rc)
 		{
 			compression = rc.GetInt("core", "compression", Deflater.DEFAULT_COMPRESSION);
 			packIndexVersion = rc.GetInt("pack", "indexversion", 2);
 			logAllRefUpdates = rc.GetBoolean("core", "logallrefupdates", true);
-			fileMode = rc.GetBoolean("core", "filemode", true);
-			autoCRLF = rc.GetEnum("core", null, "autocrlf", CoreConfig.AutoCRLF.FALSE);
 		}
 
 		/// <returns>The compression level to use when storing loose objects</returns>
@@ -120,18 +114,6 @@ namespace NGit
 		public virtual bool IsLogAllRefUpdates()
 		{
 			return logAllRefUpdates;
-		}
-
-		/// <returns>whether to trust file modes</returns>
-		public virtual bool IsFileMode()
-		{
-			return fileMode;
-		}
-
-		/// <returns>whether automatic CRLF conversion has been configured</returns>
-		public virtual CoreConfig.AutoCRLF GetAutoCRLF()
-		{
-			return autoCRLF;
 		}
 	}
 }

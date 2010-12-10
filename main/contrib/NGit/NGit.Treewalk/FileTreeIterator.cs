@@ -79,8 +79,8 @@ namespace NGit.Treewalk
 		/// <summary>Create a new iterator to traverse the work tree and its children.</summary>
 		/// <remarks>Create a new iterator to traverse the work tree and its children.</remarks>
 		/// <param name="repo">the repository whose working tree will be scanned.</param>
-		public FileTreeIterator(Repository repo) : this(repo.WorkTree, repo.FileSystem, WorkingTreeOptions
-			.CreateConfigurationInstance(repo.GetConfig()))
+		public FileTreeIterator(Repository repo) : this(repo.WorkTree, repo.FileSystem, repo
+			.GetConfig().Get(WorkingTreeOptions.KEY))
 		{
 			InitRootIterator(repo);
 		}

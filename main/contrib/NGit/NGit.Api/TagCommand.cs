@@ -144,7 +144,7 @@ namespace NGit.Api
 					RevWalk revWalk = new RevWalk(repo);
 					try
 					{
-						RevTag revTag = revWalk.ParseTag(newTag.GetTagId());
+						RevTag revTag = revWalk.ParseTag(tagId);
 						string refName = Constants.R_TAGS + newTag.GetTag();
 						RefUpdate tagRef = repo.UpdateRef(refName);
 						tagRef.SetNewObjectId(tagId);

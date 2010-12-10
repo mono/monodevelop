@@ -46,6 +46,7 @@ using ICSharpCode.SharpZipLib.Zip.Compression;
 using NGit;
 using NGit.Errors;
 using NGit.Storage.File;
+using NGit.Util;
 using Sharpen;
 
 namespace NGit.Storage.File
@@ -165,7 +166,7 @@ namespace NGit.Storage.File
 			{
 				if (delete)
 				{
-					tmp.Delete();
+					FileUtils.Delete(tmp);
 				}
 			}
 		}

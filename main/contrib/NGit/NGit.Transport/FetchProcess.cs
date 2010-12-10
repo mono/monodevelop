@@ -105,9 +105,16 @@ namespace NGit.Transport
 			}
 			finally
 			{
-				foreach (PackLock Lock in packLocks)
+				try
 				{
-					Lock.Unlock();
+					foreach (PackLock Lock in packLocks)
+					{
+						Lock.Unlock();
+					}
+				}
+				catch (IOException e)
+				{
+					throw new TransportException(e.Message, e);
 				}
 			}
 		}

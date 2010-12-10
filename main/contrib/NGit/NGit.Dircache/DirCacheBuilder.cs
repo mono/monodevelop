@@ -101,10 +101,10 @@ namespace NGit.Dircache
 		/// 	</exception>
 		public virtual void Add(DirCacheEntry newEntry)
 		{
-			if (newEntry.GetRawMode() == 0)
+			if (newEntry.RawMode == 0)
 			{
 				throw new ArgumentException(MessageFormat.Format(JGitText.Get().fileModeNotSetForPath
-					, newEntry.GetPathString()));
+					, newEntry.PathString));
 			}
 			BeforeAdd(newEntry);
 			FastAdd(newEntry);
@@ -171,7 +171,6 @@ namespace NGit.Dircache
 			 tree)
 		{
 			TreeWalk tw = new TreeWalk(reader);
-			tw.Reset();
 			tw.AddTree(new CanonicalTreeParser(pathPrefix, reader, tree.ToObjectId()));
 			tw.Recursive = true;
 			if (tw.Next())
@@ -191,8 +190,8 @@ namespace NGit.Dircache
 			DirCacheEntry e = new DirCacheEntry(tw.RawPath, stage);
 			AbstractTreeIterator i;
 			i = tw.GetTree<AbstractTreeIterator>(0);
-			e.SetFileMode(tw.GetFileMode(0));
-			e.SetObjectIdFromRaw(i.IdBuffer(), i.IdOffset());
+			e.FileMode = tw.GetFileMode(0);
+			e.SetObjectIdFromRaw(i.IdBuffer, i.IdOffset);
 			return e;
 		}
 
@@ -226,8 +225,8 @@ namespace NGit.Dircache
 						// Same file path; we can only insert this if the
 						// stages won't be violated.
 						//
-						int peStage = lastEntry.GetStage();
-						int dceStage = newEntry.GetStage();
+						int peStage = lastEntry.Stage;
+						int dceStage = newEntry.Stage;
 						if (peStage == dceStage)
 						{
 							throw Bad(newEntry, JGitText.Get().duplicateStagesNotAllowed);
@@ -258,8 +257,8 @@ namespace NGit.Dircache
 					// Same file path; we can only allow this if the stages
 					// are 1-3 and no 0 exists.
 					//
-					int peStage = pe.GetStage();
-					int ceStage = ce.GetStage();
+					int peStage = pe.Stage;
+					int ceStage = ce.Stage;
 					if (peStage == ceStage)
 					{
 						throw Bad(ce, JGitText.Get().duplicateStagesNotAllowed);
@@ -275,8 +274,7 @@ namespace NGit.Dircache
 
 		private static InvalidOperationException Bad(DirCacheEntry a, string msg)
 		{
-			return new InvalidOperationException(msg + ": " + a.GetStage() + " " + a.GetPathString
-				());
+			return new InvalidOperationException(msg + ": " + a.Stage + " " + a.PathString);
 		}
 	}
 }

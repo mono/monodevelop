@@ -121,7 +121,7 @@ namespace NGit.Treewalk
 			raw = treeData;
 			prevPtr = -1;
 			currPtr = 0;
-			if (Eof())
+			if (Eof)
 			{
 				nextPtr = 0;
 			}
@@ -208,7 +208,7 @@ namespace NGit.Treewalk
 		public override AbstractTreeIterator CreateSubtreeIterator(ObjectReader reader, MutableObjectId
 			 idBuffer)
 		{
-			idBuffer.FromRaw(IdBuffer(), IdOffset());
+			idBuffer.FromRaw(IdBuffer, IdOffset);
 			if (!FileMode.TREE.Equals(mode))
 			{
 				ObjectId me = idBuffer.ToObjectId();
@@ -246,37 +246,52 @@ namespace NGit.Treewalk
 				()));
 		}
 
-		public override bool HasId()
+		public override bool HasId
 		{
-			return true;
+			get
+			{
+				return true;
+			}
 		}
 
-		public override byte[] IdBuffer()
+		public override byte[] IdBuffer
 		{
-			return raw;
+			get
+			{
+				return raw;
+			}
 		}
 
-		public override int IdOffset()
+		public override int IdOffset
 		{
-			return nextPtr - Constants.OBJECT_ID_LENGTH;
+			get
+			{
+				return nextPtr - Constants.OBJECT_ID_LENGTH;
+			}
 		}
 
 		public override void Reset()
 		{
-			if (!First())
+			if (!First)
 			{
 				Reset(raw);
 			}
 		}
 
-		public override bool First()
+		public override bool First
 		{
-			return currPtr == 0;
+			get
+			{
+				return currPtr == 0;
+			}
 		}
 
-		public override bool Eof()
+		public override bool Eof
 		{
-			return currPtr == raw.Length;
+			get
+			{
+				return currPtr == raw.Length;
+			}
 		}
 
 		public override void Next(int delta)
@@ -287,7 +302,7 @@ namespace NGit.Treewalk
 				//
 				prevPtr = currPtr;
 				currPtr = nextPtr;
-				if (!Eof())
+				if (!Eof)
 				{
 					ParseEntry();
 				}
@@ -311,7 +326,7 @@ namespace NGit.Treewalk
 				throw Sharpen.Extensions.CreateIndexOutOfRangeException(delta);
 			}
 			currPtr = ptr;
-			if (!Eof())
+			if (!Eof)
 			{
 				ParseEntry();
 			}
@@ -326,7 +341,7 @@ namespace NGit.Treewalk
 				//
 				currPtr = prevPtr;
 				prevPtr = -1;
-				if (!Eof())
+				if (!Eof)
 				{
 					ParseEntry();
 				}

@@ -121,7 +121,7 @@ namespace NGit.Notes
 
 		private InMemoryNoteBucket ParseTree()
 		{
-			for (; !Eof(); Next(1))
+			for (; !Eof; Next(1))
 			{
 				if (pathLen == pathPadding + Constants.OBJECT_ID_STRING_LENGTH && IsHex())
 				{
@@ -129,7 +129,7 @@ namespace NGit.Notes
 				}
 				else
 				{
-					if (GetNameLength() == 2 && IsHex() && IsTree())
+					if (NameLength == 2 && IsHex() && IsTree())
 					{
 						return ParseFanoutTree();
 					}
@@ -147,11 +147,11 @@ namespace NGit.Notes
 		{
 			LeafBucket leaf = new LeafBucket(prefix.Length);
 			MutableObjectId idBuf = new MutableObjectId();
-			for (; !Eof(); Next(1))
+			for (; !Eof; Next(1))
 			{
 				if (ParseObjectId(idBuf))
 				{
-					leaf.ParseOneEntry(idBuf, GetEntryObjectId());
+					leaf.ParseOneEntry(idBuf, EntryObjectId);
 				}
 				else
 				{
@@ -181,12 +181,12 @@ namespace NGit.Notes
 		private FanoutBucket ParseFanoutTree()
 		{
 			FanoutBucket fanout = new FanoutBucket(prefix.Length);
-			for (; !Eof(); Next(1))
+			for (; !Eof; Next(1))
 			{
 				int cell = ParseFanoutCell();
 				if (0 <= cell)
 				{
-					fanout.ParseOneEntry(cell, GetEntryObjectId());
+					fanout.ParseOneEntry(cell, EntryObjectId);
 				}
 				else
 				{
@@ -198,7 +198,7 @@ namespace NGit.Notes
 
 		private int ParseFanoutCell()
 		{
-			if (GetNameLength() == 2 && IsTree())
+			if (NameLength == 2 && IsTree())
 			{
 				try
 				{
@@ -218,9 +218,9 @@ namespace NGit.Notes
 
 		private void StoreNonNote()
 		{
-			ObjectId id = GetEntryObjectId();
-			FileMode fileMode = GetEntryFileMode();
-			byte[] name = new byte[GetNameLength()];
+			ObjectId id = EntryObjectId;
+			FileMode fileMode = EntryFileMode;
+			byte[] name = new byte[NameLength];
 			GetName(name, 0);
 			NonNoteEntry ent = new NonNoteEntry(name, fileMode, id);
 			if (firstNonNote == null)

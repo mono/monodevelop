@@ -80,8 +80,6 @@ namespace NGit
 
 		private static readonly byte[] hencoding = Constants.EncodeASCII("encoding");
 
-		private ObjectId commitId;
-
 		private ObjectId treeId;
 
 		private ObjectId[] parentIds;
@@ -102,23 +100,6 @@ namespace NGit
 			encoding = Constants.CHARSET;
 		}
 
-		/// <returns>this commit's object id.</returns>
-		/// <summary>Set the id of this commit object.</summary>
-		/// <remarks>Set the id of this commit object.</remarks>
-		/// <value>the id that we calculated for this object.</value>
-		public virtual ObjectId CommitId
-		{
-			get
-			{
-				return commitId;
-			}
-			set
-			{
-				ObjectId id = value;
-				commitId = id;
-			}
-		}
-
 		/// <returns>id of the root tree listing this commit's snapshot.</returns>
 		/// <summary>Set the tree id for this commit object</summary>
 		/// <value>the tree identity.</value>
@@ -132,7 +113,6 @@ namespace NGit
 			{
 				ObjectId id = value;
 				treeId = id.Copy();
-				commitId = null;
 			}
 		}
 
@@ -150,7 +130,6 @@ namespace NGit
 			{
 				PersonIdent newAuthor = value;
 				author = newAuthor;
-				commitId = null;
 			}
 		}
 
@@ -167,7 +146,6 @@ namespace NGit
 			{
 				PersonIdent newCommitter = value;
 				committer = newCommitter;
-				commitId = null;
 			}
 		}
 
@@ -186,7 +164,6 @@ namespace NGit
 		public virtual void SetParentId(AnyObjectId newParent)
 		{
 			parentIds = new ObjectId[] { newParent.Copy() };
-			commitId = null;
 		}
 
 		/// <summary>Set the parents of this commit.</summary>
@@ -205,7 +182,6 @@ namespace NGit
 		public virtual void SetParentIds(AnyObjectId parent1, AnyObjectId parent2)
 		{
 			parentIds = new ObjectId[] { parent1.Copy(), parent2.Copy() };
-			commitId = null;
 		}
 
 		/// <summary>Set the parents of this commit.</summary>
@@ -218,7 +194,6 @@ namespace NGit
 			{
 				parentIds[i] = newParents[i].Copy();
 			}
-			commitId = null;
 		}
 
 		/// <summary>Set the parents of this commit.</summary>
@@ -231,7 +206,6 @@ namespace NGit
 			{
 				parentIds[i] = newParents[i].Copy();
 			}
-			commitId = null;
 		}
 
 		/// <summary>Add a parent onto the end of the parent list.</summary>
@@ -253,7 +227,6 @@ namespace NGit
 				}
 				newParents[parentIds.Length] = additionalParent.Copy();
 				parentIds = newParents;
-				commitId = null;
 			}
 		}
 
@@ -303,13 +276,7 @@ namespace NGit
 		}
 
 		/// <summary>Format this builder's state as a commit object.</summary>
-		/// <remarks>
-		/// Format this builder's state as a commit object.
-		/// As a side effect,
-		/// <see cref="CommitId()">CommitId()</see>
-		/// will be populated with the
-		/// proper ObjectId for the formatted content.
-		/// </remarks>
+		/// <remarks>Format this builder's state as a commit object.</remarks>
 		/// <returns>
 		/// this object in the canonical commit format, suitable for storage
 		/// in a repository.
@@ -320,35 +287,7 @@ namespace NGit
 		/// is not
 		/// supported by this Java runtime.
 		/// </exception>
-		public virtual byte[] Format()
-		{
-			return Format(new ObjectInserter.Formatter());
-		}
-
-		/// <summary>Format this builder's state as a commit object.</summary>
-		/// <remarks>
-		/// Format this builder's state as a commit object.
-		/// As a side effect,
-		/// <see cref="CommitId()">CommitId()</see>
-		/// will be populated with the
-		/// proper ObjectId for the formatted content.
-		/// </remarks>
-		/// <param name="oi">
-		/// the inserter whose formatting support will be reused. The
-		/// inserter itself is not affected, and the commit is not
-		/// actually inserted into the repository.
-		/// </param>
-		/// <returns>
-		/// this object in the canonical commit format, suitable for storage
-		/// in a repository.
-		/// </returns>
-		/// <exception cref="Sharpen.UnsupportedEncodingException">
-		/// the encoding specified by
-		/// <see cref="Encoding()">Encoding()</see>
-		/// is not
-		/// supported by this Java runtime.
-		/// </exception>
-		public virtual byte[] Format(ObjectInserter oi)
+		public virtual byte[] Build()
 		{
 			ByteArrayOutputStream os = new ByteArrayOutputStream();
 			OutputStreamWriter w = new OutputStreamWriter(os, Encoding);
@@ -396,19 +335,30 @@ namespace NGit
 				//
 				throw new RuntimeException(err);
 			}
-			byte[] content = os.ToByteArray();
-			CommitId = oi.IdFor(Constants.OBJ_COMMIT, content);
-			return content;
+			return os.ToByteArray();
+		}
+
+		/// <summary>Format this builder's state as a commit object.</summary>
+		/// <remarks>Format this builder's state as a commit object.</remarks>
+		/// <returns>
+		/// this object in the canonical commit format, suitable for storage
+		/// in a repository.
+		/// </returns>
+		/// <exception cref="Sharpen.UnsupportedEncodingException">
+		/// the encoding specified by
+		/// <see cref="Encoding()">Encoding()</see>
+		/// is not
+		/// supported by this Java runtime.
+		/// </exception>
+		public virtual byte[] ToByteArray()
+		{
+			return Build();
 		}
 
 		public override string ToString()
 		{
 			StringBuilder r = new StringBuilder();
 			r.Append("Commit");
-			if (commitId != null)
-			{
-				r.Append("[" + commitId.Name + "]");
-			}
 			r.Append("={\n");
 			r.Append("tree ");
 			r.Append(treeId != null ? treeId.Name : "NOT_SET");

@@ -98,9 +98,10 @@ namespace NGit.Storage.File
 
 		/// <summary>Remove the <code>.keep</code> file that holds this pack in place.</summary>
 		/// <remarks>Remove the <code>.keep</code> file that holds this pack in place.</remarks>
+		/// <exception cref="System.IO.IOException">if deletion of .keep file failed</exception>
 		public virtual void Unlock()
 		{
-			keepFile.Delete();
+			FileUtils.Delete(keepFile);
 		}
 	}
 }

@@ -396,7 +396,7 @@ namespace NGit.Treewalk
 		/// Check if the current entry of both iterators has the same id.
 		/// <p>
 		/// This method is faster than
-		/// <see cref="GetEntryObjectId()">GetEntryObjectId()</see>
+		/// <see cref="EntryObjectId()">EntryObjectId()</see>
 		/// as it does not
 		/// require copying the bytes out of the buffers. A direct
 		/// <see cref="IdBuffer()">IdBuffer()</see>
@@ -406,19 +406,25 @@ namespace NGit.Treewalk
 		/// <returns>true if both iterators have the same object id; false otherwise.</returns>
 		public virtual bool IdEqual(NGit.Treewalk.AbstractTreeIterator otherIterator)
 		{
-			return ObjectId.Equals(IdBuffer(), IdOffset(), otherIterator.IdBuffer(), otherIterator
-				.IdOffset());
+			return ObjectId.Equals(IdBuffer, IdOffset, otherIterator.IdBuffer, otherIterator.
+				IdOffset);
 		}
 
 		/// <returns>true if the entry has a valid ObjectId.</returns>
-		public abstract bool HasId();
+		public abstract bool HasId
+		{
+			get;
+		}
 
 		/// <summary>Get the object id of the current entry.</summary>
 		/// <remarks>Get the object id of the current entry.</remarks>
 		/// <returns>an object id for the current entry.</returns>
-		public virtual ObjectId GetEntryObjectId()
+		public virtual ObjectId EntryObjectId
 		{
-			return ObjectId.FromRaw(IdBuffer(), IdOffset());
+			get
+			{
+				return ObjectId.FromRaw(IdBuffer, IdOffset);
+			}
 		}
 
 		/// <summary>Obtain the ObjectId for the current entry.</summary>
@@ -426,25 +432,34 @@ namespace NGit.Treewalk
 		/// <param name="out">buffer to copy the object id into.</param>
 		public virtual void GetEntryObjectId(MutableObjectId @out)
 		{
-			@out.FromRaw(IdBuffer(), IdOffset());
+			@out.FromRaw(IdBuffer, IdOffset);
 		}
 
 		/// <returns>the file mode of the current entry.</returns>
-		public virtual FileMode GetEntryFileMode()
+		public virtual FileMode EntryFileMode
 		{
-			return FileMode.FromBits(mode);
+			get
+			{
+				return FileMode.FromBits(mode);
+			}
 		}
 
 		/// <returns>the file mode of the current entry as bits</returns>
-		public virtual int GetEntryRawMode()
+		public virtual int EntryRawMode
 		{
-			return mode;
+			get
+			{
+				return mode;
+			}
 		}
 
 		/// <returns>path of the current entry, as a string.</returns>
-		public virtual string GetEntryPathString()
+		public virtual string EntryPathString
 		{
-			return TreeWalk.PathOf(this);
+			get
+			{
+				return TreeWalk.PathOf(this);
+			}
 		}
 
 		/// <summary>Get the current entry's path hash code.</summary>
@@ -480,8 +495,11 @@ namespace NGit.Treewalk
 		/// garbage generation and copying costs.
 		/// </remarks>
 		/// <returns>byte array the implementation stores object IDs within.</returns>
-		/// <seealso cref="GetEntryObjectId()">GetEntryObjectId()</seealso>
-		public abstract byte[] IdBuffer();
+		/// <seealso cref="EntryObjectId()">EntryObjectId()</seealso>
+		public abstract byte[] IdBuffer
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Get the position within
@@ -494,7 +512,10 @@ namespace NGit.Treewalk
 		/// where the
 		/// ObjectId must be copied out of.
 		/// </returns>
-		public abstract int IdOffset();
+		public abstract int IdOffset
+		{
+			get;
+		}
 
 		/// <summary>Create a new iterator for the current entry's subtree.</summary>
 		/// <remarks>
@@ -560,7 +581,7 @@ namespace NGit.Treewalk
 		/// <exception cref="NGit.Errors.CorruptObjectException">the tree is invalid.</exception>
 		public virtual void Reset()
 		{
-			while (!First())
+			while (!First)
 			{
 				Back(1);
 			}
@@ -582,7 +603,10 @@ namespace NGit.Treewalk
 		/// <code>first() &amp;&amp; eof()</code>.
 		/// </remarks>
 		/// <returns>true if the iterator is positioned on the first entry.</returns>
-		public abstract bool First();
+		public abstract bool First
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Is this tree iterator at its EOF point (no more entries)?
@@ -595,7 +619,10 @@ namespace NGit.Treewalk
 		/// An iterator is at EOF if there is no current entry.
 		/// </remarks>
 		/// <returns>true if we have walked all entries and have none left.</returns>
-		public abstract bool Eof();
+		public abstract bool Eof
+		{
+			get;
+		}
 
 		/// <summary>Move to next entry, populating this iterator with the entry data.</summary>
 		/// <remarks>
@@ -703,11 +730,14 @@ namespace NGit.Treewalk
 		{
 		}
 
-		// Do nothing by default.  Most iterators do not care.
 		/// <returns>the length of the name component of the path for the current entry</returns>
-		public virtual int GetNameLength()
+		public virtual int NameLength
 		{
-			return pathLen - pathOffset;
+			get
+			{
+				// Do nothing by default.  Most iterators do not care.
+				return pathLen - pathOffset;
+			}
 		}
 
 		/// <summary>Get the name component of the current entry path into the provided buffer.
@@ -717,7 +747,7 @@ namespace NGit.Treewalk
 		/// <param name="buffer">the buffer to get the name into, it is assumed that buffer can hold the name
 		/// 	</param>
 		/// <param name="offset">the offset of the name in the buffer</param>
-		/// <seealso cref="GetNameLength()">GetNameLength()</seealso>
+		/// <seealso cref="NameLength()">NameLength()</seealso>
 		public virtual void GetName(byte[] buffer, int offset)
 		{
 			System.Array.Copy(path, pathOffset, buffer, offset, pathLen - pathOffset);

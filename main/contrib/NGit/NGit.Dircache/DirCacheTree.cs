@@ -386,11 +386,11 @@ namespace NGit.Dircache
 							continue;
 						}
 					}
-					fmt.Append(ep, pathOffset, ep.Length - pathOffset, e.GetFileMode(), e.IdBuffer(), 
-						e.IdOffset());
+					fmt.Append(ep, pathOffset, ep.Length - pathOffset, e.FileMode, e.IdBuffer, e.IdOffset
+						);
 					entryIdx++;
 				}
-				id = fmt.Insert(ow);
+				id = ow.Insert(fmt);
 			}
 			return id;
 		}
@@ -407,7 +407,7 @@ namespace NGit.Dircache
 			while (entryIdx < endIdx)
 			{
 				DirCacheEntry e = cache[entryIdx];
-				if (e.GetStage() != 0)
+				if (e.Stage != 0)
 				{
 					throw new UnmergedPathException(e);
 				}
@@ -425,7 +425,7 @@ namespace NGit.Dircache
 						continue;
 					}
 				}
-				size += TreeFormatter.EntrySize(e.GetFileMode(), ep.Length - pathOffset);
+				size += TreeFormatter.EntrySize(e.FileMode, ep.Length - pathOffset);
 				entryIdx++;
 			}
 			return size;

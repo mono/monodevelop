@@ -93,39 +93,57 @@ namespace NGit.Treewalk
 			return new NGit.Treewalk.EmptyTreeIterator(this);
 		}
 
-		public override bool HasId()
+		public override bool HasId
 		{
-			return false;
+			get
+			{
+				return false;
+			}
 		}
 
-		public override ObjectId GetEntryObjectId()
+		public override ObjectId EntryObjectId
 		{
-			return ObjectId.ZeroId;
+			get
+			{
+				return ObjectId.ZeroId;
+			}
 		}
 
-		public override byte[] IdBuffer()
+		public override byte[] IdBuffer
 		{
-			return zeroid;
+			get
+			{
+				return zeroid;
+			}
 		}
 
-		public override int IdOffset()
+		public override int IdOffset
 		{
-			return 0;
+			get
+			{
+				return 0;
+			}
 		}
 
 		public override void Reset()
 		{
 		}
 
-		// Do nothing.
-		public override bool First()
+		public override bool First
 		{
-			return true;
+			get
+			{
+				// Do nothing.
+				return true;
+			}
 		}
 
-		public override bool Eof()
+		public override bool Eof
 		{
-			return true;
+			get
+			{
+				return true;
+			}
 		}
 
 		/// <exception cref="NGit.Errors.CorruptObjectException"></exception>

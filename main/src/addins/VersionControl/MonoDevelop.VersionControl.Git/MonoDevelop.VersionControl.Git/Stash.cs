@@ -251,17 +251,17 @@ namespace MonoDevelop.VersionControl.Git
 						DirCacheIterator dcIter = tw.GetTree<DirCacheIterator>(2);
 						DirCacheEntry currentEntry = dcIter.GetDirCacheEntry ();
 						DirCacheEntry ce = new DirCacheEntry (tw.PathString);
-						if (!f.IsModified (currentEntry, true, true, _repo.FileSystem)) {
-							ce.SetLength (currentEntry.GetLength ());
-							ce.SetLastModified (currentEntry.GetLastModified ());
-							ce.SetFileMode (currentEntry.GetFileMode ());
+						if (!f.IsModified (currentEntry, true)) {
+							ce.SetLength (currentEntry.Length);
+							ce.LastModified = currentEntry.LastModified;
+							ce.FileMode = currentEntry.FileMode;
 							ce.SetObjectId (currentEntry.GetObjectId ());
 						}
 						else {
 							long sz = f.GetEntryLength();
 							ce.SetLength (sz);
-							ce.SetLastModified (f.GetEntryLastModified());
-							ce.SetFileMode (f.GetEntryFileMode());
+							ce.LastModified = f.GetEntryLastModified();
+							ce.FileMode = f.EntryFileMode;
 							var data = f.OpenEntryStream();
 							try {
 								ce.SetObjectId (oi.Insert (Constants.OBJ_BLOB, sz, data));

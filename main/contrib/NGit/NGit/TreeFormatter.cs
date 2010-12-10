@@ -42,8 +42,11 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using System.IO;
+using System.Text;
 using NGit;
+using NGit.Errors;
 using NGit.Revwalk;
+using NGit.Treewalk;
 using NGit.Util;
 using Sharpen;
 
@@ -295,34 +298,12 @@ namespace NGit
 			overflowBuffer.Write(unchecked((byte)0));
 		}
 
-		/// <summary>Compute the current tree's ObjectId.</summary>
-		/// <remarks>Compute the current tree's ObjectId.</remarks>
-		/// <returns>computed ObjectId of the tree</returns>
-		public virtual ObjectId GetTreeId()
-		{
-			ObjectInserter.Formatter fmt = new ObjectInserter.Formatter();
-			if (buf != null)
-			{
-				return fmt.IdFor(Constants.OBJ_TREE, buf, 0, ptr);
-			}
-			try
-			{
-				long len = overflowBuffer.Length();
-				return fmt.IdFor(Constants.OBJ_TREE, len, overflowBuffer.OpenInputStream());
-			}
-			catch (IOException err)
-			{
-				// This should never happen, its read failure on a byte array.
-				throw new RuntimeException(err);
-			}
-		}
-
 		/// <summary>Insert this tree and obtain its ObjectId.</summary>
 		/// <remarks>Insert this tree and obtain its ObjectId.</remarks>
 		/// <param name="ins">the inserter to store the tree.</param>
 		/// <returns>computed ObjectId of the tree</returns>
 		/// <exception cref="System.IO.IOException">the tree could not be stored.</exception>
-		public virtual ObjectId Insert(ObjectInserter ins)
+		public virtual ObjectId InsertTo(ObjectInserter ins)
 		{
 			if (buf != null)
 			{
@@ -339,7 +320,8 @@ namespace NGit
 		/// internal buffer in order to supply an array of the correct size to the
 		/// caller. If the buffer is just to pass to an ObjectInserter, consider
 		/// using
-		/// <see cref="Insert(ObjectInserter)">Insert(ObjectInserter)</see>
+		/// <see cref="ObjectInserter.Insert(TreeFormatter)">ObjectInserter.Insert(TreeFormatter)
+		/// 	</see>
 		/// instead.
 		/// </remarks>
 		/// <returns>a copy of this formatter's buffer.</returns>
@@ -360,6 +342,43 @@ namespace NGit
 				// This should never happen, its read failure on a byte array.
 				throw new RuntimeException(err);
 			}
+		}
+
+		public override string ToString()
+		{
+			byte[] raw = ToByteArray();
+			CanonicalTreeParser p = new CanonicalTreeParser();
+			p.Reset(raw);
+			StringBuilder r = new StringBuilder();
+			r.Append("Tree={");
+			if (!p.Eof)
+			{
+				r.Append('\n');
+				try
+				{
+					new ObjectChecker().CheckTree(raw);
+				}
+				catch (CorruptObjectException error)
+				{
+					r.Append("*** ERROR: ").Append(error.Message).Append("\n");
+					r.Append('\n');
+				}
+			}
+			while (!p.Eof)
+			{
+				FileMode mode = p.EntryFileMode;
+				r.Append(mode);
+				r.Append(' ');
+				r.Append(Constants.TypeString(mode.GetObjectType()));
+				r.Append(' ');
+				r.Append(p.EntryObjectId.Name);
+				r.Append(' ');
+				r.Append(p.EntryPathString);
+				r.Append('\n');
+				p.Next();
+			}
+			r.Append("}");
+			return r.ToString();
 		}
 	}
 }

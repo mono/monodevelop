@@ -207,45 +207,51 @@ namespace NGit.Treewalk
 			ignoreNode = new WorkingTreeIterator.RootIgnoreNode(entry, repo);
 		}
 
-		public override bool HasId()
+		public override bool HasId
 		{
-			if (contentIdFromPtr == ptr)
+			get
 			{
-				return true;
+				if (contentIdFromPtr == ptr)
+				{
+					return true;
+				}
+				return (mode & FileMode.TYPE_MASK) == FileMode.TYPE_FILE;
 			}
-			return (mode & FileMode.TYPE_MASK) == FileMode.TYPE_FILE;
 		}
 
-		public override byte[] IdBuffer()
+		public override byte[] IdBuffer
 		{
-			if (contentIdFromPtr == ptr)
+			get
 			{
-				return contentId;
-			}
-			switch (mode & FileMode.TYPE_MASK)
-			{
-				case FileMode.TYPE_FILE:
+				if (contentIdFromPtr == ptr)
 				{
-					contentIdFromPtr = ptr;
-					return contentId = IdBufferBlob(entries[ptr]);
+					return contentId;
 				}
+				switch (mode & FileMode.TYPE_MASK)
+				{
+					case FileMode.TYPE_FILE:
+					{
+						contentIdFromPtr = ptr;
+						return contentId = IdBufferBlob(entries[ptr]);
+					}
 
-				case FileMode.TYPE_SYMLINK:
-				{
-					// Java does not support symbolic links, so we should not
-					// have reached this particular part of the walk code.
-					//
-					return zeroid;
-				}
+					case FileMode.TYPE_SYMLINK:
+					{
+						// Java does not support symbolic links, so we should not
+						// have reached this particular part of the walk code.
+						//
+						return zeroid;
+					}
 
-				case FileMode.TYPE_GITLINK:
-				{
-					// TODO: Support obtaining current HEAD SHA-1 from nested repository
-					//
-					return zeroid;
+					case FileMode.TYPE_GITLINK:
+					{
+						// TODO: Support obtaining current HEAD SHA-1 from nested repository
+						//
+						return zeroid;
+					}
 				}
+				return zeroid;
 			}
-			return zeroid;
 		}
 
 		private static readonly byte[] digits = new byte[] { (byte)('0'), (byte)('1'), (byte
@@ -268,7 +274,7 @@ namespace NGit.Treewalk
 				{
 					state.InitializeDigestAndReadBuffer();
 					long len = e.GetLength();
-					if (!MightNeedCleaning(e))
+					if (!MightNeedCleaning())
 					{
 						return ComputeHash(@is, len);
 					}
@@ -277,9 +283,9 @@ namespace NGit.Treewalk
 						ByteBuffer rawbuf = IOUtil.ReadWholeStream(@is, (int)len);
 						byte[] raw = ((byte[])rawbuf.Array());
 						int n = rawbuf.Limit();
-						if (!IsBinary(e, raw, n))
+						if (!IsBinary(raw, n))
 						{
-							rawbuf = FilterClean(e, raw, n);
+							rawbuf = FilterClean(raw, n);
 							raw = ((byte[])rawbuf.Array());
 							n = rawbuf.Limit();
 						}
@@ -290,7 +296,7 @@ namespace NGit.Treewalk
 						return ComputeHash(@is, len);
 					}
 					long canonLen;
-					InputStream lenIs = FilterClean(e, e.OpenInputStream());
+					InputStream lenIs = FilterClean(e.OpenInputStream());
 					try
 					{
 						canonLen = ComputeLength(lenIs);
@@ -299,7 +305,7 @@ namespace NGit.Treewalk
 					{
 						SafeClose(lenIs);
 					}
-					return ComputeHash(FilterClean(e, @is), canonLen);
+					return ComputeHash(FilterClean(@is), canonLen);
 				}
 				finally
 				{
@@ -327,7 +333,7 @@ namespace NGit.Treewalk
 		// Suppress any error related to closing an input
 		// stream. We don't care, we should not have any
 		// outstanding data to flush or anything like that.
-		private bool MightNeedCleaning(WorkingTreeIterator.Entry entry)
+		private bool MightNeedCleaning()
 		{
 			switch (GetOptions().GetAutoCRLF())
 			{
@@ -346,7 +352,7 @@ namespace NGit.Treewalk
 			}
 		}
 
-		private bool IsBinary(WorkingTreeIterator.Entry entry, byte[] content, int sz)
+		private bool IsBinary(byte[] content, int sz)
 		{
 			return RawText.IsBinary(content, sz);
 		}
@@ -366,14 +372,13 @@ namespace NGit.Treewalk
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
-		private ByteBuffer FilterClean(WorkingTreeIterator.Entry entry, byte[] src, int n
-			)
+		private ByteBuffer FilterClean(byte[] src, int n)
 		{
 			InputStream @in = new ByteArrayInputStream(src);
-			return IOUtil.ReadWholeStream(FilterClean(entry, @in), n);
+			return IOUtil.ReadWholeStream(FilterClean(@in), n);
 		}
 
-		private InputStream FilterClean(WorkingTreeIterator.Entry entry, InputStream @in)
+		private InputStream FilterClean(InputStream @in)
 		{
 			return new EolCanonicalizingInputStream(@in);
 		}
@@ -386,38 +391,47 @@ namespace NGit.Treewalk
 			return state.options;
 		}
 
-		public override int IdOffset()
+		public override int IdOffset
 		{
-			return 0;
+			get
+			{
+				return 0;
+			}
 		}
 
 		public override void Reset()
 		{
-			if (!First())
+			if (!First)
 			{
 				ptr = 0;
-				if (!Eof())
+				if (!Eof)
 				{
 					ParseEntry();
 				}
 			}
 		}
 
-		public override bool First()
+		public override bool First
 		{
-			return ptr == 0;
+			get
+			{
+				return ptr == 0;
+			}
 		}
 
-		public override bool Eof()
+		public override bool Eof
 		{
-			return ptr == entryCnt;
+			get
+			{
+				return ptr == entryCnt;
+			}
 		}
 
 		/// <exception cref="NGit.Errors.CorruptObjectException"></exception>
 		public override void Next(int delta)
 		{
 			ptr += delta;
-			if (!Eof())
+			if (!Eof)
 			{
 				ParseEntry();
 			}
@@ -555,9 +569,9 @@ namespace NGit.Treewalk
 			return ignoreNode;
 		}
 
-		private sealed class _IComparer_468 : IComparer<WorkingTreeIterator.Entry>
+		private sealed class _IComparer_467 : IComparer<WorkingTreeIterator.Entry>
 		{
-			public _IComparer_468()
+			public _IComparer_467()
 			{
 			}
 
@@ -591,7 +605,7 @@ namespace NGit.Treewalk
 			}
 		}
 
-		private static readonly IComparer<WorkingTreeIterator.Entry> ENTRY_CMP = new _IComparer_468
+		private static readonly IComparer<WorkingTreeIterator.Entry> ENTRY_CMP = new _IComparer_467
 			();
 
 		internal static int LastPathChar(WorkingTreeIterator.Entry e)
@@ -646,7 +660,7 @@ namespace NGit.Treewalk
 			Arrays.Sort(entries, 0, entryCnt, ENTRY_CMP);
 			contentIdFromPtr = -1;
 			ptr = 0;
-			if (!Eof())
+			if (!Eof)
 			{
 				ParseEntry();
 			}
@@ -673,38 +687,29 @@ namespace NGit.Treewalk
 		/// True if the actual file content should be checked if
 		/// modification time differs.
 		/// </param>
-		/// <param name="checkFilemode">
-		/// whether the executable-bit in the filemode should be checked
-		/// to detect modifications
-		/// </param>
-		/// <param name="fs">
-		/// The filesystem this repo uses. Needed to find out whether the
-		/// executable-bits are supported
-		/// </param>
 		/// <returns>true if content is most likely different.</returns>
-		public virtual bool IsModified(DirCacheEntry entry, bool forceContentCheck, bool 
-			checkFilemode, FS fs)
+		public virtual bool IsModified(DirCacheEntry entry, bool forceContentCheck)
 		{
-			if (entry.IsAssumeValid())
+			if (entry.IsAssumeValid)
 			{
 				return false;
 			}
-			if (entry.IsUpdateNeeded())
+			if (entry.IsUpdateNeeded)
 			{
 				return true;
 			}
-			if (!entry.IsSmudged() && (GetEntryLength() != entry.GetLength()))
+			if (!entry.IsSmudged && (GetEntryLength() != entry.Length))
 			{
 				return true;
 			}
 			// Determine difference in mode-bits of file and index-entry. In the
 			// bitwise presentation of modeDiff we'll have a '1' when the two modes
 			// differ at this position.
-			int modeDiff = GetEntryRawMode() ^ entry.GetRawMode();
+			int modeDiff = EntryRawMode ^ entry.RawMode;
 			// Ignore the executable file bits if checkFilemode tells me to do so.
 			// Ignoring is done by setting the bits representing a EXECUTABLE_FILE
 			// to '0' in modeDiff
-			if (!checkFilemode)
+			if (!state.options.IsFileMode())
 			{
 				modeDiff &= ~FileMode.EXECUTABLE_FILE.GetBits();
 			}
@@ -717,7 +722,7 @@ namespace NGit.Treewalk
 			// Git under windows only stores seconds so we round the timestamp
 			// Java gives us if it looks like the timestamp in index is seconds
 			// only. Otherwise we compare the timestamp at millisecond precision.
-			long cacheLastModified = entry.GetLastModified();
+			long cacheLastModified = entry.LastModified;
 			long fileLastModified = GetEntryLastModified();
 			if (cacheLastModified % 1000 == 0 || fileLastModified % 1000 == 0)
 			{
@@ -742,7 +747,7 @@ namespace NGit.Treewalk
 			else
 			{
 				// The file is clean when you look at timestamps.
-				if (entry.IsSmudged())
+				if (entry.IsSmudged)
 				{
 					// The file is clean by timestamps but the entry was smudged.
 					// Lets do a content check
@@ -769,7 +774,7 @@ namespace NGit.Treewalk
 		/// </returns>
 		private bool ContentCheck(DirCacheEntry entry)
 		{
-			if (GetEntryObjectId().Equals(entry.GetObjectId()))
+			if (EntryObjectId.Equals(entry.GetObjectId()))
 			{
 				// Content has not changed
 				// We know the entry can't be racily clean because it's still clean.

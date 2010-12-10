@@ -142,7 +142,7 @@ namespace NGit.Storage.File
 			//
 			LoadUserConfig();
 			LoadRepoConfig();
-			((FileBasedConfig)GetConfig()).AddChangeListener(new _ConfigChangedListener_162(this
+			((FileBasedConfig)GetConfig()).AddChangeListener(new _ConfigChangedListener_163(this
 				));
 			refs = new RefDirectory(this);
 			objectDatabase = new ObjectDirectory(repoConfig, options.GetObjectDirectory(), options
@@ -162,9 +162,9 @@ namespace NGit.Storage.File
 			}
 		}
 
-		private sealed class _ConfigChangedListener_162 : ConfigChangedListener
+		private sealed class _ConfigChangedListener_163 : ConfigChangedListener
 		{
-			public _ConfigChangedListener_162(FileRepository _enclosing)
+			public _ConfigChangedListener_163(FileRepository _enclosing)
 			{
 				this._enclosing = _enclosing;
 			}
@@ -241,7 +241,7 @@ namespace NGit.Storage.File
 				bool on = FileSystem.CanExecute(tmp);
 				FileSystem.SetExecute(tmp, false);
 				bool off = FileSystem.CanExecute(tmp);
-				tmp.Delete();
+				FileUtils.Delete(tmp);
 				fileMode = on && !off;
 			}
 			else

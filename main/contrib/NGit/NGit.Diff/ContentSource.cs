@@ -178,7 +178,7 @@ namespace NGit.Diff
 
 				public override int GetType()
 				{
-					return this._enclosing.ptr.GetEntryFileMode().GetObjectType();
+					return this._enclosing.ptr.EntryFileMode.GetObjectType();
 				}
 
 				/// <exception cref="NGit.Errors.MissingObjectException"></exception>

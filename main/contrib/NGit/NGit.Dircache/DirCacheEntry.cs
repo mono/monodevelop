@@ -148,7 +148,7 @@ namespace NGit.Dircache
 			infoOffset = infoAt.value;
 			IOUtil.ReadFully(@in, info, infoOffset, INFO_LEN);
 			int len;
-			if (IsExtended())
+			if (IsExtended)
 			{
 				len = INFO_LEN_EXTENDED;
 				IOUtil.ReadFully(@in, info, infoOffset + INFO_LEN, INFO_LEN_EXTENDED - INFO_LEN);
@@ -296,7 +296,7 @@ namespace NGit.Dircache
 		/// <exception cref="System.IO.IOException"></exception>
 		internal virtual void Write(OutputStream os)
 		{
-			int len = IsExtended() ? INFO_LEN_EXTENDED : INFO_LEN;
+			int len = IsExtended ? INFO_LEN_EXTENDED : INFO_LEN;
 			int pathLen = path.Length;
 			os.Write(info, infoOffset, len);
 			os.Write(path, 0, pathLen);
@@ -381,21 +381,29 @@ namespace NGit.Dircache
 		/// <code>true</code> if the entry is smudged, <code>false</code>
 		/// otherwise
 		/// </returns>
-		public bool IsSmudged()
+		public bool IsSmudged
 		{
-			int @base = infoOffset + P_OBJECTID;
-			return (GetLength() == 0) && (Constants.EMPTY_BLOB_ID.CompareTo(info, @base) != 0
-				);
+			get
+			{
+				int @base = infoOffset + P_OBJECTID;
+				return (Length == 0) && (Constants.EMPTY_BLOB_ID.CompareTo(info, @base) != 0);
+			}
 		}
 
-		internal byte[] IdBuffer()
+		internal byte[] IdBuffer
 		{
-			return info;
+			get
+			{
+				return info;
+			}
 		}
 
-		internal int IdOffset()
+		internal int IdOffset
 		{
-			return infoOffset + P_OBJECTID;
+			get
+			{
+				return infoOffset + P_OBJECTID;
+			}
 		}
 
 		/// <summary>
@@ -411,45 +419,51 @@ namespace NGit.Dircache
 		/// directory, such as on NFS or SMB volumes.
 		/// </remarks>
 		/// <returns>true if we must assume the entry is unmodified.</returns>
-		public virtual bool IsAssumeValid()
-		{
-			return (info[infoOffset + P_FLAGS] & ASSUME_VALID) != 0;
-		}
-
 		/// <summary>Set the assume valid flag for this entry,</summary>
-		/// <param name="assume">
+		/// <value>
 		/// true to ignore apparent modifications; false to look at last
 		/// modified to detect file modifications.
-		/// </param>
-		public virtual void SetAssumeValid(bool assume)
+		/// </value>
+		public virtual bool IsAssumeValid
 		{
-			if (assume)
+			get
 			{
-				info[infoOffset + P_FLAGS] |= ASSUME_VALID;
+				return (info[infoOffset + P_FLAGS] & ASSUME_VALID) != 0;
 			}
-			else
+			set
 			{
-				info[infoOffset + P_FLAGS] &= unchecked((byte)~ASSUME_VALID);
+				bool assume = value;
+				if (assume)
+				{
+					info[infoOffset + P_FLAGS] |= ASSUME_VALID;
+				}
+				else
+				{
+					info[infoOffset + P_FLAGS] &= unchecked((byte)~ASSUME_VALID);
+				}
 			}
 		}
 
 		/// <returns>true if this entry should be checked for changes</returns>
-		public virtual bool IsUpdateNeeded()
-		{
-			return (inCoreFlags & UPDATE_NEEDED) != 0;
-		}
-
 		/// <summary>Set whether this entry must be checked for changes</summary>
-		/// <param name="updateNeeded"></param>
-		public virtual void SetUpdateNeeded(bool updateNeeded)
+		/// <value></value>
+		public virtual bool IsUpdateNeeded
 		{
-			if (updateNeeded)
+			get
 			{
-				inCoreFlags |= UPDATE_NEEDED;
+				return (inCoreFlags & UPDATE_NEEDED) != 0;
 			}
-			else
+			set
 			{
-				inCoreFlags &= unchecked((byte)~UPDATE_NEEDED);
+				bool updateNeeded = value;
+				if (updateNeeded)
+				{
+					inCoreFlags |= UPDATE_NEEDED;
+				}
+				else
+				{
+					inCoreFlags &= unchecked((byte)~UPDATE_NEEDED);
+				}
 			}
 		}
 
@@ -460,25 +474,34 @@ namespace NGit.Dircache
 		/// Entries have one of 4 possible stages: 0-3.
 		/// </remarks>
 		/// <returns>the stage of this entry.</returns>
-		public virtual int GetStage()
+		public virtual int Stage
 		{
-			return (info[infoOffset + P_FLAGS] >> 4) & unchecked((int)(0x3));
+			get
+			{
+				return (info[infoOffset + P_FLAGS] >> 4) & unchecked((int)(0x3));
+			}
 		}
 
 		/// <summary>Returns whether this entry should be skipped from the working tree.</summary>
 		/// <remarks>Returns whether this entry should be skipped from the working tree.</remarks>
 		/// <returns>true if this entry should be skipepd.</returns>
-		public virtual bool IsSkipWorkTree()
+		public virtual bool IsSkipWorkTree
 		{
-			return (GetExtendedFlags() & SKIP_WORKTREE) != 0;
+			get
+			{
+				return (GetExtendedFlags() & SKIP_WORKTREE) != 0;
+			}
 		}
 
 		/// <summary>Returns whether this entry is intent to be added to the Index.</summary>
 		/// <remarks>Returns whether this entry is intent to be added to the Index.</remarks>
 		/// <returns>true if this entry is intent to add.</returns>
-		public virtual bool IsIntentToAdd()
+		public virtual bool IsIntentToAdd
 		{
-			return (GetExtendedFlags() & INTENT_TO_ADD) != 0;
+			get
+			{
+				return (GetExtendedFlags() & INTENT_TO_ADD) != 0;
+			}
 		}
 
 		/// <summary>
@@ -488,9 +511,12 @@ namespace NGit.Dircache
 		/// </summary>
 		/// <returns>mode bits for the entry.</returns>
 		/// <seealso cref="NGit.FileMode.FromBits(int)">NGit.FileMode.FromBits(int)</seealso>
-		public virtual int GetRawMode()
+		public virtual int RawMode
 		{
-			return NB.DecodeInt32(info, infoOffset + P_MODE);
+			get
+			{
+				return NB.DecodeInt32(info, infoOffset + P_MODE);
+			}
 		}
 
 		/// <summary>
@@ -499,14 +525,9 @@ namespace NGit.Dircache
 		/// for this entry.
 		/// </summary>
 		/// <returns>the file mode singleton for this entry.</returns>
-		public virtual FileMode GetFileMode()
-		{
-			return FileMode.FromBits(GetRawMode());
-		}
-
 		/// <summary>Set the file mode for this entry.</summary>
 		/// <remarks>Set the file mode for this entry.</remarks>
-		/// <param name="mode">the new mode constant.</param>
+		/// <value>the new mode constant.</value>
 		/// <exception cref="System.ArgumentException">
 		/// If
 		/// <code>mode</code>
@@ -517,18 +538,26 @@ namespace NGit.Dircache
 		/// , or any other type code not permitted
 		/// in a tree object.
 		/// </exception>
-		public virtual void SetFileMode(FileMode mode)
+		public virtual NGit.FileMode FileMode
 		{
-			switch (mode.GetBits() & FileMode.TYPE_MASK)
+			get
 			{
-				case FileMode.TYPE_MISSING:
-				case FileMode.TYPE_TREE:
-				{
-					throw new ArgumentException(MessageFormat.Format(JGitText.Get().invalidModeForPath
-						, mode, GetPathString()));
-				}
+				return NGit.FileMode.FromBits(RawMode);
 			}
-			NB.EncodeInt32(info, infoOffset + P_MODE, mode.GetBits());
+			set
+			{
+				NGit.FileMode mode = value;
+				switch (mode.GetBits() & NGit.FileMode.TYPE_MASK)
+				{
+					case NGit.FileMode.TYPE_MISSING:
+					case NGit.FileMode.TYPE_TREE:
+					{
+						throw new ArgumentException(MessageFormat.Format(JGitText.Get().invalidModeForPath
+							, mode, PathString));
+					}
+				}
+				NB.EncodeInt32(info, infoOffset + P_MODE, mode.GetBits());
+			}
 		}
 
 		/// <summary>Get the cached last modification date of this file, in milliseconds.</summary>
@@ -543,17 +572,20 @@ namespace NGit.Dircache
 		/// last modification time of this file, in milliseconds since the
 		/// Java epoch (midnight Jan 1, 1970 UTC).
 		/// </returns>
-		public virtual long GetLastModified()
-		{
-			return DecodeTS(P_MTIME);
-		}
-
 		/// <summary>Set the cached last modification date of this file, using milliseconds.</summary>
 		/// <remarks>Set the cached last modification date of this file, using milliseconds.</remarks>
-		/// <param name="when">new cached modification date of the file, in milliseconds.</param>
-		public virtual void SetLastModified(long when)
+		/// <value>new cached modification date of the file, in milliseconds.</value>
+		public virtual long LastModified
 		{
-			EncodeTS(P_MTIME, when);
+			get
+			{
+				return DecodeTS(P_MTIME);
+			}
+			set
+			{
+				long when = value;
+				EncodeTS(P_MTIME, when);
+			}
 		}
 
 		/// <summary>Get the cached size (in bytes) of this file.</summary>
@@ -569,9 +601,12 @@ namespace NGit.Dircache
 		/// are being used, such as LF<->CRLF conversion.
 		/// </remarks>
 		/// <returns>cached size of the working directory file, in bytes.</returns>
-		public virtual int GetLength()
+		public virtual int Length
 		{
-			return NB.DecodeInt32(info, infoOffset + P_SIZE);
+			get
+			{
+				return NB.DecodeInt32(info, infoOffset + P_SIZE);
+			}
 		}
 
 		/// <summary>Set the cached size (in bytes) of this file.</summary>
@@ -593,8 +628,8 @@ namespace NGit.Dircache
 		{
 			if (int.MaxValue <= sz)
 			{
-				throw new ArgumentException(MessageFormat.Format(JGitText.Get().sizeExceeds2GB, GetPathString
-					(), sz));
+				throw new ArgumentException(MessageFormat.Format(JGitText.Get().sizeExceeds2GB, PathString
+					, sz));
 			}
 			SetLength((int)sz);
 		}
@@ -609,7 +644,7 @@ namespace NGit.Dircache
 		/// <returns>object identifier for the entry.</returns>
 		public virtual ObjectId GetObjectId()
 		{
-			return ObjectId.FromRaw(IdBuffer(), IdOffset());
+			return ObjectId.FromRaw(IdBuffer, IdOffset);
 		}
 
 		/// <summary>Set the ObjectId for the entry.</summary>
@@ -621,7 +656,7 @@ namespace NGit.Dircache
 		/// </param>
 		public virtual void SetObjectId(AnyObjectId id)
 		{
-			id.CopyRawTo(IdBuffer(), IdOffset());
+			id.CopyRawTo(IdBuffer, IdOffset);
 		}
 
 		/// <summary>Set the ObjectId for the entry from the raw binary representation.</summary>
@@ -634,7 +669,7 @@ namespace NGit.Dircache
 		public virtual void SetObjectIdFromRaw(byte[] bs, int p)
 		{
 			int n = Constants.OBJECT_ID_LENGTH;
-			System.Array.Copy(bs, p, IdBuffer(), IdOffset(), n);
+			System.Array.Copy(bs, p, IdBuffer, IdOffset, n);
 		}
 
 		/// <summary>Get the entry's complete path.</summary>
@@ -651,9 +686,12 @@ namespace NGit.Dircache
 		/// the entry is in a subtree there will be at least one '/' in the
 		/// returned string.
 		/// </returns>
-		public virtual string GetPathString()
+		public virtual string PathString
 		{
-			return ToString(path);
+			get
+			{
+				return ToString(path);
+			}
 		}
 
 		/// <summary>Copy the ObjectId and other meta fields from an existing entry.</summary>
@@ -673,9 +711,12 @@ namespace NGit.Dircache
 		}
 
 		/// <returns>true if the entry contains extended flags.</returns>
-		internal virtual bool IsExtended()
+		internal virtual bool IsExtended
 		{
-			return (info[infoOffset + P_FLAGS] & EXTENDED) != 0;
+			get
+			{
+				return (info[infoOffset + P_FLAGS] & EXTENDED) != 0;
+			}
 		}
 
 		private long DecodeTS(int pIdx)
@@ -695,7 +736,7 @@ namespace NGit.Dircache
 
 		private int GetExtendedFlags()
 		{
-			if (IsExtended())
+			if (IsExtended)
 			{
 				return NB.DecodeUInt16(info, infoOffset + P_FLAGS2) << 16;
 			}

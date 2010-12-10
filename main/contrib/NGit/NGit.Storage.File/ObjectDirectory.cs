@@ -529,6 +529,7 @@ SEARCH_break: ;
 			}
 		}
 
+		/// <exception cref="System.IO.IOException"></exception>
 		internal override FileObjectDatabase.InsertLooseObjectResult InsertUnpackedObject
 			(FilePath tmp, ObjectId id, bool createDuplicate)
 		{
@@ -536,12 +537,12 @@ SEARCH_break: ;
 			//
 			if (unpackedObjectCache.IsUnpacked(id))
 			{
-				tmp.Delete();
+				FileUtils.Delete(tmp);
 				return FileObjectDatabase.InsertLooseObjectResult.EXISTS_LOOSE;
 			}
 			if (!createDuplicate && Has(id))
 			{
-				tmp.Delete();
+				FileUtils.Delete(tmp);
 				return FileObjectDatabase.InsertLooseObjectResult.EXISTS_PACKED;
 			}
 			tmp.SetReadOnly();
@@ -552,7 +553,7 @@ SEARCH_break: ;
 				// that already exists. We can't be sure renameTo() would
 				// fail on all platforms if dst exists, so we check first.
 				//
-				tmp.Delete();
+				FileUtils.Delete(tmp);
 				return FileObjectDatabase.InsertLooseObjectResult.EXISTS_LOOSE;
 			}
 			if (tmp.RenameTo(dst))
@@ -572,7 +573,7 @@ SEARCH_break: ;
 			}
 			if (!createDuplicate && Has(id))
 			{
-				tmp.Delete();
+				FileUtils.Delete(tmp);
 				return FileObjectDatabase.InsertLooseObjectResult.EXISTS_PACKED;
 			}
 			// The object failed to be renamed into its proper
@@ -580,7 +581,7 @@ SEARCH_break: ;
 			// either. We really don't know what went wrong, so
 			// fail.
 			//
-			tmp.Delete();
+			FileUtils.Delete(tmp);
 			return FileObjectDatabase.InsertLooseObjectResult.FAILURE;
 		}
 

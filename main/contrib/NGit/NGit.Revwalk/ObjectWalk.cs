@@ -321,9 +321,9 @@ namespace NGit.Revwalk
 			{
 				treeWalk = last is RevTree ? Enter(last) : treeWalk.Next();
 			}
-			while (!treeWalk.Eof())
+			while (!treeWalk.Eof)
 			{
-				FileMode mode = treeWalk.GetEntryFileMode();
+				FileMode mode = treeWalk.EntryFileMode;
 				switch (mode.GetObjectType())
 				{
 					case Constants.OBJ_BLOB:
@@ -368,7 +368,7 @@ namespace NGit.Revwalk
 						}
 						treeWalk.GetEntryObjectId(idBuffer);
 						throw new CorruptObjectException(MessageFormat.Format(JGitText.Get().corruptObjectInvalidMode3
-							, mode, idBuffer.Name, treeWalk.GetEntryPathString(), currentTree.Name));
+							, mode, idBuffer.Name, treeWalk.EntryPathString, currentTree.Name));
 					}
 				}
 				treeWalk = treeWalk.Next();
@@ -410,7 +410,7 @@ namespace NGit.Revwalk
 		private CanonicalTreeParser Enter(RevObject tree)
 		{
 			CanonicalTreeParser p = treeWalk.CreateSubtreeIterator0(reader, tree);
-			if (p.Eof())
+			if (p.Eof)
 			{
 				// We can't tolerate the subtree being an empty tree, as
 				// that will break us out early before we visit all names.
@@ -493,7 +493,7 @@ namespace NGit.Revwalk
 		/// </returns>
 		public virtual string GetPathString()
 		{
-			return last != null ? treeWalk.GetEntryPathString() : null;
+			return last != null ? treeWalk.EntryPathString : null;
 		}
 
 		/// <summary>Get the current object's path hash code.</summary>
@@ -551,9 +551,9 @@ namespace NGit.Revwalk
 			}
 			tree.flags |= UNINTERESTING;
 			treeWalk = treeWalk.ResetRoot(reader, tree);
-			while (!treeWalk.Eof())
+			while (!treeWalk.Eof)
 			{
-				FileMode mode = treeWalk.GetEntryFileMode();
+				FileMode mode = treeWalk.EntryFileMode;
 				int sType = mode.GetObjectType();
 				switch (sType)
 				{
@@ -585,7 +585,7 @@ namespace NGit.Revwalk
 						}
 						treeWalk.GetEntryObjectId(idBuffer);
 						throw new CorruptObjectException(MessageFormat.Format(JGitText.Get().corruptObjectInvalidMode3
-							, mode, idBuffer.Name, treeWalk.GetEntryPathString(), tree));
+							, mode, idBuffer.Name, treeWalk.EntryPathString, tree));
 					}
 				}
 				treeWalk = treeWalk.Next();

@@ -82,7 +82,7 @@ namespace NGit.Treewalk.Filter
 				return true;
 			}
 			DirCacheEntry e = i.GetDirCacheEntry();
-			return e == null || !e.IsSkipWorkTree();
+			return e == null || !e.IsSkipWorkTree;
 		}
 
 		public override bool ShouldBeRecursive()

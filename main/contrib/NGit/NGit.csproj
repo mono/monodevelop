@@ -477,6 +477,10 @@
     <Compile Include="NGit.Api\RebaseResult.cs" />
     <Compile Include="NGit.Api\RmCommand.cs" />
     <Compile Include="NGit.Api\CheckoutCommand.cs" />
+    <Compile Include="NGit.Api\InitCommand.cs" />
+    <Compile Include="NGit.Util\FileUtils.cs" />
+    <Compile Include="NGit.Treewalk.Filter\IndexDiffFilter.cs" />
+    <Compile Include="NGit.Api.Errors\UnmergedPathsException.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -50,6 +50,7 @@ using NGit.Revwalk;
 using NGit.Storage.File;
 using NGit.Transport;
 using NGit.Treewalk;
+using NGit.Util;
 using Sharpen;
 
 namespace NGit.Transport
@@ -653,9 +654,16 @@ namespace NGit.Transport
 					// it failed the index and pack are unusable and we
 					// shouldn't consult them again.
 					//
-					if (pack.tmpIdx != null)
+					try
 					{
-						pack.tmpIdx.Delete();
+						if (pack.tmpIdx != null)
+						{
+							FileUtils.Delete(pack.tmpIdx);
+						}
+					}
+					catch (IOException e)
+					{
+						throw new TransportException(e.Message, e);
 					}
 					packItr.Remove();
 				}
@@ -1049,7 +1057,7 @@ namespace NGit.Transport
 				}
 				catch (IOException err)
 				{
-					this.tmpIdx.Delete();
+					FileUtils.Delete(this.tmpIdx);
 					throw;
 				}
 				finally
@@ -1059,7 +1067,7 @@ namespace NGit.Transport
 				pm.EndTask();
 				if (pm.IsCancelled())
 				{
-					this.tmpIdx.Delete();
+					FileUtils.Delete(this.tmpIdx);
 					return;
 				}
 				try
@@ -1068,7 +1076,7 @@ namespace NGit.Transport
 				}
 				catch (IOException e)
 				{
-					this.tmpIdx.Delete();
+					FileUtils.Delete(this.tmpIdx);
 					throw;
 				}
 			}

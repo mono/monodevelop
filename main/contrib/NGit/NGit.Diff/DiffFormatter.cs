@@ -415,7 +415,6 @@ namespace NGit.Diff
 		{
 			AssertHaveRepository();
 			TreeWalk walk = new TreeWalk(reader);
-			walk.Reset();
 			walk.AddTree(a);
 			walk.AddTree(b);
 			walk.Recursive = true;

@@ -112,7 +112,7 @@ namespace NGit.Dircache
 		{
 			if (currentSubtree == null)
 			{
-				throw new IncorrectObjectTypeException(GetEntryObjectId(), Constants.TYPE_TREE);
+				throw new IncorrectObjectTypeException(EntryObjectId, Constants.TYPE_TREE);
 			}
 			return new NGit.Dircache.DirCacheBuildIterator(this, currentSubtree);
 		}

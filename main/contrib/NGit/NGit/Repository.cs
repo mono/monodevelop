@@ -1534,7 +1534,7 @@ namespace NGit
 			}
 			else
 			{
-				mergeMsgFile.Delete();
+				FileUtils.Delete(mergeMsgFile);
 			}
 		}
 
@@ -1623,7 +1623,7 @@ namespace NGit
 			}
 			else
 			{
-				mergeHeadFile.Delete();
+				FileUtils.Delete(mergeHeadFile);
 			}
 		}
 	}

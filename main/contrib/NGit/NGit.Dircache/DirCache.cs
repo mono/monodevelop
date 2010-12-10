@@ -89,7 +89,7 @@ namespace NGit.Dircache
 				{
 					return cr;
 				}
-				return o1.GetStage() - o2.GetStage();
+				return o1.Stage - o2.Stage;
 			}
 		}
 
@@ -604,7 +604,7 @@ namespace NGit.Dircache
 			bool extended = false;
 			for (int i = 0; i < entryCnt; i++)
 			{
-				extended |= sortedEntries[i].IsExtended();
+				extended |= sortedEntries[i].IsExtended;
 			}
 			// Write the header.
 			//
@@ -933,7 +933,7 @@ namespace NGit.Dircache
 		{
 			for (int i = 0; i < entryCnt; i++)
 			{
-				if (sortedEntries[i].GetStage() > 0)
+				if (sortedEntries[i].Stage > 0)
 				{
 					return true;
 				}

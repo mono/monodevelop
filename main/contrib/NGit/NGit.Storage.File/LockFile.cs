@@ -490,7 +490,7 @@ namespace NGit.Storage.File
 			}
 			if (!@ref.Exists() || DeleteRef())
 			{
-				if (lck.RenameTo(@ref))
+				if (RenameLock())
 				{
 					return true;
 				}
@@ -511,6 +511,33 @@ namespace NGit.Storage.File
 			for (int attempts = 0; attempts < 10; attempts++)
 			{
 				if (@ref.Delete())
+				{
+					return true;
+				}
+				try
+				{
+					Sharpen.Thread.Sleep(100);
+				}
+				catch (Exception)
+				{
+					return false;
+				}
+			}
+			return false;
+		}
+
+		private bool RenameLock()
+		{
+			if (!fs.RetryFailedLockFileCommit())
+			{
+				return lck.RenameTo(@ref);
+			}
+			// File renaming fails on windows if another thread is
+			// concurrently reading the same file. So try a few times.
+			//
+			for (int attempts = 0; attempts < 10; attempts++)
+			{
+				if (lck.RenameTo(@ref))
 				{
 					return true;
 				}

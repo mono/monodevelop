@@ -615,7 +615,8 @@ namespace NGit
 						break;
 					}
 					current = current.GetParentFile();
-					if (current != null && ceilingDirectories.Contains(current))
+					if (current != null && ceilingDirectories != null && ceilingDirectories.Contains(
+						current))
 					{
 						break;
 					}

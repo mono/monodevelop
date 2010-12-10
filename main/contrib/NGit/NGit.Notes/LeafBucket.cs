@@ -235,7 +235,7 @@ namespace NGit.Notes
 			{
 				e.Format(fmt);
 			}
-			return fmt.Insert(inserter);
+			return inserter.Insert(fmt);
 		}
 
 		private int TreeSize(int nameLen)
