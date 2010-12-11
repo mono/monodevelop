@@ -87,21 +87,37 @@ namespace MonoDevelop.MonoDroid
 		public IProcessAsyncOperation SignPackage (AndroidSigningOptions options, string unsignedApk,
 			string signedApk, TextWriter outputLog, TextWriter errorLog)
 		{
-			var args = string.Format (
-				"-keystore \"{0}\" -storepass \"{1}\" -keypass \"{2}\" -signedjar \"{3}\" \"{4}\" \"{5}\"",
-				options.KeyStore, options.StorePass, options.KeyPass , signedApk, unsignedApk, options.KeyAlias);
-			return StartProcess (JarsignerExe, args, outputLog, errorLog);
+			var args = new ProcessArgumentBuilder ();
+			args.Add ("-keystore");
+			args.AddQuoted (options.KeyStore);
+			args.Add ("-storepass");
+			args.AddQuoted (options.StorePass);
+			args.Add ("-keypass");
+			args.AddQuoted (options.KeyPass);
+			args.Add ("-signedjar");
+			args.AddQuoted (signedApk, unsignedApk, options.KeyAlias);
+			
+			return StartProcess (JarsignerExe, args.ToString (), outputLog, errorLog);
 		}
 		
 		//string dname = "CN=Android Debug,O=Android,C=US";
 		public IProcessAsyncOperation Genkeypair (AndroidSigningOptions options, string dname,
 			TextWriter outputLog, TextWriter errorLog)
 		{
+			var args = new ProcessArgumentBuilder ();
+			args.Add ("-genkeypair");
+			args.Add ("-alias");
+			args.AddQuoted (options.KeyAlias);
+			args.Add ("-dname");
+			args.AddQuoted (dname);
+			args.Add ("-storepass");
+			args.AddQuoted (options.StorePass);
+			args.Add ("-keypass");
+			args.AddQuoted (options.KeyPass);
+			args.Add ("-keystore");
+			args.AddQuoted (options.KeyStore);
 			
-			var args = string.Format (
-				"-genkeypair -alias \"{0}\" -dname \"{1}\" -storepass \"{3}\" -keypass \"{2}\" -keystore \"{4}\"",
-				options.KeyAlias, dname, options.StorePass, options.KeyPass, options.KeyStore);
-			return StartProcess (KeytoolExe, args, outputLog, errorLog);
+			return StartProcess (KeytoolExe, args.ToString (), outputLog, errorLog);
 		}
 		
 		ProcessWrapper StartProcess (string name, string args, TextWriter outputLog, TextWriter errorLog)
@@ -149,9 +165,12 @@ namespace MonoDevelop.MonoDroid
 		
 		public StartAvdOperation StartAvd (AndroidVirtualDevice avd)
 		{
+			var args = new ProcessArgumentBuilder ();
+			args.Add ("-partition-size", "512", "-avd");
+			args.AddQuoted (avd.Name);
+			
 			var error = new StringWriter ();
-			string args = string.Format ("-partition-size 512 -avd \"{0}\"", avd.Name);
-			var process = StartProcess (EmulatorExe, args, null, error);
+			var process = StartProcess (EmulatorExe, args.ToString (), null, error);
 			return new StartAvdOperation (process, error);
 		}
 		
@@ -180,16 +199,22 @@ namespace MonoDevelop.MonoDroid
 				throw new ArgumentNullException ("property");
 			if (value == null)
 				throw new ArgumentNullException ("value");
-
-			var args = String.Format ("-s {0} shell setprop \"{1}\" \"{2}\"", device.ID, property, value);
-			return StartProcess (AdbExe, args, outputLog, errorLog);
+			
+			var args = new ProcessArgumentBuilder ();
+			args.Add ("-s", device.ID, "shell", "setprop");
+			args.AddQuoted (property, value);
+			
+			return StartProcess (AdbExe, args.ToString (), outputLog, errorLog);
 		}
 		
 		public IProcessAsyncOperation PushFile (AndroidDevice device, string source, string destination,
 			TextWriter outputLog, TextWriter errorLog)
 		{
-			var args = string.Format ("-s {0} push \"{1}\" \"{2}\"", device.ID, source, destination);
-			return StartProcess (AdbExe, args, outputLog, errorLog);
+			var args = new ProcessArgumentBuilder ();
+			args.Add ("-s", device.ID, "push");
+			args.AddQuoted (source, destination);
+			
+			return StartProcess (AdbExe, args.ToString (), outputLog, errorLog);
 		}
 
 		public IProcessAsyncOperation WaitForDevice (AndroidDevice device, TextWriter outputLog, TextWriter errorLog)
@@ -201,40 +226,51 @@ namespace MonoDevelop.MonoDroid
 		public IProcessAsyncOperation PullFile (AndroidDevice device, string source, string destination,
 			TextWriter outputLog, TextWriter errorLog)
 		{
-			var args = string.Format ("-s {0} pull \"{1}\" \"{2}\"", device.ID, source, destination);
-			return StartProcess (AdbExe, args, outputLog, errorLog);
+			var args = new ProcessArgumentBuilder ();
+			args.Add ("-s", device.ID, "pull");
+			args.AddQuoted (source, destination);
+			
+			return StartProcess (AdbExe, args.ToString (), outputLog, errorLog);
 		}
 
 		public InstallPackageOperation Install (AndroidDevice device, string package, TextWriter outputLog, TextWriter errorLog)
 		{
-			var args = string.Format ("-s {0} install \"{1}\"", device.ID, package);
+			var args = new ProcessArgumentBuilder ();
+			args.Add ("-s", device.ID, "install");
+			args.AddQuoted (package);
+			
 			var errorCapture = new StringWriter ();
 			var errorWriter = TeeTextWriter.ForNonNull (errorCapture, errorCapture);
-			return new InstallPackageOperation (StartProcess (AdbExe, args, outputLog, errorWriter), errorCapture);
+			return new InstallPackageOperation (StartProcess (AdbExe, args.ToString (), outputLog, errorWriter), errorCapture);
 		}
 
 		public IProcessAsyncOperation Uninstall (AndroidDevice device, string package, TextWriter outputLog, TextWriter errorLog)
 		{
-			var args = string.Format ("-s {0} uninstall \"{1}\"", device.ID, package);
-			return StartProcess (AdbExe, args, outputLog, errorLog);
+			var args = new ProcessArgumentBuilder ();
+			args.Add ("-s", device.ID, "uninstall");
+			args.AddQuoted (package);
+			
+			return StartProcess (AdbExe, args.ToString (), outputLog, errorLog);
 		}
 		
 		public IProcessAsyncOperation StartActivity (AndroidDevice device, string activity,
 			TextWriter outputLog, TextWriter errorLog)
 		{
-			var args = string.Format ("-s {0} shell am start -a android.intent.action.MAIN -n \"{1}\"",
-				device.ID, activity);
+			var args = new ProcessArgumentBuilder ();
+			args.Add ("-s", device.ID, "shell", "am", "start", "-a", "android.intent.action.MAIN");
+			args.AddQuoted (activity);
 			
-			return StartProcess (AdbExe, args, outputLog, errorLog);
+			return StartProcess (AdbExe, args.ToString (), outputLog, errorLog);
 		}
 		
 		public IProcessAsyncOperation StartActivity (AndroidDevice device, string activity,
 			ProcessEventHandler outputLog, ProcessEventHandler errorLog)
 		{
-			var args = string.Format ("-s {0} shell am start -a android.intent.action.MAIN -n \"{1}\"",
-				device.ID, activity);
+			var args = new ProcessArgumentBuilder ();
+			args.Add ("-s", device.ID, "shell", "am", "start", "-a", "android.intent.action.MAIN");
+			args.AddQuoted (activity);
 			
-			return StartProcess (AdbExe, args, outputLog, errorLog);
+			return StartProcess (AdbExe, args.ToString (), outputLog, errorLog);
 		}
 
 		public IProcessAsyncOperation ForwardPort (AndroidDevice device, int devicePort, int localPort,
