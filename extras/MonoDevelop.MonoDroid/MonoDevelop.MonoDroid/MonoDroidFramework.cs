@@ -53,16 +53,16 @@ namespace MonoDevelop.MonoDroid
 				Toolbox = null;
 				EnvironmentOverrides.Remove ("PATH");
 				
-				string monodroidPath, javaPath, androidPath;
-				MonoDroidSdk.GetPaths (out monodroidPath, out androidPath, out javaPath);
+				string monoDroidBinDir, monoDroidFrameworkDir, javaPath, androidPath;
+				MonoDroidSdk.GetPaths (out monoDroidBinDir, out monoDroidFrameworkDir, out androidPath, out javaPath, true);
 				
-				if (monodroidPath == null) {
+				if (monoDroidBinDir == null) {
 					LoggingService.LogInfo ("MonoDroid SDK not found, disabling MonoDroid addin");
 					return;
 				}
 				
-				BinDir = Path.Combine (monodroidPath, "bin");
-				FrameworkDir = ((FilePath)monodroidPath).Combine ("lib", "mono", "2.1");
+				BinDir = monoDroidBinDir;
+				FrameworkDir = monoDroidFrameworkDir;
 				
 				if (androidPath == null) {
 					LoggingService.LogError ("Android SDK not found, needed by MonoDroid addin");
@@ -87,6 +87,8 @@ namespace MonoDevelop.MonoDroid
 				LoggingService.LogError ("Error detecting MonoDroid SDK", ex);
 			}
 		}
+		
+		
 		
 		/// <summary>
 		/// Ensures all required SDKs are installed. If not, prompts the user to select the locations.

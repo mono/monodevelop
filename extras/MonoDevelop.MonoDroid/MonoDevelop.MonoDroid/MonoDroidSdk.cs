@@ -65,12 +65,12 @@ namespace MonoDroid
 			IsMac = !IsWindows && IsRunningOnMac ();
 		}
 		
-		public static void GetPaths (out string monoDroidPath, out string androidSdkPath, out string javaSdkPath)
+		public static void GetPaths (out string monoDroidBinDir, out string monoDroidFrameworkDir,
+			out string androidSdkPath, out string javaSdkPath, bool storeAutoDetectedLocations)
 		{
-			monoDroidPath = androidSdkPath = javaSdkPath = null;
+			monoDroidBinDir = monoDroidFrameworkDir = androidSdkPath = javaSdkPath = null;
 			
-			monoDroidPath = GetMonoDroidSdk ();
-			if (monoDroidPath == null)
+			if (!GetMonoDroidSdk (out monoDroidBinDir, out monoDroidFrameworkDir))
 				return;
 			
 			GetConfiguredSdkLocations (out androidSdkPath, out javaSdkPath);
@@ -92,33 +92,58 @@ namespace MonoDroid
 			
 			if (javaSdkPath == null)
 				javaSdkPath = FindJavaSdk (pathDirs);
+			
+			if (storeAutoDetectedLocations)
+				SetConfiguredSdkLocations (androidSdkPath, javaSdkPath);
 		}
 		
 		/// <summary>
 		/// Gets the MonoDroid SDK location.
 		/// </summary>
 		/// <returns>SDK location, or null if it was not found.</returns>
-		static string GetMonoDroidSdk ()
+		static bool GetMonoDroidSdk (out string monoDroidBinDir, out string monoDroidFrameworkDir)
 		{
-			
 			string loc = Environment.GetEnvironmentVariable ("MONODROID_PATH");
-			if (ValidateMonoDroidSdkLocation (loc))
-				return loc;
+			if (CheckMonoDroidPath (loc, out monoDroidBinDir, out monoDroidFrameworkDir))
+				return true;
 			
 			if (IsWindows) {
 				loc = (RegistryEx.GetValueString (RegistryEx.LocalMachine, MDREG_KEY, MDREG_MONODROID, RegistryEx.Wow64.Key32));
-				if (ValidateMonoDroidSdkLocation (loc))
-					return loc;
+				if (!string.IsNullOrEmpty (loc)) {
+					var programFilesX86 = GetProgramFilesX86 ();
+					var fxDir = programFilesX86 + @"\Reference Assemblies\Microsoft\Framework\MonoDroid\v2.0";
+					if (File.Exists (fxDir + @"\mscorlib.dll")) {
+						monoDroidBinDir = programFilesX86 + @"\MSBuild\Novell";
+						monoDroidFrameworkDir = fxDir;
+						return true;
+					}
+				}
 			} else if (IsMac) {
 				loc = "/Developer/MonoDroid/usr";
-				if (Directory.Exists (loc) && ValidateMonoDroidSdkLocation (loc))
-					return loc;
+				if (CheckMonoDroidPath (loc, out monoDroidBinDir, out monoDroidFrameworkDir))
+					return true;
 			} else {
 				loc = "/opt/monodroid";
-				if (Directory.Exists (loc) && ValidateMonoDroidSdkLocation (loc))
-					return loc;
+				if (CheckMonoDroidPath (loc, out monoDroidBinDir, out monoDroidFrameworkDir))
+					return true;
 			}
-			return null;
+			return false;
+		}
+		
+		static bool CheckMonoDroidPath (string monoDroidPath, out string monoDroidBinDir, out string monoDroidFrameworkDir)
+		{
+			monoDroidBinDir = monoDroidFrameworkDir = null;
+			
+			if (string.IsNullOrEmpty (monoDroidPath))
+				return false;
+			
+			var bin = Path.Combine (monoDroidPath, "bin");
+			if (!File.Exists (Path.Combine (bin, "monodroid.exe")))
+				return false;
+			
+			monoDroidBinDir = bin;
+			monoDroidFrameworkDir = Path.Combine (Path.Combine (Path.Combine (monoDroidPath, "lib"), "mono"), "2.1");
+			return true;
 		}
 		
 		/// <summary>
@@ -127,6 +152,16 @@ namespace MonoDroid
 		/// <returns>SDK location, or null if it was not found.</returns>
 		public static string FindAndroidSdk (string[] pathDirs)
 		{
+			if (IsWindows) {
+				var programFilesX86 = GetProgramFilesX86 ();
+				var installerLoc = programFilesX86 + @"\Android\android-sdk-windows";
+				if (ValidateAndroidSdkLocation (installerLoc))
+					return installerLoc;
+				var unzipLoc = programFilesX86 + @"C:\android-sdk-windows";
+				if (ValidateAndroidSdkLocation (unzipLoc))
+					return unzipLoc;
+			}
+			
 			var loc = Which (AdbTool, pathDirs);
 			if (!string.IsNullOrEmpty (loc)) {
 				loc = Path.GetDirectoryName (loc);
@@ -172,15 +207,6 @@ namespace MonoDroid
 		public static bool ValidateAndroidSdkLocation (string loc)
 		{
 			return !string.IsNullOrEmpty (loc) && File.Exists (Path.Combine (Path.Combine (loc, "platform-tools"), AdbTool));
-		}
-		
-		/// <summary>
-		/// Checks that a value is the location of a MonoDroid SDK.
-		/// </summary>
-		public static bool ValidateMonoDroidSdkLocation (string loc)
-		{
-			return !string.IsNullOrEmpty (loc) && File.Exists (
-				Path.Combine (Path.Combine (loc, "bin"), "monodroid.exe"));
 		}
 		
 		static string WindowsGetJavaPath ()
@@ -339,6 +365,14 @@ namespace MonoDroid
 			if (s == null || s.Length != 0)
 				return s;
 			return null;
+		}
+		
+		static string GetProgramFilesX86 ()
+		{
+			if (IntPtr.Size == 8 || !string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("PROCESSOR_ARCHITEW6432")))
+				return Environment.GetEnvironmentVariable("PROGRAMFILES(X86)");
+			else
+				return Environment.GetEnvironmentVariable("PROGRAMFILES");
 		}
 	}
 	
