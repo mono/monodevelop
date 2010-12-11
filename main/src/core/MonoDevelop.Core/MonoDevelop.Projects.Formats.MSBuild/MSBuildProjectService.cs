@@ -49,6 +49,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public const string FolderTypeGuid = "{2150E333-8FDC-42A3-9474-1A3956D46DE8}";
 		
 		//NOTE: default toolsversion should match the default format.
+		// remember to update the builder process' app.config too
 		public const string DefaultFormat = "MSBuild08";
 		const string REFERENCED_MSBUILD_TOOLS = "3.5";
 		const string REFERENCED_MSBUILD_UTILS = "Microsoft.Build.Utilities.v3.5";
@@ -426,38 +427,36 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					return new RemoteProjectBuilder (file, binDir, builder);
 				}
 				
-				if (runtime.IsRunning && toolsVersion == REFERENCED_MSBUILD_TOOLS) {
-					if (currentBuildEngine == null)
-						currentBuildEngine = new RemoteBuildEngine (null, new BuildEngine ());
-					return new RemoteProjectBuilder (file, binDir, currentBuildEngine);
-				}
-				else {
-					string exe = GetExeLocation (toolsVersion);
-					MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
-					ProcessStartInfo pinfo = new ProcessStartInfo (exe);
-					runtime.GetToolsExecutionEnvironment (toolsFx).MergeTo (pinfo);
-					pinfo.UseShellExecute = false;
-					pinfo.RedirectStandardError = true;
-					pinfo.RedirectStandardInput = true;
-					
-					Process p = null;
-					try {
-						p = runtime.ExecuteAssembly (pinfo);
-						p.StandardInput.WriteLine (Process.GetCurrentProcess ().Id.ToString ());
-						string sref = p.StandardError.ReadLine ();
-						byte[] data = Convert.FromBase64String (sref);
-						MemoryStream ms = new MemoryStream (data);
-						BinaryFormatter bf = new BinaryFormatter ();
-						builder = new RemoteBuildEngine (p, (IBuildEngine) bf.Deserialize (ms));
-					} catch {
-						if (p != null) {
-							try {
-								p.Kill ();
-							} catch { }
-						}
-						throw;
+
+				//always start the remote process explicitly, even if it's using the current runtime and fx
+				//else it won't pick up the assembly redirects from the builder exe
+				var exe = GetExeLocation (toolsVersion);
+				MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
+				var pinfo = new ProcessStartInfo (exe) {
+					UseShellExecute = false,
+					RedirectStandardError = true,
+					RedirectStandardInput = true,
+				};
+				runtime.GetToolsExecutionEnvironment (toolsFx).MergeTo (pinfo);
+				
+				Process p = null;
+				try {
+					p = runtime.ExecuteAssembly (pinfo);
+					p.StandardInput.WriteLine (Process.GetCurrentProcess ().Id.ToString ());
+					string sref = p.StandardError.ReadLine ();
+					byte[] data = Convert.FromBase64String (sref);
+					MemoryStream ms = new MemoryStream (data);
+					BinaryFormatter bf = new BinaryFormatter ();
+					builder = new RemoteBuildEngine (p, (IBuildEngine) bf.Deserialize (ms));
+				} catch {
+					if (p != null) {
+						try {
+							p.Kill ();
+						} catch { }
 					}
+					throw;
 				}
+				
 				builders [builderKey] = builder;
 				builder.ReferenceCount = 1;
 				return new RemoteProjectBuilder (file, binDir, builder);
@@ -467,7 +466,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		static string GetExeLocation (string toolsVersion)
 		{
 			FilePath sourceExe = typeof(ProjectBuilder).Assembly.Location;
-			
 			if (toolsVersion == REFERENCED_MSBUILD_TOOLS)
 				return sourceExe;
 			
