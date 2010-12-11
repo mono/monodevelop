@@ -1,0 +1,7 @@
+<AddinProject appVersion="2.4">
+	<Project platforms="Windows,Mac">
+		<AddinFile>build/MonoDevelop.MonoDroid.dll</AddinFile>
+		<BuildFile>MonoDevelop.MonoDroid.sln</BuildFile>
+		<BuildConfiguration>Debug</BuildConfiguration>
+	</Project>
+</AddinProject>
