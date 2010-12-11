@@ -10,6 +10,7 @@
     <RootNamespace>MonoDevelop.Debugger.Soft.MonoDroid</RootNamespace>
     <AssemblyName>MonoDevelop.Debugger.Soft.MonoDroid</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <CodePage>65001</CodePage>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
