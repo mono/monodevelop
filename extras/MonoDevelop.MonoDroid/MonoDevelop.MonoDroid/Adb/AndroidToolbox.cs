@@ -150,7 +150,7 @@ namespace MonoDevelop.MonoDroid
 		public StartAvdOperation StartAvd (AndroidVirtualDevice avd)
 		{
 			var error = new StringWriter ();
-			string args = string.Format ("-partition-size 512 -avd '{0}'", avd.Name);
+			string args = string.Format ("-partition-size 512 -avd \"{0}\"", avd.Name);
 			var process = StartProcess (EmulatorExe, args, null, error);
 			return new StartAvdOperation (process, error);
 		}
@@ -163,7 +163,7 @@ namespace MonoDevelop.MonoDroid
 
 		public GetDateOperation GetDeviceDate (AndroidDevice device)
 		{
-			var args = String.Format ("-s '{0}' shell date +%s", device.ID);
+			var args = String.Format ("-s {0} shell date +%s", device.ID);
 			var sw = new StringWriter ();
 			return new GetDateOperation (StartProcess (AdbExe, args, sw, sw), sw);
 		}
@@ -181,33 +181,33 @@ namespace MonoDevelop.MonoDroid
 			if (value == null)
 				throw new ArgumentNullException ("value");
 
-			var args = String.Format ("-s '{0}' shell setprop '{1}' '{2}'", device.ID, property, value);
+			var args = String.Format ("-s {0} shell setprop \"{1}\" \"{2}\"", device.ID, property, value);
 			return StartProcess (AdbExe, args, outputLog, errorLog);
 		}
 		
 		public IProcessAsyncOperation PushFile (AndroidDevice device, string source, string destination,
 			TextWriter outputLog, TextWriter errorLog)
 		{
-			var args = string.Format ("-s '{0}' push '{1} '{2}'", device.ID, source, destination);
+			var args = string.Format ("-s {0} push \"{1}\" \"{2}\"", device.ID, source, destination);
 			return StartProcess (AdbExe, args, outputLog, errorLog);
 		}
 
 		public IProcessAsyncOperation WaitForDevice (AndroidDevice device, TextWriter outputLog, TextWriter errorLog)
 		{
-			var args = string.Format ("-s '{0}' wait-for-device", device.ID);
+			var args = string.Format ("-s {0} wait-for-device", device.ID);
 			return StartProcess (AdbExe, args, outputLog, errorLog);
 		}
 
 		public IProcessAsyncOperation PullFile (AndroidDevice device, string source, string destination,
 			TextWriter outputLog, TextWriter errorLog)
 		{
-			var args = string.Format ("-s '{0}' pull '{1} '{2}'", device.ID, source, destination);
+			var args = string.Format ("-s {0} pull \"{1}\" \"{2}\"", device.ID, source, destination);
 			return StartProcess (AdbExe, args, outputLog, errorLog);
 		}
 
 		public InstallPackageOperation Install (AndroidDevice device, string package, TextWriter outputLog, TextWriter errorLog)
 		{
-			var args = string.Format ("-s '{0}' install '{1}'", device.ID, package);
+			var args = string.Format ("-s {0} install \"{1}\"", device.ID, package);
 			var errorCapture = new StringWriter ();
 			var errorWriter = TeeTextWriter.ForNonNull (errorCapture, errorCapture);
 			return new InstallPackageOperation (StartProcess (AdbExe, args, outputLog, errorWriter), errorCapture);
@@ -215,14 +215,14 @@ namespace MonoDevelop.MonoDroid
 
 		public IProcessAsyncOperation Uninstall (AndroidDevice device, string package, TextWriter outputLog, TextWriter errorLog)
 		{
-			var args = string.Format ("-s '{0}' uninstall '{1}'", device.ID, package);
+			var args = string.Format ("-s {0} uninstall \"{1}\"", device.ID, package);
 			return StartProcess (AdbExe, args, outputLog, errorLog);
 		}
 		
 		public IProcessAsyncOperation StartActivity (AndroidDevice device, string activity,
 			TextWriter outputLog, TextWriter errorLog)
 		{
-			var args = string.Format ("-s '{0}' shell am start -a android.intent.action.MAIN -n '{1}'",
+			var args = string.Format ("-s {0} shell am start -a android.intent.action.MAIN -n \"{1}\"",
 				device.ID, activity);
 			
 			return StartProcess (AdbExe, args, outputLog, errorLog);
@@ -231,7 +231,7 @@ namespace MonoDevelop.MonoDroid
 		public IProcessAsyncOperation StartActivity (AndroidDevice device, string activity,
 			ProcessEventHandler outputLog, ProcessEventHandler errorLog)
 		{
-			var args = string.Format ("-s '{0}' shell am start -a android.intent.action.MAIN -n '{1}'",
+			var args = string.Format ("-s {0} shell am start -a android.intent.action.MAIN -n \"{1}\"",
 				device.ID, activity);
 			
 			return StartProcess (AdbExe, args, outputLog, errorLog);
@@ -240,21 +240,21 @@ namespace MonoDevelop.MonoDroid
 		public IProcessAsyncOperation ForwardPort (AndroidDevice device, int devicePort, int localPort,
 			TextWriter outputLog, TextWriter errorLog)
 		{
-			var args = string.Format ("-s '{0}' forward tcp:{1} tcp:{2}", device.ID, localPort, devicePort);
+			var args = string.Format ("-s {0} forward tcp:{1} tcp:{2}", device.ID, localPort, devicePort);
 			return StartProcess (AdbExe, args, outputLog, errorLog);
 		}
 		
 		public GetPackagesOperation GetInstalledPackagesOnDevice (AndroidDevice device, TextWriter errorWriter)
 		{
 			var output = new StringWriter ();
-			var args = string.Format ("-s '{0}' shell pm list packages", device.ID);
+			var args = string.Format ("-s {0} shell pm list packages", device.ID);
 			return new GetPackagesOperation (StartProcess (AdbExe, args, output, errorWriter), output);
 		}
 		
 		public ProcessWrapper LogCat (AndroidDevice device, ProcessEventHandler outputLog,
 			ProcessEventHandler errorLog)
 		{
-			var args = string.Format ("-s '{0}' logcat", device.ID);
+			var args = string.Format ("-s {0} logcat", device.ID);
 			return StartProcess (AdbExe, args, outputLog, errorLog);
 		}
 
