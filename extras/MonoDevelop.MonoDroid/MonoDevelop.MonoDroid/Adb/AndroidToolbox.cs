@@ -257,7 +257,7 @@ namespace MonoDevelop.MonoDroid
 			TextWriter outputLog, TextWriter errorLog)
 		{
 			var args = new ProcessArgumentBuilder ();
-			args.Add ("-s", device.ID, "shell", "am", "start", "-a", "android.intent.action.MAIN");
+			args.Add ("-s", device.ID, "shell", "am", "start", "-a", "android.intent.action.MAIN", "-n");
 			args.AddQuoted (activity);
 			
 			return StartProcess (AdbExe, args.ToString (), outputLog, errorLog);
@@ -267,7 +267,7 @@ namespace MonoDevelop.MonoDroid
 			ProcessEventHandler outputLog, ProcessEventHandler errorLog)
 		{
 			var args = new ProcessArgumentBuilder ();
-			args.Add ("-s", device.ID, "shell", "am", "start", "-a", "android.intent.action.MAIN");
+			args.Add ("-s", device.ID, "shell", "am", "start", "-a", "android.intent.action.MAIN", "-n");
 			args.AddQuoted (activity);
 			
 			return StartProcess (AdbExe, args.ToString (), outputLog, errorLog);
