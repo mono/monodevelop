@@ -664,7 +664,7 @@ namespace MonoDevelop.MonoDroid
 		{
 			string sanitized = SanitizeName (Name);
 			if (sanitized.Length == 0)
-				sanitized = "Application";
+				sanitized = "application";
 			return sanitized + "." + sanitized;
 		}
 		
@@ -673,7 +673,7 @@ namespace MonoDevelop.MonoDroid
 			var sb = new StringBuilder ();
 			foreach (char c in name)
 				if (char.IsLetterOrDigit (c))
-					sb.Append (c);
+					sb.Append (char.ToLowerInvariant (c));
 			return sb.ToString ();
 		}
 		
