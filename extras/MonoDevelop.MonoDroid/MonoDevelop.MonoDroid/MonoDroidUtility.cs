@@ -282,6 +282,7 @@ namespace MonoDevelop.MonoDroid
 		System.Threading.ManualResetEvent completedEvent;
 		IProgressMonitor monitor;
 		bool success;
+		bool cancel;
 		
 		public ChainedAsyncOperationSequence (params ChainedAsyncOperation[] chain) : this (null, chain)
 		{
@@ -361,7 +362,7 @@ namespace MonoDevelop.MonoDroid
 				
 				DisposeOp ();
 				
-				if (monitor != null && monitor.IsCancelRequested)
+				if (cancel || monitor != null && monitor.IsCancelRequested)
 					index = -1;
 				
 				if (IsCompleted) {
@@ -401,10 +402,10 @@ namespace MonoDevelop.MonoDroid
 
 		public void Cancel ()
 		{
+			cancel = true;
 			if (op == null)
 				return;
 			op.Cancel ();
-			index = -1;
 		}
 
 		public void WaitForCompleted ()
