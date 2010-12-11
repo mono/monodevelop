@@ -55,7 +55,12 @@ namespace MonoDevelop.MonoDroid
 				LoggingService.LogInfo ("Error parsing Debugger HostIP: {0}: {1}", ipStr, e);
 			}
 			
-			return System.Net.Dns.GetHostEntry (System.Net.Dns.GetHostName ()).AddressList[0];
+			var entry = System.Net.Dns.GetHostEntry (System.Net.Dns.GetHostName ());
+			foreach (var addr in entry.AddressList)
+				if (addr.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+					return addr;
+			
+			throw new Exception ("Could not get host address");
 		}
 	}
 }
