@@ -19,7 +19,6 @@
 		<Project name = "${ProjectName}" directory = "." type = "MonoDroid">
 			<Options
 				AndroidApplication="true"
-				AndroidManifest="Properties/AndroidManifest.xml"
 				AndroidResgenFile="Resources/Resource.designer.cs"
 				AndroidResgenClass="Resource" />
 			<References>
@@ -55,7 +54,6 @@
 					</Directory>
 				</Directory>
 				<Directory name="Properties">
-					<File name="AndroidManifest.xml" src="MonoDroidApplication/AndroidManifest.xml" />
 					<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="AssemblyInfo.cs" />
 				</Directory>
 			</Files>

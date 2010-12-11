@@ -12,7 +12,6 @@
 		<import file = "templates/MonoDroidActivity.xft.xml"/>
 		<import file = "templates/MonoDroidApplication/AboutResources.txt"/>
 		<import file = "templates/MonoDroidApplication/Activity1.cs"/>
-		<import file = "templates/MonoDroidApplication/AndroidManifest.xml"/>
 		<import file = "templates/MonoDroidApplication/icon-hd.png"/>
 		<import file = "templates/MonoDroidApplication/icon-ld.png"/>
 		<import file = "templates/MonoDroidApplication/icon-md.png"/>
