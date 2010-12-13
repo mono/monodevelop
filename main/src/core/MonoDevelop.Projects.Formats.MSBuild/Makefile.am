@@ -4,7 +4,7 @@ ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Projects.Formats.MSBuild.exe
 REFS =  \
 	-r:Microsoft.Build.Engine \
 	-r:Microsoft.Build.Framework \
-	-r:Microsoft.Build.Utilities \
+	-r:Microsoft.Build.Utilities.v3.5 \
 	-r:System \
 	-r:System.Runtime.Remoting
 
