@@ -39,6 +39,10 @@
       <Project>{372E8E3E-29D5-4B4D-88A2-4711CD628C4E}</Project>
       <Name>Mono.Debugger.Soft</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\contrib\Mono.Cecil\Mono.Cecil.csproj">
+      <Project>{3EC06433-F168-4C5B-A885-99CE4AB617E1}</Project>
+      <Name>Mono.Cecil</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArrayAdaptor.cs" />
