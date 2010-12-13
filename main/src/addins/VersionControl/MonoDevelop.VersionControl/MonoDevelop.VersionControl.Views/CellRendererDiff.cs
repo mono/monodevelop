@@ -19,6 +19,7 @@ namespace MonoDevelop.VersionControl.Views
 		int selectedLine = -1;
 		TreePath selctedPath;
 		TreePath path;
+		int RightPadding = 4;
 		
 //		Gdk.Color baseAddColor = new Gdk.Color (133, 168, 133);
 //		Gdk.Color baseRemoveColor = new Gdk.Color (178, 140, 140);
@@ -72,7 +73,7 @@ namespace MonoDevelop.VersionControl.Views
 					int maxlen = -1;
 					int maxlin = -1;
 					for (int n=0; n<lines.Length; n++) {
-						string line = lines [n];
+						string line = ProcessLine (lines [n]);
 						if (line == null)
 							throw new Exception ("Line " + n + " from diff was null.");
 						if (line.Length > maxlen) {
@@ -84,6 +85,7 @@ namespace MonoDevelop.VersionControl.Views
 					layout = CreateLayout (container, lines [maxlin]);
 					layout.GetPixelSize (out width, out lineHeight);
 					height = lineHeight * lines.Length;
+					width += LeftPaddingBlock + RightPadding;
 				}
 				else
 					width = height = 0;
@@ -106,6 +108,13 @@ namespace MonoDevelop.VersionControl.Views
 			else
 				layout.SetMarkup (text);
 			return layout;
+		}
+		
+		string ProcessLine (string line)
+		{
+			if (line == null)
+				return null;
+			return line.Replace ("\t","    ");
 		}
 		
 		const int leftSpace = 16;
@@ -131,16 +140,9 @@ namespace MonoDevelop.VersionControl.Views
 				var treeview = widget as FileTreeView;
 				var p = treeview != null? treeview.CursorLocation : null;
 				
-				int recty = cell_area.Y;
-				int recth = cell_area.Height - 1;
-				if (recty < 0) {
-					recth += recty + 1;
-					recty = -1;
-				}
-				if (recth > maxy + 2)
-					recth = maxy + 2;
+				cell_area.Width -= RightPadding;
 				
-				window.DrawRectangle (widget.Style.BaseGC (Gtk.StateType.Normal), true, cell_area.X, recty, cell_area.Width - 1, recth);
+				window.DrawRectangle (widget.Style.BaseGC (Gtk.StateType.Normal), true, cell_area.X, cell_area.Y, cell_area.Width - 1, cell_area.Height);
 				
 				Gdk.GC normalGC = widget.Style.TextGC (StateType.Normal);
 				Gdk.GC removedGC = new Gdk.GC (window);
@@ -151,13 +153,19 @@ namespace MonoDevelop.VersionControl.Views
 				addedGC.RgbFgColor = baseAddColor.AddLight (-0.3);
 				Gdk.GC infoGC = new Gdk.GC (window);
 				infoGC.Copy (normalGC);
-				infoGC.RgbFgColor = new Color (0xa5, 0x2a, 0x2a);
+				infoGC.RgbFgColor = widget.Style.Text (StateType.Normal).AddLight (0.2);
 				
 				Cairo.Context ctx = CairoHelper.Create (window);
 				Gdk.Color bgColor = new Gdk.Color (0,0,0);
 				
+				
+				// Rendering is done in two steps:
+				// 1) Get a list of blocks to render
+				// 2) render the blocks
+				
 				int y = cell_area.Y + 2;
 				
+				// cline keeps track of the current source code line (the one to jump to when double clicking)
 				int cline = 1;
 				bool inHeader = true;
 				BlockInfo currentBlock = null;
@@ -175,22 +183,18 @@ namespace MonoDevelop.VersionControl.Views
 					
 					char tag = line [0];
 	
-					// Keep track of the real file line
-					int thisLine = cline;
 					if (line.StartsWith ("---") || line.StartsWith ("+++")) {
+						// Ignore this part of the header.
 						currentBlock = null;
 						y -= lineHeight;
 						continue;
 					}
 					if (tag == '@') {
 						int l = ParseCurrentLine (line);
-						if (l != -1) cline = thisLine = l;
+						if (l != -1) cline = l - 1;
 						inHeader = false;
 					} else if (tag != '-' && !inHeader)
 						cline++;
-					
-					if (y > maxy)
-						break;
 					
 					BlockType type;
 					bool hasBg = false;
@@ -202,8 +206,13 @@ namespace MonoDevelop.VersionControl.Views
 					}
 
 					if (currentBlock == null || type != currentBlock.Type) {
+						if (y > maxy)
+							break;
+					
+						// Starting a new block. Mark section ends between a change block and a normal code block
 						if (currentBlock != null && IsChangeBlock (currentBlock.Type) && !IsChangeBlock (type))
 							currentBlock.SectionEnd = true;
+						
 						currentBlock = new BlockInfo () {
 							YStart = y,
 							FirstLine = n,
@@ -213,20 +222,25 @@ namespace MonoDevelop.VersionControl.Views
 						};
 						blocks.Add (currentBlock);
 					}
+					// Include the line in the current block
 					currentBlock.YEnd = y + lineHeight;
 					currentBlock.LastLine = n;
 				}
 
 				// Now render the blocks
-				
+
+				// The y position of the highlighted line
+				int selectedLineRowTop = -1;
+
 				BlockInfo lastCodeSegmentStart = null;
 				BlockInfo lastCodeSegmentEnd = null;
 				
 				foreach (BlockInfo block in blocks)
 				{
 					if (block.Type == BlockType.Info) {
+						// Finished drawing the content of a code segment. Now draw the segment border and label.
 						if (lastCodeSegmentStart != null)
-							DrawCodeSegmentBorder (normalGC, ctx, cell_area.X, cell_area.Width, lastCodeSegmentStart, lastCodeSegmentEnd, lines, widget, window);
+							DrawCodeSegmentBorder (infoGC, ctx, cell_area.X, cell_area.Width, lastCodeSegmentStart, lastCodeSegmentEnd, lines, widget, window);
 						lastCodeSegmentStart = block;
 					}
 					
@@ -235,11 +249,13 @@ namespace MonoDevelop.VersionControl.Views
 					if (block.YEnd < 0)
 						continue;
 					
+					// Draw the block background
 					DrawBlockBg (ctx, cell_area.X + 1, cell_area.Width - 2, block);
 					
+					// Get all text for the current block
 					StringBuilder sb = new StringBuilder ();
 					for (int n=block.FirstLine; n <= block.LastLine; n++) {
-						string s = lines [n];
+						string s = ProcessLine (lines [n]);
 						if (sb.Length > 0)
 							sb.Append ('\n');
 						if (block.Type != BlockType.Info && s.Length > 0)
@@ -247,26 +263,20 @@ namespace MonoDevelop.VersionControl.Views
 						else
 							sb.Append (s);
 					}
-					Gdk.GC gc;
-					switch (block.Type) {
-						case BlockType.Removed: gc = removedGC; break;
-						case BlockType.Added: gc = addedGC; break;
-						case BlockType.Info: gc = infoGC; break;
-						default: gc = normalGC; break;
-					}
-
-					// Draw the selected line
+					
+					// Draw a special background for the selected line
+					
 					if (block.Type != BlockType.Info && p.HasValue && p.Value.X >= cell_area.X && p.Value.X <= cell_area.Right && p.Value.Y >= block.YStart && p.Value.Y <= block.YEnd) {
 						int row = (p.Value.Y - block.YStart) / lineHeight;
 						double yrow = block.YStart + lineHeight * row + 0.5;
 						double xrow = cell_area.X + LeftPaddingBlock + 0.5;
 						int wrow = cell_area.Width - 1 - LeftPaddingBlock;
 						if (block.Type == BlockType.Added)
-							ctx.Color = baseAddColor.ToCairoColor ();
+							ctx.Color = baseAddColor.AddLight (0.1).ToCairoColor ();
 						else if (block.Type == BlockType.Removed)
-							ctx.Color = baseRemoveColor.ToCairoColor ();
+							ctx.Color = baseRemoveColor.AddLight (0.1).ToCairoColor ();
 						else {
-							ctx.Color = widget.Style.Base (Gtk.StateType.Prelight).ToCairoColor ();
+							ctx.Color = widget.Style.Base (Gtk.StateType.Prelight).AddLight (0.1).ToCairoColor ();
 							xrow -= LeftPaddingBlock;
 							wrow += LeftPaddingBlock;
 						}
@@ -274,25 +284,44 @@ namespace MonoDevelop.VersionControl.Views
 						ctx.Fill ();
 						selectedLine = block.SourceLineStart + row;
 						selctedPath = path;
+						selectedLineRowTop = (int)yrow;
 					}
 					
+					// Draw the line text. Ignore header blocks, since they are drawn as labels in DrawCodeSegmentBorder
+					
 					if (block.Type != BlockType.Info) {
+						layout.SetMarkup ("");
 						layout.SetText (sb.ToString ());
+						Gdk.GC gc;
+						switch (block.Type) {
+							case BlockType.Removed: gc = removedGC; break;
+							case BlockType.Added: gc = addedGC; break;
+							case BlockType.Info: gc = infoGC; break;
+							default: gc = normalGC; break;
+						}
 						window.DrawLayout (gc, cell_area.X + 2 + LeftPaddingBlock, block.YStart, layout);
 					}
+					
+					// Finally draw the change symbol at the left margin
 					
 					DrawChangeSymbol (ctx, cell_area.X + 1, cell_area.Width - 2, block);
 				}
 				
+				// Finish the drawing of the code segment
 				if (lastCodeSegmentStart != null)
-					DrawCodeSegmentBorder (normalGC, ctx, cell_area.X, cell_area.Width, lastCodeSegmentStart, lastCodeSegmentEnd, lines, widget, window);
+					DrawCodeSegmentBorder (infoGC, ctx, cell_area.X, cell_area.Width, lastCodeSegmentStart, lastCodeSegmentEnd, lines, widget, window);
 				
-//				window.DrawRectangle (widget.Style.DarkGC (Gtk.StateType.Prelight), false, cell_area.X, recty, cell_area.Width - 1, recth);
+				// Draw the source line number at the current selected line. It must be done at the end because it must
+				// be drawn over the source code text and segment borders.
+				if (selectedLineRowTop != -1)
+					DrawLineBox (normalGC, ctx, ((Gtk.TreeView)widget).VisibleRect.Right - 4, selectedLineRowTop, selectedLine, widget, window);
+				
 				((IDisposable)ctx).Dispose ();
 				removedGC.Dispose ();
 				addedGC.Dispose ();
 				infoGC.Dispose ();
 			} else {
+				// Rendering a normal text row
 				int y = cell_area.Y + (cell_area.Height - height)/2;
 				window.DrawLayout (widget.Style.TextGC (GetState(flags)), cell_area.X, y, layout);
 			}
@@ -342,29 +371,49 @@ namespace MonoDevelop.VersionControl.Views
 			ctx.Color = new Cairo.Color (0.7,0.7,0.7);
 			ctx.Stroke ();
 			
-			Pango.FontDescription small = font.Copy ();
-			small.Size -= 2;
-			layout.FontDescription = small;
-			layout.SetText (lines[firstBlock.FirstLine]);
+			string text = lines[firstBlock.FirstLine].Replace ("@","").Replace ("-","");
+			text = "<span size='x-small'>" + text.Replace ("+","</span><span size='small'>➜</span><span size='x-small'> ") + "</span>";
+			
+			layout.SetText ("");
+			layout.SetMarkup (text);
 			int tw,th;
 			layout.GetPixelSize (out tw, out th);
-			ctx.Rectangle (x + 2 + LeftPaddingBlock + 0.5, firstBlock.YStart + 0.5, tw, th);
+			th--;
+			
+			int dy = (lineHeight - th) / 2;
+			
+			ctx.Rectangle (x + 2 + LeftPaddingBlock - 1 + 0.5, firstBlock.YStart + dy - 1 + 0.5, tw + 2, th + 2);
 			ctx.LineWidth = 1;
 			ctx.Color = widget.Style.Base (Gtk.StateType.Normal).ToCairoColor ();
 			ctx.FillPreserve ();
 			ctx.Color = new Cairo.Color (0.7, 0.7, 0.7);
 			ctx.Stroke ();
 				
-			window.DrawLayout (gc, (int)(x + 2 + LeftPaddingBlock), firstBlock.YStart, layout);
-			small.Dispose ();
-			layout.FontDescription = font;
+			window.DrawLayout (gc, (int)(x + 2 + LeftPaddingBlock), firstBlock.YStart + dy, layout);
+		}
+		
+		void DrawLineBox (Gdk.GC gc, Cairo.Context ctx, int right, int top, int line, Gtk.Widget widget, Gdk.Drawable window)
+		{
+			layout.SetText ("");
+			layout.SetMarkup ("<small>" + line.ToString () + "</small>");
+			int tw,th;
+			layout.GetPixelSize (out tw, out th);
+			th--;
+			
+			int dy = (lineHeight - th) / 2;
+			
+			ctx.Rectangle (right - tw - 2 + 0.5, top + dy - 1 + 0.5, tw + 2, th + 2);
+			ctx.LineWidth = 1;
+			ctx.Color = widget.Style.Base (Gtk.StateType.Normal).ToCairoColor ();
+			ctx.FillPreserve ();
+			ctx.Color = new Cairo.Color (0.7, 0.7, 0.7);
+			ctx.Stroke ();
+
+			window.DrawLayout (gc, right - tw - 1, top + dy, layout);
 		}
 		
 		void DrawBlockBg (Cairo.Context ctx, double x, int width, BlockInfo block)
 		{
-			if (block.Type == BlockType.Info) {
-			}
-			
 			if (!IsChangeBlock (block.Type))
 				return;
 			
@@ -373,21 +422,21 @@ namespace MonoDevelop.VersionControl.Views
 			double y = block.YStart + 0.5;
 			int height = block.YEnd - block.YStart;
 			
+			double markerx = x + LeftPaddingBlock - 0.5;
 			double rd = RoundedSectionRadius;
 			if (block.SectionStart) {
 				ctx.Arc (x + rd, y + rd, rd, 180 * (Math.PI / 180), 270 * (Math.PI / 180));
-				ctx.LineTo (x + width - rd, y);
-				ctx.Arc (x + width - rd, y + rd, rd, -90 * (Math.PI / 180), 0 * (Math.PI / 180));
+				ctx.LineTo (markerx, y);
 			} else {
-				ctx.MoveTo (x + width, y);
+				ctx.MoveTo (markerx, y);
 			}
+			
+			ctx.LineTo (markerx, y + height);
+			
 			if (block.SectionEnd) {
-				ctx.LineTo (x + width, y + height - rd);
-				ctx.Arc (x + width - rd, y + height - rd, rd, 0 * (Math.PI / 180), 90 * (Math.PI / 180));
 				ctx.LineTo (x + rd, y + height);
 				ctx.Arc (x + rd, y + height - rd, rd, 90 * (Math.PI / 180), 180 * (Math.PI / 180));
 			} else {
-				ctx.LineTo (x + width, y + height);
 				ctx.LineTo (x, y + height);
 			}
 			if (block.SectionStart) {
@@ -395,20 +444,15 @@ namespace MonoDevelop.VersionControl.Views
 			} else {
 				ctx.LineTo (x, y);
 			}
+			ctx.Color = color.AddLight (0.1).ToCairoColor ();
+			ctx.Fill ();
 			
+			ctx.Rectangle (markerx, y, width - markerx, height);
 			Cairo.Gradient pat = new Cairo.LinearGradient (x, y, x + width, y);
-			pat.AddColorStop (0, color.AddLight (0.2).ToCairoColor ());
+			pat.AddColorStop (0, color.AddLight (0.21).ToCairoColor ());
 			pat.AddColorStop (1, color.AddLight (0.3).ToCairoColor ());
 			ctx.Pattern = pat;
-			ctx.FillPreserve ();
-			ctx.Color = color.ToCairoColor ();
-			
-			ctx.MoveTo (x + LeftPaddingBlock - 1, y);
-			ctx.RelLineTo (0, height);
-			
-			ctx.LineWidth = 1;
-		//	ctx.Stroke ();
-			ctx.NewPath ();
+			ctx.Fill ();
 		}
 		
 		void DrawChangeSymbol (Cairo.Context ctx, double x, int width, BlockInfo block)
@@ -418,8 +462,8 @@ namespace MonoDevelop.VersionControl.Views
 			
 			Gdk.Color color = block.Type == BlockType.Added ? baseAddColor : baseRemoveColor;
 
-			int ssize = 10;
-			int barSize = 4;
+			int ssize = 8;
+			int barSize = 3;
 			
 			if (ssize - 2 > lineHeight)
 				ssize = lineHeight - 2;
