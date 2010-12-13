@@ -63,6 +63,10 @@ namespace MonoDevelop.VersionControl.Views
 			get;
 			set;
 		}
+		
+		public bool Started {
+			get { return alreadyStarted; }
+		}
 
 		public VersionControlDocumentInfo (Document document, VersionControlItem item, Repository repository)
 		{

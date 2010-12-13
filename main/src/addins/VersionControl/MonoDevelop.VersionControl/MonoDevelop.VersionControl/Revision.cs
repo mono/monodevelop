@@ -10,6 +10,7 @@ namespace MonoDevelop.VersionControl
 		DateTime time;
 		string author;
 		string message;
+		string shortMessage;
 		RevisionPath[] changedFiles; // only set by GetHistory; informative, not necessarily a file path
 		
 		protected Revision (Repository repo)
@@ -38,6 +39,22 @@ namespace MonoDevelop.VersionControl
 			protected set { author = value; }
 		}
 		
+		public string Email { get; set; }
+		
+		public string ShortMessage {
+			get {
+				if (shortMessage != null)
+					return shortMessage;
+				if (Message.Length > 80)
+					return Message.Substring (0, 80);
+				else
+					return Message;
+			}
+			set {
+				shortMessage = value;
+			}
+		}
+		
 		public string Message {
 			get { return message; }
 			protected set { message = value; }
@@ -54,6 +71,14 @@ namespace MonoDevelop.VersionControl
 		
 		protected Repository Repository {
 			get { return repo; }
+		}
+		
+		public virtual string Name {
+			get { return ToString (); }
+		}
+		
+		public virtual string ShortName {
+			get { return Name; }
 		}
 	}
 	

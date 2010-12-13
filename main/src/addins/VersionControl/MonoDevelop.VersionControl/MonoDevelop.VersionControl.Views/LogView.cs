@@ -261,8 +261,10 @@ namespace MonoDevelop.VersionControl.Views
 		#region IAttachableViewContent implementation
 		public void Selected ()
 		{
-			if (info != null)
+			if (info != null && !info.Started) {
+				widget.ShowLoading ();
 				info.Start ();
+			}
 		}
 
 		public void Deselected ()
