@@ -142,17 +142,27 @@ namespace MonoDevelop.Projects.Extensions
 	
 	class DotNetProjectSubtypeNodeImport: ExtensionNode
 	{
+		[NodeAttribute ("language")]
+		string language;
+
+		[NodeAttribute ("projects")]
+		string projects;
+
 		protected override void Read (NodeElement elem)
 		{
 			IsAdd = elem.NodeName == "AddImport";
 			base.Read (elem);
 		}
 		
-		[NodeAttribute ("language")]
-		public string Language { get; set; }
+		public string Language {
+			get { return language; }
+			set { language = value; }
+		}
 		
-		[NodeAttribute ("projects")]
-		public string Projects { get; set; }
+		public string Projects {
+			get { return projects; }
+			set { projects = value; }
+		}
 		
 		public bool IsAdd { get; private set; }
 	}
