@@ -2,9 +2,9 @@
 // GitRepository.cs
 //  
 // Author:
-//       Dale Ragan <dale.ragan@sinesignal.com>
+//       Lluis Sanchez Gual <lluis@novell.com>
 // 
-// Copyright (c) 2010 SineSignal, LLC
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -140,7 +140,10 @@ namespace MonoDevelop.VersionControl.Git
 				}
 				if (paths.Count > 0) {
 					PersonIdent author = commit.GetAuthorIdent ();
-					revs.Add (new GitRevision (this, commit.Id.Name, author.GetWhen().ToLocalTime (), author.GetName (), commit.GetShortMessage (), paths.ToArray ()));
+					GitRevision rev = new GitRevision (this, commit.Id.Name, author.GetWhen().ToLocalTime (), author.GetName (), commit.GetFullMessage (), paths.ToArray ());
+					rev.Email = author.GetEmailAddress ();
+					rev.ShortMessage = commit.GetShortMessage ();
+					revs.Add (rev);
 				}
 			}
 			return revs.ToArray ();
@@ -1278,6 +1281,15 @@ namespace MonoDevelop.VersionControl.Git
 		public override string ToString ()
 		{
 			return rev;
+		}
+		
+		public override string ShortName {
+			get {
+				if (rev.Length > 10)
+					return rev.Substring (0, 10);
+				else
+					return rev;
+			}
 		}
 
 		public override Revision GetPrevious ()
