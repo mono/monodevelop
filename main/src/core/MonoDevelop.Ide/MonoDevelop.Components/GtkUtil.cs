@@ -43,6 +43,20 @@ namespace MonoDevelop.Components
 			                        (double)color.Blue / ushort.MaxValue);
 		}
 		
+		/// <summary>
+		/// Makes a color lighter or darker
+		/// </summary>
+		/// <param name='lightAmount'>
+		/// Amount of lightness to add. If the value is positive, the color will be lighter,
+		/// if negative it will be darker. Value must be between 0 and 1.
+		/// </param>
+		public static Gdk.Color AddLight (this Gdk.Color color, double lightAmount)
+		{
+			HslColor c = color;
+			c.L += lightAmount;
+			return c;
+		}
+		
 		public static void EnableAutoTooltips (this Gtk.TreeView tree)
 		{
 			TreeViewTooltipsData data = new TreeViewTooltipsData ();
