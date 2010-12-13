@@ -1,5 +1,5 @@
-	
-ASSEMBLY = $(top_builddir)/build/Addins/MonoDevelop.Debugger.Soft/Mono.Debugger.Soft.dll
+ASSEMBLY_DIR=$(top_builddir)/build/AddIns/MonoDevelop.Debugger.Soft
+ASSEMBLY=$(ASSEMBLY_DIR)/Mono.Debugger.Soft.dll
 
 REFS =  \
 	-r:System \
@@ -79,6 +79,7 @@ FILES =  \
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY): $(build_sources) $(DEPS)
+	mkdir -p "$(ASSEMBLY_DIR)"
 	$(CSC) $(CSC_FLAGS) /keyfile:"$(SIGNING_KEY)" /define:MONO_DATACONVERTER_STATIC_METHODS /debug /unsafe /out:$@ /target:library $(REFS) $(build_deps) $(build_sources)
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)
