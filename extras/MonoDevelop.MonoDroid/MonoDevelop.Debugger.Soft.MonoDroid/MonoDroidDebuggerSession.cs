@@ -67,13 +67,29 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 				new ChainedAsyncOperation<AndroidToolbox.AdbOutputOperation> () {
 					Create = () => {
 						long expireDate = date + 30; // 30 seconds
-						string monoOptions = string.Format ("debug={0}:{1}:{2},timeout={3}", dsi.Address, dsi.DebugPort, dsi.OutputPort, expireDate);
+						string monoOptions = string.Format ("debug={0}:{1}:{2},timeout={3},server=y", dsi.Address, dsi.DebugPort, 0, expireDate);
 						return MonoDroidFramework.Toolbox.SetProperty (cmd.Device, "debug.mono.extra", monoOptions);
 					},
 					Completed = (op) => {
 						if (!op.Success) {
 							this.OnDebuggerOutput (true, GettextCatalog.GetString ("Failed to set debug property on device"));
 							this.OnDebuggerOutput (true, op.GetOutput ());
+						}
+					}
+				},
+				new ChainedAsyncOperation () {
+					Create = () => MonoDroidFramework.Toolbox.ForwardPort (cmd.Device, dsi.DebugPort, dsi.DebugPort, null, null),
+					Completed = (op) => {
+						if (!op.Success) {
+							this.OnDebuggerOutput (true, GettextCatalog.GetString ("Failed to forward port on device"));
+						}
+					}
+				},
+				new ChainedAsyncOperation () {
+					Create = () => MonoDroidFramework.Toolbox.ForwardPort (cmd.Device, dsi.OutputPort, dsi.OutputPort, null, null),
+					Completed = (op) => {
+						if (!op.Success) {
+							this.OnDebuggerOutput (true, GettextCatalog.GetString ("Failed to forward port on device"));
 						}
 					}
 				},
@@ -100,7 +116,10 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 			
 			launchOp.Start ();
 			
-			StartListening (dsi);
+			// Connect to the process, giving it a time to start.
+			System.Threading.Thread.Sleep (200);
+
+			StartConnecting (dsi, -1, 800);
 		}
 
 		void ProcessOutput (object sender, string message)
@@ -142,6 +161,14 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 		{
 			base.OnExit ();
 			EndLaunch ();
+		}
+
+		protected override bool ShouldRetryConnection (Exception exc, int attemptNumber)
+		{
+			if (exc is IOException)
+				return true;
+
+			return base.ShouldRetryConnection (exc, attemptNumber);
 		}
 	}
 	
