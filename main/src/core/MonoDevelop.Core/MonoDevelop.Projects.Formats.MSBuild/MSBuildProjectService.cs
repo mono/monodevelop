@@ -407,8 +407,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return true;
 		}
 		
-		static RemoteBuildEngine currentBuildEngine;
-		
 		public static RemoteProjectBuilder GetProjectBuilder (TargetRuntime runtime, string toolsVersion, string file)
 		{
 			lock (builders) {
