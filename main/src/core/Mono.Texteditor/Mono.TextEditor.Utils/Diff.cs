@@ -447,7 +447,7 @@ namespace Mono.TextEditor.Utils
 				
 				sb.AppendLine ("@@ -" + remStart + "," + (remEnd - remStart) + " +" + insStart + "," + (insEnd - insStart) + " @@");
 				for (int i = System.Math.Min (remStart, insStart); i < item.RemoveStart; i++) {
-					sb.AppendLine (baseDocument.GetLineText (i, false));
+					sb.AppendLine (" " + baseDocument.GetLineText (i, false));
 				}
 				for (int i = item.RemoveStart; i < item.RemoveStart + item.Removed; i++) {
 					sb.AppendLine ("-" + baseDocument.GetLineText (i, false));
@@ -456,7 +456,7 @@ namespace Mono.TextEditor.Utils
 					sb.AppendLine ("+" + changedDocument.GetLineText (i, false));
 				}
 				for (int i = item.RemoveStart + item.Removed; i < remEnd; i++) {
-					sb.AppendLine (baseDocument.GetLineText (i, false));
+					sb.AppendLine (" " + baseDocument.GetLineText (i, false));
 				}
 			}
 			return sb.ToString ();
