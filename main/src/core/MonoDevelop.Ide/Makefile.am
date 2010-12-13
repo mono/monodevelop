@@ -248,6 +248,7 @@ FILES =  \
 	MonoDevelop.Components/HoverImageButton.cs \
 	MonoDevelop.Components/HslColor.cs \
 	MonoDevelop.Components/IconView.cs \
+	MonoDevelop.Components/ImageLoader.cs \
 	MonoDevelop.Components/InfoBar.cs \
 	MonoDevelop.Components/InvisibleFrame.cs \
 	MonoDevelop.Components/ListView.cs \
