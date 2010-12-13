@@ -315,6 +315,7 @@ build/Makefile
 build/MacOSX/Makefile
 contrib/Makefile
 contrib/Mono.Cecil/Makefile
+contrib/Mono.Debugger.Soft/Makefile
 contrib/NRefactory/Makefile
 contrib/Sharpen/Makefile
 contrib/NGit/Makefile
