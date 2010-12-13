@@ -65,7 +65,7 @@
     </Reference>
     <Reference Include="Mono.Debugger.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\main\src\addins\MonoDevelop.Debugger.Soft\Mono.Debugging.Soft\Mono.Debugger.Soft.dll</HintPath>
+      <HintPath>..\..\..\main\build\AddIns\MonoDevelop.Debugger.Soft\Mono.Debugger.Soft.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Xml" />

@@ -31,11 +31,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="Mono.Debugger.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Mono.Debugging.Soft\Mono.Debugger.Soft.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -91,6 +86,11 @@
     <ProjectReference Include="..\Mono.Debugging.Soft\Mono.Debugging.Soft.csproj">
       <Project>{DE40756E-57F6-4AF2-B155-55E3A88CCED8}</Project>
       <Name>Mono.Debugging.Soft</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\contrib\Mono.Debugger.Soft\Mono.Debugger.Soft.csproj">
+      <Project>{372E8E3E-29D5-4B4D-88A2-4711CD628C4E}</Project>
+      <Name>Mono.Debugger.Soft</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

@@ -35,6 +35,10 @@
       <Name>Mono.Debugging</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\contrib\Mono.Debugger.Soft\Mono.Debugger.Soft.csproj">
+      <Project>{372E8E3E-29D5-4B4D-88A2-4711CD628C4E}</Project>
+      <Name>Mono.Debugger.Soft</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArrayAdaptor.cs" />
@@ -52,10 +56,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="Mono.Debugger.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Mono.Debugger.Soft.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -73,4 +73,7 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <None Include="Makefile.am" />
+  </ItemGroup>
 </Project>

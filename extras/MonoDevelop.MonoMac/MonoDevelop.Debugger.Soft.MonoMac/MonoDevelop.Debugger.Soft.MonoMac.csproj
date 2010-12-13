@@ -60,12 +60,8 @@
     </Reference>
     <Reference Include="Mono.Debugger.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\main\src\addins\MonoDevelop.Debugger.Soft\Mono.Debugging.Soft\Mono.Debugger.Soft.dll</HintPath>
+      <HintPath>..\..\..\main\build\AddIns\MonoDevelop.Debugger.Soft\Mono.Debugger.Soft.dll</HintPath>
       <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.Debugger.Soft">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\main\src\addins\MonoDevelop.Debugger.Soft\MonoDevelop.Debugger.Soft\Mono.Debugger.Soft.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.AspNet, Version=2.2.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
