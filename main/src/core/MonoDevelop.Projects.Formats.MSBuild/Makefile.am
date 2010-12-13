@@ -22,10 +22,15 @@ FILES =  \
 
 RES = 
 
+# Mono's 2.0/3.5 compiler doesn't recognize 3.5 variants of the MSBuild assemblies
+# so patch up the references
+MSB_REF_PREFIX:=$(shell pkg-config --variable libdir mono)/mono/3.5/
+FIXED_REFS:=$(shell echo '$(REFS)' | sed -e 's@Microsoft.Build[^ ]*@$(MSB_REF_PREFIX)&.dll@g')
+
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
-	$(CSC) $(CSC_FLAGS) -warnaserror -debug -out:$@ -target:winexe $(REFS) $(build_deps) $(build_resources:%=/resource:%) $(build_sources)
+	$(CSC) $(CSC_FLAGS) -warnaserror -debug -out:$@ -target:winexe $(FIXED_REFS) $(build_deps) $(build_resources:%=/resource:%) $(build_sources)
 	
 $(ASSEMBLY).mdb: $(ASSEMBLY)
 
