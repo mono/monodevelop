@@ -298,10 +298,12 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			// Initialize
 			
-			FileRepository repo = new FileRepository (Path.Combine (targetLocalPath, ".git"));
-			repo.Create ();
+			InitCommand ci = new InitCommand ();
+			ci.SetDirectory (targetLocalPath);
+			var git = ci.Call ();
+			FileRepository repo = (FileRepository) git.GetRepository ();
 			
-			string branch = "master";
+			string branch = Constants.R_HEADS + "master";
 			string remoteName = "origin";
 			
 			RefUpdate head = repo.UpdateRef (Constants.HEAD);
@@ -323,14 +325,6 @@ namespace MonoDevelop.VersionControl.Git
 	
 			remoteConfig.Update (repo.GetConfig());
 	
-			// branch is like 'Constants.R_HEADS + branchName', we need only
-			// the 'branchName' part
-			String branchName = branch.Substring (Constants.R_HEADS.Length);
-	
-			// setup the default remote branch for branchName
-			repo.GetConfig().SetString("branch", branchName, "remote", remoteName);
-			repo.GetConfig().SetString("branch", branchName, "merge", branch);
-	
 			repo.GetConfig().Save();
 			
 			// Fetch
@@ -345,12 +339,19 @@ namespace MonoDevelop.VersionControl.Git
 				tn.Close ();
 			}
 			
+			// Create the master branch
+			
+			// branch is like 'Constants.R_HEADS + branchName', we need only
+			// the 'branchName' part
+			String branchName = branch.Substring (Constants.R_HEADS.Length);
+			git.BranchCreate ().SetName (branchName).SetUpstreamMode (CreateBranchCommand.SetupUpstreamMode.TRACK).SetStartPoint ("origin/master").Call ();
+			
 			// Checkout
 
 			DirCache dc = repo.LockDirCache ();
 			try {
 				RevWalk rw = new RevWalk (repo);
-				ObjectId remCommitId = repo.Resolve (remoteName + "/" + branch);
+				ObjectId remCommitId = repo.Resolve (remoteName + "/" + branchName);
 				RevCommit remCommit = rw.ParseCommit (remCommitId);
 				DirCacheCheckout co = new DirCacheCheckout (repo, null, dc, remCommit.Tree);
 				co.Checkout ();
