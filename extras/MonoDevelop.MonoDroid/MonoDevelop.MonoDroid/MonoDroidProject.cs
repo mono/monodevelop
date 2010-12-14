@@ -488,7 +488,7 @@ namespace MonoDevelop.MonoDroid
 			if (e.ProjectFile.BuildAction == MonoDroidBuildAction.AndroidResource)
 				QueueResgenUpdate ();
 			//clear the manifest element if the file is removed
-			else if (AndroidManifest != null && e.ProjectFile.FilePath == AndroidManifest)
+			else if (!AndroidManifest.IsNullOrEmpty && e.ProjectFile.FilePath == AndroidManifest)
 				AndroidManifest = null;
 		}
 		
@@ -501,7 +501,7 @@ namespace MonoDevelop.MonoDroid
 			if (e.ProjectFile.BuildAction == MonoDroidBuildAction.AndroidResource)
 				QueueResgenUpdate ();
 			//if renaming the file to "AndroidManifest.xml", and the manifest element is not in use, set it as a convenience
-			else if (AndroidManifest == null && e.NewName.ToRelative (BaseDirectory) == "AndroidManifest.xml")
+			else if (AndroidManifest.IsNullOrEmpty && e.NewName.ToRelative (BaseDirectory) == "AndroidManifest.xml")
 				AndroidManifest = e.NewName;
 			//track manifest file renames or things will break
 			else if (AndroidManifest == e.OldName)
@@ -518,7 +518,7 @@ namespace MonoDevelop.MonoDroid
 				QueueResgenUpdate ();
 			//if adding a file called AndroidManifest.xml, and the manifest element is not in use, set it as a convenience
 			//TODO: is it worth coping with LogicalNames?
-			else if (AndroidManifest == null && e.ProjectFile.FilePath.ToRelative (BaseDirectory) == "AndroidManifest.xml")
+			else if (AndroidManifest.IsNullOrEmpty && e.ProjectFile.FilePath.ToRelative (BaseDirectory) == "AndroidManifest.xml")
 				AndroidManifest = e.ProjectFile.FilePath;
 		}
 		
