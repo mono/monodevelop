@@ -59,7 +59,7 @@ namespace MonoDevelop.VersionControl.Views
 			foreach (VersionControlItem item in items) {
 				var document = IdeApp.Workbench.OpenDocument (item.Path);
 				DiffView.AttachViewContents (document, item);
-				document.Window.SwitchView (3);
+				document.Window.SwitchView (document.Window.FindView (typeof(BlameView)));
 			}
 		}
 		
