@@ -281,7 +281,7 @@ namespace MonoDevelop.VersionControl.Views
 					if (prevRev == null) {
 						lines = new string[changedDocument.LineCount];
 						for (int i = 0; i < changedDocument.LineCount; i++) {
-							lines[i] = "+ " + changedDocument.GetLineText (i);
+							lines[i] = "+ " + changedDocument.GetLineText (i + 1).TrimEnd ('\r','\n');
 						}
 						
 					} else {
