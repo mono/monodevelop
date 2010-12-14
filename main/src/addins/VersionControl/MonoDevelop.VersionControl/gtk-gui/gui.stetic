@@ -1530,7 +1530,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.VersionControl.Views.DiffWidget" design-size="300 298">
+  <widget class="Gtk.Bin" id="MonoDevelop.VersionControl.Views.DiffWidget" design-size="514 303">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -1572,7 +1572,7 @@
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="Type">TextOnly</property>
-                    <property name="Label" translatable="yes">_Patch</property>
+                    <property name="Label" translatable="yes">Unified Diff</property>
                     <property name="UseUnderline">True</property>
                   </widget>
                   <packing>
@@ -1593,10 +1593,10 @@
               <widget class="Gtk.Button" id="buttonNext">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="UseStock">True</property>
-                <property name="Type">StockItem</property>
-                <property name="StockId">gtk-go-forward</property>
-                <property name="label">gtk-go-forward</property>
+                <property name="Type">TextAndIcon</property>
+                <property name="Icon">stock:gtk-go-down Menu</property>
+                <property name="Label" translatable="yes">Next Change</property>
+                <property name="UseUnderline">True</property>
               </widget>
               <packing>
                 <property name="PackType">End</property>
@@ -1610,10 +1610,10 @@
               <widget class="Gtk.Button" id="buttonPrev">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="UseStock">True</property>
-                <property name="Type">StockItem</property>
-                <property name="StockId">gtk-go-back</property>
-                <property name="label">gtk-go-back</property>
+                <property name="Type">TextAndIcon</property>
+                <property name="Icon">stock:gtk-go-up Menu</property>
+                <property name="Label" translatable="yes">Previous Change</property>
+                <property name="UseUnderline">True</property>
               </widget>
               <packing>
                 <property name="PackType">End</property>

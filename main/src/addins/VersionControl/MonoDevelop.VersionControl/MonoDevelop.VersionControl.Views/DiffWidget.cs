@@ -46,7 +46,16 @@ namespace MonoDevelop.VersionControl.Views
 			get {
 				if (comparisonWidget.Diff.Count == 0)
 					return GettextCatalog.GetString ("Both files are equal");
-				return string.Format (GettextCatalog.GetPluralString ("{0} difference", "{0} differences", comparisonWidget.Diff.Count), comparisonWidget.Diff.Count);
+				int added=0, removed=0;
+				foreach (var h in comparisonWidget.Diff) {
+					added += h.Inserted;
+					removed += h.Removed;
+				}
+				string changes = string.Format (GettextCatalog.GetPluralString ("{0} change", "{0} changes", comparisonWidget.Diff.Count), comparisonWidget.Diff.Count);
+				string additions = string.Format (GettextCatalog.GetPluralString ("{0} line added", "{0} lines added", added), added);
+				string removals = string.Format (GettextCatalog.GetPluralString ("{0} line removed", "{0} lines removed", removed), removed);
+				
+				return changes + " (" + additions + ", " + removals + ")";
 			}
 		}
 		
@@ -74,7 +83,7 @@ namespace MonoDevelop.VersionControl.Views
 			comparisonWidget.Show ();
 			
 			comparisonWidget.DiffChanged += delegate {
-				labelOverview.Markup = "<big>" + LabelText + "</big>";
+				labelOverview.Markup = LabelText;
 				SetButtonSensitivity ();
 			};
 			comparisonWidget.SetVersionControlInfo (info);
