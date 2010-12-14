@@ -174,27 +174,8 @@ namespace MonoDevelop.VersionControl.Views
 			foreach (VersionControlItem item in items) {
 				var document = IdeApp.Workbench.OpenDocument (item.Path);
 				DiffView.AttachViewContents (document, item);
-				int viewNum = FindDiffView (document.Window.SubViewContents) + 1;
-				document.Window.SwitchView (viewNum);
+				document.Window.SwitchView (document.Window.FindView (typeof(DiffView)));
 			}
-		}
-		
-		private static int FindDiffView (IEnumerable<IAttachableViewContent> subContents)
-		{
-			int idx = -1;
-			int i = 0;
-			
-			foreach (IAttachableViewContent item in subContents) {
-				if (item is DiffView)
-				{
-					idx = i;
-					break;
-				}
-				
-				i++;
-			}
-			
-			return idx;
 		}
 		
 		public static bool CanShow (VersionControlItemList items)
@@ -207,12 +188,12 @@ namespace MonoDevelop.VersionControl.Views
 		}
 		
 		VersionControlDocumentInfo info;
-		public DiffView (VersionControlDocumentInfo info) : base ("Diff")
+		public DiffView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Changes"))
 		{
 			this.info = info;
 		}
 		
-		public DiffView (VersionControlDocumentInfo info, Revision baseRev, Revision toRev) : base ("Diff")
+		public DiffView (VersionControlDocumentInfo info, Revision baseRev, Revision toRev) : base (GettextCatalog.GetString ("Changes"))
 		{
 			this.info = info;
 			widget = new DiffWidget (info);
