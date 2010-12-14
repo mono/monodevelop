@@ -1,18 +1,19 @@
 
 using System;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl
 {
-	public partial class UrlBasedRepositoryEditor : Gtk.Bin
+	public partial class UrlBasedRepositoryEditor : Gtk.Bin, IRepositoryEditor
 	{
 		UrlBasedRepository repo;
 		bool updating;
 		string[] protocols;
 		
-		public UrlBasedRepositoryEditor (UrlBasedRepository repo, string[] supportedProtocols)
+		public UrlBasedRepositoryEditor (UrlBasedRepository repo)
 		{
 			Build ();
-			protocols = supportedProtocols;
+			protocols = repo.SupportedProtocols;
 				
 			this.repo = repo;
 			foreach (string p in protocols)
@@ -25,16 +26,33 @@ namespace MonoDevelop.VersionControl
 			updating = false;
 		}
 		
+		Gtk.Widget IRepositoryEditor.Widget {
+			get { return this; }
+		}
+		
+		public bool Validate ()
+		{
+			if (!repo.IsUrlValid (repositoryUrlEntry.Text)) {
+				labelError.Show ();
+				return false;
+			} else {
+				return true;
+			}
+		}
+		
 		void Fill ()
 		{
-			if (repo.Name == repositoryServerEntry.Text)
-				repo.Name = repo.Server;
-			repositoryServerEntry.Text = repo.Server;
-			repositoryPortSpin.Value = repo.Port;
-			repositoryPathEntry.Text = repo.Dir;
-			repositoryUserEntry.Text = repo.User;
+			if (repo.Uri != null) {
+				if (repo.Name == repositoryServerEntry.Text)
+					repo.Name = repo.Uri.Host;
+				repositoryServerEntry.Text = repo.Uri.Host;
+				repositoryPortSpin.Value = repo.Uri.Port;
+				repositoryPathEntry.Text = repo.Uri.PathAndQuery;
+				repositoryUserEntry.Text = repo.Uri.UserInfo;
+				comboProtocol.Active = Array.IndexOf (protocols, repo.Uri.Scheme);
+			} else
+				comboProtocol.Active = -1;
 			repositoryPassEntry.Text = repo.Pass;
-			comboProtocol.Active = Array.IndexOf (protocols, repo.Method);
 		}
 
 		protected virtual void OnRepositoryUrlEntryChanged(object sender, System.EventArgs e)
@@ -43,6 +61,8 @@ namespace MonoDevelop.VersionControl
 				updating = true;
 				repo.Url = repositoryUrlEntry.Text;
 				Fill ();
+				UpdateControls ();
+				labelError.Hide ();
 				updating = false;
 			}
 		}
@@ -51,52 +71,55 @@ namespace MonoDevelop.VersionControl
 		{
 			updating = true;
 			repositoryUrlEntry.Text = repo.Url;
-			if (repo.Name == repositoryServerEntry.Text)
-				repo.Name = repo.Server;
+			if (repo.Uri != null && repo.Name == repositoryServerEntry.Text)
+				repo.Name = repo.Uri.Host;
 			updating = false;
 		}
 		
 		void UpdateControls ()
 		{
-			switch (Protocol) {
-				case "svn":
-				case "svn+ssh":
-				case "http":
-				case "https":
-					repositoryServerEntry.Sensitive = true;
-					repositoryUserEntry.Sensitive = true;
-					repositoryPassEntry.Sensitive = true;
-					repositoryPortSpin.Sensitive = true;
-					break;
-				case "file":
-					repositoryServerEntry.Sensitive = false;
-					repositoryUserEntry.Sensitive = false;
-					repositoryPassEntry.Sensitive = false;
-					repositoryPortSpin.Sensitive = false;
-					break;
+			if (repo.Uri != null) {
+				repositoryPathEntry.Sensitive = true;
+				bool isUrl = (Protocol != "file");
+				repositoryServerEntry.Sensitive = isUrl;
+				repositoryUserEntry.Sensitive = isUrl;
+				repositoryPassEntry.Sensitive = isUrl;
+				repositoryPortSpin.Sensitive = isUrl;
+			} else {
+				repositoryPathEntry.Sensitive = false;
+				repositoryServerEntry.Sensitive = false;
+				repositoryUserEntry.Sensitive = false;
+				repositoryPassEntry.Sensitive = false;
+				repositoryPortSpin.Sensitive = false;
 			}
 		}
 
 		protected virtual void OnRepositoryServerEntryChanged(object sender, System.EventArgs e)
 		{
 			if (updating) return;
-			if (repo.Name == repo.Server)
+			if (repo.Name == repo.Uri.Host)
 				repo.Name = repositoryServerEntry.Text;
-			repo.Server = repositoryServerEntry.Text;
+			UriBuilder ub = new UriBuilder (repo.Uri);
+			ub.Host = repositoryServerEntry.Text;
+			repo.Url = ub.ToString ();
 			UpdateUrl ();
 		}
 
 		protected virtual void OnRepositoryPathEntryChanged(object sender, System.EventArgs e)
 		{
 			if (updating) return;
-			repo.Dir = repositoryPathEntry.Text;
+			UriBuilder ub = new UriBuilder (repo.Url);
+			ub.Path = repositoryPathEntry.Text;
+			repo.Url = ub.ToString ();
 			UpdateUrl ();
 		}
 
 		protected virtual void OnRepositoryUserEntryChanged(object sender, System.EventArgs e)
 		{
 			if (updating) return;
-			repo.User = repositoryUserEntry.Text;
+			UriBuilder ub = new UriBuilder (repo.Url);
+			ub.UserName = repositoryUserEntry.Text;
+			repo.Url = ub.ToString ();
 			UpdateUrl ();
 		}
 
@@ -110,7 +133,9 @@ namespace MonoDevelop.VersionControl
 		protected virtual void OnComboProtocolChanged(object sender, System.EventArgs e)
 		{
 			if (updating) return;
-			repo.Method = Protocol;
+			UriBuilder ub = new UriBuilder (repo.Url);
+			ub.Scheme = Protocol;
+			repo.Url = ub.ToString ();
 			UpdateUrl ();
 			UpdateControls ();
 		}
@@ -118,7 +143,9 @@ namespace MonoDevelop.VersionControl
 		protected virtual void OnRepositoryPortSpinValueChanged (object sender, System.EventArgs e)
 		{
 			if (updating) return;
-			repo.Port = (int) repositoryPortSpin.Value;
+			UriBuilder ub = new UriBuilder (repo.Url);
+			ub.Port = (int) repositoryPortSpin.Value;
+			repo.Url = ub.ToString ();
 			UpdateUrl ();
 		}
 		

@@ -13,7 +13,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 		private global::Gtk.HSeparator hseparator2;
 		private global::Gtk.EventBox repoEditorContainer;
 		private global::Gtk.Button button10;
-		private global::Gtk.Button button24;
+		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
 		{
@@ -36,7 +36,6 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.vbox1.BorderWidth = ((uint)(6));
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.table1 = new global::Gtk.Table (((uint)(2)), ((uint)(2)), false);
-			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
@@ -123,15 +122,15 @@ namespace MonoDevelop.VersionControl.Dialogs
 			w11.Expand = false;
 			w11.Fill = false;
 			// Container child GtkDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
-			this.button24 = new global::Gtk.Button ();
-			this.button24.CanDefault = true;
-			this.button24.CanFocus = true;
-			this.button24.Name = "button24";
-			this.button24.UseStock = true;
-			this.button24.UseUnderline = true;
-			this.button24.Label = "gtk-ok";
-			this.AddActionWidget (this.button24, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.button24]));
+			this.buttonOk = new global::Gtk.Button ();
+			this.buttonOk.CanDefault = true;
+			this.buttonOk.CanFocus = true;
+			this.buttonOk.Name = "buttonOk";
+			this.buttonOk.UseStock = true;
+			this.buttonOk.UseUnderline = true;
+			this.buttonOk.Label = "gtk-ok";
+			w10.Add (this.buttonOk);
+			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.buttonOk]));
 			w12.Position = 1;
 			w12.Expand = false;
 			w12.Fill = false;
@@ -142,6 +141,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.Hide ();
 			this.versionControlType.Changed += new global::System.EventHandler (this.OnVersionControlTypeChanged);
 			this.entryName.Changed += new global::System.EventHandler (this.OnEntryNameChanged);
+			this.buttonOk.Clicked += new global::System.EventHandler (this.OnButtonOkClicked);
 		}
 	}
 }

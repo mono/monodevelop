@@ -555,6 +555,7 @@ namespace MonoDevelop.VersionControl
 			if (configuration != null) {
 				XmlDataSerializer ser = new XmlDataSerializer (dataContext);
 				XmlTextWriter tw = new XmlTextWriter (new StreamWriter (ConfigFile));
+				tw.Formatting = Formatting.Indented;
 				try {
 					ser.Serialize (tw, configuration, typeof (VersionControlConfiguration));
 				} finally {

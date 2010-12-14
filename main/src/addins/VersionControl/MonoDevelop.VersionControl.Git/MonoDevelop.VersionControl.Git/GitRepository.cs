@@ -59,7 +59,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		public GitRepository ()
 		{
-			Method = "git";
+			Url = "git://";
 		}
 
 		public GitRepository (FilePath path, string url)
@@ -68,6 +68,22 @@ namespace MonoDevelop.VersionControl.Git
 			Url = url;
 			repo = new FileRepository (path.Combine (Constants.DOT_GIT));
 		}
+		
+		public override string[] SupportedProtocols {
+			get {
+				return new string[] {"git", "ssh", "http", "https", "ftp", "ftps", "rsync"};
+			}
+		}
+		
+		public override bool IsUrlValid (string url)
+		{
+			try {
+				NGit.Transport.URIish u = new NGit.Transport.URIish (url);
+				return true;
+			} catch {
+				return false;
+			}
+		}
 
 		public FilePath RootPath {
 			get { return path; }
@@ -75,9 +91,9 @@ namespace MonoDevelop.VersionControl.Git
 
 		public override void CopyConfigurationFrom (Repository other)
 		{
+			base.CopyConfigurationFrom (other);
 			GitRepository r = (GitRepository)other;
 			path = r.path;
-			Url = r.Url;
 			if (r.repo != null)
 				repo = new FileRepository (path);
 		}

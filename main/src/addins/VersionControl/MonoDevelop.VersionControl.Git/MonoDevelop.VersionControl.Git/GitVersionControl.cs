@@ -32,8 +32,6 @@ namespace MonoDevelop.VersionControl.Git
 {
 	public abstract class GitVersionControl : VersionControlSystem
 	{
-		readonly string[] protocolsGit = {"git", "ssh", "http", "https", "ftp", "ftps", "rsync"};
-		
 		static GitVersionControl ()
 		{
 			// Initialize the credentials provider, to be used in all git operations
@@ -65,9 +63,9 @@ namespace MonoDevelop.VersionControl.Git
 			return new GitRepository ();
 		}
 		
-		public override Gtk.Widget CreateRepositoryEditor (Repository repo)
+		public override IRepositoryEditor CreateRepositoryEditor (Repository repo)
 		{
-			return new UrlBasedRepositoryEditor ((GitRepository)repo, protocolsGit);
+			return new UrlBasedRepositoryEditor ((GitRepository)repo);
 		}
 	}
 }

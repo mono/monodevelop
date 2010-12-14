@@ -25,7 +25,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		protected abstract Repository OnCreateRepositoryInstance ();
-		public abstract Gtk.Widget CreateRepositoryEditor (Repository repo);
+		public abstract IRepositoryEditor CreateRepositoryEditor (Repository repo);
 		
 		public virtual Repository GetRepositoryReference (FilePath path, string id)
 		{

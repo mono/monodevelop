@@ -11,8 +11,6 @@ namespace MonoDevelop.VersionControl.Subversion
 {
 	public abstract class SubversionVersionControl : VersionControlSystem
 	{
-		readonly string[] protocolsSvn = {"svn", "svn+ssh", "http", "https", "file"};
-		
 		public override string Name {
 			get { return "Subversion"; }
 		}
@@ -22,9 +20,9 @@ namespace MonoDevelop.VersionControl.Subversion
 			return new SubversionRepository ();
 		}
 		
-		public override Gtk.Widget CreateRepositoryEditor (Repository repo)
+		public override IRepositoryEditor CreateRepositoryEditor (Repository repo)
 		{
-			return new UrlBasedRepositoryEditor ((SubversionRepository)repo, protocolsSvn);
+			return new UrlBasedRepositoryEditor ((SubversionRepository)repo);
 		}
 
 		public override Repository GetRepositoryReference (FilePath path, string id)

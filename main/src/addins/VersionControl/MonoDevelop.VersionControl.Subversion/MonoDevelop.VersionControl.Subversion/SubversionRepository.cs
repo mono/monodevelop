@@ -14,12 +14,19 @@ namespace MonoDevelop.VersionControl.Subversion
 	{
 		public SubversionRepository ()
 		{
-			Method = "svn";
+			Url = "svn://";
 		}
 		
 		public SubversionRepository (SubversionVersionControl vcs, string url): base (vcs)
 		{
 			Url = url;
+		}
+		
+		public override string[] SupportedProtocols {
+			get {
+				return new string[] {"svn", "svn+ssh", "http", "https", "file"};
+
+			}
 		}
 		
 		public override bool HasChildRepositories {
@@ -259,6 +266,19 @@ namespace MonoDevelop.VersionControl.Subversion
 					Svn.Add (path, recurse, monitor);
 			}
 		}
+		
+		public string Root {
+			get {
+				try {
+					UriBuilder ub = new UriBuilder (Url);
+					ub.Path = string.Empty;
+					ub.Query = string.Empty;
+					return ub.ToString ();
+				} catch {
+					return string.Empty;
+				}
+			}
+		}		
 
 		public override bool CanMoveFilesFrom (Repository srcRepository, FilePath localSrcPath, FilePath localDestPath)
 		{

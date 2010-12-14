@@ -7,6 +7,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 	{
 		Repository repo;
 		ArrayList systems = new ArrayList ();
+		IRepositoryEditor editor;
 		
 		public EditRepositoryDialog (Repository editedRepository)
 		{
@@ -18,9 +19,9 @@ namespace MonoDevelop.VersionControl.Dialogs
 				versionControlType.AppendText (repo.VersionControlSystem.Name);
 				versionControlType.Active = 0;
 				
-				Gtk.Widget editor = repo.VersionControlSystem.CreateRepositoryEditor (repo);
-				repoEditorContainer.Add (editor);
-				editor.Show ();
+				editor = repo.VersionControlSystem.CreateRepositoryEditor (repo);
+				repoEditorContainer.Add (editor.Widget);
+				editor.Widget.Show ();
 			}
 			else {
 				foreach (VersionControlSystem vcs in VersionControlService.GetVersionControlSystems ()) {
@@ -61,9 +62,9 @@ namespace MonoDevelop.VersionControl.Dialogs
 			repo = vcs.CreateRepositoryInstance ();
 			repo.Name = oldname;
 			repo.NameChanged += OnNameChanged;
-			Gtk.Widget editor = vcs.CreateRepositoryEditor (repo);
-			repoEditorContainer.Add (editor);
-			editor.Show ();
+			editor = vcs.CreateRepositoryEditor (repo);
+			repoEditorContainer.Add (editor.Widget);
+			editor.Widget.Show ();
 			entryName.Sensitive = true;
 		}
 
@@ -78,6 +79,13 @@ namespace MonoDevelop.VersionControl.Dialogs
 			repo.Name = entryName.Text;
 			repo.NameChanged += OnNameChanged;
 		}
+		
+		protected virtual void OnButtonOkClicked (object sender, System.EventArgs e)
+		{
+			if (editor.Validate ())
+				Respond (Gtk.ResponseType.Ok);
+		}
+		
 		
 		public Repository Repository {
 			get { return repo; }

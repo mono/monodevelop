@@ -188,7 +188,6 @@ namespace MonoDevelop.VersionControl.Dialogs
 			w15.Position = 0;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.table1 = new global::Gtk.Table (((uint)(4)), ((uint)(2)), false);
-			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
@@ -355,7 +354,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.buttonOk.UseStock = true;
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
-			this.AddActionWidget (this.buttonOk, -5);
+			w30.Add (this.buttonOk);
 			global::Gtk.ButtonBox.ButtonBoxChild w32 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w30 [this.buttonOk]));
 			w32.Position = 1;
 			w32.Expand = false;
@@ -374,6 +373,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.buttonEdit.Clicked += new global::System.EventHandler (this.OnButtonEditClicked);
 			this.entryFolder.Changed += new global::System.EventHandler (this.OnEntryFolderChanged);
 			this.buttonBrowse.Clicked += new global::System.EventHandler (this.OnButtonBrowseClicked);
+			this.buttonOk.Clicked += new global::System.EventHandler (this.OnButtonOkClicked);
 		}
 	}
 }

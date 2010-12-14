@@ -4,14 +4,11 @@ using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.VersionControl
 {
-	public abstract class UrlBasedRepository: Repository
+	public abstract class UrlBasedRepository: Repository, ICustomDataItem
 	{
-		private string dir = "";
-		private string user = "";
-		private string pass = "";
-		private int port = 0;
-		private string server = "";
-		private string method = "";
+		string url;
+		string pass = "";
+		Uri uri;
 		
 		public UrlBasedRepository ()
 		{
@@ -21,103 +18,78 @@ namespace MonoDevelop.VersionControl
 		{
 		}
 		
+		DataCollection ICustomDataItem.Serialize (ITypeSerializer handler)
+		{
+			return handler.Serialize (this);
+		}
+		
+		void ICustomDataItem.Deserialize (ITypeSerializer handler, DataCollection data)
+		{
+			handler.Deserialize (this, data);
+			if (data["Url"] == null) {
+				string dir = ((DataValue)data ["Dir"]).Value;
+				string user = ((DataValue)data ["User"]).Value;
+				string server = ((DataValue)data ["Server"]).Value;
+				string method = ((DataValue)data ["Method"]).Value;
+				int port = int.Parse (((DataValue)data ["Port"]).Value);
+				UriBuilder ub = new UriBuilder (method, server, port, dir);
+				url = ub.ToString ();
+			}
+			CreateUri ();
+		}
+
+		void CreateUri ()
+		{
+			try {
+				uri = new Uri (url);
+			} catch {
+				uri = null;
+			}
+		}
+		
 		public override void CopyConfigurationFrom (Repository other)
 		{
 			base.CopyConfigurationFrom (other);
 			
 			UrlBasedRepository ot = (UrlBasedRepository) other;
-			dir = ot.dir;
-			user = ot.user;
+			url = ot.url;
 			pass = ot.pass;
-			port = ot.port;
-			server = ot.server;
-			method = ot.method;
+			CreateUri ();
+		}
+		
+		public abstract string[] SupportedProtocols { get; }
+		
+		public virtual bool IsUrlValid (string url)
+		{
+			try {
+				Uri uri = new Uri (url);
+				return Array.IndexOf (SupportedProtocols, uri.Scheme) != -1;
+			} catch {
+				return false;
+			}
 		}
 
 		public override string LocationDescription {
 			get { return Url; }
 		}
 		
+		[ItemProperty]
 		public virtual string Url
 		{
-			get {
-				if (method.Length == 0)
-					return "";
-				string sdir = dir.StartsWith ("/") ? dir.Substring (1) : dir;
-				return Root + "/" + sdir;
-			}
-			set {
-				try {
-					pass = string.Empty;
-					Uri uri = new Uri (value);
-					method = uri.Scheme;
-					user = uri.UserInfo;
-					server = uri.Host;
-					port = uri.Port;
-					dir = uri.PathAndQuery;
-				} catch {
-					pass = user = server = dir = string.Empty;
-					port = 0;
-					method = "";
-				}
-			}
+			get { return url; }
+			set { url = value; CreateUri (); }
 		}
 		
-		[ItemProperty]
-		public string Dir
-		{
-			get { return dir; }
-			set { dir = value; }
-		}
-		
-		[ItemProperty]
-		public string User
-		{
-			get { return user; }
-			set { user = value; }
-		}
-		
-		[ItemProperty]
-		public string Pass
+		[ItemProperty (DefaultValue="")]
+		public virtual string Pass
 		{
 			get { return pass; }
 			set { pass = value; }
 		}
 		
-		[ItemProperty]
-		public int Port
-		{
-			get { return port; }
-			set { port = value; }
+		internal Uri Uri {
+			get { return uri; }
 		}
-		
-		[ItemProperty]
-		public string Server
-		{
-			get { return server; }
-			set { server = value; }
-		}
-		
-		[ItemProperty]
-		public string Method
-		{
-			get { return method; }
-			set { method = value; }
-		}
-		
-		public string Root {
-			get {
-				if (method.Length == 0)
-					return "";
-				string login = "";
-				if (this.User != "") {
-					login += this.User;
-					if (this.Pass != "")
-						login += ":" + this.Pass;
-					login += "@";
-				}
-				return method + "://" + login + this.Server + (port > 0 ? ":"+port.ToString() : "");
-			}
-		}
+
 	}
 }

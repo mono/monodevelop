@@ -496,7 +496,8 @@
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-ok</property>
-            <property name="ResponseId">-5</property>
+            <property name="ResponseId">-1</property>
+            <signal name="Clicked" handler="OnButtonOkClicked" />
             <property name="label">gtk-ok</property>
           </widget>
           <packing>
@@ -681,14 +682,15 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.Button" id="button24">
+          <widget class="Gtk.Button" id="buttonOk">
             <property name="MemberName" />
             <property name="CanDefault">True</property>
             <property name="CanFocus">True</property>
             <property name="UseStock">True</property>
             <property name="Type">StockItem</property>
             <property name="StockId">gtk-ok</property>
-            <property name="ResponseId">-5</property>
+            <property name="ResponseId">-1</property>
+            <signal name="Clicked" handler="OnButtonOkClicked" />
             <property name="label">gtk-ok</property>
           </widget>
           <packing>
@@ -700,17 +702,20 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.VersionControl.UrlBasedRepositoryEditor" design-size="300 350">
+  <widget class="Gtk.Bin" id="MonoDevelop.VersionControl.UrlBasedRepositoryEditor" design-size="407 306">
     <property name="MemberName" />
     <property name="Events">ButtonPressMask</property>
     <child>
       <widget class="Gtk.Table" id="table1">
         <property name="MemberName" />
-        <property name="NRows">9</property>
+        <property name="NRows">10</property>
         <property name="NColumns">2</property>
         <property name="RowSpacing">6</property>
         <property name="ColumnSpacing">6</property>
         <property name="BorderWidth">12</property>
+        <child>
+          <placeholder />
+        </child>
         <child>
           <widget class="Gtk.HBox" id="hbox1">
             <property name="MemberName" />
@@ -730,8 +735,8 @@
             </child>
           </widget>
           <packing>
-            <property name="TopAttach">2</property>
-            <property name="BottomAttach">3</property>
+            <property name="TopAttach">3</property>
+            <property name="BottomAttach">4</property>
             <property name="LeftAttach">1</property>
             <property name="RightAttach">2</property>
             <property name="AutoSize">True</property>
@@ -770,8 +775,8 @@
             </child>
           </widget>
           <packing>
-            <property name="TopAttach">4</property>
-            <property name="BottomAttach">5</property>
+            <property name="TopAttach">5</property>
+            <property name="BottomAttach">6</property>
             <property name="LeftAttach">1</property>
             <property name="RightAttach">2</property>
             <property name="AutoSize">True</property>
@@ -790,8 +795,8 @@
             <property name="MemberName" />
           </widget>
           <packing>
-            <property name="TopAttach">6</property>
-            <property name="BottomAttach">7</property>
+            <property name="TopAttach">7</property>
+            <property name="BottomAttach">8</property>
             <property name="RightAttach">2</property>
             <property name="YPadding">6</property>
             <property name="AutoSize">False</property>
@@ -810,8 +815,8 @@
             <property name="MemberName" />
           </widget>
           <packing>
-            <property name="TopAttach">1</property>
-            <property name="BottomAttach">2</property>
+            <property name="TopAttach">2</property>
+            <property name="BottomAttach">3</property>
             <property name="RightAttach">2</property>
             <property name="YPadding">6</property>
             <property name="AutoSize">False</property>
@@ -832,8 +837,8 @@
             <property name="LabelProp" translatable="yes">Server:</property>
           </widget>
           <packing>
-            <property name="TopAttach">3</property>
-            <property name="BottomAttach">4</property>
+            <property name="TopAttach">4</property>
+            <property name="BottomAttach">5</property>
             <property name="AutoSize">False</property>
             <property name="XOptions">Fill</property>
             <property name="YOptions">0</property>
@@ -870,8 +875,8 @@
             <property name="LabelProp" translatable="yes">Protocol:</property>
           </widget>
           <packing>
-            <property name="TopAttach">2</property>
-            <property name="BottomAttach">3</property>
+            <property name="TopAttach">3</property>
+            <property name="BottomAttach">4</property>
             <property name="AutoSize">True</property>
             <property name="XOptions">Fill</property>
             <property name="YOptions">Fill</property>
@@ -890,8 +895,8 @@
             <property name="LabelProp" translatable="yes">Port:</property>
           </widget>
           <packing>
-            <property name="TopAttach">4</property>
-            <property name="BottomAttach">5</property>
+            <property name="TopAttach">5</property>
+            <property name="BottomAttach">6</property>
             <property name="AutoSize">False</property>
             <property name="XOptions">Fill</property>
             <property name="YOptions">0</property>
@@ -910,8 +915,8 @@
             <property name="LabelProp" translatable="yes">Path:</property>
           </widget>
           <packing>
-            <property name="TopAttach">5</property>
-            <property name="BottomAttach">6</property>
+            <property name="TopAttach">6</property>
+            <property name="BottomAttach">7</property>
             <property name="AutoSize">False</property>
             <property name="XOptions">Fill</property>
             <property name="YOptions">0</property>
@@ -930,8 +935,8 @@
             <property name="LabelProp" translatable="yes">User:</property>
           </widget>
           <packing>
-            <property name="TopAttach">7</property>
-            <property name="BottomAttach">8</property>
+            <property name="TopAttach">8</property>
+            <property name="BottomAttach">9</property>
             <property name="AutoSize">False</property>
             <property name="XOptions">Fill</property>
             <property name="YOptions">0</property>
@@ -950,8 +955,8 @@
             <property name="LabelProp" translatable="yes">Password:</property>
           </widget>
           <packing>
-            <property name="TopAttach">8</property>
-            <property name="BottomAttach">9</property>
+            <property name="TopAttach">9</property>
+            <property name="BottomAttach">10</property>
             <property name="AutoSize">False</property>
             <property name="XOptions">Fill</property>
             <property name="YOptions">0</property>
@@ -960,6 +965,30 @@
             <property name="XShrink">False</property>
             <property name="YExpand">False</property>
             <property name="YFill">False</property>
+            <property name="YShrink">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Label" id="labelError">
+            <property name="MemberName" />
+            <property name="Visible">False</property>
+            <property name="Xalign">0</property>
+            <property name="LabelProp" translatable="yes">&lt;small&gt;&lt;span color='red'&gt;Invalid URL&lt;/span&gt;&lt;/small&gt;</property>
+            <property name="UseMarkup">True</property>
+          </widget>
+          <packing>
+            <property name="TopAttach">1</property>
+            <property name="BottomAttach">2</property>
+            <property name="LeftAttach">1</property>
+            <property name="RightAttach">2</property>
+            <property name="AutoSize">True</property>
+            <property name="XOptions">Fill</property>
+            <property name="YOptions">Fill</property>
+            <property name="XExpand">False</property>
+            <property name="XFill">True</property>
+            <property name="XShrink">False</property>
+            <property name="YExpand">False</property>
+            <property name="YFill">True</property>
             <property name="YShrink">False</property>
           </packing>
         </child>
@@ -973,8 +1002,8 @@
             <signal name="Changed" handler="OnRepositoryPassEntryChanged" />
           </widget>
           <packing>
-            <property name="TopAttach">8</property>
-            <property name="BottomAttach">9</property>
+            <property name="TopAttach">9</property>
+            <property name="BottomAttach">10</property>
             <property name="LeftAttach">1</property>
             <property name="RightAttach">2</property>
             <property name="AutoSize">False</property>
@@ -996,8 +1025,8 @@
             <signal name="Changed" handler="OnRepositoryPathEntryChanged" />
           </widget>
           <packing>
-            <property name="TopAttach">5</property>
-            <property name="BottomAttach">6</property>
+            <property name="TopAttach">6</property>
+            <property name="BottomAttach">7</property>
             <property name="LeftAttach">1</property>
             <property name="RightAttach">2</property>
             <property name="AutoSize">False</property>
@@ -1019,8 +1048,8 @@
             <signal name="Changed" handler="OnRepositoryServerEntryChanged" />
           </widget>
           <packing>
-            <property name="TopAttach">3</property>
-            <property name="BottomAttach">4</property>
+            <property name="TopAttach">4</property>
+            <property name="BottomAttach">5</property>
             <property name="LeftAttach">1</property>
             <property name="RightAttach">2</property>
             <property name="AutoSize">False</property>
@@ -1063,8 +1092,8 @@
             <signal name="Changed" handler="OnRepositoryUserEntryChanged" />
           </widget>
           <packing>
-            <property name="TopAttach">7</property>
-            <property name="BottomAttach">8</property>
+            <property name="TopAttach">8</property>
+            <property name="BottomAttach">9</property>
             <property name="LeftAttach">1</property>
             <property name="RightAttach">2</property>
             <property name="AutoSize">False</property>
