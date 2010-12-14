@@ -37,7 +37,15 @@ namespace MonoDevelop.VersionControl
 		
 		protected override string GetDescription ()
 		{
-			return GettextCatalog.GetString ("Checkout {0}...", path);
+			return GettextCatalog.GetString ("Checking out {0}...", path);
+		}
+		
+		protected override IProgressMonitor CreateProgressMonitor ()
+		{
+			return new MonoDevelop.Core.ProgressMonitoring.AggregatedProgressMonitor (
+				new MonoDevelop.Ide.ProgressMonitoring.MessageDialogProgressMonitor (true, true, true, true),
+				base.CreateProgressMonitor ()
+			);
 		}
 		
 		protected override void Run () 

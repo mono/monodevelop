@@ -32,8 +32,13 @@ namespace MonoDevelop.VersionControl
 			get { return tracker; }
 		}
 		
+		protected virtual IProgressMonitor CreateProgressMonitor ()
+		{
+			return VersionControlService.GetProgressMonitor (GetDescription ());
+		}
+		
 		public void Start() {
-			tracker = VersionControlService.GetProgressMonitor (GetDescription ());
+			tracker = CreateProgressMonitor ();
 			tracker.BeginTask(GetDescription(), 1);
 			ThreadPool.QueueUserWorkItem (BackgroundWorker);
 		}
