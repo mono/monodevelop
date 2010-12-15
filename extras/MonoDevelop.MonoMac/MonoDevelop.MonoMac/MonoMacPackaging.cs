@@ -35,6 +35,7 @@ using MonoDevelop.Projects;
 using System.Diagnostics;
 using System.IO;
 using MonoDevelop.Core.Serialization;
+using MonoDevelop.MacDev.Plist;
 
 namespace MonoDevelop.MonoMac.Gui
 {
@@ -114,119 +115,121 @@ namespace MonoDevelop.MonoMac.Gui
 			FilePath tempDir = "/tmp/monomac-build-" + DateTime.Now.Ticks;
 			FilePath workingApp = tempDir.Combine (cfg.AppDirectory.FileName);
 			
-			monitor.BeginTask (GettextCatalog.GetString ("Creating app bundle"), 0);
-			var files = Directory.GetFiles (cfg.AppDirectory, "*", SearchOption.AllDirectories);
-			HashSet<string> createdDirs = new HashSet<string> ();
-			foreach (FilePath f in files) {
-				var rel = f.ToRelative (cfg.AppDirectory);
-				var parentDir = rel.ParentDirectory;
+			try {
+				monitor.BeginTask (GettextCatalog.GetString ("Creating app bundle"), 0);
+				var files = Directory.GetFiles (cfg.AppDirectory, "*", SearchOption.AllDirectories);
+				HashSet<string> createdDirs = new HashSet<string> ();
+				foreach (FilePath f in files) {
+					var rel = f.ToRelative (cfg.AppDirectory);
+					var parentDir = rel.ParentDirectory;
+					if (settings.IncludeMono) {
+						if (parentDir.IsNullOrEmpty || parentDir == "." || parentDir == "Contents/MacOS")
+							continue;
+						var ext = rel.Extension;
+						if (ext == ".mdb" || ext == ".exe" || ext == ".dll")
+							continue;
+					}
+					if (monitor.IsCancelRequested)
+						return false;
+					if (createdDirs.Add (parentDir))
+						Directory.CreateDirectory (workingApp.Combine (parentDir));
+					monitor.Log.WriteLine (rel);
+					File.Copy (f, workingApp.Combine (rel));
+				}
+				monitor.EndTask ();
+				
 				if (settings.IncludeMono) {
-					if (parentDir.IsNullOrEmpty || parentDir == "." || parentDir == "Contents/MacOS")
-						continue;
-					var ext = rel.Extension;
-					if (ext == ".mdb" || ext == ".exe" || ext == ".dll")
-						continue;
-				}
-				if (monitor.IsCancelRequested)
-					return false;
-				if (createdDirs.Add (parentDir))
-					Directory.CreateDirectory (workingApp.Combine (parentDir));
-				monitor.Log.WriteLine (rel);
-				File.Copy (f, workingApp.Combine (rel));
-			}
-			monitor.EndTask ();
-			
-			if (settings.IncludeMono) {
-				monitor.BeginTask (GettextCatalog.GetString ("Merging Mono into app bundle"), 0);
-				
-				var args = new ProcessArgumentBuilder ();
-				args.Add ("-o");
-				args.AddQuoted (tempDir);
-				args.Add ("-n");
-				args.AddQuoted (cfg.AppName);
-				
-				var assemblies = project.GetReferencedAssemblies (conf, true);
-				foreach (var a in assemblies) {
-					args.Add ("-a");
-					args.AddQuoted (a);
-				}
-				
-				string mmpPath = Mono.Addins.AddinManager.CurrentAddin.GetFilePath ("mmp");
-				var psi = new ProcessStartInfo (mmpPath, args.ToString ());
-				monitor.Log.WriteLine ("mmp " + psi.Arguments);
-				
-				string err;
-				if (MacBuildUtilities.ExecuteCommand (monitor, psi, out err) != 0) {
-					monitor.Log.WriteLine (err);
-					monitor.ReportError ("Merging Mono failed", null);
-					try {
-						Directory.Delete (tempDir, true);
-					} catch {}
-					return false;
+					monitor.BeginTask (GettextCatalog.GetString ("Merging Mono into app bundle"), 0);
+					
+					var args = new ProcessArgumentBuilder ();
+					args.Add ("-o");
+					args.AddQuoted (tempDir);
+					args.Add ("-n");
+					args.AddQuoted (cfg.AppName);
+					
+					var assemblies = project.GetReferencedAssemblies (conf, true);
+					foreach (var a in assemblies) {
+						args.Add ("-a");
+						args.AddQuoted (a);
+					}
+					args.AddQuoted (cfg.CompiledOutputName);
+					
+					string mmpPath = Mono.Addins.AddinManager.CurrentAddin.GetFilePath ("mmp");
+					var psi = new ProcessStartInfo (mmpPath, args.ToString ());
+					monitor.Log.WriteLine ("mmp " + psi.Arguments);
+					
+					string err;
+					if (MacBuildUtilities.ExecuteCommand (monitor, psi, out err) != 0) {
+						monitor.Log.WriteLine (err);
+						monitor.ReportError ("Merging Mono failed", null);
+						return false;
+					}
+					
+					var plistFile = workingApp.Combine ("Contents", "Info.plist");
+					var plistDoc = new PlistDocument ();
+					plistDoc.LoadFromXmlFile (plistFile);
+					((PlistDictionary)plistDoc.Root)["MonoBundleExecutable"] = cfg.CompiledOutputName.FileName;
+					plistDoc.WriteToFile (plistFile);
+					
+					monitor.EndTask ();
 				}
 				
-				monitor.EndTask ();
-			}
-			
-			//verify bundle details if for app store?
-			
-			if (settings.SignBundle) {
-				monitor.BeginTask (GettextCatalog.GetString ("Signing app bundle"), 0);
-				
-				var args = new ProcessArgumentBuilder ();
-				args.Add ("-v", "-f", "-s");
-				args.AddQuoted (bundleKey, workingApp);
-				
-				var psi = new ProcessStartInfo ("codesign", args.ToString ());
-				monitor.Log.WriteLine ("codesign " + psi.Arguments);
-				
-				string err;
-				if (MacBuildUtilities.ExecuteCommand (monitor, psi, out err) != 0) {
-					monitor.Log.WriteLine (err);
-					monitor.ReportError ("Signing failed", null);
-					try {
-						Directory.Delete (tempDir, true);
-					} catch {}
-					return false;
+				//TODO: verify bundle details if for app store?
+					
+				if (settings.SignBundle) {
+					monitor.BeginTask (GettextCatalog.GetString ("Signing app bundle"), 0);
+					
+					var args = new ProcessArgumentBuilder ();
+					args.Add ("-v", "-f", "-s");
+					args.AddQuoted (bundleKey, workingApp);
+					
+					var psi = new ProcessStartInfo ("codesign", args.ToString ());
+					monitor.Log.WriteLine ("codesign " + psi.Arguments);
+					
+					string err;
+					if (MacBuildUtilities.ExecuteCommand (monitor, psi, out err) != 0) {
+						monitor.Log.WriteLine (err);
+						monitor.ReportError ("Signing failed", null);
+						return false;
+					}
+					
+					monitor.EndTask ();
 				}
 				
-				monitor.EndTask ();
-			}
-			
-			if (settings.CreatePackage) {
-				monitor.BeginTask (GettextCatalog.GetString ("Creating installer"), 0);
-				
-				var args = new ProcessArgumentBuilder ();
-				args.Add ("--component");
-				args.AddQuoted (workingApp);
-				args.Add ("/Applications", "--sign");
-				args.AddQuoted (packageKey);
-				if (!settings.ProductDefinition.IsNullOrEmpty) {
-					args.Add ("--product");
-					args.AddQuoted (settings.ProductDefinition);
+				if (settings.CreatePackage) {
+					monitor.BeginTask (GettextCatalog.GetString ("Creating installer"), 0);
+					
+					var args = new ProcessArgumentBuilder ();
+					args.Add ("--component");
+					args.AddQuoted (workingApp);
+					args.Add ("/Applications", "--sign");
+					args.AddQuoted (packageKey);
+					if (!settings.ProductDefinition.IsNullOrEmpty) {
+						args.Add ("--product");
+						args.AddQuoted (settings.ProductDefinition);
+					}
+					args.AddQuoted (target);
+					
+					var psi = new ProcessStartInfo ("productbuild", args.ToString ());
+					monitor.Log.WriteLine ("productbuild " + psi.Arguments);
+					
+					string err;
+					if (MacBuildUtilities.ExecuteCommand (monitor, psi, out err) != 0) {
+						monitor.Log.WriteLine (err);
+						monitor.ReportError ("Package creation failed", null);
+						return false;
+					}
+					monitor.EndTask ();
+				} else {
+					Directory.Move (workingApp, target);
 				}
-				args.AddQuoted (target);
-				
-				var psi = new ProcessStartInfo ("productbuild", args.ToString ());
-				monitor.Log.WriteLine ("productbuild " + psi.Arguments);
-				
-				string err;
-				if (MacBuildUtilities.ExecuteCommand (monitor, psi, out err) != 0) {
-					monitor.Log.WriteLine (err);
-					monitor.ReportError ("Package creation failed", null);
-					try {
-						Directory.Delete (tempDir, true);
-					} catch {}
-					return false;
-				}
-				
+			} finally {
 				try {
-					Directory.Delete (tempDir, true);
-				} catch {}
-				
-				monitor.EndTask ();
-			} else {
-				Directory.Move (workingApp, target);
+					if (Directory.Exists (tempDir))
+						Directory.Delete (tempDir, true);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error removing temp directory", ex);
+				}
 			}
 			
 			return true;
