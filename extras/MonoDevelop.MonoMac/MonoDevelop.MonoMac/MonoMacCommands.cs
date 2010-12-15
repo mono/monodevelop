@@ -43,6 +43,8 @@ namespace MonoDevelop.MonoMac
 	
 	class CreateMacInstallerHandler : CommandHandler
 	{
+		const string PROP_KEY = "MonoMacPackagingSettings";
+		
 		static MonoMacProject GetSelectedMonoMacProject ()
 		{
 			return IdeApp.ProjectOperations.CurrentSelectedProject as MonoMacProject;
@@ -59,7 +61,9 @@ namespace MonoDevelop.MonoMac
 		{
 			var proj = GetSelectedMonoMacProject ();
 			
-			var settings = MonoMacPackagingSettings.GetAppStoreDefault ();
+			var settings = proj.UserProperties.GetValue<MonoMacPackagingSettings> (PROP_KEY)
+				?? MonoMacPackagingSettings.GetAppStoreDefault ();
+			
 			MonoMacPackagingSettingsDialog dlg;
 			try {
 				dlg = new MonoMacPackagingSettingsDialog ();
@@ -87,6 +91,8 @@ namespace MonoDevelop.MonoMac
 			
 			if (!fileDlg.Run ())
 				return;
+			
+			proj.UserProperties.SetValue (PROP_KEY, settings);
 			
 			var target = fileDlg.SelectedFile;
 			if (!string.Equals (target.Extension, ext, StringComparison.OrdinalIgnoreCase))

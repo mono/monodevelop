@@ -34,6 +34,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using System.Diagnostics;
 using System.IO;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.MonoMac.Gui
 {
@@ -254,14 +255,28 @@ namespace MonoDevelop.MonoMac.Gui
 	
 	public class MonoMacPackagingSettings
 	{
+		[ItemProperty]
 		public bool IncludeMono { get; set; }
+		
+		[ItemProperty]
 		public bool SignBundle { get; set; }
+		
+		[ItemProperty]
 		public string BundleSigningKey { get; set; }
+		
+		[ItemProperty]
 		public MonoMacLinkerMode LinkerMode { get; set; }
 		
+		[ItemProperty]
 		public bool CreatePackage { get; set; }
+		
+		[ItemProperty]
 		public bool SignPackage { get; set; }
+		
+		[ItemProperty]
 		public string PackageSigningKey { get; set; }
+		
+		[ItemProperty]
 		public FilePath ProductDefinition { get; set; }
 		
 		public static MonoMacPackagingSettings GetAppStoreDefault ()
