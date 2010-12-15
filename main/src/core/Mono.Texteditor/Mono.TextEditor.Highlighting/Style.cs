@@ -674,14 +674,16 @@ namespace Mono.TextEditor.Highlighting
 		
 		public Gdk.Color GetColorFromString (string colorString)
 		{
-			if (customPalette.ContainsKey (colorString))
-				return this.GetColorFromString (customPalette[colorString]);
-			if (styleLookupTable.ContainsKey (colorString)) 
-				return styleLookupTable[colorString].Color;
-			Gdk.Color result = new Color ();
-			if (!Gdk.Color.Parse (colorString, ref result)) 
-				throw new Exception ("Can't parse color: " + colorString);
-			return result;
+			string refColorString;
+			if (customPalette.TryGetValue (colorString, out refColorString))
+				return this.GetColorFromString (refColorString);
+			ChunkStyle style;
+			if (styleLookupTable.TryGetValue (colorString, out style))
+				return style.Color;
+			Gdk.Color color;
+			if (Gdk.Color.Parse (colorString, ref color))
+				return color;
+			throw new Exception ("Failed to parse color or find named color '" + colorString + "'");
 		}
 		
 		public const string NameAttribute = "name";
