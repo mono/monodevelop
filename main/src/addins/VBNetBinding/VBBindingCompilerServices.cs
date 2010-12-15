@@ -249,9 +249,6 @@ namespace MonoDevelop.VBNetBinding {
 				return res;
 			}
 			
-			string outstr = String.Concat (compilerName, " @", responseFileName);
-			
-			
 			string workingDir = ".";
 			if (configuration.ParentItem != null)
 				workingDir = configuration.ParentItem.BaseDirectory;
@@ -260,7 +257,7 @@ namespace MonoDevelop.VBNetBinding {
 			var envVars = configuration.TargetRuntime.GetToolsExecutionEnvironment (configuration.TargetFramework);
 			
 			monitor.Log.WriteLine (Path.GetFileName (compilerName) + " " + string.Join (" ", File.ReadAllLines (responseFileName)));
-			exitCode = DoCompilation (outstr, tf, workingDir, envVars, ref output);
+			exitCode = DoCompilation (compilerName, responseFileName, tf, workingDir, envVars, ref output);
 			
 			monitor.Log.WriteLine (output);			                                                          
 			BuildResult result = ParseOutput (tf, output);
@@ -360,14 +357,11 @@ namespace MonoDevelop.VBNetBinding {
 			return null;
 		}
 		
-		private int DoCompilation (string outstr, TempFileCollection tf, string working_dir, ExecutionEnvironment envVars, ref string output)
+		private int DoCompilation (string compilerName, string responseFileName, TempFileCollection tf, string working_dir, ExecutionEnvironment envVars, ref string output)
 		{
 			StringWriter outwr = new StringWriter ();
-			string[] tokens = outstr.Split (' ');			
 			try {
-				outstr = outstr.Substring (tokens[0].Length+1);
-				
-				ProcessStartInfo pinfo = new ProcessStartInfo (tokens[0], "\"" + outstr + "\"");
+				ProcessStartInfo pinfo = new ProcessStartInfo (compilerName, "\"@" + responseFileName + "\"");
 				pinfo.WorkingDirectory = working_dir;
 				envVars.MergeTo (pinfo);
 			
