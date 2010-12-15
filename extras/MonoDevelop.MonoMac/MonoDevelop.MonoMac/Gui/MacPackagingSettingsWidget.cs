@@ -36,14 +36,24 @@ namespace MonoDevelop.MonoMac.Gui
 	{
 		IList<X509Certificate2> certs;
 		
-		static string INSTALLER_PREFIX = "3rd Party Mac Developer Installer:";
-		static string APPLICATION_PREFIX = "3rd Party Mac Developer Application:";
+		public static string INSTALLER_PREFIX = "3rd Party Mac Developer Installer";
+		public static string APPLICATION_PREFIX = "3rd Party Mac Developer Application";
 		
 		public MonoMacPackagingSettingsWidget ()
 		{
 			this.Build ();
 			certs = Keychain.GetAllSigningCertificates ();
 			productDefinitionFileEntry.BrowserTitle = GettextCatalog.GetString ("Select Product Definition...");
+			
+			includeMonoCheck.Toggled += CheckToggled;
+			signBundleCheck.Toggled += CheckToggled;
+			createPackageCheck.Toggled += CheckToggled;
+			signPackageCheck.Toggled += CheckToggled;
+		}
+
+		void CheckToggled (object sender, EventArgs e)
+		{
+			UpdateSensitivity ();
 		}
 		
 		public void LoadSettings (MonoMacPackagingSettings settings)
@@ -59,7 +69,9 @@ namespace MonoDevelop.MonoMac.Gui
 			createPackageCheck.Active          = settings.CreatePackage;
 			signPackageCheck.Active            = settings.SignPackage;
 			packageIdentityCombo.SelectedName  = settings.PackageSigningKey;
-			productDefinitionFileEntry.Path    = settings.ProductDefinition;
+			productDefinitionFileEntry.Path = settings.ProductDefinition.ToString () ?? "";
+			
+			UpdateSensitivity ();
 		}
 		
 		public void SaveSettings (MonoMacPackagingSettings settings)
@@ -72,13 +84,15 @@ namespace MonoDevelop.MonoMac.Gui
 			settings.SignPackage       = signPackageCheck.Active;
 			settings.PackageSigningKey = packageIdentityCombo.SelectedName;
 			settings.ProductDefinition = productDefinitionFileEntry.Path;
+			if (settings.ProductDefinition.IsEmpty)
+				settings.ProductDefinition = FilePath.Null;
 		}
 		
 		void FillIdentities (SigningIdentityCombo combo, string preferredPrefix, string excludePrefix)
 		{
 			combo.ClearList ();
 			
-			combo.AddItemWithMarkup (GettextCatalog.GetString ("<b>Default Identity</b>"), "", null);
+			combo.AddItemWithMarkup (GettextCatalog.GetString ("<b>Default App Store Identity</b>"), "", null);
 			if (certs.Count == 0)
 				return;
 			
@@ -110,26 +124,16 @@ namespace MonoDevelop.MonoMac.Gui
 					combo.AddItem (name, name, null);
 			}
 		}
-	}
-	
-	public class MonoMacPackagingSettings
-	{
-		public bool IncludeMono { get; set; }
-		public bool SignBundle { get; set; }
-		public string BundleSigningKey { get; set; }
-		public MonoMacLinkerMode LinkerMode { get; set; }
 		
-		public bool CreatePackage { get; set; }
-		public bool SignPackage { get; set; }
-		public string PackageSigningKey { get; set; }
-		public FilePath ProductDefinition { get; set; }
-	}
-	
-	public enum MonoMacLinkerMode
-	{
-		LinkNone,
-		LinkFramework,
-		LinkAll
+		void UpdateSensitivity ()
+		{
+			linkerLabel.Sensitive = linkerCombo.Sensitive = includeMonoCheck.Active;
+			bundleSigningLabel.Sensitive = bundleIdentityCombo.Sensitive = signBundleCheck.Active;
+			signPackageCheck.Sensitive = productDefinitionLabel.Sensitive = productDefinitionFileEntry.Sensitive
+				= createPackageCheck.Active;
+			packageSigningLabel.Sensitive = packageIdentityCombo.Sensitive
+				= signPackageCheck.Active && signPackageCheck.Sensitive;
+		}
 	}
 }
 

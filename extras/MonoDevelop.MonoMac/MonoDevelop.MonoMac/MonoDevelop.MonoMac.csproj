@@ -89,6 +89,9 @@
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="gtk-gui\MonoDevelop.MonoMac.Gui.MonoMacPackagingSettingsWidget.cs" />
     <Compile Include="Gui\MacPackagingSettingsWidget.cs" />
+    <Compile Include="MonoMacCommands.cs" />
+    <Compile Include="Gui\MonoMacPackagingSettingsDialog.cs" />
+    <Compile Include="MonoMacPackaging.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MonoMac.addin.xml">
@@ -102,7 +105,6 @@
     <Folder Include="templates\" />
     <Folder Include="Gui\" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="templates\MonoMacProject.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -153,4 +155,24 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
+  <PropertyGroup>
+    <MmpUrl></MmpUrl>
+    <MmpBin>$(OutDir)mmp</MmpBin>
+    <MmpFakeScript>#!/bin/sh
+echo "Bundling is not yet supported"
+exit 1
+</MmpFakeScript>
+  </PropertyGroup>
+
+  <Target Name="AfterCompile">
+    <WriteLinesToFile File="$(MmpBin)" Lines="$(MmpFakeScript)" Condition="'$(MmpUrl)' == ''" /> 
+    <Exec Command="curl '$(MmpUrl)' -o '$(MmpBin)'" Condition="!Exists('$(MmpBin)')" /> 
+    <Exec Command="chmod +x '$(MmpBin)'" /> 
+    <CreateItem Include="$(MmpBin)">
+      <Output TaskParameter="Include" ItemName="FileWrites" />
+    </CreateItem>
+  </Target>
 </Project>

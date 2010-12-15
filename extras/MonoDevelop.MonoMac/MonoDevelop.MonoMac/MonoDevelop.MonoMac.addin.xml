@@ -25,6 +25,7 @@
 		<Import file = "MonoMac.dll.mdb"/>
 		<Import file = "MonoMacLaunchScript.sh"/>
 		<Import file = "mono-version-check"/>
+		<Import file = "mmp"/>
 	</Runtime>
 	
 	<Dependencies>
@@ -94,6 +95,19 @@
 		<Package name="monomac" version="0.0.0.0" targetFramework="3.5">
 			<Assembly file="MonoMac.dll" />
 		</Package>
+	</Extension>
+	
+	
+	<Extension path = "/MonoDevelop/Ide/Commands/Project">
+		<Command id = "MonoDevelop.MonoMac.MonoMacCommands.CreateMacInstaller" 
+			_description = "Creates a Mac Installer"
+			defaultHandler = "MonoDevelop.MonoMac.CreateMacInstallerHandler"
+			_label = "Create Mac Installer..." />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
+			<CommandItem id = "MonoDevelop.MonoMac.MonoMacCommands.CreateMacInstaller"
+			             insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.ExportProject" />
 	</Extension>
 
 	<!-- debugger addin -->
