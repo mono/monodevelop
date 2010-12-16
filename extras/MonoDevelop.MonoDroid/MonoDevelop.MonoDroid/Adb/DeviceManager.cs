@@ -38,12 +38,29 @@ namespace MonoDevelop.MonoDroid
 		List<AndroidToolbox.StartAvdOperation> emulatorHandles = new List<AndroidToolbox.StartAvdOperation> ();
 		
 		DevicePoller poller = new DevicePoller ();
+		AdbTrackDevicesOperation trackerOp;
 		
 		//this should be a singleton created from MonoDroidFramework
 		internal DeviceManager ()
 		{
 			poller.Changed += OnChanged;
 			MonoDevelop.Ide.IdeApp.Exited += IdeAppExited;
+		}
+		
+		void StartTracker ()
+		{
+			trackerOp = new AdbTrackDevicesOperation ();
+			trackerOp.DevicesChanged += delegate (List<AndroidDevice> list) {
+				Devices = list;
+				OnChanged (null, null);
+			};
+			Devices = trackerOp.Devices;
+		}
+		
+		void StopTracker ()
+		{
+			trackerOp.Dispose ();
+			trackerOp = null;
 		}
 
 		void IdeAppExited (object sender, EventArgs e)
@@ -65,14 +82,18 @@ namespace MonoDevelop.MonoDroid
 		
 		public event EventHandler DevicesUpdated {
 			add {
-				if (devicesUpdated == null)
+				if (devicesUpdated == null) {
 					poller.Start ();
+					StartTracker ();
+				}
 				devicesUpdated += value;
 			}
 			remove {
 				devicesUpdated -= value;
-				if (devicesUpdated == null)
+				if (devicesUpdated == null) {
 					poller.Stop ();
+					StopTracker ();
+				}
 			}
 		}
 		
@@ -102,9 +123,7 @@ namespace MonoDevelop.MonoDroid
 			Refresh ();
 		}
 		
-		public List<AndroidDevice> Devices {
-			get { return poller.Devices; }
-		}
+		public List<AndroidDevice> Devices { get; set; }
 		
 		public List<AndroidVirtualDevice> VirtualDevices {
 			get { return poller.VirtualDevices; }
@@ -112,18 +131,14 @@ namespace MonoDevelop.MonoDroid
 		
 		class DevicePoller : AsyncPoller
 		{
-			AndroidToolbox.GetDevicesOperation devicesOp;
 			AndroidToolbox.GetVirtualDevicesOperation virtualDevicesOp;
 			
-			public List<AndroidDevice> Devices { get; private set; }
 			public List<AndroidVirtualDevice> VirtualDevices { get; private set; }
-						
+			
 			protected override void BeginRefresh ()
 			{
 				var op = new AggregatedAsyncOperation ();
-				devicesOp = MonoDroidFramework.Toolbox.GetDevices (Console.Out);
 				virtualDevicesOp = MonoDroidFramework.Toolbox.GetAllVirtualDevices (Console.Out);
-				op.Add (devicesOp);
 				op.Add (virtualDevicesOp);
 				op.StartMonitoring ();
 				op.Completed += PollCompleted;
@@ -131,12 +146,9 @@ namespace MonoDevelop.MonoDroid
 
 			void PollCompleted (IAsyncOperation op)
 			{
-				List<AndroidDevice> devices = null;
 				List<AndroidVirtualDevice> virtualDevices = null;
 				try {
-					devices = devicesOp.Result;
 					virtualDevices = virtualDevicesOp.Result;
-					devicesOp.Dispose ();
 					virtualDevicesOp.Dispose ();
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error loading device data", ex);
@@ -144,11 +156,6 @@ namespace MonoDevelop.MonoDroid
 				
 				Gtk.Application.Invoke (delegate {
 					bool changed = false;
-					if (!ListEqual (this.Devices, devices)) {
-						this.Devices = devices;
-						changed = true;
-					}
-					
 					if (!ListEqual (this.VirtualDevices, virtualDevices)) {
 						this.VirtualDevices = virtualDevices;
 						changed = true;
