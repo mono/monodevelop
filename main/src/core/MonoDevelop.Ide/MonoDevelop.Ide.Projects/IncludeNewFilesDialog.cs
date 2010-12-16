@@ -35,8 +35,9 @@ namespace MonoDevelop.Ide.Projects
 {
 	partial class IncludeNewFilesDialog : Gtk.Dialog
 	{
-		TreeStore store;
-		Project project;
+		TreeStore store = new TreeStore (typeof (Gdk.Pixbuf), typeof (Gdk.Pixbuf), typeof (string),
+			typeof (string), typeof (bool));
+		FilePath baseDirectory;
 		
 		static class Columns {
 			public static int IconOpened = 0;
@@ -46,17 +47,12 @@ namespace MonoDevelop.Ide.Projects
 			public static int IsToggled  = 4;
 		}
 		
-		public IncludeNewFilesDialog (Project project)
+		public IncludeNewFilesDialog (string title, FilePath baseDirectory)
 		{
 			this.Build ();
-			this.Title = GettextCatalog.GetString ("Found new files in {0}", project.Name);
-			this.project = project;
-			store = new TreeStore (typeof (Gdk.Pixbuf), // Image
-			                       typeof (Gdk.Pixbuf), // Image - closed
-			                       typeof (string), // Text
-			                       typeof (string), // FileName
-			                       typeof (bool)    // IsToggled
-			                      );
+			this.Title = title;
+			this.baseDirectory = baseDirectory;
+			
 			treeviewFiles.Model = store;
 			
 			treeviewFiles.HeadersVisible = false; // Headers are untranslated because they're hidden as default
@@ -84,22 +80,25 @@ namespace MonoDevelop.Ide.Projects
 			buttonOk.Clicked += ButtonOkClicked;
 		}
 		
+		public List<FilePath> SelectedFiles { get; set; }
+		public List<FilePath> IgnoredFiles { get; set; }
+		
 		void ButtonOkClicked (object sender, EventArgs e)
 		{
+			SelectedFiles = new List<FilePath> ();
+			IgnoredFiles = new List<FilePath> ();
+			
 			TraverseSubtree (TreeIter.Zero, delegate (TreeIter currentIter) {
 				bool isToggled = (bool) store.GetValue (currentIter, Columns.IsToggled);
 				string fileName = (string) store.GetValue (currentIter, Columns.FileName);
 				if (fileName != null) {
 					if (isToggled) {
-						project.AddFile (fileName);
+						SelectedFiles.Add (fileName);
 					} else {
-						ProjectFile projectFile = project.AddFile (fileName, BuildAction.None);
-						if (projectFile != null)
-							projectFile.Visible = false;
+						IgnoredFiles.Add (fileName);
 					}
 				}
 			});
-			IdeApp.ProjectOperations.Save (project);
 		}
 		
 		void ButtonIncludeAllClicked (object sender, EventArgs e)
@@ -180,15 +179,16 @@ namespace MonoDevelop.Ide.Projects
 			return iter;
 		}
 		
-		void AddFile (string fileName)
+		void AddFile (FilePath filePath)
 		{
-			string relativePath = FileService.AbsoluteToRelativePath (project.BaseDirectory, fileName);
-			TreeIter iter = GetPath (System.IO.Path.GetDirectoryName (relativePath));
+			var relativePath = filePath.ToRelative (baseDirectory);
+			TreeIter iter = GetPath (relativePath.ParentDirectory);
 			object[] values = new object[] {
-				DesktopService.GetPixbufForFile (fileName, IconSize.Menu),
+				//FIXME: look these pixbufs up lazily in the renderer
+				DesktopService.GetPixbufForFile (filePath, IconSize.Menu),
 				null,
-				System.IO.Path.GetFileName (fileName),
-				fileName,
+				filePath.FileName,
+				filePath,
 				false
 			};
 			if (!store.IterIsValid (iter)) {

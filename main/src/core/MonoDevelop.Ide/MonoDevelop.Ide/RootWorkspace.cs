@@ -659,30 +659,29 @@ namespace MonoDevelop.Ide
 			if (newFiles.Count > 0) {
 				if (project.NewFileSearch == NewFileSearch.OnLoadAutoInsert) {
 					foreach (string file in newFiles) {
+						//FIXME: check for conflicts with links, and also below
 						project.AddFile (file);
 					}		
 				} else {
-					DispatchService.GuiDispatch (
-						delegate (object state) {
-							NewFilesMessage message = (NewFilesMessage) state;
-							var includeNewFilesDialog = new IncludeNewFilesDialog (message.Project);
-							includeNewFilesDialog.AddFiles (message.NewFiles);
-							MessageService.ShowCustomDialog (includeNewFilesDialog, IdeApp.Workbench.RootWindow);
-						},
-						new NewFilesMessage (project, newFiles)
-					);
+					DispatchService.GuiDispatch (delegate {
+						var dialog = new IncludeNewFilesDialog (
+							project.BaseDirectory,
+							GettextCatalog.GetString ("Found new files in {0}", project.Name)
+						);
+						dialog.AddFiles (newFiles);
+						if (MessageService.ShowCustomDialog (dialog) != (int)Gtk.ResponseType.Ok)
+							return;
+						
+						foreach (var file in dialog.IgnoredFiles) {
+							var projectFile = project.AddFile (file, BuildAction.None);
+							if (projectFile != null)
+								projectFile.Visible = false;
+						}
+						foreach (var file in dialog.SelectedFiles) {
+							project.AddFile (file);
+						}
+					});
 				}
-			}
-		}
-		
-		private class NewFilesMessage
-		{
-			public Project Project;
-			public List<string> NewFiles;
-			public NewFilesMessage (Project p, List<string> newFiles)
-			{
-				this.Project = p;
-				this.NewFiles = newFiles;
 			}
 		}
 		
