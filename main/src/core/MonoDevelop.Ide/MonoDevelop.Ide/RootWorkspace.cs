@@ -607,82 +607,92 @@ namespace MonoDevelop.Ide
 		
 		void SearchForNewFiles ()
 		{
-			foreach (Project p in GetAllProjects()) {
+			foreach (Project p in GetAllProjects ()) {
 				if (p.NewFileSearch != NewFileSearch.None)
 					SearchNewFiles (p);
 			}
 		}
-
 		
 		void SearchNewFiles (Project project)
 		{
-			List<string> newFiles   = new List<string> ();
+			var newFiles = new List<string> ();
 			string[] collection = Directory.GetFiles (project.BaseDirectory, "*", SearchOption.AllDirectories);
 			
-			HashSet<string> projectFiles = new HashSet<string> ();
-			foreach (string file in project.GetItemFiles (true))
-				projectFiles.Add (file);
+			var projectFileNames = new HashSet<string> ();
+			foreach (var file in project.GetItemFiles (true))
+				projectFileNames.Add (file);
+			
+			//also ignore files that would conflict with links
+			foreach (var f in project.Files)
+				projectFileNames.Add (f.ProjectVirtualPath.ToAbsolute (project.BaseDirectory));
 
 			foreach (string sfile in collection) {
-				if (projectFiles.Contains (Path.GetFullPath (sfile)))
+				if (projectFileNames.Contains (Path.GetFullPath (sfile)))
 					continue;
 				if (IdeApp.Services.ProjectService.IsSolutionItemFile (sfile) || IdeApp.Services.ProjectService.IsWorkspaceItemFile (sfile))
 					continue;
-				string extension = Path.GetExtension(sfile).ToUpper();
-				string file = Path.GetFileName (sfile);
-
-				if (extension != ".SCC" &&  // source safe control files -- Svante Lidmans
-					extension != ".DLL" &&
-					extension != ".PDB" &&
-					extension != ".EXE" &&
-					extension != ".CMBX" &&
-					extension != ".PRJX" &&
-					extension != ".SWP" &&
-					extension != ".MDSX" &&
-					extension != ".MDS" &&
-					extension != ".MDP" && 
-					extension != ".PIDB" &&
-					extension != ".PIDB-JOURNAL" &&
-					!file.EndsWith ("make.sh") &&
-					!file.EndsWith ("~") &&
-					!file.StartsWith (".") &&
-					!(Path.GetDirectoryName(sfile).IndexOf("CVS") != -1) &&
-					!(Path.GetDirectoryName(sfile).IndexOf(".svn") != -1) &&
-					!(Path.GetDirectoryName(sfile).IndexOf(Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar) != -1) &&
-					!file.StartsWith ("Makefile") &&
-					!Path.GetDirectoryName(file).EndsWith("ProjectDocumentation")) {
-
-					newFiles.Add(sfile);
-				}
+				if (IgnoreFileInSearch (sfile))
+					continue;
+				newFiles.Add (sfile);
 			}
 			
-			if (newFiles.Count > 0) {
-				if (project.NewFileSearch == NewFileSearch.OnLoadAutoInsert) {
-					foreach (string file in newFiles) {
-						//FIXME: check for conflicts with links, and also below
-						project.AddFile (file);
-					}		
-				} else {
-					DispatchService.GuiDispatch (delegate {
-						var dialog = new IncludeNewFilesDialog (
-							project.BaseDirectory,
-							GettextCatalog.GetString ("Found new files in {0}", project.Name)
-						);
-						dialog.AddFiles (newFiles);
-						if (MessageService.ShowCustomDialog (dialog) != (int)Gtk.ResponseType.Ok)
-							return;
-						
-						foreach (var file in dialog.IgnoredFiles) {
-							var projectFile = project.AddFile (file, BuildAction.None);
-							if (projectFile != null)
-								projectFile.Visible = false;
-						}
-						foreach (var file in dialog.SelectedFiles) {
-							project.AddFile (file);
-						}
-					});
+			if (newFiles.Count == 0)
+				return;
+			
+			if (project.NewFileSearch == NewFileSearch.OnLoadAutoInsert) {
+				foreach (string file in newFiles) {
+					project.AddFile (file);
 				}
+				return;
 			}
+			
+			DispatchService.GuiDispatch (delegate {
+				var dialog = new IncludeNewFilesDialog (
+					project.BaseDirectory,
+					GettextCatalog.GetString ("Found new files in {0}", project.Name)
+				);
+				dialog.AddFiles (newFiles);
+				if (MessageService.ShowCustomDialog (dialog) != (int)Gtk.ResponseType.Ok)
+					return;
+				
+				foreach (var file in dialog.IgnoredFiles) {
+					var projectFile = project.AddFile (file, BuildAction.None);
+					if (projectFile != null)
+						projectFile.Visible = false;
+				}
+				foreach (var file in dialog.SelectedFiles) {
+					project.AddFile (file);
+				}
+			});
+		}
+		
+		bool IgnoreFileInSearch (string sfile)
+		{
+			string extension = Path.GetExtension (sfile).ToUpper();
+			string file = Path.GetFileName (sfile);
+			
+			if (file.StartsWith (".") || file.EndsWith ("~"))
+				return true;
+			
+			string[] ignoredExtensions = new string [] {
+				".SCC", ".DLL", ".PDB", ".MDB", ".EXE", ".SLN", ".CMBX", ".PRJX",
+				".SWP", ".MDSX", ".MDS", ".MDP", ".PIDB", ".PIDB-JOURNAL",
+			};
+			if (ignoredExtensions.Contains (extension))
+				return true;
+			
+			string directory = Path.GetDirectoryName (sfile);
+			if (directory.IndexOf (".svn") != -1 || directory.IndexOf (".git") != -1 || directory.IndexOf ("CVS") != -1)
+				return true;
+			
+			if (directory.IndexOf (Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar) != -1
+				|| directory.IndexOf (Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar) != -1)
+				return true;
+			
+			if (file.EndsWith ("make.sh") || file.StartsWith ("Makefile") || directory.EndsWith ("ProjectDocumentation"))
+				return true;
+			
+			return false;			
 		}
 		
 		void RestoreWorkspacePreferences (WorkspaceItem item)
