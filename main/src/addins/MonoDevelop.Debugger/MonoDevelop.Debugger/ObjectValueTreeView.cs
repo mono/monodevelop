@@ -927,9 +927,11 @@ namespace MonoDevelop.Debugger
 				TreeIter it;
 				if (path.Depth > 1 || PinnedWatch == null) {
 					store.GetIter (out it, path);
-					CleanPinIcon ();
-					store.SetValue (it, PinIconCol, "md-pin-up");
-					lastPinIter = it;
+					if (!it.Equals (lastPinIter)) {
+						store.SetValue (it, PinIconCol, "md-pin-up");
+						CleanPinIcon ();
+						lastPinIter = it;
+					}
 				}
 			}
 			return base.OnMotionNotifyEvent (evnt);
@@ -1134,7 +1136,7 @@ namespace MonoDevelop.Debugger
 			return name + exp;
 		}
 
-		void CreatePinnedWatch (TreeIter it)
+		public void CreatePinnedWatch (TreeIter it)
 		{
 			string exp = GetFullExpression (it);
 			
@@ -1158,7 +1160,7 @@ namespace MonoDevelop.Debugger
 				PinStatusChanged (this, EventArgs.Empty);
 		}
 		
-		void RemovePinnedWatch (TreeIter it)
+		public void RemovePinnedWatch (TreeIter it)
 		{
 			DebuggingService.PinnedWatches.Remove (PinnedWatch);
 			if (PinStatusChanged != null)
