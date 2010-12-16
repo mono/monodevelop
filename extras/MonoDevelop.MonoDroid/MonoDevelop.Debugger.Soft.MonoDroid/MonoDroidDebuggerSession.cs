@@ -40,8 +40,6 @@ using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Debugger.Soft.MonoDroid
 {
-
-
 	public class MonoDroidDebuggerSession : RemoteSoftDebuggerSession
 	{
 		ChainedAsyncOperationSequence launchOp;
@@ -162,14 +160,15 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 			base.OnExit ();
 			EndLaunch ();
 		}
-
+		//FIXME: ShouldRetryConnection only works on master, not 2.4.x
+		/*
 		protected override bool ShouldRetryConnection (Exception exc, int attemptNumber)
 		{
 			if (exc is IOException)
 				return true;
 
 			return base.ShouldRetryConnection (exc, attemptNumber);
-		}
+		}*/
 	}
 	
 	class MonoDroidDebuggerStartInfo : RemoteDebuggerStartInfo
