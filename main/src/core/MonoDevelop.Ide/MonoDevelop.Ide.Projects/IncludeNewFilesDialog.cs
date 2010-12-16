@@ -188,7 +188,7 @@ namespace MonoDevelop.Ide.Projects
 				DesktopService.GetPixbufForFile (filePath, IconSize.Menu),
 				null,
 				filePath.FileName,
-				filePath,
+				filePath.ToString (),
 				false
 			};
 			if (!store.IterIsValid (iter)) {

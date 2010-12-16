@@ -643,13 +643,14 @@ namespace MonoDevelop.Ide
 				foreach (string file in newFiles) {
 					project.AddFile (file);
 				}
+				
 				return;
 			}
 			
 			DispatchService.GuiDispatch (delegate {
 				var dialog = new IncludeNewFilesDialog (
-					project.BaseDirectory,
-					GettextCatalog.GetString ("Found new files in {0}", project.Name)
+					GettextCatalog.GetString ("Found new files in {0}", project.Name),
+					project.BaseDirectory
 				);
 				dialog.AddFiles (newFiles);
 				if (MessageService.ShowCustomDialog (dialog) != (int)Gtk.ResponseType.Ok)
@@ -663,6 +664,7 @@ namespace MonoDevelop.Ide
 				foreach (var file in dialog.SelectedFiles) {
 					project.AddFile (file);
 				}
+				IdeApp.ProjectOperations.Save (project);
 			});
 		}
 		
