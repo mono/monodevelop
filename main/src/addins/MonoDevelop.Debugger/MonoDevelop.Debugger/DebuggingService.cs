@@ -280,6 +280,8 @@ namespace MonoDevelop.Debugger
 			ExceptionInfo val = CurrentFrame.GetException ();
 			if (val != null) {
 				ExceptionCaughtDialog dlg = new ExceptionCaughtDialog (val);
+				dlg.TransientFor = IdeApp.Workbench.RootWindow;
+				MessageService.PlaceDialog (dlg, IdeApp.Workbench.RootWindow);
 				dlg.Show ();
 			}
 		}
