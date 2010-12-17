@@ -830,6 +830,36 @@ namespace MonoDevelop.VersionControl.Git
 				cmd.AddFilepattern (ToGitPath (fp));
 			cmd.Call ();
 		}
+		
+		public override void DeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor)
+		{
+			NGit.Api.Git git = new NGit.Api.Git (repo);
+			RmCommand rm = git.Rm ();
+			foreach (var f in localPaths)
+				rm.AddFilepattern (repo.ToGitPath (f));
+			rm.Call ();
+			
+			// Untracked files are not deleted by the rm command, so delete them now
+			foreach (var f in localPaths) {
+				if (File.Exists (f))
+					File.Delete (f);
+			}
+		}
+		
+		public override void DeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor)
+		{
+			NGit.Api.Git git = new NGit.Api.Git (repo);
+			RmCommand rm = git.Rm ();
+			foreach (var f in localPaths)
+				rm.AddFilepattern (repo.ToGitPath (f));
+			rm.Call ();
+			
+			// Untracked files are not deleted by the rm command, so delete them now
+			foreach (var f in localPaths) {
+				if (Directory.Exists (f))
+					Directory.Delete (f, true);
+			}
+		}
 
 		public override string GetTextAtRevision (FilePath repositoryPath, Revision revision)
 		{
