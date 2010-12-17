@@ -58,6 +58,12 @@ namespace MonoDevelop.AssemblyBrowser
 			widget.AddReference (fileName);
 		}
 		
+		public override bool IsFile {
+			get {
+				return false;
+			}
+		}
+		
 		public bool IsDisposed {
 			get;
 			private set;
