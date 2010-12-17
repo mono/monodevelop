@@ -49,7 +49,6 @@ namespace MonoDevelop.MonoDroid
 		{
 			client = new AdbClient ();
 			client.BeginConnect (OnConnected, null);
-			
 		}
 		
 		void OnConnected (IAsyncResult ar)
@@ -62,7 +61,8 @@ namespace MonoDevelop.MonoDroid
 				client.EndConnect (ar);
 				client.BeginWriteCommand (command, OnWroteCommand, null);
 			} catch (Exception ex) {
-				SetError (ex);
+				if (client != null)
+					SetError (ex);
 			}
 		}
 		
@@ -76,7 +76,8 @@ namespace MonoDevelop.MonoDroid
 				client.EndWriteCommand (ar);
 				client.BeginReadStatus (OnGotStatus, null);
 			} catch (Exception ex) {
-				SetError (ex);
+				if (client != null)
+					SetError (ex);
 			}
 		}
 		
@@ -93,7 +94,8 @@ namespace MonoDevelop.MonoDroid
 					client.BeginReadResponseString (OnGotResponse, null);
 				}
 			} catch (Exception ex) {
-				SetError (ex);
+				if (client != null)
+					SetError (ex);
 			}
 		}
 		
@@ -107,7 +109,8 @@ namespace MonoDevelop.MonoDroid
 				var error = client.EndReadResponseString (ar);
 				SetError (new Exception (error));
 			} catch (Exception ex) {
-				SetError (ex);
+				if (client != null)
+					SetError (ex);
 			}
 		}
 		
@@ -128,7 +131,8 @@ namespace MonoDevelop.MonoDroid
 					MarkCompleted ();
 				}
 			} catch (Exception ex) {
-				SetError (ex);
+				if (client != null)
+					SetError (ex);
 			}
 		}
 		
@@ -153,7 +157,7 @@ namespace MonoDevelop.MonoDroid
 				Dispose ();
 			} catch (Exception ex) {
 				//FIXME: better way to deal with this? letting it throw from an async callback is not an option
-				System.Console.WriteLine ("Unhandled error completing AdbOperation: " + ex.ToString ());
+				LoggingService.LogError ("Unhandled error completing AdbOperation", ex);
 			}
 		}
 		

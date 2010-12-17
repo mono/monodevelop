@@ -50,6 +50,11 @@ namespace MonoDevelop.MonoDroid
 				Devices = list;
 				OnChanged (null, null);
 			};
+			trackerOp.Completed += delegate (IAsyncOperation op) {
+				var err = ((AdbTrackDevicesOperation)op).Error;
+				if (err != null)
+					LoggingService.LogError ("Error in device tracker", err);
+			};
 			Devices = trackerOp.Devices;
 		}
 		
