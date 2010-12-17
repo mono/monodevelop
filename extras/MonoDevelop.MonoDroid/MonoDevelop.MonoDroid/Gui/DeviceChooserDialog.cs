@@ -62,7 +62,7 @@ namespace MonoDevelop.MonoDroid.Gui
 					var avd = store.GetValue (iter, 0) as AndroidVirtualDevice;
 					//status.StartOperation (GettextCatalog.GetString ("Starting virtual device '{0}'...", avd.Name));
 					if (avd != null) {
-						MonoDroidFramework.DeviceManager.StartEmulator (avd);
+						MonoDroidFramework.VirtualDeviceManager.StartEmulator (avd);
 					}
 				}
 			};
@@ -73,25 +73,36 @@ namespace MonoDevelop.MonoDroid.Gui
 			startEmulatorButton.Sensitive = false;
 			
 			MonoDroidFramework.DeviceManager.DevicesUpdated += OnDevicesUpdated;
+			MonoDroidFramework.VirtualDeviceManager.Changed += OnVirtualDevicesUpdated;
 			OnDevicesUpdated (null, EventArgs.Empty);
 		}
 		
 		protected override void OnDestroyed ()
 		{
 			MonoDroidFramework.DeviceManager.DevicesUpdated -= OnDevicesUpdated;
+			MonoDroidFramework.VirtualDeviceManager.Changed -= OnVirtualDevicesUpdated;
 			base.OnDestroyed ();
+		}
+
+		void OnVirtualDevicesUpdated (IList<AndroidVirtualDevice> list)
+		{
+			OnDevicesUpdated (null, null);
 		}
 
 		void OnDevicesUpdated (object sender, EventArgs e)
 		{
 			var values = new Dictionary<string,object> ();
-			if (MonoDroidFramework.DeviceManager.VirtualDevices != null)
-				foreach (var dev in MonoDroidFramework.DeviceManager.VirtualDevices)
+			var avds = MonoDroidFramework.VirtualDeviceManager.VirtualDevices;
+			if (avds != null)
+				foreach (var dev in avds)
 					values.Add (dev.Name, dev);
-			if (MonoDroidFramework.DeviceManager.Devices != null)
+			var devices = MonoDroidFramework.DeviceManager.Devices;
+			if (devices != null)
 				foreach (var dev in MonoDroidFramework.DeviceManager.Devices)
 					values.Add (dev.ID, dev);
-			LoadData (values);
+			Gtk.Application.Invoke (delegate {
+				LoadData (values);
+			});
 		}
 
 		void UpdatedSelection (object sender, EventArgs e)
@@ -132,10 +143,26 @@ namespace MonoDevelop.MonoDroid.Gui
 		
 		void LoadData (Dictionary<string,object> devices)
 		{
-			store.Clear ();
+			string selection = null;
+			TreeIter selIter;
+			if (deviceListTreeView.Selection.GetSelected (out selIter)) {
+				var s = store.GetValue (selIter, 0);
+				var avd = s as AndroidVirtualDevice;
+				if (avd != null)
+					selection = avd.Name;
+				else
+					selection = ((AndroidDevice)s).ID;
+			}
 			
-			foreach (var o in devices.OrderBy (kvp => kvp.Key))
-				store.AppendValues (o.Value);
+			store.Clear ();
+			TreeIter selectedIter = TreeIter.Zero;
+			foreach (var o in devices.OrderBy (kvp => kvp.Key)) {
+				TreeIter iter = store.AppendValues (o.Value);
+				if (selectedIter.Equals (TreeIter.Zero) || (selection != null && string.CompareOrdinal (selection, o.Key) >= 0))
+					selectedIter = iter;
+			}
+			if (!selectedIter.Equals (TreeIter.Zero))
+				deviceListTreeView.Selection.SelectIter (selectedIter);
 		}
 		
 		public AndroidDevice Device { get; private set; }

@@ -43,6 +43,7 @@ namespace MonoDevelop.MonoDroid
 		{
 			EnvironmentOverrides = new Dictionary<string, string> ();
 			DeviceManager = new DeviceManager ();
+			VirtualDeviceManager = new VirtualDeviceManager ();
 			UpdateSdkLocations ();
 		}
 		
@@ -170,6 +171,7 @@ namespace MonoDevelop.MonoDroid
 		
 		public static AndroidToolbox Toolbox { get; private set; }
 		public static DeviceManager DeviceManager { get; private set; }
+		public static VirtualDeviceManager VirtualDeviceManager { get; private set; }
 		
 		public static readonly string[] Permissions = new [] {
 			"ACCESS_CHECKIN_PROPERTIES",

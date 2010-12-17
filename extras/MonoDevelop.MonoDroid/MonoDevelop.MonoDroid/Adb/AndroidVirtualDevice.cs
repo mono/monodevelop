@@ -1,5 +1,5 @@
 // 
-// DeviceManager.cs
+// AvdWatcher.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
@@ -26,59 +26,50 @@
 
 using System;
 using System.Collections.Generic;
-
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core;
 using System.IO;
-
 namespace MonoDevelop.MonoDroid
 {
-	public class DeviceManager
+	public class AndroidVirtualDevice
 	{
-		EventHandler devicesUpdated;
-		AdbTrackDevicesOperation trackerOp;
-		
-		//this should be a singleton created from MonoDroidFramework
-		internal DeviceManager ()
+		public AndroidVirtualDevice (string name, FilePath path, string target)
 		{
+			this.Name = name;
+			this.Path = path;
+			this.Target = target;
 		}
 		
-		void StartTracker ()
+		public string Name { get; private set; }
+		public FilePath Path { get; private set; }
+		public string Target { get; private set; }
+		
+		public Dictionary<string,string> ReadConfig ()
 		{
-			trackerOp = new AdbTrackDevicesOperation ();
-			trackerOp.DevicesChanged += delegate (List<AndroidDevice> list) {
-				Devices = list;
-				OnChanged (null, null);
-			};
-			Devices = trackerOp.Devices;
+			return ReadIni (this.Path.Combine ("config.ini"));
 		}
 		
-		void StopTracker ()
+		public static AndroidVirtualDevice Load (FilePath avdIni)
 		{
-			trackerOp.Dispose ();
-			trackerOp = null;
-		}
-
-		void OnChanged (object sender, EventArgs e)
-		{
-			if (devicesUpdated != null)
-				devicesUpdated (this, EventArgs.Empty);
+			var ini = ReadIni (avdIni);
+			return new AndroidVirtualDevice (avdIni.FileNameWithoutExtension, ini["path"], ini["target"]);
 		}
 		
-		public event EventHandler DevicesUpdated {
-			add {
-				if (devicesUpdated == null)
-					StartTracker ();
-				devicesUpdated += value;
+		static Dictionary<string,string> ReadIni (string filename)
+		{
+			var dict = new Dictionary<string,string> ();
+			var lines = File.ReadAllLines (filename);
+			foreach (var l in lines) {
+				var i = l.IndexOf ('=');
+				if (i <= 0)
+					continue;
+				string key = l.Substring (0, i);
+				string val = null;
+				if (i + 1 < l.Length)
+					val = l.Substring (i + 1); 
+				dict.Add (key, val);
 			}
-			remove {
-				devicesUpdated -= value;
-				if (devicesUpdated == null)
-					StopTracker ();
-			}
+			return dict;
 		}
-		
-		public IList<AndroidDevice> Devices { get; set; }
 	}
 }
-

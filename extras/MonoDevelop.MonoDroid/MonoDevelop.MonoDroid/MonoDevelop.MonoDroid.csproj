@@ -109,6 +109,9 @@
     <Compile Include="Adb\AdbClient.cs" />
     <Compile Include="Adb\AdbOperation.cs" />
     <Compile Include="Adb\AdbOperations.cs" />
+    <Compile Include="Adb\AvdWatcher.cs" />
+    <Compile Include="Adb\VirtualDeviceManager.cs" />
+    <Compile Include="Adb\AndroidVirtualDevice.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MonoDroid.addin.xml">

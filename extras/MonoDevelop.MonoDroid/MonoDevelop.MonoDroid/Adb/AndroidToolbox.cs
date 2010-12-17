@@ -151,18 +151,6 @@ namespace MonoDevelop.MonoDroid
 			return StartProcess (AdbExe, "start-server", outputLog, errorLog);
 		}
 		
-		public GetDevicesOperation GetDevices (TextWriter errorLog)
-		{
-			var output = new StringWriter ();
-			return new GetDevicesOperation (StartProcess (AdbExe, "devices", output, errorLog), output);
-		}
-		
-		public GetVirtualDevicesOperation GetAllVirtualDevices (TextWriter errorLog)
-		{
-			var output = new StringWriter ();
-			return new GetVirtualDevicesOperation (StartProcess (AndroidExe, "list avd", output, errorLog), output);
-		}
-		
 		public StartAvdOperation StartAvd (AndroidVirtualDevice avd)
 		{
 			var args = new ProcessArgumentBuilder ();
@@ -177,6 +165,7 @@ namespace MonoDevelop.MonoDroid
 		public ProcessWrapper StartAvdManager ()
 		{
 			//FIXME: don't create multiple instances. if it's running, focus it.
+			//and kill it when quitting MD, or it will keep MD open
 			return Runtime.ProcessService.StartProcess (AndroidExe, "", null, (TextWriter)null, null, null);
 		}
 
@@ -348,80 +337,6 @@ namespace MonoDevelop.MonoDroid
 			}
 		}
 		
-		public class GetVirtualDevicesOperation : AdbParseOperation<List<AndroidVirtualDevice>>
-		{
-			public GetVirtualDevicesOperation (IProcessAsyncOperation process, StringWriter output)
-				: base (process, output)
-			{
-			}
-			
-			protected override List<AndroidVirtualDevice> Parse (string output)
-			{
-				var devices = new List<AndroidVirtualDevice> ();
-	
-				var sr = new StringReader (output);
-				AndroidVirtualDevice current_device = null;
-	
-				string s;
-	
-				while ((s = sr.ReadLine ()) != null) {
-					s = s.Trim ();
-	
-					if (s.Length == 0)
-						continue;
-	
-					if (s.StartsWith ("Available") || s.StartsWith ("------")) {
-						if (current_device != null)
-							devices.Add (current_device);
-	
-						continue;
-					}
-	
-					if (s.StartsWith ("Name:"))
-						current_device = new AndroidVirtualDevice ();
-	
-					string[] data = s.Split (':');
-	
-					// Check for a multi-line property, and ignore it
-					if (data.Length > 1 && current_device != null)
-						current_device.Properties[data[0].Trim ()] = data[1].Trim ();
-				}
-	
-				if (current_device != null)
-					devices.Add (current_device);
-	
-				return devices;
-			}
-		}
-		
-		public class GetDevicesOperation : AdbParseOperation<List<AndroidDevice>>
-		{
-			public GetDevicesOperation (IProcessAsyncOperation process, StringWriter output)
-				: base (process, output)
-			{
-			}
-			
-			protected override List<AndroidDevice> Parse (string output)
-			{
-				var devices = new List<AndroidDevice> ();
-				
-				using (var sr = new StringReader (output)) {
-					string s;
-		
-					while ((s = sr.ReadLine ()) != null) {
-						s = s.Trim ();
-						
-						if (s.Length == 0 || s == "List of devices attached")
-							continue;
-		
-						string[] data = s.Split ('\t');
-						devices.Add (new AndroidDevice (data[0].Trim (), data[1].Trim ()));
-					}
-				}
-				return devices;
-			}
-		}
-		
 		public class AdbOutputOperation : WrapperOperation
 		{
 			StringWriter output;
@@ -584,72 +499,6 @@ namespace MonoDevelop.MonoDroid
 					^ (State != null ? State.GetHashCode () : 0)
 					^ IsEmulator.GetHashCode ();
 			}
-		}
-	}
-	
-	public class AndroidVirtualDevice
-	{
-		public Dictionary<string, string> Properties { get; private set; }
-
-		public AndroidVirtualDevice ()
-		{
-			Properties = new Dictionary<string,string> ();
-		}
-
-		#region Convenience Properties
-		public string Name { get { return Properties["Name"]; } }
-		public string Path { get { return Properties["Path"]; } }
-		public string Target { get { return Properties["Target"]; } }
-		public string Skin { get { return Properties["Skin"]; } }
-		#endregion
-
-		public override string ToString ()
-		{
-			return string.Format ("Virtual Device: {0} - {2} [{1}]", Name, Path, Target);
-		}
-		
-		public override bool Equals (object obj)
-		{
-			if (obj == null)
-				return false;
-			if (ReferenceEquals (this, obj))
-				return true;
-			var other = obj as MonoDevelop.MonoDroid.AndroidVirtualDevice;
-			return other != null && DictEqual (Properties, other.Properties);
-		}
-		
-		internal static bool DictEqual<K,V> (Dictionary<K,V> a, Dictionary<K,V> b)
-		{
-			if (a == null && b == null)
-				return true;
-			if (a == null || b == null)
-				return false;
-			if (a.Count != b.Count)
-				return false;
-			foreach (var kv in a) {
-				V otherVal;
-				if (!b.TryGetValue (kv.Key, out otherVal) || !object.Equals (otherVal, kv.Value))
-					return false;
-			}
-			return true;
-		}
-		
-		static int GetStringDictHash (Dictionary<string, string> a)
-		{
-			int val = 0;
-			if (a != null) {
-				foreach (var kvp in a) {
-					unchecked {
-						val = val ^ kvp.Key.GetHashCode () ^ (kvp.Value == null? 0 : kvp.Value.GetHashCode ());
-					}
-				}
-			}
-			return val;
-		}
-	
-		public override int GetHashCode ()
-		{
-			return GetStringDictHash (Properties);
 		}
 	}
 	
