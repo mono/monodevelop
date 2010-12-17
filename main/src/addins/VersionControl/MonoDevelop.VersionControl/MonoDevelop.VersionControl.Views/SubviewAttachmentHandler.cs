@@ -42,7 +42,7 @@ namespace MonoDevelop.VersionControl.Views
 			var repo = VersionControlService.GetRepository (e.Document.Project);
 			if (repo == null)
 				return;
-			if (!repo.IsVersioned (e.Document.FileName))
+			if (!e.Document.IsFile || !repo.IsVersioned (e.Document.FileName))
 				return;
 			var item = new VersionControlItem (repo, e.Document.Project, e.Document.FileName, false);
 			
