@@ -12,14 +12,21 @@ namespace MonoDevelop.VersionControl.Subversion
 {
 	class SubversionRepository: UrlBasedRepository
 	{
+		FilePath rootPath;
+		
 		public SubversionRepository ()
 		{
 			Url = "svn://";
 		}
 		
-		public SubversionRepository (SubversionVersionControl vcs, string url): base (vcs)
+		public SubversionRepository (SubversionVersionControl vcs, string url, FilePath rootPath): base (vcs)
 		{
 			Url = url;
+			this.rootPath = rootPath.CanonicalPath;
+		}
+		
+		public FilePath RootPath {
+			get { return rootPath; }
 		}
 		
 		public override string[] SupportedProtocols {
@@ -39,7 +46,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				
 				foreach (DirectoryEntry ent in Svn.ListUrl (Url, false)) {
 					if (ent.IsDirectory) {
-						SubversionRepository rep = new SubversionRepository (Svn, Url + "/" + ent.Name);
+						SubversionRepository rep = new SubversionRepository (Svn, Url + "/" + ent.Name, null);
 						rep.Name = ent.Name;
 						list.Add (rep);
 					}
@@ -176,7 +183,7 @@ namespace MonoDevelop.VersionControl.Subversion
 
 			Svn.Commit (new FilePath[] { localPath }, message, monitor);
 			
-			return new SubversionRepository (Svn, paths[0]);
+			return new SubversionRepository (Svn, paths[0], localPath);
 		}
 
 		void PublishDir (Set<FilePath> dirs, FilePath dir, bool rec, IProgressMonitor monitor)
@@ -262,8 +269,32 @@ namespace MonoDevelop.VersionControl.Subversion
 						File.Delete (tmp);
 					}
 				}
-				else
+				else {
+					if (File.Exists (path) && !IsVersioned (path.ParentDirectory)) {
+						// The file belongs to an unversioned folder. We can add it by versioning the parent
+						// folders up to the root of the repository
+						
+						if (!path.IsChildPathOf (rootPath))
+							throw new InvalidOperationException ("File outside the repository directory");
+
+						List<FilePath> dirChain = new List<FilePath> ();
+						FilePath parentDir = path.CanonicalPath;
+						do {
+							parentDir = parentDir.ParentDirectory;
+							if (Directory.Exists (SubversionVersionControl.GetDirectoryDotSvn (parentDir)))
+								break;
+							dirChain.Add (parentDir);
+						}
+						while (parentDir != rootPath);
+
+						// Found all parent unversioned dirs. Versin them now.
+						dirChain.Reverse ();
+						foreach (var d in dirChain)
+							Svn.Add (d, false, monitor);
+						VersionControlService.NotifyFileStatusChanged (this, dirChain [0], true);
+					}
 					Svn.Add (path, recurse, monitor);
+				}
 			}
 		}
 		
