@@ -117,15 +117,15 @@ namespace MonoDevelop.MonoDroid
 		{
 			CheckConnected ();
 			var buf = new byte[4];
-			var wrapper = new WrapperResult<byte[]> (callback, buf);
-			wrapper.InnerResult = stream.BeginRead (buf, 0, 4, wrapper.Callback, wrapper);
+			var wrapper = new WrapperResult (callback, state, buf);
+			wrapper.InnerResult = stream.BeginRead (buf, 0, 4, wrapper.WrapperCallback, wrapper);
 			return wrapper;
 		}
 		
 		public bool EndGetStatus (IAsyncResult ar)
 		{
-			var war = (WrapperResult<byte[]>) ar.AsyncState;
-			return InterpretStatus (stream.EndRead (war.InnerResult), war.WrapperState);
+			var war = (WrapperResult) ar;
+			return InterpretStatus (stream.EndRead (war.InnerResult), (byte[])war.WrapperState);
 		}
 		
 		bool InterpretStatus (int len, byte[] buf)
@@ -263,36 +263,53 @@ namespace MonoDevelop.MonoDroid
 			}
 		}
 		
-		class WrapperResult<T> : IAsyncResult
+		//for asyncresults that numply wrap an inner IAsyncResult
+		// usage pattern is:
+		// void BeginFoo (AsyncCallback callback, object state)
+		// {
+		//      var fooState = new Bar ();
+		//      var wr = new WrapperResult (callback, state, blah);
+		//      wr.InnerResult = BeginInner (args... foostate... args, wr.WrapperCallback, wr);
+		// }
+		// RetType EndFoo (IAsyncResult result)
+		// {
+		//      var wr = (WrapperResult) result;
+		//      var fooState = (Bar) wr.WrapperState;
+		//      var ret = EndInner (wr.InnerResult);
+		//      return Process (ret, fooState);
+		// }
+		class WrapperResult : IAsyncResult
 		{
-			public WrapperResult (AsyncCallback callback, T wrapperState)
+			AsyncCallback callback;
+			object state;
+			
+			public WrapperResult (AsyncCallback callback, object state, object wrapperState)
 			{
-				this.Callback = callback;
+				this.callback = callback;
+				this.state = state;
 				this.WrapperState = wrapperState;
 			}
 			
-			public void WrapperCallback ()
+			public void WrapperCallback (IAsyncResult ar)
 			{
-				Callback (InnerResult);
+				InnerResult = ar;
+				callback (this);
 			}
 			
-			public AsyncCallback Callback { get; private set; }
 			public IAsyncResult InnerResult { get; set; }
-			public T WrapperState { get; private set; }
+			public object WrapperState { get; private set; }
 			
-			public object AsyncState {
-				get { return InnerResult.AsyncState; }
-			}
+			object IAsyncResult.AsyncState { get { return state; } }
 
-			public WaitHandle AsyncWaitHandle {
+			WaitHandle IAsyncResult.AsyncWaitHandle {
 				get { return InnerResult.AsyncWaitHandle; }
 			}
 
-			public bool CompletedSynchronously {
+			bool IAsyncResult.CompletedSynchronously {
 				get { return InnerResult.CompletedSynchronously; }
 			}
 
-			public bool IsCompleted {
+			bool IAsyncResult.IsCompleted {
 				get { return InnerResult.IsCompleted; }
 			}
 		}
@@ -324,8 +341,8 @@ namespace MonoDevelop.MonoDroid
 		{
 			public AggregateAsyncResult (AsyncCallback callback, object state)
 			{
-				this.State = state;
 				this.Callback = callback;
+				this.State = state;
 			}
 			
 			public void FinalCallback (IAsyncResult ar)

@@ -35,26 +35,34 @@ namespace MonoDevelop.MonoDroid
 	{
 		const string SUPPORTED_PROTOCOL = "001a";
 		
-		public AdbCheckVersionOperation () : base ("host:version") {}
+		protected override void OnConnected ()
+		{
+			WriteCommand ("host:version", () => GetStatus (() => ReadResponseWithLength (OnGotResponse)));
+		}
 		
-		protected override void OnGotResponse (string response, ref bool readAgain)
+		void OnGotResponse (string response)
 		{
 			if (response != SUPPORTED_PROTOCOL)
 				throw new Exception ("Unsupported adb protocol: " + response);
+			else
+				SetCompleted (true);
 		}
 	}
 	
 	public class AdbTrackDevicesOperation : AdbOperation
 	{
-		public AdbTrackDevicesOperation () : base ("host:track-devices") {}
-		
-		protected override void OnGotResponse (string response, ref bool readAgain)
+		protected override void OnConnected ()
 		{
-			readAgain = true;
+			WriteCommand ("host:track-devices", () => GetStatus (() => ReadResponseWithLength (OnGotResponse)));
+		}
+		
+		void OnGotResponse (string response)
+		{
 			Devices = Parse (response);
 			var ev = DevicesChanged;
 			if (ev != null)
 				ev (Devices);
+			ReadResponseWithLength (OnGotResponse);
 		}
 		
 		List<AndroidDevice> Parse (string response)

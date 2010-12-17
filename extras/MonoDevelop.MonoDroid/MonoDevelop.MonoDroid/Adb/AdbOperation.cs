@@ -35,63 +35,71 @@ namespace MonoDevelop.MonoDroid
 		object lockObj = new object ();
 		bool cancel = false;
 		ManualResetEvent mre;
-		string command;
 		
-		public AdbOperation (string command)
+		public AdbOperation ()
 		{
-			this.command = command;
 			BeginConnect ();
 		}
-		
-		protected abstract void OnGotResponse (string response, ref bool readAgain);
 		
 		void BeginConnect ()
 		{
 			client = new AdbClient ();
-			client.BeginConnect (OnConnected, null);
+			client.BeginConnect (EndConnect, null);
 		}
 		
-		void OnConnected (IAsyncResult ar)
+		void EndConnect (IAsyncResult ar)
 		{
 			if (cancel) {
-				MarkCompleted ();
+				SetCompleted (false);
 				return;
 			}
 			try {
 				client.EndConnect (ar);
-				client.BeginWriteCommand (command, OnWroteCommand, null);
+				OnConnected ();
 			} catch (Exception ex) {
 				if (client != null)
 					SetError (ex);
 			}
+		}
+		
+		protected abstract void OnConnected ();
+		
+		protected void WriteCommand (string command, Action callback)
+		{
+			client.BeginWriteCommand (command, OnWroteCommand, callback);
 		}
 		
 		void OnWroteCommand (IAsyncResult ar)
 		{
 			if (cancel) {
-				MarkCompleted ();
+				SetCompleted (false);
 				return;
 			}
 			try {
 				client.EndWriteCommand (ar);
-				client.BeginReadStatus (OnGotStatus, null);
+				((Action)ar.AsyncState) ();
 			} catch (Exception ex) {
 				if (client != null)
 					SetError (ex);
 			}
 		}
 		
+		protected void GetStatus (Action callback)
+		{
+			client.BeginReadStatus (OnGotStatus, callback);
+		}
+		
 		void OnGotStatus (IAsyncResult ar)
 		{
 			if (cancel) {
-				MarkCompleted ();
+				SetCompleted (false);
 				return;
 			}
 			try {
 				if (!client.EndGetStatus (ar)) {
 					client.BeginReadResponseWithLength (OnGotErrorResponse, null);
 				} else {
-					client.BeginReadResponseWithLength (OnGotResponse, null);
+					((Action)ar.AsyncState) ();
 				}
 			} catch (Exception ex) {
 				if (client != null)
@@ -102,7 +110,7 @@ namespace MonoDevelop.MonoDroid
 		void OnGotErrorResponse (IAsyncResult ar)
 		{
 			if (cancel) {
-				MarkCompleted ();
+				SetCompleted (false);
 				return;
 			}	
 			try {
@@ -114,39 +122,41 @@ namespace MonoDevelop.MonoDroid
 			}
 		}
 		
+		protected void ReadResponseWithLength (Action<string> callback)
+		{
+			client.BeginReadResponseWithLength (OnGotResponse, callback);
+		}
+		
 		void OnGotResponse (IAsyncResult ar)
 		{
 			if (cancel) {
-				MarkCompleted ();
+				SetCompleted (false);
 				return;
 			}
 			try {
 				var response = client.EndReadResponseWithLength (ar);
-				bool readAgain = false;
-				OnGotResponse (response, ref readAgain);
-				if (readAgain) {
-					client.BeginReadResponseWithLength (OnGotResponse, null);
-				} else {
-					Success = true;
-					MarkCompleted ();
-				}
+				((Action<string>)ar.AsyncState) (response);
 			} catch (Exception ex) {
 				if (client != null)
 					SetError (ex);
 			}
 		}
 		
-		void SetError (Exception ex)
+		protected void SetError (Exception ex)
 		{
 			Error = ex;
-			MarkCompleted ();
+			SetCompleted (false);
 		}
 		
-		void MarkCompleted ()
+		protected void SetCompleted (bool success)
 		{
 			OperationHandler completedEv;
 			lock (lockObj) {
+				if (IsCompleted)
+					throw new InvalidOperationException ("Already completed");
 				completedEv = completed;
+				if (success)
+					this.Success = true;
 				IsCompleted = true;
 				if (mre != null)
 					mre.Set ();
