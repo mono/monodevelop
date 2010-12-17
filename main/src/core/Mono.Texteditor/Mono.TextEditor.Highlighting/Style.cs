@@ -680,7 +680,7 @@ namespace Mono.TextEditor.Highlighting
 			ChunkStyle style;
 			if (styleLookupTable.TryGetValue (colorString, out style))
 				return style.Color;
-			Gdk.Color color;
+			Gdk.Color color = new Gdk.Color ();
 			if (Gdk.Color.Parse (colorString, ref color))
 				return color;
 			throw new Exception ("Failed to parse color or find named color '" + colorString + "'");
