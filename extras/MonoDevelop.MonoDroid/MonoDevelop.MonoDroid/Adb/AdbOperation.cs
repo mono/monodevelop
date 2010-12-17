@@ -89,9 +89,9 @@ namespace MonoDevelop.MonoDroid
 			}
 			try {
 				if (!client.EndGetStatus (ar)) {
-					client.BeginReadResponseString (OnGotErrorResponse, null);
+					client.BeginReadResponseWithLength (OnGotErrorResponse, null);
 				} else {
-					client.BeginReadResponseString (OnGotResponse, null);
+					client.BeginReadResponseWithLength (OnGotResponse, null);
 				}
 			} catch (Exception ex) {
 				if (client != null)
@@ -106,7 +106,7 @@ namespace MonoDevelop.MonoDroid
 				return;
 			}	
 			try {
-				var error = client.EndReadResponseString (ar);
+				var error = client.EndReadResponseWithLength (ar);
 				SetError (new Exception (error));
 			} catch (Exception ex) {
 				if (client != null)
@@ -121,11 +121,11 @@ namespace MonoDevelop.MonoDroid
 				return;
 			}
 			try {
-				var response = client.EndReadResponseString (ar);
+				var response = client.EndReadResponseWithLength (ar);
 				bool readAgain = false;
 				OnGotResponse (response, ref readAgain);
 				if (readAgain) {
-					client.BeginReadResponseString (OnGotResponse, null);
+					client.BeginReadResponseWithLength (OnGotResponse, null);
 				} else {
 					Success = true;
 					MarkCompleted ();

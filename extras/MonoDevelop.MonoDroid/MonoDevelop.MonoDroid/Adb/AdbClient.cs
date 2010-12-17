@@ -29,6 +29,7 @@ using System.Text;
 using System.Net;
 using System.Globalization;
 using System.Threading;
+using System.IO;
 
 namespace MonoDevelop.MonoDroid
 {
@@ -146,7 +147,7 @@ namespace MonoDevelop.MonoDroid
 			return InterpretStatus (stream.Read (buf, 0, 4), buf);
 		}
 		
-		public IAsyncResult BeginReadResponseString (AsyncCallback callback, object state)
+		public IAsyncResult BeginReadResponseWithLength (AsyncCallback callback, object state)
 		{
 			CheckConnected ();
 			var ar = new ResponseAsyncResult (callback, state);
@@ -177,7 +178,7 @@ namespace MonoDevelop.MonoDroid
 			}
 		}
 		
-		public string EndReadResponseString (IAsyncResult ar)
+		public string EndReadResponseWithLength (IAsyncResult ar)
 		{
 			var r = (ResponseAsyncResult) ar;
 			if (r.Error != null)
@@ -187,7 +188,7 @@ namespace MonoDevelop.MonoDroid
 			return Encoding.ASCII.GetString (r.Buffer);
 		}
 		
-		public string ReadResponseString ()
+		public string ReadResponseWithLength ()
 		{
 			CheckConnected ();
 			var buf = new byte[4];
@@ -200,6 +201,49 @@ namespace MonoDevelop.MonoDroid
 			if (read != len)
 				throw new Exception ("Response too short");
 			return Encoding.ASCII.GetString (buf);
+		}
+		
+		public IAsyncResult BeginReadResponse (TextWriter writer, AsyncCallback callback, object state)
+		{
+			CheckConnected ();
+			var ar = new TextWriterAsyncResult (callback, state);
+			ar.Writer = writer;
+			ar.Buffer = new byte[1024];
+			stream.BeginRead (ar.Buffer, 0, ar.Buffer.Length, ContinueReadResponse, ar);
+			return ar;
+		}
+		
+		public void ContinueReadResponse (IAsyncResult ar)
+		{
+			var r = (TextWriterAsyncResult) ar.AsyncState;
+			try {
+				var len = stream.EndRead (ar);
+				if (len == 0) {
+					r.FinalCallback (r);
+					return;
+				}
+				r.Writer.Write (Encoding.ASCII.GetString (r.Buffer, 0, len));
+				stream.BeginRead (r.Buffer, 0, r.Buffer.Length, ContinueReadResponse, ar);
+			} catch (Exception ex) {
+				r.SetError (ex);
+				r.FinalCallback (r);
+			}
+		}
+		
+		public void EndReadResponse (IAsyncResult ar)
+		{
+			var r = (ResponseAsyncResult) ar;
+			if (r.Error != null)
+				throw r.Error;
+		}
+		
+		public void ReadResponse (TextWriter tw)
+		{
+			var buf = new byte[1024];
+			int len;
+			while ((len = stream.Read (buf, 0, buf.Length)) > 0) {
+				tw.Write (Encoding.ASCII.GetString (buf, 0, len));
+			}
 		}
 		
 		public void Dispose ()
@@ -253,15 +297,36 @@ namespace MonoDevelop.MonoDroid
 			}
 		}
 		
-		private class ResponseAsyncResult : IAsyncResult
+		private class TextWriterAsyncResult : AggregateAsyncResult
+		{
+			public TextWriterAsyncResult (AsyncCallback callback, object state)
+				: base (callback, state)
+			{
+			}
+			
+			public TextWriter Writer { get; set; }
+			public byte[] Buffer { get; set; }
+		}
+		
+		private class ResponseAsyncResult : AggregateAsyncResult
 		{
 			public ResponseAsyncResult (AsyncCallback callback, object state)
+				: base (callback, state)
+			{
+			}
+			
+			public byte[] Buffer { get; set; }
+		}
+		
+		//used for implementing asyncresult classes for methods that internally chain several
+		//other async results. it should be subclassed to hold needed state
+		private abstract class AggregateAsyncResult : IAsyncResult
+		{
+			public AggregateAsyncResult (AsyncCallback callback, object state)
 			{
 				this.State = state;
 				this.Callback = callback;
 			}
-			
-			public byte[] Buffer { get; set; }
 			
 			public void FinalCallback (IAsyncResult ar)
 			{
