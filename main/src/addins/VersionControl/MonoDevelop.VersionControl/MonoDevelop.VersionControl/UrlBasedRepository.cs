@@ -7,7 +7,6 @@ namespace MonoDevelop.VersionControl
 	public abstract class UrlBasedRepository: Repository, ICustomDataItem
 	{
 		string url;
-		string pass = "";
 		Uri uri;
 		
 		public UrlBasedRepository ()
@@ -53,7 +52,6 @@ namespace MonoDevelop.VersionControl
 			
 			UrlBasedRepository ot = (UrlBasedRepository) other;
 			url = ot.url;
-			pass = ot.pass;
 			CreateUri ();
 		}
 		
@@ -78,13 +76,6 @@ namespace MonoDevelop.VersionControl
 		{
 			get { return url; }
 			set { url = value; CreateUri (); }
-		}
-		
-		[ItemProperty (DefaultValue="")]
-		public virtual string Pass
-		{
-			get { return pass; }
-			set { pass = value; }
 		}
 		
 		internal Uri Uri {

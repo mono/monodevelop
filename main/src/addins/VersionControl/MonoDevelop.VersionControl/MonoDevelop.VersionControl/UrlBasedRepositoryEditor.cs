@@ -52,7 +52,6 @@ namespace MonoDevelop.VersionControl
 				comboProtocol.Active = Array.IndexOf (protocols, repo.Uri.Scheme);
 			} else
 				comboProtocol.Active = -1;
-			repositoryPassEntry.Text = repo.Pass;
 		}
 
 		protected virtual void OnRepositoryUrlEntryChanged(object sender, System.EventArgs e)
@@ -83,13 +82,11 @@ namespace MonoDevelop.VersionControl
 				bool isUrl = (Protocol != "file");
 				repositoryServerEntry.Sensitive = isUrl;
 				repositoryUserEntry.Sensitive = isUrl;
-				repositoryPassEntry.Sensitive = isUrl;
 				repositoryPortSpin.Sensitive = isUrl;
 			} else {
 				repositoryPathEntry.Sensitive = false;
 				repositoryServerEntry.Sensitive = false;
 				repositoryUserEntry.Sensitive = false;
-				repositoryPassEntry.Sensitive = false;
 				repositoryPortSpin.Sensitive = false;
 			}
 		}
@@ -120,13 +117,6 @@ namespace MonoDevelop.VersionControl
 			UriBuilder ub = new UriBuilder (repo.Url);
 			ub.UserName = repositoryUserEntry.Text;
 			repo.Url = ub.ToString ();
-			UpdateUrl ();
-		}
-
-		protected virtual void OnRepositoryPassEntryChanged(object sender, System.EventArgs e)
-		{
-			if (updating) return;
-			repo.Pass = repositoryPassEntry.Text;
 			UpdateUrl ();
 		}
 
