@@ -36,32 +36,104 @@ namespace MonoDevelop.MonoDroid
 	public class DeviceManager
 	{
 		EventHandler devicesUpdated;
-		AdbTrackDevicesOperation trackerOp;
+		IAsyncOperation op;
+		object lockObj = new object ();
+		int openProjects = 0;
 		
 		//this should be a singleton created from MonoDroidFramework
 		internal DeviceManager ()
 		{
 		}
 		
+		internal void IncrementOpenProjectCount ()
+		{
+			lock (lockObj) {
+				openProjects++;
+				CheckTracker ();
+			}
+		}
+		
+		internal void DecrementOpenProjectCount ()
+		{
+			lock (lockObj) {
+				openProjects--;
+				CheckTracker ();
+			}
+		}
+		
+		internal void AndroidSdkChanged ()
+		{
+			lock (lockObj) {
+				if (op != null)
+					StopTracker ();
+				CheckTracker ();
+			}
+		}
+		
+		void CheckTracker ()
+		{
+			bool needed = openProjects > 0 || devicesUpdated != null;
+			if (op == null) {
+				if (needed)
+					StartTracker ();
+			} else {
+				if (!needed)
+					StopTracker ();
+			}
+		}
+		
 		void StartTracker ()
 		{
-			trackerOp = new AdbTrackDevicesOperation ();
+			LoggingService.LogInfo ("Starting Android device monitor");
+			var stdOut = new StringWriter ();
+			op = MonoDroidFramework.Toolbox.EnsureServerRunning (stdOut, stdOut);
+			op.Completed += delegate (IAsyncOperation esop) {
+				if (!esop.Success) {
+					LoggingService.LogError ("Error starting adb server: " + stdOut);
+					((IDisposable)esop).Dispose ();
+					op = null;
+					return;
+				}	
+				try {
+					lock (lockObj) {
+						if (op != null) {
+							op = CreateTracker ();
+						}
+					}
+					((IDisposable)esop).Dispose ();
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error creating device tracker: ", ex);
+					op = null;
+				}
+			};
+		}
+		
+		AdbTrackDevicesOperation CreateTracker ()
+		{
+			var trackerOp = new AdbTrackDevicesOperation ();
 			trackerOp.DevicesChanged += delegate (List<AndroidDevice> list) {
 				Devices = list;
 				OnChanged (null, null);
 			};
 			trackerOp.Completed += delegate (IAsyncOperation op) {
 				var err = ((AdbTrackDevicesOperation)op).Error;
-				if (err != null)
+				if (err != null) {
+					lock (lockObj) {
+						((IDisposable)op).Dispose ();
+						op = null;
+					}
 					LoggingService.LogError ("Error in device tracker", err);
+				}
 			};
 			Devices = trackerOp.Devices;
+			return trackerOp;
 		}
 		
 		void StopTracker ()
 		{
-			trackerOp.Dispose ();
-			trackerOp = null;
+			LoggingService.LogInfo ("Stopping Android device monitor");
+			((IDisposable)op).Dispose ();
+			op = null;
 		}
 
 		void OnChanged (object sender, EventArgs e)
@@ -72,14 +144,16 @@ namespace MonoDevelop.MonoDroid
 		
 		public event EventHandler DevicesUpdated {
 			add {
-				if (devicesUpdated == null)
-					StartTracker ();
-				devicesUpdated += value;
+				lock (lockObj) {
+					devicesUpdated += value;
+					CheckTracker ();
+				}
 			}
 			remove {
-				devicesUpdated -= value;
-				if (devicesUpdated == null)
-					StopTracker ();
+				lock (lockObj) {
+					devicesUpdated -= value;
+					CheckTracker ();
+				}
 			}
 		}
 		

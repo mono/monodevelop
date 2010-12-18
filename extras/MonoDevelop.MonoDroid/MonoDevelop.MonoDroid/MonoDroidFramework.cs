@@ -50,6 +50,8 @@ namespace MonoDevelop.MonoDroid
 		internal static void UpdateSdkLocations ()
 		{
 			try {
+				var oldAndroidBinDir = AndroidBinDir;
+				
 				BinDir = FrameworkDir = AndroidBinDir = JavaBinDir = null;
 				Toolbox = null;
 				EnvironmentOverrides.Remove ("PATH");
@@ -84,6 +86,10 @@ namespace MonoDevelop.MonoDroid
 					Environment.GetEnvironmentVariable ("PATH");
 				
 				Toolbox = new AndroidToolbox (AndroidBinDir, JavaBinDir);
+				
+				if (oldAndroidBinDir != AndroidBinDir)
+					DeviceManager.AndroidSdkChanged ();
+				
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error detecting MonoDroid SDK", ex);
 			}

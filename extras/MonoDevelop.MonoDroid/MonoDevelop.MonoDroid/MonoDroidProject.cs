@@ -186,6 +186,8 @@ namespace MonoDevelop.MonoDroid
 		{
 			//set parameters to ones required for MonoDroid build
 			TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (FX_MONODROID);
+			
+			MonoDroidFramework.DeviceManager.IncrementOpenProjectCount ();
 		}
 		
 		public override SolutionItemConfiguration CreateConfiguration (string name)
@@ -705,8 +707,18 @@ namespace MonoDevelop.MonoDroid
 			return sb.ToString ();
 		}
 		
+		bool disposed = false;
+		
 		public override void Dispose ()
 		{
+			lock (this) {
+				if (disposed)
+					return;
+				disposed = true;
+			}
+			
+			MonoDroidFramework.DeviceManager.DecrementOpenProjectCount ();
+			
 			if (packageNameCache != null) {
 				packageNameCache.Dispose ();
 				packageNameCache = null;
