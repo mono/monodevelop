@@ -84,4 +84,36 @@ namespace MonoDevelop.MonoDroid
 		public List<AndroidDevice> Devices { get; private set; }
 		public event Action<List<AndroidDevice>> DevicesChanged;
 	}
+	
+	public class AdbGetPackagesOperation : AdbTransportOperation
+	{
+		public AdbGetPackagesOperation (AndroidDevice device) : base (device) {}
+		
+		protected override void OnGotTransport ()
+		{
+			var sr = new StringWriter ();
+			WriteCommand ("shell:pm list packages", () => GetStatus (() => ReadResponse (sr, OnGotResponse)));
+		}
+		
+		void OnGotResponse (TextWriter tw)
+		{
+			var sr = new StringReader (tw.ToString ());
+			var list = new List<string> ();
+			
+			string s;
+			while ((s = sr.ReadLine ()) != null) {
+				s = s.Trim ();
+				if (!s.StartsWith ("package:"))
+					throw new Exception ("Unexpected output from package list: '" + s + "'");
+				s = s.Substring ("package:".Length);
+				if (!string.IsNullOrEmpty (s))
+					list.Add (s);
+			}
+			Packages = list;
+			
+			SetCompleted (true);
+		}
+		
+		public List<string> Packages { get; private set; }
+	}
 }

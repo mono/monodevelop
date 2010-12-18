@@ -191,10 +191,10 @@ namespace MonoDevelop.MonoDroid
 					Completed = op => { DeviceNotFound = !op.Success; },
 					ErrorMessage = GettextCatalog.GetString ("Failed to get device")
 				},
-				new ChainedAsyncOperation<AndroidToolbox.GetPackagesOperation> () {
+				new ChainedAsyncOperation<AdbGetPackagesOperation> () {
 					TaskName = GettextCatalog.GetString ("Getting package list from device"),
-					Create = () => toolbox.GetInstalledPackagesOnDevice (device, monitor.Log),
-					Completed = op => { packages = op.Result; },
+					Create = () => new AdbGetPackagesOperation (device),
+					Completed = op => packages = op.Packages,
 					ErrorMessage = GettextCatalog.GetString ("Failed to get package list")
 				},
 				new ChainedAsyncOperation () {
@@ -356,7 +356,10 @@ namespace MonoDevelop.MonoDroid
 				} else {
 					index = -1;
 					if (chop.ErrorMessage != null && monitor != null) {
-						monitor.ReportError (chop.ErrorMessage, null);
+						Exception ex = null;
+						if (op is AdbOperation)
+							ex = ((AdbOperation)op).Error;
+						monitor.ReportError (chop.ErrorMessage, ex);
 					}
 				}
 				

@@ -269,13 +269,6 @@ namespace MonoDevelop.MonoDroid
 			return StartProcess (AdbExe, args, outputLog, errorLog);
 		}
 		
-		public GetPackagesOperation GetInstalledPackagesOnDevice (AndroidDevice device, TextWriter errorWriter)
-		{
-			var output = new StringWriter ();
-			var args = string.Format ("-s {0} shell pm list packages", device.ID);
-			return new GetPackagesOperation (StartProcess (AdbExe, args, output, errorWriter), output);
-		}
-		
 		public ProcessWrapper LogCat (AndroidDevice device, ProcessEventHandler outputLog,
 			ProcessEventHandler errorLog)
 		{
@@ -285,56 +278,7 @@ namespace MonoDevelop.MonoDroid
 
 		public bool IsSharedRuntimeInstalled (List<string> packages)
 		{
-			return packages.Contains ("package:com.novell.monodroid.runtimeservice");
-		}
-		
-		public abstract class AdbParseOperation<T> : WrapperOperation
-		{
-			IProcessAsyncOperation process;
-			StringWriter output;
-			T result;
-			
-			public AdbParseOperation (IProcessAsyncOperation process, StringWriter output)
-			{
-				this.process = process;
-				this.output = output;
-			}
-			
-			protected override IAsyncOperation Wrapped {
-				get { return process; }
-			}
-			
-			protected abstract T Parse (string result);
-			
-			public T Result {
-				get {
-					if (result == null)
-						result = Parse (output.ToString ());
-					return result;
-				}
-			}
-		}
-	
-		public class GetPackagesOperation : AdbParseOperation<List<string>>
-		{
-			public GetPackagesOperation (IProcessAsyncOperation process, StringWriter output)
-				: base (process, output)
-			{
-			}
-			
-			protected override List<string> Parse (string output)
-			{
-				var sr = new StringReader (output);
-				var list = new List<string> ();
-				
-				string s;
-				while ((s = sr.ReadLine ()) != null) {
-					s.Trim ();
-					if (!string.IsNullOrEmpty (s))
-						list.Add (s);
-				}
-				return list;
-			}
+			return packages.Contains ("com.novell.monodroid.runtimeservice");
 		}
 		
 		public class AdbOutputOperation : WrapperOperation

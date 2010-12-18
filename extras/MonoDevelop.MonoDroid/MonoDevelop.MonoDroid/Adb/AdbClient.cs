@@ -223,18 +223,19 @@ namespace MonoDevelop.MonoDroid
 					return;
 				}
 				r.Writer.Write (Encoding.ASCII.GetString (r.Buffer, 0, len));
-				stream.BeginRead (r.Buffer, 0, r.Buffer.Length, ContinueReadResponse, ar);
+				stream.BeginRead (r.Buffer, 0, r.Buffer.Length, ContinueReadResponse, r);
 			} catch (Exception ex) {
 				r.SetError (ex);
 				r.FinalCallback (r);
 			}
 		}
 		
-		public void EndReadResponse (IAsyncResult ar)
+		public TextWriter EndReadResponse (IAsyncResult ar)
 		{
-			var r = (ResponseAsyncResult) ar;
+			var r = (TextWriterAsyncResult) ar;
 			if (r.Error != null)
 				throw r.Error;
+			return r.Writer;
 		}
 		
 		public void ReadResponse (TextWriter tw)

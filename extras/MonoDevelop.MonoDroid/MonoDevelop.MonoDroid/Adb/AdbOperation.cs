@@ -26,6 +26,7 @@
 using System;
 using MonoDevelop.Core;
 using System.Threading;
+using System.IO;
 
 namespace MonoDevelop.MonoDroid
 {
@@ -124,7 +125,27 @@ namespace MonoDevelop.MonoDroid
 		
 		protected void ReadResponseWithLength (Action<string> callback)
 		{
-			client.BeginReadResponseWithLength (OnGotResponse, callback);
+			client.BeginReadResponseWithLength (OnGotResponseWithLength, callback);
+		}
+		
+		void OnGotResponseWithLength (IAsyncResult ar)
+		{
+			if (cancel) {
+				SetCompleted (false);
+				return;
+			}
+			try {
+				var response = client.EndReadResponseWithLength (ar);
+				((Action<string>)ar.AsyncState) (response);
+			} catch (Exception ex) {
+				if (client != null)
+					SetError (ex);
+			}
+		}
+		
+		protected void ReadResponse (TextWriter writer, Action<TextWriter> callback)
+		{
+			client.BeginReadResponse (writer, OnGotResponse, callback);
 		}
 		
 		void OnGotResponse (IAsyncResult ar)
@@ -134,8 +155,8 @@ namespace MonoDevelop.MonoDroid
 				return;
 			}
 			try {
-				var response = client.EndReadResponseWithLength (ar);
-				((Action<string>)ar.AsyncState) (response);
+				var writer = client.EndReadResponse (ar);
+				((Action<TextWriter>)ar.AsyncState) (writer);
 			} catch (Exception ex) {
 				if (client != null)
 					SetError (ex);
@@ -219,5 +240,22 @@ namespace MonoDevelop.MonoDroid
 				client = null;
 			}
 		}
+	}
+	
+	public abstract class AdbTransportOperation : AdbOperation
+	{
+		AndroidDevice device;
+		
+		public AdbTransportOperation (AndroidDevice device)
+		{
+			this.device = device;
+		}
+		
+		protected sealed override void OnConnected ()
+		{
+			WriteCommand ("host:transport:" + device.ID, () => GetStatus (() => OnGotTransport ()));
+		}
+		
+		protected abstract void OnGotTransport ();
 	}
 }
