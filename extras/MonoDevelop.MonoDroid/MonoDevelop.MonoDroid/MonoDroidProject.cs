@@ -226,24 +226,23 @@ namespace MonoDevelop.MonoDroid
 		/// <summary>
 		/// User setting of device for running app in simulator. Null means use default.
 		/// </summary>
-		public AndroidDevice GetDeviceTarget (MonoDroidProjectConfiguration conf)
+		public string GetDeviceTarget (MonoDroidProjectConfiguration conf)
 		{
 			//FIXME: do we really want this to be per-project/per-configuration? or should it be a global MD setting?
-			var device = UserProperties.GetValue<AndroidDevice> (GetDeviceTargetKey (conf));
-			if (device != null && (device.ID == null || device.ID.Length == 0))
+			var device = UserProperties.GetValue<string> (GetDeviceTargetKey (conf));
+			if (string.IsNullOrEmpty (device))
 				return null;
-
 			return device;
 		}
 		
-		public void SetDeviceTarget (MonoDroidProjectConfiguration conf, AndroidDevice value)
+		public void SetDeviceTarget (MonoDroidProjectConfiguration conf, string value)
 		{
-			UserProperties.SetValue<AndroidDevice> (GetDeviceTargetKey (conf), value);
+			UserProperties.SetValue<string> (GetDeviceTargetKey (conf), value);
 		}
 		
 		string GetDeviceTargetKey (MonoDroidProjectConfiguration conf)
 		{
-			return "AndroidDevice-" + conf.Id;
+			return "AndroidDeviceId-" + conf.Id;
 		}
 		
 		bool HackGetUserAssemblyPaths = false;
@@ -303,9 +302,8 @@ namespace MonoDevelop.MonoDroid
 		                                                            DotNetProjectConfiguration configuration)
 		{
 			var conf = (MonoDroidProjectConfiguration) configuration;
-			var devTarget = GetDeviceTarget (conf);
 			
-			return new MonoDroidExecutionCommand (conf.PackageName, devTarget,
+			return new MonoDroidExecutionCommand (conf.PackageName,
 				conf.ApkSignedPath, TargetRuntime, TargetFramework, conf.DebugMode) {
 				UserAssemblyPaths = GetUserAssemblyPaths (configSel)
 			};
@@ -347,37 +345,36 @@ namespace MonoDevelop.MonoDroid
 			IConsole console = null;
 			var opMon = new AggregatedOperationMonitor (monitor);
 			try {
-				var persistedDevice = GetDeviceTarget (conf);
+				var handler = context.ExecutionHandler as MonoDroidExecutionHandler;
+				bool useHandlerDevice = handler != null && handler.DeviceTarget != null;
 				
-				//try running the upload with the presisted device, if any
-				AndroidDevice device = persistedDevice;
+				AndroidDevice device = null;
+				
+				if (useHandlerDevice) {
+					device = handler.DeviceTarget;
+				} else {
+					var deviceId = GetDeviceTarget (conf);
+					if (deviceId != null)
+						device = MonoDroidFramework.DeviceManager.GetDevice (deviceId);
+					if (device == null)
+						SetDeviceTarget (conf, null);
+				}
+				
 				var uploadOp = MonoDroidUtility.SignAndUpload (monitor, this, configSel, false, ref device);
+				
+				//user cancelled device selection
 				if (device == null)
 					return;
 				
 				opMon.AddOperation (uploadOp);
 				uploadOp.WaitForCompleted ();
 				
-				//if a persisted device was used, but failed, try again, but this time make the user pick a device
-				if (!uploadOp.Success && !monitor.IsCancelRequested && uploadOp.DeviceNotFound && persistedDevice != null) {
-					device = null;
-					uploadOp = MonoDroidUtility.SignAndUpload (monitor, this, configSel, false, ref device);
-					if (device == null)
-						return;
-					opMon.AddOperation (uploadOp);
-					uploadOp.WaitForCompleted ();
-				}
-				
-				if (!uploadOp.Success) {
-					SetDeviceTarget (conf, null);
-					return;
-				}
-				
-				if (monitor.IsCancelRequested)
+				if (!uploadOp.Success || monitor.IsCancelRequested)
 					return;
 				
 				//successful, persist the device choice
-				SetDeviceTarget (conf, device);
+				if (!useHandlerDevice)
+					SetDeviceTarget (conf, device.ID);
 				
 				var command = (MonoDroidExecutionCommand) CreateExecutionCommand (configSel, conf);
 				command.Device = device;

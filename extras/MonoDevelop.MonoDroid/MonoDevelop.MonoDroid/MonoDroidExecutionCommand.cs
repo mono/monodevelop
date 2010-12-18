@@ -34,10 +34,9 @@ namespace MonoDevelop.MonoDroid
 {
 	public class MonoDroidExecutionCommand: ExecutionCommand
 	{
-		public MonoDroidExecutionCommand (string packageName, AndroidDevice device, FilePath apkPath,
+		public MonoDroidExecutionCommand (string packageName, FilePath apkPath,
 			TargetRuntime runtime, TargetFramework framework, bool debugMode)
 		{
-			this.Device = device;
 			this.PackageName = packageName;
 			this.ApkPath = apkPath;
 			this.Runtime = runtime;

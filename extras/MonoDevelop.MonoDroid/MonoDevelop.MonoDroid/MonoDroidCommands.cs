@@ -81,7 +81,7 @@ namespace MonoDevelop.MonoDroid
 		{
 			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
 			var conf = (MonoDroidProjectConfiguration) proj.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
-			proj.SetDeviceTarget (conf, (AndroidDevice)dataItem);
+			proj.SetDeviceTarget (conf, ((AndroidDevice)dataItem).ID);
 		}
 	}
 
@@ -103,7 +103,7 @@ namespace MonoDevelop.MonoDroid
 			
 			var device = MonoDroidUtility.ChooseDevice (null);
 			if (device != null)
-				proj.SetDeviceTarget (conf, device);
+				proj.SetDeviceTarget (conf, device.ID);
 		}
 	}
 	
