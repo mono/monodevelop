@@ -108,16 +108,10 @@
 				_description = "Upload the MonoDroid application to the device" 
 				defaultHandler = "MonoDevelop.MonoDroid.DefaultUploadToDeviceHandler"
 				_label = "Upload to Device" />
-			<!--
 			<Command id = "MonoDevelop.MonoDroid.MonoDroidCommands.SelectDeviceTarget"
 				type = "radio|array"
 				defaultHandler = "MonoDevelop.MonoDroid.SelectDeviceTargetHandler"
 				_label = "MonoDroid Device" />
-			-->
-			<Command id = "MonoDevelop.MonoDroid.MonoDroidCommands.SelectDeviceTarget"
-				_description ="Select the device target"
-				defaultHandler = "MonoDevelop.MonoDroid.ChangeDeviceTargetHandler"
-				_label = "Change Target Device..." />
 		</Condition>
 	</Extension>
 	
@@ -136,14 +130,10 @@
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
 		<Condition id="MonoDroidInstalled">
-			<CommandItem id = "MonoDevelop.MonoDroid.MonoDroidCommands.SelectDeviceTarget"
-				insertafter = "SelectActiveRuntime" />
-			<!--
 			<ItemSet id = "SelectSimulatorTarget" _label = "MonoDroid Device Target" autohide = "true" 
 			         insertafter = "SelectActiveRuntime"  >
 				<CommandItem id = "MonoDevelop.MonoDroid.MonoDroidCommands.SelectDeviceTarget" />
 			</ItemSet>
-			-->
 		</Condition>
 	</Extension>
 	

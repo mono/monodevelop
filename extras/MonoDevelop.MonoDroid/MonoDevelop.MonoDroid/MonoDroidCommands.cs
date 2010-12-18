@@ -49,16 +49,10 @@ namespace MonoDevelop.MonoDroid
 		OpenAvdManager,
 	}
 	
-	//
-	// We may use this one in the future if we properly support full dynamic device listing
-	//
 	class SelectDeviceTargetHandler : CommandHandler
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
-			return;
-			//FIXME: figure out how to poll the device list sanely
-			/*
 			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
 			if (proj == null || !MonoDroidFramework.HasAndroidJavaSdks)
 				return;
@@ -74,7 +68,7 @@ namespace MonoDevelop.MonoDroid
 				var i = info.Add (st.ToString (), st);
 				if (projSetting != null && projSetting.Equals (st))
 					i.Checked  = true;
-			}*/
+			}
 		}
 
 		protected override void Run (object dataItem)
