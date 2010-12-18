@@ -34,6 +34,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Components;
 
 using Gtk;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -86,7 +87,7 @@ namespace MonoDevelop.Ide.Projects
 			foreach (string file in selectedFiles) {
 				bool isAssembly = true;
 				try	{
-					System.Reflection.AssemblyName.GetAssemblyName(System.IO.Path.GetFullPath (file));
+					SystemAssemblyService.GetAssemblyName (System.IO.Path.GetFullPath (file));
 				} catch {
 					isAssembly = false;
 				}
