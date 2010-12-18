@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core;
 using System.IO;
+using System.Linq;
 
 namespace MonoDevelop.MonoDroid
 {
@@ -133,6 +134,7 @@ namespace MonoDevelop.MonoDroid
 		{
 			LoggingService.LogInfo ("Stopping Android device monitor");
 			((IDisposable)op).Dispose ();
+			Devices = new AndroidDevice[0];
 			op = null;
 		}
 
@@ -158,6 +160,19 @@ namespace MonoDevelop.MonoDroid
 		}
 		
 		public IList<AndroidDevice> Devices { get; set; }
+		
+		public AndroidDevice GetDevice (string id)
+		{
+			return Devices.FirstOrDefault (d => d.ID == id);
+		}
+		
+		public bool GetDeviceIsOnline (string id)
+		{
+			var device = GetDevice (id);
+			if (device == null)
+				return false;
+			return device.State == "device";
+		}
 	}
 }
 
