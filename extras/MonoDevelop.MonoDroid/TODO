@@ -2,16 +2,12 @@ High priority:
 * Package publishing wizard to sign release build with release key
 
 Medium priority:
-* Run with->(Device listing). Complications caused by need to refresh
-  the devices and update the menus. Not sure how.
 * Check whether target device had enough temp space (e.g. emulator)
 * Figure out how to associate virtual devices and running emulators, 
   and improve the device selector GUI.
 * Set asset build action automatically when adding files to Asset folder
 * More options GUIs as needed - add options GUIs for any 
   additional build options, such as the linker.
-* Support for connecting to debugger over adb forwarding instead 
-  of requiring network reachability
 
 Low priority:
 * Make the device log view window into a pad, like the VS addin.
