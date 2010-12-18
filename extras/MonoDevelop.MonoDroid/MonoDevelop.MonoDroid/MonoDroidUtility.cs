@@ -181,11 +181,7 @@ namespace MonoDevelop.MonoDroid
 			
 			chop = new ChainedAsyncOperationSequence (monitor,
 				new ChainedAsyncOperation () {
-					TaskName = GettextCatalog.GetString ("Starting adb server"),
-					Create = () => toolbox.EnsureServerRunning (monitor.Log, monitor.Log),
-					ErrorMessage = GettextCatalog.GetString ("Failed to start adb server")
-				},
-				new ChainedAsyncOperation () {
+					Skip = () => MonoDroidFramework.DeviceManager.GetDeviceIsOnline (device.ID) ? "" : null,
 					TaskName = GettextCatalog.GetString ("Waiting for device"),
 					Create = () => toolbox.WaitForDevice (device, monitor.Log, monitor.Log),
 					Completed = op => { DeviceNotFound = !op.Success; },
@@ -225,7 +221,7 @@ namespace MonoDevelop.MonoDroid
 					ErrorMessage = GettextCatalog.GetString ("Package signing failed"),
 				},
 				new ChainedAsyncOperation () {
-					Skip = () => (packages.Contains ("package:" + packageName) && !replaceIfExists)
+					Skip = () => (packages.Contains (packageName) && !replaceIfExists)
 						? GettextCatalog.GetString ("Package is already up to date") : null,
 					TaskName = GettextCatalog.GetString ("Installing package"),
 					Create = () => toolbox.Install (device, packageFile, monitor.Log, monitor.Log),
