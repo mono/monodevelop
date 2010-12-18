@@ -36,6 +36,7 @@ namespace MonoDevelop.MonoDroid
 		object lockObj = new object ();
 		bool cancel = false;
 		ManualResetEvent mre;
+		bool disposed;
 		
 		public AdbOperation ()
 		{
@@ -234,11 +235,26 @@ namespace MonoDevelop.MonoDroid
 		
 		public void Dispose ()
 		{
-			var c = client;
-			if (c != null) {
-				c.Dispose ();
+			lock (lockObj) {
+				if (disposed)
+					return;
+				disposed = true;
+			}
+			GC.SuppressFinalize (this);
+			Dispose (true);
+		}
+		
+		protected virtual void Dispose (bool disposing)
+		{
+			if (disposing) {
+				client.Dispose ();
 				client = null;
 			}
+		}
+		
+		~AdbOperation ()
+		{
+			Dispose (false);
 		}
 	}
 	
