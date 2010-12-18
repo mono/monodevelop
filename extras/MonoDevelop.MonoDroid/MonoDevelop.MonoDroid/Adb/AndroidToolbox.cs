@@ -156,7 +156,9 @@ namespace MonoDevelop.MonoDroid
 			var args = new ProcessArgumentBuilder ();
 			args.Add ("-partition-size", "512", "-avd");
 			args.AddQuoted (avd.Name);
-			
+			args.Add ("-prop");
+			args.AddQuoted ("monodroid.avdname=" + avd.Name);
+
 			var error = new StringWriter ();
 			var process = StartProcess (EmulatorExe, args.ToString (), null, error);
 			return new StartAvdOperation (process, error);
