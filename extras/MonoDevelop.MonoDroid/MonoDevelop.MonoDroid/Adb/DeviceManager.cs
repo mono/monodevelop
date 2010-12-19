@@ -88,7 +88,13 @@ namespace MonoDevelop.MonoDroid
 		{
 			LoggingService.LogInfo ("Starting Android device monitor");
 			var stdOut = new StringWriter ();
-			op = MonoDroidFramework.Toolbox.EnsureServerRunning (stdOut, stdOut);
+
+			//toolbox could be null if the android SDK is not found and not yet configured
+			var tb = MonoDroidFramework.Toolbox;
+			if (tb == null)
+				return;
+
+			op = tb.EnsureServerRunning (stdOut, stdOut);
 			op.Completed += delegate (IAsyncOperation esop) {
 				if (!esop.Success) {
 					LoggingService.LogError ("Error starting adb server: " + stdOut);
