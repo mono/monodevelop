@@ -24,7 +24,7 @@ RES =
 
 # Mono's 2.0/3.5 compiler doesn't recognize 3.5 variants of the MSBuild assemblies
 # so patch up the references
-MSB_REF_PREFIX:=$(shell pkg-config --variable libdir mono)/mono/3.5/
+MSB_REF_PREFIX:=$(shell pkg-config --variable prefix mono)/lib/mono/3.5/
 FIXED_REFS:=$(shell echo '$(REFS)' | sed -e 's@Microsoft.Build[^ ]*@$(MSB_REF_PREFIX)&.dll@g')
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
