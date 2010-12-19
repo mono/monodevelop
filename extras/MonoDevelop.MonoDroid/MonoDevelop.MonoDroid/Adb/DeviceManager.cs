@@ -44,6 +44,7 @@ namespace MonoDevelop.MonoDroid
 		//this should be a singleton created from MonoDroidFramework
 		internal DeviceManager ()
 		{
+			Devices = new AndroidDevice[0];
 		}
 		
 		internal void IncrementOpenProjectCount ()
