@@ -875,6 +875,12 @@
 				_description = "Add existing files to the project"
 				macShortcut = "Alt|Meta|A"
 				_label = "_Add Files..." />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddFilesFromFolder"
+				_description = "Adds files from a folder recursively"
+				_label = "_Add Files from Folder..." />
+		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddExistingFolder"
+				_description = "Adds and existing folder and its contents"
+				_label = "_Add Existing Folder..." />
 		<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder"
 				_label = "New _Folder" 
 				_description = "Create a new folder"
@@ -1668,6 +1674,8 @@
 			</Condition>
 			<Condition id="ItemType" value="Project|ProjectFolder">
 				<SeparatorItem/>
+				<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddFilesFromFolder" />
+				<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddExistingFolder" />
 				<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder" />
 			</Condition>
 		</ItemSet>

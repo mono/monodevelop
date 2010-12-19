@@ -27,7 +27,9 @@
 //
 
 using System;
+using System.Linq;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -346,6 +348,86 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			nav.Selected = true;
 			Tree.StartLabelEdit ();
+		}
+
+		///<summary>Imports files and folders from a target folder into the current folder</summary>
+		[CommandHandler (ProjectCommands.AddFilesFromFolder)]
+		public void AddFilesFromFolder ()
+		{
+			var project = (Project) CurrentNode.GetParentDataItem (typeof(Project), true);
+			var targetRoot = ((FilePath) GetFolderPath (CurrentNode.DataItem)).CanonicalPath;
+			
+			var ofdlg = new SelectFolderDialog (GettextCatalog.GetString ("Import From Folder")) {
+				CurrentFolder = targetRoot
+			};
+			if(!ofdlg.Run ())
+				return;
+			
+			var srcRoot = ofdlg.SelectedFile.CanonicalPath;
+			var foundFiles = Directory.GetFiles (srcRoot, "*", SearchOption.AllDirectories);
+			
+			var impdlg = new IncludeNewFilesDialog (GettextCatalog.GetString ("Select files to add from {0}", srcRoot.FileName), srcRoot);
+			impdlg.AddFiles (foundFiles);
+			if (MessageService.ShowCustomDialog (impdlg) != (int) ResponseType.Ok)
+				return;
+				
+			var srcFiles = impdlg.SelectedFiles;
+			var targetFiles = srcFiles.Select (f => targetRoot.Combine (f.ToRelative (srcRoot)));
+
+			var added = IdeApp.ProjectOperations.AddFilesToProject (project, srcFiles.ToArray (), targetFiles.ToArray (), null).Any ();
+			if (added)
+				IdeApp.ProjectOperations.Save (project);
+		}
+		
+		///<summary>Adds an existing folder to the current folder</summary>
+		[CommandHandler (ProjectCommands.AddExistingFolder)]
+		public void AddExistingFolder ()
+		{
+			var project = (Project) CurrentNode.GetParentDataItem (typeof(Project), true);
+			var selectedFolder = ((FilePath) GetFolderPath (CurrentNode.DataItem)).CanonicalPath;
+			
+			var ofdlg = new SelectFolderDialog (GettextCatalog.GetString ("Add Existing Folder")) {
+				CurrentFolder = selectedFolder
+			};
+			if(!ofdlg.Run ())
+				return;
+			
+			var srcRoot = ofdlg.SelectedFile.CanonicalPath;
+			var targetRoot = selectedFolder.Combine (srcRoot.FileName);
+
+			bool changedProject = false;
+
+			if (File.Exists (targetRoot)) {
+				MessageService.ShowWarning (GettextCatalog.GetString (
+					"There is already a file with the name '{0}' in the target directory", srcRoot.FileName));
+				return;
+			}
+
+			var existingPf = project.Files.GetFileWithVirtualPath (targetRoot.ToRelative (project.BaseDirectory));
+			if (existingPf != null) {
+				if (existingPf.Subtype != Subtype.Directory) {
+					MessageService.ShowWarning (GettextCatalog.GetString (
+						"There is already a link with the name '{0}' in the target directory", srcRoot.FileName));
+					return;
+				} else {
+					project.Files.Add (new ProjectFile (targetRoot) { Subtype = Subtype.Directory });
+					changedProject = true;
+				}
+			}
+
+			var foundFiles = Directory.GetFiles (srcRoot, "*", SearchOption.AllDirectories);
+			
+			var impdlg = new IncludeNewFilesDialog (GettextCatalog.GetString ("Select files to add from {0}", srcRoot.FileName), srcRoot.ParentDirectory);
+			impdlg.AddFiles (foundFiles);
+			if (MessageService.ShowCustomDialog (impdlg) == (int) ResponseType.Ok) {
+				var srcFiles = impdlg.SelectedFiles;
+				var targetFiles = srcFiles.Select (f => targetRoot.Combine (f.ToRelative (srcRoot)));
+				if (IdeApp.ProjectOperations.AddFilesToProject (project, srcFiles.ToArray (), targetFiles.ToArray (), null).Any ())
+					changedProject = true;
+			}
+			
+			if (changedProject)
+				IdeApp.ProjectOperations.Save (project);
 		}
 		
 		[CommandHandler (ProjectCommands.NewFolder)]

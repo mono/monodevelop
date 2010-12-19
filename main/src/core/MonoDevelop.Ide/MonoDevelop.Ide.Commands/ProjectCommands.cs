@@ -61,6 +61,8 @@ namespace MonoDevelop.Ide.Commands
 		AddNewFiles,
 		AddFiles,
 		NewFolder,
+		AddFilesFromFolder,
+		AddExistingFolder,
 		IncludeToProject,
 		BuildSolution,
 		Build,
