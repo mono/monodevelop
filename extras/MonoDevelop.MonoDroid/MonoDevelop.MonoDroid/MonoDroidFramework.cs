@@ -57,7 +57,7 @@ namespace MonoDevelop.MonoDroid
 				EnvironmentOverrides.Remove ("PATH");
 				
 				string monoDroidBinDir, monoDroidFrameworkDir, javaPath, androidPath;
-				MonoDroidSdk.GetPaths (out monoDroidBinDir, out monoDroidFrameworkDir, out androidPath, out javaPath, true);
+				MonoDroidSdk.GetPaths (out monoDroidBinDir, out monoDroidFrameworkDir, out androidPath, out javaPath);
 				
 				if (monoDroidBinDir == null) {
 					LoggingService.LogInfo ("MonoDroid SDK not found, disabling MonoDroid addin");

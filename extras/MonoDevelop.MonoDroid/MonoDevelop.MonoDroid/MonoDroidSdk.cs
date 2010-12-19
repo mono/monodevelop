@@ -32,6 +32,10 @@ using System.Runtime.InteropServices;
 
 namespace MonoDroid
 {
+	// Thie file must be kept in sync between: 
+	//  - The MonoDroid MSBuild tooling
+	//  - The MonoDroid VS Plugin
+	//  - The MonoDroid MonoDevelop Plugin [extras/MonoDevelop.MonoDroid/MonoDevelop.MonoDroid/MonoDroidSdk.cs]
 	internal static class MonoDroidSdk
 	{
 		public static readonly bool IsWindows, IsMac;
@@ -66,7 +70,7 @@ namespace MonoDroid
 		}
 		
 		public static void GetPaths (out string monoDroidBinDir, out string monoDroidFrameworkDir,
-			out string androidSdkPath, out string javaSdkPath, bool storeAutoDetectedLocations)
+			out string androidSdkPath, out string javaSdkPath)
 		{
 			monoDroidBinDir = monoDroidFrameworkDir = androidSdkPath = javaSdkPath = null;
 			
@@ -87,14 +91,9 @@ namespace MonoDroid
 			
 			if (androidSdkPath == null)
 				androidSdkPath = FindAndroidSdk (pathDirs);
-			if (androidSdkPath == null)
-				return;
-			
+
 			if (javaSdkPath == null)
 				javaSdkPath = FindJavaSdk (pathDirs);
-			
-			if (storeAutoDetectedLocations)
-				SetConfiguredSdkLocations (androidSdkPath, javaSdkPath);
 		}
 		
 		/// <summary>
@@ -137,7 +136,7 @@ namespace MonoDroid
 			if (string.IsNullOrEmpty (monoDroidPath))
 				return false;
 			
-			var bin = Path.Combine (monoDroidPath, "bin");
+			var bin = Path.Combine (Path.Combine (monoDroidPath, "lib"), "monodroid");
 			if (!File.Exists (Path.Combine (bin, "monodroid.exe")))
 				return false;
 			
