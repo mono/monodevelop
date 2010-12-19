@@ -152,30 +152,47 @@ namespace MonoDevelop.Ide.Projects
 			treeviewFiles.ExpandAll ();
 		}
 		
+		TreeIter SearchPath (string path)
+		{
+			TreeIter iter;
+			if (store.IterChildren (out iter) && SearchSibling (ref iter, path))
+				return iter;
+			return store.AppendValues (GetFolderValues (path));
+		}
+		
+		
 		TreeIter SearchPath (TreeIter parent, string path)
 		{
 			TreeIter iter;
-			if (store.IterChildren (out iter, parent)) {
-				do {
-					string name = (string)store.GetValue (iter, Columns.Text);
-					if (name == path)
-						return iter;
-				} while (store.IterNext (ref iter));
-			}
-			return store.AppendValues (parent, ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.OpenFolder, IconSize.Menu), ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.ClosedFolder, IconSize.Menu), path, null, false);
+			if (store.IterChildren (out iter, parent) && SearchSibling (ref iter, path))
+				return iter;
+			return store.AppendValues (parent, GetFolderValues (path));
+		}
+
+		bool SearchSibling (ref TreeIter iter, string name)
+		{
+			do {
+				string val = (string)store.GetValue (iter, Columns.Text);
+				if (name == val)
+					return true;
+			} while (store.IterNext (ref iter));
+			return false;
 		}
 		
+		object[] GetFolderValues (string name)
+		{
+			return new object[] { ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.OpenFolder, IconSize.Menu),
+				 ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.ClosedFolder, IconSize.Menu), name, null, false };
+		}
+
 		TreeIter GetPath (string fullPath)
 		{
 			if (string.IsNullOrEmpty (fullPath))
 				return TreeIter.Zero;
 			string[] paths = fullPath.Split (System.IO.Path.DirectorySeparatorChar, System.IO.Path.AltDirectorySeparatorChar);
-			TreeIter iter;
-			if (!store.GetIterFirst (out iter)) 
-				return TreeIter.Zero;
-			for (int i = 0; i < paths.Length; i++) {
+			var iter = SearchPath (paths[0]);
+			for (int i = 1; i < paths.Length; i++)
 				iter = SearchPath (iter, paths[i]);
-			}
 			return iter;
 		}
 		
@@ -191,7 +208,7 @@ namespace MonoDevelop.Ide.Projects
 				filePath.ToString (),
 				false
 			};
-			if (!store.IterIsValid (iter)) {
+			if (iter.Equals (TreeIter.Zero)) {
 				store.AppendValues (values);
 				return;
 			}
