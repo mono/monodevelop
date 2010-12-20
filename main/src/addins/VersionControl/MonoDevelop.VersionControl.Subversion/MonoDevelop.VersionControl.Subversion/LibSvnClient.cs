@@ -139,6 +139,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		
 		public abstract void strerror (int statcode, byte[] buf, int bufsize);
 		
+		public abstract IntPtr path_internal_style (string path, IntPtr pool);
+		
 		public class DirEnt {
 			public readonly string Name;
 			public readonly bool IsDirectory;
@@ -835,6 +837,11 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 			svn_strerror (statcode, buf, bufsize);
 		}
 		
+		public override IntPtr path_internal_style (string path, IntPtr pool)
+		{
+			return svn_path_internal_style (path, pool);
+		}
+		
 
 		
 		[DllImport(svnclientlib)] static extern void svn_config_ensure (string config_dir, IntPtr pool);
@@ -946,6 +953,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_blame (string path, ref Rev rev_start, ref Rev rev_end, svn_client_blame_receiver_t receiver, IntPtr baton, IntPtr ctx, IntPtr pool);
 		
 		[DllImport(svnclientlib)] static extern void svn_strerror (int statcode, byte[] buf, int bufsize);
+		
+		[DllImport(svnclientlib)] static extern IntPtr svn_path_internal_style (string path, IntPtr pool);
 	}
 	
 	public class LibSvnClient1 : LibSvnClient {
@@ -1202,6 +1211,11 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		{
 			svn_strerror (statcode, buf, bufsize);
 		}
+		
+		public override IntPtr path_internal_style (string path, IntPtr pool)
+		{
+			return svn_path_internal_style (path, pool);
+		}
 
 
 		[DllImport(svnclientlib)] static extern void svn_config_ensure (string config_dir, IntPtr pool);
@@ -1314,5 +1328,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_blame (string path, ref Rev rev_start, ref Rev rev_end, svn_client_blame_receiver_t receiver, IntPtr baton, IntPtr ctx, IntPtr pool);
 		
 		[DllImport(svnclientlib)] static extern void svn_strerror (int statcode, byte[] buf, int bufsize);
+		
+		[DllImport(svnclientlib)] static extern IntPtr svn_path_internal_style (string path, IntPtr pool);
 	}
 }
