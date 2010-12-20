@@ -1,7 +1,7 @@
 var MAJOR_VERSION = 2;
 var MINOR_VERSION = 4;
-var POINT_VERSION = 1;
-var BUILD_VERSION = 0;
+var POINT_VERSION = 9;
+var BUILD_VERSION = 1;
 
 var sh = new ActiveXObject("WScript.Shell");
 var fs = new ActiveXObject("Scripting.FileSystemObject");

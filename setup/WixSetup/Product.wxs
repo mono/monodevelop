@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?define ProductShortName = "MonoDevelop" ?>
-<?define ProductVersion = "2.4.1" ?>
-<?define ProductVersionText = "2.4.1" ?>
+<?define ProductVersion = "2.4.9.1" ?>
+<?define ProductVersionText = "2.4.9.1" ?>
 <?define Manufacturer = "Novell" ?>
 <?define UpgradeCode = "9134F74C-E7E3-471A-9833-C86FB45CD38E" ?>
 
@@ -552,6 +552,10 @@
               <Component Id="MonoDevelop_AddIns_VersionControl" Guid="185a74d4-17c2-4e94-9dbc-4c391026eb1e">
                 <File Name="MonoDevelop.VersionControl.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\MonoDevelop.VersionControl.dll" />
                 <File Name="MonoDevelop.VersionControl.Subversion.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\MonoDevelop.VersionControl.Subversion.dll" />
+                <File Name="MonoDevelop.VersionControl.Git.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\MonoDevelop.VersionControl.Git.dll" />
+                <File Name="NGit.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\NGit.dll" />
+                <File Name="NSch.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\NSch.dll" />
+                <File Name="Sharpen.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\Sharpen.dll" />
                 <File Name="comment.png" Source="$(var.BuildRoot)\AddIns\VersionControl\comment.png" />
                 <File Name="menu_add.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_add.png" />
                 <File Name="menu_commit.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_commit.png" />
