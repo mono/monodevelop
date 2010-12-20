@@ -22,7 +22,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		public SubversionRepository (SubversionVersionControl vcs, string url, FilePath rootPath): base (vcs)
 		{
 			Url = url;
-			this.rootPath = rootPath.CanonicalPath;
+			this.rootPath = !rootPath.IsNullOrEmpty ? rootPath.CanonicalPath : null;
 		}
 		
 		public FilePath RootPath {
