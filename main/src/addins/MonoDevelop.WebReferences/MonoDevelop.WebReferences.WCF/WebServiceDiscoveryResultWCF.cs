@@ -150,7 +150,7 @@ namespace MonoDevelop.WebReferences.WCF
 			
 			ServiceContractGenerator generator = new ServiceContractGenerator (ccu);
 			generator.Options = ServiceContractGenerationOptions.ChannelInterface | ServiceContractGenerationOptions.ClientClass;
-			if (refGroup.ClientOptions.GenerateAsynchronousMethods)
+			if (refGroup.ClientOptions.GenerateAsynchronousMethods || targetMoonlight || targetMonoTouch)
 				generator.Options |= ServiceContractGenerationOptions.AsynchronousMethods;
 			if (refGroup.ClientOptions.GenerateInternalTypes)
 				generator.Options |= ServiceContractGenerationOptions.InternalTypes;
