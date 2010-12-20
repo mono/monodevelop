@@ -110,7 +110,7 @@ namespace MonoDevelop.Platform
 		{
 			string args = "/C \"title " + title + " && \"" + command + "\" " + arguments;
 			if (pauseWhenFinished)
-			    args += " && pause\"";
+			    args += " & pause\"";
 			else
 			    args += "\"";
 			
