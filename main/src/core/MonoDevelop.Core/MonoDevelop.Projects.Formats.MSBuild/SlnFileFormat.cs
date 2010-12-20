@@ -762,17 +762,27 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					handler.ReadSlnData (it);
 					
 				} catch (Exception e) {
-					LoggingService.LogError (GettextCatalog.GetString (
-								"Error while trying to load the project {0}. Exception : {1}",
-								projectPath, e.ToString ()));
-					monitor.ReportWarning (GettextCatalog.GetString (
-						"Error while trying to load the project '{0}': {1}", projectPath, e.Message));
+					if (e is UnknownSolutionItemTypeException) {
+						var name = ((UnknownSolutionItemTypeException)e).TypeName;
+						LoggingService.LogWarning (!string.IsNullOrEmpty (name)?
+							  string.Format ("Could not load project '{0}' with unknown item type '{1}'", projectPath, name)
+							: string.Format ("Could not load project '{0}' with unknown item type", projectPath));
+						monitor.ReportWarning (!string.IsNullOrEmpty (name)?
+							  GettextCatalog.GetString ("Could not load project '{0}' with unknown item type '{1}'", projectPath, name)
+							: GettextCatalog.GetString ("Could not load project '{0}' with unknown item type", projectPath));
+					} else {
+						LoggingService.LogError (string.Format ("Error while trying to load the project {0}", projectPath), e);
+						monitor.ReportWarning (GettextCatalog.GetString (
+							"Error while trying to load the project '{0}': {1}", projectPath, e.Message));
+					}
 
-					UnknownSolutionItem uitem = new UnknownSolutionItem ();
-					uitem.FileName = projectPath;
-					uitem.LoadError = e.Message;
-					MSBuildHandler h = new MSBuildHandler (projTypeGuid, projectGuid);
-					h.Item = uitem;
+					var uitem = new UnknownSolutionItem () {
+						FileName = projectPath,
+						LoadError = e.Message,
+					};
+					var h = new MSBuildHandler (projTypeGuid, projectGuid) {
+						Item = uitem,
+					};
 					uitem.SetItemHandler (h);
 					item = uitem;
 				}

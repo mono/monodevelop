@@ -293,7 +293,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					useXBuild = useXBuild || st.UseXBuild;
 					st.UpdateImports ((SolutionEntityItem)item, targetImports);
 				} else
-					throw new InvalidOperationException ("Unknown solution item type.");
+					throw new UnknownSolutionItemTypeException (typeGuids);
 			}
 			if (item == null && itemClass != null)
 				item = (SolutionItem) Activator.CreateInstance (itemClass);
@@ -303,11 +303,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			if (item == null) {
 				if (string.IsNullOrEmpty (itemType))
-					throw new InvalidOperationException ("Unknown solution item type.");
+					throw new UnknownSolutionItemTypeException ();
 					
 				DataType dt = MSBuildProjectService.DataContext.GetConfigurationDataType (itemType);
 				if (dt == null)
-					throw new InvalidOperationException ("Unknown solution item type: " + itemType);
+					throw new UnknownSolutionItemTypeException (itemType);
 					
 				item = (SolutionItem) Activator.CreateInstance (dt.ValueType);
 			}
@@ -1454,6 +1454,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			return data;
 		}
+	}
+	
+	class UnknownSolutionItemTypeException : InvalidOperationException
+	{
+		public UnknownSolutionItemTypeException ()
+			: base ("Unknown solution item type")
+		{
+		}
+		
+		public UnknownSolutionItemTypeException (string name)
+			: base ("Unknown solution item type: " + name)
+		{
+			this.TypeName = name;
+		}
+		
+		public string TypeName { get; private set; }
 	}
 	
 	class MSBuildElementOrder: Dictionary<string, int>
