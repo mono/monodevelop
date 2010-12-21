@@ -154,6 +154,8 @@ namespace MonoDevelop.MonoDroid
 
 		void OnChanged (object sender, EventArgs e)
 		{
+			if (lastForwarded != null && !Devices.Any (d => d.ID == lastForwarded))
+				lastForwarded = null;
 			if (devicesUpdated != null)
 				devicesUpdated (this, EventArgs.Empty);
 		}
@@ -191,7 +193,7 @@ namespace MonoDevelop.MonoDroid
 		// We only track the last forwarded device as long as the tracker is alive.
 		public bool GetDeviceIsForwarded (string id)
 		{
-			return lastForwarded != null && lastForwarded == id;
+			return lastForwarded == id;
 		}
 
 		public void SetDeviceLastForwarded (string id)
