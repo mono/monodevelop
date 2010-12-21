@@ -223,7 +223,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			string question, secondaryText;
 			
-			secondaryText = GettextCatalog.GetString ("The Delete option permanently removes the file from your hard disk. Click Remove from Project if you only want to remove it from your current solution.");
+			secondaryText = GettextCatalog.GetString ("The Delete option permanently removes the file from your hard disk. " +
+				"Click Remove from Project if you only want to remove it from your current solution.");
 			
 			if (hasChildren) {
 				if (files.Count == 1)

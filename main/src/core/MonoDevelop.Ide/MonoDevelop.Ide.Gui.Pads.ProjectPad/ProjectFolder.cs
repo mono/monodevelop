@@ -54,6 +54,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			this.absolutePath = absolutePath.CanonicalPath;
 		}
 		
+		//FIXME: we don't track when the folder goes away if it's implicit and all its children are removed
 		public bool TrackChanges {
 			get { return trackChanges; }
 			set {
