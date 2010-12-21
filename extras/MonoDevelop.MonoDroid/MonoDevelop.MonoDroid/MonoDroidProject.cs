@@ -184,6 +184,8 @@ namespace MonoDevelop.MonoDroid
 		
 		void Init ()
 		{
+			MD24Workarounds.FixBuilders ();
+			
 			//set parameters to ones required for MonoDroid build
 			TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (FX_MONODROID);
 			
