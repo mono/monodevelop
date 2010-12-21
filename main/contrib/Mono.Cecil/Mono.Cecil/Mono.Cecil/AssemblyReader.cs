@@ -900,7 +900,7 @@ namespace Mono.Cecil {
 			return (TypeReference) LookupToken (token);
 		}
 
-		TypeDefinition GetTypeDefinition (uint rid)
+		public TypeDefinition GetTypeDefinition (uint rid)
 		{
 			InitializeTypeDefinitions ();
 
@@ -957,11 +957,7 @@ namespace Mono.Cecil {
 			if (type != null)
 				return type;
 
-			type = ReadTypeReference (rid);
-			if (type != null)
-				 metadata.AddTypeReference (type);
-
-			return type;
+			return ReadTypeReference (rid);
 		}
 
 		TypeReference ReadTypeReference (uint rid)
@@ -974,6 +970,19 @@ namespace Mono.Cecil {
 
 			var scope_token = ReadMetadataToken (CodedIndex.ResolutionScope);
 
+			var name = ReadString ();
+			var @namespace = ReadString ();
+
+			var type = new TypeReference (
+				@namespace,
+				name,
+				module,
+				null);
+
+			type.token = new MetadataToken (TokenType.TypeRef, rid);
+
+			metadata.AddTypeReference (type);
+
 			if (scope_token.TokenType == TokenType.TypeRef) {
 				declaring_type = GetTypeDefOrRef (scope_token);
 
@@ -983,17 +992,8 @@ namespace Mono.Cecil {
 			} else
 				scope = GetTypeReferenceScope (scope_token);
 
-			var name = ReadString ();
-			var @namespace = ReadString ();
-
-			var type = new TypeReference (
-				@namespace,
-				name,
-				module,
-				scope);
-
+			type.scope = scope;
 			type.DeclaringType = declaring_type;
-			type.token = new MetadataToken (TokenType.TypeRef, rid);
 
 			MetadataSystem.TryProcessPrimitiveType (type);
 
@@ -1037,7 +1037,11 @@ namespace Mono.Cecil {
 				return null;
 
 			var reader = ReadSignature (ReadBlobIndex ());
-			return reader.ReadTypeSignature ();
+			var type = reader.ReadTypeSignature ();
+			if (type.token.RID == 0)
+				type.token = new MetadataToken (TokenType.TypeSpec, rid);
+
+			return type;
 		}
 
 		SignatureReader ReadSignature (uint signature)
@@ -1413,14 +1417,13 @@ namespace Mono.Cecil {
 			return ReadListRange (rid, Table.PropertyMap, Table.Property);
 		}
 
-		public MethodSemanticsAttributes ReadMethodSemantics (MethodDefinition method)
+		MethodSemanticsAttributes ReadMethodSemantics (MethodDefinition method)
 		{
 			InitializeMethodSemantics ();
 			Row<MethodSemanticsAttributes, MetadataToken> row;
 			if (!metadata.Semantics.TryGetValue (method.token.RID, out row))
 				return MethodSemanticsAttributes.None;
 
-			method.SemanticsAttributes = row.Col1;
 			var type = method.DeclaringType;
 
 			switch (row.Col1) {
@@ -1528,11 +1531,23 @@ namespace Mono.Cecil {
 			return @event;
 		}
 
-		static void ReadAllSemantics (TypeDefinition type)
+		public MethodSemanticsAttributes ReadAllSemantics (MethodDefinition method)
+		{
+			ReadAllSemantics (method.DeclaringType);
+
+			return method.SemanticsAttributes;
+		}
+
+		void ReadAllSemantics (TypeDefinition type)
 		{
 			var methods = type.Methods;
-			for (int i = 0; i < methods.Count; i++)
-				methods [i].ReadSemantics ();
+			for (int i = 0; i < methods.Count; i++) {
+				var method = methods [i];
+				if (method.sem_attrs.HasValue)
+					continue;
+
+				method.sem_attrs = ReadMethodSemantics (method);
+			}
 		}
 
 		Range ReadParametersRange (uint method_rid)
@@ -1929,7 +1944,7 @@ namespace Mono.Cecil {
 				element = GetMethodSpecification (rid);
 				break;
 			default:
-				throw new NotSupportedException ();
+				return null;
 			}
 
 			this.position = position;
@@ -1953,7 +1968,7 @@ namespace Mono.Cecil {
 		{
 			var type = metadata.GetFieldDeclaringType (rid);
 			if (type == null)
-				throw new NotSupportedException ();
+				return null;
 
 			InitializeCollection (type.Fields);
 
@@ -1975,7 +1990,7 @@ namespace Mono.Cecil {
 		{
 			var type = metadata.GetMethodDeclaringType (rid);
 			if (type == null)
-				throw new NotSupportedException ();
+				return null;
 
 			InitializeCollection (type.Methods);
 
@@ -1987,11 +2002,13 @@ namespace Mono.Cecil {
 			if (!MoveTo (Table.MethodSpec, rid))
 				return null;
 
-			var method = (MethodReference) LookupToken (
+			var element_method = (MethodReference) LookupToken (
 				ReadMetadataToken (CodedIndex.MethodDefOrRef));
 			var signature = ReadBlobIndex ();
 
-			return ReadMethodSpecSignature (signature, method);
+			var method_spec = ReadMethodSpecSignature (signature, element_method);
+			method_spec.token = new MetadataToken (TokenType.MethodSpec, rid);
+			return method_spec;
 		}
 
 		MethodSpecification ReadMethodSpecSignature (uint signature, MethodReference method)
@@ -2020,7 +2037,7 @@ namespace Mono.Cecil {
 				return member;
 
 			member = ReadMemberReference (rid);
-			if (!member.ContainsGenericParameter)
+			if (member != null && !member.ContainsGenericParameter)
 				metadata.AddMemberReference (member);
 			return member;
 		}

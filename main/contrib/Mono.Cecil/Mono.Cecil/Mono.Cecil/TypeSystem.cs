@@ -47,18 +47,21 @@ namespace Mono.Cecil {
 				if (metadata.Types == null)
 					Initialize (module.Types);
 
-				var types = metadata.Types;
+				return module.Read (this, (_, reader) => {
+					var types = reader.metadata.Types;
 
-				for (int i = 0; i < types.Length; i++) {
-					var type = types [i];
-					if (type == null)
-						continue;
+					for (int i = 0; i < types.Length; i++) {
+						if (types [i] == null)
+							types [i] = reader.GetTypeDefinition ((uint) i + 1);
 
-					if (type.Name == name && type.Namespace == @namespace)
-						return type;
-				}
+						var type = types [i];
 
-				return null;
+						if (type.Name == name && type.Namespace == @namespace)
+							return type;
+					}
+
+					return null;
+				});
 			}
 
 			static void Initialize (object obj)
