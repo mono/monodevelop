@@ -350,10 +350,15 @@ namespace Mono.Debugging.Soft
 		void ReadOutput (System.IO.StreamReader reader, bool isError)
 		{
 			try {
-				char[] buffer = new char [256];
+				char[] buffer = new char [1024];
 				while (!exited) {
 					int c = reader.Read (buffer, 0, buffer.Length);
-					OnTargetOutput (isError, new string (buffer, 0, c));
+					if (c > 0) {
+						OnTargetOutput (isError, new string (buffer, 0, c));
+					} else {
+						//FIXME: workaround for buggy console stream that never blocks
+						Thread.Sleep (50);
+					}
 				}
 			} catch {
 				// Ignore
