@@ -158,6 +158,8 @@ namespace MonoDevelop.MonoDroid
 		
 		void ResponseLengthCallback (IAsyncResult ar)
 		{
+			if (disposed)
+				return;
 			var r = (ResponseAsyncResult) ar.AsyncState;
 			try {
 				var respLen = stream.EndRead (ar);
@@ -215,6 +217,8 @@ namespace MonoDevelop.MonoDroid
 		
 		public void ContinueReadResponse (IAsyncResult ar)
 		{
+			if (disposed)
+				return;
 			var r = (TextWriterAsyncResult) ar.AsyncState;
 			try {
 				var len = stream.EndRead (ar);
