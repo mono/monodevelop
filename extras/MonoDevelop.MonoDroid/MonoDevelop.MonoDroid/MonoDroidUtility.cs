@@ -356,6 +356,7 @@ namespace MonoDevelop.MonoDroid
 						if (op is AdbOperation)
 							ex = ((AdbOperation)op).Error;
 						monitor.ReportError (chop.ErrorMessage, ex);
+						LoggingService.LogError (chop.ErrorMessage, ex);
 					}
 				}
 				
@@ -421,13 +422,13 @@ namespace MonoDevelop.MonoDroid
 
 		public bool Success {
 			get {
-				return IsCompleted && success;
+				return index == chain.Length && success;
 			}
 		}
 
 		public bool SuccessWithWarnings {
 			get {
-				return IsCompleted && success;
+				return Success;
 			}
 		}
 		
