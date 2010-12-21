@@ -406,12 +406,9 @@ namespace MonoDevelop.MonoDroid
 	
 	public class AndroidDevice
 	{
-		[MonoDevelop.Core.Serialization.ItemProperty ("id")]
-		public string ID { get; set; }
-		
-		public string State { get; set; }
-
-		public AndroidDevice () {}
+		public string ID { get; private set; }
+		public string State { get; private set; }
+		public IDictionary<string,string> Properties { get; internal set; }
 
 		public AndroidDevice (string id, string state)
 		{
@@ -421,6 +418,10 @@ namespace MonoDevelop.MonoDroid
 
 		public bool IsEmulator {
 			get { return ID.ToLowerInvariant ().StartsWith ("emulator"); }
+		}
+		
+		public bool IsOnline {
+			get { return State == "device"; }
 		}
 
 		public override string ToString ()

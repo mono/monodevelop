@@ -38,6 +38,7 @@ namespace MonoDevelop.MonoDroid
 	{
 		EventHandler devicesUpdated;
 		IAsyncOperation op;
+		DevicePropertiesTracker propTracker;
 		object lockObj = new object ();
 		int openProjects = 0;
 
@@ -95,7 +96,7 @@ namespace MonoDevelop.MonoDroid
 			var tb = MonoDroidFramework.Toolbox;
 			if (tb == null)
 				return;
-
+			
 			op = tb.EnsureServerRunning (stdOut, stdOut);
 			op.Completed += delegate (IAsyncOperation esop) {
 				if (!esop.Success) {
@@ -120,6 +121,10 @@ namespace MonoDevelop.MonoDroid
 		AdbTrackDevicesOperation CreateTracker ()
 		{
 			var trackerOp = new AdbTrackDevicesOperation ();
+			propTracker = new DevicePropertiesTracker ();
+			propTracker.Changed += delegate {
+				OnChanged (null, null);
+			};
 			trackerOp.DevicesChanged += delegate (List<AndroidDevice> list) {
 				Devices = list;
 				OnChanged (null, null);
@@ -147,6 +152,9 @@ namespace MonoDevelop.MonoDroid
 				if (op != null)
 					((IDisposable)op).Dispose ();
 				op = null;
+				if (propTracker != null)
+					propTracker.Dispose ();
+				propTracker = null;
 				Devices = new AndroidDevice[0];
 				lastForwarded = null;
 			}
@@ -154,6 +162,7 @@ namespace MonoDevelop.MonoDroid
 
 		void OnChanged (object sender, EventArgs e)
 		{
+			propTracker.AnnotateProperties (Devices);
 			if (lastForwarded != null && !Devices.Any (d => d.ID == lastForwarded))
 				lastForwarded = null;
 			if (devicesUpdated != null)
@@ -185,9 +194,7 @@ namespace MonoDevelop.MonoDroid
 		public bool GetDeviceIsOnline (string id)
 		{
 			var device = GetDevice (id);
-			if (device == null)
-				return false;
-			return device.State == "device";
+			return device != null && device.IsOnline;
 		}
 
 		// We only track the last forwarded device as long as the tracker is alive.
@@ -202,6 +209,85 @@ namespace MonoDevelop.MonoDroid
 				if (op != null)
 					lastForwarded = id;
 			}
+		}
+	}
+	
+	class DevicePropertiesTracker : IDisposable
+	{
+		Dictionary<string,Dictionary<string,string>> props = new Dictionary<string, Dictionary<string, string>> ();
+		HashSet<IAsyncOperation> outstandingQueries = new HashSet<IAsyncOperation> ();
+		bool disposed;
+		
+		// Given a full list of devices, returns a list of device properties dictionaries
+		// if there in no cached property set for devices in the list, an async query is made
+		// and the chnage event is fired when it's done
+		// Devices not in the list are purged from the cache
+		public void AnnotateProperties (IList<AndroidDevice> devices)
+		{
+			if (devices == null || devices.Count == 0) {
+				lock (props)
+					props.Clear ();
+				return;
+			}
+			
+			var toClear = new HashSet<string> ();
+			lock (props) {
+				toClear.UnionWith (props.Keys);
+				foreach (var device in devices) {
+					Dictionary<string,string> val = null;
+					if (device.IsOnline) {
+						if (props.TryGetValue (device.ID, out val)) {
+							toClear.Remove (device.ID);
+							device.Properties = val;
+						} else {
+							AsyncGetProperties (device);
+						}
+					}
+				}
+				foreach (var k in toClear)
+					props.Remove (k);
+			}
+		}
+		
+		public event Action Changed;
+		
+		void AsyncGetProperties (AndroidDevice device)
+		{
+			var gpop = new AdbGetPropertiesOperation (device);
+			lock (outstandingQueries) {
+				outstandingQueries.Add (gpop);
+			}
+			gpop.Completed += delegate (IAsyncOperation op) {
+				lock (outstandingQueries) {
+					if (disposed)
+						return;
+					outstandingQueries.Remove (gpop);
+					gpop.Dispose ();
+				}
+				if (!op.Success) {
+					LoggingService.LogError (string.Format ("Error getting properties from device '{0}'", device.ID), gpop.Error);
+					//fall through, to cache the null result for failed queries
+				}
+				lock (props) {
+					props [device.ID] = gpop.Properties	;
+				}
+				if (Changed != null)
+					Changed ();
+			};
+		}
+		
+		public void Dispose ()
+		{
+			if (disposed)
+				return;
+			lock (outstandingQueries) {
+				if (disposed)
+					return;
+				disposed = true;
+			}
+			foreach (IDisposable disp in outstandingQueries)
+				disp.Dispose ();
+			outstandingQueries.Clear ();
 		}
 	}
 }

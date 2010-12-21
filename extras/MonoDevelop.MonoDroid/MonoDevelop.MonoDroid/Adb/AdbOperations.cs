@@ -102,7 +102,6 @@ namespace MonoDevelop.MonoDroid
 			
 			string s;
 			while ((s = sr.ReadLine ()) != null) {
-				s = s.Trim ();
 				if (!s.StartsWith ("package:"))
 					throw new Exception ("Unexpected output from package list: '" + s + "'");
 				s = s.Substring ("package:".Length);
@@ -115,5 +114,54 @@ namespace MonoDevelop.MonoDroid
 		}
 		
 		public List<string> Packages { get; private set; }
+	}
+	
+	public class AdbGetPropertiesOperation : AdbTransportOperation
+	{
+		public AdbGetPropertiesOperation (AndroidDevice device) : base (device) {}
+		
+		protected override void OnGotTransport ()
+		{
+			var sr = new StringWriter ();
+			WriteCommand ("shell:getprop", () => GetStatus (() => ReadResponse (sr, OnGotResponse)));
+		}
+		
+		void OnGotResponse (TextWriter tw)
+		{
+			var sr = new StringReader (tw.ToString ());
+			var props = new Dictionary<string,string> ();
+			
+			string s;
+			var split = new char[] { '[', ']' };
+			while ((s = sr.ReadLine ()) != null) {
+				var arr = s.Split (split);
+				if (arr.Length != 5 || string.IsNullOrEmpty (arr[1]) || arr[2] != ": ")
+					throw new Exception ("Unknown property format: '" + s + "'");
+				props [arr[1]] = arr[3];
+			}
+			Properties = props;
+			
+			SetCompleted (true);
+		}
+		
+		public Dictionary<string,string> Properties { get; private set; }
+	}
+	
+	public class AdbShellOperation : AdbTransportOperation
+	{
+		string command;
+		
+		public AdbShellOperation (AndroidDevice device, string command) : base (device)
+		{
+			this.command = command;
+		}
+		
+		protected override void OnGotTransport ()
+		{
+			var sr = new StringWriter ();
+			WriteCommand ("shell:" + command, () => GetStatus (() => ReadResponse (sr, (tw) => Output = tw.ToString ())));
+		}
+		
+		public string Output { get; private set; }
 	}
 }
