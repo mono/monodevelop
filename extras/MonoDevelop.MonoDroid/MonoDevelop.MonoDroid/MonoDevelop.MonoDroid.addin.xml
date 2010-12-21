@@ -1,0 +1,214 @@
+<Addin id          = "MonoDroid"
+       namespace   = "MonoDevelop"
+       name        = "MonoDroid development"
+       author      = "Michael Hutchinson"
+       copyright   = "MIT X11"
+       url         = "http://monodevelop.com/"
+       description = "Support for developing and deploying MonoDroid applications."
+       category    = "Mobile Development"
+       version     = "2.4">
+	
+	<Runtime>
+		<Import file = "templates/MonoDroidActivity.xft.xml" />
+		<Import file = "templates/MonoDroidApplication/AboutResources.txt" />
+		<Import file = "templates/MonoDroidApplication/Activity1.cs" />
+		<Import file = "templates/MonoDroidApplication/icon-hd.png" />
+		<Import file = "templates/MonoDroidApplication/icon-ld.png" />
+		<Import file = "templates/MonoDroidApplication/icon-md.png" />
+		<Import file = "templates/MonoDroidApplication/main.xml" />
+		<Import file = "templates/MonoDroidApplication/Resource.cs" />
+		<Import file = "templates/MonoDroidApplicationProject.xpt.xml" />
+		<Import file = "templates/MonoDroidLibraryProject.xpt.xml" />
+		<Import file = "templates/MonoDroidOpenGLProject.xpt.xml" />
+		<Import file = "templates/MonoDroidView.xft.xml" />
+		<Import file = "templates/OpenGLApplication/Activity1.cs" />
+		<Import file = "templates/OpenGLApplication/GLView1.cs" />
+		<Import file = "templates/OpenGLApplication/main.xml" />
+		<Import file = "templates/OpenGLApplication/Resource.cs" />
+	</Runtime>
+	
+	<Dependencies>
+		<Addin id="Core" version="2.4"/>
+		<Addin id="Ide" version="2.4"/>
+	</Dependencies>
+	
+	<ConditionType id="MonoDroidInstalled" type="MonoDevelop.MonoDroid.MonoDroidInstalledCondition" />
+	
+	<Extension path = "/MonoDevelop/Ide/FileTemplates">
+		<Condition id="MonoDroidInstalled">
+			<FileTemplate id   = "MonoDroidView"
+			              file = "templates/MonoDroidView.xft.xml"/>
+			<FileTemplate id   = "MonoDroidActivity"
+			              file = "templates/MonoDroidActivity.xft.xml"/>
+		</Condition>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
+		<Condition id="MonoDroidInstalled">
+			<ProjectTemplate id   = "MonoDroidLibraryProject"
+			                 file = "templates/MonoDroidLibraryProject.xpt.xml" />
+			<ProjectTemplate id   = "MonoDroidApplicationProject"
+			                 file = "templates/MonoDroidApplicationProject.xpt.xml"/>
+			<ProjectTemplate id   = "MonoDroidOpenGLProject"
+			                 file = "templates/MonoDroidOpenGLProject.xpt.xml"/>
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
+		<Condition id="MonoDroidInstalled">
+			<DotNetProjectSubtype
+				guid="{EFBA0AD7-5A72-4C68-AF49-83D382785DCF}"
+				type="MonoDevelop.MonoDroid.MonoDroidProject"
+				useXBuild="true">
+				<AddImport language="C#" projects="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
+				<RemoveImport language="C#" projects="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+			</DotNetProjectSubtype>
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
+		<Condition id="MonoDroidInstalled">
+			<ProjectBinding id = "MonoDroid" class = "MonoDevelop.MonoDroid.MonoDroidProjectBinding" />
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
+		<Condition id="MonoDroidInstalled">
+			<DataType class = "MonoDevelop.MonoDroid.MonoDroidProject" />
+			<DataType class = "MonoDevelop.MonoDroid.MonoDroidProjectConfiguration" />
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
+		<Condition id="MonoDroidInstalled">
+			<Class class = "MonoDevelop.MonoDroid.MonoDroidBuildExtension" insertafter="MidStep" />
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/Frameworks">
+		<Framework id="MonoDroid" resource="framework_MonoDroid.xml">
+			<Backend class="MonoDevelop.MonoDroid.MonoDroidMonoFrameworkBackend" />
+			<Backend class="MonoDevelop.MonoDroid.MonoDroidMsNetFrameworkBackend" />
+		</Framework>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/ExecutionHandlers">
+		<Condition id="MonoDroidInstalled">
+			<ExecutionHandler id="MonoDroid" class = "MonoDevelop.MonoDroid.MonoDroidExecutionHandler"/>
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/ExecutionModes">
+		<ModeSetType class="MonoDevelop.MonoDroid.MonoDroidExecutionModeSet"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/Commands/Project">
+		<Condition id="MonoDroidInstalled">
+			<Command id = "MonoDevelop.MonoDroid.MonoDroidCommands.UploadToDevice" 
+				_description = "Upload the MonoDroid application to the device" 
+				defaultHandler = "MonoDevelop.MonoDroid.DefaultUploadToDeviceHandler"
+				_label = "Upload to Device" />
+			<Command id = "MonoDevelop.MonoDroid.MonoDroidCommands.SelectDeviceTarget"
+				type = "radio|array"
+				defaultHandler = "MonoDevelop.MonoDroid.SelectDeviceTargetHandler"
+				_label = "MonoDroid Device" />
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/Commands/Tools">
+		<Condition id="MonoDroidInstalled">
+			<Command id = "MonoDevelop.MonoDroid.MonoDroidCommands.OpenAvdManager" 
+				_description = "Open the Android Virtual Device Manager" 
+				defaultHandler = "MonoDevelop.MonoDroid.DefaultOpenAvdManagerHandler"
+				_label = "Open AVD Manager" />
+			<Command id = "MonoDevelop.MonoDroid.MonoDroidCommands.ViewDeviceConsole" 
+				_description = "View the MonoDroid Device Console" 
+				defaultHandler = "MonoDevelop.MonoDroid.ViewDeviceConsoleHandler"
+				_label = "MonoDroid Console" />
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
+		<Condition id="MonoDroidInstalled">
+			<ItemSet id = "SelectSimulatorTarget" _label = "MonoDroid Device Target" autohide = "true" 
+			         insertafter = "SelectActiveRuntime"  >
+				<CommandItem id = "MonoDevelop.MonoDroid.MonoDroidCommands.SelectDeviceTarget" />
+			</ItemSet>
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Run">
+		<Condition id="MonoDroidInstalled">
+			<CommandItem id = "MonoDevelop.MonoDroid.MonoDroidCommands.UploadToDevice"
+			             insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.RunWithList" />
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Tools">
+		<Condition id="MonoDroidInstalled">
+			<CommandItem id = "MonoDevelop.MonoDroid.MonoDroidCommands.OpenAvdManager" />
+			<CommandItem id = "MonoDevelop.MonoDroid.MonoDroidCommands.ViewDeviceConsole" />
+		</Condition>
+	</Extension>
+	
+	<!--
+	<Extension path = "/MonoDevelop/ProjectModel/MonoDocSources">
+		<Condition id="MonoDroidInstalled">
+			<Source directory="/Developer/MonoDroid/usr/share/doc/MonoDroid/" />
+		</Condition>
+	</Extension>
+	-->
+	
+	<!-- Options panels -->
+	
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Other">
+		<Condition id="MonoDroidInstalled">
+			<Section id = "MonoDroidSdkSettings" _label = "MonoDroid SDKs"
+				class="MonoDevelop.MonoDroid.Gui.MonoDroidSdkSettings"/>
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build">
+		<Condition id="ItemType" value="MonoDevelop.MonoDroid.MonoDroidProject">
+			<Section id = "MonoDroidBuildOptions"
+				_label = "MonoDroid Build"
+				class = "MonoDevelop.MonoDroid.Gui.MonoDroidBuildOptions" />
+			<Section id = "MonoDroidApplicationSettings" _label = "MonoDroid Application">
+				<Panel class = "MonoDevelop.MonoDroid.Gui.MonoDroidApplicationSettings" fill="true" />
+			</Section>
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/StockIcons">
+		<StockIcon stockid = "monodroid-project" file = "icons/monodroid-project-16.png" size="Menu" />
+		<StockIcon stockid = "monodroid-project" file = "icons/monodroid-project-32.png" size="Dnd" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/Updater">
+		<Condition id="Platform" value="mac">
+			<UpdateInfo file="/Developer/MonoDroid/updateinfo" />
+			<UpdateInfo file="/Developer/MonoDroid/Source/updateinfo" />
+		</Condition>
+	</Extension>
+
+	<!-- debugger addin -->
+	<Module>
+		<Runtime>
+			<Import assembly="MonoDevelop.Debugger.Soft.MonoDroid.dll" />
+		</Runtime>
+
+		<Dependencies>
+			<Addin id="Core" version="2.4"/>
+			<Addin id="Ide"  version="2.4"/>
+			<Addin id="Debugger" version="2.4"/>
+			<Addin id="Debugger.Soft" version="2.4"/>
+		</Dependencies>
+	
+		<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
+			<DebuggerEngine id="Mono.Debugger.Soft.MonoDroid"
+				name="Mono Soft Debugger for MonoDroid"
+				features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints"
+				type="MonoDevelop.Debugger.Soft.MonoDroid.MonoDroidSoftDebuggerEngine" />
+		</Extension>
+	</Module>
+</Addin>

@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<Template>
+	<TemplateConfiguration>
+		<_Name>MonoDroid OpenGL Application</_Name>
+		<_Category>C#/MonoDroid</_Category>
+		<Icon>monodroid-project</Icon>
+		<LanguageName>C#</LanguageName>
+		<_Description>Creates an MonoDroid project that uses OpenGL.</_Description>
+	</TemplateConfiguration>
+	
+	<Actions>
+	</Actions>
+	
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = "." type = "MonoDroid">
+			<Options
+				AndroidApplication="true"
+				AndroidResgenFile="Resources/Resource.designer.cs"
+				AndroidResgenClass="Resource" />
+			<References>
+				<Reference type="Gac" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+				<Reference type="Gac" refto="System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+				<Reference type="Gac" refto="System.Core, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+				<Reference type="Gac" refto="Mono.Android" />
+				<Reference type="Gac" refto="OpenTK" />
+			</References>
+			<Files>
+				<File name="Activity1.cs" src="OpenGLApplication/Activity1.cs" />
+				<File name="GLView1.cs" src="OpenGLApplication/GLView1.cs" />
+				<Directory name="Resources">
+					<File name="Resource.designer.cs" src="OpenGLApplication/Resource.cs" />
+					<RawFile name="AboutResources.txt" src="MonoDroidApplication/AboutResources.txt" />
+					<Directory name="layout">
+						<File name="main.xml" src="OpenGLApplication/main.xml" />
+					</Directory>
+					<Directory name="values">
+						<File name="strings.xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">${ProjectName}</string>
+</resources>]]></File>
+					</Directory>
+					<Directory name="drawable-hdpi">
+						<RawFile name="icon.png" src="MonoDroidApplication/icon-md.png" />
+					</Directory>
+					<Directory name="drawable-mdpi">
+						<RawFile name="icon.png" src="MonoDroidApplication/icon-md.png" />
+					</Directory>
+					<Directory name="drawable-ldpi">
+						<RawFile name="icon.png" src="MonoDroidApplication/icon-md.png" />
+					</Directory>
+				</Directory>
+				<Directory name="Properties">
+					<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="AssemblyInfo.cs" />
+				</Directory>
+			</Files>
+		</Project>
+	</Combine>
+</Template>
