@@ -40,6 +40,8 @@ namespace MonoDevelop.MonoDroid
 		IAsyncOperation op;
 		object lockObj = new object ();
 		int openProjects = 0;
+
+		string lastForwarded;
 		
 		//this should be a singleton created from MonoDroidFramework
 		internal DeviceManager ()
@@ -146,6 +148,7 @@ namespace MonoDevelop.MonoDroid
 					((IDisposable)op).Dispose ();
 				op = null;
 				Devices = new AndroidDevice[0];
+				lastForwarded = null;
 			}
 		}
 
@@ -183,6 +186,20 @@ namespace MonoDevelop.MonoDroid
 			if (device == null)
 				return false;
 			return device.State == "device";
+		}
+
+		// We only track the last forwarded device as long as the tracker is alive.
+		public bool GetDeviceIsForwarded (string id)
+		{
+			return lastForwarded != null && lastForwarded == id;
+		}
+
+		public void SetDeviceLastForwarded (string id)
+		{
+			lock (lockObj) {
+				if (op != null)
+					lastForwarded = id;
+			}
 		}
 	}
 }

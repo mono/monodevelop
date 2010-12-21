@@ -88,7 +88,8 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 					Completed = (op) => {
 						if (!op.Success) {
 							this.OnDebuggerOutput (true, GettextCatalog.GetString ("Failed to forward port on device"));
-						}
+						} else
+							MonoDroidFramework.DeviceManager.SetDeviceLastForwarded (cmd.Device.ID);
 					}
 				},
 				new ChainedAsyncOperation () {
