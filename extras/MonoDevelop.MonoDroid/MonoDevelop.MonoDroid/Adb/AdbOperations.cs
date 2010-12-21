@@ -102,8 +102,11 @@ namespace MonoDevelop.MonoDroid
 			
 			string s;
 			while ((s = sr.ReadLine ()) != null) {
+				//"Error: Could not access the Package Manager.  Is the system running?"
+				if (s.StartsWith ("Error:"))
+					throw new GetPackageListException (s.Substring ("Error:".Length));
 				if (!s.StartsWith ("package:"))
-					throw new Exception ("Unexpected output from package list: '" + s + "'");
+					throw new GetPackageListException ("Unexpected package list output: '" + s + "'");
 				s = s.Substring ("package:".Length);
 				if (!string.IsNullOrEmpty (s))
 					list.Add (s);
@@ -114,6 +117,13 @@ namespace MonoDevelop.MonoDroid
 		}
 		
 		public List<string> Packages { get; private set; }
+	}
+	
+	class GetPackageListException : Exception
+	{
+		public GetPackageListException (string message) : base (message)
+		{
+		}
 	}
 	
 	public class AdbGetPropertiesOperation : AdbTransportOperation
