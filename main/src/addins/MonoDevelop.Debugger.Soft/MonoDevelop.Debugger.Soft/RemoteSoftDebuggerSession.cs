@@ -82,7 +82,7 @@ namespace MonoDevelop.Debugger.Soft
 		protected override void OnConnectionStarting (DebuggerStartInfo dsi, bool retrying)
 		{
 			if (!retrying)
-				ShowConnectingDialog ((RemoteDebuggerStartInfo)dsi);
+				ShowConnectingDialog ((RemoteSoftDebuggerStartInfo)dsi);
 		}
 		
 		[Obsolete]
@@ -106,7 +106,7 @@ namespace MonoDevelop.Debugger.Soft
 			get { return GettextCatalog.GetString ("Waiting for debugger to connect..."); }
 		}
 		
-		void ShowConnectingDialog (RemoteDebuggerStartInfo dsi)
+		void ShowConnectingDialog (RemoteSoftDebuggerStartInfo dsi)
 		{
 			string message = GetConnectingMessage (dsi);
 			
@@ -149,7 +149,6 @@ namespace MonoDevelop.Debugger.Soft
 		}
 	}
 	
-	[Obsolete]
 	public class RemoteDebuggerStartInfo : RemoteSoftDebuggerStartInfo
 	{
 		static RemoteDebuggerStartInfo ()
