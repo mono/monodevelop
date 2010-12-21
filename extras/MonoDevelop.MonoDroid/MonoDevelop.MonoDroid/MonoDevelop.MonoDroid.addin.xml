@@ -9,22 +9,22 @@
        version     = "2.4">
 	
 	<Runtime>
-		<import file = "templates/MonoDroidActivity.xft.xml"/>
-		<import file = "templates/MonoDroidApplication/AboutResources.txt"/>
-		<import file = "templates/MonoDroidApplication/Activity1.cs"/>
-		<import file = "templates/MonoDroidApplication/icon-hd.png"/>
-		<import file = "templates/MonoDroidApplication/icon-ld.png"/>
-		<import file = "templates/MonoDroidApplication/icon-md.png"/>
-		<import file = "templates/MonoDroidApplication/main.xml"/>
-		<import file = "templates/MonoDroidApplication/R.cs"/>
-		<import file = "templates/MonoDroidApplicationProject.xpt.xml"/>
-		<import file = "templates/MonoDroidLibraryProject.xpt.xml"/>
-		<import file = "templates/MonoDroidOpenGLProject.xpt.xml"/>
-		<import file = "templates/MonoDroidView.xft.xml"/>
-		<import file = "templates/OpenGLApplication/Activity1.cs"/>
-		<import file = "templates/OpenGLApplication/GLView1.cs"/>
-		<import file = "templates/OpenGLApplication/main.xml"/>
-		<import file = "templates/OpenGLApplication/R.cs"/>
+		<Import file = "templates/MonoDroidActivity.xft.xml" />
+		<Import file = "templates/MonoDroidApplication/AboutResources.txt" />
+		<Import file = "templates/MonoDroidApplication/Activity1.cs" />
+		<Import file = "templates/MonoDroidApplication/icon-hd.png" />
+		<Import file = "templates/MonoDroidApplication/icon-ld.png" />
+		<Import file = "templates/MonoDroidApplication/icon-md.png" />
+		<Import file = "templates/MonoDroidApplication/main.xml" />
+		<Import file = "templates/MonoDroidApplication/Resource.cs" />
+		<Import file = "templates/MonoDroidApplicationProject.xpt.xml" />
+		<Import file = "templates/MonoDroidLibraryProject.xpt.xml" />
+		<Import file = "templates/MonoDroidOpenGLProject.xpt.xml" />
+		<Import file = "templates/MonoDroidView.xft.xml" />
+		<Import file = "templates/OpenGLApplication/Activity1.cs" />
+		<Import file = "templates/OpenGLApplication/GLView1.cs" />
+		<Import file = "templates/OpenGLApplication/main.xml" />
+		<Import file = "templates/OpenGLApplication/Resource.cs" />
 	</Runtime>
 	
 	<Dependencies>
