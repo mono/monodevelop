@@ -136,17 +136,17 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 			launchOp.Start ();
 		}
 		
-		// the console stream from android returns 0 length instread of blocking
+		// the console stream from android returns 0 length instead of blocking
 		// this means that our underlying SoftDebuggerSession chews up 100% CPU reading and dispatching empty strings
 		// we work around this by plugging in a wrapper that sleeps if it gets a 0 length string
+		//this isn't necessary in MD master/2.6+ because SoftDebugger session does this too as a sanity check
 		void WorkAroundConsoleStreamBug ()
 		{
 			var oldWriter = this.OutputWriter;
 			if (oldWriter != null) {
-				System.Console.WriteLine ("fixing writer");
 				this.OutputWriter = delegate (bool isStderr, string text) {
 					if (text == null || text.Length == 0)
-						Thread.Sleep (200);
+						Thread.Sleep (250);
 					else
 						oldWriter (isStderr, text);
 				};
