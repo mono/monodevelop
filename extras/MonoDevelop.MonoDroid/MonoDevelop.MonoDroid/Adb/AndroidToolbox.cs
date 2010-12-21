@@ -265,7 +265,7 @@ namespace MonoDevelop.MonoDroid
 		}
 
 		public IProcessAsyncOperation ForwardPort (AndroidDevice device, int devicePort, int localPort,
-			TextWriter outputLog, TextWriter errorLog)
+			ProcessEventHandler outputLog, ProcessEventHandler errorLog)
 		{
 			var args = string.Format ("-s {0} forward tcp:{1} tcp:{2}", device.ID, localPort, devicePort);
 			return StartProcess (AdbExe, args, outputLog, errorLog);
