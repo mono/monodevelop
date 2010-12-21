@@ -104,6 +104,7 @@ namespace MonoDevelop.MonoDroid
 		{
 			//FIXME: actually log the output and status
 			var op = MonoDroidFramework.Toolbox.StartAvd (avd);
+			emulatorHandles.Add (op);
 			op.Completed += HandleEmulatorStarted;
 		}
 
