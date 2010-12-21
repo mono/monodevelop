@@ -161,10 +161,19 @@ namespace MonoDevelop.Core.Assemblies
 		public IEnumerable<string> GetAllPkgConfigFiles ()
 		{
 			HashSet<string> packageNames = new HashSet<string> ();
-			foreach (string pcdir in PkgConfigDirs)
-				foreach (string pcfile in Directory.GetFiles (pcdir, "*.pc"))
+			foreach (string pcdir in PkgConfigDirs) {
+				string[] files;
+				try {
+					files = Directory.GetFiles (pcdir, "*.pc");
+				} catch (Exception ex) {
+					LoggingService.LogError (string.Format (
+						"Runtime '{0}' error in pc file scan of directory '{1}'", DisplayName, pcdir), ex);
+					continue;
+				}
+				foreach (string pcfile in files)
 					if (packageNames.Add (Path.GetFileNameWithoutExtension (pcfile)))
 						yield return pcfile;
+			}
 		}
 		
 		protected override void OnInitialize ()
