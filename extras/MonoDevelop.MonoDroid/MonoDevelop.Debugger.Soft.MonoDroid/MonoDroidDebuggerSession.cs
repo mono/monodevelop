@@ -42,12 +42,17 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 {
 	public class MonoDroidDebuggerSession : RemoteSoftDebuggerSession
 	{
+		const int WAIT_BEFORE_CONNECT_MS = 1000;
 		ChainedAsyncOperationSequence launchOp;
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
 			var dsi = (MonoDroidDebuggerStartInfo) startInfo;
 			var cmd = dsi.ExecutionCommand;
+			
+			bool alreadyForwarded = MonoDroidFramework.DeviceManager.GetDeviceIsForwarded (cmd.Device.ID);
+			if (!alreadyForwarded)
+				MonoDroidFramework.DeviceManager.SetDeviceLastForwarded (null);
 			
 			long date = 0;
 			launchOp = new ChainedAsyncOperationSequence (
@@ -64,6 +69,7 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 				},
 				new ChainedAsyncOperation<AndroidToolbox.AdbOutputOperation> () {
 					Create = () => {
+						this.OnDebuggerOutput (false, GettextCatalog.GetString ("Setting debug property") + "\n");
 						long expireDate = date + 30; // 30 seconds
 						string monoOptions = string.Format ("debug={0}:{1}:{2},timeout={3},server=y", dsi.Address, dsi.DebugPort, 0, expireDate);
 						return MonoDroidFramework.Toolbox.SetProperty (cmd.Device, "debug.mono.extra", monoOptions);
@@ -76,7 +82,11 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 					}
 				},
 				new ChainedAsyncOperation () {
-					Create = () => MonoDroidFramework.Toolbox.ForwardPort (cmd.Device, dsi.DebugPort, dsi.DebugPort, null, null),
+					Skip = () => alreadyForwarded? "" : null,
+					Create = () => {
+						this.OnDebuggerOutput (false, GettextCatalog.GetString ("Forwarding debugger port") + "\n");
+						return MonoDroidFramework.Toolbox.ForwardPort (cmd.Device, dsi.DebugPort, dsi.DebugPort, DebuggerOutput, DebuggerError);
+					},
 					Completed = (op) => {
 						if (!op.Success) {
 							this.OnDebuggerOutput (true, GettextCatalog.GetString ("Failed to forward port on device"));
@@ -84,29 +94,37 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 					}
 				},
 				new ChainedAsyncOperation () {
-					Create = () => MonoDroidFramework.Toolbox.ForwardPort (cmd.Device, dsi.OutputPort, dsi.OutputPort, null, null),
+					Skip = () => alreadyForwarded? "" : null,
+					Create = () => {
+						this.OnDebuggerOutput (false, GettextCatalog.GetString ("Forwarding console port") + "\n");
+						return MonoDroidFramework.Toolbox.ForwardPort (cmd.Device, dsi.OutputPort, dsi.OutputPort, DebuggerOutput, DebuggerError);
+					},
 					Completed = (op) => {
 						if (!op.Success) {
 							this.OnDebuggerOutput (true, GettextCatalog.GetString ("Failed to forward port on device"));
-						} else
+						} else {
 							MonoDroidFramework.DeviceManager.SetDeviceLastForwarded (cmd.Device.ID);
+						}
 					}
 				},
 				new ChainedAsyncOperation () {
-					Create = () => MonoDroidFramework.Toolbox.StartActivity (cmd.Device, cmd.Activity,
-						(s, m) => OnTargetOutput (false, m),
-						(s, m) => OnTargetOutput (true, m)
-					),
+					Create = () => MonoDroidFramework.Toolbox.StartActivity (cmd.Device, cmd.Activity, DebuggerOutput, DebuggerError),
 					Completed = (op) => {
 						if (!op.Success)
 							this.OnDebuggerOutput (true, GettextCatalog.GetString ("Failed to start activity"));
 					}
 				}
 			);
-			launchOp.Completed += delegate(IAsyncOperation op) {
-				if (!op.Success)
+			launchOp.Completed += delegate (IAsyncOperation op) {
+				if (!op.Success) {
 					EndSession ();
+					return;
+				}
 				launchOp = null;
+				
+				System.Threading.Thread.Sleep (WAIT_BEFORE_CONNECT_MS);
+
+				StartConnecting (dsi, -1, 800);
 			};
 			
 			TargetExited += delegate {
@@ -114,28 +132,16 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 			};
 			
 			launchOp.Start ();
-			
-			// Connect to the process, giving it a time to start.
-			System.Threading.Thread.Sleep (200);
-
-			StartConnecting (dsi, -1, 800);
-		}
-
-		void ProcessOutput (object sender, string message)
-		{
-			OnTargetOutput (true, message);
 		}
 		
-		void ProcessError (object sender, string message)
+		void DebuggerOutput (object sender, string message)
 		{
-			OnTargetOutput (false, message);
+			OnDebuggerOutput (true, message);
 		}
 		
-		protected override string GetListenMessage (RemoteDebuggerStartInfo dsi)
+		void DebuggerError (object sender, string message)
 		{
-			//var cmd = ((MonoDroidDebuggerStartInfo)dsi).ExecutionCommand;
-			string message = GettextCatalog.GetString ("Waiting for debugger to connect on {0}:{1}...", dsi.Address, dsi.DebugPort);
-			return message;
+			OnDebuggerOutput (false, message);
 		}
 		
 		protected override void EndSession ()
