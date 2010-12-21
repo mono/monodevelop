@@ -264,6 +264,8 @@ namespace MonoDevelop.MonoDroid
 		
 		public AdbTransportOperation (AndroidDevice device)
 		{
+			if (device == null)
+				throw new ArgumentNullException ("device");
 			this.device = device;
 		}
 		
