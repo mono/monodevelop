@@ -52,7 +52,7 @@ namespace MonoDevelop.MonoDroid
 		
 		public override IEnumerable<string> GetFrameworkFolders ()
 		{
-			yield return MonoDroidFramework.FrameworkDir;
+			yield return MonoDroidFramework.MonoDroidFrameworkDir;
 		}
 		
 		public override SystemPackageInfo GetFrameworkPackageInfo (string packageName)
@@ -82,7 +82,7 @@ namespace MonoDevelop.MonoDroid
 		
 		public override IEnumerable<string> GetFrameworkFolders ()
 		{
-			yield return MonoDroidFramework.FrameworkDir;
+			yield return MonoDroidFramework.MonoDroidFrameworkDir;
 		}
 		
 		public override SystemPackageInfo GetFrameworkPackageInfo (string packageName)

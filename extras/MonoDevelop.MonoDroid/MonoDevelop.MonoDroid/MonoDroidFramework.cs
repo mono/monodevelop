@@ -52,20 +52,20 @@ namespace MonoDevelop.MonoDroid
 			try {
 				var oldAndroidBinDir = AndroidBinDir;
 				
-				BinDir = FrameworkDir = AndroidBinDir = JavaBinDir = null;
+				MonoDroidToolsDir = MonoDroidFrameworkDir = AndroidBinDir = JavaBinDir = null;
 				Toolbox = null;
 				EnvironmentOverrides.Remove ("PATH");
 				
-				string monoDroidBinDir, monoDroidFrameworkDir, javaPath, androidPath;
-				MonoDroidSdk.GetPaths (out monoDroidBinDir, out monoDroidFrameworkDir, out androidPath, out javaPath);
+				string monoDroidToolsDir, monoDroidFrameworkDir, javaPath, androidPath;
+				MonoDroidSdk.GetPaths (out monoDroidToolsDir, out monoDroidFrameworkDir, out androidPath, out javaPath);
 				
-				if (monoDroidBinDir == null) {
+				if (monoDroidToolsDir == null) {
 					LoggingService.LogInfo ("MonoDroid SDK not found, disabling MonoDroid addin");
 					return;
 				}
 				
-				BinDir = monoDroidBinDir;
-				FrameworkDir = monoDroidFrameworkDir;
+				MonoDroidToolsDir = monoDroidToolsDir;
+				MonoDroidFrameworkDir = monoDroidFrameworkDir;
 				
 				if (androidPath == null) {
 					LoggingService.LogError ("Android SDK not found, needed by MonoDroid addin");
@@ -123,7 +123,7 @@ namespace MonoDevelop.MonoDroid
 		/// </summary>
 		public static bool IsInstalled {
 			get {
-				return !BinDir.IsNullOrEmpty;
+				return !MonoDroidToolsDir.IsNullOrEmpty;
 			}
 		}
 		
@@ -139,12 +139,12 @@ namespace MonoDevelop.MonoDroid
 		/// <summary>
 		/// Directory with MonoDroid tools binaries.
 		/// </summary>
-		public static FilePath BinDir { get; private set; }
+		public static FilePath MonoDroidToolsDir { get; private set; }
 		
 		/// <summary>
 		/// Directory with MonoDroid framework assemblies.
 		/// </summary>
-		public static FilePath FrameworkDir { get; private set; }
+		public static FilePath MonoDroidFrameworkDir { get; private set; }
 		
 		/// <summary>
 		/// Bin directory of the Java SDK.
@@ -163,14 +163,14 @@ namespace MonoDevelop.MonoDroid
 		
 		public static FilePath SharedRuntimePackage {
 			get {
-				return BinDir.Combine ("MonoRuntimeService-debug.apk");
+				return MonoDroidToolsDir.Combine ("MonoRuntimeService-debug.apk");
 			}
 		}
 		
 		public static IEnumerable<string> GetToolsPaths ()
 		{
-			yield return MonoDroidFramework.FrameworkDir;
-			yield return MonoDroidFramework.BinDir;
+			yield return MonoDroidFramework.MonoDroidFrameworkDir;
+			yield return MonoDroidFramework.MonoDroidToolsDir;
 			yield return MonoDroidFramework.AndroidBinDir;
 			yield return MonoDroidFramework.JavaBinDir;
 		}
@@ -302,6 +302,7 @@ namespace MonoDevelop.MonoDroid
 			new AndroidVersion (6, "2.0.1"),
 			new AndroidVersion (7, "2.1"),
 			new AndroidVersion (8, "2.2"),
+			new AndroidVersion (9, "2.3"),
 		};
 	}
 	
