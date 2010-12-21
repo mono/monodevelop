@@ -120,6 +120,14 @@ namespace MonoDevelop.MonoDroid
 			OperationHandler upload = delegate {
 				using (var monitor = new MonoDevelop.Ide.ProgressMonitoring.MessageDialogProgressMonitor ()) {
 					AndroidDevice device = null;
+
+					var conf = (MonoDroidProjectConfiguration) proj.GetConfiguration (configSel);
+					var deviceId = proj.GetDeviceTarget (conf);
+					if (deviceId != null)
+						device = MonoDroidFramework.DeviceManager.GetDevice (deviceId);
+					if (device == null)
+						proj.SetDeviceTarget (conf, null);
+
 					MonoDroidUtility.SignAndUpload (monitor, proj, configSel, true, ref device);
 				}
 			};
