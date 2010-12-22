@@ -43,6 +43,9 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 	public class MonoDroidDebuggerSession : RemoteSoftDebuggerSession
 	{
 		const int WAIT_BEFORE_CONNECT_MS = 1000;
+		const int WAIT_BEFORE_RETRY_MS = 800;
+		const int DEBUGGER_TIMEOUT_MS = 30 * 1000;
+		
 		ChainedAsyncOperationSequence launchOp;
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
@@ -55,12 +58,14 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 				MonoDroidFramework.DeviceManager.SetDeviceLastForwarded (null);
 			
 			long date = 0;
+			DateTime setPropertyTime = DateTime.MinValue;
 			launchOp = new ChainedAsyncOperationSequence (
 				new ChainedAsyncOperation<AndroidToolbox.GetDateOperation> () {
 					Create = () => MonoDroidFramework.Toolbox.GetDeviceDate (cmd.Device),
 					Completed = (op) => {
 						if (op.Success) {
 							date = op.Date;
+							setPropertyTime = DateTime.Now;
 						} else {
 							this.OnDebuggerOutput (true, GettextCatalog.GetString ("Failed to get date from device"));
 							this.OnDebuggerOutput (true, op.GetOutput ());
@@ -70,7 +75,7 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 				new ChainedAsyncOperation<AndroidToolbox.AdbOutputOperation> () {
 					Create = () => {
 						this.OnDebuggerOutput (false, GettextCatalog.GetString ("Setting debug property") + "\n");
-						long expireDate = date + 30; // 30 seconds
+						long expireDate = date + (DEBUGGER_TIMEOUT_MS / 1000);
 						string monoOptions = string.Format ("debug={0}:{1}:{2},timeout={3},server=y", dsi.Address, dsi.DebugPort, 0, expireDate);
 						return MonoDroidFramework.Toolbox.SetProperty (cmd.Device, "debug.mono.extra", monoOptions);
 					},
@@ -123,8 +128,16 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 				launchOp = null;
 				
 				System.Threading.Thread.Sleep (WAIT_BEFORE_CONNECT_MS);
-
-				StartConnecting (dsi, -1, 800);
+				
+				var msSinceSetProperty = (long) Math.Floor ((DateTime.Now - setPropertyTime).TotalMilliseconds);
+				long msTillPropertyExpires = DEBUGGER_TIMEOUT_MS - msSinceSetProperty;
+				
+				if (msTillPropertyExpires < 100 || msTillPropertyExpires > DEBUGGER_TIMEOUT_MS)
+					return;
+				
+				int retries = (int) Math.Floor ((double)  msTillPropertyExpires / WAIT_BEFORE_RETRY_MS) - 2;
+				
+				StartConnecting (dsi, retries, WAIT_BEFORE_RETRY_MS);
 			};
 			
 			TargetExited += delegate {
