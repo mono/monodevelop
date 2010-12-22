@@ -210,7 +210,7 @@ namespace MonoDevelop.MonoDroid
 				},
 				new ChainedAsyncOperation () {
 					TaskName = GettextCatalog.GetString ("Uninstalling old version of package"),
-					Skip = () => (!replaceIfExists || !packages.Contains ("package:" + packageName))? "" : null,
+					Skip = () => (!replaceIfExists || !packages.Contains (packageName))? "" : null,
 					Create = () => toolbox.Uninstall (device, packageName, monitor.Log, monitor.Log),
 					ErrorMessage = GettextCatalog.GetString ("Failed to uninstall package")
 				},
