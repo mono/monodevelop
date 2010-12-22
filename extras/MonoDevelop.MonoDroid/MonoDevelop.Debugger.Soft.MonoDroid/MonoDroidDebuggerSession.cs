@@ -40,7 +40,7 @@ using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Debugger.Soft.MonoDroid
 {
-	public class MonoDroidDebuggerSession : RemoteSoftDebuggerSession
+	public class MonoDroidDebuggerSession : MD24Workaround_RemoteSoftDebuggerSession
 	{
 		const int WAIT_BEFORE_CONNECT_MS = 1000;
 		const int WAIT_BEFORE_RETRY_MS = 800;
@@ -199,15 +199,14 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 			base.OnExit ();
 			EndLaunch ();
 		}
-		//FIXME: ShouldRetryConnection only works on master, not 2.4.x
-		/*
+
 		protected override bool ShouldRetryConnection (Exception exc, int attemptNumber)
 		{
 			if (exc is IOException)
 				return true;
 
 			return base.ShouldRetryConnection (exc, attemptNumber);
-		}*/
+		}
 	}
 	
 	class MonoDroidDebuggerStartInfo : RemoteDebuggerStartInfo

@@ -79,6 +79,7 @@
   <ItemGroup>
     <Compile Include="MonoDroidSoftDebuggerEngine.cs" />
     <Compile Include="MonoDroidDebuggerSession.cs" />
+    <Compile Include="MD24Workaround.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.MonoDroid\MonoDevelop.MonoDroid.csproj">

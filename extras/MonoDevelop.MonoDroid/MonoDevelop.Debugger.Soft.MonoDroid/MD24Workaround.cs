@@ -47,6 +47,7 @@ namespace MonoDevelop.Debugger.Soft
 		Gtk.Dialog dialog;
 		string appName;
 		Func<bool> retryConnection;
+		int connectionAttempts = 0;
 		
 		/// <summary>Subclasses must implement this to start the session </summary>
 		protected override void OnRun (DebuggerStartInfo startInfo)
@@ -75,8 +76,10 @@ namespace MonoDevelop.Debugger.Soft
 			PreConnectionInit (dsi, out dbgEP, out conEP);
 			
 			var callback = HandleConnectionCallbackErrors (ConnectCallback);
+			connectionAttempts = 0;
 			
 			retryConnection = () => {
+				connectionAttempts++;
 				if (maxAttempts == 1 || Exited) {
 					return false;
 				}
@@ -111,23 +114,34 @@ namespace MonoDevelop.Debugger.Soft
 			dbgEP = new IPEndPoint (dsi.Address, dsi.DebugPort);
 			conEP = dsi.RedirectOutput? new IPEndPoint (dsi.Address, dsi.OutputPort) : null;
 			
-			if (!String.IsNullOrEmpty (dsi.LogMessage))
-				LogWriter (false, dsi.LogMessage + "\n");
+			var lm = typeof (RemoteDebuggerStartInfo).GetProperty ("LogMessage",
+				System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+			if (lm != null) {
+				var msg = lm.GetValue (dsi, null) as string;
+				if (!string.IsNullOrEmpty (msg))
+					LogWriter (false, msg + "\n");
+			}
 		}
 		
 		protected override void OnConnectionError (Exception ex)
 		{
 			if (retryConnection != null) {
-				var sx = ex as SocketException;
-				if (sx != null) {
-					bool retry = sx.ErrorCode == 10061; //connection refused
-					if (retry && retryConnection ())
-						return;
-				}
+				if (ShouldRetryConnection (ex, connectionAttempts) && retryConnection ())
+					return;
 				retryConnection = null;
 			}
 			
 			base.OnConnectionError (ex);
+		}
+
+		protected virtual bool ShouldRetryConnection (Exception ex, int attemptNumber)
+		{
+			var sx = ex as SocketException;
+			if (sx != null) {
+				if (sx.ErrorCode == 10061) //connection refused
+					return true;
+			}
+			return false;
 		}
 		
 		void PressOk ()
