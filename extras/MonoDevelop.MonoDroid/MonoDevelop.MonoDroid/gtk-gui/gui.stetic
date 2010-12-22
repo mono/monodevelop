@@ -694,7 +694,7 @@ have not been found automatically, you must specify the locations below.</proper
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.MonoDroid.Gui.DeviceChooserDialog" design-size="407 300">
+  <widget class="Gtk.Dialog" id="MonoDevelop.MonoDroid.Gui.DeviceChooserDialog" design-size="395 307">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="Title" translatable="yes">Select Device</property>
@@ -749,6 +749,7 @@ have not been found automatically, you must specify the locations below.</proper
                 <child>
                   <widget class="Gtk.Button" id="startEmulatorButton">
                     <property name="MemberName" />
+                    <property name="Tooltip" translatable="yes">Starts the selected virtual device.</property>
                     <property name="CanFocus">True</property>
                     <property name="Type">TextAndIcon</property>
                     <property name="Icon">stock:gtk-media-play Menu</property>
@@ -766,6 +767,7 @@ have not been found automatically, you must specify the locations below.</proper
                 <child>
                   <widget class="Gtk.Button" id="createEmulatorButton">
                     <property name="MemberName" />
+                    <property name="Tooltip" translatable="yes">Create and manage virtual devices.</property>
                     <property name="CanFocus">True</property>
                     <property name="Type">TextAndIcon</property>
                     <property name="Icon">stock:gtk-add Menu</property>
@@ -779,6 +781,27 @@ have not been found automatically, you must specify the locations below.</proper
                     <property name="Expand">False</property>
                     <property name="Fill">False</property>
                   </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.Button" id="restartAdbButton">
+                    <property name="MemberName" />
+                    <property name="Tooltip" translatable="yes">Restart the ADB server.</property>
+                    <property name="CanFocus">True</property>
+                    <property name="Type">TextAndIcon</property>
+                    <property name="Icon">stock:gtk-refresh Menu</property>
+                    <property name="Label" translatable="yes">Refresh</property>
+                    <property name="UseUnderline">True</property>
+                    <property name="Relief">None</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">2</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder />
                 </child>
               </widget>
               <packing>

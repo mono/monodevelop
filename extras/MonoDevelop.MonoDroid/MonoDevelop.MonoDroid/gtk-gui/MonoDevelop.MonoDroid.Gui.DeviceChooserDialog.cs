@@ -11,6 +11,7 @@ namespace MonoDevelop.MonoDroid.Gui
 		private global::Gtk.HBox hbox1;
 		private global::Gtk.Button startEmulatorButton;
 		private global::Gtk.Button createEmulatorButton;
+		private global::Gtk.Button restartAdbButton;
 		private global::Gtk.Alignment statusPlaceholder;
 		private global::Gtk.Button buttonCancel;
 		private global::Gtk.Button buttonOk;
@@ -58,6 +59,7 @@ namespace MonoDevelop.MonoDroid.Gui
 			this.hbox1.Spacing = 6;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.startEmulatorButton = new global::Gtk.Button ();
+			this.startEmulatorButton.TooltipMarkup = "Starts the selected virtual device.";
 			this.startEmulatorButton.CanFocus = true;
 			this.startEmulatorButton.Name = "startEmulatorButton";
 			this.startEmulatorButton.UseUnderline = true;
@@ -85,6 +87,7 @@ namespace MonoDevelop.MonoDroid.Gui
 			w13.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.createEmulatorButton = new global::Gtk.Button ();
+			this.createEmulatorButton.TooltipMarkup = "Create and manage virtual devices.";
 			this.createEmulatorButton.CanFocus = true;
 			this.createEmulatorButton.Name = "createEmulatorButton";
 			this.createEmulatorButton.UseUnderline = true;
@@ -110,27 +113,55 @@ namespace MonoDevelop.MonoDroid.Gui
 			w22.Position = 1;
 			w22.Expand = false;
 			w22.Fill = false;
+			// Container child hbox1.Gtk.Box+BoxChild
+			this.restartAdbButton = new global::Gtk.Button ();
+			this.restartAdbButton.TooltipMarkup = "Restart the ADB server.";
+			this.restartAdbButton.CanFocus = true;
+			this.restartAdbButton.Name = "restartAdbButton";
+			this.restartAdbButton.UseUnderline = true;
+			this.restartAdbButton.Relief = ((global::Gtk.ReliefStyle)(2));
+			// Container child restartAdbButton.Gtk.Container+ContainerChild
+			global::Gtk.Alignment w23 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
+			// Container child GtkAlignment.Gtk.Container+ContainerChild
+			global::Gtk.HBox w24 = new global::Gtk.HBox ();
+			w24.Spacing = 2;
+			// Container child GtkHBox.Gtk.Container+ContainerChild
+			global::Gtk.Image w25 = new global::Gtk.Image ();
+			w25.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-refresh", global::Gtk.IconSize.Menu);
+			w24.Add (w25);
+			// Container child GtkHBox.Gtk.Container+ContainerChild
+			global::Gtk.Label w27 = new global::Gtk.Label ();
+			w27.LabelProp = global::Mono.Unix.Catalog.GetString ("Refresh");
+			w27.UseUnderline = true;
+			w24.Add (w27);
+			w23.Add (w24);
+			this.restartAdbButton.Add (w23);
+			this.hbox1.Add (this.restartAdbButton);
+			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.restartAdbButton]));
+			w31.Position = 2;
+			w31.Expand = false;
+			w31.Fill = false;
 			this.vbox2.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
-			w23.Position = 2;
-			w23.Expand = false;
-			w23.Fill = false;
+			global::Gtk.Box.BoxChild w32 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
+			w32.Position = 2;
+			w32.Expand = false;
+			w32.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.statusPlaceholder = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
 			this.statusPlaceholder.Name = "statusPlaceholder";
 			this.vbox2.Add (this.statusPlaceholder);
-			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.statusPlaceholder]));
-			w24.Position = 3;
-			w24.Expand = false;
+			global::Gtk.Box.BoxChild w33 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.statusPlaceholder]));
+			w33.Position = 3;
+			w33.Expand = false;
 			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
-			w25.Position = 0;
+			global::Gtk.Box.BoxChild w34 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
+			w34.Position = 0;
 			// Internal child MonoDevelop.MonoDroid.Gui.DeviceChooserDialog.ActionArea
-			global::Gtk.HButtonBox w26 = this.ActionArea;
-			w26.Name = "dialog1_ActionArea";
-			w26.Spacing = 10;
-			w26.BorderWidth = ((uint)(5));
-			w26.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
+			global::Gtk.HButtonBox w35 = this.ActionArea;
+			w35.Name = "dialog1_ActionArea";
+			w35.Spacing = 10;
+			w35.BorderWidth = ((uint)(5));
+			w35.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonCancel = new global::Gtk.Button ();
 			this.buttonCancel.CanDefault = true;
@@ -140,9 +171,9 @@ namespace MonoDevelop.MonoDroid.Gui
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w27 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w26 [this.buttonCancel]));
-			w27.Expand = false;
-			w27.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w36 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w35 [this.buttonCancel]));
+			w36.Expand = false;
+			w36.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonOk = new global::Gtk.Button ();
 			this.buttonOk.CanDefault = true;
@@ -152,15 +183,15 @@ namespace MonoDevelop.MonoDroid.Gui
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w28 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w26 [this.buttonOk]));
-			w28.Position = 1;
-			w28.Expand = false;
-			w28.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w37 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w35 [this.buttonOk]));
+			w37.Position = 1;
+			w37.Expand = false;
+			w37.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.DefaultWidth = 407;
-			this.DefaultHeight = 300;
+			this.DefaultWidth = 395;
+			this.DefaultHeight = 307;
 			this.Hide ();
 		}
 	}

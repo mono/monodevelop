@@ -157,16 +157,35 @@ namespace MonoDevelop.MonoDroid
 				propTracker = null;
 				Devices = new AndroidDevice[0];
 				lastForwarded = null;
+				OnChanged (null, null);
 			}
 		}
 
 		void OnChanged (object sender, EventArgs e)
 		{
-			propTracker.AnnotateProperties (Devices);
+			if (propTracker != null)
+				propTracker.AnnotateProperties (Devices);
 			if (lastForwarded != null && !Devices.Any (d => d.ID == lastForwarded))
 				lastForwarded = null;
 			if (devicesUpdated != null)
 				devicesUpdated (this, EventArgs.Empty);
+		}
+		
+		public void RestartAdbServer (Action serverKilledCallback)
+		{
+			lock (lockObj) {
+				if (op != null)
+					StopTracker ();
+			}
+			var killOp = new AdbKillServerOperation ();
+			killOp.Completed += delegate(IAsyncOperation op) {
+				var err = ((AdbKillServerOperation)op).Error;
+				if (err != null)
+					LoggingService.LogError ("Error stopping adb server", err);
+				CheckTracker ();
+				if (serverKilledCallback != null)
+					serverKilledCallback ();
+			};
 		}
 		
 		public event EventHandler DevicesUpdated {

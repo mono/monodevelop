@@ -37,16 +37,19 @@ namespace MonoDevelop.MonoDroid.Gui
 	public partial class DeviceChooserDialog : Gtk.Dialog
 	{	
 		ListStore store = new ListStore (typeof (object));
+		bool destroyed;
 		
 		public DeviceChooserDialog ()
 		{
 			this.Build ();
 			
+			/*
 			var banner = new HeaderBanner () {
 				Text = GettextCatalog.GetString ("Select Device"),
 				Image = Gdk.Pixbuf.LoadFromResource ("banner.png"),
 			};
 			bannerPlaceholder.Add (banner);
+			bannerPlaceholder.ShowAll ();*/
 			
 			deviceListTreeView.Model = store;
 			var txtRenderer = new CellRendererText ();
@@ -75,10 +78,22 @@ namespace MonoDevelop.MonoDroid.Gui
 			MonoDroidFramework.DeviceManager.DevicesUpdated += OnDevicesUpdated;
 			MonoDroidFramework.VirtualDeviceManager.Changed += OnVirtualDevicesUpdated;
 			OnDevicesUpdated (null, EventArgs.Empty);
+			
+			restartAdbButton.Clicked += delegate {
+				store.Clear ();
+				restartAdbButton.Sensitive = false;
+				MonoDroidFramework.DeviceManager.RestartAdbServer (() => {
+					Gtk.Application.Invoke (delegate {
+						if (!destroyed)
+							restartAdbButton.Sensitive = true;
+					});
+				});
+			};
 		}
 		
 		protected override void OnDestroyed ()
 		{
+			destroyed = true;
 			MonoDroidFramework.DeviceManager.DevicesUpdated -= OnDevicesUpdated;
 			MonoDroidFramework.VirtualDeviceManager.Changed -= OnVirtualDevicesUpdated;
 			base.OnDestroyed ();
