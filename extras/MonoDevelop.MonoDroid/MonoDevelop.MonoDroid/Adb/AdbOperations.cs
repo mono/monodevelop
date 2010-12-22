@@ -49,6 +49,14 @@ namespace MonoDevelop.MonoDroid
 		}
 	}
 	
+	public class AdbKillServerOperation : AdbOperation
+	{
+		protected override void OnConnected ()
+		{
+			WriteCommand ("host:kill", () => GetStatus (() => SetCompleted (true)));
+		}
+	}
+	
 	public class AdbTrackDevicesOperation : AdbOperation
 	{
 		protected override void OnConnected ()
