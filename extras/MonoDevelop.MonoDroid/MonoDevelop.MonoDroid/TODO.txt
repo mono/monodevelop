@@ -1,0 +1,33 @@
+High priority:
+* Track when program is running on device in order to show output.
+* Show filtered logcat output while a program is running or debugging.
+* Stop program when done so we can re-launch it for the debugger.
+* Use device properties to improve listing in the device chooser GUI.
+* Code completion for GUI definition xml files using xsd from VS addin.
+* Bugfixing.
+
+Medium priority:
+* Package publishing wizard to sign release build with release key.
+* Check whether target device has enough temp space (e.g. emulator).
+* Add command for device chooser dialog so it can be used to start
+  emulators even when there is a default device.
+* Set asset build action automatically when adding files to Asset folder.
+* More options GUIs as needed - add options GUIs for any 
+  additional build options, such as the linker.
+* Dialog for additional options when launching emulators.
+* Make the device log view window into a pad, like the VS addin.
+* Filtering for the device log.
+
+Low priority:
+* Port more adb operations to direct TCP communication.
+* Allow user to associate friendly names with device serials.
+* Unify the android and iphone device log pads.
+* Unify the android and iphone upload command IDs.
+* Code completion for GUI definition xml files driven from the code 
+  completion db like the XAML completion.
+* Code completion schema for AndroidManifest.xml (maybe Eclipse
+  has one?).
+* Debugger visualizers & formatters for android types.
+* Unit testing integration & templates.
+
+There are also misc minor FIXMEs and TODOs in the source.
