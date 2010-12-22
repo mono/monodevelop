@@ -269,7 +269,28 @@ namespace MonoDevelop.VersionControl.Git
 
 		public override Repository Publish (string serverPath, FilePath localPath, FilePath[] files, string message, IProgressMonitor monitor)
 		{
-			throw new System.NotImplementedException ();
+			// Initialize the repository
+			repo = GitUtil.Init (localPath, Url, monitor);
+			path = localPath;
+			
+			// Add the project files
+			ChangeSet cs = CreateChangeSet (localPath);
+			NGit.Api.Git git = new NGit.Api.Git (repo);
+			var cmd = git.Add ();
+			foreach (FilePath fp in files) {
+				cmd.AddFilepattern (ToGitPath (fp));
+				cs.AddFile (fp);
+			}
+			cmd.Call ();
+			
+			// Create the initial commit
+			cs.GlobalComment = message;
+			Commit (cs, monitor);
+
+			// Push to remote repo
+			Push (monitor, "origin", "master");
+			
+			return this;
 		}
 		
 		public override bool CanUpdate (FilePath localPath)

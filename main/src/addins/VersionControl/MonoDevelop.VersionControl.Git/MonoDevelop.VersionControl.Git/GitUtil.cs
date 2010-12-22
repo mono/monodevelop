@@ -294,23 +294,20 @@ namespace MonoDevelop.VersionControl.Git
 			config.Save ();
 		}
 		
-		public static FileRepository Clone (string targetLocalPath, string url, IProgressMonitor monitor)
+		public static FileRepository Init (string targetLocalPath, string url, IProgressMonitor monitor)
 		{
-			// Initialize
-			
 			InitCommand ci = new InitCommand ();
 			ci.SetDirectory (targetLocalPath);
 			var git = ci.Call ();
 			FileRepository repo = (FileRepository) git.GetRepository ();
 			
 			string branch = Constants.R_HEADS + "master";
-			string remoteName = "origin";
 			
 			RefUpdate head = repo.UpdateRef (Constants.HEAD);
 			head.DisableRefLog ();
 			head.Link (branch);
 			
-			RemoteConfig remoteConfig = new RemoteConfig (repo.GetConfig (), remoteName);
+			RemoteConfig remoteConfig = new RemoteConfig (repo.GetConfig (), "origin");
 			remoteConfig.AddURI (new URIish (url));
 			
 			string dst = Constants.R_REMOTES + remoteConfig.Name;
@@ -326,9 +323,17 @@ namespace MonoDevelop.VersionControl.Git
 			remoteConfig.Update (repo.GetConfig());
 	
 			repo.GetConfig().Save();
+			return repo;
+		}
+		
+		public static FileRepository Clone (string targetLocalPath, string url, IProgressMonitor monitor)
+		{
+			FileRepository repo = Init (targetLocalPath, url, monitor);
 			
 			// Fetch
 			
+			string remoteName = "origin";
+			string branch = Constants.R_HEADS + "master";
 			Transport tn = Transport.Open (repo, remoteName);
 			FetchResult r;
 
@@ -344,6 +349,7 @@ namespace MonoDevelop.VersionControl.Git
 			// branch is like 'Constants.R_HEADS + branchName', we need only
 			// the 'branchName' part
 			String branchName = branch.Substring (Constants.R_HEADS.Length);
+			NGit.Api.Git git = new NGit.Api.Git (repo);
 			git.BranchCreate ().SetName (branchName).SetUpstreamMode (CreateBranchCommand.SetupUpstreamMode.TRACK).SetStartPoint ("origin/master").Call ();
 			
 			// Checkout
