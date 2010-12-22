@@ -25,6 +25,8 @@
 		<Import file = "templates/OpenGLApplication/GLView1.cs" />
 		<Import file = "templates/OpenGLApplication/main.xml" />
 		<Import file = "templates/OpenGLApplication/Resource.cs" />
+		<Import file = "icons/monodroid-project-16.png" />
+		<Import file = "icons/monodroid-project-32.png" />
 	</Runtime>
 	
 	<Dependencies>
