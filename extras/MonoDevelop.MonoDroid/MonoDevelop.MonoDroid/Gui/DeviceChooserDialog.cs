@@ -72,6 +72,17 @@ namespace MonoDevelop.MonoDroid.Gui
 			
 			deviceListTreeView.Selection.Changed += UpdatedSelection;
 			
+			deviceListTreeView.RowActivated += delegate(object o, RowActivatedArgs args) {
+				TreeIter iter;
+				if (store.GetIter (out iter, args.Path)) {
+					var device = store.GetValue (iter, 0) as AndroidDevice;
+					if (device != null) {
+						Device = device;
+						Respond (ResponseType.Ok);
+					}
+				}
+			};
+			
 			buttonOk.Sensitive = false;
 			startEmulatorButton.Sensitive = false;
 			
