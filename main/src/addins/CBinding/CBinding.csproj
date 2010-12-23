@@ -303,6 +303,8 @@
     <Compile Include="ObjCppLanguageBinding.cs" />
     <Compile Include="Parser\CompilationUnitDataProvider.cs" />
     <Compile Include="Parser\DataProvider.cs" />
+    <Compile Include="Parser\CTagsManager.cs" />
+    <Compile Include="Parser\ExuberantCTagsManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

@@ -33,6 +33,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Threading;
@@ -58,6 +59,7 @@ namespace CBinding.Parser
 		private static TagDatabaseManager instance;
 		private Queue<ProjectFilePair> parsingJobs = new Queue<ProjectFilePair> ();
 		private Thread parsingThread;
+		private CTagsManager ctags;
 		
 		public event ClassPadEventHandler FileUpdated;
 		
@@ -82,11 +84,18 @@ namespace CBinding.Parser
 			get {
 				if (!checkedCtagsInstalled) {
 					checkedCtagsInstalled = true;
+					/*
 					if (PropertyService.IsMac) {
 						return false;
 					}
+					*/
 					try {
-						Runtime.ProcessService.StartProcess ("ctags", "--version", null, null).WaitForOutput ();
+						var output = new StringWriter ();
+						Runtime.ProcessService.StartProcess ("ctags", "--version", null, output, null, null).WaitForExit ();
+						if (PropertyService.IsMac && !output.ToString ().StartsWith ("Exuberant", StringComparison.Ordinal)) {
+							System.Console.WriteLine ("Fallback to OSX ctags");
+						}
+						ctags = new ExuberantCTagsManager ();
 					} catch {
 						LoggingService.LogWarning ("Cannot update C/C++ tags database because exuberant ctags is not installed.");
 						return false;
@@ -101,7 +110,7 @@ namespace CBinding.Parser
 						ctagsInstalled = true;
 					}
 				}
-				return ctagsInstalled;
+				return ctagsInstalled && ctags != null;
 			}
 			set {
 				//don't assume that the caller is correct :-)
@@ -230,8 +239,10 @@ namespace CBinding.Parser
 			return string.Empty;
 		}
 		
-		private void UpdateSystemTags (Project project, string filename, string[] includedFiles)
+		private void UpdateSystemTags (Project project, string filename, IEnumerable<string> includedFiles)
 		{
+			if (!DepsInstalled)
+				return;
 			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
 			List<FileInformation> files;
 			
@@ -255,74 +266,12 @@ namespace CBinding.Parser
 					if (!contains) {
 						FileInformation newFileInfo = new FileInformation (project, includedFile);
 						files.Add (newFileInfo);
-						FillFileInformation (newFileInfo);
+						ctags.FillFileInformation (newFileInfo);
 					}
 					
 					contains = false;
 				}
 			}
-		}
-		
-		private void FillFileInformation (FileInformation fileInfo)
-		{
-			if (!DepsInstalled)
-				return;
-			
-			string confdir = PropertyService.ConfigPath;
-			string tagFileName = Path.GetFileName (fileInfo.FileName) + ".tag";
-			string tagdir = Path.Combine (confdir, "system-tags");
-			string tagFullFileName = Path.Combine (tagdir, tagFileName);
-			string ctags_kinds = "--C++-kinds=+px";
-			
-			if (PropertyService.Get<bool> ("CBinding.ParseLocalVariables", true))
-				ctags_kinds += "l";
-			
-			string ctags_options = ctags_kinds + " --fields=+aStisk-fz --language-force=C++ --excmd=number --line-directives=yes -f '" + tagFullFileName + "' '" + fileInfo.FileName + "'";
-			
-			if (!Directory.Exists (tagdir))
-				Directory.CreateDirectory (tagdir);
-			
-			if (!File.Exists (tagFullFileName) || File.GetLastWriteTimeUtc (tagFullFileName) < File.GetLastWriteTimeUtc (fileInfo.FileName)) {
-				ProcessWrapper p = null;
-				System.IO.StringWriter output = null;
-				try {
-					output = new System.IO.StringWriter ();
-					
-					p = Runtime.ProcessService.StartProcess ("ctags", ctags_options, null, null, output, null);
-					p.WaitForOutput (10000);
-					if (p.ExitCode != 0 || !File.Exists (tagFullFileName)) {
-						LoggingService.LogError ("Ctags did not successfully populate the tags database '{0}' within ten seconds.\nOutput: {1}", tagFullFileName, output.ToString ());
-						return;
-					}
-				} catch (Exception ex) {
-					throw new IOException ("Could not create tags database (You must have exuberant ctags installed).", ex);
-				} finally {
-					if (output != null)
-						output.Dispose ();
-					if (p != null)
-						p.Dispose ();
-				}
-			}
-			
-			string ctags_output;
-			string tagEntry;
-			
-			using (StreamReader reader = new StreamReader (tagFullFileName)) {
-				ctags_output = reader.ReadToEnd ();
-			}
-			
-			using (StringReader reader = new StringReader (ctags_output)) {
-				while ((tagEntry = reader.ReadLine ()) != null) {
-					if (tagEntry.StartsWith ("!_")) continue;
-					
-					Tag tag = ParseTag (tagEntry);
-					
-					if (tag != null)
-						AddInfo (fileInfo, tag, ctags_output);
-				}
-			}
-			
-			fileInfo.IsFilled = true;
 		}
 		
 		private void ParsingThread ()
@@ -335,17 +284,21 @@ namespace CBinding.Parser
 						p = parsingJobs.Dequeue ();
 					}
 					
-					DoUpdateFileTags (p.Project, p.File);
+					string[] headers = Headers (p.Project, p.File, false);
+					ctags.DoUpdateFileTags (p.Project, p.File, headers);
+					OnFileUpdated (new ClassPadEventArgs (p.Project));
+					
+					if (PropertyService.Get<bool> ("CBinding.ParseSystemTags", true))
+						UpdateSystemTags (p.Project, p.File, Headers (p.Project, p.File, true).Except (headers));
+					
+					if (cache.Count > cache_size)
+						cache.Clear ();
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Unhandled error updating parser database. Disabling C/C++ parsing.", ex);
 				DepsInstalled = false;
 				return;
 			}
-//			catch {
-//				LoggingService.LogError("Unexpected error while updating parser database. Disabling C/C++ parsing.");
-//				DepsInstalled = false;
-//			}
 		}
 		
 		public void UpdateFileTags (Project project, string filename)
@@ -367,228 +320,6 @@ namespace CBinding.Parser
 				parsingThread.Priority = ThreadPriority.Lowest;
 				parsingThread.Start();
 			}
-		}
-		
-		private void DoUpdateFileTags (Project project, string filename)
-		{
-			if (!DepsInstalled)
-				return;
-
-			string[] headers = Headers (project, filename, false);
-			string[] system_headers = diff (Headers (project, filename, true), headers);
-			StringBuilder ctags_kinds = new StringBuilder ("--C++-kinds=+px");
-			
-			if (PropertyService.Get<bool> ("CBinding.ParseLocalVariables", true))
-				ctags_kinds.Append ("+l");
-			
-			// Maybe we should only ask for locals for 'local' files? (not external #includes?)
-			ctags_kinds.AppendFormat (" --fields=+aStisk-fz --language-force=C++ --excmd=number --line-directives=yes -f - '{0}'", filename);
-			foreach (string header in headers) {
-				ctags_kinds.AppendFormat (" '{0}'", header);
-			}
-			
-			string ctags_output = string.Empty;
-
-			ProcessWrapper p = null;
-			System.IO.StringWriter output = null, error = null;
-			try {
-				output = new System.IO.StringWriter ();
-				error = new System.IO.StringWriter ();
-				
-				p = Runtime.ProcessService.StartProcess ("ctags", ctags_kinds.ToString (), project.BaseDirectory, output, error, null);
-				p.WaitForOutput (10000);
-				if (p.ExitCode != 0) {
-					LoggingService.LogError ("Ctags did not successfully populate the tags database from '{0}' within ten seconds.\nError output: {1}", filename, error.ToString ());
-					return;
-				}
-				ctags_output = output.ToString ();
-			} catch (Exception ex) {
-				throw new IOException ("Could not create tags database (You must have exuberant ctags installed).", ex);
-			} finally {
-				if (output != null)
-					output.Dispose ();
-				if (error != null)
-					error.Dispose ();
-				if (p != null)
-					p.Dispose ();
-			}
-			
-			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
-			
-			lock (info) {
-				info.RemoveFileInfo (filename);
-				string tagEntry;
-	
-				using (StringReader reader = new StringReader (ctags_output)) {
-					while ((tagEntry = reader.ReadLine ()) != null) {
-						if (tagEntry.StartsWith ("!_")) continue;
-						
-						Tag tag = ParseTag (tagEntry);
-						
-						if (tag != null)
-							AddInfo (info, tag, ctags_output);
-					}
-				}
-			}
-			
-			OnFileUpdated (new ClassPadEventArgs (project));
-			
-			if (PropertyService.Get<bool> ("CBinding.ParseSystemTags", true))
-				UpdateSystemTags (project, filename, system_headers);
-			
-			if (cache.Count > cache_size)
-				cache.Clear ();
-		}
-		
-		private void AddInfo (FileInformation info, Tag tag, string ctags_output)
-		{
-			switch (tag.Kind)
-			{
-			case TagKind.Class:
-				Class c = new Class (tag, info.Project, ctags_output);
-				if (!info.Classes.Contains (c))
-					info.Classes.Add (c);
-				break;
-			case TagKind.Enumeration:
-				Enumeration e = new Enumeration (tag, info.Project, ctags_output);
-				if (!info.Enumerations.Contains (e))
-					info.Enumerations.Add (e);
-				break;
-			case TagKind.Enumerator:
-				Enumerator en= new Enumerator (tag, info.Project, ctags_output);
-				if (!info.Enumerators.Contains (en))
-					info.Enumerators.Add (en);
-				break;
-			case TagKind.ExternalVariable:
-				break;
-			case TagKind.Function:
-				Function f = new Function (tag, info.Project, ctags_output);
-				if (!info.Functions.Contains (f))
-					info.Functions.Add (f);
-				break;
-			case TagKind.Local:
-				Local lo = new Local (tag, info.Project, ctags_output);
-				if(!info.Locals.Contains (lo))
-					info.Locals.Add (lo);
-				break;
-			case TagKind.Macro:
-				Macro m = new Macro (tag, info.Project);
-				if (!info.Macros.Contains (m))
-					info.Macros.Add (m);
-				break;
-			case TagKind.Member:
-				Member me = new Member (tag, info.Project, ctags_output);
-				if (!info.Members.Contains (me))
-					info.Members.Add (me);
-				break;
-			case TagKind.Namespace:
-				Namespace n = new Namespace (tag, info.Project, ctags_output);
-				if (!info.Namespaces.Contains (n))
-					info.Namespaces.Add (n);
-				break;
-			case TagKind.Prototype:
-				Function fu = new Function (tag, info.Project, ctags_output);
-				if (!info.Functions.Contains (fu))
-					info.Functions.Add (fu);
-				break;
-			case TagKind.Structure:
-				Structure s = new Structure (tag, info.Project, ctags_output);
-				if (!info.Structures.Contains (s))
-					info.Structures.Add (s);
-				break;
-			case TagKind.Typedef:
-				Typedef t = new Typedef (tag, info.Project, ctags_output);
-				if (!info.Typedefs.Contains (t))
-					info.Typedefs.Add (t);
-				break;
-			case TagKind.Union:
-				Union u = new Union (tag, info.Project, ctags_output);
-				if (!info.Unions.Contains (u))
-					info.Unions.Add (u);
-				break;
-			case TagKind.Variable:
-				Variable v = new Variable (tag, info.Project);
-				if (!info.Variables.Contains (v))
-					info.Variables.Add (v);
-				break;
-			default:
-				break;
-			}
-		}
-		
-		private Tag ParseTag (string tagEntry)
-		{
-			string file;
-			UInt64 line;
-			string name;
-			string tagField;
-			TagKind kind;
-			AccessModifier access = AccessModifier.Public;
-			string _class = null;
-			string _namespace = null;
-			string _struct = null;
-			string _union = null;
-			string _enum = null;
-			string signature = null;
-			
-			int i1 = tagEntry.IndexOf ('\t');
-			name = tagEntry.Substring (0, tagEntry.IndexOf ('\t'));
-			
-			i1 += 1;
-			int i2 = tagEntry.IndexOf ('\t', i1);
-			file = tagEntry.Substring (i1, i2 - i1);
-			
-			i1 = i2 + 1;
-			i2 = tagEntry.IndexOf (";\"", i1);
-			line = UInt64.Parse(tagEntry.Substring (i1, i2 - i1));
-
-			i1 = i2 + 3;	
-			kind = (TagKind)tagEntry[i1];
-			
-			i1 += 2;
-			tagField = (tagEntry.Length > i1? tagField = tagEntry.Substring(i1) : String.Empty);
-			
-			string[] fields = tagField.Split ('\t');
-			int index;
-			
-			foreach (string field in fields) {
-				index = field.IndexOf (':');
-				
-				// TODO: Support friend modifier
-				if (index > 0) {
-					string key = field.Substring (0, index);
-					string val = field.Substring (index + 1);
-					
-					switch (key) {
-						case "access":
-							try {
-								access = (AccessModifier)System.Enum.Parse (typeof(AccessModifier), val, true);
-							} catch (ArgumentException) {
-							}
-							break;
-						case "class":
-							_class = val;
-							break;
-						case "namespace":
-							_namespace = val;
-							break;
-						case "struct":
-							_struct = val;
-							break;
-						case "union":
-							_union = val;
-							break;
-						case "enum":
-							_enum = val;
-							break;
-						case "signature":
-							signature = val;
-							break;
-					}
-				}
-			}
-			
-			return new Tag (name, file, line, kind, access, _class, _namespace, _struct, _union, _enum, signature);
 		}
 		
 		Tag BinarySearch (string[] ctags_lines, TagKind kind, string name)
@@ -623,7 +354,7 @@ namespace CBinding.Parser
 					bool eof = false;
 					
 					while (true) {
-						Tag tag = ParseTag (entry);
+						Tag tag = ctags.ParseTag (entry);
 						
 						if (tag == null)
 							return null;
@@ -717,19 +448,6 @@ namespace CBinding.Parser
 			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
 			lock (info){ info.RemoveFileInfo(filename); }
 			OnFileUpdated(new ClassPadEventArgs (project));
-		}
-		
-		private static string[] diff (string[] a1, string[] a2)
-		{
-			List<string> res = new List<string> ();
-			List<string> right = new List<string> (a2);
-			
-			foreach (string s in a1) {
-				if (!right.Contains (s))
-					res.Add (s);
-			}
-			
-			return res.ToArray ();
 		}
 		
 		/// <summary>
