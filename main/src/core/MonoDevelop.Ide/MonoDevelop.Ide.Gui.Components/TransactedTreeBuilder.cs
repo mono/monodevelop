@@ -821,7 +821,8 @@ namespace MonoDevelop.Ide.Gui.Components
 					
 					MarkDeleted (node);
 					Gtk.TreeIter it = node.NodeIter;
-					tree.Store.Remove (ref it);
+					if (tree.Store.IterIsValid (it))
+						tree.Store.Remove (ref it);
 					return;
 				}
 				else if (node.Modified) {
