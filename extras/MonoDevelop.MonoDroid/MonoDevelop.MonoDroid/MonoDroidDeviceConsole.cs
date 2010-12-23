@@ -92,7 +92,8 @@ namespace MonoDevelop.MonoDroid
 			};
 			reconnectButton.Clicked += delegate {
 				Disconnect ();
-				Connect ();
+				if (Device != null)
+					Connect ();
 			};
 			chooseDeviceButton.Clicked += delegate {
 				Device = MonoDroidUtility.ChooseDevice (this);
@@ -150,11 +151,6 @@ namespace MonoDevelop.MonoDroid
 			};
 			process.EnableRaisingEvents = true;
 		}
-
-		void DevicesUpdated (object sender, EventArgs e)
-		{
-			Connect ();
-		}
 		
 		void OnProcessOutput (object sender, string message)
 		{
@@ -179,6 +175,8 @@ namespace MonoDevelop.MonoDroid
 		{
 			if (instance == null) {
 				instance = new MonoDroidDeviceConsole ();
+				instance.TransientFor = MessageService.RootWindow;
+				instance.DestroyWithParent = true;
 				MessageService.PlaceDialog (instance, MessageService.RootWindow);
 				instance.Show ();
 			}
