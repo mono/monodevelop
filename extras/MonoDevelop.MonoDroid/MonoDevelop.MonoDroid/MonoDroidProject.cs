@@ -672,16 +672,19 @@ namespace MonoDevelop.MonoDroid
 			var manifestFile = GetManifestFileName (conf);
 			if (manifestFile.IsNullOrEmpty)
 				return null;
-			
-			// If a specified manifest is not in the project, add or create it
-			// FIXME: do we really want to do this?
-			var pf = Files.GetFile (manifestFile);
-			if (pf != null)
-				return pf;
-			
-			if (!File.Exists (manifestFile))
-				AndroidAppManifest.Create (GetDefaultPackageName (), Name).WriteToFile (manifestFile);
-			return AddFile (manifestFile);
+			return Files.GetFile (manifestFile);
+		}
+		
+		public AndroidAppManifest AddManifest ()
+		{
+			if (AndroidManifest.IsNullOrEmpty)
+				AndroidManifest = BaseDirectory.Combine ("Properties", "AndroidManifest.xml");
+			if (!Directory.Exists (AndroidManifest.ParentDirectory))
+				Directory.CreateDirectory (AndroidManifest.ParentDirectory);
+			var manifest = AndroidAppManifest.Create (GetDefaultPackageName (), Name);
+			manifest.WriteToFile (AndroidManifest);
+			AddFile (AndroidManifest);
+			return manifest;
 		}
 		
 		public string GetPackageName (ConfigurationSelector conf)

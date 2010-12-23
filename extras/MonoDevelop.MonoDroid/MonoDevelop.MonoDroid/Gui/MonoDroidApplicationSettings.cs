@@ -30,6 +30,7 @@ using MonoDevelop.Core;
 using Gtk;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 
 namespace MonoDevelop.MonoDroid.Gui
 {
@@ -54,17 +55,124 @@ namespace MonoDevelop.MonoDroid.Gui
 		}
 	}
 	
-	
 	partial class MonoDroidApplicationSettingsWidget : Gtk.Bin
 	{
 		FilePath filename;
 		AndroidAppManifest manifest;
 		ListStore permissionsStore = new ListStore (typeof (bool), typeof (string));
+		MonoDroidProject project;
+		
+		bool loaded;
 		
 		public MonoDroidApplicationSettingsWidget (MonoDroidProject project)
 		{
+			this.project = project;
 			this.Build ();
+			Load ();
+		}
+		
+		//this may be called again if it shows a load error widget
+		//but once it's loaded the real widgets, it cannot be called again
+		void Load ()
+		{
+			//remove and destroy error widgets, if any
+			var c = this.Child;
+			if (c != null && c != table1) {
+				this.Remove (c);
+				c.Destroy ();
+			}
 			
+			filename = project.AndroidManifest;
+			
+			if (filename.IsNullOrEmpty) {
+				var msg = GettextCatalog.GetString ("The project has no Android manifest");
+				AddErrorWidget (CreateAddManifestButton (msg, Stock.Info));
+				return;
+			}
+			
+			if (!File.Exists (filename)) {
+				var msg = GettextCatalog.GetString ("The project's Android manifest is missing");
+				AddErrorWidget (CreateAddManifestButton (msg, Stock.DialogWarning));
+				return;
+			}
+			
+			try {
+				manifest = AndroidAppManifest.Load (filename);
+			} catch (Exception ex) {
+				var vb = new VBox () { Spacing = 6 };
+				var hb = new HBox () { Spacing = 6 };
+				hb.PackStart (new Image (Stock.DialogError, IconSize.Button), false, false, 0);
+				var msg = GettextCatalog.GetString ("Error reading Android manifest");
+				hb.PackStart (new Label () { Markup = "<big>" + msg + "</big>"}, false, false, 0);
+				vb.PackStart (hb, false, false, 0);
+				var tv = new TextView ();
+				tv.Buffer.InsertAtCursor (ex.ToString ());
+				var sw = new ScrolledWindow ();
+				sw.ShadowType = ShadowType.EtchedIn;
+				sw.Add (tv);
+				vb.PackStart (sw, true, true, 0);
+				AddErrorWidget (vb);
+				return;
+			}
+			
+			this.Add (table1);
+			
+			InitializeRealWidgets ();
+			
+			packageNameEntry.Text = manifest.PackageName ?? "";
+			appNameEntry.Text = manifest.ApplicationLabel ?? "";
+			versionNameEntry.Text = manifest.VersionName ?? "";
+			versionNumberEntry.Text = manifest.VersionCode ?? "";
+			appIconCombo.Entry.Text = manifest.ApplicationIcon ?? "";
+			SetMinSdkVersion (manifest.MinSdkVersion);
+			SetPermissions (manifest.AndroidPermissions);
+			
+			loaded = true;
+		}
+		
+		void AddErrorWidget (Widget w)
+		{
+			//remove the able widget, if any
+			var c = this.Child;
+			if (c != null)
+				this.Remove (c);
+			this.Add (w);
+			this.ShowAll ();
+		}
+		
+		protected override void OnDestroyed ()
+		{
+			var c = this.Child;
+			if (c != table1)
+				table1.Destroy ();
+		}
+		
+		Widget CreateAddManifestButton (string message, string imageId)
+		{
+			var img = new Image (imageId, IconSize.Button);
+			var lbl = new Label () { Markup = "<big>" + message + "</big>"};
+			var btn = new Button (GettextCatalog.GetString ("Add Android manifest"));
+			
+			btn.Clicked += delegate {
+				project.AddManifest ();
+				MonoDevelop.Ide.IdeApp.ProjectOperations.Save (project);
+				Load ();
+			};
+			
+			var tbl = new Table (4, 4, false);
+			tbl.Attach (img, 2, 3, 2, 3, AttachOptions.Shrink, AttachOptions.Shrink, 6, 6);
+			tbl.Attach (lbl, 3, 4, 2, 3, AttachOptions.Shrink, AttachOptions.Shrink, 6, 6);
+			tbl.Attach (btn, 3, 4, 3, 4, AttachOptions.Shrink, AttachOptions.Shrink, 6, 6);
+			
+			var expandFill = AttachOptions.Expand | AttachOptions.Fill;
+			tbl.Attach (new Label (""), 0, 1, 0, 1, expandFill, expandFill, 0, 0);
+			tbl.Attach (new Label (""), 4, 5, 4, 5, expandFill, expandFill, 0, 0);
+			
+			return tbl;
+		}
+		
+		void InitializeRealWidgets ()
+		{
 			foreach (var v in MonoDroidFramework.AndroidVersions)
 				minAndroidVersionCombo.AppendText (v.Label);
 			
@@ -87,26 +195,6 @@ namespace MonoDevelop.MonoDroid.Gui
 				appIconCombo.AppendText ("@drawable/" + kv.Key);
 			
 			ShowAll ();
-			
-			//try {
-				filename = project.GetManifestFile (null).Name;
-				manifest = AndroidAppManifest.Load (filename);
-			//} catch (Exception ex) {
-				// handle the case with invalid or nonexistent manifest
-			//}
-			
-			Load ();
-		}
-		
-		void Load ()
-		{
-			packageNameEntry.Text = manifest.PackageName ?? "";
-			appNameEntry.Text = manifest.ApplicationLabel ?? "";
-			versionNameEntry.Text = manifest.VersionName ?? "";
-			versionNumberEntry.Text = manifest.VersionCode ?? "";
-			appIconCombo.Entry.Text = manifest.ApplicationIcon ?? "";
-			SetMinSdkVersion (manifest.MinSdkVersion);
-			SetPermissions (manifest.AndroidPermissions);
 		}
 		
 		void SetMinSdkVersion (int v)
@@ -142,8 +230,11 @@ namespace MonoDevelop.MonoDroid.Gui
 			}
 		}
 		
-		public virtual void ApplyChanges ()
+		public void ApplyChanges ()
 		{
+			if (!loaded)
+				return;
+			
 			manifest.PackageName = packageNameEntry.Text;
 			manifest.ApplicationLabel = appNameEntry.Text;
 			manifest.VersionName = versionNameEntry.Text;
