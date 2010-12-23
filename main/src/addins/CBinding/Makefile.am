@@ -67,9 +67,11 @@ FILES =  \
 	Parser/CDocumentParser.cs \
 	Parser/Class.cs \
 	Parser/CompilationUnitDataProvider.cs \
+	Parser/CTagsManager.cs \
 	Parser/DataProvider.cs \
 	Parser/Enumeration.cs \
 	Parser/Enumerator.cs \
+	Parser/ExuberantCTagsManager.cs \
 	Parser/Function.cs \
 	Parser/LanguageItem.cs \
 	Parser/Local.cs \
