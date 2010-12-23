@@ -43,10 +43,10 @@ namespace MonoDevelop.MonoDroid
 	public enum MonoDroidCommands
 	{
 		UploadToDevice,
-		ExportToXcode,
-		SelectSimulatorTarget,
-		ViewDeviceConsole,
+		SelectDeviceTarget,
+		ManageDevices,
 		OpenAvdManager,
+		ViewDeviceConsole,
 	}
 	
 	class SelectDeviceTargetHandler : CommandHandler
@@ -60,12 +60,8 @@ namespace MonoDevelop.MonoDroid
 			var conf = (MonoDroidProjectConfiguration) proj.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
 			var projSetting = proj.GetDeviceTarget (conf);
 			
-			var def = info.Add ("Default", null);
-			if (projSetting == null)
-				def.Checked  = true;
-			
 			foreach (var st in MonoDroidFramework.DeviceManager.Devices) {
-				var i = info.Add (st.ToString (), st);
+				var i = info.Add (st.ID, st);
 				if (projSetting != null && projSetting.Equals (st))
 					i.Checked  = true;
 			}
@@ -76,6 +72,24 @@ namespace MonoDevelop.MonoDroid
 			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
 			var conf = (MonoDroidProjectConfiguration) proj.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
 			proj.SetDeviceTarget (conf, ((AndroidDevice)dataItem).ID);
+		}
+	}
+	
+	class ManageDevicesHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
+			info.Visible = info.Enabled = proj != null;
+		}
+		
+		protected override void Run ()
+		{
+			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
+			var conf = (MonoDroidProjectConfiguration) proj.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
+			var dlg = new MonoDevelop.MonoDroid.Gui.DeviceChooserDialog ();
+			if (MessageService.ShowCustomDialog (dlg) == (int)Gtk.ResponseType.Ok)
+				proj.SetDeviceTarget (conf, dlg.Device.ID);
 		}
 	}
 

@@ -9,8 +9,6 @@ High priority:
 Medium priority:
 * Package publishing wizard to sign release build with release key.
 * Check whether target device has enough temp space (e.g. emulator).
-* Add command for device chooser dialog so it can be used to start
-  emulators even when there is a default device.
 * Set asset build action automatically when adding files to Asset folder.
 * More options GUIs as needed - add options GUIs for any 
   additional build options, such as the linker.
