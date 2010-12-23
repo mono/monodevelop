@@ -32,11 +32,17 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Linq;
 using System.Collections.Generic;
 
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Projects.Dom;
+using MonoDevelop.Projects.Dom.Output;
+using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 
 using CBinding.Parser;
@@ -44,7 +50,7 @@ using Mono.TextEditor;
 
 namespace CBinding
 {
-	public class CTextEditorExtension : CompletionTextEditorExtension
+	public class CTextEditorExtension : CompletionTextEditorExtension, IPathedDocument
 	{
 		// Allowed chars to be next to an identifier
 		private static char[] allowedChars = new char[] {
@@ -72,6 +78,8 @@ namespace CBinding
 			new KeyValuePair<string, GetMembersForExtension>("->", GetInstanceMembers),
 			new KeyValuePair<string, GetMembersForExtension>(".", GetInstanceMembers)
 		};
+		
+		protected Mono.TextEditor.TextEditorData textEditorData{ get; set; }
 		
 		static bool IsOpenBrace (char c)
 		{
@@ -586,6 +594,119 @@ namespace CBinding
 		{
 			var cp = this.Document.Project as CProject;
 			info.Visible = info.Visible = cp != null && cp.MatchingFile (this.Document.FileName) != null;
+		}
+		
+		#region IPathedDocument implementation
+		
+		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
+		
+		public Gtk.Widget CreatePathWidget (int index)
+		{
+			PathEntry[] path = CurrentPath;
+			if (null == path || 0 > index || path.Length <= index) {
+				return null;
+			}
+			
+			object tag = path[index].Tag;
+			DropDownBoxListWindow.IListDataProvider provider = null;
+			if (tag is ICompilationUnit) {
+				provider = new CompilationUnitDataProvider (Document);
+			} else {
+				provider = new DataProvider (Document, tag, GetAmbience ());
+			}
+			
+			DropDownBoxListWindow window = new DropDownBoxListWindow (provider);
+			window.SelectItem (tag);
+			return window;
+		}
+
+		public PathEntry[] CurrentPath {
+			get;
+			private set;
+		}
+		
+		protected virtual void OnPathChanged (DocumentPathChangedEventArgs args)
+		{
+			if (PathChanged != null)
+				PathChanged (this, args);
+		}
+		
+		#endregion
+		
+		// Yoinked from C# binding
+		void UpdatePath (object sender, Mono.TextEditor.DocumentLocationEventArgs e)
+		{
+			var unit = Document.CompilationUnit;
+			if (unit == null)
+				return;
+				
+			var loc = textEditorData.Caret.Location;
+			IType type = unit.GetTypeAt (loc.Line, loc.Column);
+			List<PathEntry> result = new List<PathEntry> ();
+			Ambience amb = GetAmbience ();
+			IMember member = null;
+			INode node = (INode)unit;
+			
+			if (type != null && type.ClassType != ClassType.Delegate) {
+				member = type.GetMemberAt (loc.Line, loc.Column);
+			}
+			
+			if (null != member) {
+				node = member;
+			} else if (null != type) {
+				node = type;
+			}
+			
+			while (node != null) {
+				PathEntry entry;
+				if (node is ICompilationUnit) {
+					if (!Document.ParsedDocument.UserRegions.Any ())
+						break;
+					FoldingRegion reg = Document.ParsedDocument.UserRegions.Where (r => r.Region.Contains (loc.Line, loc.Column)).LastOrDefault ();
+					if (reg == null) {
+						entry = new PathEntry (GettextCatalog.GetString ("No region"));
+					} else {
+						entry = new PathEntry (CompilationUnitDataProvider.Pixbuf, reg.Name);
+					}
+					entry.Position = EntryPosition.Right;
+				} else {
+					entry = new PathEntry (ImageService.GetPixbuf (((IMember)node).StockIcon, Gtk.IconSize.Menu), amb.GetString ((IMember)node, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates));
+				}
+				entry.Tag = node;
+				result.Insert (0, entry);
+				node = node.Parent;
+			}
+			
+			PathEntry noSelection = null;
+			if (type == null) {
+				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = new CustomNode (Document.CompilationUnit) };
+			} else if (member == null && type.ClassType != ClassType.Delegate) 
+				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = new CustomNode (type) };
+			if (noSelection != null) {
+				result.Add (noSelection);
+			}
+			
+			var prev = CurrentPath;
+			CurrentPath = result.ToArray ();
+			OnPathChanged (new DocumentPathChangedEventArgs (prev));
+		}
+		
+		public override void Initialize ()
+		{
+			base.Initialize ();
+			textEditorData = Document.Editor;
+			UpdatePath (null, null);
+			textEditorData.Caret.PositionChanged += UpdatePath;
+			Document.DocumentParsed += delegate { UpdatePath (null, null); };
+		}
+		
+		// Yoinked from C# binding
+		class CustomNode : MonoDevelop.Projects.Dom.AbstractNode
+		{
+			public CustomNode (INode parent)
+			{
+				this.Parent = parent;
+			}
 		}
 	}
 }
