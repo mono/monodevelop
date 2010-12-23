@@ -60,6 +60,7 @@
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
@@ -300,6 +301,8 @@
     <Compile Include="Parser\CDocumentParser.cs" />
     <Compile Include="ObjCLanguageBinding.cs" />
     <Compile Include="ObjCppLanguageBinding.cs" />
+    <Compile Include="Parser\CompilationUnitDataProvider.cs" />
+    <Compile Include="Parser\DataProvider.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

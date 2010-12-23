@@ -17,6 +17,7 @@ REFS =  \
 	$(MONO_ADDINS_LIBS) \
 	-r:Mono.Posix \
 	-r:System \
+	-r:System.Core \
 	-r:System.Xml
 	
 
@@ -65,6 +66,8 @@ FILES =  \
 	ObjCppLanguageBinding.cs \
 	Parser/CDocumentParser.cs \
 	Parser/Class.cs \
+	Parser/CompilationUnitDataProvider.cs \
+	Parser/DataProvider.cs \
 	Parser/Enumeration.cs \
 	Parser/Enumerator.cs \
 	Parser/Function.cs \
