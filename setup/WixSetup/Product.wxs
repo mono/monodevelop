@@ -58,6 +58,7 @@
               <File Name="MonoDevelop.exe.config" Source="$(var.BuildRoot)\bin\MonoDevelop.exe.config" />
               <File Name="MonoDevelop.Ide.dll" Source="$(var.BuildRoot)\bin\MonoDevelop.Ide.dll" />
               <File Name="MonoDevelop.Projects.Formats.MSBuild.exe" Source="$(var.BuildRoot)\bin\MonoDevelop.Projects.Formats.MSBuild.exe" />
+              <File Name="MonoDevelop.Projects.Formats.MSBuild.exe.config" Source="$(var.BuildRoot)\bin\MonoDevelop.Projects.Formats.MSBuild.exe.config" />
               <File Name="NRefactory.dll" Source="$(var.BuildRoot)\bin\NRefactory.dll" />
 
               <File Name="ICSharpCode.SharpZipLib.dll" Source="Libraries\ICSharpCode.SharpZipLib.dll" />
