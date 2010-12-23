@@ -28,9 +28,7 @@ using System;
 using MonoDevelop.Components.Commands;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Remoting.Channels;
 using System.Collections;
-using System.Runtime.Remoting.Channels.Ipc;
 using System.Runtime.Remoting;
 using System.Collections.Generic;
 
@@ -48,7 +46,7 @@ namespace MonoDevelop.Components.AutoTest
 			string sref = Environment.GetEnvironmentVariable ("MONO_AUTOTEST_CLIENT");
 			if (!string.IsNullOrEmpty (sref)) {
 				Console.WriteLine ("AutoTest service starting");
-				SetupRemoting ();
+				MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
 				byte[] data = Convert.FromBase64String (sref);
 				MemoryStream ms = new MemoryStream (data);
 				BinaryFormatter bf = new BinaryFormatter ();
@@ -56,7 +54,7 @@ namespace MonoDevelop.Components.AutoTest
 				client.Connect (manager.AttachClient (client));
 			}
 			if (publishServer && !manager.IsClientConnected) {
-				SetupRemoting ();
+				MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
 				BinaryFormatter bf = new BinaryFormatter ();
 				ObjRef oref = RemotingServices.Marshal (manager);
 				MemoryStream ms = new MemoryStream ();
@@ -85,20 +83,6 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			if (manager.IsClientConnected)
 				manager.NotifyEvent (eventName);
-		}
-		
-		internal static void SetupRemoting ()
-		{
-			IChannel ch = ChannelServices.GetChannel ("ipc");
-			if (ch == null) {
-				IDictionary dict = new Hashtable ();
-				BinaryClientFormatterSinkProvider clientProvider = new BinaryClientFormatterSinkProvider();
-				BinaryServerFormatterSinkProvider serverProvider = new BinaryServerFormatterSinkProvider();
-				string unixRemotingFile = Path.GetTempFileName ();
-				dict ["portName"] = Path.GetFileName (unixRemotingFile);
-				serverProvider.TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full;
-				ChannelServices.RegisterChannel (new IpcChannel (dict, clientProvider, serverProvider), false);
-			}
 		}
 	}
 	
