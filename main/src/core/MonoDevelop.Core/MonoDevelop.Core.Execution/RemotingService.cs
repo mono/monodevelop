@@ -40,6 +40,7 @@ namespace MonoDevelop.Core.Execution
 		static string unixRemotingFile;
 		static DisposerFormatterSinkProvider clientProvider;
 		static Dictionary<string,CallbackData> callbacks = new Dictionary<string, CallbackData> ();
+		static bool channelRegistered;
 		
 		internal class CallbackData
 		{
@@ -58,8 +59,14 @@ namespace MonoDevelop.Core.Execution
 		
 		public static void RegisterRemotingChannel ()
 		{
-			IChannel ch = ChannelServices.GetChannel ("ipc");
-			if (ch == null) {
+			if (!channelRegistered) {
+				// Don't reuse ipc channels registered by add-ins. That's not supported.
+				IChannel ch = ChannelServices.GetChannel ("ipc");
+				if (ch != null) {
+					LoggingService.LogFatalError ("IPC channel already registered. An add-in may have registered it");
+					throw new InvalidOperationException ("IPC channel already registered. An add-in may have registered it.");
+				}
+				channelRegistered = true;
 				IDictionary dict = new Hashtable ();
 				BinaryServerFormatterSinkProvider serverProvider = new BinaryServerFormatterSinkProvider();
 				unixRemotingFile = Path.GetTempFileName ();
