@@ -114,6 +114,10 @@
 				type = "radio|array"
 				defaultHandler = "MonoDevelop.MonoDroid.SelectDeviceTargetHandler"
 				_label = "MonoDroid Device" />
+			<Command id = "MonoDevelop.MonoDroid.MonoDroidCommands.ManageDevices"
+				_description = "Manage Android Devices" 
+				defaultHandler = "MonoDevelop.MonoDroid.ManageDevicesHandler"
+				_label = "Manage Devices..." />
 		</Condition>
 	</Extension>
 	
@@ -132,9 +136,11 @@
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
 		<Condition id="MonoDroidInstalled">
-			<ItemSet id = "SelectSimulatorTarget" _label = "MonoDroid Device Target" autohide = "true" 
+			<ItemSet id = "SelectSimulatorTarget" _label = "MonoDroid Device Target" 
 			         insertafter = "SelectActiveRuntime"  >
 				<CommandItem id = "MonoDevelop.MonoDroid.MonoDroidCommands.SelectDeviceTarget" />
+				<SeparatorItem />
+				<CommandItem id = "MonoDevelop.MonoDroid.MonoDroidCommands.ManageDevices" />
 			</ItemSet>
 		</Condition>
 	</Extension>
