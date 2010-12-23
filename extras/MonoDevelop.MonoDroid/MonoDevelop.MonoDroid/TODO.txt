@@ -13,7 +13,7 @@ Medium priority:
 * More options GUIs as needed - add options GUIs for any 
   additional build options, such as the linker.
 * Dialog for additional options when launching emulators.
-* Make the device log view window into a pad, like the VS addin.
+* Nicer device management in the pad.
 * Filtering for the device log.
 
 Low priority:

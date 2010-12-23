@@ -104,6 +104,14 @@
 		<ModeSetType class="MonoDevelop.MonoDroid.MonoDroidExecutionModeSet"/>
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Ide/Pads">
+		<Pad id = "MonoDevelop.MonoDroid.MonoDroidDeviceLogPad"
+			_label = "Android Log"
+			class = "MonoDevelop.MonoDroid.MonoDroidDeviceLogPad"
+			defaultPlacement = "Bottom"
+			defaultStatus="AutoHide" />
+	</Extension>
+		
 	<Extension path = "/MonoDevelop/Ide/Commands/Project">
 		<Condition id="MonoDroidInstalled">
 			<Command id = "MonoDevelop.MonoDroid.MonoDroidCommands.UploadToDevice" 
