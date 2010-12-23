@@ -30,75 +30,52 @@ using MonoDevelop.Core;
 using Gtk;
 using System.Diagnostics;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components.Docking;
 
 namespace MonoDevelop.MonoDroid
 {
-	public class MonoDroidDeviceConsole : Window
+	public class MonoDroidDeviceLog : Bin
 	{
 		LogView log;
 		ProcessWrapper process;
 		Label deviceLabel;
 		
-		public MonoDroidDeviceConsole () : base ("MonoDroid Device Console")
+		public MonoDroidDeviceLog (IPadWindow container)
 		{
-			BorderWidth = 6;
+			Stetic.BinContainer.Attach (this);
+			DockItemToolbar toolbar = container.GetToolbar (PositionType.Top);
 			
-			//FIXME: persist these values
-			DefaultWidth = 600;
-			DefaultHeight = 400;
-			
-			var vbox = new VBox () {
-				Spacing = 12
-			};
-			
-			var bbox = new HButtonBox () {
-				Layout = ButtonBoxStyle.End,
-			};
-			
-			HBox deviceBox = new HBox () {
-				Spacing = 6
-			};
 			var chooseDeviceButton = new Button () {
-				Label = "Choose Device"
+				Label = GettextCatalog.GetString ("Choose Device"),
 			};
 			deviceLabel = new Label () {
 				Xalign = 0,
 			};
 			SetDeviceLabel ();
 			var reconnectButton = new Button () {
-				Label = "Reconnect"
+				Label = GettextCatalog.GetString ("Reconnect"),
 			};
 			
-			deviceBox.PackStart (deviceLabel, true, true, 0);
-			deviceBox.PackStart (chooseDeviceButton, false, false, 0);
-			deviceBox.PackStart (reconnectButton, false, false, 0);
+			toolbar.Add (deviceLabel);
+			toolbar.Add (chooseDeviceButton);
+			toolbar.Add (reconnectButton);
 			
-			var closeButton = new Button (Gtk.Stock.Close);
-			
-			log = new LogView ();
-			
-			this.Add (vbox);
-			vbox.PackStart (deviceBox, false, false, 0);
-			vbox.PackStart (log, true, true, 0);
-			vbox.PackStart (bbox, false, false, 0);
-			
-			bbox.PackEnd (closeButton);
-			
-			closeButton.Clicked += delegate {
-				 Destroy ();
-			};
-			DeleteEvent += delegate {
-				Destroy ();
-			};
 			reconnectButton.Clicked += delegate {
 				Disconnect ();
 				if (Device != null)
 					Connect ();
+				else
+					SetDeviceLabel ();
 			};
 			chooseDeviceButton.Clicked += delegate {
-				Device = MonoDroidUtility.ChooseDevice (this);
+				Device = MonoDroidUtility.ChooseDevice (null);
 			};
 			
+			log = new LogView ();
+			this.Add (log);
+			
+			toolbar.ShowAll ();
 			ShowAll ();
 		}
 		
@@ -110,15 +87,15 @@ namespace MonoDevelop.MonoDroid
 				deviceLabel.Text = GettextCatalog.GetString ("Device: {0}", Device.ID);
 		}
 		
-		AndroidDevice _device;
+		AndroidDevice device;
 		public AndroidDevice Device {
-			get { return _device; }
+			get { return device; }
 			set {
-				if (value == _device)
+				if (value == device)
 					return;
-				_device = value;
+				device = value;
 				SetDeviceLabel ();
-				if (_device != null)
+				if (device != null)
 					Connect ();
 			}
 		}
@@ -164,23 +141,23 @@ namespace MonoDevelop.MonoDroid
 		
 		protected override void OnDestroyed ()
 		{
-			instance = null;
-			Disconnect ();
 			base.OnDestroyed ();
+			Disconnect ();
 		}
-
-		static MonoDroidDeviceConsole instance;
+	}
+	
+	class MonoDroidDeviceLogPad : AbstractPadContent
+	{
+		MonoDroidDeviceLog widget;
 		
-		public static void Run ()
+		public override void Initialize (IPadWindow container)
 		{
-			if (instance == null) {
-				instance = new MonoDroidDeviceConsole ();
-				instance.TransientFor = MessageService.RootWindow;
-				instance.DestroyWithParent = true;
-				MessageService.PlaceDialog (instance, MessageService.RootWindow);
-				instance.Show ();
-			}
-			instance.Present ();
+			base.Initialize (container);
+			widget = new MonoDroidDeviceLog (container);
+		}
+		
+		public override Widget Control {
+			get { return widget; }
 		}
 	}
 }
