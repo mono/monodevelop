@@ -64,6 +64,7 @@ FILES =  \
 	Navigation/VariableNodeBuilder.cs \
 	ObjCLanguageBinding.cs \
 	ObjCppLanguageBinding.cs \
+	Parser/BsdCTagsManager.cs \
 	Parser/CDocumentParser.cs \
 	Parser/Class.cs \
 	Parser/CompilationUnitDataProvider.cs \

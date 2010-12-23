@@ -305,6 +305,7 @@
     <Compile Include="Parser\DataProvider.cs" />
     <Compile Include="Parser\CTagsManager.cs" />
     <Compile Include="Parser\ExuberantCTagsManager.cs" />
+    <Compile Include="Parser\BsdCTagsManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
