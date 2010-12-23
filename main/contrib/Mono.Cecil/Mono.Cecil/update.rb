@@ -10,6 +10,7 @@ sources = {
 	"Mono/*.cs" => "Mono",
 	"System.Runtime.CompilerServices/*.cs" => "System.Runtime.CompilerServices",
 	"NOTES.txt" => ".",
+	"Mono.Cecil.dll.sources" => ".",
 
 	"symbols/mdb/Mono.Cecil.Mdb/*.cs" => "../Mono.Cecil.Mdb/Mono.Cecil.Mdb/",
 }
