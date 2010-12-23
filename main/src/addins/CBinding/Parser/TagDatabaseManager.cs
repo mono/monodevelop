@@ -84,18 +84,16 @@ namespace CBinding.Parser
 			get {
 				if (!checkedCtagsInstalled) {
 					checkedCtagsInstalled = true;
-					/*
-					if (PropertyService.IsMac) {
-						return false;
-					}
-					*/
+					
 					try {
 						var output = new StringWriter ();
 						Runtime.ProcessService.StartProcess ("ctags", "--version", null, output, null, null).WaitForExit ();
 						if (PropertyService.IsMac && !output.ToString ().StartsWith ("Exuberant", StringComparison.Ordinal)) {
 							System.Console.WriteLine ("Fallback to OSX ctags");
+							ctags = new BsdCTagsManager ();
+						} else {
+							ctags = new ExuberantCTagsManager ();
 						}
-						ctags = new ExuberantCTagsManager ();
 					} catch {
 						LoggingService.LogWarning ("Cannot update C/C++ tags database because exuberant ctags is not installed.");
 						return false;

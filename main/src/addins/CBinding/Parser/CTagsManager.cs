@@ -38,9 +38,9 @@ namespace CBinding.Parser
 {
 	public abstract class CTagsManager
 	{
-		public abstract void FillFileInformation (FileInformation fileInfo);
-		public abstract void DoUpdateFileTags (Project project, string filename, IEnumerable<string> headers);
 		public abstract Tag ParseTag (string tagEntry);
+		protected abstract IEnumerable<string> GetTags (FileInformation fileInfo);
+		protected abstract IEnumerable<string> GetTags (Project project, string filename, IEnumerable<string> headers);
 		
 		protected virtual void AddInfo (FileInformation info, Tag tag, string ctags_output)
 		{
@@ -115,6 +115,43 @@ namespace CBinding.Parser
 				break;
 			default:
 				break;
+			}
+		}
+		
+		public virtual void FillFileInformation (FileInformation fileInfo)
+		{
+			IEnumerable<string> ctags_output = GetTags (fileInfo);
+			
+			foreach (string tagEntry in ctags_output) {
+				if (tagEntry.StartsWith ("!_")) continue;
+				
+				Tag tag = ParseTag (tagEntry);
+				
+				if (tag != null)
+					AddInfo (fileInfo, tag, tagEntry);
+			}
+			
+			fileInfo.IsFilled = true;
+		}
+		
+		public virtual void DoUpdateFileTags (MonoDevelop.Projects.Project project, string filename, IEnumerable<string> headers)
+		{
+			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
+			
+			lock (info) {
+				info.RemoveFileInfo (filename);
+	
+				IEnumerable<string> tags = GetTags (project, filename, headers);
+				if (tags == null) return;
+				
+				foreach (string tagEntry in tags) {
+					if (tagEntry.StartsWith ("!_")) continue;
+					
+					Tag tag = ParseTag (tagEntry);
+					
+					if (tag != null)
+						AddInfo (info, tag, tagEntry);
+				}
 			}
 		}
 	}

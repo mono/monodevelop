@@ -1,5 +1,5 @@
 // 
-// ExuberantCTagsManager.cs
+// BsdCTagsManager.cs
 //  
 // Author:
 //       Levi Bard <levi@unity3d.com>
@@ -26,7 +26,6 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Linq;
 using System.Collections.Generic;
 
 using MonoDevelop.Core;
@@ -34,22 +33,18 @@ using MonoDevelop.Core.Execution;
 
 namespace CBinding.Parser
 {
-	public class ExuberantCTagsManager: CTagsManager
+	public class BsdCTagsManager: CTagsManager
 	{
 		#region implemented abstract members of CBinding.Parser.CTagsManager
-
+		
 		protected override IEnumerable<string> GetTags (FileInformation fileInfo)
 		{
 			string confdir = PropertyService.ConfigPath;
 			string tagFileName = Path.GetFileName (fileInfo.FileName) + ".tag";
 			string tagdir = Path.Combine (confdir, "system-tags");
 			string tagFullFileName = Path.Combine (tagdir, tagFileName);
-			string ctags_kinds = "--C++-kinds=+px";
 			
-			if (PropertyService.Get<bool> ("CBinding.ParseLocalVariables", true))
-				ctags_kinds += "l";
-			
-			string ctags_options = ctags_kinds + " --fields=+aStisk-fz --language-force=C++ --excmd=number --line-directives=yes -f '" + tagFullFileName + "' '" + fileInfo.FileName + "'";
+			string ctags_options = " -dtxf '" + tagFullFileName + "' '" + fileInfo.FileName + "'";
 			
 			if (!Directory.Exists (tagdir))
 				Directory.CreateDirectory (tagdir);
@@ -62,12 +57,12 @@ namespace CBinding.Parser
 					
 					p = Runtime.ProcessService.StartProcess ("ctags", ctags_options, null, null, output, null);
 					p.WaitForOutput (10000);
-					if (p.ExitCode != 0 || !File.Exists (tagFullFileName)) {
+					if (/*p.ExitCode != 0 ||*/ !File.Exists (tagFullFileName)) {
 						LoggingService.LogError ("Ctags did not successfully populate the tags database '{0}' within ten seconds.\nOutput: {1}", tagFullFileName, output.ToString ());
 						return null;
 					}
 				} catch (Exception ex) {
-					throw new IOException ("Could not create tags database (You must have exuberant ctags installed).", ex);
+					throw new IOException ("Could not create tags database (You must have ctags installed).", ex);
 				} finally {
 					if (output != null)
 						output.Dispose ();
@@ -79,91 +74,12 @@ namespace CBinding.Parser
 			return File.ReadAllLines (tagFullFileName);
 		}
 		
-		public override Tag ParseTag (string tagEntry)
-		{
-			string file;
-			UInt64 line;
-			string name;
-			string tagField;
-			TagKind kind;
-			AccessModifier access = AccessModifier.Public;
-			string _class = null;
-			string _namespace = null;
-			string _struct = null;
-			string _union = null;
-			string _enum = null;
-			string signature = null;
-			
-			int i1 = tagEntry.IndexOf ('\t');
-			name = tagEntry.Substring (0, tagEntry.IndexOf ('\t'));
-			
-			i1 += 1;
-			int i2 = tagEntry.IndexOf ('\t', i1);
-			file = tagEntry.Substring (i1, i2 - i1);
-			
-			i1 = i2 + 1;
-			i2 = tagEntry.IndexOf (";\"", i1);
-			line = UInt64.Parse(tagEntry.Substring (i1, i2 - i1));
-
-			i1 = i2 + 3;	
-			kind = (TagKind)tagEntry[i1];
-			
-			i1 += 2;
-			tagField = (tagEntry.Length > i1? tagField = tagEntry.Substring(i1) : String.Empty);
-			
-			string[] fields = tagField.Split ('\t');
-			int index;
-			
-			foreach (string field in fields) {
-				index = field.IndexOf (':');
-				
-				// TODO: Support friend modifier
-				if (index > 0) {
-					string key = field.Substring (0, index);
-					string val = field.Substring (index + 1);
-					
-					switch (key) {
-						case "access":
-							try {
-								access = (AccessModifier)System.Enum.Parse (typeof(AccessModifier), val, true);
-							} catch (ArgumentException) {
-							}
-							break;
-						case "class":
-							_class = val;
-							break;
-						case "namespace":
-							_namespace = val;
-							break;
-						case "struct":
-							_struct = val;
-							break;
-						case "union":
-							_union = val;
-							break;
-						case "enum":
-							_enum = val;
-							break;
-						case "signature":
-							signature = val;
-							break;
-					}
-				}
-			}
-			
-			return new Tag (name, file, line, kind, access, _class, _namespace, _struct, _union, _enum, signature);
-		}
-		
 		static readonly char[] newlines = {'\r','\n'};
 		protected override IEnumerable<string> GetTags (MonoDevelop.Projects.Project project, string filename, IEnumerable<string> headers)
 		{
-			StringBuilder ctags_kinds = new StringBuilder ("--C++-kinds=+px");
+			StringBuilder ctags_kinds = new StringBuilder ("-dtxf -");
 			
-			if (PropertyService.Get<bool> ("CBinding.ParseLocalVariables", true))
-				ctags_kinds.Append ("+l");
-			
-			// Maybe we should only ask for locals for 'local' files? (not external #includes?)
-			ctags_kinds.AppendFormat (" --fields=+aStisk-fz --language-force=C++ --excmd=number --line-directives=yes -f - '{0}'", filename);
+			ctags_kinds.AppendFormat (" '{0}'", filename);
 			foreach (string header in headers) {
 				ctags_kinds.AppendFormat (" '{0}'", header);
 			}
@@ -176,10 +92,12 @@ namespace CBinding.Parser
 				
 				p = Runtime.ProcessService.StartProcess ("ctags", ctags_kinds.ToString (), project.BaseDirectory, output, error, null);
 				p.WaitForOutput (10000);
+				/*
 				if (p.ExitCode != 0) {
 					LoggingService.LogError ("Ctags did not successfully populate the tags database from '{0}' within ten seconds.\nError output: {1}", filename, error.ToString ());
 					return null;
 				}
+				*/
 				return output.ToString ().Split (newlines, StringSplitOptions.RemoveEmptyEntries);
 			} catch (Exception ex) {
 				throw new IOException ("Could not create tags database (You must have exuberant ctags installed).", ex);
@@ -191,6 +109,38 @@ namespace CBinding.Parser
 				if (p != null)
 					p.Dispose ();
 			}
+		}
+
+		public override void FillFileInformation (FileInformation fileInfo)
+		{
+			IEnumerable<string> ctags_output = GetTags (fileInfo);
+			if (ctags_output == null) return;
+			
+			foreach (string tagEntry in ctags_output) {
+				if (tagEntry.StartsWith ("!_")) continue;
+				
+				Tag tag = ParseTag (tagEntry);
+				
+				if (tag != null)
+					AddInfo (fileInfo, tag, tagEntry);
+			}
+			
+			fileInfo.IsFilled = true;
+		}
+		
+		
+		static readonly char[] tokenSplitters = {' ', '\t'};
+		
+		public override Tag ParseTag (string tagEntry)
+		{
+			// Format: symbolName	line	file	fulltext
+			try {
+				string[] tokens = tagEntry.Split (tokenSplitters, 4, StringSplitOptions.RemoveEmptyEntries);
+				return new Tag (tokens[0], tokens[2], uint.Parse (tokens[1]), TagKind.Unknown, AccessModifier.Public, null, null, null, null, null, null);
+			} catch (Exception ex) {
+				LoggingService.LogWarning (string.Format ("Error parsing tag {0}", tagEntry), ex);
+			}
+			return null;
 		}
 		
 		#endregion
