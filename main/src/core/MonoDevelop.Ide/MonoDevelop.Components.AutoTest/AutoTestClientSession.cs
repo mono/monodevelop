@@ -26,12 +26,10 @@
 
 using System;
 using System.Diagnostics;
-using System.Runtime.Remoting.Channels;
+using System.Runtime.Remoting;
 using System.Collections;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Remoting;
 using System.IO;
-using System.Runtime.Remoting.Channels.Ipc;
 using System.Threading;
 using System.Collections.Generic;
 
@@ -52,7 +50,7 @@ namespace MonoDevelop.Components.AutoTest
 		
 		public void StartApplication (string file, string args)
 		{
-			AutoTestService.SetupRemoting ();
+			MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
 			
 			if (file.ToLower ().EndsWith (".exe") && Path.DirectorySeparatorChar != '\\') {
 				args = "\"" + file + "\" " + args;
@@ -80,7 +78,7 @@ namespace MonoDevelop.Components.AutoTest
 		
 		public void AttachApplication ()
 		{
-			AutoTestService.SetupRemoting ();
+			MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
 
 			string sref = File.ReadAllText (AutoTestService.SessionReferenceFile);
 			byte[] data = Convert.FromBase64String (sref);
