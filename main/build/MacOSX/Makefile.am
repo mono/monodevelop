@@ -86,6 +86,9 @@ MonoDevelop.app:
 
 # update revision in updateinfo
 	echo "a3140c14-ef90-4019-ae6c-9d93804d6611 $$(cat release-info)" > "$(MACOS)/updateinfo"
+	
+	echo "Release ID: $$(cat release-info)" > "$(MACOS)/lib/monodevelop/bin/buildinfo"
+	cat ../bin/buildinfo >> "$(MACOS)/lib/monodevelop/bin/buildinfo"
 
 # touch the directory so that update dependencies work
 	touch MonoDevelop.app

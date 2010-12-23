@@ -15,16 +15,16 @@ vcrevision:
 			LANG=C; export LANG; \
 			git describe --dirty --always --abbrev=0 --match nothing; \
 		); \
-		echo "git revision: $$version" > "vcrevision"; \
+		echo "$$version" > "vcrevision"; \
 	else \
 		if test ! -f ./vcrevision; then \
-			echo "git revision: unknown" > "vcrevision"; \
+			echo "unknown" > "vcrevision"; \
 		fi; \
 	fi
 
 $(buildinfo): vcrevision
 	@mkdir -p "$(top_builddir)/build/bin"
-	@cp "$(top_srcdir)/vcrevision" "$@"
+	@echo "Git revision: $$(cat $(top_srcdir)/vcrevision)" > "$@"
 	@echo "Build date: $$(date -u +'%Y-%m-%d %H:%M:%S%z')" >> "$@"
 	@echo "Updated build information"
 	@cat $(buildinfo)
