@@ -500,6 +500,8 @@ namespace MonoDevelop.SourceEditor
 				return;
 			
 			Gtk.Application.Invoke (delegate {
+				if (this.isDisposed)
+					return;
 				if (MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false)) 
 					TextEditor.TextViewMargin.PurgeLayoutCache ();
 				ParsedDocument = args.ParsedDocument;
