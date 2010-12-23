@@ -7,7 +7,7 @@ bin_SCRIPTS = monodevelop mdtool
 
 buildinfo = $(top_builddir)/build/bin/buildinfo
 
-all:
+all: vcrevision
 
 vcrevision:
 	@if test -d ../.git; then \
