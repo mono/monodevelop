@@ -78,7 +78,7 @@ namespace MonoDevelop.MonoDroid
 		{
 			try {
 				var file = GetUploadFlagFileName (conf);
-				if (!File.Exists (file))
+				if (File.Exists (file))
 					File.Delete (file);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error clearing upload flags", ex);
