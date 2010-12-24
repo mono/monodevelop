@@ -134,7 +134,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				BuildItemGroup grp = project.GetEvaluatedItemsByName ("ReferencePath");
 				List<string> refs = new List<string> ();
 				foreach (BuildItem item in grp)
-					refs.Add (item.Include);
+					refs.Add (UnescapeString (item.Include));
 				refsArray = refs.ToArray ();
 			});
 			return refsArray;
@@ -195,6 +195,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 				workThread = null;
 			}
+		}
+		
+		//from MSBuildProjectService
+		static string UnescapeString (string str)
+		{
+			int i = str.IndexOf ('%');
+			while (i != -1 && i < str.Length - 2) {
+				int c;
+				if (int.TryParse (str.Substring (i+1, 2), System.Globalization.NumberStyles.HexNumber, null, out c))
+					str = str.Substring (0, i) + (char) c + str.Substring (i + 3);
+				i = str.IndexOf ('%', i + 1);
+			}
+			return str;
 		}
 	}
 }
