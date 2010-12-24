@@ -46,6 +46,9 @@ namespace MonoDevelop.MonoDroid
 			VirtualDevices = new AndroidVirtualDevice[0];
 			
 			FilePath home = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
+			if (PropertyService.IsWindows) {
+				home = home.ParentDirectory;
+			}
 			avdDir = home.Combine (".android", "avd");
 			if (!Directory.Exists (avdDir))
 				Directory.CreateDirectory (avdDir);
