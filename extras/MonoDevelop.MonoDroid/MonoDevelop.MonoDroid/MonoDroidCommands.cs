@@ -46,7 +46,6 @@ namespace MonoDevelop.MonoDroid
 		SelectDeviceTarget,
 		ManageDevices,
 		OpenAvdManager,
-		ViewDeviceConsole,
 	}
 	
 	class SelectDeviceTargetHandler : CommandHandler
