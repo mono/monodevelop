@@ -58,6 +58,7 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 				MonoDroidFramework.DeviceManager.SetDeviceLastForwarded (null);
 			
 			long date = 0;
+			int runningProcessId = 0; // Already running activity
 			DateTime setPropertyTime = DateTime.MinValue;
 			launchOp = new ChainedAsyncOperationSequence (
 				new ChainedAsyncOperation<AndroidToolbox.GetDateOperation> () {
@@ -109,6 +110,26 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 							this.OnDebuggerOutput (true, GettextCatalog.GetString ("Failed to forward port on device"));
 						} else {
 							MonoDroidFramework.DeviceManager.SetDeviceLastForwarded (cmd.Device.ID);
+						}
+					}
+				},
+				new ChainedAsyncOperation<AdbGetProcessIdOperation> () {
+					Create = () => new AdbGetProcessIdOperation (cmd.Device, cmd.PackageName),
+					Completed = (op) => {
+						if (!op.Success) {
+							this.OnDebuggerOutput (true, "Error trying to detect already running process");
+						} else if (op.ProcessId > 0) {
+							this.OnDebuggerOutput (false, GettextCatalog.GetString ("Already running activity detected, restarting it in debug mode") + "\n");
+							runningProcessId = op.ProcessId;
+						}
+					}
+				},
+				new ChainedAsyncOperation () {
+					Skip = () => runningProcessId <= 0 ? "" : null,
+					Create = () => new AdbShellOperation (cmd.Device, "kill " + runningProcessId),
+					Completed = (op) => {
+						if (!op.Success) {
+							this.OnDebuggerOutput (true, GettextCatalog.GetString ("Failed to stop already running activity"));
 						}
 					}
 				},
