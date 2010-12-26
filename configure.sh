@@ -3,11 +3,11 @@
 echo ""
 echo "MonoDevelop Makefile configuration script"
 echo "-----------------------------------------"
-echo "This will generate Makefile with correct paths for you. You may need to provide path for some components if they cannot be found automatically. If you're using default path but it wasn't find automatically, please report it, so that it can be added. Contact: Tomas Petricek (tomas@tomasp.net)"
+echo "This will generate Makefile with correct paths for you. You may need to provide path for some components if they cannot be found automatically. If you're using default path but it wasn't found automatically, please report it, so that it can be added. Contact: Tomas Petricek (tomas@tomasp.net)"
 echo ""
 echo "Usage: ./configure.sh [-e:<mono>] [-f:<fsc>] [-c:<gmcs>] [-n]"
 echo ""
-echo "  -n        If specified, the the 'mono' executable is not used"
+echo "  -n        If specified, the 'mono' executable is not used"
 echo "            (Use this on Windows or when 'exe' files can be executed)"
 echo ""
 echo "  -e <mono> Specify 'mono' executable with parameters"
@@ -21,7 +21,7 @@ echo "  -c <gmcs> Path/name of the C# compiler executable or script"
 echo "            ('mono' is NOT automatically added to the front) "
 echo "            Default value: gmcs"
 echo ""
-echo "Pres enter to continue..."
+echo "Press enter to continue..."
 
 read a
 
