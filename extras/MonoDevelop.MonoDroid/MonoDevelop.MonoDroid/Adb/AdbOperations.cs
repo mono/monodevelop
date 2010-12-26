@@ -249,7 +249,13 @@ namespace MonoDevelop.MonoDroid
 		protected override void OnGotTransport ()
 		{
 			var sr = new StringWriter ();
-			WriteCommand ("shell:" + command, () => GetStatus (() => ReadResponse (sr, (tw) => Output = tw.ToString ())));
+			WriteCommand ("shell:" + command, () => GetStatus (() => ReadResponse (sr, OnGotResponse)));
+		}
+
+		void OnGotResponse (TextWriter tw)
+		{
+			Output = tw.ToString ();
+			SetCompleted (true);
 		}
 		
 		public string Output { get; private set; }
