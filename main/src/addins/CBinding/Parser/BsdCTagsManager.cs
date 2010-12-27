@@ -26,6 +26,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 
 using MonoDevelop.Core;
@@ -44,7 +45,8 @@ namespace CBinding.Parser
 			string tagdir = Path.Combine (confdir, "system-tags");
 			string tagFullFileName = Path.Combine (tagdir, tagFileName);
 			
-			string ctags_options = " -dtxf '" + tagFullFileName + "' '" + fileInfo.FileName + "'";
+			string ctags_options = string.Format ("-dtx '{0}'", fileInfo.FileName);
+			string ctags_output = string.Empty;
 			
 			if (!Directory.Exists (tagdir))
 				Directory.CreateDirectory (tagdir);
@@ -55,29 +57,33 @@ namespace CBinding.Parser
 				try {
 					output = new System.IO.StringWriter ();
 					
-					p = Runtime.ProcessService.StartProcess ("ctags", ctags_options, null, null, output, null);
+					p = Runtime.ProcessService.StartProcess ("ctags", ctags_options, null, output, null, null);
 					p.WaitForOutput (10000);
-					if (/*p.ExitCode != 0 ||*/ !File.Exists (tagFullFileName)) {
-						LoggingService.LogError ("Ctags did not successfully populate the tags database '{0}' within ten seconds.\nOutput: {1}", tagFullFileName, output.ToString ());
+					
+					if (!p.HasExited) {
+						LoggingService.LogError ("Ctags did not successfully populate the tags database from '{0}' within ten seconds.", fileInfo.FileName);
 						return null;
 					}
+					
+					ctags_output = output.ToString ();
 				} catch (Exception ex) {
 					throw new IOException ("Could not create tags database (You must have ctags installed).", ex);
 				} finally {
-					if (output != null)
-						output.Dispose ();
 					if (p != null)
 						p.Dispose ();
+					if (output != null)
+						output.Dispose ();
 				}
 			}
 			
-			return File.ReadAllLines (tagFullFileName);
+			File.WriteAllText (tagFullFileName, ctags_output);
+			return ctags_output.Split (newlines, StringSplitOptions.RemoveEmptyEntries);
 		}
 		
 		static readonly char[] newlines = {'\r','\n'};
 		protected override IEnumerable<string> GetTags (MonoDevelop.Projects.Project project, string filename, IEnumerable<string> headers)
 		{
-			StringBuilder ctags_kinds = new StringBuilder ("-dtxf -");
+			StringBuilder ctags_kinds = new StringBuilder ("-dtx");
 			
 			ctags_kinds.AppendFormat (" '{0}'", filename);
 			foreach (string header in headers) {
@@ -92,22 +98,22 @@ namespace CBinding.Parser
 				
 				p = Runtime.ProcessService.StartProcess ("ctags", ctags_kinds.ToString (), project.BaseDirectory, output, error, null);
 				p.WaitForOutput (10000);
-				/*
-				if (p.ExitCode != 0) {
-					LoggingService.LogError ("Ctags did not successfully populate the tags database from '{0}' within ten seconds.\nError output: {1}", filename, error.ToString ());
+				
+				if (!p.HasExited) {
+					LoggingService.LogError ("Ctags did not successfully populate the tags database from '{0}' within ten seconds.", filename);
 					return null;
 				}
-				*/
+				
 				return output.ToString ().Split (newlines, StringSplitOptions.RemoveEmptyEntries);
 			} catch (Exception ex) {
 				throw new IOException ("Could not create tags database (You must have exuberant ctags installed).", ex);
 			} finally {
+				if (p != null)
+					p.Dispose ();
 				if (output != null)
 					output.Dispose ();
 				if (error != null)
 					error.Dispose ();
-				if (p != null)
-					p.Dispose ();
 			}
 		}
 
@@ -129,14 +135,30 @@ namespace CBinding.Parser
 		}
 		
 		
-		static readonly char[] tokenSplitters = {' ', '\t'};
+		// Format: symbol line file fulltext (there may not be any whitespace between symbol and line)
+		static readonly Regex tagExpression = new Regex (@"\s*(?<symbol>[^\s]+?)\s*(?<line>\d+)\s+(?<file>[^\s]+)\s+(?<raw>.*)", RegexOptions.Compiled);
 		
 		public override Tag ParseTag (string tagEntry)
 		{
-			// Format: symbolName	line	file	fulltext
 			try {
-				string[] tokens = tagEntry.Split (tokenSplitters, 4, StringSplitOptions.RemoveEmptyEntries);
-				return new Tag (tokens[0], tokens[2], uint.Parse (tokens[1]), TagKind.Unknown, AccessModifier.Public, null, null, null, null, null, null);
+				Match tagMatch = tagExpression.Match (tagEntry);
+				if (tagMatch == null) return null;
+				
+				TagKind kind = TagKind.Member;
+				string signature = tagMatch.Groups["raw"].Value;
+				int start = signature.IndexOf ('(');
+				int end = signature.LastIndexOf (')');
+				
+				if (start >= 0 && end > start) {
+					// Attempt to parse out method parameter block
+					signature = signature.Substring (start, end - start + 1);
+					kind = TagKind.Function; // TODO: improve kind guessing
+				}
+				return new Tag (tagMatch.Groups["symbol"].Value,
+				                tagMatch.Groups["file"].Value,
+				                ulong.Parse (tagMatch.Groups["line"].Value)+1,
+				                kind, AccessModifier.Public,
+				                null, null, null, null, null, signature);
 			} catch (Exception ex) {
 				LoggingService.LogWarning (string.Format ("Error parsing tag {0}", tagEntry), ex);
 			}
@@ -144,6 +166,30 @@ namespace CBinding.Parser
 		}
 		
 		#endregion
+		
+		static string GetOutputFromProcess (string executable, string args, string baseDirectory)
+		{
+			string processOutput = null;
+			ProcessWrapper p = null;
+			StringWriter output = null;
+			try {
+				output = new StringWriter ();
+				
+				p = Runtime.ProcessService.StartProcess (executable, args, baseDirectory, output, null, null);
+				p.WaitForOutput (10000);
+				
+				if (p.HasExited) {
+					processOutput = output.ToString ();
+				}
+			} finally {
+				if (p != null)
+					p.Dispose ();
+				if (output != null)
+					output.Dispose ();
+			}
+			
+			return processOutput;
+		}
 	}
 }
 
