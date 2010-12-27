@@ -43,6 +43,10 @@ namespace CBinding.Parser
 		protected abstract IEnumerable<string> GetTags (Project project, string filename, IEnumerable<string> headers);
 		public static readonly string SystemTagsDirectory = Path.Combine (PropertyService.ConfigPath, "system-tags");
 		
+		public static string CTagsExecutable {
+			get { return PropertyService.Get<string> ("CBinding.CTagsExecutable", "ctags"); }
+		}
+		
 		static CTagsManager ()
 		{
 			try {

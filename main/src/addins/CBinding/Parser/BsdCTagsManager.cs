@@ -47,7 +47,7 @@ namespace CBinding.Parser
 			string ctags_output = string.Empty;
 			
 			if (!File.Exists (tagFullFileName) || File.GetLastWriteTimeUtc (tagFullFileName) < File.GetLastWriteTimeUtc (fileInfo.FileName)) {
-				ctags_output = GetOutputFromProcess ("ctags", ctags_options, Environment.CurrentDirectory);
+				ctags_output = GetOutputFromProcess (CTagsExecutable, ctags_options, Environment.CurrentDirectory);
 				File.WriteAllText (tagFullFileName, ctags_output);
 			}
 			
@@ -64,7 +64,7 @@ namespace CBinding.Parser
 				ctags_kinds.AppendFormat (" '{0}'", header);
 			}
 			
-			string output = GetOutputFromProcess ("ctags", ctags_kinds.ToString (), project.BaseDirectory);
+			string output = GetOutputFromProcess (CTagsExecutable, ctags_kinds.ToString (), project.BaseDirectory);
 			if (output != null)
 				return output.Split (newlines, StringSplitOptions.RemoveEmptyEntries);
 			return null;
