@@ -71,6 +71,7 @@ namespace CBinding
 			
 			string c_compiler = PropertyService.Get<string> ("CBinding.DefaultCCompiler", new GccCompiler ().Name);
 			string cpp_compiler = PropertyService.Get<string> ("CBinding.DefaultCppCompiler", new GppCompiler ().Name);
+			ctagsEntry.Text = PropertyService.Get<string> ("CBinding.CTagsExecutable", "ctags");
 			parseSystemTagsCheck.Active = PropertyService.Get<bool> ("CBinding.ParseSystemTags", true);
 			parseLocalVariablesCheck.Active = PropertyService.Get<bool> ("CBinding.ParseLocalVariables", false);
 			
@@ -129,9 +130,16 @@ namespace CBinding
 		{
 			PropertyService.Set ("CBinding.DefaultCCompiler", default_c_compiler.Name);
 			PropertyService.Set ("CBinding.DefaultCppCompiler", default_cpp_compiler.Name);
+			PropertyService.Set ("CBinding.CTagsExecutable", ctagsEntry.Text.Trim ());
 			PropertyService.Set ("CBinding.ParseSystemTags", parseSystemTagsCheck.Active);
 			PropertyService.Set ("CBinding.ParseLocalVariables", parseLocalVariablesCheck.Active);
 			PropertyService.SaveProperties ();
+			try {
+				// Flush cached system tags, which are ctags-version-specific
+				System.IO.Directory.Delete (Parser.CTagsManager.SystemTagsDirectory);
+				System.IO.Directory.CreateDirectory (Parser.CTagsManager.SystemTagsDirectory);
+			} catch {
+			}
 			return true;
 		}
 
@@ -161,6 +169,13 @@ namespace CBinding
 			
 			if (default_cpp_compiler == null)
 				default_cpp_compiler = new GppCompiler ();
+		}
+		
+		protected virtual void OnCtagsBrowseClicked (object sender, System.EventArgs e)
+		{
+			OpenFileDialog dialog = new OpenFileDialog (GettextCatalog.GetString ("Choose ctags executable"), Gtk.FileChooserAction.Open);
+			if (dialog.Run ())
+				ctagsEntry.Text = dialog.SelectedFile;
 		}
 	}
 	

@@ -89,14 +89,7 @@ namespace CBinding.Navigation
 		private void CheckForCtags ()
 		{
 			check_ctags = true;
-			
-			try {
-				ProcessWrapper p = Runtime.ProcessService.StartProcess ("ctags", "--version", null, null);
-				p.WaitForOutput ();
-				have_ctags = true;
-			} catch {
-				have_ctags = false;
-			}
+			have_ctags = TagDatabaseManager.Instance.DepsInstalled;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder,

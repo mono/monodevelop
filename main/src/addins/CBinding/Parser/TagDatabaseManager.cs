@@ -80,14 +80,14 @@ namespace CBinding.Parser
 			}
 		}
 		
-		bool DepsInstalled {
+		public bool DepsInstalled {
 			get {
 				if (!checkedCtagsInstalled) {
 					checkedCtagsInstalled = true;
 					
 					try {
 						var output = new StringWriter ();
-						Runtime.ProcessService.StartProcess ("ctags", "--version", null, output, null, null).WaitForExit ();
+						Runtime.ProcessService.StartProcess (CTagsManager.CTagsExecutable, "--version", null, output, null, null).WaitForExit ();
 						if (PropertyService.IsMac && !output.ToString ().StartsWith ("Exuberant", StringComparison.Ordinal)) {
 							System.Console.WriteLine ("Fallback to OSX ctags");
 							ctags = new BsdCTagsManager ();
