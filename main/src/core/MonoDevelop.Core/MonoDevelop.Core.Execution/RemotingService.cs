@@ -32,15 +32,17 @@ using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Ipc;
 using System.Runtime.Remoting.Messaging;
+using System.Runtime.Remoting.Channels.Tcp;
+using System.Reflection;
 
 namespace MonoDevelop.Core.Execution
 {
 	public static class RemotingService
 	{
 		static string unixRemotingFile;
-		static DisposerFormatterSinkProvider clientProvider;
 		static Dictionary<string,CallbackData> callbacks = new Dictionary<string, CallbackData> ();
 		static bool channelRegistered;
+		static HashSet<string> simpleResolveAssemblies = new HashSet<string> ();
 		
 		internal class CallbackData
 		{
@@ -51,28 +53,68 @@ namespace MonoDevelop.Core.Execution
 			public CalledMethodCallback Called;
 		}
 		
-		static RemotingService ()
-		{
-			clientProvider = new DisposerFormatterSinkProvider();
-			clientProvider.Next = new BinaryClientFormatterSinkProvider();
-		}
-		
 		public static void RegisterRemotingChannel ()
 		{
 			if (!channelRegistered) {
+				channelRegistered = true;
+				
+				IDictionary formatterProps = new Hashtable ();
+				formatterProps ["includeVersions"] = false;
+				formatterProps ["strictBinding"] = false;
+				
 				// Don't reuse ipc channels registered by add-ins. That's not supported.
 				IChannel ch = ChannelServices.GetChannel ("ipc");
 				if (ch != null) {
 					LoggingService.LogFatalError ("IPC channel already registered. An add-in may have registered it");
 					throw new InvalidOperationException ("IPC channel already registered. An add-in may have registered it.");
 				}
-				channelRegistered = true;
-				IDictionary dict = new Hashtable ();
-				BinaryServerFormatterSinkProvider serverProvider = new BinaryServerFormatterSinkProvider();
-				unixRemotingFile = Path.GetTempFileName ();
-				dict ["portName"] = Path.GetFileName (unixRemotingFile);
+				
+				BinaryServerFormatterSinkProvider serverProvider = new BinaryServerFormatterSinkProvider(formatterProps, null);
 				serverProvider.TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full;
+				DisposerFormatterSinkProvider clientProvider = new DisposerFormatterSinkProvider();
+				clientProvider.Next = new BinaryClientFormatterSinkProvider(formatterProps, null);
+				
+				unixRemotingFile = Path.GetTempFileName ();
+				IDictionary dict = new Hashtable ();
+				dict ["portName"] = Path.GetFileName (unixRemotingFile);
 				ChannelServices.RegisterChannel (new IpcChannel (dict, clientProvider, serverProvider), false);
+				
+				// Register the TCP channel too. It is used for communication of Mono -> .NET. The IPC channel
+				// has interoperabilitu issues.
+				
+				// Don't reuse tcp channels registered by add-ins. That's not supported.
+				ch = ChannelServices.GetChannel ("tcp");
+				if (ch != null) {
+					LoggingService.LogFatalError ("TCP channel already registered. An add-in may have registered it");
+					throw new InvalidOperationException ("TCP channel already registered. An add-in may have registered it.");
+				}
+				
+				serverProvider = new BinaryServerFormatterSinkProvider(formatterProps, null);
+				serverProvider.TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full;
+				clientProvider = new DisposerFormatterSinkProvider();
+				clientProvider.Next = new BinaryClientFormatterSinkProvider(formatterProps, null);
+				
+				dict = new Hashtable ();
+				dict ["port"] = 0;
+				
+				ChannelServices.RegisterChannel (new TcpChannel (dict, clientProvider, serverProvider), false);
+
+				// This is a workaround to a serialization interoperability issue between Mono and .NET
+				// For some reason, .NET is unable to resolve add-in assemblies referenced in
+				// serialized objects, when the assemblies are not in the main bin directory
+				if (PropertyService.IsWindows) {
+					AppDomain.CurrentDomain.AssemblyResolve += delegate (object s, ResolveEventArgs args) {
+						if (!simpleResolveAssemblies.Contains (args.Name))
+							return null;
+						foreach (Assembly am in AppDomain.CurrentDomain.GetAssemblies ()) {
+							if (am.GetName ().FullName == args.Name || args.Name == am.GetName ().Name) {
+								Console.WriteLine (Environment.StackTrace);
+								return am;
+							}
+						}
+						return null;
+					};
+				}
 			}
 		}
 		
@@ -97,6 +139,14 @@ namespace MonoDevelop.Core.Execution
 		{
 			string uri = RemotingServices.GetObjectUri ((MarshalByRefObject)proxy);
 			callbacks.Remove (uri + " " + method);
+		}
+		
+		// This method is used in Windows to allow the provided assembly name to be loaded
+		// using the name only, discarding version info. This is a workaround to a serialization
+		// interoperability issue.
+		internal static void RegisterAssemblyForSimpleResolve (string name)
+		{
+			simpleResolveAssemblies.Add (name);
 		}
 		
 		internal static CallbackData GetCallbackData (string uri, string method)
