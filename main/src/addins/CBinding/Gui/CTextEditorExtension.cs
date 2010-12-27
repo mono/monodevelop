@@ -220,9 +220,41 @@ namespace CBinding
 			return base.KeyPress (key, keyChar, modifier);
 		}
 		
+		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
+		{
+			string lineText = Editor.GetLineText (completionContext.TriggerLine).TrimEnd();
+			
+			// If the line ends with a matched extension, invoke its handler
+			foreach (KeyValuePair<string, GetMembersForExtension> pair in completionExtensions) {
+				if (lineText.EndsWith(pair.Key)) {
+					lineText = lineText.Substring (0, lineText.Length - pair.Key.Length);
+					
+					int nameStart = lineText.LastIndexOfAny (allowedCharsMinusColon) + 1;
+					string itemName = lineText.Substring (nameStart).Trim ();
+					
+					if (string.IsNullOrEmpty (itemName))
+						return null;
+					
+					return pair.Value (this, pair.Key, itemName);
+				}
+			}
+			
+			if (char.IsLetter (completionChar)) {
+				// Aggressive completion
+				ICompletionDataList list = GlobalComplete ();
+				triggerWordLength = ResetTriggerOffset (completionContext);
+				return list;
+			}
+			
+			return null;
+		}
+		
 		public override ICompletionDataList HandleCodeCompletion (
 		    CodeCompletionContext completionContext, char completionChar)
 		{
+			int triggerWordLength = 0;
+			return HandleCodeCompletion (completionContext, completionChar, ref triggerWordLength);
+			
 			string lineText = Editor.GetLineText (completionContext.TriggerLine).TrimEnd();
 			
 			// If the line ends with a matched extension, invoke its handler
@@ -708,5 +740,20 @@ namespace CBinding
 				this.Parent = parent;
 			}
 		}
+		
+		/// <summary>
+		/// Move the completion trigger offset to the beginning of the current token
+		/// </summary>
+		protected virtual int ResetTriggerOffset (CodeCompletionContext completionContext)
+		{
+			int i = completionContext.TriggerOffset;
+			int accumulator = 0;
+			
+			for (;
+			     1 < i && char.IsLetterOrDigit (Editor.GetCharAt (i));
+			     --i, ++accumulator);
+			completionContext.TriggerOffset = i-1;
+			return accumulator+1;
+		}// ResetTriggerOffset
 	}
 }
