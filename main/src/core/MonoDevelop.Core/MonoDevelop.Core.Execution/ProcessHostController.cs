@@ -38,6 +38,7 @@ using System.Threading;
 using System.Reflection;
 using Timer = System.Timers.Timer;
 using MonoDevelop.Core.Logging;
+using Mono.Addins;
 
 namespace MonoDevelop.Core.Execution
 {
@@ -110,12 +111,22 @@ namespace MonoDevelop.Core.Execution
 					string location = Path.GetDirectoryName (System.Reflection.Assembly.GetExecutingAssembly ().Location);
 					location = Path.Combine (location, "mdhost.exe");
 					
-					ProcessHostConsole cons = new ProcessHostConsole ();
 					tmpFile = Path.GetTempFileName ();
-					File.WriteAllText (tmpFile, sref + "\n" + Process.GetCurrentProcess ().Id + "\n");
+					StreamWriter sw = new StreamWriter (tmpFile);
+					sw.WriteLine (sref);
+					sw.WriteLine (Process.GetCurrentProcess ().Id);
+					sw.WriteLine (Runtime.SystemAssemblyService.CurrentRuntime.RuntimeId);
+					
+					// Explicitly load Mono.Addins since the target runtime may not have it installed
+					sw.WriteLine (2);
+					sw.WriteLine (typeof(AddinManager).Assembly.Location);
+					sw.WriteLine (typeof(Mono.Addins.Setup.SetupService).Assembly.Location);
+					sw.Close ();
+					
 					string arguments = string.Format("{0} \"{1}\"", id, tmpFile);
 					DotNetExecutionCommand cmd = new DotNetExecutionCommand(location, arguments, AppDomain.CurrentDomain.BaseDirectory);
 					cmd.DebugMode = isDebugMode;
+					ProcessHostConsole cons = new ProcessHostConsole ();
 					process = executionHandlerFactory.Execute (cmd, cons);
 					Counters.ExternalHostProcesses++;
 					
@@ -154,6 +165,10 @@ namespace MonoDevelop.Core.Execution
 				remoteObjects.Clear ();
 				
 				exitedEvent.Set ();
+				
+				// If the remote process crashes, a thread may be left hung in WaitForExit. This will awaken it.
+				exitRequestEvent.Set ();
+				
 				if (oper != process) return;
 
 				// The process suddently died
@@ -181,6 +196,7 @@ namespace MonoDevelop.Core.Execution
 				// Before creating the instance, load the add-ins on which it depends
 				if (addins != null && addins.Length > 0)
 					processHost.LoadAddins (addins);
+				RemotingService.RegisterAssemblyForSimpleResolve (type.Assembly.GetName ().Name);
 				object obj = processHost.CreateInstance (type);
 				RemotingService.RegisterMethodCallback (obj, "Dispose", RemoteProcessObjectDisposing, null);
 				remoteObjects.Add (obj);
@@ -209,6 +225,7 @@ namespace MonoDevelop.Core.Execution
 				// Before creating the instance, load the add-ins on which it depends
 				if (addins != null && addins.Length > 0)
 					processHost.LoadAddins (addins);
+				RemotingService.RegisterAssemblyForSimpleResolve (Path.GetFileNameWithoutExtension (assemblyPath));
 				object obj = processHost.CreateInstance (assemblyPath, typeName);
 				RemotingService.RegisterMethodCallback (obj, "Dispose", RemoteProcessObjectDisposing, null);
 				remoteObjects.Add (obj);

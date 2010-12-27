@@ -42,9 +42,12 @@ using System.Reflection;
 using System.Collections;
 using Mono.Remoting.Channels.Unix;
 using Mono.Addins;
+using System.Runtime.Remoting.Channels.Tcp;
 
 public class MonoDevelopProcessHost
 {
+	static string ParentRuntime;
+	
 	public static int Main (string[] args)
 	{
 		string tmpFile = null;
@@ -62,6 +65,11 @@ public class MonoDevelopProcessHost
 			
 			string sref = input.ReadLine ();
 			string pidToWatch = input.ReadLine ();
+			ParentRuntime = input.ReadLine ();
+			int numAsm = int.Parse (input.ReadLine ());
+			while (numAsm-- > 0) {
+				Assembly.LoadFrom (input.ReadLine ());
+			}
 			
 			if (tmpFile != null) {
 				try {
@@ -70,7 +78,7 @@ public class MonoDevelopProcessHost
 				} catch {
 				}
 			}
-			
+
 			WatchParentProcess (int.Parse (pidToWatch));
 			
 			string unixPath = RegisterRemotingChannel ();
@@ -106,14 +114,37 @@ public class MonoDevelopProcessHost
 		
 	static string RegisterRemotingChannel ()
 	{
+		IDictionary formatterProps = new Hashtable ();
+		formatterProps ["includeVersions"] = false;
+		formatterProps ["strictBinding"] = false;
+		
 		IDictionary dict = new Hashtable ();
-		BinaryClientFormatterSinkProvider clientProvider = new BinaryClientFormatterSinkProvider();
-		BinaryServerFormatterSinkProvider serverProvider = new BinaryServerFormatterSinkProvider();
-		string unixRemotingFile = Path.GetTempFileName ();
-		dict ["portName"] = Path.GetFileName (unixRemotingFile);
+		BinaryClientFormatterSinkProvider clientProvider = new BinaryClientFormatterSinkProvider(formatterProps, null);
+		BinaryServerFormatterSinkProvider serverProvider = new BinaryServerFormatterSinkProvider(formatterProps, null);
 		serverProvider.TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full;
-		ChannelServices.RegisterChannel (new IpcChannel (dict, clientProvider, serverProvider), false);
-		return unixRemotingFile;
+		
+		// Mono's and .NET's IPC channels have interoperability issues, so use TCP in this case
+		if (CurrentRuntime != ParentRuntime) {
+			// Running Mono on Windows
+			dict ["port"] = 0;
+			ChannelServices.RegisterChannel (new TcpChannel (dict, clientProvider, serverProvider), false);
+			return null;
+		}
+		else {
+			string unixRemotingFile = Path.GetTempFileName ();
+			dict ["portName"] = Path.GetFileName (unixRemotingFile);
+			ChannelServices.RegisterChannel (new IpcChannel (dict, clientProvider, serverProvider), false);
+			return unixRemotingFile;
+		}
+	}
+	
+	static string CurrentRuntime {
+		get {
+			if (Type.GetType ("Mono.Runtime") != null)
+				return "Mono";
+			else
+				return ".NET";
+		}
 	}
 	
 	static void WatchParentProcess (int pid)
