@@ -148,10 +148,23 @@ namespace MonoDevelop.Debugger.Win32
 			process.OnNameChange += new CorThreadEventHandler (OnNameChange);
 			process.OnEvalComplete += new EvalEventHandler (OnEvalComplete);
 			process.OnEvalException += new EvalEventHandler (OnEvalException);
+			process.OnLogMessage += new LogMessageEventHandler (OnLogMessage);
+			process.OnStdOutput += new CorTargetOutputEventHandler (OnStdOutput);
 
 			process.Continue (false);
 
 			OnStarted ();
+		}
+
+		void OnStdOutput (object sender, CorTargetOutputEventArgs e)
+		{
+			OnTargetOutput (e.IsStdError, e.Text);
+		}
+
+		void OnLogMessage (object sender, CorLogMessageEventArgs e)
+		{
+			OnTargetOutput (false, e.Message);
+			e.Continue = true;
 		}
 
 		void OnEvalException (object sender, CorEvalEventArgs e)
@@ -368,6 +381,7 @@ namespace MonoDevelop.Debugger.Win32
 		{
 			// Required to avoid the jit to get rid of variables too early
 			e.Process.DesiredNGENCompilerFlags = CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION;
+			e.Process.EnableLogMessages (true);
 			e.Continue = true;
 		}
 
