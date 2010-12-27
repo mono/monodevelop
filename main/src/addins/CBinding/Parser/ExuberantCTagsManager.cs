@@ -40,19 +40,14 @@ namespace CBinding.Parser
 
 		protected override IEnumerable<string> GetTags (FileInformation fileInfo)
 		{
-			string confdir = PropertyService.ConfigPath;
 			string tagFileName = Path.GetFileName (fileInfo.FileName) + ".tag";
-			string tagdir = Path.Combine (confdir, "system-tags");
-			string tagFullFileName = Path.Combine (tagdir, tagFileName);
+			string tagFullFileName = Path.Combine (SystemTagsDirectory, tagFileName);
 			string ctags_kinds = "--C++-kinds=+px";
 			
 			if (PropertyService.Get<bool> ("CBinding.ParseLocalVariables", true))
 				ctags_kinds += "l";
 			
 			string ctags_options = ctags_kinds + " --fields=+aStisk-fz --language-force=C++ --excmd=number --line-directives=yes -f '" + tagFullFileName + "' '" + fileInfo.FileName + "'";
-			
-			if (!Directory.Exists (tagdir))
-				Directory.CreateDirectory (tagdir);
 			
 			if (!File.Exists (tagFullFileName) || File.GetLastWriteTimeUtc (tagFullFileName) < File.GetLastWriteTimeUtc (fileInfo.FileName)) {
 				ProcessWrapper p = null;
