@@ -165,6 +165,32 @@ namespace CBinding.Parser
 				}
 			}
 		}
+		
+		public static string GetOutputFromProcess (string executable, string args, string baseDirectory)
+		{
+			string processOutput = null;
+			ProcessWrapper p = null;
+			StringWriter output = null,
+			             error = null;
+			try {
+				output = new StringWriter ();
+				error = new StringWriter ();
+				
+				p = Runtime.ProcessService.StartProcess (executable, args, baseDirectory, output, error, null);
+				p.WaitForOutput (10000);
+				
+				if (p.HasExited) {
+					processOutput = output.ToString ();
+				}
+			} finally {
+				if (p != null)
+					p.Dispose ();
+				if (output != null)
+					output.Dispose ();
+			}
+			
+			return processOutput;
+		}
 	}
 }
 
