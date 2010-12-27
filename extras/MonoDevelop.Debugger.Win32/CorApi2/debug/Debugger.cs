@@ -18,6 +18,7 @@ using System.Collections.Generic;
 
 
 using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using Microsoft.Win32.SafeHandles;
 
 [assembly:CLSCompliant(true)]
 [assembly:System.Runtime.InteropServices.ComVisible(false)]
@@ -211,10 +212,9 @@ namespace Microsoft.Samples.Debugging.CorDebug
             STARTUPINFO si = new STARTUPINFO ();
             si.cb = Marshal.SizeOf(si);
 
-            // initialize safe handles 
-            si.hStdInput = new Microsoft.Win32.SafeHandles.SafeFileHandle(new IntPtr(0),false);
-            si.hStdOutput = new Microsoft.Win32.SafeHandles.SafeFileHandle(new IntPtr(0),false);
-            si.hStdError = new Microsoft.Win32.SafeHandles.SafeFileHandle(new IntPtr(0),false);
+            // initialize safe handles
+			SafeFileHandle outReadPipe, errorReadPipe;
+			CreateHandles (si, out outReadPipe, out errorReadPipe);
 
 			IntPtr env = IntPtr.Zero;
 			if (environment != null) {
@@ -254,8 +254,55 @@ namespace Microsoft.Samples.Debugging.CorDebug
 			if (env != IntPtr.Zero)
 				Marshal.FreeHGlobal (env);
 
-            return ret;
+			// Close pipe handles (do not continue to modify the parent).
+			// You need to make sure that no handles to the write end of the
+			// output pipe are maintained in this process or else the pipe will
+			// not close when the child process exits and the ReadFile will hang.
+
+			si.hStdInput.Close ();
+			si.hStdOutput.Close ();
+			si.hStdError.Close ();
+
+			ret.TrackStdOutput (outReadPipe, errorReadPipe);
+			return ret;
         }
+
+		void CreateHandles (STARTUPINFO si, out SafeFileHandle outReadPipe, out SafeFileHandle errorReadPipe)
+		{
+			si.dwFlags |= 0x00000100; /*STARTF_USESTDHANDLES*/
+			SECURITY_ATTRIBUTES sa = new SECURITY_ATTRIBUTES ();
+			sa.bInheritHandle = true;
+			IntPtr curProc = NativeMethods.GetCurrentProcess ();
+
+			SafeFileHandle outWritePipe, outReadPipeTmp;
+			if (!NativeMethods.CreatePipe (out outReadPipeTmp, out outWritePipe, sa, 0))
+				throw new Exception ("Pipe creation failed");
+
+			// Create the child error pipe.
+			SafeFileHandle errorWritePipe, errorReadPipeTmp;
+			if (!NativeMethods.CreatePipe (out errorReadPipeTmp, out errorWritePipe, sa, 0))
+				throw new Exception ("Pipe creation failed");
+
+			// Create new output read and error read handles. Set
+			// the Properties to FALSE. Otherwise, the child inherits the
+			// properties and, as a result, non-closeable handles to the pipes
+			// are created.
+			if (!NativeMethods.DuplicateHandle (curProc, outReadPipeTmp, curProc, out outReadPipe, 0, false, NativeMethods.DUPLICATE_SAME_ACCESS))
+				throw new Exception ("Pipe creation failed");
+			if (!NativeMethods.DuplicateHandle (curProc, errorReadPipeTmp, curProc, out errorReadPipe, 0, false, NativeMethods.DUPLICATE_SAME_ACCESS))
+				throw new Exception ("Pipe creation failed");
+
+			NativeMethods.CloseHandle (curProc);
+
+			// Close inheritable copies of the handles you do not want to be
+			// inherited.
+			outReadPipeTmp.Close ();
+			errorReadPipeTmp.Close ();
+
+			si.hStdInput = NativeMethods.GetStdHandle (NativeMethods.STD_INPUT_HANDLE);
+			si.hStdOutput = outWritePipe;
+			si.hStdError = errorWritePipe;
+		}
 
         /**
          * Launch a process under the control of the debugger.
@@ -1122,7 +1169,53 @@ namespace Microsoft.Samples.Debugging.CorDebug
                                                    ref Guid riid, // must be "ref NativeMethods.IIDICorDebug"
                                                    [MarshalAs(UnmanagedType.Interface)]out ICorDebug debuggingInterface
                                                    );
-    }
+
+        [
+		 DllImport (Kernel32LibraryName, CharSet = CharSet.Auto, SetLastError = true)
+        ]
+		public static extern bool CreatePipe (out SafeFileHandle hReadPipe, out SafeFileHandle hWritePipe, SECURITY_ATTRIBUTES lpPipeAttributes, int nSize);
+
+		[
+		 DllImport (Kernel32LibraryName)
+		]
+		public static extern bool DuplicateHandle (
+		  IntPtr hSourceProcessHandle,
+		  SafeFileHandle hSourceHandle,
+		  IntPtr hTargetProcessHandle,
+		  out SafeFileHandle lpTargetHandle,
+		  uint dwDesiredAccess,
+		  bool bInheritHandle,
+		  uint dwOptions
+		);
+
+		public static uint DUPLICATE_CLOSE_SOURCE = 0x00000001;
+		public static uint DUPLICATE_SAME_ACCESS = 0x00000002;
+
+		[
+		 DllImport (Kernel32LibraryName)
+		]
+		public static extern SafeFileHandle GetStdHandle (uint nStdHandle);
+
+		public const uint STD_INPUT_HANDLE = unchecked ((uint)-10);
+		public const uint STD_OUTPUT_HANDLE = unchecked ((uint)-11);
+		public const uint STD_ERROR_HANDLE = unchecked ((uint)-12);
+
+		[
+		 DllImport (Kernel32LibraryName)
+		]
+		public static extern bool ReadFile (
+		  SafeFileHandle hFile,
+		  byte[] lpBuffer,
+		  int nNumberOfBytesToRead,
+		  out int lpNumberOfBytesRead,
+		  IntPtr lpOverlapped
+		);
+
+		[
+		 DllImport (Kernel32LibraryName, CharSet = CharSet.Auto, SetLastError = true)
+		]
+		public static extern IntPtr GetCurrentProcess ();
+	}
 
     ////////////////////////////////////////////////////////////////////////////////
     //
@@ -2085,5 +2178,19 @@ namespace Microsoft.Samples.Debugging.CorDebug
     {
         Last = ManagedCallbackType.OnExceptionInCallback,
     }
+
+	public class CorTargetOutputEventArgs: EventArgs
+	{
+		public CorTargetOutputEventArgs (string text, bool isStdError)
+		{
+			Text = text;
+		}
+
+		public string Text { get; set; }
+
+		public bool IsStdError { get; set; }
+	}
+
+	public delegate void CorTargetOutputEventHandler (Object sender, CorTargetOutputEventArgs e);
 
 } /* namespace */
