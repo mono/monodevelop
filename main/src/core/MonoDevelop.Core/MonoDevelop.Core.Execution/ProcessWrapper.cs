@@ -136,7 +136,7 @@ namespace MonoDevelop.Core.Execution
 			try {
 				if (!done) {
 					try {
-						Kill ();
+						this.KillProcessTree ();
 					} catch {
 						// Ignore
 					}

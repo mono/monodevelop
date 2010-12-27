@@ -491,6 +491,7 @@
     <Compile Include="MonoDevelop.Core.Text\BacktrackingStringMatcher.cs" />
     <Compile Include="MonoDevelop.Projects.Text\DocGenerator.cs" />
     <Compile Include="MonoDevelop.Core\EventArgsChain.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\ProcessExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
