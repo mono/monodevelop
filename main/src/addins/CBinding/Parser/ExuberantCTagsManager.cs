@@ -43,6 +43,7 @@ namespace CBinding.Parser
 			string tagFileName = Path.GetFileName (fileInfo.FileName) + ".tag";
 			string tagFullFileName = Path.Combine (SystemTagsDirectory, tagFileName);
 			string ctags_kinds = "--C++-kinds=+px";
+			string ctags_output = string.Empty;
 			
 			if (PropertyService.Get<bool> ("CBinding.ParseLocalVariables", true))
 				ctags_kinds += "l";
@@ -50,28 +51,11 @@ namespace CBinding.Parser
 			string ctags_options = ctags_kinds + " --fields=+aStisk-fz --language-force=C++ --excmd=number --line-directives=yes -f '" + tagFullFileName + "' '" + fileInfo.FileName + "'";
 			
 			if (!File.Exists (tagFullFileName) || File.GetLastWriteTimeUtc (tagFullFileName) < File.GetLastWriteTimeUtc (fileInfo.FileName)) {
-				ProcessWrapper p = null;
-				System.IO.StringWriter output = null;
-				try {
-					output = new System.IO.StringWriter ();
-					
-					p = Runtime.ProcessService.StartProcess ("ctags", ctags_options, null, null, output, null);
-					p.WaitForOutput (10000);
-					if (p.ExitCode != 0 || !File.Exists (tagFullFileName)) {
-						LoggingService.LogError ("Ctags did not successfully populate the tags database '{0}' within ten seconds.\nOutput: {1}", tagFullFileName, output.ToString ());
-						return null;
-					}
-				} catch (Exception ex) {
-					throw new IOException ("Could not create tags database (You must have exuberant ctags installed).", ex);
-				} finally {
-					if (output != null)
-						output.Dispose ();
-					if (p != null)
-						p.Dispose ();
-				}
+				ctags_output = GetOutputFromProcess ("ctags", ctags_options, Environment.CurrentDirectory);
+				File.WriteAllText (tagFullFileName, ctags_output);
 			}
 			
-			return File.ReadAllLines (tagFullFileName);
+			return ctags_output.Split (newlines, StringSplitOptions.RemoveEmptyEntries);
 		}
 		
 		public override Tag ParseTag (string tagEntry)
@@ -163,29 +147,10 @@ namespace CBinding.Parser
 				ctags_kinds.AppendFormat (" '{0}'", header);
 			}
 			
-			ProcessWrapper p = null;
-			System.IO.StringWriter output = null, error = null;
-			try {
-				output = new System.IO.StringWriter ();
-				error = new System.IO.StringWriter ();
-				
-				p = Runtime.ProcessService.StartProcess ("ctags", ctags_kinds.ToString (), project.BaseDirectory, output, error, null);
-				p.WaitForOutput (10000);
-				if (p.ExitCode != 0) {
-					LoggingService.LogError ("Ctags did not successfully populate the tags database from '{0}' within ten seconds.\nError output: {1}", filename, error.ToString ());
-					return null;
-				}
-				return output.ToString ().Split (newlines, StringSplitOptions.RemoveEmptyEntries);
-			} catch (Exception ex) {
-				throw new IOException ("Could not create tags database (You must have exuberant ctags installed).", ex);
-			} finally {
-				if (output != null)
-					output.Dispose ();
-				if (error != null)
-					error.Dispose ();
-				if (p != null)
-					p.Dispose ();
-			}
+			string output = GetOutputFromProcess ("ctags", ctags_kinds.ToString (), project.BaseDirectory);
+			if (output != null)
+				return output.Split (newlines, StringSplitOptions.RemoveEmptyEntries);
+			return null;
 		}
 		
 		#endregion
