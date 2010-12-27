@@ -64,6 +64,7 @@ FILES =  \
 	MonoDevelop.Core.Execution/NativeExecutionCommand.cs \
 	MonoDevelop.Core.Execution/NativePlatformExecutionHandler.cs \
 	MonoDevelop.Core.Execution/ProcessExecutionCommand.cs \
+	MonoDevelop.Core.Execution/ProcessExtensions.cs \
 	MonoDevelop.Core.Execution/ProcessHostController.cs \
 	MonoDevelop.Core.Execution/ProcessService.cs \
 	MonoDevelop.Core.Execution/ProcessWrapper.cs \
