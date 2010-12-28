@@ -85,7 +85,11 @@ namespace MonoDevelop.ValaBinding.Parser
 					case "method":
 					case "creationmethod":
 					case "constructor":
-						members.Add (new DomMethod (child.Name, Modifiers.None, MethodModifier.None, new DomLocation (child.SourceReferences[0].FirstLine, 1), new DomRegion (child.SourceReferences[0].FirstLine, int.MaxValue, child.SourceReferences[0].LastLine, int.MaxValue), new DomReturnType (child.ReturnType.TypeName)));
+						DomMethod method = new DomMethod (child.Name, Modifiers.None, MethodModifier.None, new DomLocation (child.SourceReferences[0].FirstLine, 1), new DomRegion (child.SourceReferences[0].FirstLine, int.MaxValue, child.SourceReferences[0].LastLine, int.MaxValue), new DomReturnType (child.ReturnType.TypeName));
+						foreach (DataType param in child.Parameters) {
+							method.Add (new DomParameter (method, param.Name, new DomReturnType (param.TypeName)));
+						}
+						members.Add (method);
 						break;
 					case "property":
 						members.Add (new DomProperty (child.Name, Modifiers.None, new DomLocation (child.SourceReferences[0].FirstLine, 1), new DomRegion (child.SourceReferences[0].FirstLine, int.MaxValue, child.SourceReferences[0].LastLine, int.MaxValue), new DomReturnType ()));
