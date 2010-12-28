@@ -34,6 +34,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
     public sealed  class CorDebugger : MarshalByRefObject
     {
         private const int MaxVersionStringLength = 256; // == MAX_PATH
+		public const int CREATE_REDIRECT_STD = 0x40000000;
         
         public static string GetDebuggerVersionFromFile(string pathToExe)
         {
@@ -213,8 +214,16 @@ namespace Microsoft.Samples.Debugging.CorDebug
             si.cb = Marshal.SizeOf(si);
 
             // initialize safe handles
-			SafeFileHandle outReadPipe, errorReadPipe;
-			CreateHandles (si, out outReadPipe, out errorReadPipe);
+			SafeFileHandle outReadPipe = null, errorReadPipe = null;
+			if ((flags & CREATE_REDIRECT_STD) != 0) {
+				CreateHandles (si, out outReadPipe, out errorReadPipe);
+				flags &= ~CREATE_REDIRECT_STD;
+			}
+			else {
+				si.hStdInput = new SafeFileHandle (IntPtr.Zero, false);
+				si.hStdOutput = new SafeFileHandle (IntPtr.Zero, false);
+				si.hStdError = new SafeFileHandle (IntPtr.Zero, false);
+			}
 
 			IntPtr env = IntPtr.Zero;
 			if (environment != null) {
@@ -254,16 +263,20 @@ namespace Microsoft.Samples.Debugging.CorDebug
 			if (env != IntPtr.Zero)
 				Marshal.FreeHGlobal (env);
 
-			// Close pipe handles (do not continue to modify the parent).
-			// You need to make sure that no handles to the write end of the
-			// output pipe are maintained in this process or else the pipe will
-			// not close when the child process exits and the ReadFile will hang.
+			if (outReadPipe != null) {
 
-			si.hStdInput.Close ();
-			si.hStdOutput.Close ();
-			si.hStdError.Close ();
+				// Close pipe handles (do not continue to modify the parent).
+				// You need to make sure that no handles to the write end of the
+				// output pipe are maintained in this process or else the pipe will
+				// not close when the child process exits and the ReadFile will hang.
 
-			ret.TrackStdOutput (outReadPipe, errorReadPipe);
+				si.hStdInput.Close ();
+				si.hStdOutput.Close ();
+				si.hStdError.Close ();
+
+				ret.TrackStdOutput (outReadPipe, errorReadPipe);
+			}
+
 			return ret;
         }
 

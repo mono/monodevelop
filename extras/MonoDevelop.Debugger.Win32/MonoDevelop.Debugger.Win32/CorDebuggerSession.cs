@@ -128,7 +128,13 @@ namespace MonoDevelop.Debugger.Win32
             // The second parameter of CreateProcess is the command line, and it includes the application being launched
             string cmdLine = "\"" + startInfo.Command + "\" " + startInfo.Arguments;
 
-            process = dbg.CreateProcess(startInfo.Command, cmdLine, startInfo.WorkingDirectory, env);
+			int flags = 0;
+			if (!startInfo.UseExternalConsole) {
+				flags = 0x08000000; /* CREATE_NO_WINDOW*/
+				flags |= CorDebugger.CREATE_REDIRECT_STD;
+			}
+
+			process = dbg.CreateProcess (startInfo.Command, cmdLine, startInfo.WorkingDirectory, env, flags);
 			processId = process.Id;
 
 			process.OnCreateProcess += new CorProcessEventHandler (OnCreateProcess);
