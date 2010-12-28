@@ -54,7 +54,7 @@ using MonoDevelop.ValaBinding.Parser;
 
 namespace MonoDevelop.ValaBinding
 {
-	public class ValaTextEditorExtension : CompletionTextEditorExtension
+	public class ValaTextEditorExtension : CompletionTextEditorExtension, IPathedDocument
 	{
 		// Allowed chars to be next to an identifier
 		private static char[] allowedChars = new char[] { ' ', '\t', '\r', '\n', 
