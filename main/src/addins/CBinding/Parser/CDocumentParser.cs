@@ -27,6 +27,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
@@ -147,6 +148,8 @@ namespace CBinding.Parser
 			return -1;
 		}
 		
+		static readonly Regex paramExpression = new Regex (@"(?<type>[^\s]+)\s+(?<subtype>[*&]*)(?<name>[^\s[]+)(?<array>\[.*)?", RegexOptions.Compiled);
+		
 		/// <summary>
 		/// Create an IMember from a LanguageItem,
 		/// using the source document to locate declaration bounds.
@@ -176,7 +179,25 @@ namespace CBinding.Parser
 				return new DomType (new CompilationUnit (item.File), ClassType.Enum, item.Name, new DomLocation ((int)item.Line, 1), string.Empty, new DomRegion ((int)item.Line+1, (int)item.Line+1), new List<IMember> ());
 			}
 			if (item is Function) {
-				return new DomMethod (item.Name, Modifiers.None, MethodModifier.None, new DomLocation ((int)item.Line, 1), new DomRegion ((int)item.Line+1, FindFunctionEnd (contentLines, (int)item.Line-1)+2), new DomReturnType ());
+				DomMethod method = new DomMethod (item.Name, Modifiers.None, MethodModifier.None, new DomLocation ((int)item.Line, 1), new DomRegion ((int)item.Line+1, FindFunctionEnd (contentLines, (int)item.Line-1)+2), new DomReturnType ());
+				Function function = (Function)item;
+				Match match;
+				bool abort = false;
+				List<IParameter> parameters = new List<IParameter> ();
+				
+				foreach (string parameter in function.Parameters) {
+					match = paramExpression.Match (parameter);
+					if (null == match) {
+						abort = true;
+						break;
+					}
+					DomParameter p =  (new DomParameter (method, match.Groups["name"].Value,
+					  new DomReturnType (string.Format ("{0}{1}{2}", match.Groups["type"].Value, match.Groups["subtype"].Value, match.Groups["array"].Value))));
+					parameters.Add (p);
+				}
+				if (!abort)
+					method.Add (parameters);
+				return method;
 			}
 			if (item is Member) {
 				return new DomField (item.Name, Modifiers.None, new DomLocation ((int)item.Line, 1), new DomReturnType ());
