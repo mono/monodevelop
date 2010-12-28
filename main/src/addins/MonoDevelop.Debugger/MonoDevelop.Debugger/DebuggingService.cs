@@ -459,7 +459,13 @@ namespace MonoDevelop.Debugger
 			session = factory.CreateSession ();
 			session.ExceptionHandler = ExceptionHandler;
 			session.Initialize ();
-			console = c;
+			
+			// When using an external console, create a new internal console which will be used
+			// to show the debugger log
+			if (startInfo.UseExternalConsole)
+				console = (IConsole) IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (GettextCatalog.GetString ("Application Output"), Stock.RunProgramIcon, true, true);
+			else
+				console = c;
 			
 			SetupSession ();
 
