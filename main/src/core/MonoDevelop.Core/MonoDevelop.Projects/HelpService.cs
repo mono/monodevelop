@@ -78,7 +78,8 @@ namespace MonoDevelop.Projects
 						sources.Add (((MonoDocSourceNode)node).Directory);
 					
 					foreach (var s in sources)
-						helpTree.AddSource (s);
+						if (Directory.Exists (s))
+							helpTree.AddSource (s);
 							
 				} catch (Exception ex) {
 					if (!(ex is ThreadAbortException) && !(ex.InnerException is ThreadAbortException))
