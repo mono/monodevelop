@@ -27,7 +27,9 @@
 //
 
 using System;
+using Gtk;
 
+using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 
@@ -102,10 +104,14 @@ namespace MonoDevelop.DesignerSupport
 				return;
 			
 			ReleaseDoc ();
-			
+
+			// Remove toolbar widgets so other document outlines can add their own
+
+			RemoveToolbarWidgets ();
+
 			Gtk.Widget newWidget = null;
 			if (outlineDoc != null)
-				newWidget = outlineDoc.GetOutlineWidget ();
+				newWidget = outlineDoc.GetOutlineWidget (Window);
 			if (newWidget == null)
 				SetEmptyWidget ();
 			else
@@ -119,6 +125,14 @@ namespace MonoDevelop.DesignerSupport
 			if (currentOutlineDoc != null)
 				currentOutlineDoc.ReleaseOutlineWidget ();
 			currentOutlineDoc = null;
+		}
+
+		void RemoveToolbarWidgets ()
+		{
+			Window.GetToolbar(PositionType.Top).RemoveAllWidgets ();
+			Window.GetToolbar(PositionType.Bottom).RemoveAllWidgets ();
+			Window.GetToolbar(PositionType.Left).RemoveAllWidgets ();
+			Window.GetToolbar(PositionType.Right).RemoveAllWidgets ();
 		}
 		
 		void SetEmptyWidget ()

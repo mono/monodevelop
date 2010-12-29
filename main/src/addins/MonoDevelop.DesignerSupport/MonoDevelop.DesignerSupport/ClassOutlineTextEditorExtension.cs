@@ -73,7 +73,7 @@ namespace MonoDevelop.DesignerSupport
 			base.Dispose ();
 		}
 
-		Widget MonoDevelop.DesignerSupport.IOutlinedDocument.GetOutlineWidget ()
+		Widget MonoDevelop.DesignerSupport.IOutlinedDocument.GetOutlineWidget (IPadWindow window)
 		{
 			if (outlineTreeView != null)
 				return outlineTreeView;

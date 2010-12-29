@@ -27,6 +27,7 @@
 using System;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Projects.Dom;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.DesignerSupport;
 using MonoDevelop.TextTemplating.Parser;
@@ -145,7 +146,7 @@ namespace MonoDevelop.TextTemplating.Gui
 		MonoDevelop.Ide.Gui.Components.PadTreeView outlineTreeView;
 		Gtk.TreeStore outlineTreeStore;
 		
-		Gtk.Widget IOutlinedDocument.GetOutlineWidget ()
+		Gtk.Widget IOutlinedDocument.GetOutlineWidget (IPadWindow window)
 		{
 			if (outlineTreeView != null)
 				return outlineTreeView;
