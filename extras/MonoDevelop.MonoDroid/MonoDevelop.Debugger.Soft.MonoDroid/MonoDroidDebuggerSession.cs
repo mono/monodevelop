@@ -47,11 +47,15 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 		const int DEBUGGER_TIMEOUT_MS = 30 * 1000;
 		
 		ChainedAsyncOperationSequence launchOp;
+		AndroidDevice debugDevice;
+		bool debugPropertySet;
+		bool alreadyEnded;
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
 			var dsi = (MonoDroidDebuggerStartInfo) startInfo;
 			var cmd = dsi.ExecutionCommand;
+			debugDevice = cmd.Device;
 			
 			bool alreadyForwarded = MonoDroidFramework.DeviceManager.GetDeviceIsForwarded (cmd.Device.ID);
 			if (!alreadyForwarded)
@@ -84,6 +88,8 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 						if (!op.Success) {
 							this.OnDebuggerOutput (true, GettextCatalog.GetString ("Failed to set debug property on device"));
 							this.OnDebuggerOutput (true, op.GetOutput ());
+						} else {
+							debugPropertySet = true;
 						}
 					}
 				},
@@ -205,12 +211,20 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 		
 		void EndLaunch ()
 		{
-			if (launchOp == null)
+			if (alreadyEnded)
 				return;
-			if (!launchOp.IsCompleted) {
+			alreadyEnded = true;
+
+			if (launchOp != null && !launchOp.IsCompleted) {
 				try {
 					launchOp.Cancel ();
 					launchOp = null;
+				} catch {}
+			}
+
+			if (debugPropertySet) {
+				try {
+					MonoDroidFramework.Toolbox.SetProperty (debugDevice, "debug.mono.extra", String.Empty);
 				} catch {}
 			}
 		}
