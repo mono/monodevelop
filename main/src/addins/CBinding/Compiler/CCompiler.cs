@@ -85,51 +85,39 @@ namespace CBinding
 		
 		protected string GeneratePkgLinkerArgs (ProjectPackageCollection packages)
 		{
-			if (packages == null || packages.Count < 1)
-				return string.Empty;
-			
-			StringBuilder libs = new StringBuilder ();
-			
-			foreach (Package p in packages)
-				libs.Append (p.File + " ");
-			
-			string args = string.Format ("--libs {0}", libs.ToString ().Trim ());
-			
-			StringWriter output = new StringWriter ();			
-			ProcessWrapper proc = new ProcessWrapper ();
-			
-			try {			
-				proc = Runtime.ProcessService.StartProcess ("pkg-config", args, null, null);
-				proc.WaitForExit ();
-				
-				string line;
-				while ((line = proc.StandardOutput.ReadLine ()) != null)
-					output.WriteLine (line);
-			} catch (Exception ex) {
-				MessageService.ShowException (ex, "You need to have pkg-config installed");
-			} finally {
-				proc.Close ();
-			}
-			
-			return output.ToString ();
+			return GeneratePkgConfigArgs (packages, "--libs");
 		}
 		
 		protected string GeneratePkgCompilerArgs (ProjectPackageCollection packages)
 		{
+			return GeneratePkgConfigArgs (packages, "--cflags");
+		}
+	
+		protected static string GeneratePkgConfigArgs (ProjectPackageCollection packages, string pkgConfigArg)
+		{
 			if (packages == null || packages.Count < 1)
 				return string.Empty;
+			string originalPkgConfigPath = Environment.GetEnvironmentVariable ("PKG_CONFIG_PATH");
+			string pkgConfigPath = originalPkgConfigPath;
 			
 			StringBuilder libs = new StringBuilder ();
 			
-			foreach (Package p in packages)
-				libs.Append (p.File + " ");
+			foreach (Package p in packages) {
+				if (Path.IsPathRooted (p.File)) {
+					pkgConfigPath = string.Format ("{0}{1}{2}", pkgConfigPath, Path.PathSeparator, Path.GetDirectoryName (p.File));
+					libs.Append (Path.GetFileNameWithoutExtension (p.File) + " ");
+				} else {
+					libs.Append (p.File + " ");
+				}
+			}
 			
-			string args = string.Format ("--cflags {0}", libs.ToString ().Trim ());
+			string args = string.Format ("{0} \"{1}\"", pkgConfigArg, libs.ToString ().Trim ());
 			
 			StringWriter output = new StringWriter ();			
 			ProcessWrapper proc = new ProcessWrapper ();
 			
 			try {			
+				Environment.SetEnvironmentVariable ("PKG_CONFIG_PATH", pkgConfigPath);
 				proc = Runtime.ProcessService.StartProcess ("pkg-config", args, null, null);
 				proc.WaitForExit ();
 				
@@ -140,6 +128,7 @@ namespace CBinding
 				MessageService.ShowException (ex, "You need to have pkg-config installed");
 			} finally {
 				proc.Close ();
+				Environment.SetEnvironmentVariable ("PKG_CONFIG_PATH", originalPkgConfigPath);
 			}
 			
 			return output.ToString ();

@@ -246,11 +246,11 @@ namespace CBinding
 				writer.WriteLine ("Name: {0}", Name);
 				writer.WriteLine ("Description: {0}", Description);
 				writer.WriteLine ("Version: {0}", Version);
-				writer.WriteLine ("Libs: -L{0} -l{1}", config.OutputDirectory, config.Output.StartsWith ("lib", StringComparison.OrdinalIgnoreCase)?
+				writer.WriteLine ("Libs: -L\"{0}\" -l{1}", config.OutputDirectory, config.Output.StartsWith ("lib", StringComparison.OrdinalIgnoreCase)?
 				                                                                                                config.Output.Substring (3):
 				                                                                                                config.Output);
 //				writer.WriteLine ("Cflags: -I{0}", BaseDirectory);
-				writer.WriteLine ("Cflags: -I{0}", string.Join (" -I", headerDirectories.ToArray ()));
+				writer.WriteLine ("Cflags: -I\"{0}\"", string.Join ("\" -I\"", headerDirectories.ToArray ()));
 			}
 			
 			// If this project compiles into a shared object we need to
