@@ -11,7 +11,7 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
-	-r:Mono.Cairo \
+	-pkg:mono-cairo \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \
@@ -55,6 +55,8 @@ FILES =  \
 	MonoDevelop.DesignerSupport.Toolbox/UnknownToolboxNode.cs \
 	MonoDevelop.DesignerSupport/BindingService.cs \
 	MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtension.cs \
+	MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtensionSorting.cs \
+	MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtensionSortingProperties.cs \
 	MonoDevelop.DesignerSupport/CodeBehind.cs \
 	MonoDevelop.DesignerSupport/CodeBehindWriter.cs \
 	MonoDevelop.DesignerSupport/Commands.cs \
