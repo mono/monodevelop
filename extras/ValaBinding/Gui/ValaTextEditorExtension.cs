@@ -116,6 +116,7 @@ namespace MonoDevelop.ValaBinding
 			case '\t':
 			case ' ':
 				lineText = Editor.GetLineText (line);
+				if (0 == lineText.Length){ return null; }
 				if (column > lineText.Length){ column = lineText.Length; }
 				lineText = lineText.Substring (0, column-1).Trim ();
 				
