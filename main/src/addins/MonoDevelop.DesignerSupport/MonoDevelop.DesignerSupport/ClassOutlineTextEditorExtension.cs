@@ -64,7 +64,8 @@ namespace MonoDevelop.DesignerSupport
 		public delegate void SortingPropertiesChangedHandler (object o, EventArgs e);
 
 		/// <summary>
-		/// Currently fires whenever clicking on the sort toggle button.
+		/// Currently fires whenever sorting properties change in the preferences dialog or
+		/// by clicking on the sort toggle button.
 		/// </summary>
 
 		public static event SortingPropertiesChangedHandler EventSortingPropertiesChanged;

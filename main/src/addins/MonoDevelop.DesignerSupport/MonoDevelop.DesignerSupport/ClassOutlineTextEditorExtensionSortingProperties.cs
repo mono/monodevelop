@@ -61,8 +61,15 @@ namespace MonoDevelop.DesignerSupport
 		byte sortKeyParameter;
 
 		/*
-		 * Provide properties for storage in MonoDevelopProperties.xml.
+		 * Provide properties for display in PropertyGrid of preferences dialog
+		 * and storage in MonoDevelopProperties.xml.
 		 */
+
+		[LocalizedCategory ("General")]
+		[LocalizedDisplayName ("Sort Outline")]
+		[LocalizedDescription ("If checked the entries in the document outline will be sorted. They are first sorted by"
+			+ " the sort key. If two entries have the same sort key, they will be sorted alphabetically."
+		    + " Entries with lower keys sort higher up in the hierarchy. Valid keys lie in [0, 255].")]
 
 		public bool IsSorting
 		{
@@ -70,11 +77,19 @@ namespace MonoDevelop.DesignerSupport
 			set { isSorting = value; }
 		}
 
+		[LocalizedCategory ("Sort Keys")]
+		[LocalizedDisplayName ("Regions")]
+		[LocalizedDescription ("The sort key for regions. Valid keys lie in [0, 255].")]
+
 		public byte SortKeyFoldingRegion
 		{
 			get { return sortKeyFoldingRegion; }
 			set { sortKeyFoldingRegion = value; }
 		}
+
+		[LocalizedCategory ("Sort Keys")]
+		[LocalizedDisplayName ("Namespaces")]
+		[LocalizedDescription ("The sort key for namespaces. Valid keys lie in [0, 255].")]
 
 		public byte SortKeyNamespace
 		{
@@ -82,11 +97,19 @@ namespace MonoDevelop.DesignerSupport
 			set { sortKeyNamespace = value; }
 		}
 
+		[LocalizedCategory ("Sort Keys")]
+		[LocalizedDisplayName ("Types")]
+		[LocalizedDescription ("The sort key for types. Valid keys lie in [0, 255].")]
+
 		public byte SortKeyType
 		{
 			get { return sortKeyType; }
 			set { sortKeyType = value; }
 		}
+
+		[LocalizedCategory ("Sort Keys")]
+		[LocalizedDisplayName ("Fields")]
+		[LocalizedDescription ("The sort key for fields. Valid keys lie in [0, 255].")]
 
 		public byte SortKeyField
 		{
@@ -94,11 +117,19 @@ namespace MonoDevelop.DesignerSupport
 			set { sortKeyField = value; }
 		}
 
+		[LocalizedCategory ("Sort Keys")]
+		[LocalizedDisplayName ("Properties")]
+		[LocalizedDescription ("The sort key for properties. Valid keys lie in [0, 255].")]
+
 		public byte SortKeyProperty
 		{
 			get { return sortKeyProperty; }
 			set { sortKeyProperty = value; }
 		}
+
+		[LocalizedCategory ("Sort Keys")]
+		[LocalizedDisplayName ("Events")]
+		[LocalizedDescription ("The sort key for events. Valid keys lie in [0, 255].")]
 
 		public byte SortKeyEvent
 		{
@@ -106,17 +137,29 @@ namespace MonoDevelop.DesignerSupport
 			set { sortKeyEvent = value; }
 		}
 
+		[LocalizedCategory ("Sort Keys")]
+		[LocalizedDisplayName ("Methods")]
+		[LocalizedDescription ("The sort key for methods. Valid keys lie in [0, 255].")]
+
 		public byte SortKeyMethod
 		{
 			get { return sortKeyMethod; }
 			set { sortKeyMethod = value; }
 		}
 
+		[LocalizedCategory ("Sort Keys")]
+		[LocalizedDisplayName ("Local Variables")]
+		[LocalizedDescription ("The sort key for local variables. Valid keys lie in [0, 255].")]
+
 		public byte SortKeyLocalVariable
 		{
 			get { return sortKeyLocalVariable; }
 			set { sortKeyLocalVariable = value; }
 		}
+
+		[LocalizedCategory ("Sort Keys")]
+		[LocalizedDisplayName ("Parameters")]
+		[LocalizedDescription ("The sort key for parameters. Valid keys lie in [0, 255].")]
 
 		public byte SortKeyParameter
 		{
