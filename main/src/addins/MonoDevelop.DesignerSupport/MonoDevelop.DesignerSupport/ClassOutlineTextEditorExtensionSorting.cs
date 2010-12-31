@@ -68,12 +68,11 @@ namespace MonoDevelop.DesignerSupport
 		}
 
 		/// <summary>
-		/// Compares nodes by primary and secondary sort keys.
+		/// Compares nodes by primary (type) and secondary (name) sort keys depending on
+		/// sort settings.
 		/// </summary>
 		///
 		/// <remarks>
-		/// The primary sort key is retrieved with GetPrimarySortKey.
-		/// The secondary sort key is returned by GetSortName.
 		/// When comparing names symbols are ignored (e.g. sort 'Foo()' next to '~Foo()').
 		/// </remarks>
 		///
@@ -101,30 +100,57 @@ namespace MonoDevelop.DesignerSupport
 			string nameA = GetSortName (objectA);
 			string nameB = GetSortName (objectB);
 
-			byte primarySortKeyA = GetPrimarySortKey (objectA);
-			byte primarySortKeyB = GetPrimarySortKey (objectB);
+			byte typeKeyA = GetTypeKey (objectA);
+			byte typeKeyB = GetTypeKey (objectB);
 
-			if (primarySortKeyA == primarySortKeyB) {
+			ClassOutlineTextEditorExtensionSortingProperties properties;
 
-				// Compare by secondary sort key name ignoring symbols
+			properties = PropertyService.Get (
+				ClassOutlineTextEditorExtension.SORTING_PROPERTY,
+				ClassOutlineTextEditorExtensionSortingProperties.GetDefaultInstance ());
 
-				return String.Compare (nameA, nameB,
-					System.Globalization.CultureInfo.CurrentCulture,
-					System.Globalization.CompareOptions.IgnoreSymbols);
+			bool isGroupingByType        = properties.IsGroupingByType;
+			bool isSortingAlphabetically = properties.IsSortingAlphabetically;
+
+			if (isGroupingByType) {
+
+				int typeOrder = Compare (typeKeyA, typeKeyB);
+
+				// If items have the same type
+
+				if (typeOrder == 0) {
+
+					if (isSortingAlphabetically) {
+
+						return String.Compare (nameA, nameB,
+							System.Globalization.CultureInfo.CurrentCulture,
+							System.Globalization.CompareOptions.IgnoreSymbols);
+					}
+				}
+
+				return typeOrder;
+
+			} else {
+
+				if (isSortingAlphabetically) {
+
+					return String.Compare (nameA, nameB,
+						System.Globalization.CultureInfo.CurrentCulture,
+						System.Globalization.CompareOptions.IgnoreSymbols);
+				}
 			}
-			else {
 
-				// Compare by primary sort key
+			return 0;
+		}
 
-				if (primarySortKeyA < primarySortKeyB) {
-					return -1;
-				}
-				else if (primarySortKeyA == primarySortKeyB) {
-					return 0;
-				}
-				else {
-					return 1;
-				}
+		int Compare (byte typeKeyA, byte typeKeyB)
+		{
+			if (typeKeyA < typeKeyB) {
+				return -1;
+			} else if (typeKeyA == typeKeyB) {
+				return 0;
+			} else {
+				return 1;
 			}
 		}
 
@@ -145,7 +171,7 @@ namespace MonoDevelop.DesignerSupport
 		/// byte.MaxValue if node is neither an IMember nor a FoldingRegion.
 		/// </returns>
 
-		protected virtual byte GetPrimarySortKey (object node)
+		protected virtual byte GetTypeKey (object node)
 		{
 			ClassOutlineTextEditorExtensionSortingProperties properties = PropertyService.Get<ClassOutlineTextEditorExtensionSortingProperties> (
 				ClassOutlineTextEditorExtension.SORTING_PROPERTY);

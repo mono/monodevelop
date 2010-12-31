@@ -75,13 +75,15 @@ namespace MonoDevelop.DesignerSupport
 
 		public const string SORTING_PROPERTY = "MonoDevelop.DesignerSupport.ClassOutlineTextEditorExtension.Sorting";
 
-		const string SORT_TOGGLE_BUTTON_TOOLTIP = "Sort";
+		const string GROUP_BY_TYPE_TOGGLE_BUTTON_TOOLTIP       = "Group by type";
+		const string SORT_ALPHABETICALLY_TOGGLE_BUTTON_TOOLTIP = "Sort alphabetically";
 
 		ParsedDocument lastCU = null;
 		MonoDevelop.Ide.Gui.Components.PadTreeView outlineTreeView;
 		TreeStore outlineTreeStore;
 		TreeModelSort outlineTreeModelSort;
-		ToggleButton  sortToggleButton;
+		ToggleButton  groupByTypeToggleButton;
+		ToggleButton  sortAlphabeticallyToggleButton;
 		ClassOutlineTextEditorExtensionSorting sorting;
 		bool refreshingOutline;
 		bool disposed;
@@ -130,9 +132,14 @@ namespace MonoDevelop.DesignerSupport
 
 		void UpdateSorting ()
 		{
-			if (sortToggleButton.Active) {
+			if (IsSorting ()) {
 
-				// Sort the model, sort keys may have changed
+				/*
+				 * Sort the model, sort keys may have changed.
+				 *
+				 * Only setting the column again does not re-sort so we set
+				 * the function instead.
+				 */
 
 				outlineTreeModelSort.SetSortFunc (0, sorting.Compare);
 
@@ -152,19 +159,41 @@ namespace MonoDevelop.DesignerSupport
 		}
 
 		/*
-		 * Called when the sort button changes state.
-		 * Based on button state the tree view is directly linked to the tree model or
+		 * Called when the group button changes state.
+		 * Based on buttons state the tree view is directly linked to the tree model or
 		 * channeled through the sorted model.
 		 * The change is also stored into the properties and a change event is fired.
 		 */
 
-		void handleButtonToggle (object sender, EventArgs e)
+		void handleGroupByTypeButtonToggle (object sender, EventArgs e)
 		{
 			// Set properties to button state
 
 			ClassOutlineTextEditorExtensionSortingProperties properties = PropertyService.Get<ClassOutlineTextEditorExtensionSortingProperties> (SORTING_PROPERTY);
 
-			properties.IsSorting = sortToggleButton.Active;
+			properties.IsGroupingByType        = groupByTypeToggleButton.Active;
+
+			UpdateSorting ();
+
+			// Notifiy listeners on properties changes (this includes us as a side effect)
+
+			ClassOutlineTextEditorExtension.OnSortingPropertiesChanged (this, EventArgs.Empty);
+		}
+
+		/*
+		 * Called when the sorting button changes state.
+		 * Based on buttons state the tree view is directly linked to the tree model or
+		 * channeled through the sorted model.
+		 * The change is also stored into the properties and a change event is fired.
+		 */
+
+		void handleSortAlphabeticallyButtonToggle (object sender, EventArgs e)
+		{
+			// Set properties to button state
+
+			ClassOutlineTextEditorExtensionSortingProperties properties = PropertyService.Get<ClassOutlineTextEditorExtensionSortingProperties> (SORTING_PROPERTY);
+
+			properties.IsSortingAlphabetically = sortAlphabeticallyToggleButton.Active;
 
 			UpdateSorting ();
 
@@ -183,14 +212,20 @@ namespace MonoDevelop.DesignerSupport
 
 			if (sender != this) {
 
-				// Set button to properties state
+				// Set buttons to properties state
 
 				ClassOutlineTextEditorExtensionSortingProperties properties = PropertyService.Get<ClassOutlineTextEditorExtensionSortingProperties> (SORTING_PROPERTY);
 
-				sortToggleButton.Active = properties.IsSorting;
+				groupByTypeToggleButton.Active        = properties.IsGroupingByType;
+				sortAlphabeticallyToggleButton.Active = properties.IsSortingAlphabetically;
 
 				UpdateSorting ();
 			}
+		}
+
+		bool IsSorting ()
+		{
+			return groupByTypeToggleButton.Active || sortAlphabeticallyToggleButton.Active;
 		}
 
 		Widget MonoDevelop.DesignerSupport.IOutlinedDocument.GetOutlineWidget (IPadWindow window)
@@ -237,9 +272,7 @@ namespace MonoDevelop.DesignerSupport
 
 				object o;
 
-				// If the button is pressed in
-
-				if (sortToggleButton.Active) {
+				if (IsSorting ()) {
 					o = outlineTreeStore.GetValue (outlineTreeModelSort.ConvertIterToChildIter (iter), 0);
 				}
 				else {
@@ -253,25 +286,41 @@ namespace MonoDevelop.DesignerSupport
 
 			outlineTreeView.Realized += delegate { RefillOutlineStore (); };
 
-			// Initialize sorting toggle button
+			ClassOutlineTextEditorExtensionSortingProperties properties;
 
-			sortToggleButton = new ToggleButton ();
-			sortToggleButton.Image = new Image (Gtk.Stock.SortAscending, IconSize.Menu);
-			sortToggleButton.Toggled += new EventHandler (handleButtonToggle);
-			sortToggleButton.TooltipText = GettextCatalog.GetString (SORT_TOGGLE_BUTTON_TOOLTIP);
-			sortToggleButton.Active = PropertyService.Get (
+			properties = PropertyService.Get (
 				SORTING_PROPERTY,
-				ClassOutlineTextEditorExtensionSortingProperties.GetDefaultInstance ()).IsSorting;
+				ClassOutlineTextEditorExtensionSortingProperties.GetDefaultInstance ());
+
+			// Initialize grouping toggle button
+
+			groupByTypeToggleButton = new ToggleButton ();
+			groupByTypeToggleButton.Image = new Image (Gtk.Stock.SortAscending, IconSize.Menu);
+			groupByTypeToggleButton.Toggled += new EventHandler (handleGroupByTypeButtonToggle);
+			groupByTypeToggleButton.TooltipText = GettextCatalog.GetString (GROUP_BY_TYPE_TOGGLE_BUTTON_TOOLTIP);
+
+			// Initialize alphabetically sorting toggle button
+
+			sortAlphabeticallyToggleButton = new ToggleButton ();
+			sortAlphabeticallyToggleButton.Image = new Image (Gtk.Stock.SortAscending, IconSize.Menu);
+			sortAlphabeticallyToggleButton.Toggled += new EventHandler (handleSortAlphabeticallyButtonToggle);
+			sortAlphabeticallyToggleButton.TooltipText = GettextCatalog.GetString (SORT_ALPHABETICALLY_TOGGLE_BUTTON_TOOLTIP);
 
 			// Initialize toolbar
 
 			DockItemToolbar toolbar = window.GetToolbar (PositionType.Top);
-			toolbar.Add (sortToggleButton);
+			toolbar.Add (groupByTypeToggleButton);
+			toolbar.Add (sortAlphabeticallyToggleButton);
 			toolbar.ShowAll ();
 
 			// Listen for property changes (e.g. preferences dialog)
 
 			EventSortingPropertiesChanged += handlePropertiesChange;
+
+			// Restore property state
+
+			groupByTypeToggleButton.Active        = properties.IsGroupingByType;
+			sortAlphabeticallyToggleButton.Active = properties.IsSortingAlphabetically;
 
 			var sw = new CompactScrolledWindow ();
 			sw.Add (outlineTreeView);
@@ -314,7 +363,8 @@ namespace MonoDevelop.DesignerSupport
 			outlineTreeStore.Dispose ();
 			outlineTreeStore = null;
 			outlineTreeView = null;
-			sortToggleButton = null;
+			groupByTypeToggleButton = null;
+			sortAlphabeticallyToggleButton = null;
 
 			EventSortingPropertiesChanged -= handlePropertiesChange;
 		}

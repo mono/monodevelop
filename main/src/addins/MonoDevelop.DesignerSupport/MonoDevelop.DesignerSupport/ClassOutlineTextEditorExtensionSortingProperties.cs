@@ -48,80 +48,65 @@ namespace MonoDevelop.DesignerSupport
 
 	public class ClassOutlineTextEditorExtensionSortingProperties
 	{
-		bool isSorting;
-
-		byte sortKeyFoldingRegion;
-		byte sortKeyNamespace;
-		byte sortKeyType;
-		byte sortKeyField;
-		byte sortKeyProperty;
-		byte sortKeyEvent;
-		byte sortKeyMethod;
-		byte sortKeyLocalVariable;
-		byte sortKeyParameter;
+		static ClassOutlineTextEditorExtensionSortingProperties defaultInstance;
 
 		/*
 		 * Provide properties for storage in MonoDevelopProperties.xml.
 		 */
 
-		public bool IsSorting
-		{
-			get { return isSorting; }
-			set { isSorting = value; }
+		public bool IsGroupingByType {
+			get;
+			set;
 		}
 
-		public byte SortKeyFoldingRegion
-		{
-			get { return sortKeyFoldingRegion; }
-			set { sortKeyFoldingRegion = value; }
+		public bool IsSortingAlphabetically {
+			get;
+			set;
 		}
 
-		public byte SortKeyNamespace
-		{
-			get { return sortKeyNamespace; }
-			set { sortKeyNamespace = value; }
+		public byte SortKeyFoldingRegion {
+			get;
+			set;
 		}
 
-		public byte SortKeyType
-		{
-			get { return sortKeyType; }
-			set { sortKeyType = value; }
+		public byte SortKeyNamespace {
+			get;
+			set;
 		}
 
-		public byte SortKeyField
-		{
-			get { return sortKeyField; }
-			set { sortKeyField = value; }
+		public byte SortKeyType	{
+			get;
+			set;
 		}
 
-		public byte SortKeyProperty
-		{
-			get { return sortKeyProperty; }
-			set { sortKeyProperty = value; }
+		public byte SortKeyField {
+			get;
+			set;
 		}
 
-		public byte SortKeyEvent
-		{
-			get { return sortKeyEvent; }
-			set { sortKeyEvent = value; }
+		public byte SortKeyProperty	{
+			get;
+			set;
 		}
 
-		public byte SortKeyMethod
-		{
-			get { return sortKeyMethod; }
-			set { sortKeyMethod = value; }
+		public byte SortKeyEvent {
+			get;
+			set;
 		}
 
-		public byte SortKeyLocalVariable
-		{
-			get { return sortKeyLocalVariable; }
-			set { sortKeyLocalVariable = value; }
+		public byte SortKeyMethod {
+			get;
+			set;
 		}
 
-		public byte SortKeyParameter
-		{
-			get { return sortKeyParameter; }
-			set { sortKeyParameter = value; }
+		public byte SortKeyLocalVariable {
+			get;
+			set;
+		}
+
+		public byte SortKeyParameter {
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -142,21 +127,25 @@ namespace MonoDevelop.DesignerSupport
 
 		public static ClassOutlineTextEditorExtensionSortingProperties GetDefaultInstance ()
 		{
-			ClassOutlineTextEditorExtensionSortingProperties properties = new ClassOutlineTextEditorExtensionSortingProperties ();
+			if (defaultInstance == null) {
 
-			properties.IsSorting             = false;
+				defaultInstance = new ClassOutlineTextEditorExtensionSortingProperties ();
 
-			properties.SortKeyFoldingRegion  = 0;
-			properties.SortKeyNamespace      = 1;
-			properties.SortKeyType           = 2;
-			properties.SortKeyField          = 3;
-			properties.SortKeyProperty       = 4;
-			properties.SortKeyEvent          = 5;
-			properties.SortKeyMethod         = 6;
-			properties.SortKeyLocalVariable  = 7;
-			properties.SortKeyParameter      = 8;
+				defaultInstance.IsGroupingByType         = false;
+				defaultInstance.IsSortingAlphabetically  = false;
 
-			return properties;
+				defaultInstance.SortKeyFoldingRegion     = 0;
+				defaultInstance.SortKeyNamespace         = 1;
+				defaultInstance.SortKeyType              = 2;
+				defaultInstance.SortKeyField             = 3;
+				defaultInstance.SortKeyProperty          = 4;
+				defaultInstance.SortKeyEvent             = 5;
+				defaultInstance.SortKeyMethod            = 6;
+				defaultInstance.SortKeyLocalVariable     = 7;
+				defaultInstance.SortKeyParameter         = 8;
+			}
+
+			return defaultInstance;
 		}
 	}
 }
