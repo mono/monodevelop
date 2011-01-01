@@ -1230,14 +1230,14 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Debugger.DebuggerOptionsPanelWidget" design-size="523 242">
+  <widget class="Gtk.Bin" id="MonoDevelop.Debugger.DebuggerOptionsPanelWidget" design-size="523 250">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
       <widget class="Gtk.Notebook" id="notebook1">
         <property name="MemberName" />
         <property name="CanFocus">True</property>
-        <property name="CurrentPage">0</property>
+        <property name="CurrentPage">1</property>
         <child>
           <widget class="Gtk.VBox" id="vbox3">
             <property name="MemberName" />
@@ -1433,73 +1433,8 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.HBox" id="hbox1">
+              <widget class="MonoDevelop.Ide.Gui.Components.PriorityList" id="prioritylist">
                 <property name="MemberName" />
-                <property name="Spacing">6</property>
-                <child>
-                  <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
-                    <property name="MemberName" />
-                    <property name="ShadowType">In</property>
-                    <child>
-                      <widget class="Gtk.TreeView" id="engineList">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="ShowScrollbars">True</property>
-                        <property name="HeadersVisible">False</property>
-                      </widget>
-                    </child>
-                  </widget>
-                  <packing>
-                    <property name="Position">0</property>
-                    <property name="AutoSize">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.VBox" id="vbox4">
-                    <property name="MemberName" />
-                    <property name="Spacing">6</property>
-                    <child>
-                      <widget class="Gtk.Button" id="buttonUp">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="UseStock">True</property>
-                        <property name="Type">StockItem</property>
-                        <property name="StockId">gtk-go-up</property>
-                        <signal name="Clicked" handler="OnButtonUpClicked" />
-                        <property name="label">gtk-go-up</property>
-                      </widget>
-                      <packing>
-                        <property name="Position">0</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="Gtk.Button" id="buttonDown">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="UseStock">True</property>
-                        <property name="Type">StockItem</property>
-                        <property name="StockId">gtk-go-down</property>
-                        <signal name="Clicked" handler="OnButtonDownClicked" />
-                        <property name="label">gtk-go-down</property>
-                      </widget>
-                      <packing>
-                        <property name="Position">1</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                  </widget>
-                  <packing>
-                    <property name="Position">1</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
               </widget>
               <packing>
                 <property name="Position">1</property>
