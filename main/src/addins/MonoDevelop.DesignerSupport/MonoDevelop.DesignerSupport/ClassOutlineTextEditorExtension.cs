@@ -295,7 +295,7 @@ namespace MonoDevelop.DesignerSupport
 			// Initialize grouping toggle button
 
 			groupByTypeToggleButton = new ToggleButton ();
-			groupByTypeToggleButton.Image = new Image (Gtk.Stock.SortAscending, IconSize.Menu);
+			groupByTypeToggleButton.Image = new Image (ImageService.GetPixbuf ("md-design-categorise", IconSize.Menu));
 			groupByTypeToggleButton.Toggled += new EventHandler (handleGroupByTypeButtonToggle);
 			groupByTypeToggleButton.TooltipText = GettextCatalog.GetString (GROUP_BY_TYPE_TOGGLE_BUTTON_TOOLTIP);
 
