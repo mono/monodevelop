@@ -11,8 +11,8 @@ REFS =  \
 	$(MONO_ADDINS_LIBS) \
 	$(MONO_ADDINS_SETUP_LIBS) \
 	$(MONODOC_LIBS) \
+	-pkg:mono-cairo \
 	-r:ICSharpCode.SharpZipLib \
-	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \
@@ -43,6 +43,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.FindInFiles.SearchResultWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Fonts.FontChooserPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Components.ExecutionModeComboBox.cs \
+	gtk-gui/MonoDevelop.Ide.Gui.Components.PriorityList.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Components.StringTagSelectorButton.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GtkErrorDialog.cs \
@@ -399,6 +400,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui.Components/NodeCommandHandler.cs \
 	MonoDevelop.Ide.Gui.Components/NodeState.cs \
 	MonoDevelop.Ide.Gui.Components/PadTreeView.cs \
+	MonoDevelop.Ide.Gui.Components/PriorityList.cs \
 	MonoDevelop.Ide.Gui.Components/ProjectFileEntry.cs \
 	MonoDevelop.Ide.Gui.Components/StringTagSelectorButton.cs \
 	MonoDevelop.Ide.Gui.Components/TransactedTreeBuilder.cs \

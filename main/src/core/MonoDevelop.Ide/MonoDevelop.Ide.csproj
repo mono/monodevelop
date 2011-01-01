@@ -45,28 +45,36 @@
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="Mono.Addins.Setup, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
+      <Package>mono-addins-setup</Package>
     </Reference>
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <Reference Include="Mono.Addins.Gui, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
+      <Package>mono-addins-gui</Package>
     </Reference>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>glib-sharp-2.0</Package>
     </Reference>
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
+      <Package>mono-addins</Package>
     </Reference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -1377,6 +1385,8 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.GtkErrorDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\GtkErrorDialog.cs" />
     <Compile Include="MonoDevelop.Components\ImageLoader.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\PriorityList.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Components.PriorityList.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
