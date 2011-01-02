@@ -152,6 +152,8 @@
     <Compile Include="MonoDevelop.DesignerSupport\SwitchBetweenRelatedFilesCommand.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\ClassOutlineTextEditorExtensionSorting.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\ClassOutlineTextEditorExtensionSortingProperties.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\ClassOutlineTextEditorExtensionPreferencesDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.DesignerSupport.ClassOutlineTextEditorExtensionPreferencesDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml">

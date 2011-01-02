@@ -42,7 +42,7 @@ namespace MonoDevelop.DesignerSupport
 	/// </summary>
 	///
 	/// <remarks>
-	/// This implementation uses a primary sort key (byte based on node's type) and
+	/// This implementation uses a primary sort key (byte based on node's group) and
 	/// a secondary sort key (string based on node's name) for comparison.
 	/// </remarks>
 	///
@@ -68,7 +68,7 @@ namespace MonoDevelop.DesignerSupport
 		}
 
 		/// <summary>
-		/// Compares nodes by primary (type) and secondary (name) sort keys depending on
+		/// Compares nodes by primary (group) and secondary (name) sort keys depending on
 		/// sort settings.
 		/// </summary>
 		///
@@ -92,7 +92,7 @@ namespace MonoDevelop.DesignerSupport
 		/// Greater than zero if iterA > iterB.
 		/// </returns>
 
-		public virtual int Compare (TreeModel model, TreeIter nodeA, TreeIter nodeB)
+		public virtual int CompareNodes (TreeModel model, TreeIter nodeA, TreeIter nodeB)
 		{
 			object objectA = model.GetValue (nodeA, 0);
 			object objectB = model.GetValue (nodeB, 0);
@@ -100,8 +100,8 @@ namespace MonoDevelop.DesignerSupport
 			string nameA = GetSortName (objectA);
 			string nameB = GetSortName (objectB);
 
-			byte typeKeyA = GetTypeKey (objectA);
-			byte typeKeyB = GetTypeKey (objectB);
+			byte groupKeyA = GetGroupKey (objectA);
+			byte groupKeyB = GetGroupKey (objectB);
 
 			ClassOutlineTextEditorExtensionSortingProperties properties;
 
@@ -109,16 +109,16 @@ namespace MonoDevelop.DesignerSupport
 				ClassOutlineTextEditorExtension.SORTING_PROPERTY,
 				ClassOutlineTextEditorExtensionSortingProperties.GetDefaultInstance ());
 
-			bool isGroupingByType        = properties.IsGroupingByType;
+			bool isGrouping              = properties.IsGrouping;
 			bool isSortingAlphabetically = properties.IsSortingAlphabetically;
 
-			if (isGroupingByType) {
+			if (isGrouping) {
 
-				int typeOrder = Compare (typeKeyA, typeKeyB);
+				int groupOrder = CompareKeys (groupKeyA, groupKeyB);
 
-				// If items have the same type
+				// If items have the same group
 
-				if (typeOrder == 0) {
+				if (groupOrder == 0) {
 
 					if (isSortingAlphabetically) {
 
@@ -128,7 +128,7 @@ namespace MonoDevelop.DesignerSupport
 					}
 				}
 
-				return typeOrder;
+				return groupOrder;
 
 			} else {
 
@@ -143,11 +143,27 @@ namespace MonoDevelop.DesignerSupport
 			return 0;
 		}
 
-		int Compare (byte typeKeyA, byte typeKeyB)
+		/// <summary>
+		/// Compares the two keys.
+		/// </summary>
+		///
+		/// <param name="groupKeyA">
+		/// A <see cref="System.Byte"/> which is the sort key of a group.
+		/// </param>
+		///
+		/// <param name="groupKeyB">
+		/// A <see cref="System.Byte"/> which is the sort key of a group.
+		/// </param>
+		///
+		/// <returns>
+		/// A <see cref="System.Int32"/> giving the order of the two keys.
+		/// </returns>
+
+		public static int CompareKeys (byte groupKeyA, byte groupKeyB)
 		{
-			if (typeKeyA < typeKeyB) {
+			if (groupKeyA < groupKeyB) {
 				return -1;
-			} else if (typeKeyA == typeKeyB) {
+			} else if (groupKeyA == groupKeyB) {
 				return 0;
 			} else {
 				return 1;
@@ -155,7 +171,7 @@ namespace MonoDevelop.DesignerSupport
 		}
 
 		/// <summary>
-		/// Returns the primary sort key based on the type of the node.
+		/// Returns the primary sort key based on the group of the node.
 		/// </summary>
 		///
 		/// <remarks>
@@ -171,7 +187,7 @@ namespace MonoDevelop.DesignerSupport
 		/// byte.MaxValue if node is neither an IMember nor a FoldingRegion.
 		/// </returns>
 
-		protected virtual byte GetTypeKey (object node)
+		protected virtual byte GetGroupKey (object node)
 		{
 			ClassOutlineTextEditorExtensionSortingProperties properties = PropertyService.Get<ClassOutlineTextEditorExtensionSortingProperties> (
 				ClassOutlineTextEditorExtension.SORTING_PROPERTY);
@@ -247,6 +263,40 @@ namespace MonoDevelop.DesignerSupport
 			}
 
 			return string.Empty;
+		}
+
+		/// <summary>
+		/// Compares the two groups.
+		/// </summary>
+		///
+		/// <remarks>
+		/// Useful for sorting a List or an Array. See also System.Comparison<T>.
+		/// </remarks>
+		///
+		/// <param name="a">
+		/// A <see cref="ClassOutlineTextEditorExtensionSortingProperties.Group"/> to compare.
+		/// </param>
+		///
+		/// <param name="b">
+		/// A <see cref="ClassOutlineTextEditorExtensionSortingProperties.Group"/> to compare.
+		/// </param>
+		///
+		/// <returns>
+		/// A <see cref="System.Int32"/> indicating which group is sorted higher up.
+		/// </returns>
+
+		public static int CompareGroups (ClassOutlineTextEditorExtensionSortingProperties.Group a,
+		                                 ClassOutlineTextEditorExtensionSortingProperties.Group b)
+		{
+			ClassOutlineTextEditorExtensionSortingProperties properties;
+			properties = PropertyService.Get (
+				ClassOutlineTextEditorExtension.SORTING_PROPERTY,
+				ClassOutlineTextEditorExtensionSortingProperties.GetDefaultInstance ());
+
+			byte keyA = ClassOutlineTextEditorExtensionSortingProperties.GetKeyForGroup (properties, a);
+			byte keyB = ClassOutlineTextEditorExtensionSortingProperties.GetKeyForGroup (properties, b);
+
+			return CompareKeys (keyA, keyB);
 		}
 	}
 }

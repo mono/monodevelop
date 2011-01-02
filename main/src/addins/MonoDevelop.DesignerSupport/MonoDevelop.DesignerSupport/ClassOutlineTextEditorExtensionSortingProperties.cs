@@ -39,7 +39,7 @@ namespace MonoDevelop.DesignerSupport
 	///
 	/// <remarks>
 	/// Stores the sorting configuration, e.g. if the class outline is currently sorted
-	/// or what primary sort key values the individual node types have. This class is
+	/// or what primary sort key values the individual node groups have. This class is
 	/// serialized to the configuration file MonoDevelopProperties.xml.
 	/// </remarks>
 	///
@@ -50,11 +50,24 @@ namespace MonoDevelop.DesignerSupport
 	{
 		static ClassOutlineTextEditorExtensionSortingProperties defaultInstance;
 
+		public enum Group
+		{
+			FoldingRegion,
+			Namespace,
+			Type,
+			Field,
+			Property,
+			Event,
+			Method,
+			LocalVariable,
+			Parameter
+		}
+
 		/*
 		 * Provide properties for storage in MonoDevelopProperties.xml.
 		 */
 
-		public bool IsGroupingByType {
+		public bool IsGrouping {
 			get;
 			set;
 		}
@@ -131,7 +144,7 @@ namespace MonoDevelop.DesignerSupport
 
 				defaultInstance = new ClassOutlineTextEditorExtensionSortingProperties ();
 
-				defaultInstance.IsGroupingByType         = false;
+				defaultInstance.IsGrouping               = false;
 				defaultInstance.IsSortingAlphabetically  = false;
 
 				defaultInstance.SortKeyFoldingRegion     = 0;
@@ -146,6 +159,140 @@ namespace MonoDevelop.DesignerSupport
 			}
 
 			return defaultInstance;
+		}
+
+		/// <summary>
+		/// Sets the sort key in properties for the given group to key.
+		/// </summary>
+		///
+		/// <param name="properties">
+		/// A <see cref="ClassOutlineTextEditorExtensionSortingProperties"/> that stores the sort keys.
+		/// </param>
+		///
+		/// <param name="grp">
+		/// A <see cref="ClassOutlineTextEditorExtensionSortingProperties.Group"/> to set.
+		/// </param>
+		///
+		/// <param name="key">
+		/// A <see cref="System.Byte"/> that is the new sort key of the group.
+		/// </param>
+
+		public static void SetKeyForGroup (ClassOutlineTextEditorExtensionSortingProperties properties,
+		                                   Group grp,
+		                                   byte key)
+		{
+			switch (grp) {
+				case Group.Event: {
+					properties.SortKeyEvent = key;
+					break;
+				}
+
+				case Group.Field: {
+					properties.SortKeyField = key;
+					break;
+				}
+
+				case Group.FoldingRegion: {
+					properties.SortKeyFoldingRegion = key;
+					break;
+				}
+
+				case Group.LocalVariable: {
+					properties.SortKeyLocalVariable = key;
+					break;
+				}
+
+				case Group.Method: {
+					properties.SortKeyMethod = key;
+					break;
+				}
+
+				case Group.Namespace: {
+					properties.SortKeyNamespace = key;
+					break;
+				}
+
+				case Group.Parameter: {
+					properties.SortKeyParameter = key;
+					break;
+				}
+
+				case Group.Property: {
+					properties.SortKeyProperty = key;
+					break;
+				}
+
+				case Group.Type: {
+					properties.SortKeyType = key;
+					break;
+				}
+
+				default: {
+					throw new ArgumentOutOfRangeException ();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Returns the sort key stored in properties for the given group.
+		/// </summary>
+		///
+		/// <param name="properties">
+		/// A <see cref="ClassOutlineTextEditorExtensionSortingProperties"/> that stores the sort keys.
+		/// </param>
+		///
+		/// <param name="grp">
+		/// A <see cref="ClassOutlineTextEditorExtensionSortingProperties.Group"/> to query.
+		/// </param>
+		///
+		/// <returns>
+		/// A <see cref="System.Byte"/> that is the sort key of the Group.
+		/// </returns>
+
+		public static byte GetKeyForGroup (ClassOutlineTextEditorExtensionSortingProperties properties,
+		                                   Group grp)
+		{
+			switch (grp) {
+				case Group.Event: {
+					return properties.SortKeyEvent;
+				}
+
+				case Group.Field: {
+					return properties.SortKeyField;
+				}
+
+				case Group.FoldingRegion: {
+					return properties.SortKeyFoldingRegion;
+				}
+
+				case Group.LocalVariable: {
+					return properties.SortKeyLocalVariable;
+				}
+
+				case Group.Method: {
+					return properties.SortKeyMethod;
+				}
+
+				case Group.Namespace: {
+					return properties.SortKeyNamespace;
+				}
+
+				case Group.Parameter: {
+					return properties.SortKeyParameter;
+				}
+
+				case Group.Property: {
+					return properties.SortKeyProperty;
+				}
+
+				case Group.Type: {
+					return properties.SortKeyType;
+				}
+
+				default: {
+					throw new ArgumentOutOfRangeException ();
+				}
+			}
 		}
 	}
 }

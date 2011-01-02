@@ -24,6 +24,7 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.DesignerSupport.ClassOutlineTextEditorExtensionPreferencesDialog.cs \
 	gtk-gui/MonoDevelop.DesignerSupport.Toolbox.ComponentSelectorDialog.cs \
 	MonoDevelop.DesignerSupport.Projects/ComponentNodeBuilder.cs \
 	MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs \
@@ -55,6 +56,7 @@ FILES =  \
 	MonoDevelop.DesignerSupport.Toolbox/UnknownToolboxNode.cs \
 	MonoDevelop.DesignerSupport/BindingService.cs \
 	MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtension.cs \
+	MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtensionPreferencesDialog.cs \
 	MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtensionSorting.cs \
 	MonoDevelop.DesignerSupport/ClassOutlineTextEditorExtensionSortingProperties.cs \
 	MonoDevelop.DesignerSupport/CodeBehind.cs \
