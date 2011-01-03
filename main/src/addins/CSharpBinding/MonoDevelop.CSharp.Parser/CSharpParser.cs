@@ -1671,9 +1671,7 @@ namespace MonoDevelop.CSharp.Parser
 				var result = new BinaryOperatorExpression ();
 				result.BinaryOperatorType = BinaryOperatorType.NullCoalescing;
 				result.AddChild ((DomNode)nullCoalescingOperator.Left.Accept (this), BinaryOperatorExpression.LeftExpressionRole);
-				var location = LocationsBag.GetLocations (nullCoalescingOperator);
-				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location[0]), 2), BinaryOperatorExpression.OperatorRole);
+				result.AddChild (new CSharpTokenNode (Convert (nullCoalescingOperator.Location), 2), BinaryOperatorExpression.OperatorRole);
 				result.AddChild ((DomNode)nullCoalescingOperator.Right.Accept (this), BinaryOperatorExpression.RightExpressionRole);
 				return result;
 			}

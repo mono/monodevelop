@@ -32,6 +32,7 @@ using Mono.TextEditor;
 using MonoDevelop.Refactoring;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -177,6 +178,10 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		void ForceSpacesAround (DomNode node, bool forceSpaces)
 		{
+			if (node.IsNull) {
+				LoggingService.LogWarning ("Encountered null node.");
+				return;
+			}
 			ForceSpacesBefore (node, forceSpaces);
 			ForceSpacesAfter (node, forceSpaces);
 		}
