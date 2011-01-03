@@ -2371,7 +2371,7 @@ namespace MonoDevelop.CSharp.Parser
 			lock (CompilerCallableEntryPoint.parseLock) {
 				CompilerCompilationUnit top;
 				using (Stream stream = data.OpenStream ()) {
-					top = CompilerCallableEntryPoint.ParseFile (new string[] { "-v", "-unsafe"}, stream, data.Document.FileName, Console.Out);
+					top = CompilerCallableEntryPoint.ParseFile (new string[] { "-v", "-unsafe"}, stream, data.Document.FileName ?? "empty.cs", Console.Out);
 				}
 	
 				if (top == null)
