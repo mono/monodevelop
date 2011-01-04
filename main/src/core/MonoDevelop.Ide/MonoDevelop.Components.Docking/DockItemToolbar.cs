@@ -137,7 +137,14 @@ namespace MonoDevelop.Components.Docking
 		{
 			box.Remove (widget);
 		}
-		
+
+		public void RemoveAll ()
+		{
+			foreach (Widget widget in Children) {
+				Remove (widget);
+			}
+		}
+
 		public bool Visible {
 			get {
 				return empty || frame.Visible;

@@ -39,6 +39,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.XmlEditor.Completion;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
 using Gtk;
 using System.Linq;
@@ -752,10 +753,10 @@ namespace MonoDevelop.XmlEditor.Gui
 		#endregion
 		
 		#region IOutlinedDocument
-		
+
 		bool refreshingOutline = false;
-		
-		Gtk.Widget IOutlinedDocument.GetOutlineWidget ()
+
+		Gtk.Widget IOutlinedDocument.GetOutlineWidget (IPadWindow window)
 		{
 			if (outlineTreeView != null)
 				return outlineTreeView;

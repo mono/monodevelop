@@ -28,12 +28,25 @@
 
 using System;
 
+using MonoDevelop.Ide.Gui;
+
 namespace MonoDevelop.DesignerSupport
 {
-	
 	public interface IOutlinedDocument
 	{
-		Gtk.Widget GetOutlineWidget ();
+		/// <summary>
+		/// Returns the widget representing the document outline.
+		/// </summary>
+		/// <param name="window">
+		/// The underlying IPadWindow.
+		/// Access the GetToolbar method of window if you want document specific
+		/// buttons displayed on the toolbars.
+		/// </param>
+		/// <returns>
+		/// The widget representing the document outline.
+		/// </returns>
+		Gtk.Widget GetOutlineWidget (IPadWindow window);
+
 		void ReleaseOutlineWidget ();
 	}
 }

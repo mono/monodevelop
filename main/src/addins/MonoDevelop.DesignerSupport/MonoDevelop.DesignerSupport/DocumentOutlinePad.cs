@@ -27,7 +27,9 @@
 //
 
 using System;
+using Gtk;
 
+using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 
@@ -102,10 +104,14 @@ namespace MonoDevelop.DesignerSupport
 				return;
 			
 			ReleaseDoc ();
-			
+
+			// Remove toolbar widgets so other document outlines can add their own
+
+			RemoveToolbarWidgets ();
+
 			Gtk.Widget newWidget = null;
 			if (outlineDoc != null)
-				newWidget = outlineDoc.GetOutlineWidget ();
+				newWidget = outlineDoc.GetOutlineWidget (Window);
 			if (newWidget == null)
 				SetEmptyWidget ();
 			else
@@ -120,7 +126,15 @@ namespace MonoDevelop.DesignerSupport
 				currentOutlineDoc.ReleaseOutlineWidget ();
 			currentOutlineDoc = null;
 		}
-		
+
+		void RemoveToolbarWidgets ()
+		{
+			Window.GetToolbar(PositionType.Top).RemoveAll ();
+			Window.GetToolbar(PositionType.Bottom).RemoveAll ();
+			Window.GetToolbar(PositionType.Left).RemoveAll ();
+			Window.GetToolbar(PositionType.Right).RemoveAll ();
+		}
+
 		void SetEmptyWidget ()
 		{
 			WrappedCentreLabel label = new WrappedCentreLabel (MonoDevelop.Core.GettextCatalog.GetString (

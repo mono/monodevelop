@@ -491,8 +491,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			gproject.Project.References.Add (pref);
 		}
-		
-		Widget MonoDevelop.DesignerSupport.IOutlinedDocument.GetOutlineWidget ()
+
+		Widget MonoDevelop.DesignerSupport.IOutlinedDocument.GetOutlineWidget (IPadWindow window)
 		{
 			return GuiBuilderDocumentOutline.Instance;
 		}

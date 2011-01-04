@@ -46,21 +46,27 @@
     <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
+      <Package>mono-addins</Package>
     </Reference>
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>glib-sharp-2.0</Package>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -144,6 +150,11 @@
     <Compile Include="MonoDevelop.DesignerSupport\IPropertyPadProvider.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\CodeBehindWriter.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\SwitchBetweenRelatedFilesCommand.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\ClassOutlineTextEditorExtensionPreferencesDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.DesignerSupport.ClassOutlineTextEditorExtensionPreferencesDialog.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\ClassOutlineNodeComparer.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\ClassOutlineSortingProperties.cs" />
+    <Compile Include="MonoDevelop.DesignerSupport\ClassOutlineGroupComparer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml">

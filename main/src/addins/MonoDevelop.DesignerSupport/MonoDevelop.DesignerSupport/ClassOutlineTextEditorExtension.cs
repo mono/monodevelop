@@ -1,11 +1,11 @@
-// 
+//
 // ClassOutlineTextEditorExtension.cs
-// 
+//
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
-// 
+//
 // Copyright (C) 2008 Novell, Inc (http://www.novell.com)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -13,10 +13,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -30,25 +30,75 @@ using System;
 using System.Collections.Generic;
 using Gtk;
 
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
+using MonoDevelop.Components.Docking;
 
 
 namespace MonoDevelop.DesignerSupport
 {
-
-
+	/// <summary>
+	/// Displays a types and members outline of the current document.
+	/// </summary>
+	/// <remarks>
+	/// Document types and members are displayed in a tree view.
+	/// The displayed nodes can be sorted by pressing the buttons on the toolbar.
+	/// Sort behaviour can be configured in the MonoDevelopProperties.xml by tweaking
+	/// the sortKey* elements of type byte. Nodes with lower sortKey value will be sorted
+	/// before nodes with higher value. Nodes with equal sortKey will be sorted by string
+	/// comparison of the name of the nodes. The string comparison ignores symbols
+	/// (e.g. sort 'Foo()' next to '~Foo()').
+	/// </remarks>
+	/// <seealso cref="MonoDevelop.DesignerSupport.ClassOutlineNodeComparer"/>
+	/// <seealso cref="MonoDevelop.DesignerSupport.ClassOutlineSortingProperties"/>
 	public class ClassOutlineTextEditorExtension : TextEditorExtension, IOutlinedDocument
 	{
-		ParsedDocument lastCU = null;
+		/// <summary>
+		/// Currently fires whenever clicking on the sort toggle buttons or preferences are changed.
+		/// </summary>
+		public static event EventHandler EventSortingPropertiesChanged;
+
+		/// <summary>
+		/// Name of the sorting property entry in MonoDevelopProperties.xml.
+		/// </summary>
+		public const string                        SORTING_PROPERTY = "MonoDevelop.DesignerSupport.ClassOutlineTextEditorExtension.Sorting";
+
+		ParsedDocument                             lastCU = null;
+
 		MonoDevelop.Ide.Gui.Components.PadTreeView outlineTreeView;
-		TreeStore outlineTreeStore;
-		bool refreshingOutline;
-		bool disposed;
+
+		TreeStore                                  outlineTreeStore;
+
+		TreeModelSort                              outlineTreeModelSort;
+		ToggleButton                               groupToggleButton;
+		ToggleButton                               sortAlphabeticallyToggleButton;
+		DockToolButton                             preferencesButton;
+
+		ClassOutlineNodeComparer                   comparer;
+
+		bool                                       refreshingOutline;
+		bool                                       disposed;
+
+		/// <summary>
+		/// Call to notify listeners of sorting property changes.
+		/// </summary>
+		/// <param name="o">
+		/// The object that changed the properties.
+		/// </param>
+		/// <param name="e">
+		/// Empty event arguments.
+		/// </param>
+		public static void SortingPropertiesChanged (object o, EventArgs e)
+		{
+			if (EventSortingPropertiesChanged != null) {
+				EventSortingPropertiesChanged (o, e);
+			}
+		}
 
 		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
 		{
@@ -73,12 +123,148 @@ namespace MonoDevelop.DesignerSupport
 			base.Dispose ();
 		}
 
-		Widget MonoDevelop.DesignerSupport.IOutlinedDocument.GetOutlineWidget ()
+		void UpdateSorting ()
+		{
+			if (IsSorting ()) {
+
+				/*
+				 * Sort the model, sort keys may have changed.
+				 *
+				 * Only setting the column again does not re-sort so we set
+				 * the function instead.
+				 */
+
+				outlineTreeModelSort.SetSortFunc (0, comparer.CompareNodes);
+
+				outlineTreeView.Model = outlineTreeModelSort;
+			} else {
+				outlineTreeView.Model = outlineTreeStore;
+			}
+
+			/*
+			 * Currently the general tree expansion concept is suboptimal, e.g. tree expands
+			 * on all changes to the source file regardless of sort settings.
+			 * Because sorting the tree by setting the sort function also collapses
+			 * the tree view we just expand the whole tree for now.
+			 */
+
+			outlineTreeView.ExpandAll ();
+		}
+
+		/*
+		 * Called when the group button changes state.
+		 * Based on buttons state the tree view is directly linked to the tree model or
+		 * channeled through the sorted model.
+		 * The change is also stored into the properties and a change event is fired.
+		 */
+
+		void OnButtonGroupClicked (object sender, EventArgs e)
+		{
+			// Set properties to button state
+
+			ClassOutlineSortingProperties properties = PropertyService.Get<ClassOutlineSortingProperties> (SORTING_PROPERTY);
+
+			properties.IsGrouping = groupToggleButton.Active;
+
+			UpdateSorting ();
+
+			// Notifiy listeners on properties changes (this includes us as a side effect)
+
+			SortingPropertiesChanged (this, EventArgs.Empty);
+		}
+
+		/*
+		 * Called when the sorting button changes state.
+		 * Based on buttons state the tree view is directly linked to the tree model or
+		 * channeled through the sorted model.
+		 * The change is also stored into the properties and a change event is fired.
+		 */
+
+		void OnButtonSortAlphabeticallyClicked (object sender, EventArgs e)
+		{
+			// Set properties to button state
+
+			ClassOutlineSortingProperties properties = PropertyService.Get<ClassOutlineSortingProperties> (SORTING_PROPERTY);
+
+			properties.IsSortingAlphabetically = sortAlphabeticallyToggleButton.Active;
+
+			UpdateSorting ();
+
+			// Notifiy listeners on properties changes (this includes us as a side effect)
+
+			SortingPropertiesChanged (this, EventArgs.Empty);
+		}
+
+		/*
+		 * Called when the properties change.
+		 */
+
+		void OnPropertiesChanged (object sender, EventArgs e)
+		{
+			// If the event does not come from us (e.g. handleButtonToggle)
+
+			if (sender != this) {
+
+				/*
+				 * This class never changes the property object reference, only the object's members.
+				 * If the change originates from somewhere else the object reference could have been changed
+				 * to refer to a different object so we query the PropertyService again.
+				 */
+
+				ClassOutlineSortingProperties properties = PropertyService.Get<ClassOutlineSortingProperties> (SORTING_PROPERTY);
+
+				// Update button state to reflect properties
+
+				groupToggleButton.Active              = properties.IsGrouping;
+				sortAlphabeticallyToggleButton.Active = properties.IsSortingAlphabetically;
+
+				// Let the comparer know about the changes
+
+				comparer.Properties = properties;
+
+				UpdateSorting ();
+			}
+		}
+
+		/*
+		 * Called when the preferences button is clicked.
+		 */
+
+		void OnButtonPreferencesClicked (object sender, EventArgs e)
+		{
+			ClassOutlineTextEditorExtensionPreferencesDialog dialog;
+			dialog = new ClassOutlineTextEditorExtensionPreferencesDialog ();
+
+			dialog.Run ();
+
+			dialog.Destroy ();
+		}
+
+		bool IsSorting ()
+		{
+			return groupToggleButton.Active || sortAlphabeticallyToggleButton.Active;
+		}
+
+		Widget MonoDevelop.DesignerSupport.IOutlinedDocument.GetOutlineWidget (IPadWindow window)
 		{
 			if (outlineTreeView != null)
 				return outlineTreeView;
 
 			outlineTreeStore = new TreeStore (typeof(object));
+
+			ClassOutlineSortingProperties properties = PropertyService.Get (
+				SORTING_PROPERTY,
+				ClassOutlineSortingProperties.GetDefaultInstance ());
+
+			// Initialize sorted tree model
+
+			outlineTreeModelSort = new TreeModelSort (outlineTreeStore);
+
+			comparer = new ClassOutlineNodeComparer (GetAmbience (), properties, outlineTreeModelSort);
+
+			outlineTreeModelSort.SetSortFunc (0, comparer.CompareNodes);
+			outlineTreeModelSort.SetSortColumnId (0, SortType.Ascending);
+
 			outlineTreeView = new MonoDevelop.Ide.Gui.Components.PadTreeView (outlineTreeStore);
 
 			var pixRenderer = new CellRendererPixbuf ();
@@ -98,19 +284,65 @@ namespace MonoDevelop.DesignerSupport
 			outlineTreeView.AppendColumn (treeCol);
 
 			outlineTreeView.HeadersVisible = false;
-			
+
 			outlineTreeView.Selection.Changed += delegate {
 				TreeIter iter;
 				if (!outlineTreeView.Selection.GetSelected (out iter))
 					return;
-				object o = outlineTreeStore.GetValue (iter, 0);
-				
+
+				object o;
+
+				if (IsSorting ()) {
+					o = outlineTreeStore.GetValue (outlineTreeModelSort.ConvertIterToChildIter (iter), 0);
+				}
+				else {
+					o = outlineTreeStore.GetValue (iter, 0);
+				}
+
 				IdeApp.ProjectOperations.JumpToDeclaration (o as INode);
 			};
 
 			this.lastCU = Document.ParsedDocument;
-			
+
 			outlineTreeView.Realized += delegate { RefillOutlineStore (); };
+
+			// Initialize grouping toggle button
+
+			groupToggleButton = new ToggleButton ();
+			groupToggleButton.Image = new Image (ImageService.GetPixbuf ("md-design-categorise", IconSize.Menu));
+			groupToggleButton.Toggled += new EventHandler (OnButtonGroupClicked);
+			groupToggleButton.TooltipText = GettextCatalog.GetString ("Group");
+
+			// Initialize alphabetically sorting toggle button
+
+			sortAlphabeticallyToggleButton = new ToggleButton ();
+			sortAlphabeticallyToggleButton.Image = new Image (Gtk.Stock.SortAscending, IconSize.Menu);
+			sortAlphabeticallyToggleButton.Toggled += new EventHandler (OnButtonSortAlphabeticallyClicked);
+			sortAlphabeticallyToggleButton.TooltipText = GettextCatalog.GetString ("Sort alphabetically");
+
+			// Initialize preferences button
+
+			preferencesButton = new DockToolButton (Gtk.Stock.Preferences);
+			preferencesButton.Image = new Image (Gtk.Stock.Preferences, IconSize.Menu);
+			preferencesButton.Clicked += new EventHandler (OnButtonPreferencesClicked);
+			preferencesButton.TooltipText = GettextCatalog.GetString ("Preferences");
+
+			// Initialize toolbar
+
+			DockItemToolbar toolbar = window.GetToolbar (PositionType.Top);
+			toolbar.Add (groupToggleButton);
+			toolbar.Add (sortAlphabeticallyToggleButton);
+			toolbar.Add (preferencesButton);
+			toolbar.ShowAll ();
+
+			// Listen for property changes (e.g. preferences dialog)
+
+			EventSortingPropertiesChanged += OnPropertiesChanged;
+
+			// Restore property state
+
+			groupToggleButton.Active              = properties.IsGrouping;
+			sortAlphabeticallyToggleButton.Active = properties.IsSortingAlphabetically;
 
 			var sw = new CompactScrolledWindow ();
 			sw.Add (outlineTreeView);
@@ -153,6 +385,11 @@ namespace MonoDevelop.DesignerSupport
 			outlineTreeStore.Dispose ();
 			outlineTreeStore = null;
 			outlineTreeView = null;
+			groupToggleButton = null;
+			sortAlphabeticallyToggleButton = null;
+			preferencesButton = null;
+
+			EventSortingPropertiesChanged -= OnPropertiesChanged;
 		}
 
 		void UpdateDocumentOutline (object sender, EventArgs args)

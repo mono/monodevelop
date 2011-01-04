@@ -593,8 +593,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			cinfo.Enabled = Designer != null && Designer.UndoQueue.CanRedo;
 		}
-		
-		Widget MonoDevelop.DesignerSupport.IOutlinedDocument.GetOutlineWidget ()
+
+		Widget MonoDevelop.DesignerSupport.IOutlinedDocument.GetOutlineWidget (IPadWindow window)
 		{
 			return GuiBuilderDocumentOutline.Instance;
 		}
