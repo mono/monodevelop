@@ -64,7 +64,7 @@ namespace MonoDevelop.MonoMac
 			var settings = proj.UserProperties.GetValue<MonoMacPackagingSettings> (PROP_KEY)
 				?? MonoMacPackagingSettings.GetAppStoreDefault ();
 			
-			MonoMacPackagingSettingsDialog dlg;
+			MonoMacPackagingSettingsDialog dlg = null;
 			try {
 				dlg = new MonoMacPackagingSettingsDialog ();
 				dlg.LoadSettings (settings);
@@ -72,7 +72,8 @@ namespace MonoDevelop.MonoMac
 					return;
 				dlg.SaveSettings (settings);
 			} finally {
-				dlg.Destroy ();
+				if (dlg != null)
+					dlg.Destroy ();
 			}
 			
 			var configSel = IdeApp.Workspace.ActiveConfiguration;
