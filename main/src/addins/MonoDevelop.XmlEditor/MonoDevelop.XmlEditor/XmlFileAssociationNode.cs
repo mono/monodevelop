@@ -21,6 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using Mono.Addins;
 
 namespace MonoDevelop.XmlEditor
@@ -36,9 +37,15 @@ namespace MonoDevelop.XmlEditor
 		[NodeAttribute ("namespaceUri", false)]
 		string namespaceUri;
 		
+		[NodeAttribute ("schemaFile", false)]
+		string schemaFile;
+		
 		public XmlFileAssociation GetAssociation ()
 		{
-			return new XmlFileAssociation (fileExtension, namespaceUri, namespacePrefix);
+			var ns = namespaceUri;
+			if (!string.IsNullOrEmpty (schemaFile))
+				ns = new Uri (Addin.GetFilePath (schemaFile), UriKind.Absolute).ToString ();
+			return new XmlFileAssociation (fileExtension, ns, namespacePrefix);
 		}
 	}
 }
