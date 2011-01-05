@@ -40,6 +40,7 @@ using Mono.TextEditor.PopupWindow;
 using MonoDevelop.Refactoring;
 using MonoDevelop.CSharp.Parser;
 using MonoDevelop.CSharp.Dom;
+using MonoDevelop.CSharp.Formatting;
 
 namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 {
@@ -179,6 +180,8 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		public bool Analyze (RefactoringOptions options)
 		{
 			var data = options.GetTextEditorData ();
+			if (data.Document.MimeType != CSharpFormatter.MimeType)
+				return false;
 			var parser = new CSharpParser ();
 			var unit = parser.Parse (data);
 			if (unit == null)
