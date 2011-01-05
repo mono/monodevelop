@@ -687,6 +687,7 @@ namespace MonoDevelop.XmlEditor.Gui
 				return new XName (Editor.GetTextBetween (start, end));
 			}
 		}
+		
 		/*
 		protected XNode GetFullNode ()
 		{
@@ -705,7 +706,8 @@ namespace MonoDevelop.XmlEditor.Gui
 			}
 		}
 		*/
-		List<XObject> GetCurrentPath ()
+		
+		protected List<XObject> GetCurrentPath ()
 		{
 			if (this.tracker == null)
 				return null;
