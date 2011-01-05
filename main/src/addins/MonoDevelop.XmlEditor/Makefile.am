@@ -72,12 +72,12 @@ FILES =  \
 	MonoDevelop.XmlEditor/XmlEditorOptions.cs \
 	MonoDevelop.XmlEditor/XmlEditorService.cs \
 	MonoDevelop.XmlEditor/XmlElementPath.cs \
-	MonoDevelop.XmlEditor/XmlFileExtensionNode.cs \
-	MonoDevelop.XmlEditor/XmlFileExtensions.cs \
+	MonoDevelop.XmlEditor/XmlFileAssociation.cs \
+	MonoDevelop.XmlEditor/XmlFileAssociationManager.cs \
+	MonoDevelop.XmlEditor/XmlFileAssociationNode.cs \
 	MonoDevelop.XmlEditor/XmlFormatter.cs \
 	MonoDevelop.XmlEditor/XmlNamespace.cs \
 	MonoDevelop.XmlEditor/XmlParser.cs \
-	MonoDevelop.XmlEditor/XmlSchemaAssociation.cs \
 	MonoDevelop.XmlEditor/XmlSchemaManager.cs \
 	MonoDevelop.XmlEditor/XmlTextEditorExtension.cs
 

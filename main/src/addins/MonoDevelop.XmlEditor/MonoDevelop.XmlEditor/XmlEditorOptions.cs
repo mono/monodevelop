@@ -62,10 +62,10 @@ namespace MonoDevelop.XmlEditor
 				AutoCompleteElements = (bool)e.NewValue;
 			} else if (e.Key == AutoInsertFragmentsPropertyName) {
 				AutoInsertFragments = (bool)e.NewValue;
-			} else if (XmlSchemaAssociationChanged != null && e.Key.StartsWith (AssociationPrefix)) {
+			} else if (XmlFileAssociationChanged != null && e.Key.StartsWith (AssociationPrefix)) {
 				var ext = e.Key.Substring (AssociationPrefix.Length);
-				var assoc = e.NewValue as XmlSchemaAssociation;
-				XmlSchemaAssociationChanged (null, new XmlSchemaAssociationChangedEventArgs (ext, assoc));
+				var assoc = e.NewValue as XmlFileAssociation;
+				XmlFileAssociationChanged (null, new XmlFileAssociationChangedEventArgs (ext, assoc));
 			}
  		}
 
@@ -78,69 +78,44 @@ namespace MonoDevelop.XmlEditor
 		
 		#region Properties
 
-		/// <summary>
-		/// Raised when any xml editor property is changed.
-		/// </summary>
-		public static event EventHandler<XmlSchemaAssociationChangedEventArgs> XmlSchemaAssociationChanged;
+		/// <summary>Raised when any use scheme association changes </summary>
+		public static event EventHandler<XmlFileAssociationChangedEventArgs> XmlFileAssociationChanged;
 		
-		/// <summary>
-		/// Gets an association between a schema and a file extension.
-		/// </summary>
-		/// <remarks>
-		/// <para>The property will be an xml element when the SharpDevelopProperties.xml
-		/// is read on startup.  The property will be a schema association
-		/// if the user changes the schema associated with the file
-		/// extension in tools->options.</para>
-		/// <para>The normal way of doing things is to
-		/// pass the GetProperty method a default value which auto-magically
-		/// turns the xml element into a schema association so we would not 
-		/// have to check for both.  In this case, however, I do not want
-		/// a default saved to the SharpDevelopProperties.xml file unless the user
-		/// makes a change using Tools->Options.</para>
-		/// <para>If we have a file extension that is currently missing a default 
-		/// schema then if we  ship the schema at a later date the association will 
-		/// be updated by the code if the user has not changed the settings themselves. 
-		/// </para>
-		/// <para>For example, the initial release of the xml editor add-in had
-		/// no default schema for .xsl files, by default it was associated with
-		/// no schema and this setting is saved if the user ever viewed the settings
-		/// in the tools->options dialog.  Now, after the initial release the
-		/// .xsl schema was created and shipped with SharpDevelop, there is
-		/// no way to associate this schema to .xsl files by default since 
-		/// the property exists in the SharpDevelopProperties.xml file.</para>
-		/// <para>An alternative way of doing this might be to have the
-		/// config info in the schema itself, which a special SharpDevelop 
-		/// namespace.  I believe this is what Visual Studio does.  This
-		/// way is not as flexible since it requires the user to locate
-		/// the schema and change the association manually.</para>
-		/// </remarks>
-		public static XmlSchemaAssociation GetSchemaAssociation (string extension)
+		public static XmlFileAssociation GetFileAssociation (string extension)
 		{
-			var association = Properties.Get<XmlSchemaAssociation> (AssociationPrefix + extension.ToLowerInvariant ());
-			
-			if (association == null)
-				association = XmlSchemaAssociation.GetDefaultAssociation (extension);
-			
-			return association;
+			return Properties.Get<XmlFileAssociation> (AssociationPrefix + extension.ToLowerInvariant ());
 		}
 		
-		public static void RemoveSchemaAssociation (string extension)
+		public static void RemoveFileAssociation (string extension)
 		{
 			Properties.Set (AssociationPrefix + extension.ToLowerInvariant (), null); 
 		}
 		
-		public static void SetSchemaAssociation (XmlSchemaAssociation association)
+		public static void SetFileAssociation (XmlFileAssociation association)
 		{
-			Properties.Set (AssociationPrefix + association.Extension.ToLowerInvariant (), association);
+			Properties.Set (AssociationPrefix + association.Extension, association);
 		}
 		
-		public static IEnumerable<string> GetRegisteredFileExtensions ()
+		public static IEnumerable<string> GetFileExtensions ()
 		{
 			//for some reason we get an out of sync error unless we copy the list
-			List<string> tempList = new List<string> (Properties.Keys);
-			foreach (string key in tempList)
+			var keys = new List<string> (Properties.Keys);
+			foreach (string key in keys)
 				if (key.StartsWith (AssociationPrefix))
 					yield return key.Substring (AssociationPrefix.Length);
+		}
+		
+		public static IEnumerable<XmlFileAssociation> GetFileAssociations ()
+		{
+			var keys = new List<string> (Properties.Keys);
+			foreach (string key in keys) {
+				if (key.StartsWith (AssociationPrefix)) {
+					var assoc = Properties.Get<XmlFileAssociation> (key);
+					//ignore bad data in properties
+					if (assoc != null)
+						yield return assoc;
+				}
+			}
 		}
 		
 		public static bool ShowSchemaAnnotation { get; private set; }
@@ -155,12 +130,12 @@ namespace MonoDevelop.XmlEditor
 		#endregion
 	}
 	
-	public class XmlSchemaAssociationChangedEventArgs : EventArgs
+	public class XmlFileAssociationChangedEventArgs : EventArgs
 	{
 		public string Extension { get; private set; }
-		public XmlSchemaAssociation Association { get; private set; }
+		public XmlFileAssociation Association { get; private set; }
 		
-		public XmlSchemaAssociationChangedEventArgs (string extension, XmlSchemaAssociation association)
+		public XmlFileAssociationChangedEventArgs (string extension, XmlFileAssociation association)
 		{
 			this.Extension = extension;
 			this.Association = association;

@@ -112,10 +112,7 @@
     <Compile Include="MonoDevelop.XmlEditor\XmlNamespace.cs" />
     <Compile Include="MonoDevelop.XmlEditor\XmlParser.cs" />
     <Compile Include="MonoDevelop.XmlEditor\XmlSchemaManager.cs" />
-    <Compile Include="MonoDevelop.XmlEditor\XmlSchemaAssociation.cs" />
-    <Compile Include="MonoDevelop.XmlEditor\XmlFileExtensions.cs" />
     <Compile Include="MonoDevelop.XmlEditor\XmlEditorService.cs" />
-    <Compile Include="MonoDevelop.XmlEditor\XmlFileExtensionNode.cs" />
     <Compile Include="MonoDevelop.XmlEditor\XmlTextEditorExtension.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="MonoDevelop.XmlEditor.Gui\XmlEditorOptionsPanelWidget.cs" />
@@ -163,6 +160,9 @@
     <Compile Include="MonoDevelop.Xml.Formatting\XmlFormattingPolicyPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Xml.Formatting.XmlFormattingPolicyPanelWidget.cs" />
     <Compile Include="MonoDevelop.XmlEditor\XmlEditorOptions.cs" />
+    <Compile Include="MonoDevelop.XmlEditor\XmlFileAssociationNode.cs" />
+    <Compile Include="MonoDevelop.XmlEditor\XmlFileAssociation.cs" />
+    <Compile Include="MonoDevelop.XmlEditor\XmlFileAssociationManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="XmlEditor.glade">
@@ -240,6 +240,5 @@
   </ProjectExtensions>
   <ItemGroup>
     <Folder Include="MonoDevelop.Xml.Formatting\" />
-    <Folder Include="Icons\" />
   </ItemGroup>
 </Project>
