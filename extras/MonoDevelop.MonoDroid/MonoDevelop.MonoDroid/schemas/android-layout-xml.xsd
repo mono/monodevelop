@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:import namespace="http://schemas.android.com/apk/res/android" />
+  <xs:import namespace="http://schemas.android.com/apk/res/android" schemaLocation="schemas.android.com.apk.res.android.xsd" />
   <xs:group name="any-view">
     <xs:choice>
       <xs:element ref="GLSurfaceView" />
