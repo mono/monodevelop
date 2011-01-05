@@ -202,6 +202,28 @@
 		</Condition>
 	</Extension>
 
+	<!-- xml editing -->
+	<Module>
+		<Runtime>
+			<Import file="schemas/android-layout-xml.xsd" />
+			<Import file="schemas/schemas.android.com.apk.res.android.xsd" />
+		</Runtime>
+
+		<Dependencies>
+			<Addin id="Core" version="2.4"/>
+			<Addin id="Ide"  version="2.4"/>
+			<Addin id="XmlEditor" version="2.4"/>
+		</Dependencies>
+		
+		<Extension path = "/MonoDevelop/XmlEditor/XmlFileAssociations">
+			<Association extension = ".axml" schemaFile="schemas/android-layout-xml.xsd" />
+		</Extension>
+		
+		<Extension path = "/MonoDevelop/XmlEditor/XmlSchemas">
+			<Schema file="schemas/schemas.android.com.apk.res.android.xsd" />
+		</Extension>
+	</Module>
+
 	<!-- debugger addin -->
 	<Module>
 		<Runtime>
