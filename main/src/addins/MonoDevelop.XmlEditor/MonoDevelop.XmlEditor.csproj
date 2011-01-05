@@ -163,6 +163,7 @@
     <Compile Include="MonoDevelop.XmlEditor\XmlFileAssociationNode.cs" />
     <Compile Include="MonoDevelop.XmlEditor\XmlFileAssociation.cs" />
     <Compile Include="MonoDevelop.XmlEditor\XmlFileAssociationManager.cs" />
+    <Compile Include="MonoDevelop.XmlEditor\XmlSchemaNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="XmlEditor.glade">

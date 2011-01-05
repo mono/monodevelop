@@ -29,6 +29,10 @@
 	<ExtensionPoint path = "/MonoDevelop/XmlEditor/XmlFileAssociations">
 		<ExtensionNode name = "Association" type = "MonoDevelop.XmlEditor.XmlFileAssociationNode"/>
 	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/XmlEditor/XmlSchemas">
+		<ExtensionNode name = "Schema" type = "MonoDevelop.XmlEditor.XmlSchemaNode" />
+	</ExtensionPoint>
 
 	<!-- Additional file extensions that will be opened in the XML editor -->
 	<Extension path = "/MonoDevelop/XmlEditor/XmlFileAssociations">
@@ -38,6 +42,15 @@
 		<Association extension = ".xsl"    namespaceUri="http://www.w3.org/1999/XSL/Transform" namespacePrefix="xsl" /> 
 		<Association extension = ".xslt"   namespaceUri="http://www.w3.org/1999/XSL/Transform" namespacePrefix="xsl" /> 
 		<Association extension = ".stetic" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/XmlEditor/XmlSchemas">
+		<Schema file="schemas/appconfig.xsd" />
+		<Schema file="schemas/MonoDevelopAddIn.xsd" />
+		<Schema file="schemas/XMLSchema.xsd" />
+		<Schema file="schemas/xslt.xsd" />
+		<Schema file="schemas/manifest.xsd" />
+		<Schema file="schemas/nant.xsd" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">

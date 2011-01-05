@@ -79,6 +79,7 @@ FILES =  \
 	MonoDevelop.XmlEditor/XmlNamespace.cs \
 	MonoDevelop.XmlEditor/XmlParser.cs \
 	MonoDevelop.XmlEditor/XmlSchemaManager.cs \
+	MonoDevelop.XmlEditor/XmlSchemaNode.cs \
 	MonoDevelop.XmlEditor/XmlTextEditorExtension.cs
 
 DATA_FILES =  \
