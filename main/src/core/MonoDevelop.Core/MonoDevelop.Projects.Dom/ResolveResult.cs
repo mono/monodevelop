@@ -536,6 +536,11 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		public bool StaticUsage {
+			get;
+			set;
+		}
+		
 		public void ResolveExtensionMethods ()
 		{
 //			Console.WriteLine (" --- Resolve extension");
@@ -549,12 +554,11 @@ namespace MonoDevelop.Projects.Dom
 //			} else {
 //				Console.WriteLine ("<null>");
 //			}
-			
 			Debug.Assert (originalMethods.Count == methods.Count);
 			for (int i = 0; i < originalMethods.Count; i++) {
 				if (originalMethods[i] is ExtensionMethod) { // Extension methods are already resolved & instantiated.
 					methods[i] = originalMethods[i];
-				} else if (originalMethods[i].IsExtension && Type != null) {
+				} else if (!StaticUsage && originalMethods[i].IsExtension && Type != null) {
 					methods[i] = new ExtensionMethod (Type, originalMethods[i], genericArguments, arguments);
 				} else {
 					methods[i] = DomMethod.CreateInstantiatedGenericMethod (originalMethods[i], genericArguments, arguments);

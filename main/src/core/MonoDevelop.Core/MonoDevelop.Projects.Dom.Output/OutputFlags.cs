@@ -53,6 +53,7 @@ namespace MonoDevelop.Projects.Dom.Output
 		UseFullInnerTypeName     = 0x8000,
 		ReformatDelegates        = 0x10000,
 		GeneralizeGenerics       = 0x20000,
+		StaticUsage              = 0x40000, // to distinguish static usage for extension methods.
 		
 		ClassBrowserEntries        = IncludeReturnType | IncludeParameters | IncludeGenerics,
 		AssemblyBrowserDescription = IncludeGenerics | IncludeBaseTypes | IncludeReturnType | IncludeParameters | IncludeParameterName | IncludeMarkup | IncludeKeywords | IncludeModifiers

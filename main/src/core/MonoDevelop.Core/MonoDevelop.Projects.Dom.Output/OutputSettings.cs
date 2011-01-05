@@ -227,6 +227,12 @@ namespace MonoDevelop.Projects.Dom.Output
 			}
 		}
 		
+		public bool StaticUsage {
+			get {
+				return (OutputFlags & OutputFlags.StaticUsage) != 0;
+			}
+		}
+		
 		public MarkupText EmitModifiersCallback;
 		public MarkupText EmitKeywordCallback;
 		public MarkupText MarkupCallback;
