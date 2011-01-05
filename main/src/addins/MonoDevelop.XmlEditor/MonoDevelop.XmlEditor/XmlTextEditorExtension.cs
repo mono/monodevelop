@@ -108,17 +108,20 @@ namespace MonoDevelop.XmlEditor
 		
 		#region Code completion
 		
-		XmlElementPath GetCurrentPath ()
+		XmlElementPath GetElementPath ()
 		{
-			return ConvertPath (Tracker.Engine.Nodes.OfType<XElement> ().Reverse ());
+			return ConvertPath (GetCurrentPath ());
 		}
 		
-		static XmlElementPath ConvertPath (IEnumerable<XElement> path)
+		static XmlElementPath ConvertPath (IList<XObject> path)
 		{
 			XmlElementPath elementPath = new XmlElementPath ();
 			var namespaces = new Dictionary<string, string> ();
 			string defaultNamespace = null;
-			foreach (XElement el in path) {
+			foreach (var obj in path) {
+				var el = obj as XElement;
+				if (el == null)
+					continue;
 				foreach (XAttribute att in el.Attributes) {
 					if (att.Name.HasPrefix) {
 						if (att.Name.Prefix == "xmlns")
@@ -141,7 +144,7 @@ namespace MonoDevelop.XmlEditor
 		
 		protected override void GetElementCompletions (CompletionDataList list)
 		{	
-			XmlElementPath path = GetCurrentPath ();
+			XmlElementPath path = GetElementPath ();
 			if (path.Elements.Count > 0) {
 				IXmlCompletionProvider schema = FindSchema (path);
 				if (schema == null)
@@ -161,7 +164,7 @@ namespace MonoDevelop.XmlEditor
 		protected override CompletionDataList GetAttributeCompletions (IAttributedXObject attributedOb,
 			Dictionary<string, string> existingAtts)
 		{
-			XmlElementPath path = GetCurrentPath ();
+			XmlElementPath path = GetElementPath ();
 			if (path.Elements.Count > 0) {
 				IXmlCompletionProvider schema = FindSchema (path);
 				if (schema == null)
@@ -177,7 +180,7 @@ namespace MonoDevelop.XmlEditor
 		
 		protected override CompletionDataList GetAttributeValueCompletions (IAttributedXObject attributedOb, XAttribute att)
 		{
-			XmlElementPath path = GetCurrentPath ();
+			XmlElementPath path = GetElementPath ();
 			if (path.Elements.Count > 0) {
 				XmlSchemaCompletionData schema = FindSchema (path);
 				if (schema != null) {
@@ -246,7 +249,7 @@ namespace MonoDevelop.XmlEditor
 		public XmlSchemaObject GetSchemaObjectSelected (XmlSchemaCompletionData currentSchemaCompletionData)
 		{
 			// Find element under cursor.
-			XmlElementPath path = GetCurrentPath ();
+			XmlElementPath path = GetElementPath ();
 			
 			//attribute name under cursor, if valid
 			string attributeName = null;
@@ -266,7 +269,7 @@ namespace MonoDevelop.XmlEditor
 				XmlSchemaElement element = schemaCompletionData.FindElement(path);
 				schemaObject = element;
 				if (element != null) {
-					if (attributeName.Length > 0) {
+					if (!string.IsNullOrEmpty (attributeName)) {
 						XmlSchemaAttribute attribute = schemaCompletionData.FindAttribute(element, attributeName);
 						if (attribute != null) {
 							if (currentSchemaCompletionData != null) {
