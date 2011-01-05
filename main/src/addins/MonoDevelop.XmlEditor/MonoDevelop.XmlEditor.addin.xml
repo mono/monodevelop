@@ -25,22 +25,19 @@
 		<Addin id="DesignerSupport" version="2.4"/>
 		<Addin id="SourceEditor2" version="2.4"/>
 	</Dependencies>
-
-	<!-- Defines the Xml file extension node -->
-	<ExtensionPoint path = "/MonoDevelop/XmlEditor/XmlFileExtensions">
-		<ExtensionNode name = "XmlFileExtension" type = "MonoDevelop.XmlEditor.XmlFileExtensionNode"/>
+	
+	<ExtensionPoint path = "/MonoDevelop/XmlEditor/XmlFileAssociations">
+		<ExtensionNode name = "Association" type = "MonoDevelop.XmlEditor.XmlFileAssociationNode"/>
 	</ExtensionPoint>
 
-	<!-- File extensions that will be opened in the XML editor -->
-	<Extension path = "/MonoDevelop/XmlEditor/XmlFileExtensions"
-	           extension-nodes = "XmlFileExtension">
-		<XmlFileExtension extension = ".build"/>
-		<XmlFileExtension extension = ".config"/>
-		<XmlFileExtension extension = ".stetic"/> 
-		<XmlFileExtension extension = ".xml"/> 
-		<XmlFileExtension extension = ".xsd"/> 
-		<XmlFileExtension extension = ".xsl"/> 
-		<XmlFileExtension extension = ".xslt"/> 
+	<!-- Additional file extensions that will be opened in the XML editor -->
+	<Extension path = "/MonoDevelop/XmlEditor/XmlFileAssociations">
+		<Association extension = ".build"  namespaceUri="http://nant.sf.net/release/0.85-rc3/nant.xsd" />
+		<Association extension = ".config" namespaceUri="urn:app-config" />
+		<Association extension = ".xsd"    namespaceUri="http://www.w3.org/2001/XMLSchema" namespacePrefix="xs" /> 
+		<Association extension = ".xsl"    namespaceUri="http://www.w3.org/1999/XSL/Transform" namespacePrefix="xsl" /> 
+		<Association extension = ".xslt"   namespaceUri="http://www.w3.org/1999/XSL/Transform" namespacePrefix="xsl" /> 
+		<Association extension = ".stetic" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">

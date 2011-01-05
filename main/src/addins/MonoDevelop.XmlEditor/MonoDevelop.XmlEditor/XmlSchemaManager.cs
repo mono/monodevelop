@@ -77,7 +77,7 @@ namespace MonoDevelop.XmlEditor
 		{
 			XmlSchemaCompletionData data = null;
 			
-			var association = XmlEditorOptions.GetSchemaAssociation (fileExtension);
+			var association = XmlFileAssociationManager.GetAssociation (fileExtension);
 			if (association != null)
 				if (association.NamespaceUri.Length > 0)
 					data = SchemaCompletionDataItems [association.NamespaceUri];
@@ -89,9 +89,9 @@ namespace MonoDevelop.XmlEditor
 		/// Gets the namespace prefix that is associated with the
 		/// specified file extension.
 		/// </summary>
-		public static string GetNamespacePrefix(string extension)
+		public static string GetNamespacePrefix (string extension)
 		{
-			var association = XmlEditorOptions.GetSchemaAssociation(extension);
+			var association = XmlFileAssociationManager.GetAssociation (extension);
 			if (association != null) {
 				return association.NamespacePrefix;
 			}

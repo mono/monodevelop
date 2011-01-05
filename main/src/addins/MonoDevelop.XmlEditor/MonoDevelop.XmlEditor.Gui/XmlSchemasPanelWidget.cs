@@ -41,7 +41,7 @@ namespace MonoDevelop.XmlEditor.Gui
 {
 	
 	
-	public partial class XmlSchemasPanelWidget : Gtk.Bin
+	public partial class XmlSchemasPanelWidget : Bin
 	{
 		ListStore registeredSchemasStore;
 		ListStore defaultAssociationsStore;
@@ -50,51 +50,47 @@ namespace MonoDevelop.XmlEditor.Gui
 		List<XmlSchemaCompletionData> removedSchemas = new List<XmlSchemaCompletionData> ();
 		List<string> removedExtensions = new List<string> ();
 		
-		public XmlSchemasPanelWidget()
+		public XmlSchemasPanelWidget ()
 		{
-			this.Build();
+			this.Build ();
 			
 			//set up tree view for default schemas
-			CellRendererText textRenderer = new CellRendererText ();
+			var textRenderer = new CellRendererText ();
 			registeredSchemasStore = new ListStore (typeof (XmlSchemaCompletionData));
 			registeredSchemasView.Model = registeredSchemasStore;
 			
 			registeredSchemasView.AppendColumn (GettextCatalog.GetString ("Namespace"), textRenderer,
-			    delegate (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) {
-				((Gtk.CellRendererText)cell).Text = ((MonoDevelop.XmlEditor.Completion.XmlSchemaCompletionData)model.GetValue (iter, 0)).NamespaceUri;
-			});
+				(TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) => {
+					((CellRendererText)cell).Text = GetSchema (iter).NamespaceUri;
+				}
+			);
 			
 			registeredSchemasView.AppendColumn (GettextCatalog.GetString ("Type"), textRenderer,
-			    delegate (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) {
-				bool builtIn = ((MonoDevelop.XmlEditor.Completion.XmlSchemaCompletionData)model.GetValue (iter, 0)).ReadOnly;
-				((Gtk.CellRendererText)cell).Text = builtIn? 
-					  GettextCatalog.GetString ("Built in") 
-					: GettextCatalog.GetString ("User schema");
+				(TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) => {
+					((CellRendererText)cell).Text = GetSchema (iter).ReadOnly? 
+						  GettextCatalog.GetString ("Built in") 
+						: GettextCatalog.GetString ("User schema");
 			});
 			
-			registeredSchemasStore.SetSortFunc (0, 
-			    delegate (TreeModel model, TreeIter a, TreeIter b) {
-				return string.Compare (
-				    ((MonoDevelop.XmlEditor.Completion.XmlSchemaCompletionData) model.GetValue (a, 0)).NamespaceUri,
-				    ((MonoDevelop.XmlEditor.Completion.XmlSchemaCompletionData) model.GetValue (b, 0)).NamespaceUri
-				);
-			});
+			registeredSchemasStore.SetSortFunc (0,
+				(model, a, b) => string.Compare (GetSchema (a).NamespaceUri, GetSchema (b).NamespaceUri));
+			
 			registeredSchemasStore.SetSortColumnId (0, SortType.Ascending);
 			
 			//update state of "remove" button depending on whether schema is read-only and anything's slected
 			registeredSchemasView.Selection.Changed += delegate {
-				MonoDevelop.XmlEditor.Completion.XmlSchemaCompletionData data = GetSelectedSchema ();
+				var data = GetSelectedSchema ();
 				registeredSchemasRemoveButton.Sensitive = (data != null && !data.ReadOnly);
 			};
 			registeredSchemasRemoveButton.Sensitive = false;
 			
 			//set up cells for associations
-			CellRendererText extensionTextRenderer = new CellRendererText ();
+			var extensionTextRenderer = new CellRendererText ();
 			extensionTextRenderer.Editable = true;
-			CellRendererText prefixTextRenderer = new CellRendererText ();
+			var prefixTextRenderer = new CellRendererText ();
 			prefixTextRenderer.Editable = true;
 			
-			CellRendererCombo comboEditor = new CellRendererCombo ();
+			var comboEditor = new CellRendererCombo ();
 			registeredSchemasComboModel = new ListStore (typeof (string));
 			comboEditor.Model = registeredSchemasComboModel;
 			comboEditor.Mode = CellRendererMode.Editable;
@@ -106,42 +102,47 @@ namespace MonoDevelop.XmlEditor.Gui
 			comboEditor.EditingStarted += delegate (object sender, EditingStartedArgs args) {
 				registeredSchemasComboModel.Clear ();
 				registeredSchemasComboModel.AppendValues (string.Empty);
-				foreach (Gtk.TreeIter iter in WalkStore (registeredSchemasStore))
+				foreach (TreeIter iter in WalkStore (registeredSchemasStore))
 					registeredSchemasComboModel.AppendValues (
-					    ((MonoDevelop.XmlEditor.Completion.XmlSchemaCompletionData)registeredSchemasStore.GetValue (iter, 0)).NamespaceUri
+						GetSchema (iter).NamespaceUri
 					);
 				args.RetVal = true;
-				registeredSchemasComboModel.SetSortColumnId (0, Gtk.SortType.Ascending);
+				registeredSchemasComboModel.SetSortColumnId (0, SortType.Ascending);
 			};
 			
 			//set up tree view for associations
 			defaultAssociationsStore = new ListStore (typeof (string), typeof (string), typeof (string), typeof (bool));
 			defaultAssociationsView.Model = defaultAssociationsStore;
-			defaultAssociationsView.AppendColumn (GettextCatalog.GetString ("File Extension"), extensionTextRenderer, "text", DACols.Extension);
-			defaultAssociationsView.AppendColumn (GettextCatalog.GetString ("Namespace"), comboEditor, "text", DACols.Namespace);
-			defaultAssociationsView.AppendColumn (GettextCatalog.GetString ("Prefix"), prefixTextRenderer, "text", DACols.Prefix);
-			defaultAssociationsStore.SetSortColumnId ((int)DACols.Extension, SortType.Ascending);
+			defaultAssociationsView.AppendColumn (GettextCatalog.GetString ("File Extension"), extensionTextRenderer, "text", COL_EXT);
+			defaultAssociationsView.AppendColumn (GettextCatalog.GetString ("Namespace"), comboEditor, "text", COL_NS);
+			defaultAssociationsView.AppendColumn (GettextCatalog.GetString ("Prefix"), prefixTextRenderer, "text", COL_PREFIX);
+			defaultAssociationsStore.SetSortColumnId (COL_EXT, SortType.Ascending);
 			
 			//editing handlers
 			extensionTextRenderer.Edited += handleExtensionSet;
 			comboEditor.Edited += delegate (object sender, EditedArgs args) {
-				setAssocValAndMarkChanged (args.Path, DACols.Namespace, args.NewText);
+				setAssocValAndMarkChanged (args.Path, COL_NS, args.NewText);
 			};
 			prefixTextRenderer.Edited += delegate (object sender, EditedArgs args) {
 				foreach (char c in args.NewText)
 					if (!char.IsLetterOrDigit (c))
 						//FIXME: give an error message?
 						return;
-				setAssocValAndMarkChanged (args.Path, DACols.Prefix, args.NewText);
+				setAssocValAndMarkChanged (args.Path, COL_PREFIX, args.NewText);
 			};
 			
 			//update state of "remove" button depending on whether anything's slected
 			defaultAssociationsView.Selection.Changed += delegate {
-				Gtk.TreeIter iter;
+				TreeIter iter;
 				defaultAssociationsRemoveButton.Sensitive =
 					defaultAssociationsView.Selection.GetSelected (out iter);
 			};
 			defaultAssociationsRemoveButton.Sensitive = false;
+		}
+		
+		XmlSchemaCompletionData GetSchema (TreeIter iter)
+		{
+			return (XmlSchemaCompletionData) registeredSchemasStore.GetValue (iter, 0);
 		}
 		
 		IEnumerable<object> WalkStore (TreeModel model, int column)
@@ -174,7 +175,7 @@ namespace MonoDevelop.XmlEditor.Gui
 		{
 			TreeIter iter;
 			if (registeredSchemasView.Selection.GetSelected (out iter))
-				return (XmlSchemaCompletionData) registeredSchemasStore.GetValue (iter, 0);
+				return GetSchema (iter);
 			return null;
 		}
 		
@@ -213,7 +214,7 @@ namespace MonoDevelop.XmlEditor.Gui
 					return true;
 				
 				foreach (TreeIter iter in WalkStore (defaultAssociationsStore))
-					if ((bool)defaultAssociationsStore.GetValue (iter, (int)DACols.Changed))
+					if ((bool)defaultAssociationsStore.GetValue (iter, COL_CHANGED))
 						return true;
 				
 				return false;
@@ -222,15 +223,15 @@ namespace MonoDevelop.XmlEditor.Gui
 		
 		#region File associations
 		
-		public IEnumerable<XmlSchemaAssociation> GetChangedXmlSchemaAssociations ()
+		public IEnumerable<XmlFileAssociation> GetChangedXmlFileAssociations ()
 		{
-			foreach (TreeIter iter in WalkStore (defaultAssociationsStore)) {
-				string ext = (string)defaultAssociationsStore.GetValue (iter, (int)DACols.Extension);
-				if (!string.IsNullOrEmpty (ext) && (bool)defaultAssociationsStore.GetValue (iter, (int)DACols.Changed)) {
-					yield return new XmlSchemaAssociation (
+			foreach (var iter in WalkStore (defaultAssociationsStore)) {
+				string ext = (string)defaultAssociationsStore.GetValue (iter, COL_EXT);
+				if (!string.IsNullOrEmpty (ext) && (bool)defaultAssociationsStore.GetValue (iter, COL_CHANGED)) {
+					yield return new XmlFileAssociation (
 						ext,
-						((string)defaultAssociationsStore.GetValue (iter, (int)DACols.Namespace)) ?? string.Empty,
-						((string)defaultAssociationsStore.GetValue (iter, (int)DACols.Prefix)) ?? string.Empty
+						((string)defaultAssociationsStore.GetValue (iter, COL_NS)) ?? "",
+						((string)defaultAssociationsStore.GetValue (iter, COL_PREFIX)) ?? ""
 					);
 				}
 			}
@@ -240,9 +241,9 @@ namespace MonoDevelop.XmlEditor.Gui
 			get { return removedExtensions; }
 		}
 		
-		public void AddFileExtensions (IEnumerable<XmlSchemaAssociation> assocs)
+		public void AddFileExtensions (IEnumerable<XmlFileAssociation> assocs)
 		{
-			foreach (XmlSchemaAssociation a in assocs)
+			foreach (var a in assocs)
 				defaultAssociationsStore.AppendValues (a.Extension, a.NamespaceUri, a.NamespacePrefix, false);
 		}
 		
@@ -259,21 +260,21 @@ namespace MonoDevelop.XmlEditor.Gui
 					//FIXME: give an error message?
 					return;
 			
-			foreach (string s in WalkStore (defaultAssociationsStore, (int)DACols.Extension)) {
+			foreach (string s in WalkStore (defaultAssociationsStore, COL_EXT)) {
 				if (s == newval)
 					//FIXME: give an error message?
 					return;
 			}
 			
-			setAssocValAndMarkChanged (args.Path, DACols.Extension, newval);
+			setAssocValAndMarkChanged (args.Path, COL_EXT, newval);
 		}
 		
-		void setAssocValAndMarkChanged (string path, DACols col, object val)
+		void setAssocValAndMarkChanged (string path, int col, object val)
 		{
-			Gtk.TreeIter iter;
+			TreeIter iter;
 			if (defaultAssociationsStore.GetIter (out iter, new TreePath (path))) {
-				defaultAssociationsStore.SetValue (iter, (int)col, val);
-				defaultAssociationsStore.SetValue (iter, (int)DACols.Changed, true);
+				defaultAssociationsStore.SetValue (iter, col, val);
+				defaultAssociationsStore.SetValue (iter, COL_CHANGED, true);
 			} else {
 				throw new Exception ("Could not resolve edited path '" + path +"' to TreeIter at " + Environment.StackTrace);
 			}
@@ -284,7 +285,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			bool foundExisting = false;
 			TreeIter newIter = TreeIter.Zero;
 			foreach (TreeIter iter in WalkStore (defaultAssociationsStore)) {
-				if (string.IsNullOrEmpty ((string) defaultAssociationsStore.GetValue (iter, (int) DACols.Extension))) {
+				if (string.IsNullOrEmpty ((string) defaultAssociationsStore.GetValue (iter, COL_EXT))) {
 					foundExisting = true;
 					newIter = iter;
 				}
@@ -294,7 +295,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			
 			defaultAssociationsView.SetCursor (
 			    defaultAssociationsStore.GetPath (newIter),
-			    defaultAssociationsView.GetColumn ((int) DACols.Extension),
+			    defaultAssociationsView.GetColumn (COL_EXT),
 			    true);
 		}
 
@@ -305,7 +306,7 @@ namespace MonoDevelop.XmlEditor.Gui
 				throw new InvalidOperationException
 					("Should not be able to activate removeFileAssocation button while no row is selected.");
 			
-			string ext = (string) defaultAssociationsStore.GetValue (iter, (int)DACols.Extension);
+			string ext = (string) defaultAssociationsStore.GetValue (iter, COL_EXT);
 			if (ext != null && ext.Trim ().Length > 0)
 				removedExtensions.Add (ext.Trim ());
 			defaultAssociationsStore.Remove (ref iter);
@@ -426,11 +427,9 @@ namespace MonoDevelop.XmlEditor.Gui
 		
 		#endregion
 		
-		enum DACols {
-			Extension,
-			Namespace,
-			Prefix,
-			Changed
-		}
+		static int COL_EXT = 0;
+		static int COL_NS = 1;
+		static int COL_PREFIX = 2;
+		static int COL_CHANGED = 3;
 	}
 }

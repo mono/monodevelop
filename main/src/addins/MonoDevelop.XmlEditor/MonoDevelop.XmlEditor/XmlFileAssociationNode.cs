@@ -26,18 +26,20 @@ using System.Collections;
 
 namespace MonoDevelop.XmlEditor
 {
-	public class XmlFileExtensionNode : ExtensionNode
+	class XmlFileAssociationNode : ExtensionNode
 	{
-		[NodeAttribute("extension", true)]
+		[NodeAttribute ("extension", true)]
 		string fileExtension;
 		
-		public string FileExtension {
-			get {
-				return fileExtension;
-			}
-			set {
-				fileExtension = value;
-			}
+		[NodeAttribute ("namespacePrefix", false)]
+		string namespacePrefix;
+		
+		[NodeAttribute ("namespaceUri", false)]
+		string namespaceUri;
+		
+		public XmlFileAssociation GetAssociation ()
+		{
+			return new XmlFileAssociation (fileExtension, namespaceUri, namespacePrefix);
 		}
 	}
 }

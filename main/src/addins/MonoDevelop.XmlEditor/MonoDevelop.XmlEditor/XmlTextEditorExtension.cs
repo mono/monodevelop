@@ -72,7 +72,7 @@ namespace MonoDevelop.XmlEditor
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			XmlEditorOptions.XmlSchemaAssociationChanged += HandleXmlSchemaAssociationChanged;
+			XmlEditorOptions.XmlFileAssociationChanged += HandleXmlFileAssociationChanged;
 			XmlSchemaManager.UserSchemaAdded += UserSchemaAdded;
 			XmlSchemaManager.UserSchemaRemoved += UserSchemaRemoved;
 			SetDefaultSchema (FileExtension);
@@ -88,7 +88,7 @@ namespace MonoDevelop.XmlEditor
 			}
 		}
 
-		void HandleXmlSchemaAssociationChanged (object sender, XmlSchemaAssociationChangedEventArgs e)
+		void HandleXmlFileAssociationChanged (object sender, XmlFileAssociationChangedEventArgs e)
 		{
 			if (e.Extension == FileExtension)
 				SetDefaultSchema (FileExtension);
@@ -99,7 +99,7 @@ namespace MonoDevelop.XmlEditor
 		{
 			if (!disposed) {
 				disposed = false;
-				XmlEditorOptions.XmlSchemaAssociationChanged -= HandleXmlSchemaAssociationChanged;
+				XmlEditorOptions.XmlFileAssociationChanged -= HandleXmlFileAssociationChanged;
 				XmlSchemaManager.UserSchemaAdded -= UserSchemaAdded;
 				XmlSchemaManager.UserSchemaRemoved -= UserSchemaRemoved;
 				base.Dispose ();
@@ -107,13 +107,6 @@ namespace MonoDevelop.XmlEditor
 		}
 		
 		#region Code completion
-		
-//		IEditableTextBuffer GetBuffer ()
-//		{
-//			IEditableTextBuffer buf = Document.GetContent<IEditableTextBuffer> ();
-//			System.Diagnostics.Debug.Assert (buf != null);
-//			return buf;
-//		}
 		
 		XmlElementPath GetCurrentPath ()
 		{
@@ -469,7 +462,7 @@ namespace MonoDevelop.XmlEditor
 					return true;
 			}
 			
-			return XmlFileExtensions.IsXmlFileExtension (System.IO.Path.GetExtension (fileName));
+			return XmlFileAssociationManager.IsXmlFileExtension (System.IO.Path.GetExtension (fileName));
 		}
 		
 		public static bool IsMimeTypeHandled (string mimeType)

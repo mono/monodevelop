@@ -42,12 +42,7 @@ namespace MonoDevelop.XmlEditor.Gui
 		{
 			widget = new XmlSchemasPanelWidget ();
 			widget.LoadUserSchemas (XmlSchemaManager.UserSchemas);
-			
-			var assocs = new List<XmlSchemaAssociation> ();
-			foreach (string s in XmlFileExtensions.GetExtensions ())
-				assocs.Add (XmlEditorOptions.GetSchemaAssociation (s));
-			widget.AddFileExtensions (assocs);
-			
+			widget.AddFileExtensions (XmlFileAssociationManager.GetAssociations ());
 			return widget;
 		}
 		
@@ -61,9 +56,9 @@ namespace MonoDevelop.XmlEditor.Gui
 					
 					// Update schema associations after we have added any new schemas to the schema manager.
 					foreach (string extension in widget.RemovedExtensions)
-						XmlEditorOptions.RemoveSchemaAssociation (extension);
-					foreach (XmlSchemaAssociation item in widget.GetChangedXmlSchemaAssociations())
-						XmlEditorOptions.SetSchemaAssociation (item);
+						XmlEditorOptions.RemoveFileAssociation (extension);
+					foreach (var item in widget.GetChangedXmlFileAssociations())
+						XmlEditorOptions.SetFileAssociation (item);
 					
 				} catch (Exception ex) {
 					string msg = MonoDevelop.Core.GettextCatalog.GetString (
