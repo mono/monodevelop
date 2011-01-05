@@ -312,8 +312,8 @@ namespace MonoDevelop.CSharp.Highlighting
 							previousResult |= ((ElseIfBlockSpan)span).IsValid;
 						}
 					}
-					LineSegment line = doc.GetLineByOffset (i);
-					int length = line.Offset + line.EditableLength - i;
+//					LineSegment line = doc.GetLineByOffset (i);
+//					int length = line.Offset + line.EditableLength - i;
 					while (spanStack.Count > 0 && !(CurSpan is IfBlockSpan || CurSpan is ElseIfBlockSpan)) {
 						spanStack.Pop ();
 					}

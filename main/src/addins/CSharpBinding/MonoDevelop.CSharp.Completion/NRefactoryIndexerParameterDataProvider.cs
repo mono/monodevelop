@@ -48,13 +48,12 @@ namespace MonoDevelop.CSharp.Completion
 	{
 //		IType type;
 		string resolvedExpression;
-		TextEditorData editor;
 		static CSharpAmbience ambience = new CSharpAmbience ();
 		List<IProperty> indexers;
 		
 		public NRefactoryIndexerParameterDataProvider (TextEditorData editor, IType type, string resolvedExpression)
 		{
-			this.editor = editor;
+//			this.editor = editor;
 //			this.type = type;
 			this.resolvedExpression = resolvedExpression;
 			indexers = new List<IProperty> (type.Properties.Where (p => p.IsIndexer && !p.Name.Contains ('.')));

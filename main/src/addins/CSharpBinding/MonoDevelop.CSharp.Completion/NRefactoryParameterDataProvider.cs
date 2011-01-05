@@ -46,18 +46,15 @@ namespace MonoDevelop.CSharp.Completion
 {
 	public class NRefactoryParameterDataProvider : IParameterDataProvider
 	{
-		TextEditorData editor;
 		List<IMethod> methods = new List<IMethod> ();
 		CSharpAmbience ambience = new CSharpAmbience ();
 		
-		//bool staticResolve = false;
+		bool staticResolve = false;
 		
 		public NRefactoryParameterDataProvider (TextEditorData editor, NRefactoryResolver resolver, MethodResolveResult resolveResult)
 		{
-			this.editor = editor;
-			//this.staticResolve = resolveResult.StaticResolve;
+			this.staticResolve = resolveResult.StaticResolve;
 			bool includeProtected = true;
-			
 			HashSet<string> alreadyAdded = new HashSet<string> ();
 			foreach (IMethod method in resolveResult.Methods) {
 				if (method.IsConstructor)
@@ -79,7 +76,6 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public NRefactoryParameterDataProvider (TextEditorData editor, NRefactoryResolver resolver, ThisResolveResult resolveResult)
 		{
-			this.editor = editor;
 			HashSet<string> alreadyAdded = new HashSet<string> ();
 			if (resolveResult.CallingType != null) {
 				bool includeProtected = true;
@@ -99,7 +95,6 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public NRefactoryParameterDataProvider (TextEditorData editor, NRefactoryResolver resolver, BaseResolveResult resolveResult)
 		{
-			this.editor = editor;
 			HashSet<string> alreadyAdded = new HashSet<string> ();
 			if (resolveResult.CallingType != null) {
 				IType resolvedType = resolver.Dom.GetType (resolveResult.ResolvedType);
@@ -127,8 +122,6 @@ namespace MonoDevelop.CSharp.Completion
 		// used for constructor completion
 		public NRefactoryParameterDataProvider (TextEditorData editor, NRefactoryResolver resolver, IType type)
 		{
-			this.editor = editor;
-			
 			if (type != null) {
 				if (type.ClassType == ClassType.Delegate) {
 					IMethod invokeMethod = ExtractInvokeMethod (type);
@@ -178,7 +171,6 @@ namespace MonoDevelop.CSharp.Completion
  		string delegateName = null;
 		public NRefactoryParameterDataProvider (TextEditorData editor, string delegateName, IType type)
 		{
-			this.editor = editor;
 			this.delegateName = delegateName;
 			if (type != null) {
 				methods.Add (ExtractInvokeMethod (type));
@@ -239,10 +231,13 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
 		{
-			string name = (this.delegateName ?? (methods[overload].IsConstructor ? ambience.GetString (methods[overload].DeclaringType, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics) : methods[overload].Name));
+			var flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics;
+			if (staticResolve)
+				flags |= OutputFlags.StaticUsage;
+			string name = (this.delegateName ?? (methods[overload].IsConstructor ? ambience.GetString (methods[overload].DeclaringType, flags) : methods[overload].Name));
 			StringBuilder parameters = new StringBuilder ();
 			int curLen = 0;
-			string prefix = !methods[overload].IsConstructor ? ambience.GetString (methods[overload].ReturnType, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup  | OutputFlags.IncludeGenerics) + " " : "";
+			string prefix = !methods[overload].IsConstructor ? ambience.GetString (methods[overload].ReturnType, flags) + " " : "";
 
 			foreach (string parameter in parameterMarkup) {
 				if (parameters.Length > 0)
@@ -260,7 +255,7 @@ namespace MonoDevelop.CSharp.Completion
 				parameters.Append (parameter);
 			}
 			StringBuilder sb = new StringBuilder ();
-			if (methods[overload].WasExtended)
+			if (!staticResolve && methods[overload].WasExtended)
 				sb.Append (GettextCatalog.GetString ("(Extension) "));
 			sb.Append (prefix);
 			sb.Append ("<b>");

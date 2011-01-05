@@ -339,7 +339,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 		
 		static string GenerateMethodCall (RefactoringOptions options, ExtractMethodParameters param)
 		{
-			var data = options.GetTextEditorData ();
+//			var data = options.GetTextEditorData ();
 			StringBuilder sb = new StringBuilder ();
 			
 	/*		LineSegment line = data.Document.GetLine (Math.Max (0, data.Document.OffsetToLineNumber (data.SelectionRange.Offset) - 1));

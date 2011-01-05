@@ -38,7 +38,7 @@ namespace MonoDevelop.CSharp.Dom
 {
 	public class CSharpAmbience : Ambience, IDomVisitor<OutputSettings, string>
 	{
-		const string nullString = "Null";
+		new const string nullString = "Null";
 		static Dictionary<string, string> netToCSharpTypes = new Dictionary<string, string> ();
 		static HashSet<string> keywords = new HashSet<string> (new [] {
 			"abstract",
@@ -449,7 +449,7 @@ namespace MonoDevelop.CSharp.Dom
 					result.Append (settings.Markup (" "));
 				
 				result.Append (settings.Markup ("("));
-				bool first = true;
+				bool first = !settings.StaticUsage;
 				if (method.Parameters != null) {
 					foreach (IParameter parameter in method.Parameters) {
 						if (settings.HideExtensionsParameter && method.IsExtension && first)

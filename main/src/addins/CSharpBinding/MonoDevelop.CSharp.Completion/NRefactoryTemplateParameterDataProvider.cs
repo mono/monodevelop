@@ -40,13 +40,12 @@ namespace MonoDevelop.CSharp.Completion
 {
 	public class NRefactoryTemplateParameterDataProvider : IParameterDataProvider
 	{
-		TextEditorData editor;
 		List<ITypeParameterMember> types = new List<ITypeParameterMember> ();
 		static CSharpAmbience ambience = new CSharpAmbience ();
 		
 		public NRefactoryTemplateParameterDataProvider (TextEditorData editor, NRefactoryResolver resolver, IEnumerable<string> namespaces, ExpressionResult expressionResult, DomLocation loc)
 		{
-			this.editor = editor;
+//			this.editor = editor;
 			ResolveResult plainResolveResult = resolver.Resolve (expressionResult, loc);
 			MethodResolveResult resolveResult = plainResolveResult as MethodResolveResult;
 			if (resolveResult != null) {

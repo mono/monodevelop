@@ -1773,7 +1773,7 @@ namespace MonoDevelop.CSharp.Parser
 				for (int i = 0; i < d.Constraints.Count; i++) {
 					Constraints c = d.Constraints[i];
 					var location = LocationsBag.GetLocations (c);
-					var constraint = new Constraint ();
+//					var constraint = new Constraint ();
 					parent.AddChild (new CSharpTokenNode (Convert (location[0]), "where".Length), InvocationExpression.Roles.Keyword);
 					parent.AddChild (new Identifier (c.TypeParameter.Value, Convert (c.TypeParameter.Location)), InvocationExpression.Roles.Identifier);
 					parent.AddChild (new CSharpTokenNode (Convert (location[1]), 1), InvocationExpression.Roles.Colon);
