@@ -158,7 +158,11 @@ namespace MonoDevelop.XmlEditor.Completion
 				using (StreamReader reader = new StreamReader (fileName, true))
 					ReadSchema (baseUri, reader);
 			
-			XmlSchemaSet sset = new XmlSchemaSet ();
+			//TODO: should we evaluate unresolved imports against other registered schemas?
+			//will be messy because we'll have to re-evaluate if any schema is added, removed or changes
+			//maybe we should just force users to use schemaLocation in their includes
+			var sset = new XmlSchemaSet ();
+			sset.XmlResolver = new LocalOnlyXmlResolver ();
 			sset.Add (schema);
 			sset.ValidationEventHandler += SchemaValidation;
 			sset.Compile ();
@@ -502,13 +506,12 @@ namespace MonoDevelop.XmlEditor.Completion
 		{
 			XmlTextReader xmlReader = new XmlTextReader(baseUri, reader);
 			
-			// Setting the resolver to null allows us to
-			// load the xhtml1-strict.xsd without any exceptions if
-			// the referenced dtds exist in the same folder as the .xsd
-			// file.  If this is not set to null the dtd files are looked
-			// for in the assembly's folder.
-			xmlReader.XmlResolver = null;
-			ReadSchema(xmlReader);
+			// The default resolve can cause exceptions loading 
+			// xhtml1-strict.xsd because of the referenced dtds. It also has the
+			// possibility of blocking on referenced remote URIs.
+			// Instead we only resolve local xsds.
+			xmlReader.XmlResolver = new LocalOnlyXmlResolver ();
+			ReadSchema (xmlReader);
 		}			
 			
 			

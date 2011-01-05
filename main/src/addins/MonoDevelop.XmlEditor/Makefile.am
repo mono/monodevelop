@@ -53,6 +53,7 @@ FILES =  \
 	MonoDevelop.XmlEditor.Completion/ILazilyLoadedProvider.cs \
 	MonoDevelop.XmlEditor.Completion/InferredXmlCompletionProvider.cs \
 	MonoDevelop.XmlEditor.Completion/IXmlCompletionProvider.cs \
+	MonoDevelop.XmlEditor.Completion/LocalOnlyXmlResolver.cs \
 	MonoDevelop.XmlEditor.Completion/XmlCompletionData.cs \
 	MonoDevelop.XmlEditor.Completion/XmlCompletionDataCollection.cs \
 	MonoDevelop.XmlEditor.Completion/XmlMultipleClosingTagCompletionData.cs \
