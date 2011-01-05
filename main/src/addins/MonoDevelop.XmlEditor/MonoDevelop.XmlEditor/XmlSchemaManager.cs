@@ -67,7 +67,9 @@ namespace MonoDevelop.XmlEditor
 			get {
 				if (builtinSchemas == null) {
 					builtinSchemas  = new XmlSchemaCompletionDataCollection ();
-					LoadSchemas (builtinSchemas, SchemaFolder, true);
+					var nodes = Mono.Addins.AddinManager.GetExtensionNodes ("/MonoDevelop/XmlEditor/XmlSchemas");
+					foreach (XmlSchemaNode node in nodes)
+						LoadSchema (builtinSchemas, node.File, true);
 				}
 				return builtinSchemas;
 			}
@@ -195,17 +197,6 @@ namespace MonoDevelop.XmlEditor
 				LoggingService.LogWarning (
 				    "XmlSchemaManager is unable to read schema '{0}', because of the following error: {1}",
 				    fileName, ex.Message);
-			}
-		}
-		
-		/// <summary>
-		/// Gets the folder where the schemas for all users on the
-		/// local machine are stored.
-		/// </summary>
-		static string SchemaFolder {
-			get {
-				string location = Assembly.GetAssembly (typeof(XmlSchemaManager)).Location;
-				return Path.GetFullPath (Path.Combine (Path.GetDirectoryName (location), "schemas"));
 			}
 		}
 		

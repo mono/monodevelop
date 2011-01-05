@@ -22,7 +22,6 @@
 // THE SOFTWARE.
 
 using Mono.Addins;
-using System.Collections;
 
 namespace MonoDevelop.XmlEditor
 {
