@@ -77,14 +77,15 @@ namespace MonoDevelop.XmlEditor
 		
 		public static XmlSchemaCompletionData GetSchemaCompletionData (string fileExtension)
 		{
-			XmlSchemaCompletionData data = null;
-			
 			var association = XmlFileAssociationManager.GetAssociation (fileExtension);
-			if (association != null)
-				if (association.NamespaceUri.Length > 0)
-					data = SchemaCompletionDataItems [association.NamespaceUri];
-			
-			return data;
+			if (association == null || association.NamespaceUri.Length == 0)
+				return null;
+			var u = new Uri (association.NamespaceUri);
+			if (u.IsFile) {
+				return ReadLocalSchema (u);
+			} else {
+				return SchemaCompletionDataItems [association.NamespaceUri];
+			}
 		}
 		
 		/// <summary>
@@ -197,6 +198,19 @@ namespace MonoDevelop.XmlEditor
 				LoggingService.LogWarning (
 				    "XmlSchemaManager is unable to read schema '{0}', because of the following error: {1}",
 				    fileName, ex.Message);
+			}
+		}
+		
+		//FIXME: cache and re-use these instances using a weak reference table
+		static XmlSchemaCompletionData ReadLocalSchema (Uri uri)
+		{
+			try {
+				return new XmlSchemaCompletionData (uri.ToString (), uri.LocalPath);
+			} catch (Exception ex) {
+				LoggingService.LogWarning (
+				    "XmlSchemaManager is unable to read schema '{0}', because of the following error: {1}",
+				    uri, ex.Message);
+				return null;
 			}
 		}
 		
