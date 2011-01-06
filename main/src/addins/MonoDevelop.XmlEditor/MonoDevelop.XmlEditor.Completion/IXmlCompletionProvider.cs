@@ -31,19 +31,17 @@ using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.XmlEditor.Completion
 {
-	
-	
 	public interface IXmlCompletionProvider
 	{
-		CompletionData[] GetElementCompletionData ();
-		CompletionData[] GetElementCompletionData (string namespacePrefix);
+		CompletionDataList GetElementCompletionData ();
+		CompletionDataList GetElementCompletionData (string namespacePrefix);
 		
-		CompletionData[] GetChildElementCompletionData (XmlElementPath path);
-		CompletionData[] GetAttributeCompletionData (XmlElementPath path);
-		CompletionData[] GetAttributeValueCompletionData (XmlElementPath path, string name);
+		CompletionDataList GetChildElementCompletionData (XmlElementPath path);
+		CompletionDataList GetAttributeCompletionData (XmlElementPath path);
+		CompletionDataList GetAttributeValueCompletionData (XmlElementPath path, string name);
 		
-		CompletionData[] GetChildElementCompletionData (string tagName);
-		CompletionData[] GetAttributeCompletionData (string tagName);
-		CompletionData[] GetAttributeValueCompletionData (string tagName, string name);
+		CompletionDataList GetChildElementCompletionData (string tagName);
+		CompletionDataList GetAttributeCompletionData (string tagName);
+		CompletionDataList GetAttributeValueCompletionData (string tagName, string name);
 	}
 }

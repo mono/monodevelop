@@ -73,62 +73,60 @@ namespace MonoDevelop.XmlEditor.Completion
 			}
 		}
 		
-		public CompletionData[] GetElementCompletionData ()
+		public CompletionDataList GetElementCompletionData ()
 		{
 			return GetChildElementCompletionData ("");
 		}
 		
-		public CompletionData[] GetElementCompletionData (string namespacePrefix)
+		public CompletionDataList GetElementCompletionData (string namespacePrefix)
 		{
-			return new CompletionData[0];
+			return new CompletionDataList ();
 		}
 		
-		public CompletionData[] GetChildElementCompletionData (XmlElementPath path)
+		public CompletionDataList GetChildElementCompletionData (XmlElementPath path)
 		{
 			return GetCompletions (elementCompletions, path, XmlCompletionData.DataType.XmlElement);
 		}
 		
-		public CompletionData[] GetAttributeCompletionData (XmlElementPath path)
+		public CompletionDataList GetAttributeCompletionData (XmlElementPath path)
 		{
 			return GetCompletions (attributeCompletions, path, XmlCompletionData.DataType.XmlAttribute);
 		}
 		
-		public CompletionData[] GetAttributeValueCompletionData (XmlElementPath path, string name)
+		public CompletionDataList GetAttributeValueCompletionData (XmlElementPath path, string name)
 		{
-			return new CompletionData [0];
+			return new CompletionDataList ();
 		}
 		
-		public CompletionData[] GetChildElementCompletionData (string tagName)
+		public CompletionDataList GetChildElementCompletionData (string tagName)
 		{
 			return GetCompletions (elementCompletions, tagName, XmlCompletionData.DataType.XmlElement);
 		}
 		
-		public CompletionData[] GetAttributeCompletionData (string tagName)
+		public CompletionDataList GetAttributeCompletionData (string tagName)
 		{
 			return GetCompletions (attributeCompletions, tagName, XmlCompletionData.DataType.XmlAttribute);
 		}
 		
-		public CompletionData[] GetAttributeValueCompletionData (string tagName, string name)
+		public CompletionDataList GetAttributeValueCompletionData (string tagName, string name)
 		{
-			return new CompletionData [0];
+			return new CompletionDataList ();
 		}
 		
-		static CompletionData[] GetCompletions (Dictionary<string,HashSet<string>> map, string tagName, XmlCompletionData.DataType type)
+		static CompletionDataList GetCompletions (Dictionary<string,HashSet<string>> map, string tagName, XmlCompletionData.DataType type)
 		{
+			var data = new CompletionDataList ();
 			HashSet<string> values;
-			if (!map.TryGetValue (tagName, out values))
-				return new CompletionData [0];
-			CompletionData[] data = new CompletionData[values.Count];
-			int i = 0;
-			foreach (string s in values)
-				data[i++] = new XmlCompletionData (s, type);
+			if (map.TryGetValue (tagName, out values))
+				foreach (string s in values)
+					data.Add (new XmlCompletionData (s, type));
 			return data;
 		}
 		
-		static CompletionData[] GetCompletions (Dictionary<string,HashSet<string>> map, XmlElementPath path, XmlCompletionData.DataType type)
+		static CompletionDataList GetCompletions (Dictionary<string,HashSet<string>> map, XmlElementPath path, XmlCompletionData.DataType type)
 		{
 			if (path == null || path.Elements.Count == 0)
-				return new CompletionData[0];
+				return new CompletionDataList ();
 			return GetCompletions (map, path.Elements[path.Elements.Count - 1].Name, type);
 		}
 	}
