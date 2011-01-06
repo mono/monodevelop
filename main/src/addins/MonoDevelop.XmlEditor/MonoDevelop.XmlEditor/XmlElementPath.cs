@@ -22,6 +22,7 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.XmlEditor.Completion;
 
 namespace MonoDevelop.XmlEditor
 {
@@ -32,6 +33,9 @@ namespace MonoDevelop.XmlEditor
 	public class XmlElementPath
 	{
 		QualifiedNameCollection elements = new QualifiedNameCollection();
+		XmlNamespacePrefixMap nsMap = new XmlNamespacePrefixMap ();
+		
+		public XmlNamespacePrefixMap Namespaces { get { return nsMap; } }
 		
 		public XmlElementPath()
 		{

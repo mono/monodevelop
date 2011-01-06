@@ -113,29 +113,28 @@ namespace MonoDevelop.XmlEditor
 			return ConvertPath (GetCurrentPath ());
 		}
 		
-		static XmlElementPath ConvertPath (IList<XObject> path)
+		XmlElementPath ConvertPath (IList<XObject> path)
 		{
-			XmlElementPath elementPath = new XmlElementPath ();
-			var namespaces = new Dictionary<string, string> ();
-			string defaultNamespace = null;
+			var elementPath = new XmlElementPath ();
+			
+			if (defaultSchemaCompletionData != null && !string.IsNullOrEmpty (defaultSchemaCompletionData.NamespaceUri))
+				elementPath.Namespaces.AddPrefix (defaultSchemaCompletionData.NamespaceUri, defaultNamespacePrefix ?? "");
+			
 			foreach (var obj in path) {
 				var el = obj as XElement;
 				if (el == null)
 					continue;
-				foreach (XAttribute att in el.Attributes) {
-					if (att.Name.HasPrefix) {
-						if (att.Name.Prefix == "xmlns")
-							namespaces [att.Name.Name] = att.Value;
-					} else {
-						if (att.Name.Name == "xmlns")
-							defaultNamespace = att.Value;
+				foreach (var att in el.Attributes) {
+					if (!string.IsNullOrEmpty (att.Value)) {
+						if (att.Name.HasPrefix) {
+							if (att.Name.Prefix == "xmlns")
+								elementPath.Namespaces.AddPrefix (att.Value, att.Name.Name);
+						} else if (att.Name.Name == "xmlns") {
+								elementPath.Namespaces.AddPrefix (att.Value, "");
+						}
 					}
 				}
-				string ns = null;
-				if (el.Name.HasPrefix)
-					namespaces.TryGetValue (el.Name.Prefix, out ns);
-				else
-					ns = defaultNamespace;
+				string ns = elementPath.Namespaces.GetNamespace (el.Name.HasPrefix? el.Name.Prefix : "");
 				QualifiedName qn = new QualifiedName (el.Name.Name, ns, el.Name.Prefix ?? String.Empty);
 				elementPath.Elements.Add (qn);
 			}
