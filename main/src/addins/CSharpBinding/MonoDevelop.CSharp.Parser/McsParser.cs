@@ -862,19 +862,7 @@ namespace MonoDevelop.CSharp.Parser
 				evt.ReturnType = ConvertReturnType (e.TypeName);
 				var location = LocationsBag.GetMemberLocation (e);
 				if (location != null)
-					evt.BodyRegion = ConvertRegion (location[0], location[1]);
-				
-//				if (e.Add != null) {
-//					property.GetterModifier = ConvertModifiers (p.Get.ModFlags);
-//					if (p.Get.Block != null)
-//						property.GetRegion = ConvertRegion (p.Get.Location, p.Get.Block.EndLocation);
-//				}
-//				
-//				if (e.Remove != null) {
-//					property.GetterModifier = ConvertModifiers (p.Get.ModFlags);
-//					if (p.Get.Block != null)
-//						property.GetRegion = ConvertRegion (p.Get.Location, p.Get.Block.EndLocation);
-//				}
+					evt.BodyRegion = ConvertRegion (location[1], location[2]);
 				
 				AddAttributes (evt, e.OptAttributes);
 				AddExplicitInterfaces (evt, e);
