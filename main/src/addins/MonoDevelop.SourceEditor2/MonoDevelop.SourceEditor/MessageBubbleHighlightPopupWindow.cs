@@ -59,6 +59,7 @@ namespace MonoDevelop.SourceEditor
 			//FIXME add a drop shadow on the pixmap, and expand the bounds to include this
 			using (Gdk.Pixmap pixmap = new Gdk.Pixmap (parentwindow, bounds.Width, bounds.Height)) {
 				using (var bgGc = new Gdk.GC(pixmap)) {
+					marker.EnsureLayoutCreated (base.Editor);
 					bgGc.RgbFgColor = CairoExtensions.CairoColorToGdkColor (marker.colorMatrix[0, 0, 0, 0, 0]);
 					pixmap.DrawRectangle (bgGc, true, 0, 0, bounds.Width, bounds.Height);
 					bgGc.RgbFgColor = (Mono.TextEditor.HslColor)marker.gc;

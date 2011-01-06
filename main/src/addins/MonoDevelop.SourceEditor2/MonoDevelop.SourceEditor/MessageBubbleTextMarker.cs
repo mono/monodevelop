@@ -308,7 +308,7 @@ namespace MonoDevelop.SourceEditor
 			return colorMatrix;
 		}
 		
-		void EnsureLayoutCreated (TextEditor editor)
+		internal void EnsureLayoutCreated (TextEditor editor)
 		{
 			if (colorMatrix == null && editor.ColorStyle != null) {
 				bool isError = errors.Any (e => e.IsError);
