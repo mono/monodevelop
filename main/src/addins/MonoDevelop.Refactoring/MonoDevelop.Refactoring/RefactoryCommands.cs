@@ -228,9 +228,8 @@ namespace MonoDevelop.Refactoring
 				}
 			}
 			
-			
-			
-			if (doc.CompilationUnit != null && doc.CompilationUnit.Usings.Any (u => !u.IsFromNamespace && u.Region.Contains (line, column))) {
+			var unit = doc.CompilationUnit;
+			if (unit != null && unit.Usings != null && unit.Usings.Any (u => !u.IsFromNamespace && u.Region.Contains (line, column))) {
 				CommandInfoSet organizeUsingsMenu = new CommandInfoSet ();
 				organizeUsingsMenu.Text = GettextCatalog.GetString ("_Organize Usings");
 				organizeUsingsMenu.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.RemoveUnusedImports), new RefactoryOperation (delegate {
