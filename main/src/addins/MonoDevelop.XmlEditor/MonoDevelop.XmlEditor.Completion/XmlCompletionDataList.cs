@@ -36,22 +36,37 @@ namespace MonoDevelop.XmlEditor.Completion
 	public class XmlCompletionDataList: CompletionDataList
 	{
 		HashSet<string> names = new HashSet<string> ();
+		XmlNamespacePrefixMap nsMap;
+		
+		public XmlCompletionDataList (XmlNamespacePrefixMap nsMap)
+		{
+			this.nsMap = nsMap;
+		}
 		
 		public XmlCompletionDataList ()
 		{
+			this.nsMap = new XmlNamespacePrefixMap ();
 		}
 		
 		public void AddAttribute (XmlSchemaAttribute attribute)
 		{
-			//FIXME: resolve the namespace into a prefix from the document instance
 			string name = attribute.Name;
 			if (name == null) {
-				if (attribute.RefName.Namespace == "http://www.w3.org/XML/1998/namespace") {
-					name = String.Concat("xml:", attribute.RefName.Name);
+				var ns = attribute.RefName.Namespace;
+				if (string.IsNullOrEmpty (ns))
+					return;
+				var prefix = nsMap.GetPrefix (ns);
+				if (prefix == null) {
+					if (ns == "http://www.w3.org/XML/1998/namespace")
+						prefix = "xml";
+					else
+						return;
 				}
+				name = attribute.RefName.Name;
+				if (prefix.Length > 0)
+					name = prefix + ":" + name;
 			}
-			
-			if (name == null || !names.Add (name))
+			if (!names.Add (name))
 				return;
 			string documentation = GetDocumentation (attribute.Annotation);
 			Add (new XmlCompletionData (name, documentation, XmlCompletionData.DataType.XmlAttribute));

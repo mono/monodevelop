@@ -243,7 +243,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		{
 			EnsureLoaded ();
 			
-			var data = new XmlCompletionDataList ();
+			var data = new XmlCompletionDataList (path.Namespaces);
 			var element = FindElement (path);
 			if (element != null) {
 				prohibitedAttributes.Clear ();
@@ -260,7 +260,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		{
 			EnsureLoaded ();
 			
-			var data = new XmlCompletionDataList ();
+			var data = new XmlCompletionDataList (path.Namespaces);
 			var element = FindElement (path);
 			if (element != null)
 				GetChildElementCompletionData (data, element, path.Elements.LastPrefix);
@@ -274,7 +274,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		{
 			EnsureLoaded ();
 			
-			var data = new XmlCompletionDataList ();
+			var data = new XmlCompletionDataList (path.Namespaces);
 			var element = FindElement (path);
 			if (element != null)
 				GetAttributeValueCompletionData (data, element, name);
