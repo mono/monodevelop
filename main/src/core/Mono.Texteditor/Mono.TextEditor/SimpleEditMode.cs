@@ -293,6 +293,7 @@ namespace Mono.TextEditor
 			action = CaretMoveActions.LineHome;
 			keyBindings.Add (GetKeyCode (Gdk.Key.Left, Gdk.ModifierType.MetaMask), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.a, Gdk.ModifierType.ControlMask), action); //emacs
+			keyBindings.Add (GetKeyCode (Gdk.Key.a, Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask), SelectionActions.MoveLineHome);
 			
 			action = SelectionActions.MoveLineHome;
 			keyBindings.Add (GetKeyCode (Gdk.Key.Left, Gdk.ModifierType.MetaMask | Gdk.ModifierType.ShiftMask), action);
@@ -310,6 +311,8 @@ namespace Mono.TextEditor
 			action = CaretMoveActions.LineEnd;
 			keyBindings.Add (GetKeyCode (Gdk.Key.Right, Gdk.ModifierType.MetaMask), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.e, Gdk.ModifierType.ControlMask), action); //emacs
+			keyBindings.Add (GetKeyCode (Gdk.Key.e, Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask), SelectionActions.MoveLineEnd);
+			
 			
 			action = SelectionActions.MoveLineEnd;
 			keyBindings.Add (GetKeyCode (Gdk.Key.Right, Gdk.ModifierType.MetaMask | Gdk.ModifierType.ShiftMask), action);

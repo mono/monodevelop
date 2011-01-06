@@ -123,6 +123,10 @@ namespace Mono.TextEditor
 					mod |= Gdk.ModifierType.Mod1Mask;
 					key = GetGroupZeroKey (key, evt);
 				}
+				
+				// Fix for allow ctrl+shift+a/ctrl+shift+e keys on mac (select to line begin/end actions)
+				if ((key == Gdk.Key.A || key == Gdk.Key.E) && (evt.State & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask))
+					mod = Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask;
 			}
 			
 			//fix shift-tab weirdness. There isn't a nice name for untab, so make it shift-tab
