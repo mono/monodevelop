@@ -441,10 +441,13 @@ namespace MonoDevelop.Ide.Gui
 			get {
 				if (parsedDocument == null)
 					return null;
+				var unit = parsedDocument.CompilationUnit;
+				if (unit == null)
+					return null;
 				// HACK: The parser sometimes doesn't send back >any< info on the file on certain errors, this code detects if the last error free parsed document is the better best-fit.
-				if (parsedDocument.HasErrors && !parsedDocument.CompilationUnit.Types.Any () && lastErrorFreeParsedDocument != null && lastErrorFreeParsedDocument.CompilationUnit.Types.Any ())
+				if (parsedDocument.HasErrors && !unit.Types.Any () && lastErrorFreeParsedDocument != null && lastErrorFreeParsedDocument.CompilationUnit.Types.Any ())
 					return lastErrorFreeParsedDocument.CompilationUnit;
-				return parsedDocument.CompilationUnit;
+				return unit;
 			}
 		}
 		
