@@ -1237,7 +1237,7 @@ namespace Mono.TextEditor
 			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
 			int selectionStart;
 			int selectionEnd;
-			if (BackgroundRenderer != null || this.HideSelection) {
+			if (this.HideSelection) {
 				selectionStart = selectionEnd = -1;
 			} else {
 				GetSelectionOffsets (line, out selectionStart, out selectionEnd);
@@ -1906,8 +1906,6 @@ namespace Mono.TextEditor
 
 		public void DrawRectangleWithRuler (Cairo.Context cr, double x, Cairo.Rectangle area, Cairo.Color color, bool drawDefaultBackground)
 		{
-			if (BackgroundRenderer != null)
-				return;
 			bool isDefaultColor = color.R == defaultBgColor.R && color.G == defaultBgColor.G && color.B == defaultBgColor.B;
 			if (isDefaultColor && !drawDefaultBackground)
 				return;

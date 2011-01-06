@@ -116,7 +116,7 @@ namespace Mono.TextEditor
 					role = roles[segment];
 				}
 				DrawRoundRectangle (cr, (role & Roles.Start) == Roles.Start, (role & Roles.End) == Roles.End, xPos, y, editor.LineHeight / 2, rectangleWidth, lineHeight);
-				cr.Color = Style.ToCairoColor (hslColor);
+				cr.Color = Style.ToCairoColor (hslColor, 0.8);
 				cr.Fill ();
 		/*		if (segment == foldSegments.Count - 1) {
 					cr.Color = new Cairo.Color (0.5, 0.5, 0.5, 1);
