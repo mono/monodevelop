@@ -55,7 +55,7 @@ FILES =  \
 	MonoDevelop.XmlEditor.Completion/IXmlCompletionProvider.cs \
 	MonoDevelop.XmlEditor.Completion/LocalOnlyXmlResolver.cs \
 	MonoDevelop.XmlEditor.Completion/XmlCompletionData.cs \
-	MonoDevelop.XmlEditor.Completion/XmlCompletionDataCollection.cs \
+	MonoDevelop.XmlEditor.Completion/XmlCompletionDataList.cs \
 	MonoDevelop.XmlEditor.Completion/XmlMultipleClosingTagCompletionData.cs \
 	MonoDevelop.XmlEditor.Completion/XmlSchemaCompletionData.cs \
 	MonoDevelop.XmlEditor.Completion/XmlSchemaCompletionDataCollection.cs \

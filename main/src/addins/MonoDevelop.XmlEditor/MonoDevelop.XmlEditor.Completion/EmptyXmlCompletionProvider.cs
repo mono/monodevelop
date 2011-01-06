@@ -35,46 +35,44 @@ namespace MonoDevelop.XmlEditor.Completion
 	
 	public class EmptyXmlCompletionProvider : IXmlCompletionProvider
 	{
-		static CompletionData[] emptyData = new CompletionData [] {};
-
-		public CompletionData[] GetElementCompletionData ()
+		public CompletionDataList GetElementCompletionData ()
 		{
-			return emptyData;
+			return new CompletionDataList ();
 		}
 
-		public CompletionData[] GetElementCompletionData (string namespacePrefix)
+		public CompletionDataList GetElementCompletionData (string namespacePrefix)
 		{
-			return emptyData;
+			return new CompletionDataList ();
 		}
 
-		public CompletionData[] GetChildElementCompletionData (MonoDevelop.XmlEditor.XmlElementPath path)
+		public CompletionDataList GetChildElementCompletionData (MonoDevelop.XmlEditor.XmlElementPath path)
 		{
-			return emptyData;
+			return new CompletionDataList ();
 		}
 
-		public CompletionData[] GetAttributeCompletionData (MonoDevelop.XmlEditor.XmlElementPath path)
+		public CompletionDataList GetAttributeCompletionData (MonoDevelop.XmlEditor.XmlElementPath path)
 		{
-			return emptyData;
+			return new CompletionDataList ();
 		}
 
-		public CompletionData[] GetAttributeValueCompletionData (MonoDevelop.XmlEditor.XmlElementPath path, string name)
+		public CompletionDataList GetAttributeValueCompletionData (MonoDevelop.XmlEditor.XmlElementPath path, string name)
 		{
-			return emptyData;
+			return new CompletionDataList ();
 		}
 
-		public CompletionData[] GetChildElementCompletionData (string tagName)
+		public CompletionDataList GetChildElementCompletionData (string tagName)
 		{
-			return emptyData;
+			return new CompletionDataList ();
 		}
 
-		public CompletionData[] GetAttributeCompletionData (string tagName)
+		public CompletionDataList GetAttributeCompletionData (string tagName)
 		{
-			return emptyData;
+			return new CompletionDataList ();
 		}
 
-		public CompletionData[] GetAttributeValueCompletionData (string tagName, string name)
+		public CompletionDataList GetAttributeValueCompletionData (string tagName, string name)
 		{
-			return emptyData;
+			return new CompletionDataList ();
 		}
 	}
 }

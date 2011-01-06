@@ -144,13 +144,13 @@ namespace MonoDevelop.XmlEditor
 		
 		protected override void GetElementCompletions (CompletionDataList list)
 		{	
-			XmlElementPath path = GetElementPath ();
+			var path = GetElementPath ();
 			if (path.Elements.Count > 0) {
 				IXmlCompletionProvider schema = FindSchema (path);
 				if (schema == null)
 					schema = inferredCompletionData;
 				if (schema != null) {
-					CompletionData[] completionData = schema.GetChildElementCompletionData (path);
+					var completionData = schema.GetChildElementCompletionData (path);
 					if (completionData != null)
 						list.AddRange (completionData);
 				}
@@ -165,30 +165,24 @@ namespace MonoDevelop.XmlEditor
 		protected override CompletionDataList GetAttributeCompletions (IAttributedXObject attributedOb,
 			Dictionary<string, string> existingAtts)
 		{
-			XmlElementPath path = GetElementPath ();
+			var path = GetElementPath ();
 			if (path.Elements.Count > 0) {
 				IXmlCompletionProvider schema = FindSchema (path);
 				if (schema == null)
 					schema = inferredCompletionData;
-				if (schema != null) {
-					CompletionData[] completionData = schema.GetAttributeCompletionData (path);
-					if (completionData != null)
-						return new CompletionDataList (completionData);
-				}
+				if (schema != null)
+					return schema.GetAttributeCompletionData (path);
 			}
 			return null;
 		}
 		
 		protected override CompletionDataList GetAttributeValueCompletions (IAttributedXObject attributedOb, XAttribute att)
 		{
-			XmlElementPath path = GetElementPath ();
+			var path = GetElementPath ();
 			if (path.Elements.Count > 0) {
-				XmlSchemaCompletionData schema = FindSchema (path);
-				if (schema != null) {
-					CompletionData[] completionData = schema.GetAttributeValueCompletionData (path, att.Name.FullName);
-					if (completionData != null)
-						return new CompletionDataList (completionData);
-				}
+				var schema = FindSchema (path);
+				if (schema != null)
+					return schema.GetAttributeValueCompletionData (path, att.Name.FullName);
 			}
 			return null;
 		}

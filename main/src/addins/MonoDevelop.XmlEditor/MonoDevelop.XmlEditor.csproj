@@ -124,14 +124,12 @@
     <Compile Include="MonoDevelop.XmlEditor.Gui\XmlSchemasPanel.cs" />
     <Compile Include="MonoDevelop.XmlEditor.Completion\XmlSchemaCompletionData.cs" />
     <Compile Include="MonoDevelop.XmlEditor.Completion\XmlSchemaCompletionDataCollection.cs" />
-    <Compile Include="MonoDevelop.XmlEditor.Completion\XmlCompletionDataCollection.cs" />
     <Compile Include="MonoDevelop.XmlEditor.Completion\XmlCompletionData.cs" />
     <Compile Include="MonoDevelop.XmlEditor.Completion\IXmlCompletionProvider.cs" />
     <Compile Include="MonoDevelop.XmlEditor\QualifiedName.cs" />
     <Compile Include="MonoDevelop.XmlEditor\XmlElementPath.cs" />
     <Compile Include="MonoDevelop.XmlEditor\QualifiedNameCollection.cs" />
     <Compile Include="MonoDevelop.XmlEditor.Completion\ILazilyLoadedProvider.cs" />
-    <Compile Include="MonoDevelop.XmlEditor.Completion\EmptyXmlCompletionProvider.cs" />
     <Compile Include="MonoDevelop.XmlEditor.Completion\XmlTagCompletionData.cs" />
     <Compile Include="MonoDevelop.Xml.StateEngine\Parser.cs" />
     <Compile Include="MonoDevelop.Xml.StateEngine\State.cs" />
@@ -166,6 +164,8 @@
     <Compile Include="MonoDevelop.XmlEditor\XmlFileAssociationManager.cs" />
     <Compile Include="MonoDevelop.XmlEditor\XmlSchemaNode.cs" />
     <Compile Include="MonoDevelop.XmlEditor.Completion\LocalOnlyXmlResolver.cs" />
+    <Compile Include="MonoDevelop.XmlEditor.Completion\XmlCompletionDataList.cs" />
+    <Compile Include="MonoDevelop.XmlEditor.Completion\EmptyXmlCompletionProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.XmlEditor.addin.xml">
