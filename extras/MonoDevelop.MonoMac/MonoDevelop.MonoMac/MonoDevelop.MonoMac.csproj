@@ -170,7 +170,7 @@ exit 1
   <Target Name="AfterCompile">
     <Copy SourceFiles="$(MmpSrc)" DestinationFiles="$(MmpBin)" Condition="'$(MmpSrc)' != '' And Exists ('$(MmpSrc)')" />
     <WriteLinesToFile File="$(MmpBin)" Lines="$(MmpFakeScript)" Condition="!Exists('$(MmpBin)')" /> 
-    <Exec Command="chmod +x '$(MmpBin)'" /> 
+    <Exec Command="chmod +x '$(MmpBin)'" Condition="'$(MmpSrc)' == '' Or !Exists ('$(MmpSrc)')"  /> 
     <CreateItem Include="$(MmpBin)">
       <Output TaskParameter="Include" ItemName="FileWrites" />
     </CreateItem>
