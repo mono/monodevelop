@@ -159,17 +159,17 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 
   <PropertyGroup>
-    <MmpUrl>http://mjhutchinson.com/files/temp/mmp</MmpUrl>
+    <MmpSrc>..\..\..\..\artifacts\mmp</MmpSrc>
     <MmpBin>$(OutDir)mmp</MmpBin>
     <MmpFakeScript>#!/bin/sh
-echo "Bundling is not yet supported"
+echo "This build does not include the MonoMac bundler"
 exit 1
 </MmpFakeScript>
   </PropertyGroup>
 
   <Target Name="AfterCompile">
-    <WriteLinesToFile File="$(MmpBin)" Lines="$(MmpFakeScript)" Condition="'$(MmpUrl)' == '' And !Exists('$(MmpBin)')" /> 
-    <Exec Command="curl '$(MmpUrl)' -o '$(MmpBin)'" Condition="!Exists('$(MmpBin)')" /> 
+    <Copy SourceFiles="$(MmpSrc)" DestinationFiles="$(MmpBin)" Condition="'$(MmpSrc)' != '' And Exists ('$(MmpSrc)')" />
+    <WriteLinesToFile File="$(MmpBin)" Lines="$(MmpFakeScript)" Condition="!Exists('$(MmpBin)')" /> 
     <Exec Command="chmod +x '$(MmpBin)'" /> 
     <CreateItem Include="$(MmpBin)">
       <Output TaskParameter="Include" ItemName="FileWrites" />
