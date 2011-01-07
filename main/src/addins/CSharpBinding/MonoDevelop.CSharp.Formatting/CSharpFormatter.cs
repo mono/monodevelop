@@ -45,33 +45,26 @@ using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide;
 using MonoDevelop.Refactoring;
 using System.Linq;
+using MonoDevelop.Ide.CodeFormatting;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	public class CSharpFormatter : AbstractPrettyPrinter
+	public class CSharpFormatter : AbstractAdvancedFormatter
 	{
 		static internal readonly string MimeType = "text/x-csharp";
 		
-		public override bool SupportsOnTheFlyFormatting {
-			get {
-				return true;
-			}
-		}
+		public override bool SupportsOnTheFlyFormatting { get { return true; } }
+		public override bool SupportsCorrectingIndent { get { return true; } }
 		
-		public override bool CanFormat (string mimeType)
+		public override void CorrectIndenting (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
+			TextEditorData data, int line)
 		{
-			return mimeType == MimeType;
-		}
-		
-		public override void CorrectIndenting (object textEditorData, int line)
-		{
-			TextEditorData data = (TextEditorData)textEditorData;
 			LineSegment lineSegment = data.Document.GetLine (line);
 			if (lineSegment == null)
 				return;
-			IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
-			var policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
-			DocumentStateTracker<CSharpIndentEngine> tracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy), data);
+			
+			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
+			var tracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy), data);
 			tracker.UpdateEngine (lineSegment.Offset);
 			for (int i = lineSegment.Offset; i < lineSegment.Offset + lineSegment.EditableLength; i++) {
 				tracker.Engine.Push (data.Document.GetCharAt (i));
@@ -89,27 +82,28 @@ namespace MonoDevelop.CSharp.Formatting
 			tracker.Dispose ();
 		}
 		
-		public override void OnTheFlyFormat (object textEditorData, IType type, IMember member, ProjectDom dom, ICompilationUnit unit, DomLocation caretLocation)
+		public override void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
+			TextEditorData data, IType type, IMember member, ProjectDom dom, ICompilationUnit unit, DomLocation caretLocation)
 		{
-			OnTheFlyFormatter.Format ((TextEditorData)textEditorData, dom, caretLocation, true);
+			OnTheFlyFormatter.Format (policyParent, mimeTypeChain, data, dom, caretLocation, true);
 		}
 		
-		public override void OnTheFlyFormat (PolicyContainer policyParent, object textEditorData, int startOffset, int endOffset)
+		public override void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
+			TextEditorData data, int startOffset, int endOffset)
 		{
-			TextEditorData data = (TextEditorData)textEditorData;
-			
-			CSharp.Dom.CompilationUnit compilationUnit = new MonoDevelop.CSharp.Parser.CSharpParser ().Parse (data);
-			IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
-			CSharpFormattingPolicy policy = policyParent != null ? policyParent.Get<CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
-			DomSpacingVisitor domSpacingVisitor = new DomSpacingVisitor (policy, data);
-			domSpacingVisitor.AutoAcceptChanges = false;
+			var compilationUnit = new MonoDevelop.CSharp.Parser.CSharpParser ().Parse (data);
+			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
+			var domSpacingVisitor = new DomSpacingVisitor (policy, data) {
+				AutoAcceptChanges = false,
+			};
 			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
 			
-			DomIndentationVisitor domIndentationVisitor = new DomIndentationVisitor (policy, data);
-			domIndentationVisitor.AutoAcceptChanges = false;
+			var domIndentationVisitor = new DomIndentationVisitor (policy, data) {
+				AutoAcceptChanges = false,
+			};
 			compilationUnit.AcceptVisitor (domIndentationVisitor, null);
 			
-			List<Change> changes = new List<Change> ();
+			var changes = new List<Change> ();
 			
 			changes.AddRange (domSpacingVisitor.Changes.
 				Concat (domIndentationVisitor.Changes).
@@ -189,14 +183,14 @@ namespace MonoDevelop.CSharp.Formatting
 			return delta;
 		}
 		
-		protected override string InternalFormat (PolicyContainer policyParent, string mimeType, string input, int startOffset, int endOffset)
+		public override string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
+			string input, int startOffset, int endOffset)
 		{
-			IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
-			TextEditorData data = new TextEditorData ();
+			var data = new TextEditorData ();
 			data.Document.SuppressHighlightUpdate = true;
-			data.Document.MimeType = mimeType;
+			data.Document.MimeType = mimeTypeChain.First ();
 			data.Document.FileName = "toformat.cs";
-			var textPolicy = policyParent != null ? policyParent.Get<TextStylePolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (types);
+			var textPolicy = policyParent.Get<TextStylePolicy> (mimeTypeChain);
 			data.Options.TabsToSpaces = textPolicy.TabsToSpaces;
 			data.Options.TabSize = textPolicy.TabWidth;
 			data.Options.OverrideDocumentEolMarker = true;
@@ -210,18 +204,20 @@ namespace MonoDevelop.CSharp.Formatting
 			System.Console.WriteLine (data.Text.Replace (" ", ".").Replace ("\t", "->"));
 			System.Console.WriteLine ("-----");*/
 			
-			CSharp.Dom.CompilationUnit compilationUnit = new MonoDevelop.CSharp.Parser.CSharpParser ().Parse (data);
-			CSharpFormattingPolicy policy = policyParent != null ? policyParent.Get<CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
+			var compilationUnit = new MonoDevelop.CSharp.Parser.CSharpParser ().Parse (data);
+			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 			
-			DomSpacingVisitor domSpacingVisitor = new DomSpacingVisitor (policy, data);
-			domSpacingVisitor.AutoAcceptChanges = false;
+			var domSpacingVisitor = new DomSpacingVisitor (policy, data) {
+				AutoAcceptChanges = false,
+			};
 			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
 			
-			DomIndentationVisitor domIndentationVisitor = new DomIndentationVisitor (policy, data);
-			domIndentationVisitor.AutoAcceptChanges = false;
+			var domIndentationVisitor = new DomIndentationVisitor (policy, data) {
+				AutoAcceptChanges = false,
+			};
 			compilationUnit.AcceptVisitor (domIndentationVisitor, null);
 			
-			List<Change> changes = new List<Change> ();
+			var changes = new List<Change> ();
 			
 			changes.AddRange (domSpacingVisitor.Changes.
 				Concat (domIndentationVisitor.Changes).

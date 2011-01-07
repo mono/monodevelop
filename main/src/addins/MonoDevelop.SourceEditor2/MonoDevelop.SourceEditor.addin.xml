@@ -73,10 +73,6 @@
 		<Class id="CompileError" class="MonoDevelop.SourceEditor.CompileErrorTooltipProvider" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/TextFormatters">
-		<Class id="default" class="MonoDevelop.SourceEditor.DefaultFormatter" />
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations"
 		         defaultHandler = "MonoDevelop.SourceEditor.MarkerOperationsHandler"

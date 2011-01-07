@@ -402,18 +402,16 @@ namespace MonoDevelop.Ide.CodeTemplates
 			if (template.CaretEndOffset >= 0) {
 				document.Editor.Caret.Offset = offset + template.CaretEndOffset; 
 			} else {
-				document.Editor.Caret.Offset= offset + template.Code.Length; 
+				document.Editor.Caret.Offset = offset + template.Code.Length; 
 			}
 			
 			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
 				string mt = DesktopService.GetMimeTypeForUri (document.FileName);
-				var formatter = MonoDevelop.Projects.Text.TextFileService.GetFormatter (mt);
-				if (formatter != null) {
+				var formatter = MonoDevelop.Ide.CodeFormatting.CodeFormatterService.GetFormatter (mt);
+				if (formatter != null && formatter.SupportsOnTheFlyFormatting) {
 					document.Editor.Document.BeginAtomicUndo ();
 					formatter.OnTheFlyFormat (document.Project != null ? document.Project.Policies : null, 
-						document.Editor,
-						offset,
-						offset + length);
+						document.Editor, offset, offset + length);
 					document.Editor.Document.EndAtomicUndo ();
 				}
 			}

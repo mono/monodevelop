@@ -301,6 +301,10 @@
 		<ExtensionNode name="UpdateInfo" type="MonoDevelop.Ide.Updater.UpdateInfoExtensionNode"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/Ide/CodeFormatters" name = "Code formatters">
+		<ExtensionNode name="Formatter" type="MonoDevelop.Ide.CodeFormatting.CodeFormatterExtensionNode" />
+	</ExtensionPoint>
+	
 	<!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Core/Applications">

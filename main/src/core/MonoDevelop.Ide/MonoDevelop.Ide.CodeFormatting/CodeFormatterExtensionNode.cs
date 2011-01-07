@@ -1,10 +1,10 @@
 // 
-// XmlFormattingPolicyPanel.cs
+// CodeFormatterNode.cs
 //  
 // Author:
-//       Lluis Sanchez Gual <lluis@novell.com>
+//       Michael Hutchinson <mhutchinson@novell.com>
 // 
-// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2011 Novell, Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,45 +23,24 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
+using Mono.Addins;
 
-
-using Gtk;
-using MonoDevelop.Ide.Gui.Dialogs;
-
-namespace MonoDevelop.Xml.Formatting
+namespace MonoDevelop.Ide.CodeFormatting
 {
-	class XmlFormattingPolicyPanel : MimeTypePolicyOptionsPanel<XmlFormattingPolicy>
+	class CodeFormatterExtensionNode : TypeExtensionNode
 	{
-		XmlFormattingPolicyPanelWidget panel;
+		[NodeAttribute ("mimeType", true, "The mimetype that this formatter can handle.")]
+		string mimeType;
 		
-		public override Widget CreatePanelWidget ()
-		{
-			panel = new XmlFormattingPolicyPanelWidget ();
-			return panel;
+		public string MimeType {
+			get { return mimeType; }
 		}
 		
-		XmlFormattingPolicy policy;
-		protected override void LoadFrom (XmlFormattingPolicy policy)
+		public ICodeFormatter GetFormatter ()
 		{
-			this.policy = policy.Clone ();
-			panel.SetFormat (this.policy);
-		}
-		
-		protected override XmlFormattingPolicy GetPolicy ()
-		{
-			panel.CommitPendingChanges ();
-			CleanScopes (policy.DefaultFormat);
-			foreach (var s in policy.Formats)
-				CleanScopes (s);
-			return policy;
-		}
-		
-		void CleanScopes (XmlFormattingSettings format)
-		{
-			for (int n=format.ScopeXPath.Count - 1; n >= 0; n--) {
-				if (format.ScopeXPath [n].Length == 0)
-					format.ScopeXPath.RemoveAt (n);
-			}
+			return (ICodeFormatter) this.GetInstance ();
 		}
 	}
 }
+

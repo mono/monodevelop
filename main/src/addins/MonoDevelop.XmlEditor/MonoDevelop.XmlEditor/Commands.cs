@@ -34,7 +34,6 @@ namespace MonoDevelop.XmlEditor
 		AssignStylesheet,
 		OpenStylesheet,
 		RunXslTransform,
-		Format,
 		OpenXPathQueryPad,
 		RemoveXPathHighlighting,
 		GoToSchemaDefinition,

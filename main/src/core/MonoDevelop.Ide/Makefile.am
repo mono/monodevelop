@@ -29,7 +29,6 @@ FILES =  \
 	BuildVariables.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.Components.FolderListSelector.cs \
-	gtk-gui/MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs \
 	gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs \
@@ -287,9 +286,13 @@ FILES =  \
 	MonoDevelop.Ide.CodeCompletion/MutableCompletionDataList.cs \
 	MonoDevelop.Ide.CodeCompletion/ParameterInformationWindow.cs \
 	MonoDevelop.Ide.CodeCompletion/ParameterInformationWindowManager.cs \
+	MonoDevelop.Ide.CodeFormatting/CodeFormatter.cs \
+	MonoDevelop.Ide.CodeFormatting/CodeFormatterExtensionNode.cs \
 	MonoDevelop.Ide.CodeFormatting/CodeFormatterService.cs \
 	MonoDevelop.Ide.CodeFormatting/CodeFormattingCommands.cs \
-	MonoDevelop.Ide.CodeFormatting/CodeFormattingPolicyPanelWidget.cs \
+	MonoDevelop.Ide.CodeFormatting/DefaultCodeFormatter.cs \
+	MonoDevelop.Ide.CodeFormatting/IAdvancedCodeFormatter.cs \
+	MonoDevelop.Ide.CodeFormatting/ICodeFormatter.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplate.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateCodon.cs \
 	MonoDevelop.Ide.CodeTemplates/CodeTemplateCompletionData.cs \

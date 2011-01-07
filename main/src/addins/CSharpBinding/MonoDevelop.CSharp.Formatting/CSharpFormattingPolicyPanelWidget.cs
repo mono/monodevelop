@@ -28,6 +28,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
+using MonoDevelop.Ide.CodeFormatting;
 namespace MonoDevelop.CSharp.Formatting
 {
 	[System.ComponentModel.ToolboxItem(true)]
@@ -96,10 +97,10 @@ namespace Example {
 				if (comboboxProfiles.Active < 0)
 					return;
 				var profile = policies[comboboxProfiles.Active];
-				CSharpFormatter formatter = new CSharpFormatter ();
+				var formatter = CodeFormatterService.GetFormatter (CSharpFormatter.MimeType);
 				var parent = new MonoDevelop.Projects.DotNetAssemblyProject ();
 				parent.Policies.Set<CSharpFormattingPolicy> (profile, CSharpFormatter.MimeType);
-				texteditor.Document.Text  = formatter.FormatText (parent.Policies, CSharpFormatter.MimeType, example);
+				texteditor.Document.Text = formatter.FormatText (parent.Policies, example);
 			};
 			ShowAll ();
 			InitComboBox ();

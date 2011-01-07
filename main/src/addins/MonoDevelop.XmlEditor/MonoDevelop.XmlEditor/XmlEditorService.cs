@@ -45,7 +45,7 @@ using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.XmlEditor
 {
-	public static class XmlEditorService
+	static class XmlEditorService
 	{
 		#region Task management
 		public static void AddTask(string fileName, string message, int column, int line, TaskSeverity taskType)
@@ -106,44 +106,10 @@ namespace MonoDevelop.XmlEditor
 		
 		public static IProgressMonitor GetMonitor ()
 		{
-			return IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("XML", "XmlFileIcon", true, true);
+			return IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("XML", "md-xml-file-icon", true, true);
 		}
 		
 		#region Formatting utilities
-		
-		/// <summary>
-		/// Returns a formatted xml string using a simple formatting algorithm.
-		/// </summary>
-		public static string SimpleFormat (string xml)
-		{
-			return xml.Replace ("><", string.Concat (">", Environment.NewLine, "<"));
-		}
-		
-		/// <summary>
-		/// Returns a pretty print version of the given xml.
-		/// </summary>
-		/// <param name="xml">Xml string to pretty print.</param>
-		/// <returns>A pretty print version of the specified xml.  If the
-		/// string is not well formed xml the original string is returned.
-		/// </returns>
-		public static string IndentedFormat (string xml)
-		{
-			try {
-				XmlTextReader reader = new XmlTextReader (new StringReader (xml));
-				reader.WhitespaceHandling = WhitespaceHandling.None;
-
-				using (StringWriter indentedXmlWriter = new StringWriter ()) {
-					using (XmlTextWriter writer = CreateXmlTextWriter (indentedXmlWriter)) {
-						writer.WriteNode (reader, false);
-						writer.Flush ();
-					}
-					return indentedXmlWriter.ToString ();
-				}
-			} catch (Exception ex) {
-				LoggingService.LogError ("Error handling validated XML.", ex);
-				return xml;
-			}
-		}
 		
 		/// <summary>
 		/// Creates a XmlTextWriter using the current text editor

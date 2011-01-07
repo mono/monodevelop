@@ -30,66 +30,42 @@ using System.Xml;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide;
-using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Policies;
+using MonoDevelop.Ide.CodeFormatting;
 
 namespace MonoDevelop.Xml.Formatting
 {
-	public class XmlFormatter: IPrettyPrinter
+	public class XmlFormatter: ICodeFormatter
 	{
-		public bool CanFormat (string mimeType)
-		{
-			return DesktopService.GetMimeTypeIsSubtype (mimeType, "application/xml");
-		}
-		
-		public string FormatXml (TextStylePolicy textPolicy, XmlFormattingPolicy formattingPolicy, string input)
+		public static string FormatXml (TextStylePolicy textPolicy, XmlFormattingPolicy formattingPolicy, string input)
 		{
 			XmlDocument doc;
 			try {
 				doc = new XmlDocument ();
 				doc.LoadXml (input);
-			} catch {
+			} catch (Exception ex) {
 				// Ignore malformed xml
-				return input;
+				MonoDevelop.Core.LoggingService.LogWarning ("Error formatting XML file", ex);
+				return null;
 			}
 			
-			StringWriter sw = new StringWriter ();
-			XmlFormatterWriter xmlWriter = new XmlFormatterWriter (sw);
+			var sw = new StringWriter ();
+			var xmlWriter = new XmlFormatterWriter (sw);
 			xmlWriter.WriteNode (doc, formattingPolicy, textPolicy);
 			xmlWriter.Flush ();
 			return sw.ToString ();
 		}
-		public void CorrectIndenting (object textEditorData, int line)
-		{
-			// TODO
-		}
 		
-		public void OnTheFlyFormat (object textEditorData, MonoDevelop.Projects.Dom.IType callingType, MonoDevelop.Projects.Dom.IMember callingMember, MonoDevelop.Projects.Dom.Parser.ProjectDom dom, MonoDevelop.Projects.Dom.ICompilationUnit unit, MonoDevelop.Projects.Dom.DomLocation endLocation)
+		public string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeInheritanceChain, string input)
 		{
-			throw new System.NotImplementedException();
-		}
-		
-		public void OnTheFlyFormat (PolicyContainer policyParent, object textEditorData, int startOffset, int endOffset)
-		{
-			throw new NotImplementedException ();
-		}
-		
-		public string FormatText (PolicyContainer policyParent, string mimeType, string input)
-		{
-			XmlFormattingPolicy xmlPol = policyParent.Get<XmlFormattingPolicy> (mimeType);
-			TextStylePolicy txtPol = policyParent.Get<TextStylePolicy> (mimeType);
+			var txtPol = policyParent.Get<TextStylePolicy> (mimeTypeInheritanceChain);
+			var xmlPol = policyParent.Get<XmlFormattingPolicy> (mimeTypeInheritanceChain);
 			return FormatXml (txtPol, xmlPol, input);
 		}
 		
-		public string FormatText (PolicyContainer policyParent, string mimeType, string input, int fromOffest, int toOffset)
+		public string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeInheritanceChain, string input, int fromOffest, int toOffset)
 		{
-			return input;
-		}
-		
-		public bool SupportsOnTheFlyFormatting {
-			get {
-				return false;
-			}
+			return null;
 		}
 	}
 }

@@ -41,7 +41,7 @@ namespace MonoDevelop.Xml.Formatting
 		{
 			this.Build ();
 			
-			store = new ListStore (typeof(string), typeof (XmlFormatingSettings));
+			store = new ListStore (typeof(string), typeof (XmlFormattingSettings));
 			listView.Model = store;
 			listView.AppendColumn ("", new CellRendererText (), "text", 0);
 			
@@ -76,16 +76,16 @@ namespace MonoDevelop.Xml.Formatting
 		{
 			store.Clear ();
 			AppendSettings (policy.DefaultFormat);
-			foreach (XmlFormatingSettings s in policy.Formats)
+			foreach (XmlFormattingSettings s in policy.Formats)
 				AppendSettings (s);
 		}
 
-		TreeIter AppendSettings (XmlFormatingSettings format)
+		TreeIter AppendSettings (XmlFormattingSettings format)
 		{
 			return store.AppendValues (GetName (format), format);
 		}
 		
-		string GetName (XmlFormatingSettings format)
+		string GetName (XmlFormattingSettings format)
 		{
 			if (format == policy.DefaultFormat)
 				return GettextCatalog.GetString ("Default");
@@ -108,16 +108,16 @@ namespace MonoDevelop.Xml.Formatting
 		{
 			TreeIter it;
 			if (listView.Selection.GetSelected (out it)) {
-				XmlFormatingSettings s = (XmlFormatingSettings) store.GetValue (it, 1);
+				var s = (XmlFormattingSettings) store.GetValue (it, 1);
 				FillFormat (s);
 			} else
 				FillFormat (null);
 			UpdateButtons ();
 		}
 		
-		XmlFormatingSettings currentFormat;
+		XmlFormattingSettings currentFormat;
 		
-		void FillFormat (XmlFormatingSettings format)
+		void FillFormat (XmlFormattingSettings format)
 		{
 			currentFormat = format;
 			if (currentFormat != null && currentFormat.ScopeXPath.Count == 0)
@@ -179,7 +179,7 @@ namespace MonoDevelop.Xml.Formatting
 		
 		protected virtual void OnButtonAddClicked (object sender, System.EventArgs e)
 		{
-			XmlFormatingSettings format = new XmlFormatingSettings ();
+			var format = new XmlFormattingSettings ();
 			policy.Formats.Add (format);
 			TreeIter it = AppendSettings (format);
 			listView.Selection.SelectIter (it);
@@ -189,7 +189,7 @@ namespace MonoDevelop.Xml.Formatting
 		{
 			TreeIter it;
 			if (listView.Selection.GetSelected (out it)) {
-				XmlFormatingSettings s = (XmlFormatingSettings) store.GetValue (it, 1);
+				var s = (XmlFormattingSettings) store.GetValue (it, 1);
 				policy.Formats.Remove (s);
 				TreePath p = store.GetPath (it);
 				store.Remove (ref it);
@@ -208,7 +208,7 @@ namespace MonoDevelop.Xml.Formatting
 		{
 			TreeIter it;
 			if (listView.Selection.GetSelected (out it)) {
-				XmlFormatingSettings s = (XmlFormatingSettings) store.GetValue (it, 1);
+				var s = (XmlFormattingSettings) store.GetValue (it, 1);
 				store.SetValue (it, 0, GetName (s));
 			}
 		}
@@ -217,7 +217,7 @@ namespace MonoDevelop.Xml.Formatting
 		{
 			TreeIter it;
 			if (listView.Selection.GetSelected (out it)) {
-				XmlFormatingSettings s = (XmlFormatingSettings) store.GetValue (it, 1);
+				var s = (XmlFormattingSettings) store.GetValue (it, 1);
 				buttonAdd.Sensitive = true;
 				buttonRemove.Sensitive = s != policy.DefaultFormat;
 			} else {

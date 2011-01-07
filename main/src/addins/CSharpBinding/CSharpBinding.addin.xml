@@ -119,8 +119,8 @@
 		</MimeType>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/TextPrettyPrinters">
-		<Class class="MonoDevelop.CSharp.Formatting.CSharpFormatter" />
+	<Extension path = "/MonoDevelop/Ide/CodeFormatters">
+		<Formatter mimeType="text/x-csharp" class="MonoDevelop.CSharp.Formatting.CSharpFormatter" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/SourceEditor2/CustomModes">

@@ -49,6 +49,7 @@ using MonoDevelop.Ide.CodeTemplates;
 using Services = MonoDevelop.Projects.Services;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.CodeFormatting;
 
 namespace MonoDevelop.SourceEditor
 {	
@@ -365,10 +366,11 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			if (PropertyService.Get ("AutoFormatDocumentOnSave", false)) {
-				Formatter formatter = TextFileService.GetFormatter (Document.MimeType);
+				var formatter = CodeFormatterService.GetFormatter (Document.MimeType);
 				if (formatter != null && formatter.SupportsOnTheFlyFormatting) {
 					TextEditor.Document.BeginAtomicUndo ();
-					formatter.OnTheFlyFormat (Project != null ? Project.Policies : null, TextEditor.GetTextEditorData (), 0, Document.Length);
+					var policies = Project != null ? Project.Policies : null;
+					formatter.OnTheFlyFormat (policies, TextEditor.GetTextEditorData (), 0, Document.Length);
 					TextEditor.Document.EndAtomicUndo ();
 				}
 			}
@@ -1857,18 +1859,20 @@ namespace MonoDevelop.SourceEditor
 		
 		void CorrectIndenting ()
 		{
-			Formatter formatter = TextFileService.GetFormatter (Document.MimeType);
-			if (formatter == null || !formatter.SupportsCorrectIndenting)
+			var formatter = CodeFormatterService.GetFormatter (Document.MimeType);
+			if (formatter == null || !formatter.SupportsCorrectingIndent)
 				return;
+			var policies = Project != null ? Project.Policies : null;
+			var editorData = TextEditor.GetTextEditorData ();
 			if (TextEditor.IsSomethingSelected) {
 				TextEditor.Document.BeginAtomicUndo ();
 				int max = TextEditor.MainSelection.MaxLine;
 				for (int i = TextEditor.MainSelection.MinLine; i <= max; i++) {
-					formatter.CorrectIndenting (TextEditor.GetTextEditorData (), i);
+					formatter.CorrectIndenting (policies, editorData, i);
 				}
 				TextEditor.Document.EndAtomicUndo ();
 			} else {
-				formatter.CorrectIndenting (TextEditor.GetTextEditorData (), TextEditor.Caret.Line);
+				formatter.CorrectIndenting (policies, editorData, TextEditor.Caret.Line);
 			}
 		}
 		
@@ -1885,7 +1889,6 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.RunAction (MiscActions.MoveBlockDown);
 			CorrectIndenting ();
 		}
-		
 		
 		[CommandUpdateHandler (TextEditorCommands.ToggleBlockSelectionMode)]
 		protected void UpdateToggleBlockSelectionMode (CommandInfo cinfo)
