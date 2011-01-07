@@ -159,7 +159,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 
   <PropertyGroup>
-    <MmpUrl></MmpUrl>
+    <MmpUrl>http://mjhutchinson.com/files/temp/mmp</MmpUrl>
     <MmpBin>$(OutDir)mmp</MmpBin>
     <MmpFakeScript>#!/bin/sh
 echo "Bundling is not yet supported"
