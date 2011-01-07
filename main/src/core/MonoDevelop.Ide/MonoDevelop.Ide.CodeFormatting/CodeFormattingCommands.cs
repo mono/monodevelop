@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 			if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsFile) {
 				string mt = DesktopService.GetMimeTypeForUri (IdeApp.Workbench.ActiveDocument.FileName);
 				Formatter formatter = TextFileService.GetFormatter (mt);
-				if (formatter != null) {
+				if (formatter != null && formatter.SupportsOnTheFlyFormatting) {
 					info.Enabled = IdeApp.Workbench.ActiveDocument.Editor.IsSomethingSelected;
 					return;
 				}
