@@ -49,7 +49,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		{
 			string ns;
 			if (pfNsMap.TryGetValue (prefix, out ns))
-				return prefix;
+				return ns;
 			return null;
 		}
 		
