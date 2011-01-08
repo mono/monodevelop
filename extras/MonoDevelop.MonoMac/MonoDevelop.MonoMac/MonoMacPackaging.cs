@@ -74,7 +74,7 @@ namespace MonoDevelop.MonoMac.Gui
 			string bundleKey = settings.BundleSigningKey;
 			string packageKey = settings.PackageSigningKey;
 			
-			if (settings.SignBundle || settings.SignPackage) {
+			if (settings.SignBundle || (settings.CreatePackage && settings.SignPackage)) {
 				var identities = Keychain.GetAllSigningIdentities ();
 				
 				if (string.IsNullOrEmpty (bundleKey)) {
@@ -202,8 +202,11 @@ namespace MonoDevelop.MonoMac.Gui
 					var args = new ProcessArgumentBuilder ();
 					args.Add ("--component");
 					args.AddQuoted (workingApp);
-					args.Add ("/Applications", "--sign");
-					args.AddQuoted (packageKey);
+					args.Add ("/Applications");
+					if (settings.SignPackage) {
+						args.Add ("--sign");
+						args.AddQuoted (packageKey);
+					}
 					if (!settings.ProductDefinition.IsNullOrEmpty) {
 						args.Add ("--product");
 						args.AddQuoted (settings.ProductDefinition);
