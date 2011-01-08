@@ -217,7 +217,14 @@ namespace MonoDevelop.MonoMac.Gui
 					monitor.Log.WriteLine ("productbuild " + psi.Arguments);
 					
 					string err;
-					if (MacBuildUtilities.ExecuteCommand (monitor, psi, out err) != 0) {
+					int pbRet;
+					try {
+						pbRet = MacBuildUtilities.ExecuteCommand (monitor, psi, out err);
+					} catch (System.ComponentModel.Win32Exception) {
+						monitor.ReportError ("productbuild not found", null);
+						return false;
+					}
+					if (pbRet != 0) {
 						monitor.Log.WriteLine (err);
 						monitor.ReportError ("Package creation failed", null);
 						return false;
