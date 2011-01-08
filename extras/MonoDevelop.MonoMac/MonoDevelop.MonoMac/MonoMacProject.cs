@@ -39,7 +39,6 @@ using MonoDevelop.MacDev.Plist;
 
 namespace MonoDevelop.MonoMac
 {
-	
 	public class MonoMacProject : DotNetProject
 	{
 		public override string ProjectType {
@@ -78,6 +77,11 @@ namespace MonoDevelop.MonoMac
 		void Init ()
 		{
 			CodeBehindGenerator = new MonoMacCodeBehind (this);
+		}
+		
+		public override bool SupportsFormat (FileFormat format)
+		{
+			return format.Id == "MSBuild10";
 		}
 		
 		public override SolutionItemConfiguration CreateConfiguration (string name)
@@ -145,7 +149,7 @@ namespace MonoDevelop.MonoMac
 		
 		public override bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
 		{
-			if (!framework.IsCompatibleWithFramework ("1.1"))
+			if (!framework.IsCompatibleWithFramework ("4.0"))
 				return false;
 			else
 				return base.SupportsFramework (framework);
