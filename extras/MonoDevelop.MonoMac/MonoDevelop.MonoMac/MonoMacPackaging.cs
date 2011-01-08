@@ -155,6 +155,12 @@ namespace MonoDevelop.MonoMac.Gui
 					args.AddQuoted (cfg.CompiledOutputName);
 					
 					string mmpPath = Mono.Addins.AddinManager.CurrentAddin.GetFilePath ("mmp");
+					
+					//FIXME: workaround for Mono.Addins losing the executable bit during packaging
+					var mmpInfo = new Mono.Unix.UnixFileInfo (mmpPath);
+					if ((mmpInfo.FileAccessPermissions & Mono.Unix.FileAccessPermissions.UserExecute) == 0)
+						mmpInfo.FileAccessPermissions |=  Mono.Unix.FileAccessPermissions.UserExecute;
+					
 					var psi = new ProcessStartInfo (mmpPath, args.ToString ());
 					monitor.Log.WriteLine ("mmp " + psi.Arguments);
 					
