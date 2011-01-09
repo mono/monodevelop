@@ -120,7 +120,7 @@ namespace MonoDevelop.Debugger.Gdb
 					throw;
 				}
 
-				RunCommand ("-environment-directory", Escape (startInfo.WorkingDirectory));
+				RunCommand ("-environment-cd", Escape (startInfo.WorkingDirectory));
 				
 				// Set inferior arguments
 				if (!string.IsNullOrEmpty (startInfo.Arguments))
