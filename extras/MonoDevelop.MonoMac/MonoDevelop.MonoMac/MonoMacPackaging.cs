@@ -26,6 +26,7 @@
 
 using System;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.MacDev;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;

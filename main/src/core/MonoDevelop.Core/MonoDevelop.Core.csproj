@@ -488,6 +488,7 @@
     <Compile Include="MonoDevelop.Projects.Text\DocGenerator.cs" />
     <Compile Include="MonoDevelop.Core\EventArgsChain.cs" />
     <Compile Include="MonoDevelop.Core.Execution\ProcessExtensions.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\ProcessArgumentBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

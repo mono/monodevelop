@@ -63,6 +63,7 @@ FILES =  \
 	MonoDevelop.Core.Execution/MsNetExecutionHandler.cs \
 	MonoDevelop.Core.Execution/NativeExecutionCommand.cs \
 	MonoDevelop.Core.Execution/NativePlatformExecutionHandler.cs \
+	MonoDevelop.Core.Execution/ProcessArgumentBuilder.cs \
 	MonoDevelop.Core.Execution/ProcessExecutionCommand.cs \
 	MonoDevelop.Core.Execution/ProcessExtensions.cs \
 	MonoDevelop.Core.Execution/ProcessHostController.cs \

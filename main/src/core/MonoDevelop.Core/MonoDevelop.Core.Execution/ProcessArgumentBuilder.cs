@@ -26,7 +26,7 @@
 using System;
 using System.Text;
 
-namespace MonoDevelop.MacDev
+namespace MonoDevelop.Core.Execution
 {
 	/// <summary>
 	/// Builds a process argument string.
@@ -35,8 +35,8 @@ namespace MonoDevelop.MacDev
 	{
 		System.Text.StringBuilder sb = new System.Text.StringBuilder ();
 		
-		static string escapeQuoteCharsStr = "\\\"'";
-		static char[] escapeQuoteChars = { '\\', '"', '\'' };
+		// Mono 2.8.x doesn't like it if we escape both  " and ' within ""
+		static string escapeDoubleQuoteCharsStr = "\\\"";
 		
 		/// <summary>
 		/// Adds an argument without escaping or quoting.
@@ -79,7 +79,7 @@ namespace MonoDevelop.MacDev
 				sb.Append (' ');
 			
 			sb.Append ('"');
-			AppendEscaped (sb, escapeQuoteCharsStr, argument);
+			AppendEscaped (sb, escapeDoubleQuoteCharsStr, argument);
 			sb.Append ('"');
 		}
 		
@@ -93,26 +93,13 @@ namespace MonoDevelop.MacDev
 		}
 		
 		/// <summary>
-		/// Escapes single and double quotes, and backslashes.
-		/// </summary>
-		public static string EscapeQuotes (string s)
-		{
-			if (s.IndexOfAny (escapeQuoteChars) < 0)
-				return s;
-			
-			var sb = new StringBuilder ();
-			AppendEscaped (sb, escapeQuoteCharsStr, s);
-			return sb.ToString ();
-		}
-		
-		/// <summary>
 		/// Quotes a string, escaping if necessary.
 		/// </summary>
 		public static string Quote (string s)
 		{
 			var sb = new StringBuilder ();
 			sb.Append ('"');
-			AppendEscaped (sb, escapeQuoteCharsStr, s);
+			AppendEscaped (sb, escapeDoubleQuoteCharsStr, s);
 			sb.Append ('"');
 			return sb.ToString ();
 		}
