@@ -173,7 +173,15 @@ using (IDisposable b = null) {
 			Assert.AreEqual (expectedOutput, text);
 		}
 
-		
+		/// <summary>
+		///  Bug 659675 - on-the-fly code formatting breaks @-prefixed identifiers
+		/// </summary>
+		[Test()]
+		public void TestBug659675 ()
+		{
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			TestStatementFormatting (policy, "@string=@int;", "@string = @int;");
+		}
 	}
 }
 

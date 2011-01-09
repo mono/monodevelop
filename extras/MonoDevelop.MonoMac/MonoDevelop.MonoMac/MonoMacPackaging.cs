@@ -26,6 +26,7 @@
 
 using System;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.MacDev;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -74,7 +75,7 @@ namespace MonoDevelop.MonoMac.Gui
 			string bundleKey = settings.BundleSigningKey;
 			string packageKey = settings.PackageSigningKey;
 			
-			if (settings.SignBundle || settings.SignPackage) {
+			if (settings.SignBundle || (settings.CreatePackage && settings.SignPackage)) {
 				var identities = Keychain.GetAllSigningIdentities ();
 				
 				if (string.IsNullOrEmpty (bundleKey)) {
@@ -155,6 +156,12 @@ namespace MonoDevelop.MonoMac.Gui
 					args.AddQuoted (cfg.CompiledOutputName);
 					
 					string mmpPath = Mono.Addins.AddinManager.CurrentAddin.GetFilePath ("mmp");
+					
+					//FIXME: workaround for Mono.Addins losing the executable bit during packaging
+					var mmpInfo = new Mono.Unix.UnixFileInfo (mmpPath);
+					if ((mmpInfo.FileAccessPermissions & Mono.Unix.FileAccessPermissions.UserExecute) == 0)
+						mmpInfo.FileAccessPermissions |=  Mono.Unix.FileAccessPermissions.UserExecute;
+					
 					var psi = new ProcessStartInfo (mmpPath, args.ToString ());
 					monitor.Log.WriteLine ("mmp " + psi.Arguments);
 					
@@ -202,8 +209,11 @@ namespace MonoDevelop.MonoMac.Gui
 					var args = new ProcessArgumentBuilder ();
 					args.Add ("--component");
 					args.AddQuoted (workingApp);
-					args.Add ("/Applications", "--sign");
-					args.AddQuoted (packageKey);
+					args.Add ("/Applications");
+					if (settings.SignPackage) {
+						args.Add ("--sign");
+						args.AddQuoted (packageKey);
+					}
 					if (!settings.ProductDefinition.IsNullOrEmpty) {
 						args.Add ("--product");
 						args.AddQuoted (settings.ProductDefinition);
@@ -214,7 +224,14 @@ namespace MonoDevelop.MonoMac.Gui
 					monitor.Log.WriteLine ("productbuild " + psi.Arguments);
 					
 					string err;
-					if (MacBuildUtilities.ExecuteCommand (monitor, psi, out err) != 0) {
+					int pbRet;
+					try {
+						pbRet = MacBuildUtilities.ExecuteCommand (monitor, psi, out err);
+					} catch (System.ComponentModel.Win32Exception) {
+						monitor.ReportError ("productbuild not found", null);
+						return false;
+					}
+					if (pbRet != 0) {
 						monitor.Log.WriteLine (err);
 						monitor.ReportError ("Package creation failed", null);
 						return false;

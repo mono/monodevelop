@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 		{
 			if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsFile) {
 				string mt = DesktopService.GetMimeTypeForUri (IdeApp.Workbench.ActiveDocument.FileName);
-				Formatter formatter = TextFileService.GetFormatter (mt);
+				var formatter = CodeFormatterService.GetFormatter (mt);
 				if (formatter != null)
 					return;
 			}
@@ -56,13 +56,16 @@ namespace MonoDevelop.Ide.CodeFormatting
 			if (doc == null)
 				return;
 			string mt = DesktopService.GetMimeTypeForUri (doc.FileName);
-			Formatter formatter = TextFileService.GetFormatter (mt);
+			var formatter = CodeFormatterService.GetFormatter (mt);
 			if (formatter == null)
 				return;
 			doc.Editor.Document.BeginAtomicUndo ();
 			var loc = doc.Editor.Caret.Location;
-			doc.Editor.Replace (0, doc.Editor.Length, formatter.FormatText (doc.Project != null ? doc.Project.Policies : null, doc.Editor.Text));
-			doc.Editor.Caret.Location = loc;
+			var text = formatter.FormatText (doc.Project != null ? doc.Project.Policies : null, doc.Editor.Text);
+			if (text != null) {
+				doc.Editor.Replace (0, doc.Editor.Length, text);
+				doc.Editor.Caret.Location = loc;
+			}
 			doc.Editor.Document.EndAtomicUndo ();
 		}
 	}
@@ -73,8 +76,8 @@ namespace MonoDevelop.Ide.CodeFormatting
 		{
 			if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.IsFile) {
 				string mt = DesktopService.GetMimeTypeForUri (IdeApp.Workbench.ActiveDocument.FileName);
-				Formatter formatter = TextFileService.GetFormatter (mt);
-				if (formatter != null) {
+				var formatter = CodeFormatterService.GetFormatter (mt);
+				if (formatter != null && !formatter.IsDefault) {
 					info.Enabled = IdeApp.Workbench.ActiveDocument.Editor.IsSomethingSelected;
 					return;
 				}
@@ -88,13 +91,22 @@ namespace MonoDevelop.Ide.CodeFormatting
 			if (doc == null)
 				return;
 			string mt = DesktopService.GetMimeTypeForUri (doc.FileName);
-			Formatter formatter = TextFileService.GetFormatter (mt);
+			var formatter = CodeFormatterService.GetFormatter (mt);
 			if (formatter == null || !doc.Editor.IsSomethingSelected)
 				return;
 			var selection = doc.Editor.SelectionRange;
 			
 			doc.Editor.Document.BeginAtomicUndo ();
-			formatter.OnTheFlyFormat (doc.Project != null ? doc.Project.Policies : null, doc.Editor, selection.Offset, selection.EndOffset);
+			if (formatter.SupportsOnTheFlyFormatting) {
+				formatter.OnTheFlyFormat (doc.Project != null ? doc.Project.Policies : null, doc.Editor, selection.Offset, selection.EndOffset);
+			} else {
+				var pol = doc.Project != null ? doc.Project.Policies : null;
+				string text = formatter.FormatText (pol, doc.Editor.Text, selection.Offset, selection.EndOffset);
+				if (text != null) {
+					doc.Editor.Replace (selection.Offset, selection.Length, text);
+					doc.Editor.SetSelection (selection.Offset, selection.Offset + text.Length - 1);
+				}
+			}
 			doc.Editor.Document.EndAtomicUndo ();
 		}
 	}

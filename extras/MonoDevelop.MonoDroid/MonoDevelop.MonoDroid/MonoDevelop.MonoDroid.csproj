@@ -105,7 +105,6 @@
     <Compile Include="MonoDroidDeviceConsole.cs" />
     <Compile Include="Gui\MonoDroidSdkSettingsDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.MonoDroid.Gui.MonoDroidSdkSettingsDialog.cs" />
-    <Compile Include="Adb\ProcessArgumentBuilder.cs" />
     <Compile Include="Adb\AdbClient.cs" />
     <Compile Include="Adb\AdbOperation.cs" />
     <Compile Include="Adb\AdbOperations.cs" />

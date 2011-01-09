@@ -87,9 +87,6 @@
 			<Command id = "MonoDevelop.XmlEditor.Commands.GoToSchemaDefinition"
 					_label = "_Go to Schema Definition"
 					description = "Jumps to the schema definition"/>
-			<Command id = "MonoDevelop.XmlEditor.Commands.Format"
-					_label = "_Format"
-					description = "Pretty prints the XML"/>
 		</Category>
 	</Extension>
 
@@ -105,9 +102,7 @@
 			<SeparatorItem id = "StylesheetCommandsSeparator"/>-->
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.AssignStylesheet"/>
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.OpenStylesheet"/>
-			<CommandItem id = "MonoDevelop.XmlEditor.Commands.RunXslTransform"/>				
-			<SeparatorItem id = "FormatSeparator"/>
-			<CommandItem id = "MonoDevelop.XmlEditor.Commands.Format" />
+			<CommandItem id = "MonoDevelop.XmlEditor.Commands.RunXslTransform"/>
 			<SeparatorItem/>
 		</ItemSet>
 	</Extension>
@@ -139,8 +134,9 @@
 		<Parser class = "MonoDevelop.XmlEditor.XmlDocumentParser" id = "XmlParser" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/TextPrettyPrinters">
-		<Class class="MonoDevelop.Xml.Formatting.XmlFormatter" />
+	<Extension path = "/MonoDevelop/Ide/CodeFormatters">
+		<Formatter mimeType="text/xml" class="MonoDevelop.Xml.Formatting.XmlFormatter" />
+		<Formatter mimeType="application/xml" class="MonoDevelop.Xml.Formatting.XmlFormatter" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/PolicyTypes" >

@@ -29,6 +29,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.ProgressMonitoring;
 using System.Xml;
@@ -370,13 +371,13 @@ namespace MonoDevelop.IPhone
 		{
 			if (!string.IsNullOrEmpty (extraArgs)) {
 				var customTags = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase) {
-					{ "projectdir",   ProcessArgumentBuilder.EscapeQuotes (proj.BaseDirectory) },
-					{ "solutiondir",  ProcessArgumentBuilder.EscapeQuotes (proj.ParentSolution.BaseDirectory) },
-					{ "appbundledir", ProcessArgumentBuilder.EscapeQuotes (conf.AppDirectory) },
-					{ "targetpath",   ProcessArgumentBuilder.EscapeQuotes (conf.CompiledOutputName) },
-					{ "targetdir",    ProcessArgumentBuilder.EscapeQuotes (conf.CompiledOutputName.ParentDirectory) },
-					{ "targetname",   ProcessArgumentBuilder.EscapeQuotes (conf.CompiledOutputName.FileName) },
-					{ "targetext",    ProcessArgumentBuilder.EscapeQuotes (conf.CompiledOutputName.Extension) },
+					{ "projectdir",   proj.BaseDirectory },
+					{ "solutiondir",  proj.ParentSolution.BaseDirectory },
+					{ "appbundledir", conf.AppDirectory },
+					{ "targetpath",   conf.CompiledOutputName },
+					{ "targetdir",    conf.CompiledOutputName.ParentDirectory },
+					{ "targetname",   conf.CompiledOutputName.FileName },
+					{ "targetext",    conf.CompiledOutputName.Extension },
 				};
 				args.Add (StringParserService.Parse (extraArgs, customTags));
 			}

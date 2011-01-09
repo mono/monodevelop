@@ -25,37 +25,32 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Projects.Policies;
 
-namespace MonoDevelop.Projects.Text
+namespace MonoDevelop.Ide.CodeFormatting
 {
-	public interface IFormatter
+	public interface ICodeFormatter
 	{
-		bool CanFormat (string mimeType);
+		string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, string input);
 		
-		string FormatText (PolicyContainer policyParent, string mimeType, string input);
-		string FormatText (PolicyContainer policyParent, string mimeType, string input, int fromOffest, int toOffset);
+		/// <summary>
+		/// Formats the text in a range. Returns only the modified range, or null if formatting failed.
+		/// </summary>
+		string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
+			string input, int startOffset, int endOffset);
 	}
 	
-	public abstract class AbstractFormatter : IFormatter
+	public abstract class AbstractCodeFormatter : ICodeFormatter
 	{
-		public abstract bool CanFormat (string mimeType);
+		public abstract string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
+			string input, int startOffset, int endOffset);
 		
-		protected abstract string InternalFormat (PolicyContainer policyParent, string mimeType, string text, int fromOffest, int toOffset);
-		
-		public string FormatText (PolicyContainer policyParent, string mimeType, string input)
+		public string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, string input)
 		{
 			if (string.IsNullOrEmpty (input))
 				return input;
-			return FormatText (policyParent, mimeType, input, 0, input.Length - 1);
-		}
-		
-		public string FormatText (PolicyContainer policyParent, string mimeType, string input, int fromOffest, int toOffset)
-		{
-			if (string.IsNullOrEmpty (input))
-				return input;
-			return InternalFormat (policyParent, mimeType, input, fromOffest, toOffset);
+			return FormatText (policyParent, mimeTypeChain, input, 0, input.Length - 1);
 		}
 	}
-	
 }

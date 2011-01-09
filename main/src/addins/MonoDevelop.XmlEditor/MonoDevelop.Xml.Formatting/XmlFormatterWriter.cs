@@ -127,8 +127,8 @@ namespace MonoDevelop.Xml.Formatting
 		bool v2;
 		int lastEmptyLineCount;
 		
-		XmlFormatingSettings formatSettings = new XmlFormatingSettings ();
-		XmlFormatingSettings defaultFormatSettings = new XmlFormatingSettings ();
+		XmlFormattingSettings formatSettings = new XmlFormattingSettings ();
+		XmlFormattingSettings defaultFormatSettings = new XmlFormattingSettings ();
 		internal TextStylePolicy TextPolicy;
 		
 		// Constructors
@@ -180,14 +180,14 @@ namespace MonoDevelop.Xml.Formatting
 				new char [] {'"', '&', '<', '>', '\r', '\n'};
 		}
 		
-		Dictionary<XmlNode,XmlFormatingSettings> formatMap = new Dictionary<XmlNode, XmlFormatingSettings> ();
+		Dictionary<XmlNode,XmlFormattingSettings> formatMap = new Dictionary<XmlNode, XmlFormattingSettings> ();
 		
 		public void WriteNode (XmlNode node, XmlFormattingPolicy formattingPolicy, TextStylePolicy textPolicy)
 		{
 			this.TextPolicy = textPolicy;
 			formatMap.Clear ();
 			defaultFormatSettings = formattingPolicy.DefaultFormat;
-			foreach (XmlFormatingSettings format in formattingPolicy.Formats) {
+			foreach (XmlFormattingSettings format in formattingPolicy.Formats) {
 				foreach (string xpath in format.ScopeXPath) {
 					foreach (XmlNode n in node.SelectNodes (xpath))
 						formatMap [n] = format;
@@ -198,7 +198,7 @@ namespace MonoDevelop.Xml.Formatting
 		
 		void WriteNode (XmlNode node)
 		{
-			XmlFormatingSettings oldFormat = formatSettings;
+			XmlFormattingSettings oldFormat = formatSettings;
 			SetFormat (node);
 			
 			switch (node.NodeType) {
@@ -321,7 +321,7 @@ namespace MonoDevelop.Xml.Formatting
 		
 		void SetFormat (XmlNode node)
 		{
-			XmlFormatingSettings s;
+			XmlFormattingSettings s;
 			if (formatMap.TryGetValue (node, out s)) {
 				formatSettings = s;
 			}

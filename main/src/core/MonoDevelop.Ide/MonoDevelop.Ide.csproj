@@ -948,9 +948,7 @@
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\FileOperationsBuilderExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\DirectoryTemplate.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IUndoHandler.cs" />
-    <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormattingPolicyPanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormatterService.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Ide.CodeFormatting.CodeFormattingPolicyPanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\CodeTemplatePanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\EditTemplateDialog.cs" />
@@ -1377,6 +1375,11 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.GtkErrorDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\GtkErrorDialog.cs" />
     <Compile Include="MonoDevelop.Components\ImageLoader.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeFormatting\ICodeFormatter.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeFormatting\IAdvancedCodeFormatter.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeFormatting\DefaultCodeFormatter.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormatterExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -1440,5 +1443,6 @@
     <Folder Include="MonoDevelop.Components.AutoTest\" />
     <Folder Include="MonoDevelop.Ide.Fonts\" />
     <Folder Include="MonoDevelop.Ide.Updater\" />
+    <Folder Include="MonoDevelop.Ide.Codons\" />
   </ItemGroup>
 </Project>

@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using System.Diagnostics;
 using MonoDevelop.MacDev.Plist;
 using System.Linq;

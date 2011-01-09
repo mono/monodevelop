@@ -149,7 +149,6 @@
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.GotoLineNumberWidget.cs" />
     <Compile Include="MonoDevelop.SourceEditor\StyledSourceEditorOptions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ISourceEditorOptions.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\DefaultFormatter.cs" />
     <Compile Include="MonoDevelop.SourceEditor\AutoSave.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SyntaxModeCodon.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SyntaxModeService.cs" />
@@ -191,4 +190,7 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.SourceEditor\" />
+  </ItemGroup>
 </Project>

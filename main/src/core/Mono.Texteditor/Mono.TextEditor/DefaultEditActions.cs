@@ -337,7 +337,7 @@ namespace Mono.TextEditor
 				}
 			}
 			
-			data.Caret.Offset = prevLine.Offset + relCaretOffset;
+			data.Caret.Line--;
 			if (setSelection)
 				data.SetSelection (data.Document.GetLine (lineStart - 1).Offset, data.Document.GetLine (lineEnd - 1).Offset + data.Document.GetLine (lineEnd - 1).EditableLength);
 			data.Document.EndAtomicUndo ();
@@ -362,6 +362,8 @@ namespace Mono.TextEditor
 			int relCaretOffset = data.Caret.Offset - startLine.Offset;
 			
 			Mono.TextEditor.LineSegment nextLine = data.Document.GetLine (lineEnd + 1);
+			if (nextLine == null)
+				return;
 			string text = data.Document.GetTextAt (nextLine.Offset, nextLine.EditableLength);
 			List<TextMarker> prevLineMarkers = new List<TextMarker> (nextLine.Markers);
 			nextLine.ClearMarker ();
@@ -376,7 +378,7 @@ namespace Mono.TextEditor
 				}
 			}
 			
-			data.Caret.Offset = nextLine.Offset + relCaretOffset;
+			data.Caret.Line++;
 			if (setSelection)
 				data.SetSelection (data.Document.GetLine (lineStart + 1).Offset, data.Document.GetLine (lineEnd + 1).Offset + data.Document.GetLine (lineEnd + 1).EditableLength);
 			data.Document.EndAtomicUndo ();

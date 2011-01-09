@@ -151,7 +151,6 @@
     <Compile Include="MonoDevelop.Xml.StateEngine\XmlParsedDocument.cs" />
     <Compile Include="MonoDevelop.XmlEditor\XmlDocumentParser.cs" />
     <Compile Include="MonoDevelop.XmlEditor.Completion\InferredXmlCompletionProvider.cs" />
-    <Compile Include="MonoDevelop.XmlEditor\XmlFormatter.cs" />
     <Compile Include="MonoDevelop.Xml.Formatting\XmlFormatterWriter.cs" />
     <Compile Include="MonoDevelop.Xml.Formatting\XmlFormattingPolicy.cs" />
     <Compile Include="MonoDevelop.Xml.Formatting\XmlFormatter.cs" />

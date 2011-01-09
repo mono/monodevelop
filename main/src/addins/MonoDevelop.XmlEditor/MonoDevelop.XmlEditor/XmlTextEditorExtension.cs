@@ -41,11 +41,10 @@ using MonoDevelop.XmlEditor.Completion;
 using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.CodeFormatting;
 
 namespace MonoDevelop.XmlEditor
 {
-	
-	
 	public class XmlTextEditorExtension : MonoDevelop.XmlEditor.Gui.BaseXmlEditorExtension
 	{
 		const string TextXmlMimeType = "text/xml";
@@ -537,52 +536,6 @@ namespace MonoDevelop.XmlEditor
 			//FIXME: implement
 		}
 		
-		[CommandHandler (Commands.Format)]
-		public void FormatCommand ()
-		{
-			TaskService.Errors.Clear ();
-			
-			using (IProgressMonitor monitor = XmlEditorService.GetMonitor ()) {
-				bool selection = Editor.IsSomethingSelected;
-				string xml = selection? Editor.SelectedText : Editor.Text;
-				XmlDocument doc = XmlEditorService.ValidateWellFormedness (monitor, xml, FileName);
-				if (doc == null)
-					return;
-				
-				//if there's a line indent at the current location, prepend that to all new lines
-				string extraIndent = null;
-				if (selection)
-					extraIndent = GetPositionIndent (selection? Editor.SelectionRange.Offset : Editor.Caret.Offset);
-				
-				string formattedXml = XmlEditorService.IndentedFormat (xml);
-				
-				//convert newlines and prepend extra indents to each line if needed
-				bool nonNativeNewline = (Editor.EolMarker != Environment.NewLine);
-				bool hasExtraIndent = !string.IsNullOrEmpty (extraIndent);
-				if (hasExtraIndent || nonNativeNewline) {
-					System.Text.StringBuilder builder = new System.Text.StringBuilder (formattedXml);
-					
-					if (nonNativeNewline)
-						builder.Replace (Environment.NewLine, Editor.EolMarker);
-					
-					if (hasExtraIndent) {
-						builder.Replace (Editor.EolMarker, Editor.EolMarker + extraIndent);
-						if (formattedXml.EndsWith (Environment.NewLine))
-							builder.Remove (builder.Length - 1 - extraIndent.Length, extraIndent.Length);
-					}
-					formattedXml = builder.ToString ();
-				}
-				
-				Editor.Document.BeginAtomicUndo ();
-				if (selection) {
-					Editor.SelectedText = formattedXml;
-				} else {
-					Editor.Text = formattedXml;
-				}
-				Editor.Document.EndAtomicUndo ();
-			}
-		}
-		
 		[CommandHandler (Commands.CreateSchema)]
 		public void CreateSchemaCommand ()
 		{
@@ -606,7 +559,7 @@ namespace MonoDevelop.XmlEditor
 					}
 				}
 			} catch (Exception ex) {
-				MessageService.ShowError(ex.Message);
+				MessageService.ShowError (ex.Message);
 			}
 		}
 		
@@ -716,6 +669,43 @@ namespace MonoDevelop.XmlEditor
 					monitor.EndTask ();
 				}
 			}
+		}
+		
+		/*
+		[CommandUpdateHandler (CodeFormattingCommands.FormatSelection)]
+		internal void UpdateFormatSelection (CommandInfo info)
+		{
+			info.Enabled = false;
+		}
+		
+		[CommandHandler (CodeFormattingCommands.FormatSelection)]
+		internal void FormatSelection (CommandInfo info)
+		{
+			throw new NotImplementedException ();
+		}
+		*/
+		
+		[CommandUpdateHandler (CodeFormattingCommands.FormatBuffer)]
+		internal void UpdateFormatDocument (CommandInfo info)
+		{
+			//we know there is an XML formatter because this addin registers it
+			info.Enabled = true;
+		}
+		
+		//we have to implement the command here simply to force the document mimetype
+		//FIXME: instead we should register the XML mimetype additions to the desktopservice
+		[CommandHandler (CodeFormattingCommands.FormatBuffer)]
+		internal void FormatDocument ()
+		{
+			var formatter = CodeFormatterService.GetFormatter (TextXmlMimeType);
+			Editor.Document.BeginAtomicUndo ();
+			var loc = Editor.Caret.Location;
+			var text = formatter.FormatText (Document.Project != null ? Document.Project.Policies : null, Editor.Text);
+			if (text != null) {
+				Editor.Replace (0, Editor.Length, text);
+				Editor.Caret.Location = loc;
+			}
+			Editor.Document.EndAtomicUndo ();
 		}
 		
 		string GetFileContent (string fileName)

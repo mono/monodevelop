@@ -2771,10 +2771,19 @@ namespace Mono.CSharp
 
 			s = new string (id_builder, 0, pos);
 			identifiers_group.Add (chars, s);
-
+#if FULL_AST
+			// Special handling of quoted identifier since md needs them in it's AST
+			if (quoted) {
+				val = LocatedToken.Create ("@" + s, ref_line, column - 1);
+				AddEscapedIdentifier (((LocatedToken) val).Location);
+			} else {
+				val = LocatedToken.Create (s, ref_line, column);
+			}
+#else
 			val = LocatedToken.Create (s, ref_line, column);
 			if (quoted)
 				AddEscapedIdentifier (((LocatedToken) val).Location);
+#endif
 
 			return Token.IDENTIFIER;
 		}

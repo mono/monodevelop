@@ -1419,6 +1419,36 @@ if (b) {
 }", data.Document.Text);
 		}
 		
+		[Test()]
+		public void TestSimpleIfElseComment ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	void TestMethod ()
+	{
+		if (true) Call (); else Call ();
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			
+			policy.StatementBraceStyle = BraceStyle.EndOfLine;
+			policy.PlaceElseIfOnNewLine = false; // for simple statements it must be new line.
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test
+{
+	void TestMethod ()
+	{
+		if (true)
+			Call ();
+		else
+			Call ();
+	}
+}", data.Document.Text);
+		}
 		
 		[Test()]
 		public void TestWhileForcementRemove ()

@@ -43,6 +43,7 @@ using MonoDevelop.Ide.CodeTemplates;
 using Mono.Addins;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.CodeFormatting;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -649,16 +650,17 @@ namespace MonoDevelop.SourceEditor
 		void HandleTextPaste (int insertionOffset, string text)
 		{
 			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
-				Formatter prettyPrinter = TextFileService.GetFormatter (Document.MimeType);
-				if (prettyPrinter != null && prettyPrinter.SupportsOnTheFlyFormatting && ProjectDom != null && text != null) {
+				var prettyPrinter = CodeFormatterService.GetFormatter (Document.MimeType);
+				if (prettyPrinter != null && ProjectDom != null && text != null) {
 					try {
-						string newText = prettyPrinter.FormatText (ProjectDom.Project.Policies, Document.MimeType, Document.Text, insertionOffset, insertionOffset + text.Length);
+						var policies = ProjectDom != null && ProjectDom.Project != null ? ProjectDom.Project.Policies : null;
+						string newText = prettyPrinter.FormatText (policies, Document.Text, insertionOffset, insertionOffset + text.Length);
 						if (!string.IsNullOrEmpty (newText)) {
 							Replace (insertionOffset, text.Length, newText);
 							Caret.Offset = insertionOffset + newText.Length;
 						}
 					} catch (Exception e) {
-						Console.WriteLine (e);
+						LoggingService.LogError ("Error formatting pasted text", e);
 					}
 				}
 			}
@@ -668,20 +670,22 @@ namespace MonoDevelop.SourceEditor
 		{
 			Document.BeginAtomicUndo ();
 			var result = template.InsertTemplateContents (document);
-			TextLinkEditMode tle = new TextLinkEditMode (this, 
-			                                             result.InsertPosition,
-			                                             result.TextLinks);
+			var tle = new TextLinkEditMode (this, result.InsertPosition, result.TextLinks);
 			
 			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
-				Formatter prettyPrinter = TextFileService.GetFormatter (Document.MimeType);
-				if (prettyPrinter != null && prettyPrinter.SupportsOnTheFlyFormatting) {
+				var prettyPrinter = CodeFormatterService.GetFormatter (Document.MimeType);
+				if (prettyPrinter != null) {
 					int endOffset = result.InsertPosition + result.Code.Length;
-					string text = prettyPrinter.FormatText (document.Project.Policies, Document.MimeType, Document.Text, result.InsertPosition, endOffset);
 					string oldText = Document.GetTextAt (result.InsertPosition, result.Code.Length);
-					//					Console.WriteLine (result.InsertPosition);
-					//					Console.WriteLine ("old:" + oldText);
-					//					Console.WriteLine ("new:" + text);
-					Replace (result.InsertPosition, result.Code.Length, text);
+					var policies = document.Project != null ? document.Project.Policies : null;
+					string text = prettyPrinter.FormatText (policies, Document.Text, result.InsertPosition, endOffset);
+					
+					if (text != null)
+						Replace (result.InsertPosition, result.Code.Length, text);
+					else
+						//if formatting failed, just use the unformatted text
+						text = oldText;
+					
 					Caret.Offset = result.InsertPosition + TranslateOffset (oldText, text, Caret.Offset - result.InsertPosition);
 					foreach (TextLink textLink in tle.Links) {
 						foreach (ISegment segment in textLink.Links) {

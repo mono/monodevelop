@@ -25,21 +25,22 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using Mono.TextEditor;
+
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Policies;
 
-namespace MonoDevelop.Projects.Text
+namespace MonoDevelop.Ide.CodeFormatting
 {
-	public interface IPrettyPrinter
+	public interface IAdvancedCodeFormatter : ICodeFormatter
 	{
-		bool CanFormat (string mimeType);
+		bool SupportsOnTheFlyFormatting { get; }
+		bool SupportsCorrectingIndent { get; }
 		
-		bool SupportsOnTheFlyFormatting {
-			get;
-		}
-		
-		void CorrectIndenting (object textEditorData, int line);
+		void CorrectIndenting (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
+			TextEditorData textEditorData, int line);
 		
 		/// <summary>
 		/// Formats a text document directly with insert/remove operations.
@@ -56,49 +57,36 @@ namespace MonoDevelop.Projects.Text
 		/// <param name="caretLocation">
 		/// A <see cref="DomLocation"/> that should be the end location to which the parsing should occur.
 		/// </param>
-		void OnTheFlyFormat (object textEditorData, IType callingType, IMember callingMember, ProjectDom dom, ICompilationUnit unit, DomLocation endLocation);
-		void OnTheFlyFormat (PolicyContainer policyParent, object textEditorData, int startOffset, int endOffset);
+		void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
+			TextEditorData textEditorData, IType callingType, IMember callingMember, ProjectDom dom,
+			ICompilationUnit unit, DomLocation endLocation);
 		
-		string FormatText (PolicyContainer policyParent, string mimeType, string input);
-		string FormatText (PolicyContainer policyParent, string mimeType, string input, int fromOffest, int toOffset);
+		void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
+			TextEditorData textEditorData, int startOffset, int endOffset);
 	}
 	
-	public abstract class AbstractPrettyPrinter : IPrettyPrinter
+	public abstract class AbstractAdvancedFormatter : AbstractCodeFormatter, IAdvancedCodeFormatter
 	{
-		public abstract bool CanFormat (string mimeType);
+		public virtual bool SupportsOnTheFlyFormatting { get { return false; } }
+		public virtual bool SupportsCorrectingIndent { get { return false; } }
 		
-		public virtual bool SupportsOnTheFlyFormatting {
-			get {
-				return false;
-			}
-		}
-		
-		public virtual void OnTheFlyFormat (object textEditorData, IType callingType, IMember callingMember, ProjectDom dom, ICompilationUnit unit, DomLocation endLocation)
+		public virtual void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
+			TextEditorData data, IType callingType, IMember callingMember, ProjectDom dom,
+			ICompilationUnit unit, DomLocation endLocation)
 		{
 			throw new NotSupportedException ();
 		}
 		
-		public virtual void OnTheFlyFormat (PolicyContainer policyParent, object textEditorData, int startOffset, int endOffset)
+		public virtual void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
+			TextEditorData data, int startOffset, int endOffset)
 		{
 			throw new NotSupportedException ();
 		}
 		
-		public abstract void CorrectIndenting (object textEditorData, int line);
-		
-		protected abstract string InternalFormat (PolicyContainer policyParent, string mimeType, string text, int fromOffest, int toOffset);
-		
-		public string FormatText (PolicyContainer policyParent, string mimeType, string input)
+		public virtual void CorrectIndenting (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
+			TextEditorData data, int line)
 		{
-			if (string.IsNullOrEmpty (input))
-				return input;
-			return FormatText (policyParent, mimeType, input, 0, input.Length);
-		}
-		
-		public string FormatText (PolicyContainer policyParent, string mimeType, string input, int fromOffest, int toOffset)
-		{
-			if (string.IsNullOrEmpty (input))
-				return input;
-			return InternalFormat (policyParent, mimeType, input, fromOffest, toOffset);
+			throw new NotSupportedException ();
 		}
 	}
 }

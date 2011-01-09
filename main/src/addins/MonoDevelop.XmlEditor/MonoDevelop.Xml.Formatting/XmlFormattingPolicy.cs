@@ -37,20 +37,20 @@ namespace MonoDevelop.Xml.Formatting
 {
 	public class XmlFormattingPolicy : IEquatable<XmlFormattingPolicy>
 	{
-		List<XmlFormatingSettings> formats = new List<XmlFormatingSettings> ();
-		XmlFormatingSettings defaultFormat = new XmlFormatingSettings ();
+		List<XmlFormattingSettings> formats = new List<XmlFormattingSettings> ();
+		XmlFormattingSettings defaultFormat = new XmlFormattingSettings ();
 		
 		public XmlFormattingPolicy ()
 		{
 		}
 		
 		[ItemProperty]
-		public List<XmlFormatingSettings> Formats {
+		public List<XmlFormattingSettings> Formats {
 			get { return formats; }
 		}
 		
 		[ItemProperty]
-		public XmlFormatingSettings DefaultFormat {
+		public XmlFormattingSettings DefaultFormat {
 			get { return defaultFormat; }
 		}
 		
@@ -62,8 +62,8 @@ namespace MonoDevelop.Xml.Formatting
 			if (formats.Count != other.formats.Count)
 				return false;
 			
-			List<XmlFormatingSettings> list = new List<XmlFormatingSettings> (other.formats);
-			foreach (XmlFormatingSettings fs in formats) {
+			List<XmlFormattingSettings> list = new List<XmlFormattingSettings> (other.formats);
+			foreach (XmlFormattingSettings fs in formats) {
 				bool found = false;
 				for (int n=0; n<list.Count; n++) {
 					if (fs.Equals (list [n])) {
@@ -88,11 +88,11 @@ namespace MonoDevelop.Xml.Formatting
 		}
 	}
 	
-	public class XmlFormatingSettings
+	public class XmlFormattingSettings
 	{
 		List<string> scope = new List<string> ();
 		
-		public XmlFormatingSettings ()
+		public XmlFormattingSettings ()
 		{
 			NewLineChars = "\n";
 			OmitXmlDeclaration = false;
@@ -115,7 +115,7 @@ namespace MonoDevelop.Xml.Formatting
 			EmptyLinesAfterEnd = 0;
 		}
 		
-		public bool Equals (XmlFormatingSettings other)
+		public bool Equals (XmlFormattingSettings other)
 		{
 			if (scope.Count != other.scope.Count)
 				return false;
@@ -146,9 +146,9 @@ namespace MonoDevelop.Xml.Formatting
 				EmptyLinesAfterEnd == other.EmptyLinesAfterEnd;
 		}
 		
-		public XmlFormatingSettings Clone ()
+		public XmlFormattingSettings Clone ()
 		{
-			XmlFormatingSettings clone = (XmlFormatingSettings) MemberwiseClone ();
+			XmlFormattingSettings clone = (XmlFormattingSettings) MemberwiseClone ();
 			clone.scope = new List<string> (scope);
 			return clone;
 		}

@@ -63,6 +63,7 @@ FILES =  \
 	MonoDevelop.Core.Execution/MsNetExecutionHandler.cs \
 	MonoDevelop.Core.Execution/NativeExecutionCommand.cs \
 	MonoDevelop.Core.Execution/NativePlatformExecutionHandler.cs \
+	MonoDevelop.Core.Execution/ProcessArgumentBuilder.cs \
 	MonoDevelop.Core.Execution/ProcessExecutionCommand.cs \
 	MonoDevelop.Core.Execution/ProcessExtensions.cs \
 	MonoDevelop.Core.Execution/ProcessHostController.cs \
@@ -339,12 +340,8 @@ FILES =  \
 	MonoDevelop.Projects.Policies/PolicyService.cs \
 	MonoDevelop.Projects.Policies/PolicySet.cs \
 	MonoDevelop.Projects.Policies/ScopedPolicy.cs \
-	MonoDevelop.Projects.Text/CodeFormatDescription.cs \
 	MonoDevelop.Projects.Text/DocGenerator.cs \
-	MonoDevelop.Projects.Text/Formatter.cs \
 	MonoDevelop.Projects.Text/IEditableTextFile.cs \
-	MonoDevelop.Projects.Text/IFormatter.cs \
-	MonoDevelop.Projects.Text/IPrettyPrinter.cs \
 	MonoDevelop.Projects.Text/ITextFile.cs \
 	MonoDevelop.Projects.Text/ITextFileProvider.cs \
 	MonoDevelop.Projects.Text/TextEncoding.cs \

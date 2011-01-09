@@ -28,30 +28,45 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using Mono.Addins;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
 	public sealed class CodeFormatterService
 	{
-	/*	static List<ICodeFormatter> formatter = new List<ICodeFormatter> ();
+		static List<CodeFormatterExtensionNode> nodes = new List<CodeFormatterExtensionNode> ();
 		
 		static CodeFormatterService ()
 		{
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/CodeFormatters", delegate(object sender, ExtensionNodeEventArgs args) {
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					formatters.Add ((IFormatter) args.ExtensionObject);
-					break;
-				case ExtensionChange.Remove:
-					formatters.Remove ((IFormatter) args.ExtensionObject);
-					break;
-				}
-			});
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/CodeFormatters", FormatterExtHandler);
 		}
 		
-		public static ICodeFormatter GetFormatter (string mimeType)
+		static void FormatterExtHandler (object sender, ExtensionNodeEventArgs args)
 		{
-			return (from f in formatter where f.CanFormat (mimeType) select f).FirstOrDefault ();
-		}*/
+			switch (args.Change) {
+			case ExtensionChange.Add:
+				nodes.Add ((CodeFormatterExtensionNode) args.ExtensionNode);
+				break;
+			case ExtensionChange.Remove:
+				nodes.Remove ((CodeFormatterExtensionNode) args.ExtensionNode);
+				break;
+			}
+		}
+		
+		public static CodeFormatter GetFormatter (string mimeType)
+		{
+			//find the most specific formatter that can handle the document
+			var chain = DesktopService.GetMimeTypeInheritanceChain (mimeType).ToList ();
+			foreach (var mt in chain) {
+				var node = nodes.FirstOrDefault (f => f.MimeType == mt);
+				if (node != null)
+					return new CodeFormatter (chain, node.GetFormatter ());
+			}
+			
+			if (DesktopService.GetMimeTypeIsText (mimeType))
+				return new CodeFormatter (chain, new DefaultCodeFormatter ());
+			
+			return null;
+		}
 	}
 }

@@ -720,26 +720,24 @@ namespace MonoDevelop.XmlEditor.Completion
 		/// </summary>
 		XmlSchemaComplexType GetElementAsComplexType (XmlSchemaElement element)
 		{
-			var complexType = element.SchemaType as XmlSchemaComplexType;
-			if (complexType == null)
-				complexType = FindNamedType (schema, element.SchemaTypeName);
-			
-			return complexType;
+			return (element.SchemaType as XmlSchemaComplexType)
+				?? FindNamedType (schema, element.SchemaTypeName);
 		}
 		
 		void GetAttributeCompletionData (XmlCompletionDataList data, XmlSchemaObjectCollection attributes)
 		{
 			foreach (XmlSchemaObject schemaObject in attributes) {
 				var attribute = schemaObject as XmlSchemaAttribute;
-				var attributeGroupRef = schemaObject as XmlSchemaAttributeGroupRef;
 				if (attribute != null) {
 					if (!IsProhibitedAttribute(attribute)) {
 						data.AddAttribute (attribute);
 					} else {
 						prohibitedAttributes.Add (attribute);
 					}
-				} else if (attributeGroupRef != null) {
-					GetAttributeCompletionData (data, attributeGroupRef);
+				} else {
+					var attributeGroupRef = schemaObject as XmlSchemaAttributeGroupRef;
+					if (attributeGroupRef != null)
+						GetAttributeCompletionData (data, attributeGroupRef);
 				}
 			}
 		}
@@ -777,227 +775,202 @@ namespace MonoDevelop.XmlEditor.Completion
 		
 		static XmlSchemaComplexType FindNamedType (XmlSchema schema, XmlQualifiedName name)
 		{
-			XmlSchemaComplexType matchedComplexType = null;
+			if (name == null)
+				return null;
 			
-			if (name != null) {
-				foreach (XmlSchemaObject schemaObject in schema.Items) {
-					var complexType = schemaObject as XmlSchemaComplexType;
-					if (complexType != null && complexType.QualifiedName == name) {
-							matchedComplexType = complexType;
-							break;
-					}
-				}
+			foreach (XmlSchemaObject schemaObject in schema.Items) {
+				var complexType = schemaObject as XmlSchemaComplexType;
+				if (complexType != null && complexType.QualifiedName == name)
+						return complexType;
+			}
 			
-				// Try included schemas.
-				if (matchedComplexType == null) {				
-					foreach (XmlSchemaExternal external in schema.Includes) {
-						var include = external as XmlSchemaInclude;
-						if (include != null && include.Schema != null)
-								matchedComplexType = FindNamedType (include.Schema, name);
-					}
+			// Try included schemas.
+			foreach (XmlSchemaExternal external in schema.Includes) {
+				var include = external as XmlSchemaInclude;
+				if (include != null && include.Schema != null) {
+					var matchedComplexType = FindNamedType (include.Schema, name);
+					if (matchedComplexType != null)
+						return matchedComplexType;
 				}
 			}
 			
-			return matchedComplexType;
+			return null;
 		}	
 		
 		/// <summary>
 		/// Finds an element that matches the specified <paramref name="name"/>
 		/// from the children of the given <paramref name="element"/>.
 		/// </summary>
-		XmlSchemaElement FindChildElement(XmlSchemaElement element, QualifiedName name)
+		XmlSchemaElement FindChildElement (XmlSchemaElement element, QualifiedName name)
 		{
-			XmlSchemaElement matchedElement = null;
-			
-			XmlSchemaComplexType complexType = GetElementAsComplexType(element);
-			if (complexType != null) {
-				matchedElement = FindChildElement(complexType, name);
-			}
-			
-			return matchedElement;
+			var complexType = GetElementAsComplexType (element);
+			if (complexType != null)
+				return FindChildElement (complexType, name);
+			return null;
 		}
 		
-		XmlSchemaElement FindChildElement(XmlSchemaComplexType complexType, QualifiedName name)
+		XmlSchemaElement FindChildElement (XmlSchemaComplexType complexType, QualifiedName name)
 		{
-			XmlSchemaElement matchedElement = null;
-
-			XmlSchemaSequence sequence = complexType.Particle as XmlSchemaSequence;
-			XmlSchemaChoice choice = complexType.Particle as XmlSchemaChoice;
-			XmlSchemaGroupRef groupRef = complexType.Particle as XmlSchemaGroupRef;
-			XmlSchemaAll all = complexType.Particle as XmlSchemaAll;
-			XmlSchemaComplexContent complexContent = complexType.ContentModel as XmlSchemaComplexContent;
-
-			if (sequence != null) {
-				matchedElement = FindElement(sequence.Items, name);
-			} else if (choice != null) {
-				matchedElement = FindElement(choice.Items, name);
-			} else if (complexContent != null) {
-				XmlSchemaComplexContentExtension extension = complexContent.Content as XmlSchemaComplexContentExtension;
-				XmlSchemaComplexContentRestriction restriction = complexContent.Content as XmlSchemaComplexContentRestriction;
-				if (extension != null) {
-					matchedElement = FindChildElement(extension, name);
-				} else if (restriction != null) {
-					matchedElement = FindChildElement(restriction, name);
-				}
-			} else if (groupRef != null) {
-				matchedElement = FindElement(groupRef, name);
-			} else if (all != null) {
-				matchedElement = FindElement(all.Items, name);
+			var sequence = complexType.Particle as XmlSchemaSequence;
+			if (sequence != null)
+				return FindElement (sequence.Items, name);
+			
+			var choice = complexType.Particle as XmlSchemaChoice;
+			if (choice != null)
+				return FindElement (choice.Items, name);
+			
+			var complexContent = complexType.ContentModel as XmlSchemaComplexContent;
+			if (complexContent != null) {
+				var extension = complexContent.Content as XmlSchemaComplexContentExtension;
+				if (extension != null)
+					return FindChildElement (extension, name);
+				var restriction = complexContent.Content as XmlSchemaComplexContentRestriction;
+				if (restriction != null)
+					return FindChildElement (restriction, name);
 			}
 			
-			return matchedElement;
+			var groupRef = complexType.Particle as XmlSchemaGroupRef;
+			if (groupRef != null)
+				return FindElement(groupRef, name);
+			
+			var all = complexType.Particle as XmlSchemaAll;
+			if (all != null)
+				return FindElement(all.Items, name);
+			
+			return null;
 		}
 		
 		/// <summary>
 		/// Finds the named child element contained in the extension element.
 		/// </summary>
-		XmlSchemaElement FindChildElement(XmlSchemaComplexContentExtension extension, QualifiedName name)
+		XmlSchemaElement FindChildElement (XmlSchemaComplexContentExtension extension, QualifiedName name)
 		{
-			XmlSchemaElement matchedElement = null;
+			var complexType = FindNamedType (schema, extension.BaseTypeName);
+			if (complexType == null)
+				return null;
 			
-			XmlSchemaComplexType complexType = FindNamedType(schema, extension.BaseTypeName);
-			if (complexType != null) {
-				matchedElement = FindChildElement(complexType, name);
-							
-				if (matchedElement == null) {
-					
-					XmlSchemaSequence sequence = extension.Particle as XmlSchemaSequence;
-					XmlSchemaChoice choice = extension.Particle as XmlSchemaChoice;
-					XmlSchemaGroupRef groupRef = extension.Particle as XmlSchemaGroupRef;
-					
-					if (sequence != null) {
-						matchedElement = FindElement(sequence.Items, name);
-					} else if (choice != null) {
-						matchedElement = FindElement(choice.Items, name);
-					} else if (groupRef != null) {
-						matchedElement = FindElement(groupRef, name);
-					}
-				}
-			}
+			var matchedElement = FindChildElement (complexType, name);
+			if (matchedElement != null)
+				return matchedElement;
 			
-			return matchedElement;
+			var sequence = extension.Particle as XmlSchemaSequence;
+			if (sequence != null)
+				return FindElement (sequence.Items, name);
+			
+			var choice = extension.Particle as XmlSchemaChoice;
+			if (choice != null)
+				return FindElement (choice.Items, name);
+			
+			var groupRef = extension.Particle as XmlSchemaGroupRef;
+			if (groupRef != null)
+				return FindElement (groupRef, name);
+			
+			return null;
 		}
 		
 		/// <summary>
 		/// Finds the named child element contained in the restriction element.
 		/// </summary>
-		XmlSchemaElement FindChildElement(XmlSchemaComplexContentRestriction restriction, QualifiedName name)
+		XmlSchemaElement FindChildElement (XmlSchemaComplexContentRestriction restriction, QualifiedName name)
 		{
-			XmlSchemaElement matchedElement = null;		
-			XmlSchemaSequence sequence = restriction.Particle as XmlSchemaSequence;
-			XmlSchemaGroupRef groupRef = restriction.Particle as XmlSchemaGroupRef;
-				
-			if (sequence != null) {
-				matchedElement = FindElement(sequence.Items, name);
-			} else if (groupRef != null) {
-				matchedElement = FindElement(groupRef, name);
-			}
+			var sequence = restriction.Particle as XmlSchemaSequence;
+			if (sequence != null)
+				return FindElement (sequence.Items, name);
+			
+			var groupRef = restriction.Particle as XmlSchemaGroupRef;
+			if (groupRef != null)
+				return FindElement (groupRef, name);
 
-			return matchedElement;
+			return null;
 		}		
 		
 		/// <summary>
 		/// Finds the element in the collection of schema objects.
 		/// </summary>
-		XmlSchemaElement FindElement(XmlSchemaObjectCollection items, QualifiedName name)
+		XmlSchemaElement FindElement (XmlSchemaObjectCollection items, QualifiedName name)
 		{
 			XmlSchemaElement matchedElement = null;
 			
 			foreach (XmlSchemaObject schemaObject in items) {
-				XmlSchemaElement element = schemaObject as XmlSchemaElement;
-				XmlSchemaSequence sequence = schemaObject as XmlSchemaSequence;
-				XmlSchemaChoice choice = schemaObject as XmlSchemaChoice;
-				XmlSchemaGroupRef groupRef = schemaObject as XmlSchemaGroupRef;
+				var element = schemaObject as XmlSchemaElement;
+				var sequence = schemaObject as XmlSchemaSequence;
+				var choice = schemaObject as XmlSchemaChoice;
+				var groupRef = schemaObject as XmlSchemaGroupRef;
 				
 				if (element != null) {
 					if (element.Name != null) {
 						if (name.Name == element.Name) {
-							matchedElement = element;
+							return element;
 						}
 					} else if (element.RefName != null) {
 						if (name.Name == element.RefName.Name) {
-							matchedElement = FindElement(element.RefName);
+							matchedElement = FindElement (element.RefName);
 						} else {
-							// Abstract element?
-							XmlSchemaElement abstractElement = FindElement(element.RefName);
+							var abstractElement = FindElement (element.RefName);
 							if (abstractElement != null && abstractElement.IsAbstract) {
-								matchedElement = FindSubstitutionGroupElement(abstractElement.QualifiedName, name);
+								matchedElement = FindSubstitutionGroupElement (abstractElement.QualifiedName, name);
 							}
 						}
 					}
 				} else if (sequence != null) {
-					matchedElement = FindElement(sequence.Items, name);
+					matchedElement = FindElement (sequence.Items, name);
 				} else if (choice != null) {
-					matchedElement = FindElement(choice.Items, name);
+					matchedElement = FindElement (choice.Items, name);
 				} else if (groupRef != null) {
-					matchedElement = FindElement(groupRef, name);
+					matchedElement = FindElement (groupRef, name);
 				}
 				
-				// Did we find a match?
-				if (matchedElement != null) {
-					break;
-				}
+				if (matchedElement != null)
+					return matchedElement;
 			}
 			
-			return matchedElement;
+			return null;
 		}
 		
-		XmlSchemaElement FindElement(XmlSchemaGroupRef groupRef, QualifiedName name)
+		XmlSchemaElement FindElement (XmlSchemaGroupRef groupRef, QualifiedName name)
 		{
-			XmlSchemaElement matchedElement = null;
+			var group = FindGroup (groupRef.RefName.Name);
+			if (group == null)
+				return null;
 			
-			XmlSchemaGroup group = FindGroup(groupRef.RefName.Name);
-			if (group != null) {
-				XmlSchemaSequence sequence = group.Particle as XmlSchemaSequence;
-				XmlSchemaChoice choice = group.Particle as XmlSchemaChoice;
-				
-				if(sequence != null) {
-					matchedElement = FindElement(sequence.Items, name);
-				} else if (choice != null) {
-					matchedElement = FindElement(choice.Items, name);
-				} 
-			}
+			var sequence = group.Particle as XmlSchemaSequence;
+			if (sequence != null)
+				return FindElement (sequence.Items, name);
+			var choice = group.Particle as XmlSchemaChoice;
+			if (choice != null)
+				return FindElement (choice.Items, name);
 			
-			return matchedElement;
+			return null;
 		}
 		
-		static XmlSchemaAttributeGroup FindAttributeGroup(XmlSchema schema, string name)
+		static XmlSchemaAttributeGroup FindAttributeGroup (XmlSchema schema, string name)
 		{
-			XmlSchemaAttributeGroup matchedGroup = null;
+			if (name == null)
+				return null;
 			
-			if (name != null) {
-				foreach (XmlSchemaObject schemaObject in schema.Items) {
-					
-					XmlSchemaAttributeGroup group = schemaObject as XmlSchemaAttributeGroup;
-					if (group != null) {
-						if (group.Name == name) {
-							matchedGroup = group;
-							break;
-						}
-					}
-				}
-				
-				// Try included schemas.
-				if (matchedGroup == null) {				
-					foreach (XmlSchemaExternal external in schema.Includes) {
-						XmlSchemaInclude include = external as XmlSchemaInclude;
-						if (include != null) {
-							if (include.Schema != null) {
-								matchedGroup = FindAttributeGroup(include.Schema, name);
-							}
-						}
-					}
-				}
+			foreach (XmlSchemaObject schemaObject in schema.Items) {
+				var group = schemaObject as XmlSchemaAttributeGroup;
+				if (group != null && group.Name == name)
+					return group;
 			}
 			
-			return matchedGroup;
+			// Try included schemas.
+			foreach (XmlSchemaExternal external in schema.Includes) {
+				var include = external as XmlSchemaInclude;
+				if (include != null && include.Schema != null) {
+					var found = FindAttributeGroup (include.Schema, name);
+					if (found != null)
+						return found;
+				}
+			}
+			return null;
 		}
 		
 		void GetAttributeValueCompletionData (XmlCompletionDataList data, XmlSchemaElement element, string name)
 		{
 			var complexType = GetElementAsComplexType (element);
 			if (complexType != null) {
-				XmlSchemaAttribute attribute = FindAttribute (complexType, name);
+				var attribute = FindAttribute (complexType, name);
 				if (attribute != null)
 					GetAttributeValueCompletionData (data, attribute);
 			}
@@ -1077,110 +1050,86 @@ namespace MonoDevelop.XmlEditor.Completion
 			data.AddAttributeValue ("false");
 		}
 		
-		XmlSchemaAttribute FindAttribute(XmlSchemaComplexType complexType, string name)
+		XmlSchemaAttribute FindAttribute (XmlSchemaComplexType complexType, string name)
 		{
-			XmlSchemaAttribute matchedAttribute = null;
+			var matchedAttribute = FindAttribute (complexType.Attributes, name);
+			if (matchedAttribute != null)
+				return matchedAttribute;
 			
-			matchedAttribute = FindAttribute(complexType.Attributes, name);
+			var complexContent = complexType.ContentModel as XmlSchemaComplexContent;
+			if (complexContent != null)
+				return FindAttribute (complexContent, name);
 			
-			if (matchedAttribute == null) {
-				XmlSchemaComplexContent complexContent = complexType.ContentModel as XmlSchemaComplexContent;
-				if (complexContent != null) {
-					matchedAttribute = FindAttribute(complexContent, name);
-				}
-			}
-			
-			return matchedAttribute;
+			return null;
 		}
 		
-		XmlSchemaAttribute FindAttribute(XmlSchemaObjectCollection schemaObjects, string name)
+		XmlSchemaAttribute FindAttribute (XmlSchemaObjectCollection schemaObjects, string name)
 		{
-			XmlSchemaAttribute matchedAttribute = null;
-			
 			foreach (XmlSchemaObject schemaObject in schemaObjects) {
-				XmlSchemaAttribute attribute = schemaObject as XmlSchemaAttribute;
-				XmlSchemaAttributeGroupRef groupRef = schemaObject as XmlSchemaAttributeGroupRef;
+				var attribute = schemaObject as XmlSchemaAttribute;
+				if (attribute != null && attribute.Name == name)
+					return attribute;
 				
-				if (attribute != null) {
-					if (attribute.Name == name) {
-						matchedAttribute = attribute;
-						break;
-					}
-				} else if (groupRef != null) {
-					matchedAttribute = FindAttribute(groupRef, name);
-					if (matchedAttribute != null) {
-						break;
-					}
+				var groupRef = schemaObject as XmlSchemaAttributeGroupRef;
+				if (groupRef != null) {
+					var matchedAttribute = FindAttribute (groupRef, name);
+					if (matchedAttribute != null)
+						return matchedAttribute;
 				}
 			}
-			
-			return matchedAttribute;			
+			return null;
 		}
 		
-		XmlSchemaAttribute FindAttribute(XmlSchemaAttributeGroupRef groupRef, string name)
+		XmlSchemaAttribute FindAttribute (XmlSchemaAttributeGroupRef groupRef, string name)
 		{
-			XmlSchemaAttribute matchedAttribute = null;
-			
 			if (groupRef.RefName != null) {
-				XmlSchemaAttributeGroup group = FindAttributeGroup(schema, groupRef.RefName.Name);
+				var group = FindAttributeGroup (schema, groupRef.RefName.Name);
 				if (group != null) {
-					matchedAttribute = FindAttribute(group.Attributes, name);
+					return FindAttribute (group.Attributes, name);
 				}
 			}
-			
-			return matchedAttribute;		
+			return null;
 		}
 		
-		XmlSchemaAttribute FindAttribute(XmlSchemaComplexContent complexContent, string name)
+		XmlSchemaAttribute FindAttribute (XmlSchemaComplexContent complexContent, string name)
 		{
-			XmlSchemaAttribute matchedAttribute = null;
+			var extension = complexContent.Content as XmlSchemaComplexContentExtension;
+			if (extension != null)
+				return FindAttribute (extension, name);
 			
-			XmlSchemaComplexContentExtension extension = complexContent.Content as XmlSchemaComplexContentExtension;
-			XmlSchemaComplexContentRestriction restriction = complexContent.Content as XmlSchemaComplexContentRestriction;
+			var restriction = complexContent.Content as XmlSchemaComplexContentRestriction;
+			if (restriction != null)
+				return FindAttribute (restriction, name);
 			
-			if (extension != null) {
-				matchedAttribute = FindAttribute(extension, name);
-			} else if (restriction != null) {
-				matchedAttribute = FindAttribute(restriction, name);
-			}
-			
-			return matchedAttribute;			
+			return null;
 		}		
 		
-		XmlSchemaAttribute FindAttribute(XmlSchemaComplexContentExtension extension, string name)
+		XmlSchemaAttribute FindAttribute (XmlSchemaComplexContentExtension extension, string name)
 		{
-			return FindAttribute(extension.Attributes, name);	
+			return FindAttribute (extension.Attributes, name);
 		}			
 		
-		XmlSchemaAttribute FindAttribute(XmlSchemaComplexContentRestriction restriction, string name)
+		XmlSchemaAttribute FindAttribute (XmlSchemaComplexContentRestriction restriction, string name)
 		{
-			XmlSchemaAttribute matchedAttribute = FindAttribute(restriction.Attributes, name);
+			var matchedAttribute = FindAttribute (restriction.Attributes, name);
+			if (matchedAttribute != null)
+				return matchedAttribute;
 			
-			if (matchedAttribute == null) {
-				XmlSchemaComplexType complexType = FindNamedType(schema, restriction.BaseTypeName);
-				if (complexType != null) {
-					matchedAttribute = FindAttribute(complexType, name);
-				}
-			}
+			var complexType = FindNamedType (schema, restriction.BaseTypeName);
+			if (complexType != null)
+				return FindAttribute (complexType, name);
 			
-			return matchedAttribute;			
+			return null;
 		}
 		
-		XmlSchemaSimpleType FindSimpleType(XmlQualifiedName name)
+		XmlSchemaSimpleType FindSimpleType (XmlQualifiedName name)
 		{
-			XmlSchemaSimpleType matchedSimpleType = null;
-			
 			foreach (XmlSchemaObject schemaObject in schema.SchemaTypes.Values) {
-				XmlSchemaSimpleType simpleType = schemaObject as XmlSchemaSimpleType;
-				if (simpleType != null) {
-					if (simpleType.QualifiedName == name) {
-						matchedSimpleType = simpleType;
-						break;
-					}
-				}
+				var simpleType = schemaObject as XmlSchemaSimpleType;
+				if (simpleType != null && simpleType.QualifiedName == name)
+					return simpleType;
 			}
-			
-			return matchedSimpleType;
+			return null;
 		}
 		
 		/// <summary>
@@ -1188,11 +1137,9 @@ namespace MonoDevelop.XmlEditor.Completion
 		/// </summary>
 		void AddSubstitionGroupElements (XmlCompletionDataList data, XmlQualifiedName group, string prefix)
 		{
-			foreach (XmlSchemaElement element in schema.Elements.Values) {
-				if (element.SubstitutionGroup == group) {
+			foreach (XmlSchemaElement element in schema.Elements.Values)
+				if (element.SubstitutionGroup == group)
 					data.AddElement (element.Name, prefix, element.Annotation);
-				}
-			}
 		}
 		
 		/// <summary>
@@ -1200,15 +1147,11 @@ namespace MonoDevelop.XmlEditor.Completion
 		/// </summary>
 		XmlSchemaElement FindSubstitutionGroupElement (XmlQualifiedName group, QualifiedName name)
 		{
-			XmlSchemaElement matchedElement = null;
+			foreach (XmlSchemaElement element in schema.Elements.Values)
+				if (element.SubstitutionGroup == group && element.Name != null && element.Name == name.Name)
+					return element;
 			
-			foreach (XmlSchemaElement element in schema.Elements.Values) {
-				if (element.SubstitutionGroup == group && element.Name != null && element.Name == name.Name) {	
-					matchedElement = element;
-				}
-			}
-			
-			return matchedElement;
+			return null;
 		}
 	}
 }

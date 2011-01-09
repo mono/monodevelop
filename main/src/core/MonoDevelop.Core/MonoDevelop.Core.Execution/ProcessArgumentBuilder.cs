@@ -26,7 +26,7 @@
 using System;
 using System.Text;
 
-namespace MonoDevelop.MacDev
+namespace MonoDevelop.Core.Execution
 {
 	/// <summary>
 	/// Builds a process argument string.
@@ -35,8 +35,8 @@ namespace MonoDevelop.MacDev
 	{
 		System.Text.StringBuilder sb = new System.Text.StringBuilder ();
 		
-		static string escapeQuoteCharsStr = "\\\"'";
-		static char[] escapeQuoteChars = { '\\', '"', '\'' };
+		// .NET doesn't allow escaping chars other than " and \ inside " quotes
+		static string escapeDoubleQuoteCharsStr = "\\\"";
 		
 		/// <summary>
 		/// Adds an argument without escaping or quoting.
@@ -70,16 +70,16 @@ namespace MonoDevelop.MacDev
 			AddQuoted (string.Format (argumentFormat, val0));
 		}
 		
-		/// <summary>
-		/// Adds an argument, quoting and escaping as necessary.
-		/// </summary>
+		/// <summary>Adds an argument, quoting and escaping as necessary.</summary>
+		/// <remarks>The .NET process class does not support escaped 
+		/// arguments, only quoted arguments with escaped quotes.</remarks>
 		public void AddQuoted (string argument)
 		{
 			if (sb.Length > 0)
 				sb.Append (' ');
 			
 			sb.Append ('"');
-			AppendEscaped (sb, escapeQuoteCharsStr, argument);
+			AppendEscaped (sb, escapeDoubleQuoteCharsStr, argument);
 			sb.Append ('"');
 		}
 		
@@ -92,46 +92,17 @@ namespace MonoDevelop.MacDev
 				AddQuoted (a);
 		}
 		
-		/// <summary>
-		/// Escapes single and double quotes, and backslashes.
-		/// </summary>
-		public static string EscapeQuotes (string s)
-		{
-			if (s.IndexOfAny (escapeQuoteChars) < 0)
-				return s;
-			
-			var sb = new StringBuilder ();
-			AppendEscaped (sb, escapeQuoteCharsStr, s);
-			return sb.ToString ();
-		}
-		
-		/// <summary>
-		/// Quotes a string, escaping if necessary.
-		/// </summary>
+		/// <summary>Quotes a string, escaping if necessary.</summary>
+		/// <remarks>The .NET process class does not support escaped 
+		/// arguments, only quoted arguments with escaped quotes.</remarks>
 		public static string Quote (string s)
 		{
 			var sb = new StringBuilder ();
 			sb.Append ('"');
-			AppendEscaped (sb, escapeQuoteCharsStr, s);
+			AppendEscaped (sb, escapeDoubleQuoteCharsStr, s);
 			sb.Append ('"');
 			return sb.ToString ();
 		}
-		
-		//FIXME: this doesn't work in Mono 2.8.1 (and 2.8?); escaped spaces get discarded
-		/*
-		
-		static string escapeAllChars = "\\\"' ()";
-		
-		/// <summary>
-		/// Escapes all special characters.
-		/// </summary>
-		public static string Escape (string s)
-		{
-			var sb = new StringBuilder ();
-			AppendEscaped (sb, escapeAllChars, s);
-			return sb.ToString ();
-		}
-		*/
 		
 		public override string ToString ()
 		{

@@ -33,32 +33,25 @@ using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide;
 
-namespace MonoDevelop.SourceEditor
+namespace MonoDevelop.Ide.CodeFormatting
 {
-	public class DefaultFormatter : AbstractFormatter
+	public class DefaultCodeFormatter : AbstractCodeFormatter
 	{
-		public override bool CanFormat (string mimeType)
-		{
-			return true;
-		}
-		
 		static int GetNextTabstop (int currentColumn, int tabSize)
 		{
 			int result = currentColumn - 1 + tabSize;
 			return 1 + (result / tabSize) * tabSize;
 		}
 		
-		protected override string InternalFormat (PolicyContainer policyParent, string mimeType, string input, int startOffset, int endOffset)
+		public override string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
+			string input, int startOffset, int endOffset)
 		{
-			IEnumerable<string> mtypes = DesktopService.GetMimeTypeInheritanceChain (mimeType);
-			TextStylePolicy currentPolicy = policyParent != null
-					? policyParent.Get<TextStylePolicy> (mtypes)
-					: MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (mtypes);
+			var currentPolicy = policyParent.Get<TextStylePolicy> (mimeTypeChain);
 			
 			input = input ?? "";
 			int line = 0, col = 0;
 			string eolMarker = currentPolicy.GetEolMarker ();
-			StringBuilder result = new StringBuilder ();
+			var result = new StringBuilder ();
 			
 			for (int i = startOffset; i <= endOffset; i++) {
 				char ch = input[i];

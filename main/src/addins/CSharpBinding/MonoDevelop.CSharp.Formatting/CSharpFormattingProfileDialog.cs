@@ -973,10 +973,10 @@ delegate void BarFoo ();
 		
 		void UpdateExample (string example)
 		{
-			CSharpFormatter formatter = new CSharpFormatter ();
-			var parent = new MonoDevelop.Projects.DotNetAssemblyProject ();
-			parent.Policies.Set<CSharpFormattingPolicy> (profile, CSharpFormatter.MimeType);
-			texteditor.Document.Text  = formatter.FormatText (parent.Policies, CSharpFormatter.MimeType, example);
+			var formatter = MonoDevelop.Ide.CodeFormatting.CodeFormatterService.GetFormatter (CSharpFormatter.MimeType);
+			var policyParent = new MonoDevelop.Projects.Policies.PolicyBag (null);
+			policyParent.Set<CSharpFormattingPolicy> (profile, CSharpFormatter.MimeType);
+			texteditor.Document.Text  = formatter.FormatText (policyParent, example);
 		}
 		
 		static PropertyInfo GetProperty (TreeModel model, TreeIter iter)
