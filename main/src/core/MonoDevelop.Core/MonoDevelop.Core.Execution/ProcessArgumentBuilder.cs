@@ -70,9 +70,9 @@ namespace MonoDevelop.Core.Execution
 			AddQuoted (string.Format (argumentFormat, val0));
 		}
 		
-		/// <summary>
-		/// Adds an argument, quoting and escaping as necessary.
-		/// </summary>
+		/// <summary>Adds an argument, quoting and escaping as necessary.</summary>
+		/// <remarks>The .NET process class does not support escaped 
+		/// arguments, only quoted arguments with escaped quotes.</remarks>
 		public void AddQuoted (string argument)
 		{
 			if (sb.Length > 0)
@@ -92,9 +92,9 @@ namespace MonoDevelop.Core.Execution
 				AddQuoted (a);
 		}
 		
-		/// <summary>
-		/// Quotes a string, escaping if necessary.
-		/// </summary>
+		/// <summary>Quotes a string, escaping if necessary.</summary>
+		/// <remarks>The .NET process class does not support escaped 
+		/// arguments, only quoted arguments with escaped quotes.</remarks>
 		public static string Quote (string s)
 		{
 			var sb = new StringBuilder ();
@@ -103,22 +103,6 @@ namespace MonoDevelop.Core.Execution
 			sb.Append ('"');
 			return sb.ToString ();
 		}
-		
-		//FIXME: this doesn't work in Mono 2.8.1 (and 2.8?); escaped spaces get discarded
-		/*
-		
-		static string escapeAllChars = "\\\"' ()";
-		
-		/// <summary>
-		/// Escapes all special characters.
-		/// </summary>
-		public static string Escape (string s)
-		{
-			var sb = new StringBuilder ();
-			AppendEscaped (sb, escapeAllChars, s);
-			return sb.ToString ();
-		}
-		*/
 		
 		public override string ToString ()
 		{
