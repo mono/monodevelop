@@ -103,17 +103,7 @@ namespace Mono.TextEditor
 				return;
 			
 			HideMouseCursor ();
-			
-			Document.BeginAtomicUndo ();
-			if (textEditorData.IsSomethingSelected && textEditorData.MainSelection.SelectionMode == SelectionMode.Block) {
-				textEditorData.Caret.PreserveSelection = true;
-				if (!textEditorData.MainSelection.IsDirty) {
-					textEditorData.DeleteSelectedText (false);
-					textEditorData.MainSelection.IsDirty = true;
-				}
-			} else {
-				textEditorData.DeleteSelectedText ();
-			}
+			textEditorData.DeleteSelectedText (textEditorData.IsSomethingSelected ? textEditorData.MainSelection.SelectionMode != SelectionMode.Block : true);
 			
 			char ch = (char)unicodeKey;
 			if (!char.IsControl (ch) && textEditorData.CanEdit (Caret.Line)) {
@@ -125,9 +115,11 @@ namespace Mono.TextEditor
 						for (int lineNumber = textEditorData.MainSelection.MinLine; lineNumber <= textEditorData.MainSelection.MaxLine; lineNumber++) {
 							length = textEditorData.Insert (textEditorData.Document.GetLine (lineNumber).Offset + Caret.Column - 1, text);
 						}
+						Caret.PreserveSelection = true;
 						Caret.Column += length - 1;
+						
 						textEditorData.MainSelection.Lead = new DocumentLocation (textEditorData.MainSelection.Lead.Line, Caret.Column + 1);
-						textEditorData.MainSelection.IsDirty = true;
+						textEditorData.MainSelection.Anchor = new DocumentLocation (textEditorData.MainSelection.Anchor.Line, Caret.Column + 1);
 						Document.CommitMultipleLineUpdate (textEditorData.MainSelection.MinLine, textEditorData.MainSelection.MaxLine);
 					} else {
 						int length = textEditorData.Insert (Caret.Offset, text);
@@ -141,14 +133,14 @@ namespace Mono.TextEditor
 				// That causes unnecessary redraws:
 				//				bool autoScroll = Caret.AutoScrollToCaret;
 				Caret.Column++;
+				if (Caret.PreserveSelection)
+					Caret.PreserveSelection = false;
 				//				Caret.AutoScrollToCaret = autoScroll;
 				//				if (autoScroll)
 				//					Editor.ScrollToCaret ();
 				//				Document.RequestUpdate (new LineUpdate (Caret.Line));
 				//				Document.CommitDocumentUpdate ();
 			}
-			if (textEditorData.IsSomethingSelected && textEditorData.MainSelection.SelectionMode == SelectionMode.Block)
-				textEditorData.Caret.PreserveSelection = false;
 			Document.EndAtomicUndo ();
 			Document.OptimizeTypedUndo ();
 		}

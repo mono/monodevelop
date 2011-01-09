@@ -399,10 +399,7 @@ namespace Mono.TextEditor
 					int caretPos = data.Caret.Offset;
 					if (data.IsSomethingSelected && data.MainSelection.SelectionMode == SelectionMode.Block) {
 						data.Caret.PreserveSelection = true;
-						if (!data.MainSelection.IsDirty) {
-							data.DeleteSelectedText (false);
-							data.MainSelection.IsDirty = true;
-						}
+						data.DeleteSelectedText (false);
 						int textLength = 0;
 						int column = data.Caret.Column;
 						int minLine = data.MainSelection.MinLine;

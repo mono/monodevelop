@@ -14,7 +14,6 @@ namespace Mono.TextEditor
 				if (anchor != value) {
 					anchor = value;
 					OnChanged ();
-					IsDirty = false;
 				}
 			}
 		}
@@ -28,7 +27,6 @@ namespace Mono.TextEditor
 				if (lead != value) {
 					lead = value;
 					OnChanged ();
-					IsDirty = false;
 				}
 			}
 		}
@@ -46,11 +44,6 @@ namespace Mono.TextEditor
 		}
 		
 		public SelectionMode SelectionMode {
-			get;
-			set;
-		}
-		
-		public bool IsDirty {
 			get;
 			set;
 		}

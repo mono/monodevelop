@@ -649,6 +649,7 @@ namespace Mono.TextEditor
 		{
 			DeleteSelectedText (true);
 		}
+		
 		public void DeleteSelectedText (bool clearSelection)
 		{
 			if (!IsSomethingSelected)
