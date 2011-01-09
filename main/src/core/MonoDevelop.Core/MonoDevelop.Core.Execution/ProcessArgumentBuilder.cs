@@ -35,7 +35,7 @@ namespace MonoDevelop.Core.Execution
 	{
 		System.Text.StringBuilder sb = new System.Text.StringBuilder ();
 		
-		// Mono 2.8.x doesn't like it if we escape both  " and ' within ""
+		// .NET doesn't allow escaping chars other than " and \ inside " quotes
 		static string escapeDoubleQuoteCharsStr = "\\\"";
 		
 		/// <summary>
