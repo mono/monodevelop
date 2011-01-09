@@ -478,6 +478,7 @@
     <Compile Include="MonoDevelop.Projects.CodeGeneration\MimeTypeExtensionNode.cs" />
     <Compile Include="MonoDevelop.Core.Execution\ExecutionEnvironment.cs" />
     <Compile Include="MonoDevelop.Core.Execution\ProcessExtensions.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\ProcessArgumentBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
