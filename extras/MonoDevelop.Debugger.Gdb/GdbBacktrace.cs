@@ -385,7 +385,7 @@ namespace MonoDevelop.Debugger.Gdb
 				
 				return buffer.GetLines (firstLine, firstLine + count - 1);
 			} finally {
-				SelectFrame (currentFrame);
+				SelectFrame (oldFrame);
 			}
 		}
 		
