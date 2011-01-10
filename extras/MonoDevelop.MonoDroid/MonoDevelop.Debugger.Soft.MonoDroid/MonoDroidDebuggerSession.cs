@@ -47,6 +47,7 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 		const int DEBUGGER_TIMEOUT_MS = 30 * 1000;
 		
 		ChainedAsyncOperationSequence launchOp;
+		IAsyncOperation trackProcessOp;
 		AndroidDevice debugDevice;
 		string packageName;
 		bool debugPropertySet;
@@ -158,7 +159,12 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 					return;
 				}
 				launchOp = null;
-				
+					
+				trackProcessOp = new MonoDroidProcess (cmd.Device, cmd.Activity, cmd.PackageName);
+				trackProcessOp.Completed += delegate {
+					EndSession ();
+				};
+			
 				System.Threading.Thread.Sleep (WAIT_BEFORE_CONNECT_MS);
 				
 				var msSinceSetProperty = (long) Math.Floor ((DateTime.Now - setPropertyTime).TotalMilliseconds);
@@ -224,6 +230,14 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 				try {
 					launchOp.Cancel ();
 					launchOp = null;
+				} catch {}
+			}
+
+			if (trackProcessOp != null && !trackProcessOp.IsCompleted) {
+				// This operation should finish by itself, but make sure it's actually done.
+				try {
+					trackProcessOp.Cancel ();
+					trackProcessOp = null;
 				} catch {}
 			}
 
