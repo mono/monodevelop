@@ -109,9 +109,11 @@ namespace MonoDevelop.MonoDroid
 			}
 			adbOp.Dispose ();
 
-			Thread.Sleep (WAIT_TIME);
-			getPidOp = new AdbGetProcessIdOperation (device, packageName);
-			getPidOp.Completed += RefreshPid;
+			GLib.Timeout.Add (WAIT_TIME, delegate {
+				getPidOp = new AdbGetProcessIdOperation (device, packageName);
+				getPidOp.Completed += RefreshPid;
+				return false;
+			});
 		}
 
 		public int ExitCode {
