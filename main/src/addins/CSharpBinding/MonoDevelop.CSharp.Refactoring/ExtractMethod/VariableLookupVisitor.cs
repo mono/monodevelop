@@ -141,7 +141,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 					if (isDefinedInsideCutRegion) {
 						descr.UsedInCutRegion = true;
 					} else if (variableDeclarationStatement.StartLocation < CutRegion.Start) {
-						descr.UsedBeforeCutRegion = true;
+						descr.UsedBeforeCutRegion = !varDecl.Initializer.IsNull; 
 					} else {
 						descr.UsedAfterCutRegion = true;
 					}
