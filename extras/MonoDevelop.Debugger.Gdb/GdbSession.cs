@@ -253,6 +253,7 @@ namespace MonoDevelop.Debugger.Gdb
 		protected override void OnFinish ()
 		{
 			SelectThread (activeThread);
+			RunCommand ("-stack-select-frame", "0");
 			RunCommand ("-exec-finish");
 		}
 
