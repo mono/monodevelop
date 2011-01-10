@@ -617,7 +617,12 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		internal object ExtendedCommandTargetChain {
-			get { return editorExtension; }
+			get {
+				// Only go through the text editor chain, if the text editor is selected as subview
+				if (Window != null && Window.ActiveViewContent == Window.ViewContent)
+					return editorExtension;
+				return null;
+			}
 		}
 
 		public ParsedDocument LastErrorFreeParsedDocument {

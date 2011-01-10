@@ -570,7 +570,7 @@ namespace MonoDevelop.Ide.Gui
 			Gtk.Widget w = content as Gtk.Widget;
 			if (w != this.tabPage) {
 				// Route commands to the view
-				return content;
+				return ActiveViewContent;
 			} else
 				return null;
 		}
