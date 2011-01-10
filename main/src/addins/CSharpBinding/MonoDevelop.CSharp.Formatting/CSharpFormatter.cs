@@ -224,7 +224,7 @@ namespace MonoDevelop.CSharp.Formatting
 				Where (c => c is TextReplaceChange && (startOffset <= ((TextReplaceChange)c).Offset && ((TextReplaceChange)c).Offset < endOffset)));
 			
 			RefactoringService.AcceptChanges (null, null, changes);
-			int end = endOffset;
+			int end = endOffset + 1;
 			foreach (TextReplaceChange c in changes) {
 				end -= c.RemovedChars;
 				if (c.InsertedText != null)
