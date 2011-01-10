@@ -281,7 +281,10 @@ namespace MonoDevelop.Components.Extensions
 		[GLib.ConnectBefore]
 		void CaptureDefaultFilter (object sender, EventArgs e)
 		{
-			var name = ((FileSelector)sender).Filter.Name;
+			FileSelector fsel = (FileSelector) sender;
+			if (fsel.Filter == null)
+				return;
+			var name = fsel.Filter.Name;
 			foreach (var filter in data.Filters) {
 				if (filter.Name == name) {
 					data.DefaultFilter = filter;
