@@ -64,4 +64,171 @@ namespace MonoDevelop.MonoDroid
 				console.Out, console.Error);
 		}
 	}
+
+	public class MonoDroidProcess : IProcessAsyncOperation, IDisposable
+	{
+		AndroidDevice device;
+		string packageName;
+		AdbGetProcessIdOperation getPidOp;
+		ManualResetEvent endHandle = new ManualResetEvent (false);
+		volatile int pid = UNASSIGNED_PID;
+
+		const int UNASSIGNED_PID = -1;
+		const int WAIT_TIME = 1000;
+
+		public MonoDroidProcess (AndroidDevice device, string activity, string packageName)
+		{
+			this.device = device;
+			this.packageName = packageName;
+			StartTracking ();
+		}
+
+		void StartTracking ()
+		{
+			getPidOp = new AdbGetProcessIdOperation (device, packageName);
+			getPidOp.Completed += RefreshPid;
+		}
+
+		void RefreshPid (IAsyncOperation op)
+		{
+			if (!op.Success) {
+				SetCompleted (false);
+				return;
+			}
+
+			AdbGetProcessIdOperation adbOp = (AdbGetProcessIdOperation)op;
+			if (pid == UNASSIGNED_PID) {
+				// Ignore if the activity is still starting, and thus doesn't show up in 'ps'
+				if (adbOp.ProcessId > 0)
+					pid = adbOp.ProcessId;
+			} else {
+				if (adbOp.ProcessId == 0 || pid != adbOp.ProcessId) {
+					SetCompleted (false);
+					return;
+				}
+			}
+			adbOp.Dispose ();
+
+			Thread.Sleep (WAIT_TIME);
+			getPidOp = new AdbGetProcessIdOperation (device, packageName);
+			getPidOp.Completed += RefreshPid;
+		}
+
+		public int ExitCode {
+			get {
+				// TODO - Get the exit code from logcat.
+				return 0;
+			}
+		}
+
+		public int ProcessId {
+			get {
+				return pid;
+			}
+		}
+
+		public void Cancel ()
+		{
+			lock (lockObj) {
+				if (IsCompleted)
+					return;
+
+				// Make sure our master tracking operation is finished first
+				if (getPidOp != null && !getPidOp.IsCompleted) {
+					try {
+						getPidOp.Cancel ();
+					} catch {}
+				}
+
+				// Try to kill the activity if we were able to actually get its pid
+				if (pid != UNASSIGNED_PID) {
+					try {
+						new AdbShellOperation (device, "kill " + ProcessId);
+					} catch {}
+				}
+			}
+
+			SetCompleted (false);
+		}
+
+		public void WaitForCompleted ()
+		{
+			lock (lockObj) {
+				if (IsCompleted)
+					return;
+			}
+
+			endHandle.WaitOne ();
+		}
+
+		void SetCompleted (bool success)
+		{
+			lock (lockObj) {
+				if (IsCompleted)
+					throw new InvalidOperationException ("Already completed");
+
+				endHandle.Set ();
+				IsCompleted = true;
+			}
+
+			try {
+				if (completedEvent != null)
+					completedEvent (this);
+
+				StopOperations ();
+				Dispose ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("Unhandled error completing MonoDroidProcess", ex);
+			}
+		}
+
+		void StopOperations ()
+		{
+			if (getPidOp != null && !getPidOp.IsCompleted) {
+				getPidOp.Cancel ();
+			}
+		}
+
+		public bool IsCompleted { get; private set; }
+
+		public bool Success { get { return IsCompleted && ExitCode <= 0; } }
+		public bool SuccessWithWarnings { get { return Success; } }
+
+		object lockObj = new object ();
+		OperationHandler completedEvent;
+
+		public event OperationHandler Completed {
+			add {
+				lock (lockObj) {
+					completedEvent += value;
+				}
+			}
+			remove {
+				lock (lockObj) {
+					completedEvent -= value;
+				}
+			}
+		}
+
+		public void Dispose ()
+		{
+			Dispose (true);
+			GC.SuppressFinalize (this);
+		}
+
+		void Dispose (bool disposing)
+		{
+			if (disposing) {
+				if (getPidOp != null) {
+					getPidOp.Dispose ();
+					getPidOp = null;
+				}
+			}
+		}
+
+		~MonoDroidProcess ()
+		{
+			Dispose (false);
+		}
+	}
 }
