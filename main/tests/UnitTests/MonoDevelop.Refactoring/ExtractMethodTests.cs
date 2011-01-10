@@ -373,6 +373,43 @@ namespace MonoDevelop.Refactoring.Tests
 ");
 		}
 		
+		
+		/// <summary>
+		/// Bug 616193 - Extract method passes param with does not exists any more in main method
+		/// </summary>
+		[Test()]
+		public void TestBug616193 ()
+		{
+			TestExtractMethod (@"class TestClass
+{
+	void TestMethod ()
+	{
+		string ret;
+		string x;
+		IEnumerable<string> y;
+		<-string z = ret + y;
+		ret = x + z;->
+	}
+}
+", @"class TestClass
+{
+	void TestMethod ()
+	{
+		string ret;
+		string x;
+		IEnumerable<string> y;
+		NewMethod (ref ret, x, y);
+	}
+	
+	static void NewMethod (ref string ret, string x, IEnumerable<string> y)
+	{
+		string z = ret + y;
+		ret = x + z;
+	}
+}
+");
+		}
+		
 		/* Currently not possible to implement, would cause serve bugs:
 		[Test()]
 		public void ExtractMethodMultiVariableWithLocalReturnVariableTest ()
