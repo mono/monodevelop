@@ -167,7 +167,7 @@ namespace MonoDevelop.MonoDroid
 		{
 			lock (lockObj) {
 				if (IsCompleted)
-					throw new InvalidOperationException ("Already completed");
+					return;
 
 				endHandle.Set ();
 				IsCompleted = true;
