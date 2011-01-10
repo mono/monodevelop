@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using Mono.TextEditor;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 
@@ -44,11 +45,12 @@ namespace PyBinding.Parser
 			return true;
 		}
 		
-		ExpressionResult IExpressionFinder.FindExpression (string text, int offset)
+		ExpressionResult IExpressionFinder.FindExpression (object textEditorData, int offset)
 		{
 			int begin, typebegin;
-			var word = GetWordAtOffset (text, offset, out begin);
-			var type = GetWordAtOffset (text, begin, out typebegin);
+			TextEditorData data = (TextEditorData)textEditorData;
+			var word = GetWordAtOffset (data, offset, out begin);
+			var type = GetWordAtOffset (data, begin, out typebegin);
 			
 //			Console.WriteLine ("Expression word: {0}", word);
 //			Console.WriteLine ("Expression type: {0}", type);
@@ -56,13 +58,13 @@ namespace PyBinding.Parser
 			return new PythonExpressionResult (word, type);
 		}
 		
-		ExpressionResult IExpressionFinder.FindFullExpression (string text, int offset)
+		ExpressionResult IExpressionFinder.FindFullExpression (object textEditorData, int offset)
 		{
 			throw new System.NotImplementedException();
 		}
 		#endregion
 		
-		string GetWordAtOffset (string text, int offset, out int begin)
+		string GetWordAtOffset (TextEditorData text, int offset, out int begin)
 		{
 			if (offset < 0 || offset >= text.Length)
 			{
@@ -77,7 +79,7 @@ namespace PyBinding.Parser
 			// Look forward for break char
 			for (i = offset; i < text.Length; i++)
 			{
-				c = text [i];
+				c = text.GetCharAt (i);
 				
 				if (Char.IsWhiteSpace (c))
 					break;
@@ -111,7 +113,7 @@ namespace PyBinding.Parser
 				// look backwards for break char
 				for (i = offset - 1; i > 0; i--)
 				{
-					c = text [i];
+					c = text.GetCharAt (i);
 					
 					if (Char.IsWhiteSpace (c))
 						break;

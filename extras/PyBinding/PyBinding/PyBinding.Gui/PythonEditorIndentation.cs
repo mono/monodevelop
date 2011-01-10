@@ -40,13 +40,13 @@ namespace PyBinding.Gui
 		{
 			if (key == Gdk.Key.Return)
 			{
-				string lastLine = Editor.GetLineText (Editor.CursorLine);
+				string lastLine = Editor.GetLineText (Editor.Caret.Line);
 				string trimmed = lastLine.Trim ();
 				bool indent = false;
 				
 				if ((modifier & Gdk.ModifierType.ControlMask) != 0)
 				{
-					Editor.InsertText (Editor.CursorPosition, "\n");
+					Editor.Insert (Editor.Caret.Offset, "\n");
 
 					string endTrim = lastLine.TrimEnd ();
 					if (!String.IsNullOrEmpty (endTrim))
@@ -59,14 +59,14 @@ namespace PyBinding.Gui
 							i -= 4;
 
 						for (int j = 0; j < i; j++)
-							Editor.InsertText (Editor.CursorPosition, " ");
+							Editor.Insert (Editor.Caret.Offset, " ");
 						
 						return false;
 					}
 					else if (lastLine.Length > 4)
 					{
 						// get the last line, remove 4 chars from it if we can
-						Editor.InsertText (Editor.CursorPosition, lastLine.Substring (0, lastLine.Length - 4));
+						Editor.Insert (Editor.Caret.Offset, lastLine.Substring (0, lastLine.Length - 4));
 						return false;
 					}
 				}
@@ -88,7 +88,7 @@ namespace PyBinding.Gui
 				if (indent)
 				{
 					base.KeyPress (key, keyChar, modifier);
-					Editor.InsertText (Editor.CursorPosition, "    ");
+					Editor.Insert (Editor.Caret.Offset, "    ");
 					return false;
 				}
 			}

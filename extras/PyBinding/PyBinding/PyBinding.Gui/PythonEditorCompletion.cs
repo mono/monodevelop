@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using Mono.TextEditor;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
@@ -87,7 +88,7 @@ namespace PyBinding.Gui
 				yield return new CompletionData (func.Name, s_ImgFunc, func.Documentation);
 		}
 		
-		ICompletionDataList GenerateCompletionData (CodeCompletionContext completionContext, PythonParsedDocument document, TextEditor editor, char completionChar)
+		ICompletionDataList GenerateCompletionData (CodeCompletionContext completionContext, PythonParsedDocument document, TextEditorData editor, char completionChar)
 		{
 			if (document == null)
 				return null;
@@ -239,7 +240,7 @@ namespace PyBinding.Gui
 			return region.Start.Line <= lineNumber && region.End.Line >= lineNumber;
 		}
 		
-		static string GetTriggerWord (TextEditor editor, CodeCompletionContext completionContext)
+		static string GetTriggerWord (TextEditorData editor, CodeCompletionContext completionContext)
 		{
 			// Get the line of text for our current line
 			// and trim off everything after the cursor
