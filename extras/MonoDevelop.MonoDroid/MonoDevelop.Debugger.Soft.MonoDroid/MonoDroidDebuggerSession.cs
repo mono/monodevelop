@@ -49,17 +49,14 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 		ChainedAsyncOperationSequence launchOp;
 		IAsyncOperation trackProcessOp;
 		AndroidDevice debugDevice;
-		string packageName;
 		bool debugPropertySet;
 		bool alreadyEnded;
-		bool activityStarted;
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
 			var dsi = (MonoDroidDebuggerStartInfo) startInfo;
 			var cmd = dsi.ExecutionCommand;
 			debugDevice = cmd.Device;
-			packageName = cmd.PackageName;
 			
 			bool alreadyForwarded = MonoDroidFramework.DeviceManager.GetDeviceIsForwarded (cmd.Device.ID);
 			if (!alreadyForwarded)
@@ -148,8 +145,6 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 					Completed = (op) => {
 						if (!op.Success)
 							this.OnDebuggerOutput (true, GettextCatalog.GetString ("Failed to start activity"));
-						else
-							activityStarted = true;
 					}
 				}
 			);
@@ -227,28 +222,8 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 					MonoDroidFramework.Toolbox.SetProperty (debugDevice, "debug.mono.extra", String.Empty);
 				} catch {}
 			}
-
-			if (activityStarted) {
-				KillActivity (debugDevice, packageName);
-			}
 		}
 
-		static void KillActivity (AndroidDevice device, string packageName)
-		{
-			int runningProcessId = 0;
-			var killOp = new ChainedAsyncOperationSequence (
-				new ChainedAsyncOperation<AdbGetProcessIdOperation> () {
-					Create = () => new AdbGetProcessIdOperation (device, packageName),
-					Completed = (op) => runningProcessId = op.ProcessId
-				},
-				new ChainedAsyncOperation () {
-					Skip = () => runningProcessId <= 0 ? "" : null,
-					Create = () => new AdbShellOperation (device, "kill " + runningProcessId)
-				}
-			);
-			killOp.Start ();
-		}
-		
 		protected override void OnExit ()
 		{
 			base.OnExit ();
