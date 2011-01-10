@@ -253,8 +253,14 @@ namespace MonoDevelop.Debugger.Gdb
 		protected override void OnFinish ()
 		{
 			SelectThread (activeThread);
-			RunCommand ("-stack-select-frame", "0");
-			RunCommand ("-exec-finish");
+			
+			GdbCommandResult res = RunCommand ("-stack-info-depth", "2");
+			if (res.GetValue ("depth") == "1") {
+				RunCommand ("-exec-continue");
+			} else {
+				RunCommand ("-stack-select-frame", "0");
+				RunCommand ("-exec-finish");
+			}
 		}
 
 		protected override object OnInsertBreakEvent (BreakEvent be, bool activate)
