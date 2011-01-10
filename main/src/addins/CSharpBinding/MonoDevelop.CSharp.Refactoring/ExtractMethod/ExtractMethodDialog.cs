@@ -146,7 +146,23 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 
 		bool HasMember (string name)
 		{
-			return properties.DeclaringMember.DeclaringType.SearchMember (name, true).Count > 0;
+			foreach (var member in properties.DeclaringMember.DeclaringType.SearchMember (name, true)) {
+				var method = member as IMethod;
+				if (method == null)
+					continue;
+				if (method.Parameters.Count != properties.Parameters.Count)
+					continue;
+				bool equals = true;
+				for (int i = 0; i < method.Parameters.Count; i++) {
+					if (properties.Parameters[i].ReturnType.ToInvariantString () != member.Parameters[i].ReturnType.ToInvariantString ()) {
+						equals = false;
+						break;
+					}
+				}
+				if (equals) 
+					return true;
+			}
+			return false;
 		}
 		
 		void OnCancelClicked (object sender, EventArgs e)
