@@ -273,9 +273,9 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				param.Variables = new List<VariableDescriptor> (visitor.Variables.Values);
 				param.ReferencesMember = visitor.ReferencesMember;
 				
-				param.OneChangedVariable = param.Parameters.Count (p => p.UsedAfterCutRegion) == 1;
+				param.OneChangedVariable = param.Variables.Count (p => p.IsDefinedInsideCutRegion && p.UsedAfterCutRegion) == 1;
 				if (param.OneChangedVariable)
-					param.ExpressionType = param.Parameters.First (p => p.UsedAfterCutRegion).ReturnType;
+					param.ExpressionType = param.Variables.First (p => p.IsDefinedInsideCutRegion && p.UsedAfterCutRegion).ReturnType;
 				/*
 					foreach (VariableDescriptor varDescr in visitor.VariableList.Where (v => !v.IsDefined && param.Variables.Contains (v))) {
 					if (param.Parameters.Contains (varDescr))
@@ -356,7 +356,13 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				}
 			}*/
 			if (param.OneChangedVariable) {
-				sb.Append (param.Parameters.First (p => p.UsedAfterCutRegion).Name);
+				var resultVariable = param.Variables.First (p => p.IsDefinedInsideCutRegion && p.UsedAfterCutRegion);
+				if (resultVariable.IsDefinedInsideCutRegion) {
+					var s = resultVariable.Declaration.ReturnType.StartLocation;
+					var e = resultVariable.Declaration.ReturnType.EndLocation;
+					sb.Append (options.Document.Editor.GetTextBetween (s.Line, s.Column, e.Line, e.Column) + " ");
+				}
+				sb.Append (resultVariable.Name);
 				sb.Append (" = ");
 			}
 			sb.Append (param.Name);
@@ -373,8 +379,6 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				}
 				if (!param.OneChangedVariable) {
 					if (!var.IsDefinedInsideCutRegion && var.IsChangedInsideCutRegion) {
-						sb.Append ("ref ");
-					} else if (var.UsedAfterCutRegion) {
 						sb.Append (var.UsedBeforeCutRegion ? "ref " : "out ");
 					}
 				}
@@ -406,8 +410,6 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				
 				if (!param.OneChangedVariable) {
 					if (!p.IsDefinedInsideCutRegion && p.IsChangedInsideCutRegion) {
-						newParameter.ParameterModifiers =  ParameterModifiers.Ref;
-					} else if (p.UsedAfterCutRegion) {
 						newParameter.ParameterModifiers = p.UsedBeforeCutRegion ? ParameterModifiers.Ref : ParameterModifiers.Out;
 					}
 				}
@@ -465,7 +467,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			} else {
 				StringBuilder text = new StringBuilder ();
 				if (param.OneChangedVariable) {
-					var par = param.Parameters.First (p => p.UsedAfterCutRegion);
+					var par = param.Variables.First (p => p.IsDefinedInsideCutRegion && p.UsedAfterCutRegion);
 					if (!par.UsedInCutRegion) {
 						
 						text.Append (new CSharpAmbience ().GetString (par.ReturnType, OutputFlags.ClassBrowserEntries));
@@ -478,7 +480,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				if (param.OneChangedVariable) {
 					text.AppendLine ();
 					text.Append ("return ");
-					text.Append (param.Parameters.First (p => p.UsedAfterCutRegion).Name);
+					text.Append (param.Variables.First (p => p.IsDefinedInsideCutRegion && p.UsedAfterCutRegion).Name);
 					text.Append (";");
 				}
 				methodText.Append (AddIndent (text.ToString (), indent + "\t"));
