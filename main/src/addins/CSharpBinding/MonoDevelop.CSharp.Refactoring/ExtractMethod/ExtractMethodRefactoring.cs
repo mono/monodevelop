@@ -372,8 +372,11 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 					sb.Append (", "); // TODO: respect formatting
 				}
 				if (!param.OneChangedVariable) {
-					if (var.UsedAfterCutRegion)
+					if (!var.IsDefinedInsideCutRegion && var.IsChangedInsideCutRegion) {
+						sb.Append ("ref ");
+					} else if (var.UsedAfterCutRegion) {
 						sb.Append (var.UsedBeforeCutRegion ? "ref " : "out ");
+					}
 				}
 				sb.Append (var.Name);
 			}
@@ -402,8 +405,11 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				newParameter.ReturnType = p.ReturnType;
 				
 				if (!param.OneChangedVariable) {
-				if (p.UsedAfterCutRegion)	
+					if (!p.IsDefinedInsideCutRegion && p.IsChangedInsideCutRegion) {
+						newParameter.ParameterModifiers =  ParameterModifiers.Ref;
+					} else if (p.UsedAfterCutRegion) {
 						newParameter.ParameterModifiers = p.UsedBeforeCutRegion ? ParameterModifiers.Ref : ParameterModifiers.Out;
+					}
 				}
 				result.Add (newParameter);
 			}
