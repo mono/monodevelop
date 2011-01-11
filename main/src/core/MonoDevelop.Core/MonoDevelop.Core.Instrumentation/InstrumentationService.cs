@@ -39,6 +39,7 @@ using System.Collections;
 using System.Threading;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Core.Instrumentation
 {
@@ -60,27 +61,17 @@ namespace MonoDevelop.Core.Instrumentation
 			startTime = DateTime.Now;
 		}
 		
-		public static int PublishService (int port)
+		public static int PublishService ()
 		{
-			// Get a free port
-			TcpListener listener = new TcpListener (IPAddress.Loopback, port);
-			listener.Start ();
-			if (port == 0)
-				port = ((IPEndPoint)listener.LocalEndpoint).Port;
-			listener.Stop ();
-			
-			Hashtable dict = new Hashtable ();
-			BinaryClientFormatterSinkProvider clientProvider = new BinaryClientFormatterSinkProvider();
-			BinaryServerFormatterSinkProvider serverProvider = new BinaryServerFormatterSinkProvider();
-			dict ["port"] = port;
-			serverProvider.TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full;
-			ChannelServices.RegisterChannel (new TcpChannel (dict, clientProvider, serverProvider), false);
-			publicPort = port;
+			RemotingService.RegisterRemotingChannel ();
+			TcpChannel ch = (TcpChannel) ChannelServices.GetChannel ("tcp");
+			Uri u = new Uri (ch.GetUrlsForUri ("test")[0]);
+			publicPort = u.Port;
 			
 			InstrumentationServiceBackend backend = new InstrumentationServiceBackend ();
 			System.Runtime.Remoting.RemotingServices.Marshal (backend, "InstrumentationService");
 			
-			return port;
+			return publicPort;
 		}
 		
 		public static void StartMonitor ()
