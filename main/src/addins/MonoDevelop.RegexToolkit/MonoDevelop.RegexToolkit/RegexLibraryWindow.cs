@@ -148,6 +148,8 @@ namespace MonoDevelop.RegexToolkit
 					});
 				} catch (ThreadAbortException) {
 					Thread.ResetAbort ();
+				} catch (Exception e) {
+					MessageService.ShowError (GettextCatalog.GetString ("Error while synchronizing expressions."), e.Message);
 				} finally {
 					Gtk.Application.Invoke (delegate {
 						SetButtonUpdate (GettextCatalog.GetString ("Update Library"), "gtk-refresh");
