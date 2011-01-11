@@ -91,7 +91,6 @@ namespace MonoDevelop.AssemblyBrowser
 			};
 			DomTypeNodeBuilder.settings.EmitNameCallback = delegate (INode domVisitable, ref string outString) {
 				if (domVisitable is IType) {
-					Console.WriteLine (((IType)domVisitable).HelpUrl);
 					outString = "<span style=\"text.link\"><u><a ref=\"" + ((IType)domVisitable).HelpUrl + "\">" + outString + "</a></u></span>";
 				} else {
 					outString = "<span style=\"text\">" + outString + "</span>";
