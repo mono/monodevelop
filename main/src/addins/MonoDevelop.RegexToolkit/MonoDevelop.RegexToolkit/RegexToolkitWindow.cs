@@ -61,6 +61,8 @@ namespace MonoDevelop.RegexToolkit
 				this.Destroy ();
 			};
 			
+			var isWindows = System.IO.Path.DirectorySeparatorChar == '\\';
+			this.buttonLibrary.Visible = !isWindows;
 			this.buttonStart.Sensitive = false;
 			this.entryRegEx.Changed += UpdateStartButtonSensitivity;
 			this.inputTextview.Buffer.Changed += UpdateStartButtonSensitivity;
@@ -214,7 +216,7 @@ namespace MonoDevelop.RegexToolkit
 				this.GdkWindow.GetOrigin (out x, out y);
 				x += rect.X;
 				y += rect.Y;
-				if (this.tooltipWindow == null || ox != x || oy != y) {
+				if (this.tooltipWindow == null || ox != x || oy != y) {
 					ShowTooltipForSelectedEntry ();
 					ox = x;
 					oy = y;
@@ -302,7 +304,7 @@ namespace MonoDevelop.RegexToolkit
 			if (ox + x + w + tooltipXOffset >= geometry.Right ||
 			    oy + y + h >= geometry.Bottom) {
 				tooltipWindow.Move (ox + x - w, oy + altY - h);
-			} else 
+			} else 
 				tooltipWindow.Move (ox + x + tooltipXOffset, oy + y);
 			tooltipWindow.ShowAll ();
 		}
@@ -428,7 +430,7 @@ namespace MonoDevelop.RegexToolkit
 		
 		void FillOptionsBox ()
 		{
-			Options[] options = {
+			Options[] options = {
 				new Options (RegexOptions.IgnorePatternWhitespace, GettextCatalog.GetString("Ignore Whitespace")),
 				new Options (RegexOptions.IgnoreCase, GettextCatalog.GetString("Ignore case")),
 				new Options (RegexOptions.Singleline, GettextCatalog.GetString("Single line")),
