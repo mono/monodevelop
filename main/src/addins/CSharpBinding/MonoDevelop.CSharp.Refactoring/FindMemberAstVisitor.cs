@@ -364,6 +364,10 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			if (line < 1 || col < 1) {
 				MonoDevelop.Core.LoggingService.LogWarning ("AddUniqueReference called with invalid position line: {0} col: {1} name: {2}.", line, col, name);
+				System.Console.WriteLine ("Invalid uniqe reference stack trace:");
+				System.Console.WriteLine ("-----");
+				System.Console.WriteLine (Environment.StackTrace);
+				System.Console.WriteLine ("-----");
 				return;
 			}
 			

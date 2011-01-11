@@ -677,7 +677,6 @@ namespace MonoDevelop.CSharp.Resolver
 			if (targetResult is CombinedMethodResolveResult)
 				targetResult = ((CombinedMethodResolveResult)targetResult).MethodResolveResult;
 			bool targetIsStatic = targetResult.StaticResolve;
-			System.Console.WriteLine ("target:"+ invocationExpression.TargetObject);
 			targetResult.StaticResolve = false; // invocation results are never static because they return objects
 			if (this.resolver.CallingType != null) {
 				if (targetResult is ThisResolveResult) {
