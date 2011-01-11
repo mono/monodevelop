@@ -258,8 +258,9 @@ namespace Mono.TextEditor.Vi
 			data.ClearSelection ();
 			
 			//Editor can be null during GUI-less tests
-			if (Editor != null)
-				Editor.HighlightSearchPattern = false;
+			// Commenting this fixes bug: Bug 622618 - Inline search fails in vi mode
+//			if (Editor != null)
+//				Editor.HighlightSearchPattern = false;
 			
 			if (CaretMode.Block != data.Caret.Mode) {
 				data.Caret.Mode = CaretMode.Block;

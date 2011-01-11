@@ -1297,34 +1297,36 @@ namespace Mono.TextEditor
 			}
 
 			// highlight search results
-			ISegment firstSearch;
-			int o = offset;
-			uint curIndex = 0, byteIndex = 0;
-
-			while ((firstSearch = GetFirstSearchResult (o, offset + length)) != null) {
-				double x = pangoPosition;
-				HandleSelection (lineOffset, logicalRulerColumn, selectionStart, selectionEnd, firstSearch.Offset, firstSearch.EndOffset, delegate(int start, int end) {
-					uint startIndex = (uint)(start - offset);
-					uint endIndex = (uint)(end - offset);
-					if (startIndex < endIndex && endIndex <= layout.LineChars.Length) {
-						uint startTranslated = TranslateToUTF8Index (layout.LineChars, startIndex, ref curIndex, ref byteIndex);
-						uint endTranslated = TranslateToUTF8Index (layout.LineChars, endIndex, ref curIndex, ref byteIndex);
-						
-						int l, x1, x2;
-						layout.Layout.IndexToLineX ((int)startTranslated, false, out l, out x1);
-						layout.Layout.IndexToLineX ((int)endTranslated, false, out l, out x2);
-						x1 += (int)x;
-						x2 += (int)x;
-						x1 /= (int)Pango.Scale.PangoScale;
-						x2 /= (int)Pango.Scale.PangoScale;
-
-						cr.Color = MainSearchResult == null || MainSearchResult.Offset != firstSearch.Offset ? ColorStyle.SearchTextBg : ColorStyle.SearchTextMainBg;
-						FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, x1, y, System.Math.Min (10, width) * textEditor.Options.Zoom, x2 - x1, textEditor.LineHeight);
-						cr.Fill ();
-					}
-				}, null);
-
-				o = System.Math.Max (firstSearch.EndOffset, o + 1);
+			if (textEditor.HighlightSearchPattern) {
+				ISegment firstSearch;
+				int o = offset;
+				uint curIndex = 0, byteIndex = 0;
+	
+				while ((firstSearch = GetFirstSearchResult (o, offset + length)) != null) {
+					double x = pangoPosition;
+					HandleSelection (lineOffset, logicalRulerColumn, selectionStart, selectionEnd, firstSearch.Offset, firstSearch.EndOffset, delegate(int start, int end) {
+						uint startIndex = (uint)(start - offset);
+						uint endIndex = (uint)(end - offset);
+						if (startIndex < endIndex && endIndex <= layout.LineChars.Length) {
+							uint startTranslated = TranslateToUTF8Index (layout.LineChars, startIndex, ref curIndex, ref byteIndex);
+							uint endTranslated = TranslateToUTF8Index (layout.LineChars, endIndex, ref curIndex, ref byteIndex);
+							
+							int l, x1, x2;
+							layout.Layout.IndexToLineX ((int)startTranslated, false, out l, out x1);
+							layout.Layout.IndexToLineX ((int)endTranslated, false, out l, out x2);
+							x1 += (int)x;
+							x2 += (int)x;
+							x1 /= (int)Pango.Scale.PangoScale;
+							x2 /= (int)Pango.Scale.PangoScale;
+	
+							cr.Color = MainSearchResult == null || MainSearchResult.Offset != firstSearch.Offset ? ColorStyle.SearchTextBg : ColorStyle.SearchTextMainBg;
+							FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, x1, y, System.Math.Min (10, width) * textEditor.Options.Zoom, x2 - x1, textEditor.LineHeight);
+							cr.Fill ();
+						}
+					}, null);
+	
+					o = System.Math.Max (firstSearch.EndOffset, o + 1);
+				}
 			}
 			
 			cr.Save ();
