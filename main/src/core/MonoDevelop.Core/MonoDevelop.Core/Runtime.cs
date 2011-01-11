@@ -133,7 +133,7 @@ namespace MonoDevelop.Core
 			if (InstrumentationService.Enabled) {
 				LoggingService.LogInfo ("Instrumentation Service started");
 				try {
-					int port = InstrumentationService.PublishService (0);
+					int port = InstrumentationService.PublishService ();
 					LoggingService.LogInfo ("Instrumentation available at port " + port);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Instrumentation service could not be published", ex);
