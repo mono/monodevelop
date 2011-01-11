@@ -103,6 +103,7 @@ namespace Mono.TextEditor
 				return;
 			
 			HideMouseCursor ();
+			Document.BeginAtomicUndo ();
 			textEditorData.DeleteSelectedText (textEditorData.IsSomethingSelected ? textEditorData.MainSelection.SelectionMode != SelectionMode.Block : true);
 			
 			char ch = (char)unicodeKey;

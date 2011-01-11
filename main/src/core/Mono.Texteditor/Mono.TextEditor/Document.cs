@@ -814,6 +814,8 @@ namespace Mono.TextEditor
 		
 		public void EndAtomicUndo ()
 		{
+			if (atomicUndoLevel <= 0)
+				throw new InvalidOperationException ("There is no atomic undo operation running.");
 			atomicUndoLevel--;
 			Debug.Assert (atomicUndoLevel >= 0); 
 			
