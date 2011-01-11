@@ -337,6 +337,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 				foreach (IUsing u in unit.Usings.Reverse ()) {
 					if (u.Namespaces.Contains (name)) 
 						return null;
+					if (callingClass != null && !u.ValidRegion.Contains (callingClass.Location))
+						continue;
 					if (u != null) {
 						result = SearchType (u, name, genericParameters, true);
 						if (result != null)
