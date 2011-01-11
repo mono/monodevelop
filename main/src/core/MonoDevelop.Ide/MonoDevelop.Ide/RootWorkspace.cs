@@ -1232,41 +1232,158 @@ namespace MonoDevelop.Ide
 
 #region Event declaration
 		
+		/// <summary>
+		/// Fired when a file is removed from a project.
+		/// </summary>
 		public event ProjectFileEventHandler FileRemovedFromProject;
+		
+		/// <summary>
+		/// Fired when a file is added to a project
+		/// </summary>
 		public event ProjectFileEventHandler FileAddedToProject;
+		
+		/// <summary>
+		/// Fired when a file belonging to a project is modified.
+		/// </summary>
+		/// <remarks>
+		/// If the file belongs to several projects, the event will be fired for each project
+		/// </remarks>
 		public event ProjectFileEventHandler FileChangedInProject;
+		
+		/// <summary>
+		/// Fired when a property of a project file is modified
+		/// </summary>
 		public event ProjectFileEventHandler FilePropertyChangedInProject;
+		
+		/// <summary>
+		/// Fired when a project file is renamed
+		/// </summary>
 		public event ProjectFileRenamedEventHandler FileRenamedInProject;
 		
+		/// <summary>
+		/// Fired when a solution is loaded in the workbench
+		/// </summary>
+		/// <remarks>
+		/// This event is fired recursively for every solution
+		/// opened in the IDE. For example, if the user opens a workspace
+		/// which contains two solutions, this event will be fired once
+		/// for each solution.
+		/// </remarks>
 		public event EventHandler<SolutionEventArgs> SolutionLoaded;
+		
+		/// <summary>
+		/// Fired when a solution loaded in the workbench is unloaded
+		/// </summary>
 		public event EventHandler<SolutionEventArgs> SolutionUnloaded;
+		
+		/// <summary>
+		/// Fired when a workspace item (a solution or workspace) is opened and there
+		/// is no other item already open
+		/// </summary>
 		public event EventHandler<WorkspaceItemEventArgs> FirstWorkspaceItemOpened;
+		
+		/// <summary>
+		/// Fired a workspace item loaded in the IDE is closed and there are no other
+		/// workspace items opened.
+		/// </summary>
 		public event EventHandler LastWorkspaceItemClosed;
+		
+		/// <summary>
+		/// Fired when a workspace item (a solution or workspace) is loaded.
+		/// </summary>
+		/// <remarks>
+		/// This event is fired recursively for every solution and workspace 
+		/// opened in the IDE. For example, if the user opens a workspace
+		/// which contains two solutions, this event will be fired three times: 
+		/// once for the workspace, and once for each solution.
+		/// </remarks>
 		public event EventHandler<WorkspaceItemEventArgs> WorkspaceItemLoaded;
+		
+		/// <summary>
+		/// Fired when a workspace item (a solution or workspace) is unloaded
+		/// </summary>
 		public event EventHandler<WorkspaceItemEventArgs> WorkspaceItemUnloaded;
+		
+		/// <summary>
+		/// Fired a workspace item (a solution or workspace) is opened in the IDE
+		/// </summary>
 		public event EventHandler<WorkspaceItemEventArgs> WorkspaceItemOpened;
+		
+		/// <summary>
+		/// Fired when a workspace item (a solution or workspace) is closed in the IDE
+		/// </summary>
 		public event EventHandler<WorkspaceItemEventArgs> WorkspaceItemClosed;
+		
+		/// <summary>
+		/// Fired when user preferences for the active solution are being stored
+		/// </summary>
+		/// <remarks>
+		/// Add-ins can subscribe to this event to store custom user preferences
+		/// for a solution. Preferences can be stored in the PropertyBag provided
+		/// in the event arguments object.
+		/// </remarks>
 		public event EventHandler<UserPreferencesEventArgs> StoringUserPreferences;
+		
+		/// <summary>
+		/// Fired when user preferences for a solution are being loaded
+		/// </summary>
+		/// <remarks>
+		/// Add-ins can subscribe to this event to load preferences previously
+		/// stored in the StoringUserPreferences event.
+		/// </remarks>
 		public event EventHandler<UserPreferencesEventArgs> LoadingUserPreferences;
+		
+		/// <summary>
+		/// Fired when an item (a project, solution or workspace) is going to be unloaded.
+		/// </summary>
+		/// <remarks>
+		/// This event is fired before unloading the item, and the unload operation can
+		/// be cancelled by setting the Cancel property of the ItemUnloadingEventArgs
+		/// object to True.
+		/// </remarks>
 		public event EventHandler<ItemUnloadingEventArgs> ItemUnloading;
 		
-		public event EventHandler<SolutionEventArgs> CurrentSelectedSolutionChanged;
-		
+		/// <summary>
+		/// Fired when an assembly reference is added to a .NET project
+		/// </summary>
 		public event ProjectReferenceEventHandler ReferenceAddedToProject;
+		
+		/// <summary>
+		/// Fired when an assembly reference is added to a .NET project
+		/// </summary>
 		public event ProjectReferenceEventHandler ReferenceRemovedFromProject;
 		
-		// Fired just before an entry is added to a combine
+		/// <summary>
+		/// Fired just before a project is added to a solution
+		/// </summary>
 		public event SolutionItemEventHandler ItemAddedToSolution;
+		
+		/// <summary>
+		/// Fired after a project is removed from a solution
+		/// </summary>
 		public event SolutionItemEventHandler ItemRemovedFromSolution;
-
+		
+		/// <summary>
+		/// Fired when the active solution configuration has changed
+		/// </summary>
 		public event EventHandler ActiveConfigurationChanged;
+		
+		/// <summary>
+		/// Fired when the list of solution configurations has changed
+		/// </summary>
 		public event EventHandler ConfigurationsChanged;
 		
+		/// <summary>
+		/// Fired when the list of available .NET runtimes has changed
+		/// </summary>
 		public event EventHandler RuntimesChanged {
 			add { Runtime.SystemAssemblyService.RuntimesChanged += value; }
 			remove { Runtime.SystemAssemblyService.RuntimesChanged -= value; }
 		}
 		
+		/// <summary>
+		/// Fired when the active .NET runtime has changed
+		/// </summary>
 		public event EventHandler ActiveRuntimeChanged {
 			add { Runtime.SystemAssemblyService.DefaultRuntimeChanged += value; }
 			remove { Runtime.SystemAssemblyService.DefaultRuntimeChanged -= value; }
