@@ -182,7 +182,6 @@ namespace MonoDevelop.CSharp.Refactoring
 			parser.Parse ();
 			resolver.SetupParsedCompilationUnit (parser.CompilationUnit);
 			VisitCompilationUnit (parser.CompilationUnit, null);
-			
 			List<HashSet<string>> usedIdentifiers = GetUsedDefineCombinations (parser);
 			for (int i = 0; i < usedIdentifiers.Count; i++) {
 				parser.Lexer.ConditionalCompilationSymbols.Clear ();
@@ -257,7 +256,6 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (result == null || !result.Any ()) {
 				return;
 			}
-			
 			resolver.SetupParsedCompilationUnit (compilationUnit);
 			VisitCompilationUnit (compilationUnit, null);
 		}

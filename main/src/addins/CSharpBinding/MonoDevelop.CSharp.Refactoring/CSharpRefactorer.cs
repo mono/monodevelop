@@ -427,7 +427,10 @@ namespace MonoDevelop.CSharp.Refactoring
 		public override IEnumerable<MemberReference> FindClassReferences (RefactorerContext ctx, string fileName, IType cls, bool includeXmlComment)
 		{
 			var editor = ((Mono.TextEditor.ITextEditorDataProvider)ctx.GetFile (fileName)).GetTextEditorData ();
-			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, cls.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
+			var doc = ProjectDomService.GetParsedDocument (ctx.ParserContext, fileName);
+			if (doc == null || doc.CompilationUnit == null)
+				return null;
+			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, doc.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
 			
 			FindMemberAstVisitor visitor = new FindMemberAstVisitor (editor.Document, resolver, cls);
 			visitor.IncludeXmlDocumentation = includeXmlComment;
@@ -660,7 +663,10 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			var editor = ((Mono.TextEditor.ITextEditorDataProvider)ctx.GetFile (fileName)).GetTextEditorData ();
 			
-			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, member.DeclaringType.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
+			var doc = ProjectDomService.GetParsedDocument (ctx.ParserContext, fileName);
+			if (doc == null || doc.CompilationUnit == null)
+				return null;
+			NRefactoryResolver resolver = new NRefactoryResolver (ctx.ParserContext, doc.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
 			resolver.CallingMember = member;
 			FindMemberAstVisitor visitor = new FindMemberAstVisitor (editor.Document, resolver, member);
 			visitor.IncludeXmlDocumentation = includeXmlComment;
