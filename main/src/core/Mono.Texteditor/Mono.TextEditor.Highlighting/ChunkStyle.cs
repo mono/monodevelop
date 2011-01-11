@@ -54,14 +54,25 @@ namespace Mono.TextEditor
 		}
 		
 		Gdk.Color backColor = Gdk.Color.Zero;
-		bool backColorIsZero = true;
+		bool backColorIsZero = true, backColorIsZeroDirty = true;
+		
+		bool BackColorIsZero {
+			get {
+				if (backColorIsZeroDirty) {
+					backColorIsZero = backColor.Equal (Gdk.Color.Zero);
+					backColorIsZeroDirty = false;
+				}
+				return backColorIsZero;
+			}
+		}
+		
 		public virtual Gdk.Color BackgroundColor {
 			get {
 				return backColor;
 			}
 			set {
 				backColor = value;
-				backColorIsZero = value.Equal (Gdk.Color.Zero);
+				backColorIsZeroDirty = true;
 			}
 		}
 		
@@ -77,7 +88,7 @@ namespace Mono.TextEditor
 		
 		public bool TransparentBackround {
 			get {
-				return (ChunkProperties & ChunkProperties.TransparentBackground) == ChunkProperties.TransparentBackground || backColorIsZero; 
+				return (ChunkProperties & ChunkProperties.TransparentBackground) == ChunkProperties.TransparentBackground || BackColorIsZero; 
 			}
 		}
 		
