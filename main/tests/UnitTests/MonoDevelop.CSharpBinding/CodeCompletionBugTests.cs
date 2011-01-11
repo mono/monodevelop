@@ -2834,5 +2834,42 @@ public class C
 			Assert.IsNull (provider.Find ("Foo"), "property 'Foo' found, but shouldn't.");
 		}
 		
+		/// <summary>
+		/// Bug 616208 - Renaming a struct/class is renaming too much
+		/// </summary>
+		[Test()]
+		public void TestBug616208 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"using System;
+
+namespace System 
+{
+	public class Foo { public int Bar; };
+}
+
+namespace test.Util
+{
+	public class Foo { public string x; }
+}
+
+namespace Test
+{
+	public class A
+	{
+		public Foo X;
+		
+		public A ()
+		{
+			$X.$
+		}
+	}
+}
+
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Bar"), "property 'Bar' not found.");
+		}
+		
 	}
 }
