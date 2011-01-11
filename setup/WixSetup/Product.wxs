@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?define ProductShortName = "MonoDevelop" ?>
-<?define ProductVersion = "2.4.1" ?>
-<?define ProductVersionText = "2.4.1" ?>
+<?define ProductVersion = "2.4.2" ?>
+<?define ProductVersionText = "2.4.2" ?>
 <?define Manufacturer = "Novell" ?>
 <?define UpgradeCode = "9134F74C-E7E3-471A-9833-C86FB45CD38E" ?>
 
