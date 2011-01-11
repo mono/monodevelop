@@ -338,34 +338,25 @@ namespace MonoDevelop.RegexToolkit
 				Regex regex = new Regex (pattern, options);
 				Application.Invoke (delegate {
 					this.resultStore.Clear ();
-				});
-				
-				foreach (Match match in regex.Matches (input)) {
-					Application.Invoke (delegate {
+					foreach (Match match in regex.Matches (input)) {
 						TreeIter iter = this.resultStore.AppendValues (Stock.Find, String.Format (GettextCatalog.GetString("Match '{0}'"), match.Value), match.Index, match.Length);
 						int i = 0;
 						foreach (Group group in match.Groups) {
-							if (i > 0) {
-								TreeIter groupIter;
-								if (group.Success) {
-									groupIter = this.resultStore.AppendValues (iter, Stock.Apply, String.Format (GettextCatalog.GetString("Group '{0}':'{1}'"), regex.GroupNameFromNumber (i), group.Value), group.Index, group.Length);
-									foreach (Capture capture in match.Captures) {
-										this.resultStore.AppendValues (groupIter, null, String.Format (GettextCatalog.GetString("Capture '{0}'"), capture.Value), capture.Index, capture.Length);
-									}
-								} else {
-									groupIter = this.resultStore.AppendValues (iter, Stock.Cancel, String.Format (GettextCatalog.GetString("Group '{0}' not found"), regex.GroupNameFromNumber (i)), -1, -1);
+							TreeIter groupIter;
+							if (group.Success) {
+								groupIter = this.resultStore.AppendValues (iter, Stock.Apply, String.Format (GettextCatalog.GetString("Group '{0}':'{1}'"), regex.GroupNameFromNumber (i), group.Value), group.Index, group.Length);
+								foreach (Capture capture in match.Captures) {
+									this.resultStore.AppendValues (groupIter, null, String.Format (GettextCatalog.GetString("Capture '{0}'"), capture.Value), capture.Index, capture.Length);
 								}
-		
+							} else {
+								groupIter = this.resultStore.AppendValues (iter, Stock.Cancel, String.Format (GettextCatalog.GetString("Group '{0}' not found"), regex.GroupNameFromNumber (i)), -1, -1);
 							}
 							i++;
 						}
-					});
-				}
-				if (!String.IsNullOrEmpty (replacement)) {
-					Application.Invoke (delegate {
+					}
+					if (!String.IsNullOrEmpty (replacement))
 						this.replaceResultTextview.Buffer.Text = regex.Replace (input, replacement);
-					});
-				}
+				});
 			} catch (ThreadAbortException) {
 				Thread.ResetAbort ();
 			} catch (ArgumentException) {
