@@ -48,7 +48,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		ParsedDocument Parse (string fileName, string text)
 		{
-			return new MonoDevelop.CSharp.Parser.NRefactoryParser ().Parse (null, fileName, text);
+			return new MonoDevelop.CSharp.Parser.McsParser ().Parse (null, fileName, text);
 		}
 		
 		static void WriteUsings (IEnumerable<string> usings, StringBuilder builder)
