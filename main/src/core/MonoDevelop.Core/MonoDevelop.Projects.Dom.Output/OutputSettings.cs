@@ -233,6 +233,12 @@ namespace MonoDevelop.Projects.Dom.Output
 			}
 		}
 		
+		public bool IncludeConstraints {
+			get {
+				return (OutputFlags & OutputFlags.IncludeConstraints) != 0;
+			}
+		}
+		
 		public MarkupText EmitModifiersCallback;
 		public MarkupText EmitKeywordCallback;
 		public MarkupText MarkupCallback;

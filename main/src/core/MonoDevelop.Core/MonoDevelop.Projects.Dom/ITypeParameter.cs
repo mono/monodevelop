@@ -31,7 +31,15 @@ using System.Collections.Generic;
 namespace MonoDevelop.Projects.Dom
 {
 	public enum TypeParameterVariance { None, Out, In }
-	public interface ITypeParameter
+	
+	[Flags]
+	public enum TypeParameterModifier : byte
+	{	
+		None          = 0,
+		HasDefaultConstructorConstraint = 1
+	}
+	
+	public interface ITypeParameter : INode 
 	{
 		string Name { get; }
 
@@ -44,7 +52,9 @@ namespace MonoDevelop.Projects.Dom
 		bool ClassRequired { get; }
 		
 		bool ValueTypeRequired { get; }
-
+		
+		TypeParameterModifier TypeParameterModifier { get; }
+		
 		TypeParameterVariance Variance { get; }
 	}
 }

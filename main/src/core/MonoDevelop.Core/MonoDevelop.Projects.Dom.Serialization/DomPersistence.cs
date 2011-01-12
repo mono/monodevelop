@@ -522,7 +522,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			// Variance 
 
 			tp.Variance = (TypeParameterVariance)reader.ReadByte ();
-
+			tp.TypeParameterModifier = (TypeParameterModifier)reader.ReadByte ();
+			
 			// Constraints
 			
 			uint count = ReadUInt (reader, 1000);
@@ -556,7 +557,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			// Variance 
 
 			writer.Write ((byte)typeParameter.Variance);
-
+			writer.Write ((byte)typeParameter.TypeParameterModifier);
+			
 			// Constraints
 			
 			writer.Write (typeParameter.Constraints.Count ());

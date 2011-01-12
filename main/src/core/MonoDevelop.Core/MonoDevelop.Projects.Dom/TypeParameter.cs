@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Dom
 {
-	public class TypeParameter: ITypeParameter
+	public class TypeParameter : AbstractNode, ITypeParameter
 	{
 		string name;
 		public string Name {
@@ -48,6 +48,8 @@ namespace MonoDevelop.Projects.Dom
 
 		public TypeParameterVariance Variance { get; set; }
 
+		public TypeParameterModifier TypeParameterModifier { get; set; }
+		
 		List<IAttribute> attributes = null;
 		static readonly IAttribute[] emptyAttributes = new IAttribute[0];
 		public IEnumerable<IAttribute> Attributes {

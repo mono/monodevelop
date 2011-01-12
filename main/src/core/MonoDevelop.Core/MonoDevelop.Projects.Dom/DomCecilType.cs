@@ -115,8 +115,12 @@ namespace MonoDevelop.Projects.Dom
 			foreach (GenericParameter parameter in typeDefinition.GenericParameters) {
 				TypeParameter tp = new TypeParameter (parameter.FullName);
 				tp.Variance = (TypeParameterVariance)(((uint)parameter.Attributes) & 3);
-				foreach (TypeReference tr in parameter.Constraints)
+				if (parameter.HasDefaultConstructorConstraint)
+					tp.TypeParameterModifier |= TypeParameterModifier.HasDefaultConstructorConstraint;
+				System.Console.WriteLine (parameter.FullName + "/" + tp.TypeParameterModifier);
+				foreach (TypeReference tr in parameter.Constraints) {
 					tp.AddConstraint (DomCecilMethod.GetReturnType (tr));
+				}
 				AddTypeParameter (tp);
 			}
 		}

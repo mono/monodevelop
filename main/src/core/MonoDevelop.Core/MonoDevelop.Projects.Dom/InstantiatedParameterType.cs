@@ -140,6 +140,12 @@ namespace MonoDevelop.Projects.Dom
 				return typeparam.Variance;
 			}
 		}
+		
+		public TypeParameterModifier TypeParameterModifier {
+			get {
+				return typeparam.TypeParameterModifier;
+			}
+		}
 
 		#endregion
 		

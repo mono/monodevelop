@@ -238,6 +238,7 @@ namespace MonoDevelop.Projects.Dom
 			tp.ClassRequired = type.ClassRequired;
 			tp.ValueTypeRequired = type.ValueTypeRequired;
 			tp.ConstructorRequired = type.ConstructorRequired;
+			tp.TypeParameterModifier = type.TypeParameterModifier;
 			foreach (IAttribute attr in type.Attributes)
 				tp.AddAttribute ((IAttribute) attr.AcceptVisitor (this, data));
 			foreach (IReturnType rt in type.Constraints)
