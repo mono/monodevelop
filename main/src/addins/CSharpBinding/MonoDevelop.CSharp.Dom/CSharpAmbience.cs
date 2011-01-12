@@ -33,6 +33,7 @@ using MonoDevelop.Projects.Dom.Output;
 using System.CodeDom;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.Ide;
+using System.Collections.ObjectModel;
 
 namespace MonoDevelop.CSharp.Dom
 {
@@ -468,7 +469,7 @@ namespace MonoDevelop.CSharp.Dom
 				}
 				result.Append (settings.Markup (")"));
 			}
-			
+			OutputConstraints (result, settings, method.TypeParameters);
 			return result.ToString ();
 		}
 		
@@ -628,9 +629,48 @@ namespace MonoDevelop.CSharp.Dom
 				}
 				
 			}
+			OutputConstraints (result, settings, type.TypeParameters);
 			return result.ToString ();
 		}
 		
+		void OutputConstraints (StringBuilder result, OutputSettings settings, IEnumerable<ITypeParameter> constraints)
+		{
+			if (settings.IncludeConstraints && constraints.Any (p => p.Constraints.Any () || (p.TypeParameterModifier & TypeParameterModifier.HasDefaultConstructorConstraint) != 0)) {
+				result.Append (settings.Markup (" "));
+				result.Append (settings.EmitKeyword ("where"));
+				int typeParameterCount = 0;
+				foreach (var p in constraints) {
+					if (!p.Constraints.Any () && (p.TypeParameterModifier & TypeParameterModifier.HasDefaultConstructorConstraint) == 0)
+						continue;
+					if (typeParameterCount != 0)
+						result.Append (settings.Markup (", "));
+					
+					typeParameterCount++;
+					result.Append (settings.EmitName (p, p.Name));
+					result.Append (settings.Markup (" : "));
+					int constraintCount = 0;
+			
+					if ((p.TypeParameterModifier & TypeParameterModifier.HasDefaultConstructorConstraint) != 0) {
+						result.Append (settings.EmitKeyword ("new"));
+						result.Append (settings.Markup ("()"));
+						constraintCount++;
+					}
+					
+					foreach (var c in p.Constraints) {
+						if (constraintCount != 0)
+							result.Append (settings.Markup (", "));
+						constraintCount++;
+						if (c.DecoratedFullName == DomReturnType.ValueType.DecoratedFullName) {
+							result.Append (settings.EmitKeyword ("struct"));
+							continue;
+						}
+						result.Append (this.GetString (c, settings));
+					}
+				}
+			}
+		}
+
+
 		static void PrintObject (StringBuilder result, OutputSettings settings, object o)
 		{
 			if (o is string) {
