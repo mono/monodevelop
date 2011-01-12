@@ -555,9 +555,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				Group = grp;
 			}
 			
+			public bool FullySpecified {
+				get { return Config != Unspecified && Platform != Unspecified; }
+			}
+			
 			public string Config;
 			public string Platform;
 			public MSBuildPropertyGroup Group;
+			public bool Exists;
 		}
 
 		MSBuildPropertyGroup CreateMergedConfiguration (List<ConfigData> configData, string conf, string platform)
@@ -724,14 +729,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 				foreach (SolutionItemConfiguration conf in eitem.Configurations) {
 					bool newConf = false;
-					MSBuildPropertyGroup propGroup = FindPropertyGroup (configData, conf);
-					if (propGroup == null) {
-						propGroup = msproject.AddNewPropertyGroup (false);
-						propGroup.Condition = BuildConfigCondition (conf.Name, conf.Platform);
-						ConfigData cd = new ConfigData (conf.Name, conf.Platform, propGroup);
-						configData.Add (cd);
+					ConfigData cdata = FindPropertyGroup (configData, conf);
+					if (cdata == null) {
+						MSBuildPropertyGroup pg = msproject.AddNewPropertyGroup (false);
+						pg.Condition = BuildConfigCondition (conf.Name, conf.Platform);
+						cdata = new ConfigData (conf.Name, conf.Platform, pg);
+						configData.Add (cdata);
 						newConf = true;
 					}
+					
+					MSBuildPropertyGroup propGroup = cdata.Group;
+					cdata.Exists = true;
 					
 					DotNetProjectConfiguration netConfig = conf as DotNetProjectConfiguration;
 					
@@ -768,9 +776,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						globalGroup.RemoveProperty (prop);
 				}
 				foreach (SolutionItemConfiguration conf in eitem.Configurations) {
-					MSBuildPropertyGroup propGroup = FindPropertyGroup (configData, conf);
+					MSBuildPropertyGroup propGroup = FindPropertyGroup (configData, conf).Group;
 					foreach (string mp in mergeToProjectProperties.Keys)
 						propGroup.RemoveProperty (mp);
+				}
+				foreach (ConfigData cd in configData) {
+					if (!cd.Exists && cd.FullySpecified)
+						msproject.RemoveGroup (cd.Group);
 				}
 			}
 			
@@ -1210,11 +1222,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return propGroup.GetProperty (name);
 		}
 		
-		MSBuildPropertyGroup FindPropertyGroup (List<ConfigData> configData, SolutionItemConfiguration config)
+		ConfigData FindPropertyGroup (List<ConfigData> configData, SolutionItemConfiguration config)
 		{
 			foreach (ConfigData data in configData) {
 				if (data.Config == config.Name && data.Platform == config.Platform)
-					return data.Group;
+					return data;
 			}
 			return null;
 		}
