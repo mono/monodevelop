@@ -131,10 +131,10 @@ namespace MonoDevelop.Projects
 			string exe;
 			string args = string.Empty;
 			if (i == -1) {
-				exe = command;
+				exe = StringParserService.Parse (command, tagSource);
 				args = string.Empty;
 			} else {
-				exe = command.Substring (0, i);
+				exe = StringParserService.Parse (command.Substring (0, i), tagSource);
 				args = StringParserService.Parse (command.Substring (i + 1), tagSource);
 			}
 			
