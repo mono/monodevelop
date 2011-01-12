@@ -18,9 +18,9 @@
    sodipodi:docname="dmg-bg.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0"
-   inkscape:export-filename="/home/michael/mono/monodevelop/main/build/MacOSX/dmg-bg.png"
-   inkscape:export-xdpi="128.65294"
-   inkscape:export-ydpi="128.65294">
+   inkscape:export-filename="/Users/michael/Mono/md-2-4/main/build/MacOSX/dmg-bg.png"
+   inkscape:export-xdpi="90.023926"
+   inkscape:export-ydpi="90.023926">
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -163,7 +163,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
       <cc:Work
          rdf:about="">
@@ -312,7 +312,7 @@
          id="tspan5421"
          x="282.07111"
          y="127.0191"
-         style="font-weight:bold;fill:url(#linearGradient6215);fill-opacity:1">2.4.1</tspan></text>
+         style="font-weight:bold;fill:url(#linearGradient6215);fill-opacity:1">2.4.2</tspan></text>
   </g>
   <path
      style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
