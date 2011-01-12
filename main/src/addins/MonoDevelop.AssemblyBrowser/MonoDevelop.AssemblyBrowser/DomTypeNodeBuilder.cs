@@ -165,7 +165,9 @@ namespace MonoDevelop.AssemblyBrowser
 			IType type = (IType)navigator.DataItem;
 			StringBuilder result = new StringBuilder ();
 			result.Append (DomMethodNodeBuilder.GetAttributes (Ambience, type.Attributes));
+			settings.OutputFlags |= OutputFlags.IncludeConstraints;
 			result.Append (Ambience.GetString (type, settings));
+			settings.OutputFlags &= ~OutputFlags.IncludeConstraints;
 			bool first = true;
 			
 			if (type.ClassType == ClassType.Enum) {
@@ -316,9 +318,9 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			IType type = (IType)navigator.DataItem;
 			if (type.ClassType == ClassType.Delegate) {
-				settings.OutputFlags |= OutputFlags.ReformatDelegates;
+				settings.OutputFlags |= OutputFlags.ReformatDelegates | OutputFlags.IncludeConstraints;
 				string result =  Ambience.GetString (type, settings);
-				settings.OutputFlags &= ~OutputFlags.ReformatDelegates;
+				settings.OutputFlags &= ~(OutputFlags.ReformatDelegates | OutputFlags.IncludeConstraints);
 				return result;
 			}
 			return GetDisassembly (navigator);
