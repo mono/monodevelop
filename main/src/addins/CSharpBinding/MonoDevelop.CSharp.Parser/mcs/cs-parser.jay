@@ -545,7 +545,7 @@ namespace_body
 	  opt_using_directives
 	  opt_namespace_member_declarations
 	  CLOSE_BRACE {
-		ubag.CloseNamespace (GetLocation ($4));
+		ubag.CloseNamespace (GetLocation ($6));
 	  }
 	;
 
