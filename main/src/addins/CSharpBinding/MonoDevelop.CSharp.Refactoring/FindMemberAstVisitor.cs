@@ -383,8 +383,9 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (searchedMember is CompoundType) {
 				foreach (IType part in ((CompoundType)searchedMember).Parts) {
 					if (fileName == part.CompilationUnit.FileName &&
-					    node.StartLocation.Line == part.Location.Line && 
-					    node.StartLocation.Column == part.Location.Column)
+					    node.StartLocation.Line == part.Location.Line 
+//						&& node.StartLocation.Column == part.Location.Column
+						)
 						return true;
 				}
 			}
@@ -556,7 +557,6 @@ namespace MonoDevelop.CSharp.Refactoring
 		public override object VisitTypeDeclaration (TypeDeclaration typeDeclaration, object data)
 		{
 			CheckNode (typeDeclaration);
-			
 			typeStack.Push (typeDeclaration);
 			object result =  base.VisitTypeDeclaration (typeDeclaration, data);
 			typeStack.Pop ();

@@ -945,8 +945,8 @@ namespace MonoDevelop.CSharp.Parser
 
 			public override void Visit (Indexer i)
 			{
-				System.Console.WriteLine ("found indexer !!!");
 				DomProperty indexer = new DomProperty ();
+				indexer.PropertyModifier |= PropertyModifier.IsIndexer;
 				indexer.Name = "this";
 				indexer.Documentation = RetrieveDocumentation (i.Location.Row);
 				indexer.Location = Convert (i.Location);
