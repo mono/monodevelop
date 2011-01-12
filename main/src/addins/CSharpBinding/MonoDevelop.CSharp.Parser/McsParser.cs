@@ -346,6 +346,9 @@ namespace MonoDevelop.CSharp.Parser
 				
 				if ((modifiers & Mono.CSharp.Modifiers.STATIC) != 0)
 					result |= MonoDevelop.Projects.Dom.Modifiers.Static;
+				
+				if ((modifiers & Mono.CSharp.Modifiers.PARTIAL) != 0)
+					result |= MonoDevelop.Projects.Dom.Modifiers.Partial;
 				return result;
 			}
 			
@@ -942,6 +945,7 @@ namespace MonoDevelop.CSharp.Parser
 
 			public override void Visit (Indexer i)
 			{
+				System.Console.WriteLine ("found indexer !!!");
 				DomProperty indexer = new DomProperty ();
 				indexer.Name = "this";
 				indexer.Documentation = RetrieveDocumentation (i.Location.Row);
