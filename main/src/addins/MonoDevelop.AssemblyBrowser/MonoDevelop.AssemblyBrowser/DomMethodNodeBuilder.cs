@@ -268,7 +268,10 @@ namespace MonoDevelop.AssemblyBrowser
 
 			NetAmbience netAmbience = new NetAmbience ();
 			StringBuilder result = new StringBuilder ();
-			result.Append (netAmbience.GetString (method, DomTypeNodeBuilder.settings | OutputFlags.IncludeConstraints));
+			var settings = DomTypeNodeBuilder.settings;
+			settings.OutputFlags |= OutputFlags.IncludeConstraints;
+			result.Append (netAmbience.GetString (method, settings));
+			settings.OutputFlags &= ~OutputFlags.IncludeConstraints;
 			result.AppendLine ();
 			result.AppendLine ();
 			result.Append (Disassemble (method, true));
