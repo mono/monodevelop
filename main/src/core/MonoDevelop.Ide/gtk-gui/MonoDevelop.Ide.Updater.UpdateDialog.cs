@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.Updater
 			this.infoLabel.Xpad = 6;
 			this.infoLabel.Ypad = 6;
 			this.infoLabel.Xalign = 0F;
-			this.infoLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("The following updates are available. After downloading,\nplease close MonoDevelop before installing them.");
+			this.infoLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("The following updates are available. After downloading,\nplease quit MonoDevelop before installing them.");
 			this.infoLabel.Wrap = true;
 			this.vbox3.Add (this.infoLabel);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.infoLabel]));

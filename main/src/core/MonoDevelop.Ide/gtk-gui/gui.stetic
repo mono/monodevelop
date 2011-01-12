@@ -11602,7 +11602,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                             <property name="Ypad">6</property>
                             <property name="Xalign">0</property>
                             <property name="LabelProp" translatable="yes">The following updates are available. After downloading,
-please close MonoDevelop before installing them.</property>
+please quit MonoDevelop before installing them.</property>
                             <property name="Wrap">True</property>
                           </widget>
                           <packing>
