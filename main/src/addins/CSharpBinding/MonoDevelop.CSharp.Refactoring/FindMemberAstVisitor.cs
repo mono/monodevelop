@@ -718,7 +718,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				if (mrr != null) {
 					IMember resolvedMember = GetUnderlyingMember (mrr.ResolvedMember);
 					
-					if (resolvedMember != null && resolvedMember.DeclaringType != null && ((IMember)searchedMember).DeclaringType != null && resolvedMember.Location == searchedMemberLocation && resolvedMember.DeclaringType.FullName == ((IMember)searchedMember).DeclaringType.FullName) {
+					if (resolvedMember != null && resolvedMember.DeclaringType != null && searchedMember is IMember && ((IMember)searchedMember).DeclaringType != null && resolvedMember.Location == searchedMemberLocation && resolvedMember.DeclaringType.FullName == ((IMember)searchedMember).DeclaringType.FullName) {
 						int line, column;
 						if (SearchText (searchedMemberName, fieldExp.StartLocation.Line, fieldExp.StartLocation.Column, out line, out column))
 							AddUniqueReference (line, column, searchedMemberName);
