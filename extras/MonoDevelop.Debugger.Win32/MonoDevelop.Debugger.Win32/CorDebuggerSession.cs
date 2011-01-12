@@ -115,7 +115,13 @@ namespace MonoDevelop.Debugger.Win32
 		{
 			// Create the debugger
 
-			string dversion = CorDebugger.GetDebuggerVersionFromFile (startInfo.Command);
+			string dversion;
+			try {
+				dversion = CorDebugger.GetDebuggerVersionFromFile (startInfo.Command);
+			}
+			catch {
+				dversion = CorDebugger.GetDefaultDebuggerVersion ();
+			}
 			dbg = new CorDebugger (dversion);
 
 			Dictionary<string, string> env = new Dictionary<string, string> ();
