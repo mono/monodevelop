@@ -351,9 +351,9 @@ namespace MonoDevelop.Refactoring
 //					ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new RefactoryOperation (refactorer.Rename));
 				
 				if (canRename && cls.ClassType == ClassType.Interface && eclass != null) {
-					// An interface is selected, so just need to provide these 2 submenu items
-					ciset.CommandInfos.Add (GettextCatalog.GetString ("Implement Interface (implicit)"), new RefactoryOperation (refactorer.ImplementImplicitInterface));
-					ciset.CommandInfos.Add (GettextCatalog.GetString ("Implement Interface (explicit)"), new RefactoryOperation (refactorer.ImplementExplicitInterface));
+					// is now provided by the refactoring command infrastructure:
+//					ciset.CommandInfos.Add (GettextCatalog.GetString ("Implement Interface (explicit)"), new RefactoryOperation (refactorer.ImplementExplicitInterface));
+//					ciset.CommandInfos.Add (GettextCatalog.GetString ("Implement Interface (implicit)"), new RefactoryOperation (refactorer.ImplementImplicitInterface));
 				} else if (canRename && includeModifyCommands && cls.BaseType != null && cls.ClassType != ClassType.Interface && cls == eclass) {
 					// Class might have interfaces... offer to implement them
 					CommandInfoSet impset = new CommandInfoSet ();
@@ -955,25 +955,29 @@ namespace MonoDevelop.Refactoring
 		
 		void ImplementInterface (bool explicitly)
 		{
-			CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
-			IType iface = item as IType;
+			var doc = IdeApp.Workbench.ActiveDocument;
+			var editor = doc.Editor.Parent;
+			IType interfaceType = item as IType;
+			IType declaringType = klass;
 			
-			if (klass == null)
-				return;
-			
-			if (iface == null)
-				return;
-				
-			IEditableTextBuffer editor = IdeApp.Workbench.ActiveDocument.GetContent <IEditableTextBuffer>();
-			if (editor != null)
-				editor.BeginAtomicUndo ();
-				
-			try {
-				refactorer.ImplementInterface (pinfo, klass, iface, explicitly, iface, this.hintReturnType);
-			} finally {
-				if (editor != null)
-					editor.EndAtomicUndo ();
-			}
+			var mode = new Mono.TextEditor.InsertionCursorEditMode (editor, HelperMethods.GetInsertionPoints (doc, declaringType));
+			var helpWindow = new Mono.TextEditor.PopupWindow.ModeHelpWindow ();
+			helpWindow.TransientFor = IdeApp.Workbench.RootWindow;
+			helpWindow.TitleText = GettextCatalog.GetString ("<b>Implement Interface -- Targeting</b>");
+			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));
+			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Up</b>"), GettextCatalog.GetString ("Move to <b>previous</b> target point.")));
+			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Down</b>"), GettextCatalog.GetString ("Move to <b>next</b> target point.")));
+			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Enter</b>"), GettextCatalog.GetString ("<b>Declare interface implementation</b> at target point.")));
+			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Esc</b>"), GettextCatalog.GetString ("<b>Cancel</b> this refactoring.")));
+			mode.HelpWindow = helpWindow;
+			mode.CurIndex = mode.InsertionPoints.Count - 1;
+			mode.StartMode ();
+			mode.Exited += delegate(object s, Mono.TextEditor.InsertionCursorEventArgs args) {
+				if (args.Success) {
+					var generator = doc.CreateCodeGenerator ();
+					args.InsertionPoint.Insert (editor, generator.CreateInterfaceImplementation (declaringType, interfaceType, explicitly));
+				}
+			};
 		}
 		
 		public void ImplementImplicitInterface ()
