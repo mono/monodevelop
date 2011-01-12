@@ -53,8 +53,6 @@ namespace MonoDevelop.Projects.Dom
 			Namespace = outerType.DecoratedFullName;
 			Location = outerType.Location;
 			DeclaringType = outerType;
-			if (tp.ValueTypeRequired)
-				BaseType = new DomReturnType ("System.ValueType");
 			
 			if (tp.Constraints.Count > 0)
 				ClassType = ClassType.Interface;
@@ -114,24 +112,6 @@ namespace MonoDevelop.Projects.Dom
 		public IList<IReturnType> Constraints {
 			get { 
 				return typeparam.Constraints; 
-			}
-		}
-
-		public bool ConstructorRequired {
-			get {
-				return typeparam.ConstructorRequired;
-			}
-		}
-
-		public bool ClassRequired {
-			get { 
-				return typeparam.ClassRequired; 
-			}
-		}
-
-		public bool ValueTypeRequired {
-			get { 
-				return typeparam.ValueTypeRequired;
 			}
 		}
 

@@ -510,19 +510,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			TypeParameter tp = new TypeParameter (name);
 			
 			// Flags
+			tp.TypeParameterModifier = (TypeParameterModifier)reader.ReadByte ();
 			
-			byte f = reader.ReadByte ();
-			if ((f & 1) != 0)
-				tp.ClassRequired = true;
-			if ((f & 2) != 0)
-				tp.ValueTypeRequired = true;
-			if ((f & 4) != 0)
-				tp.ConstructorRequired = true;
-
 			// Variance 
 
 			tp.Variance = (TypeParameterVariance)reader.ReadByte ();
-			tp.TypeParameterModifier = (TypeParameterModifier)reader.ReadByte ();
 			
 			// Constraints
 			
@@ -544,20 +536,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			WriteString (typeParameter.Name, writer, nameTable);
 
 			// Flags
+			writer.Write ((byte)typeParameter.TypeParameterModifier);
 			
-			byte f = 0;
-			if (typeParameter.ClassRequired)
-				f |= 1;
-			if (typeParameter.ValueTypeRequired)
-				f |= 2;
-			if (typeParameter.ConstructorRequired)
-				f |= 4;
-			writer.Write (f);
-
 			// Variance 
 
 			writer.Write ((byte)typeParameter.Variance);
-			writer.Write ((byte)typeParameter.TypeParameterModifier);
 			
 			// Constraints
 			

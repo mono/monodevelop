@@ -47,12 +47,6 @@ namespace MonoDevelop.Projects.Dom
 
 		IList<IReturnType> Constraints { get; }
 		
-		bool ConstructorRequired { get; }
-		
-		bool ClassRequired { get; }
-		
-		bool ValueTypeRequired { get; }
-		
 		TypeParameterModifier TypeParameterModifier { get; }
 		
 		TypeParameterVariance Variance { get; }
