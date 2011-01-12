@@ -66,7 +66,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			ICompilationUnit unit = parser.Parse (null, "a.cs", 
 @"class AClass {
      void TestMethod<T> (string a, int b) {}
-     void ExtensionMethod (this int a) {}; 
+     public static void ExtensionMethod (this int a) {}; 
 }").CompilationUnit;
 			Assert.AreEqual (1, unit.Types.Count);
 			IType type = unit.Types[0];
