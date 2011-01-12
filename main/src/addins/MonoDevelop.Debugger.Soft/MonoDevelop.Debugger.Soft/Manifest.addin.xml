@@ -26,7 +26,7 @@
 	
 	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
 		<DebuggerEngine
-			id="Mono.Debugger.Soft"
+			id="Mono.Debugger.Soft.Custom"
 			name="Custom Command Mono Soft Debugger"
 			features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints"
 			type="MonoDevelop.Debugger.Soft.CustomSoftDebuggerEngine" />
