@@ -84,7 +84,7 @@ $(ASSEMBLY): $(build_sources) $(DEPS)
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)
 
-assemblydir = $(MD_ASSEMBLY_DIR)
+assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.Debugger.Soft
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
