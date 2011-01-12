@@ -68,38 +68,25 @@ namespace MonoDevelop.Ide.Gui
 		[CommandHandler (FileCommands.Save)]
 		protected void OnSaveFile ()
 		{
-			IdeApp.Workbench.FindDocument (window).Save ();
+			doc.Save ();
 		}
 		
 		[CommandUpdateHandler (FileCommands.Save)]
 		protected void OnUpdateSaveFile (CommandInfo info)
 		{
-			if (window.ViewContent.IsViewOnly) {
-				info.Enabled = false;
-				return;
-			}
-			
-			IViewContent content = window.ActiveViewContent as IViewContent;
-			if (content != null)
-				info.Enabled = !content.IsViewOnly && content.IsDirty;
-			else
-				info.Enabled = false;
+			info.Enabled = doc.IsDirty;
 		}
 
 		[CommandHandler (FileCommands.SaveAs)]
 		protected void OnSaveFileAs ()
 		{
-			IdeApp.Workbench.FindDocument (window).SaveAs ();
+			doc.SaveAs ();
 		}
 		
 		[CommandUpdateHandler (FileCommands.SaveAs)]
 		protected void OnUpdateSaveFileAs (CommandInfo info)
 		{
-			IViewContent content = window.ActiveViewContent as IViewContent;
-			if (content != null && content.IsFile)
-				info.Enabled = !content.IsViewOnly;
-			else
-				info.Enabled = false;
+			info.Enabled = doc.IsFile && !doc.IsViewOnly;
 		}
 		
 		[CommandHandler (FileCommands.ReloadFile)]

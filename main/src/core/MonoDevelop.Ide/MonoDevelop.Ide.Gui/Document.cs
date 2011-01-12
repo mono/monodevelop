@@ -121,7 +121,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		public bool IsDirty {
-			get { return Window.ViewContent.ContentName == null || Window.ViewContent.IsDirty; }
+			get { return !Window.ViewContent.IsViewOnly && (Window.ViewContent.ContentName == null || Window.ViewContent.IsDirty); }
 			set { Window.ViewContent.IsDirty = value; }
 		}
 		
