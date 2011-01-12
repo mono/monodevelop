@@ -288,6 +288,44 @@ namespace MonoDevelop.CSharp.Refactoring
 				result.Append ("(");
 				AppendParameterList (result, options.ImplementingType, method.Parameters);
 				result.Append (")");
+				
+				var typeParameters = method.TypeParameters;
+				if (typeParameters.Any (p => p.Constraints.Any () || (p.TypeParameterModifier & TypeParameterModifier.HasDefaultConstructorConstraint) != 0)) {
+					result.Append (" where ");
+					int typeParameterCount = 0;
+					foreach (var p in typeParameters) {
+						if (!p.Constraints.Any () && (p.TypeParameterModifier & TypeParameterModifier.HasDefaultConstructorConstraint) == 0)
+							continue;
+						if (typeParameterCount != 0)
+							result.Append (", ");
+						
+						typeParameterCount++;
+						result.Append (p.Name);
+						result.Append (" : ");
+						int constraintCount = 0;
+				
+						if ((p.TypeParameterModifier & TypeParameterModifier.HasDefaultConstructorConstraint) != 0) {
+							result.Append ("new ()");
+							constraintCount++;
+						}
+						System.Console.WriteLine ("c:" + p.Constraints.Count);
+						foreach (var c in p.Constraints) {
+							if (constraintCount != 0)
+								result.Append (", ");
+							constraintCount++;
+							if (c.DecoratedFullName == DomReturnType.ValueType.DecoratedFullName) {
+								result.Append ("struct");
+								continue;
+							}
+							if (c.DecoratedFullName == DomReturnType.TypeReturnType.DecoratedFullName) {
+								result.Append ("class");
+								continue;
+							}
+							AppendReturnType (result, options.ImplementingType, c);
+						}
+					}
+				}
+				
 				if (options.ImplementingType.ClassType == ClassType.Interface) {
 					result.Append (";");
 				} else {

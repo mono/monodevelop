@@ -209,7 +209,6 @@ FILES =  \
 	MonoDevelop.CSharp.Parser/mcs/typespec.cs \
 	MonoDevelop.CSharp.Parser/mcs/visit.cs \
 	MonoDevelop.CSharp.Parser/McsParser.cs \
-	MonoDevelop.CSharp.Parser/NRefactoryParser.cs \
 	MonoDevelop.CSharp.Project/CodeGenerationPanel.cs \
 	MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs \
 	MonoDevelop.CSharp.Project/CSharpCompilerParameters.cs \

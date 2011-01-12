@@ -700,11 +700,11 @@ namespace MonoDevelop.CSharp.Parser
 						if (constraintExpr is SpecialContraintExpr) {
 							var sce = (SpecialContraintExpr)constraintExpr;
 							if (sce.Constraint == SpecialConstraint.Struct)
-								result.ValueTypeRequired = true;
+								result.AddConstraint (DomReturnType.ValueType);
 							if (sce.Constraint == SpecialConstraint.Class)
-								result.ClassRequired = true;
+								result.AddConstraint (DomReturnType.TypeReturnType);
 							if (sce.Constraint == SpecialConstraint.Constructor)
-								result.ConstructorRequired = true;
+								result.TypeParameterModifier |= TypeParameterModifier.HasDefaultConstructorConstraint;
 						} else {
 							result.AddConstraint (ConvertReturnType (constraintExpr));
 						}
@@ -718,9 +718,9 @@ namespace MonoDevelop.CSharp.Parser
 				if (!decl.IsGeneric || decl.CurrentTypeParameters == null)
 					return;
 				
-				foreach (var typeParametr in decl.CurrentTypeParameters) {
-					member.AddTypeParameter (ConvertTemplateDefinition (typeParametr));
-					
+				foreach (var typeParameter in decl.CurrentTypeParameters) {
+					var par = ConvertTemplateDefinition (typeParameter);
+					member.AddTypeParameter (par);
 				}
 			}
 

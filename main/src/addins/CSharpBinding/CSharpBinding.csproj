@@ -246,7 +246,6 @@
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpIndentEngine.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpIndentEngineStack.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormatter.cs" />
-    <Compile Include="MonoDevelop.CSharp.Parser\NRefactoryParser.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpNRefactoryASTProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\FindMemberAstVisitor.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\CSharpAmbience.cs" />

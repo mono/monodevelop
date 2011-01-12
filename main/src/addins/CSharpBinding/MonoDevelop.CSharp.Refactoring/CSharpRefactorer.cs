@@ -658,7 +658,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			return new DomRegion (lineBegin, colBegin, lineEnd, colEnd);
 		}
-		static NRefactoryParser parser = new NRefactoryParser ();
+		static McsParser parser = new McsParser ();
 		public override IEnumerable<MemberReference> FindMemberReferences (RefactorerContext ctx, string fileName, IType cls, IMember member, bool includeXmlComment)
 		{
 			var editor = ((Mono.TextEditor.ITextEditorDataProvider)ctx.GetFile (fileName)).GetTextEditorData ();

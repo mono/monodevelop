@@ -633,13 +633,13 @@ namespace MonoDevelop.CSharp.Dom
 			return result.ToString ();
 		}
 		
-		void OutputConstraints (StringBuilder result, OutputSettings settings, IEnumerable<ITypeParameter> constraints)
+		void OutputConstraints (StringBuilder result, OutputSettings settings, IEnumerable<ITypeParameter> typeParameters)
 		{
-			if (settings.IncludeConstraints && constraints.Any (p => p.Constraints.Any () || (p.TypeParameterModifier & TypeParameterModifier.HasDefaultConstructorConstraint) != 0)) {
+			if (settings.IncludeConstraints && typeParameters.Any (p => p.Constraints.Any () || (p.TypeParameterModifier & TypeParameterModifier.HasDefaultConstructorConstraint) != 0)) {
 				result.Append (settings.Markup (" "));
 				result.Append (settings.EmitKeyword ("where"));
 				int typeParameterCount = 0;
-				foreach (var p in constraints) {
+				foreach (var p in typeParameters) {
 					if (!p.Constraints.Any () && (p.TypeParameterModifier & TypeParameterModifier.HasDefaultConstructorConstraint) == 0)
 						continue;
 					if (typeParameterCount != 0)
@@ -662,6 +662,10 @@ namespace MonoDevelop.CSharp.Dom
 						constraintCount++;
 						if (c.DecoratedFullName == DomReturnType.ValueType.DecoratedFullName) {
 							result.Append (settings.EmitKeyword ("struct"));
+							continue;
+						}
+						if (c.DecoratedFullName == DomReturnType.TypeReturnType.DecoratedFullName) {
+							result.Append (settings.EmitKeyword ("class"));
 							continue;
 						}
 						result.Append (this.GetString (c, settings));
