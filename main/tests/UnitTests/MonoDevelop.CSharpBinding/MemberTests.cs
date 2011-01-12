@@ -57,7 +57,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 		[Test]
 		public void TestFields ()
 		{
-			DoTestFields (new NRefactoryParser ());
+			DoTestFields (new McsParser ());
 //			DoTestFields (new DomParser ());
 		}
 		
@@ -87,7 +87,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 		[Test]
 		public void TestMethods ()
 		{
-			DoTestMethods (new NRefactoryParser ());
+			DoTestMethods (new McsParser ());
 //			DoTestMethods (new DomParser ());
 		}
 		
@@ -112,7 +112,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 		[Test]
 		public void TestConstructor ()
 		{
-			DoTestConstructor (new NRefactoryParser ());
+			DoTestConstructor (new McsParser ());
 //			DoTestConstructor (new DomParser ());
 		}
 		
@@ -155,7 +155,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 		[Test]
 		public void TestProperties ()
 		{
-			DoTestProperties (new NRefactoryParser ());
+			DoTestProperties (new McsParser ());
 //			DoTestProperties (new DomParser ());
 		}
 		
@@ -181,7 +181,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 		[Test]
 		public void TestIndexer ()
 		{
-			DoTestIndexer (new NRefactoryParser ());
+			DoTestIndexer (new McsParser ());
 //			DoTestIndexer (new DomParser ());
 		}
 
@@ -203,7 +203,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 		[Test]
 		public void TestEvents ()
 		{
-			DoTestEvents (new NRefactoryParser ());
+			DoTestEvents (new McsParser ());
 //			DoTestEvents (new DomParser ());
 		}
 		

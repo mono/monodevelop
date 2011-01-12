@@ -50,7 +50,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 	public class FindMemberVisitorTests : UnitTests.TestBase
 	{
 		#region TestHelper
-		static NRefactoryParser parser = new NRefactoryParser ();
+		static McsParser parser = new McsParser ();
 		
 		void RunTest (string test)
 		{

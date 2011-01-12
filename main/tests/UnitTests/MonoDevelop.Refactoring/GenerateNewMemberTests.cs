@@ -118,7 +118,7 @@ namespace MonoDevelop.Refactoring.Tests
 			}
 			
 			
-			doc.ParsedDocument =  new NRefactoryParser ().Parse (null, "a.cs", data.Document.Text);
+			doc.ParsedDocument =  new McsParser ().Parse (null, "a.cs", data.Document.Text);
 			
 			var foundPoints = HelperMethods.GetInsertionPoints (doc, doc.ParsedDocument.CompilationUnit.Types[0]);
 			Assert.AreEqual (loc.Count, foundPoints.Count, "point count doesn't match");

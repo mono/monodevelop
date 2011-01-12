@@ -63,7 +63,7 @@ using NUnit.Framework;").CompilationUnit;
 		[Test]
 		public void TestUsings ()
 		{
-			DoTestUsings (new NRefactoryParser ());
+			DoTestUsings (new McsParser ());
 			//DoTestUsings (new DomParser ());
 		}
 		
@@ -99,7 +99,7 @@ using NUnit.Framework;").CompilationUnit;
 		[Test]
 		public void TestEnums ()
 		{
-			DoTestEnums (new NRefactoryParser ());
+			DoTestEnums (new McsParser ());
 //			DoTestEnums (new DomParser ());
 		}
 		
@@ -115,7 +115,7 @@ using NUnit.Framework;").CompilationUnit;
 		[Test]
 		public void TestStruct ()
 		{
-			DoTestStruct (new NRefactoryParser ());
+			DoTestStruct (new McsParser ());
 //			DoTestStruct (new DomParser ());
 		}
 		
@@ -131,7 +131,7 @@ using NUnit.Framework;").CompilationUnit;
 		[Test]
 		public void TestInterface ()
 		{
-			DoTestInterface (new NRefactoryParser ());
+			DoTestInterface (new McsParser ());
 //			DoTestInterface (new DomParser ());
 		}
 		
@@ -159,7 +159,7 @@ using NUnit.Framework;").CompilationUnit;
 		[Test]
 		public void TestDelegate ()
 		{
-			DoTestDelegate (new NRefactoryParser ());
+			DoTestDelegate (new McsParser ());
 //			DoTestDelegate (new DomParser ());
 		}
 		
@@ -181,7 +181,7 @@ using NUnit.Framework;").CompilationUnit;
 		[Test]
 		public void TestClass ()
 		{
-			DoTestClass (new NRefactoryParser ());
+			DoTestClass (new McsParser ());
 //			DoTestClass (new DomParser ());
 		}
 		
@@ -200,7 +200,7 @@ using NUnit.Framework;").CompilationUnit;
 		[Test]
 		public void TestNamespace ()
 		{
-			DoTestNamespace (new NRefactoryParser ());
+			DoTestNamespace (new McsParser ());
 //			DoTestNamespace (new DomParser ());
 		}
 		
@@ -249,7 +249,7 @@ using NUnit.Framework;").CompilationUnit;
 		[Test()]
 		public void TestAttributes ()
 		{
-			DoTestAttributes (new NRefactoryParser ());
+			DoTestAttributes (new McsParser ());
 //			DoTestAttributes (new DomParser ());
 		}
 	}
