@@ -85,11 +85,17 @@ namespace MonoDevelop.AspNet.Mvc
 		
 		public override IEnumerable<string> GetSpecialDirectories ()
 		{
-			foreach (string s in base.GetSpecialDirectories ())
+			foreach (string s in BaseGetSpecialDirectories ())
 				yield return s;
 			yield return "Views";
 			yield return "Models";
 			yield return "Controllers";
+		}
+		
+		//so iterator can access base.GetSpecialDirectories () verifiably
+		IEnumerable<string> BaseGetSpecialDirectories ()
+		{
+			return base.GetSpecialDirectories ();
 		}
 		
 		public IList<string> GetCodeTemplates (string type)

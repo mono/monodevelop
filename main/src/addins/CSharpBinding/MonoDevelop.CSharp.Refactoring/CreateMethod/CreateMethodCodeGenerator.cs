@@ -296,7 +296,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			mode.Exited += delegate(object s, InsertionCursorEventArgs args) {
 				if (args.Success) {
 					SetInsertionPoint (args.InsertionPoint);
-					base.Run (options);
+					BaseRun (options);
 					if (string.IsNullOrEmpty (fileName))
 						return;
 					MonoDevelop.Ide.Gui.Document document = IdeApp.Workbench.OpenDocument (fileName);
@@ -308,6 +308,12 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 					}
 				}
 			};
+		}
+		
+		//so anonymous delegate can access base.Run verifiably
+		void BaseRun (RefactoringOptions options)
+		{
+			base.Run (options);
 		}
 		
 		static bool IsValidIdentifier (string name)

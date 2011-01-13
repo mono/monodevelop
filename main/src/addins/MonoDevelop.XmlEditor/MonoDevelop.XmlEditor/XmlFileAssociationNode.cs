@@ -28,6 +28,9 @@ namespace MonoDevelop.XmlEditor
 {
 	class XmlFileAssociationNode : ExtensionNode
 	{
+		//ignore warning: field is never assigned
+#pragma warning disable 649
+		
 		[NodeAttribute ("extension", true)]
 		string fileExtension;
 		
