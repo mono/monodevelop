@@ -27,6 +27,7 @@ EXTRA_DIST = \
 	GNOME/monodevelop.svg \
 	$(wildcard Mac/png/*.png) \
 	$(wildcard Mac/*.icns) \
+	$(wildcard Windows/*.ico) \
 	monodevelop-source.svg \
 	icon-theme-installer
 
