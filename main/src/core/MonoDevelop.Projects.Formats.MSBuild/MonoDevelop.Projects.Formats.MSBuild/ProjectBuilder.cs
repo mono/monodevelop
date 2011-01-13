@@ -87,7 +87,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			RunSTA (delegate
 			{
 				try {
-					SetupEngine (configuration, platform);
+					SetupProject (configuration, platform);
 					currentLogWriter = logWriter;
 
 					LocalLogger logger = new LocalLogger (Path.GetDirectoryName (file));
@@ -128,7 +128,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			RunSTA (delegate
 			{
-				SetupEngine (configuration, platform);
+				SetupProject (configuration, platform);
 
 				project.Build ("ResolveAssemblyReferences");
 				BuildItemGroup grp = project.GetEvaluatedItemsByName ("ReferencePath");
@@ -140,14 +140,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return refsArray;
 		}
 		
-		void SetupEngine (string configuration, string platform)
+		void SetupProject (string configuration, string platform)
 		{
 			Environment.CurrentDirectory = Path.GetDirectoryName (file);
-			engine.GlobalProperties.SetProperty ("Configuration", configuration);
+			project.GlobalProperties.SetProperty ("Configuration", configuration);
 			if (!string.IsNullOrEmpty (platform))
-				engine.GlobalProperties.SetProperty ("Platform", platform);
+				project.GlobalProperties.SetProperty ("Platform", platform);
 			else
-				engine.GlobalProperties.RemoveProperty ("Platform");
+				project.GlobalProperties.RemoveProperty ("Platform");
 		}
 		
 		public override object InitializeLifetimeService ()
