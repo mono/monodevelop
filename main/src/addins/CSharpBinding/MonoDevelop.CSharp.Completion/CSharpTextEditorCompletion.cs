@@ -1759,7 +1759,6 @@ namespace MonoDevelop.CSharp.Completion
 		CompletionDataList CreateCtrlSpaceCompletionData (CodeCompletionContext ctx, ExpressionResult expressionResult)
 		{
 			NRefactoryResolver resolver = CreateResolver ();
-			
 			DomLocation cursorLocation = new DomLocation (ctx.TriggerLine, ctx.TriggerLineOffset);
 			resolver.SetupResolver (cursorLocation);
 			CompletionDataList result = new ProjectDomCompletionDataList ();
@@ -1784,6 +1783,14 @@ namespace MonoDevelop.CSharp.Completion
 			} else if (expressionResult.ExpressionContext == ExpressionContext.InterfacePropertyDeclaration) {
 				col.Add ("get", "md-keyword");
 				col.Add ("set", "md-keyword");
+			} else if (expressionResult.ExpressionContext == ExpressionContext.ConstraintsStart) {
+				col.Add ("where", "md-keyword");
+			} else if (expressionResult.ExpressionContext == ExpressionContext.Constraints) {
+				col.Add ("new", "md-keyword");
+				col.Add ("class", "md-keyword");
+				col.Add ("struct", "md-keyword");
+				AddPrimitiveTypes (col);
+				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, col);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.Attribute) {
 				col.Add ("assembly", "md-keyword");
 				col.Add ("module", "md-keyword");
