@@ -1131,10 +1131,10 @@ namespace MonoDevelop.Ide
 				Task jumpTask = null;
 				switch (IdeApp.Preferences.JumpToFirstErrorOrWarning) {
 				case JumpToFirst.Error:
-					jumpTask = tasks.FirstOrDefault (t => t.Severity == TaskSeverity.Error);
+					jumpTask = tasks.FirstOrDefault (t => t.Severity == TaskSeverity.Error && TaskStore.IsProjectTaskFile (t));
 					break;
 				case JumpToFirst.ErrorOrWarning:
-					jumpTask = tasks.FirstOrDefault (t => t.Severity == TaskSeverity.Error || t.Severity == TaskSeverity.Warning);
+					jumpTask = tasks.FirstOrDefault (t => (t.Severity == TaskSeverity.Error || t.Severity == TaskSeverity.Warning) && TaskStore.IsProjectTaskFile (t));
 					break;
 				}
 				if (jumpTask != null) {
