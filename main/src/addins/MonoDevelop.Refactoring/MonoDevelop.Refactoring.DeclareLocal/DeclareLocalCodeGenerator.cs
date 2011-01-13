@@ -77,6 +77,8 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				resolveResult = resolver.Resolve (expressionResult, new DomLocation (data.Caret.Line, data.Caret.Column));
 				if (resolveResult == null)
 					return false;
+				if (!resolveResult.CallingMember.BodyRegion.Contains (data.Caret.Location.Line, data.Caret.Location.Column))
+					return false;
 				return true;
 			}
 			LineSegment lineSegment = data.Document.GetLine (data.Caret.Line);
