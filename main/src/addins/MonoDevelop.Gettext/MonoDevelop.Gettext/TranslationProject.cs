@@ -310,6 +310,7 @@ namespace MonoDevelop.Gettext
 					                                     monitor.Log,
 					                                     null).WaitForOutput ();
 				} catch (Exception ex) {
+					MessageService.ShowError (GettextCatalog.GetString ("Error while running 'msgmerge'. Are the GNU gettext tools installed?"));
 					monitor.ReportError (GettextCatalog.GetString ("Could not update file {0}", translation.PoFile), ex);
 				} finally {
 					monitor.EndTask ();
