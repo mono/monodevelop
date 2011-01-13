@@ -96,6 +96,8 @@ namespace MonoDevelop.Core.Execution
 				
 				dict = new Hashtable ();
 				dict ["port"] = 0;
+				dict ["rejectRemoteRequests"] = true;
+				dict ["bindTo"] = "127.0.0.1";
 				
 				ChannelServices.RegisterChannel (new TcpChannel (dict, clientProvider, serverProvider), false);
 
