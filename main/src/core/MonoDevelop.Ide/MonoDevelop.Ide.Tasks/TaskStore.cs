@@ -423,7 +423,7 @@ namespace MonoDevelop.Ide.Tasks
 			}
 		}
 		
-		bool IsProjectTaskFile (Task t)
+		public static bool IsProjectTaskFile (Task t)
 		{
 			if (t.FileName.IsNullOrEmpty)
 				return false;
