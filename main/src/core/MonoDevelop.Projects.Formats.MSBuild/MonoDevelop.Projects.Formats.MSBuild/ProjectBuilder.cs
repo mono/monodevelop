@@ -97,8 +97,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					LocalLogger logger = new LocalLogger (Path.GetDirectoryName (file));
 					engine.RegisterLogger (logger);
 
+					logWriter.WriteLine ("sss");
 					consoleLogger.Verbosity = GetVerbosity (verbosity);
-					project.Build (target);
+					
+					// We are using this BuildProject overload and the BuildSettings.None argument as a workaround to
+					// an xbuild bug which causes references to not be resolved after the project has been built once.
+					engine.BuildProject (project, new string[] { target }, new Hashtable (), BuildSettings.None);
+					
 					result = logger.BuildResult.ToArray ();
 				} catch (InvalidProjectFileException ex) {
 					result = new MSBuildResult[] { new MSBuildResult (false, ex.ProjectFile ?? file, ex.LineNumber, ex.ColumnNumber, ex.ErrorCode, ex.Message) };
@@ -133,8 +138,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			RunSTA (delegate
 			{
 				SetupProject (configuration, platform);
-
-				project.Build ("ResolveAssemblyReferences");
+				
+				// We are using this BuildProject overload and the BuildSettings.None argument as a workaround to
+				// an xbuild bug which causes references to not be resolved after the project has been built once.
+				engine.BuildProject (project, new string[] { "ResolveAssemblyReferences" }, new Hashtable (), BuildSettings.None);
 				BuildItemGroup grp = project.GetEvaluatedItemsByName ("ReferencePath");
 				List<string> refs = new List<string> ();
 				foreach (BuildItem item in grp)
