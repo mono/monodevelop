@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
             label = null;
             label = new Label ();
-            label.Markup = GettextCatalog.GetString ("<b>Copyright</b>\n    (c) 2000-2003 by icsharpcode.net\n    (c) 2004-{0} by MonoDevelop contributors", 2009);
+            label.Markup = GettextCatalog.GetString ("<b>Copyright</b>\n    (c) 2004-{0} by MonoDevelop contributors", DateTime.Now.Year);
             HBox hBoxCopyright = new HBox ();
             hBoxCopyright.PackStart (label, false, false, 5);
             this.PackStart (hBoxCopyright, false, true, 5);
