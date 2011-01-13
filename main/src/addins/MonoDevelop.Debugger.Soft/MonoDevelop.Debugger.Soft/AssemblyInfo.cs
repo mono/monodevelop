@@ -5,5 +5,5 @@ using System.Reflection;
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("Mono Soft Debugger Support")]
 [assembly: AssemblyDescription ("Mono Soft Debugger Support")]
-[assembly: AssemblyVersion ("2.4")]
+[assembly: AssemblyVersion ("2.6")]
 [assembly: AssemblyCopyright ("MIT X11")]

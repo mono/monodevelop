@@ -5,5 +5,5 @@ using System.Reflection;
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("Version Control Support")]
 [assembly: AssemblyDescription ("A MonoDevelop addin for using version control systems like Subversion")]
-[assembly: AssemblyVersion ("2.4")]
+[assembly: AssemblyVersion ("2.6")]
 [assembly: AssemblyCopyright ("LGPL")]

@@ -5,5 +5,5 @@ using System.Reflection;
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("Visual Designer Support")]
 [assembly: AssemblyDescription ("Supporting services and pads for visual design tools.")]
-[assembly: AssemblyVersion ("2.4")]
+[assembly: AssemblyVersion ("2.6")]
 [assembly: AssemblyCopyright ("MIT X11")]

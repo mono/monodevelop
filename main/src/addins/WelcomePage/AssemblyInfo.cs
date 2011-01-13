@@ -5,5 +5,5 @@ using System.Reflection;
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("Welcome Page")]
 [assembly: AssemblyDescription ("Welcome Page for MonoDevelop")]
-[assembly: AssemblyVersion ("2.4")]
+[assembly: AssemblyVersion ("2.6")]
 [assembly: AssemblyCopyright ("MIT X11")]

@@ -5,5 +5,5 @@ using System.Reflection;
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("Moonlight/Silverlight Project Support")]
 [assembly: AssemblyDescription ("Support for editing, compiling, and running Moonlight/Silverlight projects.")]
-[assembly: AssemblyVersion ("2.4")]
+[assembly: AssemblyVersion ("2.6")]
 [assembly: AssemblyCopyright ("MIT X11")]
