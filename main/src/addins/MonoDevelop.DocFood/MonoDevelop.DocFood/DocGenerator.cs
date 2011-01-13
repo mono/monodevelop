@@ -396,28 +396,30 @@ namespace MonoDevelop.DocFood
 			foreach (var macro in DocConfig.Instance.Macros) {
 				tags.Add (macro.Key, macro.Value);
 			}
-			
-			tags["DeclaringType"] = "<see cref=\"" + member.DeclaringType.DecoratedFullName + "\"/>";
-			tags["ReturnType"] = member.ReturnType != null ? "<see cref=\"" + member.ReturnType.ToInvariantString () + "\"/>" : "";
+			if (member.DeclaringType != null) {
+				tags["DeclaringType"] = "<see cref=\"" + member.DeclaringType.DecoratedFullName + "\"/>";
+				switch (member.DeclaringType.ClassType) {
+				case ClassType.Class:
+					tags["DeclaringTypeKind"] = "class";
+					break;
+				case ClassType.Delegate:
+					tags["DeclaringTypeKind"] = "delegate";
+					break;
+				case ClassType.Enum:
+					tags["DeclaringTypeKind"] = "enum";
+					break;
+				case ClassType.Interface:
+					tags["DeclaringTypeKind"] = "interface";
+					break;
+				case ClassType.Struct:
+					tags["DeclaringTypeKind"] = "struct";
+					break;
+				}
+			}
+			if (member.ReturnType != null)
+				tags["ReturnType"] = member.ReturnType != null ? "<see cref=\"" + member.ReturnType.ToInvariantString () + "\"/>" : "";
 			tags["Member"] = "<see cref=\"" + member.Name+ "\"/>";
 
-			switch (member.DeclaringType.ClassType) {
-			case ClassType.Class:
-				tags["DeclaringTypeKind"] = "class";
-				break;
-			case ClassType.Delegate:
-				tags["DeclaringTypeKind"] = "delegate";
-				break;
-			case ClassType.Enum:
-				tags["DeclaringTypeKind"] = "enum";
-				break;
-			case ClassType.Interface:
-				tags["DeclaringTypeKind"] = "interface";
-				break;
-			case ClassType.Struct:
-				tags["DeclaringTypeKind"] = "struct";
-				break;
-			}
 			
 			if (member.CanHaveParameters) {
 				List<string> parameterNames = new List<string> (from p in member.Parameters select p.Name);

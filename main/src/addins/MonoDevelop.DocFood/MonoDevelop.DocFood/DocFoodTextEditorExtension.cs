@@ -93,8 +93,13 @@ namespace MonoDevelop.DocFood
 		{
 			var parsedDocument = ProjectDomService.Parse (Document.Project, Document.FileName, Document.Editor.Document.Text);
 			IType type = parsedDocument.CompilationUnit.GetTypeAt (textEditorData.Caret.Line, textEditorData.Caret.Column);
-			if (type == null)
+			if (type == null) {
+				foreach (var t in parsedDocument.CompilationUnit.Types) {
+					if (t.Location.Line > textEditorData.Caret.Line)
+						return t;
+				}
 				return null;
+			}
 			IMember result = null;
 			foreach (IMember member in type.Members) {
 				if (member.Location > new DomLocation (textEditorData.Caret.Line, textEditorData.Caret.Column) && (result == null || member.Location < result.Location))

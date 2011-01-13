@@ -211,6 +211,21 @@
 	
 	<Rules>
 		<Switch>
+			<Case type="class">
+				<Section name="summary">${AllWords}.</Section>
+			</Case>
+			<Case type="delegate">
+				<Section name="summary">${AllWords}.</Section>
+			</Case>
+			<Case type="enum">
+				<Section name="summary">${AllWords}.</Section>
+			</Case>
+			<Case type="interface">
+				<Section name="summary">${AllWords}.</Section>
+			</Case>
+			<Case type="struct">
+				<Section name="summary">${AllWords}.</Section>
+			</Case>
 			<Case type="field">
 				<Switch>
 					<Case modifier="Const">
