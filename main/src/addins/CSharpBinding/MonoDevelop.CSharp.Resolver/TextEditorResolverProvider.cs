@@ -59,6 +59,8 @@ namespace MonoDevelop.CSharp.Resolver
 			var expressionFinder = new NewCSharpExpressionFinder (dom);
 			
 			int wordEnd = Math.Min (offset, data.Length - 1);
+			if (wordEnd < 0)
+				return null;
 			if (data.GetCharAt (wordEnd) == '@')
 				wordEnd++;
 			while (wordEnd < data.Length && (Char.IsLetterOrDigit (data.GetCharAt (wordEnd)) || data.GetCharAt (wordEnd) == '_'))
