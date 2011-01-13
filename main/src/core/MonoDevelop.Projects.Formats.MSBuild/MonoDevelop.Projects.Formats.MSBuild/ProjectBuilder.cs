@@ -43,6 +43,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		string file;
 		ILogWriter currentLogWriter;
 		MDConsoleLogger consoleLogger;
+		string currentConfiguration, currentPlatform;
 
 		AutoResetEvent wordDoneEvent = new AutoResetEvent (false);
 		ThreadStart workDelegate;
@@ -69,8 +70,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			RunSTA (delegate
 			{
-				project = new Project (engine);
-				project.Load (file);
+				//just unload the project. it will be reloaded when we next build
+				project = null;
+				var loadedProj = engine.GetLoadedProject (file);
+				if (loadedProj != null)
+					engine.UnloadProject (loadedProj);
 			});
 		}
 		
@@ -142,12 +146,20 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		void SetupProject (string configuration, string platform)
 		{
+			if (project != null && configuration == currentConfiguration && platform == currentPlatform)
+				return;
+			currentConfiguration = configuration;
+			currentPlatform = platform;
+			
 			Environment.CurrentDirectory = Path.GetDirectoryName (file);
-			project.GlobalProperties.SetProperty ("Configuration", configuration);
+			engine.GlobalProperties.SetProperty ("Configuration", configuration);
 			if (!string.IsNullOrEmpty (platform))
-				project.GlobalProperties.SetProperty ("Platform", platform);
+				engine.GlobalProperties.SetProperty ("Platform", platform);
 			else
-				project.GlobalProperties.RemoveProperty ("Platform");
+				engine.GlobalProperties.RemoveProperty ("Platform");
+			
+			project = new Project (engine);
+			project.Load (file);
 		}
 		
 		public override object InitializeLifetimeService ()
