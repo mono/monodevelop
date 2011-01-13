@@ -68,6 +68,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			BinaryClientFormatterSinkProvider clientProvider = new BinaryClientFormatterSinkProvider();
 			BinaryServerFormatterSinkProvider serverProvider = new BinaryServerFormatterSinkProvider();
 			dict ["port"] = 0;
+			dict ["rejectRemoteRequests"] = true;
 			serverProvider.TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full;
 			ChannelServices.RegisterChannel (new TcpChannel (dict, clientProvider, serverProvider), false);
 		}

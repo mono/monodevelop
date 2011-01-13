@@ -127,6 +127,7 @@ public class MonoDevelopProcessHost
 		if (CurrentRuntime != ParentRuntime) {
 			// Running Mono on Windows
 			dict ["port"] = 0;
+			dict ["rejectRemoteRequests"] = true;
 			ChannelServices.RegisterChannel (new TcpChannel (dict, clientProvider, serverProvider), false);
 			return null;
 		}
