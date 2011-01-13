@@ -6,7 +6,7 @@
        url         = "http://monodevelop.com/"
        description = "Mac Development Support for MonoDevelop"
        category    = "Mac Development"
-       version     = "2.4">
+       version     = "2.6">
 	
 	<Runtime>
 		<Import file = "icons/application-x-mono-develop-xib-16.png"/>
@@ -21,8 +21,8 @@
 	</Runtime>
 
 	<Dependencies>
-	    <Addin id="Ide" version="2.4"/>
-	    <Addin id="Core" version="2.4"/>
+	    <Addin id="Ide" version="2.6"/>
+	    <Addin id="Core" version="2.6"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">

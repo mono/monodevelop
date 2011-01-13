@@ -6,15 +6,15 @@
        url         = "http://www.monodevelop.com"
        description = "C/C++ Language binding"
        category    = "Language bindings"
-       version     = "2.4">
+       version     = "2.6">
 
 	<Dependencies>
-		<Addin id = "Core" version = "2.4"/>
-		<Addin id = "Ide" version = "2.4"/>
-		<Addin id = "Deployment" version = "2.4"/>
-		<Addin id = "Deployment.Linux" version = "2.4"/>
-		<Addin id = "SourceEditor2" version = "2.4" />
-		<Addin id = "DesignerSupport" version = "2.4" />
+		<Addin id = "Core" version = "2.6"/>
+		<Addin id = "Ide" version = "2.6"/>
+		<Addin id = "Deployment" version = "2.6"/>
+		<Addin id = "Deployment.Linux" version = "2.6"/>
+		<Addin id = "SourceEditor2" version = "2.6" />
+		<Addin id = "DesignerSupport" version = "2.6" />
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
@@ -240,7 +240,7 @@
 	    </Runtime>
 	    
 		<Dependencies>
-			<Addin id = "MonoDevelop.Autotools" version = "2.4"/>
+			<Addin id = "MonoDevelop.Autotools" version = "2.6"/>
 		</Dependencies>
 		
 		<Extension path = "/Autotools/SimpleSetups">

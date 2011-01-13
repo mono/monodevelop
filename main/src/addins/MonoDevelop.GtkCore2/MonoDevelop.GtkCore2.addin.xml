@@ -6,7 +6,7 @@
        url       = ""
        description = "Experimental GTK# visual designer developed during GSOC 2010 as a fork of stetic"
 	   category    = "IDE extensions"
-       version   = "2.4.0.5">
+       version   = "2.6.0.5">
 
 	<Runtime>
 		<Import assembly="libstetic2.dll"/>
@@ -17,11 +17,11 @@
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="2.4"/>
-		<Addin id="Ide" version="2.4"/>
-		<Addin id="DesignerSupport" version="2.4"/>
-		<Addin id="XmlEditor" version="2.4"/>
-		<Addin id="Refactoring" version="2.4"/>
+		<Addin id="Core" version="2.6"/>
+		<Addin id="Ide" version="2.6"/>
+		<Addin id="DesignerSupport" version="2.6"/>
+		<Addin id="XmlEditor" version="2.6"/>
+		<Addin id="Refactoring" version="2.6"/>
 	</Dependencies>
 	
 	<ExtensionPoint path = "/MonoDevelop/GtkCore/ContextMenu/ProjectPad.ActionGroup">

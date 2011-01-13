@@ -6,7 +6,7 @@
        url       = "http://monodevelop.com"
        description = "Integrates NUnit into the MonoDevelop IDE."
 	   category    = "Testing"
-       version   = "2.4">
+       version   = "2.6">
 
 	<Runtime>
 		<Import assembly="MonoDevelop.NUnit.dll" />
@@ -17,8 +17,8 @@
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="2.4"/>
-		<Addin id="Ide" version="2.4"/>
+		<Addin id="Core" version="2.6"/>
+		<Addin id="Ide" version="2.6"/>
 	</Dependencies>
 	
 	<!-- Extension Points -->
@@ -64,7 +64,7 @@
 	<!-- Extensions -->
 
 	<Extension path="/MonoDevelop/Core/SupportPackages">
-		<Condition id="PackageNotInstalled" name="mono-nunit" version="2.4">
+		<Condition id="PackageNotInstalled" name="mono-nunit" version="2.6">
 			<Package name="nunit" version="2.4" clrVersion="Default">
 				<Assembly file="nunit.core.dll" />
 				<Assembly file="nunit.core.interfaces.dll" />
