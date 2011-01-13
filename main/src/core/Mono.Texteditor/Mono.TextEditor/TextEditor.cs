@@ -2212,6 +2212,14 @@ namespace Mono.TextEditor
 			var loc = PointToLocation (mx, my);
 			if (loc.IsEmpty)
 				return;
+			
+			// Hide editor tooltips for text marker extended regions (message bubbles)
+			double y = LineToY (loc.Line);
+			if (y + LineHeight < my) {
+				HideTooltip ();
+				return;
+			}
+			
 			ShowTooltip (modifierState, 
 			             Document.LocationToOffset (loc),
 			             (int)mx,
