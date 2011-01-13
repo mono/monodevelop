@@ -100,9 +100,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					consoleLogger.Verbosity = GetVerbosity (verbosity);
 					project.Build (target);
 					result = logger.BuildResult.ToArray ();
-
-				}
-				finally {
+				} catch (InvalidProjectFileException ex) {
+					result = new MSBuildResult[] { new MSBuildResult (false, ex.ProjectFile ?? file, ex.LineNumber, ex.ColumnNumber, ex.ErrorCode, ex.Message) };
+				} finally {
 					currentLogWriter = null;
 				}
 			});
