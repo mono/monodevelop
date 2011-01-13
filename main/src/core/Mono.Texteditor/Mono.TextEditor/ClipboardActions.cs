@@ -411,7 +411,7 @@ namespace Mono.TextEditor
 						}
 						
 						data.Caret.Offset += textLength;
-						data.MainSelection.Anchor = new DocumentLocation (Math.Max (DocumentLocation.MinLine, data.Caret.Line == minLine ? maxLine : minLine), Math.Max (DocumentLocation.MinColumn, data.Caret.Column - textLength));
+						data.MainSelection.Anchor = new DocumentLocation (System.Math.Max (DocumentLocation.MinLine, data.Caret.Line == minLine ? maxLine : minLine), System.Math.Max (DocumentLocation.MinColumn, data.Caret.Column - textLength));
 						data.MainSelection.Lead = new DocumentLocation (data.Caret.Line, data.Caret.Column);
 						data.Caret.PreserveSelection = false;
 						data.Document.CommitMultipleLineUpdate (data.MainSelection.MinLine, data.MainSelection.MaxLine);
