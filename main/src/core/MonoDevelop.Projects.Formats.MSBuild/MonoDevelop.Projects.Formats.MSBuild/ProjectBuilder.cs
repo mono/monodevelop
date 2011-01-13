@@ -97,7 +97,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					LocalLogger logger = new LocalLogger (Path.GetDirectoryName (file));
 					engine.RegisterLogger (logger);
 
-					logWriter.WriteLine ("sss");
 					consoleLogger.Verbosity = GetVerbosity (verbosity);
 					
 					// We are using this BuildProject overload and the BuildSettings.None argument as a workaround to
