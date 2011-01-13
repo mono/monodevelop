@@ -32,7 +32,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
-using MonoDevelop.Ide;
 
 namespace MonoDevelop.Gettext
 {
@@ -93,20 +92,15 @@ namespace MonoDevelop.Gettext
 			string moDirectory = Path.GetDirectoryName (moFileName);
 			if (!Directory.Exists (moDirectory))
 				Directory.CreateDirectory (moDirectory);
-			ProcessWrapper process = null;
-			try {
-				process = Runtime.ProcessService.StartProcess ("msgfmt",
-			                                     "\"" + PoFile + "\" -o \"" + moFileName + "\"",
-			                                     parentProject.BaseDirectory,
-			                                     monitor.Log,
-			                                     monitor.Log,
-			                                     null);
-				process.WaitForOutput ();
-			} catch (Exception) {
-				MessageService.ShowError (GettextCatalog.GetString ("Error while running 'msgfmt'. Are the GNU gettext tools installed?"));
-			}
-			if (process == null)
-				return null;
+			
+			ProcessWrapper process = Runtime.ProcessService.StartProcess ("msgfmt",
+		                                     "\"" + PoFile + "\" -o \"" + moFileName + "\"",
+		                                     parentProject.BaseDirectory,
+		                                     monitor.Log,
+		                                     monitor.Log,
+		                                     null);
+			process.WaitForOutput ();
+
 			if (process.ExitCode == 0) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Translation {0}: Compilation succeeded.", IsoCode));
 			} else {
