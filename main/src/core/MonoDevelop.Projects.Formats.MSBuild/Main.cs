@@ -29,7 +29,7 @@ using System.Collections;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
-using System.Runtime.Remoting.Channels.Ipc;
+using System.Runtime.Remoting.Channels.Tcp;
 using System.Threading;
 using System.Diagnostics;
 
@@ -37,7 +37,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	class MainClass
 	{
-		static string unixRemotingFile;
 		static ManualResetEvent exitEvent = new ManualResetEvent (false);
 		
 		public static void Main (string[] args)
@@ -58,8 +57,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					System.Threading.Thread.Sleep (400);
 				}
 				
-				if (unixRemotingFile != null && File.Exists (unixRemotingFile))
-					File.Delete (unixRemotingFile);
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
 			}
@@ -70,10 +67,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			IDictionary dict = new Hashtable ();
 			BinaryClientFormatterSinkProvider clientProvider = new BinaryClientFormatterSinkProvider();
 			BinaryServerFormatterSinkProvider serverProvider = new BinaryServerFormatterSinkProvider();
-			unixRemotingFile = Path.GetTempFileName ();
-			dict ["portName"] = Path.GetFileName (unixRemotingFile);
+			dict ["port"] = 0;
 			serverProvider.TypeFilterLevel = System.Runtime.Serialization.Formatters.TypeFilterLevel.Full;
-			ChannelServices.RegisterChannel (new IpcChannel (dict, clientProvider, serverProvider), false);
+			ChannelServices.RegisterChannel (new TcpChannel (dict, clientProvider, serverProvider), false);
 		}
 		
 		public static void WatchProcess (string procId)
