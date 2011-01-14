@@ -637,9 +637,6 @@ namespace MonoDevelop.VersionControl.Views
 					result = dark ? darkRed : lightRed;
 				}
 			}
-			//System.Console.WriteLine ("Hunk: {0}/{1}", hunk.InsertStart, hunk.RemoveStart);
-			//System.Console.WriteLine ("\tAdded: {0}, Removed: {1}, Side: {2}, Dark: {3}", hunk.Inserted, hunk.Removed, removeSide, dark);
-			//System.Console.WriteLine ("\tResult: {0} {1} {2}", result.R * 255, result.G * 255, result.B * 255);
 			result.A = alpha;
 			return result;
 		}
