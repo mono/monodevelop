@@ -12,7 +12,12 @@
 //
 
 using System;
+
+#if STATIC
+using IKVM.Reflection.Emit;
+#else
 using System.Reflection.Emit;
+#endif
 	
 namespace Mono.CSharp.Nullable
 {
@@ -1121,7 +1126,7 @@ namespace Mono.CSharp.Nullable
 					// Reduce (left ?? null) to left OR (null-constant ?? right) to right
 					//
 					if (right.IsNull || lc != null)
-						return ReducedExpression.Create (lc != null ? right : left, this);
+						return ReducedExpression.Create (lc != null ? right : left, this).Resolve (ec);
 
 					right = Convert.ImplicitConversion (ec, right, ltype, loc);
 					type = ltype;
@@ -1139,7 +1144,7 @@ namespace Mono.CSharp.Nullable
 			// Reduce (null ?? right) to right
 			//
 			if (left.IsNull)
-				return ReducedExpression.Create (right, this);
+				return ReducedExpression.Create (right, this).Resolve (ec);
 
 			left = Convert.ImplicitConversion (ec, unwrap != null ? unwrap : left, rtype, loc);
 			type = rtype;

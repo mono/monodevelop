@@ -11,10 +11,18 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Emit;
 using System.Linq;
 using SLE = System.Linq.Expressions;
+
+#if STATIC
+using MetaType = IKVM.Reflection.Type;
+using IKVM.Reflection;
+using IKVM.Reflection.Emit;
+#else
+using MetaType = System.Type;
+using System.Reflection;
+using System.Reflection.Emit;
+#endif
 
 namespace Mono.CSharp
 {
@@ -70,7 +78,11 @@ namespace Mono.CSharp
 
 		public override SLE.Expression MakeExpression (BuilderContext ctx)
 		{
+#if STATIC
+			return base.MakeExpression (ctx);
+#else
 			return SLE.Expression.Call ((MethodInfo) oper.GetMetaInfo (), Arguments.MakeExpression (arguments, ctx));
+#endif
 		}
 	}
 
@@ -1448,7 +1460,7 @@ namespace Mono.CSharp
 					if (TypeManager.IsGenericParameter (d))
 						return ResolveGenericParameter (ec, t, (TypeParameterSpec) d);
 
-					if (TypeManager.ContainsGenericParameters (d))
+					if (InflatedTypeSpec.ContainsTypeParameter (d))
 						return this;
 
 					if (Convert.ImplicitReferenceConversionExists (expr, t) ||
@@ -1469,7 +1481,7 @@ namespace Mono.CSharp
 			}
 
 			if (TypeManager.IsGenericParameter (expr.Type)) {
-				if (t.IsValueType && expr.Type == t)
+				if (t.IsValueType && expr.Type == d)
 					return CreateConstantResult (ec, true);
 
 				expr = new BoxedCast (expr, d);
@@ -1492,7 +1504,6 @@ namespace Mono.CSharp
 	///   Implementation of the `as' operator.
 	/// </summary>
 	public class As : Probe {
-		bool do_isinst;
 		Expression resolved_type;
 		
 		public As (Expression expr, Expression probe_type, Location l)
@@ -1513,8 +1524,7 @@ namespace Mono.CSharp
 		{
 			expr.Emit (ec);
 
-			if (do_isinst)
-				ec.Emit (OpCodes.Isinst, type);
+			ec.Emit (OpCodes.Isinst, type);
 
 			if (TypeManager.IsGenericParameter (type) || TypeManager.IsNullableType (type))
 				ec.Emit (OpCodes.Unbox_Any, type);
@@ -1552,28 +1562,24 @@ namespace Mono.CSharp
 
 			// If the compile-time type of E is dynamic, unlike the cast operator the as operator is not dynamically bound
 			if (etype == InternalType.Dynamic) {
-				do_isinst = true;
 				return this;
 			}
 			
-			Expression e = Convert.ImplicitConversion (ec, expr, type, loc);
-			if (e != null){
-				expr = e;
-				return this;
+			Expression e = Convert.ImplicitConversionStandard (ec, expr, type, loc);
+			if (e != null) {
+				e = EmptyCast.Create (e, type);
+				return ReducedExpression.Create (e, this).Resolve (ec);
 			}
 
 			if (Convert.ExplicitReferenceConversionExists (etype, type)){
 				if (TypeManager.IsGenericParameter (etype))
 					expr = new BoxedCast (expr, etype);
 
-				do_isinst = true;
 				return this;
 			}
 
-			if (TypeManager.ContainsGenericParameters (etype) ||
-			    TypeManager.ContainsGenericParameters (type)) {
+			if (InflatedTypeSpec.ContainsTypeParameter (etype) || InflatedTypeSpec.ContainsTypeParameter (type)) {
 				expr = new BoxedCast (expr, etype);
-				do_isinst = true;
 				return this;
 			}
 
@@ -1751,7 +1757,7 @@ namespace Mono.CSharp
 			temp_storage.Emit(ec);
 		}
 
-#if NET_4_0
+#if NET_4_0 && !STATIC
 		public override SLE.Expression MakeExpression (BuilderContext ctx)
 		{
 			return SLE.Expression.Default (type.GetMetaInfo ());
@@ -5351,7 +5357,7 @@ namespace Mono.CSharp
 			return mg.OverloadResolve (ec, ref arguments, null, OverloadResolver.Restrictions.None);
 		}
 
-		static Type[] GetVarargsTypes (MethodSpec mb, Arguments arguments)
+		static MetaType[] GetVarargsTypes (MethodSpec mb, Arguments arguments)
 		{
 			AParametersCollection pd = mb.Parameters;
 
@@ -5542,7 +5548,7 @@ namespace Mono.CSharp
 			}
 
 			if (method.Parameters.HasArglist) {
-				Type[] varargs_types = GetVarargsTypes (method, Arguments);
+				var varargs_types = GetVarargsTypes (method, Arguments);
 				ec.Emit (call_op, method, varargs_types);
 				return;
 			}
@@ -5579,8 +5585,12 @@ namespace Mono.CSharp
 
 		public static SLE.Expression MakeExpression (BuilderContext ctx, Expression instance, MethodSpec mi, Arguments args)
 		{
+#if STATIC
+			throw new NotSupportedException ();
+#else
 			var instance_expr = instance == null ? null : instance.MakeExpression (ctx);
 			return SLE.Expression.Call (instance_expr, (MethodInfo) mi.GetMetaInfo (), Arguments.MakeExpression (args, ctx));
+#endif
 		}
 		public override object Accept (StructuralVisitor visitor)
 		{
@@ -5982,7 +5992,11 @@ namespace Mono.CSharp
 
 		public override SLE.Expression MakeExpression (BuilderContext ctx)
 		{
+#if STATIC
+			return base.MakeExpression (ctx);
+#else
 			return SLE.Expression.New ((ConstructorInfo) method.GetMetaInfo (), Arguments.MakeExpression (arguments, ctx));
+#endif
 		}
 		
 		public override object Accept (StructuralVisitor visitor)
@@ -6579,6 +6593,9 @@ namespace Mono.CSharp
 #if NET_4_0
 		public override SLE.Expression MakeExpression (BuilderContext ctx)
 		{
+#if STATIC
+			return base.MakeExpression (ctx);
+#else
 			var initializers = new SLE.Expression [array_data.Count];
 			for (var i = 0; i < initializers.Length; i++) {
 				if (array_data [i] == null)
@@ -6588,6 +6605,7 @@ namespace Mono.CSharp
 			}
 
 			return SLE.Expression.NewArrayInit (array_element_type.GetMetaInfo (), initializers);
+#endif
 		}
 #endif
 		//
@@ -6610,11 +6628,8 @@ namespace Mono.CSharp
 			//
 			// First, the static data
 			//
-			FieldBuilder fb;
-			
 			byte [] data = MakeByteBlob ();
-
-			fb = ec.CurrentTypeDefinition.Module.Module.MakeStaticData (data);
+			var fb = ec.CurrentTypeDefinition.Module.MakeStaticData (data, loc);
 
 			ec.Emit (OpCodes.Dup);
 			ec.Emit (OpCodes.Ldtoken, fb);
@@ -6774,7 +6789,38 @@ namespace Mono.CSharp
 	//
 	class ImplicitlyTypedArrayCreation : ArrayCreation
 	{
-		TypeInferenceContext best_type_inference;
+		sealed class InferenceContext : TypeInferenceContext
+		{
+			class ExpressionBoundInfo : BoundInfo
+			{
+				readonly Expression expr;
+
+				public ExpressionBoundInfo (Expression expr)
+					: base (expr.Type, BoundKind.Lower)
+				{
+					this.expr = expr;
+				}
+
+				public override bool Equals (BoundInfo other)
+				{
+					// We are using expression not type for conversion check
+					// no optimization based on types is possible
+					return false;
+				}
+
+				public override Expression GetTypeExpression ()
+				{
+					return expr;
+				}
+			}
+
+			public void AddExpression (Expression expr)
+			{
+				AddToBounds (new ExpressionBoundInfo (expr), 0);
+			}
+		}
+
+		InferenceContext best_type_inference;
 
 		public ImplicitlyTypedArrayCreation (ComposedTypeSpecifier rank, ArrayInitializer initializers, Location loc)
 			: base (null, rank, initializers, loc)
@@ -6793,7 +6839,7 @@ namespace Mono.CSharp
 
 			dimensions = rank.Dimension;
 
-			best_type_inference = new TypeInferenceContext ();
+			best_type_inference = new InferenceContext ();
 
 			if (!ResolveInitializers (ec))
 				return null;
@@ -6837,7 +6883,7 @@ namespace Mono.CSharp
 		{
 			element = element.Resolve (ec);
 			if (element != null)
-				best_type_inference.AddCommonTypeBound (element.Type);
+				best_type_inference.AddExpression (element);
 
 			return element;
 		}
@@ -7143,12 +7189,12 @@ namespace Mono.CSharp
 			loc = l;
 		}
 
-		public Type[] ArgumentTypes {
+		public MetaType[] ArgumentTypes {
 		    get {
 				if (Arguments == null)
-					return System.Type.EmptyTypes;
+					return MetaType.EmptyTypes;
 
-		        var retval = new Type [Arguments.Count];
+				var retval = new MetaType[Arguments.Count];
 		        for (int i = 0; i < retval.Length; i++)
 					retval[i] = Arguments[i].Expr.Type.GetMetaInfo ();
 
@@ -7289,24 +7335,6 @@ namespace Mono.CSharp
 			return false;
 		}
 
-		static bool ContainsTypeParameter (TypeSpec type)
-		{
-			if (type.Kind == MemberKind.TypeParameter)
-				return true;
-
-			var element_container = type as ElementTypeSpec;
-			if (element_container != null)
-				return ContainsTypeParameter (element_container.Element);
-
-			foreach (var t in type.TypeArguments) {
-				if (ContainsTypeParameter (t)) {
-					return true;
-				}
-			}
-
-			return false;
-		}
-
 		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
 		{
 			// Target type is not System.Type therefore must be object
@@ -7317,7 +7345,7 @@ namespace Mono.CSharp
 			if (!(QueriedType is GenericOpenTypeExpr)) {
 				var gt = typearg;
 				while (gt != null) {
-					if (ContainsTypeParameter (gt)) {
+					if (InflatedTypeSpec.ContainsTypeParameter (gt)) {
 						rc.Compiler.Report.Error (416, loc, "`{0}': an attribute argument cannot use type parameters",
 							typearg.GetSignatureForError ());
 						return;
@@ -8632,6 +8660,9 @@ namespace Mono.CSharp
 		
 		public override SLE.Expression MakeAssignExpression (BuilderContext ctx, Expression source)
 		{
+#if STATIC
+			throw new NotSupportedException ();
+#else
 			var value = new[] { source.MakeExpression (ctx) };
 			var args = Arguments.MakeExpression (arguments, ctx).Concat (value);
 #if NET_4_0
@@ -8641,12 +8672,17 @@ namespace Mono.CSharp
 #else
 			return args.First ();
 #endif
+#endif
 		}
 
 		public override SLE.Expression MakeExpression (BuilderContext ctx)
 		{
+#if STATIC
+			return base.MakeExpression (ctx);
+#else
 			var args = Arguments.MakeExpression (arguments, ctx);
 			return SLE.Expression.Call (InstanceExpression.MakeExpression (ctx), (MethodInfo) Getter.GetMetaInfo (), args);
+#endif
 		}
 
 		protected override Expression OverloadResolve (ResolveContext rc, Expression right_side)
@@ -8977,7 +9013,11 @@ namespace Mono.CSharp
 
 		public override SLE.Expression MakeExpression (BuilderContext ctx)
 		{
+#if STATIC
+			return base.MakeExpression (ctx);
+#else
 			return SLE.Expression.Convert (source.MakeExpression (ctx), type.GetMetaInfo (), (MethodInfo) method.GetMetaInfo ());
+#endif
 		}
 	}
 

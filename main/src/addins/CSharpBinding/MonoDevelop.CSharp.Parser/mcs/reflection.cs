@@ -14,13 +14,38 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Reflection.Emit;
+using System.Security;
 
 namespace Mono.CSharp
 {
-	public class ReflectionImporter : MetadataImporter
+#if STATIC
+	public class ReflectionImporter
 	{
 		public ReflectionImporter (BuildinTypes buildin)
-			: base ()
+		{
+			throw new NotSupportedException ();
+		}
+
+		public void ImportAssembly (Assembly assembly, RootNamespace targetNamespace)
+		{
+			throw new NotSupportedException ();
+		}
+
+		public ImportedModuleDefinition ImportModule (Module module, RootNamespace targetNamespace)
+		{
+			throw new NotSupportedException ();
+		}
+
+		public TypeSpec ImportType (Type type)
+		{
+			throw new NotSupportedException ();
+		}
+	}
+#else
+	public sealed class ReflectionImporter : MetadataImporter
+	{
+		public ReflectionImporter (BuildinTypes buildin)
 		{
 			Initialize (buildin);
 		}
@@ -39,17 +64,60 @@ namespace Mono.CSharp
 			return MemberKind.Class;
 		}
 
-		protected override bool HasVolatileModifier (FieldInfo field)
+		public override void GetCustomAttributeTypeName (CustomAttributeData cad, out string typeNamespace, out string typeName)
 		{
-			var reqs = field.GetRequiredCustomModifiers ();
-			if (reqs.Length > 0) {
-				foreach (var t in reqs) {
-					if (t == typeof (IsVolatile))
-						return true;
-				}
+			var dt = cad.Constructor.DeclaringType;
+			typeNamespace = dt.Namespace;
+			typeName = dt.Name;
+		}
+
+		protected override bool HasVolatileModifier (Type[] modifiers)
+		{
+			foreach (var t in modifiers) {
+				if (t == typeof (IsVolatile))
+					return true;
 			}
 
 			return false;
+		}
+
+		public void ImportAssembly (Assembly assembly, RootNamespace targetNamespace)
+		{
+			// It can be used more than once when importing same assembly
+			// into 2 or more global aliases
+			var definition = GetAssemblyDefinition (assembly);
+
+			//
+			// This part tries to simulate loading of top-level
+			// types only, any missing dependencies are ignores here.
+			// Full error report is reported later when the type is
+			// actually used
+			//
+			Type[] all_types;
+			try {
+				all_types = assembly.GetTypes ();
+			} catch (ReflectionTypeLoadException e) {
+				all_types = e.Types;
+			}
+
+			ImportTypes (all_types, targetNamespace, definition.HasExtensionMethod);
+		}
+
+		public ImportedModuleDefinition ImportModule (Module module, RootNamespace targetNamespace)
+		{
+			var module_definition = new ImportedModuleDefinition (module, this);
+			module_definition.ReadAttributes ();
+
+			Type[] all_types;
+			try {
+				all_types = module.GetTypes ();
+			} catch (ReflectionTypeLoadException e) {
+				all_types = e.Types;
+			}
+
+			ImportTypes (all_types, targetNamespace, false);
+
+			return module_definition;
 		}
 
 		void Initialize (BuildinTypes buildin)
@@ -95,27 +163,255 @@ namespace Mono.CSharp
 		}
 	}
 
-	public class DynamicLoader
+	public class MissingType
+	{
+		public Module Module {
+			get {
+				throw new NotSupportedException ();
+			}
+		}
+
+		public string Name {
+			get {
+				throw new NotSupportedException ();
+			}
+		}
+
+		public string Namespace {
+			get {
+				throw new NotSupportedException ();
+			}
+		}
+	}
+
+#endif
+
+	public class AssemblyDefinitionDynamic : AssemblyDefinition
+	{
+		//
+		// In-memory only assembly container
+		//
+		public AssemblyDefinitionDynamic (ModuleContainer module, string name)
+			: base (module, name)
+		{
+		}
+
+		//
+		// Assembly container with file output
+		//
+		public AssemblyDefinitionDynamic (ModuleContainer module, string name, string fileName)
+			: base (module, name, fileName)
+		{
+		}
+
+		public Module IncludeModule (string moduleFile)
+		{
+			return builder_extra.AddModule (moduleFile);
+		}
+
+#if !STATIC
+		public override ModuleBuilder CreateModuleBuilder ()
+		{
+			if (file_name == null)
+				return Builder.DefineDynamicModule (Name, false);
+
+			return base.CreateModuleBuilder ();
+		}
+#endif
+		//
+		// Initializes the code generator
+		//
+		public bool Create (AppDomain domain, AssemblyBuilderAccess access)
+		{
+#if STATIC
+			throw new NotSupportedException ();
+#else
+			ResolveAssemblySecurityAttributes ();
+			var an = CreateAssemblyName ();
+
+			try {
+				Builder = file_name == null ?
+					domain.DefineDynamicAssembly (an, access) :
+					domain.DefineDynamicAssembly (an, access, Dirname (file_name));
+			} catch (ArgumentException) {
+				// specified key may not be exportable outside it's container
+				if (RootContext.StrongNameKeyContainer != null) {
+					Report.Error (1548, "Could not access the key inside the container `" +
+						RootContext.StrongNameKeyContainer + "'.");
+				}
+				throw;
+			}
+
+			builder_extra = new AssemblyBuilderMonoSpecific (Builder, Compiler);
+			return true;
+#endif
+		}
+
+		static string Dirname (string name)
+		{
+			int pos = name.LastIndexOf ('/');
+
+			if (pos != -1)
+				return name.Substring (0, pos);
+
+			pos = name.LastIndexOf ('\\');
+			if (pos != -1)
+				return name.Substring (0, pos);
+
+			return ".";
+		}
+
+#if !STATIC
+		protected override void SaveModule (PortableExecutableKinds pekind, ImageFileMachine machine)
+		{
+			try {
+				var module_only = typeof (AssemblyBuilder).GetProperty ("IsModuleOnly", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+				var set_module_only = module_only.GetSetMethod (true);
+
+				set_module_only.Invoke (Builder, new object[] { true });
+			} catch {
+				base.SaveModule (pekind, machine);
+			}
+
+			Builder.Save (file_name, pekind, machine);
+		}
+#endif
+	}
+
+	//
+	// Extension to System.Reflection.Emit.AssemblyBuilder to have fully compatible
+	// compiler
+	//
+	class AssemblyBuilderMonoSpecific : AssemblyBuilderExtension
+	{
+		static MethodInfo adder_method;
+		static MethodInfo add_permission;
+		static MethodInfo add_type_forwarder;
+		static MethodInfo win32_icon_define;
+		static FieldInfo assembly_version;
+		static FieldInfo assembly_algorithm;
+		static FieldInfo assembly_culture;
+		static FieldInfo assembly_flags;
+
+		AssemblyBuilder builder;
+
+		public AssemblyBuilderMonoSpecific (AssemblyBuilder ab, CompilerContext ctx)
+			: base (ctx)
+		{
+			this.builder = ab;
+		}
+
+		public override Module AddModule (string module)
+		{
+			try {
+				if (adder_method == null)
+					adder_method = typeof (AssemblyBuilder).GetMethod ("AddModule", BindingFlags.Instance | BindingFlags.NonPublic);
+
+				return (Module) adder_method.Invoke (builder, new object[] { module });
+			} catch {
+				return base.AddModule (module);
+			}
+		}
+
+		public override void AddPermissionRequests (PermissionSet[] permissions)
+		{
+			try {
+				if (add_permission == null)
+					add_permission = typeof (AssemblyBuilder).GetMethod ("AddPermissionRequests", BindingFlags.Instance | BindingFlags.NonPublic);
+
+				add_permission.Invoke (builder, permissions);
+			} catch {
+				base.AddPermissionRequests (permissions);
+			}
+		}
+
+		public override void AddTypeForwarder (TypeSpec type, Location loc)
+		{
+			try {
+				if (add_type_forwarder == null) {
+					add_type_forwarder = typeof (AssemblyBuilder).GetMethod ("AddTypeForwarder", BindingFlags.NonPublic | BindingFlags.Instance);
+				}
+
+				add_type_forwarder.Invoke (builder, new object[] { type.GetMetaInfo () });
+			} catch {
+				base.AddTypeForwarder (type, loc);
+			}
+		}
+
+		public override void DefineWin32IconResource (string fileName)
+		{
+			try {
+				if (win32_icon_define == null)
+					win32_icon_define = typeof (AssemblyBuilder).GetMethod ("DefineIconResource", BindingFlags.Instance | BindingFlags.NonPublic);
+
+				win32_icon_define.Invoke (builder, new object[] { fileName });
+			} catch {
+				base.DefineWin32IconResource (fileName);
+			}
+		}
+
+		public override void SetAlgorithmId (uint value, Location loc)
+		{
+			try {
+				if (assembly_algorithm == null)
+					assembly_algorithm = typeof (AssemblyBuilder).GetField ("algid", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.SetField);
+
+				assembly_algorithm.SetValue (builder, value);
+			} catch {
+				base.SetAlgorithmId (value, loc);
+			}
+		}
+
+		public override void SetCulture (string culture, Location loc)
+		{
+			try {
+				if (assembly_culture == null)
+					assembly_culture = typeof (AssemblyBuilder).GetField ("culture", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.SetField);
+
+				assembly_culture.SetValue (builder, culture);
+			} catch {
+				base.SetCulture (culture, loc);
+			}
+		}
+
+		public override void SetFlags (uint flags, Location loc)
+		{
+			try {
+				if (assembly_flags == null)
+					assembly_flags = typeof (AssemblyBuilder).GetField ("flags", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.SetField);
+
+				assembly_flags.SetValue (builder, flags);
+			} catch {
+				base.SetFlags (flags, loc);
+			}
+		}
+
+		public override void SetVersion (Version version, Location loc)
+		{
+			try {
+				if (assembly_version == null)
+					assembly_version = typeof (AssemblyBuilder).GetField ("version", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.SetField);
+
+				assembly_version.SetValue (builder, version.ToString (4));
+			} catch {
+				base.SetVersion (version, loc);
+			}
+		}
+	}
+
+	//
+	// Reflection based references loader
+	//
+	class DynamicLoader : AssemblyReferencesLoader<Assembly>
 	{
 		readonly ReflectionImporter importer;
-		readonly Report reporter;
-
-		// A list of default references, they can fail to load as the user didn't not specify them
-		string[] default_references;
-
-		List<string> paths;
 
 		public DynamicLoader (ReflectionImporter importer, CompilerContext compiler)
+			: base (compiler)
 		{
-			this.importer = importer;
-			this.reporter = compiler.Report;
-
-			default_references = GetDefaultReferences ();
-
-			paths = new List<string> ();
-			paths.AddRange (RootContext.ReferencesLookupPaths);
 			paths.Add (GetSystemDir ());
-			paths.Add (Directory.GetCurrentDirectory ());
+
+			this.importer = importer;
 		}
 
 		public ReflectionImporter Importer {
@@ -124,67 +420,8 @@ namespace Mono.CSharp
 			}
 		}
 
-		void Error6 (string name, string log)
+		protected override string[] GetDefaultReferences ()
 		{
-			if (log != null && log.Length > 0)
-				reporter.ExtraInformation (Location.Null, "Log:\n" + log + "\n(log related to previous ");
-			reporter.Error (6, "cannot find metadata file `{0}'", name);
-		}
-
-		void Error9 (string type, string filename, string log)
-		{
-			if (log != null && log.Length > 0)
-				reporter.ExtraInformation (Location.Null, "Log:\n" + log + "\n(log related to previous ");
-			reporter.Error (9, "file `{0}' has invalid `{1}' metadata", filename, type);
-		}
-
-		void BadAssembly (string filename, string log)
-		{
-/*
-			MethodInfo adder_method = null; // AssemblyDefinition.AddModule_Method;
-
-			if (adder_method != null) {
-				AssemblyName an = new AssemblyName ();
-				an.Name = ".temp";
-				var ab = AppDomain.CurrentDomain.DefineDynamicAssembly (an, AssemblyBuilderAccess.Run);
-				try {
-					object m = null;
-					try {
-						m = adder_method.Invoke (ab, new object [] { filename });
-					} catch (TargetInvocationException ex) {
-						throw ex.InnerException;
-					}
-
-					if (m != null) {
-						Report.Error (1509, "Referenced file `{0}' is not an assembly. Consider using `-addmodule' option instead",
-										Path.GetFileName (filename));
-						return;
-					}
-				} catch (FileNotFoundException) {
-					// did the file get deleted during compilation? who cares? swallow the exception
-				} catch (BadImageFormatException) {
-					// swallow exception
-				} catch (FileLoadException) {
-					// swallow exception
-				}
-			}
-*/
-			Error9 ("assembly", filename, log);
-		}
-
-		//
-		// Returns the directory where the system assemblies are installed
-		//
-		static string GetSystemDir ()
-		{
-			return Path.GetDirectoryName (typeof (object).Assembly.Location);
-		}
-
-		string[] GetDefaultReferences ()
-		{
-			if (!RootContext.LoadDefaultReferences)
-				return new string [0];
-
 			//
 			// For now the "default config" is harcoded into the compiler
 			// we can move this outside later
@@ -207,10 +444,27 @@ namespace Mono.CSharp
 			return default_references.ToArray ();
 		}
 
-		public Assembly LoadAssemblyFile (string assembly, bool soft)
+		//
+		// Returns the directory where the system assemblies are installed
+		//
+		static string GetSystemDir ()
+		{
+			return Path.GetDirectoryName (typeof (object).Assembly.Location);
+		}
+
+		public override bool HasObjectType (Assembly assembly)
+		{
+			return assembly.GetType (compiler.BuildinTypes.Object.FullName) != null;
+		}
+
+		public override Assembly LoadAssemblyFile (string fileName)
+		{
+			return LoadAssemblyFile (fileName, false);
+		}
+
+		Assembly LoadAssemblyFile (string assembly, bool soft)
 		{
 			Assembly a = null;
-			string total_log = "";
 
 			try {
 				try {
@@ -235,35 +489,34 @@ namespace Mono.CSharp
 							a = Assembly.LoadFrom (full_path);
 							err = false;
 							break;
-						} catch (FileNotFoundException ff) {
-							if (soft)
-								return a;
-							total_log += ff.FusionLog;
+						} catch (FileNotFoundException) {
 						}
 					}
+
 					if (err) {
-						Error6 (assembly, total_log);
+						Error_FileNotFound (assembly);
 						return a;
 					}
 				}
-			} catch (BadImageFormatException f) {
-				// .NET 2.0 throws this if we try to load a module without an assembly manifest ...
-				BadAssembly (f.FileName, f.FusionLog);
-			} catch (FileLoadException f) {
-				// ... while .NET 1.1 throws this
-				BadAssembly (f.FileName, f.FusionLog);
+			} catch (BadImageFormatException) {
+				Error_FileCorrupted (assembly);
 			}
 
 			return a;
 		}
 
-		void LoadModule (AssemblyDefinition assembly, string module)
+		public override Assembly LoadAssemblyDefault (string fileName)
+		{
+			return LoadAssemblyFile (fileName, true);
+		}
+
+		Module LoadModuleFile (AssemblyDefinitionDynamic assembly, string module)
 		{
 			string total_log = "";
 
 			try {
 				try {
-					assembly.AddModule (module);
+					return assembly.IncludeModule (module);
 				} catch (FileNotFoundException) {
 					bool err = true;
 					foreach (string dir in paths) {
@@ -272,84 +525,50 @@ namespace Mono.CSharp
 							full_path += ".netmodule";
 
 						try {
-							assembly.AddModule (full_path);
-							err = false;
-							break;
+							return assembly.IncludeModule (full_path);
 						} catch (FileNotFoundException ff) {
 							total_log += ff.FusionLog;
 						}
 					}
 					if (err) {
-						Error6 (module, total_log);
-						return;
+						Error_FileNotFound (module);
+						return null;
 					}
 				}
-			} catch (BadImageFormatException f) {
-				Error9 ("module", f.FileName, f.FusionLog);
-			} catch (FileLoadException f) {
-				Error9 ("module", f.FileName, f.FusionLog);
+			} catch (BadImageFormatException) {
+				Error_FileCorrupted (module);
 			}
+
+			return null;
 		}
 
-		/// <summary>
-		///   Loads all assemblies referenced on the command line
-		/// </summary>
-		public void LoadReferences (ModuleContainer module)
-		{
-			Assembly a;
-			var loaded = new List<Tuple<RootNamespace, Assembly>> ();
-
-			//
-			// Load Core Library for default compilation
-			//
-			if (RootContext.StdLib) {
-				a = LoadAssemblyFile ("mscorlib", false);
-				if (a != null)
-					loaded.Add (Tuple.Create (module.GlobalRootNamespace, a));
-			}
-
-			foreach (string r in default_references) {
-				a = LoadAssemblyFile (r, true);
-				if (a != null)
-					loaded.Add (Tuple.Create (module.GlobalRootNamespace, a));
-			}
-
-			foreach (string r in RootContext.AssemblyReferences) {
-				a = LoadAssemblyFile (r, false);
-				if (a == null)
-					continue;
-
-				var key = Tuple.Create (module.GlobalRootNamespace, a);
-				if (loaded.Contains (key))
-					continue;
-
-				loaded.Add (key);
-			}
-
-			foreach (var entry in RootContext.AssemblyReferencesAliases) {
-				a = LoadAssemblyFile (entry.Item2, false);
-				if (a == null)
-					continue;
-
-				var key = Tuple.Create (module.CreateRootNamespace (entry.Item1), a);
-				if (loaded.Contains (key))
-					continue;
-
-				loaded.Add (key);
-			}
-
-			foreach (var entry in loaded) {
-				importer.ImportAssembly (entry.Item2, entry.Item1);
-			}
-		}
-
-		public void LoadModules (AssemblyDefinition assembly)
+		public void LoadModules (AssemblyDefinitionDynamic assembly, RootNamespace targetNamespace)
 		{
 			if (RootContext.Modules.Count == 0)
 				return;
 
-			foreach (var module in RootContext.Modules) {
-				LoadModule (assembly, module);
+			foreach (var moduleName in RootContext.Modules) {
+				var m = LoadModuleFile (assembly, moduleName);
+				if (m == null)
+					continue;
+
+				var md = importer.ImportModule (m, targetNamespace);
+				assembly.AddModule (md);
+			}
+		}
+
+		public override void LoadReferences (ModuleContainer module)
+		{
+			Assembly corlib;
+			List<Tuple<RootNamespace, Assembly>> loaded;
+			base.LoadReferencesCore (module, out corlib, out loaded);
+
+			if (corlib == null)
+				return;
+
+			importer.ImportAssembly (corlib, module.GlobalRootNamespace);
+			foreach (var entry in loaded) {
+				importer.ImportAssembly (entry.Item2, entry.Item1);
 			}
 		}
 	}

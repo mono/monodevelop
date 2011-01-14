@@ -13,8 +13,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
@@ -22,10 +20,17 @@ using System.Linq;
 
 #if NET_2_1
 using XmlElement = System.Object;
-#else
-
 #endif
 
+#if STATIC
+using SecurityType = System.Collections.Generic.List<IKVM.Reflection.Emit.CustomAttributeBuilder>;
+using IKVM.Reflection;
+using IKVM.Reflection.Emit;
+#else
+using SecurityType = System.Collections.Generic.Dictionary<System.Security.Permissions.SecurityAction, System.Security.PermissionSet>;
+using System.Reflection;
+using System.Reflection.Emit;
+#endif
 
 namespace Mono.CSharp {
 
@@ -1529,6 +1534,11 @@ namespace Mono.CSharp {
 				if (ct != null)
 					ct.CheckConstraints (this);
 
+				if (base_type.Interfaces != null) {
+					foreach (var iface in base_type.Interfaces)
+						spec.AddInterface (iface);
+				}
+
 				var baseContainer = base_type.MemberDefinition as ClassOrStruct;
 				if (baseContainer != null) {
 					baseContainer.Define ();
@@ -1885,7 +1895,7 @@ namespace Mono.CSharp {
 			}
 		}
 
-		public void CloseType ()
+		public virtual void CloseType ()
 		{
 			if ((caching_flags & Flags.CloseTypeCreated) != 0)
 				return;
@@ -1893,8 +1903,12 @@ namespace Mono.CSharp {
 			// Close base type container first to avoid TypeLoadException
 			if (spec.BaseType != null) {
 				var btype = spec.BaseType.MemberDefinition as TypeContainer;
-				if (btype != null)
+				if (btype != null) {
 					btype.CloseType ();
+
+					if ((caching_flags & Flags.CloseTypeCreated) != 0)
+						return;
+				}
 			}
 
 			try {
@@ -2215,8 +2229,8 @@ namespace Mono.CSharp {
 
 	public abstract class ClassOrStruct : TypeContainer
 	{
-		Dictionary<SecurityAction, PermissionSet> declarative_security;
-		
+		SecurityType declarative_security;
+
 		public ClassOrStruct (NamespaceEntry ns, DeclSpace parent,
 				      MemberName name, Attributes attrs, MemberKind kind)
 			: base (ns, parent, name, attrs, kind)
@@ -2257,15 +2271,17 @@ namespace Mono.CSharp {
 						Report.Warning (67, 3, e.Location, "The event `{0}' is never used", e.GetSignatureForError ());
 				}
 			}
+
+			if (types != null) {
+				foreach (var t in types)
+					t.VerifyMembers ();
+			}
 		}
 
 		public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
 		{
 			if (a.IsValidSecurityAttribute ()) {
-				if (declarative_security == null)
-					declarative_security = new Dictionary<SecurityAction, PermissionSet> ();
-
-				a.ExtractSecurityPermissionSet (declarative_security);
+				a.ExtractSecurityPermissionSet (ctor, ref declarative_security);
 				return;
 			}
 
@@ -2331,7 +2347,11 @@ namespace Mono.CSharp {
 
 			if (declarative_security != null) {
 				foreach (var de in declarative_security) {
+#if STATIC
+					TypeBuilder.__AddDeclarativeSecurity (de);
+#else
 					TypeBuilder.AddDeclarativeSecurity (de.Key, de.Value);
+#endif
 				}
 			}
 		}
@@ -3102,33 +3122,29 @@ namespace Mono.CSharp {
 
 			if ((base_classp & (Modifiers.PROTECTED | Modifiers.INTERNAL)) == (Modifiers.PROTECTED | Modifiers.INTERNAL)) {
 				//
+				// It must be at least "protected"
+				//
+				if ((thisp & Modifiers.PROTECTED) == 0) {
+					return false;
+				}
+
+				//
 				// when overriding protected internal, the method can be declared
 				// protected internal only within the same assembly or assembly
 				// which has InternalsVisibleTo
 				//
-				if ((thisp & (Modifiers.PROTECTED | Modifiers.INTERNAL)) == (Modifiers.PROTECTED | Modifiers.INTERNAL)) {
+				if ((thisp & Modifiers.INTERNAL) != 0) {
 					return base_member.DeclaringType.MemberDefinition.IsInternalAsPublic (this_member.Module.DeclaringAssembly);
-				} 
-				if ((thisp & Modifiers.PROTECTED) != Modifiers.PROTECTED) {
-					//
-					// if it's not "protected internal", it must be "protected"
-					//
+				}
 
+				//
+				// protected overriding protected internal inside same assembly
+				// requires internal modifier as well
+				//
+				if (base_member.DeclaringType.MemberDefinition.IsInternalAsPublic (this_member.Module.DeclaringAssembly)) {
 					return false;
 				}
-				if (this_member.Parent.PartialContainer.DeclaringAssembly == base_member.DeclaringType.MemberDefinition.DeclaringAssembly) {
-					//
-					// protected within the same assembly - an error
-					//
-					return false;
-				}
-				if ((thisp & ~(Modifiers.PROTECTED | Modifiers.INTERNAL)) !=
-					   (base_classp & ~(Modifiers.PROTECTED | Modifiers.INTERNAL))) {
-					//
-					// protected ok, but other attributes differ - report an error
-					//
-					return false;
-				}
+
 				return true;
 			}
 
@@ -3249,11 +3265,18 @@ namespace Mono.CSharp {
 
 		protected void Error_CannotChangeAccessModifiers (MemberCore member, MemberSpec base_member)
 		{
+			var base_modifiers = base_member.Modifiers;
+
+			// Remove internal modifier from types which are not internally accessible
+			if ((base_modifiers & Modifiers.AccessibilityMask) == (Modifiers.PROTECTED | Modifiers.INTERNAL) &&
+				!base_member.DeclaringType.MemberDefinition.IsInternalAsPublic (member.Module.DeclaringAssembly))
+				base_modifiers = Modifiers.PROTECTED;
+
 			Report.SymbolRelatedToPreviousError (base_member);
 			Report.Error (507, member.Location,
 				"`{0}': cannot change access modifiers when overriding `{1}' inherited member `{2}'",
 				member.GetSignatureForError (),
-				ModifiersExtensions.AccessibilityName (base_member.Modifiers),
+				ModifiersExtensions.AccessibilityName (base_modifiers),
 				base_member.GetSignatureForError ());
 		}
 

@@ -13,13 +13,19 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection.Emit;
-using System.Reflection;
 
 #if NET_2_1
 using XmlElement = System.Object;
 #else
 using System.Xml;
+#endif
+
+#if STATIC
+using IKVM.Reflection;
+using IKVM.Reflection.Emit;
+#else
+using System.Reflection;
+using System.Reflection.Emit;
 #endif
 
 namespace Mono.CSharp {
@@ -897,9 +903,11 @@ namespace Mono.CSharp {
 		{
 			Obsolete_Undetected = 1,	// Obsolete attribute has not been detected yet
 			Obsolete = 1 << 1,			// Member has obsolete attribute
-			CLSCompliant_Undetected = 1 << 3,	// CLSCompliant attribute has not been detected yet
-			CLSCompliant = 1 << 4,		// Member is CLS Compliant
-			HasDynamicElement = 1 << 5,
+			CLSCompliant_Undetected = 1 << 2,	// CLSCompliant attribute has not been detected yet
+			CLSCompliant = 1 << 3,		// Member is CLS Compliant
+			MissingDependency_Undetected = 1 << 4,
+			MissingDependency = 1 << 5,
+			HasDynamicElement = 1 << 6,
 
 			IsAccessor = 1 << 9,		// Method is an accessor
 			IsGeneric = 1 << 10,		// Member contains type arguments
@@ -930,7 +938,7 @@ namespace Mono.CSharp {
 			this.definition = definition;
 			this.modifiers = modifiers;
 
-			state = StateFlags.Obsolete_Undetected | StateFlags.CLSCompliant_Undetected;
+			state = StateFlags.Obsolete_Undetected | StateFlags.CLSCompliant_Undetected | StateFlags.MissingDependency_Undetected;
 		}
 
 		#region Properties
@@ -1027,6 +1035,35 @@ namespace Mono.CSharp {
 			return oa;
 		}
 
+		//
+		// Returns a list of missing dependencies of this member. The list
+		// will contain types only but it can have numerous values for members
+		// like methods where both return type and all parameters are checked
+		//
+		public List<MissingType> GetMissingDependencies ()
+		{
+			if ((state & (StateFlags.MissingDependency | StateFlags.MissingDependency_Undetected)) == 0)
+				return null;
+
+			state &= ~StateFlags.MissingDependency_Undetected;
+
+			var imported = definition as ImportedDefinition;
+			List<MissingType> missing;
+			if (imported != null) {
+				missing = imported.ResolveMissingDependencies ();
+			} else if (this is ElementTypeSpec) {
+				missing = ((ElementTypeSpec) this).Element.GetMissingDependencies ();
+			} else {
+				missing = null;
+			}
+
+			if (missing != null) {
+				state |= StateFlags.MissingDependency;
+			}
+
+			return missing;
+		}
+
 		protected virtual bool IsNotCLSCompliant ()
 		{
 			return MemberDefinition.IsNotCLSCompliant ();
@@ -1043,10 +1080,10 @@ namespace Mono.CSharp {
 		{
 			var inflated = (MemberSpec) MemberwiseClone ();
 			inflated.declaringType = inflator.TypeInstance;
-			inflated.state |= StateFlags.PendingMetaInflate;
+			if (DeclaringType.IsGenericOrParentIsGeneric)
+				inflated.state |= StateFlags.PendingMetaInflate;
 #if DEBUG
-			if (inflated.ID > 0)
-				inflated.ID = -inflated.ID;
+			inflated.ID += 1000000;
 #endif
 			return inflated;
 		}
@@ -1071,7 +1108,7 @@ namespace Mono.CSharp {
 			//
 			if (ma == Modifiers.PRIVATE)
 				return invocationType.MemberDefinition == parentType.MemberDefinition ||
-					TypeManager.IsNestedChildOf (invocationType, parentType);
+					TypeManager.IsNestedChildOf (invocationType, parentType.MemberDefinition);
 
 			if ((ma & Modifiers.INTERNAL) != 0) {
 				bool b;

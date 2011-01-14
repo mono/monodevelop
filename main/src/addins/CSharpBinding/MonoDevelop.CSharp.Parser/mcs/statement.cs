@@ -11,8 +11,13 @@
 //
 
 using System;
-using System.Reflection.Emit;
 using System.Collections.Generic;
+
+#if STATIC
+using IKVM.Reflection.Emit;
+#else
+using System.Reflection.Emit;
+#endif
 
 namespace Mono.CSharp {
 	
@@ -3198,6 +3203,9 @@ namespace Mono.CSharp {
 
 		public SwitchLabel Clone (CloneContext clonectx)
 		{
+			if (label == null)
+				return this;
+
 			return new SwitchLabel (label.Clone (clonectx), loc);
 		}
 	}
@@ -3216,7 +3224,7 @@ namespace Mono.CSharp {
 		{
 			var cloned_labels = new List<SwitchLabel> ();
 
-			foreach (SwitchLabel sl in cloned_labels)
+			foreach (SwitchLabel sl in Labels)
 				cloned_labels.Add (sl.Clone (clonectx));
 			
 			return new SwitchSection (cloned_labels, clonectx.LookupBlock (Block));
@@ -5646,7 +5654,8 @@ namespace Mono.CSharp {
 				// Option 2: Try to match using IEnumerable interfaces with preference of generic version
 				//
 				TypeSpec iface_candidate = null;
-				for (TypeSpec t = expr.Type; t != null && t != TypeManager.object_type; t = t.BaseType) {
+				var t = expr.Type;
+				do {
 					var ifaces = t.Interfaces;
 					if (ifaces != null) {
 						foreach (var iface in ifaces) {
@@ -5669,7 +5678,13 @@ namespace Mono.CSharp {
 							}
 						}
 					}
-				}
+
+					if (t.IsGenericParameter)
+						t = t.BaseType;
+					else
+						t = null;
+
+				} while (t != null);
 
 				if (iface_candidate == null) {
 					rc.Report.Error (1579, loc,

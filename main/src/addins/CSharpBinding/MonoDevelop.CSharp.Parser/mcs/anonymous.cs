@@ -11,8 +11,14 @@
 
 using System;
 using System.Collections.Generic;
+
+#if STATIC
+using IKVM.Reflection;
+using IKVM.Reflection.Emit;
+#else
 using System.Reflection;
 using System.Reflection.Emit;
+#endif
 
 namespace Mono.CSharp {
 
@@ -578,7 +584,7 @@ namespace Mono.CSharp {
 
 			public override Expression CreateExpressionTree (ResolveContext ec)
 			{
-				throw new NotSupportedException ("ET");
+				return hv.CreateExpressionTree ();
 			}
 
 			protected override Expression DoResolve (ResolveContext ec)

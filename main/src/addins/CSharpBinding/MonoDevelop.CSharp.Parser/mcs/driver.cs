@@ -27,44 +27,24 @@ namespace Mono.CSharp
 	/// </summary>
 	class Driver
 	{
-		// Whether we want to only run the tokenizer
-		bool tokenize;
-		
 		string first_source;
 
-		bool parse_only;
 		bool timestamps;
 		internal int fatal_errors;
 		
-		//
-		// Output file
-		//
-		static string output_file;
-
 		//
 		// Last time we took the time
 		//
 		Stopwatch stopwatch;
 		DateTime first_time;
 
-		//
-		// Encoding.
-		//
-		Encoding encoding;
-
 		internal readonly CompilerContext ctx;
 
 		static readonly char[] argument_value_separator = new char [] { ';', ',' };
 
-		static public void Reset ()
-		{
-			output_file = null;
-		}
-
 		private Driver (CompilerContext ctx)
 		{
 			this.ctx = ctx;
-			encoding = Encoding.Default;
 		}
 
 		public static Driver Create (string[] args, bool require_files, ReportPrinter printer)
@@ -118,7 +98,7 @@ namespace Mono.CSharp
 			}
 
 			using (input){
-				SeekableStreamReader reader = new SeekableStreamReader (input, encoding);
+				SeekableStreamReader reader = new SeekableStreamReader (input, RootContext.Encoding);
 				Tokenizer lexer = new Tokenizer (reader, file, ctx);
 				int token, tokens = 0, errors = 0;
 
@@ -152,7 +132,7 @@ namespace Mono.CSharp
 			}
 
 			input.Position = 0;
-			SeekableStreamReader reader = new SeekableStreamReader (input, encoding);
+			SeekableStreamReader reader = new SeekableStreamReader (input, RootContext.Encoding);
 
 			Parse (reader, file, module);
 			reader.Dispose ();
@@ -172,6 +152,7 @@ namespace Mono.CSharp
 				"   --fatal[=COUNT]    Makes errors after COUNT fatal\n" +
 				"   --lint             Enhanced warnings\n" +
 				"   --parse            Only parses the source file\n" +
+				"   --runtime:VERSION  Sets mscorlib.dll metadata version: v1, v2, v4\n" +
 				"   --stacktrace       Shows stack trace at error location\n" +
 				"   --timestamp        Displays time stamps of various compiler events\n" +
 				"   -v                 Verbose parsing (for debugging the parser)\n" + 
@@ -181,7 +162,7 @@ namespace Mono.CSharp
 		static void Usage ()
 		{
 			Console.WriteLine (
-				"Mono C# compiler, Copyright 2001 - 2008 Novell, Inc.\n" +
+				"Mono C# compiler, Copyright 2001 - 2011 Novell, Inc.\n" +
 				"mcs [options] source-files\n" +
 				"   --about              About the Mono C# compiler\n" +
 				"   -addmodule:M1[,Mn]   Adds the module to the generated assembly\n" + 
@@ -217,7 +198,7 @@ namespace Mono.CSharp
 				"   -warnaserror[+|-]    Treats all warnings as errors\n" +
 				"   -warnaserror[+|-]:W1[,Wn] Treats one or more compiler warnings as errors\n" +
 				"   -warn:0-4            Sets warning level, the default is 4 (short -w:)\n" +
-				"   -help2               Shows internal compiler options\n" + 
+				"   -helpinternal        Shows internal and advanced compiler options\n" + 
 				"\n" +
 				"Resources:\n" +
 				"   -linkresource:FILE[,ID] Links FILE as a resource (short: -linkres)\n" +
@@ -236,7 +217,7 @@ namespace Mono.CSharp
 		static void About ()
 		{
 			Console.WriteLine (
-				"The Mono C# compiler is Copyright 2001-2008, Novell, Inc.\n\n" +
+				"The Mono C# compiler is Copyright 2001-2011, Novell, Inc.\n\n" +
 				"The compiler source code is released under the terms of the \n"+
 				"MIT X11 or GNU GPL licenses\n\n" +
 
@@ -459,7 +440,7 @@ namespace Mono.CSharp
 
 			var cu = Location.SourceFiles;
 			for (int i = 0; i < cu.Count; ++i) {
-				if (tokenize) {
+				if (RootContext.TokenizeOnly) {
 					tokenize_file (cu [i], ctx);
 				} else {
 					Parse (cu [i], module);
@@ -509,16 +490,6 @@ namespace Mono.CSharp
 			}
 		}
 
-		public static string OutputFile
-		{
-			set {
-				output_file = value;
-			}
-			get {
-				return Path.GetFileName (output_file);
-			}
-		}
-
 		void SetWarningLevel (string s)
 		{
 			int level = -1;
@@ -536,7 +507,7 @@ namespace Mono.CSharp
 
 		static void Version ()
 		{
-			string version = Assembly.GetExecutingAssembly ().GetName ().Version.ToString ();
+			string version = System.Reflection.Assembly.GetExecutingAssembly ().GetName ().Version.ToString ();
 			Console.WriteLine ("Mono C# compiler version {0}", version);
 			Environment.Exit (0);
 		}
@@ -558,7 +529,7 @@ namespace Mono.CSharp
 				return true;
 				
 			case "--parse":
-				parse_only = true;
+				RootContext.ParseOnly = true;
 				return true;
 				
 			case "--main": case "-m":
@@ -591,7 +562,7 @@ namespace Mono.CSharp
 				return true;
 
 			case "--tokenize": 
-				tokenize = true;
+				RootContext.TokenizeOnly = true;
 				return true;
 				
 			case "-o": 
@@ -601,7 +572,7 @@ namespace Mono.CSharp
 					Usage ();
 					Environment.Exit (1);
 				}
-				OutputFile = args [++i];
+				RootContext.OutputFile = args [++i];
 				return true;
 
 			case "--checked":
@@ -722,7 +693,7 @@ namespace Mono.CSharp
 				}
 				Report.SetIgnoreWarning (warn);
 				return true;
-				
+
 			case "--wlevel":
 				Report.Warning (-29, 1, "Compatibility: Use -warn:LEVEL instead of --wlevel LEVEL");
 				if ((i + 1) >= args.Length){
@@ -785,6 +756,26 @@ namespace Mono.CSharp
 						fatal_errors = 1;
 					return true;
 				}
+				if (arg.StartsWith ("--runtime:", StringComparison.Ordinal)) {
+					string version = arg.Substring (10);
+
+					switch (version) {
+					case "v1":
+					case "V1":
+						RootContext.StdLibRuntimeVersion = RuntimeVersion.v1;
+						break;
+					case "v2":
+					case "V2":
+						RootContext.StdLibRuntimeVersion = RuntimeVersion.v2;
+						return true;
+					case "v4":
+					case "V4":
+						RootContext.StdLibRuntimeVersion = RuntimeVersion.v4;
+						return true;
+					}
+					return true;
+				}
+
 				break;
 			}
 
@@ -884,7 +875,7 @@ namespace Mono.CSharp
 					Error_RequiresFileName (option);
 					break;
 				}
-				OutputFile = value;
+				RootContext.OutputFile = value;
 				return true;
 
 			case "/o":
@@ -955,7 +946,7 @@ namespace Mono.CSharp
 			case "/res":
 			case "/resource":
 				AssemblyResource res = null;			
-				string[] s = value.Split (argument_value_separator);
+				string[] s = value.Split (argument_value_separator, StringSplitOptions.RemoveEmptyEntries);
 				switch (s.Length) {
 				case 1:
 					if (s[0].Length == 0)
@@ -1140,18 +1131,21 @@ namespace Mono.CSharp
 				return true;
 
 			case "/warn":
+				if (value.Length == 0) {
+					Error_RequiresArgument (option);
+					break;
+				}
+
 				SetWarningLevel (value);
 				return true;
 
 			case "/nowarn": {
-				string [] warns;
-
 				if (value.Length == 0){
-					Report.Error (5, "/nowarn requires an argument");
-					Environment.Exit (1);
+					Error_RequiresArgument (option);
+					break;
 				}
 
-				warns = value.Split (argument_value_separator);
+				var warns = value.Split (argument_value_separator);
 				foreach (string wc in warns){
 					try {
 						if (wc.Trim ().Length == 0)
@@ -1174,6 +1168,11 @@ namespace Mono.CSharp
 				return true;
 
 			case "/platform":
+				if (value.Length == 0) {
+					Error_RequiresArgument (option);
+					break;
+				}
+
 				switch (value.ToLower (CultureInfo.InvariantCulture)) {
 				case "anycpu":
 					RootContext.Platform = Platform.AnyCPU;
@@ -1197,9 +1196,14 @@ namespace Mono.CSharp
 				// We just ignore this.
 			case "/errorreport":
 			case "/filealign":
+				if (value.Length == 0) {
+					Error_RequiresArgument (option);
+					break;
+				}
+
 				return true;
 				
-			case "/help2":
+			case "/helpinternal":
 				OtherFlags ();
 				Environment.Exit(0);
 				return true;
@@ -1213,8 +1217,8 @@ namespace Mono.CSharp
 			case "/main":
 			case "/m":
 				if (value.Length == 0){
-					Report.Error (5, arg + " requires an argument");					
-					Environment.Exit (1);
+					Error_RequiresArgument (option);
+					break;
 				}
 				RootContext.MainClass = value;
 				return true;
@@ -1239,11 +1243,13 @@ namespace Mono.CSharp
 
 				RootContext.StrongNameKeyFile = value;
 				return true;
+
 			case "/keycontainer":
-				if (value == String.Empty) {
-					Report.Error (5, arg + " requires an argument");
-					Environment.Exit (1);
+				if (value.Length == 0) {
+					Error_RequiresArgument (option);
+					break;
 				}
+
 				RootContext.StrongNameKeyContainer = value;
 				return true;
 			case "/delaysign+":
@@ -1255,6 +1261,11 @@ namespace Mono.CSharp
 				return true;
 
 			case "/langversion":
+				if (value.Length == 0) {
+					Error_RequiresArgument (option);
+					break;
+				}
+
 				switch (value.ToLowerInvariant ()) {
 				case "iso-1":
 					RootContext.Version = LanguageVersion.ISO_1;
@@ -1278,26 +1289,33 @@ namespace Mono.CSharp
 				return true;
 
 			case "/codepage":
+				if (value.Length == 0) {
+					Error_RequiresArgument (option);
+					break;
+				}
+
 				switch (value) {
 				case "utf8":
-					encoding = new UTF8Encoding();
+					RootContext.Encoding = new UTF8Encoding();
 					break;
 				case "reset":
-					encoding = Encoding.Default;
+					RootContext.Encoding = Encoding.Default;
 					break;
 				default:
 					try {
-						encoding = Encoding.GetEncoding (
-						Int32.Parse (value));
+						RootContext.Encoding = Encoding.GetEncoding (Int32.Parse (value));
 					} catch {
 						Report.Error (2016, "Code page `{0}' is invalid or not installed", value);
 					}
 					break;
 				}
 				return true;
+
+			default:
+				return false;
 			}
 
-			return false;
+			return true;
 		}
 
 		void Error_WrongOption (string option)
@@ -1308,6 +1326,11 @@ namespace Mono.CSharp
 		void Error_RequiresFileName (string option)
 		{
 			Report.Error (2005, "Missing file specification for `{0}' option", option);
+		}
+
+		void Error_RequiresArgument (string option)
+		{
+			Report.Error (2006, "Missing argument for `{0}' option", option);
 		}
 
 		static string [] AddArgs (string [] args, string [] extra_args)
@@ -1411,7 +1434,7 @@ namespace Mono.CSharp
 			if (Report.Errors > 0)
 				return false;
 
-			if (tokenize || parse_only)
+			if (RootContext.TokenizeOnly || RootContext.ParseOnly)
 				return true;
 
 			if (RootContext.ToplevelTypes.NamespaceEntry != null)
@@ -1420,18 +1443,24 @@ namespace Mono.CSharp
 			//
 			// Quick hack
 			//
-			if (output_file == null){
-				if (first_source == null){
+			var output_file = RootContext.OutputFile;
+			string output_file_name;
+			if (output_file == null) {
+				if (first_source == null) {
 					Report.Error (1562, "If no source files are specified you must specify the output file with -out:");
 					return false;
 				}
-					
+
 				int pos = first_source.LastIndexOf ('.');
 
 				if (pos > 0)
 					output_file = first_source.Substring (0, pos) + RootContext.TargetExt;
 				else
 					output_file = first_source + RootContext.TargetExt;
+
+				output_file_name = output_file;
+			} else {
+				output_file_name = Path.GetFileName (output_file);
 			}
 
 			//
@@ -1440,7 +1469,34 @@ namespace Mono.CSharp
 			if (timestamps)
 				stopwatch = Stopwatch.StartNew ();
 
-			var assembly = module.MakeExecutable (output_file, output_file);
+#if STATIC
+			var assembly = new AssemblyDefinitionStatic (module, output_file_name, output_file);
+			module.SetDeclaringAssembly (assembly);
+
+			var importer = new StaticImporter ();
+			assembly.Importer = importer;
+
+			var loader = new StaticLoader (importer, ctx);
+			loader.LoadReferences (module);
+
+			ShowTime ("Imporing referenced assemblies");
+
+			if (!ctx.BuildinTypes.CheckDefinitions (module))
+				return false;
+
+			ShowTime ("Initializing predefined types");
+
+			if (!assembly.Create (loader))
+				return false;
+
+			// System.Object was not loaded, use compiled assembly as corlib
+			if (loader.Corlib == null)
+				loader.Corlib = assembly.Builder;
+
+			loader.LoadModules (assembly, module.GlobalRootNamespace);
+#else
+			var assembly = new AssemblyDefinitionDynamic (module, output_file_name, output_file);
+			module.SetDeclaringAssembly (assembly);
 
 			var importer = new ReflectionImporter (ctx.BuildinTypes);
 			assembly.Importer = importer;
@@ -1458,8 +1514,8 @@ namespace Mono.CSharp
 			if (!assembly.Create (AppDomain.CurrentDomain, AssemblyBuilderAccess.Save))
 				return false;
 
-			loader.LoadModules (assembly);
-
+			loader.LoadModules (assembly, module.GlobalRootNamespace);
+#endif
 			module.Define ();
 
 			ShowTime ("Types definition");
@@ -1519,12 +1575,11 @@ namespace Mono.CSharp
 			
 			assembly.Save ();
 
-			ShowTime ("Saving output assembly");
+#if STATIC
+			loader.Dispose ();
+#endif
 
-			if (RootContext.GenerateDebugInfo) {
-				SymbolWriter.WriteSymbolFile ();
-				ShowTime ("Saving debug symbols");
-			}
+			ShowTime ("Saving output assembly");
 
 			ShowTotalTime ("Total");
 
@@ -1578,7 +1633,6 @@ namespace Mono.CSharp
 		
 		public static void Reset (bool full_flag)
 		{
-			Driver.Reset ();
 			CSharpParser.yacc_verbose_flag = 0;
 			Location.Reset ();
 

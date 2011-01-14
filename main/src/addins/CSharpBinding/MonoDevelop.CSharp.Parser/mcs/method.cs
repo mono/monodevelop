@@ -13,8 +13,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Emit;
 using System.Security;
 using System.Security.Permissions;
 using System.Text;
@@ -24,6 +22,18 @@ using System.Linq;
 using XmlElement = System.Object;
 #else
 using System.Xml;
+#endif
+
+#if STATIC
+using MetaType = IKVM.Reflection.Type;
+using SecurityType = System.Collections.Generic.List<IKVM.Reflection.Emit.CustomAttributeBuilder>;
+using IKVM.Reflection;
+using IKVM.Reflection.Emit;
+#else
+using MetaType = System.Type;
+using SecurityType = System.Collections.Generic.Dictionary<System.Security.Permissions.SecurityAction, System.Security.PermissionSet>;
+using System.Reflection;
+using System.Reflection.Emit;
 #endif
 
 using Mono.CompilerServices.SymbolWriter;
@@ -183,9 +193,9 @@ namespace Mono.CSharp {
 //		MethodInfo MakeGenericMethod (TypeSpec[] targs);
 	}
 
-	public class MethodSpec : MemberSpec, IParametersMember
+	public sealed class MethodSpec : MemberSpec, IParametersMember
 	{
-		MethodBase metaInfo;
+		MethodBase metaInfo, inflatedMetaInfo;
 		AParametersCollection parameters;
 		TypeSpec returnType;
 
@@ -291,29 +301,46 @@ namespace Mono.CSharp {
 
 		public MethodBase GetMetaInfo ()
 		{
-			if ((state & StateFlags.PendingMetaInflate) != 0) {
-				if (DeclaringType.IsTypeBuilder) {
-					if (IsConstructor)
-						metaInfo = TypeBuilder.GetConstructor (DeclaringType.GetMetaInfo (), (ConstructorInfo) metaInfo);
-					else
-						metaInfo = TypeBuilder.GetMethod (DeclaringType.GetMetaInfo (), (MethodInfo) metaInfo);
-				} else {
-					metaInfo = MethodInfo.GetMethodFromHandle (metaInfo.MethodHandle, DeclaringType.GetMetaInfo ().TypeHandle);
-				}
+			//
+			// inflatedMetaInfo is extra field needed for cases where we
+			// inflate method but another nested type can later inflate
+			// again (the cache would be build with inflated metaInfo) and
+			// TypeBuilder can work with method definitions only
+			//
+			if (inflatedMetaInfo == null) {
+				if ((state & StateFlags.PendingMetaInflate) != 0) {
+					var dt_meta = DeclaringType.GetMetaInfo ();
 
-				state &= ~StateFlags.PendingMetaInflate;
+					if (DeclaringType.IsTypeBuilder) {
+						if (IsConstructor)
+							inflatedMetaInfo = TypeBuilder.GetConstructor (dt_meta, (ConstructorInfo) metaInfo);
+						else
+							inflatedMetaInfo = TypeBuilder.GetMethod (dt_meta, (MethodInfo) metaInfo);
+					} else {
+#if STATIC
+						// it should not be reached
+						throw new NotImplementedException ();
+#else
+						inflatedMetaInfo = MethodInfo.GetMethodFromHandle (metaInfo.MethodHandle, dt_meta.TypeHandle);
+#endif
+					}
+
+					state &= ~StateFlags.PendingMetaInflate;
+				} else {
+					inflatedMetaInfo = metaInfo;
+				}
 			}
 
 			if ((state & StateFlags.PendingMakeMethod) != 0) {
-				var sre_targs = new Type[targs.Length];
+				var sre_targs = new MetaType[targs.Length];
 				for (int i = 0; i < sre_targs.Length; ++i)
 					sre_targs[i] = targs[i].GetMetaInfo ();
 
-				metaInfo = ((MethodInfo) metaInfo).MakeGenericMethod (sre_targs);
+				inflatedMetaInfo = ((MethodInfo) inflatedMetaInfo).MakeGenericMethod (sre_targs);
 				state &= ~StateFlags.PendingMakeMethod;
 			}
 
-			return metaInfo;
+			return inflatedMetaInfo;
 		}
 
 		public override string GetSignatureForError ()
@@ -356,6 +383,7 @@ namespace Mono.CSharp {
 		public override MemberSpec InflateMember (TypeParameterInflator inflator)
 		{
 			var ms = (MethodSpec) base.InflateMember (inflator);
+			ms.inflatedMetaInfo = null;
 			ms.returnType = inflator.Inflate (returnType);
 			ms.parameters = parameters.Inflate (inflator);
 			if (IsGeneric)
@@ -408,9 +436,7 @@ namespace Mono.CSharp {
 
 			var ms = (MethodSpec) MemberwiseClone ();
 			if (decl != DeclaringType) {
-				// Gets back MethodInfo in case of metaInfo was inflated
-				ms.metaInfo = MemberCache.GetMember (TypeParameterMutator.GetMemberDeclaringType (DeclaringType), this).metaInfo;
-
+				ms.inflatedMetaInfo = null;
 				ms.declaringType = decl;
 				ms.state |= StateFlags.PendingMetaInflate;
 			}
@@ -436,7 +462,7 @@ namespace Mono.CSharp {
 	{
 		public MethodBuilder MethodBuilder;
 		ReturnParameter return_attributes;
-		Dictionary<SecurityAction, PermissionSet> declarative_security;
+		SecurityType declarative_security;
 		protected MethodData MethodData;
 
 		static string[] attribute_targets = new string [] { "method", "return" };
@@ -472,9 +498,7 @@ namespace Mono.CSharp {
 			}
 
 			if (a.IsValidSecurityAttribute ()) {
-				if (declarative_security == null)
-					declarative_security = new Dictionary<SecurityAction, PermissionSet> ();
-				a.ExtractSecurityPermissionSet (declarative_security);
+				a.ExtractSecurityPermissionSet (ctor, ref declarative_security);
 				return;
 			}
 
@@ -595,7 +619,11 @@ namespace Mono.CSharp {
 
 			if (declarative_security != null) {
 				foreach (var de in declarative_security) {
+#if STATIC
+					MethodBuilder.__AddDeclarativeSecurity (de);
+#else
 					MethodBuilder.AddDeclarativeSecurity (de.Key, de.Value);
+#endif
 				}
 			}
 
@@ -713,12 +741,17 @@ namespace Mono.CSharp {
 
 		public int Token {
 			get {
-				if (method is MethodBuilder)
-					return ((MethodBuilder) method).GetToken ().Token;
-				else if (method is ConstructorBuilder)
-					return ((ConstructorBuilder) method).GetToken ().Token;
+				MethodToken token;
+				var mb = method as MethodBuilder;
+				if (mb != null)
+					token = mb.GetToken ();
 				else
-					throw new NotSupportedException ();
+					token = ((ConstructorBuilder) method).GetToken ();
+#if STATIC
+				if (token.IsPseudoToken)
+					return ((ModuleBuilder) method.Module).ResolvePseudoToken (token.Token);
+#endif
+				return token.Token;
 			}
 		}
 
@@ -918,10 +951,33 @@ namespace Mono.CSharp {
 				
 					if (base_method.DeclaringType.IsGeneric) {
 						base_decl_tparams = base_method.DeclaringType.MemberDefinition.TypeParameters;
-						base_targs = Parent.BaseType.TypeArguments;
+
+						var base_type_parent = CurrentType;
+						while (base_type_parent.BaseType != base_method.DeclaringType) {
+							base_type_parent = base_type_parent.BaseType;
+						}
+
+						base_targs = base_type_parent.BaseType.TypeArguments;
 					}
 
 					if (base_method.IsGeneric) {
+						ObsoleteAttribute oa;
+						foreach (var base_tp in base_tparams) {
+							oa = base_tp.BaseType.GetAttributeObsolete ();
+							if (oa != null) {
+								AttributeTester.Report_ObsoleteMessage (oa, base_tp.BaseType.GetSignatureForError (), Location, Report);
+							}
+
+							if (base_tp.InterfacesDefined != null) {
+								foreach (var iface in base_tp.InterfacesDefined) {
+									oa = iface.GetAttributeObsolete ();
+									if (oa != null) {
+										AttributeTester.Report_ObsoleteMessage (oa, iface.GetSignatureForError (), Location, Report);
+									}
+								}
+							}
+						}
+
 						if (base_decl_tparams.Length != 0) {
 							base_decl_tparams = base_decl_tparams.Concat (base_tparams).ToArray ();
 							base_targs = base_targs.Concat (tparams.Select<TypeParameter, TypeSpec> (l => l.Type)).ToArray ();
@@ -1230,47 +1286,46 @@ namespace Mono.CSharp {
 			// FIXME: Hack
 			var caller_builder = (Constructor) ec.MemberContext;
 
-			if (argument_list != null) {
-				bool dynamic;
-
-				//
-				// Spec mandates that constructor initializer will not have `this' access
-				//
-				using (ec.Set (ResolveContext.Options.BaseInitializer)) {
+			//
+			// Spec mandates that constructor initializer will not have `this' access
+			//
+			using (ec.Set (ResolveContext.Options.BaseInitializer)) {
+				if (argument_list != null) {
+					bool dynamic;
 					argument_list.Resolve (ec, out dynamic);
+
+					if (dynamic) {
+						ec.Report.Error (1975, loc,
+							"The constructor call cannot be dynamically dispatched within constructor initializer");
+
+						return null;
+					}
 				}
 
-				if (dynamic) {
-					ec.Report.Error (1975, loc,
-						"The constructor call cannot be dynamically dispatched within constructor initializer");
+				type = ec.CurrentType;
+				if (this is ConstructorBaseInitializer) {
+					if (ec.CurrentType.BaseType == null)
+						return this;
 
-					return null;
+					type = ec.CurrentType.BaseType;
+					if (ec.CurrentType.IsStruct) {
+						ec.Report.Error (522, loc,
+							"`{0}': Struct constructors cannot call base constructors", caller_builder.GetSignatureForError ());
+						return this;
+					}
+				} else {
+					//
+					// It is legal to have "this" initializers that take no arguments
+					// in structs, they are just no-ops.
+					//
+					// struct D { public D (int a) : this () {}
+					//
+					if (TypeManager.IsStruct (ec.CurrentType) && argument_list == null)
+						return this;
 				}
+
+				base_ctor = ConstructorLookup (ec, type, ref argument_list, loc);
 			}
-
-			type = ec.CurrentType;
-			if (this is ConstructorBaseInitializer) {
-				if (ec.CurrentType.BaseType == null)
-					return this;
-
-				type = ec.CurrentType.BaseType;
-				if (ec.CurrentType.IsStruct) {
-					ec.Report.Error (522, loc,
-						"`{0}': Struct constructors cannot call base constructors", caller_builder.GetSignatureForError ());
-					return this;
-				}
-			} else {
-				//
-				// It is legal to have "this" initializers that take no arguments
-				// in structs, they are just no-ops.
-				//
-				// struct D { public D (int a) : this () {}
-				//
-				if (TypeManager.IsStruct (ec.CurrentType) && argument_list == null)
-					return this;			
-			}
-
-			base_ctor = ConstructorLookup (ec, type, ref argument_list, loc);
 	
 			// TODO MemberCache: Does it work for inflated types ?
 			if (base_ctor == caller_builder.Spec){
@@ -1322,7 +1377,7 @@ namespace Mono.CSharp {
 	public class Constructor : MethodCore, IMethodData {
 		public ConstructorBuilder ConstructorBuilder;
 		public ConstructorInitializer Initializer;
-		Dictionary<SecurityAction, PermissionSet> declarative_security;
+		SecurityType declarative_security;
 		bool has_compliant_args;
 
 		// <summary>
@@ -1378,10 +1433,7 @@ namespace Mono.CSharp {
 		public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
 		{
 			if (a.IsValidSecurityAttribute ()) {
-				if (declarative_security == null) {
-					declarative_security = new Dictionary<SecurityAction, PermissionSet> ();
-				}
-				a.ExtractSecurityPermissionSet (declarative_security);
+				a.ExtractSecurityPermissionSet (ctor, ref declarative_security);
 				return;
 			}
 
@@ -1478,7 +1530,11 @@ namespace Mono.CSharp {
 					Report.Error (669, Location, "`{0}': A class with the ComImport attribute cannot have a user-defined constructor",
 						Parent.GetSignatureForError ());
 				}
+
+				// Set as internal implementation and reset block data
+				// to ensure no IL is generated
 				ConstructorBuilder.SetImplementationFlags (MethodImplAttributes.InternalCall);
+				block = null;
 			}
 
 			if ((ModFlags & Modifiers.DEBUGGER_HIDDEN) != 0)
@@ -1542,7 +1598,11 @@ namespace Mono.CSharp {
 
 			if (declarative_security != null) {
 				foreach (var de in declarative_security) {
+#if STATIC
+					ConstructorBuilder.__AddDeclarativeSecurity (de);
+#else
 					ConstructorBuilder.AddDeclarativeSecurity (de.Key, de.Value);
+#endif
 				}
 			}
 
@@ -1874,6 +1934,9 @@ namespace Mono.CSharp {
 			builder.SetParameters (p_types);
 			builder.SetReturnType (return_type);
 			if (builder.Attributes != flags) {
+#if STATIC
+				builder.__SetAttributes (flags);
+#else
 				try {
 					if (methodbuilder_attrs_field == null)
 						methodbuilder_attrs_field = typeof (MethodBuilder).GetField ("attrs", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -1881,6 +1944,7 @@ namespace Mono.CSharp {
 				} catch {
 					container.Compiler.Report.RuntimeMissingSupport (method.Location, "Generic method MethodAttributes");
 				}
+#endif
 			}
 		}
 
@@ -2010,7 +2074,7 @@ namespace Mono.CSharp {
 	public abstract class AbstractPropertyEventMethod : MemberCore, IMethodData {
 		protected MethodData method_data;
 		protected ToplevelBlock block;
-		protected Dictionary<SecurityAction, PermissionSet> declarative_security;
+		protected SecurityType declarative_security;
 
 		protected readonly string prefix;
 
@@ -2093,9 +2157,7 @@ namespace Mono.CSharp {
 			}
 
 			if (a.IsValidSecurityAttribute ()) {
-				if (declarative_security == null)
-					declarative_security = new Dictionary<SecurityAction, PermissionSet> ();
-				a.ExtractSecurityPermissionSet (declarative_security);
+				a.ExtractSecurityPermissionSet (ctor, ref declarative_security);
 				return;
 			}
 
@@ -2148,7 +2210,11 @@ namespace Mono.CSharp {
 
 			if (declarative_security != null) {
 				foreach (var de in declarative_security) {
+#if STATIC
+					method_data.MethodBuilder.__AddDeclarativeSecurity (de);
+#else
 					method_data.MethodBuilder.AddDeclarativeSecurity (de.Key, de.Value);
+#endif
 				}
 			}
 

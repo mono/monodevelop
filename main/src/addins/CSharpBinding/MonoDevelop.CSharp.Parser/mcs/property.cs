@@ -13,14 +13,19 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Emit;
 using System.Text;
 
 #if NET_2_1
 using XmlElement = System.Object;
 #endif
 
+#if STATIC
+using IKVM.Reflection;
+using IKVM.Reflection.Emit;
+#else
+using System.Reflection;
+using System.Reflection.Emit;
+#endif
 
 namespace Mono.CSharp
 {
@@ -237,7 +242,6 @@ namespace Mono.CSharp
 
 			internal const string Prefix = "set_";
 
-			ImplicitParameter param_attr;
 			protected ParametersCompiled parameters;
 
 			public SetMethod (PropertyBase method, Modifiers modifiers, ParametersCompiled parameters, Attributes attrs, Location loc)
@@ -249,10 +253,7 @@ namespace Mono.CSharp
 			protected override void ApplyToExtraTarget (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
 			{
 				if (a.Target == AttributeTargets.Parameter) {
-					if (param_attr == null)
-						param_attr = new ImplicitParameter (method_data.MethodBuilder);
-
-					param_attr.ApplyAttributeBuilder (a, ctor, cdata, pa);
+					parameters[0].ApplyAttributeBuilder (a, ctor, cdata, pa);
 					return;
 				}
 
@@ -1131,7 +1132,6 @@ namespace Mono.CSharp
 		public abstract class AEventAccessor : AbstractPropertyEventMethod
 		{
 			protected readonly Event method;
-			ImplicitParameter param_attr;
 			ParametersCompiled parameters;
 
 			static readonly string[] attribute_targets = new string [] { "method", "param", "return" };
@@ -1144,7 +1144,7 @@ namespace Mono.CSharp
 			{
 				this.method = method;
 				this.ModFlags = method.ModFlags;
-				this.parameters = ParametersCompiled.CreateImplicitParameter (method.TypeExpression, loc);;
+				this.parameters = ParametersCompiled.CreateImplicitParameter (method.TypeExpression, loc);
 			}
 
 			public bool IsInterfaceImplementation {
@@ -1163,10 +1163,7 @@ namespace Mono.CSharp
 			protected override void ApplyToExtraTarget (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
 			{
 				if (a.Target == AttributeTargets.Parameter) {
-					if (param_attr == null)
-						param_attr = new ImplicitParameter (method_data.MethodBuilder);
-
-					param_attr.ApplyAttributeBuilder (a, ctor, cdata, pa);
+					parameters[0].ApplyAttributeBuilder (a, ctor, cdata, pa);
 					return;
 				}
 
@@ -1313,7 +1310,7 @@ namespace Mono.CSharp
 			if (RemoveBuilder == null)
 				return false;
 
-			EventBuilder = Parent.TypeBuilder.DefineEvent (Name, EventAttributes.None, MemberType.GetMetaInfo ());
+			EventBuilder = Parent.TypeBuilder.DefineEvent (GetFullName (MemberName), EventAttributes.None, MemberType.GetMetaInfo ());
 			EventBuilder.SetAddOnMethod (AddBuilder);
 			EventBuilder.SetRemoveOnMethod (RemoveBuilder);
 

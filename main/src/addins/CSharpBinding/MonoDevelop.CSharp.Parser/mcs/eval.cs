@@ -9,6 +9,7 @@
 // Copyright 2001, 2002, 2003 Ximian, Inc (http://www.ximian.com)
 // Copyright 2004, 2005, 2006, 2007, 2008 Novell, Inc
 //
+
 using System;
 using System.Threading;
 using System.Collections.Generic;
@@ -17,7 +18,8 @@ using System.Reflection.Emit;
 using System.IO;
 using System.Text;
 
-namespace Mono.CSharp {
+namespace Mono.CSharp
+{
 
 	/// <summary>
 	///   Evaluator: provides an API to evaluate C# statements and
@@ -119,18 +121,20 @@ namespace Mono.CSharp {
 
 				ctx = driver.ctx;
 
+				CompilerCallableEntryPoint.Reset ();
 				RootContext.ToplevelTypes = new ModuleContainer (ctx);
 				
 				var startup_files = new List<string> ();
 				foreach (CompilationUnit file in Location.SourceFiles)
 					startup_files.Add (file.Path);
 				
-				CompilerCallableEntryPoint.Reset ();
+				CompilerCallableEntryPoint.PartialReset ();
 
 				var importer = new ReflectionImporter (ctx.BuildinTypes);
 				loader = new DynamicLoader (importer, ctx);
 
-				RootContext.ToplevelTypes.MakeExecutable ("temp");
+				RootContext.ToplevelTypes.SetDeclaringAssembly (new AssemblyDefinitionDynamic (RootContext.ToplevelTypes, "temp"));
+
 				loader.LoadReferences (RootContext.ToplevelTypes);
 				ctx.BuildinTypes.CheckDefinitions (RootContext.ToplevelTypes);
 				RootContext.ToplevelTypes.InitializePredefinedTypes ();
@@ -240,6 +244,8 @@ namespace Mono.CSharp {
 			lock (evaluator_lock){
 				if (!inited)
 					Init ();
+				else
+					ctx.Report.Printer.Reset ();
 
 			//	RootContext.ToplevelTypes = new ModuleContainer (ctx);
 
@@ -264,10 +270,13 @@ namespace Mono.CSharp {
 						parser.CurrentNamespace.Extract (using_alias_list, using_list);
 				}
 
+#if STATIC
+				throw new NotSupportedException ();
+#else
 				compiled = CompileBlock (parser_result as Class, parser.undo, ctx.Report);
+				return null;
+#endif
 			}
-			
-			return null;
 		}
 
 		/// <summary>
@@ -399,8 +408,9 @@ namespace Mono.CSharp {
 				}
 
 				try {
-					var a = RootContext.ToplevelTypes.MakeExecutable ("temp");
+					var a = new AssemblyDefinitionDynamic (RootContext.ToplevelTypes, "temp");
 					a.Create (AppDomain.CurrentDomain, AssemblyBuilderAccess.Run);
+					RootContext.ToplevelTypes.SetDeclaringAssembly (a);
 					RootContext.ToplevelTypes.Define ();
 					if (ctx.Report.Errors != 0)
 						return null;
@@ -431,7 +441,7 @@ namespace Mono.CSharp {
 			}
 			return null;
 		}
-		
+
 		/// <summary>
 		///   Executes the given expression or statement.
 		/// </summary>
@@ -478,7 +488,7 @@ namespace Mono.CSharp {
 
 			return result;
 		}
-	
+
 		enum InputKind {
 			EOF,
 			StatementOrExpression,
@@ -677,19 +687,20 @@ namespace Mono.CSharp {
 		//static ArrayList types = new ArrayList ();
 
 		static volatile bool invoking;
-		
+#if !STATIC		
 		static CompiledMethod CompileBlock (Class host, Undo undo, Report Report)
 		{
-			AssemblyDefinition assembly;
+			AssemblyDefinitionDynamic assembly;
 
 			if (Environment.GetEnvironmentVariable ("SAVE") != null) {
-				assembly = RootContext.ToplevelTypes.MakeExecutable (current_debug_name, current_debug_name);
+				assembly = new AssemblyDefinitionDynamic (RootContext.ToplevelTypes, current_debug_name, current_debug_name);
 				assembly.Importer = loader.Importer;
 			} else {
-				assembly = RootContext.ToplevelTypes.MakeExecutable (current_debug_name);
+				assembly = new AssemblyDefinitionDynamic (RootContext.ToplevelTypes, current_debug_name);
 			}
 
 			assembly.Create (AppDomain.CurrentDomain, AssemblyBuilderAccess.RunAndSave);
+			RootContext.ToplevelTypes.SetDeclaringAssembly (assembly);
 			RootContext.ToplevelTypes.Define ();
 
 			if (Report.Errors != 0){
@@ -768,7 +779,7 @@ namespace Mono.CSharp {
 			
 			return (CompiledMethod) System.Delegate.CreateDelegate (typeof (CompiledMethod), mi);
 		}
-		
+#endif		
 		static internal void LoadAliases (NamespaceEntry ns)
 		{
 			ns.Populate (using_alias_list, using_list);
@@ -874,7 +885,7 @@ namespace Mono.CSharp {
 		static public void LoadAssembly (string file)
 		{
 			lock (evaluator_lock){
-				var a = loader.LoadAssemblyFile (file, false);
+				var a = loader.LoadAssemblyFile (file);
 				if (a != null)
 					loader.Importer.ImportAssembly (a, RootContext.ToplevelTypes.GlobalRootNamespace);
 			}
@@ -978,7 +989,7 @@ namespace Mono.CSharp {
 			return DateTime.Now - start;
 		}
 		
-#if !SMCS_SOURCE
+#if !SMCS_SOURCE && !STATIC
 		/// <summary>
 		///   Loads the assemblies from a package
 		/// </summary>
@@ -1012,6 +1023,7 @@ namespace Mono.CSharp {
 		}
 #endif
 
+#if !STATIC
 		/// <summary>
 		///   Loads the assembly
 		/// </summary>
@@ -1025,6 +1037,7 @@ namespace Mono.CSharp {
 		{
 			Evaluator.LoadAssembly (assembly);
 		}
+#endif
 		
 		/// <summary>
 		///   Returns a list of available static methods. 
@@ -1189,4 +1202,3 @@ namespace Mono.CSharp {
 	}
 	
 }
-	
