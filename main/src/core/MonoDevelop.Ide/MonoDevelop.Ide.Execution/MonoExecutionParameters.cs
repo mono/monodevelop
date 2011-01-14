@@ -90,15 +90,16 @@ namespace MonoDevelop.Ide.Execution
 			for (int n=0; n< VerboseLevel; n++)
 				ops.Append ("-v ");
 			
-			if (DebugMode || DebugMdbOptimizations || DebugCasts) {
-				if (DebugMdbOptimizations && DebugCasts)
-					ops.Append ("--debug=casts,mdb-optimizations ");
-				else if (DebugMdbOptimizations)
-					ops.Append ("--debug=mdb-optimizations ");
-				else if (DebugCasts)
-					ops.Append ("--debug=casts ");
-				else
-					ops.Append ("--debug ");
+			if (DebugMode || DebugMdbOptimizations || DebugCasts || GdbInfo) {
+				ops.Append ("--debug=");
+				if (DebugMdbOptimizations)
+					ops.Append ("mdb-optimizations,");
+				if (DebugCasts)
+					ops.Append ("casts,");
+				if (GdbInfo)
+					ops.Append ("gdb,");
+				ops.Remove (ops.Length - 1, 1);
+				ops.Append (' ');
 			}
 			
 			foreach (PropertyInfo prop in GetType ().GetProperties ()) {
@@ -176,6 +177,14 @@ namespace MonoDevelop.Ide.Execution
 		              "if you plan to attach to the running process with the debugger.")]
 		[ItemProperty (DefaultValue=false)]
 		public bool DebugMdbOptimizations { get; set; }
+		
+		[LocalizedCategory ("Debug")]
+		[LocalizedDisplayName ("GDB Symbols")]
+		[LocalizedDescription ("Generate and register debugging information with gdb. " +
+                     "This is only supported on some platforms, and only when " +
+                     "using gdb 7.0 or later.")]
+		[ItemProperty (DefaultValue=false)]
+		public bool GdbInfo { get; set; }
 		
 		[LocalizedCategory ("Runtime")]
 		[LocalizedDisplayName ("Profiler")]
@@ -414,7 +423,56 @@ namespace MonoDevelop.Ide.Execution
 		[EnvVarAttribute ("MONO_XDEBUG")]
 		[ItemProperty (DefaultValue=false)]
 		public bool XDebug { get; set; }
-	}
+		
+		[LocalizedCategory ("Runtime")]
+		[LocalizedDisplayName ("Garbage Collector")]
+		[LocalizedDescription ("Selects  the  Garbage Collector engine for Mono to use.")]
+		[MonoArg ("--gc={0}")]
+		[ItemProperty (DefaultValue=GcType.Default)]
+		public GcType GcType { get; set; }
+		
+		[LocalizedCategory ("LLVM")]
+		[LocalizedDisplayName ("Enable LLVM")]
+		[LocalizedDescription ("If the Mono runtime has been compiled  with LLVM support (not " +
+              "available in all configurations), this option enables use the LLVM optimization " +
+              "and code generation engine to JIT or AOT compile. For more information " +
+              "consult: http://www.mono-project.com/Mono_LLVM")]
+		[MonoArg ("--llvm")]
+		[ItemProperty (DefaultValue=false)]
+		public bool Llvm { get; set; }
+		
+		[LocalizedCategory ("LLVM")]
+		[LocalizedDisplayName ("Disable LLVM")]
+		[LocalizedDescription ("When using a Mono that has been compiled with LLVM support, it " +
+              "forces Mono to fallback to its JIT engine and not use the LLVM backend")]
+		[MonoArg ("--nollvm")]
+		[ItemProperty (DefaultValue=false)]
+		public bool NoLlvm { get; set; }
+		
+		[LocalizedCategory ("Optimizations")]
+		[LocalizedDisplayName ("Desktop Mode")]
+		[LocalizedDescription ("Configures the virtual machine to be better suited for desktop " +
+              "applications. Currently this sets the GC system to avoid " +
+              "expanding the heap as much as possible at the expense of slowing " +
+              "down garbage collection a bit.")]
+		[MonoArg ("--desktop")]
+		[ItemProperty (DefaultValue=false)]
+		public bool Desktop { get; set; }
+
+		[LocalizedCategory ("Optimizations")]
+		[LocalizedDisplayName ("Server Mode")]
+		[LocalizedDescription ("Configures the virtual machine to be better  suited  for  server operations.")]
+		[MonoArg ("--server")]
+		[ItemProperty (DefaultValue=false)]
+		public bool Server { get; set; }
+
+		[LocalizedCategory ("Additional Options")]
+		[LocalizedDisplayName ("Additional Options")]
+		[LocalizedDescription ("Additional command line options to be provided to the Mono command.")]
+		[MonoArg ("{0}")]
+		[ItemProperty (DefaultValue="")]
+		public string AdditionalOptions { get; set; }
+}
 	
 	public enum LogLevel
 	{
@@ -451,5 +509,14 @@ namespace MonoDevelop.Ide.Execution
 		[MonoArg ("core-clr")] CoreClr,
 		[MonoArg ("verifiable")] Verifiable,
 		[MonoArg ("validil")] ValidIL
+	}
+	
+	public enum GcType
+	{
+		[MonoArg (null)] 
+		[LocalizedDescription ("Default")]
+		Default,
+		[MonoArg ("boehm")] Boehm,
+		[MonoArg ("sgen")] SGen
 	}
 }
