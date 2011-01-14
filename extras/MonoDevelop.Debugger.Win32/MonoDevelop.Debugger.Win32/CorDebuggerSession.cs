@@ -313,8 +313,13 @@ namespace MonoDevelop.Debugger.Win32
 		{
 			CorMetadataImport mi = new CorMetadataImport (e.Module);
 
-			// Required to avoid the jit to get rid of variables too early
-			e.Module.JITCompilerFlags = CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION;
+			try {
+				// Required to avoid the jit to get rid of variables too early
+				e.Module.JITCompilerFlags = CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION;
+			}
+			catch {
+				// Some kind of modules don't allow JIT flags to be changed.
+			}
 
 			string file = e.Module.Assembly.Name;
 			lock (documents) {
