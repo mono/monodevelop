@@ -105,7 +105,9 @@ namespace MonoDevelop.Components.PropertyGrid
 		
 		public void CommitChanges ()
 		{
-			tree.Selection.UnselectAll ();
+			TreePath[] sel = tree.Selection.GetSelectedRows ();
+			if (sel.Length > 0)
+				tree.SetCursor (sel[0], tree.Columns[1], false);
 		}
 		
 		public void SaveStatus ()

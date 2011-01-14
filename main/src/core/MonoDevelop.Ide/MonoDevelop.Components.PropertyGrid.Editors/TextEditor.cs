@@ -156,8 +156,8 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			}
 			set {
 				string val = session.Property.Converter.ConvertToString (session, value);
-				initialText = entry.Text;
 				entry.Text = val ?? string.Empty;
+				initialText = entry.Text;
 			}
 		}
 		
