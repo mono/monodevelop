@@ -536,6 +536,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/DragNotebook.cs \
 	MonoDevelop.Ide.Gui/FileViewer.cs \
 	MonoDevelop.Ide.Gui/FreeDispatchAttribute.cs \
+	MonoDevelop.Ide.Gui/GtkSynchronizationContext.cs \
 	MonoDevelop.Ide.Gui/GuiSyncContext.cs \
 	MonoDevelop.Ide.Gui/GuiSyncObject.cs \
 	MonoDevelop.Ide.Gui/HiddenTextEditorViewContent.cs \

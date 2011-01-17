@@ -99,6 +99,9 @@ namespace MonoDevelop.Ide
 			string socket_filename = null;
 			EndPoint ep = null;
 			
+			// Set a synchronization context for the main gtk thread
+			SynchronizationContext.SetSynchronizationContext (new GtkSynchronizationContext ());
+			
 			AddinManager.AddinLoadError += OnAddinError;
 			
 			var startupInfo = new StartupInfo (remainingArgs);

@@ -38,6 +38,7 @@ using MonoDevelop.Core.Execution;
 using Mono.Addins;
 using Mono.Addins.Setup;
 using MonoDevelop.Core.Instrumentation;
+using System.Threading;
 
 namespace MonoDevelop.Core
 {
@@ -55,6 +56,10 @@ namespace MonoDevelop.Core
 				return;
 			Counters.RuntimeInitialization.BeginTiming ();
 			SetupInstrumentation ();
+			
+			// Set a default sync context
+			if (SynchronizationContext.Current == null)
+				SynchronizationContext.SetSynchronizationContext (new SynchronizationContext ());
 			
 			AddinManager.AddinLoadError += OnLoadError;
 			AddinManager.AddinLoaded += OnLoad;
