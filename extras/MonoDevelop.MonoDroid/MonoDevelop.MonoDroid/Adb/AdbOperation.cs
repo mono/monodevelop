@@ -261,16 +261,23 @@ namespace MonoDevelop.MonoDroid
 	public abstract class AdbTransportOperation : AdbOperation
 	{
 		AndroidDevice device;
+		object initLock = new object ();
 		
 		public AdbTransportOperation (AndroidDevice device)
 		{
 			if (device == null)
 				throw new ArgumentNullException ("device");
-			this.device = device;
+			lock (initLock) {
+				this.device = device;
+			}
 		}
 		
 		protected sealed override void OnConnected ()
 		{
+			lock (initLock) {
+				while (device == null)
+					Monitor.Wait (initLock, 200);
+			}
 			WriteCommand ("host:transport:" + device.ID, () => GetStatus (() => OnGotTransport ()));
 		}
 		
