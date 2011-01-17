@@ -60,8 +60,11 @@ namespace MonoDevelop.MonoDroid
 		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
 			var cmd = (MonoDroidExecutionCommand) command;
-			return MonoDroidFramework.Toolbox.StartActivity (cmd.Device, cmd.Activity,
-				console.Out, console.Error);
+
+			IAsyncOperation startOp = MonoDroidFramework.Toolbox.StartActivity (cmd.Device, 
+				cmd.Activity, console.Out, console.Error);
+			return new MonoDroidProcess (cmd.Device, cmd.Activity, cmd.PackageName, 
+				console.Out.Write, console.Error.Write, startOp);
 		}
 	}
 
@@ -80,13 +83,31 @@ namespace MonoDevelop.MonoDroid
 		const int WAIT_TIME = 1000;
 
 		public MonoDroidProcess (AndroidDevice device, string activity, string packageName,
-			Action<string> stdout, Action<string> stderr)
+			Action<string> stdout, Action<string> stderr) : 
+			this (device, activity, packageName, stdout, stderr, null)
+		{
+		}
+
+		public MonoDroidProcess (AndroidDevice device, string activity, string packageName,
+			Action<string> stdout, Action<string> stderr, IAsyncOperation startOp)
 		{
 			this.device = device;
 			this.packageName = packageName;
 			this.stdout = stdout;
 			this.stderr = stderr;
-			StartTracking ();
+
+			if (startOp == null) {
+				StartTracking ();
+				return;
+			}
+
+			// Our launch intent.
+			startOp.Completed += delegate (IAsyncOperation op) {
+				if (!op.Success)
+					SetCompleted (false);
+				else
+					StartTracking ();
+			};
 		}
 
 		void StartTracking ()
