@@ -1,4 +1,4 @@
-<AddinProject appVersion="2.4">
+<AddinProject appVersion="2.6">
 	<Project platforms="Mac">
 		<AddinFile>build/MonoDevelop.MonoMac.dll</AddinFile>
 		<BuildFile>MonoDevelop.MonoMac.sln</BuildFile>
