@@ -163,6 +163,11 @@ namespace MonoDevelop.MonoDroid
 					SetError (ex);
 			}
 		}
+
+		protected void ReadResponseContinuous (Action<string> output)
+		{
+			client.ReadResponseContinuous (output);
+		}
 		
 		protected void SetError (Exception ex)
 		{

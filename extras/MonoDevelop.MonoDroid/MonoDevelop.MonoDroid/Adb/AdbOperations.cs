@@ -92,6 +92,38 @@ namespace MonoDevelop.MonoDroid
 		public List<AndroidDevice> Devices { get; private set; }
 		public event Action<List<AndroidDevice>> DevicesChanged;
 	}
+
+	public class AdbTrackLogOperation : AdbTransportOperation
+	{
+		Action<string> output;
+		string [] parameters;
+
+		public AdbTrackLogOperation (AndroidDevice device, Action<string> output, params string [] parameters) : base (device)
+		{
+			this.output = output;
+			this.parameters = parameters;
+		}
+
+		static readonly string Space = " ";
+
+		protected override void OnGotTransport ()
+		{
+			string command = "shell:logcat ";
+			foreach (string param in parameters)
+				command += Space + param;
+
+			WriteCommand (command, () => GetStatus (() => ReadResponseContinuous (GotResponseContinuous)));
+		}
+
+		static readonly char [] newLine = new char [] { '\n' };
+
+		void GotResponseContinuous (string response)
+		{
+			if (output != null)
+				foreach (string line in response.Split (newLine, StringSplitOptions.RemoveEmptyEntries))
+					output (line);
+		}
+	}
 	
 	public class AdbGetPackagesOperation : AdbTransportOperation
 	{
