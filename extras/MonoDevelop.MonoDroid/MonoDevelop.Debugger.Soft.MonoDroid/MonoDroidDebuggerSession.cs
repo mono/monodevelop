@@ -155,7 +155,10 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 				}
 				launchOp = null;
 					
-				trackProcessOp = new MonoDroidProcess (cmd.Device, cmd.Activity, cmd.PackageName);
+				Action<string> stdout = s => OnTargetOutput (false, s);
+				Action<string> stderr = s => OnTargetOutput (true, s);
+
+				trackProcessOp = new MonoDroidProcess (cmd.Device, cmd.Activity, cmd.PackageName, stdout, stderr);
 				trackProcessOp.Completed += delegate {
 					EndSession ();
 				};

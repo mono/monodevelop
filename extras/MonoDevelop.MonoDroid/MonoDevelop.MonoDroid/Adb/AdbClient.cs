@@ -250,6 +250,15 @@ namespace MonoDevelop.MonoDroid
 				tw.Write (Encoding.ASCII.GetString (buf, 0, len));
 			}
 		}
+
+		public void ReadResponseContinuous (Action<string> output)
+		{
+			var buf = new byte[1024];
+			int len;
+			while ((len = stream.Read (buf, 0, buf.Length)) > 0) {
+				output (Encoding.ASCII.GetString (buf, 0, len));
+			}
+		}
 		
 		public void Dispose ()
 		{

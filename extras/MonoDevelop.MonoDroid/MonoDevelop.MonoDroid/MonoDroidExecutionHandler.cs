@@ -70,16 +70,22 @@ namespace MonoDevelop.MonoDroid
 		AndroidDevice device;
 		string packageName;
 		AdbGetProcessIdOperation getPidOp;
+		AdbOperation trackLogOp;
+		Action<string> stdout;
+		Action<string> stderr;
 		ManualResetEvent endHandle = new ManualResetEvent (false);
 		volatile int pid = UNASSIGNED_PID;
 
 		const int UNASSIGNED_PID = -1;
 		const int WAIT_TIME = 1000;
 
-		public MonoDroidProcess (AndroidDevice device, string activity, string packageName)
+		public MonoDroidProcess (AndroidDevice device, string activity, string packageName,
+			Action<string> stdout, Action<string> stderr)
 		{
 			this.device = device;
 			this.packageName = packageName;
+			this.stdout = stdout;
+			this.stderr = stderr;
 			StartTracking ();
 		}
 
@@ -87,6 +93,13 @@ namespace MonoDevelop.MonoDroid
 		{
 			getPidOp = new AdbGetProcessIdOperation (device, packageName);
 			getPidOp.Completed += RefreshPid;
+
+			trackLogOp = new AdbTrackLogOperation (device, ProcessLogLine, "*:S", "stdout:*", "stderr:*");
+			trackLogOp.Completed += delegate (IAsyncOperation op) {
+				if (!op.Success) {
+					SetCompleted (false);
+				}
+			};
 		}
 
 		void RefreshPid (IAsyncOperation op)
@@ -114,6 +127,80 @@ namespace MonoDevelop.MonoDroid
 				getPidOp.Completed += RefreshPid;
 				return false;
 			});
+		}
+
+		void ProcessLogLine (string line)
+		{
+			string result, tag;
+			int pid;
+			if (!ParseLine (line, out pid, out tag, out result))
+				throw new FormatException ("Could not recognize logcat output: '" + line + "'");
+
+			if (pid != this.pid)
+				return;
+
+			switch (tag) {
+				case "stdout":
+					stdout (result);
+					break;
+				case "stderr":
+					stderr (result);
+					break;
+			}
+		}
+
+		bool ParseLine (string line, out int pid, out string tag, out string result)
+		{
+			// Default (brief) FORMAT: P/Tag (PID): Actual log information
+			int pos = 0;
+			int len, start;
+			tag = result = null;
+			pid = 0;
+
+			// Ignore the priority char -and its respective '/'- for now
+			pos += 2;
+
+			// Tag
+			start = pos;
+			len = 0;
+			while (pos < line.Length && Char.IsLetter (line [pos++]))
+				len++;
+
+			if (len == 0)
+				return false;
+
+			tag = line.Substring (start, len);
+
+			// Optional whitespace
+			while (pos < line.Length && line [pos] == ' ')
+				pos++;
+
+			// Opening brace
+			pos++;
+
+			// Optional whitespace
+			while (pos < line.Length && line [pos] == ' ')
+				pos++;
+
+			// PID section
+			start = pos;
+			len = 0;
+			while (Char.IsDigit (line [pos++]))
+				len++;
+
+			if (len == 0)
+				return false;
+				
+			pid = Int32.Parse (line.Substring (start, len));
+
+			// Closing brace + space char
+			pos += 2;
+
+			if (pos >= line.Length)
+				return false;
+
+			result = line.Substring (pos, line.Length - pos);
+			return true;
 		}
 
 		public int ExitCode {
@@ -189,6 +276,9 @@ namespace MonoDevelop.MonoDroid
 			if (getPidOp != null && !getPidOp.IsCompleted) {
 				getPidOp.Cancel ();
 			}
+			if (trackLogOp != null && !trackLogOp.IsCompleted) {
+				trackLogOp.Cancel ();
+			}
 		}
 
 		public bool IsCompleted { get; private set; }
@@ -224,6 +314,10 @@ namespace MonoDevelop.MonoDroid
 				if (getPidOp != null) {
 					getPidOp.Dispose ();
 					getPidOp = null;
+				}
+				if (trackLogOp != null) {
+					trackLogOp.Dispose ();
+					trackLogOp = null;
 				}
 			}
 		}
