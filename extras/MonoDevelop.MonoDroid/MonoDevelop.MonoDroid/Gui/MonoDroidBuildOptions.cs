@@ -57,23 +57,31 @@ namespace MonoDevelop.MonoDroid.Gui
 		}
 	}
 	
-	
 	public partial class MonoDroidBuildOptionsWidget : Gtk.Bin
 	{
 		public MonoDroidBuildOptionsWidget ()
 		{
 			this.Build ();
+			
+			linkerCombo.AppendText ("Don't link"); //MtouchLinkMode.None
+			linkerCombo.AppendText ("Link SDK assemblies only"); //MtouchLinkMode.SdkOnly
+			linkerCombo.AppendText ("Link all assemblies"); //MtouchLinkMode.All
+			
 			ShowAll ();
 		}
 		
 		public void LoadPanelContents (MonoDroidProjectConfiguration cfg)
 		{
 			extraMonoDroidArgsEntry.Text = cfg.MonoDroidExtraArgs ?? "";
+			linkerCombo.Active = (int) cfg.MonoDroidLinkMode;
+			sharedRuntimeCheck.Active = cfg.AndroidUseSharedRuntime;
 		}
 		
 		public void StorePanelContents (MonoDroidProjectConfiguration cfg)
 		{
 			cfg.MonoDroidExtraArgs = extraMonoDroidArgsEntry.Text;
+			cfg.MonoDroidLinkMode = (MonoDroidLinkMode) linkerCombo.Active;
+			cfg.AndroidUseSharedRuntime = sharedRuntimeCheck.Active;
 		}
 	}
 }

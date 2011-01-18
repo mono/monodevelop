@@ -75,6 +75,24 @@ namespace MonoDevelop.MonoDroid
 			}
 		}
 		
+		[ItemProperty ("MonoDroidLinkMode", DefaultValue=MonoDroidLinkMode.SdkOnly)]
+		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
+		MonoDroidLinkMode monoDroidLinkMode = MonoDroidLinkMode.SdkOnly;
+		
+		public MonoDroidLinkMode MonoDroidLinkMode {
+			get { return monoDroidLinkMode; }
+			set { monoDroidLinkMode = value; }
+		}
+		
+		[ItemProperty ("AndroidUseSharedRuntime", DefaultValue=true)]
+		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
+		bool androidUseSharedRuntime = true;
+		
+		public bool AndroidUseSharedRuntime {
+			get { return androidUseSharedRuntime; }
+			set { androidUseSharedRuntime = value; }
+		}
+		
 		public string PackageName {
 			get {
 				return ParentItem.GetPackageName (this);
@@ -116,6 +134,15 @@ namespace MonoDevelop.MonoDroid
 			
 			monoDroidExtraArgs = cfg.monoDroidExtraArgs;
 			androidManifest = cfg.androidManifest;
+			monoDroidLinkMode = cfg.monoDroidLinkMode;
+			androidUseSharedRuntime = cfg.androidUseSharedRuntime;
 		}
+	}
+	
+	public enum MonoDroidLinkMode
+	{
+		None,
+		SdkOnly,
+		Full
 	}
 }
