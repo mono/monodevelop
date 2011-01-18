@@ -6,7 +6,11 @@ namespace MonoDevelop.MonoDroid.Gui
 	{
 		private global::Gtk.Table table1;
 		private global::Gtk.Entry extraMonoDroidArgsEntry;
+		private global::Gtk.HBox hbox1;
+		private global::Gtk.ComboBox linkerCombo;
 		private global::Gtk.Label label1;
+		private global::Gtk.Label label2;
+		private global::Gtk.CheckButton sharedRuntimeCheck;
 
 		protected virtual void Build ()
 		{
@@ -15,7 +19,7 @@ namespace MonoDevelop.MonoDroid.Gui
 			global::Stetic.BinContainer.Attach (this);
 			this.Name = "MonoDevelop.MonoDroid.Gui.MonoDroidBuildOptionsWidget";
 			// Container child MonoDevelop.MonoDroid.Gui.MonoDroidBuildOptionsWidget.Gtk.Container+ContainerChild
-			this.table1 = new global::Gtk.Table (((uint)(2)), ((uint)(2)), false);
+			this.table1 = new global::Gtk.Table (((uint)(4)), ((uint)(2)), false);
 			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
@@ -27,22 +31,71 @@ namespace MonoDevelop.MonoDroid.Gui
 			this.extraMonoDroidArgsEntry.InvisibleChar = '●';
 			this.table1.Add (this.extraMonoDroidArgsEntry);
 			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.extraMonoDroidArgsEntry]));
+			w1.TopAttach = ((uint)(2));
+			w1.BottomAttach = ((uint)(3));
 			w1.LeftAttach = ((uint)(1));
 			w1.RightAttach = ((uint)(2));
 			w1.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
+			this.hbox1 = new global::Gtk.HBox ();
+			this.hbox1.Name = "hbox1";
+			// Container child hbox1.Gtk.Box+BoxChild
+			this.linkerCombo = global::Gtk.ComboBox.NewText ();
+			this.linkerCombo.Name = "linkerCombo";
+			this.hbox1.Add (this.linkerCombo);
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.linkerCombo]));
+			w2.Position = 0;
+			w2.Expand = false;
+			w2.Fill = false;
+			this.table1.Add (this.hbox1);
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.hbox1]));
+			w3.TopAttach = ((uint)(1));
+			w3.BottomAttach = ((uint)(2));
+			w3.LeftAttach = ((uint)(1));
+			w3.RightAttach = ((uint)(2));
+			w3.XOptions = ((global::Gtk.AttachOptions)(4));
+			w3.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("_Extra MonoDroid arguments:");
+			this.label1.Xalign = 0F;
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("_Extra arguments:");
 			this.label1.UseUnderline = true;
 			this.table1.Add (this.label1);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.label1]));
-			w2.XOptions = ((global::Gtk.AttachOptions)(4));
-			w2.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.label1]));
+			w4.TopAttach = ((uint)(2));
+			w4.BottomAttach = ((uint)(3));
+			w4.XOptions = ((global::Gtk.AttachOptions)(4));
+			w4.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.label2 = new global::Gtk.Label ();
+			this.label2.Name = "label2";
+			this.label2.Xalign = 0F;
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("_Linker behavior:");
+			this.label2.UseUnderline = true;
+			this.table1.Add (this.label2);
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2]));
+			w5.TopAttach = ((uint)(1));
+			w5.BottomAttach = ((uint)(2));
+			w5.XOptions = ((global::Gtk.AttachOptions)(4));
+			w5.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.sharedRuntimeCheck = new global::Gtk.CheckButton ();
+			this.sharedRuntimeCheck.CanFocus = true;
+			this.sharedRuntimeCheck.Name = "sharedRuntimeCheck";
+			this.sharedRuntimeCheck.Label = global::Mono.Unix.Catalog.GetString ("Use shared Mono runtime");
+			this.sharedRuntimeCheck.DrawIndicator = true;
+			this.sharedRuntimeCheck.UseUnderline = true;
+			this.table1.Add (this.sharedRuntimeCheck);
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.sharedRuntimeCheck]));
+			w6.RightAttach = ((uint)(2));
+			w6.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.Add (this.table1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
+			this.label1.MnemonicWidget = this.extraMonoDroidArgsEntry;
+			this.label2.MnemonicWidget = this.linkerCombo;
 			this.Hide ();
 		}
 	}
