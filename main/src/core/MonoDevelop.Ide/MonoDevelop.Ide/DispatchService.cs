@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide
 		static internal bool DispatchDebug;
 		const string errormsg = "An exception was thrown while dispatching a method call in the UI thread.";
 
-		static DispatchService ()
+		internal static void Initialize ()
 		{
 			guiContext = new GuiSyncContext ();
 			guiThread = Thread.CurrentThread;
