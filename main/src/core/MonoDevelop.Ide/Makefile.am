@@ -245,6 +245,7 @@ FILES =  \
 	MonoDevelop.Components/FolderEntry.cs \
 	MonoDevelop.Components/FolderListSelector.cs \
 	MonoDevelop.Components/GtkUtil.cs \
+	MonoDevelop.Components/HeaderBox.cs \
 	MonoDevelop.Components/HoverImageButton.cs \
 	MonoDevelop.Components/HslColor.cs \
 	MonoDevelop.Components/IconView.cs \
