@@ -71,19 +71,21 @@ namespace MonoDevelop.Ide.Projects
 			topBar.PackEnd (deleteButton, false, false, 0);
 			
 			Alignment align = new Alignment (0f, 0f, 1f, 1f);
-			align.LeftPadding = 12;
-			align.TopPadding = 12;
-			align.RightPadding = 12;
-			align.BottomPadding = 12;
+			align.LeftPadding = 9;
+			align.TopPadding = 9;
+			align.RightPadding = 9;
+			align.BottomPadding = 9;
 			align.Add (topBar);
 			
-			EventBox ebox = new EventBox ();
+			HeaderBox ebox = new HeaderBox ();
+			ebox.GradientBackround = true;
+			ebox.SetMargins (0, 1, 0, 0);
 			ebox.Add (align);
 			
 			ebox.ShowAll ();
-			ebox.ModifyBg (StateType.Normal, ebox.Style.Background (StateType.Normal).AddLight (-0.2));
 			
 			VBox.PackStart (ebox, false, false, 0);
+			VBox.BorderWidth = 0;
 			Box.BoxChild c = (Box.BoxChild) VBox [ebox];
 			c.Position = 0;
 			
