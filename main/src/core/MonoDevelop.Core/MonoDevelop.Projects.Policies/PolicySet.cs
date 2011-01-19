@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
@@ -39,7 +40,7 @@ namespace MonoDevelop.Projects.Policies
 	/// <summary>
 	/// A named set of policies.
 	/// </summary>
-	public class PolicySet: PolicyContainer
+	public sealed class PolicySet: PolicyContainer
 	{
 		HashSet<PolicyKey> externalPolicies = new HashSet<PolicyKey> ();
 		
@@ -47,6 +48,11 @@ namespace MonoDevelop.Projects.Policies
 		{
 			this.Id = id;
 			this.Name = name;
+			Visible = true;
+		}
+		
+		public PolicySet ()
+		{
 			Visible = true;
 		}
 		
@@ -60,6 +66,11 @@ namespace MonoDevelop.Projects.Policies
 		/// </summary>
 		public bool Visible { get; set; }
 		
+		/// <summary>
+		/// When set to true, this policy can be used as a base for a differential serialization. It's false by default
+		/// </summary>
+		public bool AllowDiffSerialize { get; internal set; }
+		
 		public override PolicyContainer ParentPolicies {
 			get { return null; }
 		}
@@ -68,7 +79,7 @@ namespace MonoDevelop.Projects.Policies
 			get { return false; }
 		}
 		
-		public string Name { get; private set; }
+		public string Name { get; set; }
 		public string Id { get; private set; }
 		
 		internal void AddSerializedPolicies (StreamReader reader)
@@ -98,6 +109,8 @@ namespace MonoDevelop.Projects.Policies
 		
 		internal bool SupportsDiffSerialize (ScopedPolicy pol)
 		{
+			if (!AllowDiffSerialize)
+				return false;
 			PolicyKey pk = new PolicyKey (pol.PolicyType, pol.Scope);
 			return !externalPolicies.Contains (pk);
 		}
@@ -106,25 +119,50 @@ namespace MonoDevelop.Projects.Policies
 		{
 			XmlWriterSettings xws = new XmlWriterSettings ();
 			xws.Indent = true;
-			XmlConfigurationWriter cw = new XmlConfigurationWriter ();
-			cw.StoreAllInElements = true;
-			cw.StoreInElementExceptions = new String[] { "scope", "inheritsSet", "inheritsScope" };
-			using (XmlWriter xw = XmlTextWriter.Create(writer, xws)) {
-				xw.WriteStartElement ("PolicySet");
-				if (policies != null) {
-					foreach (KeyValuePair<PolicyKey,object> policyPair in policies)
-						cw.Write (xw, PolicyService.DiffSerialize (policyPair.Key.PolicyType, policyPair.Value, policyPair.Key.Scope));
-				}
-				xw.WriteEndElement ();
+			XmlWriter xw = XmlTextWriter.Create(writer, xws);
+			using (xw) {
+				SaveToXml (xw);
 			}
 		}
 		
+		internal void SaveToXml (XmlWriter xw)
+		{
+			XmlConfigurationWriter cw = new XmlConfigurationWriter ();
+			cw.StoreAllInElements = true;
+			cw.StoreInElementExceptions = new String[] { "scope", "inheritsSet", "inheritsScope" };
+			xw.WriteStartElement ("PolicySet");
+			if (!string.IsNullOrEmpty (Name))
+				xw.WriteAttributeString ("name", Name);
+			if (!string.IsNullOrEmpty (Id))
+				xw.WriteAttributeString ("id", Id);
+			if (policies != null) {
+				foreach (KeyValuePair<PolicyKey,object> policyPair in policies)
+					cw.Write (xw, PolicyService.DiffSerialize (policyPair.Key.PolicyType, policyPair.Value, policyPair.Key.Scope));
+			}
+			xw.WriteEndElement ();
+		}
+		
 		internal void LoadFromFile (StreamReader reader)
+		{
+			var xr = System.Xml.XmlReader.Create (reader);
+			LoadFromXml (xr);
+		}
+		
+		internal void LoadFromXml (XmlReader reader)
 		{
 			if (policies == null)
 				policies = new PolicyDictionary ();
 			else
 				policies.Clear ();
+			
+			reader.MoveToContent ();
+			string str = reader.GetAttribute ("name");
+			if (!string.IsNullOrEmpty (str))
+				Name = str;
+			str = reader.GetAttribute ("id");
+			if (!string.IsNullOrEmpty (str))
+				Id = str;
+			reader.MoveToElement ();
 			
 			//note: can't use AddSerializedPolicies as we want diff serialisation
 			foreach (ScopedPolicy policyPair in PolicyService.DiffDeserializeXml (reader)) {
@@ -134,6 +172,45 @@ namespace MonoDevelop.Projects.Policies
 					                                     key.ToString () + "' to policy set '" + Id + "'");
 				policies[key] = policyPair.Policy;
 			}
+		}
+		
+		public void CopyFrom (PolicySet pset)
+		{
+			if (pset.policies == null && policies == null)
+				return;
+
+			// Add and update policies
+			
+			if (pset.policies != null) {
+				foreach (KeyValuePair<PolicyKey, object> p in pset.policies) {
+					object oldVal;
+					if (policies == null || !policies.TryGetValue (p.Key, out oldVal) || oldVal == null || !oldVal.Equals (p.Value)) {
+						if (policies == null)
+							policies = new PolicyDictionary ();
+						policies [p.Key] = p.Value;
+						OnPolicyChanged (p.Key.PolicyType, p.Key.Scope);
+					}
+				}
+			}
+			
+			// Remove policies
+			
+			if (policies != null) {
+				foreach (PolicyKey k in policies.Keys.ToArray ()) {
+					if (pset.policies == null || !pset.policies.ContainsKey (k)) {
+						policies.Remove (k);
+						OnPolicyChanged (k.PolicyType, k.Scope);
+					}
+				}
+			}
+		}
+		
+		public PolicySet Clone ()
+		{
+			PolicySet p = new PolicySet ();
+			p.CopyFrom (this);
+			p.Name = Name;
+			return p;
 		}
 	}
 }

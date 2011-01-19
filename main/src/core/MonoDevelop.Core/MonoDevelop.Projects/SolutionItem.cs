@@ -37,10 +37,11 @@ using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core.Collections;
 using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Projects
 {
-	public abstract class SolutionItem: IExtendedDataItem, IBuildTarget, ILoadController
+	public abstract class SolutionItem: IExtendedDataItem, IBuildTarget, ILoadController, IPolicyProvider
 	{
 		SolutionFolder parentFolder;
 		Solution parentSolution;
@@ -195,6 +196,12 @@ namespace MonoDevelop.Projects
 			//setter so that a solution can deserialise the PropertyBag on its RootFolder
 			internal set {
 				policies = value;
+			}
+		}
+		
+		PolicyContainer IPolicyProvider.Policies {
+			get {
+				return Policies;
 			}
 		}
 		

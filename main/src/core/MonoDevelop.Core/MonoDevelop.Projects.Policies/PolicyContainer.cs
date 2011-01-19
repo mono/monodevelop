@@ -32,7 +32,7 @@ namespace MonoDevelop.Projects.Policies
 	/// <summary>
 	/// A set of policies. Policies are identified by type.
 	/// </summary>
-	public abstract class PolicyContainer
+	public abstract class PolicyContainer: IPolicyProvider
 	{
 		internal PolicyDictionary policies;
 		
@@ -282,6 +282,12 @@ namespace MonoDevelop.Projects.Policies
 		{
 			if (ReadOnly)
 				throw new InvalidOperationException ("This PolicyContainer can't be modified");
+		}
+		
+		PolicyContainer IPolicyProvider.Policies {
+			get {
+				return this;
+			}
 		}
 	}
 }

@@ -47,6 +47,9 @@ namespace MonoDevelop.Projects.Extensions
 		[NodeAttribute ("visible")]
 		bool visible = true;
 		
+		[NodeAttribute ("allowDiffSerialize")]
+		bool allowDiffSerialize;
+		
 		protected override void OnChildNodeAdded (ExtensionNode node)
 		{
 			PolicyResourceNode res = (PolicyResourceNode) node;
@@ -68,6 +71,7 @@ namespace MonoDevelop.Projects.Extensions
 				if (polSet == null) {
 					polSet = new PolicySet (Id, MonoDevelop.Core.GettextCatalog.GetString (name));
 					polSet.Visible = visible;
+					polSet.AllowDiffSerialize = allowDiffSerialize;
 					foreach (PolicyResourceNode res in ChildNodes) {
 						try {
 						using (System.IO.StreamReader reader = res.GetStream ())

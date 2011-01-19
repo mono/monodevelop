@@ -35,10 +35,11 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.StringParsing;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Projects
 {
-	public class Solution: WorkspaceItem, IConfigurationTarget
+	public class Solution: WorkspaceItem, IConfigurationTarget, IPolicyProvider
 	{
 		internal object MemoryProbe = Counters.SolutionsInMemory.CreateMemoryProbe ();
 		SolutionFolder rootFolder;
@@ -457,6 +458,12 @@ namespace MonoDevelop.Projects
 			get { return RootFolder.Policies; }
 			//this is for deserialisation
 			internal set { RootFolder.Policies = value; }
+		}
+		
+		PolicyContainer IPolicyProvider.Policies {
+			get {
+				return Policies;
+			}
 		}
 
 		public string Version {

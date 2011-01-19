@@ -36,6 +36,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core.Serialization;
 using System.Text;
+using System.Xml;
 
 namespace MonoDevelop.Projects.Policies
 {
@@ -47,6 +48,7 @@ namespace MonoDevelop.Projects.Policies
 		const string SET_EXT_POINT  = "/MonoDevelop/ProjectModel/PolicySets";
 		
 		static List<PolicySet> sets = new List<PolicySet> ();
+		static List<PolicySet> userSets = new List<PolicySet> ();
 		static DataSerializer serializer;
 		static Dictionary<string, Type> policyNames = new Dictionary<string, Type> ();
 		static Dictionary<Type, string> policyTypes = new Dictionary<Type, string> ();
@@ -159,14 +161,22 @@ namespace MonoDevelop.Projects.Policies
 		internal static IEnumerable<ScopedPolicy> DiffDeserializeXml (System.IO.StreamReader reader)
 		{
 			var xr = System.Xml.XmlReader.Create (reader);
+			return DiffDeserializeXml (xr);
+		}
+		
+		internal static IEnumerable<ScopedPolicy> DiffDeserializeXml (System.Xml.XmlReader xr)
+		{
 			XmlConfigurationReader configReader = XmlConfigurationReader.DefaultReader;
-			while (!xr.EOF && xr.MoveToContent () != System.Xml.XmlNodeType.None) {
+			while (!xr.EOF && xr.MoveToContent () == System.Xml.XmlNodeType.Element) {
 				DataNode node = configReader.Read (xr);
 				if (node.Name == "PolicySet" && node is DataItem) {
-					foreach (DataNode child in ((DataItem)node).ItemData)
-						yield return DiffDeserialize (child);
+					foreach (DataNode child in ((DataItem)node).ItemData) {
+						if (child is DataItem)
+							yield return DiffDeserialize ((DataItem)child);
+					}
+					yield break;
 				} else {
-					yield return DiffDeserialize (node);
+					yield return DiffDeserialize ((DataItem)node);
 				}
 			}
 		}
@@ -223,17 +233,15 @@ namespace MonoDevelop.Projects.Policies
 			return node;
 		}
 		
-		internal static ScopedPolicy DiffDeserialize (DataNode data)
+		internal static ScopedPolicy DiffDeserialize (DataItem item)
 		{
-			DataItem item = (DataItem) data;
-			
 			DataValue inheritVal = item.ItemData ["inheritsSet"] as DataValue;
 			if (inheritVal == null || inheritVal.Value == "null")
-				return RawDeserialize (data);
+				return RawDeserialize (item);
 			
-			Type t = GetRegisteredType (data.Name);
+			Type t = GetRegisteredType (item.Name);
 			if (t == null) {
-				UnknownPolicy up = new UnknownPolicy (data);
+				UnknownPolicy up = new UnknownPolicy (item);
 				return new ScopedPolicy (typeof(UnknownPolicy), up, up.Scope);
 			}
 			
@@ -247,7 +255,7 @@ namespace MonoDevelop.Projects.Policies
 			
 			object baseItem = set.Get (t, inheritScope != null ? inheritScope.Value : null);
 			if (baseItem == null) {
-				string msg = "Policy set '" + set.Id + "' does not contain a policy for '" + data.Name + "'";
+				string msg = "Policy set '" + set.Id + "' does not contain a policy for '" + item.Name + "'";
 				if (inheritScope != null)
 					msg += ", scope '" + inheritScope.Value + "'";
 				msg += ". This policy is likely provided by an addin that is not currently installed.";
@@ -256,7 +264,7 @@ namespace MonoDevelop.Projects.Policies
 			
 			DataValue scopeVal = item.ItemData.Extract ("scope") as DataValue;
 			DataNode baseline = RawSerialize (t, baseItem);
-			ScopedPolicy p = RawDeserialize (ApplyOverlay (baseline, data));
+			ScopedPolicy p = RawDeserialize (ApplyOverlay (baseline, item));
 			return new ScopedPolicy (t, p.Policy, scopeVal != null ? scopeVal.Value : null);
 		}
 		
@@ -283,8 +291,6 @@ namespace MonoDevelop.Projects.Policies
 			if (policy != null) {
 				//find the policy with the fewest differences
 				foreach (PolicySet set in sets) {
-					if (set.Id == "Invariant")
-						continue;
 					foreach (ScopedPolicy sp in set.GetScoped (policyType)) {
 						if (!set.SupportsDiffSerialize (sp))
 							continue;
@@ -1034,12 +1040,68 @@ namespace MonoDevelop.Projects.Policies
 		}
 		
 		/// <summary>
+		/// Gets the policy sets defined by the user
+		/// </summary>
+		/// <returns>
+		/// The user policy sets.
+		/// </returns>
+		public static IEnumerable<PolicySet> GetUserPolicySets ()
+		{
+			return userSets;
+		}
+		
+		/// <summary>
+		/// Adds a new user defined policy set
+		/// </summary>
+		/// <param name='pset'>
+		/// The policy set
+		/// </param>
+		public static void AddUserPolicySet (PolicySet pset)
+		{
+			userSets.Add (pset);
+			sets.Add (pset);
+		}
+		
+		/// <summary>
+		/// Removes a user defined policy set
+		/// </summary>
+		/// <param name='pset'>
+		/// The policy set
+		/// </param>
+		public static void RemoveUserPolicySet (PolicySet pset)
+		{
+			if (userSets.Remove (pset))
+				sets.Remove (pset);
+			else
+				throw new InvalidOperationException ("The provided property set is not a user defined property set");
+		}
+		
+		/// <summary>
+		/// Get all defined policy sets
+		/// </summary>
+		/// <returns>
+		/// The policy sets.
+		/// </returns>
+		public static IEnumerable<PolicySet> GetPolicySets ()
+		{
+			return sets;
+		}
+		
+		
+		/// <summary>
 		/// Saves the default policies.
 		/// </summary>
 		public static void SaveDefaultPolicies ()
 		{
 			ParanoidSave (DefaultPoliciesPath, "default policies", delegate (StreamWriter writer) {
-				defaultPolicies.SaveToFile (writer);
+				XmlWriterSettings xws = new XmlWriterSettings ();
+				xws.Indent = true;
+				XmlWriter xw = XmlTextWriter.Create(writer, xws);
+				xw.WriteStartElement ("Policies");
+				defaultPolicies.SaveToXml (xw);
+				foreach (PolicySet ps in userSets)
+					ps.SaveToXml (xw);
+				xw.WriteEndElement ();
 			});
 		}	
 		
@@ -1047,10 +1109,35 @@ namespace MonoDevelop.Projects.Policies
 		{
 			if (defaultPolicies != null)
 				defaultPolicies.PolicyChanged -= DefaultPoliciesPolicyChanged;
-			defaultPolicies = new PolicySet (null, null);
+			
+			userSets.Clear ();
+			defaultPolicies = null;
+			
 			ParanoidLoad (DefaultPoliciesPath, "default policies", delegate (StreamReader reader) {
-				defaultPolicies.LoadFromFile (reader);
+				var xr = XmlReader.Create (reader);
+				xr.MoveToContent ();
+				if (xr.LocalName == "PolicySet") {
+					defaultPolicies = new PolicySet ("Default", null);
+					defaultPolicies.LoadFromXml (xr);
+				} else if (xr.LocalName == "Policies" && !xr.IsEmptyElement) {
+					xr.ReadStartElement ();
+					xr.MoveToContent ();
+					while (xr.NodeType != XmlNodeType.EndElement) {
+						PolicySet pset = new PolicySet ();
+						pset.LoadFromXml (xr);
+						if (pset.Id == "Default")
+							defaultPolicies = pset;
+						else {
+							userSets.Add (pset);
+							sets.Add (pset);
+						}
+						xr.MoveToContent ();
+					}
+				}
 			});
+			if (defaultPolicies == null) {
+				defaultPolicies = new PolicySet ("Default", null);
+			}
 			defaultPolicies.PolicyChanged += DefaultPoliciesPolicyChanged;
 		}
 

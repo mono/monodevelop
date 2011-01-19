@@ -94,7 +94,9 @@ namespace MonoDevelop.Projects.Policies
 			policies = new PolicyDictionary ();
 			foreach (DataNode node in data) {
 				try {
-					ScopedPolicy val = PolicyService.DiffDeserialize (node);
+					if (!(node is DataItem))
+						continue;
+					ScopedPolicy val = PolicyService.DiffDeserialize ((DataItem)node);
 					policies.Add (val);
 				} catch (Exception ex) {
 					if (handler.SerializationContext.ProgressMonitor != null)

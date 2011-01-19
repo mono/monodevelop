@@ -333,6 +333,7 @@ FILES =  \
 	MonoDevelop.Projects.Formats.MSBuild/SlnData.cs \
 	MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs \
 	MonoDevelop.Projects.Policies/DotNetNamingPolicy.cs \
+	MonoDevelop.Projects.Policies/IPolicyProvider.cs \
 	MonoDevelop.Projects.Policies/PolicyBag.cs \
 	MonoDevelop.Projects.Policies/PolicyChangedEventArgs.cs \
 	MonoDevelop.Projects.Policies/PolicyContainer.cs \
