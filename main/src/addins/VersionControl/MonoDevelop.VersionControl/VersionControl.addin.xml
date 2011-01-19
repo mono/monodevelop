@@ -275,10 +275,12 @@
 		</Section>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels">
-		<Section id="VersionControl" _label="Version Control">
-			<Section id = "VersionControlGeneral" _label = "Commit Message Style" fill="true" class="MonoDevelop.VersionControl.VersionControlPolicyPanel" />
-		</Section>
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels/VersionControl">
+		<Section id = "VersionControlGeneral" _label = "Commit Message Style" fill="true" class="MonoDevelop.VersionControl.VersionControlPolicyPanel" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/VersionControl">
+		<Section id = "VersionControlGeneral" _label = "Commit Message Style" fill="true" class="MonoDevelop.VersionControl.VersionControlPolicyPanel" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/PolicyTypes" >
