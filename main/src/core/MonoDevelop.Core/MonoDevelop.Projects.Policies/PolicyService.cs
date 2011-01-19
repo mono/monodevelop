@@ -805,7 +805,35 @@ namespace MonoDevelop.Projects.Policies
 		/// </remarks>
 		public static PolicySet GetMatchingSet<T> (T policy, bool includeHidden) where T : class, IEquatable<T>, new ()
 		{
-			foreach (PolicySet ps in sets) {
+			return GetMatchingSet (policy, sets, includeHidden);
+		}
+		
+		/// <summary>
+		/// Gets a policy set which contains a specific policy value
+		/// </summary>
+		/// <returns>
+		/// The matching policy set.
+		/// </returns>
+		/// <param name='policy'>
+		/// Policy to be compared
+		/// </param>
+		/// <param name='candidateSets'>
+		/// List of policy sets where to look for the specified policy
+		/// </param>
+		/// <param name='includeHidden'>
+		/// True if hidden (system) policy sets have to be returned, False otherwise.
+		/// </param>
+		/// <typeparam name='T'>
+		/// Type of the policy to look for.
+		/// </typeparam>
+		/// <remarks>
+		/// This method returns a policy set which defines a policy of type T which is identical
+		/// to the policy provided as argument. If there are several matching policy sets, it
+		/// returns the first it finds
+		/// </remarks>
+		public static PolicySet GetMatchingSet<T> (T policy, IEnumerable<PolicySet> candidateSets, bool includeHidden) where T : class, IEquatable<T>, new ()
+		{
+			foreach (PolicySet ps in candidateSets) {
 				T match = ps.Get<T> ();
 				if (match != null  && (ps.Visible || includeHidden) && match.Equals (policy))
 					return ps;
@@ -863,7 +891,38 @@ namespace MonoDevelop.Projects.Policies
 		/// </remarks>		
 		public static PolicySet GetMatchingSet<T> (T policy, IEnumerable<string> scopes, bool includeHidden) where T : class, IEquatable<T>, new ()
 		{
-			foreach (PolicySet ps in sets) {
+			return GetMatchingSet (policy, sets, scopes, includeHidden);
+		}
+		
+		/// <summary>
+		/// Gets a policy set which contains a specific policy value
+		/// </summary>
+		/// <returns>
+		/// The policy set.
+		/// </returns>
+		/// <param name='policy'>
+		/// Policy to be compared
+		/// </param>
+		/// <param name='candidateSets'>
+		/// List of policy sets where to look for the specified policy
+		/// </param>
+		/// <param name='scopes'>
+		/// Scopes under which the policy has to be defined (it can be for example a hirearchy of mime types)
+		/// </param>
+		/// <param name='includeHidden'>
+		/// True if hidden (system) policy sets have to be returned, False otherwise.
+		/// </param>
+		/// <typeparam name='T'>
+		/// Type of the policy to look for.
+		/// </typeparam>
+		/// <remarks>
+		/// This method returns a policy set which defines a policy of type T which is identical
+		/// to the policy provided as argument. This policy has to be defined under one of the
+		/// provided scopes. If there are several matching policy sets, it returns the first it finds.
+		/// </remarks>		
+		public static PolicySet GetMatchingSet<T> (T policy, IEnumerable<PolicySet> candidateSets, IEnumerable<string> scopes, bool includeHidden) where T : class, IEquatable<T>, new ()
+		{
+			foreach (PolicySet ps in candidateSets) {
 				T match = ps.Get<T> (scopes);
 				if (match != null && (ps.Visible || includeHidden) && match.Equals (policy))
 					return ps;
