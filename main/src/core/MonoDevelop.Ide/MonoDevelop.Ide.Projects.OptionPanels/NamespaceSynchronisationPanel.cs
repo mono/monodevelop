@@ -51,7 +51,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			if (slnFolder != null)
 				return slnFolder.GetAllItems<DotNetProject> ().Any ();
 			
-			return false;
+			// Global options case
+			return !(item is IWorkspaceObject);
 		}
 		
 		public override Widget CreatePanelWidget ()

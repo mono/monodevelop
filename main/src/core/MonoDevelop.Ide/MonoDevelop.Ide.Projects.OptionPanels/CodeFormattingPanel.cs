@@ -44,6 +44,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		Dictionary<string,MimeTypePanelData> typeSections = new Dictionary<string, MimeTypePanelData> ();
 		List<string> globalMimeTypes;
 		HashSet<string> mimeTypesWithPolicies = new HashSet<string> ();
+		bool internalPolicyUpdate;
+		CodeFormattingPanelWidget widget;
 		
 		public override void Initialize (MonoDevelop.Ide.Gui.Dialogs.OptionsDialog dialog, object dataObject)
 		{
@@ -52,12 +54,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			foreach (MimeTypeOptionsPanelNode node in AddinManager.GetExtensionNodes ("/MonoDevelop/ProjectModel/Gui/MimeTypePolicyPanels"))
 				mimeTypesWithPolicies.Add (node.MimeType);
 			
-			if (dataObject is SolutionItem) {
-				policyContainer = ((SolutionItem)dataObject).Policies;
-			} else if (dataObject is Solution) {
-				policyContainer = ((Solution)dataObject).Policies;
-			} else if (dataObject is PolicySet) {
-				policyContainer = ((PolicySet)dataObject);
+			var provider = dataObject as IPolicyProvider;
+			if (provider == null)
+				provider = PolicyService.GetUserDefaultPolicySet ();
+			
+			policyContainer = provider.Policies;
+			if (!(dataObject is SolutionItem) && !(dataObject is Solution)) {
 				globalMimeTypes = new List<string> ();
 				string userTypes = PropertyService.Get<string> ("MonoDevelop.Projects.GlobalPolicyMimeTypes", "");
 				globalMimeTypes.AddRange (userTypes.Split (new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries));
@@ -65,6 +67,40 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			
 			foreach (string mt in GetItemMimeTypes ())
 				AddPanel (mt);
+			
+			policyContainer.PolicyChanged += HandlePolicyContainerPolicyChanged;
+		}
+		
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			policyContainer.PolicyChanged -= HandlePolicyContainerPolicyChanged;
+		}
+
+		void HandlePolicyContainerPolicyChanged (object sender, PolicyChangedEventArgs e)
+		{
+			if (internalPolicyUpdate)
+				return;
+			
+			// The policy container has changed externally. The panel data has to be reloaded
+			
+			foreach (MimeTypePanelData pd in typeSections.Values) {
+				bool useParentPolicy = false;
+				bool modified = false;
+				foreach (IMimeTypePolicyOptionsPanel panel in pd.Panels) {
+					// Reload the panel if it is handling the modified policy
+					if (panel.HandlesPolicyType (e.PolicyType, e.Scope)) {
+						panel.LoadSetPolicy (policyContainer);
+						modified = true;
+					}
+					if (!panel.HasCustomPolicy)
+						useParentPolicy = true;
+				}
+				if (modified)
+					pd.UseParentPolicy = useParentPolicy;
+			}
+			if (widget != null)
+				widget.Refresh ();
 		}
 		
 		MimeTypePanelData AddPanel (string mt)
@@ -144,13 +180,13 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				panels.Add (panel);
 			}
 			data.Panels = panels;
-			if (!policyContainer.IsRoot)
+			if (!policyContainer.IsRoot || ParentDialog is DefaultPolicyOptionsDialog)
 				data.UseParentPolicy = useParentPolicy;
 		}
 		
 		public override Gtk.Widget CreatePanelWidget ()
 		{
-			return new CodeFormattingPanelWidget (this, ParentDialog);
+			return widget = new CodeFormattingPanelWidget (this, ParentDialog);
 		}
 		
 		public override void ApplyChanges ()
@@ -159,10 +195,15 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				string types = string.Join (";", globalMimeTypes.ToArray ());
 				PropertyService.Set ("MonoDevelop.Projects.GlobalPolicyMimeTypes", types);
 			}
-			// If a section is already loaded, changes will be committed in the panel
-			foreach (MimeTypePanelData pd in typeSections.Values) {
-				if (!pd.SectionLoaded)
-					pd.ApplyChanges ();
+			try {
+				internalPolicyUpdate = true;
+				// If a section is already loaded, changes will be committed in the panel
+				foreach (MimeTypePanelData pd in typeSections.Values) {
+					if (!pd.SectionLoaded)
+						pd.ApplyChanges ();
+				}
+			} finally {
+				internalPolicyUpdate = false;
 			}
 		}
 		
@@ -267,7 +308,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			if (mt.UseParentPolicy)
 				selection = parentPolicyText;
 			else {
-				PolicySet matchingSet = mt.GetMatchingSet ();
+				PolicySet matchingSet = mt.GetMatchingSet (null);
 				if (matchingSet != null)
 					selection = matchingSet.Name;
 				else
@@ -315,6 +356,11 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			foreach (MimeTypePanelData mt in panel.GetMimeTypeData ()) {
 				store.AppendValues (mt, DesktopService.GetPixbufForType (mt.MimeType, Gtk.IconSize.Menu), mt.TypeDescription);
 			}
+		}
+		
+		public void Refresh ()
+		{
+			tree.QueueDraw ();
 		}
 
 		protected void OnButtonEditClicked (object sender, System.EventArgs e)

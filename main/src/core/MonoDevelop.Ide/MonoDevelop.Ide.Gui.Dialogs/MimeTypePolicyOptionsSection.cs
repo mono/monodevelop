@@ -50,6 +50,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		MimeTypePanelData panelData;
 		Notebook notebook;
 		bool isRoot;
+		HBox warningMessage;
+		bool isGlobalPolicy;
+		List<PolicySet> setsInCombo = new List<PolicySet> ();
 		
 		public MimeTypePolicyOptionsSection ()
 		{
@@ -60,16 +63,19 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			base.Initialize (dialog, dataObject);
 			panelData = (MimeTypePanelData) dataObject;
 			
-			if (panelData.DataObject is SolutionItem) {
-				bag = ((SolutionItem)panelData.DataObject).Policies;
-			} else if (panelData.DataObject is Solution) {
-				bag = ((Solution)panelData.DataObject).Policies;
-			} else if (panelData.DataObject is PolicySet) {
-				polSet = ((PolicySet)panelData.DataObject);
+			IPolicyProvider provider = panelData.DataObject as IPolicyProvider;
+			if (provider == null) {
+				provider = PolicyService.GetUserDefaultPolicySet ();
+				isGlobalPolicy = true;
 			}
+			
+			bag = provider.Policies as PolicyBag;
+			polSet = provider.Policies as PolicySet;
 			mimeType = panelData.MimeType;
 			panelData.SectionPanel = this;
 			isRoot = polSet != null || bag.IsRoot;
+			if (IsCustomUserPolicy)
+				isRoot = false;
 		}
 		
 		public override Widget CreatePanelWidget ()
@@ -93,6 +99,22 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			VBox vbox = new VBox (false, 6);
 			vbox.PackStart (hbox, false, false, 0);
 			vbox.ShowAll ();
+			
+			// Warning message to be shown when the user modifies the default policy
+			
+			warningMessage = new HBox ();
+			warningMessage.Spacing = 6;
+			Image img = new Image (Gtk.Stock.DialogWarning, IconSize.LargeToolbar);
+			warningMessage.PackStart (img, false, false, 0);
+			Label wl = new Label (GettextCatalog.GetString ("Changes done in this section will only be applied to new projects. " +
+				"Settings for existing projects can be modified in the project (or solution) options dialog."));
+			wl.Xalign = 0;
+			wl.Wrap = true;
+			wl.WidthRequest = 450;
+			warningMessage.PackStart (wl, true, true, 0);
+			warningMessage.ShowAll ();
+			warningMessage.Visible = false;
+			vbox.PackEnd (warningMessage, false, false, 0);
 			
 			notebook = new Notebook ();
 
@@ -160,20 +182,27 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			loading = false;
 		}
 		
-		void FillPolicies ()
+		public void FillPolicies ()
 		{
-			if (!isRoot) {
+			((ListStore)store).Clear ();
+			
+			if (IsCustomUserPolicy) {
+				store.AppendValues (GettextCatalog.GetString ("System Default"), null);
+				store.AppendValues ("--", null);
+			} else if (!isRoot) {
 				store.AppendValues (GettextCatalog.GetString ("Inherited Policy"), null);
 				store.AppendValues ("--", null);
 			}
 			
-			bool added = false;
+			setsInCombo.Clear ();
 			foreach (PolicySet set in panelData.GetSupportedPolicySets ()) {
+				if (polSet != null && polSet.Name == set.Name)
+					continue;
 				store.AppendValues (set.Name, set);
-				added = true;
+				setsInCombo.Add (set);
 			}
 			
-			if (added)
+			if (setsInCombo.Count > 0)
 				store.AppendValues ("--", null);
 			
 			store.AppendValues (GettextCatalog.GetString ("Custom"), null);
@@ -191,7 +220,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				return;
 			}
 			
-			PolicySet matchedSet = panelData.GetMatchingSet ();
+			int active = -1;
+			
+			PolicySet matchedSet = panelData.GetMatchingSet (setsInCombo);
 			
 			TreeIter iter;
 			int i = 0;
@@ -199,14 +230,22 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				do {
 					PolicySet s2 = store.GetValue (iter, 1) as PolicySet;
 					if (s2 != null && s2.Id == matchedSet.Id) {
-						policyCombo.Active = i;
-						return;
+						active = i;
+						break;
 					}
 					i++;
 				} while (store.IterNext (ref iter));
 			}
+			if (active != -1)
+				policyCombo.Active = active;
+			else
+				policyCombo.Active = store.IterNChildren () - 1;
 			
-			policyCombo.Active = store.IterNChildren () - 1;
+			warningMessage.Visible = isGlobalPolicy && panelData.Modified;
+		}
+		
+		bool IsCustomUserPolicy {
+			get { return ParentDialog is MonoDevelop.Ide.Projects.DefaultPolicyOptionsDialog; }
 		}
 		
 		public override bool IsVisible ()
@@ -254,14 +293,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}	
 		}
 		
-		public PolicySet GetMatchingSet ()
+		public PolicySet GetMatchingSet (IEnumerable<PolicySet> candidateSets)
 		{
 			// Find a policy set which is common to all policy types
 			
 			PolicySet matchedSet = null;
 			bool firstMatch = true;
 			foreach (IMimeTypePolicyOptionsPanel panel in Panels) {
-				PolicySet s = panel.GetMatchingSet ();
+				PolicySet s = panel.GetMatchingSet (candidateSets);
 				if (firstMatch) {
 					matchedSet = s;
 					firstMatch = false;
@@ -272,6 +311,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}
 			}
 			return matchedSet;
+		}
+		
+		public bool Modified {
+			get {
+				return Panels.Any (p => p.Modified);
+			}
 		}
 		
 		public IEnumerable<PolicySet> GetSupportedPolicySets ()
@@ -316,8 +361,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			useParentPolicy = false;
 			foreach (IMimeTypePolicyOptionsPanel panel in Panels)
 				panel.LoadSetPolicy (pset);
-			if (SectionLoaded)
+			if (SectionLoaded) {
+				SectionPanel.FillPolicies ();
 				SectionPanel.UpdateSelectedNamedPolicy ();
+			}
 		}
 	}
 }

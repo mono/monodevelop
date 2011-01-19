@@ -46,13 +46,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void LoadCurrentPolicy ();
 		void LoadParentPolicy ();
-		void LoadSetPolicy (PolicySet pset);
+		void LoadSetPolicy (PolicyContainer pset);
 		void StorePolicy ();
 		
 		bool HasCustomPolicy { get; }
 		void RemovePolicy (PolicyContainer bag);
 		IEnumerable<PolicySet> GetPolicySets ();
-		PolicySet GetMatchingSet ();
+		PolicySet GetMatchingSet (IEnumerable<PolicySet> candidateSets);
+		bool Modified { get; }
+		bool HandlesPolicyType (Type type, string scope);
 	}
 	
 	public abstract class MimeTypePolicyOptionsPanel<T>: ItemOptionsPanel, IMimeTypePolicyOptionsPanel where T : class, IEquatable<T>, new ()
@@ -128,7 +130,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			return PolicyService.GetDefaultPolicy<T>(scopes);
 		}
 		
-		void IMimeTypePolicyOptionsPanel.LoadSetPolicy (PolicySet pset)
+		void IMimeTypePolicyOptionsPanel.LoadSetPolicy (PolicyContainer pset)
 		{
 			object selected = pset.Get<T> (mimeTypeScopes);
 			if (selected == null)
@@ -157,16 +159,25 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			return PolicyService.GetPolicySets<T> (mimeTypeScopes);
 		}
 		
-		PolicySet IMimeTypePolicyOptionsPanel.GetMatchingSet ()
+		PolicySet IMimeTypePolicyOptionsPanel.GetMatchingSet (IEnumerable<PolicySet> candidateSets)
 		{
 			T pol = GetCurrentPolicy ();
-			return PolicyService.GetMatchingSet (pol, mimeTypeScopes);
+			if (candidateSets != null)
+				return PolicyService.GetMatchingSet (pol, candidateSets, mimeTypeScopes, false);
+			else
+				return PolicyService.GetMatchingSet (pol, mimeTypeScopes, false);
 		}
 		
 		void IMimeTypePolicyOptionsPanel.RemovePolicy (PolicyContainer bag)
 		{
 			bag.Remove<T> (mimeType);
 		}
+		
+		bool IMimeTypePolicyOptionsPanel.HandlesPolicyType (Type type, string scope)
+		{
+			return type == typeof(T) && scope == mimeType;
+		}
+
 		
 		T GetDirectInherited (PolicyContainer initialContainer)
 		{
@@ -259,7 +270,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			panelWidget.Show ();
 			return box;
 		}
-
+		
+		public bool Modified {
+			get {
+				T pol = policyContainer.Get<T> (mimeTypeScopes) ?? PolicyService.GetDefaultPolicy<T> (mimeTypeScopes);
+				return !pol.Equals (GetCurrentPolicy ());
+			}
+		}
 		
 		protected abstract void LoadFrom (T policy);
 		

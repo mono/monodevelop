@@ -46,6 +46,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		PolicySet polSet;
 		PolicyContainer policyContainer;
 		bool loading = true;
+		HBox warningMessage;
+		bool isGlobalPolicy;
+		Widget policyPanel;
+		bool policyUndefined;
+		List<PolicySet> setsInCombo = new List<PolicySet> ();
 		
 		public PolicyOptionsPanel ()
 		{
@@ -76,14 +81,31 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			FillPolicies ();
 			policyCombo.Active = 0;
+
+			// Message to be shown when the user changes default policies
 			
-			Widget child = CreatePanelWidget ();
+			warningMessage = new HBox ();
+			warningMessage.Spacing = 6;
+			Image img = new Image (Gtk.Stock.DialogWarning, IconSize.LargeToolbar);
+			warningMessage.PackStart (img, false, false, 0);
+			Label wl = new Label (GettextCatalog.GetString ("Changes done in this section will only be applied to new projects. " +
+				"Settings for existing projects can be modified in the project (or solution) options dialog."));
+			wl.Xalign = 0;
+			wl.Wrap = true;
+			wl.WidthRequest = 450;
+			warningMessage.PackStart (wl, true, true, 0);
+			warningMessage.ShowAll ();
+			warningMessage.Visible = false;
+			vbox.PackEnd (warningMessage, false, false, 0);
+			
+			policyPanel = CreatePanelWidget ();
 			//HACK: work around bug 469427 - broken themes match on widget names
-			if (child.Name.IndexOf ("Panel") > 0)
-				child.Name = child.Name.Replace ("Panel", "_");
-			vbox.PackEnd (child, true, true, 0);
+			if (policyPanel.Name.IndexOf ("Panel") > 0)
+				policyPanel.Name = policyPanel.Name.Replace ("Panel", "_");
+			vbox.PackEnd (policyPanel, true, true, 0);
 			
-			LoadFrom (GetCurrentValue ());
+			InitializePolicy ();
+
 			loading = false;
 			
 			if (!IsRoot && !policyContainer.DirectHas<T> ()) {
@@ -97,20 +119,34 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			return vbox;
 		}
+		
+		void LoadPolicy (T policy)
+		{
+			if (policy == null) {
+				policyPanel.Sensitive = false;
+				return;
+			}
+			policyPanel.Sensitive = true;
+			LoadFrom (policy);
+		}
 
 		void HandlePolicyComboChanged (object sender, EventArgs e)
 		{
+			policyPanel.Sensitive = true;
 			T selected = GetSelectedPolicy ();
-			if (selected != null) {
+			policyUndefined = IsCustomUserPolicy && policyCombo.Active == 0;
+			if (selected != null || policyUndefined) {
 				loading = true;
-				LoadFrom (selected);
+				LoadPolicy (selected);
 				loading = false;
 			}
 		}
 		
 		T GetCurrentValue ()
 		{
-			if (polSet != null)
+			if (policyUndefined)
+				return null;
+			else if (polSet != null)
 				return polSet.Get<T> () ?? new T ();
 			else
 				return bag.Get<T> ();
@@ -118,18 +154,26 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void FillPolicies ()
 		{
-			if (!IsRoot) {
+			((ListStore)store).Clear ();
+			
+			if (IsCustomUserPolicy) {
+				store.AppendValues (GettextCatalog.GetString ("System Default"), null);
+				store.AppendValues ("--", null);
+			}
+			else if (!IsRoot) {
 				store.AppendValues (GettextCatalog.GetString ("Parent Policy"), null);
 				store.AppendValues ("--", null);
 			}
 			
-			bool added = false;
+			setsInCombo.Clear ();
 			foreach (PolicySet set in PolicyService.GetPolicySets<T> ()) {
+				if (polSet != null && set.Name == polSet.Name)
+					continue;
 				store.AppendValues (set.Name, set);
-				added = true;
+				setsInCombo.Add (set);
 			}
 			
-			if (added)
+			if (setsInCombo.Count > 0)
 				store.AppendValues ("--", null);
 			
 			store.AppendValues (GettextCatalog.GetString ("Custom"), null);
@@ -141,6 +185,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			if (active == 0 && !IsRoot)
 				return bag.Owner.ParentFolder.Policies.Get<T> ();
+			if (active == 0 && IsCustomUserPolicy)
+				return null;
 			
 			TreeIter iter;
 			int i = 0;
@@ -164,24 +210,34 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (loading)
 				return;
 			
+			if (policyUndefined) {
+				policyCombo.Active = 0;
+				return;
+			}
+			
 			T pol = GetPolicy ();
 			
-			PolicySet s = PolicyService.GetMatchingSet (pol);
+			PolicySet s = PolicyService.GetMatchingSet (pol, setsInCombo, false);
 			
+			int active = -1;
 			TreeIter iter;
 			int i = 0;
 			if (s != null && store.GetIterFirst (out iter)) {
 				do {
 					PolicySet s2 = store.GetValue (iter, 1) as PolicySet;
-					if (s2 != null && s2.Id == s.Id) {
-						policyCombo.Active = i;
-						return;
+					if (s2 == s) {
+						active = i;
+						break;
 					}
 					i++;
 				} while (store.IterNext (ref iter));
 			}
 			
-			policyCombo.Active = store.IterNChildren () - 1;
+			if (active != -1)
+				policyCombo.Active = active;
+			else
+				policyCombo.Active = store.IterNChildren () - 1;
+			warningMessage.Visible = isGlobalPolicy && !((IEquatable<T>)pol).Equals (GetCurrentValue ());
 		}
 		
 		protected abstract string PolicyTitleWithMnemonic { get; }
@@ -201,33 +257,69 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			get { return !IsRoot && policyCombo.Active == 0; }
 		}
 		
+		bool IsCustomUserPolicy {
+			get { return ParentDialog is MonoDevelop.Ide.Projects.DefaultPolicyOptionsDialog; }
+		}
+		
 		protected abstract void LoadFrom (T policy);
 		protected abstract T GetPolicy ();
 		
 		public override void Initialize (MonoDevelop.Ide.Gui.Dialogs.OptionsDialog dialog, object dataObject)
 		{
 			base.Initialize (dialog, dataObject);
-			if (dataObject is SolutionItem) {
-				policyContainer = bag = ((SolutionItem)dataObject).Policies;
-			} else if (dataObject is Solution) {
-				policyContainer = bag = ((Solution)dataObject).Policies;
-			} else if (dataObject is PolicySet) {
-				policyContainer = polSet = ((PolicySet)dataObject);
+			IPolicyProvider provider = dataObject as IPolicyProvider;
+			if (provider == null) {
+				provider = PolicyService.GetUserDefaultPolicySet ();
+				isGlobalPolicy = true;
 			}
+			policyContainer = provider.Policies;
+			bag = policyContainer as PolicyBag;
+			polSet = policyContainer as PolicySet;
+			
+			policyContainer.PolicyChanged += HandlePolicyContainerPolicyChanged;
+		}
+		
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			policyContainer.PolicyChanged -= HandlePolicyContainerPolicyChanged;
+		}
+
+		void HandlePolicyContainerPolicyChanged (object sender, PolicyChangedEventArgs e)
+		{
+			if (!loading && e.PolicyType == typeof(T)) {
+				FillPolicies ();
+				InitializePolicy ();
+				UpdateSelectedNamedPolicy ();
+			}
+		}
+		
+		void InitializePolicy ()
+		{
+			policyUndefined = IsCustomUserPolicy && !polSet.DirectHas<T> ();
+			LoadPolicy (GetCurrentValue ());
 		}
 		
 		public override void ApplyChanges ()
 		{
-			if (polSet != null) {
-				polSet.Set (GetPolicy ());
-				return;
+			loading = true;
+			try {
+				if (polSet != null) {
+					if (IsCustomUserPolicy && policyUndefined)
+						polSet.Remove<T> ();
+					else
+						polSet.Set (GetPolicy ());
+					return;
+				}
+				
+				if (UseParentPolicy) {
+					bag.Remove<T> ();
+				} else {
+					bag.Set (GetPolicy ());
+				}
+			} finally {
+				loading = false;
 			}
-			
-			if (UseParentPolicy) {
-				bag.Remove<T> ();
-			} else {
-				bag.Set (GetPolicy ());
-			}	
 		}
 	}
 }

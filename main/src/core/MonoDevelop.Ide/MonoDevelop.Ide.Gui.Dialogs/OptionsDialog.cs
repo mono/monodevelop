@@ -110,6 +110,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.DefaultResponse = Gtk.ResponseType.Ok;
 		}
 		
+		protected Alignment MainBox {
+			get { return alignment; }
+		}
+		
 		protected void ExpandCategories ()
 		{
 			TreeIter it;
@@ -137,9 +141,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 		protected override void OnDestroyed()
 		{
-			foreach (PanelInstance pi in panels.Values)
+			foreach (PanelInstance pi in panels.Values) {
 				if (pi.Widget != null)
 					pi.Widget.Destroy ();
+				IDisposable disp = pi.Panel as IDisposable;
+				if (disp != null)
+					disp.Dispose ();
+			}
 			base.OnDestroyed ();
 		}
 		
@@ -195,8 +203,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (section != null) {
 				SectionPage page;
 				if (pages.TryGetValue (section, out page)) {
-					foreach (PanelInstance pi in page.Panels)
+					foreach (PanelInstance pi in page.Panels) {
 						panels.Remove (pi.Node);
+						IDisposable d = pi.Panel as IDisposable;
+						if (d != null)
+							d.Dispose ();
+					}
 					pages.Remove (section);
 					if (page.Widget != null)
 						page.Widget.Destroy ();
@@ -402,6 +414,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 						panels.Remove (node);
 						if (pi.Widget != null)
 							pi.Widget.Destroy ();
+						IDisposable d = pi.Panel as IDisposable;
+						if (d != null)
+							d.Dispose ();
 						pi = null;
 					}
 				}

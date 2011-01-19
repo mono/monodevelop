@@ -4,7 +4,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	public partial class OptionsDialog
 	{
-		private global::Gtk.HBox hbox1;
+		private global::Gtk.Alignment alignment;
+		private global::Gtk.HBox mainHBox;
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 		private global::Gtk.TreeView tree;
 		private global::Gtk.VBox vbox3;
@@ -29,11 +30,18 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			w1.Name = "dialog1_VBox";
 			w1.BorderWidth = ((uint)(2));
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
-			this.hbox1 = new global::Gtk.HBox ();
-			this.hbox1.Name = "hbox1";
-			this.hbox1.Spacing = 6;
-			this.hbox1.BorderWidth = ((uint)(12));
-			// Container child hbox1.Gtk.Box+BoxChild
+			this.alignment = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
+			this.alignment.Name = "alignment";
+			this.alignment.LeftPadding = ((uint)(6));
+			this.alignment.TopPadding = ((uint)(6));
+			this.alignment.RightPadding = ((uint)(6));
+			this.alignment.BottomPadding = ((uint)(6));
+			this.alignment.BorderWidth = ((uint)(6));
+			// Container child alignment.Gtk.Container+ContainerChild
+			this.mainHBox = new global::Gtk.HBox ();
+			this.mainHBox.Name = "mainHBox";
+			this.mainHBox.Spacing = 6;
+			// Container child mainHBox.Gtk.Box+BoxChild
 			this.GtkScrolledWindow = new global::Gtk.ScrolledWindow ();
 			this.GtkScrolledWindow.Name = "GtkScrolledWindow";
 			this.GtkScrolledWindow.HscrollbarPolicy = ((global::Gtk.PolicyType)(2));
@@ -43,11 +51,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.tree.CanFocus = true;
 			this.tree.Name = "tree";
 			this.GtkScrolledWindow.Add (this.tree);
-			this.hbox1.Add (this.GtkScrolledWindow);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.GtkScrolledWindow]));
+			this.mainHBox.Add (this.GtkScrolledWindow);
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.mainHBox [this.GtkScrolledWindow]));
 			w3.Position = 0;
 			w3.Expand = false;
-			// Container child hbox1.Gtk.Box+BoxChild
+			// Container child mainHBox.Gtk.Box+BoxChild
 			this.vbox3 = new global::Gtk.VBox ();
 			this.vbox3.Name = "vbox3";
 			this.vbox3.Spacing = 9;
@@ -93,19 +101,20 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.vbox3.Add (this.pageFrame);
 			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.pageFrame]));
 			w8.Position = 2;
-			this.hbox1.Add (this.vbox3);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox3]));
+			this.mainHBox.Add (this.vbox3);
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.mainHBox [this.vbox3]));
 			w9.Position = 1;
 			w9.Padding = ((uint)(6));
-			w1.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(w1 [this.hbox1]));
-			w10.Position = 0;
+			this.alignment.Add (this.mainHBox);
+			w1.Add (this.alignment);
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(w1 [this.alignment]));
+			w11.Position = 0;
 			// Internal child MonoDevelop.Ide.Gui.Dialogs.OptionsDialog.ActionArea
-			global::Gtk.HButtonBox w11 = this.ActionArea;
-			w11.Name = "dialog1_ActionArea";
-			w11.Spacing = 6;
-			w11.BorderWidth = ((uint)(5));
-			w11.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
+			global::Gtk.HButtonBox w12 = this.ActionArea;
+			w12.Name = "dialog1_ActionArea";
+			w12.Spacing = 6;
+			w12.BorderWidth = ((uint)(5));
+			w12.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonCancel = new global::Gtk.Button ();
 			this.buttonCancel.CanDefault = true;
@@ -115,9 +124,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w11 [this.buttonCancel]));
-			w12.Expand = false;
-			w12.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w13 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w12 [this.buttonCancel]));
+			w13.Expand = false;
+			w13.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonOk = new global::Gtk.Button ();
 			this.buttonOk.CanDefault = true;
@@ -126,11 +135,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.buttonOk.UseStock = true;
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
-			w11.Add (this.buttonOk);
-			global::Gtk.ButtonBox.ButtonBoxChild w13 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w11 [this.buttonOk]));
-			w13.Position = 1;
-			w13.Expand = false;
-			w13.Fill = false;
+			w12.Add (this.buttonOk);
+			global::Gtk.ButtonBox.ButtonBoxChild w14 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w12 [this.buttonOk]));
+			w14.Position = 1;
+			w14.Expand = false;
+			w14.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
