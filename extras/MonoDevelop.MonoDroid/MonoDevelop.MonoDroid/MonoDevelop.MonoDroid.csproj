@@ -115,7 +115,6 @@
     <Compile Include="Adb\AvdWatcher.cs" />
     <Compile Include="Adb\VirtualDeviceManager.cs" />
     <Compile Include="Adb\AndroidVirtualDevice.cs" />
-    <Compile Include="MD24Workarounds.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MonoDroid.addin.xml">
