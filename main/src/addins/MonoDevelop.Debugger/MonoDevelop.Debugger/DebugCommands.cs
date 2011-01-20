@@ -68,7 +68,7 @@ namespace MonoDevelop.Debugger
 	{
 		protected override void Run ()
 		{
-			if (DebuggingService.IsDebugging && !DebuggingService.IsRunning) {
+			if (DebuggingService.IsPaused) {
 				DebuggingService.Resume ();
 				return;
 			}
@@ -136,7 +136,7 @@ namespace MonoDevelop.Debugger
 		
 		protected override void Update (CommandInfo info)
 		{
-			if (DebuggingService.IsDebugging && !DebuggingService.IsRunning) {
+			if (DebuggingService.IsPaused) {
 				info.Enabled = true;
 				info.Text = GettextCatalog.GetString ("_Continue");
 				info.Description = GettextCatalog.GetString ("Continue the execution of the application");
@@ -289,7 +289,7 @@ namespace MonoDevelop.Debugger
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = DebuggingService.IsDebugging && !DebuggingService.IsRunning;
+			info.Enabled = DebuggingService.IsPaused;
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Stepping);
 		}
 	}
@@ -303,7 +303,7 @@ namespace MonoDevelop.Debugger
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = DebuggingService.IsDebugging && !DebuggingService.IsRunning;
+			info.Enabled = DebuggingService.IsPaused;
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Stepping);
 		}
 	}
@@ -317,7 +317,7 @@ namespace MonoDevelop.Debugger
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = DebuggingService.IsDebugging && !DebuggingService.IsRunning;
+			info.Enabled = DebuggingService.IsPaused;
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Stepping);
 		}
 	}
@@ -560,7 +560,7 @@ namespace MonoDevelop.Debugger
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = DebuggingService.IsDebugging && !DebuggingService.IsRunning;
+			info.Enabled = DebuggingService.IsPaused;
 			info.Visible = DebuggingService.IsDebuggingSupported;
 		}
 	}

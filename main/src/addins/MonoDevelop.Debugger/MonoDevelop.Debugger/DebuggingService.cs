@@ -370,6 +370,12 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		public static bool IsPaused {
+			get {
+				return IsDebugging && !IsRunning && currentBacktrace != null;
+			}
+		}
+
 		public static void Pause ()
 		{
 			session.Stop ();

@@ -16,6 +16,7 @@ FILES =  \
 	Mono.Debugger.Soft/AppDomainUnloadEvent.cs \
 	Mono.Debugger.Soft/ArrayMirror.cs \
 	Mono.Debugger.Soft/AssemblyLoadEvent.cs \
+	Mono.Debugger.Soft/AssemblyLoadEventRequest.cs \
 	Mono.Debugger.Soft/AssemblyMirror.cs \
 	Mono.Debugger.Soft/AssemblyUnloadEvent.cs \
 	Mono.Debugger.Soft/BreakpointEvent.cs \

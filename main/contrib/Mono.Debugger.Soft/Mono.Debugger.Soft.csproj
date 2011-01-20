@@ -101,6 +101,7 @@
     <Compile Include="Mono.Debugger.Soft\VMDisconnectEvent.cs" />
     <Compile Include="Mono.Debugger.Soft\VMMismatchException.cs" />
     <Compile Include="Mono.Debugger.Soft\VMStartEvent.cs" />
+    <Compile Include="Mono.Debugger.Soft\AssemblyLoadEventRequest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.Debugger.Soft\ChangeLog" />
