@@ -25,8 +25,8 @@
 		<Import file = "templates/OpenGLApplication/GLView1.cs" />
 		<Import file = "templates/OpenGLApplication/Main.axml" />
 		<Import file = "templates/OpenGLApplication/Resource.cs" />
-		<Import file = "icons/Monodroid-project-16.png" />
-		<Import file = "icons/Monodroid-project-32.png" />
+		<Import file = "icons/monodroid-project-16.png" />
+		<Import file = "icons/monodroid-project-32.png" />
 	</Runtime>
 	
 	<Dependencies>
@@ -191,8 +191,8 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "monodroid-project" file = "icons/Monodroid-project-16.png" size="Menu" />
-		<StockIcon stockid = "monodroid-project" file = "icons/Monodroid-project-32.png" size="Dnd" />
+		<StockIcon stockid = "monodroid-project" file = "icons/monodroid-project-16.png" size="Menu" />
+		<StockIcon stockid = "monodroid-project" file = "icons/monodroid-project-32.png" size="Dnd" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Updater">
