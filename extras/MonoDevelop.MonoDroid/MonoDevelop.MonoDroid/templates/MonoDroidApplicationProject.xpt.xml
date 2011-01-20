@@ -33,23 +33,23 @@
 					<File name="Resource.designer.cs" src="MonoDroidApplication/Resource.cs" />
 					<RawFile name="AboutResources.txt" src="MonoDroidApplication/AboutResources.txt" />
 					<Directory name="layout">
-						<File name="main.axml" src="MonoDroidApplication/main.axml" />
+						<File name="Main.axml" src="MonoDroidApplication/Main.axml" />
 					</Directory>
 					<Directory name="values">
-						<File name="strings.xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+						<File name="Strings.xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hello">Hello World, Click Me!</string>
     <string name="app_name">${ProjectName}</string>
 </resources>]]></File>
 					</Directory>
 					<Directory name="drawable-hdpi">
-						<RawFile name="icon.png" src="MonoDroidApplication/icon-md.png" />
+						<RawFile name="Icon.png" src="MonoDroidApplication/Icon-md.png" />
 					</Directory>
 					<Directory name="drawable-mdpi">
-						<RawFile name="icon.png" src="MonoDroidApplication/icon-md.png" />
+						<RawFile name="Icon.png" src="MonoDroidApplication/Icon-md.png" />
 					</Directory>
 					<Directory name="drawable-ldpi">
-						<RawFile name="icon.png" src="MonoDroidApplication/icon-md.png" />
+						<RawFile name="Icon.png" src="MonoDroidApplication/Icon-md.png" />
 					</Directory>
 				</Directory>
 				<Directory name="Properties">
