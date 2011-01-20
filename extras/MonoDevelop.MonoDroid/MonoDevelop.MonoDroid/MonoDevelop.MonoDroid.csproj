@@ -144,10 +144,10 @@
     <None Include="templates\MonoDroidLibraryProject.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="icons\Monodroid-project-16.png">
+    <None Include="icons\monodroid-project-16.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="icons\Monodroid-project-32.png">
+    <None Include="icons\monodroid-project-32.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="templates\MonoDroidApplication\AboutResources.txt">
