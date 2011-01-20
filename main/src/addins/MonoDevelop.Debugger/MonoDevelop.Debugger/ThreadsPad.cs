@@ -136,7 +136,7 @@ namespace MonoDevelop.Debugger
 			
 			store.Clear ();
 
-			if (DebuggingService.DebuggerSession == null || DebuggingService.DebuggerSession.IsRunning)
+			if (!DebuggingService.IsPaused)
 				return;
 			
 			try {
