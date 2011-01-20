@@ -17,7 +17,7 @@
 		<DebuggerEngine
 			id="MonoDevelop.Debugger.Win32"
 			name="Microsoft .NET Debugger"
-			features="Tracepoints, Catchpoints, DebugFile, Stepping, Pause, Breakpoints"
+			features="Tracepoints, Catchpoints, DebugFile, Stepping, Pause, Breakpoints, ConditionalBreakpoints"
 			type="MonoDevelop.Debugger.Win32.CorDebuggerEngine" />
 	</Extension>
 

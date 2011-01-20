@@ -37,6 +37,7 @@ namespace Mono.Debugging.Client
 		int line;
 		
 		string conditionExpression;
+		string lastConditionValue;
 		bool breakIfConditionChanges;
 		
 		public Breakpoint (string fileName, int line)
@@ -85,6 +86,15 @@ namespace Mono.Debugging.Client
 			}
 			set {
 				conditionExpression = value;
+			}
+		}
+		
+		public string LastConditionValue {
+			get {
+				return this.lastConditionValue;
+			}
+			set {
+				lastConditionValue = value;
 			}
 		}
 

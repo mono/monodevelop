@@ -13,6 +13,7 @@ using Microsoft.Samples.Debugging.CorMetadata;
 using Microsoft.Samples.Debugging.CorSymbolStore;
 using Microsoft.Samples.Debugging.CorDebug.NativeApi;
 using Mono.Debugging.Evaluation;
+using System.Reflection;
 
 namespace MonoDevelop.Debugger.Win32
 {
@@ -36,6 +37,7 @@ namespace MonoDevelop.Debugger.Win32
 		Dictionary<int, ProcessInfo> processes = new Dictionary<int, ProcessInfo> ();
 		Dictionary<int, ThreadInfo> threads = new Dictionary<int,ThreadInfo> ();
 		Dictionary<string, ModuleInfo> modules;
+		Dictionary<CorBreakpoint, Breakpoint> breakpoints = new Dictionary<CorBreakpoint, Breakpoint>();
 		
 
 		public CorObjectAdaptor ObjectAdapter;
@@ -252,6 +254,42 @@ namespace MonoDevelop.Debugger.Win32
 					return;
 				}
 			}
+			
+			Breakpoint bp;
+			if (breakpoints.TryGetValue (e.Breakpoint, out bp)) {
+				e.Continue = true;
+				
+				if (bp.HitCount > 1) {
+					// Just update the count and continue
+					UpdateHitCount (e.Breakpoint, bp.HitCount - 1);
+					return;
+				}
+				
+				if (!string.IsNullOrEmpty (bp.ConditionExpression)) {
+					string res = EvaluateExpression (e.Thread, bp.ConditionExpression);
+					if (bp.BreakIfConditionChanges) {
+						if (res == bp.LastConditionValue)
+							return;
+						bp.LastConditionValue = res;
+					} else {
+						if (res != null && res.ToLower () == "false")
+							return;
+					}
+				}
+				switch (bp.HitAction) {
+					case HitAction.CustomAction:
+						// If custom action returns true, execution must continue
+						if (OnCustomBreakpointAction (bp.CustomActionId, e.Breakpoint))
+							return;
+						break;
+					case HitAction.PrintExpression: {
+						string exp = EvaluateTrace (e.Thread, bp.TraceExpression);
+						UpdateLastTraceValue (e.Breakpoint, exp);
+						return;
+					}
+				}
+			}
+			
 			OnStopped ();
 			e.Continue = false;
 			// If a breakpoint is hit while stepping, cancel the stepping operation
@@ -539,6 +577,7 @@ namespace MonoDevelop.Debugger.Win32
 					CorFunction func = doc.Module.GetFunctionFromToken (met.Token.GetToken ());
 					CorFunctionBreakpoint corBp = func.ILCode.CreateBreakpoint (offset);
 					corBp.Activate (activate);
+					breakpoints [corBp] = bp;
 					return corBp;
 				}
 			}
@@ -920,21 +959,79 @@ namespace MonoDevelop.Debugger.Win32
 
 		string GetThreadName (CorThread thread)
 		{
+			// From http://social.msdn.microsoft.com/Forums/en/netfxtoolsdev/thread/461326fe-88bd-4a6b-82a9-1a66b8e65116
+		    try 
+		    { 
+		        CorReferenceValue refVal = thread.ThreadVariable.CastToReferenceValue(); 
+		        if (refVal.IsNull) 
+		            return string.Empty; 
+		        
+		        CorObjectValue val = refVal.Dereference().CastToObjectValue(); 
+		        if (val != null) 
+		        { 
+					Type classType = val.ExactType.GetTypeInfo (this);
+		            // Loop through all private instance fields in the thread class 
+		            foreach (MetadataFieldInfo fi in classType.GetFields (BindingFlags.NonPublic | BindingFlags.Instance))
+		            { 
+		                if (fi.Name == "m_Name")
+						{
+		                        CorReferenceValue fieldValue = val.GetFieldValue(val.Class, fi.MetadataToken).CastToReferenceValue(); 
+							
+								if (fieldValue.IsNull)
+									return string.Empty;
+								else
+									return fieldValue.Dereference().CastToStringValue().String;
+		                } 
+		            } 
+		        } 
+		    } catch (Exception) {
+				// Ignore
+			}
+			
 			return string.Empty;
-/*			CorValue to = thread.ThreadVariable;
-			if (to == null)
+		}
+		
+		string EvaluateTrace (CorThread thread, string exp)
+		{
+			StringBuilder sb = new StringBuilder ();
+			int last = 0;
+			int i = exp.IndexOf ('{');
+			while (i != -1) {
+				if (i < exp.Length - 1 && exp [i+1] == '{') {
+					sb.Append (exp.Substring (last, i - last + 1));
+					last = i + 2;
+					i = exp.IndexOf ('{', i + 2);
+					continue;
+				}
+				int j = exp.IndexOf ('}', i + 1);
+				if (j == -1)
+					break;
+				string se = exp.Substring (i + 1, j - i - 1);
+				se = EvaluateExpression (thread, se);
+				sb.Append (exp.Substring (last, i - last));
+				sb.Append (se);
+				last = j + 1;
+				i = exp.IndexOf ('{', last);
+			}
+			sb.Append (exp.Substring (last, exp.Length - last));
+			return sb.ToString ();
+		}
+		
+		string EvaluateExpression (CorThread thread, string exp)
+		{
+			try {
+				if (thread.ActiveFrame == null)
+					return string.Empty;
+				EvaluationOptions ops = Options.EvaluationOptions;
+				ops.AllowTargetInvoke = true;
+				CorEvaluationContext ctx = new CorEvaluationContext (this, new CorBacktrace (thread, this), 0, ops);
+				ctx.Thread = thread;
+				ValueReference val = ctx.Evaluator.Evaluate (ctx, exp);
+				return val.CreateObjectValue (false).Value;
+			} catch (Exception ex) {
+				OnDebuggerOutput (true, ex.ToString ());
 				return string.Empty;
-
-			CorEvaluationContext ctx = new CorEvaluationContext (this);
-			ctx.Thread = thread;
-			ctx.Frame = thread.ActiveFrame;
-
-			LiteralValueReference val = new LiteralValueReference (ctx, "", new CorValRef (to));
-			ValueReference prop = val.GetChild ("Name");
-			if (prop != null)
-				return prop.ObjectValue as string;
-			else
-				return string.Empty;*/
+			}
 		}
 	}
 
