@@ -59,7 +59,7 @@ namespace Mono.Debugging.Soft
 		StepEventRequest currentStepRequest;
 		ExceptionEventRequest unhandledExceptionRequest;
 		string remoteProcessName;
-		Dictionary<int,int> legacyFakeThreadIds;
+		Dictionary<long,long> legacyFakeThreadIds;
 		
 		Dictionary<long,ObjectMirror> activeExceptionsByThread = new Dictionary<long, ObjectMirror> ();
 		
@@ -535,8 +535,12 @@ namespace Mono.Debugging.Soft
 		{
 			if (current_threads == null) {
 				List<ThreadInfo> threads = new List<ThreadInfo> ();
-				foreach (ThreadMirror t in vm.GetThreads ())
-					threads.Add (new ThreadInfo (processId, t.Id, t.Name, null));
+				foreach (ThreadMirror t in vm.GetThreads ()) {
+					string name = t.Name;
+					if (string.IsNullOrEmpty (name) && t.IsThreadPoolThread)
+						name = "<Thread Pool>";
+					threads.Add (new ThreadInfo (processId, GetId (t), name, null));
+				}
 				current_threads = threads.ToArray ();
 			}
 			return current_threads;
@@ -545,15 +549,16 @@ namespace Mono.Debugging.Soft
 		ThreadMirror GetThread (long processId, long threadId)
 		{
 			foreach (ThreadMirror t in vm.GetThreads ())
-				if (t.Id == threadId)
+				if (GetId (t) == threadId)
 					return t;
 			return null;
 		}
 		
 		ThreadInfo GetThread (ProcessInfo process, ThreadMirror thread)
 		{
+			long tid = GetId (thread);
 			foreach (var t in OnGetThreads (process.Id))
-				if (t.Id == thread.Id)
+				if (t.Id == tid)
 					return t;
 			return null;
 		}
@@ -843,7 +848,7 @@ namespace Mono.Debugging.Soft
 				args.Backtrace = GetThreadBacktrace (current_thread);
 				
 				if (exception != null)
-					activeExceptionsByThread [current_thread.Id] = exception;
+					activeExceptionsByThread [current_thread.ThreadId] = exception;
 				
 				OnTargetEvent (args);
 			}
@@ -864,7 +869,7 @@ namespace Mono.Debugging.Soft
 		public ObjectMirror GetExceptionObject (ThreadMirror thread)
 		{
 			ObjectMirror obj;
-			if (activeExceptionsByThread.TryGetValue (thread.Id, out obj))
+			if (activeExceptionsByThread.TryGetValue (thread.ThreadId, out obj))
 				return obj;
 			else
 				return null;
@@ -1189,12 +1194,12 @@ namespace Mono.Debugging.Soft
 		{
 			var infos = process.GetThreads ();
 			
-			if (ThreadIsAlive (recent_thread) && HasUserFrame (recent_thread.Id, infos))
+			if (ThreadIsAlive (recent_thread) && HasUserFrame (GetId (recent_thread), infos))
 				return;
 
 			var threads = vm.GetThreads ();
 			foreach (var thread in threads) {
-				if (ThreadIsAlive (thread) && HasUserFrame (thread.Id, infos)) {
+				if (ThreadIsAlive (thread) && HasUserFrame (GetId (thread), infos)) {
 					recent_thread = thread;
 					return;
 				}
@@ -1202,13 +1207,13 @@ namespace Mono.Debugging.Soft
 			recent_thread = threads[0];	
 		}
 		
-		int GetId (ThreadMirror thread)
+		long GetId (ThreadMirror thread)
 		{
 			if (legacyFakeThreadIds != null) {
 				// TID is not supported in the debugged app, so we have to create a fake thread id,
 				// since ThreadId is not suitable to be displayed to the user
-				int id;
-				if (!legacyFakeThreadIds.TryGetValue (thread.ThreadId)) {
+				long id;
+				if (!legacyFakeThreadIds.TryGetValue (thread.ThreadId, out id)) {
 					id = legacyFakeThreadIds.Count + 1;
 					legacyFakeThreadIds [thread.ThreadId] = id;
 				}
@@ -1218,7 +1223,7 @@ namespace Mono.Debugging.Soft
 				try {
 					return thread.TID;
 				} catch {
-					legacyFakeThreadIds = new Dictionary<int, int> ();
+					legacyFakeThreadIds = new Dictionary<long, long> ();
 					return GetId (thread);
 				}
 			}
