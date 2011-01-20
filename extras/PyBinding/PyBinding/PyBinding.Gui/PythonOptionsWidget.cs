@@ -59,6 +59,7 @@ namespace PyBinding.Gui
 			m_RuntimeCombo.Model = this.m_RuntimeListStore;
 			m_RuntimeListStore.AppendValues ("Python 2.5", typeof (Python25Runtime));
 			m_RuntimeListStore.AppendValues ("Python 2.6", typeof (Python26Runtime));
+			m_RuntimeListStore.AppendValues ("Python 2.7", typeof (Python27Runtime));
 		}
 		
 		public string DefaultModule {

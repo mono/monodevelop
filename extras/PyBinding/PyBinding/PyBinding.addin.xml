@@ -6,7 +6,7 @@
        url         = "http://www.monodevelop.com"
        description = "Python Language binding"
        category    = "Language bindings"
-       version     = "2.6">
+       version     = "2.7">
 
     <Runtime>
         <Import assembly = "PyBinding.dll"/>
@@ -98,6 +98,7 @@
         <DataType class = "PyBinding.PythonConfiguration"/>
         <DataType class = "PyBinding.Runtime.Python25Runtime"/>
         <DataType class = "PyBinding.Runtime.Python26Runtime"/>
+        <DataType class = "PyBinding.Runtime.Python27Runtime"/>
         <DataType class = "PyBinding.Compiler.Python25Compiler"/>
     </Extension>
 
