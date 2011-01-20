@@ -38,6 +38,7 @@ namespace MonoDevelop.Debugger.Win32
 		Dictionary<int, ThreadInfo> threads = new Dictionary<int,ThreadInfo> ();
 		Dictionary<string, ModuleInfo> modules;
 		Dictionary<CorBreakpoint, Breakpoint> breakpoints = new Dictionary<CorBreakpoint, Breakpoint>();
+		Dictionary<long, CorHandleValue> handles = new Dictionary<long, CorHandleValue>();
 		
 
 		public CorObjectAdaptor ObjectAdapter;
@@ -525,6 +526,7 @@ namespace MonoDevelop.Debugger.Win32
 		protected override void OnContinue ( )
 		{
 			ClearEvalStatus ();
+			ClearHandles ();
 			process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null);
 			process.Continue (false);
 		}
@@ -608,7 +610,24 @@ namespace MonoDevelop.Debugger.Win32
 			}
 			return mods;
 		}
-
+		
+		internal CorHandleValue GetHandle (CorValue val)
+		{
+			CorHandleValue handleVal = null;
+			if (!handles.TryGetValue (val.Address, out handleVal)) {
+				handleVal = val.CastToHandleValue ();
+				if (handleVal == null)
+				{
+					// Create a handle
+					CorReferenceValue refVal = val.CastToReferenceValue ();
+					CorHeapValue heapVal = refVal.Dereference ().CastToHeapValue ();
+					handleVal = heapVal.CreateHandle (CorDebugHandleType.HANDLE_STRONG);
+				}
+				handles.Add (val.Address, handleVal);	
+			}
+			return handleVal;
+		}
+		
 		protected override object OnInsertBreakEvent (BreakEvent be, bool activate)
 		{
 			lock (documents) {
@@ -969,6 +988,14 @@ namespace MonoDevelop.Debugger.Win32
 					break;
 				}
 			}
+		}
+		
+		void ClearHandles ( )
+		{
+			foreach (CorHandleValue handle in handles.Values) {
+				handle.Dispose ();
+			}
+			handles.Clear ();
 		}
 
 		ProcessInfo GetProcess (CorProcess proc)

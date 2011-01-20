@@ -958,8 +958,6 @@ namespace MonoDevelop.Debugger.Win32
 			return GetLocals (wctx, null, (int) offset, false);
 		}
 		
-		private Dictionary<CorValue, CorHandleValue> exceptionHandles = new Dictionary<CorValue, CorHandleValue>();
-		
 		public override ValueReference GetCurrentException (EvaluationContext ctx)
 		{
 			CorEvaluationContext wctx = (CorEvaluationContext) ctx;
@@ -967,30 +965,13 @@ namespace MonoDevelop.Debugger.Win32
 			
 			if (exception != null)
 			{
-				lock (exceptionHandles)
-				{
-					if (!exceptionHandles.ContainsKey(exception))
-					{
-						CorHandleValue handleVal = exception.CastToHandleValue();
-						if (handleVal == null)
-						{
-							// Create a handle
-							CorReferenceValue refVal = exception.CastToReferenceValue();
-							CorHeapValue heapVal = refVal.Dereference().CastToHeapValue();
-							handleVal = heapVal.CreateHandle(CorDebugHandleType.HANDLE_STRONG);
-						}
-						exceptionHandles.Add(exception, handleVal);		
-					}
-				}
+				CorHandleValue exceptionHandle = wctx.Session.GetHandle (exception);
 				
 				CorValRef vref = new CorValRef (delegate {
-					lock (exceptionHandles)
-					{
-						return exceptionHandles[exception];
-					}
+					return exceptionHandle;
 				});
 				
-				return new VariableReference (ctx, vref, string.Empty, ObjectValueFlags.Variable);
+				return new VariableReference (ctx, vref, "__EXCEPTION_OBJECT__", ObjectValueFlags.Variable);
 			}
 			else
 				return base.GetCurrentException(ctx);
@@ -1083,13 +1064,6 @@ namespace MonoDevelop.Debugger.Win32
 				}
 			}
 			return td;
-		}
-		
-		public override void Dispose ()
-		{
-			foreach (CorHandleValue handle in exceptionHandles.Values)
-				handle.Dispose();
-			base.Dispose();
 		}
 	}
 }
