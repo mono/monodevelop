@@ -45,7 +45,7 @@ namespace MonoDevelop.MonoDroid
 
 	public class MonoDroidProject : DotNetProject
 	{
-		internal const string FX_MONODROID = "MonoDroid";
+		internal const string FX_MONODROID = "2.2";
 		
 		#region Properties
 		
