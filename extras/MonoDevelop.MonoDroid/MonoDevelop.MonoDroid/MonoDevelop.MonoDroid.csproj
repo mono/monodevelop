@@ -144,22 +144,22 @@
     <None Include="templates\MonoDroidLibraryProject.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="icons\monodroid-project-16.png">
+    <None Include="icons\Monodroid-project-16.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="icons\monodroid-project-32.png">
+    <None Include="icons\Monodroid-project-32.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="templates\MonoDroidApplication\AboutResources.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="templates\MonoDroidApplication\icon-hd.png">
+    <None Include="templates\MonoDroidApplication\Icon-hd.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="templates\MonoDroidApplication\icon-ld.png">
+    <None Include="templates\MonoDroidApplication\Icon-ld.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="templates\MonoDroidApplication\icon-md.png">
+    <None Include="templates\MonoDroidApplication\Icon-md.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="templates\MonoDroidOpenGLProject.xpt.xml">
@@ -168,10 +168,10 @@
     <None Include="templates\MonoDroidApplicationProject.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="templates\OpenGLApplication\main.axml">
+    <None Include="templates\OpenGLApplication\Main.axml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="templates\MonoDroidApplication\main.axml">
+    <None Include="templates\MonoDroidApplication\Main.axml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="templates\OpenGLApplication\Activity1.cs">

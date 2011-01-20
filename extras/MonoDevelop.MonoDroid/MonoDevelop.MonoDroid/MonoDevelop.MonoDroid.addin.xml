@@ -12,10 +12,10 @@
 		<Import file = "templates/MonoDroidActivity.xft.xml" />
 		<Import file = "templates/MonoDroidApplication/AboutResources.txt" />
 		<Import file = "templates/MonoDroidApplication/Activity1.cs" />
-		<Import file = "templates/MonoDroidApplication/icon-hd.png" />
-		<Import file = "templates/MonoDroidApplication/icon-ld.png" />
-		<Import file = "templates/MonoDroidApplication/icon-md.png" />
-		<Import file = "templates/MonoDroidApplication/main.axml" />
+		<Import file = "templates/MonoDroidApplication/Icon-hd.png" />
+		<Import file = "templates/MonoDroidApplication/Icon-ld.png" />
+		<Import file = "templates/MonoDroidApplication/Icon-md.png" />
+		<Import file = "templates/MonoDroidApplication/Main.axml" />
 		<Import file = "templates/MonoDroidApplication/Resource.cs" />
 		<Import file = "templates/MonoDroidApplicationProject.xpt.xml" />
 		<Import file = "templates/MonoDroidLibraryProject.xpt.xml" />
@@ -23,10 +23,10 @@
 		<Import file = "templates/MonoDroidView.xft.xml" />
 		<Import file = "templates/OpenGLApplication/Activity1.cs" />
 		<Import file = "templates/OpenGLApplication/GLView1.cs" />
-		<Import file = "templates/OpenGLApplication/main.axml" />
+		<Import file = "templates/OpenGLApplication/Main.axml" />
 		<Import file = "templates/OpenGLApplication/Resource.cs" />
-		<Import file = "icons/monodroid-project-16.png" />
-		<Import file = "icons/monodroid-project-32.png" />
+		<Import file = "icons/Monodroid-project-16.png" />
+		<Import file = "icons/Monodroid-project-32.png" />
 	</Runtime>
 	
 	<Dependencies>
@@ -191,8 +191,8 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "monodroid-project" file = "icons/monodroid-project-16.png" size="Menu" />
-		<StockIcon stockid = "monodroid-project" file = "icons/monodroid-project-32.png" size="Dnd" />
+		<StockIcon stockid = "monodroid-project" file = "icons/Monodroid-project-16.png" size="Menu" />
+		<StockIcon stockid = "monodroid-project" file = "icons/Monodroid-project-32.png" size="Dnd" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Updater">

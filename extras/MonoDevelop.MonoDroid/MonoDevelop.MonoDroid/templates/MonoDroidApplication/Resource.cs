@@ -5,37 +5,37 @@ namespace ${Namespace}
 	public partial class Resource
 	{
 
-		public class attr
+		public partial class Attribute
 		{
 
-			private attr ()
+			private Attribute ()
 			{
 			}
 		}
 
-		public class drawable
+		public partial class Drawable
 		{
 
 			// aapt resource value: 0x7f020000
 			public const int icon = 2130837504;
 
-			private drawable ()
+			private Drawable ()
 			{
 			}
 		}
 
-		public class layout
+		public partial class Layout
 		{
 
 			// aapt resource value: 0x7f030000
 			public const int main = 2130903040;
 
-			private layout ()
+			private Layout ()
 			{
 			}
 		}
 
-		public class @string
+		public partial class String
 		{
 
 			// aapt resource value: 0x7f040000
@@ -44,18 +44,18 @@ namespace ${Namespace}
 			// aapt resource value: 0x7f040001
 			public const int app_name = 2130968577;
 
-			private @string ()
+			private String ()
 			{
 			}
 		}
 
-		public class id
+		public partial class Id
 		{
 
 			// aapt resource value: 0x7f050000
 			public const int myButton = 2131034112;
 
-			private id ()
+			private Id ()
 			{
 			}
 		}
