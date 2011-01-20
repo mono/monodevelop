@@ -52,7 +52,7 @@ namespace Mono.Debugging.Evaluation
 			asyncEvaluationTracker.WaitTime = DefaultEvaluationWaitTime;
 		}
 		
-		public virtual void Dispose ()
+		public void Dispose ()
 		{
 			asyncEvaluationTracker.Dispose ();
 			asyncOperationManager.Dispose ();
