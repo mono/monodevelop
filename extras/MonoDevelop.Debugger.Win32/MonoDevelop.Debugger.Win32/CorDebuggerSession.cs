@@ -79,6 +79,7 @@ namespace MonoDevelop.Debugger.Win32
 		public override void Dispose ( )
 		{
 			TerminateDebugger ();
+			ObjectAdapter.Dispose();
 
 			base.Dispose ();
 
@@ -164,6 +165,7 @@ namespace MonoDevelop.Debugger.Win32
 			process.OnEvalException += new EvalEventHandler (OnEvalException);
 			process.OnLogMessage += new LogMessageEventHandler (OnLogMessage);
 			process.OnStdOutput += new CorTargetOutputEventHandler (OnStdOutput);
+			process.OnException2 += new CorException2EventHandler (OnException2);
 
 			process.Continue (false);
 
@@ -450,6 +452,70 @@ namespace MonoDevelop.Debugger.Win32
 		{
 			OnDebuggerOutput (false, string.Format ("Loaded Module '{0}'\n", e.Assembly.Name));
 			e.Continue = true;
+		}
+		
+		void OnException2 (object sender, CorException2EventArgs e)
+		{
+			lock (debugLock) {
+				if (evaluating) {
+					e.Continue = true;
+					return;
+				}
+			}
+			
+			TargetEventArgs args = null;
+			
+			switch (e.EventType) {
+				case CorDebugExceptionCallbackType.DEBUG_EXCEPTION_FIRST_CHANCE:
+					if (!this.Options.ProjectAssembliesOnly && IsCatchpoint (e))
+						args = new TargetEventArgs (TargetEventType.ExceptionThrown);
+					break;
+				case CorDebugExceptionCallbackType.DEBUG_EXCEPTION_USER_FIRST_CHANCE:
+					if (IsCatchpoint (e))
+						args = new TargetEventArgs (TargetEventType.ExceptionThrown);
+					break;
+				case CorDebugExceptionCallbackType.DEBUG_EXCEPTION_CATCH_HANDLER_FOUND:
+					break;
+				case CorDebugExceptionCallbackType.DEBUG_EXCEPTION_UNHANDLED:
+					args = new TargetEventArgs (TargetEventType.UnhandledException);
+					break;
+			}
+			
+			if (args != null) {
+				OnStopped ();
+				e.Continue = false;
+				// If an exception is thrown while stepping, cancel the stepping operation
+				if (stepper != null && stepper.IsActive ())
+					stepper.Deactivate ();
+
+				SetActiveThread (e.Thread);
+				
+				args.Process = GetProcess (process);
+				args.Thread = GetThread (e.Thread);
+				args.Backtrace = new Backtrace (new CorBacktrace (e.Thread, this));
+				OnTargetEvent (args);	
+			}
+		}
+		
+		private bool IsCatchpoint (CorException2EventArgs e)
+		{
+			// Build up the exception type hierachy
+			CorValue v = e.Thread.CurrentException;
+			List<string> exceptions = new List<string>();
+			CorType t = v.ExactType;
+			while (t != null) {
+				exceptions.Add(t.GetTypeInfo(this).FullName);
+				t = t.Base;
+			}
+			
+			// See if a catchpoint is set for this exception.
+			foreach (Catchpoint cp in Breakpoints.GetCatchpoints()) {
+				if (cp.Enabled && exceptions.Contains(cp.ExceptionName)) {
+					return true;
+				}
+			}
+			
+			return false;
 		}
 
 		protected override void OnAttachToProcess (long processId)
