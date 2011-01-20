@@ -238,7 +238,7 @@ namespace Mono.Debugger.Soft
 		}
 
 		public static VirtualMachine Listen (IPEndPoint dbg_ep, IPEndPoint con_ep)
-		{ 
+		{
 			return EndListen (BeginListen (dbg_ep, con_ep, null));
 		}
 
