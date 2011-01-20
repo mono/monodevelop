@@ -90,6 +90,7 @@ FILES =  \
 	PyBinding.Runtime/IPythonRuntime.cs \
 	PyBinding.Runtime/Python25Runtime.cs \
 	PyBinding.Runtime/Python26Runtime.cs \
+	PyBinding.Runtime/Python27Runtime.cs \
 	PyBinding/PythonConfiguration.cs \
 	PyBinding/PythonExecutionCommand.cs \
 	PyBinding/PythonExecutionHandler.cs \
@@ -122,6 +123,7 @@ EXTRAS = \
 REFERENCES =  \
 	Mono.Data.Sqlite \
 	Mono.Posix \
+	-pkg:gdk-sharp-2.0 \
 	-pkg:glib-sharp-2.0 \
 	-pkg:gtk-sharp-2.0 \
 	-pkg:mono-addins \
