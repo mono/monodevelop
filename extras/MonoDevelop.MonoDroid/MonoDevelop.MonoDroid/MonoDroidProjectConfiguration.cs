@@ -75,9 +75,9 @@ namespace MonoDevelop.MonoDroid
 			}
 		}
 		
-		[ItemProperty ("MonoDroidLinkMode", DefaultValue=MonoDroidLinkMode.SdkOnly)]
+		[ItemProperty ("MonoDroidLinkMode", DefaultValue=MonoDroidLinkMode.Full)]
 		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
-		MonoDroidLinkMode monoDroidLinkMode = MonoDroidLinkMode.SdkOnly;
+		MonoDroidLinkMode monoDroidLinkMode = MonoDroidLinkMode.Full;
 		
 		public MonoDroidLinkMode MonoDroidLinkMode {
 			get { return monoDroidLinkMode; }
