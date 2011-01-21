@@ -107,10 +107,11 @@ namespace MonoDroid
 				return true;
 			
 			if (IsWindows) {
+				// TODO - Handle multiple directories/profiles.
 				loc = (RegistryEx.GetValueString (RegistryEx.LocalMachine, MDREG_KEY, MDREG_MONODROID, RegistryEx.Wow64.Key32));
 				if (!string.IsNullOrEmpty (loc)) {
 					var programFilesX86 = GetProgramFilesX86 ();
-					var fxDir = programFilesX86 + @"\Reference Assemblies\Microsoft\Framework\MonoDroid\v2.0";
+					var fxDir = programFilesX86 + @"\Reference Assemblies\Microsoft\Framework\MonoDroid\v1.0";
 					if (File.Exists (fxDir + @"\mscorlib.dll")) {
 						monoDroidBinDir = programFilesX86 + @"\MSBuild\Novell";
 						monoDroidFrameworkDir = fxDir;
