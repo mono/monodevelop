@@ -74,8 +74,7 @@ namespace MonoDroid
 		{
 			monoDroidBinDir = monoDroidFrameworkDir = androidSdkPath = javaSdkPath = null;
 			
-			if (!GetMonoDroidSdk (out monoDroidBinDir, out monoDroidFrameworkDir))
-				return;
+			GetMonoDroidSdk (out monoDroidBinDir, out monoDroidFrameworkDir);
 			
 			GetConfiguredSdkLocations (out androidSdkPath, out javaSdkPath);
 			
@@ -100,34 +99,42 @@ namespace MonoDroid
 		/// Gets the MonoDroid SDK location.
 		/// </summary>
 		/// <returns>SDK location, or null if it was not found.</returns>
-		static bool GetMonoDroidSdk (out string monoDroidBinDir, out string monoDroidFrameworkDir)
+		static void GetMonoDroidSdk (out string monoDroidBinDir, out string monoDroidFrameworkDir)
 		{
-			string loc = Environment.GetEnvironmentVariable ("MONODROID_PATH");
-			if (CheckMonoDroidPath (loc, out monoDroidBinDir, out monoDroidFrameworkDir))
-				return true;
-			
+			string loc;
+
 			if (IsWindows) {
-				// TODO - Handle multiple directories/profiles.
-				loc = (RegistryEx.GetValueString (RegistryEx.LocalMachine, MDREG_KEY, MDREG_MONODROID, RegistryEx.Wow64.Key32));
-				if (!string.IsNullOrEmpty (loc)) {
-					var programFilesX86 = GetProgramFilesX86 ();
-					var fxDir = programFilesX86 + @"\Reference Assemblies\Microsoft\Framework\MonoDroid\v1.0";
-					if (File.Exists (fxDir + @"\mscorlib.dll")) {
-						monoDroidBinDir = programFilesX86 + @"\MSBuild\Novell";
-						monoDroidFrameworkDir = fxDir;
-						return true;
-					}
-				}
-			} else if (IsMac) {
+				// Find user's \Program Files
+				var programFilesX86 = GetProgramFilesX86 ();
+
+				// We keep our tools in:
+				// \Program Files\MSBuild\Novell
+				monoDroidBinDir = programFilesX86 + @"\MSBuild\Novell";
+
+				// This will probably never be used on Windows
+				var fxDir = programFilesX86 + @"\Reference Assemblies\Microsoft\Framework\MonoDroid\v1.0";
+				
+				if (File.Exists (fxDir + @"\mscorlib.dll"))
+					monoDroidFrameworkDir = fxDir;
+				else
+					monoDroidFrameworkDir = null;
+
+				return;
+			} 
+			
+			// Linux/Mac users can override our SDK location with MONODROID_PATH
+			loc = Environment.GetEnvironmentVariable ("MONODROID_PATH");
+
+			if (CheckMonoDroidPath (loc, out monoDroidBinDir, out monoDroidFrameworkDir))
+				return;
+			
+			// Else, use the default locations
+			if (IsMac)
 				loc = "/Developer/MonoDroid/usr";
-				if (CheckMonoDroidPath (loc, out monoDroidBinDir, out monoDroidFrameworkDir))
-					return true;
-			} else {
+			else
 				loc = "/opt/monodroid";
-				if (CheckMonoDroidPath (loc, out monoDroidBinDir, out monoDroidFrameworkDir))
-					return true;
-			}
-			return false;
+				
+			CheckMonoDroidPath (loc, out monoDroidBinDir, out monoDroidFrameworkDir);
 		}
 		
 		static bool CheckMonoDroidPath (string monoDroidPath, out string monoDroidBinDir, out string monoDroidFrameworkDir)
