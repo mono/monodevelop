@@ -52,6 +52,11 @@ namespace MonoDevelop.MonoDroid
 		
 		public override IEnumerable<string> GetFrameworkFolders ()
 		{
+			//version-specific framework
+			//FIXME: this should be dependent on framework version
+			yield return MonoDroidFramework.MonoDroidToolsDir.Combine ("platforms", "android-8");
+			
+			//root framework
 			yield return MonoDroidFramework.MonoDroidFrameworkDir;
 		}
 		
@@ -82,6 +87,11 @@ namespace MonoDevelop.MonoDroid
 		
 		public override IEnumerable<string> GetFrameworkFolders ()
 		{
+			//version-specific framework
+			//FIXME: this should be dependent on framework version
+			yield return MonoDroidFramework.MonoDroidFrameworkDir.ParentDirectory.Combine ("v2.2");
+			
+			//root framework
 			yield return MonoDroidFramework.MonoDroidFrameworkDir;
 		}
 		
