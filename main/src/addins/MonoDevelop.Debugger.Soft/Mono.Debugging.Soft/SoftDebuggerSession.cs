@@ -59,7 +59,7 @@ namespace Mono.Debugging.Soft
 		StepEventRequest currentStepRequest;
 		ExceptionEventRequest unhandledExceptionRequest;
 		string remoteProcessName;
-		Dictionary<long,long> legacyFakeThreadIds;
+		Dictionary<long,long> localThreadIds = new Dictionary<long, long> ();
 		
 		Dictionary<long,ObjectMirror> activeExceptionsByThread = new Dictionary<long, ObjectMirror> ();
 		
@@ -1209,24 +1209,12 @@ namespace Mono.Debugging.Soft
 		
 		long GetId (ThreadMirror thread)
 		{
-			if (legacyFakeThreadIds != null) {
-				// TID is not supported in the debugged app, so we have to create a fake thread id,
-				// since ThreadId is not suitable to be displayed to the user
-				long id;
-				if (!legacyFakeThreadIds.TryGetValue (thread.ThreadId, out id)) {
-					id = legacyFakeThreadIds.Count + 1;
-					legacyFakeThreadIds [thread.ThreadId] = id;
-				}
-				return id;
+			long id;
+			if (!localThreadIds.TryGetValue (thread.ThreadId, out id)) {
+				id = localThreadIds.Count + 1;
+				localThreadIds [thread.ThreadId] = id;
 			}
-			else {
-				try {
-					return thread.TID;
-				} catch {
-					legacyFakeThreadIds = new Dictionary<long, long> ();
-					return GetId (thread);
-				}
-			}
+			return id;
 		}
 		
 		static bool ThreadIsAlive (ThreadMirror thread)
