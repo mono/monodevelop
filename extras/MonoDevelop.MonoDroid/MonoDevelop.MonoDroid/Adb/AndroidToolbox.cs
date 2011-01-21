@@ -143,7 +143,7 @@ namespace MonoDevelop.MonoDroid
 			if (errorLog != null)
 				psi.RedirectStandardError = true;
 			psi.EnvironmentVariables["PATH"] = pathOverride;
-			return Runtime.ProcessService.StartProcess (psi, outputLog, outputLog, null);
+			return Runtime.ProcessService.StartProcess (psi, outputLog, errorLog, null);
 		}
 		
 		public IProcessAsyncOperation EnsureServerRunning (TextWriter outputLog, TextWriter errorLog)
