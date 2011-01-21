@@ -44,6 +44,8 @@ namespace WindowsIntegration.Addin
 		private const string progId = "MonoDevelop";
 		private const string appId = "MonoDevelop";
 		
+		private RecentFiles recentFiles;
+		
 		public bool IsEnabled
 		{
 			get;
@@ -59,16 +61,27 @@ namespace WindowsIntegration.Addin
 			}
 			
 			Taskbar.TaskbarManager.Instance.ApplicationId = progId;
-			Taskbar.JumpList list = Taskbar.JumpList.CreateJumpList ();
-			list.KnownCategoryToDisplay = Taskbar.JumpListKnownCategoryType.Neither;
+			this.recentFiles = DesktopService.RecentFiles;
+			recentFiles.Changed += this.RecentFilesChanged;
+			this.UpdateJumpList();
+		}
+		
+		private void RecentFilesChanged(object sender, EventArgs args)
+		{
+			this.UpdateJumpList();
+		}
+		
+		private void UpdateJumpList()
+		{
+			Taskbar.JumpList jumplist = Taskbar.JumpList.CreateJumpList ();
+			jumplist.KnownCategoryToDisplay = Taskbar.JumpListKnownCategoryType.Neither;
 			
 			Taskbar.JumpListCustomCategory recentProjectsCategory = new Taskbar.JumpListCustomCategory ("Recent Solutions");
 			Taskbar.JumpListCustomCategory recentFilesCategory = new Taskbar.JumpListCustomCategory ("Recent Files");
 			
-			list.AddCustomCategories (recentProjectsCategory, recentFilesCategory);
-			list.KnownCategoryOrdinalPosition = 0;
+			jumplist.AddCustomCategories (recentProjectsCategory, recentFilesCategory);
+			jumplist.KnownCategoryOrdinalPosition = 0;
 			
-			RecentFiles recentFiles = DesktopService.RecentFiles;
 			foreach (RecentFile recentProject in recentFiles.GetProjects ()) {
 				// Windows is picky about files that are added to the jumplist. Only files that MonoDevelop
 				// has been registered as supporting can be added.
@@ -83,9 +96,9 @@ namespace WindowsIntegration.Addin
 					recentFilesCategory.AddJumpListItems (new Taskbar.JumpListItem (recentFile.FileName));
 			}
 			
-			list.Refresh ();
+			jumplist.Refresh ();
 		}
-
+		
 		private bool CheckRegistration ()
 		{
 			// The supportedExtensions can only contain extensions that monodevelop has a registry entry under
