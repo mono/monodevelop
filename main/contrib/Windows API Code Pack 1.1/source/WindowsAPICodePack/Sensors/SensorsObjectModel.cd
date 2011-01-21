@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Microsoft.WindowsAPICodePack.Sensors.Sensor" BaseTypeListCollapsed="true">
+    <Position X="3" Y="0.5" Width="2.25" />
+    <Members>
+      <Field Name="categoryId" Hidden="true" />
+      <Method Name="ClearEventInterest" Hidden="true" />
+      <Field Name="connectionType" Hidden="true" />
+      <Field Name="dataReport" Hidden="true" />
+      <Field Name="description" Hidden="true" />
+      <Field Name="devicePath" Hidden="true" />
+      <Field Name="friendlyName" Hidden="true" />
+      <Method Name="GetInterestingEvents" Hidden="true" />
+      <Method Name="IncrementIntPtr" Hidden="true" />
+      <Method Name="Initialize" Hidden="true" />
+      <Property Name="internalObject" Hidden="true" />
+      <Method Name="InternalUpdateData" Hidden="true" />
+      <Method Name="ISensorEvents.OnDataUpdated" Hidden="true" />
+      <Method Name="ISensorEvents.OnEvent" Hidden="true" />
+      <Method Name="ISensorEvents.OnLeave" Hidden="true" />
+      <Method Name="ISensorEvents.OnStateChanged" Hidden="true" />
+      <Method Name="IsEventInterestSet" Hidden="true" />
+      <Field Name="manufacturer" Hidden="true" />
+      <Field Name="model" Hidden="true" />
+      <Field Name="nativeISensor" Hidden="true" />
+      <Field Name="sensorId" Hidden="true" />
+      <Field Name="serialNumber" Hidden="true" />
+      <Method Name="SetEventInterest" Hidden="true" />
+      <Field Name="typeId" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>UUiQKJALEAEgAwIEIgAIIBIIAEdACBAgAAgRpgAIECA=</HashCode>
+      <FileName>ObjectModel\Sensor.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Microsoft.WindowsAPICodePack.Sensors.SensorReport">
+    <Position X="8" Y="0.5" Width="2.25" />
+    <Members>
+      <Method Name="FromNativeReport" Hidden="true" />
+      <Field Name="originator" Hidden="true" />
+      <Field Name="sensorData" Hidden="true" />
+      <Field Name="timeStamp" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AIAAABCAAgAAAAAAQAAAAAAAAAAAAAAAAAAgAAAAAQA=</HashCode>
+      <FileName>ObjectModel\SensorReport.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Microsoft.WindowsAPICodePack.Sensors.SensorData" BaseTypeListCollapsed="true">
+    <Position X="8" Y="2.25" Width="2.25" />
+    <Members>
+      <Method Name="FromNativeReport" Hidden="true" />
+      <Field Name="sensorDataDictionary" Hidden="true" />
+      <Method Name="System.Collections.IEnumerable.GetEnumerator" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>CCIAABAAAAAEABAQCAgABAQAAAAAAAAAAAAgAABQIAA=</HashCode>
+      <FileName>ObjectModel\SensorData.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Microsoft.WindowsAPICodePack.Sensors.SensorList&lt;S&gt;" BaseTypeListCollapsed="true">
+    <Position X="0.5" Y="3.25" Width="2.25" />
+    <Members>
+      <Field Name="sensorList" Hidden="true" />
+      <Method Name="System.Collections.IEnumerable.GetEnumerator" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AGIAAEAAAAAAABAYCAAABAQAAAAAAAAACAAAAABQIAA=</HashCode>
+      <FileName>ObjectModel\SensorList.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Microsoft.WindowsAPICodePack.Sensors.SensorManager">
+    <Position X="0.5" Y="0.5" Width="2.25" />
+    <Members>
+      <Method Name="BuildSensorTypeMap" Hidden="true" />
+      <Method Name="GetSensorWrapperInstance" Hidden="true" />
+      <Field Name="guidToSensorDescr" Hidden="true" />
+      <Method Name="nativeSensorCollectionToSensorCollection" Hidden="true" />
+      <Method Name="OnSensorsChanged" Hidden="true" />
+      <Field Name="sensorManager" Hidden="true" />
+      <Method Name="SensorManager" Hidden="true" />
+      <Field Name="sensorManagerEventSink" Hidden="true" />
+      <Field Name="sensorTypeToGuid" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AQEAAgAEAIAAAAAAAEAEAAAQAAEAAAMBAAAAQAgAAAA=</HashCode>
+      <FileName>ObjectModel\SensorManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Microsoft.WindowsAPICodePack.Sensors.AmbientLightSensor">
+    <Position X="5.75" Y="0.5" Width="2" />
+    <NestedTypes>
+      <Class Name="Microsoft.WindowsAPICodePack.Sensors.AmbientLightSensor.LuminousIntensity" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Sensors\Light\AmbientLightSensor.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Sensors\Light\AmbientLightSensor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Microsoft.WindowsAPICodePack.Sensors.Accelerometer3D">
+    <Position X="5.75" Y="2.5" Width="2" />
+    <NestedTypes>
+      <Enum Name="Microsoft.WindowsAPICodePack.Sensors.Accelerometer3D.AccelerationAxis" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Sensors\Motion\Accelerometer3D.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Class Name="Microsoft.WindowsAPICodePack.Sensors.Accelerometer3D.Acceleration3D" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Sensors\Motion\Accelerometer3D.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Sensors\Motion\Accelerometer3D.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Microsoft.WindowsAPICodePack.Sensors.UnknownSensor" Collapsed="true">
+    <Position X="5.75" Y="4.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Sensors\UnknownSensor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

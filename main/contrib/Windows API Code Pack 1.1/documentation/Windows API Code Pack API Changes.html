@@ -1,0 +1,455 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Assembly Changes - 
+          Project: "All"
+        </title>
+    <style type="text/css">
+          body { font-family: sans-serif }
+          h1 { text-decoration: underline }
+          ul { list-style-type: none }
+        </style>
+  </head>
+  <body>
+    <span style="text-decoration: underline">Namespaces</span>
+    <ul>
+      <li>
+        <a href="#Microsoft.WindowsAPICodePack">Microsoft.WindowsAPICodePack</a>
+      </li>
+      <li>
+        <a href="#Microsoft.WindowsAPICodePack.ExtendedLinguisticServices">Microsoft.WindowsAPICodePack.ExtendedLinguisticServices</a>
+      </li>
+      <li>
+        <a href="#Microsoft.WindowsAPICodePack.Sensors">Microsoft.WindowsAPICodePack.Sensors</a>
+      </li>
+      <li>
+        <a href="#Microsoft.WindowsAPICodePack.Shell">Microsoft.WindowsAPICodePack.Shell</a>
+      </li>
+    </ul>
+    <h1 id="Microsoft.WindowsAPICodePack">Microsoft.WindowsAPICodePack</h1>
+    <h2>Namespace: Microsoft.WindowsAPICodePack.ApplicationServices</h2>
+    <span style="color: green">Added types:
+      ApplicationRecoveryException, PowerManagerException<br /></span>
+    <h3>Class: BatteryState</h3>
+    <h4>Property: ACOnline : System.Boolean</h4>
+    Read/write status changed to "ReadWrite"<br /><h4>Property: CurrentCharge : System.Int32</h4>
+    Read/write status changed to "ReadWrite"<br /><h4>Property: DischargeRate : System.Int32</h4>
+    Renamed to "ChargeRate"<br />
+    Read/write status changed to "ReadWrite"<br /><h5>Method: get_DischargeRate() : System.Int32</h5>
+    Renamed to "get_ChargeRate"<br /><h4>Property: EstimatedTimeRemaining : System.TimeSpan</h4>
+    Read/write status changed to "ReadWrite"<br /><h4>Property: MaxCharge : System.Int32</h4>
+    Read/write status changed to "ReadWrite"<br /><h4>Property: SuggestedBatteryWarningCharge : System.Int32</h4>
+    Read/write status changed to "ReadWrite"<br /><h4>Property: SuggestedCriticalBatteryCharge : System.Int32</h4>
+    Read/write status changed to "ReadWrite"<br /><h3>Enum: ExecutionState</h3>Accessibility changed to "public"<br />
+    Renamed to "ExecutionStates"<br /><span style="color: green">Added fields:
+      AwayModeRequired, None<br /></span><h3>Class: PowerManager</h3><span style="color: green">Added methods:
+      SetThreadExecutionState(Microsoft.WindowsAPICodePack.ApplicationServices.ExecutionStates) : System.Void<br /></span><h4>Property: IsMonitorOn : System.Boolean</h4>
+    Read/write status changed to "ReadWrite"<br /><h3>Enum: PowerPersonality</h3><span style="color: green">Added fields:
+      Unknown<br /></span><h2>Namespace: Microsoft.WindowsAPICodePack.Dialogs</h2><h3>Class: DialogControl</h3><h4>Property: Id : System.Int32</h4>
+    Read/write status changed to "ReadWrite"<br /><h3>Class: TaskDialogButton</h3><h4>Property: ShowElevationIcon : System.Boolean</h4>
+    Renamed to "UseElevationIcon"<br /><h5>Method: get_ShowElevationIcon() : System.Boolean</h5>
+    Renamed to "get_UseElevationIcon"<br /><h5>Method: set_ShowElevationIcon(System.Boolean) : System.Void</h5>
+    Renamed to "set_UseElevationIcon"<br /><h3>Enum: TaskDialogProgressBarState</h3><span style="color: green">Added fields:
+      None<br /></span><h3>Enum: TaskDialogResult</h3><span style="color: green">Added fields:
+      None<br /></span><h3>Class: TaskDialogTickEventArgs</h3><h4>Property: Ticks : System.Int32</h4>
+    Read/write status changed to "ReadWrite"<br /><h2>Namespace: Microsoft.WindowsAPICodePack.Net</h2><h3>Enum: Connectivity</h3>
+    Renamed to "ConnectivityStates"<br /><h4>Field: Disconnected</h4>
+    Renamed to "None"<br /><h3>Class: Network</h3><h4>Property: Connectivity : Microsoft.WindowsAPICodePack.Net.Connectivity</h4><h5>Method: get_Connectivity() : Microsoft.WindowsAPICodePack.Net.Connectivity</h5>
+    Signature changed to "() : Microsoft.WindowsAPICodePack.Net.ConnectivityStates"<br /><h3>Class: NetworkConnection</h3><h4>Property: Connectivity : Microsoft.WindowsAPICodePack.Net.Connectivity</h4><h5>Method: get_Connectivity() : Microsoft.WindowsAPICodePack.Net.Connectivity</h5>
+    Signature changed to "() : Microsoft.WindowsAPICodePack.Net.ConnectivityStates"<br /><h3>Class: NetworkListManager</h3><h4>Property: Connectivity : Microsoft.WindowsAPICodePack.Net.Connectivity</h4><h5>Method: get_Connectivity() : Microsoft.WindowsAPICodePack.Net.Connectivity</h5>
+    Signature changed to "() : Microsoft.WindowsAPICodePack.Net.ConnectivityStates"<br /><h2>Namespace: MS.WindowsAPICodePack.Internal</h2><span style="color: red">Removed types:
+      CommonDllNames, POINT, RECT, SIZE<br /></span><h3>Class: CoreErrorHelper</h3>Accessibility changed to "not public"<br /><span style="color: red">Removed fields:
+      IGNORED : System.Int32<br /></span><span style="color: green">Added methods:
+      Failed(System.Int32) : System.Boolean, Succeeded(MS.WindowsAPICodePack.Internal.HResult) : System.Boolean<br />Added fields:
+      Ignored : System.Int32<br /></span><h4>Method: Failed(MS.WindowsAPICodePack.Internal.HRESULT) : System.Boolean</h4>
+    Signature changed to "(MS.WindowsAPICodePack.Internal.HResult) : System.Boolean"<br /><h3>Class: CoreNativeMethods</h3>Accessibility changed to "not public"<br /><span style="color: green">Added methods:
+      PostMessage(System.IntPtr, MS.WindowsAPICodePack.Internal.WindowMessage, System.IntPtr, System.IntPtr) : System.Void, SendMessage(System.IntPtr, MS.WindowsAPICodePack.Internal.WindowMessage, System.IntPtr, System.IntPtr) : System.IntPtr, SendMessage(System.IntPtr, System.UInt32, System.IntPtr, System.String) : System.IntPtr<br /></span><h4>Method: DestroyIcon(System.IntPtr) : System.Boolean</h4>Accessibility changed to "not public"<br /><h4>Method: HIWORD(System.Int64, System.Int32) : System.Int32</h4>
+    Renamed to "GetHiWord"<br /><h4>Method: LOWORD(System.Int64) : System.Int32</h4>
+    Renamed to "GetLoWord"<br /><h3>Enum: HRESULT</h3>
+    Renamed to "HResult"<br /><span style="color: green">Added fields:
+      AccessDenied<br /></span><h4>Field: E_ELEMENTNOTFOUND</h4>
+    Renamed to "ElementNotFound"<br /><h4>Field: E_ERROR_CANCELLED</h4>
+    Renamed to "Canceled"<br /><h4>Field: E_FAIL</h4>
+    Renamed to "Fail"<br /><h4>Field: E_INVALIDARG</h4>
+    Renamed to "InvalidArguments"<br /><h4>Field: E_NOINTERFACE</h4>
+    Renamed to "NoInterface"<br /><h4>Field: E_OUTOFMEMORY</h4>
+    Renamed to "OutOfMemory"<br /><h4>Field: ERROR_CANCELLED</h4>
+    Renamed to "Win32ErrorCanceled"<br /><h4>Field: NO_OBJECT</h4>
+    Renamed to "NoObject"<br /><h4>Field: RESOURCE_IN_USE</h4>
+    Renamed to "ResourceInUse"<br /><h4>Field: S_FALSE</h4>
+    Renamed to "False"<br /><h4>Field: S_OK</h4>
+    Renamed to "Ok"<br /><h4>Field: TYPE_E_ELEMENTNOTFOUND</h4>
+    Renamed to "TypeElementNotFound"<br /><h3>Struct: PropVariant</h3>
+    Kind changed to "Class"<br /><span style="color: red">Removed methods:
+      Clear() : System.Void, SetBool(System.Boolean) : System.Void, SetBoolVector(System.Boolean[]) : System.Void, SetByte(System.Byte) : System.Void, SetDateTime(System.DateTime) : System.Void, SetDateTimeVector(System.DateTime[]) : System.Void, SetDecimal(System.Decimal) : System.Void, SetDouble(System.Double) : System.Void, SetDoubleVector(System.Double[]) : System.Void, SetEmptyValue() : System.Void, SetInt(System.Int32) : System.Void, SetIntVector(System.Int32[]) : System.Void, SetLong(System.Int64) : System.Void, SetLongVector(System.Int64[]) : System.Void, SetSByte(System.SByte) : System.Void, SetShort(System.Int16) : System.Void, SetShortVector(System.Int16[]) : System.Void, SetString(System.String) : System.Void, SetStringVector(System.String[]) : System.Void, SetUInt(System.UInt32) : System.Void, SetUIntVector(System.UInt32[]) : System.Void, SetULong(System.UInt64) : System.Void, SetULongVector(System.UInt64[]) : System.Void, SetUShort(System.UInt16) : System.Void, SetUShortVector(System.UInt16[]) : System.Void<br /></span><span style="color: green">Added methods:
+      .ctor() : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.Boolean) : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.Boolean[]) : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.Byte) : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.DateTime) : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.DateTime[]) : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.Decimal) : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.Decimal[]) : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.Double) : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.Double[]) : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.Int16) : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.Int16[]) : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.Int32) : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.Int32[]) : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.Int64) : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.Int64[]) : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.SByte) : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.Single) : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.Single[]) : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.String) : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.String[]) : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.UInt16) : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.UInt16[]) : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.UInt32) : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.UInt32[]) : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.UInt64) : MS.WindowsAPICodePack.Internal.PropVariant, .ctor(System.UInt64[]) : MS.WindowsAPICodePack.Internal.PropVariant, Dispose() : System.Void, ToString() : System.String<br /></span><h4>Method: SetIUnknown(System.Object) : System.Void</h4>Accessibility changed to "not public"<br /><h4>Method: SetSafeArray(System.Array) : System.Void</h4>Accessibility changed to "not public"<br /><p /><div style="width: 100%; border-top: solid" /><p><span style="text-decoration: underline">Reflection Errors:</span> (no reflection errors reported)</p><h1 id="Microsoft.WindowsAPICodePack.ExtendedLinguisticServices">Microsoft.WindowsAPICodePack.ExtendedLinguisticServices</h1><h2>Namespace: Microsoft.WindowsAPICodePack.ExtendedLinguisticServices</h2><h3>Class: MappingActionAsyncResult</h3><h4>Property: ActionId : System.String</h4>
+    Read/write status changed to "ReadWrite"<br /><h4>Property: RangeIndex : System.Int32</h4>
+    Read/write status changed to "ReadWrite"<br /><h3>Class: MappingAsyncResult</h3><span style="color: green">Added methods:
+      Dispose() : System.Void<br />Added properties:
+      AsyncState : System.Object, CompletedSynchronously : System.Boolean<br /></span><h3>Class: MappingRecognizeAsyncResult</h3><h4>Property: Index : System.Int32</h4>
+    Read/write status changed to "ReadWrite"<br /><h4>Property: Length : System.Int32</h4>
+    Read/write status changed to "ReadWrite"<br /><h4>Property: Options : Microsoft.WindowsAPICodePack.ExtendedLinguisticServices.MappingOptions</h4>
+    Read/write status changed to "ReadWrite"<br /><h4>Property: Text : System.String</h4>
+    Read/write status changed to "ReadWrite"<br /><p /><div style="width: 100%; border-top: solid" /><p><span style="text-decoration: underline">Reflection Errors:</span> (no reflection errors reported)</p><h1 id="Microsoft.WindowsAPICodePack.Sensors">Microsoft.WindowsAPICodePack.Sensors</h1><h2>Namespace: Microsoft.WindowsAPICodePack.Sensors</h2><h3>Enum: AccelerationAxis</h3><h4>Field: X</h4>
+    Renamed to "XAxis"<br /><h4>Field: Y</h4>
+    Renamed to "YAxis"<br /><h4>Field: Z</h4>
+    Renamed to "ZAxis"<br /><h3>Class: LuminousIntensity</h3><h4>Property: Intensity : System.Single</h4>
+    Read/write status changed to "ReadWrite"<br /><h3>Class: Sensor</h3><h4>Property: DataReport : Microsoft.WindowsAPICodePack.Sensors.SensorReport</h4>
+    Read/write status changed to "ReadWrite"<br /><h3>Class: SensorCategories</h3><h4>Field: BioMetric : System.Guid</h4>
+    Renamed to "Biometric"<br /><h3>Enum: SensorConnectionType</h3><h4>Field: Intergrated</h4>
+    Renamed to "Integrated"<br /><h3>Class: SensorDescriptionAttribute</h3><h4>Property: SensorType : System.String</h4>
+    Read/write status changed to "ReadOnly"<br /><span style="color: red">Removed methods:
+      set_SensorType(System.String) : System.Void<br /></span><h4>Property: SensorTypeGuid : System.Guid</h4>Accessibility changed to "public"<br /><h5>Method: get_SensorTypeGuid() : System.Guid</h5>Accessibility changed to "public"<br /><h3>Class: SensorList&lt;S&gt;</h3>
+    Renamed to "SensorList&lt;TSensor&gt;"<br /><h4>Method: .ctor() : Microsoft.WindowsAPICodePack.Sensors.SensorList&lt;S&gt;</h4>
+    Signature changed to "() : Microsoft.WindowsAPICodePack.Sensors.SensorList&lt;TSensor&gt;"<br /><h4>Method: Add(S) : System.Void</h4>
+    Signature changed to "(TSensor) : System.Void"<br /><h4>Method: Contains(S) : System.Boolean</h4>
+    Signature changed to "(TSensor) : System.Boolean"<br /><h4>Method: CopyTo(S[], System.Int32) : System.Void</h4>
+    Signature changed to "(TSensor[], System.Int32) : System.Void"<br /><h4>Method: GetEnumerator() : IEnumerator&lt;S&gt;</h4>
+    Signature changed to "() : IEnumerator&lt;TSensor&gt;"<br /><h4>Method: IndexOf(S) : System.Int32</h4>
+    Signature changed to "(TSensor) : System.Int32"<br /><h4>Method: Insert(System.Int32, S) : System.Void</h4>
+    Signature changed to "(System.Int32, TSensor) : System.Void"<br /><h4>Property: Item : S</h4><h5>Method: get_Item(System.Int32) : S</h5>
+    Signature changed to "(System.Int32) : TSensor"<br /><h5>Method: set_Item(System.Int32, S) : System.Void</h5>
+    Signature changed to "(System.Int32, TSensor) : System.Void"<br /><h4>Method: Remove(S) : System.Boolean</h4>
+    Signature changed to "(TSensor) : System.Boolean"<br /><h3>Class: SensorManager</h3><h4>Method: GetSensorBySensorId(System.Guid) : S</h4>
+    Signature changed to "(System.Guid) : T"<br /><h4>Method: GetSensorsByTypeId() : SensorList&lt;S&gt;</h4>
+    Signature changed to "() : SensorList&lt;T&gt;"<br /><h3>Class: SensorPropertyKeys</h3><h4>Field: SENSOR_DATA_TYPE_ACCELERATION_X_G : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeAccelerationXG"<br /><h4>Field: SENSOR_DATA_TYPE_ACCELERATION_Y_G : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeAccelerationYG"<br /><h4>Field: SENSOR_DATA_TYPE_ACCELERATION_Z_G : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeAccelerationZG"<br /><h4>Field: SENSOR_DATA_TYPE_ALTITUDE_ELLIPSOID_METERS : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeAltitudeEllipsoidMeters"<br /><h4>Field: SENSOR_DATA_TYPE_ALTITUDE_SEALEVEL_METERS : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeAltitudeSeaLevelMeters"<br /><h4>Field: SENSOR_DATA_TYPE_ANGLE_X_DEGREES : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeAngleXDegrees"<br /><h4>Field: SENSOR_DATA_TYPE_ANGLE_Y_DEGREES : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeAngleYDegrees"<br /><h4>Field: SENSOR_DATA_TYPE_ANGLE_Z_DEGREES : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeAngleZDegrees"<br /><h4>Field: SENSOR_DATA_TYPE_ANGULAR_ACCELERATION_X_DEGREES_PER_SECOND : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeAngularAccelerationXDegreesPerSecond"<br /><h4>Field: SENSOR_DATA_TYPE_ANGULAR_ACCELERATION_Y_DEGREES_PER_SECOND : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeAngularAccelerationYDegreesPerSecond"<br /><h4>Field: SENSOR_DATA_TYPE_ANGULAR_ACCELERATION_Z_DEGREES_PER_SECOND : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeAngularAccelerationZDegreesPerSecond"<br /><h4>Field: SENSOR_DATA_TYPE_BOOLEAN_SWITCH_ARRAY_STATE : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeBooleanSwitchArrayState"<br /><h4>Field: SENSOR_DATA_TYPE_BOOLEAN_SWITCH_STATE : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeBooleanSwitchState"<br /><h4>Field: SENSOR_DATA_TYPE_DISTANCE_X_METERS : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeDistanceXMeters"<br /><h4>Field: SENSOR_DATA_TYPE_DISTANCE_Y_METERS : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeDistanceYMeters"<br /><h4>Field: SENSOR_DATA_TYPE_DISTANCE_Z_METERS : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeDistanceZMeters"<br /><h4>Field: SENSOR_DATA_TYPE_FIX_QUALITY : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeFixQuality"<br /><h4>Field: SENSOR_DATA_TYPE_FIX_TYPE : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeFixType"<br /><h4>Field: SENSOR_DATA_TYPE_FORCE_NEWTONS : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeForceNewtons"<br /><h4>Field: SENSOR_DATA_TYPE_HORIZONAL_DILUTION_OF_PRECISION : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeHorizontalDilutionOfPrecision"<br /><h4>Field: SENSOR_DATA_TYPE_HUMAN_PRESENCE : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeHumanPresence"<br /><h4>Field: SENSOR_DATA_TYPE_HUMAN_PROXIMITY : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeHumanProximity"<br /><h4>Field: SENSOR_DATA_TYPE_LATITUDE_DEGREES : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeLatitudeDegrees"<br /><h4>Field: SENSOR_DATA_TYPE_LIGHT_LUX : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeLightLux"<br /><h4>Field: SENSOR_DATA_TYPE_LONGITUDE_DEGREES : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeLongitudeDegrees"<br /><h4>Field: SENSOR_DATA_TYPE_MAGNETIC_HEADING_DEGREES : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeMagneticHeadingDegrees"<br /><h4>Field: SENSOR_DATA_TYPE_MAGNETIC_HEADING_X_DEGREES : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeMagneticHeadingXDegrees"<br /><h4>Field: SENSOR_DATA_TYPE_MAGNETIC_HEADING_Y_DEGREES : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeMagneticHeadingYDegrees"<br /><h4>Field: SENSOR_DATA_TYPE_MAGNETIC_HEADING_Z_DEGREES : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeMagneticHeadingZDegrees"<br /><h4>Field: SENSOR_DATA_TYPE_MAGNETIC_VARIATION : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeMagneticVariation"<br /><h4>Field: SENSOR_DATA_TYPE_MULTIVALUE_SWITCH_STATE : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeMultivalueSwitchState"<br /><h4>Field: SENSOR_DATA_TYPE_POSITION_DILUTION_OF_PRECISION : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypePositionDilutionOfPrecision"<br /><h4>Field: SENSOR_DATA_TYPE_PRESSURE_PASCAL : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypePressurePascal"<br /><h4>Field: SENSOR_DATA_TYPE_RFID_TAG_40_BIT : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeRfidTag40Bit"<br /><h4>Field: SENSOR_DATA_TYPE_SATELLITES_IN_VIEW : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeSatellitesInView"<br /><h4>Field: SENSOR_DATA_TYPE_SATELLITES_IN_VIEW_AZIMUTH : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeSatellitesInViewAzimuth"<br /><h4>Field: SENSOR_DATA_TYPE_SATELLITES_IN_VIEW_ELEVATION : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeSatellitesInViewElevation"<br /><h4>Field: SENSOR_DATA_TYPE_SATELLITES_IN_VIEW_PRNS : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeSatellitesInViewPrns"<br /><h4>Field: SENSOR_DATA_TYPE_SATELLITES_IN_VIEW_STN_RATIO : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeSatellitesInViewStnRatio"<br /><h4>Field: SENSOR_DATA_TYPE_SATELLITES_USED_COUNT : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeSatellitesUsedCount"<br /><h4>Field: SENSOR_DATA_TYPE_SATELLITES_USED_PRNS : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeSatellitesUsedPrns"<br /><h4>Field: SENSOR_DATA_TYPE_SPEED_KNOTS : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeSpeedKnots"<br /><h4>Field: SENSOR_DATA_TYPE_STRAIN : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeStrain"<br /><h4>Field: SENSOR_DATA_TYPE_TEMPERATURE_CELSIUS : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeTemperatureCelsius"<br /><h4>Field: SENSOR_DATA_TYPE_TIMESTAMP : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeTimestamp"<br /><h4>Field: SENSOR_DATA_TYPE_TRUE_HEADING_DEGREES : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeTrueHeadingDegrees"<br /><h4>Field: SENSOR_DATA_TYPE_VERTICAL_DILUTION_OF_PRECISION : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeVerticalDilutionOfPrecision"<br /><h4>Field: SENSOR_DATA_TYPE_WEIGHT_KILOGRAMS : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorDataTypeWeightKilograms"<br /><h4>Field: SENSOR_PROPERTY_ACCURACY : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorPropertyAccuracy"<br /><h4>Field: SENSOR_PROPERTY_CHANGE_SENSITIVITY : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorPropertyChangeSensitivity"<br /><h4>Field: SENSOR_PROPERTY_COMMON_GUID : System.Guid</h4>
+    Renamed to "SensorPropertyCommonGuid"<br /><h4>Field: SENSOR_PROPERTY_CONNECTION_TYPE : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorPropertyConnectionType"<br /><h4>Field: SENSOR_PROPERTY_CURRENT_REPORT_INTERVAL : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorPropertyCurrentReportInterval"<br /><h4>Field: SENSOR_PROPERTY_DESCRIPTION : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorPropertyDescription"<br /><h4>Field: SENSOR_PROPERTY_DEVICE_ID : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorPropertyDeviceId"<br /><h4>Field: SENSOR_PROPERTY_FRIENDLY_NAME : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorPropertyFriendlyName"<br /><h4>Field: SENSOR_PROPERTY_LIGHT_RESPONSE_CURVE : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorPropertyLightResponseCurve"<br /><h4>Field: SENSOR_PROPERTY_MANUFACTURER : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorPropertyManufacturer"<br /><h4>Field: SENSOR_PROPERTY_MIN_REPORT_INTERVAL : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorPropertyMinReportInterval"<br /><h4>Field: SENSOR_PROPERTY_MODEL : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorPropertyModel"<br /><h4>Field: SENSOR_PROPERTY_PERSISTENT_UNIQUE_ID : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorPropertyPersistentUniqueId"<br /><h4>Field: SENSOR_PROPERTY_RESOLUTION : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorPropertyResolution"<br /><h4>Field: SENSOR_PROPERTY_SAMPLING_RATE : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorPropertySamplingRate"<br /><h4>Field: SENSOR_PROPERTY_SERIAL_NUMBER : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorPropertySerialNumber"<br /><h4>Field: SENSOR_PROPERTY_STATE : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorPropertyState"<br /><h4>Field: SENSOR_PROPERTY_TYPE : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SensorPropertyType"<br /><h3>Class: SensorTypes</h3><h4>Field: Accelerometer1d : System.Guid</h4>
+    Renamed to "Accelerometer1D"<br /><h4>Field: Accelerometer2d : System.Guid</h4>
+    Renamed to "Accelerometer2D"<br /><h4>Field: Accelerometer3d : System.Guid</h4>
+    Renamed to "Accelerometer3D"<br /><h4>Field: Compass1d : System.Guid</h4>
+    Renamed to "Compass1D"<br /><h4>Field: Compass2d : System.Guid</h4>
+    Renamed to "Compass2D"<br /><h4>Field: Compass3d : System.Guid</h4>
+    Renamed to "Compass3D"<br /><h4>Field: Distance1d : System.Guid</h4>
+    Renamed to "Distance1D"<br /><h4>Field: Distance2d : System.Guid</h4>
+    Renamed to "Distance2D"<br /><h4>Field: Distance3d : System.Guid</h4>
+    Renamed to "Distance3D"<br /><h4>Field: Gyrometer1d : System.Guid</h4>
+    Renamed to "Gyrometer1D"<br /><h4>Field: Gyrometer2d : System.Guid</h4>
+    Renamed to "Gyrometer2D"<br /><h4>Field: Gyrometer3d : System.Guid</h4>
+    Renamed to "Gyrometer3D"<br /><h4>Field: Inclinometer1d : System.Guid</h4>
+    Renamed to "Inclinometer1D"<br /><h4>Field: Inclinometer2d : System.Guid</h4>
+    Renamed to "Inclinometer2D"<br /><h4>Field: Inclinometer3d : System.Guid</h4>
+    Renamed to "Inclinometer3D"<br /><h4>Field: MultiValueSwitch : System.Guid</h4>
+    Renamed to "MultivalueSwitch"<br /><h4>Field: RFIDScanner : System.Guid</h4>
+    Renamed to "RfidScanner"<br /><p /><div style="width: 100%; border-top: solid" /><p><span style="text-decoration: underline">Reflection Errors:</span> (no reflection errors reported)</p><h1 id="Microsoft.WindowsAPICodePack.Shell">Microsoft.WindowsAPICodePack.Shell</h1><span style="color: green">Added namespaces:
+      Microsoft.WindowsAPICodePack.Shell.Interop<br /></span><h2>Namespace: Microsoft.WindowsAPICodePack.Controls</h2><span style="color: red">Removed types:
+      ExplorerBrowserItemsChangedEventHandler, ExplorerBrowserNavigationCompleteEventHandler, ExplorerBrowserNavigationFailedEventHandler, ExplorerBrowserNavigationPendingEventHandler, ExplorerBrowserSelectionChangedEventHandler, ExplorerBrowserViewEnumerationCompleteHandler, ExplorerBrowserViewSelectedItemChangedHandler, NavigationLogChangedEventHandler<br /></span><span style="color: green">Added types:
+      CommonControlException<br /></span><h3>Enum: ExplorerBrowserContentFlags</h3>
+    Renamed to "ExplorerBrowserContentSectionOptions"<br /><span style="color: green">Added fields:
+      None<br /></span><h3>Class: ExplorerBrowserContentOptions</h3><h4>Property: Flags : Microsoft.WindowsAPICodePack.Controls.ExplorerBrowserContentFlags</h4><h5>Method: get_Flags() : Microsoft.WindowsAPICodePack.Controls.ExplorerBrowserContentFlags</h5>
+    Signature changed to "() : Microsoft.WindowsAPICodePack.Controls.ExplorerBrowserContentSectionOptions"<br /><h5>Method: set_Flags(Microsoft.WindowsAPICodePack.Controls.ExplorerBrowserContentFlags) : System.Void</h5>
+    Signature changed to "(Microsoft.WindowsAPICodePack.Controls.ExplorerBrowserContentSectionOptions) : System.Void"<br /><h3>Enum: ExplorerBrowserNavigationFlags</h3>
+    Renamed to "ExplorerBrowserNavigateOptions"<br /><h3>Class: ExplorerBrowserNavigationLog</h3><h4>Property: Locations : System.Collections.Generic.List&lt;Microsoft.WindowsAPICodePack.Shell.ShellObject&gt;</h4>
+    Read/write status changed to "ReadOnly"<br /><h5>Method: get_Locations() : System.Collections.Generic.List&lt;Microsoft.WindowsAPICodePack.Shell.ShellObject&gt;</h5>
+    Signature changed to "() : System.Collections.Generic.IEnumerable&lt;Microsoft.WindowsAPICodePack.Shell.ShellObject&gt;"<br /><h3>Class: ExplorerBrowserNavigationOptions</h3><h4>Property: Flags : Microsoft.WindowsAPICodePack.Controls.ExplorerBrowserNavigationFlags</h4><h5>Method: get_Flags() : Microsoft.WindowsAPICodePack.Controls.ExplorerBrowserNavigationFlags</h5>
+    Signature changed to "() : Microsoft.WindowsAPICodePack.Controls.ExplorerBrowserNavigateOptions"<br /><h5>Method: set_Flags(Microsoft.WindowsAPICodePack.Controls.ExplorerBrowserNavigationFlags) : System.Void</h5>
+    Signature changed to "(Microsoft.WindowsAPICodePack.Controls.ExplorerBrowserNavigateOptions) : System.Void"<br /><h3>Enum: PaneVisibilityState</h3><h4>Field: DontCare</h4>
+    Renamed to "DoNotCare"<br /><h2>Namespace: Microsoft.WindowsAPICodePack.Controls.WindowsForms</h2><h3>Class: CommandLink</h3><h4>Property: ShieldIcon : System.Boolean</h4>
+    Renamed to "UseElevationIcon"<br /><h5>Method: get_ShieldIcon() : System.Boolean</h5>
+    Renamed to "get_UseElevationIcon"<br /><h5>Method: set_ShieldIcon(System.Boolean) : System.Void</h5>
+    Renamed to "set_UseElevationIcon"<br /><h2>Namespace: Microsoft.WindowsAPICodePack.Controls.WindowsPresentationFoundation</h2><h3>Class: ExplorerBrowser</h3><span style="color: green">Added methods:
+      Dispose() : System.Void<br /></span><h4>Field: NavigationTargetProperty : System.Windows.DependencyProperty</h4>Accessibility changed to "public"<br /><h2>Namespace: Microsoft.WindowsAPICodePack.Dialogs</h2><h3>Class: CommonFileDialog</h3><span style="color: green">Added methods:
+      ApplyCollectionChanged() : System.Void, ApplyControlPropertyChange(System.String, Microsoft.WindowsAPICodePack.Dialogs.DialogControl) : System.Void, IsCollectionChangeAllowed() : System.Boolean, IsControlPropertyChangeAllowed(System.String, Microsoft.WindowsAPICodePack.Dialogs.DialogControl) : System.Boolean<br /></span><h4>Property: DefaultDirectory : System.String</h4>
+    Read/write status changed to "ReadWrite"<br /><span style="color: green">Added methods:
+      get_DefaultDirectory() : System.String<br /></span><h4>Property: DefaultDirectoryShellContainer : Microsoft.WindowsAPICodePack.Shell.ShellContainer</h4>
+    Read/write status changed to "ReadWrite"<br /><span style="color: green">Added methods:
+      get_DefaultDirectoryShellContainer() : Microsoft.WindowsAPICodePack.Shell.ShellContainer<br /></span><h4>Method: Dispose(System.Boolean) : System.Void</h4>Accessibility changed to "not public"<br /><h3>Enum: CommonFileDialogResult</h3><span style="color: green">Added fields:
+      None<br /></span><h4>Field: OK</h4>
+    Renamed to "Ok"<br /><h3>Class: CommonOpenFileDialog</h3><h4>Property: FileNames : System.Collections.ObjectModel.Collection&lt;System.String&gt;</h4><h5>Method: get_FileNames() : System.Collections.ObjectModel.Collection&lt;System.String&gt;</h5>
+    Signature changed to "() : System.Collections.Generic.IEnumerable&lt;System.String&gt;"<br /><h2>Namespace: Microsoft.WindowsAPICodePack.Shell</h2><span style="color: red">Removed types:
+      AeroGlassCompositionChangedEvent, ShellObjectNode<br /></span><span style="color: green">Added types:
+      EventHandlerExtensionMethods, NativePoint, NativeRect, ShellException, ShellObjectChangedEventArgs, ShellObjectChangeTypes, ShellObjectNotificationEventArgs, ShellObjectRenamedEventArgs, ShellObjectWatcher, SystemImageUpdatedEventArgs, WindowMessageEventArgs<br /></span><h3>Class: AeroGlassCompositionChangedEvenArgs</h3>
+    Renamed to "AeroGlassCompositionChangedEventArgs"<br /><h4>Property: GlassAvailable : System.Boolean</h4>
+    Read/write status changed to "ReadWrite"<br /><h3>Class: FileSystemKnownFolder</h3><h4>Property: Redirection : Microsoft.WindowsAPICodePack.Shell.RedirectionCapabilities</h4><h5>Method: get_Redirection() : Microsoft.WindowsAPICodePack.Shell.RedirectionCapabilities</h5>
+    Signature changed to "() : Microsoft.WindowsAPICodePack.Shell.RedirectionCapability"<br /><h3>Enum: FolderLogicalViewMode</h3><span style="color: green">Added fields:
+      None<br /></span><h3>Class: GlassForm</h3><h4>Method: ResetAreoGlass() : System.Void</h4>
+    Renamed to "ResetAeroGlass"<br /><h3>Class: GlassWindow</h3><span style="color: red">Removed methods:
+      ResetAreoGlass() : System.Void<br /></span><span style="color: green">Added methods:
+      ResetAeroGlass() : System.Void<br /></span><h3>Struct: IconReference</h3><span style="color: green">Added methods:
+      Equals(System.Object) : System.Boolean, GetHashCode() : System.Int32, op_Equality(Microsoft.WindowsAPICodePack.Shell.IconReference, Microsoft.WindowsAPICodePack.Shell.IconReference) : System.Boolean, op_Inequality(Microsoft.WindowsAPICodePack.Shell.IconReference, Microsoft.WindowsAPICodePack.Shell.IconReference) : System.Boolean<br /></span><h3>Interface: IKnownFolder</h3><h4>Property: Redirection : Microsoft.WindowsAPICodePack.Shell.RedirectionCapabilities</h4><h5>Method: get_Redirection() : Microsoft.WindowsAPICodePack.Shell.RedirectionCapabilities</h5>
+    Signature changed to "() : Microsoft.WindowsAPICodePack.Shell.RedirectionCapability"<br /><h3>Class: KnownFolders</h3><span style="color: red">Removed properties:
+      CommonOEMLinks : Microsoft.WindowsAPICodePack.Shell.IKnownFolder<br /></span><span style="color: green">Added properties:
+      CommonOemLinks : Microsoft.WindowsAPICodePack.Shell.IKnownFolder<br /></span><h3>Class: NonFileSystemKnownFolder</h3><h4>Property: Redirection : Microsoft.WindowsAPICodePack.Shell.RedirectionCapabilities</h4><h5>Method: get_Redirection() : Microsoft.WindowsAPICodePack.Shell.RedirectionCapabilities</h5>
+    Signature changed to "() : Microsoft.WindowsAPICodePack.Shell.RedirectionCapability"<br /><h3>Enum: QueryParserManagerOption</h3><h4>Field: SchemaBiaryName</h4>
+    Renamed to "SchemaBinaryName"<br /><h4>Field: UnLocalizedSchemaBinaryPath</h4>
+    Renamed to "UnlocalizedSchemaBinaryPath"<br /><h3>Enum: RedirectionCapabilities</h3>
+    Renamed to "RedirectionCapability"<br /><h3>Class: SearchCondition</h3><h4>Property: ConditionOperation : Microsoft.WindowsAPICodePack.Shell.SearchConditionOperation</h4>
+    Read/write status changed to "ReadOnly"<br /><h4>Property: ConditionType : Microsoft.WindowsAPICodePack.Shell.SearchConditionType</h4>
+    Read/write status changed to "ReadOnly"<br /><h4>Method: Dispose(System.Boolean) : System.Void</h4>Accessibility changed to "not public"<br /><h4>Property: PropertyCanonicalName : System.String</h4>
+    Read/write status changed to "ReadOnly"<br /><h4>Property: PropertyKey : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Read/write status changed to "ReadOnly"<br /><h3>Enum: SearchConditionOperation</h3><h4>Field: DOSWildcards</h4>
+    Renamed to "DosWildcards"<br /><h3>Class: ShellLink</h3><span style="color: green">Added properties:
+      Arguments : System.String, Comments : System.String<br /></span><h3>Class: ShellObject</h3><span style="color: green">Added methods:
+      Update(System.Runtime.InteropServices.ComTypes.IBindCtx) : System.Void<br /></span><h3>Class: ShellObjectCollection</h3><h4>Method: FromDataObject(System.Object) : Microsoft.WindowsAPICodePack.Shell.ShellObjectCollection</h4>
+    Signature changed to "(System.Runtime.InteropServices.ComTypes.IDataObject) : Microsoft.WindowsAPICodePack.Shell.ShellObjectCollection"<br /><h3>Class: ShellSearchFolder</h3><h4>Property: DisplayName : System.String</h4>
+    Renamed to "SetDisplayName"<br />
+    Kind changed to "Method"<br /><span style="color: red">Removed methods:
+      set_DisplayName(System.String) : System.Void<br /></span><h4>Property: FolderTypeID : System.Guid</h4>
+    Renamed to "SetFolderTypeID"<br />
+    Kind changed to "Method"<br /><span style="color: red">Removed methods:
+      set_FolderTypeID(System.Guid) : System.Void<br /></span><h4>Property: GroupColumn : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "SetGroupColumn"<br />
+    Kind changed to "Method"<br /><span style="color: red">Removed methods:
+      set_GroupColumn(Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey) : System.Void<br /></span><h4>Property: IconSize : System.Int32</h4>
+    Renamed to "SetIconSize"<br />
+    Kind changed to "Method"<br /><span style="color: red">Removed methods:
+      set_IconSize(System.Int32) : System.Void<br /></span><h4>Property: SearchScopePaths : System.String[]</h4><h5>Method: get_SearchScopePaths() : System.String[]</h5>
+    Signature changed to "() : System.Collections.Generic.IEnumerable&lt;System.String&gt;"<br /><h4>Property: SortColumns : Microsoft.WindowsAPICodePack.Shell.SortColumn[]</h4>
+    Kind changed to "Method"<br /><span style="color: red">Removed methods:
+      set_SortColumns(Microsoft.WindowsAPICodePack.Shell.SortColumn[]) : System.Void<br /></span><h4>Property: VisibleColumns : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey[]</h4>
+    Renamed to "SetVisibleColumns"<br />
+    Kind changed to "Method"<br /><span style="color: red">Removed methods:
+      set_VisibleColumns(Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey[]) : System.Void<br /></span><h3>Class: ShellThumbnail</h3><h4>Property: FormatOption : Microsoft.WindowsAPICodePack.Shell.ShellThumbnailFormatOptions</h4><h5>Method: get_FormatOption() : Microsoft.WindowsAPICodePack.Shell.ShellThumbnailFormatOptions</h5>
+    Signature changed to "() : Microsoft.WindowsAPICodePack.Shell.ShellThumbnailFormatOption"<br /><h5>Method: set_FormatOption(Microsoft.WindowsAPICodePack.Shell.ShellThumbnailFormatOptions) : System.Void</h5>
+    Signature changed to "(Microsoft.WindowsAPICodePack.Shell.ShellThumbnailFormatOption) : System.Void"<br /><h4>Property: RetrievalOption : Microsoft.WindowsAPICodePack.Shell.ShellThumbnailRetrievalOptions</h4><h5>Method: get_RetrievalOption() : Microsoft.WindowsAPICodePack.Shell.ShellThumbnailRetrievalOptions</h5>
+    Signature changed to "() : Microsoft.WindowsAPICodePack.Shell.ShellThumbnailRetrievalOption"<br /><h5>Method: set_RetrievalOption(Microsoft.WindowsAPICodePack.Shell.ShellThumbnailRetrievalOptions) : System.Void</h5>
+    Signature changed to "(Microsoft.WindowsAPICodePack.Shell.ShellThumbnailRetrievalOption) : System.Void"<br /><h3>Enum: ShellThumbnailFormatOptions</h3>
+    Renamed to "ShellThumbnailFormatOption"<br /><h3>Enum: ShellThumbnailRetrievalOptions</h3>
+    Renamed to "ShellThumbnailRetrievalOption"<br /><h3>Struct: SortColumn</h3><span style="color: green">Added methods:
+      Equals(System.Object) : System.Boolean, GetHashCode() : System.Int32, op_Equality(Microsoft.WindowsAPICodePack.Shell.SortColumn, Microsoft.WindowsAPICodePack.Shell.SortColumn) : System.Boolean, op_Inequality(Microsoft.WindowsAPICodePack.Shell.SortColumn, Microsoft.WindowsAPICodePack.Shell.SortColumn) : System.Boolean<br /></span><h4>Field: Direction : Microsoft.WindowsAPICodePack.Shell.SortDirection</h4>
+    Kind changed to "Property"<br /><span style="color: green">Added methods:
+      get_Direction() : Microsoft.WindowsAPICodePack.Shell.SortDirection, set_Direction(Microsoft.WindowsAPICodePack.Shell.SortDirection) : System.Void<br /></span><h4>Field: PropertyKey : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Kind changed to "Property"<br /><span style="color: green">Added methods:
+      get_PropertyKey() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey, set_PropertyKey(Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey) : System.Void<br /></span><h3>Enum: SortDirection</h3><span style="color: green">Added fields:
+      Default<br /></span><h3>Enum: STGM</h3>Accessibility changed to "public"<br />
+    Renamed to "AccessModes"<br /><h4>Field: DirectSwmr</h4>
+    Renamed to "DirectSingleWriterMultipleReader"<br /><h3>Class: StockIcon</h3><h4>Method: .ctor(Microsoft.WindowsAPICodePack.Shell.StockIconIdentifier, Microsoft.WindowsAPICodePack.Shell.StockIconSizes, System.Boolean, System.Boolean) : Microsoft.WindowsAPICodePack.Shell.StockIcon</h4>
+    Signature changed to "(Microsoft.WindowsAPICodePack.Shell.StockIconIdentifier, Microsoft.WindowsAPICodePack.Shell.StockIconSize, System.Boolean, System.Boolean) : Microsoft.WindowsAPICodePack.Shell.StockIcon"<br /><h4>Property: CurrentSize : Microsoft.WindowsAPICodePack.Shell.StockIconSizes</h4><h5>Method: get_CurrentSize() : Microsoft.WindowsAPICodePack.Shell.StockIconSizes</h5>
+    Signature changed to "() : Microsoft.WindowsAPICodePack.Shell.StockIconSize"<br /><h5>Method: set_CurrentSize(Microsoft.WindowsAPICodePack.Shell.StockIconSizes) : System.Void</h5>
+    Signature changed to "(Microsoft.WindowsAPICodePack.Shell.StockIconSize) : System.Void"<br /><h4>Method: Dispose(System.Boolean) : System.Void</h4>Accessibility changed to "not public"<br /><h3>Class: StockIcons</h3><h4>Method: .ctor(Microsoft.WindowsAPICodePack.Shell.StockIconSizes, System.Boolean, System.Boolean) : Microsoft.WindowsAPICodePack.Shell.StockIcons</h4>
+    Signature changed to "(Microsoft.WindowsAPICodePack.Shell.StockIconSize, System.Boolean, System.Boolean) : Microsoft.WindowsAPICodePack.Shell.StockIcons"<br /><h4>Property: DefaultSize : Microsoft.WindowsAPICodePack.Shell.StockIconSizes</h4><h5>Method: get_DefaultSize() : Microsoft.WindowsAPICodePack.Shell.StockIconSizes</h5>
+    Signature changed to "() : Microsoft.WindowsAPICodePack.Shell.StockIconSize"<br /><h3>Enum: StockIconSizes</h3>
+    Renamed to "StockIconSize"<br /><h2>Namespace: Microsoft.WindowsAPICodePack.Shell.PropertySystem</h2><span style="color: green">Added types:
+      PropertyStoreCacheState, PropertySystemException<br /></span><h3>Class: AppUserModel</h3><h4>Property: IsDestListSeparator : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "IsDestinationListSeparator"<br /><h5>Method: get_IsDestListSeparator() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_IsDestinationListSeparator"<br /><h3>Class: Audio</h3><h4>Property: IsVariableBitRate : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "IsVariableBitrate"<br /><h5>Method: get_IsVariableBitRate() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_IsVariableBitrate"<br /><h3>Class: Communication</h3><h4>Property: FollowupIconIndex : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "FollowUpIconIndex"<br /><h5>Method: get_FollowupIconIndex() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_FollowUpIconIndex"<br /><h3>Class: Contact</h3><h4>Property: BusinessHomePage : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "BusinessHomepage"<br /><h5>Method: get_BusinessHomePage() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_BusinessHomepage"<br /><h4>Property: NickName : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "Nickname"<br /><h5>Method: get_NickName() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_Nickname"<br /><h4>Property: WebPage : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "Webpage"<br /><h5>Method: get_WebPage() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_Webpage"<br /><h3>Class: Device</h3><h4>Property: PrinterURL : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "PrinterUrl"<br /><span style="color: red">Removed methods:
+      get_PrinterURL() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey<br /></span><span style="color: green">Added methods:
+      get_PrinterUrl() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey<br /></span><h3>Class: GPS</h3><h4>Property: DestBearing : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "DestinationBearing"<br /><h5>Method: get_DestBearing() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_DestinationBearing"<br /><h4>Property: DestBearingDenominator : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "DestinationBearingDenominator"<br /><h5>Method: get_DestBearingDenominator() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_DestinationBearingDenominator"<br /><h4>Property: DestBearingNumerator : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "DestinationBearingNumerator"<br /><h5>Method: get_DestBearingNumerator() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_DestinationBearingNumerator"<br /><h4>Property: DestBearingRef : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "DestinationBearingRef"<br /><h5>Method: get_DestBearingRef() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_DestinationBearingRef"<br /><h4>Property: DestDistance : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "DestinationDistance"<br /><h5>Method: get_DestDistance() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_DestinationDistance"<br /><h4>Property: DestDistanceDenominator : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "DestinationDistanceDenominator"<br /><h5>Method: get_DestDistanceDenominator() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_DestinationDistanceDenominator"<br /><h4>Property: DestDistanceNumerator : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "DestinationDistanceNumerator"<br /><h5>Method: get_DestDistanceNumerator() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_DestinationDistanceNumerator"<br /><h4>Property: DestDistanceRef : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "DestinationDistanceRef"<br /><h5>Method: get_DestDistanceRef() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_DestinationDistanceRef"<br /><h4>Property: DestLatitude : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "DestinationLatitude"<br /><h5>Method: get_DestLatitude() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_DestinationLatitude"<br /><h4>Property: DestLatitudeDenominator : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "DestinationLatitudeDenominator"<br /><h5>Method: get_DestLatitudeDenominator() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_DestinationLatitudeDenominator"<br /><h4>Property: DestLatitudeNumerator : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "DestinationLatitudeNumerator"<br /><h5>Method: get_DestLatitudeNumerator() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_DestinationLatitudeNumerator"<br /><h4>Property: DestLatitudeRef : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "DestinationLatitudeRef"<br /><h5>Method: get_DestLatitudeRef() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_DestinationLatitudeRef"<br /><h4>Property: DestLongitude : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "DestinationLongitude"<br /><h5>Method: get_DestLongitude() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_DestinationLongitude"<br /><h4>Property: DestLongitudeDenominator : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "DestinationLongitudeDenominator"<br /><h5>Method: get_DestLongitudeDenominator() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_DestinationLongitudeDenominator"<br /><h4>Property: DestLongitudeNumerator : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "DestinationLongitudeNumerator"<br /><h5>Method: get_DestLongitudeNumerator() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_DestinationLongitudeNumerator"<br /><h4>Property: DestLongitudeRef : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "DestinationLongitudeRef"<br /><h5>Method: get_DestLongitudeRef() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_DestinationLongitudeRef"<br /><h4>Property: ImgDirection : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "ImageDirection"<br /><h5>Method: get_ImgDirection() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_ImageDirection"<br /><h4>Property: ImgDirectionDenominator : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "ImageDirectionDenominator"<br /><h5>Method: get_ImgDirectionDenominator() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_ImageDirectionDenominator"<br /><h4>Property: ImgDirectionNumerator : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "ImageDirectionNumerator"<br /><h5>Method: get_ImgDirectionNumerator() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_ImageDirectionNumerator"<br /><h4>Property: ImgDirectionRef : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "ImageDirectionRef"<br /><h5>Method: get_ImgDirectionRef() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_ImageDirectionRef"<br /><h3>Interface: IShellProperty</h3><h4>Method: FormatForDisplay(Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyDescriptionFormat) : System.String</h4>
+    Signature changed to "(Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyDescriptionFormatOptions) : System.String"<br /><h3>Class: Media</h3><h4>Property: SubTitle : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "Subtitle"<br /><h5>Method: get_SubTitle() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_Subtitle"<br /><h3>Enum: PropertyColumnState</h3>
+    Renamed to "PropertyColumnStateOptions"<br /><h4>Field: DefaultValue</h4>
+    Renamed to "None"<br /><h4>Field: NoDPIScale</h4>
+    Renamed to "NoDpiScale"<br /><h4>Field: PerferVarCmp</h4>
+    Renamed to "PreferVariantCompare"<br /><h3>Enum: PropertyDescriptionFormat</h3>
+    Renamed to "PropertyDescriptionFormatOptions"<br /><h4>Field: Default</h4>
+    Renamed to "None"<br /><h3>Enum: PropertyGroupingRange</h3><h4>Field: Dymamic</h4>
+    Renamed to "Dynamic"<br /><h3>Class: PropertySystem</h3><h4>Property: IsPinnedToNameSpaceTree : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.Boolean&gt;&gt;</h4>
+    Renamed to "IsPinnedToNamespaceTree"<br /><h5>Method: get_IsPinnedToNameSpaceTree() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.Boolean&gt;&gt;</h5>
+    Renamed to "get_IsPinnedToNamespaceTree"<br /><h4>Property: NamespaceCLSID : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.IntPtr&gt;&gt;</h4>
+    Renamed to "NamespaceClsid"<br /><h5>Method: get_NamespaceCLSID() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.IntPtr&gt;&gt;</h5>
+    Renamed to "get_NamespaceClsid"<br /><h4>Property: OwnerSID : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.String&gt;</h4>
+    Renamed to "OwnerSid"<br /><h5>Method: get_OwnerSID() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.String&gt;</h5>
+    Renamed to "get_OwnerSid"<br /><h3>Class: PropertySystemAppUserModel</h3><h4>Property: IsDestListSeparator : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.Boolean&gt;&gt;</h4>
+    Renamed to "IsDestinationListSeparator"<br /><h5>Method: get_IsDestListSeparator() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.Boolean&gt;&gt;</h5>
+    Renamed to "get_IsDestinationListSeparator"<br /><h3>Class: PropertySystemAudio</h3><h4>Property: IsVariableBitRate : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.Boolean&gt;&gt;</h4>
+    Renamed to "IsVariableBitrate"<br /><h5>Method: get_IsVariableBitRate() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.Boolean&gt;&gt;</h5>
+    Renamed to "get_IsVariableBitrate"<br /><h3>Class: PropertySystemCommunication</h3><h4>Property: FollowupIconIndex : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.Int32&gt;&gt;</h4>
+    Renamed to "FollowUpIconIndex"<br /><h5>Method: get_FollowupIconIndex() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.Int32&gt;&gt;</h5>
+    Renamed to "get_FollowUpIconIndex"<br /><h3>Class: PropertySystemContact</h3><h4>Property: BusinessHomePage : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.String&gt;</h4>
+    Renamed to "BusinessHomepage"<br /><h5>Method: get_BusinessHomePage() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.String&gt;</h5>
+    Renamed to "get_BusinessHomepage"<br /><h4>Property: NickName : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.String&gt;</h4>
+    Renamed to "Nickname"<br /><h5>Method: get_NickName() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.String&gt;</h5>
+    Renamed to "get_Nickname"<br /><h4>Property: WebPage : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.String&gt;</h4>
+    Renamed to "Webpage"<br /><h5>Method: get_WebPage() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.String&gt;</h5>
+    Renamed to "get_Webpage"<br /><h3>Class: PropertySystemDevice</h3><h4>Property: PrinterURL : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.String&gt;</h4>
+    Renamed to "PrinterUrl"<br /><h5>Method: get_PrinterURL() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.String&gt;</h5>
+    Renamed to "get_PrinterUrl"<br /><h3>Class: PropertySystemGPS</h3><h4>Property: DestBearing : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.Double&gt;&gt;</h4>
+    Renamed to "DestinationBearing"<br /><h5>Method: get_DestBearing() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.Double&gt;&gt;</h5>
+    Renamed to "get_DestinationBearing"<br /><h4>Property: DestBearingDenominator : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.UInt32&gt;&gt;</h4>
+    Renamed to "DestinationBearingDenominator"<br /><h5>Method: get_DestBearingDenominator() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.UInt32&gt;&gt;</h5>
+    Renamed to "get_DestinationBearingDenominator"<br /><h4>Property: DestBearingNumerator : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.UInt32&gt;&gt;</h4>
+    Renamed to "DestinationBearingNumerator"<br /><h5>Method: get_DestBearingNumerator() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.UInt32&gt;&gt;</h5>
+    Renamed to "get_DestinationBearingNumerator"<br /><h4>Property: DestBearingRef : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.String&gt;</h4>
+    Renamed to "DestinationBearingRef"<br /><h5>Method: get_DestBearingRef() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.String&gt;</h5>
+    Renamed to "get_DestinationBearingRef"<br /><h4>Property: DestDistance : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.Double&gt;&gt;</h4>
+    Renamed to "DestinationDistance"<br /><h5>Method: get_DestDistance() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.Double&gt;&gt;</h5>
+    Renamed to "get_DestinationDistance"<br /><h4>Property: DestDistanceDenominator : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.UInt32&gt;&gt;</h4>
+    Renamed to "DestinationDistanceDenominator"<br /><h5>Method: get_DestDistanceDenominator() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.UInt32&gt;&gt;</h5>
+    Renamed to "get_DestinationDistanceDenominator"<br /><h4>Property: DestDistanceNumerator : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.UInt32&gt;&gt;</h4>
+    Renamed to "DestinationDistanceNumerator"<br /><h5>Method: get_DestDistanceNumerator() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.UInt32&gt;&gt;</h5>
+    Renamed to "get_DestinationDistanceNumerator"<br /><h4>Property: DestDistanceRef : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.String&gt;</h4>
+    Renamed to "DestinationDistanceRef"<br /><h5>Method: get_DestDistanceRef() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.String&gt;</h5>
+    Renamed to "get_DestinationDistanceRef"<br /><h4>Property: DestLatitude : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Double[]&gt;</h4>
+    Renamed to "DestinationLatitude"<br /><h5>Method: get_DestLatitude() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Double[]&gt;</h5>
+    Renamed to "get_DestinationLatitude"<br /><h4>Property: DestLatitudeDenominator : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.UInt32[]&gt;</h4>
+    Renamed to "DestinationLatitudeDenominator"<br /><h5>Method: get_DestLatitudeDenominator() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.UInt32[]&gt;</h5>
+    Renamed to "get_DestinationLatitudeDenominator"<br /><h4>Property: DestLatitudeNumerator : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.UInt32[]&gt;</h4>
+    Renamed to "DestinationLatitudeNumerator"<br /><h5>Method: get_DestLatitudeNumerator() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.UInt32[]&gt;</h5>
+    Renamed to "get_DestinationLatitudeNumerator"<br /><h4>Property: DestLatitudeRef : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.String&gt;</h4>
+    Renamed to "DestinationLatitudeRef"<br /><h5>Method: get_DestLatitudeRef() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.String&gt;</h5>
+    Renamed to "get_DestinationLatitudeRef"<br /><h4>Property: DestLongitude : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Double[]&gt;</h4>
+    Renamed to "DestinationLongitude"<br /><h5>Method: get_DestLongitude() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Double[]&gt;</h5>
+    Renamed to "get_DestinationLongitude"<br /><h4>Property: DestLongitudeDenominator : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.UInt32[]&gt;</h4>
+    Renamed to "DestinationLongitudeDenominator"<br /><h5>Method: get_DestLongitudeDenominator() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.UInt32[]&gt;</h5>
+    Renamed to "get_DestinationLongitudeDenominator"<br /><h4>Property: DestLongitudeNumerator : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.UInt32[]&gt;</h4>
+    Renamed to "DestinationLongitudeNumerator"<br /><h5>Method: get_DestLongitudeNumerator() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.UInt32[]&gt;</h5>
+    Renamed to "get_DestinationLongitudeNumerator"<br /><h4>Property: DestLongitudeRef : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.String&gt;</h4>
+    Renamed to "DestinationLongitudeRef"<br /><h5>Method: get_DestLongitudeRef() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.String&gt;</h5>
+    Renamed to "get_DestinationLongitudeRef"<br /><h4>Property: ImgDirection : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.Double&gt;&gt;</h4>
+    Renamed to "ImageDirection"<br /><h5>Method: get_ImgDirection() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.Double&gt;&gt;</h5>
+    Renamed to "get_ImageDirection"<br /><h4>Property: ImgDirectionDenominator : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.UInt32&gt;&gt;</h4>
+    Renamed to "ImageDirectionDenominator"<br /><h5>Method: get_ImgDirectionDenominator() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.UInt32&gt;&gt;</h5>
+    Renamed to "get_ImageDirectionDenominator"<br /><h4>Property: ImgDirectionNumerator : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.UInt32&gt;&gt;</h4>
+    Renamed to "ImageDirectionNumerator"<br /><h5>Method: get_ImgDirectionNumerator() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.Nullable&lt;System.UInt32&gt;&gt;</h5>
+    Renamed to "get_ImageDirectionNumerator"<br /><h4>Property: ImgDirectionRef : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.String&gt;</h4>
+    Renamed to "ImageDirectionRef"<br /><h5>Method: get_ImgDirectionRef() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.String&gt;</h5>
+    Renamed to "get_ImageDirectionRef"<br /><h3>Class: PropertySystemMedia</h3><h4>Property: SubTitle : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.String&gt;</h4>
+    Renamed to "Subtitle"<br /><h5>Method: get_SubTitle() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellProperty&lt;System.String&gt;</h5>
+    Renamed to "get_Subtitle"<br /><h3>Enum: PropertyTypeFlags</h3>
+    Renamed to "PropertyTypeOptions"<br /><h4>Field: Default</h4>
+    Renamed to "None"<br /><h3>Enum: PropertyViewFlags</h3>
+    Renamed to "PropertyViewOptions"<br /><h4>Field: Default</h4>
+    Renamed to "None"<br /><h3>Class: ShellProperties</h3><span style="color: green">Added methods:
+      Dispose() : System.Void<br /></span><h3>Class: ShellProperty&lt;T&gt;</h3><h4>Method: FormatForDisplay(Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyDescriptionFormat) : System.String</h4>
+    Signature changed to "(Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyDescriptionFormatOptions) : System.String"<br /><h4>Method: TryFormatForDisplay(Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyDescriptionFormat, System.String&amp;) : System.Boolean</h4>
+    Signature changed to "(Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyDescriptionFormatOptions, System.String&amp;) : System.Boolean"<br /><h3>Class: ShellPropertyCollection</h3><h4>Method: .ctor(Microsoft.WindowsAPICodePack.Shell.ShellObject) : Microsoft.WindowsAPICodePack.Shell.PropertySystem.ShellPropertyCollection</h4>Accessibility changed to "public"<br /><h3>Class: ShellPropertyDescription</h3><h4>Property: ColumnState : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyColumnState</h4><h5>Method: get_ColumnState() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyColumnState</h5>
+    Signature changed to "() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyColumnStateOptions"<br /><h4>Method: Dispose(System.Boolean) : System.Void</h4>Accessibility changed to "not public"<br /><h4>Property: TypeFlags : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyTypeFlags</h4><h5>Method: get_TypeFlags() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyTypeFlags</h5>
+    Signature changed to "() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyTypeOptions"<br /><h4>Property: ViewFlags : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyViewFlags</h4><h5>Method: get_ViewFlags() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyViewFlags</h5>
+    Signature changed to "() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyViewOptions"<br /><h3>Class: System</h3><h4>Property: IsPinnedToNameSpaceTree : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "IsPinnedToNamespaceTree"<br /><h5>Method: get_IsPinnedToNameSpaceTree() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_IsPinnedToNamespaceTree"<br /><h4>Property: NamespaceCLSID : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "NamespaceClsid"<br /><h5>Method: get_NamespaceCLSID() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_NamespaceClsid"<br /><h4>Property: OwnerSID : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h4>
+    Renamed to "OwnerSid"<br /><h5>Method: get_OwnerSID() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.PropertyKey</h5>
+    Renamed to "get_OwnerSid"<br /><h3>Class: WindowProperties</h3><span style="color: red">Removed methods:
+      .ctor() : Microsoft.WindowsAPICodePack.Shell.PropertySystem.WindowProperties<br /></span><h2>Namespace: Microsoft.WindowsAPICodePack.Taskbar</h2><span style="color: green">Added types:
+      TabbedThumbnailClosedEventArgs, ThumbnailAlphaType<br /></span><h3>Interface: IJumpListTask</h3>
+    Renamed to "JumpListTask"<br />
+    Kind changed to "Class"<br /><h3>Class: JumpList</h3><h4>Method: AddUserTasks(Microsoft.WindowsAPICodePack.Taskbar.IJumpListTask[]) : System.Void</h4>
+    Signature changed to "(Microsoft.WindowsAPICodePack.Taskbar.JumpListTask[]) : System.Void"<br /><h3>Class: JumpListLink</h3><h4>Method: Dispose(System.Boolean) : System.Void</h4>Accessibility changed to "not public"<br /><h3>Class: JumpListSeparator</h3><h4>Method: Dispose(System.Boolean) : System.Void</h4>Accessibility changed to "not public"<br /><h3>Class: TabbedThumbnail</h3><h4>Method: Dispose(System.Boolean) : System.Void</h4>Accessibility changed to "not public"<br /><h3>Class: TabbedThumbnailBitmapRequestedEventArgs</h3><span style="color: red">Removed methods:
+      SetImage(System.Drawing.Bitmap) : System.Void, SetImage(System.IntPtr) : System.Void, SetImage(System.Windows.Media.Imaging.BitmapSource) : System.Void<br /></span><h4>Method: .ctor(System.IntPtr, Microsoft.WindowsAPICodePack.Taskbar.TabbedThumbnail) : Microsoft.WindowsAPICodePack.Taskbar.TabbedThumbnailBitmapRequestedEventArgs</h4>
+    Signature changed to "(System.IntPtr) : Microsoft.WindowsAPICodePack.Taskbar.TabbedThumbnailBitmapRequestedEventArgs"<br /><h4>Method: .ctor(System.Windows.UIElement, Microsoft.WindowsAPICodePack.Taskbar.TabbedThumbnail) : Microsoft.WindowsAPICodePack.Taskbar.TabbedThumbnailBitmapRequestedEventArgs</h4>
+    Signature changed to "(System.Windows.UIElement) : Microsoft.WindowsAPICodePack.Taskbar.TabbedThumbnailBitmapRequestedEventArgs"<br /><h3>Class: TabbedThumbnailEventArgs</h3><span style="color: red">Removed properties:
+      TabbedThumbnail : Microsoft.WindowsAPICodePack.Taskbar.TabbedThumbnail<br /></span><h4>Method: .ctor(System.IntPtr, Microsoft.WindowsAPICodePack.Taskbar.TabbedThumbnail) : Microsoft.WindowsAPICodePack.Taskbar.TabbedThumbnailEventArgs</h4>
+    Signature changed to "(System.IntPtr) : Microsoft.WindowsAPICodePack.Taskbar.TabbedThumbnailEventArgs"<br /><h4>Method: .ctor(System.Windows.UIElement, Microsoft.WindowsAPICodePack.Taskbar.TabbedThumbnail) : Microsoft.WindowsAPICodePack.Taskbar.TabbedThumbnailEventArgs</h4>
+    Signature changed to "(System.Windows.UIElement) : Microsoft.WindowsAPICodePack.Taskbar.TabbedThumbnailEventArgs"<br /><h3>Class: TaskbarManager</h3><h4>Property: ThumbnailToolbars : Microsoft.WindowsAPICodePack.Taskbar.ThumbnailToolbarManager</h4>
+    Renamed to "ThumbnailToolBars"<br /><h5>Method: get_ThumbnailToolbars() : Microsoft.WindowsAPICodePack.Taskbar.ThumbnailToolbarManager</h5>
+    Renamed to "get_ThumbnailToolBars"<br />
+    Signature changed to "() : Microsoft.WindowsAPICodePack.Taskbar.ThumbnailToolBarManager"<br /><h3>Class: ThumbnailButtonClickedEventArgs</h3><h4>Method: .ctor(System.IntPtr, Microsoft.WindowsAPICodePack.Taskbar.ThumbnailToolbarButton) : Microsoft.WindowsAPICodePack.Taskbar.ThumbnailButtonClickedEventArgs</h4>
+    Signature changed to "(System.IntPtr, Microsoft.WindowsAPICodePack.Taskbar.ThumbnailToolBarButton) : Microsoft.WindowsAPICodePack.Taskbar.ThumbnailButtonClickedEventArgs"<br /><h4>Method: .ctor(System.Windows.UIElement, Microsoft.WindowsAPICodePack.Taskbar.ThumbnailToolbarButton) : Microsoft.WindowsAPICodePack.Taskbar.ThumbnailButtonClickedEventArgs</h4>
+    Signature changed to "(System.Windows.UIElement, Microsoft.WindowsAPICodePack.Taskbar.ThumbnailToolBarButton) : Microsoft.WindowsAPICodePack.Taskbar.ThumbnailButtonClickedEventArgs"<br /><h4>Property: ThumbnailButton : Microsoft.WindowsAPICodePack.Taskbar.ThumbnailToolbarButton</h4><h5>Method: get_ThumbnailButton() : Microsoft.WindowsAPICodePack.Taskbar.ThumbnailToolbarButton</h5>
+    Signature changed to "() : Microsoft.WindowsAPICodePack.Taskbar.ThumbnailToolBarButton"<br /><h3>Class: ThumbnailToolbarButton</h3>
+    Renamed to "ThumbnailToolBarButton"<br /><h4>Method: .ctor(System.Drawing.Icon, System.String) : Microsoft.WindowsAPICodePack.Taskbar.ThumbnailToolbarButton</h4>
+    Signature changed to "(System.Drawing.Icon, System.String) : Microsoft.WindowsAPICodePack.Taskbar.ThumbnailToolBarButton"<br /><h3>Class: ThumbnailToolbarManager</h3>
+    Renamed to "ThumbnailToolBarManager"<br /><h4>Method: AddButtons(System.IntPtr, Microsoft.WindowsAPICodePack.Taskbar.ThumbnailToolbarButton[]) : System.Void</h4>
+    Signature changed to "(System.IntPtr, Microsoft.WindowsAPICodePack.Taskbar.ThumbnailToolBarButton[]) : System.Void"<br /><h4>Method: AddButtons(System.Windows.UIElement, Microsoft.WindowsAPICodePack.Taskbar.ThumbnailToolbarButton[]) : System.Void</h4>
+    Signature changed to "(System.Windows.UIElement, Microsoft.WindowsAPICodePack.Taskbar.ThumbnailToolBarButton[]) : System.Void"<br /><h2>Namespace: MS.WindowsAPICodePack.Internal</h2><h3>Class: ExplorerBrowserViewEvents</h3><span style="color: green">Added methods:
+      .ctor() : MS.WindowsAPICodePack.Internal.ExplorerBrowserViewEvents, Dispose() : System.Void<br /></span><p /><div style="width: 100%; border-top: solid" /><p><span style="text-decoration: underline">Reflection Errors:</span> (no reflection errors reported)</p></body>
+</html>

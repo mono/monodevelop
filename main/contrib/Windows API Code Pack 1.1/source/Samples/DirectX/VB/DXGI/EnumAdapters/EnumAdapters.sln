@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "EnumAdapters", "EnumAdapters.vbproj", "{D691CAEB-8635-436B-9987-403047DA06AC}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.WindowsAPICodePack.DirectX", "..\..\..\..\..\WindowsAPICodePack\DirectX\DirectX\DirectX.vcproj", "{446B1E21-65A1-4F56-AA2C-D2E24058B2B8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|Win32 = Debug|Win32
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D691CAEB-8635-436B-9987-403047DA06AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D691CAEB-8635-436B-9987-403047DA06AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D691CAEB-8635-436B-9987-403047DA06AC}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D691CAEB-8635-436B-9987-403047DA06AC}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D691CAEB-8635-436B-9987-403047DA06AC}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{D691CAEB-8635-436B-9987-403047DA06AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D691CAEB-8635-436B-9987-403047DA06AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D691CAEB-8635-436B-9987-403047DA06AC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{D691CAEB-8635-436B-9987-403047DA06AC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{D691CAEB-8635-436B-9987-403047DA06AC}.Release|Win32.ActiveCfg = Release|Any CPU
+		{446B1E21-65A1-4F56-AA2C-D2E24058B2B8}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{446B1E21-65A1-4F56-AA2C-D2E24058B2B8}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{446B1E21-65A1-4F56-AA2C-D2E24058B2B8}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{446B1E21-65A1-4F56-AA2C-D2E24058B2B8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{446B1E21-65A1-4F56-AA2C-D2E24058B2B8}.Debug|Win32.Build.0 = Debug|Win32
+		{446B1E21-65A1-4F56-AA2C-D2E24058B2B8}.Release|Any CPU.ActiveCfg = Release|Win32
+		{446B1E21-65A1-4F56-AA2C-D2E24058B2B8}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{446B1E21-65A1-4F56-AA2C-D2E24058B2B8}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{446B1E21-65A1-4F56-AA2C-D2E24058B2B8}.Release|Win32.ActiveCfg = Release|Win32
+		{446B1E21-65A1-4F56-AA2C-D2E24058B2B8}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,47 @@
+<!-- Copyright (c) Microsoft Corporation.  All rights reserved. -->
+
+<Window x:Class="StockIconsDemo.Window1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Stock Icons Demo" Height="638" Width="651.046" WindowStartupLocation="CenterScreen">
+
+    <DockPanel>
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,15,0,0">
+            <ComboBox Height="21" HorizontalAlignment="Left" Name="comboBox1" VerticalAlignment="Top" Width="160" SelectedIndex="-1" SelectionChanged="comboBox1_SelectionChanged" Margin="15">
+                <ComboBoxItem Name="smallComboBoxItem">Small</ComboBoxItem>
+                <ComboBoxItem Name="largeComboBoxItem">Large</ComboBoxItem>
+                <ComboBoxItem Name="shellSizeComboBoxItem">Shell Size</ComboBoxItem>
+            </ComboBox>
+
+            <CheckBox Height="16" 
+                  Name="linkOverlayCheckBox" 
+                  VerticalAlignment="Top" 
+                  Checked="linkOverlayCheckBox_Checked" 
+                  Unchecked="linkOverlayCheckBox_Checked" 
+                  HorizontalAlignment="Left" 
+                  Width="90" Margin="15">Link Overlay
+            </CheckBox>
+
+            <CheckBox Height="16" 
+                  Name="selectedCheckBox" 
+                  VerticalAlignment="Top" 
+                  Checked="selectedCheckBox_Checked" 
+                  Unchecked="selectedCheckBox_Checked" 
+                  HorizontalAlignment="Left" 
+                  Width="68" Margin="15">Selected
+            </CheckBox>
+        </StackPanel>
+        
+        <StatusBar Name="statusBar1" DockPanel.Dock="Bottom">
+            <TextBlock Text="Total StockIcons: "/>
+            <TextBlock Name="stockIconsCount"/>
+        </StatusBar>
+    
+        <ScrollViewer DockPanel.Dock="Bottom" Margin="0,0,0,15">
+            <WrapPanel Name="wrapPanel1"/>
+        </ScrollViewer>
+
+
+    </DockPanel>
+
+</Window>

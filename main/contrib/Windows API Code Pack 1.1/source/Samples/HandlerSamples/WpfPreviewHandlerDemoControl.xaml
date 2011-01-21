@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="HandlerSamples.WpfPreviewHandlerDemoControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" Height="300" Width="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <Image Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="2" HorizontalAlignment="Stretch" Name="imgEncodedImage" Stretch="Fill" VerticalAlignment="Stretch" Opacity=".5"  />
+        <Label Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Content="Label" HorizontalAlignment="Stretch" Name="lblName" VerticalAlignment="Stretch"/>
+
+        <ScrollViewer Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="2" Name="scrollViewer1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <TextBlock Name="txtContent" Text="TextBlock" TextAlignment="Left" TextWrapping="Wrap" />
+        </ScrollViewer>
+
+    </Grid>
+</UserControl>

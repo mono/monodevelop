@@ -1,0 +1,83 @@
+﻿<!-- //Copyright (c) Microsoft Corporation.  All rights reserved. -->
+
+<Window x:Class="ShellHierarchyTreeDemo.Window1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Shell Hierarchy Tree Demo"
+    xmlns:Demo="clr-namespace:ShellHierarchyTreeDemo"
+    xmlns:WB="clr-namespace:Microsoft.WindowsAPICodePack.Shell;assembly=Microsoft.WindowsAPICodePack.Shell"
+    >
+
+    <Window.Resources>
+        <ObjectDataProvider x:Key="DesktopDataSource"                      
+          ObjectType="{x:Type Demo:DesktopCollection}" />
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="325"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition/>
+            <RowDefinition Height="280"/>
+        </Grid.RowDefinitions>
+
+        <TreeView 
+                Name="ExplorerTreeView"                 
+                Grid.Row="0" 
+                Grid.Column="0" Grid.RowSpan="3">
+            
+            <TreeView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Refresh Subitems" Click="MenuItemRefresh_Click"/>
+                </ContextMenu>
+            </TreeView.ContextMenu>
+            <TreeViewItem
+                ItemsSource="{Binding Source={StaticResource DesktopDataSource}}" 
+                Header="Desktop"
+                IsExpanded="True"
+                Selected="treeViewHeader_Selected"
+                Name="treeViewHeader"
+                />
+        </TreeView>
+
+        <GridSplitter Width="3" Grid.RowSpan="3" Background="Gray"/>
+
+        <TextBox Name="PropertiesTextBox" Foreground="Navy" Background="WhiteSmoke" FontSize="12" FontFamily="Courier New" IsReadOnly="True"  Grid.Column="1" Grid.Row="0"></TextBox>
+
+        <Grid Grid.Column="1" Grid.Row="1" Name="PropertiesGrid">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <ListView Name="PropertiesListBox" Background="AntiqueWhite" Grid.Row="0" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" >
+                <ListView.View>
+                    <GridView AllowsColumnReorder="false" ColumnHeaderToolTip="Properties">
+                        <GridViewColumn Header="Property Key" Width="100" DisplayMemberBinding="{Binding Path=PropertyKey}"/>
+                        <GridViewColumn Header="Canonical Name" Width="120" DisplayMemberBinding="{Binding Path=CanonicalName}"/>
+                        <GridViewColumn Header="Display Name" Width="120" DisplayMemberBinding="{Binding Path=Description.DisplayName}"/>
+                        <GridViewColumn Header="Display Type" Width="60" DisplayMemberBinding="{Binding Path=Description.DisplayType}"/>
+                        <GridViewColumn Header="Value" Width="100" DisplayMemberBinding="{Binding Path=ValueAsObject}"/>
+                        <GridViewColumn Header="Type Flags" Width="70" DisplayMemberBinding="{Binding Path=Description.TypeFlags}"/>
+                        <GridViewColumn Header="View Flags" Width="70" DisplayMemberBinding="{Binding Path=Description.ViewFlags}"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+
+            <ListView Name="FolderPropsListBox" Background="LavenderBlush" Grid.Row="1"  ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" >
+                <ListView.View>
+                    <GridView AllowsColumnReorder="false" ColumnHeaderToolTip="Properties" >
+                        <GridViewColumn Header="Property" Width="150" DisplayMemberBinding="{Binding Path=PropertyName}"/>
+                        <GridViewColumn Header="Value" Width="300" DisplayMemberBinding="{Binding Path=Value}"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Grid>
+
+        <Grid Grid.Column="1" Grid.Row="2" Background="AliceBlue">
+            <Image Margin="10,10,10,10" Name="ThumbnailPreview"  Stretch="Uniform" Width="256" Height="256" />
+        </Grid>
+    </Grid>
+</Window>

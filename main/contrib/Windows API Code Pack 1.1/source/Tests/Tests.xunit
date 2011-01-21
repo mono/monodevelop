@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xunit>
+  <assemblies>
+    <assembly filename="CoreTests\bin\Debug\Microsoft.WindowsAPICodePackTests.dll" shadow-copy="true" />
+    <assembly filename="ExtendedLinguisticServices\bin\Debug\Microsoft.WindowsAPICodePack.ExtendedLinguisticServicesTests.dll" shadow-copy="true" />
+    <assembly filename="Sensors\bin\Debug\Microsoft.WindowsAPICodePack.SensorsTests.dll" shadow-copy="true" />
+  </assemblies>
+</xunit>

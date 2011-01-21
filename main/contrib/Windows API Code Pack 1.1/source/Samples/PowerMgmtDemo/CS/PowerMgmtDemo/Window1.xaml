@@ -1,0 +1,123 @@
+<!-- Copyright (c) Microsoft Corporation.  All rights reserved. -->
+
+<Window x:Class="Microsoft.WindowsAPICodePack.Samples.PowerMgmtDemoApp.Window1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:Microsoft.WindowsAPICodePack.Samples.PowerMgmtDemoApp" 
+    Title="Power Management" Height="592.163" Width="527.725" 
+    Loaded="Window_Loaded" Name="window1" SizeToContent="WidthAndHeight" ResizeMode="CanMinimize" Icon="/PowerMgmtDemoApp;component/powercfg.png" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <local:MyPowerSettings x:Key="powerSettings"/>
+        <local:YesNoConverter x:Key="boolConverter"/>
+    </Window.Resources>
+    <TabControl Height="533.28" Name="tabControl1" Width="499.95" SelectedIndex="0">
+        <TabItem Name="PropertiesTab" Header="Power Management Info">
+            <StackPanel Height="485" Width="468.842">
+                <Grid Height="271" Width="457" HorizontalAlignment="Left" Margin="3,3,3,3" VerticalAlignment="Top" DataContext="{StaticResource powerSettings}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" MinWidth="120" />
+                        <ColumnDefinition  />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="18.887*" />
+                        <RowDefinition Height="18.887*" />
+                        <RowDefinition Height="18.887*" />
+                        <RowDefinition Height="18.887*" />
+                        <RowDefinition Height="18.887*" />
+                        <RowDefinition Height="20.65*" />
+                        <RowDefinition Height="18.887*" />
+                        <RowDefinition Height="18.887*" />
+                        <RowDefinition Height="18.887*" />
+                        <RowDefinition Height="18.887*" />
+                        <RowDefinition Height="18.887*" />
+                        <RowDefinition Height="18.887*" />
+                        <RowDefinition Height="18.887*" />
+                        <RowDefinition Height="18.887*" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Column="0" Grid.Row="0" Name="tb0" FontSize="12" 
+                   Text="Power Personality:"/>
+                <TextBlock Grid.Column="1" Height="29" 
+                   Name="personalityText" VerticalAlignment="Top" 
+                   Text="{Binding Path=PowerPersonality}"/>
+        
+                <TextBlock Grid.Column="0" Grid.Row="1" Name="tb1" FontSize="12" 
+                   Text="Power Source:"/>
+                <TextBlock Grid.Column="1" Grid.Row="1"  Height="29" 
+                   Name="powerSourceText" VerticalAlignment="Top" 
+                   Text="{Binding Path=PowerSource}"/>
+        
+                <TextBlock Grid.Column="0" Grid.Row="2" Name="tb2" FontSize="12" 
+                   Text="Is Battery Present:"/>
+                <TextBlock Grid.Column="1" Grid.Row="2"  Height="29" 
+                   Name="batteryPresentText" VerticalAlignment="Top" 
+                   Text="{Binding Path=BatteryPresent, Converter={StaticResource boolConverter}}" HorizontalAlignment="Stretch" />
+        
+                <TextBlock Grid.Column="0" Grid.Row="3" Name="tb3" FontSize="12" 
+                   Text="Is UPS Present:"/>
+                <TextBlock Grid.Column="1" Grid.Row="3"  Height="29" 
+                   Name="upsText" VerticalAlignment="Top" 
+                   Text="{Binding Path=UpsPresent, Converter={StaticResource boolConverter}}"/>
+       
+                <TextBlock Grid.Column="0" Grid.Row="4" Name="tb4" FontSize="12" 
+                   Text="Is Battery Short Term:  "/>
+                <TextBlock Grid.Column="1" Grid.Row="4"  Height="29" 
+                   Name="batteryShortTermText" VerticalAlignment="Top" 
+                   Text="{Binding Path=BatteryShortTerm, Converter={StaticResource boolConverter}}"/>
+        
+                <TextBlock Grid.Column="0" Grid.Row="5" Name="tb5" FontSize="12" 
+                   Text="Battery Life (%):"/>
+                <ProgressBar 
+                    Grid.Column="1" 
+                    Grid.Row="5" 
+                    Margin="1.111,0.47,0,18.887" 
+                    Name="progressBar1" 
+                    SmallChange="1" 
+                    Value="{Binding Path=BatteryLifePercent}"
+                    ToolTip="{Binding Path=BatteryLifePercent}" Grid.RowSpan="2" HorizontalAlignment="Left" Width="255.694" />
+        
+               <Label FontSize="12" Grid.RowSpan="2" Margin="0,14.229,27.775,0.983" Name="batteryLifePercentLabel" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right" Width="52.217"></Label>
+
+                    
+                <TextBlock Grid.Column="0" Grid.Row="6" Name="tb6" FontSize="12" 
+                   Text="Is Monitor Required:"/>
+                <TextBlock Grid.Column="1" Grid.Row="6"  Height="29" 
+                   Name="monitorReqText" VerticalAlignment="Top" 
+                   Text="{Binding Path=MonitorRequired, Converter={StaticResource boolConverter}}"/>
+        
+                <TextBlock Grid.Column="0" Grid.Row="7" Name="tb7" FontSize="12" 
+                   Text="Is Monitor On:"/>
+                <TextBlock Grid.Column="1" Grid.Row="7"  Height="29" 
+                   Name="monitorOnText" VerticalAlignment="Top" 
+                   Text="{Binding Path=MonitorOn, Converter={StaticResource boolConverter}}"/>
+        
+                <TextBlock Grid.Column="0" Grid.Row="8" Name="tb8" FontSize="12" 
+                   Text="Battery State:"/>
+                <TextBlock Grid.Column="1" Grid.Row="8" Grid.RowSpan="6"
+                   Name="batteryStateText" VerticalAlignment="Top" 
+                   Text="{Binding Path=BatteryState}"/>
+                            
+                </Grid>
+
+                <ListBox Name="messagesListBox" Height="193.314" Width="459.954"></ListBox>
+            </StackPanel>
+
+        </TabItem>
+
+        <TabItem Name="PowerSourceChangedEventTab" Header="Power Source Event">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition  />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="119*" />
+                    <RowDefinition Height="214.04*" />
+                </Grid.RowDefinitions>
+
+                <Button Content="Start Search Indexer" Name="StartStopIndexerButton" Click="StartIndexer" Height="30" Width="137" />
+                <Label Grid.Row="1" Name="IndexerStatusLabel" Height="70" VerticalAlignment="Top">Click "Start Search Indexer" to run the indexer</Label>
+                <Label Grid.Row="1" Margin="0,70,0,75" Name="IndexerCurrentFileLabel">Current file:</Label>
+            </Grid>
+
+        </TabItem>
+    </TabControl>
+</Window>

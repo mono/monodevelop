@@ -1,0 +1,1 @@
+The changes listed in the two API-changes documents are the APIs that have been changed between v1.0.1 and v1.1 of the Windows API Code Pack. These documents do not include new features and are meant to document changes that may prevent existing applications from functioning as expected.

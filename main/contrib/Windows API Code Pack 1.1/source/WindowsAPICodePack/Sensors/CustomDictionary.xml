@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Dictionary>
+  <Words>
+    <Recognized>
+      <Word>Lux</Word>            
+      <Word>Newtons</Word>
+      <Word>Rfid</Word>
+      <Word>Gps</Word>
+      <Word>Gyrometer</Word>
+      <Word>Multivalue</Word>
+      <Word>Prns</Word>
+      <Word>Stn</Word> <!--Signal to noise-->
+    </Recognized>
+  </Words>
+  <Acronyms>
+    <CasingExceptions>
+      <Acronym>API</Acronym>      
+    </CasingExceptions>
+  </Acronyms>
+</Dictionary>

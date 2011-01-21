@@ -1,0 +1,171 @@
+<!-- Copyright (c) Microsoft Corporation.  All rights reserved. -->
+
+<UserControl x:Class="Microsoft.WindowsAPICodePack.Samples.StarBackupSample.CommandLinkWPF"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Width="325"
+    Height="63"
+    HorizontalAlignment="Left"
+    Margin="0,0,0,12"
+    >
+  <UserControl.Resources>
+    <Style TargetType="{x:Type RadioButton}">
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="{x:Type RadioButton}">
+            <Canvas>
+              <Canvas Name="Normal" Opacity="1">
+                <StackPanel Margin="7,7,7,7" Orientation="Horizontal">
+                  <Image Source="{Binding Path=Icon}" />
+                  <StackPanel Margin="6,0,0,10">
+                    <TextBlock FontFamily="Segoe" FontSize="16" Foreground="#282671" Text="{Binding Path=Link}">
+                      <TextBlock.BitmapEffect>
+                        <OuterGlowBitmapEffect GlowColor="White" GlowSize="5"/>
+                      </TextBlock.BitmapEffect>
+                    </TextBlock>
+                    <TextBlock FontFamily="Segoe" FontSize="12" Foreground="#282671" Text="{Binding Path=Note}">
+                      <TextBlock.BitmapEffect>
+                        <OuterGlowBitmapEffect GlowColor="White" GlowSize="5"/>
+                      </TextBlock.BitmapEffect>
+                    </TextBlock>
+                  </StackPanel>
+                </StackPanel>
+              </Canvas>
+              <Canvas Opacity="0" Name="Selected">
+                <Rectangle  Stroke="Cyan" Fill="White" RadiusX="2" RadiusY ="2" Width="520" Height="63"/>
+                <StackPanel Margin="7,7,7,7" Orientation="Horizontal">
+                  <Image Source="{Binding Path=Icon}" />
+                  <StackPanel Margin="6,0,0,10">
+                    <TextBlock FontFamily="Segoe" FontSize="16" Foreground="#5380f6" Text="{Binding Path=Link}">
+                      <TextBlock.BitmapEffect>
+                        <OuterGlowBitmapEffect GlowColor="White" GlowSize="5"/>
+                      </TextBlock.BitmapEffect>
+                    </TextBlock>
+                    <TextBlock FontFamily="Segoe" FontSize="12" Foreground="#5380f6" Text="{Binding Path=Note}">
+                      <TextBlock.BitmapEffect>
+                        <OuterGlowBitmapEffect GlowColor="White" GlowSize="5"/>
+                      </TextBlock.BitmapEffect>
+                    </TextBlock>
+                  </StackPanel>
+                </StackPanel>
+              </Canvas>
+              <Canvas Opacity="0" Name="Hover">
+                <Rectangle  Stroke="Gray"  RadiusX="2" RadiusY ="2" Width="520" Height="63">
+                  <Rectangle.Fill>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                      <LinearGradientBrush.GradientStops>
+                        <GradientStop Color="White"  Offset="0"/>
+                        <GradientStop Color="#F9F9F9" Offset="0.30"/>
+                      </LinearGradientBrush.GradientStops>
+                    </LinearGradientBrush>
+                  </Rectangle.Fill>
+                </Rectangle>
+                <StackPanel Margin="7,7,7,7" Orientation="Horizontal">
+                  <Image Source="{Binding Path=Icon}" />
+                  <StackPanel Margin="6,0,0,10">
+                    <TextBlock FontFamily="Segoe" FontSize="16" Foreground="#5380f6" Text="{Binding Path=Link}">
+                      <TextBlock.BitmapEffect>
+                        <OuterGlowBitmapEffect GlowColor="White" GlowSize="5"/>
+                      </TextBlock.BitmapEffect>
+                    </TextBlock>
+                    <TextBlock FontFamily="Segoe" FontSize="12" Foreground="#5380f6" Text="{Binding Path=Note}">
+                      <TextBlock.BitmapEffect>
+                        <OuterGlowBitmapEffect GlowColor="White" GlowSize="5"/>
+                      </TextBlock.BitmapEffect>
+                    </TextBlock>
+                  </StackPanel>
+                </StackPanel>
+              </Canvas>
+              <Canvas Opacity="0" Name="Pressed">
+                <Rectangle  Stroke="#6868a9"  RadiusX="2" RadiusY ="2" Width="520" Height="63">
+                  <Rectangle.Fill>
+                    <LinearGradientBrush StartPoint="0,0.25" EndPoint="1,0.75">
+                      <LinearGradientBrush.GradientStops>
+                        <GradientStop Color="#93b9db"  Offset="0"/>
+                        <GradientStop Color="#ebf6fa" Offset="0.50"/>
+                        <GradientStop Color="#93b9db" Offset="1"/>
+                      </LinearGradientBrush.GradientStops>
+                    </LinearGradientBrush>
+                  </Rectangle.Fill>
+                  <Rectangle.BitmapEffect>
+                    <OuterGlowBitmapEffect GlowColor="LightGray"  GlowSize="3"/>
+                  </Rectangle.BitmapEffect>
+                </Rectangle>
+                <StackPanel Margin="7,7,7,7" Orientation="Horizontal">
+                  <Image Source="{Binding Path=Icon}" />
+                  <StackPanel Margin="6,0,0,10">
+                    <TextBlock FontFamily="Segoe" FontSize="16" Foreground="#294073" Text="{Binding Path=Link}">
+                      <TextBlock.BitmapEffect>
+                        <OuterGlowBitmapEffect GlowColor="White" GlowSize="5"/>
+                      </TextBlock.BitmapEffect>
+                    </TextBlock>
+                    <TextBlock FontFamily="Segoe" FontSize="12" Foreground="#294073" Text="{Binding Path=Note}">
+                      <TextBlock.BitmapEffect>
+                        <OuterGlowBitmapEffect GlowColor="White" GlowSize="5"/>
+                      </TextBlock.BitmapEffect>
+                    </TextBlock>
+                  </StackPanel>
+                </StackPanel>
+              </Canvas>
+            </Canvas>
+            <ControlTemplate.Triggers>
+              <DataTrigger Value="True" Binding="{Binding Path=IsChecked, RelativeSource={RelativeSource Self}}">
+                <DataTrigger.EnterActions>
+                  <BeginStoryboard>
+                    <Storyboard Storyboard.TargetName="Selected" Storyboard.TargetProperty="Opacity">
+                      <DoubleAnimation AccelerationRatio="0.2" DecelerationRatio="0.3" From="0.3" To="0.7" Duration="0:0:2" AutoReverse="True" RepeatBehavior="Forever"/>
+                    </Storyboard>
+                  </BeginStoryboard>
+                </DataTrigger.EnterActions>
+                <DataTrigger.ExitActions>
+                  <BeginStoryboard>
+                    <Storyboard Storyboard.TargetName="Selected" Storyboard.TargetProperty="Opacity">
+                      <DoubleAnimation To="0" Duration="0:0:1" />
+                    </Storyboard>
+                  </BeginStoryboard>
+                </DataTrigger.ExitActions>
+              </DataTrigger>
+              <EventTrigger RoutedEvent="Button.MouseEnter">
+                <EventTrigger.Actions>
+                  <BeginStoryboard>
+                    <Storyboard Storyboard.TargetName="Hover" Storyboard.TargetProperty="Opacity">
+                      <DoubleAnimation To="1" Duration="0:0:0.2"/>
+                    </Storyboard>
+                  </BeginStoryboard>
+                </EventTrigger.Actions>
+              </EventTrigger>
+              <EventTrigger RoutedEvent="Button.MouseLeave">
+                <EventTrigger.Actions>
+                  <BeginStoryboard>
+                    <Storyboard Storyboard.TargetName="Hover" Storyboard.TargetProperty="Opacity">
+                      <DoubleAnimation To="0" Duration="0:0:0.5"/>
+                    </Storyboard>
+                  </BeginStoryboard>
+                </EventTrigger.Actions>
+              </EventTrigger>
+              <EventTrigger RoutedEvent="Button.PreviewMouseLeftButtonDown">
+                <EventTrigger.Actions>
+                  <BeginStoryboard>
+                    <Storyboard Storyboard.TargetName="Pressed" Storyboard.TargetProperty="Opacity">
+                      <DoubleAnimation To="1" Duration="0:0:0.2"/>
+                    </Storyboard>
+                  </BeginStoryboard>
+                </EventTrigger.Actions>
+              </EventTrigger>
+              <EventTrigger RoutedEvent="Button.PreviewMouseLeftButtonUp">
+                <EventTrigger.Actions>
+                  <BeginStoryboard>
+                    <Storyboard Storyboard.TargetName="Pressed" Storyboard.TargetProperty="Opacity">
+                      <DoubleAnimation To="0" Duration="0:0:0.5"/>
+                    </Storyboard>
+                  </BeginStoryboard>
+                </EventTrigger.Actions>
+              </EventTrigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+  </UserControl.Resources>
+  <RadioButton GroupName="commandLinkGroup" Name="button"/>
+</UserControl>

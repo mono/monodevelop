@@ -1,0 +1,25 @@
+<!-- Copyright (c) Microsoft Corporation.  All rights reserved. -->
+
+<Window x:Class="Microsoft.WindowsAPICodePack.Samples.Window1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sample="clr-namespace:Microsoft.WindowsAPICodePack.DirectX.Controls;assembly=Microsoft.WindowsAPICodePack.DirectX.Controls" 
+    Title="Direct2D Demo App" Height="600" Width="600">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0"  Name="ControlHostElement"
+         BorderBrush="Navy"
+         BorderThickness="2" Margin="5,5,5,5" >
+            <sample:RenderHost x:Name="host"/>
+        </Border>
+
+        <Grid Grid.Row="1">
+            <Button Grid.Row="0" Name="Generate" Width="100" Height="32" Click="generate_Data">Generate</Button>
+        </Grid>
+    </Grid>
+</Window>

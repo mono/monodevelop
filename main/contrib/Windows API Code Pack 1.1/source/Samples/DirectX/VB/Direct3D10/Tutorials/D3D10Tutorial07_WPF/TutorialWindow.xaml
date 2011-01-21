@@ -1,0 +1,13 @@
+﻿<Window x:Class="D3D10Tutorial07_WPF.TutorialWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Microsoft.WindowsAPICodePack.DirectX.Controls;assembly=Microsoft.WindowsAPICodePack.DirectX.Controls" 
+    Title="Direc3D 10 Tutorial 7: Texture Mapping and Constant Buffers" Width="640" Height="480">
+    <Grid>
+        <Border Grid.Row="0" Grid.Column="0" Name="ControlHostElement" Margin="0,0,0,0" >
+            <controls:DirectHost x:Name="host" SizeChanged="host_SizeChanged"/>
+        </Border>
+
+    </Grid>
+
+</Window>

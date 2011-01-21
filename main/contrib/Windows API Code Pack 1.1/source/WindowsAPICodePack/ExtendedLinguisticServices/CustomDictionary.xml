@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Dictionary>
+  <Words>
+    <Recognized>
+      <Word>Hant</Word>
+      <Word>Devanagari</Word>      
+    </Recognized>
+  </Words>
+  <Acronyms>
+    <CasingExceptions>
+      <Acronym>API</Acronym>
+    </CasingExceptions>
+  </Acronyms>
+</Dictionary>

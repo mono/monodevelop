@@ -1,0 +1,59 @@
+﻿<Window x:Class="Microsoft.WindowsAPICodePack.Samples.Dialogs.Window1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dialogs="clr-namespace:Microsoft.WindowsAPICodePack.Dialogs;assembly=Microsoft.WindowsAPICodePack.Shell" 
+    xmlns:dialogControls="clr-namespace:Microsoft.WindowsAPICodePack.Dialogs.Controls;assembly=Microsoft.WindowsAPICodePack.Shell" 
+    Title="Custom controls in common file dialogs" Width="544" SizeToContent="Height" >
+    <Window.Resources>
+        <dialogs:CommonSaveFileDialog x:Key="CustomSaveFileDialog" Title="Custom Save File Dialog">
+            <dialogControls:CommonFileDialogRadioButtonList Name="radioButtonOptions"
+                                               Text="Options"
+                                               SelectedIndex="1"
+                                               SelectedIndexChanged="RBLOptions_SelectedIndexChanged">
+                <dialogControls:CommonFileDialogRadioButtonListItem Text="Option A" />
+                <dialogControls:CommonFileDialogRadioButtonListItem Text="Option B" />
+            </dialogControls:CommonFileDialogRadioButtonList>
+            <dialogControls:CommonFileDialogSeparator />
+            <dialogControls:CommonFileDialogLabel Text="Encoding:" />
+            <dialogControls:CommonFileDialogComboBox Name="comboBox"
+                                                     SelectedIndex="0"
+                                                     SelectedIndexChanged="ComboEncoding_SelectedIndexChanged">
+                <dialogControls:CommonFileDialogComboBoxItem Text="ANSI" />
+                <dialogControls:CommonFileDialogComboBoxItem Text="Unicode" />
+            </dialogControls:CommonFileDialogComboBox>
+            <dialogControls:CommonFileDialogGroupBox>
+                <dialogControls:CommonFileDialogCheckBox Name="chkOptionA"
+                                            Text="Hide All"
+                                            IsChecked="False"
+                                            CheckedChanged="ChkOptionA_CheckedChanged" />
+                <dialogControls:CommonFileDialogCheckBox Name="chkOptionB"
+                                            Text="Show All"
+                                            IsChecked="True"
+                                            CheckedChanged="ChkOptionB_CheckedChanged" />
+            </dialogControls:CommonFileDialogGroupBox>
+            <dialogControls:CommonFileDialogMenu Name="menu" Text="Light Color">
+                <dialogControls:CommonFileDialogMenuItem Name="menuOptionA"
+                                            Text="Red"
+                                            Click="MenuOptionA_Click" />
+                <dialogControls:CommonFileDialogMenuItem Name="menuOptionB"
+                                            Text="Green"
+                                            Click="MenuOptionB_Click" />
+            </dialogControls:CommonFileDialogMenu>
+            <dialogControls:CommonFileDialogLabel Text="Name:" />
+            <dialogControls:CommonFileDialogTextBox Name="textName" />
+            <dialogControls:CommonFileDialogButton Name="button1" Text="Check Name" Click="PushButton_Click" />
+        </dialogs:CommonSaveFileDialog>
+    </Window.Resources>
+    <StackPanel Height="192">
+        <TextBlock Margin="4,4,4,4" TextWrapping="Wrap">
+      This sample demonstrates how to customize Common "Open" and "Save" file dialogs in Vista and Windows 7 using common controls, such as buttons, text boxes and combo boxes.
+        </TextBlock>
+        <TextBlock Margin="4,4,4,24" TextWrapping="Wrap">
+      The customizations are implemented both in Xaml and using direct method calls.
+        </TextBlock>
+        <Button HorizontalAlignment="Stretch" Width="280"
+            Margin="4,4,4,12" Click="OpenFileDialogCustomizationClicked">Custom Common Open File Dialog</Button>
+        <Button HorizontalAlignment="Stretch" Width="280"
+            Margin="4,4,4,12" Click="SaveFileDialogCustomizationXamlClicked">Custom Common Save File Dialog</Button>
+    </StackPanel>
+</Window>

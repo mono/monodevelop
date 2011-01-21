@@ -1,0 +1,72 @@
+﻿<!-- Copyright (c) Microsoft Corporation.  All rights reserved. -->
+
+<Window x:Class="Microsoft.WindowsAPICodePack.Samples.KnownFoldersBrowser.Window1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:WB="clr-namespace:Microsoft.WindowsAPICodePack.Shell;assembly=Microsoft.WindowsAPICodePack.Shell"
+    xmlns:EB="clr-namespace:Microsoft.WindowsAPICodePack.Controls.WindowsPresentationFoundation;assembly=Microsoft.WindowsAPICodePack.Shell"
+    xmlns:Demo="clr-namespace:Microsoft.WindowsAPICodePack.Samples.KnownFoldersBrowser"
+    Title="KnownFolders Browser" Height="600" Width="800" 
+    WindowStartupLocation="CenterScreen"
+>
+
+    <Window.DataContext>
+        <ObjectDataProvider ObjectType="{x:Type WB:KnownFolders}" MethodName="get_All" />
+    </Window.DataContext>
+
+    <Window.Resources>
+        <Style TargetType="{x:Type ListBox}">
+            <Setter Property="ItemTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{Binding Path=Thumbnail.BitmapSource}" Stretch="Fill" Width="32" Height="32"/>
+                            <TextBlock Margin="5" Text="{Binding Path=CanonicalName}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Name="MainGrid">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="325"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="213*" />
+            <RowDefinition Height="25"/>
+        </Grid.RowDefinitions>
+
+        <StatusBar Grid.Row="1" Name="statusBar1" Margin="0,2,0,0" Grid.ColumnSpan="2">
+            <TextBlock Text="Total KnownFolders: "/>
+            <TextBlock Text="{Binding Path=Count}"/>
+        </StatusBar>
+
+        <Grid Grid.Column="1" Name="RightSideGrid">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="325*" />
+                <RowDefinition Height="237*" />
+            </Grid.RowDefinitions>
+
+            <EB:ExplorerBrowser Name="explorerBrowser1" Margin="0,0,0,0" NoColumnHeader="True" 
+                                NoHeaderInAllViews="True" NoSubfolders="False" ExtendedTiles="True" 
+                                NavigationPane="Hide" CommandsPane="Hide" CommandsOrganizePane="Hide" CommandsViewPane="Hide" DetailsPane="Hide" PreviewPane="Hide" QueryPane="Hide" />
+
+            <ListView Name="PropertiesListBox" Grid.Row="1">
+                <ListView.View>
+                    <GridView AllowsColumnReorder="false" ColumnHeaderToolTip="Properties" >
+                        <GridViewColumn Header="Property" Width="180" DisplayMemberBinding="{Binding Path=PropertyName}"/>
+                        <GridViewColumn Header="Value" Width="180" DisplayMemberBinding="{Binding Path=Value}"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Grid>
+
+        <ListBox Name="knownFoldersListBox" ItemsSource="{Binding}" SelectionChanged="NavigateExplorerBrowser" SelectedIndex="0"/>
+    </Grid>
+</Window>

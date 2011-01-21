@@ -1,0 +1,325 @@
+<!-- Copyright (c) Microsoft Corporation.  All rights reserved. -->
+
+<Window x:Class="Microsoft.WindowsAPICodePack.Samples.PicturePropertiesEditor.Window1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:Microsoft.WindowsAPICodePack.Samples.PicturePropertiesEditor"
+    xmlns:WB="clr-namespace:Microsoft.WindowsAPICodePack.Shell;assembly=Microsoft.WindowsAPICodePack.Shell"
+        xmlns:WBP="clr-namespace:Microsoft.WindowsAPICodePack.Controls.WindowsPresentationFoundation;assembly=Microsoft.WindowsAPICodePack.Shell"
+        Title="Picture Properties Editor" 
+        Height="759" 
+        Width="800" 
+        WindowStartupLocation="CenterScreen" 
+        WindowState="Maximized"
+        Background="White">
+
+    <Window.Resources>
+        <ItemsPanelTemplate x:Key="ItemsPanelTemplate1">
+            <local:ZOrderStackPanel
+            IsItemsHost="True"
+            MaxRotation="11"
+            MaxOffset="20"/>
+        </ItemsPanelTemplate>
+    </Window.Resources>
+
+
+    <TabControl Name="tabControl1" SelectedIndex="0" Background="White">
+        <TabItem Name="SimpleProperties" Header="Simple (XAML-only) Properties" Background="White">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="300"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- The Explorer Browser -->
+                <WBP:ExplorerBrowser Name="ExplorerBrowser1"
+                             SingleSelection="True"
+                             PreviewPane="Hide"
+                             QueryPane="Hide"
+                             NavigationPane="Hide"
+                             CommandsOrganizePane="Hide"
+                             CommandsViewPane="Hide"
+                             DetailsPane="Hide"
+                             NoHeaderInAllViews="True"
+                             NoColumnHeader="True"
+                             NoSubfolders="False"
+                             AdvancedQueryPane="Hide" 
+                             CommandsPane="Hide" 
+                             FullRowSelect="True"
+                             ViewMode="Tile"
+                             />
+
+                <!-- Right side area for properties -->
+                <ScrollViewer Grid.Column="1">
+                    <StackPanel Name="StackPanelRight">
+                        <StackPanel Name="StackPanelTopRight" Orientation="Vertical">
+                            <Image Source="{Binding ElementName=ExplorerBrowser1, Path=SelectedItems[0].Thumbnail.LargeBitmapSource}"
+                               Height="256" Width="256"/>
+                        </StackPanel>
+
+                        <!-- Description properties -->
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Width="150" Content="Title: " VerticalAlignment="Center"/>
+                                <TextBox Width="273" 
+                             Text="{Binding ElementName=ExplorerBrowser1, Path=SelectedItems[0].Properties.System.Title.Value, Mode=TwoWay}" 
+                             BorderThickness="0" 
+                             VerticalContentAlignment="Center" 
+                             Margin="20,0,0,0" Height="26" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Width="150" Content="Subject: " VerticalAlignment="Center"/>
+                                <TextBox Width="273" 
+                             Text="{Binding ElementName=ExplorerBrowser1, Path=SelectedItems[0].Properties.System.Subject.Value, Mode=TwoWay}" 
+                             BorderThickness="0" 
+                             VerticalContentAlignment="Center" 
+                             Margin="20,0,0,0" Height="26" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Width="150" Content="Rating: "/>
+                                <local:RatingControl Width="87" 
+                                         Height="15" 
+                                         RatingValue="{Binding ElementName=ExplorerBrowser1, Path=SelectedItems[0].Properties.System.SimpleRating.Value}" 
+                                         Margin="20,0,0,0" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Tags: " HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" />
+                                <ListBox Width="273" 
+                             ItemsSource="{Binding ElementName=ExplorerBrowser1, Path=SelectedItems[0].Properties.System.Keywords.Value}" 
+                             BorderThickness="0" 
+                             VerticalContentAlignment="Center" 
+                             Margin="20,0,0,0" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Width="150" Content="Comments: " VerticalAlignment="Center"/>
+                                <TextBox Width="298" 
+                             Text="{Binding ElementName=ExplorerBrowser1, Path=SelectedItems[0].Properties.System.Comment.Value, Mode=TwoWay}" 
+                             BorderThickness="0" 
+                             VerticalContentAlignment="Center" 
+                             Margin="20,0,0,0" Height="26" />
+                            </StackPanel>
+
+                            <!-- Origin Properties -->
+
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Authors: " HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" />
+                                <ListBox Width="273" 
+                             ItemsSource="{Binding ElementName=ExplorerBrowser1, Path=SelectedItems[0].Properties.System.Author.Value}" 
+                             BorderThickness="0" 
+                             VerticalContentAlignment="Center" 
+                             Margin="20,0,0,0" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Date Taken: " HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" />
+                                <TextBox Width="273" 
+                             IsEnabled="True"
+                             Text="{Binding ElementName=ExplorerBrowser1, Path=SelectedItems[0].Properties.System.Photo.DateTaken.Value, StringFormat=D, Mode=OneWay}"
+                             BorderThickness="0" 
+                             VerticalContentAlignment="Center" 
+                             Margin="20,0,0,0" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" IsReadOnly="True" TextDecorations="None" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Date Acquired: " HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" />
+                                <TextBox Width="273" 
+                             IsEnabled="True"
+                             Text="{Binding ElementName=ExplorerBrowser1, Path=SelectedItems[0].Properties.System.DateAcquired.Value, StringFormat=D, Mode=TwoWay}"
+                             BorderThickness="0" 
+                             VerticalContentAlignment="Center" 
+                             Margin="20,0,0,0" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" IsReadOnly="True" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Width="150" Content="Copyright: " VerticalAlignment="Center"/>
+                                <TextBox Width="273" 
+                             Text="{Binding ElementName=ExplorerBrowser1, Path=SelectedItems[0].Properties.System.Copyright.Value, Mode=TwoWay}" 
+                             BorderThickness="0" 
+                             VerticalContentAlignment="Center" 
+                             Margin="20,0,0,0" Height="26" />
+                            </StackPanel>
+
+                            <!-- Image Properties -->
+
+                            <StackPanel Orientation="Horizontal">
+                                <Label Width="150" Content="Dimensions: " VerticalAlignment="Center"/>
+                                <TextBox Width="273" 
+                             Text="{Binding ElementName=ExplorerBrowser1, Path=SelectedItems[0].Properties.System.Image.Dimensions.Value, Mode=OneWay}"
+                             BorderThickness="0" 
+                             VerticalContentAlignment="Center" 
+                             Margin="20,0,0,0" Height="26" IsEnabled="True" IsReadOnly="True" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Width="150" Content="Horizontal resolution: " VerticalAlignment="Center"/>
+                                <TextBox Width="273" 
+                             Text="{Binding ElementName=ExplorerBrowser1, Path=SelectedItems[0].Properties.System.Image.HorizontalResolution.Value, Mode=OneWay}" 
+                             BorderThickness="0" 
+                             VerticalContentAlignment="Center" 
+                             Margin="20,0,0,0" Height="26" IsEnabled="True" IsReadOnly="True" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Width="150" Content="Vertical resolution: " VerticalAlignment="Center"/>
+                                <TextBox Width="273" 
+                             Text="{Binding ElementName=ExplorerBrowser1, Path=SelectedItems[0].Properties.System.Image.VerticalResolution.Value, Mode=OneWay}" 
+                             BorderThickness="0" 
+                             VerticalContentAlignment="Center" 
+                             Margin="20,0,0,0" Height="26" IsEnabled="True" IsReadOnly="True" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Width="150" Content="Bit depth: " VerticalAlignment="Center"/>
+                                <TextBox Width="273" 
+                             Text="{Binding ElementName=ExplorerBrowser1, Path=SelectedItems[0].Properties.System.Image.BitDepth.Value, Mode=OneWay}" 
+                             BorderThickness="0" 
+                             VerticalContentAlignment="Center" 
+                             Margin="20,0,0,0" Height="26" IsEnabled="True" IsReadOnly="True" />
+                            </StackPanel>
+
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </TabItem>
+        <TabItem Name="MultipleProperties" Header="Multiple Properties/files (PropertyWriter)">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="300"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- The Explorer Browser -->
+                <WBP:ExplorerBrowser Name="ExplorerBrowser2"/>
+
+                <!-- Right side area for properties -->
+                <ScrollViewer Grid.Column="1">
+                    <StackPanel Name="StackPanelRight2">
+                        <Grid>
+                            <ListBox x:Name="ListBoxThumbnails" 
+                                 IsSynchronizedWithCurrentItem="True" 
+                                 ItemsPanel="{DynamicResource ItemsPanelTemplate1}"
+                                 Height="300" Width="300"
+                                 BorderThickness="0">
+                            </ListBox>
+                            <Button Content="Button" x:Name="ResortBtn" Opacity="0"/>
+                        </Grid>
+
+                        <!-- Description properties -->
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Width="150" Content="Title: " VerticalAlignment="Center"/>
+                                <TextBox Width="273"
+                                     Name="TextBoxTitle"
+                             BorderThickness="0" 
+                             VerticalContentAlignment="Center" 
+                             Margin="20,0,0,0" Height="26" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Width="150" Content="Subject: " VerticalAlignment="Center"/>
+                                <TextBox Width="273" 
+                                     Name="TextBoxSubject"
+                             BorderThickness="0" 
+                             VerticalContentAlignment="Center" 
+                             Margin="20,0,0,0" Height="26" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Width="150" Content="Rating: "/>
+                                <local:RatingControl Width="87" 
+                                         Height="15" 
+                                         x:Name="RatingValueControl"
+                                         Margin="20,0,0,0" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Tags: " HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" />
+                                <ListBox Width="273" 
+                             Name="ListBoxTags"
+                             BorderThickness="0" 
+                             VerticalContentAlignment="Center" 
+                             Margin="20,0,0,0" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Width="150" Content="Comments: " VerticalAlignment="Center"/>
+                                <TextBox Width="273" 
+                             Name="TextBoxComments"
+                             BorderThickness="0" 
+                             VerticalContentAlignment="Center" 
+                             Margin="20,0,0,0" Height="26" />
+                            </StackPanel>
+
+                            <!-- Origin Properties -->
+
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Authors: " HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" />
+                                <ListBox Width="273" 
+                                     Name="ListBoxAuthors"
+                             BorderThickness="0" 
+                             VerticalContentAlignment="Center" 
+                             Margin="20,0,0,0" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Date Taken: " HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" />
+                                <TextBox Width="273" 
+                             IsEnabled="True"
+                             Name="TextBoxDateTaken"
+                             BorderThickness="0" 
+                             VerticalContentAlignment="Center" 
+                             Margin="20,0,0,0" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" IsReadOnly="True" TextDecorations="None" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Date Acquired: " HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" />
+                                <TextBox Width="273" 
+                             IsEnabled="True"
+                             Name="TextBoxDateAcquired"
+                             BorderThickness="0" 
+                             VerticalContentAlignment="Center" 
+                             Margin="20,0,0,0" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" IsReadOnly="True" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Width="150" Content="Copyright: " VerticalAlignment="Center"/>
+                                <TextBox Width="273" 
+                             Name="TextBoxCopyright"
+                             BorderThickness="0" 
+                             VerticalContentAlignment="Center" 
+                             Margin="20,0,0,0" Height="26" />
+                            </StackPanel>
+
+                            <!-- Image Properties -->
+
+                            <StackPanel Orientation="Horizontal">
+                                <Label Width="150" Content="Dimensions: " VerticalAlignment="Center"/>
+                                <TextBox Width="273" 
+                             Name="TextBoxDimensions"
+                             BorderThickness="0" 
+                             VerticalContentAlignment="Center" 
+                             Margin="20,0,0,0" Height="26" IsEnabled="True" IsReadOnly="True" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Width="150" Content="Horizontal resolution: " VerticalAlignment="Center"/>
+                                <TextBox Width="273" 
+                             Name="TextBoxHorizontalResolution"
+                             BorderThickness="0" 
+                             VerticalContentAlignment="Center" 
+                             Margin="20,0,0,0" Height="26" IsEnabled="True" IsReadOnly="True" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Width="150" Content="Vertical resolution: " VerticalAlignment="Center"/>
+                                <TextBox Width="273" 
+                             Name="TextBoxVerticalResolution"
+                             BorderThickness="0" 
+                             VerticalContentAlignment="Center" 
+                             Margin="20,0,0,0" Height="26" IsEnabled="True" IsReadOnly="True" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Width="150" Content="Bit depth: " VerticalAlignment="Center"/>
+                                <TextBox Width="273" 
+                             Name="TextBoxBitDepth"
+                             BorderThickness="0" 
+                             VerticalContentAlignment="Center" 
+                             Margin="20,0,0,0" Height="26" IsEnabled="True" IsReadOnly="True" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                                <Button Height="23" Name="buttonSave" Width="75" Click="buttonSave_Click" Margin="20,0,0,0">Save</Button>
+                                <Button Height="23" Name="buttonCancel" Width="75" Click="buttonCancel_Click">Cancel</Button>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </TabItem>
+    </TabControl>
+</Window>

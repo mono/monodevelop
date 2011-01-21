@@ -1,0 +1,40 @@
+<!-- Copyright (c) Microsoft Corporation.  All rights reserved. -->
+
+<Window x:Class="SciFiTextDemo.Window1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Microsoft.WindowsAPICodePack.DirectX.Controls;assembly=Microsoft.WindowsAPICodePack.DirectX.Controls"
+    Title="SciFi Text Demo" Width="800" Height="600">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="120" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="72" />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Row="0"  Name="ControlHostElement"
+         BorderBrush="Navy"
+         BorderThickness="0" Margin="0,0" Grid.ColumnSpan="2">
+            <controls:DirectHost x:Name="host"/>
+        </Border>
+        
+        <GridSplitter Grid.Row="1" 
+              Grid.ColumnSpan="2" 
+              HorizontalAlignment="Stretch" 
+              VerticalAlignment="Center"
+              Background="Yellow" 
+              ShowsPreview="true"
+              Height="3"/>
+        
+        <TextBox ToolTip="Change text here to update the SciFi text." Grid.Row="2" TextChanged="textBox_TextChanged" Grid.Column="0" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" TabIndex="0" IsReadOnly="False" FontFamily="Calibri" FontSize="14" AcceptsReturn="True" Background="GhostWhite" Foreground="Navy" Name="textBox"/>
+        <Button VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="2" Height="64" Width="64" Grid.Column="1" Click="Button_Click">
+            <TextBox Name="actionText"  IsHitTestVisible="False" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" Background="Transparent" BorderBrush="Transparent" BorderThickness="0" >Pause Text</TextBox>
+        </Button>
+
+    </Grid>
+</Window>

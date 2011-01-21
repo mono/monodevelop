@@ -1,0 +1,374 @@
+﻿<!-- Copyright (c) Microsoft Corporation.  All rights reserved. -->
+
+<Window x:Class="Microsoft.WindowsAPICodePack.Samples.ExplorerBrowserTestWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Explorer Browser WPF Demo" Height="749" Width="800"
+    xmlns:WindowsAPICodePackPresentation="clr-namespace:Microsoft.WindowsAPICodePack.Controls.WindowsPresentationFoundation;assembly=Microsoft.WindowsAPICodePack.Shell"
+    xmlns:WindowsAPICodePackShell="clr-namespace:Microsoft.WindowsAPICodePack.Shell;assembly=Microsoft.WindowsAPICodePack.Shell"
+    xmlns:app="clr-namespace:Microsoft.WindowsAPICodePack.Samples" >
+
+    <Window.Resources>
+        
+        <app:TriCheckToPaneVisibilityState x:Key="tristateConverter"/>
+        
+        <LinearGradientBrush x:Key="gradientBrush" EndPoint="0.51,0.95" StartPoint="0.51,0.05">
+            <GradientStop Color="AliceBlue" Offset="0"/>
+            <GradientStop Color="LightCyan" Offset=".1"/>
+            <GradientStop Color="PowderBlue" Offset=".99"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="horizontalGradientBrush"  EndPoint="1,1" StartPoint="0,0">
+            <GradientStop Color="AliceBlue" Offset="0"/>
+            <GradientStop Color="AliceBlue" Offset="1"/>
+        </LinearGradientBrush>
+
+        <SolidColorBrush x:Key="borderBrush" Color="DarkSlateGray"/>
+        
+        <SolidColorBrush x:Key="windowBrush" Color="LightBlue"/>
+
+        <Style x:Key="CheckedListBoxStyle" TargetType="{x:Type ListBox}" BasedOn="{StaticResource {x:Type ListBox}}">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="KeyboardNavigation.DirectionalNavigation" Value="Cycle"/>
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="{x:Type ListBoxItem}" >
+                        <Setter Property="Margin" Value="2, 2, 2, 0" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                    <Border Background="Transparent">
+                                        <CheckBox Content="{TemplateBinding Content}" IsChecked="{Binding Path=IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}" />
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+      <DataTemplate x:Key="NavLogItemTemplate">
+          <StackPanel Orientation="Vertical" MinWidth="60"
+            Margin="2">
+
+          <Image 
+              Source="{Binding Thumbnail.BitmapSource}" 
+              Height="28" />
+          <TextBlock 
+              Margin="2"
+              Background="Transparent" 
+              FontSize="12" 
+              HorizontalAlignment="Center" 
+              Text="{Binding Name}" />
+        </StackPanel>
+      </DataTemplate>
+
+        <DataTemplate x:Key="KnownFoldersComboItemTemplate">
+            <StackPanel Margin="5,2,5,2" Orientation="Horizontal" >
+                <Image Source="{Binding Thumbnail.BitmapSource}" Height="32"/>
+                <TextBlock Background="Transparent" FontSize="18" Margin="4" VerticalAlignment="Center" Text="{Binding CanonicalName}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="ShellObjectItemTemplate">
+            <Grid Margin="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="32" />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Image Grid.Column="0" Source="{Binding Thumbnail.BitmapSource}" />
+                <TextBlock Grid.Column="2" VerticalAlignment="Center" Text="{Binding Name}" />
+             </Grid>
+        </DataTemplate>
+
+    </Window.Resources>
+
+    <Grid Width="Auto" Height="Auto">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="290px"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0" Width="Auto" Height="Auto"  Background="{StaticResource windowBrush}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="75px"/>
+                <RowDefinition Height="105px"/>
+                <RowDefinition Height="245px"/>
+                <RowDefinition Height="75px"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- View Mode combo-->            
+            <Border CornerRadius="10" Background="{StaticResource gradientBrush}" Padding="10" Grid.Row="0" BorderBrush="{StaticResource borderBrush}" BorderThickness="1" Margin="5" >
+                <Grid  Margin="-4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20"></RowDefinition>
+                        <RowDefinition Height="30"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Margin="5,-1,6,6">View Mode</TextBlock>
+                    <ComboBox 
+                        Grid.Row="1" 
+                        x:Name="ViewModeCombo" 
+                        FontSize="18"
+                        Background="{StaticResource horizontalGradientBrush}"></ComboBox>
+                </Grid>
+            </Border>
+
+            <!-- Navigation Options checked list box-->
+            <Border CornerRadius="10" Background="{StaticResource gradientBrush}" Padding="10" Grid.Row="1" BorderBrush="{StaticResource borderBrush}" BorderThickness="1" Margin="5" >
+                <Grid  Margin="-4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition ></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Margin="5,-1,6,6">Navigation Options</TextBlock>
+                    <Rectangle Grid.Row="1" Margin="20,-1,-1,-1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                    <ListBox Grid.Row="1"
+                             Style="{StaticResource CheckedListBoxStyle}"
+                             SelectionMode="Multiple"
+                             IsSynchronizedWithCurrentItem="True" FontSize="18" Height="Auto"
+                             VerticalAlignment="Stretch" HorizontalAlignment="Stretch" SelectedIndex="0">
+                        <ListBoxItem x:Name="lbiAlwaysNavigate">Always Navigate</ListBoxItem>
+                        <ListBoxItem x:Name="lbiNavigateOnce">Navigate Once</ListBoxItem>
+                    </ListBox>
+                </Grid>
+            </Border>
+
+            <!-- Pane Options checked list box-->
+            <Border CornerRadius="10" Background="{StaticResource gradientBrush}" Padding="10" Grid.Row="2" BorderBrush="{StaticResource borderBrush}" BorderThickness="1" Margin="5" >
+                <Grid Margin="-4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition ></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Margin="5,-1,6,6">Pane Options</TextBlock>
+                    <Rectangle Grid.Row="1" Margin="20,-1,-1,-1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                    <ListBox Grid.Row="1"
+                             SelectionMode="Multiple"
+                             IsSynchronizedWithCurrentItem="True" FontSize="18" Height="Auto"
+                             VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                             BorderBrush="Transparent" Background="Transparent"
+                             KeyboardNavigation.DirectionalNavigation="Cycle" >
+                        <CheckBox  x:Name="lbiAdvancedQueryPane" IsThreeState="True">Advanced Query</CheckBox>
+                        <CheckBox x:Name="lbiCommandsPane" IsThreeState="True">Commands</CheckBox>
+                        <CheckBox x:Name="lbiCommandsOrganizePane" IsThreeState="True">Commands-Organize</CheckBox>
+                        <CheckBox x:Name="lbiCommandsViewPane" IsThreeState="True">Commands-View</CheckBox>
+                        <CheckBox x:Name="lbiDetailsPane" IsThreeState="True">Details</CheckBox>
+                        <CheckBox x:Name="lbiNavigationPane" IsThreeState="True">Navigation</CheckBox>
+                        <CheckBox x:Name="lbiPreviewPane" IsThreeState="True">Preview</CheckBox>
+                        <CheckBox x:Name="lbiQueryPane" IsThreeState="True">Query</CheckBox>
+                   </ListBox>
+                </Grid>
+            </Border>
+
+            <!-- Thumbnail size slider -->
+            <Border CornerRadius="10" Background="{StaticResource gradientBrush}" Padding="10" Grid.Row="3" BorderBrush="{StaticResource borderBrush}" BorderThickness="1" Margin="5" >
+                <Grid Margin="-4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition ></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Margin="5,-1,6,6">Thumbnail Size</TextBlock>
+                    <Rectangle Grid.Row="1" Margin="20,-1,-1,-1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal">
+                        <Slider Height="21" Width ="180px" Name="thumbnailSizeSlider" VerticalAlignment="Center" Minimum="16" Maximum="255"/>
+                        <TextBlock Width ="60px" TextAlignment="Center" VerticalAlignment="Center" Text="{Binding ThumbnailSize, ElementName=eb, Mode=OneWay}"></TextBlock>
+                    </StackPanel>                        
+                </Grid>
+            </Border>
+
+            <!-- Content Options checked list box-->
+            <Border CornerRadius="10" Background="{StaticResource gradientBrush}" Padding="10" Grid.Row="4" BorderBrush="{StaticResource borderBrush}" BorderThickness="1" Margin="5">
+                <Grid Margin="-4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition ></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Margin="5,-1,6,6">Content Options</TextBlock>
+
+                    <Rectangle Grid.Row="1" Margin="20,-1,-1,-1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+
+                    <ListBox Grid.Row="1"
+                             Style="{StaticResource CheckedListBoxStyle}" 
+                             SelectionMode="Multiple"
+                             IsSynchronizedWithCurrentItem="True" FontSize="18" Height="Auto" 
+                             VerticalAlignment="Stretch" HorizontalAlignment="Stretch" SelectedIndex="0">
+                        <ListBoxItem x:Name="lbiAlignLeft">Align Left</ListBoxItem>
+                        <ListBoxItem x:Name="lbiAutoArrange">Auto Arrange</ListBoxItem>
+                        <ListBoxItem x:Name="lbiCheckSelect">CheckSelect</ListBoxItem>
+                        <ListBoxItem x:Name="lbiExtendedTiles">Extended Tiles</ListBoxItem>
+                        <ListBoxItem x:Name="lbiFullRowSelect">Full Row Select</ListBoxItem>
+                        <ListBoxItem x:Name="lbiHideFileNames">Hide File Names</ListBoxItem>
+                        <ListBoxItem x:Name="lbiNoBrowserViewState">No Browser View State</ListBoxItem>
+                        <ListBoxItem x:Name="lbiNoColumnHeader">No Column Header</ListBoxItem>
+                        <ListBoxItem x:Name="lbiNoHeaderInAllViews">No Header In All Views</ListBoxItem>
+                        <ListBoxItem x:Name="lbiNoIcons">No Icons</ListBoxItem>
+                        <ListBoxItem x:Name="lbiNoSubFolders">No Sub Folders</ListBoxItem>
+                        <ListBoxItem x:Name="lbiSingleClickActivate">Single Click Activate</ListBoxItem>
+                        <ListBoxItem x:Name="lbiSingleSelection">Single Selection</ListBoxItem>
+                    </ListBox>
+                </Grid>
+            </Border>
+        </Grid>
+        
+        <Grid Grid.Column="1" Background="{StaticResource windowBrush}" >
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="250px"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="200px"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Border Grid.Row="0" Margin="5" CornerRadius="10" Background="{StaticResource gradientBrush}" BorderBrush="{StaticResource borderBrush}" BorderThickness="1" >
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="120"></RowDefinition>
+                            <RowDefinition Height="90"></RowDefinition>
+                            <RowDefinition Height="25"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        
+                        <!-- Navigation TextBoxes and buttons -->
+                        <Grid Grid.Row="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30"></RowDefinition>
+                                <RowDefinition Height="30"></RowDefinition>
+                                <RowDefinition Height="50"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="150px"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Button Height="27" Grid.Column="1" Margin="10,2,10,1" Name="navigateFileButton" Click="navigateFileButton_Click">Navigate File
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Style.Triggers>
+                                            <DataTrigger
+                                                Binding="{Binding ElementName=navigateFileTextBox, Path=Text}"
+                                                Value="" >
+                                                <Setter Property="Button.IsEnabled" Value="false" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Height="27" Grid.Column="1" Grid.Row="1" Margin="10,2,10,1" Name="navigateFolderButton" Click="navigateFolderButton_Click">Navigate Folder
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Style.Triggers>
+                                            <DataTrigger
+                                                Binding="{Binding ElementName=navigateFolderTextBox, Path=Text}"
+                                                Value="" >
+                                                <Setter Property="Button.IsEnabled" Value="false" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Height="27" Grid.Column="1" Grid.Row="2" Margin="10,2,10,1" Name="navigateKnownFolderButton" Click="navigateKnownFolderButton_Click">Navigate Known Folder
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Style.Triggers>
+                                            <DataTrigger
+                                                Binding="{Binding ElementName=knownFoldersCombo, Path=Text}"
+                                                Value="" >
+                                                <Setter Property="Button.IsEnabled" Value="false" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <ComboBox 
+                                Grid.Row="2" 
+                                Margin="29,2,23,1" 
+                                Name="knownFoldersCombo"
+                                Background="{StaticResource horizontalGradientBrush}"
+                                ItemTemplate="{StaticResource KnownFoldersComboItemTemplate}"/>
+                            <TextBox BorderBrush="Black" Background="{StaticResource horizontalGradientBrush}" Margin="30,2,23,1" Name="navigateFileTextBox" />
+                            <TextBox BorderBrush="Black" Background="{StaticResource horizontalGradientBrush}" Grid.Row="1" Margin="29,2,23,1" Name="navigateFolderTextBox" />
+                        </Grid>
+
+                        <!-- Navigation Log list box -->
+                        <ListBox 
+                            Grid.Row="1" 
+                            Margin="4" 
+                            Background="Transparent" 
+                            BorderBrush="Black" 
+                            BorderThickness="2" 
+                            ItemsSource="{Binding NavigationLog, ElementName=eb}"
+                            ItemTemplate="{StaticResource NavLogItemTemplate}"
+                            SelectedIndex="{Binding NavigationLogIndex, ElementName=eb, Mode=TwoWay}">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal"></StackPanel>
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                        </ListBox>
+                        
+                        <!-- Clear Navigation Log button -->
+                        <Button Grid.Row="2" Margin="10,1,10,1" Width="160" Click="ClearNavigationLog_Click" HorizontalAlignment="Left">Clear Navigation History</Button>
+                    </Grid>
+                    
+                </Border>
+                
+                <Border Grid.Row="1" Margin="5" CornerRadius="10" Background="{StaticResource gradientBrush}" BorderBrush="{StaticResource borderBrush}" BorderThickness="1" >
+
+                    <!-- The Explorer Browser -->
+                    <WindowsAPICodePackPresentation:ExplorerBrowser
+                        x:Name="eb"
+                        Margin="5"
+                        AlignLeft="{Binding IsSelected, ElementName=lbiAlignLeft, Mode=TwoWay}"
+                        AutoArrange="{Binding IsSelected, ElementName=lbiAutoArrange, Mode=TwoWay}"
+                        CheckSelect="{Binding IsSelected, ElementName=lbiCheckSelect, Mode=TwoWay}"
+                        ExtendedTiles="{Binding IsSelected, ElementName=lbiExtendedTiles, Mode=TwoWay}"
+                        FullRowSelect="{Binding IsSelected, ElementName=lbiFullRowSelect, Mode=TwoWay}"
+                        HideFileNames="{Binding IsSelected, ElementName=lbiHideFileNames, Mode=TwoWay}"
+                        NoBrowserViewState="{Binding IsSelected, ElementName=lbiNoBrowserViewState, Mode=TwoWay}"
+                        NoColumnHeader="{Binding IsSelected, ElementName=lbiNoColumnHeader, Mode=TwoWay}"
+                        NoHeaderInAllViews="{Binding IsSelected, ElementName=lbiNoHeaderInAllViews, Mode=TwoWay}"
+                        NoIcons="{Binding IsSelected, ElementName=lbiNoIcons, Mode=TwoWay}"
+                        NoSubfolders="{Binding IsSelected, ElementName=lbiNoSubFolders, Mode=TwoWay}"
+                        SingleClickActivate="{Binding IsSelected, ElementName=lbiSingleClickActivate, Mode=TwoWay}"
+                        SingleSelection="{Binding IsSelected, ElementName=lbiSingleSelection, Mode=TwoWay}"
+                        AlwaysNavigate="{Binding IsSelected, ElementName=lbiAlwaysNavigate, Mode=TwoWay}"
+                        NavigateOnce="{Binding IsSelected, ElementName=lbiNavigateOnce, Mode=TwoWay}"
+                        ViewMode="{Binding SelectedValue, ElementName=ViewModeCombo, Mode=TwoWay}"
+                        
+                        ThumbnailSize="{Binding Value, ElementName=thumbnailSizeSlider, Mode=TwoWay}"
+                        
+                        AdvancedQueryPane="{Binding IsChecked, ElementName=lbiAdvancedQueryPane, Mode=TwoWay, Converter={StaticResource tristateConverter} }"
+                        CommandsPane="{Binding IsChecked, ElementName=lbiCommandsPane, Mode=TwoWay, Converter={StaticResource tristateConverter} }"
+                        CommandsOrganizePane="{Binding IsChecked, ElementName=lbiCommandsOrganizePane, Mode=TwoWay, Converter={StaticResource tristateConverter} }"
+                        CommandsViewPane="{Binding IsChecked, ElementName=lbiCommandsViewPane, Mode=TwoWay, Converter={StaticResource tristateConverter} }"
+                        DetailsPane="{Binding IsChecked, ElementName=lbiDetailsPane, Mode=TwoWay, Converter={StaticResource tristateConverter} }"
+                        NavigationPane="{Binding IsChecked, ElementName=lbiNavigationPane, Mode=TwoWay, Converter={StaticResource tristateConverter} }"
+                        PreviewPane="{Binding IsChecked, ElementName=lbiPreviewPane, Mode=TwoWay, Converter={StaticResource tristateConverter} }"
+                        QueryPane="{Binding IsChecked, ElementName=lbiQueryPane, Mode=TwoWay, Converter={StaticResource tristateConverter} }"
+                        
+                        NavigationTarget="{Binding SelectedItem, ElementName=KnownFoldersList, Mode=OneWay}"
+                        />
+                </Border>
+                
+                <Border Grid.Row="2" Margin="5" CornerRadius="10" Background="{StaticResource gradientBrush}" BorderBrush="{StaticResource borderBrush}" BorderThickness="1">
+                    <TabControl Margin="4" Name="tabControl1" Background="Transparent">
+                        <TabItem Header="Items" Background="Transparent">
+
+                            <!--Items list box -->
+                            <ListView Background="Transparent" ItemsSource="{Binding Items, ElementName=eb}" ItemTemplate="{StaticResource ShellObjectItemTemplate}" />
+
+                        </TabItem>
+                        <TabItem Header="SelectedItems" Background="Transparent">
+
+                            <!-- Selected Items list box-->
+                            <ListView Background="Transparent" ItemsSource="{Binding SelectedItems, ElementName=eb}"  ItemTemplate="{StaticResource ShellObjectItemTemplate}" />
+
+                        </TabItem>
+                    </TabControl>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

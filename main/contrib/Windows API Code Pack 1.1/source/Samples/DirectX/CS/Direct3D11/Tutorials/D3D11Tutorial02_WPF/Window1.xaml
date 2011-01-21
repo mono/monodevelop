@@ -1,0 +1,15 @@
+﻿<!-- Copyright (c) Microsoft Corporation.  All rights reserved. -->
+
+<Window x:Class="Microsoft.WindowsAPICodePack.Samples.Direct3D11.Window1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Microsoft.WindowsAPICodePack.DirectX.Controls;assembly=Microsoft.WindowsAPICodePack.DirectX.Controls" 
+    Title="Direct3D 11 Tutorial 02" Height="480" Width="640" Loaded="Window_Loaded">
+    <Grid>
+        <Border Name="ControlHostElement"
+            BorderBrush="Transparent"
+            BorderThickness="0">
+            <controls:DirectHost x:Name="host" SizeChanged="host_SizeChanged" />
+        </Border>
+    </Grid>
+</Window>

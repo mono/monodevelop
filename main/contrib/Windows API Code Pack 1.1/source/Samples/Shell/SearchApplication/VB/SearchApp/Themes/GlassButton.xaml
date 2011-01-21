@@ -1,0 +1,172 @@
+<!-- Copyright (c) Microsoft Corporation.  All rights reserved. -->
+
+<ResourceDictionary 
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" >
+    <Style x:Key="GlassButton" TargetType="{x:Type Button}">
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Grid>
+                        <!-- Background Layer -->
+                        <Ellipse Fill="{TemplateBinding Background}"/>
+                        <!-- Refraction Layer -->
+                        <Ellipse x:Name="RefractionLayer">
+                            <Ellipse.Fill>
+                                <RadialGradientBrush GradientOrigin="0.496,1.052">
+                                    <RadialGradientBrush.RelativeTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform CenterX="0.5" CenterY="0.5" ScaleX="1.5" ScaleY="1.5"/>
+                                            <TranslateTransform X="0.02" Y="0.3"/>
+                                        </TransformGroup>
+                                    </RadialGradientBrush.RelativeTransform>
+                                    <GradientStop Offset="1" Color="#00000000"/>
+                                    <GradientStop Offset="0.4" Color="#FFFFFFFF"/>
+                                </RadialGradientBrush>
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        <!-- Reflection Layer -->
+                        <Path x:Name="ReflectionLayer" VerticalAlignment="Top" Stretch="Fill">
+                            <Path.RenderTransform>
+                                <ScaleTransform ScaleY="0.5" />
+                            </Path.RenderTransform>
+                            <Path.Data>
+                                <PathGeometry>
+                                    <PathFigure IsClosed="True" StartPoint="98.999,45.499">
+                                        <BezierSegment Point1="98.999,54.170" Point2="89.046,52.258" Point3="85.502,51.029"/>
+                                        <BezierSegment
+                                    IsSmoothJoin="True"
+                                    Point1="75.860,47.685"
+                                    Point2="69.111,45.196"
+                                    Point3="50.167,45.196"/>
+                                        <BezierSegment Point1="30.805,45.196" Point2="20.173,47.741" Point3="10.665,51.363"/>
+                                        <BezierSegment
+                                    IsSmoothJoin="True"
+                                    Point1="7.469,52.580"
+                                    Point2="1.000,53.252"
+                                    Point3="1.000,44.999"/>
+                                        <BezierSegment Point1="1.000,39.510" Point2="0.884,39.227" Point3="2.519,34.286"/>
+                                        <BezierSegment
+                                    IsSmoothJoin="True"
+                                    Point1="9.106,14.370"
+                                    Point2="27.875,0"
+                                    Point3="50,0"/>
+                                        <BezierSegment Point1="72.198,0" Point2="91.018,14.466" Point3="97.546,34.485"/>
+                                        <BezierSegment
+                                    IsSmoothJoin="True"
+                                    Point1="99.139,39.369"
+                                    Point2="98.999,40.084"
+                                    Point3="98.999,45.499"/>
+                                    </PathFigure>
+                                </PathGeometry>
+                            </Path.Data>
+                            <Path.Fill>
+                                <RadialGradientBrush GradientOrigin="0.498,0.526">
+                                    <RadialGradientBrush.RelativeTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform
+                                       CenterX="0.5"
+                                       CenterY="0.5"
+                                       ScaleX="1"
+                                       ScaleY="1.997"/>
+                                            <TranslateTransform X="0" Y="0.5"/>
+                                        </TransformGroup>
+                                    </RadialGradientBrush.RelativeTransform>
+                                    <GradientStop Offset="1" Color="#FFFFFFFF"/>
+                                    <GradientStop Offset="0.85" Color="#92FFFFFF"/>
+                                    <GradientStop Offset="0" Color="#00000000"/>
+                                </RadialGradientBrush>
+                            </Path.Fill>
+                        </Path>
+                        <!-- ContentPresenter -->
+                        <ContentPresenter Margin="0,2,0,0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="RefractionLayer" Property="Fill">
+                                <Setter.Value>
+                                    <RadialGradientBrush GradientOrigin="0.496,1.052">
+                                        <RadialGradientBrush.RelativeTransform>
+                                            <TransformGroup>
+                                                <ScaleTransform
+                                          CenterX="0.5"
+                                          CenterY="0.5"
+                                          ScaleX="1.5"
+                                          ScaleY="1.5"/>
+                                                <TranslateTransform X="0.02" Y="0.3"/>
+                                            </TransformGroup>
+                                        </RadialGradientBrush.RelativeTransform>
+                                        <GradientStop Offset="1" Color="#00000000"/>
+                                        <GradientStop Offset="0.45" Color="#FFFFFFFF"/>
+                                    </RadialGradientBrush>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter TargetName="ReflectionLayer" Property="Fill">
+                                <Setter.Value>
+                                    <RadialGradientBrush GradientOrigin="0.498,0.526">
+                                        <RadialGradientBrush.RelativeTransform>
+                                            <TransformGroup>
+                                                <ScaleTransform
+                                          CenterX="0.5"
+                                          CenterY="0.5"
+                                          ScaleX="1"
+                                          ScaleY="1.997"/>
+                                                <TranslateTransform X="0" Y="0.5"/>
+                                            </TransformGroup>
+                                        </RadialGradientBrush.RelativeTransform>
+                                        <GradientStop Offset="1" Color="#FFFFFFFF"/>
+                                        <GradientStop Offset="0.85" Color="#BBFFFFFF"/>
+                                        <GradientStop Offset="0" Color="#00000000"/>
+                                    </RadialGradientBrush>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="RefractionLayer" Property="Fill">
+                                <Setter.Value>
+                                    <RadialGradientBrush GradientOrigin="0.496,1.052">
+                                        <RadialGradientBrush.RelativeTransform>
+                                            <TransformGroup>
+                                                <ScaleTransform
+                                          CenterX="0.5"
+                                          CenterY="0.5"
+                                          ScaleX="1.5"
+                                          ScaleY="1.5"/>
+                                                <TranslateTransform X="0.02" Y="0.3"/>
+                                            </TransformGroup>
+                                        </RadialGradientBrush.RelativeTransform>
+                                        <GradientStop Offset="1" Color="#00000000"/>
+                                        <GradientStop Offset="0.3" Color="#FFFFFFFF"/>
+                                    </RadialGradientBrush>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter TargetName="ReflectionLayer" Property="Fill">
+                                <Setter.Value>
+                                    <RadialGradientBrush GradientOrigin="0.498,0.526">
+                                        <RadialGradientBrush.RelativeTransform>
+                                            <TransformGroup>
+                                                <ScaleTransform
+                                          CenterX="0.5"
+                                          CenterY="0.5"
+                                          ScaleX="1"
+                                          ScaleY="1.997"/>
+                                                <TranslateTransform X="0" Y="0.5"/>
+                                            </TransformGroup>
+                                        </RadialGradientBrush.RelativeTransform>
+                                        <GradientStop Offset="1" Color="#CCFFFFFF"/>
+                                        <GradientStop Offset="0.85" Color="#66FFFFFF"/>
+                                        <GradientStop Offset="0" Color="#00000000"/>
+                                    </RadialGradientBrush>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

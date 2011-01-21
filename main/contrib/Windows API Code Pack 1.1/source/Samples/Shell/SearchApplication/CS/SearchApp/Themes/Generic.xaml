@@ -1,0 +1,244 @@
+<!-- Copyright (c) Microsoft Corporation.  All rights reserved. -->
+
+<ResourceDictionary xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+                    xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
+                    xmlns:wnd="clr-namespace:System.Windows;assembly=PresentationFramework"
+                    xmlns:l="clr-namespace:Microsoft.WindowsAPICodePack.Samples.SearchApp">
+    <Style x:Key="{ComponentResourceKey TypeInTargetAssembly={x:Type l:ImageView},ResourceId=ImageView}"
+         TargetType="{x:Type ListView}" BasedOn="{StaticResource {x:Type ListBox}}">
+        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="BorderThickness" Value="0.5"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Border Name="bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                  Background="{TemplateBinding Background}" Margin="{TemplateBinding Margin}">
+                        <ScrollViewer Margin="{TemplateBinding Padding}">
+                            <WrapPanel ItemWidth="150" IsItemsHost="True" MinWidth="100"
+                         Width="{Binding ActualWidth,RelativeSource={RelativeSource AncestorType=ScrollContentPresenter}}">
+                            </WrapPanel>
+                        </ScrollViewer>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- This storyboard will make the image grow to double its size in 0.2 seconds -->
+    <Storyboard x:Key="expandStoryboard">
+        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" 
+        To="1.2" Duration="0:0:0.2" />
+        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" 
+        To="1.2" Duration="0:0:0.2" />
+    </Storyboard>
+    <!-- This storyboard will make the image revert to its original size -->
+    <Storyboard x:Key="shrinkStoryboard">
+        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" 
+        To="1" Duration="0:0:0.2" />
+        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" 
+        To="1" Duration="0:0:0.2" />
+    </Storyboard>
+
+    <Style x:Key="{ComponentResourceKey TypeInTargetAssembly={x:Type l:ImageView},ResourceId=ImageViewItem}"
+         TargetType='{x:Type ListViewItem}' BasedOn='{StaticResource {x:Type ListBoxItem}}'>
+        <Setter Property='Padding' Value='3'/>
+        <Setter Property='Margin' Value='5'/>
+        <Setter Property='HorizontalContentAlignment' Value='Center'/>
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <Border Background="White">
+                        <StackPanel>
+                            <Image Height="96" Width="96" Margin="3" Stretch="Uniform" Source="{Binding Thumbnail}"/>
+                            <Label HorizontalContentAlignment="Center" Content="{Binding Name}"/>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+
+        <Setter Property="RenderTransform">
+            <Setter.Value>
+                <ScaleTransform ScaleX="1" ScaleY="1"/>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Trigger.EnterActions>
+                    <BeginStoryboard Storyboard="{StaticResource expandStoryboard}" />
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <BeginStoryboard Storyboard="{StaticResource shrinkStoryboard}" />
+                </Trigger.ExitActions>
+            </Trigger>
+        </Style.Triggers>
+
+    </Style>
+
+    <SolidColorBrush x:Key="SearchTextBox_Background" Color="White" />
+    <SolidColorBrush x:Key="SearchTextBox_Foreground" Color="Black" />
+    <LinearGradientBrush x:Key="SearchTextBox_Border" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#FFABADB3" Offset="0.05" />
+        <GradientStop Color="#FFE2E3EA" Offset="0.07" />
+        <GradientStop Color="#FFE3E9EF" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="SearchTextBox_BorderMouseOver" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#FF5C97C1" Offset="0.05" />
+        <GradientStop Color="#FFB9D7EB" Offset="0.07" />
+        <GradientStop Color="#FFC7E2F1" Offset="1" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="SearchTextBox_SearchIconBorder" Color="White" />
+    <SolidColorBrush x:Key="SearchTextBox_SearchIconBackground" Color="White" />
+    <LinearGradientBrush x:Key="SearchTextBox_SearchIconBorder_MouseOver" StartPoint="0,0" EndPoint="0,1" >
+        <GradientStop Color="#FFFFFFFF" Offset="0" />
+        <GradientStop Color="#FFE5F4FC" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="SearchTextBox_SearchIconBackground_MouseOver" StartPoint="0,0" EndPoint="0,1" >
+        <GradientStop Color="#FFE7F5FD" Offset="0" />
+        <GradientStop Color="#FFD2EDFC" Offset="0.5" />
+        <GradientStop Color="#FFB6E3FD" Offset="0.51" />
+        <GradientStop Color="#FF9DD5F3" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="SearchTextBox_SearchIconBorder_MouseDown" StartPoint="0,0" EndPoint="0,1" >
+        <GradientStop Color="#FFFFFFFF" Offset="0" />
+        <GradientStop Color="#FFE5F4FC" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="SearchTextBox_SearchIconBackground_MouseDown" StartPoint="0,0" EndPoint="0,1" >
+        <GradientStop Color="#FFE7F5FD" Offset="0" />
+        <GradientStop Color="#FFD2EDFC" Offset="0.5" />
+        <GradientStop Color="#FFB6E3FD" Offset="0.51" />
+        <GradientStop Color="#FF9DD5F3" Offset="1" />
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="SearchTextBox_LabelTextColor" Color="Gray" />
+
+    <Style x:Key="{x:Type l:SearchTextBox}" TargetType="{x:Type l:SearchTextBox}">
+        <Setter Property="Background" Value="{StaticResource SearchTextBox_Background}" />
+        <Setter Property="BorderBrush" Value="{StaticResource SearchTextBox_Border}" />
+        <Setter Property="Foreground" Value="{StaticResource SearchTextBox_Foreground}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="LabelText" Value="Search (CTRL+E)" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="LabelTextColor" Value="{StaticResource SearchTextBox_LabelTextColor}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type l:SearchTextBox}">
+                    <Border x:Name="Border"
+                  Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid x:Name="LayoutGrid">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="{Binding RelativeSource={RelativeSource TemplatedParent},
+                                                  Path=ActualHeight}" />
+                            </Grid.ColumnDefinitions>
+                            <ScrollViewer Margin="2" x:Name="PART_ContentHost" Grid.Column="0" />
+                            <Label x:Name="LabelText"
+                     Margin="2"
+                     Grid.Column="0"
+                     Foreground="{Binding RelativeSource={RelativeSource TemplatedParent},
+                                          Path=LabelTextColor}"
+                     Content="{Binding RelativeSource={RelativeSource TemplatedParent},
+                                       Path=LabelText}"
+                     Padding="2,0,0,0"
+                     FontStyle="Italic" />
+                            <Border x:Name="PART_SearchIconBorder"
+                      Grid.Column="1"
+                      BorderThickness="1"
+                      VerticalAlignment="Stretch"
+                      HorizontalAlignment="Stretch"
+                      BorderBrush="{StaticResource SearchTextBox_SearchIconBorder}"
+                      Background="{StaticResource SearchTextBox_SearchIconBackground}">
+                                <Image x:Name="SearchIcon"
+                       Stretch="None"
+                       Width="15"
+                       Height="15" 
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Source="/SearchApp;component/Images/search.png" />
+                            </Border>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="BorderBrush" Value="{StaticResource SearchTextBox_BorderMouseOver}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter Property="BorderBrush" Value="{StaticResource SearchTextBox_BorderMouseOver}" />
+                        </Trigger>
+                        <Trigger Property="HasText" Value="True">
+                            <Setter Property="Visibility" TargetName="LabelText" Value="Hidden" />
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="HasText" Value="True" />
+                                <Condition Property="SearchMode" Value="Instant" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Source" TargetName="SearchIcon" Value="/SearchApp;component/Images/clear.png" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" SourceName="PART_SearchIconBorder" Value="True" />
+                                <Condition Property="HasText" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="BorderBrush" TargetName="PART_SearchIconBorder" Value="{StaticResource SearchTextBox_SearchIconBorder_MouseOver}" />
+                            <Setter Property="Background" TargetName="PART_SearchIconBorder" Value="{StaticResource SearchTextBox_SearchIconBackground_MouseOver}" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" SourceName="PART_SearchIconBorder" Value="True" />
+                                <Condition Property="IsMouseLeftButtonDown" Value="True" />
+                                <Condition Property="HasText" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Padding" TargetName="PART_SearchIconBorder" Value="2,0,0,0" />
+                            <Setter Property="BorderBrush" TargetName="PART_SearchIconBorder" Value="{StaticResource SearchTextBox_SearchIconBorder_MouseOver}" />
+                            <Setter Property="Background" TargetName="PART_SearchIconBorder" Value="{StaticResource SearchTextBox_SearchIconBackground_MouseOver}" />
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <ControlTemplate x:Key="DefaultThemeTemplate" TargetType="{x:Type Window}">
+        <Grid x:Name="DocumentRoot" MinWidth="200" MinHeight="100">
+            <Grid.Background>
+                <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                    <LinearGradientBrush.GradientStops>
+                        <GradientStop Color="sc#1, 0.341924876, 0.341924876, 0.341924876" Offset="0"/>
+                        <GradientStop Color="sc#1, 0.7222066, 0.7222066, 0.7222066" Offset="0.58653846153846156"/>
+                        <GradientStop Color="sc#1, 0.257417828, 0.257417828, 0.257417828" Offset="1"/>
+                    </LinearGradientBrush.GradientStops>
+                </LinearGradientBrush>
+            </Grid.Background>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Rectangle Stroke="#FF000000" RadiusX="5" RadiusY="5" StrokeThickness="1" Width="Auto" Height="Auto" x:Name="Rectangle" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinWidth="0" Margin="0,0,0,0" MinHeight="0">
+                <Rectangle.Fill>
+                    <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                        <LinearGradientBrush.RelativeTransform>
+                            <TransformGroup>
+                                <TranslateTransform X="-0.5" Y="-0.5"/>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                <SkewTransform AngleX="0" AngleY="0"/>
+                                <RotateTransform Angle="-22.11269311646868"/>
+                                <TranslateTransform X="0.5" Y="0.5"/>
+                                <TranslateTransform X="0.10296191819464032" Y="-0.037190082644628045"/>
+                            </TransformGroup>
+                        </LinearGradientBrush.RelativeTransform>
+                        <LinearGradientBrush.GradientStops>
+                            <GradientStop Color="sc#1, 0.341924876, 0.341924876, 0.341924876" Offset="0"/>
+                            <GradientStop Color="sc#1, 0.7222066, 0.7222066, 0.7222066" Offset="0.58653846153846156"/>
+                            <GradientStop Color="sc#1, 0.257417828, 0.257417828, 0.257417828" Offset="1"/>
+                        </LinearGradientBrush.GradientStops>
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+        </Grid>
+    </ControlTemplate>
+</ResourceDictionary>

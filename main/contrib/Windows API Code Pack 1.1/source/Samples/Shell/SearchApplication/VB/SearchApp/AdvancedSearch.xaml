@@ -1,0 +1,157 @@
+<!-- Copyright (c) Microsoft Corporation.  All rights reserved. -->
+
+<Window x:Class="Microsoft.WindowsAPICodePack.Samples.SearchApp.AdvancedSearch"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:WB="clr-namespace:Microsoft.WindowsAPICodePack.Shell;assembly=Microsoft.WindowsAPICodePack.Shell"
+    xmlns:PropSys="clr-namespace:Microsoft.WindowsAPICodePack.Shell.PropertySystem;assembly=Microsoft.WindowsAPICodePack.Shell"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib" 
+    Title="Advanced Search" Height="558" Width="673"
+    WindowStartupLocation="Manual"
+    >
+
+    <Window.Resources>
+        <ObjectDataProvider x:Key="stockIcons" ObjectType="{x:Type WB:StockIcons}"/>
+    
+        <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="PropertyOperations">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="PropSys:PropertyConditionOperation" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+    </Window.Resources>
+
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                <LinearGradientBrush.GradientStops>
+                    <GradientStop Color="sc#1, 0.341924876, 0.341924876, 0.341924876" Offset="0"/>
+                    <GradientStop Color="sc#1, 0.7222066, 0.7222066, 0.7222066" Offset="0.58653846153846156"/>
+                    <GradientStop Color="sc#1, 0.257417828, 0.257417828, 0.257417828" Offset="1"/>
+                </LinearGradientBrush.GradientStops>
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="171*" />
+            <ColumnDefinition Width="480*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="39*" />
+            <RowDefinition Height="133*" />
+            <RowDefinition Height="52*" />
+            <RowDefinition Height="156.5*" />
+            <RowDefinition Height="107.5*" />
+            <RowDefinition Height="32*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Name="stackPanel1" Orientation="Horizontal" Grid.Column="1" Margin="64,0,0,0">
+            <RadioButton Width="60" Name="DocumentsRadioButton" GroupName="SearchTypeRadioButton" Checked="DocumentsRadioButton_Checked">
+                <Image Source="{Binding Source={StaticResource stockIcons}, Path=DocumentAssociated.BitmapSource}" Width="48" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </RadioButton>
+
+            <RadioButton Width="60" Name="PicturesRadioButton" GroupName="SearchTypeRadioButton" Checked="PicturesRadioButton_Checked">
+                <Image Source="{Binding Source={StaticResource stockIcons}, Path=ImageFiles.BitmapSource}" Width="48" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </RadioButton>
+
+            <RadioButton Width="60"  Name="MusicRadioButton" GroupName="SearchTypeRadioButton"  Checked="MusicRadioButton_Checked">
+                <Image Source="{Binding Source={StaticResource stockIcons}, Path=AudioFiles.BitmapSource}" Width="48" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </RadioButton>
+
+            <RadioButton Width="60"  Name="VideosRadioButton" GroupName="SearchTypeRadioButton" Checked="VideosRadioButton_Checked">
+                <Image Source="{Binding Source={StaticResource stockIcons}, Path=VideoFiles.BitmapSource}" Width="48" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </RadioButton>
+        </StackPanel>
+
+        <Label Name="label1" FontSize="14">Search type:</Label>
+        <Label Name="label2" Grid.Row="1" FontSize="14">What to search:</Label>
+        <Label Name="label3" Grid.Row="2" FontSize="14" HorizontalAlignment="Stretch" VerticalAlignment="Center">Within any date range:</Label>
+        <Label Name="label4" Grid.Row="3" FontSize="14">Where to search:</Label>
+        <Grid Grid.Column="1" Grid.Row="1" Name="whatToSearchGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="68*" />
+                <ColumnDefinition Width="70*" />
+                <ColumnDefinition Width="62*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="47*" />
+                <RowDefinition Height="24.623*" />
+                <RowDefinition Height="37.583*" />
+            </Grid.RowDefinitions>
+    
+            <ComboBox Name="prop1ComboBox" Margin="12,15.101,8,0" Height="25" VerticalAlignment="Top" />
+            <ComboBox Name="prop1OperationComboBox" Grid.Column="1" SelectedIndex="10" 
+                      Margin="20.8,15.102,13.2,0" Height="25" VerticalAlignment="Top">
+                <ComboBoxItem Tag="Implicit">Implicit</ComboBoxItem>
+                <ComboBoxItem Tag="Equal">=</ComboBoxItem>
+                <ComboBoxItem Tag="NotEqual">!=</ComboBoxItem>
+                <ComboBoxItem Tag="LessThan">&lt;</ComboBoxItem>
+                <ComboBoxItem Tag="GreaterThan">&gt;</ComboBoxItem>
+                <ComboBoxItem Tag="LessThanOrEqual">&lt;=</ComboBoxItem>
+                <ComboBoxItem Tag="GreaterThanOrEqual">&gt;=</ComboBoxItem>
+                <ComboBoxItem Tag="ValueStartsWith">Starts with</ComboBoxItem>
+                <ComboBoxItem Tag="ValueEndsWith">Ends with</ComboBoxItem>
+                <ComboBoxItem Tag="ValueContains">Contains</ComboBoxItem>
+                <ComboBoxItem Tag="ValueNotContains">Does not contains</ComboBoxItem>
+                <ComboBoxItem Tag="DOSWildCards">Matches</ComboBoxItem>
+                <ComboBoxItem Tag="WordEqual">Contains word</ComboBoxItem>
+                <ComboBoxItem Tag="WordStartsWith">Contains word starting with</ComboBoxItem>
+                <ComboBoxItem Tag="ApplicationSpecific">Application specific</ComboBoxItem>
+            </ComboBox>
+            <TextBox Name="prop1TextBox" Grid.Column="2" Margin="24.4,15.102,24.4,0" Height="25" VerticalAlignment="Top" />
+
+            <ComboBox Name="prop1prop2OperationComboBox" Grid.Column="1" Grid.Row="1" 
+                      Margin="20.8,3.451,13.2,0" Height="25" VerticalAlignment="Top" SelectionChanged="prop1prop2OperationComboBox_SelectionChanged">
+                <ComboBoxItem>(None)</ComboBoxItem>
+                <ComboBoxItem>And</ComboBoxItem>
+                <ComboBoxItem>Or</ComboBoxItem>
+            </ComboBox>
+
+            <ComboBox Name="prop2ComboBox" Grid.Row="2" Margin="12,10.386,8,0" Height="25" VerticalAlignment="Top" />
+            <ComboBox Name="prop2OperationComboBox" 
+                      Grid.Column="1" Grid.Row="2" SelectedIndex="0" 
+                      Margin="20.8,10.386,13.2,0" Height="25" VerticalAlignment="Top">
+                <ComboBoxItem Tag="Implicit">Implicit</ComboBoxItem>
+                <ComboBoxItem Tag="Equal">=</ComboBoxItem>
+                <ComboBoxItem Tag="NotEqual">!=</ComboBoxItem>
+                <ComboBoxItem Tag="LessThan">&lt;</ComboBoxItem>
+                <ComboBoxItem Tag="GreaterThan">&gt;</ComboBoxItem>
+                <ComboBoxItem Tag="LessThanOrEqual">&lt;=</ComboBoxItem>
+                <ComboBoxItem Tag="GreaterThanOrEqual">&gt;=</ComboBoxItem>
+                <ComboBoxItem Tag="ValueStartsWith">Starts with</ComboBoxItem>
+                <ComboBoxItem Tag="ValueEndsWith">Ends with</ComboBoxItem>
+                <ComboBoxItem Tag="ValueContains">Contains</ComboBoxItem>
+                <ComboBoxItem Tag="ValueNotContains">Does not contains</ComboBoxItem>
+                <ComboBoxItem Tag="DOSWildCards">Matches</ComboBoxItem>
+                <ComboBoxItem Tag="WordEqual">Contains word</ComboBoxItem>
+                <ComboBoxItem Tag="WordStartsWith">Contains word starting with</ComboBoxItem>
+                <ComboBoxItem Tag="ApplicationSpecific">Application specific</ComboBoxItem>
+            </ComboBox>
+            <TextBox Name="prop2TextBox" Grid.Column="2" Grid.Row="2" Height="25" Margin="24.4,10.386,24.4,0" VerticalAlignment="Top" />
+
+
+        </Grid>
+
+        <ComboBox Name="comboBoxDateCreated" Grid.Column="1" Grid.Row="2" SelectedIndex="0" Margin="12,13.5,24.4,0" Height="25" VerticalAlignment="Top">
+            <ComboBoxItem Name="dateCreatedNone">(None)</ComboBoxItem>
+            <ComboBoxItem Name="dateCreatedYesterday" Tag="date:yesterday">Yesterday</ComboBoxItem>
+            <ComboBoxItem Name="dateCreatedEarlierThisWeek" Tag="date:earlier this week">Earlier this week</ComboBoxItem>
+            <ComboBoxItem Name="dateCreatedLastWeek" Tag="date:last week">Last week</ComboBoxItem>
+            <ComboBoxItem Name="dateCreatedEarlierThisMonth" Tag="date:earlier this month">Earlier this month</ComboBoxItem>
+            <ComboBoxItem Name="dateCreatedEarlierThisyear" Tag="date:earlier this year">Earlier this year</ComboBoxItem>
+            <ComboBoxItem Name="dateCreatedLongTimeAgo" Tag="date:a long time ago">A long time ago</ComboBoxItem>
+        </ComboBox>
+        
+        <StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Left" Width="480">
+            <ListBox Width="365" Height="147" Name="locationsListBox"></ListBox>
+
+            <StackPanel Name="searchScopeCommandButtons" Orientation="Vertical" Margin="20,0,0,0" Width="73">
+                <Button Margin="0,10,0,0" Name="addLocationButton" Click="addLocationButton_Click">Add</Button>
+                <Button Margin="0,10,0,0" Name="removeLocationButton" Click="removeLocationButton_Click">Remove</Button>
+            </StackPanel>
+            
+        </StackPanel>
+        <Button Grid.Column="1" Grid.Row="5" HorizontalAlignment="Right" Margin="0,4,26.646,0" Name="buttonClear" Width="75" Height="23" VerticalAlignment="Top" Click="buttonClear_Click">Clear</Button>
+        <Button Margin="0,4,115,0" Name="buttonSearch" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Right" Width="75" Height="23" VerticalAlignment="Top" Click="buttonSearch_Click" IsDefault="True">Search</Button>
+    </Grid>
+</Window>

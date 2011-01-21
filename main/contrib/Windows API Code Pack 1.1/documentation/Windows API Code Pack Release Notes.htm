@@ -1,0 +1,3328 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns:m="http://schemas.microsoft.com/office/2004/12/omml"
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 14">
+<meta name=Originator content="Microsoft Word 14">
+<link rel=File-List
+href="Windows%20API%20Code%20Pack%20Release%20Notes_files/filelist.xml">
+<link rel=Edit-Time-Data
+href="Windows%20API%20Code%20Pack%20Release%20Notes_files/editdata.mso">
+<!--[if !mso]>
+<style>
+v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style>
+<![endif]--><!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>Eric Fabricant</o:Author>
+  <o:LastAuthor>Eric Fabricant</o:LastAuthor>
+  <o:Revision>4</o:Revision>
+  <o:TotalTime>15893</o:TotalTime>
+  <o:Created>2010-08-05T02:11:00Z</o:Created>
+  <o:LastSaved>2010-08-05T02:12:00Z</o:LastSaved>
+  <o:Pages>4</o:Pages>
+  <o:Words>2688</o:Words>
+  <o:Characters>15326</o:Characters>
+  <o:Company>Microsoft</o:Company>
+  <o:Lines>127</o:Lines>
+  <o:Paragraphs>35</o:Paragraphs>
+  <o:CharactersWithSpaces>17979</o:CharactersWithSpaces>
+  <o:Version>14.00</o:Version>
+ </o:DocumentProperties>
+ <o:OfficeDocumentSettings>
+  <o:AllowPNG/>
+ </o:OfficeDocumentSettings>
+</xml><![endif]-->
+<link rel=dataStoreItem
+href="Windows%20API%20Code%20Pack%20Release%20Notes_files/item0012.xml"
+target="Windows%20API%20Code%20Pack%20Release%20Notes_files/props0013.xml">
+<link rel=themeData
+href="Windows%20API%20Code%20Pack%20Release%20Notes_files/themedata.thmx">
+<link rel=colorSchemeMapping
+href="Windows%20API%20Code%20Pack%20Release%20Notes_files/colorschememapping.xml">
+<!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:TrackMoves>false</w:TrackMoves>
+  <w:TrackFormatting/>
+  <w:PunctuationKerning/>
+  <w:ValidateAgainstSchemas/>
+  <w:SaveIfXMLInvalid>false</w:SaveIfXMLInvalid>
+  <w:IgnoreMixedContent>false</w:IgnoreMixedContent>
+  <w:AlwaysShowPlaceholderText>false</w:AlwaysShowPlaceholderText>
+  <w:DoNotPromoteQF/>
+  <w:LidThemeOther>EN-US</w:LidThemeOther>
+  <w:LidThemeAsian>X-NONE</w:LidThemeAsian>
+  <w:LidThemeComplexScript>X-NONE</w:LidThemeComplexScript>
+  <w:Compatibility>
+   <w:BreakWrappedTables/>
+   <w:SnapToGridInCell/>
+   <w:WrapTextWithPunct/>
+   <w:UseAsianBreakRules/>
+   <w:DontGrowAutofit/>
+   <w:SplitPgBreakAndParaMark/>
+   <w:EnableOpenTypeKerning/>
+   <w:DontFlipMirrorIndents/>
+   <w:OverrideTableStyleHps/>
+   <w:UseFELayout/>
+  </w:Compatibility>
+  <m:mathPr>
+   <m:mathFont m:val="Cambria Math"/>
+   <m:brkBin m:val="before"/>
+   <m:brkBinSub m:val="&#45;-"/>
+   <m:smallFrac m:val="off"/>
+   <m:dispDef/>
+   <m:lMargin m:val="0"/>
+   <m:rMargin m:val="0"/>
+   <m:defJc m:val="centerGroup"/>
+   <m:wrapIndent m:val="1440"/>
+   <m:intLim m:val="subSup"/>
+   <m:naryLim m:val="undOvr"/>
+  </m:mathPr></w:WordDocument>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:LatentStyles DefLockedState="false" DefUnhideWhenUsed="true"
+  DefSemiHidden="true" DefQFormat="false" DefPriority="99"
+  LatentStyleCount="267">
+  <w:LsdException Locked="false" Priority="0" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Normal"/>
+  <w:LsdException Locked="false" Priority="9" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="heading 1"/>
+  <w:LsdException Locked="false" Priority="9" QFormat="true" Name="heading 2"/>
+  <w:LsdException Locked="false" Priority="9" QFormat="true" Name="heading 3"/>
+  <w:LsdException Locked="false" Priority="9" QFormat="true" Name="heading 4"/>
+  <w:LsdException Locked="false" Priority="9" QFormat="true" Name="heading 5"/>
+  <w:LsdException Locked="false" Priority="9" QFormat="true" Name="heading 6"/>
+  <w:LsdException Locked="false" Priority="9" QFormat="true" Name="heading 7"/>
+  <w:LsdException Locked="false" Priority="9" QFormat="true" Name="heading 8"/>
+  <w:LsdException Locked="false" Priority="9" QFormat="true" Name="heading 9"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 1"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 2"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 3"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 4"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 5"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 6"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 7"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 8"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 9"/>
+  <w:LsdException Locked="false" Priority="35" QFormat="true" Name="caption"/>
+  <w:LsdException Locked="false" Priority="10" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Title"/>
+  <w:LsdException Locked="false" Priority="1" Name="Default Paragraph Font"/>
+  <w:LsdException Locked="false" Priority="11" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Subtitle"/>
+  <w:LsdException Locked="false" Priority="22" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Strong"/>
+  <w:LsdException Locked="false" Priority="20" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Emphasis"/>
+  <w:LsdException Locked="false" Priority="59" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Table Grid"/>
+  <w:LsdException Locked="false" UnhideWhenUsed="false" Name="Placeholder Text"/>
+  <w:LsdException Locked="false" Priority="1" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="No Spacing"/>
+  <w:LsdException Locked="false" Priority="60" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Shading"/>
+  <w:LsdException Locked="false" Priority="61" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light List"/>
+  <w:LsdException Locked="false" Priority="62" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Grid"/>
+  <w:LsdException Locked="false" Priority="63" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 1"/>
+  <w:LsdException Locked="false" Priority="64" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 2"/>
+  <w:LsdException Locked="false" Priority="65" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 1"/>
+  <w:LsdException Locked="false" Priority="66" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 2"/>
+  <w:LsdException Locked="false" Priority="67" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 1"/>
+  <w:LsdException Locked="false" Priority="68" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 2"/>
+  <w:LsdException Locked="false" Priority="69" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 3"/>
+  <w:LsdException Locked="false" Priority="70" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Dark List"/>
+  <w:LsdException Locked="false" Priority="71" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Shading"/>
+  <w:LsdException Locked="false" Priority="72" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful List"/>
+  <w:LsdException Locked="false" Priority="73" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Grid"/>
+  <w:LsdException Locked="false" Priority="60" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Shading Accent 1"/>
+  <w:LsdException Locked="false" Priority="61" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light List Accent 1"/>
+  <w:LsdException Locked="false" Priority="62" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Grid Accent 1"/>
+  <w:LsdException Locked="false" Priority="63" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 1 Accent 1"/>
+  <w:LsdException Locked="false" Priority="64" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 2 Accent 1"/>
+  <w:LsdException Locked="false" Priority="65" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 1 Accent 1"/>
+  <w:LsdException Locked="false" UnhideWhenUsed="false" Name="Revision"/>
+  <w:LsdException Locked="false" Priority="34" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="List Paragraph"/>
+  <w:LsdException Locked="false" Priority="29" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Quote"/>
+  <w:LsdException Locked="false" Priority="30" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Intense Quote"/>
+  <w:LsdException Locked="false" Priority="66" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 2 Accent 1"/>
+  <w:LsdException Locked="false" Priority="67" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 1 Accent 1"/>
+  <w:LsdException Locked="false" Priority="68" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 2 Accent 1"/>
+  <w:LsdException Locked="false" Priority="69" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 3 Accent 1"/>
+  <w:LsdException Locked="false" Priority="70" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Dark List Accent 1"/>
+  <w:LsdException Locked="false" Priority="71" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Shading Accent 1"/>
+  <w:LsdException Locked="false" Priority="72" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful List Accent 1"/>
+  <w:LsdException Locked="false" Priority="73" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Grid Accent 1"/>
+  <w:LsdException Locked="false" Priority="60" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Shading Accent 2"/>
+  <w:LsdException Locked="false" Priority="61" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light List Accent 2"/>
+  <w:LsdException Locked="false" Priority="62" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Grid Accent 2"/>
+  <w:LsdException Locked="false" Priority="63" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 1 Accent 2"/>
+  <w:LsdException Locked="false" Priority="64" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 2 Accent 2"/>
+  <w:LsdException Locked="false" Priority="65" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 1 Accent 2"/>
+  <w:LsdException Locked="false" Priority="66" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 2 Accent 2"/>
+  <w:LsdException Locked="false" Priority="67" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 1 Accent 2"/>
+  <w:LsdException Locked="false" Priority="68" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 2 Accent 2"/>
+  <w:LsdException Locked="false" Priority="69" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 3 Accent 2"/>
+  <w:LsdException Locked="false" Priority="70" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Dark List Accent 2"/>
+  <w:LsdException Locked="false" Priority="71" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Shading Accent 2"/>
+  <w:LsdException Locked="false" Priority="72" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful List Accent 2"/>
+  <w:LsdException Locked="false" Priority="73" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Grid Accent 2"/>
+  <w:LsdException Locked="false" Priority="60" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Shading Accent 3"/>
+  <w:LsdException Locked="false" Priority="61" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light List Accent 3"/>
+  <w:LsdException Locked="false" Priority="62" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Grid Accent 3"/>
+  <w:LsdException Locked="false" Priority="63" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 1 Accent 3"/>
+  <w:LsdException Locked="false" Priority="64" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 2 Accent 3"/>
+  <w:LsdException Locked="false" Priority="65" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 1 Accent 3"/>
+  <w:LsdException Locked="false" Priority="66" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 2 Accent 3"/>
+  <w:LsdException Locked="false" Priority="67" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 1 Accent 3"/>
+  <w:LsdException Locked="false" Priority="68" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 2 Accent 3"/>
+  <w:LsdException Locked="false" Priority="69" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 3 Accent 3"/>
+  <w:LsdException Locked="false" Priority="70" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Dark List Accent 3"/>
+  <w:LsdException Locked="false" Priority="71" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Shading Accent 3"/>
+  <w:LsdException Locked="false" Priority="72" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful List Accent 3"/>
+  <w:LsdException Locked="false" Priority="73" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Grid Accent 3"/>
+  <w:LsdException Locked="false" Priority="60" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Shading Accent 4"/>
+  <w:LsdException Locked="false" Priority="61" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light List Accent 4"/>
+  <w:LsdException Locked="false" Priority="62" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Grid Accent 4"/>
+  <w:LsdException Locked="false" Priority="63" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 1 Accent 4"/>
+  <w:LsdException Locked="false" Priority="64" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 2 Accent 4"/>
+  <w:LsdException Locked="false" Priority="65" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 1 Accent 4"/>
+  <w:LsdException Locked="false" Priority="66" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 2 Accent 4"/>
+  <w:LsdException Locked="false" Priority="67" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 1 Accent 4"/>
+  <w:LsdException Locked="false" Priority="68" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 2 Accent 4"/>
+  <w:LsdException Locked="false" Priority="69" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 3 Accent 4"/>
+  <w:LsdException Locked="false" Priority="70" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Dark List Accent 4"/>
+  <w:LsdException Locked="false" Priority="71" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Shading Accent 4"/>
+  <w:LsdException Locked="false" Priority="72" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful List Accent 4"/>
+  <w:LsdException Locked="false" Priority="73" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Grid Accent 4"/>
+  <w:LsdException Locked="false" Priority="60" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Shading Accent 5"/>
+  <w:LsdException Locked="false" Priority="61" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light List Accent 5"/>
+  <w:LsdException Locked="false" Priority="62" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Grid Accent 5"/>
+  <w:LsdException Locked="false" Priority="63" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 1 Accent 5"/>
+  <w:LsdException Locked="false" Priority="64" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 2 Accent 5"/>
+  <w:LsdException Locked="false" Priority="65" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 1 Accent 5"/>
+  <w:LsdException Locked="false" Priority="66" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 2 Accent 5"/>
+  <w:LsdException Locked="false" Priority="67" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 1 Accent 5"/>
+  <w:LsdException Locked="false" Priority="68" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 2 Accent 5"/>
+  <w:LsdException Locked="false" Priority="69" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 3 Accent 5"/>
+  <w:LsdException Locked="false" Priority="70" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Dark List Accent 5"/>
+  <w:LsdException Locked="false" Priority="71" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Shading Accent 5"/>
+  <w:LsdException Locked="false" Priority="72" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful List Accent 5"/>
+  <w:LsdException Locked="false" Priority="73" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Grid Accent 5"/>
+  <w:LsdException Locked="false" Priority="60" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Shading Accent 6"/>
+  <w:LsdException Locked="false" Priority="61" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light List Accent 6"/>
+  <w:LsdException Locked="false" Priority="62" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Grid Accent 6"/>
+  <w:LsdException Locked="false" Priority="63" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 1 Accent 6"/>
+  <w:LsdException Locked="false" Priority="64" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 2 Accent 6"/>
+  <w:LsdException Locked="false" Priority="65" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 1 Accent 6"/>
+  <w:LsdException Locked="false" Priority="66" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 2 Accent 6"/>
+  <w:LsdException Locked="false" Priority="67" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 1 Accent 6"/>
+  <w:LsdException Locked="false" Priority="68" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 2 Accent 6"/>
+  <w:LsdException Locked="false" Priority="69" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 3 Accent 6"/>
+  <w:LsdException Locked="false" Priority="70" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Dark List Accent 6"/>
+  <w:LsdException Locked="false" Priority="71" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Shading Accent 6"/>
+  <w:LsdException Locked="false" Priority="72" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful List Accent 6"/>
+  <w:LsdException Locked="false" Priority="73" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Grid Accent 6"/>
+  <w:LsdException Locked="false" Priority="19" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Subtle Emphasis"/>
+  <w:LsdException Locked="false" Priority="21" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Intense Emphasis"/>
+  <w:LsdException Locked="false" Priority="31" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Subtle Reference"/>
+  <w:LsdException Locked="false" Priority="32" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Intense Reference"/>
+  <w:LsdException Locked="false" Priority="33" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Book Title"/>
+  <w:LsdException Locked="false" Priority="37" Name="Bibliography"/>
+  <w:LsdException Locked="false" Priority="39" QFormat="true" Name="TOC Heading"/>
+ </w:LatentStyles>
+</xml><![endif]-->
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;
+	mso-font-charset:2;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:0 268435456 0 0 -2147483648 0;}
+@font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;
+	mso-font-charset:2;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:0 268435456 0 0 -2147483648 0;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:swiss;
+	mso-font-pitch:variable;
+	mso-font-signature:-520092929 1073786111 9 0 415 0;}
+@font-face
+	{font-family:Tahoma;
+	panose-1:2 11 6 4 3 5 4 4 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:swiss;
+	mso-font-pitch:variable;
+	mso-font-signature:-520081665 -1073717157 41 0 66047 0;}
+@font-face
+	{font-family:Consolas;
+	panose-1:2 11 6 9 2 2 4 3 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:modern;
+	mso-font-pitch:fixed;
+	mso-font-signature:-520092929 1073806591 9 0 415 0;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-parent:"";
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;}
+h1
+	{mso-style-priority:9;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-link:"Heading 1 Char";
+	mso-style-next:Normal;
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	mso-pagination:widow-orphan;
+	mso-outline-level:1;
+	background:#4F81BD;
+	mso-background-themecolor:accent1;
+	border:none;
+	mso-border-alt:solid #4F81BD 3.0pt;
+	mso-border-themecolor:accent1;
+	padding:0in;
+	mso-padding-alt:0in 0in 0in 0in;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;
+	color:white;
+	mso-themecolor:background1;
+	text-transform:uppercase;
+	letter-spacing:.75pt;
+	mso-font-kerning:0pt;}
+h2
+	{mso-style-priority:9;
+	mso-style-qformat:yes;
+	mso-style-link:"Heading 2 Char";
+	mso-style-next:Normal;
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	mso-pagination:widow-orphan;
+	mso-outline-level:2;
+	background:#DCE6F2;
+	mso-background-themecolor:accent1;
+	mso-background-themetint:51;
+	border:none;
+	mso-border-alt:solid #DCE6F2 3.0pt;
+	mso-border-themecolor:accent1;
+	mso-border-themetint:51;
+	padding:0in;
+	mso-padding-alt:0in 0in 0in 0in;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;
+	text-transform:uppercase;
+	letter-spacing:.75pt;
+	font-weight:normal;}
+h3
+	{mso-style-priority:9;
+	mso-style-qformat:yes;
+	mso-style-link:"Heading 3 Char";
+	mso-style-next:Normal;
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	mso-pagination:widow-orphan;
+	mso-outline-level:3;
+	border:none;
+	mso-border-top-alt:solid #4F81BD .75pt;
+	mso-border-top-themecolor:accent1;
+	mso-border-left-alt:solid #4F81BD .75pt;
+	mso-border-left-themecolor:accent1;
+	padding:0in;
+	mso-padding-alt:2.0pt 0in 0in 2.0pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;
+	color:#254061;
+	mso-themecolor:accent1;
+	mso-themeshade:127;
+	text-transform:uppercase;
+	letter-spacing:.75pt;
+	font-weight:normal;}
+h4
+	{mso-style-priority:9;
+	mso-style-qformat:yes;
+	mso-style-link:"Heading 4 Char";
+	mso-style-next:Normal;
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	mso-pagination:widow-orphan;
+	mso-outline-level:4;
+	border:none;
+	mso-border-top-alt:dotted #4F81BD .75pt;
+	mso-border-top-themecolor:accent1;
+	mso-border-left-alt:dotted #4F81BD .75pt;
+	mso-border-left-themecolor:accent1;
+	padding:0in;
+	mso-padding-alt:2.0pt 0in 0in 2.0pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;
+	color:#376092;
+	mso-themecolor:accent1;
+	mso-themeshade:191;
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	font-weight:normal;}
+h5
+	{mso-style-priority:9;
+	mso-style-qformat:yes;
+	mso-style-link:"Heading 5 Char";
+	mso-style-next:Normal;
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	mso-pagination:widow-orphan;
+	mso-outline-level:5;
+	border:none;
+	mso-border-bottom-alt:solid #4F81BD .75pt;
+	mso-border-bottom-themecolor:accent1;
+	padding:0in;
+	mso-padding-alt:0in 0in 1.0pt 0in;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;
+	color:#376092;
+	mso-themecolor:accent1;
+	mso-themeshade:191;
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	font-weight:normal;}
+h6
+	{mso-style-noshow:yes;
+	mso-style-priority:9;
+	mso-style-qformat:yes;
+	mso-style-link:"Heading 6 Char";
+	mso-style-next:Normal;
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	mso-pagination:widow-orphan;
+	mso-outline-level:6;
+	border:none;
+	mso-border-bottom-alt:dotted #4F81BD .75pt;
+	mso-border-bottom-themecolor:accent1;
+	padding:0in;
+	mso-padding-alt:0in 0in 1.0pt 0in;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;
+	color:#376092;
+	mso-themecolor:accent1;
+	mso-themeshade:191;
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	font-weight:normal;}
+p.MsoHeading7, li.MsoHeading7, div.MsoHeading7
+	{mso-style-noshow:yes;
+	mso-style-priority:9;
+	mso-style-qformat:yes;
+	mso-style-link:"Heading 7 Char";
+	mso-style-next:Normal;
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	mso-pagination:widow-orphan;
+	mso-outline-level:7;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;
+	color:#376092;
+	mso-themecolor:accent1;
+	mso-themeshade:191;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+p.MsoHeading8, li.MsoHeading8, div.MsoHeading8
+	{mso-style-noshow:yes;
+	mso-style-priority:9;
+	mso-style-qformat:yes;
+	mso-style-link:"Heading 8 Char";
+	mso-style-next:Normal;
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	mso-pagination:widow-orphan;
+	mso-outline-level:8;
+	font-size:9.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+p.MsoHeading9, li.MsoHeading9, div.MsoHeading9
+	{mso-style-noshow:yes;
+	mso-style-priority:9;
+	mso-style-qformat:yes;
+	mso-style-link:"Heading 9 Char";
+	mso-style-next:Normal;
+	margin-top:15.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	mso-pagination:widow-orphan;
+	mso-outline-level:9;
+	font-size:9.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	font-style:italic;
+	mso-bidi-font-style:normal;}
+p.MsoCaption, li.MsoCaption, div.MsoCaption
+	{mso-style-noshow:yes;
+	mso-style-priority:35;
+	mso-style-qformat:yes;
+	mso-style-next:Normal;
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;
+	mso-pagination:widow-orphan;
+	font-size:8.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;
+	color:#376092;
+	mso-themecolor:accent1;
+	mso-themeshade:191;
+	font-weight:bold;}
+p.MsoTitle, li.MsoTitle, div.MsoTitle
+	{mso-style-priority:10;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-link:"Title Char";
+	mso-style-next:Normal;
+	margin-top:.5in;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;
+	mso-pagination:widow-orphan;
+	font-size:26.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;
+	color:#4F81BD;
+	mso-themecolor:accent1;
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	mso-font-kerning:14.0pt;}
+p.MsoSubtitle, li.MsoSubtitle, div.MsoSubtitle
+	{mso-style-priority:11;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-link:"Subtitle Char";
+	mso-style-next:Normal;
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:50.0pt;
+	margin-left:0in;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;
+	color:#595959;
+	mso-themecolor:text1;
+	mso-themetint:166;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:#0033CC;
+	mso-text-animation:none;
+	text-decoration:none;
+	text-underline:none;
+	text-decoration:none;
+	text-line-through:none;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-noshow:yes;
+	mso-style-priority:99;
+	color:purple;
+	mso-themecolor:followedhyperlink;
+	text-decoration:underline;
+	text-underline:single;}
+em
+	{mso-style-priority:20;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-parent:"";
+	color:#254061;
+	mso-themecolor:accent1;
+	mso-themeshade:127;
+	text-transform:uppercase;
+	letter-spacing:.25pt;
+	font-style:normal;}
+p.MsoAcetate, li.MsoAcetate, div.MsoAcetate
+	{mso-style-noshow:yes;
+	mso-style-priority:99;
+	mso-style-link:"Balloon Text Char";
+	margin:0in;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:8.0pt;
+	font-family:"Tahoma","sans-serif";
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;}
+p.MsoNoSpacing, li.MsoNoSpacing, div.MsoNoSpacing
+	{mso-style-priority:1;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-link:"No Spacing Char";
+	margin:0in;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;}
+p.MsoListParagraph, li.MsoListParagraph, div.MsoListParagraph
+	{mso-style-priority:34;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:.5in;
+	mso-add-space:auto;
+	line-height:115%;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;}
+p.MsoListParagraphCxSpFirst, li.MsoListParagraphCxSpFirst, div.MsoListParagraphCxSpFirst
+	{mso-style-priority:34;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-type:export-only;
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:.5in;
+	margin-bottom:.0001pt;
+	mso-add-space:auto;
+	line-height:115%;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;}
+p.MsoListParagraphCxSpMiddle, li.MsoListParagraphCxSpMiddle, div.MsoListParagraphCxSpMiddle
+	{mso-style-priority:34;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-type:export-only;
+	margin-top:0in;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:.5in;
+	margin-bottom:.0001pt;
+	mso-add-space:auto;
+	line-height:115%;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;}
+p.MsoListParagraphCxSpLast, li.MsoListParagraphCxSpLast, div.MsoListParagraphCxSpLast
+	{mso-style-priority:34;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-type:export-only;
+	margin-top:0in;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:.5in;
+	mso-add-space:auto;
+	line-height:115%;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;}
+p.MsoQuote, li.MsoQuote, div.MsoQuote
+	{mso-style-priority:29;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-link:"Quote Char";
+	mso-style-next:Normal;
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;
+	font-style:italic;}
+p.MsoIntenseQuote, li.MsoIntenseQuote, div.MsoIntenseQuote
+	{mso-style-priority:30;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-link:"Intense Quote Char";
+	mso-style-next:Normal;
+	margin-top:10.0pt;
+	margin-right:.8in;
+	margin-bottom:0in;
+	margin-left:.9in;
+	margin-bottom:.0001pt;
+	text-align:justify;
+	text-justify:inter-ideograph;
+	line-height:115%;
+	mso-pagination:widow-orphan;
+	border:none;
+	mso-border-top-alt:solid #4F81BD .5pt;
+	mso-border-top-themecolor:accent1;
+	mso-border-left-alt:solid #4F81BD .5pt;
+	mso-border-left-themecolor:accent1;
+	padding:0in;
+	mso-padding-alt:10.0pt 0in 0in 10.0pt;
+	font-size:10.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;
+	color:#4F81BD;
+	mso-themecolor:accent1;
+	font-style:italic;}
+span.MsoSubtleEmphasis
+	{mso-style-priority:19;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-parent:"";
+	color:#254061;
+	mso-themecolor:accent1;
+	mso-themeshade:127;
+	font-style:italic;}
+span.MsoIntenseEmphasis
+	{mso-style-priority:21;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-parent:"";
+	color:#254061;
+	mso-themecolor:accent1;
+	mso-themeshade:127;
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	font-weight:bold;}
+span.MsoSubtleReference
+	{mso-style-priority:31;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-parent:"";
+	color:#4F81BD;
+	mso-themecolor:accent1;
+	font-weight:bold;}
+span.MsoIntenseReference
+	{mso-style-priority:32;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-parent:"";
+	color:#4F81BD;
+	mso-themecolor:accent1;
+	text-transform:uppercase;
+	font-weight:bold;
+	font-style:italic;}
+span.MsoBookTitle
+	{mso-style-priority:33;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-parent:"";
+	letter-spacing:.45pt;
+	font-weight:bold;
+	font-style:italic;}
+p.MsoTocHeading, li.MsoTocHeading, div.MsoTocHeading
+	{mso-style-noshow:yes;
+	mso-style-priority:39;
+	mso-style-qformat:yes;
+	mso-style-parent:"Heading 1";
+	mso-style-next:Normal;
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:0in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	mso-pagination:widow-orphan;
+	background:#4F81BD;
+	mso-background-themecolor:accent1;
+	border:none;
+	mso-border-alt:solid #4F81BD 3.0pt;
+	mso-border-themecolor:accent1;
+	padding:0in;
+	mso-padding-alt:0in 0in 0in 0in;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;
+	color:white;
+	mso-themecolor:background1;
+	text-transform:uppercase;
+	letter-spacing:.75pt;
+	mso-bidi-language:EN-US;
+	font-weight:bold;}
+span.TitleChar
+	{mso-style-name:"Title Char";
+	mso-style-priority:10;
+	mso-style-unhide:no;
+	mso-style-locked:yes;
+	mso-style-link:Title;
+	mso-ansi-font-size:26.0pt;
+	mso-bidi-font-size:26.0pt;
+	color:#4F81BD;
+	mso-themecolor:accent1;
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	mso-font-kerning:14.0pt;}
+span.SubtitleChar
+	{mso-style-name:"Subtitle Char";
+	mso-style-priority:11;
+	mso-style-unhide:no;
+	mso-style-locked:yes;
+	mso-style-link:Subtitle;
+	mso-ansi-font-size:12.0pt;
+	mso-bidi-font-size:12.0pt;
+	color:#595959;
+	mso-themecolor:text1;
+	mso-themetint:166;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.Heading1Char
+	{mso-style-name:"Heading 1 Char";
+	mso-style-priority:9;
+	mso-style-unhide:no;
+	mso-style-locked:yes;
+	mso-style-link:"Heading 1";
+	color:white;
+	mso-themecolor:background1;
+	text-transform:uppercase;
+	letter-spacing:.75pt;
+	background:#4F81BD;
+	mso-shading-themecolor:accent1;
+	font-weight:bold;}
+span.Heading2Char
+	{mso-style-name:"Heading 2 Char";
+	mso-style-priority:9;
+	mso-style-unhide:no;
+	mso-style-locked:yes;
+	mso-style-link:"Heading 2";
+	text-transform:uppercase;
+	letter-spacing:.75pt;
+	background:#DCE6F2;
+	mso-shading-themecolor:accent1;
+	mso-shading-themetint:51;}
+span.Heading3Char
+	{mso-style-name:"Heading 3 Char";
+	mso-style-priority:9;
+	mso-style-unhide:no;
+	mso-style-locked:yes;
+	mso-style-link:"Heading 3";
+	color:#254061;
+	mso-themecolor:accent1;
+	mso-themeshade:127;
+	text-transform:uppercase;
+	letter-spacing:.75pt;}
+span.Heading4Char
+	{mso-style-name:"Heading 4 Char";
+	mso-style-priority:9;
+	mso-style-unhide:no;
+	mso-style-locked:yes;
+	mso-style-link:"Heading 4";
+	color:#376092;
+	mso-themecolor:accent1;
+	mso-themeshade:191;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.Heading5Char
+	{mso-style-name:"Heading 5 Char";
+	mso-style-priority:9;
+	mso-style-unhide:no;
+	mso-style-locked:yes;
+	mso-style-link:"Heading 5";
+	color:#376092;
+	mso-themecolor:accent1;
+	mso-themeshade:191;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.Heading6Char
+	{mso-style-name:"Heading 6 Char";
+	mso-style-noshow:yes;
+	mso-style-priority:9;
+	mso-style-unhide:no;
+	mso-style-locked:yes;
+	mso-style-link:"Heading 6";
+	color:#376092;
+	mso-themecolor:accent1;
+	mso-themeshade:191;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.Heading7Char
+	{mso-style-name:"Heading 7 Char";
+	mso-style-noshow:yes;
+	mso-style-priority:9;
+	mso-style-unhide:no;
+	mso-style-locked:yes;
+	mso-style-link:"Heading 7";
+	color:#376092;
+	mso-themecolor:accent1;
+	mso-themeshade:191;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.Heading8Char
+	{mso-style-name:"Heading 8 Char";
+	mso-style-noshow:yes;
+	mso-style-priority:9;
+	mso-style-unhide:no;
+	mso-style-locked:yes;
+	mso-style-link:"Heading 8";
+	mso-ansi-font-size:9.0pt;
+	mso-bidi-font-size:9.0pt;
+	text-transform:uppercase;
+	letter-spacing:.5pt;}
+span.Heading9Char
+	{mso-style-name:"Heading 9 Char";
+	mso-style-noshow:yes;
+	mso-style-priority:9;
+	mso-style-unhide:no;
+	mso-style-locked:yes;
+	mso-style-link:"Heading 9";
+	mso-ansi-font-size:9.0pt;
+	mso-bidi-font-size:9.0pt;
+	text-transform:uppercase;
+	letter-spacing:.5pt;
+	font-style:italic;
+	mso-bidi-font-style:normal;}
+span.NoSpacingChar
+	{mso-style-name:"No Spacing Char";
+	mso-style-priority:1;
+	mso-style-unhide:no;
+	mso-style-locked:yes;
+	mso-style-link:"No Spacing";
+	mso-ansi-font-size:10.0pt;
+	mso-bidi-font-size:10.0pt;}
+span.QuoteChar
+	{mso-style-name:"Quote Char";
+	mso-style-priority:29;
+	mso-style-unhide:no;
+	mso-style-locked:yes;
+	mso-style-link:Quote;
+	mso-ansi-font-size:10.0pt;
+	mso-bidi-font-size:10.0pt;
+	font-style:italic;}
+span.IntenseQuoteChar
+	{mso-style-name:"Intense Quote Char";
+	mso-style-priority:30;
+	mso-style-unhide:no;
+	mso-style-locked:yes;
+	mso-style-link:"Intense Quote";
+	mso-ansi-font-size:10.0pt;
+	mso-bidi-font-size:10.0pt;
+	color:#4F81BD;
+	mso-themecolor:accent1;
+	font-style:italic;}
+span.BalloonTextChar
+	{mso-style-name:"Balloon Text Char";
+	mso-style-noshow:yes;
+	mso-style-priority:99;
+	mso-style-unhide:no;
+	mso-style-locked:yes;
+	mso-style-link:"Balloon Text";
+	mso-ansi-font-size:8.0pt;
+	mso-bidi-font-size:8.0pt;
+	font-family:"Tahoma","sans-serif";
+	mso-ascii-font-family:Tahoma;
+	mso-hansi-font-family:Tahoma;
+	mso-bidi-font-family:Tahoma;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	mso-default-props:yes;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;}
+.MsoPapDefault
+	{mso-style-type:export-only;
+	margin-top:10.0pt;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;
+	mso-header-margin:.5in;
+	mso-footer-margin:.5in;
+	mso-paper-source:0;}
+div.WordSection1
+	{page:WordSection1;}
+ /* List Definitions */
+ @list l0
+	{mso-list-id:17395927;
+	mso-list-type:hybrid;
+	mso-list-template-ids:1964935072 67698689 67698691 67698693 67698689 67698691 67698693 67698689 67698691 67698693;}
+@list l0:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l0:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l0:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l0:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l0:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l0:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l0:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l0:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l0:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l1
+	{mso-list-id:559748952;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-2004957454 67698689 67698691 67698693 67698689 67698691 67698693 67698689 67698691 67698693;}
+@list l1:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l1:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l1:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l1:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l1:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l1:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l1:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l1:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l1:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l2
+	{mso-list-id:612636186;
+	mso-list-type:hybrid;
+	mso-list-template-ids:465338326 67698689 67698691 67698693 67698689 67698691 67698693 67698689 67698691 67698693;}
+@list l2:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l2:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l2:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l2:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l2:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l2:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l2:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l2:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l2:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l3
+	{mso-list-id:626277783;
+	mso-list-type:hybrid;
+	mso-list-template-ids:1539093920 67698689 67698691 67698693 67698689 67698691 67698693 67698689 67698691 67698693;}
+@list l3:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l3:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l3:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l3:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l3:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l3:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l3:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l3:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l3:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l4
+	{mso-list-id:666909967;
+	mso-list-type:hybrid;
+	mso-list-template-ids:741772008 67698689 67698691 67698693 67698689 67698691 67698693 67698689 67698691 67698693;}
+@list l4:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l4:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l4:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l4:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l4:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l4:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l4:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l4:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l4:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l5
+	{mso-list-id:1374815875;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-389496802 67698689 67698691 67698693 67698689 67698691 67698693 67698689 67698691 67698693;}
+@list l5:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:38.4pt;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l5:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:74.4pt;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l5:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:110.4pt;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l5:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:146.4pt;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l5:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:182.4pt;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l5:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:218.4pt;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l5:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:254.4pt;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l5:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:290.4pt;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l5:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:326.4pt;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l6
+	{mso-list-id:1528910977;
+	mso-list-type:hybrid;
+	mso-list-template-ids:1223095714 67698689 67698691 67698693 67698689 67698691 67698693 67698689 67698691 67698693;}
+@list l6:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l6:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l6:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l6:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l6:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l6:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l6:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l6:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l6:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l7
+	{mso-list-id:1572236250;
+	mso-list-type:hybrid;
+	mso-list-template-ids:410042066 438874182 67698691 67698693 67698689 67698691 67698693 67698689 67698691 67698693;}
+@list l7:level1
+	{mso-level-start-at:0;
+	mso-level-number-format:bullet;
+	mso-level-text:-;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:20.25pt;
+	text-indent:-.25in;
+	font-family:"Calibri","sans-serif";
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;}
+@list l7:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:56.25pt;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l7:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:92.25pt;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l7:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:128.25pt;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l7:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:164.25pt;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l7:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:200.25pt;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l7:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:236.25pt;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l7:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:272.25pt;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l7:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	margin-left:308.25pt;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l8
+	{mso-list-id:1585652403;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-901593700 67698689 67698691 67698693 67698689 67698691 67698693 67698689 67698691 67698693;}
+@list l8:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l8:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l8:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l8:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l8:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l8:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l8:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l8:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l8:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l9
+	{mso-list-id:1644962535;
+	mso-list-type:hybrid;
+	mso-list-template-ids:1521905846 67698689 67698691 67698693 67698689 67698691 67698693 67698689 67698691 67698693;}
+@list l9:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l9:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l9:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l9:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l9:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l9:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l9:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l9:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l9:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l10
+	{mso-list-id:1970553768;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-1696530758 67698689 67698691 67698693 67698689 67698691 67698693 67698689 67698691 67698693;}
+@list l10:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l10:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l10:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l10:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l10:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l10:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l10:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l10:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l10:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l11
+	{mso-list-id:2123109596;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-937424708 67698689 67698691 67698693 67698689 67698691 67698693 67698689 67698691 67698693;}
+@list l11:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l11:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l11:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l11:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l11:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l11:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+@list l11:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Symbol;}
+@list l11:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:"Courier New";}
+@list l11:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	font-family:Wingdings;}
+ol
+	{margin-bottom:0in;}
+ul
+	{margin-bottom:0in;}
+-->
+</style>
+<!--[if gte mso 10]>
+<style>
+ /* Style Definitions */
+ table.MsoNormalTable
+	{mso-style-name:"Table Normal";
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-noshow:yes;
+	mso-style-priority:99;
+	mso-style-parent:"";
+	mso-padding-alt:0in 5.4pt 0in 5.4pt;
+	mso-para-margin-top:10.0pt;
+	mso-para-margin-right:0in;
+	mso-para-margin-bottom:10.0pt;
+	mso-para-margin-left:0in;
+	line-height:115%;
+	mso-pagination:widow-orphan;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;}
+table.MsoTableGrid
+	{mso-style-name:"Table Grid";
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-priority:59;
+	mso-style-unhide:no;
+	border:solid windowtext 1.0pt;
+	mso-border-alt:solid windowtext .5pt;
+	mso-padding-alt:0in 5.4pt 0in 5.4pt;
+	mso-border-insideh:.5pt solid windowtext;
+	mso-border-insidev:.5pt solid windowtext;
+	mso-para-margin:0in;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;}
+table.MsoTableMediumShading1Accent1
+	{mso-style-name:"Medium Shading 1 - Accent 1";
+	mso-tstyle-rowband-size:1;
+	mso-tstyle-colband-size:1;
+	mso-style-priority:63;
+	mso-style-unhide:no;
+	border:solid #7BA1CE 1.0pt;
+	mso-border-themecolor:accent1;
+	mso-border-themetint:191;
+	mso-padding-alt:0in 5.4pt 0in 5.4pt;
+	mso-border-insideh:1.0pt solid #7BA1CE;
+	mso-border-insideh-themecolor:accent1;
+	mso-border-insideh-themetint:191;
+	mso-para-margin:0in;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;}
+table.MsoTableMediumShading1Accent1FirstRow
+	{mso-style-name:"Medium Shading 1 - Accent 1";
+	mso-table-condition:first-row;
+	mso-style-priority:63;
+	mso-style-unhide:no;
+	mso-tstyle-shading:#4F81BD;
+	mso-tstyle-shading-themecolor:accent1;
+	mso-tstyle-border-top:1.0pt solid #7BA1CE;
+	mso-tstyle-border-top-themecolor:accent1;
+	mso-tstyle-border-top-themetint:191;
+	mso-tstyle-border-left:1.0pt solid #7BA1CE;
+	mso-tstyle-border-left-themecolor:accent1;
+	mso-tstyle-border-left-themetint:191;
+	mso-tstyle-border-bottom:1.0pt solid #7BA1CE;
+	mso-tstyle-border-bottom-themecolor:accent1;
+	mso-tstyle-border-bottom-themetint:191;
+	mso-tstyle-border-right:1.0pt solid #7BA1CE;
+	mso-tstyle-border-right-themecolor:accent1;
+	mso-tstyle-border-right-themetint:191;
+	mso-tstyle-border-insideh:cell-none;
+	mso-tstyle-border-insidev:cell-none;
+	mso-para-margin-top:0in;
+	mso-para-margin-bottom:0in;
+	mso-para-margin-bottom:.0001pt;
+	line-height:normal;
+	color:white;
+	mso-themecolor:background1;
+	mso-ansi-font-weight:bold;
+	mso-bidi-font-weight:bold;}
+table.MsoTableMediumShading1Accent1LastRow
+	{mso-style-name:"Medium Shading 1 - Accent 1";
+	mso-table-condition:last-row;
+	mso-style-priority:63;
+	mso-style-unhide:no;
+	mso-tstyle-border-top:2.25pt double #7BA1CE;
+	mso-tstyle-border-top-themecolor:accent1;
+	mso-tstyle-border-top-themetint:191;
+	mso-tstyle-border-left:1.0pt solid #7BA1CE;
+	mso-tstyle-border-left-themecolor:accent1;
+	mso-tstyle-border-left-themetint:191;
+	mso-tstyle-border-bottom:1.0pt solid #7BA1CE;
+	mso-tstyle-border-bottom-themecolor:accent1;
+	mso-tstyle-border-bottom-themetint:191;
+	mso-tstyle-border-right:1.0pt solid #7BA1CE;
+	mso-tstyle-border-right-themecolor:accent1;
+	mso-tstyle-border-right-themetint:191;
+	mso-tstyle-border-insideh:cell-none;
+	mso-tstyle-border-insidev:cell-none;
+	mso-para-margin-top:0in;
+	mso-para-margin-bottom:0in;
+	mso-para-margin-bottom:.0001pt;
+	line-height:normal;
+	mso-ansi-font-weight:bold;
+	mso-bidi-font-weight:bold;}
+table.MsoTableMediumShading1Accent1FirstCol
+	{mso-style-name:"Medium Shading 1 - Accent 1";
+	mso-table-condition:first-column;
+	mso-style-priority:63;
+	mso-style-unhide:no;
+	mso-ansi-font-weight:bold;
+	mso-bidi-font-weight:bold;}
+table.MsoTableMediumShading1Accent1LastCol
+	{mso-style-name:"Medium Shading 1 - Accent 1";
+	mso-table-condition:last-column;
+	mso-style-priority:63;
+	mso-style-unhide:no;
+	mso-ansi-font-weight:bold;
+	mso-bidi-font-weight:bold;}
+table.MsoTableMediumShading1Accent1OddColumn
+	{mso-style-name:"Medium Shading 1 - Accent 1";
+	mso-table-condition:odd-column;
+	mso-style-priority:63;
+	mso-style-unhide:no;
+	mso-tstyle-shading:#D3E0EF;
+	mso-tstyle-shading-themecolor:accent1;
+	mso-tstyle-shading-themetint:63;}
+table.MsoTableMediumShading1Accent1OddRow
+	{mso-style-name:"Medium Shading 1 - Accent 1";
+	mso-table-condition:odd-row;
+	mso-style-priority:63;
+	mso-style-unhide:no;
+	mso-tstyle-shading:#D3E0EF;
+	mso-tstyle-shading-themecolor:accent1;
+	mso-tstyle-shading-themetint:63;
+	mso-tstyle-border-insideh:cell-none;
+	mso-tstyle-border-insidev:cell-none;}
+table.MsoTableMediumShading1Accent1EvenRow
+	{mso-style-name:"Medium Shading 1 - Accent 1";
+	mso-table-condition:even-row;
+	mso-style-priority:63;
+	mso-style-unhide:no;
+	mso-tstyle-border-insideh:cell-none;
+	mso-tstyle-border-insidev:cell-none;}
+table.MediumGrid11
+	{mso-style-name:"Medium Grid 11";
+	mso-tstyle-rowband-size:1;
+	mso-tstyle-colband-size:1;
+	mso-style-priority:67;
+	mso-style-unhide:no;
+	border:solid #404040 1.0pt;
+	mso-border-themecolor:text1;
+	mso-border-themetint:191;
+	mso-padding-alt:0in 5.4pt 0in 5.4pt;
+	mso-border-insideh:1.0pt solid #404040;
+	mso-border-insideh-themecolor:text1;
+	mso-border-insideh-themetint:191;
+	mso-border-insidev:1.0pt solid #404040;
+	mso-border-insidev-themecolor:text1;
+	mso-border-insidev-themetint:191;
+	mso-tstyle-shading:#BFBFBF;
+	mso-tstyle-shading-themecolor:text1;
+	mso-tstyle-shading-themetint:63;
+	mso-para-margin:0in;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";
+	mso-ascii-font-family:Calibri;
+	mso-ascii-theme-font:minor-latin;
+	mso-hansi-font-family:Calibri;
+	mso-hansi-theme-font:minor-latin;
+	mso-bidi-font-family:"Times New Roman";
+	mso-bidi-theme-font:minor-bidi;}
+table.MediumGrid11FirstRow
+	{mso-style-name:"Medium Grid 11";
+	mso-table-condition:first-row;
+	mso-style-priority:67;
+	mso-style-unhide:no;
+	mso-ansi-font-weight:bold;
+	mso-bidi-font-weight:bold;}
+table.MediumGrid11LastRow
+	{mso-style-name:"Medium Grid 11";
+	mso-table-condition:last-row;
+	mso-style-priority:67;
+	mso-style-unhide:no;
+	mso-tstyle-border-top:2.25pt solid #404040;
+	mso-tstyle-border-top-themecolor:text1;
+	mso-tstyle-border-top-themetint:191;
+	mso-ansi-font-weight:bold;
+	mso-bidi-font-weight:bold;}
+table.MediumGrid11FirstCol
+	{mso-style-name:"Medium Grid 11";
+	mso-table-condition:first-column;
+	mso-style-priority:67;
+	mso-style-unhide:no;
+	mso-ansi-font-weight:bold;
+	mso-bidi-font-weight:bold;}
+table.MediumGrid11LastCol
+	{mso-style-name:"Medium Grid 11";
+	mso-table-condition:last-column;
+	mso-style-priority:67;
+	mso-style-unhide:no;
+	mso-ansi-font-weight:bold;
+	mso-bidi-font-weight:bold;}
+table.MediumGrid11OddColumn
+	{mso-style-name:"Medium Grid 11";
+	mso-table-condition:odd-column;
+	mso-style-priority:67;
+	mso-style-unhide:no;
+	mso-tstyle-shading:gray;
+	mso-tstyle-shading-themecolor:text1;
+	mso-tstyle-shading-themetint:127;}
+table.MediumGrid11OddRow
+	{mso-style-name:"Medium Grid 11";
+	mso-table-condition:odd-row;
+	mso-style-priority:67;
+	mso-style-unhide:no;
+	mso-tstyle-shading:gray;
+	mso-tstyle-shading-themecolor:text1;
+	mso-tstyle-shading-themetint:127;}
+</style>
+<![endif]--><!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext="edit" spidmax="1026"/>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext="edit">
+  <o:idmap v:ext="edit" data="1"/>
+ </o:shapelayout></xml><![endif]-->
+</head>
+
+<body lang=EN-US link="#0033CC" vlink=purple style='tab-interval:.5in'>
+
+<div class=WordSection1>
+
+<p class=MsoTitle>Windows API Code Pack <span class=SubtitleChar><span
+style='font-size:12.0pt;line-height:115%;text-transform:none'>v1.1 Release
+Notes<o:p></o:p></span></span></p>
+
+<div style='mso-element:para-border-div;border:solid #4F81BD 3.0pt;mso-border-themecolor:
+accent1;padding:0in 0in 0in 0in;background:#4F81BD;mso-background-themecolor:
+accent1'>
+
+<h1>Release Overview</h1>
+
+</div>
+
+<p class=MsoNormal>The major changes v1.1 of the Windows API Code Pack includes:</p>
+
+<p class=MsoListParagraphCxSpFirst style='text-indent:-.25in;mso-list:l6 level1 lfo5'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>Code clean-up</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;mso-add-space:
+auto;text-indent:-.25in;mso-list:l6 level2 lfo5'><![if !supportLists]><span
+style='font-family:"Courier New";mso-fareast-font-family:"Courier New"'><span
+style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>Addressed <i style='mso-bidi-font-style:normal'>many</i>
+FxCop violations and PREfast warnings</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;mso-add-space:
+auto;text-indent:-.25in;mso-list:l6 level2 lfo5'><![if !supportLists]><span
+style='font-family:"Courier New";mso-fareast-font-family:"Courier New"'><span
+style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>Various spot-fixes<span
+style='mso-spacerun:yes'>  </span>for improved stability</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;mso-add-space:
+auto;text-indent:-.25in;mso-list:l6 level2 lfo5'><![if !supportLists]><span
+style='font-family:"Courier New";mso-fareast-font-family:"Courier New"'><span
+style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>Added String localization preparation</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in;mso-list:l6 level1 lfo5'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>Bug Fixes within the Code Pack and Samples</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in;mso-list:l6 level1 lfo5'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>New Features</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;mso-add-space:
+auto;text-indent:-.25in;mso-list:l6 level2 lfo5'><![if !supportLists]><span
+style='font-family:"Courier New";mso-fareast-font-family:"Courier New"'><span
+style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>PropVariant (Re-designed)</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;mso-add-space:
+auto;text-indent:-.25in;mso-list:l6 level2 lfo5'><![if !supportLists]><span
+style='font-family:"Courier New";mso-fareast-font-family:"Courier New"'><span
+style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>Thumbnail Handlers</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;mso-add-space:
+auto;text-indent:-.25in;mso-list:l6 level2 lfo5'><![if !supportLists]><span
+style='font-family:"Courier New";mso-fareast-font-family:"Courier New"'><span
+style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>Preview Handlers</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;mso-add-space:
+auto;text-indent:-.25in;mso-list:l6 level2 lfo5'><![if !supportLists]><span
+style='font-family:"Courier New";mso-fareast-font-family:"Courier New"'><span
+style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>ShellObjectWatcher</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in;mso-list:l6 level1 lfo5'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>New Demos and Sample Applications</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in;mso-list:l6 level1 lfo5'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>Visual Studio 2010 Compliance</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in;mso-list:l6 level1 lfo5'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>xUnit test coverage</p>
+
+<p class=MsoListParagraphCxSpLast style='text-indent:-.25in;mso-list:l6 level1 lfo5'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>Signed assemblies</p>
+
+<div style='mso-element:para-border-div;border:solid #4F81BD 3.0pt;mso-border-themecolor:
+accent1;padding:0in 0in 0in 0in;background:#4F81BD;mso-background-themecolor:
+accent1'>
+
+<h1>Release Changes</h1>
+
+</div>
+
+<div style='mso-element:para-border-div;border:solid #DCE6F2 3.0pt;mso-border-themecolor:
+accent1;mso-border-themetint:51;padding:0in 0in 0in 0in;background:#DCE6F2;
+mso-background-themecolor:accent1;mso-background-themetint:51'>
+
+<h2>Code Clean-up</h2>
+
+</div>
+
+<p class=MsoNormal>This release the code underwent a review process to assess
+how well the project adhered to Microsoft’s design guidelines for class
+libraries.<span style='mso-spacerun:yes'>  </span>To address the discovered issues
+we have corrected a large number of outstanding FxCop and PREfast warnings in the
+codebase.<span style='mso-spacerun:yes'>  </span>Many of these corrections have
+resulted in API changes that may prevent existing applications from using the
+new code base without upgrading.<span style='mso-spacerun:yes'>   </span>A
+complete list of these changes can be found in the “API Changes” documents.</p>
+
+<p class=MsoNormal><a
+href="http://msdn.microsoft.com/en-us/library/bb429476(VS.80).aspx"><span
+style='mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin'>FxCop</span></a><span
+style='mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black'>
+is an application that analyzes managed code assemblies for potential design,
+localization, performance, and security improvements. We addressed all of the
+FxCop violations in the release.<o:p></o:p></span></p>
+
+<p class=MsoNormal><a
+href="http://msdn.microsoft.com/en-us/library/aa448765.aspx"><span
+style='mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin'>PREfast</span></a><span
+style='mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin;color:black'>
+is a static analysis tool that identifies defects in C/C++ </span><span
+style='mso-bidi-font-family:Calibri;mso-bidi-theme-font:minor-latin'>code that
+can detect certain kinds of source code errors that are not easily found by the
+typical compiler or by conventional testing. PREfast can be used to detect
+access to misused memory allocations, compliment with specifications, possible
+argument-type mismatches, and more. In this release we addressed all of the
+PREfast warnings in our DirectX Project.<span style='color:black'><o:p></o:p></span></span></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<div style='mso-element:para-border-div;border:solid #DCE6F2 3.0pt;mso-border-themecolor:
+accent1;mso-border-themetint:51;padding:0in 0in 0in 0in;background:#DCE6F2;
+mso-background-themecolor:accent1;mso-background-themetint:51'>
+
+<h2>Bugs Fixed</h2>
+
+</div>
+
+<p class=MsoNormal>This release contains many bug fixes. Below are some of the
+more significant ones.</p>
+
+<div style='mso-element:para-border-div;border-top:solid #4F81BD 1.0pt;
+mso-border-top-themecolor:accent1;border-left:solid #4F81BD 1.0pt;mso-border-left-themecolor:
+accent1;border-bottom:none;border-right:none;mso-border-top-alt:solid #4F81BD .75pt;
+mso-border-top-themecolor:accent1;mso-border-left-alt:solid #4F81BD .75pt;
+mso-border-left-themecolor:accent1;padding:2.0pt 0in 0in 2.0pt'>
+
+<h3>ALL</h3>
+
+</div>
+
+<p class=MsoListParagraph style='text-indent:-.25in;mso-list:l2 level1 lfo12'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>Properties should not be write-only</p>
+
+<div style='mso-element:para-border-div;border-top:solid #4F81BD 1.0pt;
+mso-border-top-themecolor:accent1;border-left:solid #4F81BD 1.0pt;mso-border-left-themecolor:
+accent1;border-bottom:none;border-right:none;mso-border-top-alt:solid #4F81BD .75pt;
+mso-border-top-themecolor:accent1;mso-border-left-alt:solid #4F81BD .75pt;
+mso-border-left-themecolor:accent1;padding:2.0pt 0in 0in 2.0pt'>
+
+<h3>Core</h3>
+
+</div>
+
+<p class=MsoListParagraphCxSpFirst style='text-indent:-.25in;mso-list:l9 level1 lfo2'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>BatteryState.EstimatedTimeRemaining returns an
+unexpected value when the device is plugged in.</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in;mso-list:l9 level1 lfo2'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>BatteryState.DischargeRate is named incorrectly
+and returns an unexpected negative value.</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in;mso-list:l9 level1 lfo2'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>PropVariant should not be a struct</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in;mso-list:l9 level1 lfo2'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>PropVariant should support float[] and decimal[]
+datatypes</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in;mso-list:l9 level1 lfo2'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>PropVariant.<span style='color:black'>
+CreatePropVariantFromVectorElement copies data twice (fixed with the re-design)</span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in;mso-list:l9 level1 lfo2'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>PowerManager should expose a way to set the
+thread’s execution-state and inform the system that an app is in use</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in;mso-list:l9 level1 lfo2'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>TaskDialogCommandLink.ToString() returns extra
+line breaks</p>
+
+<p class=MsoListParagraphCxSpLast style='text-indent:-.25in;mso-list:l9 level1 lfo2'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>TaskDialog doesn’t Dispose correctly and throws
+a NullReferenceException</p>
+
+<div style='mso-element:para-border-div;border-top:solid #4F81BD 1.0pt;
+mso-border-top-themecolor:accent1;border-left:solid #4F81BD 1.0pt;mso-border-left-themecolor:
+accent1;border-bottom:none;border-right:none;mso-border-top-alt:solid #4F81BD .75pt;
+mso-border-top-themecolor:accent1;mso-border-left-alt:solid #4F81BD .75pt;
+mso-border-left-themecolor:accent1;padding:2.0pt 0in 0in 2.0pt'>
+
+<h3>Shell</h3>
+
+</div>
+
+<p class=MsoListParagraphCxSpFirst style='text-indent:-.25in;mso-list:l3 level1 lfo1'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>ExplorerBrowser throws an unwrapped COM
+Exception when navigating quickly</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in;mso-list:l3 level1 lfo1'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>ProgressBarStateSettings class is never used
+(removed).</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in;mso-list:l3 level1 lfo1'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>TabbedThumbnail leaks memory</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in;mso-list:l3 level1 lfo1'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>WinForms ExplorerBrowserthrows an unwrapped COM
+Exception when canceling the first navigation</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in;mso-list:l3 level1 lfo1'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>ShellObjectCollection throws a
+NullReferenceException when using IEnumberable extensions and the content
+variable is null or the Count is zero.</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in;mso-list:l3 level1 lfo1'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>IJumpListTask should not be an empty interface</p>
+
+<p class=MsoListParagraphCxSpLast style='text-indent:-.25in;mso-list:l3 level1 lfo1'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>ShellFile from a NonFileSystemFolder does not
+have the same properties as a ShellFileSystemFolder</p>
+
+<div style='mso-element:para-border-div;border-top:solid #4F81BD 1.0pt;
+mso-border-top-themecolor:accent1;border-left:solid #4F81BD 1.0pt;mso-border-left-themecolor:
+accent1;border-bottom:none;border-right:none;mso-border-top-alt:solid #4F81BD .75pt;
+mso-border-top-themecolor:accent1;mso-border-left-alt:solid #4F81BD .75pt;
+mso-border-left-themecolor:accent1;padding:2.0pt 0in 0in 2.0pt'>
+
+<h3>Direct X</h3>
+
+</div>
+
+<p class=MsoListParagraphCxSpFirst style='margin-left:38.4pt;mso-add-space:
+auto;text-indent:-.25in;mso-list:l5 level1 lfo10'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:black'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='color:black'>OpenSharedResource
+functions should support DirectUnknown<o:p></o:p></span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:38.4pt;mso-add-space:
+auto;text-indent:-.25in;mso-list:l5 level1 lfo10'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:black'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='color:black'>CreateTexture
+functions should have a variable-length arguments<o:p></o:p></span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:38.4pt;mso-add-space:
+auto;text-indent:-.25in;mso-list:l5 level1 lfo10'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:black'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='color:black'>DeviceContext.Map
+function should return a MappedSubresource instead of accepting one as an
+argument<o:p></o:p></span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:38.4pt;mso-add-space:
+auto;text-indent:-.25in;mso-list:l5 level1 lfo10'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:black'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>BitmapSource.CopyPixels crashes if the bitmap’s
+width is greater than its height<span style='color:black'><o:p></o:p></span></p>
+
+<p class=MsoListParagraphCxSpLast style='margin-left:38.4pt;mso-add-space:auto;
+text-indent:-.25in;mso-list:l5 level1 lfo10'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol;color:black'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>Improve support for the creation of D3D10
+StateBlocks<span style='color:black'><o:p></o:p></span></p>
+
+<div style='mso-element:para-border-div;border-top:solid #4F81BD 1.0pt;
+mso-border-top-themecolor:accent1;border-left:solid #4F81BD 1.0pt;mso-border-left-themecolor:
+accent1;border-bottom:none;border-right:none;mso-border-top-alt:solid #4F81BD .75pt;
+mso-border-top-themecolor:accent1;mso-border-left-alt:solid #4F81BD .75pt;
+mso-border-left-themecolor:accent1;padding:2.0pt 0in 0in 2.0pt'>
+
+<h3>SAMPLES</h3>
+
+</div>
+
+<p class=MsoNormal>All of the samples have been reviewed – many have undergone
+stability and performance improvements.</p>
+
+<div style='mso-element:para-border-div;border:solid #DCE6F2 3.0pt;mso-border-themecolor:
+accent1;mso-border-themetint:51;padding:0in 0in 0in 0in;background:#DCE6F2;
+mso-background-themecolor:accent1;mso-background-themetint:51'>
+
+<h2>Features Added</h2>
+
+</div>
+
+<div style='mso-element:para-border-div;border-top:solid #4F81BD 1.0pt;
+mso-border-top-themecolor:accent1;border-left:solid #4F81BD 1.0pt;mso-border-left-themecolor:
+accent1;border-bottom:none;border-right:none;mso-border-top-alt:solid #4F81BD .75pt;
+mso-border-top-themecolor:accent1;mso-border-left-alt:solid #4F81BD .75pt;
+mso-border-left-themecolor:accent1;padding:2.0pt 0in 0in 2.0pt'>
+
+<h3>ALL Projects</h3>
+
+</div>
+
+<p class=MsoNormal>This release has been released such that it will build in
+Visual Studio 2008 and will succeed in converting to run in Visual Studio
+2010.<span style='mso-spacerun:yes'>  </span>The exception to this is the
+ShellExtensions project and Handler Samples project which require .NET 4
+features and can only be built in Visual Studio 2010.</p>
+
+<div style='mso-element:para-border-div;border-top:solid #4F81BD 1.0pt;
+mso-border-top-themecolor:accent1;border-left:solid #4F81BD 1.0pt;mso-border-left-themecolor:
+accent1;border-bottom:none;border-right:none;mso-border-top-alt:solid #4F81BD .75pt;
+mso-border-top-themecolor:accent1;mso-border-left-alt:solid #4F81BD .75pt;
+mso-border-left-themecolor:accent1;padding:2.0pt 0in 0in 2.0pt'>
+
+<h3>Core</h3>
+
+<h4 style='border:none;mso-border-top-alt:solid #4F81BD .75pt;mso-border-top-themecolor:
+accent1;mso-border-left-alt:solid #4F81BD .75pt;mso-border-left-themecolor:
+accent1;padding:0in;mso-padding-alt:2.0pt 0in 0in 2.0pt'>Redesigned PROPVARIANT</h4>
+
+</div>
+
+<p class=MsoNormal>The PropVariant has been completely redesigned. Issues that
+you experienced in the past may no longer be a problem – please see the new
+implementation in the source code. The redesign included changing it from a
+struct to a class, making it immutable and disposable, improving the
+performance of setting and retrieving values,<span style='mso-spacerun:yes'> 
+</span>and greatly increasing its maintainability and flexibility.</p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<div style='mso-element:para-border-div;border-top:solid #4F81BD 1.0pt;
+mso-border-top-themecolor:accent1;border-left:solid #4F81BD 1.0pt;mso-border-left-themecolor:
+accent1;border-bottom:none;border-right:none;mso-border-top-alt:solid #4F81BD .75pt;
+mso-border-top-themecolor:accent1;mso-border-left-alt:solid #4F81BD .75pt;
+mso-border-left-themecolor:accent1;padding:2.0pt 0in 0in 2.0pt'>
+
+<h3>Shell Extensions</h3>
+
+</div>
+
+<p class=MsoNormal>The Shell Extensions project has been added to contain the
+new Shell Extensions added to the API Code Pack. This project only targets .NET
+4.0 and contains features that are designed to facilitate extending the shell.</p>
+
+<div style='mso-element:para-border-div;border-top:solid #4F81BD 1.0pt;
+mso-border-top-themecolor:accent1;border-left:solid #4F81BD 1.0pt;mso-border-left-themecolor:
+accent1;border-bottom:none;border-right:none;mso-border-top-alt:solid #4F81BD .75pt;
+mso-border-top-themecolor:accent1;mso-border-left-alt:solid #4F81BD .75pt;
+mso-border-left-themecolor:accent1;padding:2.0pt 0in 0in 2.0pt'>
+
+<h4 style='border:none;mso-border-top-alt:solid #4F81BD .75pt;mso-border-top-themecolor:
+accent1;mso-border-left-alt:solid #4F81BD .75pt;mso-border-left-themecolor:
+accent1;padding:0in;mso-padding-alt:2.0pt 0in 0in 2.0pt'>File Thumbnail handlers</h4>
+
+</div>
+
+<p class=MsoNormal>The Microsoft.WindowsAPICodePack.ShellExtensions namespace
+now contains APIs to support the development of managed thumbnail handlers.<span
+style='mso-spacerun:yes'>  </span>Thumbnail handlers are shell extensions that allow
+one to specify how the Windows Shell will display a thumbnail for a custom file
+type. The Shell does this by calling your handler with a reference to file whose
+thumbnail is being requested.<span style='mso-spacerun:yes'>  </span>Thumbnail handlers
+can be designed to include adornments (i.e.: drop shadows or photo
+borders),<span style='mso-spacerun:yes'>  </span>overlays (i.e.: icons), and transparency.<span
+style='mso-spacerun:yes'>  </span>Below are a few examples of thumbnails
+generated from a custom file type using managed thumbnail handlers: </p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='mso-no-proof:yes'><!--[if gte vml 1]><v:shapetype id="_x0000_t75"
+ coordsize="21600,21600" o:spt="75" o:preferrelative="t" path="m@4@5l@4@11@9@11@9@5xe"
+ filled="f" stroked="f">
+ <v:stroke joinstyle="miter"/>
+ <v:formulas>
+  <v:f eqn="if lineDrawn pixelLineWidth 0"/>
+  <v:f eqn="sum @0 1 0"/>
+  <v:f eqn="sum 0 0 @1"/>
+  <v:f eqn="prod @2 1 2"/>
+  <v:f eqn="prod @3 21600 pixelWidth"/>
+  <v:f eqn="prod @3 21600 pixelHeight"/>
+  <v:f eqn="sum @0 0 1"/>
+  <v:f eqn="prod @6 1 2"/>
+  <v:f eqn="prod @7 21600 pixelWidth"/>
+  <v:f eqn="sum @8 21600 0"/>
+  <v:f eqn="prod @7 21600 pixelHeight"/>
+  <v:f eqn="sum @10 21600 0"/>
+ </v:formulas>
+ <v:path o:extrusionok="f" gradientshapeok="t" o:connecttype="rect"/>
+ <o:lock v:ext="edit" aspectratio="t"/>
+</v:shapetype><v:shape id="Picture_x0020_3" o:spid="_x0000_i1027" type="#_x0000_t75"
+ style='width:312pt;height:124.5pt;visibility:visible;mso-wrap-style:square'>
+ <v:imagedata src="Windows%20API%20Code%20Pack%20Release%20Notes_files/image001.png"
+  o:title=""/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=416 height=166
+src="Windows%20API%20Code%20Pack%20Release%20Notes_files/image002.jpg" v:shapes="Picture_x0020_3"><![endif]></span></p>
+
+<p class=MsoNormal>To build a custom thumbnail handler:</p>
+
+<p class=MsoListParagraphCxSpFirst style='text-indent:-.25in;mso-list:l1 level1 lfo8'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>Derive your handler from ThumbnailProvider and implement
+at least one of the following initialization interfaces:<span
+style='mso-spacerun:yes'>  </span>IThumbnailFromStream,
+IThumbnailFromShellObject, IThumbnailFromFile. IThumbnailFromStream is highly
+encouraged if possible - initializing with a Steam is explicitly suggested on <a
+href="http://msdn.microsoft.com/en-us/library/cc144114(VS.85).aspx">MSDN</a>.</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;mso-add-space:
+auto;text-indent:-.25in;mso-list:l1 level2 lfo8'><![if !supportLists]><span
+style='font-family:"Courier New";mso-fareast-font-family:"Courier New"'><span
+style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>Implement the ConstructBitmap functions for the
+initialization interfaces you chose and return a Bitmap based on the provided
+shell item and thumbnail size.</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in;mso-list:l1 level1 lfo8'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>Add the required class attributes</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;mso-add-space:
+auto;text-indent:-.25in;mso-list:l1 level2 lfo8'><![if !supportLists]><span
+style='font-family:"Courier New";mso-fareast-font-family:"Courier New"'><span
+style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>ThumbnailProvider Attribute <span
+style='mso-spacerun:yes'> </span>- specifies how the handler should be
+registered</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.5in;mso-add-space:
+auto;text-indent:-.25in;mso-list:l1 level3 lfo8'><![if !supportLists]><span
+style='font-family:Wingdings;mso-fareast-font-family:Wingdings;mso-bidi-font-family:
+Wingdings'><span style='mso-list:Ignore'>§<span style='font:7.0pt "Times New Roman"'>&nbsp;
+</span></span></span><![endif]>Specify a unique name for the handler,
+semicolon-delimited list of supported extensions, <span
+style='mso-spacerun:yes'> </span>adornment, overlay, and cutoff size.</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-top:0in;margin-right:0in;
+margin-bottom:0in;margin-left:1.0in;margin-bottom:.0001pt;mso-add-space:auto;
+text-indent:-.25in;line-height:normal;mso-list:l1 level2 lfo8;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportLists]><span style='font-size:9.5pt;
+font-family:"Courier New";mso-fareast-font-family:"Courier New";color:black'><span
+style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:9.5pt;font-family:Consolas;
+color:black'>[Guid(&quot;XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX&quot;)] </span><span
+style='font-size:9.5pt;font-family:Consolas'>– The </span>GUID under which your
+<span style='color:black'>assembly is registered. This GUID must be unique.</span><span
+style='font-size:9.5pt;font-family:Consolas;color:black'><o:p></o:p></span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;mso-add-space:
+auto;text-indent:-.25in;mso-list:l1 level2 lfo8'><![if !supportLists]><span
+style='font-family:"Courier New";mso-fareast-font-family:"Courier New";
+color:black'><span style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='color:black'>[ComVisible(true)]
+-<span style='mso-spacerun:yes'>  </span>Ensures that your shell extension can
+be registered and is visible by the Shell.<o:p></o:p></span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-top:0in;margin-right:0in;
+margin-bottom:0in;margin-left:1.0in;margin-bottom:.0001pt;mso-add-space:auto;
+text-indent:-.25in;line-height:normal;mso-list:l1 level2 lfo8;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportLists]><span style='font-size:9.5pt;
+font-family:"Courier New";mso-fareast-font-family:"Courier New"'><span
+style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:9.5pt;font-family:Consolas;
+color:black'>[ClassInterface(ClassInterfaceType.None</span><span
+style='font-size:9.5pt;font-family:Consolas'>)] – Required for interoperability<o:p></o:p></span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;mso-add-space:
+auto;text-indent:-.25in;mso-list:l1 level2 lfo8'><![if !supportLists]><span
+style='font-family:"Courier New";mso-fareast-font-family:"Courier New";
+color:black'><span style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='color:black'>[ProgId(&quot;YourHandlers.YourXYZThumbnailHandler&quot;)]
+– Another ID used to register your handler<o:p></o:p></span></p>
+
+<p class=MsoListParagraphCxSpLast style='margin-left:1.0in;mso-add-space:auto'><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal>A managed thumbnail handler can be compiled for AnyCPU but
+must target .NET 4.<span style='mso-spacerun:yes'>  </span>As with all managed
+COM objects, thumbnail handlers must be registered with <a
+href="http://msdn.microsoft.com/en-us/library/tzat5yw6(VS.71).aspx"><u>regasm.exe</u></a>.
+For more information on thumbnail handlers and the available features, see the
+thumbnail handler samples included with this release and the <a
+href="http://msdn.microsoft.com/en-us/library/cc144118(VS.85).aspx"><u>MSDN
+page</u></a> for thumbnail handlers.</p>
+
+<p class=MsoNormal><b style='mso-bidi-font-weight:normal'>Implementation Notes</b>:
+Only 32bpp bitmaps (for thumbnails) support adornments. Additional guidelines for
+development can be found on <a
+href="http://msdn.microsoft.com/en-us/library/cc144115(v=VS.85).aspx">MSDN</a>
+. </p>
+
+<p class=MsoNormal><b style='mso-bidi-font-weight:normal'>Compilation Notes</b>:
+This feature was designed for .NET 4.0 as the new version of the CLR allows
+multiple runtimes in the same process. Information on why using previous
+versions of .NET is highly discouraged can be found <a
+href="http://msdn.microsoft.com/en-us/library/dd758089(v=VS.85).aspx"><u>here</u></a>.
+For more information on why .NET 4 is a safer alternative see this <a
+href="http://msdn.microsoft.com/en-us/magazine/ee819091.aspx"><u>MSDN article</u>.</a><span
+style='mso-spacerun:yes'>  </span>The “What Does In-Process Side-by-Side Mean
+To You?” section discusses shell extensions. <span
+style='mso-spacerun:yes'> </span>This feature cannot be compiled for earlier
+versions of .NET as it uses features specific to .NET 4.</p>
+
+<p class=MsoNormal><b style='mso-bidi-font-weight:normal'>Test Notes</b>: When
+registering &amp; unregistering thumbnail handlers for testing purposes certain
+actions should be taken to ensure that you are observing the actual behavior of
+the thumbnail handler. </p>
+
+<p class=MsoListParagraphCxSpFirst style='text-indent:-.25in;mso-list:l11 level1 lfo7'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>Terminate instances of DllHost.exe (the
+surrogate host for your handler) or Explorer.exe (if opting out of process
+isolation). </p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in;mso-list:l11 level1 lfo7'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>Delete the thumbnail cache files with the Disk
+Cleanup utility included with Windows. See this <a
+href="http://www.tech-recipes.com/rx/4285/windows-7-how-to-reset-the-thumbnail-cache/">article</a>
+for instructions.</p>
+
+<p class=MsoListParagraphCxSpLast style='text-indent:-.25in;mso-list:l11 level1 lfo7'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>Generated thumbnails are cached by Windows. To
+cause a new thumbnail to be generated you can increase the size of the viewed
+thumbnail to a previously unviewed size, manually modify the file such that the
+last modified time is updated on the file, or create a new instance of the
+file.<span style='mso-spacerun:yes'>  </span>Our developers found it extremely
+helpful to write a script which on build-complete would automatically update
+the test files.</p>
+
+<p class=MsoNormal>If all three initialization interfaces are implemented, only
+one will be used according to the circumstances and Shell’s own preset
+priorities for the native interfaces. The prioritized order of access is as
+follows:<span style='mso-spacerun:yes'>  </span>IThumbnailFromStream,
+IThumbnailFromShellObject, IThumbnailFromFile.</p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<div style='mso-element:para-border-div;border-top:solid #4F81BD 1.0pt;
+mso-border-top-themecolor:accent1;border-left:solid #4F81BD 1.0pt;mso-border-left-themecolor:
+accent1;border-bottom:none;border-right:none;mso-border-top-alt:solid #4F81BD .75pt;
+mso-border-top-themecolor:accent1;mso-border-left-alt:solid #4F81BD .75pt;
+mso-border-left-themecolor:accent1;padding:2.0pt 0in 0in 2.0pt'>
+
+<h4 style='border:none;mso-border-top-alt:solid #4F81BD .75pt;mso-border-top-themecolor:
+accent1;mso-border-left-alt:solid #4F81BD .75pt;mso-border-left-themecolor:
+accent1;padding:0in;mso-padding-alt:2.0pt 0in 0in 2.0pt'>File Preview Handlers </h4>
+
+</div>
+
+<p class=MsoNormal>The Microsoft.WindowsAPICodePack.ShellExtensions namespace
+now contains APIs to support the development of managed preview handlers.<span
+style='mso-spacerun:yes'>  </span>Preview handlers are shell extensions that
+allows one to specify how the Windows Shell or Microsoft Outlook will display a
+preview for a custom file type . The Shell does this by calling your handler
+and providing access to the file whose preview is being requested.<span
+style='mso-spacerun:yes'>  </span>Previews can be displayed in explorer’s
+preview pane or Microsoft Outlook.</p>
+
+<p class=MsoNormal>The APIs for implementing a preview handler require that a
+native window handle is supplied to shell.<span style='mso-spacerun:yes'> 
+</span>In this release we provide abstracted implementations for both WPF and
+Winforms as well as providing access to the base class if a more custom
+approach is required. Below are a few examples of previews generated from a
+custom file type using managed preview handlers (WPF on top, WinForms on the
+bottom):</p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape id="Picture_x0020_5"
+ o:spid="_x0000_i1026" type="#_x0000_t75" style='width:404.25pt;height:163.5pt;
+ visibility:visible;mso-wrap-style:square'>
+ <v:imagedata src="Windows%20API%20Code%20Pack%20Release%20Notes_files/image003.png"
+  o:title=""/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=539 height=218
+src="Windows%20API%20Code%20Pack%20Release%20Notes_files/image004.jpg" v:shapes="Picture_x0020_5"><![endif]></span></p>
+
+<p class=MsoNormal align=center style='text-align:center'><span
+style='mso-no-proof:yes'><!--[if gte vml 1]><v:shape id="Picture_x0020_6"
+ o:spid="_x0000_i1025" type="#_x0000_t75" style='width:371.25pt;height:180.75pt;
+ visibility:visible;mso-wrap-style:square'>
+ <v:imagedata src="Windows%20API%20Code%20Pack%20Release%20Notes_files/image005.png"
+  o:title=""/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=495 height=241
+src="Windows%20API%20Code%20Pack%20Release%20Notes_files/image006.jpg" v:shapes="Picture_x0020_6"><![endif]></span></p>
+
+<p class=MsoNormal>To build a custom preview handler:</p>
+
+<p class=MsoListParagraphCxSpFirst style='text-indent:-.25in;mso-list:l1 level1 lfo8'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>Derive your handler from either
+WPFPreviewHandler or WinFormsPreviewHandler and implement at least one of following
+initialization interfaces: IPreviewFromStream, IPreviewFromShellObject,
+IPreviewFromFile. IPreviewFromStream is highly encouraged if possible
+(initializing with a Steam is explicitly suggested on <a
+href="http://msdn.microsoft.com/en-us/library/cc144143(VS.85).aspx#initialization"><u>MSDN</u></a>).</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;mso-add-space:
+auto;text-indent:-.25in;mso-list:l1 level2 lfo8'><![if !supportLists]><span
+style='font-family:"Courier New";mso-fareast-font-family:"Courier New"'><span
+style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>Implement the Load functions for the initialization
+interfaces. Based on the shell item provided to<span style='mso-spacerun:yes'> 
+</span>the called Load function, populate the Control property <span
+style='mso-spacerun:yes'> </span>inherited from WPFPreviewHandler or
+WinFormsPreviewHandler. </p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in;mso-list:l1 level1 lfo8'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>Add the required class attributes</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;mso-add-space:
+auto;text-indent:-.25in;mso-list:l1 level2 lfo8'><![if !supportLists]><span
+style='font-family:"Courier New";mso-fareast-font-family:"Courier New"'><span
+style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>PreviewHandler Attribute<span
+style='mso-spacerun:yes'>  </span>- specifies how the handler should be
+registered</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.5in;mso-add-space:
+auto;text-indent:-.25in;mso-list:l1 level3 lfo8'><![if !supportLists]><span
+style='font-family:Wingdings;mso-fareast-font-family:Wingdings;mso-bidi-font-family:
+Wingdings'><span style='mso-list:Ignore'>§<span style='font:7.0pt "Times New Roman"'>&nbsp;
+</span></span></span><![endif]>Specify the name of the handler, a
+semicolon-delimited list of supported extensions, and a unique AppID (GUID) for
+the <a
+href="http://msdn.microsoft.com/en-us/library/cc144143(v=VS.85).aspx#process_isolation"><u>dedicated
+surrogate host process (prevhost.exe)</u>.</a></p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-top:0in;margin-right:0in;
+margin-bottom:0in;margin-left:1.0in;margin-bottom:.0001pt;mso-add-space:auto;
+text-indent:-.25in;line-height:normal;mso-list:l1 level2 lfo8;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportLists]><span style='font-size:9.5pt;
+font-family:"Courier New";mso-fareast-font-family:"Courier New";color:black'><span
+style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:9.5pt;font-family:Consolas;
+color:black'>[Guid(&quot;XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX&quot;)] –</span><span
+style='font-size:9.5pt;font-family:Consolas'> The </span>GUID under which your <span
+style='color:black'>assembly is registered. This GUID must be unique.</span><span
+style='font-size:9.5pt;font-family:Consolas;color:black'><o:p></o:p></span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;mso-add-space:
+auto;text-indent:-.25in;mso-list:l1 level2 lfo8'><![if !supportLists]><span
+style='font-family:"Courier New";mso-fareast-font-family:"Courier New";
+color:black'><span style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>[ComVisible(true)] - <span
+style='mso-spacerun:yes'> </span>Ensures that your handler can be registered <span
+style='color:black'>and is visible by the Shell.<o:p></o:p></span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-top:0in;margin-right:0in;
+margin-bottom:0in;margin-left:1.0in;margin-bottom:.0001pt;mso-add-space:auto;
+text-indent:-.25in;line-height:normal;mso-list:l1 level2 lfo8;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportLists]><span style='font-size:9.5pt;
+font-family:"Courier New";mso-fareast-font-family:"Courier New";color:black'><span
+style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='font-size:9.5pt;font-family:Consolas;
+color:black'>[ClassInterface(ClassInterfaceType.None)] – Required for
+interoperability<o:p></o:p></span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:1.0in;mso-add-space:
+auto;text-indent:-.25in;mso-list:l1 level2 lfo8'><![if !supportLists]><span
+style='font-family:"Courier New";mso-fareast-font-family:"Courier New";
+color:black'><span style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span style='color:black'>[ProgId(&quot;YourHandlers.YourXYZThumbnailHandler&quot;)]
+– Another ID used to register your handler<o:p></o:p></span></p>
+
+<p class=MsoListParagraphCxSpLast><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal>A managed preview handler can be compiled for AnyCPU<span
+style='mso-spacerun:yes'>  </span>but must target .NET 4.<span
+style='mso-spacerun:yes'>  </span>As with all managed COM objects they must be
+registered with <a
+href="http://msdn.microsoft.com/en-us/library/tzat5yw6(VS.71).aspx"><u>regasm.exe</u></a>.</p>
+
+<p class=MsoNormal><b style='mso-bidi-font-weight:normal'>Implementation Notes</b>:
+Additional guidelines for development can be found on <a
+href="http://msdn.microsoft.com/en-us/library/cc144140(v=VS.85).aspx">MSDN</a>
+. </p>
+
+<p class=MsoNormal><b style='mso-bidi-font-weight:normal'>Compilation Notes</b>:
+This feature was designed for .NET 4.0 as the new version of the CLR allows
+multiple runtimes in the same process. <span style='mso-spacerun:yes'> </span>Information
+on why using previous versions of .NET can be found <a
+href="http://msdn.microsoft.com/en-us/library/dd758089(v=VS.85).aspx"><u>here</u></a>.
+For more information on why .NET 4 is a safer alternative see this <a
+href="http://msdn.microsoft.com/en-us/magazine/ee819091.aspx"><u>MSDN article</u>.</a><span
+style='mso-spacerun:yes'>  </span>The “What Does In-Process Side-by-Side Mean
+To You?” section discusses shell extensions. This feature cannot be compiled
+for earlier versions of .NET as it uses features specific to .NET 4.</p>
+
+<p class=MsoNormal><b style='mso-bidi-font-weight:normal'>Test Notes</b>: When
+registering &amp; unregistering preview handlers for testing purposes certain
+actions should be taken to ensure that you are observing the actual behavior of
+the preview handler. </p>
+
+<p class=MsoListParagraph style='text-indent:-.25in;mso-list:l11 level1 lfo7'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>Terminate instances of Prevhost.exe (the
+surrogate host for your provider) or Explorer.exe (if opting out of process
+isolation). </p>
+
+<p class=MsoNormal>If the file-type is associated with a particular
+application, the adornment specified in your thumbnail handler may be
+overridden and not be shown. If all three initialization interfaces are
+implemented, only one will be used according to the circumstances under which
+the thumbnail is requested and Shell’s own preset priorities for the native interfaces.
+The prioritized order of access is as follows:<span style='mso-spacerun:yes'> 
+</span>IPreviewFromStream, IPreviewFromShellObject, IPreviewFromFile.</p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<div style='mso-element:para-border-div;border-top:solid #4F81BD 1.0pt;
+mso-border-top-themecolor:accent1;border-left:solid #4F81BD 1.0pt;mso-border-left-themecolor:
+accent1;border-bottom:none;border-right:none;mso-border-top-alt:solid #4F81BD .75pt;
+mso-border-top-themecolor:accent1;mso-border-left-alt:solid #4F81BD .75pt;
+mso-border-left-themecolor:accent1;padding:2.0pt 0in 0in 2.0pt'>
+
+<h4 style='border:none;mso-border-top-alt:solid #4F81BD .75pt;mso-border-top-themecolor:
+accent1;mso-border-left-alt:solid #4F81BD .75pt;mso-border-left-themecolor:
+accent1;padding:0in;mso-padding-alt:2.0pt 0in 0in 2.0pt'>Shell Object Watcher</h4>
+
+</div>
+
+<p class=MsoNoSpacing><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNoSpacing>The<span style='mso-spacerun:yes'> 
+</span>Microsoft.WindowsAPICodePack.Shell namespace now contains APIs to watch
+items within the <a
+href="http://msdn.microsoft.com/en-us/library/cc144090(VS.85).aspx#introduction"><span
+style='color:windowtext'>Shell Namespace</span></a> and receive notifications
+when they’re modified. The ShellObjectWatcher class allows an application</p>
+
+<p class=MsoNoSpacing>to subscribe to individual ShellFiles or ShellContainers (including
+virtual folders like network shares and Libraries). The complete list of
+supported notifications can be found <a
+href="http://msdn.microsoft.com/en-us/library/bb762118(VS.85).aspx"><u>here</u></a>.
+</p>
+
+<p class=MsoNoSpacing><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNoSpacing>To register for change notifications on a specified shell
+item:</p>
+
+<p class=MsoNoSpacing style='margin-left:.5in;text-indent:-.25in;mso-list:l10 level1 lfo9'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>Create a new instance of ShellObjectWatcher and
+provide an instance of a ShellObject</p>
+
+<p class=MsoNoSpacing style='margin-left:.5in;text-indent:-.25in;mso-list:l10 level1 lfo9'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>Subscribe to the desired events</p>
+
+<p class=MsoNoSpacing style='margin-left:.5in;text-indent:-.25in;mso-list:l10 level1 lfo9'><![if !supportLists]><span
+style='font-family:Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:
+Symbol'><span style='mso-list:Ignore'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]>Call the Start() method on the
+ShellObjectWatcher instance</p>
+
+<p class=MsoNoSpacing><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNoSpacing>To unsubscribe to notifications call the Stop() method. You
+cannot change which events you’re subscribed<span style='mso-spacerun:yes'> 
+</span>to while the watcher is running. To alter the list of subscribed
+notifications, call the Stop() method, unsubscribe/subscribe to events, then
+call the Start() method.</p>
+
+<p class=MsoNoSpacing><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNoSpacing><b style='mso-bidi-font-weight:normal'>Behavioral Notes</b>:
+<span style='mso-spacerun:yes'> </span>Change notifications are initially
+raised on a separate thread and use the current or default
+SynchronizaionContext to raise events.<span style='mso-spacerun:yes'>  </span>In
+the case of WPF and Windows Forms, these events are marshaled over to the
+thread containing the ShellObjectWatcher.<span style='mso-spacerun:yes'> 
+</span>Console applications<span style='mso-spacerun:yes'>  </span>and other
+types of applications that do not provide a default implementations of a
+SynchronizationContext are treated as free threaded.<span
+style='mso-spacerun:yes'>  </span></p>
+
+<p class=MsoNoSpacing><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNoSpacing>Shell items are watched according to their PIDL (pointer
+to ID list) which is constructed similarly to an item’s fully qualified
+path.<span style='mso-spacerun:yes'>  </span>If a shell item is renamed its
+PIDL will change but the ShellObjectWatcher will continue to watch the original
+PIDL. This behavior must be taken into account as future changes to the renamed
+shell item will not raise notifications. To receive notifications on a renamed
+shell item, create a new ShellObjectWatcher withthe renamed shell item and Stop
+the ShellObjectWatcher created with the shell item prior to the rename. If the
+ShellObjectWatcher created with the shell item (prior to the rename) is <i
+style='mso-bidi-font-style:normal'>not</i> Stopped and the file is reverted to
+its original name, notifications will continue to be raised from that
+ShellObjectWatcher. Similarly, if a another shell item is renamed to match the
+fully qualified path of a watched shell item, the ShellObjectWatcher will raise
+notifications on that renamed shell item despite the fact that the
+ShellObjectWatcher was created with a different shell item.<span
+style='mso-spacerun:yes'>  </span>In summary, the change notification for a
+shell item is solely based on PIDLs and persists to do so regardless of the
+actual shell it is associated with a given PIDL. </p>
+
+<p class=MsoNoSpacing><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNoSpacing><o:p>&nbsp;</o:p></p>
+
+<div style='mso-element:para-border-div;border:solid #DCE6F2 3.0pt;mso-border-themecolor:
+accent1;mso-border-themetint:51;padding:0in 0in 0in 0in;background:#DCE6F2;
+mso-background-themecolor:accent1;mso-background-themetint:51'>
+
+<h2>SAMPLES ADDED</h2>
+
+</div>
+
+<div style='mso-element:para-border-div;border-top:solid #4F81BD 1.0pt;
+mso-border-top-themecolor:accent1;border-left:solid #4F81BD 1.0pt;mso-border-left-themecolor:
+accent1;border-bottom:none;border-right:none;mso-border-top-alt:solid #4F81BD .75pt;
+mso-border-top-themecolor:accent1;mso-border-left-alt:solid #4F81BD .75pt;
+mso-border-left-themecolor:accent1;padding:2.0pt 0in 0in 2.0pt'>
+
+<h3>Shell</h3>
+
+<h4 style='border:none;mso-border-top-alt:solid #4F81BD .75pt;mso-border-top-themecolor:
+accent1;mso-border-left-alt:solid #4F81BD .75pt;mso-border-left-themecolor:
+accent1;padding:0in;mso-padding-alt:2.0pt 0in 0in 2.0pt'>ShellObjectWatcher
+Sample</h4>
+
+</div>
+
+<p class=MsoNormal>This sample allows the user to select an item from the
+Windows Shell and watch it for change notifications. This sample supports
+files, folders, and virtual folders (i.e.: network shares &amp; libraries).</p>
+
+<div style='mso-element:para-border-div;border-top:solid #4F81BD 1.0pt;
+mso-border-top-themecolor:accent1;border-left:solid #4F81BD 1.0pt;mso-border-left-themecolor:
+accent1;border-bottom:none;border-right:none;mso-border-top-alt:solid #4F81BD .75pt;
+mso-border-top-themecolor:accent1;mso-border-left-alt:solid #4F81BD .75pt;
+mso-border-left-themecolor:accent1;padding:2.0pt 0in 0in 2.0pt'>
+
+<h3>Shell Extensions</h3>
+
+<h4 style='border:none;mso-border-top-alt:solid #4F81BD .75pt;mso-border-top-themecolor:
+accent1;mso-border-left-alt:solid #4F81BD .75pt;mso-border-left-themecolor:
+accent1;padding:0in;mso-padding-alt:2.0pt 0in 0in 2.0pt'>Thumbnail Handler
+Samples</h4>
+
+</div>
+
+<p class=MsoNormal>Two samples have been created to demonstrate how to generate
+thumbnails for an .xyz file-type and .xyz2 file type. The samples demonstrate
+how to use the various initialization interfaces and parse a sample file to
+generate a thumbnail with adornments and overlays.</p>
+
+<div style='mso-element:para-border-div;border-top:solid #4F81BD 1.0pt;
+mso-border-top-themecolor:accent1;border-left:solid #4F81BD 1.0pt;mso-border-left-themecolor:
+accent1;border-bottom:none;border-right:none;mso-border-top-alt:solid #4F81BD .75pt;
+mso-border-top-themecolor:accent1;mso-border-left-alt:solid #4F81BD .75pt;
+mso-border-left-themecolor:accent1;padding:2.0pt 0in 0in 2.0pt'>
+
+<h4 style='border:none;mso-border-top-alt:solid #4F81BD .75pt;mso-border-top-themecolor:
+accent1;mso-border-left-alt:solid #4F81BD .75pt;mso-border-left-themecolor:
+accent1;padding:0in;mso-padding-alt:2.0pt 0in 0in 2.0pt'>Preview Handler
+Samples</h4>
+
+</div>
+
+<p class=MsoNormal>Two samples have been created to demonstrate how to generate
+a preview from an .xyz and .xyz2 file-type. One sample illustrates how to
+generate a WPF control<span style='mso-spacerun:yes'>  </span>and the other
+demonstrates how to generate a Windows Forms control within the preview pane of
+explorer.</p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<div style='mso-element:para-border-div;border:solid #DCE6F2 3.0pt;mso-border-themecolor:
+accent1;mso-border-themetint:51;padding:0in 0in 0in 0in;background:#DCE6F2;
+mso-background-themecolor:accent1;mso-background-themetint:51'>
+
+<h2>API Changes</h2>
+
+</div>
+
+<p class=MsoNormal>A complete list of these changes can be found in the “API
+Changes” documents. Changes are organized by namespace and class and are
+structured as follows:</p>
+
+<p class=MsoNormal style='margin-left:.5in'>&lt;Kind Of Member Modified&gt; :
+&lt;Identifier of Member Modified&gt; : &lt;Type/Return-type of Member
+Modified&gt;</p>
+
+<p class=MsoNoSpacing style='margin-left:.5in'>&lt;Changes Made to Member&gt;<br>
+<span style='color:red'>&lt;Members Removed from this Member&gt;</span></p>
+
+<p class=MsoNoSpacing style='margin-left:.5in'><span style='color:#00B050'>&lt;Members
+Added to this Member&gt;<o:p></o:p></span></p>
+
+<p class=MsoNormal>Below are a few examples of actual entries from the DirectX
+changes document:</p>
+
+<p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span
+style='font-size:14.0pt;line-height:115%'>Class: SwitchToRef<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><span style='font-family:"Arial","sans-serif";color:red'>Removed
+methods: GetUseRef() : System.Boolean, SetUseRef(System.Boolean) :
+System.Boolean<br>
+</span><span style='font-family:"Arial","sans-serif";color:green'>Added
+properties: UseRef : System.Boolean</span><b style='mso-bidi-font-weight:normal'><span
+style='font-size:14.0pt;line-height:115%'><o:p></o:p></span></b></p>
+
+<p class=MsoNormal>In this entry, the SwitchToRef class <span
+style='mso-spacerun:yes'> </span>has been modified. The GetUseRef (returning a
+Boolean) and SetUseRef (accepting a Boolean) have been removed in favor of
+adding a Property called UseRef. </p>
+
+<p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span
+style='font-size:14.0pt;line-height:115%'>Method: GetClusterMetrics() :
+Microsoft.WindowsAPICodePack.DirectX.DirectWrite.ClusterMetrics[]<o:p></o:p></span></b></p>
+
+<p class=MsoNormal><span style='font-family:"Arial","sans-serif"'>Renamed to
+&quot;ClusterMetrics&quot;<br>
+Kind changed to &quot;Property&quot;<br>
+<span style='color:green'>Added methods: get_ClusterMetrics() :
+System.Collections.Generic.IEnumerable&lt;Microsoft.WindowsAPICodePack.DirectX.DirectWrite.ClusterMetrics&gt;</span></span></p>
+
+<p class=MsoNormal>In this entry the GetClusterMetrics() method was removed in
+favor of a readonly ClusterMetrics Property. The return type has also been
+changed from an array to an IEnumerable</p>
+
+<p class=MsoNormal><span style='color:red'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+</div>
+
+</body>
+
+</html>

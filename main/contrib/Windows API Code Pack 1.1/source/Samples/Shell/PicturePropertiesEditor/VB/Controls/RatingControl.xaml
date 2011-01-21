@@ -1,0 +1,32 @@
+<!-- Copyright (c) Microsoft Corporation.  All rights reserved. -->
+
+<UserControl x:Class="Microsoft.WindowsAPICodePack.Samples.PicturePropertiesEditor.RatingControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <Grid.Resources>
+            <ControlTemplate x:Key="starTemplate"  TargetType="{x:Type ToggleButton}">
+                <Viewbox>
+                    <Path Name="star" Fill="Gray" Data="F1 M 145.637,174.227L 127.619,110.39L 180.809,70.7577L 114.528,68.1664L 93.2725,5.33333L 70.3262,67.569L 4,68.3681L 56.0988,109.423L 36.3629,172.75L 91.508,135.888L 145.637,174.227 Z"/>
+                </Viewbox>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="IsChecked" Value="True">
+                        <Setter TargetName="star" Property="Fill" Value="Gold"/>
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+        </Grid.Resources>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <ToggleButton Grid.Column="0" Tag="1" Cursor="Hand" Template="{StaticResource starTemplate}" Click="RatingButtonClickEventHandler" />
+        <ToggleButton Grid.Column="1" Tag="2" Cursor="Hand" Template="{StaticResource starTemplate}" Click="RatingButtonClickEventHandler" />
+        <ToggleButton Grid.Column="2" Tag="3" Cursor="Hand" Template="{StaticResource starTemplate}" Click="RatingButtonClickEventHandler" />
+        <ToggleButton Grid.Column="3" Tag="4" Cursor="Hand" Template="{StaticResource starTemplate}" Click="RatingButtonClickEventHandler" />
+        <ToggleButton Grid.Column="4" Tag="5" Cursor="Hand" Template="{StaticResource starTemplate}" Click="RatingButtonClickEventHandler" />
+    </Grid>
+</UserControl>

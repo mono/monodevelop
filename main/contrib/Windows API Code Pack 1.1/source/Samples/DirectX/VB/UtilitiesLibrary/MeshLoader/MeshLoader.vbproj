@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{B28ADA8B-BD7E-4C11-8298-C39F7C456365}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>
+    </RootNamespace>
+    <AssemblyName>MeshLoader</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <OptionExplicit>On</OptionExplicit>
+    <OptionCompare>Binary</OptionCompare>
+    <OptionStrict>Off</OptionStrict>
+    <OptionInfer>On</OptionInfer>
+    <FileAlignment>512</FileAlignment>
+    
+    
+    
+    
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AirplaneMesh.vb" />
+    <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="Texturizer.vb" />
+    <Compile Include="XMesh.vb" />
+    <Compile Include="XMeshLoader.vb" />
+    <Compile Include="XMeshLoader.XDataObject.vb" />
+    <Compile Include="XMeshManager.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="XMesh.fx" />
+    <EmbeddedResource Include="XMesh.fxo" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\WindowsAPICodePack\DirectX\DirectX\DirectX.vcproj">
+      <Project>{446B1E21-65A1-4F56-AA2C-D2E24058B2B8}</Project>
+      <Name>Microsoft.WindowsAPICodePack.DirectX</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\UtilitiesLibrary\Controls\DirectXControls.vcproj">
+      <Project>{5D4F4B06-1572-4E57-9007-93ECA5A07A11}</Project>
+      <Name>Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\UtilitiesLibrary\D3DX10Helpers\Direct3DX10.vcproj">
+      <Project>{453FF234-24EC-4CC3-83DA-6D6C54388899}</Project>
+      <Name>Microsoft.WindowsAPICodePack.DirectX.Direct3DX10</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\D3DUtilities\Direct3DUtilities.vbproj">
+      <Project>{8A152DCF-12AE-492B-9F24-060B90B2DDD0}</Project>
+      <Name>Direct3DUtilities</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
