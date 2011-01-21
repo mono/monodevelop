@@ -131,7 +131,12 @@ namespace MonoDevelop.Ide
 				options.NoLogo = true;
 			
 			IProgressMonitor monitor;
+			
+#if DEBUG
+			if (options.NoLogo || System.Diagnostics.Debugger.IsAttached) {
+#else
 			if (options.NoLogo) {
+#endif
 				monitor = new MonoDevelop.Core.ProgressMonitoring.ConsoleProgressMonitor ();
 			} else {
 				monitor = SplashScreenForm.SplashScreen;
@@ -258,7 +263,7 @@ namespace MonoDevelop.Ide
 			MessageService.RootWindow = IdeApp.Workbench.RootWindow;
 			Thread.CurrentThread.Name = "GUI Thread";
 			Counters.Initialization.Trace ("Running IdeApp");
-			Counters.Initialization.EndTiming ();
+			Counters.Initialization.EndTiming ();			
 			IdeApp.Run ();
 			
 			// unloading services
