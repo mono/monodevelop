@@ -53,7 +53,7 @@ namespace MonoDevelop.MonoDroid
 	{
 		protected override void OnConnected ()
 		{
-			WriteCommand ("host:kill", () => GetStatus (() => SetCompleted (true)));
+			WriteCommand ("host:kill", () => SetCompleted (true));
 		}
 	}
 	
