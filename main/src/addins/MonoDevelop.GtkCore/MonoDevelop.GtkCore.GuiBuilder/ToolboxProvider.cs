@@ -24,7 +24,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public IEnumerable<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
 		{
-			GuiBuilderView view = consumer as GuiBuilderView;
+			DesignerPage view = consumer as DesignerPage;
 			if (view == null)
 				return null;
 			

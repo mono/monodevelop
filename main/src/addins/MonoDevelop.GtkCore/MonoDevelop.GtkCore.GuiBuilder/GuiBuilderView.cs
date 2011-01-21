@@ -396,14 +396,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		bool ErrorMode {
 			get { return designer.RootComponent == null; }
 		}
-		
-		public Stetic.ComponentType[] GetComponentTypes ()
-		{
-			if (designer != null)
-				return designer.GetComponentTypes ();
-			else
-				return null;
-		}
 	}
 	
 	class DesignerPage: Gtk.EventBox, ICustomPropertyPadProvider, IToolboxConsumer, MonoDevelop.DesignerSupport.IOutlinedDocument
@@ -413,6 +405,18 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public DesignerPage (GuiBuilderProject gproject)
 		{
 			this.gproject = gproject;
+		}
+		
+		public Stetic.ComponentType[] GetComponentTypes ()
+		{
+			if (Designer != null)
+				return Designer.GetComponentTypes ();
+			else
+				return null;
+		}
+		
+		public DotNetProject Project {
+			get { return gproject.Project; }
 		}
 		
 		Gtk.Widget ICustomPropertyPadProvider.GetCustomPropertyWidget ()
