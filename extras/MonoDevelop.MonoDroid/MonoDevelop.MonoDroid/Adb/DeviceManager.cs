@@ -203,7 +203,6 @@ namespace MonoDevelop.MonoDroid
 			if (tb == null)
 				return;
 			
-			var stdOut = new StringWriter ();
 			pop = new AdbKillServerOperation ();
 			((AdbKillServerOperation)pop).Completed += delegate (IAsyncOperation killOp) {
 				if (!object.ReferenceEquals (pop, killOp)) {
@@ -355,7 +354,7 @@ namespace MonoDevelop.MonoDroid
 	//
 	class AdbStartServerProcess : IDisposable
 	{
-		ManualResetEvent endEventErr = new ManualResetEvent (false);
+		//ManualResetEvent endEventErr = new ManualResetEvent (false);
 		Thread captureOutputThread; //, captureErrorThread;
 		System.Diagnostics.Process proc;
 		object lockObj = new object ();
