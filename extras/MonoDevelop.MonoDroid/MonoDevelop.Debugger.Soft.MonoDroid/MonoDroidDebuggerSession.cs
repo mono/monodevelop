@@ -236,10 +236,21 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 		
 		protected override bool ShouldRetryConnection (Exception exc, int attemptNumber)
 		{
+			//android tunnel behaviour causes us to get IOExceptions instead of socket exceptions
 			if (exc is IOException)
 				return true;
 
 			return base.ShouldRetryConnection (exc, attemptNumber);
+		}
+		
+		protected override void OnConnectionError (Exception ex)
+		{
+			//if the exception was caused by cancelling the session
+			//as with ShouldRetryConnection, need to handle android tunnel behaviour
+			if (Exited && ex is IOException)
+				return;
+			
+			base.OnConnectionError (ex);
 		}
 	}
 	
