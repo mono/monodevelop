@@ -30,8 +30,8 @@
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="2.4.2"/>
-		<Addin id="Ide" version="2.4.2"/>
+		<Addin id="Core" version="2.4"/>
+		<Addin id="Ide" version="2.4"/>
 	</Dependencies>
 	
 	<ConditionType id="MonoDroidInstalled" type="MonoDevelop.MonoDroid.MonoDroidInstalledCondition" />
