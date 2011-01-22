@@ -31,9 +31,14 @@ using System.IO;
 
 namespace MonoDevelop.MonoDroid
 {
-	public class AdbCheckVersionOperation : AdbOperation
+	public sealed class AdbCheckVersionOperation : AdbOperation
 	{
 		const string SUPPORTED_PROTOCOL = "001a";
+		
+		public AdbCheckVersionOperation ()
+		{
+			BeginConnect ();
+		}
 		
 		protected override void OnConnected ()
 		{
@@ -49,16 +54,26 @@ namespace MonoDevelop.MonoDroid
 		}
 	}
 	
-	public class AdbKillServerOperation : AdbOperation
+	public sealed class AdbKillServerOperation : AdbOperation
 	{
+		public AdbKillServerOperation ()
+		{
+			BeginConnect ();
+		}
+		
 		protected override void OnConnected ()
 		{
 			WriteCommand ("host:kill", () => SetCompleted (true));
 		}
 	}
 	
-	public class AdbTrackDevicesOperation : AdbOperation
+	public sealed class AdbTrackDevicesOperation : AdbOperation
 	{
+		public AdbTrackDevicesOperation ()
+		{
+			BeginConnect ();
+		}
+		
 		protected override void OnConnected ()
 		{
 			WriteCommand ("host:track-devices", () => GetStatus (() => ReadResponseWithLength (OnGotResponse)));
@@ -93,8 +108,8 @@ namespace MonoDevelop.MonoDroid
 		public event Action<List<AndroidDevice>> DevicesChanged;
 	}
 
-	public class AdbTrackLogOperation : AdbTransportOperation
-	{
+	public sealed class AdbTrackLogOperation : AdbTransportOperation
+	{	
 		Action<string> output;
 		string [] parameters;
 
@@ -102,6 +117,8 @@ namespace MonoDevelop.MonoDroid
 		{
 			this.output = output;
 			this.parameters = parameters;
+			
+			BeginConnect ();
 		}
 
 		static readonly string Space = " ";
@@ -125,9 +142,12 @@ namespace MonoDevelop.MonoDroid
 		}
 	}
 	
-	public class AdbGetPackagesOperation : AdbTransportOperation
+	public sealed class AdbGetPackagesOperation : AdbTransportOperation
 	{
-		public AdbGetPackagesOperation (AndroidDevice device) : base (device) {}
+		public AdbGetPackagesOperation (AndroidDevice device) : base (device)
+		{
+			BeginConnect ();
+		}
 		
 		protected override void OnGotTransport ()
 		{
@@ -166,9 +186,12 @@ namespace MonoDevelop.MonoDroid
 		}
 	}
 	
-	public class AdbGetPropertiesOperation : AdbTransportOperation
+	public sealed class AdbGetPropertiesOperation : AdbTransportOperation
 	{
-		public AdbGetPropertiesOperation (AndroidDevice device) : base (device) {}
+		public AdbGetPropertiesOperation (AndroidDevice device) : base (device)
+		{
+			BeginConnect ();
+		}
 		
 		protected override void OnGotTransport ()
 		{
@@ -197,7 +220,7 @@ namespace MonoDevelop.MonoDroid
 		public Dictionary<string,string> Properties { get; private set; }
 	}
 
-	public class AdbGetProcessIdOperation : AdbTransportOperation
+	public sealed class AdbGetProcessIdOperation : AdbTransportOperation
 	{
 		int pid = -1;
 		string packageName;
@@ -209,6 +232,7 @@ namespace MonoDevelop.MonoDroid
 				throw new ArgumentNullException ("packageName");
 
 			this.packageName = packageName;
+			BeginConnect ();
 		}
 
 		protected override void OnGotTransport ()
@@ -268,12 +292,43 @@ namespace MonoDevelop.MonoDroid
 		}
 
 	}
+	
+	public sealed class AdbGetDateOperation : AdbBaseShellOperation
+	{
+		public AdbGetDateOperation (AndroidDevice device) : base (device, "date +%s")
+		{
+			BeginConnect ();
+		}
+		
+		long? date;
+		
+		public override bool Success {
+			get {
+				if (!base.Success)
+					return false;
+				if (!date.HasValue) {
+					long value;
+					date = long.TryParse (Output, out value)? value : -1;
+				}
+				return date >= 0;
+			}
+		}
+			
+		public long Date {
+			get {
+				if (!Success)
+					throw new InvalidOperationException ("Error getting date from device:\n" + Output);
+				//Success will have parsed the value 
+				return date.Value;
+			}
+		}
+	}
 
-	public class AdbShellOperation : AdbTransportOperation
+	public abstract class AdbBaseShellOperation : AdbTransportOperation
 	{
 		string command;
 		
-		public AdbShellOperation (AndroidDevice device, string command) : base (device)
+		public AdbBaseShellOperation (AndroidDevice device, string command) : base (device)
 		{
 			this.command = command;
 		}
@@ -291,5 +346,13 @@ namespace MonoDevelop.MonoDroid
 		}
 		
 		public string Output { get; private set; }
+	}
+	
+	public sealed class AdbShellOperation : AdbBaseShellOperation
+	{
+		public AdbShellOperation (AndroidDevice device, string command) : base (device, command)
+		{
+			BeginConnect ();
+		}
 	}
 }

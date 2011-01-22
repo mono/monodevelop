@@ -65,7 +65,7 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 			int runningProcessId = 0; // Already running activity
 			DateTime setPropertyTime = DateTime.MinValue;
 			launchOp = new ChainedAsyncOperationSequence (
-				new ChainedAsyncOperation<AndroidToolbox.GetDateOperation> () {
+				new ChainedAsyncOperation<AdbGetDateOperation> () {
 					Create = () => MonoDroidFramework.Toolbox.GetDeviceDate (cmd.Device),
 					Completed = (op) => {
 						if (op.Success) {
@@ -73,11 +73,11 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 							setPropertyTime = DateTime.Now;
 						} else {
 							this.OnDebuggerOutput (true, GettextCatalog.GetString ("Failed to get date from device"));
-							this.OnDebuggerOutput (true, op.GetOutput ());
+							this.OnDebuggerOutput (true, op.Output);
 						}
 					},
 				},
-				new ChainedAsyncOperation<AndroidToolbox.AdbOutputOperation> () {
+				new ChainedAsyncOperation<AdbShellOperation> () {
 					Create = () => {
 						this.OnDebuggerOutput (false, GettextCatalog.GetString ("Setting debug property") + "\n");
 						long expireDate = date + (DEBUGGER_TIMEOUT_MS / 1000);
@@ -87,7 +87,7 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 					Completed = (op) => {
 						if (!op.Success) {
 							this.OnDebuggerOutput (true, GettextCatalog.GetString ("Failed to set debug property on device"));
-							this.OnDebuggerOutput (true, op.GetOutput ());
+							this.OnDebuggerOutput (true, op.Output);
 						} else {
 							debugPropertySet = true;
 						}
@@ -139,11 +139,12 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 						}
 					}
 				},
-				new ChainedAsyncOperation () {
-					Create = () => MonoDroidFramework.Toolbox.StartActivity (cmd.Device, cmd.Activity, DebuggerOutput, DebuggerError),
+				new ChainedAsyncOperation<AdbShellOperation> () {
+					Create = () => MonoDroidFramework.Toolbox.StartActivity (cmd.Device, cmd.Activity),
 					Completed = (op) => {
 						if (!op.Success)
 							this.OnDebuggerOutput (true, GettextCatalog.GetString ("Failed to start activity"));
+						OnDebuggerOutput (false, op.Output);
 					}
 				}
 			);
