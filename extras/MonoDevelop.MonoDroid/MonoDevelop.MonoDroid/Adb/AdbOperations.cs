@@ -115,19 +115,18 @@ namespace MonoDevelop.MonoDroid
 
 		public AdbTrackLogOperation (AndroidDevice device, Action<string> output, params string [] parameters) : base (device)
 		{
+			if (output == null)
+				throw new ArgumentNullException ("output");
+			
 			this.output = output;
 			this.parameters = parameters;
 			
 			BeginConnect ();
 		}
 
-		static readonly string Space = " ";
-
 		protected override void OnGotTransport ()
 		{
-			string command = "shell:logcat ";
-			foreach (string param in parameters)
-				command += Space + param;
+			string command = "shell:logcat " + string.Join (" ", parameters);
 
 			WriteCommand (command, () => GetStatus (() => ReadResponseContinuous (GotResponseContinuous)));
 		}
@@ -136,9 +135,9 @@ namespace MonoDevelop.MonoDroid
 
 		void GotResponseContinuous (string response)
 		{
-			if (output != null)
-				foreach (string line in response.Split (newLine, StringSplitOptions.RemoveEmptyEntries))
-					output (line);
+			//FIXME: is each read guaranteed to get a full line? or do we need to cache and merge partial lines?
+			foreach (string line in response.Split (newLine, StringSplitOptions.RemoveEmptyEntries))
+				output (line);
 		}
 	}
 	
