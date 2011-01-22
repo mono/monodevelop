@@ -51,14 +51,36 @@ namespace Mono.TextEditor.Utils
 		/// </param>
 		public static List<ISegment> BreakLinesIntoWords (TextEditor editor, int startLine, int lineCount)
 		{
+			return BreakLinesIntoWords (editor.Document, startLine, lineCount);
+		}
+
+		
+		/// <summary>
+		/// Breaks the lines into words in the form of a list of <see cref="ISegment">ISegments</see>. A 'word' is defined as an identifier (a series of letters, digits or underscores)
+		/// or a single non-identifier character (including white space characters)
+		/// </summary>
+		/// <returns>
+		/// The list of segments representing the 'words' in the lines
+		/// </returns>
+		/// <param name='document'>
+		/// The document to get the words from
+		/// </param>
+		/// <param name='startLine'>
+		/// The first line in the documents to get the words from
+		/// </param>
+		/// <param name='lineCount'>
+		/// The number of lines to get words from
+		/// </param>
+		public static List<ISegment> BreakLinesIntoWords (Document document, int startLine, int lineCount)
+		{
 			var result = new List<ISegment> ();
 			for (int line = startLine; line < startLine + lineCount; line++) {
-				var lineSegment = editor.Document.GetLine (line);
+				var lineSegment = document.GetLine (line);
 				int offset = lineSegment.Offset;
 				bool wasIdentifierPart = false;
 				int lastWordEnd = 0;
 				for (int i = 0; i < lineSegment.EditableLength; i++) {
-					char ch = editor.GetCharAt (offset + i);
+					char ch = document.GetCharAt (offset + i);
 					bool isIdentifierPart = char.IsLetterOrDigit (ch) || ch == '_';
 					if (!isIdentifierPart) {
 						if (wasIdentifierPart) {
@@ -71,9 +93,10 @@ namespace Mono.TextEditor.Utils
 				}
 				
 				if (lastWordEnd != lineSegment.EditableLength) {
-					result.Add (new Mono.TextEditor.Segment (lastWordEnd, lineSegment.EditableLength - lastWordEnd));
+					result.Add (new Mono.TextEditor.Segment (offset + lastWordEnd, lineSegment.EditableLength - lastWordEnd));
 				}
 			}
+			
 			return result;
 		}
 	}
