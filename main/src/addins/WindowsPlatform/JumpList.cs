@@ -40,57 +40,23 @@ namespace MonoDevelop.Platform
 {
 	public class JumpList : CommandHandler
 	{
-		private IList<string> supportedExtensions;
 		private const string progId = "MonoDevelop";
 		private const string appId = "MonoDevelop";
 		
+		private IList<string> supportedExtensions;
 		private RecentFiles recentFiles;
-		private bool hasChanges = false;
-		private Timer timer;
-		
-		public bool IsEnabled
-		{
-			get;
-			private set;
-		}
 
 		protected override void Run ()
 		{
-			this.IsEnabled = Taskbar.TaskbarManager.IsPlatformSupported && this.CheckRegistration ();
+			bool enable = Taskbar.TaskbarManager.IsPlatformSupported && this.CheckRegistration ();
 			
-			if (!this.IsEnabled) {
+			if (!enable) {
 				return;
 			}
 			
 			Taskbar.TaskbarManager.Instance.ApplicationId = progId;
 			this.recentFiles = DesktopService.RecentFiles;
-			UpdateJumpList();
-			recentFiles.Changed += this.RecentFilesChanged;
-			
-			this.timer = new System.Timers.Timer(30000);
-			this.timer.AutoReset = true;
-			this.timer.Elapsed += this.RecentFilesChangedTimer;
-			this.timer.Start();
-		}
-		
-		private void RecentFilesChanged(object sender, EventArgs args)
-		{
-			// RecentFilesChanged gets call about 8 to 10 times whenever a project is opened or
-			// the list changes. Updating the JumpList is a somewhat involved process so don't
-			// update the list immedaitely.
-			this.hasChanges = true;
-				
-			// Make the timer start it's countdown again.
-			this.timer.Stop();
-			this.timer.Start();
-		}
-		
-		private void RecentFilesChangedTimer(object sender, EventArgs args)
-		{
-			if(this.hasChanges){
-				this.UpdateJumpList();
-				this.hasChanges = false;
-			}
+			this.UpdateJumpList();
 		}
 		
 		private void UpdateJumpList()
