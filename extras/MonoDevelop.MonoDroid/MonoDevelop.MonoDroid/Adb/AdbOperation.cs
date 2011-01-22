@@ -30,6 +30,11 @@ using System.IO;
 
 namespace MonoDevelop.MonoDroid
 {
+	/// <remarks>
+	/// The most-derived subclasses of this class must be sealed and must call BeginConnect() in their ctor.
+	/// This avoids forcing consumers to call it. This class's ctor cannot cause it or there will be a race
+	/// between this and the derived classes' ctors
+	/// </remarks>
 	public abstract class AdbOperation : IAsyncOperation, IDisposable
 	{
 		AdbClient client;
@@ -40,10 +45,9 @@ namespace MonoDevelop.MonoDroid
 		
 		public AdbOperation ()
 		{
-			BeginConnect ();
 		}
 		
-		void BeginConnect ()
+		protected void BeginConnect ()
 		{
 			client = new AdbClient ();
 			client.BeginConnect (EndConnect, null);
@@ -233,8 +237,8 @@ namespace MonoDevelop.MonoDroid
 
 		public bool IsCompleted { get; private set; }
 
-		public bool Success { get; private set; }
-		public bool SuccessWithWarnings { get { return Success; } }
+		public virtual bool Success { get; private set; }
+		public virtual bool SuccessWithWarnings { get { return Success; } }
 		
 		public Exception Error { get; private set; }
 		
@@ -266,23 +270,16 @@ namespace MonoDevelop.MonoDroid
 	public abstract class AdbTransportOperation : AdbOperation
 	{
 		AndroidDevice device;
-		object initLock = new object ();
 		
 		public AdbTransportOperation (AndroidDevice device)
 		{
 			if (device == null)
 				throw new ArgumentNullException ("device");
-			lock (initLock) {
-				this.device = device;
-			}
+			this.device = device;
 		}
 		
 		protected sealed override void OnConnected ()
 		{
-			lock (initLock) {
-				while (device == null)
-					Monitor.Wait (initLock, 200);
-			}
 			WriteCommand ("host:transport:" + device.ID, () => GetStatus (() => OnGotTransport ()));
 		}
 		

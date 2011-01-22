@@ -168,31 +168,19 @@ namespace MonoDevelop.MonoDroid
 			return Runtime.ProcessService.StartProcess (AndroidExe, "", null, (TextWriter)null, null, null);
 		}
 
-		public GetDateOperation GetDeviceDate (AndroidDevice device)
+		public AdbGetDateOperation GetDeviceDate (AndroidDevice device)
 		{
-			var args = String.Format ("-s {0} shell date +%s", device.ID);
-			var sw = new StringWriter ();
-			return new GetDateOperation (StartProcess (AdbExe, args, sw, sw), sw);
+			return new AdbGetDateOperation (device);
 		}
 		
-		public AdbOutputOperation SetProperty (AndroidDevice device, string property, string value)
-		{
-			var sw = new StringWriter ();
-			return new AdbOutputOperation (SetProperty (device, property, value, sw, sw), sw);
-		}
-		
-		public IProcessAsyncOperation SetProperty (AndroidDevice device, string property, string value, TextWriter outputLog, TextWriter errorLog)
+		public AdbShellOperation SetProperty (AndroidDevice device, string property, string value)
 		{
 			if (property == null)
 				throw new ArgumentNullException ("property");
 			if (value == null)
 				throw new ArgumentNullException ("value");
 			
-			var args = new ProcessArgumentBuilder ();
-			args.Add ("-s", device.ID, "shell", "setprop");
-			args.AddQuoted (property, value);
-			
-			return StartProcess (AdbExe, args.ToString (), outputLog, errorLog);
+			return new AdbShellOperation (device, string.Format ("setprop \"{0}\" \"{1}\"", property, value));
 		}
 		
 		public IProcessAsyncOperation PushFile (AndroidDevice device, string source, string destination,
@@ -241,24 +229,10 @@ namespace MonoDevelop.MonoDroid
 			return StartProcess (AdbExe, args.ToString (), outputLog, errorLog);
 		}
 		
-		public IProcessAsyncOperation StartActivity (AndroidDevice device, string activity,
-			TextWriter outputLog, TextWriter errorLog)
+		public AdbShellOperation StartActivity (AndroidDevice device, string activity)
 		{
-			var args = new ProcessArgumentBuilder ();
-			args.Add ("-s", device.ID, "shell", "am", "start", "-a", "android.intent.action.MAIN", "-n");
-			args.AddQuoted (activity);
-			
-			return StartProcess (AdbExe, args.ToString (), outputLog, errorLog);
-		}
-		
-		public IProcessAsyncOperation StartActivity (AndroidDevice device, string activity,
-			ProcessEventHandler outputLog, ProcessEventHandler errorLog)
-		{
-			var args = new ProcessArgumentBuilder ();
-			args.Add ("-s", device.ID, "shell", "am", "start", "-a", "android.intent.action.MAIN", "-n");
-			args.AddQuoted (activity);
-			
-			return StartProcess (AdbExe, args.ToString (), outputLog, errorLog);
+			return new AdbShellOperation (device,
+				string.Format ("am start -a android.intent.action.MAIN -n '{0}'", activity));
 		}
 
 		public IProcessAsyncOperation ForwardPort (AndroidDevice device, int devicePort, int localPort,
@@ -298,36 +272,6 @@ namespace MonoDevelop.MonoDroid
 			public string GetOutput ()
 			{
 				return output.ToString ();
-			}
-		}
-		
-		public class GetDateOperation : AdbOutputOperation
-		{
-			long? date;
-			
-			public GetDateOperation (IProcessAsyncOperation process, StringWriter output) : base (process, output)
-			{
-			}
-			
-			public override bool Success {
-				get {
-					if (!base.Success)
-						return false;
-					if (!date.HasValue) {
-						long value;
-						date = long.TryParse (GetOutput (), out value)? value : -1;
-					}
-					return date >= 0;
-				}
-			}
-			
-			public long Date {
-				get {
-					if (!Success)
-						throw new InvalidOperationException ("Error getting date from device:\n" + GetOutput ());
-					//Success will have parsed the value 
-					return date.Value;
-				}
 			}
 		}
 		

@@ -386,7 +386,7 @@ namespace MonoDevelop.MonoDroid
 				propOp.WaitForCompleted ();
 				if (!propOp.Success) {
 					monitor.ReportError (GettextCatalog.GetString ("Count not clear debug settings on device"),
-						new Exception (propOp.GetOutput ()));
+						propOp.Error);
 					return;
 				}
 				
