@@ -251,9 +251,9 @@ namespace MonoDevelop.Platform.Mac
 		}
 		
 		[DllImport ("libgtk-quartz-2.0.dylib")]
-        static extern IntPtr gdk_quartz_window_get_nsview (IntPtr window);
+		static extern IntPtr gdk_quartz_window_get_nsview (IntPtr window);
 		
-        [DllImport ("libgtk-quartz-2.0.dylib")]
-        static extern IntPtr gdk_quartz_window_get_nswindow (IntPtr window);
+		[DllImport ("libgtk-quartz-2.0.dylib")]
+		static extern IntPtr gdk_quartz_window_get_nswindow (IntPtr window);
 	}
 }
