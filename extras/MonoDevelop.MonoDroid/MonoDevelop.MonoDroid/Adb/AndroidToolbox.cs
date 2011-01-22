@@ -84,6 +84,8 @@ namespace MonoDevelop.MonoDroid
 			}
 		}
 		
+		public string AdbPathOverride { get { return pathOverride; } }
+		
 		public IProcessAsyncOperation SignPackage (AndroidSigningOptions options, string unsignedApk,
 			string signedApk, TextWriter outputLog, TextWriter errorLog)
 		{
@@ -144,11 +146,6 @@ namespace MonoDevelop.MonoDroid
 				psi.RedirectStandardError = true;
 			psi.EnvironmentVariables["PATH"] = pathOverride;
 			return Runtime.ProcessService.StartProcess (psi, outputLog, errorLog, null);
-		}
-		
-		public IProcessAsyncOperation EnsureServerRunning (TextWriter outputLog, TextWriter errorLog)
-		{
-			return StartProcess (AdbExe, "start-server", outputLog, errorLog);
 		}
 		
 		public StartAvdOperation StartAvd (AndroidVirtualDevice avd)

@@ -29,14 +29,17 @@ using System.Collections.Generic;
 
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
 namespace MonoDevelop.MonoDroid
 {
 	public class DeviceManager
 	{
 		EventHandler devicesUpdated;
+		IDisposable pop; 
 		IAsyncOperation op;
 		DevicePropertiesTracker propTracker;
 		object lockObj = new object ();
@@ -77,6 +80,8 @@ namespace MonoDevelop.MonoDroid
 		
 		void CheckTracker ()
 		{
+			if (pop != null)
+				return;
 			bool needed = openProjects > 0 || devicesUpdated != null;
 			if (op == null) {
 				if (needed)
@@ -90,42 +95,54 @@ namespace MonoDevelop.MonoDroid
 		void StartTracker ()
 		{
 			LoggingService.LogInfo ("Starting Android device monitor");
-			var stdOut = new StringWriter ();
-
+			
 			//toolbox could be null if the android SDK is not found and not yet configured
 			var tb = MonoDroidFramework.Toolbox;
 			if (tb == null)
 				return;
 			
-			op = tb.EnsureServerRunning (stdOut, stdOut);
-			op.Completed += delegate (IAsyncOperation esop) {
-				if (!esop.Success) {
-					LoggingService.LogError ("Error starting adb server: " + stdOut);
-					ClearTracking ();
+			pop = new AdbStartServerProcess (tb, delegate(object sender, EventArgs e) {
+				var startOp = (AdbStartServerProcess) sender;
+				if (!object.ReferenceEquals (pop, startOp)) {
+					LoggingService.LogInfo ("Adb start operation completed but is no longer valid: {0}, {1}", pop, startOp);
 					return;
-				}	
+				}
+				pop = null;
+				LoggingService.LogInfo ("Adb server launch operation completed");
 				try {
-					lock (lockObj) {
-						if (op != null) {
+					if (!startOp.Success) {
+						LoggingService.LogError ("Error starting adb server: " + startOp.GetOutput ());
+						ClearTracking ();
+						return;
+					}
+					try {
+						lock (lockObj) {
 							op = CreateTracker ();
 						}
+					} catch (Exception ex) {
+						LoggingService.LogError ("Error creating device tracker: ", ex);
+						ClearTracking ();
 					}
-					((IDisposable)esop).Dispose ();
-				} catch (Exception ex) {
-					LoggingService.LogError ("Error creating device tracker: ", ex);
-					ClearTracking ();
+				} finally {
+					try {
+						((IDisposable)startOp).Dispose ();
+					} catch (Exception ex) {
+						LoggingService.LogError ("Error disposing adb start operation: ", ex);
+					}
 				}
-			};
+			});
 		}
 		
 		AdbTrackDevicesOperation CreateTracker ()
 		{
+			LoggingService.LogInfo ("Creating android device tracker");
 			var trackerOp = new AdbTrackDevicesOperation ();
 			propTracker = new DevicePropertiesTracker ();
 			propTracker.Changed += delegate {
 				OnChanged (null, null);
 			};
 			trackerOp.DevicesChanged += delegate (List<AndroidDevice> list) {
+				LoggingService.LogInfo ("Got new device list from adb");
 				Devices = list;
 				OnChanged (null, null);
 			};
@@ -155,6 +172,9 @@ namespace MonoDevelop.MonoDroid
 				if (propTracker != null)
 					propTracker.Dispose ();
 				propTracker = null;
+				if (pop != null)
+					pop.Dispose ();
+				pop = null;
 				Devices = new AndroidDevice[0];
 				lastForwarded = null;
 				OnChanged (null, null);
@@ -177,11 +197,28 @@ namespace MonoDevelop.MonoDroid
 				if (op != null)
 					StopTracker ();
 			}
-			var killOp = new AdbKillServerOperation ();
-			killOp.Completed += delegate(IAsyncOperation op) {
-				var err = ((AdbKillServerOperation)op).Error;
-				if (err != null)
-					LoggingService.LogError ("Error stopping adb server", err);
+
+			//toolbox could be null if the android SDK is not found and not yet configured
+			var tb = MonoDroidFramework.Toolbox;
+			if (tb == null)
+				return;
+			
+			var stdOut = new StringWriter ();
+			pop = new AdbKillServerOperation ();
+			((AdbKillServerOperation)pop).Completed += delegate (IAsyncOperation killOp) {
+				if (!object.ReferenceEquals (pop, killOp)) {
+					LoggingService.LogInfo ("Adb kill operation completed but is no longer valid");
+					return;
+				}
+				LoggingService.LogInfo ("Adb server kill operation completed");
+				if (!killOp.Success)
+					LoggingService.LogError ("Error killing adb server: " + ((AdbKillServerOperation)killOp).Error);
+				try {
+					((IDisposable)killOp).Dispose ();
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error disposing adb kill operation: ", ex);
+				}
+				pop = null;
 				CheckTracker ();
 				if (serverKilledCallback != null)
 					serverKilledCallback ();
@@ -307,6 +344,158 @@ namespace MonoDevelop.MonoDroid
 			foreach (IDisposable disp in outstandingQueries)
 				disp.Dispose ();
 			outstandingQueries.Clear ();
+		}
+	}
+		
+	//HACK: using Process and a thread instead of MD process APIs because of weird stuff adb start-server does
+	// When using adb start-server, .NET's StandardOutput.Read blocks or even throws a "stdout not redirected" 
+	// after all data is read and the process has ended
+	// This seems to be because adb forks, and even though the original process exits, the output stream somehow 
+	// stays alive. Iit's probably been passed over to the new process somehow.
+	//
+	class AdbStartServerProcess : IDisposable
+	{
+		ManualResetEvent endEventErr = new ManualResetEvent (false);
+		Thread captureOutputThread; //, captureErrorThread;
+		System.Diagnostics.Process proc;
+		object lockObj = new object ();
+		EventHandler exited;
+		StringWriter output = new StringWriter ();
+		bool success = false;
+		
+		public bool Success { get { return success; } }
+		
+		public string GetOutput ()
+		{
+			return output.ToString ();
+		}
+		
+		public AdbStartServerProcess (AndroidToolbox tb, EventHandler exited)
+		{
+			this.exited = exited;
+			
+			proc = new System.Diagnostics.Process ();
+			proc.StartInfo = new System.Diagnostics.ProcessStartInfo (tb.AdbExe, "start-server") {
+				UseShellExecute = false,
+				RedirectStandardOutput = true,
+				RedirectStandardError = true,
+				CreateNoWindow = true,
+			};
+			proc.StartInfo.EnvironmentVariables["PATH"] = tb.AdbPathOverride;
+			proc.Start ();
+			
+			captureOutputThread = new Thread (CaptureOutput) {
+				Name = "Adb output reader",
+				IsBackground = true,
+			};
+			captureOutputThread.Start ();
+			
+			/*
+			captureErrorThread = new Thread (CaptureError) {
+				Name = "Adb error reader",
+				IsBackground = true,
+			};
+			captureErrorThread.Start ();*/
+		}
+		
+		void CaptureOutput ()
+		{
+			try {
+				//HACK: this is just long enough to contain the expected adb output string when successfully starting the server
+				//if we try to read too much, we will hang somewhere in native code
+				char[] buffer = new char [86];
+				int nr;
+				while ((nr = proc.StandardOutput.Read (buffer, 0, buffer.Length)) > 0) {
+					var s = new string (buffer, 0, nr);
+					output.Write (s);
+					if (s.Contains ("daemon started successfully")) {
+						success = true;
+						/*
+						lock (lockObj) {
+							captureErrorThread.Abort ();
+							captureErrorThread = null;
+						}*/
+						break;
+					}
+				}
+			} catch (ThreadAbortException) {
+				Thread.ResetAbort ();
+			} catch (Exception ex) {
+				MonoDevelop.Core.LoggingService.LogError ("Unhandled exception in adb output reader", ex);
+			} finally {
+				/*
+				if (endEventErr != null)
+					WaitHandle.WaitAll (new WaitHandle[] {endEventErr} );
+				*/
+				
+				//HACK: if success is true at this point, then we have determined that adb is forking a new server 
+				// and bailed out early to avoid the Windows native hang that happens when we read too far in the adb
+				// stdout stream that gets passed over to the new process.
+				// Unfortunately, if the fork happens then the error stream thread hangs in the same way, and cannot 
+				// even be aborted. We avoid this by *only* reading stderr if this condition is false. Instead we 
+				// only read stderr after the output thread is done. Sadly this means we lose stderr/stdout 
+				// interleaving, and the adb process could deadlock if stderr fills up too much.
+				if (!success) {
+					string line;
+					while ((line = proc.StandardError.ReadLine ()) != null)
+						output.WriteLine (line);
+				}
+				
+				if (!success && proc.HasExited && proc.ExitCode <= 0)
+					success = true;
+				
+				captureOutputThread = null;
+				exited (this, EventArgs.Empty);
+			}
+		}
+		/*
+		void CaptureError ()
+		{
+			try {
+				char[] buffer = new char [1024];
+				int nr;
+				while ((nr = proc.StandardError.Read (buffer, 0, buffer.Length)) > 0) {
+					var s = new string (buffer, 0, nr);
+					output.Write (s);
+				}					
+			} catch (ThreadAbortException) {
+				Thread.ResetAbort ();
+			} catch (Exception ex) {
+				MonoDevelop.Core.LoggingService.LogError ("Unhandled exception in adb error reader", ex);
+			} finally {
+				lock (lockObj) {
+					if (endEventErr != null)
+						endEventErr.Set ();
+				}
+			}
+		}*/
+		
+		public void Dispose ()
+		{
+			var proc = this.proc;
+			lock (lockObj) {
+				if (this.proc == null)
+					return;
+				this.proc = null;
+			}
+			if (captureOutputThread != null) {
+				if (captureOutputThread.IsAlive) {
+					try {
+						captureOutputThread.Abort ();
+					} catch {}
+				}
+				captureOutputThread = null;
+			}
+			/*
+			if (captureErrorThread != null) {
+				if (captureErrorThread.IsAlive) {
+					try {
+						captureErrorThread.Abort ();
+					} catch {}
+				}
+				captureErrorThread = null;
+			}*/
+			proc.Dispose ();
 		}
 	}
 }
