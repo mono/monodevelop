@@ -153,8 +153,15 @@ namespace MonoDevelop.MonoDroid
 		{
 			string result, tag;
 			int pid;
-			if (!ParseLine (line, out pid, out tag, out result))
-				throw new FormatException ("Could not recognize logcat output: '" + line + "'");
+			
+			//ignore section headers
+			if (line.StartsWith ("--------"))
+				return;
+			
+			if (!ParseLine (line, out pid, out tag, out result)) {
+				MonoDevelop.Core.LoggingService.LogWarning ("Could not recognize Android logcat output: '" + line + "'");
+				return;
+			}
 
 			if (pid != this.pid)
 				return;
