@@ -371,25 +371,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		static List<ISegment> BreakTextInWords (TextEditor editor, int start, int count)
 		{
-			var result = new List<ISegment> ();
-			for (int line = start; line < start + count; line++) {
-				var lineSegment = editor.Document.GetLine (line);
-				int offset = lineSegment.Offset;
-				bool wasIdentifierPart = false;
-				int lastWordEnd = 0;
-				for (int i = 0; i < lineSegment.EditableLength; i++) {
-					char ch = editor.GetCharAt (offset + i);
-					bool isIdentifierPart = char.IsLetterOrDigit (ch) || ch == '_';
-					if (!isIdentifierPart) {
-						if (wasIdentifierPart)
-							result.Add (new Mono.TextEditor.Segment (offset + lastWordEnd, i - lastWordEnd));
-						result.Add (new Mono.TextEditor.Segment (offset + i, 1));
-						lastWordEnd = i + 1;
-					}
-					wasIdentifierPart = isIdentifierPart;
-				}
-			}
-			return result;
+			return TextBreaker.BreakLinesIntoWords(editor, start, count);
 		}
 		
 		List<Cairo.Rectangle> CalculateChunkPath (TextEditor editor, List<Hunk> diff, List<ISegment> words, bool useRemove)
