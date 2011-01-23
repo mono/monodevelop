@@ -646,6 +646,7 @@ namespace Mono.Debugging.Soft
 		{
 			if (!started)
 				return null;
+			string filename = System.IO.Path.GetFileName (file);
 	
 			// Try the current class first
 			Location target_loc = null;// = GetLocFromType (current_thread.GetFrames()[0].Method.DeclaringType, filename, line);
@@ -654,9 +655,9 @@ namespace Mono.Debugging.Soft
 			if (target_loc == null) {
 				List<TypeMirror> types;
 	
-				if (source_to_type.TryGetValue (file, out types)) {
+				if (source_to_type.TryGetValue (filename, out types)) {
 					foreach (TypeMirror t in types) {
-						target_loc = GetLocFromType (t, file, line);
+						target_loc = GetLocFromType (t, filename, line);
 						if (target_loc != null)
 							break;
 					}
@@ -837,7 +838,7 @@ namespace Mono.Debugging.Soft
 				);
 				foreach (KeyValuePair<EventRequest,BreakInfo> breakpoint in affectedBreakpoints) {
 					OnDebuggerOutput (false, string.Format ("Re-pending breakpoint at {0}:{1}\n",
-					                                        breakpoint.Value.Location.SourceFile,
+					                                        Path.GetFileName (breakpoint.Value.Location.SourceFile),
 					                                        breakpoint.Value.Location.LineNumber));
 					breakpoints.Remove (breakpoint.Key);
 					pending_bes.Add (breakpoint.Value.BreakEvent);
@@ -1085,7 +1086,7 @@ namespace Mono.Debugging.Soft
 			
 			var resolved = new List<BreakEvent> ();
 			
-			foreach (string s in t.GetSourceFiles (true)) {
+			foreach (string s in t.GetSourceFiles ()) {
 				List<TypeMirror> typesList;
 				
 				if (source_to_type.TryGetValue (s, out typesList)) {
@@ -1098,7 +1099,7 @@ namespace Mono.Debugging.Soft
 				
 				
 				foreach (var bp in pending_bes.OfType<Breakpoint> ()) {
-					if (bp.FileName == s) {
+					if (System.IO.Path.GetFileName (bp.FileName) == s) {
 						Location l = GetLocFromType (t, s, bp.Line);
 						if (l != null) {
 							OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint at '{0}:{1}' to {2}:{3}.\n",
@@ -1135,7 +1136,7 @@ namespace Mono.Debugging.Soft
 			Location target_loc = null;
 			foreach (MethodMirror m in type.GetMethods ()) {
 				foreach (Location l in m.Locations) {
-					if (l.SourceFile == file && l.LineNumber == line) {
+					if (System.IO.Path.GetFileName (l.SourceFile) == file && l.LineNumber == line) {
 						target_loc = l;
 						break;
 						}
