@@ -60,8 +60,11 @@ namespace MonoDevelop.MonoDroid
 		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
 			var cmd = (MonoDroidExecutionCommand) command;
-			MonoDroidFramework.Toolbox.StartActivity (cmd.Device, cmd.Activity);
-			return NullProcessAsyncOperation.Success;
+
+			IAsyncOperation startOp = MonoDroidFramework.Toolbox.StartActivity (cmd.Device, 
+				cmd.Activity, console.Out, console.Error);
+			return new MonoDroidProcess (cmd.Device, cmd.Activity, cmd.PackageName, 
+				console.Out.Write, console.Error.Write, startOp);
 		}
 	}
 
