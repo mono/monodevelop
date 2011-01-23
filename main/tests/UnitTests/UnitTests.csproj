@@ -140,6 +140,14 @@
       <Project>{19DE0F35-D204-4FD8-A553-A19ECE05E24D}</Project>
       <Name>MonoDevelop.VersionControl</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\addins\VersionControl\MonoDevelop.VersionControl.Git\MonoDevelop.VersionControl.Git.csproj">
+      <Project>{0413DB7D-8B35-423F-9752-D75C9225E7DE}</Project>
+      <Name>MonoDevelop.VersionControl.Git</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\contrib\NGit\NGit.csproj">
+      <Project>{E3BFF8B4-189C-496A-A817-7E8B31E22B91}</Project>
+      <Name>NGit</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Util.cs" />
@@ -215,6 +223,7 @@
     <Compile Include="MonoDevelop.Refactoring\ImplementInterfaceTests.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\EditorCompareWidgetBaseTest.cs" />
     <Compile Include="Mono.TextEditor.Tests\TextBreakerTests.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git\GitUtilsTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
@@ -241,5 +250,6 @@
     <Folder Include="MonoDevelop.Projects.Gui\" />
     <Folder Include="MonoDevelop.AspNet\" />
     <Folder Include="MonoDevelop.VersionControl.Views\" />
+    <Folder Include="MonoDevelop.VersionControl.Git\" />
   </ItemGroup>
 </Project>

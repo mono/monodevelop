@@ -20,10 +20,12 @@ REFS =  \
 	-r:../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
 	-r:../../build/AddIns/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.dll \
 	-r:../../build/AddIns/VersionControl/MonoDevelop.VersionControl.dll \
+	-r:../../build/AddIns/VersionControl/MonoDevelop.VersionControl.Git.dll \
 	-r:../../build/bin/Mono.TextEditor.dll \
 	-r:../../build/bin/MonoDevelop.Core.dll \
 	-r:../../build/bin/MonoDevelop.Ide.dll \
 	-r:../../build/bin/NRefactory.dll \
+	-r:../../contrib/bin/NGit.dll \
 	-r:../../src/addins/NUnit/lib/nunit.core.dll \
 	-r:../../src/addins/NUnit/lib/nunit.core.interfaces.dll \
 	-r:../../src/addins/NUnit/lib/nunit.framework.dll \
@@ -101,6 +103,7 @@ FILES =  \
 	MonoDevelop.Refactoring/IntroduceFormatItemRefactoringTests.cs \
 	MonoDevelop.Refactoring/RemoveBackingStoreTests.cs \
 	MonoDevelop.VersionControl.Views/EditorCompareWidgetBaseTest.cs \
+	MonoDevelop.VersionControl.Git/GitUtilsTests.cs \
 	MonoDevelop.Xml.StateEngine/AspNetParsingTests.cs \
 	MonoDevelop.Xml.StateEngine/HtmlParsingTests.cs \
 	MonoDevelop.Xml.StateEngine/ParsingTests.cs \
