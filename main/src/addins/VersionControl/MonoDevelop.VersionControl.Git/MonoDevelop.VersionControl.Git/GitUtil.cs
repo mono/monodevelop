@@ -380,31 +380,55 @@ namespace MonoDevelop.VersionControl.Git
 			byte[] data = repo.ObjectDatabase.Open (id).GetBytes ();			
 			int lineCount = NGit.Util.RawParseUtils.LineMap (data, 0, data.Length).Size ();
 			RevCommit[] lines = new RevCommit [lineCount];
-			CascadeBlame (repo, rw, gitFilePath, c, id, lines);
+			int blamedLineCount = 0;
+			List<RevisionObjectIdPair> revisionsToProcess = new List<RevisionObjectIdPair>();
+			revisionsToProcess.Add(new RevisionObjectIdPair(c, id));
+			
+			do {
+				List<RevisionObjectIdPair> nextPass = new List<RevisionObjectIdPair>();
+				
+				foreach (RevisionObjectIdPair pair in revisionsToProcess) {
+					nextPass.AddRange(ProcessCommitBlame (repo, rw, gitFilePath, pair, lines, ref blamedLineCount));
+				}
+				
+				revisionsToProcess = nextPass;
+			} while (blamedLineCount < lineCount && revisionsToProcess.Count > 0);
+			
 			return lines;
 		}
 		
-		static void CascadeBlame (NGit.Repository repo, RevWalk rw, string gitFilePath, RevCommit commit, ObjectId objectId, RevCommit[] lines)
+		static ICollection<RevisionObjectIdPair> ProcessCommitBlame (NGit.Repository repo, RevWalk rw, string gitFilePath, RevisionObjectIdPair commit, RevCommit[] lines, ref int blamedLineCount)
 		{
-			RawText commitText = new RawText (repo.ObjectDatabase.Open (objectId).GetBytes ());
+			ICollection<RevisionObjectIdPair> ancestors = new List<RevisionObjectIdPair>();
+			RawText commitText = null;
 			
-			foreach (ObjectId ancestorId in commit.Parents) {
+			foreach (ObjectId ancestorId in commit.Commit.Parents) {
 				RevCommit ancestor = rw.ParseCommit (ancestorId);
 				TreeWalk tw = TreeWalk.ForPath (repo, gitFilePath, ancestor.Tree);
 				
-				//FIXME: Seems to do depth-first, so we get repeated "tw == null" for the end of each branch
 				if (tw == null)	{
-					FillRemainingBlame (lines, commit);
+					blamedLineCount += FillRemainingBlame (lines, commit.Commit);
 				} else {
 					ObjectId ancestorObjectID = tw.GetObjectId (0);
 					
-					if (!objectId.Equals(ancestorObjectID)) {
-						SetBlameLines (repo, lines, commit, commitText, ancestorObjectID);
+					if (!commit.ObjectId.Equals(ancestorObjectID)) {
+						if (commitText == null) {
+							commitText = new RawText (repo.ObjectDatabase.Open (commit.ObjectId).GetBytes ());
+						}
+						
+						blamedLineCount += SetBlameLines (repo, lines, commit.Commit, commitText, ancestorObjectID);
 					}
 
-					CascadeBlame(repo, rw, gitFilePath, ancestor, ancestorObjectID, lines);
+					ancestors.Add(new RevisionObjectIdPair(ancestor, ancestorObjectID));
+				}
+				
+				if (blamedLineCount == lines.Length)
+				{
+					break;
 				}
 			}
+			
+			return ancestors;
 		}
 
 		static int SetBlameLines (NGit.Repository repo, RevCommit[] lines, RevCommit commit, RawText curText, ObjectId prevObjectId)
@@ -426,13 +450,18 @@ namespace MonoDevelop.VersionControl.Git
 			return lineCount;
 		}
 
-		static void FillRemainingBlame (RevCommit[] lines, RevCommit commit)
+		static int FillRemainingBlame (RevCommit[] lines, RevCommit commit)
 		{
+			int lineCount = 0;
+			
 			for (int n=0; n<lines.Length; n++) {
 				if (lines [n] == null) {
 					lines [n] = commit;
+					lineCount++;
 				}
 			}
+			
+			return lineCount;
 		}
 
 
@@ -551,6 +580,18 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 		
+	}
+	
+	class RevisionObjectIdPair
+	{
+		public RevisionObjectIdPair(RevCommit revision, ObjectId objectId)
+		{
+			this.Commit = revision;
+			this.ObjectId = objectId;
+		}
+		
+		public RevCommit Commit { get; private set; }
+		public ObjectId ObjectId { get; private set; }
 	}
 }
 
