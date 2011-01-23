@@ -371,50 +371,71 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public static RevCommit[] Blame (NGit.Repository repo, RevCommit c, string file)
 		{
-			TreeWalk tw = TreeWalk.ForPath (repo, ToGitPath (repo, file), c.Tree);
+			string gitFilePath = ToGitPath (repo, file);
+			TreeWalk tw = TreeWalk.ForPath (repo, gitFilePath, c.Tree);
 			if (tw == null)
 				return new RevCommit [0];
+			RevWalk rw = new RevWalk (repo);
 			ObjectId id = tw.GetObjectId (0);
-			byte[] data = repo.ObjectDatabase.Open (id).GetBytes ();
-			
+			byte[] data = repo.ObjectDatabase.Open (id).GetBytes ();			
 			int lineCount = NGit.Util.RawParseUtils.LineMap (data, 0, data.Length).Size ();
 			RevCommit[] lines = new RevCommit [lineCount];
-			var curText = new RawText (data);
-			RevCommit prevAncestor = c;
-			
-			ObjectId prevObjectId = null;
-			RevCommit prevCommit = null;
-			int emptyLines = lineCount;
-			RevWalk rw = new RevWalk (repo);
-			
-			foreach (ObjectId ancestorId in c.Parents) {
-				RevCommit ancestor = rw.ParseCommit (ancestorId);
-				tw = TreeWalk.ForPath (repo, ToGitPath (repo, file), ancestor.Tree);
-				if (prevCommit != null && (tw == null || tw.GetObjectId (0) != prevObjectId)) {
-					if (prevObjectId == null)
-						break;
-					byte[] prevData = repo.ObjectDatabase.Open (prevObjectId).GetBytes ();
-					var prevText = new RawText (prevData);
-					var differ = MyersDiff<RawText>.INSTANCE;
-					foreach (Edit e in differ.Diff (RawTextComparator.DEFAULT, prevText, curText)) {
-						for (int n = e.GetBeginB (); n < e.GetEndB (); n++) {
-							if (lines [n] == null) {
-								lines [n] = prevCommit;
-								emptyLines--;
-							}
-						}
-					}
-					if (tw == null || emptyLines <= 0)
-						break;
-				}
-				prevCommit = ancestor;
-				prevObjectId = tw != null ? tw.GetObjectId (0) : null;
-			}
-			for (int n=0; n<lines.Length; n++)
-				if (lines [n] == null)
-					lines [n] = prevAncestor;
+			CascadeBlame (repo, rw, gitFilePath, c, id, lines);
 			return lines;
 		}
+		
+		static void CascadeBlame (NGit.Repository repo, RevWalk rw, string gitFilePath, RevCommit commit, ObjectId objectId, RevCommit[] lines)
+		{
+			RawText commitText = new RawText (repo.ObjectDatabase.Open (objectId).GetBytes ());
+			
+			foreach (ObjectId ancestorId in commit.Parents) {
+				RevCommit ancestor = rw.ParseCommit (ancestorId);
+				TreeWalk tw = TreeWalk.ForPath (repo, gitFilePath, ancestor.Tree);
+				
+				//FIXME: Seems to do depth-first, so we get repeated "tw == null" for the end of each branch
+				if (tw == null)	{
+					FillRemainingBlame (lines, commit);
+				} else {
+					ObjectId ancestorObjectID = tw.GetObjectId (0);
+					
+					if (!objectId.Equals(ancestorObjectID)) {
+						SetBlameLines (repo, lines, commit, commitText, ancestorObjectID);
+					}
+
+					CascadeBlame(repo, rw, gitFilePath, ancestor, ancestorObjectID, lines);
+				}
+			}
+		}
+
+		static int SetBlameLines (NGit.Repository repo, RevCommit[] lines, RevCommit commit, RawText curText, ObjectId prevObjectId)
+		{
+			int lineCount = 0;
+			byte[] prevData = repo.ObjectDatabase.Open (prevObjectId).GetBytes ();
+			var prevText = new RawText (prevData);
+			var differ = MyersDiff<RawText>.INSTANCE;
+			
+			foreach (Edit e in differ.Diff (RawTextComparator.DEFAULT, prevText, curText)) {
+				for (int n = e.GetBeginB (); n < e.GetEndB (); n++) {
+					if (lines [n] == null) {
+						lines [n] = commit;
+						lineCount ++;
+					}
+				}
+			}
+			
+			return lineCount;
+		}
+
+		static void FillRemainingBlame (RevCommit[] lines, RevCommit commit)
+		{
+			for (int n=0; n<lines.Length; n++) {
+				if (lines [n] == null) {
+					lines [n] = commit;
+				}
+			}
+		}
+
+
 		
 		public static MergeCommandResult CherryPick (NGit.Repository repo, RevCommit srcCommit)
 		{
