@@ -239,7 +239,7 @@ namespace MonoDevelop.MonoDroid
 			// Valid package names never start with a '.'
 			// Process names use the format ".lastPartOfPackageName"
 			int idx = packageName.LastIndexOf ('.');
-			var processName = idx > -1 ? packageName.Substring (idx) : "." + packageName;
+			var processName = idx > -1 ? packageName.Substring (idx + 1) : packageName;
 
 			var sr = new StringWriter ();
 			WriteCommand ("shell:ps " + processName, () => GetStatus (() => ReadResponse (sr, OnGotResponse)));
