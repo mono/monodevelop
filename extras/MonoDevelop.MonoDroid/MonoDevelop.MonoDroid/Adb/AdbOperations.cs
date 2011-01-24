@@ -131,13 +131,37 @@ namespace MonoDevelop.MonoDroid
 			WriteCommand (command, () => GetStatus (() => ReadResponseContinuous (GotResponseContinuous)));
 		}
 
-		static readonly char [] newLine = new char [] { '\n' };
+		string tmpLine;
 
+		// Each log line marks its ending by a \r\n, so we use it
+		// to detect incomplete lines and save, to merge them later.
 		void GotResponseContinuous (string response)
 		{
-			//FIXME: is each read guaranteed to get a full line? or do we need to cache and merge partial lines?
-			foreach (string line in response.Split (newLine, StringSplitOptions.RemoveEmptyEntries))
-				output (line);
+			int pos = 0;
+			while (pos < response.Length) {
+
+				int idx = response.IndexOf ('\n', pos);
+				if (idx < 0) {
+					// End of response, incomplete logline
+					if (tmpLine != null)
+						tmpLine += response.Substring (pos, response.Length - pos);
+					else
+						tmpLine = response.Substring (pos, response.Length - pos);
+
+					break;
+				}
+
+				// Extract the line, including the newline chars.
+				var logLine = response.Substring (pos, idx - pos + 1);
+				pos = idx + 1;
+
+				if (tmpLine != null) {
+					logLine = tmpLine + logLine;
+					tmpLine = null;
+				}
+
+				output (logLine);
+			}
 		}
 	}
 	
