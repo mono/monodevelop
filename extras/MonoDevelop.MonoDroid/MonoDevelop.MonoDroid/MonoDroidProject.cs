@@ -45,7 +45,7 @@ namespace MonoDevelop.MonoDroid
 
 	public class MonoDroidProject : DotNetProject
 	{
-		internal const string FX_MONODROID = "2.2";
+		internal const string FX_MONODROID = "MonoDroid";
 		
 		#region Properties
 		
@@ -184,9 +184,6 @@ namespace MonoDevelop.MonoDroid
 		
 		void Init ()
 		{
-			//set parameters to ones required for MonoDroid build
-			TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (FX_MONODROID);
-			
 			MonoDroidFramework.DeviceManager.IncrementOpenProjectCount ();
 		}
 		
@@ -200,6 +197,16 @@ namespace MonoDevelop.MonoDroid
 		public override bool SupportsFormat (FileFormat format)
 		{
 			return format.Id == "MSBuild10";
+		}
+		
+		public override MonoDevelop.Core.Assemblies.TargetFrameworkMoniker GetDefaultTargetFrameworkId ()
+		{
+			return new MonoDevelop.Core.Assemblies.TargetFrameworkMoniker (FX_MONODROID, MonoDroidFramework.DefaultAndroidVersion.OSVersion);
+		}
+		
+		public override bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
+		{
+			return framework.Id.Identifier == FX_MONODROID;
 		}
 		
 		protected override void OnEndLoad ()
@@ -453,15 +460,6 @@ namespace MonoDevelop.MonoDroid
 			}
 			
 			monitor.Dispose ();
-		}
-		
-		#endregion
-		
-		#region Platform properties
-		
-		public override bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
-		{
-			return framework.Id == FX_MONODROID;
 		}
 		
 		#endregion

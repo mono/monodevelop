@@ -1,4 +1,4 @@
-<TargetFramework id="2.2" _name="MonoDroid" clrVersion="Clr_2_1" SubsetOfFramework="3.5">
+<TargetFramework id="MonoDroid,Version=v1.0" hidden="true" _name="MonoDroid Core" clrVersion="Clr_2_1">
 <Assemblies>
   <Assembly name="mscorlib" version="2.0.5.0" publicKeyToken="7cec85d7bea7798e" />
   <Assembly name="System" version="2.0.5.0" publicKeyToken="7cec85d7bea7798e" />
@@ -16,7 +16,5 @@
   <Assembly name="Mono.Data.Sqlite" version="2.0.5.0" publicKeyToken="0738eb9f132ed756" />
   <Assembly name="Mono.Data.Tds" version="2.0.5.0" publicKeyToken="0738eb9f132ed756" />
   <Assembly name="Mono.Security" version="2.0.5.0" publicKeyToken="0738eb9f132ed756" />
-  <Assembly name="Mono.Android" />
-  <Assembly name="OpenTK" />
 </Assemblies>
 </TargetFramework>

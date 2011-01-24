@@ -34,6 +34,7 @@ FILES =  \
 	MonoDevelop.Core.Assemblies/SystemPackage.cs \
 	MonoDevelop.Core.Assemblies/TargetFramework.cs \
 	MonoDevelop.Core.Assemblies/TargetFrameworkBackend.cs \
+	MonoDevelop.Core.Assemblies/TargetFrameworkMoniker.cs \
 	MonoDevelop.Core.Assemblies/TargetRuntime.cs \
 	MonoDevelop.Core.Collections/ReadOnlyDictionary.cs \
 	MonoDevelop.Core.Collections/Set.cs \

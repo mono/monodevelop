@@ -70,7 +70,8 @@ namespace UnitTests
 			Gtk.Application.Init ();
 			ProjectDomService.TrackFileChanges = true;
 			DesktopService.Initialize ();
-			MonoDevelop.Projects.Services.ProjectService.DefaultTargetFramework = Runtime.SystemAssemblyService.GetTargetFramework ("2.0");
+			MonoDevelop.Projects.Services.ProjectService.DefaultTargetFramework
+				= Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_2_0);
 		}
 
 		

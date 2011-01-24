@@ -381,8 +381,11 @@ namespace MonoDevelop.Projects
 					SystemAssembly best = null;
 					foreach (SystemAssembly asm in AssemblyContext.GetAssembliesFromFullName (reference)) {
 						//highest priority to framework packages
-						if (ownerProject != null && asm.Package.IsFrameworkPackage && asm.Package.TargetFramework == ownerProject.TargetFramework.Id) {
-							return cachedPackage = asm.Package;
+						if (ownerProject != null && asm.Package.IsFrameworkPackage) {
+							var targetFx = ownerProject.TargetFramework;
+							var packageFxId = asm.Package.TargetFramework;
+							if (targetFx.IncludesFramework (packageFxId))
+								return cachedPackage = asm.Package;
 						}
 						if (asm.Package.IsGacPackage)
 							best = asm;

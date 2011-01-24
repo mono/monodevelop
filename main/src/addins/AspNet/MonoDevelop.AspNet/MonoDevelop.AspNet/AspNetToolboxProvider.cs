@@ -53,20 +53,20 @@ namespace MonoDevelop.AspNet
 		{
 			var ctx = Runtime.SystemAssemblyService.DefaultAssemblyContext;
 			
-			TargetFramework fx = Runtime.SystemAssemblyService.GetTargetFramework ("1.1");
+			TargetFramework fx = Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_1_1);
 			
 			yield return ctx.GetAssemblyLocation ("System.Web, Version=1.0.5000.0", fx);
 			
-			fx = Runtime.SystemAssemblyService.GetTargetFramework ("3.5");
+			fx = Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_2_0);
 			
 			yield return ctx.GetAssemblyLocation ("System.Web, Version=2.0.0.0", fx);
 			
-			fx = Runtime.SystemAssemblyService.GetTargetFramework ("2.0");
+			fx = Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_3_5);
 			
 			yield return ctx.GetAssemblyLocation ("System.Web.Extensions, Version=3.5.0.0", fx);
 			yield return ctx.GetAssemblyLocation ("System.Web.Mvc, Version=1.0.0.0", fx);
 			
-			fx = Runtime.SystemAssemblyService.GetTargetFramework ("4.0");
+			fx = Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_4_0);
 			
 			yield return ctx.GetAssemblyLocation ("System.Web, Version=4.0.0.0", fx);
 			yield return ctx.GetAssemblyLocation ("System.Web.Extensions, Version=4.0.0.0", fx);

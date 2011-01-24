@@ -135,7 +135,7 @@ namespace MonoDevelop.Projects
 			}
 
 			if ((projectOptions != null) && (projectOptions.Attributes["TargetFrameworkVersion"] != null))
-				targetFrameworkVersion = projectOptions.Attributes["TargetFrameworkVersion"].Value;
+				targetFrameworkId = TargetFrameworkMoniker.Parse (projectOptions.Attributes["TargetFrameworkVersion"].Value);
 
 			string binPath;
 			if (projectCreateInfo != null) {
@@ -275,7 +275,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		string targetFrameworkVersion;
+		TargetFrameworkMoniker targetFrameworkId;
 		TargetFramework targetFramework;
 
 		public TargetFramework TargetFramework {
@@ -291,7 +291,7 @@ namespace MonoDevelop.Projects
 				if (targetFramework == validValue || validValue == null)
 					return;
 				targetFramework = validValue;
-				targetFrameworkVersion = validValue.Id;
+				targetFrameworkId = validValue.Id;
 				if (replacingValue)
 					UpdateSystemReferences ();
 				NotifyModified ("TargetFramework");
@@ -300,6 +300,11 @@ namespace MonoDevelop.Projects
 
 		public TargetRuntime TargetRuntime {
 			get { return Runtime.SystemAssemblyService.DefaultRuntime; }
+		}
+		
+		public virtual TargetFrameworkMoniker GetDefaultTargetFrameworkId ()
+		{
+			return ProjectService.DefaultTargetFrameworkId;
 		}
 
 		public IAssemblyContext AssemblyContext {
@@ -325,8 +330,8 @@ namespace MonoDevelop.Projects
 		void SetDefaultFramework ()
 		{
 			if (targetFramework == null) {
-				if (targetFrameworkVersion != null)
-					targetFramework = Runtime.SystemAssemblyService.GetTargetFramework (targetFrameworkVersion);
+				if (targetFrameworkId != null)
+					targetFramework = Runtime.SystemAssemblyService.GetTargetFramework (targetFrameworkId);
 				if (targetFramework == null)
 					TargetFramework = Services.ProjectService.DefaultTargetFramework;
 			}

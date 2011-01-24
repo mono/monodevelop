@@ -58,17 +58,17 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="MonoDevelop.Core, Version=2.4.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="MonoDevelop.Core, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\main\build\bin\MonoDevelop.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MonoDevelop.Ide, Version=2.4.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="MonoDevelop.Ide, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\main\build\bin\MonoDevelop.Ide.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MonoDevelop.DesignerSupport, Version=2.4.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="MonoDevelop.DesignerSupport, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\main\build\AddIns\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.dll</HintPath>
       <Private>False</Private>
@@ -116,9 +116,6 @@
     <EmbeddedResource Include="MonoDevelop.MonoDroid.addin.xml">
       <LogicalName>MonoDevelop.MonoDroid.addin.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="framework_MonoDroid.xml">
-      <LogicalName>framework_MonoDroid.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
@@ -128,12 +125,34 @@
     <EmbeddedResource Include="spinner.gif">
       <LogicalName>spinner.gif</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Frameworks\framework_MonoDroid.xml">
+      <LogicalName>framework_MonoDroid.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Frameworks\framework_MonoDroid_1_6.xml">
+      <LogicalName>framework_MonoDroid_1_6.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Frameworks\framework_MonoDroid_2_0.xml">
+      <LogicalName>framework_MonoDroid_2_0.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Frameworks\framework_MonoDroid_2_0_1.xml">
+      <LogicalName>framework_MonoDroid_2_0_1.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Frameworks\framework_MonoDroid_2_1.xml">
+      <LogicalName>framework_MonoDroid_2_1.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Frameworks\framework_MonoDroid_2_2.xml">
+      <LogicalName>framework_MonoDroid_2_2.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Frameworks\framework_MonoDroid_2_3.xml">
+      <LogicalName>framework_MonoDroid_2_3.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="icons\" />
     <Folder Include="templates\" />
     <Folder Include="Gui\" />
     <Folder Include="Adb\" />
+    <Folder Include="Frameworks\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="templates\MonoDroidLibraryProject.xpt.xml">

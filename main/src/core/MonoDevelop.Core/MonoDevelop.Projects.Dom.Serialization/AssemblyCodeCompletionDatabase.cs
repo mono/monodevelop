@@ -315,7 +315,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	
 	internal class DatabaseGenerator: RemoteProcessObject
 	{
-		public string GenerateDatabase (string runtimeId, string fxId, string baseDir, string assemblyFile)
+		public string GenerateDatabase (string runtimeId, TargetFrameworkMoniker fxId, string baseDir, string assemblyFile)
 		{
 			try {
 				Runtime.Initialize (false);
@@ -326,7 +326,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				TargetFramework fx = Runtime.SystemAssemblyService.GetTargetFramework (fxId);
 
 				// Generate the new db in a temp file. The main process will move the file if required.
-				using (AssemblyCodeCompletionDatabase db = new AssemblyCodeCompletionDatabase (runtime, fx, assemblyFile, pdb, true)) {
+				using (var db = new AssemblyCodeCompletionDatabase (runtime, fx, assemblyFile, pdb, true)) {
 					if (db.LoadError)
 						throw new InvalidOperationException ("Could find assembly: " + assemblyFile);
 					db.ParseInExternalProcess = false;

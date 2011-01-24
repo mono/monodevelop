@@ -491,6 +491,7 @@
     <Compile Include="MonoDevelop.Core.Execution\ProcessArgumentBuilder.cs" />
     <Compile Include="MonoDevelop.Projects.Policies\IPolicyProvider.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectItemEventArgs.cs" />
+    <Compile Include="MonoDevelop.Core.Assemblies\TargetFrameworkMoniker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

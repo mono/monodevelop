@@ -78,11 +78,11 @@ namespace MonoDevelop.Core.AddIns
 			pi.Version = version;
 			
 			if (fxVersion != null)
-				pi.TargetFramework = fxVersion;
+				pi.TargetFramework = TargetFrameworkMoniker.Parse (fxVersion);
 			else if (clrVersion == ClrVersion.Net_1_1)
-				pi.TargetFramework = "1.1";
+				pi.TargetFramework = TargetFrameworkMoniker.NET_1_1;
 			else if (clrVersion == ClrVersion.Net_2_0)
-				pi.TargetFramework = "2.0";
+				pi.TargetFramework = TargetFrameworkMoniker.NET_2_0;
 			
 			if (hasGacRoot)
 				pi.GacRoot = Addin.GetFilePath (".");

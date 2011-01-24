@@ -410,12 +410,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public static RemoteProjectBuilder GetProjectBuilder (TargetRuntime runtime, string toolsVersion, string file)
 		{
 			lock (builders) {
-				var toolsFx = Runtime.SystemAssemblyService.GetTargetFramework (toolsVersion);
+				var toolsFx = Runtime.SystemAssemblyService.GetTargetFramework (new TargetFrameworkMoniker (toolsVersion));
 				string binDir = runtime.GetMSBuildBinPath (toolsFx);
 				
 				if (!runtime.IsInstalled (toolsFx))
 					throw new InvalidOperationException (string.Format (
-						"Runtime '{0}' cannot be used to build MSBuild '{1}' format projects",
+						"Runtime '{0}' does not have the MSBuild '{1}' framework installed",
 						runtime.Id, toolsVersion));
 				
 				string builderKey = runtime.Id + " " + toolsVersion;

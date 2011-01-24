@@ -71,13 +71,16 @@ namespace MonoDevelop.Core.Assemblies
 		
 		SystemPackage RegisterPackage (SystemPackageInfo pinfo, bool isInternal, PackageAssemblyInfo[] assemblyFiles)
 		{
-			//don't allow packages to duplicate framework packages
+			//don't allow packages to duplicate framework package names
+			//but multiple framework packages (from different versions) may have the same name
 			SystemPackage oldPackage;
 			if (packagesHash.TryGetValue (pinfo.Name, out oldPackage)) {
-				if (oldPackage.IsFrameworkPackage)
+				if (pinfo.IsFrameworkPackage) {
+					if (!oldPackage.IsFrameworkPackage)
+						ForceUnregisterPackage (oldPackage);
+				} else if (oldPackage.IsFrameworkPackage) {
 					return oldPackage;
-				else if (pinfo.IsFrameworkPackage)
-					ForceUnregisterPackage (oldPackage);
+				}
 			}
 			
 			SystemPackage p = new SystemPackage ();
@@ -133,22 +136,13 @@ namespace MonoDevelop.Core.Assemblies
 		public IEnumerable<SystemPackage> GetPackages (TargetFramework fx)
 		{
 			foreach (SystemPackage pkg in packages) {
-				if (pkg.TargetFramework == fx.Id) {
-					yield return pkg;
-				}
-				else if (pkg.IsBaseCorePackage) {
-					if (pkg.TargetFramework == fx.BaseCoreFramework)
+				if (pkg.IsFrameworkPackage) {
+					if (fx.IncludesFramework (pkg.TargetFramework))
 						yield return pkg;
-				}
-				else if (pkg.IsFrameworkPackage) {
-					if (fx.IsCompatibleWithFramework (pkg.TargetFramework)) {
-						TargetFramework packageFx = Runtime.SystemAssemblyService.GetTargetFramework (pkg.TargetFramework);
-						if (packageFx.BaseCoreFramework == fx.BaseCoreFramework)
-							yield return pkg;
-					}
-				}
-				else if (fx.IsCompatibleWithFramework (pkg.TargetFramework))
-					yield return pkg;
+				} else {
+					if (fx.IsCompatibleWithFramework (pkg.TargetFramework))
+						yield return pkg;
+				}		
 			}
 		}
 
@@ -213,7 +207,7 @@ namespace MonoDevelop.Core.Assemblies
 				SystemAssembly gacFound = null;
 				foreach (SystemAssembly asm in GetAssembliesFromFullNameInternal (fullname)) {
 					found = asm;
-					if (asm.Package.IsFrameworkPackage && fx != null && asm.Package.TargetFramework == fx.Id)
+					if (asm.Package.IsFrameworkPackage && fx != null && fx.IncludesFramework (asm.Package.TargetFramework))
 						return asm;
 					if (asm.Package.IsGacPackage)
 						gacFound = asm;
@@ -309,7 +303,7 @@ namespace MonoDevelop.Core.Assemblies
 			string bestMatch = null;
 			foreach (SystemAssembly asm in FindNewerAssembliesSameName (fullname)) {
 				if (asm.Package.IsFrameworkPackage) {
-					if (fx.IsExtensionOfFramework (asm.Package.TargetFramework))
+					if (fx.IncludesFramework (asm.Package.TargetFramework))
 						if (package == null || asm.Package.Name == package)
 							return asm.FullName;
 				} else if (fx.IsCompatibleWithFramework (asm.Package.TargetFramework)) {
@@ -433,7 +427,7 @@ namespace MonoDevelop.Core.Assemblies
 			}
 			
 			foreach (var fxAsm in fxAsms) {
-				if (fx.IsExtensionOfFramework (fxAsm.Package.TargetFramework))
+				if (fx.IncludesFramework (fxAsm.Package.TargetFramework))
 					return fxAsm;
 			}
 
@@ -443,7 +437,7 @@ namespace MonoDevelop.Core.Assemblies
 			foreach (var pair in assemblyFullNameToAsm) {
 				foreach (var fxAsm in pair.Value.AllSameName ()) {
 					var rpack = fxAsm.Package;
-					if (rpack.IsFrameworkPackage && fx.IsExtensionOfFramework (rpack.TargetFramework) && Path.GetFileName (fxAsm.Location) == fname)
+					if (rpack.IsFrameworkPackage && fx.IncludesFramework (rpack.TargetFramework) && Path.GetFileName (fxAsm.Location) == fname)
 						return fxAsm;
 				}
 			}

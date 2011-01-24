@@ -105,9 +105,8 @@ namespace MonoDevelop.Core.Assemblies
 			info.IsFrameworkPackage = true;
 			info.IsCorePackage = true;
 			info.IsGacPackage = true;
-			info.Version = framework.Id;
+			info.Version = framework.Id.Version;
 			info.TargetFramework = framework.Id;
-			info.IsBaseCorePackage = framework.Id == framework.BaseCoreFramework;
 			return info;
 		}
 	}

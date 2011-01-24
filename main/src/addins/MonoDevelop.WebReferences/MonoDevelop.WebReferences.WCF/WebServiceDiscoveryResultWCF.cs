@@ -145,8 +145,9 @@ namespace MonoDevelop.WebReferences.WCF
 			CodeNamespace cns = new CodeNamespace (proxyNamespace);
 			ccu.Namespaces.Add (cns);
 			
-			bool targetMoonlight = dotNetProject.TargetFramework.Id.StartsWith ("SL");
-			bool targetMonoTouch = dotNetProject.TargetFramework.Id.StartsWith ("IPhone");
+			bool targetMoonlight = dotNetProject.TargetFramework.Id.Identifier == ("Silverlight");
+			bool targetMonoTouch = dotNetProject.TargetFramework.Id.Identifier == ("MonoTouch");
+			bool targetMonoDroid = dotNetProject.TargetFramework.Id.Identifier == ("MonoDroid");
 			
 			ServiceContractGenerator generator = new ServiceContractGenerator (ccu);
 			generator.Options = ServiceContractGenerationOptions.ChannelInterface | ServiceContractGenerationOptions.ClientClass;

@@ -44,7 +44,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	{
 		Project project;
 		bool initialFileCheck;
-		string lastVersion = null;
 		int parseCount;
 		
 		public ProjectCodeCompletionDatabase (Project project, ParserDatabase pdb): base (pdb, true)
@@ -182,9 +181,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			
 			DotNetProject prj = project as DotNetProject;
 			if (prj == null) return false;
-			
-			if (prj.TargetFramework.Id == lastVersion)
-				return false;
 
 			// Look for an existing mscorlib reference
 			string currentRefUri = null;

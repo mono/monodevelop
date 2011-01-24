@@ -37,17 +37,21 @@ namespace MonoDevelop.Core.Assemblies
 {
 	public class TargetFramework
 	{
-		[ItemProperty]
-		string id;
+		[ItemProperty(SerializationDataType=typeof(TargetFrameworkMonikerDataType))]
+		TargetFrameworkMoniker id;
 		
 		[ItemProperty ("_name")]
 		string name;
 		
+#pragma warning disable 0649
+		[ItemProperty]
+		bool hidden;
+#pragma warning restore 0649
+		
 		[ItemProperty]
 		ClrVersion clrVersion;
 
-		List<string> compatibleFrameworks = new List<string> ();
-		List<string> extendedFrameworks = new List<string> ();
+		List<TargetFrameworkMoniker> includedFrameworks = new List<TargetFrameworkMoniker> ();
 
 		internal bool RelationsBuilt;
 		
@@ -56,7 +60,7 @@ namespace MonoDevelop.Core.Assemblies
 		string corlibVersion;
 
 		public static TargetFramework Default {
-			get { return Runtime.SystemAssemblyService.GetTargetFramework ("1.1"); }
+			get { return Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.Default); }
 		}
 
 		internal TargetFramework ()
@@ -64,15 +68,19 @@ namespace MonoDevelop.Core.Assemblies
 			Index = FrameworkCount++;
 		}
 
-		internal TargetFramework (string id)
+		internal TargetFramework (TargetFrameworkMoniker id)
 		{
 			Index = FrameworkCount++;
 			this.id = id;
-			this.name = id;
+			this.name = id.Profile == null
+				? string.Format ("{0} {1}", id.Identifier, id.Version)
+				: string.Format ("{0} {1} {2} Profile", id.Identifier, id.Version, id.Profile);
 			clrVersion = ClrVersion.Default;
 			Assemblies = new AssemblyInfo[0];
-			compatibleFrameworks.Add (id);
-			extendedFrameworks.Add (id);
+		}
+		
+		public bool Hidden {
+			get { return hidden; }
 		}
 		
 		public string Name {
@@ -81,7 +89,7 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 		
-		public string Id {
+		public TargetFrameworkMoniker Id {
 			get {
 				return id;
 			}
@@ -93,9 +101,10 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 
-		public bool IsCompatibleWithFramework (string fxId)
+		public bool IsCompatibleWithFramework (TargetFrameworkMoniker fxId)
 		{
-			return compatibleFrameworks.Contains (fxId);
+			return fxId.Identifier == this.id.Identifier
+				&& new Version (fxId.Version).CompareTo (new Version (this.id.Version)) <= 0;
 		}
 		
 		internal string GetCorlibVersion ()
@@ -124,29 +133,29 @@ namespace MonoDevelop.Core.Assemblies
 			return null;
 		}
 		
-		internal bool IsExtensionOfFramework (string fxId)
+		public bool IncludesFramework (TargetFrameworkMoniker id)
 		{
-			return extendedFrameworks.Contains (fxId);
+			return id == this.id || includedFrameworks.Contains (id);
 		}
 
-		internal List<string> CompatibleFrameworks {
-			get { return compatibleFrameworks; }
+		internal List<TargetFrameworkMoniker> IncludedFrameworks {
+			get { return includedFrameworks; }
 		}
-
-		internal List<string> ExtendedFrameworks {
-			get { return extendedFrameworks; }
+				
+		[ItemProperty (Name="IncludesFramework")]
+		string includesFramework;
+		
+		internal TargetFrameworkMoniker GetIncludesFramework ()
+		{
+			if (string.IsNullOrEmpty (includesFramework))
+				return null;
+			string version = includesFramework[0] == 'v'?
+				includesFramework.Substring (1) : includesFramework;
+			if (version.Length == 0)
+				throw new InvalidOperationException ("Invalid include version in framework " + id);
+			
+			return new TargetFrameworkMoniker (id.Identifier, version);	
 		}
-		
-		internal string BaseCoreFramework { get; set; }
-
-		[ItemProperty]
-		internal string ExtendsFramework { get; set; }
-		
-		[ItemProperty]
-		internal string CompatibleWithFramework { get; set; }
-		
-		[ItemProperty]
-		public string SubsetOfFramework { get; set; }
 		
 		[ItemProperty]
 		[ItemProperty ("Assembly", Scope="*")]
@@ -162,9 +171,9 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public override string ToString ()
 		{
-			return string.Format("[TargetFramework: Name={0}, Id={1}, ClrVersion={2}, SubsetOfFramework={3}]", Name, Id, ClrVersion, SubsetOfFramework);
+			return string.Format ("[TargetFramework: Hidden={0}, Name={1}, Id={2}, ClrVersion={3}]",
+				Hidden, Name, Id, ClrVersion);
 		}
-
 	}
 	
 	class AssemblyInfo
