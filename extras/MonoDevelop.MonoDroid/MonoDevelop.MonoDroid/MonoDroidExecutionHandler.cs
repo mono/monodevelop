@@ -190,20 +190,14 @@ namespace MonoDevelop.MonoDroid
 			// Tag
 			start = pos;
 			len = 0;
-			while (pos < line.Length && Char.IsLetter (line [pos++]))
+
+			while (pos < line.Length && line [pos++] != '(')
 				len++;
 
 			if (len == 0)
 				return false;
 
-			tag = line.Substring (start, len);
-
-			// Optional whitespace
-			while (pos < line.Length && line [pos] == ' ')
-				pos++;
-
-			// Opening brace
-			pos++;
+			tag = line.Substring (start, len).Trim ();
 
 			// Optional whitespace
 			while (pos < line.Length && line [pos] == ' ')
@@ -212,7 +206,7 @@ namespace MonoDevelop.MonoDroid
 			// PID section
 			start = pos;
 			len = 0;
-			while (Char.IsDigit (line [pos++]))
+			while (pos < line.Length && Char.IsDigit (line [pos++]))
 				len++;
 
 			if (len == 0)
