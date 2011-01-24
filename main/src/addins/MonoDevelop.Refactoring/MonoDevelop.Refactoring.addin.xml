@@ -125,7 +125,8 @@
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.QuickFix"
 					defaultHandler = "MonoDevelop.Refactoring.QuickFixHandler"
 					_label = "Quick fix..."
-					shortcut = "Alt|Return" />
+					shortcut = "Alt|Return"
+					macShortcut = "Alt|Return" />
 		
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.IntegrateTemporaryVariable"
 					defaultHandler = "MonoDevelop.Refactoring.IntegrateTemporaryVariable.IntegrateTemporaryVariableHandler"
