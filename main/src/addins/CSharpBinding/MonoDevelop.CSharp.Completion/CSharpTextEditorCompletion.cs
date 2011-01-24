@@ -438,11 +438,13 @@ namespace MonoDevelop.CSharp.Completion
 								}
 							}
 							if (!added)
-								cdc.Add (returnType);
+								cdc.Add (returnType);/*
 							foreach (object o in CreateCtrlSpaceCompletionData (completionContext, result)) {
 								MemberCompletionData memberData = o as MemberCompletionData;
-								if (memberData == null || memberData.Member == null)
+								if (memberData == null || memberData.Member == null) {
+									completionList.Add (o as CompletionData);
 									continue;
+								}
 								if (memberData.Member is IMember) {
 									returnType = ((IMember)memberData.Member).ReturnType;
 								} else if (memberData.Member is IParameter) {
@@ -450,10 +452,12 @@ namespace MonoDevelop.CSharp.Completion
 								} else {
 									returnType = ((LocalVariable)memberData.Member).ReturnType;
 								}
-								if (returnType != null && returnType.FullName == resolvedType.FullName)
+								// filter out void types
+								if (returnType != null && returnType.FullName != DomReturnType.Void.FullName)
 									completionList.Add (memberData);
-							}
+							}*/
 							completionList.AutoCompleteEmptyMatch = false;
+							resolver.AddAccessibleCodeCompletionData (result.ExpressionContext, cdc);
 							return completionList;
 						}
 						
@@ -463,11 +467,12 @@ namespace MonoDevelop.CSharp.Completion
 							completionList.AutoCompleteEmptyMatch = false;
 							cdc.Add ("true", "md-keyword");
 							cdc.Add ("false", "md-keyword");
-							
-							foreach (object o in CreateCtrlSpaceCompletionData (completionContext, result)) {
+/*							foreach (object o in CreateCtrlSpaceCompletionData (completionContext, result)) {
 								MemberCompletionData memberData = o as MemberCompletionData;
-								if (memberData == null || memberData.Member == null)
+								if (memberData == null || memberData.Member == null) {
+									completionList.Add (o as CompletionData);
 									continue;
+								}
 								IReturnType returnType = null;
 								if (memberData.Member is IMember) {
 									returnType = ((IMember)memberData.Member).ReturnType;
@@ -476,9 +481,11 @@ namespace MonoDevelop.CSharp.Completion
 								} else {
 									returnType = ((LocalVariable)memberData.Member).ReturnType;
 								}
-								if (returnType != null && returnType.FullName == DomReturnType.Bool.FullName)
+								// filter out void types
+								if (returnType != null && returnType.FullName != DomReturnType.Void.FullName)
 									completionList.Add (memberData);
-							}
+							}*/
+							resolver.AddAccessibleCodeCompletionData (result.ExpressionContext, cdc);
 							return completionList;
 						}
 							
