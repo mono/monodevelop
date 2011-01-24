@@ -59,7 +59,7 @@ namespace Mono.TextEditor
 			get { return lineHeight; }
 		}
 
-		public override double Width {
+		public override double Width { 
 			get { return -1; }
 		}
 
@@ -153,7 +153,10 @@ namespace Mono.TextEditor
 			textEditor.GetTextEditorData ().SearchChanged += HandleSearchChanged;
 			markerLayout = PangoUtil.CreateLayout (textEditor);
 
-			textEditor.Document.EndUndo += UpdateBracketHighlighting;
+			textEditor.Document.EndUndo += delegate {
+				if (!textEditor.Document.IsInAtomicUndo)
+					UpdateBracketHighlighting (this, EventArgs.Empty);
+			};
 			textEditor.SelectionChanged += UpdateBracketHighlighting;
 			textEditor.Document.Undone += delegate {
 				UpdateBracketHighlighting (this, EventArgs.Empty);
@@ -376,17 +379,15 @@ namespace Mono.TextEditor
 				matchingBracket = Document.GetMatchingBracketOffset (worker, offset + 1);
 			if (matchingBracket == caretOffset)
 				matchingBracket = -1;
-			if (worker.CancellationPending)
-				return;
 			if (matchingBracket != oldIndex) {
 				highlightBracketOffset = matchingBracket;
 				int line1 = oldIndex >= 0 ? Document.OffsetToLineNumber (oldIndex) : -1;
 				int line2 = highlightBracketOffset >= 0 ? Document.OffsetToLineNumber (highlightBracketOffset) : -1;
 				//DocumentLocation matchingBracketLocation = Document.OffsetToLocation (matchingBracket);
 				Application.Invoke (delegate {
-					if (!worker.CancellationPending && line1 >= 0)
+					if (line1 >= 0)
 						textEditor.RedrawLine (line1);
-					if (!worker.CancellationPending && line1 != line2 && line2 >= 0)
+					if (line1 != line2 && line2 >= 0)
 						textEditor.RedrawLine (line2);
 				});
 			}
@@ -1201,7 +1202,7 @@ namespace Mono.TextEditor
 				int index = highlightBracketOffset - offset;
 				Pango.Rectangle rect = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)index, ref curIndex, ref byteIndex));
 				
-				var bracketMatch = new Cairo.Rectangle (xPos + rect.X / Pango.Scale.PangoScale, y, (rect.Width / Pango.Scale.PangoScale) - 1, (rect.Height / Pango.Scale.PangoScale) - 1);
+				var bracketMatch = new Cairo.Rectangle (xPos + rect.X / Pango.Scale.PangoScale + 0.5, y + 0.5, (rect.Width / Pango.Scale.PangoScale) - 1, (rect.Height / Pango.Scale.PangoScale) - 1);
 				if (BackgroundRenderer == null) {
 					ctx.Color = this.ColorStyle.BracketHighlightRectangle.CairoBackgroundColor;
 					ctx.Rectangle (bracketMatch);
