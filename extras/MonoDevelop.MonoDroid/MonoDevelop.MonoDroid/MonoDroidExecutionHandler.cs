@@ -114,7 +114,7 @@ namespace MonoDevelop.MonoDroid
 			getPidOp = new AdbGetProcessIdOperation (device, packageName);
 			getPidOp.Completed += RefreshPid;
 
-			trackLogOp = new AdbTrackLogOperation (device, ProcessLogLine, "*:S", "stdout:*", "stderr:*");
+			trackLogOp = new AdbTrackLogOperation (device, ProcessLogLine);
 			trackLogOp.Completed += delegate (IAsyncOperation op) {
 				if (!op.Success) {
 					SetCompleted (false);
@@ -172,6 +172,11 @@ namespace MonoDevelop.MonoDroid
 					break;
 				case "stderr":
 					stderr (result);
+					break;
+				default:
+					// Anything related to the process;
+					// show the entire log line.
+					stdout (line);
 					break;
 			}
 		}
