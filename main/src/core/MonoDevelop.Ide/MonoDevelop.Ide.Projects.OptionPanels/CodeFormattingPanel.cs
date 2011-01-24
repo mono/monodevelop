@@ -98,6 +98,10 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				}
 				if (modified)
 					pd.UseParentPolicy = useParentPolicy;
+				if (pd.SectionLoaded) {
+					pd.SectionPanel.FillPolicies ();
+					pd.SectionPanel.UpdateSelectedNamedPolicy ();
+				}
 			}
 			if (widget != null)
 				widget.Refresh ();

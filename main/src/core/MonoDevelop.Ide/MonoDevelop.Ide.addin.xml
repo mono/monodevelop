@@ -640,9 +640,11 @@
 			</Section>
 			<Condition id="ItemType" value="Solution">
 				<Section id="CodeFormattingPolicies" _label="Code Formatting" icon="md-formatting" fill = "true" class="MonoDevelop.Ide.Projects.OptionPanels.CodeFormattingPanel" />
+				<Section id="DefaultStandardHeader" _label = "Standard Header" fill="true" class = "MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" />
 			</Condition>
 			<Condition id="ItemType" value="SolutionItem">
 				<Section id="CodeFormattingPolicies" _label="Code Formatting" icon="md-formatting" fill = "true" class="MonoDevelop.Ide.Projects.OptionPanels.CodeFormattingPanel" />
+				<Section id="DefaultStandardHeader" _label = "Standard Header" fill="true" class = "MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" />
 			</Condition>
 		</Section>
 	</Extension>

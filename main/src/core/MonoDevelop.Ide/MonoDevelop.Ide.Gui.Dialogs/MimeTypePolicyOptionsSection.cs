@@ -53,6 +53,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		HBox warningMessage;
 		bool isGlobalPolicy;
 		List<PolicySet> setsInCombo = new List<PolicySet> ();
+		bool synchingPoliciesCombo;
+		bool selectingPolicy;
 		
 		public MimeTypePolicyOptionsSection ()
 		{
@@ -164,26 +166,34 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 		void HandlePolicyComboChanged (object sender, EventArgs e)
 		{
-			loading = true;
+			if (loading || synchingPoliciesCombo)
+				return;
 			
-			if (policyCombo.Active == 0 && !isRoot) {
-				panelData.UseParentPolicy = true;
-				notebook.Sensitive = false;
+			selectingPolicy = true;
+			try {
+				if (policyCombo.Active == 0 && !isRoot) {
+					panelData.UseParentPolicy = true;
+					notebook.Sensitive = false;
+				}
+				else {
+					string activeName = policyCombo.ActiveText;
+					PolicySet pset = PolicyService.GetPolicySet (activeName);
+					if (pset != null)
+						panelData.AssignPolicies (pset);
+					else
+						panelData.UseParentPolicy = false;
+					notebook.Sensitive = true;
+				}
+			} finally {
+				selectingPolicy = false;
 			}
-			else {
-				string activeName = policyCombo.ActiveText;
-				PolicySet pset = PolicyService.GetPolicySet (activeName);
-				if (pset != null)
-					panelData.AssignPolicies (pset);
-				else
-					panelData.UseParentPolicy = false;
-				notebook.Sensitive = true;
-			}
-			loading = false;
 		}
 		
 		public void FillPolicies ()
 		{
+			if (selectingPolicy)
+				return;
+			
 			((ListStore)store).Clear ();
 			
 			if (IsCustomUserPolicy) {
@@ -210,38 +220,43 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		public void UpdateSelectedNamedPolicy ()
 		{
-			if (loading)
+			if (selectingPolicy)
 				return;
 			
-			// Find a policy set which is common to all policy types
-			
-			if (!isRoot && panelData.UseParentPolicy) {
-				policyCombo.Active = 0;
-				return;
+			synchingPoliciesCombo = true;
+			try {
+				// Find a policy set which is common to all policy types
+				
+				if (!isRoot && panelData.UseParentPolicy) {
+					policyCombo.Active = 0;
+					return;
+				}
+				
+				int active = -1;
+				
+				PolicySet matchedSet = panelData.GetMatchingSet (setsInCombo);
+				
+				TreeIter iter;
+				int i = 0;
+				if (matchedSet != null && store.GetIterFirst (out iter)) {
+					do {
+						PolicySet s2 = store.GetValue (iter, 1) as PolicySet;
+						if (s2 != null && s2.Id == matchedSet.Id) {
+							active = i;
+							break;
+						}
+						i++;
+					} while (store.IterNext (ref iter));
+				}
+				if (active != -1)
+					policyCombo.Active = active;
+				else
+					policyCombo.Active = store.IterNChildren () - 1;
+				
+				warningMessage.Visible = isGlobalPolicy && panelData.Modified;
+			} finally {
+				synchingPoliciesCombo = false;
 			}
-			
-			int active = -1;
-			
-			PolicySet matchedSet = panelData.GetMatchingSet (setsInCombo);
-			
-			TreeIter iter;
-			int i = 0;
-			if (matchedSet != null && store.GetIterFirst (out iter)) {
-				do {
-					PolicySet s2 = store.GetValue (iter, 1) as PolicySet;
-					if (s2 != null && s2.Id == matchedSet.Id) {
-						active = i;
-						break;
-					}
-					i++;
-				} while (store.IterNext (ref iter));
-			}
-			if (active != -1)
-				policyCombo.Active = active;
-			else
-				policyCombo.Active = store.IterNChildren () - 1;
-			
-			warningMessage.Visible = isGlobalPolicy && panelData.Modified;
 		}
 		
 		bool IsCustomUserPolicy {
