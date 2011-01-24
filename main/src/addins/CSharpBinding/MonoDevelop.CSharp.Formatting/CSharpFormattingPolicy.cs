@@ -663,6 +663,12 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		[ItemProperty]
+		public bool AroundNullCoalescingOperator {
+			get;
+			set;
+		}
+		
+		[ItemProperty]
 		public bool WithinParentheses { // tested
 			get;
 			set;
@@ -919,6 +925,7 @@ namespace MonoDevelop.CSharp.Formatting
 			AroundAdditiveOperatorParentheses = true;
 			AroundMultiplicativeOperatorParentheses = true;
 			AroundShiftOperatorParentheses = true;
+			AroundNullCoalescingOperator = true;
 			WithinParentheses = false;
 			WithinMethodCallParentheses = false;
 			WithinMethodDeclarationParentheses = false;

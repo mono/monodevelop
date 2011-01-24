@@ -251,6 +251,10 @@ namespace MonoDevelop.CSharp.Formatting
 				b -= a;
 			}
 		}
+		object Test (object a, object b)
+		{
+			return a ?? b;
+		}
 	}";
 		const string blankLineExample = @"// Example
 using System;
@@ -768,7 +772,8 @@ delegate void BarFoo ();
 				new Option ("AroundBitwiseOperatorParentheses", GettextCatalog.GetString ("Bitwise (&amp;,|,^) operators")),
 				new Option ("AroundAdditiveOperatorParentheses", GettextCatalog.GetString ("Additive (+,-) operators")),
 				new Option ("AroundMultiplicativeOperatorParentheses", GettextCatalog.GetString ("Multiplicative (*,/,%) operators")),
-				new Option ("AroundShiftOperatorParentheses", GettextCatalog.GetString ("Shift (&lt;&lt;,&gt;&gt;) operators"))
+				new Option ("AroundShiftOperatorParentheses", GettextCatalog.GetString ("Shift (&lt;&lt;,&gt;&gt;) operators")),
+				new Option ("AroundNullCoalescingOperator", GettextCatalog.GetString ("Null coalescing (??) operator"))
 			));
 			
 			whiteSpaceCategory.AppendValues (GettextCatalog.GetString ("Conditional Operator (?:)"), new Category (condOpExample,

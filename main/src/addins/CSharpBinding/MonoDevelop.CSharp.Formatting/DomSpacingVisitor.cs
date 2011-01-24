@@ -150,6 +150,9 @@ namespace MonoDevelop.CSharp.Formatting
 			case BinaryOperatorType.ShiftRight:
 				forceSpaces = policy.AroundShiftOperatorParentheses;
 				break;
+			case BinaryOperatorType.NullCoalescing:
+				forceSpaces = policy.AroundNullCoalescingOperator;
+				break;
 			}
 			ForceSpacesAround (binaryOperatorExpression.Operator, forceSpaces);
 			
