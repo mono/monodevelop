@@ -81,6 +81,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Mono.Addins, Version=0.5.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <Reference Include="Mono.Cairo" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -137,6 +138,10 @@
       <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
       <Name>MonoDevelop.DesignerSupport</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\addins\VersionControl\MonoDevelop.VersionControl\MonoDevelop.VersionControl.csproj">
+      <Project>{19DE0F35-D204-4FD8-A553-A19ECE05E24D}</Project>
+      <Name>MonoDevelop.VersionControl</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -211,6 +216,8 @@
     <Compile Include="MonoDevelop.Refactoring\CreateMethodTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\TestBlankLineFormatting.cs" />
     <Compile Include="MonoDevelop.Refactoring\ImplementInterfaceTests.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Views\EditorCompareWidgetBaseTest.cs" />
+    <Compile Include="Mono.TextEditor.Tests\TextBreakerTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
@@ -236,5 +243,6 @@
     <Folder Include="MonoDevelop.Refactoring\" />
     <Folder Include="MonoDevelop.Projects.Gui\" />
     <Folder Include="MonoDevelop.AspNet\" />
+    <Folder Include="MonoDevelop.VersionControl.Views\" />
   </ItemGroup>
 </Project>
