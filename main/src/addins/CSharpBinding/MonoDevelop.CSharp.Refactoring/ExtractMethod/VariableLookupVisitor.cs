@@ -204,6 +204,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 		
 		public override object VisitUnaryOperatorExpression (MonoDevelop.CSharp.Dom.UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
+			base.VisitUnaryOperatorExpression (unaryOperatorExpression, data);
 			if (CutRegion.Contains (unaryOperatorExpression.StartLocation)) {
 				var left = unaryOperatorExpression.Expression as MonoDevelop.CSharp.Dom.IdentifierExpression;
 				if (left != null && variables.ContainsKey (left.Identifier)) {
