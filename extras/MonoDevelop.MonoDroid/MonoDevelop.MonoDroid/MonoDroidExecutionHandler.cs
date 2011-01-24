@@ -61,8 +61,7 @@ namespace MonoDevelop.MonoDroid
 		{
 			var cmd = (MonoDroidExecutionCommand) command;
 
-			IAsyncOperation startOp = MonoDroidFramework.Toolbox.StartActivity (cmd.Device, 
-				cmd.Activity, console.Out, console.Error);
+			IAsyncOperation startOp = MonoDroidFramework.Toolbox.StartActivity (cmd.Device, cmd.Activity);
 			return new MonoDroidProcess (cmd.Device, cmd.Activity, cmd.PackageName, 
 				console.Out.Write, console.Error.Write, startOp);
 		}
