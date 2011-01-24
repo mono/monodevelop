@@ -113,10 +113,16 @@ namespace MonoDevelop.Debugger
 			if (bt != null) {
 				for (int n=0; n<bt.FrameCount; n++) {
 					StackFrame sf = bt.GetFrame (n);
-					if (!sf.IsExternalCode && !string.IsNullOrEmpty (sf.SourceLocation.Filename) && System.IO.File.Exists (sf.SourceLocation.Filename) && sf.SourceLocation.Line != -1) {
-						if (n != DebuggingService.CurrentFrameIndex)
-							DebuggingService.CurrentFrameIndex = n;
-						break;
+					if (!sf.IsExternalCode && sf.SourceLocation.Line != -1) {
+						bool found = !string.IsNullOrEmpty (sf.SourceLocation.Filename)
+							&& System.IO.File.Exists (sf.SourceLocation.Filename);
+						if (found) {
+							if (n != DebuggingService.CurrentFrameIndex)
+								DebuggingService.CurrentFrameIndex = n;
+							break;
+						} else {
+							LoggingService.LogWarning ("Debugger could not find file '{0}'", sf.SourceLocation.Filename);
+						}
 					}
 				}
 			}
