@@ -45,7 +45,8 @@ namespace Mono.Debugging.Soft
 	{
 		VirtualMachine vm;
 		Thread eventHandler;
-		Dictionary<string, List<TypeMirror>> source_to_type = new Dictionary<string, List<TypeMirror>> ();
+		Dictionary<string, List<TypeMirror>> source_to_type = new Dictionary<string, List<TypeMirror>> (PathComparer);
+		bool useFullPaths = true;
 		Dictionary<string,TypeMirror> types = new Dictionary<string, TypeMirror> ();
 		Dictionary<EventRequest,BreakInfo> breakpoints = new Dictionary<EventRequest,BreakInfo> ();
 		List<BreakEvent> pending_bes = new List<BreakEvent> ();
@@ -206,6 +207,11 @@ namespace Mono.Debugging.Soft
 			connectionHandle = null;
 			
 			this.vm = vm;
+			
+			//full paths, from GetSourceFiles (true), are only supported by sdb protocol 2.2 and later
+			var version = vm.Version;
+			if (version.MajorVersion <= 2 && version.MinorVersion < 2)
+				useFullPaths = false;
 			
 			ConnectOutput (vm.StandardOutput, false);
 			ConnectOutput (vm.StandardError, true);
@@ -541,7 +547,7 @@ namespace Mono.Debugging.Soft
 		{
 			if (!started)
 				return null;
-			string filename = System.IO.Path.GetFileName (file);
+			string filename = PathToFileName (file);
 	
 			// Try the current class first
 			Location target_loc = null;// = GetLocFromType (current_thread.GetFrames()[0].Method.DeclaringType, filename, line);
@@ -655,9 +661,9 @@ namespace Mono.Debugging.Soft
 					breakpoints.Where (x=> (x.Value.Location.Method.DeclaringType.Assembly.Location.Equals (aue.Assembly.Location, StringComparison.OrdinalIgnoreCase)))
 				);
 				foreach (KeyValuePair<EventRequest,BreakInfo> breakpoint in affectedBreakpoints) {
-					OnDebuggerOutput (false, string.Format ("Re-pending breakpoint at {0}:{1}\n",
-					                                        Path.GetFileName (breakpoint.Value.Location.SourceFile),
-					                                        breakpoint.Value.Location.LineNumber));
+					string file = PathToFileName (breakpoint.Value.Location.SourceFile);
+					int line = breakpoint.Value.Location.LineNumber;
+					OnDebuggerOutput (false, string.Format ("Re-pending breakpoint at {0}:{1}\n", file, line));
 					breakpoints.Remove (breakpoint.Key);
 					pending_bes.Add (breakpoint.Value.BreakEvent);
 				}
@@ -941,7 +947,25 @@ namespace Mono.Debugging.Soft
 			
 			var resolved = new List<BreakEvent> ();
 			
-			foreach (string s in t.GetSourceFiles ()) {
+			//get the source file paths
+			//full paths, from GetSourceFiles (true), are only supported by sdb protocol 2.2 and later
+			string[] sourceFiles;
+			if (useFullPaths) {
+				sourceFiles = t.GetSourceFiles (true);
+			} else {
+				sourceFiles = t.GetSourceFiles ();
+				
+				//HACK: if mdb paths are windows paths but the sdb agent is on unix, it won't map paths to filenames correctly
+				if (IsWindows) {
+					for (int i = 0; i < sourceFiles.Length; i++) {
+						string s = sourceFiles[i];
+						if (s != null && !s.StartsWith ("/"))
+							sourceFiles[i] = System.IO.Path.GetFileName (s);
+					}
+				}
+			}
+			
+			foreach (string s in sourceFiles) {
 				List<TypeMirror> typesList;
 				
 				if (source_to_type.TryGetValue (s, out typesList)) {
@@ -952,9 +976,8 @@ namespace Mono.Debugging.Soft
 					source_to_type[s] = typesList;
 				}
 				
-				
 				foreach (var bp in pending_bes.OfType<Breakpoint> ()) {
-					if (System.IO.Path.GetFileName (bp.FileName) == s) {
+					if (PathComparer.Compare (PathToFileName (bp.FileName), s) == 0) {
 						Location l = GetLocFromType (t, s, bp.Line);
 						if (l != null) {
 							OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint at '{0}:{1}' to {2}:{3}.\n",
@@ -986,15 +1009,22 @@ namespace Mono.Debugging.Soft
 				pending_bes.Remove (be);
 		}
 		
+		string PathToFileName (string path)
+		{
+			if (useFullPaths)
+				return path;
+			return System.IO.Path.GetFileName (path);
+		}
+		
 		Location GetLocFromType (TypeMirror type, string file, int line)
 		{
 			Location target_loc = null;
 			foreach (MethodMirror m in type.GetMethods ()) {
 				foreach (Location l in m.Locations) {
-					if (System.IO.Path.GetFileName (l.SourceFile) == file && l.LineNumber == line) {
+					if (PathComparer.Compare (PathToFileName (l.SourceFile), file) == 0 && l.LineNumber == line) {
 						target_loc = l;
 						break;
-						}
+					}
 				}
 				if (target_loc != null)
 					break;
@@ -1147,6 +1177,40 @@ namespace Mono.Debugging.Soft
 		{
 			return assemblyFilters != null && !assemblyFilters.Contains (type.Assembly);
 		}
+		
+		readonly static bool IsWindows;
+		readonly static bool IsMac;
+		readonly static StringComparer PathComparer;
+		
+		static SoftDebuggerSession ()
+		{
+			IsWindows = Path.DirectorySeparatorChar == '\\';
+			IsMac = !IsWindows && IsRunningOnMac();
+			PathComparer = (IsWindows || IsMac)? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
+		}
+		
+		//From Managed.Windows.Forms/XplatUI
+		static bool IsRunningOnMac ()
+		{
+			IntPtr buf = IntPtr.Zero;
+			try {
+				buf = System.Runtime.InteropServices.Marshal.AllocHGlobal (8192);
+				// This is a hacktastic way of getting sysname from uname ()
+				if (uname (buf) == 0) {
+					string os = System.Runtime.InteropServices.Marshal.PtrToStringAnsi (buf);
+					if (os == "Darwin")
+						return true;
+				}
+			} catch {
+			} finally {
+				if (buf != IntPtr.Zero)
+					System.Runtime.InteropServices.Marshal.FreeHGlobal (buf);
+			}
+			return false;
+		}
+		
+		[System.Runtime.InteropServices.DllImport ("libc")]
+		static extern int uname (IntPtr buf);
 	}
 	
 	class BreakInfo
