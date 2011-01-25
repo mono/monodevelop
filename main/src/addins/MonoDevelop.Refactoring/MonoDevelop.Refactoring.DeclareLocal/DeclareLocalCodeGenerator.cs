@@ -77,7 +77,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				resolveResult = resolver.Resolve (expressionResult, new DomLocation (data.Caret.Line, data.Caret.Column));
 				if (resolveResult == null)
 					return false;
-				if (!resolveResult.CallingMember.BodyRegion.Contains (data.Caret.Line, data.Caret.Column))
+				if (resolveResult.CallingMember == null || !resolveResult.CallingMember.BodyRegion.Contains (data.Caret.Line, data.Caret.Column))
 					return false;
 				return true;
 			}
