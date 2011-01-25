@@ -13,4 +13,7 @@ $(SHARPEN): $(SHARPEN_CSFILES)
 
 CLEANFILES = $(SHARPEN) $(SHARPEN_MDB)
 
-
+EXTRA_DIST = \
+      $(wildcard Sharpen/*.cs) \
+      AssemblyInfo.cs \
+      Sharpen.csproj
