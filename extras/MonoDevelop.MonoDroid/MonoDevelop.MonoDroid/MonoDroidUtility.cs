@@ -142,7 +142,7 @@ namespace MonoDevelop.MonoDroid
 		{
 			var dlg = new MonoDevelop.MonoDroid.Gui.DeviceChooserDialog ();
 			try {
-				var result = MessageService.ShowCustomDialog (dlg, parent);
+				var result = MessageService.ShowCustomDialog (dlg, parent ?? MessageService.RootWindow);
 				if (result != (int)Gtk.ResponseType.Ok)
 					return null;
 				return dlg.Device;
