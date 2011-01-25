@@ -84,7 +84,13 @@ namespace Mono.TextEditor
 					return;
 				switch (info) {
 				case TextType:
-					selection_data.Text = copiedDocument.Text;
+					// Windows specific hack to work around bug: Bug 661973 - copy operation in TextEditor braks text lines with duplicate line endings when the file has CRLF
+					// Remove when https://bugzilla.gnome.org/show_bug.cgi?id=640439 is fixed.
+					if (Platform.IsWindows) {
+						selection_data.Text = copiedDocument.Text.Replace ("\r\n", "\n");
+					} else {
+						selection_data.Text = copiedDocument.Text;
+					}
 					break;
 				case RichTextType:
 					selection_data.Set (RTF_ATOM, UTF8_FORMAT, System.Text.Encoding.UTF8.GetBytes (GenerateRtf (copiedDocument, mode, docStyle, options)));
@@ -133,6 +139,7 @@ namespace Mono.TextEditor
 				bool isItalic = false;
 				bool isBold   = false;
 				int curColor  = -1;
+
 				foreach (var line in doc.GetLinesBetween (startLineNumber, endLineNumber)) {
 					bool appendSpace = false;
 					for (Chunk chunk = mode.GetChunks (doc, style, line, line.Offset, line.EditableLength); chunk != null; chunk = chunk.Next) {
@@ -191,6 +198,7 @@ namespace Mono.TextEditor
 				}
 				
 				// color table
+
 				StringBuilder colorTable = new StringBuilder ();
 				colorTable.Append (@"{\colortbl ;");
 				for (int i = 0; i < colorList.Count; i++) {
@@ -206,23 +214,27 @@ namespace Mono.TextEditor
 				colorTable.Append ("}");
 				
 				StringBuilder rtf = new StringBuilder();
+
 				rtf.Append (@"{\rtf1\ansi\deff0\adeflang1025");
 				
 				// font table
 				rtf.Append (@"{\fonttbl");
+
 				rtf.Append (@"{\f0\fnil\fprq1\fcharset128 " + options.Font.Family + ";}");
+
 				rtf.Append ("}");
 				
 				rtf.Append (colorTable.ToString ());
 				
 				rtf.Append (@"\viewkind4\uc1\pard");
+
 				rtf.Append (@"\f0");
 				try {
 					string fontName = options.Font.ToString ();
 					double fontSize = Double.Parse (fontName.Substring (fontName.LastIndexOf (' ')  + 1), System.Globalization.CultureInfo.InvariantCulture) * 2;
 					rtf.Append (@"\fs");
 					rtf.Append (fontSize);
-				} catch (Exception) {};
+				} catch (Exception) {};
 				rtf.Append (@"\cf1");
 				rtf.Append (rtfText.ToString ());
 				rtf.Append("}");
