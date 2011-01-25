@@ -383,7 +383,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 				
 				arg.Name = char.ToLower (arg.Name[0]) + arg.Name.Substring (1);
 				
-				if (resolveResult != null) {
+				if (resolveResult != null && resolveResult.ResolvedType != null && !string.IsNullOrEmpty (resolveResult.ResolvedType.FullName)) {
 					arg.ReturnType = resolveResult.ResolvedType;
 				} else {
 					arg.ReturnType = DomReturnType.Object;
