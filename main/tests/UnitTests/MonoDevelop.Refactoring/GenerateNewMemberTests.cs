@@ -134,7 +134,7 @@ namespace MonoDevelop.Refactoring.Tests
 		{
 			TestInsertionPoints (@"
 class Test {
-	@D
+@D	
 	void TestMe ()
 	{
 	}
@@ -149,7 +149,7 @@ class Test {
 			TestInsertionPoints (@"
 class Test 
 {
-	@D
+@D	
 	void TestMe ()
 	{
 	}
@@ -206,21 +206,21 @@ class Test {
 		{
 			TestInsertionPoints (@"
 class Test {
-	@D
+@D	
 	void TestMe ()
 	{
 	}
-	
-	@Dint a;
-	
-	@Dclass Test2 {
+@U	
+	int a;
+@U	
+	class Test2 {
 		void TestMe2 ()
 		{
 	
 		}
 	}
-	
-	@Dpublic delegate void ADelegate ();
+@U	
+	public delegate void ADelegate ();
 	
 @d}
 ");
@@ -231,22 +231,22 @@ class Test {
 		public void TestComplexInsertionPointCase2 ()
 		{
 			TestInsertionPoints (@"class MainClass {
-	@Dstatic void A ()
+@D	static void A ()
 	{
 	}
-	@tstatic void B ()
+@S	static void B ()
 	{
 	}
-	
-	@Dpublic static void Main (string[] args)
+@U	
+	public static void Main (string[] args)
 	{
 		System.Console.WriteLine ();
 	}
-	@tint g;
-	@tint i;
-	
-	@Dint j;
-	@tpublic delegate void Del(int a);
+@S	int g;
+@S	int i;
+@U	
+	int j;
+@S	public delegate void Del(int a);
 @s}
 ");
 		}
