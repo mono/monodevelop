@@ -394,6 +394,7 @@ monodevelop
 mdtool
 monodevelop.pc
 monodevelop-core-addins.pc
+monodevelop.spec
 po/Makefile
 man/Makefile
 theme-icons/Makefile
