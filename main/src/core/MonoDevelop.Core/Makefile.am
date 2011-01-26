@@ -403,6 +403,7 @@ FILES =  \
 	MonoDevelop.Projects/ProjectFileEventArgs.cs \
 	MonoDevelop.Projects/ProjectItem.cs \
 	MonoDevelop.Projects/ProjectItemCollection.cs \
+	MonoDevelop.Projects/ProjectItemEventArgs.cs \
 	MonoDevelop.Projects/ProjectParameters.cs \
 	MonoDevelop.Projects/ProjectPathItemPropertyAttribute.cs \
 	MonoDevelop.Projects/ProjectReference.cs \

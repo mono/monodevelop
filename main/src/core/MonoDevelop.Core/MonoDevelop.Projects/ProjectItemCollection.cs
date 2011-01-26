@@ -112,13 +112,13 @@ namespace MonoDevelop.Projects
 		void IItemListHandler.InternalAdd (object obj, bool comesFromParent)
 		{
 			Items.Add ((T) obj);
-			NotifyAdded (obj, comesFromParent);
+			NotifyAdded ((T) obj, comesFromParent);
 		}
 		
 		void IItemListHandler.InternalRemove (object obj, bool comesFromParent)
 		{
 			Items.Remove ((T) obj);
-			NotifyRemoved (obj, comesFromParent);
+			NotifyRemoved ((T) obj, comesFromParent);
 		}
 		
 		bool IItemListHandler.CanHandle (object obj)
@@ -126,7 +126,7 @@ namespace MonoDevelop.Projects
 			return obj is T;
 		}
 		
-		void NotifyAdded (object item, bool comesFromParent)
+		void NotifyAdded (T item, bool comesFromParent)
 		{
 			if (comesFromParent) {
 				if (subCollections != null) {
@@ -143,7 +143,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		void NotifyRemoved (object item, bool comesFromParent)
+		void NotifyRemoved (T item, bool comesFromParent)
 		{
 			if (comesFromParent) {
 				if (subCollections != null) {

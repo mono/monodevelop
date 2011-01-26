@@ -1027,7 +1027,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected internal override void OnItemAdded (object obj)
+		protected internal override void OnItemAdded (ProjectItem obj)
 		{
 			base.OnItemAdded (obj);
 			if (obj is ProjectReference) {
@@ -1037,7 +1037,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected internal override void OnItemRemoved (object obj)
+		protected internal override void OnItemRemoved (ProjectItem obj)
 		{
 			base.OnItemRemoved (obj);
 			if (obj is ProjectReference) {
