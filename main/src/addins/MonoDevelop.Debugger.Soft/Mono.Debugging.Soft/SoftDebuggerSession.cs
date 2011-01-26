@@ -1354,7 +1354,6 @@ namespace Mono.Debugging.Soft
 			List<AssemblyLine> lines = new List<AssemblyLine> ();
 			foreach (TypeMirror type in types) {
 				foreach (MethodMirror met in type.GetMethods ()) {
-					string s = met.Name;
 					if (!PathsAreEqual (met.SourceFile, file))
 						continue;
 					var body = met.GetMethodBody ();

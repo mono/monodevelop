@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Diagnostics;
 using Mono.Debugger.Soft;
 using Mono.Debugging.Evaluation;
@@ -252,9 +253,20 @@ namespace Mono.Debugging.Soft
 		{
 			try {
 				SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
-				LocalVariable local = cx.Frame.GetVisibleVariableByName (name);
-				if (local != null)
-					return new VariableValueReference (ctx, name, local);
+				LocalVariable local = null;
+				if (!cx.SourceCodeAvailable) {
+					if (name.StartsWith ("loc")) {
+						int idx;
+						if (int.TryParse (name.Substring (3), out idx))
+							local = cx.Frame.Method.GetLocals ().FirstOrDefault (loc => loc.Index == idx);
+					}
+				} else
+					local = cx.Frame.GetVisibleVariableByName (name);
+				
+				if (local != null) {
+					string vname = !string.IsNullOrEmpty (local.Name) || cx.SourceCodeAvailable ? local.Name : "loc" + local.Index;
+					return new VariableValueReference (ctx, vname, local);
+				}
 				else
 					return null;
 			} catch (AbsentInformationException) {
@@ -272,8 +284,10 @@ namespace Mono.Debugging.Soft
 				yield break;
 			}
 			foreach (LocalVariable var in locals) {
-				if (!var.IsArg)
-					yield return new VariableValueReference (ctx, var.Name, var);
+				if (!var.IsArg) {
+					string name = !string.IsNullOrEmpty (var.Name) || cx.SourceCodeAvailable ? var.Name : "loc" + var.Index;
+					yield return new VariableValueReference (ctx, name, var);
+				}
 			}
 		}
 
@@ -383,8 +397,10 @@ namespace Mono.Debugging.Soft
 			}
 				
 			foreach (LocalVariable var in locals) {
-				if (var.IsArg)
-					yield return new VariableValueReference (ctx, var.Name, var);
+				if (var.IsArg) {
+					string name = !string.IsNullOrEmpty (var.Name) || cx.SourceCodeAvailable ? var.Name : "arg" + var.Index;
+					yield return new VariableValueReference (ctx, name, var);
+				}
 			}
 		}
 

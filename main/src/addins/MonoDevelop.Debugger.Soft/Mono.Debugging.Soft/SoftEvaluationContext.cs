@@ -36,6 +36,7 @@ namespace Mono.Debugging.Soft
 		SoftDebuggerSession session;
 		int stackVersion;
 		StackFrame frame;
+		bool sourceAvailable;
 		
 		public ThreadMirror Thread { get; set; }
 		
@@ -55,6 +56,7 @@ namespace Mono.Debugging.Soft
 			Adapter = session.Adaptor;
 			this.session = session;
 			this.stackVersion = session.StackVersion;
+			sourceAvailable = !string.IsNullOrEmpty (frame.FileName) && System.IO.File.Exists (frame.FileName);
 		}
 		
 		public StackFrame Frame {
@@ -65,6 +67,14 @@ namespace Mono.Debugging.Soft
 			}
 			set {
 				frame = value;
+			}
+		}
+		
+		public bool SourceCodeAvailable {
+			get {
+				if (stackVersion != session.StackVersion)
+					sourceAvailable = !string.IsNullOrEmpty (Frame.FileName) && System.IO.File.Exists (Frame.FileName);
+				return sourceAvailable;
 			}
 		}
 		
