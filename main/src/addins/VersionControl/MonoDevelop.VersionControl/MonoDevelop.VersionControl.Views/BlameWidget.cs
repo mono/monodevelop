@@ -732,8 +732,9 @@ namespace MonoDevelop.VersionControl.Views
 						if (ann != null) {
 							do {
 								widget.JumpOverFoldings (ref line);
-							} while (line <= annotations.Count && annotations[line - 1] != null && annotations[line - 1].Revision == ann.Revision);
-							
+								line++;
+							} while (line + 1 <= annotations.Count && annotations[line - 1] != null && annotations[line - 1].Revision == ann.Revision);
+							double nextY = widget.editor.LineToY (line) - widget.editor.VAdjustment.Value;
 							if (highlightAnnotation != null && highlightAnnotation.Revision == ann.Revision && curStart <= highlightPositon && highlightPositon < nextY) {
 								cr.Rectangle (leftSpacer, curStart + cr.LineWidth, Allocation.Width - leftSpacer, nextY - curStart - cr.LineWidth);
 								cr.Color = new Cairo.Color (1, 1, 1);
