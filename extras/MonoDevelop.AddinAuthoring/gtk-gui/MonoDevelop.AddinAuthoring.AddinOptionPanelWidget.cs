@@ -5,11 +5,8 @@ namespace MonoDevelop.AddinAuthoring
 	public partial class AddinOptionPanelWidget
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.CheckButton checkEnable;
-
 		private global::Gtk.HSeparator hseparator1;
-
 		private global::MonoDevelop.AddinAuthoring.AddinFeatureWidget optionsWidget;
 
 		protected virtual void Build ()
@@ -30,7 +27,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.checkEnable.DrawIndicator = true;
 			this.checkEnable.UseUnderline = true;
 			this.vbox2.Add (this.checkEnable);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.checkEnable]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.checkEnable]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
@@ -38,16 +35,14 @@ namespace MonoDevelop.AddinAuthoring
 			this.hseparator1 = new global::Gtk.HSeparator ();
 			this.hseparator1.Name = "hseparator1";
 			this.vbox2.Add (this.hseparator1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hseparator1]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hseparator1]));
 			w2.Position = 1;
 			w2.Expand = false;
 			w2.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.optionsWidget = new global::MonoDevelop.AddinAuthoring.AddinFeatureWidget ();
-			this.optionsWidget.Events = ((global::Gdk.EventMask)(256));
-			this.optionsWidget.Name = "optionsWidget";
+			this.optionsWidget = null;
 			this.vbox2.Add (this.optionsWidget);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.optionsWidget]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.optionsWidget]));
 			w3.Position = 2;
 			w3.Expand = false;
 			w3.Fill = false;

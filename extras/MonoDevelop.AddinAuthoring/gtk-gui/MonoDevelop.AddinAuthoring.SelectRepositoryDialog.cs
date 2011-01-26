@@ -5,23 +5,14 @@ namespace MonoDevelop.AddinAuthoring
 	public partial class SelectRepositoryDialog
 	{
 		private global::Gtk.VBox vbox4;
-
 		private global::Gtk.Label label11;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.ScrolledWindow scrolledwindow4;
-
 		private global::Gtk.TreeView tree;
-
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Button buttonAdd;
-
 		private global::Gtk.Button buttonRemove;
-
 		private global::Gtk.Button button155;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -46,10 +37,10 @@ namespace MonoDevelop.AddinAuthoring
 			// Container child vbox4.Gtk.Box+BoxChild
 			this.label11 = new global::Gtk.Label ();
 			this.label11.Name = "label11";
-			this.label11.Xalign = 0f;
+			this.label11.Xalign = 0F;
 			this.label11.LabelProp = global::Mono.Addins.AddinManager.CurrentLocalizer.GetString ("Select the application you want to extend:");
 			this.vbox4.Add (this.label11);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.label11]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.label11]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -68,7 +59,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.tree.Name = "tree";
 			this.scrolledwindow4.Add (this.tree);
 			this.hbox1.Add (this.scrolledwindow4);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.scrolledwindow4]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.scrolledwindow4]));
 			w4.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.vbox2 = new global::Gtk.VBox ();
@@ -82,7 +73,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.buttonAdd.UseUnderline = true;
 			this.buttonAdd.Label = "gtk-add";
 			this.vbox2.Add (this.buttonAdd);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.buttonAdd]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.buttonAdd]));
 			w5.Position = 0;
 			w5.Expand = false;
 			w5.Fill = false;
@@ -94,20 +85,20 @@ namespace MonoDevelop.AddinAuthoring
 			this.buttonRemove.UseUnderline = true;
 			this.buttonRemove.Label = "gtk-remove";
 			this.vbox2.Add (this.buttonRemove);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.buttonRemove]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.buttonRemove]));
 			w6.Position = 1;
 			w6.Expand = false;
 			w6.Fill = false;
 			this.hbox1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.vbox2]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox2]));
 			w7.Position = 1;
 			w7.Expand = false;
 			w7.Fill = false;
 			this.vbox4.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.hbox1]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.hbox1]));
 			w8.Position = 1;
 			w1.Add (this.vbox4);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(w1[this.vbox4]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox4]));
 			w9.Position = 0;
 			// Internal child MonoDevelop.AddinAuthoring.SelectRepositoryDialog.ActionArea
 			global::Gtk.HButtonBox w10 = this.ActionArea;
@@ -124,7 +115,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.button155.UseUnderline = true;
 			this.button155.Label = "gtk-cancel";
 			this.AddActionWidget (this.button155, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10[this.button155]));
+			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.button155]));
 			w11.Expand = false;
 			w11.Fill = false;
 			// Container child MonoDevelop.AddinAuthoring.SelectRepositoryDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -136,7 +127,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w10 [this.buttonOk]));
 			w12.Position = 1;
 			w12.Expand = false;
 			w12.Fill = false;

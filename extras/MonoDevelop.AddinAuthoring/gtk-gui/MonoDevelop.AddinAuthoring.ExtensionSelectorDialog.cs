@@ -5,15 +5,10 @@ namespace MonoDevelop.AddinAuthoring
 	public partial class ExtensionSelectorDialog
 	{
 		private global::Gtk.VBox vbox5;
-
 		private global::Gtk.Label label13;
-
 		private global::Gtk.ScrolledWindow scrolledwindow5;
-
 		private global::Gtk.TreeView tree;
-
 		private global::Gtk.Button button785;
-
 		private global::Gtk.Button button789;
 
 		protected virtual void Build ()
@@ -37,10 +32,10 @@ namespace MonoDevelop.AddinAuthoring
 			// Container child vbox5.Gtk.Box+BoxChild
 			this.label13 = new global::Gtk.Label ();
 			this.label13.Name = "label13";
-			this.label13.Xalign = 0f;
+			this.label13.Xalign = 0F;
 			this.label13.LabelProp = global::Mono.Addins.AddinManager.CurrentLocalizer.GetString ("Select the extension points to be extended:");
 			this.vbox5.Add (this.label13);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.label13]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.label13]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -55,10 +50,10 @@ namespace MonoDevelop.AddinAuthoring
 			this.tree.Name = "tree";
 			this.scrolledwindow5.Add (this.tree);
 			this.vbox5.Add (this.scrolledwindow5);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.scrolledwindow5]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.scrolledwindow5]));
 			w4.Position = 1;
 			w1.Add (this.vbox5);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(w1[this.vbox5]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox5]));
 			w5.Position = 0;
 			// Internal child MonoDevelop.AddinAuthoring.ExtensionSelectorDialog.ActionArea
 			global::Gtk.HButtonBox w6 = this.ActionArea;
@@ -75,7 +70,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.button785.UseUnderline = true;
 			this.button785.Label = "gtk-cancel";
 			this.AddActionWidget (this.button785, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w7 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6[this.button785]));
+			global::Gtk.ButtonBox.ButtonBoxChild w7 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6 [this.button785]));
 			w7.Expand = false;
 			w7.Fill = false;
 			// Container child MonoDevelop.AddinAuthoring.ExtensionSelectorDialog_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -87,7 +82,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.button789.UseUnderline = true;
 			this.button789.Label = "gtk-ok";
 			this.AddActionWidget (this.button789, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6[this.button789]));
+			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6 [this.button789]));
 			w8.Position = 1;
 			w8.Expand = false;
 			w8.Fill = false;
