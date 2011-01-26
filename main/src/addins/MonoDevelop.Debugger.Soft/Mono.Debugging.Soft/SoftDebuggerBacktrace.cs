@@ -83,7 +83,7 @@ namespace Mono.Debugging.Soft
 				method = frame.Method.DeclaringType.FullName + "." + method;
 			var location = new DC.SourceLocation (method, frame.FileName, frame.LineNumber);
 			var lang = frame.Method != null? "Managed" : "Native";
-			return new DC.StackFrame (frame.ILOffset, location, lang, session.IsExternalCode (frame), true);
+			return new DC.StackFrame (frame.ILOffset, frame.Method.FullName, location, lang, session.IsExternalCode (frame), true);
 		}
 		
 		protected override EvaluationContext GetEvaluationContext (int frameIndex, EvaluationOptions options)
@@ -91,6 +91,11 @@ namespace Mono.Debugging.Soft
 			ValidateStack ();
 			MDB.StackFrame frame = frames [frameIndex];
 			return new SoftEvaluationContext (session, frame, options);
+		}
+		
+		public override AssemblyLine[] Disassemble (int frameIndex, int firstLine, int count)
+		{
+			return session.Disassemble (frames [frameIndex], firstLine, count);
 		}
 	}
 }

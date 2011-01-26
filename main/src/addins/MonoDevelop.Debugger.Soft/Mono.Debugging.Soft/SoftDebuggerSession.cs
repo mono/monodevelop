@@ -492,19 +492,7 @@ namespace Mono.Debugging.Soft
 
 		protected override void OnFinish ()
 		{
-			ThreadPool.QueueUserWorkItem (delegate {
-				Adaptor.CancelAsyncOperations (); // This call can block, so it has to run in background thread to avoid keeping the main session lock
-				var req = vm.CreateStepRequest (current_thread);
-				req.Depth = StepDepth.Out;
-				req.Size = StepSize.Line;
-				if (assemblyFilters != null && assemblyFilters.Count > 0)
-					req.AssemblyFilter = assemblyFilters;
-				req.Enabled = true;
-				currentStepRequest = req;
-				OnResumed ();
-				vm.Resume ();
-				DequeueEventsForFirstThread ();
-			});
+			Step (StepDepth.Out, StepSize.Line);
 		}
 
 		protected override ProcessInfo[] OnGetProcesses ()
@@ -677,17 +665,22 @@ namespace Mono.Debugging.Soft
 		
 		protected override void OnNextInstruction ()
 		{
-			throw new System.NotImplementedException ();
+			Step (StepDepth.Over, StepSize.Min);
 		}
 
 		protected override void OnNextLine ()
+		{
+			Step (StepDepth.Over, StepSize.Line);
+		}
+		
+		void Step (StepDepth depth, StepSize size)
 		{
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
 					Adaptor.CancelAsyncOperations (); // This call can block, so it has to run in background thread to avoid keeping the main session lock
 					var req = vm.CreateStepRequest (current_thread);
-					req.Depth = StepDepth.Over;
-					req.Size = StepSize.Line;
+					req.Depth = depth;
+					req.Size = size;
 					if (assemblyFilters != null && assemblyFilters.Count > 0)
 						req.AssemblyFilter = assemblyFilters;
 					req.Enabled = true;
@@ -1226,24 +1219,12 @@ namespace Mono.Debugging.Soft
 
 		protected override void OnStepInstruction ()
 		{
-			throw new System.NotImplementedException ();
+			Step (StepDepth.Into, StepSize.Min);
 		}
 
 		protected override void OnStepLine ()
 		{
-			ThreadPool.QueueUserWorkItem (delegate {
-				Adaptor.CancelAsyncOperations (); // This call can block, so it has to run in background thread to avoid keeping the main session lock
-				var req = vm.CreateStepRequest (current_thread);
-				req.Depth = StepDepth.Into;
-				req.Size = StepSize.Line;
-				if (assemblyFilters != null && assemblyFilters.Count > 0)
-					req.AssemblyFilter = assemblyFilters;
-				req.Enabled = true;
-				currentStepRequest = req;
-				OnResumed ();
-				vm.Resume ();
-				DequeueEventsForFirstThread ();
-			});
+			Step (StepDepth.Into, StepSize.Line);
 		}
 
 		protected override void OnStop ()
@@ -1331,6 +1312,107 @@ namespace Mono.Debugging.Soft
 		public bool IsExternalCode (TypeMirror type)
 		{
 			return assemblyFilters != null && !assemblyFilters.Contains (type.Assembly);
+		}
+		
+		protected override AssemblyLine[] OnDisassembleFile (string file)
+		{
+			List<TypeMirror> types;
+			if (!source_to_type.TryGetValue (file, out types))
+				return new AssemblyLine [0];
+			
+			List<AssemblyLine> lines = new List<AssemblyLine> ();
+			foreach (TypeMirror type in types) {
+				foreach (MethodMirror met in type.GetMethods ()) {
+					string s = met.Name;
+					if (met.SourceFile != file)
+						continue;
+					var body = met.GetMethodBody ();
+					int lastLine = -1;
+					int firstPos = lines.Count;
+					string addrSpace = met.FullName;
+					foreach (var ins in body.Instructions) {
+						Location loc = met.LocationAtILOffset (ins.Offset);
+						if (loc != null && lastLine == -1) {
+							lastLine = loc.LineNumber;
+							for (int n=firstPos; n<lines.Count; n++)
+								lines [n].SourceLine = loc.LineNumber;
+						}
+						lines.Add (new AssemblyLine (ins.Offset, addrSpace, Disassemble (ins), loc != null ? loc.LineNumber : lastLine));
+					}
+				}
+			}
+			lines.Sort (delegate (AssemblyLine a1, AssemblyLine a2) {
+				int res = a1.SourceLine.CompareTo (a2.SourceLine);
+				if (res != 0)
+					return res;
+				else
+					return a1.Address.CompareTo (a2.Address);
+			});
+			return lines.ToArray ();
+		}
+		
+		public AssemblyLine[] Disassemble (Mono.Debugger.Soft.StackFrame frame, int firstLine, int count)
+		{
+			MethodBodyMirror body = frame.Method.GetMethodBody ();
+			var instructions = body.Instructions;
+			ILInstruction current = null;
+			foreach (var ins in instructions) {
+				if (ins.Offset >= frame.ILOffset) {
+					current = ins;
+					break;
+				}
+			}
+			if (current == null)
+				return new AssemblyLine [0];
+			
+			List<AssemblyLine> result = new List<AssemblyLine> ();
+			
+			int pos = firstLine;
+			
+			while (firstLine < 0 && count > 0) {
+				if (current.Previous == null) {
+//					result.Add (new AssemblyLine (99999, "<" + (pos++) + ">"));
+					result.Add (AssemblyLine.OutOfRange);
+					count--;
+					firstLine++;
+				} else {
+					current = current.Previous;
+					firstLine++;
+				}
+			}
+			
+			while (current != null && firstLine > 0) {
+				current = current.Next;
+				firstLine--;
+			}
+			
+			while (count > 0) {
+				if (current != null) {
+					Location loc = frame.Method.LocationAtILOffset (current.Offset);
+					result.Add (new AssemblyLine (current.Offset, frame.Method.FullName, Disassemble (current), loc != null ? loc.LineNumber : -1));
+					current = current.Next;
+					pos++;
+				} else
+					result.Add (AssemblyLine.OutOfRange);
+//					result.Add (new AssemblyLine (99999, "<" + (pos++) + ">"));
+				count--;
+			}
+			return result.ToArray ();
+		}
+		
+		string Disassemble (ILInstruction ins)
+		{
+			string oper;
+			if (ins.Operand is MethodMirror)
+				oper = ((MethodMirror)ins.Operand).FullName;
+			else if (ins.Operand is ILInstruction)
+				oper = ((ILInstruction)ins.Operand).Offset.ToString ("x8");
+			else if (ins.Operand == null)
+				oper = string.Empty;
+			else
+				oper = ins.Operand.ToString ();
+			
+			return ins.OpCode + " " + oper;
 		}
 		
 		readonly static bool IsWindows;
