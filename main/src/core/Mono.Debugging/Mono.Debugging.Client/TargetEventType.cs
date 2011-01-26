@@ -12,6 +12,8 @@ namespace Mono.Debugging.Client
 		TargetSignaled,
 		TargetExited,
 		ExceptionThrown,
-		UnhandledException
+		UnhandledException,
+		ThreadStarted,
+		ThreadStopped
 	}
 }

@@ -89,6 +89,8 @@ namespace Mono.Debugging.Client
 		public event EventHandler TargetExited;
 		public event EventHandler<TargetEventArgs> TargetExceptionThrown;
 		public event EventHandler<TargetEventArgs> TargetUnhandledException;
+		public event EventHandler<TargetEventArgs> TargetThreadStarted;
+		public event EventHandler<TargetEventArgs> TargetThreadStopped;
 		
 		public event EventHandler<BusyStateEventArgs> BusyStateChanged;
 		
@@ -779,6 +781,7 @@ namespace Mono.Debugging.Client
 				case TargetEventType.ExceptionThrown:
 					lock (slock) {
 						isRunning = false;
+						args.IsStopEvent = true;
 					}
 					if (TargetExceptionThrown != null)
 						TargetExceptionThrown (this, args);
@@ -796,6 +799,7 @@ namespace Mono.Debugging.Client
 				case TargetEventType.TargetHitBreakpoint:
 					lock (slock) {
 						isRunning = false;
+						args.IsStopEvent = true;
 					}
 					if (TargetHitBreakpoint != null)
 						TargetHitBreakpoint (this, args);
@@ -803,6 +807,7 @@ namespace Mono.Debugging.Client
 				case TargetEventType.TargetInterrupted:
 					lock (slock) {
 						isRunning = false;
+						args.IsStopEvent = true;
 					}
 					if (TargetInterrupted != null)
 						TargetInterrupted (this, args);
@@ -810,6 +815,7 @@ namespace Mono.Debugging.Client
 				case TargetEventType.TargetSignaled:
 					lock (slock) {
 						isRunning = false;
+						args.IsStopEvent = true;
 					}
 					if (TargetSignaled != null)
 						TargetSignaled (this, args);
@@ -817,6 +823,7 @@ namespace Mono.Debugging.Client
 				case TargetEventType.TargetStopped:
 					lock (slock) {
 						isRunning = false;
+						args.IsStopEvent = true;
 					}
 					if (TargetStopped != null)
 						TargetStopped (this, args);
@@ -824,9 +831,18 @@ namespace Mono.Debugging.Client
 				case TargetEventType.UnhandledException:
 					lock (slock) {
 						isRunning = false;
+						args.IsStopEvent = true;
 					}
 					if (TargetUnhandledException != null)
 						TargetUnhandledException (this, args);
+					break;
+				case TargetEventType.ThreadStarted:
+					if (TargetThreadStarted != null)
+						TargetThreadStarted (this, args);
+					break;
+				case TargetEventType.ThreadStopped:
+					if (TargetThreadStopped != null)
+						TargetThreadStopped (this, args);
 					break;
 			}
 			if (TargetEvent != null)
