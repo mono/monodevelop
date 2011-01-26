@@ -1,10 +1,10 @@
 // 
-// ReferenceNodeBuilder.cs
+// ExtensionModelBrowser.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,37 +23,39 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 
-namespace MonoDevelop.AddinAuthoring.NodeBuilders
+namespace MonoDevelop.AddinAuthoring
 {
-	public class ReferenceNodeBuilder: NodeBuilderExtension
+	public class ExtensionModelBrowser: AbstractViewContent
 	{
-		public override bool CanBuildNode (System.Type dataType)
+		ExtensionModelBrowserWidget widget;
+		
+		public ExtensionModelBrowser ()
 		{
-			return typeof(ProjectReference).IsAssignableFrom (dataType);
+			ContentName = "Extension Model Browser";
 		}
 		
-		public override void GetNodeAttributes (ITreeNavigator parentNode, object dataObject, ref NodeAttributes attributes)
+		public override void Load (string fileName)
 		{
-			if (dataObject is AddinProjectReference) {
-				attributes |= NodeAttributes.Hidden;
-				return;
-			}
-			ProjectReference pr = (ProjectReference) dataObject;
-			DotNetProject parent = pr.OwnerProject as DotNetProject;
-			if (AddinAuthoringService.IsProjectIncludedByAddin (parent, pr)) {
-				attributes |= NodeAttributes.Hidden;
-			}
-			else if (parent.GetAddinData () != null && pr.ReferenceType == ReferenceType.Project) {
-				DotNetProject tp = parent.ParentSolution.FindProjectByName (pr.Reference) as DotNetProject;
-				if (tp != null && tp.GetAddinData () != null)
-					attributes |= NodeAttributes.Hidden;
+		}
+		
+		public override Gtk.Widget Control {
+			get {
+				if (widget == null)
+					widget = new ExtensionModelBrowserWidget ();
+				return widget;
 			}
 		}
+
+		public void Dispose ()
+		{
+			if (widget != null)
+				widget.Destroy ();
+		}
+
 	}
 }
+

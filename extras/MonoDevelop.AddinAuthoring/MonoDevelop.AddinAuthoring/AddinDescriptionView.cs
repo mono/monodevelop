@@ -17,12 +17,13 @@ namespace MonoDevelop.AddinAuthoring
 		AddinDescription adesc;
 		DateTime descTimestamp;
 		bool inInternalUpdate;
+		string manifestFile;
 		
-		public AddinDescriptionView (AddinData data)
+		public AddinDescriptionView (AddinData data, string manifestFile)
 		{
 			this.data = data;
-			ContentName = data.Project.Name + " Extension Model";
-			//ContentName = data.AddinManifestFileName;
+			this.manifestFile = manifestFile;
+			ContentName = manifestFile;
 			Project = data.Project;
 			
 			descWidget = new AddinDescriptionWidget ();
@@ -74,7 +75,7 @@ namespace MonoDevelop.AddinAuthoring
 		public override void Save ()
 		{
 			descWidget.Save ();
-			AddinAuthoringService.SaveFormatted (adesc);
+			AddinAuthoringService.SaveFormatted (data.Project.Policies, adesc);
 			IsDirty = false;
 			data.NotifyChanged (true);
 		}
@@ -87,7 +88,7 @@ namespace MonoDevelop.AddinAuthoring
 		internal void EndInternalUpdate ()
 		{
 			inInternalUpdate = false;
-			descTimestamp = File.GetLastWriteTime (data.AddinManifestFileName);
+			descTimestamp = File.GetLastWriteTime (manifestFile);
 		}
 		
 		public void Update ()
@@ -97,15 +98,15 @@ namespace MonoDevelop.AddinAuthoring
 		
 		public void Reload ()
 		{
-			adesc = data.AddinRegistry.ReadAddinManifestFile (data.AddinManifestFileName);
+			adesc = data.AddinRegistry.ReadAddinManifestFile (manifestFile);
 			descWidget.Fill (adesc, data);
 			IsDirty = false;
-			descTimestamp = File.GetLastWriteTime (data.AddinManifestFileName);
+			descTimestamp = File.GetLastWriteTime (manifestFile);
 		}
 		
 		void OnDataChanged (object s, EventArgs a)
 		{
-			if (inInternalUpdate || descTimestamp == File.GetLastWriteTime (data.AddinManifestFileName))
+			if (inInternalUpdate || descTimestamp == File.GetLastWriteTime (manifestFile))
 				return;
 			if (IsDirty) {
 				string q = AddinManager.CurrentLocalizer.GetString ("The add-in manifest for project '{0}' has been modified. Do you want to reload it? (unsaved changes will be lost)", data.Project.Name);

@@ -39,7 +39,7 @@ using Mono.Addins.Description;
 using MonoDevelop.Ide.Gui.Components;
 using Gtk;
 
-namespace MonoDevelop.AddinAuthoring
+namespace MonoDevelop.AddinAuthoring.NodeBuilders
 {
 	class ProjectFolderNodeBuilderExtension: NodeBuilderExtension
 	{
@@ -116,17 +116,14 @@ namespace MonoDevelop.AddinAuthoring
 	{
 		public override void ActivateItem ()
 		{
-			if (CurrentNode.DataItem is AddinData) {
-				AddinData data = (AddinData) CurrentNode.DataItem;
-				foreach (Document doc in IdeApp.Workbench.Documents) {
-					AddinDescriptionView view = doc.GetContent<AddinDescriptionView> ();
-					if (view != null && view.Data == data) {
-						doc.Select ();
-						return;
-					}
-				}
-				IdeApp.Workbench.OpenDocument (new AddinDescriptionView (data), true);
-			}
+/*			if (CurrentNode.DataItem is AddinData) {
+				Pad pad = IdeApp.Workbench.GetPad<ExtensionTreePad> ();
+				ExtensionTreePad etree = (ExtensionTreePad) pad.Content;
+				pad.BringToFront ();
+				Project p = (Project) CurrentNode.GetParentDataItem (typeof(Project), false);
+				if (p != null)
+					etree.SelectProject (p);
+			}*/
 		}
 
 		[CommandHandler (Commands.AddExtension)]

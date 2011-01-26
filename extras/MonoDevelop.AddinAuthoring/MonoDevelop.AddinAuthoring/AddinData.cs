@@ -36,6 +36,8 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using Mono.Addins;
 using Mono.Addins.Description;
+using MonoDevelop.Xml.Formatting;
+ 
 
 namespace MonoDevelop.AddinAuthoring
 {
@@ -51,6 +53,7 @@ namespace MonoDevelop.AddinAuthoring
 		AddinDescription compiledManifest;
 		FileSystemWatcher watcher;
 		DateTime lastNotifiedTimestamp;
+		object changeLock = new object ();
 		
 		public event EventHandler Changed;
 		internal static event AddinSupportEventHandler AddinSupportChanged;
@@ -113,10 +116,12 @@ namespace MonoDevelop.AddinAuthoring
 		void OnDescFileChanged (object s, EventArgs a)
 		{
 			Gtk.Application.Invoke (delegate {
-				DateTime tim = File.GetLastWriteTime (AddinManifestFileName);
-				if (tim != lastNotifiedTimestamp) {
-					lastNotifiedTimestamp = tim;
-					NotifyChanged (true);
+				lock (changeLock) {
+					DateTime tim = File.GetLastWriteTime (AddinManifestFileName);
+					if (tim != lastNotifiedTimestamp) {
+						lastNotifiedTimestamp = tim;
+						NotifyChanged (true);
+					}
 				}
 			});
 		}
@@ -132,10 +137,6 @@ namespace MonoDevelop.AddinAuthoring
 		
 		public static AddinData GetAddinData (DotNetProject project)
 		{
-			// Extensibility options are only available when a project belongs to a solution
-			if (project.ParentSolution == null)
-				return null;
-			
 			AddinData data = project.ExtendedProperties ["MonoDevelop.AddinAuthoring"] as AddinData;
 			if (data != null)
 				return data;
@@ -186,6 +187,16 @@ namespace MonoDevelop.AddinAuthoring
 			}
 		}
 		
+		public void SaveAddinManifest ()
+		{
+			lock (changeLock) {
+				if (manifest != null) {
+					AddinAuthoringService.SaveFormatted (project.Policies, manifest);
+					lastNotifiedTimestamp = File.GetLastWriteTime (manifest.FileName);
+				}
+			}
+		}
+		
 		public AddinDescription LoadAddinManifest ()
 		{
 			AddinDescription d = AddinRegistry.ReadAddinManifestFile (AddinManifestFileName);
@@ -229,11 +240,18 @@ namespace MonoDevelop.AddinAuthoring
 				NotifyChanged (true);
 			}
 		}
+		
+		AddinRegistry tempRegistry;
 
 		public AddinRegistry AddinRegistry {
 			get {
 				if (registry != null)
 					return registry;
+				if (project.ParentSolution == null) {
+					if (tempRegistry == null)
+						tempRegistry = new AddinRegistry (".");
+					return tempRegistry;
+				}
 				return SetRegistry ();
 			}
 		}
@@ -276,6 +294,8 @@ namespace MonoDevelop.AddinAuthoring
 		
 		void SyncRoot ()
 		{
+			if (project.ParentSolution == null)
+				return;
 			if (CachedAddinManifest.IsRoot != isRoot) {
 				isRoot = CachedAddinManifest.IsRoot;
 				registry = null;
@@ -290,7 +310,7 @@ namespace MonoDevelop.AddinAuthoring
 			foreach (AddinDependency adep in CachedAddinManifest.MainModule.Dependencies) {
 				bool found = false;
 				foreach (ProjectReference pr in Project.References) {
-					if ((pr is AddinProjectReference) && pr.Reference == adep.FullAddinId) {
+					if ((pr is AddinProjectReference) && ((AddinProjectReference)pr).AddinId == adep.FullAddinId) {
 						found = true;
 						break;
 					} else if (pr.ReferenceType == ReferenceType.Project) {
@@ -309,7 +329,7 @@ namespace MonoDevelop.AddinAuthoring
 						updating = true;
 						DotNetProject p = FindProjectImplementingAddin (adep.FullAddinId);
 						if (p != null)
-							Project.References.Add (new ProjectReference (p));
+							Project.References.Add (new ProjectReference (p) { LocalCopy = false });
 						else
 							Project.References.Add (new AddinProjectReference (adep.FullAddinId));
 					} finally {
@@ -322,7 +342,7 @@ namespace MonoDevelop.AddinAuthoring
 			
 			ArrayList toDelete = new ArrayList ();
 			foreach (ProjectReference pr in Project.References) {
-				if ((pr is AddinProjectReference) && !addinRefs.ContainsKey (pr.Reference))
+				if ((pr is AddinProjectReference) && !addinRefs.ContainsKey (((AddinProjectReference)pr).AddinId))
 					toDelete.Add (pr);
 			}
 			foreach (ProjectReference pr in toDelete)

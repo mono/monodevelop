@@ -1,10 +1,10 @@
 // 
-// ReferenceNodeBuilder.cs
+// AddinGroup.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,35 +25,18 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using Mono.Addins.Description;
 
 namespace MonoDevelop.AddinAuthoring.NodeBuilders
 {
-	public class ReferenceNodeBuilder: NodeBuilderExtension
+	public class AddinGroup
 	{
-		public override bool CanBuildNode (System.Type dataType)
+		public AddinGroup (AddinDescription adesc)
 		{
-			return typeof(ProjectReference).IsAssignableFrom (dataType);
+			this.AddinDescription = adesc;
 		}
 		
-		public override void GetNodeAttributes (ITreeNavigator parentNode, object dataObject, ref NodeAttributes attributes)
-		{
-			if (dataObject is AddinProjectReference) {
-				attributes |= NodeAttributes.Hidden;
-				return;
-			}
-			ProjectReference pr = (ProjectReference) dataObject;
-			DotNetProject parent = pr.OwnerProject as DotNetProject;
-			if (AddinAuthoringService.IsProjectIncludedByAddin (parent, pr)) {
-				attributes |= NodeAttributes.Hidden;
-			}
-			else if (parent.GetAddinData () != null && pr.ReferenceType == ReferenceType.Project) {
-				DotNetProject tp = parent.ParentSolution.FindProjectByName (pr.Reference) as DotNetProject;
-				if (tp != null && tp.GetAddinData () != null)
-					attributes |= NodeAttributes.Hidden;
-			}
-		}
+		public AddinDescription AddinDescription { get; set; }
 	}
 }
+

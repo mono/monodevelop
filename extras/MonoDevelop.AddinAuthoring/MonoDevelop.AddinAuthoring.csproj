@@ -24,6 +24,11 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="Execute" command="../../main/build/bin/MonoDevelop.exe" />
+      </CustomCommands>
+    </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -43,7 +48,6 @@
     <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\ProjectFolderNodeBuilderExtension.cs" />
     <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\AddinFolderNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AddinAuthoring\AddinData.cs" />
-    <Compile Include="MonoDevelop.AddinAuthoring\AddinDescriptionView.cs" />
     <Compile Include="MonoDevelop.AddinAuthoring\AddinDescriptionWidget.cs" />
     <Compile Include="MonoDevelop.AddinAuthoring\AddinFileDescriptionTemplate.cs" />
     <Compile Include="MonoDevelop.AddinAuthoring\AddinOptionPanelWidget.cs" />
@@ -65,12 +69,9 @@
     <Compile Include="MonoDevelop.AddinAuthoring\NodeTypeEditorDialog.cs" />
     <Compile Include="MonoDevelop.AddinAuthoring\SelectNodeSetDialog.cs" />
     <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\AddinHeaderNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\ExtensionPointsNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\ExtensionsNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AddinAuthoring\ExtensionPointsEditorWidget.cs" />
     <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\ReferencesFolderNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\AddinReferenceNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AddinAuthoring\AddinDescriptionDisplayBinding.cs" />
     <Compile Include="MonoDevelop.AddinAuthoring\AddinProjectReference.cs" />
     <Compile Include="MonoDevelop.AddinAuthoring\NewRegistryDialog.cs" />
     <Compile Include="MonoDevelop.AddinAuthoring.CodeCompletion\CodeCompletionExtension.cs" />
@@ -93,6 +94,33 @@
     <Compile Include="MonoDevelop.AddinAuthoring\ExtensionDomain.cs" />
     <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\ReferenceNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AddinAuthoring\TypeCellEditor.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\ProjectNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\ExtensionPointNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\ExtensionNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\ExtensionNodeNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\ExtensionModelTypeNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\Util.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\AddinCategoryGroup.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\AddinGroup.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\AddinCategoryNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\ExtensionNodeTree.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\ExtensionNodeInfo.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\ExtensionModelBrowser.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\ExtensionModelBrowserWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AddinAuthoring.ExtensionModelBrowserWidget.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\AddinNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\SolutionNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring.Gui\AddinView.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AddinAuthoring.Gui.AddinView.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring.Gui\ExtensionPointView.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AddinAuthoring.Gui.ExtensionPointView.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring.Gui\ExtensionView.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AddinAuthoring.Gui.ExtensionView.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring.Gui\ExtensionNodeView.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AddinAuthoring.Gui.ExtensionNodeView.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring.NodeBuilders\RegistryNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\AddinDescriptionDisplayBinding.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\AddinDescriptionView.cs" />
     <Compile Include="MonoDevelop.AddinAuthoring\DomAssemblyReflector.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -126,9 +154,17 @@
     <EmbeddedResource Include="addin-reference.png">
       <LogicalName>addin-reference.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="extension.png">
+      <LogicalName>extension.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddinXmlPolicy.xml">
+      <LogicalName>AddinXmlPolicy.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddinTextStylePolicy.xml">
+      <LogicalName>AddinTextStylePolicy.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Mono.Posix" />
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -206,6 +242,11 @@
     <Reference Include="MonoDevelop.Debugger.Soft, Version=2.2.0.0, Culture=neutral">
       <Package>monodevelop-core-addins</Package>
     </Reference>
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtkhtml-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Debugger.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <Package>monodevelop-core-addins</Package>
+    </Reference>
     <Reference Include="Mono.Addins, Version=0.5.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <Reference Include="Mono.Addins.Setup, Version=0.5.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <Reference Include="Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e9ce85b0923c84f">
@@ -214,16 +255,18 @@
     <Reference Include="Mono.Debugging.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e9ce85b0923c84f">
       <Package>monodevelop-core-addins</Package>
     </Reference>
-    <Reference Include="Mono.Debugger.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
-      <Package>monodevelop-core-addins</Package>
-    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
+        <Policies>
+          <ChangeLogPolicy UpdateMode="None" inheritsSet="Mono">
+            <MessageStyle LineAlign="0" />
+          </ChangeLogPolicy>
+        </Policies>
         <GtkDesignInfo gettextClass="Mono.Addins.AddinManager.CurrentLocalizer" />
-        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="MonoDevelop.AddinAuthoring.make" SyncReferences="true" RelativeConfigureInPath="../../">
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="MonoDevelop.AddinAuthoring.make" BuildTargetName="" SyncReferences="true" RelativeConfigureInPath="../../">
           <BuildFilesVar Sync="true" Name="FILES" />
           <DeployFilesVar />
           <ResourcesVar Sync="true" Name="RESOURCES" />
@@ -235,4 +278,7 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.AddinAuthoring.Gui\" />
+  </ItemGroup>
 </Project>

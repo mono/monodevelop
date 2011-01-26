@@ -32,7 +32,6 @@ using MonoDevelop.Projects;
 using Mono.Addins;
 using Mono.Addins.Setup;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.AddinAuthoring
 {
@@ -48,7 +47,10 @@ namespace MonoDevelop.AddinAuthoring
 		}
 		
 		FilePath TempRegistryPath {
-			get { return solution.BaseDirectory.Combine (".temp-addin-registry").Combine (IdeApp.Workspace.ActiveConfigurationId); }
+			get {
+				
+				return solution.BaseDirectory.Combine (".temp-addin-registry").Combine (IdeApp.Workspace.ActiveConfigurationId ?? "Default"); 
+			}
 		}
 		
 		public string ApplicationName {
@@ -137,6 +139,15 @@ namespace MonoDevelop.AddinAuthoring
 				tw.WriteEndElement ();
 			}
 			Registry.Update (new ConsoleProgressStatus (false));
+		}
+		
+		public void NotifyChanged ()
+		{
+			foreach (DotNetProject p in solution.GetAllSolutionItems<DotNetProject> ()) {
+				AddinData data = p.GetAddinData ();
+				if (data != null)
+					data.NotifyChanged (false);
+			}
 		}
 	}
 }

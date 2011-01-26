@@ -35,7 +35,11 @@ namespace MonoDevelop.AddinAuthoring
 			this.table1.ColumnSpacing = ((uint)(6));
 			this.table1.BorderWidth = ((uint)(9));
 			// Container child table1.Gtk.Table+TableChild
-			this.baseType = null;
+			this.baseType = new global::MonoDevelop.AddinAuthoring.TypeSelector ();
+			this.baseType.Events = ((global::Gdk.EventMask)(256));
+			this.baseType.Name = "baseType";
+			this.baseType.AllowCreate = false;
+			this.baseType.AllowCreateInterface = false;
 			this.table1.Add (this.baseType);
 			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.baseType]));
 			w2.TopAttach = ((uint)(2));
@@ -112,7 +116,11 @@ namespace MonoDevelop.AddinAuthoring
 			w8.XOptions = ((global::Gtk.AttachOptions)(4));
 			w8.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.nodeType = null;
+			this.nodeType = new global::MonoDevelop.AddinAuthoring.TypeSelector ();
+			this.nodeType.Events = ((global::Gdk.EventMask)(256));
+			this.nodeType.Name = "nodeType";
+			this.nodeType.AllowCreate = false;
+			this.nodeType.AllowCreateInterface = false;
 			this.table1.Add (this.nodeType);
 			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.table1 [this.nodeType]));
 			w9.LeftAttach = ((uint)(1));
@@ -161,6 +169,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.DefaultWidth = 543;
 			this.DefaultHeight = 251;
 			this.Show ();
+			this.nodeType.Changed += new global::System.EventHandler (this.OnNodeTypeChanged);
 			this.entryName.Changed += new global::System.EventHandler (this.OnEntryNameChanged);
 			this.buttonOk.Clicked += new global::System.EventHandler (this.OnButtonOkClicked);
 		}

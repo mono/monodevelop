@@ -1,10 +1,10 @@
 // 
-// ReferenceNodeBuilder.cs
+// AddinView.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,35 +25,36 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using Mono.Addins.Description;
 
-namespace MonoDevelop.AddinAuthoring.NodeBuilders
+namespace MonoDevelop.AddinAuthoring.Gui
 {
-	public class ReferenceNodeBuilder: NodeBuilderExtension
+	[System.ComponentModel.ToolboxItem(true)]
+	public partial class AddinView : Gtk.Bin
 	{
-		public override bool CanBuildNode (System.Type dataType)
+		public AddinView ()
 		{
-			return typeof(ProjectReference).IsAssignableFrom (dataType);
+			this.Build ();
 		}
 		
-		public override void GetNodeAttributes (ITreeNavigator parentNode, object dataObject, ref NodeAttributes attributes)
+		public void Fill (AddinDescription desc)
 		{
-			if (dataObject is AddinProjectReference) {
-				attributes |= NodeAttributes.Hidden;
-				return;
-			}
-			ProjectReference pr = (ProjectReference) dataObject;
-			DotNetProject parent = pr.OwnerProject as DotNetProject;
-			if (AddinAuthoringService.IsProjectIncludedByAddin (parent, pr)) {
-				attributes |= NodeAttributes.Hidden;
-			}
-			else if (parent.GetAddinData () != null && pr.ReferenceType == ReferenceType.Project) {
-				DotNetProject tp = parent.ParentSolution.FindProjectByName (pr.Reference) as DotNetProject;
-				if (tp != null && tp.GetAddinData () != null)
-					attributes |= NodeAttributes.Hidden;
-			}
+			string name = desc.Name;
+			if (string.IsNullOrEmpty (name))
+				name = desc.LocalId;
+			labelName.Markup = "<small>Add-in</small>\n<big><b>" + GLib.Markup.EscapeText (name) + "</b></big>";
+			
+			if (!string.IsNullOrEmpty (desc.Description))
+				labelDesc.Text = desc.Description;
+			else
+				labelDesc.Hide ();
+			
+			labelId.Text = desc.LocalId;
+			labelNamespace.Text = desc.Namespace;
+			labelVersion.Text = desc.Version;
+			labelAuthor.Text = desc.Author;
+			labelCopyright.Text = desc.Copyright;
 		}
 	}
 }
+

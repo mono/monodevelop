@@ -27,6 +27,22 @@
 		<ExtensionNode name="Registry" type="MonoDevelop.AddinAuthoring.RegistryInfo" />
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/AddinAuthoring/ContextMenu/ExtensionModelPad/ExtensionPoint">
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/AddinAuthoring/ContextMenu/ExtensionModelPad/Extension">
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/AddinAuthoring/ContextMenu/ExtensionModelPad/ExtensionNode">
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/AddinAuthoring/ContextMenu/ExtensionModelPad/Project">
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+	</ExtensionPoint>
+	
 	<!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/AddinAuthoring/AddinRegistries">
@@ -38,6 +54,22 @@
 		<Command id = "MonoDevelop.AddinAuthoring.Commands.AddExtension"
 			icon = "md-addin"
 			_label = "Add new extension..." />
+		<Command id = "MonoDevelop.AddinAuthoring.Commands.AddNodeBefore"
+			type="array"
+			_label = "Add Node Before" />
+		<Command id = "MonoDevelop.AddinAuthoring.Commands.AddNodeAfter"
+			type="array"
+			_label = "Add Node After" />
+		<Command id = "MonoDevelop.AddinAuthoring.Commands.AddNode"
+			type="array"
+			_label = "Add Node" />
+		<Command id = "MonoDevelop.AddinAuthoring.Commands.AddExtensionPoint"
+			icon = "md-new-extension-point"
+			_label = "New Extension Point" />
+		<Command id = "MonoDevelop.AddinAuthoring.Commands.ExtensionModelBrowser"
+			icon = "md-addin"
+			defaultHandler = "MonoDevelop.AddinAuthoring.ExtensionModelBrowserHandler"
+			_label = "Extension Model Browser" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplateTypes">
@@ -48,6 +80,14 @@
 		<CommandItem id="MonoDevelop.AddinAuthoring.Commands.AddAddinDependency" insertafter="Separator5"/>
 	</Extension>
 
+	<Extension path="/MonoDevelop/Ide/MainMenu/View">
+		<CommandItem id="MonoDevelop.AddinAuthoring.Commands.ExtensionModelBrowser" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
+		<DisplayBinding class = "MonoDevelop.AddinAuthoring.AddinDescriptionDisplayBinding" insertbefore="DefaultDisplayBinding"/>
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
 		<Condition id="ItemType" value="ProjectReferenceCollection">
 			<CommandItem id = "MonoDevelop.AddinAuthoring.Commands.AddAddinDependency" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddReference"/>
@@ -55,15 +95,11 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
-		<NodeBuilder class = "MonoDevelop.AddinAuthoring.ReferencesFolderNodeBuilder"/>
-		<NodeBuilder class = "MonoDevelop.AddinAuthoring.AddinReferenceNodeBuilder"/>
-		<NodeBuilder class = "MonoDevelop.AddinAuthoring.ReferenceNodeBuilder"/>
-		<NodeBuilder class = "MonoDevelop.AddinAuthoring.ProjectFolderNodeBuilderExtension"/>
-		<NodeBuilder class = "MonoDevelop.AddinAuthoring.AddinFolderNodeBuilder"/>
-<!--		
-		<NodeBuilder class = "MonoDevelop.AddinAuthoring.ExtensionsNodeBuilder"/>
-		<NodeBuilder class = "MonoDevelop.AddinAuthoring.ExtensionPointsNodeBuilder"/>
-		-->
+		<NodeBuilder class = "MonoDevelop.AddinAuthoring.NodeBuilders.ReferencesFolderNodeBuilder"/>
+		<NodeBuilder class = "MonoDevelop.AddinAuthoring.NodeBuilders.AddinReferenceNodeBuilder"/>
+		<NodeBuilder class = "MonoDevelop.AddinAuthoring.NodeBuilders.ReferenceNodeBuilder"/>
+<!--		<NodeBuilder class = "MonoDevelop.AddinAuthoring.NodeBuilders.ProjectFolderNodeBuilderExtension"/>-->
+		<NodeBuilder class = "MonoDevelop.AddinAuthoring.NodeBuilders.AddinFolderNodeBuilder"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
@@ -102,14 +138,10 @@
 		</Condition>
 	</Extension>
 	
-<!--	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
-		<DisplayBinding class = "MonoDevelop.AddinAuthoring.AddinDescriptionDisplayBinding" insertbefore="DefaultDisplayBinding"/>
-	</Extension>
--->
-
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "md-addinauthoring-newclass" icon = "md-class|res:flare.png" size="Menu" />
 		<StockIcon stockid = "md-addinauthoring-newinterface" icon = "md-interface|res:flare.png" size="Menu" />
+		<StockIcon stockid = "md-extension" icon = "res:extension.png" size="Menu" />
 		<StockIcon stockid = "md-extension-point" icon = "res:extension-point.png" size="Menu" />
 		<StockIcon stockid = "md-extension-node-type" icon = "res:extension-node-type.png" size="Menu" />
 		<StockIcon stockid = "md-extension-node" icon = "res:extension-node-type.png" size="Menu" />
@@ -131,5 +163,39 @@
 	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
 		<ItemProperty class = "MonoDevelop.Projects.DotNetProject"
 			name = "ExtensionDomain" type = "System.String" external="false"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/WorkbenchContexts/Edit">
+		<ContextPad id = "ExtensionTreePad" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/AddinAuthoring/ContextMenu/ExtensionModelPad/Project">
+		<CommandItem id = "MonoDevelop.AddinAuthoring.Commands.AddExtensionPoint" />
+		<CommandItem id = "MonoDevelop.AddinAuthoring.Commands.AddExtension" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/AddinAuthoring/ContextMenu/ExtensionModelPad/Extension">
+		<CommandItem id="MonoDevelop.AddinAuthoring.Commands.AddNode" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/AddinAuthoring/ContextMenu/ExtensionModelPad/ExtensionPoint">
+		<CommandItem id="MonoDevelop.AddinAuthoring.Commands.AddNode" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/AddinAuthoring/ContextMenu/ExtensionModelPad/ExtensionNode">
+		<ItemSet id="InsertBefore" _label="Insert Before" autohide="true">
+			<CommandItem id="MonoDevelop.AddinAuthoring.Commands.AddNodeBefore" />
+		</ItemSet>
+		<ItemSet id="InsertAfter" _label="Insert After" autohide="true">
+			<CommandItem id="MonoDevelop.AddinAuthoring.Commands.AddNodeAfter" />
+		</ItemSet>
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
+		<Policies resource="AddinXmlPolicy.xml" />
+		<Policies resource="AddinTextStylePolicy.xml" />
 	</Extension>
 </Addin>

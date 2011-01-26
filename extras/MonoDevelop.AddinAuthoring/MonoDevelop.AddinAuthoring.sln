@@ -18,7 +18,6 @@ Global
 		Policies = $0
 		$0.ChangeLogPolicy = $1
 		$1.UpdateMode = None
-		$1.VcsIntegration = None
 		$1.MessageStyle = $2
 		$2.LineAlign = 0
 		$1.inheritsSet = Mono

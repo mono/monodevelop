@@ -34,6 +34,7 @@ using Mono.Addins.Description;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Collections;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.CodeCompletion;

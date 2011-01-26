@@ -7,21 +7,51 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
 using Mono.Addins.Description;
 using Mono.Addins;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AddinAuthoring
 {
 	public class AddinProjectExtension: ProjectServiceExtension
 	{
+		static bool buildingSolution;
+		
+		public override bool SupportsItem (IBuildTarget item)
+		{
+			return IdeApp.IsInitialized && (item is Solution);
+		}
+		
+		protected override BuildResult Build (IProgressMonitor monitor, Solution solution, ConfigurationSelector configuration)
+		{
+			try {
+				buildingSolution = true;
+				BuildResult res = base.Build (monitor, solution, configuration);
+				if (res.ErrorCount == 0) {
+					SolutionAddinData data = solution.GetAddinData ();
+					if (data != null && data.Registry != null) {
+						data.Registry.Update (new ProgressStatusMonitor (monitor));
+						DispatchService.GuiDispatch (delegate {
+							data.NotifyChanged ();
+						});
+					}
+				}
+				return res;
+			} finally {
+				buildingSolution = false;
+			}
+		}
+
 		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, ConfigurationSelector configuration)
 		{
+			DotNetProject project = entry as DotNetProject;
+			AddinData data = project != null ? AddinData.GetAddinData (project) : null;
+			if (data != null)
+				monitor.BeginTask (null, buildingSolution ? 2 : 3);
+			
 			BuildResult res = base.Build (monitor, entry, configuration);
-			if (res.ErrorCount > 0 || !(entry is DotNetProject))
+			if (res.ErrorCount > 0 || data == null)
 				return res;
 			
-			DotNetProject project = (DotNetProject) entry;
-			AddinData data = AddinData.GetAddinData (project);
-			if (data == null)
-				return res;
+			monitor.Step (1);
 			
 			monitor.Log.WriteLine (AddinManager.CurrentLocalizer.GetString ("Verifying add-in description..."));
 			string fileName = data.AddinManifestFileName;
@@ -42,6 +72,19 @@ namespace MonoDevelop.AddinAuthoring
 				res.AddError (data.AddinManifestFileName, 0, 0, "", err);
 				monitor.Log.WriteLine ("ERROR: " + err);
 			}
+			
+			if (!buildingSolution && project.ParentSolution != null) {
+				monitor.Step (1);
+				SolutionAddinData sdata = project.ParentSolution.GetAddinData ();
+				if (sdata != null && sdata.Registry != null) {
+					sdata.Registry.Update (new ProgressStatusMonitor (monitor));
+					DispatchService.GuiDispatch (delegate {
+						sdata.NotifyChanged ();
+					});
+				}
+			}
+			
+			monitor.EndTask ();
 			
 			return res;
 		}

@@ -45,18 +45,41 @@ namespace MonoDevelop.AddinAuthoring
 		
 		public AddinProjectReference ()
 		{
+			LocalCopy = false;
 		}
 		
-		public AddinProjectReference (string reference): base (ReferenceType.Custom, reference)
+		public AddinProjectReference (string addinId): base (ReferenceType.Custom, EncodeId (addinId))
 		{
+			LocalCopy = false;
+		}
+		
+		public string AddinId {
+			get { return DecodeId (Reference); }
+		}
+		
+		static string EncodeId (string addinId)
+		{
+			int i = addinId.LastIndexOf (',');
+			if (i == -1)
+				throw new ArgumentException ("Invalid add-in id");
+			return addinId.Substring (0, i) + ":" + addinId.Substring (i+1);
+		}
+		
+		static string DecodeId (string reference)
+		{
+			int i = reference.LastIndexOf (':');
+			if (i == -1)
+				throw new ArgumentException ("Invalid add-in reference");
+			return reference.Substring (0, i) + "," + reference.Substring (i+1);
 		}
 		
 		public override string[] GetReferencedFileNames (ConfigurationSelector configuration)
 		{
 			if (OwnerProject != null) {
+				string aid = AddinId;
 				AddinData data = AddinData.GetAddinData ((DotNetProject)OwnerProject);
 				if (data != null) {
-					Addin addin = data.AddinRegistry.GetAddin (Reference);
+					Addin addin = data.AddinRegistry.GetAddin (aid);
 					if (addin != null) {
 						List<string> list = new List<string> ();
 						foreach (string asm in addin.Description.MainModule.Assemblies) {

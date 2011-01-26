@@ -226,7 +226,7 @@ namespace MonoDevelop.AddinAuthoring
 				if (AddinData.GetAddinData ((DotNetProject)entry) != null)
 					return FeatureSupportLevel.Enabled;
 				else
-					return FeatureSupportLevel.Supported;
+					return FeatureSupportLevel.SupportedByDefault;
 			}
 			else
 				return FeatureSupportLevel.NotSupported;

@@ -1,10 +1,10 @@
 // 
-// ReferenceNodeBuilder.cs
+// ExtensionModelTypeNodeBuilder.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,37 +23,50 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using MonoDevelop.Projects;
+using Mono.Addins;
 
 namespace MonoDevelop.AddinAuthoring.NodeBuilders
 {
-	public class ReferenceNodeBuilder: NodeBuilderExtension
+	public abstract class ExtensionModelTypeNodeBuilder: TypeNodeBuilder
 	{
-		public override bool CanBuildNode (System.Type dataType)
+		public AddinRegistry GetRegistry (ITreeNavigator nav)
 		{
-			return typeof(ProjectReference).IsAssignableFrom (dataType);
+			Solution sol = (Solution) nav.GetParentDataItem (typeof(Solution), true);
+			if (sol != null)
+				return sol.GetAddinData ().Registry;
+			RegistryInfo reg = (RegistryInfo) nav.GetParentDataItem (typeof(RegistryInfo), true);
+			if (reg != null)
+				return reg.CachedRegistry;
+			return null;
 		}
 		
-		public override void GetNodeAttributes (ITreeNavigator parentNode, object dataObject, ref NodeAttributes attributes)
+		public AddinData GetAddinData (ITreeNavigator nav)
 		{
-			if (dataObject is AddinProjectReference) {
-				attributes |= NodeAttributes.Hidden;
-				return;
+			DotNetProject p = (DotNetProject) nav.GetParentDataItem (typeof(DotNetProject), true);
+			if (p == null)
+				return null;
+			return p.GetAddinData ();
+		}
+		
+		public CachedModelData GetCachedModelData (ITreeNavigator nav)
+		{
+			Project p = (Project) nav.GetParentDataItem (typeof(Project), true);
+			if (p == null)
+				return new CachedModelData ();
+			CachedModelData data = (CachedModelData) p.ExtendedProperties [typeof(CachedModelData)];
+			if (data == null) {
+				data = new CachedModelData ();
+				p.ExtendedProperties [typeof(CachedModelData)] = data;
 			}
-			ProjectReference pr = (ProjectReference) dataObject;
-			DotNetProject parent = pr.OwnerProject as DotNetProject;
-			if (AddinAuthoringService.IsProjectIncludedByAddin (parent, pr)) {
-				attributes |= NodeAttributes.Hidden;
-			}
-			else if (parent.GetAddinData () != null && pr.ReferenceType == ReferenceType.Project) {
-				DotNetProject tp = parent.ParentSolution.FindProjectByName (pr.Reference) as DotNetProject;
-				if (tp != null && tp.GetAddinData () != null)
-					attributes |= NodeAttributes.Hidden;
-			}
+			return data;
 		}
 	}
+	
+	public class CachedModelData
+	{
+	}
 }
+

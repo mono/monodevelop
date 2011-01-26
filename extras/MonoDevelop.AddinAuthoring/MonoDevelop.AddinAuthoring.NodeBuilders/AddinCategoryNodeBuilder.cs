@@ -1,4 +1,4 @@
-// AddinReferenceNodeBuilder.cs
+// ExtensionPointsNodeBuilder.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -28,7 +28,7 @@
 using System;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Components.Commands;
@@ -36,51 +36,57 @@ using Mono.Addins;
 using Mono.Addins.Description;
 using MonoDevelop.Ide.Gui.Components;
 using Gdk;
+using System.Collections.Generic;
 
 namespace MonoDevelop.AddinAuthoring.NodeBuilders
 {
-	public class AddinReferenceNodeBuilder: TypeNodeBuilder
+	public class AddinCategoryNodeBuilder: TypeNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(AddinDependency); }
+			get { return typeof(AddinCategoryGroup); }
 		}
-		
-		public override Type CommandHandlerType {
-			get { return typeof(AddinReferenceCommandHandler); }
-		}
-		
-		public override string ContextMenuAddinPath {
-			get { return "/MonoDevelop/AddinAuthoring/ContextMenu/ProjectPad/AddinReference"; }
-		}
-
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			AddinDependency adep = (AddinDependency) dataObject;
-			return Addin.GetIdName (adep.AddinId);
+			AddinCategoryGroup ep = (AddinCategoryGroup) dataObject;
+			return ep.Name;
 		}
 
-		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Pixbuf icon, ref Pixbuf closedIcon)
 		{
-			AddinDependency adep = (AddinDependency) dataObject;
-			label = Addin.GetIdName (adep.AddinId);
-			icon = closedIcon = Context.GetIcon ("md-addin-reference");
+			AddinCategoryGroup ep = (AddinCategoryGroup) dataObject;
+			label = ep.Name;
+			icon = Context.GetIcon ("md-open-folder");
 		}
-	}
-	
-	class AddinReferenceCommandHandler: NodeCommandHandler
-	{
-		public override void DeleteItem ()
+		
+		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
-			DotNetProject p = CurrentNode.GetParentDataItem (typeof(Project), true) as DotNetProject;
-			AddinData data = AddinData.GetAddinData (p);
-			AddinDependency adep = (AddinDependency) CurrentNode.DataItem;
-			
-			string q = AddinManager.CurrentLocalizer.GetString ("Are you sure you want to remove the reference to add-in '{0}'?", Addin.GetIdName (adep.AddinId));
-			if (MessageService.Confirm (q, AlertButton.Remove)) {
-				AddinAuthoringService.RemoveReferences (data, new string[] { adep.FullAddinId });
+			AddinCategoryGroup cat = (AddinCategoryGroup) dataObject;
+			foreach (var ad in cat.Registry.CachedRegistry.GetAddinRoots ()) {
+				if (ad.Description.Category == cat.Name)
+					treeBuilder.AddChild (ad.Description);
+			}
+			foreach (var ad in cat.Registry.CachedRegistry.GetAddins ()) {
+				if (ad.Description.Category == cat.Name)
+					treeBuilder.AddChild (ad.Description);
 			}
 		}
+		
+		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
+		{
+			return true;
+		}
+		
+		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
+		{
+			object o1 = thisNode.DataItem;
+			object o2 = otherNode.DataItem;
+			if ((o1 is AddinCategoryGroup) && !(o2 is AddinCategoryGroup))
+				return -1;
+			if ((o2 is AddinCategoryGroup) && !(o1 is AddinCategoryGroup))
+				return 1;
+			return base.CompareObjects (thisNode, otherNode);
+		}
+
 	}
 }

@@ -36,7 +36,7 @@ using Mono.Addins;
 using Mono.Addins.Description;
 using MonoDevelop.Ide.Gui.Components;
 
-namespace MonoDevelop.AddinAuthoring
+namespace MonoDevelop.AddinAuthoring.NodeBuilders
 {
 	public class ReferencesFolderNodeBuilder: NodeBuilderExtension
 	{

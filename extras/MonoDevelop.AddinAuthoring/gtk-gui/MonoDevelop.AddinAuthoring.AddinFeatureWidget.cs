@@ -72,7 +72,6 @@ namespace MonoDevelop.AddinAuthoring
 			this.radiobuttonLibrary = new global::Gtk.RadioButton (global::Mono.Addins.AddinManager.CurrentLocalizer.GetString ("A library which can be extended by add-ins"));
 			this.radiobuttonLibrary.CanFocus = true;
 			this.radiobuttonLibrary.Name = "radiobuttonLibrary";
-			this.radiobuttonLibrary.Active = true;
 			this.radiobuttonLibrary.DrawIndicator = true;
 			this.radiobuttonLibrary.UseUnderline = true;
 			this.radiobuttonLibrary.Group = new global::GLib.SList (global::System.IntPtr.Zero);
@@ -119,7 +118,9 @@ namespace MonoDevelop.AddinAuthoring
 			w8.Expand = false;
 			w8.Fill = false;
 			// Container child boxRepo.Gtk.Box+BoxChild
-			this.regSelector = null;
+			this.regSelector = new global::MonoDevelop.AddinAuthoring.RegistrySelector ();
+			this.regSelector.Events = ((global::Gdk.EventMask)(256));
+			this.regSelector.Name = "regSelector";
 			this.boxRepo.Add (this.regSelector);
 			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.boxRepo [this.regSelector]));
 			w9.Position = 1;
@@ -235,6 +236,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.labelExtensibleApp.Hide ();
 			this.Show ();
 			this.radiobuttonLibrary.Toggled += new global::System.EventHandler (this.OnRadiobuttonLibraryToggled);
+			this.regSelector.Changed += new global::System.EventHandler (this.OnRegSelectorChanged);
 			this.entryName.Changed += new global::System.EventHandler (this.OnEntryNameChanged);
 			this.entryId.Changed += new global::System.EventHandler (this.OnEntryIdChanged);
 			this.comboNs.Changed += new global::System.EventHandler (this.OnComboNsChanged);

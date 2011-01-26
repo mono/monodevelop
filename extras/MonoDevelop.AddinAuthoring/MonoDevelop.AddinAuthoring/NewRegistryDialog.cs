@@ -50,5 +50,9 @@ namespace MonoDevelop.AddinAuthoring
 		public string RegistryPath {
 			get { return entryRegPath.Path; }
 		}
+		
+		public string ApplicationPath {
+			get { return entryAppPath.Path; }
+		}
 	}
 }

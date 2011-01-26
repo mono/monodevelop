@@ -62,7 +62,7 @@ namespace MonoDevelop.AddinAuthoring
 		{
 			DotNetProject p = IdeApp.Workspace.GetProjectContainingFile (fileName) as DotNetProject;
 			AddinData data = AddinData.GetAddinData (p);
-			return new AddinDescriptionView (data);
+			return new AddinDescriptionView (data, fileName);
 		}
 
 		public IViewContent CreateContentForMimeType (string mimeType, System.IO.Stream content)

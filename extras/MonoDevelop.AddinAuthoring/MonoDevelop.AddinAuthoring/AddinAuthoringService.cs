@@ -41,6 +41,8 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Formats.MSBuild;
 using MonoDevelop.Xml.Formatting;
+using MonoDevelop.Projects.Policies;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AddinAuthoring
 {
@@ -52,7 +54,7 @@ namespace MonoDevelop.AddinAuthoring
 		static AddinAuthoringService ()
 		{
 			if (IdeApp.IsInitialized) {
-				IdeApp.ProjectOperations.EndBuild += OnEndBuild;
+				//IdeApp.ProjectOperations.EndBuild += OnEndBuild;
 			}
 			
 			configFile = Path.Combine (PropertyService.ConfigPath, "AddinAuthoring.config");
@@ -70,6 +72,21 @@ namespace MonoDevelop.AddinAuthoring
 			}
 			if (config == null)
 				config = new AddinAuthoringServiceConfig ();
+		}
+
+		static Document browserDocument;
+		
+		public static void ShowExtensionModelBrowser ()
+		{
+			if (browserDocument != null)
+				browserDocument.Select ();
+			else {
+				ExtensionModelBrowser browser = new ExtensionModelBrowser ();
+				browserDocument = IdeApp.Workbench.OpenDocument (browser, true);
+				browserDocument.Closed += delegate {
+					browserDocument = null;
+				};
+			}
 		}
 		
 		static void SaveConfig ()
@@ -169,60 +186,24 @@ namespace MonoDevelop.AddinAuthoring
 		
 		internal static void AddReferences (AddinData data, object[] addins)
 		{
-			AddinDescription desc = data.LoadAddinManifest ();
-			AddinDescriptionView view = FindLoadedDescription (data);
-			foreach (Addin ad in addins) {
+			AddinDescription desc = data.CachedAddinManifest;
+			foreach (Addin ad in addins)
 				AddReference (desc, ad);
-				if (view != null)
-					AddReference (view.AddinDescription, ad);
-			}
-			if (view != null) {
-				view.Update ();
-				view.BeginInternalUpdate ();
-			}
 			
-			try {
-				desc.Save ();
-				data.NotifyChanged (true);
-			} finally {
-				if (view != null)
-					view.EndInternalUpdate ();
-			}
+			data.SaveAddinManifest ();
+			data.NotifyChanged (false);
 		}
 		
 		internal static void RemoveReferences (AddinData data, string[] fullIds)
 		{
-			AddinDescription desc = data.LoadAddinManifest ();
-			AddinDescriptionView view = FindLoadedDescription (data);
-			foreach (string ad in fullIds) {
+			AddinDescription desc = data.CachedAddinManifest;
+			foreach (string ad in fullIds)
 				RemoveReference (desc, ad);
-				if (view != null)
-					RemoveReference (view.AddinDescription, ad);
-			}
-			if (view != null) {
-				view.Update ();
-				view.BeginInternalUpdate ();
-			}
 			
-			try {
-				desc.Save ();
-				data.NotifyChanged (true);
-			} finally {
-				if (view != null)
-					view.EndInternalUpdate ();
-			}
+			data.SaveAddinManifest ();
+			data.NotifyChanged (false);
 		}
 		
-		static AddinDescriptionView FindLoadedDescription (AddinData data)
-		{
-			foreach (Document doc in IdeApp.Workbench.Documents) {
-				AddinDescriptionView view = doc.GetContent <AddinDescriptionView> ();
-				if (view != null && view.Data == data)
-					return view;
-			}
-			return null;
-		}
-				
 		static void AddReference (AddinDescription desc, Addin addin)
 		{
 			foreach (AddinDependency adep in desc.MainModule.Dependencies) {
@@ -302,27 +283,14 @@ namespace MonoDevelop.AddinAuthoring
 			return false;
 		}
 		
-		public static void SaveFormatted (AddinDescription adesc)
+		public static void SaveFormatted (PolicyContainer policies, AddinDescription adesc)
 		{
 			XmlDocument doc = adesc.SaveToXml ();
 			XmlFormatter formatter = new XmlFormatter ();
 			
-			TextStylePolicy textPolicy = new TextStylePolicy (80, 4, false, false, true, EolMarker.Unix);
-			XmlFormattingPolicy xmlPolicy = new XmlFormattingPolicy ();
+			TextStylePolicy textPolicy = policies.Get<TextStylePolicy> (DesktopService.GetMimeTypeInheritanceChain ("application/x-addin+xml"));
+			XmlFormattingPolicy xmlPolicy = policies.Get<XmlFormattingPolicy> (DesktopService.GetMimeTypeInheritanceChain ("application/x-addin+xml"));
 			
-			XmlFormattingSettings f = new XmlFormattingSettings ();
-			f.ScopeXPath.Add ("*/*");
-			f.EmptyLinesBeforeStart = 1;
-			f.EmptyLinesAfterEnd = 1;
-			xmlPolicy.Formats.Add (f);
-			
-			f = new XmlFormattingSettings ();
-			f.ScopeXPath.Add ("Addin");
-			f.AttributesInNewLine = true;
-			f.AlignAttributes = true;
-			f.AttributesInNewLine = false;
-			xmlPolicy.Formats.Add (f);
-				
 			string xml = XmlFormatter.FormatXml (textPolicy, xmlPolicy, doc.OuterXml);
 			File.WriteAllText (adesc.FileName, xml);
 		}

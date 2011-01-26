@@ -40,7 +40,9 @@ namespace MonoDevelop.AddinAuthoring
 			w2.Expand = false;
 			w2.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.optionsWidget = null;
+			this.optionsWidget = new global::MonoDevelop.AddinAuthoring.AddinFeatureWidget ();
+			this.optionsWidget.Events = ((global::Gdk.EventMask)(256));
+			this.optionsWidget.Name = "optionsWidget";
 			this.vbox2.Add (this.optionsWidget);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.optionsWidget]));
 			w3.Position = 2;
