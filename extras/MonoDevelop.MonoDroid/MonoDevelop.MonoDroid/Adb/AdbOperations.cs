@@ -260,13 +260,9 @@ namespace MonoDevelop.MonoDroid
 
 		protected override void OnGotTransport ()
 		{
-			// Valid package names never start with a '.'
-			// Process names use the format ".lastPartOfPackageName"
-			int idx = packageName.LastIndexOf ('.');
-			var processName = idx > -1 ? packageName.Substring (idx + 1) : packageName;
-
+			// Can't pass any info to 'ps', as it seems to have an irregular behaviour among versions.
 			var sr = new StringWriter ();
-			WriteCommand ("shell:ps " + processName, () => GetStatus (() => ReadResponse (sr, OnGotResponse)));
+			WriteCommand ("shell:ps", () => GetStatus (() => ReadResponse (sr, OnGotResponse)));
 		}
 
 		void OnGotResponse (TextWriter tw)
