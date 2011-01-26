@@ -75,7 +75,7 @@ namespace MonoDevelop.CSharp.Dom
 			DomNode node = this;
 			while (node != null) {
 				DomNode next;
-				if (start <= node.StartLocation && node.EndLocation < end) {
+				if (start <= node.StartLocation && node.EndLocation <= end) {
 					yield return node;
 					next = node.NextSibling;
 				} else {
