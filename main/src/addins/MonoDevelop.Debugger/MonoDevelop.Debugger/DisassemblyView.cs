@@ -50,7 +50,7 @@ namespace MonoDevelop.Debugger
 		bool autoRefill;
 		CurrentDebugLineTextMarker currentDebugLineMarker;
 		bool dragging;
-		string currentFile;
+		FilePath currentFile;
 		AsmLineMarker asmMarker = new AsmLineMarker ();
 		
 		List<AssemblyLine> cachedLines = new List<AssemblyLine> ();
