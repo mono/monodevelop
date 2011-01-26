@@ -1154,6 +1154,11 @@ namespace Mono.Debugging.Soft
 			return System.IO.Path.GetFileName (path);
 		}
 		
+		bool PathsAreEqual (string p1, string p2)
+		{
+			return PathComparer.Compare (p1, p2) == 0;
+		}
+		
 		Location GetLocFromType (TypeMirror type, string file, int line)
 		{
 			Location target_loc = null;
@@ -1324,7 +1329,7 @@ namespace Mono.Debugging.Soft
 			foreach (TypeMirror type in types) {
 				foreach (MethodMirror met in type.GetMethods ()) {
 					string s = met.Name;
-					if (met.SourceFile != file)
+					if (!PathsAreEqual (met.SourceFile, file))
 						continue;
 					var body = met.GetMethodBody ();
 					int lastLine = -1;
