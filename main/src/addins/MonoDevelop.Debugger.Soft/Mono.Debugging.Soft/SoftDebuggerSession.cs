@@ -1436,6 +1436,8 @@ namespace Mono.Debugging.Soft
 			string oper;
 			if (ins.Operand is MethodMirror)
 				oper = ((MethodMirror)ins.Operand).FullName;
+			else if (ins.Operand is TypeMirror)
+				oper = ((TypeMirror)ins.Operand).FullName;
 			else if (ins.Operand is ILInstruction)
 				oper = ((ILInstruction)ins.Operand).Offset.ToString ("x8");
 			else if (ins.Operand == null)
