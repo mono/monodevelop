@@ -47,7 +47,7 @@ namespace MonoDevelop.AddinAuthoring
 			get { return "Addin"; }
 		}
 		
-		public override void Load (XmlElement filenode)
+		public override void Load (XmlElement filenode, FilePath path)
 		{
 			addinTemplate = filenode;
 		}

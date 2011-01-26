@@ -61,9 +61,9 @@ namespace MonoDevelop.AddinAuthoring.CodeCompletion
 			    || Tracker.Engine.CurrentState is XmlSingleQuotedAttributeValueState))
 			{
 				// completionChar may be a space even if the current char isn't, when ctrl-space is fired t
-				int currentPosition = Editor.CursorPosition;
+				int currentPosition = Editor.Caret.Offset;
 				if (currentPosition > 0) {
-					string s = Editor.GetText (currentPosition - Tracker.Engine.CurrentStateLength, currentPosition);
+					string s = Editor.GetTextBetween (currentPosition - Tracker.Engine.CurrentStateLength, currentPosition);
 					if (s.EndsWith ("/"))
 						return GetPathCompletion (s);
 				}

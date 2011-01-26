@@ -310,20 +310,20 @@ namespace MonoDevelop.AddinAuthoring
 			TextStylePolicy textPolicy = new TextStylePolicy (80, 4, false, false, true, EolMarker.Unix);
 			XmlFormattingPolicy xmlPolicy = new XmlFormattingPolicy ();
 			
-			XmlFormatingSettings f = new XmlFormatingSettings ();
+			XmlFormattingSettings f = new XmlFormattingSettings ();
 			f.ScopeXPath.Add ("*/*");
 			f.EmptyLinesBeforeStart = 1;
 			f.EmptyLinesAfterEnd = 1;
 			xmlPolicy.Formats.Add (f);
 			
-			f = new XmlFormatingSettings ();
+			f = new XmlFormattingSettings ();
 			f.ScopeXPath.Add ("Addin");
 			f.AttributesInNewLine = true;
 			f.AlignAttributes = true;
 			f.AttributesInNewLine = false;
 			xmlPolicy.Formats.Add (f);
 				
-			string xml = formatter.FormatXml (textPolicy, xmlPolicy, doc.OuterXml);
+			string xml = XmlFormatter.FormatXml (textPolicy, xmlPolicy, doc.OuterXml);
 			File.WriteAllText (adesc.FileName, xml);
 		}
 	}
