@@ -482,6 +482,11 @@ namespace MonoDevelop.VersionControl
 			this.Author = author;
 			this.Date = date;
 		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[Annotation: Revision={0}, Author={1}, Date={2}, HasDate={3}]", Revision, Author, Date, HasDate);
+		}
 	}
 	
 	public class DiffInfo
