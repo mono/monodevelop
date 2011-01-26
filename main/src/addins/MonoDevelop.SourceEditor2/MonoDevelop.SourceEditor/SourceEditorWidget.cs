@@ -366,6 +366,7 @@ namespace MonoDevelop.SourceEditor
 						}
 					}
 				}
+				
 				if (updateSymbols) {
 					symbols.Clear ();
 					foreach (PreProcessorDefine define in parsedDocument.Defines) {
@@ -373,6 +374,7 @@ namespace MonoDevelop.SourceEditor
 					}
 					doc.UpdateHighlighting ();
 				}
+				
 				foreach (FoldingRegion region in parsedDocument.GenerateFolds ()) {
 					if (worker != null && worker.CancellationPending)
 						return;
@@ -472,9 +474,11 @@ namespace MonoDevelop.SourceEditor
 			parseInformationUpdaterWorkerThread.CancelAsync ();
 			WaitForParseInformationUpdaterWorkerThread ();
 		}
+		
 		public void WaitForParseInformationUpdaterWorkerThread ()
 		{
-			while (parseInformationUpdaterWorkerThread.IsBusy)
+			int count = 0;
+			while (count++ < 5 && parseInformationUpdaterWorkerThread.IsBusy)
 				Thread.Sleep (20);
 		}
 		
