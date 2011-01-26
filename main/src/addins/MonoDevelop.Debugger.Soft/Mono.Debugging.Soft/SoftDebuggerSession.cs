@@ -776,7 +776,7 @@ namespace Mono.Debugging.Soft
 			BreakEvent breakEvent = null;
 			
 			if (es[0] is ExceptionEvent) {
-				var bad = es.First (ee => !(ee is ExceptionEvent));
+				var bad = es.FirstOrDefault (ee => !(ee is ExceptionEvent));
 				if (bad != null)
 					throw new Exception ("Catchpoint eventset had unexpected event type " + bad.GetType ());
 				var ev = (ExceptionEvent)es[0];
