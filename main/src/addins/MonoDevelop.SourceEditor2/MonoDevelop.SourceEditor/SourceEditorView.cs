@@ -523,7 +523,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		void StoreSettings ()
+		internal void StoreSettings ()
 		{
 			Dictionary<int, bool> foldingStates = new Dictionary<int, bool> ();
 			foreach (var f in widget.TextEditor.Document.FoldSegments) {

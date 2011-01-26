@@ -346,7 +346,7 @@ namespace MonoDevelop.SourceEditor
 			return result;
 		}
 		HashSet<string> symbols = new HashSet<string> ();
-		
+		bool reloadSettings;
 		
 		void HandleParseInformationUpdaterWorkerThreadDoWork (object sender, DoWorkEventArgs e)
 		{
@@ -425,6 +425,13 @@ namespace MonoDevelop.SourceEditor
 				}
 				doc.UpdateFoldSegments (foldSegments, false);
 				UpdateErrorUndelines (parsedDocument);
+				if (reloadSettings) {
+					reloadSettings = false;
+					Application.Invoke (delegate {
+						view.LoadSettings ();
+						mainsw.QueueDraw ();
+					});
+				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
 			}
@@ -803,14 +810,9 @@ namespace MonoDevelop.SourceEditor
 		public void Reload ()
 		{
 			try {
-				double vscroll = view.TextEditor.VAdjustment.Value;
-				var loc = view.TextEditor.Caret.Location;
-				
+				view.StoreSettings ();
+				reloadSettings = true;
 				view.Load (view.ContentName);
-				
-				view.TextEditor.Caret.Location = loc;
-				view.TextEditor.VAdjustment.Value = vscroll;
-				
 				view.WorkbenchWindow.ShowNotification = false;
 			} catch (Exception ex) {
 				MessageService.ShowException (ex, "Could not reload the file.");
