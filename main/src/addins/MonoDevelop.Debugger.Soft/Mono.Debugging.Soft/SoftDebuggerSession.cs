@@ -572,7 +572,7 @@ namespace Mono.Debugging.Soft
 					InsertBreakpoint (bp, bi);
 				else {
 					pending_bes.Add (bp);
-					SetBreakEventStatus (be, false);
+					SetBreakEventStatus (be, false, null);
 				}
 			} else if (be is Catchpoint) {
 				var cp = (Catchpoint) be;
@@ -581,7 +581,7 @@ namespace Mono.Debugging.Soft
 					InsertCatchpoint (cp, bi, type);
 				} else {
 					pending_bes.Add (be);
-					SetBreakEventStatus (be, false);
+					SetBreakEventStatus (be, false, null);
 				}
 			}
 			return bi;
@@ -1193,7 +1193,7 @@ namespace Mono.Debugging.Soft
 			if (bi != null) {
 				bi.Location = l;
 				InsertBreakpoint (bp, bi);
-				SetBreakEventStatus (bp, true);
+				SetBreakEventStatus (bp, true, null);
 			}
 		}
 				
@@ -1201,7 +1201,7 @@ namespace Mono.Debugging.Soft
 		{
 			BreakInfo bi = GetBreakInfo (cp);
 			InsertCatchpoint (cp, bi, type);
-			SetBreakEventStatus (cp, true);
+			SetBreakEventStatus (cp, true, null);
 		}
 		
 		bool UpdateAssemblyFilters (AssemblyMirror asm)

@@ -115,6 +115,15 @@ namespace Mono.Debugging.Client
 				return true;
 			return session.IsBreakEventValid (this);
 		}
+		
+		public string GetStatusMessage (DebuggerSession session)
+		{
+			if (store == null)
+				throw new InvalidOperationException ();
+			if (session == null)
+				return string.Empty;
+			return session.GetBreakEventStatusMessage (this);
+		}
 
 		public string TraceExpression {
 			get {

@@ -62,15 +62,18 @@ namespace Mono.Debugging.Client
 		DebuggerSessionOptions options;
 		Dictionary<string,string> resolvedExpressionCache = new Dictionary<string, string> ();
 		
-		struct BreakEventInfo {
+		class BreakEventInfo {
 			// Handle is the native debugger breakpoint handle
 			public object Handle;
 			// IsValid is always true unless the subclass explicitly sets it to false using SetBreakEventStatus.
 			public bool IsValid;
+			// null, unless the subclass explicitly sets it using SetBreakEventStatus.
+			public string StatusMessage;
 			
 			public BreakEventInfo (object handle) {
 				Handle = handle;
 				IsValid = true;
+				StatusMessage = null;
 			}
 		}
 		
@@ -366,16 +369,36 @@ namespace Mono.Debugging.Client
 		}
 		
 		/// <summary>
+		/// Returns a status message of a breakpoint for this debugger session.
+		/// </summary>
+		public string GetBreakEventStatusMessage (BreakEvent be)
+		{
+			if (started) {
+				BreakEventInfo binfo;
+				lock (breakpoints) {
+					if (breakpoints.TryGetValue (be, out binfo)) {
+						if (binfo.StatusMessage != null)
+							return binfo.StatusMessage;
+						if (binfo.IsValid)
+							return null;
+					}
+				}
+			}
+			return "The breakpoint will not currently be hit";
+		}
+		
+		/// <summary>
 		/// This method can be used by subclasses to set the validity of a breakpoint.
 		/// </summary>
-		protected void SetBreakEventStatus (BreakEvent be, bool isValid)
+		protected void SetBreakEventStatus (BreakEvent be, bool isValid, string statusMessge)
 		{
 			lock (breakpoints) {
 				BreakEventInfo bi;
 				if (!breakpoints.TryGetValue (be, out bi))
 					bi = new BreakEventInfo (null);
-				if (bi.IsValid != isValid) {
+				if (bi.IsValid != isValid || bi.StatusMessage != statusMessge) {
 					bi.IsValid = isValid;
+					bi.StatusMessage = statusMessge;
 					breakpoints [be] = bi;
 					Breakpoints.NotifyStatusChanged (be);
 				}
