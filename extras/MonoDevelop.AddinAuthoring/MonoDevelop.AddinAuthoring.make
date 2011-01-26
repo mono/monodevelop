@@ -80,6 +80,7 @@ FILES =  \
 	MonoDevelop.AddinAuthoring/AddinProjectReference.cs \
 	MonoDevelop.AddinAuthoring/CellRendererExtension.cs \
 	MonoDevelop.AddinAuthoring/Commands.cs \
+	MonoDevelop.AddinAuthoring/DomAssemblyReflector.cs \
 	MonoDevelop.AddinAuthoring/ExtensionDomain.cs \
 	MonoDevelop.AddinAuthoring/ExtensionEditorWidget.cs \
 	MonoDevelop.AddinAuthoring/ExtensionPointsEditorWidget.cs \
