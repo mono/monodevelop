@@ -896,6 +896,16 @@ namespace Mono.Debugging.Soft
 			else if (e is ThreadStartEvent) {
 				ThreadStartEvent ts = (ThreadStartEvent)e;
 				OnDebuggerOutput (false, string.Format ("Thread started: {0}\n", ts.Thread.Name));
+				TargetEventArgs args = new TargetEventArgs (TargetEventType.ThreadStarted);
+				args.Thread = new ThreadInfo (0, GetId (ts.Thread), ts.Thread.Name, null);
+				OnTargetEvent (args);
+			}
+			else if (e is ThreadDeathEvent) {
+				ThreadDeathEvent ts = (ThreadDeathEvent)e;
+				OnDebuggerOutput (false, string.Format ("Thread finished: {0}\n", ts.Thread.Name));
+				TargetEventArgs args = new TargetEventArgs (TargetEventType.ThreadStarted);
+				args.Thread = new ThreadInfo (0, GetId (ts.Thread), ts.Thread.Name, null);
+				OnTargetEvent (args);
 			}
 		}
 
