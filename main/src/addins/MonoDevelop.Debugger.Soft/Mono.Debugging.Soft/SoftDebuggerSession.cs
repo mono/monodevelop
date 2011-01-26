@@ -773,6 +773,7 @@ namespace Mono.Debugging.Soft
 			bool resume = true;
 			ObjectMirror exception = null;
 			TargetEventType etype = TargetEventType.TargetStopped;
+			BreakEvent breakEvent = null;
 			
 			if (es[0] is ExceptionEvent) {
 				var bad = es.First (ee => !(ee is ExceptionEvent));
@@ -794,6 +795,9 @@ namespace Mono.Debugging.Soft
 					if (be != null) {
 						if (!HandleBreakpoint (e.Thread, be.Request)) {
 							etype = TargetEventType.TargetHitBreakpoint;
+							BreakInfo binfo;
+							if (breakpoints.TryGetValue (be.Request, out binfo))
+								breakEvent = binfo.BreakEvent;
 							resume = false;
 						}
 					} else if (e is StepEvent) {
@@ -819,6 +823,7 @@ namespace Mono.Debugging.Soft
 				args.Process = OnGetProcesses () [0];
 				args.Thread = GetThread (args.Process, current_thread);
 				args.Backtrace = GetThreadBacktrace (current_thread);
+				args.BreakEvent = breakEvent;
 				
 				if (exception != null)
 					activeExceptionsByThread [current_thread.ThreadId] = exception;
