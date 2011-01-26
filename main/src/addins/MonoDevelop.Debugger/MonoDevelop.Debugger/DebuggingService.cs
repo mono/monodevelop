@@ -556,9 +556,6 @@ namespace MonoDevelop.Debugger
 		{
 			try {
 				Console.WriteLine ("OnTargetEvent, type - {0}", args.Type);
-				if (args.Type != TargetEventType.TargetExited) {
-					SetCurrentBacktrace (args.Backtrace);
-				}
 
 				switch (args.Type) {
 					case TargetEventType.TargetExited:
@@ -571,6 +568,7 @@ namespace MonoDevelop.Debugger
 					case TargetEventType.TargetInterrupted:
 					case TargetEventType.UnhandledException:
 					case TargetEventType.ExceptionThrown:
+						SetCurrentBacktrace (args.Backtrace);
 						NotifyPaused ();
 						NotifyException (args);
 						break;
