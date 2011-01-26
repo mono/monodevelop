@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
@@ -45,14 +46,15 @@ namespace MonoDevelop.Debugger
 		Mono.TextEditor.TextEditor editor;
 		int firstLine;
 		int lastLine;
-		List<AssemblyLine> lines = new List<AssemblyLine> ();
-		Dictionary<long,int> addressLines = new Dictionary<long,int> ();
+		Dictionary<string,int> addressLines = new Dictionary<string,int> ();
 		bool autoRefill;
-		int lastDebugLine = -1;
 		CurrentDebugLineTextMarker currentDebugLineMarker;
 		bool dragging;
 		string currentFile;
 		AsmLineMarker asmMarker = new AsmLineMarker ();
+		
+		List<AssemblyLine> cachedLines = new List<AssemblyLine> ();
+		string cachedLinesAddrSpace;
 		
 		const int FillMarginLines = 50;
 		
@@ -100,20 +102,17 @@ namespace MonoDevelop.Debugger
 		{
 			autoRefill = false;
 			
-			if (lastDebugLine != -1) {
-				editor.Document.RemoveMarker (currentDebugLineMarker);
-			}
+			editor.Document.RemoveMarker (currentDebugLineMarker);
 			
 			if (DebuggingService.CurrentFrame == null) {
 				sw.Sensitive = false;
-				lastDebugLine = -1;
 				return;
 			}
 			
 			sw.Sensitive = true;
 			
 			StackFrame sf = DebuggingService.CurrentFrame;
-			if (!string.IsNullOrEmpty (sf.SourceLocation.Filename) && File.Exists (sf.SourceLocation.Filename) && sf.SourceLocation.Line != -1)
+			if (!string.IsNullOrEmpty (sf.SourceLocation.Filename) && File.Exists (sf.SourceLocation.Filename))
 				FillWithSource ();
 			else
 				Fill ();
@@ -121,7 +120,7 @@ namespace MonoDevelop.Debugger
 		
 		public void FillWithSource ()
 		{
-			lines.Clear ();
+			cachedLines.Clear ();
 			
 			StackFrame sf = DebuggingService.CurrentFrame;
 			
@@ -139,7 +138,7 @@ namespace MonoDevelop.Debugger
 				string line;
 				int sourceLine = 1;
 				int na = 0;
-				int editorLine = 0;
+				int editorLine = 1;
 				StringBuilder sb = new StringBuilder ();
 				List<int> asmLineNums = new List<int> ();
 				while ((line = sr.ReadLine ()) != null) {
@@ -155,12 +154,14 @@ namespace MonoDevelop.Debugger
 					editor.Document.AddMarker (li, asmMarker);
 			}
 			int aline;
-			if (!addressLines.TryGetValue (sf.Address, out aline))
+			if (!addressLines.TryGetValue (GetAddrId (sf.Address, sf.AddressSpace), out aline))
 				return;
-			lastDebugLine = aline;
-			editor.Caret.Line = aline;
-			editor.Document.AddMarker (lastDebugLine, currentDebugLineMarker);
-			editor.QueueDraw ();
+			UpdateCurrentLineMarker (true);
+		}
+		
+		string GetAddrId (long addr, string addrSpace)
+		{
+			return addrSpace + " " + addr;
 		}
 		
 		void InsertSourceLine (StringBuilder sb, int line, string text)
@@ -170,45 +171,57 @@ namespace MonoDevelop.Debugger
 		
 		void InsertAssemblerLine (StringBuilder sb, int line, AssemblyLine asm)
 		{
-			sb.AppendFormat ("0x{0:x}   {1}\n", asm.Address, asm.Code);
-			addressLines [asm.Address] = line;
+			sb.AppendFormat ("{0:x8}   {1}\n", asm.Address, asm.Code);
+			addressLines [GetAddrId (asm.Address, asm.AddressSpace)] = line;
 		}
 
 		public void Fill ()
 		{
 			currentFile = null;
 			StackFrame sf = DebuggingService.CurrentFrame;
-			if (lines.Count > 0) {
-				if (sf.Address >= lines [0].Address && sf.Address <= lines [lines.Count - 1].Address) {
+			if (cachedLines.Count > 0 && cachedLinesAddrSpace == sf.AddressSpace) {
+				if (sf.Address >= cachedLines [0].Address && sf.Address <= cachedLines [cachedLines.Count - 1].Address) {
 					// The same address range can be reused
 					autoRefill = true;
-					for (int n=0; n<lines.Count; n++) {
-						if (lines [n].Address == sf.Address) {
-							lastDebugLine = n;
-							editor.Caret.Line = n;
-							editor.Document.AddMarker (lastDebugLine, currentDebugLineMarker);
-							editor.QueueDraw ();
-							return;
-						}
-					}
+					UpdateCurrentLineMarker (true);
+					return;
 				}
 			}
 			
 			// New address view
 			
-			lines.Clear ();
+			cachedLinesAddrSpace = sf.AddressSpace;
+			cachedLines.Clear ();
+			addressLines.Clear ();
+			
 			firstLine = -150;
 			lastLine = 150;
 			
 			editor.Document.MimeType = "text/plain";
-			InsertLines (0, firstLine, lastLine);
+			editor.Document.Text = string.Empty;
+			InsertLines (0, firstLine, lastLine, out firstLine, out lastLine);
 			
 			autoRefill = true;
-			lastDebugLine = lastLine;
-			editor.Caret.Line = 150;
 			
-			editor.Document.AddMarker (lastDebugLine, currentDebugLineMarker);
-			editor.QueueDraw ();
+			UpdateCurrentLineMarker (true);
+		}
+		
+		void UpdateCurrentLineMarker (bool moveCaret)
+		{
+			editor.Document.RemoveMarker (currentDebugLineMarker);
+			StackFrame sf = DebuggingService.CurrentFrame;
+			int line;
+			if (addressLines.TryGetValue (GetAddrId (sf.Address, sf.AddressSpace), out line)) {
+				editor.Document.AddMarker (line, currentDebugLineMarker);
+				if (moveCaret) {
+					editor.Caret.Line = line;
+					GLib.Timeout.Add (100, delegate {
+						editor.CenterToCaret ();
+						return false;
+					});
+				}
+				editor.QueueDraw ();
+			}
 		}
 		
 		[GLib.ConnectBefore]
@@ -233,55 +246,77 @@ namespace MonoDevelop.Debugger
 			DocumentLocation loc2 = editor.PointToLocation (0, editor.Allocation.Height);
 			bool moveCaret = editor.Caret.Line >= loc.Line && editor.Caret.Line <= loc2.Line;
 			
-			if (loc.Line < FillMarginLines) {
-				if (lastDebugLine != -1)
-					editor.Document.RemoveMarker (currentDebugLineMarker);
+			if (firstLine != int.MinValue && loc.Line < FillMarginLines) {
 				int num = (FillMarginLines - loc.Line) * 2;
-				InsertLines (0, firstLine - num, firstLine - 1);
-				firstLine -= num;
+				int newLast;
+				num = InsertLines (0, firstLine - num, firstLine - 1, out firstLine, out newLast);
 				
-				if (moveCaret)
+				// Shift line numbers in the addresses dictionary
+				var newLines = new Dictionary<string, int> ();
+				foreach (var pair in addressLines)
+					newLines [pair.Key] = pair.Value + num;
+				addressLines = newLines;
+				
+				//if (moveCaret)
 					editor.Caret.Line += num;
 				
 				double hinc = num * editor.LineHeight;
 				sw.Vadjustment.Value += hinc;
 				
-				if (lastDebugLine != -1) {
-					lastDebugLine += num;
-					editor.Document.AddMarker (lastDebugLine, currentDebugLineMarker);
-					editor.QueueDraw ();
-				}
+				UpdateCurrentLineMarker (false);
 			}
-			if (loc2.Line >= editor.Document.LineCount - FillMarginLines) {
+			if (lastLine != int.MinValue && loc2.Line >= editor.Document.LineCount - FillMarginLines) {
 				int num = (loc2.Line - (editor.Document.LineCount - FillMarginLines) + 1) * 2;
-				InsertLines (editor.Document.Length, lastLine + 1, lastLine + num);
-				lastLine += num;
+				int newFirst;
+				InsertLines (editor.Document.Length, lastLine + 1, lastLine + num, out newFirst, out lastLine);
 			}
 		}
 		
-		void InsertLines (int offset, int start, int end)
+		int InsertLines (int offset, int start, int end, out int newStart, out int newEnd)
 		{
 			StringBuilder sb = new StringBuilder ();
 			StackFrame ff = DebuggingService.CurrentFrame;
-			AssemblyLine[] lines = ff.Disassemble (start, end - start + 1);
+			List<AssemblyLine> lines = new List<AssemblyLine> (ff.Disassemble (start, end - start + 1));
+			
+			int i = lines.FindIndex (al => !al.IsOutOfRange);
+			if (i == -1) {
+				newStart = int.MinValue;
+				newEnd = int.MinValue;
+				return 0;
+			}
+			
+			newStart = i == 0 ? start : int.MinValue;
+			lines.RemoveRange (0, i);
+			
+			int j = lines.FindLastIndex (al => !al.IsOutOfRange);
+			newEnd = j == lines.Count - 1 ? end : int.MinValue;
+			lines.RemoveRange (j + 1, lines.Count - j - 1);
+			
+			int lineCount = 0;
+			int editorLine = editor.GetTextEditorData ().OffsetToLineNumber (offset);
 			foreach (AssemblyLine li in lines) {
-				sb.AppendFormat ("0x{0:x}   {1}\n", li.Address, li.Code);
+				if (li.IsOutOfRange)
+					continue;
+				InsertAssemblerLine (sb, editorLine++, li);
+				lineCount++;
 			}
 			editor.Insert (offset, sb.ToString ());
 			editor.Document.CommitUpdateAll ();
 			if (offset == 0)
-				this.lines.InsertRange (0, lines);
+				this.cachedLines.InsertRange (0, lines);
 			else
-				this.lines.AddRange (lines);
+				this.cachedLines.AddRange (lines);
+			return lineCount;
 		}
 		
 		void OnStop (object s, EventArgs args)
 		{
+			addressLines.Clear ();
+			currentFile = null;
 			sw.Sensitive = false;
 			autoRefill = false;
-			lastDebugLine = -1;
 			editor.Document.Text = string.Empty;
-			lines.Clear ();
+			cachedLines.Clear ();
 		}
 		
 		public override bool IsReadOnly {
@@ -311,7 +346,8 @@ namespace MonoDevelop.Debugger
 		[CommandUpdateHandler (DebugCommands.StepInto)]
 		protected void OnUpdateStep (CommandInfo ci)
 		{
-			ci.Enabled = lastDebugLine != -1;
+			var cf = DebuggingService.CurrentFrame;
+			ci.Enabled =  cf != null && addressLines.ContainsKey (GetAddrId (cf.Address, cf.AddressSpace));
 		}
 	}
 	
