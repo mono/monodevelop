@@ -292,18 +292,17 @@ namespace MonoDevelop.VersionControl.Views
 			double startY = Editor.LineToY (startLine);
 			double curY = startY - Editor.VAdjustment.Value;
 			int line = startLine;
-			JumpOverFoldings (ref line);
 			var color = Style.Dark (State);
 			
 			while (curY < editor.Allocation.Bottom) {
 				Annotation ann = line <= overview.annotations.Count ? overview.annotations[line - 1] : null;
 				double curStart = curY;
 				do {
-					double lineHeight = Editor.GetLineHeight (line);
-					curY += lineHeight;
+					JumpOverFoldings (ref line);
 					line++;
-					JumpOverFoldings (ref  line);
-				} while (line + 1 <= overview.annotations.Count && ann != null && overview.annotations[line - 1] != null && overview.annotations[line - 1].Revision == ann.Revision);
+				} while (curY < editor.Allocation.Bottom && line + 1 <= overview.annotations.Count && ann != null && overview.annotations[line - 1] != null && overview.annotations[line - 1].Revision == ann.Revision);
+				curY = Editor.LineToY (line) - Editor.VAdjustment.Value;
+				
 				if (overview.highlightAnnotation != null) {
 					if (ann != null && overview.highlightAnnotation.Revision == ann.Revision && curStart <= overview.highlightPositon && overview.highlightPositon < curY) {
 					} else {
@@ -560,6 +559,11 @@ namespace MonoDevelop.VersionControl.Views
 				ThreadPool.QueueUserWorkItem (delegate {
 					try {
 						annotations = new List<Annotation> (widget.VersionControlItem.Repository.GetAnnotations (widget.Document.FileName));
+						
+//						for (int i = 0; i < annotations.Count; i++) {
+//							Annotation varname = annotations[i];
+//							System.Console.WriteLine (i + ":" + varname);
+//						}
 						minDate = annotations.Min (a => a.Date);
 						maxDate = annotations.Max (a => a.Date);
 					} catch (Exception ex) {
@@ -717,24 +721,20 @@ namespace MonoDevelop.VersionControl.Views
 						startLine--;
 						startY -= widget.Editor.GetLineHeight (widget.Editor.Document.GetLine (startLine));
 					}
-					
 					double curY = startY - widget.Editor.VAdjustment.Value;
 					int line = startLine;
 					while (curY < Allocation.Bottom) {
 						double curStart = curY;
-						widget.JumpOverFoldings (ref line);
+//						widget.JumpOverFoldings (ref line);
 						int lineStart = line;
 						int w = 0, w2 = 0, h = 16;
 						Annotation ann = line <= annotations.Count ? annotations[line - 1] : null;
 						if (ann != null) {
-							double nextY = curY;
 							do {
-								double lineHeight = widget.Editor.GetLineHeight (line);
-								nextY += lineHeight;
-								line++;
 								widget.JumpOverFoldings (ref line);
+								line++;
 							} while (line + 1 <= annotations.Count && annotations[line - 1] != null && annotations[line - 1].Revision == ann.Revision);
-							
+							double nextY = widget.editor.LineToY (line) - widget.editor.VAdjustment.Value;
 							if (highlightAnnotation != null && highlightAnnotation.Revision == ann.Revision && curStart <= highlightPositon && highlightPositon < nextY) {
 								cr.Rectangle (leftSpacer, curStart + cr.LineWidth, Allocation.Width - leftSpacer, nextY - curStart - cr.LineWidth);
 								cr.Color = new Cairo.Color (1, 1, 1);
