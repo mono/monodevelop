@@ -706,15 +706,24 @@ namespace Mono.Debugging.Soft
 					HandleEventSet (e);
 				} catch (VMDisconnectedException ex) {
 					OnVMDeathEvent ();
-					OnDebuggerOutput (true, ex.ToString ());
+					if (!HandleException (ex))
+						OnDebuggerOutput (true, ex.ToString ());
 					break;
 				} catch (Exception ex) {
-					OnDebuggerOutput (true, ex.ToString ());
+					if (!HandleException (ex))
+						OnDebuggerOutput (true, ex.ToString ());
 				}
 			}
 			
 			exited = true;
 			OnTargetEvent (new TargetEventArgs (TargetEventType.TargetExited));
+		}
+		
+		protected override bool HandleException (Exception ex)
+		{
+			if (ex is VMDisconnectedException)
+				ex = new DisconnectedException ();
+			return base.HandleException (ex);
 		}
 		
 		// This method dispatches an event set.
@@ -981,10 +990,12 @@ namespace Mono.Debugging.Soft
 						try {
 							 HandleBreakEventSet (es.ToArray (), true);
 						} catch (VMDisconnectedException ex) {
-							OnDebuggerOutput (true, ex.ToString ());
+							if (!HandleException (ex))
+								OnDebuggerOutput (true, ex.ToString ());
 							break;
 						} catch (Exception ex) {
-							OnDebuggerOutput (true, ex.ToString ());
+							if (!HandleException (ex))
+								OnDebuggerOutput (true, ex.ToString ());
 						}
 					}
 				}
@@ -1462,5 +1473,13 @@ namespace Mono.Debugging.Soft
 		public EventRequest Req;
 		public BreakEvent BreakEvent;
 		public string LastConditionValue;
+	}
+	
+	class DisconnectedException: DebuggerException
+	{
+		public DisconnectedException ():
+			base ("The connection with the debugger has been lost. The target application may have exited.")
+		{
+		}
 	}
 }
