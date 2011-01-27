@@ -93,6 +93,7 @@ FILES =  \
 	MonoDevelop.AddinAuthoring/AddinDescriptionWidget.cs \
 	MonoDevelop.AddinAuthoring/AddinFeatureWidget.cs \
 	MonoDevelop.AddinAuthoring/AddinFileDescriptionTemplate.cs \
+	MonoDevelop.AddinAuthoring/AddinFileSystem.cs \
 	MonoDevelop.AddinAuthoring/AddinOptionPanelWidget.cs \
 	MonoDevelop.AddinAuthoring/AddinProjectExtension.cs \
 	MonoDevelop.AddinAuthoring/AddinProjectReference.cs \
@@ -113,6 +114,7 @@ FILES =  \
 	MonoDevelop.AddinAuthoring/NodeSetEditorDialog.cs \
 	MonoDevelop.AddinAuthoring/NodeSetEditorWidget.cs \
 	MonoDevelop.AddinAuthoring/NodeTypeEditorDialog.cs \
+	MonoDevelop.AddinAuthoring/RegistryEventArgs.cs \
 	MonoDevelop.AddinAuthoring/RegistryExtensionNode.cs \
 	MonoDevelop.AddinAuthoring/RegistrySelector.cs \
 	MonoDevelop.AddinAuthoring/SelectNodeSetDialog.cs \

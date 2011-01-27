@@ -1,10 +1,10 @@
 // 
-// ExtensionModelBrowser.cs
+// RegistryEventArgs.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
 // 
-// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,38 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
+using Mono.Addins;
 
 namespace MonoDevelop.AddinAuthoring
 {
-	public class ExtensionModelBrowser: AbstractViewContent
+	public class RegistryEventArgs: EventArgs
 	{
-		ExtensionModelBrowserWidget widget;
-		
-		public ExtensionModelBrowser ()
-		{
-			ContentName = "Extension Model Browser";
-		}
-		
-		public override void Load (string fileName)
-		{
-		}
-		
-		public override Gtk.Widget Control {
-			get {
-				if (widget == null)
-					widget = new ExtensionModelBrowserWidget ();
-				return widget;
-			}
-		}
-
-		public override void Dispose ()
-		{
-			if (widget != null)
-				widget.Destroy ();
-		}
-
+		public AddinRegistry Registry { get; set; }
 	}
 }
 

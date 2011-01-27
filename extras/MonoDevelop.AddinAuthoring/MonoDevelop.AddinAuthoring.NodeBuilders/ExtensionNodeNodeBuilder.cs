@@ -269,7 +269,6 @@ namespace MonoDevelop.AddinAuthoring.NodeBuilders
 		
 		ExtensionNodeTypeCollection GetAllowedChildTypes ()
 		{
-			ExtensionNodeTypeCollection types = null;
 			ExtensionNodeInfo en = (ExtensionNodeInfo) CurrentNode.DataItem;
 			object parent = en.Node.Parent;
 			

@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.AddinAuthoring.NodeBuilders;
 using MonoDevelop.Ide;
@@ -41,6 +42,8 @@ namespace MonoDevelop.AddinAuthoring
 	{
 		ExtensibleTreeView tree;
 		Gtk.Widget docView;
+		Dictionary<AddinRegistry, RegistryInfo> registries = new Dictionary<AddinRegistry, RegistryInfo> ();
+		Dictionary<Solution, RegistryInfo> solutions = new Dictionary<Solution, RegistryInfo> ();
 		
 		public ExtensionModelBrowserWidget ()
 		{
@@ -64,24 +67,67 @@ namespace MonoDevelop.AddinAuthoring
 			tree.ShowAll ();
 			paned.Add1 (tree);
 			
-			foreach (var item in IdeApp.Workspace.Items) {
-				if (item is Solution) {
-					Solution sol = (Solution) item;
-					SolutionAddinData data = sol.GetAddinData ();
-					if (data != null) {
-						RegistryInfo reg = new RegistryInfo ();
-						reg.ApplicationName = data.ApplicationName;
-						reg.CachedRegistry = data.Registry;
-						tree.AddChild (reg);
-					}
-				}
-			}
+			foreach (Solution sol in IdeApp.Workspace.GetAllSolutions ())
+				AddSolution (sol);
 			
 			docView = new Gtk.Label ();
 			paned.Add2 (docView);
 			
 			tree.ShadowType = Gtk.ShadowType.In;
 			tree.Tree.Selection.Changed += HandleSelectionChanged;
+			
+			AddinAuthoringService.RegistryChanged += OnRegistryChanged;
+			IdeApp.Workspace.WorkspaceItemLoaded += OnSolutionLoaded;
+			IdeApp.Workspace.WorkspaceItemUnloaded += OnSolutionUnloaded;
+		}
+		
+		protected override void OnDestroyed ()
+		{
+			AddinAuthoringService.RegistryChanged -= OnRegistryChanged;
+			IdeApp.Workspace.WorkspaceItemLoaded -= OnSolutionLoaded;
+			IdeApp.Workspace.WorkspaceItemUnloaded -= OnSolutionUnloaded;
+			base.OnDestroyed ();
+		}
+		
+		void AddSolution (Solution sol)
+		{
+			SolutionAddinData data = sol.GetAddinData ();
+			if (data != null) {
+				RegistryInfo reg = new RegistryInfo ();
+				reg.ApplicationName = data.ApplicationName;
+				reg.CachedRegistry = data.Registry;
+				tree.AddChild (reg);
+				registries [reg.CachedRegistry] = reg;
+				solutions [sol] = reg;
+			}
+		}
+
+		void OnSolutionLoaded (object sender, WorkspaceItemEventArgs e)
+		{
+			if (e.Item is Solution)
+				AddSolution ((Solution)e.Item);
+		}
+
+		void OnSolutionUnloaded (object sender, WorkspaceItemEventArgs e)
+		{
+			if (e.Item is Solution) {
+				RegistryInfo reg;
+				if (solutions.TryGetValue ((Solution) e.Item, out reg)) {
+					var nav = tree.BuilderContext.GetTreeBuilder (reg);
+					if (nav != null)
+						nav.Remove ();
+				}
+			}
+		}
+
+		void OnRegistryChanged (object sender, RegistryEventArgs e)
+		{
+			RegistryInfo reg;
+			if (registries.TryGetValue (e.Registry, out reg)) {
+				var nav = tree.BuilderContext.GetTreeBuilder (reg);
+				if (nav != null)
+					nav.UpdateAll ();
+			}
 		}
 
 		void HandleSelectionChanged (object sender, EventArgs e)

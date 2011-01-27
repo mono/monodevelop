@@ -37,12 +37,14 @@ using System.CodeDom;
 using System.Reflection;
 using MA = Mono.Addins.Database;
 using Mono.Addins;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.AddinAuthoring
 {
 	public class DomAssemblyReflector: IAssemblyReflector
 	{
 		Solution solution;
+		List<FilePath> loadedDoms = new List<FilePath> ();
 		
 		public DomAssemblyReflector (Solution solution)
 		{
@@ -301,7 +303,7 @@ namespace MonoDevelop.AddinAuthoring
 			}
 			else if (exp is CodeTypeOfExpression) {
 				CodeTypeOfExpression ce = (CodeTypeOfExpression) exp;
-				return new EvalResult () { Type = "String.Type", Value = ce.Type.BaseType };
+				return new EvalResult () { Type = "System.Type", Value = ce.Type.BaseType };
 			}
 			else
 				throw new NotSupportedException ();
@@ -315,11 +317,31 @@ namespace MonoDevelop.AddinAuthoring
 		
 		public object LoadAssembly (string file)
 		{
-			DotNetProject p = solution.FindSolutionItem (file) as DotNetProject;
-			if (p != null)
-				return ProjectDomService.GetProjectDom (p);
-			else
-				return null;
+			DotNetProject project = null;
+			foreach (DotNetProject p in solution.GetAllSolutionItems<DotNetProject> ()) {
+				foreach (var conf in p.Configurations) {
+					if (p.GetOutputFileName (conf.Selector) == file) {
+						project = p;
+						break;
+					}
+				}
+			}
+			if (project != null)
+				return ProjectDomService.GetProjectDom (project);
+			else {
+				if (!loadedDoms.Contains (file)) {
+					loadedDoms.Add (file);
+					ProjectDomService.LoadAssembly (Runtime.SystemAssemblyService.DefaultRuntime, file);
+				}
+				return ProjectDomService.GetAssemblyDom (Runtime.SystemAssemblyService.DefaultRuntime, file);
+			}
+		}
+		
+		public void UnloadAssemblyDoms ()
+		{
+			foreach (var f in loadedDoms)
+				ProjectDomService.UnloadAssembly (Runtime.SystemAssemblyService.DefaultRuntime, f);
+			loadedDoms.Clear ();
 		}
 
 		public object LoadAssemblyFromReference (object asmReference)

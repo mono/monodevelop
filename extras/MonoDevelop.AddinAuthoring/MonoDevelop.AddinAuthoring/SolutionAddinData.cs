@@ -35,15 +35,27 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.AddinAuthoring
 {
-	public class SolutionAddinData
+	public class SolutionAddinData: IDisposable
 	{
 		AddinRegistry registry;
 		Solution solution;
 		RegistryInfo regInfo;
+		AddinFileSystem customFileSystem;
+		bool registryNeedsUpdate;
+		bool updatePlanned;
+		
+		const int RegistryChangeNotifDelay = 1 * 1000;
 		
 		public SolutionAddinData (Solution sol)
 		{
 			solution = sol;
+			customFileSystem = new AddinFileSystem (sol);
+			customFileSystem.Changed += OnSolutionChanged;
+		}
+		
+		public void Dispose ()
+		{
+			customFileSystem.Dispose ();
 		}
 		
 		FilePath TempRegistryPath {
@@ -99,6 +111,8 @@ namespace MonoDevelop.AddinAuthoring
 						ResetRegistry ();
 						UpdateRegistry ();
 					}
+					else if (registryNeedsUpdate)
+						UpdateRegistry ();
 				}
 				return registry;
 			}
@@ -118,10 +132,13 @@ namespace MonoDevelop.AddinAuthoring
 				FilePath path = TempRegistryPath;
 				registry = new AddinRegistry (path, path);
 			}
+			registry.RegisterExtension (customFileSystem);
 		}
 		
 		public void UpdateRegistry ()
 		{
+			registryNeedsUpdate = false;
+			
 			FilePath addinsPath = TempRegistryPath.Combine ("addins");
 			if (!Directory.Exists (addinsPath))
 				Directory.CreateDirectory (addinsPath);
@@ -139,6 +156,26 @@ namespace MonoDevelop.AddinAuthoring
 				tw.WriteEndElement ();
 			}
 			Registry.Update (new ConsoleProgressStatus (false));
+			AddinAuthoringService.NotifyRegistryChanged (Registry);
+		}
+
+		void OnSolutionChanged (object sender, EventArgs e)
+		{
+			lock (this) {
+				if (!updatePlanned) {
+					updatePlanned = true;
+					GLib.Timeout.Add (RegistryChangeNotifDelay, OnDelayedUpdate);
+				}
+			}
+		}
+		
+		bool OnDelayedUpdate ()
+		{
+			lock (this) {
+				updatePlanned = false;
+				UpdateRegistry ();
+			}
+			return false;
 		}
 		
 		public void NotifyChanged ()

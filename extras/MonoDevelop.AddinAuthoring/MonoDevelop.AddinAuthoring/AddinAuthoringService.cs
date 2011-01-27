@@ -42,7 +42,6 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Formats.MSBuild;
 using MonoDevelop.Xml.Formatting;
 using MonoDevelop.Projects.Policies;
-using MonoDevelop.Ide;
 
 namespace MonoDevelop.AddinAuthoring
 {
@@ -50,6 +49,8 @@ namespace MonoDevelop.AddinAuthoring
 	{
 		static AddinAuthoringServiceConfig config;
 		static string configFile;
+		
+		public static event EventHandler<RegistryEventArgs> RegistryChanged;
 		
 		static AddinAuthoringService ()
 		{
@@ -286,13 +287,18 @@ namespace MonoDevelop.AddinAuthoring
 		public static void SaveFormatted (PolicyContainer policies, AddinDescription adesc)
 		{
 			XmlDocument doc = adesc.SaveToXml ();
-			XmlFormatter formatter = new XmlFormatter ();
 			
 			TextStylePolicy textPolicy = policies.Get<TextStylePolicy> (DesktopService.GetMimeTypeInheritanceChain ("application/x-addin+xml"));
 			XmlFormattingPolicy xmlPolicy = policies.Get<XmlFormattingPolicy> (DesktopService.GetMimeTypeInheritanceChain ("application/x-addin+xml"));
 			
 			string xml = XmlFormatter.FormatXml (textPolicy, xmlPolicy, doc.OuterXml);
 			File.WriteAllText (adesc.FileName, xml);
+		}
+		
+		public static void NotifyRegistryChanged (AddinRegistry reg)
+		{
+			if (RegistryChanged != null)
+				RegistryChanged (null, new RegistryEventArgs () { Registry = reg });
 		}
 	}
 	

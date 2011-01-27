@@ -37,7 +37,6 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.XmlEditor;
 using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.XmlEditor.Gui;
