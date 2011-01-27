@@ -483,7 +483,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 
-		internal TreeBuilderContext BuilderContext {
+		public ITreeBuilderContext BuilderContext {
 			get {
 				return builderContext;
 			}
