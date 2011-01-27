@@ -144,6 +144,14 @@ namespace MonoDevelop.Ide
 			}
 			return base.OnLeaveNotifyEvent (evnt);
 		}
+
+		
+		static string Ellipsize (string str, int maxLength)
+		{
+			if (str != null && str.Length > maxLength)
+				return str.Substring (0, maxLength - 3) + "...";
+			return str;
+		}
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
@@ -243,7 +251,7 @@ namespace MonoDevelop.Ide
 							cr.Color = (HslColor)Style.Text (StateType.Normal);
 						}
 						cr.MoveTo (xPos + item.Icon.Width + 2, yPos + (iconHeight - h) / 2);
-						layout.SetText (item.ListTitle ?? item.Title);
+						layout.SetText (Ellipsize (item.ListTitle ?? item.Title, maxLength));
 						cr.ShowLayout (layout);
 						e.Window.DrawPixbuf (Style.BaseGC (StateType.Normal), item.Icon, 0, 0, (int)xPos, (int)(yPos + (iconHeight - item.Icon.Height) / 2), item.Icon.Width, item.Icon.Height, RgbDither.None, 0, 0);
 						
