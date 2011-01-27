@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide
 	class DocumentList : Gtk.DrawingArea
 	{ 
 		List<Category> categories = new List<Category> ();
-		const int maxLength = 15;
+		int maxLength = 15;
 		const int maxItems = 20;
 		const int padding = 6;
 		const int headerDistance = 4;
@@ -396,6 +396,13 @@ namespace MonoDevelop.Ide
 		
 		protected override void OnSizeRequested (ref Requisition req)
 		{
+			maxLength = 15;
+			foreach (var cat in categories) {
+				foreach (var item in cat.Items) {
+					maxLength = Math.Min (30, Math.Max (maxLength, (item.ListTitle ?? item.Title).Length));
+				}
+			}
+			
 			var layout = PangoUtil.CreateLayout (this);
 			int w, h;
 			layout.SetText (new string ('X', maxLength));
@@ -403,6 +410,7 @@ namespace MonoDevelop.Ide
 			layout.Dispose ();
 			int totalWidth = 0;
 			int totalHeight = 0;
+				
 			foreach (var cat in categories) {
 				var iconHeight = Math.Max (h, cat.Items[0].Icon.Height + 2);
 				var iconWidth = cat.Items[0].Icon.Width + 2 + w;
@@ -536,8 +544,9 @@ namespace MonoDevelop.Ide
 			vBox.PackStart (hBox, false, false, 0);
 			
 			labelFileName.Xalign = 0;
+			labelFileName.Ellipsize = Pango.EllipsizeMode.Start;
 			hBox = new HBox ();
-			hBox.PackStart (labelFileName, false, false, 8);
+			hBox.PackStart (labelFileName, true, true, 8);
 			vBox.PackEnd (hBox, false, false, 6);
 			
 			Add (vBox);
