@@ -563,7 +563,6 @@ namespace MonoDevelop.Debugger
 						break;
 					case TargetEventType.TargetSignaled:
 					case TargetEventType.TargetStopped:
-					case TargetEventType.TargetRunning:
 					case TargetEventType.TargetHitBreakpoint:
 					case TargetEventType.TargetInterrupted:
 					case TargetEventType.UnhandledException:
