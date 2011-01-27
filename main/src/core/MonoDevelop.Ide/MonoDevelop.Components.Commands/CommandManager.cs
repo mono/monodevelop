@@ -176,9 +176,21 @@ namespace MonoDevelop.Components.Commands
 			return true;
 		}
 		
+		bool isEnabled = true;
+		public bool IsEnabled {
+			get {
+				return isEnabled;
+			}
+			set {
+				isEnabled = value;
+			}
+		}
+		
 		[GLib.ConnectBefore]
 		void OnKeyPressed (object o, Gtk.KeyPressEventArgs e)
 		{
+			if (!IsEnabled)
+				return;
 			bool complete;
 			string accel = KeyBindingManager.AccelFromKey (e.Event, out complete);
 			

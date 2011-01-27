@@ -31,7 +31,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.Components.FolderListSelector.cs \
 	gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs \
-	gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs \
 	gtk-gui/MonoDevelop.Ide.Execution.CustomExecutionModeDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Execution.CustomExecutionModeManagerDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Execution.CustomExecutionModeWidget.cs \
