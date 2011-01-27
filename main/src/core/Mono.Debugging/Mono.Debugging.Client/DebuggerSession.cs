@@ -82,6 +82,7 @@ namespace Mono.Debugging.Client
 		public event EventHandler<TargetEventArgs> TargetEvent;
 		
 		public event EventHandler TargetStarted;
+		public event EventHandler<TargetEventArgs> TargetReady;
 		public event EventHandler<TargetEventArgs> TargetStopped;
 		public event EventHandler<TargetEventArgs> TargetInterrupted;
 		public event EventHandler<TargetEventArgs> TargetHitBreakpoint;
@@ -836,6 +837,10 @@ namespace Mono.Debugging.Client
 					if (TargetUnhandledException != null)
 						TargetUnhandledException (this, args);
 					break;
+				case TargetEventType.TargetReady:
+					if (TargetReady != null)
+						TargetReady (this, args);
+					break;
 				case TargetEventType.ThreadStarted:
 					if (TargetThreadStarted != null)
 						TargetThreadStarted (this, args);
@@ -859,6 +864,7 @@ namespace Mono.Debugging.Client
 		internal protected void OnStarted ()
 		{
 			lock (slock) {
+				OnTargetEvent (new TargetEventArgs (TargetEventType.TargetReady));
 				started = true;
 				foreach (BreakEvent bp in breakpointStore)
 					AddBreakEvent (bp);
