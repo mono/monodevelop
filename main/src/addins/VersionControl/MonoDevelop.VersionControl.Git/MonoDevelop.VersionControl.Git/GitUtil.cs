@@ -369,73 +369,76 @@ namespace MonoDevelop.VersionControl.Git
 			return repo;
 		}
 		
-		public static RevCommit[] Blame (NGit.Repository repo, RevCommit c, string file)
+		public static RevCommit[] Blame (NGit.Repository repo, RevCommit commit, string file)
 		{
-			string gitFilePath = ToGitPath (repo, file);
-			TreeWalk tw = TreeWalk.ForPath (repo, gitFilePath, c.Tree);
+			string localFile = ToGitPath (repo, file);
+			TreeWalk tw = TreeWalk.ForPath (repo, localFile, commit.Tree);
 			if (tw == null)
 				return new RevCommit [0];
-			RevWalk rw = new RevWalk (repo);
-			ObjectId id = tw.GetObjectId (0);
-			byte[] data = repo.ObjectDatabase.Open (id).GetBytes ();			
-			int lineCount = NGit.Util.RawParseUtils.LineMap (data, 0, data.Length).Size ();
+			int lineCount = GetFileLineCount (repo, tw);
 			RevCommit[] lines = new RevCommit [lineCount];
-			int blamedLineCount = 0;
-			List<RevisionObjectIdPair> revisionsToProcess = new List<RevisionObjectIdPair>();
-			revisionsToProcess.Add(new RevisionObjectIdPair(c, id));
+			RevWalk revWalker = new RevWalk (repo);
+			revWalker.MarkStart (commit);
+			List<RevCommit> commitHistory = new List<RevCommit>();
+			FilePath localCpath = FromGitPath (repo, localFile);
 			
-			do {
-				List<RevisionObjectIdPair> nextPass = new List<RevisionObjectIdPair>();
-				
-				foreach (RevisionObjectIdPair pair in revisionsToProcess) {
-					nextPass.AddRange(ProcessCommitBlame (repo, rw, gitFilePath, pair, lines, ref blamedLineCount));
-				}
-				
-				revisionsToProcess = nextPass;
-			} while (blamedLineCount < lineCount && revisionsToProcess.Count > 0);
-			
-			return lines;
-		}
-		
-		static ICollection<RevisionObjectIdPair> ProcessCommitBlame (NGit.Repository repo, RevWalk rw, string gitFilePath, RevisionObjectIdPair commit, RevCommit[] lines, ref int blamedLineCount)
-		{
-			ICollection<RevisionObjectIdPair> ancestors = new List<RevisionObjectIdPair>();
-			RawText commitText = null;
-			
-			foreach (ObjectId ancestorId in commit.Commit.Parents) {
-				RevCommit ancestor = rw.ParseCommit (ancestorId);
-				TreeWalk tw = TreeWalk.ForPath (repo, gitFilePath, ancestor.Tree);
-				
-				if (tw == null)	{
-					blamedLineCount += FillRemainingBlame (lines, commit.Commit);
-				} else {
-					ObjectId ancestorObjectID = tw.GetObjectId (0);
-					
-					if (!commit.ObjectId.Equals(ancestorObjectID)) {
-						if (commitText == null) {
-							commitText = new RawText (repo.ObjectDatabase.Open (commit.ObjectId).GetBytes ());
-						}
-						
-						blamedLineCount += SetBlameLines (repo, lines, commit.Commit, commitText, ancestorObjectID);
+			foreach (RevCommit ancestorCommit in revWalker) {
+				foreach (Change change in GetCommitChanges (repo, ancestorCommit)) {
+					FilePath cpath = FromGitPath (repo, change.Path);
+					if (localCpath == localFile || cpath.IsChildPathOf (localCpath))
+					{
+						commitHistory.Add(ancestorCommit);
+						break;
 					}
-
-					ancestors.Add(new RevisionObjectIdPair(ancestor, ancestorObjectID));
 				}
+			}
+			
+			int historySize = commitHistory.Count;
+			
+			for (int i = 0; i + 1 < historySize; i++)
+			{
+				RevCommit ancestorCommit = commitHistory[i];
+				lineCount -= SetBlameLines(repo, lines, ancestorCommit, GetRawText(repo, localFile, ancestorCommit), GetRawText(repo, localFile, commitHistory[i + 1]));
 				
-				if (blamedLineCount == lines.Length)
+				if (lineCount <= 0)
 				{
 					break;
 				}
 			}
 			
-			return ancestors;
+			if (lineCount > 0)
+			{
+				//TODO: Do we need to set the 00000 commit?
+				RevCommit firstCommit = historySize > 0 ? commitHistory[historySize - 1] : null;
+				
+				for (int i = 0; i < lineCount; i++)
+				{
+					if (lines[i] == null)
+					{
+						lines[i] = firstCommit;
+					}
+				}
+			}
+			return lines;
+		}
+		
+		static int GetFileLineCount (NGit.Repository repo, TreeWalk tw)
+		{
+			ObjectId id = tw.GetObjectId (0);
+			byte[] data = repo.ObjectDatabase.Open (id).GetBytes ();			
+			return NGit.Util.RawParseUtils.LineMap (data, 0, data.Length).Size ();
+		}
+		
+		static RawText GetRawText(NGit.Repository repo, string file, RevCommit commit) {
+			TreeWalk tw = TreeWalk.ForPath (repo, file, commit.Tree);
+			ObjectId objectID = tw.GetObjectId(0);
+			byte[] prevData = repo.ObjectDatabase.Open (objectID).GetBytes ();
+			return new RawText (prevData);
 		}
 
-		static int SetBlameLines (NGit.Repository repo, RevCommit[] lines, RevCommit commit, RawText curText, ObjectId prevObjectId)
+		static int SetBlameLines (NGit.Repository repo, RevCommit[] lines, RevCommit commit, RawText curText, RawText prevText)
 		{
 			int lineCount = 0;
-			byte[] prevData = repo.ObjectDatabase.Open (prevObjectId).GetBytes ();
-			var prevText = new RawText (prevData);
 			var differ = MyersDiff<RawText>.INSTANCE;
 			
 			foreach (Edit e in differ.Diff (RawTextComparator.DEFAULT, prevText, curText)) {
