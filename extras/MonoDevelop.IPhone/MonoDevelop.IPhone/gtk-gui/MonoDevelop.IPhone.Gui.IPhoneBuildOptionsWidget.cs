@@ -26,9 +26,9 @@ namespace MonoDevelop.IPhone.Gui
 		private global::Gtk.Alignment alignment9;
 		private global::MonoDevelop.Components.MenuButtonEntry extraArgsEntry;
 		private global::Gtk.Label label11;
-		private global::Gtk.VBox vbox4;
-		private global::Gtk.Label label13;
-		private global::Gtk.Alignment alignment6;
+		private global::Gtk.VBox advancedVbox;
+		private global::Gtk.Label codeGenerationLabel;
+		private global::Gtk.Alignment codeGenerationAlignment;
 		private global::Gtk.VBox vbox5;
 		private global::Gtk.CheckButton useLlvmCheck;
 		private global::Gtk.Label label14;
@@ -39,8 +39,8 @@ namespace MonoDevelop.IPhone.Gui
 		private global::Gtk.Alignment alignment4;
 		private global::Gtk.CheckButton useThumbCheck;
 		private global::Gtk.Label label16;
-		private global::Gtk.Label label8;
-		private global::Gtk.Alignment alignment3;
+		private global::Gtk.Label runtimeOptionsLabel;
+		private global::Gtk.Alignment runtimeOptionsAlignment;
 		private global::Gtk.CheckButton useSGenCheck;
 		private global::Gtk.Label label7;
 		private global::Gtk.Label label17;
@@ -61,7 +61,7 @@ namespace MonoDevelop.IPhone.Gui
 			this.notebook1 = new global::Gtk.Notebook ();
 			this.notebook1.CanFocus = true;
 			this.notebook1.Name = "notebook1";
-			this.notebook1.CurrentPage = 1;
+			this.notebook1.CurrentPage = 0;
 			// Container child notebook1.Gtk.Notebook+NotebookChild
 			this.vbox2 = new global::Gtk.VBox ();
 			this.vbox2.Name = "vbox2";
@@ -272,26 +272,26 @@ namespace MonoDevelop.IPhone.Gui
 			this.notebook1.SetTabLabel (this.vbox2, this.label11);
 			this.label11.ShowAll ();
 			// Container child notebook1.Gtk.Notebook+NotebookChild
-			this.vbox4 = new global::Gtk.VBox ();
-			this.vbox4.Name = "vbox4";
-			this.vbox4.Spacing = 6;
-			this.vbox4.BorderWidth = ((uint)(6));
-			// Container child vbox4.Gtk.Box+BoxChild
-			this.label13 = new global::Gtk.Label ();
-			this.label13.Name = "label13";
-			this.label13.Xalign = 0F;
-			this.label13.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Code Generation</b>");
-			this.label13.UseMarkup = true;
-			this.vbox4.Add (this.label13);
-			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.label13]));
+			this.advancedVbox = new global::Gtk.VBox ();
+			this.advancedVbox.Name = "advancedVbox";
+			this.advancedVbox.Spacing = 6;
+			this.advancedVbox.BorderWidth = ((uint)(6));
+			// Container child advancedVbox.Gtk.Box+BoxChild
+			this.codeGenerationLabel = new global::Gtk.Label ();
+			this.codeGenerationLabel.Name = "codeGenerationLabel";
+			this.codeGenerationLabel.Xalign = 0F;
+			this.codeGenerationLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Code Generation</b>");
+			this.codeGenerationLabel.UseMarkup = true;
+			this.advancedVbox.Add (this.codeGenerationLabel);
+			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.advancedVbox [this.codeGenerationLabel]));
 			w21.Position = 0;
 			w21.Expand = false;
 			w21.Fill = false;
-			// Container child vbox4.Gtk.Box+BoxChild
-			this.alignment6 = new global::Gtk.Alignment (0F, 0.5F, 1F, 1F);
-			this.alignment6.Name = "alignment6";
-			this.alignment6.LeftPadding = ((uint)(24));
-			// Container child alignment6.Gtk.Container+ContainerChild
+			// Container child advancedVbox.Gtk.Box+BoxChild
+			this.codeGenerationAlignment = new global::Gtk.Alignment (0F, 0.5F, 1F, 1F);
+			this.codeGenerationAlignment.Name = "codeGenerationAlignment";
+			this.codeGenerationAlignment.LeftPadding = ((uint)(24));
+			// Container child codeGenerationAlignment.Gtk.Container+ContainerChild
 			this.vbox5 = new global::Gtk.VBox ();
 			this.vbox5.Name = "vbox5";
 			this.vbox5.Spacing = 2;
@@ -371,28 +371,28 @@ namespace MonoDevelop.IPhone.Gui
 			w30.Position = 1;
 			w30.Expand = false;
 			w30.Fill = false;
-			this.alignment6.Add (this.vbox5);
-			this.vbox4.Add (this.alignment6);
-			global::Gtk.Box.BoxChild w32 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.alignment6]));
+			this.codeGenerationAlignment.Add (this.vbox5);
+			this.advancedVbox.Add (this.codeGenerationAlignment);
+			global::Gtk.Box.BoxChild w32 = ((global::Gtk.Box.BoxChild)(this.advancedVbox [this.codeGenerationAlignment]));
 			w32.Position = 1;
 			w32.Expand = false;
 			w32.Fill = false;
-			// Container child vbox4.Gtk.Box+BoxChild
-			this.label8 = new global::Gtk.Label ();
-			this.label8.Name = "label8";
-			this.label8.Xalign = 0F;
-			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Runtime Options</b>");
-			this.label8.UseMarkup = true;
-			this.vbox4.Add (this.label8);
-			global::Gtk.Box.BoxChild w33 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.label8]));
+			// Container child advancedVbox.Gtk.Box+BoxChild
+			this.runtimeOptionsLabel = new global::Gtk.Label ();
+			this.runtimeOptionsLabel.Name = "runtimeOptionsLabel";
+			this.runtimeOptionsLabel.Xalign = 0F;
+			this.runtimeOptionsLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Runtime Options</b>");
+			this.runtimeOptionsLabel.UseMarkup = true;
+			this.advancedVbox.Add (this.runtimeOptionsLabel);
+			global::Gtk.Box.BoxChild w33 = ((global::Gtk.Box.BoxChild)(this.advancedVbox [this.runtimeOptionsLabel]));
 			w33.Position = 2;
 			w33.Expand = false;
 			w33.Fill = false;
-			// Container child vbox4.Gtk.Box+BoxChild
-			this.alignment3 = new global::Gtk.Alignment (0F, 0.5F, 1F, 1F);
-			this.alignment3.Name = "alignment3";
-			this.alignment3.LeftPadding = ((uint)(24));
-			// Container child alignment3.Gtk.Container+ContainerChild
+			// Container child advancedVbox.Gtk.Box+BoxChild
+			this.runtimeOptionsAlignment = new global::Gtk.Alignment (0F, 0.5F, 1F, 1F);
+			this.runtimeOptionsAlignment.Name = "runtimeOptionsAlignment";
+			this.runtimeOptionsAlignment.LeftPadding = ((uint)(24));
+			// Container child runtimeOptionsAlignment.Gtk.Container+ContainerChild
 			this.useSGenCheck = new global::Gtk.CheckButton ();
 			this.useSGenCheck.CanFocus = true;
 			this.useSGenCheck.Name = "useSGenCheck";
@@ -406,24 +406,24 @@ namespace MonoDevelop.IPhone.Gui
 			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("Use SGen generational garbage collector\n<small>Experimental, may improve GC performance</small>");
 			this.label7.UseMarkup = true;
 			this.useSGenCheck.Add (this.label7);
-			this.alignment3.Add (this.useSGenCheck);
-			this.vbox4.Add (this.alignment3);
-			global::Gtk.Box.BoxChild w36 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.alignment3]));
+			this.runtimeOptionsAlignment.Add (this.useSGenCheck);
+			this.advancedVbox.Add (this.runtimeOptionsAlignment);
+			global::Gtk.Box.BoxChild w36 = ((global::Gtk.Box.BoxChild)(this.advancedVbox [this.runtimeOptionsAlignment]));
 			w36.Position = 3;
 			w36.Expand = false;
 			w36.Fill = false;
-			// Container child vbox4.Gtk.Box+BoxChild
+			// Container child advancedVbox.Gtk.Box+BoxChild
 			this.label17 = new global::Gtk.Label ();
 			this.label17.Name = "label17";
 			this.label17.Xalign = 0F;
 			this.label17.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Internationalization</b>");
 			this.label17.UseMarkup = true;
-			this.vbox4.Add (this.label17);
-			global::Gtk.Box.BoxChild w37 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.label17]));
+			this.advancedVbox.Add (this.label17);
+			global::Gtk.Box.BoxChild w37 = ((global::Gtk.Box.BoxChild)(this.advancedVbox [this.label17]));
 			w37.Position = 4;
 			w37.Expand = false;
 			w37.Fill = false;
-			// Container child vbox4.Gtk.Box+BoxChild
+			// Container child advancedVbox.Gtk.Box+BoxChild
 			this.alignment8 = new global::Gtk.Alignment (0F, 0.5F, 1F, 1F);
 			this.alignment8.Name = "alignment8";
 			this.alignment8.LeftPadding = ((uint)(24));
@@ -457,18 +457,18 @@ namespace MonoDevelop.IPhone.Gui
 			w40.Position = 1;
 			w40.Expand = false;
 			this.alignment8.Add (this.vbox7);
-			this.vbox4.Add (this.alignment8);
-			global::Gtk.Box.BoxChild w42 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.alignment8]));
+			this.advancedVbox.Add (this.alignment8);
+			global::Gtk.Box.BoxChild w42 = ((global::Gtk.Box.BoxChild)(this.advancedVbox [this.alignment8]));
 			w42.Position = 5;
-			this.notebook1.Add (this.vbox4);
-			global::Gtk.Notebook.NotebookChild w43 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.vbox4]));
+			this.notebook1.Add (this.advancedVbox);
+			global::Gtk.Notebook.NotebookChild w43 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.advancedVbox]));
 			w43.Position = 1;
 			// Notebook tab
 			this.label12 = new global::Gtk.Label ();
 			this.label12.Name = "label12";
 			this.label12.LabelProp = global::Mono.Unix.Catalog.GetString ("_Advanced");
 			this.label12.UseUnderline = true;
-			this.notebook1.SetTabLabel (this.vbox4, this.label12);
+			this.notebook1.SetTabLabel (this.advancedVbox, this.label12);
 			this.label12.ShowAll ();
 			this.Add (this.notebook1);
 			if ((this.Child != null)) {

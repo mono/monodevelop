@@ -1316,7 +1316,7 @@
       <widget class="Gtk.Notebook" id="notebook1">
         <property name="MemberName" />
         <property name="CanFocus">True</property>
-        <property name="CurrentPage">1</property>
+        <property name="CurrentPage">0</property>
         <child>
           <widget class="Gtk.VBox" id="vbox2">
             <property name="MemberName" />
@@ -1658,12 +1658,12 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.VBox" id="vbox4">
+          <widget class="Gtk.VBox" id="advancedVbox">
             <property name="MemberName" />
             <property name="Spacing">6</property>
             <property name="BorderWidth">6</property>
             <child>
-              <widget class="Gtk.Label" id="label13">
+              <widget class="Gtk.Label" id="codeGenerationLabel">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
                 <property name="LabelProp" translatable="yes">&lt;b&gt;Code Generation&lt;/b&gt;</property>
@@ -1677,7 +1677,7 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.Alignment" id="alignment6">
+              <widget class="Gtk.Alignment" id="codeGenerationAlignment">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
                 <property name="LeftPadding">24</property>
@@ -1794,7 +1794,7 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.Label" id="label8">
+              <widget class="Gtk.Label" id="runtimeOptionsLabel">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
                 <property name="LabelProp" translatable="yes">&lt;b&gt;Runtime Options&lt;/b&gt;</property>
@@ -1808,7 +1808,7 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.Alignment" id="alignment3">
+              <widget class="Gtk.Alignment" id="runtimeOptionsAlignment">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
                 <property name="LeftPadding">24</property>
