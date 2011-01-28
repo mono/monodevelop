@@ -115,6 +115,7 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				releaseVersion = value;
+				NotifyModified ("Version");
 			}
 		}
 		
@@ -126,6 +127,7 @@ namespace MonoDevelop.Projects
 				syncReleaseVersion = value;
 				if (syncReleaseVersion && ParentSolution != null)
 					Version = ParentSolution.Version;
+				NotifyModified ("SyncVersionWithSolution");
 			}
 		}
 		
@@ -465,12 +467,14 @@ namespace MonoDevelop.Projects
 		
 		internal protected virtual void OnItemAdded (ProjectItem obj)
 		{
+			NotifyModified ("Items");
 			if (ProjectItemAdded != null)
 				ProjectItemAdded (this, new ProjectItemEventArgs (this, obj));
 		}
 		
 		internal protected virtual void OnItemRemoved (ProjectItem obj)
 		{
+			NotifyModified ("Items");
 			if (ProjectItemRemoved != null)
 				ProjectItemRemoved (this, new ProjectItemEventArgs (this, obj));
 		}

@@ -135,7 +135,7 @@ namespace MonoDevelop.Projects
 		/// </value>
 		public virtual IconId StockIcon {
 			get { return stockIcon; }
-			set { this.stockIcon = value; }
+			set { this.stockIcon = value; NotifyModified ("StockIcon"); }
 		}
 		IconId stockIcon = "md-project";
 		
