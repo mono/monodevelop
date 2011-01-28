@@ -108,6 +108,13 @@ namespace MonoDevelop.IPhone
 			return true;
 		}
 		
+		public override bool Equals (object obj)
+		{
+			if (obj is IPhoneSdkVersion)
+				return Equals ((IPhoneSdkVersion)obj);
+			return false;
+		}
+		
 		public override int GetHashCode ()
 		{
 			unchecked {
@@ -117,6 +124,36 @@ namespace MonoDevelop.IPhone
 					acc ^= x[i] << i;
 				return acc;
 			}
+		}
+		
+		public static bool operator == (IPhoneSdkVersion a, IPhoneSdkVersion b)
+		{
+			return a.Equals (b);
+		}
+		
+		public static bool operator != (IPhoneSdkVersion a, IPhoneSdkVersion b)
+		{
+			return !a.Equals (b);
+		}
+		
+		public static bool operator < (IPhoneSdkVersion a, IPhoneSdkVersion b)
+		{
+			return a.CompareTo (b) < 0;
+		}
+		
+		public static bool operator > (IPhoneSdkVersion a, IPhoneSdkVersion b)
+		{
+			return a.CompareTo (b) > 0;
+		}
+		
+		public static bool operator <= (IPhoneSdkVersion a, IPhoneSdkVersion b)
+		{
+			return a.CompareTo (b) <= 0;
+		}
+		
+		public static bool operator >= (IPhoneSdkVersion a, IPhoneSdkVersion b)
+		{
+			return a.CompareTo (b) >= 0;
 		}
 		
 		public bool IsUseDefault {

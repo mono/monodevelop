@@ -172,6 +172,18 @@ namespace MonoDevelop.IPhone
 			}
 		}
 		
+		[ItemProperty ("MtouchUseLlvm")]
+		public bool MtouchUseLlvm { get; set; }
+		
+		[ItemProperty ("MtouchUseArmv7")]
+		public bool MtouchUseArmv7 { get; set; }
+		
+		[ItemProperty ("MtouchUseThumb")]
+		public bool MtouchUseThumb { get; set; }
+		
+		[ItemProperty ("MtouchUseSGen")]
+		public bool MtouchUseSGen { get; set; }
+		
 		public override void CopyFrom (ItemConfiguration configuration)
 		{
 			base.CopyFrom (configuration);
@@ -191,6 +203,10 @@ namespace MonoDevelop.IPhone
 			MtouchMinimumOSVersion = cfg.MtouchMinimumOSVersion;
 			MtouchExtraArgs = cfg.MtouchExtraArgs;
 			MtouchI18n = cfg.MtouchI18n;
+			MtouchUseLlvm = cfg.MtouchUseLlvm;
+			MtouchUseArmv7 = cfg.MtouchUseArmv7;
+			MtouchUseThumb = cfg.MtouchUseThumb;
+			MtouchUseSGen = cfg.MtouchUseSGen;
 		}
 		
 		//always set the MtouchDebug element

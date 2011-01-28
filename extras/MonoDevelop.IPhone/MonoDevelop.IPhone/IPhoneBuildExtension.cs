@@ -164,8 +164,10 @@ namespace MonoDevelop.IPhone
 				monitor.EndTask ();
 			}
 			
-			if (result.Append (UnpackContent (monitor, conf, assemblyRefs)).ErrorCount > 0)
-				return result;
+			//unpack nibs and content from dll resources (MT 4+ only)
+			if (IPhoneFramework.MonoTouchVersion >= new IPhoneSdkVersion (4))
+				if (result.Append (UnpackContent (monitor, conf, assemblyRefs)).ErrorCount > 0)
+					return result;
 			
 			//create the info.plist, merging in the template if it exists
 			var plistOut = conf.AppDirectory.Combine ("Info.plist");
@@ -362,6 +364,18 @@ namespace MonoDevelop.IPhone
 			if (conf.MtouchMinimumOSVersion != "3.0")
 				args.AddQuotedFormat ("-targetver={0}", conf.MtouchMinimumOSVersion);
 			
+			if (IPhoneFramework.MonoTouchVersion >= new IPhoneSdkVersion (4)) {
+				if (conf.MtouchUseSGen)
+					args.Add ("--sgen");
+				if (conf.MtouchUseLlvm) {
+					args.Add ("--llvm");
+					if (conf.MtouchUseArmv7) {
+						args.Add ("--armv7");
+						if (conf.MtouchUseThumb)
+							args.Add ("--thumb");
+					}
+				}
+			}
 			
 			AddExtraArgs (args, conf.MtouchExtraArgs, proj, conf);
 		}
@@ -393,8 +407,8 @@ namespace MonoDevelop.IPhone
 					doc.Root = dict = new PlistDictionary ();
 				
 				bool sim = conf.Platform != IPhoneProject.PLAT_IPHONE;
-				bool v3_2_orNewer = sdkVersion.CompareTo (IPhoneSdkVersion.V3_2) >= 0;
-				bool v4_0_orNewer = sdkVersion.CompareTo (IPhoneSdkVersion.V4_0) >= 0;
+				bool v3_2_orNewer = sdkVersion >= IPhoneSdkVersion.V3_2;
+				bool v4_0_orNewer = sdkVersion >= IPhoneSdkVersion.V4_0;
 				bool supportsIPhone = (proj.SupportedDevices & TargetDevice.IPhone) != 0;
 				bool supportsIPad = (proj.SupportedDevices & TargetDevice.IPad) != 0;
 				
@@ -715,6 +729,10 @@ namespace MonoDevelop.IPhone
 			var projFiles = buildData.Items.OfType<ProjectFile> ();
 			
 			if (proj.CompileTarget == CompileTarget.Library) {
+				if (IPhoneFramework.MonoTouchVersion < new IPhoneSdkVersion (4))
+					return base.Compile (monitor, item, buildData);
+				
+				//pack nibs and content into the dll resources (MT 4+ only)
 				var nibDir = cfg.ObjDir.Combine ("nibs");
 				var xibRes = MacBuildUtilities.CompileXibFiles (monitor, projFiles, nibDir);
 				if (xibRes.ErrorCount > 0)
@@ -769,8 +787,8 @@ namespace MonoDevelop.IPhone
 		static IEnumerable<FilePair> GetIconContentFiles (IPhoneSdkVersion sdkVersion, IPhoneProject proj,
 			IPhoneProjectConfiguration conf)
 		{
-			bool v3_2_orNewer = sdkVersion.CompareTo (IPhoneSdkVersion.V3_2) >= 0;
-			bool v4_0_orNewer = sdkVersion.CompareTo (IPhoneSdkVersion.V4_0) >= 0;
+			bool v3_2_orNewer = sdkVersion >= IPhoneSdkVersion.V3_2;
+			bool v4_0_orNewer = sdkVersion >= IPhoneSdkVersion.V4_0;
 			bool supportsIPhone = (proj.SupportedDevices & TargetDevice.IPhone) != 0;
 			bool supportsIPad = (proj.SupportedDevices & TargetDevice.IPad) != 0;
 			var appDir = conf.AppDirectory;
