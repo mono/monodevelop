@@ -1279,7 +1279,7 @@ namespace MonoDevelop.CSharp.Completion
 					hideExtensionParameter = value;
 				}
 			}
-			public class NegateKeyHandler : ICompletionKeyHandler
+/*			public class NegateKeyHandler : ICompletionKeyHandler
 			{
 				public bool ProcessKey (CompletionListWindow window, Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions keyAction)
 				{
@@ -1314,7 +1314,7 @@ namespace MonoDevelop.CSharp.Completion
 					
 					return true;
 				}
-			}
+			}*/
 			
 			public CompletionDataCollector (ProjectDom dom, CompletionDataList completionList, ICompilationUnit unit, IType declaringType, DomLocation location)
 			{
@@ -1324,7 +1324,7 @@ namespace MonoDevelop.CSharp.Completion
 				this.FullyQualify = false;
 //				this.location = location;
 				this.declaringType = declaringType;
-				completionList.AddKeyHandler (new NegateKeyHandler ());
+//				completionList.AddKeyHandler (new NegateKeyHandler ());
 				// Get a list of all namespaces in scope
 				if (unit != null) {
 					foreach (IUsing u in unit.Usings) {
