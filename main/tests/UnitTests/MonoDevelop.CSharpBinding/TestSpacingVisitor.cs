@@ -1777,6 +1777,28 @@ return (Test)null;
 }", data.Document.Text);
 			
 			
-		}		
+		}
+		
+		[Test()]
+		public void TestRemoveWhitespacesBeforeSemicolon ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		Foo ()        ;
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.ForParentheses = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomSpacingVisitor (policy, data), null);
+			int i1 = data.Document.Text.IndexOf ("Foo");
+			int i2 = data.Document.Text.LastIndexOf (";") + ";".Length;
+			Assert.AreEqual (@"Foo ();", data.Document.GetTextBetween (i1, i2));
+		}
+		
 	}
 }

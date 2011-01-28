@@ -371,6 +371,54 @@ set;
 		}
 		
 		[Test()]
+		public void TestIndentPropertyOneLine ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = 
+@"class Test
+{
+	Test TestMe {      get;set;                  }
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.PropertyFormatting = PropertyFormatting.AllowOneLine;
+			policy.AllowPropertyGetBlockInline = true;
+			policy.AllowPropertySetBlockInline = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test
+{
+	Test TestMe { get; set; }
+}", data.Document.Text);
+		}
+		
+		[Test()]
+		public void TestIndentPropertyOneLineCase2 ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = 
+@"class Test
+{
+	Test TestMe {      get { ; }set{;}                  }
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.PropertyFormatting = PropertyFormatting.AllowOneLine;
+			policy.AllowPropertyGetBlockInline = true;
+			policy.AllowPropertySetBlockInline = true;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test
+{
+	Test TestMe { get { ; } set { ; } }
+}", data.Document.Text);
+		}
+		
+		[Test()]
 		public void TestIndentPropertyBodyIndexerCase ()
 		{
 			TextEditorData data = new TextEditorData ();
