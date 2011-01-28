@@ -1,0 +1,92 @@
+<ExtensionModel>
+
+<ExtensionPoint path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels" name="Dialog panels for item options">
+	<Description>Dialog panels for item options. Those panels will be shown for all kind of solution items, solutions and workspaces.</Description>
+	<ExtensionNodeSet id="MonoDevelop.Ide.OptionsDialogSection"/>
+	<ConditionType id="ItemType" type="MonoDevelop.Projects.Extensions.ItemTypeCondition">
+		<Description>Type of the item. If no namespace is provided, MonoDevelop.Projects is assumed.</Description>
+	</ConditionType>
+	<ConditionType id="ActiveLanguage" type="MonoDevelop.Projects.Extensions.ProjectLanguageCondition">
+		<Description>Language of the project. It will evaluate to false if the project is not a .NET project.</Description>
+	</ConditionType>
+</ExtensionPoint>
+	
+<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
+	<Section id="Common" _label="General">
+		<Section id="General" _label="Main Settings">
+			<Condition id="ItemType" value="Project">
+				<Panel id = "GeneralProjectPanel" _label = "Project" class = "MonoDevelop.Ide.Projects.OptionPanels.GeneralProjectOptions" />
+				<Panel id = "BaseDirectoryPanel" _label = "Location of Project Files" class = "MonoDevelop.Ide.Projects.OptionPanels.BaseDirectoryPanel"/>
+			</Condition>
+			<Condition id="ItemType" value="Solution">
+				<Panel id = "GeneralSolutionPanel" _label = "Solution" class = "MonoDevelop.Ide.Projects.OptionPanels.CombineInformationPanel" />
+				<Panel id = "BaseDirectoryPanel" _label = "Location of Project Files" class = "MonoDevelop.Ide.Projects.OptionPanels.BaseDirectoryPanel"/>
+			</Condition>
+			<Condition id="ItemType" value="SolutionFolder">
+				<Panel id = "BaseDirectoryPanel" _label = "Location of Project Files" class = "MonoDevelop.Ide.Projects.OptionPanels.BaseDirectoryPanel"/>
+			</Condition>
+			<Condition id="ItemType" value="Workspace">
+				<Panel id = "BaseDirectoryPanel" _label = "Location of Project Files" class = "MonoDevelop.Ide.Projects.OptionPanels.BaseDirectoryPanel"/>
+			</Condition>
+		</Section>
+		<Condition id="ItemType" value="Solution">
+			<Section id = "AuthorInfo" _label = "Author Information" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.AuthorInformationPanel" />
+		</Condition>
+		<Condition id="ItemType" value="SolutionEntityItem">
+			<Section id = "CustomCommands" _label = "Custom Commands" icon="md-custom-commands" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.CustomCommandPanel"/>
+		</Condition>
+	</Section>
+	<Section id="Build" _label="Build">
+		<Section id="General" _label="General" icon="md-build-combine">
+			<Condition id="ItemType" value="Project">
+				<Panel id = "RuntimeOptionsPanel" _label = "Runtime Options" class = "MonoDevelop.Ide.Projects.OptionPanels.RuntimeOptionsPanel"/>
+			</Condition>
+			<Condition id="ItemType" value="Solution">
+				<Panel id = "SolutionGeneral" _label = "Build" class = "MonoDevelop.Ide.Projects.OptionPanels.CombineBuildOptions"/>
+			</Condition>
+		</Section>
+		<Condition id="ItemType" value="Project">
+			<Section id = "ProjectConfigurations" _label = "Configurations" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.SolutionItemConfigurationsPanel"/>
+			<Section id = "Compiler" _label="Compiler" icon="md-compiler-options" />
+			<Section id = "SigningPreferences" _label = "Assembly Signing" class = "MonoDevelop.Ide.Projects.OptionPanels.CommonAssemblySigningPreferencesPanel"/>
+			<Section id = "OutputOptionsPanel" _label = "Output" class = "MonoDevelop.Ide.Projects.OptionPanels.OutputOptionsPanel"/>
+		</Condition>
+		<Condition id="ItemType" value="Solution">
+			<Section id = "SolutionConfigurations" _label="Configurations">
+				<Panel id = "Configurations" _label = "Configurations" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.SolutionItemConfigurationsPanel"/>
+				<Panel id = "EntryConfigurations" _label = "Configuration Mappings" fill = "true" grouping="Tab" class = "MonoDevelop.Ide.Projects.OptionPanels.CombineConfigurationPanel"/>
+			</Section>
+		</Condition>
+	</Section>
+	<Section id="Run" _label="Run">
+		<Section id="General" _label="General" icon="gtk-execute">
+			<Condition id="ItemType" value="Project">
+				<Panel id = "RunOptionsPanel" _label = "Run" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.RunOptionsPanel"/>
+			</Condition>
+		</Section>
+		<Condition id="ItemType" value="Solution">
+			<Section id = "StartupOptionsPanel" _label = "Startup Project" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.StartupOptionsPanel"/>
+		</Condition>
+	</Section>
+	<Section id="SourceCode" _label="Source Code">
+		<Section id="DotNetNamingPolicies" _label=".NET Naming Policies">
+			<Condition id="ItemType" value="Solution">
+				<Panel id = "NamespaceSynchronisationPanel" class = "MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanel" />
+			</Condition>
+			<Condition id="ItemType" value="SolutionItem">
+				<Panel id = "NamespaceSynchronisationPanel" class = "MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanel" />
+			</Condition>
+		</Section>
+		<Condition id="ItemType" value="Solution">
+			<Section id="CodeFormattingPolicies" _label="Code Formatting" icon="md-formatting" fill = "true" class="MonoDevelop.Ide.Projects.OptionPanels.CodeFormattingPanel" />
+			<Section id="DefaultStandardHeader" _label = "Standard Header" fill="true" class = "MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" />
+		</Condition>
+		<Condition id="ItemType" value="SolutionItem">
+			<Section id="CodeFormattingPolicies" _label="Code Formatting" icon="md-formatting" fill = "true" class="MonoDevelop.Ide.Projects.OptionPanels.CodeFormattingPanel" />
+			<Section id="DefaultStandardHeader" _label = "Standard Header" fill="true" class = "MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" />
+		</Condition>
+	</Section>
+</Extension>
+
+</ExtensionModel>
+

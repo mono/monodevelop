@@ -1,0 +1,49 @@
+<ExtensionModel>
+
+<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Namespace" name = "Namespace node context menu in the class pad">
+	<Description>Context menu for namespaces in the class pad.</Description>
+	<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+</ExtensionPoint>
+
+<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Method" name = "Method node context menu in the class pad">
+	<Description>Context menu for methods in the class pad.</Description>
+	<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+</ExtensionPoint>
+
+<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Field" name = "Field node context menu in the class pad">
+	<Description>Context menu for fields in the class pad.</Description>
+	<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+</ExtensionPoint>
+
+<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Event" name = "Event node context menu in the class pad">
+	<Description>Context menu for events in the class pad.</Description>
+	<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+</ExtensionPoint>
+
+<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Combine" name = "Combine node context menu in the class pad">
+	<Description>Context menu for combines in the class pad.</Description>
+	<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+</ExtensionPoint>
+
+<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Class" name = "Class node context menu in the class pad">
+	<Description>Context menu for classes in the class pad.</Description>
+	<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+</ExtensionPoint>
+
+<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Property" name = "Property node context menu in the class pad">
+	<Description>Context menu for properties in the class pad.</Description>
+	<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+</ExtensionPoint>
+
+<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/Project" name = "Project node context menu in the class pad">
+	<Description>Context menu for projects in the class pad.</Description>
+	<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+</ExtensionPoint>
+
+<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ClassPad/References" name = "Reference node context menu in the class pad">
+	<Description>Context menu for references in the class pad.</Description>
+	<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+</ExtensionPoint>
+	
+</ExtensionModel>
+

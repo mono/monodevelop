@@ -1,0 +1,226 @@
+<Addin id          = "Ide"
+       namespace   = "MonoDevelop"
+       name        = "MonoDevelop Ide"
+       author      = "Todd Berman, Pedro Abelleira Seco, John Luke, Daniel Kornhauser, Alex Graveley, nricciar, John Bou Antoun, Ben Maurer, Jeroen Zwartepoorte, Gustavo Giráldez, Miguel de Icaza, Inigo Illan, Iain McCoy, Nick Drochak, Paweł Różański, Richard Torkar, Paco Martinez, Lluis Sanchez Gual, Christian Hergert, Mike Krueger"
+       copyright   = "LGPL"
+       url         = "http://www.monodevelop.com"
+       description = "The MonoDevelop IDE application."
+       category    = "MonoDevelop Core"
+       isroot      = "true"
+       version     = "2.6"
+       compatVersion = "2.6">
+	
+	<Runtime>
+		<Import assembly="MonoDevelop.Ide.dll"/>
+	</Runtime>
+	
+	<Dependencies>
+		<Addin id="Core" version="2.6"/>
+	</Dependencies>
+
+	<!-- Extension ponts -->
+	
+	<ConditionType id="combineopen" type="MonoDevelop.Ide.Codons.CombineOpenCondition" />
+	<ConditionType id="activeproject" type="MonoDevelop.Ide.Codons.ProjectActiveCondition" />
+	<ConditionType id="activelanguage" type="MonoDevelop.Ide.Codons.LanguageActiveCondition" />
+	
+	<ExtensionNodeSet id="MonoDevelop.Ide.OptionsDialogSection">
+		<ExtensionNode name="Section" type="MonoDevelop.Ide.Extensions.OptionsDialogSection" />
+	</ExtensionNodeSet>
+	
+	<ExtensionPoint path = "/MonoDevelop/Core/PlatformService" name = "Platform Service">
+		<Description>Implementations of platform-dependent code wrapped in a platform-agnostic API. Specified classes must inherit from MonoDevelop.Ide.Desktop.PlatformService.</Description>
+		<ExtensionNode name="Class" />
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Core/WebBrowsers" name = "Web Browsers">
+		<Description>Used optionally to provides a web browser widget. Must implement MonoDevelop.Ide.WebBrowser.IWebBrowserLoader</Description>
+		<ExtensionNode name="Class" />
+	</ExtensionPoint>
+	
+	<ExtensionNodeSet id="MonoDevelop.Components.Commands.KeyBindingScheme">
+		<ExtensionNode name="Scheme" type="MonoDevelop.Components.Commands.ExtensionNodes.SchemeExtensionNode" />
+	</ExtensionNodeSet>
+	
+	<ExtensionPoint path = "/MonoDevelop/Components/DialogHandlers" name = "Dialog Handlers">
+		<Description>Allows providing platform-specific implementations for common dialogs</Description>
+		<ExtensionNode name="Class" />
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/Ide/DisplayBindings" name = "Display bindings">
+		<Description>Display bindings.</Description>
+		<ExtensionNode name="DisplayBinding" type="MonoDevelop.Ide.Codons.DisplayBindingCodon" />
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Ide/StartupHandlers" name = "Startup handlers">
+		<Description>Commands to be automatically executed when the IDE starts.</Description>
+		<ExtensionNode name="Class" objectType="MonoDevelop.Components.Commands.CommandHandler" customAttributeType="MonoDevelop.Ide.Extensions.StartupHandlerExtensionAttribute">
+			<Description>A subclass of MonoDevelop.Components.Commands.CommandHandler</Description>
+		</ExtensionNode>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Ide/KeyBindingSchemes" name = "Key binding schemes">
+		<Description>Key binding schemes.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.KeyBindingScheme"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/Ide/TaskList/View" name = "Task list views">
+		<Description>Task list views to be shown in the task list pad.</Description>
+		<ExtensionNode name="TaskListView" type="MonoDevelop.Ide.Codons.TaskListViewCodon"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Ide/WorkbenchContexts" name = "Workbench contexts">
+		<Description>Workbench contexts.</Description>
+		<ExtensionNode name="WorkbenchContext" type="MonoDevelop.Ide.Codons.WorkbenchContextCodon">
+			<ExtensionNode name ="ContextPad" type="MonoDevelop.Ide.Codons.ContextPadCodon" />
+		</ExtensionNode>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Ide/ProjectFileFilters" name = "Combine file filters">
+		<Description>File filters to be shown in the Project Open dialog.</Description>
+		<ExtensionNode name="FileFilter" type="MonoDevelop.Ide.Codons.FileFilterCodon"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Ide/FileFilters" name = "File filters">
+		<Description>File filters to be shown in the File Open dialog.</Description>
+		<ExtensionNode name="FileFilter" type="MonoDevelop.Ide.Codons.FileFilterCodon"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Ide/TextEditorExtensions" name = "Text editor extensions">
+		<Description>Extensions to the text editor. Classes must be a subclass of TextEditorExtension.</Description>
+		<ExtensionNode name="Class" type="MonoDevelop.Ide.Extensions.TextEditorExtensionNode"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/Ide/ProjectFeatures" name = "Project feature editors">
+		<ExtensionNode name="Class"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/DocumentTab" name = "View Context Menu">
+		<Description>The context menu for all open files.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Ide/ExecutionCommandEditors" name = "View Context Menu">
+		<Description>Widgets which allow editing the configuration of execution commands.</Description>
+		<ExtensionNode name="Customizer" type="MonoDevelop.Ide.Execution.ExecutionCommandCustomizer" objectType="MonoDevelop.Ide.Execution.IExecutionCommandCustomizer"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Ide/CodeTemplates" name = "Code Templates">
+		<Description>Custom code templates.</Description>
+		<ExtensionNode name="CodeTemplate" type="MonoDevelop.Ide.CodeTemplates.CodeTemplateCodon"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Ide/TextEditorResolver" name = "Text Editor Resolver">
+		<Description>Text editor resolvers are responsible for getting resolve results inside text editor locations.</Description>
+		<ExtensionNode name="Resolver" type="MonoDevelop.Ide.Gui.Content.TextEditorResolverProviderCodon"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Ide/WorkbenchLayouts" name = "Workbench Layouts">
+		<Description>This extension point allows registering layouts and pads to be shown in each layout</Description>
+		<ExtensionNode name="Layout" type="MonoDevelop.Ide.Extensions.LayoutExtensionNode"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Ide/CustomTools" name = "Custom code generation tools">
+		<Description>Extensions to the text editor. Classes must be a subclass of TextEditorExtension.</Description>
+		<ExtensionNode name="Tool" type="MonoDevelop.Ide.Extensions.CustomToolExtensionNode"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Ide/Fonts" name = "IDE Fonts">
+		<Description>Addins can register own fonts to be configured.</Description>
+		<ExtensionNode name="Font" type="MonoDevelop.Ide.Fonts.FontDescriptionCodon"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Ide/Updater" name = "Updater information">
+		<Description>Path of an updateinfo file.</Description>
+		<ExtensionNode name="UpdateInfo" type="MonoDevelop.Ide.Updater.UpdateInfoExtensionNode"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Ide/CodeFormatters" name = "Code formatters">
+		<ExtensionNode name="Formatter" type="MonoDevelop.Ide.CodeFormatting.CodeFormatterExtensionNode" />
+	</ExtensionPoint>
+	
+	<!-- Extensions -->
+	
+	<Extension path = "/MonoDevelop/Core/Applications">
+		<Application id = "gsetup"
+		       description = "Graphical add-in setup utility"
+		       class = "MonoDevelop.Ide.Gui.Dialogs.SetupApp"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
+		<DisplayBinding id    = "DefaultDisplayBinding"
+		                class = "MonoDevelop.Ide.Gui.DefaultDisplayBinding"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
+		<Class class = "MonoDevelop.Ide.Gui.AddinUpdateHandler"/>
+		<Class class = "MonoDevelop.Ide.Gui.Dialogs.TipOfTheDayStartup"/>
+		<Class class = "MonoDevelop.Ide.Updater.CheckForUpdatesOnStartUpHandler" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/KeyBindingSchemes">
+		<Scheme id="Emacs" _name = "GNU/Emacs" resource="KeyBindingSchemeEmacs.xml"/>
+		<Scheme id="VS05" _name = "Visual Studio" resource="KeyBindingSchemeVisualStudio.xml"/>
+		<Scheme id="MD1" _name = "MonoDevelop 1.0" resource="KeyBindingSchemeMonoDevelop1.xml"/>
+		<Scheme id="MD2" _name = "MonoDevelop 2.0" resource="KeyBindingSchemeMonoDevelop2.xml"/>
+	</Extension>
+	
+
+	
+	<!--<Extension path = "/MonoDevelop/Ide/FileFilters">
+		<FileFilter id = "AllFiles"
+		            _label = "All Files"
+		            extensions = "*.*"/>
+	</Extension>-->
+	
+	<Extension path = "/MonoDevelop/Ide/TaskList/View">
+		<TaskListView _label = "Comments" class = "MonoDevelop.Ide.Tasks.CommentTasksView" />
+		<TaskListView _label = "User Tasks" class = "MonoDevelop.Ide.Tasks.UserTasksView" />
+	</Extension>
+	
+	<Extension path="/MonoDevelop/Ide/WorkbenchLayouts">
+		<Layout id="Default" _name="Default">
+			<LayoutPad id="ProjectPad" status="AutoHide" />
+		</Layout>
+		<Layout id="Solution" _name="Solution" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/ProjectFileFilters">
+		<FileFilter id = "Combine"
+		            _label = "MonoDevelop Solution Files"
+		            extensions = "*.mds"/>
+		<FileFilter id = "Project"
+		            _label = "MonoDevelop Project Files"
+		            extensions = "*.mdp"/>
+		<!--<FileFilter id = "AllFiles"
+		            _label = "All Files"
+		            extensions = "*.*"/>-->
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
+		<Class id="InitialStep" class = "MonoDevelop.Ide.Gui.Content.TextEditorExtensionMarker" />
+		<Class id="MidStep" class = "MonoDevelop.Ide.Gui.Content.TextEditorExtensionMarker" />
+		<Class id="FinalStep" class = "MonoDevelop.Ide.Gui.Content.TextEditorExtensionMarker" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/DocumentTab">
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAllButThis" />
+		<SeparatorItem id = "CloseSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll" />
+		<SeparatorItem id = "SaveSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.CopyPathName" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.ToggleMaximize" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/ExecutionCommandEditors">
+		<Customizer id="MonoDevelop.Ide.Execution.CustomArgsCustomizer" _name="Arguments" />
+		<Customizer id="MonoDevelop.Ide.Execution.MonoExecutionCustomizer" _name="Mono Options" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/Fonts">
+		<Font name ="Editor" _displayName="Text Editor" default ="_DEFAULT_MONOSPACE"/>
+	</Extension>
+</Addin>

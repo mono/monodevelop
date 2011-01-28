@@ -1,0 +1,15 @@
+<ExtensionModel>
+
+	<!-- This item set can be used to define extension points for extensible menus and toolbars -->
+
+<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet">
+	<ExtensionNode name="CommandItem" type="MonoDevelop.Components.Commands.ExtensionNodes.CommandItemCodon" />
+	<ExtensionNode name="SeparatorItem" type="MonoDevelop.Components.Commands.ExtensionNodes.SeparatorItemCodon" />
+	<ExtensionNode name="ItemSet" type="MonoDevelop.Components.Commands.ExtensionNodes.ItemSetCodon">
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
+	</ExtensionNode>
+	<ExtensionNode name="LinkItem" type="MonoDevelop.Components.Commands.ExtensionNodes.LinkItemCodon" />
+	<ExtensionNode name="LocalCommandItem" type="MonoDevelop.Components.Commands.ExtensionNodes.LocalCommandItemCodon" />
+</ExtensionNodeSet>
+
+</ExtensionModel>

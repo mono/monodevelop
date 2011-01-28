@@ -8,7 +8,6 @@
     <ProjectGuid>{27096E7F-C91C-4AC6-B289-6897A701DF21}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.Ide</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <RootNamespace>MonoDevelop.Ide</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -120,9 +119,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\SplashScreen.png">
       <LogicalName>SplashScreen.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.addin.xml">
-      <LogicalName>MonoDevelop.Ide.addin.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\Icons.16x16.LinkOverlay.png">
       <LogicalName>Icons.16x16.LinkOverlay.png</LogicalName>
@@ -723,6 +719,51 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.Docking\stock-menu-right-12.png">
       <LogicalName>stock-menu-right-12.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\ProjectPadContextMenu.addin.xml">
+      <LogicalName>ProjectPadContextMenu.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Gui.Pads.ClassPad\ClassPadContextMenu.addin.xml">
+      <LogicalName>ClassPadContextMenu.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExtensionModel\Commands.addin.xml">
+      <LogicalName>Commands.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExtensionModel\DefaultPolicyPanels.addin.xml">
+      <LogicalName>DefaultPolicyPanels.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExtensionModel\GlobalOptionsDialog.addin.xml">
+      <LogicalName>GlobalOptionsDialog.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExtensionModel\ItemOptionPanels.addin.xml">
+      <LogicalName>ItemOptionPanels.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExtensionModel\MainMenu.addin.xml">
+      <LogicalName>MainMenu.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExtensionModel\MainToolbar.addin.xml">
+      <LogicalName>MainToolbar.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExtensionModel\MimeTypes.addin.xml">
+      <LogicalName>MimeTypes.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExtensionModel\Pads.addin.xml">
+      <LogicalName>Pads.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExtensionModel\StockIcons.addin.xml">
+      <LogicalName>StockIcons.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExtensionModel\Templates.addin.xml">
+      <LogicalName>Templates.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExtensionModel\MonoDevelop.Ide.addin.xml">
+      <LogicalName>MonoDevelop.Ide.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExtensionModel\Policies.addin.xml">
+      <LogicalName>Policies.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.Commands\CommandsExtensionModel.addin.xml">
+      <LogicalName>CommandsExtensionModel.addin.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -1376,6 +1417,7 @@
     <Compile Include="MonoDevelop.Ide.Projects\NewPolicySetDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.NewPolicySetDialog.cs" />
     <Compile Include="MonoDevelop.Components\HeaderBox.cs" />
+    <Compile Include="MonoDevelop.Ide.Extensions\StartupHandlerExtensionAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -1439,5 +1481,6 @@
     <Folder Include="MonoDevelop.Ide.Fonts\" />
     <Folder Include="MonoDevelop.Ide.Updater\" />
     <Folder Include="MonoDevelop.Ide.Codons\" />
+    <Folder Include="ExtensionModel\" />
   </ItemGroup>
 </Project>

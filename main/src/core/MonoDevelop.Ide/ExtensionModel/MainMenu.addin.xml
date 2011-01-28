@@ -1,0 +1,242 @@
+<ExtensionModel>
+
+<ExtensionPoint path = "/MonoDevelop/Ide/MainMenu" name = "Main menu">
+	<Description>Main menu items.</Description>
+	<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+</ExtensionPoint>
+
+<Extension path = "/MonoDevelop/Ide/MainMenu">
+	<ItemSet id = "File" _label = "_File">
+		<ItemSet id = "New" _label = "_New">
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewFile" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewProject" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewWorkspace" />
+		</ItemSet>
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenFile" />
+
+		<SeparatorItem id = "OpenSep" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAs" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.ReloadFile" />
+		<SeparatorItem id = "SaveSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintPageSetup" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintPreviewDocument" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintDocument" />
+		<SeparatorItem id = "RecentSeparator" />
+		<ItemSet id = "RecentFiles" _label = "Recent _Files">
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.RecentFileList" />
+			<SeparatorItem id = "RecentFilesSeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.ClearRecentFiles" />
+		</ItemSet>
+                
+		<ItemSet id = "RecentProjects" _label = "Recent Solu_tions">
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.RecentProjectList" />
+			<SeparatorItem id = "RecentProjectsSeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.ClearRecentProjects" />
+		</ItemSet>
+		
+		<SeparatorItem id = "ExitSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseWorkspace" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" _label = "_Close" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Exit" />
+	</ItemSet>
+        
+	<ItemSet id = "Edit" _label = "_Edit">
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Undo" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Redo" />
+		
+		<SeparatorItem id = "Separator1" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
+
+		<SeparatorItem id = "Separator2" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.SelectAll" />
+		
+		<SeparatorItem id = "Separator4" />
+		
+		<ItemSet id = "Format" _label = "_Format">
+			<CommandItem id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer" />
+			<CommandItem id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatSelection" />
+			<SeparatorItem id ="FormatSeparator" /> 
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" />
+			<SeparatorItem id = "Separator1" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.RemoveTrailingWhiteSpaces" />
+			<SeparatorItem id = "Separator1" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.JoinWithNextLine" />
+		</ItemSet>
+
+		<ItemSet id = "Folding" _label = "F_olding">
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleFolding" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleAllFoldings" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions" />
+		</ItemSet>
+		
+		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleCompletionSuggestionMode" />
+		
+		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" />
+		<SeparatorItem id = "Separator5" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.WordCount" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.InsertStandardHeader" />
+		<SeparatorItem id = "Separator6" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleBlockSelectionMode" />
+		<SeparatorItem id = "optionssep5" />
+		<Condition id="Platform" value="!windows">
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.DefaultPolicies" />
+		</Condition>
+	</ItemSet>
+	
+	<ItemSet id = "View" _label = "_View">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.LayoutList" />
+		<SeparatorItem id = "ViewSeparator1" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.NewLayout" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.DeleteCurrentLayout" />
+		<SeparatorItem id = "ViewSeparator2" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ViewList" />
+		<SeparatorItem id = "ViewSeparator3" />
+		<ItemSet id = "ViewToolbars" _label = "Toolbars">
+			<CommandItem id = "MonoDevelop.Components.Commands.CommandSystemCommands.ToolbarList" />
+		</ItemSet>
+		<SeparatorItem id = "ViewItemsSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomIn" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomOut" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomReset" />
+		<SeparatorItem id = "ViewItemsSeparator4" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FocusCurrentDocument" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FullScreen" />
+	</ItemSet>
+	
+	<ItemSet id = "Search" _label = "_Search">
+	
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.Find" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindPrevious" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindNext" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindNextSelection" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.Replace" />
+	
+		<SeparatorItem id = "SearchSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ReplaceInFiles" />
+		
+		<SeparatorItem id = "SearchInFilesSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.PrevBookmark" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.NextBookmark" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ClearBookmarks" />
+		<SeparatorItem id = "Separator2" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoLineNumber" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoFile" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType" />
+		
+		<CommandItem id = "MonoDevelop.Ide.NavigateToDialog.Commands.NavigateTo" />
+		
+		<SeparatorItem id = "ViewItemsSeparator3" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward" />
+		<ItemSet id = "NavigationList" _label = "Navigation _History"
+		         _description = "Select a point from the navigation history" >
+			<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateHistory" />
+			<SeparatorItem id = "NavigationHistoryClearSeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.ClearNavigationHistory" />
+		</ItemSet>
+		<SeparatorItem id = "ViewItemsSeparator4" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowPrevious" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowNext" />
+		<SeparatorItem id = "Separator3" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace" />
+	</ItemSet>
+
+	<ItemSet id = "Project" _label = "_Project">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportProject" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference" />
+		<SeparatorItem id = "ExportSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
+		<SeparatorItem id = "OptionsSeparator" />
+		<ItemSet id = "SelectActiveConfiguration" _label = "Active Configuration">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SelectActiveConfiguration" />
+		</ItemSet>
+		<ItemSet id = "SelectActiveRuntime" _label = "Active Runtime" autohide = "true">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SelectActiveRuntime" />
+		</ItemSet>
+		<SeparatorItem id = "OptionsSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SolutionOptions" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ProjectOptions" />
+	</ItemSet>
+
+	<ItemSet id = "Build" _label = "_Build">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.BuildSolution" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RebuildSolution" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CleanSolution" />
+		<SeparatorItem id = "Separator0" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
+	</ItemSet>
+
+	<ItemSet id = "Run" _label = "_Run">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Run" />
+		<ItemSet id = "RunWith" _label = "Run With">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunWithList" />
+		</ItemSet>
+		<SeparatorItem id = "StopSection" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Stop" />
+	</ItemSet>
+
+	<ItemSet id = "Tools" _label = "_Tools">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.AddinManager" />
+		<SeparatorItem id ="AddinManagerSeparator" /> 
+		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.InstrumentationViewer" />
+		<SeparatorItem id = "OptionsSection" />
+		<Condition id="Platform" value="windows">
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.DefaultPolicies" />
+		</Condition>
+	</ItemSet>
+
+	<ItemSet id = "Window" _label = "_Window">
+		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.NextWindow" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.PrevWindow" />
+		<SeparatorItem id ="NxtPrvSeparator" /> 
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles" />
+		<SeparatorItem id ="SplitSeparator" /> 
+		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.SplitWindowVertically" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.SplitWindowHorizontally" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.UnsplitWindow" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.SwitchSplitWindow" />
+		<SeparatorItem id = "contentSep" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.OpenWindowList" />
+	</ItemSet> 
+
+	<ItemSet id = "Help" _label = "_Help">
+		<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.Help" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay" />
+		<CommandItem id = "MonoDevelop.Ide.Updater.UpdateCommands.CheckForUpdates" />
+		<SeparatorItem id = "Separator2" />
+		<ItemSet id = "Web" _label = "_Web">
+			<LinkItem id = "MonoDevelop" _label = "MonoDevelop" link = "http://www.monodevelop.com" />
+			<LinkItem id = "Mono" _label = "Mono Project" description = "A free .NET implementation effort, worth visiting" link = "http://www.mono-project.com" />
+			<ItemSet id = "C#" _label = "C#">
+				<LinkItem id = "C# Help" _label = "C# Help" link = "http://www.csharphelp.com" />
+				<LinkItem id = "C# Corner" _label = "C# Corner" link = "http://www.c-sharpcorner.com" />
+				<LinkItem id = "CodePlex" _label = "CodePlex" description = "Open Source Project Community." link = "http://www.codeplex.com" />
+				<LinkItem id = "MsCodeGallery" _label = "MSDN Code Gallery" description = "Download and share sample applications, code snippets, and other resources with the developer community." link = "http://code.msdn.microsoft.com" />
+			</ItemSet>
+		</ItemSet>
+		<SeparatorItem id = "Separator3" />
+		<LinkItem id = "ReportBug" _label = "Report a Bug" link = "http://bugzilla.novell.com/enter_bug.cgi?alias=&amp;assigned_to=&amp;blocked=&amp;bug_file_loc=http%3A%2F%2F&amp;bug_severity=Normal&amp;bug_status=NEW&amp;cf_foundby=---&amp;cf_nts_priority=&amp;cf_nts_support_num=&amp;cf_partnerid=&amp;comment=Description%20of%20Problem%3A%0D%0A%0D%0A%0D%0ASteps%20to%20reproduce%20the%20problem%3A%0D%0A1.%20%0D%0A2.%20%0D%0A%0D%0A%0D%0AActual%20Results%3A%0D%0A%0D%0A%0D%0AExpected%20Results%3A%0D%0A%0D%0A%0D%0AHow%20often%20does%20this%20happen%3F%20%0D%0A%0D%0A%0D%0AAdditional%20Information%3A%0D%0A%0D%0A%0D%0A&amp;component=&amp;contenttypeentry=&amp;contenttypemethod=autodetect&amp;contenttypeselection=text%2Fplain&amp;data=&amp;deadline=&amp;dependson=&amp;description=&amp;estimated_time=0.0&amp;flag_type-2=X&amp;form_name=enter_bug&amp;keywords=&amp;maketemplate=Remember%20values%20as%20bookmarkable%20template&amp;op_sys=Other&amp;priority=P5%20-%20None&amp;product=MonoDevelop%20&amp;qa_contact=&amp;rep_platform=Other&amp;short_desc=&amp;version=unspecified" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.About" />
+	</ItemSet>
+</Extension>
+
+</ExtensionModel>
+	

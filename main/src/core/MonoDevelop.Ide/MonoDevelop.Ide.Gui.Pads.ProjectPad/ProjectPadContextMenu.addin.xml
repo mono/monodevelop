@@ -1,0 +1,146 @@
+<ExtensionModel>
+
+<ExtensionPoint path = "/MonoDevelop/Ide/ContextMenu/ProjectPad" name = "Project pad context menu">
+	<Description>Context menu for nodes in the solution pad.</Description>
+	<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+	<ConditionType id="ItemType" type="MonoDevelop.Projects.Extensions.ItemTypeCondition">
+		<Description>Type of the item. If no namespace is provided, MonoDevelop.Projects is assumed.</Description>
+	</ConditionType>
+</ExtensionPoint>
+
+<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
+
+	<!-- Build section -->
+	
+	<SeparatorItem id = "BuildSectionStart" />
+	<Condition id="ItemType" value="IBuildTarget">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Clean" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Reload" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
+	</Condition>
+	<SeparatorItem id = "BuildSectionEnd" />
+	
+	<!-- Actions Section -->
+	
+	<SeparatorItem id = "ActionsSectionStart" />
+	<Condition id="ItemType" value="ProjectReference|ProjectFile|SystemFile">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" />
+		<ItemSet id = "OpenWith" _label = "Open _With" autohide="true">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.OpenWithList" />
+		</ItemSet>
+		<SeparatorItem id = "OpenSeparator" />
+	</Condition>
+	<Condition id="ItemType" value="SystemFile|ProjectFolder">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeToProject" />
+	</Condition>
+	<SeparatorItem id = "ActionsSectionEnd" />
+	
+	<!-- Run section -->
+	
+	<SeparatorItem id = "RunSectionStart" />
+	<Condition id="ItemType" value="IBuildTarget">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunEntry" />
+		<ItemSet id = "RunWith" _label = "Run With" autohide="True">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunEntryWithList" />
+		</ItemSet>
+	</Condition>
+	<Condition id="ItemType" value="Project">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SetAsStartupProject" />
+	</Condition>
+	<SeparatorItem id = "RunSectionEnd" />
+
+	<!-- Add section -->
+					
+	<SeparatorItem id = "AddSectionStart" />
+	<ItemSet id = "Add" _label = "_Add" autohide="True">
+		<Condition id="ItemType" value="Workspace">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewSolution" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewWorkspace" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddItem" />
+		</Condition>
+		<Condition id="ItemType" value="Solution|SolutionFolder">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewProject" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddProject" />
+			<SeparatorItem id = "Separator1" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddSolutionFolder" />
+		</Condition>
+		<Condition id="ItemType" value="Project|ProjectFolder|Solution|SolutionFolder">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
+		</Condition>
+		<Condition id="ItemType" value="Project|ProjectFolder">
+			<SeparatorItem/>
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddFilesFromFolder" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddExistingFolder" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder" />
+		</Condition>
+	</ItemSet>
+	<Condition id="ItemType" value="ProjectReferenceCollection">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference" />
+	</Condition>
+	<SeparatorItem id = "AddSectionEnd" />
+	
+	<!-- Tools section -->
+	
+	<SeparatorItem id = "ToolsSectionStart" />
+	<ItemSet id = "Tools" _label = "_Tools" autohide="True">
+		<Condition id="ItemType" value="Solution|Project">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportProject" />
+			<SeparatorItem id = "ExportSeparator" />
+		</Condition>
+		<Condition id="ItemType" value="IFolderItem">
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenInTerminal" />
+		</Condition>
+	</ItemSet>
+	<Condition id="ItemType" value="IFolderItem">
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />
+	</Condition>
+	<Condition id="ItemType" value="IFolderItem|IFileItem">
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder" />
+	</Condition>
+	<SeparatorItem id = "ToolsSectionEnd" />
+	
+	<!-- Edit section -->
+	
+	<SeparatorItem id = "EditSectionStart" />
+	<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" disabledVisible="False" />
+	<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" disabledVisible="False" />
+	<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" disabledVisible="False" />
+	<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" disabledVisible="False" />
+	<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename" disabledVisible="False" />
+	<SeparatorItem id = "EditSectionEnd" />
+		
+	<Condition id="ItemType" value="WorkspaceItem">
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseWorkspaceItem" />
+	</Condition>
+	
+	<SeparatorItem id = "CombineOptionsSeparator" />
+	
+	<!-- Properties Section -->
+	
+	<SeparatorItem id = "PropertiesSectionStart" />
+	<Condition id="ItemType" value="ProjectFile">
+		<ItemSet id = "BuildActions" _label = "Build Action">
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SetBuildAction" />
+		</ItemSet>
+		<ItemSet id = "QuickProperties" _label = "_Quick Properties">
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CopyToOutputDirectory" />
+		</ItemSet>
+	</Condition>
+	<Condition id="ItemType" value="ProjectReference">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.LocalCopyReference" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SpecificAssemblyVersion" />
+	</Condition>
+	<Condition id="ItemType" value="IBuildTarget">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
+	</Condition>
+	<Condition id="ItemType" value="ProjectItem">
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.ShowProperties" />
+	</Condition>
+	<SeparatorItem id = "PropertiesSectionEnd" />
+	
+</Extension>
+
+</ExtensionModel>
