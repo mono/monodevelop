@@ -4,23 +4,52 @@ namespace MonoDevelop.IPhone.Gui
 {
 	internal partial class IPhoneBuildOptionsWidget
 	{
+		private global::Gtk.Notebook notebook1;
 		private global::Gtk.VBox vbox2;
+		private global::Gtk.Table table2;
+		private global::Gtk.Label label19;
 		private global::Gtk.Label label2;
-		private global::Gtk.Alignment contentsAlignment;
-		private global::Gtk.VBox vbox1;
-		private global::Gtk.CheckButton debugCheck;
-		private global::Gtk.Table table1;
-		private global::MonoDevelop.Components.MenuButtonEntry extraArgsEntry;
-		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-		private global::Gtk.TreeView i18nTreeView;
-		private global::Gtk.Label label1;
 		private global::Gtk.Label label3;
 		private global::Gtk.Label label4;
-		private global::Gtk.Label label5;
 		private global::Gtk.Label label6;
+		private global::Gtk.Label label9;
 		private global::Gtk.ComboBox linkCombo;
 		private global::Gtk.ComboBoxEntry minOSComboEntry;
 		private global::Gtk.ComboBox sdkCombo;
+		private global::Gtk.Label label10;
+		private global::Gtk.Alignment alignment5;
+		private global::Gtk.VBox vbox9;
+		private global::Gtk.CheckButton debugCheck;
+		private global::Gtk.Label label18;
+		private global::Gtk.HBox hbox1;
+		private global::Gtk.Label label1;
+		private global::Gtk.Alignment alignment9;
+		private global::MonoDevelop.Components.MenuButtonEntry extraArgsEntry;
+		private global::Gtk.Label label11;
+		private global::Gtk.VBox vbox4;
+		private global::Gtk.Label label13;
+		private global::Gtk.Alignment alignment6;
+		private global::Gtk.VBox vbox5;
+		private global::Gtk.CheckButton useLlvmCheck;
+		private global::Gtk.Label label14;
+		private global::Gtk.Alignment alignment7;
+		private global::Gtk.VBox vbox6;
+		private global::Gtk.CheckButton useArmv7Check;
+		private global::Gtk.Label label15;
+		private global::Gtk.Alignment alignment4;
+		private global::Gtk.CheckButton useThumbCheck;
+		private global::Gtk.Label label16;
+		private global::Gtk.Label label8;
+		private global::Gtk.Alignment alignment3;
+		private global::Gtk.CheckButton useSGenCheck;
+		private global::Gtk.Label label7;
+		private global::Gtk.Label label17;
+		private global::Gtk.Alignment alignment8;
+		private global::Gtk.VBox vbox7;
+		private global::Gtk.Label label5;
+		private global::Gtk.ScrolledWindow GtkScrolledWindow;
+		private global::Gtk.TreeView i18nTreeView;
+		private global::Gtk.Label label12;
 
 		protected virtual void Build ()
 		{
@@ -29,56 +58,392 @@ namespace MonoDevelop.IPhone.Gui
 			global::Stetic.BinContainer.Attach (this);
 			this.Name = "MonoDevelop.IPhone.Gui.IPhoneBuildOptionsWidget";
 			// Container child MonoDevelop.IPhone.Gui.IPhoneBuildOptionsWidget.Gtk.Container+ContainerChild
+			this.notebook1 = new global::Gtk.Notebook ();
+			this.notebook1.CanFocus = true;
+			this.notebook1.Name = "notebook1";
+			this.notebook1.CurrentPage = 1;
+			// Container child notebook1.Gtk.Notebook+NotebookChild
 			this.vbox2 = new global::Gtk.VBox ();
 			this.vbox2.Name = "vbox2";
 			this.vbox2.Spacing = 6;
+			this.vbox2.BorderWidth = ((uint)(6));
 			// Container child vbox2.Gtk.Box+BoxChild
+			this.table2 = new global::Gtk.Table (((uint)(5)), ((uint)(3)), false);
+			this.table2.Name = "table2";
+			this.table2.RowSpacing = ((uint)(6));
+			this.table2.ColumnSpacing = ((uint)(6));
+			// Container child table2.Gtk.Table+TableChild
+			this.label19 = new global::Gtk.Label ();
+			this.label19.WidthRequest = 18;
+			this.label19.Name = "label19";
+			this.label19.Xalign = 0F;
+			this.label19.UseUnderline = true;
+			this.table2.Add (this.label19);
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table2 [this.label19]));
+			w1.TopAttach = ((uint)(1));
+			w1.BottomAttach = ((uint)(2));
+			w1.XOptions = ((global::Gtk.AttachOptions)(4));
+			w1.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table2.Gtk.Table+TableChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.label2.Xalign = 0F;
-			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>MonoTouch iPhone compiler</b>");
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>SDK Options</b>");
 			this.label2.UseMarkup = true;
-			this.vbox2.Add (this.label2);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label2]));
-			w1.Position = 0;
-			w1.Expand = false;
-			w1.Fill = false;
+			this.table2.Add (this.label2);
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table2 [this.label2]));
+			w2.RightAttach = ((uint)(3));
+			w2.XOptions = ((global::Gtk.AttachOptions)(4));
+			w2.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table2.Gtk.Table+TableChild
+			this.label3 = new global::Gtk.Label ();
+			this.label3.Name = "label3";
+			this.label3.Xalign = 0F;
+			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("_Linker behavior:");
+			this.label3.UseUnderline = true;
+			this.table2.Add (this.label3);
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table2 [this.label3]));
+			w3.TopAttach = ((uint)(4));
+			w3.BottomAttach = ((uint)(5));
+			w3.LeftAttach = ((uint)(1));
+			w3.RightAttach = ((uint)(2));
+			w3.XOptions = ((global::Gtk.AttachOptions)(4));
+			w3.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table2.Gtk.Table+TableChild
+			this.label4 = new global::Gtk.Label ();
+			this.label4.Name = "label4";
+			this.label4.Xalign = 0F;
+			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("_SDK version:");
+			this.label4.UseUnderline = true;
+			this.table2.Add (this.label4);
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table2 [this.label4]));
+			w4.TopAttach = ((uint)(1));
+			w4.BottomAttach = ((uint)(2));
+			w4.LeftAttach = ((uint)(1));
+			w4.RightAttach = ((uint)(2));
+			w4.XOptions = ((global::Gtk.AttachOptions)(4));
+			w4.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table2.Gtk.Table+TableChild
+			this.label6 = new global::Gtk.Label ();
+			this.label6.Name = "label6";
+			this.label6.Xalign = 0F;
+			this.label6.LabelProp = global::Mono.Unix.Catalog.GetString ("Minimum _OS version:");
+			this.label6.UseUnderline = true;
+			this.table2.Add (this.label6);
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table2 [this.label6]));
+			w5.TopAttach = ((uint)(2));
+			w5.BottomAttach = ((uint)(3));
+			w5.LeftAttach = ((uint)(1));
+			w5.RightAttach = ((uint)(2));
+			w5.XOptions = ((global::Gtk.AttachOptions)(4));
+			w5.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table2.Gtk.Table+TableChild
+			this.label9 = new global::Gtk.Label ();
+			this.label9.Name = "label9";
+			this.label9.Xalign = 0F;
+			this.label9.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Linker Options</b>");
+			this.label9.UseMarkup = true;
+			this.table2.Add (this.label9);
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table2 [this.label9]));
+			w6.TopAttach = ((uint)(3));
+			w6.BottomAttach = ((uint)(4));
+			w6.RightAttach = ((uint)(3));
+			w6.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table2.Gtk.Table+TableChild
+			this.linkCombo = global::Gtk.ComboBox.NewText ();
+			this.linkCombo.Name = "linkCombo";
+			this.table2.Add (this.linkCombo);
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table2 [this.linkCombo]));
+			w7.TopAttach = ((uint)(4));
+			w7.BottomAttach = ((uint)(5));
+			w7.LeftAttach = ((uint)(2));
+			w7.RightAttach = ((uint)(3));
+			w7.XOptions = ((global::Gtk.AttachOptions)(4));
+			w7.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table2.Gtk.Table+TableChild
+			this.minOSComboEntry = global::Gtk.ComboBoxEntry.NewText ();
+			this.minOSComboEntry.Name = "minOSComboEntry";
+			this.table2.Add (this.minOSComboEntry);
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table2 [this.minOSComboEntry]));
+			w8.TopAttach = ((uint)(2));
+			w8.BottomAttach = ((uint)(3));
+			w8.LeftAttach = ((uint)(2));
+			w8.RightAttach = ((uint)(3));
+			w8.XOptions = ((global::Gtk.AttachOptions)(4));
+			w8.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table2.Gtk.Table+TableChild
+			this.sdkCombo = global::Gtk.ComboBox.NewText ();
+			this.sdkCombo.Name = "sdkCombo";
+			this.table2.Add (this.sdkCombo);
+			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.table2 [this.sdkCombo]));
+			w9.TopAttach = ((uint)(1));
+			w9.BottomAttach = ((uint)(2));
+			w9.LeftAttach = ((uint)(2));
+			w9.RightAttach = ((uint)(3));
+			w9.YOptions = ((global::Gtk.AttachOptions)(4));
+			this.vbox2.Add (this.table2);
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.table2]));
+			w10.Position = 0;
+			w10.Expand = false;
+			w10.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.contentsAlignment = new global::Gtk.Alignment (0F, 0.5F, 1F, 1F);
-			this.contentsAlignment.Name = "contentsAlignment";
-			this.contentsAlignment.LeftPadding = ((uint)(24));
-			// Container child contentsAlignment.Gtk.Container+ContainerChild
-			this.vbox1 = new global::Gtk.VBox ();
-			this.vbox1.Name = "vbox1";
-			this.vbox1.Spacing = 6;
-			// Container child vbox1.Gtk.Box+BoxChild
+			this.label10 = new global::Gtk.Label ();
+			this.label10.Name = "label10";
+			this.label10.Xalign = 0F;
+			this.label10.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Additional Options</b>");
+			this.label10.UseMarkup = true;
+			this.vbox2.Add (this.label10);
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label10]));
+			w11.Position = 1;
+			w11.Expand = false;
+			w11.Fill = false;
+			// Container child vbox2.Gtk.Box+BoxChild
+			this.alignment5 = new global::Gtk.Alignment (0F, 0.5F, 1F, 1F);
+			this.alignment5.Name = "alignment5";
+			this.alignment5.LeftPadding = ((uint)(24));
+			// Container child alignment5.Gtk.Container+ContainerChild
+			this.vbox9 = new global::Gtk.VBox ();
+			this.vbox9.Name = "vbox9";
+			this.vbox9.Spacing = 6;
+			// Container child vbox9.Gtk.Box+BoxChild
 			this.debugCheck = new global::Gtk.CheckButton ();
 			this.debugCheck.CanFocus = true;
 			this.debugCheck.Name = "debugCheck";
-			this.debugCheck.Label = global::Mono.Unix.Catalog.GetString ("Build _debug-mode binaries");
+			this.debugCheck.Label = "";
 			this.debugCheck.DrawIndicator = true;
 			this.debugCheck.UseUnderline = true;
-			this.vbox1.Add (this.debugCheck);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.debugCheck]));
-			w2.Position = 0;
-			w2.Expand = false;
-			w2.Fill = false;
-			// Container child vbox1.Gtk.Box+BoxChild
-			this.table1 = new global::Gtk.Table (((uint)(5)), ((uint)(2)), false);
-			this.table1.Name = "table1";
-			this.table1.RowSpacing = ((uint)(6));
-			this.table1.ColumnSpacing = ((uint)(6));
-			// Container child table1.Gtk.Table+TableChild
+			this.debugCheck.Remove (this.debugCheck.Child);
+			// Container child debugCheck.Gtk.Container+ContainerChild
+			this.label18 = new global::Gtk.Label ();
+			this.label18.Name = "label18";
+			this.label18.LabelProp = global::Mono.Unix.Catalog.GetString ("Enable debugging\n<small>Do not use for release builds, as binaries are significantly larger</small>");
+			this.label18.UseMarkup = true;
+			this.debugCheck.Add (this.label18);
+			this.vbox9.Add (this.debugCheck);
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox9 [this.debugCheck]));
+			w13.Position = 0;
+			w13.Expand = false;
+			w13.Fill = false;
+			// Container child vbox9.Gtk.Box+BoxChild
+			this.hbox1 = new global::Gtk.HBox ();
+			this.hbox1.Name = "hbox1";
+			this.hbox1.Spacing = 6;
+			// Container child hbox1.Gtk.Box+BoxChild
+			this.label1 = new global::Gtk.Label ();
+			this.label1.Name = "label1";
+			this.label1.Xalign = 0F;
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Additional _mtouch arguments:");
+			this.label1.UseUnderline = true;
+			this.hbox1.Add (this.label1);
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));
+			w14.Position = 0;
+			w14.Expand = false;
+			w14.Fill = false;
+			this.vbox9.Add (this.hbox1);
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox9 [this.hbox1]));
+			w15.Position = 1;
+			w15.Expand = false;
+			w15.Fill = false;
+			// Container child vbox9.Gtk.Box+BoxChild
+			this.alignment9 = new global::Gtk.Alignment (0F, 0.5F, 1F, 1F);
+			this.alignment9.Name = "alignment9";
+			this.alignment9.LeftPadding = ((uint)(24));
+			// Container child alignment9.Gtk.Container+ContainerChild
 			this.extraArgsEntry = new global::MonoDevelop.Components.MenuButtonEntry ();
 			this.extraArgsEntry.Name = "extraArgsEntry";
-			this.table1.Add (this.extraArgsEntry);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.extraArgsEntry]));
-			w3.TopAttach = ((uint)(3));
-			w3.BottomAttach = ((uint)(4));
-			w3.LeftAttach = ((uint)(1));
-			w3.RightAttach = ((uint)(2));
-			w3.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
+			this.alignment9.Add (this.extraArgsEntry);
+			this.vbox9.Add (this.alignment9);
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox9 [this.alignment9]));
+			w17.Position = 2;
+			w17.Expand = false;
+			w17.Fill = false;
+			this.alignment5.Add (this.vbox9);
+			this.vbox2.Add (this.alignment5);
+			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.alignment5]));
+			w19.Position = 2;
+			w19.Expand = false;
+			w19.Fill = false;
+			this.notebook1.Add (this.vbox2);
+			// Notebook tab
+			this.label11 = new global::Gtk.Label ();
+			this.label11.Name = "label11";
+			this.label11.LabelProp = global::Mono.Unix.Catalog.GetString ("_General");
+			this.label11.UseUnderline = true;
+			this.notebook1.SetTabLabel (this.vbox2, this.label11);
+			this.label11.ShowAll ();
+			// Container child notebook1.Gtk.Notebook+NotebookChild
+			this.vbox4 = new global::Gtk.VBox ();
+			this.vbox4.Name = "vbox4";
+			this.vbox4.Spacing = 6;
+			this.vbox4.BorderWidth = ((uint)(6));
+			// Container child vbox4.Gtk.Box+BoxChild
+			this.label13 = new global::Gtk.Label ();
+			this.label13.Name = "label13";
+			this.label13.Xalign = 0F;
+			this.label13.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Code Generation</b>");
+			this.label13.UseMarkup = true;
+			this.vbox4.Add (this.label13);
+			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.label13]));
+			w21.Position = 0;
+			w21.Expand = false;
+			w21.Fill = false;
+			// Container child vbox4.Gtk.Box+BoxChild
+			this.alignment6 = new global::Gtk.Alignment (0F, 0.5F, 1F, 1F);
+			this.alignment6.Name = "alignment6";
+			this.alignment6.LeftPadding = ((uint)(24));
+			// Container child alignment6.Gtk.Container+ContainerChild
+			this.vbox5 = new global::Gtk.VBox ();
+			this.vbox5.Name = "vbox5";
+			this.vbox5.Spacing = 2;
+			// Container child vbox5.Gtk.Box+BoxChild
+			this.useLlvmCheck = new global::Gtk.CheckButton ();
+			this.useLlvmCheck.CanFocus = true;
+			this.useLlvmCheck.Name = "useLlvmCheck";
+			this.useLlvmCheck.Label = "";
+			this.useLlvmCheck.DrawIndicator = true;
+			this.useLlvmCheck.UseUnderline = true;
+			this.useLlvmCheck.Remove (this.useLlvmCheck.Child);
+			// Container child useLlvmCheck.Gtk.Container+ContainerChild
+			this.label14 = new global::Gtk.Label ();
+			this.label14.Name = "label14";
+			this.label14.LabelProp = global::Mono.Unix.Catalog.GetString ("Use LLVM optimizing compiler\n<small>Experimental, not compatible with debug mode</small>");
+			this.label14.UseMarkup = true;
+			this.useLlvmCheck.Add (this.label14);
+			this.vbox5.Add (this.useLlvmCheck);
+			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.useLlvmCheck]));
+			w23.Position = 0;
+			w23.Expand = false;
+			w23.Fill = false;
+			// Container child vbox5.Gtk.Box+BoxChild
+			this.alignment7 = new global::Gtk.Alignment (0F, 0.5F, 1F, 1F);
+			this.alignment7.Name = "alignment7";
+			this.alignment7.LeftPadding = ((uint)(24));
+			// Container child alignment7.Gtk.Container+ContainerChild
+			this.vbox6 = new global::Gtk.VBox ();
+			this.vbox6.Name = "vbox6";
+			this.vbox6.Spacing = 2;
+			// Container child vbox6.Gtk.Box+BoxChild
+			this.useArmv7Check = new global::Gtk.CheckButton ();
+			this.useArmv7Check.CanFocus = true;
+			this.useArmv7Check.Name = "useArmv7Check";
+			this.useArmv7Check.Label = global::Mono.Unix.Catalog.GetString ("ARMv7");
+			this.useArmv7Check.DrawIndicator = true;
+			this.useArmv7Check.UseUnderline = true;
+			this.useArmv7Check.Remove (this.useArmv7Check.Child);
+			// Container child useArmv7Check.Gtk.Container+ContainerChild
+			this.label15 = new global::Gtk.Label ();
+			this.label15.Name = "label15";
+			this.label15.LabelProp = global::Mono.Unix.Catalog.GetString ("Use ARMv7 ABI\n<small>Makes generated code smaller, but requires iPhone 3GS or later</small> ");
+			this.label15.UseMarkup = true;
+			this.useArmv7Check.Add (this.label15);
+			this.vbox6.Add (this.useArmv7Check);
+			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.useArmv7Check]));
+			w25.Position = 0;
+			w25.Expand = false;
+			w25.Fill = false;
+			// Container child vbox6.Gtk.Box+BoxChild
+			this.alignment4 = new global::Gtk.Alignment (0F, 0.5F, 1F, 1F);
+			this.alignment4.Name = "alignment4";
+			this.alignment4.LeftPadding = ((uint)(24));
+			// Container child alignment4.Gtk.Container+ContainerChild
+			this.useThumbCheck = new global::Gtk.CheckButton ();
+			this.useThumbCheck.CanFocus = true;
+			this.useThumbCheck.Name = "useThumbCheck";
+			this.useThumbCheck.Label = global::Mono.Unix.Catalog.GetString ("Thumb");
+			this.useThumbCheck.DrawIndicator = true;
+			this.useThumbCheck.UseUnderline = true;
+			this.useThumbCheck.Remove (this.useThumbCheck.Child);
+			// Container child useThumbCheck.Gtk.Container+ContainerChild
+			this.label16 = new global::Gtk.Label ();
+			this.label16.Name = "label16";
+			this.label16.LabelProp = global::Mono.Unix.Catalog.GetString ("Generate Thumb instructions\n<small>Makes generated code smaller, but may be slightly slower</small>");
+			this.label16.UseMarkup = true;
+			this.useThumbCheck.Add (this.label16);
+			this.alignment4.Add (this.useThumbCheck);
+			this.vbox6.Add (this.alignment4);
+			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.alignment4]));
+			w28.Position = 1;
+			w28.Expand = false;
+			w28.Fill = false;
+			this.alignment7.Add (this.vbox6);
+			this.vbox5.Add (this.alignment7);
+			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.alignment7]));
+			w30.Position = 1;
+			w30.Expand = false;
+			w30.Fill = false;
+			this.alignment6.Add (this.vbox5);
+			this.vbox4.Add (this.alignment6);
+			global::Gtk.Box.BoxChild w32 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.alignment6]));
+			w32.Position = 1;
+			w32.Expand = false;
+			w32.Fill = false;
+			// Container child vbox4.Gtk.Box+BoxChild
+			this.label8 = new global::Gtk.Label ();
+			this.label8.Name = "label8";
+			this.label8.Xalign = 0F;
+			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Runtime Options</b>");
+			this.label8.UseMarkup = true;
+			this.vbox4.Add (this.label8);
+			global::Gtk.Box.BoxChild w33 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.label8]));
+			w33.Position = 2;
+			w33.Expand = false;
+			w33.Fill = false;
+			// Container child vbox4.Gtk.Box+BoxChild
+			this.alignment3 = new global::Gtk.Alignment (0F, 0.5F, 1F, 1F);
+			this.alignment3.Name = "alignment3";
+			this.alignment3.LeftPadding = ((uint)(24));
+			// Container child alignment3.Gtk.Container+ContainerChild
+			this.useSGenCheck = new global::Gtk.CheckButton ();
+			this.useSGenCheck.CanFocus = true;
+			this.useSGenCheck.Name = "useSGenCheck";
+			this.useSGenCheck.Label = "";
+			this.useSGenCheck.DrawIndicator = true;
+			this.useSGenCheck.UseUnderline = true;
+			this.useSGenCheck.Remove (this.useSGenCheck.Child);
+			// Container child useSGenCheck.Gtk.Container+ContainerChild
+			this.label7 = new global::Gtk.Label ();
+			this.label7.Name = "label7";
+			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("Use SGen generational garbage collector\n<small>Experimental, may improve GC performance</small>");
+			this.label7.UseMarkup = true;
+			this.useSGenCheck.Add (this.label7);
+			this.alignment3.Add (this.useSGenCheck);
+			this.vbox4.Add (this.alignment3);
+			global::Gtk.Box.BoxChild w36 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.alignment3]));
+			w36.Position = 3;
+			w36.Expand = false;
+			w36.Fill = false;
+			// Container child vbox4.Gtk.Box+BoxChild
+			this.label17 = new global::Gtk.Label ();
+			this.label17.Name = "label17";
+			this.label17.Xalign = 0F;
+			this.label17.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Internationalization</b>");
+			this.label17.UseMarkup = true;
+			this.vbox4.Add (this.label17);
+			global::Gtk.Box.BoxChild w37 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.label17]));
+			w37.Position = 4;
+			w37.Expand = false;
+			w37.Fill = false;
+			// Container child vbox4.Gtk.Box+BoxChild
+			this.alignment8 = new global::Gtk.Alignment (0F, 0.5F, 1F, 1F);
+			this.alignment8.Name = "alignment8";
+			this.alignment8.LeftPadding = ((uint)(24));
+			// Container child alignment8.Gtk.Container+ContainerChild
+			this.vbox7 = new global::Gtk.VBox ();
+			this.vbox7.Name = "vbox7";
+			this.vbox7.Spacing = 6;
+			// Container child vbox7.Gtk.Box+BoxChild
+			this.label5 = new global::Gtk.Label ();
+			this.label5.Name = "label5";
+			this.label5.Xalign = 0F;
+			this.label5.Yalign = 0F;
+			this.label5.LabelProp = global::Mono.Unix.Catalog.GetString ("<small>If the application uses certain international codesets, they must be\nspecified explicitly so that the linker can include supporting resources.</small>");
+			this.label5.UseMarkup = true;
+			this.vbox7.Add (this.label5);
+			global::Gtk.Box.BoxChild w38 = ((global::Gtk.Box.BoxChild)(this.vbox7 [this.label5]));
+			w38.Position = 0;
+			w38.Expand = false;
+			w38.Fill = false;
+			// Container child vbox7.Gtk.Box+BoxChild
 			this.GtkScrolledWindow = new global::Gtk.ScrolledWindow ();
 			this.GtkScrolledWindow.Name = "GtkScrolledWindow";
 			this.GtkScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
@@ -87,121 +452,33 @@ namespace MonoDevelop.IPhone.Gui
 			this.i18nTreeView.CanFocus = true;
 			this.i18nTreeView.Name = "i18nTreeView";
 			this.GtkScrolledWindow.Add (this.i18nTreeView);
-			this.table1.Add (this.GtkScrolledWindow);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.GtkScrolledWindow]));
-			w5.TopAttach = ((uint)(4));
-			w5.BottomAttach = ((uint)(5));
-			w5.LeftAttach = ((uint)(1));
-			w5.RightAttach = ((uint)(2));
-			w5.XOptions = ((global::Gtk.AttachOptions)(4));
-			w5.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label1 = new global::Gtk.Label ();
-			this.label1.Name = "label1";
-			this.label1.Xalign = 0F;
-			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Extra _arguments:");
-			this.label1.UseUnderline = true;
-			this.table1.Add (this.label1);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.label1]));
-			w6.TopAttach = ((uint)(3));
-			w6.BottomAttach = ((uint)(4));
-			w6.XOptions = ((global::Gtk.AttachOptions)(4));
-			w6.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label3 = new global::Gtk.Label ();
-			this.label3.Name = "label3";
-			this.label3.Xalign = 0F;
-			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("_Linker behavior:");
-			this.label3.UseUnderline = true;
-			this.table1.Add (this.label3);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.label3]));
-			w7.XOptions = ((global::Gtk.AttachOptions)(4));
-			w7.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label4 = new global::Gtk.Label ();
-			this.label4.Name = "label4";
-			this.label4.Xalign = 0F;
-			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("_SDK version:");
-			this.label4.UseUnderline = true;
-			this.table1.Add (this.label4);
-			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1 [this.label4]));
-			w8.TopAttach = ((uint)(1));
-			w8.BottomAttach = ((uint)(2));
-			w8.XOptions = ((global::Gtk.AttachOptions)(4));
-			w8.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label5 = new global::Gtk.Label ();
-			this.label5.Name = "label5";
-			this.label5.Xalign = 0F;
-			this.label5.Yalign = 0F;
-			this.label5.LabelProp = global::Mono.Unix.Catalog.GetString ("I18n assemblies:");
-			this.label5.UseUnderline = true;
-			this.table1.Add (this.label5);
-			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.table1 [this.label5]));
-			w9.TopAttach = ((uint)(4));
-			w9.BottomAttach = ((uint)(5));
-			w9.XOptions = ((global::Gtk.AttachOptions)(4));
-			w9.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label6 = new global::Gtk.Label ();
-			this.label6.Name = "label6";
-			this.label6.Xalign = 0F;
-			this.label6.LabelProp = global::Mono.Unix.Catalog.GetString ("Minimum _OS version:");
-			this.label6.UseUnderline = true;
-			this.table1.Add (this.label6);
-			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table1 [this.label6]));
-			w10.TopAttach = ((uint)(2));
-			w10.BottomAttach = ((uint)(3));
-			w10.XOptions = ((global::Gtk.AttachOptions)(4));
-			w10.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.linkCombo = global::Gtk.ComboBox.NewText ();
-			this.linkCombo.Name = "linkCombo";
-			this.table1.Add (this.linkCombo);
-			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table1 [this.linkCombo]));
-			w11.LeftAttach = ((uint)(1));
-			w11.RightAttach = ((uint)(2));
-			w11.XOptions = ((global::Gtk.AttachOptions)(4));
-			w11.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.minOSComboEntry = global::Gtk.ComboBoxEntry.NewText ();
-			this.minOSComboEntry.Name = "minOSComboEntry";
-			this.table1.Add (this.minOSComboEntry);
-			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table1 [this.minOSComboEntry]));
-			w12.TopAttach = ((uint)(2));
-			w12.BottomAttach = ((uint)(3));
-			w12.LeftAttach = ((uint)(1));
-			w12.RightAttach = ((uint)(2));
-			w12.XOptions = ((global::Gtk.AttachOptions)(4));
-			w12.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.sdkCombo = global::Gtk.ComboBox.NewText ();
-			this.sdkCombo.Name = "sdkCombo";
-			this.table1.Add (this.sdkCombo);
-			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table1 [this.sdkCombo]));
-			w13.TopAttach = ((uint)(1));
-			w13.BottomAttach = ((uint)(2));
-			w13.LeftAttach = ((uint)(1));
-			w13.RightAttach = ((uint)(2));
-			w13.XOptions = ((global::Gtk.AttachOptions)(4));
-			w13.YOptions = ((global::Gtk.AttachOptions)(4));
-			this.vbox1.Add (this.table1);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.table1]));
-			w14.Position = 1;
-			w14.Expand = false;
-			w14.Fill = false;
-			this.contentsAlignment.Add (this.vbox1);
-			this.vbox2.Add (this.contentsAlignment);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.contentsAlignment]));
-			w16.Position = 1;
-			this.Add (this.vbox2);
+			this.vbox7.Add (this.GtkScrolledWindow);
+			global::Gtk.Box.BoxChild w40 = ((global::Gtk.Box.BoxChild)(this.vbox7 [this.GtkScrolledWindow]));
+			w40.Position = 1;
+			w40.Expand = false;
+			this.alignment8.Add (this.vbox7);
+			this.vbox4.Add (this.alignment8);
+			global::Gtk.Box.BoxChild w42 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.alignment8]));
+			w42.Position = 5;
+			this.notebook1.Add (this.vbox4);
+			global::Gtk.Notebook.NotebookChild w43 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.vbox4]));
+			w43.Position = 1;
+			// Notebook tab
+			this.label12 = new global::Gtk.Label ();
+			this.label12.Name = "label12";
+			this.label12.LabelProp = global::Mono.Unix.Catalog.GetString ("_Advanced");
+			this.label12.UseUnderline = true;
+			this.notebook1.SetTabLabel (this.vbox4, this.label12);
+			this.label12.ShowAll ();
+			this.Add (this.notebook1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
+			this.label19.MnemonicWidget = this.linkCombo;
 			this.label3.MnemonicWidget = this.linkCombo;
 			this.label4.MnemonicWidget = this.sdkCombo;
-			this.label5.MnemonicWidget = this.i18nTreeView;
 			this.label6.MnemonicWidget = this.sdkCombo;
+			this.label5.MnemonicWidget = this.i18nTreeView;
 			this.Hide ();
 		}
 	}

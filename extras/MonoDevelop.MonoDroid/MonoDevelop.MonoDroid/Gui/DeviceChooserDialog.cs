@@ -62,10 +62,10 @@ namespace MonoDevelop.MonoDroid.Gui
 			startEmulatorButton.Clicked += delegate {
 				TreeIter iter;
 				if (deviceListTreeView.Selection.GetSelected (out iter)) {
-					var avd = store.GetValue (iter, 0) as AndroidVirtualDevice;
+					var dd = (DisplayDevice) store.GetValue (iter, 0) ;
 					//status.StartOperation (GettextCatalog.GetString ("Starting virtual device '{0}'...", avd.Name));
-					if (avd != null) {
-						MonoDroidFramework.VirtualDeviceManager.StartEmulator (avd);
+					if (dd.VirtualDevice != null) {
+						MonoDroidFramework.VirtualDeviceManager.StartEmulator (dd.VirtualDevice);
 					}
 				}
 			};
@@ -75,9 +75,9 @@ namespace MonoDevelop.MonoDroid.Gui
 			deviceListTreeView.RowActivated += delegate(object o, RowActivatedArgs args) {
 				TreeIter iter;
 				if (store.GetIter (out iter, args.Path)) {
-					var device = store.GetValue (iter, 0) as AndroidDevice;
-					if (device != null) {
-						Device = device;
+					var dd = (DisplayDevice) store.GetValue (iter, 0);
+					if (dd.Device != null) {
+						Device = dd.Device;
 						Respond (ResponseType.Ok);
 					}
 				}
@@ -117,15 +117,36 @@ namespace MonoDevelop.MonoDroid.Gui
 
 		void OnDevicesUpdated (object sender, EventArgs e)
 		{
-			var values = new Dictionary<string,object> ();
-			var avds = MonoDroidFramework.VirtualDeviceManager.VirtualDevices;
-			if (avds != null)
-				foreach (var dev in avds)
-					values.Add (dev.Name, dev);
+			var values = new List<DisplayDevice> ();
+			var map = new Dictionary<string,DisplayDevice> ();
+			
 			var devices = MonoDroidFramework.DeviceManager.Devices;
-			if (devices != null)
-				foreach (var dev in MonoDroidFramework.DeviceManager.Devices)
-					values.Add (dev.ID, dev);
+			if (devices != null) {
+				foreach (var dev in MonoDroidFramework.DeviceManager.Devices) {
+					var dd = new DisplayDevice () { Device = dev };
+					values.Add (dd);
+					if (dev.IsEmulator && dev.Properties != null) {
+						string avdname;
+						if (dev.Properties.TryGetValue ("monodroid.avdname", out avdname))
+							map[avdname] = dd;
+					}
+				}
+			}
+			
+			var avds = MonoDroidFramework.VirtualDeviceManager.VirtualDevices;
+			if (avds != null) {
+				foreach (var dev in avds) {
+					DisplayDevice dd;
+					if (map.TryGetValue (dev.Name, out dd))
+						dd.VirtualDevice = dev;
+					else
+						values.Add (new DisplayDevice () { VirtualDevice = dev });
+				}
+			}
+			
+			//FIXME sort this
+			//values.Sort ();
+			
 			Gtk.Application.Invoke (delegate {
 				LoadData (values);
 			});
@@ -141,57 +162,57 @@ namespace MonoDevelop.MonoDroid.Gui
 			if (!deviceListTreeView.Selection.GetSelected (out iter))
 				return;
 			
-			var device = store.GetValue (iter, 0);
-			var avd = device as AndroidVirtualDevice;
-			if (avd != null) {
-				startEmulatorButton.Sensitive = true;
-			} else {
-				Device = (AndroidDevice) device;
+			var device = (DisplayDevice) store.GetValue (iter, 0);
+			if (device.Device != null) {
 				buttonOk.Sensitive = true;
+			} else {
+				startEmulatorButton.Sensitive = true;
 			}
 		}
 		
 		void DeviceDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			var store = (ListStore) model;
-			var device = store.GetValue (iter, 0);
+			var device = (DisplayDevice) store.GetValue (iter, 0);
 			var txtCell = (CellRendererText) cell;
 			
-			var avd = device as AndroidVirtualDevice;
-			if (avd != null) {
-				 txtCell.Markup = string.Format ("<span color=\"#444444\">{0} ({1})</span>",
-					GLib.Markup.EscapeText (avd.Name), GettextCatalog.GetString ("Not running"));
-			} else {
-				var dev = (AndroidDevice) device;
-				txtCell.Markup = GLib.Markup.EscapeText (dev.ID);
-			}
+			txtCell.Markup = string.Format ("<span color=\"#{0}\">{1}\n    {2}</span>",
+				device.Device != null && device.Device.IsOnline ? "000000" : "444444",
+				GLib.Markup.EscapeText (device.GetName ()),
+				device.GetStatus ());
 		}
 		
-		void LoadData (Dictionary<string,object> devices)
+		void LoadData (List<DisplayDevice> devices)
 		{
-			string selection = null;
-			TreeIter selIter;
-			if (deviceListTreeView.Selection.GetSelected (out selIter)) {
-				var s = store.GetValue (selIter, 0);
-				var avd = s as AndroidVirtualDevice;
-				if (avd != null)
-					selection = avd.Name;
-				else
-					selection = ((AndroidDevice)s).ID;
-			}
-			
 			store.Clear ();
-			TreeIter selectedIter = TreeIter.Zero;
-			foreach (var o in devices.OrderBy (kvp => kvp.Key)) {
-				TreeIter iter = store.AppendValues (o.Value);
-				if (selectedIter.Equals (TreeIter.Zero) || (selection != null && string.CompareOrdinal (selection, o.Key) >= 0))
-					selectedIter = iter;
-			}
-			if (!selectedIter.Equals (TreeIter.Zero))
-				deviceListTreeView.Selection.SelectIter (selectedIter);
+			foreach (var o in devices.OrderBy (d => d.GetName ()))
+				store.AppendValues (o);
 		}
 		
 		public AndroidDevice Device { get; private set; }
+		
+		class DisplayDevice
+		{
+			public AndroidVirtualDevice VirtualDevice { get; set; }
+			public AndroidDevice Device { get; set; }
+			
+			public string GetName ()
+			{
+				if (VirtualDevice != null) {
+					if (Device != null)
+						return string.Format ("{0} ({1})", VirtualDevice.Name, Device.ID);
+					return VirtualDevice.Name;
+				}
+				return Device.ID;
+			}
+			
+			public string GetStatus ()
+			{
+				if (Device != null)
+					return Device.State;
+				return "not started";
+			}
+		}
 	}
 	
 	class HeaderBanner : DrawingArea 

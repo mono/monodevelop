@@ -80,6 +80,8 @@ namespace MonoDevelop.IPhone.Gui
 		ListStore i18nStore = new ListStore (typeof (string), typeof (bool));
 		ListStore sdkStore = new ListStore (typeof (string), typeof (IPhoneSdkVersion));
 		
+		bool disableMtouch4Features;
+		
 		public IPhoneBuildOptionsWidget ()
 		{
 			this.Build ();
@@ -104,7 +106,27 @@ namespace MonoDevelop.IPhone.Gui
 			
 			sdkCombo.Changed += HandleSdkComboChanged;
 			
+			disableMtouch4Features = IPhoneFramework.MonoTouchVersion < new IPhoneSdkVersion (4);
+			if (disableMtouch4Features) {
+				useLlvmCheck.Sensitive = false;
+				useSGenCheck.Sensitive = false;
+				useArmv7Check.Sensitive = false;
+				useThumbCheck.Sensitive = false;
+			} else {
+				useLlvmCheck.Toggled += UpdateSensitivity;
+				useArmv7Check.Toggled += UpdateSensitivity;
+			}
+			
 			this.ShowAll ();
+		}
+
+		void UpdateSensitivity (object sender, EventArgs e)
+		{
+			if (!disableMtouch4Features) {
+				var llvmActive = useLlvmCheck.Active;
+				useArmv7Check.Sensitive = llvmActive;
+				useThumbCheck.Sensitive = llvmActive && useArmv7Check.Active;
+			}
 		}
 
 		/// <summary>
@@ -132,6 +154,11 @@ namespace MonoDevelop.IPhone.Gui
 			LoadSdkValues (cfg.MtouchSdkVersion);
 			minOSComboEntry.Entry.Text = cfg.MtouchMinimumOSVersion;
 			LoadI18nValues (cfg.MtouchI18n);
+			useLlvmCheck.Active = cfg.MtouchUseLlvm;
+			useArmv7Check.Active = cfg.MtouchUseArmv7;
+			useThumbCheck.Active = cfg.MtouchUseThumb;
+			useSGenCheck.Active = cfg.MtouchUseSGen;
+			UpdateSensitivity (null, null);
 		}
 		
 		public void StorePanelContents (IPhoneProjectConfiguration cfg)
@@ -142,6 +169,10 @@ namespace MonoDevelop.IPhone.Gui
 			cfg.MtouchDebug = debugCheck.Active;
 			cfg.MtouchLink = (MtouchLinkMode) linkCombo.Active;
 			cfg.MtouchI18n = GetI18nValues ();
+			cfg.MtouchUseLlvm = useLlvmCheck.Active;
+			cfg.MtouchUseArmv7 = cfg.MtouchUseLlvm && useArmv7Check.Active;
+			cfg.MtouchUseThumb = cfg.MtouchUseArmv7 && useThumbCheck.Active;
+			cfg.MtouchUseSGen = useSGenCheck.Active;
 		}
 		
 		void LoadSdkValues (IPhoneSdkVersion selectedVersion)
