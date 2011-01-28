@@ -57,6 +57,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public abstract IEnumerable<IType> Types { get; }
 
+		public virtual IEnumerable<IAttribute> Attributes {
+			get {
+				yield break;
+			}
+		}
 
 		protected virtual IEnumerable<string> InternalResolvePossibleNamespaces (IReturnType returnType)
 		{
@@ -976,6 +981,16 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 
+		public override IEnumerable<IAttribute> Attributes {
+			get {
+				foreach (ICompilationUnit unit in units) {
+					foreach (var att in unit.Attributes) {
+						yield return att;
+					}
+				}
+			}
+		}
+		
 		protected override IEnumerable<IType> InternalGetSubclasses (IType type, bool searchDeep, IList<string> namespaces)
 		{
 			if (namespaces == null || namespaces.Contains (type.Namespace))

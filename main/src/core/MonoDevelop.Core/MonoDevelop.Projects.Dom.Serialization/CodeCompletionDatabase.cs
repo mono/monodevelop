@@ -51,7 +51,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	{
 		static protected readonly int MAX_ACTIVE_COUNT = 100;
 		static protected readonly int MIN_ACTIVE_COUNT = 10;
-		static protected readonly int FORMAT_VERSION   = 82;
+		static protected readonly int FORMAT_VERSION   = 83;
 		
 		Dictionary<string, ClassEntry> typeEntries = new Dictionary<string, ClassEntry> ();
 		Dictionary<string, ClassEntry> typeEntriesIgnoreCase = new Dictionary<string, ClassEntry> (StringComparer.InvariantCultureIgnoreCase);
@@ -62,6 +62,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		Dictionary<string, List<Namespace>> namespaceEntries = new Dictionary<string, List<Namespace>> ();
 		Dictionary<string, List<Namespace>> namespaceEntriesIgnoreCase = new Dictionary<string, List<Namespace>> (StringComparer.InvariantCultureIgnoreCase);
 		// TODO: Table for inner types. Problem A.Inner could be B.Inner if B inherits from A.
+		
+		List<AttributeEntry> globalAttributes;
+		long globalAttributesPosition = -1;
 		
 		List<ReferenceEntry> references;
 		protected Dictionary<string, FileEntry> files;
@@ -276,6 +279,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					typeEntries = (Dictionary<string, ClassEntry>) dataQueue.Dequeue ();
 					files = (Dictionary<string, FileEntry>) dataQueue.Dequeue ();
 					unresolvedSubclassTable = (Hashtable) dataQueue.Dequeue ();
+					
+					// Read the global attributes position
+					globalAttributesPosition = br.ReadInt64 ();
+					
 					DeserializeData (dataQueue);
 					UpdateClassEntries ();
 				}
@@ -363,9 +370,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			return new FileStream (tempDataFile, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
 		}
 		
-		protected int ResolveTypes (ICompilationUnit unit, IList<IType> types, out List<IType> result)
+		protected int ResolveTypes (ICompilationUnit unit, IEnumerable<IType> types, IEnumerable<IAttribute> attributes, out List<IType> result, out List<IAttribute> resultAtrtibutes)
 		{
-			return ProjectDomService.ResolveTypes (SourceProjectDom, unit, types, out result);
+			return ProjectDomService.ResolveTypes (SourceProjectDom, unit, types, attributes, out result, out resultAtrtibutes);
 		}
 		
 		private class OldPidbVersionException : Exception
@@ -419,6 +426,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				MemoryStream tmpStream = new MemoryStream ();
 				BinaryFormatter bf = new BinaryFormatter ();
 				BinaryWriter bw = new BinaryWriter (tmpStream);
+				long attributesOffset;
 				
 				try {
 					timer.Trace ("Serializing headers");
@@ -478,6 +486,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					
 					timer.Trace ("Writing index");
 					
+					// Write global attributes
+					attributesOffset = tmpStream.Position;
+					WriteGlobalAttribtues (bw);
+					bw.Flush ();
+					
 					// Write the index
 					long indexOffset = tmpStream.Position;
 					
@@ -488,6 +501,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					dataQueue.Enqueue (unresolvedSubclassTable);
 					SerializeData (dataQueue);
 					bf.Serialize (tmpStream, dataQueue.ToArray ());
+					
+					// Write the global index position
+					bw.Write (attributesOffset);
 					
 					tmpStream.Position = indexOffsetPos;
 					bw.Write (indexOffset);
@@ -509,6 +525,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				} finally {
 					timer.End ();
 				}
+				
+				globalAttributesPosition = attributesOffset;
 			}
 			
 #if CHECK_STRINGS
@@ -523,6 +541,26 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		protected virtual void DeserializeData (Queue dataQueue)
 		{
+		}
+		
+		void LoadGlobalAttributes ()
+		{
+			if (globalAttributes != null)
+				return;
+			globalAttributes = new List<AttributeEntry> ();
+			if (globalAttributesPosition == -1)
+				return;
+			
+			dataFileStream.Position = globalAttributesPosition;
+			INameDecoder nd = pdb.CreateNameDecoder ();
+			DomPersistence.ReadAttributeEntryList (datareader, nd);
+		}
+		
+		void WriteGlobalAttribtues (BinaryWriter writer)
+		{
+			LoadGlobalAttributes ();
+			INameEncoder nd = pdb.CreateNameEncoder ();
+			DomPersistence.WriteAttributeEntryList (writer, nd, globalAttributes);
 		}
 		
 		internal protected FileEntry GetFile (string name)
@@ -983,7 +1021,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 		}
 		
-		public TypeUpdateInformation UpdateTypeInformation (IList<IType> newClasses, string fileName)
+		public TypeUpdateInformation UpdateTypeInformation (IList<IType> newClasses, IEnumerable<IAttribute> fileAttributes, string fileName)
 		{
 			lock (rwlock)
 			{
@@ -991,6 +1029,19 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				FileEntry fe;
 				if (!files.TryGetValue (fileName, out fe))
 					return null;
+				
+				// Update global attributes
+				
+				LoadGlobalAttributes ();
+				globalAttributes.RemoveAll (e => e.File == fileName);
+				
+				if (fileAttributes != null) {
+					globalAttributes.AddRange (
+						fileAttributes.Select (a => new AttributeEntry () { Attribute = a, File = fileName })
+					);
+				}
+				
+				// Update types
 				
 				bool[] added = new bool [newClasses.Count];
 				for (int n = 0; n < newClasses.Count; n++) {
@@ -1252,6 +1303,17 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 		}
 
+		public IEnumerable<IAttribute> GetGlobalAttributes ()
+		{
+			lock (rwlock)
+			{
+				List<IAttribute> list = new List<IAttribute> ();
+				LoadGlobalAttributes ();
+				list.AddRange (globalAttributes.Select (a => a.Attribute));
+				return list;
+			}
+		}
+		
 		public void GetClassList (ArrayList list, string subNameSpace, bool caseSensitive)
 		{
 			lock (rwlock)

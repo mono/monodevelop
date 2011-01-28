@@ -38,26 +38,17 @@
     <Reference Include="Mono.Posix" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Runtime.Remoting" />
-    <Reference Include="Mono.Addins.Setup, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System.Configuration" />
-    <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
-      <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
-      <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Mono.Addins, Version=0.5.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <Reference Include="Mono.Addins.Setup, Version=0.5.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core\StringParserService.cs" />
@@ -492,6 +483,7 @@
     <Compile Include="MonoDevelop.Projects.Policies\IPolicyProvider.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectItemEventArgs.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\TargetFrameworkMoniker.cs" />
+    <Compile Include="MonoDevelop.Projects.Dom.Serialization\AttributeEntry.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

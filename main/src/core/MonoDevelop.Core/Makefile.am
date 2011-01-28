@@ -196,6 +196,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom.Parser/TypeNameResolver.cs \
 	MonoDevelop.Projects.Dom.Parser/TypeResolverVisitor.cs \
 	MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs \
+	MonoDevelop.Projects.Dom.Serialization/AttributeEntry.cs \
 	MonoDevelop.Projects.Dom.Serialization/ClassEntry.cs \
 	MonoDevelop.Projects.Dom.Serialization/ClassInformationEventHandler.cs \
 	MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs \

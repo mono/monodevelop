@@ -55,6 +55,12 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 		}
 
+		public override IEnumerable<IAttribute> Attributes {
+			get {
+				return database.GetGlobalAttributes ();
+			}
+		}
+
 		public override IEnumerable<IType> GetTypes (FilePath fileName)
 		{
 			return database.GetFileContents (fileName);

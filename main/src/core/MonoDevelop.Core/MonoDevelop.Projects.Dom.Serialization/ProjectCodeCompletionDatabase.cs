@@ -245,11 +245,12 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				ICompilationUnit cu = parserInfo;
 	
 				List<IType> resolved;
+				List<IAttribute> resolvedAtts;
 				
-				int unresolvedCount = ResolveTypes (cu, cu.Types, out resolved);
+				int unresolvedCount = ResolveTypes (cu, cu.Types, cu.Attributes, out resolved, out resolvedAtts);
 				totalUnresolvedCount += unresolvedCount;
 				
-				TypeUpdateInformation res = UpdateTypeInformation (resolved, parserInfo.FileName);
+				TypeUpdateInformation res = UpdateTypeInformation (resolved, resolvedAtts, parserInfo.FileName);
 				
 				FileEntry file;
 				if (files.TryGetValue (fileName, out file)) {

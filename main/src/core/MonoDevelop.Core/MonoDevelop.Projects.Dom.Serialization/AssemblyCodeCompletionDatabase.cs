@@ -236,7 +236,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				} else {
 					DomCecilCompilationUnit ainfo = DomCecilCompilationUnit.Load (fileName, false, true);
 					
-					UpdateTypeInformation (ainfo.Types, fileName);
+					UpdateTypeInformation (ainfo.Types, ainfo.Attributes, fileName);
 					
 					// Reset the error retry count, since the file has been
 					// successfully parsed.

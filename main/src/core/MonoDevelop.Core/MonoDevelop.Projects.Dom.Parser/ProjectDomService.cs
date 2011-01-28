@@ -1024,11 +1024,12 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 		
-		internal static int ResolveTypes (ProjectDom db, ICompilationUnit unit, IList<IType> types, out List<IType> result)
+		internal static int ResolveTypes (ProjectDom db, ICompilationUnit unit, IEnumerable<IType> types, IEnumerable<IAttribute> attributes, out List<IType> result, out List<IAttribute> resultAtrtibutes)
 		{
 			TypeResolverVisitor tr = new TypeResolverVisitor (db, unit);
 			
 			int unresolvedCount = 0;
+			
 			result = new List<IType> ();
 			foreach (IType c in types) {
 				tr.UnresolvedCount = 0;
@@ -1047,6 +1048,14 @@ namespace MonoDevelop.Projects.Dom.Parser
 				unresolvedCount += tr.UnresolvedCount;
 			}
 				
+			resultAtrtibutes = new List<IAttribute> ();
+			foreach (IAttribute a in attributes) {
+				tr.UnresolvedCount = 0;
+				DomAttribute ra = (DomAttribute)a.AcceptVisitor (tr, null);
+				resultAtrtibutes.Add (ra);
+				unresolvedCount += tr.UnresolvedCount;
+			}
+			
 			return unresolvedCount;
 		}
 
