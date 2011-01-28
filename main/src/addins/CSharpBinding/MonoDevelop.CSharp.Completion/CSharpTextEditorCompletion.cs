@@ -1397,10 +1397,11 @@ namespace MonoDevelop.CSharp.Completion
 					newData.CompletionCategory = GetCompletionCategory (((IMember)member).DeclaringType);
 				}
 				List<MemberCompletionData> existingData;
-				if (data.TryGetValue (memberKey, out existingData)) {
-					if (existingData == null)
-						return null;
+				data.TryGetValue (memberKey, out existingData);
+				
+				if (existingData != null) {
 					IBaseMember a = member as IBaseMember;
+					System.Console.WriteLine ("add:" + a);
 					foreach (MemberCompletionData md in existingData) {
 						IBaseMember b = md.Member as IBaseMember;
 						if (a == null || b == null || a.MemberType == b.MemberType) {
@@ -1423,9 +1424,8 @@ namespace MonoDevelop.CSharp.Completion
 			
 			public CompletionData Add (string name, string icon)
 			{
-				if (data.ContainsKey (name))
-					return null;
-				data.Add (name, null);
+				if (!data.ContainsKey (name))
+					data.Add (name, null);
 				
 				return CompletionList.Add (name, icon);
 			}
@@ -1439,9 +1439,8 @@ namespace MonoDevelop.CSharp.Completion
 			{
 				Namespace ns = obj as Namespace;
 				if (ns != null) {
-					if (data.ContainsKey (ns.Name))
-						return null;
-					data.Add (ns.Name, null);
+					if (!data.ContainsKey (ns.Name))
+						data.Add (ns.Name, null);
 					return CompletionList.Add (ns.Name, ns.StockIcon, ns.Documentation);
 				}
 				
@@ -1458,9 +1457,8 @@ namespace MonoDevelop.CSharp.Completion
 						return CompletionList.Add (rt.Name, "md-class");
 					}
 					string returnTypeString = ambience.GetString (rt, flags);
-					if (data.ContainsKey (returnTypeString))
-						return null;
-					data.Add (returnTypeString, null);
+					if (!data.ContainsKey (returnTypeString))
+						data.Add (returnTypeString, null);
 					return CompletionList.Add (returnTypeString, "md-class");
 				}
 				
@@ -1475,9 +1473,8 @@ namespace MonoDevelop.CSharp.Completion
 				
 				if (obj is string) {
 					string str = (string)obj;
-					if (data.ContainsKey (str))
-						return null;
-					data.Add (str, null);
+					if (!data.ContainsKey (str))
+						data.Add (str, null);
 					return CompletionList.Add (str, "md-literal");
 				}
 				return null;
