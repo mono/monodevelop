@@ -26,7 +26,31 @@
 	<Dependencies>
 		<Addin id="Core" version="2.4"/>
 		<Addin id="Ide"  version="2.4"/>
+		<!--Addin id="SourceEditor2" version="2.4"/-->
 	</Dependencies>
+	
+    <Extension path = "/MonoDevelop/Ide/Commands">
+        <Command id = "MonoDevelop.MonoMac.MonoMacCommands.MonoMacAddFrameworksHandler"
+                 _label = "Add Framework Reference"
+                 defaultHandler = "MonoDevelop.MonoMac.MonoMacAddFrameworksHandler"
+                 _description = "Add Framework reference to 'External Frameworks and Libraries'" />
+    </Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
+		<Condition id="ItemType" value="Project">	
+			<CommandItem id = "MonoDevelop.MonoMac.MonoMacCommands.MonoMacAddFrameworksHandler"/>
+		</Condition>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
+		<NodeBuilder class = "MonoDevelop.MonoMac.ExternalFrameworksNodeBuilder"/>
+		<NodeBuilder class = "MonoDevelop.MonoMac.ExternalFrameworkFolderNodeBuilder"/>
+		<NodeBuilder class = "MonoDevelop.MonoMac.ExternalFrameworkNodeBuilder"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
+		<DataType class = "MonoDevelop.MonoMac.ExternalFrameworkNode" />
+	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id = "MonoMacPlist"

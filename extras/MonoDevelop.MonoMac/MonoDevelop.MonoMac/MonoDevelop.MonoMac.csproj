@@ -81,10 +81,20 @@
     <Compile Include="MonoMacExecutionHandler.cs" />
     <Compile Include="MonoMacProject.cs" />
     <Compile Include="MonoMacCodeBehind.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="ExternalFrameworksNodeBuilder.cs" />
+    <Compile Include="ExternalFrameworkNodeBuilder.cs" />
+    <Compile Include="MonoMacFrameworkItem.cs" />
+    <Compile Include="AddFrameworksDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.MonoMac.AddFrameworksDialog.cs" />
+    <Compile Include="MonoMacCommands.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MonoMac.addin.xml">
       <LogicalName>MonoDevelop.MonoMac.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -30,15 +30,14 @@ using System.Linq;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Core.ProgressMonitoring;
-using System.Xml;
 using System.Text;
-using System.Diagnostics;
-using System.CodeDom.Compiler;
 using Mono.Addins;
 using MonoDevelop.MacDev;
 using Mono.Unix;
 using MonoDevelop.MacDev.Plist;
+using System.CodeDom;
+using Microsoft.CSharp;
+using System.CodeDom.Compiler;
 
 namespace MonoDevelop.MonoMac
 {
@@ -110,6 +109,34 @@ namespace MonoDevelop.MonoMac
 			if (!File.Exists (pkgInfo))
 				using (var f = File.OpenWrite (pkgInfo))
 					f.Write (new byte [] { 0X41, 0X50, 0X50, 0X4C, 0x3f, 0x3f, 0x3f, 0x3f}, 0, 8); // "APPL???"
+			
+			// external frameworks
+			int externalFrameworksCount = proj.Items.GetAll<MonoMacFrameworkItem> ().Count();
+			if (externalFrameworksCount > 0) {
+				monitor.BeginTask ("Copying frameworks to bundle", externalFrameworksCount);
+				var externalFrameworks = conf.AppDirectory.Combine ("Contents", "Frameworks");
+				
+				if (!Directory.Exists (externalFrameworks))
+					Directory.CreateDirectory (externalFrameworks);
+				
+				foreach (MonoMacFrameworkItem node in proj.Items.GetAll<MonoMacFrameworkItem> ()) {
+					var bundleName = Path.GetFileName (node.FullPath);
+					monitor.Log.WriteLine (string.Format ("Copying '{0}' to bundle", bundleName));
+
+					var destFramework = externalFrameworks.Combine (bundleName);
+					if (Directory.Exists (destFramework)) {
+						Directory.Delete (destFramework, true);
+					}
+					Directory.CreateDirectory (destFramework);
+					
+					CopyFolder (node.FullPath, destFramework);
+					monitor.Step (1);
+				}
+				
+				GenerateExternalFrameworkCodeFile (proj, conf);
+				
+				monitor.EndTask ();
+			}
 			
 			return res;
 		}
@@ -184,6 +211,31 @@ namespace MonoDevelop.MonoMac
 			if (!File.Exists (conf.AppDirectory.Combine ("Contents", "PkgInfo")))
 			    return true;
 			
+			//external frameworks
+			var externalFrameworks = conf.AppDirectory.Combine ("Contents", "Frameworks");
+			if (proj.Items.GetAll<MonoMacFrameworkItem> ().Count () > 0)
+			{
+				if (!Directory.Exists (externalFrameworks))
+			    	return true;
+				
+				FilePath generatedFilePath = proj.BaseDirectory.Combine ("MonoMacFrameworks.cs");
+				var fi = new FileInfo (generatedFilePath);
+				if (!fi.Exists)
+					return true;
+				
+				var projFile = new FileInfo (proj.FileName);	
+				if (projFile.Exists && projFile.LastWriteTime >= fi.LastWriteTime)
+					return true;
+			}
+			
+			foreach (MonoMacFrameworkItem node in proj.Items.GetAll<MonoMacFrameworkItem> ()) {
+				string dirName = Path.GetFileName (node.FullPath);
+				
+				var destFramework = externalFrameworks.Combine (dirName);
+				if (!Directory.Exists (destFramework))
+					return true;
+			}
+			
 			return false;
 		}
 		
@@ -236,5 +288,108 @@ namespace MonoDevelop.MonoMac
 				if (pf.BuildAction == BuildAction.Content)
 					yield return new FilePair (pf.FilePath, pf.ProjectVirtualPath.ToAbsolute (resDir));
 		}
+		
+		
+		static private void GenerateExternalFrameworkCodeFile (MonoMacProject proj, MonoMacProjectConfiguration conf)
+		{
+			FilePath generatedFilePath = proj.BaseDirectory.Combine ("MonoMacFrameworks.cs");
+			
+			var fi = new FileInfo (generatedFilePath);
+			var projFile = new FileInfo (proj.FileName);
+
+			if (fi.Exists && projFile.Exists && projFile.LastWriteTime < fi.LastWriteTime)
+				return;
+			
+			File.Delete (generatedFilePath);
+			
+			var loadFrameworksCU = new CodeCompileUnit ();
+			CodeNamespace projectNameSpace = new CodeNamespace (proj.DefaultNamespace);
+			projectNameSpace.Imports.Add (new CodeNamespaceImport ("System"));
+			projectNameSpace.Imports.Add (new CodeNamespaceImport ("System.Runtime.InteropServices"));
+			projectNameSpace.Imports.Add (new CodeNamespaceImport ("MonoMac.ObjCRuntime"));
+			
+			var mainClass = new CodeTypeDeclaration ("MonoMacFrameworks") {
+				Attributes = MemberAttributes.Public | MemberAttributes.Static
+			};
+			
+			var loadFrameworkMethod = new CodeMemberMethod () {
+				Name = "Initialize",
+				Attributes = MemberAttributes.Public | MemberAttributes.Static,
+			};
+			loadFrameworkMethod.Comments.Add (new CodeCommentStatement ("Call this method prior to NSApplication.Init()", true));
+
+			mainClass.Members.Add (loadFrameworkMethod);
+			projectNameSpace.Types.Add (mainClass);
+			loadFrameworksCU.Namespaces.Add (projectNameSpace);
+		
+			var dlfcnClass = new CodeTypeReference ("Dlfcn");
+			var dlfcnRef = new CodeTypeReferenceExpression (dlfcnClass);
+			
+			var dlopenMethod = new CodeMethodReferenceExpression (dlfcnRef, "dlopen");
+			var dlerrorMethod = new CodeMethodReferenceExpression (dlfcnRef, "dlerror");
+		 	
+			var consoleType = new CodeTypeReferenceExpression () {
+            	Type = new CodeTypeReference (typeof (Console))
+			};
+			
+	        var writeLineRef = new CodeMethodReferenceExpression (consoleType, "WriteLine");
+        
+			var intPtrType = new CodeTypeReferenceExpression () {
+				Type = new CodeTypeReference (typeof (IntPtr))
+			};
+			
+			FilePath externalFrameworks = conf.AppDirectory.Combine ("Contents", "Frameworks");
+			
+			foreach (MonoMacFrameworkItem node in proj.Items.GetAll<MonoMacFrameworkItem> ()) {
+
+				string libName = Path.GetFileName (node.FullPath).Replace (".framework", "");
+				
+				var writeLine = new CodeMethodInvokeExpression (
+					writeLineRef, new CodePrimitiveExpression (
+						string.Format ("Failed to open '{0}' with error: '{1}'",
+							libName, "{0}")), new CodeMethodInvokeExpression (dlerrorMethod));
+	
+				var check = new CodeConditionStatement ();
+				check.Condition = new CodeBinaryOperatorExpression (
+					new CodeMethodInvokeExpression (dlopenMethod,
+						new CodePrimitiveExpression ((string)externalFrameworks.Combine (Path.GetFileName (node.FullPath))), 
+				                                     new CodePrimitiveExpression (0)),
+				    CodeBinaryOperatorType.IdentityEquality,                                               
+	                new CodeFieldReferenceExpression (intPtrType, "Zero"));
+				check.TrueStatements.Add (writeLine);
+				
+				loadFrameworkMethod.Statements.Add (check);
+			}
+			
+			CodeDomProvider codeDom = proj.LanguageBinding.GetCodeDomProvider ();
+        
+        	using (StreamWriter sw = new StreamWriter (generatedFilePath))
+        		codeDom.GenerateCodeFromCompileUnit (loadFrameworksCU, sw, null);
+		}
+		
+		static private void CopyFolder (string sourceFolder, string destFolder)
+        {
+            if (!Directory.Exists (destFolder))
+                Directory.CreateDirectory (destFolder);
+			
+            string[] files = Directory.GetFiles (sourceFolder);
+            foreach (string file in files) {
+                string name = Path.GetFileName (file);
+				if (name[0] == '.')
+					continue;
+                string dest = Path.Combine (destFolder, name);
+
+                File.Copy (file, dest);
+            }
+			
+            string[] folders = Directory.GetDirectories (sourceFolder);
+            foreach (string folder in folders) {
+                string name = Path.GetFileName (folder);
+				if (name[0] == '.')
+					continue;
+                string dest = Path.Combine (destFolder, name);
+                CopyFolder (folder, dest);
+            }
+        }
 	}
 }

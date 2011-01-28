@@ -44,10 +44,25 @@ namespace ${Namespace}
 {
 	class MainClass
 	{
-		static void Main (string [] args)
+		partial static void Main (string [] args)
 		{
+			MonoMacFrameworks.Initialize();
 			NSApplication.Init ();
 			NSApplication.Main (args);
+		}
+	}
+}	
+]]></File>
+				<File name="MonoMacFrameworks.cs">
+<![CDATA[// This file is auto generated.
+using System;
+
+namespace ${Namespace}
+{
+	public class MonoMacFrameworks
+	{
+		public static void Initialize ()
+		{
 		}
 	}
 }	
