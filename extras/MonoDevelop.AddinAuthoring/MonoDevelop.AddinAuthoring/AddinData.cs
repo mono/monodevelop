@@ -148,7 +148,8 @@ namespace MonoDevelop.AddinAuthoring
 					if (pfile.Name.EndsWith (".addin.xml") || pfile.Name.EndsWith (".addin"))
 						return new AddinData (project);
 				}
-				if (ProjectDomService.GetProjectDom (project).Attributes.Any (
+				ProjectDom dom = ProjectDomService.GetProjectDom (project);
+				if (dom != null && dom.Attributes.Any (
 					a => a.AttributeType.FullName == "Mono.Addins.AddinAttribute" || a.AttributeType.FullName == "Mono.Addins.AddinRootAttribute"
 				)) {
 					return new AddinData (project);
