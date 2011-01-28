@@ -36,7 +36,7 @@ namespace MonoDevelop.AddinAuthoring
 {
 	[System.ComponentModel.Category("MonoDevelop.AddinAuthoring")]
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class ExtensionPointsEditorWidget : Gtk.Bin
+	public partial class ExtensionPointsEditorWidget : Gtk.Bin, IExtensionViewWidget
 	{
 		ListStore store;
 		AddinData data;

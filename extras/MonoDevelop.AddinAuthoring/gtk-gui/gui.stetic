@@ -11,6 +11,7 @@
     <widget-library name="MonoDevelop.NUnit, Version=2.6.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.XmlEditor, Version=2.6.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.Gettext, Version=2.6.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Deployment, Version=2.6.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.Deployment.Linux, Version=2.6.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.GtkCore, Version=2.6.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.DesignerSupport, Version=2.6.0.0, Culture=neutral" />
@@ -19,6 +20,7 @@
     <widget-library name="MonoDevelop.SourceEditor2, Version=2.6.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.Debugger, Version=2.6.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.AspNet, Version=2.6.0.0, Culture=neutral" />
+    <widget-library name="MonoDevelop.Autotools, Version=2.6.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.Refactoring, Version=2.6.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.Moonlight, Version=2.6.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.Debugger.Soft, Version=2.6.0.0, Culture=neutral" />
@@ -84,7 +86,7 @@
           <widget class="Gtk.Notebook" id="notebook">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="CurrentPage">0</property>
+            <property name="CurrentPage">2</property>
             <property name="TabPos">Bottom</property>
             <child>
               <widget class="Gtk.VBox" id="vbox3">

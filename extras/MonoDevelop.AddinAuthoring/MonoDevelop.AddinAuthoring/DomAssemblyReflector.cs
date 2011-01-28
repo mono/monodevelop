@@ -71,7 +71,7 @@ namespace MonoDevelop.AddinAuthoring
 			else if (ob is IParameter)
 				return ((IParameter)ob).Attributes;
 			else if (ob is ProjectDom)
-				return new IAttribute [0];
+				return ((ProjectDom)ob).Attributes;
 			else
 				throw new NotSupportedException ();
 		}

@@ -9,7 +9,6 @@
     <OutputType>Library</OutputType>
     <ApplicationIcon>.</ApplicationIcon>
     <AssemblyName>MonoDevelop.AddinAuthoring</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <RootNamespace>MonoDevelop.AddinAuthoring</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -124,6 +123,10 @@
     <Compile Include="MonoDevelop.AddinAuthoring\DomAssemblyReflector.cs" />
     <Compile Include="MonoDevelop.AddinAuthoring\AddinFileSystem.cs" />
     <Compile Include="MonoDevelop.AddinAuthoring\RegistryEventArgs.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\StartupHandler.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\ExtensionPointsEditorView.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\ExtensionEditorView.cs" />
+    <Compile Include="MonoDevelop.AddinAuthoring\ExtensionBaseView.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

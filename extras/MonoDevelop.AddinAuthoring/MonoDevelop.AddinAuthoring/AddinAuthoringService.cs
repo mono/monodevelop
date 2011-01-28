@@ -286,13 +286,17 @@ namespace MonoDevelop.AddinAuthoring
 		
 		public static void SaveFormatted (PolicyContainer policies, AddinDescription adesc)
 		{
+			File.WriteAllText (adesc.FileName, SaveFormattedXml (policies, adesc));
+		}
+		
+		public static string SaveFormattedXml (PolicyContainer policies, AddinDescription adesc)
+		{
 			XmlDocument doc = adesc.SaveToXml ();
 			
 			TextStylePolicy textPolicy = policies.Get<TextStylePolicy> (DesktopService.GetMimeTypeInheritanceChain ("application/x-addin+xml"));
 			XmlFormattingPolicy xmlPolicy = policies.Get<XmlFormattingPolicy> (DesktopService.GetMimeTypeInheritanceChain ("application/x-addin+xml"));
 			
-			string xml = XmlFormatter.FormatXml (textPolicy, xmlPolicy, doc.OuterXml);
-			File.WriteAllText (adesc.FileName, xml);
+			return XmlFormatter.FormatXml (textPolicy, xmlPolicy, doc.OuterXml);
 		}
 		
 		public static void NotifyRegistryChanged (AddinRegistry reg)

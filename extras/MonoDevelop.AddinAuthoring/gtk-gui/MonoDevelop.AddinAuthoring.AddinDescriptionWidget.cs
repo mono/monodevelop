@@ -57,7 +57,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.notebook = new global::Gtk.Notebook ();
 			this.notebook.CanFocus = true;
 			this.notebook.Name = "notebook";
-			this.notebook.CurrentPage = 0;
+			this.notebook.CurrentPage = 2;
 			this.notebook.TabPos = ((global::Gtk.PositionType)(3));
 			// Container child notebook.Gtk.Notebook+NotebookChild
 			this.vbox3 = new global::Gtk.VBox ();

@@ -84,10 +84,11 @@
 		<CommandItem id="MonoDevelop.AddinAuthoring.Commands.ExtensionModelBrowser" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
+<!--	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding class = "MonoDevelop.AddinAuthoring.AddinDescriptionDisplayBinding" insertbefore="DefaultDisplayBinding"/>
 	</Extension>
-	
+-->
+
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
 		<Condition id="ItemType" value="ProjectReferenceCollection">
 			<CommandItem id = "MonoDevelop.AddinAuthoring.Commands.AddAddinDependency" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddReference"/>

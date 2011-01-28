@@ -37,6 +37,8 @@ using MonoDevelop.Core.Serialization;
 using Mono.Addins;
 using Mono.Addins.Description;
 using MonoDevelop.Xml.Formatting;
+using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects.Dom;
  
 
 namespace MonoDevelop.AddinAuthoring
@@ -145,6 +147,11 @@ namespace MonoDevelop.AddinAuthoring
 				foreach (ProjectFile pfile in project.Files) {
 					if (pfile.Name.EndsWith (".addin.xml") || pfile.Name.EndsWith (".addin"))
 						return new AddinData (project);
+				}
+				if (ProjectDomService.GetProjectDom (project).Attributes.Any (
+					a => a.AttributeType.FullName == "Mono.Addins.AddinAttribute" || a.AttributeType.FullName == "Mono.Addins.AddinRootAttribute"
+				)) {
+					return new AddinData (project);
 				}
 			}
 			return null;

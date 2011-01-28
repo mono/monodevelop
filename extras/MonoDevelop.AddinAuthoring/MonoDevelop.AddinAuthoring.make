@@ -100,12 +100,15 @@ FILES =  \
 	MonoDevelop.AddinAuthoring/CellRendererExtension.cs \
 	MonoDevelop.AddinAuthoring/Commands.cs \
 	MonoDevelop.AddinAuthoring/DomAssemblyReflector.cs \
+	MonoDevelop.AddinAuthoring/ExtensionBaseView.cs \
 	MonoDevelop.AddinAuthoring/ExtensionDomain.cs \
+	MonoDevelop.AddinAuthoring/ExtensionEditorView.cs \
 	MonoDevelop.AddinAuthoring/ExtensionEditorWidget.cs \
 	MonoDevelop.AddinAuthoring/ExtensionModelBrowser.cs \
 	MonoDevelop.AddinAuthoring/ExtensionModelBrowserWidget.cs \
 	MonoDevelop.AddinAuthoring/ExtensionNodeInfo.cs \
 	MonoDevelop.AddinAuthoring/ExtensionNodeTree.cs \
+	MonoDevelop.AddinAuthoring/ExtensionPointsEditorView.cs \
 	MonoDevelop.AddinAuthoring/ExtensionPointsEditorWidget.cs \
 	MonoDevelop.AddinAuthoring/ExtensionSelectorDialog.cs \
 	MonoDevelop.AddinAuthoring/NewExtensionPointDialog.cs \
@@ -120,6 +123,7 @@ FILES =  \
 	MonoDevelop.AddinAuthoring/SelectNodeSetDialog.cs \
 	MonoDevelop.AddinAuthoring/SelectRepositoryDialog.cs \
 	MonoDevelop.AddinAuthoring/SolutionAddinData.cs \
+	MonoDevelop.AddinAuthoring/StartupHandler.cs \
 	MonoDevelop.AddinAuthoring/TypeCellEditor.cs \
 	MonoDevelop.AddinAuthoring/TypeSelector.cs \
 	MonoDevelop.AddinAuthoring/Util.cs 
