@@ -125,6 +125,7 @@
 			<Section id = "IPhoneBuildOptions"
 				_label = "iPhone Build"
 				icon="iphone-project-options-panel"
+				fill="true"
 				class = "MonoDevelop.IPhone.Gui.IPhoneBuildOptionsPanel" />
 			<Section id = "IPhoneSigningInfo"
 				_label = "iPhone Bundle Signing"
