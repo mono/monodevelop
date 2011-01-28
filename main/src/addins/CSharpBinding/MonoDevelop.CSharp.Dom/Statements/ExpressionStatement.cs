@@ -40,6 +40,12 @@ namespace MonoDevelop.CSharp.Dom
 			}
 		}
 
+		public CSharpTokenNode Semicolon {
+			get {
+				return (CSharpTokenNode)GetChildByRole (Roles.Semicolon) ?? CSharpTokenNode.Null;
+			}
+		}
+
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitExpressionStatement (this, data);

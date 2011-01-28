@@ -206,10 +206,80 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			if (accessor.IsNull || accessor.Body.IsNull || accessor.Body.FirstChild == null)
 				return true;
-			if (accessor.Body.Children.Count () != 1)
+			if (accessor.Body.GetChildrenByRole (Accessor.Roles.Statement).Count () != 1)
 				return false;
-			return !(accessor.Body.FirstChild is BlockStatement);
+			return !(accessor.Body.GetChildByRole (Accessor.Roles.Statement) is BlockStatement);
 			
+		}
+		
+		bool IsSpacing (char ch)
+		{
+			return ch == ' ' || ch == '\t';
+		}
+		int SearchLastNonWsChar (int startOffset, int endOffset)
+		{
+			startOffset = System.Math.Max (0, startOffset);
+			endOffset = System.Math.Max (startOffset, endOffset);
+			if (startOffset >= endOffset)
+				return startOffset;
+			int result = -1;
+			bool inComment = false;
+			
+			for (int i = startOffset; i < endOffset && i < data.Document.Length; i++) {
+				char ch = data.Document.GetCharAt (i);
+				if (IsSpacing (ch))
+					continue;
+				if (ch == '/' && i + 1 < data.Document.Length && data.Document.GetCharAt (i + 1) == '/')
+					return result;
+				if (ch == '/' && i + 1 < data.Document.Length && data.Document.GetCharAt (i + 1) == '*') {
+					inComment = true;
+					i++;
+					continue;
+				}
+				if (inComment && ch == '*' && i + 1 < data.Document.Length && data.Document.GetCharAt (i + 1) == '/') {
+					inComment = false;
+					i++;
+					continue;
+				}
+				if (!inComment)
+					result = i;
+			}
+			return result;
+		}
+
+		void ForceSpace (int startOffset, int endOffset, bool forceSpace)
+		{
+			int lastNonWs = SearchLastNonWsChar (startOffset, endOffset);
+			AddChange (lastNonWs + 1, System.Math.Max (0, endOffset - lastNonWs - 1), forceSpace ? " " : "");
+		}
+		
+		void ForceSpacesAfter (DomNode n, bool forceSpaces)
+		{
+			if (n == null)
+				return;
+			DomLocation location = n.EndLocation;
+			int offset = data.Document.LocationToOffset (location.Line, location.Column);
+			int i = offset;
+			while (i < data.Document.Length && IsSpacing (data.Document.GetCharAt (i))) {
+				i++;
+			}
+			ForceSpace (offset - 1, i, forceSpaces);
+		}
+		
+		int ForceSpacesBefore (DomNode n, bool forceSpaces)
+		{
+			if (n == null || n.IsNull)
+				return 0;
+			DomLocation location = n.StartLocation;
+			
+			int offset = data.Document.LocationToOffset (location.Line, location.Column);
+			int i = offset - 1;
+			
+			while (i >= 0 && IsSpacing (data.Document.GetCharAt (i))) {
+				i--;
+			}
+			ForceSpace (i, offset, forceSpaces);
+			return i;
 		}
 		
 		public override object VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration, object data)
@@ -222,6 +292,9 @@ namespace MonoDevelop.CSharp.Formatting
 				if (!isSimple || propertyDeclaration.LBrace.StartLocation.Line != propertyDeclaration.RBrace.StartLocation.Line) {
 					EnforceBraceStyle (policy.PropertyBraceStyle, propertyDeclaration.LBrace, propertyDeclaration.RBrace);
 				} else {
+					ForceSpacesBefore (propertyDeclaration.GetAccessor, true);
+					ForceSpacesBefore (propertyDeclaration.SetAccessor, true);
+					ForceSpacesBefore (propertyDeclaration.RBrace, true);
 					oneLine = true;
 				}
 				break;
@@ -242,7 +315,7 @@ namespace MonoDevelop.CSharp.Formatting
 					start = SearchWhitespaceStart (offset);
 					AddChange (start, offset - start, " ");
 					oneLine = true;
-
+				
 				} else {
 					EnforceBraceStyle (policy.PropertyBraceStyle, propertyDeclaration.LBrace, propertyDeclaration.RBrace);
 				}
@@ -250,7 +323,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 			if (policy.IndentPropertyBody)
 				IndentLevel++;
-			
+			System.Console.WriteLine ("one line: " + oneLine);
 			if (!propertyDeclaration.GetAccessor.IsNull) {
 				if (!oneLine) {
 					if (!IsLineIsEmptyUpToEol (propertyDeclaration.GetAccessor.StartLocation)) {
@@ -262,11 +335,12 @@ namespace MonoDevelop.CSharp.Formatting
 						FixIndentation (propertyDeclaration.GetAccessor.StartLocation);
 					}
 				} else {
-					if (!propertyDeclaration.SetAccessor.IsNull && propertyDeclaration.SetAccessor.StartLocation < propertyDeclaration.GetAccessor.StartLocation) {
-						int offset = this.data.Document.LocationToOffset (propertyDeclaration.GetAccessor.StartLocation.Line, propertyDeclaration.GetAccessor.StartLocation.Column);
-						int start = SearchWhitespaceStart (offset);
-						AddChange (start, offset - start, " ");
-					}
+					int offset = this.data.Document.LocationToOffset (propertyDeclaration.GetAccessor.StartLocation.Line, propertyDeclaration.GetAccessor.StartLocation.Column);
+					int start = SearchWhitespaceStart (offset);
+					AddChange (start, offset - start, " ");
+					
+					ForceSpacesBefore (propertyDeclaration.GetAccessor.Body.LBrace, true);
+					ForceSpacesBefore (propertyDeclaration.GetAccessor.Body.RBrace, true);
 				}
 				if (!propertyDeclaration.GetAccessor.Body.IsNull) {
 					if (!policy.AllowPropertyGetBlockInline || propertyDeclaration.GetAccessor.Body.LBrace.StartLocation.Line != propertyDeclaration.GetAccessor.Body.RBrace.StartLocation.Line) {
@@ -289,11 +363,12 @@ namespace MonoDevelop.CSharp.Formatting
 						FixIndentation (propertyDeclaration.SetAccessor.StartLocation);
 					}
 				} else {
-					if (!propertyDeclaration.GetAccessor.IsNull && propertyDeclaration.SetAccessor.StartLocation > propertyDeclaration.GetAccessor.StartLocation) {
-						int offset = this.data.Document.LocationToOffset (propertyDeclaration.SetAccessor.StartLocation.Line, propertyDeclaration.SetAccessor.StartLocation.Column);
-						int start = SearchWhitespaceStart (offset);
-						AddChange (start, offset - start, " ");
-					}
+					int offset = this.data.Document.LocationToOffset (propertyDeclaration.SetAccessor.StartLocation.Line, propertyDeclaration.SetAccessor.StartLocation.Column);
+					int start = SearchWhitespaceStart (offset);
+					AddChange (start, offset - start, " ");
+					
+					ForceSpacesBefore (propertyDeclaration.SetAccessor.Body.LBrace, true);
+					ForceSpacesBefore (propertyDeclaration.SetAccessor.Body.RBrace, true);
 				}
 				if (!propertyDeclaration.SetAccessor.Body.IsNull) {
 					if (!policy.AllowPropertySetBlockInline || propertyDeclaration.SetAccessor.Body.LBrace.StartLocation.Line != propertyDeclaration.SetAccessor.Body.RBrace.StartLocation.Line) {

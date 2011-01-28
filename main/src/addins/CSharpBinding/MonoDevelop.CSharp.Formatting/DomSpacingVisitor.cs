@@ -209,7 +209,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		int ForceSpacesBefore (DomNode n, bool forceSpaces)
 		{
-			if (n == null)
+			if (n == null || n.IsNull)
 				return 0;
 			DomLocation location = n.StartLocation;
 			
@@ -310,7 +310,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (currentText == insertedText)
 				return;
 			if (currentText.Any (c => !(char.IsWhiteSpace (c) || c == '\r' || c == '\t')))
-				throw new InvalidOperationException ("Tried to remove non ws chars: '" + currentText + "'");
+				throw new InvalidOperationException ("Tried to remove non ws chars: '" + currentText + "' at:" + data.Document.OffsetToLocation (offset));
 			foreach (MyTextReplaceChange change in changes) {
 				if (change.Offset == offset) {
 					if (removedChars > 0 && insertedText == change.InsertedText) {
@@ -415,6 +415,21 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 			return result;
 		}
+
+		
+		public void FixSemicolon (CSharpTokenNode semicolon)
+		{
+			if (semicolon.IsNull)
+				return;
+			int endOffset = data.Document.LocationToOffset (semicolon.StartLocation.Line, semicolon.StartLocation.Column);
+			int offset = endOffset;
+			while (offset - 1 > 0 && char.IsWhiteSpace (data.Document.GetCharAt (offset - 1))) {
+				offset--;
+			}
+			if (offset < endOffset) {
+				AddChange (offset, endOffset - offset, null);
+			}
+		}	
 		
 		public override object VisitVariableInitializer (VariableInitializer variableInitializer, object data)
 		{
@@ -458,7 +473,13 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			return base.VisitIndexerExpression (indexerExpression, data);
 		}
-
+		
+		public override object VisitExpressionStatement (ExpressionStatement expressionStatement, object data)
+		{
+			FixSemicolon (expressionStatement.Semicolon);
+			return base.VisitExpressionStatement (expressionStatement, data);
+		}
+		
 		public override object VisitIfElseStatement (IfElseStatement ifElseStatement, object data)
 		{
 			ForceSpacesBefore (ifElseStatement.LPar, policy.IfParentheses);

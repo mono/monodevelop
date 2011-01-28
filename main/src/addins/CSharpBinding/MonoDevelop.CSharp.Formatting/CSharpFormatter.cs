@@ -157,7 +157,8 @@ namespace MonoDevelop.CSharp.Formatting
 						}
 					}
 				}
-				
+				if (indent.Length == line.EditableLength)
+					newIndent.Length = 0;
 				if (line.DelimiterLength != 0) {
 					delta -= line.DelimiterLength;
 					delta += data.EolMarker.Length;
