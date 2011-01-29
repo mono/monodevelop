@@ -39,9 +39,9 @@ namespace MonoDevelop.Debugger.Soft
 {
 	public class SoftDebuggerEngine: IDebuggerEngine
 	{
-		public SoftDebuggerEngine ()
+		static SoftDebuggerEngine ()
 		{
-			EnsureSdbLoggingService ();
+			Mono.Debugging.Soft.LoggingService.CustomLogger = new MDLogger ();
 		}
 		
 		public bool CanDebugCommand (ExecutionCommand cmd)
@@ -72,9 +72,7 @@ namespace MonoDevelop.Debugger.Soft
 				WorkingDirectory = cmd.WorkingDirectory,
 			};
 			
-			string error;
-			dsi.UserAssemblyNames = GetAssemblyNames (cmd.UserAssemblyPaths, out error);
-			dsi.LogMessage = error;
+			SetUserAssemblyNames (dsi, cmd.UserAssemblyPaths);
 			
 			foreach (KeyValuePair<string,string> var in cmd.EnvironmentVariables)
 				dsi.EnvironmentVariables [var.Key] = var.Value;
@@ -100,18 +98,17 @@ namespace MonoDevelop.Debugger.Soft
 			return new SoftDebuggerSession ();
 		}
 		
-		public static List<AssemblyName> GetAssemblyNames (IList<string> files, out string error)
+		public static void SetUserAssemblyNames (BaseSoftDebuggerStartInfo dsi, IList<string> files)
 		{
-			error = null;
 			if (files == null || files.Count == 0)
-				return null;
+				return;
 			
 			var names = new List<AssemblyName> ();
 			foreach (var file in files) {
 				if (!File.Exists (file)) {
-					error = GettextCatalog.GetString ("User assembly '{0}' is missing. " +
+					dsi.LogMessage = GettextCatalog.GetString ("User assembly '{0}' is missing. " +
 						"Debugger will now debug all code, not just user code.", file);
-					return null;
+					return;
 				}
 				try {
 					var asm = Mono.Cecil.AssemblyDefinition.ReadAssembly (file);
@@ -119,20 +116,13 @@ namespace MonoDevelop.Debugger.Soft
 						throw new InvalidOperationException ("Assembly has no assembly name");
 					names.Add (new AssemblyName (asm.Name.FullName));
 				} catch (Exception ex) {
-					error = GettextCatalog.GetString ("Could not get assembly name for user assembly '{0}'. " +
+					dsi.LogMessage = GettextCatalog.GetString ("Could not get assembly name for user assembly '{0}'. " +
 						"Debugger will now debug all code, not just user code.", file);
 					MDLS.LogError ("Error getting assembly name for user assembly '" + file + "'", ex);
-					return null;
+					return;
 				}
 			}
-			return names;
-		}
-		
-		static ICustomLogger logger;
-		internal static void EnsureSdbLoggingService ()
-		{
-			if (logger == null)
-				Mono.Debugging.Soft.LoggingService.CustomLogger = logger = new MDLogger ();
+			dsi.UserAssemblyNames = names;
 		}
 		
 		class MDLogger : ICustomLogger

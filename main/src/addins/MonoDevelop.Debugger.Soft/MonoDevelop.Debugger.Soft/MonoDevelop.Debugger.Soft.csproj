@@ -9,7 +9,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>MonoDevelop.Debugger.Soft</RootNamespace>
     <AssemblyName>MonoDevelop.Debugger.Soft</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -43,7 +42,6 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="SoftDebuggerEngine.cs" />
-    <Compile Include="RemoteSoftDebuggerSession.cs" />
     <Compile Include="CustomSoftDebuggerEngine.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -91,7 +91,22 @@ namespace Mono.Debugging.Soft
 			if (exited)
 				throw new InvalidOperationException ("Already exited");
 			
-			var dsi = (SoftDebuggerStartInfo) startInfo;
+			var dsi = startInfo as SoftDebuggerStartInfo;
+			if (dsi != null) {
+				StartLaunching (dsi);
+				return;
+			}
+			
+			var rdsi = (RemoteSoftDebuggerStartInfo) startInfo;
+			if (rdsi.Listen) {
+				StartListening (rdsi);
+			} else {
+				StartConnecting (rdsi);
+			}
+		}
+		
+		void StartLaunching (SoftDebuggerStartInfo dsi)
+		{
 			var runtime = Path.Combine (Path.Combine (dsi.MonoRuntimePrefix, "bin"), "mono");
 			RegisterUserAssemblies (dsi.UserAssemblyNames);
 			
@@ -122,7 +137,7 @@ namespace Mono.Debugging.Soft
 			foreach (var env in dsi.MonoRuntimeEnvironmentVariables)
 				psi.EnvironmentVariables[env.Key] = env.Value;
 			
-			foreach (var env in startInfo.EnvironmentVariables)
+			foreach (var env in dsi.EnvironmentVariables)
 				psi.EnvironmentVariables[env.Key] = env.Value;
 			
 			if (!String.IsNullOrEmpty (dsi.LogMessage))
@@ -156,9 +171,14 @@ namespace Mono.Debugging.Soft
 			return false;
 		}
 		
+		protected void StartConnecting (RemoteSoftDebuggerStartInfo dsi)
+		{
+			StartConnecting (dsi, dsi.MaxConnectionAttempts, dsi.TimeBetweenConnectionAttempts);
+		}
+		
 		/// <summary>Starts the debugger connecting to a remote IP</summary>
 		protected void StartConnecting (RemoteSoftDebuggerStartInfo dsi, int maxAttempts, int timeBetweenAttempts)
-		{
+		{	
 			if (timeBetweenAttempts < 0 || timeBetweenAttempts > 10000)
 				throw new ArgumentException ("timeBetweenAttempts");
 			

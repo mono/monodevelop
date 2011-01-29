@@ -254,7 +254,7 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 		}
 	}
 	
-	class MonoDroidDebuggerStartInfo : RemoteDebuggerStartInfo
+	class MonoDroidDebuggerStartInfo : Mono.Debugging.Soft.RemoteSoftDebuggerStartInfo
 	{
 		public MonoDroidExecutionCommand ExecutionCommand { get; private set; }
 		

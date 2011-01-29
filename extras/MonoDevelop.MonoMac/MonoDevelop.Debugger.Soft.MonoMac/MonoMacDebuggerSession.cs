@@ -37,11 +37,12 @@ using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using System.Collections.Generic;
+using Mono.Debugging.Soft;
 
 namespace MonoDevelop.Debugger.Soft.MonoMac
 {
 
-	public class MonoMacDebuggerSession : Mono.Debugging.Soft.SoftDebuggerSession
+	public class MonoMacDebuggerSession : SoftDebuggerSession
 	{
 		MonoMacProcess process;
 		
@@ -73,12 +74,12 @@ namespace MonoDevelop.Debugger.Soft.MonoMac
 				if (process != null && !process.IsCompleted)
 					process.Cancel ();
 			} catch (Exception ex) {
-				LoggingService.LogError ("Error force-terminating soft debugger process", ex);
+				MonoDevelop.Core.LoggingService.LogError ("Error force-terminating soft debugger process", ex);
 			}
 		}
 	}
 	
-	class MonoMacDebuggerStartInfo : RemoteDebuggerStartInfo
+	class MonoMacDebuggerStartInfo : RemoteSoftDebuggerStartInfo
 	{
 		public MonoMacExecutionCommand ExecutionCommand { get; private set; }
 		
@@ -86,6 +87,7 @@ namespace MonoDevelop.Debugger.Soft.MonoMac
 			: base (cmd.AppPath.FileNameWithoutExtension, IPAddress.Loopback, 8901)
 		{
 			ExecutionCommand = cmd;
+			Listen = true;
 		}
 	}
 }

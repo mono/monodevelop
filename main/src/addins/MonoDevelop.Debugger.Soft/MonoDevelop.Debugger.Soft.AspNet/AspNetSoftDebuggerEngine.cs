@@ -88,10 +88,7 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 					"The \"{0}\" web server cannot be started. Please ensure that it is installed.", xspName), null);
 			
 			startInfo.Command = xspPath;
-			
-			string error;
-			startInfo.UserAssemblyNames = SoftDebuggerEngine.GetAssemblyNames (cmd.UserAssemblyPaths, out error);
-			startInfo.LogMessage = error;
+			SoftDebuggerEngine.SetUserAssemblyNames (startInfo, cmd.UserAssemblyPaths);
 			
 			return startInfo;
 		}

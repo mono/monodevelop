@@ -47,8 +47,8 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
 			var dsi = (MoonlightDebuggerStartInfo) startInfo;
-			StartBrowserProcess (dsi);
 			StartListening (dsi);
+			StartBrowserProcess (dsi);
 		}
 
 		void StartBrowserProcess (MoonlightDebuggerStartInfo dsi)

@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using System.Net;
 using System.Collections.Generic;
+using Mono.Debugging.Soft;
 
 namespace MonoDevelop.Debugger.Soft
 {
@@ -62,12 +63,12 @@ namespace MonoDevelop.Debugger.Soft
 		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand c)
 		{
 			//WORKAROUND: explicit generic type argument works around a gmcs 2.6.x type inference bug 
-			return InvokeSynch<CustomSoftDebuggerStartInfo> (GetDebuggerInfo) ??
+			return InvokeSynch<RemoteSoftDebuggerStartInfo> (GetDebuggerInfo) ??
 				//HACK: flag object so we can cancel the session
 				new DebuggerStartInfo ();
 		}
 		
-		static CustomSoftDebuggerStartInfo GetDebuggerInfo ()
+		static RemoteSoftDebuggerStartInfo GetDebuggerInfo ()
 		{
 			var dlg = new DebuggerOptionsDialog ();
 			try {
@@ -100,43 +101,30 @@ namespace MonoDevelop.Debugger.Soft
 			return val;
 		}
 		
-		class CustomSoftDebuggerStartInfo : RemoteDebuggerStartInfo
-		{
-			public CustomSoftDebuggerStartInfo (string name, IPAddress address, int debugPort, int outputPort) 
-				: base (name, address, debugPort, outputPort)
-			{
-			}
-			
-			public bool Listen { get; set; }
-		}
-		
-		class CustomSoftDebuggerSession : Mono.Debugging.Soft.SoftDebuggerSession
+		class CustomSoftDebuggerSession : SoftDebuggerSession
 		{
 			IProcessAsyncOperation process;
 			bool usingExternalConsole;
 			
 			protected override void OnRun (DebuggerStartInfo startInfo)
 			{
-				var info = startInfo as CustomSoftDebuggerStartInfo;
+				var info = startInfo as RemoteSoftDebuggerStartInfo;
 				if (info == null) {
 					EndSession ();
 					return;
 				}
-				
-				if (info.Listen)
-					StartListening (info);
 				
 				StartProcess (info);
 				
 				if (!info.Listen) {
 					//connecting to the process, so give it a moment to start listening
 					System.Threading.Thread.Sleep (200);
-					//infinite connection retries (user can cancel), 800ms between them
-					StartConnecting (info, -1, 800);
 				}
+				
+				base.OnRun (startInfo);
 			}
 			
-			void StartProcess (CustomSoftDebuggerStartInfo info)
+			void StartProcess (RemoteSoftDebuggerStartInfo info)
 			{
 				if (string.IsNullOrEmpty (info.Command))
 					return;
@@ -310,7 +298,7 @@ namespace MonoDevelop.Debugger.Soft
 				VBox.ShowAll ();
 			}
 			
-			public new CustomSoftDebuggerStartInfo Run ()
+			public new RemoteSoftDebuggerStartInfo Run ()
 			{
 				var response = (Gtk.ResponseType) MonoDevelop.Ide.MessageService.RunCustomDialog (this);
 				if (response != listenResponse && response != connectResponse)
@@ -333,10 +321,13 @@ namespace MonoDevelop.Debugger.Soft
 					{ "Console", consolePort.ToString () },
 				};
 				
-				var dsi = new CustomSoftDebuggerStartInfo (name, ip, port, consolePort) {
+				var dsi = new RemoteSoftDebuggerStartInfo (name, ip, port, consolePort) {
 					Command = StringParserService.Parse (command),
 					Arguments = StringParserService.Parse (args, customArgsTags),
 					Listen = listen,
+					//infinite connection retries (user can cancel), 800ms between them
+					TimeBetweenConnectionAttempts = 800,
+					MaxConnectionAttempts = -1,
 				};
 				
 				//FIXME: GUI for env vars

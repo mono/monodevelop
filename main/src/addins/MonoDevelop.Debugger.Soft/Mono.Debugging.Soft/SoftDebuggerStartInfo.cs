@@ -32,7 +32,18 @@ using System.Net;
 
 namespace Mono.Debugging.Soft
 {
-	public class SoftDebuggerStartInfo : DebuggerStartInfo
+	public abstract class BaseSoftDebuggerStartInfo : DebuggerStartInfo
+	{
+		public List<AssemblyName> UserAssemblyNames { get; set; }
+		
+		/// <summary>
+		/// The session will output this to the debug log as soon as it starts. It can be used to log warnings from
+		/// creating the SoftDebuggerStartInfo
+		/// </summary>
+		public string LogMessage { get; set; }
+	}
+	
+	public class SoftDebuggerStartInfo : BaseSoftDebuggerStartInfo
 	{
 		public SoftDebuggerStartInfo (string monoRuntimePrefix, Dictionary<string,string> monoRuntimeEnvironmentVariables)
 		{
@@ -43,33 +54,21 @@ namespace Mono.Debugging.Soft
 		public string MonoRuntimePrefix { get; private set; }
 		public Dictionary<string,string> MonoRuntimeEnvironmentVariables { get; private set; }
 		
-		public List<AssemblyName> UserAssemblyNames { get; set; }
-		
-		/// <summary>
-		/// The session will output this to the debug log as soon as it starts. It can be used to log warnings from
-		/// creating the SoftDebuggerStartInfo
-		/// </summary>
-		public string LogMessage { get; set; }
-		
 		public Mono.Debugger.Soft.LaunchOptions.TargetProcessLauncher ExternalConsoleLauncher;
 	}
 	
-	public class RemoteSoftDebuggerStartInfo : DebuggerStartInfo
+	public class RemoteSoftDebuggerStartInfo : BaseSoftDebuggerStartInfo
 	{
 		public IPAddress Address { get; private set; }
 		public int DebugPort { get; private set; }
 		public int OutputPort { get; private set; }
+		public bool Listen { get; set; }
+		public int MaxConnectionAttempts { get; set; }
+		public int TimeBetweenConnectionAttempts { get; set; }
 		
 		public bool RedirectOutput { get { return OutputPort > 0; } }
 		
 		public string AppName { get; set; }
-		public List<AssemblyName> UserAssemblyNames { get; set; }
-		
-		/// <summary>
-		/// The session will output this to the debug log as soon as it starts. It can be used to log warnings from
-		/// creating the SoftDebuggerStartInfo
-		/// </summary>
-		public string LogMessage { get; set; }
 		
 		public RemoteSoftDebuggerStartInfo (string appName, IPAddress address, int debugPort)
 			: this (appName, address, debugPort, 0) {}

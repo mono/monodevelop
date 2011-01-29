@@ -40,8 +40,6 @@ using Mono.Debugging.Soft;
 
 namespace MonoDevelop.Debugger.Soft.IPhone
 {
-
-
 	public class IPhoneDebuggerSession : SoftDebuggerSession
 	{
 		System.Diagnostics.Process simProcess;
@@ -125,7 +123,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		}
 	}
 	
-	class IPhoneDebuggerStartInfo : RemoteDebuggerStartInfo
+	class IPhoneDebuggerStartInfo : RemoteSoftDebuggerStartInfo
 	{
 		public IPhoneExecutionCommand ExecutionCommand { get; private set; }
 		
@@ -133,6 +131,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 			: base (cmd.AppPath.FileNameWithoutExtension, address, debugPort, outputPort)
 		{
 			ExecutionCommand = cmd;
+			Listen = true;
 		}
 	}
 }

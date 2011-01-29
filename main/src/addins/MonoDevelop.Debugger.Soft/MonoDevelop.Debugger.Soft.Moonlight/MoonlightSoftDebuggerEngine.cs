@@ -52,7 +52,7 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 		{
 			var cmd = (MoonlightExecutionCommand) command;
 			var msi = new MoonlightDebuggerStartInfo (cmd.AppName, cmd.Url);
-			msi.SetUserAssemblies (cmd.UserAssemblyPaths);
+			SoftDebuggerEngine.SetUserAssemblyNames (msi, cmd.UserAssemblyPaths);
 			return msi;
 		}
 
@@ -67,7 +67,7 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 		}
 	}
 	
-	class MoonlightDebuggerStartInfo : RemoteDebuggerStartInfo
+	class MoonlightDebuggerStartInfo : Mono.Debugging.Soft.RemoteSoftDebuggerStartInfo
 	{
 		public string Url { get; private set; }
 		
@@ -75,6 +75,7 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 			: base (appName, IPAddress.Loopback, 10000)
 		{
 			this.Url = url;
+			this.Listen = true;
 		}
 	}
 }
