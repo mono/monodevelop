@@ -115,7 +115,8 @@ namespace MonoDevelop.MonoDroid.Gui
 				return;
 			}
 			
-			this.Add (table1);
+			if (c != table1)
+				this.Add (table1);
 			
 			InitializeRealWidgets ();
 			
@@ -173,6 +174,7 @@ namespace MonoDevelop.MonoDroid.Gui
 		
 		void InitializeRealWidgets ()
 		{
+			minAndroidVersionCombo.AppendText (GettextCatalog.GetString ("Automatic"));
 			foreach (var v in MonoDroidFramework.AndroidVersions)
 				minAndroidVersionCombo.AppendText (v.Label);
 			
@@ -197,12 +199,14 @@ namespace MonoDevelop.MonoDroid.Gui
 			ShowAll ();
 		}
 		
-		void SetMinSdkVersion (int v)
+		void SetMinSdkVersion (int? v)
 		{
-			for (int i = 0; i < MonoDroidFramework.AndroidVersions.Length; i++) {
-				if (MonoDroidFramework.AndroidVersions[i].ApiLevel == v) {
-					minAndroidVersionCombo.Active = i;
-					return;
+			if (v.HasValue) {
+				for (int i = 0; i < MonoDroidFramework.AndroidVersions.Length; i++) {
+					if (MonoDroidFramework.AndroidVersions[i].ApiLevel == v.Value) {
+						minAndroidVersionCombo.Active = i + 1;
+						return;
+					}
 				}
 			}
 			minAndroidVersionCombo.Active = 0;
@@ -240,7 +244,10 @@ namespace MonoDevelop.MonoDroid.Gui
 			manifest.VersionName = versionNameEntry.Text;
 			manifest.VersionCode = versionNumberEntry.Text;
 			manifest.ApplicationIcon = appIconCombo.Entry.Text;
-			manifest.MinSdkVersion = MonoDroidFramework.AndroidVersions[minAndroidVersionCombo.Active].ApiLevel;
+			if (minAndroidVersionCombo.Active == 0)
+				manifest.MinSdkVersion = null;
+			else
+				manifest.MinSdkVersion = MonoDroidFramework.AndroidVersions[minAndroidVersionCombo.Active - 1].ApiLevel;
 			manifest.SetAndroidPermissions (GetPermissions ());
 			
 			//FIXME:icon
