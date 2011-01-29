@@ -215,12 +215,17 @@ namespace MonoDevelop.MonoDroid
 		}
 	}
 	
-	/* COPIED FROM MONODEVELOP.ASPNET */
+	/* COPIED FROM MONODEVELOP.ASPNET AND MODIFIED */
 	
 	/// <summary>
-	/// Caches items for filename keys. Files may not exist, which doesn't matter.
-	/// When a project file with that name is cached in any way, the cache item will be flushed.
+	/// Caches file-derived values for filename keys.
 	/// </summary>
+	/// <description>
+	/// Used to cache values extracted from files. Subclasses of this class extract the values
+	/// on request. Requested files may not exist, in which case the returned value is the default/null value.
+	/// When a project file with that name is changed in any way, the cache item will be flushed.
+	/// The files in the cache do not need to be in the project, but if not, changes to the files will not be tracked.
+	/// </description>
 	/// <remarks>Not safe for multithreaded access.</remarks>
 	abstract class ProjectFileCache<T,U> : IDisposable
 		where T : MonoDevelop.Projects.Project
@@ -252,7 +257,7 @@ namespace MonoDevelop.MonoDroid
 		}
 		
 		/// <summary>
-		/// Queries the cache for an item. If the file does not exist in the project, returns null.
+		/// Queries the cache for an item. If the file does not exist, returns default/null.
 		/// </summary>
 		protected U Get (string filename)
 		{
@@ -260,11 +265,10 @@ namespace MonoDevelop.MonoDroid
 			if (cache.TryGetValue (filename, out value))
 				return value;
 			
-			var pf = Project.GetProjectFile (filename);
-			if (pf != null)
-				value = GenerateInfo (filename);
+			if (File.Exists (filename))
+				return cache[filename] = GenerateInfo (filename);
 			
-			return cache[filename] = value;
+			return cache[filename] = default (U);
 		}
 		
 		/// <summary>
