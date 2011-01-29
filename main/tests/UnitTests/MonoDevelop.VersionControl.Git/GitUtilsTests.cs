@@ -39,19 +39,19 @@ namespace MonoDevelop.VersionControl.Git
 	public class GitUtilsTests : TestBase
 	{
 		private readonly string PROJECT_ROOT = "../../../";
-		private RevCommit[] blame;
+		private Dictionary<string, RevCommit[]> blames = new Dictionary<string, RevCommit[]>();
 
 		[Test()]
-		public void TestBlameLineCount ()
+		public void TestBlameLineCountWithMultipleCommits ()
 		{
-			RevCommit[] blameCommits = GetBlameForFixedFile ();
+			RevCommit[] blameCommits = GetBlameForFixedFile ("c5f4319ee3e077436e3950c8a764959d50bf57c0");
 			Assert.That (blameCommits.Length, Is.EqualTo (73));
 		}
 
 		[Test()]
-		public void TestBlameRevisions ()
+		public void TestBlameRevisionsWithMultipleCommits ()
 		{
-			RevCommit[] blameCommits = GetBlameForFixedFile ();
+			RevCommit[] blameCommits = GetBlameForFixedFile ("c5f4319ee3e077436e3950c8a764959d50bf57c0");
 			List<BlameFragment> blames = new List<BlameFragment> ();
 			blames.Add (new BlameFragment (1, 27, "b6e41ee2"));
 			blames.Add (new BlameFragment (28, 1, "15ed2793"));
@@ -76,23 +76,51 @@ namespace MonoDevelop.VersionControl.Git
 			
 			CompareBlames (blameCommits, blames);
 		}
-
-		private RevCommit[] GetBlameForFixedFile ()
+		
+		[Test()]
+		public void TestBlameRevisionsWithOneCommit ()
 		{
+			string commit = "b6e41ee2dd00e8744abc4835567e06667891b2cf";
+			RevCommit[] blameCommits = GetBlameForFixedFile (commit);
+			List<BlameFragment> blames = new List<BlameFragment> ();
+			blames.Add (new BlameFragment (1, 57, commit));			
+			CompareBlames (blameCommits, blames);
+		}
+		
+		[Test()]
+		public void TestBlameLineCountWithOneCommit ()
+		{
+			RevCommit[] blameCommits = GetBlameForFixedFile ("b6e41ee2dd00e8744abc4835567e06667891b2cf");
+			Assert.That (blameCommits.Length, Is.EqualTo (57));
+		}
+		
+		[Test()]
+		public void TestBlameLineCountWithNoCommits ()
+		{
+			RevCommit[] blameCommits = GetBlameForFixedFile ("39fe1158de8da8b82822e299958d35c51d493298");
+			Assert.That (blameCommits.Length, Is.EqualTo (0));
+		}
+		
+		private RevCommit[] GetBlameForFixedFile (string revision)
+		{
+			RevCommit[] blame = null;
+			string path = PROJECT_ROOT + "main/src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitVersionControl.cs";
+			string key = path + revision;
+			blames.TryGetValue(key, out blame);
+			
 			if (blame == null)
 			{
-				string path = PROJECT_ROOT + "main/src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitVersionControl.cs";
-				string revision = "c5f4319ee3e077436e3950c8a764959d50bf57c0";
 				DirectoryInfo gitDir = new DirectoryInfo (PROJECT_ROOT + ".git");
 				FileRepository repo = new FileRepository (gitDir.FullName);
 				RevWalk walker = new RevWalk (repo);
 				ObjectId objectId = repo.Resolve (revision);
 				RevCommit commit = walker.ParseCommit (objectId);
 				blame = GitUtil.Blame (repo, commit, new FileInfo (path).FullName);
+				blames.Add(key, blame);
 			}
+			
 			return blame;
 		}
-
 		void CompareBlames (RevCommit[] blameCommits,List<BlameFragment> blames)
 		{
 			foreach (BlameFragment blame in blames) {

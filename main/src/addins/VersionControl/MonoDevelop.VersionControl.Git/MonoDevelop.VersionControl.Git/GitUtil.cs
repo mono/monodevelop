@@ -438,6 +438,12 @@ namespace MonoDevelop.VersionControl.Git
 						}
 					}
 				}
+			} else if (historySize == 1) {
+				RevCommit firstCommit = commitHistory[0];
+					
+				for (int i = 0; i < totalLines; i++) {
+					lines[i] = firstCommit;
+				}
 			}
 			
 			return lines;
