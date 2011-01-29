@@ -402,7 +402,7 @@ namespace MonoDevelop.VersionControl.Git
 			foreach (RevCommit ancestorCommit in revWalker) {
 				foreach (Change change in GetCommitChanges (repo, ancestorCommit)) {
 					FilePath cpath = FromGitPath (repo, change.Path);
-					if (localCpath == localFile || cpath.IsChildPathOf (localCpath))
+					if (localCpath == cpath || cpath.IsChildPathOf (localCpath))
 					{
 						commitHistory.Add(ancestorCommit);
 						break;
@@ -411,11 +411,17 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			
 			int historySize = commitHistory.Count;
+			RawText rawText = null;
 			
 			for (int i = 0; i + 1 < historySize; i++)
 			{
 				RevCommit ancestorCommit = commitHistory[i];
-				lineCount -= SetBlameLines(repo, lines, ancestorCommit, GetRawText(repo, localFile, ancestorCommit), GetRawText(repo, localFile, commitHistory[i + 1]));
+				if (rawText == null) {
+					rawText = GetRawText (repo, localFile, ancestorCommit);	
+				}
+				RawText nextRawText = GetRawText (repo, localFile, commitHistory[i + 1]);
+				lineCount -= SetBlameLines(repo, lines, ancestorCommit, rawText, nextRawText);
+				rawText = nextRawText;
 				
 				if (lineCount <= 0)
 				{
