@@ -595,9 +595,17 @@ namespace MonoDevelop.MonoDroid
 					continue;
 				var id = GetAndroidResourceID (pf);
 				var split = id.Split (splitChars, StringSplitOptions.RemoveEmptyEntries);
-				if (split.Length != 2 || !split[0].StartsWith (kind))
+				if (split.Length != 2)
 					continue;
-				id = Path.GetFileNameWithoutExtension (split[1]);
+				
+				//check that the kind matches but ignore qualifiers
+				if (!split[0].StartsWith (kind, StringComparison.OrdinalIgnoreCase))
+					continue;
+				if (split[0].Length != kind.Length && split[0][kind.Length] != '-')
+					continue;
+				
+				//HACK: MonoDroid currently requires IDs in xml files to be lowercased
+				id = Path.GetFileNameWithoutExtension (split[1]).ToLower ();
 				if (alreadyReturned.Add (id))
 					yield return new KeyValuePair<string, ProjectFile> (id, pf);
 			}		
