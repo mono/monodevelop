@@ -38,9 +38,7 @@ using System.Net;
 
 namespace MonoDevelop.Debugger.Soft.Moonlight
 {
-
-
-	public class MoonlightSoftDebuggerSession : RemoteSoftDebuggerSession
+	public class MoonlightSoftDebuggerSession : Mono.Debugging.Soft.SoftDebuggerSession
 	{
 		Process browser;
 		

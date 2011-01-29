@@ -41,7 +41,7 @@ using System.Collections.Generic;
 namespace MonoDevelop.Debugger.Soft.MonoMac
 {
 
-	public class MonoMacDebuggerSession : RemoteSoftDebuggerSession
+	public class MonoMacDebuggerSession : Mono.Debugging.Soft.SoftDebuggerSession
 	{
 		MonoMacProcess process;
 		

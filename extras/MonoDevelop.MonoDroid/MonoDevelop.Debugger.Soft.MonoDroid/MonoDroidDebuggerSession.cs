@@ -40,7 +40,7 @@ using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Debugger.Soft.MonoDroid
 {
-	public class MonoDroidDebuggerSession : RemoteSoftDebuggerSession
+	public class MonoDroidDebuggerSession : Mono.Debugging.Soft.SoftDebuggerSession
 	{
 		const int WAIT_BEFORE_CONNECT_MS = 500;
 		const int WAIT_BEFORE_RETRY_MS = 800;

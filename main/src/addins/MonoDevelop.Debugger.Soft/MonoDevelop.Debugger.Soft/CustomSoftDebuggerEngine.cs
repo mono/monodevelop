@@ -110,7 +110,7 @@ namespace MonoDevelop.Debugger.Soft
 			public bool Listen { get; set; }
 		}
 		
-		class CustomSoftDebuggerSession : RemoteSoftDebuggerSession
+		class CustomSoftDebuggerSession : Mono.Debugging.Soft.SoftDebuggerSession
 		{
 			IProcessAsyncOperation process;
 			bool usingExternalConsole;

@@ -303,6 +303,9 @@ namespace MonoDevelop.Debugger
 			session.TypeResolverHandler = ResolveType;
 			session.BreakpointTraceHandler = BreakpointTraceHandler;
 			session.GetExpressionEvaluator = OnGetExpressionEvaluator;
+			session.ConnectionDialogCreator = delegate {
+				return new GtkConnectionDialog ();
+			};
 
 			console.CancelRequested += OnCancelRequested;
 			
@@ -912,6 +915,78 @@ namespace MonoDevelop.Debugger
 		{
 			DebugExecutionHandler h = new DebugExecutionHandler (engine);
 			return h.Execute (command, console);
+		}
+	}
+	
+	internal class GtkConnectionDialog : IConnectionDialog
+	{
+		bool disposed;
+		Gtk.Dialog dialog;
+		Gtk.Label label;
+		
+		public event EventHandler UserCancelled;
+		
+		string DefaultListenMessage {
+			get { return GettextCatalog.GetString ("Waiting for debugger to connect..."); }
+		}
+
+		public void SetMessage (DebuggerStartInfo dsi, string message, bool listening, int attemptNumber)
+		{
+			if (disposed)
+				return;
+			
+			if (string.IsNullOrEmpty (message))
+				message = DefaultListenMessage;
+			
+			if (dialog == null) {
+				Gtk.Application.Invoke (delegate {
+					if (disposed)
+						return;
+					RunDialog (message);
+				});
+			} else {
+				Gtk.Application.Invoke (delegate {
+					if (disposed)
+						return;
+					if (label != null)
+						label.Text = message;
+				});
+			}
+		}
+		
+		void RunDialog (string message)
+		{
+			dialog = new Gtk.Dialog () {
+				Title = "Waiting for debugger"
+			};
+			
+			var label = new Gtk.Alignment (0.5f, 0.5f, 1f, 1f) {
+				Child = new Gtk.Label (message),
+				BorderWidth = 12
+			};
+			dialog.VBox.PackStart (label);
+			label.ShowAll ();
+			
+			dialog.AddButton ("Cancel", Gtk.ResponseType.Cancel);
+			
+			int response = MonoDevelop.Ide.MessageService.ShowCustomDialog (dialog);
+			
+			if (!disposed && response != (int) Gtk.ResponseType.Ok && UserCancelled != null) {
+				UserCancelled (null, null);
+			}
+		}
+
+		public void Dispose ()
+		{
+			if (disposed)
+				return;
+			disposed = true;
+			
+			if (dialog != null) {
+				Gtk.Application.Invoke (delegate {
+					dialog.Respond (Gtk.ResponseType.Ok);
+				});
+			}
 		}
 	}
 }

@@ -42,6 +42,7 @@ namespace Mono.Debugging.Client
 	public delegate string TypeResolverHandler (string identifier, SourceLocation location);
 	public delegate void BreakpointTraceHandler (BreakEvent be, string trace);
 	public delegate IExpressionEvaluator GetExpressionEvaluatorHandler (string extension);
+	public delegate IConnectionDialog ConnectionDialogCreator ();
 	
 	public abstract class DebuggerSession: IDisposable
 	{
@@ -119,6 +120,8 @@ namespace Mono.Debugging.Client
 			get { return exceptionHandler; }
 			set { exceptionHandler = value; }
 		}
+		
+		public ConnectionDialogCreator ConnectionDialogCreator { get; set; }
 		
 		public BreakpointTraceHandler BreakpointTraceHandler { get; set; }
 		
@@ -861,7 +864,7 @@ namespace Mono.Debugging.Client
 				TargetStarted (this, EventArgs.Empty);
 		}
 		
-		internal protected void OnStarted ()
+		internal protected virtual void OnStarted ()
 		{
 			lock (slock) {
 				OnTargetEvent (new TargetEventArgs (TargetEventType.TargetReady));
@@ -1093,5 +1096,13 @@ namespace Mono.Debugging.Client
 		public bool IsBusy { get; internal set; }
 		
 		public string Description { get; internal set; }
+	}
+	
+	public interface IConnectionDialog : IDisposable
+	{
+		event EventHandler UserCancelled;
+		
+		//message may be null in which case the dialog should construct a default
+		void SetMessage (DebuggerStartInfo dsi, string message, bool listening, int attemptNumber);
 	}
 }

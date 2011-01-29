@@ -61,6 +61,7 @@ namespace Mono.Debugging.Soft
 		ExceptionEventRequest unhandledExceptionRequest;
 		string remoteProcessName;
 		Dictionary<long,long> localThreadIds = new Dictionary<long, long> ();
+		IConnectionDialog connectionDialog;
 		
 		Dictionary<long,ObjectMirror> activeExceptionsByThread = new Dictionary<long, ObjectMirror> ();
 		
@@ -130,7 +131,7 @@ namespace Mono.Debugging.Soft
 			var callback = HandleConnectionCallbackErrors ((IAsyncResult ar) => {
 				ConnectionStarted (VirtualMachineManager.EndLaunch (ar));
 			});
-			ConnectionStarting (VirtualMachineManager.BeginLaunch (psi, callback, options), dsi);
+			ConnectionStarting (VirtualMachineManager.BeginLaunch (psi, callback, options), dsi, true, 0);
 		}
 		
 		/// <summary>Starts the debugger listening for a connection over TCP/IP</summary>
@@ -142,7 +143,7 @@ namespace Mono.Debugging.Soft
 			var callback = HandleConnectionCallbackErrors (delegate (IAsyncResult ar) {
 				ConnectionStarted (VirtualMachineManager.EndListen (ar));
 			});
-			ConnectionStarting (VirtualMachineManager.BeginListen (dbgEP, conEP, callback), dsi);
+			ConnectionStarting (VirtualMachineManager.BeginListen (dbgEP, conEP, callback), dsi, true, 0);
 		}
 
 		protected virtual bool ShouldRetryConnection (Exception ex, int attemptNumber)
@@ -172,7 +173,7 @@ namespace Mono.Debugging.Soft
 					return;
 				} catch (Exception ex) {
 					attemptNumber++;
-					if (!ShouldRetryConnection(ex, attemptNumber) || attemptNumber == maxAttempts || Exited) {
+					if (!ShouldRetryConnection (ex, attemptNumber) || attemptNumber == maxAttempts || Exited) {
 						OnConnectionError (ex);
 						return;
 					}
@@ -181,14 +182,14 @@ namespace Mono.Debugging.Soft
 					if (timeBetweenAttempts > 0)
 						System.Threading.Thread.Sleep (timeBetweenAttempts);
 					
-					ConnectionStarting (VirtualMachineManager.BeginConnect (dbgEP, conEP, callback), dsi);
+					ConnectionStarting (VirtualMachineManager.BeginConnect (dbgEP, conEP, callback), dsi, false, attemptNumber);
 					
 				} catch (Exception ex2) {
 					OnConnectionError (ex2);
 				}
 			};
 			
-			ConnectionStarting (VirtualMachineManager.BeginConnect (dbgEP, conEP, callback), dsi);
+			ConnectionStarting (VirtualMachineManager.BeginConnect (dbgEP, conEP, callback), dsi, false, 0);
 		}
 		
 		void InitForRemoteSession (RemoteSoftDebuggerStartInfo dsi, out IPEndPoint dbgEP, out IPEndPoint conEP)
@@ -223,20 +224,6 @@ namespace Mono.Debugging.Soft
 		}
 		
 		/// <summary>
-		/// Called when the debugger starts connecting.
-		/// </summary>
-		protected virtual void OnConnectionStarting (DebuggerStartInfo dsi, bool retrying)
-		{
-		}
-		
-		/// <summary>
-		/// Called when the debugger succeeds connecting.
-		/// </summary>
-		protected virtual void OnConnectionStarted ()
-		{
-		}
-		
-		/// <summary>
 		/// Called if an error happens while making the connection. Default terminates the session.
 		/// </summary>
 		protected virtual void OnConnectionError (Exception ex)
@@ -251,17 +238,31 @@ namespace Mono.Debugging.Soft
 			}
 		}
 		
-		void ConnectionStarting (IAsyncResult connectionHandle, DebuggerStartInfo dsi) 
+		void ConnectionStarting (IAsyncResult connectionHandle, DebuggerStartInfo dsi, bool listening, int attemptNumber) 
 		{
-			if (this.connectionHandle != null && !this.connectionHandle.IsCompleted)
+			if (this.connectionHandle != null && (attemptNumber == 0 || !this.connectionHandle.IsCompleted))
 				throw new InvalidOperationException ("Already connecting");
-			bool retrying = this.connectionHandle != null;
+			
 			this.connectionHandle = connectionHandle;
-			OnConnectionStarting (dsi, retrying);
+			
+			if (ConnectionDialogCreator != null) {
+				connectionDialog = ConnectionDialogCreator ();
+				connectionDialog.UserCancelled += delegate {
+					EndSession ();
+				};
+				if (connectionDialog != null)
+					connectionDialog.SetMessage (dsi, GetConnectingMessage (dsi), listening, attemptNumber);
+			}
+		}
+		
+		protected virtual string GetConnectingMessage (DebuggerStartInfo dsi)
+		{
+			return null;
 		}
 		
 		void EndLaunch ()
 		{
+			HideConnectionDialog ();
 			if (connectionHandle != null) {
 				VirtualMachineManager.CancelConnection (connectionHandle);
 				connectionHandle = null;
@@ -279,6 +280,14 @@ namespace Mono.Debugging.Soft
 		
 		protected bool Exited {
 			get { return exited; }
+		}
+		
+		void HideConnectionDialog ()
+		{
+			if (connectionDialog != null) {
+				connectionDialog.Dispose ();
+				connectionDialog = null;
+			}
 		}
 		
 		/// <summary>
@@ -307,7 +316,7 @@ namespace Mono.Debugging.Soft
 			ConnectOutput (vm.StandardOutput, false);
 			ConnectOutput (vm.StandardError, true);
 			
-			OnConnectionStarted ();
+			HideConnectionDialog ();
 			
 			vm.EnableEvents (EventType.AssemblyLoad, EventType.TypeLoad, EventType.ThreadStart, EventType.ThreadDeath, EventType.AssemblyUnload);
 			try {
@@ -721,6 +730,8 @@ namespace Mono.Debugging.Soft
 		
 		protected override bool HandleException (Exception ex)
 		{
+			HideConnectionDialog ();
+			
 			if (ex is VMDisconnectedException)
 				ex = new DisconnectedException ();
 			return base.HandleException (ex);

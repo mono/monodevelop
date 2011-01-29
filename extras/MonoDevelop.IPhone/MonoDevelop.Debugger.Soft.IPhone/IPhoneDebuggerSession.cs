@@ -36,12 +36,13 @@ using MonoDevelop.Core;
 using System.Net.Sockets;
 using System.Net;
 using System.Text;
+using Mono.Debugging.Soft;
 
 namespace MonoDevelop.Debugger.Soft.IPhone
 {
 
 
-	public class IPhoneDebuggerSession : RemoteSoftDebuggerSession
+	public class IPhoneDebuggerSession : SoftDebuggerSession
 	{
 		System.Diagnostics.Process simProcess;
 		
@@ -54,11 +55,12 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 			StartListening (dsi);
 		}
 		
-		protected override string GetListenMessage (RemoteDebuggerStartInfo dsi)
+		protected override string GetConnectingMessage (DebuggerStartInfo dsi)
 		{
-			var cmd = ((IPhoneDebuggerStartInfo)dsi).ExecutionCommand;
-			string message = GettextCatalog.GetString ("Waiting for debugger to connect on {0}:{1}...", dsi.Address, dsi.DebugPort);
-			if (!cmd.Simulator)
+			var iphDsi = ((IPhoneDebuggerStartInfo)dsi);
+			string message = GettextCatalog.GetString ("Waiting for debugger to connect on {0}:{1}...",
+				iphDsi.Address, iphDsi.DebugPort);
+			if (!iphDsi.ExecutionCommand.Simulator)
 				message += "\n" + GettextCatalog.GetString ("Please start the application on the device.");
 			return message;
 		}
@@ -102,8 +104,9 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 			});
 		}
 		
-		protected override void OnConnected ()
+		protected override void OnStarted ()
 		{
+			base.OnStarted ();
 			if (simProcess != null)
 				IPhoneUtility.MakeSimulatorGrabFocus ();
 		}
