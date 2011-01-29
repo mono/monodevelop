@@ -31,6 +31,7 @@ using NGit;
 using UnitTests;
 using NUnit.Framework.SyntaxHelpers;
 using System.IO;
+using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -38,18 +39,63 @@ namespace MonoDevelop.VersionControl.Git
 	public class GitUtilsTests : TestBase
 	{
 		private readonly string PROJECT_ROOT = "../../../";
+
 		[Test()]
-		public void TestBlame ()
+		public void TestBlameLineCount ()
+		{
+			RevCommit[] blameCommits = GetBlameForFixedFile ();
+			Assert.That (blameCommits.Length, Is.EqualTo (73));
+		}
+
+		[Test()]
+		public void TestBlameRevisions ()
+		{
+			RevCommit[] blameCommits = GetBlameForFixedFile ();
+			List<BlameFragment> blames = new List<BlameFragment> ();
+			blames.Add (new BlameFragment (1, 27, "b6e41ee2"));
+			blames.Add (new BlameFragment (28, 1, "15ed2793"));
+			blames.Add (new BlameFragment (29, 1, "a78c32a5"));
+			blames.Add (new BlameFragment (30, 5, "b6e41ee2"));
+			
+			CompareBlames (blameCommits, blames);
+		}
+
+		private RevCommit[] GetBlameForFixedFile ()
 		{
 			string path = PROJECT_ROOT + "main/src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitVersionControl.cs";
 			string revision = "c5f4319ee3e077436e3950c8a764959d50bf57c0";
-			DirectoryInfo gitDir = new DirectoryInfo(PROJECT_ROOT + ".git");
-			FileRepository repo = new FileRepository(gitDir.FullName);
-			RevWalk walker = new RevWalk(repo);
+			DirectoryInfo gitDir = new DirectoryInfo (PROJECT_ROOT + ".git");
+			FileRepository repo = new FileRepository (gitDir.FullName);
+			RevWalk walker = new RevWalk (repo);
 			ObjectId objectId = repo.Resolve (revision);
 			RevCommit commit = walker.ParseCommit (objectId);
-			RevCommit[] blameCommits = GitUtil.Blame (repo, commit, new FileInfo(path).FullName);
-			Assert.That(blameCommits.Length, Is.EqualTo(73));
+			return GitUtil.Blame (repo, commit, new FileInfo (path).FullName);
+		}
+
+		void CompareBlames (RevCommit[] blameCommits,List<BlameFragment> blames)
+		{
+			foreach (BlameFragment blame in blames) {
+				int zeroBasedStartLine = blame.startLine - 1;
+				
+				for (int i = 0; i < blame.lineCount; i++) {
+					Assert.That (blameCommits [zeroBasedStartLine + i].Id.Name, Text.StartsWith(blame.revID), "Error at line {0}", blame.startLine + i);
+				}
+			}
+		}
+
+	}
+
+	struct BlameFragment
+	{
+		public int startLine;
+		public int lineCount;
+		public string revID;
+
+		public BlameFragment (int start,int count, string revision)
+		{
+			startLine = start;
+			lineCount = count;
+			revID = revision;
 		}
 	}
 }
