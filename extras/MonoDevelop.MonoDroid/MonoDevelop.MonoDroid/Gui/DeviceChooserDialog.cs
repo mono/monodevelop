@@ -165,6 +165,7 @@ namespace MonoDevelop.MonoDroid.Gui
 			var device = (DisplayDevice) store.GetValue (iter, 0);
 			if (device.Device != null) {
 				buttonOk.Sensitive = true;
+				Device = device.Device;
 			} else {
 				startEmulatorButton.Sensitive = true;
 			}
