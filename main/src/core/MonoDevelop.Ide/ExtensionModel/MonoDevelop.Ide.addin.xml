@@ -59,6 +59,13 @@
 		</ExtensionNode>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/Ide/InitCompleteHandlers" name = "Post inialization handlers">
+		<Description>Commands to be automatically executed when the IDE finishes initalization.</Description>
+		<ExtensionNode name="Class">
+			<Description>A subclass of MonoDevelop.Components.Commands.CommandHandler</Description>
+		</ExtensionNode>
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/MonoDevelop/Ide/KeyBindingSchemes" name = "Key binding schemes">
 		<Description>Key binding schemes.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.KeyBindingScheme"/>
