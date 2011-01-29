@@ -2,9 +2,9 @@
 // ExternalFrameworkNodeBuilder.cs
 //  
 // Author:
-//       dwandless <${AuthorEmail}>
+//       Duane Wandless
 // 
-// Copyright (c) 2011 dwandless
+// Copyright (c) 2009-2010 Novell, Inc. (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -54,9 +54,7 @@ namespace MonoDevelop.MonoMac
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			if (((ExternalFrameworksFolder)dataObject).Project.Items.GetAll<MonoMacFrameworkItem> ().Any ())
-				return true;
-			return false;
+			return((ExternalFrameworksFolder)dataObject).Project.Items.GetAll<MonoMacFrameworkItem> ().Any ();
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
@@ -108,7 +106,7 @@ namespace MonoDevelop.MonoMac
 			var proj = (MonoMacProject)CurrentNode.GetParentDataItem (typeof (MonoMacProject), false);
 			proj.Items.Remove (node);
 			IdeApp.ProjectOperations.Save (proj);
-			IdeApp.Workbench.StatusBar.ShowMessage ( GettextCatalog.GetString ("Removed framework reference"));	
+			IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("Removed framework reference"));	
 			
 			MonoMacAddFrameworksHandler.NotifyFrameworksChanged (proj);
 		}

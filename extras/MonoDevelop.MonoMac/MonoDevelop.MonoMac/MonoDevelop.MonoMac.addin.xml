@@ -26,7 +26,6 @@
 	<Dependencies>
 		<Addin id="Core" version="2.4"/>
 		<Addin id="Ide"  version="2.4"/>
-		<!--Addin id="SourceEditor2" version="2.4"/-->
 	</Dependencies>
 	
     <Extension path = "/MonoDevelop/Ide/Commands">
@@ -49,7 +48,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
-		<DataType class = "MonoDevelop.MonoMac.ExternalFrameworkNode" />
+		<DataType class = "MonoDevelop.MonoMac.MonoMacFrameworkItem" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">

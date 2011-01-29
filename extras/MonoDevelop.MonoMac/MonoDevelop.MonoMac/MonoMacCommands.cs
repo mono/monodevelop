@@ -2,9 +2,9 @@
 // MonoMacCommands.cs
 //  
 // Author:
-//       dwandless <${AuthorEmail}>
+//       Duane Wandless
 // 
-// Copyright (c) 2011 dwandless
+// Copyright (c) 2009-2010 Novell, Inc. (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -48,45 +48,48 @@ namespace MonoDevelop.MonoMac
 		
 		protected override void Run ()
 		{
+			var mmProject = IdeApp.ProjectOperations.CurrentSelectedItem as MonoMacProject;			
+			if (mmProject == null) 
+				return;
+			
 			var addFrameworkDlg = new AddFrameworksDialog () {
 				Modal = true
 			};
 			
+			MonoMacFrameworkItem ef = null;
+			
 			try {				
 				if (MessageService.RunCustomDialog (addFrameworkDlg) == (int)Gtk.ResponseType.Ok) {
-					var entry = (SolutionItem)IdeApp.ProjectOperations.CurrentSelectedItem;
-					var mmProject = (MonoMacProject)entry;
+					string pathToFramework = addFrameworkDlg.Framework;
 					
-					if (mmProject != null) {	
-						string pathToFramework = addFrameworkDlg.Framework;
-						
-						if (addFrameworkDlg.IsRelative) {
-							var path = new FilePath (addFrameworkDlg.Framework);
-							pathToFramework = path.ToRelative (mmProject.BaseDirectory);
-						}
-						
-						var ef = new MonoMacFrameworkItem (pathToFramework) {
-							Relative = addFrameworkDlg.IsRelative
-						};
-
-						mmProject.Items.Add (ef);
-						IdeApp.ProjectOperations.Save (mmProject);
-						IdeApp.Workbench.StatusBar.ShowMessage ( GettextCatalog.GetString ("Added framework"));
-						
-						NotifyFrameworksChanged (mmProject);
+					if (addFrameworkDlg.IsRelative) {
+						var path = new FilePath (addFrameworkDlg.Framework);
+						pathToFramework = path.ToRelative (mmProject.BaseDirectory);
 					}
+					
+					ef = new MonoMacFrameworkItem (pathToFramework) {
+						Relative = addFrameworkDlg.IsRelative
+					};
 				}
 			}
 			finally {
 				addFrameworkDlg.Destroy ();
 			}
+			
+			if (ef != null) {
+				mmProject.Items.Add (ef);
+				IdeApp.ProjectOperations.Save (mmProject);
+				IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("Added framework"));
+				
+				NotifyFrameworksChanged (mmProject);
+			}
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			var entry = (SolutionItem)IdeApp.ProjectOperations.CurrentSelectedItem;
+			var entry = IdeApp.ProjectOperations.CurrentSelectedItem as MonoMacProject;
 			
-			if (entry == null || !(entry is MonoMacProject)) {
+			if (entry == null) {
 				info.Visible = false;
 				return;
 			}

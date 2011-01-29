@@ -2,9 +2,9 @@
 // ExternalFrameworksNodeBuilder.cs
 //  
 // Author:
-//       dwandless <${AuthorEmail}>
+//       Duane Wandless
 // 
-// Copyright (c) 2011 dwandless
+// Copyright (c) 2009-2010 Novell, Inc. (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal

@@ -133,8 +133,6 @@ namespace MonoDevelop.MonoMac
 					monitor.Step (1);
 				}
 				
-				GenerateExternalFrameworkCodeFile (proj, conf);
-				
 				monitor.EndTask ();
 			}
 			
@@ -213,18 +211,16 @@ namespace MonoDevelop.MonoMac
 			
 			//external frameworks
 			var externalFrameworks = conf.AppDirectory.Combine ("Contents", "Frameworks");
-			if (proj.Items.GetAll<MonoMacFrameworkItem> ().Count () > 0)
+			if (proj.Items.GetAll<MonoMacFrameworkItem> ().Any ())
 			{
 				if (!Directory.Exists (externalFrameworks))
 			    	return true;
 				
-				FilePath generatedFilePath = proj.BaseDirectory.Combine ("MonoMacFrameworks.cs");
-				var fi = new FileInfo (generatedFilePath);
-				if (!fi.Exists)
+				FilePath generatedFilePath = proj.BaseDirectory.Combine ("obj", conf.Id).Combine (proj.LanguageBinding.GetFileName ("MonoMacFrameworks.g"));
+				if (!File.Exists (generatedFilePath))
 					return true;
-				
-				var projFile = new FileInfo (proj.FileName);	
-				if (projFile.Exists && projFile.LastWriteTime >= fi.LastWriteTime)
+					
+				if (File.Exists (proj.FileName) && File.GetLastWriteTime (proj.FileName) >= File.GetLastWriteTime (generatedFilePath))
 					return true;
 			}
 			
@@ -254,6 +250,20 @@ namespace MonoDevelop.MonoMac
 		
 		protected override BuildResult Compile (IProgressMonitor monitor, SolutionEntityItem item, BuildData buildData)
 		{
+			MonoMacProject proj = item as MonoMacProject;
+			if (proj == null || !proj.Items.GetAll<MonoMacFrameworkItem> ().Any ())
+				return base.Compile (monitor, item, buildData);
+			
+			var objDir = proj.BaseDirectory.Combine ("obj", buildData.Configuration.Id);
+			if (!Directory.Exists (objDir))
+				Directory.CreateDirectory (objDir);
+			
+			var generatedFile = objDir.Combine (proj.LanguageBinding.GetFileName ("MonoMacFrameworks.g"));
+			buildData.Items.Add (new ProjectFile (generatedFile, BuildAction.Compile));
+			
+			if (!File.Exists (generatedFile) || File.GetLastWriteTime (generatedFile) < File.GetLastWriteTime (proj.FileName))
+				GenerateExternalFrameworkCodeFile (proj, buildData.Configuration);
+	
 			return base.Compile (monitor, item, buildData);
 		}
 		
@@ -290,9 +300,13 @@ namespace MonoDevelop.MonoMac
 		}
 		
 		
-		static private void GenerateExternalFrameworkCodeFile (MonoMacProject proj, MonoMacProjectConfiguration conf)
+		static private void GenerateExternalFrameworkCodeFile (MonoMacProject proj, DotNetProjectConfiguration conf)
 		{
-			FilePath generatedFilePath = proj.BaseDirectory.Combine ("MonoMacFrameworks.cs");
+			var projectConf = conf as MonoMacProjectConfiguration;
+			if (projectConf == null)
+				return;
+			
+			FilePath generatedFilePath = proj.BaseDirectory.Combine ("obj", conf.Id, proj.LanguageBinding.GetFileName ("MonoMacFrameworks.g"));
 			
 			var fi = new FileInfo (generatedFilePath);
 			var projFile = new FileInfo (proj.FileName);
@@ -338,7 +352,7 @@ namespace MonoDevelop.MonoMac
 				Type = new CodeTypeReference (typeof (IntPtr))
 			};
 			
-			FilePath externalFrameworks = conf.AppDirectory.Combine ("Contents", "Frameworks");
+			FilePath externalFrameworks = projectConf.AppDirectory.Combine ("Contents", "Frameworks");
 			
 			foreach (MonoMacFrameworkItem node in proj.Items.GetAll<MonoMacFrameworkItem> ()) {
 
@@ -352,7 +366,7 @@ namespace MonoDevelop.MonoMac
 				var check = new CodeConditionStatement ();
 				check.Condition = new CodeBinaryOperatorExpression (
 					new CodeMethodInvokeExpression (dlopenMethod,
-						new CodePrimitiveExpression ((string)externalFrameworks.Combine (Path.GetFileName (node.FullPath))), 
+						new CodePrimitiveExpression ((string)externalFrameworks.Combine (Path.GetFileName (node.FullPath), libName)), 
 				                                     new CodePrimitiveExpression (0)),
 				    CodeBinaryOperatorType.IdentityEquality,                                               
 	                new CodeFieldReferenceExpression (intPtrType, "Zero"));

@@ -198,12 +198,6 @@ namespace MonoDevelop.MonoMac
 		
 		#endregion
 		
-		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
-		{
-			
-			return base.OnBuild (monitor, configuration);
-		}
-		
 		public ProjectFile GetInfoPlist ()
 		{
 			var name = BaseDirectory.Combine ("Info.plist");
