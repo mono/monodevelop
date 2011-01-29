@@ -412,21 +412,23 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			
 			int historySize = commitHistory.Count;
-			RawText rawText = null;
 			
-			for (int i = 0; i + 1 < historySize; i++)
+			if (historySize > 1)
 			{
-				RevCommit ancestorCommit = commitHistory[i];
-				if (rawText == null) {
-					rawText = GetRawText (repo, localFile, ancestorCommit);	
-				}
-				RawText nextRawText = GetRawText (repo, localFile, commitHistory[i + 1]);
-				lineCount -= SetBlameLines(repo, lines, ancestorCommit, rawText, nextRawText);
-				rawText = nextRawText;
+				RevCommit recentCommit = commitHistory[0];
+				RawText rawText = GetRawText (repo, localFile, recentCommit);
 				
-				if (lineCount <= 0)
+				for (int i = 1; i < historySize; i++)
 				{
-					break;
+					RevCommit ancestorCommit = commitHistory[i];
+					RawText olderRawText = GetRawText (repo, localFile, ancestorCommit);
+					lineCount -= SetBlameLines(repo, lines, recentCommit, rawText, olderRawText);
+					recentCommit = ancestorCommit;
+					
+					if (lineCount <= 0)
+					{
+						break;
+					}
 				}
 			}
 			
