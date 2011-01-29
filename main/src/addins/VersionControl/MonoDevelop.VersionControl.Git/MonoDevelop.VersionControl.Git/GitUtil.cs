@@ -375,7 +375,8 @@ namespace MonoDevelop.VersionControl.Git
 			TreeWalk tw = TreeWalk.ForPath (repo, localFile, commit.Tree);
 			if (tw == null)
 				return new RevCommit [0];
-			int lineCount = GetFileLineCount (repo, tw);
+			int totalLines = GetFileLineCount (repo, tw);
+			int lineCount = totalLines;			
 			RevCommit[] lines = new RevCommit [lineCount];
 			RevWalk revWalker = new RevWalk (repo);
 			revWalker.MarkStart (commit);
@@ -417,7 +418,7 @@ namespace MonoDevelop.VersionControl.Git
 				//TODO: Do we need to set the 00000 commit?
 				RevCommit firstCommit = historySize > 0 ? commitHistory[historySize - 1] : null;
 				
-				for (int i = 0; i < lineCount; i++)
+				for (int i = 0; i < totalLines; i++)
 				{
 					if (lines[i] == null)
 					{
