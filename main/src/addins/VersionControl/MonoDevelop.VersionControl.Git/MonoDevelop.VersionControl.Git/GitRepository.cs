@@ -47,6 +47,7 @@ using NGit.Errors;
 using NGit.Api.Errors;
 using NGit.Diff;
 using NGit.Merge;
+using Mono.TextEditor;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -1314,12 +1315,34 @@ namespace MonoDevelop.VersionControl.Git
 			if (hc == null)
 				return new Annotation [0];
 			RevCommit[] lineCommits = GitUtil.Blame (repo, hc, repositoryPath);
-			Annotation[] lines = new Annotation[lineCommits.Length];
-			for (int n = 0; n < lines.Length; n++) {
+			int lineCount = lineCommits.Length;
+			List<Annotation> annotations = new List<Annotation>(lineCount);
+			for (int n = 0; n < lineCount; n++) {
 				RevCommit c = lineCommits[n];
-				lines[n] = new Annotation (c.Name, c.GetAuthorIdent ().GetName () + "<" + c.GetAuthorIdent().GetEmailAddress () + ">", c.GetCommitterIdent ().GetWhen ());
+				Annotation annotation = new Annotation (c.Name, c.GetAuthorIdent ().GetName () + "<" + c.GetAuthorIdent ().GetEmailAddress () + ">", c.GetCommitterIdent ().GetWhen ());
+				annotations.Add(annotation);
 			}
-			return lines;
+			
+			Document baseDocument = new Document (GetCommitContent (hc, repositoryPath));
+			Document workingDocument = new Document (File.ReadAllText (repositoryPath));
+			Annotation uncommittedRev = new Annotation("0000000000000000000000000000000000000000", "", new DateTime());
+			
+			// Based on Subversion code until we support blame on things other than commits
+			foreach (var hunk in baseDocument.Diff (workingDocument)) {
+				annotations.RemoveRange (hunk.RemoveStart, hunk.Removed);
+				int start = hunk.InsertStart - 1; //Line number - 1 = index
+				bool insert = (start < annotations.Count);
+					
+				for (int i = 0; i < hunk.Inserted; ++i) {
+					if (insert) {
+						annotations.Insert (start, uncommittedRev);
+					} else {
+						annotations.Add (uncommittedRev);
+					}
+				}
+			}
+			
+			return annotations.ToArray();
 		}
 		
 		internal GitRevision GetPreviousRevisionFor (GitRevision revision)
