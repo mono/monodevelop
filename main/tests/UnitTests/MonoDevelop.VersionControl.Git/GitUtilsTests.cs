@@ -40,12 +40,22 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		private readonly string PROJECT_ROOT = "../../../";
 		private Dictionary<string, RevCommit[]> blames = new Dictionary<string, RevCommit[]>();
+		private FileRepository repo;
+		private RevWalk walker;
+		
+		[SetUp()]
+		public override void Setup() {
+			base.Setup();
+			DirectoryInfo gitDir = new DirectoryInfo (PROJECT_ROOT + ".git");
+			repo = new FileRepository (gitDir.FullName);
+			walker = new RevWalk (repo);
+		}
 
 		[Test()]
 		public void TestBlameLineCountWithMultipleCommits ()
 		{
 			RevCommit[] blameCommits = GetBlameForFixedFile ("c5f4319ee3e077436e3950c8a764959d50bf57c0");
-			Assert.That (blameCommits.Length, Is.EqualTo (73));
+			Assert.That (blameCommits.Length, Is.EqualTo (72));
 		}
 
 		[Test()]
@@ -83,7 +93,7 @@ namespace MonoDevelop.VersionControl.Git
 			string commit = "b6e41ee2dd00e8744abc4835567e06667891b2cf";
 			RevCommit[] blameCommits = GetBlameForFixedFile (commit);
 			List<BlameFragment> blames = new List<BlameFragment> ();
-			blames.Add (new BlameFragment (1, 57, commit));			
+			blames.Add (new BlameFragment (1, 56, commit));			
 			CompareBlames (blameCommits, blames);
 		}
 		
@@ -91,7 +101,7 @@ namespace MonoDevelop.VersionControl.Git
 		public void TestBlameLineCountWithOneCommit ()
 		{
 			RevCommit[] blameCommits = GetBlameForFixedFile ("b6e41ee2dd00e8744abc4835567e06667891b2cf");
-			Assert.That (blameCommits.Length, Is.EqualTo (57));
+			Assert.That (blameCommits.Length, Is.EqualTo (56));
 		}
 		
 		[Test()]
@@ -110,9 +120,6 @@ namespace MonoDevelop.VersionControl.Git
 			
 			if (blame == null)
 			{
-				DirectoryInfo gitDir = new DirectoryInfo (PROJECT_ROOT + ".git");
-				FileRepository repo = new FileRepository (gitDir.FullName);
-				RevWalk walker = new RevWalk (repo);
 				ObjectId objectId = repo.Resolve (revision);
 				RevCommit commit = walker.ParseCommit (objectId);
 				blame = GitUtil.Blame (repo, commit, new FileInfo (path).FullName);
