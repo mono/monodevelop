@@ -452,14 +452,14 @@ namespace MonoDevelop.VersionControl.Git
 		static int GetFileLineCount (NGit.Repository repo, TreeWalk tw) {
 			ObjectId id = tw.GetObjectId (0);
 			byte[] data = repo.ObjectDatabase.Open (id).GetBytes ();			
-			return NGit.Util.RawParseUtils.LineMap (data, 0, data.Length).Size ();
+			return new RawText (data).Size();
 		}
 		
 		static RawText GetRawText(NGit.Repository repo, string file, RevCommit commit) {
 			TreeWalk tw = TreeWalk.ForPath (repo, file, commit.Tree);
 			ObjectId objectID = tw.GetObjectId(0);
-			byte[] prevData = repo.ObjectDatabase.Open (objectID).GetBytes ();
-			return new RawText (prevData);
+			byte[] data = repo.ObjectDatabase.Open (objectID).GetBytes ();
+			return new RawText (data);
 		}
 
 		static int SetBlameLines (NGit.Repository repo, RevCommit[] lines, RevCommit commit, RawText curText, RawText ancestorText)
