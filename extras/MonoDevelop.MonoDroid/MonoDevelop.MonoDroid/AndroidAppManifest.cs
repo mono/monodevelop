@@ -63,10 +63,10 @@ namespace MonoDevelop.MonoDroid
 		{
 			return new AndroidAppManifest (XDocument.Parse (
 @"<?xml version=""1.0"" encoding=""utf-8""?>
-<manifest xmlns:android=""http://schemas.android.com/apk/res/android"" package="""" android:versionCode=""1"" android:versionName=""1.0"">
+<manifest xmlns:android=""http://schemas.android.com/apk/res/android"" android:versionCode=""1"" android:versionName=""1.0"">
   <application android:label="""">
   </application>
-  <uses-sdk android:minSdkVersion=""4"" />
+  <uses-sdk />
 </manifest>")) {
 				PackageName = packageName,
 				ApplicationLabel = appLabel,
