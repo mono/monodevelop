@@ -653,17 +653,21 @@ namespace MonoDevelop.MonoDroid
 		public string GetPackageName (MonoDroidProjectConfiguration conf)
 		{
 			var f = GetManifestFileName (conf);
-
-			//no manifest, use the same default package name as the MSBuild tasks do
-			if (f.IsNullOrEmpty) {
-				var name = conf.CompiledOutputName.FileNameWithoutExtension;
-				return string.Format ("{0}.{0}", name.Replace (" ", "").ToLowerInvariant ());
-			}
-
-			if (packageNameCache == null)
-				packageNameCache = new AndroidPackageNameCache (this);
 			
-			return packageNameCache.GetPackageName (f);
+			if (!f.IsNullOrEmpty) {
+				if (packageNameCache == null)
+					packageNameCache = new AndroidPackageNameCache (this);
+				string packageName = packageNameCache.GetPackageName (f);
+				if (!string.IsNullOrEmpty (packageName))
+					return packageName;
+			}
+			
+			//no name in manifest, use same default package name as GetAndroidPackageName MSBuild task
+			var name = conf.CompiledOutputName.FileNameWithoutExtension.Replace (" ", "").ToLowerInvariant ();
+			if (name.Contains ("."))
+				return name;
+			else
+				return name + "." + name;
 		}
 		
 		FilePath GetManifestFileName (MonoDroidProjectConfiguration conf)
