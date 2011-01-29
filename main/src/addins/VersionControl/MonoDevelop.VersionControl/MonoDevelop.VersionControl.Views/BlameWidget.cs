@@ -733,7 +733,7 @@ namespace MonoDevelop.VersionControl.Views
 								nextY += lineHeight;
 								line++;
 								widget.JumpOverFoldings (ref line);
-							} while (line + 1 <= annotations.Count && annotations[line - 1] != null && annotations[line - 1].Revision == ann.Revision);
+							} while (line <= annotations.Count && annotations[line - 1] != null && annotations[line - 1].Revision == ann.Revision);
 							
 							if (highlightAnnotation != null && highlightAnnotation.Revision == ann.Revision && curStart <= highlightPositon && highlightPositon < nextY) {
 								cr.Rectangle (leftSpacer, curStart + cr.LineWidth, Allocation.Width - leftSpacer, nextY - curStart - cr.LineWidth);
