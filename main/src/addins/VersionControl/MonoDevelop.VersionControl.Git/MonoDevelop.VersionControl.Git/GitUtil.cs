@@ -413,16 +413,14 @@ namespace MonoDevelop.VersionControl.Git
 			
 			int historySize = commitHistory.Count;
 			
-			if (historySize > 1)
-			{
+			if (historySize > 1) {
 				RevCommit recentCommit = commitHistory[0];
-				RawText rawText = GetRawText (repo, localFile, recentCommit);
+				RawText latestRawText = GetRawText (repo, localFile, recentCommit);
 				
-				for (int i = 1; i < historySize; i++)
-				{
+				for (int i = 1; i < historySize; i++) {
 					RevCommit ancestorCommit = commitHistory[i];
-					RawText olderRawText = GetRawText (repo, localFile, ancestorCommit);
-					lineCount -= SetBlameLines(repo, lines, recentCommit, rawText, olderRawText);
+					RawText ancestorRawText = GetRawText (repo, localFile, ancestorCommit);
+					lineCount -= SetBlameLines(repo, lines, recentCommit, latestRawText, ancestorRawText);
 					recentCommit = ancestorCommit;
 					
 					if (lineCount <= 0)
@@ -430,26 +428,22 @@ namespace MonoDevelop.VersionControl.Git
 						break;
 					}
 				}
-			}
-			
-			if (lineCount > 0)
-			{
-				//TODO: Do we need to set the 00000 commit?
-				RevCommit firstCommit = historySize > 0 ? commitHistory[historySize - 1] : null;
 				
-				for (int i = 0; i < totalLines; i++)
-				{
-					if (lines[i] == null)
-					{
-						lines[i] = firstCommit;
+				if (lineCount > 0) {
+					RevCommit firstCommit = commitHistory[historySize - 1];
+					
+					for (int i = 0; i < totalLines; i++) {
+						if (lines[i] == null) {
+							lines[i] = firstCommit;
+						}
 					}
 				}
 			}
+			
 			return lines;
 		}
 		
-		static int GetFileLineCount (NGit.Repository repo, TreeWalk tw)
-		{
+		static int GetFileLineCount (NGit.Repository repo, TreeWalk tw) {
 			ObjectId id = tw.GetObjectId (0);
 			byte[] data = repo.ObjectDatabase.Open (id).GetBytes ();			
 			return NGit.Util.RawParseUtils.LineMap (data, 0, data.Length).Size ();
@@ -462,12 +456,12 @@ namespace MonoDevelop.VersionControl.Git
 			return new RawText (prevData);
 		}
 
-		static int SetBlameLines (NGit.Repository repo, RevCommit[] lines, RevCommit commit, RawText curText, RawText prevText)
+		static int SetBlameLines (NGit.Repository repo, RevCommit[] lines, RevCommit commit, RawText curText, RawText ancestorText)
 		{
 			int lineCount = 0;
 			var differ = MyersDiff<RawText>.INSTANCE;
 			
-			foreach (Edit e in differ.Diff (RawTextComparator.DEFAULT, prevText, curText)) {
+			foreach (Edit e in differ.Diff (RawTextComparator.DEFAULT, ancestorText, curText)) {
 				for (int n = e.GetBeginB (); n < e.GetEndB (); n++) {
 					if (lines [n] == null) {
 						lines [n] = commit;
