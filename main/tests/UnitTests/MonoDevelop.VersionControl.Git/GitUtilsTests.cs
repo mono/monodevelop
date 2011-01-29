@@ -57,6 +57,22 @@ namespace MonoDevelop.VersionControl.Git
 			blames.Add (new BlameFragment (28, 1, "15ed2793"));
 			blames.Add (new BlameFragment (29, 1, "a78c32a5"));
 			blames.Add (new BlameFragment (30, 5, "b6e41ee2"));
+			blames.Add(new BlameFragment(35, 2, "a78c32a5"));
+			blames.Add(new BlameFragment(37, 2, "927ca9cd"));
+			blames.Add(new BlameFragment(39, 2, "a78c32a5"));
+			blames.Add(new BlameFragment(41, 6, "b6e41ee2"));
+			blames.Add(new BlameFragment(47, 1, "927ca9cd"));
+			blames.Add(new BlameFragment(48, 3, "b6e41ee2"));
+			blames.Add(new BlameFragment(51, 2, "15ed2793"));
+			blames.Add(new BlameFragment(53, 1, "39f9d8e3"));
+			blames.Add(new BlameFragment(54, 7, "15ed2793"));
+			blames.Add(new BlameFragment(61, 2, "b6e41ee2"));
+			blames.Add(new BlameFragment(63, 1, "15ed2793"));
+			blames.Add(new BlameFragment(64, 2, "b6e41ee2"));
+			blames.Add(new BlameFragment(66, 1, "c5f4319e"));
+			blames.Add(new BlameFragment(67, 1, "b6e41ee2"));
+			blames.Add(new BlameFragment(68, 1, "c5f4319e"));
+			blames.Add(new BlameFragment(69, 4, "b6e41ee2"));
 			
 			CompareBlames (blameCommits, blames);
 		}
