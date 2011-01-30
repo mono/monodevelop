@@ -71,6 +71,7 @@ namespace MonoDevelop.MonoDroid
 	{
 		AndroidDevice device;
 		string packageName;
+		DateTime startTime;
 		AdbGetProcessIdOperation getPidOp;
 		AdbOperation trackLogOp;
 		Action<string> stdout;
@@ -95,6 +96,8 @@ namespace MonoDevelop.MonoDroid
 			this.stdout = stdout;
 			this.stderr = stderr;
 
+			startTime = DateTime.Now;
+
 			if (startOp == null) {
 				StartTracking ();
 				return;
@@ -114,7 +117,7 @@ namespace MonoDevelop.MonoDroid
 			getPidOp = new AdbGetProcessIdOperation (device, packageName);
 			getPidOp.Completed += RefreshPid;
 
-			trackLogOp = new AdbTrackLogOperation (device, ProcessLogLine);
+			trackLogOp = new AdbTrackLogOperation (device, ProcessLogLine, "-v time");
 			trackLogOp.Completed += delegate (IAsyncOperation op) {
 				if (!op.Success) {
 					SetCompleted (false);
@@ -153,17 +156,18 @@ namespace MonoDevelop.MonoDroid
 		{
 			string result, tag;
 			int pid;
+			DateTime time;
 			
 			//ignore section headers
 			if (line.StartsWith ("--------"))
 				return;
 			
-			if (!ParseLine (line, out pid, out tag, out result)) {
+			if (!ParseLine (line, out pid, out tag, out time, out result)) {
 				MonoDevelop.Core.LoggingService.LogWarning ("Could not recognize Android logcat output: '" + line + "'");
 				return;
 			}
 
-			if (pid != this.pid)
+			if (pid != this.pid || time < startTime)
 				return;
 
 			switch (tag) {
@@ -176,18 +180,36 @@ namespace MonoDevelop.MonoDroid
 				default:
 					// Anything related to the process;
 					// show the entire log line.
-					stdout (line);
+					stdout (result);
 					break;
 			}
 		}
 
-		bool ParseLine (string line, out int pid, out string tag, out string result)
+		bool ParseLine (string line, out int pid, out string tag, out DateTime time, out string result)
 		{
-			// Default (brief) FORMAT: P/Tag (PID): Actual log information
+			// Time FORMAT: Date-Time P/Tag (PID): Actual log information
 			int pos = 0;
-			int len, start;
+			int len, start, resultStart;
 			tag = result = null;
 			pid = 0;
+			time = DateTime.MinValue;
+
+			// Date+Time
+			start = pos;
+			len = 0;
+
+			while (pos < line.Length && !Char.IsLetter (line [pos++]))
+				len++;
+
+			if (len == 0)
+				return false;
+
+			if (!DateTime.TryParseExact (line.Substring (start, len), "MM-dd HH:mm:ss.fff", null,
+					System.Globalization.DateTimeStyles.AllowWhiteSpaces, out time))
+				return false;
+
+			// Mark the result line
+			resultStart = --pos;
 
 			// Ignore the priority char -and its respective '/'- for now
 			pos += 2;
@@ -225,7 +247,8 @@ namespace MonoDevelop.MonoDroid
 			if (pos >= line.Length)
 				return false;
 
-			result = line.Substring (pos, line.Length - pos);
+			// Return the tag, pid, and info line
+			result = line.Substring (resultStart, line.Length - resultStart);
 			return true;
 		}
 
