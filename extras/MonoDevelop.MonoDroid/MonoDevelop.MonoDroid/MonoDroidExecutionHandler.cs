@@ -134,7 +134,10 @@ namespace MonoDevelop.MonoDroid
 		{
 			getPidOp = new AdbGetProcessIdOperation (device, packageName);
 			getPidOp.Completed += RefreshPid;
+		}
 
+		void StartLogTracking ()
+		{
 			trackLogOp = new AdbTrackLogOperation (device, ProcessLogLine, "-v time");
 			trackLogOp.Completed += delegate (IAsyncOperation op) {
 				if (!op.Success) {
@@ -153,8 +156,10 @@ namespace MonoDevelop.MonoDroid
 			AdbGetProcessIdOperation adbOp = (AdbGetProcessIdOperation)op;
 			if (pid == UNASSIGNED_PID) {
 				// Ignore if the activity is still starting, and thus doesn't show up in 'ps'
-				if (adbOp.ProcessId > 0)
+				if (adbOp.ProcessId > 0) {
 					pid = adbOp.ProcessId;
+					StartLogTracking (); // track log *after* getting the pid
+				}
 			} else {
 				if (adbOp.ProcessId == 0 || pid != adbOp.ProcessId) {
 					SetCompleted (false);
