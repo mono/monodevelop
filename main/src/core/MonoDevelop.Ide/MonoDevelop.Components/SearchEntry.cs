@@ -294,6 +294,15 @@ namespace MonoDevelop.Components
 			active_filter_id = 0;
 			entry.Text = String.Empty;
 		}
+		
+		protected override void OnDestroyed ()
+		{
+			if (menu != null) {
+				menu.Destroy ();
+				menu = null;
+			}
+			base.OnDestroyed ();
+		}
 
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
