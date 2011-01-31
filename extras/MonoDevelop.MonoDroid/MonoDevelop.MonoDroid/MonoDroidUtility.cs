@@ -91,6 +91,8 @@ namespace MonoDevelop.MonoDroid
 		{	
 			var conf = project.GetConfiguration (configSel);
 			var opMon = new AggregatedOperationMonitor (monitor);
+
+			InvokeSynch (() => MonoDroidFramework.EnsureSdksInstalled ());
 			
 			IAsyncOperation signOp = null;
 			if (project.PackageNeedsSigning (conf)) {
