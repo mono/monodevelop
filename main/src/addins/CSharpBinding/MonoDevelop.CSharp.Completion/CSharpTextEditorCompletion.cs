@@ -1234,6 +1234,8 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			
 			Dictionary<string, List<MemberCompletionData>> data = new Dictionary<string, List<MemberCompletionData>> ();
+			HashSet<string> namespacesInList = new HashSet<string> ();
+			
 			HashSet<string> namespacesInScope = new HashSet<string> ();
 			internal static CSharpAmbience ambience = new CSharpAmbience ();
 //			DomLocation location;
@@ -1441,6 +1443,10 @@ namespace MonoDevelop.CSharp.Completion
 				if (ns != null) {
 					if (!data.ContainsKey (ns.Name))
 						data.Add (ns.Name, null);
+					if (namespacesInList.Contains (ns.Name)) {
+						return null;
+					}
+					namespacesInList.Add (ns.Name);
 					return CompletionList.Add (ns.Name, ns.StockIcon, ns.Documentation);
 				}
 				
