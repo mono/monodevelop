@@ -647,7 +647,6 @@ class Test{
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.AreEqual (1, provider.Count);
 			Assert.IsNotNull (provider.Find ("string"), "type string not found.");
 		}
 
@@ -2871,5 +2870,24 @@ namespace Test
 			Assert.IsNotNull (provider.Find ("Bar"), "property 'Bar' not found.");
 		}
 		
+		/// <summary>
+		/// Bug 668135 - Problems with "new" completion
+		/// </summary>
+		[Test()]
+		public void TestBug668135a ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"public class A
+{
+	public A ()
+	{
+		string test;
+		$Console.WriteLine (test = new $
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("string"), "class 'string' not found.");
+		}
 	}
 }
