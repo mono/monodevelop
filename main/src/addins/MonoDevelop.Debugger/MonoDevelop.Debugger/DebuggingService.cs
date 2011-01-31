@@ -956,6 +956,9 @@ namespace MonoDevelop.Debugger
 		
 		void RunDialog (string message)
 		{
+			if (disposed)
+				return;
+			
 			dialog = new Gtk.Dialog () {
 				Title = "Waiting for debugger"
 			};
@@ -970,6 +973,8 @@ namespace MonoDevelop.Debugger
 			dialog.AddButton ("Cancel", Gtk.ResponseType.Cancel);
 			
 			int response = MonoDevelop.Ide.MessageService.ShowCustomDialog (dialog);
+			dialog.Destroy ();
+			dialog = null;
 			
 			if (!disposed && response != (int) Gtk.ResponseType.Ok && UserCancelled != null) {
 				UserCancelled (null, null);
@@ -984,7 +989,8 @@ namespace MonoDevelop.Debugger
 			
 			if (dialog != null) {
 				Gtk.Application.Invoke (delegate {
-					dialog.Respond (Gtk.ResponseType.Ok);
+					if (dialog != null)
+						dialog.Respond (Gtk.ResponseType.Ok);
 				});
 			}
 		}

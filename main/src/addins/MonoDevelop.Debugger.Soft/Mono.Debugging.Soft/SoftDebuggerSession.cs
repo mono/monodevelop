@@ -265,14 +265,14 @@ namespace Mono.Debugging.Soft
 			
 			this.connectionHandle = connectionHandle;
 			
-			if (ConnectionDialogCreator != null) {
+			if (ConnectionDialogCreator != null && attemptNumber == 0) {
 				connectionDialog = ConnectionDialogCreator ();
 				connectionDialog.UserCancelled += delegate {
 					EndSession ();
 				};
-				if (connectionDialog != null)
-					connectionDialog.SetMessage (dsi, GetConnectingMessage (dsi), listening, attemptNumber);
 			}
+			if (connectionDialog != null)
+				connectionDialog.SetMessage (dsi, GetConnectingMessage (dsi), listening, attemptNumber);
 		}
 		
 		protected virtual string GetConnectingMessage (DebuggerStartInfo dsi)
