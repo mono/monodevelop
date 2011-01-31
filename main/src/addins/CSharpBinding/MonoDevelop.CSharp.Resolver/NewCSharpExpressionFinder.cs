@@ -246,26 +246,13 @@ namespace MonoDevelop.CSharp.Resolver
 			int lastWs = pos - 1;
 			while (lastWs > 0 && Char.IsWhiteSpace (editor.GetCharAt (lastWs)))
 				lastWs--;
-			while (lastWs > 0 && !Char.IsWhiteSpace (editor.GetCharAt (lastWs)))
-				lastWs--;
-			ExpressionResult firstExprs = FindExpression (editor, lastWs);
 			
-			if (firstExprs.Expression != null) {
-				IReturnType unresolvedReturnType = NRefactoryResolver.ParseReturnType (firstExprs);
-				if (unresolvedReturnType != null) {
-					IType resolvedType = projectContent.SearchType ((INode)callingType ?? unit, unresolvedReturnType);
-					return ExpressionContext.TypeDerivingFrom (resolvedType != null ? new DomReturnType (resolvedType) : null, unresolvedReturnType, true);
-				}
-				
-			}
-			
-			ExpressionResult lhsExpr = FindExpression (editor, pos);
+			ExpressionResult lhsExpr = FindFullExpression (editor, lastWs);
 			if (lhsExpr.Expression != null) {
 				NRefactoryResolver resolver = new NRefactoryResolver (projectContent, unit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
 				
 				ResolveResult rr = resolver.Resolve (lhsExpr, new DomLocation (editor.Caret.Line, editor.Caret.Column));
 				//ResolveResult rr = ParserService.Resolve (lhsExpr, currentLine.LineNumber, pos, editor.FileName, editor.Text);
-				
 				if (rr != null && rr.ResolvedType != null) {
 					ExpressionContext context;
 					IType c;
@@ -298,6 +285,17 @@ namespace MonoDevelop.CSharp.Resolver
 					return context;
 				}
 			}
+		
+			ExpressionResult firstExprs = FindFullExpression (editor, lastWs);
+			if (firstExprs.Expression != null) {
+				IReturnType unresolvedReturnType = NRefactoryResolver.ParseReturnType (firstExprs);
+				if (unresolvedReturnType != null) {
+					IType resolvedType = projectContent.SearchType ((INode)callingType ?? unit, unresolvedReturnType);
+					return ExpressionContext.TypeDerivingFrom (resolvedType != null ? new DomReturnType (resolvedType) : null, unresolvedReturnType, true);
+				}
+				
+			}
+
 			return null;
 		}
 
@@ -1314,8 +1312,6 @@ namespace MonoDevelop.CSharp.Resolver
 						return true;
 					}
 				}
-				
-				
 			}
 			return false;
 			

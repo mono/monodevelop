@@ -1110,7 +1110,6 @@ namespace MonoDevelop.CSharp.Completion
 							return CreateTypeCompletionData (location, callingType, newExactContext, null, returnType);
 					}
 				}
-				
 				return CreateCtrlSpaceCompletionData (completionContext, null);
 			case "if":
 			case "elif":
@@ -1403,7 +1402,6 @@ namespace MonoDevelop.CSharp.Completion
 				
 				if (existingData != null) {
 					IBaseMember a = member as IBaseMember;
-					System.Console.WriteLine ("add:" + a);
 					foreach (MemberCompletionData md in existingData) {
 						IBaseMember b = md.Member as IBaseMember;
 						if (a == null || b == null || a.MemberType == b.MemberType) {
@@ -1463,6 +1461,7 @@ namespace MonoDevelop.CSharp.Completion
 						return CompletionList.Add (rt.Name, "md-class");
 					}
 					string returnTypeString = ambience.GetString (rt, flags);
+					
 					if (!data.ContainsKey (returnTypeString))
 						data.Add (returnTypeString, null);
 					return CompletionList.Add (returnTypeString, "md-class");
@@ -1609,20 +1608,24 @@ namespace MonoDevelop.CSharp.Completion
 				type = dom.GetType (returnType);
 			if (type == null)
 				type = dom.SearchType ((MonoDevelop.Projects.Dom.INode)Document.CompilationUnit ?? callingType, returnTypeUnresolved);
-			
 			if (type == null || !(type.IsAbstract || type.ClassType == ClassType.Interface)) {
 				if (type == null || type.ConstructorCount == 0 || type.Methods.Any (c => c.IsConstructor && c.IsAccessibleFrom (dom, callingType, type, callingType != null && dom.GetInheritanceTree (callingType).Any (x => x.FullName == type.FullName)))) {
 					if (returnTypeUnresolved != null) {
 						col.FullyQualify = true;
 						CompletionData unresovedCompletionData = col.Add (returnTypeUnresolved);
 						col.FullyQualify = false;
-						result.DefaultCompletionString = StripGenerics (unresovedCompletionData.CompletionText);
+						// don't set default completion string for arrays, since it interferes with: 
+						// string[] arr = new string[] vs new { "a"}
+						if (returnTypeUnresolved.ArrayDimensions == 0)
+							result.DefaultCompletionString = StripGenerics (unresovedCompletionData.CompletionText);
 					} else {
 						CompletionData unresovedCompletionData = col.Add (returnType);
-						result.DefaultCompletionString = StripGenerics (unresovedCompletionData.CompletionText);
+						if (returnType.ArrayDimensions == 0)
+							result.DefaultCompletionString = StripGenerics (unresovedCompletionData.CompletionText);
 					}
 				}
 			}
+			
 			//				if (tce != null && tce.Type != null) {
 			//					result.DefaultCompletionString = StripGenerics (col.AddCompletionData (result, tce.Type).CompletionString);
 			//				} 

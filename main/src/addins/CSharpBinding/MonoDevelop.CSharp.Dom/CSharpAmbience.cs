@@ -584,7 +584,7 @@ namespace MonoDevelop.CSharp.Dom
 				result.Append (settings.Markup ("."));
 			}
 			
-			result.Append (settings.EmitName (type, FilterName (name)));
+			result.Append (settings.EmitName (type, name));
 			if (settings.IncludeGenerics && parameterCount > 0) {
 				result.Append (settings.Markup ("<"));
 				for (int i = 0; i < parameterCount; i++) {
