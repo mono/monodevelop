@@ -1,7 +1,4 @@
 High priority:
-* Track when program is running on device in order to show output.
-* Show filtered logcat output while a program is running or debugging.
-* Stop program when done so we can re-launch it for the debugger.
 * Use device properties to improve listing in the device chooser GUI.
 * Code completion for GUI definition xml files using xsd from VS addin.
 * Bugfixing.
