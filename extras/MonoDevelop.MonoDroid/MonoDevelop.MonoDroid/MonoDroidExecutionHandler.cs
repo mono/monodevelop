@@ -100,6 +100,14 @@ namespace MonoDevelop.MonoDroid
 		const int UNASSIGNED_PID = -1;
 		const int WAIT_TIME = 1000;
 
+		// Common system tags that we may want to ignore
+		readonly static string [] excludedLogTags = new string [] {
+			"dalvikvm",
+			"ActivityThread",
+			"mkestner",
+			"MonoDroid-Debugger"
+		};
+
 		public MonoDroidProcess (AndroidDevice device, string activity, string packageName,
 			Action<string> stdout, Action<string> stderr) : 
 			this (device, activity, packageName, stdout, stderr, null)
@@ -138,7 +146,12 @@ namespace MonoDevelop.MonoDroid
 
 		void StartLogTracking ()
 		{
-			trackLogOp = new AdbTrackLogOperation (device, ProcessLogLine, "-v time");
+			var args = new ProcessArgumentBuilder ();
+			args.Add ("-v time");
+			foreach (string tag in excludedLogTags)
+				args.Add (tag + ":S");
+
+			trackLogOp = new AdbTrackLogOperation (device, ProcessLogLine, args.ToString ());
 			trackLogOp.Completed += delegate (IAsyncOperation op) {
 				if (!op.Success) {
 					SetCompleted (false);
