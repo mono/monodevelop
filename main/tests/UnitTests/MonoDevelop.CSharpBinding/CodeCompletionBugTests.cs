@@ -2889,5 +2889,26 @@ namespace Test
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNotNull (provider.Find ("string"), "class 'string' not found.");
 		}
+		
+		/// <summary>
+		/// Bug 668453 - var completion infers var type too eagerly
+		/// </summary>
+		[Test()]
+		public void TestBug668453 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"public class Test
+{
+	private void FooBar ()
+	{
+		$var str = new $
+		FooBar ();
+	}
+}
+
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNull (provider.Find ("FooBar"), "method 'FooBar' found.");
+		}
 	}
 }
