@@ -488,16 +488,12 @@ namespace MonoDevelop.Components
 			leftWidths = rightWidths = null;
 		}
 		
-		public override void Dispose ()
-		{
-			base.Dispose ();
-			KillLayout ();
-		}
-		
 		public override void Destroy ()
 		{
 			base.Destroy ();
 			styleButton.Destroy ();
+			KillLayout ();
+			this.boldAtts.Dispose ();
 		}
 	}
 }
