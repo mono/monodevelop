@@ -249,7 +249,16 @@ namespace Mono.Debugging.Soft
 			return new PropertyValueReference (ctx, props[i], target, null, values);
 		}
 
-		public override ValueReference GetLocalVariable (EvaluationContext ctx, string name)
+		public override bool InAnonymousMethod (EvaluationContext ctx)
+		{
+			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
+			if (cx.Frame.Method.IsStatic)
+				return false;
+			TypeMirror tm = cx.Frame.Method.DeclaringType;
+			return tm.Name.IndexOf ("c__AnonStorey") != -1;
+		}
+
+		protected override ValueReference OnGetLocalVariable (EvaluationContext ctx, string name)
 		{
 			try {
 				SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
@@ -267,14 +276,13 @@ namespace Mono.Debugging.Soft
 					string vname = !string.IsNullOrEmpty (local.Name) || cx.SourceCodeAvailable ? local.Name : "loc" + local.Index;
 					return new VariableValueReference (ctx, vname, local);
 				}
-				else
-					return null;
+				return null;
 			} catch (AbsentInformationException) {
 				return null;
 			}
 		}
 
-		public override IEnumerable<ValueReference> GetLocalVariables (EvaluationContext ctx)
+		protected override IEnumerable<ValueReference> OnGetLocalVariables (EvaluationContext ctx)
 		{
 			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
 			IList<LocalVariable> locals;
@@ -386,7 +394,7 @@ namespace Mono.Debugging.Soft
 			types.CopyTo (childTypes);
 		}
 
-		public override IEnumerable<ValueReference> GetParameters (EvaluationContext ctx)
+		protected override IEnumerable<ValueReference> OnGetParameters (EvaluationContext ctx)
 		{
 			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
 			LocalVariable[] locals;
@@ -404,7 +412,7 @@ namespace Mono.Debugging.Soft
 			}
 		}
 
-		public override ValueReference GetThisReference (EvaluationContext ctx)
+		protected override ValueReference OnGetThisReference (EvaluationContext ctx)
 		{
 			try {
 				SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
@@ -534,7 +542,7 @@ namespace Mono.Debugging.Soft
 			else
 				return ((Type)val).FullName;
 		}
-
+		
 		public override object GetValueType (EvaluationContext ctx, object val)
 		{
 			if (val is ObjectMirror)
