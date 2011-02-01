@@ -291,7 +291,7 @@ namespace MonoDevelop.IPhone
 		
 		static void ExtractFromContentAssembly (IProgressMonitor monitor, FilePath appDir, FilePath asmInBundle)
 		{
-			Mono.Cecil.AssemblyDefinition a = Mono.Cecil.AssemblyDefinition.ReadAssembly (asmInBundle);
+			Mono.Cecil.AssemblyDefinition a = Mono.Cecil.AssemblyFactory.GetAssembly (asmInBundle);
 			foreach (Mono.Cecil.ModuleDefinition m in a.Modules) {
 				for (int i = 0; i < m.Resources.Count; i++) {
 					var er = m.Resources[i] as Mono.Cecil.EmbeddedResource;
@@ -314,8 +314,7 @@ namespace MonoDevelop.IPhone
 						if (!Directory.Exists (parentDir))
 							Directory.CreateDirectory (parentDir);
 							
-						//FIXME: do a stream copy with .NET 4
-						File.WriteAllBytes (file, er.GetResourceData ());
+						File.WriteAllBytes (file, er.Data);
 					}
 				}
 			}
