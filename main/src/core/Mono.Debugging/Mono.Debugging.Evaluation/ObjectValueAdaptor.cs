@@ -460,14 +460,27 @@ namespace Mono.Debugging.Evaluation
 			return null;
 		}
 
-		public virtual bool InAnonymousMethod (EvaluationContext ctx)
+		public virtual bool InCompilerGeneratedType (EvaluationContext ctx)
 		{
 			return false;
 		}
 		
-		protected virtual string GetCapturedThisMemberName (EvaluationContext ctx)
+		public virtual ValueReference GetCompilerGeneratedLocalVariable (EvaluationContext ctx, string name)
 		{
-			return "<>f__this";
+			foreach (var val in GetCompilerGeneratedLocalVariables (ctx))
+				if (val.Name == name)
+					return val;
+			return null;
+		}
+		
+		public virtual IEnumerable<ValueReference> GetCompilerGeneratedLocalVariables (EvaluationContext ctx)
+		{
+			yield break;
+		}
+		
+		public virtual ValueReference GetCompilerGeneratedThisReference (EvaluationContext ctx)
+		{
+			return null;
 		}
 		
 		public ValueReference GetLocalVariable (EvaluationContext ctx, string name)
@@ -475,12 +488,10 @@ namespace Mono.Debugging.Evaluation
 			ValueReference val = OnGetLocalVariable (ctx, name);
 			if (val != null)
 				return val;
-			if (InAnonymousMethod (ctx) && GetCapturedThisMemberName (ctx) != name) {
-				ValueReference vthis = OnGetThisReference (ctx);
-				if (vthis != null)
-					return vthis.GetChild (name, ctx.Options);
-			}
-			return null;
+			if (InCompilerGeneratedType (ctx))
+				return GetCompilerGeneratedLocalVariable (ctx, name);
+			else
+				return null;
 		}
 
 		protected virtual ValueReference OnGetLocalVariable (EvaluationContext ctx, string name)
@@ -508,27 +519,18 @@ namespace Mono.Debugging.Evaluation
 
 		public IEnumerable<ValueReference> GetLocalVariables (EvaluationContext ctx)
 		{
-			if (InAnonymousMethod (ctx)) {
-				ValueReference vthis = OnGetThisReference (ctx);
-				if (vthis != null) {
-					string tname = GetCapturedThisMemberName (ctx);
-					return vthis.GetChildReferences (ctx.Options).Where (r => r.Name != tname).Union (OnGetLocalVariables (ctx));
-				}
-			}
-			return OnGetLocalVariables (ctx);
+			if (InCompilerGeneratedType (ctx))
+				return GetCompilerGeneratedLocalVariables (ctx).Union (OnGetLocalVariables (ctx));
+			else
+				return OnGetLocalVariables (ctx);
 		}
 
 		public ValueReference GetThisReference (EvaluationContext ctx)
 		{
-			if (InAnonymousMethod (ctx)) {
-				ValueReference vthis = OnGetThisReference (ctx);
-				if (vthis != null) {
-					ValueReference cthis = vthis.GetChild (GetCapturedThisMemberName (ctx), ctx.Options);
-					return LiteralValueReference.CreateTargetObjectLiteral (ctx, "this", cthis.Value);
-				}
-				return null;
-			}
-			return OnGetThisReference (ctx);
+			if (InCompilerGeneratedType (ctx))
+				return GetCompilerGeneratedThisReference (ctx);
+			else
+				return OnGetThisReference (ctx);
 		}
 
 		public IEnumerable<ValueReference> GetParameters (EvaluationContext ctx)

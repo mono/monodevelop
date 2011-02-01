@@ -38,13 +38,20 @@ namespace Mono.Debugging.Soft
 		object obj;
 		TypeMirror declaringType;
 		ObjectValueFlags flags;
+		string vname;
 		
-		public FieldValueReference (EvaluationContext ctx, FieldInfoMirror field, object obj, TypeMirror declaringType): base (ctx)
+		public FieldValueReference (EvaluationContext ctx, FieldInfoMirror field, object obj, TypeMirror declaringType)
+			: this (ctx, field, obj, declaringType, null, ObjectValueFlags.Field)
+		{
+		}
+		
+		public FieldValueReference (EvaluationContext ctx, FieldInfoMirror field, object obj, TypeMirror declaringType, string vname, ObjectValueFlags vflags): base (ctx)
 		{
 			this.field = field;
 			this.obj = obj;
 			this.declaringType = declaringType;
-			flags = ObjectValueFlags.Field;
+			this.vname = vname;
+			flags = vflags;
 			if (field.IsStatic) {
 				flags |= ObjectValueFlags.Global;
 				this.obj = null;
@@ -71,7 +78,7 @@ namespace Mono.Debugging.Soft
 
 		public override string Name {
 			get {
-				return field.Name;
+				return vname ?? field.Name;
 			}
 		}
 
