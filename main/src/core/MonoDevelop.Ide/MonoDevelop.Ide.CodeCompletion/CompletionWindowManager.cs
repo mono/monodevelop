@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					return false;
 				}
 			} finally {
-				ParameterInformationWindowManager.UpdateWindow ();
+				ParameterInformationWindowManager.UpdateWindow (completionWidget);
 			}
 		}
 
@@ -123,9 +123,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (wnd != null) {
 				wnd.Destroy ();
+				ParameterInformationWindowManager.UpdateWindow (wnd.CompletionWidget);
 				wnd = null;
 			}
-			ParameterInformationWindowManager.UpdateWindow ();
 			OnWindowClosed (EventArgs.Empty);
 		}
 		

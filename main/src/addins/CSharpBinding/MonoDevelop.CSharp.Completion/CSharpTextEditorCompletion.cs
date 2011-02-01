@@ -159,7 +159,7 @@ namespace MonoDevelop.CSharp.Completion
 				base.RunParameterCompletionCommand ();
 			
 			if (stateTracker.Engine.IsInsideComment) {
-				ParameterInformationWindowManager.HideWindow ();
+				ParameterInformationWindowManager.HideWindow (CompletionWidget);
 			}/* else {
 				int cpos;
 				if (key == Gdk.Key.Return && CanRunParameterCompletionCommand () && GetParameterCompletionCommandOffset (out cpos))  {
