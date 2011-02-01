@@ -251,7 +251,7 @@ namespace Mono.Debugging.Soft
 		
 		bool IsCompilerGeneratedType (SoftEvaluationContext cx, TypeMirror tm)
 		{
-			return GetTypeDisplayData (cx, tm).IsCompilerGenerated;
+			return tm.Name.IndexOf (">c__AnonStorey") != -1 || tm.Name.IndexOf (">c__Iterator") != -1;
 		}
 		
 		bool InCompilerGeneratedType (EvaluationContext ctx)
@@ -269,17 +269,20 @@ namespace Mono.Debugging.Soft
 				return new ValueReference [0];
 			
 			TypeMirror tm = (TypeMirror) vthis.Type;
-			if (tm.Name.IndexOf (">c__AnonStorey") != -1) {
-				return vthis.GetChildReferences (cx.Options).Where (r => r.Name != "<>f__this");
-			}
-			else if (tm.Name.IndexOf (">c__Iterator") != -1) {
-				var list = new List<ValueReference> ();
-				TypeMirror type = (TypeMirror) vthis.Type;
-				object val = vthis.Value;
-				foreach (FieldInfoMirror field in type.GetFields ()) {
-					if (field.Name == "<>f__this")
-						continue;
-					if (field.Name.StartsWith ("<")) {
+			bool isIterator = tm.Name.IndexOf (">c__Iterator") != -1;
+			
+			var list = new List<ValueReference> ();
+			TypeMirror type = (TypeMirror) vthis.Type;
+			object val = vthis.Value;
+			foreach (FieldInfoMirror field in type.GetFields ()) {
+				if (field.Name == "<>f__this")
+					continue;
+				if (field.Name.StartsWith ("<>f__ref")) {
+					list.AddRange (GetCompilerGeneratedLocalVariables (cx, new FieldValueReference (cx, field, val, type)));
+					continue;
+				}
+				if (field.Name.StartsWith ("<")) {
+					if (isIterator) {
 						int i = field.Name.IndexOf ('>');
 						if (i > 1) {
 							string vname = field.Name.Substring (1, i - 1);
@@ -287,9 +290,10 @@ namespace Mono.Debugging.Soft
 						}
 					}
 				}
-				return list;
+				else
+					list.Add (new FieldValueReference (cx, field, val, type, field.Name, ObjectValueFlags.Variable));
 			}
-			return new ValueReference [0];
+			return list;
 		}
 		
 		ValueReference GetCompilerGeneratedThisReference (SoftEvaluationContext cx)
