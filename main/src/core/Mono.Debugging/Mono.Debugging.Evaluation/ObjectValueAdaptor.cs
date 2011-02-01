@@ -460,38 +460,9 @@ namespace Mono.Debugging.Evaluation
 			return null;
 		}
 
-		public virtual bool InCompilerGeneratedType (EvaluationContext ctx)
-		{
-			return false;
-		}
-		
-		public virtual ValueReference GetCompilerGeneratedLocalVariable (EvaluationContext ctx, string name)
-		{
-			foreach (var val in GetCompilerGeneratedLocalVariables (ctx))
-				if (val.Name == name)
-					return val;
-			return null;
-		}
-		
-		public virtual IEnumerable<ValueReference> GetCompilerGeneratedLocalVariables (EvaluationContext ctx)
-		{
-			yield break;
-		}
-		
-		public virtual ValueReference GetCompilerGeneratedThisReference (EvaluationContext ctx)
-		{
-			return null;
-		}
-		
 		public ValueReference GetLocalVariable (EvaluationContext ctx, string name)
 		{
-			ValueReference val = OnGetLocalVariable (ctx, name);
-			if (val != null)
-				return val;
-			if (InCompilerGeneratedType (ctx))
-				return GetCompilerGeneratedLocalVariable (ctx, name);
-			else
-				return null;
+			return OnGetLocalVariable (ctx, name);
 		}
 
 		protected virtual ValueReference OnGetLocalVariable (EvaluationContext ctx, string name)
@@ -519,18 +490,12 @@ namespace Mono.Debugging.Evaluation
 
 		public IEnumerable<ValueReference> GetLocalVariables (EvaluationContext ctx)
 		{
-			if (InCompilerGeneratedType (ctx))
-				return GetCompilerGeneratedLocalVariables (ctx).Union (OnGetLocalVariables (ctx));
-			else
-				return OnGetLocalVariables (ctx);
+			return OnGetLocalVariables (ctx);
 		}
 
 		public ValueReference GetThisReference (EvaluationContext ctx)
 		{
-			if (InCompilerGeneratedType (ctx))
-				return GetCompilerGeneratedThisReference (ctx);
-			else
-				return OnGetThisReference (ctx);
+			return OnGetThisReference (ctx);
 		}
 
 		public IEnumerable<ValueReference> GetParameters (EvaluationContext ctx)
@@ -1042,6 +1007,7 @@ namespace Mono.Debugging.Evaluation
 		public string ValueDisplayString;
 		public string TypeDisplayString;
 		public string NameDisplayString;
+		public bool IsCompilerGenerated;
 		
 		public bool IsProxyType {
 			get { return ProxyType != null; }
