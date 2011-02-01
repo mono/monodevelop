@@ -21,7 +21,7 @@ namespace MonoDevelop.Ide.Projects
 			// Widget MonoDevelop.Ide.Projects.ExportProjectDialog
 			this.Events = ((global::Gdk.EventMask)(256));
 			this.Name = "MonoDevelop.Ide.Projects.ExportProjectDialog";
-			this.Title = global::MonoDevelop.Core.GettextCatalog.GetString ("Export Project");
+			this.Title = global::Mono.Unix.Catalog.GetString ("Export Project");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.BorderWidth = ((uint)(6));
 			// Internal child MonoDevelop.Ide.Projects.ExportProjectDialog.VBox
@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Projects
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.label2.Xalign = 0F;
-			this.label2.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Target folder:");
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Target folder:");
 			this.table1.Add (this.label2);
 			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2]));
 			w4.TopAttach = ((uint)(2));
@@ -76,7 +76,7 @@ namespace MonoDevelop.Ide.Projects
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
 			this.label3.Xalign = 0F;
-			this.label3.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("New format:");
+			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("New format:");
 			this.table1.Add (this.label3);
 			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.label3]));
 			w5.TopAttach = ((uint)(1));
@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide.Projects
 			this.label4 = new global::Gtk.Label ();
 			this.label4.Name = "label4";
 			this.label4.Xalign = 0F;
-			this.label4.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Current format:");
+			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("Current format:");
 			this.table1.Add (this.label4);
 			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.label4]));
 			w6.XOptions = ((global::Gtk.AttachOptions)(4));

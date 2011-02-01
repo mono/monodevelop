@@ -7,6 +7,7 @@
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/AddIns/VersionControl/MonoDevelop.VersionControl.dll" />
+    <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
     <widget-library name="../../../../build/AddIns/ChangeLogAddIn/ChangeLogAddIn.dll" internal="true" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.ChangeLogAddIn.AddLogEntryDialog" design-size="573 510">
@@ -320,7 +321,8 @@
               <widget class="Gtk.RadioButton" id="noneRadioButton">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Label" translatable="no">radiobutton1</property>
+                <property name="Label">radiobutton1</property>
+                <property name="Active">True</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">False</property>
                 <property name="UseUnderline">True</property>
