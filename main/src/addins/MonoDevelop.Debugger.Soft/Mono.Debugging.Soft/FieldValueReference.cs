@@ -118,6 +118,8 @@ namespace Mono.Debugging.Soft
 				} else {
 					SoftEvaluationContext cx = (SoftEvaluationContext) Context;
 					PrimitiveValue val = (PrimitiveValue) obj;
+					if (val.Value == null)
+						return null;
 					FieldInfo rfield = val.Value.GetType ().GetField (field.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 					return cx.Session.VirtualMachine.CreateValue (rfield.GetValue (val.Value));
 				}

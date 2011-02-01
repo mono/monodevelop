@@ -268,12 +268,15 @@ namespace Mono.Debugging.Soft
 			if (vthis == null)
 				return new ValueReference [0];
 			
+			object val = vthis.Value;
+			if (IsNull (cx, val))
+				return new ValueReference [0];
+			
 			TypeMirror tm = (TypeMirror) vthis.Type;
 			bool isIterator = tm.Name.IndexOf (">c__Iterator") != -1;
 			
 			var list = new List<ValueReference> ();
 			TypeMirror type = (TypeMirror) vthis.Type;
-			object val = vthis.Value;
 			foreach (FieldInfoMirror field in type.GetFields ()) {
 				if (field.Name == "<>f__this")
 					continue;
