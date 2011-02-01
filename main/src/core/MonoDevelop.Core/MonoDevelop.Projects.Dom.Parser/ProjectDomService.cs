@@ -1034,6 +1034,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 			foreach (IType c in types) {
 				tr.UnresolvedCount = 0;
 				DomType rc = (DomType)c.AcceptVisitor (tr, null);
+				if (rc.CompilationUnit != null)
+					rc.CompilationUnit = new CompilationUnit (rc.CompilationUnit.FileName);
 				rc.Resolved = true;
 				// no need to set the base type here - the completion db handles that
 				// (setting to system.object is wrong for enums & structs - and interfaces may never have a base)
