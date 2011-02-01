@@ -121,7 +121,11 @@ namespace MonoDevelop.MonoMac
 				
 				foreach (MonoMacFrameworkItem node in proj.Items.GetAll<MonoMacFrameworkItem> ()) {
 					var bundleName = Path.GetFileName (node.FullPath);
-					monitor.Log.WriteLine (string.Format ("Copying '{0}' to bundle", bundleName));
+					var bundlePath = node.FullPath;
+					if (node.Relative)
+						bundlePath = proj.BaseDirectory.Combine (node.FullPath);
+					
+					monitor.Log.WriteLine ("Copying '{0}' to bundle", bundleName);
 
 					var destFramework = externalFrameworks.Combine (bundleName);
 					if (Directory.Exists (destFramework)) {
@@ -129,8 +133,18 @@ namespace MonoDevelop.MonoMac
 					}
 					Directory.CreateDirectory (destFramework);
 					
-					CopyFolder (node.FullPath, destFramework);
+					try
+					{
+						CopyFolder (bundlePath, destFramework);
+					}
+					catch (Exception copyException)
+					{
+						BuildResult buildResult = new BuildResult();
+						buildResult.AddError ("Failed to copy: " + copyException.Message);
+						return buildResult;
+					}
 					monitor.Step (1);
+					monitor.Log.WriteLine ("Copied '{0}' to bundle", bundleName);
 				}
 				
 				monitor.EndTask ();
@@ -308,10 +322,9 @@ namespace MonoDevelop.MonoMac
 			
 			FilePath generatedFilePath = proj.BaseDirectory.Combine ("obj", conf.Id, proj.LanguageBinding.GetFileName ("MonoMacFrameworks.g"));
 			
-			var fi = new FileInfo (generatedFilePath);
-			var projFile = new FileInfo (proj.FileName);
-
-			if (fi.Exists && projFile.Exists && projFile.LastWriteTime < fi.LastWriteTime)
+			if (File.Exists (generatedFilePath) && 
+			    File.Exists (proj.FileName) && 
+			    File.GetLastWriteTime (proj.FileName) < File.GetLastWriteTime (generatedFilePath))
 				return;
 			
 			File.Delete (generatedFilePath);
@@ -330,7 +343,6 @@ namespace MonoDevelop.MonoMac
 				Name = "Initialize",
 				Attributes = MemberAttributes.Public | MemberAttributes.Static,
 			};
-			loadFrameworkMethod.Comments.Add (new CodeCommentStatement ("Call this method prior to NSApplication.Init()", true));
 
 			mainClass.Members.Add (loadFrameworkMethod);
 			projectNameSpace.Types.Add (mainClass);
@@ -342,18 +354,36 @@ namespace MonoDevelop.MonoMac
 			var dlopenMethod = new CodeMethodReferenceExpression (dlfcnRef, "dlopen");
 			var dlerrorMethod = new CodeMethodReferenceExpression (dlfcnRef, "dlerror");
 		 	
+			//System.Console.WriteLine
 			var consoleType = new CodeTypeReferenceExpression () {
             	Type = new CodeTypeReference (typeof (Console))
 			};
-			
 	        var writeLineRef = new CodeMethodReferenceExpression (consoleType, "WriteLine");
         
 			var intPtrType = new CodeTypeReferenceExpression () {
 				Type = new CodeTypeReference (typeof (IntPtr))
 			};
 			
-			FilePath externalFrameworks = projectConf.AppDirectory.Combine ("Contents", "Frameworks");
+			//System.IO.Path.Combine
+			var pathType = new CodeTypeReferenceExpression () {
+				Type = new CodeTypeReference (typeof (System.IO.Path))
+			};
+			var pathCombine = new CodeMethodReferenceExpression (pathType, "Combine");
 			
+			//AppDomain.CurrentDomain.BaseDirectory
+			var appDomain = new CodeTypeReferenceExpression () {
+				Type = new CodeTypeReference (typeof (AppDomain))
+			};
+			var currentDomain = new CodePropertyReferenceExpression (appDomain, "CurrentDomain");
+			var baseDirectory = new CodePropertyReferenceExpression (currentDomain, "BaseDirectory");
+			
+			var getFrameworkPath = new CodeMethodInvokeExpression (pathCombine, 
+							                                       baseDirectory, 
+							                                       new CodePrimitiveExpression ("../Frameworks/"));
+			
+			var executingPath = new CodeVariableDeclarationStatement (typeof (string), "executingPath", getFrameworkPath);
+			loadFrameworkMethod.Statements.Add (executingPath);
+						
 			foreach (MonoMacFrameworkItem node in proj.Items.GetAll<MonoMacFrameworkItem> ()) {
 
 				string libName = Path.GetFileName (node.FullPath).Replace (".framework", "");
@@ -366,7 +396,9 @@ namespace MonoDevelop.MonoMac
 				var check = new CodeConditionStatement ();
 				check.Condition = new CodeBinaryOperatorExpression (
 					new CodeMethodInvokeExpression (dlopenMethod,
-						new CodePrimitiveExpression ((string)externalFrameworks.Combine (Path.GetFileName (node.FullPath), libName)), 
+						new CodeMethodInvokeExpression (pathCombine,
+							new CodeVariableReferenceExpression ("executingPath"),
+							new CodePrimitiveExpression (Path.Combine (Path.GetFileName (node.FullPath), libName))),
 				                                     new CodePrimitiveExpression (0)),
 				    CodeBinaryOperatorType.IdentityEquality,                                               
 	                new CodeFieldReferenceExpression (intPtrType, "Zero"));
@@ -392,8 +424,9 @@ namespace MonoDevelop.MonoMac
 				if (name[0] == '.')
 					continue;
                 string dest = Path.Combine (destFolder, name);
-
-                File.Copy (file, dest);
+				
+				if (!File.Exists (dest) || File.GetLastWriteTime (file) > File.GetLastWriteTime (dest))
+                	File.Copy (file, dest);
             }
 			
             string[] folders = Directory.GetDirectories (sourceFolder);

@@ -28,12 +28,21 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using System;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.MonoMac
 {
 	public enum MonoMacCommands
 	{
-		MonoMacAddFrameworksHandler,
+		MonoMacAddFramework,
+	}
+	
+	public class MonoMacAddFrameworkCommand : NodeCommandHandler
+	{
+		[CommandHandler (MonoDevelop.MonoMac.MonoMacCommands.MonoMacAddFramework)]
+		public void AddFramework()
+		{
+		}
 	}
 	
 	public class MonoMacAddFrameworksHandler : CommandHandler

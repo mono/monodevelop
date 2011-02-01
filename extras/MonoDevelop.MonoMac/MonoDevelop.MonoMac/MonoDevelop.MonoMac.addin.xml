@@ -29,15 +29,17 @@
 	</Dependencies>
 	
     <Extension path = "/MonoDevelop/Ide/Commands">
-        <Command id = "MonoDevelop.MonoMac.MonoMacCommands.MonoMacAddFrameworksHandler"
+    	<Category _name = "Framework Reference" id = "MonoMac">	
+        <Command id = "MonoDevelop.MonoMac.MonoMacCommands.MonoMacAddFramework"
                  _label = "Add Framework Reference"
                  defaultHandler = "MonoDevelop.MonoMac.MonoMacAddFrameworksHandler"
                  _description = "Add Framework reference to 'External Frameworks and Libraries'" />
+        </Category>
     </Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
 		<Condition id="ItemType" value="Project">	
-			<CommandItem id = "MonoDevelop.MonoMac.MonoMacCommands.MonoMacAddFrameworksHandler"/>
+			<CommandItem id = "MonoDevelop.MonoMac.MonoMacCommands.MonoMacAddFramework"/>
 		</Condition>
 	</Extension>
 	
