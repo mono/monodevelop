@@ -88,6 +88,16 @@ namespace Mono.TextEditor.Theatrics
 		{
 			if (Child != null)
 				Child.Destroy ();
+			if (vAdjustment != null) {
+				vAdjustment.Changed -= HandleAdjustmentChanged;
+				vAdjustment.Destroy ();
+				vAdjustment = null;
+			}
+			if (hAdjustment != null) {
+				hAdjustment.Changed -= HandleAdjustmentChanged;
+				hAdjustment.Destroy ();
+				hAdjustment = null;
+			}
 			foreach (var c in children) {
 				c.Child.Destroy ();
 			}
