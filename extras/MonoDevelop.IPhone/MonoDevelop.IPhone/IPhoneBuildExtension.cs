@@ -265,15 +265,12 @@ namespace MonoDevelop.IPhone
 			
 			monitor.BeginTask ("Extracting embedded content", 0);
 			for (int i = 0; i < toProcess.Count; i++) {
-				//despite doing the deps checks with the original dlls, we do the extraction on the copies
-				//that are in the app bundle, so that in the device case we can also strip the resoucres from them
 				FilePath asmFile = toProcess[i];
 				bool skipExtract = skipExtractList != null && skipExtractList[i];
-				if (skipExtract && !isDevice)
+				if (skipExtract)
 					continue;
 				try {
-					var asmInBundle = appDir.Combine (asmFile.FileName);
-					ProcessContentAssembly (monitor, appDir, asmInBundle, isDevice, !skipExtract);
+					ExtractFromContentAssembly (monitor, appDir, asmFile);
 				} catch (Exception ex) {
 					string message = string.Format ("Error extracting content from assembly '{0}'", asmFile);
 					monitor.ReportError (message, ex);
@@ -292,9 +289,8 @@ namespace MonoDevelop.IPhone
 			return result;
 		}
 		
-		static void ProcessContentAssembly (IProgressMonitor monitor, FilePath appDir, FilePath asmInBundle, bool strip, bool extract)
+		static void ExtractFromContentAssembly (IProgressMonitor monitor, FilePath appDir, FilePath asmInBundle)
 		{
-			bool foundContent = false;
 			Mono.Cecil.AssemblyDefinition a = Mono.Cecil.AssemblyDefinition.ReadAssembly (asmInBundle);
 			foreach (Mono.Cecil.ModuleDefinition m in a.Modules) {
 				for (int i = 0; i < m.Resources.Count; i++) {
@@ -310,29 +306,18 @@ namespace MonoDevelop.IPhone
 						} else {
 							continue;
 						}
-						foundContent = true;
 						
-						if (extract) {
-							monitor.Log.WriteLine ("Extracted {0} from {1}", sname, asmInBundle.FileName);
+						monitor.Log.WriteLine ("Extracted {0} from {1}", sname, asmInBundle.FileName);
 							
-							var file = sname.ToAbsolute (appDir);
-							var parentDir = file.ParentDirectory;
-							if (!Directory.Exists (parentDir))
-								Directory.CreateDirectory (parentDir);
+						var file = sname.ToAbsolute (appDir);
+						var parentDir = file.ParentDirectory;
+						if (!Directory.Exists (parentDir))
+							Directory.CreateDirectory (parentDir);
 							
-							//FIXME: do a stream copy when we use new cecil in MD 2.6
-							File.WriteAllBytes (file, er.GetResourceData ());
-						}
-						
-						if (strip) {
-							m.Resources.RemoveAt (i--);
-						}
+						//FIXME: do a stream copy with .NET 4
+						File.WriteAllBytes (file, er.GetResourceData ());
 					}
 				}
-			}
-			if (strip && foundContent) {
-				monitor.Log.WriteLine ("Stripping content from assembly {0}", asmInBundle.FileName);
-				a.Write (asmInBundle);
 			}
 		}
 		
