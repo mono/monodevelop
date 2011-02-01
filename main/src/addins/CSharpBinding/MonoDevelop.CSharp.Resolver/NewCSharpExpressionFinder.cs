@@ -244,8 +244,26 @@ namespace MonoDevelop.CSharp.Resolver
 					return null;
 			}
 			int lastWs = pos - 1;
-			while (lastWs > 0 && Char.IsWhiteSpace (editor.GetCharAt (lastWs)))
+			while (lastWs > 0 && char.IsWhiteSpace (editor.GetCharAt (lastWs)))
 				lastWs--;
+			
+			int varTypePos = lastWs;
+			while (varTypePos > 0 && !char.IsWhiteSpace (editor.GetCharAt (varTypePos)))
+				varTypePos--;
+			while (varTypePos > 0 && char.IsWhiteSpace (editor.GetCharAt (varTypePos)))
+				varTypePos--;
+			
+			ExpressionResult possibleTypeExpression = FindFullExpression (editor, varTypePos);
+			if (possibleTypeExpression.Expression != null) {
+				if (possibleTypeExpression.Expression == "var")
+					return ExpressionContext.TypeDerivingFrom (DomReturnType.Object, DomReturnType.Object, true);
+				IReturnType unresolvedReturnType = NRefactoryResolver.ParseReturnType (possibleTypeExpression);
+				if (unresolvedReturnType != null) {
+					IType resolvedType = projectContent.SearchType ((INode)callingType ?? unit, unresolvedReturnType);
+					if (resolvedType != null)
+						return ExpressionContext.TypeDerivingFrom (new DomReturnType (resolvedType), unresolvedReturnType, true);
+				}
+			}
 			
 			ExpressionResult lhsExpr = FindFullExpression (editor, lastWs);
 			if (lhsExpr.Expression != null) {
@@ -286,16 +304,6 @@ namespace MonoDevelop.CSharp.Resolver
 				}
 			}
 		
-			ExpressionResult firstExprs = FindFullExpression (editor, lastWs);
-			if (firstExprs.Expression != null) {
-				IReturnType unresolvedReturnType = NRefactoryResolver.ParseReturnType (firstExprs);
-				if (unresolvedReturnType != null) {
-					IType resolvedType = projectContent.SearchType ((INode)callingType ?? unit, unresolvedReturnType);
-					return ExpressionContext.TypeDerivingFrom (resolvedType != null ? new DomReturnType (resolvedType) : null, unresolvedReturnType, true);
-				}
-				
-			}
-
 			return null;
 		}
 
