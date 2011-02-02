@@ -5,7 +5,7 @@ include $(top_srcdir)/Makefile.include
 include $(top_srcdir)/config.make
 
 ifeq ($(CONFIG),DEBUG)
-ASSEMBLY_COMPILER_COMMAND = gmcs
+ASSEMBLY_COMPILER_COMMAND = dmcs
 ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize+ -debug -define:DEBUG\;TRACE
 ASSEMBLY = build/AspNetEdit.dll
 ASSEMBLY_MDB = $(ASSEMBLY).mdb
@@ -17,7 +17,7 @@ BUILD_DIR = build
 endif
 
 ifeq ($(CONFIG),RELEASE)
-ASSEMBLY_COMPILER_COMMAND = gmcs
+ASSEMBLY_COMPILER_COMMAND = dmcs
 ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize+
 ASSEMBLY = build/AspNetEdit.dll
 ASSEMBLY_MDB = 

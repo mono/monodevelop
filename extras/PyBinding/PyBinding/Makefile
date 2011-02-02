@@ -9,7 +9,7 @@ top_srcdir=..
 include $(top_srcdir)/config.make
 
 ifeq ($(CONFIG),DEBUG)
-ASSEMBLY_COMPILER_COMMAND = gmcs
+ASSEMBLY_COMPILER_COMMAND = dmcs
 ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize+ -debug "-define:DEBUG"
 ASSEMBLY = ../build/PyBinding.dll
 ASSEMBLY_MDB = $(ASSEMBLY).mdb
@@ -23,7 +23,7 @@ PYBINDING_DLL_MDB=$(BUILD_DIR)/PyBinding.dll.mdb
 endif
 
 ifeq ($(CONFIG),RELEASE)
-ASSEMBLY_COMPILER_COMMAND = gmcs
+ASSEMBLY_COMPILER_COMMAND = dmcs
 ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize+
 ASSEMBLY = ../build/PyBinding.dll
 ASSEMBLY_MDB = 
