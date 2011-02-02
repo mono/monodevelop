@@ -56,6 +56,23 @@ namespace MonoDevelop.VersionControl.Git
 			return Path.Combine (repo.WorkTree, filePath);
 		}
 		
+		public static List<string> GetConflictedFiles (NGit.Repository repo)
+		{
+			List<string> list = new List<string> ();
+			TreeWalk treeWalk = new TreeWalk (repo);
+			treeWalk.Reset ();
+			treeWalk.Recursive = true;
+			DirCache dc = repo.ReadDirCache ();
+			treeWalk.AddTree (new DirCacheIterator (dc));
+			while (treeWalk.Next()) {
+				DirCacheIterator dirCacheIterator = treeWalk.GetTree<DirCacheIterator>(0);
+				var ce = dirCacheIterator.GetDirCacheEntry ();
+				if (ce != null && ce.Stage == 1)
+					list.Add (ce.PathString);
+			}
+			return list;
+		}
+		
 		/// <summary>
 		/// Compares two commits and returns a list of files that have changed
 		/// </summary>
@@ -416,42 +433,6 @@ namespace MonoDevelop.VersionControl.Git
 			return lines;
 		}
 		
-		public static MergeCommandResult CherryPick (NGit.Repository repo, RevCommit srcCommit)
-		{
-			RevCommit newHead = null;
-			RevWalk revWalk = new RevWalk(repo);
-			try
-			{
-				// get the head commit
-				Ref headRef = repo.GetRef(Constants.HEAD);
-				if (headRef == null)
-				{
-					throw new NoHeadException(JGitText.Get().commitOnRepoWithoutHEADCurrentlyNotSupported
-						);
-				}
-				RevCommit headCommit = revWalk.ParseCommit(headRef.GetObjectId());
-				
-				// get the parent of the commit to cherry-pick
-				if (srcCommit.ParentCount != 1)
-				{
-					throw new MultipleParentsNotAllowedException(JGitText.Get().canOnlyCherryPickCommitsWithOneParent
-						);
-				}
-				RevCommit srcParent = srcCommit.GetParent(0);
-				revWalk.ParseHeaders(srcParent);
-				
-				return MergeTrees (repo, srcParent, srcCommit, srcCommit.Name, true);
-			}
-			catch (IOException e)
-			{
-				throw new Exception ("Commit failed", e);
-			}
-			finally
-			{
-				revWalk.Release();
-			}
-		}
-		
 		public static MergeCommandResult MergeTrees (NGit.Repository repo, RevCommit srcBase, RevCommit srcCommit, string sourceDisplayName, bool commitResult)
 		{
 			RevCommit newHead = null;
@@ -486,7 +467,7 @@ namespace MonoDevelop.VersionControl.Git
 				noProblems = merger.Merge(headCommit, srcCommit);
 				lowLevelResults = resolveMerger.GetMergeResults();
 				modifiedFiles = resolveMerger.GetModifiedFiles();
-				failingPaths = resolveMerger.GetFailingPathes();
+				failingPaths = resolveMerger.GetFailingPaths();
 				
 				if (noProblems)
 				{

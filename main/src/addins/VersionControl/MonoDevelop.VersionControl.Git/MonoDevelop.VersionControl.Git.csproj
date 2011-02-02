@@ -67,7 +67,6 @@
     <Compile Include="MonoDevelop.VersionControl.Git\MergeDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\Stash.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitUtil.cs" />
-    <Compile Include="MonoDevelop.VersionControl.Git\RebaseOperation.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\CredentialsDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.CredentialsDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitCredentials.cs" />
