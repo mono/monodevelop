@@ -602,6 +602,9 @@ namespace MonoDevelop.Projects.Dom
 			// instantiated generic types.
 			if (type is InstantiatedType)
 				return type;
+			if (type.TypeParameters.Count != genericArguments.Count)
+				return type;
+			
 			string name = GetInstantiatedTypeName (type.Name, genericArguments);
 			GenericTypeInstanceResolver resolver = new GenericTypeInstanceResolver ();
 			if (genericArguments != null) {
