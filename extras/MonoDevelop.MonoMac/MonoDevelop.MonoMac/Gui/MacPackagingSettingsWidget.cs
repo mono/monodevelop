@@ -44,7 +44,11 @@ namespace MonoDevelop.MonoMac.Gui
 		public MonoMacPackagingSettingsWidget ()
 		{
 			this.Build ();
-			certs = Keychain.GetAllSigningCertificates ();
+			
+			certs = Keychain.GetAllSigningCertificates ()
+				.Where (k => !Keychain.GetCertificateCommonName (k).StartsWith ("iPhone"))
+				.ToList ();
+			
 			productDefinitionFileEntry.BrowserTitle = GettextCatalog.GetString ("Select Product Definition...");
 			
 			includeMonoCheck.Toggled += CheckToggled;
@@ -155,8 +159,6 @@ namespace MonoDevelop.MonoMac.Gui
 			foreach (var cert in certs) {
 				var name = Keychain.GetCertificateCommonName (cert);
 				if (excludePrefix != null && name.StartsWith (excludePrefix))
-					continue;
-				if (name.StartsWith ("iPhone"))
 					continue;
 				if (name.StartsWith (preferredPrefix)) {
 					preferred.Add (name);
