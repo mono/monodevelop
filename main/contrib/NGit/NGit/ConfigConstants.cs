@@ -64,6 +64,9 @@ namespace NGit
 		/// <summary>The "diff" section</summary>
 		public static readonly string CONFIG_DIFF_SECTION = "diff";
 
+		/// <summary>The "user" section</summary>
+		public static readonly string CONFIG_USER_SECTION = "user";
+
 		/// <summary>The "algorithm" key</summary>
 		public static readonly string CONFIG_KEY_ALGORITHM = "algorithm";
 
@@ -99,5 +102,11 @@ namespace NGit
 
 		/// <summary>The "autosetupmerge" key</summary>
 		public static readonly string CONFIG_KEY_AUTOSETUPMERGE = "autosetupmerge";
+
+		/// <summary>The "name" key</summary>
+		public static readonly string CONFIG_KEY_NAME = "name";
+
+		/// <summary>The "email" key</summary>
+		public static readonly string CONFIG_KEY_EMAIL = "email";
 	}
 }

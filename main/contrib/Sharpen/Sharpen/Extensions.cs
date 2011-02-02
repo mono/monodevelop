@@ -628,6 +628,11 @@ namespace Sharpen
 		
 		public static string GetTestName (object obj)
 		{
+			return GetTestName ();
+		}
+		
+		public static string GetTestName ()
+		{
 			MethodBase met;
 			int n = 0;
 			do {
@@ -675,9 +680,14 @@ namespace Sharpen
 			return string.IsNullOrEmpty (uri.UserInfo) ? null : uri.UserInfo;
 		}
 		
+		public static string GetQuery (this Uri uri)
+		{
+			return string.IsNullOrEmpty (uri.Query) ? null : uri.Query;
+		}
+		
 		public static HttpURLConnection OpenConnection (this Uri uri, Proxy p)
 		{
-			return new HttpURLConnection (uri, p);
+			return new HttpsURLConnection (uri, p);
 		}
 		
 		public static Uri ToURI (this Uri uri)
@@ -773,11 +783,16 @@ namespace Sharpen
 		public static void SetCommand (this ProcessStartInfo si, IList<string> args)
 		{
 			si.FileName = args[0];
-			si.Arguments = string.Join (" ", args.Select (a => "\"" + a + "\"").ToArray ());
+			si.Arguments = string.Join (" ", args.Skip (1).Select (a => "\"" + a + "\"").ToArray ());
 		}
 		
 		public static Process Start (this ProcessStartInfo si)
 		{
+			si.UseShellExecute = false;
+			si.RedirectStandardInput = true;
+			si.RedirectStandardError = true;
+			si.RedirectStandardOutput = true;
+			si.CreateNoWindow = true;
 			return Process.Start (si);
 		}
 	}

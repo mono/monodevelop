@@ -36,16 +36,18 @@ namespace Sharpen
 			return array;
 		}
 
-		public static T[] ToArray<T> (ICollection<T> list, T[] res)
+		public static U[] ToArray<T,U> (ICollection<T> list, U[] res) where T:U
 		{
-			if (res.Length >= list.Count) {
-				list.CopyTo (res, 0);
-				if (res.Length > list.Count)
-					res [list.Count] = default (T);
-				return res;
-			}
-			else
-				return ToArray (list);
+			if (res.Length < list.Count)
+				res = new U [list.Count];
+			
+			int n = 0;
+			foreach (T t in list)
+				res [n++] = t;
+			
+			if (res.Length > list.Count)
+				res [list.Count] = default (T);
+			return res;
 		}
 		
 		public static IDictionary<K,V> EmptyMap<K,V> ()

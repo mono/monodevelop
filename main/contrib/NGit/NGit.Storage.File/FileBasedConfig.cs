@@ -56,9 +56,11 @@ namespace NGit.Storage.File
 	{
 		private readonly FilePath configFile;
 
-		private long lastModified;
-
 		private readonly FS fs;
+
+		private volatile FileSnapshot snapshot;
+
+		private volatile ObjectId hash;
 
 		/// <summary>Create a configuration with no default fallback.</summary>
 		/// <remarks>Create a configuration with no default fallback.</remarks>
@@ -84,6 +86,8 @@ namespace NGit.Storage.File
 		{
 			configFile = cfgLocation;
 			this.fs = fs;
+			this.snapshot = FileSnapshot.DIRTY;
+			this.hash = ObjectId.ZeroId;
 		}
 
 		protected internal override bool NotifyUponTransientChanges()
@@ -111,14 +115,34 @@ namespace NGit.Storage.File
 		/// 	</exception>
 		public override void Load()
 		{
-			lastModified = GetFile().LastModified();
+			FileSnapshot oldSnapshot = snapshot;
+			FileSnapshot newSnapshot = FileSnapshot.Save(GetFile());
 			try
 			{
-				FromText(RawParseUtils.Decode(IOUtil.ReadFully(GetFile())));
+				byte[] @in = IOUtil.ReadFully(GetFile());
+				ObjectId newHash = Hash(@in);
+				if (hash.Equals(newHash))
+				{
+					if (oldSnapshot.Equals(newSnapshot))
+					{
+						oldSnapshot.SetClean(newSnapshot);
+					}
+					else
+					{
+						snapshot = newSnapshot;
+					}
+				}
+				else
+				{
+					FromText(RawParseUtils.Decode(@in));
+					snapshot = newSnapshot;
+					hash = newHash;
+				}
 			}
 			catch (FileNotFoundException)
 			{
 				Clear();
+				snapshot = newSnapshot;
 			}
 			catch (IOException e)
 			{
@@ -156,7 +180,7 @@ namespace NGit.Storage.File
 			}
 			try
 			{
-				lf.SetNeedStatInformation(true);
+				lf.SetNeedSnapshot(true);
 				lf.Write(@out);
 				if (!lf.Commit())
 				{
@@ -168,9 +192,21 @@ namespace NGit.Storage.File
 			{
 				lf.Unlock();
 			}
-			lastModified = lf.GetCommitLastModified();
+			snapshot = lf.GetCommitSnapshot();
+			hash = Hash(@out);
 			// notify the listeners
 			FireConfigChangedEvent();
+		}
+
+		protected internal override void Clear()
+		{
+			hash = Hash(new byte[0]);
+			base.Clear();
+		}
+
+		private static ObjectId Hash(byte[] rawText)
+		{
+			return ObjectId.FromRaw(Constants.NewMessageDigest().Digest(rawText));
 		}
 
 		public override string ToString()
@@ -184,7 +220,7 @@ namespace NGit.Storage.File
 		/// </returns>
 		public virtual bool IsOutdated()
 		{
-			return GetFile().LastModified() != lastModified;
+			return snapshot.IsModified(GetFile());
 		}
 	}
 }

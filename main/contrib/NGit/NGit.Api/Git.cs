@@ -93,6 +93,27 @@ namespace NGit.Api
 
 		/// <summary>
 		/// Returns a command object to execute a
+		/// <code>clone</code>
+		/// command
+		/// </summary>
+		/// <seealso><a
+		/// *      href="http://www.kernel.org/pub/software/scm/git/docs/git-clone.html"
+		/// *      >Git documentation about clone</a></seealso>
+		/// <returns>
+		/// a
+		/// <see cref="CloneCommand">CloneCommand</see>
+		/// used to collect all optional parameters
+		/// and to finally execute the
+		/// <code>clone</code>
+		/// command
+		/// </returns>
+		public static CloneCommand CloneRepository()
+		{
+			return new CloneCommand();
+		}
+
+		/// <summary>
+		/// Returns a command object to execute a
 		/// <code>init</code>
 		/// command
 		/// </summary>
@@ -353,6 +374,27 @@ namespace NGit.Api
 		public virtual CherryPickCommand CherryPick()
 		{
 			return new CherryPickCommand(repo);
+		}
+
+		/// <summary>
+		/// Returns a command object to execute a
+		/// <code>revert</code>
+		/// command
+		/// </summary>
+		/// <seealso><a
+		/// *      href="http://www.kernel.org/pub/software/scm/git/docs/git-revert.html"
+		/// *      >Git documentation about reverting changes</a></seealso>
+		/// <returns>
+		/// a
+		/// <see cref="RevertCommand">RevertCommand</see>
+		/// used to collect all optional
+		/// parameters and to finally execute the
+		/// <code>cherry-pick</code>
+		/// command
+		/// </returns>
+		public virtual RevertCommand Revert()
+		{
+			return new RevertCommand(repo);
 		}
 
 		/// <summary>

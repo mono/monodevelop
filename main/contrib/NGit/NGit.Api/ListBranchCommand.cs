@@ -93,7 +93,8 @@ namespace NGit.Api
 					}
 					else
 					{
-						refList = repo.RefDatabase.GetRefs(Constants.R_HEADS);
+						refList = new Dictionary<string, Ref>(repo.RefDatabase.GetRefs(Constants.R_HEADS)
+							);
 						refList.PutAll(repo.RefDatabase.GetRefs(Constants.R_REMOTES));
 					}
 				}
@@ -104,14 +105,14 @@ namespace NGit.Api
 			}
 			IList<Ref> resultRefs = new AList<Ref>();
 			Sharpen.Collections.AddAll(resultRefs, refList.Values);
-			resultRefs.Sort(new _IComparer_112());
+			resultRefs.Sort(new _IComparer_114());
 			SetCallable(false);
 			return resultRefs;
 		}
 
-		private sealed class _IComparer_112 : IComparer<Ref>
+		private sealed class _IComparer_114 : IComparer<Ref>
 		{
-			public _IComparer_112()
+			public _IComparer_114()
 			{
 			}
 

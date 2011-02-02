@@ -87,7 +87,7 @@ namespace NGit.Merge
 
 		private ObjectId resultTree;
 
-		private IList<string> unmergedPathes = new AList<string>();
+		private IList<string> unmergedPaths = new AList<string>();
 
 		private IList<string> modifiedFiles = new List<string>();
 
@@ -97,7 +97,7 @@ namespace NGit.Merge
 		private IDictionary<string, MergeResult<Sequence>> mergeResults = new Dictionary<
 			string, MergeResult<Sequence>>();
 
-		private IDictionary<string, ResolveMerger.MergeFailureReason> failingPathes = new 
+		private IDictionary<string, ResolveMerger.MergeFailureReason> failingPaths = new 
 			Dictionary<string, ResolveMerger.MergeFailureReason>();
 
 		private ObjectInserter oi;
@@ -193,7 +193,7 @@ namespace NGit.Merge
 					builder.Finish();
 					builder = null;
 				}
-				if (GetUnmergedPathes().IsEmpty())
+				if (GetUnmergedPaths().IsEmpty())
 				{
 					resultTree = dircache.WriteTree(oi);
 					return true;
@@ -229,7 +229,7 @@ namespace NGit.Merge
 				{
 					if (!f.Delete())
 					{
-						failingPathes.Put(entry.Key, ResolveMerger.MergeFailureReason.COULD_NOT_DELETE);
+						failingPaths.Put(entry.Key, ResolveMerger.MergeFailureReason.COULD_NOT_DELETE);
 					}
 				}
 				modifiedFiles.AddItem(entry.Key);
@@ -367,7 +367,7 @@ namespace NGit.Merge
 			// Each index entry has to match ours, means: it has to be clean
 			if (NonTree(modeI) && !(tw.IdEqual(T_INDEX, T_OURS) && modeO == modeI))
 			{
-				failingPathes.Put(tw.PathString, ResolveMerger.MergeFailureReason.DIRTY_INDEX);
+				failingPaths.Put(tw.PathString, ResolveMerger.MergeFailureReason.DIRTY_INDEX);
 				return false;
 			}
 			int modeT = tw.GetRawMode(T_THEIRS);
@@ -424,7 +424,7 @@ namespace NGit.Merge
 						Add(tw.RawPath, @base, DirCacheEntry.STAGE_1);
 					}
 					Add(tw.RawPath, ours, DirCacheEntry.STAGE_2);
-					unmergedPathes.AddItem(tw.PathString);
+					unmergedPaths.AddItem(tw.PathString);
 					enterSubtree = false;
 					return true;
 				}
@@ -435,7 +435,7 @@ namespace NGit.Merge
 						Add(tw.RawPath, @base, DirCacheEntry.STAGE_1);
 					}
 					Add(tw.RawPath, theirs, DirCacheEntry.STAGE_3);
-					unmergedPathes.AddItem(tw.PathString);
+					unmergedPaths.AddItem(tw.PathString);
 					enterSubtree = false;
 					return true;
 				}
@@ -459,13 +459,13 @@ namespace NGit.Merge
 					if (work != null && (!NonTree(work.EntryRawMode) || work.IsModified(index.GetDirCacheEntry
 						(), true)))
 					{
-						failingPathes.Put(tw.PathString, ResolveMerger.MergeFailureReason.DIRTY_WORKTREE);
+						failingPaths.Put(tw.PathString, ResolveMerger.MergeFailureReason.DIRTY_WORKTREE);
 						return false;
 					}
 				}
 				if (!ContentMerge(@base, ours, theirs))
 				{
-					unmergedPathes.AddItem(tw.PathString);
+					unmergedPaths.AddItem(tw.PathString);
 				}
 				modifiedFiles.AddItem(tw.PathString);
 			}
@@ -606,9 +606,9 @@ namespace NGit.Merge
 		/// by
 		/// <see cref="GetModifiedFiles()">GetModifiedFiles()</see>
 		/// </returns>
-		public virtual IList<string> GetUnmergedPathes()
+		public virtual IList<string> GetUnmergedPaths()
 		{
-			return unmergedPathes;
+			return unmergedPaths;
 		}
 
 		/// <returns>
@@ -616,7 +616,7 @@ namespace NGit.Merge
 		/// file will be modified if a content-merge works on this path or if
 		/// the merge algorithm decides to take the theirs-version. This is a
 		/// superset of the files listed by
-		/// <see cref="GetUnmergedPathes()">GetUnmergedPathes()</see>
+		/// <see cref="GetUnmergedPaths()">GetUnmergedPaths()</see>
 		/// .
 		/// </returns>
 		public virtual IList<string> GetModifiedFiles()
@@ -646,10 +646,10 @@ namespace NGit.Merge
 		/// a conflict). <code>null</code> is returned if this merge didn't
 		/// fail abnormally.
 		/// </returns>
-		public virtual IDictionary<string, ResolveMerger.MergeFailureReason> GetFailingPathes
+		public virtual IDictionary<string, ResolveMerger.MergeFailureReason> GetFailingPaths
 			()
 		{
-			return (failingPathes.Count == 0) ? null : failingPathes;
+			return (failingPaths.Count == 0) ? null : failingPaths;
 		}
 
 		/// <summary>Sets the DirCache which shall be used by this merger.</summary>

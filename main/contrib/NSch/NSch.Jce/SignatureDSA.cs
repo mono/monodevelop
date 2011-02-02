@@ -68,29 +68,7 @@ namespace NSch.Jce
 		/// <exception cref="System.Exception"></exception>
 		public virtual byte[] Sign()
 		{
-			byte[] sig = signature.Sign();
-			// sig is in ASN.1
-			// SEQUENCE::={ r INTEGER, s INTEGER }
-			int len = 0;
-			int index = 3;
-			len = sig[index++] & unchecked((int)(0xff));
-			//System.err.println("! len="+len);
-			byte[] r = new byte[len];
-			System.Array.Copy(sig, index, r, 0, r.Length);
-			index = index + len + 1;
-			len = sig[index++] & unchecked((int)(0xff));
-			//System.err.println("!! len="+len);
-			byte[] s = new byte[len];
-			System.Array.Copy(sig, index, s, 0, s.Length);
-			byte[] result = new byte[40];
-			// result must be 40 bytes, but length of r and s may not be 20 bytes  
-			System.Array.Copy(r, (r.Length > 20) ? 1 : 0, result, (r.Length > 20) ? 0 : 20 - 
-				r.Length, (r.Length > 20) ? 20 : r.Length);
-			System.Array.Copy(s, (s.Length > 20) ? 1 : 0, result, (s.Length > 20) ? 20 : 40 -
-				 s.Length, (s.Length > 20) ? 20 : s.Length);
-			//  System.arraycopy(sig, (sig[3]==20?4:5), result, 0, 20);
-			//  System.arraycopy(sig, sig.length-20, result, 20, 20);
-			return result;
+			return signature.Sign ();
 		}
 
 		/// <exception cref="System.Exception"></exception>

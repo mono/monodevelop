@@ -45,6 +45,7 @@ using System.Collections.Generic;
 using NGit;
 using NGit.Storage.File;
 using NGit.Storage.Pack;
+using NGit.Util;
 using Sharpen;
 
 namespace NGit.Storage.File
@@ -142,6 +143,8 @@ namespace NGit.Storage.File
 			 id);
 
 		internal abstract Config GetConfig();
+
+		internal abstract FS GetFS();
 
 		/// <summary>Open an object from this database.</summary>
 		/// <remarks>
@@ -315,6 +318,9 @@ namespace NGit.Storage.File
 		/// <exception cref="System.IO.IOException"></exception>
 		internal abstract FileObjectDatabase.InsertLooseObjectResult InsertUnpackedObject
 			(FilePath tmp, ObjectId id, bool createDuplicate);
+
+		/// <exception cref="System.IO.IOException"></exception>
+		internal abstract PackFile OpenPack(FilePath pack, FilePath idx);
 
 		internal abstract FileObjectDatabase NewCachedFileObjectDatabase();
 

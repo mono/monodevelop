@@ -61,6 +61,8 @@ namespace NGit.Api
 
 		private ProgressMonitor monitor = NullProgressMonitor.INSTANCE;
 
+		private CredentialsProvider credentialsProvider;
+
 		/// <param name="repo"></param>
 		protected internal PullCommand(Repository repo) : base(repo)
 		{
@@ -79,6 +81,21 @@ namespace NGit.Api
 		public virtual NGit.Api.PullCommand SetProgressMonitor(ProgressMonitor monitor)
 		{
 			this.monitor = monitor;
+			return this;
+		}
+
+		/// <param name="credentialsProvider">
+		/// the
+		/// <see cref="NGit.Transport.CredentialsProvider">NGit.Transport.CredentialsProvider
+		/// 	</see>
+		/// to use
+		/// </param>
+		/// <returns>this instance</returns>
+		public virtual NGit.Api.PullCommand SetCredentialsProvider(CredentialsProvider credentialsProvider
+			)
+		{
+			CheckCallable();
+			this.credentialsProvider = credentialsProvider;
 			return this;
 		}
 
@@ -141,17 +158,9 @@ namespace NGit.Api
 			// stored in configuration key branch.<branch name>.merge
 			string remoteBranchName = repoConfig.GetString(ConfigConstants.CONFIG_BRANCH_SECTION
 				, branchName, ConfigConstants.CONFIG_KEY_MERGE);
-			if (remoteBranchName == null)
-			{
-				// check if the branch is configured for pull-rebase
-				remoteBranchName = repoConfig.GetString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName
-					, ConfigConstants.CONFIG_KEY_REBASE);
-				if (remoteBranchName != null)
-				{
-					// TODO implement pull-rebase
-					throw new JGitInternalException("Pull with rebase is not yet supported");
-				}
-			}
+			// check if the branch is configured for pull-rebase
+			bool doRebase = repoConfig.GetBoolean(ConfigConstants.CONFIG_BRANCH_SECTION, branchName
+				, ConfigConstants.CONFIG_KEY_REBASE, false);
 			if (remoteBranchName == null)
 			{
 				string missingKey = ConfigConstants.CONFIG_BRANCH_SECTION + DOT + branchName + DOT
@@ -164,7 +173,7 @@ namespace NGit.Api
 			FetchResult fetchRes;
 			if (isRemote)
 			{
-				remoteUri = repo.GetConfig().GetString("remote", remote, ConfigConstants.CONFIG_KEY_URL
+				remoteUri = repoConfig.GetString("remote", remote, ConfigConstants.CONFIG_KEY_URL
 					);
 				if (remoteUri == null)
 				{
@@ -182,6 +191,7 @@ namespace NGit.Api
 				fetch.SetRemote(remote);
 				fetch.SetProgressMonitor(monitor);
 				fetch.SetTimeout(this.timeout);
+				fetch.SetCredentialsProvider(credentialsProvider);
 				fetchRes = fetch.Call();
 			}
 			else
@@ -191,7 +201,13 @@ namespace NGit.Api
 				fetchRes = null;
 			}
 			monitor.Update(1);
-			// we check the updates to see which of the updated branches corresponds
+			if (monitor.IsCancelled())
+			{
+				throw new CanceledException(MessageFormat.Format(JGitText.Get().operationCanceled
+					, JGitText.Get().pullTaskName));
+			}
+			// we check the updates to see which of the updated branches
+			// corresponds
 			// to the remote branch name
 			AnyObjectId commitToMerge;
 			if (isRemote)
@@ -227,46 +243,72 @@ namespace NGit.Api
 						, e);
 				}
 			}
-			if (monitor.IsCancelled())
+			PullResult result;
+			if (doRebase)
 			{
-				throw new CanceledException(MessageFormat.Format(JGitText.Get().operationCanceled
-					, JGitText.Get().pullTaskName));
+				RebaseCommand rebase = new RebaseCommand(repo);
+				try
+				{
+					RebaseResult rebaseRes = rebase.SetUpstream(commitToMerge).SetProgressMonitor(monitor
+						).SetOperation(RebaseCommand.Operation.BEGIN).Call();
+					result = new PullResult(fetchRes, remote, rebaseRes);
+				}
+				catch (NoHeadException e)
+				{
+					throw new JGitInternalException(e.Message, e);
+				}
+				catch (RefNotFoundException e)
+				{
+					throw new JGitInternalException(e.Message, e);
+				}
+				catch (JGitInternalException e)
+				{
+					throw new JGitInternalException(e.Message, e);
+				}
+				catch (GitAPIException e)
+				{
+					throw new JGitInternalException(e.Message, e);
+				}
 			}
-			MergeCommand merge = new MergeCommand(repo);
-			merge.Include("branch \'" + remoteBranchName + "\' of " + remoteUri, commitToMerge
-				);
-			MergeCommandResult mergeRes;
-			try
+			else
 			{
-				mergeRes = merge.Call();
-				monitor.Update(1);
-			}
-			catch (NoHeadException e)
-			{
-				throw new JGitInternalException(e.Message, e);
-			}
-			catch (ConcurrentRefUpdateException e)
-			{
-				throw new JGitInternalException(e.Message, e);
-			}
-			catch (CheckoutConflictException e)
-			{
-				throw new JGitInternalException(e.Message, e);
-			}
-			catch (InvalidMergeHeadsException e)
-			{
-				throw new JGitInternalException(e.Message, e);
-			}
-			catch (WrongRepositoryStateException e)
-			{
-				throw new JGitInternalException(e.Message, e);
-			}
-			catch (NoMessageException e)
-			{
-				throw new JGitInternalException(e.Message, e);
+				MergeCommand merge = new MergeCommand(repo);
+				merge.Include("branch \'" + remoteBranchName + "\' of " + remoteUri, commitToMerge
+					);
+				MergeCommandResult mergeRes;
+				try
+				{
+					mergeRes = merge.Call();
+					monitor.Update(1);
+					result = new PullResult(fetchRes, remote, mergeRes);
+				}
+				catch (NoHeadException e)
+				{
+					throw new JGitInternalException(e.Message, e);
+				}
+				catch (ConcurrentRefUpdateException e)
+				{
+					throw new JGitInternalException(e.Message, e);
+				}
+				catch (NGit.Api.Errors.CheckoutConflictException e)
+				{
+					throw new JGitInternalException(e.Message, e);
+				}
+				catch (InvalidMergeHeadsException e)
+				{
+					throw new JGitInternalException(e.Message, e);
+				}
+				catch (WrongRepositoryStateException e)
+				{
+					throw new JGitInternalException(e.Message, e);
+				}
+				catch (NoMessageException e)
+				{
+					throw new JGitInternalException(e.Message, e);
+				}
 			}
 			monitor.EndTask();
-			return new PullResult(fetchRes, remote, mergeRes);
+			return result;
 		}
 	}
 }

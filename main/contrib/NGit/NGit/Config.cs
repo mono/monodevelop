@@ -1562,29 +1562,32 @@ namespace NGit
 
 			public virtual ICollection<string> Parse(Config cfg)
 			{
-				ICollection<string> result = new HashSet<string>();
+				IDictionary<string, string> m = new LinkedHashMap<string, string>();
 				while (cfg != null)
 				{
 					foreach (Config.Entry e in cfg.state.Get().entryList)
 					{
-						if (e.name != null && StringUtils.EqualsIgnoreCase(e.section, section))
+						if (e.name == null)
 						{
-							if (subsection == null && e.subsection == null)
+							continue;
+						}
+						if (!StringUtils.EqualsIgnoreCase(section, e.section))
+						{
+							continue;
+						}
+						if ((subsection == null && e.subsection == null) || (subsection != null && subsection
+							.Equals(e.subsection)))
+						{
+							string lc = StringUtils.ToLowerCase(e.name);
+							if (!m.ContainsKey(lc))
 							{
-								result.AddItem(StringUtils.ToLowerCase(e.name));
-							}
-							else
-							{
-								if (e.subsection != null && e.subsection.Equals(subsection))
-								{
-									result.AddItem(StringUtils.ToLowerCase(e.name));
-								}
+								m.Put(lc, e.name);
 							}
 						}
 					}
 					cfg = cfg.baseConfig;
 				}
-				return Sharpen.Collections.UnmodifiableSet(result);
+				return new Config.CaseFoldingSet(m);
 			}
 		}
 
@@ -1592,19 +1595,56 @@ namespace NGit
 		{
 			public virtual ICollection<string> Parse(Config cfg)
 			{
-				ICollection<string> result = new HashSet<string>();
+				IDictionary<string, string> m = new LinkedHashMap<string, string>();
 				while (cfg != null)
 				{
 					foreach (Config.Entry e in cfg.state.Get().entryList)
 					{
 						if (e.section != null)
 						{
-							result.AddItem(StringUtils.ToLowerCase(e.section));
+							string lc = StringUtils.ToLowerCase(e.section);
+							if (!m.ContainsKey(lc))
+							{
+								m.Put(lc, e.section);
+							}
 						}
 					}
 					cfg = cfg.baseConfig;
 				}
-				return Sharpen.Collections.UnmodifiableSet(result);
+				return new Config.CaseFoldingSet(m);
+			}
+		}
+
+		private class CaseFoldingSet : AbstractSet<string>
+		{
+			private readonly IDictionary<string, string> names;
+
+			internal CaseFoldingSet(IDictionary<string, string> names)
+			{
+				this.names = Sharpen.Collections.UnmodifiableMap(names);
+			}
+
+			public override bool Contains(object needle)
+			{
+				if (!(needle is string))
+				{
+					return false;
+				}
+				string n = (string)needle;
+				return names.ContainsKey(n) || names.ContainsKey(StringUtils.ToLowerCase(n));
+			}
+
+			public override Sharpen.Iterator<string> Iterator()
+			{
+				return names.Values.Iterator();
+			}
+
+			public override int Count
+			{
+				get
+				{
+					return names.Count;
+				}
 			}
 		}
 

@@ -4,7 +4,7 @@ namespace Sharpen
 
 	internal interface ExecutorService : Executor
 	{
-		bool AwaitTermination (int n, TimeUnit unit);
+		bool AwaitTermination (long n, TimeUnit unit);
 		void Shutdown ();
 		Future<T> Submit<T> (Callable<T> ob);
 	}

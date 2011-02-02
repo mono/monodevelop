@@ -93,7 +93,7 @@ namespace NGit.Dircache
 
 		private AList<string> toBeDeleted = new AList<string>();
 
-		/// <returns>a list of updated pathes and objectIds</returns>
+		/// <returns>a list of updated paths and objectIds</returns>
 		public virtual IDictionary<string, ObjectId> GetUpdated()
 		{
 			return updated;
@@ -120,7 +120,7 @@ namespace NGit.Dircache
 		/// </returns>
 		public virtual IList<string> GetToBeDeleted()
 		{
-			return conflicts;
+			return toBeDeleted;
 		}
 
 		/// <returns>a list of all files removed by this checkout</returns>
@@ -300,35 +300,78 @@ namespace NGit.Dircache
 		/// <param name="m">the tree to merge</param>
 		/// <param name="i">the index</param>
 		/// <param name="f">the working tree</param>
+		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
 		internal virtual void ProcessEntry(CanonicalTreeParser m, DirCacheBuildIterator i
 			, WorkingTreeIterator f)
 		{
 			if (m != null)
 			{
-				if (i == null || f == null || !m.IdEqual(i) || (i.GetDirCacheEntry() != null && (
-					f.IsModified(i.GetDirCacheEntry(), true) || i.GetDirCacheEntry().Stage != 0)))
+				// There is an entry in the merge commit. Means: we want to update
+				// what's currently in the index and working-tree to that one
+				if (i == null)
 				{
-					Update(m.EntryPathString, m.EntryObjectId, m.EntryFileMode);
+					// The index entry is missing
+					if (f != null && !FileMode.TREE.Equals(f.EntryFileMode) && !f.IsEntryIgnored())
+					{
+						// don't overwrite an untracked and not ignored file
+						conflicts.AddItem(walk.PathString);
+					}
+					else
+					{
+						Update(m.EntryPathString, m.EntryObjectId, m.EntryFileMode);
+					}
 				}
 				else
 				{
-					Keep(i.GetDirCacheEntry());
+					if (f == null || !m.IdEqual(i))
+					{
+						// The working tree file is missing or the merge content differs
+						// from index content
+						Update(m.EntryPathString, m.EntryObjectId, m.EntryFileMode);
+					}
+					else
+					{
+						if (i.GetDirCacheEntry() != null)
+						{
+							// The index contains a file (and not a folder)
+							if (f.IsModified(i.GetDirCacheEntry(), true) || i.GetDirCacheEntry().Stage != 0)
+							{
+								// The working tree file is dirty or the index contains a
+								// conflict
+								Update(m.EntryPathString, m.EntryObjectId, m.EntryFileMode);
+							}
+							else
+							{
+								Keep(i.GetDirCacheEntry());
+							}
+						}
+						else
+						{
+							// The index contains a folder
+							Keep(i.GetDirCacheEntry());
+						}
+					}
 				}
 			}
 			else
 			{
+				// There is no entry in the merge commit. Means: we want to delete
+				// what's currently in the index and working tree
 				if (f != null)
 				{
+					// There is a file/folder for that path in the working tree
 					if (walk.IsDirectoryFileConflict())
 					{
 						conflicts.AddItem(walk.PathString);
 					}
 					else
 					{
+						// No file/folder conflict exists. All entries are files or
+						// all entries are folders
 						if (i != null)
 						{
-							// ... and the working dir contained a file or folder ->
-							// add it to the removed set and remove it from
+							// ... and the working tree contained a file or folder
+							// -> add it to the removed set and remove it from
 							// conflicts set
 							Remove(i.EntryPathString);
 							conflicts.Remove(i.EntryPathString);
@@ -337,6 +380,12 @@ namespace NGit.Dircache
 				}
 				else
 				{
+					// untracked file, neither contained in tree to merge
+					// nor in index
+					// There is no file/folder for that path in the working tree.
+					// The only entry we have is the index entry. If that entry is a
+					// conflict simply remove it. Otherwise keep that entry in the
+					// index
 					if (i.GetDirCacheEntry().Stage == 0)
 					{
 						Keep(i.GetDirCacheEntry());
@@ -374,8 +423,8 @@ namespace NGit.Dircache
 				if (failOnConflict)
 				{
 					dc.Unlock();
-					throw new CheckoutConflictException(Sharpen.Collections.ToArray(conflicts, new string
-						[conflicts.Count]));
+					throw new NGit.Errors.CheckoutConflictException(Sharpen.Collections.ToArray(conflicts
+						, new string[conflicts.Count]));
 				}
 				else
 				{
@@ -414,8 +463,10 @@ namespace NGit.Dircache
 			{
 				// ... create/overwrite this file ...
 				file = new FilePath(repo.WorkTree, path);
-				file.GetParentFile().Mkdirs();
-				file.CreateNewFile();
+				if (!file.GetParentFile().Mkdirs())
+				{
+				}
+				// ignore
 				DirCacheEntry entry = dc.GetEntry(path);
 				CheckoutEntry(repo, file, entry);
 			}
@@ -683,6 +734,17 @@ namespace NGit.Dircache
 			}
 			if (i == null)
 			{
+				// make sure not to overwrite untracked files
+				if (f != null)
+				{
+					// a dirty worktree: the index is empty but we have a
+					// workingtree-file
+					if (mId == null || !mId.Equals(f.EntryObjectId))
+					{
+						Conflict(name, null, h, m);
+						return;
+					}
+				}
 				if (h == null)
 				{
 					Update(name, mId, m.EntryFileMode);
@@ -865,8 +927,8 @@ namespace NGit.Dircache
 				FilePath conflict = new FilePath(repo.WorkTree, c);
 				if (!conflict.Delete())
 				{
-					throw new CheckoutConflictException(MessageFormat.Format(JGitText.Get().cannotDeleteFile
-						, c));
+					throw new NGit.Errors.CheckoutConflictException(MessageFormat.Format(JGitText.Get
+						().cannotDeleteFile, c));
 				}
 				RemoveEmptyParents(conflict);
 			}
@@ -875,8 +937,8 @@ namespace NGit.Dircache
 				FilePath file = new FilePath(repo.WorkTree, r);
 				if (!file.Delete())
 				{
-					throw new CheckoutConflictException(MessageFormat.Format(JGitText.Get().cannotDeleteFile
-						, file.GetAbsolutePath()));
+					throw new NGit.Errors.CheckoutConflictException(MessageFormat.Format(JGitText.Get
+						().cannotDeleteFile, file.GetAbsolutePath()));
 				}
 				RemoveEmptyParents(file);
 			}

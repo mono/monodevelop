@@ -93,9 +93,9 @@ namespace NGit
 
 		private readonly Repository db;
 
-		private sealed class _IComparer_121 : IComparer<byte[]>
+		private sealed class _IComparer_122 : IComparer<byte[]>
 		{
-			public _IComparer_121()
+			public _IComparer_122()
 			{
 			}
 
@@ -127,7 +127,7 @@ namespace NGit
 		}
 
 		private IDictionary<byte[], GitIndex.Entry> entries = new SortedDictionary<byte[]
-			, GitIndex.Entry>(new _IComparer_121());
+			, GitIndex.Entry>(new _IComparer_122());
 
 		/// <summary>Construct a Git index representation.</summary>
 		/// <remarks>Construct a Git index representation.</remarks>
@@ -1102,7 +1102,7 @@ namespace NGit
 			ObjectLoader ol = db.Open(e.sha1, Constants.OBJ_BLOB);
 			FilePath file = new FilePath(wd, e.GetName());
 			file.Delete();
-			file.GetParentFile().Mkdirs();
+			FileUtils.Mkdirs(file.GetParentFile(), true);
 			FileOutputStream dst = new FileOutputStream(file);
 			try
 			{

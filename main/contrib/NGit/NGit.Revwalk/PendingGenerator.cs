@@ -163,6 +163,7 @@ namespace NGit.Revwalk
 					}
 					else
 					{
+						c.ParseBody(walker);
 						produce = filter.Include(walker, c);
 					}
 					foreach (RevCommit p in c.parents)

@@ -379,7 +379,7 @@ namespace NGit
 			return new _AsyncObjectSizeQueue_354<T>(this, idItr);
 		}
 
-		private sealed class _AsyncObjectSizeQueue_354 <T>: AsyncObjectSizeQueue<T> where T:ObjectId
+		private sealed class _AsyncObjectSizeQueue_354<T>: AsyncObjectSizeQueue<T> where T:ObjectId
 		{
 			public _AsyncObjectSizeQueue_354(ObjectReader _enclosing, Iterator<T> idItr)
 			{

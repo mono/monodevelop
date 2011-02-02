@@ -62,9 +62,9 @@ namespace NGit.Storage.File
 	/// </remarks>
 	public class PackFile : Iterable<PackIndex.MutableEntry>
 	{
-		private sealed class _IComparer_90 : IComparer<NGit.Storage.File.PackFile>
+		private sealed class _IComparer_89 : IComparer<NGit.Storage.File.PackFile>
 		{
-			public _IComparer_90()
+			public _IComparer_89()
 			{
 			}
 
@@ -76,7 +76,7 @@ namespace NGit.Storage.File
 
 		/// <summary>Sorts PackFiles to be most recently created to least recently created.</summary>
 		/// <remarks>Sorts PackFiles to be most recently created to least recently created.</remarks>
-		public static readonly IComparer<NGit.Storage.File.PackFile> SORT = new _IComparer_90
+		public static readonly IComparer<NGit.Storage.File.PackFile> SORT = new _IComparer_89
 			();
 
 		private readonly FilePath idxFile;
@@ -290,14 +290,30 @@ namespace NGit.Storage.File
 
 		/// <exception cref="System.IO.IOException"></exception>
 		/// <exception cref="Sharpen.DataFormatException"></exception>
-		private void Decompress(long position, WindowCursor curs, byte[] dstbuf, int dstoff
-			, int dstsz)
+		private byte[] Decompress(long position, int sz, WindowCursor curs)
 		{
-			if (curs.Inflate(this, position, dstbuf, dstoff) != dstsz)
+			byte[] dstbuf;
+			try
+			{
+				dstbuf = new byte[sz];
+			}
+			catch (OutOfMemoryException)
+			{
+				// The size may be larger than our heap allows, return null to
+				// let the caller know allocation isn't possible and it should
+				// use the large object streaming approach instead.
+				//
+				// For example, this can occur when sz is 640 MB, and JRE
+				// maximum heap size is only 256 MB. Even if the JRE has
+				// 200 MB free, it cannot allocate a 640 MB byte array.
+				return null;
+			}
+			if (curs.Inflate(this, position, dstbuf, 0) != sz)
 			{
 				throw new EOFException(MessageFormat.Format(JGitText.Get().shortCompressedStreamAt
 					, position));
 			}
+			return dstbuf;
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
@@ -730,72 +746,163 @@ namespace NGit.Storage.File
 		/// <exception cref="System.IO.IOException"></exception>
 		internal virtual ObjectLoader Load(WindowCursor curs, long pos)
 		{
-			byte[] ib = curs.tempId;
-			ReadFully(pos, ib, 0, 20, curs);
-			int c = ib[0] & unchecked((int)(0xff));
-			int type = (c >> 4) & 7;
-			long sz = c & 15;
-			int shift = 4;
-			int p = 1;
-			while ((c & unchecked((int)(0x80))) != 0)
-			{
-				c = ib[p++] & unchecked((int)(0xff));
-				sz += (c & unchecked((int)(0x7f))) << shift;
-				shift += 7;
-			}
 			try
 			{
-				switch (type)
+				byte[] ib = curs.tempId;
+				PackFile.Delta delta = null;
+				byte[] data = null;
+				int type = Constants.OBJ_BAD;
+				bool cached = false;
+				for (; ; )
 				{
-					case Constants.OBJ_COMMIT:
-					case Constants.OBJ_TREE:
-					case Constants.OBJ_BLOB:
-					case Constants.OBJ_TAG:
-					{
-						if (sz < curs.GetStreamFileThreshold())
-						{
-							byte[] data;
-							try
-							{
-								data = new byte[(int)sz];
-							}
-							catch (OutOfMemoryException)
-							{
-								return LargeWhole(curs, pos, type, sz, p);
-							}
-							Decompress(pos + p, curs, data, 0, data.Length);
-							return new ObjectLoader.SmallObject(type, data);
-						}
-						return LargeWhole(curs, pos, type, sz, p);
-					}
-
-					case Constants.OBJ_OFS_DELTA:
+					ReadFully(pos, ib, 0, 20, curs);
+					int c = ib[0] & unchecked((int)(0xff));
+					int typeCode = (c >> 4) & 7;
+					long sz = c & 15;
+					int shift = 4;
+					int p = 1;
+					while ((c & unchecked((int)(0x80))) != 0)
 					{
 						c = ib[p++] & unchecked((int)(0xff));
-						long ofs = c & 127;
-						while ((c & 128) != 0)
+						sz += (c & unchecked((int)(0x7f))) << shift;
+						shift += 7;
+					}
+					switch (typeCode)
+					{
+						case Constants.OBJ_COMMIT:
+						case Constants.OBJ_TREE:
+						case Constants.OBJ_BLOB:
+						case Constants.OBJ_TAG:
 						{
-							ofs += 1;
-							c = ib[p++] & unchecked((int)(0xff));
-							ofs <<= 7;
-							ofs += (c & 127);
+							if (sz < curs.GetStreamFileThreshold())
+							{
+								data = Decompress(pos + p, (int)sz, curs);
+							}
+							if (delta != null)
+							{
+								type = typeCode;
+								goto SEARCH_break;
+							}
+							if (data != null)
+							{
+								return new ObjectLoader.SmallObject(typeCode, data);
+							}
+							else
+							{
+								return new LargePackedWholeObject(typeCode, sz, pos, p, this, curs.db);
+							}
+							goto case Constants.OBJ_OFS_DELTA;
 						}
-						return LoadDelta(pos, p, sz, pos - ofs, curs);
-					}
 
-					case Constants.OBJ_REF_DELTA:
-					{
-						ReadFully(pos + p, ib, 0, 20, curs);
-						long ofs = FindDeltaBase(ObjectId.FromRaw(ib));
-						return LoadDelta(pos, p + 20, sz, ofs, curs);
-					}
+						case Constants.OBJ_OFS_DELTA:
+						{
+							c = ib[p++] & unchecked((int)(0xff));
+							long @base = c & 127;
+							while ((c & 128) != 0)
+							{
+								@base += 1;
+								c = ib[p++] & unchecked((int)(0xff));
+								@base <<= 7;
+								@base += (c & 127);
+							}
+							@base = pos - @base;
+							delta = new PackFile.Delta(delta, pos, (int)sz, p, @base);
+							if (sz != delta.deltaSize)
+							{
+								goto SEARCH_break;
+							}
+							DeltaBaseCache.Entry e = DeltaBaseCache.Get(this, @base);
+							if (e != null)
+							{
+								type = e.type;
+								data = e.data;
+								cached = true;
+								goto SEARCH_break;
+							}
+							pos = @base;
+							goto SEARCH_continue;
+						}
 
-					default:
-					{
-						throw new IOException(MessageFormat.Format(JGitText.Get().unknownObjectType, type
-							));
+						case Constants.OBJ_REF_DELTA:
+						{
+							ReadFully(pos + p, ib, 0, 20, curs);
+							long @base = FindDeltaBase(ObjectId.FromRaw(ib));
+							delta = new PackFile.Delta(delta, pos, (int)sz, p + 20, @base);
+							if (sz != delta.deltaSize)
+							{
+								goto SEARCH_break;
+							}
+							DeltaBaseCache.Entry e = DeltaBaseCache.Get(this, @base);
+							if (e != null)
+							{
+								type = e.type;
+								data = e.data;
+								cached = true;
+								goto SEARCH_break;
+							}
+							pos = @base;
+							goto SEARCH_continue;
+						}
+
+						default:
+						{
+							throw new IOException(MessageFormat.Format(JGitText.Get().unknownObjectType, typeCode
+								));
+						}
 					}
+SEARCH_continue: ;
 				}
+SEARCH_break: ;
+				// At this point there is at least one delta to apply to data.
+				// (Whole objects with no deltas to apply return early above.)
+				if (data == null)
+				{
+					return delta.Large(this, curs);
+				}
+				do
+				{
+					// Cache only the base immediately before desired object.
+					if (cached)
+					{
+						cached = false;
+					}
+					else
+					{
+						if (delta.next == null)
+						{
+							DeltaBaseCache.Store(this, delta.basePos, data, type);
+						}
+					}
+					pos = delta.deltaPos;
+					byte[] cmds = Decompress(pos + delta.hdrLen, delta.deltaSize, curs);
+					if (cmds == null)
+					{
+						data = null;
+						// Discard base in case of OutOfMemoryError
+						return delta.Large(this, curs);
+					}
+					long sz = BinaryDelta.GetResultSize(cmds);
+					if (int.MaxValue <= sz)
+					{
+						return delta.Large(this, curs);
+					}
+					byte[] result;
+					try
+					{
+						result = new byte[(int)sz];
+					}
+					catch (OutOfMemoryException)
+					{
+						data = null;
+						// Discard base in case of OutOfMemoryError
+						return delta.Large(this, curs);
+					}
+					BinaryDelta.Apply(data, cmds, result);
+					data = result;
+					delta = delta.next;
+				}
+				while (delta != null);
+				return new ObjectLoader.SmallObject(type, data);
 			}
 			catch (DataFormatException dfe)
 			{
@@ -818,75 +925,52 @@ namespace NGit.Storage.File
 			return ofs;
 		}
 
-		/// <exception cref="System.IO.IOException"></exception>
-		/// <exception cref="Sharpen.DataFormatException"></exception>
-		private ObjectLoader LoadDelta(long posSelf, int hdrLen, long sz, long posBase, WindowCursor
-			 curs)
+		private class Delta
 		{
-			if (int.MaxValue <= sz)
-			{
-				return LargeDelta(posSelf, hdrLen, posBase, curs);
-			}
-			byte[] @base;
-			int type;
-			DeltaBaseCache.Entry e = DeltaBaseCache.Get(this, posBase);
-			if (e != null)
-			{
-				@base = e.data;
-				type = e.type;
-			}
-			else
-			{
-				ObjectLoader p = Load(curs, posBase);
-				try
-				{
-					@base = p.GetCachedBytes(curs.GetStreamFileThreshold());
-				}
-				catch (LargeObjectException)
-				{
-					return LargeDelta(posSelf, hdrLen, posBase, curs);
-				}
-				type = p.GetType();
-				DeltaBaseCache.Store(this, posBase, @base, type);
-			}
-			byte[] delta;
-			try
-			{
-				delta = new byte[(int)sz];
-			}
-			catch (OutOfMemoryException)
-			{
-				return LargeDelta(posSelf, hdrLen, posBase, curs);
-			}
-			Decompress(posSelf + hdrLen, curs, delta, 0, delta.Length);
-			sz = BinaryDelta.GetResultSize(delta);
-			if (int.MaxValue <= sz)
-			{
-				return LargeDelta(posSelf, hdrLen, posBase, curs);
-			}
-			byte[] result;
-			try
-			{
-				result = new byte[(int)sz];
-			}
-			catch (OutOfMemoryException)
-			{
-				return LargeDelta(posSelf, hdrLen, posBase, curs);
-			}
-			BinaryDelta.Apply(@base, delta, result);
-			return new ObjectLoader.SmallObject(type, result);
-		}
+			/// <summary>Child that applies onto this object.</summary>
+			/// <remarks>Child that applies onto this object.</remarks>
+			internal readonly PackFile.Delta next;
 
-		private LargePackedWholeObject LargeWhole(WindowCursor curs, long pos, int type, 
-			long sz, int p)
-		{
-			return new LargePackedWholeObject(type, sz, pos, p, this, curs.db);
-		}
+			/// <summary>Offset of the delta object.</summary>
+			/// <remarks>Offset of the delta object.</remarks>
+			internal readonly long deltaPos;
 
-		private LargePackedDeltaObject LargeDelta(long posObj, int hdrLen, long posBase, 
-			WindowCursor wc)
-		{
-			return new LargePackedDeltaObject(posObj, posBase, hdrLen, this, wc.db);
+			/// <summary>Size of the inflated delta stream.</summary>
+			/// <remarks>Size of the inflated delta stream.</remarks>
+			internal readonly int deltaSize;
+
+			/// <summary>Total size of the delta's pack entry header (including base).</summary>
+			/// <remarks>Total size of the delta's pack entry header (including base).</remarks>
+			internal readonly int hdrLen;
+
+			/// <summary>Offset of the base object this delta applies onto.</summary>
+			/// <remarks>Offset of the base object this delta applies onto.</remarks>
+			internal readonly long basePos;
+
+			internal Delta(PackFile.Delta next, long ofs, int sz, int hdrLen, long baseOffset
+				)
+			{
+				this.next = next;
+				this.deltaPos = ofs;
+				this.deltaSize = sz;
+				this.hdrLen = hdrLen;
+				this.basePos = baseOffset;
+			}
+
+			internal virtual ObjectLoader Large(PackFile pack, WindowCursor wc)
+			{
+				PackFile.Delta d = this;
+				while (d.next != null)
+				{
+					d = d.next;
+				}
+				return d.NewLargeLoader(pack, wc);
+			}
+
+			private ObjectLoader NewLargeLoader(PackFile pack, WindowCursor wc)
+			{
+				return new LargePackedDeltaObject(deltaPos, basePos, hdrLen, pack, wc.db);
+			}
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>

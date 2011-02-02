@@ -49,7 +49,7 @@ using Sharpen;
 
 namespace NGit.Util
 {
-	internal class FS_POSIX_Java6 : FS
+	internal class FS_POSIX_Java6 : FS_POSIX
 	{
 		private static readonly MethodInfo canExecute;
 

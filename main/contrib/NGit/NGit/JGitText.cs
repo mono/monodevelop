@@ -210,6 +210,8 @@ namespace NGit
 
 		public string canOnlyCherryPickCommitsWithOneParent;
 
+		public string canOnlyRevertCommitsWithOneParent;
+
 		public string cantFindObjectInReversePackIndexForTheSpecifiedOffset;
 
 		public string cantPassMeATree;
@@ -302,6 +304,8 @@ namespace NGit
 
 		public string couldNotReadIndexInOneGo;
 
+		public string couldNotReadObjectWhileParsingCommit;
+
 		public string couldNotRenameDeleteOldIndex;
 
 		public string couldNotRenameTemporaryFile;
@@ -317,6 +321,8 @@ namespace NGit
 		public string createBranchFailedUnknownReason;
 
 		public string createBranchUnexpectedResult;
+
+		public string createNewFileFailed;
 
 		public string credentialPassword;
 
@@ -401,6 +407,8 @@ namespace NGit
 		public string exceptionCaughtDuringExecutionOfPushCommand;
 
 		public string exceptionCaughtDuringExecutionOfPullCommand;
+
+		public string exceptionCaughtDuringExecutionOfRevertCommand;
 
 		public string exceptionCaughtDuringExecutionOfRmCommand;
 
@@ -572,6 +580,10 @@ namespace NGit
 
 		public string malformedpersonIdentString;
 
+		public string mergeConflictOnNotes;
+
+		public string mergeConflictOnNonNoteEntries;
+
 		public string mergeStrategyAlreadyExistsAsDefault;
 
 		public string mergeStrategyDoesNotSupportHeads;
@@ -595,6 +607,10 @@ namespace NGit
 		public string missingSecretkey;
 
 		public string mixedStagesNotAllowed;
+
+		public string mkDirFailed;
+
+		public string mkDirsFailed;
 
 		public string multipleMergeBasesFor;
 
@@ -804,6 +820,8 @@ namespace NGit
 
 		public string searchForReuse;
 
+		public string searchForSizes;
+
 		public string sequenceTooLargeForDiffAlgorithm;
 
 		public string serviceNotPermitted;
@@ -841,6 +859,8 @@ namespace NGit
 		public string submodulesNotSupported;
 
 		public string symlinkCannotBeWrittenAsTheLinkTarget;
+
+		public string systemConfigFileInvalid;
 
 		public string tagNameInvalid;
 
@@ -881,6 +901,8 @@ namespace NGit
 		public string unableToWrite;
 
 		public string unencodeableFile;
+
+		public string unexpectedCompareResult;
 
 		public string unexpectedEndOfConfigFile;
 

@@ -41,6 +41,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using NGit;
@@ -675,6 +676,98 @@ namespace NGit.Treewalk
 		}
 
 		/// <summary>
+		/// The result of a metadata-comparison between the current entry and a
+		/// <see cref="DirCacheEntry">DirCacheEntry</see>
+		/// </summary>
+		public enum MetadataDiff
+		{
+			EQUAL,
+			DIFFER_BY_METADATA,
+			SMUDGED,
+			DIFFER_BY_TIMESTAMP
+		}
+
+		/// <summary>
+		/// Compare the metadata (mode, length, modification-timestamp) of the
+		/// current entry and a
+		/// <see cref="NGit.Dircache.DirCacheEntry">NGit.Dircache.DirCacheEntry</see>
+		/// </summary>
+		/// <param name="entry">
+		/// the
+		/// <see cref="NGit.Dircache.DirCacheEntry">NGit.Dircache.DirCacheEntry</see>
+		/// to compare with
+		/// </param>
+		/// <returns>
+		/// a
+		/// <see cref="MetadataDiff">MetadataDiff</see>
+		/// which tells whether and how the entries
+		/// metadata differ
+		/// </returns>
+		public virtual WorkingTreeIterator.MetadataDiff CompareMetadata(DirCacheEntry entry
+			)
+		{
+			if (entry.IsAssumeValid)
+			{
+				return WorkingTreeIterator.MetadataDiff.EQUAL;
+			}
+			if (entry.IsUpdateNeeded)
+			{
+				return WorkingTreeIterator.MetadataDiff.DIFFER_BY_METADATA;
+			}
+			if (!entry.IsSmudged && (GetEntryLength() != entry.Length))
+			{
+				return WorkingTreeIterator.MetadataDiff.DIFFER_BY_METADATA;
+			}
+			// Determine difference in mode-bits of file and index-entry. In the
+			// bitwise presentation of modeDiff we'll have a '1' when the two modes
+			// differ at this position.
+			int modeDiff = EntryRawMode ^ entry.RawMode;
+			// Do not rely on filemode differences in case of symbolic links
+			if (modeDiff != 0 && !FileMode.SYMLINK.Equals(entry.RawMode))
+			{
+				// Ignore the executable file bits if WorkingTreeOptions tell me to
+				// do so. Ignoring is done by setting the bits representing a
+				// EXECUTABLE_FILE to '0' in modeDiff
+				if (!state.options.IsFileMode())
+				{
+					modeDiff &= ~FileMode.EXECUTABLE_FILE.GetBits();
+				}
+				if (modeDiff != 0)
+				{
+					// Report a modification if the modes still (after potentially
+					// ignoring EXECUTABLE_FILE bits) differ
+					return WorkingTreeIterator.MetadataDiff.DIFFER_BY_METADATA;
+				}
+			}
+			// Git under windows only stores seconds so we round the timestamp
+			// Java gives us if it looks like the timestamp in index is seconds
+			// only. Otherwise we compare the timestamp at millisecond precision.
+			long cacheLastModified = entry.LastModified;
+			long fileLastModified = GetEntryLastModified();
+			if (cacheLastModified % 1000 == 0 || fileLastModified % 1000 == 0)
+			{
+				cacheLastModified = cacheLastModified - cacheLastModified % 1000;
+				fileLastModified = fileLastModified - fileLastModified % 1000;
+			}
+			if (fileLastModified != cacheLastModified)
+			{
+				return WorkingTreeIterator.MetadataDiff.DIFFER_BY_TIMESTAMP;
+			}
+			else
+			{
+				if (!entry.IsSmudged)
+				{
+					// The file is clean when you look at timestamps.
+					return WorkingTreeIterator.MetadataDiff.EQUAL;
+				}
+				else
+				{
+					return WorkingTreeIterator.MetadataDiff.SMUDGED;
+				}
+			}
+		}
+
+		/// <summary>
 		/// Checks whether this entry differs from a given entry from the
 		/// <see cref="NGit.Dircache.DirCache">NGit.Dircache.DirCache</see>
 		/// .
@@ -690,74 +783,46 @@ namespace NGit.Treewalk
 		/// <returns>true if content is most likely different.</returns>
 		public virtual bool IsModified(DirCacheEntry entry, bool forceContentCheck)
 		{
-			if (entry.IsAssumeValid)
+			WorkingTreeIterator.MetadataDiff diff = CompareMetadata(entry);
+			switch (diff)
 			{
-				return false;
-			}
-			if (entry.IsUpdateNeeded)
-			{
-				return true;
-			}
-			if (!entry.IsSmudged && (GetEntryLength() != entry.Length))
-			{
-				return true;
-			}
-			// Determine difference in mode-bits of file and index-entry. In the
-			// bitwise presentation of modeDiff we'll have a '1' when the two modes
-			// differ at this position.
-			int modeDiff = EntryRawMode ^ entry.RawMode;
-			// Ignore the executable file bits if checkFilemode tells me to do so.
-			// Ignoring is done by setting the bits representing a EXECUTABLE_FILE
-			// to '0' in modeDiff
-			if (!state.options.IsFileMode())
-			{
-				modeDiff &= ~FileMode.EXECUTABLE_FILE.GetBits();
-			}
-			if (modeDiff != 0)
-			{
-				// Report a modification if the modes still (after potentially
-				// ignoring EXECUTABLE_FILE bits) differ
-				return true;
-			}
-			// Git under windows only stores seconds so we round the timestamp
-			// Java gives us if it looks like the timestamp in index is seconds
-			// only. Otherwise we compare the timestamp at millisecond precision.
-			long cacheLastModified = entry.LastModified;
-			long fileLastModified = GetEntryLastModified();
-			if (cacheLastModified % 1000 == 0 || fileLastModified % 1000 == 0)
-			{
-				cacheLastModified = cacheLastModified - cacheLastModified % 1000;
-				fileLastModified = fileLastModified - fileLastModified % 1000;
-			}
-			if (fileLastModified != cacheLastModified)
-			{
-				// The file is dirty by timestamps
-				if (forceContentCheck)
+				case WorkingTreeIterator.MetadataDiff.DIFFER_BY_TIMESTAMP:
 				{
-					// But we are told to look at content even though timestamps
-					// tell us about modification
-					return ContentCheck(entry);
+					if (forceContentCheck)
+					{
+						// But we are told to look at content even though timestamps
+						// tell us about modification
+						return ContentCheck(entry);
+					}
+					else
+					{
+						// We are told to assume a modification if timestamps differs
+						return true;
+					}
+					goto case WorkingTreeIterator.MetadataDiff.SMUDGED;
 				}
-				else
-				{
-					// We are told to assume a modification if timestamps differs
-					return true;
-				}
-			}
-			else
-			{
-				// The file is clean when you look at timestamps.
-				if (entry.IsSmudged)
+
+				case WorkingTreeIterator.MetadataDiff.SMUDGED:
 				{
 					// The file is clean by timestamps but the entry was smudged.
 					// Lets do a content check
 					return ContentCheck(entry);
 				}
-				else
+
+				case WorkingTreeIterator.MetadataDiff.EQUAL:
 				{
-					// The file is clean by timestamps and the entry is not
-					// smudged: Can't get any cleaner!
 					return false;
+				}
+
+				case WorkingTreeIterator.MetadataDiff.DIFFER_BY_METADATA:
+				{
+					return true;
+				}
+
+				default:
+				{
+					throw new InvalidOperationException(MessageFormat.Format(JGitText.Get().unexpectedCompareResult
+						, diff.ToString()));
 				}
 			}
 		}

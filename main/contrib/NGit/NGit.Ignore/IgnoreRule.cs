@@ -106,8 +106,8 @@ namespace NGit.Ignore
 				endIndex--;
 				dirOnly = true;
 			}
-			bool hasSlash = pattern.Contains("/");
 			pattern = Sharpen.Runtime.Substring(pattern, startIndex, endIndex);
+			bool hasSlash = pattern.Contains("/");
 			if (!hasSlash)
 			{
 				nameOnly = true;
@@ -207,9 +207,12 @@ namespace NGit.Ignore
 				if (nameOnly)
 				{
 					//Iterate through each sub-name
-					foreach (string folderName in target.Split("/"))
+					string[] segments = target.Split("/");
+					for (int idx = 0; idx < segments.Length; idx++)
 					{
-						if (folderName.Equals(pattern))
+						string segmentName = segments[idx];
+						if (segmentName.Equals(pattern) && DoesMatchDirectoryExpectations(isDirectory, idx
+							, segments.Length))
 						{
 							return true;
 						}
@@ -223,14 +226,17 @@ namespace NGit.Ignore
 				{
 					return true;
 				}
+				string[] segments = target.Split("/");
 				if (nameOnly)
 				{
-					foreach (string folderName in target.Split("/"))
+					for (int idx = 0; idx < segments.Length; idx++)
 					{
+						string segmentName = segments[idx];
 						//Iterate through each sub-directory
 						matcher.Reset();
-						matcher.Append(folderName);
-						if (matcher.IsMatch())
+						matcher.Append(segmentName);
+						if (matcher.IsMatch() && DoesMatchDirectoryExpectations(isDirectory, idx, segments
+							.Length))
 						{
 							return true;
 						}
@@ -241,13 +247,15 @@ namespace NGit.Ignore
 					//TODO: This is the slowest operation
 					//This matches e.g. "/src/ne?" to "/src/new/file.c"
 					matcher.Reset();
-					foreach (string folderName in target.Split("/"))
+					for (int idx = 0; idx < segments.Length; idx++)
 					{
-						if (folderName.Length > 0)
+						string segmentName = segments[idx];
+						if (segmentName.Length > 0)
 						{
-							matcher.Append("/" + folderName);
+							matcher.Append("/" + segmentName);
 						}
-						if (matcher.IsMatch())
+						if (matcher.IsMatch() && DoesMatchDirectoryExpectations(isDirectory, idx, segments
+							.Length))
 						{
 							return true;
 						}
@@ -270,6 +278,18 @@ namespace NGit.Ignore
 		public virtual bool GetResult()
 		{
 			return !negation;
+		}
+
+		private bool DoesMatchDirectoryExpectations(bool isDirectory, int segmentIdx, int
+			 segmentLength)
+		{
+			// The segment we are checking is a directory, expectations are met.
+			if (segmentIdx < segmentLength - 1)
+			{
+				return true;
+			}
+			// We are checking the last part of the segment for which isDirectory has to be considered.
+			return !dirOnly || isDirectory;
 		}
 	}
 }

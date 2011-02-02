@@ -89,7 +89,7 @@ namespace NGit.Notes
 			return new NGit.Notes.NoteParser(prefix, reader, treeId).Parse();
 		}
 
-		private readonly AbbreviatedObjectId prefix;
+		private readonly int prefixLen;
 
 		private readonly int pathPadding;
 
@@ -99,16 +99,16 @@ namespace NGit.Notes
 
 		/// <exception cref="NGit.Errors.IncorrectObjectTypeException"></exception>
 		/// <exception cref="System.IO.IOException"></exception>
-		private NoteParser(AbbreviatedObjectId p, ObjectReader r, ObjectId t) : base(Constants.EncodeASCII
-			(p.Name), r, t)
+		private NoteParser(AbbreviatedObjectId prefix, ObjectReader r, ObjectId t) : base
+			(Constants.EncodeASCII(prefix.Name), r, t)
 		{
-			prefix = p;
+			prefixLen = prefix.Length;
 			// Our path buffer has a '/' that we don't want after the prefix.
 			// Drop it by shifting the path down one position.
-			pathPadding = 0 < prefix.Length ? 1 : 0;
+			pathPadding = 0 < prefixLen ? 1 : 0;
 			if (0 < pathPadding)
 			{
-				System.Array.Copy(path, 0, path, pathPadding, prefix.Length);
+				System.Array.Copy(path, 0, path, pathPadding, prefixLen);
 			}
 		}
 
@@ -140,12 +140,12 @@ namespace NGit.Notes
 				}
 			}
 			// If we cannot determine the style used, assume its a leaf.
-			return new LeafBucket(prefix.Length);
+			return new LeafBucket(prefixLen);
 		}
 
 		private LeafBucket ParseLeafTree()
 		{
-			LeafBucket leaf = new LeafBucket(prefix.Length);
+			LeafBucket leaf = new LeafBucket(prefixLen);
 			MutableObjectId idBuf = new MutableObjectId();
 			for (; !Eof; Next(1))
 			{
@@ -180,13 +180,13 @@ namespace NGit.Notes
 
 		private FanoutBucket ParseFanoutTree()
 		{
-			FanoutBucket fanout = new FanoutBucket(prefix.Length);
+			FanoutBucket fanout = new FanoutBucket(prefixLen);
 			for (; !Eof; Next(1))
 			{
 				int cell = ParseFanoutCell();
 				if (0 <= cell)
 				{
-					fanout.ParseOneEntry(cell, EntryObjectId);
+					fanout.SetBucket(cell, EntryObjectId);
 				}
 				else
 				{

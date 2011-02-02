@@ -215,10 +215,10 @@ namespace NGit.Transport
 
 		private class FetchConfig
 		{
-			private sealed class _SectionParser_211 : Config.SectionParser<BasePackFetchConnection.FetchConfig
+			private sealed class _SectionParser_212 : Config.SectionParser<BasePackFetchConnection.FetchConfig
 				>
 			{
-				public _SectionParser_211()
+				public _SectionParser_212()
 				{
 				}
 
@@ -229,7 +229,7 @@ namespace NGit.Transport
 			}
 
 			internal static readonly Config.SectionParser<BasePackFetchConnection.FetchConfig
-				> KEY = new _SectionParser_211();
+				> KEY = new _SectionParser_212();
 
 			internal readonly bool allowOfsDelta;
 
@@ -693,12 +693,12 @@ READ_RESULT_break2: ;
 			walk.ResetRetain(REACHABLE, ADVERTISED);
 			walk.MarkStart(reachableCommits);
 			walk.Sort(RevSort.COMMIT_TIME_DESC);
-			walk.SetRevFilter(new _RevFilter_586(this));
+			walk.SetRevFilter(new _RevFilter_587(this));
 		}
 
-		private sealed class _RevFilter_586 : RevFilter
+		private sealed class _RevFilter_587 : RevFilter
 		{
-			public _RevFilter_586(BasePackFetchConnection _enclosing)
+			public _RevFilter_587(BasePackFetchConnection _enclosing)
 			{
 				this._enclosing = _enclosing;
 			}
@@ -775,17 +775,25 @@ READ_RESULT_break2: ;
 		/// <exception cref="System.IO.IOException"></exception>
 		private void ReceivePack(ProgressMonitor monitor)
 		{
-			IndexPack ip;
 			InputStream input = @in;
 			if (sideband)
 			{
 				input = new SideBandInputStream(input, monitor, GetMessageWriter());
 			}
-			ip = IndexPack.Create(local, input);
-			ip.SetFixThin(thinPack);
-			ip.SetObjectChecking(transport.IsCheckFetchedObjects());
-			ip.Index(monitor);
-			packLock = ip.RenameAndOpenPack(lockMessage);
+			ObjectInserter ins = local.NewObjectInserter();
+			try
+			{
+				PackParser parser = ins.NewPackParser(input);
+				parser.SetAllowThin(thinPack);
+				parser.SetObjectChecking(transport.IsCheckFetchedObjects());
+				parser.SetLockMessage(lockMessage);
+				packLock = parser.Parse(monitor);
+				ins.Flush();
+			}
+			finally
+			{
+				ins.Release();
+			}
 		}
 
 		[System.Serializable]

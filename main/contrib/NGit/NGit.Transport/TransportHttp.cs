@@ -109,10 +109,10 @@ namespace NGit.Transport
 			return "JGit/" + version;
 		}
 
-		private sealed class _SectionParser_142 : Config.SectionParser<TransportHttp.HttpConfig
+		private sealed class _SectionParser_151 : Config.SectionParser<TransportHttp.HttpConfig
 			>
 		{
-			public _SectionParser_142()
+			public _SectionParser_151()
 			{
 			}
 
@@ -124,17 +124,20 @@ namespace NGit.Transport
 		}
 
 		private static readonly Config.SectionParser<TransportHttp.HttpConfig> HTTP_KEY = 
-			new _SectionParser_142();
+			new _SectionParser_151();
 
 		private class HttpConfig
 		{
 			internal readonly int postBuffer;
 
+			internal readonly bool sslVerify;
+
 			internal HttpConfig(Config rc)
 			{
 				postBuffer = rc.GetInt("http", "postbuffer", 1 * 1024 * 1024);
+				//$NON-NLS-1$  //$NON-NLS-2$
+				sslVerify = rc.GetBoolean("http", "sslVerify", true);
 			}
-			//$NON-NLS-1$  //$NON-NLS-2$
 		}
 
 		private readonly Uri baseUrl;
@@ -489,6 +492,10 @@ namespace NGit.Transport
 		{
 			Proxy proxy = HttpSupport.ProxyFor(proxySelector, u);
 			HttpURLConnection conn = (HttpURLConnection)u.OpenConnection(proxy);
+			if (!http.sslVerify && "https".Equals(u.Scheme))
+			{
+				DisableSslVerify(conn);
+			}
 			conn.SetRequestMethod(method);
 			conn.SetUseCaches(false);
 			conn.SetRequestProperty(HttpSupport.HDR_ACCEPT_ENCODING, HttpSupport.ENCODING_GZIP
@@ -500,6 +507,28 @@ namespace NGit.Transport
 			conn.SetReadTimeout(GetTimeout() * 1000);
 			authMethod.ConfigureRequest(conn);
 			return conn;
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
+		private void DisableSslVerify(URLConnection conn)
+		{
+			TrustManager[] trustAllCerts = new TrustManager[] { new TransportHttp.DummyX509TrustManager
+				() };
+			try
+			{
+				SSLContext ctx = SSLContext.GetInstance("SSL");
+				ctx.Init(null, trustAllCerts, null);
+				HttpsURLConnection sslConn = (HttpsURLConnection)conn;
+				sslConn.SetSSLSocketFactory(ctx.GetSocketFactory());
+			}
+			catch (KeyManagementException e)
+			{
+				throw new IOException(e.Message);
+			}
+			catch (NoSuchAlgorithmException e)
+			{
+				throw new IOException(e.Message);
+			}
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
@@ -985,6 +1014,24 @@ namespace NGit.Transport
 			}
 
 			private readonly TransportHttp _enclosing;
+		}
+
+		private class DummyX509TrustManager : X509TrustManager
+		{
+			public virtual X509Certificate[] GetAcceptedIssuers()
+			{
+				return null;
+			}
+
+			public virtual void CheckClientTrusted(X509Certificate[] certs, string authType)
+			{
+			}
+
+			// no check
+			public virtual void CheckServerTrusted(X509Certificate[] certs, string authType)
+			{
+			}
+			// no check
 		}
 	}
 }

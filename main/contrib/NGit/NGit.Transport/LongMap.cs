@@ -48,7 +48,7 @@ namespace NGit.Transport
 {
 	/// <summary>
 	/// Simple Map<long,Object> helper for
-	/// <see cref="IndexPack">IndexPack</see>
+	/// <see cref="PackParser">PackParser</see>
 	/// .
 	/// </summary>
 	/// <?></?>

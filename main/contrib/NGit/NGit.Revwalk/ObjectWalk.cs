@@ -41,6 +41,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System.Collections.Generic;
 using NGit;
 using NGit.Errors;
 using NGit.Revwalk;
@@ -89,7 +90,11 @@ namespace NGit.Revwalk
 		/// </summary>
 		private const int IN_PENDING = RevWalk.REWRITE;
 
+		private static readonly byte[] EMPTY_PATH = new byte[] {  };
+
 		private CanonicalTreeParser treeWalk;
+
+		private IList<RevObject> rootObjects;
 
 		private BlockObjQueue pendingObjects;
 
@@ -117,6 +122,7 @@ namespace NGit.Revwalk
 		/// </param>
 		public ObjectWalk(ObjectReader or) : base(or)
 		{
+			rootObjects = new AList<RevObject>();
 			pendingObjects = new BlockObjQueue();
 			treeWalk = new CanonicalTreeParser();
 		}
@@ -286,7 +292,6 @@ namespace NGit.Revwalk
 					MarkTreeUninteresting(r.Tree);
 					if (HasRevSort(RevSort.BOUNDARY))
 					{
-						pendingObjects.Add(r.Tree);
 						return r;
 					}
 					continue;
@@ -509,6 +514,22 @@ namespace NGit.Revwalk
 			return last != null ? treeWalk.GetEntryPathHashCode() : 0;
 		}
 
+		/// <returns>the internal buffer holding the current path.</returns>
+		public virtual byte[] GetPathBuffer()
+		{
+			return last != null ? treeWalk.GetEntryPathBuffer() : EMPTY_PATH;
+		}
+
+		/// <returns>
+		/// length of the path in
+		/// <see cref="GetPathBuffer()">GetPathBuffer()</see>
+		/// .
+		/// </returns>
+		public virtual int GetPathLength()
+		{
+			return last != null ? treeWalk.GetEntryPathLength() : 0;
+		}
+
 		public override void Dispose()
 		{
 			base.Dispose();
@@ -523,6 +544,11 @@ namespace NGit.Revwalk
 		protected internal override void Reset(int retainFlags)
 		{
 			base.Reset(retainFlags);
+			foreach (RevObject obj in rootObjects)
+			{
+				obj.flags &= ~IN_PENDING;
+			}
+			rootObjects = new AList<RevObject>();
 			pendingObjects = new BlockObjQueue();
 			treeWalk = new CanonicalTreeParser();
 			currentTree = null;
@@ -536,6 +562,7 @@ namespace NGit.Revwalk
 			if ((o.flags & IN_PENDING) == 0)
 			{
 				o.flags |= IN_PENDING;
+				rootObjects.AddItem(o);
 				pendingObjects.Add(o);
 			}
 		}

@@ -153,7 +153,6 @@ namespace NGit.Storage.Pack
 			{
 				for (int end = off + cnt; off < end; off++)
 				{
-					monitor.Update(1);
 					res = window[resSlot];
 					if (0 < maxMemory)
 					{
@@ -179,6 +178,7 @@ namespace NGit.Storage.Pack
 					{
 						// Search for a delta for the current window slot.
 						//
+						monitor.Update(1);
 						Search();
 					}
 				}

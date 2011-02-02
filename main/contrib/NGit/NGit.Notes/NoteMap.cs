@@ -41,6 +41,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System.IO;
 using NGit;
 using NGit.Notes;
 using NGit.Revwalk;
@@ -60,7 +61,7 @@ namespace NGit.Notes
 	/// <code>ObjectReader</code>
 	/// at the proper times.
 	/// </remarks>
-	public class NoteMap
+	public class NoteMap : Iterable<Note>
 	{
 		/// <summary>Construct a new empty note map.</summary>
 		/// <remarks>Construct a new empty note map.</remarks>
@@ -140,6 +141,23 @@ namespace NGit.Notes
 			return map;
 		}
 
+		/// <summary>Construct a new note map from an existing note bucket.</summary>
+		/// <remarks>Construct a new note map from an existing note bucket.</remarks>
+		/// <param name="root">the root bucket of this note map</param>
+		/// <param name="reader">
+		/// reader to scan the note branch with. This reader may be
+		/// retained by the NoteMap for the life of the map in order to
+		/// support lazy loading of entries.
+		/// </param>
+		/// <returns>the note map built from the note bucket</returns>
+		internal static NGit.Notes.NoteMap NewMap(InMemoryNoteBucket root, ObjectReader reader
+			)
+		{
+			NGit.Notes.NoteMap map = new NGit.Notes.NoteMap(reader);
+			map.root = root;
+			return map;
+		}
+
 		/// <summary>Borrowed reader to access the repository.</summary>
 		/// <remarks>Borrowed reader to access the repository.</remarks>
 		private readonly ObjectReader reader;
@@ -153,6 +171,22 @@ namespace NGit.Notes
 			this.reader = reader;
 		}
 
+		/// <returns>
+		/// an iterator that iterates over notes of this NoteMap. Non note
+		/// entries are ignored by this iterator.
+		/// </returns>
+		public override Sharpen.Iterator<Note> Iterator()
+		{
+			try
+			{
+				return root.Iterator(new MutableObjectId(), reader);
+			}
+			catch (IOException e)
+			{
+				throw new RuntimeException(e);
+			}
+		}
+
 		/// <summary>Lookup a note for a specific ObjectId.</summary>
 		/// <remarks>Lookup a note for a specific ObjectId.</remarks>
 		/// <param name="id">the object to look for.</param>
@@ -161,7 +195,19 @@ namespace NGit.Notes
 		/// 	</exception>
 		public virtual ObjectId Get(AnyObjectId id)
 		{
-			return root.Get(id, reader);
+			Note n = root.GetNote(id, reader);
+			return n == null ? null : n.GetData();
+		}
+
+		/// <summary>Lookup a note for a specific ObjectId.</summary>
+		/// <remarks>Lookup a note for a specific ObjectId.</remarks>
+		/// <param name="id">the object to look for.</param>
+		/// <returns>the note for the given object id, or null if no note exists.</returns>
+		/// <exception cref="System.IO.IOException">a portion of the note space is not accessible.
+		/// 	</exception>
+		public virtual Note GetNote(AnyObjectId id)
+		{
+			return root.GetNote(id, reader);
 		}
 
 		/// <summary>Determine if a note exists for the specified ObjectId.</summary>
@@ -333,6 +379,12 @@ namespace NGit.Notes
 		public virtual ObjectId WriteTree(ObjectInserter inserter)
 		{
 			return root.WriteTree(inserter);
+		}
+
+		/// <returns>the root note bucket</returns>
+		internal virtual InMemoryNoteBucket GetRoot()
+		{
+			return root;
 		}
 
 		/// <exception cref="NGit.Errors.MissingObjectException"></exception>

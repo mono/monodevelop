@@ -41,6 +41,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System.Collections.Generic;
 using NGit;
 using NGit.Revwalk;
 using NGit.Storage.Pack;
@@ -144,13 +145,14 @@ namespace NGit.Storage.Pack
 		/// <param name="out">the stream to write each object to.</param>
 		/// <param name="list">
 		/// the list of objects to write. Objects should be written in
-		/// approximately this order.
+		/// approximately this order. Implementors may resort the list
+		/// elements in-place during writing if desired.
 		/// </param>
 		/// <exception cref="System.IO.IOException">
 		/// the stream cannot be written to, or one or more required
 		/// objects cannot be accessed from the object database.
 		/// </exception>
-		void WriteObjects(PackOutputStream @out, Iterable<ObjectToPack> list);
+		void WriteObjects(PackOutputStream @out, IList<ObjectToPack> list);
 
 		/// <summary>Output a previously selected representation.</summary>
 		/// <remarks>

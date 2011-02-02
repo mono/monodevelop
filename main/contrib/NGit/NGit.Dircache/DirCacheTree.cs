@@ -553,14 +553,12 @@ namespace NGit.Dircache
 				entrySpan += st.entrySpan;
 				stIdx++;
 			}
-			if (stIdx < childCnt)
+			// None of our remaining children can be in this tree
+			// as the current cache entry is after our own name.
+			//
+			while (stIdx < childCnt)
 			{
-				// None of our remaining children can be in this tree
-				// as the current cache entry is after our own name.
-				//
-				NGit.Dircache.DirCacheTree[] dct = new NGit.Dircache.DirCacheTree[stIdx];
-				System.Array.Copy(children, 0, dct, 0, stIdx);
-				children = dct;
+				RemoveChild(childCnt - 1);
 			}
 		}
 

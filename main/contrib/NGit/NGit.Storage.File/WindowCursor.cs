@@ -157,7 +157,7 @@ namespace NGit.Storage.File
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
-		public void WriteObjects(PackOutputStream @out, Iterable<ObjectToPack> list)
+		public void WriteObjects(PackOutputStream @out, IList<ObjectToPack> list)
 		{
 			foreach (ObjectToPack otp in list)
 			{

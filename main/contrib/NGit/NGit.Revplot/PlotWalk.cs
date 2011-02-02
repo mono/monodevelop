@@ -95,12 +95,12 @@ namespace NGit.Revplot
 			PlotCommit commit = (PlotCommit)pc;
 			if (pc != null)
 			{
-				commit.refs = GetTags(pc);
+				commit.refs = GetRefs(pc);
 			}
 			return pc;
 		}
 
-		private Ref[] GetTags(AnyObjectId commitId)
+		private Ref[] GetRefs(AnyObjectId commitId)
 		{
 			ICollection<Ref> list = reverseRefMap.Get(commitId);
 			Ref[] tags;

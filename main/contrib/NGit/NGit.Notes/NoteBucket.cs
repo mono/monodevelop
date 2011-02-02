@@ -54,7 +54,7 @@ namespace NGit.Notes
 	internal abstract class NoteBucket
 	{
 		/// <exception cref="System.IO.IOException"></exception>
-		internal abstract ObjectId Get(AnyObjectId objId, ObjectReader reader);
+		internal abstract Note GetNote(AnyObjectId objId, ObjectReader reader);
 
 		/// <exception cref="System.IO.IOException"></exception>
 		internal abstract Sharpen.Iterator<Note> Iterator(AnyObjectId objId, ObjectReader
@@ -69,5 +69,7 @@ namespace NGit.Notes
 
 		/// <exception cref="System.IO.IOException"></exception>
 		internal abstract ObjectId WriteTree(ObjectInserter inserter);
+
+		internal abstract ObjectId GetTreeId();
 	}
 }

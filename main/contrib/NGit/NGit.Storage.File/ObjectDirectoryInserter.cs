@@ -46,6 +46,7 @@ using ICSharpCode.SharpZipLib.Zip.Compression;
 using NGit;
 using NGit.Errors;
 using NGit.Storage.File;
+using NGit.Transport;
 using NGit.Util;
 using Sharpen;
 
@@ -94,6 +95,12 @@ namespace NGit.Storage.File
 			}
 			FilePath dst = db.FileFor(id);
 			throw new ObjectWritingException("Unable to create new object: " + dst);
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
+		public override PackParser NewPackParser(InputStream @in)
+		{
+			return new ObjectDirectoryPackParser(db, @in);
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>

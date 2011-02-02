@@ -401,9 +401,9 @@ namespace NGit.Transport
 				bool putty = ssh.ToLower().Contains("plink");
 				IList<string> args = new AList<string>();
 				args.AddItem(ssh);
-				if (putty)
+				if (putty && !ssh.ToLower().Contains("tortoiseplink"))
 				{
-					args.AddItem("--batch");
+					args.AddItem("-batch");
 				}
 				if (0 < this._enclosing.GetURI().GetPort())
 				{

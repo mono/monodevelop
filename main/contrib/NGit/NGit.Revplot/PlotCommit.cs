@@ -162,6 +162,29 @@ namespace NGit.Revplot
 			return false;
 		}
 
+		/// <summary>Get the number of refs for this commit.</summary>
+		/// <remarks>Get the number of refs for this commit.</remarks>
+		/// <returns>number of refs; always a positive value but can be 0.</returns>
+		public int GetRefCount()
+		{
+			return refs.Length;
+		}
+
+		/// <summary>Get the nth Ref from this commit's ref list.</summary>
+		/// <remarks>Get the nth Ref from this commit's ref list.</remarks>
+		/// <param name="nth">
+		/// ref index to obtain. Must be in the range 0 through
+		/// <see cref="PlotCommit{L}.GetRefCount()">PlotCommit&lt;L&gt;.GetRefCount()</see>
+		/// -1.
+		/// </param>
+		/// <returns>the specified ref.</returns>
+		/// <exception cref="System.IndexOutOfRangeException">an invalid ref index was specified.
+		/// 	</exception>
+		public Ref GetRef(int nth)
+		{
+			return refs[nth];
+		}
+
 		/// <summary>Obtain the lane this commit has been plotted into.</summary>
 		/// <remarks>Obtain the lane this commit has been plotted into.</remarks>
 		/// <returns>the assigned lane for this commit.</returns>

@@ -337,33 +337,50 @@ namespace NGit.Treewalk
 
 		internal virtual int PathCompare(NGit.Treewalk.AbstractTreeIterator p, int pMode)
 		{
-			byte[] a = path;
-			byte[] b = p.path;
-			int aLen = pathLen;
-			int bLen = p.pathLen;
-			int cPos;
 			// Its common when we are a subtree for both parents to match;
 			// when this happens everything in path[0..cPos] is known to
 			// be equal and does not require evaluation again.
 			//
-			cPos = AlreadyMatch(this, p);
-			for (; cPos < aLen && cPos < bLen; cPos++)
+			int cPos = AlreadyMatch(this, p);
+			return PathCompare(p.path, cPos, p.pathLen, pMode, cPos);
+		}
+
+		/// <summary>Compare the path of this current entry to a raw buffer.</summary>
+		/// <remarks>Compare the path of this current entry to a raw buffer.</remarks>
+		/// <param name="buf">the raw path buffer.</param>
+		/// <param name="pos">position to start reading the raw buffer.</param>
+		/// <param name="end">one past the end of the raw buffer (length is end - pos).</param>
+		/// <param name="mode">the mode of the path.</param>
+		/// <returns>
+		/// -1 if this entry sorts first; 0 if the entries are equal; 1 if
+		/// p's entry sorts first.
+		/// </returns>
+		public virtual int PathCompare(byte[] buf, int pos, int end, int mode)
+		{
+			return PathCompare(buf, pos, end, mode, 0);
+		}
+
+		private int PathCompare(byte[] b, int bPos, int bEnd, int bMode, int aPos)
+		{
+			byte[] a = path;
+			int aEnd = pathLen;
+			for (; aPos < aEnd && bPos < bEnd; aPos++, bPos++)
 			{
-				int cmp = (a[cPos] & unchecked((int)(0xff))) - (b[cPos] & unchecked((int)(0xff)));
+				int cmp = (a[aPos] & unchecked((int)(0xff))) - (b[bPos] & unchecked((int)(0xff)));
 				if (cmp != 0)
 				{
 					return cmp;
 				}
 			}
-			if (cPos < aLen)
+			if (aPos < aEnd)
 			{
-				return (a[cPos] & unchecked((int)(0xff))) - LastPathChar(pMode);
+				return (a[aPos] & unchecked((int)(0xff))) - LastPathChar(bMode);
 			}
-			if (cPos < bLen)
+			if (bPos < bEnd)
 			{
-				return LastPathChar(mode) - (b[cPos] & unchecked((int)(0xff)));
+				return LastPathChar(mode) - (b[bPos] & unchecked((int)(0xff)));
 			}
-			return LastPathChar(mode) - LastPathChar(pMode);
+			return LastPathChar(mode) - LastPathChar(bMode);
 		}
 
 		private static int AlreadyMatch(NGit.Treewalk.AbstractTreeIterator a, NGit.Treewalk.AbstractTreeIterator
@@ -460,6 +477,22 @@ namespace NGit.Treewalk
 			{
 				return TreeWalk.PathOf(this);
 			}
+		}
+
+		/// <returns>the internal buffer holding the current path.</returns>
+		public virtual byte[] GetEntryPathBuffer()
+		{
+			return path;
+		}
+
+		/// <returns>
+		/// length of the path in
+		/// <see cref="GetEntryPathBuffer()">GetEntryPathBuffer()</see>
+		/// .
+		/// </returns>
+		public virtual int GetEntryPathLength()
+		{
+			return pathLen;
 		}
 
 		/// <summary>Get the current entry's path hash code.</summary>
