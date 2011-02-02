@@ -7,25 +7,31 @@ namespace MonoDevelop.MonoMac.Gui
 		private global::Gtk.VBox vbox1;
 		private global::Gtk.CheckButton includeMonoCheck;
 		private global::Gtk.Label labelBlah;
-		private global::Gtk.Alignment alignment2;
+		private global::Gtk.Alignment linkerAlignment;
 		private global::Gtk.HBox hbox1;
 		private global::Gtk.Label linkerLabel;
 		private global::Gtk.ComboBox linkerCombo;
 		private global::Gtk.Table table1;
 		private global::MonoDevelop.MacDev.SigningIdentityCombo bundleIdentityCombo;
 		private global::Gtk.Label bundleSigningLabel;
+		private global::Gtk.HBox hbox2;
+		private global::Gtk.CheckButton signBundleCheck;
+		private global::Gtk.Label label12;
+		private global::Gtk.Image signBundleImage;
+		private global::Gtk.HBox hbox3;
 		private global::Gtk.CheckButton createPackageCheck;
 		private global::Gtk.Label label3636;
+		private global::Gtk.Image installerImage;
+		private global::Gtk.HBox hbox4;
+		private global::Gtk.CheckButton signPackageCheck;
+		private global::Gtk.Label label1;
+		private global::Gtk.Image signInstallerImage;
 		private global::Gtk.Label label2;
 		private global::Gtk.Label label8;
 		private global::MonoDevelop.MacDev.SigningIdentityCombo packageIdentityCombo;
 		private global::Gtk.Label packageSigningLabel;
 		private global::MonoDevelop.Components.FileEntry productDefinitionFileEntry;
 		private global::Gtk.Label productDefinitionLabel;
-		private global::Gtk.CheckButton signBundleCheck;
-		private global::Gtk.Label label12;
-		private global::Gtk.CheckButton signPackageCheck;
-		private global::Gtk.Label label1;
 
 		protected virtual void Build ()
 		{
@@ -59,10 +65,10 @@ namespace MonoDevelop.MonoMac.Gui
 			w2.Expand = false;
 			w2.Fill = false;
 			// Container child vbox1.Gtk.Box+BoxChild
-			this.alignment2 = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
-			this.alignment2.Name = "alignment2";
-			this.alignment2.LeftPadding = ((uint)(24));
-			// Container child alignment2.Gtk.Container+ContainerChild
+			this.linkerAlignment = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
+			this.linkerAlignment.Name = "linkerAlignment";
+			this.linkerAlignment.LeftPadding = ((uint)(24));
+			// Container child linkerAlignment.Gtk.Container+ContainerChild
 			this.hbox1 = new global::Gtk.HBox ();
 			this.hbox1.TooltipMarkup = "The linker reduces the size of the application by removing unused code.\nIt is especially useful to reduce the size of the bundled Mono runtime.";
 			this.hbox1.Name = "hbox1";
@@ -88,9 +94,9 @@ namespace MonoDevelop.MonoMac.Gui
 			w4.Position = 1;
 			w4.Expand = false;
 			w4.Fill = false;
-			this.alignment2.Add (this.hbox1);
-			this.vbox1.Add (this.alignment2);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.alignment2]));
+			this.linkerAlignment.Add (this.hbox1);
+			this.vbox1.Add (this.linkerAlignment);
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.linkerAlignment]));
 			w6.Position = 1;
 			w6.Expand = false;
 			w6.Fill = false;
@@ -122,97 +128,10 @@ namespace MonoDevelop.MonoMac.Gui
 			w8.XOptions = ((global::Gtk.AttachOptions)(4));
 			w8.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.createPackageCheck = new global::Gtk.CheckButton ();
-			this.createPackageCheck.TooltipMarkup = "Creates an installer package from the app bundle.";
-			this.createPackageCheck.CanFocus = true;
-			this.createPackageCheck.Name = "createPackageCheck";
-			this.createPackageCheck.Label = global::Mono.Unix.Catalog.GetString ("Sign Application Bundle");
-			this.createPackageCheck.Active = true;
-			this.createPackageCheck.DrawIndicator = true;
-			this.createPackageCheck.UseUnderline = true;
-			this.createPackageCheck.Remove (this.createPackageCheck.Child);
-			// Container child createPackageCheck.Gtk.Container+ContainerChild
-			this.label3636 = new global::Gtk.Label ();
-			this.label3636.Name = "label3636";
-			this.label3636.LabelProp = global::Mono.Unix.Catalog.GetString ("Create installer package <i>(Required for App Store)</i>");
-			this.label3636.UseMarkup = true;
-			this.createPackageCheck.Add (this.label3636);
-			this.table1.Add (this.createPackageCheck);
-			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table1 [this.createPackageCheck]));
-			w10.TopAttach = ((uint)(2));
-			w10.BottomAttach = ((uint)(3));
-			w10.RightAttach = ((uint)(4));
-			w10.XOptions = ((global::Gtk.AttachOptions)(4));
-			w10.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label2 = new global::Gtk.Label ();
-			this.label2.WidthRequest = 12;
-			this.label2.Name = "label2";
-			this.table1.Add (this.label2);
-			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2]));
-			w11.TopAttach = ((uint)(1));
-			w11.BottomAttach = ((uint)(2));
-			w11.LeftAttach = ((uint)(1));
-			w11.RightAttach = ((uint)(2));
-			w11.XOptions = ((global::Gtk.AttachOptions)(4));
-			w11.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label8 = new global::Gtk.Label ();
-			this.label8.WidthRequest = 12;
-			this.label8.Name = "label8";
-			this.table1.Add (this.label8);
-			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table1 [this.label8]));
-			w12.TopAttach = ((uint)(1));
-			w12.BottomAttach = ((uint)(2));
-			w12.XOptions = ((global::Gtk.AttachOptions)(4));
-			w12.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.packageIdentityCombo = new global::MonoDevelop.MacDev.SigningIdentityCombo ();
-			this.packageIdentityCombo.Name = "packageIdentityCombo";
-			this.table1.Add (this.packageIdentityCombo);
-			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table1 [this.packageIdentityCombo]));
-			w13.TopAttach = ((uint)(4));
-			w13.BottomAttach = ((uint)(5));
-			w13.LeftAttach = ((uint)(3));
-			w13.RightAttach = ((uint)(4));
-			w13.XOptions = ((global::Gtk.AttachOptions)(4));
-			w13.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.packageSigningLabel = new global::Gtk.Label ();
-			this.packageSigningLabel.Name = "packageSigningLabel";
-			this.packageSigningLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("Signing identity:");
-			this.table1.Add (this.packageSigningLabel);
-			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.table1 [this.packageSigningLabel]));
-			w14.TopAttach = ((uint)(4));
-			w14.BottomAttach = ((uint)(5));
-			w14.LeftAttach = ((uint)(2));
-			w14.RightAttach = ((uint)(3));
-			w14.XOptions = ((global::Gtk.AttachOptions)(4));
-			w14.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.productDefinitionFileEntry = new global::MonoDevelop.Components.FileEntry ();
-			this.productDefinitionFileEntry.Name = "productDefinitionFileEntry";
-			this.table1.Add (this.productDefinitionFileEntry);
-			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.table1 [this.productDefinitionFileEntry]));
-			w15.TopAttach = ((uint)(5));
-			w15.BottomAttach = ((uint)(6));
-			w15.LeftAttach = ((uint)(3));
-			w15.RightAttach = ((uint)(4));
-			w15.XOptions = ((global::Gtk.AttachOptions)(4));
-			w15.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.productDefinitionLabel = new global::Gtk.Label ();
-			this.productDefinitionLabel.Name = "productDefinitionLabel";
-			this.productDefinitionLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("Product definition:");
-			this.table1.Add (this.productDefinitionLabel);
-			global::Gtk.Table.TableChild w16 = ((global::Gtk.Table.TableChild)(this.table1 [this.productDefinitionLabel]));
-			w16.TopAttach = ((uint)(5));
-			w16.BottomAttach = ((uint)(6));
-			w16.LeftAttach = ((uint)(1));
-			w16.RightAttach = ((uint)(3));
-			w16.XOptions = ((global::Gtk.AttachOptions)(4));
-			w16.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
+			this.hbox2 = new global::Gtk.HBox ();
+			this.hbox2.Name = "hbox2";
+			this.hbox2.Spacing = 6;
+			// Container child hbox2.Gtk.Box+BoxChild
 			this.signBundleCheck = new global::Gtk.CheckButton ();
 			this.signBundleCheck.TooltipMarkup = "The application bundle can be signed to verify its origin.";
 			this.signBundleCheck.CanFocus = true;
@@ -228,11 +147,68 @@ namespace MonoDevelop.MonoMac.Gui
 			this.label12.LabelProp = global::Mono.Unix.Catalog.GetString ("Sign application bundle <i>(Required for App Store)</i>");
 			this.label12.UseMarkup = true;
 			this.signBundleCheck.Add (this.label12);
-			this.table1.Add (this.signBundleCheck);
-			global::Gtk.Table.TableChild w18 = ((global::Gtk.Table.TableChild)(this.table1 [this.signBundleCheck]));
-			w18.RightAttach = ((uint)(4));
-			w18.YOptions = ((global::Gtk.AttachOptions)(4));
+			this.hbox2.Add (this.signBundleCheck);
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.signBundleCheck]));
+			w10.Position = 0;
+			w10.Expand = false;
+			w10.Fill = false;
+			// Container child hbox2.Gtk.Box+BoxChild
+			this.signBundleImage = new global::Gtk.Image ();
+			this.signBundleImage.Name = "signBundleImage";
+			this.signBundleImage.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-error", global::Gtk.IconSize.Menu);
+			this.hbox2.Add (this.signBundleImage);
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.signBundleImage]));
+			w11.Position = 1;
+			w11.Expand = false;
+			w11.Fill = false;
+			this.table1.Add (this.hbox2);
+			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table1 [this.hbox2]));
+			w12.RightAttach = ((uint)(4));
+			w12.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child table1.Gtk.Table+TableChild
+			this.hbox3 = new global::Gtk.HBox ();
+			this.hbox3.Name = "hbox3";
+			this.hbox3.Spacing = 6;
+			// Container child hbox3.Gtk.Box+BoxChild
+			this.createPackageCheck = new global::Gtk.CheckButton ();
+			this.createPackageCheck.TooltipMarkup = "Creates an installer package from the app bundle.";
+			this.createPackageCheck.CanFocus = true;
+			this.createPackageCheck.Name = "createPackageCheck";
+			this.createPackageCheck.Label = global::Mono.Unix.Catalog.GetString ("Sign Application Bundle");
+			this.createPackageCheck.Active = true;
+			this.createPackageCheck.DrawIndicator = true;
+			this.createPackageCheck.UseUnderline = true;
+			this.createPackageCheck.Remove (this.createPackageCheck.Child);
+			// Container child createPackageCheck.Gtk.Container+ContainerChild
+			this.label3636 = new global::Gtk.Label ();
+			this.label3636.Name = "label3636";
+			this.label3636.LabelProp = global::Mono.Unix.Catalog.GetString ("Create installer package <i>(Required for App Store)</i>");
+			this.label3636.UseMarkup = true;
+			this.createPackageCheck.Add (this.label3636);
+			this.hbox3.Add (this.createPackageCheck);
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.createPackageCheck]));
+			w14.Position = 0;
+			w14.Expand = false;
+			// Container child hbox3.Gtk.Box+BoxChild
+			this.installerImage = new global::Gtk.Image ();
+			this.installerImage.Name = "installerImage";
+			this.installerImage.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-error", global::Gtk.IconSize.Menu);
+			this.hbox3.Add (this.installerImage);
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.installerImage]));
+			w15.Position = 1;
+			w15.Expand = false;
+			w15.Fill = false;
+			this.table1.Add (this.hbox3);
+			global::Gtk.Table.TableChild w16 = ((global::Gtk.Table.TableChild)(this.table1 [this.hbox3]));
+			w16.TopAttach = ((uint)(2));
+			w16.BottomAttach = ((uint)(3));
+			w16.RightAttach = ((uint)(4));
+			w16.YOptions = ((global::Gtk.AttachOptions)(0));
+			// Container child table1.Gtk.Table+TableChild
+			this.hbox4 = new global::Gtk.HBox ();
+			this.hbox4.Name = "hbox4";
+			this.hbox4.Spacing = 6;
+			// Container child hbox4.Gtk.Box+BoxChild
 			this.signPackageCheck = new global::Gtk.CheckButton ();
 			this.signPackageCheck.TooltipMarkup = "The installer package can be signed to verify its origin.";
 			this.signPackageCheck.CanFocus = true;
@@ -248,19 +224,100 @@ namespace MonoDevelop.MonoMac.Gui
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Sign installer package <i>(Required for App Store)</i>");
 			this.label1.UseMarkup = true;
 			this.signPackageCheck.Add (this.label1);
-			this.table1.Add (this.signPackageCheck);
-			global::Gtk.Table.TableChild w20 = ((global::Gtk.Table.TableChild)(this.table1 [this.signPackageCheck]));
+			this.hbox4.Add (this.signPackageCheck);
+			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.signPackageCheck]));
+			w18.Position = 0;
+			w18.Expand = false;
+			w18.Fill = false;
+			// Container child hbox4.Gtk.Box+BoxChild
+			this.signInstallerImage = new global::Gtk.Image ();
+			this.signInstallerImage.Name = "signInstallerImage";
+			this.signInstallerImage.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-error", global::Gtk.IconSize.Menu);
+			this.hbox4.Add (this.signInstallerImage);
+			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.signInstallerImage]));
+			w19.Position = 1;
+			w19.Expand = false;
+			w19.Fill = false;
+			this.table1.Add (this.hbox4);
+			global::Gtk.Table.TableChild w20 = ((global::Gtk.Table.TableChild)(this.table1 [this.hbox4]));
 			w20.TopAttach = ((uint)(3));
 			w20.BottomAttach = ((uint)(4));
 			w20.LeftAttach = ((uint)(1));
 			w20.RightAttach = ((uint)(4));
-			w20.XOptions = ((global::Gtk.AttachOptions)(4));
-			w20.YOptions = ((global::Gtk.AttachOptions)(4));
+			w20.YOptions = ((global::Gtk.AttachOptions)(0));
+			// Container child table1.Gtk.Table+TableChild
+			this.label2 = new global::Gtk.Label ();
+			this.label2.WidthRequest = 12;
+			this.label2.Name = "label2";
+			this.table1.Add (this.label2);
+			global::Gtk.Table.TableChild w21 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2]));
+			w21.TopAttach = ((uint)(1));
+			w21.BottomAttach = ((uint)(2));
+			w21.LeftAttach = ((uint)(1));
+			w21.RightAttach = ((uint)(2));
+			w21.XOptions = ((global::Gtk.AttachOptions)(4));
+			w21.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.label8 = new global::Gtk.Label ();
+			this.label8.WidthRequest = 12;
+			this.label8.Name = "label8";
+			this.table1.Add (this.label8);
+			global::Gtk.Table.TableChild w22 = ((global::Gtk.Table.TableChild)(this.table1 [this.label8]));
+			w22.TopAttach = ((uint)(1));
+			w22.BottomAttach = ((uint)(2));
+			w22.XOptions = ((global::Gtk.AttachOptions)(4));
+			w22.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.packageIdentityCombo = new global::MonoDevelop.MacDev.SigningIdentityCombo ();
+			this.packageIdentityCombo.Name = "packageIdentityCombo";
+			this.table1.Add (this.packageIdentityCombo);
+			global::Gtk.Table.TableChild w23 = ((global::Gtk.Table.TableChild)(this.table1 [this.packageIdentityCombo]));
+			w23.TopAttach = ((uint)(4));
+			w23.BottomAttach = ((uint)(5));
+			w23.LeftAttach = ((uint)(3));
+			w23.RightAttach = ((uint)(4));
+			w23.XOptions = ((global::Gtk.AttachOptions)(4));
+			w23.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.packageSigningLabel = new global::Gtk.Label ();
+			this.packageSigningLabel.Name = "packageSigningLabel";
+			this.packageSigningLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("Signing identity:");
+			this.table1.Add (this.packageSigningLabel);
+			global::Gtk.Table.TableChild w24 = ((global::Gtk.Table.TableChild)(this.table1 [this.packageSigningLabel]));
+			w24.TopAttach = ((uint)(4));
+			w24.BottomAttach = ((uint)(5));
+			w24.LeftAttach = ((uint)(2));
+			w24.RightAttach = ((uint)(3));
+			w24.XOptions = ((global::Gtk.AttachOptions)(4));
+			w24.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.productDefinitionFileEntry = new global::MonoDevelop.Components.FileEntry ();
+			this.productDefinitionFileEntry.Name = "productDefinitionFileEntry";
+			this.table1.Add (this.productDefinitionFileEntry);
+			global::Gtk.Table.TableChild w25 = ((global::Gtk.Table.TableChild)(this.table1 [this.productDefinitionFileEntry]));
+			w25.TopAttach = ((uint)(5));
+			w25.BottomAttach = ((uint)(6));
+			w25.LeftAttach = ((uint)(3));
+			w25.RightAttach = ((uint)(4));
+			w25.XOptions = ((global::Gtk.AttachOptions)(4));
+			w25.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.productDefinitionLabel = new global::Gtk.Label ();
+			this.productDefinitionLabel.Name = "productDefinitionLabel";
+			this.productDefinitionLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("Product definition:");
+			this.table1.Add (this.productDefinitionLabel);
+			global::Gtk.Table.TableChild w26 = ((global::Gtk.Table.TableChild)(this.table1 [this.productDefinitionLabel]));
+			w26.TopAttach = ((uint)(5));
+			w26.BottomAttach = ((uint)(6));
+			w26.LeftAttach = ((uint)(1));
+			w26.RightAttach = ((uint)(3));
+			w26.XOptions = ((global::Gtk.AttachOptions)(4));
+			w26.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox1.Add (this.table1);
-			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.table1]));
-			w21.Position = 2;
-			w21.Expand = false;
-			w21.Fill = false;
+			global::Gtk.Box.BoxChild w27 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.table1]));
+			w27.Position = 2;
+			w27.Expand = false;
+			w27.Fill = false;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

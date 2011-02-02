@@ -39,6 +39,8 @@ namespace MonoDevelop.MonoMac.Gui
 		public static string INSTALLER_PREFIX = "3rd Party Mac Developer Installer";
 		public static string APPLICATION_PREFIX = "3rd Party Mac Developer Application";
 		
+		bool hasCerts, hasProductBuild;
+		
 		public MonoMacPackagingSettingsWidget ()
 		{
 			this.Build ();
@@ -49,6 +51,57 @@ namespace MonoDevelop.MonoMac.Gui
 			signBundleCheck.Toggled += CheckToggled;
 			createPackageCheck.Toggled += CheckToggled;
 			signPackageCheck.Toggled += CheckToggled;
+			
+			//disable signing options and show message if no keys found
+			hasCerts = certs.Count > 0;
+			if (!hasCerts) {
+				string noSignMsg = GettextCatalog.GetString ("Signing is disabled, as no signing keys were found");
+				signBundleImage.TooltipText = noSignMsg;
+				signInstallerImage.TooltipText = noSignMsg;
+				signBundleCheck.Sensitive = false;
+				signPackageCheck.Sensitive = false;
+			} else {
+				((Gtk.Container)signBundleImage.Parent).Remove (signBundleImage);
+				signBundleImage.Destroy ();
+				signBundleImage = null;
+				((Gtk.Container)signInstallerImage.Parent).Remove (signInstallerImage);
+				signInstallerImage.Destroy ();
+				signInstallerImage = null;
+			}
+			
+			//disable packaging and show message if productbuild not found
+			hasProductBuild = !string.IsNullOrEmpty (Which ("productbuild"));
+			if (!hasProductBuild) {
+				installerImage.TooltipText = GettextCatalog.GetString (
+					"Packaging is disabled, as the productbuild utility from\n" +
+					 "the Apple Application Tools is not installed");
+				createPackageCheck.Sensitive = false;
+				if (signInstallerImage != null) {
+					((Gtk.Container)signInstallerImage.Parent).Remove (signInstallerImage);
+					signInstallerImage.Destroy ();
+					signInstallerImage = null;
+				}
+			} else {
+				((Gtk.Container)installerImage.Parent).Remove (installerImage);
+				installerImage.Destroy ();
+				installerImage = null;
+			}
+			
+			//linker currently not implemented, hide completely
+			((Gtk.Container)linkerAlignment.Parent).Remove (linkerAlignment);
+			linkerAlignment.Destroy ();
+			
+			UpdateSensitivity ();
+		}
+		
+		static string Which (string programName)
+		{
+			var env = System.Environment.GetEnvironmentVariable ("PATH");
+			if (string.IsNullOrEmpty (env))
+				return null;
+			return env.Split (System.IO.Path.PathSeparator)
+				.Select (d => System.IO.Path.Combine (d, programName))
+				.FirstOrDefault (System.IO.File.Exists);
 		}
 
 		void CheckToggled (object sender, EventArgs e)
@@ -77,11 +130,11 @@ namespace MonoDevelop.MonoMac.Gui
 		public void SaveSettings (MonoMacPackagingSettings settings)
 		{
 			settings.IncludeMono       = includeMonoCheck.Active;
-			settings.SignBundle        = signBundleCheck.Active;
+			settings.SignBundle        = signBundleCheck.Sensitive && signBundleCheck.Active;
 			settings.BundleSigningKey  = bundleIdentityCombo.SelectedName;
 			settings.LinkerMode        = (MonoMacLinkerMode)linkerCombo.Active;
-			settings.CreatePackage     = createPackageCheck.Active;
-			settings.SignPackage       = signPackageCheck.Active;
+			settings.CreatePackage     = createPackageCheck.Sensitive && createPackageCheck.Active;
+			settings.SignPackage       = signPackageCheck.Sensitive && signPackageCheck.Active;
 			settings.PackageSigningKey = packageIdentityCombo.SelectedName;
 			settings.ProductDefinition = productDefinitionFileEntry.Path;
 			if (settings.ProductDefinition.IsEmpty)
@@ -128,11 +181,23 @@ namespace MonoDevelop.MonoMac.Gui
 		void UpdateSensitivity ()
 		{
 			linkerLabel.Sensitive = linkerCombo.Sensitive = includeMonoCheck.Active;
-			bundleSigningLabel.Sensitive = bundleIdentityCombo.Sensitive = signBundleCheck.Active;
-			signPackageCheck.Sensitive = productDefinitionLabel.Sensitive = productDefinitionFileEntry.Sensitive
-				= createPackageCheck.Active;
-			packageSigningLabel.Sensitive = packageIdentityCombo.Sensitive
-				= signPackageCheck.Active && signPackageCheck.Sensitive;
+			
+			signBundleCheck.Sensitive = hasCerts;
+			bool signBundle = hasCerts && signBundleCheck.Active;
+			bundleSigningLabel.Sensitive = signBundle;
+			bundleIdentityCombo.Sensitive = signBundle;
+			
+			createPackageCheck.Sensitive = hasProductBuild;
+			bool createPackage = hasProductBuild && createPackageCheck.Active;
+			productDefinitionLabel.Sensitive = createPackage;
+			productDefinitionFileEntry.Sensitive = createPackage;
+			if (signInstallerImage != null)
+				signInstallerImage.Sensitive = createPackage;
+			
+			signPackageCheck.Sensitive = createPackage && hasCerts;
+			bool signPackage = createPackage && hasCerts && signPackageCheck.Active;
+			packageSigningLabel.Sensitive = signPackage;
+			packageIdentityCombo.Sensitive = signPackage;
 		}
 	}
 }
