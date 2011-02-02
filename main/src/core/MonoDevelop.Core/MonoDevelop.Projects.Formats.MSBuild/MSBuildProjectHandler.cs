@@ -809,7 +809,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				isDefaultVersion = false;
 
 				// If the format only supports one fx version, or the version is the default, there is no need to store it
-				if (!isDefaultVersion && supportsMultipleFrameworks)
+				if (/*!isDefaultVersion &&*/ supportsMultipleFrameworks)
 					SetGroupProperty (globalGroup, "TargetFrameworkVersion", "v" + moniker.Version, false);
 				else
 					globalGroup.RemoveProperty ("TargetFrameworkVersion");
