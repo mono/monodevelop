@@ -39,7 +39,7 @@ namespace MonoDevelop.MonoMac.Gui
 		public static string INSTALLER_PREFIX = "3rd Party Mac Developer Installer";
 		public static string APPLICATION_PREFIX = "3rd Party Mac Developer Application";
 		
-		bool hasCerts, hasProductBuild;
+		bool hasBundleCerts, hasPackageCerts, hasProductBuild;
 		
 		public MonoMacPackagingSettingsWidget ()
 		{
@@ -56,22 +56,9 @@ namespace MonoDevelop.MonoMac.Gui
 			createPackageCheck.Toggled += CheckToggled;
 			signPackageCheck.Toggled += CheckToggled;
 			
-			//disable signing options and show message if no keys found
-			hasCerts = certs.Count > 0;
-			if (!hasCerts) {
-				string noSignMsg = GettextCatalog.GetString ("Signing is disabled, as no signing keys were found");
-				signBundleImage.TooltipText = noSignMsg;
-				signInstallerImage.TooltipText = noSignMsg;
-				signBundleCheck.Sensitive = false;
-				signPackageCheck.Sensitive = false;
-			} else {
-				((Gtk.Container)signBundleImage.Parent).Remove (signBundleImage);
-				signBundleImage.Destroy ();
-				signBundleImage = null;
-				((Gtk.Container)signInstallerImage.Parent).Remove (signInstallerImage);
-				signInstallerImage.Destroy ();
-				signInstallerImage = null;
-			}
+			string noSignMsg = GettextCatalog.GetString ("Signing is disabled, as no signing keys were found");
+			signBundleImage.TooltipText = noSignMsg;
+			signInstallerImage.TooltipText = noSignMsg;
 			
 			//disable packaging and show message if productbuild not found
 			hasProductBuild = !string.IsNullOrEmpty (Which ("productbuild"));
@@ -116,8 +103,8 @@ namespace MonoDevelop.MonoMac.Gui
 		public void LoadSettings (MonoMacPackagingSettings settings)
 		{
 			//refill every time in case the value is an unknown - don't want those to be kept in the list
-			FillIdentities (bundleIdentityCombo, APPLICATION_PREFIX, INSTALLER_PREFIX);
-			FillIdentities (packageIdentityCombo, INSTALLER_PREFIX, APPLICATION_PREFIX);
+			hasBundleCerts = FillIdentities (bundleIdentityCombo, APPLICATION_PREFIX, INSTALLER_PREFIX, signBundleCheck, signBundleImage);
+			hasPackageCerts = FillIdentities (packageIdentityCombo, INSTALLER_PREFIX, APPLICATION_PREFIX, signPackageCheck, signInstallerImage);
 			
 			includeMonoCheck.Active            = settings.IncludeMono;
 			signBundleCheck.Active             = settings.SignBundle;
@@ -145,11 +132,10 @@ namespace MonoDevelop.MonoMac.Gui
 				settings.ProductDefinition = FilePath.Null;
 		}
 		
-		void FillIdentities (SigningIdentityCombo combo, string preferredPrefix, string excludePrefix)
+		bool FillIdentities (SigningIdentityCombo combo, string preferredPrefix, string excludePrefix,
+			Gtk.CheckButton enabledCheck, Gtk.Image errorImage)
 		{
 			combo.ClearList ();
-			if (certs.Count == 0)
-				return;
 			
 			var preferred = new List<string> ();
 			var other = new List<string> ();
@@ -165,27 +151,40 @@ namespace MonoDevelop.MonoMac.Gui
 				}
 			}
 			
-			if (preferred.Any ()) {
+			//disable signing options and show message if no keys found
+			if (preferred.Count == 0 && other.Count == 0) {
+				enabledCheck.Sensitive = false;
+				if (errorImage != null)
+					errorImage.Visible = true;
+				return false;
+			} else {
+				enabledCheck.Sensitive = true;
+				if (errorImage != null)
+					errorImage.Visible = false;
+			}
+			
+			if (preferred.Count > 0) {
 				combo.AddItemWithMarkup (GettextCatalog.GetString ("<b>Default App Store Identity</b>"), "", null);
 				combo.AddSeparator ();
 				foreach (var name in preferred)
 					combo.AddItem (name, name, null);
 			}
 			
-			if (other.Any ()) {
+			if (other.Count > 0) {
 				if (preferred.Any ())
 					combo.AddSeparator ();
 				foreach (var name in other)
 					combo.AddItem (name, name, null);
 			}
+			return true;
 		}
 		
 		void UpdateSensitivity ()
 		{
 			linkerLabel.Sensitive = linkerCombo.Sensitive = includeMonoCheck.Active;
 			
-			signBundleCheck.Sensitive = hasCerts;
-			bool signBundle = hasCerts && signBundleCheck.Active;
+			signBundleCheck.Sensitive = hasBundleCerts;
+			bool signBundle = hasBundleCerts && signBundleCheck.Active;
 			bundleSigningLabel.Sensitive = signBundle;
 			bundleIdentityCombo.Sensitive = signBundle;
 			
@@ -196,8 +195,8 @@ namespace MonoDevelop.MonoMac.Gui
 			if (signInstallerImage != null)
 				signInstallerImage.Sensitive = createPackage;
 			
-			signPackageCheck.Sensitive = createPackage && hasCerts;
-			bool signPackage = createPackage && hasCerts && signPackageCheck.Active;
+			signPackageCheck.Sensitive = createPackage && hasPackageCerts;
+			bool signPackage = createPackage && hasPackageCerts && signPackageCheck.Active;
 			packageSigningLabel.Sensitive = signPackage;
 			packageIdentityCombo.Sensitive = signPackage;
 		}
