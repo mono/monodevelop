@@ -330,81 +330,18 @@ namespace MonoDevelop.MonoMac
 			File.Delete (generatedFilePath);
 			
 			var loadFrameworksCU = new CodeCompileUnit ();
-			CodeNamespace projectNameSpace = new CodeNamespace (proj.DefaultNamespace);
-			projectNameSpace.Imports.Add (new CodeNamespaceImport ("System"));
-			projectNameSpace.Imports.Add (new CodeNamespaceImport ("System.Runtime.InteropServices"));
-			projectNameSpace.Imports.Add (new CodeNamespaceImport ("MonoMac.ObjCRuntime"));
-			
-			var mainClass = new CodeTypeDeclaration ("MonoMacFrameworks") {
-				Attributes = MemberAttributes.Public | MemberAttributes.Static
-			};
-			
-			var loadFrameworkMethod = new CodeMemberMethod () {
-				Name = "Initialize",
-				Attributes = MemberAttributes.Public | MemberAttributes.Static,
-			};
 
-			mainClass.Members.Add (loadFrameworkMethod);
-			projectNameSpace.Types.Add (mainClass);
-			loadFrameworksCU.Namespaces.Add (projectNameSpace);
-		
-			var dlfcnClass = new CodeTypeReference ("Dlfcn");
-			var dlfcnRef = new CodeTypeReferenceExpression (dlfcnClass);
-			
-			var dlopenMethod = new CodeMethodReferenceExpression (dlfcnRef, "dlopen");
-			var dlerrorMethod = new CodeMethodReferenceExpression (dlfcnRef, "dlerror");
-		 	
-			//System.Console.WriteLine
-			var consoleType = new CodeTypeReferenceExpression () {
-            	Type = new CodeTypeReference (typeof (Console))
-			};
-	        var writeLineRef = new CodeMethodReferenceExpression (consoleType, "WriteLine");
-        
-			var intPtrType = new CodeTypeReferenceExpression () {
-				Type = new CodeTypeReference (typeof (IntPtr))
-			};
-			
-			//System.IO.Path.Combine
-			var pathType = new CodeTypeReferenceExpression () {
-				Type = new CodeTypeReference (typeof (System.IO.Path))
-			};
-			var pathCombine = new CodeMethodReferenceExpression (pathType, "Combine");
-			
-			//AppDomain.CurrentDomain.BaseDirectory
-			var appDomain = new CodeTypeReferenceExpression () {
-				Type = new CodeTypeReference (typeof (AppDomain))
-			};
-			var currentDomain = new CodePropertyReferenceExpression (appDomain, "CurrentDomain");
-			var baseDirectory = new CodePropertyReferenceExpression (currentDomain, "BaseDirectory");
-			
-			var getFrameworkPath = new CodeMethodInvokeExpression (pathCombine, 
-							                                       baseDirectory, 
-							                                       new CodePrimitiveExpression ("../Frameworks/"));
-			
-			var executingPath = new CodeVariableDeclarationStatement (typeof (string), "executingPath", getFrameworkPath);
-			loadFrameworkMethod.Statements.Add (executingPath);
-						
 			foreach (MonoMacFrameworkItem node in proj.Items.GetAll<MonoMacFrameworkItem> ()) {
 
-				string libName = Path.GetFileName (node.FullPath).Replace (".framework", "");
+				string libName = Path.GetFileName (node.FullPath);
 				
-				var writeLine = new CodeMethodInvokeExpression (
-					writeLineRef, new CodePrimitiveExpression (
-						string.Format ("Failed to open '{0}' with error: '{1}'",
-							libName, "{0}")), new CodeMethodInvokeExpression (dlerrorMethod));
-	
-				var check = new CodeConditionStatement ();
-				check.Condition = new CodeBinaryOperatorExpression (
-					new CodeMethodInvokeExpression (dlopenMethod,
-						new CodeMethodInvokeExpression (pathCombine,
-							new CodeVariableReferenceExpression ("executingPath"),
-							new CodePrimitiveExpression (Path.Combine (Path.GetFileName (node.FullPath), libName))),
-				                                     new CodePrimitiveExpression (0)),
-				    CodeBinaryOperatorType.IdentityEquality,                                               
-	                new CodeFieldReferenceExpression (intPtrType, "Zero"));
-				check.TrueStatements.Add (writeLine);
+				var attribute = new CodeAttributeDeclaration(
+					new CodeTypeReference("MonoMac.RequiredFramework"));
+				attribute.Arguments.Add(
+					new CodeAttributeArgument(
+						new CodePrimitiveExpression(libName)));
 				
-				loadFrameworkMethod.Statements.Add (check);
+				loadFrameworksCU.AssemblyCustomAttributes.Add(attribute);
 			}
 			
 			CodeDomProvider codeDom = proj.LanguageBinding.GetCodeDomProvider ();
