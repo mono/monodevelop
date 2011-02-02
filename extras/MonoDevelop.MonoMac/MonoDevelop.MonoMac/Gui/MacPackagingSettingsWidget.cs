@@ -148,8 +148,6 @@ namespace MonoDevelop.MonoMac.Gui
 		void FillIdentities (SigningIdentityCombo combo, string preferredPrefix, string excludePrefix)
 		{
 			combo.ClearList ();
-			
-			combo.AddItemWithMarkup (GettextCatalog.GetString ("<b>Default App Store Identity</b>"), "", null);
 			if (certs.Count == 0)
 				return;
 			
@@ -168,13 +166,15 @@ namespace MonoDevelop.MonoMac.Gui
 			}
 			
 			if (preferred.Any ()) {
+				combo.AddItemWithMarkup (GettextCatalog.GetString ("<b>Default App Store Identity</b>"), "", null);
 				combo.AddSeparator ();
 				foreach (var name in preferred)
 					combo.AddItem (name, name, null);
 			}
 			
 			if (other.Any ()) {
-				combo.AddSeparator ();
+				if (preferred.Any ())
+					combo.AddSeparator ();
 				foreach (var name in other)
 					combo.AddItem (name, name, null);
 			}
