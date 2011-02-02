@@ -1040,7 +1040,7 @@ namespace Mono.CSharp {
 		// will contain types only but it can have numerous values for members
 		// like methods where both return type and all parameters are checked
 		//
-		public List<MissingType> GetMissingDependencies ()
+		public List<TypeSpec> GetMissingDependencies ()
 		{
 			if ((state & (StateFlags.MissingDependency | StateFlags.MissingDependency_Undetected)) == 0)
 				return null;
@@ -1048,9 +1048,9 @@ namespace Mono.CSharp {
 			state &= ~StateFlags.MissingDependency_Undetected;
 
 			var imported = definition as ImportedDefinition;
-			List<MissingType> missing;
+			List<TypeSpec> missing;
 			if (imported != null) {
-				missing = imported.ResolveMissingDependencies ();
+				missing = ResolveMissingDependencies ();
 			} else if (this is ElementTypeSpec) {
 				missing = ((ElementTypeSpec) this).Element.GetMissingDependencies ();
 			} else {
@@ -1063,6 +1063,8 @@ namespace Mono.CSharp {
 
 			return missing;
 		}
+
+		public abstract List<TypeSpec> ResolveMissingDependencies ();
 
 		protected virtual bool IsNotCLSCompliant ()
 		{
@@ -1342,9 +1344,7 @@ namespace Mono.CSharp {
 			return false;
 		}
 
-		protected virtual TypeAttributes TypeAttr {
-			get { return Module.DefaultCharSetType; }
-		}
+		protected abstract TypeAttributes TypeAttr { get; }
 
 		/// <remarks>
 		///  Should be overriten by the appropriate declaration space

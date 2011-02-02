@@ -37,9 +37,11 @@ namespace Mono.CSharp
 		string FullName { get; }
 		bool HasExtensionMethod { get; }
 		bool IsCLSCompliant { get; }
+		bool IsMissing { get; }
 		string Name { get; }
 
 		byte[] GetPublicKeyToken ();
+		bool IsFriendAssemblyTo (IAssemblyDefinition assembly);
 	}
                 
 	public abstract class AssemblyDefinition : IAssemblyDefinition
@@ -143,12 +145,18 @@ namespace Mono.CSharp
 
 		// TODO: This should not exist here but will require more changes
 		public MetadataImporter Importer {
-			get ; set;
+		    get; set;
 		}
 
 		public bool IsCLSCompliant {
 			get {
 				return is_cls_compliant;
+			}
+		}
+
+		bool IAssemblyDefinition.IsMissing {
+			get {
+				return false;
 			}
 		}
 
@@ -358,7 +366,11 @@ namespace Mono.CSharp
 		{
 			// TODO: It should check only references assemblies but there is
 			// no working SRE API
-			foreach (var a in Importer.Assemblies) {
+			foreach (var entry in Importer.Assemblies) {
+				var a = entry as ImportedAssemblyDefinition;
+				if (a == null)
+					continue;
+
 				if (public_key != null && !a.HasStrongName) {
 					Report.Error (1577, "Referenced assembly `{0}' does not have a strong name",
 						a.FullName);
@@ -414,7 +426,7 @@ namespace Mono.CSharp
 			return Builder.DefineDynamicModule (module_name, module_name, false);
 		}
 
-		public void Emit ()
+		public virtual void Emit ()
 		{
 			if (RootContext.Target == Target.Module) {
 				module_target_attrs = new AssemblyAttributesPlaceholder (module, name);
@@ -448,7 +460,7 @@ namespace Mono.CSharp
 				if (pa.IsDefined && pa.ResolveBuilder ()) {
 					var prop = pa.GetProperty ("WrapNonExceptionThrows", TypeManager.bool_type, Location.Null);
 					if (prop != null) {
-						AttributeEncoder encoder = new AttributeEncoder (false);
+						AttributeEncoder encoder = new AttributeEncoder ();
 						encoder.EncodeNamedPropertyArgument (prop, new BoolLiteral (true, Location.Null));
 						SetCustomAttribute (pa.Constructor, encoder.ToArray ());
 					}
@@ -483,7 +495,7 @@ namespace Mono.CSharp
 			byte[] hash = ha.ComputeHash (public_key);
 			// we need the last 8 bytes in reverse order
 			public_key_token = new byte[8];
-			Array.Copy (hash, (hash.Length - 8), public_key_token, 0, 8);
+			Buffer.BlockCopy (hash, hash.Length - 8, public_key_token, 0, 8);
 			Array.Reverse (public_key_token, 0, 8);
 			return public_key_token;
 		}
@@ -542,11 +554,19 @@ namespace Mono.CSharp
 					byte[] publickey = CryptoConvert.ToCapiPublicKeyBlob (rsa);
 
 					// AssemblyName.SetPublicKey requires an additional header
-					byte[] publicKeyHeader = new byte[12] { 0x00, 0x24, 0x00, 0x00, 0x04, 0x80, 0x00, 0x00, 0x94, 0x00, 0x00, 0x00 };
+					byte[] publicKeyHeader = new byte[8] { 0x00, 0x24, 0x00, 0x00, 0x04, 0x80, 0x00, 0x00 };
 
 					// Encode public key
 					public_key = new byte[12 + publickey.Length];
-					Buffer.BlockCopy (publicKeyHeader, 0, public_key, 0, 12);
+					Buffer.BlockCopy (publicKeyHeader, 0, public_key, 0, publicKeyHeader.Length);
+
+					// Length of Public Key (in bytes)
+					int lastPart = public_key.Length - 12;
+					public_key[8] = (byte) (lastPart & 0xFF);
+					public_key[9] = (byte) ((lastPart >> 8) & 0xFF);
+					public_key[10] = (byte) ((lastPart >> 16) & 0xFF);
+					public_key[11] = (byte) ((lastPart >> 24) & 0xFF);
+
 					Buffer.BlockCopy (publickey, 0, public_key, 12, publickey.Length);
 				} catch {
 					Error_AssemblySigning ("The specified key file `" + keyFile + "' has incorrect format");
@@ -782,6 +802,7 @@ namespace Mono.CSharp
 				break;
 			}
 
+			Compiler.TimeReporter.Start (TimeReporter.TimerType.OutputSave);
 			try {
 				if (RootContext.Target == Target.Module) {
 					SaveModule (pekind, machine);
@@ -791,11 +812,14 @@ namespace Mono.CSharp
 			} catch (Exception e) {
 				Report.Error (16, "Could not write to file `" + name + "', cause: " + e.Message);
 			}
+			Compiler.TimeReporter.Stop (TimeReporter.TimerType.OutputSave);
 
 			// Save debug symbols file
 			if (symbol_writer != null) {
 				// TODO: it should run in parallel
+				Compiler.TimeReporter.Start (TimeReporter.TimerType.DebugSave);
 				symbol_writer.WriteSymbolFile (SymbolWriter.GetGuid (module.Builder));
+				Compiler.TimeReporter.Stop (TimeReporter.TimerType.DebugSave);
 			}
 		}
 
@@ -877,6 +901,11 @@ namespace Mono.CSharp
 		void Error_AssemblySigning (string text)
 		{
 			Report.Error (1548, "Error during assembly signing. " + text);
+		}
+
+		public bool IsFriendAssemblyTo (IAssemblyDefinition assembly)
+		{
+			return false;
 		}
 
 		static Version IsValidAssemblyVersion (string version, bool allowGenerated)
@@ -1087,6 +1116,8 @@ namespace Mono.CSharp
 
 		protected void LoadReferencesCore (ModuleContainer module, out T corlib_assembly, out List<Tuple<RootNamespace, T>> loaded)
 		{
+			compiler.TimeReporter.Start (TimeReporter.TimerType.ReferencesLoading);
+
 			loaded = new List<Tuple<RootNamespace, T>> ();
 
 			//
@@ -1134,6 +1165,8 @@ namespace Mono.CSharp
 
 				loaded.Add (key);
 			}
+
+			compiler.TimeReporter.Stop (TimeReporter.TimerType.ReferencesLoading);
 		}
 	}
 }

@@ -1367,6 +1367,9 @@ namespace Mono.CSharp {
 					break;
 				}
 			}
+
+			if (open_type.Kind == MemberKind.MissingType)
+				MemberCache = MemberCache.Empty;
 		}
 
 		#region Properties
@@ -2253,6 +2256,12 @@ namespace Mono.CSharp {
 		public override TypeParameter[] CurrentTypeParameters {
 			get {
 				return base.type_params;
+			}
+		}
+
+		protected override TypeAttributes TypeAttr {
+			get {
+				throw new NotSupportedException ();
 			}
 		}
 

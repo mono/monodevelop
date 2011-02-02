@@ -35,6 +35,12 @@ namespace Mono.CSharp {
 		v4
 	}
 
+	public enum SdkVersion
+	{
+		v2,
+		v4
+	}
+
 	public enum Target
 	{
 		Library, Exe, Module, WinExe
@@ -58,6 +64,7 @@ namespace Mono.CSharp {
 		public static LanguageVersion Version;
 		public static bool EnhancedWarnings;
 		public static bool LoadDefaultReferences;
+		public static SdkVersion SdkVersion;
 
 		//
 		// We keep strongname related info here because
@@ -148,7 +155,9 @@ namespace Mono.CSharp {
 		static public bool GenerateDebugInfo;
 
 		// Compiler debug flags only
-		public static bool ParseOnly, TokenizeOnly;
+		public static bool ParseOnly, TokenizeOnly, Timestamps;
+
+		public static bool ShowFullPaths;
 
 		//
 		// Whether we are being linked against the standard libraries.
@@ -205,6 +214,7 @@ namespace Mono.CSharp {
 			MainClass = null;
 			OutputFile = null;
 			Target = Target.Exe;
+			SdkVersion = SdkVersion.v4;
 			TargetExt = ".exe";
 			Platform = Platform.AnyCPU;
 			Version = LanguageVersion.Default;
@@ -215,6 +225,7 @@ namespace Mono.CSharp {
 			GenerateDebugInfo = false;
 			ParseOnly = false;
 			TokenizeOnly = false;
+			Timestamps = false;
 			Win32IconFile = null;
 			Win32ResourceFile = null;
 			Resources = null;
@@ -224,6 +235,7 @@ namespace Mono.CSharp {
 			Modules = new List<string> ();
 			ReferencesLookupPaths = new List<string> ();
 			StdLibRuntimeVersion = RuntimeVersion.v2;
+			ShowFullPaths = false;
 
 			//
 			// Setup default defines

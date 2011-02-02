@@ -73,7 +73,7 @@ namespace Mono.CSharp
 
 					var pa = Module.PredefinedAttributes.StructLayout;
 					if (pa.Constructor != null || pa.ResolveConstructor (Location, TypeManager.short_type)) {
-						var argsEncoded = new AttributeEncoder (false);
+						var argsEncoded = new AttributeEncoder ();
 						argsEncoded.Encode ((short) LayoutKind.Explicit);
 
 						var field_size = pa.GetField ("Size", TypeManager.int32_type, Location);
@@ -110,7 +110,7 @@ namespace Mono.CSharp
 			}
 		}
 
-		public CharSet DefaultCharSet = CharSet.Ansi;
+		public CharSet? DefaultCharSet;
 		public TypeAttributes DefaultCharSetType = TypeAttributes.AnsiClass;
 
 		Dictionary<int, List<AnonymousTypeClass>> anonymous_types;
@@ -123,10 +123,6 @@ namespace Mono.CSharp
 
 		ModuleBuilder builder;
 
-		// HACK
-		public List<Enum> hack_corlib_enums = new List<Enum> ();
-
-		bool has_default_charset;
 		bool has_extenstion_method;
 
 		PredefinedAttributes predefined_attributes;
@@ -175,7 +171,7 @@ namespace Mono.CSharp
 
 		public bool HasDefaultCharSet {
 			get {
-				return has_default_charset;
+				return DefaultCharSet.HasValue;
 			}
 		}
 
@@ -264,7 +260,25 @@ namespace Mono.CSharp
 				return;
 			}
 
-			if (a.Type == pa.CLSCompliant) {
+			if (a.Type == pa.DefaultCharset) {
+				switch (a.GetCharSetValue ()) {
+				case CharSet.Ansi:
+				case CharSet.None:
+					break;
+				case CharSet.Auto:
+					DefaultCharSet = CharSet.Auto;
+					DefaultCharSetType = TypeAttributes.AutoClass;
+					break;
+				case CharSet.Unicode:
+					DefaultCharSet = CharSet.Unicode;
+					DefaultCharSetType = TypeAttributes.UnicodeClass;
+					break;
+				default:
+					Report.Error (1724, a.Location, "Value specified for the argument to `{0}' is not valid",
+						a.GetSignatureForError ());
+					break;
+				}
+			} else if (a.Type == pa.CLSCompliant) {
 				Attribute cls = DeclaringAssembly.CLSCompliantAttribute;
 				if (cls == null) {
 					Report.Warning (3012, 1, a.Location,
@@ -282,8 +296,6 @@ namespace Mono.CSharp
 
 		public override void CloseType ()
 		{
-			HackCorlibEnums ();
-
 			foreach (TypeContainer tc in types) {
 				tc.CloseType ();
 			}
@@ -317,19 +329,22 @@ namespace Mono.CSharp
 			return rn;
 		}
 
-		public new void Define ()
+		public void Create (AssemblyDefinition assembly, ModuleBuilder moduleBuilder)
 		{
-			builder = assembly.CreateModuleBuilder ();
+			this.assembly = assembly;
+			builder = moduleBuilder;
+		}
 
-			// FIXME: Temporary hack for repl to reset
-			static_data = null;
-
-			// TODO: It should be done much later when the types are resolved
-			// but that require DefineType clean-up
-			ResolveGlobalAttributes ();
-
+		public new void CreateType ()
+		{
 			foreach (TypeContainer tc in types)
 				tc.CreateType ();
+		}
+
+		public new void Define ()
+		{
+			// FIXME: Temporary hack for repl to reset
+			static_data = null;
 
 			InitializePredefinedTypes ();
 
@@ -361,8 +376,6 @@ namespace Mono.CSharp
 
 			foreach (var tc in types)
 				tc.DefineConstants ();
-
-			HackCorlib ();
 
 			foreach (TypeContainer tc in types)
 				tc.EmitType ();
@@ -408,52 +421,6 @@ namespace Mono.CSharp
 		public override string GetSignatureForError ()
 		{
 			return "<module>";
-		}
-
-		void HackCorlib ()
-		{
-#if !STATIC
-			if (RootContext.StdLib)
-				return;
-
-			//
-			// HACK: When building corlib mcs uses loaded mscorlib which
-			// has different predefined types and this method sets mscorlib types
-			// to be same to avoid type check errors in CreateType.
-			//
-			var type = typeof (Type);
-			var system_4_type_arg = new[] { type, type, type, type };
-
-			MethodInfo set_corlib_type_builders =
-				typeof (System.Reflection.Emit.AssemblyBuilder).GetMethod (
-				"SetCorlibTypeBuilders", BindingFlags.NonPublic | BindingFlags.Instance, null,
-				system_4_type_arg, null);
-
-			if (set_corlib_type_builders == null) {
-				Compiler.Report.Warning (-26, 3,
-					"The compilation may fail due to missing `System.Reflection.Emit.AssemblyBuilder.SetCorlibTypeBuilders(...)' method");
-				return;
-			}
-
-			object[] args = new object[4];
-			args[0] = TypeManager.object_type.GetMetaInfo ();
-			args[1] = TypeManager.value_type.GetMetaInfo ();
-			args[2] = TypeManager.enum_type.GetMetaInfo ();
-			args[3] = TypeManager.void_type.GetMetaInfo ();
-			set_corlib_type_builders.Invoke (assembly.Builder, args);
-#endif
-		}
-
-		void HackCorlibEnums ()
-		{
-			if (RootContext.StdLib)
-				return;
-
-			// Another Mono corlib HACK
-			// mono_class_layout_fields requires to have enums created
-			// before creating a class which used the enum for any of its fields
-			foreach (var e in hack_corlib_enums)
-				e.CloseType ();
 		}
 
 		public void InitializePredefinedTypes ()
@@ -502,54 +469,9 @@ namespace Mono.CSharp
 			visitor.Visit (this);
 		}
 
-		/// <summary>
-		/// It is called very early therefore can resolve only predefined attributes
-		/// </summary>
-		void ResolveGlobalAttributes ()
-		{
-			if (OptAttributes == null)
-				return;
-
-			if (!OptAttributes.CheckTargets ())
-				return;
-
-			// FIXME: Define is wrong as the type may not exist yet
-			var DefaultCharSet_attr = new PredefinedAttribute (this, "System.Runtime.InteropServices", "DefaultCharSetAttribute");
-			DefaultCharSet_attr.Define ();
-			Attribute a = ResolveModuleAttribute (DefaultCharSet_attr);
-			if (a != null) {
-				has_default_charset = true;
-				DefaultCharSet = a.GetCharSetValue ();
-				switch (DefaultCharSet) {
-				case CharSet.Ansi:
-				case CharSet.None:
-					break;
-				case CharSet.Auto:
-					DefaultCharSetType = TypeAttributes.AutoClass;
-					break;
-				case CharSet.Unicode:
-					DefaultCharSetType = TypeAttributes.UnicodeClass;
-					break;
-				default:
-					Report.Error (1724, a.Location, "Value specified for the argument to `{0}' is not valid", 
-						DefaultCharSet_attr.GetSignatureForError ());
-					break;
-				}
-			}
-		}
-
 		public Attribute ResolveAssemblyAttribute (PredefinedAttribute a_type)
 		{
 			Attribute a = OptAttributes.Search ("assembly", a_type);
-			if (a != null) {
-				a.Resolve ();
-			}
-			return a;
-		}
-
-		Attribute ResolveModuleAttribute (PredefinedAttribute a_type)
-		{
-			Attribute a = OptAttributes.Search ("module", a_type);
 			if (a != null) {
 				a.Resolve ();
 			}

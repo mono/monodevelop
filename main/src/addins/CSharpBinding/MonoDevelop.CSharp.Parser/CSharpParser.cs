@@ -1416,7 +1416,7 @@ namespace MonoDevelop.CSharp.Parser
 			
 			public override object Visit (Constant constant)
 			{
-				var result = new PrimitiveExpression (constant.GetValue (), Convert (constant.Location), constant.AsString ().Length);
+				var result = new PrimitiveExpression (constant.GetValue (), Convert (constant.Location), constant.GetValueAsLiteral ().Length);
 				return result;
 			}
 
