@@ -480,6 +480,11 @@ namespace MonoDevelop.SourceEditor
 				return;
 			parseInformationUpdaterWorkerThread.CancelAsync ();
 			WaitForParseInformationUpdaterWorkerThread ();
+			parseInformationUpdaterWorkerThread.Dispose ();
+			
+			parseInformationUpdaterWorkerThread = new BackgroundWorker ();
+			parseInformationUpdaterWorkerThread.WorkerSupportsCancellation = true;
+			parseInformationUpdaterWorkerThread.DoWork += HandleParseInformationUpdaterWorkerThreadDoWork;
 		}
 		
 		public void WaitForParseInformationUpdaterWorkerThread ()
