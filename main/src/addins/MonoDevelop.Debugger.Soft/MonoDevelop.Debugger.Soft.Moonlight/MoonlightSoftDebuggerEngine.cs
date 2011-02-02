@@ -72,7 +72,7 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 		public string Url { get; private set; }
 		
 		public MoonlightDebuggerStartInfo (string appName, string url)
-			: base (appName, IPAddress.Loopback, 10000)
+			: base (appName, IPAddress.Loopback, 0)
 		{
 			this.Url = url;
 			this.Listen = true;

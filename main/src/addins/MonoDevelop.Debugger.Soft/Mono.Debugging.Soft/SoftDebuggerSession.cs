@@ -152,13 +152,30 @@ namespace Mono.Debugging.Soft
 		/// <summary>Starts the debugger listening for a connection over TCP/IP</summary>
 		protected void StartListening (RemoteSoftDebuggerStartInfo dsi)
 		{
+			int dp, cp;
+			StartListening (dsi, out dp, out cp);
+		}
+		
+		/// <summary>Starts the debugger listening for a connection over TCP/IP</summary>
+		protected void StartListening (RemoteSoftDebuggerStartInfo dsi, out int assignedDebugPort)
+		{
+			int cp;
+			StartListening (dsi, out assignedDebugPort, out cp);
+		}
+		
+		/// <summary>Starts the debugger listening for a connection over TCP/IP</summary>
+		protected void StartListening (RemoteSoftDebuggerStartInfo dsi,
+			out int assignedDebugPort, out int assignedConsolePort)
+		{
+		
 			IPEndPoint dbgEP, conEP;
 			InitForRemoteSession (dsi, out dbgEP, out conEP);
 			
 			var callback = HandleConnectionCallbackErrors (delegate (IAsyncResult ar) {
 				ConnectionStarted (VirtualMachineManager.EndListen (ar));
 			});
-			ConnectionStarting (VirtualMachineManager.BeginListen (dbgEP, conEP, callback), dsi, true, 0);
+			var a = VirtualMachineManager.BeginListen (dbgEP, conEP, callback, out assignedDebugPort, out assignedConsolePort);
+			ConnectionStarting (a, dsi, true, 0);
 		}
 
 		protected virtual bool ShouldRetryConnection (Exception ex, int attemptNumber)

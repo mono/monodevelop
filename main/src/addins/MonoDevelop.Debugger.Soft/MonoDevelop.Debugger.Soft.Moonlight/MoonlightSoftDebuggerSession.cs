@@ -47,11 +47,12 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
 			var dsi = (MoonlightDebuggerStartInfo) startInfo;
-			StartListening (dsi);
-			StartBrowserProcess (dsi);
+			int assignedDebugPort;
+			StartListening (dsi, out assignedDebugPort);
+			StartBrowserProcess (dsi, assignedDebugPort);
 		}
 
-		void StartBrowserProcess (MoonlightDebuggerStartInfo dsi)
+		void StartBrowserProcess (MoonlightDebuggerStartInfo dsi, int assignedDebugPort)
 		{
 			if (browser != null)
 				throw new InvalidOperationException ("Browser already started");
@@ -66,7 +67,7 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 				RedirectStandardError = true,
 			};
 			psi.EnvironmentVariables.Add ("MOON_SOFT_DEBUG",
-				string.Format ("transport=dt_socket,address={0}:{1}", dsi.Address, dsi.DebugPort));
+				string.Format ("transport=dt_socket,address={0}:{1}", dsi.Address, assignedDebugPort));
 			
 			browser = Process.Start (psi);
 			ConnectOutput (browser.StandardOutput, false);
