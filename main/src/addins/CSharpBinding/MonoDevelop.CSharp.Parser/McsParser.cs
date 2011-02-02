@@ -738,7 +738,7 @@ namespace MonoDevelop.CSharp.Parser
 							if (sce.Constraint == SpecialConstraint.Struct)
 								result.AddConstraint (DomReturnType.ValueType);
 							if (sce.Constraint == SpecialConstraint.Class)
-								result.AddConstraint (DomReturnType.TypeReturnType);
+								result.AddConstraint (DomReturnType.Object);
 							if (sce.Constraint == SpecialConstraint.Constructor)
 								result.TypeParameterModifier |= TypeParameterModifier.HasDefaultConstructorConstraint;
 						} else {
