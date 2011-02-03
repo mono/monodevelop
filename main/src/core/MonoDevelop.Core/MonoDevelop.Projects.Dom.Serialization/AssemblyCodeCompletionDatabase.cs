@@ -82,7 +82,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 			else
 				isPackageAssembly = false;
-
+			
 			this.baseDir = ProjectDomService.CodeCompletionPath;
 
 			if (isTempDatabase)

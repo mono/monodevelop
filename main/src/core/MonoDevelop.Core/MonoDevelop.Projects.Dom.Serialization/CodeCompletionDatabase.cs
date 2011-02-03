@@ -775,7 +775,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				string parTypeName = subType.FullName + "." + par.Name;
 				for (int n=0; n < bparams.Count; n++) {
 					string pname = bparams [n].FullName;
-					if (parTypeName == pname) {
+					if (parTypeName == pname || par.Name == pname) {
 						paramsMatched [n] = true;
 						pos = n;
 						break;
@@ -1203,8 +1203,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				List<string> pars = new List<string> ();
 				foreach (TypeParameter tpar in subType.TypeParameters)
 					pars.Add (subType.FullName + "." + tpar.Name);
-				foreach (IReturnType rt in baseType.GenericArguments)
+				foreach (IReturnType rt in baseType.GenericArguments) {
 					pars.Remove (rt.FullName);
+					pars.Remove (subType.FullName + "." + rt.FullName);
+				}
 				if (pars.Count > 0)
 					return false;
 			} else if (subType.TypeParameters.Count != 0)
