@@ -106,6 +106,15 @@ namespace MonoDevelop.Ide.Gui
 			window.ActiveViewContentChanged += OnActiveViewContentChanged;
 			if (IdeApp.Workspace != null)
 				IdeApp.Workspace.ItemRemovedFromSolution += OnEntryRemoved;
+			ProjectDomService.DomRegistered += UpdateRegisteredDom;
+		}
+
+		void UpdateRegisteredDom (object sender, ProjectDomEventArgs e)
+		{
+			if (dom == null)
+				return;
+			if (e.ProjectDom.Project.FileName == dom.Project.FileName)
+				dom = e.ProjectDom;
 		}
 
 		public FilePath FileName {
@@ -375,6 +384,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		void OnClosed (object s, EventArgs a)
 		{
+			ProjectDomService.DomRegistered -= UpdateRegisteredDom;
 			if (parseTimeout != 0) {
 				GLib.Source.Remove (parseTimeout);
 				parseTimeout = 0;
