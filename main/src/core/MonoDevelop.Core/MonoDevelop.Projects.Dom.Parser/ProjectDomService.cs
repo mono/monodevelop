@@ -387,6 +387,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 					// in which case those references are not properly registered.
 					foreach (Project project in solution.GetAllProjects ()) {
 						ProjectDom dom = GetProjectDom (project);
+						// referenced by main project - prevents the removal if a project is referenced one time inside the solution
+						// and the project that references it is reloaded.
+						dom.ReferenceCount++; 
 						if (dom != null)
 							dom.UpdateReferences ();
 					}
@@ -410,8 +413,10 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			else if (item is Solution) {
 				Solution solution = (Solution) item;
-				foreach (Project project in solution.GetAllProjects ())
+				foreach (Project project in solution.GetAllProjects ()) {
+					GetProjectDom (project).ReferenceCount--;
 					Unload (project);
+				}
 				solution.SolutionItemAdded -= OnSolutionItemAdded;
 				solution.SolutionItemRemoved -= OnSolutionItemRemoved;
 			}
@@ -451,9 +456,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				try {
 					ProjectDom db = ParserDatabase.LoadProjectDom (project);
 					RegisterDom (db, uri);
-					// referenced by main project - prevents the removal if a project is referenced one time inside the solution
-					// and the project that references it is reloaded.
-					db.ReferenceCount++; 
+					
 					if (project is DotNetProject) {
 						((DotNetProject)project).ReferenceAddedToProject += OnProjectReferenceAdded;
 						((DotNetProject)project).ReferenceRemovedFromProject += OnProjectReferenceRemoved;
