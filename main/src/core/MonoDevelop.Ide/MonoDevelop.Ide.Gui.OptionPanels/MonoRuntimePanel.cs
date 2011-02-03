@@ -112,8 +112,18 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 			var dlg = new SelectFolderDialog (GettextCatalog.GetString ("Select the mono installation prefix")) {
 				TransientFor = this.Toplevel as Gtk.Window,
-				CurrentFolder = "/usr",
 			};
+			
+			//set a platform-dependent default folder for the dialog if possible
+			if (PropertyService.IsWindows) {
+				string folder = Environment.GetFolderPath (Environment.SpecialFolder.ProgramFilesX86);
+				if (!string.IsNullOrEmpty (folder) && System.IO.Directory.Exists (folder))
+					dlg.CurrentFolder = folder;
+			} else {
+				if (System.IO.Directory.Exists ("/usr"))
+					dlg.CurrentFolder = "/usr";
+			}
+			
 			if (!dlg.Run ())
 				return;
 			
