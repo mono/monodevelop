@@ -41,62 +41,6 @@ using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	static class Tuple
-	{
-		public static Tuple<S, T> Create<S, T> (S s, T t)
-		{
-			return new Tuple<S, T> (s, t);
-		}
-
-		public static Tuple<S, T, R > Create<S, T, R> (S s, T t, R r)
-		{
-			return new Tuple<S, T, R> (s, t, r);
-		}
-	}
-	
-	class Tuple<S, T>
-	{
-		public S Item1 {
-			get;
-			set;
-		}
-		
-		public T Item2 {
-			get;
-			set;
-		}
-		public Tuple (S item1, T item2)
-		{
-			this.Item1 = item1;
-			this.Item2 = item2;
-		}
-	}
-	
-	class Tuple<S, T, R>
-	{
-		public S Item1 {
-			get;
-			set;
-		}
-		
-		public T Item2 {
-			get;
-			set;
-		}
-		
-		public R Item3 {
-			get;
-			set;
-		}
-		
-		public Tuple (S item1, T item2, R item3)
-		{
-			this.Item1 = item1;
-			this.Item2 = item2;
-			this.Item3 = item3;
-		}
-	}
-	
 	public abstract class EditorCompareWidgetBase : Gtk.Bin
 	{
 		internal protected VersionControlDocumentInfo info;
