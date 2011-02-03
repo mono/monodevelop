@@ -45,7 +45,7 @@ namespace MonoDevelop.WebReferences.WS
 		}
 		
 		[ItemProperty]
-		public FilePath Include { get; private set; }
+		public string Include { get; private set; }
 		
 		[ItemProperty]
 		public string UrlBehavior { get; set; }
