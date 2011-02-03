@@ -111,9 +111,10 @@ namespace MonoDevelop.Ide.Gui
 
 		void UpdateRegisteredDom (object sender, ProjectDomEventArgs e)
 		{
-			if (dom == null)
+			if (dom == null || dom.Project == null)
 				return;
-			if (e.ProjectDom.Project.FileName == dom.Project.FileName)
+			var project = e.ProjectDom != null ? e.ProjectDom.Project : null;
+			if (project != null && project.FileName == dom.Project.FileName)
 				dom = e.ProjectDom;
 		}
 
