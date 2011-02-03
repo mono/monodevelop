@@ -451,7 +451,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 				try {
 					ProjectDom db = ParserDatabase.LoadProjectDom (project);
 					RegisterDom (db, uri);
-				
+					// referenced by main project - prevents the removal if a project is referenced one time inside the solution
+					// and the project that references it is reloaded.
+					db.ReferenceCount++; 
 					if (project is DotNetProject) {
 						((DotNetProject)project).ReferenceAddedToProject += OnProjectReferenceAdded;
 						((DotNetProject)project).ReferenceRemovedFromProject += OnProjectReferenceRemoved;
@@ -467,6 +469,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			dom.Uri = uri;
 			databases [uri] = dom;
 			dom.UpdateReferences ();
+			OnDomRegistered (new ProjectDomEventArgs (dom));
 		}
 		
 		internal static ProjectDom GetDomForUri (string uri)
@@ -484,13 +487,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 			lock (databases)
 			{
 				ProjectDom db;
+				
 				if (!databases.TryGetValue (uri, out db)) {
 					// Create/load the database
 					
 					TargetRuntime tr = null;
 					TargetFramework fx = null;
 					string file;
-					
 					if (ParseAssemblyUri (uri, out tr, out fx, out file)) {
 						db = ParserDatabase.LoadAssemblyDom (tr, fx, file);
 						RegisterDom (db, uri);
@@ -1106,12 +1109,20 @@ namespace MonoDevelop.Projects.Dom.Parser
 				TypesUpdated (null, new TypeUpdateInformationEventArgs (project, info));
 		}
 		
+		static void OnDomRegistered (ProjectDomEventArgs e)
+		{
+			EventHandler<ProjectDomEventArgs> handler = DomRegistered;
+			if (handler != null)
+				handler (null, e);
+		}
+
 		public static event EventHandler<TypeUpdateInformationEventArgs> TypesUpdated;
 		public static event AssemblyInformationEventHandler AssemblyInformationChanged;
 		public static event EventHandler<CommentTasksChangedEventArgs> CommentTasksChanged;
 		public static event EventHandler SpecialCommentTagsChanged;
 		public static event EventHandler ParseOperationStarted;
 		public static event EventHandler ParseOperationFinished;
+		public static event EventHandler<ProjectDomEventArgs> DomRegistered;
 	}
 	
 	class InternalProgressMonitor: NullProgressMonitor
