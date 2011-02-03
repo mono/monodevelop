@@ -741,7 +741,13 @@ namespace MonoDevelop.VersionControl.Git
 
 		public override void Checkout (FilePath targetLocalPath, Revision rev, bool recurse, IProgressMonitor monitor)
 		{
-			GitUtil.Clone (targetLocalPath, Url, monitor);
+			CloneCommand cmd = NGit.Api.Git.CloneRepository ();
+			cmd.SetURI (Url);
+			cmd.SetRemote ("origin");
+			cmd.SetBranch ("refs/heads/master");
+			cmd.SetDirectory ((string)targetLocalPath);
+			cmd.SetProgressMonitor (new GitMonitor (monitor));
+			cmd.Call ();
 		}
 
 		public override void Revert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
@@ -1456,6 +1462,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override void Update (int completed)
 		{
+			monitor.Step (completed);
 		}
 		
 		

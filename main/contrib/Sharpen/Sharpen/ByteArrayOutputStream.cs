@@ -24,5 +24,10 @@ namespace Sharpen
 		{
 			return ((MemoryStream)base.Wrapped).ToArray ();
 		}
+		
+		public override void Close ()
+		{
+			// Closing a ByteArrayOutputStream has no effect.
+		}
 	}
 }
