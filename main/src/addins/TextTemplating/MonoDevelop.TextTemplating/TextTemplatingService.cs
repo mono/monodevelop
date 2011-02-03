@@ -57,14 +57,17 @@ namespace MonoDevelop.TextTemplating
 		public static RecyclableAppDomain.Handle GetTemplatingDomain ()
 		{
 			if (domain == null || domain.Used) {
-				var dir = Path.GetDirectoryName (typeof (TemplatingEngine).Assembly.Location);
 				var info = new AppDomainSetup () {
-					ApplicationBase = dir,
+					ApplicationBase = System.IO.Path.GetDirectoryName (typeof (RecyclableAppDomain).Assembly.Location),
 					DisallowBindingRedirects = false,
 					DisallowCodeDownload = true,
 					ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile,
 				};
 				domain = new RecyclableAppDomain ("T4Domain", info);
+				var handle = domain.GetHandle ();
+				handle.AddAssembly (typeof (TemplatingEngine).Assembly);
+				handle.AddAssembly (typeof (TextTemplatingService).Assembly);
+				return handle;
 			}
 			return domain.GetHandle ();
 		}
@@ -78,15 +81,12 @@ namespace MonoDevelop.TextTemplating
 		int handleCount = 0;
 		int uses = 0;
 		AppDomain domain;
+		CrossDomainAssemblyMap assemblyMap = new CrossDomainAssemblyMap ();
 		
 		public RecyclableAppDomain (string name, AppDomainSetup info)
 		{
 			domain = AppDomain.CreateDomain (name, null, info);
-			
-			//FIXME: do we really want to allow resolving arbitrary MD assemblies?
-			// some things do depend on this behaviour, but maybe some kind of explicit registration system 
-			// would be better, so we can prevent accidentally pulling in unwanted assemblies
-			//domain.AssemblyResolve += new Mono.TextTemplating.CrossAppDomainAssemblyResolver ().Resolve;
+			domain.AssemblyResolve += new DomainAssemblyLoader (assemblyMap).Resolve;
 		}
 		
 		public bool Used { get; private set; }
@@ -138,26 +138,46 @@ namespace MonoDevelop.TextTemplating
 				}
 			}
 			
-			
-			public void LoadAssembly (System.Reflection.Assembly assembly)
+			public void AddAssembly (System.Reflection.Assembly assembly)
 			{
-				Domain.DoCallBack (new DomainAssemblyLoader (assembly.Location).Load);
+				parent.assemblyMap.Add (assembly.FullName, assembly.Location);
 			}
 		}
 		
 		[Serializable]
 		class DomainAssemblyLoader
 		{
-			string assemblyFile;
+			CrossDomainAssemblyMap map;
 			
-			public DomainAssemblyLoader (string assemblyFile)
+			public DomainAssemblyLoader (CrossDomainAssemblyMap map)
 			{
-				this.assemblyFile = assemblyFile;
+				this.map = map;
 			}
 			
-			public void Load ()
+			public System.Reflection.Assembly Resolve (object sender, ResolveEventArgs args)
 			{
-				System.Reflection.Assembly.LoadFrom (assemblyFile);
+				var assemblyFile = map.ResolveAssembly (args.Name);
+				if (assemblyFile != null)
+					return System.Reflection.Assembly.LoadFrom (assemblyFile);
+				return null;
+			}
+		}
+		
+		class CrossDomainAssemblyMap : MarshalByRefObject
+		{
+			Dictionary<string, string> maps = new Dictionary<string, string> ();
+			
+			public string ResolveAssembly (string name)
+			{
+				string result;
+				if (maps.TryGetValue (name, out result))
+					return result;
+				return null;
+			}
+				
+			public void Add (string name, string location)
+			{
+				maps.Add (name, location);
 			}
 		}
 	}
