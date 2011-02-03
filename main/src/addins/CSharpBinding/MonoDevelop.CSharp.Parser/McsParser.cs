@@ -670,6 +670,18 @@ namespace MonoDevelop.CSharp.Parser
 						(CodeExpression)binaryExpression.Right.Accept (this));
 				}
 			}
+
+			
+			System.CodeDom.CodeExpression ResolveMemberAccessExpression (Mono.CSharp.Expression expr)
+			{
+				if (expr is MemberAccess) {
+					var ma = (MemberAccess)expr;
+					return new CodeFieldReferenceExpression (ResolveMemberAccessExpression (ma.LeftExpression), ma.Name);
+				}
+				if (expr is SimpleName)
+					return new CodeTypeReferenceExpression (((SimpleName)expr).Name);
+				return null;
+			}
 			
 			IEnumerable<IAttribute> ConvertAttributes (Attributes optAttributes, IMemberContext mc)
 			{
@@ -696,11 +708,15 @@ namespace MonoDevelop.CSharp.Parser
 							}
 							else {
 								try {
-									var res = exp.Resolve (ctx);
-									var val = res as Constant;
-									if (val == null)
-										continue;
-									domExp = new CodePrimitiveExpression (val.GetValue ());
+									if (exp is MemberAccess) {
+										domExp = ResolveMemberAccessExpression (exp);
+									} else {
+										var res = exp.Resolve (ctx);
+										var val = res as Constant;
+										if (val == null)
+											continue;
+										domExp = new CodePrimitiveExpression (val.GetValue ());
+									}
 								} catch {
 									continue;
 								}
