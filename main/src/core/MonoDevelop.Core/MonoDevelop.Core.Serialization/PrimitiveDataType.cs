@@ -28,6 +28,7 @@
 
 using System;
 using System.Xml;
+using System.IO;
 
 namespace MonoDevelop.Core.Serialization
 {
@@ -95,12 +96,20 @@ namespace MonoDevelop.Core.Serialization
 
 		internal protected override DataNode OnSerialize (SerializationContext serCtx, object mapData, object value)
 		{
-			return new DataValue (Name, ((FilePath) value).ToString ());
+			string file = value.ToString ();
+			if (Path.DirectorySeparatorChar != serCtx.DirectorySeparatorChar)
+				file = file.Replace (Path.DirectorySeparatorChar, serCtx.DirectorySeparatorChar);
+			return new DataValue (Name, file);
 		}
 
 		internal protected override object OnDeserialize (SerializationContext serCtx, object mapData, DataNode data)
 		{
-			return new FilePath (((DataValue) data).Value);
+			string file = ((DataValue)data).Value;
+			if (!string.IsNullOrEmpty (file)) {
+				if (Path.DirectorySeparatorChar != serCtx.DirectorySeparatorChar)
+					file = file.Replace (serCtx.DirectorySeparatorChar, Path.DirectorySeparatorChar);
+			}
+			return (FilePath) file;
 		}
 	}
 }
