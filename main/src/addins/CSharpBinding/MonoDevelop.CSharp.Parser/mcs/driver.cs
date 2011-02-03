@@ -1582,7 +1582,7 @@ namespace Mono.CSharp
 		{
 			try {
 				StreamReportPrinter srp = new StreamReportPrinter (error);
-				Driver d = Driver.Create (args, true, null, srp);
+				Driver d = Driver.Create (args, true, delegate (string[] a, int i) { System.Console.WriteLine ("Unknown option:" + a[i]); return 0; }, srp);
 				if (d == null)
 					return false;
 
@@ -1652,7 +1652,7 @@ namespace Mono.CSharp
 		{
 			lock (parseLock) {
 				try {
-					Driver d = Driver.Create (args, false, delegate (string[] a, int i) { System.Console.WriteLine ("Unknown option:" + a[i]); return 0; }, reportPrinter);
+					Driver d = Driver.Create (args, false, null, reportPrinter);
 					if (d == null)
 						return null;
 	
