@@ -230,7 +230,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return false;
 		}
 		
-		static char[] specialCharacters = new char [] {'%', '$', '@', '(', ')', '\'', ';', '?', '*' };
+		static char[] specialCharacters = new char [] {'%', '$', '@', '(', ')', '\'', ';', '?' };
 		
 		public static string EscapeString (string str)
 		{
