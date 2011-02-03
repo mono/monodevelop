@@ -314,8 +314,8 @@ namespace MonoDevelop.IPhone
 						if (!Directory.Exists (parentDir))
 							Directory.CreateDirectory (parentDir);
 							
-						//FIXME: do a stream copy with .NET 4
-						File.WriteAllBytes (file, er.GetResourceData ());
+						using (var fileStream = File.OpenWrite (file))
+							er.GetResourceStream ().CopyTo (fileStream);
 					}
 				}
 			}
