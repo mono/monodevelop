@@ -2910,5 +2910,51 @@ namespace Test
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNull (provider.Find ("FooBar"), "method 'FooBar' found.");
 		}
+		
+		/// <summary>
+		/// Bug 669285 - Extension method on T[] shows up on T
+		/// </summary>
+		[Test()]
+		public void TestBug669285 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"static class Ext
+{
+	public static void Foo<T> (this T[] t)
+	{
+	}
+}
+
+public class Test<T>
+{
+	public void Foo ()
+	{
+		T t;
+		$t.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNull (provider.Find ("Foo"), "method 'Foo' found.");
+			provider = CreateCtrlSpaceProvider (
+@"static class Ext
+{
+	public static void Foo<T> (this T[] t)
+	{
+	}
+}
+
+public class Test<T>
+{
+	public void Foo ()
+	{
+		T[] t;
+		$t.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Foo"), "method 'Foo' not found.");
+		}
 	}
 }
