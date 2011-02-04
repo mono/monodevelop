@@ -88,14 +88,12 @@ namespace MonoDevelop.Projects.Dom.Parser
 		static object parseQueueLock = new object ();
 		static AutoResetEvent parseEvent = new AutoResetEvent (false);
 		
-		static string codeCompletionPath;
-
 		static Dictionary<string,ProjectDom> databases = new Dictionary<string,ProjectDom>();
 		static Dictionary<FilePath,SingleFileCacheEntry> singleDatabases = new Dictionary<FilePath,SingleFileCacheEntry> ();		
 		
 		static ProjectDomService ()
 		{
-			codeCompletionPath = GetDefaultCompletionFileLocation ();
+			CodeCompletionPath = GetDefaultCompletionFileLocation ();
 			// for unit tests it may not have been initialized.
 		}
 
@@ -192,18 +190,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 		}
 
 		internal static string CodeCompletionPath {
-			get { return codeCompletionPath; }
+			get;
+			private set;
 		}
 		
-		static string GetDefaultCompletionFileLocation()
+		static string GetDefaultCompletionFileLocation ()
 		{
-			string path = PropertyService.Get<string> ("MonoDevelop.CodeCompletion.DataDirectory", String.Empty);
-			if (string.IsNullOrEmpty (path)) {
-				path = Path.Combine (PropertyService.ConfigPath, "CodeCompletionData");
-				PropertyService.Set ("MonoDevelop.CodeCompletion.DataDirectory", path);
-				PropertyService.SaveProperties ();
-			}
-			
+			string path = Path.Combine (PropertyService.ConfigPath, "CodeCompletionData");
 			if (!Directory.Exists (path))
 				Directory.CreateDirectory (path);
 
