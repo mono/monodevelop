@@ -44,7 +44,6 @@ namespace MonoDevelop.IPhone
 	public enum IPhoneCommands
 	{
 		UploadToDevice,
-		ExportToXcode,
 		SelectSimulatorTarget,
 		ViewDeviceConsole,
 		ZipApp,
@@ -136,97 +135,6 @@ namespace MonoDevelop.IPhone
 					return proj;
 			}
 			return null;
-		}
-	}
-	
-	class ExportToXcodeCommandHandler : CommandHandler
-	{
-		protected override void Update (MonoDevelop.Components.Commands.CommandInfo info)
-		{
-			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableIPhoneProject ();
-			info.Visible = proj != null;
-			if (info.Visible) {
-				var conf = (IPhoneProjectConfiguration)proj.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
-				info.Enabled = conf != null && IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted;
-			}
-		}
-		
-		protected override void Run ()
-		{
-			if (IPhoneFramework.SimOnly) {
-				IPhoneFramework.ShowSimOnlyDialog ();
-				return;
-			}
-			
-			var proj = DefaultUploadToDeviceHandler.GetActiveExecutableIPhoneProject ();
-			var slnConf = IdeApp.Workspace.ActiveConfiguration;
-			var conf = (IPhoneProjectConfiguration)proj.GetConfiguration (slnConf);
-			
-			IdeApp.ProjectOperations.Build (proj).Completed += delegate (IAsyncOperation op) {
-				if (!op.Success)
-					return;
-				GenerateXCodeProject (proj, conf, slnConf);
-			};
-		}
-		
-		void GenerateXCodeProject (IPhoneProject proj, IPhoneProjectConfiguration conf, ConfigurationSelector slnConf)
-		{
-			string mtouchPath = IPhoneUtility.GetMtouchPath (proj.TargetRuntime, proj.TargetFramework);
-			
-			var xcodeDir = conf.OutputDirectory.Combine ("XcodeProject");
-			if (!Directory.Exists (xcodeDir)) {
-				try {
-					Directory.CreateDirectory (xcodeDir);
-				} catch (IOException ex) {
-					MessageService.ShowException (ex, "Failed to create directory '" + xcodeDir +"' for Xcode project");
-					return;
-				}
-			}
-			
-			var args = new ProcessArgumentBuilder ();
-			args.AddQuotedFormat ("-xcode={0}", xcodeDir);
-			args.Add ("-v");
-			
-			foreach (ProjectFile pf in proj.Files) {
-				if (pf.BuildAction == BuildAction.Content) {
-					var rel = pf.ProjectVirtualPath;
-					args.AddQuotedFormat ("-res={0},{1}", pf.FilePath, rel);
-					
-					//hack around mtouch 1.0 bug. create resource directories
-					string subdir = rel.ParentDirectory;
-					if (string.IsNullOrEmpty (subdir))
-						continue;
-					subdir = xcodeDir.Combine (subdir);
-					try {
-						if (!Directory.Exists (subdir))
-							Directory.CreateDirectory (subdir);
-					} catch (IOException ex) {
-						MessageService.ShowException (ex, "Failed to create directory '" + subdir +"' for Xcode project");
-						return;
-					}
-				} else if (pf.BuildAction == BuildAction.Page) {
-					args.AddQuotedFormat ("-res={0}", pf.FilePath);
-				}
-			}
-			
-			args.AddQuotedFormat ("-res={0},Info.plist", conf.AppDirectory.Combine ("Info.plist"));
-			
-			foreach (string asm in proj.GetReferencedAssemblies (slnConf).Distinct ())
-				args.AddQuotedFormat ("-r={0}", asm);
-			
-			var sdkVersion = conf.MtouchSdkVersion.ResolveIfDefault ();
-			if (!IPhoneFramework.SdkIsInstalled (sdkVersion))
-				sdkVersion = IPhoneFramework.GetClosestInstalledSdk (sdkVersion);
-			
-			IPhoneBuildExtension.AppendExtrasMtouchArgs (args, sdkVersion, proj, conf);
-			args.AddQuoted (conf.CompiledOutputName);
-			
-			string argStr = args.ToString ();
-			
-			var console = (IConsole) IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
-				GettextCatalog.GetString ("Generate Xcode project"), MonoDevelop.Ide.Gui.Stock.RunProgramIcon, true, true);
-			console.Log.WriteLine (mtouchPath + " " + argStr);
-			Runtime.ProcessService.StartConsoleProcess (mtouchPath, argStr, conf.OutputDirectory, console, null);
 		}
 	}
 	
