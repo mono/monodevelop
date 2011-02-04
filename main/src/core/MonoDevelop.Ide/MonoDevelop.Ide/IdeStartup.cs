@@ -41,6 +41,7 @@ using System.Linq;
 using Mono.Unix;
 
 using Mono.Addins;
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
@@ -131,6 +132,7 @@ namespace MonoDevelop.Ide
 				options.NoLogo = true;
 			
 			IProgressMonitor monitor;
+			
 			if (options.NoLogo) {
 				monitor = new MonoDevelop.Core.ProgressMonitoring.ConsoleProgressMonitor ();
 			} else {
@@ -259,6 +261,9 @@ namespace MonoDevelop.Ide
 			Thread.CurrentThread.Name = "GUI Thread";
 			Counters.Initialization.Trace ("Running IdeApp");
 			Counters.Initialization.EndTiming ();
+				
+			AddinManager.AddExtensionNodeHandler("/MonoDevelop/Ide/InitCompleteHandlers", OnExtensionChanged);
+				
 			IdeApp.Run ();
 			
 			// unloading services
@@ -274,6 +279,20 @@ namespace MonoDevelop.Ide
 		
 		public bool Initialized {
 			get { return initialized; }
+		}
+		
+		static void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
+		{
+			if (args.Change == ExtensionChange.Add) {
+				try {
+					if (typeof(CommandHandler).IsInstanceOfType (args.ExtensionObject))
+						typeof(CommandHandler).GetMethod ("Run", System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance, null, Type.EmptyTypes, null).Invoke (args.ExtensionObject, null);
+					else
+						LoggingService.LogError ("Type " + args.ExtensionObject.GetType () + " must be a subclass of MonoDevelop.Components.Commands.CommandHandler");
+				} catch (Exception ex) {
+					LoggingService.LogError (ex.ToString ());
+				}
+			}
 		}
 		
 		void OnAddinError (object s, AddinErrorEventArgs args)

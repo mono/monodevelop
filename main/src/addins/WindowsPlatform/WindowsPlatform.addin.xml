@@ -24,6 +24,10 @@
 	<Extension path = "/MonoDevelop/Ide/Updater">
 		<UpdateInfo file="..\bin\updateinfo" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/InitCompleteHandlers">
+		<Class class="MonoDevelop.Platform.JumpList" />
+	</Extension>
 
 <!--  <Extension path = "/MonoDevelop/Components/DialogHandlers">
     <Class class = "MonoDevelop.Platform.SelectFileDialogHandler"/>
