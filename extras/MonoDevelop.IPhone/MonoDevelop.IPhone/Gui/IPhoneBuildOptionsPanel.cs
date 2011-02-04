@@ -106,7 +106,7 @@ namespace MonoDevelop.IPhone.Gui
 			
 			sdkCombo.Changed += HandleSdkComboChanged;
 			
-			enableMtouch4Features = IPhoneFramework.MonoTouchVersion >= new IPhoneSdkVersion (4);
+			enableMtouch4Features = IPhoneFramework.MonoTouchVersion >= new IPhoneSdkVersion (3, 99);
 			if (enableMtouch4Features) {
 				useLlvmCheck.Toggled += UpdateCodegenCheckSensitivity;
 				useArmv7Check.Toggled += UpdateCodegenCheckSensitivity;
