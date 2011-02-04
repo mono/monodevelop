@@ -165,7 +165,7 @@ namespace MonoDevelop.IPhone
 			}
 			
 			//unpack nibs and content from dll resources (MT 4+ only)
-			if (IPhoneFramework.MonoTouchVersion >= new IPhoneSdkVersion (4))
+			if (IPhoneFramework.MonoTouchVersion >= new IPhoneSdkVersion (3, 99))
 				if (result.Append (UnpackContent (monitor, conf, assemblyRefs)).ErrorCount > 0)
 					return result;
 			
@@ -349,7 +349,7 @@ namespace MonoDevelop.IPhone
 			if (conf.MtouchMinimumOSVersion != "3.0")
 				args.AddQuotedFormat ("-targetver={0}", conf.MtouchMinimumOSVersion);
 			
-			if (IPhoneFramework.MonoTouchVersion >= new IPhoneSdkVersion (4)) {
+			if (IPhoneFramework.MonoTouchVersion >= new IPhoneSdkVersion (3, 99)) {
 				if (conf.MtouchUseSGen)
 					args.Add ("--sgen");
 				if (conf.MtouchUseLlvm) {
@@ -714,7 +714,7 @@ namespace MonoDevelop.IPhone
 			var projFiles = buildData.Items.OfType<ProjectFile> ();
 			
 			if (proj.CompileTarget == CompileTarget.Library) {
-				if (IPhoneFramework.MonoTouchVersion < new IPhoneSdkVersion (4))
+				if (IPhoneFramework.MonoTouchVersion < new IPhoneSdkVersion (3, 99))
 					return base.Compile (monitor, item, buildData);
 				
 				//pack nibs and content into the dll resources (MT 4+ only)
