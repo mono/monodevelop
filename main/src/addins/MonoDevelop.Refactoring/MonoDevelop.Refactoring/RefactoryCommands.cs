@@ -516,9 +516,15 @@ namespace MonoDevelop.Refactoring
 			
 			public void ResolveName ()
 			{
-				// TODO: Move this to a expression refactorer !!!!
 				int pos = doc.Editor.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.Start.Line, resolveResult.ResolvedExpression.Region.Start.Column);
-				doc.Editor.Insert (pos, ns +"." );
+				if (pos < 0) {
+					LoggingService.LogError ("Invalie expression position: " + resolveResult.ResolvedExpression);
+					return;
+				}
+				doc.Editor.Insert (pos, ns + ".");
+				if (doc.Editor.Caret.Offset >= pos)
+					doc.Editor.Caret.Offset += (ns + ".").Length;
+				doc.Editor.Document.CommitLineUpdate (resolveResult.ResolvedExpression.Region.Start.Line);
 			}
 		}
 
