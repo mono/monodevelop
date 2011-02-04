@@ -237,6 +237,7 @@ public static class IPhoneFramework
 				new IPhoneSdkVersion (new [] { 4, 0 }),
 				new IPhoneSdkVersion (new [] { 4, 1 }),
 				new IPhoneSdkVersion (new [] { 4, 2 }),
+				new IPhoneSdkVersion (new [] { 4, 3 }),
 			};
 			
 			const string sdkDir = "/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/";
