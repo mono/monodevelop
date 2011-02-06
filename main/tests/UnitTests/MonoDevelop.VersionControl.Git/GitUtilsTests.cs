@@ -128,6 +128,7 @@ namespace MonoDevelop.VersionControl.Git
 			
 			return blame;
 		}
+		
 		void CompareBlames (RevCommit[] blameCommits,List<BlameFragment> blames)
 		{
 			foreach (BlameFragment blame in blames) {
@@ -138,7 +139,6 @@ namespace MonoDevelop.VersionControl.Git
 				}
 			}
 		}
-
 	}
 
 	struct BlameFragment
