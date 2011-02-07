@@ -440,6 +440,11 @@ namespace MonoDevelop.MonoDroid
 						output.WriteLine (line);
 				}
 				
+				// StandardOutput may have returnd 0, but the process may still need some more time to
+				// have HasExited as true
+				if (!success && !proc.HasExited)
+					proc.WaitForExit (500);
+
 				if (!success && proc.HasExited && proc.ExitCode <= 0)
 					success = true;
 				
