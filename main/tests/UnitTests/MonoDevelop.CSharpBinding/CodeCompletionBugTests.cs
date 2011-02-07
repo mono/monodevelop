@@ -2956,5 +2956,35 @@ public class Test<T>
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNotNull (provider.Find ("Foo"), "method 'Foo' not found.");
 		}
+		
+		
+		/// <summary>
+		/// Bug 669818 - Autocomplete missing for new nested class
+		/// </summary>
+		[Test()]
+		public void TestBug669818 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"using System;
+public class Foo
+{
+    public class Bar
+    {
+    }
+	public static void FooBar () {}
+}
+class TestNested
+{
+    public static void Main (string[] args)
+    {
+        $new Foo.$
+    }
+}
+
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Bar"), "class 'Bar' not found.");
+			Assert.IsNull (provider.Find ("FooBar"), "method 'FooBar' found.");
+		}
 	}
 }
