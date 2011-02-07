@@ -122,6 +122,7 @@
     <Compile Include="MonoDevelop.Refactoring.IntegrateTemporaryVariable\IntegrateTemporaryVariableHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\ImportSymbolHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\ReferencesFinder.cs" />
+    <Compile Include="MonoDevelop.Refactoring.Rename\RenameTextEditorExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
