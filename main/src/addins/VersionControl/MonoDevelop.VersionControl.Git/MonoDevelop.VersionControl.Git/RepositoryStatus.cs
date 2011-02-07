@@ -152,7 +152,7 @@ namespace MonoDevelop.VersionControl.Git
 			
 			TreeWalk treeWalk = new TreeWalk (Repository);
 			treeWalk.Reset ();
-			treeWalk.Recursive = true;
+			treeWalk.Recursive = false;
 
 			if (commit != null)
 				treeWalk.AddTree (commit.Tree);
@@ -180,6 +180,12 @@ namespace MonoDevelop.VersionControl.Git
 				DirCacheIterator dirCacheIterator = treeWalk.GetTree<DirCacheIterator>(1);
 				WorkingTreeIterator workingTreeIterator = treeWalk.GetTree<WorkingTreeIterator>(2);
 				NGit.FileMode fileModeTree = treeWalk.GetFileMode(0);
+				
+				if (treeWalk.IsSubtree) {
+					if (dirCacheIterator != null || treeIterator != null)
+						treeWalk.EnterSubtree ();
+					continue;
+				}
 				
 				int stage = dirCacheIterator != null ? dirCacheIterator.GetDirCacheEntry ().Stage : 0;
 				if (stage > 1)
