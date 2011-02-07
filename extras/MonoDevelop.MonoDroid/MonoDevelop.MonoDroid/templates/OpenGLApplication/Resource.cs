@@ -17,7 +17,7 @@ namespace ${Namespace}
 		{
 
 			// aapt resource value: 0x7f020000
-			public const int icon = 2130837504;
+			public const int Icon = 2130837504;
 
 			private Drawable ()
 			{
@@ -39,10 +39,10 @@ namespace ${Namespace}
 		{
 
 			// aapt resource value: 0x7f040000
-			public const int hello = 2130968576;
+			public const int Hello = 2130968576;
 
 			// aapt resource value: 0x7f040001
-			public const int app_name = 2130968577;
+			public const int ApplicationName = 2130968577;
 
 			private String ()
 			{
@@ -53,7 +53,7 @@ namespace ${Namespace}
 		{
 
 			// aapt resource value: 0x7f050000
-			public const int myButton = 2131034112;
+			public const int MyButton = 2131034112;
 
 			private Id ()
 			{
