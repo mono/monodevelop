@@ -335,7 +335,11 @@ namespace MonoDevelop.Projects.Dom
 		public override IEnumerable<object> CreateResolveResult (ProjectDom dom, IMember callingMember)
 		{
 			List<object> result = new List<object> ();
-			AddType (dom, result, ResolvedType, callingMember, StaticResolve);
+			if (ResolvedExpression != null && ResolvedExpression.ExpressionContext != null && ResolvedExpression.ExpressionContext.IsObjectCreation) {
+				AddType (dom, result, dom.GetType (ResolvedType), callingMember, true);
+			} else {
+				AddType (dom, result, ResolvedType, callingMember, StaticResolve);
+			}
 			return result;
 		}
 		
