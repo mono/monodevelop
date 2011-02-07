@@ -375,8 +375,12 @@ namespace Mono.TextEditor
 			int caretOffset = Caret.Offset;
 			int matchingBracket;
 			matchingBracket = Document.GetMatchingBracketOffset (worker, offset);
+			if (worker.CancellationPending)
+				return;
 			if (matchingBracket == caretOffset && offset + 1 < Document.Length)
 				matchingBracket = Document.GetMatchingBracketOffset (worker, offset + 1);
+			if (worker.CancellationPending)
+				return;
 			if (matchingBracket == caretOffset)
 				matchingBracket = -1;
 			if (matchingBracket != oldIndex) {
@@ -384,10 +388,12 @@ namespace Mono.TextEditor
 				int line1 = oldIndex >= 0 ? Document.OffsetToLineNumber (oldIndex) : -1;
 				int line2 = highlightBracketOffset >= 0 ? Document.OffsetToLineNumber (highlightBracketOffset) : -1;
 				//DocumentLocation matchingBracketLocation = Document.OffsetToLocation (matchingBracket);
+				if (worker.CancellationPending)
+					return;
 				Application.Invoke (delegate {
-					if (line1 >= 0)
+					if (!worker.CancellationPending && line1 >= 0)
 						textEditor.RedrawLine (line1);
-					if (line1 != line2 && line2 >= 0)
+					if (!worker.CancellationPending && line1 != line2 && line2 >= 0)
 						textEditor.RedrawLine (line2);
 				});
 			}
@@ -2496,7 +2502,10 @@ namespace Mono.TextEditor
 		
 		public double GetLineHeight (int logicalLineNumber)
 		{
-			return GetLineHeight (Document.GetLine (logicalLineNumber));
+			var doc = Document;
+			if (doc == null)
+				return LineHeight;
+			return GetLineHeight (doc.GetLine (logicalLineNumber));
 		}
 		#endregion
 	}
