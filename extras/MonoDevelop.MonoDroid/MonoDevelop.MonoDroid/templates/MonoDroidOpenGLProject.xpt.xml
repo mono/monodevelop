@@ -34,22 +34,22 @@
 				<Directory name="Resources">
 					<File name="Resource.designer.cs" src="OpenGLApplication/Resource.cs" />
 					<RawFile name="AboutResources.txt" src="MonoDroidApplication/AboutResources.txt" />
-					<Directory name="layout">
+					<Directory name="Layout">
 						<File name="Main.axml" src="OpenGLApplication/Main.axml" />
 					</Directory>
-					<Directory name="values">
+					<Directory name="Values">
 						<File name="Strings.xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">${ProjectName}</string>
 </resources>]]></File>
 					</Directory>
-					<Directory name="drawable-hdpi">
+					<Directory name="Drawable-hdpi">
 						<RawFile name="Icon.png" src="MonoDroidApplication/Icon-md.png" />
 					</Directory>
-					<Directory name="drawable-mdpi">
+					<Directory name="Drawable-mdpi">
 						<RawFile name="Icon.png" src="MonoDroidApplication/Icon-md.png" />
 					</Directory>
-					<Directory name="drawable-ldpi">
+					<Directory name="Drawable-ldpi">
 						<RawFile name="Icon.png" src="MonoDroidApplication/Icon-md.png" />
 					</Directory>
 				</Directory>
