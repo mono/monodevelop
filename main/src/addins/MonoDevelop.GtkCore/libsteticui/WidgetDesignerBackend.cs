@@ -677,7 +677,7 @@ namespace Stetic
 				IObjectSelection sel = GetSelection ();
 				if (sel != null && sel.DataObject != null) {
 					Wrapper.Widget wrapper = Wrapper.Widget.Lookup (sel.DataObject) as Wrapper.Widget;
-					if (wrapper != null)
+					if (wrapper != null && !wrapper.IsTopLevel)
 						wrapper.Delete ();
 				}
 				return true;
