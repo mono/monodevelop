@@ -102,9 +102,9 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 			});
 		}
 		
-		protected override void OnStarted ()
+		protected override void OnStarted (ThreadInfo t)
 		{
-			base.OnStarted ();
+			base.OnStarted (t);
 			if (simProcess != null)
 				IPhoneUtility.MakeSimulatorGrabFocus ();
 		}

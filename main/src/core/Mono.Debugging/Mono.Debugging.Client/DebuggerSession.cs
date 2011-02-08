@@ -864,10 +864,15 @@ namespace Mono.Debugging.Client
 				TargetStarted (this, EventArgs.Empty);
 		}
 		
-		internal protected virtual void OnStarted ()
+		internal protected void OnStarted ()
+		{
+			OnStarted (null);
+		}
+		
+		internal protected virtual void OnStarted (ThreadInfo t)
 		{
 			lock (slock) {
-				OnTargetEvent (new TargetEventArgs (TargetEventType.TargetReady));
+				OnTargetEvent (new TargetEventArgs (TargetEventType.TargetReady) { Thread = t });
 				started = true;
 				foreach (BreakEvent bp in breakpointStore)
 					AddBreakEvent (bp);
@@ -1066,6 +1071,11 @@ namespace Mono.Debugging.Client
 		public void NotifyDebuggerOutput (bool isStderr, string text)
 		{
 			session.OnDebuggerOutput (isStderr, text);
+		}
+		
+		public void NotifyStarted (ThreadInfo t)
+		{
+			session.OnStarted (t);
 		}
 		
 		public void NotifyStarted ()
