@@ -371,7 +371,14 @@ namespace NGit.Storage.File
 					repo = ((FileObjectDatabase.AlternateRepository)d).repository;
 					foreach (Ref @ref in repo.GetAllRefs().Values)
 					{
-						r.AddItem(@ref.GetObjectId());
+						if (@ref.GetObjectId() != null)
+						{
+							r.AddItem(@ref.GetObjectId());
+						}
+						if (@ref.GetPeeledObjectId() != null)
+						{
+							r.AddItem(@ref.GetPeeledObjectId());
+						}
 					}
 					Sharpen.Collections.AddAll(r, repo.GetAdditionalHaves());
 				}

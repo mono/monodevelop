@@ -64,7 +64,7 @@ namespace NGit.Util
 				// login shell and search using that.
 				//
 				string w = ReadPipe(UserHome(), new string[] { "bash", "--login", "-c", "which git"
-					 }, Encoding.Default.EncodingName);
+					 }, Encoding.Default.Name());
 				//
 				//
 				return new FilePath(w).GetParentFile().GetParentFile();

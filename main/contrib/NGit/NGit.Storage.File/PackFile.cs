@@ -179,6 +179,25 @@ namespace NGit.Storage.File
 			return packFile;
 		}
 
+		/// <returns>
+		/// name extracted from
+		/// <code>pack-*.pack</code>
+		/// pattern.
+		/// </returns>
+		public virtual string GetPackName()
+		{
+			string name = GetPackFile().GetName();
+			if (name.StartsWith("pack-"))
+			{
+				name = Sharpen.Runtime.Substring(name, "pack-".Length);
+			}
+			if (name.EndsWith(".pack"))
+			{
+				name = Sharpen.Runtime.Substring(name, 0, name.Length - ".pack".Length);
+			}
+			return name;
+		}
+
 		/// <summary>Determine if an object is contained within the pack file.</summary>
 		/// <remarks>
 		/// Determine if an object is contained within the pack file.
@@ -314,6 +333,14 @@ namespace NGit.Storage.File
 					, position));
 			}
 			return dstbuf;
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
+		internal virtual void CopyPackAsIs(PackOutputStream @out, WindowCursor curs)
+		{
+			// Pin the first window, this ensures the length is accurate.
+			curs.Pin(this, 0);
+			curs.CopyPackAsIs(this, @out, 12, length - (12 + 20));
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>

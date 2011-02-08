@@ -62,7 +62,9 @@ namespace NGit.Storage.Pack
 
 		private readonly ObjectId[] baseTrees;
 
-		private readonly ObjectIdSubclassMap<ObjectToPack> edgeObjects;
+		private readonly ObjectIdSubclassMap<ObjectToPack> objectsMap;
+
+		private readonly IList<ObjectToPack> edgeObjects;
 
 		private readonly IntSet alreadyProcessed;
 
@@ -73,11 +75,13 @@ namespace NGit.Storage.Pack
 		private readonly MutableObjectId idBuf;
 
 		internal BaseSearch(ProgressMonitor countingMonitor, ICollection<RevTree> bases, 
-			ObjectIdSubclassMap<ObjectToPack> edges, ObjectReader or)
+			ObjectIdSubclassMap<ObjectToPack> objects, IList<ObjectToPack> edges, ObjectReader
+			 or)
 		{
 			progress = countingMonitor;
 			reader = or;
 			baseTrees = Sharpen.Collections.ToArray(bases, new ObjectId[bases.Count]);
+			objectsMap = objects;
 			edgeObjects = edges;
 			alreadyProcessed = new IntSet();
 			treeCache = new ObjectIdSubclassMap<BaseSearch.TreeWithData>();
@@ -145,6 +149,7 @@ namespace NGit.Storage.Pack
 					parser.Reset(ReadTree(idBuf));
 				}
 			}
+CHECK_BASE_break: ;
 		}
 
 		private static int ModeForType(int typeCode)
@@ -183,8 +188,9 @@ namespace NGit.Storage.Pack
 			ObjectToPack obj = new ObjectToPack(id, objectType);
 			obj.SetEdge();
 			obj.SetPathHash(pathHash);
-			if (edgeObjects.AddIfAbsent(obj) == obj)
+			if (objectsMap.AddIfAbsent(obj) == obj)
 			{
+				edgeObjects.AddItem(obj);
 				progress.Update(1);
 			}
 		}

@@ -100,7 +100,7 @@ namespace NGit.Util
 			// also be in $PATH. But its worth trying.
 			//
 			string w = ReadPipe(UserHome(), new string[] { "bash", "--login", "-c", "which git"
-				 }, Encoding.Default.EncodingName);
+				 }, Encoding.Default.Name());
 			//
 			//
 			if (w != null)

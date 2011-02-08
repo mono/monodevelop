@@ -146,6 +146,12 @@ namespace NGit.Storage.File
 			return wrapped.GetFS();
 		}
 
+		/// <exception cref="System.IO.IOException"></exception>
+		internal override ICollection<CachedPack> GetCachedPacks()
+		{
+			return wrapped.GetCachedPacks();
+		}
+
 		internal override FileObjectDatabase.AlternateHandle[] MyAlternates()
 		{
 			if (alts == null)

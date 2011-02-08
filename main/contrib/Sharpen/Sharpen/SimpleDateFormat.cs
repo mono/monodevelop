@@ -25,6 +25,7 @@ namespace Sharpen
 
 		public string Format (DateTime date)
 		{
+			date += timeZone.BaseUtcOffset;
 			return date.ToString (format);
 		}
 

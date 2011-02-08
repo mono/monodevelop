@@ -143,7 +143,10 @@ namespace NGit.Api
 						transport.SetOptionReceivePack(receivePack);
 					}
 					transport.SetDryRun(dryRun);
-					transport.SetCredentialsProvider(credentialsProvider);
+					if (credentialsProvider != null)
+					{
+						transport.SetCredentialsProvider(credentialsProvider);
+					}
 					ICollection<RemoteRefUpdate> toPush = transport.FindRemoteRefUpdatesFor(refSpecs);
 					try
 					{

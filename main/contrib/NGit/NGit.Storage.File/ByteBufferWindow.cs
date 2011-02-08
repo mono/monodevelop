@@ -44,6 +44,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System;
 using ICSharpCode.SharpZipLib.Zip.Compression;
 using NGit.Storage.File;
+using NGit.Storage.Pack;
 using Sharpen;
 
 namespace NGit.Storage.File
@@ -71,6 +72,21 @@ namespace NGit.Storage.File
 			n = Math.Min(s.Remaining(), n);
 			s.Get(b, o, n);
 			return n;
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
+		internal override void Write(PackOutputStream @out, long pos, int cnt)
+		{
+			ByteBuffer s = buffer.Slice();
+			s.Position((int)(pos - start));
+			while (0 < cnt)
+			{
+				byte[] buf = @out.GetCopyBuffer();
+				int n = Math.Min(cnt, buf.Length);
+				s.Get(buf, 0, n);
+				@out.Write(buf, 0, n);
+				cnt -= n;
+			}
 		}
 
 		/// <exception cref="Sharpen.DataFormatException"></exception>

@@ -208,6 +208,29 @@ namespace NGit.Treewalk
 			ignoreNode = new WorkingTreeIterator.RootIgnoreNode(entry, repo);
 		}
 
+		/// <summary>
+		/// Define the matching
+		/// <see cref="NGit.Dircache.DirCacheIterator">NGit.Dircache.DirCacheIterator</see>
+		/// , to optimize ObjectIds.
+		/// Once the DirCacheIterator has been set this iterator must only be
+		/// advanced by the TreeWalk that is supplied, as it assumes that itself and
+		/// the corresponding DirCacheIterator are positioned on the same file path
+		/// whenever
+		/// <see cref="IdBuffer()">IdBuffer()</see>
+		/// is invoked.
+		/// </summary>
+		/// <param name="walk">the walk that will be advancing this iterator.</param>
+		/// <param name="treeId">
+		/// index of the matching
+		/// <see cref="NGit.Dircache.DirCacheIterator">NGit.Dircache.DirCacheIterator</see>
+		/// .
+		/// </param>
+		public virtual void SetDirCacheIterator(TreeWalk walk, int treeId)
+		{
+			state.walk = walk;
+			state.dirCacheTree = treeId;
+		}
+
 		public override bool HasId
 		{
 			get
@@ -227,6 +250,22 @@ namespace NGit.Treewalk
 				if (contentIdFromPtr == ptr)
 				{
 					return contentId;
+				}
+				if (state.walk != null)
+				{
+					// If there is a matching DirCacheIterator, we can reuse
+					// its idBuffer, but only if we appear to be clean against
+					// the cached index information for the path.
+					//
+					DirCacheIterator i = state.walk.GetTree<DirCacheIterator>(state.dirCacheTree);
+					if (i != null)
+					{
+						DirCacheEntry ent = i.GetDirCacheEntry();
+						if (ent != null && CompareMetadata(ent) == WorkingTreeIterator.MetadataDiff.EQUAL)
+						{
+							return i.IdBuffer;
+						}
+					}
 				}
 				switch (mode & FileMode.TYPE_MASK)
 				{
@@ -447,6 +486,7 @@ namespace NGit.Treewalk
 
 		private void ParseEntry()
 		{
+			ignoreStatus = -1;
 			WorkingTreeIterator.Entry e = entries[ptr];
 			mode = e.GetMode().GetBits();
 			int nameLen = e.encodedNameLen;
@@ -513,10 +553,16 @@ namespace NGit.Treewalk
 		/// 	</exception>
 		protected internal virtual bool IsEntryIgnored(int pLen)
 		{
-			if (ignoreStatus != -1)
-			{
+			if (pLen == pathLen) {
+				if (ignoreStatus == -1)
+					ignoreStatus = IsEntryIgnoredInternal (pLen) ? 1 : 0;
 				return ignoreStatus == 1;
 			}
+			return IsEntryIgnoredInternal (pLen);
+		}
+
+		bool IsEntryIgnoredInternal (int pLen)
+		{
 			IgnoreNode rules = GetIgnoreNode();
 			if (rules != null)
 			{
@@ -534,13 +580,11 @@ namespace NGit.Treewalk
 				{
 					case IgnoreNode.MatchResult.IGNORED:
 					{
-						ignoreStatus = 1;
 						return true;
 					}
 
 					case IgnoreNode.MatchResult.NOT_IGNORED:
 					{
-						ignoreStatus = 0;
 						return false;
 					}
 
@@ -552,14 +596,11 @@ namespace NGit.Treewalk
 			}
 			if (parent is NGit.Treewalk.WorkingTreeIterator)
 			{
-				ignoreStatus = ((NGit.Treewalk.WorkingTreeIterator)parent).IsEntryIgnored(pLen) ? 
-					1 : 0;
-				return ignoreStatus == 1;
+				return ((NGit.Treewalk.WorkingTreeIterator)parent).IsEntryIgnored(pLen);
 			}
-			ignoreStatus = 0;
 			return false;
 		}
-
+		
 		/// <exception cref="System.IO.IOException"></exception>
 		private IgnoreNode GetIgnoreNode()
 		{
@@ -570,9 +611,9 @@ namespace NGit.Treewalk
 			return ignoreNode;
 		}
 
-		private sealed class _IComparer_467 : IComparer<WorkingTreeIterator.Entry>
+		private sealed class _IComparer_501 : IComparer<WorkingTreeIterator.Entry>
 		{
-			public _IComparer_467()
+			public _IComparer_501()
 			{
 			}
 
@@ -606,7 +647,7 @@ namespace NGit.Treewalk
 			}
 		}
 
-		private static readonly IComparer<WorkingTreeIterator.Entry> ENTRY_CMP = new _IComparer_467
+		private static readonly IComparer<WorkingTreeIterator.Entry> ENTRY_CMP = new _IComparer_501
 			();
 
 		internal static int LastPathChar(WorkingTreeIterator.Entry e)
@@ -1128,6 +1169,17 @@ namespace NGit.Treewalk
 			/// computations.
 			/// </summary>
 			internal byte[] contentReadBuffer;
+
+			/// <summary>TreeWalk with a (supposedly) matching DirCacheIterator.</summary>
+			/// <remarks>TreeWalk with a (supposedly) matching DirCacheIterator.</remarks>
+			internal TreeWalk walk;
+
+			/// <summary>
+			/// Position of the matching
+			/// <see cref="NGit.Dircache.DirCacheIterator">NGit.Dircache.DirCacheIterator</see>
+			/// .
+			/// </summary>
+			internal int dirCacheTree;
 
 			internal IteratorState(WorkingTreeOptions options)
 			{

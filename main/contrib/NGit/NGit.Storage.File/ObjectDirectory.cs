@@ -42,6 +42,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using System;
+using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using NGit;
@@ -96,7 +98,11 @@ namespace NGit.Storage.File
 
 		private readonly FilePath alternatesFile;
 
+		private readonly FilePath cachedPacksFile;
+
 		private readonly AtomicReference<ObjectDirectory.PackList> packList;
+
+		private readonly AtomicReference<ObjectDirectory.CachedPackList> cachedPacks;
 
 		private readonly FS fs;
 
@@ -122,7 +128,9 @@ namespace NGit.Storage.File
 			infoDirectory = new FilePath(objects, "info");
 			packDirectory = new FilePath(objects, "pack");
 			alternatesFile = new FilePath(infoDirectory, "alternates");
+			cachedPacksFile = new FilePath(infoDirectory, "cached-packs");
 			packList = new AtomicReference<ObjectDirectory.PackList>(NO_PACKS);
+			cachedPacks = new AtomicReference<ObjectDirectory.CachedPackList>();
 			unpackedObjectCache = new UnpackedObjectCache();
 			this.fs = fs;
 			alternates = new AtomicReference<FileObjectDatabase.AlternateHandle[]>();
@@ -208,6 +216,95 @@ namespace NGit.Storage.File
 			}
 			PackFile[] packs = list.packs;
 			return Sharpen.Collections.UnmodifiableCollection(Arrays.AsList(packs));
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
+		internal override ICollection<CachedPack> GetCachedPacks()
+		{
+			ObjectDirectory.CachedPackList list = cachedPacks.Get();
+			if (list == null || list.snapshot.IsModified(cachedPacksFile))
+			{
+				list = ScanCachedPacks(list);
+			}
+			ICollection<CachedPack> result = list.GetCachedPacks();
+			bool resultIsCopy = false;
+			foreach (FileObjectDatabase.AlternateHandle h in MyAlternates())
+			{
+				ICollection<CachedPack> altPacks = h.GetCachedPacks();
+				if (altPacks.IsEmpty())
+				{
+					continue;
+				}
+				if (result.IsEmpty())
+				{
+					result = altPacks;
+					continue;
+				}
+				if (!resultIsCopy)
+				{
+					result = new AList<CachedPack>(result);
+					resultIsCopy = true;
+				}
+				Sharpen.Collections.AddAll(result, altPacks);
+			}
+			return result;
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
+		private ObjectDirectory.CachedPackList ScanCachedPacks(ObjectDirectory.CachedPackList
+			 old)
+		{
+			FileSnapshot s = FileSnapshot.Save(cachedPacksFile);
+			byte[] buf;
+			try
+			{
+				buf = IOUtil.ReadFully(cachedPacksFile);
+			}
+			catch (FileNotFoundException)
+			{
+				buf = new byte[0];
+			}
+			if (old != null && old.snapshot.Equals(s) && Arrays.Equals(old.raw, buf))
+			{
+				old.snapshot.SetClean(s);
+				return old;
+			}
+			AList<LocalCachedPack> list = new AList<LocalCachedPack>(4);
+			ICollection<ObjectId> tips = new HashSet<ObjectId>();
+			int ptr = 0;
+			while (ptr < buf.Length)
+			{
+				if (buf[ptr] == '#' || buf[ptr] == '\n')
+				{
+					ptr = RawParseUtils.NextLF(buf, ptr);
+					continue;
+				}
+				if (buf[ptr] == '+')
+				{
+					tips.AddItem(ObjectId.FromString(buf, ptr + 2));
+					ptr = RawParseUtils.NextLF(buf, ptr + 2);
+					continue;
+				}
+				IList<string> names = new AList<string>(4);
+				while (ptr < buf.Length && buf[ptr] == 'P')
+				{
+					int end = RawParseUtils.NextLF(buf, ptr);
+					if (buf[end - 1] == '\n')
+					{
+						end--;
+					}
+					names.AddItem(RawParseUtils.Decode(buf, ptr + 2, end));
+					ptr = RawParseUtils.NextLF(buf, end);
+				}
+				if (!tips.IsEmpty() && !names.IsEmpty())
+				{
+					list.AddItem(new LocalCachedPack(this, tips, names));
+					tips = new HashSet<ObjectId>();
+				}
+			}
+			list.TrimToSize();
+			return new ObjectDirectory.CachedPackList(s, Sharpen.Collections.UnmodifiableList
+				(list), buf);
 		}
 
 		/// <summary>Add a single existing pack to the list of available pack files.</summary>
@@ -901,6 +998,27 @@ SEARCH_break: ;
 			{
 				this.snapshot = monitor;
 				this.packs = packs;
+			}
+		}
+
+		private sealed class CachedPackList
+		{
+			internal readonly FileSnapshot snapshot;
+
+			internal readonly ICollection<LocalCachedPack> packs;
+
+			internal readonly byte[] raw;
+
+			internal CachedPackList(FileSnapshot sn, IList<LocalCachedPack> list, byte[] buf)
+			{
+				snapshot = sn;
+				packs = list;
+				raw = buf;
+			}
+
+			internal ICollection<CachedPack> GetCachedPacks()
+			{
+				return packs.Select (p => (CachedPack)p).ToArray ();
 			}
 		}
 

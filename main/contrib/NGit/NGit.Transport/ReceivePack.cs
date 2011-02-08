@@ -813,8 +813,7 @@ namespace NGit.Transport
 				adv.WriteOne("ERR " + advertiseError);
 				return;
 			}
-			RevFlag advertised = walk.NewFlag("ADVERTISED");
-			adv.Init(walk, advertised);
+			adv.Init(db);
 			adv.AdvertiseCapability(BasePackPushConnection.CAPABILITY_SIDE_BAND_64K);
 			adv.AdvertiseCapability(BasePackPushConnection.CAPABILITY_DELETE_REFS);
 			adv.AdvertiseCapability(BasePackPushConnection.CAPABILITY_REPORT_STATUS);

@@ -292,6 +292,9 @@ namespace NGit.Storage.File
 
 		internal abstract FilePath GetDirectory();
 
+		/// <exception cref="System.IO.IOException"></exception>
+		internal abstract ICollection<CachedPack> GetCachedPacks();
+
 		internal abstract FileObjectDatabase.AlternateHandle[] MyAlternates();
 
 		internal abstract bool TryAgain1();
@@ -331,6 +334,12 @@ namespace NGit.Storage.File
 			internal AlternateHandle(FileObjectDatabase db)
 			{
 				this.db = db;
+			}
+
+			/// <exception cref="System.IO.IOException"></exception>
+			internal virtual ICollection<CachedPack> GetCachedPacks()
+			{
+				return (ICollection<CachedPack>)db.GetCachedPacks();
 			}
 
 			internal virtual void Close()

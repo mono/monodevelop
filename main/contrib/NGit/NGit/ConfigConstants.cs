@@ -103,10 +103,49 @@ namespace NGit
 		/// <summary>The "autosetupmerge" key</summary>
 		public static readonly string CONFIG_KEY_AUTOSETUPMERGE = "autosetupmerge";
 
+		/// <summary>The "autosetuprebase" key</summary>
+		public static readonly string CONFIG_KEY_AUTOSETUPREBASE = "autosetuprebase";
+
 		/// <summary>The "name" key</summary>
 		public static readonly string CONFIG_KEY_NAME = "name";
 
 		/// <summary>The "email" key</summary>
 		public static readonly string CONFIG_KEY_EMAIL = "email";
+
+		/// <summary>
+		/// The "false" key (used to configure
+		/// <see cref="CONFIG_KEY_AUTOSETUPMERGE">CONFIG_KEY_AUTOSETUPMERGE</see>
+		/// 
+		/// </summary>
+		public static readonly string CONFIG_KEY_FALSE = "false";
+
+		/// <summary>
+		/// The "true" key (used to configure
+		/// <see cref="CONFIG_KEY_AUTOSETUPMERGE">CONFIG_KEY_AUTOSETUPMERGE</see>
+		/// 
+		/// </summary>
+		public static readonly string CONFIG_KEY_TRUE = "true";
+
+		/// <summary>
+		/// The "always" key (used to configure
+		/// <see cref="CONFIG_KEY_AUTOSETUPREBASE">CONFIG_KEY_AUTOSETUPREBASE</see>
+		/// and
+		/// <see cref="CONFIG_KEY_AUTOSETUPMERGE">CONFIG_KEY_AUTOSETUPMERGE</see>
+		/// </summary>
+		public static readonly string CONFIG_KEY_ALWAYS = "always";
+
+		/// <summary>
+		/// The "never" key (used to configure
+		/// <see cref="CONFIG_KEY_AUTOSETUPREBASE">CONFIG_KEY_AUTOSETUPREBASE</see>
+		/// 
+		/// </summary>
+		public static readonly string CONFIG_KEY_NEVER = "never";
+
+		/// <summary>
+		/// The "local" key (used to configure
+		/// <see cref="CONFIG_KEY_AUTOSETUPREBASE">CONFIG_KEY_AUTOSETUPREBASE</see>
+		/// 
+		/// </summary>
+		public static readonly string CONFIG_KEY_LOCAL = "local";
 	}
 }

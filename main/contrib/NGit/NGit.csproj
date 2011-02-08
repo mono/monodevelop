@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>NGit</RootNamespace>
     <AssemblyName>NGit</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -494,6 +495,8 @@
     <Compile Include="NGit.Api\CloneCommand.cs" />
     <Compile Include="NGit.Storage.Pack\BaseSearch.cs" />
     <Compile Include="NGit.Storage.Pack\IntSet.cs" />
+    <Compile Include="NGit.Storage.File\LocalCachedPack.cs" />
+    <Compile Include="NGit.Storage.Pack\CachedPack.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

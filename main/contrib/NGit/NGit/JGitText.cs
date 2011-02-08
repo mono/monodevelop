@@ -130,6 +130,8 @@ namespace NGit
 
 		public string branchNameInvalid;
 
+		public string cachedPacksPreventsIndexCreation;
+
 		public string cannotBeCombined;
 
 		public string cannotCombineTreeFilterWithRevFilter;
@@ -717,6 +719,8 @@ namespace NGit
 		public string packfileIsTruncated;
 
 		public string packingCancelledDuringObjectsWriting;
+
+		public string packWriterStatistics;
 
 		public string pathIsNotInWorkingDir;
 

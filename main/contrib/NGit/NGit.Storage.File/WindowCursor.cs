@@ -41,6 +41,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System;
 using System.Collections.Generic;
 using NGit;
 using NGit.Errors;
@@ -165,6 +166,12 @@ namespace NGit.Storage.File
 			}
 		}
 
+		/// <exception cref="System.IO.IOException"></exception>
+		public ICollection<CachedPack> GetCachedPacks()
+		{
+			return (ICollection<CachedPack>)db.GetCachedPacks();
+		}
+
 		/// <summary>Copy bytes from the window to a caller supplied buffer.</summary>
 		/// <remarks>Copy bytes from the window to a caller supplied buffer.</remarks>
 		/// <param name="pack">the file the desired window is stored within.</param>
@@ -199,6 +206,27 @@ namespace NGit.Storage.File
 				need -= r;
 			}
 			return cnt - need;
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
+		public void CopyPackAsIs(PackOutputStream @out, CachedPack pack)
+		{
+			((LocalCachedPack)pack).CopyAsIs(@out, this);
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
+		internal void CopyPackAsIs(PackFile pack, PackOutputStream @out, long position, long
+			 cnt)
+		{
+			while (0 < cnt)
+			{
+				Pin(pack, position);
+				int ptr = (int)(position - window.start);
+				int n = (int)Math.Min(window.Size() - ptr, cnt);
+				window.Write(@out, position, n);
+				position += n;
+				cnt -= n;
+			}
 		}
 
 		/// <summary>

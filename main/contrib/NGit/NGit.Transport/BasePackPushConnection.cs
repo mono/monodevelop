@@ -289,6 +289,7 @@ namespace NGit.Transport
 						newObjects.AddItem(r_1.GetNewObjectId());
 					}
 				}
+				writer.SetUseCachedPacks(true);
 				writer.SetThin(thinPack);
 				writer.SetDeltaBaseAsOffset(capableOfsDelta);
 				writer.PreparePack(monitor, newObjects, remoteObjects);
