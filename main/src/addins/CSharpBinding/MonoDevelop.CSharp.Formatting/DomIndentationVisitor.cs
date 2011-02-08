@@ -779,7 +779,20 @@ namespace MonoDevelop.CSharp.Formatting
 				endIndent = IsLineIsEmptyUpToEol (rbraceOffset) ? curIndent.IndentString : data.EolMarker + curIndent.IndentString;
 				break;
 			case BraceStyle.EndOfLine:
-				startIndent = " ";
+				var prevNode = lbrace.GetPrevNode ();
+				if (prevNode is MonoDevelop.CSharp.Dom.Comment) {
+					// delete old bracket
+					AddChange (whitespaceStart, lbraceOffset - whitespaceStart + 1, "");
+					
+					while (prevNode is MonoDevelop.CSharp.Dom.Comment) {
+						prevNode = prevNode.GetPrevNode ();
+					}
+					whitespaceStart = data.Document.LocationToOffset (prevNode.EndLocation.Line, prevNode.EndLocation.Column);
+					lbraceOffset = whitespaceStart;
+					startIndent = " {";
+				} else {
+					startIndent = " ";
+				}
 				endIndent = IsLineIsEmptyUpToEol (rbraceOffset) ? curIndent.IndentString : data.EolMarker + curIndent.IndentString;
 				break;
 			case BraceStyle.NextLine:
