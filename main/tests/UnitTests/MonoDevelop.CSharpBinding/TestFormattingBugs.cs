@@ -182,6 +182,36 @@ using (IDisposable b = null) {
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			TestStatementFormatting (policy, "@string=@int;", "@string = @int;");
 		}
+		
+		/// <summary>
+		/// Bug 670213 - Document formatter deletes valid text!
+		/// </summary>
+		[Test()]
+		public void TestBug670213 ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	Test MyMethod() // Comment
+	{
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.MethodBraceStyle = BraceStyle.EndOfLine;
+			
+			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			
+			Assert.AreEqual (@"class Test
+{
+	Test MyMethod() { // Comment
+	}
+}", data.Document.Text);
+		}
+		
+		
 	}
 }
 

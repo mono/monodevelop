@@ -166,7 +166,6 @@ namespace B {
 			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
 			
-			Console.WriteLine (data.Document.Text);
 			Assert.AreEqual (@"class Test
 {
 	Test MyMethod()
