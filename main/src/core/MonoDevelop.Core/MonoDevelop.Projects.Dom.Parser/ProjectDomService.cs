@@ -407,8 +407,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 			else if (item is Solution) {
 				Solution solution = (Solution) item;
 				foreach (Project project in solution.GetAllProjects ()) {
-					GetProjectDom (project).ReferenceCount--;
-					Unload (project);
+					ProjectDom dom = GetProjectDom (project);
+					if (dom != null) {
+						dom.ReferenceCount--;
+						Unload (project);
+					}
 				}
 				solution.SolutionItemAdded -= OnSolutionItemAdded;
 				solution.SolutionItemRemoved -= OnSolutionItemRemoved;
