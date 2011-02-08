@@ -280,8 +280,7 @@ namespace MonoDevelop.Projects
 					return null;
 				
 				default:
-					Console.WriteLine ("pp: " + Reference + " " + OwnerProject.FileName);
-					throw new NotImplementedException("unknown reference type : " + ReferenceType);
+					return null;
 			}
 		}
 		
