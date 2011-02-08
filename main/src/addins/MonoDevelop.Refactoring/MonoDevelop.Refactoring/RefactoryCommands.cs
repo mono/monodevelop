@@ -69,9 +69,6 @@ namespace MonoDevelop.Refactoring
 		ImportSymbol
 	}
 	
-	
-	
-	
 	public class CurrentRefactoryOperationsHandler: CommandHandler
 	{
 		protected override void Run (object data)
@@ -250,7 +247,7 @@ namespace MonoDevelop.Refactoring
 			foreach (var refactoring in RefactoringService.Refactorings) {
 				if (refactoring.IsValid (options)) {
 					CommandInfo info = new CommandInfo (refactoring.GetMenuDescription (options));
-					info.AccelKey = KeyBindingManager.BindingToDisplayLabel (refactoring.AccelKey, true);
+					info.AccelKey = refactoring.AccelKey;
 					ciset.CommandInfos.Add (info, new RefactoryOperation (new RefactoringOperationWrapper (refactoring, options).Operation));
 				}
 			}
@@ -657,7 +654,7 @@ namespace MonoDevelop.Refactoring
 			foreach (var refactoring in RefactoringService.Refactorings) {
 				if (refactoring.IsValid (options)) {
 					CommandInfo info = new CommandInfo (refactoring.GetMenuDescription (options));
-					info.AccelKey = KeyBindingManager.BindingToDisplayLabel (refactoring.AccelKey, true);
+					info.AccelKey = refactoring.AccelKey;
 					ciset.CommandInfos.Add (info, new RefactoryOperation (new RefactoringOperationWrapper (refactoring, options).Operation));
 				}
 			}
