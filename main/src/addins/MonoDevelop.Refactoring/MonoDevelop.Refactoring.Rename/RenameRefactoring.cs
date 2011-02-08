@@ -42,7 +42,7 @@ namespace MonoDevelop.Refactoring.Rename
 	{
 		public override string AccelKey {
 			get {
-				var key = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.Rename).AccelKey;
+				var key = IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.EditCommands.Rename).AccelKey;
 				return key == null ? null : key.Replace ("dead_circumflex", "^");
 			}
 		}
@@ -69,7 +69,7 @@ namespace MonoDevelop.Refactoring.Rename
 		
 		public override string GetMenuDescription (RefactoringOptions options)
 		{
-			return IdeApp.CommandService.GetCommandInfo (RefactoryCommands.Rename).Text;
+			return IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.EditCommands.Rename).Text;
 		}
 		
 		public override void Run (RefactoringOptions options)

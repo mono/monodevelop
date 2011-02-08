@@ -85,9 +85,6 @@
 		</Category>
 		
 		<Category _name = "Refactoring" id = "Refactoring">
-<!--		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.Rename"
-					defaultHandler = "MonoDevelop.Refactoring.Rename.RenameHandler"
-					_label = "_Rename..."/>-->
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations"
 				defaultHandler = "MonoDevelop.Refactoring.CurrentRefactoryOperationsHandler"
 				type="array"

@@ -58,7 +58,6 @@ namespace MonoDevelop.Refactoring
 		FindReferences,
 		FindDerivedClasses,
 		DeclareLocal,
-		Rename,
 		RemoveUnusedImports,
 		SortImports,
 		RemoveSortImports,
