@@ -158,7 +158,8 @@ namespace Mono.Debugging.Client
 			if (!hasDebugInfo)
 				return null;
 			ObjectValue value = sourceBacktrace.GetThisReference (index, options);
-			ObjectValue.ConnectCallbacks (this, value);
+			if (value != null)
+				ObjectValue.ConnectCallbacks (this, value);
 			return value;
 		}
 		
