@@ -139,7 +139,12 @@
 		<ExtensionNode name="Formatter" type="MonoDevelop.Ide.CodeFormatting.CodeFormatterExtensionNode" />
 	</ExtensionPoint>
 	
-	<!-- Extensions -->
+	<ExtensionPoint path = "/MonoDevelop/Ide/ReferenceFinder" name = "Reference finders">
+		<Description>Reference finder.</Description>
+		<ExtensionNode name="ReferenceFinder" type="MonoDevelop.Ide.FindInFiles.ReferenceFinderCodon"/>
+	</ExtensionPoint>
+
+		<!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Core/Applications">
 		<Application id = "gsetup"

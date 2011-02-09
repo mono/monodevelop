@@ -377,6 +377,7 @@ FILES =  \
 	MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs \
 	MonoDevelop.Ide.FindInFiles/FindReplace.cs \
 	MonoDevelop.Ide.FindInFiles/ISearchProgressMonitor.cs \
+	MonoDevelop.Ide.FindInFiles/ReferencesFinder.cs \
 	MonoDevelop.Ide.FindInFiles/Scope.cs \
 	MonoDevelop.Ide.FindInFiles/SearchProgressMonitor.cs \
 	MonoDevelop.Ide.FindInFiles/SearchResult.cs \
