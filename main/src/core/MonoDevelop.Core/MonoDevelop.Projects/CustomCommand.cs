@@ -85,6 +85,28 @@ namespace MonoDevelop.Projects
 			set { pauseExternalConsole = value; }
 		}
 		
+		public string GetCommandFile (IWorkspaceObject entry, ConfigurationSelector configuration)
+		{
+			string exe, args;
+			StringTagModel tagSource = GetTagModel (entry, configuration);
+			ParseCommand (tagSource, out exe, out args);
+			return exe;
+		}
+		
+		public string GetCommandArgs (IWorkspaceObject entry, ConfigurationSelector configuration)
+		{
+			string exe, args;
+			StringTagModel tagSource = GetTagModel (entry, configuration);
+			ParseCommand (tagSource, out exe, out args);
+			return args;
+		}
+		
+		public FilePath GetCommandWorkingDir (IWorkspaceObject entry, ConfigurationSelector configuration)
+		{
+			StringTagModel tagSource = GetTagModel (entry, configuration);
+			return (string.IsNullOrEmpty (workingdir) ? entry.BaseDirectory : (FilePath) StringParserService.Parse (workingdir, tagSource));
+		}
+		
 		public CustomCommand Clone ()
 		{
 			CustomCommand cmd = new CustomCommand ();
@@ -97,50 +119,70 @@ namespace MonoDevelop.Projects
 			return cmd;
 		}
 		
+		StringTagModel GetTagModel (IWorkspaceObject entry, ConfigurationSelector configuration)
+		{
+			if (entry is SolutionItem)
+				return ((SolutionItem)entry).GetStringTagModel (configuration);
+			else if (entry is WorkspaceItem)
+				return ((WorkspaceItem)entry).GetStringTagModel ();
+			else
+				return new StringTagModel ();
+		}
+		
+		void ParseCommand (StringTagModel tagSource, out string cmd, out string args)
+		{
+			if (command.Length > 0 && command [0] == '"') {
+				int n = command.IndexOf ('"', 1);
+				if (n != -1) {
+					cmd = command.Substring (1, n - 1);
+					args = command.Substring (n + 1).Trim ();
+				}
+				else {
+					cmd = command;
+					args = string.Empty;
+				}
+			}
+			else {
+				int i = command.IndexOf (' ');
+				if (i != -1) {
+					cmd = command.Substring (0, i);
+					args = command.Substring (i + 1).Trim ();
+				} else {
+					cmd = command;
+					args = string.Empty;
+				}
+			}
+			cmd = StringParserService.Parse (cmd, tagSource);
+			args = StringParserService.Parse (args, tagSource);
+		}
+		
 		public void Execute (IProgressMonitor monitor, IWorkspaceObject entry, ConfigurationSelector configuration)
 		{
 			Execute (monitor, entry, null, configuration);
 		}
 		
-		public bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
+		public bool CanExecute (IWorkspaceObject entry, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			string exe = command;
-			int i = exe.IndexOf (' ');
-			if (i != -1)
-				exe = command.Substring (0, i);
-			
+			string exe, args;
+			StringTagModel tagSource = GetTagModel (entry, configuration);
+			ParseCommand (tagSource, out exe, out args);
 			ExecutionCommand cmd = Runtime.ProcessService.CreateCommand (exe);
 			return context == null || context.ExecutionHandler.CanExecute (cmd);
 		}
 		
 		public void Execute (IProgressMonitor monitor, IWorkspaceObject entry, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			StringTagModel tagSource;
-			
-			if (entry is SolutionItem)
-				tagSource = ((SolutionItem)entry).GetStringTagModel (configuration);
-			else if (entry is WorkspaceItem)
-				tagSource = ((WorkspaceItem)entry).GetStringTagModel ();
-			else
-				tagSource = new StringTagModel ();
-			
 			if (string.IsNullOrEmpty (command))
 				return;
 			
-			int i = command.IndexOf (' ');
-			string exe;
-			string args = string.Empty;
-			if (i == -1) {
-				exe = StringParserService.Parse (command, tagSource);
-				args = string.Empty;
-			} else {
-				exe = StringParserService.Parse (command.Substring (0, i), tagSource);
-				args = StringParserService.Parse (command.Substring (i + 1), tagSource);
-			}
+			StringTagModel tagSource = GetTagModel (entry, configuration);
+			
+			string exe, args;
+			ParseCommand (tagSource, out exe, out args);
 			
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Executing: {0} {1}", exe, args));
 
-			FilePath dir = (string.IsNullOrEmpty (workingdir) ? entry.BaseDirectory : (FilePath) StringParserService.Parse (workingdir, tagSource));
+			FilePath dir = GetCommandWorkingDir (entry, configuration);
 
 			FilePath localPath = entry.BaseDirectory.Combine (exe);
 			if (File.Exists (localPath))
