@@ -708,9 +708,9 @@ namespace MonoDevelop.CSharp.Parser
 							}
 							else {
 								try {
-									if (exp is MemberAccess) {
-										domExp = ResolveMemberAccessExpression (exp);
-									} else {
+									domExp = ResolveMemberAccessExpression (exp);
+									// may be literal
+									if (domExp == null) {
 										var res = exp.Resolve (ctx);
 										var val = res as Constant;
 										if (val == null)
