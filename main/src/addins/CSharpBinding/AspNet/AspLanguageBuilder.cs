@@ -46,7 +46,7 @@ namespace MonoDevelop.CSharp.Completion
 			return language == "C#";
 		}
 		
-		ParsedDocument Parse (string fileName, string text)
+		public static ParsedDocument Parse (string fileName, string text)
 		{
 			return new MonoDevelop.CSharp.Parser.McsParser ().Parse (null, fileName, text);
 		}
@@ -88,7 +88,7 @@ namespace MonoDevelop.CSharp.Completion
 					if (expression.IsExpression)
 						sb.Append ("WriteLine (");
 					string expr = expression.Expression.Trim ('=');
-					result.AddTextPosition (data.Document.LocationToOffset (expression.Location.BeginLine, expression.Location.EndLine), sb.Length, expr.Length);
+					result.AddTextPosition (data.Document.LocationToOffset (expression.Location.BeginLine, expression.Location.BeginColumn), sb.Length, expr.Length);
 					sb.Append (expr);
 					if (expression.IsExpression)
 						sb.Append (");");
@@ -276,20 +276,49 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public ParsedDocument BuildDocument (DocumentInfo info, TextEditorData data)
 		{
+			var docStr = BuildDocumentString (info, data);
+			return Parse (info.AspNetDocument.FileName, docStr);
+		}
+		 
+		public string BuildDocumentString (DocumentInfo info, TextEditorData data, List<LocalDocumentInfo.OffsetInfo> offsetInfos = null, bool buildExpressions = false)
+		{
 			var document = new StringBuilder ();
 			
 			WriteUsings (info.Imports, document);
-			WriteClassDeclaration (info, document);
 			
 			foreach (var node in info.ScriptBlocks) {
 				int start = data.Document.LocationToOffset (node.Location.EndLine,  node.Location.EndColumn);
 				int end = data.Document.LocationToOffset (node.EndLocation.BeginLine, node.EndLocation.BeginColumn);
+				if (offsetInfos != null)
+					offsetInfos.Add (new LocalDocumentInfo.OffsetInfo (start, document.Length, end - start));
+				
 				document.AppendLine (data.Document.GetTextBetween (start, end));
 			}
-			
-			var docStr = document.ToString ();
-			document.Length = 0;
-			return Parse (info.AspNetDocument.FileName, docStr);
+			if (buildExpressions) {
+				WriteClassDeclaration (info, document);
+				document.AppendLine ("{");
+				document.AppendLine ("void Generated ()");
+				document.AppendLine ("{");
+				//Console.WriteLine ("start:" + location.BeginLine  +"/" +location.BeginColumn);
+				foreach (var expression in info.Expressions) {
+					if (expression.IsExpression)
+						document.Append ("WriteLine (");
+					
+					string expr = expression.Expression.Trim ('=');
+					if (offsetInfos != null) {
+						int col = expression.Location.BeginColumn + "<%".Length + 2;
+						if (expr.Length < expression.Expression.Length)
+							col++;
+						offsetInfos.Add (new LocalDocumentInfo.OffsetInfo (data.Document.LocationToOffset (expression.Location.BeginLine, col), document.Length, expr.Length));
+					}
+					document.Append (expr);
+					if (expression.IsExpression)
+						document.Append (");");
+				}
+				document.AppendLine ("}");
+				document.AppendLine ("}");
+			}
+			return document.ToString ();
 		}
 	}
 }
