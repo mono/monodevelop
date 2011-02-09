@@ -935,7 +935,7 @@ namespace Mono.Debugging.Soft
 				string typeName = t.FullName;
 				
 				if (types.ContainsKey (typeName)) {
-					if (typeName != "System.Exception")
+					if (typeName != "System.Exception" && typeName != "<Module>")
 						LoggingService.LogError ("Type '" + typeName + "' loaded more than once", null);
 				} else {
 					ResolveBreakpoints (t);
