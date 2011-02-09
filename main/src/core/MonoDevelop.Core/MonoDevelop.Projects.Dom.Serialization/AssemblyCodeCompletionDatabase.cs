@@ -295,10 +295,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		static DatabaseGenerator GetGenerator (bool share)
 		{
-			if (Runtime.ProcessService != null)
+/*			if (Runtime.ProcessService != null)
 				return (DatabaseGenerator) Runtime.ProcessService.CreateExternalProcessObject (typeof(DatabaseGenerator), share);
-			else
-				return new DatabaseGenerator ();
+			else*/
+			return new DatabaseGenerator ();
 		}
 		
 		public IEnumerable<string> ReadAssemblyReferences ()
