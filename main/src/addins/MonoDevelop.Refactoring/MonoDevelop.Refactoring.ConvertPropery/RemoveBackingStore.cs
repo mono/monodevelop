@@ -33,6 +33,7 @@ using Mono.TextEditor;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.FindInFiles;
 
 namespace MonoDevelop.Refactoring.ConvertPropery
 {
@@ -85,7 +86,7 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 			IField backingStore = GetBackingStoreField (options, backingStoreName, out backinStoreStart, out backinStoreEnd);
 			
 			if (backingStore != null) {
-				foreach (MemberReference memberRef in GetReferences (options, backingStore)) {
+				foreach (MemberReference memberRef in ReferenceFinder.FindReferences (backingStore)) {
 					result.Add (new TextReplaceChange () {
 						FileName = memberRef.FileName,
 						Offset = memberRef.Position,
@@ -171,18 +172,5 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 			return visitor.BackingStoreName;
 		}
 
-		MemberReferenceCollection GetReferences (RefactoringOptions options, IMember member)
-		{
-			CodeRefactorer refactorer;
-			
-			if (options.TestFileProvider == null) {
-				refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
-			} else {
-				refactorer = new CodeRefactorer ();
-				refactorer.TextFileProvider = options.TestFileProvider;
-			}
-			IProgressMonitor monitor = IdeApp.Workbench != null ? IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Name, null) : new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ();
-			return refactorer.FindMemberReferences (monitor, member.DeclaringType, member, true);
-		}
 	}
 }

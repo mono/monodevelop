@@ -862,28 +862,8 @@ namespace MonoDevelop.Refactoring
 		void FindReferencesThread (object state)
 		{
 			try {
-				CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
-				if (item is IType) {
-					references = refactorer.FindClassReferences (monitor, (IType)item, RefactoryScope.Solution, true);
-				} else if (item is LocalVariable) {
-					references = refactorer.FindVariableReferences (monitor, (LocalVariable)item);
-				} else if (item is IParameter) {
-					references = refactorer.FindParameterReferences (monitor, (IParameter)item, true);
-				} else if (item is IMember) {
-					IMember member = (IMember)item;
-/*					references = new MemberReferenceCollection ();
-					foreach (IMember m in MonoDevelop.Refactoring.Rename.RenameRefactoring.CollectMembers (member.DeclaringType.SourceProjectDom, member)) {
-						foreach (MemberReference r in refactorer.FindMemberReferences (monitor, m.DeclaringType, m, true)) {
-							references.Add (r);
-						}
-					}*/
-					
-					references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member, true);
-				}
-				if (references != null) {
-					foreach (MemberReference mref in references) {
-						monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (new FileProvider (mref.FileName), mref.Position, mref.Name.Length));
-					}
+				foreach (MemberReference mref in ReferenceFinder.FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, item)) {
+					monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (new FileProvider (mref.FileName), mref.Position, mref.Name.Length));
 				}
 			} catch (Exception ex) {
 				if (monitor != null)
