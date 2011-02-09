@@ -34,6 +34,7 @@ using MonoDevelop.Moonlight;
 using Mono.Debugging.Client;
 using MonoDevelop.Debugger.Soft;
 using System.Net;
+using Mono.Debugging.Soft;
 
 namespace MonoDevelop.Debugger.Soft.Moonlight
 {
@@ -67,15 +68,14 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 		}
 	}
 	
-	class MoonlightDebuggerStartInfo : Mono.Debugging.Soft.RemoteSoftDebuggerStartInfo
+	class MoonlightDebuggerStartInfo : SoftDebuggerStartInfo
 	{
 		public string Url { get; private set; }
 		
 		public MoonlightDebuggerStartInfo (string appName, string url)
-			: base (appName, IPAddress.Loopback, 0)
+			: base (new SoftDebuggerListenArgs (appName, IPAddress.Loopback, 0))
 		{
 			this.Url = url;
-			this.Listen = true;
 		}
 	}
 }

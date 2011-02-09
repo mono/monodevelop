@@ -37,6 +37,7 @@ using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using MonoDevelop.Core.Execution;
+using Mono.Debugging.Soft;
 
 namespace MonoDevelop.Debugger.Soft.MonoDroid
 {
@@ -56,6 +57,7 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 		{
 			var dsi = (MonoDroidDebuggerStartInfo) startInfo;
 			var cmd = dsi.ExecutionCommand;
+			var startArgs = (SoftDebuggerRemoteArgs) dsi.StartArgs;
 			debugDevice = cmd.Device;
 			
 			bool alreadyForwarded = MonoDroidFramework.DeviceManager.GetDeviceIsForwarded (cmd.Device.ID);
@@ -82,7 +84,7 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 					Create = () => {
 						this.OnDebuggerOutput (false, GettextCatalog.GetString ("Setting debug property") + "\n");
 						long expireDate = date + (DEBUGGER_TIMEOUT_MS / 1000);
-						string monoOptions = string.Format ("debug={0}:{1}:{2},timeout={3},server=y", dsi.Address, dsi.DebugPort, 0, expireDate);
+						string monoOptions = string.Format ("debug={0}:{1}:{2},timeout={3},server=y", startArgs.Address, startArgs.DebugPort, 0, expireDate);
 						return MonoDroidFramework.Toolbox.SetProperty (cmd.Device, "debug.mono.extra", monoOptions);
 					},
 					Completed = (op) => {
@@ -98,7 +100,7 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 					Skip = () => alreadyForwarded? "" : null,
 					Create = () => {
 						this.OnDebuggerOutput (false, GettextCatalog.GetString ("Forwarding debugger port") + "\n");
-						return MonoDroidFramework.Toolbox.ForwardPort (cmd.Device, dsi.DebugPort, dsi.DebugPort, DebuggerOutput, DebuggerError);
+						return MonoDroidFramework.Toolbox.ForwardPort (cmd.Device, startArgs.DebugPort, startArgs.DebugPort, DebuggerOutput, DebuggerError);
 					},
 					Completed = (op) => {
 						if (!op.Success) {
@@ -110,7 +112,7 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 					Skip = () => alreadyForwarded? "" : null,
 					Create = () => {
 						this.OnDebuggerOutput (false, GettextCatalog.GetString ("Forwarding console port") + "\n");
-						return MonoDroidFramework.Toolbox.ForwardPort (cmd.Device, dsi.OutputPort, dsi.OutputPort, DebuggerOutput, DebuggerError);
+						return MonoDroidFramework.Toolbox.ForwardPort (cmd.Device, startArgs.OutputPort, startArgs.OutputPort, DebuggerOutput, DebuggerError);
 					},
 					Completed = (op) => {
 						if (!op.Success) {
@@ -254,12 +256,12 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 		}
 	}
 	
-	class MonoDroidDebuggerStartInfo : Mono.Debugging.Soft.RemoteSoftDebuggerStartInfo
+	class MonoDroidDebuggerStartInfo : SoftDebuggerStartInfo
 	{
 		public MonoDroidExecutionCommand ExecutionCommand { get; private set; }
 		
 		public MonoDroidDebuggerStartInfo (IPAddress address, MonoDroidExecutionCommand cmd)
-			: base (cmd.PackageName, address, cmd.DebugPort, cmd.OutputPort)
+			: base (new SoftDebuggerConnectArgs (cmd.PackageName, address, cmd.DebugPort, cmd.OutputPort))
 		{
 			ExecutionCommand = cmd;
 		}

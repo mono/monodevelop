@@ -91,23 +91,22 @@ namespace Mono.Debugging.Soft
 			if (exited)
 				throw new InvalidOperationException ("Already exited");
 			
-			var dsi = startInfo as SoftDebuggerStartInfo;
-			if (dsi != null) {
+			var dsi = (SoftDebuggerStartInfo) startInfo;
+			if (dsi.StartArgs is SoftDebuggerLaunchArgs) {
 				StartLaunching (dsi);
-				return;
-			}
-			
-			var rdsi = (RemoteSoftDebuggerStartInfo) startInfo;
-			if (rdsi.Listen) {
-				StartListening (rdsi);
+			} else if (dsi.StartArgs is SoftDebuggerConnectArgs) {
+				StartConnecting (dsi);
+			} else if (dsi.StartArgs is SoftDebuggerListenArgs) {
+				StartListening (dsi);
 			} else {
-				StartConnecting (rdsi);
+				throw new Exception (string.Format ("Unknown args: {0}", dsi.StartArgs));
 			}
 		}
 		
 		void StartLaunching (SoftDebuggerStartInfo dsi)
 		{
-			var runtime = Path.Combine (Path.Combine (dsi.MonoRuntimePrefix, "bin"), "mono");
+			var args = (SoftDebuggerLaunchArgs) dsi.StartArgs;
+			var runtime = Path.Combine (Path.Combine (args.MonoRuntimePrefix, "bin"), "mono");
 			RegisterUserAssemblies (dsi.UserAssemblyNames);
 			
 			var psi = new System.Diagnostics.ProcessStartInfo (runtime) {
@@ -121,9 +120,9 @@ namespace Mono.Debugging.Soft
 			
 			LaunchOptions options = null;
 			
-			if (dsi.UseExternalConsole && dsi.ExternalConsoleLauncher != null) {
+			if (dsi.UseExternalConsole && args.ExternalConsoleLauncher != null) {
 				options = new LaunchOptions ();
-				options.CustomTargetProcessLauncher = dsi.ExternalConsoleLauncher;
+				options.CustomTargetProcessLauncher = args.ExternalConsoleLauncher;
 				psi.RedirectStandardOutput = false;
 				psi.RedirectStandardError = false;
 			}
@@ -134,7 +133,7 @@ namespace Mono.Debugging.Soft
 				options.AgentArgs = string.Format ("loglevel=1,logfile='{0}'", sdbLog);
 			}
 			
-			foreach (var env in dsi.MonoRuntimeEnvironmentVariables)
+			foreach (var env in args.MonoRuntimeEnvironmentVariables)
 				psi.EnvironmentVariables[env.Key] = env.Value;
 			
 			foreach (var env in dsi.EnvironmentVariables)
@@ -150,21 +149,21 @@ namespace Mono.Debugging.Soft
 		}
 		
 		/// <summary>Starts the debugger listening for a connection over TCP/IP</summary>
-		protected void StartListening (RemoteSoftDebuggerStartInfo dsi)
+		protected void StartListening (SoftDebuggerStartInfo dsi)
 		{
 			int dp, cp;
 			StartListening (dsi, out dp, out cp);
 		}
 		
 		/// <summary>Starts the debugger listening for a connection over TCP/IP</summary>
-		protected void StartListening (RemoteSoftDebuggerStartInfo dsi, out int assignedDebugPort)
+		protected void StartListening (SoftDebuggerStartInfo dsi, out int assignedDebugPort)
 		{
 			int cp;
 			StartListening (dsi, out assignedDebugPort, out cp);
 		}
 		
 		/// <summary>Starts the debugger listening for a connection over TCP/IP</summary>
-		protected void StartListening (RemoteSoftDebuggerStartInfo dsi,
+		protected void StartListening (SoftDebuggerStartInfo dsi,
 			out int assignedDebugPort, out int assignedConsolePort)
 		{
 		
@@ -188,13 +187,14 @@ namespace Mono.Debugging.Soft
 			return false;
 		}
 		
-		protected void StartConnecting (RemoteSoftDebuggerStartInfo dsi)
+		protected void StartConnecting (SoftDebuggerStartInfo dsi)
 		{
-			StartConnecting (dsi, dsi.MaxConnectionAttempts, dsi.TimeBetweenConnectionAttempts);
+			var args = (SoftDebuggerConnectArgs) dsi.StartArgs;
+			StartConnecting (dsi, args.MaxConnectionAttempts, args.TimeBetweenConnectionAttempts);
 		}
 		
 		/// <summary>Starts the debugger connecting to a remote IP</summary>
-		protected void StartConnecting (RemoteSoftDebuggerStartInfo dsi, int maxAttempts, int timeBetweenAttempts)
+		protected void StartConnecting (SoftDebuggerStartInfo dsi, int maxAttempts, int timeBetweenAttempts)
 		{	
 			if (timeBetweenAttempts < 0 || timeBetweenAttempts > 10000)
 				throw new ArgumentException ("timeBetweenAttempts");
@@ -229,19 +229,21 @@ namespace Mono.Debugging.Soft
 			ConnectionStarting (VirtualMachineManager.BeginConnect (dbgEP, conEP, callback), dsi, false, 0);
 		}
 		
-		void InitForRemoteSession (RemoteSoftDebuggerStartInfo dsi, out IPEndPoint dbgEP, out IPEndPoint conEP)
+		void InitForRemoteSession (SoftDebuggerStartInfo dsi, out IPEndPoint dbgEP, out IPEndPoint conEP)
 		{
 			if (remoteProcessName != null)
 				throw new InvalidOperationException ("Cannot initialize connection more than once");
 			
-			remoteProcessName = dsi.AppName;
+			var args = (SoftDebuggerRemoteArgs) dsi.StartArgs;
+			
+			remoteProcessName = args.AppName;
 			if (string.IsNullOrEmpty (remoteProcessName))
 				remoteProcessName = "mono";
 			
 			RegisterUserAssemblies (dsi.UserAssemblyNames);
 			
-			dbgEP = new IPEndPoint (dsi.Address, dsi.DebugPort);
-			conEP = dsi.RedirectOutput? new IPEndPoint (dsi.Address, dsi.OutputPort) : null;
+			dbgEP = new IPEndPoint (args.Address, args.DebugPort);
+			conEP = args.RedirectOutput? new IPEndPoint (args.Address, args.OutputPort) : null;
 			
 			if (!String.IsNullOrEmpty (dsi.LogMessage))
 				LogWriter (false, dsi.LogMessage + "\n");

@@ -78,7 +78,8 @@ namespace MonoDevelop.Debugger.Soft
 				dsi.EnvironmentVariables [var.Key] = var.Value;
 			
 			var varsCopy = new Dictionary<string, string> (cmd.EnvironmentVariables);
-			dsi.ExternalConsoleLauncher = delegate (System.Diagnostics.ProcessStartInfo info) {
+			var startArgs = (SoftDebuggerLaunchArgs) dsi.StartArgs;
+			startArgs.ExternalConsoleLauncher = delegate (System.Diagnostics.ProcessStartInfo info) {
 				IProcessAsyncOperation oper;
 				oper = Runtime.ProcessService.StartConsoleProcess (info.FileName, info.Arguments, info.WorkingDirectory,
 					varsCopy, ExternalConsoleFactory.Instance.CreateConsole (dsi.CloseExternalConsoleOnExit), null);
@@ -98,7 +99,7 @@ namespace MonoDevelop.Debugger.Soft
 			return new SoftDebuggerSession ();
 		}
 		
-		public static void SetUserAssemblyNames (BaseSoftDebuggerStartInfo dsi, IList<string> files)
+		public static void SetUserAssemblyNames (SoftDebuggerStartInfo dsi, IList<string> files)
 		{
 			if (files == null || files.Count == 0)
 				return;

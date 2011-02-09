@@ -66,8 +66,9 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 				RedirectStandardOutput = true,
 				RedirectStandardError = true,
 			};
+			var args = (Mono.Debugging.Soft.SoftDebuggerRemoteArgs) dsi.StartArgs;
 			psi.EnvironmentVariables.Add ("MOON_SOFT_DEBUG",
-				string.Format ("transport=dt_socket,address={0}:{1}", dsi.Address, assignedDebugPort));
+				string.Format ("transport=dt_socket,address={0}:{1}", args.Address, assignedDebugPort));
 			
 			browser = Process.Start (psi);
 			ConnectOutput (browser.StandardOutput, false);

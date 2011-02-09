@@ -49,6 +49,7 @@ namespace MonoDevelop.Debugger.Soft.MonoMac
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
 			var dsi = (MonoMacDebuggerStartInfo) startInfo;
+			var startArgs = (SoftDebuggerRemoteArgs) dsi.StartArgs;
 			var cmd = dsi.ExecutionCommand;		
 			
 			int assignedPort;
@@ -59,7 +60,7 @@ namespace MonoDevelop.Debugger.Soft.MonoMac
 			
 			var asi = new ApplicationStartInfo (cmd.AppPath);
 			asi.Environment ["MONOMAC_DEBUGLAUNCHER_OPTIONS"]
-				= string.Format ("--debug --debugger-agent=transport=dt_socket,address={0}:{1}", dsi.Address, assignedPort);
+				= string.Format ("--debug --debugger-agent=transport=dt_socket,address={0}:{1}", startArgs.Address, assignedPort);
 			
 			process = MonoMacExecutionHandler.OpenApplication (cmd, asi, stdout, stderr);
 			
@@ -80,15 +81,14 @@ namespace MonoDevelop.Debugger.Soft.MonoMac
 		}
 	}
 	
-	class MonoMacDebuggerStartInfo : RemoteSoftDebuggerStartInfo
+	class MonoMacDebuggerStartInfo : SoftDebuggerStartInfo
 	{
 		public MonoMacExecutionCommand ExecutionCommand { get; private set; }
 		
 		public MonoMacDebuggerStartInfo (MonoMacExecutionCommand cmd)
-			: base (cmd.AppPath.FileNameWithoutExtension, IPAddress.Loopback, 0)
+			: base (new SoftDebuggerListenArgs (cmd.AppPath.FileNameWithoutExtension, IPAddress.Loopback, 0))
 		{
 			ExecutionCommand = cmd;
-			Listen = true;
 		}
 	}
 }

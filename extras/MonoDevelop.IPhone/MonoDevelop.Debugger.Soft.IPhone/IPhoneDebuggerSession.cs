@@ -55,9 +55,10 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		
 		protected override string GetConnectingMessage (DebuggerStartInfo dsi)
 		{
-			var iphDsi = ((IPhoneDebuggerStartInfo)dsi);
+			var iphDsi = (IPhoneDebuggerStartInfo) dsi;
+			var args = (SoftDebuggerListenArgs) iphDsi.StartArgs;
 			string message = GettextCatalog.GetString ("Waiting for debugger to connect on {0}:{1}...",
-				iphDsi.Address, iphDsi.DebugPort);
+				args.Address, args.DebugPort);
 			if (!iphDsi.ExecutionCommand.Simulator)
 				message += "\n" + GettextCatalog.GetString ("Please start the application on the device.");
 			return message;
@@ -123,15 +124,14 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 		}
 	}
 	
-	class IPhoneDebuggerStartInfo : RemoteSoftDebuggerStartInfo
+	class IPhoneDebuggerStartInfo : SoftDebuggerStartInfo
 	{
 		public IPhoneExecutionCommand ExecutionCommand { get; private set; }
 		
 		public IPhoneDebuggerStartInfo (IPAddress address, int debugPort, int outputPort, IPhoneExecutionCommand cmd)
-			: base (cmd.AppPath.FileNameWithoutExtension, address, debugPort, outputPort)
+			: base (new SoftDebuggerListenArgs (cmd.AppPath.FileNameWithoutExtension, address, debugPort, outputPort))
 		{
 			ExecutionCommand = cmd;
-			Listen = true;
 		}
 	}
 }
