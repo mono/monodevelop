@@ -84,6 +84,11 @@
 		                 class = "MonoDevelop.CSharp.CSharpLanguageBinding" />
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Ide/ReferenceFinder">
+		<ReferenceFinder supportedmimetypes = "text/x-csharp"
+		                 class = "MonoDevelop.CSharp.Refactoring.CSharpReferenceFinder" />
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "MonoDevelop.CSharp.Project.CSharpCompilerParameters" />
 		<DataType class = "MonoDevelop.CSharp.Project.CSharpProjectParameters" />
@@ -200,6 +205,10 @@
 		</Dependencies>
 		<Extension path = "/MonoDevelop/Asp/CompletionBuilders">
 			<Class class = "MonoDevelop.CSharp.Completion.AspLanguageBuilder" />
+		</Extension>
+		<Extension path = "/MonoDevelop/Ide/ReferenceFinder">
+			<ReferenceFinder supportedmimetypes = "application/x-aspx,application/x-ascx,application/x-asax,application/x-ashx,application/x-asmx,application/x-asix"
+			                 class = "MonoDevelop.CSharp.Refactoring.ASPNetReferenceFinder" />
 		</Extension>
 	</Module>
 </Addin>

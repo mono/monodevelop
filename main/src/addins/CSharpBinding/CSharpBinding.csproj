@@ -366,6 +366,7 @@
     <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\EnumMemberDeclaration.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\Comment.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\mcs\reflection.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpReferenceFinder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

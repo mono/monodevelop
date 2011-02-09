@@ -219,6 +219,7 @@ FILES =  \
 	MonoDevelop.CSharp.Refactoring/CSharpCodeGenerator.cs \
 	MonoDevelop.CSharp.Refactoring/CSharpNRefactoryASTProvider.cs \
 	MonoDevelop.CSharp.Refactoring/CSharpRefactorer.cs \
+	MonoDevelop.CSharp.Refactoring/CSharpReferenceFinder.cs \
 	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodAstTransformer.cs \
 	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodDialog.cs \
 	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodHandler.cs \
