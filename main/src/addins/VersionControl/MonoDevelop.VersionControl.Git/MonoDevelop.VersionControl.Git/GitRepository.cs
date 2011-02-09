@@ -80,10 +80,11 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			try {
 				NGit.Transport.URIish u = new NGit.Transport.URIish (url);
-				return true;
+				if (!string.IsNullOrEmpty (u.GetHost ()))
+					return true;
 			} catch {
-				return false;
 			}
+			return base.IsUrlValid (url);
 		}
 
 		public FilePath RootPath {
