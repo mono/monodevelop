@@ -102,8 +102,8 @@ FILES =  \
 	MonoDevelop.Refactoring/IntroduceConstantRefactoringTests.cs \
 	MonoDevelop.Refactoring/IntroduceFormatItemRefactoringTests.cs \
 	MonoDevelop.Refactoring/RemoveBackingStoreTests.cs \
-	MonoDevelop.VersionControl.Views/EditorCompareWidgetBaseTest.cs \
 	MonoDevelop.VersionControl.Git/GitUtilsTests.cs \
+	MonoDevelop.VersionControl.Views/EditorCompareWidgetBaseTest.cs \
 	MonoDevelop.Xml.StateEngine/AspNetParsingTests.cs \
 	MonoDevelop.Xml.StateEngine/HtmlParsingTests.cs \
 	MonoDevelop.Xml.StateEngine/ParsingTests.cs \
