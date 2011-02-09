@@ -111,6 +111,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				entryCommand.Text = FileService.AbsoluteToRelativePath (entry.BaseDirectory, dlg.SelectedFile);
 			else
 				entryCommand.Text = dlg.SelectedFile;
+			if (entryCommand.Text.IndexOf (' ') != -1)
+				entryCommand.Text = '"' + entryCommand.Text + '"';
 		}
 
 		protected virtual void OnEntryCommandChanged(object sender, System.EventArgs e)

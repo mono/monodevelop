@@ -190,28 +190,32 @@ namespace MonoDevelop.Projects
 			
 			IProcessAsyncOperation oper;
 			
-			if (context != null) {
-				IConsole console;
-				if (externalConsole)
-					console = context.ExternalConsoleFactory.CreateConsole (!pauseExternalConsole);
-				else
-					console = context.ConsoleFactory.CreateConsole (!pauseExternalConsole);
-
-				ExecutionCommand cmd = Runtime.ProcessService.CreateCommand (exe);
-				ProcessExecutionCommand pcmd = cmd as ProcessExecutionCommand;
-				if (pcmd != null) {
-					pcmd.Arguments = args;
-					pcmd.WorkingDirectory = dir;
+			try {
+				if (context != null) {
+					IConsole console;
+					if (externalConsole)
+						console = context.ExternalConsoleFactory.CreateConsole (!pauseExternalConsole);
+					else
+						console = context.ConsoleFactory.CreateConsole (!pauseExternalConsole);
+	
+					ExecutionCommand cmd = Runtime.ProcessService.CreateCommand (exe);
+					ProcessExecutionCommand pcmd = cmd as ProcessExecutionCommand;
+					if (pcmd != null) {
+						pcmd.Arguments = args;
+						pcmd.WorkingDirectory = dir;
+					}
+					oper = context.ExecutionHandler.Execute (cmd, console);
 				}
-				oper = context.ExecutionHandler.Execute (cmd, console);
-			}
-			else {
-				if (externalConsole) {
-					IConsole console = ExternalConsoleFactory.Instance.CreateConsole (!pauseExternalConsole);
-					oper = Runtime.ProcessService.StartConsoleProcess (exe, args, dir, console, null);
-				} else {
-					oper = Runtime.ProcessService.StartProcess (exe, args, dir, monitor.Log, monitor.Log, null, false);
+				else {
+					if (externalConsole) {
+						IConsole console = ExternalConsoleFactory.Instance.CreateConsole (!pauseExternalConsole);
+						oper = Runtime.ProcessService.StartConsoleProcess (exe, args, dir, console, null);
+					} else {
+						oper = Runtime.ProcessService.StartProcess (exe, args, dir, monitor.Log, monitor.Log, null, false);
+					}
 				}
+			} catch (Exception ex) {
+				throw new UserException (GettextCatalog.GetString ("Command execution failed: {0}",ex.Message));
 			}
 			
 			monitor.CancelRequested += delegate {
