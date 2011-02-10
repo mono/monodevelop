@@ -136,12 +136,12 @@ namespace MonoDevelop.CSharp.Resolver
 		
 		public IType SearchType (string fullyDecoratedName)
 		{
-			return dom.SearchType (CallingMember ?? (MonoDevelop.Projects.Dom.INode)CallingType ?? Unit, fullyDecoratedName);
+			return dom.SearchType (Unit, CallingMember ?? (MonoDevelop.Projects.Dom.INode)CallingType ?? Unit, fullyDecoratedName);
 		}
 		
 		public IType SearchType (IReturnType type)
 		{
-			return dom.SearchType (CallingMember ?? (MonoDevelop.Projects.Dom.INode)CallingType ?? Unit, type);
+			return dom.SearchType (Unit, CallingMember ?? (MonoDevelop.Projects.Dom.INode)CallingType ?? Unit, type);
 		}
 		
 		ICSharpCode.NRefactory.Ast.CompilationUnit memberCompilationUnit;

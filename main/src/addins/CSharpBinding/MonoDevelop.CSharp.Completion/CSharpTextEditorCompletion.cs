@@ -961,7 +961,7 @@ namespace MonoDevelop.CSharp.Completion
 							break;
 						token = token.Trim ();
 						if (Char.IsLetterOrDigit (token[0]) || token[0] == '_') {
-							IType baseType = dom.SearchType (Document.CompilationUnit, token);
+							IType baseType = dom.SearchType (Document.CompilationUnit, Document.CompilationUnit, token);
 							if (baseType != null) {
 								if (baseType.ClassType != ClassType.Interface)
 									isInterface = true;
@@ -1524,7 +1524,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			if (curType == null)
 				return;
-			IType searchType = dom.SearchType ((MonoDevelop.Projects.Dom.INode)type ?? Document.CompilationUnit, curType);
+			IType searchType = dom.SearchType (Document.CompilationUnit, (MonoDevelop.Projects.Dom.INode)type ?? Document.CompilationUnit, curType);
 			//System.Console.WriteLine("Add Virtuals for:" + searchType + " / " + curType);
 			if (searchType == null)
 				return;
@@ -1607,7 +1607,7 @@ namespace MonoDevelop.CSharp.Completion
 			if (returnType != null)
 				type = dom.GetType (returnType);
 			if (type == null)
-				type = dom.SearchType ((MonoDevelop.Projects.Dom.INode)Document.CompilationUnit ?? callingType, returnTypeUnresolved);
+				type = dom.SearchType (Document.CompilationUnit, (MonoDevelop.Projects.Dom.INode)Document.CompilationUnit ?? callingType, returnTypeUnresolved);
 			if (type == null || !(type.IsAbstract || type.ClassType == ClassType.Interface)) {
 				if (type == null || type.ConstructorCount == 0 || type.Methods.Any (c => c.IsConstructor && c.IsAccessibleFrom (dom, callingType, type, callingType != null && dom.GetInheritanceTree (callingType).Any (x => x.FullName == type.FullName)))) {
 					if (returnTypeUnresolved != null) {
