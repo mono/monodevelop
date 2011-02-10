@@ -670,7 +670,6 @@ namespace Mono.Debugging.Soft
 			bi.Req = vm.SetBreakpoint (bi.Location.Method, bi.Location.ILOffset);
 			bi.Req.Enabled = bi.Enabled;
 			breakpoints [bi.Req] = bi;
-			OnBreakpointBound (bp, (BreakpointEventRequest) bi.Req);
 		}
 		
 		void InsertCatchpoint (Catchpoint cp, BreakInfo bi, TypeMirror excType)
@@ -678,10 +677,6 @@ namespace Mono.Debugging.Soft
 			var request = bi.Req = vm.CreateExceptionRequest (excType, true, true);
 			request.Count = cp.HitCount;
 			bi.Req.Enabled = bi.Enabled;
-		}
-
-		protected virtual void OnBreakpointBound (Breakpoint bp, BreakpointEventRequest request)
-		{
 		}
 		
 		Location FindLocation (string file, int line)
@@ -748,12 +743,10 @@ namespace Mono.Debugging.Soft
 				try {
 					EventSet e = vm.GetNextEventSet ();
 					if (e[0] is VMDeathEvent || e[0] is VMDisconnectEvent) {
-						OnVMDeathEvent ();
 						break;
 					}
 					HandleEventSet (e);
 				} catch (VMDisconnectedException ex) {
-					OnVMDeathEvent ();
 					if (!HandleException (ex))
 						OnDebuggerOutput (true, ex.ToString ());
 					break;
@@ -817,8 +810,6 @@ namespace Mono.Debugging.Soft
 		{
 			if (dequeuing && exited)
 				return;
-			
-			OnHandleBreakEventSet (es);
 			
 			bool resume = true;
 			ObjectMirror exception = null;
@@ -884,8 +875,6 @@ namespace Mono.Debugging.Soft
 		
 		void HandleEvent (Event e)
 		{
-			OnHandleEvent (e);
-			
 			if (e is AssemblyLoadEvent) {
 				AssemblyLoadEvent ae = (AssemblyLoadEvent)e;
 				bool isExternal = !UpdateAssemblyFilters (ae.Assembly) && userAssemblyNames != null;
@@ -929,7 +918,6 @@ namespace Mono.Debugging.Soft
 				var t = vm.RootDomain.Corlib.GetType ("System.Exception", false, false);
 				if (t != null)
 					ResolveBreakpoints (t);
-				OnVMStartEvent ((VMStartEvent) e);
 			}
 			else if (e is TypeLoadEvent) {
 				var t = ((TypeLoadEvent)e).Type;
@@ -957,22 +945,6 @@ namespace Mono.Debugging.Soft
 				args.Thread = new ThreadInfo (0, GetId (ts.Thread), ts.Thread.Name, null);
 				OnTargetEvent (args);
 			}
-		}
-
-		protected virtual void OnHandleBreakEventSet (Event[] events)
-		{
-		}
-
-		protected virtual void OnHandleEvent (Event e)
-		{
-		}
-
-		protected virtual void OnVMStartEvent (VMStartEvent e)
-		{
-		}
-
-		protected virtual void OnVMDeathEvent ()
-		{
 		}
 
 		public ObjectMirror GetExceptionObject (ThreadMirror thread)
