@@ -32,6 +32,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Refactoring.Tests
 {
+	[Ignore]
 	[TestFixture()]
 	public class RemoveBackingStoreTests : UnitTests.TestBase
 	{
