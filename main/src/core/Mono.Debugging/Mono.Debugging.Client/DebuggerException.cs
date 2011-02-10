@@ -39,5 +39,9 @@ namespace Mono.Debugging.Client
 		public DebuggerException (string message): base (message)
 		{
 		}
+		
+		public DebuggerException (string message, Exception inner): base (message, inner)
+		{
+		}
 	}
 }

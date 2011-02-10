@@ -766,6 +766,9 @@ namespace Mono.Debugging.Soft
 			
 			if (ex is VMDisconnectedException)
 				ex = new DisconnectedException ();
+			else if (ex is SocketException)
+				ex = new DebugSocketException (ex);
+			
 			return base.HandleException (ex);
 		}
 		
@@ -1517,6 +1520,14 @@ namespace Mono.Debugging.Soft
 	{
 		public DisconnectedException ():
 			base ("The connection with the debugger has been lost. The target application may have exited.")
+		{
+		}
+	}
+	
+	class DebugSocketException: DebuggerException
+	{
+		public DebugSocketException (Exception ex):
+			base ("Could not open port for debugger. Another process may be using the port.", ex)
 		{
 		}
 	}
