@@ -105,9 +105,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return decorated.SearchType (unit, callingClass, callingMember, decoratedFullName);
 		}
 		
-		public override IType SearchType (INode searchIn, string decoratedFullName)
+		public override IType SearchType (ICompilationUnit unit, INode searchIn, string decoratedFullName)
 		{
-			return decorated.SearchType (searchIn, decoratedFullName);
+			return decorated.SearchType (unit, searchIn, decoratedFullName);
 		}
 		
 		public override IType SearchType (ICompilationUnit unit, IType callingClass, IMember callingMember, IReturnType returnType)
@@ -115,9 +115,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return decorated.SearchType (unit, callingClass, callingMember, returnType);
 		}
 		
-		public override IType SearchType (INode searchIn, IReturnType returnType)
+		public override IType SearchType (ICompilationUnit unit, INode searchIn, IReturnType returnType)
 		{
-			return decorated.SearchType (searchIn, returnType);
+			return decorated.SearchType (unit, searchIn, returnType);
 		}
 		
 		public override List<IMember> GetNamespaceContents (string subNamespace, bool includeReferences, bool caseSensitive)

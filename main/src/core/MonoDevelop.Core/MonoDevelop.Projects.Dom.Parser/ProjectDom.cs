@@ -228,17 +228,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return SearchType (decoratedFullName, callingClass, callingMember, unit, null);
 		}
 		
-		public virtual IType SearchType (INode searchIn, string decoratedFullName)
+		public virtual IType SearchType (ICompilationUnit unit, INode searchIn, string decoratedFullName)
 		{
 			if (string.IsNullOrEmpty (decoratedFullName))
 				return null;
-			INode cu = searchIn;
-			while (cu != null && !(cu is ICompilationUnit)) {
-				cu = cu.Parent;
-			}
 			IMember callingMember = searchIn as IMember;
 			IType callingClass = callingMember != null ? callingMember as IType ?? callingMember.DeclaringType : null;
-			return SearchType (decoratedFullName, callingClass, callingMember, cu as CompilationUnit, null);
+			return SearchType (decoratedFullName, callingClass, callingMember, unit, null);
 		}
 		
 		public virtual IType SearchType (ICompilationUnit unit, IType callingClass, IMember callingMember, IReturnType returnType)
@@ -248,17 +244,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return SearchType (returnType.DecoratedFullName, callingClass, callingMember, unit, returnType.GenericArguments);
 		}
 		
-		public virtual IType SearchType (INode searchIn, IReturnType returnType)
+		public virtual IType SearchType (ICompilationUnit unit, INode searchIn, IReturnType returnType)
 		{
 			if (returnType == null)
 				return null;
-			INode cu = searchIn;
-			while (cu != null && !(cu is ICompilationUnit)) {
-				cu = cu.Parent;
-			}
 			IMember callingMember = searchIn as IMember;
 			IType callingClass = callingMember != null ? callingMember as IType ?? callingMember.DeclaringType : null;
-			return SearchType (returnType.DecoratedFullName, callingClass, callingMember, cu as CompilationUnit, returnType.GenericArguments);
+			return SearchType (returnType.DecoratedFullName, callingClass, callingMember, unit, returnType.GenericArguments);
 		}
 		
 /*		public virtual IType SearchType (SearchTypeRequest request)
@@ -340,6 +332,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				// request equals a namespace name; for example the type B could be resolved in the 2nd case when a type
 				// A.B exists but not in the 1st.
 				foreach (IUsing u in unit.Usings.Reverse ()) {
+					System.Console.WriteLine ("usings:" + u);
 					if (u.Namespaces.Contains (name)) 
 						return null;
 					if (callingClass != null && !u.ValidRegion.Contains (callingClass.Location))

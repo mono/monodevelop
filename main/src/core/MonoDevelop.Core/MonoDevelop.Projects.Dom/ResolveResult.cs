@@ -465,8 +465,8 @@ namespace MonoDevelop.Projects.Dom
 			if (CallingType == null) 
 				return false;
 			dom = CallingType.SourceProjectDom;
-			IType b = dom.SearchType (CallingType, baseType);
-			IType t = dom.SearchType (CallingType, type);
+			IType b = dom.SearchType (CallingType.CompilationUnit, CallingType, baseType);
+			IType t = dom.SearchType (CallingType.CompilationUnit, CallingType, type);
 			if (b == null || t == null)
 				return false;
 			return dom.GetInheritanceTree (t).Any (tBase => tBase.DecoratedFullName == b.DecoratedFullName);
@@ -660,7 +660,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			List<object> result = new List<object> ();
 			if (CallingMember != null && !CallingMember.IsStatic) {
-				IType baseType = dom.SearchType (CallingMember ?? CallingType, CallingType.BaseType ?? DomReturnType.Object);
+				IType baseType = dom.SearchType (CallingType != null ? CallingType.CompilationUnit : null, CallingMember ?? CallingType, CallingType.BaseType ?? DomReturnType.Object);
 				MemberResolveResult.AddType (dom, result, baseType, new BaseMemberDecorator (CallingMember, baseType), StaticResolve, m => m.IsAbstract);
 			}
 			return result;
