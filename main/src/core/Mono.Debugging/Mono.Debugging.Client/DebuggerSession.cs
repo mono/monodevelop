@@ -55,6 +55,7 @@ namespace Mono.Debugging.Client
 		OutputWriterDelegate logWriter;
 		bool disposed;
 		bool attached;
+		bool ownedBreakpointStore;
 		object slock = new object ();
 		object olock = new object ();
 		ThreadInfo activeThread;
@@ -111,7 +112,8 @@ namespace Mono.Debugging.Client
 			Dispatch (delegate {
 				if (!disposed) {
 					disposed = true;
-					Breakpoints = null;
+					if (!ownedBreakpointStore)
+						Breakpoints = null;
 				}
 			});
 		}
@@ -132,19 +134,19 @@ namespace Mono.Debugging.Client
 		public BreakpointStore Breakpoints {
 			get {
 				lock (slock) {
-					if (breakpointStore == null)
+					if (breakpointStore == null) {
 						Breakpoints = new BreakpointStore ();
+						ownedBreakpointStore = true;
+					}
 					return breakpointStore;
 				}
 			}
 			set {
 				lock (slock) {
 					if (breakpointStore != null) {
-						if (started) {
-							foreach (BreakEvent bp in breakpointStore) {
-								RemoveBreakEvent (bp);
-								Breakpoints.NotifyStatusChanged (bp);
-							}
+						foreach (BreakEvent bp in breakpointStore) {
+							RemoveBreakEvent (bp);
+							Breakpoints.NotifyStatusChanged (bp);
 						}
 						breakpointStore.BreakEventAdded -= OnBreakpointAdded;
 						breakpointStore.BreakEventRemoved -= OnBreakpointRemoved;
@@ -154,6 +156,7 @@ namespace Mono.Debugging.Client
 					}
 					
 					breakpointStore = value;
+					ownedBreakpointStore = false;
 					
 					if (breakpointStore != null) {
 						if (started) {
@@ -794,8 +797,6 @@ namespace Mono.Debugging.Client
 					lock (slock) {
 						isRunning = false;
 						started = false;
-						foreach (BreakEvent bp in Breakpoints)
-							Breakpoints.NotifyStatusChanged (bp);
 					}
 					if (TargetExited != null)
 						TargetExited (this, args);
