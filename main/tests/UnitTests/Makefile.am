@@ -26,6 +26,7 @@ REFS =  \
 	-r:../../build/bin/MonoDevelop.Ide.dll \
 	-r:../../build/bin/NRefactory.dll \
 	-r:../../contrib/bin/NGit.dll \
+	-r:../../contrib/bin/Sharpen.dll \
 	-r:../../src/addins/NUnit/lib/nunit.core.dll \
 	-r:../../src/addins/NUnit/lib/nunit.core.interfaces.dll \
 	-r:../../src/addins/NUnit/lib/nunit.framework.dll \

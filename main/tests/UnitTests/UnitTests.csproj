@@ -148,6 +148,10 @@
       <Project>{E3BFF8B4-189C-496A-A817-7E8B31E22B91}</Project>
       <Name>NGit</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\contrib\Sharpen\Sharpen.csproj">
+      <Project>{72944A6C-45FF-4EF8-B349-8C9CABF519D4}</Project>
+      <Name>Sharpen</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Util.cs" />
