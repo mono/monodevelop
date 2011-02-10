@@ -2345,7 +2345,7 @@ namespace MonoDevelop.CSharp.Parser
 		}
 		
 
-		public void InsertComment (DomNode node, MonoDevelop.CSharp.Dom.Comment comment)
+		public static void InsertComment (DomNode node, MonoDevelop.CSharp.Dom.Comment comment)
 		{
 			if (node.EndLocation < comment.StartLocation) {
 				node.AddChild (comment);
@@ -2366,6 +2366,31 @@ namespace MonoDevelop.CSharp.Parser
 			node.AddChild (comment);
 		}
 
+		
+		internal static MonoDevelop.CSharp.Dom.CompilationUnit Parse (CompilerCompilationUnit top)
+		{
+			if (top == null)
+				return null;
+			CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (top.LocationsBag);
+			top.UsingsBag.Global.Accept (conversionVisitor);
+			
+			foreach (var special in top.SpecialsBag.Specials) {
+				var comment = special as SpecialsBag.Comment;
+				
+				if (comment != null) {
+					var type  = (MonoDevelop.CSharp.Dom.CommentType)comment.CommentType;
+					var start =  new DomLocation (comment.Line, comment.Col);
+					var end =  new DomLocation (comment.EndLine, comment.EndCol);
+					var domComment = new MonoDevelop.CSharp.Dom.Comment (type, start, end);
+					domComment.StartsLine = comment.StartsLine;
+					domComment.Content = comment.Content;
+					InsertComment (conversionVisitor.Unit, domComment);
+				}
+			}
+			
+			return conversionVisitor.Unit;
+		}
+		
 		public MonoDevelop.CSharp.Dom.CompilationUnit Parse (TextEditorData data)
 		{
 			lock (CompilerCallableEntryPoint.parseLock) {
@@ -2374,26 +2399,7 @@ namespace MonoDevelop.CSharp.Parser
 					top = CompilerCallableEntryPoint.ParseFile (new string[] { "-v", "-unsafe"}, stream, data.Document.FileName ?? "empty.cs", Console.Out);
 				}
 	
-				if (top == null)
-					return null;
-				CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (top.LocationsBag);
-				top.UsingsBag.Global.Accept (conversionVisitor);
-				
-				foreach (var special in top.SpecialsBag.Specials) {
-					var comment = special as SpecialsBag.Comment;
-					
-					if (comment != null) {
-						var type  = (MonoDevelop.CSharp.Dom.CommentType)comment.CommentType;
-						var start =  new DomLocation (comment.Line, comment.Col);
-						var end =  new DomLocation (comment.EndLine, comment.EndCol);
-						var domComment = new MonoDevelop.CSharp.Dom.Comment (type, start, end);
-						domComment.StartsLine = comment.StartsLine;
-						domComment.Content = comment.Content;
-						InsertComment (conversionVisitor.Unit, domComment);
-					}
-				}
-				
-				return conversionVisitor.Unit;
+				return Parse (top);
 			}
 		}
 	}

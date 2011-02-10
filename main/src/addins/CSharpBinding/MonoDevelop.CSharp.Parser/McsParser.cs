@@ -135,9 +135,7 @@ namespace MonoDevelop.CSharp.Parser
 				top.UsingsBag.Global.Accept (conversionVisitor);
 				top.ModuleCompiled.Accept (conversionVisitor);
 				
-				unit.Tag = top;
-				
-				
+				unit.Tag = CSharpParser.Parse (top);
 				
 				// parser errors
 				errorReportPrinter.Errors.ForEach (e => conversionVisitor.ParsedDocument.Add (e));
