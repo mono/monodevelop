@@ -1166,7 +1166,7 @@ namespace Mono.Debugging.Soft
 					if (PathComparer.Compare (PathToFileName (bp.FileName), s) == 0) {
 						Location l = GetLocFromType (t, s, bp.Line);
 						if (l != null) {
-							OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint at '{0}:{1}' to {2}:{3}.\n",
+							OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint at '{0}:{1}' to {2} [0x{3:x5}].\n",
 							                                        s, bp.Line, l.Method.FullName, l.ILOffset));
 							ResolvePendingBreakpoint (bp, l);
 							resolved.Add (bp);
