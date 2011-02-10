@@ -317,7 +317,7 @@ namespace MonoDevelop.CSharp.Refactoring
 								result.Append ("struct");
 								continue;
 							}
-							if (c.DecoratedFullName == DomReturnType.TypeReturnType.DecoratedFullName) {
+							if (c.DecoratedFullName == DomReturnType.Object.DecoratedFullName) {
 								result.Append ("class");
 								continue;
 							}
