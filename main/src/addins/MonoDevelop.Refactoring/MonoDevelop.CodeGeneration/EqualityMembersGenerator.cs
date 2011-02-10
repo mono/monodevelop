@@ -121,7 +121,7 @@ namespace MonoDevelop.CodeGeneration
 				LocalVariableDeclaration varDecl = new LocalVariableDeclaration (new DomReturnType (Options.EnclosingType).ConvertToTypeReference ());
 				varDecl.Variables.Add (new VariableDeclaration ("other", new CastExpression (varDecl.TypeReference, paramId, CastType.Cast)));
 				methodDeclaration.Body.AddChild (varDecl);
-
+				
 				IdentifierExpression otherId = new IdentifierExpression ("other");
 				Expression binOp = null;
 				foreach (IMember member in includedMembers) {
@@ -148,7 +148,7 @@ namespace MonoDevelop.CodeGeneration
 					Expression right;
 					right = new InvocationExpression (new MemberReferenceExpression (new IdentifierExpression (member.Name), "GetHashCode"));
 
-					IType type = Options.Dom.SearchType (member, member.ReturnType);
+					IType type = Options.Dom.SearchType (Options.Document.ParsedDocument.CompilationUnit, member, member.ReturnType);
 					if (type != null && type.ClassType != MonoDevelop.Projects.Dom.ClassType.Struct&& type.ClassType != MonoDevelop.Projects.Dom.ClassType.Enum)
 						right = new ParenthesizedExpression (new ConditionalExpression (new BinaryOperatorExpression (new IdentifierExpression (member.Name), BinaryOperatorType.InEquality, new PrimitiveExpression (null)), right, new PrimitiveExpression (0)));
 

@@ -84,7 +84,7 @@ namespace MonoDevelop.CodeGeneration
 				foreach (var parameter in Options.EnclosingMember.Parameters) {
 					if (parameter == null || parameter.ReturnType == null)
 						continue;
-					IType type = Options.Dom.SearchType (Options.EnclosingMember, parameter.ReturnType);
+					IType type = Options.Dom.SearchType (Options.Document.ParsedDocument.CompilationUnit, Options.EnclosingMember, parameter.ReturnType);
 					if (type != null && (type.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface || type.ClassType == MonoDevelop.Projects.Dom.ClassType.Class))
 						yield return parameter;
 				}
