@@ -63,6 +63,8 @@ namespace MonoDevelop.Debugger
 		static IConsole console;
 		static DebugExecutionHandlerFactory executionHandlerFactory;
 		
+		static string oldLayout;
+		
 		static DebuggerEngine currentEngine;
 		static DebuggerSession session;
 		static Backtrace currentBacktrace;
@@ -317,6 +319,16 @@ namespace MonoDevelop.Debugger
 		
 		static void Cleanup ()
 		{
+			if (oldLayout != null) {
+				string layout = oldLayout;
+				oldLayout = null;
+				// Dispatch asynchronously to avoid start/stop races
+				DispatchService.GuiSyncDispatch (delegate {
+					if (IdeApp.Workbench.CurrentLayout == "Debug")
+						IdeApp.Workbench.CurrentLayout = layout;
+				});
+			}
+			
 			currentBacktrace = null;
 			
 			if (!IsDebugging)
@@ -461,6 +473,9 @@ namespace MonoDevelop.Debugger
 					throw new InvalidOperationException ("Unsupported command: " + cmd);
 			}
 			
+			if (session != null)
+				throw new InvalidOperationException ("A debugger session is already started");
+
 			DebuggerStartInfo startInfo = factory.CreateDebuggerStartInfo (cmd);
 			startInfo.UseExternalConsole = c is ExternalConsole;
 			startInfo.CloseExternalConsoleOnExit = c.CloseOnDispose;
@@ -477,7 +492,13 @@ namespace MonoDevelop.Debugger
 				console = c;
 			
 			SetupSession ();
-
+			
+			// Dispatch synchronously to avoid start/stop races
+			DispatchService.GuiSyncDispatch (delegate {
+				oldLayout = IdeApp.Workbench.CurrentLayout;
+				IdeApp.Workbench.CurrentLayout = "Debug";
+			});
+			
 			try {
 				session.Run (startInfo, GetUserOptions ());
 			} catch {
