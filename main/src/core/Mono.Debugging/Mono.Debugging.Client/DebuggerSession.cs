@@ -872,8 +872,8 @@ namespace Mono.Debugging.Client
 		
 		internal protected virtual void OnStarted (ThreadInfo t)
 		{
+			OnTargetEvent (new TargetEventArgs (TargetEventType.TargetReady) { Thread = t });
 			lock (slock) {
-				OnTargetEvent (new TargetEventArgs (TargetEventType.TargetReady) { Thread = t });
 				started = true;
 				foreach (BreakEvent bp in breakpointStore)
 					AddBreakEvent (bp);
