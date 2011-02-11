@@ -156,9 +156,6 @@
     <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\CSharpFormattingPolicy.xml">
       <LogicalName>CSharpFormattingPolicy.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\FormattingProfiles.xml">
-      <LogicalName>FormattingProfiles.xml</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
@@ -352,7 +349,6 @@
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Formatting.NewFormattingProfileDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingProfileDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Formatting.CSharpFormattingProfileDialog.cs" />
-    <Compile Include="MonoDevelop.CSharp.Formatting\FormattingProfileService.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\ComposedType.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\DirectionExpression.cs" />
     <Compile Include="MonoDevelop.CSharp.Dom\Expressions\ArrayInitializerExpression.cs" />

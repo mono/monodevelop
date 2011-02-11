@@ -295,14 +295,9 @@ namespace TestSpace {
 			this.Build ();
 			this.profile = profile;
 			this.Title = profile.IsBuiltIn ? GettextCatalog.GetString ("Show built-in profile") : GettextCatalog.GetString ("Edit Profile");
-			entryName.Text = profile.Name;
-			entryName.Sensitive = !profile.IsBuiltIn;
-			entryName.Changed += delegate {
-				profile.Name = entryName.Text;
-			};
+			
 			notebookCategories.SwitchPage += delegate {
 				TreeView treeView;
-				Console.WriteLine (notebookCategories.Page);
 				switch (notebookCategories.Page) {
 				case 0:
 					treeView = treeviewIndentOptions;
@@ -907,7 +902,6 @@ delegate void BarFoo ();
 			Gtk.TreeIter iter;
 			if (treeSelection.GetSelected (out model, out iter)) {
 				var category = (Category)model.GetValue (iter, 1);
-				Console.WriteLine ("category:" + model.GetValue (iter, 1));
 				if (category == null)
 					return;
 				whiteSpaceOptions.Clear ();

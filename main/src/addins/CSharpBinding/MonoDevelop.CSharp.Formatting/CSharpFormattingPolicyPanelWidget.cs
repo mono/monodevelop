@@ -49,37 +49,21 @@ namespace Example {
 		}
 	}
 }";
+		CSharpFormattingPolicy policy;
 		public CSharpFormattingPolicy Policy {
 			get {
-				if (comboboxProfiles.Active < 0)
-					return null;
-				return policies[comboboxProfiles.Active];
+				return policy;
 			}
 			set {
-				for (int i = 0; i < policies.Count; i++) {
-					if (policies[i].Equals (value)) {
-						comboboxProfiles.Active = i;
-						return;
-					}
-				}
-			
-				if (string.IsNullOrEmpty (value.Name))
-					value.Name = GettextCatalog.GetString ("Custom");
-				policies.Add (value);
-				InitComboBox ();
-				
-				comboboxProfiles.Active = policies.Count - 1;
+				policy = value;
+				FormatSample ();
 			}
 		}
 		
 		public CSharpFormattingPolicyPanelWidget ()
 		{
 			this.Build ();
-			buttonNew.Clicked += HandleButtonNewClicked;
-			buttonImport.Clicked += HandleButtonImportClicked; 
-			buttonExport.Clicked += HandleButtonExportClicked;
 			buttonEdit.Clicked += HandleButtonEditClicked;
-			buttonRemove.Clicked += HandleButtonRemoveClicked;
 			
 			var options = MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance;
 			texteditor.Options.FontName = options.FontName;
@@ -91,101 +75,22 @@ namespace Example {
 			texteditor.Document.ReadOnly = true;
 			texteditor.Document.MimeType = CSharpFormatter.MimeType;
 			scrolledwindow1.Child = texteditor;
-			policies.AddRange (FormattingProfileService.Profiles);
-			comboboxProfiles.Model = model;
-			comboboxProfiles.Changed += delegate {
-				if (comboboxProfiles.Active < 0)
-					return;
-				var profile = policies[comboboxProfiles.Active];
-				var formatter = CodeFormatterService.GetFormatter (CSharpFormatter.MimeType);
-				var parent = new MonoDevelop.Projects.DotNetAssemblyProject ();
-				parent.Policies.Set<CSharpFormattingPolicy> (profile, CSharpFormatter.MimeType);
-				texteditor.Document.Text = formatter.FormatText (parent.Policies, example);
-			};
 			ShowAll ();
-			InitComboBox ();
 		}
 
-		void HandleButtonRemoveClicked (object sender, EventArgs e)
+		public void FormatSample ()
 		{
-			if (comboboxProfiles.Active < 0)
-				return;
-			FormattingProfileService.Remove (policies[comboboxProfiles.Active]);
-			InitComboBox ();
-			comboboxProfiles.Active = 0;
+			var formatter = CodeFormatterService.GetFormatter (CSharpFormatter.MimeType);
+			var parent = new MonoDevelop.Projects.DotNetAssemblyProject ();
+			parent.Policies.Set<CSharpFormattingPolicy> (policy, CSharpFormatter.MimeType);
+			texteditor.Document.Text = formatter.FormatText (parent.Policies, example);
 		}
 
 		void HandleButtonEditClicked (object sender, EventArgs e)
 		{
-			if (comboboxProfiles.Active < 0)
-				return;
-			var p = policies[comboboxProfiles.Active];
-			bool isFromService =!p.IsBuiltIn && FormattingProfileService.Profiles.Contains (p);
-			if (isFromService)
-				FormattingProfileService.Remove (p);
-			var editDialog = new CSharpFormattingProfileDialog (p);
+			var editDialog = new CSharpFormattingProfileDialog (policy);
 			MessageService.ShowCustomDialog (editDialog);
 			editDialog.Destroy ();
-			if (isFromService)
-				FormattingProfileService.AddProfile (p);
-			InitComboBox ();
-		}
-
-		void HandleButtonImportClicked (object sender, EventArgs e)
-		{
-			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Profile to import"), Gtk.FileChooserAction.Open) {
-				TransientFor = this.Toplevel as Gtk.Window,
-			};
-			dialog.AddFilter (null, "*.xml");
-			if (!dialog.Run ())
-				return;
-			int selection = comboboxProfiles.Active;
-			var p = CSharpFormattingPolicy.Load (dialog.SelectedFile);
-			FormattingProfileService.AddProfile (p);
-			policies.Add (p);
-			InitComboBox ();
-			comboboxProfiles.Active = selection;
-		}
-
-		void HandleButtonExportClicked (object sender, EventArgs e)
-		{
-			if (comboboxProfiles.Active < 0)
-				return;
-			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Export profile"), Gtk.FileChooserAction.Save) {
-				TransientFor = this.Toplevel as Gtk.Window,
-			};
-			dialog.AddFilter (null, "*.xml");
-			if (!dialog.Run ())
-				return;
-			policies[comboboxProfiles.Active].Save (dialog.SelectedFile);
-		}
-		
-		void InitComboBox ()
-		{
-			model.Clear ();
-			foreach (var p in policies) {
-				model.AppendValues (p.Name);
-			}
-			if (comboboxProfiles.Active < 0)
-				comboboxProfiles.Active = policies.Count > 0 ? 0 : -1;
-			buttonEdit.Sensitive = buttonRemove.Sensitive = buttonExport.Sensitive = comboboxProfiles.Active >= 0;
-		}
-
-		void HandleButtonNewClicked (object sender, EventArgs e)
-		{
-			var newProfileDialog = new NewFormattingProfileDialog (policies);
-			int result = MessageService.ShowCustomDialog (newProfileDialog);
-			if (result == (int)Gtk.ResponseType.Ok) {
-				var baseProfile = newProfileDialog.InitializeFrom ?? new CSharpFormattingPolicy ();
-				var newProfile = baseProfile.Clone ();
-				newProfile.IsBuiltIn = false;
-				newProfile.Name = newProfileDialog.NewProfileName;
-				policies.Add (newProfile);
-				FormattingProfileService.AddProfile (newProfile);
-				InitComboBox ();
-				comboboxProfiles.Active = policies.Count - 1;
-			}
-			newProfileDialog.Destroy ();
 		}
 	}
 }

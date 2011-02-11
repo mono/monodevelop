@@ -143,7 +143,6 @@ FILES =  \
 	MonoDevelop.CSharp.Formatting/CSharpTextEditorIndentation.cs \
 	MonoDevelop.CSharp.Formatting/DomIndentationVisitor.cs \
 	MonoDevelop.CSharp.Formatting/DomSpacingVisitor.cs \
-	MonoDevelop.CSharp.Formatting/FormattingProfileService.cs \
 	MonoDevelop.CSharp.Formatting/Indent.cs \
 	MonoDevelop.CSharp.Formatting/NewFormattingProfileDialog.cs \
 	MonoDevelop.CSharp.Formatting/OnTheFlyFormatter.cs \
@@ -245,7 +244,6 @@ RES =  \
 	md1format.xml \
 	MonoCSharpPolicy.xml \
 	MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml \
-	MonoDevelop.CSharp.Formatting/FormattingProfiles.xml \
 	templates/AssemblyInfo.xft.xml \
 	templates/ConsoleProject.xpt.xml \
 	templates/EmptyCSharpFile.xft.xml \
