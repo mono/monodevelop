@@ -365,7 +365,6 @@ namespace Mono.Debugging.Soft
 				//Mono < 2.6.3 doesn't support catching unhandled exceptions
 			}
 			
-			OnStarted ();
 			started = true;
 			
 			/* Wait for the VMStart event */
@@ -917,6 +916,7 @@ namespace Mono.Debugging.Soft
 				OnDebuggerOutput (false, string.Format ("Unloaded assembly: {0}\n", aue.Assembly.Location));
 			}
 			else if (e is VMStartEvent) {
+				OnStarted (new ThreadInfo (0, GetId (e.Thread), e.Thread.Name, null));
 				//HACK: 2.6.1 VM doesn't emit type load event, so work around it
 				var t = vm.RootDomain.Corlib.GetType ("System.Exception", false, false);
 				if (t != null)
