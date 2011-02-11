@@ -135,8 +135,9 @@ namespace Mono.TextEditor
 		{
 			DestroyHelpWindow ();
 		}
+
 		
-		void MoveHelpWindow (object o, Gtk.SizeAllocatedArgs args)
+		public void PositionHelpWindow ()
 		{
 			if (editor == null || HelpWindow == null)
 				return;
@@ -148,6 +149,24 @@ namespace Mono.TextEditor
 			int x = System.Math.Min (ox + editor.Allocation.Width - req.Width / 2, geometry.X + geometry.Width - req.Width);
 			int y = System.Math.Min (oy + editor.Allocation.Height - req.Height / 2, geometry.Y + geometry.Height - req.Height);
 			HelpWindow.Move (x, y);
+		}
+		
+		public void PositionHelpWindow (int x, int y)
+		{
+			if (editor == null || HelpWindow == null)
+				return;
+			int ox, oy;
+			editor.GdkWindow.GetOrigin (out ox, out oy);
+			editor.Destroyed += HandleEditorDestroy;
+			Gdk.Rectangle geometry = editor.Screen.GetMonitorGeometry (editor.Screen.GetMonitorAtPoint (ox, oy));
+			var req = HelpWindow.SizeRequest ();
+			x = System.Math.Min (x, geometry.X + geometry.Width - req.Width);
+			HelpWindow.Move (ox + x, oy + y - req.Height / 2);
+		}
+		
+		void MoveHelpWindow (object o, Gtk.SizeAllocatedArgs args)
+		{
+			PositionHelpWindow ();
 		}
 	}
 	
@@ -187,6 +206,7 @@ namespace Mono.TextEditor
 				DocumentLocation loc = insertionPoints[CurIndex].Location;
 				editor.CenterTo (loc.Line - 1, DocumentLocation.MinColumn);
 				editor.QueueDraw ();
+				SetHelpWindowPosition ();
 				break;
 			case Gdk.Key.Down:
 				if (CurIndex < insertionPoints.Count - 1)
@@ -194,6 +214,7 @@ namespace Mono.TextEditor
 				loc = insertionPoints[CurIndex].Location;
 				editor.CenterTo (loc.Line + 1, DocumentLocation.MinColumn);
 				editor.QueueDraw ();
+				SetHelpWindowPosition ();
 				break;
 				
 			case Gdk.Key.KP_Enter:
@@ -223,6 +244,16 @@ namespace Mono.TextEditor
 			editor.QueueDraw ();
 			
 			ShowHelpWindow ();
+			SetHelpWindowPosition ();
+		}
+		
+		void SetHelpWindowPosition ()
+		{
+			int y = (int)(editor.LineToY (insertionPoints[CurIndex].Location.Line) - editor.VAdjustment.Value);
+			double x1, x2, d;
+			drawer.CalculateLineStarts (out x1, out x2, out d);
+			
+			PositionHelpWindow ((int)x2 + 8, y);
 		}
 		
 		protected virtual void OnExited (InsertionCursorEventArgs e)
@@ -269,11 +300,12 @@ namespace Mono.TextEditor
 				g.Color = new Cairo.Color (1.0, 0, 0, 0.1);
 				g.Fill ();
 			}
+
 			
-			public override void Draw (Cairo.Context cr, Cairo.Rectangle erea)
+			public void CalculateLineStarts (out double x1, out double x2, out double delta)
 			{
 				TextEditor editor = mode.editor;
-				double y = editor.LineToY (mode.CurrentInsertionPoint.Line) - editor.VAdjustment.Value; 
+				
 				LineSegment lineAbove = editor.Document.GetLine (mode.CurrentInsertionPoint.Line - 1);
 				LineSegment lineBelow = editor.Document.GetLine (mode.CurrentInsertionPoint.Line);
 				
@@ -306,14 +338,14 @@ namespace Mono.TextEditor
 						wrapper.Dispose ();
 				}
 					
-				double d = editor.LineHeight / 3;
-				double x1 = editor.TextViewMargin.XOffset - editor.HAdjustment.Value;
-				double x2 = x1;
+				delta = editor.LineHeight / 3;
+				x1 = editor.TextViewMargin.XOffset - editor.HAdjustment.Value;
+				x2 = x1;
 				if (aboveStart < belowEnd) {
 					x1 += aboveStart;
 					x2 += belowEnd;
 				} else if (aboveStart > belowEnd) {
-					d *= -1;
+					delta *= -1;
 					x1 += belowEnd;
 					x2 += aboveStart;
 				} else {
@@ -322,7 +354,16 @@ namespace Mono.TextEditor
 					if (x1 == x2)
 						x2 += 50;
 				}
+			}
+			
+			public override void Draw (Cairo.Context cr, Cairo.Rectangle erea)
+			{
+				TextEditor editor = mode.editor;
 				
+				double y = editor.LineToY (mode.CurrentInsertionPoint.Line) - editor.VAdjustment.Value; 
+				double x1, x2, d;
+				CalculateLineStarts (out x1, out x2, out d);
+					
 				cr.MoveTo (x1, y + d);
 				cr.LineTo (x1, y);
 				cr.LineTo (x2, y);
