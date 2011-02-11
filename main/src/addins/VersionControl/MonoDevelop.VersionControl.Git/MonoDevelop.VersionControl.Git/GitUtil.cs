@@ -451,6 +451,7 @@ namespace MonoDevelop.VersionControl.Git
 			var differ = MyersDiff<RawText>.INSTANCE;
 			
 			foreach (Edit e in differ.Diff (RawTextComparator.DEFAULT, ancestorText, curText)) {
+				System.Console.WriteLine ("Change: A: {0} to {1}; B: {2} to {3}", e.GetBeginA(), e.GetEndA(), e.GetBeginB(), e.GetEndB());
 				for (int n = e.GetBeginB (); n < e.GetEndB (); n++) {
 					if (lines [n] == null) {
 						lines [n] = commit;
