@@ -332,7 +332,6 @@ namespace MonoDevelop.Projects.Dom.Parser
 				// request equals a namespace name; for example the type B could be resolved in the 2nd case when a type
 				// A.B exists but not in the 1st.
 				foreach (IUsing u in unit.Usings.Reverse ()) {
-					System.Console.WriteLine ("usings:" + u);
 					if (u.Namespaces.Contains (name)) 
 						return null;
 					if (callingClass != null && !u.ValidRegion.Contains (callingClass.Location))
