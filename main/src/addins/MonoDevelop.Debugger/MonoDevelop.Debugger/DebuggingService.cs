@@ -311,10 +311,12 @@ namespace MonoDevelop.Debugger
 
 			console.CancelRequested += OnCancelRequested;
 			
-			if (DebugSessionStarted != null)
-				DebugSessionStarted (null, EventArgs.Empty);
+			DispatchService.GuiDispatch (delegate {
+				if (DebugSessionStarted != null)
+					DebugSessionStarted (null, EventArgs.Empty);
+				NotifyLocationChanged ();
+			});
 
-			NotifyLocationChanged ();
 		}
 		
 		static void Cleanup ()
@@ -352,9 +354,11 @@ namespace MonoDevelop.Debugger
 			// Dispose the session at the end, since it may take a while.
 			DebuggerSession oldSession = session;
 			session = null;
-
-			if (StoppedEvent != null)
-				StoppedEvent (null, new EventArgs ());
+			
+			DispatchService.GuiDispatch (delegate {
+				if (StoppedEvent != null)
+					StoppedEvent (null, new EventArgs ());
+			});
 			
 			if (console != null) {
 				console.Dispose ();
