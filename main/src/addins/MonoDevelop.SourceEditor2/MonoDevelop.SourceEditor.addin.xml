@@ -181,4 +181,9 @@
 		<Font name ="MessageBubbles" _displayName="Message bubbles" default ="_DEFAULT_SANS"/>
 		<Font name ="LanguageTooltips" _displayName="Editor tooltips" default ="_DEFAULT_SANS"/>
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/UserDataMigration">
+		<Migration sourceVersion="2.4" kind="Data" isDirectory="true" sourcePath="syntaxmodes"
+			targetPath="HighlightingSchemes" />
+	</Extension>
 </Addin>

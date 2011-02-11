@@ -217,6 +217,13 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 		
+		static string CommitMessagesFile {
+			get {
+				return PropertyService.Locations.Cache.Combine ("version-control-commit-msg");
+				
+			}
+		}
+		
 		static Hashtable GetCommitComments ()
 		{
 			if (comments != null)
@@ -230,7 +237,7 @@ namespace MonoDevelop.VersionControl
 				return null;
 			};
 
-			string file = Path.Combine (PropertyService.ConfigPath, "version-control-commit-msg");
+			string file = CommitMessagesFile;
 			if (File.Exists (file)) {
 				FileStream stream = null;
 				try {
@@ -295,15 +302,14 @@ namespace MonoDevelop.VersionControl
 				
 				FileStream stream = null;
 				try {
-					string file = Path.Combine (PropertyService.ConfigPath, "version-control-commit-msg");
+					FilePath file = CommitMessagesFile;
 					if (comments.Count == 0) {
 						if (File.Exists (file))
 							FileService.DeleteFile (file);
 						return;
 					}
 				
-					if (!Directory.Exists (PropertyService.ConfigPath))
-						Directory.CreateDirectory (PropertyService.ConfigPath);
+					FileService.EnsureDirectoryExists (file.ParentDirectory);
 					stream = new FileStream (file, FileMode.Create, FileAccess.Write);
 					BinaryFormatter formatter = new BinaryFormatter ();
 					formatter.Serialize (stream, comments);
@@ -506,7 +512,7 @@ namespace MonoDevelop.VersionControl
 		
 		static string ConfigFile {
 			get {
-				return Path.Combine (PropertyService.ConfigPath, "VersionControl.config");
+				return PropertyService.Locations.Config.Combine ("VersionControl.config");
 			}
 		}
 		

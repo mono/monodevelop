@@ -495,6 +495,7 @@ namespace MonoDevelop.Ide.Gui
 				
 				if (MessageService.RunCustomDialog (ops, parentWindow) == (int) Gtk.ResponseType.Ok) {
 					PropertyService.SaveProperties ();
+					MonoDevelop.Projects.Policies.PolicyService.SavePolicies ();
 				}
 			} finally {
 				ops.Destroy ();
@@ -517,9 +518,7 @@ namespace MonoDevelop.Ide.Gui
 				if (panelId != null)
 					ops.SelectPanel (panelId);
 				
-				if (MessageService.RunCustomDialog (ops, parentWindow) == (int) Gtk.ResponseType.Ok) {
-					MonoDevelop.Projects.Policies.PolicyService.SaveDefaultPolicies ();
-				}
+				MessageService.RunCustomDialog (ops, parentWindow);
 			} finally {
 				ops.Destroy ();
 			}

@@ -140,4 +140,8 @@
 	<Extension path = "/MonoDevelop/DesignerSupport/ToolboxProviders">
 		<Class class="MonoDevelop.DesignerSupport.Toolbox.CodeTemplateToolboxProvider" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/UserDataMigration">
+		<Migration sourceVersion="2.4" kind="ConfigLocal" sourcePath="Toolbox.xml" />
+	</Extension>
 </Addin>

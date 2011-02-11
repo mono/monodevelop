@@ -97,9 +97,15 @@ namespace MonoDevelop.WelcomePage
 			scroller.Show ();
 		}
 		
+		static string NewsFile {
+			get {
+				return PropertyService.Locations.Cache.Combine ("WelcomePageNews.xml");
+			}
+		}
+		
 		public XmlDocument GetUpdatedXmlDocument ()
 		{
-			string localCachedNewsFile = System.IO.Path.Combine (PropertyService.ConfigPath, "news.xml");
+			string localCachedNewsFile = NewsFile;
 			
 			Stream stream = Assembly.GetExecutingAssembly ().GetManifestResourceStream ("WelcomePageContent.xml");
 			XmlDocument contentDoc = new XmlDocument ();
@@ -131,7 +137,7 @@ namespace MonoDevelop.WelcomePage
 			LoggingService.LogInfo ("Updating Welcome Page from '{0}'.", netNewsXml);
 			
 			HttpWebRequest request = (HttpWebRequest) WebRequest.Create (netNewsXml);
-			string localCachedNewsFile = System.IO.Path.Combine (PropertyService.ConfigPath, "news.xml");
+			string localCachedNewsFile = NewsFile;
 			FileInfo localNewsXml = new FileInfo (localCachedNewsFile);
 			if (localNewsXml.Exists)
 				request.IfModifiedSince = localNewsXml.LastWriteTime;

@@ -31,11 +31,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace MonoDevelop.Core
 {
 	public static class PropertyService
 	{
+		const string CURRENT_PROFILE_VERSION = "2.6";
+		
 		readonly static string FileName = "MonoDevelopProperties.xml";
 		static Properties properties;
 
@@ -54,13 +57,13 @@ namespace MonoDevelop.Core
 			}
 		}
 		
-		public static FilePath ConfigPath {
-			get {
-				string configPath = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
-				return Path.Combine (configPath, "MonoDevelop");
-			}
+		public static UserDataLocations Locations {
+			get; private set;
 		}
 		
+		/// <summary>
+		/// Location of data files that are bundled with MonoDevelop itself.
+		/// </summary>
 		public static FilePath DataPath {
 			get {
 				string result = System.Configuration.ConfigurationManager.AppSettings ["DataDirectory"];
@@ -98,20 +101,103 @@ namespace MonoDevelop.Core
 			Counters.PropertyServiceInitialization.BeginTiming ();
 			
 			IsWindows = Path.DirectorySeparatorChar == '\\';
-
-			if (!LoadProperties (Path.Combine (ConfigPath, FileName))) {
-				if (!LoadProperties (Path.Combine (DataPath, FileName))) {
-					properties = new Properties ();
-					properties.Set ("MonoDevelop.Core.FirstRun", true);
+			IsMac = !IsWindows && IsRunningOnMac ();
+			
+			FilePath testProfileRoot = Environment.GetEnvironmentVariable ("MONODEVELOP_PROFILE");
+			if (!testProfileRoot.IsNullOrEmpty) {
+				Locations = UserDataLocations.ForTest (CURRENT_PROFILE_VERSION, testProfileRoot);
+			} else {
+				Locations = GetLocations (CURRENT_PROFILE_VERSION);
+			}
+			
+			string migrateVersion = null;
+			UserDataLocations migratableProfile = null;
+			
+			var prefsPath = Locations.Config.Combine (FileName);
+			if (!File.Exists (prefsPath)) {
+				if (GetMigratableProfile (testProfileRoot, out migratableProfile, out migrateVersion)) {
+					FilePath migratePrefsPath = migratableProfile.Config.Combine (FileName);
+					try {
+						var parentDir = prefsPath.ParentDirectory;
+						//can't use file service until property sevice in initialized
+						if (!Directory.Exists (parentDir))
+							Directory.CreateDirectory (parentDir);
+						File.Copy (migratePrefsPath, prefsPath);
+						LoggingService.LogInfo ("Migrated core properties from {0}", migratePrefsPath);
+					} catch (IOException ex) {
+						string message = string.Format ("Failed to migrate core properties from {0}", migratePrefsPath);
+						LoggingService.LogError (message, ex);
+					}
+				} else {
+					LoggingService.LogInfo ("Did not find previous version from which to migrate data");	
 				}
 			}
+			
+			if (!LoadProperties (prefsPath)) {
+				properties = new Properties ();
+				properties.Set ("MonoDevelop.Core.FirstRun", true);
+			}
+			
+			if (migratableProfile != null)
+				UserDataMigrationService.SetMigrationSource (migratableProfile, migrateVersion);
+			
 			properties.PropertyChanged += delegate(object sender, PropertyChangedEventArgs args) {
 				if (PropertyChanged != null)
 					PropertyChanged (sender, args);
 			};
-			IsMac = !IsWindows && IsRunningOnMac();
 			
 			Counters.PropertyServiceInitialization.EndTiming ();
+		}
+		
+		static UserDataLocations GetLocations (string profileVersion)
+		{
+			if (IsWindows)
+				return UserDataLocations.ForWindows (profileVersion);
+			else if (IsWindows)
+				return UserDataLocations.ForMac (profileVersion);
+			else
+				return UserDataLocations.ForUnix (profileVersion);
+		}
+		
+		static bool GetMigratableProfile (FilePath testProfileRoot, out UserDataLocations profile, out string version)
+		{
+			profile = null;
+			version = null;
+			
+			//TODO: check 2.6 when 2.8 is released, etc
+			string[] migratableVersions = { };
+			
+			//test profiles only migrate from test profiles
+			if (!testProfileRoot.IsNullOrEmpty) {
+				for (int i = migratableVersions.Length -1; i >= 0; i--) {
+					var p = UserDataLocations.ForTest (migratableVersions[i], testProfileRoot);
+					if (File.Exists (p.Config.Combine (FileName))) {
+						profile = p;
+						version = migratableVersions[i];
+						return true;
+					}
+				}
+				return false;
+			}
+			
+			//try versioned profiles
+			for (int i = migratableVersions.Length -1; i >= 0; i--) {
+				var p = UserDataLocations.ForTest (migratableVersions[i], testProfileRoot);
+				if (File.Exists (p.Config.Combine (FileName))) {
+					profile = p;
+					version = migratableVersions[i];
+					return true;
+				}
+			}
+			
+			//try the old unversioned MD <= 2.4 profile
+			var md24 = UserDataLocations.ForMD24 ();
+			if (File.Exists (md24.Config.Combine (FileName))) {
+				profile = md24;
+				version = "2.4";
+				return true;
+			}
+			return false;
 		}
 		
 		static bool LoadProperties (string fileName)
@@ -137,12 +223,12 @@ namespace MonoDevelop.Core
 			return properties != null;
 		}
 		
-		public static void SaveProperties()
+		public static void SaveProperties ()
 		{
 			Debug.Assert (properties != null);
-			if (!Directory.Exists (ConfigPath))
-				Directory.CreateDirectory (ConfigPath);
-			properties.Save (Path.Combine (ConfigPath, FileName));
+			var prefsPath = Locations.Config.Combine (FileName);
+			FileService.EnsureDirectoryExists (prefsPath.ParentDirectory);
+			properties.Save (prefsPath);
 		}
 		
 		public static T Get<T> (string property, T defaultValue)

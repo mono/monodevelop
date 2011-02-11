@@ -311,4 +311,8 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Core/UserDataMigration">
+		<Migration sourceVersion="2.4" kind="Cache" sourcePath="version-control-commit-msg" />
+		<Migration sourceVersion="2.4" kind="Config" sourcePath="VersionControl.config" />
+	</Extension>
 </Addin>

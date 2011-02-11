@@ -35,7 +35,7 @@ namespace MonoDevelop.SourceEditor
 	{
 		public static FilePath SyntaxModePath {
 			get {
-				return PropertyService.ConfigPath.Combine ("syntaxmodes");
+				return PropertyService.DataPath.Combine ("HighlightingSchemes");
 			}
 		}
 		

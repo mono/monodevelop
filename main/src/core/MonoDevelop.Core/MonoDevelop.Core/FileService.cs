@@ -36,6 +36,7 @@ using Mono.Addins;
 using MonoDevelop.Core.FileSystem;
 using System.Collections.Generic;
 using System.Threading;
+using System.Linq;
 
 namespace MonoDevelop.Core
 {
@@ -351,6 +352,7 @@ namespace MonoDevelop.Core
 		// Atomic rename of a file. It does not fire events.
 		public static void SystemRename (string sourceFile, string destFile)
 		{
+			//FIXME: use the atomic System.IO.File.Replace on NTFS
 			if (PropertyService.IsWindows) {
 				string wtmp = null;
 				if (File.Exists (destFile)) {
@@ -385,6 +387,35 @@ namespace MonoDevelop.Core
 			else {
 				Mono.Unix.Native.Syscall.rename (sourceFile, destFile);
 			}
+		}
+		
+		/// <summary>
+		/// Removes the directory if it's empty.
+		/// </summary>
+		public static void RemoveDirectoryIfEmpty (string directory)
+		{
+			if (Directory.Exists (directory) && !Directory.EnumerateFiles (directory).Any ())
+				Directory.Delete (directory);
+		}
+		
+		/// <summary>
+		/// Creates a directory if it does not already exist.
+		/// </summary>
+		public static void EnsureDirectoryExists (string directory)
+		{
+			if (!Directory.Exists (directory))
+				Directory.CreateDirectory (directory);
+		}
+		
+		/// <summary>
+		/// Makes the path separators native.
+		/// </summary>
+		public static string MakePathSeparatorsNative (string path)
+		{
+			if (path == null || path.Length == 0)
+				return path;
+			char c = Path.DirectorySeparatorChar == '\\'? '/' : '\\'; 
+			return path.Replace (c, Path.DirectorySeparatorChar);
 		}
 
 		static bool HandleError (string message, Exception ex)

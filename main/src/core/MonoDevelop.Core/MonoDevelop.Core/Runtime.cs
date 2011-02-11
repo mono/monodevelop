@@ -67,13 +67,22 @@ namespace MonoDevelop.Core
 			
 			try {
 				Counters.RuntimeInitialization.Trace ("Initializing Addin Manager");
-				AddinManager.Initialize (MonoDevelop.Core.PropertyService.ConfigPath);
+				AddinManager.Initialize (
+					PropertyService.Locations.Config,
+					PropertyService.Locations.Addins,
+					PropertyService.Locations.Cache);
 				AddinManager.InitializeDefaultLocalizer (new DefaultAddinLocalizer ());
 				
 				if (updateAddinRegistry)
 					AddinManager.Registry.Update (null);
 				setupService = new SetupService (AddinManager.Registry);
 				Counters.RuntimeInitialization.Trace ("Initialized Addin Manager");
+				
+				//have to do this after the addin service is initialized
+				if (UserDataMigrationService.HasSource) {
+					Counters.RuntimeInitialization.Trace ("Migrating User Data from MD " + UserDataMigrationService.SourceVersion);
+					UserDataMigrationService.StartMigration ();
+				}
 				
 				RegisterAddinRepositories ();
 				

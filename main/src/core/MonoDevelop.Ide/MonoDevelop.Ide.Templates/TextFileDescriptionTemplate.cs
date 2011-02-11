@@ -44,21 +44,13 @@ namespace MonoDevelop.Ide.Templates
 			base.Load (filenode, baseDirectory);
 			var srcAtt = filenode.Attributes["src"];
 			if (srcAtt != null) {
-				contentSrcFile = MakePathNative (srcAtt.Value);
+				contentSrcFile = FileService.MakePathSeparatorsNative (srcAtt.Value);
 				if (contentSrcFile.IsNullOrEmpty)
 					throw new InvalidOperationException ("Template's Src attribute is empty");
 				contentSrcFile = contentSrcFile.ToAbsolute (baseDirectory);
 			} else {
 				content = filenode.InnerText;
 			}
-		}
-		
-		static internal string MakePathNative (string path)
-		{
-			if (path == null || path.Length == 0)
-				return path;
-			char c = Path.DirectorySeparatorChar == '\\'? '/' : '\\'; 
-			return path.Replace (c, Path.DirectorySeparatorChar);
 		}
 		
 		public override string CreateContent (string language)
@@ -78,7 +70,7 @@ namespace MonoDevelop.Ide.Templates
 			if (srcAtt == null)
 				throw new InvalidOperationException ("Template is missing Src attribute");
 			
-			contentSrcFile = TextFileDescriptionTemplate.MakePathNative (srcAtt.Value);
+			contentSrcFile = FileService.MakePathSeparatorsNative (srcAtt.Value);
 			if (contentSrcFile.IsNullOrEmpty)
 				throw new InvalidOperationException ("Template's Src attribute is empty");
 			contentSrcFile = contentSrcFile.ToAbsolute (baseDirectory);

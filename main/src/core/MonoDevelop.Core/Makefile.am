@@ -14,6 +14,7 @@ FILES =  \
 	MonoDevelop.Core.AddIns/PackageInstalledCondition.cs \
 	MonoDevelop.Core.AddIns/PlatformCondition.cs \
 	MonoDevelop.Core.AddIns/TargetFrameworkNode.cs \
+	MonoDevelop.Core.AddIns/UserDataMigrationNode.cs \
 	MonoDevelop.Core.Assemblies/AssemblyContext.cs \
 	MonoDevelop.Core.Assemblies/ComposedAssemblyContext.cs \
 	MonoDevelop.Core.Assemblies/CustomRuntimeExecutionModeSet.cs \
@@ -159,6 +160,8 @@ FILES =  \
 	MonoDevelop.Core/PropertyService.cs \
 	MonoDevelop.Core/Runtime.cs \
 	MonoDevelop.Core/StringParserService.cs \
+	MonoDevelop.Core/UserDataLocations.cs \
+	MonoDevelop.Core/UserDataMigrationService.cs \
 	MonoDevelop.Core/UserException.cs \
 	MonoDevelop.Core/XmlReadHelper.cs \
 	MonoDevelop.Projects.CodeGeneration/BaseRefactorer.cs \

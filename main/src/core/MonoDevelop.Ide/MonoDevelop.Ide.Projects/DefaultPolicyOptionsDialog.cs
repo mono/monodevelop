@@ -121,7 +121,7 @@ namespace MonoDevelop.Ide.Projects
 			foreach (PolicySet ps in usets)
 				PolicyService.RemoveUserPolicySet (ps);
 			
-			PolicyService.SaveDefaultPolicies ();
+			PolicyService.SavePolicies ();
 		}
 
 		void HandleDeleteButtonClicked (object sender, EventArgs e)

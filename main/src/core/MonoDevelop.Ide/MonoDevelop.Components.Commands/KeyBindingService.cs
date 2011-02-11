@@ -63,7 +63,8 @@ namespace MonoDevelop.Components.Commands
 		
 		static string ConfigFileName {
 			get {
-				return Path.Combine (PropertyService.ConfigPath, PropertyService.IsMac? configFileNameMac : configFileName);
+				string file = PropertyService.IsMac? "Custom.kb.xml" : "Custom.mac-kb.xml";
+				return PropertyService.Locations.Config.Combine ("KeyBindings", file);
 			}
 		}
 

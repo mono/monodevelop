@@ -216,7 +216,7 @@ namespace MonoDevelop.XmlEditor
 		
 		// Gets the folder where schemas are stored for an individual user.
 		static string UserSchemaFolder {
-			get { return Path.Combine (PropertyService.ConfigPath, "schemas"); }
+			get { return PropertyService.Locations.Data.Combine ("schemas"); }
 		}
 		
 		// FIXME: Should really pass schema info with the event.

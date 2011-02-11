@@ -34,7 +34,8 @@ namespace MonoDevelop.SourceEditor
 {
 	static class AutoSave
 	{
-		static string autoSavePath = Path.Combine (PropertyService.Get<string> ("MonoDevelop.CodeCompletion.DataDirectory", String.Empty), "AutoSave");
+		//FIXME: is this path a good one? wouldn't it be better to put autosaves beside the files anyway?
+		static string autoSavePath = PropertyService.Locations.Cache.Combine ("AutoSave");
 
 		static AutoSave ()
 		{

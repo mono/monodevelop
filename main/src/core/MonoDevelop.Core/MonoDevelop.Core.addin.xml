@@ -58,6 +58,11 @@
 		</ExtensionNode>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/Core/UserDataMigration">
+		<Description>Defines data to be migrated from the previous version of MonoDevelop.</Description>
+		<ExtensionNode name="Migration" type="MonoDevelop.Core.AddIns.UserDataMigrationNode" />
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/Ambiences" name = "Language ambiences">
 		<Description>Language ambiences. Specified classes must implement IAmbience.</Description>
 		<ExtensionNode name="Class" />
@@ -177,6 +182,11 @@
 		                  class = "MonoDevelop.Core.Execution.DotNetExecutionHandler"/>
 		<ExecutionHandler id="Native"
 		                  class = "MonoDevelop.Core.Execution.NativePlatformExecutionHandler"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/UserDataMigration">
+		<Migration sourceVersion="2.4" kind="Config" sourcePath="mono-runtimes.xml" />
+		<Migration sourceVersion="2.4" kind="Data" sourcePath="DefaultPolicies.xml" targetPath="Policies/Default.mdpolicy.xml" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/Applications">

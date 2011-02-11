@@ -497,7 +497,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				throw new InvalidOperationException ("Unknown MSBuild ToolsVersion '" + toolsVersion + "'");
 			}
 			
-			FilePath p = FilePath.Build (PropertyService.ConfigPath, "xbuild", toolsVersion, "MonoDevelop.Projects.Formats.MSBuild.exe");
+			FilePath p = FilePath.Build (PropertyService.Locations.Cache, "xbuild", toolsVersion, "MonoDevelop.Projects.Formats.MSBuild.exe");
 			if (!File.Exists (p) || File.GetLastWriteTime (p) < File.GetLastWriteTime (sourceExe)) {
 				if (!Directory.Exists (p.ParentDirectory))
 					Directory.CreateDirectory (p.ParentDirectory);

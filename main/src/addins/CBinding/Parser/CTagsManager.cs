@@ -41,7 +41,8 @@ namespace CBinding.Parser
 		public abstract Tag ParseTag (string tagEntry);
 		protected abstract IEnumerable<string> GetTags (FileInformation fileInfo);
 		protected abstract IEnumerable<string> GetTags (Project project, string filename, IEnumerable<string> headers);
-		public static readonly string SystemTagsDirectory = Path.Combine (PropertyService.ConfigPath, "system-tags");
+		
+		public static readonly string SystemTagsDirectory = PropertyService.Locations.Cache.Combine ("CTagsData");
 		
 		public static string CTagsExecutable {
 			get { return PropertyService.Get<string> ("CBinding.CTagsExecutable", "ctags"); }
@@ -50,8 +51,7 @@ namespace CBinding.Parser
 		static CTagsManager ()
 		{
 			try {
-				if (!Directory.Exists (SystemTagsDirectory))
-					Directory.CreateDirectory (SystemTagsDirectory);
+				FileService.EnsureDirectoryExists (SystemTagsDirectory);
 			} catch (IOException ioe) {
 				LoggingService.LogError ("Error creating system tags directory", ioe);
 			}

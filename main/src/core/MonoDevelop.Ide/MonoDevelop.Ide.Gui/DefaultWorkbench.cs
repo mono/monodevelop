@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.Gui
 		readonly static string toolbarsPath    = "/MonoDevelop/Ide/Toolbar";
 		readonly static string stockLayoutsPath    = "/MonoDevelop/Ide/WorkbenchLayouts";
 		
-		static string configFile = System.IO.Path.Combine (PropertyService.ConfigPath, "EditingLayout2.xml");
+		static string configFile = PropertyService.Locations.Config.Combine ("EditingLayout.xml");
 		const string fullViewModeTag = "[FullViewMode]";
 		const int MAX_LASTACTIVEWINDOWS = 10;
 		
@@ -518,10 +518,10 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public Properties GetStoredMemento(IViewContent content)
+		public Properties GetStoredMemento (IViewContent content)
 		{
 			if (content != null && content.ContentName != null) {
-				string directory = System.IO.Path.Combine (PropertyService.ConfigPath, "temp");
+				string directory = PropertyService.Locations.Cache.Combine ("temp");
 				if (!Directory.Exists(directory)) {
 					Directory.CreateDirectory(directory);
 				}

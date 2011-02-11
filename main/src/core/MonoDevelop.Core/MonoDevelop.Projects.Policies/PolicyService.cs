@@ -61,10 +61,7 @@ namespace MonoDevelop.Projects.Policies
 		{
 			AddinManager.AddExtensionNodeHandler (TYPE_EXT_POINT, HandlePolicyTypeUpdated);
 			AddinManager.AddExtensionNodeHandler (SET_EXT_POINT, HandlePolicySetUpdated);
-			MonoDevelop.Core.Runtime.ShuttingDown += delegate {
-				SaveDefaultPolicies ();
-			};
-			LoadDefaultPolicies ();
+			LoadPolicies ();
 			defaultPolicyBag.ReadOnly = true;
 			
 			PolicySet pset = GetPolicySet ("Invariant");
@@ -930,9 +927,9 @@ namespace MonoDevelop.Projects.Policies
 			return null;
 		}
 		
-		static string DefaultPoliciesPath {
+		static FilePath PoliciesFolder {
 			get {
-				return Path.Combine (PropertyService.ConfigPath, "DefaultPolicies.xml");
+				return Path.Combine (PropertyService.Locations.Data, "Policies");
 			}
 		}
 		
@@ -1148,23 +1145,31 @@ namespace MonoDevelop.Projects.Policies
 		
 		
 		/// <summary>
-		/// Saves the default policies.
+		/// Saves the policies.
 		/// </summary>
-		public static void SaveDefaultPolicies ()
+		public static void SavePolicies ()
 		{
-			ParanoidSave (DefaultPoliciesPath, "default policies", delegate (StreamWriter writer) {
-				XmlWriterSettings xws = new XmlWriterSettings ();
-				xws.Indent = true;
-				XmlWriter xw = XmlTextWriter.Create(writer, xws);
+			SavePolicy (defaultPolicies);
+			foreach (PolicySet ps in userSets)
+				SavePolicy (ps);
+		}
+		
+		static void SavePolicy (PolicySet set)
+		{
+			string file = PoliciesFolder.Combine (set.Name + ".mdpolicy.xml");
+			string friendlyName = string.Format ("policy '{0}'", set.Name);
+			ParanoidSave (file, friendlyName, delegate (StreamWriter writer) {
+				var xws = new XmlWriterSettings () {
+					Indent = true,
+				};
+				var xw = XmlTextWriter.Create (writer, xws);
 				xw.WriteStartElement ("Policies");
-				defaultPolicies.SaveToXml (xw);
-				foreach (PolicySet ps in userSets)
-					ps.SaveToXml (xw);
+				set.SaveToXml (xw);
 				xw.WriteEndElement ();
 			});
-		}	
+		}
 		
-		static void LoadDefaultPolicies ()
+		static void LoadPolicies ()
 		{
 			if (defaultPolicies != null)
 				defaultPolicies.PolicyChanged -= DefaultPoliciesPolicyChanged;
@@ -1172,7 +1177,22 @@ namespace MonoDevelop.Projects.Policies
 			userSets.Clear ();
 			defaultPolicies = null;
 			
-			ParanoidLoad (DefaultPoliciesPath, "default policies", delegate (StreamReader reader) {
+			if (Directory.Exists (PoliciesFolder)) {
+				foreach (var file in Directory.GetFiles (PoliciesFolder, "*.mdpolicy.xml")) {
+					LoadPolicy (file);
+				}
+			}
+			
+			if (defaultPolicies == null) {
+				defaultPolicies = new PolicySet ("Default", null);
+			}
+			defaultPolicies.PolicyChanged += DefaultPoliciesPolicyChanged;
+		}
+		
+		static void LoadPolicy (FilePath file)
+		{
+			string friendlyName = string.Format ("policy file '{0}'", file.FileName);
+			ParanoidLoad (file, friendlyName, delegate (StreamReader reader) {
 				var xr = XmlReader.Create (reader);
 				xr.MoveToContent ();
 				if (xr.LocalName == "PolicySet") {
@@ -1194,10 +1214,6 @@ namespace MonoDevelop.Projects.Policies
 					}
 				}
 			});
-			if (defaultPolicies == null) {
-				defaultPolicies = new PolicySet ("Default", null);
-			}
-			defaultPolicies.PolicyChanged += DefaultPoliciesPolicyChanged;
 		}
 
 		static void DefaultPoliciesPolicyChanged (object sender, PolicyChangedEventArgs e)
