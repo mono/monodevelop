@@ -696,7 +696,7 @@ namespace Mono.Debugging.Client
 		Mono.Debugging.Evaluation.ExpressionEvaluator defaultResolver = new Mono.Debugging.Evaluation.NRefactoryEvaluator ();
 		Dictionary <string, IExpressionEvaluator> evaluators = new Dictionary <string, IExpressionEvaluator> ();
 
-		public IExpressionEvaluator FindExpressionEvaluator (StackFrame frame)
+		internal IExpressionEvaluator FindExpressionEvaluator (StackFrame frame)
 		{
 			if (GetExpressionEvaluator == null)
 				return null;
@@ -717,7 +717,7 @@ namespace Mono.Debugging.Client
 			return result;
 		}
 
-		public Mono.Debugging.Evaluation.ExpressionEvaluator GetResolver (StackFrame frame)
+		public Mono.Debugging.Evaluation.ExpressionEvaluator GetEvaluator (StackFrame frame)
 		{
 			IExpressionEvaluator result = FindExpressionEvaluator (frame);
 			if (result == null)
