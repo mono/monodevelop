@@ -88,6 +88,36 @@ namespace MonoDevelop.VersionControl.Git
 		}
 		
 		[Test()]
+		public void TestBlameRevisionsWithTwoCommits ()
+		{
+			string commit1 = "b6e41ee2dd00e8744abc4835567e06667891b2cf";
+			string commit2 = "15ed279";
+			RevCommit[] blameCommits = GetBlameForFixedFile (commit2);
+			List<BlameFragment> blames = new List<BlameFragment> ();
+			blames.Add (new BlameFragment (1, 27, commit1));
+			blames.Add (new BlameFragment (28, 1, commit2));
+			blames.Add (new BlameFragment (29, 5, commit1));
+			blames.Add (new BlameFragment (34, 1, commit2));
+			blames.Add (new BlameFragment (35, 7, commit1));
+			blames.Add (new BlameFragment (42, 1, commit2));
+			blames.Add (new BlameFragment (43, 3, commit1));
+			blames.Add (new BlameFragment (46, 10, commit2));
+			blames.Add (new BlameFragment (56, 2, commit1));
+			blames.Add (new BlameFragment (58, 1, commit2));
+			blames.Add (new BlameFragment (59, 4, commit1));
+			blames.Add (new BlameFragment (63, 1, commit2));
+			blames.Add (new BlameFragment (64, 4, commit2));
+			CompareBlames (blameCommits, blames);
+		}
+		
+		[Test()]
+		public void TestBlameLineCountWithTwoCommits ()
+		{
+			RevCommit[] blameCommits = GetBlameForFixedFile ("15ed279");
+			Assert.That (blameCommits.Length, Is.EqualTo (67));
+		}
+		
+		[Test()]
 		public void TestBlameRevisionsWithOneCommit ()
 		{
 			string commit = "b6e41ee2dd00e8744abc4835567e06667891b2cf";
