@@ -705,6 +705,17 @@ namespace Mono.Debugging.Soft
 			return target_loc;
 		}
 		
+		public override bool CanCancelAsyncEvaluations {
+			get {
+				return true;
+			}
+		}
+		
+		public override void CancelAsyncEvaluations ()
+		{
+			Adaptor.CancelAsyncOperations ();
+		}
+		
 		protected override void OnNextInstruction ()
 		{
 			Step (StepDepth.Over, StepSize.Min);

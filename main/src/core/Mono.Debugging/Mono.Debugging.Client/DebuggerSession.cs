@@ -693,6 +693,14 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		public virtual void CancelAsyncEvaluations ()
+		{
+		}
+		
+		public virtual bool CanCancelAsyncEvaluations {
+			get { return false; }
+		}
+		
 		Mono.Debugging.Evaluation.ExpressionEvaluator defaultResolver = new Mono.Debugging.Evaluation.NRefactoryEvaluator ();
 		Dictionary <string, IExpressionEvaluator> evaluators = new Dictionary <string, IExpressionEvaluator> ();
 
