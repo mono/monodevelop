@@ -24,7 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.CSharp.Dom;
+using MonoDevelop.CSharp.Ast;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects.Dom;
 using System.Text;

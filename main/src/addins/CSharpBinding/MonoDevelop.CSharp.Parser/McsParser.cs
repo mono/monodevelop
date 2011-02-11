@@ -31,7 +31,7 @@ using System.IO;
 using Mono.CSharp;
 using System.Text;
 using Mono.TextEditor;
-using MonoDevelop.CSharp.Dom;
+using MonoDevelop.CSharp.Ast;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.CSharp.Resolver;
@@ -596,7 +596,7 @@ namespace MonoDevelop.CSharp.Parser
 				VisitType (e, ClassType.Enum);
 			}
 			
-			class CodeDomVisitor : StructuralVisitor
+			class CodeAstVisitor : StructuralVisitor
 			{
 				public override object Visit (Constant constant)
 				{

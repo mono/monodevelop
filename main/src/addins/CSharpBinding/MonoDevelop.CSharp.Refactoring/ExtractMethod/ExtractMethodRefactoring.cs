@@ -39,7 +39,7 @@ using System.Text;
 using Mono.TextEditor.PopupWindow;
 using MonoDevelop.Refactoring;
 using MonoDevelop.CSharp.Parser;
-using MonoDevelop.CSharp.Dom;
+using MonoDevelop.CSharp.Ast;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.CSharp.Resolver;
@@ -171,7 +171,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				set;
 			}
 			
-			public List<DomNode> Nodes {
+			public List<AstNode> Nodes {
 				get;
 				set;
 			}
@@ -253,7 +253,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			
 			var startLocation = data.Document.OffsetToLocation (data.SelectionRange.Offset);
 			var endLocation = data.Document.OffsetToLocation (data.SelectionRange.EndOffset);
-			param.Nodes = new List<DomNode> (unit.GetNodesBetween (startLocation.Line, startLocation.Column, endLocation.Line, endLocation.Column));
+			param.Nodes = new List<AstNode> (unit.GetNodesBetween (startLocation.Line, startLocation.Column, endLocation.Line, endLocation.Column));
 			
 			string text = options.Document.Editor.GetTextAt (options.Document.Editor.SelectionRange);
 			

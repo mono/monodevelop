@@ -93,12 +93,12 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			var compilationUnit = new MonoDevelop.CSharp.Parser.CSharpParser ().Parse (data);
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-			var domSpacingVisitor = new DomSpacingVisitor (policy, data) {
+			var domSpacingVisitor = new AstSpacingVisitor (policy, data) {
 				AutoAcceptChanges = false,
 			};
 			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
 			
-			var domIndentationVisitor = new DomIndentationVisitor (policy, data) {
+			var domIndentationVisitor = new AstIndentationVisitor (policy, data) {
 				AutoAcceptChanges = false,
 			};
 			compilationUnit.AcceptVisitor (domIndentationVisitor, null);
@@ -208,12 +208,12 @@ namespace MonoDevelop.CSharp.Formatting
 			var compilationUnit = new MonoDevelop.CSharp.Parser.CSharpParser ().Parse (data);
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 			
-			var domSpacingVisitor = new DomSpacingVisitor (policy, data) {
+			var domSpacingVisitor = new AstSpacingVisitor (policy, data) {
 				AutoAcceptChanges = false,
 			};
 			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
 			
-			var domIndentationVisitor = new DomIndentationVisitor (policy, data) {
+			var domIndentationVisitor = new AstIndentationVisitor (policy, data) {
 				AutoAcceptChanges = false,
 			};
 			compilationUnit.AcceptVisitor (domIndentationVisitor, null);

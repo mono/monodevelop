@@ -39,7 +39,7 @@ using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Parser;
 
 using System.Text.RegularExpressions;
-using MonoDevelop.CSharp.Dom;
+using MonoDevelop.CSharp.Ast;
 using Mono.TextEditor;
 
 namespace MonoDevelop.CSharp.Completion

@@ -46,7 +46,7 @@ using MonoDevelop.Ide.CodeCompletion;
 
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Parser;
-using MonoDevelop.CSharp.Dom;
+using MonoDevelop.CSharp.Ast;
 using MonoDevelop.CSharp.Project;
 using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.Components;

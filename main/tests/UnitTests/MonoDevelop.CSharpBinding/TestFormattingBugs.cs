@@ -147,12 +147,12 @@ using (IDisposable b = null) {
 		" + input + @"
 	}
 }";
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			DomSpacingVisitor domSpacingVisitor = new DomSpacingVisitor (policy, data);
+			var compilationUnit = new CSharpParser ().Parse (data);
+			AstSpacingVisitor domSpacingVisitor = new AstSpacingVisitor (policy, data);
 			domSpacingVisitor.AutoAcceptChanges = false;
 			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
 			
-			DomIndentationVisitor domIndentationVisitor = new DomIndentationVisitor (policy, data);
+			AstIndentationVisitor domIndentationVisitor = new AstIndentationVisitor (policy, data);
 			domIndentationVisitor.AutoAcceptChanges = false;
 			compilationUnit.AcceptVisitor (domIndentationVisitor, null);
 			
@@ -201,8 +201,8 @@ using (IDisposable b = null) {
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.MethodBraceStyle = BraceStyle.EndOfLine;
 			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			var compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
 			
 			Assert.AreEqual (@"class Test
 {

@@ -59,8 +59,8 @@ namespace B {
 			policy.NamespaceBraceStyle = BraceStyle.EndOfLine;
 			policy.ClassBraceStyle = BraceStyle.DoNotChange;
 			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			var compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
 			Assert.AreEqual (@"namespace A {
 	namespace B {
 		class Test {}
@@ -69,7 +69,7 @@ namespace B {
 			
 			policy.NamespaceBraceStyle = BraceStyle.NextLineShifted;
 			compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
 			Assert.AreEqual (@"namespace A
 	{
 	namespace B
@@ -90,8 +90,8 @@ namespace B {
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.ClassBraceStyle =  BraceStyle.EndOfLine;
 			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			var compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
 			Assert.AreEqual (@"class Test {
 }", data.Document.Text);
 		}
@@ -106,8 +106,8 @@ namespace B {
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.StructBraceStyle =  BraceStyle.NextLine;
 			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			var compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
 			Assert.AreEqual (@"struct Test
 {
 }", data.Document.Text);
@@ -123,8 +123,8 @@ namespace B {
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.InterfaceBraceStyle =  BraceStyle.NextLine;
 			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			var compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
 			Assert.AreEqual (@"interface Test
 {
 }", data.Document.Text);
@@ -142,8 +142,8 @@ namespace B {
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.EnumBraceStyle =  BraceStyle.NextLineShifted;
 			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			var compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
 			Assert.AreEqual (@"enum Test
 	{
 	A
@@ -163,8 +163,8 @@ namespace B {
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.MethodBraceStyle = BraceStyle.NextLine;
 			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			var compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
 			
 			Assert.AreEqual (@"class Test
 {
@@ -187,8 +187,8 @@ namespace B {
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.ConstructorBraceStyle = BraceStyle.NextLine;
 			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			var compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
 			
 			Console.WriteLine (data.Document.Text);
 			Assert.AreEqual (@"class Test
@@ -212,8 +212,8 @@ namespace B {
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.DestructorBraceStyle = BraceStyle.NextLine;
 			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			var compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
 			
 			Console.WriteLine (data.Document.Text);
 			Assert.AreEqual (@"class Test
@@ -240,8 +240,8 @@ namespace B {
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.PropertyBraceStyle = BraceStyle.NextLine;
 			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			var compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
 			
 			Console.WriteLine (data.Document.Text);
 			Assert.AreEqual (@"class Test
@@ -272,8 +272,8 @@ namespace B {
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.PropertyGetBraceStyle = BraceStyle.NextLine;
 			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			var compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
 			
 			Console.WriteLine (data.Document.Text);
 			Assert.AreEqual (@"class Test
@@ -306,8 +306,8 @@ namespace B {
 			policy.AllowPropertyGetBlockInline = true;
 			policy.AllowPropertySetBlockInline = false;
 			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			var compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
 			
 			Console.WriteLine (data.Document.Text);
 			Assert.AreEqual (@"class Test
@@ -322,7 +322,7 @@ namespace B {
 			
 			policy.AllowPropertyGetBlockInline = false;
 			compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
 			
 			Assert.AreEqual (@"class Test
 {
@@ -355,8 +355,8 @@ namespace B {
 			policy.AllowPropertyGetBlockInline = false;
 			policy.AllowPropertySetBlockInline = true;
 			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			var compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
 			
 			Console.WriteLine (data.Document.Text);
 			Assert.AreEqual (@"class Test
@@ -371,7 +371,7 @@ namespace B {
 			
 			policy.AllowPropertySetBlockInline = false;
 			compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
 			
 			Assert.AreEqual (@"class Test
 {
@@ -404,8 +404,8 @@ namespace B {
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.PropertySetBraceStyle = BraceStyle.NextLine;
 			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			var compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
 			
 			Console.WriteLine (data.Document.Text);
 			Assert.AreEqual (@"class Test
@@ -440,8 +440,8 @@ namespace B {
 			policy.EventAddBraceStyle = BraceStyle.NextLine;
 			policy.EventRemoveBraceStyle = BraceStyle.NextLine;
 			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			var compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
 			
 			Console.WriteLine (data.Document.Text);
 			Assert.AreEqual (@"class Test
@@ -475,8 +475,8 @@ namespace B {
 			policy.AllowEventAddBlockInline = true;
 			policy.AllowEventRemoveBlockInline = false;
 			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			var compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
 			
 			Console.WriteLine (data.Document.Text);
 			Assert.AreEqual (@"class Test
@@ -507,8 +507,8 @@ namespace B {
 			policy.AllowEventAddBlockInline = false;
 			policy.AllowEventRemoveBlockInline = true;
 			
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new DomIndentationVisitor (policy, data), null);
+			var compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
 			
 			Console.WriteLine (data.Document.Text);
 			Assert.AreEqual (@"class Test
