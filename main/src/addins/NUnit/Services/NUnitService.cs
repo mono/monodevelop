@@ -152,9 +152,20 @@ namespace MonoDevelop.NUnit
 				resultsPad = IdeApp.Workbench.ShowPad (new TestResultsPad (), "MonoDevelop.NUnit.TestResultsPad", GettextCatalog.GetString ("Test results"), "Bottom", "md-solution");
 			}
 			
+			// Make the pad sticky while the tests are runnig, so the results pad is always visible (even if minimized)
+			// That's required since when running in debug mode, the layout is automatically switched to debug.
+			
+			resultsPad.Sticky = true;
 			resultsPad.BringToFront ();
+			
 			TestSession session = new TestSession (test, context, (TestResultsPad) resultsPad.Content);
+			
+			session.Completed += delegate {
+				resultsPad.Sticky = false;
+			};
+			
 			session.Start ();
+			
 			return session;
 		}
 		
