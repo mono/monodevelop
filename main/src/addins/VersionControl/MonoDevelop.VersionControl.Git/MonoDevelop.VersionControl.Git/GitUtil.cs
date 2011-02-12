@@ -40,6 +40,7 @@ using NGit.Merge;
 using NGit.Storage.File;
 using NGit.Transport;
 using NGit.Diff;
+using Mono.TextEditor.Utils;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -380,67 +381,67 @@ namespace MonoDevelop.VersionControl.Git
 			RevCommit[] lines = new RevCommit [lineCount];
 			RevWalk revWalker = new RevWalk (repo);
 			revWalker.MarkStart (commit);
-			List<RevCommit> commitHistory = new List<RevCommit>();
+			List<RevCommit> commitHistory = new List<RevCommit> ();
 			FilePath localCpath = FromGitPath (repo, localFile);
-			
+
 			foreach (RevCommit ancestorCommit in revWalker) {
 				foreach (Change change in GetCommitChanges (repo, ancestorCommit)) {
 					FilePath cpath = FromGitPath (repo, change.Path);
-					if (localCpath == cpath || cpath.IsChildPathOf (localCpath))
-					{
-						commitHistory.Add(ancestorCommit);
+					if (localCpath == cpath || cpath.IsChildPathOf (localCpath)) {
+						commitHistory.Add (ancestorCommit);
 						break;
 					}
 				}
 			}
-			
+
 			int historySize = commitHistory.Count;
-			
+
 			if (historySize > 1) {
-				RevCommit recentCommit = commitHistory[0];
+				RevCommit recentCommit = commitHistory [0];
 				RawText latestRawText = GetRawText (repo, localFile, recentCommit);
-				
+
 				for (int i = 1; i < historySize; i++) {
-					RevCommit ancestorCommit = commitHistory[i];
+					RevCommit ancestorCommit = commitHistory [i];
 					RawText ancestorRawText = GetRawText (repo, localFile, ancestorCommit);
-					lineCount -= SetBlameLines(repo, lines, recentCommit, latestRawText, ancestorRawText);
+					lineCount -= SetBlameLines (repo, lines, recentCommit, latestRawText, ancestorRawText);
 					recentCommit = ancestorCommit;
-					
-					if (lineCount <= 0)
-					{
+
+					if (lineCount <= 0) {
 						break;
 					}
 				}
-				
+
 				if (lineCount > 0) {
-					RevCommit firstCommit = commitHistory[historySize - 1];
-					
+					RevCommit firstCommit = commitHistory [historySize - 1];
+
 					for (int i = 0; i < totalLines; i++) {
-						if (lines[i] == null) {
-							lines[i] = firstCommit;
+						if (lines [i] == null) {
+							lines [i] = firstCommit;
 						}
 					}
 				}
 			} else if (historySize == 1) {
-				RevCommit firstCommit = commitHistory[0];
-					
+				RevCommit firstCommit = commitHistory [0];
+
 				for (int i = 0; i < totalLines; i++) {
-					lines[i] = firstCommit;
+					lines [i] = firstCommit;
 				}
 			}
-			
+
 			return lines;
 		}
-		
-		static int GetFileLineCount (NGit.Repository repo, TreeWalk tw) {
+
+		static int GetFileLineCount (NGit.Repository repo, TreeWalk tw)
+		{
 			ObjectId id = tw.GetObjectId (0);
 			byte[] data = repo.ObjectDatabase.Open (id).GetBytes ();			
-			return new RawText (data).Size();
+			return new RawText (data).Size ();
 		}
-		
-		static RawText GetRawText(NGit.Repository repo, string file, RevCommit commit) {
+
+		static RawText GetRawText (NGit.Repository repo, string file, RevCommit commit)
+		{
 			TreeWalk tw = TreeWalk.ForPath (repo, file, commit.Tree);
-			ObjectId objectID = tw.GetObjectId(0);
+			ObjectId objectID = tw.GetObjectId (0);
 			byte[] data = repo.ObjectDatabase.Open (objectID).GetBytes ();
 			return new RawText (data);
 		}
@@ -448,38 +449,73 @@ namespace MonoDevelop.VersionControl.Git
 		static int SetBlameLines (NGit.Repository repo, RevCommit[] lines, RevCommit commit, RawText curText, RawText ancestorText)
 		{
 			int lineCount = 0;
-			var differ = MyersDiff<RawText>.INSTANCE;
-			
-			foreach (Edit e in differ.Diff (RawTextComparator.DEFAULT, ancestorText, curText)) {
-				System.Console.WriteLine ("{4} A: {0} to {1}; B: {2} to {3}", e.GetBeginA(), e.GetEndA(), e.GetBeginB(), e.GetEndB(), e.GetType());
-				System.Console.WriteLine (curText.GetString(e.GetBeginB(), e.GetEndB(), true));
-				for (int n = e.GetBeginB (); n < e.GetEndB (); n++) {
-					if (lines [n] == null) {
-						lines [n] = commit;
+			IEnumerable<Hunk> diffHunks = GetDiffHunks (curText, ancestorText);
+
+			foreach (Hunk e in diffHunks) {
+				int basePosition = e.InsertStart - 1;
+				for (int i = 0; i < e.Inserted; i++) {
+					int lineNum = basePosition + i;
+					if (lines [lineNum] == null) {
+						lines [lineNum] = commit;
 						lineCount ++;
 					}
 				}
 			}
-			
+
 			return lineCount;
+		}
+
+		static IEnumerable<Hunk> GetDiffHunks (RawText curText, RawText ancestorText)
+		{
+			Dictionary<string, int> codeDictionary = new Dictionary<string, int> ();
+			int codeCounter = 0;
+			int[] ancestorDiffCodes = GetDiffCodes (ref codeCounter, codeDictionary, ancestorText);
+			int[] currentDiffCodes = GetDiffCodes (ref codeCounter, codeDictionary, curText);
+			return Diff.GetDiff<int> (ancestorDiffCodes, currentDiffCodes);
+		}
+
+		static int[] GetDiffCodes (ref int codeCounter, Dictionary<string, int> codeDictionary, RawText text)
+		{
+			int lineCount = text.Size ();
+			int[] result = new int[lineCount];
+			string[] lines = GetLineStrings (text);
+			for (int i = 0; i < lineCount; i++) {
+				string lineText = lines [i];
+				int curCode;
+				if (!codeDictionary.TryGetValue (lineText, out curCode)) {
+					codeDictionary [lineText] = curCode = ++codeCounter;
+				}
+				result [i] = curCode;
+			}
+			return result;
+		}
+
+		static string[] GetLineStrings (RawText text)
+		{
+			int lineCount = text.Size ();
+			string[] lines = new string[lineCount];
+
+			for (int i = 0; i < lineCount; i++) {
+				lines [i] = text.GetString (i);
+			}
+
+			return lines;
 		}
 
 		static int FillRemainingBlame (RevCommit[] lines, RevCommit commit)
 		{
 			int lineCount = 0;
-			
+
 			for (int n=0; n<lines.Length; n++) {
 				if (lines [n] == null) {
 					lines [n] = commit;
 					lineCount++;
 				}
 			}
-			
+
 			return lineCount;
 		}
 
-
-		
 		public static MergeCommandResult CherryPick (NGit.Repository repo, RevCommit srcCommit)
 		{
 			RevCommit newHead = null;
