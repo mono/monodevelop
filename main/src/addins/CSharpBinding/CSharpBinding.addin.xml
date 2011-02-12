@@ -110,7 +110,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Ambiences">
-		<Class id = "C#" class = "MonoDevelop.CSharp.Dom.CSharpAmbience" />
+		<Class id = "C#" class = "MonoDevelop.CSharp.Ast.CSharpAmbience" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
