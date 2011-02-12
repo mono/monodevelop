@@ -532,39 +532,6 @@ namespace MonoDevelop.VersionControl.Git
 
 			return lineCount;
 		}
-
-		public static MergeCommandResult CherryPick (NGit.Repository repo, RevCommit srcCommit)
-		{
-			int lineCount = 0;
-			var differ = MyersDiff<RawText>.INSTANCE;
-			
-			foreach (Edit e in differ.Diff (RawTextComparator.DEFAULT, ancestorText, curText)) {
-				for (int n = e.GetBeginB (); n < e.GetEndB (); n++) {
-					if (lines [n] == null) {
-						lines [n] = commit;
-						lineCount ++;
-					}
-				}
-			}
-			
-			return lineCount;
-		}
-
-		static int FillRemainingBlame (RevCommit[] lines, RevCommit commit)
-		{
-			int lineCount = 0;
-			
-			for (int n=0; n<lines.Length; n++) {
-				if (lines [n] == null) {
-					lines [n] = commit;
-					lineCount++;
-				}
-			}
-			
-			return lineCount;
-		}
-
-
 		
 		public static MergeCommandResult MergeTrees (NGit.Repository repo, RevCommit srcBase, RevCommit srcCommit, string sourceDisplayName, bool commitResult)
 		{

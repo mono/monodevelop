@@ -253,10 +253,7 @@
     <Folder Include="MonoDevelop.Refactoring\" />
     <Folder Include="MonoDevelop.Projects.Gui\" />
     <Folder Include="MonoDevelop.AspNet\" />
-<<<<<<< HEAD
-=======
     <Folder Include="MonoDevelop.VersionControl.Views\" />
->>>>>>> master
     <Folder Include="MonoDevelop.VersionControl.Git\" />
   </ItemGroup>
 </Project>
