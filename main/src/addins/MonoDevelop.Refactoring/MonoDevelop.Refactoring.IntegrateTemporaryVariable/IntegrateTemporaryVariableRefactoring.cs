@@ -169,11 +169,25 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 							TextReplaceChange change = new TextReplaceChange ();
 							change.Description = string.Format (GettextCatalog.GetString ("Deleting local variable declaration {0}"), options.GetName ());
 							change.FileName = options.Options.Document.FileName;
-
-							change.Offset = options.Options.Document.Editor.Document.LocationToOffset (localVariableDeclaration.StartLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.Start.Line, localVariableDeclaration.StartLocation.Column);
+							int lineNumber = localVariableDeclaration.StartLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.Start.Line;
+							change.Offset = options.Options.Document.Editor.Document.LocationToOffset (lineNumber, localVariableDeclaration.StartLocation.Column);
 							int end = options.Options.Document.Editor.Document.LocationToOffset (localVariableDeclaration.EndLocation.Line + ((LocalVariable)options.Options.SelectedItem).DeclaringMember.BodyRegion.Start.Line, localVariableDeclaration.EndLocation.Column);
-
 							change.RemovedChars = end - change.Offset;
+							// check if whole line can be removed.
+							var line = options.Options.Document.Editor.GetLine (lineNumber);
+							if (line.GetIndentation (options.Options.Document.Editor.Document).Length == localVariableDeclaration.StartLocation.Column - 1) {
+								bool isEmpty = true;
+								for (int i = end; i < line.EndOffset; i++) {
+									if (!char.IsWhiteSpace (options.Options.Document.Editor.GetCharAt (i))) {
+										isEmpty = false;
+										break;
+									}
+								}
+								if (isEmpty) {
+									change.Offset = line.Offset;
+									change.RemovedChars = line.Length;
+								}
+							}
 							change.InsertedText = "";
 							((IntegrateTemporaryVariableVisitorOptions)data).Changes.Add (change);
 						} else {
@@ -282,7 +296,6 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 			}
 			public override object VisitBinaryOperatorExpression (BinaryOperatorExpression expression, object data) // there are too much Parenthisiz
 			{
-				Console.WriteLine ("BinaryOperatorExpression");
 				IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
 				if (IsExpressionToReplace (expression.Left, (IntegrateTemporaryVariableVisitorOptions)data))
 					if (IsUnary (options.Initializer))
@@ -301,7 +314,6 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 			}
 			public override object VisitConditionalExpression (ConditionalExpression expression, object data)
 			{
-				Console.WriteLine ("ConditionalExpression");
 				IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
 				if (IsExpressionToReplace (expression.Condition, (IntegrateTemporaryVariableVisitorOptions)data))
 					if (IsUnary (options.Initializer))
@@ -367,7 +379,6 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 			
 			public override object VisitIdentifierExpression (IdentifierExpression e, object data)
 			{
-				Console.WriteLine ("IdentifierExpression");
 				IntegrateTemporaryVariableVisitorOptions options = (IntegrateTemporaryVariableVisitorOptions)data;
 				if (!(e.Identifier == options.GetName ())) {
 					return data;

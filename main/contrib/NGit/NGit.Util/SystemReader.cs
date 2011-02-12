@@ -43,6 +43,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
 using System.Net;
+using NGit;
 using NGit.Storage.File;
 using NGit.Util;
 using Sharpen;
@@ -60,9 +61,9 @@ namespace NGit.Util
 	/// </remarks>
 	public abstract class SystemReader
 	{
-		private sealed class _SystemReader_64 : SystemReader
+		private sealed class _SystemReader_65 : SystemReader
 		{
-			public _SystemReader_64()
+			public _SystemReader_65()
 			{
 			}
 
@@ -78,10 +79,41 @@ namespace NGit.Util
 				return Runtime.GetProperty(key);
 			}
 
-			public override FileBasedConfig OpenUserConfig(FS fs)
+			public override FileBasedConfig OpenSystemConfig(Config parent, FS fs)
+			{
+				FilePath prefix = fs.GitPrefix();
+				if (prefix == null)
+				{
+					return new _FileBasedConfig_79(null, fs);
+				}
+				// empty, do not load
+				// regular class would bomb here
+				FilePath etc = fs.Resolve(prefix, "etc");
+				FilePath config = fs.Resolve(etc, "gitconfig");
+				return new FileBasedConfig(parent, config, fs);
+			}
+
+			private sealed class _FileBasedConfig_79 : FileBasedConfig
+			{
+				public _FileBasedConfig_79(FilePath baseArg1, FS baseArg2) : base(baseArg1, baseArg2
+					)
+				{
+				}
+
+				public override void Load()
+				{
+				}
+
+				public override bool IsOutdated()
+				{
+					return false;
+				}
+			}
+
+			public override FileBasedConfig OpenUserConfig(Config parent, FS fs)
 			{
 				FilePath home = fs.UserHome();
-				return new FileBasedConfig(new FilePath(home, ".gitconfig"), fs);
+				return new FileBasedConfig(parent, new FilePath(home, ".gitconfig"), fs);
 			}
 
 			public override string GetHostname()
@@ -113,7 +145,7 @@ namespace NGit.Util
 			}
 		}
 
-		private static SystemReader INSTANCE = new _SystemReader_64();
+		private static SystemReader INSTANCE = new _SystemReader_65();
 
 		/// <returns>the live instance to read system properties.</returns>
 		public static SystemReader GetInstance()
@@ -143,12 +175,28 @@ namespace NGit.Util
 		/// <returns>value of the system property</returns>
 		public abstract string GetProperty(string key);
 
+		/// <param name="parent">a config with values not found directly in the returned config
+		/// 	</param>
 		/// <param name="fs">
-		/// the file system abstraction which will be necessary to
-		/// perform certain file system operations.
+		/// the file system abstraction which will be necessary to perform
+		/// certain file system operations.
 		/// </param>
 		/// <returns>the git configuration found in the user home</returns>
-		public abstract FileBasedConfig OpenUserConfig(FS fs);
+		public abstract FileBasedConfig OpenUserConfig(Config parent, FS fs);
+
+		/// <param name="parent">
+		/// a config with values not found directly in the returned
+		/// config. Null is a reasonable value here.
+		/// </param>
+		/// <param name="fs">
+		/// the file system abstraction which will be necessary to perform
+		/// certain file system operations.
+		/// </param>
+		/// <returns>
+		/// the gitonfig configuration found in the system-wide "etc"
+		/// directory
+		/// </returns>
+		public abstract FileBasedConfig OpenSystemConfig(Config parent, FS fs);
 
 		/// <returns>the current system time</returns>
 		public abstract long GetCurrentTime();

@@ -37,7 +37,7 @@ namespace MonoDevelop.XmlEditor
 		{
 			foreach (XmlFileAssociationNode node in AddinManager.GetExtensionNodes ("/MonoDevelop/XmlEditor/XmlFileAssociations")) {
 				var assoc = node.GetAssociation ();
-				map.Add (assoc.Extension, assoc);
+				map[assoc.Extension] = assoc;
 			}
 		}
 		
@@ -90,4 +90,5 @@ namespace MonoDevelop.XmlEditor
 			return XmlEditorOptions.GetFileAssociation (extension) != null;
 		}
 	}
+
 }

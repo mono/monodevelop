@@ -53,6 +53,8 @@ namespace MonoDevelop.AddinAuthoring
 		[ItemProperty()]
 		[NodeAttribute("testCommand")]
 		string testCommand;
+		
+		internal AddinRegistry CachedRegistry { get; set; }
 
 		public RegistryInfo ()
 		{

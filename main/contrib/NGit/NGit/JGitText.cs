@@ -130,6 +130,8 @@ namespace NGit
 
 		public string branchNameInvalid;
 
+		public string cachedPacksPreventsIndexCreation;
+
 		public string cannotBeCombined;
 
 		public string cannotCombineTreeFilterWithRevFilter;
@@ -209,6 +211,8 @@ namespace NGit
 		public string cannotWorkWithOtherStagesThanZeroRightNow;
 
 		public string canOnlyCherryPickCommitsWithOneParent;
+
+		public string canOnlyRevertCommitsWithOneParent;
 
 		public string cantFindObjectInReversePackIndexForTheSpecifiedOffset;
 
@@ -302,6 +306,8 @@ namespace NGit
 
 		public string couldNotReadIndexInOneGo;
 
+		public string couldNotReadObjectWhileParsingCommit;
+
 		public string couldNotRenameDeleteOldIndex;
 
 		public string couldNotRenameTemporaryFile;
@@ -317,6 +323,8 @@ namespace NGit
 		public string createBranchFailedUnknownReason;
 
 		public string createBranchUnexpectedResult;
+
+		public string createNewFileFailed;
 
 		public string credentialPassword;
 
@@ -401,6 +409,8 @@ namespace NGit
 		public string exceptionCaughtDuringExecutionOfPushCommand;
 
 		public string exceptionCaughtDuringExecutionOfPullCommand;
+
+		public string exceptionCaughtDuringExecutionOfRevertCommand;
 
 		public string exceptionCaughtDuringExecutionOfRmCommand;
 
@@ -572,6 +582,10 @@ namespace NGit
 
 		public string malformedpersonIdentString;
 
+		public string mergeConflictOnNotes;
+
+		public string mergeConflictOnNonNoteEntries;
+
 		public string mergeStrategyAlreadyExistsAsDefault;
 
 		public string mergeStrategyDoesNotSupportHeads;
@@ -595,6 +609,10 @@ namespace NGit
 		public string missingSecretkey;
 
 		public string mixedStagesNotAllowed;
+
+		public string mkDirFailed;
+
+		public string mkDirsFailed;
 
 		public string multipleMergeBasesFor;
 
@@ -702,6 +720,8 @@ namespace NGit
 
 		public string packingCancelledDuringObjectsWriting;
 
+		public string packWriterStatistics;
+
 		public string pathIsNotInWorkingDir;
 
 		public string peeledLineBeforeRef;
@@ -804,6 +824,8 @@ namespace NGit
 
 		public string searchForReuse;
 
+		public string searchForSizes;
+
 		public string sequenceTooLargeForDiffAlgorithm;
 
 		public string serviceNotPermitted;
@@ -841,6 +863,8 @@ namespace NGit
 		public string submodulesNotSupported;
 
 		public string symlinkCannotBeWrittenAsTheLinkTarget;
+
+		public string systemConfigFileInvalid;
 
 		public string tagNameInvalid;
 
@@ -881,6 +905,8 @@ namespace NGit
 		public string unableToWrite;
 
 		public string unencodeableFile;
+
+		public string unexpectedCompareResult;
 
 		public string unexpectedEndOfConfigFile;
 

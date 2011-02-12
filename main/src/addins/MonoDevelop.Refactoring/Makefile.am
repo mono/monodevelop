@@ -68,6 +68,7 @@ FILES =  \
 	MonoDevelop.Refactoring.Rename/RenameHandler.cs \
 	MonoDevelop.Refactoring.Rename/RenameItemDialog.cs \
 	MonoDevelop.Refactoring.Rename/RenameRefactoring.cs \
+	MonoDevelop.Refactoring.Rename/RenameTextEditorExtension.cs \
 	MonoDevelop.Refactoring/AbstractRefactoringCommandHandler.cs \
 	MonoDevelop.Refactoring/Change.cs \
 	MonoDevelop.Refactoring/EncapsulateFieldDialog.cs \

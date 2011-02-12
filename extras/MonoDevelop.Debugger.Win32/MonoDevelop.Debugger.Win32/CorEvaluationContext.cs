@@ -23,11 +23,11 @@ namespace MonoDevelop.Debugger.Win32
 		internal CorEvaluationContext (CorDebuggerSession session, CorBacktrace backtrace, int index, DC.EvaluationOptions ops): base (ops)
 		{
 			Session = session;
-			Evaluator = session.Evaluator;
 			base.Adapter = session.ObjectAdapter;
 			frameIndex = index;
 			this.backtrace = backtrace;
 			evalTimestamp = CorDebuggerSession.EvaluationTimestamp;
+			Evaluator = session.GetEvaluator (CorBacktrace.CreateFrame (session, Frame));
 		}
 
 		public new CorObjectAdaptor Adapter {

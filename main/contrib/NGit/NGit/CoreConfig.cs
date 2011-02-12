@@ -104,7 +104,6 @@ namespace NGit
 		}
 
 		/// <returns>the preferred pack index file format; 0 for oldest possible.</returns>
-		/// <seealso cref="NGit.Transport.IndexPack">NGit.Transport.IndexPack</seealso>
 		public virtual int GetPackIndexVersion()
 		{
 			return packIndexVersion;

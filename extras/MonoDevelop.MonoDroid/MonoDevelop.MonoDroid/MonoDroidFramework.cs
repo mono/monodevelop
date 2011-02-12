@@ -304,6 +304,10 @@ namespace MonoDevelop.MonoDroid
 			new AndroidVersion (8, "2.2"),
 			new AndroidVersion (9, "2.3"),
 		};
+		
+		public static AndroidVersion DefaultAndroidVersion {
+			get { return AndroidVersions[AndroidVersions.Length-1]; }
+		}
 	}
 	
 	public class MonoDroidInstalledCondition : ConditionType

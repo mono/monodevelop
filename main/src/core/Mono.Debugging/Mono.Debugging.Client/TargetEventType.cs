@@ -5,13 +5,15 @@ namespace Mono.Debugging.Client
 	[Serializable]
 	public enum TargetEventType
 	{
-		TargetRunning,
+		TargetReady,
 		TargetStopped,
 		TargetInterrupted,
 		TargetHitBreakpoint,
 		TargetSignaled,
 		TargetExited,
 		ExceptionThrown,
-		UnhandledException
+		UnhandledException,
+		ThreadStarted,
+		ThreadStopped
 	}
 }

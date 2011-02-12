@@ -433,6 +433,42 @@ namespace Mono.CSharp
 			return this;
 		}
 
+		public override List<TypeSpec> ResolveMissingDependencies ()
+		{
+			List<TypeSpec> missing = null;
+
+			if (Kind == MemberKind.MissingType) {
+				missing = new List<TypeSpec> ();
+				missing.Add (this);
+				return missing;
+			}
+
+			foreach (var targ in TypeArguments) {
+				if (targ.Kind == MemberKind.MissingType) {
+					if (missing == null)
+						missing = new List<TypeSpec> ();
+
+					missing.Add (targ);
+				}
+			}
+
+			if (Interfaces != null) {
+				foreach (var iface in Interfaces) {
+					if (iface.Kind == MemberKind.MissingType) {
+						if (missing == null)
+							missing = new List<TypeSpec> ();
+
+						missing.Add (iface);
+					}
+				}
+			}
+
+			if (missing != null || BaseType == null)
+				return missing;
+
+			return BaseType.ResolveMissingDependencies ();
+		}
+
 		public void SetMetaInfo (MetaType info)
 		{
 			if (this.info != null)
@@ -1083,9 +1119,10 @@ namespace Mono.CSharp
 			return null;
 		}
 
-		bool IMemberDefinition.IsNotCLSCompliant ()
-		{
-			return false;
+		bool? IMemberDefinition.CLSAttributeValue {
+			get {
+				return null;
+			}
 		}
 
 		void IMemberDefinition.SetIsAssigned ()
@@ -1216,9 +1253,10 @@ namespace Mono.CSharp
 			return Element.MemberDefinition.ConditionalConditions ();
 		}
 
-		bool IMemberDefinition.IsNotCLSCompliant ()
-		{
-			return Element.MemberDefinition.IsNotCLSCompliant ();
+		bool? IMemberDefinition.CLSAttributeValue {
+			get {
+				return Element.MemberDefinition.CLSAttributeValue;
+			}
 		}
 
 		public void SetIsAssigned ()

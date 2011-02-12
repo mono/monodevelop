@@ -172,12 +172,6 @@ namespace NGit
 			}
 		}
 
-		/// <returns>the directory containing the objects owned by this repository.</returns>
-		public abstract FilePath ObjectsDirectory
-		{
-			get;
-		}
-
 		/// <returns>the object database which stores this repository's data.</returns>
 		public abstract NGit.ObjectDatabase ObjectDatabase
 		{
@@ -195,7 +189,7 @@ namespace NGit
 		}
 
 		/// <returns>
-		/// a new inserter to create objects in
+		/// a new reader to read objects from
 		/// <see cref="ObjectDatabase()">ObjectDatabase()</see>
 		/// 
 		/// </returns>
@@ -887,16 +881,6 @@ namespace NGit
 			ObjectDatabase.Close();
 			RefDatabase.Close();
 		}
-
-		/// <summary>Add a single existing pack to the list of available pack files.</summary>
-		/// <remarks>Add a single existing pack to the list of available pack files.</remarks>
-		/// <param name="pack">path of the pack file to open.</param>
-		/// <param name="idx">path of the corresponding index file.</param>
-		/// <exception cref="System.IO.IOException">
-		/// index file could not be opened, read, or is not recognized as
-		/// a Git pack file index.
-		/// </exception>
-		public abstract void OpenPack(FilePath pack, FilePath idx);
 
 		public override string ToString()
 		{

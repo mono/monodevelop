@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -8,8 +8,8 @@
     <ProjectGuid>{07CC7654-27D6-421D-A64C-0FFA40456FA2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.CSharpBinding</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <RootNamespace>CSharpBinding</RootNamespace>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -107,7 +107,6 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="Mono.Cairo" />
   </ItemGroup>
@@ -157,81 +156,10 @@
     <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\CSharpFormattingPolicy.xml">
       <LogicalName>CSharpFormattingPolicy.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\FormattingProfiles.xml">
-      <LogicalName>FormattingProfiles.xml</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\Attribute.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\AttributeSection.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\NamespaceDeclaration.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\TypeDeclaration.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\UsingAliasDeclaration.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\UsingDeclaration.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\DelegateDeclaration.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Statements\BlockStatement.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\AbstractMember.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\ConstructorDeclaration.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\DestructorDeclaration.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\FieldDeclaration.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\PropertyDeclaration.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\VariableInitializer.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\AbstractMemberBase.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\EventDeclaration.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\IndexerDeclaration.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\MethodDeclaration.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\OperatorDeclaration.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Statements\BreakStatement.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Statements\CheckedStatement.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Statements\ContinueStatement.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Statements\WhileStatement.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Statements\EmptyStatement.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Statements\FixedStatement.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Statements\ForeachStatement.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Statements\ForStatement.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Statements\GotoStatement.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Statements\IfElseStatement.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Statements\LabelStatement.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Statements\VariableDeclarationStatement.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Statements\LockStatement.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Statements\ReturnStatement.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Statements\SwitchStatement.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Statements\ThrowStatement.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Statements\TryCatchStatement.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Statements\UncheckedStatement.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Statements\UnsafeStatement.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Statements\UsingStatement.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Statements\YieldStatement.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\PrimitiveExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\UncheckedExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\CheckedExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\BaseReferenceExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\ThisReferenceExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\NullReferenceExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\CastExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\ConditionalExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\MemberReferenceExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\IndexerExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\InvocationExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\ParenthesizedExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\PointerReferenceExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\SizeOfExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\StackAllocExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\TypeOfExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\UnaryOperatorExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\BinaryOperatorExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\AsExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\IsExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\DefaultValueExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Identifier.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\QualifiedIdentifier.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\IdentifierExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\AssignmentExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\AnonymousMethodExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\ObjectCreateExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\QueryExpression.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\CSharpParser.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\NRefactoryResolver.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\ResolveVisitor.cs" />
@@ -248,7 +176,6 @@
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormatter.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpNRefactoryASTProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\FindMemberAstVisitor.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\CSharpAmbience.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\CSharpCompilerParameters.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\CSharpProjectParameters.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\CSharpResourceIdBuilder.cs" />
@@ -266,18 +193,8 @@
     <Compile Include="MonoDevelop.CSharp.Completion\NRefactoryIndexerParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\NRefactoryParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\NRefactoryTemplateParameterDataProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\CompilationUnit.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\CSharpTokenNode.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\FullTypeName.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Statements\ExpressionStatement.cs" />
-    <Compile Include="MonoDevelop.CSharp.Formatting\DomIndentationVisitor.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\TextEditorResolverProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\Indent.cs" />
-    <Compile Include="MonoDevelop.CSharp.Formatting\DomSpacingVisitor.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\CSharpModifierToken.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\ArgListExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\LambdaExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\Constraint.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\OnTheFlyFormatter.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\HighlightUsagesExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\MoveToUsagesHandler.cs" />
@@ -353,20 +270,99 @@
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Formatting.NewFormattingProfileDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingProfileDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Formatting.CSharpFormattingProfileDialog.cs" />
-    <Compile Include="MonoDevelop.CSharp.Formatting\FormattingProfileService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\ComposedType.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\DirectionExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\ArrayInitializerExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\Expressions\ArrayCreateExpression.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\NodeType.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\Accessor.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\mcs\assembly.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\DomNode.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\DomVisitor.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\ParameterDeclaration.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\TypeMembers\EnumMemberDeclaration.cs" />
-    <Compile Include="MonoDevelop.CSharp.Dom\GeneralScope\Comment.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\mcs\reflection.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpReferenceFinder.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\GeneralScope\Attribute.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\GeneralScope\AttributeSection.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\GeneralScope\NamespaceDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\GeneralScope\TypeDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\GeneralScope\UsingAliasDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\GeneralScope\UsingDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\GeneralScope\DelegateDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\BlockStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\AbstractMember.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\ConstructorDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\DestructorDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\FieldDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\PropertyDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\VariableInitializer.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\AbstractMemberBase.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\EventDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\IndexerDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\MethodDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\OperatorDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\BreakStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\CheckedStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\ContinueStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\WhileStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\EmptyStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\FixedStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\ForeachStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\ForStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\GotoStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\IfElseStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\LabelStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\VariableDeclarationStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\LockStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\ReturnStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\SwitchStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\ThrowStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\TryCatchStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\UncheckedStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\UnsafeStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\UsingStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\YieldStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\PrimitiveExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\UncheckedExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\CheckedExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\BaseReferenceExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\ThisReferenceExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\NullReferenceExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\CastExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\ConditionalExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\MemberReferenceExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\IndexerExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\InvocationExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\ParenthesizedExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\PointerReferenceExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\SizeOfExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\StackAllocExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\TypeOfExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\UnaryOperatorExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\BinaryOperatorExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\AsExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\IsExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\DefaultValueExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Identifier.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\QualifiedIdentifier.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\IdentifierExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\AssignmentExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\AnonymousMethodExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\ObjectCreateExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\QueryExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\CSharpAmbience.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\CompilationUnit.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\CSharpTokenNode.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\FullTypeName.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\ExpressionStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\CSharpModifierToken.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\ArgListExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\LambdaExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\GeneralScope\Constraint.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\ComposedType.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\DirectionExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\ArrayInitializerExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\ArrayCreateExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\NodeType.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\Accessor.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\ParameterDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\EnumMemberDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\GeneralScope\Comment.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\AstNode.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\AstVisitor.cs" />
+    <Compile Include="MonoDevelop.CSharp.Formatting\AstIndentationVisitor.cs" />
+    <Compile Include="MonoDevelop.CSharp.Formatting\AstSpacingVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -390,11 +386,6 @@
     </MonoDevelop>
   </ProjectExtensions>
   <ItemGroup>
-    <Folder Include="MonoDevelop.CSharp.Dom\" />
-    <Folder Include="MonoDevelop.CSharp.Dom\GeneralScope\" />
-    <Folder Include="MonoDevelop.CSharp.Dom\TypeMembers\" />
-    <Folder Include="MonoDevelop.CSharp.Dom\Statements\" />
-    <Folder Include="MonoDevelop.CSharp.Dom\Expressions\" />
     <Folder Include="MonoDevelop.CSharp.Parser\" />
     <Folder Include="MonoDevelop.CSharp.Resolver\" />
     <Folder Include="MonoDevelop.CSharp.Highlighting\" />
@@ -406,5 +397,10 @@
     <Folder Include="MonoDevelop.CSharp.Parser\mcs\" />
     <Folder Include="MonoDevelop.CSharp.Refactoring\CreateMethod\" />
     <Folder Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\" />
+    <Folder Include="MonoDevelop.CSharp.Ast\" />
+    <Folder Include="MonoDevelop.CSharp.Ast\GeneralScope\" />
+    <Folder Include="MonoDevelop.CSharp.Ast\TypeMembers\" />
+    <Folder Include="MonoDevelop.CSharp.Ast\Statements\" />
+    <Folder Include="MonoDevelop.CSharp.Ast\Expressions\" />
   </ItemGroup>
 </Project>

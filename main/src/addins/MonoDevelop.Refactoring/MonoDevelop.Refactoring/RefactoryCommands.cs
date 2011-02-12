@@ -58,7 +58,6 @@ namespace MonoDevelop.Refactoring
 		FindReferences,
 		FindDerivedClasses,
 		DeclareLocal,
-		Rename,
 		RemoveUnusedImports,
 		SortImports,
 		RemoveSortImports,
@@ -68,9 +67,6 @@ namespace MonoDevelop.Refactoring
 		IntegrateTemporaryVariable,
 		ImportSymbol
 	}
-	
-	
-	
 	
 	public class CurrentRefactoryOperationsHandler: CommandHandler
 	{
@@ -250,7 +246,7 @@ namespace MonoDevelop.Refactoring
 			foreach (var refactoring in RefactoringService.Refactorings) {
 				if (refactoring.IsValid (options)) {
 					CommandInfo info = new CommandInfo (refactoring.GetMenuDescription (options));
-					info.AccelKey = KeyBindingManager.BindingToDisplayLabel (refactoring.AccelKey, true);
+					info.AccelKey = refactoring.AccelKey;
 					ciset.CommandInfos.Add (info, new RefactoryOperation (new RefactoringOperationWrapper (refactoring, options).Operation));
 				}
 			}
@@ -516,9 +512,15 @@ namespace MonoDevelop.Refactoring
 			
 			public void ResolveName ()
 			{
-				// TODO: Move this to a expression refactorer !!!!
 				int pos = doc.Editor.Document.LocationToOffset (resolveResult.ResolvedExpression.Region.Start.Line, resolveResult.ResolvedExpression.Region.Start.Column);
-				doc.Editor.Insert (pos, ns +"." );
+				if (pos < 0) {
+					LoggingService.LogError ("Invalie expression position: " + resolveResult.ResolvedExpression);
+					return;
+				}
+				doc.Editor.Insert (pos, ns + ".");
+				if (doc.Editor.Caret.Offset >= pos)
+					doc.Editor.Caret.Offset += (ns + ".").Length;
+				doc.Editor.Document.CommitLineUpdate (resolveResult.ResolvedExpression.Region.Start.Line);
 			}
 		}
 
@@ -651,7 +653,7 @@ namespace MonoDevelop.Refactoring
 			foreach (var refactoring in RefactoringService.Refactorings) {
 				if (refactoring.IsValid (options)) {
 					CommandInfo info = new CommandInfo (refactoring.GetMenuDescription (options));
-					info.AccelKey = KeyBindingManager.BindingToDisplayLabel (refactoring.AccelKey, true);
+					info.AccelKey = refactoring.AccelKey;
 					ciset.CommandInfos.Add (info, new RefactoryOperation (new RefactoringOperationWrapper (refactoring, options).Operation));
 				}
 			}
@@ -860,28 +862,8 @@ namespace MonoDevelop.Refactoring
 		void FindReferencesThread (object state)
 		{
 			try {
-				CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
-				if (item is IType) {
-					references = refactorer.FindClassReferences (monitor, (IType)item, RefactoryScope.Solution, true);
-				} else if (item is LocalVariable) {
-					references = refactorer.FindVariableReferences (monitor, (LocalVariable)item);
-				} else if (item is IParameter) {
-					references = refactorer.FindParameterReferences (monitor, (IParameter)item, true);
-				} else if (item is IMember) {
-					IMember member = (IMember)item;
-/*					references = new MemberReferenceCollection ();
-					foreach (IMember m in MonoDevelop.Refactoring.Rename.RenameRefactoring.CollectMembers (member.DeclaringType.SourceProjectDom, member)) {
-						foreach (MemberReference r in refactorer.FindMemberReferences (monitor, m.DeclaringType, m, true)) {
-							references.Add (r);
-						}
-					}*/
-					
-					references = refactorer.FindMemberReferences (monitor, member.DeclaringType, member, true);
-				}
-				if (references != null) {
-					foreach (MemberReference mref in references) {
-						monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (new FileProvider (mref.FileName), mref.Position, mref.Name.Length));
-					}
+				foreach (MemberReference mref in ReferenceFinder.FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, item)) {
+					monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (new FileProvider (mref.FileName), mref.Position, mref.Name.Length));
 				}
 			} catch (Exception ex) {
 				if (monitor != null)

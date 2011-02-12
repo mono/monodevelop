@@ -30,6 +30,7 @@ using System;
 using System.CodeDom;
 
 using Mono.Cecil;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -49,14 +50,26 @@ namespace MonoDevelop.Projects.Dom
 			base.AttributeType = DomCecilMethod.GetReturnType (customAttribute.Constructor);
 			base.Name          = customAttribute.Constructor.DeclaringType.FullName;
 			
-			foreach (var argument in customAttribute.ConstructorArguments)
-				AddPositionalArgument (CreateExpressionFor (argument));
-
-			foreach (var namedArgument in customAttribute.Properties)
-				AddNamedArgument (namedArgument.Name, CreateExpressionFor (namedArgument.Argument));
+			try {
+				foreach (var argument in customAttribute.ConstructorArguments)
+					AddPositionalArgument (CreateExpressionFor (argument));
+			} catch (Exception e) {
+				LoggingService.LogError ("Error reading attributes", e);
+			}
 			
-			foreach (var namedArgument in customAttribute.Fields)
-				AddNamedArgument (namedArgument.Name, CreateExpressionFor (namedArgument.Argument));
+			try {
+				foreach (var namedArgument in customAttribute.Properties)
+					AddNamedArgument (namedArgument.Name, CreateExpressionFor (namedArgument.Argument));
+			} catch (Exception e) {
+				LoggingService.LogError ("Error reading attributes", e);
+			}
+			
+			try {
+				foreach (var namedArgument in customAttribute.Fields)
+					AddNamedArgument (namedArgument.Name, CreateExpressionFor (namedArgument.Argument));
+			} catch (Exception e) {
+				LoggingService.LogError ("Error reading attributes", e);
+			}
 		}
 
 		static CodeExpression CreateExpressionFor (CustomAttributeArgument argument)

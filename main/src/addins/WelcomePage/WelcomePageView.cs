@@ -46,6 +46,8 @@ namespace MonoDevelop.WelcomePage
 		WelcomePageWidget widget;
 		ScrolledWindow scroller;
 		
+		EventHandler newsUpdatedHandler;
+		
 		// netNewsXml is where online the news.xml file can be found
 		static string netNewsXml {
 			get {
@@ -77,7 +79,8 @@ namespace MonoDevelop.WelcomePage
 			
 			recentChangesHandler = DispatchService.GuiDispatch (new EventHandler (RecentChangesHandler));
 			DesktopService.RecentFiles.Changed += recentChangesHandler;
-			NewsUpdated += (EventHandler) DispatchService.GuiDispatch (new EventHandler (HandleNewsUpdate));
+			newsUpdatedHandler = (EventHandler) DispatchService.GuiDispatch (new EventHandler (HandleNewsUpdate));
+			NewsUpdated += newsUpdatedHandler;
 			
 			UpdateNews ();
 			
@@ -284,6 +287,7 @@ namespace MonoDevelop.WelcomePage
 
 		public override void Dispose ()
 		{
+			NewsUpdated -= newsUpdatedHandler;
 			if (recentChangesHandler != null) {
 				DesktopService.RecentFiles.Changed -= recentChangesHandler;
 				recentChangesHandler = null;

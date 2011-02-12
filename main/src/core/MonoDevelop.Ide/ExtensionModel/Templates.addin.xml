@@ -1,0 +1,58 @@
+<ExtensionModel>
+
+<ExtensionPoint path = "/MonoDevelop/Ide/FileTemplates" name = "File templates">
+	<Description>File templates to be shown in the New File dialog.</Description>
+	<ExtensionNode name="FileTemplate" type="MonoDevelop.Ide.Codons.ProjectTemplateCodon"/>
+</ExtensionPoint>
+
+<ExtensionPoint path = "/MonoDevelop/Ide/FileTemplateTypes" name = "File template types">
+	<Description>Template types which can be used to create file templates.</Description>
+	<ExtensionNode name="FileTemplateType" type="MonoDevelop.Ide.Codons.FileTemplateTypeCodon"/>
+</ExtensionPoint>
+
+<ExtensionPoint path = "/MonoDevelop/Ide/FileTemplateConditionTypes" name = "File template condition types">
+	<Description>Condition types which can be used to limit when file templates can be created.</Description>
+	<ExtensionNode name="FileTemplateConditionType" type="MonoDevelop.Ide.Codons.FileTemplateConditionTypeCodon"/>
+</ExtensionPoint>
+
+<ExtensionPoint path = "/MonoDevelop/Ide/ProjectTemplates" name = "File template types">
+	<Description>Project templates to be shown in the New Project dialog.</Description>
+	<ExtensionNode name="ProjectTemplate" type="MonoDevelop.Ide.Codons.ProjectTemplateCodon"/>
+</ExtensionPoint>
+
+<Extension path = "/MonoDevelop/Ide/FileTemplates">
+	<FileTemplate id = "EmptyClass" resource = "EmptyClass.xft.xml"/>
+	<FileTemplate id = "EmptyEnum" resource = "EmptyEnum.xft.xml"/>
+	<FileTemplate id = "EmptyInterface" resource = "EmptyInterface.xft.xml"/>
+	<FileTemplate id = "EmptyStruct" resource = "EmptyStruct.xft.xml"/>
+	<FileTemplate id = "EmptyHTMLFile" resource = "EmptyHTMLFile.xft.xml"/>
+	<FileTemplate id = "AppConfigFile" resource = "AppConfigFile.xft.xml"/>
+	<FileTemplate id = "EmptyResourceFile" resource = "EmptyResourceFile.xft.xml"/>
+	<FileTemplate id = "EmptyTextFile" resource = "EmptyTextFile.xft.xml"/>
+	<FileTemplate id = "EmptyXMLFile" resource = "EmptyXMLFile.xft.xml"/>
+</Extension>
+
+<Extension path = "/MonoDevelop/Ide/FileTemplateTypes">
+	<FileTemplateType name = "File" class = "MonoDevelop.Ide.Templates.TextFileDescriptionTemplate"/>
+	<FileTemplateType name = "RawFile" class = "MonoDevelop.Ide.Templates.RawFileDescriptionTemplate"/>
+	<FileTemplateType name = "CodeDomFile" class = "MonoDevelop.Ide.Templates.CodeDomFileDescriptionTemplate"/>
+	<FileTemplateType name = "ProjectResource" class = "MonoDevelop.Ide.Templates.ResourceFileDescriptionTemplate"/>
+	<FileTemplateType name = "CodeTranslationFile" class = "MonoDevelop.Ide.Templates.CodeTranslationFileDescriptionTemplate"/>
+	<FileTemplateType name = "FileTemplateReference" class = "MonoDevelop.Ide.Templates.FileTemplateReference"/>
+	<FileTemplateType name = "Directory" class = "MonoDevelop.Ide.Templates.DirectoryTemplate"/>
+</Extension>
+
+<Extension path = "/MonoDevelop/Ide/FileTemplateConditionTypes">
+	<FileTemplateConditionType name = "ClrVersion" class = "MonoDevelop.Ide.Templates.ClrVersionFileTemplateCondition"/>
+	<FileTemplateConditionType name = "PartialTypeSupport" class = "MonoDevelop.Ide.Templates.PartialTypeFileTemplateCondition"/>
+	<FileTemplateConditionType name = "ParentProject" class = "MonoDevelop.Ide.Templates.ParentProjectFileTemplateCondition"/>
+</Extension>
+
+<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
+	<ProjectTemplate id = "MonoDevelop.BlankSolution" resource = "BlankCombine.xpt.xml"/>
+	<ProjectTemplate id = "MonoDevelop.Workspace" resource = "Workspace.xpt.xml"/>
+	<ProjectTemplate id = "MonoDevelop.GenericProject" resource = "GenericProject.xpt.xml"/>
+</Extension>
+
+</ExtensionModel>
+

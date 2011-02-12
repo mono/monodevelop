@@ -64,7 +64,7 @@ WScript.Echo ("Setup successfully generated");
 
 function build (file)
 {
-	if (sh.run ("C:\\Windows\\Microsoft.NET\\Framework\\v3.5\\msbuild.exe " + MD_DIR + "\\" + file, 5, true) != 0) {
+	if (sh.run ("C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\msbuild.exe " + MD_DIR + "\\" + file, 5, true) != 0) {
 		WScript.Echo ("Build failed");
 		return 1;
 	}

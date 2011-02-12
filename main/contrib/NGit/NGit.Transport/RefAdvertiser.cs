@@ -42,10 +42,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
 using NGit;
-using NGit.Revwalk;
 using NGit.Transport;
 using NGit.Util;
 using Sharpen;
@@ -91,33 +89,26 @@ namespace NGit.Transport
 			}
 		}
 
-		private RevWalk walk;
-
-		private RevFlag ADVERTISED;
-
 		private readonly StringBuilder tmpLine = new StringBuilder(100);
 
 		private readonly char[] tmpId = new char[Constants.OBJECT_ID_STRING_LENGTH];
 
 		private readonly ICollection<string> capablities = new LinkedHashSet<string>();
 
+		private readonly ICollection<ObjectId> sent = new HashSet<ObjectId>();
+
+		private Repository repository;
+
 		private bool derefTags;
 
 		private bool first = true;
 
-		/// <summary>Initialize a new advertisement formatter.</summary>
-		/// <remarks>Initialize a new advertisement formatter.</remarks>
-		/// <param name="protoWalk">the RevWalk used to parse objects that are advertised.</param>
-		/// <param name="advertisedFlag">
-		/// flag marked on any advertised objects parsed out of the
-		/// <code>protoWalk</code>
-		/// 's object pool, permitting the caller to
-		/// later quickly determine if an object was advertised (or not).
-		/// </param>
-		public virtual void Init(RevWalk protoWalk, RevFlag advertisedFlag)
+		/// <summary>Initialize this advertiser with a repository for peeling tags.</summary>
+		/// <remarks>Initialize this advertiser with a repository for peeling tags.</remarks>
+		/// <param name="src">the repository to read from.</param>
+		public virtual void Init(Repository src)
 		{
-			walk = protoWalk;
-			ADVERTISED = advertisedFlag;
+			repository = src;
 		}
 
 		/// <summary>Toggle tag peeling.</summary>
@@ -129,11 +120,6 @@ namespace NGit.Transport
 		/// <ul>
 		/// <li>
 		/// <see cref="Send(System.Collections.Generic.IDictionary{K, V})">Send(System.Collections.Generic.IDictionary&lt;K, V&gt;)
-		/// 	</see>
-		/// <li>
-		/// <see cref="AdvertiseHave(NGit.AnyObjectId)">AdvertiseHave(NGit.AnyObjectId)</see>
-		/// <li>
-		/// <see cref="IncludeAdditionalHaves(NGit.Repository)">IncludeAdditionalHaves(NGit.Repository)
 		/// 	</see>
 		/// </ul>
 		/// </remarks>
@@ -180,24 +166,39 @@ namespace NGit.Transport
 		/// sorted before display if necessary, and therefore may appear
 		/// in any order.
 		/// </param>
+		/// <returns>set of ObjectIds that were advertised to the client.</returns>
 		/// <exception cref="System.IO.IOException">
 		/// the underlying output stream failed to write out an
 		/// advertisement record.
 		/// </exception>
-		public virtual void Send(IDictionary<string, Ref> refs)
+		public virtual ICollection<ObjectId> Send(IDictionary<string, Ref> refs)
 		{
-			foreach (Ref r in GetSortedRefs(refs))
+			foreach (Ref refit in GetSortedRefs(refs))
 			{
-				RevObject obj = ParseAnyOrNull(r.GetObjectId());
-				if (obj != null)
+				Ref @ref = refit;
+				if (@ref.GetObjectId() == null)
 				{
-					AdvertiseAny(obj, r.GetName());
-					if (derefTags && obj is RevTag)
+					continue;
+				}
+				AdvertiseAny(@ref.GetObjectId(), @ref.GetName());
+				if (!derefTags)
+				{
+					continue;
+				}
+				if (!@ref.IsPeeled())
+				{
+					if (repository == null)
 					{
-						AdvertiseTag((RevTag)obj, r.GetName() + "^{}");
+						continue;
 					}
+					@ref = repository.Peel(@ref);
+				}
+				if (@ref.GetPeeledObjectId() != null)
+				{
+					AdvertiseAny(@ref.GetPeeledObjectId(), @ref.GetName() + "^{}");
 				}
 			}
+			return sent;
 		}
 
 		private Iterable<Ref> GetSortedRefs(IDictionary<string, Ref> all)
@@ -230,15 +231,7 @@ namespace NGit.Transport
 		/// </exception>
 		public virtual void AdvertiseHave(AnyObjectId id)
 		{
-			RevObject obj = ParseAnyOrNull(id);
-			if (obj != null)
-			{
-				AdvertiseAnyOnce(obj, ".have");
-				if (obj is RevTag)
-				{
-					AdvertiseAnyOnce(((RevTag)obj).GetObject(), ".have");
-				}
-			}
+			AdvertiseAnyOnce(id, ".have");
 		}
 
 		/// <summary>
@@ -265,59 +258,20 @@ namespace NGit.Transport
 			return first;
 		}
 
-		private RevObject ParseAnyOrNull(AnyObjectId id)
-		{
-			if (id == null)
-			{
-				return null;
-			}
-			try
-			{
-				return walk.ParseAny(id);
-			}
-			catch (IOException)
-			{
-				return null;
-			}
-		}
-
 		/// <exception cref="System.IO.IOException"></exception>
-		private void AdvertiseAnyOnce(RevObject obj, string refName)
+		private void AdvertiseAnyOnce(AnyObjectId obj, string refName)
 		{
-			if (!obj.Has(ADVERTISED))
+			if (!sent.Contains(obj))
 			{
 				AdvertiseAny(obj, refName);
 			}
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
-		private void AdvertiseAny(RevObject obj, string refName)
+		private void AdvertiseAny(AnyObjectId obj, string refName)
 		{
-			obj.Add(ADVERTISED);
+			sent.AddItem(obj.ToObjectId());
 			AdvertiseId(obj, refName);
-		}
-
-		/// <exception cref="System.IO.IOException"></exception>
-		private void AdvertiseTag(RevTag tag, string refName)
-		{
-			RevObject o = tag;
-			do
-			{
-				// Fully unwrap here so later on we have these already parsed.
-				RevObject target = ((RevTag)o).GetObject();
-				try
-				{
-					walk.ParseHeaders(target);
-				}
-				catch (IOException)
-				{
-					return;
-				}
-				target.Add(ADVERTISED);
-				o = target;
-			}
-			while (o is RevTag);
-			AdvertiseAny(tag.GetObject(), refName);
 		}
 
 		/// <summary>Advertise one object under a specific name.</summary>

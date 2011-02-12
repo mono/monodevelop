@@ -5,57 +5,31 @@ namespace MonoDevelop.AddinAuthoring
 	public partial class NewExtensionPointDialog
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.Table table2;
-
 		private global::Gtk.Entry entryDesc;
-
 		private global::Gtk.Entry entryName;
-
 		private global::Gtk.Entry entryPath;
-
 		private global::Gtk.Label label6;
-
 		private global::Gtk.Label label7;
-
 		private global::Gtk.Label label8;
-
 		private global::Gtk.VBox vbox3;
-
 		private global::Gtk.Label label2;
-
 		private global::Gtk.HBox hbox2;
-
 		private global::Gtk.RadioButton radioTypeExtension;
-
 		private global::Gtk.RadioButton radioCustomExtension;
-
 		private global::Gtk.HSeparator hseparator2;
-
 		private global::Gtk.Notebook notebook;
-
 		private global::Gtk.Table table1;
-
 		private global::MonoDevelop.AddinAuthoring.TypeSelector baseTypeSelector;
-
 		private global::Gtk.Entry entryNodeDescription;
-
 		private global::Gtk.Entry entryNodeName;
-
 		private global::Gtk.Label label3;
-
 		private global::Gtk.Label label4;
-
 		private global::Gtk.Label label5;
-
 		private global::Gtk.Label label9;
-
 		private global::MonoDevelop.AddinAuthoring.NodeSetEditorWidget nodeseteditorwidget;
-
 		private global::Gtk.Label label10;
-
 		private global::Gtk.Button buttonCancel;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -86,7 +60,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.entryDesc.IsEditable = true;
 			this.entryDesc.InvisibleChar = '●';
 			this.table2.Add (this.entryDesc);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table2[this.entryDesc]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table2 [this.entryDesc]));
 			w2.TopAttach = ((uint)(2));
 			w2.BottomAttach = ((uint)(3));
 			w2.LeftAttach = ((uint)(1));
@@ -99,7 +73,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.entryName.IsEditable = true;
 			this.entryName.InvisibleChar = '●';
 			this.table2.Add (this.entryName);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table2[this.entryName]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table2 [this.entryName]));
 			w3.TopAttach = ((uint)(1));
 			w3.BottomAttach = ((uint)(2));
 			w3.LeftAttach = ((uint)(1));
@@ -112,17 +86,17 @@ namespace MonoDevelop.AddinAuthoring
 			this.entryPath.IsEditable = true;
 			this.entryPath.InvisibleChar = '●';
 			this.table2.Add (this.entryPath);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table2[this.entryPath]));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table2 [this.entryPath]));
 			w4.LeftAttach = ((uint)(1));
 			w4.RightAttach = ((uint)(2));
 			w4.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table2.Gtk.Table+TableChild
 			this.label6 = new global::Gtk.Label ();
 			this.label6.Name = "label6";
-			this.label6.Xalign = 0f;
+			this.label6.Xalign = 0F;
 			this.label6.LabelProp = global::Mono.Addins.AddinManager.CurrentLocalizer.GetString ("Description:");
 			this.table2.Add (this.label6);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table2[this.label6]));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table2 [this.label6]));
 			w5.TopAttach = ((uint)(2));
 			w5.BottomAttach = ((uint)(3));
 			w5.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -130,25 +104,25 @@ namespace MonoDevelop.AddinAuthoring
 			// Container child table2.Gtk.Table+TableChild
 			this.label7 = new global::Gtk.Label ();
 			this.label7.Name = "label7";
-			this.label7.Xalign = 0f;
+			this.label7.Xalign = 0F;
 			this.label7.LabelProp = global::Mono.Addins.AddinManager.CurrentLocalizer.GetString ("Extension path:");
 			this.table2.Add (this.label7);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table2[this.label7]));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table2 [this.label7]));
 			w6.XOptions = ((global::Gtk.AttachOptions)(4));
 			w6.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table2.Gtk.Table+TableChild
 			this.label8 = new global::Gtk.Label ();
 			this.label8.Name = "label8";
-			this.label8.Xalign = 0f;
+			this.label8.Xalign = 0F;
 			this.label8.LabelProp = global::Mono.Addins.AddinManager.CurrentLocalizer.GetString ("Name:");
 			this.table2.Add (this.label8);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table2[this.label8]));
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table2 [this.label8]));
 			w7.TopAttach = ((uint)(1));
 			w7.BottomAttach = ((uint)(2));
 			w7.XOptions = ((global::Gtk.AttachOptions)(4));
 			w7.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox2.Add (this.table2);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.table2]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.table2]));
 			w8.Position = 0;
 			w8.Expand = false;
 			w8.Fill = false;
@@ -159,10 +133,10 @@ namespace MonoDevelop.AddinAuthoring
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.Xalign = 0f;
+			this.label2.Xalign = 0F;
 			this.label2.LabelProp = global::Mono.Addins.AddinManager.CurrentLocalizer.GetString ("Select the kind of extension point to create:");
 			this.vbox3.Add (this.label2);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.label2]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.label2]));
 			w9.Position = 0;
 			w9.Expand = false;
 			w9.Fill = false;
@@ -178,7 +152,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.radioTypeExtension.UseUnderline = true;
 			this.radioTypeExtension.Group = new global::GLib.SList (global::System.IntPtr.Zero);
 			this.hbox2.Add (this.radioTypeExtension);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.radioTypeExtension]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.radioTypeExtension]));
 			w10.Position = 0;
 			w10.Expand = false;
 			w10.Fill = false;
@@ -190,15 +164,15 @@ namespace MonoDevelop.AddinAuthoring
 			this.radioCustomExtension.UseUnderline = true;
 			this.radioCustomExtension.Group = this.radioTypeExtension.Group;
 			this.hbox2.Add (this.radioCustomExtension);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.radioCustomExtension]));
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.radioCustomExtension]));
 			w11.Position = 1;
 			this.vbox3.Add (this.hbox2);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.hbox2]));
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.hbox2]));
 			w12.Position = 1;
 			w12.Expand = false;
 			w12.Fill = false;
 			this.vbox2.Add (this.vbox3);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.vbox3]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.vbox3]));
 			w13.Position = 1;
 			w13.Expand = false;
 			w13.Fill = false;
@@ -206,7 +180,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.hseparator2 = new global::Gtk.HSeparator ();
 			this.hseparator2.Name = "hseparator2";
 			this.vbox2.Add (this.hseparator2);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hseparator2]));
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hseparator2]));
 			w14.Position = 2;
 			w14.Expand = false;
 			w14.Fill = false;
@@ -229,7 +203,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.baseTypeSelector.AllowCreate = false;
 			this.baseTypeSelector.AllowCreateInterface = false;
 			this.table1.Add (this.baseTypeSelector);
-			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.table1[this.baseTypeSelector]));
+			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.table1 [this.baseTypeSelector]));
 			w15.TopAttach = ((uint)(1));
 			w15.BottomAttach = ((uint)(2));
 			w15.LeftAttach = ((uint)(1));
@@ -242,7 +216,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.entryNodeDescription.IsEditable = true;
 			this.entryNodeDescription.InvisibleChar = '●';
 			this.table1.Add (this.entryNodeDescription);
-			global::Gtk.Table.TableChild w16 = ((global::Gtk.Table.TableChild)(this.table1[this.entryNodeDescription]));
+			global::Gtk.Table.TableChild w16 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryNodeDescription]));
 			w16.TopAttach = ((uint)(2));
 			w16.BottomAttach = ((uint)(3));
 			w16.LeftAttach = ((uint)(1));
@@ -255,26 +229,26 @@ namespace MonoDevelop.AddinAuthoring
 			this.entryNodeName.IsEditable = true;
 			this.entryNodeName.InvisibleChar = '●';
 			this.table1.Add (this.entryNodeName);
-			global::Gtk.Table.TableChild w17 = ((global::Gtk.Table.TableChild)(this.table1[this.entryNodeName]));
+			global::Gtk.Table.TableChild w17 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryNodeName]));
 			w17.LeftAttach = ((uint)(1));
 			w17.RightAttach = ((uint)(2));
 			w17.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.Xalign = 0f;
+			this.label3.Xalign = 0F;
 			this.label3.LabelProp = global::Mono.Addins.AddinManager.CurrentLocalizer.GetString ("Node name:");
 			this.table1.Add (this.label3);
-			global::Gtk.Table.TableChild w18 = ((global::Gtk.Table.TableChild)(this.table1[this.label3]));
+			global::Gtk.Table.TableChild w18 = ((global::Gtk.Table.TableChild)(this.table1 [this.label3]));
 			w18.XOptions = ((global::Gtk.AttachOptions)(4));
 			w18.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label4 = new global::Gtk.Label ();
 			this.label4.Name = "label4";
-			this.label4.Xalign = 0f;
+			this.label4.Xalign = 0F;
 			this.label4.LabelProp = global::Mono.Addins.AddinManager.CurrentLocalizer.GetString ("Description:");
 			this.table1.Add (this.label4);
-			global::Gtk.Table.TableChild w19 = ((global::Gtk.Table.TableChild)(this.table1[this.label4]));
+			global::Gtk.Table.TableChild w19 = ((global::Gtk.Table.TableChild)(this.table1 [this.label4]));
 			w19.TopAttach = ((uint)(2));
 			w19.BottomAttach = ((uint)(3));
 			w19.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -282,10 +256,10 @@ namespace MonoDevelop.AddinAuthoring
 			// Container child table1.Gtk.Table+TableChild
 			this.label5 = new global::Gtk.Label ();
 			this.label5.Name = "label5";
-			this.label5.Xalign = 0f;
+			this.label5.Xalign = 0F;
 			this.label5.LabelProp = global::Mono.Addins.AddinManager.CurrentLocalizer.GetString ("Base type:");
 			this.table1.Add (this.label5);
-			global::Gtk.Table.TableChild w20 = ((global::Gtk.Table.TableChild)(this.table1[this.label5]));
+			global::Gtk.Table.TableChild w20 = ((global::Gtk.Table.TableChild)(this.table1 [this.label5]));
 			w20.TopAttach = ((uint)(1));
 			w20.BottomAttach = ((uint)(2));
 			w20.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -303,7 +277,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.nodeseteditorwidget.Name = "nodeseteditorwidget";
 			this.nodeseteditorwidget.AllowEditing = true;
 			this.notebook.Add (this.nodeseteditorwidget);
-			global::Gtk.Notebook.NotebookChild w22 = ((global::Gtk.Notebook.NotebookChild)(this.notebook[this.nodeseteditorwidget]));
+			global::Gtk.Notebook.NotebookChild w22 = ((global::Gtk.Notebook.NotebookChild)(this.notebook [this.nodeseteditorwidget]));
 			w22.Position = 1;
 			// Notebook tab
 			this.label10 = new global::Gtk.Label ();
@@ -312,10 +286,10 @@ namespace MonoDevelop.AddinAuthoring
 			this.notebook.SetTabLabel (this.nodeseteditorwidget, this.label10);
 			this.label10.ShowAll ();
 			this.vbox2.Add (this.notebook);
-			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.notebook]));
+			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.notebook]));
 			w23.Position = 3;
 			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(w1[this.vbox2]));
+			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
 			w24.Position = 0;
 			// Internal child MonoDevelop.AddinAuthoring.NewExtensionPointDialog.ActionArea
 			global::Gtk.HButtonBox w25 = this.ActionArea;
@@ -332,7 +306,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w26 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w25[this.buttonCancel]));
+			global::Gtk.ButtonBox.ButtonBoxChild w26 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w25 [this.buttonCancel]));
 			w26.Expand = false;
 			w26.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -344,7 +318,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w27 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w25[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w27 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w25 [this.buttonOk]));
 			w27.Position = 1;
 			w27.Expand = false;
 			w27.Fill = false;

@@ -647,7 +647,6 @@ class Test{
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.AreEqual (1, provider.Count);
 			Assert.IsNotNull (provider.Find ("string"), "type string not found.");
 		}
 
@@ -2871,5 +2870,121 @@ namespace Test
 			Assert.IsNotNull (provider.Find ("Bar"), "property 'Bar' not found.");
 		}
 		
+		/// <summary>
+		/// Bug 668135 - Problems with "new" completion
+		/// </summary>
+		[Test()]
+		public void TestBug668135a ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"public class A
+{
+	public A ()
+	{
+		string test;
+		$Console.WriteLine (test = new $
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("string"), "class 'string' not found.");
+		}
+		
+		/// <summary>
+		/// Bug 668453 - var completion infers var type too eagerly
+		/// </summary>
+		[Test()]
+		public void TestBug668453 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"public class Test
+{
+	private void FooBar ()
+	{
+		$var str = new $
+		FooBar ();
+	}
+}
+
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNull (provider.Find ("FooBar"), "method 'FooBar' found.");
+		}
+		
+		/// <summary>
+		/// Bug 669285 - Extension method on T[] shows up on T
+		/// </summary>
+		[Test()]
+		public void TestBug669285 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"static class Ext
+{
+	public static void Foo<T> (this T[] t)
+	{
+	}
+}
+
+public class Test<T>
+{
+	public void Foo ()
+	{
+		T t;
+		$t.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNull (provider.Find ("Foo"), "method 'Foo' found.");
+			provider = CreateCtrlSpaceProvider (
+@"static class Ext
+{
+	public static void Foo<T> (this T[] t)
+	{
+	}
+}
+
+public class Test<T>
+{
+	public void Foo ()
+	{
+		T[] t;
+		$t.$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Foo"), "method 'Foo' not found.");
+		}
+		
+		
+		/// <summary>
+		/// Bug 669818 - Autocomplete missing for new nested class
+		/// </summary>
+		[Test()]
+		public void TestBug669818 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"using System;
+public class Foo
+{
+    public class Bar
+    {
+    }
+	public static void FooBar () {}
+}
+class TestNested
+{
+    public static void Main (string[] args)
+    {
+        $new Foo.$
+    }
+}
+
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Bar"), "class 'Bar' not found.");
+			Assert.IsNull (provider.Find ("FooBar"), "method 'FooBar' found.");
+		}
 	}
 }

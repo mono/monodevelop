@@ -60,7 +60,8 @@ namespace NGit.Api
 			OK,
 			ABORTED,
 			STOPPED,
-			UP_TO_DATE
+			UP_TO_DATE,
+			FAST_FORWARD
 		}
 
 		internal static readonly NGit.Api.RebaseResult UP_TO_DATE_RESULT = new NGit.Api.RebaseResult

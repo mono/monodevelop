@@ -187,5 +187,34 @@ namespace MonoDevelop.Projects
 			DotNetProjectConfiguration c = (DotNetProjectConfiguration) p.CreateConfiguration ("First");
 			Assert.AreEqual ("HiThere", c.OutputAssembly);
 		}
+		
+		[Test()]
+		public void CustomCommands ()
+		{
+			DotNetProject p = new DotNetAssemblyProject ("C#");
+			p.Name = "SomeProject";
+			DotNetProjectConfiguration c = (DotNetProjectConfiguration) p.CreateConfiguration ("First");
+			
+			CustomCommand cmd = new CustomCommand ();
+			cmd.Command = "aa bb cc";
+			Assert.AreEqual ("aa", cmd.GetCommandFile (p, c.Selector));
+			Assert.AreEqual ("bb cc", cmd.GetCommandArgs (p, c.Selector));
+			
+			cmd.Command = "\"aa bb\" cc dd";
+			Assert.AreEqual ("aa bb", cmd.GetCommandFile (p, c.Selector));
+			Assert.AreEqual ("cc dd", cmd.GetCommandArgs (p, c.Selector));
+			
+			cmd.Command = "\"aa ${ProjectName}\" cc ${ProjectName}";
+			Assert.AreEqual ("aa SomeProject", cmd.GetCommandFile (p, c.Selector));
+			Assert.AreEqual ("cc SomeProject", cmd.GetCommandArgs (p, c.Selector));
+			
+			cmd.WorkingDir = NormalizePath ("/some/${ProjectName}/place");
+			Assert.AreEqual (NormalizePath ("/some/SomeProject/place"), (string)cmd.GetCommandWorkingDir (p, c.Selector));
+		}
+		
+		public static string NormalizePath (string path)
+		{
+			return path.Replace ('/', Path.DirectorySeparatorChar);
+		}
 	}
 }

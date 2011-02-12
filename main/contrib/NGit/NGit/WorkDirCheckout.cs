@@ -44,7 +44,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System;
 using System.Collections.Generic;
 using NGit;
-using NGit.Errors;
 using Sharpen;
 
 namespace NGit
@@ -140,7 +139,7 @@ namespace NGit
 				if (failOnConflict)
 				{
 					string[] entries = Sharpen.Collections.ToArray(conflicts, new string[0]);
-					throw new CheckoutConflictException(entries);
+					throw new NGit.Errors.CheckoutConflictException(entries);
 				}
 			}
 			CleanUpConflicts();
@@ -242,8 +241,8 @@ namespace NGit
 				FilePath conflict = new FilePath(root, c);
 				if (!conflict.Delete())
 				{
-					throw new CheckoutConflictException(MessageFormat.Format(JGitText.Get().cannotDeleteFile
-						, c));
+					throw new NGit.Errors.CheckoutConflictException(MessageFormat.Format(JGitText.Get
+						().cannotDeleteFile, c));
 				}
 				RemoveEmptyParents(conflict);
 			}

@@ -16,6 +16,12 @@ namespace Sharpen
 			d.CopyTo (buffer, o);
 		}
 
+		public byte[] Digest (byte[] buffer)
+		{
+			Update (buffer);
+			return Digest ();
+		}
+
 		public abstract byte[] Digest ();
 		public abstract int GetDigestLength ();
 		public static MessageDigest GetInstance (string algorithm)

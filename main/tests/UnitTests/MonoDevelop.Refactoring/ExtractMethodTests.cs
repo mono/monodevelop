@@ -438,6 +438,34 @@ namespace MonoDevelop.Refactoring.Tests
 ");
 		}
 		
+		/// <summary>
+		/// Bug 666271 - "Extract Method" on single line adds two semi-colons in method, none in replaced text
+		/// </summary>
+		[Test()]
+		public void TestBug666271 ()
+		{
+			TestExtractMethod (@"class TestClass
+{
+	void TestMethod ()
+	{
+		<-TestMethod ();->
+	}
+}
+", @"class TestClass
+{
+	void TestMethod ()
+	{
+		NewMethod ();
+	}
+	
+	void NewMethod ()
+	{
+		TestMethod ();
+	}
+}
+");
+		}
+		
 		/* Currently not possible to implement, would cause serve bugs:
 		[Test()]
 		public void ExtractMethodMultiVariableWithLocalReturnVariableTest ()

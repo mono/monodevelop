@@ -29,16 +29,66 @@ using Gtk;
 using MonoDevelop.Ide;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Linq;
 namespace MonoDevelop.CSharp.Formatting
 {
 	public partial class CSharpFormattingProfileDialog : Gtk.Dialog
 	{
 		Mono.TextEditor.TextEditor texteditor = new Mono.TextEditor.TextEditor ();
 		CSharpFormattingPolicy profile;
-		Gtk.TreeStore indentOptions, bacePositionOptions, newLineOptions;
+		Gtk.TreeStore indentOptions, bacePositionOptions, newLineOptions, whiteSpaceOptions;
 		
-		Gtk.TreeStore whiteSpaceCategory;
-		ListStore whiteSpaceOptions; 
+		static Dictionary<ArrayInitializerPlacement, string> arrayInitializerTranslationDictionary = new Dictionary<ArrayInitializerPlacement, string> ();
+		static Dictionary<BraceStyle, string> braceStyleTranslationDictionary = new Dictionary<BraceStyle, string> ();
+		static Dictionary<BraceForcement, string> braceForcementTranslationDictionary = new Dictionary<BraceForcement, string> ();
+		static Dictionary<PropertyFormatting, string> propertyFormattingTranslationDictionary = new Dictionary<PropertyFormatting, string> ();
+		
+		static CSharpFormattingProfileDialog ()
+		{
+			braceStyleTranslationDictionary[BraceStyle.DoNotChange] = GettextCatalog.GetString ("Do not change");
+			braceStyleTranslationDictionary[BraceStyle.EndOfLine] = GettextCatalog.GetString ("End of line");
+			braceStyleTranslationDictionary[BraceStyle.EndOfLineWithoutSpace] = GettextCatalog.GetString ("End of line without space");
+			braceStyleTranslationDictionary[BraceStyle.NextLine] =  GettextCatalog.GetString ("Next line");
+			braceStyleTranslationDictionary[BraceStyle.NextLineShifted] = GettextCatalog.GetString ("Next line shifted");
+			braceStyleTranslationDictionary[BraceStyle.NextLineShifted2] = GettextCatalog.GetString ("Next line shifted2");
+			
+			braceForcementTranslationDictionary[BraceForcement.DoNotChange] = GettextCatalog.GetString ("Do not change");
+			braceForcementTranslationDictionary[BraceForcement.AddBraces] = GettextCatalog.GetString ("Add braces");
+			braceForcementTranslationDictionary[BraceForcement.RemoveBraces] = GettextCatalog.GetString ("Remove braces");
+			
+			propertyFormattingTranslationDictionary[PropertyFormatting.AllowOneLine] = GettextCatalog.GetString ("Allow one line");
+			propertyFormattingTranslationDictionary[PropertyFormatting.ForceOneLine] = GettextCatalog.GetString ("Force one line");
+			propertyFormattingTranslationDictionary[PropertyFormatting.ForceNewLine] = GettextCatalog.GetString ("Force new line");
+			
+			arrayInitializerTranslationDictionary[ArrayInitializerPlacement.AlwaysNewLine] = GettextCatalog.GetString ("Always new line");
+			arrayInitializerTranslationDictionary[ArrayInitializerPlacement.AlwaysSameLine] = GettextCatalog.GetString ("Always same line");
+		}
+		
+		public static string TranslateValue (object value)
+		{
+			if (value is BraceStyle)
+				return braceStyleTranslationDictionary[(BraceStyle)value];
+			if (value is BraceForcement) 
+				return braceForcementTranslationDictionary[(BraceForcement)value];
+			if (value is PropertyFormatting)
+				return propertyFormattingTranslationDictionary[(PropertyFormatting)value];
+			if (value is ArrayInitializerPlacement)
+				return arrayInitializerTranslationDictionary[(ArrayInitializerPlacement)value];
+			throw new Exception ("unknown property type: " + value);
+		}
+		
+		public static object ConvertProperty (Type propertyType, string newText)
+		{
+			if (propertyType == typeof (BraceStyle))
+				return braceStyleTranslationDictionary.First (p => p.Value == newText).Key;
+			if (propertyType == typeof (BraceForcement)) 
+				return braceForcementTranslationDictionary.First (p => p.Value == newText).Key;
+			if (propertyType == typeof (PropertyFormatting)) 
+				return propertyFormattingTranslationDictionary.First (p => p.Value == newText).Key;
+			if (propertyType == typeof (ArrayInitializerPlacement))
+				return arrayInitializerTranslationDictionary.First (p => p.Value == newText).Key;
+			throw new Exception ("unknown property type: " + propertyType);
+		}
 		
 		#region Examples
 		const string methodSpaceExample = @"class ClassDeclaration { 
@@ -251,6 +301,10 @@ namespace MonoDevelop.CSharp.Formatting
 				b -= a;
 			}
 		}
+		object Test (object a, object b)
+		{
+			return a ?? b;
+		}
 	}";
 		const string blankLineExample = @"// Example
 using System;
@@ -291,14 +345,9 @@ namespace TestSpace {
 			this.Build ();
 			this.profile = profile;
 			this.Title = profile.IsBuiltIn ? GettextCatalog.GetString ("Show built-in profile") : GettextCatalog.GetString ("Edit Profile");
-			entryName.Text = profile.Name;
-			entryName.Sensitive = !profile.IsBuiltIn;
-			entryName.Changed += delegate {
-				profile.Name = entryName.Text;
-			};
+			
 			notebookCategories.SwitchPage += delegate {
 				TreeView treeView;
-				Console.WriteLine (notebookCategories.Page);
 				switch (notebookCategories.Page) {
 				case 0:
 					treeView = treeviewIndentOptions;
@@ -310,7 +359,7 @@ namespace TestSpace {
 					UpdateExample (blankLineExample);
 					return;
 				case 3: // white spaces
-					WhitespaceCategoryChanged (treeviewInsertWhiteSpaceCategory.Selection, EventArgs.Empty);
+					treeView = treeviewInsertWhiteSpaceCategory;
 					return;
 				case 4:
 					treeView = treeviewNewLines;
@@ -574,26 +623,48 @@ namespace TestSpace {
 			#endregion
 			
 			#region White space options
-			whiteSpaceCategory = new TreeStore (typeof (string), typeof (Category));
-
+			whiteSpaceOptions = new Gtk.TreeStore (typeof (string), typeof (string), typeof (string), typeof(bool), typeof(bool));
+			
+			
 			column = new TreeViewColumn ();
 			// pixbuf column
 			column.PackStart (pixbufCellRenderer, false);
 			column.SetCellDataFunc (pixbufCellRenderer, RenderIcon);
 			
 			// text column
+			cellRendererText.Ypad = 1;
 			column.PackStart (cellRendererText, true);
-			column.SetAttributes (cellRendererText, "text", 0);
+			column.SetAttributes (cellRendererText, "text", 1);
+			
+			treeviewInsertWhiteSpaceCategory.Model = whiteSpaceOptions;
+			treeviewInsertWhiteSpaceCategory.HeadersVisible = false;
+			treeviewInsertWhiteSpaceCategory.Selection.Changed += TreeSelectionChanged;
+			treeviewInsertWhiteSpaceCategory.AppendColumn (column);
+			
+			column = new TreeViewColumn ();
+			cellRendererCombo = new CellRendererCombo ();
+			cellRendererCombo.Ypad = 1;
+			cellRendererCombo.Mode = CellRendererMode.Editable;
+			cellRendererCombo.TextColumn = 1;
+			cellRendererCombo.Model = comboBoxStore;
+			cellRendererCombo.HasEntry = false;
+			cellRendererCombo.Editable = !profile.IsBuiltIn;
+			cellRendererCombo.Edited += new ComboboxEditedHandler (this, whiteSpaceOptions).ComboboxEdited;
+
+			column.PackStart (cellRendererCombo, false);
+			column.SetAttributes (cellRendererCombo, "visible", comboVisibleColumn);
+			column.SetCellDataFunc (cellRendererCombo, ComboboxDataFunc);
+			
+			cellRendererToggle = new CellRendererToggle ();
+			cellRendererToggle.Activatable = !profile.IsBuiltIn;
+			cellRendererToggle.Ypad = 1;
+			cellRendererToggle.Toggled += new CellRendererToggledHandler (this, whiteSpaceOptions).Toggled;
+			column.PackStart (cellRendererToggle, false);
+			column.SetAttributes (cellRendererToggle, "visible", toggleVisibleColumn);
+			column.SetCellDataFunc (cellRendererToggle, ToggleDataFunc);
 			
 			treeviewInsertWhiteSpaceCategory.AppendColumn (column);
 			
-			treeviewInsertWhiteSpaceCategory.Model = whiteSpaceCategory;
-			treeviewInsertWhiteSpaceCategory.HeadersVisible = false;
-			treeviewInsertWhiteSpaceCategory.Selection.Changed += WhitespaceCategoryChanged;
-			
-			treeviewInsertWhiteSpaceOptions.Model = whiteSpaceOptions;
-			
-			category = whiteSpaceCategory.AppendValues (GettextCatalog.GetString ("Declarations"), null);
 			string example = @"class Example {
 		void Test ()
 		{
@@ -603,21 +674,19 @@ namespace TestSpace {
 		{
 		}
 }";
-			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("Methods"), new Category (example,
-				new Option ("BeforeMethodDeclarationParentheses", GettextCatalog.GetString ("before opening parenthesis")),
-				new Option ("WithinMethodDeclarationParentheses", GettextCatalog.GetString ("within parenthesis")),
-				new Option ("BetweenEmptyMethodDeclarationParentheses", GettextCatalog.GetString ("between empty parenthesis")),
-				new Option ("BeforeMethodDeclarationParameterComma", GettextCatalog.GetString ("before comma in parenthesis")),
-				new Option ("AfterMethodDeclarationParameterComma", GettextCatalog.GetString ("after comma in parenthesis"))
-			));
+			category = AddOption (whiteSpaceOptions, null, GettextCatalog.GetString ("Declarations"), example);
+			AddOption (whiteSpaceOptions, category, "BeforeMethodDeclarationParentheses", GettextCatalog.GetString ("before opening parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "WithinMethodDeclarationParentheses", GettextCatalog.GetString ("within parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "BetweenEmptyMethodDeclarationParentheses", GettextCatalog.GetString ("between empty parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "BeforeMethodDeclarationParameterComma", GettextCatalog.GetString ("before comma in parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "AfterMethodDeclarationParameterComma", GettextCatalog.GetString ("after comma in parenthesis"), example);
 			
 			example = @"class Example {
 		int a, b, c;
 }";
-			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("Fields"), new Category (example,
-				new Option ("BeforeFieldDeclarationComma", GettextCatalog.GetString ("before comma in multiple field declarations")),
-				new Option ("AfterFieldDeclarationComma", GettextCatalog.GetString ("after comma in multiple field declarations"))
-			));
+			category = AddOption (whiteSpaceOptions, null, GettextCatalog.GetString ("Fields"), example);
+			AddOption (whiteSpaceOptions, category, "BeforeFieldDeclarationComma", GettextCatalog.GetString ("before comma in multiple field declarations"), example);
+			AddOption (whiteSpaceOptions, category, "AfterFieldDeclarationComma", GettextCatalog.GetString ("after comma in multiple field declarations"), example);
 			
 			example = @"class Example {
 	Example () 
@@ -628,13 +697,12 @@ namespace TestSpace {
 	{
 	}
 }";
-			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("Constructors"), new Category (example,
-				new Option ("BeforeConstructorDeclarationParentheses", GettextCatalog.GetString ("before opening parenthesis")),
-				new Option ("WithinConstructorDeclarationParentheses", GettextCatalog.GetString ("within parenthesis")),
-				new Option ("BetweenEmptyConstructorDeclarationParentheses", GettextCatalog.GetString ("between empty parenthesis")),
-				new Option ("BeforeConstructorDeclarationParameterComma", GettextCatalog.GetString ("before comma in parenthesis")),
-				new Option ("AfterConstructorDeclarationParameterComma", GettextCatalog.GetString ("after comma in parenthesis"))
-			));
+			category = AddOption (whiteSpaceOptions, null, GettextCatalog.GetString ("Constructors"), example);
+			AddOption (whiteSpaceOptions, category, "BeforeConstructorDeclarationParentheses", GettextCatalog.GetString ("before opening parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "WithinConstructorDeclarationParentheses", GettextCatalog.GetString ("within parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "BetweenEmptyConstructorDeclarationParentheses", GettextCatalog.GetString ("between empty parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "BeforeConstructorDeclarationParameterComma", GettextCatalog.GetString ("before comma in parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "AfterConstructorDeclarationParameterComma", GettextCatalog.GetString ("after comma in parenthesis"), example);
 			
 			example = @"class Example {
 	public int this[int a, int b] {
@@ -643,57 +711,51 @@ namespace TestSpace {
 		}
 	}
 }";
-			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("Indexer"), new Category (example,
-				new Option ("BeforeIndexerDeclarationBracket", GettextCatalog.GetString ("before opening bracket")),
-				new Option ("WithinIndexerDeclarationBracket", GettextCatalog.GetString ("within brackets")),
-				new Option ("BeforeIndexerDeclarationParameterComma", GettextCatalog.GetString ("before comma in brackets")),
-				new Option ("AfterIndexerDeclarationParameterComma", GettextCatalog.GetString ("after comma in brackets"))
-			));
+			category = AddOption (whiteSpaceOptions, null, GettextCatalog.GetString ("Indexer"), example);
+			AddOption (whiteSpaceOptions, category, "BeforeIndexerDeclarationBracket", GettextCatalog.GetString ("before opening bracket"), example);
+			AddOption (whiteSpaceOptions, category, "WithinIndexerDeclarationBracket", GettextCatalog.GetString ("within brackets"), example);
+			AddOption (whiteSpaceOptions, category, "BeforeIndexerDeclarationParameterComma", GettextCatalog.GetString ("before comma in brackets"), example);
+			AddOption (whiteSpaceOptions, category, "AfterIndexerDeclarationParameterComma", GettextCatalog.GetString ("after comma in brackets"), example);
 			
 			example = @"delegate void FooBar (int a, int b, int c);
 delegate void BarFoo ();
 ";
-			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("Delegates"), new Category (example,
-				new Option ("BeforeDelegateDeclarationParentheses", GettextCatalog.GetString ("before opening parenthesis")),
-				new Option ("WithinDelegateDeclarationParentheses", GettextCatalog.GetString ("within parenthesis")),
-				new Option ("BetweenEmptyDelegateDeclarationParentheses", GettextCatalog.GetString ("between empty parenthesis")),
-				new Option ("BeforeDelegateDeclarationParameterComma", GettextCatalog.GetString ("before comma in parenthesis")),
-				new Option ("AfterDelegateDeclarationParameterComma", GettextCatalog.GetString ("after comma in parenthesis"))
-			));
 			
-			category = whiteSpaceCategory.AppendValues (GettextCatalog.GetString ("Statements"), null);
+			category = AddOption (whiteSpaceOptions, null, GettextCatalog.GetString ("Delegates"), example);
+			AddOption (whiteSpaceOptions, category, "BeforeDelegateDeclarationParentheses", GettextCatalog.GetString ("before opening parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "WithinDelegateDeclarationParentheses", GettextCatalog.GetString ("within parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "BetweenEmptyDelegateDeclarationParentheses", GettextCatalog.GetString ("between empty parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "BeforeDelegateDeclarationParameterComma", GettextCatalog.GetString ("before comma in parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "AfterDelegateDeclarationParameterComma", GettextCatalog.GetString ("after comma in parenthesis"), example);
 			
-			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("'if'"), new Category (simpleIf,
-				new Option ("IfParentheses", GettextCatalog.GetString ("before opening parenthesis"))
-			));
+			var upperCategory = AddOption (whiteSpaceOptions, null, GettextCatalog.GetString ("Statements"), null);
 			
-			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("'while'"), new Category (simpleWhile,
-				new Option ("WhileParentheses", GettextCatalog.GetString ("before opening parenthesis"))
-			));
+			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'if'"), simpleIf);
+			AddOption (whiteSpaceOptions, category, "IfParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleIf);
 			
-			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("'for'"), new Category (simpleFor,
-				new Option ("ForParentheses", GettextCatalog.GetString ("before opening parenthesis")),
-				new Option ("SpacesBeforeForSemicolon", GettextCatalog.GetString ("before semicolon")),
-				new Option ("SpacesAfterForSemicolon", GettextCatalog.GetString ("after semicolon"))
-			));
+			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'while'"), simpleWhile);
+			AddOption (whiteSpaceOptions, category, "WhileParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleWhile);
+
+			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'for'"), simpleFor);
+			AddOption (whiteSpaceOptions, category, "ForParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleFor);
+			AddOption (whiteSpaceOptions, category, "SpacesBeforeForSemicolon", GettextCatalog.GetString ("before semicolon"), simpleFor);
+			AddOption (whiteSpaceOptions, category, "SpacesAfterForSemicolon", GettextCatalog.GetString ("after semicolon"), simpleFor);
+
+			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'foreach'"), simpleForeach);
+			AddOption (whiteSpaceOptions, category, "ForeachParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleForeach);
+
+			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'catch'"), simpleCatch);
+			AddOption (whiteSpaceOptions, category, "CatchParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleCatch);
 			
-			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("'foreach'"), new Category (simpleForeach,
-				new Option ("ForeachParentheses", GettextCatalog.GetString ("before opening parenthesis"))
-			));
+			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'switch'"), switchExample);
+			AddOption (whiteSpaceOptions, category, "SwitchParentheses", GettextCatalog.GetString ("before opening parenthesis"), switchExample);
 			
-			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("'catch'"), new Category (simpleCatch,
-				new Option ("CatchParentheses", GettextCatalog.GetString ("before opening parenthesis"))
-			));
+			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'lock'"), simpleLock);
+			AddOption (whiteSpaceOptions, category, "SwitchParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleLock);
 			
-			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("'switch'"), new Category (switchExample,
-				new Option ("SwitchParentheses", GettextCatalog.GetString ("before opening parenthesis"))
-			));
 			
-			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("'lock'"), new Category (simpleLock,
-				new Option ("SwitchParentheses", GettextCatalog.GetString ("before opening parenthesis"))
-			));
+			upperCategory = AddOption (whiteSpaceOptions, null, GettextCatalog.GetString ("Expressions"), null);
 			
-			category = whiteSpaceCategory.AppendValues (GettextCatalog.GetString ("Expressions"), null);
 			example = @"class Example {
 		void Test ()
 		{
@@ -701,13 +763,13 @@ delegate void BarFoo ();
 			Console.WriteLine(""{0} {1}!"", ""Hello"", ""World"");
 		}
 }";
-			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("Method invocations"), new Category (example,
-				new Option ("BeforeMethodCallParentheses", GettextCatalog.GetString ("before opening parenthesis")),
-				new Option ("WithinMethodCallParentheses", GettextCatalog.GetString ("within parenthesis")),
-				new Option ("BetweenEmptyMethodCallParentheses", GettextCatalog.GetString ("between empty parenthesis")),
-				new Option ("BeforeMethodCallParameterComma", GettextCatalog.GetString ("before comma in parenthesis")),
-				new Option ("AfterMethodCallParameterComma", GettextCatalog.GetString ("after comma in parenthesis"))
-			));
+			
+			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("Method invocations"), example);
+			AddOption (whiteSpaceOptions, category, "BeforeMethodCallParentheses", GettextCatalog.GetString ("before opening parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "WithinMethodCallParentheses", GettextCatalog.GetString ("within parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "BetweenEmptyMethodCallParentheses", GettextCatalog.GetString ("between empty parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "BeforeMethodCallParameterComma", GettextCatalog.GetString ("before comma in parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "AfterMethodCallParameterComma", GettextCatalog.GetString ("after comma in parenthesis"), example);
 			
 			example = @"class Example {
 		void Test ()
@@ -715,16 +777,14 @@ delegate void BarFoo ();
 			a[1,2] = b[3];
 		}
 }";
-			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("Element access"), new Category (example,
-				new Option ("SpacesBeforeBrackets", GettextCatalog.GetString ("before opening bracket")),
-				new Option ("SpacesWithinBrackets", GettextCatalog.GetString ("within brackets")),
-				new Option ("BeforeBracketComma", GettextCatalog.GetString ("before comma in brackets")),
-				new Option ("AfterBracketComma", GettextCatalog.GetString ("after comma in brackets"))
-			));
+			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("Element access"), example);
+			AddOption (whiteSpaceOptions, category, "SpacesBeforeBrackets", GettextCatalog.GetString ("before opening bracket"), example);
+			AddOption (whiteSpaceOptions, category, "SpacesWithinBrackets", GettextCatalog.GetString ("within brackets"), example);
+			AddOption (whiteSpaceOptions, category, "BeforeBracketComma", GettextCatalog.GetString ("before comma in brackets"), example);
+			AddOption (whiteSpaceOptions, category, "AfterBracketComma", GettextCatalog.GetString ("after comma in brackets"), example);
 			
-			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("Parentheses"), new Category (operatorExample,
-				new Option ("WithinParentheses", GettextCatalog.GetString ("within parenthesis"))
-			));
+			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("Parentheses"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "WithinParentheses", GettextCatalog.GetString ("within parenthesis"), operatorExample);
 			
 			example = @"class ClassDeclaration { 
 		public void Test (object o)
@@ -732,10 +792,9 @@ delegate void BarFoo ();
 			int i = (int)o;
 		}
 	}";
-			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("Type cast"), new Category (example,
-				new Option ("WithinCastParentheses", GettextCatalog.GetString ("within parenthesis")),
-				new Option ("SpacesAfterTypecast", GettextCatalog.GetString ("after type cast"))
-			));
+			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("Type cast"), example);
+			AddOption (whiteSpaceOptions, category, "WithinCastParentheses", GettextCatalog.GetString ("within parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpacesAfterTypecast", GettextCatalog.GetString ("after type cast"), example);
 			
 			example = @"class ClassDeclaration { 
 		public void Test ()
@@ -743,10 +802,9 @@ delegate void BarFoo ();
 			int i = sizeof (ClassDeclaration);
 		}
 	}";
-			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("'sizeof'"), new Category (example,
-				new Option ("BeforeSizeOfParentheses", GettextCatalog.GetString ("before opening parenthesis")),
-				new Option ("WithinSizeOfParentheses", GettextCatalog.GetString ("within parenthesis"))
-			));
+			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'sizeof'"), example);
+			AddOption (whiteSpaceOptions, category, "BeforeSizeOfParentheses", GettextCatalog.GetString ("before opening parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "WithinSizeOfParentheses", GettextCatalog.GetString ("within parenthesis"), example);
 			
 			example = @"class ClassDeclaration { 
 		public void Test ()
@@ -754,38 +812,34 @@ delegate void BarFoo ();
 			Type t = typeof (ClassDeclaration);
 		}
 	}";
-			whiteSpaceCategory.AppendValues (category, GettextCatalog.GetString ("'typeof'"), new Category (example,
-				new Option ("BeforeTypeOfParentheses", GettextCatalog.GetString ("before opening parenthesis")),
-				new Option ("WithinTypeOfParentheses", GettextCatalog.GetString ("within parenthesis"))
-			));
+			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'typeof'"), example);
+			AddOption (whiteSpaceOptions, category, "BeforeTypeOfParentheses", GettextCatalog.GetString ("before opening parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "WithinTypeOfParentheses", GettextCatalog.GetString ("within parenthesis"), example);
 			
+			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("Around Operators"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "AroundAssignmentParentheses", GettextCatalog.GetString ("Assignment (=, -=, ...)"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "AroundLogicalOperatorParentheses", GettextCatalog.GetString ("Logical (&amp;&amp;,||) operators"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "AroundEqualityOperatorParentheses", GettextCatalog.GetString ("Equality (==, !=) operators"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "AroundRelationalOperatorParentheses", GettextCatalog.GetString ("Relational (&lt;,&gt;,&lt;=,&gt;=) operators"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "AroundBitwiseOperatorParentheses", GettextCatalog.GetString ("Bitwise (&amp;,|,^) operators"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "AroundAdditiveOperatorParentheses", GettextCatalog.GetString ("Additive (+,-) operators"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "AroundMultiplicativeOperatorParentheses", GettextCatalog.GetString ("Multiplicative (*,/,%) operators"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "AroundShiftOperatorParentheses", GettextCatalog.GetString ("Shift (&lt;&lt;,&gt;&gt;) operators"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "AroundNullCoalescingOperator", GettextCatalog.GetString ("Null coalescing (??) operator"), operatorExample);
 			
-			whiteSpaceCategory.AppendValues (GettextCatalog.GetString ("Around Operators"), new Category (operatorExample,
-				new Option ("AroundAssignmentParentheses", GettextCatalog.GetString ("Assignment (=, -=, ...)")),
-				new Option ("AroundLogicalOperatorParentheses", GettextCatalog.GetString ("Logical (&amp;&amp;,||) operators")),
-				new Option ("AroundEqualityOperatorParentheses", GettextCatalog.GetString ("Equality (==, !=) operators")),
-				new Option ("AroundRelationalOperatorParentheses", GettextCatalog.GetString ("Relational (&lt;,&gt;,&lt;=,&gt;=) operators")),
-				new Option ("AroundBitwiseOperatorParentheses", GettextCatalog.GetString ("Bitwise (&amp;,|,^) operators")),
-				new Option ("AroundAdditiveOperatorParentheses", GettextCatalog.GetString ("Additive (+,-) operators")),
-				new Option ("AroundMultiplicativeOperatorParentheses", GettextCatalog.GetString ("Multiplicative (*,/,%) operators")),
-				new Option ("AroundShiftOperatorParentheses", GettextCatalog.GetString ("Shift (&lt;&lt;,&gt;&gt;) operators"))
-			));
-			
-			whiteSpaceCategory.AppendValues (GettextCatalog.GetString ("Conditional Operator (?:)"), new Category (condOpExample,
-				new Option ("ConditionalOperatorBeforeConditionSpace", GettextCatalog.GetString ("before '?'")),
-				new Option ("ConditionalOperatorAfterConditionSpace", GettextCatalog.GetString ("after '?'")),
-				new Option ("ConditionalOperatorBeforeSeparatorSpace", GettextCatalog.GetString ("before ':'")),
-				new Option ("ConditionalOperatorAfterSeparatorSpace", GettextCatalog.GetString ("after ':'"))
-			));
+			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("Conditional Operator (?:)"), condOpExample);
+			AddOption (whiteSpaceOptions, category, "ConditionalOperatorBeforeConditionSpace", GettextCatalog.GetString ("before '?'"), condOpExample);
+			AddOption (whiteSpaceOptions, category, "ConditionalOperatorAfterConditionSpace", GettextCatalog.GetString ("after '?'"), condOpExample);
+			AddOption (whiteSpaceOptions, category, "ConditionalOperatorBeforeSeparatorSpace", GettextCatalog.GetString ("before ':'"), condOpExample);
+			AddOption (whiteSpaceOptions, category, "ConditionalOperatorAfterSeparatorSpace", GettextCatalog.GetString ("after ':'"), condOpExample);
 			
 			example = @"class ClassDeclaration { 
 		string[][] field;
 		int[] test;
 	}";
-			whiteSpaceCategory.AppendValues (GettextCatalog.GetString ("Array Declarations"), new Category (example,
-				new Option ("SpacesBeforeArrayDeclarationBrackets", GettextCatalog.GetString ("before opening bracket"))
-			));
-			
+			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("Array Declarations"), example);
+			AddOption (whiteSpaceOptions, category, "SpacesBeforeArrayDeclarationBrackets", GettextCatalog.GetString ("before opening bracket"), condOpExample);
+			/*
 			whiteSpaceOptions= new ListStore (typeof (Option), typeof (bool), typeof (bool)); 
 			column = new TreeViewColumn ();
 			// text column
@@ -849,7 +903,7 @@ delegate void BarFoo ();
 			
 			treeviewInsertWhiteSpaceOptions.AppendColumn (column);
 			
-			treeviewInsertWhiteSpaceOptions.Model = whiteSpaceOptions;
+			treeviewInsertWhiteSpaceOptions.Model = whiteSpaceOptions;*/
 			treeviewInsertWhiteSpaceCategory.ExpandAll ();
 			#endregion
 			
@@ -871,7 +925,6 @@ delegate void BarFoo ();
 			entryBetweenFields.Changed += HandleEntryBeforUsingsChanged;
 			entryBetweenEvents.Changed += HandleEntryBeforUsingsChanged;
 			entryBetweenMembers.Changed += HandleEntryBeforUsingsChanged;
-			
 			#endregion
 		}
 		
@@ -893,26 +946,6 @@ delegate void BarFoo ();
 			profile.BlankLinesBetweenMembers = SetFlag (entryBetweenMembers, profile.BlankLinesBetweenMembers);
 			profile.BlankLinesBetweenEventFields = SetFlag (entryBetweenEvents, profile.BlankLinesBetweenMembers);
 			UpdateExample (blankLineExample);
-		}
-
-		void WhitespaceCategoryChanged (object sender, EventArgs e)
-		{
-			Gtk.TreeSelection treeSelection = (Gtk.TreeSelection)sender;
-			Gtk.TreeModel model;
-			Gtk.TreeIter iter;
-			if (treeSelection.GetSelected (out model, out iter)) {
-				var category = (Category)model.GetValue (iter, 1);
-				Console.WriteLine ("category:" + model.GetValue (iter, 1));
-				if (category == null)
-					return;
-				whiteSpaceOptions.Clear ();
-				foreach (var option in category.Options) {
-					PropertyInfo info = GetPropertyByName (option.PropertyName);
-					bool isBool = info.PropertyType == typeof (bool);
-					whiteSpaceOptions.AppendValues (option, isBool, !isBool);
-				}
-				UpdateExample (category.Example);
-			}
 		}
 		
 		static PropertyInfo GetPropertyByName (string name)
@@ -956,7 +989,7 @@ delegate void BarFoo ();
 				if (info != null && info.PropertyType != typeof (bool)) {
 					comboBoxStore.Clear ();
 					foreach (var v in Enum.GetValues (info.PropertyType)) {
-						comboBoxStore.AppendValues (v.ToString (), v.ToString ());
+						comboBoxStore.AppendValues (v.ToString (),  TranslateValue (v));
 					}
 				}
 				
@@ -1012,7 +1045,8 @@ delegate void BarFoo ();
 				return;
 			}
 			object value = info.GetValue (this.profile, null);
-			cellRenderer.Text = value.ToString ();
+			
+			cellRenderer.Text = value is Enum ? TranslateValue (value) : value.ToString ();
 		}
 		
 		void ToggleDataFunc (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) 
@@ -1060,7 +1094,7 @@ delegate void BarFoo ();
 				this.dialog = dialog;
 				this.model = model;
 			}
-			
+
 			public void ComboboxEdited (object o, EditedArgs args)
 			{
 				TreeIter iter;
@@ -1068,34 +1102,10 @@ delegate void BarFoo ();
 					var info = GetProperty (model, iter);
 					if (info == null)
 						return;
-					var value = Enum.Parse (info.PropertyType, args.NewText);
+					var value = ConvertProperty (info.PropertyType, args.NewText);
 					info.SetValue (dialog.profile, value, null);
 					dialog.UpdateExample (dialog.texteditor.Document.Text);
 				}
-			}
-		}
-		
-		class Option
-		{
-			public string PropertyName { get; set; }
-			public string DisplayName { get; set; }
-			
-			public Option (string propertyName, string displayName)
-			{
-				this.PropertyName = propertyName;
-				this.DisplayName = displayName;
-			}
-		}
-		
-		class Category
-		{
-			public readonly string Example;
-			public readonly List<Option> Options = new List<Option> ();
-			
-			public Category (string example, params Option[] options)
-			{
-				Example = example;
-				Options.AddRange (options);
 			}
 		}
 	}

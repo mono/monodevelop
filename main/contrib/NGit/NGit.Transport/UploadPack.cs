@@ -154,9 +154,9 @@ namespace NGit.Transport
 		/// </summary>
 		private bool? okToGiveUp;
 
-		/// <summary>Marked on objects we sent in our advertisement list.</summary>
-		/// <remarks>Marked on objects we sent in our advertisement list.</remarks>
-		private readonly RevFlag ADVERTISED;
+		/// <summary>Objects we sent in our advertisement list, clients can ask for these.</summary>
+		/// <remarks>Objects we sent in our advertisement list, clients can ask for these.</remarks>
+		private ICollection<ObjectId> advertised;
 
 		/// <summary>Marked on objects the client has asked us to give them.</summary>
 		/// <remarks>Marked on objects the client has asked us to give them.</remarks>
@@ -189,14 +189,12 @@ namespace NGit.Transport
 			db = copyFrom;
 			walk = new RevWalk(db);
 			walk.SetRetainBody(false);
-			ADVERTISED = walk.NewFlag("ADVERTISED");
 			WANT = walk.NewFlag("WANT");
 			PEER_HAS = walk.NewFlag("PEER_HAS");
 			COMMON = walk.NewFlag("COMMON");
 			SATISFIED = walk.NewFlag("SATISFIED");
 			walk.Carry(PEER_HAS);
 			SAVE = new RevFlagSet();
-			SAVE.AddItem(ADVERTISED);
 			SAVE.AddItem(WANT);
 			SAVE.AddItem(PEER_HAS);
 			refFilter = RefFilter.DEFAULT;
@@ -352,19 +350,16 @@ namespace NGit.Transport
 			}
 			else
 			{
+				advertised = new HashSet<ObjectId>();
 				refs = refFilter.Filter(db.GetAllRefs());
-				foreach (Ref r in refs.Values)
+				foreach (Ref @ref in refs.Values)
 				{
-					try
+					if (@ref.GetObjectId() != null)
 					{
-						walk.ParseAny(r.GetObjectId()).Add(ADVERTISED);
-					}
-					catch (IOException)
-					{
+						advertised.AddItem(@ref.GetObjectId());
 					}
 				}
 			}
-			// Skip missing/corrupt objects
 			RecvWants();
 			if (wantAll.IsEmpty())
 			{
@@ -398,7 +393,7 @@ namespace NGit.Transport
 		/// 	</exception>
 		public virtual void SendAdvertisedRefs(RefAdvertiser adv)
 		{
-			adv.Init(walk, ADVERTISED);
+			adv.Init(db);
 			adv.AdvertiseCapability(OPTION_INCLUDE_TAG);
 			adv.AdvertiseCapability(OPTION_MULTI_ACK_DETAILED);
 			adv.AdvertiseCapability(OPTION_MULTI_ACK);
@@ -409,7 +404,7 @@ namespace NGit.Transport
 			adv.AdvertiseCapability(OPTION_NO_PROGRESS);
 			adv.SetDerefTags(true);
 			refs = refFilter.Filter(db.GetAllRefs());
-			adv.Send(refs);
+			advertised = adv.Send(refs);
 			adv.End();
 		}
 
@@ -487,7 +482,7 @@ namespace NGit.Transport
 					else
 					{
 						// Already processed, the client repeated itself.
-						if (o.Has(ADVERTISED))
+						if (advertised.Contains(o))
 						{
 							o.Add(WANT);
 							wantAll.AddItem(o);
@@ -768,6 +763,7 @@ namespace NGit.Transport
 				);
 			ProgressMonitor pm = NullProgressMonitor.INSTANCE;
 			OutputStream packOut = rawOut;
+			SideBandOutputStream msgOut = null;
 			if (sideband)
 			{
 				int bufsz = SideBandOutputStream.SMALL_BUF;
@@ -778,8 +774,9 @@ namespace NGit.Transport
 				packOut = new SideBandOutputStream(SideBandOutputStream.CH_DATA, bufsz, rawOut);
 				if (!options.Contains(OPTION_NO_PROGRESS))
 				{
-					pm = new SideBandProgressMonitor(new SideBandOutputStream(SideBandOutputStream.CH_PROGRESS
-						, bufsz, rawOut));
+					msgOut = new SideBandOutputStream(SideBandOutputStream.CH_PROGRESS, bufsz, rawOut
+						);
+					pm = new SideBandProgressMonitor(msgOut);
 				}
 			}
 			PackConfig cfg = packConfig;
@@ -790,6 +787,7 @@ namespace NGit.Transport
 			PackWriter pw = new PackWriter(cfg, walk.GetObjectReader());
 			try
 			{
+				pw.SetUseCachedPacks(true);
 				pw.SetDeltaBaseAsOffset(options.Contains(OPTION_OFS_DELTA));
 				pw.SetThin(options.Contains(OPTION_THIN_PACK));
 				pw.PreparePack(pm, wantAll, commonBase);
@@ -818,12 +816,18 @@ namespace NGit.Transport
 					}
 				}
 				pw.WritePack(pm, NullProgressMonitor.INSTANCE, packOut);
+				packOut.Flush();
+				if (msgOut != null)
+				{
+					string msg = pw.GetStatistics().GetMessage() + '\n';
+					msgOut.Write(Constants.Encode(msg));
+					msgOut.Flush();
+				}
 			}
 			finally
 			{
 				pw.Release();
 			}
-			packOut.Flush();
 			if (sideband)
 			{
 				pckOut.End();

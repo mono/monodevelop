@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			}
 			
 			if (ParameterInformationWindowManager.IsWindowVisible) {
-				if (ParameterInformationWindowManager.ProcessKeyEvent (key, modifier))
+				if (ParameterInformationWindowManager.ProcessKeyEvent (CompletionWidget, key, modifier))
 					return false;
 				autoHideCompletionWindow = false;
 			}
@@ -101,8 +101,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			
 			// Handle parameter completion
 			if (ParameterInformationWindowManager.IsWindowVisible) {
-				ParameterInformationWindowManager.CompletionWidget = CompletionWidget;
-				ParameterInformationWindowManager.PostProcessKeyEvent (key, modifier);
+				ParameterInformationWindowManager.PostProcessKeyEvent (CompletionWidget, key, modifier);
 			}
 			
 			if ((modifier & ignoreMods) != 0)
@@ -186,7 +185,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		{
 			if (autoHideCompletionWindow) {
 				CompletionWindowManager.HideWindow ();
-				ParameterInformationWindowManager.HideWindow ();
+				ParameterInformationWindowManager.HideWindow (CompletionWidget);
 			}
 		}
 
@@ -266,7 +265,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			cp = ParameterCompletionCommand (ctx);
 			if (cp != null) {
 				ParameterInformationWindowManager.ShowWindow (CompletionWidget, ctx, cp);
-				ParameterInformationWindowManager.PostProcessKeyEvent (Gdk.Key.F, Gdk.ModifierType.None);
+				ParameterInformationWindowManager.PostProcessKeyEvent (CompletionWidget, Gdk.Key.F, Gdk.ModifierType.None);
 			}
 		}
 		

@@ -75,6 +75,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			if (project != null) {
 				// Get the list of available versions, and add only those supported by the target language.
 				foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
+					if (fx.Hidden)
+						continue;
 					if (fx != project.TargetFramework) {
 						if (!project.TargetRuntime.IsInstalled (fx))
 							continue;

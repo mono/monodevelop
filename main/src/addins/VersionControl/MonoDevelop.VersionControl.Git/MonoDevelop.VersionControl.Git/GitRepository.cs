@@ -80,10 +80,11 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			try {
 				NGit.Transport.URIish u = new NGit.Transport.URIish (url);
-				return true;
+				if (!string.IsNullOrEmpty (u.GetHost ()))
+					return true;
 			} catch {
-				return false;
 			}
+			return base.IsUrlValid (url);
 		}
 
 		public FilePath RootPath {
@@ -336,30 +337,51 @@ namespace MonoDevelop.VersionControl.Git
 				stash = stashes.Create (GetStashName ("_tmp_"));
 				monitor.Step (1);
 				
-				RebaseOperation rebaser = new RebaseOperation (repo, upstreamRef, monitor);
+				GitMonitor gmonitor = new GitMonitor (monitor);
+				
+				NGit.Api.Git git = new NGit.Api.Git (repo);
+				RebaseCommand rebase = git.Rebase ();
+				rebase.SetOperation (RebaseCommand.Operation.BEGIN);
+				rebase.SetUpstream (upstreamRef);
+				rebase.SetProgressMonitor (gmonitor);
+				bool aborted = false;
+				
 				try {
-					while (!rebaser.Rebase ()) {
-						var conflicts = rebaser.LastMergeResult.GetConflicts ();
-						if (conflicts != null) {
-							foreach (string conflictFile in conflicts.Keys) {
-								ConflictResult res = ResolveConflict (FromGitPath (conflictFile));
-								if (res == ConflictResult.Abort) {
-									rebaser.Abort ();
-									break;
-								} else if (res == ConflictResult.Skip) {
-									rebaser.Skip ();
-									break;
-								}
-							}
-							if (rebaser.Aborted)
+					var result = rebase.Call ();
+					while (!aborted && result.GetStatus () == RebaseResult.Status.STOPPED) {
+						rebase = git.Rebase ();
+						rebase.SetProgressMonitor (gmonitor);
+						rebase.SetOperation (RebaseCommand.Operation.CONTINUE);
+						bool commitChanges = true;
+						var conflicts = GitUtil.GetConflictedFiles (repo);
+						foreach (string conflictFile in conflicts) {
+							ConflictResult res = ResolveConflict (FromGitPath (conflictFile));
+							if (res == ConflictResult.Abort) {
+								aborted = true;
+								commitChanges = false;
+								rebase.SetOperation (RebaseCommand.Operation.ABORT);
 								break;
+							} else if (res == ConflictResult.Skip) {
+								rebase.SetOperation (RebaseCommand.Operation.SKIP);
+								commitChanges = false;
+								break;
+							}
 						}
-						else
-							throw new Exception ("Rebase commit failed");
+						if (commitChanges) {
+							NGit.Api.AddCommand cmd = git.Add ();
+							foreach (string conflictFile in conflicts)
+								cmd.AddFilepattern (conflictFile);
+							cmd.Call ();
+						}
+						result = rebase.Call ();
 					}
 				} catch {
-					if (!rebaser.Aborted)
-						rebaser.Abort ();
+					if (!aborted) {
+						rebase = git.Rebase ();
+						rebase.SetOperation (RebaseCommand.Operation.ABORT);
+						rebase.SetProgressMonitor (gmonitor);
+						rebase.Call ();
+					}
 					throw;
 				}
 				
@@ -721,7 +743,13 @@ namespace MonoDevelop.VersionControl.Git
 
 		public override void Checkout (FilePath targetLocalPath, Revision rev, bool recurse, IProgressMonitor monitor)
 		{
-			GitUtil.Clone (targetLocalPath, Url, monitor);
+			CloneCommand cmd = NGit.Api.Git.CloneRepository ();
+			cmd.SetURI (Url);
+			cmd.SetRemote ("origin");
+			cmd.SetBranch ("refs/heads/master");
+			cmd.SetDirectory ((string)targetLocalPath);
+			cmd.SetProgressMonitor (new GitMonitor (monitor));
+			cmd.Call ();
 		}
 
 		public override void Revert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
@@ -1458,6 +1486,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override void Update (int completed)
 		{
+			monitor.Step (completed);
 		}
 		
 		

@@ -6,14 +6,14 @@ AM_MAINTAINER_MODE
 ASSEMBLY_VERSION=2.6.0.0
 
 AC_PATH_PROG(MONO, mono)
-AC_PATH_PROG(MCS, gmcs)
+AC_PATH_PROG(MCS, dmcs)
 
 if test "x$MONO" = "x" ; then
 	AC_MSG_ERROR([Can't find "mono" in your PATH])
 fi
 
 if test "x$MCS" = "x" ; then
-  AC_MSG_ERROR([Can't find "gmcs" in your PATH])
+  AC_MSG_ERROR([Can't find "dmcs" in your PATH])
 fi
 AC_SUBST(PATH)
 AC_SUBST(LD_LIBRARY_PATH)
@@ -29,12 +29,12 @@ fi
 if test "x$has_mono" = "xtrue"; then
     if test `uname -s` = "Darwin"; then
 	AC_PATH_PROG(RUNTIME, mono, no)
-	AC_PATH_PROG(CSC, gmcs, no)
+	AC_PATH_PROG(CSC, dmcs, no)
 	LIB_PREFIX=
 	LIB_SUFFIX=.dylib
     else
 	AC_PATH_PROG(RUNTIME, mono, no)
-	AC_PATH_PROG(CSC, gmcs, no)
+	AC_PATH_PROG(CSC, dmcs, no)
 	LIB_PREFIX=.so
 	LIB_SUFFIX=
     fi

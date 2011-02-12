@@ -27,7 +27,7 @@
 
 using System;
 
-namespace MonoDevelop.AddinAuthoring
+namespace MonoDevelop.AddinAuthoring.NodeBuilders
 {
 	
 	

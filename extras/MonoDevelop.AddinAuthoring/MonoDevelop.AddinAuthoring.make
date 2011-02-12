@@ -9,7 +9,7 @@ include $(top_srcdir)/Makefile.include
 include $(top_srcdir)/config.make
 
 ifeq ($(CONFIG),DEBUG)
-ASSEMBLY_COMPILER_COMMAND = gmcs
+ASSEMBLY_COMPILER_COMMAND = dmcs
 ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize+ -debug -define:DEBUG
 ASSEMBLY = build/MonoDevelop.AddinAuthoring.dll
 ASSEMBLY_MDB = $(ASSEMBLY).mdb
@@ -21,7 +21,7 @@ BUILD_DIR = build
 endif
 
 ifeq ($(CONFIG),RELEASE)
-ASSEMBLY_COMPILER_COMMAND = gmcs
+ASSEMBLY_COMPILER_COMMAND = dmcs
 ASSEMBLY_COMPILER_FLAGS =  -noconfig -codepage:utf8 -warn:4 -optimize+
 ASSEMBLY = bin/Release/MonoDevelop.AddinAuthoring.dll
 ASSEMBLY_MDB = 
@@ -48,8 +48,13 @@ FILES =  \
 	gtk-gui/MonoDevelop.AddinAuthoring.AddinFeatureWidget.cs \
 	gtk-gui/MonoDevelop.AddinAuthoring.AddinOptionPanelWidget.cs \
 	gtk-gui/MonoDevelop.AddinAuthoring.ExtensionEditorWidget.cs \
+	gtk-gui/MonoDevelop.AddinAuthoring.ExtensionModelBrowserWidget.cs \
 	gtk-gui/MonoDevelop.AddinAuthoring.ExtensionPointsEditorWidget.cs \
 	gtk-gui/MonoDevelop.AddinAuthoring.ExtensionSelectorDialog.cs \
+	gtk-gui/MonoDevelop.AddinAuthoring.Gui.AddinView.cs \
+	gtk-gui/MonoDevelop.AddinAuthoring.Gui.ExtensionNodeView.cs \
+	gtk-gui/MonoDevelop.AddinAuthoring.Gui.ExtensionPointView.cs \
+	gtk-gui/MonoDevelop.AddinAuthoring.Gui.ExtensionView.cs \
 	gtk-gui/MonoDevelop.AddinAuthoring.NewExtensionPointDialog.cs \
 	gtk-gui/MonoDevelop.AddinAuthoring.NewRegistryDialog.cs \
 	gtk-gui/MonoDevelop.AddinAuthoring.NodeSetEditorDialog.cs \
@@ -60,14 +65,27 @@ FILES =  \
 	gtk-gui/MonoDevelop.AddinAuthoring.SelectRepositoryDialog.cs \
 	gtk-gui/MonoDevelop.AddinAuthoring.TypeSelector.cs \
 	MonoDevelop.AddinAuthoring.CodeCompletion/CodeCompletionExtension.cs \
+	MonoDevelop.AddinAuthoring.Gui/AddinView.cs \
+	MonoDevelop.AddinAuthoring.Gui/ExtensionNodeView.cs \
+	MonoDevelop.AddinAuthoring.Gui/ExtensionPointView.cs \
+	MonoDevelop.AddinAuthoring.Gui/ExtensionView.cs \
+	MonoDevelop.AddinAuthoring.NodeBuilders/AddinCategoryGroup.cs \
+	MonoDevelop.AddinAuthoring.NodeBuilders/AddinCategoryNodeBuilder.cs \
 	MonoDevelop.AddinAuthoring.NodeBuilders/AddinFolderNodeBuilder.cs \
+	MonoDevelop.AddinAuthoring.NodeBuilders/AddinGroup.cs \
 	MonoDevelop.AddinAuthoring.NodeBuilders/AddinHeaderNodeBuilder.cs \
+	MonoDevelop.AddinAuthoring.NodeBuilders/AddinNodeBuilder.cs \
 	MonoDevelop.AddinAuthoring.NodeBuilders/AddinReferenceNodeBuilder.cs \
-	MonoDevelop.AddinAuthoring.NodeBuilders/ExtensionPointsNodeBuilder.cs \
-	MonoDevelop.AddinAuthoring.NodeBuilders/ExtensionsNodeBuilder.cs \
+	MonoDevelop.AddinAuthoring.NodeBuilders/ExtensionModelTypeNodeBuilder.cs \
+	MonoDevelop.AddinAuthoring.NodeBuilders/ExtensionNodeBuilder.cs \
+	MonoDevelop.AddinAuthoring.NodeBuilders/ExtensionNodeNodeBuilder.cs \
+	MonoDevelop.AddinAuthoring.NodeBuilders/ExtensionPointNodeBuilder.cs \
 	MonoDevelop.AddinAuthoring.NodeBuilders/ProjectFolderNodeBuilderExtension.cs \
+	MonoDevelop.AddinAuthoring.NodeBuilders/ProjectNodeBuilder.cs \
 	MonoDevelop.AddinAuthoring.NodeBuilders/ReferenceNodeBuilder.cs \
 	MonoDevelop.AddinAuthoring.NodeBuilders/ReferencesFolderNodeBuilder.cs \
+	MonoDevelop.AddinAuthoring.NodeBuilders/RegistryNodeBuilder.cs \
+	MonoDevelop.AddinAuthoring.NodeBuilders/SolutionNodeBuilder.cs \
 	MonoDevelop.AddinAuthoring/AddinAuthoringService.cs \
 	MonoDevelop.AddinAuthoring/AddinData.cs \
 	MonoDevelop.AddinAuthoring/AddinDescriptionDisplayBinding.cs \
@@ -75,13 +93,22 @@ FILES =  \
 	MonoDevelop.AddinAuthoring/AddinDescriptionWidget.cs \
 	MonoDevelop.AddinAuthoring/AddinFeatureWidget.cs \
 	MonoDevelop.AddinAuthoring/AddinFileDescriptionTemplate.cs \
+	MonoDevelop.AddinAuthoring/AddinFileSystem.cs \
 	MonoDevelop.AddinAuthoring/AddinOptionPanelWidget.cs \
 	MonoDevelop.AddinAuthoring/AddinProjectExtension.cs \
 	MonoDevelop.AddinAuthoring/AddinProjectReference.cs \
 	MonoDevelop.AddinAuthoring/CellRendererExtension.cs \
 	MonoDevelop.AddinAuthoring/Commands.cs \
+	MonoDevelop.AddinAuthoring/DomAssemblyReflector.cs \
+	MonoDevelop.AddinAuthoring/ExtensionBaseView.cs \
 	MonoDevelop.AddinAuthoring/ExtensionDomain.cs \
+	MonoDevelop.AddinAuthoring/ExtensionEditorView.cs \
 	MonoDevelop.AddinAuthoring/ExtensionEditorWidget.cs \
+	MonoDevelop.AddinAuthoring/ExtensionModelBrowser.cs \
+	MonoDevelop.AddinAuthoring/ExtensionModelBrowserWidget.cs \
+	MonoDevelop.AddinAuthoring/ExtensionNodeInfo.cs \
+	MonoDevelop.AddinAuthoring/ExtensionNodeTree.cs \
+	MonoDevelop.AddinAuthoring/ExtensionPointsEditorView.cs \
 	MonoDevelop.AddinAuthoring/ExtensionPointsEditorWidget.cs \
 	MonoDevelop.AddinAuthoring/ExtensionSelectorDialog.cs \
 	MonoDevelop.AddinAuthoring/NewExtensionPointDialog.cs \
@@ -90,18 +117,24 @@ FILES =  \
 	MonoDevelop.AddinAuthoring/NodeSetEditorDialog.cs \
 	MonoDevelop.AddinAuthoring/NodeSetEditorWidget.cs \
 	MonoDevelop.AddinAuthoring/NodeTypeEditorDialog.cs \
+	MonoDevelop.AddinAuthoring/RegistryEventArgs.cs \
 	MonoDevelop.AddinAuthoring/RegistryExtensionNode.cs \
 	MonoDevelop.AddinAuthoring/RegistrySelector.cs \
 	MonoDevelop.AddinAuthoring/SelectNodeSetDialog.cs \
 	MonoDevelop.AddinAuthoring/SelectRepositoryDialog.cs \
 	MonoDevelop.AddinAuthoring/SolutionAddinData.cs \
+	MonoDevelop.AddinAuthoring/StartupHandler.cs \
 	MonoDevelop.AddinAuthoring/TypeCellEditor.cs \
-	MonoDevelop.AddinAuthoring/TypeSelector.cs 
+	MonoDevelop.AddinAuthoring/TypeSelector.cs \
+	MonoDevelop.AddinAuthoring/Util.cs 
 
 DATA_FILES = 
 
 RESOURCES =  \
 	addin-reference.png \
+	AddinTextStylePolicy.xml \
+	AddinXmlPolicy.xml \
+	extension.png \
 	extension-node-set.png \
 	extension-node-type.png \
 	extension-point.png \
@@ -116,7 +149,8 @@ EXTRAS = \
 	monodevelop.addinauthoring.pc.in 
 
 REFERENCES =  \
-	Mono.Posix \
+	-pkg:glib-sharp-2.0 \
+	-pkg:gtkhtml-sharp-3.14 \
 	-pkg:gtk-sharp-2.0 \
 	-pkg:mono-addins \
 	-pkg:mono-addins-setup \

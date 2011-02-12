@@ -308,7 +308,6 @@ namespace MonoDevelop.Projects.Dom
 			if (dom == null || type == null || Parameters.Count == 0 || !IsExtension) {
 				return null;
 			}
-//			Console.WriteLine ("Ext.Type: " + type);
 			string extensionTableKey = this.HelpUrl + "/" + type.FullName;
 //			Console.WriteLine ("table key:" + extensionTableKey);
 			lock (extensionTable) {
@@ -334,7 +333,7 @@ namespace MonoDevelop.Projects.Dom
 					string baseTypeFullName = baseType is InstantiatedType ? ((InstantiatedType)baseType).UninstantiatedType.FullName : baseType.FullName;
 					
 					// compare the generic arguments.
-					if (instMethod.Parameters[0].ReturnType.FullName == baseTypeFullName) {
+					if (instMethod.Parameters[0].ReturnType.FullName == baseTypeFullName && Parameters[0].ReturnType.ArrayDimensions == 0 && Parameters[0].ReturnType.PointerNestingLevel == 0) {
 						if (instMethod.Parameters[0].ReturnType.GenericArguments.Count > 0) {
 							InstantiatedType instType = baseType as InstantiatedType;
 							if (instType == null || instType.GenericParameters.Count != instMethod.Parameters[0].ReturnType.GenericArguments.Count)

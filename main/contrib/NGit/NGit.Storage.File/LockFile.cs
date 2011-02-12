@@ -44,6 +44,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System;
 using System.IO;
 using NGit;
+using NGit.Storage.File;
 using NGit.Util;
 using Sharpen;
 
@@ -64,9 +65,9 @@ namespace NGit.Storage.File
 	{
 		internal static readonly string SUFFIX = ".lock";
 
-		private sealed class _FilenameFilter_78 : FilenameFilter
+		private sealed class _FilenameFilter_79 : FilenameFilter
 		{
-			public _FilenameFilter_78()
+			public _FilenameFilter_79()
 			{
 			}
 
@@ -79,7 +80,7 @@ namespace NGit.Storage.File
 
 		/// <summary>Filter to skip over active lock files when listing a directory.</summary>
 		/// <remarks>Filter to skip over active lock files when listing a directory.</remarks>
-		internal static readonly FilenameFilter FILTER = new _FilenameFilter_78();
+		internal static readonly FilenameFilter FILTER = new _FilenameFilter_79();
 
 		private readonly FilePath @ref;
 
@@ -89,11 +90,11 @@ namespace NGit.Storage.File
 
 		private FileOutputStream os;
 
-		private bool needStatInformation;
+		private bool needSnapshot;
 
 		private bool fsync;
 
-		private long commitLastModified;
+		private FileSnapshot commitSnapshot;
 
 		private readonly FS fs;
 
@@ -123,7 +124,7 @@ namespace NGit.Storage.File
 		/// </exception>
 		public virtual bool Lock()
 		{
-			lck.GetParentFile().Mkdirs();
+			FileUtils.Mkdirs(lck.GetParentFile(), true);
 			if (lck.CreateNewFile())
 			{
 				haveLck = true;
@@ -340,12 +341,12 @@ namespace NGit.Storage.File
 			{
 				@out = os;
 			}
-			return new _OutputStream_290(this, @out);
+			return new _OutputStream_291(this, @out);
 		}
 
-		private sealed class _OutputStream_290 : OutputStream
+		private sealed class _OutputStream_291 : OutputStream
 		{
-			public _OutputStream_290(LockFile _enclosing, OutputStream @out)
+			public _OutputStream_291(LockFile _enclosing, OutputStream @out)
 			{
 				this._enclosing = _enclosing;
 				this.@out = @out;
@@ -417,11 +418,28 @@ namespace NGit.Storage.File
 		/// Request that
 		/// <see cref="Commit()">Commit()</see>
 		/// remember modification time.
+		/// <p>
+		/// This is an alias for
+		/// <code>setNeedSnapshot(true)</code>
+		/// .
 		/// </summary>
 		/// <param name="on">true if the commit method must remember the modification time.</param>
 		public virtual void SetNeedStatInformation(bool on)
 		{
-			needStatInformation = on;
+			SetNeedSnapshot(on);
+		}
+
+		/// <summary>
+		/// Request that
+		/// <see cref="Commit()">Commit()</see>
+		/// remember the
+		/// <see cref="FileSnapshot">FileSnapshot</see>
+		/// .
+		/// </summary>
+		/// <param name="on">true if the commit method must remember the FileSnapshot.</param>
+		public virtual void SetNeedSnapshot(bool on)
+		{
+			needSnapshot = on;
 		}
 
 		/// <summary>
@@ -555,9 +573,9 @@ namespace NGit.Storage.File
 
 		private void SaveStatInformation()
 		{
-			if (needStatInformation)
+			if (needSnapshot)
 			{
-				commitLastModified = lck.LastModified();
+				commitSnapshot = FileSnapshot.Save(lck);
 			}
 		}
 
@@ -566,7 +584,17 @@ namespace NGit.Storage.File
 		/// <returns>modification time of the lock file right before we committed it.</returns>
 		public virtual long GetCommitLastModified()
 		{
-			return commitLastModified;
+			return commitSnapshot.LastModified();
+		}
+
+		/// <returns>
+		/// get the
+		/// <see cref="FileSnapshot">FileSnapshot</see>
+		/// just before commit.
+		/// </returns>
+		public virtual FileSnapshot GetCommitSnapshot()
+		{
+			return commitSnapshot;
 		}
 
 		/// <summary>Unlock this file and abort this change.</summary>

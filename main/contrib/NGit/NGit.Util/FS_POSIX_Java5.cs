@@ -46,7 +46,7 @@ using Sharpen;
 
 namespace NGit.Util
 {
-	internal class FS_POSIX_Java5 : FS
+	internal class FS_POSIX_Java5 : FS_POSIX
 	{
 		public override bool SupportsExecute()
 		{

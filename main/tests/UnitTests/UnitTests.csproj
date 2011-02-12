@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -8,8 +8,8 @@
     <ProjectGuid>{1497D0A8-AFF1-4938-BC22-BE79B358BA5B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>UnitTests</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <RootNamespace>UnitTests</RootNamespace>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -37,10 +37,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System">
-      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System.Xml">
-      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
@@ -58,7 +56,6 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="nunit.core, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
       <SpecificVersion>False</SpecificVersion>
@@ -81,6 +78,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Mono.Addins, Version=0.5.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <Reference Include="Mono.Cairo" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -138,6 +136,10 @@
       <Name>MonoDevelop.DesignerSupport</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\addins\VersionControl\MonoDevelop.VersionControl\MonoDevelop.VersionControl.csproj">
+      <Project>{19DE0F35-D204-4FD8-A553-A19ECE05E24D}</Project>
+      <Name>MonoDevelop.VersionControl</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\addins\VersionControl\MonoDevelop.VersionControl.Git\MonoDevelop.VersionControl.Git.csproj">
       <Project>{0413DB7D-8B35-423F-9752-D75C9225E7DE}</Project>
       <Name>MonoDevelop.VersionControl.Git</Name>
@@ -145,6 +147,10 @@
     <ProjectReference Include="..\..\contrib\NGit\NGit.csproj">
       <Project>{E3BFF8B4-189C-496A-A817-7E8B31E22B91}</Project>
       <Name>NGit</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\contrib\Sharpen\Sharpen.csproj">
+      <Project>{72944A6C-45FF-4EF8-B349-8C9CABF519D4}</Project>
+      <Name>Sharpen</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -219,6 +225,8 @@
     <Compile Include="MonoDevelop.Refactoring\CreateMethodTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\TestBlankLineFormatting.cs" />
     <Compile Include="MonoDevelop.Refactoring\ImplementInterfaceTests.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Views\EditorCompareWidgetBaseTest.cs" />
+    <Compile Include="Mono.TextEditor.Tests\TextBreakerTests.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitUtilsTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
@@ -245,6 +253,10 @@
     <Folder Include="MonoDevelop.Refactoring\" />
     <Folder Include="MonoDevelop.Projects.Gui\" />
     <Folder Include="MonoDevelop.AspNet\" />
+<<<<<<< HEAD
+=======
+    <Folder Include="MonoDevelop.VersionControl.Views\" />
+>>>>>>> master
     <Folder Include="MonoDevelop.VersionControl.Git\" />
   </ItemGroup>
 </Project>

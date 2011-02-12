@@ -30,7 +30,7 @@ namespace MonoDevelop.Prj2Make
 		private bool m_bIsMcs;
 		private bool m_bIsUsingLib;
 		
-		TargetFramework fx = Runtime.SystemAssemblyService.GetTargetFramework ("1.1");
+		TargetFramework fx = Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_1_1);
  
 		// Flag use to determine if the LIB variable will be used in
 		// the Makefile that prj2make generates

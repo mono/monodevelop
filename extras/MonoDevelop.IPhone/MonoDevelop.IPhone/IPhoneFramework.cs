@@ -41,6 +41,7 @@ public static class IPhoneFramework
 	{
 		static bool? isInstalled = null;
 		static bool? simOnly = null;
+		static IPhoneSdkVersion? monoTouchVersion;
 		static IPhoneSdkVersion[] installedSdkVersions, knownOSVersions;
 		
 		const string PLAT_PLIST = "/Developer/Platforms/iPhoneOS.platform/Info.plist";
@@ -61,6 +62,24 @@ public static class IPhoneFramework
 					simOnly = !File.Exists ("/Developer/MonoTouch/usr/bin/arm-darwin-mono");
 				}
 				return simOnly.Value;
+			}
+		}
+		
+		public static IPhoneSdkVersion MonoTouchVersion {
+			get {
+				if (!monoTouchVersion.HasValue) {
+					if (File.Exists ("/Developer/MonoTouch/Version")) {
+						try {
+							monoTouchVersion = IPhoneSdkVersion.Parse (
+								File.ReadAllText ("/Developer/MonoTouch/Version").Trim ());
+						} catch (Exception ex) {
+							LoggingService.LogError ("Failed to read MonoTouch version", ex);
+						}
+					}
+					if (!monoTouchVersion.HasValue)
+						monoTouchVersion = new IPhoneSdkVersion ();
+				}
+				return monoTouchVersion.Value;
 			}
 		}
 		
@@ -218,6 +237,7 @@ public static class IPhoneFramework
 				new IPhoneSdkVersion (new [] { 4, 0 }),
 				new IPhoneSdkVersion (new [] { 4, 1 }),
 				new IPhoneSdkVersion (new [] { 4, 2 }),
+				new IPhoneSdkVersion (new [] { 4, 3 }),
 			};
 			
 			const string sdkDir = "/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/";

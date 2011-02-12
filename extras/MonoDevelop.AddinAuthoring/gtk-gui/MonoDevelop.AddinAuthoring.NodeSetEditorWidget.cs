@@ -5,19 +5,12 @@ namespace MonoDevelop.AddinAuthoring
 	public partial class NodeSetEditorWidget
 	{
 		private global::Gtk.HBox hbox4;
-
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-
 		private global::Gtk.TreeView tree;
-
 		private global::Gtk.VBox buttonBox;
-
 		private global::Gtk.Button addNodeButton;
-
 		private global::Gtk.Button addSetButton;
-
 		private global::Gtk.Button removeNodeButton;
-
 		private global::Gtk.Button editNodeButton;
 
 		protected virtual void Build ()
@@ -40,7 +33,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.tree.Name = "tree";
 			this.GtkScrolledWindow.Add (this.tree);
 			this.hbox4.Add (this.GtkScrolledWindow);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox4[this.GtkScrolledWindow]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.GtkScrolledWindow]));
 			w2.Position = 0;
 			// Container child hbox4.Gtk.Box+BoxChild
 			this.buttonBox = new global::Gtk.VBox ();
@@ -52,7 +45,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.addNodeButton.Name = "addNodeButton";
 			this.addNodeButton.UseUnderline = true;
 			// Container child addNodeButton.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w3 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+			global::Gtk.Alignment w3 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
 			global::Gtk.HBox w4 = new global::Gtk.HBox ();
 			w4.Spacing = 2;
@@ -68,7 +61,7 @@ namespace MonoDevelop.AddinAuthoring
 			w3.Add (w4);
 			this.addNodeButton.Add (w3);
 			this.buttonBox.Add (this.addNodeButton);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.buttonBox[this.addNodeButton]));
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.buttonBox [this.addNodeButton]));
 			w11.Position = 0;
 			w11.Expand = false;
 			w11.Fill = false;
@@ -78,7 +71,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.addSetButton.Name = "addSetButton";
 			this.addSetButton.UseUnderline = true;
 			// Container child addSetButton.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w12 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+			global::Gtk.Alignment w12 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
 			global::Gtk.HBox w13 = new global::Gtk.HBox ();
 			w13.Spacing = 2;
@@ -94,7 +87,7 @@ namespace MonoDevelop.AddinAuthoring
 			w12.Add (w13);
 			this.addSetButton.Add (w12);
 			this.buttonBox.Add (this.addSetButton);
-			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.buttonBox[this.addSetButton]));
+			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.buttonBox [this.addSetButton]));
 			w20.Position = 1;
 			w20.Expand = false;
 			w20.Fill = false;
@@ -106,7 +99,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.removeNodeButton.UseUnderline = true;
 			this.removeNodeButton.Label = "gtk-remove";
 			this.buttonBox.Add (this.removeNodeButton);
-			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.buttonBox[this.removeNodeButton]));
+			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.buttonBox [this.removeNodeButton]));
 			w21.Position = 2;
 			w21.Expand = false;
 			w21.Fill = false;
@@ -118,12 +111,12 @@ namespace MonoDevelop.AddinAuthoring
 			this.editNodeButton.UseUnderline = true;
 			this.editNodeButton.Label = "gtk-edit";
 			this.buttonBox.Add (this.editNodeButton);
-			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.buttonBox[this.editNodeButton]));
+			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.buttonBox [this.editNodeButton]));
 			w22.Position = 3;
 			w22.Expand = false;
 			w22.Fill = false;
 			this.hbox4.Add (this.buttonBox);
-			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.hbox4[this.buttonBox]));
+			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.buttonBox]));
 			w23.Position = 1;
 			w23.Expand = false;
 			w23.Fill = false;

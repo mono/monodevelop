@@ -236,7 +236,7 @@ namespace MonoDevelop.Core.Assemblies
 			bool inconsistentFrameworks = false;
 			
 			foreach (PackageAssemblyInfo pi in pinfo.Assemblies) {
-				string targetFramework = Runtime.SystemAssemblyService.GetTargetFrameworkForAssembly (Runtime.SystemAssemblyService.CurrentRuntime, pi.File);
+				TargetFrameworkMoniker targetFramework = Runtime.SystemAssemblyService.GetTargetFrameworkForAssembly (Runtime.SystemAssemblyService.CurrentRuntime, pi.File);
 				if (commonFramework == null) {
 					commonFramework = Runtime.SystemAssemblyService.GetTargetFramework (targetFramework);
 					if (commonFramework == null)
@@ -259,7 +259,7 @@ namespace MonoDevelop.Core.Assemblies
 			if (inconsistentFrameworks)
 				LoggingService.LogError ("Inconsistent target frameworks found in " + pcfile);
 			if (commonFramework != null)
-				pinfo.SetData ("targetFramework", commonFramework.Id);
+				pinfo.SetData ("targetFramework", commonFramework.Id.ToString ());
 			else
 				pinfo.SetData ("targetFramework", "FxUnknown");
 		}

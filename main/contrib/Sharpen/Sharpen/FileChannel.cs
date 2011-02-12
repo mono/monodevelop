@@ -7,10 +7,12 @@ namespace Sharpen
 	{
 		private FileStream s;
 		byte[] buffer;
+		bool isOpen;
 
 		internal FileChannel (FileStream s)
 		{
 			this.s = s;
+			isOpen = true;
 		}
 		
 		internal FileStream Stream {
@@ -19,7 +21,13 @@ namespace Sharpen
 
 		public void Close ()
 		{
+			isOpen = false;
 			s.Close ();
+		}
+		
+		public bool IsOpen ()
+		{
+			return isOpen;
 		}
 
 		public void Force (bool f)

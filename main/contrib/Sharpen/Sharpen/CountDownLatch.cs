@@ -21,6 +21,11 @@ namespace Sharpen
 			done.WaitOne ();
 		}
 
+		public bool Await (long timeout, Sharpen.TimeUnit unit)
+		{
+			return done.WaitOne ((int) unit.Convert (timeout, TimeUnit.MILLISECONDS));
+		}
+
 		public void CountDown ()
 		{
 			if (Interlocked.Decrement (ref count) == 0) {

@@ -19,7 +19,7 @@ namespace Sharpen
 		bool shuttingDown;
 		
 		#region ExecutorService implementation
-		public bool AwaitTermination (int n, Sharpen.TimeUnit unit)
+		public bool AwaitTermination (long n, Sharpen.TimeUnit unit)
 		{
 			WaitHandle[] handles;
 			lock (tasks) {

@@ -460,7 +460,12 @@ namespace Mono.Debugging.Evaluation
 			return null;
 		}
 
-		public virtual ValueReference GetLocalVariable (EvaluationContext ctx, string name)
+		public ValueReference GetLocalVariable (EvaluationContext ctx, string name)
+		{
+			return OnGetLocalVariable (ctx, name);
+		}
+
+		protected virtual ValueReference OnGetLocalVariable (EvaluationContext ctx, string name)
 		{
 			foreach (ValueReference var in GetLocalVariables (ctx)) {
 				if (var.Name == name)
@@ -471,6 +476,11 @@ namespace Mono.Debugging.Evaluation
 
 		public virtual ValueReference GetParameter (EvaluationContext ctx, string name)
 		{
+			return OnGetParameter (ctx, name);
+		}
+
+		protected virtual ValueReference OnGetParameter (EvaluationContext ctx, string name)
+		{
 			foreach (ValueReference var in GetParameters (ctx)) {
 				if (var.Name == name)
 					return var;
@@ -478,17 +488,32 @@ namespace Mono.Debugging.Evaluation
 			return null;
 		}
 
-		public virtual IEnumerable<ValueReference> GetLocalVariables (EvaluationContext ctx)
+		public IEnumerable<ValueReference> GetLocalVariables (EvaluationContext ctx)
+		{
+			return OnGetLocalVariables (ctx);
+		}
+
+		public ValueReference GetThisReference (EvaluationContext ctx)
+		{
+			return OnGetThisReference (ctx);
+		}
+
+		public IEnumerable<ValueReference> GetParameters (EvaluationContext ctx)
+		{
+			return OnGetParameters (ctx);
+		}
+
+		protected virtual IEnumerable<ValueReference> OnGetLocalVariables (EvaluationContext ctx)
 		{
 			yield break;
 		}
 
-		public virtual IEnumerable<ValueReference> GetParameters (EvaluationContext ctx)
+		protected virtual IEnumerable<ValueReference> OnGetParameters (EvaluationContext ctx)
 		{
 			yield break;
 		}
 
-		public virtual ValueReference GetThisReference (EvaluationContext ctx)
+		protected virtual ValueReference OnGetThisReference (EvaluationContext ctx)
 		{
 			return null;
 		}
@@ -547,26 +572,26 @@ namespace Mono.Debugging.Evaluation
 				
 				// Local variables
 				
-				foreach (ValueReference vc in ctx.Adapter.GetLocalVariables (ctx))
+				foreach (ValueReference vc in GetLocalVariables (ctx))
 					if (vc.Name.StartsWith (partialWord))
 						data.Items.Add (new CompletionItem (vc.Name, vc.Flags));
 				
 				// Parameters
 				
-				foreach (ValueReference vc in ctx.Adapter.GetParameters (ctx))
+				foreach (ValueReference vc in GetParameters (ctx))
 					if (vc.Name.StartsWith (partialWord))
 						data.Items.Add (new CompletionItem (vc.Name, vc.Flags));
 				
 				// Members
 				
-				ValueReference thisobj = ctx.Adapter.GetThisReference (ctx);
+				ValueReference thisobj = GetThisReference (ctx);
 				
 				if (thisobj != null)
 					data.Items.Add (new CompletionItem ("this", ObjectValueFlags.Field | ObjectValueFlags.ReadOnly));
 
-				object type = ctx.Adapter.GetEnclosingType (ctx);
+				object type = GetEnclosingType (ctx);
 				
-				foreach (ValueReference vc in ctx.Adapter.GetMembers (ctx, null, type, thisobj != null ? thisobj.Value : null))
+				foreach (ValueReference vc in GetMembers (ctx, null, type, thisobj != null ? thisobj.Value : null))
 					if (vc.Name.StartsWith (partialWord))
 						data.Items.Add (new CompletionItem (vc.Name, vc.Flags));
 				
@@ -982,6 +1007,7 @@ namespace Mono.Debugging.Evaluation
 		public string ValueDisplayString;
 		public string TypeDisplayString;
 		public string NameDisplayString;
+		public bool IsCompilerGenerated;
 		
 		public bool IsProxyType {
 			get { return ProxyType != null; }

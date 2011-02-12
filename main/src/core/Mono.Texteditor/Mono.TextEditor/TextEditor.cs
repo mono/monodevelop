@@ -1115,12 +1115,11 @@ namespace Mono.TextEditor
 			
 			textViewMargin.HideCodeSegmentPreviewWindow ();
 			
-			if (e.Mode == CrossingMode.Normal) {
-				if (GdkWindow != null)
-					GdkWindow.Cursor = null;
-				if (oldMargin != null)
-					oldMargin.MouseLeft ();
-			}
+			if (GdkWindow != null)
+				GdkWindow.Cursor = null;
+			if (oldMargin != null)
+				oldMargin.MouseLeft ();
+			
 			return base.OnLeaveNotifyEvent (e); 
 		}
 

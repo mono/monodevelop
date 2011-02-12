@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Diagnostics;
 using Mono.Debugger.Soft;
 using Mono.Debugging.Evaluation;
@@ -247,24 +248,114 @@ namespace Mono.Debugging.Soft
 			int i = candidates.IndexOf (idx);
 			return new PropertyValueReference (ctx, props[i], target, null, values);
 		}
-
-		public override ValueReference GetLocalVariable (EvaluationContext ctx, string name)
+		
+		bool IsCompilerGeneratedType (SoftEvaluationContext cx, TypeMirror tm)
 		{
-			try {
-				SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
-				LocalVariable local = cx.Frame.GetVisibleVariableByName (name);
-				if (local != null)
-					return new VariableValueReference (ctx, name, local);
+			return tm.Name.IndexOf (">c__AnonStorey") != -1 || tm.Name.IndexOf (">c__Iterator") != -1;
+		}
+		
+		bool InCompilerGeneratedType (EvaluationContext ctx)
+		{
+			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
+			if (cx.Frame.Method.IsStatic)
+				return false;
+			TypeMirror tm = cx.Frame.Method.DeclaringType;
+			return IsCompilerGeneratedType (cx, tm);
+		}
+
+		IEnumerable<ValueReference> GetCompilerGeneratedLocalVariables (SoftEvaluationContext cx, ValueReference vthis)
+		{
+			if (vthis == null)
+				return new ValueReference [0];
+			
+			object val = vthis.Value;
+			if (IsNull (cx, val))
+				return new ValueReference [0];
+			
+			TypeMirror tm = (TypeMirror) vthis.Type;
+			bool isIterator = tm.Name.IndexOf (">c__Iterator") != -1;
+			
+			var list = new List<ValueReference> ();
+			TypeMirror type = (TypeMirror) vthis.Type;
+			foreach (FieldInfoMirror field in type.GetFields ()) {
+				if (field.Name == "<>f__this")
+					continue;
+				if (field.Name.StartsWith ("<>f__ref")) {
+					list.AddRange (GetCompilerGeneratedLocalVariables (cx, new FieldValueReference (cx, field, val, type)));
+					continue;
+				}
+				if (field.Name.StartsWith ("<")) {
+					if (isIterator) {
+						int i = field.Name.IndexOf ('>');
+						if (i > 1) {
+							string vname = field.Name.Substring (1, i - 1);
+							list.Add (new FieldValueReference (cx, field, val, type, vname, ObjectValueFlags.Variable));
+						}
+					}
+				}
 				else
-					return null;
+					list.Add (new FieldValueReference (cx, field, val, type, field.Name, ObjectValueFlags.Variable));
+			}
+			return list;
+		}
+		
+		ValueReference GetCompilerGeneratedThisReference (SoftEvaluationContext cx)
+		{
+			TypeMirror tm = cx.Frame.Method.DeclaringType;
+			try {
+				Value val = cx.Frame.GetThis ();
+				TypeMirror type = (TypeMirror) GetValueType (cx, val);
+				FieldInfoMirror field = type.GetField ("<>f__this");
+				if (field != null)
+					return new FieldValueReference (cx, field, val, type, "this", ObjectValueFlags.Literal);
+			} catch (AbsentInformationException) {
+			}
+			return null;
+		}
+		
+		protected override ValueReference OnGetLocalVariable (EvaluationContext ctx, string name)
+		{
+			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
+			if (InCompilerGeneratedType (cx))
+				return OnGetLocalVariables (cx).FirstOrDefault (v => v.Name == name);
+			
+			try {
+				LocalVariable local = null;
+				if (!cx.SourceCodeAvailable) {
+					if (name.StartsWith ("loc")) {
+						int idx;
+						if (int.TryParse (name.Substring (3), out idx))
+							local = cx.Frame.Method.GetLocals ().FirstOrDefault (loc => loc.Index == idx);
+					}
+				} else
+					local = cx.Frame.GetVisibleVariableByName (name);
+				
+				if (local != null) {
+					string vname = !string.IsNullOrEmpty (local.Name) || cx.SourceCodeAvailable ? local.Name : "loc" + local.Index;
+					return new VariableValueReference (ctx, vname, local);
+				}
+				foreach (var v in OnGetLocalVariables (ctx))
+					if (v.Name == name)
+						return v;
+				return null;
 			} catch (AbsentInformationException) {
 				return null;
 			}
 		}
 
-		public override IEnumerable<ValueReference> GetLocalVariables (EvaluationContext ctx)
+		protected override IEnumerable<ValueReference> OnGetLocalVariables (EvaluationContext ctx)
 		{
 			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
+			if (InCompilerGeneratedType (cx)) {
+				ValueReference vthis = GetThisReference (cx);
+				return GetCompilerGeneratedLocalVariables (cx, vthis).Union (GetLocalVariables (cx));
+			}
+			else
+				return GetLocalVariables (cx);
+		}
+		
+		IEnumerable<ValueReference> GetLocalVariables (SoftEvaluationContext cx)
+		{
 			IList<LocalVariable> locals;
 			try {
 				locals = cx.Frame.GetVisibleVariables ();
@@ -272,8 +363,17 @@ namespace Mono.Debugging.Soft
 				yield break;
 			}
 			foreach (LocalVariable var in locals) {
-				if (!var.IsArg)
-					yield return new VariableValueReference (ctx, var.Name, var);
+				if (!var.IsArg) {
+					string name = !string.IsNullOrEmpty (var.Name) || cx.SourceCodeAvailable ? var.Name : "loc" + var.Index;
+					if (name.Length == 0 || name.StartsWith ("<")) {
+						if (IsCompilerGeneratedType (cx, var.Type)) {
+							foreach (var gv in GetCompilerGeneratedLocalVariables (cx, new VariableValueReference (cx, name, var)))
+								yield return gv;
+						}
+					}
+					else
+						yield return new VariableValueReference (cx, name, var);
+				}
 			}
 		}
 
@@ -372,7 +472,7 @@ namespace Mono.Debugging.Soft
 			types.CopyTo (childTypes);
 		}
 
-		public override IEnumerable<ValueReference> GetParameters (EvaluationContext ctx)
+		protected override IEnumerable<ValueReference> OnGetParameters (EvaluationContext ctx)
 		{
 			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
 			LocalVariable[] locals;
@@ -383,19 +483,29 @@ namespace Mono.Debugging.Soft
 			}
 				
 			foreach (LocalVariable var in locals) {
-				if (var.IsArg)
-					yield return new VariableValueReference (ctx, var.Name, var);
+				if (var.IsArg) {
+					string name = !string.IsNullOrEmpty (var.Name) || cx.SourceCodeAvailable ? var.Name : "arg" + var.Index;
+					yield return new VariableValueReference (ctx, name, var);
+				}
 			}
 		}
 
-		public override ValueReference GetThisReference (EvaluationContext ctx)
+		protected override ValueReference OnGetThisReference (EvaluationContext ctx)
+		{
+			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
+			if (InCompilerGeneratedType (cx))
+				return GetCompilerGeneratedThisReference (cx);
+			else
+				return GetThisReference (cx);
+		}
+		
+		ValueReference GetThisReference (SoftEvaluationContext cx)
 		{
 			try {
-				SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
 				if (cx.Frame.Method.IsStatic)
 					return null;
 				Value val = cx.Frame.GetThis ();
-				return LiteralValueReference.CreateTargetObjectLiteral (ctx, "this", val);
+				return LiteralValueReference.CreateTargetObjectLiteral (cx, "this", val);
 			} catch (AbsentInformationException) {
 				return null;
 			}
@@ -518,7 +628,7 @@ namespace Mono.Debugging.Soft
 			else
 				return ((Type)val).FullName;
 		}
-
+		
 		public override object GetValueType (EvaluationContext ctx, object val)
 		{
 			if (val is ObjectMirror)
@@ -625,6 +735,8 @@ namespace Mono.Debugging.Soft
 						if (!string.IsNullOrEmpty (td.ProxyType))
 							ForceLoadType (ctx, td.ProxyType);
 					}
+					else if (attName == "System.Runtime.CompilerServices.CompilerGeneratedAttribute")
+						td.IsCompilerGenerated = true;
 				}
 				foreach (FieldInfoMirror fi in t.GetFields ()) {
 					CustomAttributeDataMirror[] attrs = fi.GetCustomAttributes (true);

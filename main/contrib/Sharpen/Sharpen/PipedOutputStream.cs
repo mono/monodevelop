@@ -14,7 +14,13 @@ namespace Sharpen
 		{
 			Attach (iss);
 		}
-		
+
+		public override void Close ()
+		{
+			ips.Close ();
+			base.Close ();
+		}
+
 		internal void Attach (PipedInputStream iss)
 		{
 			ips = iss;

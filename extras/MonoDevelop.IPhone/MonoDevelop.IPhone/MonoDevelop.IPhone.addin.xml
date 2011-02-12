@@ -125,6 +125,7 @@
 			<Section id = "IPhoneBuildOptions"
 				_label = "iPhone Build"
 				icon="iphone-project-options-panel"
+				fill="true"
 				class = "MonoDevelop.IPhone.Gui.IPhoneBuildOptionsPanel" />
 			<Section id = "IPhoneSigningInfo"
 				_label = "iPhone Bundle Signing"
@@ -150,10 +151,6 @@
 	
 	<Extension path = "/MonoDevelop/Ide/Commands/Project">
 		<Condition id="MonoTouchInstalled">
-			<Command id = "MonoDevelop.IPhone.IPhoneCommands.ExportToXcode" 
-				_description = "Exports the project to Xcode and opens it"
-				defaultHandler = "MonoDevelop.IPhone.ExportToXcodeCommandHandler"
-				_label = "Open in Xcode" />
 			<Command id = "MonoDevelop.IPhone.IPhoneCommands.UploadToDevice" 
 				_description = "Upload the iPhone application to the device" 
 				defaultHandler = "MonoDevelop.IPhone.DefaultUploadToDeviceHandler"
@@ -182,7 +179,6 @@
 		<Condition id="MonoTouchInstalled">
 			<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.ZipApp"
 			             insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.ExportProject" />
-			<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.ExportToXcode" />
 			<ItemSet id = "SelectSimulatorTarget" _label = "iPhone Simulator Target" autohide = "true" 
 			         insertafter = "SelectActiveRuntime"  >
 				<CommandItem id = "MonoDevelop.IPhone.IPhoneCommands.SelectSimulatorTarget" />

@@ -53,7 +53,7 @@ namespace MonoDevelop.Debugger.Soft.IPhone
 			var startInfo = new IPhoneDebuggerStartInfo (IPhoneSettings.GetDebuggerHostIP (cmd.Simulator),
 								     IPhoneSettings.DebuggerPort,
 								     IPhoneSettings.DebuggerOutputPort, cmd);
-			startInfo.SetUserAssemblies (cmd.UserAssemblyPaths);
+			SoftDebuggerEngine.SetUserAssemblyNames (startInfo, cmd.UserAssemblyPaths);
 			return startInfo;
 		}
 

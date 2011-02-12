@@ -34,6 +34,8 @@ using Gtk;
 using Mono.TextEditor;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -346,6 +348,16 @@ namespace MonoDevelop.SourceEditor
 		{
 			GdkWindow.Cursor = arrowCursor;
 			return base.OnEnterNotifyEvent (evnt);
+		}
+		
+		[CommandHandler (EditCommands.SelectAll)]
+		public void SelectAllCommand ()
+		{
+			if (searchEntry.HasFocus) {
+				searchEntry.Entry.SelectRegion (0, searchEntry.Entry.Text.Length);
+			} else if (IsReplaceMode && entryReplace.HasFocus) {
+				entryReplace.SelectRegion (0, entryReplace.Text.Length);
+			}
 		}
 		
 		public void UpdateSearchPattern ()

@@ -2,7 +2,7 @@
 using System;
 using S = MonoDevelop.Xml.StateEngine;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Gui.Completion;
+using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.AddinAuthoring.CodeCompletion
 {

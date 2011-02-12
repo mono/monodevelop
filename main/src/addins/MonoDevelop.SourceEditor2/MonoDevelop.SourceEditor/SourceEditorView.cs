@@ -523,7 +523,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		void StoreSettings ()
+		internal void StoreSettings ()
 		{
 			Dictionary<int, bool> foldingStates = new Dictionary<int, bool> ();
 			foreach (var f in widget.TextEditor.Document.FoldSegments) {
@@ -1444,7 +1444,6 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			triggerOffset += data.EnsureCaretIsNotVirtual ();
-			data.Document.EndAtomicUndo ();
 			if (blockMode) {
 				data.Document.BeginAtomicUndo ();
 
@@ -1465,10 +1464,10 @@ namespace MonoDevelop.SourceEditor
 				
 				data.Document.CommitMultipleLineUpdate (data.MainSelection.MinLine, data.MainSelection.MaxLine);
 				data.Caret.PreserveSelection = false;
+				data.Document.EndAtomicUndo ();
 			} else {
 				data.Replace (triggerOffset, length, complete_word);
 				data.Caret.Offset = triggerOffset + idx;
-				data.Document.BeginAtomicUndo ();
 			}
 			
 			data.Document.CommitLineUpdate (data.Caret.Line);

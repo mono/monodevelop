@@ -6,6 +6,7 @@ REFS =  \
 	$(MONO_ADDINS_LIBS) \
 	$(MONODEVELOP_CORE_ADDINS_LIBS) \
 	$(MONODEVELOP_LIBS) \
+	-r:Mono.Debugger.Soft \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Xml

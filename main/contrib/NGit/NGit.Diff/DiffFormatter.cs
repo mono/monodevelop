@@ -46,6 +46,7 @@ using System.Collections.Generic;
 using System.IO;
 using NGit;
 using NGit.Diff;
+using NGit.Dircache;
 using NGit.Errors;
 using NGit.Patch;
 using NGit.Revwalk;
@@ -418,20 +419,16 @@ namespace NGit.Diff
 			walk.AddTree(a);
 			walk.AddTree(b);
 			walk.Recursive = true;
-			TreeFilter filter = pathFilter;
-			if (a is WorkingTreeIterator)
+			TreeFilter filter = GetDiffTreeFilterFor(a, b);
+			if (pathFilter is FollowFilter)
 			{
-				filter = AndTreeFilter.Create(filter, new NotIgnoredFilter(0));
+				walk.Filter = AndTreeFilter.Create(PathFilter.Create(((FollowFilter)pathFilter).GetPath
+					()), filter);
 			}
-			if (b is WorkingTreeIterator)
+			else
 			{
-				filter = AndTreeFilter.Create(filter, new NotIgnoredFilter(1));
+				walk.Filter = AndTreeFilter.Create(pathFilter, filter);
 			}
-			if (!(pathFilter is FollowFilter))
-			{
-				filter = AndTreeFilter.Create(filter, TreeFilter.ANY_DIFF);
-			}
-			walk.Filter = filter;
 			source = new ContentSource.Pair(Source(a), Source(b));
 			IList<DiffEntry> files = DiffEntry.Scan(walk);
 			if (pathFilter is FollowFilter && IsAdd(files))
@@ -445,15 +442,6 @@ namespace NGit.Diff
 				walk.Reset();
 				walk.AddTree(a);
 				walk.AddTree(b);
-				filter = TreeFilter.ANY_DIFF;
-				if (a is WorkingTreeIterator)
-				{
-					filter = AndTreeFilter.Create(new NotIgnoredFilter(0), filter);
-				}
-				if (b is WorkingTreeIterator)
-				{
-					filter = AndTreeFilter.Create(new NotIgnoredFilter(1), filter);
-				}
 				walk.Filter = filter;
 				if (renameDetector == null)
 				{
@@ -469,6 +457,29 @@ namespace NGit.Diff
 				}
 			}
 			return files;
+		}
+
+		private static TreeFilter GetDiffTreeFilterFor(AbstractTreeIterator a, AbstractTreeIterator
+			 b)
+		{
+			if (a is DirCacheIterator && b is WorkingTreeIterator)
+			{
+				return new IndexDiffFilter(0, 1);
+			}
+			if (a is WorkingTreeIterator && b is DirCacheIterator)
+			{
+				return new IndexDiffFilter(1, 0);
+			}
+			TreeFilter filter = TreeFilter.ANY_DIFF;
+			if (a is WorkingTreeIterator)
+			{
+				filter = AndTreeFilter.Create(new NotIgnoredFilter(0), filter);
+			}
+			if (b is WorkingTreeIterator)
+			{
+				filter = AndTreeFilter.Create(new NotIgnoredFilter(1), filter);
+			}
+			return filter;
 		}
 
 		private ContentSource Source(AbstractTreeIterator iterator)

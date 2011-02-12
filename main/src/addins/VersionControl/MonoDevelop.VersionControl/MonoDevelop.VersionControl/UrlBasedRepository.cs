@@ -59,12 +59,12 @@ namespace MonoDevelop.VersionControl
 		
 		public virtual bool IsUrlValid (string url)
 		{
-			try {
-				Uri uri = new Uri (url);
-				return Array.IndexOf (SupportedProtocols, uri.Scheme) != -1;
-			} catch {
+			if (!Uri.IsWellFormedUriString (url, UriKind.Absolute))
 				return false;
-			}
+			Uri uri = new Uri (url);
+			if (string.IsNullOrEmpty (uri.Host))
+				return false;
+			return Array.IndexOf (SupportedProtocols, uri.Scheme) != -1;
 		}
 
 		public override string LocationDescription {

@@ -5,31 +5,18 @@ namespace MonoDevelop.AddinAuthoring
 	public partial class ExtensionEditorWidget
 	{
 		private global::Gtk.VBox vbox2;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Button buttonAdd;
-
 		private global::Gtk.Button addNodeButton;
-
 		private global::Gtk.HBox hbox2;
-
 		private global::Gtk.Image image445;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.Arrow arrow1;
-
 		private global::Gtk.Button buttonRemove;
-
 		private global::Gtk.HBox hbox4;
-
 		private global::Gtk.HPaned hpaned1;
-
 		private global::Gtk.ScrolledWindow scrolledwindow6;
-
 		private global::Gtk.TreeView tree;
-
 		private global::Gtk.ScrolledWindow editorBox;
 
 		protected virtual void Build ()
@@ -53,7 +40,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.buttonAdd.UseUnderline = true;
 			this.buttonAdd.Relief = ((global::Gtk.ReliefStyle)(2));
 			// Container child buttonAdd.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w1 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+			global::Gtk.Alignment w1 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
 			global::Gtk.HBox w2 = new global::Gtk.HBox ();
 			w2.Spacing = 2;
@@ -69,7 +56,7 @@ namespace MonoDevelop.AddinAuthoring
 			w1.Add (w2);
 			this.buttonAdd.Add (w1);
 			this.hbox1.Add (this.buttonAdd);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonAdd]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonAdd]));
 			w9.Position = 0;
 			w9.Expand = false;
 			w9.Fill = false;
@@ -87,7 +74,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.image445.Name = "image445";
 			this.image445.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-add", global::Gtk.IconSize.Menu);
 			this.hbox2.Add (this.image445);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.image445]));
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.image445]));
 			w10.Position = 0;
 			w10.Expand = false;
 			w10.Fill = false;
@@ -96,7 +83,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.label1.Name = "label1";
 			this.label1.LabelProp = global::Mono.Addins.AddinManager.CurrentLocalizer.GetString ("Add Node");
 			this.hbox2.Add (this.label1);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.label1]));
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.label1]));
 			w11.Position = 1;
 			w11.Expand = false;
 			w11.Fill = false;
@@ -104,14 +91,14 @@ namespace MonoDevelop.AddinAuthoring
 			this.arrow1 = new global::Gtk.Arrow (((global::Gtk.ArrowType)(1)), ((global::Gtk.ShadowType)(2)));
 			this.arrow1.Name = "arrow1";
 			this.hbox2.Add (this.arrow1);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.arrow1]));
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.arrow1]));
 			w12.Position = 2;
 			w12.Expand = false;
 			w12.Fill = false;
 			this.addNodeButton.Add (this.hbox2);
 			this.addNodeButton.Label = null;
 			this.hbox1.Add (this.addNodeButton);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.addNodeButton]));
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.addNodeButton]));
 			w14.Position = 1;
 			w14.Expand = false;
 			w14.Fill = false;
@@ -122,7 +109,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.buttonRemove.UseUnderline = true;
 			this.buttonRemove.Relief = ((global::Gtk.ReliefStyle)(2));
 			// Container child buttonRemove.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w15 = new global::Gtk.Alignment (0.5f, 0.5f, 0f, 0f);
+			global::Gtk.Alignment w15 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
 			// Container child GtkAlignment.Gtk.Container+ContainerChild
 			global::Gtk.HBox w16 = new global::Gtk.HBox ();
 			w16.Spacing = 2;
@@ -138,12 +125,12 @@ namespace MonoDevelop.AddinAuthoring
 			w15.Add (w16);
 			this.buttonRemove.Add (w15);
 			this.hbox1.Add (this.buttonRemove);
-			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.buttonRemove]));
+			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonRemove]));
 			w23.Position = 2;
 			w23.Expand = false;
 			w23.Fill = false;
 			this.vbox2.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
 			w24.Position = 0;
 			w24.Expand = false;
 			w24.Fill = false;
@@ -167,7 +154,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.tree.Name = "tree";
 			this.scrolledwindow6.Add (this.tree);
 			this.hpaned1.Add (this.scrolledwindow6);
-			global::Gtk.Paned.PanedChild w26 = ((global::Gtk.Paned.PanedChild)(this.hpaned1[this.scrolledwindow6]));
+			global::Gtk.Paned.PanedChild w26 = ((global::Gtk.Paned.PanedChild)(this.hpaned1 [this.scrolledwindow6]));
 			w26.Resize = false;
 			// Container child hpaned1.Gtk.Paned+PanedChild
 			this.editorBox = new global::Gtk.ScrolledWindow ();
@@ -176,10 +163,10 @@ namespace MonoDevelop.AddinAuthoring
 			this.editorBox.HscrollbarPolicy = ((global::Gtk.PolicyType)(2));
 			this.hpaned1.Add (this.editorBox);
 			this.hbox4.Add (this.hpaned1);
-			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.hbox4[this.hpaned1]));
+			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.hpaned1]));
 			w28.Position = 0;
 			this.vbox2.Add (this.hbox4);
-			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox4]));
+			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox4]));
 			w29.Position = 1;
 			this.Add (this.vbox2);
 			if ((this.Child != null)) {

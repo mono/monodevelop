@@ -85,11 +85,6 @@
 		</Category>
 		
 		<Category _name = "Refactoring" id = "Refactoring">
-		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.Rename"
-					defaultHandler = "MonoDevelop.Refactoring.Rename.RenameHandler"
-					_label = "_Rename..." 
-					shortcut = "F2"
-					macShortcut = "Meta|R"/>
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations"
 				defaultHandler = "MonoDevelop.Refactoring.CurrentRefactoryOperationsHandler"
 				type="array"
@@ -125,7 +120,8 @@
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.QuickFix"
 					defaultHandler = "MonoDevelop.Refactoring.QuickFixHandler"
 					_label = "Quick fix..."
-					shortcut = "Alt|Return" />
+					shortcut = "Alt|Return"
+					macShortcut = "Alt|Return" />
 		
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.IntegrateTemporaryVariable"
 					defaultHandler = "MonoDevelop.Refactoring.IntegrateTemporaryVariable.IntegrateTemporaryVariableHandler"
@@ -151,6 +147,10 @@
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
 		<CommandItem id = "MonoDevelop.CodeGeneration.CodeGenerationCommands.ShowCodeGenerationWindow"
 		             insertafter="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
+		<Class class = "MonoDevelop.Refactoring.Rename.RenameTextEditorExtension" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Edit">

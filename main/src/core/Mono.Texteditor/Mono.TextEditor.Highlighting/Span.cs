@@ -41,6 +41,13 @@ namespace Mono.TextEditor.Highlighting
 	}
 
 	[Flags]
+	public enum SpanExitFlags
+	{
+		None = 0,
+		CancelSpan = 1
+	}
+	
+	[Flags]
 	public enum SpanEndFlags
 	{
 		None = 0
@@ -122,7 +129,7 @@ namespace Mono.TextEditor.Highlighting
 			set;
 		}
 
-		public SpanEndFlags ExitFlags {
+		public SpanExitFlags ExitFlags {
 			get;
 			set;
 		}
@@ -182,7 +189,7 @@ namespace Mono.TextEditor.Highlighting
 					case "Exit":
 						string exitFlags = reader.GetAttribute ("flags");
 						if (!string.IsNullOrEmpty (exitFlags))
-							result.ExitFlags = (SpanEndFlags)Enum.Parse (typeof(SpanEndFlags), exitFlags);
+							result.ExitFlags = (SpanExitFlags)Enum.Parse (typeof(SpanExitFlags), exitFlags);
 						result.Exit = new Regex (reader.ReadElementString ());
 						return true;
 					}

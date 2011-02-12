@@ -77,7 +77,7 @@ if test "x$MSGMERGE" = "xno"; then
         AC_MSG_ERROR([You need to install msgmerge from intltool])
 fi
 
-MONO_REQUIRED_VERSION=2.6.1
+MONO_REQUIRED_VERSION=2.8
 PKG_CHECK_MODULES(UNMANAGED_DEPENDENCIES_MONO,mono >= $MONO_REQUIRED_VERSION, has_mono=true, has_mono=false)
 
 if test "x$has_mono" = "xfalse"; then
@@ -88,12 +88,12 @@ fi
 if test "x$has_mono" = "xtrue"; then
     if test `uname -s` = "Darwin"; then
 	AC_PATH_PROG(RUNTIME, mono, no)
-	AC_PATH_PROG(CSC, gmcs, no)
+	AC_PATH_PROG(CSC, dmcs, no)
 	LIB_PREFIX=
 	LIB_SUFFIX=.dylib
     else
 	AC_PATH_PROG(RUNTIME, mono, no)
-	AC_PATH_PROG(CSC, gmcs, no)
+	AC_PATH_PROG(CSC, dmcs, no)
 	LIB_PREFIX=.so
 	LIB_SUFFIX=
     fi
@@ -394,6 +394,7 @@ monodevelop
 mdtool
 monodevelop.pc
 monodevelop-core-addins.pc
+monodevelop.spec
 po/Makefile
 man/Makefile
 theme-icons/Makefile

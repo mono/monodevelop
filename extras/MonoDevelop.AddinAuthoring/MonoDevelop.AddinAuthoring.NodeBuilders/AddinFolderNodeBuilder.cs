@@ -34,13 +34,12 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using Mono.Addins;
 using MonoDevelop.Ide.Gui.Components;
 
-namespace MonoDevelop.AddinAuthoring
+namespace MonoDevelop.AddinAuthoring.NodeBuilders
 {
 	public class AddinFolderNodeBuilder: TypeNodeBuilder
 	{
@@ -60,10 +59,10 @@ namespace MonoDevelop.AddinAuthoring
 			get { return typeof(AddinFolderCommandHandler); }
 		}
 		
-		public override string ContextMenuAddinPath {
+/*		public override string ContextMenuAddinPath {
 			get { return "/MonoDevelop/AddinAuthoring/ContextMenu/ProjectPad/Addin"; }
 		}
-		
+				 */
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
 			return "AddinDescription";
@@ -72,7 +71,7 @@ namespace MonoDevelop.AddinAuthoring
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			label = AddinManager.CurrentLocalizer.GetString ("Extension Model");
-			icon = Context.GetIcon (Stock.Addin);
+			icon = Context.GetIcon (MonoDevelop.Ide.Gui.Stock.Addin);
 		}
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
@@ -81,8 +80,6 @@ namespace MonoDevelop.AddinAuthoring
 			ProjectFile file = data.Project.GetProjectFile (data.AddinManifestFileName);
 			if (file != null)
 				builder.AddChild (file);
-			builder.AddChild (data.CachedAddinManifest.ExtensionPoints);
-			builder.AddChild (data.CachedAddinManifest.MainModule.Extensions);
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

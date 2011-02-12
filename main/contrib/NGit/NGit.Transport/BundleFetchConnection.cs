@@ -77,7 +77,7 @@ namespace NGit.Transport
 			 src)
 		{
 			transport = transportBundle;
-			bin = new BufferedInputStream(src, IndexPack.BUFFER_SIZE);
+			bin = new BufferedInputStream(src);
 			try
 			{
 				switch (ReadSignature())
@@ -194,9 +194,20 @@ namespace NGit.Transport
 			VerifyPrerequisites();
 			try
 			{
-				IndexPack ip = NewIndexPack();
-				ip.Index(monitor);
-				packLock = ip.RenameAndOpenPack(lockMessage);
+				ObjectInserter ins = transport.local.NewObjectInserter();
+				try
+				{
+					PackParser parser = ins.NewPackParser(bin);
+					parser.SetAllowThin(true);
+					parser.SetObjectChecking(transport.IsCheckFetchedObjects());
+					parser.SetLockMessage(lockMessage);
+					packLock = parser.Parse(NullProgressMonitor.INSTANCE);
+					ins.Flush();
+				}
+				finally
+				{
+					ins.Release();
+				}
 			}
 			catch (IOException err)
 			{
@@ -222,15 +233,6 @@ namespace NGit.Transport
 				return Sharpen.Collections.Singleton(packLock);
 			}
 			return Sharpen.Collections.EmptyList<PackLock>();
-		}
-
-		/// <exception cref="System.IO.IOException"></exception>
-		private IndexPack NewIndexPack()
-		{
-			IndexPack ip = IndexPack.Create(transport.local, bin);
-			ip.SetFixThin(true);
-			ip.SetObjectChecking(transport.IsCheckFetchedObjects());
-			return ip;
 		}
 
 		/// <exception cref="NGit.Errors.TransportException"></exception>

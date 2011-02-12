@@ -63,6 +63,8 @@ namespace MonoDevelop.Debugger
 		static IConsole console;
 		static DebugExecutionHandlerFactory executionHandlerFactory;
 		
+		static string oldLayout;
+		
 		static DebuggerEngine currentEngine;
 		static DebuggerSession session;
 		static Backtrace currentBacktrace;
@@ -303,17 +305,32 @@ namespace MonoDevelop.Debugger
 			session.TypeResolverHandler = ResolveType;
 			session.BreakpointTraceHandler = BreakpointTraceHandler;
 			session.GetExpressionEvaluator = OnGetExpressionEvaluator;
+			session.ConnectionDialogCreator = delegate {
+				return new GtkConnectionDialog ();
+			};
 
 			console.CancelRequested += OnCancelRequested;
 			
-			if (DebugSessionStarted != null)
-				DebugSessionStarted (null, EventArgs.Empty);
+			DispatchService.GuiDispatch (delegate {
+				if (DebugSessionStarted != null)
+					DebugSessionStarted (null, EventArgs.Empty);
+				NotifyLocationChanged ();
+			});
 
-			NotifyLocationChanged ();
 		}
 		
 		static void Cleanup ()
 		{
+			if (oldLayout != null) {
+				string layout = oldLayout;
+				oldLayout = null;
+				// Dispatch asynchronously to avoid start/stop races
+				DispatchService.GuiSyncDispatch (delegate {
+					if (IdeApp.Workbench.CurrentLayout == "Debug")
+						IdeApp.Workbench.CurrentLayout = layout;
+				});
+			}
+			
 			currentBacktrace = null;
 			
 			if (!IsDebugging)
@@ -337,9 +354,11 @@ namespace MonoDevelop.Debugger
 			// Dispose the session at the end, since it may take a while.
 			DebuggerSession oldSession = session;
 			session = null;
-
-			if (StoppedEvent != null)
-				StoppedEvent (null, new EventArgs ());
+			
+			DispatchService.GuiDispatch (delegate {
+				if (StoppedEvent != null)
+					StoppedEvent (null, new EventArgs ());
+			});
 			
 			if (console != null) {
 				console.Dispose ();
@@ -458,6 +477,9 @@ namespace MonoDevelop.Debugger
 					throw new InvalidOperationException ("Unsupported command: " + cmd);
 			}
 			
+			if (session != null)
+				throw new InvalidOperationException ("A debugger session is already started");
+
 			DebuggerStartInfo startInfo = factory.CreateDebuggerStartInfo (cmd);
 			startInfo.UseExternalConsole = c is ExternalConsole;
 			startInfo.CloseExternalConsoleOnExit = c.CloseOnDispose;
@@ -474,7 +496,13 @@ namespace MonoDevelop.Debugger
 				console = c;
 			
 			SetupSession ();
-
+			
+			// Dispatch synchronously to avoid start/stop races
+			DispatchService.GuiSyncDispatch (delegate {
+				oldLayout = IdeApp.Workbench.CurrentLayout;
+				IdeApp.Workbench.CurrentLayout = "Debug";
+			});
+			
 			try {
 				session.Run (startInfo, GetUserOptions ());
 			} catch {
@@ -556,9 +584,6 @@ namespace MonoDevelop.Debugger
 		{
 			try {
 				Console.WriteLine ("OnTargetEvent, type - {0}", args.Type);
-				if (args.Type != TargetEventType.TargetExited) {
-					SetCurrentBacktrace (args.Backtrace);
-				}
 
 				switch (args.Type) {
 					case TargetEventType.TargetExited:
@@ -566,11 +591,11 @@ namespace MonoDevelop.Debugger
 						break;
 					case TargetEventType.TargetSignaled:
 					case TargetEventType.TargetStopped:
-					case TargetEventType.TargetRunning:
 					case TargetEventType.TargetHitBreakpoint:
 					case TargetEventType.TargetInterrupted:
 					case TargetEventType.UnhandledException:
 					case TargetEventType.ExceptionThrown:
+						SetCurrentBacktrace (args.Backtrace);
 						NotifyPaused ();
 						NotifyException (args);
 						break;
@@ -915,6 +940,84 @@ namespace MonoDevelop.Debugger
 		{
 			DebugExecutionHandler h = new DebugExecutionHandler (engine);
 			return h.Execute (command, console);
+		}
+	}
+	
+	internal class GtkConnectionDialog : IConnectionDialog
+	{
+		bool disposed;
+		Gtk.Dialog dialog;
+		Gtk.Label label;
+		
+		public event EventHandler UserCancelled;
+		
+		string DefaultListenMessage {
+			get { return GettextCatalog.GetString ("Waiting for debugger to connect..."); }
+		}
+
+		public void SetMessage (DebuggerStartInfo dsi, string message, bool listening, int attemptNumber)
+		{
+			if (disposed)
+				return;
+			
+			if (string.IsNullOrEmpty (message))
+				message = DefaultListenMessage;
+			
+			if (dialog == null) {
+				Gtk.Application.Invoke (delegate {
+					if (disposed)
+						return;
+					RunDialog (message);
+				});
+			} else {
+				Gtk.Application.Invoke (delegate {
+					if (disposed)
+						return;
+					if (label != null)
+						label.Text = message;
+				});
+			}
+		}
+		
+		void RunDialog (string message)
+		{
+			if (disposed)
+				return;
+			
+			dialog = new Gtk.Dialog () {
+				Title = "Waiting for debugger"
+			};
+			
+			var label = new Gtk.Alignment (0.5f, 0.5f, 1f, 1f) {
+				Child = new Gtk.Label (message),
+				BorderWidth = 12
+			};
+			dialog.VBox.PackStart (label);
+			label.ShowAll ();
+			
+			dialog.AddButton ("Cancel", Gtk.ResponseType.Cancel);
+			
+			int response = MonoDevelop.Ide.MessageService.ShowCustomDialog (dialog);
+			dialog.Destroy ();
+			dialog = null;
+			
+			if (!disposed && response != (int) Gtk.ResponseType.Ok && UserCancelled != null) {
+				UserCancelled (null, null);
+			}
+		}
+
+		public void Dispose ()
+		{
+			if (disposed)
+				return;
+			disposed = true;
+			
+			if (dialog != null) {
+				Gtk.Application.Invoke (delegate {
+					if (dialog != null)
+						dialog.Respond (Gtk.ResponseType.Ok);
+				});
+			}
 		}
 	}
 }

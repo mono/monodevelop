@@ -53,7 +53,8 @@ namespace MonoDevelop.MonoDroid
 				return base.Build (monitor, item, configuration);
 
 			MonoDroidProject project = (MonoDroidProject) item;
-			TargetFramework requiredFramework = Runtime.SystemAssemblyService.GetTargetFramework ("4.0");
+			TargetFramework requiredFramework = Runtime.SystemAssemblyService.GetTargetFramework (
+				MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_4_0);
 
 			// Check that we support 4.0 to infer we are at Mono 2.8 at least.
 			if (!project.TargetRuntime.IsInstalled (requiredFramework)) {

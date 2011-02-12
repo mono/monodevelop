@@ -209,7 +209,7 @@ namespace MonoDevelop.Core.Assemblies
 		public virtual Process ExecuteAssembly (ProcessStartInfo pinfo, TargetFramework fx)
 		{
 			if (fx == null) {
-				string fxId = Runtime.SystemAssemblyService.GetTargetFrameworkForAssembly (this, pinfo.FileName);
+				TargetFrameworkMoniker fxId = Runtime.SystemAssemblyService.GetTargetFrameworkForAssembly (this, pinfo.FileName);
 				fx = Runtime.SystemAssemblyService.GetTargetFramework (fxId);
 				if (!IsInstalled (fx)) {
 					// Look for a compatible framework which is installed

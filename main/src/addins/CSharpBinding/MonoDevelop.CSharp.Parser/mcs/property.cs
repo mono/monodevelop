@@ -182,6 +182,11 @@ namespace Mono.CSharp
 			ps.memberType = inflator.Inflate (memberType);
 			return ps;
 		}
+
+		public override List<TypeSpec> ResolveMissingDependencies ()
+		{
+			return memberType.ResolveMissingDependencies ();
+		}
 	}
 
 	//
@@ -1402,6 +1407,11 @@ namespace Mono.CSharp
 
 			return es;
 		}
+
+		public override List<TypeSpec> ResolveMissingDependencies ()
+		{
+			return MemberType.ResolveMissingDependencies ();
+		}
 	}
  
 	public class Indexer : PropertyBase, IParametersMember
@@ -1647,6 +1657,23 @@ namespace Mono.CSharp
 			var spec = (IndexerSpec) base.InflateMember (inflator);
 			spec.parameters = parameters.Inflate (inflator);
 			return spec;
+		}
+
+		public override List<TypeSpec> ResolveMissingDependencies ()
+		{
+			var missing = base.ResolveMissingDependencies ();
+			foreach (var pt in parameters.Types) {
+				var m = pt.GetMissingDependencies ();
+				if (m == null)
+					continue;
+
+				if (missing == null)
+					missing = new List<TypeSpec> ();
+
+				missing.AddRange (m);
+			}
+
+			return missing;
 		}
 	}
 }

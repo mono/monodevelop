@@ -41,6 +41,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using NGit;
@@ -207,6 +208,29 @@ namespace NGit.Treewalk
 			ignoreNode = new WorkingTreeIterator.RootIgnoreNode(entry, repo);
 		}
 
+		/// <summary>
+		/// Define the matching
+		/// <see cref="NGit.Dircache.DirCacheIterator">NGit.Dircache.DirCacheIterator</see>
+		/// , to optimize ObjectIds.
+		/// Once the DirCacheIterator has been set this iterator must only be
+		/// advanced by the TreeWalk that is supplied, as it assumes that itself and
+		/// the corresponding DirCacheIterator are positioned on the same file path
+		/// whenever
+		/// <see cref="IdBuffer()">IdBuffer()</see>
+		/// is invoked.
+		/// </summary>
+		/// <param name="walk">the walk that will be advancing this iterator.</param>
+		/// <param name="treeId">
+		/// index of the matching
+		/// <see cref="NGit.Dircache.DirCacheIterator">NGit.Dircache.DirCacheIterator</see>
+		/// .
+		/// </param>
+		public virtual void SetDirCacheIterator(TreeWalk walk, int treeId)
+		{
+			state.walk = walk;
+			state.dirCacheTree = treeId;
+		}
+
 		public override bool HasId
 		{
 			get
@@ -226,6 +250,22 @@ namespace NGit.Treewalk
 				if (contentIdFromPtr == ptr)
 				{
 					return contentId;
+				}
+				if (state.walk != null)
+				{
+					// If there is a matching DirCacheIterator, we can reuse
+					// its idBuffer, but only if we appear to be clean against
+					// the cached index information for the path.
+					//
+					DirCacheIterator i = state.walk.GetTree<DirCacheIterator>(state.dirCacheTree);
+					if (i != null)
+					{
+						DirCacheEntry ent = i.GetDirCacheEntry();
+						if (ent != null && CompareMetadata(ent) == WorkingTreeIterator.MetadataDiff.EQUAL)
+						{
+							return i.IdBuffer;
+						}
+					}
 				}
 				switch (mode & FileMode.TYPE_MASK)
 				{
@@ -446,6 +486,7 @@ namespace NGit.Treewalk
 
 		private void ParseEntry()
 		{
+			ignoreStatus = -1;
 			WorkingTreeIterator.Entry e = entries[ptr];
 			mode = e.GetMode().GetBits();
 			int nameLen = e.encodedNameLen;
@@ -512,10 +553,16 @@ namespace NGit.Treewalk
 		/// 	</exception>
 		protected internal virtual bool IsEntryIgnored(int pLen)
 		{
-			if (ignoreStatus != -1)
-			{
+			if (pLen == pathLen) {
+				if (ignoreStatus == -1)
+					ignoreStatus = IsEntryIgnoredInternal (pLen) ? 1 : 0;
 				return ignoreStatus == 1;
 			}
+			return IsEntryIgnoredInternal (pLen);
+		}
+
+		bool IsEntryIgnoredInternal (int pLen)
+		{
 			IgnoreNode rules = GetIgnoreNode();
 			if (rules != null)
 			{
@@ -533,13 +580,11 @@ namespace NGit.Treewalk
 				{
 					case IgnoreNode.MatchResult.IGNORED:
 					{
-						ignoreStatus = 1;
 						return true;
 					}
 
 					case IgnoreNode.MatchResult.NOT_IGNORED:
 					{
-						ignoreStatus = 0;
 						return false;
 					}
 
@@ -551,14 +596,11 @@ namespace NGit.Treewalk
 			}
 			if (parent is NGit.Treewalk.WorkingTreeIterator)
 			{
-				ignoreStatus = ((NGit.Treewalk.WorkingTreeIterator)parent).IsEntryIgnored(pLen) ? 
-					1 : 0;
-				return ignoreStatus == 1;
+				return ((NGit.Treewalk.WorkingTreeIterator)parent).IsEntryIgnored(pLen);
 			}
-			ignoreStatus = 0;
 			return false;
 		}
-
+		
 		/// <exception cref="System.IO.IOException"></exception>
 		private IgnoreNode GetIgnoreNode()
 		{
@@ -569,9 +611,9 @@ namespace NGit.Treewalk
 			return ignoreNode;
 		}
 
-		private sealed class _IComparer_467 : IComparer<WorkingTreeIterator.Entry>
+		private sealed class _IComparer_501 : IComparer<WorkingTreeIterator.Entry>
 		{
-			public _IComparer_467()
+			public _IComparer_501()
 			{
 			}
 
@@ -605,7 +647,7 @@ namespace NGit.Treewalk
 			}
 		}
 
-		private static readonly IComparer<WorkingTreeIterator.Entry> ENTRY_CMP = new _IComparer_467
+		private static readonly IComparer<WorkingTreeIterator.Entry> ENTRY_CMP = new _IComparer_501
 			();
 
 		internal static int LastPathChar(WorkingTreeIterator.Entry e)
@@ -675,6 +717,98 @@ namespace NGit.Treewalk
 		}
 
 		/// <summary>
+		/// The result of a metadata-comparison between the current entry and a
+		/// <see cref="DirCacheEntry">DirCacheEntry</see>
+		/// </summary>
+		public enum MetadataDiff
+		{
+			EQUAL,
+			DIFFER_BY_METADATA,
+			SMUDGED,
+			DIFFER_BY_TIMESTAMP
+		}
+
+		/// <summary>
+		/// Compare the metadata (mode, length, modification-timestamp) of the
+		/// current entry and a
+		/// <see cref="NGit.Dircache.DirCacheEntry">NGit.Dircache.DirCacheEntry</see>
+		/// </summary>
+		/// <param name="entry">
+		/// the
+		/// <see cref="NGit.Dircache.DirCacheEntry">NGit.Dircache.DirCacheEntry</see>
+		/// to compare with
+		/// </param>
+		/// <returns>
+		/// a
+		/// <see cref="MetadataDiff">MetadataDiff</see>
+		/// which tells whether and how the entries
+		/// metadata differ
+		/// </returns>
+		public virtual WorkingTreeIterator.MetadataDiff CompareMetadata(DirCacheEntry entry
+			)
+		{
+			if (entry.IsAssumeValid)
+			{
+				return WorkingTreeIterator.MetadataDiff.EQUAL;
+			}
+			if (entry.IsUpdateNeeded)
+			{
+				return WorkingTreeIterator.MetadataDiff.DIFFER_BY_METADATA;
+			}
+			if (!entry.IsSmudged && (GetEntryLength() != entry.Length))
+			{
+				return WorkingTreeIterator.MetadataDiff.DIFFER_BY_METADATA;
+			}
+			// Determine difference in mode-bits of file and index-entry. In the
+			// bitwise presentation of modeDiff we'll have a '1' when the two modes
+			// differ at this position.
+			int modeDiff = EntryRawMode ^ entry.RawMode;
+			// Do not rely on filemode differences in case of symbolic links
+			if (modeDiff != 0 && !FileMode.SYMLINK.Equals(entry.RawMode))
+			{
+				// Ignore the executable file bits if WorkingTreeOptions tell me to
+				// do so. Ignoring is done by setting the bits representing a
+				// EXECUTABLE_FILE to '0' in modeDiff
+				if (!state.options.IsFileMode())
+				{
+					modeDiff &= ~FileMode.EXECUTABLE_FILE.GetBits();
+				}
+				if (modeDiff != 0)
+				{
+					// Report a modification if the modes still (after potentially
+					// ignoring EXECUTABLE_FILE bits) differ
+					return WorkingTreeIterator.MetadataDiff.DIFFER_BY_METADATA;
+				}
+			}
+			// Git under windows only stores seconds so we round the timestamp
+			// Java gives us if it looks like the timestamp in index is seconds
+			// only. Otherwise we compare the timestamp at millisecond precision.
+			long cacheLastModified = entry.LastModified;
+			long fileLastModified = GetEntryLastModified();
+			if (cacheLastModified % 1000 == 0 || fileLastModified % 1000 == 0)
+			{
+				cacheLastModified = cacheLastModified - cacheLastModified % 1000;
+				fileLastModified = fileLastModified - fileLastModified % 1000;
+			}
+			if (fileLastModified != cacheLastModified)
+			{
+				return WorkingTreeIterator.MetadataDiff.DIFFER_BY_TIMESTAMP;
+			}
+			else
+			{
+				if (!entry.IsSmudged)
+				{
+					// The file is clean when you look at timestamps.
+					return WorkingTreeIterator.MetadataDiff.EQUAL;
+				}
+				else
+				{
+					return WorkingTreeIterator.MetadataDiff.SMUDGED;
+				}
+			}
+		}
+
+		/// <summary>
 		/// Checks whether this entry differs from a given entry from the
 		/// <see cref="NGit.Dircache.DirCache">NGit.Dircache.DirCache</see>
 		/// .
@@ -690,74 +824,46 @@ namespace NGit.Treewalk
 		/// <returns>true if content is most likely different.</returns>
 		public virtual bool IsModified(DirCacheEntry entry, bool forceContentCheck)
 		{
-			if (entry.IsAssumeValid)
+			WorkingTreeIterator.MetadataDiff diff = CompareMetadata(entry);
+			switch (diff)
 			{
-				return false;
-			}
-			if (entry.IsUpdateNeeded)
-			{
-				return true;
-			}
-			if (!entry.IsSmudged && (GetEntryLength() != entry.Length))
-			{
-				return true;
-			}
-			// Determine difference in mode-bits of file and index-entry. In the
-			// bitwise presentation of modeDiff we'll have a '1' when the two modes
-			// differ at this position.
-			int modeDiff = EntryRawMode ^ entry.RawMode;
-			// Ignore the executable file bits if checkFilemode tells me to do so.
-			// Ignoring is done by setting the bits representing a EXECUTABLE_FILE
-			// to '0' in modeDiff
-			if (!state.options.IsFileMode())
-			{
-				modeDiff &= ~FileMode.EXECUTABLE_FILE.GetBits();
-			}
-			if (modeDiff != 0)
-			{
-				// Report a modification if the modes still (after potentially
-				// ignoring EXECUTABLE_FILE bits) differ
-				return true;
-			}
-			// Git under windows only stores seconds so we round the timestamp
-			// Java gives us if it looks like the timestamp in index is seconds
-			// only. Otherwise we compare the timestamp at millisecond precision.
-			long cacheLastModified = entry.LastModified;
-			long fileLastModified = GetEntryLastModified();
-			if (cacheLastModified % 1000 == 0 || fileLastModified % 1000 == 0)
-			{
-				cacheLastModified = cacheLastModified - cacheLastModified % 1000;
-				fileLastModified = fileLastModified - fileLastModified % 1000;
-			}
-			if (fileLastModified != cacheLastModified)
-			{
-				// The file is dirty by timestamps
-				if (forceContentCheck)
+				case WorkingTreeIterator.MetadataDiff.DIFFER_BY_TIMESTAMP:
 				{
-					// But we are told to look at content even though timestamps
-					// tell us about modification
-					return ContentCheck(entry);
+					if (forceContentCheck)
+					{
+						// But we are told to look at content even though timestamps
+						// tell us about modification
+						return ContentCheck(entry);
+					}
+					else
+					{
+						// We are told to assume a modification if timestamps differs
+						return true;
+					}
+					goto case WorkingTreeIterator.MetadataDiff.SMUDGED;
 				}
-				else
-				{
-					// We are told to assume a modification if timestamps differs
-					return true;
-				}
-			}
-			else
-			{
-				// The file is clean when you look at timestamps.
-				if (entry.IsSmudged)
+
+				case WorkingTreeIterator.MetadataDiff.SMUDGED:
 				{
 					// The file is clean by timestamps but the entry was smudged.
 					// Lets do a content check
 					return ContentCheck(entry);
 				}
-				else
+
+				case WorkingTreeIterator.MetadataDiff.EQUAL:
 				{
-					// The file is clean by timestamps and the entry is not
-					// smudged: Can't get any cleaner!
 					return false;
+				}
+
+				case WorkingTreeIterator.MetadataDiff.DIFFER_BY_METADATA:
+				{
+					return true;
+				}
+
+				default:
+				{
+					throw new InvalidOperationException(MessageFormat.Format(JGitText.Get().unexpectedCompareResult
+						, diff.ToString()));
 				}
 			}
 		}
@@ -1063,6 +1169,17 @@ namespace NGit.Treewalk
 			/// computations.
 			/// </summary>
 			internal byte[] contentReadBuffer;
+
+			/// <summary>TreeWalk with a (supposedly) matching DirCacheIterator.</summary>
+			/// <remarks>TreeWalk with a (supposedly) matching DirCacheIterator.</remarks>
+			internal TreeWalk walk;
+
+			/// <summary>
+			/// Position of the matching
+			/// <see cref="NGit.Dircache.DirCacheIterator">NGit.Dircache.DirCacheIterator</see>
+			/// .
+			/// </summary>
+			internal int dirCacheTree;
 
 			internal IteratorState(WorkingTreeOptions options)
 			{

@@ -595,7 +595,17 @@ namespace MonoDevelop.Projects.Gui
 			string output = RunSimulation ("", "unit\t", true, true, false, "Unit", "unit");
 			Assert.AreEqual ("unit", output);
 		}
-				
+		
+		/// <summary>
+		/// Bug 668136 - Subword matching in completion does not work well for xml
+		/// </summary>
+		[Test]
+		public void TestBug668136 ()
+		{
+			string output = RunSimulation ("", "bar\t", true, true, false, "foo:test", "foo:bar", "foo:foo");
+			Assert.AreEqual ("foo:bar", output);
+		}
+		
 		[Test]
 		public void TestSubstringMatch ()
 		{

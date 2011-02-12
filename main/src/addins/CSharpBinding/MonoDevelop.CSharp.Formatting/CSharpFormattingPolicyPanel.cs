@@ -43,7 +43,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		protected override void LoadFrom (CSharpFormattingPolicy policy)
 		{
-			panel.Policy = policy.Clone ();
+			panel.Policy = policy;
 		}
 		
 		protected override CSharpFormattingPolicy GetPolicy ()

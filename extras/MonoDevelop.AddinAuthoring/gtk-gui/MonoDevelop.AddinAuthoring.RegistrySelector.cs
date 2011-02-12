@@ -5,13 +5,9 @@ namespace MonoDevelop.AddinAuthoring
 	public partial class RegistrySelector
 	{
 		private global::Gtk.Button buttonBrowse;
-
 		private global::Gtk.HBox hbox2;
-
 		private global::Gtk.Label label;
-
 		private global::Gtk.VSeparator vseparator1;
-
 		private global::Gtk.Image image131;
 
 		protected virtual void Build ()
@@ -31,16 +27,16 @@ namespace MonoDevelop.AddinAuthoring
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.label = new global::Gtk.Label ();
 			this.label.Name = "label";
-			this.label.Xalign = 0f;
+			this.label.Xalign = 0F;
 			this.label.Ellipsize = ((global::Pango.EllipsizeMode)(3));
 			this.hbox2.Add (this.label);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.label]));
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.label]));
 			w1.Position = 0;
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.vseparator1 = new global::Gtk.VSeparator ();
 			this.vseparator1.Name = "vseparator1";
 			this.hbox2.Add (this.vseparator1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.vseparator1]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.vseparator1]));
 			w2.Position = 1;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -49,7 +45,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.image131.Name = "image131";
 			this.image131.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-open", global::Gtk.IconSize.Menu);
 			this.hbox2.Add (this.image131);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.image131]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.image131]));
 			w3.Position = 2;
 			w3.Expand = false;
 			w3.Fill = false;

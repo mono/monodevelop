@@ -16,7 +16,9 @@ REFS =  \
 	-r:System \
 	-r:System.Core
 
-FILES = AspLanguageBuilder.cs
+FILES =  \
+	AspLanguageBuilder.cs \
+	ASPNetReferenceFinder.cs
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/BackendBindings
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.CSharpBinding.AspNet.dll

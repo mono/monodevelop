@@ -73,6 +73,11 @@ namespace Sharpen
 		{
 			Remove (elem);
 		}
+		
+		public void TrimToSize ()
+		{
+			Capacity = Count;
+		}
 	}
 }
 

@@ -43,6 +43,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
 using NGit;
+using NGit.Transport;
 using Sharpen;
 
 namespace NGit
@@ -72,6 +73,12 @@ namespace NGit
 		{
 			/// <exception cref="System.IO.IOException"></exception>
 			public override ObjectId Insert(int objectType, long length, InputStream @in)
+			{
+				throw new NotSupportedException();
+			}
+
+			/// <exception cref="System.IO.IOException"></exception>
+			public override PackParser NewPackParser(InputStream @in)
 			{
 				throw new NotSupportedException();
 			}
@@ -191,6 +198,15 @@ namespace NGit
 			return ObjectId.FromRaw(md.Digest());
 		}
 
+		/// <summary>Compute the ObjectId for the given tree without inserting it.</summary>
+		/// <remarks>Compute the ObjectId for the given tree without inserting it.</remarks>
+		/// <param name="formatter"></param>
+		/// <returns>the computed ObjectId</returns>
+		public virtual ObjectId IdFor(TreeFormatter formatter)
+		{
+			return formatter.ComputeId(this);
+		}
+
 		/// <summary>Insert a single tree into the store, returning its unique name.</summary>
 		/// <remarks>Insert a single tree into the store, returning its unique name.</remarks>
 		/// <param name="formatter">the formatter containing the proposed tree's data.</param>
@@ -276,6 +292,19 @@ namespace NGit
 		/// not be read.
 		/// </exception>
 		public abstract ObjectId Insert(int objectType, long length, InputStream @in);
+
+		/// <summary>Initialize a parser to read from a pack formatted stream.</summary>
+		/// <remarks>Initialize a parser to read from a pack formatted stream.</remarks>
+		/// <param name="in">
+		/// the input stream. The stream is not closed by the parser, and
+		/// must instead be closed by the caller once parsing is complete.
+		/// </param>
+		/// <returns>the pack parser.</returns>
+		/// <exception cref="System.IO.IOException">
+		/// the parser instance, which can be configured and then used to
+		/// parse objects into the ObjectDatabase.
+		/// </exception>
+		public abstract PackParser NewPackParser(InputStream @in);
 
 		/// <summary>Make all inserted objects visible.</summary>
 		/// <remarks>

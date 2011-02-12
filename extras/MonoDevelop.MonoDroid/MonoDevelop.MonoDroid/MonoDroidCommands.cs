@@ -182,16 +182,4 @@ namespace MonoDevelop.MonoDroid
 			MonoDroidFramework.Toolbox.StartAvdManager ();
 		}
 	}
-
-	class MonoDroidStartupHandler : CommandHandler
-	{
-		protected override void Run ()
-		{
-			var assembly = typeof (LoggingService).Assembly;
-			var msBuildType = assembly.GetType ("MonoDevelop.Projects.Formats.MSBuild.MSBuildFileFormatVS10");
-			var frameworkVersions = msBuildType.GetField ("frameworkVersions",
-				System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
-			frameworkVersions.SetValue (null, new string [] { "2.0", "2.2", "3.0", "3.5", "4.0" });
-		}
-	}
 }

@@ -40,7 +40,7 @@ namespace MonoDevelop.Core.Assemblies
 		string description;
 		SystemAssembly assemblies;
 		bool isInternal;
-		string targetFramework;
+		TargetFrameworkMoniker targetFramework;
 		string gacRoot;
 		bool gacPackage;
 		
@@ -59,7 +59,6 @@ namespace MonoDevelop.Core.Assemblies
 			this.gacPackage = info.IsGacPackage;
 			IsFrameworkPackage = info.IsFrameworkPackage;
 			IsCorePackage = info.IsCorePackage;
-			IsBaseCorePackage = info.IsBaseCorePackage;
 			this.Requires = info.Requires;
 			SystemAssembly last = null;
 			foreach (SystemAssembly asm in assemblies) {
@@ -94,8 +93,8 @@ namespace MonoDevelop.Core.Assemblies
 			get { return description; }
 		}
 		
-		public string TargetFramework {
-			get { return targetFramework ?? "1.1"; }
+		public TargetFrameworkMoniker TargetFramework {
+			get { return targetFramework ?? TargetFrameworkMoniker.NET_1_1; }
 		}
 		
 		public string Requires {
@@ -123,9 +122,6 @@ namespace MonoDevelop.Core.Assemblies
 			internal set;
 		}
 		
-		// The package contains an mscorlib
-		internal bool IsBaseCorePackage { get; set; }
-		
 		public IEnumerable<SystemAssembly> Assemblies {	
 			get {
 				SystemAssembly asm = assemblies;
@@ -152,7 +148,7 @@ namespace MonoDevelop.Core.Assemblies
 			IsGacPackage = info.IsGacPackage;
 			Version = info.Version;
 			Description = info.Description;
-			TargetFramework = info.GetData ("targetFramework");
+			TargetFramework = TargetFrameworkMoniker.Parse (info.GetData ("targetFramework"));
 			CustomData = info.CustomData;
 			Requires = info.Requires;
 			
@@ -173,15 +169,12 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public string Description { get; set; }
 		
-		public string TargetFramework { get; set; }
+		public TargetFrameworkMoniker TargetFramework { get; set; }
 		
 		public string Requires { get; set; }
 		
 		// The package is part of the core mono SDK
 		public bool IsCorePackage { get; set; }
-		
-		// The package contains an mscorlib
-		internal bool IsBaseCorePackage { get; set; }
 		
 		// The package is part of the mono SDK (unlike IsCorePackage, it may be provided by a non-core package)
 		public bool IsFrameworkPackage { get; set; }

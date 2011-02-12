@@ -38,9 +38,7 @@ using System.Net;
 
 namespace MonoDevelop.Debugger.Soft.Moonlight
 {
-
-
-	public class MoonlightSoftDebuggerSession : RemoteSoftDebuggerSession
+	public class MoonlightSoftDebuggerSession : Mono.Debugging.Soft.SoftDebuggerSession
 	{
 		Process browser;
 		
@@ -49,11 +47,12 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
 			var dsi = (MoonlightDebuggerStartInfo) startInfo;
-			StartBrowserProcess (dsi);
-			StartListening (dsi);
+			int assignedDebugPort;
+			StartListening (dsi, out assignedDebugPort);
+			StartBrowserProcess (dsi, assignedDebugPort);
 		}
 
-		void StartBrowserProcess (MoonlightDebuggerStartInfo dsi)
+		void StartBrowserProcess (MoonlightDebuggerStartInfo dsi, int assignedDebugPort)
 		{
 			if (browser != null)
 				throw new InvalidOperationException ("Browser already started");
@@ -67,8 +66,9 @@ namespace MonoDevelop.Debugger.Soft.Moonlight
 				RedirectStandardOutput = true,
 				RedirectStandardError = true,
 			};
+			var args = (Mono.Debugging.Soft.SoftDebuggerRemoteArgs) dsi.StartArgs;
 			psi.EnvironmentVariables.Add ("MOON_SOFT_DEBUG",
-				string.Format ("transport=dt_socket,address={0}:{1}", dsi.Address, dsi.DebugPort));
+				string.Format ("transport=dt_socket,address={0}:{1}", args.Address, assignedDebugPort));
 			
 			browser = Process.Start (psi);
 			ConnectOutput (browser.StandardOutput, false);

@@ -360,6 +360,21 @@ namespace Mono.TextEditor.Highlighting
 					RegexMatch match = span.Begin.TryMatch (CurText, textOffset);
 					if (!match.Success)
 						continue;
+					// scan for span exit which cancels the span.
+					if ((span.ExitFlags & SpanExitFlags.CancelSpan) == SpanExitFlags.CancelSpan && span.Exit != null) {
+						bool foundEnd = false;
+						for (int k = i + match.Length; k < CurText.Length; k++) {
+							if (span.Exit.TryMatch (CurText, k - StartOffset).Success)
+								return;
+							if (span.End.TryMatch (CurText, k - StartOffset).Success) {
+								foundEnd = true;
+								break;
+							}
+						}
+						if (!foundEnd)
+							return;
+					}
+					
 					bool mismatch = false;
 					if ((span.BeginFlags & SpanBeginFlags.FirstNonWs) == SpanBeginFlags.FirstNonWs)
 						mismatch = CurText.Take (i).Any (ch => !char.IsWhiteSpace (ch));
@@ -406,7 +421,7 @@ namespace Mono.TextEditor.Highlighting
 
 			public void ParseSpans (int offset, int length)
 			{
-				if (offset < 0 || offset + length >= doc.Length || length <= 0)
+				if (offset < 0 || offset + length > doc.Length || length <= 0)
 					return;
 				StartOffset = offset;
 				CurText = doc.GetTextAt (offset, length);

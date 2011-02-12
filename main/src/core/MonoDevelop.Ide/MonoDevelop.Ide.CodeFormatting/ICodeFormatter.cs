@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 		{
 			if (string.IsNullOrEmpty (input))
 				return input;
-			return FormatText (policyParent, mimeTypeChain, input, 0, input.Length - 1);
+			return FormatText (policyParent, mimeTypeChain, input, 0, input.Length);
 		}
 	}
 }

@@ -4569,7 +4569,9 @@ namespace Mono.CSharp
 			if (c != null){
 				bool is_false = c.IsDefaultValue;
 				ec.Report.Warning (429, 4, is_false ? true_expr.Location : false_expr.Location, "Unreachable expression code detected");
-				return ReducedExpression.Create (is_false ? false_expr : true_expr, this).Resolve (ec);
+				return ReducedExpression.Create (
+					is_false ? false_expr : true_expr, this,
+					false_expr is Constant && true_expr is Constant).Resolve (ec);
 			}
 
 			return this;
@@ -5422,7 +5424,7 @@ namespace Mono.CSharp
 			//
 			// It's non-virtual and will never be null
 			//
-			if (!method.IsVirtual && (instance is This || instance is New || instance is ArrayCreation || instance is DelegateCreation || instance is TypeOf))
+			if (!method.IsVirtual && (instance is This || instance is New || instance is ArrayCreation || instance is DelegateCreation))
 				return false;
 
 			return true;
@@ -6749,13 +6751,13 @@ namespace Mono.CSharp
 				if (ic == null || !ic.IsDefaultValue) {
 					base.EncodeAttributeValue (rc, enc, targetType);
 				} else {
-					enc.Stream.Write (0);
+					enc.Encode (0);
 				}
 
 				return;
 			}
 
-			enc.Stream.Write ((int) array_data.Count);
+			enc.Encode (array_data.Count);
 			foreach (var element in array_data) {
 				element.EncodeAttributeValue (rc, enc, array_element_type);
 			}

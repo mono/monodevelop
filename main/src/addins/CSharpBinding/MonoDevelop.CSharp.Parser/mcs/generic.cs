@@ -1367,6 +1367,9 @@ namespace Mono.CSharp {
 					break;
 				}
 			}
+
+			if (open_type.Kind == MemberKind.MissingType)
+				MemberCache = MemberCache.Empty;
 		}
 
 		#region Properties
@@ -1512,13 +1515,13 @@ namespace Mono.CSharp {
 			return open_type.GetAttributeObsolete ();
 		}
 
-		protected override bool IsNotCLSCompliant ()
+		protected override bool IsNotCLSCompliant (out bool attrValue)
 		{
-			if (base.IsNotCLSCompliant ())
+			if (base.IsNotCLSCompliant (out attrValue))
 				return true;
 
 			foreach (var ta in TypeArguments) {
-				if (ta.MemberDefinition.IsNotCLSCompliant ())
+				if (ta.MemberDefinition.CLSAttributeValue == false)
 					return true;
 			}
 
@@ -2253,6 +2256,12 @@ namespace Mono.CSharp {
 		public override TypeParameter[] CurrentTypeParameters {
 			get {
 				return base.type_params;
+			}
+		}
+
+		protected override TypeAttributes TypeAttr {
+			get {
+				throw new NotSupportedException ();
 			}
 		}
 

@@ -35,6 +35,7 @@ using System.Text;
 using MonoDevelop.Ide;
 using System.Linq;
 using Mono.TextEditor.PopupWindow;
+using MonoDevelop.Ide.FindInFiles;
 
 namespace MonoDevelop.Refactoring.Rename
 {
@@ -42,7 +43,7 @@ namespace MonoDevelop.Refactoring.Rename
 	{
 		public override string AccelKey {
 			get {
-				var key = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.Rename).AccelKey;
+				var key = IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.EditCommands.Rename).AccelKey;
 				return key == null ? null : key.Replace ("dead_circumflex", "^");
 			}
 		}
@@ -69,13 +70,13 @@ namespace MonoDevelop.Refactoring.Rename
 		
 		public override string GetMenuDescription (RefactoringOptions options)
 		{
-			return IdeApp.CommandService.GetCommandInfo (RefactoryCommands.Rename).Text;
+			return IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.EditCommands.Rename).Text;
 		}
 		
 		public override void Run (RefactoringOptions options)
 		{
 			if (options.SelectedItem is LocalVariable || options.SelectedItem is IParameter) {
-				MemberReferenceCollection col = GetReferences (options);
+				var col = ReferenceFinder.FindReferences (options.SelectedItem);
 				if (col == null)
 					return;
 				TextEditorData data = options.GetTextEditorData ();
@@ -143,7 +144,7 @@ namespace MonoDevelop.Refactoring.Rename
 			RenameProperties properties = (RenameProperties)prop;
 			List<Change> result = new List<Change> ();
 
-			MemberReferenceCollection col = GetReferences (options);
+			var col = ReferenceFinder.FindReferences (options.SelectedItem);
 			if (col == null)
 				return result;
 			
@@ -203,77 +204,6 @@ namespace MonoDevelop.Refactoring.Rename
 				name.Append (System.IO.Path.GetExtension (oldFullFileName));
 			
 			return System.IO.Path.Combine (System.IO.Path.GetDirectoryName (oldFullFileName), name.ToString ());
-		}
-		
-		MemberReferenceCollection GetReferences (RefactoringOptions options)
-		{
-			CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Name, null);
-			if (options.SelectedItem is IType) {
-				IType cls = (IType)options.SelectedItem;
-				return refactorer.FindClassReferences (monitor, cls, RefactoryScope.Solution, true);
-			} else if (options.SelectedItem is LocalVariable) {
-				return refactorer.FindVariableReferences (monitor, (LocalVariable)options.SelectedItem);
-			} else if (options.SelectedItem is IParameter) {
-				return refactorer.FindParameterReferences (monitor, (IParameter)options.SelectedItem, true);
-			} else if (options.SelectedItem is IMember) {
-				IMember member = (IMember)options.SelectedItem;
-				Dictionary<string, HashSet<DomLocation>> foundLocations = new Dictionary <string, HashSet<DomLocation>> ();
-				MemberReferenceCollection result = new MemberReferenceCollection ();
-				foreach (IMember m in CollectMembers (member.DeclaringType.SourceProjectDom, member)) {
-					foreach (MemberReference r in refactorer.FindMemberReferences (monitor, m.DeclaringType, m, true)) {
-						DomLocation location = new DomLocation (r.Line, r.Column);
-						if (!foundLocations.ContainsKey (r.FileName))
-							foundLocations[r.FileName] = new HashSet<DomLocation> ();
-						if (foundLocations[r.FileName].Contains (location))
-							continue;
-						foundLocations[r.FileName].Add (location);
-						result.Add (r);
-					}
-				}
-				return result;
-			}
-			return null;
-		}
-		
-		internal static IEnumerable<IMember> CollectMembers (ProjectDom dom, IMember member)
-		{
-			if (member is IMethod && ((IMethod)member).IsConstructor) {
-				yield return member;
-			} else {
-				bool isOverrideable = member.DeclaringType.ClassType == ClassType.Interface || member.IsOverride || member.IsVirtual || member.IsAbstract;
-				bool isLastMember = false;
-				// for members we need to collect the whole 'class' of members (overloads & implementing types)
-				HashSet<string> alreadyVisitedTypes = new HashSet<string> ();
-				foreach (IType type in dom.GetInheritanceTree (member.DeclaringType)) {
-					if (type.ClassType == ClassType.Interface || isOverrideable || type.DecoratedFullName == member.DeclaringType.DecoratedFullName) {
-						// search in the class for the member
-						foreach (IMember interfaceMember in type.SearchMember (member.Name, true)) {
-							if (interfaceMember.MemberType == member.MemberType)
-								yield return interfaceMember;
-						}
-						
-						// now search in all subclasses of this class for the member
-						isLastMember = !member.IsOverride;
-						foreach (IType implementingType in dom.GetSubclasses (type)) {
-							string name = implementingType.DecoratedFullName;
-							if (alreadyVisitedTypes.Contains (name))
-								continue;
-							alreadyVisitedTypes.Add (name);
-							foreach (IMember typeMember in implementingType.SearchMember (member.Name, true)) {
-								if (typeMember.MemberType == member.MemberType) {
-									isLastMember = type.ClassType != ClassType.Interface && (typeMember.IsVirtual || typeMember.IsAbstract || !typeMember.IsOverride);
-									yield return typeMember;
-								}
-							}
-							if (!isOverrideable)
-								break;
-						}
-						if (isLastMember)
-							break;
-					}
-				}
-			}
 		}
 	}
 }

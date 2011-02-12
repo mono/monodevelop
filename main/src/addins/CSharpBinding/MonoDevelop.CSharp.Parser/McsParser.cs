@@ -31,7 +31,7 @@ using System.IO;
 using Mono.CSharp;
 using System.Text;
 using Mono.TextEditor;
-using MonoDevelop.CSharp.Dom;
+using MonoDevelop.CSharp.Ast;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.CSharp.Resolver;
@@ -133,10 +133,9 @@ namespace MonoDevelop.CSharp.Parser
 				conversionVisitor.ParsedDocument = result;
 				conversionVisitor.Unit = unit;
 				top.UsingsBag.Global.Accept (conversionVisitor);
+				top.ModuleCompiled.Accept (conversionVisitor);
 				
-				unit.Tag = top;
-				
-				
+				unit.Tag = CSharpParser.Parse (top);
 				
 				// parser errors
 				errorReportPrinter.Errors.ForEach (e => conversionVisitor.ParsedDocument.Add (e));
@@ -473,6 +472,12 @@ namespace MonoDevelop.CSharp.Parser
 				
 			}
 			
+			public override void Visit (ModuleContainer mc)
+			{
+				foreach (var at in ConvertAttributes (mc.OptAttributes, mc))
+					Unit.Add (at);
+			}
+			
 			public override void Visit (UsingsBag.Namespace nspace)
 			{
 				string oldNamespace = currentNamespaceName;
@@ -547,7 +552,7 @@ namespace MonoDevelop.CSharp.Parser
 				}
 				
 				newType.Modifiers = ConvertModifiers (c.ModFlags);
-				AddAttributes (newType, c.OptAttributes);
+				AddAttributes (newType, c.OptAttributes, c);
 				AddTypeParameter (newType, c);
 				
 				if (c.TypeBaseExpressions != null) {
@@ -591,7 +596,7 @@ namespace MonoDevelop.CSharp.Parser
 				VisitType (e, ClassType.Enum);
 			}
 			
-			class CodeDomVisitor : StructuralVisitor
+			class CodeAstVisitor : StructuralVisitor
 			{
 				public override object Visit (Constant constant)
 				{
@@ -663,11 +668,28 @@ namespace MonoDevelop.CSharp.Parser
 						(CodeExpression)binaryExpression.Right.Accept (this));
 				}
 			}
+
 			
-			public void AddAttributes (MonoDevelop.Projects.Dom.AbstractMember member, Attributes optAttributes)
+			System.CodeDom.CodeExpression ResolveMemberAccessExpression (Mono.CSharp.Expression expr)
 			{
+				if (expr is MemberAccess) {
+					var ma = (MemberAccess)expr;
+					return new CodeFieldReferenceExpression (ResolveMemberAccessExpression (ma.LeftExpression), ma.Name);
+				}
+				if (expr is SimpleName)
+					return new CodeTypeReferenceExpression (((SimpleName)expr).Name);
+				return null;
+			}
+			
+			IEnumerable<IAttribute> ConvertAttributes (Attributes optAttributes, IMemberContext mc)
+			{
+				List<IAttribute> atts = new List<IAttribute> ();
+				
 				if (optAttributes == null || optAttributes.Attrs == null)
-					return;
+					return atts;
+				
+				ResolveContext ctx = new ResolveContext (mc);
+				
 				foreach (var attr in optAttributes.Attrs) {
 					DomAttribute domAttribute = new DomAttribute ();
 					domAttribute.Name = attr.Name;
@@ -675,11 +697,29 @@ namespace MonoDevelop.CSharp.Parser
 					domAttribute.AttributeType = new DomReturnType (attr.Name);
 					if (attr.PosArguments != null) {
 						for (int i = 0; i < attr.PosArguments.Count; i++) {
-							var val = attr.PosArguments[i].Expr as Constant;
-							if (val == null) {
-								continue;
+							CodeExpression domExp;
+							var exp = attr.PosArguments[i].Expr;
+							if (exp is TypeOf) {
+								TypeOf tof = (TypeOf)exp;
+								IReturnType rt = ConvertReturnType (tof.TypeExpression);
+								domExp = new CodeTypeOfExpression (rt.FullName);
 							}
-							domAttribute.AddPositionalArgument (new CodePrimitiveExpression (val.GetValue ()));
+							else {
+								try {
+									domExp = ResolveMemberAccessExpression (exp);
+									// may be literal
+									if (domExp == null) {
+										var res = exp.Resolve (ctx);
+										var val = res as Constant;
+										if (val == null)
+											continue;
+										domExp = new CodePrimitiveExpression (val.GetValue ());
+									}
+								} catch {
+									continue;
+								}
+							}
+							domAttribute.AddPositionalArgument (domExp);
 						}
 					}
 					if (attr.NamedArguments != null) {
@@ -691,8 +731,15 @@ namespace MonoDevelop.CSharp.Parser
 						}
 					}
 					
-					member.Add (domAttribute);
+					atts.Add (domAttribute);
 				}
+				return atts;
+			}
+			
+			public void AddAttributes (MonoDevelop.Projects.Dom.AbstractMember member, Attributes optAttributes, IMemberContext mc)
+			{
+				foreach (var attr in ConvertAttributes (optAttributes, mc))
+					member.Add (attr);
 			}
 			
 			MonoDevelop.Projects.Dom.TypeParameter ConvertTemplateDefinition (Mono.CSharp.TypeParameter parameter)
@@ -705,7 +752,7 @@ namespace MonoDevelop.CSharp.Parser
 							if (sce.Constraint == SpecialConstraint.Struct)
 								result.AddConstraint (DomReturnType.ValueType);
 							if (sce.Constraint == SpecialConstraint.Class)
-								result.AddConstraint (DomReturnType.TypeReturnType);
+								result.AddConstraint (DomReturnType.Object);
 							if (sce.Constraint == SpecialConstraint.Constructor)
 								result.TypeParameterModifier |= TypeParameterModifier.HasDefaultConstructorConstraint;
 						} else {
@@ -734,7 +781,7 @@ namespace MonoDevelop.CSharp.Parser
 				delegateType.Location = Convert (d.MemberName.Location);
 				delegateType.Documentation = RetrieveDocumentation (d.MemberName.Location.Row);
 				delegateType.Modifiers = ConvertModifiers (d.ModFlags);
-				AddAttributes (delegateType, d.OptAttributes);
+				AddAttributes (delegateType, d.OptAttributes, d);
 				
 				AddParameter ((MonoDevelop.Projects.Dom.AbstractMember)delegateType.Methods.First (), d.Parameters);
 				AddTypeParameter (delegateType, d);
@@ -754,7 +801,7 @@ namespace MonoDevelop.CSharp.Parser
 				field.Location = Convert (f.MemberName.Location);
 				field.Modifiers = ConvertModifiers (f.ModFlags) | MonoDevelop.Projects.Dom.Modifiers.Fixed;
 				field.ReturnType = ConvertReturnType (f.TypeName);
-				AddAttributes (field, f.OptAttributes);
+				AddAttributes (field, f.OptAttributes, f);
 				field.DeclaringType = typeStack.Peek ();
 				typeStack.Peek ().Add (field);
 				if (f.Declarators != null) {
@@ -764,7 +811,7 @@ namespace MonoDevelop.CSharp.Parser
 						field.Location = Convert (decl.Name.Location);
 						field.Modifiers = ConvertModifiers (f.ModFlags) | MonoDevelop.Projects.Dom.Modifiers.Fixed;
 						field.ReturnType = ConvertReturnType (f.TypeName);
-						AddAttributes (field, f.OptAttributes);
+						AddAttributes (field, f.OptAttributes, f);
 						field.DeclaringType = typeStack.Peek ();
 						typeStack.Peek ().Add (field);
 					}
@@ -779,7 +826,7 @@ namespace MonoDevelop.CSharp.Parser
 				field.Location = Convert (f.MemberName.Location);
 				field.Modifiers = ConvertModifiers (f.ModFlags);
 				field.ReturnType = ConvertReturnType (f.TypeName);
-				AddAttributes (field, f.OptAttributes);
+				AddAttributes (field, f.OptAttributes, f);
 				field.DeclaringType = typeStack.Peek ();
 				typeStack.Peek ().Add (field);
 				
@@ -790,7 +837,7 @@ namespace MonoDevelop.CSharp.Parser
 						field.Location = Convert (decl.Name.Location);
 						field.Modifiers = ConvertModifiers (f.ModFlags);
 						field.ReturnType = ConvertReturnType (f.TypeName);
-						AddAttributes (field, f.OptAttributes);
+						AddAttributes (field, f.OptAttributes, f);
 						field.DeclaringType = typeStack.Peek ();
 						typeStack.Peek ().Add (field);
 					}
@@ -805,7 +852,7 @@ namespace MonoDevelop.CSharp.Parser
 				field.Location = Convert (f.MemberName.Location);
 				field.Modifiers = ConvertModifiers (f.ModFlags) | MonoDevelop.Projects.Dom.Modifiers.Const;
 				field.ReturnType = ConvertReturnType (f.TypeName);
-				AddAttributes (field, f.OptAttributes);
+				AddAttributes (field, f.OptAttributes, f);
 				field.DeclaringType = typeStack.Peek ();
 				typeStack.Peek ().Add (field);
 				if (f.Declarators != null) {
@@ -815,7 +862,7 @@ namespace MonoDevelop.CSharp.Parser
 						field.Location = Convert (decl.Name.Location);
 						field.Modifiers = ConvertModifiers (f.ModFlags) | MonoDevelop.Projects.Dom.Modifiers.Const;
 						field.ReturnType = ConvertReturnType (f.TypeName);
-						AddAttributes (field, f.OptAttributes);
+						AddAttributes (field, f.OptAttributes, f);
 						field.DeclaringType = typeStack.Peek ();
 						typeStack.Peek ().Add (field);
 					}
@@ -837,7 +884,7 @@ namespace MonoDevelop.CSharp.Parser
 				evt.Location = Convert (e.MemberName.Location);
 				evt.Modifiers = ConvertModifiers (e.ModFlags);
 				evt.ReturnType = ConvertReturnType (e.TypeName);
-				AddAttributes (evt, e.OptAttributes);
+				AddAttributes (evt, e.OptAttributes, e);
 				AddExplicitInterfaces (evt, e);
 				evt.DeclaringType = typeStack.Peek ();
 				typeStack.Peek ().Add (evt);
@@ -848,7 +895,7 @@ namespace MonoDevelop.CSharp.Parser
 						evt.Location = Convert (decl.Name.Location);
 						evt.Modifiers = ConvertModifiers (e.ModFlags);
 						evt.ReturnType = ConvertReturnType (e.TypeName);
-						AddAttributes (evt, e.OptAttributes);
+						AddAttributes (evt, e.OptAttributes, e);
 						evt.DeclaringType = typeStack.Peek ();
 						typeStack.Peek ().Add (evt);
 					}
@@ -867,7 +914,7 @@ namespace MonoDevelop.CSharp.Parser
 				if (location != null)
 					evt.BodyRegion = ConvertRegion (location[1], location[2]);
 				
-				AddAttributes (evt, e.OptAttributes);
+				AddAttributes (evt, e.OptAttributes, e);
 				AddExplicitInterfaces (evt, e);
 				
 				evt.DeclaringType = typeStack.Peek ();
@@ -891,7 +938,7 @@ namespace MonoDevelop.CSharp.Parser
 				}
 				property.ReturnType = ConvertReturnType (p.TypeName);
 				
-				AddAttributes (property, p.OptAttributes);
+				AddAttributes (property, p.OptAttributes, p);
 				AddExplicitInterfaces (property, p);
 				
 				if (p.Get != null) {
@@ -962,7 +1009,7 @@ namespace MonoDevelop.CSharp.Parser
 				indexer.ReturnType = ConvertReturnType (i.TypeName);
 				AddParameter (indexer, i.Parameters);
 				
-				AddAttributes (indexer, i.OptAttributes);
+				AddAttributes (indexer, i.OptAttributes, i);
 				AddExplicitInterfaces (indexer, i);
 				
 				if (i.Get != null) {
@@ -1008,7 +1055,7 @@ namespace MonoDevelop.CSharp.Parser
 				}
 				
 				method.ReturnType = ConvertReturnType (m.TypeName);
-				AddAttributes (method, m.OptAttributes);
+				AddAttributes (method, m.OptAttributes, m);
 				AddParameter (method, m.ParameterInfo);
 				AddExplicitInterfaces (method, m);
 				method.Modifiers = ConvertModifiers (m.ModFlags);
@@ -1018,6 +1065,12 @@ namespace MonoDevelop.CSharp.Parser
 					AddTypeParameter (method, m.GenericMethod);
 				method.DeclaringType = typeStack.Peek ();
 				typeStack.Peek ().Add (method);
+
+				// Hack: Fixes Bug 650840 - Missing completion for locals
+				// Take out, when the parser has improved error recovery for this case.
+				if (m.Block == null && typeStack.Peek ().ClassType != ClassType.Interface) {
+					method.BodyRegion = new DomRegion (new DomLocation (m.Location.Row, m.Location.Column), typeStack.Peek ().BodyRegion.End);
+				}
 			}
 
 			public override void Visit (Operator o)
@@ -1036,7 +1089,7 @@ namespace MonoDevelop.CSharp.Parser
 				}
 				method.Modifiers = ConvertModifiers (o.ModFlags) | MonoDevelop.Projects.Dom.Modifiers.SpecialName;
 				method.ReturnType = ConvertReturnType (o.TypeName);
-				AddAttributes (method, o.OptAttributes);
+				AddAttributes (method, o.OptAttributes, o);
 				AddParameter (method, o.ParameterInfo);
 				AddExplicitInterfaces (method, o);
 				
@@ -1060,7 +1113,7 @@ namespace MonoDevelop.CSharp.Parser
 				}
 				method.Modifiers = ConvertModifiers (c.ModFlags) | MonoDevelop.Projects.Dom.Modifiers.SpecialName;
 				method.MethodModifier |= MethodModifier.IsConstructor;
-				AddAttributes (method, c.OptAttributes);
+				AddAttributes (method, c.OptAttributes, c);
 				AddParameter (method, c.ParameterInfo);
 				AddExplicitInterfaces (method, c);
 				method.DeclaringType = typeStack.Peek ();
@@ -1082,7 +1135,7 @@ namespace MonoDevelop.CSharp.Parser
 				}
 				method.Modifiers = ConvertModifiers (d.ModFlags) | MonoDevelop.Projects.Dom.Modifiers.SpecialName;
 				method.MethodModifier |= MethodModifier.IsFinalizer;
-				AddAttributes (method, d.OptAttributes);
+				AddAttributes (method, d.OptAttributes, d);
 				AddExplicitInterfaces (method, d);
 				method.DeclaringType = typeStack.Peek ();
 				typeStack.Peek ().Add (method);
@@ -1096,7 +1149,7 @@ namespace MonoDevelop.CSharp.Parser
 				// return types for enum fields are == null
 				field.Location = Convert (f.MemberName.Location);
 				field.Modifiers = MonoDevelop.Projects.Dom.Modifiers.Const | MonoDevelop.Projects.Dom.Modifiers.SpecialName| MonoDevelop.Projects.Dom.Modifiers.Public;
-				AddAttributes (field, f.OptAttributes);
+				AddAttributes (field, f.OptAttributes, f);
 				field.DeclaringType = typeStack.Peek ();
 				typeStack.Peek ().Add (field);
 			}

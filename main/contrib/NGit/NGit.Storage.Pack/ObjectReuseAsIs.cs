@@ -41,6 +41,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System.Collections.Generic;
 using NGit;
 using NGit.Revwalk;
 using NGit.Storage.Pack;
@@ -144,13 +145,14 @@ namespace NGit.Storage.Pack
 		/// <param name="out">the stream to write each object to.</param>
 		/// <param name="list">
 		/// the list of objects to write. Objects should be written in
-		/// approximately this order.
+		/// approximately this order. Implementors may resort the list
+		/// elements in-place during writing if desired.
 		/// </param>
 		/// <exception cref="System.IO.IOException">
 		/// the stream cannot be written to, or one or more required
 		/// objects cannot be accessed from the object database.
 		/// </exception>
-		void WriteObjects(PackOutputStream @out, Iterable<ObjectToPack> list);
+		void WriteObjects(PackOutputStream @out, IList<ObjectToPack> list);
 
 		/// <summary>Output a previously selected representation.</summary>
 		/// <remarks>
@@ -196,5 +198,32 @@ namespace NGit.Storage.Pack
 		/// abort.
 		/// </exception>
 		void CopyObjectAsIs(PackOutputStream @out, ObjectToPack otp);
+
+		/// <summary>Obtain the available cached packs.</summary>
+		/// <remarks>
+		/// Obtain the available cached packs.
+		/// <p>
+		/// A cached pack has known starting points and may be sent entirely as-is,
+		/// with almost no effort on the sender's part.
+		/// </remarks>
+		/// <returns>the available cached packs.</returns>
+		/// <exception cref="System.IO.IOException">
+		/// the cached packs cannot be listed from the repository.
+		/// Callers may choose to ignore this and continue as-if there
+		/// were no cached packs.
+		/// </exception>
+		ICollection<CachedPack> GetCachedPacks();
+
+		/// <summary>Append an entire pack's contents onto the output stream.</summary>
+		/// <remarks>
+		/// Append an entire pack's contents onto the output stream.
+		/// <p>
+		/// The entire pack, excluding its header and trailing footer is sent.
+		/// </remarks>
+		/// <param name="out">stream to append the pack onto.</param>
+		/// <param name="pack">the cached pack to send.</param>
+		/// <exception cref="System.IO.IOException">the pack cannot be read, or stream did not accept a write.
+		/// 	</exception>
+		void CopyPackAsIs(PackOutputStream @out, CachedPack pack);
 	}
 }

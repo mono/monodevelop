@@ -60,10 +60,28 @@ namespace MonoDevelop.MonoDroid
 		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
 			var cmd = (MonoDroidExecutionCommand) command;
+			int runningProcessId = -1;
 
-			IAsyncOperation startOp = MonoDroidFramework.Toolbox.StartActivity (cmd.Device, cmd.Activity);
+			var launchOp = new ChainedAsyncOperationSequence (
+				new ChainedAsyncOperation<AdbGetProcessIdOperation> () {
+					Create = () => new AdbGetProcessIdOperation (cmd.Device, cmd.PackageName),
+					Completed = (op) => {
+						if (op.Success)
+							runningProcessId = op.ProcessId;
+					}
+				},
+				new ChainedAsyncOperation () {
+					Skip = () => runningProcessId <= 0 ? "" : null,
+					Create = () => new AdbShellOperation (cmd.Device, "kill " + runningProcessId)
+				},
+				new ChainedAsyncOperation () {
+					Create = () => MonoDroidFramework.Toolbox.StartActivity (cmd.Device, cmd.Activity)
+				}
+			);
+			launchOp.Start ();
+
 			return new MonoDroidProcess (cmd.Device, cmd.Activity, cmd.PackageName, 
-				console.Out.Write, console.Error.Write, startOp);
+				console.Out.Write, console.Error.Write, launchOp);
 		}
 	}
 
@@ -71,6 +89,7 @@ namespace MonoDevelop.MonoDroid
 	{
 		AndroidDevice device;
 		string packageName;
+		DateTime startTime;
 		AdbGetProcessIdOperation getPidOp;
 		AdbOperation trackLogOp;
 		Action<string> stdout;
@@ -80,6 +99,14 @@ namespace MonoDevelop.MonoDroid
 
 		const int UNASSIGNED_PID = -1;
 		const int WAIT_TIME = 1000;
+
+		// Common system tags that we may want to ignore
+		readonly static string [] excludedLogTags = new string [] {
+			"dalvikvm",
+			"ActivityThread",
+			"mkestner",
+			"MonoDroid-Debugger"
+		};
 
 		public MonoDroidProcess (AndroidDevice device, string activity, string packageName,
 			Action<string> stdout, Action<string> stderr) : 
@@ -94,6 +121,8 @@ namespace MonoDevelop.MonoDroid
 			this.packageName = packageName;
 			this.stdout = stdout;
 			this.stderr = stderr;
+
+			startTime = DateTime.Now;
 
 			if (startOp == null) {
 				StartTracking ();
@@ -113,8 +142,16 @@ namespace MonoDevelop.MonoDroid
 		{
 			getPidOp = new AdbGetProcessIdOperation (device, packageName);
 			getPidOp.Completed += RefreshPid;
+		}
 
-			trackLogOp = new AdbTrackLogOperation (device, ProcessLogLine, "*:S", "stdout:*", "stderr:*");
+		void StartLogTracking ()
+		{
+			var args = new ProcessArgumentBuilder ();
+			args.Add ("-v time");
+			foreach (string tag in excludedLogTags)
+				args.Add (tag + ":S");
+
+			trackLogOp = new AdbTrackLogOperation (device, ProcessLogLine, args.ToString ());
 			trackLogOp.Completed += delegate (IAsyncOperation op) {
 				if (!op.Success) {
 					SetCompleted (false);
@@ -132,8 +169,10 @@ namespace MonoDevelop.MonoDroid
 			AdbGetProcessIdOperation adbOp = (AdbGetProcessIdOperation)op;
 			if (pid == UNASSIGNED_PID) {
 				// Ignore if the activity is still starting, and thus doesn't show up in 'ps'
-				if (adbOp.ProcessId > 0)
+				if (adbOp.ProcessId > 0) {
 					pid = adbOp.ProcessId;
+					StartLogTracking (); // track log *after* getting the pid
+				}
 			} else {
 				if (adbOp.ProcessId == 0 || pid != adbOp.ProcessId) {
 					SetCompleted (false);
@@ -153,17 +192,18 @@ namespace MonoDevelop.MonoDroid
 		{
 			string result, tag;
 			int pid;
+			DateTime time;
 			
 			//ignore section headers
 			if (line.StartsWith ("--------"))
 				return;
 			
-			if (!ParseLine (line, out pid, out tag, out result)) {
+			if (!ParseLine (line, out pid, out tag, out time, out result)) {
 				MonoDevelop.Core.LoggingService.LogWarning ("Could not recognize Android logcat output: '" + line + "'");
 				return;
 			}
 
-			if (pid != this.pid)
+			if (pid != this.pid || time < startTime)
 				return;
 
 			switch (tag) {
@@ -173,16 +213,39 @@ namespace MonoDevelop.MonoDroid
 				case "stderr":
 					stderr (result);
 					break;
+				default:
+					// Anything related to the process;
+					// show the entire log line.
+					stdout (result);
+					break;
 			}
 		}
 
-		bool ParseLine (string line, out int pid, out string tag, out string result)
+		bool ParseLine (string line, out int pid, out string tag, out DateTime time, out string result)
 		{
-			// Default (brief) FORMAT: P/Tag (PID): Actual log information
+			// Time FORMAT: Date-Time P/Tag (PID): Actual log information
 			int pos = 0;
-			int len, start;
+			int len, start, resultStart;
 			tag = result = null;
 			pid = 0;
+			time = DateTime.MinValue;
+
+			// Date+Time
+			start = pos;
+			len = 0;
+
+			while (pos < line.Length && !Char.IsLetter (line [pos++]))
+				len++;
+
+			if (len == 0)
+				return false;
+
+			if (!DateTime.TryParseExact (line.Substring (start, len), "MM-dd HH:mm:ss.fff", null,
+					System.Globalization.DateTimeStyles.AllowWhiteSpaces, out time))
+				return false;
+
+			// Mark the result line
+			resultStart = --pos;
 
 			// Ignore the priority char -and its respective '/'- for now
 			pos += 2;
@@ -190,20 +253,14 @@ namespace MonoDevelop.MonoDroid
 			// Tag
 			start = pos;
 			len = 0;
-			while (pos < line.Length && Char.IsLetter (line [pos++]))
+
+			while (pos < line.Length && line [pos++] != '(')
 				len++;
 
 			if (len == 0)
 				return false;
 
-			tag = line.Substring (start, len);
-
-			// Optional whitespace
-			while (pos < line.Length && line [pos] == ' ')
-				pos++;
-
-			// Opening brace
-			pos++;
+			tag = line.Substring (start, len).Trim ();
 
 			// Optional whitespace
 			while (pos < line.Length && line [pos] == ' ')
@@ -212,7 +269,7 @@ namespace MonoDevelop.MonoDroid
 			// PID section
 			start = pos;
 			len = 0;
-			while (Char.IsDigit (line [pos++]))
+			while (pos < line.Length && Char.IsDigit (line [pos++]))
 				len++;
 
 			if (len == 0)
@@ -226,7 +283,8 @@ namespace MonoDevelop.MonoDroid
 			if (pos >= line.Length)
 				return false;
 
-			result = line.Substring (pos, line.Length - pos);
+			// Return the tag, pid, and info line
+			result = line.Substring (resultStart, line.Length - resultStart);
 			return true;
 		}
 

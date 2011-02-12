@@ -20,7 +20,7 @@
 		<DebuggerEngine
 			id="Mono.Debugger.Soft"
 			name="Mono Soft Debugger"
-			features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints"
+			features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints, Disassembly"
 			type="MonoDevelop.Debugger.Soft.SoftDebuggerEngine" />
 	</Extension>
 	
@@ -28,7 +28,7 @@
 		<DebuggerEngine
 			id="Mono.Debugger.Soft.Custom"
 			name="Custom Command Mono Soft Debugger"
-			features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints"
+			features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints, Disassembly"
 			type="MonoDevelop.Debugger.Soft.CustomSoftDebuggerEngine" />
 	</Extension>
 </Addin>

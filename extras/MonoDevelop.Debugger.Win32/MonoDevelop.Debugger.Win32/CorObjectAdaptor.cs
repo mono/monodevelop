@@ -897,7 +897,7 @@ namespace MonoDevelop.Debugger.Win32
 			return base.TargetObjectToObject (ctx, objr);
 		}
 
-		public override ValueReference GetThisReference (EvaluationContext gctx)
+		protected override ValueReference OnGetThisReference (EvaluationContext gctx)
 		{
 			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
 			if (ctx.Frame.FrameType != CorFrameType.ILFrame || ctx.Frame.Function == null)
@@ -914,7 +914,7 @@ namespace MonoDevelop.Debugger.Win32
 			return new VariableReference (ctx, vref, "this", ObjectValueFlags.Variable | ObjectValueFlags.ReadOnly);
 		}
 
-		public override IEnumerable<ValueReference> GetParameters (EvaluationContext gctx)
+		protected override IEnumerable<ValueReference> OnGetParameters (EvaluationContext gctx)
 		{
 			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
 			if (ctx.Frame.FrameType == CorFrameType.ILFrame && ctx.Frame.Function != null) {
@@ -949,7 +949,7 @@ namespace MonoDevelop.Debugger.Win32
 			}
 		}
 
-		public override IEnumerable<ValueReference> GetLocalVariables (EvaluationContext ctx)
+		protected override IEnumerable<ValueReference> OnGetLocalVariables (EvaluationContext ctx)
 		{
 			CorEvaluationContext wctx = (CorEvaluationContext) ctx;
 			uint offset;

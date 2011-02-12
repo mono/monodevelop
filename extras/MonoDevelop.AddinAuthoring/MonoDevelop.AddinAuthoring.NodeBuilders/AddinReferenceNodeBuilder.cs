@@ -29,7 +29,6 @@ using System;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Components.Commands;
@@ -38,7 +37,7 @@ using Mono.Addins.Description;
 using MonoDevelop.Ide.Gui.Components;
 using Gdk;
 
-namespace MonoDevelop.AddinAuthoring
+namespace MonoDevelop.AddinAuthoring.NodeBuilders
 {
 	public class AddinReferenceNodeBuilder: TypeNodeBuilder
 	{

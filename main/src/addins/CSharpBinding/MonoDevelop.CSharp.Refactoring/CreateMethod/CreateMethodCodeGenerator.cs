@@ -39,7 +39,7 @@ using System.Text;
 using Mono.TextEditor.PopupWindow;
 using MonoDevelop.Refactoring;
 using MonoDevelop.CSharp.Parser;
-using MonoDevelop.CSharp.Dom;
+using MonoDevelop.CSharp.Ast;
 using MonoDevelop.CSharp.Formatting;
 
 namespace MonoDevelop.CSharp.Refactoring.CreateMethod
@@ -61,7 +61,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			}
 		}
 
-		InvocationExpression GetInvocation (MonoDevelop.CSharp.Dom.CompilationUnit unit, TextEditorData data)
+		InvocationExpression GetInvocation (MonoDevelop.CSharp.Ast.CompilationUnit unit, TextEditorData data)
 		{
 			var containingNode = unit.GetNodeAt (data.Caret.Line, data.Caret.Column);
 			var curNode = containingNode;
@@ -71,7 +71,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			return curNode as InvocationExpression;
 		}
 		
-		bool AnalyzeTargetExpression (RefactoringOptions options, MonoDevelop.CSharp.Dom.CompilationUnit unit)
+		bool AnalyzeTargetExpression (RefactoringOptions options, MonoDevelop.CSharp.Ast.CompilationUnit unit)
 		{
 			var data = options.GetTextEditorData ();
 			var target = unit.GetNodeAt (data.Caret.Line, data.Caret.Column);
@@ -92,7 +92,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			return declaringType != null && !HasCompatibleMethod (declaringType, methodName, invocation);
 		}
 		
-		IType GetDelegateType (RefactoringOptions options, MonoDevelop.CSharp.Dom.CompilationUnit unit)
+		IType GetDelegateType (RefactoringOptions options, MonoDevelop.CSharp.Ast.CompilationUnit unit)
 		{
 			var data = options.GetTextEditorData ();
 			var containingNode = unit.GetNodeAt (data.Caret.Line, data.Caret.Column);
@@ -144,7 +144,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		{
 			var resolver = options.GetResolver ();
 			var data = options.GetTextEditorData ();
-			DomNode node = invocation;
+			AstNode node = invocation;
 			while (node != null) {
 				if (node.Parent is VariableInitializer) {
 					var initializer = (VariableInitializer)node.Parent;
@@ -383,7 +383,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 				
 				arg.Name = char.ToLower (arg.Name[0]) + arg.Name.Substring (1);
 				
-				if (resolveResult != null) {
+				if (resolveResult != null && resolveResult.ResolvedType != null && !string.IsNullOrEmpty (resolveResult.ResolvedType.FullName)) {
 					arg.ReturnType = resolveResult.ResolvedType;
 				} else {
 					arg.ReturnType = DomReturnType.Object;

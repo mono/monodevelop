@@ -58,6 +58,8 @@ namespace NGit.Api
 
 		private readonly MergeCommandResult mergeResult;
 
+		private readonly RebaseResult rebaseResult;
+
 		private readonly string fetchedFrom;
 
 		internal PullResult(FetchResult fetchResult, string fetchedFrom, MergeCommandResult
@@ -66,6 +68,16 @@ namespace NGit.Api
 			this.fetchResult = fetchResult;
 			this.fetchedFrom = fetchedFrom;
 			this.mergeResult = mergeResult;
+			this.rebaseResult = null;
+		}
+
+		internal PullResult(FetchResult fetchResult, string fetchedFrom, RebaseResult rebaseResult
+			)
+		{
+			this.fetchResult = fetchResult;
+			this.fetchedFrom = fetchedFrom;
+			this.mergeResult = null;
+			this.rebaseResult = rebaseResult;
 		}
 
 		/// <returns>the fetch result, or <code>null</code></returns>
@@ -78,6 +90,12 @@ namespace NGit.Api
 		public virtual MergeCommandResult GetMergeResult()
 		{
 			return this.mergeResult;
+		}
+
+		/// <returns>the rebase result, or <code>null</code></returns>
+		public virtual RebaseResult GetRebaseResult()
+		{
+			return this.rebaseResult;
 		}
 
 		/// <returns>
@@ -107,7 +125,14 @@ namespace NGit.Api
 			}
 			else
 			{
-				sb.Append("No merge result");
+				if (rebaseResult != null)
+				{
+					sb.Append(rebaseResult.ToString());
+				}
+				else
+				{
+					sb.Append("No update result");
+				}
 			}
 			return sb.ToString();
 		}

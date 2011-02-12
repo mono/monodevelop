@@ -8,6 +8,7 @@ namespace Mono.Debugging.Client
 	public class StackFrame
 	{
 		long address;
+		string addressSpace;
 		SourceLocation location;
 		IBacktrace sourceBacktrace;
 		string language;
@@ -18,22 +19,38 @@ namespace Mono.Debugging.Client
 		[NonSerialized]
 		DebuggerSession session;
 
-		public StackFrame (long address, SourceLocation location, string language, bool isExternalCode, bool hasDebugInfo)
+		public StackFrame (long address, string addressSpace, SourceLocation location, string language, bool isExternalCode, bool hasDebugInfo)
 		{
 			this.address = address;
+			this.addressSpace = addressSpace;
 			this.location = location;
 			this.language = language;
 			this.isExternalCode = isExternalCode;
 			this.hasDebugInfo = hasDebugInfo;
 		}
 		
+		public StackFrame (long address, string addressSpace, SourceLocation location, string language)
+			: this (address, addressSpace, location, language, string.IsNullOrEmpty (location.Filename), true)
+		{
+		}
+
+		public StackFrame (long address, string addressSpace, string module, string method, string filename, int line, string language)
+			: this (address, addressSpace, new SourceLocation (method, filename, line), language)
+		{
+		}
+
+		public StackFrame (long address, SourceLocation location, string language, bool isExternalCode, bool hasDebugInfo)
+			: this (address, "", location, language, string.IsNullOrEmpty (location.Filename), true)
+		{
+		}
+		
 		public StackFrame (long address, SourceLocation location, string language)
-			: this (address, location, language, string.IsNullOrEmpty (location.Filename), true)
+			: this (address, "", location, language, string.IsNullOrEmpty (location.Filename), true)
 		{
 		}
 
 		public StackFrame (long address, string module, string method, string filename, int line, string language)
-			: this (address, new SourceLocation (method, filename, line), language)
+			: this (address, "", new SourceLocation (method, filename, line), language)
 		{
 		}
 
@@ -54,6 +71,10 @@ namespace Mono.Debugging.Client
 		public long Address
 		{
 			get { return address; }
+		}
+		
+		public string AddressSpace {
+			get { return addressSpace; }
 		}
 
 		internal IBacktrace SourceBacktrace {
@@ -137,7 +158,8 @@ namespace Mono.Debugging.Client
 			if (!hasDebugInfo)
 				return null;
 			ObjectValue value = sourceBacktrace.GetThisReference (index, options);
-			ObjectValue.ConnectCallbacks (this, value);
+			if (value != null)
+				ObjectValue.ConnectCallbacks (this, value);
 			return value;
 		}
 		

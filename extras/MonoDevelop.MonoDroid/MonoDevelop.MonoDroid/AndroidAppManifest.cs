@@ -50,8 +50,9 @@ namespace MonoDevelop.MonoDroid
 			if (manifest.Name != "manifest")
 				throw new Exception ("App manifest does not have 'manifest' root element");
 			
-			// NOTE: Maybe we should create this element for the manifest if needed.
 			application = manifest.Element ("application");
+			if (application == null)
+				manifest.Add (application = new XElement ("application"));
 			
 			usesSdk = manifest.Element ("uses-sdk");
 			if (usesSdk == null)
@@ -62,10 +63,10 @@ namespace MonoDevelop.MonoDroid
 		{
 			return new AndroidAppManifest (XDocument.Parse (
 @"<?xml version=""1.0"" encoding=""utf-8""?>
-<manifest xmlns:android=""http://schemas.android.com/apk/res/android"" package="""" android:versionCode=""1"" android:versionName=""1.0"">
+<manifest xmlns:android=""http://schemas.android.com/apk/res/android"" android:versionCode=""1"" android:versionName=""1.0"">
   <application android:label="""">
   </application>
-  <uses-sdk android:minSdkVersion=""4"" />
+  <uses-sdk />
 </manifest>")) {
 				PackageName = packageName,
 				ApplicationLabel = appLabel,
@@ -124,8 +125,8 @@ namespace MonoDevelop.MonoDroid
 			set { manifest.SetAttributeValue (aNS + "versionCode", value); }
 		}
 		
-		public int MinSdkVersion {
-			get { return (int) usesSdk.Attribute (aNS + "minSdkVersion");  }
+		public int? MinSdkVersion {
+			get { return (int?) usesSdk.Attribute (aNS + "minSdkVersion");  }
 			set { usesSdk.SetAttributeValue (aNS + "minSdkVersion", value); }
 		}
 		
@@ -214,12 +215,17 @@ namespace MonoDevelop.MonoDroid
 		}
 	}
 	
-	/* COPIED FROM MONODEVELOP.ASPNET */
+	/* COPIED FROM MONODEVELOP.ASPNET AND MODIFIED */
 	
 	/// <summary>
-	/// Caches items for filename keys. Files may not exist, which doesn't matter.
-	/// When a project file with that name is cached in any way, the cache item will be flushed.
+	/// Caches file-derived values for filename keys.
 	/// </summary>
+	/// <description>
+	/// Used to cache values extracted from files. Subclasses of this class extract the values
+	/// on request. Requested files may not exist, in which case the returned value is the default/null value.
+	/// When a project file with that name is changed in any way, the cache item will be flushed.
+	/// The files in the cache do not need to be in the project, but if not, changes to the files will not be tracked.
+	/// </description>
 	/// <remarks>Not safe for multithreaded access.</remarks>
 	abstract class ProjectFileCache<T,U> : IDisposable
 		where T : MonoDevelop.Projects.Project
@@ -251,7 +257,7 @@ namespace MonoDevelop.MonoDroid
 		}
 		
 		/// <summary>
-		/// Queries the cache for an item. If the file does not exist in the project, returns null.
+		/// Queries the cache for an item. If the file does not exist, returns default/null.
 		/// </summary>
 		protected U Get (string filename)
 		{
@@ -259,11 +265,10 @@ namespace MonoDevelop.MonoDroid
 			if (cache.TryGetValue (filename, out value))
 				return value;
 			
-			var pf = Project.GetProjectFile (filename);
-			if (pf != null)
-				value = GenerateInfo (filename);
+			if (File.Exists (filename))
+				return cache[filename] = GenerateInfo (filename);
 			
-			return cache[filename] = value;
+			return cache[filename] = default (U);
 		}
 		
 		/// <summary>

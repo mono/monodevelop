@@ -29,15 +29,8 @@ namespace Mono.CSharp
 	{
 		string first_source;
 
-		bool timestamps;
 		internal int fatal_errors;
 		
-		//
-		// Last time we took the time
-		//
-		Stopwatch stopwatch;
-		DateTime first_time;
-
 		internal readonly CompilerContext ctx;
 
 		static readonly char[] argument_value_separator = new char [] { ';', ',' };
@@ -47,11 +40,11 @@ namespace Mono.CSharp
 			this.ctx = ctx;
 		}
 
-		public static Driver Create (string[] args, bool require_files, ReportPrinter printer)
+		public static Driver Create (string[] args, bool require_files, Func<string [], int, int> unknown_option_parser, ReportPrinter printer)
 		{
 			Driver d = new Driver (new CompilerContext (new Report (printer)));
 
-			if (!d.ParseArguments (args, require_files))
+			if (!d.ParseArguments (args, require_files, unknown_option_parser))
 				return null;
 
 			return d;
@@ -60,32 +53,7 @@ namespace Mono.CSharp
 		Report Report {
 			get { return ctx.Report; }
 		}
-
-		void ShowTime (string msg)
-		{
-			if (!timestamps)
-				return;
-
-			stopwatch.Stop ();
-
-			Console.WriteLine ("{0,5}ms {1}", stopwatch.ElapsedMilliseconds, msg);
-
-			stopwatch = Stopwatch.StartNew ();
-		}
-
-		void ShowTotalTime (string msg)
-		{
-			if (!timestamps)
-				return;
-
-			DateTime now = DateTime.Now;
-			TimeSpan span = now - first_time;
-
-			Console.WriteLine (
-				"[{0:00}:{1:000}] {2}",
-				(int) span.TotalSeconds, span.Milliseconds, msg);
-		}	       
-	       
+       
 		void tokenize_file (CompilationUnit file, CompilerContext ctx)
 		{
 			Stream input;
@@ -167,12 +135,13 @@ namespace Mono.CSharp
 				"   --about              About the Mono C# compiler\n" +
 				"   -addmodule:M1[,Mn]   Adds the module to the generated assembly\n" + 
 				"   -checked[+|-]        Sets default aritmetic overflow context\n" +
-				"   -codepage:ID         Sets code page to the one in ID (number, utf8, reset)\n" +
 				"   -clscheck[+|-]       Disables CLS Compliance verifications\n" +
+				"   -codepage:ID         Sets code page to the one in ID (number, utf8, reset)\n" +
 				"   -define:S1[;S2]      Defines one or more conditional symbols (short: -d)\n" +
 				"   -debug[+|-], -g      Generate debugging information\n" + 
 				"   -delaysign[+|-]      Only insert the public key into the assembly (no signing)\n" +
 				"   -doc:FILE            Process documentation comments to XML file\n" + 
+				"   -fullpaths           Any issued error or warning uses absolute file path\n" +
 				"   -help                Lists all compiler options (short: -?)\n" + 
 				"   -keycontainer:NAME   The key pair container used to sign the output assembly\n" +
 				"   -keyfile:FILE        The key file used to strongname the ouput assembly\n" +
@@ -184,14 +153,14 @@ namespace Mono.CSharp
 				"   -nowarn:W1[,Wn]      Suppress one or more compiler warnings\n" + 
 				"   -optimize[+|-]       Enables advanced compiler optimizations (short: -o)\n" + 
 				"   -out:FILE            Specifies output assembly name\n" +
-#if !SMCS_SOURCE
 				"   -pkg:P1[,Pn]         References packages P1..Pn\n" + 
-#endif
 				"   -platform:ARCH       Specifies the target platform of the output assembly\n" +
 				"                        ARCH can be one of: anycpu, x86, x64 or itanium\n" +
 				"   -recurse:SPEC        Recursively compiles files according to SPEC pattern\n" + 
 				"   -reference:A1[,An]   Imports metadata from the specified assembly (short: -r)\n" +
-				"   -reference:ALIAS=A   Imports metadata using specified extern alias (short: -r)\n" +				
+				"   -reference:ALIAS=A   Imports metadata using specified extern alias (short: -r)\n" +
+				"   -sdk:VERSION         Specifies SDK version of referenced assemlies\n" +
+				"                        VERSION can be one of: 2 (default), 4\n" +
 				"   -target:KIND         Specifies the format of the output assembly (short: -t)\n" +
 				"                        KIND can be one of: exe, winexe, library, module\n" +
 				"   -unsafe[+|-]         Allows to compile code which uses unsafe keyword\n" +
@@ -232,7 +201,7 @@ namespace Mono.CSharp
 		{
 			Location.InEmacs = Environment.GetEnvironmentVariable ("EMACS") == "t";
 			var crp = new ConsoleReportPrinter ();
-			Driver d = Driver.Create (args, true, crp);
+			Driver d = Driver.Create (args, true, null, crp);
 			if (d == null)
 				return 1;
 
@@ -339,7 +308,7 @@ namespace Mono.CSharp
 			Location.AddFile (Report, f);
 		}
 
-		bool ParseArguments (string[] args, bool require_files)
+		bool ParseArguments (string[] args, bool require_files, Func<string [], int, int> unknown_option_parser)
 		{
 			List<string> response_file_list = null;
 			bool parsing_options = true;
@@ -391,6 +360,14 @@ namespace Mono.CSharp
 						if (CSCParseOption (csc_opt, ref args))
 							continue;
 
+						if (unknown_option_parser != null){
+							var ret = unknown_option_parser (args, i);
+							if (ret != -1){
+								i = ret;
+								return true;
+							}
+						}
+						
 						Error_WrongOption (arg);
 						return false;
 					}
@@ -734,7 +711,7 @@ namespace Mono.CSharp
 				return true;
 				
 			case "--timestamp":
-				timestamps = true;
+				RootContext.Timestamps = true;
 				return true;
 
 			case "--debug": case "-g":
@@ -782,7 +759,6 @@ namespace Mono.CSharp
 			return false;
 		}
 
-#if !SMCS_SOURCE
 		public static string GetPackageFlags (string packages, bool fatal, Report report)
 		{
 			ProcessStartInfo pi = new ProcessStartInfo ();
@@ -819,7 +795,6 @@ namespace Mono.CSharp
 
 			return pkgout;
 		}
-#endif
 
 		//
 		// This parses the -arg and /arg options to the compiler, even if the strings
@@ -921,7 +896,7 @@ namespace Mono.CSharp
 				//
 				Console.WriteLine ("To file bug reports, please visit: http://www.mono-project.com/Bugs");
 				return true;
-#if !SMCS_SOURCE
+
 			case "/pkg": {
 				string packages;
 
@@ -940,7 +915,7 @@ namespace Mono.CSharp
 				
 				return true;
 			}
-#endif
+
 			case "/linkres":
 			case "/linkresource":
 			case "/res":
@@ -1193,6 +1168,26 @@ namespace Mono.CSharp
 
 				return true;
 
+			case "/sdk":
+				if (value.Length == 0) {
+					Error_RequiresArgument (option);
+					break;
+				}
+
+				switch (value.ToLowerInvariant ()) {
+					case "2":
+						RootContext.SdkVersion = SdkVersion.v2;
+						break;
+					case "4":
+						RootContext.SdkVersion = SdkVersion.v4;
+						break;
+					default:
+						Report.Error (-26, "Invalid sdk version name");
+						break;
+				}
+
+				return true;
+
 				// We just ignore this.
 			case "/errorreport":
 			case "/filealign":
@@ -1233,6 +1228,7 @@ namespace Mono.CSharp
 				return true;
 
 			case "/fullpaths":
+				RootContext.ShowFullPaths = true;
 				return true;
 
 			case "/keyfile":
@@ -1420,16 +1416,16 @@ namespace Mono.CSharp
 		//
 		public bool Compile ()
 		{
+			TimeReporter tr = new TimeReporter (RootContext.Timestamps);
+			ctx.TimeReporter = tr;
+			tr.StartTotal ();
+
 			var module = new ModuleContainer (ctx);
 			RootContext.ToplevelTypes = module;
 
-			if (timestamps) {
-				stopwatch = Stopwatch.StartNew ();
-				first_time = DateTime.Now;
-			}
-
+			tr.Start (TimeReporter.TimerType.ParseTotal);
 			Parse (module);
-			ShowTime ("Parsing source files");
+			tr.Stop (TimeReporter.TimerType.ParseTotal);
 
 			if (Report.Errors > 0)
 				return false;
@@ -1463,37 +1459,33 @@ namespace Mono.CSharp
 				output_file_name = Path.GetFileName (output_file);
 			}
 
-			//
-			// Load assemblies required
-			//
-			if (timestamps)
-				stopwatch = Stopwatch.StartNew ();
-
 #if STATIC
-			var assembly = new AssemblyDefinitionStatic (module, output_file_name, output_file);
-			module.SetDeclaringAssembly (assembly);
-
 			var importer = new StaticImporter ();
-			assembly.Importer = importer;
+			var references_loader = new StaticLoader (importer, ctx);
 
-			var loader = new StaticLoader (importer, ctx);
-			loader.LoadReferences (module);
+			tr.Start (TimeReporter.TimerType.AssemblyBuilderSetup);
+			var assembly = new AssemblyDefinitionStatic (module, references_loader, output_file_name, output_file);
+			assembly.Create (references_loader.Domain);
+			tr.Stop (TimeReporter.TimerType.AssemblyBuilderSetup);
 
-			ShowTime ("Imporing referenced assemblies");
+			// Create compiler types first even before any referenced
+			// assembly is loaded to allow forward referenced types from
+			// loaded assembly into compiled builder to be resolved
+			// correctly
+			tr.Start (TimeReporter.TimerType.CreateTypeTotal);
+			module.CreateType ();
+			importer.AddCompiledAssembly (assembly);
+			tr.Stop (TimeReporter.TimerType.CreateTypeTotal);
 
+			references_loader.LoadReferences (module);
+
+			tr.Start (TimeReporter.TimerType.PredefinedTypesInit);
 			if (!ctx.BuildinTypes.CheckDefinitions (module))
 				return false;
 
-			ShowTime ("Initializing predefined types");
+			tr.Stop (TimeReporter.TimerType.PredefinedTypesInit);
 
-			if (!assembly.Create (loader))
-				return false;
-
-			// System.Object was not loaded, use compiled assembly as corlib
-			if (loader.Corlib == null)
-				loader.Corlib = assembly.Builder;
-
-			loader.LoadModules (assembly, module.GlobalRootNamespace);
+			references_loader.LoadModules (assembly, module.GlobalRootNamespace);
 #else
 			var assembly = new AssemblyDefinitionDynamic (module, output_file_name, output_file);
 			module.SetDeclaringAssembly (assembly);
@@ -1504,27 +1496,24 @@ namespace Mono.CSharp
 			var loader = new DynamicLoader (importer, ctx);
 			loader.LoadReferences (module);
 
-			ShowTime ("Imporing referenced assemblies");
-
 			if (!ctx.BuildinTypes.CheckDefinitions (module))
 				return false;
-
-			ShowTime ("Initializing predefined types");
 
 			if (!assembly.Create (AppDomain.CurrentDomain, AssemblyBuilderAccess.Save))
 				return false;
 
+			module.CreateType ();
+
 			loader.LoadModules (assembly, module.GlobalRootNamespace);
 #endif
+			tr.Start (TimeReporter.TimerType.ModuleDefinitionTotal);
 			module.Define ();
-
-			ShowTime ("Types definition");
+			tr.Stop (TimeReporter.TimerType.ModuleDefinitionTotal);
 
 			if (Report.Errors > 0)
 				return false;
 
-			if (Report.Errors == 0 &&
-				RootContext.Documentation != null &&
+			if (RootContext.Documentation != null &&
 				!RootContext.Documentation.OutputDocComment (
 					output_file, Report))
 				return false;
@@ -1532,7 +1521,9 @@ namespace Mono.CSharp
 			//
 			// Verify using aliases now
 			//
+			tr.Start (TimeReporter.TimerType.UsingVerification);
 			NamespaceEntry.VerifyAllUsing ();
+			tr.Stop (TimeReporter.TimerType.UsingVerification);
 			
 			if (Report.Errors > 0){
 				return false;
@@ -1542,48 +1533,34 @@ namespace Mono.CSharp
 			
 			if (Report.Errors > 0)
 				return false;
-			
-			//
-			// The code generator
-			//
-			if (timestamps)
-				stopwatch = Stopwatch.StartNew ();
 
+
+			tr.Start (TimeReporter.TimerType.EmitTotal);
 			assembly.Emit ();
-
-			ShowTime ("Resolving and emitting members blocks");
+			tr.Stop (TimeReporter.TimerType.EmitTotal);
 
 			if (Report.Errors > 0){
 				return false;
 			}
 
+			tr.Start (TimeReporter.TimerType.CloseTypes);
 			module.CloseType ();
+			tr.Stop (TimeReporter.TimerType.CloseTypes);
 
-			ShowTime ("Closing types");
-
-			if (timestamps)
-				stopwatch = Stopwatch.StartNew ();
-
+			tr.Start (TimeReporter.TimerType.Resouces);
 			assembly.EmbedResources ();
-			ShowTime ("Embedding resources");
+			tr.Stop (TimeReporter.TimerType.Resouces);
 
 			if (Report.Errors > 0)
 				return false;
 
-			if (timestamps)
-				stopwatch = Stopwatch.StartNew ();
-			
 			assembly.Save ();
 
 #if STATIC
-			loader.Dispose ();
+			references_loader.Dispose ();
 #endif
-
-			ShowTime ("Saving output assembly");
-
-			ShowTotalTime ("Total");
-
-			Timer.ShowTimers ();
+			tr.StopTotal ();
+			tr.ShowStats ();
 
 			return (Report.Errors == 0);
 		}
@@ -1605,7 +1582,7 @@ namespace Mono.CSharp
 		{
 			try {
 				StreamReportPrinter srp = new StreamReportPrinter (error);
-				Driver d = Driver.Create (args, true, srp);
+				Driver d = Driver.Create (args, true, delegate (string[] a, int i) { System.Console.WriteLine ("Unknown option:" + a[i]); return 0; }, srp);
 				if (d == null)
 					return false;
 
@@ -1635,7 +1612,7 @@ namespace Mono.CSharp
 		{
 			CSharpParser.yacc_verbose_flag = 0;
 			Location.Reset ();
-
+			
 			if (!full_flag)
 				return;
 
@@ -1675,7 +1652,7 @@ namespace Mono.CSharp
 		{
 			lock (parseLock) {
 				try {
-					Driver d = Driver.Create (args, false, reportPrinter);
+					Driver d = Driver.Create (args, false, null, reportPrinter);
 					if (d == null)
 						return null;
 	

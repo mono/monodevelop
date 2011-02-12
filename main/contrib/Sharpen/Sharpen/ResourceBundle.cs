@@ -22,7 +22,12 @@ namespace Sharpen
 			}
 			if (asm == null)
 				throw new MissingResourceException ();
-			Stream manifestResourceStream = asm.GetManifestResourceStream (bundleClass + ".properties");
+			Stream manifestResourceStream;
+			manifestResourceStream = asm.GetManifestResourceStream (bundleClass + "_" + culture.ToString().Replace ('-','_') + ".properties");
+			if (manifestResourceStream == null)
+				manifestResourceStream = asm.GetManifestResourceStream (bundleClass + "_" + culture.TwoLetterISOLanguageName + ".properties");
+			if (manifestResourceStream == null)
+				manifestResourceStream = asm.GetManifestResourceStream (bundleClass + ".properties");
 			if (manifestResourceStream != null) {
 				ResourceBundle bundle = new ResourceBundle ();
 				bundle.culture = culture;
@@ -43,7 +48,7 @@ namespace Sharpen
 			if (this.strings.TryGetValue (fieldName, out str)) {
 				return str;
 			}
-			return fieldName;
+			throw new MissingResourceException ();
 		}
 
 		private void Load (Stream s)

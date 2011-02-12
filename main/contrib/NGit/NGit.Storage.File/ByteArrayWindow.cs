@@ -44,6 +44,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System;
 using ICSharpCode.SharpZipLib.Zip.Compression;
 using NGit.Storage.File;
+using NGit.Storage.Pack;
 using Sharpen;
 
 namespace NGit.Storage.File
@@ -84,7 +85,7 @@ namespace NGit.Storage.File
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
-		internal void Write(OutputStream @out, long pos, int cnt)
+		internal override void Write(PackOutputStream @out, long pos, int cnt)
 		{
 			@out.Write(array, (int)(pos - start), cnt);
 		}

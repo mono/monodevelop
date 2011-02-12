@@ -227,13 +227,16 @@ namespace MonoDevelop.CSharp.Formatting
 						textEditorData.SelectedText = "\t";
 					} else {
 						textEditorData.Insert (cursor, "\t");
+						textEditorData.Caret.Offset++;
 					}
+					textEditorData.Document.CommitLineUpdate (textEditorData.Caret.Line);
 				} else if (TextEditorProperties.TabIsReindent && cursor >= 1) {
 					if (textEditorData.Caret.Column > 1) {
 						int delta = cursor - this.cursorPositionBeforeKeyPress;
 						if (delta < 2 && delta > 0) {
 							textEditorData.Remove (cursor - delta, delta);
 							textEditorData.Caret.Offset = cursor - delta;
+							textEditorData.Document.CommitLineUpdate (textEditorData.Caret.Line);
 						}
 					}
 					stateTracker.UpdateEngine ();
@@ -553,6 +556,7 @@ namespace MonoDevelop.CSharp.Formatting
 							CompletionWindowManager.CodeCompletionContext.TriggerOffset -= nlwsp;
 					}
 					newIndentLength = textEditorData.Replace (pos, nlwsp, newIndent);
+					textEditorData.Document.CommitLineUpdate (textEditorData.Caret.Line);
 					// Engine state is now invalid
 					stateTracker.ResetEngineToPosition (pos);
 				}

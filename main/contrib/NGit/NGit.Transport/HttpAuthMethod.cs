@@ -233,30 +233,54 @@ namespace NGit.Transport
 			/// <exception cref="System.IO.IOException"></exception>
 			internal override void ConfigureRequest(HttpURLConnection conn)
 			{
-				IDictionary<string, string> p = new Dictionary<string, string>(@params);
-				p.Put("username", user);
-				string realm = p.Get("realm");
-				string nonce = p.Get("nonce");
-				string uri = p.Get("uri");
-				string qop = p.Get("qop");
+				IDictionary<string, string> r = new LinkedHashMap<string, string>();
+				string realm = @params.Get("realm");
+				string nonce = @params.Get("nonce");
+				string cnonce = @params.Get("cnonce");
+				string uri = Uri(conn.GetURL());
+				string qop = @params.Get("qop");
 				string method = conn.GetRequestMethod();
 				string A1 = user + ":" + realm + ":" + pass;
 				string A2 = method + ":" + uri;
-				string expect;
+				r.Put("username", user);
+				r.Put("realm", realm);
+				r.Put("nonce", nonce);
+				r.Put("uri", uri);
+				string response;
+				string nc;
 				if ("auth".Equals(qop))
 				{
-					string c = p.Get("cnonce");
-					string nc = string.Format("%08x", ++requestCount);
-					p.Put("nc", nc);
-					expect = KD(H(A1), nonce + ":" + nc + ":" + c + ":" + qop + ":" + H(A2));
+					nc = string.Format("%08x", ++requestCount);
+					response = KD(H(A1), nonce + ":" + nc + ":" + cnonce + ":" + qop + ":" + H(A2));
 				}
 				else
 				{
-					expect = KD(H(A1), nonce + ":" + H(A2));
+					nc = null;
+					response = KD(H(A1), nonce + ":" + H(A2));
 				}
-				p.Put("response", expect);
+				r.Put("response", response);
+				if (@params.ContainsKey("algorithm"))
+				{
+					r.Put("algorithm", "MD5");
+				}
+				if (cnonce != null && qop != null)
+				{
+					r.Put("cnonce", cnonce);
+				}
+				if (@params.ContainsKey("opaque"))
+				{
+					r.Put("opaque", @params.Get("opaque"));
+				}
+				if (qop != null)
+				{
+					r.Put("qop", qop);
+				}
+				if (nc != null)
+				{
+					r.Put("nc", nc);
+				}
 				StringBuilder v = new StringBuilder();
-				foreach (KeyValuePair<string, string> e in p.EntrySet())
+				foreach (KeyValuePair<string, string> e in r.EntrySet())
 				{
 					if (v.Length > 0)
 					{
@@ -269,6 +293,36 @@ namespace NGit.Transport
 					v.Append('"');
 				}
 				conn.SetRequestProperty(HttpSupport.HDR_AUTHORIZATION, NAME + " " + v);
+			}
+
+			private static string Uri(System.Uri u)
+			{
+				StringBuilder r = new StringBuilder();
+				r.Append(u.Scheme);
+				r.Append("://");
+				r.Append(u.GetHost());
+				if (0 < u.Port)
+				{
+					if (u.Port == 80 && "http".Equals(u.Scheme))
+					{
+					}
+					else
+					{
+						if (u.Port == 443 && "https".Equals(u.Scheme))
+						{
+						}
+						else
+						{
+							r.Append(':').Append(u.Port);
+						}
+					}
+				}
+				r.Append(u.AbsolutePath);
+				if (u.GetQuery() != null)
+				{
+					r.Append('?').Append(u.GetQuery());
+				}
+				return r.ToString();
 			}
 
 			private static string H(string data)

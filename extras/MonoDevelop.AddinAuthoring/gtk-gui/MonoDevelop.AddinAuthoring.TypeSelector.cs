@@ -5,11 +5,8 @@ namespace MonoDevelop.AddinAuthoring
 	public partial class TypeSelector
 	{
 		private global::Gtk.HBox hbox3;
-
 		private global::Gtk.EventBox eventbox;
-
 		private global::Gtk.Image typeImage;
-
 		private global::Gtk.ComboBoxEntry combo;
 
 		protected virtual void Build ()
@@ -31,7 +28,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.typeImage.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "md-addinauthoring-newclass", global::Gtk.IconSize.Menu);
 			this.eventbox.Add (this.typeImage);
 			this.hbox3.Add (this.eventbox);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.eventbox]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.eventbox]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -39,7 +36,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.combo = global::Gtk.ComboBoxEntry.NewText ();
 			this.combo.Name = "combo";
 			this.hbox3.Add (this.combo);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.combo]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.combo]));
 			w3.Position = 1;
 			this.Add (this.hbox3);
 			if ((this.Child != null)) {

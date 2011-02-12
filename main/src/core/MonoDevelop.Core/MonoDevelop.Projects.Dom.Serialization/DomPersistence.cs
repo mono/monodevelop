@@ -653,6 +653,29 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 		}
 		
+		internal static void WriteAttributeEntryList (BinaryWriter writer, INameEncoder nameTable, List<AttributeEntry> list)
+		{
+			writer.Write (list.Count);
+			foreach (AttributeEntry e in list) {
+				WriteString (e.File, writer, nameTable);
+				Write (writer, nameTable, e.Attribute);
+			}
+		}
+		
+		internal static List<AttributeEntry> ReadAttributeEntryList (BinaryReader reader, INameDecoder nameTable)
+		{
+			List<AttributeEntry> list = new List<AttributeEntry> ();
+			// Number of attributes
+			int num = reader.ReadInt32 ();
+			while (num-- > 0) {
+				AttributeEntry e = new AttributeEntry ();
+				e.File = ReadString (reader, nameTable);
+				e.Attribute = ReadAttribute (reader, nameTable);
+				list.Add (e);
+			}
+			return list;
+		}
+		
 #region Helper methods
 		static void WriteMemberInformation (BinaryWriter writer, INameEncoder nameTable, IMember member)
 		{

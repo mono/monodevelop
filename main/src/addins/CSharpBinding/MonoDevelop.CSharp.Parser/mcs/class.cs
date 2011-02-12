@@ -676,7 +676,7 @@ namespace Mono.CSharp {
 
 		protected override TypeAttributes TypeAttr {
 			get {
-				return ModifiersExtensions.TypeAttr (ModFlags, IsTopLevel) | base.TypeAttr;
+				return ModifiersExtensions.TypeAttr (ModFlags, IsTopLevel);
 			}
 		}
 
@@ -1046,6 +1046,9 @@ namespace Mono.CSharp {
 				TypeBuilder = Parent.TypeBuilder.DefineNestedType (Basename, TypeAttr, null, type_size);
 			}
 
+			if (DeclaringAssembly.Importer != null)
+				DeclaringAssembly.Importer.AddCompiledType (TypeBuilder, spec);
+
 			spec.SetMetaInfo (TypeBuilder);
 			spec.MemberCache = new MemberCache (this);
 			spec.DeclaringType = Parent.CurrentType;
@@ -1239,6 +1242,8 @@ namespace Mono.CSharp {
 
 				// Set base type after type creation
 				TypeBuilder.SetParent (base_type.GetMetaInfo ());
+			} else {
+				TypeBuilder.SetParent (null);
 			}
 
 			return true;
@@ -1366,7 +1371,20 @@ namespace Mono.CSharp {
 		//
 		public void SetPredefinedSpec (BuildinTypeSpec spec)
 		{
+			// When compiling build-in types we start with two
+			// version of same type. One is of BuildinTypeSpec and
+			// second one is ordinary TypeSpec. The unification
+			// happens at later stage when we know which type
+			// really matches the buildin type signature. However
+			// that means TypeSpec create during CreateType of this
+			// type has to be replaced with buildin one
+			// 
+			spec.SetMetaInfo (TypeBuilder);
+			spec.MemberCache = this.spec.MemberCache;
+			spec.DeclaringType = this.spec.DeclaringType;
+
 			this.spec = spec;
+			current_type = null;
 		}
 
 		void UpdateTypeParameterConstraints (TypeContainer part)
@@ -1589,6 +1607,10 @@ namespace Mono.CSharp {
 			ComputeIndexerName();
 			CheckEqualsAndGetHashCode();
 
+			if (Kind == MemberKind.Interface && iface_exprs != null) {
+				MemberCache.RemoveHiddenMembers (spec);
+			}
+
 			return true;
 		}
 
@@ -1652,7 +1674,7 @@ namespace Mono.CSharp {
 				!pa.ResolveConstructor (Location, TypeManager.string_type))
 				return;
 
-			var encoder = new AttributeEncoder (false);
+			var encoder = new AttributeEncoder ();
 			encoder.Encode (GetAttributeDefaultMember ());
 			encoder.EncodeEmptyNamedArguments ();
 
@@ -1750,7 +1772,7 @@ namespace Mono.CSharp {
 						
 						Constant c = New.Constantify (f.MemberType, f.Location);
 						Report.Warning (649, 4, f.Location, "Field `{0}' is never assigned to, and will always have its default value `{1}'",
-							f.GetSignatureForError (), c == null ? "null" : c.AsString ());
+							f.GetSignatureForError (), c == null ? "null" : c.GetValueAsLiteral ());
 					}
 				}
 			}
@@ -1790,6 +1812,11 @@ namespace Mono.CSharp {
 
 			if ((ModFlags & Modifiers.COMPILER_GENERATED) != 0 && !Parent.IsCompilerGenerated)
 				Module.PredefinedAttributes.CompilerGenerated.EmitAttribute (TypeBuilder);
+
+#if STATIC
+			if ((TypeBuilder.Attributes & TypeAttributes.StringFormatMask) == 0 && Module.HasDefaultCharSet)
+				TypeBuilder.__SetAttributes (TypeBuilder.Attributes | Module.DefaultCharSetType);
+#endif
 
 			base.Emit ();
 		}
@@ -3234,10 +3261,10 @@ namespace Mono.CSharp {
 			// We are more strict than csc and report this as an error because SRE does not allow emit that
 			if ((ModFlags & Modifiers.EXTERN) != 0 && !is_external_implementation) {
 				if (this is Constructor) {
-					Report.Error (824, Location,
+					Report.Warning (824, 1, Location,
 						"Constructor `{0}' is marked `external' but has no external implementation specified", GetSignatureForError ());
 				} else {
-					Report.Error (626, Location,
+					Report.Warning (626, 1, Location,
 						"`{0}' is marked as an external but has no DllImport attribute. Consider adding a DllImport attribute to specify the external implementation",
 						GetSignatureForError ());
 				}

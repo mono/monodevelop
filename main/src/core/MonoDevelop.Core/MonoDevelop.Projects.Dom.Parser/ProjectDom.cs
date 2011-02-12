@@ -57,6 +57,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public abstract IEnumerable<IType> Types { get; }
 
+		public virtual IEnumerable<IAttribute> Attributes {
+			get {
+				yield break;
+			}
+		}
 
 		protected virtual IEnumerable<string> InternalResolvePossibleNamespaces (IReturnType returnType)
 		{
@@ -223,17 +228,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return SearchType (decoratedFullName, callingClass, callingMember, unit, null);
 		}
 		
-		public virtual IType SearchType (INode searchIn, string decoratedFullName)
+		public virtual IType SearchType (ICompilationUnit unit, INode searchIn, string decoratedFullName)
 		{
 			if (string.IsNullOrEmpty (decoratedFullName))
 				return null;
-			INode cu = searchIn;
-			while (cu != null && !(cu is ICompilationUnit)) {
-				cu = cu.Parent;
-			}
 			IMember callingMember = searchIn as IMember;
 			IType callingClass = callingMember != null ? callingMember as IType ?? callingMember.DeclaringType : null;
-			return SearchType (decoratedFullName, callingClass, callingMember, cu as CompilationUnit, null);
+			return SearchType (decoratedFullName, callingClass, callingMember, unit, null);
 		}
 		
 		public virtual IType SearchType (ICompilationUnit unit, IType callingClass, IMember callingMember, IReturnType returnType)
@@ -243,17 +244,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return SearchType (returnType.DecoratedFullName, callingClass, callingMember, unit, returnType.GenericArguments);
 		}
 		
-		public virtual IType SearchType (INode searchIn, IReturnType returnType)
+		public virtual IType SearchType (ICompilationUnit unit, INode searchIn, IReturnType returnType)
 		{
 			if (returnType == null)
 				return null;
-			INode cu = searchIn;
-			while (cu != null && !(cu is ICompilationUnit)) {
-				cu = cu.Parent;
-			}
 			IMember callingMember = searchIn as IMember;
 			IType callingClass = callingMember != null ? callingMember as IType ?? callingMember.DeclaringType : null;
-			return SearchType (returnType.DecoratedFullName, callingClass, callingMember, cu as CompilationUnit, returnType.GenericArguments);
+			return SearchType (returnType.DecoratedFullName, callingClass, callingMember, unit, returnType.GenericArguments);
 		}
 		
 /*		public virtual IType SearchType (SearchTypeRequest request)
@@ -504,6 +501,45 @@ namespace MonoDevelop.Projects.Dom.Parser
 		}
 		
 		protected abstract IEnumerable<IType> InternalGetSubclasses (IType type, bool searchDeep, IList<string> namespaces);
+		/*
+		IEnumerable<IType> GetSubclassesInternalSafe (IType btype, bool includeReferences)
+		{
+			string decoratedName = btype.DecoratedFullName;
+			string genericName = decoratedName;
+			if (btype is InstantiatedType)
+				genericName = ((InstantiatedType)btype).UninstantiatedType.DecoratedFullName;
+			
+			
+			Stack<IType> types = new Stack <IType> (Types);
+			while (types.Count > 0) {
+				IType t = types.Pop ();
+				foreach (var inner in t.InnerTypes)
+					types.Push (inner);
+				System.Console.WriteLine (t.DecoratedFullName);
+				foreach (var v in t.SourceProjectDom.GetInheritanceTree (t)) {
+					if (v.DecoratedFullName == t.DecoratedFullName)
+						continue;
+					if (t.DecoratedFullName.StartsWith ("Library2.GenericBin["))
+						System.Console.WriteLine (v);
+					bool isInTree;
+					if (v is InstantiatedType) {
+						isInTree = v.DecoratedFullName == decoratedName;
+					} else {
+						isInTree = v.DecoratedFullName == genericName;
+					}
+					if (isInTree) {
+						yield return t;
+					}
+				}
+			}
+			
+			if (includeReferences) {
+				foreach (var refDom in References) {
+					foreach (var t in refDom.GetSubclassesInternalSafe (btype, false))
+						yield return t;
+				}
+			}
+		}*/
 		
 		public virtual IEnumerable<IType> GetSubclasses (IType type, bool searchDeep, IList<string> namespaces)
 		{
@@ -976,6 +1012,16 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 
+		public override IEnumerable<IAttribute> Attributes {
+			get {
+				foreach (ICompilationUnit unit in units) {
+					foreach (var att in unit.Attributes) {
+						yield return att;
+					}
+				}
+			}
+		}
+		
 		protected override IEnumerable<IType> InternalGetSubclasses (IType type, bool searchDeep, IList<string> namespaces)
 		{
 			if (namespaces == null || namespaces.Contains (type.Namespace))

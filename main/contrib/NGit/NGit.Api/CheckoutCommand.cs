@@ -70,6 +70,8 @@ namespace NGit.Api
 
 		private RevCommit startCommit;
 
+		private CheckoutResult status;
+
 		/// <param name="repo"></param>
 		protected internal CheckoutCommand(Repository repo) : base(repo)
 		{
@@ -110,7 +112,6 @@ namespace NGit.Api
 				RevCommit headCommit = revWalk.ParseCommit(headRef.GetObjectId());
 				string refLogMessage = "checkout: moving from " + headRef.GetTarget().GetName();
 				ObjectId branch = repo.Resolve(name);
-				Ref @ref = repo.GetRef(name);
 				if (branch == null)
 				{
 					throw new RefNotFoundException(MessageFormat.Format(JGitText.Get().refNotResolved
@@ -120,11 +121,33 @@ namespace NGit.Api
 				DirCacheCheckout dco = new DirCacheCheckout(repo, headCommit.Tree, repo.LockDirCache
 					(), newCommit.Tree);
 				dco.SetFailOnConflict(true);
-				dco.Checkout();
-				RefUpdate refUpdate = repo.UpdateRef(Constants.HEAD);
+				try
+				{
+					dco.Checkout();
+				}
+				catch (NGit.Errors.CheckoutConflictException e)
+				{
+					status = new CheckoutResult(CheckoutResult.Status.CONFLICTS, dco.GetConflicts());
+					throw;
+				}
+				Ref @ref = repo.GetRef(name);
+				if (@ref != null && !@ref.GetName().StartsWith(Constants.R_HEADS))
+				{
+					@ref = null;
+				}
+				RefUpdate refUpdate = repo.UpdateRef(Constants.HEAD, @ref == null);
 				refUpdate.SetForceUpdate(force);
-				refUpdate.SetRefLogMessage(refLogMessage + "to " + newCommit.GetName(), false);
-				RefUpdate.Result updateResult = refUpdate.Link(@ref.GetName());
+				refUpdate.SetRefLogMessage(refLogMessage + " to " + newCommit.GetName(), false);
+				RefUpdate.Result updateResult;
+				if (@ref != null)
+				{
+					updateResult = refUpdate.Link(@ref.GetName());
+				}
+				else
+				{
+					refUpdate.SetNewObjectId(newCommit);
+					updateResult = refUpdate.ForceUpdate();
+				}
 				SetCallable(false);
 				bool ok = false;
 				switch (updateResult)
@@ -154,12 +177,27 @@ namespace NGit.Api
 					throw new JGitInternalException(MessageFormat.Format(JGitText.Get().checkoutUnexpectedResult
 						, updateResult.ToString()));
 				}
-				Ref result = repo.GetRef(name);
-				return result;
+				if (!dco.GetToBeDeleted().IsEmpty())
+				{
+					status = new CheckoutResult(CheckoutResult.Status.NONDELETED, dco.GetToBeDeleted(
+						));
+				}
+				else
+				{
+					status = CheckoutResult.OK_RESULT;
+				}
+				return @ref;
 			}
 			catch (IOException ioe)
 			{
 				throw new JGitInternalException(ioe.Message, ioe);
+			}
+			finally
+			{
+				if (status == null)
+				{
+					status = CheckoutResult.ERROR_RESULT;
+				}
 			}
 		}
 
@@ -271,6 +309,16 @@ namespace NGit.Api
 			CheckCallable();
 			this.upstreamMode = mode;
 			return this;
+		}
+
+		/// <returns>the result</returns>
+		public virtual CheckoutResult GetResult()
+		{
+			if (status == null)
+			{
+				return CheckoutResult.NOT_TRIED_RESULT;
+			}
+			return status;
 		}
 	}
 }

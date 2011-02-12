@@ -88,7 +88,31 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/Frameworks">
-		<Framework id="MonoDroid" resource="framework_MonoDroid.xml">
+		<Framework resource="framework_MonoDroid.xml" id="MonoDroid_1_0">
+			<Backend class="MonoDevelop.MonoDroid.MonoDroidMonoFrameworkBackend" />
+			<Backend class="MonoDevelop.MonoDroid.MonoDroidMsNetFrameworkBackend" />
+		</Framework>
+		<Framework resource="framework_MonoDroid_1_6.xml" id="MonoDroid_1_6">
+			<Backend class="MonoDevelop.MonoDroid.MonoDroidMonoFrameworkBackend" />
+			<Backend class="MonoDevelop.MonoDroid.MonoDroidMsNetFrameworkBackend" />
+		</Framework>
+		<Framework resource="framework_MonoDroid_2_0.xml" id="MonoDroid_2_0">
+			<Backend class="MonoDevelop.MonoDroid.MonoDroidMonoFrameworkBackend" />
+			<Backend class="MonoDevelop.MonoDroid.MonoDroidMsNetFrameworkBackend" />
+		</Framework>
+		<Framework resource="framework_MonoDroid_2_0_1.xml" id="MonoDroid_2_0_1">
+			<Backend class="MonoDevelop.MonoDroid.MonoDroidMonoFrameworkBackend" />
+			<Backend class="MonoDevelop.MonoDroid.MonoDroidMsNetFrameworkBackend" />
+		</Framework>
+		<Framework resource="framework_MonoDroid_2_1.xml" id="MonoDroid_2_1">
+			<Backend class="MonoDevelop.MonoDroid.MonoDroidMonoFrameworkBackend" />
+			<Backend class="MonoDevelop.MonoDroid.MonoDroidMsNetFrameworkBackend" />
+		</Framework>
+		<Framework resource="framework_MonoDroid_2_2.xml" id="MonoDroid_2_2">
+			<Backend class="MonoDevelop.MonoDroid.MonoDroidMonoFrameworkBackend" />
+			<Backend class="MonoDevelop.MonoDroid.MonoDroidMsNetFrameworkBackend" />
+		</Framework>
+		<Framework resource="framework_MonoDroid_2_3.xml" id="MonoDroid_2_3">
 			<Backend class="MonoDevelop.MonoDroid.MonoDroidMonoFrameworkBackend" />
 			<Backend class="MonoDevelop.MonoDroid.MonoDroidMsNetFrameworkBackend" />
 		</Framework>
@@ -102,10 +126,6 @@
 	
 	<Extension path = "/MonoDevelop/Core/ExecutionModes">
 		<ModeSetType class="MonoDevelop.MonoDroid.MonoDroidExecutionModeSet"/>
-	</Extension>
-
-	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
-		<Class class="MonoDevelop.MonoDroid.MonoDroidStartupHandler" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Pads">

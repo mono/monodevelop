@@ -550,7 +550,7 @@ namespace Mono.Debugging.Evaluation
 			// Look in fields and properties
 
 			ValueReference thisobj = ctx.Adapter.GetThisReference (ctx);
-			object thistype = ctx.Adapter.GetEnclosingType (ctx);
+			object thistype = thisobj != null ? thisobj.Type : ctx.Adapter.GetEnclosingType (ctx);
 
 			var = ctx.Adapter.GetMember (ctx, thisobj, thistype, thisobj != null ? thisobj.Value : null, name);
 			if (var != null)

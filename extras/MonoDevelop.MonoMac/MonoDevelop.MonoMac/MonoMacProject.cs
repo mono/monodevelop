@@ -149,7 +149,7 @@ namespace MonoDevelop.MonoMac
 		
 		public override bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
 		{
-			if (!framework.IsCompatibleWithFramework ("4.0"))
+			if (!framework.IsCompatibleWithFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_4_0))
 				return false;
 			else
 				return base.SupportsFramework (framework);

@@ -325,7 +325,7 @@ namespace NGit
 
 		/// <summary>The environment variable that tells us which file holds the Git index.</summary>
 		/// <remarks>The environment variable that tells us which file holds the Git index.</remarks>
-		public static readonly string GIT_INDEX_KEY = "GIT_INDEX";
+		public static readonly string GIT_INDEX_FILE_KEY = "GIT_INDEX_FILE";
 
 		/// <summary>The environment variable that tells us where objects are stored</summary>
 		public static readonly string GIT_OBJECT_DIRECTORY_KEY = "GIT_OBJECT_DIRECTORY";

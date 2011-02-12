@@ -252,8 +252,9 @@ namespace Sharpen
 		public bool Mkdir ()
 		{
 			try {
-				if (!Directory.Exists (path))
-					Directory.CreateDirectory (path);
+				if (Directory.Exists (path))
+					return false;
+				Directory.CreateDirectory (path);
 				return true;
 			} catch (Exception) {
 				return false;
@@ -263,8 +264,9 @@ namespace Sharpen
 		public bool Mkdirs ()
 		{
 			try {
-				if (!Directory.Exists (path))
-					Directory.CreateDirectory (this.path);
+				if (Directory.Exists (path))
+					return false;
+				Directory.CreateDirectory (this.path);
 				return true;
 			} catch {
 				return false;

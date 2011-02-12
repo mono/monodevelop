@@ -36,6 +36,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.CSharp.Project;
+using System.Threading;
+using MonoDevelop.Ide;
 
 
 namespace MonoDevelop.CSharp
@@ -58,6 +60,24 @@ namespace MonoDevelop.CSharp
 			
 			string outputName       = configuration.CompiledOutputName;
 			string responseFileName = Path.GetTempFileName();
+			
+			if (File.Exists (outputName)) {
+				bool isWriteable = false;
+				int count = 0;
+				do {
+					try {
+						using (var stream = File.OpenWrite (outputName)) {
+							isWriteable = true;
+						}
+					} catch (Exception) {
+						Thread.Sleep (20);
+					}
+				} while (count++ < 5 && !isWriteable);
+				if (!isWriteable) {
+					MessageService.ShowError (string.Format (GettextCatalog.GetString ("Can't lock file: {0}."), outputName));
+					return null;
+				}
+			}
 			
 			TargetRuntime runtime = MonoDevelop.Core.Runtime.SystemAssemblyService.DefaultRuntime;
 			DotNetProject project = configuration.ParentItem as DotNetProject;
@@ -106,6 +126,13 @@ namespace MonoDevelop.CSharp
 						break;
 					}
 				}
+			}
+			
+			string sysCore = project.AssemblyContext.GetAssemblyFullName ("System.Core", project.TargetFramework);
+			if (sysCore != null) {
+				sysCore = project.AssemblyContext.GetAssemblyLocation (sysCore, project.TargetFramework);
+				if (sysCore != null && !alreadyAddedReference.Contains (sysCore))
+					AppendQuoted (sb, "/r:", sysCore);
 			}
 			
 			sb.AppendLine ("/nologo");

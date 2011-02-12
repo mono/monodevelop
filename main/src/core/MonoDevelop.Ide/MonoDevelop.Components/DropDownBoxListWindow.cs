@@ -170,7 +170,10 @@ namespace MonoDevelop.Components
 				hBox.Remove (vScrollbar);
 		
 			requisition.Height = this.list.HeightRequest + 2;
-			requisition.Width = this.list.CalcWidth ();
+			int width = this.list.CalcWidth ();
+			if (list.VisibleRows < DataProvider.IconCount)
+				width += vScrollbar.Allocation.Width;
+			requisition.Width = width;
 		}
 
 		protected override bool OnExposeEvent (Gdk.EventExpose args)

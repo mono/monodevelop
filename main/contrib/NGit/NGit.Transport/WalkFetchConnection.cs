@@ -1084,18 +1084,18 @@ namespace NGit.Transport
 			/// <exception cref="System.IO.IOException"></exception>
 			internal virtual void DownloadPack(ProgressMonitor monitor)
 			{
-				WalkRemoteObjectDatabase.FileStream s;
-				IndexPack ip;
-				s = this.connection.Open("pack/" + this.packName);
-				ip = IndexPack.Create(this._enclosing.local, s.@in);
-				ip.SetFixThin(false);
-				ip.SetObjectChecker(this._enclosing.objCheck);
-				ip.Index(monitor);
-				PackLock keep = ip.RenameAndOpenPack(this._enclosing.lockMessage);
-				if (keep != null)
+				string name = "pack/" + this.packName;
+				WalkRemoteObjectDatabase.FileStream s = this.connection.Open(name);
+				PackParser parser = this._enclosing.inserter.NewPackParser(s.@in);
+				parser.SetAllowThin(false);
+				parser.SetObjectChecker(this._enclosing.objCheck);
+				parser.SetLockMessage(this._enclosing.lockMessage);
+				PackLock Lock = parser.Parse(monitor);
+				if (Lock != null)
 				{
-					this._enclosing.packLocks.AddItem(keep);
+					this._enclosing.packLocks.AddItem(Lock);
 				}
+				this._enclosing.inserter.Flush();
 			}
 
 			private readonly WalkFetchConnection _enclosing;

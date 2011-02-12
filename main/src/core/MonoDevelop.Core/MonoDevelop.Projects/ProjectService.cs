@@ -61,7 +61,7 @@ namespace MonoDevelop.Projects
 		TargetFramework defaultTargetFramework;
 		
 		string defaultPlatformTarget = "x86";
-		public const string DefaultTargetFrameworkId = "3.5";
+		public static readonly TargetFrameworkMoniker DefaultTargetFrameworkId = TargetFrameworkMoniker.NET_3_5;
 		
 		public const string BuildTarget = "Build";
 		public const string CleanTarget = "Clean";
@@ -710,7 +710,7 @@ namespace MonoDevelop.Projects
 				SolutionEntityItem entry = (SolutionEntityItem) item;
 				SolutionItemConfiguration conf = entry.GetConfiguration (configuration) as SolutionItemConfiguration;
 				if (conf != null && conf.CustomCommands.HasCommands (CustomCommandType.Execute))
-					return conf.CustomCommands.CanExecute (CustomCommandType.Execute, context, configuration);
+					return conf.CustomCommands.CanExecute (entry, CustomCommandType.Execute, context, configuration);
 				return entry.OnGetCanExecute (context, configuration);
 			}
 			else if (item is WorkspaceItem) {

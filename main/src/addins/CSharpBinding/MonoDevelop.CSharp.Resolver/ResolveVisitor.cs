@@ -549,7 +549,7 @@ namespace MonoDevelop.CSharp.Resolver
 			
 			return null;
 		}
-		static MonoDevelop.CSharp.Dom.CSharpAmbience ambience = new MonoDevelop.CSharp.Dom.CSharpAmbience ();
+		static MonoDevelop.CSharp.Ast.CSharpAmbience ambience = new MonoDevelop.CSharp.Ast.CSharpAmbience ();
 		ResolveResult ResolveMemberReference (ResolveResult result, MemberReferenceExpression memberReferenceExpression)
 		{
 			IType type = resolver.Dom.GetType (result.ResolvedType);

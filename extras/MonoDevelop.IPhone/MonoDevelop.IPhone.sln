@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.IPhone", "MonoDevelop.IPhone\MonoDevelop.IPhone.csproj", "{B9D6A509-8369-4E86-B04E-936491E11801}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Debugger.Soft.IPhone", "MonoDevelop.Debugger.Soft.IPhone\MonoDevelop.Debugger.Soft.IPhone.csproj", "{325F28AD-2C46-4873-AE54-40FCC74C2695}"

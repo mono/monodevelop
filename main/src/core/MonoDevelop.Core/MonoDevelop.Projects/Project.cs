@@ -135,7 +135,7 @@ namespace MonoDevelop.Projects
 		/// </value>
 		public virtual IconId StockIcon {
 			get { return stockIcon; }
-			set { this.stockIcon = value; }
+			set { this.stockIcon = value; NotifyModified ("StockIcon"); }
 		}
 		IconId stockIcon = "md-project";
 		
@@ -780,14 +780,14 @@ namespace MonoDevelop.Projects
 			return col;
 		}
 
-		protected internal override void OnItemAdded (object obj)
+		protected internal override void OnItemAdded (ProjectItem obj)
 		{
 			base.OnItemAdded (obj);
 			if (obj is ProjectFile)
 				NotifyFileAddedToProject ((ProjectFile)obj);
 		}
 
-		protected internal override void OnItemRemoved (object obj)
+		protected internal override void OnItemRemoved (ProjectItem obj)
 		{
 			base.OnItemRemoved (obj);
 			if (obj is ProjectFile)

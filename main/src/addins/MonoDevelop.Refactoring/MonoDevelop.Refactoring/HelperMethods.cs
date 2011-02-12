@@ -120,8 +120,24 @@ namespace MonoDevelop.Refactoring
 			}
 			result[result.Count - 1].LineAfter = NewLineInsertion.None;
 			CheckStartPoint (doc.Document, result[0], result.Count == 1);
-			if (result.Count > 1)
+			if (result.Count > 1) {
+				result.RemoveAt (result.Count - 1); 
+				NewLineInsertion insertLine;
+				var lineBefore = doc.GetLine (type.BodyRegion.End.Line - 1);
+				if (lineBefore != null && lineBefore.EditableLength == lineBefore.GetIndentation (doc.Document).Length) {
+					insertLine = NewLineInsertion.None;
+				} else {
+					insertLine = NewLineInsertion.Eol;
+				}
+				// search for line start
+				var line = doc.GetLine (type.BodyRegion.End.Line);
+				int col = type.BodyRegion.End.Column - 1;
+				while (col > 1 && char.IsWhiteSpace (doc.GetCharAt (line.Offset + col - 2)))
+					col--;
+				result.Add (new InsertionPoint (new DocumentLocation (type.BodyRegion.End.Line, col), insertLine, NewLineInsertion.Eol));
 				CheckEndPoint (doc.Document, result[result.Count - 1], result.Count == 1);
+			}
+			
 			foreach (var region in document.ParsedDocument.UserRegions.Where (r => type.BodyRegion.Contains (r.Region))) {
 				result.Add (new InsertionPoint (new DocumentLocation (region.Region.Start.Line + 1, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
 				result.Add (new InsertionPoint (new DocumentLocation (region.Region.End.Line, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
@@ -166,46 +182,30 @@ namespace MonoDevelop.Refactoring
 		static InsertionPoint GetInsertionPosition (Document doc, int line, int column)
 		{
 			int bodyEndOffset = doc.LocationToOffset (line, column) + 1;
-			
 			LineSegment curLine = doc.GetLine (line);
 			if (curLine != null) {
-				if (bodyEndOffset < curLine.Offset + curLine.EditableLength)
+				if (bodyEndOffset < curLine.Offset + curLine.EditableLength) {
+					System.Console.WriteLine (1);
+					// case1: positition is somewhere inside the start line
 					return new InsertionPoint (new DocumentLocation (line, column + 1), NewLineInsertion.BlankLine, NewLineInsertion.BlankLine);
+				}
 			}
 			
+			// -> if position is at line end check next line
 			LineSegment nextLine = doc.GetLine (line + 1);
+			if (nextLine == null) // check for 1 line case.
+				return new InsertionPoint (new DocumentLocation (line, column + 1), NewLineInsertion.BlankLine, NewLineInsertion.BlankLine);
 			
-			int endOffset = nextLine != null ? nextLine.Offset : doc.Length;
-			for (int i = bodyEndOffset; i < endOffset; i++) {
+			for (int i = nextLine.Offset; i < nextLine.EndOffset; i++) {
 				char ch = doc.GetCharAt (i);
-				if (!char.IsWhiteSpace (ch))
-					return new InsertionPoint (doc.OffsetToLocation (i), NewLineInsertion.BlankLine, NewLineInsertion.BlankLine);
+				if (!char.IsWhiteSpace (ch)) {
+					// case2: next line contains non ws chars.
+					System.Console.WriteLine (2);
+					return new InsertionPoint (new DocumentLocation (line + 1, 1), NewLineInsertion.BlankLine, NewLineInsertion.BlankLine);
+				}
 			}
-			
-			if (nextLine == null)
-				return new InsertionPoint (doc.OffsetToLocation (bodyEndOffset - 1), NewLineInsertion.BlankLine, NewLineInsertion.BlankLine);
-			int oldLine = line;
-			while (line < doc.LineCount && doc.GetLineIndent (line + 1).Length == doc.GetLine (line + 1).EditableLength)
-				line++;
-			NewLineInsertion insertBefore = NewLineInsertion.None;
-			NewLineInsertion insertAfter = NewLineInsertion.None;
-			int delta = line - oldLine;
-			int lineNumber = line + 1;
-			
-			if (delta == 0) {
-				insertBefore = NewLineInsertion.Eol;
-				insertAfter = NewLineInsertion.BlankLine;
-			} else if (delta == 1) {
-				insertAfter = NewLineInsertion.BlankLine;
-			} else if (delta == 2) {
-				lineNumber--;
-				insertAfter = NewLineInsertion.BlankLine;
-			} else if (delta >= 3) {
-				lineNumber -= 2;
-				insertAfter = NewLineInsertion.None;
-			}
-			
-			return new InsertionPoint (new DocumentLocation (lineNumber, doc.GetLineIndent (lineNumber).Length + 1), insertBefore, insertAfter);
+			// case3: whitespace line
+			return new InsertionPoint (new DocumentLocation (line + 1, 1), NewLineInsertion.BlankLine, NewLineInsertion.None);
 		}
 	}
 }

@@ -1810,5 +1810,18 @@ namespace MonoDevelop.Ide
 			return new ProviderProxy (data);
 		}
 		
+		public TextEditorData GetTextEditorData (FilePath filePath)
+		{
+			foreach (var doc in IdeApp.Workbench.Documents) {
+				if (doc.FileName == filePath) {
+					return doc.Editor;
+				}
+			}
+			
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = filePath;
+			data.Text = File.ReadAllText (filePath);
+			return data;
+		}
 	}
 }

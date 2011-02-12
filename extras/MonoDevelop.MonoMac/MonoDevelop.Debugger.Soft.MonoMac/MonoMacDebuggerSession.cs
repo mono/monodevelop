@@ -37,27 +37,30 @@ using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using System.Collections.Generic;
+using Mono.Debugging.Soft;
 
 namespace MonoDevelop.Debugger.Soft.MonoMac
 {
 
-	public class MonoMacDebuggerSession : RemoteSoftDebuggerSession
+	public class MonoMacDebuggerSession : SoftDebuggerSession
 	{
 		MonoMacProcess process;
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
 			var dsi = (MonoMacDebuggerStartInfo) startInfo;
+			var startArgs = (SoftDebuggerRemoteArgs) dsi.StartArgs;
 			var cmd = dsi.ExecutionCommand;		
-		
-			StartListening (dsi);
+			
+			int assignedPort;
+			StartListening (dsi, out assignedPort);
 			
 			Action<string> stdout = s => OnTargetOutput (false, s);
 			Action<string> stderr = s => OnTargetOutput (true, s);
 			
 			var asi = new ApplicationStartInfo (cmd.AppPath);
 			asi.Environment ["MONOMAC_DEBUGLAUNCHER_OPTIONS"]
-				= string.Format ("--debug --debugger-agent=transport=dt_socket,address={0}:{1}", dsi.Address, dsi.DebugPort);
+				= string.Format ("--debug --debugger-agent=transport=dt_socket,address={0}:{1}", startArgs.Address, assignedPort);
 			
 			process = MonoMacExecutionHandler.OpenApplication (cmd, asi, stdout, stderr);
 			
@@ -73,17 +76,17 @@ namespace MonoDevelop.Debugger.Soft.MonoMac
 				if (process != null && !process.IsCompleted)
 					process.Cancel ();
 			} catch (Exception ex) {
-				LoggingService.LogError ("Error force-terminating soft debugger process", ex);
+				MonoDevelop.Core.LoggingService.LogError ("Error force-terminating soft debugger process", ex);
 			}
 		}
 	}
 	
-	class MonoMacDebuggerStartInfo : RemoteDebuggerStartInfo
+	class MonoMacDebuggerStartInfo : SoftDebuggerStartInfo
 	{
 		public MonoMacExecutionCommand ExecutionCommand { get; private set; }
 		
 		public MonoMacDebuggerStartInfo (MonoMacExecutionCommand cmd)
-			: base (cmd.AppPath.FileNameWithoutExtension, IPAddress.Loopback, 8901)
+			: base (new SoftDebuggerListenArgs (cmd.AppPath.FileNameWithoutExtension, IPAddress.Loopback, 0))
 		{
 			ExecutionCommand = cmd;
 		}

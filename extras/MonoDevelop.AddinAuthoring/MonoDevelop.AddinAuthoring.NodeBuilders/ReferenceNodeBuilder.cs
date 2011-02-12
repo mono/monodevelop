@@ -29,7 +29,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 
-namespace MonoDevelop.AddinAuthoring
+namespace MonoDevelop.AddinAuthoring.NodeBuilders
 {
 	public class ReferenceNodeBuilder: NodeBuilderExtension
 	{

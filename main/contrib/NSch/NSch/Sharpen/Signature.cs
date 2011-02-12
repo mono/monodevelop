@@ -117,7 +117,7 @@ namespace Sharpen
 	
 	class SHA1withDSASignature : Signature
 	{
-		DSACryptoServiceProvider sa;
+		DSACryptoServiceProvider sa = new DSACryptoServiceProvider ();
 		MemoryStream ms = new MemoryStream ();
 		
 		public override byte[] Sign ()

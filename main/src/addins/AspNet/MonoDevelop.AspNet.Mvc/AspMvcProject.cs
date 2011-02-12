@@ -35,36 +35,20 @@ using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.AspNet.Mvc
 {
-	
-	
 	public class AspMvcProject : AspNetAppProject
 	{
-		static void Check24 ()
-		{
-			Type mr = Type.GetType ("Mono.Runtime");
-			if (mr != null) {
-				string version = (string) mr.GetMethod ("GetDisplayName", BindingFlags.NonPublic|BindingFlags.Static).Invoke (null, null);
-				//MD only builds on 2.0 or later
-				if (version.StartsWith ("Mono 2.0") || version.StartsWith ("Mono 2.2"))
-					MonoDevelop.Ide.MessageService.ShowWarning ("ASP.NET MVC projects only build and run on Mono 2.4 or later");
-			}
-		}
-		
 		public AspMvcProject ()
 		{
-			Check24 ();
 		}
 		
 		public AspMvcProject (string languageName)
 			: base (languageName)
 		{
-			Check24 ();
 		}
 		
 		public AspMvcProject (string languageName, ProjectCreateInformation info, XmlElement projectOptions)
 			: base (languageName, info, projectOptions)
 		{
-			Check24 ();
 		}	
 		
 		public override SolutionItemConfiguration CreateConfiguration (string name)
@@ -80,7 +64,7 @@ namespace MonoDevelop.AspNet.Mvc
 		
 		public override bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
 		{
-			return framework.IsCompatibleWithFramework ("3.5");
+			return framework.IsCompatibleWithFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_3_5);
 		}
 		
 		public override IEnumerable<string> GetSpecialDirectories ()

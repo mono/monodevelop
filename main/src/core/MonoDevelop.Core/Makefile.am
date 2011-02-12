@@ -34,6 +34,7 @@ FILES =  \
 	MonoDevelop.Core.Assemblies/SystemPackage.cs \
 	MonoDevelop.Core.Assemblies/TargetFramework.cs \
 	MonoDevelop.Core.Assemblies/TargetFrameworkBackend.cs \
+	MonoDevelop.Core.Assemblies/TargetFrameworkMoniker.cs \
 	MonoDevelop.Core.Assemblies/TargetRuntime.cs \
 	MonoDevelop.Core.Collections/ReadOnlyDictionary.cs \
 	MonoDevelop.Core.Collections/Set.cs \
@@ -195,6 +196,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom.Parser/TypeNameResolver.cs \
 	MonoDevelop.Projects.Dom.Parser/TypeResolverVisitor.cs \
 	MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs \
+	MonoDevelop.Projects.Dom.Serialization/AttributeEntry.cs \
 	MonoDevelop.Projects.Dom.Serialization/ClassEntry.cs \
 	MonoDevelop.Projects.Dom.Serialization/ClassInformationEventHandler.cs \
 	MonoDevelop.Projects.Dom.Serialization/CodeCompletionDatabase.cs \
@@ -403,6 +405,7 @@ FILES =  \
 	MonoDevelop.Projects/ProjectFileEventArgs.cs \
 	MonoDevelop.Projects/ProjectItem.cs \
 	MonoDevelop.Projects/ProjectItemCollection.cs \
+	MonoDevelop.Projects/ProjectItemEventArgs.cs \
 	MonoDevelop.Projects/ProjectParameters.cs \
 	MonoDevelop.Projects/ProjectPathItemPropertyAttribute.cs \
 	MonoDevelop.Projects/ProjectReference.cs \

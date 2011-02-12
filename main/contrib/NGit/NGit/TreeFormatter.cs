@@ -313,6 +313,27 @@ namespace NGit
 			return ins.Insert(Constants.OBJ_TREE, len, overflowBuffer.OpenInputStream());
 		}
 
+		/// <summary>Compute the ObjectId for this tree</summary>
+		/// <param name="ins"></param>
+		/// <returns>ObjectId for this tree</returns>
+		public virtual ObjectId ComputeId(ObjectInserter ins)
+		{
+			if (buf != null)
+			{
+				return ins.IdFor(Constants.OBJ_TREE, buf, 0, ptr);
+			}
+			long len = overflowBuffer.Length();
+			try
+			{
+				return ins.IdFor(Constants.OBJ_TREE, len, overflowBuffer.OpenInputStream());
+			}
+			catch (IOException e)
+			{
+				// this should never happen
+				throw new RuntimeException(e);
+			}
+		}
+
 		/// <summary>Copy this formatter's buffer into a byte array.</summary>
 		/// <remarks>
 		/// Copy this formatter's buffer into a byte array.

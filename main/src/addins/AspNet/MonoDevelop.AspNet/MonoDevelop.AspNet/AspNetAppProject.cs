@@ -131,7 +131,7 @@ namespace MonoDevelop.AspNet
 		public override bool SupportsFramework (TargetFramework framework)
 		{
 			//only support 1.1, 2.0, 3.5, 4.0 etc, not monotouch, moonlight and so on
-			return framework.IsCompatibleWithFramework ("1.1") && base.SupportsFramework (framework);
+			return framework.Id.Identifier == TargetFrameworkMoniker.ID_NET_FRAMEWORK && base.SupportsFramework (framework);
 		}
 		
 		#endregion

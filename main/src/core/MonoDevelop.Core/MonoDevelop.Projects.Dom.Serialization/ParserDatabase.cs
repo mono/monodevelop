@@ -189,7 +189,12 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		void DeleteObsoleteDatabases ()
 		{
-			string[] files = Directory.GetFiles (ProjectDomService.CodeCompletionPath, "*.pidb");
+			string[] files;
+			try {
+				files = Directory.GetFiles (ProjectDomService.CodeCompletionPath, "*.pidb");
+			} catch (DirectoryNotFoundException) {
+				return;
+			}
 			foreach (string file in files)
 			{
 				string name = Path.GetFileNameWithoutExtension (file);

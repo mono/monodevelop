@@ -42,7 +42,6 @@ namespace MonoDevelop.Debugger.Win32
 		
 
 		public CorObjectAdaptor ObjectAdapter;
-		public ExpressionEvaluator Evaluator;
 
 		class DocInfo
 		{
@@ -65,7 +64,6 @@ namespace MonoDevelop.Debugger.Win32
 			modules = new Dictionary<string, ModuleInfo> (StringComparer.CurrentCultureIgnoreCase);
 
 			ObjectAdapter = new CorObjectAdaptor ();
-			Evaluator = new NRefactoryEvaluator ();
 		}
 
 		public new IDebuggerSessionFrontend Frontend {

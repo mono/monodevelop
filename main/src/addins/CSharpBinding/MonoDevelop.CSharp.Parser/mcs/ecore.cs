@@ -288,28 +288,16 @@ namespace Mono.CSharp {
 			if (type == InternalType.AnonymousMethod)
 				return;
 
-/*
-			if (TypeManager.IsGenericParameter (Type) && TypeManager.IsGenericParameter (target) && type.Name == target.Name) {
-				string sig1 = type.DeclaringMethod == null ?
-					TypeManager.CSharpName (type.DeclaringType) :
-					TypeManager.CSharpSignature (type.DeclaringMethod);
-				string sig2 = target.DeclaringMethod == null ?
-					TypeManager.CSharpName (target.DeclaringType) :
-					TypeManager.CSharpSignature (target.DeclaringMethod);
-				ec.Report.ExtraInformation (loc,
-					String.Format (
-						"The generic parameter `{0}' of `{1}' cannot be converted to the generic parameter `{0}' of `{2}' (in the previous ",
-						Type.Name, sig1, sig2));
-			} else if (Type.MetaInfo.FullName == target.MetaInfo.FullName) {
-				ec.Report.ExtraInformation (loc,
-					String.Format (
-					"The type `{0}' has two conflicting definitions, one comes from `{1}' and the other from `{2}' (in the previous ",
-					Type.MetaInfo.FullName, Type.Assembly.FullName, target.Assembly.FullName));
+			string from_type = type.GetSignatureForError ();
+			string to_type = target.GetSignatureForError ();
+			if (from_type == to_type) {
+				from_type = string.Format ("{0} [{1}]", from_type, type.MemberDefinition.DeclaringAssembly.FullName);
+				to_type = string.Format ("{0} [{1}]", to_type, target.MemberDefinition.DeclaringAssembly.FullName);
 			}
-*/
+
 			if (expl) {
 				ec.Report.Error (30, loc, "Cannot convert type `{0}' to `{1}'",
-					TypeManager.CSharpName (type), TypeManager.CSharpName (target));
+					from_type, to_type);
 				return;
 			}
 
@@ -318,14 +306,13 @@ namespace Mono.CSharp {
 			ec.Report.EnableReporting ();
 
 			if (expl_exists) {
-				ec.Report.Error (266, loc, "Cannot implicitly convert type `{0}' to `{1}'. " +
-					      "An explicit conversion exists (are you missing a cast?)",
-					TypeManager.CSharpName (Type), TypeManager.CSharpName (target));
-				return;
+				ec.Report.Error (266, loc,
+					"Cannot implicitly convert type `{0}' to `{1}'. An explicit conversion exists (are you missing a cast?)",
+					from_type, to_type);
+			} else {
+				ec.Report.Error (29, loc, "Cannot implicitly convert type `{0}' to `{1}'",
+					from_type, to_type);
 			}
-
-			ec.Report.Error (29, loc, "Cannot implicitly convert type `{0}' to `{1}'",
-				type.GetSignatureForError (), target.GetSignatureForError ());
 		}
 
 		public void Error_TypeArgumentsCannotBeUsed (Report report, Location loc, MemberSpec member, int arity)
@@ -1245,16 +1232,6 @@ namespace Mono.CSharp {
 			this.type = type;
 		}
 
-		public override string AsString ()
-		{
-			return child.AsString ();
-		}
-
-		public override object GetValue ()
-		{
-			return child.GetValue ();
-		}
-
 		public override Constant ConvertExplicitly (bool in_checked_context, TypeSpec target_type)
 		{
 			if (child.Type == target_type)
@@ -1318,6 +1295,16 @@ namespace Mono.CSharp {
 		public override void EmitSideEffect (EmitContext ec)
 		{
 			child.EmitSideEffect (ec);
+		}
+
+		public override object GetValue ()
+		{
+			return child.GetValue ();
+		}
+
+		public override string GetValueAsLiteral ()
+		{
+			return child.GetValueAsLiteral ();
 		}
 
 		public override Constant ConvertImplicitly (ResolveContext rc, TypeSpec target_type)
@@ -1398,10 +1385,10 @@ namespace Mono.CSharp {
 			return System.Enum.ToObject (type.GetMetaInfo (), Child.GetValue ());
 		}
 #endif
-		
-		public override string AsString ()
+
+		public override string GetValueAsLiteral ()
 		{
-			return Child.AsString ();
+			return Child.GetValueAsLiteral ();
 		}
 
 		public EnumConstant Increment()
@@ -1943,15 +1930,23 @@ namespace Mono.CSharp {
 			return new ReducedExpressionStatement (s, orig);
 		}
 
-		//
-		// Creates unresolved reduce expression. The original expression has to be
-		// already resolved
-		//
 		public static Expression Create (Expression expr, Expression original_expr)
 		{
-			Constant c = expr as Constant;
-			if (c != null)
-				return Create (c, original_expr);
+			return Create (expr, original_expr, true);
+		}
+
+		//
+		// Creates unresolved reduce expression. The original expression has to be
+		// already resolved. Created expression is constant based based on `expr'
+		// value unless canBeConstant is used
+		//
+		public static Expression Create (Expression expr, Expression original_expr, bool canBeConstant)
+		{
+			if (canBeConstant) {
+				Constant c = expr as Constant;
+				if (c != null)
+					return Create (c, original_expr);
+			}
 
 			ExpressionStatement s = expr as ExpressionStatement;
 			if (s != null)
@@ -1994,7 +1989,7 @@ namespace Mono.CSharp {
 	//
 	public abstract class CompositeExpression : Expression
 	{
-		Expression expr;
+		protected Expression expr;
 
 		protected CompositeExpression (Expression expr)
 		{
@@ -3706,7 +3701,7 @@ namespace Mono.CSharp {
 			var best_def_pd = ((IParametersMember) best.MemberDefinition).Parameters;
 
 			bool specific_at_least_once = false;
-			for (j = 0; j < candidate_param_count; ++j) {
+			for (j = 0; j < args_count; ++j) {
 				NamedArgument na = args_count == 0 ? null : args [j] as NamedArgument;
 				if (na != null) {
 					ct = candidate_def_pd.Types[cparam.GetParameterIndexByName (na.Name)];
@@ -3768,20 +3763,18 @@ namespace Mono.CSharp {
 					}
 				}
 
-				int args_gap = System.Math.Abs (arg_count - param_count);
 				if (optional_count != 0) {
-					if (args_gap > optional_count)
-						return int.MaxValue - 10000 + args_gap - optional_count;
-
 					// Readjust expected number when params used
 					if (cpd.HasParams) {
 						optional_count--;
 						if (arg_count < param_count)
 							param_count--;
 					} else if (arg_count > param_count) {
+						int args_gap = System.Math.Abs (arg_count - param_count);
 						return int.MaxValue - 10000 + args_gap;
 					}
 				} else if (arg_count != param_count) {
+					int args_gap = System.Math.Abs (arg_count - param_count);
 					if (!cpd.HasParams)
 						return int.MaxValue - 10000 + args_gap;
 					if (arg_count < param_count - 1)
@@ -4253,7 +4246,7 @@ namespace Mono.CSharp {
 								if (best_candidate.DeclaringType.IsInterface && member.DeclaringType.ImplementsInterface (best_candidate.DeclaringType, false)) {
 									//
 									// We pack all interface members into top level type which makes the overload resolution
-									// more complicated for interfaces. We accomodate for this by removing methods with same
+									// more complicated for interfaces. We compensate it by removing methods with same
 									// signature when building the cache hence this path should not really be hit often
 									//
 									// Example:
@@ -5174,7 +5167,7 @@ namespace Mono.CSharp {
 			bool need_copy;
 			if (spec.IsReadOnly){
 				need_copy = true;
-				if (ec.HasSet (EmitContext.Options.ConstructorScope)){
+				if (ec.HasSet (EmitContext.Options.ConstructorScope) && spec.DeclaringType == ec.CurrentType) {
 					if (IsStatic){
 						if (ec.IsStatic)
 							need_copy = false;

@@ -35,6 +35,7 @@ namespace Mono.Debugging.Client
 		long address;
 		string code;
 		int sourceLine;
+		string addressSpace;
 		
 		public string Code {
 			get {
@@ -48,21 +49,45 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		public string AddressSpace {
+			get {
+				return addressSpace;
+			}
+		}
+		
 		public int SourceLine {
 			get {
 				return sourceLine;
 			}
+			set {
+				sourceLine = value;
+			}
 		}
 		
-		public AssemblyLine (long address, string code): this (address, code, -1)
+		public bool IsOutOfRange {
+			get { return address == -1 && code == null; }
+		}
+		
+		public static readonly AssemblyLine OutOfRange = new AssemblyLine (-1, null, null);
+		
+		public AssemblyLine (long address, string code): this (address, "", code, -1)
 		{
 		}
 		
-		public AssemblyLine (long address, string code, int sourceLine)
+		public AssemblyLine (long address, string code, int sourceLine): this (address, "", code, sourceLine)
+		{
+		}
+		
+		public AssemblyLine (long address, string addressSpace, string code): this (address, addressSpace, code, -1)
+		{
+		}
+		
+		public AssemblyLine (long address, string addressSpace, string code, int sourceLine)
 		{
 			this.address = address;
 			this.code = code;
 			this.sourceLine = sourceLine;
+			this.addressSpace = addressSpace;
 		}
 	}
 }

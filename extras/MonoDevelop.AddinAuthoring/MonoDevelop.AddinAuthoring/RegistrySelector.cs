@@ -57,7 +57,7 @@ namespace MonoDevelop.AddinAuthoring
 			SelectRepositoryDialog dlg = new SelectRepositoryDialog (appName);
 			dlg.TransientFor = this.Toplevel as Gtk.Window;
 			if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-				appName = dlg.SelectedApplication;
+				appName = dlg.SelectedApplication.ApplicationName;
 				UpdateLabel ();
 				if (Changed != null)
 					Changed (this, EventArgs.Empty);

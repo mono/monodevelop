@@ -73,7 +73,6 @@ namespace MonoDevelop.Gettext
 				AddTextview (0);
 				UpdateFromCatalog ();
 				UpdateProgressBar ();
-				UpdateTasks ();
 			}
 		}
 		
@@ -233,7 +232,6 @@ namespace MonoDevelop.Gettext
 			};
 			
 			widgets.Add (this);
-			UpdateTasks ();
 			
 			checkbuttonWhiteSpaces.Toggled += CheckbuttonWhiteSpacesToggled;
 			options.ShowLineNumberMargin = false;
@@ -465,6 +463,7 @@ namespace MonoDevelop.Gettext
 			Catalog newCatalog = new Catalog(project);
 			newCatalog.Load (null, catalog.FileName);
 			this.Catalog = newCatalog;
+			UpdateTasks ();
 		}
 		
 		Mono.TextEditor.TextEditor GetTextView (int index)
@@ -1169,9 +1168,15 @@ namespace MonoDevelop.Gettext
 		void StopTaskWorkerThread ()
 		{
 			updateTaskThread.CancelAsync ();
-			while (updateTaskThread.IsBusy)  {
+			int count = 0;
+			while (count++ < 5 && updateTaskThread.IsBusy)  {
 				Thread.Sleep (20);
 			}
+			updateTaskThread.Dispose ();
+			updateTaskThread = new BackgroundWorker ();
+			updateTaskThread.WorkerSupportsCancellation = true;
+			updateTaskThread.DoWork += TaskUpdateWorker;
+			
 		}
 		
 		void UpdateTasks ()

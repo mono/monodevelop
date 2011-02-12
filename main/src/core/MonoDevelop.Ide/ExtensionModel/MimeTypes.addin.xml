@@ -1,0 +1,65 @@
+<ExtensionModel>
+
+<ExtensionPoint path = "/MonoDevelop/Core/MimeTypes" name = "Mime types">
+	<Description>Mime type to file extension mappings. Mime types defined here override the ones provided by the operating system.</Description>
+	<ExtensionNode name="MimeType" type="MonoDevelop.Ide.Extensions.MimeTypeNode"/>
+</ExtensionPoint>
+
+<Extension path = "/MonoDevelop/Core/MimeTypes">
+	<MimeType id="text/x-resource" _description=".NET resource" icon="md-resource-file-icon" isText="true">
+		<File pattern="*.resources" />
+	</MimeType>
+	<MimeType id="application/x-resource" _description=".NET resource" icon="md-resource-file-icon" isText="true">
+		<File pattern="*.resx" />
+	</MimeType>
+	<MimeType id="application/x-addin+xml" _description="Add-in manifest" icon="md-addin-file">
+		<File pattern="*.addin.xml" />
+		<File pattern="*.addin" />
+	</MimeType>
+	<MimeType id="application/xml" _description="XML document" icon="md-xml-file-icon" isText="true">
+		<File pattern="*.xml" />
+	</MimeType>
+	<MimeType id="application/config+xml" _description="Configuration File" baseType="application/xml">
+		<File pattern="*.config" />
+	</MimeType>
+	<MimeType id="application/glade+xml" _description="Glade File" baseType="application/xml">
+		<File pattern="*.glade" />
+	</MimeType>
+	<MimeType id="text/x-changelog" _description="ChangeLog document" isText="true">
+		<File pattern="ChangeLog|Changelog|CHANGELOG|Changelog"/>
+	</MimeType>
+	<MimeType id="application/x-executable" _description=".NET program" icon="md-empty-file-icon">
+		<File pattern="*.exe" />
+		<File pattern="*.dll" />
+	</MimeType>
+	<MimeType id="application/x-sln" _description="MonoDevelop/MSBuild Solution" icon="md-solution" >
+		<File pattern="*.sln" />
+	</MimeType>
+	<MimeType id="application/x-mds" _description="MonoDevelop 1.0 Solution" icon="md-solution" baseType="application/xml">
+		<File pattern="*.mds" />
+	</MimeType>
+	
+	<MimeType id="text/x-patch" _description="diff files" isText="true">
+		<File pattern="*.patch" />
+		<File pattern="*.diff" />
+	</MimeType>
+	
+	<MimeType id="text/x-makefile" _description="Makefile" isText="true">
+		<File pattern="Makefile|Makefile.am|Makefile.in"/>
+	</MimeType>
+	
+	<MimeType id="text/x-lua" _description="lua files" isText="true">
+		<File pattern="*.lua" />
+	</MimeType>
+	
+	<MimeType id="text/x-ilasm" _description="il files" isText="true">
+		<File pattern="*.il" />
+	</MimeType>
+	
+	<MimeType id="text/x-jay" _description="jay files" isText="true">
+		<File pattern="*.jay" />
+	</MimeType>
+</Extension>	
+
+</ExtensionModel>
+

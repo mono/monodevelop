@@ -164,8 +164,10 @@ namespace MonoDevelop.IPhone
 				monitor.EndTask ();
 			}
 			
-			if (result.Append (UnpackContent (monitor, conf, assemblyRefs)).ErrorCount > 0)
-				return result;
+			//unpack nibs and content from dll resources (MT 4+ only)
+			if (IPhoneFramework.MonoTouchVersion >= new IPhoneSdkVersion (3, 99))
+				if (result.Append (UnpackContent (monitor, conf, assemblyRefs)).ErrorCount > 0)
+					return result;
 			
 			//create the info.plist, merging in the template if it exists
 			var plistOut = conf.AppDirectory.Combine ("Info.plist");
@@ -263,15 +265,12 @@ namespace MonoDevelop.IPhone
 			
 			monitor.BeginTask ("Extracting embedded content", 0);
 			for (int i = 0; i < toProcess.Count; i++) {
-				//despite doing the deps checks with the original dlls, we do the extraction on the copies
-				//that are in the app bundle, so that in the device case we can also strip the resoucres from them
 				FilePath asmFile = toProcess[i];
 				bool skipExtract = skipExtractList != null && skipExtractList[i];
-				if (skipExtract && !isDevice)
+				if (skipExtract)
 					continue;
 				try {
-					var asmInBundle = appDir.Combine (asmFile.FileName);
-					ProcessContentAssembly (monitor, appDir, asmInBundle, isDevice, !skipExtract);
+					ExtractFromContentAssembly (monitor, appDir, asmFile);
 				} catch (Exception ex) {
 					string message = string.Format ("Error extracting content from assembly '{0}'", asmFile);
 					monitor.ReportError (message, ex);
@@ -290,9 +289,8 @@ namespace MonoDevelop.IPhone
 			return result;
 		}
 		
-		static void ProcessContentAssembly (IProgressMonitor monitor, FilePath appDir, FilePath asmInBundle, bool strip, bool extract)
+		static void ExtractFromContentAssembly (IProgressMonitor monitor, FilePath appDir, FilePath asmInBundle)
 		{
-			bool foundContent = false;
 			Mono.Cecil.AssemblyDefinition a = Mono.Cecil.AssemblyDefinition.ReadAssembly (asmInBundle);
 			foreach (Mono.Cecil.ModuleDefinition m in a.Modules) {
 				for (int i = 0; i < m.Resources.Count; i++) {
@@ -308,29 +306,18 @@ namespace MonoDevelop.IPhone
 						} else {
 							continue;
 						}
-						foundContent = true;
 						
-						if (extract) {
-							monitor.Log.WriteLine ("Extracted {0} from {1}", sname, asmInBundle.FileName);
+						monitor.Log.WriteLine ("Extracted {0} from {1}", sname, asmInBundle.FileName);
 							
-							var file = sname.ToAbsolute (appDir);
-							var parentDir = file.ParentDirectory;
-							if (!Directory.Exists (parentDir))
-								Directory.CreateDirectory (parentDir);
+						var file = sname.ToAbsolute (appDir);
+						var parentDir = file.ParentDirectory;
+						if (!Directory.Exists (parentDir))
+							Directory.CreateDirectory (parentDir);
 							
-							//FIXME: do a stream copy when we use new cecil in MD 2.6
-							File.WriteAllBytes (file, er.GetResourceData ());
-						}
-						
-						if (strip) {
-							m.Resources.RemoveAt (i--);
-						}
+						using (var fileStream = File.OpenWrite (file))
+							er.GetResourceStream ().CopyTo (fileStream);
 					}
 				}
-			}
-			if (strip && foundContent) {
-				monitor.Log.WriteLine ("Stripping content from assembly {0}", asmInBundle.FileName);
-				a.Write (asmInBundle);
 			}
 		}
 		
@@ -362,6 +349,18 @@ namespace MonoDevelop.IPhone
 			if (conf.MtouchMinimumOSVersion != "3.0")
 				args.AddQuotedFormat ("-targetver={0}", conf.MtouchMinimumOSVersion);
 			
+			if (IPhoneFramework.MonoTouchVersion >= new IPhoneSdkVersion (3, 99)) {
+				if (conf.MtouchUseSGen)
+					args.Add ("--sgen");
+				if (conf.MtouchUseLlvm) {
+					args.Add ("--llvm");
+					if (conf.MtouchUseArmv7) {
+						args.Add ("--armv7");
+						if (conf.MtouchUseThumb)
+							args.Add ("--thumb");
+					}
+				}
+			}
 			
 			AddExtraArgs (args, conf.MtouchExtraArgs, proj, conf);
 		}
@@ -393,8 +392,8 @@ namespace MonoDevelop.IPhone
 					doc.Root = dict = new PlistDictionary ();
 				
 				bool sim = conf.Platform != IPhoneProject.PLAT_IPHONE;
-				bool v3_2_orNewer = sdkVersion.CompareTo (IPhoneSdkVersion.V3_2) >= 0;
-				bool v4_0_orNewer = sdkVersion.CompareTo (IPhoneSdkVersion.V4_0) >= 0;
+				bool v3_2_orNewer = sdkVersion >= IPhoneSdkVersion.V3_2;
+				bool v4_0_orNewer = sdkVersion >= IPhoneSdkVersion.V4_0;
 				bool supportsIPhone = (proj.SupportedDevices & TargetDevice.IPhone) != 0;
 				bool supportsIPad = (proj.SupportedDevices & TargetDevice.IPad) != 0;
 				
@@ -715,6 +714,10 @@ namespace MonoDevelop.IPhone
 			var projFiles = buildData.Items.OfType<ProjectFile> ();
 			
 			if (proj.CompileTarget == CompileTarget.Library) {
+				if (IPhoneFramework.MonoTouchVersion < new IPhoneSdkVersion (3, 99))
+					return base.Compile (monitor, item, buildData);
+				
+				//pack nibs and content into the dll resources (MT 4+ only)
 				var nibDir = cfg.ObjDir.Combine ("nibs");
 				var xibRes = MacBuildUtilities.CompileXibFiles (monitor, projFiles, nibDir);
 				if (xibRes.ErrorCount > 0)
@@ -769,8 +772,8 @@ namespace MonoDevelop.IPhone
 		static IEnumerable<FilePair> GetIconContentFiles (IPhoneSdkVersion sdkVersion, IPhoneProject proj,
 			IPhoneProjectConfiguration conf)
 		{
-			bool v3_2_orNewer = sdkVersion.CompareTo (IPhoneSdkVersion.V3_2) >= 0;
-			bool v4_0_orNewer = sdkVersion.CompareTo (IPhoneSdkVersion.V4_0) >= 0;
+			bool v3_2_orNewer = sdkVersion >= IPhoneSdkVersion.V3_2;
+			bool v4_0_orNewer = sdkVersion >= IPhoneSdkVersion.V4_0;
 			bool supportsIPhone = (proj.SupportedDevices & TargetDevice.IPhone) != 0;
 			bool supportsIPad = (proj.SupportedDevices & TargetDevice.IPad) != 0;
 			var appDir = conf.AppDirectory;

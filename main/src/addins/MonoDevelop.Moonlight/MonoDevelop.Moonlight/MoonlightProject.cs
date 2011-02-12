@@ -37,6 +37,7 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 using MonoDevelop.AspNet.Gui;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Moonlight
 {
@@ -48,20 +49,16 @@ namespace MonoDevelop.Moonlight
 		public MoonlightProject ()
 			: base ()
 		{
-			Init ();
 		}
 		
 		public MoonlightProject (string languageName)
 			: base (languageName)
 		{
-			Init ();
 		}
 		
 		public MoonlightProject (string languageName, ProjectCreateInformation info, XmlElement projectOptions)
 			: base (languageName, info, projectOptions)
 		{
-			Init ();
-			
 			XmlNode silverAppNode = projectOptions.SelectSingleNode ("SilverlightApplication");
 			if (silverAppNode == null || !Boolean.TryParse (silverAppNode.InnerText, out silverlightApplication))
 				throw new Exception ("Moonlight template is missing SilverlightApplication node");
@@ -99,15 +96,9 @@ namespace MonoDevelop.Moonlight
 			generateSilverlightManifest = true;
 		}
 		
-		void Init ()
+		public override TargetFrameworkMoniker GetDefaultTargetFrameworkId ()
 		{
-			//set the framework to an available SL version
-			//FIXME: we need to base these on the MSBuild targets, so that changes are persisted
-			var fx = Runtime.SystemAssemblyService.GetTargetFramework ("SL3.0");
-			if (TargetRuntime.IsInstalled (fx))
-				TargetFramework = fx;
-			else
-				TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework ("SL2.0");
+			return new TargetFrameworkMoniker ("Silverlight", "2.0");
 		}
 		
 		public override SolutionItemConfiguration CreateConfiguration (string name)
@@ -119,8 +110,12 @@ namespace MonoDevelop.Moonlight
 		
 		public override bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
 		{
-			//framework.ClrVersion == ClrVersion.Clr_2_1;
-			return framework.Id == "SL2.0" || framework.Id == "SL3.0";
+			return framework.Id.Identifier == "Silverlight";
+		}
+		
+		public override bool SupportsFormat (FileFormat format)
+		{
+			return format.Id == "MSBuild08" || format.Id == "MSBuild10";
 		}
 		
 		public override string ProjectType {
@@ -238,6 +233,11 @@ namespace MonoDevelop.Moonlight
 		
 		[ItemProperty("ThrowErrorsInValidation")]
 		bool throwErrorsInValidation = false;
+		
+		//FIXME: how can we ensure this goes after the TargetFrameworkVersion element?
+		//why do we even need to deserialize it?
+		[ItemProperty("SilverlightVersion")]
+		string silverlightVersion = "$(TargetFrameworkVersion)";
 		
 		//whether it's an application or a classlib
 		public bool SilverlightApplication {

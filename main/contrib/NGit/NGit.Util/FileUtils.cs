@@ -154,5 +154,146 @@ namespace NGit.Util
 					()));
 			}
 		}
+
+		/// <summary>Creates the directory named by this abstract pathname.</summary>
+		/// <remarks>Creates the directory named by this abstract pathname.</remarks>
+		/// <param name="d">directory to be created</param>
+		/// <exception cref="System.IO.IOException">
+		/// if creation of
+		/// <code>d</code>
+		/// fails. This may occur if
+		/// <code>d</code>
+		/// did exist when the method was called. This can therefore
+		/// cause IOExceptions during race conditions when multiple
+		/// concurrent threads all try to create the same directory.
+		/// </exception>
+		public static void Mkdir(FilePath d)
+		{
+			Mkdir(d, false);
+		}
+
+		/// <summary>Creates the directory named by this abstract pathname.</summary>
+		/// <remarks>Creates the directory named by this abstract pathname.</remarks>
+		/// <param name="d">directory to be created</param>
+		/// <param name="skipExisting">
+		/// if
+		/// <code>true</code>
+		/// skip creation of the given directory if it
+		/// already exists in the file system
+		/// </param>
+		/// <exception cref="System.IO.IOException">
+		/// if creation of
+		/// <code>d</code>
+		/// fails. This may occur if
+		/// <code>d</code>
+		/// did exist when the method was called. This can therefore
+		/// cause IOExceptions during race conditions when multiple
+		/// concurrent threads all try to create the same directory.
+		/// </exception>
+		public static void Mkdir(FilePath d, bool skipExisting)
+		{
+			if (!d.Mkdir())
+			{
+				if (skipExisting && d.IsDirectory())
+				{
+					return;
+				}
+				throw new IOException(MessageFormat.Format(JGitText.Get().mkDirFailed, d.GetAbsolutePath
+					()));
+			}
+		}
+
+		/// <summary>
+		/// Creates the directory named by this abstract pathname, including any
+		/// necessary but nonexistent parent directories.
+		/// </summary>
+		/// <remarks>
+		/// Creates the directory named by this abstract pathname, including any
+		/// necessary but nonexistent parent directories. Note that if this operation
+		/// fails it may have succeeded in creating some of the necessary parent
+		/// directories.
+		/// </remarks>
+		/// <param name="d">directory to be created</param>
+		/// <exception cref="System.IO.IOException">
+		/// if creation of
+		/// <code>d</code>
+		/// fails. This may occur if
+		/// <code>d</code>
+		/// did exist when the method was called. This can therefore
+		/// cause IOExceptions during race conditions when multiple
+		/// concurrent threads all try to create the same directory.
+		/// </exception>
+		public static void Mkdirs(FilePath d)
+		{
+			Mkdirs(d, false);
+		}
+
+		/// <summary>
+		/// Creates the directory named by this abstract pathname, including any
+		/// necessary but nonexistent parent directories.
+		/// </summary>
+		/// <remarks>
+		/// Creates the directory named by this abstract pathname, including any
+		/// necessary but nonexistent parent directories. Note that if this operation
+		/// fails it may have succeeded in creating some of the necessary parent
+		/// directories.
+		/// </remarks>
+		/// <param name="d">directory to be created</param>
+		/// <param name="skipExisting">
+		/// if
+		/// <code>true</code>
+		/// skip creation of the given directory if it
+		/// already exists in the file system
+		/// </param>
+		/// <exception cref="System.IO.IOException">
+		/// if creation of
+		/// <code>d</code>
+		/// fails. This may occur if
+		/// <code>d</code>
+		/// did exist when the method was called. This can therefore
+		/// cause IOExceptions during race conditions when multiple
+		/// concurrent threads all try to create the same directory.
+		/// </exception>
+		public static void Mkdirs(FilePath d, bool skipExisting)
+		{
+			if (!d.Mkdirs())
+			{
+				if (skipExisting && d.IsDirectory())
+				{
+					return;
+				}
+				throw new IOException(MessageFormat.Format(JGitText.Get().mkDirsFailed, d.GetAbsolutePath
+					()));
+			}
+		}
+
+		/// <summary>
+		/// Atomically creates a new, empty file named by this abstract pathname if
+		/// and only if a file with this name does not yet exist.
+		/// </summary>
+		/// <remarks>
+		/// Atomically creates a new, empty file named by this abstract pathname if
+		/// and only if a file with this name does not yet exist. The check for the
+		/// existence of the file and the creation of the file if it does not exist
+		/// are a single operation that is atomic with respect to all other
+		/// filesystem activities that might affect the file.
+		/// <p>
+		/// Note: this method should not be used for file-locking, as the resulting
+		/// protocol cannot be made to work reliably. The
+		/// <see cref="Sharpen.FileLock">Sharpen.FileLock</see>
+		/// facility
+		/// should be used instead.
+		/// </remarks>
+		/// <param name="f">the file to be created</param>
+		/// <exception cref="System.IO.IOException">if the named file already exists or if an I/O error occurred
+		/// 	</exception>
+		public static void CreateNewFile(FilePath f)
+		{
+			if (!f.CreateNewFile())
+			{
+				throw new IOException(MessageFormat.Format(JGitText.Get().createNewFileFailed, f)
+					);
+			}
+		}
 	}
 }

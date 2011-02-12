@@ -107,17 +107,43 @@ namespace NGit.Notes
 			table = new NoteBucket[256];
 		}
 
-		internal virtual void ParseOneEntry(int cell, ObjectId id)
+		internal virtual void SetBucket(int cell, ObjectId id)
 		{
 			table[cell] = new FanoutBucket.LazyNoteBucket(this, id);
 			cnt++;
 		}
 
+		internal virtual void SetBucket(int cell, InMemoryNoteBucket bucket)
+		{
+			table[cell] = bucket;
+			cnt++;
+		}
+
 		/// <exception cref="System.IO.IOException"></exception>
-		internal override ObjectId Get(AnyObjectId objId, ObjectReader or)
+		internal override Note GetNote(AnyObjectId objId, ObjectReader or)
 		{
 			NoteBucket b = table[Cell(objId)];
-			return b != null ? b.Get(objId, or) : null;
+			return b != null ? b.GetNote(objId, or) : null;
+		}
+
+		internal virtual NoteBucket GetBucket(int cell)
+		{
+			return table[cell];
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
+		internal static InMemoryNoteBucket LoadIfLazy(NoteBucket b, AnyObjectId prefix, ObjectReader
+			 or)
+		{
+			if (b == null)
+			{
+				return null;
+			}
+			if (b is InMemoryNoteBucket)
+			{
+				return (InMemoryNoteBucket)b;
+			}
+			return ((FanoutBucket.LazyNoteBucket)b).Load(prefix, or);
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
@@ -126,12 +152,12 @@ namespace NGit.Notes
 		{
 			MutableObjectId id = new MutableObjectId();
 			id.FromObjectId(objId);
-			return new _Iterator_119(this, id, reader);
+			return new _Iterator_138(this, id, reader);
 		}
 
-		private sealed class _Iterator_119 : Sharpen.Iterator<Note>
+		private sealed class _Iterator_138 : Sharpen.Iterator<Note>
 		{
-			public _Iterator_119(FanoutBucket _enclosing, MutableObjectId id, ObjectReader reader
+			public _Iterator_138(FanoutBucket _enclosing, MutableObjectId id, ObjectReader reader
 				)
 			{
 				this._enclosing = _enclosing;
@@ -257,18 +283,7 @@ namespace NGit.Notes
 					{
 						return null;
 					}
-					if (EstimateSize(noteOn, or) < LeafBucket.MAX_SIZE)
-					{
-						// We are small enough to just contract to a single leaf.
-						InMemoryNoteBucket r = new LeafBucket(prefixLen);
-						for (Sharpen.Iterator<Note> i = Iterator(noteOn, or); i.HasNext(); )
-						{
-							r = r.Append(i.Next());
-						}
-						r.nonNotes = nonNotes;
-						return r;
-					}
-					return this;
+					return ContractIfTooSmall(noteOn, or);
 				}
 				else
 				{
@@ -281,6 +296,24 @@ namespace NGit.Notes
 			}
 		}
 
+		/// <exception cref="System.IO.IOException"></exception>
+		internal virtual InMemoryNoteBucket ContractIfTooSmall(AnyObjectId noteOn, ObjectReader
+			 or)
+		{
+			if (EstimateSize(noteOn, or) < LeafBucket.MAX_SIZE)
+			{
+				// We are small enough to just contract to a single leaf.
+				InMemoryNoteBucket r = new LeafBucket(prefixLen);
+				for (Sharpen.Iterator<Note> i = Iterator(noteOn, or); i.HasNext(); )
+				{
+					r = r.Append(i.Next());
+				}
+				r.nonNotes = nonNotes;
+				return r;
+			}
+			return this;
+		}
+
 		private static readonly byte[] hexchar = new byte[] { (byte)('0'), (byte)('1'), (
 			byte)('2'), (byte)('3'), (byte)('4'), (byte)('5'), (byte)('6'), (byte)('7'), (byte
 			)('8'), (byte)('9'), (byte)('a'), (byte)('b'), (byte)('c'), (byte)('d'), (byte)(
@@ -288,6 +321,25 @@ namespace NGit.Notes
 
 		/// <exception cref="System.IO.IOException"></exception>
 		internal override ObjectId WriteTree(ObjectInserter inserter)
+		{
+			return inserter.Insert(Build(true, inserter));
+		}
+
+		internal override ObjectId GetTreeId()
+		{
+			try
+			{
+				return new ObjectInserter.Formatter().IdFor(Build(false, null));
+			}
+			catch (IOException e)
+			{
+				// should never happen as we are not inserting
+				throw new RuntimeException(e);
+			}
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
+		private TreeFormatter Build(bool insert, ObjectInserter inserter)
 		{
 			byte[] nameBuf = new byte[2];
 			TreeFormatter fmt = new TreeFormatter(TreeSize());
@@ -306,13 +358,22 @@ namespace NGit.Notes
 					e.Format(fmt);
 					e = e.next;
 				}
-				fmt.Append(nameBuf, 0, 2, FileMode.TREE, b.WriteTree(inserter));
+				ObjectId id;
+				if (insert)
+				{
+					id = b.WriteTree(inserter);
+				}
+				else
+				{
+					id = b.GetTreeId();
+				}
+				fmt.Append(nameBuf, 0, 2, FileMode.TREE, id);
 			}
 			for (; e != null; e = e.next)
 			{
 				e.Format(fmt);
 			}
-			return inserter.Insert(fmt);
+			return fmt;
 		}
 
 		private int TreeSize()
@@ -351,7 +412,7 @@ namespace NGit.Notes
 			return id.GetByte(prefixLen >> 1);
 		}
 
-		private class LazyNoteBucket : NoteBucket
+		internal class LazyNoteBucket : NoteBucket
 		{
 			private readonly ObjectId treeId;
 
@@ -362,9 +423,9 @@ namespace NGit.Notes
 			}
 
 			/// <exception cref="System.IO.IOException"></exception>
-			internal override ObjectId Get(AnyObjectId objId, ObjectReader or)
+			internal override Note GetNote(AnyObjectId objId, ObjectReader or)
 			{
-				return this.Load(objId, or).Get(objId, or);
+				return this.Load(objId, or).GetNote(objId, or);
 			}
 
 			/// <exception cref="System.IO.IOException"></exception>
@@ -392,12 +453,17 @@ namespace NGit.Notes
 				return this.treeId;
 			}
 
-			/// <exception cref="System.IO.IOException"></exception>
-			private NoteBucket Load(AnyObjectId objId, ObjectReader or)
+			internal override ObjectId GetTreeId()
 			{
-				AbbreviatedObjectId p = objId.Abbreviate(this._enclosing.prefixLen + 2);
-				NoteBucket self = NoteParser.Parse(p, this.treeId, or);
-				this._enclosing.table[this._enclosing.Cell(objId)] = self;
+				return this.treeId;
+			}
+
+			/// <exception cref="System.IO.IOException"></exception>
+			internal InMemoryNoteBucket Load(AnyObjectId prefix, ObjectReader or)
+			{
+				AbbreviatedObjectId p = prefix.Abbreviate(this._enclosing.prefixLen + 2);
+				InMemoryNoteBucket self = NoteParser.Parse(p, this.treeId, or);
+				this._enclosing.table[this._enclosing.Cell(prefix)] = self;
 				return self;
 			}
 

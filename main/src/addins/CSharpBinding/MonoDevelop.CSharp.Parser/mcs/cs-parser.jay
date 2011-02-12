@@ -1237,15 +1237,18 @@ variable_initializer
 	;
 
 method_declaration
-	: method_header {
+	: method_header
+	  {
 		if (RootContext.Documentation != null)
 			Lexer.doc_state = XmlCommentState.NotAllowed;
+
+		// Add it early in the case of body being eof for full aot
+		current_container.AddMethod ((Method) $1);
 	  }
 	  method_body
 	  {
 		Method method = (Method) $1;
 		method.Block = (ToplevelBlock) $3;
-		current_container.AddMethod (method);
 		
 		if (current_container.Kind == MemberKind.Interface && method.Block != null) {
 			Report.Error (531, method.Location, "`{0}': interface members cannot have a definition", method.GetSignatureForError ());
@@ -1568,7 +1571,7 @@ fixed_parameter
 		lbag.AddLocation ($$, parameterModifierLocation, GetLocation ($5)); // parameterModifierLocation should be ignored when mod == NONE
 		
 		if ($7 != null)
-			((Parameter) $$).DefaultValue = (Expression) $7;
+			((Parameter) $$).DefaultValue = new DefaultParameterValueExpression ((Expression) $7);
 	  }
 	;
 
@@ -3435,7 +3438,7 @@ array_creation_expression
 
 		$$ = new ArrayCreation ((FullNamedExpression) $2, (ComposedTypeSpecifier) $3, (ArrayInitializer) $4, GetLocation ($1));
 	  }
-	| NEW rank_specifiers array_initializer
+	| NEW rank_specifier array_initializer
 	  {
 		if (RootContext.Version <= LanguageVersion.ISO_2)
 			Report.FeatureIsNotAvailable (GetLocation ($1), "implicitly typed arrays");

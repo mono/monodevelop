@@ -147,12 +147,12 @@ using (IDisposable b = null) {
 		" + input + @"
 	}
 }";
-			CSharp.Dom.CompilationUnit compilationUnit = new CSharpParser ().Parse (data);
-			DomSpacingVisitor domSpacingVisitor = new DomSpacingVisitor (policy, data);
+			var compilationUnit = new CSharpParser ().Parse (data);
+			AstSpacingVisitor domSpacingVisitor = new AstSpacingVisitor (policy, data);
 			domSpacingVisitor.AutoAcceptChanges = false;
 			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
 			
-			DomIndentationVisitor domIndentationVisitor = new DomIndentationVisitor (policy, data);
+			AstIndentationVisitor domIndentationVisitor = new AstIndentationVisitor (policy, data);
 			domIndentationVisitor.AutoAcceptChanges = false;
 			compilationUnit.AcceptVisitor (domIndentationVisitor, null);
 			
@@ -182,6 +182,36 @@ using (IDisposable b = null) {
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			TestStatementFormatting (policy, "@string=@int;", "@string = @int;");
 		}
+		
+		/// <summary>
+		/// Bug 670213 - Document formatter deletes valid text!
+		/// </summary>
+		[Test()]
+		public void TestBug670213 ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	Test MyMethod() // Comment
+	{
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.MethodBraceStyle = BraceStyle.EndOfLine;
+			
+			var compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
+			
+			Assert.AreEqual (@"class Test
+{
+	Test MyMethod() { // Comment
+	}
+}", data.Document.Text);
+		}
+		
+		
 	}
 }
 

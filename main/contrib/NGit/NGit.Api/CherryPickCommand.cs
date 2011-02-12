@@ -117,6 +117,7 @@ namespace NGit.Api
 						);
 				}
 				RevCommit headCommit = revWalk.ParseCommit(headRef.GetObjectId());
+				newHead = headCommit;
 				// loop through all refs to be cherry-picked
 				foreach (Ref src in commits)
 				{
@@ -142,6 +143,10 @@ namespace NGit.Api
 					merger.SetBase(srcParent.Tree);
 					if (merger.Merge(headCommit, srcCommit))
 					{
+						if (AnyObjectId.Equals(headCommit.Tree.Id, merger.GetResultTreeId()))
+						{
+							continue;
+						}
 						DirCacheCheckout dco = new DirCacheCheckout(repo, headCommit.Tree, repo.LockDirCache
 							(), merger.GetResultTreeId());
 						dco.SetFailOnConflict(true);

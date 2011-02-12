@@ -335,8 +335,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			DotNetProject dotNetProject = Item as DotNetProject;
 			
-			string frameworkVersion = null;
-			
 			// Read all items
 			
 			timer.Trace ("Read project items");
@@ -353,12 +351,20 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			timer.Trace ("Read configurations");
 			
+			TargetFrameworkMoniker targetFx = null;
+			
 			if (dotNetProject != null) {
-				frameworkVersion = globalGroup.GetPropertyValue ("TargetFrameworkVersion");
-				if (frameworkVersion != null && frameworkVersion.StartsWith ("v"))
-					frameworkVersion = frameworkVersion.Substring (1);
-				if (!string.IsNullOrEmpty (frameworkVersion))
-					dotNetProject.TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (frameworkVersion);
+				string frameworkIdentifier = globalGroup.GetPropertyValue ("TargetFrameworkIdentifier");
+				string frameworkVersion = globalGroup.GetPropertyValue ("TargetFrameworkVersion");
+				string frameworkProfile = globalGroup.GetPropertyValue ("TargetFrameworkProfile");
+				
+				//determine the default target framework from the project type's default
+				//overridden by the components in the project
+				var def = dotNetProject.GetDefaultTargetFrameworkId ();
+				targetFx = new TargetFrameworkMoniker (
+					string.IsNullOrEmpty (frameworkIdentifier)? def.Identifier : frameworkIdentifier,
+					string.IsNullOrEmpty (frameworkVersion)? def.Version : frameworkVersion,
+					string.IsNullOrEmpty (frameworkProfile)? def.Profile : frameworkProfile);
 				
 				if (dotNetProject.LanguageParameters != null) {
 					DataItem data = ReadPropertyGroupMetadata (ser, globalGroup, dotNetProject.LanguageParameters);
@@ -422,15 +428,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			timer.Trace ("Final initializations");
 			
-			if (dotNetProject != null && string.IsNullOrEmpty (frameworkVersion)) {
+			//clean up the "InternalTargetFrameworkVersion" hack from MD 2.2, 2.4
+			if (dotNetProject != null) {
 				string fx = Item.ExtendedProperties ["InternalTargetFrameworkVersion"] as string;
-				if (fx != null) {
-					dotNetProject.TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (fx);
+				if (!string.IsNullOrEmpty (fx)) {
+					targetFx = TargetFrameworkMoniker.Parse (fx);
 					Item.ExtendedProperties.Remove ("InternalTargetFrameworkVersion");
-				} else {
-					// If no framework is specified, it means the format is VS2005, so the default framework is 2.0.
-					dotNetProject.TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework ("2.0");
 				}
+				
+				dotNetProject.TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (targetFx);
 			}
 			
 			Item.NeedsReload = false;
@@ -669,23 +675,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			else
 				msproject.ToolsVersion = string.Empty;
 
-			
-			string targetFramework = null;
-			IList supportedFrameworks = TargetFormat.FrameworkVersions;
-			
-			if (dotNetProject != null) {
-
-				targetFramework = dotNetProject.TargetFramework.Id;
-
-				// If the file format does not support this framework version, store the highest version
-				// supported in the TargetFrameworkVersion property and the real one in the extended properties
-				if (!supportedFrameworks.Contains (targetFramework)) {
-					dotNetProject.ExtendedProperties ["InternalTargetFrameworkVersion"] = targetFramework;
-					targetFramework = FindClosestSupportedVersion (targetFramework);
-				} else
-					dotNetProject.ExtendedProperties.Remove ("InternalTargetFrameworkVersion");
-			}
-
 			// This serialize call will write data to ser.InternalItemProperties and ser.ExternalItemProperties
 			ser.Serialize (Item, Item.GetType ());
 			
@@ -809,13 +798,33 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		
 			if (dotNetProject != null) {
+				var moniker = dotNetProject.TargetFramework.Id;
+				bool supportsMultipleFrameworks = TargetFormat.FrameworkVersions.Length > 0;
+				var def = dotNetProject.GetDefaultTargetFrameworkId ();
+				bool isDefaultIdentifier = def.Identifier == moniker.Identifier;
+				bool isDefaultVersion = isDefaultIdentifier && def.Version == moniker.Version;
+				bool isDefaultProfile = isDefaultVersion && def.Profile == moniker.Profile;
+				
+				//HACK: default needs to be format dependent, so always write it for now
+				isDefaultVersion = false;
 
-				// If the format only supports one fx version, there is no need to store it
-				if (supportedFrameworks.Count > 1)
-					SetGroupProperty (globalGroup, "TargetFrameworkVersion", "v" + targetFramework, false);
+				// If the format only supports one fx version, or the version is the default, there is no need to store it
+				if (/*!isDefaultVersion &&*/ supportsMultipleFrameworks)
+					SetGroupProperty (globalGroup, "TargetFrameworkVersion", "v" + moniker.Version, false);
 				else
 					globalGroup.RemoveProperty ("TargetFrameworkVersion");
 				
+				if (TargetFormat.SupportsMonikers) {
+					if (!isDefaultIdentifier && def.Identifier != moniker.Identifier)
+						SetGroupProperty (globalGroup, "TargetFrameworkIdentifier", moniker.Identifier, false);
+					else
+						globalGroup.RemoveProperty ("TargetFrameworkIdentifier");
+					
+					if (!isDefaultProfile && def.Profile != moniker.Profile)
+						SetGroupProperty (globalGroup, "TargetFrameworkProfile", moniker.Profile, false);
+					else
+						globalGroup.RemoveProperty ("TargetFrameworkProfile");
+				}
 			}
 
 			// Impdate the imports section
@@ -1022,12 +1031,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					buildItem.SetMetadata ("SpecificVersion", "False");
 				else
 					buildItem.UnsetMetadata ("SpecificVersion");
+				
+				//RequiredTargetFramework is undocumented, maybe only a hint for VS. Only seems to be used for .NETFramework
+				var dnp = pref.OwnerProject as DotNetProject;
 				IList supportedFrameworks = TargetFormat.FrameworkVersions;
-				if (pkg != null && pkg.IsFrameworkPackage && supportedFrameworks.Contains (pkg.TargetFramework) && pkg.TargetFramework != "2.0" && supportedFrameworks.Count > 1) {
+				if (dnp != null && pkg != null
+					&& dnp.TargetFramework.Id.Identifier == TargetFrameworkMoniker.ID_NET_FRAMEWORK
+					&& pkg.IsFrameworkPackage && supportedFrameworks.Contains (pkg.TargetFramework)
+					&& pkg.TargetFramework.Version != "2.0" && supportedFrameworks.Count > 1)
+				{
 					TargetFramework fx = Runtime.SystemAssemblyService.GetTargetFramework (pkg.TargetFramework);
-					buildItem.SetMetadata ("RequiredTargetFramework", fx.Id);
-				} else
+					buildItem.SetMetadata ("RequiredTargetFramework", fx.Id.Version);
+				} else {
 					buildItem.UnsetMetadata ("RequiredTargetFramework");
+				}
+				
 				string hintPath = (string) pref.ExtendedProperties ["_OriginalMSBuildReferenceHintPath"];
 				if (hintPath != null)
 					buildItem.SetMetadata ("HintPath", hintPath);
@@ -1338,20 +1356,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					return true;
 			}
 			return false;
-		}
-
-		string FindClosestSupportedVersion (string version)
-		{
-			TargetFramework sfx = Runtime.SystemAssemblyService.GetTargetFramework (version);
-			if (!string.IsNullOrEmpty (sfx.SubsetOfFramework) && ((IList)TargetFormat.FrameworkVersions).Contains (sfx.SubsetOfFramework))
-				return sfx.SubsetOfFramework;
-			
-			foreach (string supv in TargetFormat.FrameworkVersions) {
-				TargetFramework fx = Runtime.SystemAssemblyService.GetTargetFramework (supv);
-				if (fx.IsCompatibleWithFramework (version))
-					return fx.Id;
-			}
-			return TargetFormat.FrameworkVersions [TargetFormat.FrameworkVersions.Length - 1];
 		}
 		
 		string GetXmlString (DataNode node)

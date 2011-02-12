@@ -80,6 +80,8 @@ namespace MonoDevelop.IPhone.Gui
 		ListStore i18nStore = new ListStore (typeof (string), typeof (bool));
 		ListStore sdkStore = new ListStore (typeof (string), typeof (IPhoneSdkVersion));
 		
+		bool enableMtouch4Features;
+		
 		public IPhoneBuildOptionsWidget ()
 		{
 			this.Build ();
@@ -104,7 +106,29 @@ namespace MonoDevelop.IPhone.Gui
 			
 			sdkCombo.Changed += HandleSdkComboChanged;
 			
+			enableMtouch4Features = IPhoneFramework.MonoTouchVersion >= new IPhoneSdkVersion (3, 99);
+			if (enableMtouch4Features) {
+				useLlvmCheck.Toggled += UpdateCodegenCheckSensitivity;
+				useArmv7Check.Toggled += UpdateCodegenCheckSensitivity;
+			} else {
+				advancedVbox.Remove (codeGenerationLabel);
+				codeGenerationLabel.Destroy ();
+				advancedVbox.Remove (codeGenerationAlignment);
+				codeGenerationAlignment.Destroy ();
+				advancedVbox.Remove (runtimeOptionsLabel);
+				runtimeOptionsLabel.Destroy ();
+				advancedVbox.Remove (runtimeOptionsAlignment);
+				runtimeOptionsAlignment.Destroy ();
+			}
+			
 			this.ShowAll ();
+		}
+
+		void UpdateCodegenCheckSensitivity (object sender, EventArgs e)
+		{
+			var llvmActive = useLlvmCheck.Active;
+			useArmv7Check.Sensitive = llvmActive;
+			useThumbCheck.Sensitive = llvmActive && useArmv7Check.Active;
 		}
 
 		/// <summary>
@@ -132,6 +156,13 @@ namespace MonoDevelop.IPhone.Gui
 			LoadSdkValues (cfg.MtouchSdkVersion);
 			minOSComboEntry.Entry.Text = cfg.MtouchMinimumOSVersion;
 			LoadI18nValues (cfg.MtouchI18n);
+			if (enableMtouch4Features) {
+				useLlvmCheck.Active = cfg.MtouchUseLlvm;
+				useArmv7Check.Active = cfg.MtouchUseArmv7;
+				useThumbCheck.Active = cfg.MtouchUseThumb;
+				useSGenCheck.Active = cfg.MtouchUseSGen;
+				UpdateCodegenCheckSensitivity (null, null);
+			}
 		}
 		
 		public void StorePanelContents (IPhoneProjectConfiguration cfg)
@@ -142,6 +173,12 @@ namespace MonoDevelop.IPhone.Gui
 			cfg.MtouchDebug = debugCheck.Active;
 			cfg.MtouchLink = (MtouchLinkMode) linkCombo.Active;
 			cfg.MtouchI18n = GetI18nValues ();
+			if (enableMtouch4Features) {
+				cfg.MtouchUseLlvm = useLlvmCheck.Active;
+				cfg.MtouchUseArmv7 = cfg.MtouchUseLlvm && useArmv7Check.Active;
+				cfg.MtouchUseThumb = cfg.MtouchUseArmv7 && useThumbCheck.Active;
+				cfg.MtouchUseSGen = useSGenCheck.Active;
+			}
 		}
 		
 		void LoadSdkValues (IPhoneSdkVersion selectedVersion)

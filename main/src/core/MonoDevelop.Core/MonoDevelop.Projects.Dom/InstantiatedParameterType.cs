@@ -59,7 +59,7 @@ namespace MonoDevelop.Projects.Dom
 			foreach (IReturnType rt in tp.Constraints) {
 				if (FindCyclicReference (new HashSet<ITypeParameter> () { tp }, outerType, ((DomReturnType)rt).DecoratedFullName))
 					continue;
-				IType bt = dom.SearchType (typeParameterMember, rt);
+				IType bt = dom.SearchType (compilationUnit, typeParameterMember, rt);
 				IReturnType resolvedType = rt;
 				if (bt != null) {
 					resolvedType = new DomReturnType (bt);

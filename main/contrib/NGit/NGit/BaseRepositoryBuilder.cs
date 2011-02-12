@@ -433,7 +433,7 @@ namespace NGit
 			}
 			if (GetIndexFile() == null)
 			{
-				string val = sr.Getenv(Constants.GIT_INDEX_KEY);
+				string val = sr.Getenv(Constants.GIT_INDEX_FILE_KEY);
 				if (val != null)
 				{
 					SetIndexFile(new FilePath(val));

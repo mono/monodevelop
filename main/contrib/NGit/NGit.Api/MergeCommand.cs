@@ -118,7 +118,6 @@ namespace NGit.Api
 				StringBuilder refLogMessage = new StringBuilder("merge ");
 				// Check for FAST_FORWARD, ALREADY_UP_TO_DATE
 				revWalk = new RevWalk(repo);
-				RevCommit headCommit = revWalk.LookupCommit(head.GetObjectId());
 				// we know for now there is only one commit
 				Ref @ref = commits[0];
 				refLogMessage.Append(@ref.GetName());
@@ -129,6 +128,28 @@ namespace NGit.Api
 					objectId = @ref.GetObjectId();
 				}
 				RevCommit srcCommit = revWalk.LookupCommit(objectId);
+				ObjectId headId = head.GetObjectId();
+				if (headId == null)
+				{
+					revWalk.ParseHeaders(srcCommit);
+					DirCacheCheckout dco = new DirCacheCheckout(repo, repo.LockDirCache(), srcCommit.
+						Tree);
+					dco.SetFailOnConflict(true);
+					dco.Checkout();
+					RefUpdate refUpdate = repo.UpdateRef(head.GetTarget().GetName());
+					refUpdate.SetNewObjectId(objectId);
+					refUpdate.SetExpectedOldObjectId(null);
+					refUpdate.SetRefLogMessage("initial pull", false);
+					if (refUpdate.Update() != RefUpdate.Result.NEW)
+					{
+						throw new NoHeadException(JGitText.Get().commitOnRepoWithoutHEADCurrentlyNotSupported
+							);
+					}
+					SetCallable(false);
+					return new MergeCommandResult(srcCommit, srcCommit, new ObjectId[] { null, srcCommit
+						 }, MergeStatus.FAST_FORWARD, mergeStrategy, null, null);
+				}
+				RevCommit headCommit = revWalk.LookupCommit(headId);
 				if (revWalk.IsMergedInto(srcCommit, headCommit))
 				{
 					SetCallable(false);
@@ -146,7 +167,7 @@ namespace NGit.Api
 							(), srcCommit.Tree);
 						dco.SetFailOnConflict(true);
 						dco.Checkout();
-						UpdateHead(refLogMessage, srcCommit, head.GetObjectId());
+						UpdateHead(refLogMessage, srcCommit, headId);
 						SetCallable(false);
 						return new MergeCommandResult(srcCommit, srcCommit, new ObjectId[] { headCommit, 
 							srcCommit }, MergeStatus.FAST_FORWARD, mergeStrategy, null, null);
@@ -166,7 +187,7 @@ namespace NGit.Api
 							resolveMerger.SetWorkingTreeIterator(new FileTreeIterator(repo));
 							noProblems = merger.Merge(headCommit, srcCommit);
 							lowLevelResults = resolveMerger.GetMergeResults();
-							failingPaths = resolveMerger.GetFailingPathes();
+							failingPaths = resolveMerger.GetFailingPaths();
 						}
 						else
 						{

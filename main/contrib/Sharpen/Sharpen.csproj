@@ -142,6 +142,10 @@
     <Compile Include="Sharpen\BitSet.cs" />
     <Compile Include="Sharpen\Channels.cs" />
     <Compile Include="Sharpen\BufferedWriter.cs" />
+    <Compile Include="Sharpen\X509TrustManager.cs" />
+    <Compile Include="Sharpen\X509Certificate.cs" />
+    <Compile Include="Sharpen\TrustManager.cs" />
+    <Compile Include="Sharpen\SSLContext.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -688,6 +688,8 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 			} else {
 				stack.Push (Inside.Block, keyword, curLineNr, 0);
+				if (inside == Inside.ParenList)
+					TrimIndent ();
 			}
 			
 			keyword = String.Empty;
@@ -720,7 +722,13 @@ namespace MonoDevelop.CSharp.Formatting
 				inside = stack.PeekInside (1);
 				stack.Pop ();
 			}
-
+			
+			if (inside == Inside.ParenList) {
+				curIndent = stack.PeekIndent (0);
+				keyword = stack.PeekKeyword (0);
+				inside = stack.PeekInside (0);
+			}
+			
 			// pop this block off the stack
 			keyword = stack.PeekKeyword (0);
 			if (keyword != "case" && keyword != "default")

@@ -127,9 +127,11 @@ namespace MonoDevelop.Projects.Dom
 				return null;
 			string xmlFileName = System.IO.Path.ChangeExtension (fileName, ".xml");
 			//FIXME: should pass a custom resolver to the AssemblyDefinition so that it resolves from the correct GAC
-			DomCecilCompilationUnit result = new DomCecilCompilationUnit (AssemblyDefinition.ReadAssembly (fileName), xmlFileName, loadInternals, instantiateTypeParameter);
-			result.fileName = fileName;
-			return result;
+			using (var stream = new MemoryStream (File.ReadAllBytes (fileName))) {
+				DomCecilCompilationUnit result = new DomCecilCompilationUnit (AssemblyDefinition.ReadAssembly (stream), xmlFileName, loadInternals, instantiateTypeParameter);
+				result.fileName = fileName;
+				return result;
+			}
 		}
 		
 		public static bool IsInternal (MonoDevelop.Projects.Dom.Modifiers mods)

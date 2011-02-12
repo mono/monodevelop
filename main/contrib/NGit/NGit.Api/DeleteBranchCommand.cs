@@ -164,9 +164,9 @@ namespace NGit.Api
 							string shortenedName = Sharpen.Runtime.Substring(fullName, Constants.R_HEADS.Length
 								);
 							// remove upstream configuration if any
-							repo.GetConfig().UnsetSection(ConfigConstants.CONFIG_BRANCH_SECTION, shortenedName
-								);
-							repo.GetConfig().Save();
+							StoredConfig cfg = repo.GetConfig();
+							cfg.UnsetSection(ConfigConstants.CONFIG_BRANCH_SECTION, shortenedName);
+							cfg.Save();
 						}
 					}
 					else

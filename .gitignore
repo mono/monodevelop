@@ -36,6 +36,7 @@ autom4te.cache/
 /main/monodevelop
 /main/monodevelop-core-addins.pc
 /main/monodevelop.pc
+/main/monodevelop.spec
 /profiles/default
 
 # Autotools junk

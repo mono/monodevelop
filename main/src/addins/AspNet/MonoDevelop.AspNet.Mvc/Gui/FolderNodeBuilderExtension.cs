@@ -123,7 +123,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 				}	
 				
 				handle = MonoDevelop.TextTemplating.TextTemplatingService.GetTemplatingDomain ();
-				handle.LoadAssembly (typeof (MvcTextTemplateHost).Assembly);
+				handle.AddAssembly (typeof (MvcTextTemplateHost).Assembly);
 				
 				host = MvcTextTemplateHost.Create (handle.Domain);
 				

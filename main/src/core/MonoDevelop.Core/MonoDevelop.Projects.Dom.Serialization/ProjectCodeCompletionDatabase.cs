@@ -44,7 +44,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	{
 		Project project;
 		bool initialFileCheck;
-		string lastVersion = null;
 		int parseCount;
 		
 		public ProjectCodeCompletionDatabase (Project project, ParserDatabase pdb): base (pdb, true)
@@ -182,9 +181,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			
 			DotNetProject prj = project as DotNetProject;
 			if (prj == null) return false;
-			
-			if (prj.TargetFramework.Id == lastVersion)
-				return false;
 
 			// Look for an existing mscorlib reference
 			string currentRefUri = null;
@@ -249,11 +245,12 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				ICompilationUnit cu = parserInfo;
 	
 				List<IType> resolved;
+				List<IAttribute> resolvedAtts;
 				
-				int unresolvedCount = ResolveTypes (cu, cu.Types, out resolved);
+				int unresolvedCount = ResolveTypes (cu, cu.Types, cu.Attributes, out resolved, out resolvedAtts);
 				totalUnresolvedCount += unresolvedCount;
 				
-				TypeUpdateInformation res = UpdateTypeInformation (resolved, parserInfo.FileName);
+				TypeUpdateInformation res = UpdateTypeInformation (resolved, resolvedAtts, parserInfo.FileName);
 				
 				FileEntry file;
 				if (files.TryGetValue (fileName, out file)) {

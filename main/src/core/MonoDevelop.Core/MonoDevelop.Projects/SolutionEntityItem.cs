@@ -67,6 +67,8 @@ namespace MonoDevelop.Projects
 		public event ConfigurationEventHandler DefaultConfigurationChanged;
 		public event ConfigurationEventHandler ConfigurationAdded;
 		public event ConfigurationEventHandler ConfigurationRemoved;
+		public event EventHandler<ProjectItemEventArgs> ProjectItemAdded;
+		public event EventHandler<ProjectItemEventArgs> ProjectItemRemoved;
 		
 		public SolutionEntityItem ()
 		{
@@ -113,6 +115,7 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				releaseVersion = value;
+				NotifyModified ("Version");
 			}
 		}
 		
@@ -124,6 +127,7 @@ namespace MonoDevelop.Projects
 				syncReleaseVersion = value;
 				if (syncReleaseVersion && ParentSolution != null)
 					Version = ParentSolution.Version;
+				NotifyModified ("SyncVersionWithSolution");
 			}
 		}
 		
@@ -461,12 +465,18 @@ namespace MonoDevelop.Projects
 			return source;
 		}
 		
-		internal protected virtual void OnItemAdded (object obj)
+		internal protected virtual void OnItemAdded (ProjectItem obj)
 		{
+			NotifyModified ("Items");
+			if (ProjectItemAdded != null)
+				ProjectItemAdded (this, new ProjectItemEventArgs (this, obj));
 		}
 		
-		internal protected virtual void OnItemRemoved (object obj)
+		internal protected virtual void OnItemRemoved (ProjectItem obj)
 		{
+			NotifyModified ("Items");
+			if (ProjectItemRemoved != null)
+				ProjectItemRemoved (this, new ProjectItemEventArgs (this, obj));
 		}
 		
 		protected virtual void OnDefaultConfigurationChanged (ConfigurationEventArgs args)

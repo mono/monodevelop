@@ -346,7 +346,7 @@ namespace MonoDevelop.SourceEditor
 			return result;
 		}
 		HashSet<string> symbols = new HashSet<string> ();
-		
+		bool reloadSettings;
 		
 		void HandleParseInformationUpdaterWorkerThreadDoWork (object sender, DoWorkEventArgs e)
 		{
@@ -366,6 +366,7 @@ namespace MonoDevelop.SourceEditor
 						}
 					}
 				}
+				
 				if (updateSymbols) {
 					symbols.Clear ();
 					foreach (PreProcessorDefine define in parsedDocument.Defines) {
@@ -373,6 +374,7 @@ namespace MonoDevelop.SourceEditor
 					}
 					doc.UpdateHighlighting ();
 				}
+				
 				foreach (FoldingRegion region in parsedDocument.GenerateFolds ()) {
 					if (worker != null && worker.CancellationPending)
 						return;
@@ -423,6 +425,13 @@ namespace MonoDevelop.SourceEditor
 				}
 				doc.UpdateFoldSegments (foldSegments, false);
 				UpdateErrorUndelines (parsedDocument);
+				if (reloadSettings) {
+					reloadSettings = false;
+					Application.Invoke (delegate {
+						view.LoadSettings ();
+						mainsw.QueueDraw ();
+					});
+				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
 			}
@@ -471,10 +480,17 @@ namespace MonoDevelop.SourceEditor
 				return;
 			parseInformationUpdaterWorkerThread.CancelAsync ();
 			WaitForParseInformationUpdaterWorkerThread ();
+			parseInformationUpdaterWorkerThread.Dispose ();
+			
+			parseInformationUpdaterWorkerThread = new BackgroundWorker ();
+			parseInformationUpdaterWorkerThread.WorkerSupportsCancellation = true;
+			parseInformationUpdaterWorkerThread.DoWork += HandleParseInformationUpdaterWorkerThreadDoWork;
 		}
+		
 		public void WaitForParseInformationUpdaterWorkerThread ()
 		{
-			while (parseInformationUpdaterWorkerThread.IsBusy)
+			int count = 0;
+			while (count++ < 5 && parseInformationUpdaterWorkerThread.IsBusy)
 				Thread.Sleep (20);
 		}
 		
@@ -799,14 +815,9 @@ namespace MonoDevelop.SourceEditor
 		public void Reload ()
 		{
 			try {
-				double vscroll = view.TextEditor.VAdjustment.Value;
-				var loc = view.TextEditor.Caret.Location;
-				
+				view.StoreSettings ();
+				reloadSettings = true;
 				view.Load (view.ContentName);
-				
-				view.TextEditor.Caret.Location = loc;
-				view.TextEditor.VAdjustment.Value = vscroll;
-				
 				view.WorkbenchWindow.ShowNotification = false;
 			} catch (Exception ex) {
 				MessageService.ShowException (ex, "Could not reload the file.");

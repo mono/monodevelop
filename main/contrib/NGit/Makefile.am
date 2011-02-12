@@ -13,4 +13,8 @@ $(NGIT): $(NGIT_CSFILES)
 
 CLEANFILES = $(NGIT) $(NGIT_MDB)
 
-
+EXTRA_DIST = \
+	     $(wildcard NGit*/*.cs) \
+	     $(wildcard resources/*) \
+	     AssemblyInfo.cs \
+	     NGit.csproj

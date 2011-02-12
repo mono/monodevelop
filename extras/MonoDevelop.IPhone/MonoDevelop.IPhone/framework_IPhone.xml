@@ -1,4 +1,4 @@
-<TargetFramework id="IPhone" _name="Mono for iPhone" clrVersion="Clr_2_1" SubsetOfFramework="3.5">
+<TargetFramework id="MonoTouch,Version=v1.0" _name="Mono for iPhone" clrVersion="Clr_2_1">
 <Assemblies>
   <Assembly name="mscorlib" version="2.0.5.0" publicKeyToken="7cec85d7bea7798e" />
   <Assembly name="System" version="2.0.5.0" publicKeyToken="7cec85d7bea7798e" />
@@ -12,6 +12,7 @@
   <Assembly name="System.Json" version="2.0.5.0" publicKeyToken="7cec85d7bea7798e" />
   <Assembly name="System.Web.Services" version="2.0.5.0" publicKeyToken="b03f5f7f11d50a3a" />
   <Assembly name="System.Data" version="2.0.5.0" publicKeyToken="b77a5c561934e089" />
+  <Assembly name="System.Data.Services.Client" version="2.0.5.0" publicKeyToken="b03f5f7f11d50a3a" />
   <Assembly name="System.Transactions" version="2.0.5.0" publicKeyToken="b77a5c561934e089" />
   <Assembly name="Mono.Data.Sqlite" version="2.0.5.0" publicKeyToken="0738eb9f132ed756" />
   <Assembly name="Mono.Data.Tds" version="2.0.5.0" publicKeyToken="0738eb9f132ed756" />

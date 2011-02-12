@@ -138,11 +138,11 @@ namespace NGit.Storage.Pack
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
-		internal void WriteFileHeader(int version, int objectCount)
+		internal void WriteFileHeader(int version, long objectCount)
 		{
 			System.Array.Copy(Constants.PACK_SIGNATURE, 0, headerBuffer, 0, 4);
 			NB.EncodeInt32(headerBuffer, 4, version);
-			NB.EncodeInt32(headerBuffer, 8, objectCount);
+			NB.EncodeInt32(headerBuffer, 8, (int)objectCount);
 			Write(headerBuffer, 0, 12);
 		}
 

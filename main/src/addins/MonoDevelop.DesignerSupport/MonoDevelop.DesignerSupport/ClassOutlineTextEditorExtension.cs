@@ -70,6 +70,7 @@ namespace MonoDevelop.DesignerSupport
 			disposed = true;
 			if (Document != null)
 				Document.DocumentParsed -= UpdateDocumentOutline;
+			RemoveRefillOutlineStoreTimeout ();
 			base.Dispose ();
 		}
 
@@ -154,14 +155,23 @@ namespace MonoDevelop.DesignerSupport
 			outlineTreeStore = null;
 			outlineTreeView = null;
 		}
-
+		
+		void RemoveRefillOutlineStoreTimeout ()
+		{
+			if (refillOutlineStoreId == 0)
+				return;
+			GLib.Source.Remove (refillOutlineStoreId);
+			refillOutlineStoreId = 0;
+		}
+		
+		uint refillOutlineStoreId;
 		void UpdateDocumentOutline (object sender, EventArgs args)
 		{
 			lastCU = Document.ParsedDocument;
 			//limit update rate to 3s
 			if (!refreshingOutline) {
 				refreshingOutline = true;
-				GLib.Timeout.Add (3000, new GLib.TimeoutHandler (RefillOutlineStore));
+				refillOutlineStoreId = GLib.Timeout.Add (3000, new GLib.TimeoutHandler (RefillOutlineStore));
 			}
 		}
 
@@ -170,8 +180,10 @@ namespace MonoDevelop.DesignerSupport
 			DispatchService.AssertGuiThread ();
 			Gdk.Threads.Enter ();
 			refreshingOutline = false;
-			if (outlineTreeStore == null || !outlineTreeView.IsRealized)
+			if (outlineTreeStore == null || !outlineTreeView.IsRealized) {
+				refillOutlineStoreId = 0;
 				return false;
+			}
 
 			outlineTreeStore.Clear ();
 			if (lastCU != null) {
@@ -182,6 +194,7 @@ namespace MonoDevelop.DesignerSupport
 			Gdk.Threads.Leave ();
 
 			//stop timeout handler
+			refillOutlineStoreId = 0;
 			return false;
 		}
 

@@ -31,7 +31,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.Components.FolderListSelector.cs \
 	gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs \
-	gtk-gui/MonoDevelop.Ide.DocumentSwitcher.cs \
 	gtk-gui/MonoDevelop.Ide.Execution.CustomExecutionModeDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Execution.CustomExecutionModeManagerDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Execution.CustomExecutionModeWidget.cs \
@@ -366,6 +365,7 @@ FILES =  \
 	MonoDevelop.Ide.Extensions/MimeTypeOptionsPanelNode.cs \
 	MonoDevelop.Ide.Extensions/OptionsDialogSection.cs \
 	MonoDevelop.Ide.Extensions/OptionsPanelNode.cs \
+	MonoDevelop.Ide.Extensions/StartupHandlerExtensionAttribute.cs \
 	MonoDevelop.Ide.Extensions/StockIconCodon.cs \
 	MonoDevelop.Ide.Extensions/TextEditorExtensionNode.cs \
 	MonoDevelop.Ide.ExternalTools/ExternalTool.cs \
@@ -377,6 +377,7 @@ FILES =  \
 	MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs \
 	MonoDevelop.Ide.FindInFiles/FindReplace.cs \
 	MonoDevelop.Ide.FindInFiles/ISearchProgressMonitor.cs \
+	MonoDevelop.Ide.FindInFiles/ReferencesFinder.cs \
 	MonoDevelop.Ide.FindInFiles/Scope.cs \
 	MonoDevelop.Ide.FindInFiles/SearchProgressMonitor.cs \
 	MonoDevelop.Ide.FindInFiles/SearchResult.cs \
@@ -678,6 +679,18 @@ FILES =  \
 	MonoDevelop.Ide/WebBrowserService.cs
 
 RES =  \
+	ExtensionModel/Commands.addin.xml \
+	ExtensionModel/DefaultPolicyPanels.addin.xml \
+	ExtensionModel/GlobalOptionsDialog.addin.xml \
+	ExtensionModel/ItemOptionPanels.addin.xml \
+	ExtensionModel/MainMenu.addin.xml \
+	ExtensionModel/MainToolbar.addin.xml \
+	ExtensionModel/MimeTypes.addin.xml \
+	ExtensionModel/MonoDevelop.Ide.addin.xml \
+	ExtensionModel/Pads.addin.xml \
+	ExtensionModel/Policies.addin.xml \
+	ExtensionModel/StockIcons.addin.xml \
+	ExtensionModel/Templates.addin.xml \
 	gtk-gui/gui.stetic \
 	icons/AboutImage.png \
 	icons/AboutImageSep.png \
@@ -857,16 +870,18 @@ RES =  \
 	icons-components/MonoDevelop.Components.PropertyGrid.DefaultPropertyTab.bmp \
 	icons-components/MonoDevelop.Components.PropertyGrid.EventPropertyTab.bmp \
 	icons-components/MonoDevelop.Components.PropertyGrid.SortByCat.png \
+	MonoDevelop.Components.Commands/CommandsExtensionModel.addin.xml \
 	MonoDevelop.Components.Docking/stock-auto-hide.png \
 	MonoDevelop.Components.Docking/stock-close-12.png \
 	MonoDevelop.Components.Docking/stock-dock.png \
 	MonoDevelop.Components.Docking/stock-menu-left-12.png \
 	MonoDevelop.Components.Docking/stock-menu-right-12.png \
-	MonoDevelop.Ide.addin.xml \
 	MonoDevelop.Ide.CodeFormatting/InvariantTextStylePolicy.xml \
 	MonoDevelop.Ide.CodeFormatting/MonoTextStylePolicy.xml \
 	MonoDevelop.Ide.CodeFormatting/VisualStudioTextStylePolicy.xml \
 	MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml \
+	MonoDevelop.Ide.Gui.Pads.ClassPad/ClassPadContextMenu.addin.xml \
+	MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectPadContextMenu.addin.xml \
 	MonoDevelop.Ide.StandardHeader/Apache2LicencePolicy.xml \
 	MonoDevelop.Ide.StandardHeader/GPL2LicencePolicy.xml \
 	MonoDevelop.Ide.StandardHeader/GPL3LicencePolicy.xml \

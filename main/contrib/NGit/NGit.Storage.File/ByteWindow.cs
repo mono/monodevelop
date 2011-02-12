@@ -43,6 +43,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using ICSharpCode.SharpZipLib.Zip.Compression;
 using NGit.Storage.File;
+using NGit.Storage.Pack;
 using Sharpen;
 
 namespace NGit.Storage.File
@@ -118,6 +119,9 @@ namespace NGit.Storage.File
 		/// bytes available.
 		/// </returns>
 		protected internal abstract int Copy(int pos, byte[] dstbuf, int dstoff, int cnt);
+
+		/// <exception cref="System.IO.IOException"></exception>
+		internal abstract void Write(PackOutputStream @out, long pos, int cnt);
 
 		/// <exception cref="Sharpen.DataFormatException"></exception>
 		internal int SetInput(long pos, Inflater inf)

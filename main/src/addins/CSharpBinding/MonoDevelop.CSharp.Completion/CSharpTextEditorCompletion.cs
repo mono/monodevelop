@@ -46,7 +46,7 @@ using MonoDevelop.Ide.CodeCompletion;
 
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Parser;
-using MonoDevelop.CSharp.Dom;
+using MonoDevelop.CSharp.Ast;
 using MonoDevelop.CSharp.Project;
 using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.Components;
@@ -159,7 +159,7 @@ namespace MonoDevelop.CSharp.Completion
 				base.RunParameterCompletionCommand ();
 			
 			if (stateTracker.Engine.IsInsideComment) {
-				ParameterInformationWindowManager.HideWindow ();
+				ParameterInformationWindowManager.HideWindow (CompletionWidget);
 			}/* else {
 				int cpos;
 				if (key == Gdk.Key.Return && CanRunParameterCompletionCommand () && GetParameterCompletionCommandOffset (out cpos))  {
@@ -438,11 +438,13 @@ namespace MonoDevelop.CSharp.Completion
 								}
 							}
 							if (!added)
-								cdc.Add (returnType);
+								cdc.Add (returnType);/*
 							foreach (object o in CreateCtrlSpaceCompletionData (completionContext, result)) {
 								MemberCompletionData memberData = o as MemberCompletionData;
-								if (memberData == null || memberData.Member == null)
+								if (memberData == null || memberData.Member == null) {
+									completionList.Add (o as CompletionData);
 									continue;
+								}
 								if (memberData.Member is IMember) {
 									returnType = ((IMember)memberData.Member).ReturnType;
 								} else if (memberData.Member is IParameter) {
@@ -450,10 +452,12 @@ namespace MonoDevelop.CSharp.Completion
 								} else {
 									returnType = ((LocalVariable)memberData.Member).ReturnType;
 								}
-								if (returnType != null && returnType.FullName == resolvedType.FullName)
+								// filter out void types
+								if (returnType != null && returnType.FullName != DomReturnType.Void.FullName)
 									completionList.Add (memberData);
-							}
+							}*/
 							completionList.AutoCompleteEmptyMatch = false;
+							resolver.AddAccessibleCodeCompletionData (result.ExpressionContext, cdc);
 							return completionList;
 						}
 						
@@ -463,11 +467,12 @@ namespace MonoDevelop.CSharp.Completion
 							completionList.AutoCompleteEmptyMatch = false;
 							cdc.Add ("true", "md-keyword");
 							cdc.Add ("false", "md-keyword");
-							
-							foreach (object o in CreateCtrlSpaceCompletionData (completionContext, result)) {
+/*							foreach (object o in CreateCtrlSpaceCompletionData (completionContext, result)) {
 								MemberCompletionData memberData = o as MemberCompletionData;
-								if (memberData == null || memberData.Member == null)
+								if (memberData == null || memberData.Member == null) {
+									completionList.Add (o as CompletionData);
 									continue;
+								}
 								IReturnType returnType = null;
 								if (memberData.Member is IMember) {
 									returnType = ((IMember)memberData.Member).ReturnType;
@@ -476,9 +481,11 @@ namespace MonoDevelop.CSharp.Completion
 								} else {
 									returnType = ((LocalVariable)memberData.Member).ReturnType;
 								}
-								if (returnType != null && returnType.FullName == DomReturnType.Bool.FullName)
+								// filter out void types
+								if (returnType != null && returnType.FullName != DomReturnType.Void.FullName)
 									completionList.Add (memberData);
-							}
+							}*/
+							resolver.AddAccessibleCodeCompletionData (result.ExpressionContext, cdc);
 							return completionList;
 						}
 							
@@ -954,7 +961,7 @@ namespace MonoDevelop.CSharp.Completion
 							break;
 						token = token.Trim ();
 						if (Char.IsLetterOrDigit (token[0]) || token[0] == '_') {
-							IType baseType = dom.SearchType (Document.CompilationUnit, token);
+							IType baseType = dom.SearchType (Document.CompilationUnit, Document.CompilationUnit, token);
 							if (baseType != null) {
 								if (baseType.ClassType != ClassType.Interface)
 									isInterface = true;
@@ -1103,7 +1110,6 @@ namespace MonoDevelop.CSharp.Completion
 							return CreateTypeCompletionData (location, callingType, newExactContext, null, returnType);
 					}
 				}
-				
 				return CreateCtrlSpaceCompletionData (completionContext, null);
 			case "if":
 			case "elif":
@@ -1227,6 +1233,8 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			
 			Dictionary<string, List<MemberCompletionData>> data = new Dictionary<string, List<MemberCompletionData>> ();
+			HashSet<string> namespacesInList = new HashSet<string> ();
+			
 			HashSet<string> namespacesInScope = new HashSet<string> ();
 			internal static CSharpAmbience ambience = new CSharpAmbience ();
 //			DomLocation location;
@@ -1272,7 +1280,7 @@ namespace MonoDevelop.CSharp.Completion
 					hideExtensionParameter = value;
 				}
 			}
-			public class NegateKeyHandler : ICompletionKeyHandler
+/*			public class NegateKeyHandler : ICompletionKeyHandler
 			{
 				public bool ProcessKey (CompletionListWindow window, Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions keyAction)
 				{
@@ -1307,7 +1315,7 @@ namespace MonoDevelop.CSharp.Completion
 					
 					return true;
 				}
-			}
+			}*/
 			
 			public CompletionDataCollector (ProjectDom dom, CompletionDataList completionList, ICompilationUnit unit, IType declaringType, DomLocation location)
 			{
@@ -1317,7 +1325,7 @@ namespace MonoDevelop.CSharp.Completion
 				this.FullyQualify = false;
 //				this.location = location;
 				this.declaringType = declaringType;
-				completionList.AddKeyHandler (new NegateKeyHandler ());
+//				completionList.AddKeyHandler (new NegateKeyHandler ());
 				// Get a list of all namespaces in scope
 				if (unit != null) {
 					foreach (IUsing u in unit.Usings) {
@@ -1390,9 +1398,9 @@ namespace MonoDevelop.CSharp.Completion
 					newData.CompletionCategory = GetCompletionCategory (((IMember)member).DeclaringType);
 				}
 				List<MemberCompletionData> existingData;
-				if (data.TryGetValue (memberKey, out existingData)) {
-					if (existingData == null)
-						return null;
+				data.TryGetValue (memberKey, out existingData);
+				
+				if (existingData != null) {
 					IBaseMember a = member as IBaseMember;
 					foreach (MemberCompletionData md in existingData) {
 						IBaseMember b = md.Member as IBaseMember;
@@ -1416,9 +1424,8 @@ namespace MonoDevelop.CSharp.Completion
 			
 			public CompletionData Add (string name, string icon)
 			{
-				if (data.ContainsKey (name))
-					return null;
-				data.Add (name, null);
+				if (!data.ContainsKey (name))
+					data.Add (name, null);
 				
 				return CompletionList.Add (name, icon);
 			}
@@ -1432,9 +1439,12 @@ namespace MonoDevelop.CSharp.Completion
 			{
 				Namespace ns = obj as Namespace;
 				if (ns != null) {
-					if (data.ContainsKey (ns.Name))
+					if (!data.ContainsKey (ns.Name))
+						data.Add (ns.Name, null);
+					if (namespacesInList.Contains (ns.Name)) {
 						return null;
-					data.Add (ns.Name, null);
+					}
+					namespacesInList.Add (ns.Name);
 					return CompletionList.Add (ns.Name, ns.StockIcon, ns.Documentation);
 				}
 				
@@ -1451,9 +1461,9 @@ namespace MonoDevelop.CSharp.Completion
 						return CompletionList.Add (rt.Name, "md-class");
 					}
 					string returnTypeString = ambience.GetString (rt, flags);
-					if (data.ContainsKey (returnTypeString))
-						return null;
-					data.Add (returnTypeString, null);
+					
+					if (!data.ContainsKey (returnTypeString))
+						data.Add (returnTypeString, null);
 					return CompletionList.Add (returnTypeString, "md-class");
 				}
 				
@@ -1468,9 +1478,8 @@ namespace MonoDevelop.CSharp.Completion
 				
 				if (obj is string) {
 					string str = (string)obj;
-					if (data.ContainsKey (str))
-						return null;
-					data.Add (str, null);
+					if (!data.ContainsKey (str))
+						data.Add (str, null);
 					return CompletionList.Add (str, "md-literal");
 				}
 				return null;
@@ -1515,7 +1524,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			if (curType == null)
 				return;
-			IType searchType = dom.SearchType ((MonoDevelop.Projects.Dom.INode)type ?? Document.CompilationUnit, curType);
+			IType searchType = dom.SearchType (Document.CompilationUnit, (MonoDevelop.Projects.Dom.INode)type ?? Document.CompilationUnit, curType);
 			//System.Console.WriteLine("Add Virtuals for:" + searchType + " / " + curType);
 			if (searchType == null)
 				return;
@@ -1598,21 +1607,25 @@ namespace MonoDevelop.CSharp.Completion
 			if (returnType != null)
 				type = dom.GetType (returnType);
 			if (type == null)
-				type = dom.SearchType ((MonoDevelop.Projects.Dom.INode)Document.CompilationUnit ?? callingType, returnTypeUnresolved);
-			
+				type = dom.SearchType (Document.CompilationUnit, (MonoDevelop.Projects.Dom.INode)Document.CompilationUnit ?? callingType, returnTypeUnresolved);
 			if (type == null || !(type.IsAbstract || type.ClassType == ClassType.Interface)) {
 				if (type == null || type.ConstructorCount == 0 || type.Methods.Any (c => c.IsConstructor && c.IsAccessibleFrom (dom, callingType, type, callingType != null && dom.GetInheritanceTree (callingType).Any (x => x.FullName == type.FullName)))) {
 					if (returnTypeUnresolved != null) {
 						col.FullyQualify = true;
 						CompletionData unresovedCompletionData = col.Add (returnTypeUnresolved);
 						col.FullyQualify = false;
-						result.DefaultCompletionString = StripGenerics (unresovedCompletionData.CompletionText);
+						// don't set default completion string for arrays, since it interferes with: 
+						// string[] arr = new string[] vs new { "a"}
+						if (returnTypeUnresolved.ArrayDimensions == 0)
+							result.DefaultCompletionString = StripGenerics (unresovedCompletionData.CompletionText);
 					} else {
 						CompletionData unresovedCompletionData = col.Add (returnType);
-						result.DefaultCompletionString = StripGenerics (unresovedCompletionData.CompletionText);
+						if (returnType.ArrayDimensions == 0)
+							result.DefaultCompletionString = StripGenerics (unresovedCompletionData.CompletionText);
 					}
 				}
 			}
+			
 			//				if (tce != null && tce.Type != null) {
 			//					result.DefaultCompletionString = StripGenerics (col.AddCompletionData (result, tce.Type).CompletionString);
 			//				} 

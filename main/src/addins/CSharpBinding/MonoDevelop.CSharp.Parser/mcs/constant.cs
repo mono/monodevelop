@@ -29,19 +29,9 @@ namespace Mono.CSharp {
 			this.loc = loc;
 		}
 
-		/// <remarks>
-		///   This is different from ToString in that ToString
-		///   is supposed to be there for debugging purposes,
-		///   and is not guaranteed to be useful for anything else,
-		///   AsString() will provide something that can be used
-		///   for round-tripping C# code.  Maybe it can be used
-		///   for IL assembly as well.
-		/// </remarks>
-		public abstract string AsString ();
-
 		override public string ToString ()
 		{
-			return this.GetType ().Name + " (" + AsString () + ")";
+			return this.GetType ().Name + " (" + GetValueAsLiteral () + ")";
 		}
 
 		/// <summary>
@@ -49,6 +39,8 @@ namespace Mono.CSharp {
 		///  cast into an object.
 		/// </summary>
 		public abstract object GetValue ();
+
+		public abstract string GetValueAsLiteral ();
 
 #if !STATIC
 		//
@@ -66,7 +58,7 @@ namespace Mono.CSharp {
 				(TypeManager.IsPrimitiveType (target) || type == TypeManager.decimal_type) &&
 				(TypeManager.IsPrimitiveType (type) || type == TypeManager.decimal_type)) {
 				ec.Report.Error (31, loc, "Constant value `{0}' cannot be converted to a `{1}'",
-					AsString (), TypeManager.CSharpName (target));
+					GetValueAsLiteral (), TypeManager.CSharpName (target));
 			} else {
 				base.Error_ValueCannotBeConverted (ec, loc, target, expl);
 			}
@@ -183,9 +175,10 @@ namespace Mono.CSharp {
 				return TryReduce (ec, target_type);
 			}
 			catch (OverflowException) {
-				if (ec.ConstantCheckState) {				
-					ec.Report.Error (221, loc, "Constant value `{0}' cannot be converted to a `{1}' (use `unchecked' syntax to override)",
-						GetValue ().ToString (), TypeManager.CSharpName (target_type));
+				if (ec.ConstantCheckState && Type.BuildinType != BuildinTypeSpec.Type.Decimal) {
+					ec.Report.Error (221, loc,
+						"Constant value `{0}' cannot be converted to a `{1}' (use `unchecked' syntax to override)",
+						GetValueAsLiteral (), target_type.GetSignatureForError ());
 				} else {
 					Error_ValueCannotBeConverted (ec, loc, target_type, false);
 				}
@@ -326,6 +319,11 @@ namespace Mono.CSharp {
 					GetValue ().ToString (), TypeManager.CSharpName (target));
 			}
 		}
+
+		public override string GetValueAsLiteral ()
+		{
+			return GetValue ().ToString ();
+		}
 		
 		public abstract Constant Increment ();
 	}
@@ -337,11 +335,6 @@ namespace Mono.CSharp {
 			base (loc)
 		{
 			Value = val;
-		}
-
-		override public string AsString ()
-		{
-			return Value ? "true" : "false";
 		}
 
 		protected override Expression DoResolve (ResolveContext ec)
@@ -356,9 +349,14 @@ namespace Mono.CSharp {
 			return (object) Value;
 		}
 
+		public override string GetValueAsLiteral ()
+		{
+			return Value ? "true" : "false";
+		}
+
 		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
 		{
-			enc.Stream.Write (Value);
+			enc.Encode (Value);
 		}
 		
 		public override void Emit (EmitContext ec)
@@ -403,17 +401,12 @@ namespace Mono.CSharp {
 
 		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
 		{
-			enc.Stream.Write (Value);
+			enc.Encode (Value);
 		}
 
 		public override void Emit (EmitContext ec)
 		{
 			ec.EmitInt (Value);
-		}
-
-		public override string AsString ()
-		{
-			return Value.ToString ();
 		}
 
 		protected override Expression DoResolve (ResolveContext ec)
@@ -508,7 +501,7 @@ namespace Mono.CSharp {
 
 		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
 		{
-			enc.Stream.Write ((ushort) Value);
+			enc.Encode ((ushort) Value);
 		}
 
 		public override void Emit (EmitContext ec)
@@ -545,14 +538,14 @@ namespace Mono.CSharp {
 			return c.ToString ();
 		}
 
-		public override string AsString ()
-		{
-			return "\"" + descape (Value) + "\"";
-		}
-
 		public override object GetValue ()
 		{
 			return Value;
+		}
+
+		public override string GetValueAsLiteral ()
+		{
+			return "\"" + descape (Value) + "\"";
 		}
 
 		public override bool IsDefaultValue {
@@ -632,17 +625,12 @@ namespace Mono.CSharp {
 
 		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
 		{
-			enc.Stream.Write (Value);
+			enc.Encode (Value);
 		}
 
 		public override void Emit (EmitContext ec)
 		{
 			ec.EmitInt (Value);
-		}
-
-		public override string AsString ()
-		{
-			return Value.ToString ();
 		}
 
 		public override object GetValue ()
@@ -738,17 +726,12 @@ namespace Mono.CSharp {
 
 		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
 		{
-			enc.Stream.Write (Value);
+			enc.Encode (Value);
 		}
 
 		public override void Emit (EmitContext ec)
 		{
 			ec.EmitInt (Value);
-		}
-
-		public override string AsString ()
-		{
-			return Value.ToString ();
 		}
 
 		public override object GetValue ()
@@ -856,17 +839,12 @@ namespace Mono.CSharp {
 
 		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
 		{
-			enc.Stream.Write (Value);
+			enc.Encode (Value);
 		}
 
 		public override void Emit (EmitContext ec)
 		{
 			ec.EmitInt (Value);
-		}
-
-		public override string AsString ()
-		{
-			return Value.ToString ();
 		}
 
 		public override object GetValue ()
@@ -968,17 +946,12 @@ namespace Mono.CSharp {
 
 		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
 		{
-			enc.Stream.Write (Value);
+			enc.Encode (Value);
 		}
 
 		public override void Emit (EmitContext ec)
 		{
 			ec.EmitInt (Value);
-		}
-
-		public override string AsString ()
-		{
-			return Value.ToString ();
 		}
 
 		public override object GetValue ()
@@ -1149,17 +1122,12 @@ namespace Mono.CSharp {
 
 		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
 		{
-			enc.Stream.Write (Value);
+			enc.Encode (Value);
 		}
 
 		public override void Emit (EmitContext ec)
 		{
 			ec.EmitInt (unchecked ((int) Value));
-		}
-
-		public override string AsString ()
-		{
-			return Value.ToString ();
 		}
 
 		public override object GetValue ()
@@ -1198,7 +1166,7 @@ namespace Mono.CSharp {
 		{
 			if (target_type == TypeManager.byte_type) {
 				if (in_checked_context){
-					if (Value < Char.MinValue || Value > Char.MaxValue)
+					if (Value < 0 || Value > byte.MaxValue)
 						throw new OverflowException ();
 				}
 				return new ByteConstant ((byte) Value, Location);
@@ -1272,17 +1240,12 @@ namespace Mono.CSharp {
 
 		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
 		{
-			enc.Stream.Write (Value);
+			enc.Encode (Value);
 		}
 
 		public override void Emit (EmitContext ec)
 		{
 			ec.EmitLong (Value);
-		}
-
-		public override string AsString ()
-		{
-			return Value.ToString ();
 		}
 
 		public override object GetValue ()
@@ -1411,17 +1374,12 @@ namespace Mono.CSharp {
 
 		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
 		{
-			enc.Stream.Write (Value);
+			enc.Encode (Value);
 		}
 
 		public override void Emit (EmitContext ec)
 		{
 			ec.EmitLong (unchecked ((long) Value));
-		}
-
-		public override string AsString ()
-		{
-			return Value.ToString ();
 		}
 
 		public override object GetValue ()
@@ -1528,7 +1486,7 @@ namespace Mono.CSharp {
 
 		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
 		{
-			enc.Stream.Write (Value);
+			enc.Encode (Value);
 		}
 
 		public override void Emit (EmitContext ec)
@@ -1536,14 +1494,14 @@ namespace Mono.CSharp {
 			ec.Emit (OpCodes.Ldc_R4, Value);
 		}
 
-		public override string AsString ()
-		{
-			return Value.ToString ();
-		}
-
 		public override object GetValue ()
 		{
 			return Value;
+		}
+
+		public override string GetValueAsLiteral ()
+		{
+			return Value.ToString ();
 		}
 
 		public override bool IsDefaultValue {
@@ -1651,7 +1609,7 @@ namespace Mono.CSharp {
 
 		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)
 		{
-			enc.Stream.Write (Value);
+			enc.Encode (Value);
 		}
 
 		public override void Emit (EmitContext ec)
@@ -1659,14 +1617,14 @@ namespace Mono.CSharp {
 			ec.Emit (OpCodes.Ldc_R8, Value);
 		}
 
-		public override string AsString ()
-		{
-			return Value.ToString ();
-		}
-
 		public override object GetValue ()
 		{
 			return Value;
+		}
+
+		public override string GetValueAsLiteral ()
+		{
+			return Value.ToString ();
 		}
 
 		public override bool IsDefaultValue {
@@ -1765,11 +1723,6 @@ namespace Mono.CSharp {
 			Value = d;
 		}
 
-		override public string AsString ()
-		{
-			return Value.ToString () + "M";
-		}
-
 		protected override Expression DoResolve (ResolveContext rc)
 		{
 			type = TypeManager.decimal_type;
@@ -1779,7 +1732,12 @@ namespace Mono.CSharp {
 
 		public override object GetValue ()
 		{
-			return (object) Value;
+			return Value;
+		}
+
+		public override string GetValueAsLiteral ()
+		{
+			return Value.ToString () + "M";
 		}
 
 		public override void Emit (EmitContext ec)
@@ -1890,12 +1848,6 @@ namespace Mono.CSharp {
 			Value = s;
 		}
 
-		// FIXME: Escape the string.
-		override public string AsString ()
-		{
-			return "\"" + Value + "\"";
-		}
-
 		protected override Expression DoResolve (ResolveContext rc)
 		{
 			type = TypeManager.string_type;
@@ -1906,6 +1858,12 @@ namespace Mono.CSharp {
 		public override object GetValue ()
 		{
 			return Value;
+		}
+
+		public override string GetValueAsLiteral ()
+		{
+			// FIXME: Escape the string.
+			return "\"" + Value + "\"";
 		}
 		
 		public override void Emit (EmitContext ec)
@@ -1977,11 +1935,6 @@ namespace Mono.CSharp {
 			this.type = type;
 		}
 
-		public override string AsString ()
-		{
-			return GetSignatureForError ();
-		}
-
 		public override Expression CreateExpressionTree (ResolveContext ec)
 		{
 			if (type == InternalType.Null || type == TypeManager.object_type) {
@@ -2010,9 +1963,9 @@ namespace Mono.CSharp {
 				if (ac.Rank != 1 || ac.Element.IsArray)
 					base.EncodeAttributeValue (rc, enc, targetType);
 				else
-					enc.Stream.Write (uint.MaxValue);
+					enc.Encode (uint.MaxValue);
 			} else {
-				enc.Stream.Write (byte.MaxValue);
+				enc.Encode (byte.MaxValue);
 			}
 		}
 
@@ -2029,11 +1982,6 @@ namespace Mono.CSharp {
 			get {
 				return GetSignatureForError ();
 			}
-		}
-
-		public override string GetSignatureForError ()
-		{
-			return "null";
 		}
 
 		public override Constant ConvertExplicitly (bool inCheckedContext, TypeSpec targetType)
@@ -2066,9 +2014,19 @@ namespace Mono.CSharp {
 			return ConvertExplicitly (false, targetType);
 		}
 
+		public override string GetSignatureForError ()
+		{
+			return "null";
+		}
+
 		public override object GetValue ()
 		{
 			return null;
+		}
+
+		public override string GetValueAsLiteral ()
+		{
+			return GetSignatureForError ();
 		}
 
 		public override bool IsDefaultValue {
@@ -2105,11 +2063,6 @@ namespace Mono.CSharp {
 			this.side_effect = side_effect;
 		}
 
-		public override string AsString ()
-		{
-			return value.AsString ();
-		}
-
 		protected override Expression DoResolve (ResolveContext rc)
 		{
 			value = value.Resolve (rc);
@@ -2122,6 +2075,11 @@ namespace Mono.CSharp {
 		public override object GetValue ()
 		{
 			return value.GetValue ();
+		}
+
+		public override string GetValueAsLiteral ()
+		{
+			return value.GetValueAsLiteral ();
 		}
 
 		public override void Emit (EmitContext ec)

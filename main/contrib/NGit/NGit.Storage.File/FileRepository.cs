@@ -78,6 +78,8 @@ namespace NGit.Storage.File
 	/// </remarks>
 	public class FileRepository : Repository
 	{
+		private readonly FileBasedConfig systemConfig;
+
 		private readonly FileBasedConfig userConfig;
 
 		private readonly FileBasedConfig repoConfig;
@@ -135,15 +137,16 @@ namespace NGit.Storage.File
 		/// </exception>
 		protected internal FileRepository(BaseRepositoryBuilder options) : base(options)
 		{
-			userConfig = SystemReader.GetInstance().OpenUserConfig(FileSystem);
+			systemConfig = SystemReader.GetInstance().OpenSystemConfig(null, FileSystem);
+			userConfig = SystemReader.GetInstance().OpenUserConfig(systemConfig, FileSystem);
 			repoConfig = new FileBasedConfig(userConfig, FileSystem.Resolve(Directory, "config"
 				), FileSystem);
 			//
 			//
+			LoadSystemConfig();
 			LoadUserConfig();
 			LoadRepoConfig();
-			((FileBasedConfig)GetConfig()).AddChangeListener(new _ConfigChangedListener_163(this
-				));
+			repoConfig.AddChangeListener(new _ConfigChangedListener_168(this));
 			refs = new RefDirectory(this);
 			objectDatabase = new ObjectDirectory(repoConfig, options.GetObjectDirectory(), options
 				.GetAlternateObjectDirectories(), FileSystem);
@@ -162,9 +165,9 @@ namespace NGit.Storage.File
 			}
 		}
 
-		private sealed class _ConfigChangedListener_163 : ConfigChangedListener
+		private sealed class _ConfigChangedListener_168 : ConfigChangedListener
 		{
-			public _ConfigChangedListener_163(FileRepository _enclosing)
+			public _ConfigChangedListener_168(FileRepository _enclosing)
 			{
 				this._enclosing = _enclosing;
 			}
@@ -175,6 +178,22 @@ namespace NGit.Storage.File
 			}
 
 			private readonly FileRepository _enclosing;
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
+		private void LoadSystemConfig()
+		{
+			try
+			{
+				systemConfig.Load();
+			}
+			catch (ConfigInvalidException e1)
+			{
+				IOException e2 = new IOException(MessageFormat.Format(JGitText.Get().systemConfigFileInvalid
+					, systemConfig.GetFile().GetAbsolutePath(), e1));
+				Sharpen.Extensions.InitCause(e2, e1);
+				throw e2;
+			}
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
@@ -226,10 +245,10 @@ namespace NGit.Storage.File
 				throw new InvalidOperationException(MessageFormat.Format(JGitText.Get().repositoryAlreadyExists
 					, Directory));
 			}
-			Directory.Mkdirs();
+			FileUtils.Mkdirs(Directory, true);
 			refs.Create();
 			objectDatabase.Create();
-			new FilePath(Directory, "branches").Mkdir();
+			FileUtils.Mkdir(new FilePath(Directory, "branches"));
 			RefUpdate head = UpdateRef(Constants.HEAD);
 			head.DisableRefLog();
 			head.Link(Constants.R_HEADS + Constants.MASTER);
@@ -265,7 +284,7 @@ namespace NGit.Storage.File
 		}
 
 		/// <returns>the directory containing the objects owned by this repository.</returns>
-		public override FilePath ObjectsDirectory
+		public virtual FilePath ObjectsDirectory
 		{
 			get
 			{
@@ -294,6 +313,17 @@ namespace NGit.Storage.File
 		/// <returns>the configuration of this repository</returns>
 		public override StoredConfig GetConfig()
 		{
+			if (systemConfig.IsOutdated())
+			{
+				try
+				{
+					LoadSystemConfig();
+				}
+				catch (IOException e)
+				{
+					throw new RuntimeException(e);
+				}
+			}
 			if (userConfig.IsOutdated())
 			{
 				try
@@ -341,7 +371,14 @@ namespace NGit.Storage.File
 					repo = ((FileObjectDatabase.AlternateRepository)d).repository;
 					foreach (Ref @ref in repo.GetAllRefs().Values)
 					{
-						r.AddItem(@ref.GetObjectId());
+						if (@ref.GetObjectId() != null)
+						{
+							r.AddItem(@ref.GetObjectId());
+						}
+						if (@ref.GetPeeledObjectId() != null)
+						{
+							r.AddItem(@ref.GetPeeledObjectId());
+						}
 					}
 					Sharpen.Collections.AddAll(r, repo.GetAdditionalHaves());
 				}
@@ -357,7 +394,7 @@ namespace NGit.Storage.File
 		/// index file could not be opened, read, or is not recognized as
 		/// a Git pack file index.
 		/// </exception>
-		public override void OpenPack(FilePath pack, FilePath idx)
+		public virtual void OpenPack(FilePath pack, FilePath idx)
 		{
 			objectDatabase.OpenPack(pack, idx);
 		}

@@ -92,6 +92,11 @@ namespace Mono.CSharp
 			return ctx.Report.SetPrinter (report_printer);
 		}				
 
+		public static string [] InitAndGetStartupFiles (string [] args)
+		{
+			return InitAndGetStartupFiles (args, null);
+		}
+
 		/// <summary>
 		///   Optional initialization for the Evaluator.
 		/// </summary>
@@ -108,20 +113,27 @@ namespace Mono.CSharp
 		///
 		///  This method return an array of strings that contains any
 		///  files that were specified in `args'.
+		///
+		///  If the unknownOptionParser is not null, this function is invoked
+		///  with the current args array and the index of the option that is not
+		///  known.  A value of true means that the value was processed, otherwise
+		///  it will be reported as an error
 		/// </remarks>
-		public static string [] InitAndGetStartupFiles (string [] args)
+		public static string [] InitAndGetStartupFiles (string [] args, Func<string [], int, int> unknownOptionParser)
 		{
 			lock (evaluator_lock){
 				if (inited)
 					return new string [0];
-				
-				driver = Driver.Create (args, false, new ConsoleReportPrinter ());
+
+				CompilerCallableEntryPoint.Reset ();
+				var crp = new ConsoleReportPrinter ();
+				driver = Driver.Create (args, false, unknownOptionParser, crp);
 				if (driver == null)
 					throw new Exception ("Failed to create compiler driver with the given arguments");
 
+				crp.Fatal = driver.fatal_errors;
 				ctx = driver.ctx;
 
-				CompilerCallableEntryPoint.Reset ();
 				RootContext.ToplevelTypes = new ModuleContainer (ctx);
 				
 				var startup_files = new List<string> ();
@@ -189,6 +201,9 @@ namespace Mono.CSharp
 			if (type == null)
 				throw new ArgumentNullException ();
 
+			if (!inited)
+				throw new Exception ("Evaluator has to be initiated before seting custom InteractiveBase class");
+
 			lock (evaluator_lock)
 				interactive_base_class = loader.Importer.ImportType (type);
 		}
@@ -240,7 +255,7 @@ namespace Mono.CSharp
 				compiled = null;
 				return null;
 			}
-			
+
 			lock (evaluator_lock){
 				if (!inited)
 					Init ();
@@ -264,10 +279,12 @@ namespace Mono.CSharp
 				
 				if (!(parser_result is Class)){
 					int errors = ctx.Report.Errors;
-					
+
 					NamespaceEntry.VerifyAllUsing ();
 					if (errors == ctx.Report.Errors)
 						parser.CurrentNamespace.Extract (using_alias_list, using_list);
+					else
+						NamespaceEntry.Reset ();
 				}
 
 #if STATIC
@@ -411,6 +428,7 @@ namespace Mono.CSharp
 					var a = new AssemblyDefinitionDynamic (RootContext.ToplevelTypes, "temp");
 					a.Create (AppDomain.CurrentDomain, AssemblyBuilderAccess.Run);
 					RootContext.ToplevelTypes.SetDeclaringAssembly (a);
+					RootContext.ToplevelTypes.CreateType ();
 					RootContext.ToplevelTypes.Define ();
 					if (ctx.Report.Errors != 0)
 						return null;
@@ -700,7 +718,7 @@ namespace Mono.CSharp
 			}
 
 			assembly.Create (AppDomain.CurrentDomain, AssemblyBuilderAccess.RunAndSave);
-			RootContext.ToplevelTypes.SetDeclaringAssembly (assembly);
+			RootContext.ToplevelTypes.CreateType ();
 			RootContext.ToplevelTypes.Define ();
 
 			if (Report.Errors != 0){
@@ -768,7 +786,7 @@ namespace Mono.CSharp
 						}
 					}
 
-					fields [field.Name] = Tuple.Create (old.Item1, fi);
+					fields [field.Name] = Tuple.Create (field.Spec, fi);
 				} else {
 					fields.Add (field.Name, Tuple.Create (field.Spec, fi));
 				}
@@ -779,7 +797,7 @@ namespace Mono.CSharp
 			
 			return (CompiledMethod) System.Delegate.CreateDelegate (typeof (CompiledMethod), mi);
 		}
-#endif		
+#endif
 		static internal void LoadAliases (NamespaceEntry ns)
 		{
 			ns.Populate (using_alias_list, using_list);
@@ -989,7 +1007,7 @@ namespace Mono.CSharp
 			return DateTime.Now - start;
 		}
 		
-#if !SMCS_SOURCE && !STATIC
+#if !STATIC
 		/// <summary>
 		///   Loads the assemblies from a package
 		/// </summary>
@@ -1037,6 +1055,16 @@ namespace Mono.CSharp
 		{
 			Evaluator.LoadAssembly (assembly);
 		}
+
+		static public void print (string obj)
+		{
+			Output.WriteLine (obj);
+		}
+
+		static public void print (string fmt, params object [] args)
+		{
+			Output.WriteLine (fmt, args);
+		}
 #endif
 		
 		/// <summary>
@@ -1053,6 +1081,7 @@ namespace Mono.CSharp
 					"  Prompt                  - The prompt used by the C# shell\n" +
 					"  ContinuationPrompt      - The prompt for partial input\n" +
 					"  Time(() -> { })         - Times the specified code\n" +
+					"  print (obj)             - Shorthand for Console.WriteLine\n" +
 					"  quit;                   - You'll never believe it - this quits the repl!\n" +
 					"  help;                   - This help text\n";
 			}

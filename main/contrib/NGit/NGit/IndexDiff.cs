@@ -41,9 +41,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System;
 using System.Collections.Generic;
 using NGit;
 using NGit.Dircache;
+using NGit.Errors;
 using NGit.Revwalk;
 using NGit.Treewalk;
 using NGit.Treewalk.Filter;
@@ -70,6 +72,63 @@ namespace NGit
 	/// </remarks>
 	public class IndexDiff
 	{
+		private sealed class ProgressReportingFilter : TreeFilter
+		{
+			private readonly ProgressMonitor monitor;
+
+			private int count = 0;
+
+			private int stepSize;
+
+			private readonly int total;
+
+			public ProgressReportingFilter(IndexDiff _enclosing, ProgressMonitor monitor, int
+				 total)
+			{
+				this._enclosing = _enclosing;
+				this.monitor = monitor;
+				this.total = total;
+				this.stepSize = total / 100;
+				if (this.stepSize == 0)
+				{
+					this.stepSize = 1000;
+				}
+			}
+
+			public override bool ShouldBeRecursive()
+			{
+				return false;
+			}
+
+			/// <exception cref="NGit.Errors.MissingObjectException"></exception>
+			/// <exception cref="NGit.Errors.IncorrectObjectTypeException"></exception>
+			/// <exception cref="System.IO.IOException"></exception>
+			public override bool Include(TreeWalk walker)
+			{
+				this.count++;
+				if (this.count % this.stepSize == 0)
+				{
+					if (this.count <= this.total)
+					{
+						this.monitor.Update(this.stepSize);
+					}
+					if (this.monitor.IsCancelled())
+					{
+						throw StopWalkException.INSTANCE;
+					}
+				}
+				return true;
+			}
+
+			public override TreeFilter Clone()
+			{
+				throw new InvalidOperationException("Do not clone this kind of filter: " + this.GetType
+					().FullName);
+			}
+
+			private readonly IndexDiff _enclosing;
+		}
+
 		private const int TREE = 0;
 
 		private const int INDEX = 1;
@@ -156,10 +215,41 @@ namespace NGit
 		}
 
 		/// <summary>Run the diff operation.</summary>
-		/// <remarks>Run the diff operation. Until this is called, all lists will be empty</remarks>
+		/// <remarks>
+		/// Run the diff operation. Until this is called, all lists will be empty.
+		/// Use
+		/// <see cref="Diff(ProgressMonitor, int, int, string)">Diff(ProgressMonitor, int, int, string)
+		/// 	</see>
+		/// if a progress
+		/// monitor is required.
+		/// </remarks>
 		/// <returns>if anything is different between index, tree, and workdir</returns>
 		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
 		public virtual bool Diff()
+		{
+			return Diff(null, 0, 0, string.Empty);
+		}
+
+		/// <summary>Run the diff operation.</summary>
+		/// <remarks>
+		/// Run the diff operation. Until this is called, all lists will be empty.
+		/// <p>
+		/// The operation may be aborted by the progress monitor. In that event it
+		/// will report what was found before the cancel operation was detected.
+		/// Callers should ignore the result if monitor.isCancelled() is true. If a
+		/// progress monitor is not needed, callers should use
+		/// <see cref="Diff()">Diff()</see>
+		/// instead. Progress reporting is crude and approximate and only intended
+		/// for informing the user.
+		/// </remarks>
+		/// <param name="monitor">for reporting progress, may be null</param>
+		/// <param name="estWorkTreeSize">number or estimated files in the working tree</param>
+		/// <param name="estIndexSize">number of estimated entries in the cache</param>
+		/// <param name="title"></param>
+		/// <returns>if anything is different between index, tree, and workdir</returns>
+		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
+		public virtual bool Diff(ProgressMonitor monitor, int estWorkTreeSize, int estIndexSize
+			, string title)
 		{
 			dirCache = repository.ReadDirCache();
 			TreeWalk treeWalk = new TreeWalk(repository);
@@ -176,6 +266,18 @@ namespace NGit
 			treeWalk.AddTree(new DirCacheIterator(dirCache));
 			treeWalk.AddTree(initialWorkingTreeIterator);
 			ICollection<TreeFilter> filters = new AList<TreeFilter>(4);
+			if (monitor != null)
+			{
+				// Get the maximum size of the work tree and index
+				// and add some (quite arbitrary)
+				if (estIndexSize == 0)
+				{
+					estIndexSize = dirCache.GetEntryCount();
+				}
+				int total = Math.Max(estIndexSize * 10 / 9, estWorkTreeSize * 10 / 9);
+				monitor.BeginTask(title, total);
+				filters.AddItem(new IndexDiff.ProgressReportingFilter(this, monitor, total));
+			}
 			if (filter != null)
 			{
 				filters.AddItem(filter);
@@ -242,6 +344,11 @@ namespace NGit
 						}
 					}
 				}
+			}
+			// consume the remaining work
+			if (monitor != null)
+			{
+				monitor.EndTask();
 			}
 			if (added.IsEmpty() && changed.IsEmpty() && removed.IsEmpty() && missing.IsEmpty(
 				) && modified.IsEmpty() && untracked.IsEmpty())

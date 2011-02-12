@@ -5,17 +5,11 @@ namespace MonoDevelop.AddinAuthoring
 	public partial class SelectNodeSetDialog
 	{
 		private global::Gtk.VBox vbox3;
-
 		private global::Gtk.HBox hbox1;
-
 		private global::Gtk.Label label1;
-
 		private global::Gtk.ComboBoxEntry combo;
-
 		private global::MonoDevelop.AddinAuthoring.NodeSetEditorWidget nodeseteditor;
-
 		private global::Gtk.Button buttonCancel;
-
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -42,10 +36,10 @@ namespace MonoDevelop.AddinAuthoring
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Addins.AddinManager.CurrentLocalizer.GetString ("Node Set:");
 			this.hbox1.Add (this.label1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label1]));
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -53,10 +47,10 @@ namespace MonoDevelop.AddinAuthoring
 			this.combo = global::Gtk.ComboBoxEntry.NewText ();
 			this.combo.Name = "combo";
 			this.hbox1.Add (this.combo);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.combo]));
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.combo]));
 			w3.Position = 1;
 			this.vbox3.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.hbox1]));
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.hbox1]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
@@ -66,10 +60,10 @@ namespace MonoDevelop.AddinAuthoring
 			this.nodeseteditor.Name = "nodeseteditor";
 			this.nodeseteditor.AllowEditing = false;
 			this.vbox3.Add (this.nodeseteditor);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.nodeseteditor]));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.nodeseteditor]));
 			w5.Position = 1;
 			w1.Add (this.vbox3);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(w1[this.vbox3]));
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox3]));
 			w6.Position = 0;
 			// Internal child MonoDevelop.AddinAuthoring.SelectNodeSetDialog.ActionArea
 			global::Gtk.HButtonBox w7 = this.ActionArea;
@@ -86,7 +80,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7[this.buttonCancel]));
+			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7 [this.buttonCancel]));
 			w8.Expand = false;
 			w8.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
@@ -98,7 +92,7 @@ namespace MonoDevelop.AddinAuthoring
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7 [this.buttonOk]));
 			w9.Position = 1;
 			w9.Expand = false;
 			w9.Fill = false;

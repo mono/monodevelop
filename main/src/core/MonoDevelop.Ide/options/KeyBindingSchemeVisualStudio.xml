@@ -53,4 +53,5 @@
 	<binding command="Pad|MonoDevelop.Ide.Gui.Pads.FileScout" shortcut="Control+W|F" />
 	<binding command="MonoDevelop.Ide.Commands.ViewCommands.ZoomIn" shortcut="Control+Alt++" />
 	<binding command="MonoDevelop.Ide.Commands.ViewCommands.ZoomOut" shortcut="Control+Alt+-" />
+	<binding command="MonoDevelop.Refactoring.RefactoryCommands.QuickFix" shortcut="Control+." />
 </scheme>

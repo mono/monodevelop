@@ -61,7 +61,7 @@ namespace Mono.TextEditor.PopupWindow
 		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
-			int totalWidth = 1;
+			int descriptionWidth = 1;
 			int totalHeight = yBorder * 2 + 1;
 			
 			int width, height;
@@ -76,13 +76,14 @@ namespace Mono.TextEditor.PopupWindow
 
 				layout.SetMarkup (pair.Value);
 				layout.GetPixelSize (out w2, out height);
-				totalWidth = System.Math.Max (totalWidth, w1 + w2 + xBorder * 4 + 1);
-				xSpacer = System.Math.Max (xSpacer, w1 + xBorder * 2 + 1);
+				descriptionWidth = System.Math.Max (descriptionWidth, w2);
+				xSpacer = System.Math.Max (xSpacer, w1);
 				
 				totalHeight += height;
 			}
+			xSpacer += xBorder * 2 + 1;
 			
-			requisition.Width = totalWidth;
+			requisition.Width = descriptionWidth + xSpacer + xBorder * 2 + 1;
 			requisition.Height = totalHeight;
 		}
 		

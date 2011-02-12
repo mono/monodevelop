@@ -287,7 +287,7 @@ namespace DebuggerServer
 		}
 
 
-		public override ValueReference GetThisReference (EvaluationContext gctx)
+		protected override ValueReference OnGetThisReference (EvaluationContext gctx)
 		{
 			MdbEvaluationContext ctx = (MdbEvaluationContext) gctx;
 			if (ctx.Frame.Method != null && ctx.Frame.Method.HasThis) {
@@ -310,7 +310,7 @@ namespace DebuggerServer
 		}
 
 
-		public override IEnumerable<ValueReference> GetParameters (EvaluationContext gctx)
+		protected override IEnumerable<ValueReference> OnGetParameters (EvaluationContext gctx)
 		{
 			MdbEvaluationContext ctx = (MdbEvaluationContext) gctx;
 			if (ctx.Frame.Method != null) {
@@ -453,7 +453,7 @@ namespace DebuggerServer
 		}
 
 
-		public override IEnumerable<ValueReference> GetLocalVariables (EvaluationContext gctx)
+		protected override IEnumerable<ValueReference> OnGetLocalVariables (EvaluationContext gctx)
 		{
 			MdbEvaluationContext ctx = (MdbEvaluationContext) gctx;
 			foreach (TargetVariable var in ctx.Frame.Method.GetLocalVariables (ctx.Thread)) {

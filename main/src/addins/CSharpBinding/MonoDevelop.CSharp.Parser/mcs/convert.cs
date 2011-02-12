@@ -1164,11 +1164,16 @@ namespace Mono.CSharp {
 			//
 			// Convert input type when it's different to best operator argument
 			//
-			if (s_x != source_type)
-				source = implicitOnly ?
-					ImplicitConversionStandard (ec, source_type_expr, s_x, loc) :
-					ExplicitConversionStandard (ec, source_type_expr, s_x, loc);
-			else {
+			if (s_x != source_type) {
+				var c = source as Constant;
+				if (c != null) {
+					source = c.TryReduce (ec, s_x, loc);
+				} else {
+					source = implicitOnly ?
+						ImplicitConversionStandard (ec, source_type_expr, s_x, loc) :
+						ExplicitConversionStandard (ec, source_type_expr, s_x, loc);
+				}
+			} else {
 				source = source_type_expr;
 			}
 
@@ -1370,8 +1375,12 @@ namespace Mono.CSharp {
 			if (expr_type == InternalType.Arglist && target_type == TypeManager.arg_iterator_type)
 				return expr;
 
-			if (TypeSpecComparer.IsEqual (expr_type, target_type))
-				return expr;
+			if (TypeSpecComparer.IsEqual (expr_type, target_type)) {
+				if (expr_type == target_type)
+					return expr;
+
+				return EmptyCast.Create (expr, target_type);
+			}
 
 			return null;
 		}

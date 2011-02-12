@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "MonoLibraries", "MonoLibraries\MonoLibraries.wixproj", "{C3F60294-806C-467E-8FD8-94D0F89755EF}"
 EndProject
 Global

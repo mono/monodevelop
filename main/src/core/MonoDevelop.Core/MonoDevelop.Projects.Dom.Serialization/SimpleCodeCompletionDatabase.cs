@@ -56,8 +56,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 //			UpdateTagComments (cu.TagComments, file);
 			lock (rwlock) {
 				List<IType> resolved;
-				ProjectDomService.ResolveTypes (SourceProjectDom, cu, cu.Types, out resolved);
-				TypeUpdateInformation res = UpdateTypeInformation (resolved, file);
+				List<IAttribute> resolvedAtts;
+				ProjectDomService.ResolveTypes (SourceProjectDom, cu, cu.Types, cu.Attributes, out resolved, out resolvedAtts);
+				TypeUpdateInformation res = UpdateTypeInformation (resolved, resolvedAtts, file);
 				Flush ();
 				return res;
 			}

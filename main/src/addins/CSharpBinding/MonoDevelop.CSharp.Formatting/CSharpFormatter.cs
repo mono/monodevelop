@@ -93,12 +93,12 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			var compilationUnit = new MonoDevelop.CSharp.Parser.CSharpParser ().Parse (data);
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-			var domSpacingVisitor = new DomSpacingVisitor (policy, data) {
+			var domSpacingVisitor = new AstSpacingVisitor (policy, data) {
 				AutoAcceptChanges = false,
 			};
 			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
 			
-			var domIndentationVisitor = new DomIndentationVisitor (policy, data) {
+			var domIndentationVisitor = new AstIndentationVisitor (policy, data) {
 				AutoAcceptChanges = false,
 			};
 			compilationUnit.AcceptVisitor (domIndentationVisitor, null);
@@ -157,7 +157,8 @@ namespace MonoDevelop.CSharp.Formatting
 						}
 					}
 				}
-				
+				if (indent.Length == line.EditableLength)
+					newIndent.Length = 0;
 				if (line.DelimiterLength != 0) {
 					delta -= line.DelimiterLength;
 					delta += data.EolMarker.Length;
@@ -207,12 +208,12 @@ namespace MonoDevelop.CSharp.Formatting
 			var compilationUnit = new MonoDevelop.CSharp.Parser.CSharpParser ().Parse (data);
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 			
-			var domSpacingVisitor = new DomSpacingVisitor (policy, data) {
+			var domSpacingVisitor = new AstSpacingVisitor (policy, data) {
 				AutoAcceptChanges = false,
 			};
 			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
 			
-			var domIndentationVisitor = new DomIndentationVisitor (policy, data) {
+			var domIndentationVisitor = new AstIndentationVisitor (policy, data) {
 				AutoAcceptChanges = false,
 			};
 			compilationUnit.AcceptVisitor (domIndentationVisitor, null);
@@ -224,7 +225,7 @@ namespace MonoDevelop.CSharp.Formatting
 				Where (c => c is TextReplaceChange && (startOffset <= ((TextReplaceChange)c).Offset && ((TextReplaceChange)c).Offset < endOffset)));
 			
 			RefactoringService.AcceptChanges (null, null, changes);
-			int end = endOffset + 1;
+			int end = endOffset;
 			foreach (TextReplaceChange c in changes) {
 				end -= c.RemovedChars;
 				if (c.InsertedText != null)

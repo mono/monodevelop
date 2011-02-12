@@ -46,6 +46,7 @@ using System.Collections.Generic;
 using NGit;
 using NGit.Storage.File;
 using NGit.Storage.Pack;
+using NGit.Util;
 using Sharpen;
 
 namespace NGit.Storage.File
@@ -138,6 +139,17 @@ namespace NGit.Storage.File
 		internal override Config GetConfig()
 		{
 			return wrapped.GetConfig();
+		}
+
+		internal override FS GetFS()
+		{
+			return wrapped.GetFS();
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
+		internal override ICollection<CachedPack> GetCachedPacks()
+		{
+			return wrapped.GetCachedPacks();
 		}
 
 		internal override FileObjectDatabase.AlternateHandle[] MyAlternates()
@@ -248,10 +260,7 @@ namespace NGit.Storage.File
 				case FileObjectDatabase.InsertLooseObjectResult.INSERTED:
 				case FileObjectDatabase.InsertLooseObjectResult.EXISTS_LOOSE:
 				{
-					if (!unpackedObjects.Contains(objectId))
-					{
-						unpackedObjects.Add(objectId);
-					}
+					unpackedObjects.AddIfAbsent(objectId);
 					break;
 				}
 
@@ -262,6 +271,12 @@ namespace NGit.Storage.File
 				}
 			}
 			return result;
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
+		internal override PackFile OpenPack(FilePath pack, FilePath idx)
+		{
+			return wrapped.OpenPack(pack, idx);
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>

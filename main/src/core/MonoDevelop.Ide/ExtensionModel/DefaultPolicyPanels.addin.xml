@@ -1,0 +1,27 @@
+<ExtensionModel>
+
+<ExtensionPoint path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels" name = "Default policy panels">
+	<Description>Panels for editing default policies. Must derive from PolicyOptionsPanel. 
+	Should be the same policy panel registered for ItemOptionPanels.</Description>
+	<ExtensionNodeSet id="MonoDevelop.Ide.OptionsDialogSection"/>
+</ExtensionPoint>
+
+<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels">
+	<Section id="Common" _label="General">
+	</Section>
+	<Section id="Build" _label="Build">
+	</Section>
+	<Section id="Run" _label="Run">
+	</Section>
+	<Section id="SourceCode" _label="Source Code">
+		<Section id="DefaultDotNetNamingPolicies" _label=".NET Naming Policies">
+			<Panel id = "NamespaceSynchronisationPanel" class = "MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanel" />
+		</Section>
+		<Section id="CodeFormattingPolicies" _label="Code Formatting" icon="md-formatting" fill = "true" class="MonoDevelop.Ide.Projects.OptionPanels.CodeFormattingPanel" />
+		<Section id="DefaultStandardHeader" _label = "Standard Header" fill="true" class = "MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" />
+	</Section>
+	<Section id="VersionControl" _label="Version Control" />
+</Extension>
+
+</ExtensionModel>
+

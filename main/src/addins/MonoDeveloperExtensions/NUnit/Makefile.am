@@ -1,10 +1,11 @@
 FILES = MonoTestProvider.cs
 
-REFS =  \
-	-r:$(top_builddir)/build/AddIns/MonoDeveloperExtensions/MonoDeveloperExtensions.dll \
-	-r:$(top_builddir)/build/AddIns/NUnit/MonoDevelop.NUnit.dll \
-	-r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	-r:System
+REFS = -r:System
+
+DEPS =  \
+	$(top_builddir)/build/AddIns/MonoDeveloperExtensions/MonoDeveloperExtensions.dll \
+	$(top_builddir)/build/AddIns/NUnit/MonoDevelop.NUnit.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Core.dll
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDeveloperExtensions
 
@@ -16,9 +17,9 @@ else
 all:
 endif
 
-$(ASSEMBLY): $(build_sources)
+$(ASSEMBLY): $(build_sources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
-	$(CSC) $(CSC_FLAGS) -target:library -out:$@ $(build_sources) $(REFS)
+	$(CSC) $(CSC_FLAGS) -target:library -out:$@ $(build_sources) $(REFS) $(build_deps)
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)
 

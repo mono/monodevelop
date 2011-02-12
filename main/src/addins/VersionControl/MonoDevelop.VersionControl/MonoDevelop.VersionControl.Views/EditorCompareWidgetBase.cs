@@ -41,62 +41,6 @@ using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	static class Tuple
-	{
-		public static Tuple<S, T> Create<S, T> (S s, T t)
-		{
-			return new Tuple<S, T> (s, t);
-		}
-
-		public static Tuple<S, T, R > Create<S, T, R> (S s, T t, R r)
-		{
-			return new Tuple<S, T, R> (s, t, r);
-		}
-	}
-	
-	class Tuple<S, T>
-	{
-		public S Item1 {
-			get;
-			set;
-		}
-		
-		public T Item2 {
-			get;
-			set;
-		}
-		public Tuple (S item1, T item2)
-		{
-			this.Item1 = item1;
-			this.Item2 = item2;
-		}
-	}
-	
-	class Tuple<S, T, R>
-	{
-		public S Item1 {
-			get;
-			set;
-		}
-		
-		public T Item2 {
-			get;
-			set;
-		}
-		
-		public R Item3 {
-			get;
-			set;
-		}
-		
-		public Tuple (S item1, T item2, R item3)
-		{
-			this.Item1 = item1;
-			this.Item2 = item2;
-			this.Item3 = item3;
-		}
-	}
-	
 	public abstract class EditorCompareWidgetBase : Gtk.Bin
 	{
 		internal protected VersionControlDocumentInfo info;
@@ -139,6 +83,9 @@ namespace MonoDevelop.VersionControl.Views
 		
 		static readonly Cairo.Color lightGreen = new Cairo.Color (190 / 255.0, 240 / 255.0, 190 / 255.0);
 		static readonly Cairo.Color darkGreen = new Cairo.Color (133 / 255.0, 168 / 255.0, 133 / 255.0);
+		
+		static readonly Cairo.Color lightBlue = new Cairo.Color (190 / 255.0, 190 / 255.0, 240 / 255.0);
+		static readonly Cairo.Color darkBlue = new Cairo.Color (133 / 255.0, 133 / 255.0, 168 / 255.0);
 		
 		protected abstract TextEditor MainEditor {
 			get;
@@ -368,25 +315,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		static List<ISegment> BreakTextInWords (TextEditor editor, int start, int count)
 		{
-			var result = new List<ISegment> ();
-			for (int line = start; line < start + count; line++) {
-				var lineSegment = editor.Document.GetLine (line);
-				int offset = lineSegment.Offset;
-				bool wasIdentifierPart = false;
-				int lastWordEnd = 0;
-				for (int i = 0; i < lineSegment.EditableLength; i++) {
-					char ch = editor.GetCharAt (offset + i);
-					bool isIdentifierPart = char.IsLetterOrDigit (ch) || ch == '_';
-					if (!isIdentifierPart) {
-						if (wasIdentifierPart)
-							result.Add (new Mono.TextEditor.Segment (offset + lastWordEnd, i - lastWordEnd));
-						result.Add (new Mono.TextEditor.Segment (offset + i, 1));
-						lastWordEnd = i + 1;
-					}
-					wasIdentifierPart = isIdentifierPart;
-				}
-			}
-			return result;
+			return TextBreaker.BreakLinesIntoWords(editor, start, count);
 		}
 		
 		List<Cairo.Rectangle> CalculateChunkPath (TextEditor editor, List<Hunk> diff, List<ISegment> words, bool useRemove)
@@ -619,8 +548,9 @@ namespace MonoDevelop.VersionControl.Views
 		public static Cairo.Color GetColor (Mono.TextEditor.Utils.Hunk hunk, bool removeSide, bool dark, double alpha)
 		{
 			Cairo.Color result;
-			
-			if (removeSide) {
+			if (hunk.Removed > 0 && hunk.Inserted > 0) {
+				result = dark ? darkBlue : lightBlue;
+			} else if (removeSide) {
 				if (hunk.Removed > 0) {
 					result = dark ? darkRed : lightRed;
 				} else {

@@ -85,7 +85,7 @@ bash pause on exit trick
 		                               string title, bool pauseWhenFinished)
 		{
 			//build the sh command
-			var sb = new StringBuilder ();
+			var sb = new StringBuilder ("clear; ");
 			if (!string.IsNullOrEmpty (workingDirectory))
 				sb.AppendFormat ("cd \"{0}\"; ", Escape (workingDirectory));
 			foreach (string env in environmentVariables.Keys)

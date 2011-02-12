@@ -126,7 +126,8 @@ namespace NGit.Merge
 				listings.AddItem(StringUtils.Join(others, ", ", " and "));
 			}
 			sb.Append(StringUtils.Join(listings, ", "));
-			if (!target.GetName().Equals(Constants.R_HEADS + Constants.MASTER))
+			string targetName = target.GetLeaf().GetName();
+			if (!targetName.Equals(Constants.R_HEADS + Constants.MASTER))
 			{
 				string targetShortName = Repository.ShortenRefName(target.GetName());
 				sb.Append(" into " + targetShortName);

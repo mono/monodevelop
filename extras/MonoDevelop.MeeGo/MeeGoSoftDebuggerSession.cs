@@ -32,7 +32,7 @@ using System.IO;
 
 namespace MonoDevelop.MeeGo
 {
-	public class MeeGoSoftDebuggerSession : RemoteSoftDebuggerSession
+	public class MeeGoSoftDebuggerSession : Mono.Debugging.Soft.SoftDebuggerSession
 	{
 		SshRemoteProcess process;
 		
@@ -43,7 +43,7 @@ namespace MonoDevelop.MeeGo
 			StartListening (dsi);
 		}
 		
-		protected override string GetListenMessage (RemoteDebuggerStartInfo dsi)
+		protected override string GetConnectingMessage (RemoteDebuggerStartInfo dsi)
 		{
 			return string.Format ("Waiting for debugger to connect on {0}:{1}...", dsi.Address, dsi.DebugPort);
 		}

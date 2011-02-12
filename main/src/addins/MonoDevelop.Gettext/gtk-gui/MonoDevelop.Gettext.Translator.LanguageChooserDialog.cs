@@ -144,7 +144,6 @@ namespace MonoDevelop.Gettext.Translator
 			this.frame1.Add (this.GtkAlignment2);
 			this.radiobuttonKnown = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("_Known Language"));
 			this.radiobuttonKnown.Name = "radiobuttonKnown";
-			this.radiobuttonKnown.Active = true;
 			this.radiobuttonKnown.DrawIndicator = true;
 			this.radiobuttonKnown.UseUnderline = true;
 			this.radiobuttonKnown.Group = new global::GLib.SList (global::System.IntPtr.Zero);

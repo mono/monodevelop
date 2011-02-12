@@ -16,7 +16,10 @@ namespace Sharpen
 
 		public string Decode (ByteBuffer b)
 		{
-			return enc.Decode (b);
+			string res = enc.Decode (b);
+			if (res.IndexOf ('\uFFFD') != -1 && decoder.Fallback == DecoderFallback.ExceptionFallback)
+				throw new CharacterCodingException ();
+			return res;
 		}
 
 		public void OnMalformedInput (CodingErrorAction action)

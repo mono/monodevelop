@@ -37,6 +37,7 @@
 	
 	<Span color = "text.preprocessor" rule = "Comment">
 		<Begin>&amp;</Begin>
+		<Exit flags="CancelSpan"> |	</Exit>
 		<End>;</End>
 	</Span>
 	

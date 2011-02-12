@@ -106,7 +106,7 @@ namespace NGit.Api
 		/// 	</exception>
 		/// <exception cref="NGit.Api.Errors.NoMessageException">when called without specifying a commit message
 		/// 	</exception>
-		/// <exception cref="NGit.Errors.UnmergedPathException">when the current index contained unmerged pathes (conflicts)
+		/// <exception cref="NGit.Errors.UnmergedPathException">when the current index contained unmerged paths (conflicts)
 		/// 	</exception>
 		/// <exception cref="NGit.Api.Errors.WrongRepositoryStateException">when repository is not in the right state for committing
 		/// 	</exception>

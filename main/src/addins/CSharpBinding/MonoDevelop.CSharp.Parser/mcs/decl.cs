@@ -708,26 +708,31 @@ namespace Mono.CSharp {
 		/// Goes through class hierarchy and gets value of first found CLSCompliantAttribute.
 		/// If no is attribute exists then assembly CLSCompliantAttribute is returned.
 		/// </summary>
-		public bool IsNotCLSCompliant ()
-		{
-			if ((caching_flags & Flags.HasCompliantAttribute_Undetected) == 0)
-				return (caching_flags & Flags.ClsCompliantAttributeFalse) != 0;
+		public bool? CLSAttributeValue {
+			get {
+				if ((caching_flags & Flags.HasCompliantAttribute_Undetected) == 0) {
+					if ((caching_flags & Flags.HasClsCompliantAttribute) == 0)
+						return null;
 
-			caching_flags &= ~Flags.HasCompliantAttribute_Undetected;
-
-			if (OptAttributes != null) {
-				Attribute cls_attribute = OptAttributes.Search (Module.PredefinedAttributes.CLSCompliant);
-				if (cls_attribute != null) {
-					caching_flags |= Flags.HasClsCompliantAttribute;
-					if (cls_attribute.GetClsCompliantAttributeValue ())
-						return false;
-
-					caching_flags |= Flags.ClsCompliantAttributeFalse;
-					return true;
+					return (caching_flags & Flags.ClsCompliantAttributeFalse) == 0;
 				}
-			}
 
-			return false;
+				caching_flags &= ~Flags.HasCompliantAttribute_Undetected;
+
+				if (OptAttributes != null) {
+					Attribute cls_attribute = OptAttributes.Search (Module.PredefinedAttributes.CLSCompliant);
+					if (cls_attribute != null) {
+						caching_flags |= Flags.HasClsCompliantAttribute;
+						if (cls_attribute.GetClsCompliantAttributeValue ())
+							return true;
+
+						caching_flags |= Flags.ClsCompliantAttributeFalse;
+						return false;
+					}
+				}
+
+				return null;
+			}
 		}
 
 		/// <summary>
@@ -735,10 +740,7 @@ namespace Mono.CSharp {
 		/// </summary>
 		protected bool HasClsCompliantAttribute {
 			get {
-				if ((caching_flags & Flags.HasCompliantAttribute_Undetected) != 0)
-					IsNotCLSCompliant ();
-				
-				return (caching_flags & Flags.HasClsCompliantAttribute) != 0;
+				return CLSAttributeValue.HasValue;
 			}
 		}
 
@@ -1040,7 +1042,7 @@ namespace Mono.CSharp {
 		// will contain types only but it can have numerous values for members
 		// like methods where both return type and all parameters are checked
 		//
-		public List<MissingType> GetMissingDependencies ()
+		public List<TypeSpec> GetMissingDependencies ()
 		{
 			if ((state & (StateFlags.MissingDependency | StateFlags.MissingDependency_Undetected)) == 0)
 				return null;
@@ -1048,9 +1050,9 @@ namespace Mono.CSharp {
 			state &= ~StateFlags.MissingDependency_Undetected;
 
 			var imported = definition as ImportedDefinition;
-			List<MissingType> missing;
+			List<TypeSpec> missing;
 			if (imported != null) {
-				missing = imported.ResolveMissingDependencies ();
+				missing = ResolveMissingDependencies ();
 			} else if (this is ElementTypeSpec) {
 				missing = ((ElementTypeSpec) this).Element.GetMissingDependencies ();
 			} else {
@@ -1064,9 +1066,13 @@ namespace Mono.CSharp {
 			return missing;
 		}
 
-		protected virtual bool IsNotCLSCompliant ()
+		public abstract List<TypeSpec> ResolveMissingDependencies ();
+
+		protected virtual bool IsNotCLSCompliant (out bool attrValue)
 		{
-			return MemberDefinition.IsNotCLSCompliant ();
+			var cls = MemberDefinition.CLSAttributeValue;
+			attrValue = cls ?? false;
+			return cls == false;
 		}
 
 		public virtual string GetSignatureForError ()
@@ -1141,14 +1147,16 @@ namespace Mono.CSharp {
 			if ((state & StateFlags.CLSCompliant_Undetected) != 0) {
 				state &= ~StateFlags.CLSCompliant_Undetected;
 
-				if (IsNotCLSCompliant ())
+				bool compliant;
+				if (IsNotCLSCompliant (out compliant))
 					return false;
 
-				bool compliant;
-				if (DeclaringType != null) {
-					compliant = DeclaringType.IsCLSCompliant ();
-				} else {
-					compliant = ((ITypeDefinition) MemberDefinition).DeclaringAssembly.IsCLSCompliant;
+				if (!compliant) {
+					if (DeclaringType != null) {
+						compliant = DeclaringType.IsCLSCompliant ();
+					} else {
+						compliant = ((ITypeDefinition) MemberDefinition).DeclaringAssembly.IsCLSCompliant;
+					}
 				}
 
 				if (compliant)
@@ -1187,12 +1195,12 @@ namespace Mono.CSharp {
 	//
 	public interface IMemberDefinition
 	{
+		bool? CLSAttributeValue { get; }
 		string Name { get; }
 		bool IsImported { get; }
 
 		string[] ConditionalConditions ();
 		ObsoleteAttribute GetAttributeObsolete ();
-		bool IsNotCLSCompliant ();
 		void SetIsAssigned ();
 		void SetIsUsed ();
 	}
@@ -1342,9 +1350,7 @@ namespace Mono.CSharp {
 			return false;
 		}
 
-		protected virtual TypeAttributes TypeAttr {
-			get { return Module.DefaultCharSetType; }
-		}
+		protected abstract TypeAttributes TypeAttr { get; }
 
 		/// <remarks>
 		///  Should be overriten by the appropriate declaration space

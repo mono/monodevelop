@@ -41,6 +41,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System.Text;
 using NGit.Util;
 using Sharpen;
 
@@ -50,14 +51,14 @@ namespace NGit.Util
 	{
 		internal static bool Detect()
 		{
-			string osDotName = AccessController.DoPrivileged(new _PrivilegedAction_54());
+			string osDotName = AccessController.DoPrivileged(new _PrivilegedAction_55());
 			return osDotName != null && StringUtils.ToLowerCase(osDotName).IndexOf("windows")
 				 != -1;
 		}
 
-		private sealed class _PrivilegedAction_54 : PrivilegedAction<string>
+		private sealed class _PrivilegedAction_55 : PrivilegedAction<string>
 		{
-			public _PrivilegedAction_54()
+			public _PrivilegedAction_55()
 			{
 			}
 
@@ -85,6 +86,49 @@ namespace NGit.Util
 		public override bool RetryFailedLockFileCommit()
 		{
 			return true;
+		}
+
+		public override FilePath GitPrefix()
+		{
+			string path = SystemReader.GetInstance().Getenv("PATH");
+			FilePath gitExe = SearchPath(path, "git.exe", "git.cmd");
+			if (gitExe != null)
+			{
+				return gitExe.GetParentFile().GetParentFile();
+			}
+			// This isn't likely to work, if bash is in $PATH, git should
+			// also be in $PATH. But its worth trying.
+			//
+			string w = ReadPipe(UserHome(), new string[] { "bash", "--login", "-c", "which git"
+				 }, Encoding.Default.Name());
+			//
+			//
+			if (w != null)
+			{
+				return new FilePath(w).GetParentFile().GetParentFile();
+			}
+			return null;
+		}
+
+		protected internal override FilePath UserHomeImpl()
+		{
+			string home = SystemReader.GetInstance().Getenv("HOME");
+			if (home != null)
+			{
+				return Resolve(null, home);
+			}
+			string homeDrive = SystemReader.GetInstance().Getenv("HOMEDRIVE");
+			if (homeDrive != null)
+			{
+				string homePath = SystemReader.GetInstance().Getenv("HOMEPATH");
+				return new FilePath(homeDrive, homePath);
+			}
+			string homeShare = SystemReader.GetInstance().Getenv("HOMESHARE");
+			if (homeShare != null)
+			{
+				return new FilePath(homeShare);
+			}
+			return base.UserHomeImpl();
 		}
 	}
 }

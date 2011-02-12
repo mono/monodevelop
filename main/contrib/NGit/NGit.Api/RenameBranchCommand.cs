@@ -143,23 +143,23 @@ namespace NGit.Api
 						// move the upstream configuration over to the new branch
 						string shortOldName = Sharpen.Runtime.Substring(fullOldName, Constants.R_HEADS.Length
 							);
-						string oldRemote = repo.GetConfig().GetString(ConfigConstants.CONFIG_BRANCH_SECTION
-							, shortOldName, ConfigConstants.CONFIG_KEY_REMOTE);
+						StoredConfig repoConfig = repo.GetConfig();
+						string oldRemote = repoConfig.GetString(ConfigConstants.CONFIG_BRANCH_SECTION, shortOldName
+							, ConfigConstants.CONFIG_KEY_REMOTE);
 						if (oldRemote != null)
 						{
-							repo.GetConfig().SetString(ConfigConstants.CONFIG_BRANCH_SECTION, newName, ConfigConstants
+							repoConfig.SetString(ConfigConstants.CONFIG_BRANCH_SECTION, newName, ConfigConstants
 								.CONFIG_KEY_REMOTE, oldRemote);
 						}
-						string oldMerge = repo.GetConfig().GetString(ConfigConstants.CONFIG_BRANCH_SECTION
-							, shortOldName, ConfigConstants.CONFIG_KEY_MERGE);
+						string oldMerge = repoConfig.GetString(ConfigConstants.CONFIG_BRANCH_SECTION, shortOldName
+							, ConfigConstants.CONFIG_KEY_MERGE);
 						if (oldMerge != null)
 						{
-							repo.GetConfig().SetString(ConfigConstants.CONFIG_BRANCH_SECTION, newName, ConfigConstants
+							repoConfig.SetString(ConfigConstants.CONFIG_BRANCH_SECTION, newName, ConfigConstants
 								.CONFIG_KEY_MERGE, oldMerge);
 						}
-						repo.GetConfig().UnsetSection(ConfigConstants.CONFIG_BRANCH_SECTION, shortOldName
-							);
-						repo.GetConfig().Save();
+						repoConfig.UnsetSection(ConfigConstants.CONFIG_BRANCH_SECTION, shortOldName);
+						repoConfig.Save();
 					}
 				}
 				else

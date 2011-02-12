@@ -117,7 +117,6 @@ namespace MonoDevelop.Projects.Dom
 				tp.Variance = (TypeParameterVariance)(((uint)parameter.Attributes) & 3);
 				if (parameter.HasDefaultConstructorConstraint)
 					tp.TypeParameterModifier |= TypeParameterModifier.HasDefaultConstructorConstraint;
-				System.Console.WriteLine (parameter.FullName + "/" + tp.TypeParameterModifier);
 				foreach (TypeReference tr in parameter.Constraints) {
 					tp.AddConstraint (DomCecilMethod.GetReturnType (tr));
 				}

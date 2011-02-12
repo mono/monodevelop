@@ -53,7 +53,7 @@ namespace MonoDevelop.IPhone
 	{
 		internal const string PLAT_IPHONE = "iPhone";
 		internal const string PLAT_SIM = "iPhoneSimulator";
-		internal const string FX_IPHONE = "IPhone";
+		internal const string FX_IPHONE = "MonoTouch";
 		internal const string DEV_CERT_PREFIX  = "iPhone Developer";
 		internal const string DIST_CERT_PREFIX = "iPhone Distribution";
 		
@@ -312,9 +312,16 @@ namespace MonoDevelop.IPhone
 		void Init ()
 		{
 			CodeBehindGenerator = new IPhoneCodeBehind (this);
-			
-			//set parameters to ones required for IPhone build
-			TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (FX_IPHONE);
+		}
+		
+		public override MonoDevelop.Core.Assemblies.TargetFrameworkMoniker GetDefaultTargetFrameworkId ()
+		{
+			return new MonoDevelop.Core.Assemblies.TargetFrameworkMoniker (FX_IPHONE, "1.0");
+		}
+		
+		public override bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
+		{
+			return framework.Id.Identifier == FX_IPHONE;
 		}
 		
 		protected override void OnEndLoad ()
@@ -481,11 +488,6 @@ namespace MonoDevelop.IPhone
 		
 		#region Platform properties
 		
-		public override bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
-		{
-			return framework.Id == FX_IPHONE;
-		}
-
 		public override string[] SupportedPlatforms {
 			get {
 				return new string [] { PLAT_IPHONE, PLAT_SIM };

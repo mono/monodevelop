@@ -28,7 +28,23 @@ using System.Net;
 
 namespace Sharpen
 {
-	public class HttpURLConnection
+	public class URLConnection
+	{
+	}
+	
+	public class HttpsURLConnection: HttpURLConnection
+	{
+		internal HttpsURLConnection (Uri uri, Proxy p): base (uri, p)
+		{
+		}
+		
+		internal void SetSSLSocketFactory (object factory)
+		{
+			// TODO
+		}
+	}
+	
+	public class HttpURLConnection: URLConnection
 	{
 		public const int HTTP_OK = 200;
 		public const int HTTP_NOT_FOUND = 404;

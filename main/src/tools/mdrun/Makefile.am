@@ -6,12 +6,13 @@ src/mdrun.cs
 
 all: $(ASSEMBLY) $(ASSEMBLY).config
 
-REFS = -r:$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	$(MONO_ADDINS_LIBS) \
+REFS = $(MONO_ADDINS_LIBS) \
 	$(MONO_ADDINS_SETUP_LIBS)
+
+DEPS = $(top_builddir)/build/bin/MonoDevelop.Core.dll
 	
-$(ASSEMBLY): $(build_sources)
-	$(CSC) $(CSC_FLAGS) $(build_sources) $(REFS) /out:$(ASSEMBLY)
+$(ASSEMBLY): $(build_sources) $(DEPS)
+	$(CSC) $(CSC_FLAGS) $(build_sources) $(REFS) $(build_deps) /out:$(ASSEMBLY)
 
 $(ASSEMBLY).config: $(ASSEMBLY) $(srcdir)/app.config
 	cp $(srcdir)/app.config $(ASSEMBLY).config

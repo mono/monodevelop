@@ -13,4 +13,8 @@ $(NSCH): $(NSCH_CSFILES)
 
 CLEANFILES = $(NSCH) $(NSCH_MDB)
 
-
+EXTRA_DIST = \
+	     $(wildcard NSch*/*.cs) \
+	     $(wildcard NSch/Sharpen/*.cs) \
+	     AssemblyInfo.cs \
+	     NSch.csproj

@@ -82,6 +82,7 @@
                       <widget class="Gtk.RadioButton" id="noFilterRadio">
                         <property name="MemberName" />
                         <property name="Label" translatable="yes">Don't apply any filter</property>
+                        <property name="Active">True</property>
                         <property name="DrawIndicator">True</property>
                         <property name="HasLabel">True</property>
                         <property name="UseUnderline">True</property>

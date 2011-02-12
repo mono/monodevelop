@@ -88,14 +88,12 @@ namespace MonoDevelop.Projects.Dom.Parser
 		static object parseQueueLock = new object ();
 		static AutoResetEvent parseEvent = new AutoResetEvent (false);
 		
-		static string codeCompletionPath;
-
 		static Dictionary<string,ProjectDom> databases = new Dictionary<string,ProjectDom>();
 		static Dictionary<FilePath,SingleFileCacheEntry> singleDatabases = new Dictionary<FilePath,SingleFileCacheEntry> ();		
 		
 		static ProjectDomService ()
 		{
-			codeCompletionPath = GetDefaultCompletionFileLocation ();
+			CodeCompletionPath = GetDefaultCompletionFileLocation ();
 			// for unit tests it may not have been initialized.
 		}
 
@@ -192,18 +190,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 		}
 
 		internal static string CodeCompletionPath {
-			get { return codeCompletionPath; }
+			get;
+			private set;
 		}
 		
-		static string GetDefaultCompletionFileLocation()
+		static string GetDefaultCompletionFileLocation ()
 		{
-			string path = PropertyService.Get<string> ("MonoDevelop.CodeCompletion.DataDirectory", String.Empty);
-			if (string.IsNullOrEmpty (path)) {
-				path = Path.Combine (PropertyService.ConfigPath, "CodeCompletionData");
-				PropertyService.Set ("MonoDevelop.CodeCompletion.DataDirectory", path);
-				PropertyService.SaveProperties ();
-			}
-			
+			string path = Path.Combine (PropertyService.ConfigPath, "CodeCompletionData");
 			if (!Directory.Exists (path))
 				Directory.CreateDirectory (path);
 
@@ -387,6 +380,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 					// in which case those references are not properly registered.
 					foreach (Project project in solution.GetAllProjects ()) {
 						ProjectDom dom = GetProjectDom (project);
+						// referenced by main project - prevents the removal if a project is referenced one time inside the solution
+						// and the project that references it is reloaded.
+						dom.ReferenceCount++; 
 						if (dom != null)
 							dom.UpdateReferences ();
 					}
@@ -410,8 +406,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			else if (item is Solution) {
 				Solution solution = (Solution) item;
-				foreach (Project project in solution.GetAllProjects ())
-					Unload (project);
+				foreach (Project project in solution.GetAllProjects ()) {
+					ProjectDom dom = GetProjectDom (project);
+					if (dom != null) {
+						dom.ReferenceCount--;
+						Unload (project);
+					}
+				}
 				solution.SolutionItemAdded -= OnSolutionItemAdded;
 				solution.SolutionItemRemoved -= OnSolutionItemRemoved;
 			}
@@ -451,7 +452,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				try {
 					ProjectDom db = ParserDatabase.LoadProjectDom (project);
 					RegisterDom (db, uri);
-				
+					
 					if (project is DotNetProject) {
 						((DotNetProject)project).ReferenceAddedToProject += OnProjectReferenceAdded;
 						((DotNetProject)project).ReferenceRemovedFromProject += OnProjectReferenceRemoved;
@@ -467,6 +468,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			dom.Uri = uri;
 			databases [uri] = dom;
 			dom.UpdateReferences ();
+			OnDomRegistered (new ProjectDomEventArgs (dom));
 		}
 		
 		internal static ProjectDom GetDomForUri (string uri)
@@ -484,13 +486,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 			lock (databases)
 			{
 				ProjectDom db;
+				
 				if (!databases.TryGetValue (uri, out db)) {
 					// Create/load the database
 					
 					TargetRuntime tr = null;
 					TargetFramework fx = null;
 					string file;
-					
 					if (ParseAssemblyUri (uri, out tr, out fx, out file)) {
 						db = ParserDatabase.LoadAssemblyDom (tr, fx, file);
 						RegisterDom (db, uri);
@@ -1024,15 +1026,18 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 		}
 		
-		internal static int ResolveTypes (ProjectDom db, ICompilationUnit unit, IList<IType> types, out List<IType> result)
+		internal static int ResolveTypes (ProjectDom db, ICompilationUnit unit, IEnumerable<IType> types, IEnumerable<IAttribute> attributes, out List<IType> result, out List<IAttribute> resultAtrtibutes)
 		{
 			TypeResolverVisitor tr = new TypeResolverVisitor (db, unit);
 			
 			int unresolvedCount = 0;
+			
 			result = new List<IType> ();
 			foreach (IType c in types) {
 				tr.UnresolvedCount = 0;
 				DomType rc = (DomType)c.AcceptVisitor (tr, null);
+				if (rc.CompilationUnit != null)
+					rc.CompilationUnit = new CompilationUnit (rc.CompilationUnit.FileName);
 				rc.Resolved = true;
 				// no need to set the base type here - the completion db handles that
 				// (setting to system.object is wrong for enums & structs - and interfaces may never have a base)
@@ -1047,6 +1052,14 @@ namespace MonoDevelop.Projects.Dom.Parser
 				unresolvedCount += tr.UnresolvedCount;
 			}
 				
+			resultAtrtibutes = new List<IAttribute> ();
+			foreach (IAttribute a in attributes) {
+				tr.UnresolvedCount = 0;
+				DomAttribute ra = (DomAttribute)a.AcceptVisitor (tr, null);
+				resultAtrtibutes.Add (ra);
+				unresolvedCount += tr.UnresolvedCount;
+			}
+			
 			return unresolvedCount;
 		}
 
@@ -1095,12 +1108,20 @@ namespace MonoDevelop.Projects.Dom.Parser
 				TypesUpdated (null, new TypeUpdateInformationEventArgs (project, info));
 		}
 		
+		static void OnDomRegistered (ProjectDomEventArgs e)
+		{
+			EventHandler<ProjectDomEventArgs> handler = DomRegistered;
+			if (handler != null)
+				handler (null, e);
+		}
+
 		public static event EventHandler<TypeUpdateInformationEventArgs> TypesUpdated;
 		public static event AssemblyInformationEventHandler AssemblyInformationChanged;
 		public static event EventHandler<CommentTasksChangedEventArgs> CommentTasksChanged;
 		public static event EventHandler SpecialCommentTagsChanged;
 		public static event EventHandler ParseOperationStarted;
 		public static event EventHandler ParseOperationFinished;
+		public static event EventHandler<ProjectDomEventArgs> DomRegistered;
 	}
 	
 	class InternalProgressMonitor: NullProgressMonitor

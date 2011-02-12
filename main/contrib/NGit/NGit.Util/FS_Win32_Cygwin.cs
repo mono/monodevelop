@@ -41,9 +41,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-using System;
-using System.Diagnostics;
-using System.IO;
 using NGit.Util;
 using Sharpen;
 
@@ -55,26 +52,22 @@ namespace NGit.Util
 
 		internal static bool Detect()
 		{
-			string path = AccessController.DoPrivileged(new _PrivilegedAction_58());
+			string path = AccessController.DoPrivileged(new _PrivilegedAction_55());
 			if (path == null)
 			{
 				return false;
 			}
-			foreach (string p in path.Split(";"))
+			FilePath found = FS.SearchPath(path, "cygpath.exe");
+			if (found != null)
 			{
-				FilePath e = new FilePath(p, "cygpath.exe");
-				if (e.IsFile())
-				{
-					cygpath = e.GetAbsolutePath();
-					return true;
-				}
+				cygpath = found.GetPath();
 			}
-			return false;
+			return cygpath != null;
 		}
 
-		private sealed class _PrivilegedAction_58 : PrivilegedAction<string>
+		private sealed class _PrivilegedAction_55 : PrivilegedAction<string>
 		{
-			public _PrivilegedAction_58()
+			public _PrivilegedAction_55()
 			{
 			}
 
@@ -86,50 +79,20 @@ namespace NGit.Util
 
 		public override FilePath Resolve(FilePath dir, string pn)
 		{
-			try
-			{
-				Process p;
-				p = Runtime.GetRuntime().Exec(new string[] { cygpath, "--windows", "--absolute", 
-					pn }, null, dir);
-				p.GetOutputStream().Close();
-				BufferedReader lineRead = new BufferedReader(new InputStreamReader(p.GetInputStream
-					(), "UTF-8"));
-				string r = null;
-				try
-				{
-					r = lineRead.ReadLine();
-				}
-				finally
-				{
-					lineRead.Close();
-				}
-				for (; ; )
-				{
-					try
-					{
-						if (p.WaitFor() == 0 && r != null && r.Length > 0)
-						{
-							return new FilePath(r);
-						}
-						break;
-					}
-					catch (Exception)
-					{
-					}
-				}
-			}
-			catch (IOException)
-			{
-			}
-			// Stop bothering me, I have a zombie to reap.
-			// Fall through and use the default return.
+			string w = ReadPipe(dir, new string[] { cygpath, "--windows", "--absolute", pn }, 
+				"UTF-8");
 			//
+			//
+			if (w != null)
+			{
+				return new FilePath(w);
+			}
 			return base.Resolve(dir, pn);
 		}
 
 		protected internal override FilePath UserHomeImpl()
 		{
-			string home = AccessController.DoPrivileged(new _PrivilegedAction_112());
+			string home = AccessController.DoPrivileged(new _PrivilegedAction_80());
 			if (home == null || home.Length == 0)
 			{
 				return base.UserHomeImpl();
@@ -137,9 +100,9 @@ namespace NGit.Util
 			return Resolve(new FilePath("."), home);
 		}
 
-		private sealed class _PrivilegedAction_112 : PrivilegedAction<string>
+		private sealed class _PrivilegedAction_80 : PrivilegedAction<string>
 		{
-			public _PrivilegedAction_112()
+			public _PrivilegedAction_80()
 			{
 			}
 

@@ -59,10 +59,10 @@ namespace Mono.CSharp {
 			402, 414, 419, 420, 429, 436, 440, 458, 464, 465, 467, 469, 472,
 			612, 618, 626, 628, 642, 649, 652, 658, 659, 660, 661, 665, 672, 675, 693,
 			728,
-			809,
+			809, 824,
 			1030, 1058, 1066,
 			1522, 1570, 1571, 1572, 1573, 1574, 1580, 1581, 1584, 1587, 1589, 1590, 1591, 1592,
-			1607, 1616, 1633, 1634, 1635, 1685, 1690, 1691, 1692, 1695, 1696, 1699, 1683,
+			1607, 1616, 1633, 1634, 1635, 1685, 1690, 1691, 1692, 1695, 1696, 1699,
 			1700, 1701, 1702, 1709, 1717, 1718, 1720,
 			1901, 1981,
 			2002, 2023, 2029,
@@ -641,7 +641,11 @@ namespace Mono.CSharp {
 		{
 			StringBuilder txt = new StringBuilder ();
 			if (!msg.Location.IsNull) {
-				txt.Append (msg.Location.ToString ());
+				if (RootContext.ShowFullPaths)
+					txt.Append (msg.Location.ToStringFullName ());
+				else
+					txt.Append (msg.Location.ToString ());
+
 				txt.Append (" ");
 			}
 
@@ -970,89 +974,97 @@ namespace Mono.CSharp {
 		}
 	}
 
-	public enum TimerType {
-		FindMembers	= 0,
-		TcFindMembers	= 1,
-		MemberLookup	= 2,
-		CachedLookup	= 3,
-		CacheInit	= 4,
-		MiscTimer	= 5,
-		CountTimers	= 6
-	}
-
-	public enum CounterType {
-		FindMembers	= 0,
-		MemberCache	= 1,
-		MiscCounter	= 2,
-		CountCounters	= 3
-	}
-
-	public class Timer
+	class TimeReporter
 	{
-		static DateTime[] timer_start;
-		static TimeSpan[] timers;
-		static long[] timer_counters;
-		static long[] counters;
-
-		static Timer ()
+		public enum TimerType
 		{
-			timer_start = new DateTime [(int) TimerType.CountTimers];
-			timers = new TimeSpan [(int) TimerType.CountTimers];
-			timer_counters = new long [(int) TimerType.CountTimers];
-			counters = new long [(int) CounterType.CountCounters];
+			ParseTotal,
+			AssemblyBuilderSetup,
+			CreateTypeTotal,
+			ReferencesLoading,
+			ReferencesImporting,
+			PredefinedTypesInit,
+			ModuleDefinitionTotal,
+			UsingVerification,
+			EmitTotal,
+			CloseTypes,
+			Resouces,
+			OutputSave,
+			DebugSave,
+		}
 
-			for (int i = 0; i < (int) TimerType.CountTimers; i++) {
-				timer_start [i] = DateTime.Now;
-				timers [i] = TimeSpan.Zero;
+		readonly Stopwatch[] timers;
+		Stopwatch total;
+
+		public TimeReporter (bool enabled)
+		{
+			if (!enabled)
+				return;
+
+			timers = new Stopwatch[System.Enum.GetValues(typeof (TimerType)).Length];
+		}
+
+		public void Start (TimerType type)
+		{
+			if (timers != null) {
+				var sw = new Stopwatch ();
+				timers[(int) type] = sw;
+				sw.Start ();
 			}
 		}
 
-		[Conditional("TIMER")]
-		static public void IncrementCounter (CounterType which)
+		public void StartTotal ()
 		{
-			++counters [(int) which];
+			total = new Stopwatch ();
+			total.Start ();
 		}
 
-		[Conditional("TIMER")]
-		static public void StartTimer (TimerType which)
+		public void Stop (TimerType type)
 		{
-			timer_start [(int) which] = DateTime.Now;
+			if (timers != null) {
+				timers[(int) type].Stop ();
+			}
 		}
 
-		[Conditional("TIMER")]
-		static public void StopTimer (TimerType which)
+		public void StopTotal ()
 		{
-			timers [(int) which] += DateTime.Now - timer_start [(int) which];
-			++timer_counters [(int) which];
+			total.Stop ();
 		}
 
-		[Conditional("TIMER")]
-		static public void ShowTimers ()
+		public void ShowStats ()
 		{
-			ShowTimer (TimerType.FindMembers, "- FindMembers timer");
-			ShowTimer (TimerType.TcFindMembers, "- TypeContainer.FindMembers timer");
-			ShowTimer (TimerType.MemberLookup, "- MemberLookup timer");
-			ShowTimer (TimerType.CachedLookup, "- CachedLookup timer");
-			ShowTimer (TimerType.CacheInit, "- Cache init");
-			ShowTimer (TimerType.MiscTimer, "- Misc timer");
+			if (timers == null)
+				return;
 
-			ShowCounter (CounterType.FindMembers, "- Find members");
-			ShowCounter (CounterType.MemberCache, "- Member cache");
-			ShowCounter (CounterType.MiscCounter, "- Misc counter");
-		}
+			Dictionary<TimerType, string> timer_names = new Dictionary<TimerType,string> () {
+				{ TimerType.ParseTotal, "Parsing source files" },
+				{ TimerType.AssemblyBuilderSetup, "Assembly builder setup" },
+				{ TimerType.CreateTypeTotal, "Compiled types created" },
+				{ TimerType.ReferencesLoading, "Referenced assemblies loading" },
+				{ TimerType.ReferencesImporting, "Referenced assemblies importing" },
+				{ TimerType.PredefinedTypesInit, "Predefined types initialization" },
+				{ TimerType.ModuleDefinitionTotal, "Module definition" },
+				{ TimerType.UsingVerification, "Usings verification" },
+				{ TimerType.EmitTotal, "Resolving and emitting members blocks" },
+				{ TimerType.CloseTypes, "Module types closed" },
+				{ TimerType.Resouces, "Embedding resources" },
+				{ TimerType.OutputSave, "Writing output file" },
+				{ TimerType.DebugSave, "Writing debug symbols file" },
+			};
 
-		static public void ShowCounter (CounterType which, string msg)
-		{
-			Console.WriteLine ("{0} {1}", counters [(int) which], msg);
-		}
+			int counter = 0;
+			double percentage = total.ElapsedMilliseconds / 100;
+			long subtotal = total.ElapsedMilliseconds;
+			foreach (var timer in timers) {
+				string msg = timer_names[(TimerType) counter++];
+				var ms = timer == null ? 0 : timer.ElapsedMilliseconds;
+				Console.WriteLine ("{0,4:0.0}% {1,5}ms {2}", ms / percentage, ms, msg);
+				subtotal -= ms;
+			}
 
-		static public void ShowTimer (TimerType which, string msg)
-		{
-			Console.WriteLine (
-				"[{0:00}:{1:000}] {2} (used {3} times)",
-				(int) timers [(int) which].TotalSeconds,
-				timers [(int) which].Milliseconds, msg,
-				timer_counters [(int) which]);
+			Console.WriteLine ("{0,4:0.0}% {1,5}ms Other tasks", subtotal / percentage, subtotal);
+			Console.WriteLine ();
+			Console.WriteLine ("Total elapsed time: {0}", total.Elapsed);
 		}
 	}
 

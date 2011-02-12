@@ -39,7 +39,7 @@ using System.Text;
 using Mono.TextEditor.PopupWindow;
 using MonoDevelop.Refactoring;
 using MonoDevelop.CSharp.Parser;
-using MonoDevelop.CSharp.Dom;
+using MonoDevelop.CSharp.Ast;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.CSharp.Resolver;
@@ -171,7 +171,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				set;
 			}
 			
-			public List<DomNode> Nodes {
+			public List<AstNode> Nodes {
 				get;
 				set;
 			}
@@ -253,7 +253,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			
 			var startLocation = data.Document.OffsetToLocation (data.SelectionRange.Offset);
 			var endLocation = data.Document.OffsetToLocation (data.SelectionRange.EndOffset);
-			param.Nodes = new List<DomNode> (unit.GetNodesBetween (startLocation.Line, startLocation.Column, endLocation.Line, endLocation.Column));
+			param.Nodes = new List<AstNode> (unit.GetNodesBetween (startLocation.Line, startLocation.Column, endLocation.Line, endLocation.Column));
 			
 			string text = options.Document.Editor.GetTextAt (options.Document.Editor.SelectionRange);
 			
@@ -489,7 +489,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				methodText.Append (AddIndent (text.ToString (), indent + "\t"));
 			}
 
-			methodText.AppendLine (code.Substring (idx2 + 1));
+			methodText.Append (code.Substring (idx2 + 1));
 			if (param.InsertionPoint != null) {
 				switch (param.InsertionPoint.LineAfter) {
 				case NewLineInsertion.Eol:
@@ -497,14 +497,14 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 					break;
 				case NewLineInsertion.BlankLine:
 					methodText.AppendLine ();
-					methodText.AppendLine ();
 					methodText.Append (indent);
+					methodText.AppendLine ();
 					break;
 				}
 			} else {
 				methodText.AppendLine ();
-				methodText.AppendLine ();
 				methodText.Append (indent);
+				methodText.AppendLine ();
 			}
 			return methodText.ToString ();
 		}
@@ -535,12 +535,11 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				if (insertionPoint == null)
 					insertionPoint = points.FirstOrDefault ();
 			}
-				
-			insertNewMethod.RemovedChars = insertionPoint.LineBefore == NewLineInsertion.Eol ? 0 : insertionPoint.Location.Column - 1;
+			
+			insertNewMethod.RemovedChars = 0; //insertionPoint.LineBefore == NewLineInsertion.Eol ? 0 : insertionPoint.Location.Column - 1;
 			insertNewMethod.Offset = data.Document.LocationToOffset (insertionPoint.Location) - insertNewMethod.RemovedChars;
 			insertNewMethod.InsertedText = GenerateMethodDeclaration (options, param);
 			result.Add (insertNewMethod);
-			
 			/*
 			
 			ExtractMethodAstTransformer transformer = new ExtractMethodAstTransformer (param.VariablesToGenerate);

@@ -122,7 +122,10 @@ namespace NGit
 		/// <see cref="ObjectIdSubclassMap{V}.Get(AnyObjectId)">ObjectIdSubclassMap&lt;V&gt;.Get(AnyObjectId)
 		/// 	</see>
 		/// to verify there is no current
-		/// mapping prior to adding a new mapping.
+		/// mapping prior to adding a new mapping, or use
+		/// <see cref="ObjectIdSubclassMap{V}.AddIfAbsent{Q}(ObjectId)">ObjectIdSubclassMap&lt;V&gt;.AddIfAbsent&lt;Q&gt;(ObjectId)
+		/// 	</see>
+		/// .
 		/// </remarks>
 		/// <param name="newValue">the object to store.</param>
 		/// <?></?>
@@ -134,6 +137,58 @@ namespace NGit
 			}
 			Insert(newValue);
 			size++;
+		}
+
+		/// <summary>Store an object for future lookup.</summary>
+		/// <remarks>
+		/// Store an object for future lookup.
+		/// <p>
+		/// Stores
+		/// <code>newValue</code>
+		/// , but only if there is not already an object for
+		/// the same object name. Callers can tell if the value is new by checking
+		/// the return value with reference equality:
+		/// <pre>
+		/// V obj = ...;
+		/// boolean wasNew = map.addIfAbsent(obj) == obj;
+		/// </pre>
+		/// </remarks>
+		/// <param name="newValue">the object to store.</param>
+		/// <returns>
+		/// 
+		/// <code>newValue</code>
+		/// if stored, or the prior value already stored and
+		/// that would have been returned had the caller used
+		/// <code>get(newValue)</code>
+		/// first.
+		/// </returns>
+		/// <?></?>
+		public virtual V AddIfAbsent<Q>(Q newValue) where Q:V
+		{
+			int i = Index(newValue);
+			V obj;
+			while ((obj = obj_hash[i]) != null)
+			{
+				if (AnyObjectId.Equals(obj, newValue))
+				{
+					return obj;
+				}
+				if (++i == obj_hash.Length)
+				{
+					i = 0;
+				}
+			}
+			if (obj_hash.Length - 1 <= size * 2)
+			{
+				Grow();
+				Insert(newValue);
+			}
+			else
+			{
+				obj_hash[i] = newValue;
+			}
+			size++;
+			return newValue;
 		}
 
 		/// <returns>number of objects in map</returns>
@@ -154,12 +209,12 @@ namespace NGit
 
 		public override Sharpen.Iterator<V> Iterator()
 		{
-			return new _Iterator_145(this);
+			return new _Iterator_186(this);
 		}
 
-		private sealed class _Iterator_145 : Sharpen.Iterator<V>
+		private sealed class _Iterator_186 : Sharpen.Iterator<V>
 		{
-			public _Iterator_145(ObjectIdSubclassMap<V> _enclosing)
+			public _Iterator_186(ObjectIdSubclassMap<V> _enclosing)
 			{
 				this._enclosing = _enclosing;
 			}

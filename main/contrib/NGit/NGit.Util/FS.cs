@@ -41,6 +41,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System;
+using System.Diagnostics;
+using System.IO;
 using NGit.Util;
 using Sharpen;
 
@@ -205,7 +208,7 @@ namespace NGit.Util
 		/// <returns>the user's home directory; null if the user does not have one.</returns>
 		protected internal virtual FilePath UserHomeImpl()
 		{
-			string home = AccessController.DoPrivileged(new _PrivilegedAction_193());
+			string home = AccessController.DoPrivileged(new _PrivilegedAction_196());
 			if (home == null || home.Length == 0)
 			{
 				return null;
@@ -213,9 +216,9 @@ namespace NGit.Util
 			return new FilePath(home).GetAbsoluteFile();
 		}
 
-		private sealed class _PrivilegedAction_193 : PrivilegedAction<string>
+		private sealed class _PrivilegedAction_196 : PrivilegedAction<string>
 		{
-			public _PrivilegedAction_193()
+			public _PrivilegedAction_196()
 			{
 			}
 
@@ -224,5 +227,71 @@ namespace NGit.Util
 				return Runtime.GetProperty("user.home");
 			}
 		}
+
+		internal static FilePath SearchPath(string path, params string[] lookFor)
+		{
+			foreach (string p in path.Split(FilePath.pathSeparator))
+			{
+				foreach (string command in lookFor)
+				{
+					FilePath e = new FilePath(p, command);
+					if (e.IsFile())
+					{
+						return e.GetAbsoluteFile();
+					}
+				}
+			}
+			return null;
+		}
+
+		/// <summary>Execute a command and return a single line of output as a String</summary>
+		/// <param name="dir">Working directory for the command</param>
+		/// <param name="command">as component array</param>
+		/// <param name="encoding"></param>
+		/// <returns>the one-line output of the command</returns>
+		protected internal static string ReadPipe(FilePath dir, string[] command, string 
+			encoding)
+		{
+			try
+			{
+				Process p = Runtime.GetRuntime().Exec(command, null, dir);
+				BufferedReader lineRead = new BufferedReader(new InputStreamReader(p.GetInputStream
+					(), encoding));
+				string r = null;
+				try
+				{
+					r = lineRead.ReadLine();
+				}
+				finally
+				{
+					p.GetOutputStream().Close();
+					p.GetErrorStream().Close();
+					lineRead.Close();
+				}
+				for (; ; )
+				{
+					try
+					{
+						if (p.WaitFor() == 0 && r != null && r.Length > 0)
+						{
+							return r;
+						}
+						break;
+					}
+					catch (Exception)
+					{
+					}
+				}
+			}
+			catch (IOException)
+			{
+			}
+			// Stop bothering me, I have a zombie to reap.
+			// ignore
+			return null;
+		}
+
+		/// <returns>the $prefix directory C Git would use.</returns>
+		public abstract FilePath GitPrefix();
 	}
 }

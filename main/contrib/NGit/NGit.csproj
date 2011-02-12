@@ -358,7 +358,6 @@
     <Compile Include="NGit.Errors\TransportException.cs" />
     <Compile Include="NGit.Transport\URIish.cs" />
     <Compile Include="NGit.Api\MergeCommandResult.cs" />
-    <Compile Include="NGit.Transport\IndexPack.cs" />
     <Compile Include="NGit.Transport\LongMap.cs" />
     <Compile Include="NGit.Util\IOUtil.cs" />
     <Compile Include="NGit.Transport\RemoteConfig.cs" />
@@ -481,6 +480,23 @@
     <Compile Include="NGit.Util\FileUtils.cs" />
     <Compile Include="NGit.Treewalk.Filter\IndexDiffFilter.cs" />
     <Compile Include="NGit.Api.Errors\UnmergedPathsException.cs" />
+    <Compile Include="NGit.Storage.File\FileSnapshot.cs" />
+    <Compile Include="NGit.Api\CheckoutResult.cs" />
+    <Compile Include="NGit.Util\FS_POSIX.cs" />
+    <Compile Include="NGit.Api\RevertCommand.cs" />
+    <Compile Include="NGit.Notes\DefaultNoteMerger.cs" />
+    <Compile Include="NGit.Notes\NoteMapMerger.cs" />
+    <Compile Include="NGit.Notes\NoteMerger.cs" />
+    <Compile Include="NGit.Notes\NotesMergeConflictException.cs" />
+    <Compile Include="NGit.Transport\TransferConfig.cs" />
+    <Compile Include="NGit.Transport\PackParser.cs" />
+    <Compile Include="NGit.Storage.File\ObjectDirectoryPackParser.cs" />
+    <Compile Include="NGit.Revwalk\ObjectListIterator.cs" />
+    <Compile Include="NGit.Api\CloneCommand.cs" />
+    <Compile Include="NGit.Storage.Pack\BaseSearch.cs" />
+    <Compile Include="NGit.Storage.Pack\IntSet.cs" />
+    <Compile Include="NGit.Storage.File\LocalCachedPack.cs" />
+    <Compile Include="NGit.Storage.Pack\CachedPack.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

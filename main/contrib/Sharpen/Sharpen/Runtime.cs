@@ -189,5 +189,10 @@ namespace Sharpen
 		{
 			return s1.Equals (s2, StringComparison.CurrentCultureIgnoreCase);
 		}
+		
+		public static long NanoTime ()
+		{
+			return Environment.TickCount * 1000 * 1000;
+		}
 	}
 }

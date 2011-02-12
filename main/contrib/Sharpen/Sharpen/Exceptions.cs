@@ -164,5 +164,9 @@ namespace Sharpen
 		{
 		}
 	}
+	
+	class KeyManagementException: Exception
+	{
+	}
 }
 

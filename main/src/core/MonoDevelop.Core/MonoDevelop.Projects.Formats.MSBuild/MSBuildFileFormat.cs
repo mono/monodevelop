@@ -43,17 +43,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		string toolsVersion;
 		string slnVersion;
 		string productDescription;
-		string[] frameworkVersions;
-		IList compatibleFrameworkVersions;
+		TargetFrameworkMoniker[] frameworkVersions;
+		bool supportsMonikers;
 		
-		public MSBuildFileFormat (string productVersion, string toolsVersion, string slnVersion, string productDescription, string[] frameworkVersions, string[] compatibleFrameworkVersions)
+		public MSBuildFileFormat (string productVersion, string toolsVersion, string slnVersion, string productDescription,
+			TargetFrameworkMoniker[] frameworkVersions, bool supportsMonikers)
 		{
 			this.productVersion = productVersion;
 			this.toolsVersion = toolsVersion;
 			this.slnVersion = slnVersion;
 			this.productDescription = productDescription;
 			this.frameworkVersions = frameworkVersions;
-			this.compatibleFrameworkVersions = compatibleFrameworkVersions;
+			this.supportsMonikers = supportsMonikers;
 		}
 		
 		public string Name {
@@ -66,12 +67,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return this.slnFileFormat; }
 		}
 		
+		public bool SupportsMonikers { get { return supportsMonikers; } }
 		
-		bool SupportsFramework (TargetFramework fx)
+		public bool SupportsFramework (TargetFramework fx)
 		{
-			return ((IList)frameworkVersions).Contains (fx.Id) || 
-				(compatibleFrameworkVersions != null && compatibleFrameworkVersions.Contains (fx.Id)) ||
-				(!string.IsNullOrEmpty (fx.SubsetOfFramework) && ((IList)frameworkVersions).Contains (fx.SubsetOfFramework));
+			IList<TargetFrameworkMoniker> frameworkVersions = this.frameworkVersions;
+			return frameworkVersions.Contains (fx.Id) || supportsMonikers;
 		}
 
 		public FilePath GetValidFormatName (object obj, FilePath fileName)
@@ -219,7 +220,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		public string[] FrameworkVersions {
+		public TargetFrameworkMoniker[] FrameworkVersions {
 			get {
 				return frameworkVersions;
 			}
@@ -252,10 +253,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		const string toolsVersion = "2.0";
 		const string slnVersion = "9.00";
 		const string productComment = "Visual Studio 2005";
-		static string[] frameworkVersions = { "2.0" };
-		static string[] compatibleFrameworkVersions = { "3.0", "3.5" };
+		static TargetFrameworkMoniker[] frameworkVersions = {
+			TargetFrameworkMoniker.NET_2_0,
+		};
+		const bool supportsMonikers = false;
 		
-		public MSBuildFileFormatVS05 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions, compatibleFrameworkVersions)
+		public MSBuildFileFormatVS05 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions, supportsMonikers)
 		{
 		}
 	}
@@ -266,9 +269,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		const string toolsVersion = "3.5";
 		const string slnVersion = "10.00";
 		const string productComment = "Visual Studio 2008";
-		static string[] frameworkVersions = { "2.0", "3.0", "3.5" };
+		static TargetFrameworkMoniker[] frameworkVersions = {
+			TargetFrameworkMoniker.NET_2_0,
+			TargetFrameworkMoniker.NET_3_0,
+			TargetFrameworkMoniker.NET_3_5,
+			TargetFrameworkMoniker.SL_2_0,
+			TargetFrameworkMoniker.SL_3_0,
+			TargetFrameworkMoniker.MONOTOUCH_1_0,
+		};
+		const bool supportsMonikers = false;
 		
-		public MSBuildFileFormatVS08 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions, null)
+		public MSBuildFileFormatVS08 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions, supportsMonikers)
 		{
 		}
 	}
@@ -279,9 +290,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		const string toolsVersion = "4.0";
 		const string slnVersion = "11.00";
 		const string productComment = "Visual Studio 2010";
-		static string[] frameworkVersions = { "2.0", "3.0", "3.5", "4.0" };
+		static TargetFrameworkMoniker[] frameworkVersions = {
+			TargetFrameworkMoniker.NET_2_0,
+			TargetFrameworkMoniker.NET_3_0,
+			TargetFrameworkMoniker.NET_3_5,
+			TargetFrameworkMoniker.NET_4_0,
+		};
+		const bool supportsMonikers = true;
 		
-		public MSBuildFileFormatVS10 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions, null)
+		public MSBuildFileFormatVS10 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions, supportsMonikers)
 		{
 		}
 	}

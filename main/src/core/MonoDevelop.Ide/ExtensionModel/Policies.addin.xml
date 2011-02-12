@@ -1,0 +1,52 @@
+<ExtensionModel>
+
+<ExtensionPoint path = "/MonoDevelop/ProjectModel/Gui/MimeTypePolicyPanels" name = "Mime Type policy panels">
+	<Description>Panels for editing mime type policies. Must derive from MimeTypePolicyOptionsPanel.</Description>
+	<ExtensionNode name="Panel" type="MonoDevelop.Ide.Extensions.MimeTypeOptionsPanelNode"/>
+</ExtensionPoint>
+
+<Extension path = "/MonoDevelop/ProjectModel/Gui/MimeTypePolicyPanels">
+	<Panel id = "TextStylePolicy" mimeType="text/plain" _label = "Text Style" class = "MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanel" />
+</Extension>
+
+<Extension path = "/MonoDevelop/ProjectModel/PolicyTypes" >
+	<PolicyType id="StandardHeaderPolicy" class="MonoDevelop.Ide.StandardHeader.StandardHeaderPolicy" />
+	<PolicyType id="TextStylePolicy" class="MonoDevelop.Ide.Gui.Content.TextStylePolicy" />
+</Extension>
+
+<Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
+	<Policies resource="MonoTextStylePolicy.xml" />
+</Extension>
+<Extension path = "/MonoDevelop/ProjectModel/PolicySets/VisualStudio" >
+	<Policies resource="VisualStudioTextStylePolicy.xml" />
+</Extension>
+<Extension path = "/MonoDevelop/ProjectModel/PolicySets/Invariant" >
+	<Policies resource="InvariantTextStylePolicy.xml" />
+</Extension>
+
+<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
+	<PolicySet id="MITX11License" _name="MIT/X11 License">
+		<Policies resource="MITX11LicencePolicy.xml" />
+	</PolicySet>
+	<PolicySet id="NewBSDLicense" _name="New BSD License">
+		<Policies resource="NewBSDLicencePolicy.xml" />
+	</PolicySet>
+	<PolicySet id="Apache2License" _name="Apache 2.0 License">
+		<Policies resource="Apache2LicencePolicy.xml" />
+	</PolicySet>
+	<PolicySet id="LGPLv2License" _name="LGPL 2.1 License">
+		<Policies resource="LGPL2-1LicencePolicy.xml" />
+	</PolicySet>
+	<PolicySet id="GPLv2License" _name="GPL 2 License">
+		<Policies resource="GPL2LicencePolicy.xml" />
+	</PolicySet>
+	<PolicySet id="GPLv3License" _name="GPL 3 License">
+		<Policies resource="GPL3LicencePolicy.xml" />
+	</PolicySet>
+	<PolicySet id="LGPLv3License" _name="LGPL 3 License">
+		<Policies resource="LGPL3LicencePolicy.xml" />
+	</PolicySet>
+</Extension>
+
+</ExtensionModel>
+

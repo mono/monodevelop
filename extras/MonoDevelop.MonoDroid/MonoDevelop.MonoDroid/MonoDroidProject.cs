@@ -45,7 +45,7 @@ namespace MonoDevelop.MonoDroid
 
 	public class MonoDroidProject : DotNetProject
 	{
-		internal const string FX_MONODROID = "2.2";
+		internal const string FX_MONODROID = "MonoDroid";
 		
 		#region Properties
 		
@@ -184,9 +184,6 @@ namespace MonoDevelop.MonoDroid
 		
 		void Init ()
 		{
-			//set parameters to ones required for MonoDroid build
-			TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (FX_MONODROID);
-			
 			MonoDroidFramework.DeviceManager.IncrementOpenProjectCount ();
 		}
 		
@@ -200,6 +197,16 @@ namespace MonoDevelop.MonoDroid
 		public override bool SupportsFormat (FileFormat format)
 		{
 			return format.Id == "MSBuild10";
+		}
+		
+		public override MonoDevelop.Core.Assemblies.TargetFrameworkMoniker GetDefaultTargetFrameworkId ()
+		{
+			return new MonoDevelop.Core.Assemblies.TargetFrameworkMoniker (FX_MONODROID, MonoDroidFramework.DefaultAndroidVersion.OSVersion);
+		}
+		
+		public override bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
+		{
+			return framework.Id.Identifier == FX_MONODROID;
 		}
 		
 		protected override void OnEndLoad ()
@@ -457,15 +464,6 @@ namespace MonoDevelop.MonoDroid
 		
 		#endregion
 		
-		#region Platform properties
-		
-		public override bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
-		{
-			return framework.Id == FX_MONODROID;
-		}
-		
-		#endregion
-		
 		#region Resgen
 		
 		protected override void OnFileChangedInProject (ProjectFileEventArgs e)
@@ -595,9 +593,17 @@ namespace MonoDevelop.MonoDroid
 					continue;
 				var id = GetAndroidResourceID (pf);
 				var split = id.Split (splitChars, StringSplitOptions.RemoveEmptyEntries);
-				if (split.Length != 2 || !split[0].StartsWith (kind))
+				if (split.Length != 2)
 					continue;
-				id = Path.GetFileNameWithoutExtension (split[1]);
+				
+				//check that the kind matches but ignore qualifiers
+				if (!split[0].StartsWith (kind, StringComparison.OrdinalIgnoreCase))
+					continue;
+				if (split[0].Length != kind.Length && split[0][kind.Length] != '-')
+					continue;
+				
+				//HACK: MonoDroid currently requires IDs in xml files to be lowercased
+				id = Path.GetFileNameWithoutExtension (split[1]).ToLower ();
 				if (alreadyReturned.Add (id))
 					yield return new KeyValuePair<string, ProjectFile> (id, pf);
 			}		
@@ -644,18 +650,22 @@ namespace MonoDevelop.MonoDroid
 		
 		public string GetPackageName (MonoDroidProjectConfiguration conf)
 		{
-			var pf = GetManifestFile (conf);
-
-			//no manifest, use the same default package name as the MSBuild tasks do
-			if (pf == null) {
-				var name = conf.CompiledOutputName.FileNameWithoutExtension;
-				return string.Format ("{0}.{0}", name.Replace (" ", "").ToLowerInvariant ());
-			}
-
-			if (packageNameCache == null)
-				packageNameCache = new AndroidPackageNameCache (this);
+			var f = GetManifestFileName (conf);
 			
-			return packageNameCache.GetPackageName (pf.Name);
+			if (!f.IsNullOrEmpty) {
+				if (packageNameCache == null)
+					packageNameCache = new AndroidPackageNameCache (this);
+				string packageName = packageNameCache.GetPackageName (f);
+				if (!string.IsNullOrEmpty (packageName))
+					return packageName;
+			}
+			
+			//no name in manifest, use same default package name as GetAndroidPackageName MSBuild task
+			var name = conf.CompiledOutputName.FileNameWithoutExtension.Replace (" ", "").ToLowerInvariant ();
+			if (name.Contains ("."))
+				return name;
+			else
+				return name + "." + name;
 		}
 		
 		FilePath GetManifestFileName (MonoDroidProjectConfiguration conf)
@@ -663,14 +673,6 @@ namespace MonoDevelop.MonoDroid
 			if (conf != null && !conf.AndroidManifest.IsNullOrEmpty)
 				return conf.AndroidManifest;
 			return this.AndroidManifest;
-		}
-		
-		public ProjectFile GetManifestFile (MonoDroidProjectConfiguration conf)
-		{
-			var manifestFile = GetManifestFileName (conf);
-			if (manifestFile.IsNullOrEmpty)
-				return null;
-			return Files.GetFile (manifestFile);
 		}
 		
 		public AndroidAppManifest AddManifest ()

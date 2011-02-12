@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -8,8 +8,8 @@
     <ProjectGuid>{89a68f00-c757-4ea3-a611-8307d4683732}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.MonoMac</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <RootNamespace>MonoDevelop.MonoMac</RootNamespace>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -43,7 +43,6 @@
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="MonoDevelop.DesignerSupport, Version=2.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
@@ -57,16 +56,10 @@
     </Reference>
     <Reference Include="Mono.Posix" />
     <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="MonoDevelop.MacDev, Version=2.4.0.0, Culture=neutral, PublicKeyToken=null">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\MonoDevelop.IPhone\build\MonoDevelop.MacDev.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
@@ -74,6 +67,11 @@
     <Reference Include="MonoMac, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>MonoMac.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.MacDev, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\MonoDevelop.IPhone\build\MonoDevelop.MacDev.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -155,9 +153,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-
   <PropertyGroup>
     <MmpSrc>..\..\..\..\artifacts\mmp</MmpSrc>
     <MmpBin>$(OutDir)mmp</MmpBin>
@@ -166,11 +162,10 @@ echo "This build does not include the MonoMac bundler"
 exit 1
 </MmpFakeScript>
   </PropertyGroup>
-
   <Target Name="AfterCompile">
     <Copy SourceFiles="$(MmpSrc)" DestinationFiles="$(MmpBin)" Condition="'$(MmpSrc)' != '' And Exists ('$(MmpSrc)')" />
-    <WriteLinesToFile File="$(MmpBin)" Lines="$(MmpFakeScript)" Condition="!Exists('$(MmpBin)')" /> 
-    <Exec Command="chmod +x '$(MmpBin)'" Condition="'$(MmpSrc)' == '' Or !Exists ('$(MmpSrc)')"  /> 
+    <WriteLinesToFile File="$(MmpBin)" Lines="$(MmpFakeScript)" Condition="!Exists('$(MmpBin)')" />
+    <Exec Command="chmod +x '$(MmpBin)'" Condition="'$(MmpSrc)' == '' Or !Exists ('$(MmpSrc)')" />
     <CreateItem Include="$(MmpBin)">
       <Output TaskParameter="Include" ItemName="FileWrites" />
     </CreateItem>

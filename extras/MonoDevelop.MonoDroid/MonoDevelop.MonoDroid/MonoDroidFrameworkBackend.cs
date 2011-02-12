@@ -52,23 +52,44 @@ namespace MonoDevelop.MonoDroid
 		
 		public override IEnumerable<string> GetFrameworkFolders ()
 		{
-			//version-specific framework
-			//FIXME: this should be dependent on framework version
-			yield return MonoDroidFramework.MonoDroidToolsDir.Combine ("platforms", "android-8");
+			string version = framework.Id.Version;
+			if (version == "1.0")
+				return new string[] { MonoDroidFramework.MonoDroidFrameworkDir };
 			
-			//root framework
-			yield return MonoDroidFramework.MonoDroidFrameworkDir;
+			string apiLevel = GetApiLevelFromVersion (version);
+			if (apiLevel == null)
+				return new string[0];
+			
+			return new string[] {  MonoDroidFramework.MonoDroidToolsDir.Combine ("platforms", "android-" + apiLevel) };
+		}
+		
+		static string GetApiLevelFromVersion (string version)
+		{
+			switch (version) {
+			case "1.6":   return "4";
+			case "2.0":   return "5";
+			case "2.0.1": return "6";
+			case "2.1":   return "7";
+			case "2.2":   return "8";
+			case "2.3":   return "9";
+			default:      return null;
+			}
 		}
 		
 		public override SystemPackageInfo GetFrameworkPackageInfo (string packageName)
 		{
+			string version = framework.Id.Version;
+			bool isCore = version == "1.0";
+			
 			SystemPackageInfo info = base.GetFrameworkPackageInfo ("monodroid");
 			info.Name = "monodroid";
+			info.Version = isCore? "core" : version;
+			info.Description = isCore? "MonoDroid Core" : "MonoDroid " + version;
 			return info;
 		}
 		
 		public override bool IsInstalled {
-			get { return MonoDroidFramework.IsInstalled; }
+			get { return MonoDroidFramework.IsInstalled && base.IsInstalled; }
 		}
 	}
 	
@@ -87,23 +108,23 @@ namespace MonoDevelop.MonoDroid
 		
 		public override IEnumerable<string> GetFrameworkFolders ()
 		{
-			//version-specific framework
-			//FIXME: this should be dependent on framework version
-			yield return MonoDroidFramework.MonoDroidFrameworkDir.ParentDirectory.Combine ("v2.2");
-			
-			//root framework
-			yield return MonoDroidFramework.MonoDroidFrameworkDir;
+			yield return MonoDroidFramework.MonoDroidFrameworkDir.ParentDirectory.Combine ("v" + framework.Id.Version);
 		}
 		
 		public override SystemPackageInfo GetFrameworkPackageInfo (string packageName)
 		{
+			string version = framework.Id.Version;
+			bool isCore = version == "1.0";
+			
 			SystemPackageInfo info = base.GetFrameworkPackageInfo ("monodroid");
 			info.Name = "monodroid";
+			info.Version = isCore? "core" : version;
+			info.Description = isCore? "MonoDroid Core" : "MonoDroid " + version;
 			return info;
 		}
 		
 		public override bool IsInstalled {
-			get { return MonoDroidFramework.IsInstalled; }
+			get { return MonoDroidFramework.IsInstalled && base.IsInstalled; }
 		}
 	}
 }

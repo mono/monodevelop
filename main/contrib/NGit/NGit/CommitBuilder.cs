@@ -318,7 +318,7 @@ namespace NGit
 				{
 					os.Write(hencoding);
 					os.Write(' ');
-					os.Write(Constants.EncodeASCII(Encoding.EncodingName));
+					os.Write(Constants.EncodeASCII(Encoding.Name()));
 					os.Write('\n');
 				}
 				os.Write('\n');
@@ -378,7 +378,7 @@ namespace NGit
 			if (encoding != null && encoding != Constants.CHARSET)
 			{
 				r.Append("encoding ");
-				r.Append(encoding.EncodingName);
+				r.Append(encoding.Name());
 				r.Append("\n");
 			}
 			r.Append("\n");
