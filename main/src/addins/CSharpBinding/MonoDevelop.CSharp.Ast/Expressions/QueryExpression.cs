@@ -43,7 +43,7 @@ namespace MonoDevelop.CSharp.Ast
 				}
 			}
 			
-			public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+			public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 			{
 				return default (S);
 			}
@@ -55,7 +55,7 @@ namespace MonoDevelop.CSharp.Ast
 			set { SetChildrenByRole(ClauseRole, value); }
 		}
 		
-		public override S AcceptVisitor<T, S>(AstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpression (this, data);
 		}
@@ -105,7 +105,7 @@ namespace MonoDevelop.CSharp.Ast
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryContinuationClause (this, data);
 		}
@@ -135,7 +135,7 @@ namespace MonoDevelop.CSharp.Ast
 			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryFromClause (this, data);
 		}
@@ -165,7 +165,7 @@ namespace MonoDevelop.CSharp.Ast
 			set { SetChildByRole(Roles.Expression, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryLetClause (this, data);
 		}
@@ -183,7 +183,7 @@ namespace MonoDevelop.CSharp.Ast
 			set { SetChildByRole (Roles.Condition, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryWhereClause (this, data);
 		}
@@ -268,7 +268,7 @@ namespace MonoDevelop.CSharp.Ast
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryJoinClause (this, data);
 		}
@@ -287,7 +287,7 @@ namespace MonoDevelop.CSharp.Ast
 			set { SetChildrenByRole (OrderingRole, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryOrderClause (this, data);
 		}
@@ -313,7 +313,7 @@ namespace MonoDevelop.CSharp.Ast
 			get { return GetChildByRole (Roles.Keyword); }
 		}
 		
-		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryOrdering (this, data);
 		}
@@ -337,7 +337,7 @@ namespace MonoDevelop.CSharp.Ast
 			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQuerySelectClause (this, data);
 		}
@@ -368,7 +368,7 @@ namespace MonoDevelop.CSharp.Ast
 			set { SetChildByRole (KeyRole, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryGroupClause (this, data);
 		}

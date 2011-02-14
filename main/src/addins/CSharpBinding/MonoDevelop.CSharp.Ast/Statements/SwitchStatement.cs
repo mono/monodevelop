@@ -66,7 +66,7 @@ namespace MonoDevelop.CSharp.Ast
 			get { return GetChildByRole (Roles.RBrace); }
 		}
 		
-		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitSwitchStatement (this, data);
 		}
@@ -92,7 +92,7 @@ namespace MonoDevelop.CSharp.Ast
 			set { SetChildrenByRole (Roles.EmbeddedStatement, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitSwitchSection (this, data);
 		}
@@ -111,7 +111,7 @@ namespace MonoDevelop.CSharp.Ast
 			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitCaseLabel (this, data);
 		}

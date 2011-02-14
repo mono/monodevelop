@@ -1,5 +1,5 @@
 // 
-// AstVisitor.cs
+// IAstVisitor.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -31,7 +31,7 @@ namespace MonoDevelop.CSharp.Ast
 	/// <summary>
 	/// AST visitor with a default implementation that visits all node depth-first.
 	/// </summary>
-	public abstract class DepthFirstAstVisitor<T, S> : AstVisitor<T, S>
+	public abstract class DepthFirstAstVisitor<T, S> : IAstVisitor<T, S>
 	{
 		protected virtual S VisitChildren (AstNode node, T data)
 		{

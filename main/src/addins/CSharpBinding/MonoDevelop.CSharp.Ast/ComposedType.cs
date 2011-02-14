@@ -70,7 +70,7 @@ namespace MonoDevelop.CSharp.Ast
 			set { SetChildrenByRole (ArraySpecifierRole, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitComposedType (this, data);
 		}
@@ -125,7 +125,7 @@ namespace MonoDevelop.CSharp.Ast
 			get { return GetChildByRole (Roles.RBracket); }
 		}
 		
-		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitArraySpecifier(this, data);
 		}

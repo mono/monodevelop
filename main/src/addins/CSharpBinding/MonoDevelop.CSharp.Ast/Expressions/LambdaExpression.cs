@@ -50,7 +50,7 @@ namespace MonoDevelop.CSharp.Ast
 			set { SetChildByRole (BodyRole, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitLambdaExpression (this, data);
 		}

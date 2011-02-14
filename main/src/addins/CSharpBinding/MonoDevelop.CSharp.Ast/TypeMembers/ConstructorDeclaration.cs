@@ -60,7 +60,7 @@ namespace MonoDevelop.CSharp.Ast
 			get { return NodeType.Member; }
 		}
 		
-		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitConstructorDeclaration (this, data);
 		}
@@ -88,7 +88,7 @@ namespace MonoDevelop.CSharp.Ast
 				}
 			}
 			
-			public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+			public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 			{
 				return default (S);
 			}
@@ -110,7 +110,7 @@ namespace MonoDevelop.CSharp.Ast
 			set { SetChildrenByRole (Roles.Argument, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitConstructorInitializer (this, data);
 		}

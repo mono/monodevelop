@@ -53,7 +53,7 @@ namespace MonoDevelop.CSharp.Ast
 			get { return GetChildByRole (Roles.Semicolon); }
 		}
 		
-		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitVariableDeclarationStatement (this, data);
 		}

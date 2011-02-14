@@ -54,7 +54,7 @@ namespace MonoDevelop.CSharp.Ast
 			set { SetChildrenByRole (Roles.TypeArgument, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitPointerReferenceExpression (this, data);
 		}

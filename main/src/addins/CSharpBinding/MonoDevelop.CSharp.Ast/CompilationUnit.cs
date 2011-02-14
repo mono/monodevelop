@@ -96,7 +96,7 @@ namespace MonoDevelop.CSharp.Ast
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitCompilationUnit (this, data);
 		}
