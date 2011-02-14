@@ -361,7 +361,7 @@ namespace MonoDevelop.VersionControl.Git
 			foreach (RevCommit ancestorCommit in revWalker) {
 				foreach (Change change in GetCommitChanges (repo, ancestorCommit)) {
 					FilePath cpath = FromGitPath (repo, change.Path);
-					if (localCpath == cpath || cpath.IsChildPathOf (localCpath))
+					if (change.ChangeType != ChangeType.Deleted && (localCpath == cpath || cpath.IsChildPathOf (localCpath)))
 					{
 						commitHistory.Add(ancestorCommit);
 						break;
@@ -438,7 +438,7 @@ namespace MonoDevelop.VersionControl.Git
 				}
 			}
 			
-			return lineCount++;
+			return lineCount;
 		}
 		
 		static IEnumerable<Hunk> GetDiffHunks (RawText curText, RawText ancestorText)
