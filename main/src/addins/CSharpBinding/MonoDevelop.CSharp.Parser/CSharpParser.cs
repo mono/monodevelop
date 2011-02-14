@@ -380,9 +380,7 @@ namespace MonoDevelop.CSharp.Parser
 				variable.AddChild (new Identifier (em.Name, Convert (em.Location)), AstNode.Roles.Identifier);
 				
 				if (em.Initializer != null) {
-					var initializer = (VariableInitializer)em.Initializer.Accept (this);
-					if (initializer != null)
-						variable.AddChild (initializer, AstNode.Roles.Variable);
+					variable.AddChild ((MonoDevelop.CSharp.Ast.Expression)em.Initializer.Accept (this), VariableInitializer.Roles.Expression);
 				}
 				
 				newField.AddChild (variable, AstNode.Roles.Variable);
@@ -1452,6 +1450,11 @@ namespace MonoDevelop.CSharp.Parser
 				Console.WriteLine ("Visit unknown expression:" + expression);
 				System.Console.WriteLine (Environment.StackTrace);
 				return null;
+			}
+			
+			public override object Visit (Mono.CSharp.DefaultParameterValueExpression defaultParameterValueExpression)
+			{
+				return defaultParameterValueExpression.Child.Accept (this);
 			}
 			
 			public override object Visit (TypeExpression typeExpression)

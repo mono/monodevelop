@@ -1259,5 +1259,10 @@ namespace Mono.CSharp {
 				"Optional parameter expression of type `{0}' cannot be converted to parameter type `{1}'",
 				type.GetSignatureForError (), parameter_type.GetSignatureForError ());
 		}
+		
+		public virtual object Accept (StructuralVisitor visitor)
+		{
+			return visitor.Visit (this);
+		}
 	}
 }

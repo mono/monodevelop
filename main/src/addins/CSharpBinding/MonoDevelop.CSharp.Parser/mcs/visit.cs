@@ -405,7 +405,12 @@ namespace Mono.CSharp
 		{
 			return null;
 		}
-
+		
+		public virtual object Visit (DefaultParameterValueExpression defaultParameterValueExpression)
+		{
+			return null;
+		}
+		
 		public virtual object Visit (Binary binaryExpression)
 		{
 			return null;
