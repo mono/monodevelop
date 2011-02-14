@@ -160,10 +160,25 @@ namespace MonoDevelop.VersionControl.Git
 			blames.Add(new BlameFragment(185, 1, "c7da699"));
 			blames.Add(new BlameFragment(186, 1, "3352c438"));
 			blames.Add(new BlameFragment(187, 9, "e2ddc3e3"));
-			blames.Add(new BlameFragment(196, 15, "3352c438"));
-			//blames.Add(new BlameFragment(60, 5, "85dfe8a5"));
-			//blames.Add(new BlameFragment(60, 5, "85dfe8a5"));
-			//blames.Add(new BlameFragment(60, 5, "85dfe8a5"));
+			blames.Add(new BlameFragment(196, 14, "3352c438"));
+			blames.Add(new BlameFragment(210, 1, "c7da699"));//Another minor discrepancy from "git blame" on a blank line that matches what is found by "git diff"
+			blames.Add(new BlameFragment(211, 2, "4d06ef70"));
+			blames.Add(new BlameFragment(213, 18, "3352c438"));
+			blames.Add(new BlameFragment(231, 1, "d802c4d2"));
+			blames.Add(new BlameFragment(232, 5, "3352c438"));
+			blames.Add(new BlameFragment(237, 1, "d802c4d2"));
+			blames.Add(new BlameFragment(238, 9, "3352c438"));
+			blames.Add(new BlameFragment(247, 1, "d802c4d2"));
+			blames.Add(new BlameFragment(248, 5, "3352c438"));
+			blames.Add(new BlameFragment(253, 1, "d802c4d2"));
+			blames.Add(new BlameFragment(254, 10, "3352c438"));
+			blames.Add(new BlameFragment(264, 1, "0095b4ad"));
+			blames.Add(new BlameFragment(265, 22, "3352c438"));
+			blames.Add(new BlameFragment(287, 2, "0095b4ad"));
+			blames.Add(new BlameFragment(289, 4, "3352c438"));
+			blames.Add(new BlameFragment(293, 1, "0095b4ad"));
+			blames.Add(new BlameFragment(294, 18, "3352c438"));
+			//TODO: complete
 			CompareBlames(blameCommits, blames);
 		}
 		
