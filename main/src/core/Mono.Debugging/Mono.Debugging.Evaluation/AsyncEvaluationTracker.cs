@@ -95,6 +95,12 @@ namespace Mono.Debugging.Evaluation
 			lock (asyncCallbacks) {
 				cancelTimestamp = asyncCounter;
 				runner.CancelAll ();
+				foreach (var cb in asyncCallbacks.Values) {
+					try {
+						cb.UpdateValue (ObjectValue.CreateFatalError ("", "Canceled", ObjectValueFlags.None));
+					} catch {
+					}
+				}
 				asyncCallbacks.Clear ();
 				asyncResults.Clear ();
 			}
@@ -112,7 +118,9 @@ namespace Mono.Debugging.Evaluation
 			UpdateCallback cb = null;
 			lock (asyncCallbacks) {
 				if (asyncCallbacks.TryGetValue (id, out cb)) {
-					cb.UpdateValue (val);
+					try {
+						cb.UpdateValue (val);
+					} catch {}
 					asyncCallbacks.Remove (id);
 				}
 				else

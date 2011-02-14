@@ -121,8 +121,9 @@ namespace Mono.Debugging.Evaluation
 	public abstract class AsyncOperation
 	{
 		internal bool Aborted;
-		internal bool Aborting;
 		internal AsyncOperationManager Manager;
+		
+		public bool Aborting { get; internal set; }
 		
 		internal void InternalAbort ()
 		{
