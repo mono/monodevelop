@@ -26,47 +26,49 @@
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class ForeachStatement : AstNode
+	/// <summary>
+	/// foreach (Type VariableName in InExpression) EmbeddedStatement
+	/// </summary>
+	public class ForeachStatement : Statement
 	{
-		public const int ForEachKeywordRole = 100;
-		public const int InKeywordRole = 101;
-		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
-		public AstNode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement) ?? AstNode.Null; }
+		public CSharpTokenNode ForeachToken {
+			get { return GetChildByRole (Roles.Keyword); }
 		}
 		
-		public AstNode Expression {
-			get { return GetChildByRole (Roles.Initializer) ?? AstNode.Null; }
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
 		}
 		
-		public AstNode VariableType {
-			get { return GetChildByRole (Roles.ReturnType) ?? AstNode.Null; }
-		}
-		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		public AstType VariableType {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole (Roles.Type, value); }
 		}
 		
 		public string VariableName {
 			get {
-				return VariableNameIdentifier.Name;
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				SetChildByRole(Roles.Identifier, new Identifier(value, AstLocation.Empty));
 			}
 		}
 		
-		public Identifier VariableNameIdentifier {
-			get {
-				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
-			}
+		public CSharpTokenNode InToken {
+			get { return GetChildByRole (Roles.InKeyword); }
+		}
+		
+		public Expression InExpression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
+		}
+		
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
+		}
+		
+		public Statement EmbeddedStatement {
+			get { return GetChildByRole (Roles.EmbeddedStatement); }
+			set { SetChildByRole (Roles.EmbeddedStatement, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

@@ -26,33 +26,27 @@
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class PropertyDeclaration : AbstractMember
+	public class PropertyDeclaration : MemberDeclaration
 	{
-		public const int PropertyGetRole = 100;
-		public const int PropertySetRole = 101;
+		public static readonly Role<Accessor> GetterRole = new Role<Accessor>("Getter", Accessor.Null);
+		public static readonly Role<Accessor> SetterRole = new Role<Accessor>("Setter", Accessor.Null);
 		
-		public CSharpTokenNode LBrace {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.LBrace) ?? CSharpTokenNode.Null;
-			}
+		public CSharpTokenNode LBraceToken {
+			get { return GetChildByRole (Roles.LBrace); }
 		}
 		
-		public CSharpTokenNode RBrace {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.RBrace) ?? CSharpTokenNode.Null;
-			}
+		public Accessor Getter {
+			get { return GetChildByRole(GetterRole); }
+			set { SetChildByRole(GetterRole, value); }
 		}
 		
-		public Accessor GetAccessor {
-			get {
-				return (Accessor)GetChildByRole (PropertyGetRole) ?? Accessor.Null;
-			}
+		public Accessor Setter {
+			get { return GetChildByRole(SetterRole); }
+			set { SetChildByRole(SetterRole, value); }
 		}
 		
-		public Accessor SetAccessor {
-			get {
-				return (Accessor)GetChildByRole (PropertySetRole) ?? Accessor.Null;
-			}
+		public CSharpTokenNode RBraceToken {
+			get { return GetChildByRole (Roles.RBrace); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

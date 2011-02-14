@@ -26,30 +26,37 @@
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class UsingStatement : AstNode
+	/// <summary>
+	/// using (ResourceAcquisition) EmbeddedStatement
+	/// </summary>
+	public class UsingStatement : Statement
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
-		public AstNode Statement {
-			get { return GetChildByRole (Roles.Statement) ?? AstNode.Null; }
+		public static readonly Role<AstNode> ResourceAcquisitionRole = new Role<AstNode>("ResourceAcquisition", AstNode.Null);
+		
+		public CSharpTokenNode UsingToken {
+			get { return GetChildByRole (Roles.Keyword); }
 		}
 		
-		public AstNode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement) ?? AstNode.Null; }
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
 		}
 		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
+		/// <summary>
+		/// Either a VariableDeclarationStatement, or an Expression.
+		/// </summary>
+		public AstNode ResourceAcquisition {
+			get { return GetChildByRole (ResourceAcquisitionRole); }
+			set { SetChildByRole (ResourceAcquisitionRole, value); }
 		}
 		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
 		}
 		
+		public Statement EmbeddedStatement {
+			get { return GetChildByRole (Roles.EmbeddedStatement); }
+			set { SetChildByRole (Roles.EmbeddedStatement, value); }
+		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{

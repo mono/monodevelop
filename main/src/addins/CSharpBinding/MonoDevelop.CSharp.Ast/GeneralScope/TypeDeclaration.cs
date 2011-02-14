@@ -30,61 +30,61 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class TypeDeclaration : AbstractMemberBase
+	/// <summary>
+	/// class Name&lt;TypeParameters&gt; : BaseTypes where Constraints;
+	/// </summary>
+	public class TypeDeclaration : AttributedNode
 	{
-		public const int TypeKeyword      = 100;
+		public readonly static Role<CSharpTokenNode> ColonRole = Roles.Colon;
+		public readonly static Role<AstType> BaseTypeRole = new Role<AstType>("BaseType", AstType.Null);
+		public readonly static Role<AttributedNode> MemberRole = new Role<AttributedNode>("Member");
 		
 		public override NodeType NodeType {
 			get {
-				return NodeType.Type;
+				return NodeType.TypeDeclaration;
 			}
 		}
 		
-		public Identifier NameIdentifier {
-			get {
-				return (Identifier)GetChildByRole (Roles.Identifier);
-			}
-		}
-		
-		public string Name {
-			get {
-				return NameIdentifier.Name;
-			}
-		}
-		
-		public IEnumerable<AstNode> TypeParameters {
-			get {
-				return GetChildrenByRole (Roles.TypeParameter);
-			}
-		}
-		
-		public IEnumerable<Constraint> Constraints { 
-			get {
-				return base.GetChildrenByRole (Roles.Constraint).Cast <Constraint> ();
-			}
-		}
-		
-		public CSharpTokenNode LBrace {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.LBrace) ?? CSharpTokenNode.Null;
-			}
-		}
-		
-		public CSharpTokenNode RBrace {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.RBrace) ?? CSharpTokenNode.Null;
-			}
-		}
-		
-		public virtual ClassType ClassType {
+		public ClassType ClassType {
 			get;
 			set;
 		}
 		
-		public IEnumerable<AbstractMemberBase> Members {
+		public string Name {
 			get {
-				return GetChildrenByRole (Roles.Member).Cast<AbstractMemberBase> ();
+				return GetChildByRole (Roles.Identifier).Name;
 			}
+			set {
+				SetChildByRole (Roles.Identifier, new Identifier(value, AstLocation.Empty));
+			}
+		}
+		
+		public IEnumerable<TypeParameterDeclaration> TypeParameters {
+			get { return GetChildrenByRole (Roles.TypeParameter); }
+			set { SetChildrenByRole (Roles.TypeParameter, value); }
+		}
+		
+		public IEnumerable<AstType> BaseTypes {
+			get { return GetChildrenByRole (BaseTypeRole); }
+			set { SetChildrenByRole (BaseTypeRole, value); }
+		}
+		
+		public IEnumerable<Constraint> Constraints {
+			get { return GetChildrenByRole (Roles.Constraint); }
+			set { SetChildrenByRole (Roles.Constraint, value); }
+		}
+		
+		public CSharpTokenNode LBraceToken {
+			get { return GetChildByRole (Roles.LBrace); }
+		}
+		
+		public IEnumerable<AttributedNode> Members {
+			get { return GetChildrenByRole (MemberRole); }
+			set { SetChildrenByRole (MemberRole, value); }
+		}
+		
+		public CSharpTokenNode RBraceToken {
+			get { return GetChildByRole (Roles.RBrace); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

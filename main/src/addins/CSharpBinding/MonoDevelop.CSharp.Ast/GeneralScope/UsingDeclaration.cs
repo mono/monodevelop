@@ -26,24 +26,34 @@
 
 namespace MonoDevelop.CSharp.Ast
 {
+	/// <summary>
+	/// using Import;
+	/// </summary>
 	public class UsingDeclaration : AstNode
 	{
+		public static readonly Role<AstType> ImportRole = new Role<AstType>("Import", AstType.Null);
+		
 		public override NodeType NodeType {
 			get {
 				return NodeType.Unknown;
 			}
 		}
 		
-		public string Namespace {
-			get {
-				return NameIdentifier.QualifiedName;
-			}
+		public CSharpTokenNode UsingToken {
+			get { return GetChildByRole (Roles.Keyword); }
 		}
 		
-		public QualifiedIdentifier NameIdentifier {
-			get {
-				return (QualifiedIdentifier)GetChildByRole (Roles.Identifier);
-			}
+		public AstType Import {
+			get { return GetChildByRole (ImportRole); }
+			set { SetChildByRole (ImportRole, value); }
+		}
+		
+		public string Namespace {
+			get { return this.Import.ToString(); }
+		}
+		
+		public CSharpTokenNode SemicolonToken {
+			get { return GetChildByRole (Roles.Semicolon); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

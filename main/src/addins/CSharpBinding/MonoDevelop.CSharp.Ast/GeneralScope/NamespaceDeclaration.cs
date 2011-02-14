@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 // 
 // NamespaceDeclaration.cs
 //  
@@ -25,10 +24,19 @@ using System.Collections.Generic;
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
 namespace MonoDevelop.CSharp.Ast
 {
+	/// <summary>
+	/// namespace Name { Members }
+	/// </summary>
 	public class NamespaceDeclaration : AstNode
 	{
+		public static readonly Role<AstNode> MemberRole = CompilationUnit.MemberRole;
+		
 		public override NodeType NodeType {
 			get {
 				return NodeType.Unknown;
@@ -37,39 +45,47 @@ namespace MonoDevelop.CSharp.Ast
 		
 		public string Name {
 			get {
-				return NameIdentifier.QualifiedName;
+				StringBuilder builder = new StringBuilder ();
+				foreach (Identifier identifier in GetChildrenByRole (Roles.Identifier)) {
+					if (builder.Length > 0)
+						builder.Append ('.');
+					builder.Append (identifier.Name);
+				}
+				return builder.ToString ();
+			}
+			set {
+				SetChildrenByRole (Roles.Identifier, value.Split('.').Select(ident => new Identifier(ident, AstLocation.Empty)));
 			}
 		}
 		
-		public string QualifiedName {
+		public IEnumerable<Identifier> Identifiers {
+			get { return GetChildrenByRole (Roles.Identifier); }
+			set { SetChildrenByRole (Roles.Identifier, value); }
+		}
+		
+		/// <summary>
+		/// Gets the full namespace name (including any parent namespaces)
+		/// </summary>
+		public string FullName {
 			get {
 				NamespaceDeclaration parentNamespace = Parent as NamespaceDeclaration;
 				if (parentNamespace != null)
-					return BuildQualifiedName (parentNamespace.QualifiedName, Name);
+					return BuildQualifiedName (parentNamespace.FullName, Name);
 				return Name;
 			}
 		}
 		
-		public CSharpTokenNode LBrace {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.LBrace) ?? CSharpTokenNode.Null;
-			}
-		}
-		
-		public CSharpTokenNode RBrace {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.RBrace) ?? CSharpTokenNode.Null;
-			}
-		}
-		
-		public QualifiedIdentifier NameIdentifier {
-			get {
-				return (QualifiedIdentifier)GetChildByRole (Roles.Identifier);
-			}
+		public CSharpTokenNode LBraceToken {
+			get { return GetChildByRole (Roles.LBrace); }
 		}
 		
 		public IEnumerable<AstNode> Members {
-			get { return GetChildrenByRole(Roles.Member); }
+			get { return GetChildrenByRole(MemberRole); }
+			set { SetChildrenByRole(MemberRole, value); }
+		}
+		
+		public CSharpTokenNode RBraceToken {
+			get { return GetChildByRole (Roles.RBrace); }
 		}
 		
 		public static string BuildQualifiedName (string name1, string name2)

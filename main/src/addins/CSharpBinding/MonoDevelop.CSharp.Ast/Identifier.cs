@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using MonoDevelop.Projects.Dom;
+using System;
 
 namespace MonoDevelop.CSharp.Ast
 {
@@ -51,36 +52,38 @@ namespace MonoDevelop.CSharp.Ast
 			}
 		}
 		
+		string name;
 		public string Name {
-			get;
-			set;
+			get { return this.name; }
+			set { 
+				if (value == null)
+					throw new ArgumentNullException("value");
+				this.name = value;
+			}
 		}
 		
-		DomLocation startLocation;
-		public override DomLocation StartLocation {
+		AstLocation startLocation;
+		public override AstLocation StartLocation {
 			get {
 				return startLocation;
 			}
 		}
 		
-		public override DomLocation EndLocation {
+		public override AstLocation EndLocation {
 			get {
-				return new DomLocation (StartLocation.Line, StartLocation.Column + (Name ?? "").Length);
+				return new AstLocation (StartLocation.Line, StartLocation.Column + (Name ?? "").Length);
 			}
 		}
 		
-		/*
-		public ISegment Segment {
-			get {
-				return new Segment (Offset, Name != null ? Name.Length : 0);
-			}
-		}*/
-		
-		public Identifier ()
+		private Identifier ()
 		{
+			this.name = string.Empty;
 		}
-		public Identifier (string name, DomLocation location)
+		
+		public Identifier (string name, AstLocation location)
 		{
+			if (name == null)
+				throw new ArgumentNullException("name");
 			this.Name = name;
 			this.startLocation = location;
 		}

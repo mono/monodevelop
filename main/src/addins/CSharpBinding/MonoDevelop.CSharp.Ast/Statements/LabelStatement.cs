@@ -26,20 +26,18 @@
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class LabelStatement : AstNode
+	/// <summary>
+	/// Label:
+	/// </summary>
+	public class LabelStatement : Statement
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
 		public string Label {
-			get { return LabelIdentifier.Name; }
-		}
-
-		public Identifier LabelIdentifier {
-			get { return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null; }
+			get {
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				SetChildByRole(Roles.Identifier, new Identifier(value, AstLocation.Empty));
+			}
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

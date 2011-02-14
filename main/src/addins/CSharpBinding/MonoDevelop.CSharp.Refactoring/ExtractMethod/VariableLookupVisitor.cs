@@ -88,7 +88,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 
 	}
 	
-	public class VariableLookupVisitor : AstVisitor<object, object>
+	public class VariableLookupVisitor : DepthFirstAstVisitor<object, object>
 	{
 		List<KeyValuePair <string, IReturnType>> unknownVariables = new List<KeyValuePair <string, IReturnType>> ();
 		Dictionary<string, VariableDescriptor> variables = new Dictionary<string, VariableDescriptor> ();
@@ -246,7 +246,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				return null;
 			foreach (var param in methodDeclaration.Parameters) {
 				
-				variables[param.Identifier.Name] = new VariableDescriptor (param.Identifier.Name);
+				variables[param.Name] = new VariableDescriptor (param.Name);
 				
 			}
 			return base.VisitMethodDeclaration (methodDeclaration, data);

@@ -28,36 +28,26 @@ using System.Linq;
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class LambdaExpression : AstNode
+	/// <summary>
+	/// Parameters => Body
+	/// </summary>
+	public class LambdaExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
+		public readonly static Role<CSharpTokenNode> ArrowRole = new Role<CSharpTokenNode>("Arrow", CSharpTokenNode.Null);
+		public static readonly Role<AstNode> BodyRole = new Role<AstNode>("Body", AstNode.Null);
+		
 		public IEnumerable<ParameterDeclaration> Parameters { 
-			get {
-				return base.GetChildrenByRole (Roles.Parameter).Cast <ParameterDeclaration>();
-			}
+			get { return GetChildrenByRole (Roles.Parameter); }
+			set { SetChildrenByRole (Roles.Parameter, value); }
 		}
 		
-		public BlockStatement Body {
-			get {
-				return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null;
-			}
+		public CSharpTokenNode ArrowToken {
+			get { return GetChildByRole (ArrowRole); }
 		}
 		
-		public CSharpTokenNode Arrow {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Assign) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		public AstNode Body {
+			get { return GetChildByRole (BodyRole); }
+			set { SetChildByRole (BodyRole, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

@@ -28,25 +28,22 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class PrimitiveExpression : AstNode
+	/// <summary>
+	/// Represents a literal value.
+	/// </summary>
+	public class PrimitiveExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
-		DomLocation startLocation;
-		public override DomLocation StartLocation {
+		AstLocation startLocation;
+		public override AstLocation StartLocation {
 			get {
 				return startLocation;
 			}
 		}
 		
 		int length;
-		public override DomLocation EndLocation {
+		public override AstLocation EndLocation {
 			get {
-				return new DomLocation (StartLocation.Line, StartLocation.Column + length);
+				return new AstLocation (StartLocation.Line, StartLocation.Column + length);
 			}
 		}
 		
@@ -55,13 +52,17 @@ namespace MonoDevelop.CSharp.Ast
 			private set;
 		}
 		
-		public PrimitiveExpression (object value, DomLocation startLocation, int length)
+		public PrimitiveExpression (object value)
+		{
+			this.Value = value;
+		}
+		
+		public PrimitiveExpression (object value, AstLocation startLocation, int length)
 		{
 			this.Value = value;
 			this.startLocation = startLocation;
 			this.length = length;
 		}
-		
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{

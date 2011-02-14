@@ -36,31 +36,25 @@ namespace MonoDevelop.CSharp.Ast
 
 		public string Name {
 			get {
-				return NameIdentifier.Name;
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				SetChildByRole (Roles.Identifier, new Identifier(value, AstLocation.Empty));
 			}
 		}
 		
-		public Identifier NameIdentifier {
-			get {
-				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
-			}
+		public CSharpTokenNode AssignToken {
+			get { return GetChildByRole (Roles.Assign); }
 		}
 		
-		public CSharpTokenNode Assign {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Assign) ?? CSharpTokenNode.Null; }
-		}
-		
-		
-		public AstNode Initializer {
-			get {
-				return GetChildByRole (Roles.Initializer) ?? AstNode.Null;
-			}
+		public Expression Initializer {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitVariableInitializer (this, data);
 		}
-
 	}
 }

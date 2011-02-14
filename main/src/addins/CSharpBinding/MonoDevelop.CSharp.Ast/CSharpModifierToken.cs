@@ -26,14 +26,14 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Dom;
+
 namespace MonoDevelop.CSharp.Ast
 {
-	
 	public class CSharpModifierToken : CSharpTokenNode
 	{
-		MonoDevelop.Projects.Dom.Modifiers modifier;
+		Modifiers modifier;
 		
-		public MonoDevelop.Projects.Dom.Modifiers Modifier {
+		public Modifiers Modifier {
 			get { return modifier; }
 			set {
 				modifier = value;
@@ -42,31 +42,73 @@ namespace MonoDevelop.CSharp.Ast
 			}
 		}
 		
-		static Dictionary<MonoDevelop.Projects.Dom.Modifiers, int> lengthTable = new Dictionary<MonoDevelop.Projects.Dom.Modifiers, int> ();
-		static CSharpModifierToken ()
-		{
-			lengthTable[MonoDevelop.Projects.Dom.Modifiers.New] = "new".Length;
-			lengthTable[MonoDevelop.Projects.Dom.Modifiers.Public] = "new".Length;
-			lengthTable[MonoDevelop.Projects.Dom.Modifiers.Protected] = "protected".Length;
-			lengthTable[MonoDevelop.Projects.Dom.Modifiers.Private] = "private".Length;
-			lengthTable[MonoDevelop.Projects.Dom.Modifiers.Internal] = "internal".Length;
-			lengthTable[MonoDevelop.Projects.Dom.Modifiers.Abstract] = "abstract".Length;
-			lengthTable[MonoDevelop.Projects.Dom.Modifiers.Virtual] = "virtual".Length;
-			lengthTable[MonoDevelop.Projects.Dom.Modifiers.Sealed] = "sealed".Length;
-			lengthTable[MonoDevelop.Projects.Dom.Modifiers.Static] = "static".Length;
-			lengthTable[MonoDevelop.Projects.Dom.Modifiers.Override] = "override".Length;
-			lengthTable[MonoDevelop.Projects.Dom.Modifiers.Readonly] = "readonly".Length;
-			lengthTable[MonoDevelop.Projects.Dom.Modifiers.Const] = "const".Length;
-			lengthTable[MonoDevelop.Projects.Dom.Modifiers.Partial] = "partial".Length;
-			lengthTable[MonoDevelop.Projects.Dom.Modifiers.Extern] = "extern".Length;
-			lengthTable[MonoDevelop.Projects.Dom.Modifiers.Volatile] = "volatile".Length;
-			lengthTable[MonoDevelop.Projects.Dom.Modifiers.Unsafe] = "unsafe".Length;
-			lengthTable[MonoDevelop.Projects.Dom.Modifiers.Overloads] = "override".Length; 
+		static Dictionary<Modifiers, int> lengthTable = new Dictionary<Modifiers, int> () {
+			{ Modifiers.Public, "public".Length },
+			{ Modifiers.Protected, "protected".Length },
+			{ Modifiers.Private, "private".Length },
+			{ Modifiers.Internal, "internal".Length },
+			{ Modifiers.New, "new".Length },
+			{ Modifiers.Unsafe, "unsafe".Length },
+			{ Modifiers.Abstract, "abstract".Length },
+			{ Modifiers.Virtual, "virtual".Length },
+			{ Modifiers.Sealed, "sealed".Length },
+			{ Modifiers.Static, "static".Length },
+			{ Modifiers.Override, "override".Length },
+			{ Modifiers.Readonly, "readonly".Length },
+			{ Modifiers.Volatile, "volatile".Length },
+			{ Modifiers.Extern, "extern".Length },
+			{ Modifiers.Partial, "partial".Length },
+		};
+		
+		public static ICollection<Modifiers> AllModifiers {
+			get { return lengthTable.Keys; }
 		}
 		
-		public CSharpModifierToken (DomLocation location, MonoDevelop.Projects.Dom.Modifiers modifier) : base (location, 0)
+		public CSharpModifierToken (AstLocation location, Modifiers modifier) : base (location, 0)
 		{
 			this.Modifier = modifier;
+		}
+		
+		public static string GetModifierName(Modifiers modifier)
+		{
+			switch (modifier) {
+				case Modifiers.Private:
+					return "private";
+				case Modifiers.Internal:
+					return "internal";
+				case Modifiers.Protected:
+					return "protected";
+				case Modifiers.Public:
+					return "public";
+				case Modifiers.Abstract:
+					return "abstract";
+				case Modifiers.Virtual:
+					return "virtual";
+				case Modifiers.Sealed:
+					return "sealed";
+				case Modifiers.Static:
+					return "static";
+				case Modifiers.Override:
+					return "override";
+				case Modifiers.Readonly:
+					return "readonly";
+				case Modifiers.Const:
+					return "const";
+				case Modifiers.New:
+					return "new";
+				case Modifiers.Partial:
+					return "partial";
+				case Modifiers.Extern:
+					return "extern";
+				case Modifiers.Volatile:
+					return "volatile";
+				case Modifiers.Unsafe:
+					return "unsafe";
+				case Modifiers.Fixed:
+					return "fixed";
+				default:
+					throw new NotSupportedException("Invalid value for Modifiers");
+			}
 		}
 	}
 }

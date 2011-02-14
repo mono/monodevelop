@@ -27,26 +27,26 @@
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class TypeOfExpression : AstNode
+	/// <summary>
+	/// typeof(Type)
+	/// </summary>
+	public class TypeOfExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
-		public FullTypeName Type {
-			get {
-				return (FullTypeName)GetChildByRole (Roles.ReturnType) ?? FullTypeName.Null;
-			}
+		public CSharpTokenNode TypeOfToken {
+			get { return GetChildByRole (Roles.Keyword); }
 		}
 		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
 		}
 		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		public AstType Type {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole(Roles.Type, value); }
+		}
+		
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

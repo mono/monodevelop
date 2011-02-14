@@ -1052,6 +1052,7 @@ constant_initializer
 	  {
 		--lexer.parsing_block;
 		$$ = new ConstInitializer (current_field, (Expression) $3, GetLocation ($1));
+	  	lbag.AddLocation ($$, GetLocation ($1));
 	  }
 	| error
 	  {

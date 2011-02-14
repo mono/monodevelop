@@ -66,52 +66,42 @@ namespace MonoDevelop.CSharp.Ast
 		Explicit
 	}
 	
-	public class OperatorDeclaration : AbstractMember
+	public class OperatorDeclaration : MemberDeclaration
 	{
-		public const int OperatorKeywordRole = 100;
-		public const int OperatorTypeRole = 101;
+		public static readonly Role<CSharpTokenNode> OperatorTypeRole = new Role<CSharpTokenNode>("OperatorType", CSharpTokenNode.Null);
+		public static readonly Role<CSharpTokenNode> OperatorKeywordRole = Roles.Keyword;
 		
 		public OperatorType OperatorType {
 			get;
 			set;
 		}
 		
-		public string OverloadOperator {
-			get;
-			set;
-		}
-		
-		public CSharpTokenNode OperatorKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (OperatorKeywordRole); }
-		}
-		
-		public CSharpTokenNode OperatorTypeKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (OperatorTypeRole); }
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
 		}
 		
 		public IEnumerable<ParameterDeclaration> Parameters { 
-			get {
-				return base.GetChildrenByRole (Roles.Parameter).Cast <ParameterDeclaration> ();
-			}
+			get { return GetChildrenByRole (Roles.Parameter); }
+			set { SetChildrenByRole (Roles.Parameter, value); }
 		}
 		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
 		}
 		
 		public BlockStatement Body {
-			get {
-				return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null;
-			}
+			get { return GetChildByRole (Roles.Body); }
+			set { SetChildByRole (Roles.Body, value); }
 		}
 		
 		public static string GetName(OperatorType type)
 		{
 			return Mono.CSharp.Operator.GetMetadataName((Mono.CSharp.Operator.OpType)type);
+		}
+		
+		public static string GetToken(OperatorType type)
+		{
+			return Mono.CSharp.Operator.GetName((Mono.CSharp.Operator.OpType)type);
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

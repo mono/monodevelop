@@ -26,59 +26,38 @@
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class WhileStatement : AstNode
+	/// <summary>
+	/// "while (Condition) EmbeddedStatement"
+	/// </summary>
+	public class WhileStatement : Statement
 	{
-		public const int DoKeywordRole = 101;
-		public const int WhileKeywordRole = 102;
+		public static readonly Role<CSharpTokenNode> WhileKeywordRole = new Role<CSharpTokenNode>("WhileKeyword", CSharpTokenNode.Null);
 		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
-		public WhilePosition WhilePosition {
-			get;
-			set;
+		public CSharpTokenNode WhileToken {
+			get { return GetChildByRole (WhileKeywordRole); }
 		}
 		
-		public AstNode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement) ?? AstNode.Null; }
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
 		}
 		
-		public AstNode Condition {
-			get { return GetChildByRole (Roles.Condition) ?? AstNode.Null; }
+		public Expression Condition {
+			get { return GetChildByRole (Roles.Condition); }
+			set { SetChildByRole (Roles.Condition, value); }
 		}
 		
-		public CSharpTokenNode DoKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (DoKeywordRole) ?? CSharpTokenNode.Null; }
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
 		}
 		
-		public CSharpTokenNode WhileKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (WhileKeywordRole) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		public Statement EmbeddedStatement {
+			get { return GetChildByRole (Roles.EmbeddedStatement); }
+			set { SetChildByRole (Roles.EmbeddedStatement, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitWhileStatement (this, data);
 		}
-		
-		public WhileStatement (WhilePosition whilePosition)
-		{
-			this.WhilePosition = whilePosition;
-		}
-	}
-	
-	public enum WhilePosition {
-		Begin,
-		End
 	}
 }

@@ -26,45 +26,47 @@
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class IfElseStatement : AstNode
+	/// <summary>
+	/// if (Condition) TrueStatement else FalseStatement
+	/// </summary>
+	public class IfElseStatement : Statement
 	{
-		public const int TrueEmbeddedStatementRole = 100;
-		public const int FalseEmbeddedStatementRole = 101;
-		public const int IfKeywordRole = 102;
-		public const int ElseKeywordRole = 103;
+		public readonly static Role<CSharpTokenNode> IfKeywordRole = Roles.Keyword;
+		public readonly static Role<Expression> ConditionRole = Roles.Condition;
+		public readonly static Role<CSharpTokenNode> QuestionMarkRole = new Role<CSharpTokenNode>("QuestionMark", CSharpTokenNode.Null);
+		public readonly static Role<Statement> TrueRole = new Role<Statement>("True", Statement.Null);
+		public readonly static Role<CSharpTokenNode> ElseKeywordRole = new Role<CSharpTokenNode>("ElseKeyword", CSharpTokenNode.Null);
+		public readonly static Role<Statement> FalseRole = new Role<Statement>("False", Statement.Null);
 		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
-		public AstNode TrueEmbeddedStatement {
-			get { return GetChildByRole (TrueEmbeddedStatementRole) ?? AstNode.Null; }
+		public CSharpTokenNode IfToken {
+			get { return GetChildByRole (IfKeywordRole); }
 		}
 		
-		public AstNode FalseEmbeddedStatement {
-			get { return GetChildByRole (FalseEmbeddedStatementRole) ?? AstNode.Null; }
-		}
-
-		public AstNode Condition {
-			get { return GetChildByRole (Roles.Condition) ?? AstNode.Null; }
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
 		}
 		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
+		public Expression Condition {
+			get { return GetChildByRole (ConditionRole); }
+			set { SetChildByRole (ConditionRole, value); }
 		}
 		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
 		}
 		
-		public CSharpTokenNode IfKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (IfKeywordRole) ?? CSharpTokenNode.Null; }
+		public Statement TrueStatement {
+			get { return GetChildByRole (TrueRole); }
+			set { SetChildByRole (TrueRole, value); }
 		}
 		
-		public CSharpTokenNode ElseKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (ElseKeywordRole) ?? CSharpTokenNode.Null; }
+		public CSharpTokenNode ElseToken {
+			get { return GetChildByRole (ElseKeywordRole); }
+		}
+		
+		public Statement FalseStatement {
+			get { return GetChildByRole (FalseRole); }
+			set { SetChildByRole (FalseRole, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

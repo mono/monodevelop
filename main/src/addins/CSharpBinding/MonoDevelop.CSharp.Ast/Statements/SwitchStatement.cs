@@ -29,38 +29,41 @@ using System.Linq;
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class SwitchStatement : AstNode
+	/// <summary>
+	/// switch (Expression) { SwitchSections }
+	/// </summary>
+	public class SwitchStatement : Statement
 	{
-		public const int SwitchSectionRole = 100;
+		public static readonly Role<SwitchSection> SwitchSectionRole = new Role<SwitchSection>("SwitchSection");
 		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
+		public CSharpTokenNode SwitchToken {
+			get { return GetChildByRole (Roles.Keyword); }
 		}
-
-		public AstNode Expression {
-			get { return GetChildByRole (Roles.Expression) ?? AstNode.Null; }
+		
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
+		}
+		
+		public Expression Expression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
+		}
+		
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
+		}
+		
+		public CSharpTokenNode LBraceToken {
+			get { return GetChildByRole (Roles.LBrace); }
 		}
 		
 		public IEnumerable<SwitchSection> SwitchSections {
-			get { return GetChildrenByRole (SwitchSectionRole).Cast<SwitchSection> (); }
+			get { return GetChildrenByRole (SwitchSectionRole); }
+			set { SetChildrenByRole (SwitchSectionRole, value); }
 		}
 		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode LBrace {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LBrace) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode RBrace {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RBrace) ?? CSharpTokenNode.Null; }
+		public CSharpTokenNode RBraceToken {
+			get { return GetChildByRole (Roles.RBrace); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
@@ -71,7 +74,7 @@ namespace MonoDevelop.CSharp.Ast
 	
 	public class SwitchSection : AstNode
 	{
-		public const int CaseLabelRole = 100;
+		public static readonly Role<CaseLabel> CaseLabelRole = new Role<CaseLabel>("CaseLabel");
 		
 		public override NodeType NodeType {
 			get {
@@ -80,16 +83,13 @@ namespace MonoDevelop.CSharp.Ast
 		}
 		
 		public IEnumerable<CaseLabel> CaseLabels {
-			get { return GetChildrenByRole (CaseLabelRole).Cast<CaseLabel> (); }
+			get { return GetChildrenByRole (CaseLabelRole); }
+			set { SetChildrenByRole (CaseLabelRole, value); }
 		}
 		
-		public IEnumerable<AstNode> Statements {
-			get {
-				var body = GetChildByRole (Roles.Body);
-				if (body is BlockStatement)
-					return ((BlockStatement)body).Statements;
-				return new AstNode[] { body };
-			}
+		public IEnumerable<Statement> Statements {
+			get { return GetChildrenByRole (Roles.EmbeddedStatement); }
+			set { SetChildrenByRole (Roles.EmbeddedStatement, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
@@ -106,8 +106,9 @@ namespace MonoDevelop.CSharp.Ast
 			}
 		}
 		
-		public AstNode Expression {
-			get { return GetChildByRole (Roles.Expression) ?? AstNode.Null; }
+		public Expression Expression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

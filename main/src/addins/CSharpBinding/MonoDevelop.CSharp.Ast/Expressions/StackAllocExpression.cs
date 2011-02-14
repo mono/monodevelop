@@ -26,42 +26,31 @@
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class StackAllocExpression : AstNode
+	/// <summary>
+	/// stackalloc Type[Count]
+	/// </summary>
+	public class StackAllocExpression : Expression
 	{
-		public const int StackAllocKeywordRole = 100;
-		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
-		public FullTypeName Type {
-			get {
-				return (FullTypeName)GetChildByRole (Roles.ReturnType) ?? FullTypeName.Null;
-			}
+		public CSharpTokenNode StackAllocToken {
+			get { return GetChildByRole (Roles.Keyword); }
 		}
 		
-		public AstNode CountExpression {
-			get { return GetChildByRole (Roles.Expression) ?? AstNode.Null; }
+		public AstType Type {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole(Roles.Type, value); }
 		}
 		
-		public CSharpTokenNode StackAllocKeyword {
-			get {
-				return (CSharpTokenNode)GetChildByRole (StackAllocKeywordRole) ?? CSharpTokenNode.Null;
-			}
+		public CSharpTokenNode LBracketToken {
+			get { return GetChildByRole (Roles.LBracket); }
 		}
 		
-		public CSharpTokenNode LBracket {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.LBracket) ?? CSharpTokenNode.Null;
-			}
+		public Expression CountExpression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
-		public CSharpTokenNode RBracket {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.RBracket) ?? CSharpTokenNode.Null;
-			}
+		public CSharpTokenNode RBracketToken {
+			get { return GetChildByRole (Roles.RBracket); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

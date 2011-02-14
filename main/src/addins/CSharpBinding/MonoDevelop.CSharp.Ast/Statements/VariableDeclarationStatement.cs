@@ -30,40 +30,27 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class VariableDeclarationStatement : AstNode
+	public class VariableDeclarationStatement : Statement
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-		
-		public IEnumerable<CSharpModifierToken> ModifierTokens {
-			get {
-				return base.GetChildrenByRole (Roles.Modifier).Cast <CSharpModifierToken>();
-			}
-		}
+		public static readonly Role<CSharpModifierToken> ModifierRole = AttributedNode.ModifierRole;
 		
 		public Modifiers Modifiers {
-			get {
-				Modifiers m = 0;
-				foreach (CSharpModifierToken t in this.ModifierTokens) {
-					m |= t.Modifier;
-				}
-				return m;
-			}
+			get { return AttributedNode.GetModifiers(this); }
+			set { AttributedNode.SetModifiers(this, value); }
 		}
 		
-		public AstNode ReturnType {
-			get { return GetChildByRole (Roles.ReturnType) ?? AstNode.Null; }
+		public AstType Type {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole (Roles.Type, value); }
 		}
 		
 		public IEnumerable<VariableInitializer> Variables {
-			get { return base.GetChildrenByRole (Roles.Initializer).Cast<VariableInitializer> (); }
+			get { return GetChildrenByRole (Roles.Variable); }
+			set { SetChildrenByRole (Roles.Variable, value); }
 		}
 		
-		public CSharpTokenNode Semicolon {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Semicolon) ?? CSharpTokenNode.Null; }
+		public CSharpTokenNode SemicolonToken {
+			get { return GetChildByRole (Roles.Semicolon); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

@@ -27,24 +27,26 @@ using System;
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class EnumMemberDeclaration : AbstractMemberBase
+	public class EnumMemberDeclaration : AttributedNode
 	{
+		public static readonly Role<Expression> InitializerRole = new Role<Expression>("Initializer", Expression.Null);
+		
 		public string Name {
 			get {
-				return NameIdentifier.Name;
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				SetChildByRole (Roles.Identifier, new Identifier(value, AstLocation.Empty));
 			}
 		}
 		
-		public Identifier NameIdentifier {
-			get {
-				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
-			}
+		public Expression Initializer {
+			get { return GetChildByRole (InitializerRole); }
+			set { SetChildByRole (InitializerRole, value); }
 		}
 		
-		public AstNode Initializer {
-			get {
-				return GetChildByRole (Roles.Initializer) ?? AstNode.Null;
-			}
+		public override NodeType NodeType {
+			get { return NodeType.Member; }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

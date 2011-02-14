@@ -28,32 +28,36 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class MemberReferenceExpression : AstNode
+	/// <summary>
+	/// Target.MemberName
+	/// </summary>
+	public class MemberReferenceExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
-		public AstNode Target {
-			get { return GetChildByRole (Roles.TargetExpression) ?? AstNode.Null; }
-		}
-		
-		public Identifier Identifier {
-			get {
-				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
-			}
+		public Expression Target {
+			get { return GetChildByRole (Roles.TargetExpression); }
+			set { SetChildByRole(Roles.TargetExpression, value); }
 		}
 		
 		public string MemberName {
 			get {
-				return this.Identifier.Name;
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				SetChildByRole(Roles.Identifier, new Identifier(value, AstLocation.Empty));
 			}
 		}
 		
-		public IEnumerable<AstNode> TypeArguments {
-			get { return GetChildrenByRole (Roles.TypeParameter); }
+		public CSharpTokenNode LChevronToken {
+			get { return GetChildByRole (Roles.LChevron); }
+		}
+		
+		public IEnumerable<AstType> TypeArguments {
+			get { return GetChildrenByRole (Roles.TypeArgument); }
+			set { SetChildrenByRole (Roles.TypeArgument, value); }
+		}
+		
+		public CSharpTokenNode RChevronToken {
+			get { return GetChildByRole (Roles.RChevron); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

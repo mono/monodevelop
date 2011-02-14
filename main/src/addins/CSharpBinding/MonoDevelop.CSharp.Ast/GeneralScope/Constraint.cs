@@ -28,8 +28,13 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Ast
 {
+	/// <summary>
+	/// where TypeParameter : BaseTypes
+	/// </summary>
 	public class Constraint : AstNode
 	{
+		public readonly static Role<CSharpTokenNode> ColonRole = TypeDeclaration.ColonRole;
+		public readonly static Role<AstType> BaseTypeRole = TypeDeclaration.BaseTypeRole;
 		
 		public override NodeType NodeType {
 			get {
@@ -37,20 +42,20 @@ namespace MonoDevelop.CSharp.Ast
 			}
 		}
 		
-		public CSharpTokenNode WhereKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword) ?? CSharpTokenNode.Null; }
+		public string TypeParameter {
+			get {
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				SetChildByRole(Roles.Identifier, new Identifier(value, AstLocation.Empty));
+			}
 		}
 		
-		public Identifier TypeParameter {
-			get { return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null; }
-		}
+		// TODO: what about new(), struct and class constraints?
 		
-		public CSharpTokenNode Colon {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Colon) ?? CSharpTokenNode.Null; }
-		}
-		
-		public IEnumerable<AstNode> TypeParameters {
-			get { return GetChildrenByRole (Roles.TypeParameter); }
+		public IEnumerable<AstType> BaseTypes {
+			get { return GetChildrenByRole (BaseTypeRole); }
+			set { SetChildrenByRole (BaseTypeRole, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

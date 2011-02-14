@@ -29,39 +29,36 @@ using System.Linq;
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class AnonymousMethodExpression : AstNode
+	/// <summary>
+	/// delegate(Parameters) {Body}
+	/// </summary>
+	public class AnonymousMethodExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-		
-		// used to make a difference between delegate {} and delegate () {} 
+		// used to make a difference between delegate {} and delegate () {}
 		public bool HasParameterList {
-			get {
-				return GetChildByRole (Roles.LPar) != null;
-			}
+			get; set;
 		}
 		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
+		public CSharpTokenNode DelegateToken {
+			get { return GetChildByRole (Roles.Keyword); }
 		}
 		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
 		}
 		
-		public IEnumerable<ParameterDeclaration> Parameters { 
-			get {
-				return base.GetChildrenByRole (Roles.Parameter).Cast <ParameterDeclaration> ();
-			}
+		public IEnumerable<ParameterDeclaration> Parameters {
+			get { return GetChildrenByRole (Roles.Parameter); }
+			set { SetChildrenByRole (Roles.Parameter, value); }
+		}
+		
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
 		}
 		
 		public BlockStatement Body {
-			get {
-				return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null;
-			}
+			get { return GetChildByRole (Roles.Body); }
+			set { SetChildByRole (Roles.Body, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

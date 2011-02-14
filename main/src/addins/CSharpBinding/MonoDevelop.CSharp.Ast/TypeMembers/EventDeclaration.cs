@@ -24,40 +24,49 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
+
 namespace MonoDevelop.CSharp.Ast
 {
-	public class EventDeclaration : AbstractMember
+	public class EventDeclaration : MemberDeclaration
 	{
-		public const int EventAddRole = 100;
-		public const int EventRemoveRole = 101;
-		
-		public CSharpTokenNode LBrace {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.LBrace) ?? CSharpTokenNode.Null;
-			}
-		}
-		
-		public CSharpTokenNode RBrace {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.RBrace) ?? CSharpTokenNode.Null;
-			}
-		}
-		
-		public Accessor AddAccessor {
-			get {
-				return (Accessor)GetChildByRole (EventAddRole) ?? Accessor.Null;
-			}
-		}
-		
-		public Accessor RemoveAccessor {
-			get {
-				return (Accessor)GetChildByRole (EventRemoveRole) ?? Accessor.Null;
-			}
+		public IEnumerable<VariableInitializer> Variables {
+			get { return GetChildrenByRole (Roles.Variable); }
+			set { SetChildrenByRole (Roles.Variable, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitEventDeclaration (this, data);
+		}
+	}
+	
+	public class CustomEventDeclaration : MemberDeclaration
+	{
+		public static readonly Role<Accessor> AddAccessorRole = new Role<Accessor>("AddAccessor", Accessor.Null);
+		public static readonly Role<Accessor> RemoveAccessorRole = new Role<Accessor>("RemoveAccessor", Accessor.Null);
+		
+		public CSharpTokenNode LBraceToken {
+			get { return GetChildByRole (Roles.LBrace); }
+		}
+		
+		public Accessor AddAccessor {
+			get { return GetChildByRole (AddAccessorRole); }
+			set { SetChildByRole (AddAccessorRole, value); }
+		}
+		
+		public Accessor RemoveAccessor {
+			get { return GetChildByRole (RemoveAccessorRole); }
+			set { SetChildByRole (RemoveAccessorRole, value); }
+		}
+		
+		public CSharpTokenNode RBraceToken {
+			get { return GetChildByRole (Roles.RBrace); }
+		}
+		
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+		{
+			return visitor.VisitCustomEventDeclaration (this, data);
 		}
 	}
 }

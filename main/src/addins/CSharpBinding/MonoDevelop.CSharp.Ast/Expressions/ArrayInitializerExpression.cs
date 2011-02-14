@@ -24,16 +24,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
+
 namespace MonoDevelop.CSharp.Ast
 { 
-	public class ArrayInitializerExpression : AstNode
+	/// <summary>
+	/// { Elements }
+	/// </summary>
+	public class ArrayInitializerExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
+		#region Null
+		public new static readonly ArrayInitializerExpression Null = new NullArrayInitializerExpression ();
+		
+		sealed class NullArrayInitializerExpression : ArrayInitializerExpression
+		{
+			public override bool IsNull {
+				get {
+					return true;
+				}
+			}
+			
+			public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+			{
+				return default (S);
 			}
 		}
+		#endregion
 		
+		public CSharpTokenNode LBraceToken {
+			get { return GetChildByRole (Roles.LBrace); }
+		}
+		
+		public IEnumerable<Expression> Elements {
+			get { return GetChildrenByRole(Roles.Expression); }
+			set { SetChildrenByRole(Roles.Expression, value); }
+		}
+		
+		public CSharpTokenNode RBraceToken {
+			get { return GetChildByRole (Roles.RBrace); }
+		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{

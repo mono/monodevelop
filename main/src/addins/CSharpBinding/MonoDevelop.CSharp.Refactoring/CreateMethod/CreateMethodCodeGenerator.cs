@@ -77,14 +77,14 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			var target = unit.GetNodeAt (data.Caret.Line, data.Caret.Column);
 			if (target == null)
 				return false;
-			if (target.Parent is MemberReferenceExpression && ((MemberReferenceExpression)target.Parent).Identifier == target) {
+			if (target.Parent is MemberReferenceExpression && ((MemberReferenceExpression)target.Parent).GetChildByRole (MemberReferenceExpression.Roles.Identifier) == target) {
 				var memberReference = (MemberReferenceExpression)target.Parent;
 				target = memberReference.Target;
 				var targetResult = options.GetResolver ().Resolve (new ExpressionResult (data.GetTextBetween (target.StartLocation.Line, target.StartLocation.Column, target.EndLocation.Line, target.EndLocation.Column)), resolvePosition);
 				if (targetResult.StaticResolve)
 					modifiers = MonoDevelop.Projects.Dom.Modifiers.Static;
 				declaringType = options.Dom.GetType (targetResult.ResolvedType);
-				methodName = memberReference.Identifier.Name;
+				methodName = memberReference.MemberName;
 			} else if (target is Identifier) {
 				declaringType = options.ResolveResult.CallingType;
 				methodName = data.GetTextBetween (target.StartLocation.Line, target.StartLocation.Column, target.EndLocation.Line, target.EndLocation.Column);
@@ -101,7 +101,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			while (parent != null) {
 				if (parent is AssignmentExpression) {
 					AssignmentExpression assignment = (AssignmentExpression)parent;
-					if (assignment.AssignmentOperatorType != AssignmentOperatorType.Add && assignment.AssignmentOperatorType != AssignmentOperatorType.Subtract && assignment.AssignmentOperatorType != AssignmentOperatorType.Assign)
+					if (assignment.Operator != AssignmentOperatorType.Add && assignment.Operator != AssignmentOperatorType.Subtract && assignment.Operator != AssignmentOperatorType.Assign)
 						return null;
 					
 					var resolveResult = ResolveAssignment (options, assignment);
@@ -371,7 +371,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 				var resolveResult = resolver.Resolve (new ExpressionResult (argExpression), resolvePosition);
 				
 				if (argument is MemberReferenceExpression) {
-					arg.Name = ((MemberReferenceExpression)argument).Identifier.Name;
+					arg.Name = ((MemberReferenceExpression)argument).MemberName;
 				} else if (argument is IdentifierExpression) {
 					arg.Name = ((IdentifierExpression)argument).Identifier;
 					int idx = arg.Name.LastIndexOf ('.');

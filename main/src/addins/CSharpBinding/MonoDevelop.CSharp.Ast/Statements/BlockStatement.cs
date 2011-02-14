@@ -28,10 +28,16 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class BlockStatement : AstNode
+	/// <summary>
+	/// { Statements }
+	/// </summary>
+	public class BlockStatement : Statement
 	{
+		public static readonly Role<Statement> StatementRole = new Role<Statement>("Statement", Statement.Null);
+		
+		#region Null
 		public static readonly new BlockStatement Null = new NullBlockStatement ();
-		class NullBlockStatement : BlockStatement
+		sealed class NullBlockStatement : BlockStatement
 		{
 			public override bool IsNull {
 				get {
@@ -44,35 +50,46 @@ namespace MonoDevelop.CSharp.Ast
 				return default (S);
 			}
 		}
+		#endregion
 		
-		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
-		public CSharpTokenNode LBrace {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.LBrace) ?? CSharpTokenNode.Null;
-			}
+		public CSharpTokenNode LBraceToken {
+			get { return GetChildByRole (Roles.LBrace); }
 		}
 		
-		public CSharpTokenNode RBrace {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.RBrace) ?? CSharpTokenNode.Null;
-			}
+		public IEnumerable<Statement> Statements {
+			get { return GetChildrenByRole (StatementRole); }
+			set { SetChildrenByRole (StatementRole, value); }
 		}
 		
-		public IEnumerable<AstNode> Statements {
-			get {
-				return GetChildrenByRole (Roles.Statement);
-			}
+		public CSharpTokenNode RBraceToken {
+			get { return GetChildByRole (Roles.RBrace); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitBlockStatement (this, data);
 		}
+		
+		#region Builder methods
+		public void AddStatement(Statement statement)
+		{
+			AddChild(statement, StatementRole);
+		}
+		
+		public void AddStatement(Expression expression)
+		{
+			AddChild(new ExpressionStatement { Expression = expression }, StatementRole);
+		}
+		
+		public void AddAssignment(Expression left, Expression right)
+		{
+			AddStatement(new AssignmentExpression { Left = left, Operator = AssignmentOperatorType.Assign, Right = right });
+		}
+		
+		public void AddReturnStatement(Expression expression)
+		{
+			AddStatement(new ReturnStatement { Expression = expression });
+		}
+		#endregion
 	}
 }

@@ -28,27 +28,24 @@ using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class BaseReferenceExpression : AstNode
+	/// <summary>
+	/// base
+	/// </summary>
+	public class BaseReferenceExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
-		public DomLocation Location {
+		public AstLocation Location {
 			get;
 			set;
 		}
 		
-		public override DomLocation StartLocation {
+		public override AstLocation StartLocation {
 			get {
 				return Location;
 			}
 		}
-		public override DomLocation EndLocation {
+		public override AstLocation EndLocation {
 			get {
-				return new DomLocation (Location.Line, Location.Column + "base".Length);
+				return new AstLocation (Location.Line, Location.Column + "base".Length);
 			}
 		}
 		

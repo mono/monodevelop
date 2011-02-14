@@ -43,6 +43,8 @@ namespace Mono.CSharp {
 		public static readonly MemberName Null = new MemberName ("");
 
 		bool is_double_colon;
+		
+		public bool IsDoubleColon { get { return is_double_colon; } }
 
 		private MemberName (MemberName left, string name, bool is_double_colon,
 				    Location loc)

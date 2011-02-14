@@ -24,14 +24,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace MonoDevelop.CSharp.Ast
 {
+	/// <summary>
+	/// [AttributeTarget: Attributes]
+	/// </summary>
 	public class AttributeSection : AstNode
 	{
-		const int TargetRole = 101;
+		public static readonly Role<Attribute> AttributeRole = new Role<Attribute>("Attribute");
+		public static readonly Role<CSharpTokenNode> TargetRole = new Role<CSharpTokenNode>("Target", CSharpTokenNode.Null);
 		
 		public override NodeType NodeType {
 			get {
@@ -43,18 +48,39 @@ namespace MonoDevelop.CSharp.Ast
 			get;
 			set;
 		}
-
-		public Identifier TargetIdentifier {
-			get { return (Identifier)GetChildByRole (TargetRole) ?? Identifier.Null; }
-		}
-
+		
 		public IEnumerable<Attribute> Attributes {
-			get { return base.GetChildrenByRole (Roles.Attribute).Cast<Attribute> (); }
+			get { return base.GetChildrenByRole (AttributeRole); }
+			set { SetChildrenByRole (AttributeRole, value); }
 		}
-
+		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitAttributeSection (this, data);
+		}
+		
+		public static string GetAttributeTargetName(AttributeTarget attributeTarget)
+		{
+			switch (attributeTarget) {
+				case AttributeTarget.None:
+					return null;
+				case AttributeTarget.Assembly:
+					return "assembly";
+				case AttributeTarget.Module:
+					return "module";
+				case AttributeTarget.Type:
+					return "type";
+				case AttributeTarget.Param:
+					return "param";
+				case AttributeTarget.Field:
+					return "field";
+				case AttributeTarget.Return:
+					return "return";
+				case AttributeTarget.Method:
+					return "method";
+				default:
+					throw new NotSupportedException("Invalid value for AttributeTarget");
+			}
 		}
 	}
 	

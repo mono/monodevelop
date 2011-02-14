@@ -1,3 +1,4 @@
+using System;
 // 
 // UnaryOperatorExpression.cs
 //  
@@ -26,28 +27,66 @@
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class UnaryOperatorExpression : AstNode
+	/// <summary>
+	/// Operator Expression
+	/// </summary>
+	public class UnaryOperatorExpression : Expression
 	{
-		public const int Operator = 100;
+		public readonly static Role<CSharpTokenNode> OperatorRole = BinaryOperatorExpression.OperatorRole;
 		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
+		public UnaryOperatorExpression()
+		{
 		}
-
-		public UnaryOperatorType UnaryOperatorType {
+		
+		public UnaryOperatorExpression(UnaryOperatorType op, Expression expression)
+		{
+			this.Operator = op;
+			this.Expression = expression;
+		}
+		
+		public UnaryOperatorType Operator {
 			get;
 			set;
 		}
 		
-		public AstNode Expression {
-			get { return GetChildByRole (Roles.Expression) ?? AstNode.Null; }
+		public CSharpTokenNode OperatorToken {
+			get { return GetChildByRole (OperatorRole); }
+		}
+		
+		public Expression Expression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitUnaryOperatorExpression (this, data);
+		}
+		
+		public static string GetOperatorSymbol(UnaryOperatorType op)
+		{
+			switch (op) {
+				case UnaryOperatorType.Not:
+					return "!";
+				case UnaryOperatorType.BitNot:
+					return "~";
+				case UnaryOperatorType.Minus:
+					return "-";
+				case UnaryOperatorType.Plus:
+					return "+";
+				case UnaryOperatorType.Increment:
+				case UnaryOperatorType.PostIncrement:
+					return "++";
+				case UnaryOperatorType.PostDecrement:
+				case UnaryOperatorType.Decrement:
+					return "--";
+				case UnaryOperatorType.Dereference:
+					return "*";
+				case UnaryOperatorType.AddressOf:
+					return "&";
+				default:
+					throw new NotSupportedException("Invalid value for UnaryOperatorType");
+			}
 		}
 	}
 	

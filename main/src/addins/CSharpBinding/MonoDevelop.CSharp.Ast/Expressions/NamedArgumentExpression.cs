@@ -1,10 +1,10 @@
 // 
-// AbstractMemberBase.cs
+// NamedArgumentExpression.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,41 +23,33 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-using System.Collections.Generic;
-using System.Linq;
-using MonoDevelop.Projects.Dom;
+using System;
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public abstract class AbstractMemberBase : AstNode
+	/// <summary>
+	/// Represents a named argument passed to a method or attribute.
+	/// </summary>
+	public class NamedArgumentExpression : Expression
 	{
-		public override NodeType NodeType {
+		public string Identifier {
 			get {
-				return NodeType.Member;
+				return GetChildByRole (Roles.Identifier).Name;
 			}
-		}
-
-		public IEnumerable<CSharpModifierToken> ModifierTokens {
-			get {
-				return base.GetChildrenByRole (Roles.Modifier).Cast <CSharpModifierToken>();
+			set {
+				SetChildByRole(Roles.Identifier, new Identifier(value, AstLocation.Empty));
 			}
 		}
 		
-		public Modifiers Modifiers {
-			get {
-				Modifiers m = 0;
-				foreach (CSharpModifierToken t in this.ModifierTokens) {
-					m |= t.Modifier;
-				}
-				return m;
-			}
+		public Expression Expression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
-		public IEnumerable<AttributeSection> Attributes { 
-			get {
-				return base.GetChildrenByRole (Roles.Attribute).Cast <AttributeSection>();
-			}
+		public override S AcceptVisitor<T, S>(AstVisitor<T, S> visitor, T data)
+		{
+			return visitor.VisitNamedArgumentExpression(this, data);
 		}
 	}
 }
+

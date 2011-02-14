@@ -29,16 +29,11 @@ using System.Linq;
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class FieldDeclaration : AbstractMember
+	public class FieldDeclaration : MemberDeclaration
 	{
-		public CSharpTokenNode Semicolon {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Semicolon) ?? CSharpTokenNode.Null; }
-		}
-		
 		public IEnumerable<VariableInitializer> Variables { 
-			get {
-				return base.GetChildrenByRole (Roles.Initializer).Cast <VariableInitializer>();
-			}
+			get { return GetChildrenByRole (Roles.Variable); }
+			set { SetChildrenByRole (Roles.Variable, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

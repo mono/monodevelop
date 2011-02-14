@@ -29,11 +29,18 @@ namespace MonoDevelop.CSharp.Ast
 	public enum NodeType
 	{
 		Unknown,
-		
-		Type,
+		/// <summary>
+		/// DomType
+		/// </summary>
+		TypeReference,
+		/// <summary>
+		/// Type or delegate declaration
+		/// </summary>
+		TypeDeclaration,
 		Member,
 		Statement,
 		Expression,
-		Token
+		Token,
+		QueryClause
 	}
 }

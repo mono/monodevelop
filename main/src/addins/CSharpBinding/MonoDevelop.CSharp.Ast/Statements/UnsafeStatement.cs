@@ -26,16 +26,18 @@
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class UnsafeStatement : AstNode
+	/// <summary>
+	/// unsafe { Body }
+	/// </summary>
+	public class UnsafeStatement : Statement
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
+		public CSharpTokenNode UnsafeToken {
+			get { return GetChildByRole (Roles.Keyword); }
 		}
-
-		public BlockStatement Block {
-			get { return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null; }
+		
+		public BlockStatement Body {
+			get { return GetChildByRole (Roles.Body); }
+			set { SetChildByRole (Roles.Body, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

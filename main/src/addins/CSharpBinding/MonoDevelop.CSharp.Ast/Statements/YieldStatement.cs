@@ -26,20 +26,29 @@
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class YieldStatement : AstNode
+	/// <summary>
+	/// yield return Expression;
+	/// </summary>
+	public class YieldStatement : Statement
 	{
-		public const int YieldKeywordRole = 100;
-		public const int ReturnKeywordRole = 101;
-		public const int BreakKeywordRole = 102;
+		public static readonly Role<CSharpTokenNode> YieldKeywordRole = new Role<CSharpTokenNode>("YieldKeyword", CSharpTokenNode.Null);
+		public static readonly Role<CSharpTokenNode> ReturnKeywordRole = new Role<CSharpTokenNode>("ReturnKeyword", CSharpTokenNode.Null);
 		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
+		public CSharpTokenNode YieldToken {
+			get { return GetChildByRole (YieldKeywordRole); }
 		}
-
-		public AstNode Expression {
-			get { return GetChildByRole (Roles.Expression) ?? AstNode.Null; }
+		
+		public CSharpTokenNode ReturnToken {
+			get { return GetChildByRole (ReturnKeywordRole); }
+		}
+		
+		public Expression Expression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
+		}
+		
+		public CSharpTokenNode SemicolonToken {
+			get { return GetChildByRole (Roles.Semicolon); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

@@ -31,6 +31,8 @@ namespace MonoDevelop.CSharp.Ast
 {
 	public class CompilationUnit : AstNode 
 	{
+		public static readonly Role<AstNode> MemberRole = new Role<AstNode>("Member", AstNode.Null);
+		
 		public override NodeType NodeType {
 			get {
 				return NodeType.Unknown;
@@ -43,10 +45,10 @@ namespace MonoDevelop.CSharp.Ast
 		
 		public AstNode GetNodeAt (int line, int column)
 		{
-			return GetNodeAt (new DomLocation (line, column));
+			return GetNodeAt (new AstLocation (line, column));
 		}
 		
-		public AstNode GetNodeAt (DomLocation location)
+		public AstNode GetNodeAt (AstLocation location)
 		{
 			AstNode node = this;
 			while (node.FirstChild != null) {
@@ -67,17 +69,19 @@ namespace MonoDevelop.CSharp.Ast
 		
 		public IEnumerable<AstNode> GetNodesBetween (int startLine, int startColumn, int endLine, int endColumn)
 		{
-			return GetNodesBetween (new DomLocation (startLine, startColumn), new DomLocation (endLine, endColumn));
+			return GetNodesBetween (new AstLocation (startLine, startColumn), new AstLocation (endLine, endColumn));
 		}
 		
-		public IEnumerable<AstNode> GetNodesBetween (DomLocation start, DomLocation end)
+		public IEnumerable<AstNode> GetNodesBetween (AstLocation start, AstLocation end)
 		{
 			AstNode node = this;
 			while (node != null) {
 				AstNode next;
 				if (start <= node.StartLocation && node.EndLocation <= end) {
-					yield return node;
+					// Remember next before yielding node.
+					// This allows iteration to continue when the caller removes/replaces the node.
 					next = node.NextSibling;
+					yield return node;
 				} else {
 					if (node.EndLocation < start) {
 						next = node.NextSibling; 

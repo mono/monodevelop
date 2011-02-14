@@ -26,28 +26,31 @@
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class LockStatement : AstNode
+	/// <summary>
+	/// lock (Expression) EmbeddedStatement;
+	/// </summary>
+	public class LockStatement : Statement
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
-		public AstNode Expression {
-			get { return GetChildByRole (Roles.Expression) ?? AstNode.Null; }
+		public CSharpTokenNode LockToken {
+			get { return GetChildByRole (Roles.Keyword); }
 		}
 		
-		public AstNode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement) ?? AstNode.Null; }
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
 		}
 		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
+		public Expression Expression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
+		}
+		
+		public Statement EmbeddedStatement {
+			get { return GetChildByRole (Roles.EmbeddedStatement); }
+			set { SetChildByRole (Roles.EmbeddedStatement, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

@@ -24,26 +24,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
+
 namespace MonoDevelop.CSharp.Ast
 {
 	/// <summary>
-	/// Same as member reference, only with pointer as base (a->b)
+	/// Target->MemberName
 	/// </summary>
-	public class PointerReferenceExpression : MemberReferenceExpression
+	public class PointerReferenceExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
-		public AstNode Expression {
-			get { return GetChildByRole (Roles.TargetExpression) ?? AstNode.Null; }
+		public readonly static Role<CSharpTokenNode> ArrowRole = new Role<CSharpTokenNode>("Arrow", CSharpTokenNode.Null);
+		
+		public Expression Target {
+			get { return GetChildByRole (Roles.TargetExpression); }
+			set { SetChildByRole(Roles.TargetExpression, value); }
 		}
 		
-		public string Dim {
-			get;
-			set;
+		public string MemberName {
+			get {
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				SetChildByRole(Roles.Identifier, new Identifier(value, AstLocation.Empty));
+			}
+		}
+		
+		public IEnumerable<AstType> TypeArguments {
+			get { return GetChildrenByRole (Roles.TypeArgument); }
+			set { SetChildrenByRole (Roles.TypeArgument, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

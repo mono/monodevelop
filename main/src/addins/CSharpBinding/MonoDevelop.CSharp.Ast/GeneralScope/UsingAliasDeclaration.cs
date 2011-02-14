@@ -26,9 +26,13 @@
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class UsingAliasDeclaration : UsingDeclaration
+	/// <summary>
+	/// using Alias = Import;
+	/// </summary>
+	public class UsingAliasDeclaration : AstNode
 	{
-		public const int AliasRole       = 100;
+		public static readonly Role<Identifier> AliasRole = new Role<Identifier>("Alias", Identifier.Null);
+		public static readonly Role<AstType> ImportRole = UsingDeclaration.ImportRole;
 		
 		public override NodeType NodeType {
 			get {
@@ -36,16 +40,30 @@ namespace MonoDevelop.CSharp.Ast
 			}
 		}
 		
+		public CSharpTokenNode UsingToken {
+			get { return GetChildByRole (Roles.Keyword); }
+		}
+		
 		public string Alias {
 			get {
-				return AliasIdentifier.QualifiedName;
+				return GetChildByRole (AliasRole).Name;
+			}
+			set {
+				SetChildByRole(AliasRole, new Identifier(value, AstLocation.Empty));
 			}
 		}
 		
-		public QualifiedIdentifier AliasIdentifier {
-			get {
-				return (QualifiedIdentifier)GetChildByRole (AliasRole);
-			}
+		public CSharpTokenNode AssignToken {
+			get { return GetChildByRole (Roles.Assign); }
+		}
+		
+		public AstType Import {
+			get { return GetChildByRole (ImportRole); }
+			set { SetChildByRole (ImportRole, value); }
+		}
+		
+		public CSharpTokenNode SemicolonToken {
+			get { return GetChildByRole (Roles.Semicolon); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

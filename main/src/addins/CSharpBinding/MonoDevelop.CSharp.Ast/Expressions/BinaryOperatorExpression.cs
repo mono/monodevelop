@@ -1,3 +1,4 @@
+using System;
 // 
 // BinaryOperatorExpression.cs
 //  
@@ -26,51 +27,112 @@
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class BinaryOperatorExpression : AstNode
+	/// <summary>
+	/// Left Operator Right
+	/// </summary>
+	public class BinaryOperatorExpression : Expression
 	{
-		public const int LeftExpressionRole = 100;
-		public const int RightExpressionRole = 101;
-		public const int OperatorRole = 102;
+		public readonly static Role<Expression> LeftRole = new Role<Expression>("Left", Expression.Null);
+		public readonly static Role<CSharpTokenNode> OperatorRole = new Role<CSharpTokenNode>("Operator", CSharpTokenNode.Null);
+		public readonly static Role<Expression> RightRole = new Role<Expression>("Right", Expression.Null);
 		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
+		public BinaryOperatorExpression()
+		{
 		}
-
-		public BinaryOperatorType BinaryOperatorType {
+		
+		public BinaryOperatorExpression(Expression left, BinaryOperatorType op, Expression right)
+		{
+			this.Left = left;
+			this.Operator = op;
+			this.Right = right;
+		}
+		
+		public BinaryOperatorType Operator {
 			get;
 			set;
 		}
 		
-		public CSharpTokenNode Operator {
-			get { return (CSharpTokenNode)GetChildByRole (OperatorRole) ?? CSharpTokenNode.Null; }
+		public Expression Left {
+			get { return GetChildByRole (LeftRole); }
+			set { SetChildByRole(LeftRole, value); }
 		}
 		
-		public AstNode Left {
-			get { return GetChildByRole (LeftExpressionRole) ?? AstNode.Null; }
+		public CSharpTokenNode OperatorToken {
+			get { return GetChildByRole (OperatorRole); }
 		}
 		
-		public AstNode Right {
-			get { return GetChildByRole (RightExpressionRole) ?? AstNode.Null; }
+		public Expression Right {
+			get { return GetChildByRole (RightRole); }
+			set { SetChildByRole(RightRole, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitBinaryOperatorExpression (this, data);
 		}
+		
+		public static string GetOperatorSymbol(BinaryOperatorType op)
+		{
+			switch (op) {
+				case BinaryOperatorType.BitwiseAnd:
+					return "&";
+				case BinaryOperatorType.BitwiseOr:
+					return "|";
+				case BinaryOperatorType.ConditionalAnd:
+					return "&&";
+				case BinaryOperatorType.ConditionalOr:
+					return "||";
+				case BinaryOperatorType.ExclusiveOr:
+					return "^";
+				case BinaryOperatorType.GreaterThan:
+					return ">";
+				case BinaryOperatorType.GreaterThanOrEqual:
+					return ">=";
+				case BinaryOperatorType.Equality:
+					return "==";
+				case BinaryOperatorType.InEquality:
+					return "!=";
+				case BinaryOperatorType.LessThan:
+					return "<";
+				case BinaryOperatorType.LessThanOrEqual:
+					return "<=";
+				case BinaryOperatorType.Add:
+					return "+";
+				case BinaryOperatorType.Subtract:
+					return "-";
+				case BinaryOperatorType.Multiply:
+					return "*";
+				case BinaryOperatorType.Divide:
+					return "/";
+				case BinaryOperatorType.Modulus:
+					return "%";
+				case BinaryOperatorType.ShiftLeft:
+					return "<<";
+				case BinaryOperatorType.ShiftRight:
+					return ">>";
+				case BinaryOperatorType.NullCoalescing:
+					return "??";
+				default:
+					throw new NotSupportedException("Invalid value for BinaryOperatorType");
+			}
+		}
 	}
 	
 	public enum BinaryOperatorType
 	{
+		// We avoid 'logical or' on purpose, because it's not clear if that refers to the bitwise
+		// or to the short-circuiting (conditional) operator:
+		// MCS and old NRefactory used bitwise='|', logical='||'
+		// but the C# spec uses logical='|', conditional='||'
+		
 		/// <summary>left &amp; right</summary>
 		BitwiseAnd,
 		/// <summary>left | right</summary>
 		BitwiseOr,
 		/// <summary>left &amp;&amp; right</summary>
-		LogicalAnd,
+		ConditionalAnd,
 		/// <summary>left || right</summary>
-		LogicalOr,
+		ConditionalOr,
 		/// <summary>left ^ right</summary>
 		ExclusiveOr,
 		

@@ -31,33 +31,27 @@ namespace MonoDevelop.CSharp.Ast
 	/// <summary>
 	/// Represents the undocumented __arglist keyword.
 	/// </summary>
-	public class ArgListExpression : AstNode
+	public class ArgListExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
-		public bool IsAccess { // access is __arglist, otherwise it's __arlist (a1, a2, ..., an)
-			get;
-			set;
+		public bool IsAccess { // access is __arglist, otherwise it's __arglist (a1, a2, ..., an)
+			get; set;
 		}
 		
-		public CSharpTokenNode Keyword {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword) ?? CSharpTokenNode.Null; }
+		public CSharpTokenNode ArgListToken {
+			get { return GetChildByRole (Roles.Keyword); }
 		}
 		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
 		}
 		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		public IEnumerable<Expression> Arguments {
+			get { return GetChildrenByRole(Roles.Argument); }
+			set { SetChildrenByRole(Roles.Argument, value); }
 		}
 		
-		public IEnumerable<AstNode> Arguments {
-			get { return GetChildrenByRole (Roles.Parameter); }
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

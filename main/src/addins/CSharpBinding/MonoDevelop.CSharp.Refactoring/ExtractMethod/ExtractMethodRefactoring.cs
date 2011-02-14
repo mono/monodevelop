@@ -361,8 +361,8 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			if (param.OneChangedVariable) {
 				var resultVariable = param.Variables.First (p => p.IsDefinedInsideCutRegion && p.UsedAfterCutRegion);
 				if (resultVariable.IsDefinedInsideCutRegion) {
-					var s = resultVariable.Declaration.ReturnType.StartLocation;
-					var e = resultVariable.Declaration.ReturnType.EndLocation;
+					var s = resultVariable.Declaration.Type.StartLocation;
+					var e = resultVariable.Declaration.Type.EndLocation;
 					sb.Append (options.Document.Editor.GetTextBetween (s.Line, s.Column, e.Line, e.Column) + " ");
 				}
 				sb.Append (resultVariable.Name);

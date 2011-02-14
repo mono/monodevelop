@@ -28,36 +28,49 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class ForStatement : AstNode
+	/// <summary>
+	/// for (Initializers; Condition; Iterators) EmbeddedStatement
+	/// </summary>
+	public class ForStatement : Statement
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
-		public AstNode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement) ?? AstNode.Null; }
+		public readonly static Role<Statement> InitializerRole = new Role<Statement>("Initializer", Statement.Null);
+		public readonly static Role<Statement> IteratorRole = new Role<Statement>("Iterator", Statement.Null);
+		
+		public CSharpTokenNode ForToken {
+			get { return GetChildByRole (Roles.Keyword); }
 		}
 		
-		public AstNode Condition {
-			get { return GetChildByRole (Roles.Condition) ?? AstNode.Null; }
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
 		}
 		
-		public IEnumerable<AstNode> Initializers {
-			get { return GetChildrenByRole (Roles.Initializer); }
+		/// <summary>
+		/// Gets the list of initializer statements.
+		/// Note: this contains multiple statements for "for (a = 2, b = 1; a > b; a--)", but contains
+		/// only a single statement for "for (int a = 2, b = 1; a > b; a--)" (a single VariableDeclarationStatement with two variables)
+		/// </summary>
+		public IEnumerable<Statement> Initializers {
+			get { return GetChildrenByRole (InitializerRole); }
+			set { SetChildrenByRole (InitializerRole, value); }
 		}
 		
-		public IEnumerable<AstNode> Iterators {
-			get { return GetChildrenByRole (Roles.Iterator); }
+		public Expression Condition {
+			get { return GetChildByRole (Roles.Condition); }
+			set { SetChildByRole (Roles.Condition, value); }
 		}
 		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
+		public IEnumerable<Statement> Iterators {
+			get { return GetChildrenByRole (IteratorRole); }
+			set { SetChildrenByRole (IteratorRole, value); }
 		}
 		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
+		}
+		
+		public Statement EmbeddedStatement {
+			get { return GetChildByRole (Roles.EmbeddedStatement); }
+			set { SetChildByRole (Roles.EmbeddedStatement, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

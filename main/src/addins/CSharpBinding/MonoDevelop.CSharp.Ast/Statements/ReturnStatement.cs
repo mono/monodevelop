@@ -26,16 +26,22 @@
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class ReturnStatement : AstNode
+	/// <summary>
+	/// return Expression;
+	/// </summary>
+	public class ReturnStatement : Statement
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
+		public CSharpTokenNode ReturnToken {
+			get { return GetChildByRole (Roles.Keyword); }
 		}
-
-		public AstNode Expression {
-			get { return GetChildByRole (Roles.Expression) ?? AstNode.Null; }
+		
+		public Expression Expression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
+		}
+		
+		public CSharpTokenNode SemicolonToken {
+			get { return GetChildByRole (Roles.Semicolon); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

@@ -1,3 +1,4 @@
+using System;
 // 
 // AssignmentExpression.cs
 //  
@@ -26,43 +27,82 @@
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class AssignmentExpression : AstNode
+	/// <summary>
+	/// Left Operator= Right
+	/// </summary>
+	public class AssignmentExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
-		public const int LeftExpressionRole = 100;
-		public const int RightExpressionRole = 101;
-		public const int OperatorRole = 102;
+		// reuse roles from BinaryOperatorExpression
+		public readonly static Role<Expression> LeftRole = BinaryOperatorExpression.LeftRole;
+		public readonly static Role<CSharpTokenNode> OperatorRole = BinaryOperatorExpression.OperatorRole;
+		public readonly static Role<Expression> RightRole = BinaryOperatorExpression.RightRole;
 		
-		public AssignmentOperatorType AssignmentOperatorType {
+		public AssignmentExpression()
+		{
+		}
+		
+		public AssignmentExpression(Expression left, Expression right)
+		{
+			this.Left = left;
+			this.Right = right;
+		}
+		
+		public AssignmentOperatorType Operator {
 			get;
 			set;
 		}
 		
-		public AstNode Left {
-			get { return GetChildByRole (LeftExpressionRole) ?? AstNode.Null; }
+		public Expression Left {
+			get { return GetChildByRole (LeftRole); }
+			set { SetChildByRole(LeftRole, value); }
 		}
 		
-		public AstNode Right {
-			get { return GetChildByRole (RightExpressionRole) ?? AstNode.Null; }
+		public CSharpTokenNode OperatorToken {
+			get { return GetChildByRole (OperatorRole); }
 		}
 		
-		public CSharpTokenNode Operator {
-			get { return (CSharpTokenNode)GetChildByRole (OperatorRole) ?? CSharpTokenNode.Null; }
+		public Expression Right {
+			get { return GetChildByRole (RightRole); }
+			set { SetChildByRole(RightRole, value); }
 		}
-	
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitAssignmentExpression (this, data);
 		}
+		
+		public static string GetOperatorSymbol(AssignmentOperatorType op)
+		{
+			switch (op) {
+				case AssignmentOperatorType.Assign:
+					return "=";
+				case AssignmentOperatorType.Add:
+					return "+=";
+				case AssignmentOperatorType.Subtract:
+					return "-=";
+				case AssignmentOperatorType.Multiply:
+					return "*=";
+				case AssignmentOperatorType.Divide:
+					return "/=";
+				case AssignmentOperatorType.Modulus:
+					return "%=";
+				case AssignmentOperatorType.ShiftLeft:
+					return "<<=";
+				case AssignmentOperatorType.ShiftRight:
+					return ">>=";
+				case AssignmentOperatorType.BitwiseAnd:
+					return "&=";
+				case AssignmentOperatorType.BitwiseOr:
+					return "|=";
+				case AssignmentOperatorType.ExclusiveOr:
+					return "^=";
+				default:
+					throw new NotSupportedException("Invalid value for AssignmentOperatorType");
+			}
+		}
 	}
 	
-	public enum AssignmentOperatorType 
+	public enum AssignmentOperatorType
 	{
 		/// <summary>left = right</summary>
 		Assign,

@@ -26,18 +26,19 @@
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class UncheckedStatement : AstNode
+	/// <summary>
+	/// unchecked { Body }
+	/// </summary>
+	public class UncheckedStatement : Statement
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
-		public BlockStatement Block {
-			get { return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null; }
+		public CSharpTokenNode UncheckedToken {
+			get { return GetChildByRole (Roles.Keyword); }
 		}
 		
+		public BlockStatement Body {
+			get { return GetChildByRole (Roles.Body); }
+			set { SetChildByRole (Roles.Body, value); }
+		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{

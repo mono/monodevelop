@@ -29,38 +29,38 @@ using System.Linq;
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class TryCatchStatement : AstNode
+	/// <summary>
+	/// try TryBlock CatchClauses finally FinallyBlock
+	/// </summary>
+	public class TryCatchStatement : Statement
 	{
-		public const int TryKeywordRole     = 100;
-		public const int FinallyKeywordRole = 101;
-		public const int TryBlockRole       = 102;
-		public const int FinallyBlockRole   = 103;
-		public const int CatchClauseRole    = 104;
+		public static readonly Role<CSharpTokenNode> TryKeywordRole = new Role<CSharpTokenNode>("TryKeyword", CSharpTokenNode.Null);
+		public static readonly Role<BlockStatement> TryBlockRole = new Role<BlockStatement>("TryBlock", BlockStatement.Null);
+		public static readonly Role<CatchClause> CatchClauseRole = new Role<CatchClause>("CatchClause");
+		public static readonly Role<CSharpTokenNode> FinallyKeywordRole = new Role<CSharpTokenNode>("FinallyKeyword", CSharpTokenNode.Null);
+		public static readonly Role<BlockStatement> FinallyBlockRole = new Role<BlockStatement>("FinallyBlock", BlockStatement.Null);
 		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
-		public CSharpTokenNode TryKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (TryKeywordRole) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode FinallyKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (FinallyKeywordRole) ?? CSharpTokenNode.Null; }
+		public CSharpTokenNode TryToken {
+			get { return GetChildByRole (TryKeywordRole); }
 		}
 		
 		public BlockStatement TryBlock {
-			get { return (BlockStatement)GetChildByRole (TryBlockRole) ?? BlockStatement.Null; }
-		}
-		
-		public BlockStatement FinallyBlock {
-			get { return (BlockStatement)GetChildByRole (FinallyBlockRole) ?? BlockStatement.Null; }
+			get { return GetChildByRole (TryBlockRole); }
+			set { SetChildByRole (TryBlockRole, value); }
 		}
 		
 		public IEnumerable<CatchClause> CatchClauses {
-			get { return GetChildrenByRole (CatchClauseRole).Cast<CatchClause> (); }
+			get { return GetChildrenByRole (CatchClauseRole); }
+			set { SetChildrenByRole (CatchClauseRole, value); }
+		}
+		
+		public CSharpTokenNode FinallyToken {
+			get { return GetChildByRole (FinallyKeywordRole); }
+		}
+		
+		public BlockStatement FinallyBlock {
+			get { return GetChildByRole (FinallyBlockRole); }
+			set { SetChildByRole (FinallyBlockRole, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
@@ -69,6 +69,9 @@ namespace MonoDevelop.CSharp.Ast
 		}
 	}
 	
+	/// <summary>
+	/// catch (Type VariableName) { Body }
+	/// </summary>
 	public class CatchClause : AstNode
 	{
 		public override NodeType NodeType {
@@ -77,32 +80,36 @@ namespace MonoDevelop.CSharp.Ast
 			}
 		}
 		
-		public AstNode ReturnType {
-			get { return GetChildByRole (Roles.ReturnType); }
+		public CSharpTokenNode CatchToken {
+			get { return GetChildByRole (Roles.Keyword); }
+		}
+		
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
+		}
+		
+		public AstType Type {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole (Roles.Type, value); }
 		}
 		
 		public string VariableName {
-			get { return VariableNameIdentifier.Name; }
-		}
-
-		public Identifier VariableNameIdentifier {
-			get { return (Identifier)GetChildByRole (Roles.Identifier); }
-		}
-		
-		public BlockStatement Block {
-			get { return (BlockStatement)GetChildByRole (Roles.Body); }
+			get { return GetChildByRole (Roles.Identifier).Name; }
+			set {
+				if (string.IsNullOrEmpty(value))
+					SetChildByRole (Roles.Identifier, null);
+				else
+					SetChildByRole (Roles.Identifier, new Identifier(value, AstLocation.Empty));
+			}
 		}
 		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
 		}
 		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
-		}
-		
-		public CSharpTokenNode CatchKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
+		public BlockStatement Body {
+			get { return GetChildByRole (Roles.Body); }
+			set { SetChildByRole (Roles.Body, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

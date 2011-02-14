@@ -28,6 +28,9 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Ast
 {
+	/// <summary>
+	/// Attribute(Arguments)
+	/// </summary>
 	public class Attribute : AstNode
 	{
 		public override NodeType NodeType {
@@ -36,23 +39,14 @@ namespace MonoDevelop.CSharp.Ast
 			}
 		}
 
-		public string Name {
-			get {
-				return NameIdentifier.QualifiedName;
-			}
+		public AstType Type {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole (Roles.Type, value); }
 		}
 		
-		public QualifiedIdentifier NameIdentifier {
-			get {
-				return (QualifiedIdentifier)GetChildByRole (Roles.Identifier);
-			}
-		}
-		
-		// Todo: Arguments should not be nodes, instead it should be expressions, change when it's implemented.
-		public IEnumerable<AstNode> Arguments { 
-			get {
-				return base.GetChildrenByRole (Roles.Parameter);
-			}
+		public IEnumerable<Expression> Arguments {
+			get { return base.GetChildrenByRole (Roles.Argument); }
+			set { SetChildrenByRole (Roles.Argument, value); }
 		}
 
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

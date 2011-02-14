@@ -1978,7 +1978,7 @@ namespace MonoDevelop.CSharp.Completion
 				var declaringType = resolver.CallingType;
 				if (declaringType != null && dom != null) {
 					foreach (IType t in new List<IType>(dom.GetInheritanceTree (declaringType))) {
-						if (t.SearchMember (type.Name, true).Any (m => m.MemberType != MemberType.Type)) {
+						if (t.SearchMember (type.Name, true).Any (m => m.MemberType != MonoDevelop.Projects.Dom.MemberType.Type)) {
 							flags |= OutputFlags.UseFullName;
 							break;
 						}

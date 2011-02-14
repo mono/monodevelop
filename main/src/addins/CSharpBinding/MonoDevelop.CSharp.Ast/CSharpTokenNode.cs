@@ -38,7 +38,7 @@ namespace MonoDevelop.CSharp.Ast
 				}
 			}
 			
-			public NullCSharpTokenNode () : base (DomLocation.Empty, 0)
+			public NullCSharpTokenNode () : base (AstLocation.Empty, 0)
 			{
 			}
 			
@@ -55,21 +55,21 @@ namespace MonoDevelop.CSharp.Ast
 			}
 		}
 		
-		DomLocation startLocation;
-		public override DomLocation StartLocation {
+		AstLocation startLocation;
+		public override AstLocation StartLocation {
 			get {
 				return startLocation;
 			}
 		}
 		
 		protected int tokenLength;
-		public override DomLocation EndLocation {
+		public override AstLocation EndLocation {
 			get {
-				return new DomLocation (StartLocation.Line, StartLocation.Column + tokenLength);
+				return new AstLocation (StartLocation.Line, StartLocation.Column + tokenLength);
 			}
 		}
 		
-		public CSharpTokenNode (DomLocation location, int tokenLength)
+		public CSharpTokenNode (AstLocation location, int tokenLength)
 		{
 			this.startLocation = location;
 			this.tokenLength = tokenLength;
@@ -77,7 +77,7 @@ namespace MonoDevelop.CSharp.Ast
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
-			return default (S);
+			return visitor.VisitCSharpTokenNode (this, data);
 		}
 		
 		public override string ToString ()

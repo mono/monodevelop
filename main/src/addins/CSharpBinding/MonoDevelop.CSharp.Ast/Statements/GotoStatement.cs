@@ -26,46 +26,112 @@
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class GotoStatement : AstNode
+	/// <summary>
+	/// "goto Label;"
+	/// </summary>
+	public class GotoStatement : Statement
 	{
-		public const int DefaultKeywordRole = 100;
-		public const int CaseKeywordRole = 101;
-		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
-		public GotoType GotoType {
-			get;
-			set;
+		public CSharpTokenNode GotoToken {
+			get { return GetChildByRole (Roles.Keyword); }
 		}
 		
 		public string Label {
-			get { return ((Identifier)LabelExpression).Name; }
+			get {
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				if (string.IsNullOrEmpty(value))
+					SetChildByRole(Roles.Identifier, null);
+				else
+					SetChildByRole(Roles.Identifier, new Identifier(value, AstLocation.Empty));
+			}
 		}
-
-		public AstNode LabelExpression {
-			get { return GetChildByRole (Roles.Expression) ?? AstNode.Null; }
+		
+		/// <summary>
+		/// Used for "goto case LabelExpression;"
+		/// </summary>
+		public Expression LabelExpression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
+		}
+		
+		public CSharpTokenNode SemicolonToken {
+			get { return GetChildByRole (Roles.Semicolon); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitGotoStatement (this, data);
 		}
-		
-		public GotoStatement (GotoType gotoType)
-		{
-			this.GotoType = gotoType;
-		}
-		
-		
 	}
 	
-	public enum GotoType {
-		Label,
-		Case,
-		CaseDefault
+	/// <summary>
+	/// or "goto case LabelExpression;"
+	/// </summary>
+	public class GotoCaseStatement : Statement
+	{
+		public static readonly Role<CSharpTokenNode> CaseKeywordRole = new Role<CSharpTokenNode>("CaseKeyword", CSharpTokenNode.Null);
+		
+		public CSharpTokenNode GotoToken {
+			get { return GetChildByRole (Roles.Keyword); }
+		}
+		
+		public CSharpTokenNode CaseToken {
+			get { return GetChildByRole (CaseKeywordRole); }
+		}
+		
+		public string Label {
+			get {
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				if (string.IsNullOrEmpty(value))
+					SetChildByRole(Roles.Identifier, null);
+				else
+					SetChildByRole(Roles.Identifier, new Identifier(value, AstLocation.Empty));
+			}
+		}
+		
+		/// <summary>
+		/// Used for "goto case LabelExpression;"
+		/// </summary>
+		public Expression LabelExpression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
+		}
+		
+		public CSharpTokenNode SemicolonToken {
+			get { return GetChildByRole (Roles.Semicolon); }
+		}
+		
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+		{
+			return visitor.VisitGotoCaseStatement (this, data);
+		}
+	}
+	
+	/// <summary>
+	/// or "goto default;"
+	/// </summary>
+	public class GotoDefaultStatement : Statement
+	{
+		public static readonly Role<CSharpTokenNode> DefaultKeywordRole = new Role<CSharpTokenNode>("DefaultKeyword", CSharpTokenNode.Null);
+		
+		public CSharpTokenNode GotoToken {
+			get { return GetChildByRole (Roles.Keyword); }
+		}
+		
+		public CSharpTokenNode DefaultToken {
+			get { return GetChildByRole (DefaultKeywordRole); }
+		}
+		
+		public CSharpTokenNode SemicolonToken {
+			get { return GetChildByRole (Roles.Semicolon); }
+		}
+		
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+		{
+			return visitor.VisitGotoDefaultStatement (this, data);
+		}
 	}
 }

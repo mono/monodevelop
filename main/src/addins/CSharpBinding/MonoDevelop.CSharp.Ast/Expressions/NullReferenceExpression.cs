@@ -26,14 +26,11 @@
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class NullReferenceExpression : AstNode
+	/// <summary>
+	/// null
+	/// </summary>
+	public class NullReferenceExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitNullReferenceExpression (this, data);

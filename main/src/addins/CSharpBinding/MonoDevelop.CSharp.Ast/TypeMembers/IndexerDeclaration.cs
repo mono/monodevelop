@@ -31,24 +31,18 @@ namespace MonoDevelop.CSharp.Ast
 {
 	public class IndexerDeclaration : PropertyDeclaration
 	{
+		public CSharpTokenNode LBracketToken {
+			get { return GetChildByRole (Roles.LBracket); }
+		}
+		
 		public IEnumerable<ParameterDeclaration> Parameters { 
-			get {
-				return base.GetChildrenByRole (Roles.Parameter).Cast <ParameterDeclaration>();
-			}
+			get { return GetChildrenByRole (Roles.Parameter); }
+			set { SetChildrenByRole (Roles.Parameter, value); }
 		}
 		
-		public CSharpTokenNode LBracket {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.LBracket) ?? CSharpTokenNode.Null;
-			}
+		public CSharpTokenNode RBracketToken {
+			get { return GetChildByRole (Roles.RBracket); }
 		}
-		
-		public CSharpTokenNode RBracket {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.RBracket) ?? CSharpTokenNode.Null;
-			}
-		}
-		
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{

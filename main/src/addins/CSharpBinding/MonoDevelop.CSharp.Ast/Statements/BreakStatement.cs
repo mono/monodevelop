@@ -26,18 +26,13 @@
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class BreakStatement : AstNode
+	/// <summary>
+	/// break;
+	/// </summary>
+	public class BreakStatement : Statement
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
-		public CSharpTokenNode BreakKeyword {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.Keyword) ?? CSharpTokenNode.Null;
-			}
+		public CSharpTokenNode SemicolonToken {
+			get { return GetChildByRole (Roles.Semicolon); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

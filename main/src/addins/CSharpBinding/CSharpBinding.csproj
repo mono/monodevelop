@@ -281,13 +281,11 @@
     <Compile Include="MonoDevelop.CSharp.Ast\GeneralScope\UsingDeclaration.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\GeneralScope\DelegateDeclaration.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\Statements\BlockStatement.cs" />
-    <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\AbstractMember.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\ConstructorDeclaration.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\DestructorDeclaration.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\FieldDeclaration.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\PropertyDeclaration.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\VariableInitializer.cs" />
-    <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\AbstractMemberBase.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\EventDeclaration.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\IndexerDeclaration.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\MethodDeclaration.cs" />
@@ -344,7 +342,6 @@
     <Compile Include="MonoDevelop.CSharp.Ast\CSharpAmbience.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\CompilationUnit.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\CSharpTokenNode.cs" />
-    <Compile Include="MonoDevelop.CSharp.Ast\FullTypeName.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\Statements\ExpressionStatement.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\CSharpModifierToken.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\Expressions\ArgListExpression.cs" />
@@ -360,9 +357,25 @@
     <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\EnumMemberDeclaration.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\GeneralScope\Comment.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\AstNode.cs" />
-    <Compile Include="MonoDevelop.CSharp.Ast\AstVisitor.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\AstIndentationVisitor.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\AstSpacingVisitor.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Role.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\AstType.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\MemberType.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\PrimitiveType.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\SimpleType.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\Expression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Expressions\NamedArgumentExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\GeneralScope\TypeParameterDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\DoWhileStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\Statement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Statements\YieldBreakStatement.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\AttributedNode.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\MemberDeclaration.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\IAstVisitor.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\DepthFirstAstVisitor.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\AstLocation.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Utils\TreeTraversal.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -402,5 +415,6 @@
     <Folder Include="MonoDevelop.CSharp.Ast\TypeMembers\" />
     <Folder Include="MonoDevelop.CSharp.Ast\Statements\" />
     <Folder Include="MonoDevelop.CSharp.Ast\Expressions\" />
+    <Folder Include="MonoDevelop.CSharp.Ast\Utils\" />
   </ItemGroup>
 </Project>

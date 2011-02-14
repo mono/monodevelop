@@ -29,44 +29,52 @@ using System.Linq;
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class DelegateDeclaration : AbstractMemberBase
+	/// <summary>
+	/// delegate ReturnType Name&lt;TypeParameters&gt;(Parameters) where Constraints;
+	/// </summary>
+	public class DelegateDeclaration : AttributedNode
 	{
 		public override NodeType NodeType {
 			get {
-				return NodeType.Type;
+				return NodeType.TypeDeclaration;
 			}
 		}
 		
 		public string Name {
 			get {
-				return NameIdentifier.Name;
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				SetChildByRole (Roles.Identifier, new Identifier(value, AstLocation.Empty));
 			}
 		}
 		
-		public Identifier NameIdentifier {
-			get {
-				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
-			}
+		public AstType ReturnType {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole (Roles.Type, value); }
 		}
 		
-		public AstNode ReturnType {
-			get {
-				return GetChildByRole (Roles.ReturnType) ?? AstNode.Null;
-			}
+		public IEnumerable<TypeParameterDeclaration> TypeParameters {
+			get { return GetChildrenByRole (Roles.TypeParameter); }
+			set { SetChildrenByRole (Roles.TypeParameter, value); }
 		}
 		
-		public IEnumerable<ParameterDeclaration> Parameters { 
-			get {
-				return base.GetChildrenByRole (Roles.Parameter).Cast <ParameterDeclaration> ();
-			}
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
 		}
 		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
+		public IEnumerable<ParameterDeclaration> Parameters {
+			get { return GetChildrenByRole (Roles.Parameter); }
+			set { SetChildrenByRole (Roles.Parameter, value); }
 		}
 		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
+		}
+		
+		public IEnumerable<Constraint> Constraints {
+			get { return GetChildrenByRole (Roles.Constraint); }
+			set { SetChildrenByRole (Roles.Constraint, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

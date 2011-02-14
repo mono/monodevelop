@@ -57,21 +57,21 @@ namespace MonoDevelop.CSharp.Ast
 			set;
 		}
 		
-		DomLocation startLocation;
-		public override DomLocation StartLocation {
+		AstLocation startLocation;
+		public override AstLocation StartLocation {
 			get { 
 				return startLocation;
 			}
 		}
 		
-		DomLocation endLocation;
-		public override DomLocation EndLocation {
+		AstLocation endLocation;
+		public override AstLocation EndLocation {
 			get {
 				return endLocation;
 			}
 		}
 		
-		public Comment (CommentType commentType, DomLocation startLocation, DomLocation endLocation)
+		public Comment (CommentType commentType, AstLocation startLocation, AstLocation endLocation)
 		{
 			this.CommentType = commentType;
 			this.startLocation = startLocation;

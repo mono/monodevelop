@@ -33,26 +33,23 @@ namespace MonoDevelop.CSharp.Ast
 		Ref
 	}
 	
-	public class DirectionExpression  : AstNode
+	/// <summary>
+	/// ref Expression
+	/// </summary>
+	public class DirectionExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-		
 		public FieldDirection FieldDirection {
 			get;
 			set;
 		}
 		
-		
-		public CSharpTokenNode Keyword {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword) ?? CSharpTokenNode.Null; }
+		public CSharpTokenNode FieldDirectionToken {
+			get { return GetChildByRole (Roles.Keyword); }
 		}
 		
-		public AstNode Expression {
-			get { return GetChildByRole (Roles.Expression) ?? AstNode.Null; }
+		public Expression Expression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

@@ -24,26 +24,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
+
 namespace MonoDevelop.CSharp.Ast
 {
-	public class FixedStatement : AstNode
+	/// <summary>
+	/// fixed (Type Variables) EmbeddedStatement
+	/// </summary>
+	public class FixedStatement : Statement
 	{
-		public const int PointerDeclarationRole = 100;
-		public const int FixedKeywordRole = 101;
-		public const int DeclaratorRole = 102;
-		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
-		public AstNode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement) ?? AstNode.Null; }
+		public CSharpTokenNode FixedToken {
+			get { return GetChildByRole (Roles.Keyword); }
 		}
 		
-		public AstNode PointerDeclaration {
-			get { return GetChildByRole (PointerDeclarationRole) ?? AstNode.Null; }
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
+		}
+		
+		public AstType Type {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole (Roles.Type, value); }
+		}
+		
+		public IEnumerable<VariableInitializer> Variables {
+			get { return GetChildrenByRole (Roles.Variable); }
+			set { SetChildrenByRole (Roles.Variable, value); }
+		}
+		
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
+		}
+		
+		public Statement EmbeddedStatement {
+			get { return GetChildByRole (Roles.EmbeddedStatement); }
+			set { SetChildByRole (Roles.EmbeddedStatement, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

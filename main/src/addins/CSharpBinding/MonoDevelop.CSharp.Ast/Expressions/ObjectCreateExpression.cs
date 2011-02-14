@@ -28,28 +28,38 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class ObjectCreateExpression : AstNode
+	/// <summary>
+	/// new Type(Arguments) { Initializer }
+	/// </summary>
+	public class ObjectCreateExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
-		public AstNode Type {
-			get { return GetChildByRole (Roles.ReturnType) ?? AstNode.Null; }
+		public readonly static Role<ArrayInitializerExpression> InitializerRole = ArrayCreateExpression.InitializerRole;
+		
+		public CSharpTokenNode NewToken {
+			get { return GetChildByRole (Roles.Keyword); }
 		}
 		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
+		public AstType Type {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole (Roles.Type, value); }
 		}
 		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
 		}
 		
-		public IEnumerable<AstNode> Arguments {
-			get { return GetChildrenByRole (Roles.Parameter); }
+		public IEnumerable<Expression> Arguments {
+			get { return GetChildrenByRole (Roles.Argument); }
+			set { SetChildrenByRole (Roles.Argument, value); }
+		}
+		
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
+		}
+		
+		public ArrayInitializerExpression Initializer {
+			get { return GetChildByRole (InitializerRole); }
+			set { SetChildByRole (InitializerRole, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
@@ -57,5 +67,4 @@ namespace MonoDevelop.CSharp.Ast
 			return visitor.VisitObjectCreateExpression (this, data);
 		}
 	}
-	
 }

@@ -1,10 +1,10 @@
 // 
-// AbstractMember.cs
+// AstType.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,37 +24,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using MonoDevelop.Projects.Dom;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace MonoDevelop.CSharp.Ast
 {
-	public abstract class AbstractMember : AbstractMemberBase
+	/// <summary>
+	/// A type reference in the C# AST.
+	/// </summary>
+	public abstract class AstType : AstNode
 	{
-		const int PrivateImplementationTypeRole = 100;
+		#region Null
+		public new static readonly AstType Null = new NullAstType ();
 		
-		public AstNode ReturnType {
-			get {
-				return GetChildByRole (Roles.ReturnType) ?? AstNode.Null;
+		sealed class NullAstType : AstType
+		{
+			public override bool IsNull {
+				get {
+					return true;
+				}
+			}
+			
+			public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
+			{
+				return default (S);
 			}
 		}
+		#endregion
 		
-		/// <summary>
-		/// Only supported on members that can be declared in an interface.
-		/// </summary>
-		public AstNode PrivateImplementationType {
-			get {
-				return GetChildByRole (PrivateImplementationTypeRole) ?? AstNode.Null;
-			}
+		public override NodeType NodeType {
+			get { return NodeType.TypeReference; }
 		}
 		
-		public Identifier NameIdentifier {
-			get {
-				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
-			}
-		}
-		
-		public string Name {
-			get {
-				return NameIdentifier.Name;
-			}
-		}
+
 	}
 }

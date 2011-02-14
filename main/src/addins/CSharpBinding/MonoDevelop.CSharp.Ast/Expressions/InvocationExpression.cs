@@ -28,28 +28,27 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class InvocationExpression : AstNode
+	/// <summary>
+	/// Target(Arguments)
+	/// </summary>
+	public class InvocationExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
-		public AstNode Target {
-			get { return GetChildByRole (Roles.TargetExpression) ?? AstNode.Null; }
+		public Expression Target {
+			get { return GetChildByRole (Roles.TargetExpression); }
+			set { SetChildByRole(Roles.TargetExpression, value); }
 		}
 		
-		public IEnumerable<AstNode> Arguments {
-			get { return GetChildrenByRole (Roles.Parameter); }
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
 		}
 		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
+		public IEnumerable<Expression> Arguments {
+			get { return GetChildrenByRole<Expression>(Roles.Argument); }
+			set { SetChildrenByRole(Roles.Argument, value); }
 		}
 		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

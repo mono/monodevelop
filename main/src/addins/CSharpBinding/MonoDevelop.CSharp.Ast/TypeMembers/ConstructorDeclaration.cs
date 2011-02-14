@@ -29,32 +29,35 @@ using System.Linq;
 
 namespace MonoDevelop.CSharp.Ast
 {
-	public class ConstructorDeclaration : AbstractMemberBase
+	public class ConstructorDeclaration : AttributedNode
 	{
-		public BlockStatement Body {
-			get {
-				return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null;
-			}
+		public static readonly Role<ConstructorInitializer> InitializerRole = new Role<ConstructorInitializer>("Initializer", ConstructorInitializer.Null);
+		
+		public CSharpTokenNode LParToken {
+			get { return GetChildByRole (Roles.LPar); }
 		}
 		
-		public IEnumerable<ParameterDeclaration> Parameters { 
-			get {
-				return base.GetChildrenByRole (Roles.Parameter).Cast <ParameterDeclaration> ();
-			}
+		public IEnumerable<ParameterDeclaration> Parameters {
+			get { return GetChildrenByRole (Roles.Parameter); }
+			set { SetChildrenByRole (Roles.Parameter, value); }
 		}
 		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		public CSharpTokenNode RParToken {
+			get { return GetChildByRole (Roles.RPar); }
 		}
 		
 		public ConstructorInitializer Initializer {
-			get {
-				return (ConstructorInitializer)base.GetChildByRole (Roles.Initializer) ?? ConstructorInitializer.Null;
-			}
+			get { return GetChildByRole (InitializerRole); }
+			set { SetChildByRole( InitializerRole, value); }
+		}
+		
+		public BlockStatement Body {
+			get { return GetChildByRole (Roles.Body); }
+			set { SetChildByRole (Roles.Body, value); }
+		}
+		
+		public override NodeType NodeType {
+			get { return NodeType.Member; }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
@@ -102,10 +105,9 @@ namespace MonoDevelop.CSharp.Ast
 			set;
 		}
 		
-		public IEnumerable<AstNode> Arguments { 
-			get {
-				return base.GetChildrenByRole (Roles.Parameter);
-			}
+		public IEnumerable<Expression> Arguments {
+			get { return GetChildrenByRole (Roles.Argument); }
+			set { SetChildrenByRole (Roles.Argument, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

@@ -24,32 +24,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
+
 namespace MonoDevelop.CSharp.Ast
 {
-	public class IdentifierExpression : AstNode
+	public class IdentifierExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
+		public IdentifierExpression()
+		{
 		}
-
-		public  Identifier IdentifierToken {
-			get {
-				return (Identifier)GetChildByRole (Roles.Identifier) ?? MonoDevelop.CSharp.Ast.Identifier.Null;
-			}
+		
+		public IdentifierExpression(string identifier)
+		{
+			this.Identifier = identifier;
+		}
+		
+		public IdentifierExpression(string identifier, AstLocation location)
+		{
+			SetChildByRole(Roles.Identifier, new Identifier(identifier, location));
 		}
 		
 		public string Identifier {
 			get {
-				Identifier i = this.IdentifierToken;
-				return !i.IsNull ? i.Name : null;
+				return GetChildByRole (Roles.Identifier).Name;
 			}
+			set {
+				SetChildByRole(Roles.Identifier, new Identifier(value, AstLocation.Empty));
+			}
+		}
+		
+		public IEnumerable<AstType> TypeArguments {
+			get { return GetChildrenByRole (Roles.TypeArgument); }
+			set { SetChildrenByRole (Roles.TypeArgument, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitIdentifierExpression (this, data);
 		}
+		
 	}
 }

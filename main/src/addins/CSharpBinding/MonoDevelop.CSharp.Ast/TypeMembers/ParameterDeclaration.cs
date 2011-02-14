@@ -30,7 +30,6 @@ using System.Linq;
 
 namespace MonoDevelop.CSharp.Ast
 {
-	
 	public enum ParameterModifier {
 		None,
 		Ref,
@@ -41,10 +40,18 @@ namespace MonoDevelop.CSharp.Ast
 	
 	public class ParameterDeclaration : AstNode
 	{
+		public static readonly Role<AttributeSection> AttributeRole = AttributedNode.AttributeRole;
+		public static readonly Role<CSharpTokenNode> ModifierRole = new Role<CSharpTokenNode>("Modifier", CSharpTokenNode.Null);
+		
 		public override NodeType NodeType {
 			get {
 				return NodeType.Unknown;
 			}
+		}
+		
+		public IEnumerable<AttributeSection> Attributes {
+			get { return GetChildrenByRole (AttributeRole); }
+			set { SetChildrenByRole (AttributeRole, value); }
 		}
 		
 		public ParameterModifier ParameterModifier {
@@ -52,33 +59,23 @@ namespace MonoDevelop.CSharp.Ast
 			set;
 		}
 		
-		public Identifier Identifier {
-			get {
-				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
-			}
+		public AstType Type {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole (Roles.Type, value); }
 		}
 		
 		public string Name {
 			get {
-				Identifier i = this.Identifier;
-				return i != null ? i.Name : null;
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				SetChildByRole (Roles.Identifier, new Identifier(value, AstLocation.Empty));
 			}
 		}
 		
-		public AstNode DefaultExpression {
-			get {
-				return GetChildByRole (Roles.Expression) ?? AstNode.Null;
-			}
-		}
-		
-		public AstNode Type {
-			get { return GetChildByRole (Roles.ReturnType) ?? AstNode.Null; }
-		}
-		
-		public IEnumerable<AttributeSection> Attributes {
-			get {
-				return base.GetChildrenByRole (Roles.Attribute).Cast <AttributeSection>();
-			}
+		public Expression DefaultExpression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
