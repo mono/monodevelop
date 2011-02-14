@@ -249,11 +249,6 @@ namespace MonoDevelop.MonoDroid
 			return StartProcess (AdbExe, args, outputLog, errorLog);
 		}
 
-		public bool IsSharedRuntimeInstalled (List<string> packages)
-		{
-			return packages.Contains ("com.novell.monodroid.runtimeservice");
-		}
-		
 		public class AdbOutputOperation : WrapperOperation
 		{
 			StringWriter output;

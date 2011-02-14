@@ -163,10 +163,10 @@ namespace MonoDevelop.MonoDroid
 		
 		public static FilePath SharedRuntimePackage {
 			get {
-				return MonoDroidToolsDir.Combine ("MonoRuntimeService-debug.apk");
+				return MonoDroidToolsDir.Combine ("MonoAndroidDebugRuntime-debug.apk");
 			}
 		}
-		
+
 		public static IEnumerable<string> GetToolsPaths ()
 		{
 			yield return MonoDroidFramework.MonoDroidFrameworkDir;
