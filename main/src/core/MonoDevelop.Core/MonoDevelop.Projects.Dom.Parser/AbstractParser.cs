@@ -37,9 +37,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 		}
 		
-		public ParsedDocument Parse (ProjectDom dom, string fileName)
+		public ParsedDocument Parse (ProjectDom dom, string fileName, bool generateAst = false)
 		{
-			return Parse (dom, fileName, System.IO.File.ReadAllText (fileName));
+			return Parse (dom, fileName, System.IO.File.ReadAllText (fileName), generateAst);
 		}
 		
 		public virtual IExpressionFinder CreateExpressionFinder (ProjectDom dom)
@@ -52,11 +52,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return null;
 		}
 		
-		public abstract ParsedDocument Parse (ProjectDom dom, string fileName, string content);
+		public abstract ParsedDocument Parse (ProjectDom dom, string fileName, string content, bool generateAst);
 		
-		public virtual ParsedDocument Parse (ProjectDom dom, string fileName, TextReader content)
+		public virtual ParsedDocument Parse (ProjectDom dom, string fileName, TextReader content, bool generateAst = false)
 		{
-			return Parse (dom, fileName, content.ReadToEnd ());
+			return Parse (dom, fileName, content.ReadToEnd (), generateAst);
 		}
 		
 		public virtual bool CanParse (string fileName)
