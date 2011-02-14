@@ -56,7 +56,7 @@ namespace MonoDevelop.CSharp.Ast
 		}
 		public override AstLocation EndLocation {
 			get {
-				return new AstLocation (Location.Line, Location.Column + Keyword != null ? Keyword.Length : 0);
+				return new AstLocation (Location.Line, Location.Column + (Keyword != null ? Keyword.Length : 0));
 			}
 		}
 		
