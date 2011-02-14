@@ -142,15 +142,18 @@ namespace MonoDevelop.Ide.Projects
 			esets.RemoveWhere (p => !p.Visible);
 			
 			NewPolicySetDialog dlg = new NewPolicySetDialog (new List<PolicySet> (esets));
-			if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
-				PolicySet pset = new PolicySet ();
-				pset.CopyFrom (dlg.SourceSet);
-				pset.Name = dlg.PolicyName;
-				sets.Add (pset);
-				FillPolicySets ();
-				policiesCombo.Active = sets.IndexOf (pset);
+			try {
+				if (MessageService.RunCustomDialog (dlg, this) == (int) Gtk.ResponseType.Ok) {
+					PolicySet pset = new PolicySet ();
+					pset.CopyFrom (dlg.SourceSet);
+					pset.Name = dlg.PolicyName;
+					sets.Add (pset);
+					FillPolicySets ();
+					policiesCombo.Active = sets.IndexOf (pset);
+				}
+			} finally {
+				dlg.Destroy ();
 			}
-			dlg.Destroy ();
 		}
 		
 		void FillPolicySets ()
