@@ -145,10 +145,38 @@ namespace MonoDevelop.VersionControl.Git
 			Assert.That (blameCommits.Length, Is.EqualTo (0));
 		}
 		
+		[Test()]
+		public void TestBlameForProjectDom ()
+		{
+			RevCommit[] blameCommits = GetBlameForFile ("6469602e3c0ba6953fd3ef0ae01d77abe1d9ab70", "main/src/core/MonoDevelop.Core/MonoDevelop.Projects.Dom.Parser/ProjectDom.cs");
+			List<BlameFragment> blames = new List<BlameFragment> ();
+			blames.Add(new BlameFragment(1, 59, "3352c438"));
+			blames.Add(new BlameFragment(60, 5, "85dfe8a5"));
+			blames.Add(new BlameFragment(65, 3, "3352c438"));
+			blames.Add(new BlameFragment(68, 3, "c45c8708"));
+			blames.Add(new BlameFragment(71, 112, "3352c438"));
+			blames.Add(new BlameFragment(183, 1, "c7da699"));
+			blames.Add(new BlameFragment(184, 1, "3352c438"));
+			blames.Add(new BlameFragment(185, 1, "c7da699"));
+			blames.Add(new BlameFragment(186, 1, "3352c438"));
+			blames.Add(new BlameFragment(187, 9, "e2ddc3e3"));
+			blames.Add(new BlameFragment(196, 15, "3352c438"));
+			//blames.Add(new BlameFragment(60, 5, "85dfe8a5"));
+			//blames.Add(new BlameFragment(60, 5, "85dfe8a5"));
+			//blames.Add(new BlameFragment(60, 5, "85dfe8a5"));
+			CompareBlames(blameCommits, blames);
+		}
+		
 		private RevCommit[] GetBlameForFixedFile (string revision)
 		{
+			string filePath = "main/src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitVersionControl.cs";
+			return GetBlameForFile (revision, filePath);
+		}
+		
+		RevCommit[] GetBlameForFile (string revision, string filePath)
+		{
 			RevCommit[] blame = null;
-			string path = PROJECT_ROOT + "main/src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitVersionControl.cs";
+			string path = PROJECT_ROOT + filePath;
 			string key = path + revision;
 			blames.TryGetValue(key, out blame);
 			
