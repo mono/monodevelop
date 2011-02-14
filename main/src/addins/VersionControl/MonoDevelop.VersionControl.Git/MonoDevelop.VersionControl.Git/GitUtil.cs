@@ -40,6 +40,7 @@ using NGit.Merge;
 using NGit.Storage.File;
 using NGit.Transport;
 using NGit.Diff;
+using Mono.TextEditor.Utils;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -424,18 +425,57 @@ namespace MonoDevelop.VersionControl.Git
 		static int SetBlameLines (NGit.Repository repo, RevCommit[] lines, RevCommit commit, RawText curText, RawText ancestorText)
 		{
 			int lineCount = 0;
-			var differ = MyersDiff<RawText>.INSTANCE;
-			
-			foreach (Edit e in differ.Diff (RawTextComparator.DEFAULT, ancestorText, curText)) {
-				for (int n = e.GetBeginB (); n < e.GetEndB (); n++) {
-					if (lines [n] == null) {
-						lines [n] = commit;
-						lineCount ++;
+			IEnumerable<Hunk> diffHunks = GetDiffHunks (curText, ancestorText);
+
+			foreach (Hunk e in diffHunks) {
+				int basePosition = e.InsertStart - 1;
+				for (int i = 0; i < e.Inserted; i++) {
+					int lineNum = basePosition + i;
+					if (lines [lineNum] == null) {
+						lines [lineNum] = commit;
+						lineCount++;
 					}
 				}
 			}
 			
-			return lineCount;
+			return lineCount++;
+		}
+		
+		static IEnumerable<Hunk> GetDiffHunks (RawText curText, RawText ancestorText)
+		{
+			Dictionary<string, int> codeDictionary = new Dictionary<string, int> ();
+			int codeCounter = 0;
+			int[] ancestorDiffCodes = GetDiffCodes (ref codeCounter, codeDictionary, ancestorText);
+			int[] currentDiffCodes = GetDiffCodes (ref codeCounter, codeDictionary, curText);
+			return Diff.GetDiff<int> (ancestorDiffCodes, currentDiffCodes);
+		}
+
+		static int[] GetDiffCodes (ref int codeCounter, Dictionary<string, int> codeDictionary, RawText text)
+		{
+			int lineCount = text.Size ();
+			int[] result = new int[lineCount];
+			string[] lines = GetLineStrings (text);
+			for (int i = 0; i < lineCount; i++) {
+				string lineText = lines [i];
+				int curCode;
+				if (!codeDictionary.TryGetValue (lineText, out curCode)) {
+					codeDictionary [lineText] = curCode = ++codeCounter;
+				}
+				result [i] = curCode;
+			}
+			return result;
+		}
+
+		static string[] GetLineStrings (RawText text)
+		{
+			int lineCount = text.Size ();
+			string[] lines = new string[lineCount];
+
+			for (int i = 0; i < lineCount; i++) {
+				lines [i] = text.GetString (i);
+			}
+
+			return lines;
 		}
 
 		static int FillRemainingBlame (RevCommit[] lines, RevCommit commit)
@@ -451,8 +491,6 @@ namespace MonoDevelop.VersionControl.Git
 			
 			return lineCount;
 		}
-
-
 		
 		public static MergeCommandResult MergeTrees (NGit.Repository repo, RevCommit srcBase, RevCommit srcCommit, string sourceDisplayName, bool commitResult)
 		{
