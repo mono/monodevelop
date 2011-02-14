@@ -134,6 +134,7 @@ namespace MonoDevelop.CSharp.Parser
 				}
 				
 				System.Console.WriteLine ("Error while converting :" + typeName + " - unknown type name");
+				System.Console.WriteLine (Environment.StackTrace);
 				return new SimpleType ("unknown");
 			}
 			
@@ -1163,7 +1164,7 @@ namespace MonoDevelop.CSharp.Parser
 						if (loc != null)
 							usingResult.AddChild (new CSharpTokenNode (Convert (loc[1]), 1), ContinueStatement.Roles.Assign);
 						if (u.Variables.Initializer != null)
-							usingResult.AddChild (ConvertToType (u.Variables.Initializer), UsingStatement.ResourceAcquisitionRole);
+							usingResult.AddChild ((AstNode)u.Variables.Initializer.Accept (this), UsingStatement.ResourceAcquisitionRole);
 						
 					}
 					cur = u.Statement;
