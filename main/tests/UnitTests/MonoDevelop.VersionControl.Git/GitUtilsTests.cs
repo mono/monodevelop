@@ -69,8 +69,12 @@ namespace MonoDevelop.VersionControl.Git
 			blames.Add (new BlameFragment (30, 5, "b6e41ee2"));
 			blames.Add(new BlameFragment(35, 2, "a78c32a5"));
 			blames.Add(new BlameFragment(37, 2, "927ca9cd"));
-			blames.Add(new BlameFragment(39, 2, "a78c32a5"));
-			blames.Add(new BlameFragment(41, 6, "b6e41ee2"));
+			//The following two are correct according to "git blame", but according to a "git diff" of the two lines
+			//then the uncommented lines are correct (and pass the test)
+			//blames.Add(new BlameFragment(39, 2, "a78c32a5"));
+			//blames.Add(new BlameFragment(41, 6, "b6e41ee2"));
+			blames.Add(new BlameFragment(39, 1, "a78c32a5"));
+			blames.Add(new BlameFragment(40, 7, "b6e41ee2"));
 			blames.Add(new BlameFragment(47, 1, "927ca9cd"));
 			blames.Add(new BlameFragment(48, 3, "b6e41ee2"));
 			blames.Add(new BlameFragment(51, 2, "15ed2793"));
@@ -106,7 +110,7 @@ namespace MonoDevelop.VersionControl.Git
 			blames.Add (new BlameFragment (58, 1, commit2));
 			blames.Add (new BlameFragment (59, 4, commit1));
 			blames.Add (new BlameFragment (63, 1, commit2));
-			blames.Add (new BlameFragment (64, 4, commit2));
+			blames.Add (new BlameFragment (64, 4, commit1));
 			CompareBlames (blameCommits, blames);
 		}
 		
