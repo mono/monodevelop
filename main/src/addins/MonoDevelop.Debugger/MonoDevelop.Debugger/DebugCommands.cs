@@ -61,7 +61,8 @@ namespace MonoDevelop.Debugger
 		SelectExceptions,
 		ShowCurrentExecutionLine,
 		AddTracepoint,
-		AddWatch
+		AddWatch,
+		StopEvaluation
 	}
 
 	internal class DebugHandler: CommandHandler
@@ -562,6 +563,19 @@ namespace MonoDevelop.Debugger
 		{
 			info.Enabled = DebuggingService.IsPaused;
 			info.Visible = DebuggingService.IsDebuggingSupported;
+		}
+	}
+	
+	internal class StopEvaluationHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			DebuggingService.DebuggerSession.CancelAsyncEvaluations ();
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = DebuggingService.IsDebugging && DebuggingService.IsPaused && DebuggingService.DebuggerSession.CanCancelAsyncEvaluations;
 		}
 	}
 }
