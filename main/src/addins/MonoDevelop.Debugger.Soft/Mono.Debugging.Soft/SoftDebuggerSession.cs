@@ -707,7 +707,7 @@ namespace Mono.Debugging.Soft
 		
 		public override bool CanCancelAsyncEvaluations {
 			get {
-				return true;
+				return Adaptor.IsEvaluating;
 			}
 		}
 		

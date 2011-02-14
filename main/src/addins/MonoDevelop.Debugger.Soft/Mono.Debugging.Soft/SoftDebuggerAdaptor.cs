@@ -1072,7 +1072,7 @@ namespace Mono.Debugging.Soft
 				else
 					result = ((StructMirror)obj).EndInvokeMethod (handle);
 			} catch (InvocationException ex) {
-				if (ex.Exception != null) {
+				if (!Aborting && ex.Exception != null) {
 					string ename = ctx.Adapter.GetValueTypeName (ctx, ex.Exception);
 					ValueReference vref = ctx.Adapter.GetMember (ctx, null, ex.Exception, "Message");
 					if (vref != null) {
