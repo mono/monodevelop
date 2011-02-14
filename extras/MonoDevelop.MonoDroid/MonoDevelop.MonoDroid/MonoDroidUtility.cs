@@ -172,12 +172,13 @@ namespace MonoDevelop.MonoDroid
 	public class MonoDroidUploadOperation : IAsyncOperation
 	{
 		ChainedAsyncOperationSequence chop;
+		const int RuntimeVersion = 1;
 		
 		public MonoDroidUploadOperation (IProgressMonitor monitor, AndroidDevice device, FilePath packageFile, string packageName,
 			IAsyncOperation signingOperation, bool replaceIfExists)
 		{
 			var toolbox = MonoDroidFramework.Toolbox;
-			List<string> packages = null;
+			PackageList list = null;
 			
 			replaceIfExists = replaceIfExists || signingOperation != null;
 			
@@ -192,12 +193,12 @@ namespace MonoDevelop.MonoDroid
 				new ChainedAsyncOperation<AdbGetPackagesOperation> () {
 					TaskName = GettextCatalog.GetString ("Getting package list from device"),
 					Create = () => new AdbGetPackagesOperation (device),
-					Completed = op => packages = op.Packages,
+					Completed = op => list = op.PackageList,
 					ErrorMessage = GettextCatalog.GetString ("Failed to get package list")
 				},
 				new ChainedAsyncOperation () {
 					TaskName = GettextCatalog.GetString ("Installing shared runtime package on device"),
-					Skip = () => toolbox.IsSharedRuntimeInstalled (packages)? "" : null,
+					Skip = () => list.IsCurrentRuntimeInstalled (RuntimeVersion) ? "" : null,
 					Create = () => {
 						var pkg = MonoDroidFramework.SharedRuntimePackage;
 						if (!File.Exists (pkg)) {
@@ -212,7 +213,7 @@ namespace MonoDevelop.MonoDroid
 				},
 				new ChainedAsyncOperation () {
 					TaskName = GettextCatalog.GetString ("Uninstalling old version of package"),
-					Skip = () => (!replaceIfExists || !packages.Contains (packageName))? "" : null,
+					Skip = () => (!replaceIfExists || !list.ContainsPackage (packageName))? "" : null,
 					Create = () => toolbox.Uninstall (device, packageName, monitor.Log, monitor.Log),
 					ErrorMessage = GettextCatalog.GetString ("Failed to uninstall package")
 				},
@@ -223,7 +224,7 @@ namespace MonoDevelop.MonoDroid
 					ErrorMessage = GettextCatalog.GetString ("Package signing failed"),
 				},
 				new ChainedAsyncOperation () {
-					Skip = () => (packages.Contains (packageName) && !replaceIfExists)
+					Skip = () => (list.ContainsPackage (packageName) && !replaceIfExists)
 						? GettextCatalog.GetString ("Package is already up to date") : null,
 					TaskName = GettextCatalog.GetString ("Installing package"),
 					Create = () => toolbox.Install (device, packageFile, monitor.Log, monitor.Log),

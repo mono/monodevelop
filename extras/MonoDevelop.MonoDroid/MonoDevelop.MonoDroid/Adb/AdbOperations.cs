@@ -175,13 +175,13 @@ namespace MonoDevelop.MonoDroid
 		protected override void OnGotTransport ()
 		{
 			var sr = new StringWriter ();
-			WriteCommand ("shell:pm list packages", () => GetStatus (() => ReadResponse (sr, OnGotResponse)));
+			WriteCommand ("shell:pm list packages -f", () => GetStatus (() => ReadResponse (sr, OnGotResponse)));
 		}
 		
 		void OnGotResponse (TextWriter tw)
 		{
 			var sr = new StringReader (tw.ToString ());
-			var list = new List<string> ();
+			var list = new PackageList ();
 			
 			string s;
 			while ((s = sr.ReadLine ()) != null) {
@@ -192,14 +192,14 @@ namespace MonoDevelop.MonoDroid
 					throw new GetPackageListException ("Unexpected package list output: '" + s + "'");
 				s = s.Substring ("package:".Length);
 				if (!string.IsNullOrEmpty (s))
-					list.Add (s);
+					list.Packages.Add (new InstalledPackage (s));
 			}
-			Packages = list;
+			PackageList = list;
 			
 			SetCompleted (true);
 		}
 		
-		public List<string> Packages { get; private set; }
+		public PackageList PackageList { get; private set; }
 	}
 	
 	class GetPackageListException : Exception
