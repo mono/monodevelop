@@ -591,7 +591,7 @@ namespace MonoDevelop.Ide.Gui
 					return null;
 				string currentParseText = editor.Text;
 				Project curentParseProject = Project;
-				this.parsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, currentParseText, true);
+				this.parsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, currentParseText);
 				if (this.parsedDocument != null && !this.parsedDocument.HasErrors)
 					this.lastErrorFreeParsedDocument = parsedDocument;
 			} finally {
@@ -614,7 +614,7 @@ namespace MonoDevelop.Ide.Gui
 				Project curentParseProject = Project;
 				// parser revice queue takes care of the locking
 				ProjectDomService.QueueParseJob (dom, delegate (string name, IProgressMonitor monitor) {
-					var currentParsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, currentParseText, true);
+					var currentParsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, currentParseText);
 					Application.Invoke (delegate {
 						this.parsedDocument = currentParsedDocument;
 						if (this.parsedDocument != null && !this.parsedDocument.HasErrors)
