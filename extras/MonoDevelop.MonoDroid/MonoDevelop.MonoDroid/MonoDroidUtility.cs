@@ -199,6 +199,12 @@ namespace MonoDevelop.MonoDroid
 					ErrorMessage = GettextCatalog.GetString ("Failed to get package list")
 				},
 				new ChainedAsyncOperation () {
+					TaskName = GettextCatalog.GetString ("Uninstalling old version of shared runtime package"),
+					Skip = () => list.GetOldRuntimes (RuntimeVersion).Count () == 0 ? "" : null,
+					Create = () => toolbox.Uninstall (device, "com.novell.monodroid.runtimeservice", monitor.Log, monitor.Log),
+					ErrorMessage = GettextCatalog.GetString ("Failed to uninstall package")
+				},
+				new ChainedAsyncOperation () {
 					TaskName = GettextCatalog.GetString ("Installing shared runtime package on device"),
 					Skip = () => list.IsCurrentRuntimeInstalled (RuntimeVersion) ? "" : null,
 					Create = () => {
