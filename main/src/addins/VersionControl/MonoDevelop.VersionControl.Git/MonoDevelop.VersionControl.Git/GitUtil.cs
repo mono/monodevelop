@@ -343,49 +343,6 @@ namespace MonoDevelop.VersionControl.Git
 			return repo;
 		}
 		
-		public static FileRepository Clone (string targetLocalPath, string url, IProgressMonitor monitor)
-		{
-			FileRepository repo = Init (targetLocalPath, url, monitor);
-			
-			// Fetch
-			
-			string remoteName = "origin";
-			string branch = Constants.R_HEADS + "master";
-			Transport tn = Transport.Open (repo, remoteName);
-			FetchResult r;
-
-			try {
-				r = tn.Fetch(new GitMonitor (monitor), null);
-			}
-			finally {
-				tn.Close ();
-			}
-			
-			// Create the master branch
-			
-			// branch is like 'Constants.R_HEADS + branchName', we need only
-			// the 'branchName' part
-			String branchName = branch.Substring (Constants.R_HEADS.Length);
-			NGit.Api.Git git = new NGit.Api.Git (repo);
-			git.BranchCreate ().SetName (branchName).SetUpstreamMode (CreateBranchCommand.SetupUpstreamMode.TRACK).SetStartPoint ("origin/master").Call ();
-			
-			// Checkout
-
-			DirCache dc = repo.LockDirCache ();
-			try {
-				RevWalk rw = new RevWalk (repo);
-				ObjectId remCommitId = repo.Resolve (remoteName + "/" + branchName);
-				RevCommit remCommit = rw.ParseCommit (remCommitId);
-				DirCacheCheckout co = new DirCacheCheckout (repo, null, dc, remCommit.Tree);
-				co.Checkout ();
-			} catch {
-				dc.Unlock ();
-				throw;
-			}
-			
-			return repo;
-		}
-		
 		public static RevCommit[] Blame (NGit.Repository repo, RevCommit commit, string file)
 		{
 			string localFile = ToGitPath (repo, file);
@@ -457,6 +414,8 @@ namespace MonoDevelop.VersionControl.Git
 		
 		static RawText GetRawText(NGit.Repository repo, string file, RevCommit commit) {
 			TreeWalk tw = TreeWalk.ForPath (repo, file, commit.Tree);
+			if (tw == null)
+				return new RawText (new byte[0]);
 			ObjectId objectID = tw.GetObjectId(0);
 			byte[] data = repo.ObjectDatabase.Open (objectID).GetBytes ();
 			return new RawText (data);
