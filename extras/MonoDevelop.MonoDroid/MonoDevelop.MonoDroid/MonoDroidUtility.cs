@@ -178,6 +178,8 @@ namespace MonoDevelop.MonoDroid
 			IAsyncOperation signingOperation, bool replaceIfExists)
 		{
 			var toolbox = MonoDroidFramework.Toolbox;
+			var project = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
+			int apiLevel = MonoDroidFramework.FrameworkVersionToApiLevel (project.TargetFramework.Id);
 			PackageList list = null;
 			
 			replaceIfExists = replaceIfExists || signingOperation != null;
@@ -210,6 +212,21 @@ namespace MonoDevelop.MonoDroid
 						return toolbox.Install (device, pkg, monitor.Log, monitor.Log);
 					},
 					ErrorMessage = GettextCatalog.GetString ("Failed to install shared runtime package")
+				},
+				new ChainedAsyncOperation () {
+					TaskName = GettextCatalog.GetString ("Installing the platform framework"),
+					Skip = () => list.IsCurrentPlatformInstalled (apiLevel, RuntimeVersion) ? "" : null,
+					Create = () => {
+						var platformApk = MonoDroidFramework.GetPlatformPackage (apiLevel);
+						if (!File.Exists (platformApk)) {
+							var msg = GettextCatalog.GetString ("Could not find platform package file");
+							monitor.ReportError (msg, null);
+							LoggingService.LogError ("{0} '{1}'", msg, platformApk);
+							return null;
+						}
+						return toolbox.Install (device, platformApk, monitor.Log, monitor.Log);
+					},
+					ErrorMessage = GettextCatalog.GetString ("Failed to install the platform framework")
 				},
 				new ChainedAsyncOperation () {
 					TaskName = GettextCatalog.GetString ("Uninstalling old version of package"),
