@@ -220,6 +220,12 @@ while test x$1 != x; do
 	shift
 done
 
+# make the build & run use libraries already installed in $PREFIX
+if [ -d "$prefix" ]; then
+	export MONO_GAC_PREFIX=$prefix:$MONO_GAC_PREFIX
+	export PKG_CONFIG_PATH=$prefix/lib/pkgconfig:$prefix/share/pkgconfig:$PKG_CONFIG_PATH
+fi
+
 validate_profile "$profile"
 if [ ! $? -eq 1 ]; then
 	echo "The build profile '$profile' does not exist. A new profile will be created."
@@ -249,3 +255,4 @@ done
 echo >> config.make
 echo
 
+echo -n  "prefix=$prefix" >> config.make
