@@ -41,7 +41,7 @@ namespace MonoDevelop.Platform
 	//
 	public class WindowsRecentFiles : FdoRecentFiles
 	{
-		public WindowsRecentFiles () : base (MonoDevelop.Core.PropertyService.ConfigPath.Combine (".recently-used"))
+		public WindowsRecentFiles () : base (MonoDevelop.Core.PropertyService.Locations.Data.Combine ("RecentlyUsed.xml"))
 		{
 		}
 		
