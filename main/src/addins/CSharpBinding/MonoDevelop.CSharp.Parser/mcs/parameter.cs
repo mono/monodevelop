@@ -1260,7 +1260,7 @@ namespace Mono.CSharp {
 				type.GetSignatureForError (), parameter_type.GetSignatureForError ());
 		}
 		
-		public virtual object Accept (StructuralVisitor visitor)
+		public override object Accept (StructuralVisitor visitor)
 		{
 			return visitor.Visit (this);
 		}

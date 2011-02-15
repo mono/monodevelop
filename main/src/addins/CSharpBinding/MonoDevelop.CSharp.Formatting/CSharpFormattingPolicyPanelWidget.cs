@@ -35,8 +35,8 @@ namespace MonoDevelop.CSharp.Formatting
 	public partial class CSharpFormattingPolicyPanelWidget : Gtk.Bin
 	{
 		Mono.TextEditor.TextEditor texteditor = new Mono.TextEditor.TextEditor ();
-		Gtk.ListStore model = new Gtk.ListStore (typeof(string));
-		List<CSharpFormattingPolicy> policies = new List<CSharpFormattingPolicy> ();
+//		Gtk.ListStore model = new Gtk.ListStore (typeof(string));
+//		List<CSharpFormattingPolicy> policies = new List<CSharpFormattingPolicy> ();
 		const string example = @"using System;
 namespace Example { 
 	public class Test

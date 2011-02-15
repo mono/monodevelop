@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -52,26 +51,27 @@ namespace MonoDevelop.CSharp.Formatting
 	public class CSharpFormatter : AbstractAdvancedFormatter
 	{
 		static internal readonly string MimeType = "text/x-csharp";
-		
+
 		public override bool SupportsOnTheFlyFormatting { get { return true; } }
+
 		public override bool SupportsCorrectingIndent { get { return true; } }
-		
-		public override void CorrectIndenting (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
+
+		public override void CorrectIndenting (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, 
 			TextEditorData data, int line)
 		{
 			LineSegment lineSegment = data.Document.GetLine (line);
 			if (lineSegment == null)
 				return;
-			
+
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 			var tracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy), data);
 			tracker.UpdateEngine (lineSegment.Offset);
 			for (int i = lineSegment.Offset; i < lineSegment.Offset + lineSegment.EditableLength; i++) {
 				tracker.Engine.Push (data.Document.GetCharAt (i));
 			}
-			
+
 			string curIndent = lineSegment.GetIndentation (data.Document);
-			
+
 			int nlwsp = curIndent.Length;
 			if (!tracker.Engine.LineBeganInsideMultiLineComment || (nlwsp < lineSegment.Length && data.Document.GetCharAt (lineSegment.Offset + nlwsp) == '*')) {
 				// Possibly replace the indent
@@ -81,13 +81,13 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 			tracker.Dispose ();
 		}
-		
-		public override void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
+
+		public override void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, 
 			TextEditorData data, IType type, IMember member, ProjectDom dom, ICompilationUnit unit, DomLocation caretLocation)
 		{
-			OnTheFlyFormatter.Format (policyParent, mimeTypeChain, data, dom, caretLocation, true);
+			//		OnTheFlyFormatter.Format (policyParent, mimeTypeChain, data, dom, caretLocation, true);
 		}
-		
+
 		public override void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
 			TextEditorData data, int startOffset, int endOffset)
 		{
@@ -97,22 +97,22 @@ namespace MonoDevelop.CSharp.Formatting
 				AutoAcceptChanges = false,
 			};
 			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
-			
+
 			var domIndentationVisitor = new AstIndentationVisitor (policy, data) {
 				AutoAcceptChanges = false,
 			};
 			compilationUnit.AcceptVisitor (domIndentationVisitor, null);
-			
+
 			var changes = new List<Change> ();
-			
+
 			changes.AddRange (domSpacingVisitor.Changes.
 				Concat (domIndentationVisitor.Changes).
 				Where (c => c is TextReplaceChange && (startOffset <= ((TextReplaceChange)c).Offset && ((TextReplaceChange)c).Offset < endOffset)));
-			
+
 			RefactoringService.AcceptChanges (null, null, changes);
 			CorrectFormatting (data, startOffset, endOffset);
 		}
-		
+
 		int CorrectFormatting (TextEditorData data, int start, int end)
 		{
 			int delta = 0;
@@ -140,7 +140,7 @@ namespace MonoDevelop.CSharp.Formatting
 					}
 				} else {
 					for (int i = 0; i < indent.Length; i++) {
-						char ch = indent[i];
+						char ch = indent [i];
 						if (ch == '\t') {
 							int tabWidth = TextViewMargin.GetNextTabstop (data, col) - col;
 							newIndent.Append (ch);
@@ -150,7 +150,7 @@ namespace MonoDevelop.CSharp.Formatting
 							newIndent.Append ('\t');
 							col += tabWidth;
 							while (tabWidth-- > 0 && i + 1 < indent.Length) {
-								if (indent[i + 1] != ' ')
+								if (indent [i + 1] != ' ')
 									break;
 								i++;
 							}
@@ -168,7 +168,7 @@ namespace MonoDevelop.CSharp.Formatting
 						end += data.EolMarker.Length;
 					}
 				}
-				
+
 				string replaceWith = newIndent.ToString ();
 				if (indent != replaceWith) {
 					int count = (indent ?? "").Length;
@@ -177,13 +177,13 @@ namespace MonoDevelop.CSharp.Formatting
 					if (!wholeDocument)
 						end = end - count + replaceWith.Length;
 				}
-				
+
 				lineNumber++;
 				line = data.GetLine (lineNumber);
 			} while (line != null && (wholeDocument || line.EndOffset <= end));
 			return delta;
 		}
-		
+
 		public override string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
 			string input, int startOffset, int endOffset)
 		{
@@ -197,33 +197,33 @@ namespace MonoDevelop.CSharp.Formatting
 			data.Options.OverrideDocumentEolMarker = true;
 			data.Options.DefaultEolMarker = textPolicy.GetEolMarker ();
 			data.Text = input;
-			
-//			System.Console.WriteLine ("TABS:" + textPolicy.TabsToSpaces);
+
+			//			System.Console.WriteLine ("TABS:" + textPolicy.TabsToSpaces);
 			endOffset += CorrectFormatting (data, startOffset, endOffset);
-			
-/*			System.Console.WriteLine ("-----");
+
+			/*			System.Console.WriteLine ("-----");
 			System.Console.WriteLine (data.Text.Replace (" ", ".").Replace ("\t", "->"));
 			System.Console.WriteLine ("-----");*/
-			
+
 			var compilationUnit = new MonoDevelop.CSharp.Parser.CSharpParser ().Parse (data);
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-			
+
 			var domSpacingVisitor = new AstSpacingVisitor (policy, data) {
 				AutoAcceptChanges = false,
 			};
 			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
-			
+
 			var domIndentationVisitor = new AstIndentationVisitor (policy, data) {
 				AutoAcceptChanges = false,
 			};
 			compilationUnit.AcceptVisitor (domIndentationVisitor, null);
-			
+
 			var changes = new List<Change> ();
-			
+
 			changes.AddRange (domSpacingVisitor.Changes.
 				Concat (domIndentationVisitor.Changes).
 				Where (c => c is TextReplaceChange && (startOffset <= ((TextReplaceChange)c).Offset && ((TextReplaceChange)c).Offset < endOffset)));
-			
+
 			RefactoringService.AcceptChanges (null, null, changes);
 			int end = endOffset;
 			foreach (TextReplaceChange c in changes) {
@@ -231,7 +231,7 @@ namespace MonoDevelop.CSharp.Formatting
 				if (c.InsertedText != null)
 					end += c.InsertedText.Length;
 			}
-/*			System.Console.WriteLine ("-----");
+			/*			System.Console.WriteLine ("-----");
 			System.Console.WriteLine (data.Text.Replace (" ", "^").Replace ("\t", "->"));
 			System.Console.WriteLine ("-----");*/
 			string result = data.GetTextBetween (startOffset, Math.Min (data.Length, end));
