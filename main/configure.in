@@ -19,8 +19,13 @@ fi
 if test "x$MCS" = "x" ; then
   AC_MSG_ERROR([Can't find "gmcs" in your PATH])
 fi
+
+#ensure we have the same env as when configured
 AC_SUBST(PATH)
+AC_SUBST(PKG_CONFIG_PATH)
 AC_SUBST(LD_LIBRARY_PATH)
+AC_SUBST(DYLD_FALLBACK_LIBRARY_PATH)
+AC_SUBST(MONO_GAC_PREFIX)
 
 default_gnomeplatform=no
 default_windowsplatform=no
