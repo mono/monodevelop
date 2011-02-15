@@ -105,7 +105,7 @@
           <OthersVar />
           <GacRefVar Sync="true" Name="REFS" Prefix="-r:" />
           <AsmRefVar Sync="true" Name="REFS" Prefix="-r:" />
-          <ProjectRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <ProjectRefVar Sync="true" Name="DEPS" />
         </MonoDevelop.Autotools.MakefileInfo>
       </Properties>
     </MonoDevelop>
