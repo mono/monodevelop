@@ -1,12 +1,17 @@
 <Addin id        = "SubversionAddinWindows"
        namespace = "MonoDevelop"
-       name      = "Subversion Add-in for Windows"
-       author    = "Lluis Sanchez"
-       copyright = "GPL"
-       description = "Subversion support for the Version Control Add-in (for Windows)"
-       category    = "Version Control"
        version   = "2.6">
 
+  <Header>
+    <Name>Subversion Add-in</Name>
+    <Description>Subversion support for the Version Control Add-in</Description>
+    <Description locale="ca">Suport per a Subversion</Description>
+    <Icon32>subversion-logo.png</Icon32>
+    <Author>Lluis Sanchez</Author>
+    <Copyright>GPL</Copyright>
+    <Category>Version Control</Category>
+  </Header>
+  
 	<Dependencies>
 		<Addin id="Core" version="2.6"/>
 		<Addin id="Ide" version="2.6"/>
