@@ -58,7 +58,7 @@ namespace MonoDevelop.AddinAuthoring
 				//IdeApp.ProjectOperations.EndBuild += OnEndBuild;
 			}
 			
-			configFile = Path.Combine (PropertyService.ConfigPath, "AddinAuthoring.config");
+			configFile = Path.Combine (PropertyService.Locations.Config, "AddinAuthoring.config");
 			if (File.Exists (configFile)) {
 				try {
 					XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());

@@ -11,6 +11,10 @@
 	<Runtime>
 		<Import assembly="MonoDevelop.Database.Sql.dll"/>
 	</Runtime>
+
+	<Dependencies>
+		<Addin id="Core" version="2.6"/>
+	</Dependencies>
 	
   	<Localizer type="Gettext" catalog="monodevelop-database"/>
 	
@@ -18,4 +22,8 @@
 		<Description>MonoDevelop database factory addins.</Description>
 		<ExtensionNode name="DatabaseFactory" type="MonoDevelop.Database.Sql.DbFactoryCodon" />
 	</ExtensionPoint>
+
+	<Extension path = "/MonoDevelop/Core/UserDataMigration">
+		<Migration sourceVersion="2.4" kind="Config" sourcePath="MonoDevelop.Database.ConnectionManager.xml" />
+	</Extension>
 </Addin>

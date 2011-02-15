@@ -66,7 +66,7 @@ namespace MonoDevelop.Profiling
 			stateHandler = new ProfilerStateEventHandler (HandleStateChanged);
 			snapshotFailedHandler = new EventHandler (HandleSnapshotFailed);
 			
-			string configFile = Path.Combine (PropertyService.ConfigPath, "MonoDevelop.Profiling.xml");
+			string configFile = Path.Combine (PropertyService.Locations.Config, "MonoDevelop.Profiling.xml");
 			profilingSnapshots = new ProfilingSnapshotCollection (configFile);
 			profilingSnapshots.Load ();
 		}

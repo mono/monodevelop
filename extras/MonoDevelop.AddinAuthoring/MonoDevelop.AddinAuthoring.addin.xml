@@ -199,4 +199,8 @@
 		<Policies resource="AddinXmlPolicy.xml" />
 		<Policies resource="AddinTextStylePolicy.xml" />
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Core/UserDataMigration">
+		<Migration sourceVersion="2.4" kind="Config" sourcePath="AddinAuthoring.config" />
+	</Extension>
 </Addin>

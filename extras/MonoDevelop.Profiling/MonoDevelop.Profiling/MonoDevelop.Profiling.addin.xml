@@ -127,4 +127,8 @@
 	<Extension path = "/MonoDevelop/Profiling/ContextMenu/ProfilingPad/ProfilingSnapshotNodes">
 		<CommandItem id = "MonoDevelop.Profiling.PadCommands.OpenSnapshot" />
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Core/UserDataMigration">
+		<Migration sourceVersion="2.4" kind="Config" sourcePath="MonoDevelop.Profiling.xml" />
+	</Extension>
 </Addin>
