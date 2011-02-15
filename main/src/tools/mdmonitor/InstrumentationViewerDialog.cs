@@ -83,9 +83,9 @@ namespace Mono.Instrumentation.Monitor
 		{
 			try {
 				XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
-				FilePath file = PropertyService.ConfigPath.Combine ("monitor-views.xml");
+				FilePath file = ConfigFile;
 				if (System.IO.File.Exists (file)) {
-					views = (List<ChartView>) ser.Deserialize (PropertyService.ConfigPath.Combine ("monitor-views.xml"), typeof (List<ChartView>));
+					views = (List<ChartView>) ser.Deserialize (file, typeof (List<ChartView>));
 					UpdateViews ();
 					return;
 				}
@@ -98,12 +98,16 @@ namespace Mono.Instrumentation.Monitor
 			views.Add (v);
 			UpdateViews ();
 		}
+
+		static string ConfigFile {
+			get { return PropertyService.Locations.Config.Combine ("monitor-views.xml"); }
+		}
 		
 		public void SaveViews ()
 		{
 			try {
 				XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
-				ser.Serialize (PropertyService.ConfigPath.Combine ("monitor-views.xml"), views);
+				ser.Serialize (ConfigFile, views);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error while saving monitor-views.xml", ex);
 			}
