@@ -90,6 +90,7 @@ FILES =  \
 	MonoDevelop.CSharp.Ast/GeneralScope/UsingDeclaration.cs \
 	MonoDevelop.CSharp.Ast/IAstVisitor.cs \
 	MonoDevelop.CSharp.Ast/Identifier.cs \
+	MonoDevelop.CSharp.Ast/LookupTableVisitor.cs \
 	MonoDevelop.CSharp.Ast/MemberType.cs \
 	MonoDevelop.CSharp.Ast/NodeType.cs \
 	MonoDevelop.CSharp.Ast/PrimitiveType.cs \
@@ -136,6 +137,7 @@ FILES =  \
 	MonoDevelop.CSharp.Ast/TypeMembers/ParameterDeclaration.cs \
 	MonoDevelop.CSharp.Ast/TypeMembers/PropertyDeclaration.cs \
 	MonoDevelop.CSharp.Ast/TypeMembers/VariableInitializer.cs \
+	MonoDevelop.CSharp.Ast/Utils/ModiferNodeExtension.cs \
 	MonoDevelop.CSharp.Ast/Utils/TreeTraversal.cs \
 	MonoDevelop.CSharp.Completion/CompletionTextLinkMode.cs \
 	MonoDevelop.CSharp.Completion/CSharpTextEditorCompletion.cs \

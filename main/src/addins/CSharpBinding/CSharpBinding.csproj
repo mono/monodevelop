@@ -376,6 +376,8 @@
     <Compile Include="MonoDevelop.CSharp.Ast\DepthFirstAstVisitor.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\AstLocation.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\Utils\TreeTraversal.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\LookupTableVisitor.cs" />
+    <Compile Include="MonoDevelop.CSharp.Ast\Utils\ModiferNodeExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
