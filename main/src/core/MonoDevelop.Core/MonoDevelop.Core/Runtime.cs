@@ -107,8 +107,9 @@ namespace MonoDevelop.Core
 			string stableUrl = GetRepoUrl ("Stable");
 			string betaUrl = GetRepoUrl ("Beta");
 			string alphaUrl = GetRepoUrl ("Alpha");
+			string testUrl = GetRepoUrl ("Test");
 			
-			IList validUrls = new string[] { stableUrl, betaUrl, alphaUrl };
+			IList validUrls = new string[] { stableUrl, betaUrl, alphaUrl, testUrl };
 			
 			// Remove old repositories
 			
@@ -122,9 +123,20 @@ namespace MonoDevelop.Core
 			}
 			
 			if (!reps.ContainsRepository (stableUrl)) {
-				// Add the stable and beta channels. Don't add alpha.
-				reps.RegisterRepository (null, stableUrl, false);
-				reps.RegisterRepository (null, betaUrl, false);
+				var rep = reps.RegisterRepository (null, stableUrl, false);
+				rep.Name = "MonoDevelop Add-in Repository";
+				rep = reps.RegisterRepository (null, betaUrl, false);
+				rep.Name = "MonoDevelop Add-in Repository (Beta channel)";
+			}
+			if (!reps.ContainsRepository (betaUrl)) {
+				var rep = reps.RegisterRepository (null, betaUrl, false);
+				rep.Name = "MonoDevelop Add-in Repository (Beta channel)";
+				reps.SetRepositoryEnabled (betaUrl, false);
+			}
+			if (!reps.ContainsRepository (alphaUrl)) {
+				var rep = reps.RegisterRepository (null, alphaUrl, false);
+				rep.Name = "MonoDevelop Add-in Repository (Alpha channel)";
+				reps.SetRepositoryEnabled (alphaUrl, false);
 			}
 		}
 		
