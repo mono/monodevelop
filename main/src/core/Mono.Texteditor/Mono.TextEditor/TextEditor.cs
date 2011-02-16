@@ -2040,6 +2040,7 @@ namespace Mono.TextEditor
 			
 			protected override void OnAnimationCompleted ()
 			{
+				HideAll ();
 				base.OnAnimationCompleted ();
 				DetachEvents ();
 				Destroy ();
@@ -2124,13 +2125,16 @@ namespace Mono.TextEditor
 						cr.SetSourceRGBA (1, 1, 1, 0);
 						cr.Operator = Cairo.Operator.Source; 
 						cr.Paint ();
-						
+					}
+					using (var cr = Gdk.CairoHelper.Create (evnt.Window)) {
 						cr.Translate (width / 2,  height / 2);
 						cr.Scale (1 + scale / 4, 1 + scale / 4);
 						if (layout == null) {
 							layout = cr.CreateLayout ();
 							layout.FontDescription = Editor.Options.Font;
-							layout.SetMarkup (Editor.Document.SyntaxMode.GetMarkup (Editor.Document, Editor.Options, Editor.ColorStyle, Result.Offset, Result.Length, true));
+							string markup = Editor.Document.SyntaxMode.GetMarkup (Editor.Document, Editor.Options, Editor.ColorStyle, Result.Offset, Result.Length, true);
+							System.Console.WriteLine (markup);
+							layout.SetMarkup (markup);
 							layout.GetPixelSize (out layoutWidth, out layoutHeight);
 						}
 						
@@ -2151,7 +2155,7 @@ namespace Mono.TextEditor
 							cr.Pattern = gradient;
 							cr.Fill (); 
 						}
-						
+						cr.Color = new Cairo.Color (0, 0, 0);
 						cr.Translate (-layoutWidth / 2, -layoutHeight / 2);
 						cr.ShowLayout (layout);
 					}
