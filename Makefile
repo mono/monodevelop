@@ -10,7 +10,7 @@ CONFIG_MAKE=$(top_srcdir)/config.make
 
 %-recursive: $(CONFIG_MAKE)
 	@export PKG_CONFIG_PATH="`pwd`/$(top_srcdir)/local-config:$(prefix)/lib/pkgconfig:$(prefix)/share/pkgconfig:$$PKG_CONFIG_PATH"; \
-	export MONO_GAC_PREFIX="$(prefix)/lib/pkgconfig:$(prefix)/share/pkgconfig:$$MONO_GAC_PREFIX"; \
+	export MONO_GAC_PREFIX="$(prefix):$$MONO_GAC_PREFIX"; \
 	set . $$MAKEFLAGS; final_exit=:; \
 	case $$2 in --unix) shift ;; esac; \
 	case $$2 in *=*) dk="exit 1" ;; *k*) dk=: ;; *) dk="exit 1" ;; esac; \
