@@ -438,10 +438,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		#region Spaces
 		
 		#region Before Parentheses
-		bool beforeMethodCallParentheses        = false;
-		bool beforeDelegateDeclarationParentheses = false;
-		bool beforeMethodDeclarationParentheses = false;
-		bool beforeConstructorDeclarationParentheses = false;
+		bool spaceBeforeMethodCallParentheses        = false;
+		bool spaceBeforeDelegateDeclarationParentheses = false;
+		bool spaceBeforeMethodDeclarationParentheses = false;
+		bool spaceBeforeConstructorDeclarationParentheses = false;
 		
 		bool ifParentheses      = true;
 		bool whileParentheses   = true;
@@ -466,7 +466,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				checkedParentheses = value;
 			}
 		}
-		public bool NewParentheses {
+		public bool SpaceBeforeNewParentheses {
 			get {
 				return newParentheses;
 			}
@@ -499,43 +499,43 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		public bool BeforeConstructorDeclarationParentheses {
+		public bool SpaceBeforeConstructorDeclarationParentheses {
 			get {
-				return beforeConstructorDeclarationParentheses;
+				return spaceBeforeConstructorDeclarationParentheses;
 			}
 			set {
-				beforeConstructorDeclarationParentheses = value;
+				spaceBeforeConstructorDeclarationParentheses = value;
 			}
 		}
 		
-		public bool BeforeDelegateDeclarationParentheses {
+		public bool SpaceBeforeDelegateDeclarationParentheses {
 			get {
-				return beforeDelegateDeclarationParentheses;
+				return spaceBeforeDelegateDeclarationParentheses;
 			}
 			set {
-				beforeDelegateDeclarationParentheses = value;
+				spaceBeforeDelegateDeclarationParentheses = value;
 			}
 		}
 		
-		public bool BeforeMethodCallParentheses {
+		public bool SpaceBeforeMethodCallParentheses {
 			get {
-				return beforeMethodCallParentheses;
+				return spaceBeforeMethodCallParentheses;
 			}
 			set {
-				beforeMethodCallParentheses = value;
+				spaceBeforeMethodCallParentheses = value;
 			}
 		}
 		
-		public bool BeforeMethodDeclarationParentheses {
+		public bool SpaceBeforeMethodDeclarationParentheses {
 			get {
-				return beforeMethodDeclarationParentheses;
+				return spaceBeforeMethodDeclarationParentheses;
 			}
 			set {
-				beforeMethodDeclarationParentheses = value;
+				spaceBeforeMethodDeclarationParentheses = value;
 			}
 		}
 		
-		public bool IfParentheses {
+		public bool SpaceBeforeIfParentheses {
 			get {
 				return ifParentheses;
 			}
@@ -544,7 +544,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		public bool WhileParentheses {
+		public bool SpaceBeforeWhileParentheses {
 			get {
 				return whileParentheses;
 			}
@@ -552,7 +552,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				whileParentheses = value;
 			}
 		}
-		public bool ForeachParentheses {
+		public bool SpaceBeforeForeachParentheses {
 			get {
 				return foreachParentheses;
 			}
@@ -560,7 +560,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				foreachParentheses = value;
 			}
 		}
-		public bool LockParentheses {
+		public bool SpaceBeforeLockParentheses {
 			get {
 				return lockParentheses;
 			}
@@ -568,7 +568,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				lockParentheses = value;
 			}
 		}
-		public bool UsingParentheses {
+		public bool SpaceBeforeUsingParentheses {
 			get {
 				return usingParentheses;
 			}
@@ -577,7 +577,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		public bool CatchParentheses {
+		public bool SpaceBeforeCatchParentheses {
 			get {
 				return catchParentheses;
 			}
@@ -593,7 +593,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				fixedParentheses = value;
 			}
 		}
-		public bool SwitchParentheses {
+		public bool SpaceBeforeSwitchParentheses {
 			get {
 				return switchParentheses;
 			}
@@ -601,7 +601,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				switchParentheses = value;
 			}
 		}
-		public bool ForParentheses {
+		public bool SpaceBeforeForParentheses {
 			get {
 				return forParentheses;
 			}
@@ -622,7 +622,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		bool aroundMultiplicativeOperatorParentheses = true;
 		bool aroundShiftOperatorParentheses = true;
 		
-		public bool AroundAdditiveOperatorParentheses {
+		public bool SpaceAroundAdditiveOperator {
 			get {
 				return aroundAdditiveOperatorParentheses;
 			}
@@ -630,7 +630,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				aroundAdditiveOperatorParentheses = value;
 			}
 		}
-		public bool AroundAssignmentParentheses {
+		public bool SpaceAroundAssignment {
 			get {
 				return aroundAssignmentParentheses;
 			}
@@ -638,7 +638,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				aroundAssignmentParentheses = value;
 			}
 		}
-		public bool AroundBitwiseOperatorParentheses {
+		public bool SpaceAroundBitwiseOperator {
 			get {
 				return aroundBitwiseOperatorParentheses;
 			}
@@ -646,7 +646,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				aroundBitwiseOperatorParentheses = value;
 			}
 		}
-		public bool AroundEqualityOperatorParentheses {
+		public bool SpaceAroundEqualityOperator {
 			get {
 				return aroundEqualityOperatorParentheses;
 			}
@@ -654,7 +654,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				aroundEqualityOperatorParentheses = value;
 			}
 		}
-		public bool AroundLogicalOperatorParentheses {
+		public bool SpaceAroundLogicalOperator {
 			get {
 				return aroundLogicalOperatorParentheses;
 			}
@@ -662,7 +662,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				aroundLogicalOperatorParentheses = value;
 			}
 		}
-		public bool AroundMultiplicativeOperatorParentheses {
+		public bool SpaceAroundMultiplicativeOperator {
 			get {
 				return aroundMultiplicativeOperatorParentheses;
 			}
@@ -670,7 +670,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				aroundMultiplicativeOperatorParentheses = value;
 			}
 		}
-		public bool AroundRelationalOperatorParentheses {
+		public bool SpaceAroundRelationalOperator {
 			get {
 				return aroundRelationalOperatorParentheses;
 			}
@@ -678,7 +678,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				aroundRelationalOperatorParentheses = value;
 			}
 		}
-		public bool AroundShiftOperatorParentheses {
+		public bool SpaceAroundShiftOperator {
 			get {
 				return aroundShiftOperatorParentheses;
 			}
@@ -688,9 +688,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		#endregion
 		
-		#region WithinParentheses
+		#region SpacesWithinParentheses
 		bool withinCheckedExpressionParantheses = false;
-		public bool WithinCheckedExpressionParantheses {
+		public bool SpacesWithinCheckedExpressionParantheses {
 			get {
 				return withinCheckedExpressionParantheses;
 			}
@@ -700,7 +700,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		bool withinTypeOfParentheses = false;
-		public bool WithinTypeOfParentheses {
+		public bool SpacesWithinTypeOfParentheses {
 			get {
 				return withinTypeOfParentheses;
 			}
@@ -710,7 +710,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		bool withinSizeOfParentheses = false;
-		public bool WithinSizeOfParentheses {
+		public bool SpacesWithinSizeOfParentheses {
 			get {
 				return withinSizeOfParentheses;
 			}
@@ -720,7 +720,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		bool withinCastParentheses = false;
-		public bool WithinCastParentheses {
+		public bool SpacesWithinCastParentheses {
 			get {
 				return withinCastParentheses;
 			}
@@ -730,7 +730,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		bool withinUsingParentheses = false;
-		public bool WithinUsingParentheses {
+		public bool SpacesWithinUsingParentheses {
 			get {
 				return withinUsingParentheses;
 			}
@@ -740,7 +740,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		bool withinLockParentheses = false;
-		public bool WithinLockParentheses {
+		public bool SpacesWithinLockParentheses {
 			get {
 				return withinLockParentheses;
 			}
@@ -750,7 +750,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		bool withinSwitchParentheses = false;
-		public bool WithinSwitchParentheses {
+		public bool SpacesWithinSwitchParentheses {
 			get {
 				return withinSwitchParentheses;
 			}
@@ -760,7 +760,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		bool withinCatchParentheses = false;
-		public bool WithinCatchParentheses {
+		public bool SpacesWithinCatchParentheses {
 			get {
 				return withinCatchParentheses;
 			}
@@ -770,7 +770,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		bool withinForEachParentheses = false;
-		public bool WithinForEachParentheses {
+		public bool SpacesWithinForEachParentheses {
 			get {
 				return withinForEachParentheses;
 			}
@@ -780,7 +780,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		bool withinForParentheses = false;
-		public bool WithinForParentheses {
+		public bool SpacesWithinForParentheses {
 			get {
 				return withinForParentheses;
 			}
@@ -790,7 +790,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		bool withinWhileParentheses = false;
-		public bool WithinWhileParentheses {
+		public bool SpacesWithinWhileParentheses {
 			get {
 				return withinWhileParentheses;
 			}
@@ -800,7 +800,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		bool withinIfParentheses = false;
-		public bool WithinIfParentheses {
+		public bool SpacesWithinIfParentheses {
 			get {
 				return withinIfParentheses;
 			}
@@ -809,28 +809,28 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		bool withinMethodDeclarationParentheses = false;
-		public bool WithinMethodDeclarationParentheses {
+		bool spacesWithinMethodDeclarationParentheses = false;
+		public bool SpacesWithinMethodDeclarationParentheses {
 			get {
-				return withinMethodDeclarationParentheses;
+				return spacesWithinMethodDeclarationParentheses;
 			}
 			set {
-				withinMethodDeclarationParentheses = value;
+				spacesWithinMethodDeclarationParentheses = value;
 			}
 		}
 		
-		bool withinMethodCallParentheses = false;
-		public bool WithinMethodCallParentheses {
+		bool spacesWithinMethodCallParentheses = false;
+		public bool SpacesWithinMethodCallParentheses {
 			get {
-				return withinMethodCallParentheses;
+				return spacesWithinMethodCallParentheses;
 			}
 			set {
-				withinMethodCallParentheses = value;
+				spacesWithinMethodCallParentheses = value;
 			}
 		}
 		
 		bool withinParentheses = false;
-		public bool WithinParentheses {
+		public bool SpacesWithinParentheses {
 			get {
 				return withinParentheses;
 			}
@@ -848,7 +848,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		bool conditionalOperatorBeforeSeparatorSpace = true;
 		bool conditionalOperatorAfterSeparatorSpace = true;
 		
-		public bool ConditionalOperatorAfterConditionSpace {
+		public bool SpaceAfterConditionalOperatorCondition {
 			get {
 				return conditionalOperatorAfterConditionSpace;
 			}
@@ -856,7 +856,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				conditionalOperatorAfterConditionSpace = value;
 			}
 		}
-		public bool ConditionalOperatorAfterSeparatorSpace {
+		public bool SpaceAfterConditionalOperatorSeparator {
 			get {
 				return conditionalOperatorAfterSeparatorSpace;
 			}
@@ -864,7 +864,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				conditionalOperatorAfterSeparatorSpace = value;
 			}
 		}
-		public bool ConditionalOperatorBeforeConditionSpace {
+		public bool SpaceBeforeConditionalOperatorCondition {
 			get {
 				return conditionalOperatorBeforeConditionSpace;
 			}
@@ -872,7 +872,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				conditionalOperatorBeforeConditionSpace = value;
 			}
 		}
-		public bool ConditionalOperatorBeforeSeparatorSpace {
+		public bool SpaceBeforeConditionalOperatorSeparator {
 			get {
 				return conditionalOperatorBeforeSeparatorSpace;
 			}
@@ -904,7 +904,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		bool spacesAfterTypecast  = false;
-		public bool SpacesAfterTypecast {
+		public bool SpaceAfterTypecast {
 			get {
 				return spacesAfterTypecast;
 			}

@@ -245,7 +245,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				bodyStartOffset = result.Length;
 				result.Append ("throw new ");
 				AppendReturnType (result, options.ImplementingType, new DomReturnType ("System.NotImplementedException"));
-				if (generator.policy.BeforeMethodCallParentheses)
+				if (generator.policy.SpaceBeforeMethodCallParentheses)
 					result.Append (" ");
 				result.Append ("();");
 				bodyEndOffset = result.Length;
@@ -283,7 +283,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					}
 					result.Append (">");
 				}
-				if (generator.policy.BeforeMethodDeclarationParentheses)
+				if (generator.policy.SpaceBeforeMethodDeclarationParentheses)
 					result.Append (" ");
 				result.Append ("(");
 				AppendParameterList (result, options.ImplementingType, method.Parameters);
@@ -334,7 +334,7 @@ namespace MonoDevelop.CSharp.Refactoring
 						generator.AppendIndent (result);
 						bodyStartOffset = result.Length;
 						result.Append ("return string.Format");
-						if (generator.policy.BeforeMethodDeclarationParentheses)
+						if (generator.policy.SpaceBeforeMethodDeclarationParentheses)
 							result.Append (" ");
 						result.Append ("(\"[");
 						result.Append (options.ImplementingType.Name);
@@ -372,7 +372,7 @@ namespace MonoDevelop.CSharp.Refactoring
 							result.Append ("return ");
 						result.Append ("base.");
 						result.Append (method.Name);
-						if (generator.policy.BeforeMethodCallParentheses)
+						if (generator.policy.SpaceBeforeMethodCallParentheses)
 							result.Append (" ");
 						result.Append ("(");
 						for (int i = 0; i < method.Parameters.Count; i++) {

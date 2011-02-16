@@ -54,8 +54,8 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.ClassBraceStyle =  BraceStyle.EndOfLine;
-			policy.BeforeFieldDeclarationComma = false;
-			policy.AfterFieldDeclarationComma = false;
+			policy.SpaceBeforeFieldDeclarationComma = false;
+			policy.SpaceAfterFieldDeclarationComma = false;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -75,8 +75,8 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.ClassBraceStyle =  BraceStyle.EndOfLine;
-			policy.BeforeFieldDeclarationComma = true;
-			policy.AfterFieldDeclarationComma = true;
+			policy.SpaceBeforeFieldDeclarationComma = true;
+			policy.SpaceAfterFieldDeclarationComma = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -96,8 +96,8 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.ClassBraceStyle =  BraceStyle.EndOfLine;
-			policy.AfterFieldDeclarationComma = true;
-			policy.BeforeFieldDeclarationComma = true;
+			policy.SpaceAfterFieldDeclarationComma = true;
+			policy.SpaceBeforeFieldDeclarationComma = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -117,8 +117,8 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.ClassBraceStyle =  BraceStyle.EndOfLine;
-			policy.AfterFieldDeclarationComma = false;
-			policy.BeforeFieldDeclarationComma = false;
+			policy.SpaceAfterFieldDeclarationComma = false;
+			policy.SpaceBeforeFieldDeclarationComma = false;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -128,7 +128,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 		}
 		
 		[Test()]
-		public void TestBeforeMethodDeclarationParentheses ()
+		public void TestSpaceBeforeMethodDeclarationParentheses ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
@@ -138,7 +138,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 }";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BeforeMethodDeclarationParentheses = true;
+			policy.SpaceBeforeMethodDeclarationParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -153,7 +153,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 		
 		
 		[Test()]
-		public void TestBeforeConstructorDeclarationParenthesesDestructorCase ()
+		public void TestSpaceBeforeConstructorDeclarationParenthesesDestructorCase ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
@@ -165,7 +165,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 }";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BeforeConstructorDeclarationParentheses = true;
+			policy.SpaceBeforeConstructorDeclarationParentheses = true;
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
 			Assert.AreEqual (@"class Test
@@ -197,7 +197,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 		public void TestSpacesAroundMultiplicativeOperator ()
 		{
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.AroundMultiplicativeOperatorParentheses = true;
+			policy.SpaceAroundMultiplicativeOperator = true;
 			
 			TestBinaryOperator (policy, "*");
 			TestBinaryOperator (policy, "/");
@@ -207,7 +207,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 		public void TestSpacesAroundShiftOperator ()
 		{
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.AroundShiftOperatorParentheses = true;
+			policy.SpaceAroundShiftOperator = true;
 			TestBinaryOperator (policy, "<<");
 			TestBinaryOperator (policy, ">>");
 		}
@@ -216,7 +216,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 		public void TestSpacesAroundAdditiveOperator ()
 		{
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.AroundAdditiveOperatorParentheses = true;
+			policy.SpaceAroundAdditiveOperator = true;
 			
 			TestBinaryOperator (policy, "+");
 			TestBinaryOperator (policy, "-");
@@ -226,7 +226,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 		public void TestSpacesAroundBitwiseOperator ()
 		{
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.AroundBitwiseOperatorParentheses = true;
+			policy.SpaceAroundBitwiseOperator = true;
 			
 			TestBinaryOperator (policy, "&");
 			TestBinaryOperator (policy, "|");
@@ -237,7 +237,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 		public void TestSpacesAroundRelationalOperator ()
 		{
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.AroundRelationalOperatorParentheses = true;
+			policy.SpaceAroundRelationalOperator = true;
 			
 			TestBinaryOperator (policy, "<");
 			TestBinaryOperator (policy, "<=");
@@ -249,7 +249,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 		public void TestSpacesAroundEqualityOperator ()
 		{
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.AroundEqualityOperatorParentheses = true;
+			policy.SpaceAroundEqualityOperator = true;
 			
 			TestBinaryOperator (policy, "==");
 			TestBinaryOperator (policy, "!=");
@@ -259,7 +259,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 		public void TestSpacesAroundLogicalOperator ()
 		{
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.AroundLogicalOperatorParentheses = true;
+			policy.SpaceAroundLogicalOperator = true;
 			
 			TestBinaryOperator (policy, "&&");
 			TestBinaryOperator (policy, "||");
@@ -277,10 +277,10 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.ConditionalOperatorAfterConditionSpace = true;
-			policy.ConditionalOperatorAfterSeparatorSpace = true;
-			policy.ConditionalOperatorBeforeConditionSpace = true;
-			policy.ConditionalOperatorBeforeSeparatorSpace = true;
+			policy.SpaceAfterConditionalOperatorCondition = true;
+			policy.SpaceAfterConditionalOperatorSeparator = true;
+			policy.SpaceBeforeConditionalOperatorCondition = true;
+			policy.SpaceBeforeConditionalOperatorSeparator = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -296,10 +296,10 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 		result = true ? trueexpr : falseexpr;
 	}
 }";
-			policy.ConditionalOperatorAfterConditionSpace = false;
-			policy.ConditionalOperatorAfterSeparatorSpace = false;
-			policy.ConditionalOperatorBeforeConditionSpace = false;
-			policy.ConditionalOperatorBeforeSeparatorSpace = false;
+			policy.SpaceAfterConditionalOperatorCondition = false;
+			policy.SpaceAfterConditionalOperatorSeparator = false;
+			policy.SpaceBeforeConditionalOperatorCondition = false;
+			policy.SpaceBeforeConditionalOperatorSeparator = false;
 			
 			compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -309,7 +309,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 		}
 		
 		[Test()]
-		public void TestBeforeMethodCallParenthesesSpace ()
+		public void TestSpaceBeforeMethodCallParenthesesSpace ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
@@ -320,7 +320,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BeforeMethodCallParentheses = true;
+			policy.SpaceBeforeMethodCallParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -335,7 +335,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 		MethodCall                         				();
 	}
 }";
-			policy.BeforeMethodCallParentheses = false;
+			policy.SpaceBeforeMethodCallParentheses = false;
 			
 			compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -345,7 +345,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 		}
 		
 		[Test()]
-		public void TestWithinMethodCallParenthesesSpace ()
+		public void TestSpaceWithinMethodCallParenthesesSpace ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
@@ -356,7 +356,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.WithinMethodCallParentheses = true;
+			policy.SpacesWithinMethodCallParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			
@@ -372,7 +372,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 		MethodCall( true );
 	}
 }";
-			policy.WithinMethodCallParentheses = false;
+			policy.SpacesWithinMethodCallParentheses = false;
 			
 			compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -393,7 +393,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.IfParentheses = true;
+			policy.SpaceBeforeIfParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -414,7 +414,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.WithinIfParentheses = true;
+			policy.SpacesWithinIfParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -435,7 +435,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.WhileParentheses = true;
+			policy.SpaceBeforeWhileParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -456,7 +456,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.WithinWhileParentheses = true;
+			policy.SpacesWithinWhileParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -477,7 +477,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.ForParentheses = true;
+			policy.SpaceBeforeForParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -498,7 +498,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.WithinForParentheses = true;
+			policy.SpacesWithinForParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -519,7 +519,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.ForeachParentheses = true;
+			policy.SpaceBeforeForeachParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -540,7 +540,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.WithinForEachParentheses = true;
+			policy.SpacesWithinForEachParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -561,7 +561,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.CatchParentheses = true;
+			policy.SpaceBeforeCatchParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -582,7 +582,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.WithinCatchParentheses = true;
+			policy.SpacesWithinCatchParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -603,7 +603,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.LockParentheses = true;
+			policy.SpaceBeforeLockParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -624,7 +624,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.WithinLockParentheses = true;
+			policy.SpacesWithinLockParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -646,7 +646,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.SpacesAfterForSemicolon = true;
+			policy.SpaceAfterForSemicolon = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -667,8 +667,8 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.SpacesBeforeForSemicolon = true;
-			policy.SpacesAfterForSemicolon = false;
+			policy.SpaceBeforeForSemicolon = true;
+			policy.SpaceAfterForSemicolon = false;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -690,7 +690,7 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.SpacesAfterTypecast = true;
+			policy.SpaceAfterTypecast = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -712,7 +712,7 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.UsingParentheses = true;
+			policy.SpaceBeforeUsingParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -733,7 +733,7 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.WithinUsingParentheses = true;
+			policy.SpacesWithinUsingParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -761,7 +761,7 @@ return (Test)null;
 		public void TestAroundAssignmentSpace ()
 		{
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.AroundAssignmentParentheses = true;
+			policy.SpaceAroundAssignment = true;
 			
 			TestAssignmentOperator (policy, "=");
 			TestAssignmentOperator (policy, "*=");
@@ -789,7 +789,7 @@ return (Test)null;
 }";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.AroundAssignmentParentheses = true;
+			policy.SpaceAroundAssignment = true;
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("left");
@@ -809,7 +809,7 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.SwitchParentheses = true;
+			policy.SpaceBeforeSwitchParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -830,7 +830,7 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.WithinSwitchParentheses = true;
+			policy.SpacesWithinSwitchParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -851,7 +851,7 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.WithinParentheses = true;
+			policy.SpacesWithinParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -861,7 +861,7 @@ return (Test)null;
 		}
 		
 		[Test()]
-		public void TestWithinMethodDeclarationParenthesesSpace ()
+		public void TestSpaceWithinMethodDeclarationParenthesesSpace ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
@@ -871,7 +871,7 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.WithinMethodDeclarationParentheses = true;
+			policy.SpacesWithinMethodDeclarationParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -892,7 +892,7 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.WithinCastParentheses = true;
+			policy.SpacesWithinCastParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -913,7 +913,7 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.WithinSizeOfParentheses = true;
+			policy.SpacesWithinSizeOfParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -934,7 +934,7 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BeforeSizeOfParentheses = true;
+			policy.SpaceBeforeSizeOfParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -955,7 +955,7 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.WithinTypeOfParentheses = true;
+			policy.SpacesWithinTypeOfParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -976,7 +976,7 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BeforeTypeOfParentheses = true;
+			policy.SpaceBeforeTypeOfParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -997,7 +997,7 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.WithinCheckedExpressionParantheses = true;
+			policy.SpacesWithinCheckedExpressionParantheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1031,7 +1031,7 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.NewParentheses = true;
+			policy.SpaceBeforeNewParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1049,15 +1049,15 @@ return (Test)null;
 	int a,b,c;
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BeforeFieldDeclarationComma = false;
-			policy.AfterFieldDeclarationComma = true;
+			policy.SpaceBeforeFieldDeclarationComma = false;
+			policy.SpaceAfterFieldDeclarationComma = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("int");
 			int i2 = data.Document.Text.LastIndexOf (";") + ";".Length;
 			Assert.AreEqual (@"int a, b, c;", data.Document.GetTextBetween (i1, i2));
-			policy.BeforeFieldDeclarationComma = true;
+			policy.SpaceBeforeFieldDeclarationComma = true;
 			
 			compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1065,8 +1065,8 @@ return (Test)null;
 			i2 = data.Document.Text.LastIndexOf (";") + ";".Length;
 			Assert.AreEqual (@"int a , b , c;", data.Document.GetTextBetween (i1, i2));
 			
-			policy.BeforeFieldDeclarationComma = false;
-			policy.AfterFieldDeclarationComma = false;
+			policy.SpaceBeforeFieldDeclarationComma = false;
+			policy.SpaceAfterFieldDeclarationComma = false;
 			compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
 			i1 = data.Document.Text.LastIndexOf ("int");
@@ -1075,7 +1075,7 @@ return (Test)null;
 		}
 		
 		[Test()]
-		public void TestBeforeMethodDeclarationParameterComma ()
+		public void TestSpaceBeforeMethodDeclarationParameterComma ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
@@ -1083,8 +1083,8 @@ return (Test)null;
 	public void Foo (int a,int b,int c) {}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BeforeMethodDeclarationParameterComma = true;
-			policy.AfterMethodDeclarationParameterComma = false;
+			policy.SpaceBeforeMethodDeclarationParameterComma = true;
+			policy.SpaceAfterMethodDeclarationParameterComma = false;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1093,7 +1093,7 @@ return (Test)null;
 			Assert.AreEqual (@"(int a ,int b ,int c)", data.Document.GetTextBetween (i1, i2));
 			compilationUnit = new CSharpParser ().Parse (data);
 			
-			policy.BeforeMethodDeclarationParameterComma = false;
+			policy.SpaceBeforeMethodDeclarationParameterComma = false;
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
 			i1 = data.Document.Text.LastIndexOf ("(");
 			i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
@@ -1101,7 +1101,7 @@ return (Test)null;
 		}
 		
 		[Test()]
-		public void TestAfterMethodDeclarationParameterComma ()
+		public void TestSpaceAfterMethodDeclarationParameterComma ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
@@ -1109,8 +1109,8 @@ return (Test)null;
 	public void Foo (int a,int b,int c) {}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BeforeMethodDeclarationParameterComma = false;
-			policy.AfterMethodDeclarationParameterComma = true;
+			policy.SpaceBeforeMethodDeclarationParameterComma = false;
+			policy.SpaceAfterMethodDeclarationParameterComma = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1119,7 +1119,7 @@ return (Test)null;
 			Assert.AreEqual (@"(int a, int b, int c)", data.Document.GetTextBetween (i1, i2));
 			compilationUnit = new CSharpParser ().Parse (data);
 			
-			policy.AfterMethodDeclarationParameterComma = false;
+			policy.SpaceAfterMethodDeclarationParameterComma = false;
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
 			i1 = data.Document.Text.LastIndexOf ("(");
 			i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
@@ -1139,7 +1139,7 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.WithinWhileParentheses = true;
+			policy.SpacesWithinWhileParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1149,7 +1149,7 @@ return (Test)null;
 		}
 		
 		[Test()]
-		public void TestBeforeLocalVariableDeclarationComma ()
+		public void TestSpaceBeforeLocalVariableDeclarationComma ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
@@ -1160,8 +1160,8 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BeforeLocalVariableDeclarationComma = true;
-			policy.AfterLocalVariableDeclarationComma = false;
+			policy.SpaceBeforeLocalVariableDeclarationComma = true;
+			policy.SpaceAfterLocalVariableDeclarationComma = false;
 
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1172,7 +1172,7 @@ return (Test)null;
 			compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
 
-			policy.BeforeLocalVariableDeclarationComma = false;
+			policy.SpaceBeforeLocalVariableDeclarationComma = false;
 
 			compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1193,8 +1193,8 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BeforeLocalVariableDeclarationComma = true;
-			policy.AfterLocalVariableDeclarationComma = true;
+			policy.SpaceBeforeLocalVariableDeclarationComma = true;
+			policy.SpaceAfterLocalVariableDeclarationComma = true;
 
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1205,8 +1205,8 @@ return (Test)null;
 			compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
 
-			policy.BeforeLocalVariableDeclarationComma = false;
-			policy.AfterLocalVariableDeclarationComma = false;
+			policy.SpaceBeforeLocalVariableDeclarationComma = false;
+			policy.SpaceAfterLocalVariableDeclarationComma = false;
 
 			compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1218,7 +1218,7 @@ return (Test)null;
 		#region Constructors
 		
 		[Test()]
-		public void TestBeforeConstructorDeclarationParentheses ()
+		public void TestSpaceBeforeConstructorDeclarationParentheses ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
@@ -1230,7 +1230,7 @@ return (Test)null;
 }";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BeforeConstructorDeclarationParentheses = true;
+			policy.SpaceBeforeConstructorDeclarationParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1243,7 +1243,7 @@ return (Test)null;
 		}
 				
 		[Test()]
-		public void TestBeforeConstructorDeclarationParameterComma ()
+		public void TestSpaceBeforeConstructorDeclarationParameterComma ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
@@ -1251,8 +1251,8 @@ return (Test)null;
 	public Test (int a,int b,int c) {}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BeforeConstructorDeclarationParameterComma = true;
-			policy.AfterConstructorDeclarationParameterComma = false;
+			policy.SpaceBeforeConstructorDeclarationParameterComma = true;
+			policy.SpaceAfterConstructorDeclarationParameterComma = false;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1261,7 +1261,7 @@ return (Test)null;
 			Assert.AreEqual (@"(int a ,int b ,int c)", data.Document.GetTextBetween (i1, i2));
 			compilationUnit = new CSharpParser ().Parse (data);
 			
-			policy.BeforeConstructorDeclarationParameterComma = false;
+			policy.SpaceBeforeConstructorDeclarationParameterComma = false;
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
 			i1 = data.Document.Text.LastIndexOf ("(");
 			i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
@@ -1269,7 +1269,7 @@ return (Test)null;
 		}
 		
 		[Test()]
-		public void TestAfterConstructorDeclarationParameterComma ()
+		public void TestSpaceAfterConstructorDeclarationParameterComma ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
@@ -1277,8 +1277,8 @@ return (Test)null;
 	public Test (int a,int b,int c) {}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BeforeConstructorDeclarationParameterComma = false;
-			policy.AfterConstructorDeclarationParameterComma = true;
+			policy.SpaceBeforeConstructorDeclarationParameterComma = false;
+			policy.SpaceAfterConstructorDeclarationParameterComma = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1287,7 +1287,7 @@ return (Test)null;
 			Assert.AreEqual (@"(int a, int b, int c)", data.Document.GetTextBetween (i1, i2));
 			compilationUnit = new CSharpParser ().Parse (data);
 			
-			policy.AfterConstructorDeclarationParameterComma = false;
+			policy.SpaceAfterConstructorDeclarationParameterComma = false;
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
 			i1 = data.Document.Text.LastIndexOf ("(");
 			i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
@@ -1295,7 +1295,7 @@ return (Test)null;
 		}
 		
 		[Test()]
-		public void TestWithinConstructorDeclarationParentheses ()
+		public void TestSpaceWithinConstructorDeclarationParentheses ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
@@ -1305,7 +1305,7 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.WithinConstructorDeclarationParentheses = true;
+			policy.SpacesWithinConstructorDeclarationParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1315,7 +1315,7 @@ return (Test)null;
 		}
 		
 		[Test()]
-		public void TestBetweenEmptyConstructorDeclarationParentheses ()
+		public void TestSpaceBetweenEmptyConstructorDeclarationParentheses ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
@@ -1325,7 +1325,7 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BetweenEmptyConstructorDeclarationParentheses = true;
+			policy.SpaceBetweenEmptyConstructorDeclarationParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1338,14 +1338,14 @@ return (Test)null;
 		
 		#region Delegates
 		[Test()]
-		public void TestBeforeDelegateDeclarationParentheses ()
+		public void TestSpaceBeforeDelegateDeclarationParentheses ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
 			data.Document.Text = @"delegate void Test();";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BeforeDelegateDeclarationParentheses = true;
+			policy.SpaceBeforeDelegateDeclarationParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1353,14 +1353,14 @@ return (Test)null;
 		}
 		
 		[Test()]
-		public void TestBeforeDelegateDeclarationParenthesesComplex ()
+		public void TestSpaceBeforeDelegateDeclarationParenthesesComplex ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
 			data.Document.Text = "delegate void TestDelegate\t\t\t();";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BeforeDelegateDeclarationParentheses = true;
+			policy.SpaceBeforeDelegateDeclarationParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1368,14 +1368,14 @@ return (Test)null;
 		}
 		
 		[Test()]
-		public void TestBeforeDelegateDeclarationParameterComma ()
+		public void TestSpaceBeforeDelegateDeclarationParameterComma ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
 			data.Document.Text = @"delegate void Test (int a,int b,int c);";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BeforeDelegateDeclarationParameterComma = true;
-			policy.AfterDelegateDeclarationParameterComma = false;
+			policy.SpaceBeforeDelegateDeclarationParameterComma = true;
+			policy.SpaceAfterDelegateDeclarationParameterComma = false;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1384,7 +1384,7 @@ return (Test)null;
 			Assert.AreEqual (@"(int a ,int b ,int c)", data.Document.GetTextBetween (i1, i2));
 			compilationUnit = new CSharpParser ().Parse (data);
 			
-			policy.BeforeDelegateDeclarationParameterComma = false;
+			policy.SpaceBeforeDelegateDeclarationParameterComma = false;
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
 			i1 = data.Document.Text.LastIndexOf ("(");
 			i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
@@ -1392,14 +1392,14 @@ return (Test)null;
 		}
 		
 		[Test()]
-		public void TestAfterDelegateDeclarationParameterComma ()
+		public void TestSpaceAfterDelegateDeclarationParameterComma ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
 			data.Document.Text = @"delegate void Test (int a,int b,int c);";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BeforeDelegateDeclarationParameterComma = false;
-			policy.AfterDelegateDeclarationParameterComma = true;
+			policy.SpaceBeforeDelegateDeclarationParameterComma = false;
+			policy.SpaceAfterDelegateDeclarationParameterComma = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1408,7 +1408,7 @@ return (Test)null;
 			Assert.AreEqual (@"(int a, int b, int c)", data.Document.GetTextBetween (i1, i2));
 			compilationUnit = new CSharpParser ().Parse (data);
 			
-			policy.AfterDelegateDeclarationParameterComma = false;
+			policy.SpaceAfterDelegateDeclarationParameterComma = false;
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
 			i1 = data.Document.Text.LastIndexOf ("(");
 			i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
@@ -1416,13 +1416,13 @@ return (Test)null;
 		}
 		
 		[Test()]
-		public void TestWithinDelegateDeclarationParentheses ()
+		public void TestSpaceWithinDelegateDeclarationParentheses ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
 			data.Document.Text = @"delegate void Test (int a);";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.WithinDelegateDeclarationParentheses = true;
+			policy.SpacesWithinDelegateDeclarationParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1432,13 +1432,13 @@ return (Test)null;
 		}
 		
 		[Test()]
-		public void TestBetweenEmptyDelegateDeclarationParentheses ()
+		public void TestSpaceBetweenEmptyDelegateDeclarationParentheses ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
 			data.Document.Text = @"delegate void Test();";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BetweenEmptyDelegateDeclarationParentheses = true;
+			policy.SpaceBetweenEmptyDelegateDeclarationParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1451,7 +1451,7 @@ return (Test)null;
 		
 		#region Method invocations
 		[Test()]
-		public void TestBeforeMethodCallParentheses ()
+		public void TestSpaceBeforeMethodCallParentheses ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
@@ -1464,7 +1464,7 @@ return (Test)null;
 }";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BeforeMethodCallParentheses = true;
+			policy.SpaceBeforeMethodCallParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1478,7 +1478,7 @@ return (Test)null;
 		}
 		
 		[Test()]
-		public void TestBeforeMethodCallParameterComma ()
+		public void TestSpaceBeforeMethodCallParameterComma ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
@@ -1490,8 +1490,8 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BeforeMethodCallParameterComma = true;
-			policy.AfterMethodCallParameterComma = false;
+			policy.SpaceBeforeMethodCallParameterComma = true;
+			policy.SpaceAfterMethodCallParameterComma = false;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1500,7 +1500,7 @@ return (Test)null;
 			Assert.AreEqual (@"(a ,b ,c)", data.Document.GetTextBetween (i1, i2));
 			compilationUnit = new CSharpParser ().Parse (data);
 			
-			policy.BeforeMethodCallParameterComma = false;
+			policy.SpaceBeforeMethodCallParameterComma = false;
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
 			i1 = data.Document.Text.LastIndexOf ("(");
 			i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
@@ -1508,7 +1508,7 @@ return (Test)null;
 		}
 		
 		[Test()]
-		public void TestAfterMethodCallParameterComma ()
+		public void TestSpaceAfterMethodCallParameterComma ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
@@ -1520,8 +1520,8 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BeforeMethodCallParameterComma = false;
-			policy.AfterMethodCallParameterComma = true;
+			policy.SpaceBeforeMethodCallParameterComma = false;
+			policy.SpaceAfterMethodCallParameterComma = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1530,7 +1530,7 @@ return (Test)null;
 			Assert.AreEqual (@"(a, b, c)", data.Document.GetTextBetween (i1, i2));
 			compilationUnit = new CSharpParser ().Parse (data);
 			
-			policy.AfterMethodCallParameterComma = false;
+			policy.SpaceAfterMethodCallParameterComma = false;
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
 			i1 = data.Document.Text.LastIndexOf ("(");
 			i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
@@ -1538,7 +1538,7 @@ return (Test)null;
 		}
 		
 		[Test()]
-		public void TestWithinMethodCallParentheses ()
+		public void TestSpaceWithinMethodCallParentheses ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
@@ -1550,7 +1550,7 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.WithinMethodCallParentheses = true;
+			policy.SpacesWithinMethodCallParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1560,7 +1560,7 @@ return (Test)null;
 		}
 		
 		[Test()]
-		public void TestBetweenEmptyMethodCallParentheses ()
+		public void TestSpaceBetweenEmptyMethodCallParentheses ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
@@ -1572,7 +1572,7 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BetweenEmptyMethodCallParentheses = true;
+			policy.SpaceBetweenEmptyMethodCallParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1585,7 +1585,7 @@ return (Test)null;
 		
 		#region Indexer declarations
 		[Test()]
-		public void TestBeforeIndexerDeclarationBracket ()
+		public void TestSpaceBeforeIndexerDeclarationBracket ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
@@ -1599,7 +1599,7 @@ return (Test)null;
 }";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BeforeIndexerDeclarationBracket = true;
+			policy.SpaceBeforeIndexerDeclarationBracket = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1614,7 +1614,7 @@ return (Test)null;
 		}
 		
 		[Test()]
-		public void TestBeforeIndexerDeclarationParameterComma ()
+		public void TestSpaceBeforeIndexerDeclarationParameterComma ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
@@ -1627,8 +1627,8 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BeforeIndexerDeclarationParameterComma = true;
-			policy.AfterIndexerDeclarationParameterComma = false;
+			policy.SpaceBeforeIndexerDeclarationParameterComma = true;
+			policy.SpaceAfterIndexerDeclarationParameterComma = false;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1639,7 +1639,7 @@ return (Test)null;
 		}
 		
 		[Test()]
-		public void TestAfterIndexerDeclarationParameterComma ()
+		public void TestSpaceAfterIndexerDeclarationParameterComma ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
@@ -1652,7 +1652,7 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.AfterIndexerDeclarationParameterComma = true;
+			policy.SpaceAfterIndexerDeclarationParameterComma = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1662,7 +1662,7 @@ return (Test)null;
 		}
 		
 		[Test()]
-		public void TestWithinIndexerDeclarationBracket ()
+		public void TestSpaceWithinIndexerDeclarationBracket ()
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
@@ -1675,7 +1675,7 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.WithinIndexerDeclarationBracket = true;
+			policy.SpacesWithinIndexerDeclarationBracket = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1702,7 +1702,7 @@ return (Test)null;
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.SpacesWithinBrackets = true;
-			policy.SpacesBeforeBrackets = false;
+			policy.SpaceBeforeBrackets = false;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1728,7 +1728,7 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.SpacesBeforeBrackets = true;
+			policy.SpaceBeforeBrackets = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1755,8 +1755,8 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.BeforeBracketComma = true;
-			policy.AfterBracketComma = false;
+			policy.SpaceBeforeBracketComma = true;
+			policy.SpaceAfterBracketComma = false;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1778,7 +1778,7 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.AfterBracketComma = true;
+			policy.SpaceAfterBracketComma = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1800,7 +1800,7 @@ return (Test)null;
 	int[][] b;
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.SpacesBeforeArrayDeclarationBrackets = true;
+			policy.SpaceBeforeArrayDeclarationBrackets = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
@@ -1825,7 +1825,7 @@ return (Test)null;
 	}
 }";
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.ForParentheses = true;
+			policy.SpaceBeforeForParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);

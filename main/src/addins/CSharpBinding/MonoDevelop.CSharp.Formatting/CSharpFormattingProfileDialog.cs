@@ -675,18 +675,18 @@ namespace TestSpace {
 		}
 }";
 			category = AddOption (whiteSpaceOptions, null, GettextCatalog.GetString ("Declarations"), example);
-			AddOption (whiteSpaceOptions, category, "BeforeMethodDeclarationParentheses", GettextCatalog.GetString ("before opening parenthesis"), example);
-			AddOption (whiteSpaceOptions, category, "WithinMethodDeclarationParentheses", GettextCatalog.GetString ("within parenthesis"), example);
-			AddOption (whiteSpaceOptions, category, "BetweenEmptyMethodDeclarationParentheses", GettextCatalog.GetString ("between empty parenthesis"), example);
-			AddOption (whiteSpaceOptions, category, "BeforeMethodDeclarationParameterComma", GettextCatalog.GetString ("before comma in parenthesis"), example);
-			AddOption (whiteSpaceOptions, category, "AfterMethodDeclarationParameterComma", GettextCatalog.GetString ("after comma in parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeMethodDeclarationParentheses", GettextCatalog.GetString ("before opening parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpacesWithinMethodDeclarationParentheses", GettextCatalog.GetString ("within parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceBetweenEmptyMethodDeclarationParentheses", GettextCatalog.GetString ("between empty parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeMethodDeclarationParameterComma", GettextCatalog.GetString ("before comma in parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceAfterMethodDeclarationParameterComma", GettextCatalog.GetString ("after comma in parenthesis"), example);
 			
 			example = @"class Example {
 		int a, b, c;
 }";
 			category = AddOption (whiteSpaceOptions, null, GettextCatalog.GetString ("Fields"), example);
-			AddOption (whiteSpaceOptions, category, "BeforeFieldDeclarationComma", GettextCatalog.GetString ("before comma in multiple field declarations"), example);
-			AddOption (whiteSpaceOptions, category, "AfterFieldDeclarationComma", GettextCatalog.GetString ("after comma in multiple field declarations"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeFieldDeclarationComma", GettextCatalog.GetString ("before comma in multiple field declarations"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceAfterFieldDeclarationComma", GettextCatalog.GetString ("after comma in multiple field declarations"), example);
 			
 			example = @"class Example {
 	Example () 
@@ -698,11 +698,11 @@ namespace TestSpace {
 	}
 }";
 			category = AddOption (whiteSpaceOptions, null, GettextCatalog.GetString ("Constructors"), example);
-			AddOption (whiteSpaceOptions, category, "BeforeConstructorDeclarationParentheses", GettextCatalog.GetString ("before opening parenthesis"), example);
-			AddOption (whiteSpaceOptions, category, "WithinConstructorDeclarationParentheses", GettextCatalog.GetString ("within parenthesis"), example);
-			AddOption (whiteSpaceOptions, category, "BetweenEmptyConstructorDeclarationParentheses", GettextCatalog.GetString ("between empty parenthesis"), example);
-			AddOption (whiteSpaceOptions, category, "BeforeConstructorDeclarationParameterComma", GettextCatalog.GetString ("before comma in parenthesis"), example);
-			AddOption (whiteSpaceOptions, category, "AfterConstructorDeclarationParameterComma", GettextCatalog.GetString ("after comma in parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeConstructorDeclarationParentheses", GettextCatalog.GetString ("before opening parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpacesWithinConstructorDeclarationParentheses", GettextCatalog.GetString ("within parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceBetweenEmptyConstructorDeclarationParentheses", GettextCatalog.GetString ("between empty parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeConstructorDeclarationParameterComma", GettextCatalog.GetString ("before comma in parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceAfterConstructorDeclarationParameterComma", GettextCatalog.GetString ("after comma in parenthesis"), example);
 			
 			example = @"class Example {
 	public int this[int a, int b] {
@@ -712,46 +712,46 @@ namespace TestSpace {
 	}
 }";
 			category = AddOption (whiteSpaceOptions, null, GettextCatalog.GetString ("Indexer"), example);
-			AddOption (whiteSpaceOptions, category, "BeforeIndexerDeclarationBracket", GettextCatalog.GetString ("before opening bracket"), example);
-			AddOption (whiteSpaceOptions, category, "WithinIndexerDeclarationBracket", GettextCatalog.GetString ("within brackets"), example);
-			AddOption (whiteSpaceOptions, category, "BeforeIndexerDeclarationParameterComma", GettextCatalog.GetString ("before comma in brackets"), example);
-			AddOption (whiteSpaceOptions, category, "AfterIndexerDeclarationParameterComma", GettextCatalog.GetString ("after comma in brackets"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeIndexerDeclarationBracket", GettextCatalog.GetString ("before opening bracket"), example);
+			AddOption (whiteSpaceOptions, category, "SpacesWithinIndexerDeclarationBracket", GettextCatalog.GetString ("within brackets"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeIndexerDeclarationParameterComma", GettextCatalog.GetString ("before comma in brackets"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceAfterIndexerDeclarationParameterComma", GettextCatalog.GetString ("after comma in brackets"), example);
 			
 			example = @"delegate void FooBar (int a, int b, int c);
 delegate void BarFoo ();
 ";
 			
 			category = AddOption (whiteSpaceOptions, null, GettextCatalog.GetString ("Delegates"), example);
-			AddOption (whiteSpaceOptions, category, "BeforeDelegateDeclarationParentheses", GettextCatalog.GetString ("before opening parenthesis"), example);
-			AddOption (whiteSpaceOptions, category, "WithinDelegateDeclarationParentheses", GettextCatalog.GetString ("within parenthesis"), example);
-			AddOption (whiteSpaceOptions, category, "BetweenEmptyDelegateDeclarationParentheses", GettextCatalog.GetString ("between empty parenthesis"), example);
-			AddOption (whiteSpaceOptions, category, "BeforeDelegateDeclarationParameterComma", GettextCatalog.GetString ("before comma in parenthesis"), example);
-			AddOption (whiteSpaceOptions, category, "AfterDelegateDeclarationParameterComma", GettextCatalog.GetString ("after comma in parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeDelegateDeclarationParentheses", GettextCatalog.GetString ("before opening parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpacesWithinDelegateDeclarationParentheses", GettextCatalog.GetString ("within parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceBetweenEmptyDelegateDeclarationParentheses", GettextCatalog.GetString ("between empty parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeDelegateDeclarationParameterComma", GettextCatalog.GetString ("before comma in parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceAfterDelegateDeclarationParameterComma", GettextCatalog.GetString ("after comma in parenthesis"), example);
 			
 			var upperCategory = AddOption (whiteSpaceOptions, null, GettextCatalog.GetString ("Statements"), null);
 			
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'if'"), simpleIf);
-			AddOption (whiteSpaceOptions, category, "IfParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleIf);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeIfParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleIf);
 			
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'while'"), simpleWhile);
-			AddOption (whiteSpaceOptions, category, "WhileParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleWhile);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeWhileParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleWhile);
 
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'for'"), simpleFor);
-			AddOption (whiteSpaceOptions, category, "ForParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleFor);
-			AddOption (whiteSpaceOptions, category, "SpacesBeforeForSemicolon", GettextCatalog.GetString ("before semicolon"), simpleFor);
-			AddOption (whiteSpaceOptions, category, "SpacesAfterForSemicolon", GettextCatalog.GetString ("after semicolon"), simpleFor);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeForParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleFor);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeForSemicolon", GettextCatalog.GetString ("before semicolon"), simpleFor);
+			AddOption (whiteSpaceOptions, category, "SpaceAfterForSemicolon", GettextCatalog.GetString ("after semicolon"), simpleFor);
 
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'foreach'"), simpleForeach);
-			AddOption (whiteSpaceOptions, category, "ForeachParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleForeach);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeForeachParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleForeach);
 
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'catch'"), simpleCatch);
-			AddOption (whiteSpaceOptions, category, "CatchParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleCatch);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeCatchParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleCatch);
 			
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'switch'"), switchExample);
-			AddOption (whiteSpaceOptions, category, "SwitchParentheses", GettextCatalog.GetString ("before opening parenthesis"), switchExample);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeSwitchParentheses", GettextCatalog.GetString ("before opening parenthesis"), switchExample);
 			
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'lock'"), simpleLock);
-			AddOption (whiteSpaceOptions, category, "SwitchParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleLock);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeSwitchParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleLock);
 			
 			
 			upperCategory = AddOption (whiteSpaceOptions, null, GettextCatalog.GetString ("Expressions"), null);
@@ -765,11 +765,11 @@ delegate void BarFoo ();
 }";
 			
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("Method invocations"), example);
-			AddOption (whiteSpaceOptions, category, "BeforeMethodCallParentheses", GettextCatalog.GetString ("before opening parenthesis"), example);
-			AddOption (whiteSpaceOptions, category, "WithinMethodCallParentheses", GettextCatalog.GetString ("within parenthesis"), example);
-			AddOption (whiteSpaceOptions, category, "BetweenEmptyMethodCallParentheses", GettextCatalog.GetString ("between empty parenthesis"), example);
-			AddOption (whiteSpaceOptions, category, "BeforeMethodCallParameterComma", GettextCatalog.GetString ("before comma in parenthesis"), example);
-			AddOption (whiteSpaceOptions, category, "AfterMethodCallParameterComma", GettextCatalog.GetString ("after comma in parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeMethodCallParentheses", GettextCatalog.GetString ("before opening parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpacesWithinMethodCallParentheses", GettextCatalog.GetString ("within parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceBetweenEmptyMethodCallParentheses", GettextCatalog.GetString ("between empty parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeMethodCallParameterComma", GettextCatalog.GetString ("before comma in parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceAfterMethodCallParameterComma", GettextCatalog.GetString ("after comma in parenthesis"), example);
 			
 			example = @"class Example {
 		void Test ()
@@ -778,13 +778,13 @@ delegate void BarFoo ();
 		}
 }";
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("Element access"), example);
-			AddOption (whiteSpaceOptions, category, "SpacesBeforeBrackets", GettextCatalog.GetString ("before opening bracket"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeBrackets", GettextCatalog.GetString ("before opening bracket"), example);
 			AddOption (whiteSpaceOptions, category, "SpacesWithinBrackets", GettextCatalog.GetString ("within brackets"), example);
-			AddOption (whiteSpaceOptions, category, "BeforeBracketComma", GettextCatalog.GetString ("before comma in brackets"), example);
-			AddOption (whiteSpaceOptions, category, "AfterBracketComma", GettextCatalog.GetString ("after comma in brackets"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeBracketComma", GettextCatalog.GetString ("before comma in brackets"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceAfterBracketComma", GettextCatalog.GetString ("after comma in brackets"), example);
 			
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("Parentheses"), operatorExample);
-			AddOption (whiteSpaceOptions, category, "WithinParentheses", GettextCatalog.GetString ("within parenthesis"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "SpacesWithinParentheses", GettextCatalog.GetString ("within parenthesis"), operatorExample);
 			
 			example = @"class ClassDeclaration { 
 		public void Test (object o)
@@ -793,8 +793,8 @@ delegate void BarFoo ();
 		}
 	}";
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("Type cast"), example);
-			AddOption (whiteSpaceOptions, category, "WithinCastParentheses", GettextCatalog.GetString ("within parenthesis"), example);
-			AddOption (whiteSpaceOptions, category, "SpacesAfterTypecast", GettextCatalog.GetString ("after type cast"), example);
+			AddOption (whiteSpaceOptions, category, "SpacesWithinCastParentheses", GettextCatalog.GetString ("within parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceAfterTypecast", GettextCatalog.GetString ("after type cast"), example);
 			
 			example = @"class ClassDeclaration { 
 		public void Test ()
@@ -803,8 +803,8 @@ delegate void BarFoo ();
 		}
 	}";
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'sizeof'"), example);
-			AddOption (whiteSpaceOptions, category, "BeforeSizeOfParentheses", GettextCatalog.GetString ("before opening parenthesis"), example);
-			AddOption (whiteSpaceOptions, category, "WithinSizeOfParentheses", GettextCatalog.GetString ("within parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeSizeOfParentheses", GettextCatalog.GetString ("before opening parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpacesWithinSizeOfParentheses", GettextCatalog.GetString ("within parenthesis"), example);
 			
 			example = @"class ClassDeclaration { 
 		public void Test ()
@@ -813,32 +813,32 @@ delegate void BarFoo ();
 		}
 	}";
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'typeof'"), example);
-			AddOption (whiteSpaceOptions, category, "BeforeTypeOfParentheses", GettextCatalog.GetString ("before opening parenthesis"), example);
-			AddOption (whiteSpaceOptions, category, "WithinTypeOfParentheses", GettextCatalog.GetString ("within parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeTypeOfParentheses", GettextCatalog.GetString ("before opening parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "SpacesWithinTypeOfParentheses", GettextCatalog.GetString ("within parenthesis"), example);
 			
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("Around Operators"), operatorExample);
-			AddOption (whiteSpaceOptions, category, "AroundAssignmentParentheses", GettextCatalog.GetString ("Assignment (=, -=, ...)"), operatorExample);
-			AddOption (whiteSpaceOptions, category, "AroundLogicalOperatorParentheses", GettextCatalog.GetString ("Logical (&amp;&amp;,||) operators"), operatorExample);
-			AddOption (whiteSpaceOptions, category, "AroundEqualityOperatorParentheses", GettextCatalog.GetString ("Equality (==, !=) operators"), operatorExample);
-			AddOption (whiteSpaceOptions, category, "AroundRelationalOperatorParentheses", GettextCatalog.GetString ("Relational (&lt;,&gt;,&lt;=,&gt;=) operators"), operatorExample);
-			AddOption (whiteSpaceOptions, category, "AroundBitwiseOperatorParentheses", GettextCatalog.GetString ("Bitwise (&amp;,|,^) operators"), operatorExample);
-			AddOption (whiteSpaceOptions, category, "AroundAdditiveOperatorParentheses", GettextCatalog.GetString ("Additive (+,-) operators"), operatorExample);
-			AddOption (whiteSpaceOptions, category, "AroundMultiplicativeOperatorParentheses", GettextCatalog.GetString ("Multiplicative (*,/,%) operators"), operatorExample);
-			AddOption (whiteSpaceOptions, category, "AroundShiftOperatorParentheses", GettextCatalog.GetString ("Shift (&lt;&lt;,&gt;&gt;) operators"), operatorExample);
-			AddOption (whiteSpaceOptions, category, "AroundNullCoalescingOperator", GettextCatalog.GetString ("Null coalescing (??) operator"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "SpaceAroundAssignment", GettextCatalog.GetString ("Assignment (=, -=, ...)"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "SpaceAroundLogicalOperator", GettextCatalog.GetString ("Logical (&amp;&amp;,||) operators"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "SpaceAroundEqualityOperator", GettextCatalog.GetString ("Equality (==, !=) operators"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "SpaceAroundRelationalOperator", GettextCatalog.GetString ("Relational (&lt;,&gt;,&lt;=,&gt;=) operators"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "SpaceAroundBitwiseOperator", GettextCatalog.GetString ("Bitwise (&amp;,|,^) operators"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "SpaceAroundAdditiveOperator", GettextCatalog.GetString ("Additive (+,-) operators"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "SpaceAroundMultiplicativeOperator", GettextCatalog.GetString ("Multiplicative (*,/,%) operators"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "SpaceAroundShiftOperator", GettextCatalog.GetString ("Shift (&lt;&lt;,&gt;&gt;) operators"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "SpaceAroundNullCoalescingOperator", GettextCatalog.GetString ("Null coalescing (??) operator"), operatorExample);
 			
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("Conditional Operator (?:)"), condOpExample);
-			AddOption (whiteSpaceOptions, category, "ConditionalOperatorBeforeConditionSpace", GettextCatalog.GetString ("before '?'"), condOpExample);
-			AddOption (whiteSpaceOptions, category, "ConditionalOperatorAfterConditionSpace", GettextCatalog.GetString ("after '?'"), condOpExample);
-			AddOption (whiteSpaceOptions, category, "ConditionalOperatorBeforeSeparatorSpace", GettextCatalog.GetString ("before ':'"), condOpExample);
-			AddOption (whiteSpaceOptions, category, "ConditionalOperatorAfterSeparatorSpace", GettextCatalog.GetString ("after ':'"), condOpExample);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeConditionalOperatorCondition", GettextCatalog.GetString ("before '?'"), condOpExample);
+			AddOption (whiteSpaceOptions, category, "SpaceAfterConditionalOperatorCondition", GettextCatalog.GetString ("after '?'"), condOpExample);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeConditionalOperatorSeparator", GettextCatalog.GetString ("before ':'"), condOpExample);
+			AddOption (whiteSpaceOptions, category, "SpaceAfterConditionalOperatorSeparator", GettextCatalog.GetString ("after ':'"), condOpExample);
 			
 			example = @"class ClassDeclaration { 
 		string[][] field;
 		int[] test;
 	}";
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("Array Declarations"), example);
-			AddOption (whiteSpaceOptions, category, "SpacesBeforeArrayDeclarationBrackets", GettextCatalog.GetString ("before opening bracket"), condOpExample);
+			AddOption (whiteSpaceOptions, category, "SpaceBeforeArrayDeclarationBrackets", GettextCatalog.GetString ("before opening bracket"), condOpExample);
 			/*
 			whiteSpaceOptions= new ListStore (typeof (Option), typeof (bool), typeof (bool)); 
 			column = new TreeViewColumn ();

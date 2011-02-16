@@ -34,46 +34,46 @@
 	<PlaceCatchOnNewLine>False</PlaceCatchOnNewLine>
 	<PlaceFinallyOnNewLine>False</PlaceFinallyOnNewLine>
 	<PlaceWhileOnNewLine>False</PlaceWhileOnNewLine>
-	<BeforeMethodCallParentheses>True</BeforeMethodCallParentheses>
-	<BeforeMethodDeclarationParentheses>True</BeforeMethodDeclarationParentheses>
-	<IfParentheses>True</IfParentheses>
-	<WhileParentheses>True</WhileParentheses>
-	<ForParentheses>True</ForParentheses>
-	<ForeachParentheses>True</ForeachParentheses>
-	<CatchParentheses>True</CatchParentheses>
-	<SwitchParentheses>True</SwitchParentheses>
-	<LockParentheses>True</LockParentheses>
-	<UsingParentheses>True</UsingParentheses>
-	<AroundAssignmentParentheses>True</AroundAssignmentParentheses>
-	<AroundLogicalOperatorParentheses>True</AroundLogicalOperatorParentheses>
-	<AroundEqualityOperatorParentheses>True</AroundEqualityOperatorParentheses>
-	<AroundRelationalOperatorParentheses>True</AroundRelationalOperatorParentheses>
-	<AroundBitwiseOperatorParentheses>True</AroundBitwiseOperatorParentheses>
-	<AroundAdditiveOperatorParentheses>True</AroundAdditiveOperatorParentheses>
-	<AroundMultiplicativeOperatorParentheses>True</AroundMultiplicativeOperatorParentheses>
-	<AroundShiftOperatorParentheses>True</AroundShiftOperatorParentheses>
-	<WithinParentheses>False</WithinParentheses>
-	<WithinMethodCallParentheses>False</WithinMethodCallParentheses>
-	<WithinMethodDeclarationParentheses>False</WithinMethodDeclarationParentheses>
-	<WithinIfParentheses>False</WithinIfParentheses>
-	<WithinWhileParentheses>False</WithinWhileParentheses>
-	<WithinForParentheses>False</WithinForParentheses>
-	<WithinForEachParentheses>False</WithinForEachParentheses>
-	<WithinCatchParentheses>False</WithinCatchParentheses>
-	<WithinSwitchParentheses>False</WithinSwitchParentheses>
-	<WithinLockParentheses>False</WithinLockParentheses>
-	<WithinUsingParentheses>False</WithinUsingParentheses>
-	<WithinCastParentheses>False</WithinCastParentheses>
-	<WithinSizeOfParentheses>False</WithinSizeOfParentheses>
-	<WithinTypeOfParentheses>False</WithinTypeOfParentheses>
-	<WithinCheckedExpressionParantheses>False</WithinCheckedExpressionParantheses>
-	<ConditionalOperatorBeforeConditionSpace>True</ConditionalOperatorBeforeConditionSpace>
-	<ConditionalOperatorAfterConditionSpace>True</ConditionalOperatorAfterConditionSpace>
-	<ConditionalOperatorBeforeSeparatorSpace>True</ConditionalOperatorBeforeSeparatorSpace>
-	<ConditionalOperatorAfterSeparatorSpace>True</ConditionalOperatorAfterSeparatorSpace>
+	<SpaceBeforeMethodCallParentheses>True</SpaceBeforeMethodCallParentheses>
+	<SpaceBeforeMethodDeclarationParentheses>True</SpaceBeforeMethodDeclarationParentheses>
+	<SpaceBeforeIfParentheses>True</SpaceBeforeIfParentheses>
+	<SpaceBeforeWhileParentheses>True</SpaceBeforeWhileParentheses>
+	<SpaceBeforeForParentheses>True</SpaceBeforeForParentheses>
+	<SpaceBeforeForeachParentheses>True</SpaceBeforeForeachParentheses>
+	<SpaceBeforeCatchParentheses>True</SpaceBeforeCatchParentheses>
+	<SpaceBeforeSwitchParentheses>True</SpaceBeforeSwitchParentheses>
+	<SpaceBeforeLockParentheses>True</SpaceBeforeLockParentheses>
+	<SpaceBeforeUsingParentheses>True</SpaceBeforeUsingParentheses>
+	<SpaceAroundAssignment>True</SpaceAroundAssignment>
+	<SpaceAroundLogicalOperator>True</SpaceAroundLogicalOperator>
+	<SpaceAroundEqualityOperator>True</SpaceAroundEqualityOperator>
+	<SpaceAroundRelationalOperator>True</SpaceAroundRelationalOperator>
+	<SpaceAroundBitwiseOperator>True</SpaceAroundBitwiseOperator>
+	<SpaceAroundAdditiveOperator>True</SpaceAroundAdditiveOperator>
+	<SpaceAroundMultiplicativeOperator>True</SpaceAroundMultiplicativeOperator>
+	<SpaceAroundShiftOperator>True</SpaceAroundShiftOperator>
+	<SpacesWithinParentheses>False</SpacesWithinParentheses>
+	<SpacesWithinMethodCallParentheses>False</SpacesWithinMethodCallParentheses>
+	<SpacesWithinMethodDeclarationParentheses>False</SpacesWithinMethodDeclarationParentheses>
+	<SpacesWithinIfParentheses>False</SpacesWithinIfParentheses>
+	<SpacesWithinWhileParentheses>False</SpacesWithinWhileParentheses>
+	<SpacesWithinForParentheses>False</SpacesWithinForParentheses>
+	<SpacesWithinForEachParentheses>False</SpacesWithinForEachParentheses>
+	<SpacesWithinCatchParentheses>False</SpacesWithinCatchParentheses>
+	<SpacesWithinSwitchParentheses>False</SpacesWithinSwitchParentheses>
+	<SpacesWithinLockParentheses>False</SpacesWithinLockParentheses>
+	<SpacesWithinUsingParentheses>False</SpacesWithinUsingParentheses>
+	<SpacesWithinCastParentheses>False</SpacesWithinCastParentheses>
+	<SpacesWithinSizeOfParentheses>False</SpacesWithinSizeOfParentheses>
+	<SpacesWithinTypeOfParentheses>False</SpacesWithinTypeOfParentheses>
+	<SpacesWithinCheckedExpressionParantheses>False</SpacesWithinCheckedExpressionParantheses>
+	<SpaceBeforeConditionalOperatorCondition>True</SpaceBeforeConditionalOperatorCondition>
+	<SpaceAfterConditionalOperatorCondition>True</SpaceAfterConditionalOperatorCondition>
+	<SpaceBeforeConditionalOperatorSeparator>True</SpaceBeforeConditionalOperatorSeparator>
+	<SpaceAfterConditionalOperatorSeparator>True</SpaceAfterConditionalOperatorSeparator>
 	<SpacesWithinBrackets>False</SpacesWithinBrackets>
 	<SpacesAfterComma>True</SpacesAfterComma>
 	<SpacesBeforeComma>False</SpacesBeforeComma>
 	<SpacesAfterSemicolon>True</SpacesAfterSemicolon>
-	<SpacesAfterTypecast>False</SpacesAfterTypecast>
+	<SpaceAfterTypecast>False</SpaceAfterTypecast>
 </CSharpFormattingPolicy>

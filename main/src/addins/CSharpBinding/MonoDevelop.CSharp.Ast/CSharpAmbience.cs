@@ -446,7 +446,7 @@ namespace MonoDevelop.CSharp.Ast
 			
 			if (settings.IncludeParameters) {
 				CSharpFormattingPolicy policy = GetPolicy (settings);
-				if (policy.BeforeMethodCallParentheses)
+				if (policy.SpaceBeforeMethodCallParentheses)
 					result.Append (settings.Markup (" "));
 				
 				result.Append (settings.Markup ("("));
@@ -608,7 +608,7 @@ namespace MonoDevelop.CSharp.Ast
 			
 			if (type.ClassType == ClassType.Delegate && settings.ReformatDelegates) {
 				CSharpFormattingPolicy policy = GetPolicy (settings);
-				if (policy.BeforeMethodCallParentheses)
+				if (policy.SpaceBeforeMethodCallParentheses)
 					result.Append (settings.Markup (" "));
 				result.Append (settings.Markup ("("));
 				IMethod invoke = type.SearchMember ("Invoke", true).FirstOrDefault () as IMethod;
@@ -702,7 +702,7 @@ namespace MonoDevelop.CSharp.Ast
 				attrName = attrName.Substring (0, attrName.Length - "Attribute".Length);
 			result.Append (attrName);
 			CSharpFormattingPolicy policy = GetPolicy (settings);
-			if (policy.BeforeMethodCallParentheses)
+			if (policy.SpaceBeforeMethodCallParentheses)
 				result.Append (settings.Markup (" "));
 			result.Append (settings.Markup ("("));
 			bool first = true;

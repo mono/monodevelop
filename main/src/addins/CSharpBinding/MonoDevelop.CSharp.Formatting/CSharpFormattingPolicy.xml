@@ -456,53 +456,53 @@ class ClassDeclaration {
 	
 	<Category _displayName="Spaces">
 		<Category _displayName="Before Parentheses">
-<!--		<Option name="BeforeMethodCallParentheses" _displayName="Method call" example ="methodSpaceExample"/>
+<!--		<Option name="SpaceBeforeMethodCallParentheses" _displayName="Method call" example ="methodSpaceExample"/>
 			
-			<Option name="BeforeDelegateDeclarationParentheses" _displayName="Delegate declaration" example ="delegateExample"/>
-			<Option name="BeforeConstructorDeclarationParentheses" _displayName="Constructor declaration" example ="constructorCallExample"/>
+			<Option name="SpaceBeforeDelegateDeclarationParentheses" _displayName="Delegate declaration" example ="delegateExample"/>
+			<Option name="SpaceBeforeConstructorDeclarationParentheses" _displayName="Constructor declaration" example ="constructorCallExample"/>
 		-->	
-			<Option name="NewParentheses" _displayName="Constructor call" example ="constructorCallExample"/>
+			<Option name="SpaceBeforeNewParentheses" _displayName="Constructor call" example ="constructorCallExample"/>
 		<!--	
 			<OptionCategory _displayName="Statements">
-				<Option name="IfParentheses" _displayName="'if' statement" example="simpleIf"/>
-				<Option name="WhileParentheses" _displayName="'while' statement" example="simpleWhile"/>
-				<Option name="ForParentheses" _displayName="'for' statement" example="simpleFor"/>
-				<Option name="ForeachParentheses" _displayName="'foreach' statement" example="simpleForeach"/>
-				<Option name="CatchParentheses" _displayName="'catch' statement" example="simpleCatch"/>
-				<Option name="SwitchParentheses" _displayName="'switch' statement" example="simpleSwitch"/>
-				<Option name="LockParentheses" _displayName="'lock' statement" example="simpleLock"/>
-				<Option name="UsingParentheses" _displayName="'using' statement" example="simpleUsingStatement"/>
+				<Option name="SpaceBeforeIfParentheses" _displayName="'if' statement" example="simpleIf"/>
+				<Option name="SpaceBeforeWhileParentheses" _displayName="'while' statement" example="simpleWhile"/>
+				<Option name="SpaceBeforeForParentheses" _displayName="'for' statement" example="simpleFor"/>
+				<Option name="SpaceBeforeForeachParentheses" _displayName="'foreach' statement" example="simpleForeach"/>
+				<Option name="SpaceBeforeCatchParentheses" _displayName="'catch' statement" example="simpleCatch"/>
+				<Option name="SpaceBeforeSwitchParentheses" _displayName="'switch' statement" example="simpleSwitch"/>
+				<Option name="SpaceBeforeLockParentheses" _displayName="'lock' statement" example="simpleLock"/>
+				<Option name="SpaceBeforeUsingParentheses" _displayName="'using' statement" example="simpleUsingStatement"/>
 			</OptionCategory>-->
 		</Category>
 		<!--
 		<OptionCategory _displayName="Around Operators">
-			<Option name="AroundAssignmentParentheses" _displayName="Assignment (=, -=, ...)" example="operatorExample"/>
-			<Option name="AroundLogicalOperatorParentheses" _displayName="Logical (&amp;&amp;,||) operators" example="operatorExample"/>
-			<Option name="AroundEqualityOperatorParentheses" _displayName="Equality (==, !=) operators" example="operatorExample"/>
-			<Option name="AroundRelationalOperatorParentheses" _displayName="Relational (&lt;,&gt;,&lt;=,&gt;=) operators" example="operatorExample"/>
-			<Option name="AroundBitwiseOperatorParentheses" _displayName="Bitwise (&amp;,|,^) operators" example="operatorExample"/>
-			<Option name="AroundAdditiveOperatorParentheses" _displayName="Additive (+,-) operators" example="operatorExample"/>
-			<Option name="AroundMultiplicativeOperatorParentheses" _displayName="Multiplicative (*,/,%) operators" example="operatorExample"/>
-			<Option name="AroundShiftOperatorParentheses" _displayName="Shift (&lt;&lt;,&gt;&gt;) operators" example="operatorExample"/>
+			<Option name="SpaceAroundAssignment" _displayName="Assignment (=, -=, ...)" example="operatorExample"/>
+			<Option name="SpaceAroundLogicalOperator" _displayName="Logical (&amp;&amp;,||) operators" example="operatorExample"/>
+			<Option name="SpaceAroundEqualityOperator" _displayName="Equality (==, !=) operators" example="operatorExample"/>
+			<Option name="SpaceAroundRelationalOperator" _displayName="Relational (&lt;,&gt;,&lt;=,&gt;=) operators" example="operatorExample"/>
+			<Option name="SpaceAroundBitwiseOperator" _displayName="Bitwise (&amp;,|,^) operators" example="operatorExample"/>
+			<Option name="SpaceAroundAdditiveOperator" _displayName="Additive (+,-) operators" example="operatorExample"/>
+			<Option name="SpaceAroundMultiplicativeOperator" _displayName="Multiplicative (*,/,%) operators" example="operatorExample"/>
+			<Option name="SpaceAroundShiftOperator" _displayName="Shift (&lt;&lt;,&gt;&gt;) operators" example="operatorExample"/>
 		</OptionCategory>
 		-->
 		<Category _displayName="Within Parentheses">
-	<!--			<Option name="WithinParentheses" _displayName="Parentheses" example="operatorExample"/>
-			<Option name="WithinMethodCallParentheses" _displayName="Method call" example="methodSpaceExample"/>
+	<!--			<Option name="SpacesWithinParentheses" _displayName="Parentheses" example="operatorExample"/>
+			<Option name="SpacesWithinMethodCallParentheses" _displayName="Method call" example="methodSpaceExample"/>
 			<OptionCategory _displayName="Statements">
-				<Option name="WithinIfParentheses" _displayName="'if' statement" example="simpleIf"/>
-				<Option name="WithinWhileParentheses" _displayName="'while' statement" example="simpleWhile"/>
-				<Option name="WithinForParentheses" _displayName="'for' statement" example="simpleFor"/>
-				<Option name="WithinForEachParentheses" _displayName="'foreach' statement" example="simpleForeach"/>
-				<Option name="WithinCatchParentheses" _displayName="'catch' statement" example="simpleCatch"/>
-				<Option name="WithinSwitchParentheses" _displayName="'switch' statement" example="simpleSwitch"/>
-				<Option name="WithinLockParentheses" _displayName="'lock' statement" example="simpleLock"/>
-				<Option name="WithinUsingParentheses" _displayName="'using' statement" example="simpleUsingStatement"/>
+				<Option name="SpacesWithinIfParentheses" _displayName="'if' statement" example="simpleIf"/>
+				<Option name="SpacesWithinWhileParentheses" _displayName="'while' statement" example="simpleWhile"/>
+				<Option name="SpacesWithinForParentheses" _displayName="'for' statement" example="simpleFor"/>
+				<Option name="SpacesWithinForEachParentheses" _displayName="'foreach' statement" example="simpleForeach"/>
+				<Option name="SpacesWithinCatchParentheses" _displayName="'catch' statement" example="simpleCatch"/>
+				<Option name="SpacesWithinSwitchParentheses" _displayName="'switch' statement" example="simpleSwitch"/>
+				<Option name="SpacesWithinLockParentheses" _displayName="'lock' statement" example="simpleLock"/>
+				<Option name="SpacesWithinUsingParentheses" _displayName="'using' statement" example="simpleUsingStatement"/>
 			</OptionCategory> -->
 			
 			<OptionCategory _displayName="Expressions">
-<!--				<Option name="WithinCastParentheses" _displayName="Type cast" example="simpleTypeCast"/>
-				<Option name="WithinSizeOfParentheses" _displayName="'sizeof' expression"><Example><![CDATA[
+<!--				<Option name="SpacesWithinCastParentheses" _displayName="Type cast" example="simpleTypeCast"/>
+				<Option name="SpacesWithinSizeOfParentheses" _displayName="'sizeof' expression"><Example><![CDATA[
 class ClassDeclaration { 
 		public void Test ()
 		{
@@ -511,7 +511,7 @@ class ClassDeclaration {
 	}
 ]]></Example>
 				</Option>
-				<Option name="WithinTypeOfParentheses" _displayName="'typeof' expression"><Example><![CDATA[
+				<Option name="SpacesWithinTypeOfParentheses" _displayName="'typeof' expression"><Example><![CDATA[
 class ClassDeclaration { 
 		public void Test ()
 		{
@@ -520,7 +520,7 @@ class ClassDeclaration {
 	}
 ]]></Example>-->
 				</Option>
-				<Option name="WithinCheckedExpressionParantheses" _displayName="'checked'/'fixed' expression"><Example><![CDATA[
+				<Option name="SpacesWithinCheckedExpressionParantheses" _displayName="'checked'/'fixed' expression"><Example><![CDATA[
 class ClassDeclaration { 
 		public void Test ()
 		{
@@ -536,10 +536,10 @@ class ClassDeclaration {
 		</Category>
 		<!--
 		<Category _displayName="Conditional Operator (?:)">
-			<Option name="ConditionalOperatorBeforeConditionSpace" _displayName="before '?'" example="condOpExample"/>
-			<Option name="ConditionalOperatorAfterConditionSpace" _displayName="after '?'" example="condOpExample"/>
-			<Option name="ConditionalOperatorBeforeSeparatorSpace" _displayName="before ':'" example="condOpExample"/>
-			<Option name="ConditionalOperatorAfterSeparatorSpace" _displayName="after ':'" example="condOpExample"/>
+			<Option name="SpaceBeforeConditionalOperatorCondition" _displayName="before '?'" example="condOpExample"/>
+			<Option name="SpaceAfterConditionalOperatorCondition" _displayName="after '?'" example="condOpExample"/>
+			<Option name="SpaceBeforeConditionalOperatorSeparator" _displayName="before ':'" example="condOpExample"/>
+			<Option name="SpaceAfterConditionalOperatorSeparator" _displayName="after ':'" example="condOpExample"/>
 		</Category>-->
 		
 		<Category _displayName="Other">
@@ -556,7 +556,7 @@ class ClassDeclaration {
 <!--			<Option name="SpacesAfterComma" _displayName="After comma" example="simpleArrayInitializer"/>
 			<Option name="SpacesBeforeComma" _displayName="Before comma" example="simpleArrayInitializer"/>
 			<Option name="SpacesAfterSemicolon" _displayName="After semicolon" example="simpleFor"/>
-			<Option name="SpacesAfterTypecast" _displayName="After type cast" example="simpleTypeCast"/>-->
+			<Option name="SpaceAfterTypecast" _displayName="After type cast" example="simpleTypeCast"/>-->
 		</Category>
 	</Category>
 </CodeStyle>
