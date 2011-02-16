@@ -266,6 +266,19 @@ namespace MonoDevelop.Platform
 					e.Handled = true;
 				};
 				
+				if (!System.Reflection.Assembly.GetExecutingAssembly ().Location.Contains ("MonoDevelop.app")) {
+					var icons = Path.Combine (Directory.GetCurrentDirectory (), "theme-icons", "Mac", "monodevelop.icns");
+
+					if (File.Exists (icons)) {
+						var tile = NSApplication.SharedApplication.DockTile;
+						var view = new NSImageView (new System.Drawing.RectangleF (0, 0, tile.Size.Width, tile.Size.Height)) {
+							Image = new NSImage (icons)
+						};
+
+						tile.ContentView = view;
+						tile.Display ();
+					}
+				}
 			} catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Could not install app event handlers", ex);
 				setupFail = true;
