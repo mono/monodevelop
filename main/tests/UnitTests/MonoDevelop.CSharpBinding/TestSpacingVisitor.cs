@@ -1162,25 +1162,59 @@ return (Test)null;
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.BeforeLocalVariableDeclarationComma = true;
 			policy.AfterLocalVariableDeclarationComma = false;
-			
+
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
 			int i1 = data.Document.Text.IndexOf ("int");
 			int i2 = data.Document.Text.IndexOf (";") + ";".Length;
 			Assert.AreEqual (@"int a ,b ,c;", data.Document.GetTextBetween (i1, i2));
-			
+
 			compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
-			
+
 			policy.BeforeLocalVariableDeclarationComma = false;
-			
+
 			compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
 			i1 = data.Document.Text.IndexOf ("int");
 			i2 = data.Document.Text.IndexOf (";") + ";".Length;
 			Assert.AreEqual (@"int a,b,c;", data.Document.GetTextBetween (i1, i2));
 		}
-		
+
+		[Test()]
+		public void TestLocalVariableDeclarationComma ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		int a = 5,b = 6,c;
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.BeforeLocalVariableDeclarationComma = true;
+			policy.AfterLocalVariableDeclarationComma = true;
+
+			var compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			int i1 = data.Document.Text.IndexOf ("int");
+			int i2 = data.Document.Text.IndexOf (";") + ";".Length;
+			Assert.AreEqual (@"int a = 5 , b = 6 , c;", data.Document.GetTextBetween (i1, i2));
+
+			compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+
+			policy.BeforeLocalVariableDeclarationComma = false;
+			policy.AfterLocalVariableDeclarationComma = false;
+
+			compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			i1 = data.Document.Text.IndexOf ("int");
+			i2 = data.Document.Text.IndexOf (";") + ";".Length;
+			Assert.AreEqual (@"int a = 5,b = 6,c;", data.Document.GetTextBetween (i1, i2));
+		}
+
 		#region Constructors
 		
 		[Test()]
