@@ -661,7 +661,7 @@ namespace MonoDevelop.MonoDroid
 			}
 			
 			//no name in manifest, use same default package name as GetAndroidPackageName MSBuild task
-			var name = conf.CompiledOutputName.FileNameWithoutExtension.Replace (" ", "").ToLowerInvariant ();
+			var name = conf.CompiledOutputName.FileNameWithoutExtension.Replace (" ", "");
 			if (name.Contains ("."))
 				return name;
 			else
