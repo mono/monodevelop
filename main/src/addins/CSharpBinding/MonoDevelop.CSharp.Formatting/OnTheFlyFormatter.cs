@@ -130,6 +130,7 @@ namespace MonoDevelop.CSharp.Formatting
 			RefactoringService.AcceptChanges (null, null, changes);
 			foreach (int line in lines)
 				data.Editor.Document.CommitLineUpdate (line);
+			stubData.Dispose ();
 		}
 	}
 }
