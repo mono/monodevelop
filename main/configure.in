@@ -228,64 +228,6 @@ fi
 
 AM_CONDITIONAL(ENABLE_WINDOWSPLATFORM, [test x$enable_windowsplatform = xyes])
 
-############BEGIN UGLINESS#####################################################
-# MonoDevelop doesn't depend on Mozilla, but some addins do. However, 
-# due to Mozilla never being in the linker path, we have to put Mozilla 
-# detection code in the MonoDevelop core so that MD can set LD_LIBRARY_PATH 
-# MOZILLA_FIVE_HOME before starting.
-###############################################################################
-MOZFILE="libgtkembedmoz.so"
-
-#Check pkg-config first
-MOZILLA_HOME="`$PKG_CONFIG --variable=libdir mozilla-gtkmozembed`"
-if test ! -z "$MOZILLA_HOME" && test ! -e "$MOZILLA_HOME/$MOZFILE";
-		then AC_MSG_WARN(The mozilla-gtkmozembed.pc file is broken); unset MOZILLA_HOME;
-	fi
-if test -z "$MOZILLA_HOME"; then
-	MOZILLA_HOME="`$PKG_CONFIG --variable=libdir firefox-gtkmozembed`"
-	if test ! -z "$MOZILLA_HOME" && test ! -e "$MOZILLA_HOME/$MOZFILE";
-		then AC_MSG_WARN(The firefox-gtkmozembed.pc file is broken); unset MOZILLA_HOME;
-	fi
-fi
-if test -z "$MOZILLA_HOME"; then
-	MOZILLA_HOME="`$PKG_CONFIG --variable=libdir xulrunner-gtkmozembed`"
-	if test ! -z "$MOZILLA_HOME" && test ! -e "$MOZILLA_HOME/$MOZFILE";
-		then AC_MSG_WARN(The xulrunner-gtkmozembed.pc file is broken); unset MOZILLA_HOME;
-	fi
-fi
-
-#if MOZILLA_HOME is still empty, try to detect without pkg_config
-#(NOTE: any changes to this block should be kept in sync with the one in monodevelop.in)
-MOZFILE="libgtkembedmoz.so"
-find_libgtkembedmoz ()
-{
-	MOZDIR=$MOZILLA_FIVE_HOME
-	if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
-	
-	MOZDIR=$(grep -h GRE_PATH= /etc/gre.d/*.conf 2>/dev/null | cut -d '"' -f 2 -d = | head -n 1) #"
-	if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
-	
-	mozilla_script=$(which mozilla 2> /dev/null)
-	firefox_script=$(which firefox 2> /dev/null)
-	
-	for runtime_script in "$firefox_script $mozilla_script"; do
-		MOZDIR=$(grep "MOZ_DIST_LIB=" $runtime_script 2> /dev/null | cut -d '"' -f 2 | cut -d '=' -f 2)
-		if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
-		MOZDIR=$(grep "MOZILLA_FIVE_HOME=" $runtime_script 2> /dev/null | cut -d '"' -f 2 | cut -d '=' -f 2)
-		if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
-		MOZDIR=$(grep "MOZILLA_LIBDIR=" $runtime_script 2> /dev/null | cut -d '"' -f 2 | cut -d '=' -f 2)
-		if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
-		MOZDIR=$(grep "moz_libdir=" $runtime_script 2> /dev/null | cut -d '"' -f 2 | cut -d '=' -f 2)
-		if test -e "$MOZDIR/$MOZFILE"; then echo $MOZDIR; return; fi
-	done
-}
-
-if test -z "$MOZILLA_HOME"; then
-	MOZILLA_HOME=`find_libgtkembedmoz`
-fi
-
-AC_SUBST(MOZILLA_HOME)
-
 dnl Intl
 ALL_LINGUAS="cs da de es fr ja pt_BR tr pl it zh_TW zh_CN ru sl ca gl pt sv nl id hu"
 AC_SUBST(ALL_LINGUAS)
@@ -416,5 +358,4 @@ echo "   *     Subversion (Unix): $enable_subversion"
 echo "   *     Git: $enable_git"
 echo "   * Platform bindings: $platform_bindings"
 echo "   * Unit tests: $enable_tests"
-echo "   * Mozilla location: $MOZILLA_HOME"
 echo ""
