@@ -187,6 +187,11 @@ namespace Mono.TextEditor
 			this.SelectPrimaryLink = true;
 		}
 
+		void HandleEditorDocumentBeginUndo (object sender, EventArgs e)
+		{
+			ExitTextLinkMode ();
+		}
+
 		public event EventHandler Cancel;
 
 		protected virtual void OnCancel (EventArgs e)
@@ -245,6 +250,7 @@ namespace Mono.TextEditor
 				}
 			}
 			
+			editor.Document.BeforeUndoOperation += HandleEditorDocumentBeginUndo;
 			Editor.Document.TextReplaced += UpdateLinksOnTextReplace;
 			this.Editor.Caret.PositionChanged += HandlePositionChanged;
 			this.UpdateTextLinks ();
@@ -271,6 +277,7 @@ namespace Mono.TextEditor
 
 		void ExitTextLinkMode ()
 		{
+			editor.Document.BeforeUndoOperation -= HandleEditorDocumentBeginUndo;
 			DestroyHelpWindow ();
 			isExited = true;
 			DestroyWindow ();
