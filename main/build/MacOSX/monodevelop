@@ -17,7 +17,11 @@ DIR=$(cd "$(dirname "$0")"; pwd)
 # $0 should contain the full path from the root i.e. /Applications/<folder>.app/Contents/MacOS/<script>
 EXE_PATH="$DIR/lib/monodevelop/bin/MonoDevelop.exe"
 
-export PKG_CONFIG_PATH="$DIR/lib/pkgconfig:$PKG_CONFIG_PATH"
+#use stuff bundled into the app bundle
+export MONO_GAC_PREFIX="$DIR:$MONO_GAC_PREFIX"
+export PATH="$DIR/bin:$PATH"
+export DYLD_FALLBACK_LIBRARY_PATH="$DIR/lib:$DYLD_FALLBACK_LIBRARY_PATH"
+export PKG_CONFIG_PATH="$DIR/lib/pkgconfig:$DIR/share/pkgconfig:$PKG_CONFIG_PATH"
 
 # Work around a bug in 'exec' in older versions of macosx
 OSX_VERSION=$(uname -r | cut -f1 -d.)
