@@ -863,16 +863,14 @@ namespace MonoDevelop.CSharp.Parser
 					foreach (var decl in blockVariableDeclaration.Declarators) {
 						var loc = LocationsBag.GetLocations (decl);
 						var init = new VariableInitializer ();
+						if (loc != null && loc.Count > 0)
+							result.AddChild (new CSharpTokenNode (Convert (loc [0]), 1), VariableInitializer.Roles.Comma);
 						init.AddChild (new Identifier (decl.Variable.Name, Convert (decl.Variable.Location)), VariableInitializer.Roles.Identifier);
 						if (decl.Initializer != null) {
-							if (loc != null)
-								init.AddChild (new CSharpTokenNode (Convert (loc[0]), 1), VariableInitializer.Roles.Assign);
-							init.AddChild ((MonoDevelop.CSharp.Ast.Expression)decl.Initializer.Accept (this), VariableInitializer.Roles.Expression);
 							if (loc != null && loc.Count > 1)
-								result.AddChild (new CSharpTokenNode (Convert (loc[1]), 1), VariableInitializer.Roles.Comma);
+								result.AddChild (new CSharpTokenNode (Convert (loc [1]), 1), VariableInitializer.Roles.Assign);
+							init.AddChild ((MonoDevelop.CSharp.Ast.Expression)decl.Initializer.Accept (this), VariableInitializer.Roles.Expression);
 						} else {
-							if (loc != null && loc.Count > 0)
-								result.AddChild (new CSharpTokenNode (Convert (loc[0]), 1), VariableInitializer.Roles.Comma);
 						}
 						result.AddChild (init, VariableDeclarationStatement.Roles.Variable);
 					}
