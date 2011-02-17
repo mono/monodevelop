@@ -188,6 +188,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom.Parser/AssemblyInformationEventHandler.cs \
 	MonoDevelop.Projects.Dom.Parser/CommentTag.cs \
 	MonoDevelop.Projects.Dom.Parser/CommentTasksChangedEventHandler.cs \
+	MonoDevelop.Projects.Dom.Parser/IDomObjectTable.cs \
 	MonoDevelop.Projects.Dom.Parser/IParser.cs \
 	MonoDevelop.Projects.Dom.Parser/IParserDatabase.cs \
 	MonoDevelop.Projects.Dom.Parser/IResolver.cs \

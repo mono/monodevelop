@@ -36,10 +36,11 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Dom.Parser
 {
-	public abstract class ProjectDom
+	public abstract class ProjectDom: IDomObjectTable
 	{	
 		protected List<ProjectDom> references; 
 		Dictionary<string, IType> instantiatedTypeCache = new Dictionary<string, IType> ();
+		Dictionary<string, IReturnType> returnTypeCache = new Dictionary<string, IReturnType> ();
 		
 		public Project Project;
 		internal int ReferenceCount;
@@ -889,12 +890,28 @@ namespace MonoDevelop.Projects.Dom.Parser
 			foreach (ProjectDom dom in oldRefs)
 				ProjectDomService.UnrefDom (dom.Uri); 
 		}
-
-		internal IReturnType GetSharedReturnType (DomReturnType rt)
+		
+		object IDomObjectTable.GetSharedObject (object ob)
 		{
-			return DomReturnType.GetSharedReturnType (rt);
+			if (ob is IReturnType)
+				return GetSharedReturnType ((IReturnType)ob);
+			else
+				return ob;
 		}
 
+		internal IReturnType GetSharedReturnType (IReturnType rt)
+		{
+			string id = rt.ToInvariantString ();
+			IReturnType s;
+			if (returnTypeCache.TryGetValue (id, out s))
+				return s;
+
+			s = DomReturnType.GetSharedReturnType (rt);
+			if (object.ReferenceEquals (s, rt))
+				returnTypeCache [id] = rt;
+			return s;
+		}
+		
 		internal abstract IEnumerable<string> OnGetReferences ();
 
 		internal virtual void OnProjectReferenceAdded (ProjectReference pref)

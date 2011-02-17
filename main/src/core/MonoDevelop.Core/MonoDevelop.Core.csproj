@@ -491,6 +491,7 @@
     <Compile Include="MonoDevelop.Core\UserDataLocations.cs" />
     <Compile Include="MonoDevelop.Core\UserDataMigrationService.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\UserDataMigrationNode.cs" />
+    <Compile Include="MonoDevelop.Projects.Dom.Parser\IDomObjectTable.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -544,6 +545,9 @@
     <Folder Include="MonoDevelop.Core.StringParsing\" />
     <Folder Include="MonoDevelop.Core.Text\" />
     <Folder Include="MonoDevelop.Projects.Text\" />
+    <Folder Include="MonoDevelop.Projects.Dom.Parser\" />
+    <Folder Include="MonoDevelop.Projects.Dom\" />
+    <Folder Include="MonoDevelop.Projects.Dom.Serialization\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\contrib\Mono.Cecil\Mono.Cecil.csproj">

@@ -87,7 +87,7 @@ namespace MonoDevelop.Projects.DomTests
 			DomPersistence.Write (writer, DefaultNameEncoder, input);
 			byte[] bytes = ms.ToArray ();
 			
-			DomField result = DomPersistence.ReadField (CreateReader (bytes), DefaultNameDecoder);
+			DomField result = DomPersistence.ReadField (CreateReader (bytes), DefaultNameDecoder, null);
 			Assert.AreEqual ("TestField", result.Name);
 			Assert.AreEqual ("testDocumentation", result.Documentation);
 			Assert.AreEqual (new DomLocation (5, 10), result.Location);
@@ -110,7 +110,7 @@ namespace MonoDevelop.Projects.DomTests
 			DomPersistence.Write (writer, DefaultNameEncoder, input);
 			byte[] bytes = ms.ToArray ();
 			
-			DomField result = DomPersistence.ReadField (CreateReader (bytes), DefaultNameDecoder);
+			DomField result = DomPersistence.ReadField (CreateReader (bytes), DefaultNameDecoder, null);
 			Assert.AreEqual (null, result.Name);
 			Assert.AreEqual (null, result.Documentation);
 			Assert.AreEqual (DomLocation.Empty, result.Location);
@@ -135,7 +135,7 @@ namespace MonoDevelop.Projects.DomTests
 			DomPersistence.Write (writer, DefaultNameEncoder, input);
 			byte[] bytes = ms.ToArray ();
 			
-			IReturnType result = DomPersistence.ReadReturnType (CreateReader (bytes), DefaultNameDecoder);
+			IReturnType result = DomPersistence.ReadReturnType (CreateReader (bytes), DefaultNameDecoder, null);
 			Assert.AreEqual ("Test", result.Name);
 			Assert.AreEqual ("Namespace", result.Namespace);
 			Assert.AreEqual ("Namespace.Test", result.FullName);
@@ -159,7 +159,7 @@ namespace MonoDevelop.Projects.DomTests
 			DomPersistence.Write (writer, DefaultNameEncoder, input);
 			byte[] bytes = ms.ToArray ();
 			
-			DomMethod result = DomPersistence.ReadMethod (CreateReader (bytes), DefaultNameDecoder);
+			DomMethod result = DomPersistence.ReadMethod (CreateReader (bytes), DefaultNameDecoder, null);
 			Assert.AreEqual ("Test", result.Name);
 			Assert.AreEqual (true, result.IsConstructor);
 			Assert.AreEqual ("par1", result.Parameters [0].Name);
@@ -178,7 +178,7 @@ namespace MonoDevelop.Projects.DomTests
 			DomPersistence.Write (writer, DefaultNameEncoder, input);
 			byte[] bytes = ms.ToArray ();
 			
-			DomType result = DomPersistence.ReadType (CreateReader (bytes), DefaultNameDecoder);
+			DomType result = DomPersistence.ReadType (CreateReader (bytes), DefaultNameDecoder, null);
 			Assert.AreEqual ("TestDelegate", result.Name);
 			Assert.AreEqual (ClassType.Delegate, result.ClassType);
 		}
@@ -195,7 +195,7 @@ namespace MonoDevelop.Projects.DomTests
 			DomPersistence.Write (writer, DefaultNameEncoder, input);
 			byte[] bytes = ms.ToArray ();
 			
-			DomProperty result = DomPersistence.ReadProperty (CreateReader (bytes), DefaultNameDecoder);
+			DomProperty result = DomPersistence.ReadProperty (CreateReader (bytes), DefaultNameDecoder, null);
 			Assert.AreEqual ("Test", result.Name);
 			Assert.AreEqual (true, result.IsIndexer);
 			Assert.AreEqual (true, result.HasGet);
@@ -216,7 +216,7 @@ namespace MonoDevelop.Projects.DomTests
 			DomPersistence.Write (writer, DefaultNameEncoder, input);
 			byte[] bytes = ms.ToArray ();
 			
-			DomEvent result = DomPersistence.ReadEvent (CreateReader (bytes), DefaultNameDecoder);
+			DomEvent result = DomPersistence.ReadEvent (CreateReader (bytes), DefaultNameDecoder, null);
 			Assert.AreEqual ("Test", result.Name);
 			Assert.AreEqual ("AddMethod", result.AddMethod.Name);
 			Assert.AreEqual ("RemoveMethod", result.RemoveMethod.Name);
@@ -236,7 +236,7 @@ namespace MonoDevelop.Projects.DomTests
 			DomPersistence.Write (writer, DefaultNameEncoder, input);
 			byte[] bytes = ms.ToArray ();
 			
-			DomType result = DomPersistence.ReadType (CreateReader (bytes), DefaultNameDecoder);
+			DomType result = DomPersistence.ReadType (CreateReader (bytes), DefaultNameDecoder, null);
 			Assert.AreEqual ("Test", result.Name);
 			Assert.AreEqual (ClassType.Struct, result.ClassType);
 			Assert.AreEqual ("BaseClass", result.BaseType.Name);
@@ -264,7 +264,7 @@ namespace MonoDevelop.Projects.DomTests
 			DomPersistence.Write (writer, DefaultNameEncoder, input);
 			byte[] bytes = ms.ToArray ();
 			
-			DomType result = DomPersistence.ReadType (CreateReader (bytes), DefaultNameDecoder);
+			DomType result = DomPersistence.ReadType (CreateReader (bytes), DefaultNameDecoder, null);
 			Assert.AreEqual ("Test", result.Name);
 			Assert.AreEqual (ClassType.Struct, result.ClassType);
 			Assert.AreEqual ("BaseClass", result.BaseType.Name);
@@ -303,7 +303,7 @@ namespace MonoDevelop.Projects.DomTests
 			BinaryWriter writer = new BinaryWriter (ms);
 			DomPersistence.Write (writer, DefaultNameEncoder, attr);
 			byte[] bytes = ms.ToArray ();
-			DomAttribute result = DomPersistence.ReadAttribute (CreateReader (bytes), DefaultNameDecoder);
+			DomAttribute result = DomPersistence.ReadAttribute (CreateReader (bytes), DefaultNameDecoder, null);
 			
 			Assert.AreEqual (4, result.PositionalArguments.Count);
 			
