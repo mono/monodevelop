@@ -2040,12 +2040,18 @@ namespace Mono.TextEditor
 			
 			protected override void OnAnimationCompleted ()
 			{
-				HideAll ();
+				Move (Screen.Width, Screen.Height);
 				base.OnAnimationCompleted ();
 				DetachEvents ();
 				Destroy ();
 			}
 			
+			internal override void StopPlaying ()
+			{
+				Move (Screen.Width, Screen.Height);
+				base.StopPlaying ();
+			}
+
 			protected override void OnDestroyed ()
 			{
 				base.OnDestroyed ();

@@ -181,7 +181,7 @@ namespace Mono.TextEditor.Theatrics
 			StopPlaying ();
 		}
 		
-		internal void StopPlaying ()
+		internal virtual void StopPlaying ()
 		{
 			stage.Playing = false;
 			
