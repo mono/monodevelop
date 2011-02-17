@@ -99,30 +99,35 @@ namespace MonoDevelop.MonoDroid
 			//use textfile API because it's safer (writes out to another file then moves)
 			MonoDevelop.Projects.Text.TextFile.WriteFile (fileName, text, "utf-8");
 		}
+
+		static string NullIfEmpty (string value)
+		{
+			return string.IsNullOrEmpty (value) ? null : value;
+		}
 		
 		public string PackageName {
 			get { return (string) manifest.Attribute ("package");  }
-			set { manifest.SetAttributeValue ("package", value); }
+			set { manifest.SetAttributeValue ("package", NullIfEmpty (value)); }
 		}
 		
 		public string ApplicationLabel {
 			get { return (string) application.Attribute (aNS + "label");  }
-			set { application.SetAttributeValue (aNS + "label", value); }
+			set { application.SetAttributeValue (aNS + "label", NullIfEmpty (value)); }
 		}
 		
 		public string ApplicationIcon {
 			get { return (string) application.Attribute (aNS + "icon");  }
-			set { application.SetAttributeValue (aNS + "icon", value); }
+			set { application.SetAttributeValue (aNS + "icon", NullIfEmpty (value)); }
 		}
 		
 		public string VersionName {
 			get { return (string) manifest.Attribute (aNS + "versionName");  }
-			set { manifest.SetAttributeValue (aNS + "versionName", value); }
+			set { manifest.SetAttributeValue (aNS + "versionName", NullIfEmpty (value)); }
 		}
 		
 		public string VersionCode {
 			get { return (string) manifest.Attribute (aNS + "versionCode");  }
-			set { manifest.SetAttributeValue (aNS + "versionCode", value); }
+			set { manifest.SetAttributeValue (aNS + "versionCode", NullIfEmpty (value)); }
 		}
 		
 		public int? MinSdkVersion {
