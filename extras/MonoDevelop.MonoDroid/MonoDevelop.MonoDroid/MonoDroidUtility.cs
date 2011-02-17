@@ -179,6 +179,7 @@ namespace MonoDevelop.MonoDroid
 		{
 			var toolbox = MonoDroidFramework.Toolbox;
 			var project = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
+			var conf = (MonoDroidProjectConfiguration) project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
 			int apiLevel = MonoDroidFramework.FrameworkVersionToApiLevel (project.TargetFramework.Id);
 			PackageList list = null;
 			
@@ -206,7 +207,8 @@ namespace MonoDevelop.MonoDroid
 				},
 				new ChainedAsyncOperation () {
 					TaskName = GettextCatalog.GetString ("Installing shared runtime package on device"),
-					Skip = () => list.IsCurrentRuntimeInstalled (RuntimeVersion) ? "" : null,
+					Skip = () => !conf.AndroidUseSharedRuntime || list.IsCurrentRuntimeInstalled (RuntimeVersion) ?
+						"" : null,
 					Create = () => {
 						var pkg = MonoDroidFramework.SharedRuntimePackage;
 						if (!File.Exists (pkg)) {
