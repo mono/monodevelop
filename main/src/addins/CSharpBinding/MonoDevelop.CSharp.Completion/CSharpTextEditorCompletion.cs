@@ -1887,11 +1887,16 @@ namespace MonoDevelop.CSharp.Completion
 					if (type == null) 
 						type = resolver.SearchType (attributeName);
 					if (type != null) {
-						foreach (IProperty property in type.Properties) {
+						foreach (var property in type.Properties) {
 							col.Add (property);
+						}
+						foreach (var field in type.Fields) {
+							if (field.IsPublic)
+								col.Add (field);
 						}
 					}
 				}
+				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, col);
 			} else if (expressionResult.ExpressionContext == ExpressionContext.IdentifierExpected) {
 				if (!string.IsNullOrEmpty (expressionResult.Expression))
 					expressionResult.Expression = expressionResult.Expression.Trim ();
