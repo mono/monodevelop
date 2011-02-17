@@ -30,6 +30,7 @@ namespace Mono.CSharp
 	//
 	public class ModuleContainer : TypeContainer
 	{
+#if STATIC
 		//
 		// Compiler generated container for static data
 		//
@@ -37,9 +38,6 @@ namespace Mono.CSharp
 		{
 			Dictionary<int, Struct> size_types;
 			new int fields;
-#if !STATIC
-			static MethodInfo set_data;
-#endif
 
 			public StaticDataContainer (ModuleContainer module)
 				: base (module, new MemberName ("<PrivateImplementationDetails>" + module.builder.ModuleVersionId.ToString ("B"), Location.Null), Modifiers.STATIC)
@@ -93,28 +91,36 @@ namespace Mono.CSharp
 				++fields;
 				const Modifiers fmod = Modifiers.STATIC | Modifiers.INTERNAL;
 				var fbuilder = TypeBuilder.DefineField (name, size_type.CurrentType.GetMetaInfo (), ModifiersExtensions.FieldAttr (fmod) | FieldAttributes.HasFieldRVA);
-#if STATIC
 				fbuilder.__SetDataAndRVA (data);
-#else
-				if (set_data == null)
-					set_data = typeof (FieldBuilder).GetMethod ("SetRVAData", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-
-				try {
-					set_data.Invoke (fbuilder, new object[] { data });
-				} catch {
-					Report.RuntimeMissingSupport (loc, "SetRVAData");
-				}
-#endif
 
 				return new FieldSpec (CurrentType, null, size_type.CurrentType, fbuilder, fmod);
 			}
 		}
 
+		StaticDataContainer static_data;
+
+		//
+		// Makes const data field inside internal type container
+		//
+		public FieldSpec MakeStaticData (byte[] data, Location loc)
+		{
+			if (static_data == null) {
+				static_data = new StaticDataContainer (this);
+				static_data.CreateType ();
+				static_data.DefineType ();
+
+				AddCompilerGeneratedClass (static_data);
+			}
+
+			return static_data.DefineInitializedData (data, loc);
+		}
+#endif
+
 		public CharSet? DefaultCharSet;
 		public TypeAttributes DefaultCharSetType = TypeAttributes.AnsiClass;
 
 		Dictionary<int, List<AnonymousTypeClass>> anonymous_types;
-		StaticDataContainer static_data;
+		Dictionary<ArrayContainer.TypeRankPair, ArrayContainer> arrays;
 
 		AssemblyDefinition assembly;
 		readonly CompilerContext context;
@@ -141,9 +147,16 @@ namespace Mono.CSharp
 			anonymous_types = new Dictionary<int, List<AnonymousTypeClass>> ();
 			global_ns = new GlobalRootNamespace ();
 			alias_ns = new Dictionary<string, RootNamespace> ();
+			arrays = new Dictionary<ArrayContainer.TypeRankPair, ArrayContainer> ();
 		}
 
 		#region Properties
+
+		public Dictionary<ArrayContainer.TypeRankPair, ArrayContainer> ArraysCache {
+			get {
+				return arrays;
+			}
+		}
 
  		public override AttributeTargets AttributeTargets {
  			get {
@@ -218,6 +231,11 @@ namespace Mono.CSharp
 		}
 
 		#endregion
+
+		public override void Accept (StructuralVisitor visitor)
+		{
+			visitor.Visit (this);
+		}
 
 		public void AddAnonymousType (AnonymousTypeClass type)
 		{
@@ -343,9 +361,6 @@ namespace Mono.CSharp
 
 		public new void Define ()
 		{
-			// FIXME: Temporary hack for repl to reset
-			static_data = null;
-
 			InitializePredefinedTypes ();
 
 			foreach (TypeContainer tc in types)
@@ -368,7 +383,7 @@ namespace Mono.CSharp
 			if (OptAttributes != null)
 				OptAttributes.Emit ();
 
-			if (RootContext.Unsafe) {
+			if (Compiler.Settings.Unsafe) {
 				var pa = PredefinedAttributes.UnverifiableCode;
 				if (pa.IsDefined)
 					pa.EmitAttribute (builder);
@@ -434,22 +449,6 @@ namespace Mono.CSharp
 			return DeclaringAssembly.IsCLSCompliant;
 		}
 
-		//
-		// Makes const data field inside internal type container
-		//
-		public FieldSpec MakeStaticData (byte[] data, Location loc)
-		{
-			if (static_data == null) {
-				static_data = new StaticDataContainer (this);
-				static_data.CreateType ();
-				static_data.DefineType ();
-
-				AddCompilerGeneratedClass (static_data);
-			}
-
-			return static_data.DefineInitializedData (data, loc);
-		}
-
 		protected override bool AddMemberType (TypeContainer ds)
 		{
 			if (!AddToContainer (ds, ds.Name))
@@ -462,11 +461,6 @@ namespace Mono.CSharp
 		{
 			ds.NamespaceEntry.NS.RemoveDeclSpace (ds.Basename);
 			base.RemoveMemberType (ds);
-		}
-		
-		public override void Accept (StructuralVisitor visitor)
-		{
-			visitor.Visit (this);
 		}
 
 		public Attribute ResolveAssemblyAttribute (PredefinedAttribute a_type)
@@ -486,10 +480,10 @@ namespace Mono.CSharp
 	}
 
 	class RootDeclSpace : TypeContainer {
-		public RootDeclSpace (NamespaceEntry ns)
+		public RootDeclSpace (ModuleContainer module, NamespaceEntry ns)
 			: base (ns, null, MemberName.Null, null, 0)
 		{
-			PartialContainer = RootContext.ToplevelTypes;
+			PartialContainer = module;
 		}
 
 		public override AttributeTargets AttributeTargets {
@@ -515,6 +509,11 @@ namespace Mono.CSharp
 			get {
 				return PartialContainer.Module;
 			}
+		}
+
+		public override void Accept (StructuralVisitor visitor)
+		{
+			throw new InternalErrorException ("should not be called");
 		}
 
 		public override bool IsClsComplianceRequired ()

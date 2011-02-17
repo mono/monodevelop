@@ -392,7 +392,7 @@ namespace Mono.CSharp {
 				}
 			} else {
 				if ((ModFlags & (Modifiers.ABSTRACT | Modifiers.EXTERN | Modifiers.PARTIAL)) == 0 && !(Parent is Delegate)) {
-					if (RootContext.Version >= LanguageVersion.V_3) {
+					if (Compiler.Settings.Version >= LanguageVersion.V_3) {
 						Property.PropertyMethod pm = this as Property.PropertyMethod;
 						if (pm is Indexer.GetIndexerMethod || pm is Indexer.SetIndexerMethod)
 							pm = null;
@@ -466,7 +466,7 @@ namespace Mono.CSharp {
 		/// </summary>
 		public virtual void Emit ()
 		{
-			if (!RootContext.VerifyClsCompliance)
+			if (!Compiler.Settings.VerifyClsCompliance)
 				return;
 
 			VerifyClsCompliance ();

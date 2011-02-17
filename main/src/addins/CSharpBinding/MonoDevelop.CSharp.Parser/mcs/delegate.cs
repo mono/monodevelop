@@ -82,6 +82,11 @@ namespace Mono.CSharp {
 		}
 		#endregion
 
+		public override void Accept (StructuralVisitor visitor)
+		{
+			visitor.Visit (this);
+		}
+
 		public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
 		{
 			if (a.Target == AttributeTargets.ReturnValue) {
@@ -164,7 +169,7 @@ namespace Mono.CSharp {
 
 			CheckProtectedModifier ();
 
-			if (RootContext.StdLib && TypeManager.IsSpecialType (ret_type)) {
+			if (Compiler.Settings.StdLib && TypeManager.IsSpecialType (ret_type)) {
 				Method.Error1599 (Location, ret_type, Report);
 				return false;
 			}
@@ -357,7 +362,7 @@ namespace Mono.CSharp {
 		}
 
 
-		public static MethodSpec GetConstructor (CompilerContext ctx, TypeSpec container_type, TypeSpec delType)
+		public static MethodSpec GetConstructor (TypeSpec delType)
 		{
 			var ctor = MemberCache.FindMember (delType, MemberFilter.Constructor (null), BindingRestriction.DeclaredOnly);
 			return (MethodSpec) ctor;
@@ -366,7 +371,7 @@ namespace Mono.CSharp {
 		//
 		// Returns the "Invoke" from a delegate type
 		//
-		public static MethodSpec GetInvokeMethod (CompilerContext ctx, TypeSpec delType)
+		public static MethodSpec GetInvokeMethod (TypeSpec delType)
 		{
 			var invoke = MemberCache.FindMember (delType,
 				MemberFilter.Method (InvokeMethodName, 0, null, null),
@@ -375,16 +380,16 @@ namespace Mono.CSharp {
 			return (MethodSpec) invoke;
 		}
 
-		public static AParametersCollection GetParameters (CompilerContext ctx, TypeSpec delType)
+		public static AParametersCollection GetParameters (TypeSpec delType)
 		{
-			var invoke_mb = GetInvokeMethod (ctx, delType);
+			var invoke_mb = GetInvokeMethod (delType);
 			return invoke_mb.Parameters;
 		}
 
 		//
 		// 15.2 Delegate compatibility
 		//
-		public static bool IsTypeCovariant (Expression a, TypeSpec b)
+		public static bool IsTypeCovariant (ResolveContext rc, Expression a, TypeSpec b)
 		{
 			//
 			// For each value parameter (a parameter with no ref or out modifier), an 
@@ -394,7 +399,7 @@ namespace Mono.CSharp {
 			if (a.Type == b)
 				return true;
 
-			if (RootContext.Version == LanguageVersion.ISO_1)
+			if (rc.Module.Compiler.Settings.Version == LanguageVersion.ISO_1)
 				return false;
 
 			return Convert.ImplicitReferenceConversionExists (a, b);
@@ -412,11 +417,6 @@ namespace Mono.CSharp {
 			set {
 				instance_expr = value;
 			}
-		}
-
-		public override void Accept (StructuralVisitor visitor)
-		{
-			visitor.Visit (this);
 		}
 	}
 
@@ -477,9 +477,9 @@ namespace Mono.CSharp {
 
 		protected override Expression DoResolve (ResolveContext ec)
 		{
-			constructor_method = Delegate.GetConstructor (ec.Compiler, ec.CurrentType, type);
+			constructor_method = Delegate.GetConstructor (type);
 
-			var invoke_method = Delegate.GetInvokeMethod (ec.Compiler, type);
+			var invoke_method = Delegate.GetInvokeMethod (type);
 
 			Arguments arguments = CreateDelegateMethodArguments (invoke_method.Parameters, invoke_method.Parameters.Types, loc);
 			method_group = method_group.OverloadResolve (ec, ref arguments, this, OverloadResolver.Restrictions.CovariantDelegate);
@@ -508,7 +508,7 @@ namespace Mono.CSharp {
 
 			TypeSpec rt = delegate_method.ReturnType;
 			Expression ret_expr = new TypeExpression (rt, loc);
-			if (!Delegate.IsTypeCovariant (ret_expr, invoke_method.ReturnType)) {
+			if (!Delegate.IsTypeCovariant (ec, ret_expr, invoke_method.ReturnType)) {
 				Error_ConversionFailed (ec, delegate_method, ret_expr);
 			}
 
@@ -554,14 +554,14 @@ namespace Mono.CSharp {
 
 		void Error_ConversionFailed (ResolveContext ec, MethodSpec method, Expression return_type)
 		{
-			var invoke_method = Delegate.GetInvokeMethod (ec.Compiler, type);
+			var invoke_method = Delegate.GetInvokeMethod (type);
 			string member_name = method_group.InstanceExpression != null ?
 				Delegate.FullDelegateDesc (method) :
 				TypeManager.GetFullNameSignature (method);
 
 			ec.Report.SymbolRelatedToPreviousError (type);
 			ec.Report.SymbolRelatedToPreviousError (method);
-			if (RootContext.Version == LanguageVersion.ISO_1) {
+			if (ec.Module.Compiler.Settings.Version == LanguageVersion.ISO_1) {
 				ec.Report.Error (410, loc, "A method or delegate `{0} {1}' parameters and return type must be same as delegate `{2} {3}' parameters and return type",
 					TypeManager.CSharpName (method.ReturnType), member_name,
 					TypeManager.CSharpName (invoke_method.ReturnType), Delegate.FullDelegateDesc (invoke_method));
@@ -584,7 +584,7 @@ namespace Mono.CSharp {
 			if (target_type == TypeManager.delegate_type || target_type == TypeManager.multicast_delegate_type)
 				return false;
 
-			var invoke = Delegate.GetInvokeMethod (ec.Compiler, target_type);
+			var invoke = Delegate.GetInvokeMethod (target_type);
 
 			Arguments arguments = CreateDelegateMethodArguments (invoke.Parameters, invoke.Parameters.Types, mg.Location);
 			return mg.OverloadResolve (ec, ref arguments, null, OverloadResolver.Restrictions.CovariantDelegate | OverloadResolver.Restrictions.ProbingOnly) != null;
@@ -668,7 +668,7 @@ namespace Mono.CSharp {
 			Expression e = a.Expr;
 
 			AnonymousMethodExpression ame = e as AnonymousMethodExpression;
-			if (ame != null && RootContext.Version != LanguageVersion.ISO_1) {
+			if (ame != null && ec.Module.Compiler.Settings.Version != LanguageVersion.ISO_1) {
 				e = ame.Compatible (ec, type);
 				if (e == null)
 					return null;
@@ -688,7 +688,7 @@ namespace Mono.CSharp {
 				//
 				// An argument is not a method but another delegate
 				//
-				method_group = new MethodGroupExpr (Delegate.GetInvokeMethod (ec.Compiler, e.Type), e.Type, loc);
+				method_group = new MethodGroupExpr (Delegate.GetInvokeMethod (e.Type), e.Type, loc);
 				method_group.InstanceExpression = e;
 			}
 
@@ -730,7 +730,7 @@ namespace Mono.CSharp {
 			// Do only core overload resolution the rest of the checks has been
 			// done on primary expression
 			//
-			method = Delegate.GetInvokeMethod (ec.Compiler, del_type);
+			method = Delegate.GetInvokeMethod (del_type);
 			var res = new OverloadResolver (new MemberSpec[] { method }, OverloadResolver.Restrictions.DelegateInvoke, loc);
 			var valid = res.ResolveMember<MethodSpec> (ec, ref arguments);
 			if (valid == null && !res.BestCandidateIsDynamic)

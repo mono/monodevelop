@@ -213,7 +213,7 @@ namespace Mono.CSharp {
 
 		public static void Error_AttributeArgumentIsDynamic (IMemberContext context, Location loc)
 		{
-			context.Compiler.Report.Error (1982, loc, "An attribute argument cannot be dynamic expression");
+			context.Module.Compiler.Report.Error (1982, loc, "An attribute argument cannot be dynamic expression");
 		}
 		
 		public void Error_MissingGuidAttribute ()
@@ -279,7 +279,7 @@ namespace Mono.CSharp {
 		void ResolveAttributeType ()
 		{
 			SessionReportPrinter resolve_printer = new SessionReportPrinter ();
-			ReportPrinter prev_recorder = context.Compiler.Report.SetPrinter (resolve_printer);
+			ReportPrinter prev_recorder = context.Module.Compiler.Report.SetPrinter (resolve_printer);
 
 			bool t1_is_attr = false;
 			bool t2_is_attr = false;
@@ -300,7 +300,7 @@ namespace Mono.CSharp {
 
 				resolve_printer.EndSession ();
 			} finally {
-				context.Compiler.Report.SetPrinter (prev_recorder);
+				context.Module.Compiler.Report.SetPrinter (prev_recorder);
 			}
 
 			if (t1_is_attr && t2_is_attr) {
@@ -369,7 +369,7 @@ namespace Mono.CSharp {
 		}
 
 		public Report Report {
-			get { return context.Compiler.Report; }
+			get { return context.Module.Compiler.Report; }
 		}
 
 		public MethodSpec Resolve ()
@@ -805,103 +805,7 @@ namespace Mono.CSharp {
 			var cab = new CustomAttributeBuilder ((ConstructorInfo) ctor.GetMetaInfo (), values, prop, prop_values);
 			permissions.Add (cab);
 #else
-			Type orig_assembly_type = null;
-
-			if (Type.MemberDefinition is TypeContainer) {
-				if (!RootContext.StdLib) {
-					orig_assembly_type = System.Type.GetType (Type.GetMetaInfo ().FullName);
-				} else {
-					string orig_version_path = Environment.GetEnvironmentVariable ("__SECURITY_BOOTSTRAP_DB");
-					if (orig_version_path == null) {
-						Error_AttributeEmitError ("security custom attributes can not be referenced from defining assembly");
-						return;
-					}
-
-					if (orig_sec_assembly == null) {
-						string file = Path.Combine (orig_version_path, Path.GetFileName (RootContext.OutputFile));
-						orig_sec_assembly = Assembly.LoadFile (file);
-					}
-
-					orig_assembly_type = orig_sec_assembly.GetType (Type.GetMetaInfo ().FullName, true);
-					if (orig_assembly_type == null) {
-						Report.Warning (-112, 1, Location, "Self-referenced security attribute `{0}' " +
-								"was not found in previous version of assembly");
-						return;
-					}
-				}
-			}
-
-			SecurityAttribute sa;
-			object[] args;
-
-			// For all non-selfreferencing security attributes we can avoid all hacks
-			if (orig_assembly_type == null) {
-				args = new object[PosArguments.Count];
-				for (int j = 0; j < args.Length; ++j) {
-					args[j] = ((Constant) PosArguments[j].Expr).GetValue ();
-				}
-
-				sa = (SecurityAttribute) Activator.CreateInstance (Type.GetMetaInfo (), args);
-
-				if (named_values != null) {
-					for (int i = 0; i < named_values.Count; ++i) {
-						PropertyInfo pi = ((PropertyExpr) named_values[i].Key).PropertyInfo.MetaInfo;
-						pi.SetValue (sa, ((Constant) named_values [i].Value.Expr).GetValue (), null);
-					}
-				}
-			} else {
-				// HACK: All security attributes have same ctor syntax
-				args = new object[] { GetSecurityActionValue () };
-				sa = (SecurityAttribute) Activator.CreateInstance (orig_assembly_type, args);
-
-				// All types are from newly created assembly but for invocation with old one we need to convert them
-				if (named_values != null) {
-					for (int i = 0; i < named_values.Count; ++i) {
-						PropertyInfo emited_pi = ((PropertyExpr) named_values[i].Key).PropertyInfo.MetaInfo;
-						// FIXME: We are missing return type filter
-						// TODO: pi can be null
-						PropertyInfo pi = orig_assembly_type.GetProperty (emited_pi.Name);
-
-						pi.SetValue (sa, ((Constant) named_values[i].Value.Expr).GetValue (), null);
-					}
-				}
-			}
-
-			IPermission perm;
-			perm = sa.CreatePermission ();
-			SecurityAction action = (SecurityAction) args [0];
-
-			// IS is correct because for corlib we are using an instance from old corlib
-			if (!(perm is System.Security.CodeAccessPermission)) {
-				switch (action) {
-				case SecurityAction.Demand:
-					action = (SecurityAction)13;
-					break;
-				case SecurityAction.LinkDemand:
-					action = (SecurityAction)14;
-					break;
-				case SecurityAction.InheritanceDemand:
-					action = (SecurityAction)15;
-					break;
-				}
-			}
-
-			if (permissions == null)
-				permissions = new SecurityType ();
-
-			PermissionSet ps;
-			if (!permissions.TryGetValue (action, out ps)) {
-				if (sa is PermissionSetAttribute)
-					ps = new PermissionSet (sa.Unrestricted ? PermissionState.Unrestricted : PermissionState.None);
-				else
-					ps = new PermissionSet (PermissionState.None);
-
-				permissions.Add (action, ps);
-			} else if (!ps.IsUnrestricted () && (sa is PermissionSetAttribute) && sa.Unrestricted) {
-				ps = ps.Union (new PermissionSet (PermissionState.Unrestricted));
-				permissions [action] = ps;
-			}
-			ps.AddPermission (perm);
+			throw new NotSupportedException ();
 #endif
 		}
 
@@ -1020,7 +924,7 @@ namespace Mono.CSharp {
 							if (Type == predefined.IndexerName || Type == predefined.Conditional) {
 								string v = ((StringConstant) arg_expr).Value;
 								if (!Tokenizer.IsValidIdentifier (v) || Tokenizer.IsKeyword (v)) {
-									context.Compiler.Report.Error (633, arg_expr.Location,
+									context.Module.Compiler.Report.Error (633, arg_expr.Location,
 										"The argument to the `{0}' attribute must be a valid identifier", GetSignatureForError ());
 								}
 							} else if (Type == predefined.Guid) {
@@ -1034,7 +938,7 @@ namespace Mono.CSharp {
 							} else if (Type == predefined.AttributeUsage) {
 								int v = ((IntConstant) ((EnumConstant) arg_expr).Child).Value;
 								if (v == 0) {
-									context.Compiler.Report.Error (591, Location, "Invalid value for argument to `{0}' attribute",
+									context.Module.Compiler.Report.Error (591, Location, "Invalid value for argument to `{0}' attribute",
 										"System.AttributeUsage");
 								}
 							} else if (Type == predefined.MarshalAs) {
@@ -1101,18 +1005,18 @@ namespace Mono.CSharp {
 				}
 			}
 
-			if (!RootContext.VerifyClsCompliance)
+			if (!context.Module.Compiler.Settings.VerifyClsCompliance)
 				return;
 
 			// Here we are testing attribute arguments for array usage (error 3016)
 			if (Owner.IsClsComplianceRequired ()) {
 				if (PosArguments != null)
-					PosArguments.CheckArrayAsAttribute (context.Compiler);
+					PosArguments.CheckArrayAsAttribute (context.Module.Compiler);
 			
 				if (NamedArguments == null)
 					return;
 
-				NamedArguments.CheckArrayAsAttribute (context.Compiler);
+				NamedArguments.CheckArrayAsAttribute (context.Module.Compiler);
 			}
 		}
 
@@ -2113,7 +2017,7 @@ namespace Mono.CSharp {
 			if (Resolve (loc) == null)
 				return false;
 
-			tctor = TypeManager.GetPredefinedConstructor (type, Location.Null, ArrayContainer.MakeType (TypeManager.bool_type));
+			tctor = TypeManager.GetPredefinedConstructor (type, Location.Null, ArrayContainer.MakeType (module, TypeManager.bool_type));
 			return tctor != null;
 		}
 	}

@@ -370,7 +370,7 @@ namespace Mono.CSharp
 		TypeExpr CreateSiteType (EmitContext ec, Arguments arguments, int dyn_args_count, bool is_statement)
 		{
 			int default_args = is_statement ? 1 : 2;
-			var module = ec.MemberContext.Module;
+			var module = ec.Module;
 
 			bool has_ref_out_argument = false;
 			var targs = new TypeExpression[dyn_args_count + default_args];
@@ -396,7 +396,7 @@ namespace Mono.CSharp
 				TypeExpr te = null;
 				Namespace type_ns = module.GlobalRootNamespace.GetNamespace ("System", true);
 				if (type_ns != null) {
-					te = type_ns.LookupType (module.Compiler, d_name, dyn_args_count + default_args, true, Location.Null);
+					te = type_ns.LookupType (module, d_name, dyn_args_count + default_args, true, Location.Null);
 				}
 			
 				if (te != null) {
@@ -884,7 +884,7 @@ namespace Mono.CSharp
 
 			// Inflated type instance has to be updated manually
 			if (instance_type is InflatedTypeSpec) {
-				var inflator = new TypeParameterInflator (instance_type, TypeParameterSpec.EmptyTypes, TypeSpec.EmptyTypes);
+				var inflator = new TypeParameterInflator (this, instance_type, TypeParameterSpec.EmptyTypes, TypeSpec.EmptyTypes);
 				inflated = (TypeSpec) d.CurrentType.InflateMember (inflator);
 				instance_type.MemberCache.AddMember (inflated);
 
@@ -910,7 +910,7 @@ namespace Mono.CSharp
 				//
 				// Inflate the field, no need to keep it in MemberCache as it's accessed only once
 				//
-				var inflator = new TypeParameterInflator (instance_type, spec.MemberDefinition.TypeParameters, instance_type.TypeArguments);
+				var inflator = new TypeParameterInflator (this, instance_type, spec.MemberDefinition.TypeParameters, instance_type.TypeArguments);
 				fs = (FieldSpec) fs.InflateMember (inflator);
 			}
 
@@ -921,7 +921,7 @@ namespace Mono.CSharp
 		{
 			instance_type = spec;
 			if (mutator != null)
-				instance_type = instance_type.MakeGenericType (mutator.MethodTypeParameters.Select (l => l.Type).ToArray ());
+				instance_type = instance_type.MakeGenericType (this, mutator.MethodTypeParameters.Select (l => l.Type).ToArray ());
 
 			return true;
 		}

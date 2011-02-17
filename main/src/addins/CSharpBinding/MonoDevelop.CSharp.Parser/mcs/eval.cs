@@ -17,6 +17,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.IO;
 using System.Text;
+using System.Linq;
 
 namespace Mono.CSharp
 {
@@ -56,16 +57,15 @@ namespace Mono.CSharp
 		static int count;
 		static Thread invoke_thread;
 
-		static List<NamespaceEntry.UsingAliasEntry> using_alias_list = new List<NamespaceEntry.UsingAliasEntry> ();
-		internal static List<NamespaceEntry.UsingEntry> using_list = new List<NamespaceEntry.UsingEntry> ();
 		static Dictionary<string, Tuple<FieldSpec, FieldInfo>> fields = new Dictionary<string, Tuple<FieldSpec, FieldInfo>> ();
 
 		static TypeSpec interactive_base_class;
-		static Driver driver;
 		static bool inited;
 
 		static CompilerContext ctx;
 		static DynamicLoader loader;
+		static NamespaceEntry ns;
+		static ModuleContainer module;
 		
 		public static TextWriter MessageOutput = Console.Out;
 
@@ -126,15 +126,22 @@ namespace Mono.CSharp
 					return new string [0];
 
 				CompilerCallableEntryPoint.Reset ();
-				var crp = new ConsoleReportPrinter ();
-				driver = Driver.Create (args, false, unknownOptionParser, crp);
-				if (driver == null)
+				var r = new Report (new ConsoleReportPrinter ());
+				var cmd = new CommandLineParser (r);
+				if (unknownOptionParser != null)
+					cmd.UnknownOptionHandler += unknownOptionParser;
+
+				var settings = cmd.ParseArguments (args);
+
+				// TODO: Should use ReportPrinter with throw instead of this
+				if (settings == null || r.Errors > 0)
 					throw new Exception ("Failed to create compiler driver with the given arguments");
 
-				crp.Fatal = driver.fatal_errors;
-				ctx = driver.ctx;
+				ctx = new CompilerContext (settings, r) {
+					IsEvalutor = true
+				};
 
-				RootContext.ToplevelTypes = new ModuleContainer (ctx);
+				RootContext.ToplevelTypes = module = new ModuleContainer (ctx);
 				
 				var startup_files = new List<string> ();
 				foreach (CompilationUnit file in Location.SourceFiles)
@@ -142,16 +149,15 @@ namespace Mono.CSharp
 				
 				CompilerCallableEntryPoint.PartialReset ();
 
-				var importer = new ReflectionImporter (ctx.BuildinTypes);
+				var importer = new ReflectionImporter (module, ctx.BuildinTypes);
 				loader = new DynamicLoader (importer, ctx);
 
-				RootContext.ToplevelTypes.SetDeclaringAssembly (new AssemblyDefinitionDynamic (RootContext.ToplevelTypes, "temp"));
+				module.SetDeclaringAssembly (new AssemblyDefinitionDynamic (module, "temp"));
 
-				loader.LoadReferences (RootContext.ToplevelTypes);
-				ctx.BuildinTypes.CheckDefinitions (RootContext.ToplevelTypes);
-				RootContext.ToplevelTypes.InitializePredefinedTypes ();
+				loader.LoadReferences (module);
+				ctx.BuildinTypes.CheckDefinitions (module);
+				module.InitializePredefinedTypes ();
 
-				RootContext.EvalMode = true;
 				inited = true;
 
 				return startup_files.ToArray ();
@@ -262,8 +268,6 @@ namespace Mono.CSharp
 				else
 					ctx.Report.Printer.Reset ();
 
-			//	RootContext.ToplevelTypes = new ModuleContainer (ctx);
-
 				bool partial_input;
 				CSharpParser parser = ParseString (ParseMode.Silent, input, out partial_input);
 				if (parser == null){
@@ -275,22 +279,11 @@ namespace Mono.CSharp
 					return null;
 				}
 				
-				object parser_result = parser.InteractiveResult;
-				
-				if (!(parser_result is Class)){
-					int errors = ctx.Report.Errors;
-
-					NamespaceEntry.VerifyAllUsing ();
-					if (errors == ctx.Report.Errors)
-						parser.CurrentNamespace.Extract (using_alias_list, using_list);
-					else
-						NamespaceEntry.Reset ();
-				}
-
 #if STATIC
 				throw new NotSupportedException ();
 #else
-				compiled = CompileBlock (parser_result as Class, parser.undo, ctx.Report);
+				Class parser_result = parser.InteractiveResult;
+				compiled = CompileBlock (parser_result, parser.undo, ctx.Report);
 				return null;
 #endif
 			}
@@ -416,20 +409,17 @@ namespace Mono.CSharp
 					return null;
 				}
 				
-				Class parser_result = parser.InteractiveResult as Class;
-				
-				if (parser_result == null){
-					if (CSharpParser.yacc_verbose_flag != 0)
-						Console.WriteLine ("Do not know how to cope with !Class yet");
-					return null;
-				}
+				Class parser_result = parser.InteractiveResult;
 
 				try {
-					var a = new AssemblyDefinitionDynamic (RootContext.ToplevelTypes, "temp");
+					var a = new AssemblyDefinitionDynamic (module, "temp");
 					a.Create (AppDomain.CurrentDomain, AssemblyBuilderAccess.Run);
-					RootContext.ToplevelTypes.SetDeclaringAssembly (a);
-					RootContext.ToplevelTypes.CreateType ();
-					RootContext.ToplevelTypes.Define ();
+					module.SetDeclaringAssembly (a);
+					module.CreateType ();
+					module.Define ();
+
+					parser_result.CreateType ();
+					parser_result.Define ();
 					if (ctx.Report.Errors != 0)
 						return null;
 					
@@ -453,7 +443,8 @@ namespace Mono.CSharp
 						return cr.Result;
 					} 
 				} finally {
-					parser.undo.ExecuteUndo ();
+					if (parser.undo != null)
+						parser.undo.ExecuteUndo ();
 				}
 				
 			}
@@ -655,20 +646,17 @@ namespace Mono.CSharp
 			}
 			seekable.Position = 0;
 
-			CSharpParser parser = new CSharpParser (seekable, Location.SourceFiles [0], RootContext.ToplevelTypes);
+			if (ns == null)
+				ns = new NamespaceEntry (module, null, Location.SourceFiles[0], null);
+
+			CSharpParser parser = new CSharpParser (seekable, Location.SourceFiles [0], module, ns);
 
 			if (kind == InputKind.StatementOrExpression){
 				parser.Lexer.putback_char = Tokenizer.EvalStatementParserCharacter;
-				RootContext.StatementMode = true;
+				ctx.Settings.StatementMode = true;
 			} else {
-				//
-				// Do not activate EvalCompilationUnitParserCharacter until
-				// I have figured out all the limitations to invoke methods
-				// in the generated classes.  See repl.txt
-				//
-				parser.Lexer.putback_char = Tokenizer.EvalUsingDeclarationsParserCharacter;
-				//parser.Lexer.putback_char = Tokenizer.EvalCompilationUnitParserCharacter;
-				RootContext.StatementMode = false;
+				parser.Lexer.putback_char = Tokenizer.EvalCompilationUnitParserCharacter;
+				ctx.Settings.StatementMode = false;
 			}
 
 			if (mode == ParseMode.GetCompletions)
@@ -685,7 +673,9 @@ namespace Mono.CSharp
 					if (mode != ParseMode.ReportErrors  && parser.UnexpectedEOF)
 						partial_input = true;
 
-					parser.undo.ExecuteUndo ();
+					if (parser.undo != null)
+						parser.undo.ExecuteUndo ();
+
 					parser = null;
 				}
 
@@ -709,20 +699,35 @@ namespace Mono.CSharp
 		static CompiledMethod CompileBlock (Class host, Undo undo, Report Report)
 		{
 			AssemblyDefinitionDynamic assembly;
+			AssemblyBuilderAccess access;
 
 			if (Environment.GetEnvironmentVariable ("SAVE") != null) {
-				assembly = new AssemblyDefinitionDynamic (RootContext.ToplevelTypes, current_debug_name, current_debug_name);
+				access = AssemblyBuilderAccess.RunAndSave;
+				assembly = new AssemblyDefinitionDynamic (module, current_debug_name, current_debug_name);
 				assembly.Importer = loader.Importer;
 			} else {
-				assembly = new AssemblyDefinitionDynamic (RootContext.ToplevelTypes, current_debug_name);
+#if NET_4_0
+				access = AssemblyBuilderAccess.RunAndCollect;
+#else
+				access = AssemblyBuilderAccess.Run;
+#endif
+				assembly = new AssemblyDefinitionDynamic (module, current_debug_name);
 			}
 
-			assembly.Create (AppDomain.CurrentDomain, AssemblyBuilderAccess.RunAndSave);
-			RootContext.ToplevelTypes.CreateType ();
-			RootContext.ToplevelTypes.Define ();
+			assembly.Create (AppDomain.CurrentDomain, access);
+
+			if (host != null) {
+				host.CreateType ();
+				host.Define ();
+			}
+
+			module.CreateType ();
+			module.Define ();
 
 			if (Report.Errors != 0){
-				undo.ExecuteUndo ();
+				if (undo != null)
+					undo.ExecuteUndo ();
+
 				return null;
 			}
 
@@ -743,17 +748,22 @@ namespace Mono.CSharp
 
 				if (mb == null)
 					throw new Exception ("Internal error: did not find the method builder for the generated method");
+
+				host.EmitType ();
 			}
 			
-			RootContext.ToplevelTypes.Emit ();
+			module.Emit ();
 			if (Report.Errors != 0){
-				undo.ExecuteUndo ();
+				if (undo != null)
+					undo.ExecuteUndo ();
 				return null;
 			}
 
-			RootContext.ToplevelTypes.CloseType ();
+			module.CloseType ();
+			if (host != null)
+				host.CloseType ();
 
-			if (Environment.GetEnvironmentVariable ("SAVE") != null)
+			if (access == AssemblyBuilderAccess.RunAndSave)
 				assembly.Save ();
 
 			if (host == null)
@@ -791,18 +801,12 @@ namespace Mono.CSharp
 					fields.Add (field.Name, Tuple.Create (field.Spec, fi));
 				}
 			}
-			//types.Add (tb);
-
 			queued_fields.Clear ();
 			
 			return (CompiledMethod) System.Delegate.CreateDelegate (typeof (CompiledMethod), mi);
 		}
 #endif
-		static internal void LoadAliases (NamespaceEntry ns)
-		{
-			ns.Populate (using_alias_list, using_list);
-		}
-		
+
 		/// <summary>
 		///   A sentinel value used to indicate that no value was
 		///   was set by the compiled function.   This is used to
@@ -846,13 +850,18 @@ namespace Mono.CSharp
 		static public string GetUsing ()
 		{
 			lock (evaluator_lock){
+				if (ns == null)
+					return null;
+
 				StringBuilder sb = new StringBuilder ();
-				
-				foreach (object x in using_alias_list)
-					sb.Append (String.Format ("using {0};\n", x));
-				
-				foreach (object x in using_list)
-					sb.Append (String.Format ("using {0};\n", x));
+				// TODO:
+				//foreach (object x in ns.using_alias_list)
+				//    sb.AppendFormat ("using {0};\n", x);
+
+				foreach (var ue in ns.Usings) {
+					sb.AppendFormat ("using {0};", ue.ToString ());
+					sb.Append (Environment.NewLine);
+				}
 				
 				return sb.ToString ();
 			}
@@ -860,8 +869,9 @@ namespace Mono.CSharp
 
 		static internal ICollection<string> GetUsingList ()
 		{
-			var res = new List<string> (using_list.Count);
-			foreach (object ue in using_list)
+			var res = new List<string> ();
+
+			foreach (var ue in ns.Usings)
 				res.Add (ue.ToString ());
 			return res;
 		}
@@ -905,7 +915,7 @@ namespace Mono.CSharp
 			lock (evaluator_lock){
 				var a = loader.LoadAssemblyFile (file);
 				if (a != null)
-					loader.Importer.ImportAssembly (a, RootContext.ToplevelTypes.GlobalRootNamespace);
+					loader.Importer.ImportAssembly (a, module.GlobalRootNamespace);
 			}
 		}
 
@@ -915,7 +925,7 @@ namespace Mono.CSharp
 		static public void ReferenceAssembly (Assembly a)
 		{
 			lock (evaluator_lock){
-				loader.Importer.ImportAssembly (a, RootContext.ToplevelTypes.GlobalRootNamespace);
+				loader.Importer.ImportAssembly (a, module.GlobalRootNamespace);
 			}
 		}
 
@@ -1023,9 +1033,7 @@ namespace Mono.CSharp
 				return;
 			}
 
-			string pkgout = Driver.GetPackageFlags (pkg, false, RootContext.ToplevelTypes.Compiler.Report);
-			if (pkgout == null)
-				return;
+			string pkgout = Driver.GetPackageFlags (pkg, null);
 
 			string [] xargs = pkgout.Trim (new Char [] {' ', '\n', '\r', '\t'}).
 				Split (new Char [] { ' ', '\t'});
@@ -1195,12 +1203,12 @@ namespace Mono.CSharp
 		}
 	}
 
-	public class Undo {
-		List<KeyValuePair<TypeContainer, TypeContainer>> undo_types;
+	public class Undo
+	{
+		List<Action> undo_actions;
 		
 		public Undo ()
 		{
-			undo_types = new List<KeyValuePair<TypeContainer, TypeContainer>> ();
 		}
 
 		public void AddTypeContainer (TypeContainer current_container, TypeContainer tc)
@@ -1210,23 +1218,28 @@ namespace Mono.CSharp
 				return;
 			}
 
-			if (undo_types == null)
-				undo_types = new List<KeyValuePair<TypeContainer, TypeContainer>> ();
+			if (undo_actions == null)
+				undo_actions = new List<Action> ();
 
-			undo_types.Add (new KeyValuePair<TypeContainer, TypeContainer> (current_container, tc));
+			var existing = current_container.Types.FirstOrDefault (l => l.MemberName.Basename == tc.MemberName.Basename);
+			if (existing != null) {
+				current_container.RemoveTypeContainer (existing);
+				undo_actions.Add (() => current_container.AddTypeContainer (existing));
+			}
+
+			undo_actions.Add (() => current_container.RemoveTypeContainer (tc));
 		}
 
 		public void ExecuteUndo ()
 		{
-			if (undo_types == null)
+			if (undo_actions == null)
 				return;
 
-			foreach (var p in undo_types){
-				TypeContainer current_container = p.Key;
-
-				current_container.RemoveTypeContainer (p.Value);
+			foreach (var p in undo_actions){
+				p ();
 			}
-			undo_types = null;
+
+			undo_actions = null;
 		}
 	}
 	

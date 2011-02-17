@@ -87,14 +87,7 @@ namespace Mono.CSharp {
 			ec.Report.Error (834, loc, "A lambda expression with statement body cannot be converted to an expresion tree");
 			return null;
 		}
-
-		public Statement PerformClone ()
-		{
-			CloneContext clonectx = new CloneContext ();
-
-			return Clone (clonectx);
-		}
-
+		
 		public virtual object Accept (StructuralVisitor visitor)
 		{
 			return visitor.Visit (this);
@@ -1387,8 +1380,8 @@ namespace Mono.CSharp {
 					// 
 					var texpr = type_expr.ResolveAsTypeTerminal (bc, true);
 					if (texpr == null) {
-						if (RootContext.Version < LanguageVersion.V_3)
-							bc.Report.FeatureIsNotAvailable (loc, "implicitly typed local variable");
+						if (bc.Module.Compiler.Settings.Version < LanguageVersion.V_3)
+							bc.Report.FeatureIsNotAvailable (bc.Module.Compiler, loc, "implicitly typed local variable");
 
 						if (li.IsFixed) {
 							bc.Report.Error (821, loc, "A fixed statement cannot use an implicitly typed local variable");
@@ -1433,13 +1426,10 @@ namespace Mono.CSharp {
 				if (type.IsStatic)
 					FieldBase.Error_VariableOfStaticClass (loc, li.Name, type, bc.Report);
 
-				if (type.IsPointer && !bc.IsUnsafe)
-					Expression.UnsafeError (bc, loc);
-
 				li.Type = type;
 			}
 
-			bool eval_global = RootContext.StatementMode && bc.CurrentBlock is ToplevelBlock;
+			bool eval_global = bc.Module.Compiler.Settings.StatementMode && bc.CurrentBlock is ToplevelBlock;
 			if (eval_global) {
 				CreateEvaluatorVariable (bc, li);
 			} else {
@@ -2220,6 +2210,8 @@ namespace Mono.CSharp {
 #endif
 
 			clonectx.AddBlockMap (this, target);
+			if (original != this)
+				clonectx.AddBlockMap (original, target);
 
 			target.ParametersBlock = (ParametersBlock) (ParametersBlock == this ? target : clonectx.RemapBlockCopy (ParametersBlock));
 			target.Explicit = (ExplicitBlock) (Explicit == this ? target : clonectx.LookupBlock (Explicit));
@@ -2623,6 +2615,12 @@ namespace Mono.CSharp {
 		public Expression GetParameterReference (int index, Location loc)
 		{
 			return new ParameterReference (parameter_info[index], loc);
+		}
+
+		public Statement PerformClone ()
+		{
+			CloneContext clonectx = new CloneContext ();
+			return Clone (clonectx);
 		}
 
 		protected void ProcessParameters ()
@@ -3747,8 +3745,8 @@ namespace Mono.CSharp {
 			// Validate switch.
 			SwitchType = new_expr.Type;
 
-			if (RootContext.Version == LanguageVersion.ISO_1 && SwitchType == TypeManager.bool_type) {
-				ec.Report.FeatureIsNotAvailable (loc, "switch expression of boolean type");
+			if (ec.Module.Compiler.Settings.Version == LanguageVersion.ISO_1 && SwitchType == TypeManager.bool_type) {
+				ec.Report.FeatureIsNotAvailable (ec.Module.Compiler, loc, "switch expression of boolean type");
 				return false;
 			}
 
@@ -4630,7 +4628,7 @@ namespace Mono.CSharp {
 					//
 					// Provided that array_type is unmanaged,
 					//
-					if (!TypeManager.VerifyUnmanaged (bc.Compiler, array_type, loc))
+					if (!TypeManager.VerifyUnmanaged (bc.Module, array_type, loc))
 						return null;
 
 					//

@@ -1763,6 +1763,7 @@ namespace MonoDevelop.CSharp.Parser
 						opLength = 2;
 						break;
 				}
+				
 				result.AddChild ((MonoDevelop.CSharp.Ast.Expression)binaryExpression.Left.Accept (this), BinaryOperatorExpression.LeftRole);
 				result.AddChild (new CSharpTokenNode (Convert (binaryExpression.Location), opLength), BinaryOperatorExpression.OperatorRole);
 				result.AddChild ((MonoDevelop.CSharp.Ast.Expression)binaryExpression.Right.Accept (this), BinaryOperatorExpression.RightRole);

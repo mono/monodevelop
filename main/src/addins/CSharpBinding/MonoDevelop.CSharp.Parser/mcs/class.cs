@@ -265,7 +265,7 @@ namespace Mono.CSharp {
 						// Switch to inflated version as it's used by all expressions
 						//
 						var targs = CurrentTypeParameters == null ? TypeSpec.EmptyTypes : CurrentTypeParameters.Select (l => l.Type).ToArray ();
-						current_type = spec.MakeGenericType (targs);
+						current_type = spec.MakeGenericType (this, targs);
 					} else {
 						current_type = spec;
 					}
@@ -746,7 +746,7 @@ namespace Mono.CSharp {
 				if (initialized_static_fields == null)
 					return;
 
-				bool has_complex_initializer = !RootContext.Optimize;
+				bool has_complex_initializer = !ec.Module.Compiler.Settings.Optimize;
 				int i;
 				ExpressionStatement [] init = new ExpressionStatement [initialized_static_fields.Count];
 				for (i = 0; i < initialized_static_fields.Count; ++i) {
@@ -789,7 +789,7 @@ namespace Mono.CSharp {
 				//
 				// Field is re-initialized to its default value => removed
 				//
-				if (fi.IsDefaultInitializer && RootContext.Optimize)
+				if (fi.IsDefaultInitializer && ec.Module.Compiler.Settings.Optimize)
 					continue;
 
 				ec.CurrentBlock.AddScopeStatement (new StatementExpression (s));
@@ -1117,7 +1117,7 @@ namespace Mono.CSharp {
 					for (int i = 0; i < type_params.Length; ++i) {
 						var tp = hoisted_tparams[i];
 						targs.Add (new TypeParameterName (tp.Name, null, Location));
-						type_params[i] = new TypeParameter (tp, null, null, new MemberName (tp.Name), null);
+						type_params[i] = new TypeParameter (tp, this, null, new MemberName (tp.Name), null);
 					}
 
 					member_name = new MemberName (name, targs, Location);
@@ -1585,7 +1585,7 @@ namespace Mono.CSharp {
 					requires_delayed_unmanagedtype_check = false;
 					foreach (FieldBase f in fields) {
 						if (f.MemberType != null && f.MemberType.IsPointer)
-							TypeManager.VerifyUnmanaged (Compiler, f.MemberType, f.Location);
+							TypeManager.VerifyUnmanaged (Module, f.MemberType, f.Location);
 					}
 				}
 			}
@@ -1729,7 +1729,7 @@ namespace Mono.CSharp {
 			// Check for internal or private fields that were never assigned
 			//
 			if (Report.WarningLevel >= 3) {
-				if (RootContext.EnhancedWarnings) {
+				if (Compiler.Settings.EnhancedWarnings) {
 					CheckMemberUsage (properties, "property");
 					CheckMemberUsage (methods, "method");
 					CheckMemberUsage (constants, "constant");
@@ -1827,7 +1827,7 @@ namespace Mono.CSharp {
 			if (instance_constructors == null)
 				return;
 
-			if (spec.IsAttribute && IsExposedFromAssembly () && RootContext.VerifyClsCompliance && IsClsComplianceRequired ()) {
+			if (spec.IsAttribute && IsExposedFromAssembly () && Compiler.Settings.VerifyClsCompliance && IsClsComplianceRequired ()) {
 				bool has_compliant_args = false;
 
 				foreach (Constructor c in instance_constructors) {
@@ -2433,10 +2433,11 @@ namespace Mono.CSharp {
 			var accmods = (Parent == null || Parent.Parent == null) ? Modifiers.INTERNAL : Modifiers.PRIVATE;
 			this.ModFlags = ModifiersExtensions.Check (AllowedModifiers, mod, accmods, Location, Report);
 			spec = new TypeSpec (Kind, null, this, null, ModFlags);
+		}
 
-			if (IsStatic && RootContext.Version == LanguageVersion.ISO_1) {
-				Report.FeatureIsNotAvailable (Location, "static classes");
-			}
+		public override void Accept (StructuralVisitor visitor)
+		{
+			visitor.Visit (this);
 		}
 
 		public override void AddBasesForPart (DeclSpace part, List<FullNamedExpression> bases)
@@ -2480,11 +2481,6 @@ namespace Mono.CSharp {
 			get {
 				return AttributeTargets.Class;
 			}
-		}
-		
-		public override void Accept (StructuralVisitor visitor)
-		{
-			visitor.Visit (this);
 		}
 		
 		protected override void DefineContainerMembers (System.Collections.IList list)
@@ -2683,6 +2679,11 @@ namespace Mono.CSharp {
 			}
 		}
 
+		public override void Accept (StructuralVisitor visitor)
+		{
+			visitor.Visit (this);
+		}
+
 		public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
 		{
 			base.ApplyAttributeBuilder (a, ctor, cdata, pa);
@@ -2824,10 +2825,6 @@ namespace Mono.CSharp {
 				return base.TypeAttr | DefaultTypeAttributes;
 			}
 		}
-		public override void Accept (StructuralVisitor visitor)
-		{
-			visitor.Visit (this);
-		}
 		
 		public override void RegisterFieldForInitialization (MemberCore field, FieldInitializer expression)
 		{
@@ -2867,16 +2864,7 @@ namespace Mono.CSharp {
 			spec = new TypeSpec (Kind, null, this, null, ModFlags);
 		}
 
-		public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
-		{
-			if (a.Type == pa.ComImport && !attributes.Contains (pa.Guid)) {
-				a.Error_MissingGuidAttribute ();
-				return;
-			}
-
-			base.ApplyAttributeBuilder (a, ctor, cdata, pa);
-		}
-
+		#region Properties
 
 		public override AttributeTargets AttributeTargets {
 			get {
@@ -2894,12 +2882,24 @@ namespace Mono.CSharp {
 				return base.TypeAttr | DefaultTypeAttributes;
 			}
 		}
-		
+
+		#endregion
+
 		public override void Accept (StructuralVisitor visitor)
 		{
 			visitor.Visit (this);
 		}
-		
+
+		public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
+		{
+			if (a.Type == pa.ComImport && !attributes.Contains (pa.Guid)) {
+				a.Error_MissingGuidAttribute ();
+				return;
+			}
+
+			base.ApplyAttributeBuilder (a, ctor, cdata, pa);
+		}
+
 		protected override bool VerifyClsCompliance ()
 		{
 			if (!base.VerifyClsCompliance ())

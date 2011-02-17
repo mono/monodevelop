@@ -189,6 +189,11 @@ namespace Mono.CSharp {
 
 		#endregion
 
+		public override void Accept (StructuralVisitor visitor)
+		{
+			visitor.Visit (this);
+		}
+
 		public void AddEnumMember (EnumMember em)
 		{
 			if (em.Name == UnderlyingValueField) {
@@ -256,11 +261,6 @@ namespace Mono.CSharp {
 			}
 
 			return true;
-		}
-
-		public override void Accept (StructuralVisitor visitor)
-		{
-			visitor.Visit (this);
 		}
 	}
 

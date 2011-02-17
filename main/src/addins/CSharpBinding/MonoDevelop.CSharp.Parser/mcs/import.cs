@@ -120,11 +120,14 @@ namespace Mono.CSharp
 		protected readonly Dictionary<MetaType, TypeSpec> import_cache;
 		protected readonly Dictionary<MetaType, TypeSpec> compiled_types;
 		protected readonly Dictionary<Assembly, IAssemblyDefinition> assembly_2_definition;
+		readonly ModuleContainer module;
 
 		public static readonly string CompilerServicesNamespace = "System.Runtime.CompilerServices";
 
-		protected MetadataImporter ()
+		protected MetadataImporter (ModuleContainer module)
 		{
+			this.module = module;
+
 			import_cache = new Dictionary<MetaType, TypeSpec> (1024, ReferenceEquality<MetaType>.Default);
 			compiled_types = new Dictionary<MetaType, TypeSpec> (40, ReferenceEquality<MetaType>.Default);
 			assembly_2_definition = new Dictionary<Assembly, IAssemblyDefinition> (ReferenceEquality<Assembly>.Default);
@@ -307,7 +310,7 @@ namespace Mono.CSharp
 						throw new NotImplementedException ("Unknown element type " + type.ToString ());
 					}
 
-					spec = ArrayContainer.MakeType (spec, type.GetArrayRank ());
+					spec = ArrayContainer.MakeType (module, spec, type.GetArrayRank ());
 				} else {
 					spec = CreateType (type, dtype, true);
 
@@ -323,7 +326,7 @@ namespace Mono.CSharp
 					//
 					if (!IsMissingType (type) && type.IsGenericTypeDefinition) {
 						var targs = CreateGenericArguments (0, type.GetGenericArguments (), dtype);
-						spec = spec.MakeGenericType (targs);
+						spec = spec.MakeGenericType (module, targs);
 					}
 				}
 
@@ -669,7 +672,7 @@ namespace Mono.CSharp
 				if (declaringType == null) {
 					// Simple case, no nesting
 					spec = CreateType (type_def, null, new DynamicTypeReader (), canImportBaseType);
-					spec = spec.MakeGenericType (targs);
+					spec = spec.MakeGenericType (module, targs);
 				} else {
 					//
 					// Nested type case, converting .NET types like
@@ -684,7 +687,7 @@ namespace Mono.CSharp
 
 					int targs_pos = 0;
 					if (declaringType.Arity > 0) {
-						spec = declaringType.MakeGenericType (targs.Skip (targs_pos).Take (declaringType.Arity).ToArray ());
+						spec = declaringType.MakeGenericType (module, targs.Skip (targs_pos).Take (declaringType.Arity).ToArray ());
 						targs_pos = spec.Arity;
 					} else {
 						spec = declaringType;
@@ -694,7 +697,7 @@ namespace Mono.CSharp
 						var t = nested_hierarchy [i - 1];
 						spec = MemberCache.FindNestedType (spec, t.Name, t.Arity);
 						if (t.Arity > 0) {
-							spec = spec.MakeGenericType (targs.Skip (targs_pos).Take (spec.Arity).ToArray ());
+							spec = spec.MakeGenericType (module, targs.Skip (targs_pos).Take (spec.Arity).ToArray ());
 							targs_pos += t.Arity;
 						}
 					}
@@ -706,7 +709,7 @@ namespace Mono.CSharp
 
 					spec = MemberCache.FindNestedType (spec, name, targs.Length - targs_pos);
 					if (spec.Arity > 0) {
-						spec = spec.MakeGenericType (targs.Skip (targs_pos).ToArray ());
+						spec = spec.MakeGenericType (module, targs.Skip (targs_pos).ToArray ());
 					}
 				}
 
@@ -1060,7 +1063,7 @@ namespace Mono.CSharp
 				var spec = ImportType (element, dtype);
 
 				if (type.IsArray)
-					return ArrayContainer.MakeType (spec, type.GetArrayRank ());
+					return ArrayContainer.MakeType (module, spec, type.GetArrayRank ());
 				if (type.IsByRef)
 					return ReferenceContainer.MakeType (spec);
 				if (type.IsPointer)
@@ -1754,15 +1757,15 @@ namespace Mono.CSharp
 				string name = t.GetSignatureForError ();
 
 				if (t.MemberDefinition.DeclaringAssembly == ctx.Module.DeclaringAssembly) {
-					ctx.Compiler.Report.Error (1683, loc,
+					ctx.Module.Compiler.Report.Error (1683, loc,
 						"Reference to type `{0}' claims it is defined in this assembly, but it is not defined in source or any added modules",
 						name);
 				} else if (t.MemberDefinition.DeclaringAssembly.IsMissing) {
-					ctx.Compiler.Report.Error (12, loc,
+					ctx.Module.Compiler.Report.Error (12, loc,
 						"The type `{0}' is defined in an assembly that is not referenced. Consider adding a reference to assembly `{1}'",
 						name, t.MemberDefinition.DeclaringAssembly.FullName);
 				} else {
-					ctx.Compiler.Report.Error (1684, loc,
+					ctx.Module.Compiler.Report.Error (1684, loc,
 						"Reference to type `{0}' claims it is defined assembly `{1}', but it could not be found",
 						name, t.MemberDefinition.DeclaringAssembly.FullName);
 				}
@@ -1845,7 +1848,7 @@ namespace Mono.CSharp
 					var t = (MetaType) member;
 
 					// Ignore compiler generated types, mostly lambda containers
-					if ((t.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NestedPrivate)
+					if ((t.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NestedPrivate && importer.IgnorePrivateMembers)
 						continue;
 
 					imported = importer.CreateNestedType (t, declaringType);
@@ -1858,7 +1861,7 @@ namespace Mono.CSharp
 
 					var t = (MetaType) member;
 
-					if ((t.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NestedPrivate)
+					if ((t.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NestedPrivate && importer.IgnorePrivateMembers)
 						continue;
 
 					importer.ImportTypeBase (t);

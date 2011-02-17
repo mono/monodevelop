@@ -86,7 +86,7 @@ namespace Mono.CSharp {
 			// FIXME: It could be even optimizable as not
 			// to use XmlDocument. But anyways the nodes
 			// are not kept in memory.
-			XmlDocument doc = RootContext.Documentation.XmlDocumentation;
+			XmlDocument doc = mc.Compiler.Settings.Documentation.XmlDocumentation;
 			try {
 				XmlElement el = doc.CreateElement ("member");
 				el.SetAttribute ("name", name);
@@ -157,7 +157,7 @@ namespace Mono.CSharp {
 						HandleException (mc, ds_target, see, Report);
 				}
 
-				n.WriteTo (RootContext.Documentation.XmlCommentOutput);
+				n.WriteTo (mc.Compiler.Settings.Documentation.XmlCommentOutput);
 			}
 			else if (mc.IsExposedFromAssembly ()) {
 				Constructor c = mc as Constructor;
@@ -188,11 +188,11 @@ namespace Mono.CSharp {
 			}
 			else {
 				XmlDocument doc;
-				if (!RootContext.Documentation.StoredDocuments.TryGetValue (file, out doc)) {
+				if (!mc.Compiler.Settings.Documentation.StoredDocuments.TryGetValue (file, out doc)) {
 					try {
 						doc = new XmlDocument ();
 						doc.Load (file);
-						RootContext.Documentation.StoredDocuments.Add (file, doc);
+						mc.Compiler.Settings.Documentation.StoredDocuments.Add (file, doc);
 					} catch (Exception) {
 						el.ParentNode.InsertBefore (el.OwnerDocument.CreateComment (String.Format (" Badly formed XML in at comment file `{0}': cannot be included ", file)), el);
 						Report.Warning (1592, 1, mc.Location, "Badly formed XML in included comments file -- `{0}'", file);
@@ -264,7 +264,7 @@ namespace Mono.CSharp {
 			}
 			TypeSpec t = FindDocumentedTypeNonArray (mc, identifier, ds, cref, r);
 			if (t != null && is_array)
-				t = ArrayContainer.MakeType (t);
+				t = ArrayContainer.MakeType (mc.Module, t);
 			return t;
 		}
 
@@ -320,7 +320,7 @@ namespace Mono.CSharp {
 			Namespace ns = ds.NamespaceEntry.NS.GetNamespace (nsName, false);
 			ns = ns ?? mc.Module.GlobalRootNamespace.GetNamespace(nsName, false);
 			if (ns != null) {
-				var te = ns.LookupType(mc.Compiler, typeName, 0, true, mc.Location);
+				var te = ns.LookupType(mc, typeName, 0, true, mc.Location);
 				if(te != null)
 					return te.Type;
 			}
