@@ -218,6 +218,13 @@ namespace MonoDevelop.Debugger
 
 		protected override void OnDestroyed ()
 		{
+			crtExp.Edited -= OnExpEdited;
+			crtExp.EditingStarted -= OnExpEditing;
+			crtExp.EditingCanceled -= OnEditingCancelled;
+			crtValue.EditingStarted -= OnValueEditing;
+			crtValue.Edited -= OnValueEdited;
+			crtValue.EditingCanceled -= OnEditingCancelled;
+			
 			base.OnDestroyed ();
 			disposed = true;
 		}
