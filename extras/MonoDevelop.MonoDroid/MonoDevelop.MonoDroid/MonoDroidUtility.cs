@@ -179,7 +179,7 @@ namespace MonoDevelop.MonoDroid
 		{
 			var toolbox = MonoDroidFramework.Toolbox;
 			var project = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
-			int apiLevel = MonoDroidFramework.FrameworkVersionToApiLevel (project.TargetFramework.Id);
+			int apiLevel = MonoDroidFramework.FrameworkVersionToApiLevel (project.TargetFramework.Id.Version);
 			PackageList list = null;
 			
 			replaceIfExists = replaceIfExists || signingOperation != null;
