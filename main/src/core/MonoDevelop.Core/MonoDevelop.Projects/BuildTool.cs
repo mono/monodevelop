@@ -33,6 +33,7 @@ using MonoDevelop.Projects;
 using Mono.Addins;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Projects
 {
@@ -43,6 +44,7 @@ namespace MonoDevelop.Projects
 		string project;
 		string config = null;
 		string command = ProjectService.BuildTarget;
+		string runtime;
 		
 		public int Run (string[] arguments)
 		{
@@ -55,6 +57,7 @@ namespace MonoDevelop.Projects
 				Console.WriteLine ("-p --project:PROJECT  Name of the project to build.");
 				Console.WriteLine ("-t --target:TARGET    Name of the target: Build or Clean.");
 				Console.WriteLine ("-c --configuration:CONFIGURATION  Name of the solution configuration to build.");
+				Console.WriteLine ("-r --runtime:PREFIX  Prefix of the Mono runtime to build against.");
 				Console.WriteLine ();
 				Console.WriteLine ("Supported targets:");
 				Console.WriteLine ("  {0}: build the project (the default target).", ProjectService.BuildTarget);
@@ -91,7 +94,16 @@ namespace MonoDevelop.Projects
 			}
 			
 			ConsoleProgressMonitor monitor = new ConsoleProgressMonitor ();
-			
+
+			TargetRuntime targetRuntime = null;
+			TargetRuntime defaultRuntime = Runtime.SystemAssemblyService.DefaultRuntime;
+			if (runtime != null)
+			{
+				targetRuntime = MonoTargetRuntimeFactory.RegisterRuntime(new MonoRuntimeInfo(runtime));
+				if (targetRuntime != null)
+					Runtime.SystemAssemblyService.DefaultRuntime = targetRuntime;
+			}
+
 			IBuildTarget item;
 			if (solFile != null)
 				item = Services.ProjectService.ReadWorkspaceItem (monitor, solFile);
@@ -123,6 +135,13 @@ namespace MonoDevelop.Projects
 			
 			monitor = new ConsoleProgressMonitor ();
 			BuildResult res = item.RunTarget (monitor, command, configuration);
+
+			if (targetRuntime != null)
+			{
+				Runtime.SystemAssemblyService.DefaultRuntime = defaultRuntime;
+				MonoTargetRuntimeFactory.UnregisterRuntime((MonoTargetRuntime) targetRuntime);
+			}
+
 			return (res == null || res.ErrorCount == 0) ? 0 : 1;
 		}
 		
@@ -180,6 +199,11 @@ namespace MonoDevelop.Projects
 				case "target":
 				    command = value;
 				    break;
+
+				case "r":
+				case "runtime":
+						runtime = value;
+						break;
 
 				default:
 				    throw new Exception("Unknown option '" + option + "'");
