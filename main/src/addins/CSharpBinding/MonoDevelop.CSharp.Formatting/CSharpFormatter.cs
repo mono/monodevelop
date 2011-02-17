@@ -235,6 +235,7 @@ namespace MonoDevelop.CSharp.Formatting
 			System.Console.WriteLine (data.Text.Replace (" ", "^").Replace ("\t", "->"));
 			System.Console.WriteLine ("-----");*/
 			string result = data.GetTextBetween (startOffset, Math.Min (data.Length, end));
+			data.Dispose ();
 			return result;
 		}
 	}
