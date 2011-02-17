@@ -273,7 +273,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (attribute.IsEmptyCall)
 				return null;
 			outputFormatter.PrintToken (Tokens.OpenParenthesis);
-			if (this.prettyPrintOptions.SpacesWithinMethodCallParentheses) {
+			if (this.prettyPrintOptions.WithinMethodCallParentheses) {
 				outputFormatter.Space ();
 			}
 			this.AppendCommaSeparatedList (attribute.PositionalArguments);
@@ -289,7 +289,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					}
 				}
 			}
-			if (this.prettyPrintOptions.SpacesWithinMethodCallParentheses) {
+			if (this.prettyPrintOptions.WithinMethodCallParentheses) {
 				outputFormatter.Space ();
 			}
 			outputFormatter.PrintToken (Tokens.CloseParenthesis);
@@ -299,11 +299,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, object data)
 		{
 			outputFormatter.PrintIdentifier(namedArgumentExpression.Name);
-			if (this.prettyPrintOptions.SpaceAroundAssignment) {
+			if (this.prettyPrintOptions.AroundAssignmentParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.Assign);
-			if (this.prettyPrintOptions.SpaceAroundAssignment) {
+			if (this.prettyPrintOptions.AroundAssignmentParentheses) {
 				outputFormatter.Space();
 			}
 			TrackVisit(namedArgumentExpression.Expression, data);
@@ -319,11 +319,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintIdentifier(@using.Name);
 			
 			if (@using.IsAlias) {
-				if (this.prettyPrintOptions.SpaceAroundAssignment) {
+				if (this.prettyPrintOptions.AroundAssignmentParentheses) {
 					outputFormatter.Space();
 				}
 				outputFormatter.PrintToken(Tokens.Assign);
-				if (this.prettyPrintOptions.SpaceAroundAssignment) {
+				if (this.prettyPrintOptions.AroundAssignmentParentheses) {
 					outputFormatter.Space();
 				}
 				TrackVisit(@using.Alias, data);
@@ -379,11 +379,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Indent();
 				outputFormatter.PrintIdentifier(f.Name);
 				if (f.Initializer != null && !f.Initializer.IsNull) {
-					if (this.prettyPrintOptions.SpaceAroundAssignment) {
+					if (this.prettyPrintOptions.AroundAssignmentParentheses) {
 						outputFormatter.Space();
 					}
 					outputFormatter.PrintToken(Tokens.Assign);
-					if (this.prettyPrintOptions.SpaceAroundAssignment) {
+					if (this.prettyPrintOptions.AroundAssignmentParentheses) {
 						outputFormatter.Space();
 					}
 					TrackVisit(f.Initializer, data);
@@ -512,11 +512,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintIdentifier(delegateDeclaration.Name);
 			PrintTemplates(delegateDeclaration.Templates);
-			if (prettyPrintOptions.SpaceBeforeDelegateDeclarationParentheses) {
+			if (prettyPrintOptions.BeforeDelegateDeclarationParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			bool withinParentheses = this.prettyPrintOptions.SpacesWithinMethodDeclarationParentheses && delegateDeclaration.Parameters.Any ();
+			bool withinParentheses = this.prettyPrintOptions.WithinMethodDeclarationParentheses && delegateDeclaration.Parameters.Any ();
 			if (withinParentheses) {
 				outputFormatter.Space();
 			}
@@ -582,11 +582,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(Tokens.CloseSquareBracket);
 			}
 			if (!variableDeclaration.Initializer.IsNull) {
-				if (this.prettyPrintOptions.SpaceAroundAssignment) {
+				if (this.prettyPrintOptions.AroundAssignmentParentheses) {
 					outputFormatter.Space();
 				}
 				outputFormatter.PrintToken(Tokens.Assign);
-				if (this.prettyPrintOptions.SpaceAroundAssignment) {
+				if (this.prettyPrintOptions.AroundAssignmentParentheses) {
 					outputFormatter.Space();
 				}
 				TrackVisit(variableDeclaration.Initializer, data);
@@ -692,11 +692,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintIdentifier(eventDeclaration.Name);
 			
 			if (!eventDeclaration.Initializer.IsNull) {
-				if (this.prettyPrintOptions.SpaceAroundAssignment) {
+				if (this.prettyPrintOptions.AroundAssignmentParentheses) {
 					outputFormatter.Space();
 				}
 				outputFormatter.PrintToken(Tokens.Assign);
-				if (this.prettyPrintOptions.SpaceAroundAssignment) {
+				if (this.prettyPrintOptions.AroundAssignmentParentheses) {
 					outputFormatter.Space();
 				}
 				TrackVisit(eventDeclaration.Initializer, data);
@@ -787,11 +787,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		void PrintMethodDeclaration(MethodDeclaration methodDeclaration)
 		{
 			PrintTemplates(methodDeclaration.Templates);
-			if (prettyPrintOptions.SpaceBeforeMethodDeclarationParentheses) {
+			if (prettyPrintOptions.BeforeMethodDeclarationParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			bool withinParentheses = this.prettyPrintOptions.SpacesWithinMethodDeclarationParentheses && methodDeclaration.Parameters.Any ();
+			bool withinParentheses = this.prettyPrintOptions.WithinMethodDeclarationParentheses && methodDeclaration.Parameters.Any ();
 			if (withinParentheses) {
 				outputFormatter.Space();
 			}
@@ -937,11 +937,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			} else {
 				outputFormatter.PrintIdentifier(constructorDeclaration.Name);
 			}
-			if (prettyPrintOptions.SpaceBeforeConstructorDeclarationParentheses) {
+			if (prettyPrintOptions.BeforeConstructorDeclarationParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			bool withinParentheses = this.prettyPrintOptions.SpacesWithinMethodDeclarationParentheses && constructorDeclaration.Parameters.Any ();
+			bool withinParentheses = this.prettyPrintOptions.WithinMethodDeclarationParentheses && constructorDeclaration.Parameters.Any ();
 			if (withinParentheses) {
 				outputFormatter.Space();
 			}
@@ -969,11 +969,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(Tokens.This);
 			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			if (this.prettyPrintOptions.SpacesWithinMethodCallParentheses) {
+			if (this.prettyPrintOptions.WithinMethodCallParentheses) {
 				outputFormatter.Space();
 			}
 			AppendCommaSeparatedList(constructorInitializer.Arguments);
-			if (this.prettyPrintOptions.SpacesWithinMethodCallParentheses) {
+			if (this.prettyPrintOptions.WithinMethodCallParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
@@ -1022,7 +1022,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintIdentifier(currentType.Name);
 			else
 				outputFormatter.PrintIdentifier(destructorDeclaration.Name);
-			if (prettyPrintOptions.SpaceBeforeConstructorDeclarationParentheses) {
+			if (prettyPrintOptions.BeforeConstructorDeclarationParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
@@ -1186,11 +1186,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.Indent();
 				}
 				TrackVisit(eraseStatement.Expressions[i], data);
-				if (this.prettyPrintOptions.SpaceAroundAssignment) {
+				if (this.prettyPrintOptions.AroundAssignmentParentheses) {
 					outputFormatter.Space();
 				}
 				outputFormatter.PrintToken(Tokens.Assign);
-				if (this.prettyPrintOptions.SpaceAroundAssignment) {
+				if (this.prettyPrintOptions.AroundAssignmentParentheses) {
 					outputFormatter.Space();
 				}
 				outputFormatter.PrintToken(Tokens.Null);
@@ -1301,15 +1301,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitIfElseStatement(IfElseStatement ifElseStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.If);
-			if (this.prettyPrintOptions.SpaceBeforeIfParentheses) {
+			if (this.prettyPrintOptions.IfParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			if (this.prettyPrintOptions.SpacesWithinIfParentheses) {
+			if (this.prettyPrintOptions.WithinIfParentheses) {
 				outputFormatter.Space();
 			}
 			TrackVisit(ifElseStatement.Condition, data);
-			if (this.prettyPrintOptions.SpacesWithinIfParentheses) {
+			if (this.prettyPrintOptions.WithinIfParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
@@ -1383,15 +1383,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.Else);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.If);
-			if (prettyPrintOptions.SpaceBeforeIfParentheses) {
+			if (prettyPrintOptions.IfParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			if (this.prettyPrintOptions.SpacesWithinIfParentheses) {
+			if (this.prettyPrintOptions.WithinIfParentheses) {
 				outputFormatter.Space();
 			}
 			TrackVisit(elseIfSection.Condition, data);
-			if (this.prettyPrintOptions.SpacesWithinIfParentheses) {
+			if (this.prettyPrintOptions.WithinIfParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
@@ -1404,11 +1404,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitForStatement(ForStatement forStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.For);
-			if (this.prettyPrintOptions.SpaceBeforeForParentheses) {
+			if (this.prettyPrintOptions.ForParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			if (this.prettyPrintOptions.SpacesWithinForParentheses) {
+			if (this.prettyPrintOptions.WithinForParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.DoIndent = false;
@@ -1446,7 +1446,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					}
 				}
 			}
-			if (this.prettyPrintOptions.SpacesWithinForParentheses) {
+			if (this.prettyPrintOptions.WithinForParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
@@ -1532,15 +1532,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitSwitchStatement(SwitchStatement switchStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Switch);
-			if (this.prettyPrintOptions.SpaceBeforeSwitchParentheses) {
+			if (this.prettyPrintOptions.SwitchParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			if (this.prettyPrintOptions.SpacesWithinSwitchParentheses) {
+			if (this.prettyPrintOptions.WithinSwitchParentheses) {
 				outputFormatter.Space();
 			}
 			TrackVisit(switchStatement.SwitchExpression, data);
-			if (this.prettyPrintOptions.SpacesWithinSwitchParentheses) {
+			if (this.prettyPrintOptions.WithinSwitchParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
@@ -1675,11 +1675,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		void PrintLoopCheck(DoLoopStatement doLoopStatement)
 		{
 			outputFormatter.PrintToken(Tokens.While);
-			if (this.prettyPrintOptions.SpaceBeforeWhileParentheses) {
+			if (this.prettyPrintOptions.WhileParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			if (this.prettyPrintOptions.SpacesWithinWhileParentheses) {
+			if (this.prettyPrintOptions.WithinWhileParentheses) {
 				outputFormatter.Space();
 			}
 			
@@ -1697,7 +1697,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (doLoopStatement.ConditionType == ConditionType.Until) {
 				outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			}
-			if (this.prettyPrintOptions.SpacesWithinWhileParentheses) {
+			if (this.prettyPrintOptions.WithinWhileParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
@@ -1734,11 +1734,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitForeachStatement(ForeachStatement foreachStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Foreach);
-			if (this.prettyPrintOptions.SpaceBeforeForeachParentheses) {
+			if (this.prettyPrintOptions.ForeachParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			if (this.prettyPrintOptions.SpacesWithinForEachParentheses) {
+			if (this.prettyPrintOptions.WithinForEachParentheses) {
 				outputFormatter.Space();
 			}
 			TrackVisit(foreachStatement.TypeReference, data);
@@ -1748,7 +1748,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.In);
 			outputFormatter.Space();
 			TrackVisit(foreachStatement.Expression, data);
-			if (this.prettyPrintOptions.SpacesWithinForEachParentheses) {
+			if (this.prettyPrintOptions.WithinForEachParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
@@ -1761,15 +1761,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitLockStatement(LockStatement lockStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Lock);
-			if (this.prettyPrintOptions.SpaceBeforeLockParentheses) {
+			if (this.prettyPrintOptions.LockParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			if (this.prettyPrintOptions.SpacesWithinLockParentheses) {
+			if (this.prettyPrintOptions.WithinLockParentheses) {
 				outputFormatter.Space();
 			}
 			TrackVisit(lockStatement.LockExpression, data);
-			if (this.prettyPrintOptions.SpacesWithinLockParentheses) {
+			if (this.prettyPrintOptions.WithinLockParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
@@ -1782,15 +1782,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitUsingStatement(UsingStatement usingStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Using);
-			if (this.prettyPrintOptions.SpaceBeforeUsingParentheses) {
+			if (this.prettyPrintOptions.UsingParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			if (prettyPrintOptions.SpacesWithinUsingParentheses) {
+			if (prettyPrintOptions.WithinUsingParentheses) {
 				outputFormatter.Space();
 			}
 			PrintStatementInline(usingStatement.ResourceAcquisition, data);
-			if (prettyPrintOptions.SpacesWithinUsingParentheses) {
+			if (prettyPrintOptions.WithinUsingParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
@@ -1851,11 +1851,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.Catch);
 			
 			if (!catchClause.TypeReference.IsNull) {
-				if (this.prettyPrintOptions.SpaceBeforeCatchParentheses) {
+				if (this.prettyPrintOptions.CatchParentheses) {
 					outputFormatter.Space();
 				}
 				outputFormatter.PrintToken(Tokens.OpenParenthesis);
-				if (this.prettyPrintOptions.SpacesWithinCatchParentheses) {
+				if (this.prettyPrintOptions.WithinCatchParentheses) {
 					outputFormatter.Space();
 				}
 				outputFormatter.PrintIdentifier(catchClause.TypeReference.Type);
@@ -1863,7 +1863,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.Space();
 					outputFormatter.PrintIdentifier(catchClause.VariableName);
 				}
-				if (this.prettyPrintOptions.SpacesWithinCatchParentheses) {
+				if (this.prettyPrintOptions.WithinCatchParentheses) {
 					outputFormatter.Space();
 				}
 				outputFormatter.PrintToken(Tokens.CloseParenthesis);
@@ -1890,11 +1890,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			if (this.prettyPrintOptions.SpacesWithinCheckedExpressionParantheses) {
+			if (this.prettyPrintOptions.WithinCheckedExpressionParantheses) {
 				outputFormatter.Space();
 			}
 			PrintStatementInline(fixedStatement.PointerDeclaration, data);
-			if (this.prettyPrintOptions.SpacesWithinCheckedExpressionParantheses) {
+			if (this.prettyPrintOptions.WithinCheckedExpressionParantheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
@@ -1943,7 +1943,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.For);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			if (this.prettyPrintOptions.SpacesWithinForParentheses) {
+			if (this.prettyPrintOptions.WithinForParentheses) {
 				outputFormatter.Space();
 			}
 			if (forNextStatement.LoopVariableExpression.IsNull) {
@@ -1955,11 +1955,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			} else {
 				TrackVisit(forNextStatement.LoopVariableExpression, data);
 			}
-			if (this.prettyPrintOptions.SpaceAroundAssignment) {
+			if (this.prettyPrintOptions.AroundAssignmentParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.Assign);
-			if (this.prettyPrintOptions.SpaceAroundAssignment) {
+			if (this.prettyPrintOptions.AroundAssignmentParentheses) {
 				outputFormatter.Space();
 			}
 			TrackVisit(forNextStatement.Start, data);
@@ -1992,7 +1992,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				TrackVisit(forNextStatement.Step, data);
 			}
-			if (this.prettyPrintOptions.SpacesWithinForParentheses) {
+			if (this.prettyPrintOptions.WithinForParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
@@ -2146,7 +2146,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					if (binaryOperatorExpression.Op == BinaryOperatorType.ReferenceInequality)
 						outputFormatter.PrintToken(Tokens.Not);
 					outputFormatter.PrintText("object.ReferenceEquals");
-					if (prettyPrintOptions.SpaceBeforeMethodCallParentheses) {
+					if (prettyPrintOptions.BeforeMethodCallParentheses) {
 						outputFormatter.Space();
 					}
 					
@@ -2158,17 +2158,17 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					return null;
 				case BinaryOperatorType.Power:
 					outputFormatter.PrintText("Math.Pow");
-					if (prettyPrintOptions.SpaceBeforeMethodCallParentheses) {
+					if (prettyPrintOptions.BeforeMethodCallParentheses) {
 						outputFormatter.Space();
 					}
 					outputFormatter.PrintToken(Tokens.OpenParenthesis);
-					if (this.prettyPrintOptions.SpacesWithinMethodCallParentheses) {
+					if (this.prettyPrintOptions.WithinMethodCallParentheses) {
 						outputFormatter.Space();
 					}
 					TrackVisit(binaryOperatorExpression.Left, data);
 					PrintFormattedComma();
 					TrackVisit(binaryOperatorExpression.Right, data);
-					if (this.prettyPrintOptions.SpacesWithinMethodCallParentheses) {
+					if (this.prettyPrintOptions.WithinMethodCallParentheses) {
 						outputFormatter.Space();
 					}
 					outputFormatter.PrintToken(Tokens.CloseParenthesis);
@@ -2184,186 +2184,186 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			switch (binaryOperatorExpression.Op) {
 				case BinaryOperatorType.Add:
 				case BinaryOperatorType.Concat: // translate Concatenation to +
-					if (prettyPrintOptions.SpaceAroundAdditiveOperator) {
+					if (prettyPrintOptions.AroundAdditiveOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					outputFormatter.PrintToken(Tokens.Plus);
-					if (prettyPrintOptions.SpaceAroundAdditiveOperator) {
+					if (prettyPrintOptions.AroundAdditiveOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					break;
 					
 				case BinaryOperatorType.Subtract:
-					if (prettyPrintOptions.SpaceAroundAdditiveOperator) {
+					if (prettyPrintOptions.AroundAdditiveOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					outputFormatter.PrintToken(Tokens.Minus);
-					if (prettyPrintOptions.SpaceAroundAdditiveOperator) {
+					if (prettyPrintOptions.AroundAdditiveOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					break;
 					
 				case BinaryOperatorType.Multiply:
-					if (prettyPrintOptions.SpaceAroundMultiplicativeOperator) {
+					if (prettyPrintOptions.AroundMultiplicativeOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					outputFormatter.PrintToken(Tokens.Times);
-					if (prettyPrintOptions.SpaceAroundMultiplicativeOperator) {
+					if (prettyPrintOptions.AroundMultiplicativeOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					break;
 					
 				case BinaryOperatorType.Divide:
 				case BinaryOperatorType.DivideInteger:
-					if (prettyPrintOptions.SpaceAroundMultiplicativeOperator) {
+					if (prettyPrintOptions.AroundMultiplicativeOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					outputFormatter.PrintToken(Tokens.Div);
-					if (prettyPrintOptions.SpaceAroundMultiplicativeOperator) {
+					if (prettyPrintOptions.AroundMultiplicativeOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					break;
 					
 				case BinaryOperatorType.Modulus:
-					if (prettyPrintOptions.SpaceAroundMultiplicativeOperator) {
+					if (prettyPrintOptions.AroundMultiplicativeOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					outputFormatter.PrintToken(Tokens.Mod);
-					if (prettyPrintOptions.SpaceAroundMultiplicativeOperator) {
+					if (prettyPrintOptions.AroundMultiplicativeOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					break;
 					
 				case BinaryOperatorType.ShiftLeft:
-					if (prettyPrintOptions.SpaceAroundShiftOperator) {
+					if (prettyPrintOptions.AroundShiftOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					outputFormatter.PrintToken(Tokens.ShiftLeft);
-					if (prettyPrintOptions.SpaceAroundShiftOperator) {
+					if (prettyPrintOptions.AroundShiftOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					break;
 					
 				case BinaryOperatorType.ShiftRight:
-					if (prettyPrintOptions.SpaceAroundShiftOperator) {
+					if (prettyPrintOptions.AroundShiftOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					outputFormatter.PrintToken(Tokens.GreaterThan);
 					outputFormatter.PrintToken(Tokens.GreaterThan);
-					if (prettyPrintOptions.SpaceAroundShiftOperator) {
+					if (prettyPrintOptions.AroundShiftOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					break;
 					
 				case BinaryOperatorType.BitwiseAnd:
-					if (prettyPrintOptions.SpaceAroundBitwiseOperator) {
+					if (prettyPrintOptions.AroundBitwiseOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					outputFormatter.PrintToken(Tokens.BitwiseAnd);
-					if (prettyPrintOptions.SpaceAroundBitwiseOperator) {
+					if (prettyPrintOptions.AroundBitwiseOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					break;
 				case BinaryOperatorType.BitwiseOr:
-					if (prettyPrintOptions.SpaceAroundBitwiseOperator) {
+					if (prettyPrintOptions.AroundBitwiseOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					outputFormatter.PrintToken(Tokens.BitwiseOr);
-					if (prettyPrintOptions.SpaceAroundBitwiseOperator) {
+					if (prettyPrintOptions.AroundBitwiseOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					break;
 				case BinaryOperatorType.ExclusiveOr:
-					if (prettyPrintOptions.SpaceAroundBitwiseOperator) {
+					if (prettyPrintOptions.AroundBitwiseOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					outputFormatter.PrintToken(Tokens.Xor);
-					if (prettyPrintOptions.SpaceAroundBitwiseOperator) {
+					if (prettyPrintOptions.AroundBitwiseOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					break;
 					
 				case BinaryOperatorType.LogicalAnd:
-					if (prettyPrintOptions.SpaceAroundLogicalOperator) {
+					if (prettyPrintOptions.AroundLogicalOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					outputFormatter.PrintToken(Tokens.LogicalAnd);
-					if (prettyPrintOptions.SpaceAroundLogicalOperator) {
+					if (prettyPrintOptions.AroundLogicalOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					break;
 				case BinaryOperatorType.LogicalOr:
-					if (prettyPrintOptions.SpaceAroundLogicalOperator) {
+					if (prettyPrintOptions.AroundLogicalOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					outputFormatter.PrintToken(Tokens.LogicalOr);
-					if (prettyPrintOptions.SpaceAroundLogicalOperator) {
+					if (prettyPrintOptions.AroundLogicalOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					break;
 					
 				case BinaryOperatorType.Equality:
 				case BinaryOperatorType.ReferenceEquality:
-					if (prettyPrintOptions.SpaceAroundEqualityOperator) {
+					if (prettyPrintOptions.AroundEqualityOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					outputFormatter.PrintToken(Tokens.Equal);
-					if (prettyPrintOptions.SpaceAroundEqualityOperator) {
+					if (prettyPrintOptions.AroundEqualityOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					break;
 				case BinaryOperatorType.GreaterThan:
-					if (prettyPrintOptions.SpaceAroundRelationalOperator) {
+					if (prettyPrintOptions.AroundRelationalOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					outputFormatter.PrintToken(Tokens.GreaterThan);
-					if (prettyPrintOptions.SpaceAroundRelationalOperator) {
+					if (prettyPrintOptions.AroundRelationalOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					break;
 				case BinaryOperatorType.GreaterThanOrEqual:
-					if (prettyPrintOptions.SpaceAroundRelationalOperator) {
+					if (prettyPrintOptions.AroundRelationalOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					outputFormatter.PrintToken(Tokens.GreaterEqual);
-					if (prettyPrintOptions.SpaceAroundRelationalOperator) {
+					if (prettyPrintOptions.AroundRelationalOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					break;
 				case BinaryOperatorType.InEquality:
 				case BinaryOperatorType.ReferenceInequality:
-					if (prettyPrintOptions.SpaceAroundEqualityOperator) {
+					if (prettyPrintOptions.AroundEqualityOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					outputFormatter.PrintToken(Tokens.NotEqual);
-					if (prettyPrintOptions.SpaceAroundEqualityOperator) {
+					if (prettyPrintOptions.AroundEqualityOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					break;
 				case BinaryOperatorType.LessThan:
-					if (prettyPrintOptions.SpaceAroundRelationalOperator) {
+					if (prettyPrintOptions.AroundRelationalOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					outputFormatter.PrintToken(Tokens.LessThan);
-					if (prettyPrintOptions.SpaceAroundRelationalOperator) {
+					if (prettyPrintOptions.AroundRelationalOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					break;
 				case BinaryOperatorType.LessThanOrEqual:
-					if (prettyPrintOptions.SpaceAroundRelationalOperator) {
+					if (prettyPrintOptions.AroundRelationalOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					outputFormatter.PrintToken(Tokens.LessEqual);
-					if (prettyPrintOptions.SpaceAroundRelationalOperator) {
+					if (prettyPrintOptions.AroundRelationalOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					break;
 				case BinaryOperatorType.NullCoalescing:
-					if (prettyPrintOptions.SpaceAroundRelationalOperator) {
+					if (prettyPrintOptions.AroundRelationalOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					outputFormatter.PrintToken(Tokens.DoubleQuestion);
-					if (prettyPrintOptions.SpaceAroundRelationalOperator) {
+					if (prettyPrintOptions.AroundRelationalOperatorParentheses) {
 						outputFormatter.Space();
 					}
 					break;
@@ -2379,11 +2379,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			if (this.prettyPrintOptions.SpacesWithinParentheses) {
+			if (this.prettyPrintOptions.WithinParentheses) {
 				outputFormatter.Space();
 			}
 			TrackVisit(parenthesizedExpression.Expression, data);
-			if (this.prettyPrintOptions.SpacesWithinParentheses) {
+			if (this.prettyPrintOptions.WithinParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
@@ -2394,16 +2394,16 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			TrackVisit(invocationExpression.TargetObject, data);
 			
-			if (prettyPrintOptions.SpaceBeforeMethodCallParentheses) {
+			if (prettyPrintOptions.BeforeMethodCallParentheses) {
 				outputFormatter.Space();
 			}
 			
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			if (this.prettyPrintOptions.SpacesWithinMethodCallParentheses) {
+			if (this.prettyPrintOptions.WithinMethodCallParentheses) {
 				outputFormatter.Space();
 			}
 			AppendCommaSeparatedList(invocationExpression.Arguments);
-			if (this.prettyPrintOptions.SpacesWithinMethodCallParentheses) {
+			if (this.prettyPrintOptions.WithinMethodCallParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
@@ -2478,7 +2478,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
 		{
 			TrackVisit(assignmentExpression.Left, data);
-			if (this.prettyPrintOptions.SpaceAroundAssignment) {
+			if (this.prettyPrintOptions.AroundAssignmentParentheses) {
 				outputFormatter.Space();
 			}
 			switch (assignmentExpression.Op) {
@@ -2520,7 +2520,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					break;
 				case AssignmentOperatorType.Power:
 					outputFormatter.PrintToken(Tokens.Assign);
-					if (this.prettyPrintOptions.SpaceAroundAssignment) {
+					if (this.prettyPrintOptions.AroundAssignmentParentheses) {
 						outputFormatter.Space();
 					}
 					VisitBinaryOperatorExpression(new BinaryOperatorExpression(assignmentExpression.Left,
@@ -2531,7 +2531,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					Error(assignmentExpression, String.Format("Unknown assignment operator {0}", assignmentExpression.Op));
 					return null;
 			}
-			if (this.prettyPrintOptions.SpaceAroundAssignment) {
+			if (this.prettyPrintOptions.AroundAssignmentParentheses) {
 				outputFormatter.Space();
 			}
 			TrackVisit(assignmentExpression.Right, data);
@@ -2545,11 +2545,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			if (this.prettyPrintOptions.SpacesWithinSizeOfParentheses) {
+			if (this.prettyPrintOptions.WithinSizeOfParentheses) {
 				outputFormatter.Space();
 			}
 			TrackVisit(sizeOfExpression.TypeReference, data);
-			if (this.prettyPrintOptions.SpacesWithinSizeOfParentheses) {
+			if (this.prettyPrintOptions.WithinSizeOfParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
@@ -2563,11 +2563,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			if (this.prettyPrintOptions.SpacesWithinTypeOfParentheses) {
+			if (this.prettyPrintOptions.WithinTypeOfParentheses) {
 				outputFormatter.Space();
 			}
 			TrackVisit(typeOfExpression.TypeReference, data);
-			if (this.prettyPrintOptions.SpacesWithinTypeOfParentheses) {
+			if (this.prettyPrintOptions.WithinTypeOfParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
@@ -2581,11 +2581,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			if (this.prettyPrintOptions.SpacesWithinTypeOfParentheses) {
+			if (this.prettyPrintOptions.WithinTypeOfParentheses) {
 				outputFormatter.Space();
 			}
 			TrackVisit(defaultValueExpression.TypeReference, data);
-			if (this.prettyPrintOptions.SpacesWithinTypeOfParentheses) {
+			if (this.prettyPrintOptions.WithinTypeOfParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
@@ -2614,7 +2614,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			
 			if (anonymousMethodExpression.Parameters.Count > 0 || anonymousMethodExpression.HasParameterList) {
 				outputFormatter.PrintToken(Tokens.OpenParenthesis);
-				bool withinParentheses = this.prettyPrintOptions.SpacesWithinMethodDeclarationParentheses && anonymousMethodExpression.Parameters.Any ();
+				bool withinParentheses = this.prettyPrintOptions.WithinMethodDeclarationParentheses && anonymousMethodExpression.Parameters.Any ();
 				if (withinParentheses) {
 					outputFormatter.Space();
 				}
@@ -2635,11 +2635,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintIdentifier(lambdaExpression.Parameters[0].ParameterName);
 			} else {
 				outputFormatter.PrintToken(Tokens.OpenParenthesis);
-				if (this.prettyPrintOptions.SpacesWithinParentheses) {
+				if (this.prettyPrintOptions.WithinParentheses) {
 					outputFormatter.Space();
 				}
 				AppendCommaSeparatedList(lambdaExpression.Parameters);
-				if (this.prettyPrintOptions.SpacesWithinParentheses) {
+				if (this.prettyPrintOptions.WithinParentheses) {
 					outputFormatter.Space();
 				}
 				outputFormatter.PrintToken(Tokens.CloseParenthesis);
@@ -2664,11 +2664,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			if (this.prettyPrintOptions.SpacesWithinCheckedExpressionParantheses) {
+			if (this.prettyPrintOptions.WithinCheckedExpressionParantheses) {
 				outputFormatter.Space();
 			}
 			TrackVisit(checkedExpression.Expression, data);
-			if (this.prettyPrintOptions.SpacesWithinCheckedExpressionParantheses) {
+			if (this.prettyPrintOptions.WithinCheckedExpressionParantheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
@@ -2682,11 +2682,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			if (this.prettyPrintOptions.SpacesWithinCheckedExpressionParantheses) {
+			if (this.prettyPrintOptions.WithinCheckedExpressionParantheses) {
 				outputFormatter.Space();
 			}
 			TrackVisit(uncheckedExpression.Expression, data);
-			if (this.prettyPrintOptions.SpacesWithinCheckedExpressionParantheses) {
+			if (this.prettyPrintOptions.WithinCheckedExpressionParantheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
@@ -2721,15 +2721,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				TrackVisit(castExpression.CastTo, data);
 			} else {
 				outputFormatter.PrintToken(Tokens.OpenParenthesis);
-				if (prettyPrintOptions.SpacesWithinCastParentheses) {
+				if (prettyPrintOptions.WithinCastParentheses) {
 					outputFormatter.Space();
 				}
 				TrackVisit(castExpression.CastTo, data);
-				if (prettyPrintOptions.SpacesWithinCastParentheses) {
+				if (prettyPrintOptions.WithinCastParentheses) {
 					outputFormatter.Space();
 				}
 				outputFormatter.PrintToken(Tokens.CloseParenthesis);
-				if (this.prettyPrintOptions.SpaceAfterTypecast) {
+				if (this.prettyPrintOptions.SpacesAfterTypecast) {
 					outputFormatter.Space();
 				}
 				TrackVisit(castExpression.Expression, data);
@@ -2788,15 +2788,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				TrackVisit(objectCreateExpression.CreateType, data);
 			}
 			if (objectCreateExpression.Parameters.Count > 0 || objectCreateExpression.ObjectInitializer.IsNull) {
-				if (prettyPrintOptions.SpaceBeforeNewParentheses) {
+				if (prettyPrintOptions.NewParentheses) {
 					outputFormatter.Space();
 				}
 				outputFormatter.PrintToken(Tokens.OpenParenthesis);
-				if (this.prettyPrintOptions.SpacesWithinMethodCallParentheses) {
+				if (this.prettyPrintOptions.WithinMethodCallParentheses) {
 					outputFormatter.Space();
 				}
 				AppendCommaSeparatedList(objectCreateExpression.Parameters);
-				if (this.prettyPrintOptions.SpacesWithinMethodCallParentheses) {
+				if (this.prettyPrintOptions.WithinMethodCallParentheses) {
 					outputFormatter.Space();
 				}
 				outputFormatter.PrintToken(Tokens.CloseParenthesis);
@@ -2851,13 +2851,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			
 			if (target is BinaryOperatorExpression || target is CastExpression) {
 				outputFormatter.PrintToken(Tokens.OpenParenthesis);
-				if (this.prettyPrintOptions.SpacesWithinMethodCallParentheses) {
+				if (this.prettyPrintOptions.WithinMethodCallParentheses) {
 					outputFormatter.Space();
 				}
 			}
 			TrackVisit(target, data);
 			if (target is BinaryOperatorExpression || target is CastExpression) {
-				if (this.prettyPrintOptions.SpacesWithinMethodCallParentheses) {
+				if (this.prettyPrintOptions.WithinMethodCallParentheses) {
 					outputFormatter.Space();
 				}
 				outputFormatter.PrintToken(Tokens.CloseParenthesis);
@@ -2917,19 +2917,19 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitConditionalExpression(ConditionalExpression conditionalExpression, object data)
 		{
 			TrackVisit(conditionalExpression.Condition, data);
-			if (this.prettyPrintOptions.SpaceBeforeConditionalOperatorCondition) {
+			if (this.prettyPrintOptions.ConditionalOperatorBeforeConditionSpace) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.Question);
-			if (this.prettyPrintOptions.SpaceAfterConditionalOperatorCondition) {
+			if (this.prettyPrintOptions.ConditionalOperatorAfterConditionSpace) {
 				outputFormatter.Space();
 			}
 			TrackVisit(conditionalExpression.TrueExpression, data);
-			if (this.prettyPrintOptions.SpaceBeforeConditionalOperatorSeparator) {
+			if (this.prettyPrintOptions.ConditionalOperatorBeforeSeparatorSpace) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.Colon);
-			if (this.prettyPrintOptions.SpaceAfterConditionalOperatorSeparator) {
+			if (this.prettyPrintOptions.ConditionalOperatorAfterSeparatorSpace) {
 				outputFormatter.Space();
 			}
 			TrackVisit(conditionalExpression.FalseExpression, data);
@@ -3124,11 +3124,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.Let);
 			outputFormatter.Space();
 			outputFormatter.PrintIdentifier(letClause.Identifier);
-			if (this.prettyPrintOptions.SpaceAroundAssignment) {
+			if (this.prettyPrintOptions.AroundAssignmentParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.Assign);
-			if (this.prettyPrintOptions.SpaceAroundAssignment) {
+			if (this.prettyPrintOptions.AroundAssignmentParentheses) {
 				outputFormatter.Space();
 			}
 			var result = letClause.Expression.AcceptVisitor(this, data);
