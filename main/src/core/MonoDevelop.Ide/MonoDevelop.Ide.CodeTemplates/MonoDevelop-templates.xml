@@ -72,19 +72,19 @@
 			</Variable>
 			<Variable name="SystemAttribute" isEditable="false">
 				<Default>System.Attribute</Default>
-				<Function>GetSimpleTypeName("System.Attribute")</Function>
+				<Function>GetSimpleTypeName("System#Attribute")</Function>
 			</Variable>
 			<Variable name="SystemAttributeUsage" isEditable="false">
 				<Default>System.AttributeUsage</Default>
-				<Function>GetSimpleTypeName("System.AttributeUsage")</Function>
+				<Function>GetSimpleTypeName("System#AttributeUsage")</Function>
 			</Variable>
 			<Variable name="SystemAttributeTargets" isEditable="false">
 				<Default>System.AttributeTargets</Default>
-				<Function>GetSimpleTypeName("System.AttributeTargets")</Function>
+				<Function>GetSimpleTypeName("System#AttributeTargets")</Function>
 			</Variable>
 			<Variable name="SystemNotImplementedException" isEditable="false">
 				<Default>System.NotImplementedException</Default>
-				<Function>GetSimpleTypeName("System.NotImplementedException")</Function>
+				<Function>GetSimpleTypeName("System#NotImplementedException")</Function>
 			</Variable>
 		</Variables>
 		<Code><![CDATA[[$SystemAttributeUsage$ ($SystemAttributeTargets$.$target$, Inherited = $inherited$, AllowMultiple = $allowmultiple$)]
@@ -145,7 +145,7 @@ public sealed class $name$Attribute : $SystemAttribute$
 		<Variables>
 			<Variable name="SystemConsoleWriteLine" isEditable="false">
 				<Default>System.Console.WriteLine</Default>
-				<Function>GetSimpleTypeName("System.Console.WriteLine")</Function>
+				<Function>GetSimpleTypeName("System#Console.WriteLine")</Function>
 			</Variable>
 		</Variables>
 		<Code><![CDATA[$SystemConsoleWriteLine$ ($end$);]]></Code>
@@ -220,19 +220,19 @@ break;
 			</Variable>
 			<Variable name="SystemException" isEditable="false">
 				<Default>System.Exception</Default>
-				<Function>GetSimpleTypeName("System.Exception")</Function>
+				<Function>GetSimpleTypeName("System#Exception")</Function>
 			</Variable>
 			<Variable name="SystemSerializable" isEditable="false">
 				<Default>System.Serializable</Default>
-				<Function>GetSimpleTypeName("System.Serializable")</Function>
+				<Function>GetSimpleTypeName("System#Serializable")</Function>
 			</Variable>
 			<Variable name="SystemRuntimeSerializationSerializationInfo" isEditable="false">
 				<Default>System.Runtime.Serialization.SerializationInfo</Default>
-				<Function>GetSimpleTypeName("System.Runtime.Serialization.SerializationInfo")</Function>
+				<Function>GetSimpleTypeName("System.Runtime.Serialization#SerializationInfo")</Function>
 			</Variable>
 			<Variable name="SystemRuntimeSerializationStreamingContext" isEditable="false">
 				<Default>System.Runtime.Serialization.StreamingContext</Default>
-				<Function>GetSimpleTypeName("System.Runtime.Serialization.StreamingContext")</Function>
+				<Function>GetSimpleTypeName("System.Runtime.Serialization#StreamingContext")</Function>
 			</Variable>
 		</Variables>
 		<Code><![CDATA[
@@ -294,7 +294,7 @@ public class $name$Exception : $SystemException$
 			</Variable>
 			<Variable name="SystemNotImplementedException" isEditable="false">
 				<Default>System.NotImplementedException</Default>
-				<Function>GetSimpleTypeName("System.NotImplementedException")</Function>
+				<Function>GetSimpleTypeName("System#NotImplementedException")</Function>
 			</Variable>
 		</Variables>
 		<Code><![CDATA[public $type$ this [$indextype$ index] {
@@ -373,11 +373,11 @@ public class $name$Exception : $SystemException$
 			</Variable>
 			<Variable name="SystemEventArgs" isEditable="false">
 				<Default>System.EventArgs</Default>
-				<Function>GetSimpleTypeName("System.EventArgs")</Function>
+				<Function>GetSimpleTypeName("System#EventArgs")</Function>
 			</Variable>
 			<Variable name="SystemSerializable" isEditable="false">
 				<Default>System.Serializable</Default>
-				<Function>GetSimpleTypeName("System.Serializable")</Function>
+				<Function>GetSimpleTypeName("System#Serializable")</Function>
 			</Variable>
 		</Variables>
 		<Code><![CDATA[[$SystemSerializable$]
@@ -406,7 +406,7 @@ public sealed class $name$EventArgs : $SystemEventArgs$
 			</Variable>
 			<Variable name="SystemMin" isEditable="false">
 				<Default>System.Min</Default>
-				<Function>GetSimpleTypeName("System.Min")</Function>
+				<Function>GetSimpleTypeName("System#Min")</Function>
 			</Variable>
 		</Variables>
 		<Code><![CDATA[$var$ = $SystemMin$ ($var$, $end$);]]></Code>
@@ -428,7 +428,7 @@ public sealed class $name$EventArgs : $SystemEventArgs$
 			</Variable>
 			<Variable name="SystemMax" isEditable="false">
 				<Default>System.Max</Default>
-				<Function>GetSimpleTypeName("System.Max")</Function>
+				<Function>GetSimpleTypeName("System#Max")</Function>
 			</Variable>
 		</Variables>
 		<Code><![CDATA[$var$ = $SystemMax$ ($var$, $end$);]]></Code>
@@ -879,7 +879,7 @@ $selected$$end$
 		<Variables>
 			<Variable name="SystemException" isEditable="false">
 				<Default>System.Exception</Default>
-				<Function>GetSimpleTypeName("System.Exception")</Function>
+				<Function>GetSimpleTypeName("System#Exception")</Function>
 			</Variable>
 		</Variables>
 		<Code><![CDATA[try {

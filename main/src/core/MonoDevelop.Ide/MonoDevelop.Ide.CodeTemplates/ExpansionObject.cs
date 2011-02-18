@@ -193,8 +193,16 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			if (CurrentContext.ParsedDocument == null)
 				return fullTypeName;
+			DomReturnType returnType;
+			int idx = fullTypeName.IndexOf ('#');
+			if (idx < 0) {
+				returnType = new DomReturnType (fullTypeName);
+			} else {
+				returnType = new DomReturnType (fullTypeName.Substring (0, idx), fullTypeName.Substring (idx + 1));
+			}
+			System.Console.WriteLine (returnType);
 			
-			return CurrentContext.ParsedDocument.CompilationUnit.ShortenTypeName (new DomReturnType (fullTypeName), CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column).FullName;
+			return CurrentContext.ParsedDocument.CompilationUnit.ShortenTypeName (returnType, CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column).FullName;
 		}
 		
 		static Regex functionRegEx = new Regex ("([^(]*)\\(([^(]*)\\)", RegexOptions.Compiled);
