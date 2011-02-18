@@ -8243,10 +8243,6 @@ void case_918()
 		current_container = new Class (current_namespace, current_class, new MemberName ("<InteractiveExpressionClass>"), Modifiers.PUBLIC, null);
 		current_class = current_container;
 
-		var baseclass_list = new List<FullNamedExpression> ();
-		baseclass_list.Add (new TypeExpression (Evaluator.InteractiveBaseClass, lexer.Location));
-		current_container.AddBasesForPart (current_class, baseclass_list);
-
 		/* (ref object retval)*/
 		Parameter [] mpar = new Parameter [1];
 		mpar [0] = new Parameter (new TypeExpression (TypeManager.object_type, Location.Null), "$retval", Parameter.Modifier.REF, null, Location.Null);
@@ -8274,7 +8270,7 @@ void case_918()
 	  }
 
 void case_919()
-#line 6013 "cs-parser.jay"
+#line 6009 "cs-parser.jay"
 {
 		--lexer.parsing_block;
 		Method method = (Method) oob_stack.Pop ();
@@ -11422,7 +11418,7 @@ void case_919()
    -1,   -1,   -1,   -1,   -1,   -1,   -1,  359,
   };
 
-#line 6042 "cs-parser.jay"
+#line 6038 "cs-parser.jay"
 
 // <summary>
 //  A class used to hold info about an operator declarator
@@ -11483,7 +11479,7 @@ void Error_NamedArgumentExpected (NamedArgument a)
 
 void push_current_class (TypeContainer tc, object partial_token)
 {
-	if (compiler.IsEvalutor){
+	if (module.Evaluator != null){
 		tc.Definition.Modifiers = tc.ModFlags = (tc.ModFlags & ~Modifiers.AccessibilityMask) | Modifiers.PUBLIC;
 		if (undo == null)
 			undo = new Undo ();

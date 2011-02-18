@@ -439,25 +439,24 @@ namespace Mono.CSharp
 		{
 			lock (parseLock) {
 				try {
-//					Driver d = Driver.Create (args, false, null, reportPrinter);
-//					if (d == null)
-//						return null;
-	
-					var r = new Report (reportPrinter);
-					CommandLineParser cmd = new CommandLineParser (r, Console.Out);
-					var setting = cmd.ParseArguments (args);
-					if (setting == null || r.Errors > 0)
+//                                     Driver d = Driver.Create (args, false, null, reportPrinter);
+//                                     if (d == null)
+//                                             return null;
+       
+                                       var r = new Report (reportPrinter);
+                                       CommandLineParser cmd = new CommandLineParser (r, Console.Out);
+                                       var setting = cmd.ParseArguments (args);
+                                       if (setting == null || r.Errors > 0)
 						return null;
-	
-					CompilerContext ctx = new CompilerContext (setting, r);
-					var d = new Driver (ctx);
-					
+
+                                       CompilerContext ctx = new CompilerContext (setting, r);
+                                       var d = new Driver (ctx);
+
 					Location.AddFile (null, inputFile);
 					Location.Initialize ();
 	
 					// TODO: encoding from driver
 					SeekableStreamReader reader = new SeekableStreamReader (input, Encoding.Default);
-	
 					
 					RootContext.ToplevelTypes = new ModuleContainer (ctx);
 					CompilationUnit unit = null;

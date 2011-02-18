@@ -1363,7 +1363,6 @@ namespace Mono.CSharp {
 
 			container.AddField (f);
 			f.Define ();
-			Evaluator.QueueField (f);
 
 			li.HoistedVariant = new HoistedEvaluatorVariable (f);
 			li.SetIsUsed ();

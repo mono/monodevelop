@@ -195,7 +195,7 @@ namespace MonoDevelop.CSharp.Formatting
 			data.Options.TabsToSpaces = textPolicy.TabsToSpaces;
 			data.Options.TabSize = textPolicy.TabWidth;
 			data.Options.OverrideDocumentEolMarker = true;
-			data.Options.DefaultEolMarker = "\n"; // eol markers don't get changed, therefore we can set them to the unix eol
+			data.Options.DefaultEolMarker = textPolicy.GetEolMarker ();
 			data.Text = input;
 
 			//			System.Console.WriteLine ("TABS:" + textPolicy.TabsToSpaces);
