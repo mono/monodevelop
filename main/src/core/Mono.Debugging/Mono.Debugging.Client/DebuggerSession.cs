@@ -693,12 +693,22 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
-		public virtual void CancelAsyncEvaluations ()
+		public void CancelAsyncEvaluations ()
 		{
+			if (UseOperationThread) {
+				ThreadPool.QueueUserWorkItem (delegate {
+					OnCancelAsyncEvaluations ();
+				});
+			} else
+				OnCancelAsyncEvaluations ();
 		}
 		
 		public virtual bool CanCancelAsyncEvaluations {
 			get { return false; }
+		}
+		
+		protected virtual void OnCancelAsyncEvaluations ()
+		{
 		}
 		
 		Mono.Debugging.Evaluation.ExpressionEvaluator defaultResolver = new Mono.Debugging.Evaluation.NRefactoryEvaluator ();

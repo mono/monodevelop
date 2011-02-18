@@ -1050,8 +1050,7 @@ namespace Mono.Debugging.Soft
 				var info = GetInfo ();
 				LoggingService.LogMessage ("Aborting invocation of " + info);
 				((IInvokeAsyncResult) handle).Abort ();
-				WaitForCompleted (-1);
-				LoggingService.LogMessage ("Aborted invocation of " + info);
+				// Don't wait for the abort to finish. The engine will do it.
 			} else {
 				throw new NotSupportedException ();
 			}

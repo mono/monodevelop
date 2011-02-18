@@ -711,7 +711,7 @@ namespace Mono.Debugging.Soft
 			}
 		}
 		
-		public override void CancelAsyncEvaluations ()
+		protected override void OnCancelAsyncEvaluations ()
 		{
 			Adaptor.CancelAsyncOperations ();
 		}

@@ -136,7 +136,7 @@ namespace Mono.Debugging.Evaluation
 			if (Aborting) {
 				// Somebody else is aborting this. Just wait for it to finish.
 				ST.Monitor.Exit (this);
-				WaitForCompleted (System.Threading.Timeout.Infinite);
+				WaitForCompleted (ST.Timeout.Infinite);
 				return;
 			}
 			
@@ -144,16 +144,22 @@ namespace Mono.Debugging.Evaluation
 			
 			int abortState = 0;
 			int abortRetryWait = 100;
+			bool abortRequested = false;
 			
 			do {
 				if (abortState > 0)
 					ST.Monitor.Enter (this);
 				
 				try {
-					if (!Aborted)
+					if (!Aborted && !abortRequested) {
+						// The Abort() call doesn't block. WaitForCompleted is used below to wait for the abort to succeed
 						Abort ();
-					ST.Monitor.Exit (this);
-					break;
+						abortRequested = true;
+					}
+					if (WaitForCompleted (1000)) {
+						ST.Monitor.Exit (this);
+						break;
+					}
 				} catch {
 					// If abort fails, try again after a short wait
 				}
@@ -214,9 +220,10 @@ namespace Mono.Debugging.Evaluation
 
 		/// <summary>
 		/// Called to abort the execution of the operation. It has to throw an exception
-		/// if the operation can't be aborted.
+		/// if the operation can't be aborted. This operation must not block. The engine
+		/// will wait for the operation to be aborted by calling WaitForCompleted.
 		/// </summary>
-		public abstract void Abort ( );
+		public abstract void Abort ();
 
 		/// <summary>
 		/// Waits until the operation has been completed or aborted.
