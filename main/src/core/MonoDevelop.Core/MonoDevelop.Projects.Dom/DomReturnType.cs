@@ -530,12 +530,30 @@ namespace MonoDevelop.Projects.Dom
 		{
 		}
 		
+		public DomReturnType (string nameSpace, string name) : this (nameSpace, name, false, new List<IReturnType> ())
+		{
+		}
+		
 		public DomReturnType (string name, bool isNullable, IEnumerable<IReturnType> typeParameters)
 		{
 			KeyValuePair<string, string> splitted = SplitFullName (name);
 			this.nspace = splitted.Key;
 			this.parts.Add (new ReturnTypePart (splitted.Value, typeParameters));
 			this.IsNullable     = isNullable;
+		}
+		
+		public DomReturnType (string nameSpace, string name, bool isNullable, IEnumerable<IReturnType> typeParameters)
+		{
+			this.nspace = nameSpace;
+			var parts = name.Split ('.');
+			for (int i = 0; i < parts.Length; i++) {
+				string part = parts[i];
+				this.parts.Add (i + 1 < parts.Length ? new ReturnTypePart (part) : new ReturnTypePart (part, typeParameters));
+			}
+			foreach (string part in name.Split ('.')) {
+				
+			}
+			this.IsNullable = isNullable;
 		}
 		
 		public static int num = 0;
