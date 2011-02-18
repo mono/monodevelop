@@ -240,7 +240,7 @@ namespace MonoDevelop.Projects.Dom
 				if (contains && dom != null) {
 					var t1 = dom.GetType (typeTable[name]);
 					var t2 = dom.GetType (type);
-					if (!dom.GetInheritanceTree (t1).Any (t => t.DecoratedFullName == t2.DecoratedFullName))
+					if (t1 != null && !dom.GetInheritanceTree (t1).Any (t => t.DecoratedFullName == t2.DecoratedFullName))
 						return;
 				}
 				
@@ -309,7 +309,8 @@ namespace MonoDevelop.Projects.Dom
 				return null;
 			}
 			string extensionTableKey = this.HelpUrl + "/" + type.FullName;
-//			Console.WriteLine ("table key:" + extensionTableKey);
+			if (Name.StartsWith ("ForEachWithIndex"))
+				Console.WriteLine ("table key:" + extensionTableKey);
 			lock (extensionTable) {
 				if (extensionTable.ContainsKey (extensionTableKey))
 					return extensionTable[extensionTableKey];
@@ -340,7 +341,8 @@ namespace MonoDevelop.Projects.Dom
 								continue;
 							bool genericArgumentsAreEqual = true;
 							for (int i = 0; i < instMethod.Parameters[0].ReturnType.GenericArguments.Count; i++) {
-								//Console.WriteLine (instMethod.Parameters[0].ReturnType.GenericArguments[i].DecoratedFullName + " --- " + instType.GenericParameters[i].DecoratedFullName);
+								if (Name.StartsWith ("ForEachWithIndex"))
+									Console.WriteLine (instMethod.Parameters[0].ReturnType.GenericArguments[i].DecoratedFullName + " --- " + instType.GenericParameters[i].DecoratedFullName);
 								if (instMethod.Parameters[0].ReturnType.GenericArguments[i].DecoratedFullName != instType.GenericParameters[i].DecoratedFullName) {
 									genericArgumentsAreEqual = false;
 									break;
