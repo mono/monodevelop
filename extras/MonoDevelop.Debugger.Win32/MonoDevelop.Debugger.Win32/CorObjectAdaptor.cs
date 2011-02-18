@@ -346,7 +346,7 @@ namespace MonoDevelop.Debugger.Win32
 			while (currentType != null) {
 				Type rtype = currentType.GetTypeInfo (ctx.Session);
 				foreach (MethodInfo met in rtype.GetMethods (flags)) {
-					if (met.Name == methodName) {
+					if (met.Name == methodName || (!ctx.CaseSensitive && met.Name.Equals (methodName, StringComparison.CurrentCultureIgnoreCase))) {
 						if (argtypes == null)
 							return met;
 						ParameterInfo[] pars = met.GetParameters ();
