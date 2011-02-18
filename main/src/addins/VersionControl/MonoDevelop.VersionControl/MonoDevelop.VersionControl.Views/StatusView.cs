@@ -69,6 +69,7 @@ namespace MonoDevelop.VersionControl.Views
 		const int ColRemoteIcon = 11;
 		const int ColStatusColor = 12;
 		const int ColStatusRemoteDiff = 13;
+		const int ColRenderAsText = 14;
 		
 		delegate void DiffDataHandler (DiffData diffdata);
 		
@@ -230,7 +231,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			colRemote.Visible = false;
 
-			filestore = new TreeStore (typeof (Gdk.Pixbuf), typeof (string), typeof (string[]), typeof (string), typeof(bool), typeof(bool), typeof(string), typeof(bool), typeof (bool), typeof(Gdk.Pixbuf), typeof(bool), typeof (Gdk.Pixbuf), typeof(string), typeof(bool));
+			filestore = new TreeStore (typeof (Gdk.Pixbuf), typeof (string), typeof (string[]), typeof (string), typeof(bool), typeof(bool), typeof(string), typeof(bool), typeof (bool), typeof(Gdk.Pixbuf), typeof(bool), typeof (Gdk.Pixbuf), typeof(string), typeof(bool), typeof(bool));
 			filelist.Model = filestore;
 			filelist.TestExpandRow += new Gtk.TestExpandRowHandler (OnTestExpandRow);
 			
@@ -946,6 +947,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 
 			filestore.SetValue (iter, ColPath, new string[] { GettextCatalog.GetString ("Loading data...") });
+			filestore.SetValue (iter, ColRenderAsText, true);
 			
 			if (ddata.diffRunning)
 				return;
@@ -960,11 +962,13 @@ namespace MonoDevelop.VersionControl.Views
 				foreach (DiffInfo di in ddata.difs) {
 					if (di.FileName == file) {
 						filestore.SetValue (iter, ColPath, di.Content.Split ('\n'));
+						filestore.SetValue (iter, ColRenderAsText, false);
 						return;
 					}
 				}
 			}
 			filestore.SetValue (iter, ColPath, new string[] { GettextCatalog.GetString ("No differences found") });
+			filestore.SetValue (iter, ColRenderAsText, true);
 		}
 		
 		void FillDifs (DiffData ddata)
@@ -1002,7 +1006,7 @@ namespace MonoDevelop.VersionControl.Views
 			CellRendererDiff rc = (CellRendererDiff)cell;
 			string[] lines = (string[])filestore.GetValue (iter, ColPath);
 			TreePath path = filestore.GetPath (iter);
-			if (filestore.IterDepth (iter) == 0) {
+			if (filestore.IterDepth (iter) == 0 || (bool)filestore.GetValue (iter, ColRenderAsText)) {
 				rc.InitCell (filelist, false, lines, path);
 			} else {
 				rc.InitCell (filelist, true, lines, path);
