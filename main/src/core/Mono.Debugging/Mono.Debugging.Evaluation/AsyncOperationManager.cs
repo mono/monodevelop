@@ -156,7 +156,8 @@ namespace Mono.Debugging.Evaluation
 						Abort ();
 						abortRequested = true;
 					}
-					if (WaitForCompleted (1000)) {
+					// Short wait for the Abort to finish. If this wait is not enough, it will wait again in the next loop
+					if (WaitForCompleted (100)) {
 						ST.Monitor.Exit (this);
 						break;
 					}
