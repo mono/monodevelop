@@ -63,6 +63,7 @@ namespace Mono.Debugging.Client
 		ExceptionHandler exceptionHandler;
 		DebuggerSessionOptions options;
 		Dictionary<string,string> resolvedExpressionCache = new Dictionary<string, string> ();
+		bool adjustingBreakpoints;
 		
 		class BreakEventInfo {
 			// Handle is the native debugger breakpoint handle
@@ -153,6 +154,7 @@ namespace Mono.Debugging.Client
 						breakpointStore.BreakEventModified -= OnBreakpointModified;
 						breakpointStore.BreakEventEnableStatusChanged -= OnBreakpointStatusChanged;
 						breakpointStore.CheckingReadOnly -= BreakpointStoreCheckingReadOnly;
+						Breakpoints.ResetAdjustedBreakpoints ();
 					}
 					
 					breakpointStore = value;
@@ -520,6 +522,10 @@ namespace Mono.Debugging.Client
 		
 		void OnBreakpointAdded (object s, BreakEventArgs args)
 		{
+			lock (breakpoints) {
+				if (adjustingBreakpoints)
+					return;
+			}
 			lock (slock) {
 				if (started)
 					AddBreakEvent (args.BreakEvent);
@@ -528,6 +534,10 @@ namespace Mono.Debugging.Client
 		
 		void OnBreakpointRemoved (object s, BreakEventArgs args)
 		{
+			lock (breakpoints) {
+				if (adjustingBreakpoints)
+					return;
+			}
 			lock (slock) {
 				if (started)
 					RemoveBreakEvent (args.BreakEvent);
@@ -998,6 +1008,18 @@ namespace Mono.Debugging.Client
 						BreakpointTraceHandler (ev, value);
 					else
 						OnDebuggerOutput (false, value + "\n");
+				}
+			}
+		}
+		
+		protected void AdjustBreakpointLocation (Breakpoint b, int newLine)
+		{
+			lock (breakpoints) {
+				try {
+					adjustingBreakpoints = true;
+					Breakpoints.AdjustBreakpointLine (b, newLine);
+				} finally {
+					adjustingBreakpoints = false;
 				}
 			}
 		}

@@ -35,6 +35,7 @@ namespace Mono.Debugging.Client
 	{
 		string fileName;
 		int line;
+		int adjustedLine = -1;
 		
 		string conditionExpression;
 		string lastConditionValue;
@@ -77,7 +78,21 @@ namespace Mono.Debugging.Client
 		}
 		
 		public int Line {
-			get { return line; }
+			get { return adjustedLine == -1 ? line : adjustedLine; }
+		}
+		
+		internal void SetAdjustedLine (int newLine)
+		{
+			adjustedLine = newLine;
+		}
+		
+		internal void ResetAdjustedLine ()
+		{
+			adjustedLine = -1;
+		}
+
+		internal bool HasAdjustedLine {
+			get { return adjustedLine != -1; }
 		}
 
 		public string ConditionExpression {

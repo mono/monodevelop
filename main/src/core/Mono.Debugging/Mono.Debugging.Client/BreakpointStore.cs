@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Xml;
 using System.Collections;
 using System.Collections.Generic;
@@ -116,20 +117,20 @@ namespace Mono.Debugging.Client
 				return false;
 		}
 		
-		public bool Toggle (string filename, int line)
+		public Breakpoint Toggle (string filename, int line)
 		{
 			if (IsReadOnly)
-				return false;
+				return null;
 			
 			ReadOnlyCollection<Breakpoint> col = GetBreakpointsAtFileLine (filename, line);
 			if (col.Count > 0) {
 				foreach (Breakpoint bp in col)
 					Remove (bp);
+				return null;
 			}
 			else {
-				Add (filename, line);
+				return Add (filename, line);
 			}
-			return true;
 		}
 		
 		public ReadOnlyCollection<Breakpoint> GetBreakpoints ()
@@ -215,6 +216,24 @@ namespace Mono.Debugging.Client
 		public void CopyTo (BreakEvent[] array, int arrayIndex)
 		{
 			breakpoints.CopyTo (array, arrayIndex);
+		}
+		
+		internal void AdjustBreakpointLine (Breakpoint bp, int newLine)
+		{
+			Remove (bp);
+			bp.SetAdjustedLine (newLine);
+			Add (bp);
+		}
+		
+		internal void ResetAdjustedBreakpoints ()
+		{
+			foreach (Breakpoint bp in breakpoints.Where (b => b is Breakpoint).ToArray ()) {
+				if (bp.HasAdjustedLine) {
+					Remove (bp);
+					bp.ResetAdjustedLine ();
+					Add (bp);
+				}
+			}
 		}
 		
 		public XmlElement Save ()

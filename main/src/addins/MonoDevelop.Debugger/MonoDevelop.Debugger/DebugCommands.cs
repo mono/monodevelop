@@ -355,9 +355,15 @@ namespace MonoDevelop.Debugger
 	{
 		protected override void Run ()
 		{
-			DebuggingService.Breakpoints.Toggle (
+			var bp = DebuggingService.Breakpoints.Toggle (
 			    IdeApp.Workbench.ActiveDocument.FileName,
 			    IdeApp.Workbench.ActiveDocument.Editor.Caret.Line);
+			
+			// If the breakpoint could not be inserted in the caret location, move the caret
+			// to the real line of the breakpoint, so that if the Toggle command is run again,
+			// this breakpoint will be removed
+			if (bp != null && bp.Line != IdeApp.Workbench.ActiveDocument.Editor.Caret.Line)
+				IdeApp.Workbench.ActiveDocument.Editor.Caret.Line = bp.Line;
 		}
 		
 		protected override void Update (CommandInfo info)

@@ -669,6 +669,9 @@ namespace Mono.Debugging.Soft
 			bi.Req = vm.SetBreakpoint (bi.Location.Method, bi.Location.ILOffset);
 			bi.Req.Enabled = bi.Enabled;
 			breakpoints [bi.Req] = bi;
+			
+			if (bi.Location.LineNumber != bp.Line)
+				AdjustBreakpointLocation (bp, bi.Location.LineNumber);
 		}
 		
 		void InsertCatchpoint (Catchpoint cp, BreakInfo bi, TypeMirror excType)
@@ -1181,7 +1184,7 @@ namespace Mono.Debugging.Soft
 						Location l = GetLocFromType (t, s, bp.Line);
 						if (l != null) {
 							OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint at '{0}:{1}' to {2} [0x{3:x5}].\n",
-							                                        s, bp.Line, l.Method.FullName, l.ILOffset));
+							                                        s, l.LineNumber, l.Method.FullName, l.ILOffset));
 							ResolvePendingBreakpoint (bp, l);
 							resolved.Add (bp);
 						} else {
@@ -1226,9 +1229,18 @@ namespace Mono.Debugging.Soft
 			Location target_loc = null;
 			foreach (MethodMirror m in type.GetMethods ()) {
 				foreach (Location l in m.Locations) {
-					if (PathComparer.Compare (PathToFileName (l.SourceFile), file) == 0 && l.LineNumber == line) {
-						target_loc = l;
-						break;
+					if (PathComparer.Compare (PathToFileName (l.SourceFile), file) == 0) {
+						// If we are inserting a breakpoint in line L, but L+1 has the same IL offset as L,
+						// pick the L+1 location, since that's where the debugger is going to stop.
+						if (l.LineNumber == line) {
+							target_loc = l;
+						}
+						else if (target_loc != null) {
+							if (target_loc.ILOffset == l.ILOffset)
+								target_loc = l;
+							else
+								break;
+						}
 					}
 				}
 				if (target_loc != null)
