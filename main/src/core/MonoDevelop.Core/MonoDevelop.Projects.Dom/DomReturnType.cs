@@ -550,9 +550,6 @@ namespace MonoDevelop.Projects.Dom
 				string part = parts[i];
 				this.parts.Add (i + 1 < parts.Length ? new ReturnTypePart (part) : new ReturnTypePart (part, typeParameters));
 			}
-			foreach (string part in name.Split ('.')) {
-				
-			}
 			this.IsNullable = isNullable;
 		}
 		
