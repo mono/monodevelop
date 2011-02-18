@@ -544,7 +544,7 @@ namespace MonoDevelop.SourceEditor
 				fileName = View.UntitledName;
 			
 			IExpressionFinder expressionFinder = ProjectDomService.GetExpressionFinder (fileName);
-			string expression = expressionFinder == null ? GetExpressionBeforeOffset (offset) : expressionFinder.FindFullExpression (Document.Text, offset).Expression;
+			string expression = expressionFinder == null ? GetExpressionBeforeOffset (offset) : expressionFinder.FindFullExpression (GetTextEditorData () , offset).Expression;
 			
 			if (expression == null)
 				return string.Empty;
