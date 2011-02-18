@@ -301,7 +301,6 @@ namespace Mono.Debugging.Soft
 		
 		ValueReference GetCompilerGeneratedThisReference (SoftEvaluationContext cx)
 		{
-			TypeMirror tm = cx.Frame.Method.DeclaringType;
 			try {
 				Value val = cx.Frame.GetThis ();
 				TypeMirror type = (TypeMirror) GetValueType (cx, val);
@@ -317,7 +316,7 @@ namespace Mono.Debugging.Soft
 		{
 			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
 			if (InCompilerGeneratedType (cx))
-				return OnGetLocalVariables (cx).FirstOrDefault (v => v.Name == name);
+				return FindByName (OnGetLocalVariables (cx), v => v.Name, name, ctx.CaseSensitive);
 			
 			try {
 				LocalVariable local = null;
@@ -328,16 +327,13 @@ namespace Mono.Debugging.Soft
 							local = cx.Frame.Method.GetLocals ().FirstOrDefault (loc => loc.Index == idx);
 					}
 				} else
-					local = cx.Frame.GetVisibleVariableByName (name);
+					local = ctx.CaseSensitive ? cx.Frame.GetVisibleVariableByName (name) : FindByName (cx.Frame.GetVisibleVariables(), v => v.Name, name, false);
 				
 				if (local != null) {
 					string vname = !string.IsNullOrEmpty (local.Name) || cx.SourceCodeAvailable ? local.Name : "loc" + local.Index;
 					return new VariableValueReference (ctx, vname, local);
 				}
-				foreach (var v in OnGetLocalVariables (ctx))
-					if (v.Name == name)
-						return v;
-				return null;
+				return FindByName (OnGetLocalVariables (ctx), v => v.Name, name, ctx.CaseSensitive);;
 			} catch (AbsentInformationException) {
 				return null;
 			}
@@ -381,17 +377,30 @@ namespace Mono.Debugging.Soft
 		{
 			TypeMirror type = (TypeMirror) t;
 			while (type != null) {
-				FieldInfoMirror field = type.GetField (name);
+				FieldInfoMirror field = FindByName (type.GetFields(), f => f.Name, name, ctx.CaseSensitive);
 				if (field != null)
 					return new FieldValueReference (ctx, field, co, type);
-				PropertyInfoMirror prop = type.GetProperty (name);
+				PropertyInfoMirror prop = FindByName (type.GetProperties(), p => p.Name, name, ctx.CaseSensitive);
 				if (prop != null)
 					return new PropertyValueReference (ctx, prop, co, type, null);
 				type = type.BaseType;
 			}
 			return null;
 		}
-
+		
+		static T FindByName<T> (IEnumerable<T> elems, Func<T,string> getName, string name, bool caseSensitive)
+		{
+			T best = default(T);
+			foreach (T t in elems) {
+				string n = getName (t);
+				if (n == name) 
+					return t;
+				else if (!caseSensitive && n.Equals (name, StringComparison.CurrentCultureIgnoreCase))
+					best = t;
+			}
+			return best;
+		}
+		
 		protected override IEnumerable<ValueReference> GetMembers (EvaluationContext ctx, object t, object co, BindingFlags bindingFlags)
 		{
 			Dictionary<string, PropertyInfoMirror> subProps = new Dictionary<string, PropertyInfoMirror> ();
@@ -871,7 +880,7 @@ namespace Mono.Debugging.Soft
 			TypeMirror currentType = type;
 			while (currentType != null) {
 				foreach (MethodMirror met in currentType.GetMethods ()) {
-					if (met.Name == methodName) {
+					if (met.Name == methodName || (!ctx.CaseSensitive && met.Name.Equals (methodName, StringComparison.CurrentCultureIgnoreCase))) {
 						ParameterInfoMirror[] pars = met.GetParameters ();
 						if (pars.Length == argtypes.Length && (met.IsStatic && allowStatic || !met.IsStatic && allowInstance))
 							candidates.Add (met);
