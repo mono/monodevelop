@@ -1526,7 +1526,6 @@ namespace MonoDevelop.CSharp.Parser
 			public override object Visit (SimpleName simpleName)
 			{
 				var result = new IdentifierExpression ();
-				Console.WriteLine (Convert (simpleName.Location));
 				result.AddChild (new Identifier (simpleName.Name, Convert (simpleName.Location)), IdentifierExpression.Roles.Identifier);
 				if (simpleName.TypeArguments != null)  {
 					var location = LocationsBag.GetLocations (simpleName);

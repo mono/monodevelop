@@ -615,7 +615,6 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 		[Conditional ("FULL_AST")]
 		public void EndComment (int endLine, int endColumn)
 		{
-			Console.WriteLine ("end comment {0}, {1}", endLine, endColumn);
 			Specials.Add (new Comment (curComment, startsLine, startLine, startCol, endLine, endColumn, contentBuilder.ToString ()));
 		}
 		
