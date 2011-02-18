@@ -43,6 +43,10 @@ namespace Mono.Debugging.Evaluation
 			set { options = value; }
 		}
 		
+		public bool CaseSensitive {
+			get { return Evaluator.CaseSensitive; }
+		}
+		
 		public virtual void WriteDebuggerError (Exception ex)
 		{
 		}

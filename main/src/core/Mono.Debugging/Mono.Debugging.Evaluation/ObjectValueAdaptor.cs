@@ -467,11 +467,14 @@ namespace Mono.Debugging.Evaluation
 
 		protected virtual ValueReference OnGetLocalVariable (EvaluationContext ctx, string name)
 		{
+			ValueReference best = null;
 			foreach (ValueReference var in GetLocalVariables (ctx)) {
 				if (var.Name == name)
 					return var;
+				if (!ctx.Evaluator.CaseSensitive && var.Name.Equals (name, StringComparison.CurrentCultureIgnoreCase))
+					best = var;
 			}
-			return null;
+			return best;
 		}
 
 		public virtual ValueReference GetParameter (EvaluationContext ctx, string name)
@@ -481,11 +484,14 @@ namespace Mono.Debugging.Evaluation
 
 		protected virtual ValueReference OnGetParameter (EvaluationContext ctx, string name)
 		{
+			ValueReference best = null;
 			foreach (ValueReference var in GetParameters (ctx)) {
 				if (var.Name == name)
 					return var;
+				if (!ctx.Evaluator.CaseSensitive && var.Name.Equals (name, StringComparison.CurrentCultureIgnoreCase))
+					best = var;
 			}
-			return null;
+			return best;
 		}
 
 		public IEnumerable<ValueReference> GetLocalVariables (EvaluationContext ctx)
@@ -624,10 +630,14 @@ namespace Mono.Debugging.Evaluation
 		
 		protected virtual ValueReference GetMember (EvaluationContext ctx, object t, object co, string name)
 		{
-			foreach (ValueReference var in GetMembers (ctx, t, co, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static))
+			ValueReference best = null;
+			foreach (ValueReference var in GetMembers (ctx, t, co, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)) {
 				if (var.Name == name)
 					return var;
-			return null;
+				if (!ctx.Evaluator.CaseSensitive && var.Name.Equals (name, StringComparison.CurrentCultureIgnoreCase))
+					best = var;
+			}
+			return best;
 		}
 
 		internal IEnumerable<ValueReference> GetMembersSorted (EvaluationContext ctx, IObjectSource objectSource, object t, object co)
@@ -975,7 +985,10 @@ namespace Mono.Debugging.Evaluation
 
 		public bool HasMethod (EvaluationContext ctx, object targetType, string methodName)
 		{
-			return HasMethod (ctx, targetType, methodName, null, BindingFlags.Instance | BindingFlags.Static);
+			BindingFlags flags = BindingFlags.Instance | BindingFlags.Static;
+			if (!ctx.Evaluator.CaseSensitive)
+				flags |= BindingFlags.IgnoreCase;
+			return HasMethod (ctx, targetType, methodName, null, flags);
 		}
 		
 		public bool HasMethod (EvaluationContext ctx, object targetType, string methodName, BindingFlags flags)

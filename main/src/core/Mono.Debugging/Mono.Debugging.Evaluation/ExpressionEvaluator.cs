@@ -158,6 +158,10 @@ namespace Mono.Debugging.Evaluation
 			}
 			return sb.ToString ();
 		}
+		
+		public virtual bool CaseSensitive {
+			get { return true; }
+		}
 
 		public abstract string Resolve (DebuggerSession session, SourceLocation location, string exp);
 	}
