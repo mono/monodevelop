@@ -81,21 +81,72 @@ namespace Mono.Debugging.Client
 		}
 		
 		ProcessInfo[] currentProcesses;
-		
+
+		/// <summary>
+		/// Reports a debugger event
+		/// </summary>
 		public event EventHandler<TargetEventArgs> TargetEvent;
 		
+		/// <summary>
+		/// Raised when the debugger resumes execution after being stopped
+		/// </summary>
 		public event EventHandler TargetStarted;
+		
+		/// <summary>
+		/// Raised when the underlying debugging engine has been initialized and it is ready to start execution.
+		/// </summary>
 		public event EventHandler<TargetEventArgs> TargetReady;
+		
+		/// <summary>
+		/// Raised when the debugging session ends.
+		/// </summary>
 		public event EventHandler<TargetEventArgs> TargetStopped;
+		
+		/// <summary>
+		/// Raised when the execution is interrupted by an external event
+		/// </summary>
 		public event EventHandler<TargetEventArgs> TargetInterrupted;
+		
+		/// <summary>
+		/// Raised when a breakpoint is hit
+		/// </summary>
 		public event EventHandler<TargetEventArgs> TargetHitBreakpoint;
+		
+		/// <summary>
+		/// Raised when the execution is interrupted due to receiving a signal
+		/// </summary>
 		public event EventHandler<TargetEventArgs> TargetSignaled;
+		
+		/// <summary>
+		/// Raised when the debugged process exits
+		/// </summary>
 		public event EventHandler TargetExited;
+		
+		/// <summary>
+		/// Raised when an exception for which there is a catchpoint is thrown
+		/// </summary>
 		public event EventHandler<TargetEventArgs> TargetExceptionThrown;
+		
+		/// <summary>
+		/// Raised when an exception is unhandled
+		/// </summary>
 		public event EventHandler<TargetEventArgs> TargetUnhandledException;
+		
+		/// <summary>
+		/// Raised when a thread is started in the debugged process
+		/// </summary>
 		public event EventHandler<TargetEventArgs> TargetThreadStarted;
+		
+		/// <summary>
+		/// Raised when a thread is stopped in the debugged process
+		/// </summary>
 		public event EventHandler<TargetEventArgs> TargetThreadStopped;
 		
+		/// <summary>
+		/// Raised when the 'busy state' of the debugger changes.
+		/// The debugger may switch to busy state if it is in the middle
+		/// of an expression evaluation which can't be aborted.
+		/// </summary>
 		public event EventHandler<BusyStateEventArgs> BusyStateChanged;
 		
 		public DebuggerSession ()
@@ -108,6 +159,16 @@ namespace Mono.Debugging.Client
 		{
 		}
 		
+		/// <summary>
+		/// Releases all resource used by the <see cref="Mono.Debugging.Client.DebuggerSession"/> object.
+		/// </summary>
+		/// <remarks>
+		/// Call <see cref="Dispose"/> when you are finished using the <see cref="Mono.Debugging.Client.DebuggerSession"/>.
+		/// The <see cref="Dispose"/> method leaves the <see cref="Mono.Debugging.Client.DebuggerSession"/> in an unusable
+		/// state. After calling <see cref="Dispose"/>, you must release all references to the
+		/// <see cref="Mono.Debugging.Client.DebuggerSession"/> so the garbage collector can reclaim the memory that the
+		/// <see cref="Mono.Debugging.Client.DebuggerSession"/> was occupying.
+		/// </remarks>
 		public virtual void Dispose ()
 		{
 			Dispatch (delegate {
@@ -119,19 +180,66 @@ namespace Mono.Debugging.Client
 			});
 		}
 		
+		/// <summary>
+		/// Gets or sets an exception handler to be invoked when an exception is raised by the debugger engine.
+		/// </summary>
+		/// <remarks>
+		/// Notice that this handler will be used to report exceptions in the debugger, not exceptions raised
+		/// in the debugged process.
+		/// </remarks>
 		public ExceptionHandler ExceptionHandler {
 			get { return exceptionHandler; }
 			set { exceptionHandler = value; }
 		}
 		
+		/// <summary>
+		/// Gets or sets the connection dialog creator callback.
+		/// </summary>
 		public ConnectionDialogCreator ConnectionDialogCreator { get; set; }
-		
+
+		/// <summary>
+		/// Gets or sets the breakpoint trace handler.
+		/// </summary>
+		/// <remarks>
+		/// This handler is invoked when the value of a tracepoint has to be printed
+		/// </remarks>
 		public BreakpointTraceHandler BreakpointTraceHandler { get; set; }
 		
+		/// <summary>
+		/// Gets or sets the type resolver handler.
+		/// </summary>
+		/// <remarks>
+		/// This handler is invoked when the expression evaluator needs to resolve a type name.
+		/// </remarks>
 		public TypeResolverHandler TypeResolverHandler { get; set; }
-
-		public GetExpressionEvaluatorHandler GetExpressionEvaluator { get; set; }		
 		
+		/// <summary>
+		/// Gets or sets the an expression evaluator provider
+		/// </summary>
+		/// <remarks>
+		/// This handler is invoked when the debugger needs to get an evaluator for a specific type of file
+		/// </remarks>
+		public GetExpressionEvaluatorHandler GetExpressionEvaluator { get; set; }		
+
+		/// <summary>
+		/// Gets or sets the custom break event hit handler.
+		/// </summary>
+		/// <remarks>
+		/// This handler is invoked when a custom breakpoint is hit to determine if the debug session should
+		/// continue or stop.
+		/// </remarks>
+		public BreakEventHitHandler CustomBreakEventHitHandler {
+			get {
+				return customBreakpointHitHandler;
+			}
+			set {
+				customBreakpointHitHandler = value;
+			}
+		}
+		
+		/// <summary>
+		/// Gets or sets the breakpoint store for the debugger session.
+		/// </summary>
 		public BreakpointStore Breakpoints {
 			get {
 				lock (slock) {
@@ -172,15 +280,6 @@ namespace Mono.Debugging.Client
 						breakpointStore.CheckingReadOnly += BreakpointStoreCheckingReadOnly;
 					}
 				}
-			}
-		}
-
-		public BreakEventHitHandler CustomBreakEventHitHandler {
-			get {
-				return customBreakpointHitHandler;
-			}
-			set {
-				customBreakpointHitHandler = value;
 			}
 		}
 		
