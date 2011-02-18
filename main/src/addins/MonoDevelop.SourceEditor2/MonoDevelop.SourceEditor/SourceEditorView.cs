@@ -886,26 +886,28 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		void UpdateBreakpoints ()
+		void UpdateBreakpoints (bool forceUpdate = false)
 		{
-			int i = 0, count = 0;
-			bool mismatch = false;
-			foreach (Breakpoint bp in DebuggingService.Breakpoints.GetBreakpoints ()) {
-				count++;
-				if (i < breakpointSegments.Count) {
-					int lineNumber = widget.TextEditor.Document.OffsetToLineNumber (breakpointSegments[i].Offset);
-					if (lineNumber != bp.Line) {
-						mismatch = true;
-						break;
+			if (!forceUpdate) {
+				int i = 0, count = 0;
+				bool mismatch = false;
+				foreach (Breakpoint bp in DebuggingService.Breakpoints.GetBreakpoints ()) {
+					count++;
+					if (i < breakpointSegments.Count) {
+						int lineNumber = widget.TextEditor.Document.OffsetToLineNumber (breakpointSegments[i].Offset);
+						if (lineNumber != bp.Line) {
+							mismatch = true;
+							break;
+						}
+						i++;
 					}
-					i++;
 				}
+				if (count != breakpointSegments.Count)
+					mismatch = true;
+				
+				if (!mismatch)
+					return;
 			}
-			if (count != breakpointSegments.Count)
-				mismatch = true;
-			
-			if (!mismatch)
-				return;
 			
 			HashSet<int> lineNumbers = new HashSet<int> ();
 			foreach (LineSegment line in breakpointSegments) {
@@ -995,7 +997,7 @@ namespace MonoDevelop.SourceEditor
 			// result of inserting/removing lines before a breakpoint position
 			GLib.Timeout.Add (10, delegate {
 				if (!isDisposed)
-					UpdateBreakpoints ();
+					UpdateBreakpoints (true);
 				return false;
 			});
 		}
