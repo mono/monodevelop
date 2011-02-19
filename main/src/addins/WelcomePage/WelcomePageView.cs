@@ -148,7 +148,7 @@ namespace MonoDevelop.WelcomePage
 						var response = (HttpWebResponse) request.EndGetResponse (ar);
 						if (response.StatusCode == HttpStatusCode.OK) {
 							using (var fs = File.Create (localCachedNewsFile))
-								CopyStream (response.GetResponseStream (), fs, response.ContentLength);
+								response.GetResponseStream ().CopyTo (fs, 2048);
 						}
 						NewsUpdated (null, EventArgs.Empty);
 					} catch (System.Net.WebException wex) {
@@ -171,19 +171,6 @@ namespace MonoDevelop.WelcomePage
 				LoggingService.LogWarning ("Welcome Page news file could not be downloaded.", ex);
 				lock (updateLock)
 					isUpdating = false;
-			}
-		}
-		
-		static void CopyStream (Stream fr, Stream to, long remaining)
-		{
-			int position = 0;
-			int readBytes = -1;
-			byte[] buffer = new byte[2048];
-			while (readBytes != 0) {							
-				readBytes = fr.Read (buffer, position, (int) (remaining > 2048 ? 2048 : remaining));
-				position += readBytes;
-				remaining -= readBytes;
-				to.Write (buffer, 0, readBytes);
 			}
 		}
 		
