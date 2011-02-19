@@ -191,6 +191,15 @@ namespace MonoDevelop.MonoDroid
 		{
 			var conf = new MonoDroidProjectConfiguration (name);
 			conf.CopyFrom (base.CreateConfiguration (name));
+
+			if (conf.Name.IndexOf ("debug", StringComparison.OrdinalIgnoreCase) > -1) {
+				conf.AndroidUseSharedRuntime = true;
+				conf.MonoDroidLinkMode = MonoDroidLinkMode.None;
+			} else {
+				conf.AndroidUseSharedRuntime = false;
+				conf.MonoDroidLinkMode = MonoDroidLinkMode.Full;
+			}
+
 			return conf;
 		}
 		
