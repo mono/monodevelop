@@ -28,6 +28,7 @@ using System;
 
 namespace MonoDevelop.Components
 {
+	[System.ComponentModel.ToolboxItem (true)]
 	public class CompactScrolledWindow : Gtk.ScrolledWindow
 	{
 		const string styleName = "MonoDevelop.Components.CompactScrolledWindow";
