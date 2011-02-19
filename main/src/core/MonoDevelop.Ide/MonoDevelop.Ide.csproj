@@ -62,7 +62,6 @@
     <Reference Include="System.Core">
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
-      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Mono.Cairo" />
     <Reference Include="System.Web" />
@@ -1448,6 +1447,9 @@
     <Data Include="options\TipsOfTheDay.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Data>
+    <None Include="MonoDevelop.Ide.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
