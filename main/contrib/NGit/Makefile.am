@@ -11,6 +11,9 @@ $(NGIT): $(NGIT_CSFILES)
 	mkdir -p $(BINDIR)
 	xbuild $(NGIT_DIR)/NGit.csproj
 
+clean-local:
+	xbuild /t:Clean $(NGIT_DIR)/NGit.csproj
+
 CLEANFILES = $(NGIT) $(NGIT_MDB)
 
 EXTRA_DIST = \

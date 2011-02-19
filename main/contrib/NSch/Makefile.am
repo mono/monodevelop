@@ -11,6 +11,9 @@ $(NSCH): $(NSCH_CSFILES)
 	mkdir -p $(BINDIR)
 	xbuild $(NSCH_DIR)/NSch.csproj
 
+clean-local:
+	xbuild /t:Clean $(NSCH_DIR)/NSch.csproj
+
 CLEANFILES = $(NSCH) $(NSCH_MDB)
 
 EXTRA_DIST = \

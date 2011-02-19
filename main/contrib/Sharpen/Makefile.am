@@ -11,6 +11,9 @@ $(SHARPEN): $(SHARPEN_CSFILES)
 	mkdir -p $(BINDIR)
 	xbuild $(SHARPEN_DIR)/Sharpen.csproj
 
+clean-local:
+	xbuild /t:Clean $(SHARPEN_DIR)/Sharpen.csproj
+
 CLEANFILES = $(SHARPEN) $(SHARPEN_MDB)
 
 EXTRA_DIST = \
