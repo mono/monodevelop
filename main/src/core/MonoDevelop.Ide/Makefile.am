@@ -261,6 +261,7 @@ FILES =  \
 	MonoDevelop.Components/PathBar.cs \
 	MonoDevelop.Components/RoundedFrame.cs \
 	MonoDevelop.Components/SearchEntry.cs \
+	MonoDevelop.Components/SectionList.cs \
 	MonoDevelop.Components/SelectFileDialog.cs \
 	MonoDevelop.Components/SelectFolderDialog.cs \
 	MonoDevelop.Components/TabLabel.cs \

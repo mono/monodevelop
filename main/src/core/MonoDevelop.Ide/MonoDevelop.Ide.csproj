@@ -1425,6 +1425,7 @@
     <Compile Include="MonoDevelop.Components\HeaderBox.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\StartupHandlerExtensionAttribute.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\ReferencesFinder.cs" />
+    <Compile Include="MonoDevelop.Components\SectionList.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
