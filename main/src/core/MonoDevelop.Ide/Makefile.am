@@ -581,6 +581,8 @@ FILES =  \
 	MonoDevelop.Ide.Navigation/NavigationHistoryService.cs \
 	MonoDevelop.Ide.Navigation/NavigationPoint.cs \
 	MonoDevelop.Ide.Navigation/TextFileNavigationPoint.cs \
+	MonoDevelop.Ide.OnlineTemplates/OnlineTemplateService.cs \
+	MonoDevelop.Ide.OnlineTemplates/ProjectTemplateIndex.cs \
 	MonoDevelop.Ide.ProgressMonitoring/BaseProgressMonitor.cs \
 	MonoDevelop.Ide.ProgressMonitoring/MessageDialogProgressMonitor.cs \
 	MonoDevelop.Ide.ProgressMonitoring/MultiTaskDialogProgressMonitor.cs \
