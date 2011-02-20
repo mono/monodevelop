@@ -223,7 +223,8 @@ namespace MonoDevelop.MonoDroid
 				},
 				new ChainedAsyncOperation () {
 					TaskName = GettextCatalog.GetString ("Installing the platform framework"),
-					Skip = () => list.IsCurrentPlatformInstalled (apiLevel, RuntimeVersion) ? "" : null,
+					Skip = () => !conf.AndroidUseSharedRuntime || list.IsCurrentPlatformInstalled (apiLevel, RuntimeVersion) ? 
+						"" : null,
 					Create = () => {
 						var platformApk = MonoDroidFramework.GetPlatformPackage (apiLevel);
 						if (!File.Exists (platformApk)) {
