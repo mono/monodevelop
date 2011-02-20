@@ -201,8 +201,13 @@ namespace MonoDevelop.MonoDroid
 				},
 				new ChainedAsyncOperation () {
 					TaskName = GettextCatalog.GetString ("Uninstalling old version of shared runtime package"),
-					Skip = () => list.GetOldRuntimes (RuntimeVersion).Count () == 0 ? "" : null,
-					Create = () => toolbox.Uninstall (device, "com.novell.monodroid.runtimeservice", monitor.Log, monitor.Log),
+					Skip = () => !conf.AndroidUseSharedRuntime || list.GetOldRuntimesAndPlatforms (apiLevel, RuntimeVersion).Count () == 0 ? 
+						"" : null,
+					Create = () => { // Cleanup task, no need to wait for it
+						foreach (InstalledPackage oldPackage in list.GetOldRuntimesAndPlatforms (apiLevel, RuntimeVersion))
+							toolbox.Uninstall (device, oldPackage.Name, monitor.Log, monitor.Log);
+						return Core.Execution.NullProcessAsyncOperation.Success;
+					},
 					ErrorMessage = GettextCatalog.GetString ("Failed to uninstall package")
 				},
 				new ChainedAsyncOperation () {

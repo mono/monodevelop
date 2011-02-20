@@ -83,6 +83,15 @@ namespace MonoDevelop.MonoDroid
 			return packages.ToList ();
 		}
 
+		public List<InstalledPackage> GetOldRuntimesAndPlatforms (int platform, int current)
+		{
+			var runtimes = GetOldRuntimes (current);
+
+			runtimes.AddRange (GetOldPlatforms (platform, current));
+
+			return runtimes;
+		}
+
 		public bool ContainsPackage (string packageName)
 		{
 			var packages = Packages.Where (p => p.Name == packageName);
