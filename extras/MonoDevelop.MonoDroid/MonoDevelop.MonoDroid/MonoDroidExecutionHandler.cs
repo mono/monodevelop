@@ -89,7 +89,7 @@ namespace MonoDevelop.MonoDroid
 	{
 		AndroidDevice device;
 		string packageName;
-		DateTime startTime;
+		//DateTime startTime;
 		AdbGetProcessIdOperation getPidOp;
 		AdbOperation trackLogOp;
 		Action<string> stdout;
@@ -122,7 +122,7 @@ namespace MonoDevelop.MonoDroid
 			this.stdout = stdout;
 			this.stderr = stderr;
 
-			startTime = DateTime.Now;
+			//startTime = DateTime.Now;
 
 			if (startOp == null) {
 				StartTracking ();
@@ -203,7 +203,10 @@ namespace MonoDevelop.MonoDroid
 				return;
 			}
 
-			if (pid != this.pid || time < startTime)
+			// Disable the time check for now, as we need to use device-only dates
+			// We may implement a date retrieval later if needed
+			//if (pid != this.pid || time < startTime)
+			if (pid != this.pid)
 				return;
 
 			switch (tag) {
