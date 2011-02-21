@@ -104,11 +104,10 @@ namespace MonoDevelop.Core.Text
 			// no match, try to continue match at the next word start
 			j++;
 			for (; j < text.Length; j++) {
-				bool prevIsPunctuation = j > 0 && !char.IsLetterOrDigit (text [j - 1]);
 				// word start is either a upper case letter (FooBar) or a char that follows a non letter
 				// like foo:bar 
 				if (char.IsUpper (text[j]) && filterChar == text[j] || 
-					(prevIsPunctuation && filterChar == char.ToUpper (text[j])))
+					(filterChar == char.ToUpper (text[j]) && j > 0 && !char.IsLetterOrDigit (text[j - 1])))
 					return j;
 			}
 			return -1;
