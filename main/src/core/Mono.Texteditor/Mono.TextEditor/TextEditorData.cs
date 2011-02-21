@@ -94,7 +94,6 @@ namespace Mono.TextEditor
 			options = TextEditorOptions.DefaultOptions;
 			Document = doc;
 			this.SearchEngine = new BasicSearchEngine ();
-			SelectionChanging += HandleSelectionChanging;
 		}
 
 		void HandleDocLineChanged (object sender, LineEventArgs e)
@@ -258,7 +257,6 @@ namespace Mono.TextEditor
 				caret.PositionChanged -= CaretPositionChanged;
 				caret = null;
 			}
-			SelectionChanging -= HandleSelectionChanging;
 		}
 		
 		void CaretPositionChanged (object sender, DocumentLocationEventArgs args)
@@ -421,18 +419,13 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		void HandleSelectionChanging (object sender, TextEditorDataEventArgs args)
-		{
-			if (args.TextEditorData != this)
-				this.ClearSelection ();
-		}
+		public event EventHandler SelectionChanging;
 		
-		static event EventHandler<TextEditorDataEventArgs> SelectionChanging;
-		
-		static void OnSelectionChanging (TextEditorDataEventArgs args)
+		protected virtual void OnSelectionChanging (EventArgs e)
 		{
-			if (SelectionChanging != null)
-				SelectionChanging (null, args);
+			EventHandler handler = this.SelectionChanging;
+			if (handler != null)
+				handler (this, e);
 		}
 		
 		public SelectionMode SelectionMode {
@@ -454,6 +447,7 @@ namespace Mono.TextEditor
 				if (mainSelection == null && value == null)
 					return;
 				if (mainSelection == null && value != null || mainSelection != null && value == null || !mainSelection.Equals (value)) {
+					OnSelectionChanging (EventArgs.Empty);
 					if (mainSelection != null)
 						mainSelection.Changed -= HandleMainSelectionChanged;
 					mainSelection = value;
@@ -509,7 +503,7 @@ namespace Mono.TextEditor
 			}
 			set {
 				if (!Segment.Equals (this.SelectionRange, value)) {
-					OnSelectionChanging (new TextEditorDataEventArgs (this));
+					OnSelectionChanging (EventArgs.Empty);
 					if (value == null || value.Length == 0) {
 						MainSelection = null;
 					} else {
