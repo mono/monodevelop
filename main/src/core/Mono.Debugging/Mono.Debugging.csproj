@@ -33,7 +33,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <AssemblyName>Mono</AssemblyName>
+    <AssemblyName>Mono.Debugging</AssemblyName>
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
