@@ -256,7 +256,7 @@ namespace MonoDevelop.VersionControl.Views
 					StringBuilder sb = new StringBuilder ();
 					for (int n=block.FirstLine; n <= block.LastLine; n++) {
 						string s = ProcessLine (lines [n]);
-						if (sb.Length > 0)
+						if (n > block.FirstLine)
 							sb.Append ('\n');
 						if (block.Type != BlockType.Info && s.Length > 0)
 							sb.Append (s, 1, s.Length - 1);
