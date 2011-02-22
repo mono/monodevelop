@@ -11,6 +11,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
  
 using MonoDevelop.Components;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl 
 {
@@ -121,7 +122,10 @@ namespace MonoDevelop.VersionControl
 			if (test)
 				return true;
 			
-			new RemoveWorker (items).Start();
+			string msg = GettextCatalog.GetString ("Are you sure you want to remove the selected items from the version control system?");
+			string msg2 = GettextCatalog.GetString ("The files will be removed from disk");
+			if (MessageService.Confirm (msg, msg2, AlertButton.Delete))
+				new RemoveWorker (items).Start();
 			return true;
 		}
 		
