@@ -64,17 +64,57 @@ namespace MonoDevelop.Profiler
 			return null;
 		}
 		
-		public virtual object Visit (MetadataEvent metadataEvent)
+		public virtual object Visit (MetaDataClassEvent metaDataClassEvent)
 		{
 			return null;
 		}
 		
-		public virtual object Visit (MethodEvent methodEvent)
+		public virtual object Visit (MetaDataAssemblyEvent metaDataAssemblyEvent	)
 		{
 			return null;
 		}
 		
-		public virtual object Visit (ExceptionEvent exceptionEvent)
+		public virtual object Visit (MetaDataDomainEvent metaDataDomainEvent)
+		{
+			return null;
+		}
+		
+		public virtual object Visit (MetaDataImageEvent metaDataImageEvent)
+		{
+			return null;
+		}
+		
+		public virtual object Visit (MetaDataThreadEvent metaDataThreadEvent)
+		{
+			return null;
+		}
+		
+		public virtual object Visit (MethodLeaveEvent methodLeaveEvent)
+		{
+			return null;
+		}
+		
+		public virtual object Visit (MethodEnterEvent methodEnterEvent)
+		{
+			return null;
+		}
+		
+		public virtual object Visit (MethodExcLeaveEvent methodExcLeaveEvent)
+		{
+			return null;
+		}
+		
+		public virtual object Visit (MethodJitEvent methodJitEvent)
+		{
+			return null;
+		}
+		
+		public virtual object Visit (ExceptionClauseEvent exceptionClauseEvent)
+		{
+			return null;
+		}
+
+		public virtual object Visit (ExceptionThrowEvent exceptionThrowEvent)
 		{
 			return null;
 		}
@@ -84,7 +124,37 @@ namespace MonoDevelop.Profiler
 			return null;
 		}
 
-		public virtual object Visit (HeapEvent heapEvent)
+		public virtual object Visit (HeapStartEvent heapStartEvent)
+		{
+			return null;
+		}
+
+		public virtual object Visit (HeapEndEvent heapEndEvent)
+		{
+			return null;
+		}
+
+		public virtual object Visit (HeapObjectEvent heapObjectEvent)
+		{
+			return null;
+		}
+
+		public virtual object Visit (HeapRootEvent heapRootEvent)
+		{
+			return null;
+		}
+		
+		public virtual object Visit (SampleUSymEvent sampleUSymEvent)
+		{
+			return null;
+		}
+		
+		public virtual object Visit (SampleHitEvent sampleHitEvent)
+		{
+			return null;
+		}
+		
+		public virtual object Visit (SampleUBinEvent sampleUBinEvent)
 		{
 			return null;
 		}

@@ -90,7 +90,7 @@ namespace MonoDevelop.Profiler
 		{
 			if (x >= boxWidth) {
 				double length = Allocation.Width - boxWidth;
-				double displayLength = length / 2;
+				//double displayLength = length / 2;
 				
 				slider = Math.Max (0, (int)((dialog.visitor.TimeBase - dialog.T0) / 100000.0  * (x - boxWidth) / length));
 				QueueDraw ();

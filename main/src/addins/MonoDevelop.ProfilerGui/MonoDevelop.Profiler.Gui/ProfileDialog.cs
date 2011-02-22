@@ -470,32 +470,44 @@ namespace MonoDevelop.Profiler
 				threadDictionary.Clear ();
 			}
 			
-			public override object Visit (MethodEvent methodEvent)
+			public override object Visit (MethodEnterEvent methodEvent)
 			{
 				methodBase += methodEvent.Method;
 				TimeBase += methodEvent.TimeDiff;
-				switch (methodEvent.Type) {
-				case MethodEvent.MethodType.Jit:
-					nameDictionary [methodBase] = methodEvent.Name;
-					break;
+				if (ShouldLog) {
+					eventCount++;
+					if (!nameDictionary.ContainsKey (methodBase))
+						nameDictionary [methodBase] = "[Unknown method]";
+					
+					currentThread.PushMethod (methodBase, TimeBase);
+				}
+				return null;
+			}
+			
+			public override object Visit (MethodJitEvent methodEvent)
+			{
+				methodBase += methodEvent.Method;
+				TimeBase += methodEvent.TimeDiff;
+				nameDictionary [methodBase] = methodEvent.Name;
+				return null;
+			}
+			
+			public override object Visit (MethodExcLeaveEvent methodEvent)
+			{
+				methodBase += methodEvent.Method;
+				TimeBase += methodEvent.TimeDiff;
+				return null;
+			}
+			
+			public override object Visit (MethodLeaveEvent methodEvent)
+			{
+				methodBase += methodEvent.Method;
+				TimeBase += methodEvent.TimeDiff;
 				
-				case MethodEvent.MethodType.Enter:
-					if (ShouldLog) {
-						eventCount++;
-						if (!nameDictionary.ContainsKey (methodBase))
-							nameDictionary [methodBase] = "[Unknown method]";
-						
-						currentThread.PushMethod (methodBase, TimeBase);
-					}
-					break;
-				
-				case MethodEvent.MethodType.Leave:
-					if (ShouldLog) {
-						if (!nameDictionary.ContainsKey (methodBase))
-							nameDictionary [methodBase] = "[Unknown method]";
-						currentThread.PopMethod (methodBase, TimeBase);
-					}
-					break;
+				if (ShouldLog) {
+					if (!nameDictionary.ContainsKey (methodBase))
+						nameDictionary [methodBase] = "[Unknown method]";
+					currentThread.PopMethod (methodBase, TimeBase);
 				}
 				return null;
 			}
@@ -508,9 +520,15 @@ namespace MonoDevelop.Profiler
 				}
 			}
 			
-			public override object Visit (ExceptionEvent exceptionEvent)
+			public override object Visit (ExceptionClauseEvent exceptionEvent)
 			{
 				methodBase += exceptionEvent.Method;
+				TimeBase += exceptionEvent.TimeDiff;
+				return null;
+			}
+			
+			public override object Visit (ExceptionThrowEvent exceptionEvent)
+			{
 				TimeBase += exceptionEvent.TimeDiff;
 				return null;
 			}
@@ -539,25 +557,59 @@ namespace MonoDevelop.Profiler
 				return null;
 			}
 			
-			public override object Visit (HeapEvent heapEvent)
+			public override object Visit (HeapEndEvent heapEvent)
 			{
 				TimeBase += heapEvent.TimeDiff;
 				return null;
 			}
 			
-			public override object Visit (MetadataEvent metadataEvent)
+			public override object Visit (HeapStartEvent heapEvent)
 			{
-				TimeBase += metadataEvent.TimeDiff;
-				switch (metadataEvent.MType) {
-				case MetadataEvent.MetaDataType.Thread:
-					ThreadContext ctx;
-					long threadId = currentBuffer.Header.PtrBase * metadataEvent.Pointer;
-					if (!threadDictionary.TryGetValue (threadId, out ctx)) {
-						threadDictionary [threadId] = ctx = new ThreadContext () { ThreadId = threadId };
-					}
-					ctx.Name = metadataEvent.Name;
-					break;
+				TimeBase += heapEvent.TimeDiff;
+				return null;
+			}
+			
+			public override object Visit (HeapObjectEvent heapEvent)
+			{
+				TimeBase += heapEvent.TimeDiff;
+				return null;
+			}
+			
+			public override object Visit (MetaDataAssemblyEvent metaDataEvent)
+			{
+				TimeBase += metaDataEvent.TimeDiff;
+				return null;
+			}
+			
+			public override object Visit (MetaDataClassEvent metaDataEvent)
+			{
+				TimeBase += metaDataEvent.TimeDiff;
+				return null;
+			}
+			
+			public override object Visit (MetaDataDomainEvent metaDataEvent)
+			{
+				TimeBase += metaDataEvent.TimeDiff;
+				return null;
+			}
+			
+			public override object Visit (MetaDataImageEvent metaDataEvent)
+			{
+				TimeBase += metaDataEvent.TimeDiff;
+				return null;
+			}
+			
+			public override object Visit (MetaDataThreadEvent metaDataEvent)
+			{
+				TimeBase += metaDataEvent.TimeDiff;
+				
+				ThreadContext ctx;
+				long threadId = currentBuffer.Header.PtrBase * metaDataEvent.Pointer;
+				if (!threadDictionary.TryGetValue (threadId, out ctx)) {
+					threadDictionary [threadId] = ctx = new ThreadContext () { ThreadId = threadId };
 				}
+				ctx.Name = metaDataEvent.Name;
+				
 				return null;
 			}
 			
@@ -576,6 +628,12 @@ namespace MonoDevelop.Profiler
 			public override object Visit (ResizeGcEvent resizeGcEvent)
 			{
 				TimeBase += resizeGcEvent.TimeDiff;
+				return null;
+			}
+			
+			public override object Visit (SampleUBinEvent sampleUBinEvent)
+			{
+				TimeBase += sampleUBinEvent.TimeDiff;
 				return null;
 			}
 		}
