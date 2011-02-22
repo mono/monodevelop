@@ -93,7 +93,7 @@ MonoDevelop.app:
 	@rm -f missing-stuff
 
 MonoDevelop.app.zip: MonoDevelop.app
-	zip -r9uq MonoDevelop.app.zip MonoDevelop.app
+	zip -r9uyq MonoDevelop.app.zip MonoDevelop.app
 
 update-png:
 	/Applications/Inkscape.app/Contents/Resources/script --without-gui --export-png=`pwd`/dmg-bg.png `pwd`/dmg-bg.svg
