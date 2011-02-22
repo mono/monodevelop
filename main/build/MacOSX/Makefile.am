@@ -101,6 +101,6 @@ MonoDevelop.app:
 	@rm -f missing-stuff
 
 MonoDevelop.app.zip: MonoDevelop.app
-	zip -r9uq MonoDevelop.app.zip MonoDevelop.app
+	zip -r9uyq MonoDevelop.app.zip MonoDevelop.app
 
 .PHONY: MonoDevelop.app
