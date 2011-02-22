@@ -158,3 +158,6 @@ autom4te.cache/
 /extras/ValaBinding/Makefile
 /extras/ValaBinding/configure
 /extras/ValaBinding/missing
+
+#other extras generated stuff
+/extras/JavaBinding/monodevelop-java.pc
