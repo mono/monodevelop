@@ -609,8 +609,13 @@ namespace Mono.TextEditor
 
 		void SetVisibleCaretPosition (double x, double y)
 		{
+			if (x == caretX && y == caretY)
+				return;
+			
 			caretX = x;
 			caretY = y;
+			
+			textEditor.IMContext.CursorLocation = new Rectangle ((int)caretX, (int)caretY, 0, (int)(LineHeight - 1));
 		}
 
 		public static Gdk.Rectangle EmptyRectangle = new Gdk.Rectangle (0, 0, 0, 0);

@@ -92,7 +92,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		protected IMMulticontext IMContext {
+		protected internal IMMulticontext IMContext {
 			get { return imContext; }
 		}
 		
@@ -289,6 +289,20 @@ namespace Mono.TextEditor
 					this.textViewMargin.ForceInvalidateLine (Caret.Line);
 					this.textEditorData.Document.CommitLineUpdate (Caret.Line);
 				}
+			};
+			
+			imContext.RetrieveSurrounding += delegate (object o, RetrieveSurroundingArgs args) {
+				//use a single line of context, whole document would be very expensive
+				//FIXME: UTF16 surrogates handling for caret offset? only matters for astral plane
+				imContext.SetSurrounding (Document.GetLineText (Caret.Line, false), Caret.Column);
+				args.RetVal = true;
+			};
+			
+			imContext.SurroundingDeleted += delegate (object o, SurroundingDeletedArgs args) {
+				//FIXME: UTF16 surrogates handling for offset and NChars? only matters for astral plane
+				var line = Document.GetLine (Caret.Line);
+				((IBuffer)Document).Remove (line.Offset + args.Offset, args.NChars);
+				args.RetVal = true;
 			};
 			
 			using (Pixmap inv = new Pixmap (null, 1, 1, 1)) {
