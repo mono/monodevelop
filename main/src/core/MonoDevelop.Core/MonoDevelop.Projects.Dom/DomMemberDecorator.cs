@@ -49,6 +49,12 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
+		public ProjectDom SourceProjectDom {
+			get {
+				return member.SourceProjectDom;
+			}
+		}
+		
 		public virtual System.Xml.XmlNode GetMonodocDocumentation ()
 		{
 			return member.GetMonodocDocumentation ();

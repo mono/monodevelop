@@ -148,6 +148,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			database.Flush ();
 		}
 		
+		public override string GetDocumentation (IMember member)
+		{
+			return database.GetDocumentation (member);
+		}
+		
 		public override TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit unit)
 		{
 			if (string.IsNullOrEmpty (unit.FileName))

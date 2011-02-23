@@ -120,7 +120,7 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		public virtual ProjectDom SourceProjectDom {
+		public override ProjectDom SourceProjectDom {
 			get {
 				if (sourceProjectDom == null && DeclaringType != null)
 					return DeclaringType.SourceProjectDom;

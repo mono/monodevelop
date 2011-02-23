@@ -47,6 +47,10 @@ namespace MonoDevelop.Projects.Dom
 	
 	public interface IMember : IBaseMember, IComparable
 	{
+		ProjectDom SourceProjectDom {
+			get;
+		}
+		
 		string FullName {
 			get;
 		}
@@ -60,6 +64,14 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
+		/// <summary>
+		/// Gets or sets the documentation. To get the Documentation from a node the method GetDocumentation
+		/// method from the ProjectDom should be used. This property only stores the documentation retrieved from the source
+		/// code files.
+		/// </summary>
+		/// <value>
+		/// The documentation.
+		/// </value>
 		string Documentation {
 			get;
 			set;

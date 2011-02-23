@@ -45,6 +45,16 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
+		public virtual ProjectDom SourceProjectDom {
+			get {
+				return DeclaringType.SourceProjectDom;
+			}
+			set {
+				// nothing
+			}
+		}
+		
+		
 		public IType DeclaringType {
 			get {
 				return declaringType;

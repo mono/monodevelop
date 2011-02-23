@@ -146,7 +146,12 @@ namespace MonoDevelop.Projects.Dom.Parser
 			foreach (ProjectDom dom in References)
 				dom.ForceUpdateRec (visited);
 		}
-
+		
+		public virtual string GetDocumentation (IMember member)
+		{
+			return member != null ? member.Documentation : null;
+		}
+		
 		public virtual IEnumerable<IType> GetTypes (FilePath fileName)
 		 {
 			foreach (IType type in Types) {

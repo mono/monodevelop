@@ -40,7 +40,6 @@ namespace MonoDevelop.Projects.Dom
 	public class DomCecilCompilationUnit : CompilationUnit
 	{
 		AssemblyDefinition assemblyDefinition;
-		Dictionary<string, string> xmlDocumentation = null;
 		public AssemblyDefinition AssemblyDefinition {
 			get {
 				return assemblyDefinition;
@@ -79,26 +78,10 @@ namespace MonoDevelop.Projects.Dom
 //		{
 //		}
 		
-		public DomCecilCompilationUnit (AssemblyDefinition assemblyDefinition, string xmlFileName, bool loadInternals, bool instantiateTypeParameter) : base (assemblyDefinition.Name.FullName)
+		public DomCecilCompilationUnit (AssemblyDefinition assemblyDefinition, bool loadInternals, bool instantiateTypeParameter) : base (assemblyDefinition.Name.FullName)
 		{
 			this.assemblyDefinition = assemblyDefinition;
-			if (xmlFileName != null && File.Exists (xmlFileName)) {
-				xmlDocumentation = new Dictionary<string, string> ();
-				try {
-					using (XmlReader reader = new XmlTextReader (xmlFileName)) {
-						while (reader.Read ()) {
-							if (reader.NodeType == XmlNodeType.Element && reader.LocalName == "member") {
-								string memberName = reader.GetAttribute ("name");
-								string innerXml   = reader.ReadInnerXml ();
-								xmlDocumentation[memberName] = innerXml.Trim ();
-							}
-						}
-					}
-				} catch (Exception e) {
-					LoggingService.LogWarning ("Can't load xml documentation: " + e.Message);
-					xmlDocumentation = null;
-				}
-			}
+		
 			foreach (ModuleDefinition moduleDefinition in assemblyDefinition.Modules) {
 				AddModuleDefinition (moduleDefinition, loadInternals, instantiateTypeParameter);
 			}
@@ -125,10 +108,9 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (String.IsNullOrEmpty (fileName))
 				return null;
-			string xmlFileName = System.IO.Path.ChangeExtension (fileName, ".xml");
 			//FIXME: should pass a custom resolver to the AssemblyDefinition so that it resolves from the correct GAC
 			using (var stream = new MemoryStream (File.ReadAllBytes (fileName))) {
-				DomCecilCompilationUnit result = new DomCecilCompilationUnit (AssemblyDefinition.ReadAssembly (stream), xmlFileName, loadInternals, instantiateTypeParameter);
+				DomCecilCompilationUnit result = new DomCecilCompilationUnit (AssemblyDefinition.ReadAssembly (stream), loadInternals, instantiateTypeParameter);
 				result.fileName = fileName;
 				return result;
 			}
@@ -143,7 +125,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		void AddModuleDefinition (ModuleDefinition moduleDefinition, bool loadInternal, bool instantiateTypeParameter)
 		{
-			InstantiatedParamResolver resolver = new InstantiatedParamResolver (xmlDocumentation);
+			InstantiatedParamResolver resolver = new InstantiatedParamResolver ();
 			Module module = new Module (moduleDefinition);
 			foreach (TypeDefinition type in moduleDefinition.Types) {
 				if (!loadInternal && IsInternal (DomCecilType.GetModifiers (type.Attributes)))
@@ -163,12 +145,10 @@ namespace MonoDevelop.Projects.Dom
 		
 		class InstantiatedParamResolver : AbstractDomVisitor<object, object>
 		{
-			Dictionary<string, string> xmlDocumentation;
 			Dictionary<string, IType> argTypes = new Dictionary<string, IType> ();
 			
-			public InstantiatedParamResolver (Dictionary<string, string> xmlDocumentation)
+			public InstantiatedParamResolver ()
 			{
-				this.xmlDocumentation = xmlDocumentation;
 			}
 			
 			public void ClearTypes ()
@@ -176,22 +156,11 @@ namespace MonoDevelop.Projects.Dom
 				this.argTypes.Clear ();
 			}
 			
-			void AddDocumentation (IMember member)
-			{
-				if (xmlDocumentation == null || member == null)
-					return;
-				string doc;
-				if (xmlDocumentation.TryGetValue (member.HelpUrl, out doc))
-					member.Documentation = doc;
-			}
-				
 			public override object Visit (IType type, object data)
 			{
 				foreach (TypeParameter p in type.TypeParameters)
 					argTypes[p.Name] = type;
-				AddDocumentation (type);
 				foreach (IMember member in type.Members) {
-					AddDocumentation (member);
 					CheckReturnType (member.ReturnType);
 					member.AcceptVisitor (this, data);
 				}

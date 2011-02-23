@@ -113,6 +113,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				AddNamespace (ce.Namespace);
 			}
 		}
+		
+		public virtual string GetDocumentation (IMember member)
+		{
+			return member != null ? member.Documentation : null;
+		}
 
 		public void AddNamespace (string nsName)
 		{

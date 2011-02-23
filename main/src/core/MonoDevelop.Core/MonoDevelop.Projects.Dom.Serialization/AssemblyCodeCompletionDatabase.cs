@@ -40,6 +40,8 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Core.Assemblies;
 using TargetRuntime = MonoDevelop.Core.Assemblies.TargetRuntime;
+using System.Xml;
+using System.Globalization;
 
 namespace MonoDevelop.Projects.Dom.Serialization
 {	
@@ -122,6 +124,45 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						RemoveReference (re.Uri);
 				}
 			}
+		}
+		
+		Dictionary<string, string> xmlDocumentation = null;
+		public override string GetDocumentation (IMember member)
+		{
+			if (member == null)
+				return null;
+			
+			if (xmlDocumentation == null) {
+				FilePath xmlFileName = System.IO.Path.ChangeExtension (assemblyFile, ".xml");
+				var langCode = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
+				var langDirectory = xmlFileName.ParentDirectory.Combine (langCode);
+				if (Directory.Exists (langDirectory)) {
+					var langXmlFlile = langDirectory.Combine (xmlFileName.FileName);
+					if (File.Exists (langXmlFlile))
+						xmlFileName = langXmlFlile;
+				}
+
+				if (xmlFileName != null && File.Exists (xmlFileName)) {
+					xmlDocumentation = new Dictionary<string, string> ();
+					try {
+						using (var reader = new XmlTextReader (xmlFileName)) {
+							while (reader.Read ()) {
+								if (reader.NodeType == XmlNodeType.Element && reader.LocalName == "member") {
+									string memberName = reader.GetAttribute ("name");
+									string innerXml   = reader.ReadInnerXml ();
+									xmlDocumentation[memberName] = innerXml.Trim ();
+								}
+							}
+						}
+					} catch (Exception e) {
+						LoggingService.LogWarning ("Can't load xml documentation: " + e.Message);
+						xmlDocumentation = null;
+					}
+				}
+			}
+			string documentation;
+			xmlDocumentation.TryGetValue (member.HelpUrl, out documentation);
+			return documentation;
 		}
 		
 		public override void Dispose ()
