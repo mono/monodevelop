@@ -774,9 +774,8 @@ namespace Mono.TextEditor
 			LayoutDescriptor descriptor;
 			if (!containsPreedit && layoutDict.TryGetValue (line, out descriptor)) {
 				bool isInvalid;
-				if (descriptor.Equals (line, offset, length, selectionStart, selectionEnd, out isInvalid)) {
+				if (descriptor.Equals (line, offset, length, selectionStart, selectionEnd, out isInvalid) && descriptor.Layout != null)
 					return descriptor.Layout;
-				}
 				descriptor.Dispose ();
 				layoutDict.Remove (line);
 			}
