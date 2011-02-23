@@ -1046,7 +1046,7 @@ namespace Mono.TextEditor
 				string lineText = textBuilder.ToString ();
 				bool containsPreedit = !string.IsNullOrEmpty (textEditor.preeditString) && offset <= textEditor.preeditOffset && textEditor.preeditOffset <= offset + length;
 				uint preeditLength = 0;
-
+				
 				if (containsPreedit) {
 					lineText = lineText.Insert (textEditor.preeditOffset - offset, textEditor.preeditString);
 					preeditLength = (uint)textEditor.preeditString.Length;
@@ -1071,14 +1071,13 @@ namespace Mono.TextEditor
 						uint endIndex = (uint)(startIndex + chunk.Length);
 						oldEndIndex = endIndex;
 
-						if (containsPreedit) {
-							if (textEditor.preeditOffset < startOffset)
-								startIndex += preeditLength;
-							if (textEditor.preeditOffset < endOffset)
-								endIndex += preeditLength;
-						}
-
 						HandleSelection(lineOffset, logicalRulerColumn, selectionStart, selectionEnd, chunk.Offset, chunk.EndOffset, delegate(int start, int end) {
+							if (containsPreedit) {
+								if (textEditor.preeditOffset < start)
+									start += (int)preeditLength;
+								if (textEditor.preeditOffset < end)
+									end += (int)preeditLength;
+							}
 							var si = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
 							var ei = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
 							atts.AddForegroundAttribute (chunkStyle.Color, si, ei);
@@ -1097,6 +1096,12 @@ namespace Mono.TextEditor
 								}
 							}
 						}, delegate(int start, int end) {
+							if (containsPreedit) {
+								if (textEditor.preeditOffset < start)
+									start += (int)preeditLength;
+								if (textEditor.preeditOffset < end)
+									end += (int)preeditLength;
+							}
 							var si = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
 							var ei = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
 							atts.AddForegroundAttribute (SelectionColor.Color, si, ei);
@@ -1120,8 +1125,14 @@ namespace Mono.TextEditor
 				}
 				if (containsPreedit) {
 					var si = TranslateToUTF8Index (lineChars, (uint)(textEditor.preeditOffset - offset), ref curIndex, ref byteIndex);
-					var ei = TranslateToUTF8Index (lineChars, (uint)(si + preeditLength), ref curIndex, ref byteIndex);
+					var ei = TranslateToUTF8Index (lineChars, (uint)(textEditor.preeditOffset - offset + preeditLength), ref curIndex, ref byteIndex);
 					atts.AddUnderlineAttribute (Pango.Underline.Single, si, ei);
+					
+					var parser = Document.SyntaxMode.CreateSpanParser (Document, Document.SyntaxMode, line, line.StartSpan);
+					
+					parser.ParseSpans (line.Offset, textEditor.preeditOffset);
+					var preEditColor = parser.CurSpan != null ? ColorStyle.GetChunkStyle (parser.CurSpan.Color).Color : ColorStyle.Default.Color;
+					atts.AddForegroundAttribute (preEditColor, si, ei);
 				}
 				wrapper.LineChars = lineChars;
 				wrapper.Layout.SetText (lineText);
