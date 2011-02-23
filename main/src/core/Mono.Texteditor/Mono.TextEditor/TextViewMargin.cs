@@ -337,6 +337,12 @@ namespace Mono.TextEditor
 		void UpdateBracketHighlighting (object sender, EventArgs e)
 		{
 			HighlightCaretLine = false;
+			
+			// remove caret line from cache, if virtual spaces are painted.
+			LineSegment caretLine = Document.GetLine (Caret.Line);
+			if (caretLine.EditableLength < Caret.Column)
+				RemoveCachedLine (caretLine);
+			
 			if (!textEditor.Options.HighlightMatchingBracket || textEditor.IsSomethingSelected) {
 				if (highlightBracketOffset >= 0) {
 					textEditor.RedrawLine (Document.OffsetToLineNumber (highlightBracketOffset));
@@ -694,7 +700,7 @@ namespace Mono.TextEditor
 
 			public bool Equals (LineSegment line, int offset, int length, out bool isInvalid)
 			{
-				isInvalid = MarkerLength != line.MarkerCount || line.StartSpan.Equals (Spans);
+				isInvalid = MarkerLength != line.MarkerCount || !line.StartSpan.Equals (Spans);
 				return offset == Offset && Length == length && !isInvalid;
 			}
 		}
@@ -717,8 +723,10 @@ namespace Mono.TextEditor
 			public LayoutDescriptor (LineSegment line, int offset, int length, LayoutWrapper layout, int selectionStart, int selectionEnd) : base(line, offset, length)
 			{
 				this.Layout = layout;
-				this.SelectionStart = selectionStart;
-				this.SelectionEnd = selectionEnd;
+				if (selectionEnd >= 0) {
+					this.SelectionStart = selectionStart;
+					this.SelectionEnd = selectionEnd;
+				}
 			}
 
 			public void Dispose ()
@@ -731,7 +739,12 @@ namespace Mono.TextEditor
 
 			public bool Equals (LineSegment line, int offset, int length, int selectionStart, int selectionEnd, out bool isInvalid)
 			{
-				return base.Equals (line, offset, length, out isInvalid) && selectionStart == this.SelectionStart && selectionEnd == this.SelectionEnd;
+				int selStart = 0, selEnd = 0;
+				if (selectionEnd >= 0) {
+					selStart = selectionStart;
+					selEnd = selectionEnd;
+				}
+				return base.Equals (line, offset, length, out isInvalid) && selStart == this.SelectionStart && selEnd == this.SelectionEnd;
 			}
 
 			public override bool Equals (object obj)
@@ -743,7 +756,7 @@ namespace Mono.TextEditor
 				if (obj.GetType () != typeof(LayoutDescriptor))
 					return false;
 				Mono.TextEditor.TextViewMargin.LayoutDescriptor other = (Mono.TextEditor.TextViewMargin.LayoutDescriptor)obj;
-				return MarkerLength == other.MarkerLength && Offset == other.Offset && Length == other.Length && Spans == other.Spans  && SelectionStart == other.SelectionStart && SelectionEnd == other.SelectionEnd;
+				return MarkerLength == other.MarkerLength && Offset == other.Offset && Length == other.Length && Spans.Equals (other.Spans) && SelectionStart == other.SelectionStart && SelectionEnd == other.SelectionEnd;
 			}
 
 			public override int GetHashCode ()
@@ -752,7 +765,6 @@ namespace Mono.TextEditor
 					return SelectionStart.GetHashCode () ^ SelectionEnd.GetHashCode ();
 				}
 			}
-
 		}
 
 		Dictionary<LineSegment, LayoutDescriptor> layoutDict = new Dictionary<LineSegment, LayoutDescriptor> ();
@@ -768,7 +780,6 @@ namespace Mono.TextEditor
 				descriptor.Dispose ();
 				layoutDict.Remove (line);
 			}
-
 			var wrapper = new LayoutWrapper (PangoUtil.CreateLayout (textEditor));
 			wrapper.IsUncached = containsPreedit;
 			createNew (wrapper);
