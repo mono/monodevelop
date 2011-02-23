@@ -294,12 +294,26 @@ namespace Mono.TextEditor
 		{
 			if (data.Document.ReadOnly)
 				return;
+			if (CancelPreEditMode (data))
+				return;
 			data.Document.Undo ();
+		}
+		
+		public static bool CancelPreEditMode (TextEditorData data)
+		{
+			var editor = data.Parent;
+			if (editor != null && editor.preeditOffset >= 0) {
+				editor.ResetIMContext ();
+				return true;
+			}
+			return false;
 		}
 		
 		public static void Redo (TextEditorData data)
 		{
 			if (data.Document.ReadOnly)
+				return;
+			if (CancelPreEditMode (data))
 				return;
 			data.Document.Redo ();
 		}
@@ -319,8 +333,8 @@ namespace Mono.TextEditor
 				return;
 			
 			data.Document.BeginAtomicUndo ();
-			Mono.TextEditor.LineSegment startLine = data.Document.GetLine (lineStart);
-			int relCaretOffset = data.Caret.Offset - startLine.Offset;
+			//Mono.TextEditor.LineSegment startLine = data.Document.GetLine (lineStart);
+			//int relCaretOffset = data.Caret.Offset - startLine.Offset;
 			
 			Mono.TextEditor.LineSegment prevLine = data.Document.GetLine (lineStart - 1);
 			string text = data.Document.GetTextAt (prevLine.Offset, prevLine.EditableLength);
@@ -358,8 +372,8 @@ namespace Mono.TextEditor
 				return;
 			data.Document.BeginAtomicUndo ();
 			
-			Mono.TextEditor.LineSegment startLine = data.Document.GetLine (lineStart);
-			int relCaretOffset = data.Caret.Offset - startLine.Offset;
+			//Mono.TextEditor.LineSegment startLine = data.Document.GetLine (lineStart);
+			//int relCaretOffset = data.Caret.Offset - startLine.Offset;
 			
 			Mono.TextEditor.LineSegment nextLine = data.Document.GetLine (lineEnd + 1);
 			if (nextLine == null)

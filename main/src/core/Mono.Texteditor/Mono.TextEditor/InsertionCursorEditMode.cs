@@ -96,7 +96,7 @@ namespace Mono.TextEditor
 	
 	public class HelpWindowEditMode : SimpleEditMode
 	{
-		protected TextEditor editor;
+		protected new TextEditor editor;
 		
 		public new TextEditor Editor {
 			get {

@@ -1051,7 +1051,7 @@ namespace Mono.TextEditor
 					preeditLength = (uint)textEditor.preeditString.Length;
 				}
 				char[] lineChars = lineText.ToCharArray ();
-				int startOffset = offset, endOffset = offset + length;
+				//int startOffset = offset, endOffset = offset + length;
 				uint curIndex = 0, byteIndex = 0;
 				uint curChunkIndex = 0, byteChunkIndex = 0;
 				
@@ -1063,8 +1063,8 @@ namespace Mono.TextEditor
 						chunkStyle = marker.GetStyle (chunkStyle);
 
 					if (chunkStyle != null) {
-						startOffset = chunk.Offset;
-						endOffset = chunk.EndOffset;
+						//startOffset = chunk.Offset;
+						//endOffset = chunk.EndOffset;
 
 						uint startIndex = (uint)(oldEndIndex);
 						uint endIndex = (uint)(startIndex + chunk.Length);

@@ -1047,7 +1047,7 @@ namespace MonoDevelop.SourceEditor
 		#region IEditableTextBuffer
 		public bool EnableUndo {
 			get {
-				return this.Document.CanUndo && widget.EditorHasFocus;
+				return /*this.TextEditor.PreeditOffset < 0 &&*/ this.Document.CanUndo && widget.EditorHasFocus;
 			}
 		}
 		
@@ -1063,13 +1063,14 @@ namespace MonoDevelop.SourceEditor
 				if (result != buttonOk)
 					return;
 			}*/
-			
+			if (MiscActions.CancelPreEditMode (TextEditor.GetTextEditorData ()))
+				return;
 			this.Document.Undo ();
 		}
 		
 		public bool EnableRedo {
 			get {
-				return this.Document.CanRedo && widget.EditorHasFocus;
+				return /*this.TextEditor.PreeditOffset < 0 && */ this.Document.CanRedo && widget.EditorHasFocus;
 			}
 		}
 
@@ -1085,6 +1086,8 @@ namespace MonoDevelop.SourceEditor
 
 		public void Redo()
 		{
+			if (MiscActions.CancelPreEditMode (TextEditor.GetTextEditorData ()))
+				return;
 			this.Document.Redo ();
 		}
 		

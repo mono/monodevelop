@@ -283,6 +283,7 @@ namespace Mono.TextEditor
 				this.textViewMargin.ForceInvalidateLine (Caret.Line);
 				this.textEditorData.Document.CommitLineUpdate (Caret.Line);
 			};
+			
 			imContext.PreeditChanged += delegate(object sender, EventArgs e) {
 				if (preeditOffset >= 0) {
 					imContext.GetPreeditString (out preeditString, out preeditAttrs, out preeditCursorPos);
@@ -344,6 +345,18 @@ namespace Mono.TextEditor
 		internal string preeditString;
 		internal Pango.AttrList preeditAttrs;
 		
+		public int PreeditOffset {
+			get {
+				return this.preeditOffset;
+			}
+		}
+
+		public string PreeditString {
+			get {
+				return this.preeditString;
+			}
+		}
+
 		void CaretPositionChanged (object sender, DocumentLocationEventArgs args) 
 		{
 			HideTooltip ();
@@ -435,7 +448,7 @@ namespace Mono.TextEditor
 			OnSelectionChanged (EventArgs.Empty);
 		}
 		
-		void ResetIMContext ()
+		internal void ResetIMContext ()
 		{
 			if (imContextActive) {
 				imContext.Reset ();
