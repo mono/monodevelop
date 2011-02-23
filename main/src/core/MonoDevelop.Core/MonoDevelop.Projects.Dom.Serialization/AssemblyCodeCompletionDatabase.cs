@@ -160,6 +160,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					}
 				}
 			}
+			if (xmlDocumentation == null)
+				return null;
 			string documentation;
 			xmlDocumentation.TryGetValue (member.HelpUrl, out documentation);
 			return documentation;
