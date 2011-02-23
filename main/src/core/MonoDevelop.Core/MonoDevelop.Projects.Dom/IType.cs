@@ -60,7 +60,7 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		ProjectDom SourceProjectDom {
+		new ProjectDom SourceProjectDom {
 			get;
 			set;
 		}
