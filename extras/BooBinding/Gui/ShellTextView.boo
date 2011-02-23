@@ -76,10 +76,10 @@ class ShellTextView (TextView, ICompletionWidget):
 		self.ModifyFont(Model.Properties.Font)
 
 		# FIXME: Put the project file somewhere other than /tmp
-		shellProjectFile = System.IO.Path.Combine (MonoDevelop.Core.PropertyService.ConfigPath, "${Model.LanguageName}-shell-project.mdp")
+		shellProjectFile = System.IO.Path.Combine (MonoDevelop.Core.PropertyService.Locations.Cache, "${Model.LanguageName}-shell-project.mdp")
 
 		// 'touch' the file so the MD parsing foo sees it as existing.
-		_fakeFileName = System.IO.Path.Combine (MonoDevelop.Core.PropertyService.ConfigPath, "shell-dummy-file.${Model.MimeTypeExtension}")
+		_fakeFileName = System.IO.Path.Combine (MonoDevelop.Core.PropertyService.Locations.Cache, "shell-dummy-file.${Model.MimeTypeExtension}")
 		if not System.IO.File.Exists (_fakeFileName):
 			_fileInfo  = System.IO.File.Create (_fakeFileName)
 			_fileInfo.Close ()
