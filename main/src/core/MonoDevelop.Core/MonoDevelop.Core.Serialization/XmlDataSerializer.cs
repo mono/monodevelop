@@ -258,14 +258,13 @@ namespace MonoDevelop.Core.Serialization
 			}
 			
 			reader.ReadStartElement ();
-			reader.MoveToContent ();
 			
 			string text = "";
 			while (reader.NodeType != XmlNodeType.EndElement) {
 				if (reader.NodeType == XmlNodeType.Element) {
 					DataNode data = ReadChild (reader, item);
 					if (data != null) item.ItemData.Add (data);
-				} else if (reader.NodeType == XmlNodeType.Text) {
+				} else if (reader.NodeType == XmlNodeType.Text || reader.NodeType == XmlNodeType.Whitespace) {
 					text += reader.Value;
 					reader.Skip ();
 				} else {
