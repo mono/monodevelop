@@ -45,6 +45,7 @@ namespace MonoDevelop.Projects
 		string config = null;
 		string command = ProjectService.BuildTarget;
 		string runtime;
+		bool noWrap;
 		
 		public int Run (string[] arguments)
 		{
@@ -58,6 +59,7 @@ namespace MonoDevelop.Projects
 				Console.WriteLine ("-t --target:TARGET    Name of the target: Build or Clean.");
 				Console.WriteLine ("-c --configuration:CONFIGURATION  Name of the solution configuration to build.");
 				Console.WriteLine ("-r --runtime:PREFIX  Prefix of the Mono runtime to build against.");
+				Console.WriteLine ("--nowrap  Don't wrap output at 80 columns.");
 				Console.WriteLine ();
 				Console.WriteLine ("Supported targets:");
 				Console.WriteLine ("  {0}: build the project (the default target).", ProjectService.BuildTarget);
@@ -94,6 +96,7 @@ namespace MonoDevelop.Projects
 			}
 			
 			ConsoleProgressMonitor monitor = new ConsoleProgressMonitor ();
+			monitor.WrapText = !noWrap;
 
 			TargetRuntime targetRuntime = null;
 			TargetRuntime defaultRuntime = Runtime.SystemAssemblyService.DefaultRuntime;
@@ -133,6 +136,7 @@ namespace MonoDevelop.Projects
 				configuration = new SolutionConfigurationSelector (config);
 			
 			monitor = new ConsoleProgressMonitor ();
+			monitor.WrapText = !noWrap;
 			BuildResult res = item.RunTarget (monitor, command, configuration);
 
 			if (targetRuntime != null) {
@@ -201,6 +205,10 @@ namespace MonoDevelop.Projects
 				case "r":
 				case "runtime":
 				    runtime = value;
+				    break;
+
+				case "nowrap":
+				    noWrap = true;
 				    break;
 
 				default:
