@@ -1233,7 +1233,8 @@ namespace Mono.Debugging.Soft
 						// If we are inserting a breakpoint in line L, but L+1 has the same IL offset as L,
 						// pick the L+1 location, since that's where the debugger is going to stop.
 						if (l.LineNumber == line) {
-							target_loc = l;
+							if (target_loc == null)
+								target_loc = l;
 						}
 						else if (target_loc != null) {
 							if (target_loc.ILOffset == l.ILOffset)
