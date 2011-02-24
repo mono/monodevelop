@@ -338,11 +338,6 @@ namespace Mono.TextEditor
 		{
 			HighlightCaretLine = false;
 			
-			// remove caret line from cache, if virtual spaces are painted.
-			LineSegment caretLine = Document.GetLine (Caret.Line);
-			if (caretLine.EditableLength < Caret.Column)
-				RemoveCachedLine (caretLine);
-			
 			if (!textEditor.Options.HighlightMatchingBracket || textEditor.IsSomethingSelected) {
 				if (highlightBracketOffset >= 0) {
 					textEditor.RedrawLine (Document.OffsetToLineNumber (highlightBracketOffset));
