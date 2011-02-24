@@ -55,6 +55,7 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		NGit.Repository repo;
 		FilePath path;
+		static readonly byte[] EmptyContent = new byte[0];
 
 		public static event EventHandler BranchSelectionChanged;
 
@@ -113,7 +114,7 @@ namespace MonoDevelop.VersionControl.Git
 			RevCommit c = GetHeadCommit ();
 			if (c == null)
 				return string.Empty;
-			return GetCommitContent (c, localFile);
+			return GetCommitTextContent (c, localFile);
 		}
 				
 		RevCommit GetHeadCommit ()
@@ -917,7 +918,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (c == null)
 				return string.Empty;
 			else
-				return GetCommitContent (c, repositoryPath);
+				return GetCommitTextContent (c, repositoryPath);
 		}
 
 		public override DiffInfo[] PathDiff (FilePath baseLocalPath, FilePath[] localPaths, bool remoteDiff)
@@ -930,14 +931,14 @@ namespace MonoDevelop.VersionControl.Git
 				foreach (VersionInfo vi in vinfos) {
 					try {
 						if ((vi.Status & VersionStatus.ScheduledAdd) != 0) {
-							string ctxt = File.ReadAllText (vi.LocalPath);
-							diffs.Add (new DiffInfo (baseLocalPath, vi.LocalPath, GenerateDiff ("", ctxt)));
+							var ctxt = GetFileContent (vi.LocalPath);
+							diffs.Add (new DiffInfo (baseLocalPath, vi.LocalPath, GenerateDiff (EmptyContent, ctxt)));
 						} else if ((vi.Status & VersionStatus.ScheduledDelete) != 0) {
-							string ctxt = GetCommitContent (GetHeadCommit (), vi.LocalPath);
-							diffs.Add (new DiffInfo (baseLocalPath, vi.LocalPath, GenerateDiff (ctxt, "")));
+							var ctxt = GetCommitContent (GetHeadCommit (), vi.LocalPath);
+							diffs.Add (new DiffInfo (baseLocalPath, vi.LocalPath, GenerateDiff (ctxt, EmptyContent)));
 						} else if ((vi.Status & VersionStatus.Modified) != 0 || (vi.Status & VersionStatus.Conflicted) != 0) {
-							string ctxt1 = GetCommitContent (GetHeadCommit (), vi.LocalPath);
-							string ctxt2 = File.ReadAllText (vi.LocalPath);
+							var ctxt1 = GetCommitContent (GetHeadCommit (), vi.LocalPath);
+							var ctxt2 = GetFileContent (vi.LocalPath);
 							diffs.Add (new DiffInfo (baseLocalPath, vi.LocalPath, GenerateDiff (ctxt1, ctxt2)));
 						}
 					} catch (Exception ex) {
@@ -947,21 +948,41 @@ namespace MonoDevelop.VersionControl.Git
 				return diffs.ToArray ();
 			}
 		}
+		
+		byte[] GetFileContent (string file)
+		{
+			return File.ReadAllBytes (file);
+		}
 
-		string GetCommitContent (RevCommit c, FilePath file)
+		byte[] GetCommitContent (RevCommit c, FilePath file)
 		{
 			TreeWalk tw = TreeWalk.ForPath (repo, ToGitPath (file), c.Tree);
 			if (tw == null)
-				return string.Empty;
+				return EmptyContent;
 			ObjectId id = tw.GetObjectId (0);
-			byte[] data = repo.ObjectDatabase.Open (id).GetBytes ();
-			return Encoding.UTF8.GetString (data);
+			return repo.ObjectDatabase.Open (id).GetBytes ();
 		}
 
-		string GenerateDiff (string s1, string s2)
+		string GetCommitTextContent (RevCommit c, FilePath file)
 		{
-			var text1 = new NGit.Diff.RawText (Encoding.UTF8.GetBytes (s1));
-			var text2 = new NGit.Diff.RawText (Encoding.UTF8.GetBytes (s2));
+			return NGit.Util.RawParseUtils.Decode (GetCommitContent (c, file));
+		}
+		
+		string GenerateDiff (byte[] data1, byte[] data2)
+		{
+			if (RawText.IsBinary (data1) || RawText.IsBinary (data2)) {
+				if (data1.Length != data2.Length)
+					return GettextCatalog.GetString (" Binary files differ");
+				if (data1.Length == data2.Length) {
+					for (int n=0; n<data1.Length; n++) {
+						if (data1[n] != data2[n])
+							return GettextCatalog.GetString (" Binary files differ");
+					}
+				}
+				return string.Empty;
+			}
+			var text1 = new RawText (data1);
+			var text2 = new RawText (data2);
 			var edits = MyersDiff<RawText>.INSTANCE.Diff(RawTextComparator.DEFAULT, text1, text2);
 			MemoryStream s = new MemoryStream ();
 			var formatter = new NGit.Diff.DiffFormatter (s);
@@ -1290,10 +1311,10 @@ namespace MonoDevelop.VersionControl.Git
 				string diff;
 				switch (change.ChangeType) {
 				case ChangeType.Deleted:
-					diff = GenerateDiff ("", GetCommitContent (c2, change.Path));
+					diff = GenerateDiff (EmptyContent, GetCommitContent (c2, change.Path));
 					break;
 				case ChangeType.Added:
-					diff = GenerateDiff (GetCommitContent (c1, change.Path), "");
+					diff = GenerateDiff (GetCommitContent (c1, change.Path), EmptyContent);
 					break;
 				default:
 					diff = GenerateDiff (GetCommitContent (c1, change.Path), GetCommitContent (c2, change.Path));
@@ -1353,7 +1374,7 @@ namespace MonoDevelop.VersionControl.Git
 				annotations.Add(annotation);
 			}
 			
-			Document baseDocument = new Document (GetCommitContent (hc, repositoryPath));
+			Document baseDocument = new Document (GetCommitTextContent (hc, repositoryPath));
 			Document workingDocument = new Document (File.ReadAllText (repositoryPath));
 			Annotation uncommittedRev = new Annotation("0000000000000000000000000000000000000000", "", new DateTime());
 			
