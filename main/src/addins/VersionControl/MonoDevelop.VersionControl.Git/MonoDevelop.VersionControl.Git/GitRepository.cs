@@ -754,8 +754,6 @@ namespace MonoDevelop.VersionControl.Git
 
 		public override void Revert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
-			GitIndex index = repo.GetIndex ();
-			index.RereadIfNecessary ();
 			RevWalk rw = new RevWalk (repo);
 			var c = GetHeadCommit ();
 			RevTree tree = c != null ? c.Tree : null;
@@ -1309,12 +1307,16 @@ namespace MonoDevelop.VersionControl.Git
 
 		public override void MoveFile (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
 		{
-			if (!IsVersioned (localSrcPath)) {
+			VersionInfo vi = GetVersionInfo (localSrcPath, false);
+			if (vi == null || !vi.IsVersioned) {
 				base.MoveFile (localSrcPath, localDestPath, force, monitor);
 				return;
 			}
 			base.MoveFile (localSrcPath, localDestPath, force, monitor);
 			Add (localDestPath, false, monitor);
+			
+			if ((vi.Status & VersionStatus.ScheduledAdd) != 0)
+				Revert (localSrcPath, false, monitor);
 		}
 
 		public override void MoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
