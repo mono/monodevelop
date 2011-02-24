@@ -23,7 +23,9 @@
       <EnvironmentVariables>
         <Variable name="MONO_ADDINS_REGISTRY" value="." />
         <Variable name="MONODEVELOP_LOCALE_PATH" value="../locale" />
+        <Variable name="XDG_DATA_HOME" value="./local" />
         <Variable name="XDG_CONFIG_HOME" value="./local" />
+        <Variable name="XDG_CACHE_HOME" value="./local" />
       </EnvironmentVariables>
     </EnvironmentVariables>
     <Execution>
