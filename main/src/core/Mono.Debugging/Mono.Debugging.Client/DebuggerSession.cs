@@ -98,7 +98,7 @@ namespace Mono.Debugging.Client
 		public event EventHandler<TargetEventArgs> TargetReady;
 		
 		/// <summary>
-		/// Raised when the debugging session ends.
+		/// Raised when the debugging session is paused
 		/// </summary>
 		public event EventHandler<TargetEventArgs> TargetStopped;
 		
@@ -298,6 +298,18 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		/// <summary>
+		/// Starts a debugging session
+		/// </summary>
+		/// <param name='startInfo'>
+		/// Startup information
+		/// </param>
+		/// <param name='options'>
+		/// Session options
+		/// </param>
+		/// <exception cref='ArgumentNullException'>
+		/// Is thrown when an argument passed to a method is invalid because it is <see langword="null" /> .
+		/// </exception>
 		public void Run (DebuggerStartInfo startInfo, DebuggerSessionOptions options)
 		{
 			if (startInfo == null)
@@ -320,6 +332,18 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		/// <summary>
+		/// Starts a debugging session by attaching the debugger to a running process
+		/// </summary>
+		/// <param name='proc'>
+		/// Process information
+		/// </param>
+		/// <param name='options'>
+		/// Debugging options
+		/// </param>
+		/// <exception cref='ArgumentNullException'>
+		/// Is thrown when an argument passed to a method is invalid because it is <see langword="null" /> .
+		/// </exception>
 		public void AttachToProcess (ProcessInfo proc, DebuggerSessionOptions options)
 		{
 			if (proc == null)
@@ -343,6 +367,9 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		/// <summary>
+		/// Detaches this debugging session from the debugged process
+		/// </summary>
 		public void Detach ()
 		{
 			lock (slock) {
@@ -355,6 +382,12 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="Mono.Debugging.Client.DebuggerSession"/> has been attached to a process using the Attach method.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if attached to process; otherwise, <c>false</c>.
+		/// </value>
 		public bool AttachedToProcess {
 			get {
 				lock (slock) {
@@ -363,6 +396,12 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		/// <summary>
+		/// Gets or sets the active thread.
+		/// </summary>
+		/// <remarks>
+		/// This property can only be used when the debugger is paused
+		/// </remarks>
 		public ThreadInfo ActiveThread {
 			get {
 				lock (slock) {
@@ -382,6 +421,10 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		
+		/// <summary>
+		/// Executes one line of code
+		/// </summary>
 		public void NextLine ()
 		{
 			lock (slock) {
@@ -397,7 +440,10 @@ namespace Mono.Debugging.Client
 				});
 			}
 		}
-
+		
+		/// <summary>
+		/// Executes one line of code, stepping into method invocations
+		/// </summary>
 		public void StepLine ()
 		{
 			lock (slock) {
@@ -414,6 +460,9 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		/// <summary>
+		/// Executes one low level instruction
+		/// </summary>
 		public void NextInstruction ()
 		{
 			lock (slock) {
@@ -430,6 +479,9 @@ namespace Mono.Debugging.Client
 			}
 		}
 
+		/// <summary>
+		/// Executes one low level instruction, stepping into method invocations
+		/// </summary>
 		public void StepInstruction ()
 		{
 			lock (slock) {
@@ -445,7 +497,10 @@ namespace Mono.Debugging.Client
 				});
 			}
 		}
-
+		
+		/// <summary>
+		/// Resumes the execution of the debugger and stops when the current method is exited
+		/// </summary>
 		public void Finish ()
 		{
 			lock (slock) {
@@ -675,6 +730,18 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		/// <summary>
+		/// Gets the backend handle for a BreakEvent
+		/// </summary>
+		/// <returns>
+		/// True if there is a handle for the event
+		/// </returns>
+		/// <param name='be'>
+		/// The break event
+		/// </param>
+		/// <param name='handle'>
+		/// The handle
+		/// </param>
 		protected bool GetBreakpointHandle (BreakEvent be, out object handle)
 		{
 			BreakEventInfo binfo;
@@ -686,15 +753,24 @@ namespace Mono.Debugging.Client
 			return true;
 		}
 		
+		/// <summary>
+		/// Gets the debugger options object
+		/// </summary>
 		public DebuggerSessionOptions Options {
 			get { return options; }
 		}
-
+		
+		/// <summary>
+		/// Gets or sets the evaluation options.
+		/// </summary>
 		public EvaluationOptions EvaluationOptions {
 			get { return options.EvaluationOptions; }
 			set { options.EvaluationOptions = value; }
 		}
-
+		
+		/// <summary>
+		/// Resumes the execution of the debugger
+		/// </summary>
 		public void Continue ()
 		{
 			lock (slock) {
@@ -710,7 +786,10 @@ namespace Mono.Debugging.Client
 				});
 			}
 		}
-
+		
+		/// <summary>
+		/// Pauses the execution of the debugger
+		/// </summary>
 		public void Stop ()
 		{
 			Dispatch (delegate {
@@ -722,7 +801,10 @@ namespace Mono.Debugging.Client
 				}
 			});
 		}
-
+		
+		/// <summary>
+		/// Stops the execution of the debugger by killing the debugged process
+		/// </summary>
 		public void Exit ()
 		{
 			Dispatch (delegate {
@@ -734,13 +816,22 @@ namespace Mono.Debugging.Client
 				}
 			});
 		}
-
+		
+		/// <summary>
+		/// Gets a value indicating whether the debuggee is currently running (not paused by the debugger)
+		/// </summary>
 		public bool IsRunning {
 			get {
 				return isRunning;
 			}
 		}
 		
+		/// <summary>
+		/// Gets a list of all processes
+		/// </summary>
+		/// <remarks>
+		/// This method can only be used when the debuggee is stopped by the debugger
+		/// </remarks>
 		public ProcessInfo[] GetProcesses ()
 		{
 			lock (slock) {
@@ -753,6 +844,12 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		/// <summary>
+		/// Gets or sets the output writer callback.
+		/// </summary>
+		/// <remarks>
+		/// This callback is invoked to print debuggee output
+		/// </remarks>
 		public OutputWriterDelegate OutputWriter {
 			get { return outputWriter; }
 			set {
@@ -762,6 +859,12 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		/// <summary>
+		/// Gets or sets the log writer.
+		/// </summary>
+		/// <remarks>
+		/// This callback is invoked to print debugger log messages
+		/// </remarks>
 		public OutputWriterDelegate LogWriter {
 			get { return logWriter; }
 			set {
@@ -770,7 +873,19 @@ namespace Mono.Debugging.Client
 				}
 			}
 		}
-
+		
+		/// <summary>
+		/// Gets the disassembly of a source code file
+		/// </summary>
+		/// <returns>
+		/// An array of AssemblyLine, with one element for each source code line that could be disassembled
+		/// </returns>
+		/// <param name='file'>
+		/// The file.
+		/// </param>
+		/// <remarks>
+		/// This method can only be used when the debuggee is stopped by the debugger
+		/// </remarks>
 		public AssemblyLine[] DisassembleFile (string file)
 		{
 			lock (slock) {
@@ -802,6 +917,12 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		/// <summary>
+		/// Stops the execution of background evaluations being done by the debugger
+		/// </summary>
+		/// <remarks>
+		/// This method can only be used when the debuggee is stopped by the debugger
+		/// </remarks>
 		public void CancelAsyncEvaluations ()
 		{
 			if (UseOperationThread) {
@@ -811,11 +932,21 @@ namespace Mono.Debugging.Client
 			} else
 				OnCancelAsyncEvaluations ();
 		}
-		
+
+		/// <summary>
+		/// Gets a value indicating whether there are background evaluations being done by the debugger
+		/// which can be cancelled.
+		/// </summary>
+		/// <remarks>
+		/// This method can only be used when the debuggee is stopped by the debugger
+		/// </remarks>
 		public virtual bool CanCancelAsyncEvaluations {
 			get { return false; }
 		}
 		
+		/// <summary>
+		/// Override to stop the execution of background evaluations being done by the debugger
+		/// </summary>
 		protected virtual void OnCancelAsyncEvaluations ()
 		{
 		}
@@ -853,6 +984,18 @@ namespace Mono.Debugging.Client
 		}
 		
 		
+		/// <summary>
+		/// Called when an expression needs to be resolved
+		/// </summary>
+		/// <param name='expression'>
+		/// The expression
+		/// </param>
+		/// <param name='location'>
+		/// The source code location
+		/// </param>
+		/// <returns>
+		/// The resolved expression
+		/// </returns>
 		protected virtual string OnResolveExpression (string expression, SourceLocation location)
 		{
 			return defaultResolver.Resolve (this, location, expression);
