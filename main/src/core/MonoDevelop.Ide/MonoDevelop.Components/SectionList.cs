@@ -51,9 +51,12 @@ namespace MonoDevelop.Components
 			get { return activeIndex; }
 			set {
 				if (value >= sections.Count || value < 0)
-					throw new ArgumentOutOfRangeException ();
+					//ignore this, stetic tries to set it
+					//throw new ArgumentOutOfRangeException ();
+					return;
 				int oldIndex = activeIndex;
 				activeIndex = value;
+				//FIXME: implement real focus support
 				FocusChain = new Widget[] { sections[value].Child };
 				UpdateVisibility ();
 				RepaintSectionHeader (oldIndex);
@@ -125,8 +128,9 @@ namespace MonoDevelop.Components
 		
 		protected override void OnMapped ()
 		{
-			base.OnMapped ();
+			//show our window before the children, so they're on top
 			inputWindow.Show ();
+			base.OnMapped ();
 		}
 		
 		protected override void OnUnmapped ()
