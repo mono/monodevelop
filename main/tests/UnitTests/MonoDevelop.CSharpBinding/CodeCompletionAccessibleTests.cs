@@ -855,5 +855,23 @@ namespace CaptainHook.Mail
 			Assert.IsNotNull (provider.Find ("ParsingState"), "class 'ParsingState' not found");
 		}
 		
+		[Test()]
+		public void TestInheritableTypeContext ()
+		{
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+@"
+class Test
+{
+	public class Inner {}
+	public static void Foo () {}
+}
+
+$class Test2 : Test.$
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("Inner"), "class 'Inner' not found.");
+			Assert.IsNull (provider.Find ("Foo"), "method 'Foo' found.");
+		}
+		
 	}
 }
