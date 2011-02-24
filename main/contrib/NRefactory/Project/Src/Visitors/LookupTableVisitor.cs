@@ -270,14 +270,16 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		public override object VisitForeachStatement(ForeachStatement foreachStatement, object data)
 		{
-			AddVariable(foreachStatement.TypeReference,
-			            foreachStatement.VariableName,
-			            foreachStatement.StartLocation,
-			            foreachStatement.EndLocation,
-			            false, true,
-			            foreachStatement.Expression,
-			            null,
-			            false);
+			if (!foreachStatement.EmbeddedStatement.IsNull) {
+				AddVariable(foreachStatement.TypeReference,
+				            foreachStatement.VariableName,
+				            foreachStatement.EmbeddedStatement.StartLocation,
+				            foreachStatement.EndLocation,
+				            false, true,
+				            foreachStatement.Expression,
+				            null,
+				            false);
+			}
 			
 			if (foreachStatement.Expression != null) {
 				foreachStatement.Expression.AcceptVisitor(this, data);
