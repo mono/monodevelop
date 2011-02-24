@@ -1184,7 +1184,7 @@ namespace MonoDevelop.Projects.Policies
 			}
 			
 			if (defaultPolicies == null) {
-				defaultPolicies = new PolicySet ("Default", null);
+				defaultPolicies = new PolicySet ("Default", "Default");
 			}
 			defaultPolicies.PolicyChanged += DefaultPoliciesPolicyChanged;
 		}
