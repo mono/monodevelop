@@ -68,11 +68,10 @@ Packaging for OSX
 Dependencies
 ------------
 
-	Mono >= 1.1.10
-	Gtk# >= 2.8.0
+	Mono >= 2.8
+	Gtk# >= 2.12.8
 	monodoc >= 1.0
-	gtksourceview-sharp >= 0.10
-	mono-addins >= 0.3
+	mono-addins >= 0.6
 	
 References
 ----------
