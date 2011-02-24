@@ -278,7 +278,8 @@ namespace Mono.TextEditor
 		
 		public string GetLineText (int line)
 		{
-			return GetTextAt (GetLine (line));
+			var lineSegment = GetLine (line);
+			return lineSegment != null ? GetTextAt (lineSegment) : null;
 		}
 		
 		public string GetLineText (int line, bool includeDelimiter)
