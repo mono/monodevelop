@@ -2986,5 +2986,47 @@ class TestNested
 			Assert.IsNotNull (provider.Find ("Bar"), "class 'Bar' not found.");
 			Assert.IsNull (provider.Find ("FooBar"), "method 'FooBar' found.");
 		}
+		
+		/// <summary>
+		/// Bug 674514 - foreach value should not be in the completion list
+		/// </summary>
+		[Test()]
+		public void TestBug674514 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"using System;
+using System.Linq;
+using System.Collections.Generic;
+
+class Foo
+{
+	public static void Main (string[] args)
+	{
+		$foreach (var arg in $
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("args"), "parameter 'args' not found.");
+			Assert.IsNull (provider.Find ("arg"), "variable 'arg' found.");
+			
+			provider = CreateCtrlSpaceProvider (
+@"using System;
+using System.Linq;
+using System.Collections.Generic;
+
+class Foo
+{
+	public static void Main (string[] args)
+	{
+		$foreach (var arg in args) 
+			Console.WriteLine ($
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("args"), "parameter 'args' not found.");
+			Assert.IsNotNull (provider.Find ("arg"), "variable 'arg' not found.");
+		}
 	}
 }
