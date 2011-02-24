@@ -680,6 +680,17 @@ namespace MonoDevelop.CSharp.Completion
 							CompletionDataList dataList = CreateCtrlSpaceCompletionData (completionContext, result);
 							dataList.AutoSelect = autoSelect;
 							return dataList;
+						} else {
+							result = FindExpression (dom, completionContext, 0);
+							result.ExpressionContext = ExpressionContext.IdentifierExpected;
+							result.Expression = "";
+							result.Region = DomRegion.Empty;
+							
+							// identifier has already started with the first letter
+							completionContext.TriggerOffset--;
+							completionContext.TriggerLineOffset--;
+							completionContext.TriggerWordLength = 1;
+							return CreateCtrlSpaceCompletionData (completionContext, result);
 						}
 					}
 				}
@@ -1776,6 +1787,7 @@ namespace MonoDevelop.CSharp.Completion
 			resolver.SetupResolver (cursorLocation);
 			CompletionDataList result = new ProjectDomCompletionDataList ();
 			CompletionDataCollector col = new CompletionDataCollector (dom, result, Document.CompilationUnit, resolver.CallingType, cursorLocation);
+			
 			if (expressionResult == null) {
 				AddPrimitiveTypes (col);
 				resolver.AddAccessibleCodeCompletionData (ExpressionContext.Global, col);
