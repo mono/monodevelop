@@ -1156,7 +1156,7 @@ namespace MonoDevelop.Projects.Policies
 		
 		static void SavePolicy (PolicySet set)
 		{
-			string file = PoliciesFolder.Combine (set.Name + ".mdpolicy.xml");
+			string file = PoliciesFolder.Combine (set.Name ?? set.Id + ".mdpolicy.xml");
 			string friendlyName = string.Format ("policy '{0}'", set.Name);
 			ParanoidSave (file, friendlyName, delegate (StreamWriter writer) {
 				var xws = new XmlWriterSettings () {
