@@ -1619,6 +1619,14 @@ namespace MonoDevelop.CSharp.Completion
 				type = dom.GetType (returnType);
 			if (type == null)
 				type = dom.SearchType (Document.CompilationUnit, (MonoDevelop.Projects.Dom.INode)Document.CompilationUnit ?? callingType, returnTypeUnresolved);
+			
+			// special handling for nullable types: Bug 674516 - new completion for nullables should not include "Nullable"
+			if (type is InstantiatedType && ((InstantiatedType)type).UninstantiatedType.FullName == "System.Nullable" && ((InstantiatedType)type).GenericParameters.Count == 1) {
+				var genericParameter = ((InstantiatedType)type).GenericParameters[0];
+				returnType = returnTypeUnresolved = Document.CompilationUnit.ShortenTypeName (genericParameter, location);
+				type = dom.SearchType (Document.CompilationUnit, (MonoDevelop.Projects.Dom.INode)Document.CompilationUnit ?? callingType, genericParameter);
+			}
+			
 			if (type == null || !(type.IsAbstract || type.ClassType == ClassType.Interface)) {
 				if (type == null || type.ConstructorCount == 0 || type.Methods.Any (c => c.IsConstructor && c.IsAccessibleFrom (dom, callingType, type, callingType != null && dom.GetInheritanceTree (callingType).Any (x => x.FullName == type.FullName)))) {
 					if (returnTypeUnresolved != null) {
@@ -1642,12 +1650,12 @@ namespace MonoDevelop.CSharp.Completion
 			//				} 
 			//			else {
 			//			}
-
 			if (type == null)
 				return result;
 			HashSet<string> usedNamespaces = new HashSet<string> (GetUsedNamespaces ());
 			if (type.FullName == DomReturnType.Object.FullName) 
 				AddPrimitiveTypes (col);
+			
 			foreach (IType curType in dom.GetSubclasses (type)) {
 				if (context != null && context.FilterEntry (curType))
 					continue;
