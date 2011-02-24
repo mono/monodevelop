@@ -86,12 +86,10 @@ namespace MonoDevelop.Core.Text
 		int GetMatchChar (string text, int i, int j, bool onlyWordStart)
 		{
 			char filterChar = filterTextUpperCase[i];
-			// filter char is no letter -> search for next exact match
+			// filter char is no letter -> next char should match it - see Bug 674512 - Space doesn't commit generics
 			if (filterIsNonLetter[i]) {
-				for (; j < text.Length; j++) {
-					if (filterChar == text[j])
-						return j;
-				}
+				if (filterChar == text[j])
+					return j;
 				return -1;
 			}
 			
