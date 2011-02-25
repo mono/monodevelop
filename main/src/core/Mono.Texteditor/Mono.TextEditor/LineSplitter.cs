@@ -145,11 +145,43 @@ namespace Mono.TextEditor
 		{
 			Clear ();
 			inInit = true;
-			try {
-				TextInsert (0, text);
-			} finally {
-				inInit = false;
+			
+			var nodes = new List<TreeNode> ();
+			int offset = 0;
+			foreach (var delimiter in FindDelimiter (text)) {
+				int delimiterEndOffset = delimiter.Offset + delimiter.Length;
+				var newLine = new TreeNode (delimiterEndOffset - offset, delimiter.Length);
+				nodes.Add (newLine);
+				offset = delimiterEndOffset;
 			}
+			int height = GetTreeHeight (nodes.Count);
+			tree.Root = BuildTree (nodes, 0, nodes.Count, height);
+			tree.Root.Color = true;
+			tree.Count = nodes.Count;
+		}
+		
+		public Mono.TextEditor.RedBlackTree<TreeNode>.RedBlackTreeNode BuildTree (System.Collections.Generic.List<TreeNode> nodes, int start, int end, int subtreeHeight)
+		{
+			if (start == end)
+				return null;
+			int middle = (start + end) / 2;
+			var node = new RedBlackTree<TreeNode>.RedBlackTreeNode (nodes[middle]);
+			nodes[middle].treeNode = node;
+			node.Left = BuildTree (nodes, start, middle, subtreeHeight - 1);
+			node.Right = BuildTree (nodes, middle + 1, end, subtreeHeight - 1);
+			if (node.Left != null)
+				node.Left.Parent = node;
+			if (node.Right != null)
+				node.Right.Parent = node;
+			if (subtreeHeight == 1)
+				node.Color = false;
+			UpdateNode (node);
+			return node;
+		}
+		
+		static int GetTreeHeight (int size)
+		{
+			return size == 0 ? 0 : GetTreeHeight (size / 2) + 1;
 		}
 
 		public void TextInsert (int offset, string text)
