@@ -134,12 +134,13 @@ namespace MonoDevelop.CSharp.Parser
 				conversionVisitor.Unit = unit;
 				top.UsingsBag.Global.Accept (conversionVisitor);
 				top.ModuleCompiled.Accept (conversionVisitor);
-				
+				/*
 				try {
 					unit.Tag = CSharpParser.Parse (top);
 				} catch (Exception ex) {
 					System.Console.WriteLine (ex);
-				}
+				}*/
+				
 				// parser errors
 				errorReportPrinter.Errors.ForEach (e => conversionVisitor.ParsedDocument.Add (e));
 				return result;
