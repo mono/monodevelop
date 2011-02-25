@@ -142,7 +142,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						xmlFileName = langXmlFlile;
 				}
 
-				if (xmlFileName != null && File.Exists (xmlFileName)) {
+				if (!xmlFileName.IsNull && File.Exists (xmlFileName)) {
 					xmlDocumentation = new Dictionary<string, string> ();
 					try {
 						using (var reader = new XmlTextReader (xmlFileName)) {
