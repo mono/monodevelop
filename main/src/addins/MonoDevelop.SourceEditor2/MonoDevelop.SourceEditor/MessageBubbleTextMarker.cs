@@ -131,6 +131,8 @@ namespace MonoDevelop.SourceEditor
 
 		public void SetPrimaryError (string text)
 		{
+			EnsureLayoutCreated (editor);
+			
 			var match = mcsErrorFormat.Match (text);
 			if (match.Success)
 				text = match.Groups[1].Value;
