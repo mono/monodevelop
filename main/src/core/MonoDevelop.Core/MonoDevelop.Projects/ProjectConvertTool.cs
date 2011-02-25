@@ -28,6 +28,7 @@
 
 using System;
 using System.IO;
+using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 
@@ -46,6 +47,9 @@ namespace MonoDevelop.Projects
 				Console.WriteLine ("  -d:<dest-path>      Directory where the project will be exported.");
 				Console.WriteLine ("  -f:\"<format-name>\"  Format to which export the project or solution.");
 				Console.WriteLine ("  -l                  Show a list of all allowed target formats.");
+				Console.WriteLine ("  -p:<project-name>   When exporting a solution, name of a project to be");
+				Console.WriteLine ("                      included in the export. It can be specified multiple");
+				Console.WriteLine ("                      times.");
 				Console.WriteLine ("");
 				Console.WriteLine ("  The format name is optional. A list of allowed file formats will be");
 				Console.WriteLine ("  shown if none is provided.");
@@ -57,6 +61,8 @@ namespace MonoDevelop.Projects
 			string destPath = null;
 			string formatName = null;
 			bool formatList = false;
+			List<string> projects = new List<string> ();
+			string[] itemsToExport = null;
 			
 			foreach (string s in arguments)
 			{
@@ -64,6 +70,8 @@ namespace MonoDevelop.Projects
 					destPath = s.Substring (3);
 				else if (s.StartsWith ("-f:"))
 					formatName = s.Substring (3);
+				else if (s.StartsWith ("-p:"))
+					projects.Add (s.Substring (3));
 				else if (s == "-l")
 					formatList = true;
 				else if (projectFile != null) {
@@ -90,10 +98,37 @@ namespace MonoDevelop.Projects
 			
 			
 			object item;
-			if (Services.ProjectService.IsWorkspaceItemFile (projectFile))
+			if (Services.ProjectService.IsWorkspaceItemFile (projectFile)) {
 				item = Services.ProjectService.ReadWorkspaceItem (monitor, projectFile);
-			else
+				if (projects.Count > 0) {
+					Solution sol = item as Solution;
+					if (sol == null) {
+						Console.WriteLine ("The -p option can only be used when exporting a solution.");
+						return 1;
+					}
+					for (int n=0; n<projects.Count; n++) {
+						string pname = projects [n];
+						if (pname.Length == 0) {
+							Console.WriteLine ("Project name not specified in -p option.");
+							return 1;
+						}
+						Project p = sol.FindProjectByName (pname);
+						if (p == null) {
+							Console.WriteLine ("Project '" + pname + "' not found in solution.");
+							return 1;
+						}
+						projects[n] = p.ItemId;
+					}
+					itemsToExport = projects.ToArray ();
+				}
+			}
+			else {
+				if (projects.Count > 0) {
+					Console.WriteLine ("The -p option can't be used when exporting a single project");
+					return 1;
+				}
 				item = Services.ProjectService.ReadSolutionItem (monitor, projectFile);
+			}
 			
 			FileFormat[] formats = Services.ProjectService.FileFormats.GetFileFormatsForObject (item);
 			
@@ -142,7 +177,7 @@ namespace MonoDevelop.Projects
 				destPath = Path.GetDirectoryName (projectFile);
 			destPath = FileService.GetFullPath (destPath);
 			
-			string ofile = Services.ProjectService.Export (monitor, projectFile, destPath, format);
+			string ofile = Services.ProjectService.Export (monitor, projectFile, itemsToExport, destPath, format);
 			if (ofile != null) {
 				Console.WriteLine ("Saved file: " + ofile);
 				return 0;
