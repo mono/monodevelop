@@ -110,7 +110,7 @@ namespace MonoDevelop.VersionControl
 				fileSeparator2 = message_style.FileSeparator.Substring (si + 1);
 			}
 			
-			formatter.Wrap = WrappingType.Word;
+			formatter.Wrap = message_style.Wrap ? WrappingType.Word : WrappingType.None;
 			formatter.LeftMargin = message_style.LineAlign;
 			formatter.ParagraphStartMargin = 0;
 			

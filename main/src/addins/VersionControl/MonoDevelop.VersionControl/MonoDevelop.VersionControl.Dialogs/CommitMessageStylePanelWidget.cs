@@ -66,6 +66,7 @@ namespace MonoDevelop.VersionControl
 			checkIndentEntries.Active = format.Style.Indent.Length > 0;
 			checkIncludeDirs.Active = format.Style.IncludeDirectoryPaths;
 			entryHeader.Text = ToCString (format.Style.Header.TrimEnd ('\n'));
+			checkWrap.Active = format.Style.Wrap;
 			UpdatePreview ();
 			updating = false;
 		}
@@ -166,6 +167,13 @@ namespace MonoDevelop.VersionControl
 		{
 			if (updating) return;
 			format.Style.IncludeDirectoryPaths = checkIncludeDirs.Active;
+			OnChanged ();
+		}
+		
+		protected virtual void OnCheckWrapToggled (object sender, System.EventArgs e)
+		{
+			if (updating) return;
+			format.Style.Wrap = checkWrap.Active;
 			OnChanged ();
 		}
 	}
