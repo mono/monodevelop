@@ -81,8 +81,7 @@ MonoDevelop.app:
 	@echo ""
 
 	rm -rf  $(ADDINS)/GnomePlatform* \
-	  $(ADDINS)/WindowsPlatform* \
-	  $(ADDINS)/MonoDevelop.Gettext/*
+	  $(ADDINS)/WindowsPlatform*
 	
 # remove stuff we don't need
 	@echo ""
