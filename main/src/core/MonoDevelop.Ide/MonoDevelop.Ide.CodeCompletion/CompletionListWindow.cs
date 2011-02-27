@@ -228,6 +228,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 				initialWordLength = text.Length /*+ completionWidget.SelectedLength*/;
 				PartialWord = text;
+				HideWhenWordDeleted = initialWordLength != 0;
 				UpdateWordSelection ();
 			
 				//if there is only one matching result we take it by default

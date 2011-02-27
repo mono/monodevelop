@@ -332,7 +332,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				word.Remove (curPos, 1);
 				ResetSizes ();
 				UpdateWordSelection ();
-				if (word.Length == 0)
+				if (HideWhenWordDeleted && word.Length == 0)
 					return KeyActions.CloseWindow | KeyActions.Process;
 				return KeyActions.Process;
 
@@ -417,6 +417,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 
 			return KeyActions.CloseWindow | KeyActions.Process;
+		}
+		
+		protected bool HideWhenWordDeleted {
+			get; set;
 		}
 
 		public void UpdateWordSelection ()
