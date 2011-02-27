@@ -266,18 +266,13 @@ namespace MonoDevelop.Platform
 					e.Handled = true;
 				};
 				
-				if (!System.Reflection.Assembly.GetExecutingAssembly ().Location.Contains ("MonoDevelop.app")) {
-					var icons = Path.Combine (Directory.GetCurrentDirectory (), "theme-icons", "Mac", "monodevelop.icns");
-
-					if (File.Exists (icons)) {
-						var tile = NSApplication.SharedApplication.DockTile;
-						var view = new NSImageView (new System.Drawing.RectangleF (0, 0, tile.Size.Width, tile.Size.Height)) {
-							Image = new NSImage (icons)
-						};
-
-						tile.ContentView = view;
-						tile.Display ();
-					}
+				//if not running inside an app bundle, assume usual MD build layout and load the app icon
+				FilePath exePath = System.Reflection.Assembly.GetExecutingAssembly ().Location;
+				if (!exePath.ToString ().Contains ("MonoDevelop.app")) {
+					var mdSrcMain = exePath.ParentDirectory.ParentDirectory.ParentDirectory;
+					var icons = mdSrcMain.Combine ("theme-icons", "Mac", "monodevelop.icns");
+					if (File.Exists (icons))
+						NSApplication.SharedApplication.ApplicationIconImage = new NSImage (icons);
 				}
 			} catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Could not install app event handlers", ex);
