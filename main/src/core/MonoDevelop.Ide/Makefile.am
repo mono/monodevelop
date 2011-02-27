@@ -619,11 +619,13 @@ FILES =  \
 	MonoDevelop.Ide.Projects/NewFileDialog.cs \
 	MonoDevelop.Ide.Projects/NewPolicySetDialog.cs \
 	MonoDevelop.Ide.Projects/NewProjectDialog.cs \
+	MonoDevelop.Ide.Projects/NewProjectOptionsWidget.cs \
 	MonoDevelop.Ide.Projects/ProjectFileSelectorDialog.cs \
 	MonoDevelop.Ide.Projects/ProjectOptionsDialog.cs \
 	MonoDevelop.Ide.Projects/ProjectReferencePanel.cs \
 	MonoDevelop.Ide.Projects/RenameConfigDialog.cs \
 	MonoDevelop.Ide.Projects/SelectReferenceDialog.cs \
+	MonoDevelop.Ide.Projects/TemplatePickerWidget.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs \
 	MonoDevelop.Ide.StandardHeader/StandardHeaderService.cs \
 	MonoDevelop.Ide.Tasks/CommentTasksView.cs \
