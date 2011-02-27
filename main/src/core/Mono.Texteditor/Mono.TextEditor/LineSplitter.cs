@@ -156,8 +156,12 @@ namespace Mono.TextEditor
 			}
 			int height = GetTreeHeight (nodes.Count);
 			tree.Root = BuildTree (nodes, 0, nodes.Count, height);
-			tree.Root.Color = true;
-			tree.Count = nodes.Count;
+			if (tree.Root != null) {
+				tree.Root.Color = true;
+				tree.Count = nodes.Count;
+			} else {
+				Clear ();
+			}
 		}
 		
 		public Mono.TextEditor.RedBlackTree<TreeNode>.RedBlackTreeNode BuildTree (System.Collections.Generic.List<TreeNode> nodes, int start, int end, int subtreeHeight)
