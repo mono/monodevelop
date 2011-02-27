@@ -66,6 +66,7 @@ namespace Mono.TextEditor
 		IMMulticontext imContext;
 		Gdk.EventKey lastIMEvent;
 		Gdk.Key lastIMEventMappedKey;
+		uint lastIMEventMappedChar;
 		Gdk.ModifierType lastIMEventMappedModifier;
 		bool imContextActive;
 		
@@ -460,8 +461,6 @@ namespace Mono.TextEditor
 		{
 			try {
 				if (IsRealized && IsFocus) {
-					uint lastChar = Keyval.ToUnicode ((uint)lastIMEventMappedKey);
-					
 					//this, if anywhere, is where we should handle UCS4 conversions
 					for (int i = 0; i < ca.Str.Length; i++) {
 						int utf32Char;
@@ -473,8 +472,8 @@ namespace Mono.TextEditor
 						}
 						
 						//include the other pre-IM state *if* the post-IM char matches the pre-IM (key-mapped) one
-						if (lastChar == utf32Char)
-							OnIMProcessedKeyPressEvent (lastIMEventMappedKey, lastChar, lastIMEventMappedModifier);
+						if (lastIMEventMappedChar == utf32Char)
+							OnIMProcessedKeyPressEvent (lastIMEventMappedKey, lastIMEventMappedChar, lastIMEventMappedModifier);
 						else
 							OnIMProcessedKeyPressEvent ((Gdk.Key)0, (uint)utf32Char, Gdk.ModifierType.None);
 					}
@@ -770,13 +769,14 @@ namespace Mono.TextEditor
 			RequestResetCaretBlink ();
 		}
 		
-		bool IMFilterKeyPress (Gdk.EventKey evt, Gdk.Key mappedKey, Gdk.ModifierType mappedModifiers)
+		bool IMFilterKeyPress (Gdk.EventKey evt, Gdk.Key mappedKey, uint mappedChar, Gdk.ModifierType mappedModifiers)
 		{
 			if (lastIMEvent == evt)
 				return false;
 			
 			if (evt.Type == EventType.KeyPress) {
 				lastIMEvent = evt;
+				lastIMEventMappedChar = mappedChar;
 				lastIMEventMappedKey = mappedKey;
 				lastIMEventMappedModifier = mappedModifiers;
 			}
@@ -820,7 +820,7 @@ namespace Mono.TextEditor
 				SimulateKeyPress (key, unicodeChar, mod);
 				return true;
 			}
-			bool filter = IMFilterKeyPress (evt, key, mod);
+			bool filter = IMFilterKeyPress (evt, key, unicodeChar, mod);
 			if (!filter) {
 				return OnIMProcessedKeyPressEvent (key, unicodeChar, mod);
 			}
@@ -838,7 +838,7 @@ namespace Mono.TextEditor
 		
 		protected override bool OnKeyReleaseEvent (EventKey evnt)
 		{
-			if (IMFilterKeyPress (evnt, 0, ModifierType.None))
+			if (IMFilterKeyPress (evnt, 0, 0, ModifierType.None))
 				imContextActive = true;
 			return true;
 		}
