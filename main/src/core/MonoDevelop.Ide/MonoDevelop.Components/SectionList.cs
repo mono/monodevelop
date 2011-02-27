@@ -32,7 +32,6 @@ using Cairo;
 
 namespace MonoDevelop.Components
 {
-	[System.ComponentModel.ToolboxItem (true)]
 	class SectionList : Container
 	{
 		const int borderLineWidth = 1;
@@ -51,9 +50,11 @@ namespace MonoDevelop.Components
 			get { return activeIndex; }
 			set {
 				if (value >= sections.Count || value < 0)
-					//ignore this, stetic tries to set it
-					//throw new ArgumentOutOfRangeException ();
+					throw new ArgumentOutOfRangeException ();
+				
+				if (activeIndex == value)
 					return;
+				
 				int oldIndex = activeIndex;
 				activeIndex = value;
 				//FIXME: implement real focus support
@@ -61,6 +62,8 @@ namespace MonoDevelop.Components
 				UpdateVisibility ();
 				RepaintSectionHeader (oldIndex);
 				RepaintSectionHeader (activeIndex);
+				OnActiveSectionChanged ();
+				sections[activeIndex].OnActivated ();
 			}
 		}
 		
@@ -75,6 +78,15 @@ namespace MonoDevelop.Components
 				ActiveIndex = idx;
 			}
 		}
+		
+		void OnActiveSectionChanged ()
+		{
+			var evt = ActiveSectionChanged;
+			if (evt != null)
+				evt (this, EventArgs.Empty);
+		}
+		
+		public event EventHandler ActiveSectionChanged;
 		
 		public SectionList ()
 		{
@@ -478,6 +490,15 @@ namespace MonoDevelop.Components
 					Parent.RepaintSectionHeader (idx);
 				}
 			}
+			
+			internal void OnActivated ()
+			{
+				var evt = Activated;
+				if (evt != null)
+					evt (this, EventArgs.Empty);
+			}
+			
+			public event EventHandler Activated;
 		}
 	}
 }
