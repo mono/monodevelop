@@ -396,7 +396,6 @@ namespace MonoDevelop.CSharp.Completion
 				if (result == null)
 					return null;
 					
-					
 				int tokenIndex = completionContext.TriggerOffset;
 				string token = GetPreviousToken (ref tokenIndex, false);
 				if (result.ExpressionContext == ExpressionContext.ObjectInitializer) {
@@ -682,7 +681,31 @@ namespace MonoDevelop.CSharp.Completion
 							return dataList;
 						} else {
 							result = FindExpression (dom, completionContext, 0);
-							result.ExpressionContext = ExpressionContext.IdentifierExpected;
+							tokenIndex = completionContext.TriggerOffset;
+								
+							// check foreach case, unfortunately the expression finder is too dumb to handle full type names
+							// should be overworked if the expression finder is replaced with a mcs ast based analyzer.
+							var possibleForeachToken = GetPreviousToken (ref tokenIndex, false); // starting letter
+							possibleForeachToken = GetPreviousToken (ref tokenIndex, false); // varname
+							
+							// read return types to '(' token
+							possibleForeachToken = GetPreviousToken (ref tokenIndex, false); // varType
+							if (possibleForeachToken == ">") {
+								while (possibleForeachToken != "(")
+									possibleForeachToken = GetPreviousToken (ref tokenIndex, false);
+							} else {
+								possibleForeachToken = GetPreviousToken (ref tokenIndex, false); // (
+								if (possibleForeachToken == ".")
+									while (possibleForeachToken != "(")
+										possibleForeachToken = GetPreviousToken (ref tokenIndex, false);
+							}
+							possibleForeachToken = GetPreviousToken (ref tokenIndex, false); // foreach
+							
+							if (possibleForeachToken == "foreach") {
+								result.ExpressionContext = ExpressionContext.ForeachInToken;
+							} else {
+								result.ExpressionContext = ExpressionContext.IdentifierExpected;
+							}
 							result.Expression = "";
 							result.Region = DomRegion.Empty;
 							
@@ -1971,6 +1994,8 @@ namespace MonoDevelop.CSharp.Completion
 				col.Add ("global", "md-keyword");
 				AddPrimitiveTypes (col);
 				resolver.AddAccessibleCodeCompletionData (expressionResult.ExpressionContext, col);
+			} else if (expressionResult.ExpressionContext == ExpressionContext.ForeachInToken) {
+				col.Add ("in", "md-keyword");
 			} else {
 				col.Add ("global", "md-keyword");
 				col.Add ("var", "md-keyword");
