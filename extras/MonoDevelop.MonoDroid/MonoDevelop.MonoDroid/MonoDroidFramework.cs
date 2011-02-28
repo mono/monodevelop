@@ -320,7 +320,7 @@ namespace MonoDevelop.MonoDroid
 		};
 		
 		public static AndroidVersion DefaultAndroidVersion {
-			get { return AndroidVersions[AndroidVersions.Length-1]; }
+			get { return AndroidVersions[AndroidVersions.Length-2]; } // 2.2
 		}
 	}
 	
