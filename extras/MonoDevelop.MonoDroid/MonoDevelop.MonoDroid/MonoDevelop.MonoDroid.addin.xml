@@ -10,6 +10,7 @@
 	
 	<Runtime>
 		<Import file = "templates/MonoDroidActivity.xft.xml" />
+		<Import file = "templates/MonoDroidApplication/AboutAssets.txt" />
 		<Import file = "templates/MonoDroidApplication/AboutResources.txt" />
 		<Import file = "templates/MonoDroidApplication/Activity1.cs" />
 		<Import file = "templates/MonoDroidApplication/Icon-hd.png" />
