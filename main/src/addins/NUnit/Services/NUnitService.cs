@@ -161,7 +161,9 @@ namespace MonoDevelop.NUnit
 			TestSession session = new TestSession (test, context, (TestResultsPad) resultsPad.Content);
 			
 			session.Completed += delegate {
-				resultsPad.Sticky = false;
+				Gtk.Application.Invoke (delegate {
+					resultsPad.Sticky = false;
+				});
 			};
 			
 			session.Start ();
