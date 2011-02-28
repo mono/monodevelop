@@ -7428,7 +7428,7 @@ void case_781()
 void case_784()
 #line 5013 "cs-parser.jay"
 {
-		var labels = new List<SwitchLabel> (4);
+		var labels = new List<SwitchLabel> (2);
 
 		labels.Add ((SwitchLabel) yyVals[0+yyTop]);
 		yyVal = labels;

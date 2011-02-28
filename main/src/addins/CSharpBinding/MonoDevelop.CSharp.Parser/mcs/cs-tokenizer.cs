@@ -2160,7 +2160,7 @@ namespace Mono.CSharp
 				c = get_char ();
 				sbag.PushCommentChar (c);
 				var pc = peek_char ();
-				if (pc == '\n' || pc == -1)
+				if (pc == '\n' || pc == -1) 
 					sbag.EndComment (line, col + 1);
 			} while (c != -1 && c != '\n');
 		}
@@ -3082,7 +3082,7 @@ namespace Mono.CSharp
 						if (d == '\n' || d == '\r')
 							sbag.EndComment (line, col + 1);
 						
-						while ((d = get_char ()) != -1 && d != '\n') {
+						while ((d = get_char ()) != -1 && (d != '\n') && d != '\r') {
 							sbag.PushCommentChar (d);
 							var pc = peek_char ();
 							if (pc == -1 || pc == '\n' || pc == '\r') {
