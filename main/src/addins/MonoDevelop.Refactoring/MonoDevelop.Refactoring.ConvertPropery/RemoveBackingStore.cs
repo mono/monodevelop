@@ -86,13 +86,15 @@ namespace MonoDevelop.Refactoring.ConvertPropery
 			IField backingStore = GetBackingStoreField (options, backingStoreName, out backinStoreStart, out backinStoreEnd);
 			
 			if (backingStore != null) {
-				foreach (MemberReference memberRef in ReferenceFinder.FindReferences (backingStore)) {
-					result.Add (new TextReplaceChange () {
-						FileName = memberRef.FileName,
-						Offset = memberRef.Position,
-						RemovedChars = memberRef.Name.Length,
-						InsertedText = property.Name
-					});
+				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
+					foreach (MemberReference memberRef in ReferenceFinder.FindReferences (backingStore, monitor)) {
+						result.Add (new TextReplaceChange () {
+							FileName = memberRef.FileName,
+							Offset = memberRef.Position,
+							RemovedChars = memberRef.Name.Length,
+							InsertedText = property.Name
+						});
+					}
 				}
 				
 				result.RemoveAll (c => backinStoreStart <= ((TextReplaceChange)c).Offset  && ((TextReplaceChange)c).Offset <= backinStoreEnd);

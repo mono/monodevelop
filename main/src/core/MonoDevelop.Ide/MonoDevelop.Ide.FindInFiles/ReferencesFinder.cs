@@ -66,15 +66,13 @@ namespace MonoDevelop.Ide.FindInFiles
 			return codon != null ? codon.ReferenceFinder : null;
 		}
 		
-		public abstract IEnumerable<MemberReference> FindReferences (ProjectDom dom, FilePath fileName, INode member);
 		
-		
-		public static IEnumerable<MemberReference> FindReferences (INode member)
+		public static IEnumerable<MemberReference> FindReferences (INode member, ISearchProgressMonitor monitor = null)
 		{
-			return FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, member);
+			return FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, member, monitor);
 		}
-			
-		public static IEnumerable<MemberReference> FindReferences (Solution solution, INode member)
+		
+		public static IEnumerable<MemberReference> FindReferences (Solution solution, INode member, ISearchProgressMonitor monitor = null)
 		{
 			var scope = GetScope (member);
 			ReferenceFinder finder;
@@ -113,6 +111,9 @@ namespace MonoDevelop.Ide.FindInFiles
 			case RefactoryScope.Project:
 				if (dom == null)
 					yield break;
+				if (monitor != null)
+					monitor.BeginTask (GettextCatalog.GetString ("Search reference in project..."), dom.Project.Files.Count);
+				int counter = 0;
 				foreach (var file in dom.Project.Files) {
 					finder = GetReferenceFinder (DesktopService.GetMimeTypeForUri (file.FilePath));
 					if (finder == null)
@@ -122,10 +123,19 @@ namespace MonoDevelop.Ide.FindInFiles
 							yield return foundReference;
 						}
 					}
+					if (monitor != null) {
+						if (counter % 10 == 0)
+							monitor.Step (10);
+						counter++;
+					}
 				}
+				if (monitor != null)
+					monitor.EndTask ();
 				break;
 				
 			case RefactoryScope.Solution:
+				if (monitor != null)
+					monitor.BeginTask (GettextCatalog.GetString ("Search reference in solution..."), solution.GetAllProjects ().Count);
 				foreach (var project in solution.GetAllProjects ()) {
 					var currentDom = ProjectDomService.GetProjectDom (project);
 					foreach (var file in project.Files) {
@@ -138,10 +148,16 @@ namespace MonoDevelop.Ide.FindInFiles
 							}
 						}
 					}
+					if (monitor != null)
+						monitor.Step (1);
 				}
+				if (monitor != null)
+					monitor.EndTask ();
 				break;
 			}
 		}
+		
+		public abstract IEnumerable<MemberReference> FindReferences (ProjectDom dom, FilePath fileName, INode member);
 		
 		internal static IEnumerable<INode> CollectMembers (ProjectDom dom, IMember member)
 		{

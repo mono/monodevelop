@@ -143,52 +143,51 @@ namespace MonoDevelop.Refactoring.Rename
 		{
 			RenameProperties properties = (RenameProperties)prop;
 			List<Change> result = new List<Change> ();
-
-			var col = ReferenceFinder.FindReferences (options.SelectedItem);
-			if (col == null)
-				return result;
-			
-			if (properties.RenameFile && options.SelectedItem is IType) {
-				IType cls = (IType)options.SelectedItem;
-				int currentPart = 1;
-				HashSet<string> alreadyRenamed = new HashSet<string> ();
-				foreach (IType part in cls.Parts) {
-					if (part.CompilationUnit.FileName != options.Document.FileName && System.IO.Path.GetFileNameWithoutExtension (part.CompilationUnit.FileName) != System.IO.Path.GetFileNameWithoutExtension (options.Document.FileName))
-						continue;
-					if (alreadyRenamed.Contains (part.CompilationUnit.FileName))
-						continue;
-					alreadyRenamed.Add (part.CompilationUnit.FileName);
-					
-					string oldFileName = System.IO.Path.GetFileNameWithoutExtension (part.CompilationUnit.FileName);
-					string newFileName;
-					System.Console.WriteLine ("old: " + oldFileName);
-					System.Console.WriteLine ("new:" + properties.NewName);
-					if (oldFileName.ToUpper () == properties.NewName.ToUpper () || oldFileName.ToUpper ().EndsWith ("." + properties.NewName.ToUpper ()))
-						continue;
-					int idx = oldFileName.IndexOf (cls.Name);
-					if (idx >= 0) {
-						newFileName = oldFileName.Substring (0, idx) + properties.NewName + oldFileName.Substring (idx + cls.Name.Length);
-					} else {
-						newFileName = currentPart != 1 ? properties.NewName + currentPart : properties.NewName;
-						currentPart++;
+			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
+				var col = ReferenceFinder.FindReferences (options.SelectedItem, monitor);
+				if (col == null)
+					return result;
+				
+				if (properties.RenameFile && options.SelectedItem is IType) {
+					IType cls = (IType)options.SelectedItem;
+					int currentPart = 1;
+					HashSet<string> alreadyRenamed = new HashSet<string> ();
+					foreach (IType part in cls.Parts) {
+						if (part.CompilationUnit.FileName != options.Document.FileName && System.IO.Path.GetFileNameWithoutExtension (part.CompilationUnit.FileName) != System.IO.Path.GetFileNameWithoutExtension (options.Document.FileName))
+							continue;
+						if (alreadyRenamed.Contains (part.CompilationUnit.FileName))
+							continue;
+						alreadyRenamed.Add (part.CompilationUnit.FileName);
+						
+						string oldFileName = System.IO.Path.GetFileNameWithoutExtension (part.CompilationUnit.FileName);
+						string newFileName;
+						if (oldFileName.ToUpper () == properties.NewName.ToUpper () || oldFileName.ToUpper ().EndsWith ("." + properties.NewName.ToUpper ()))
+							continue;
+						int idx = oldFileName.IndexOf (cls.Name);
+						if (idx >= 0) {
+							newFileName = oldFileName.Substring (0, idx) + properties.NewName + oldFileName.Substring (idx + cls.Name.Length);
+						} else {
+							newFileName = currentPart != 1 ? properties.NewName + currentPart : properties.NewName;
+							currentPart++;
+						}
+						
+						int t = 0;
+						while (System.IO.File.Exists (GetFullFileName (newFileName, part.CompilationUnit.FileName, t))) {
+							t++;
+						}
+						result.Add (new RenameFileChange (part.CompilationUnit.FileName, GetFullFileName (newFileName, part.CompilationUnit.FileName, t)));
 					}
-					
-					int t = 0;
-					while (System.IO.File.Exists (GetFullFileName (newFileName, part.CompilationUnit.FileName, t))) {
-						t++;
-					}
-					result.Add (new RenameFileChange (part.CompilationUnit.FileName, GetFullFileName (newFileName, part.CompilationUnit.FileName, t)));
 				}
-			}
-			
-			foreach (MemberReference memberRef in col) {
-				TextReplaceChange change = new TextReplaceChange ();
-				change.FileName = memberRef.FileName;
-				change.Offset = memberRef.Position;
-				change.RemovedChars = memberRef.Name.Length;
-				change.InsertedText = properties.NewName;
-				change.Description = string.Format (GettextCatalog.GetString ("Replace '{0}' with '{1}'"), memberRef.Name, properties.NewName);
-				result.Add (change);
+				
+				foreach (MemberReference memberRef in col) {
+					TextReplaceChange change = new TextReplaceChange ();
+					change.FileName = memberRef.FileName;
+					change.Offset = memberRef.Position;
+					change.RemovedChars = memberRef.Name.Length;
+					change.InsertedText = properties.NewName;
+					change.Description = string.Format (GettextCatalog.GetString ("Replace '{0}' with '{1}'"), memberRef.Name, properties.NewName);
+					result.Add (change);
+				}
 			}
 			return result;
 		}

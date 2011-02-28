@@ -862,7 +862,7 @@ namespace MonoDevelop.Refactoring
 		void FindReferencesThread (object state)
 		{
 			try {
-				foreach (MemberReference mref in ReferenceFinder.FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, item)) {
+				foreach (MemberReference mref in ReferenceFinder.FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, item, monitor)) {
 					monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (new FileProvider (mref.FileName), mref.Position, mref.Name.Length));
 				}
 			} catch (Exception ex) {
