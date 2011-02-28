@@ -151,8 +151,9 @@ namespace CBinding
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			var line = Editor.Document.GetLine (Editor.Caret.Line);
-			int lineCursorIndex = Editor.Caret.Column;
 			string lineText = Editor.GetLineText (Editor.Caret.Line);
+			int lineCursorIndex = Math.Min (lineText.Length, Editor.Caret.Column);
+			
 			// Smart Indentation
 			if (TextEditorProperties.IndentStyle == IndentStyle.Smart)
 			{
