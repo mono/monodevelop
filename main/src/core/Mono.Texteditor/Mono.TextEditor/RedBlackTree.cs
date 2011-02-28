@@ -409,8 +409,8 @@ namespace Mono.TextEditor
 			return result.ToString ();
 		}
 
-		const bool Red = true;
-		const bool Black = false;
+		internal const bool Red = true;
+		internal const bool Black = false;
 
 		public class RedBlackTreeNode
 		{
