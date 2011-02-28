@@ -685,7 +685,7 @@ namespace MonoDevelop.MonoDroid
 			// AndroidManifest property may have not been added to the solution,
 			// yet it could exist in the default location.
 			if (string.IsNullOrEmpty (AndroidManifest)) {
-				var defManifestPath = Path.Combine (BaseDirectory, Path.Combine ("Properties", "AndroidManifest.xml"));
+				var defManifestPath = GetDefaultManifestFileName ();
 				if (File.Exists (defManifestPath)) {
 					AddExistingManifest (defManifestPath);
 					MonoDevelop.Ide.IdeApp.ProjectOperations.Save (this);
@@ -694,11 +694,16 @@ namespace MonoDevelop.MonoDroid
 
 			return this.AndroidManifest;
 		}
+
+		string GetDefaultManifestFileName ()
+		{
+			return BaseDirectory.Combine ("Properties", "AndroidManifest.xml");
+		}
 		
 		public AndroidAppManifest AddManifest ()
 		{
 			if (AndroidManifest.IsNullOrEmpty)
-				AndroidManifest = BaseDirectory.Combine ("Properties", "AndroidManifest.xml");
+				AndroidManifest = GetDefaultManifestFileName ();
 			if (!Directory.Exists (AndroidManifest.ParentDirectory))
 				Directory.CreateDirectory (AndroidManifest.ParentDirectory);
 			var manifest = AndroidAppManifest.Create (GetDefaultPackageName (), Name);
