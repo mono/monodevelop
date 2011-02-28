@@ -8929,6 +8929,11 @@ namespace Mono.CSharp
 		{
 			type = t;
 		}
+		
+		public override object Accept (StructuralVisitor visitor)
+		{
+			return visitor.Visit (this);
+		}
 	}
 	
 	//
