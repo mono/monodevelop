@@ -681,6 +681,17 @@ namespace MonoDevelop.MonoDroid
 		{
 			if (conf != null && !conf.AndroidManifest.IsNullOrEmpty)
 				return conf.AndroidManifest;
+
+			// AndroidManifest property may have not been added to the solution,
+			// yet it could exist in the default location.
+			if (string.IsNullOrEmpty (AndroidManifest)) {
+				var defManifestPath = Path.Combine (BaseDirectory, Path.Combine ("Properties", "AndroidManifest.xml"));
+				if (File.Exists (defManifestPath)) {
+					AddExistingManifest (defManifestPath);
+					MonoDevelop.Ide.IdeApp.ProjectOperations.Save (this);
+				}
+			}
+
 			return this.AndroidManifest;
 		}
 		
@@ -694,6 +705,13 @@ namespace MonoDevelop.MonoDroid
 			manifest.WriteToFile (AndroidManifest);
 			AddFile (AndroidManifest);
 			return manifest;
+		}
+
+		// Add an existing manifest file.
+		void AddExistingManifest (string manifestFile)
+		{
+			AndroidManifest = manifestFile;
+			AddFile (AndroidManifest);
 		}
 		
 		public string GetPackageName (ConfigurationSelector conf)
