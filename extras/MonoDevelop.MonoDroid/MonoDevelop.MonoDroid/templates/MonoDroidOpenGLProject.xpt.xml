@@ -56,6 +56,9 @@
 				<Directory name="Properties">
 					<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="AssemblyInfo.cs" />
 				</Directory>
+				<Directory name="Assets">
+					<RawFile name="AboutAssets.txt" src="MonoDroidApplication/AboutAssets.txt" />
+				</Directory>
 			</Files>
 		</Project>
 	</Combine>
