@@ -192,22 +192,25 @@ namespace Mono.TextEditor.Highlighting
 						curChunk = new TextChunk (new ChunkStyle (), offset);
 					}
 					tagBuilder.Length = 0;
+					specialBuilder.Length = 0;
 					inTag = true;
 					break;
 				case '&':
+					curChunk.Length = i - curChunk.Offset;
+					if (curChunk.Length > 0) {
+						curChunk.ChunkStyle = GetChunkStyle (style, tagStack);
+						endChunk = endChunk.Next = curChunk;
+						curChunk = new TextChunk (new ChunkStyle (), offset);
+					}
+					
 					inSpecial = true;
 					specialBuilder.Length = 0;
+					tagBuilder.Length = 0;
 					specialBegin = i;
 					break;
 				case ';':
 					if (inSpecial) {
 						string specialText = specialBuilder.ToString ();
-						curChunk.Length = specialText.Length;
-						if (curChunk.Length > 0) {
-							curChunk.ChunkStyle = GetChunkStyle (style, tagStack);
-							endChunk = endChunk.Next = curChunk;
-							curChunk = new TextChunk (new ChunkStyle (), offset);
-						}
 						switch (specialText) {
 						case "lt":
 							endChunk = endChunk.Next = new TextChunk (GetChunkStyle (style, tagStack), specialBegin, "<");
@@ -221,6 +224,8 @@ namespace Mono.TextEditor.Highlighting
 						}
 						curChunk.Offset = i + 1;
 						inSpecial = false;
+						specialBuilder.Length = 0;
+						tagBuilder.Length = 0;
 					}
 					break;
 				case '>':
@@ -236,6 +241,8 @@ namespace Mono.TextEditor.Highlighting
 					}
 					curChunk.Offset = i + 1;
 					inTag = false;
+					specialBuilder.Length = 0;
+					tagBuilder.Length = 0;
 					break;
 				default:
 					if (inSpecial) {

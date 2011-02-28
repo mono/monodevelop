@@ -155,12 +155,11 @@ namespace Mono.TextEditor
 				offset = delimiterEndOffset;
 			}
 			int height = GetTreeHeight (nodes.Count);
-			tree.Root = BuildTree (nodes, 0, nodes.Count, height);
-			if (tree.Root != null) {
+			var newRoot = BuildTree (nodes, 0, nodes.Count, height);
+			if (newRoot != null) {
+				tree.Root = newRoot;
 				tree.Root.Color = true;
 				tree.Count = nodes.Count;
-			} else {
-				Clear ();
 			}
 		}
 		
