@@ -386,16 +386,16 @@ namespace Mono.TextEditor
 			if (matchingBracket == caretOffset)
 				matchingBracket = -1;
 			if (matchingBracket != oldIndex) {
-				highlightBracketOffset = matchingBracket;
 				int line1 = oldIndex >= 0 ? Document.OffsetToLineNumber (oldIndex) : -1;
-				int line2 = highlightBracketOffset >= 0 ? Document.OffsetToLineNumber (highlightBracketOffset) : -1;
+				int line2 = matchingBracket >= 0 ? Document.OffsetToLineNumber (matchingBracket) : -1;
 				//DocumentLocation matchingBracketLocation = Document.OffsetToLocation (matchingBracket);
 				if (worker.CancellationPending)
 					return;
+				highlightBracketOffset = matchingBracket;
 				Application.Invoke (delegate {
-					if (!worker.CancellationPending && line1 >= 0)
+					if (line1 >= 0)
 						textEditor.RedrawLine (line1);
-					if (!worker.CancellationPending && line1 != line2 && line2 >= 0)
+					if (line1 != line2 && line2 >= 0)
 						textEditor.RedrawLine (line2);
 				});
 			}
