@@ -606,10 +606,10 @@ namespace MonoDevelop.MonoDroid
 							return MonoDroidBuildAction.AndroidResource;
 
 				}
-
-				if (monoDroidAssetsPrefix == parentDir)
-					return MonoDroidBuildAction.AndroidAsset;
 			}
+
+			if (((FilePath)fileName).IsChildPathOf (BaseDirectory.Combine (MonoDroidAssetsPrefix)))
+				return MonoDroidBuildAction.AndroidAsset;
 				
 			return baseAction;
 		}
