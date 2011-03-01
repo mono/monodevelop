@@ -101,7 +101,7 @@ namespace MonoDroid
 		/// <returns>SDK location, or null if it was not found.</returns>
 		static void GetMonoDroidSdk (out string monoDroidBinDir, out string monoDroidFrameworkDir)
 		{
-			string loc;
+			monoDroidBinDir = monoDroidFrameworkDir = null;
 
 			if (IsWindows) {
 				// Find user's \Program Files
@@ -122,30 +122,34 @@ namespace MonoDroid
 				return;
 			} 
 			
-			// Linux/Mac users can override our SDK location with MONODROID_PATH
-			loc = Environment.GetEnvironmentVariable ("MONODROID_PATH");
+			string monoAndroidPath  = Environment.GetEnvironmentVariable ("MONO_ANDROID_PATH");
+			string monodroidPath    = Environment.GetEnvironmentVariable ("MONODROID_PATH");
+			string libmandroid      = Path.Combine ("lib", "mandroid");
+			string mandroid         = "mandroid.exe";
+			string libmonodroid     = Path.Combine ("lib", "monodroid");
+			string monodroid        = "monodroid.exe";
 
-			if (CheckMonoDroidPath (loc, out monoDroidBinDir, out monoDroidFrameworkDir))
-				return;
-			
-			// Else, use the default locations
-			if (IsMac)
-				loc = "/Developer/MonoDroid/usr";
-			else
-				loc = "/opt/monodroid";
-				
-			CheckMonoDroidPath (loc, out monoDroidBinDir, out monoDroidFrameworkDir);
+			foreach (var loc in new[]{
+					new { D = monoAndroidPath,              L = libmandroid,  E = mandroid  },
+					new { D = monodroidPath,                L = libmandroid,  E = mandroid  },
+					new { D = monodroidPath,                L = libmonodroid, E = monodroid },
+					new { D = "/Developer/MonoAndroid/usr", L = libmandroid,  E = mandroid  },
+					new { D = "/Developer/MonoDroid/usr",   L = libmonodroid, E = monodroid },
+					new { D = "/opt/mono-android",          L = libmandroid,  E = mandroid  },
+					new { D = "/opt/monodroid",             L = libmonodroid, E = monodroid }})
+				if (CheckMonoDroidPath (loc.D, loc.L, loc.E, out monoDroidBinDir, out monoDroidFrameworkDir))
+					return;
 		}
 		
-		static bool CheckMonoDroidPath (string monoDroidPath, out string monoDroidBinDir, out string monoDroidFrameworkDir)
+		static bool CheckMonoDroidPath (string monoDroidPath, string relBinPath, string mandroid, out string monoDroidBinDir, out string monoDroidFrameworkDir)
 		{
 			monoDroidBinDir = monoDroidFrameworkDir = null;
 			
 			if (string.IsNullOrEmpty (monoDroidPath))
 				return false;
 			
-			var bin = Path.Combine (Path.Combine (monoDroidPath, "lib"), "monodroid");
-			if (!File.Exists (Path.Combine (bin, "monodroid.exe")))
+			var bin = Path.Combine (monoDroidPath, relBinPath);
+			if (!File.Exists (Path.Combine (bin, mandroid)))
 				return false;
 			
 			monoDroidBinDir = bin;
@@ -274,7 +278,9 @@ namespace MonoDroid
 		const string MDREG_ANDROID = "AndroidSdkDirectory";
 		const string MDREG_JAVA = "JavaSdkDirectory";
 		const string MDREG_MONODROID = "InstallDirectory";
-		
+		const string ANDROID_INSTALLER_PATH = @"SOFTWARE\Android SDK Tools";
+		const string ANDROID_INSTALLER_KEY = "Path";
+
 		static void SetWindowsConfiguredSdkLocations (string androidSdk, string javaSdk)
 		{
 			var wow = RegistryEx.Wow64.Key32;
@@ -327,12 +333,22 @@ namespace MonoDroid
 			androidSdk = null;
 			javaSdk = null;
 			
+			// Check for the key written by the Android SDK installer first
 			foreach (var root in roots) {
-				androidSdk = NullIfEmpty (RegistryEx.GetValueString (root, MDREG_KEY, MDREG_ANDROID, wow));
+				androidSdk = NullIfEmpty (RegistryEx.GetValueString (root, ANDROID_INSTALLER_PATH, ANDROID_INSTALLER_KEY, wow));
 				if (androidSdk != null)
 					break;
 			}
+
+			// Check for the key the user gave us in the VS options
+			if (androidSdk == null)
+				foreach (var root in roots) {
+					androidSdk = NullIfEmpty (RegistryEx.GetValueString (root, MDREG_KEY, MDREG_ANDROID, wow));
+					if (androidSdk != null)
+						break;
+				}
 			
+			// Find the Java SDK
 			foreach (var root in roots) {
 				javaSdk = NullIfEmpty (RegistryEx.GetValueString (root, MDREG_KEY, MDREG_JAVA, wow));
 				if (javaSdk != null)
