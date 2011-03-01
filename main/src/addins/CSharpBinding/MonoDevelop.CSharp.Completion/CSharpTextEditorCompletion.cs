@@ -704,7 +704,8 @@ namespace MonoDevelop.CSharp.Completion
 							if (possibleForeachToken == "foreach") {
 								result.ExpressionContext = ExpressionContext.ForeachInToken;
 							} else {
-								result.ExpressionContext = ExpressionContext.IdentifierExpected;
+								return null;
+//								result.ExpressionContext = ExpressionContext.IdentifierExpected;
 							}
 							result.Expression = "";
 							result.Region = DomRegion.Empty;

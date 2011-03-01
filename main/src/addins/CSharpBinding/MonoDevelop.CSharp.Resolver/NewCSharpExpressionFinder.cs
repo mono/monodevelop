@@ -980,7 +980,10 @@ namespace MonoDevelop.CSharp.Resolver
 				frame.state = FrameState.EventDecl;
 				break;
 			case Tokens.Comma:
-				if (frame.state == FrameState.FieldDecl || frame.state == FrameState.FieldDeclAfterIdentifier || frame.state == FrameState.Initializer) {
+				if (frame.bracketType == '<') {
+					frame.state = FrameState.Normal;
+					frame.SetDefaultContext ();
+				} else if (frame.state == FrameState.FieldDecl || frame.state == FrameState.FieldDeclAfterIdentifier || frame.state == FrameState.Initializer) {
 					frame.state = FrameState.FieldDecl;
 					frame.SetContext (ExpressionContext.IdentifierExpected);
 				} else if (frame.state == FrameState.ObjectInitializerValue) {
