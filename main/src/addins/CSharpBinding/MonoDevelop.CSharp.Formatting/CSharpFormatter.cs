@@ -110,78 +110,6 @@ namespace MonoDevelop.CSharp.Formatting
 				Where (c => c is TextReplaceChange && (startOffset <= ((TextReplaceChange)c).Offset && ((TextReplaceChange)c).Offset < endOffset)));
 
 			RefactoringService.AcceptChanges (null, null, changes);
-			CorrectFormatting (data, startOffset, endOffset);
-		}
-
-		int CorrectFormatting (TextEditorData data, int start, int end)
-		{
-			int delta = 0;
-			int lineNumber = data.OffsetToLineNumber (start);
-			LineSegment line = data.GetLine (lineNumber);
-			if (line.Offset < start)
-				lineNumber++;
-			line = data.GetLine (lineNumber);
-			if (line == null)
-				return 0;
-			bool wholeDocument = end >= data.Document.Length;
-			do {
-				string indent = line.GetIndentation (data.Document);
-				StringBuilder newIndent = new StringBuilder ();
-				int col = 1;
-				if (data.Options.TabsToSpaces) {
-					foreach (char ch in indent) {
-						if (ch == '\t') {
-							int tabWidth = TextViewMargin.GetNextTabstop (data, col) - col;
-							newIndent.Append (new string (' ', tabWidth));
-							col += tabWidth;
-						} else {
-							newIndent.Append (ch);
-						}
-					}
-				} else {
-					for (int i = 0; i < indent.Length; i++) {
-						char ch = indent [i];
-						if (ch == '\t') {
-							int tabWidth = TextViewMargin.GetNextTabstop (data, col) - col;
-							newIndent.Append (ch);
-							col += tabWidth;
-						} else {
-							int tabWidth = TextViewMargin.GetNextTabstop (data, col) - col;
-							newIndent.Append ('\t');
-							col += tabWidth;
-							while (tabWidth-- > 0 && i + 1 < indent.Length) {
-								if (indent [i + 1] != ' ')
-									break;
-								i++;
-							}
-						}
-					}
-				}
-				if (indent.Length == line.EditableLength)
-					newIndent.Length = 0;
-				if (line.DelimiterLength != 0) {
-					delta -= line.DelimiterLength;
-					delta += data.EolMarker.Length;
-					data.Replace (line.Offset + line.EditableLength, line.DelimiterLength, data.EolMarker);
-					if (!wholeDocument) {
-						end -= line.DelimiterLength;
-						end += data.EolMarker.Length;
-					}
-				}
-
-				string replaceWith = newIndent.ToString ();
-				if (indent != replaceWith) {
-					int count = (indent ?? "").Length;
-					delta -= count;
-					delta += data.Replace (line.Offset, count, replaceWith);
-					if (!wholeDocument)
-						end = end - count + replaceWith.Length;
-				}
-
-				lineNumber++;
-				line = data.GetLine (lineNumber);
-			} while (line != null && (wholeDocument || line.EndOffset <= end));
-			return delta;
 		}
 
 		public override string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
@@ -198,9 +126,6 @@ namespace MonoDevelop.CSharp.Formatting
 			data.Options.DefaultEolMarker = textPolicy.GetEolMarker ();
 			data.Text = input;
 
-			//			System.Console.WriteLine ("TABS:" + textPolicy.TabsToSpaces);
-			endOffset += CorrectFormatting (data, startOffset, endOffset);
-			
 			/*			System.Console.WriteLine ("-----");
 			System.Console.WriteLine (data.Text.Replace (" ", ".").Replace ("\t", "->"));
 			System.Console.WriteLine ("-----");*/
