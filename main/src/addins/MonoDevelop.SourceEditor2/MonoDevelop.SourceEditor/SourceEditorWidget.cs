@@ -74,25 +74,13 @@ namespace MonoDevelop.SourceEditor
 		
 		public MonoDevelop.SourceEditor.ExtensibleTextEditor TextEditor {
 			get {
-				SetLastActiveEditor ();
 				return lastActiveEditor;
 			}
 		}
 		
 		public TextEditorContainer TextEditorContainer {
 			get {
-				SetLastActiveEditor ();
 				return lastActiveEditor == textEditor ? textEditorContainer : splittedTextEditorContainer;
-			}
-		}
-		
-		void SetLastActiveEditor ()
-		{
-			if (this.splittedTextEditor != null && this.splittedTextEditor.Parent != null && this.splittedTextEditor.HasFocus) {
-				lastActiveEditor = this.splittedTextEditor;
-			}
-			if (this.textEditor != null && this.textEditor.Parent != null && this.textEditor.HasFocus) {
-				lastActiveEditor = this.textEditor;
 			}
 		}
 		
@@ -262,6 +250,7 @@ namespace MonoDevelop.SourceEditor
 			this.view = view;
 			vbox.SetSizeRequest (32, 32);
 			this.lastActiveEditor = this.textEditor = new MonoDevelop.SourceEditor.ExtensibleTextEditor (view);
+			this.textEditor.FocusInEvent += (o, s) => lastActiveEditor = (ExtensibleTextEditor)o;
 			mainsw = new DecoratedScrolledWindow (this);
 			this.textEditorContainer = new TextEditorContainer (textEditor);
 			mainsw.SetTextEditor (textEditorContainer);
@@ -651,6 +640,7 @@ namespace MonoDevelop.SourceEditor
 			};
 			secondsw = new DecoratedScrolledWindow (this);
 			this.splittedTextEditor = new MonoDevelop.SourceEditor.ExtensibleTextEditor (view, this.textEditor.Options, textEditor.Document);
+			this.splittedTextEditor.FocusInEvent += (o, s) => lastActiveEditor = (ExtensibleTextEditor)o;
 			this.splittedTextEditor.Extension = textEditor.Extension;
 			
 			this.splittedTextEditorContainer = new TextEditorContainer (this.splittedTextEditor);
