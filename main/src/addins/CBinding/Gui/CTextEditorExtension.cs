@@ -435,6 +435,8 @@ namespace CBinding
 			
 			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
 			string lineText = Editor.GetLineText (Editor.Caret.Line).TrimEnd ();
+			if (lineText.EndsWith (completionChar.ToString (), StringComparison.Ordinal))
+				lineText = lineText.Remove (lineText.Length-1).TrimEnd ();
 			
 			int nameStart = lineText.LastIndexOfAny (allowedChars);
 
