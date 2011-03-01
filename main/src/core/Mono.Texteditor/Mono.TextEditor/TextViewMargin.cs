@@ -807,6 +807,7 @@ namespace Mono.TextEditor
 			foreach (LayoutDescriptor descr in layoutDict.Values) {
 				descr.Dispose ();
 			}
+			layoutDict.Clear ();
 		}
 
 		public void PurgeLayoutCache ()
@@ -2047,7 +2048,6 @@ namespace Mono.TextEditor
 
 			if (BackgroundRenderer != null)
 				BackgroundRenderer.Draw (cr, area, line, x, y, _lineHeight);
-
 
 			// Check if line is beyond the document length
 			if (line == null) {

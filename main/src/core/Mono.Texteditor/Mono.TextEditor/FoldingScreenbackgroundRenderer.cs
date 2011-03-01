@@ -89,9 +89,9 @@ namespace Mono.TextEditor
 				if (segment == foldSegments.Count - 1)
 					colorPosition += 2;
 				if (brightness < 0.5) {
-					hslColor.L = hslColor.L * 0.85 + hslColor.L * 0.25 * (colorCount - colorPosition) / colorCount;
+					hslColor.L = hslColor.L * 0.81 + hslColor.L * 0.25 * (colorCount - colorPosition) / colorCount;
 				} else {
-					hslColor.L = hslColor.L * 0.9 + hslColor.L * 0.1 * colorPosition / colorCount;
+					hslColor.L = hslColor.L * 0.86 + hslColor.L * 0.1 * colorPosition / colorCount;
 				}
 				
 				Roles role = Roles.Between;
@@ -116,7 +116,7 @@ namespace Mono.TextEditor
 					role = roles[segment];
 				}
 				DrawRoundRectangle (cr, (role & Roles.Start) == Roles.Start, (role & Roles.End) == Roles.End, xPos, y, editor.LineHeight / 2, rectangleWidth, lineHeight);
-				cr.Color = Style.ToCairoColor (hslColor, 0.8);
+				cr.Color = Style.ToCairoColor (hslColor);
 				cr.Fill ();
 		/*		if (segment == foldSegments.Count - 1) {
 					cr.Color = new Cairo.Color (0.5, 0.5, 0.5, 1);

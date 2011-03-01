@@ -162,8 +162,11 @@ namespace Mono.TextEditor
 		IEnumerable<FoldSegment> foldings;
 		void DelayTimerElapsed (object sender, ElapsedEventArgs e)
 		{
-			editor.TextViewMargin.BackgroundRenderer = new FoldingScreenbackgroundRenderer (editor, foldings);
-			editor.QueueDraw ();
+			Application.Invoke (delegate {
+				editor.TextViewMargin.DisposeLayoutDict ();
+				editor.TextViewMargin.BackgroundRenderer = new FoldingScreenbackgroundRenderer (editor, foldings);
+				editor.QueueDraw ();
+			});
 		}
 		
 		void RemoveBackgroundRenderer ()
