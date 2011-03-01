@@ -3338,7 +3338,7 @@ out expr);
 			Expect(11);
 
 #line  1530 "Frames/cs.ATG" 
-			var.EndLocation = t.EndLocation; compilationUnit.AddChild(var); 
+			var.EndLocation = t.EndLocation; if (t.Kind == Tokens.Semicolon) var.SemicolonPosition = t.EndLocation; compilationUnit.AddChild(var); 
 		} else if (
 #line  1533 "Frames/cs.ATG" 
 IsLocalVarDecl()) {
@@ -3348,7 +3348,7 @@ out stmt);
 			Expect(11);
 
 #line  1533 "Frames/cs.ATG" 
-			compilationUnit.AddChild(stmt); 
+			if (t.Kind == Tokens.Semicolon) ((LocalVariableDeclaration)stmt).SemicolonPosition = t.EndLocation; compilationUnit.AddChild(stmt); 
 		} else if (StartOf(30)) {
 			EmbeddedStatement(
 #line  1535 "Frames/cs.ATG" 

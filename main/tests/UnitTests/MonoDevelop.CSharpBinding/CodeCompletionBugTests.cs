@@ -3028,5 +3028,23 @@ class Foo
 			Assert.IsNotNull (provider.Find ("args"), "parameter 'args' not found.");
 			Assert.IsNotNull (provider.Find ("arg"), "variable 'arg' not found.");
 		}
+		
+		/// <summary>
+		/// Bug 675436 - Completion is trying to complete symbol names in declarations
+		/// </summary>
+		[Test()]
+		public void TestBug675436_LocalVar ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"class Test
+{
+    public static void Main (string[] args)
+    {
+        $int test = $
+    }
+}
+");
+			Assert.IsNull (provider.Find ("test"), "name 'test' found.");
+		}
 	}
 }

@@ -1527,10 +1527,10 @@ Statement
 				TypeReference = type
 			});
 		  .) }
-		  ";" (. var.EndLocation = t.EndLocation; compilationUnit.AddChild(var); .)
+		  ";" (. var.EndLocation = t.EndLocation; if (t.Kind == Tokens.Semicolon) var.SemicolonPosition = t.EndLocation; compilationUnit.AddChild(var); .)
 
 		/*--- local variable declaration: */
-	|	IF (IsLocalVarDecl()) LocalVariableDecl<out stmt> ";" (. compilationUnit.AddChild(stmt); .)
+	|	IF (IsLocalVarDecl()) LocalVariableDecl<out stmt> ";" (. if (t.Kind == Tokens.Semicolon) ((LocalVariableDeclaration)stmt).SemicolonPosition = t.EndLocation; compilationUnit.AddChild(stmt); .)
 	
 	|	EmbeddedStatement<out stmt> (. compilationUnit.AddChild(stmt); .)
 		/* LL(1) confict: LocalVariableDecl *
@@ -1671,7 +1671,7 @@ ForInitializer<out List<Statement> initializer>
 	initializer = new List<Statement>();
 .)
 =
-	IF (IsLocalVarDecl()) LocalVariableDecl<out stmt> (. initializer.Add(stmt);.)
+	IF (IsLocalVarDecl()) LocalVariableDecl<out stmt> (.  initializer.Add(stmt);.)
 	| StatementExpr<out stmt> (.initializer.Add(stmt);.) { "," StatementExpr<out stmt> (. initializer.Add(stmt);.) }
 .
 

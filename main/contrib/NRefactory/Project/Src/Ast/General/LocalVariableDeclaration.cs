@@ -35,6 +35,11 @@ namespace ICSharpCode.NRefactory.Ast
 			}
 		}
 		
+		public Location SemicolonPosition {
+			get;
+			set;
+		}
+		
 		public List<VariableDeclaration> Variables {
 			get {
 				return variables;
