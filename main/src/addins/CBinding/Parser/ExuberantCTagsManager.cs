@@ -51,8 +51,12 @@ namespace CBinding.Parser
 			string ctags_options = ctags_kinds + " --fields=+aStisk-fz --language-force=C++ --excmd=number --line-directives=yes -f '" + tagFullFileName + "' '" + fileInfo.FileName + "'";
 			
 			if (!File.Exists (tagFullFileName) || File.GetLastWriteTimeUtc (tagFullFileName) < File.GetLastWriteTimeUtc (fileInfo.FileName)) {
-				ctags_output = GetOutputFromProcess (CTagsExecutable, ctags_options, Environment.CurrentDirectory);
-				File.WriteAllText (tagFullFileName, ctags_output);
+				GetOutputFromProcess (CTagsExecutable, ctags_options, Environment.CurrentDirectory);
+			}
+			try {
+				ctags_output = File.ReadAllText (tagFullFileName);
+			} catch (IOException ioe) {
+				LoggingService.LogError ("Error updating system tags", ioe);
 			}
 			
 			return ctags_output.Split (newlines, StringSplitOptions.RemoveEmptyEntries);
