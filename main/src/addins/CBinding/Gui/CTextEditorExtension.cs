@@ -215,6 +215,7 @@ namespace CBinding
 				
 			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
 			CompletionDataList list = new CompletionDataList ();
+			list.AutoSelect = false;
 			
 			LanguageItem container = null;
 			
@@ -297,6 +298,7 @@ namespace CBinding
 				
 			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
 			CompletionDataList list = new CompletionDataList ();
+			list.AutoSelect = false;
 			
 			string container = null;
 			
@@ -384,6 +386,7 @@ namespace CBinding
 			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
 			
 			CompletionDataList list = new CompletionDataList ();
+			list.AutoSelect = false;
 			
 			foreach (LanguageItem li in info.Containers ())
 				if (li.Parent == null)
