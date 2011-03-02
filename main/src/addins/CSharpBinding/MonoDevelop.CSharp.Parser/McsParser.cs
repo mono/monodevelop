@@ -1069,12 +1069,6 @@ namespace MonoDevelop.CSharp.Parser
 					AddTypeParameter (method, m.GenericMethod);
 				method.DeclaringType = typeStack.Peek ();
 				typeStack.Peek ().Add (method);
-
-				// Hack: Fixes Bug 650840 - Missing completion for locals
-				// Take out, when the parser has improved error recovery for this case.
-				if (m.Block == null && !method.IsAbstract && !method.IsExtern && typeStack.Peek ().ClassType != ClassType.Interface) {
-					method.BodyRegion = new DomRegion (new DomLocation (m.Location.Row, m.Location.Column), typeStack.Peek ().BodyRegion.End);
-				}
 			}
 
 			public override void Visit (Operator o)
