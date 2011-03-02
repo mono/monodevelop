@@ -619,6 +619,20 @@ namespace MonoDevelop.Projects.Gui
 			Assert.AreEqual ("CustomCommandCollection", output);
 		}
 		
+		[Test]
+		public void TestUpperCase1 ()
+		{
+			string output = RunSimulation ("", "WR\t", true, true, false, "WriteLine");
+			Assert.AreEqual ("WriteLine", output);
+		}
+		
+		[Test]
+		public void TestUpperCase2 ()
+		{
+			string output = RunSimulation ("", "WR\t", true, true, false, "WriteLine", "WriteRaw");
+			Assert.AreEqual ("WriteRaw", output);
+		}
+		
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{

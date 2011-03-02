@@ -461,6 +461,7 @@ namespace Mono.TextEditor
 		{
 			try {
 				if (IsRealized && IsFocus) {
+					var lastChar = Keyval.ToUnicode ((uint)lastIMEventMappedKey);
 					//this, if anywhere, is where we should handle UCS4 conversions
 					for (int i = 0; i < ca.Str.Length; i++) {
 						int utf32Char;
@@ -470,10 +471,9 @@ namespace Mono.TextEditor
 						} else {
 							utf32Char = (int) ca.Str[i];
 						}
-						
 						//include the other pre-IM state *if* the post-IM char matches the pre-IM (key-mapped) one
-						if (lastIMEventMappedChar == utf32Char)
-							OnIMProcessedKeyPressEvent (lastIMEventMappedKey, lastIMEventMappedChar, lastIMEventMappedModifier);
+						if (lastChar == utf32Char)
+							OnIMProcessedKeyPressEvent (lastIMEventMappedKey, lastChar, lastIMEventMappedModifier);
 						else
 							OnIMProcessedKeyPressEvent ((Gdk.Key)0, (uint)utf32Char, Gdk.ModifierType.None);
 					}
