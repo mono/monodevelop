@@ -188,6 +188,7 @@
 			<Command id = "CBinding.CProjectCommands.AddPackage" _label = "Edit Packages..." />
 			<Command id = "CBinding.CProjectCommands.UpdateClassPad" _label = "Update class pad" icon = "res:update" />
 			<Command id = "CBinding.CProjectCommands.ShowPackageDetails" _label = "Details..." />
+			<Command id = "CBinding.CProjectCommands.GotoDeclaration" _label = "Go to Declaration" />
 		</Category>
 	</Extension>
 	
@@ -265,5 +266,9 @@
 	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
 		<Parser class = "CBinding.Parser.CDocumentParser" id = "CDocumentParser"
 			fileExtensions=".c,.cpp,.cxx,.cc,.h,.hpp,.hh,.hxx" />
+	</Extension>
+	
+	<Extension path="/MonoDevelop/SourceEditor2/ContextMenu/Editor">
+		<CommandItem id = "CBinding.CProjectCommands.GotoDeclaration"/>
 	</Extension>
 </Addin>
