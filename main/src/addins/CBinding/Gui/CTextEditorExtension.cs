@@ -598,5 +598,47 @@ namespace CBinding
 			completionContext.TriggerOffset = i-1;
 			return accumulator+1;
 		}// ResetTriggerOffset
+		
+		[CommandHandler (CBinding.CProjectCommands.GotoDeclaration)]
+		public void GotoDeclaration ()
+		{
+			LanguageItem item = GetLanguageItemAt (Editor.Caret.Location);
+			if (item != null)
+				IdeApp.Workbench.OpenDocument ((FilePath)item.File, (int)item.Line, 1, true);
+		}
+		
+		[CommandUpdateHandler (CBinding.CProjectCommands.GotoDeclaration)]
+		public void CanGotoDeclaration (CommandInfo item)
+		{
+			item.Visible = (GetLanguageItemAt (Editor.Caret.Location) != null);
+		}
+		
+		private LanguageItem GetLanguageItemAt (DocumentLocation location)
+		{
+			CProject project = Document.Project as CProject;
+			string token = GetTokenAt (location);
+			if (project != null && !string.IsNullOrEmpty (token)) {
+				ProjectInformation info = ProjectInformationManager.Instance.Get (project);
+				return info.AllItems ().FirstOrDefault (i => i.Name.Equals (token, StringComparison.Ordinal));
+			}
+			
+			return null;
+		}
+		
+		private string GetTokenAt (DocumentLocation location)
+		{
+			int lineOffset = location.Column-1;
+			string line = Editor.GetLineText (location.Line);
+			int first = line.LastIndexOfAny (allowedChars, lineOffset)+1,
+			    last = line.IndexOfAny (allowedChars, lineOffset);
+			if (last < 0) last = line.Length - 1;
+			string token = string.Empty;
+			    
+			if (first >= 0 && first < last && last < line.Length) {
+				token = line.Substring (first, last-first);
+			}
+			
+			return token.Trim ();
+		}
 	}
 }

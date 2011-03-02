@@ -59,7 +59,8 @@ namespace CBinding
 	public enum CProjectCommands {
 		AddPackage,
 		UpdateClassPad,
-		ShowPackageDetails
+		ShowPackageDetails,
+		GotoDeclaration,
 	}
 	
 	[DataInclude(typeof(CProjectConfiguration))]
