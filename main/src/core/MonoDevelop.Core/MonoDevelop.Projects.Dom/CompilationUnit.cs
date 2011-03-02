@@ -71,12 +71,6 @@ namespace MonoDevelop.Projects.Dom
 			}
 		}
 		
-		
-		public object Tag {
-			get;
-			set;
-		}
-		
 		S INode.AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.Visit (this, data);

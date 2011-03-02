@@ -51,11 +51,6 @@ namespace MonoDevelop.Projects.Dom
 			get;
 		}
 		
-		object Tag {
-			get;
-			set;
-		}
-		
 		IType GetType (string fullName, int genericParameterCount);
 		IType GetTypeAt (int line, int column);
 		IType GetTypeAt (DomLocation location);
