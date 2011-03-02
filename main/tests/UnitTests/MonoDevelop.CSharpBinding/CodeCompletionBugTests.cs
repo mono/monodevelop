@@ -3046,5 +3046,23 @@ class Foo
 ");
 			Assert.IsNull (provider.Find ("test"), "name 'test' found.");
 		}
+		
+		/// <summary>
+		/// Bug 675956 - Completion in for loops is broken
+		/// </summary>
+		[Test()]
+		public void TestBug675956 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"class Test
+{
+    public static void Main (string[] args)
+    {
+        $for (int i = 0; $
+    }
+}
+");
+			Assert.IsNotNull (provider.Find ("i"), "variable 'i' not found.");
+		}
 	}
 }

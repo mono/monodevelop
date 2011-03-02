@@ -4017,7 +4017,7 @@ IsLocalVarDecl()) {
 out stmt);
 
 #line  1674 "Frames/cs.ATG" 
-			initializer.Add(stmt);
+			((LocalVariableDeclaration)stmt).SemicolonPosition = t.EndLocation; initializer.Add(stmt); 
 		} else if (StartOf(6)) {
 			StatementExpr(
 #line  1675 "Frames/cs.ATG" 
