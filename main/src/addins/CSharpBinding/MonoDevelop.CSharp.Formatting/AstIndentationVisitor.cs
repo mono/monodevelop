@@ -160,7 +160,7 @@ namespace MonoDevelop.CSharp.Formatting
 			object result = base.VisitNamespaceDeclaration (namespaceDeclaration, data);
 			if (policy.IndentNamespaceBody)
 				IndentLevel--;
-			FixIndentation (namespaceDeclaration.EndLocation);
+			FixIndentation (namespaceDeclaration.RBraceToken.StartLocation);
 			return result;
 		}
 		
@@ -1117,6 +1117,12 @@ namespace MonoDevelop.CSharp.Formatting
 		void FixIndentation (MonoDevelop.Projects.Dom.DomLocation location, int relOffset)
 		{
 			LineSegment lineSegment = data.Document.GetLine (location.Line);
+			if (lineSegment == null)  {
+				Console.WriteLine ("Invalid location " + location);
+				Console.WriteLine (Environment.StackTrace);
+				return;
+			}
+		
 			string lineIndent = lineSegment.GetIndentation (data.Document);
 			string indentString = this.curIndent.IndentString;
 			if (indentString != lineIndent && location.Column - 1 + relOffset == lineIndent.Length) {
