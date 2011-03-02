@@ -337,8 +337,12 @@ namespace MonoDevelop.SourceEditor
 			foreach (ErrorText errorText in errors) {
 				Pango.Layout layout = new Pango.Layout (editor.PangoContext);
 				layout.FontDescription = fontDescription;
-				layout.SetText (errorText.ErrorMessage);
 				
+				string firstLine = errorText.ErrorMessage ?? "";
+				int idx = firstLine.IndexOfAny (new [] {'\n', '\r'});
+				if (idx > 0)
+					firstLine = firstLine.Substring (0, idx);
+				layout.SetText (firstLine);
 				KeyValuePair<int, int> textSize;
 				if (!textWidthDictionary.TryGetValue (errorText.ErrorMessage, out textSize)) {
 					int w, h;
