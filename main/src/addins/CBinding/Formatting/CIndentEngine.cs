@@ -50,7 +50,6 @@ namespace CBinding.Formatting
 		Inside beganInside;
 		
 		bool needsReindent;
-		bool popVerbatim;
 		bool canBeLabel;
 		bool isEscaped;
 		
@@ -106,20 +105,12 @@ namespace CBinding.Formatting
 			get { return stack.Count; }
 		}
 		
-		public bool IsInsideVerbatimString {
-			get { return stack.PeekInside (0) == Inside.VerbatimString; }
-		}
-		
 		public bool IsInsideMultiLineComment {
 			get { return stack.PeekInside (0) == Inside.MultiLineComment; }
 		}
 		
 		public bool IsInsideDocLineComment {
 			get { return stack.PeekInside (0) == Inside.DocComment; }
-		}
-		
-		public bool LineBeganInsideVerbatimString {
-			get { return beganInside == Inside.VerbatimString; }
 		}
 		
 		public bool LineBeganInsideMultiLineComment {
@@ -194,7 +185,6 @@ namespace CBinding.Formatting
 			curIndent = String.Empty;
 
 			needsReindent = false;
-			popVerbatim = false;
 			canBeLabel = true;
 			isEscaped = false;
 
@@ -223,7 +213,6 @@ namespace CBinding.Formatting
 			engine.curIndent = curIndent;
 			
 			engine.needsReindent = needsReindent;
-			engine.popVerbatim = popVerbatim;
 			engine.canBeLabel = canBeLabel;
 			engine.isEscaped = isEscaped;
 			
@@ -264,7 +253,6 @@ namespace CBinding.Formatting
 		static bool KeywordIsSpecial (string keyword)
 		{
 			string[] specials = new string [] {
-				"foreach",
 				"while",
 				"for",
 				"else",
@@ -281,7 +269,6 @@ namespace CBinding.Formatting
 		
 		static readonly string[] keywords = new string [] {
 			"namespace",
-			"interface",
 			"struct",
 			"class",
 			"enum",
@@ -321,8 +308,8 @@ namespace CBinding.Formatting
 			return str == "default";
 		}
 		
-		//directive keywords that we care about
-		static string[] directiveKeywords = new string [] {"region", "endregion" };
+		// directive keywords that we care about
+		static string[] directiveKeywords = new string [] { "region", "endregion" };
 		
 		string GetDirectiveKeyword (char currentChar)
 		{
@@ -465,16 +452,7 @@ namespace CBinding.Formatting
 			if ((inside & (Inside.PreProcessor | Inside.Comment | Inside.CharLiteral)) != 0)
 				return;
 			
-			if (inside == Inside.VerbatimString) {
-				if (popVerbatim) {
-					// back in the verbatim-string-literal token
-					popVerbatim = false;
-				} else {
-					/* need to see the next char before we pop the
-					 * verbatim-string-literal */
-					popVerbatim = true;
-				}
-			} else if (inside == Inside.StringLiteral) {
+			if (inside == Inside.StringLiteral) {
 				// check that it isn't escaped
 				if (!isEscaped) {
 					keyword = stack.PeekKeyword (0);
@@ -482,10 +460,7 @@ namespace CBinding.Formatting
 				}
 			} else {
 				// FoldedStatement, Block, Attribute or ParenList
-				if (pc == '@')
-					type = Inside.VerbatimString;
-				else
-					type = Inside.StringLiteral;
+				type = Inside.StringLiteral;
 				
 				// push a new string onto the stack
 				stack.Push (type, keyword, curLineNr, 0);
@@ -766,9 +741,6 @@ namespace CBinding.Formatting
 
 				inside = stack.PeekInside (0);
 				goto top;
-			case Inside.VerbatimString:
-				// nothing to do
-				break;
 			case Inside.StringLiteral:
 				if (isEscaped) {
 					/* I don't think c# allows breaking a
@@ -888,16 +860,6 @@ namespace CBinding.Formatting
 			Inside inside, after;
 			
 			inside = stack.PeekInside (0);
-			
-			// pop the verbatim-string-literal
-			if (inside == Inside.VerbatimString && popVerbatim && c != '"') {
-				keyword = stack.PeekKeyword (0);
-				popVerbatim = false;
-				stack.Pop ();
-				
-				inside = stack.PeekInside (0);
-			}
-			
 			needsReindent = false;
 			
 			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) == 0 && wordStart != -1) {
@@ -907,15 +869,14 @@ namespace CBinding.Formatting
 						keyword = tmp;
 				} else if (c == ':' && WordIsDefault ()) {
 					keyword = "default";
-				}	
-			//get the keyword for preprocessor directives
+				}
 			} else if ((inside & (Inside.PreProcessor)) != 0 && stack.PeekKeyword (0) == null) {
-				//replace the stack item with a keyworded one
+				// replace the stack item with a keyworded one
 				string preProcessorKeyword = GetDirectiveKeyword (c);
 				int peekLine = stack.PeekLineNr (0);
 				stack.Pop ();
 				stack.Push (Inside.PreProcessor, preProcessorKeyword, peekLine, 0);
-				//regions need to pop back out
+				// regions need to pop back out
 				if (preProcessorKeyword == "region" || preProcessorKeyword == "endregion") {
 					curIndent = stack.PeekIndent (0);
 					needsReindent = true;
@@ -1058,9 +1019,6 @@ namespace CBinding.Formatting
 					break;
 				case Inside.LineComment:
 					Console.WriteLine ("\t// comment");
-					break;
-				case Inside.VerbatimString:
-					Console.WriteLine ("\tverbatim string");
 					break;
 				case Inside.StringLiteral:
 					Console.WriteLine ("\tstring literal");

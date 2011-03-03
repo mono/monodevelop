@@ -206,17 +206,8 @@ namespace CBinding.Formatting
 
 			if (key == Gdk.Key.Tab && TextEditorProperties.TabIsReindent && !(textEditorData.CurrentMode is TextLinkEditMode) && !DoInsertTemplate () && !isSomethingSelected) {
 				int cursor = textEditorData.Caret.Offset;
-
-				if (TextEditorProperties.TabIsReindent && stateTracker.Engine.IsInsideVerbatimString) {
-					// insert normal tab inside @" ... "
-					if (textEditorData.IsSomethingSelected) {
-						textEditorData.SelectedText = "\t";
-					} else {
-						textEditorData.Insert (cursor, "\t");
-						textEditorData.Caret.Offset++;
-					}
-					textEditorData.Document.CommitLineUpdate (textEditorData.Caret.Line);
-				} else if (TextEditorProperties.TabIsReindent && cursor >= 1) {
+				
+				if (TextEditorProperties.TabIsReindent && cursor >= 1) {
 					if (textEditorData.Caret.Column > 1) {
 						int delta = cursor - this.cursorPositionBeforeKeyPress;
 						if (delta < 2 && delta > 0) {
@@ -299,9 +290,10 @@ namespace CBinding.Formatting
 			// if the line ends with ';' the line end is not the correct place for a new semicolon.
 			if (curLine.EditableLength > 0 && data.Document.GetCharAt (max - 1) == ';')
 				return offset;
-
-			bool isInString = false , isInChar= false , isVerbatimString= false;
-			bool isInLineComment = false , isInBlockComment= false;
+			
+			bool isInLineComment = false, isInBlockComment = false;
+			bool isInString = false, isInChar = false;
+			
 			for (int pos = offset; pos < max; pos++) {
 				char ch = data.Document.GetCharAt (pos);
 				switch (ch) {
@@ -322,25 +314,12 @@ namespace CBinding.Formatting
 					}
 					break;
 				case '\\':
-					if (isInChar || (isInString && !isVerbatimString))
+					if (isInChar || isInString)
 						pos++;
-					break;
-				case '@':
-					if (!(isInString || isInChar || isInLineComment || isInBlockComment) && pos + 1 < max && data.Document.GetCharAt (pos + 1) == '"') {
-						isInString = true;
-						isVerbatimString = true;
-						pos++;
-					}
 					break;
 				case '"':
-					if (!(isInChar || isInLineComment || isInBlockComment)) {
-						if (isInString && isVerbatimString && pos + 1 < max && data.Document.GetCharAt (pos + 1) == '"') {
-							pos++;
-						} else {
-							isInString = !isInString;
-							isVerbatimString = false;
-						}
-					}
+					if (!(isInChar || isInLineComment || isInBlockComment))
+						isInString = !isInString;
 					break;
 				case '\'':
 					if (!(isInString || isInLineComment || isInBlockComment)) 

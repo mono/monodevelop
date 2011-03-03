@@ -41,13 +41,12 @@ namespace CBinding.Formatting
 			
 			MultiLineComment   = (1 << 1),
 			LineComment        = (1 << 2),
-			DocComment         = (1 << 11),
-			Comment            = (MultiLineComment | LineComment | DocComment),
+			DocComment         = (1 << 3),
+			Comment            = (MultiLineComment | LineComment | DocComment),
 			
-			VerbatimString     = (1 << 3),
 			StringLiteral      = (1 << 4),
 			CharLiteral        = (1 << 5),
-			String             = (VerbatimString | StringLiteral),
+			String             = StringLiteral,
 			StringOrChar       = (String | CharLiteral),
 			
 			Attribute          = (1 << 6),
