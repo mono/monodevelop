@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?define ProductShortName = "MonoDevelop" ?>
-<?define ProductVersion = "2.5.9" ?>
-<?define ProductVersionText = "2.5.9" ?>
-<?define HKCRNAME = "MonoDevelop2.5.9.0" ?>
+<?define ProductVersion = "2.5.90" ?>
+<?define ProductVersionText = "2.6 Beta 1" ?>
+<?define HKCRNAME = "MonoDevelop2.5.90.0" ?>
 <?define Manufacturer = "Novell" ?>
 <?define UpgradeCode = "9134F74C-E7E3-471A-9833-C86FB45CD38E" ?>
 

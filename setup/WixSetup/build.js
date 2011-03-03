@@ -2,6 +2,7 @@ var MAJOR_VERSION = 2;
 var MINOR_VERSION = 5;
 var POINT_VERSION = 90;
 var BUILD_VERSION = 0;
+var PRODUCT_VERSION_TEXT = "2.6 Beta 1";
 
 var sh = new ActiveXObject("WScript.Shell");
 var fs = new ActiveXObject("Scripting.FileSystemObject");
@@ -9,7 +10,6 @@ var MONO_LIBS = "C:\\Program Files\\MonoLibraries\\2.6";
 var MD_DIR = "..\\..";
 var MD_EXTRAS_DIR = "..\\..\\extras";
 var PRODUCT_VERSION = "" + MAJOR_VERSION + "." + MINOR_VERSION + "." + POINT_VERSION + (BUILD_VERSION != 0 ? "." + BUILD_VERSION : "");
-var PRODUCT_VERSION_TEXT = "" + MAJOR_VERSION + "." + MINOR_VERSION + (POINT_VERSION != 0 || BUILD_VERSION != 0 ? "." + POINT_VERSION : "") + (BUILD_VERSION != 0 ? "." + BUILD_VERSION : "");
 var HKCRNAME = "MonoDevelop" + MAJOR_VERSION + "." + MINOR_VERSION + "." + POINT_VERSION + "." + BUILD_VERSION;
 var MONO_PRODUCT_VERSION = "" + MAJOR_VERSION + format (MINOR_VERSION, 2) + format (POINT_VERSION, 2) + format (BUILD_VERSION, 3);
 
