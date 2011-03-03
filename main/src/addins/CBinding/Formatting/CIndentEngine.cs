@@ -308,30 +308,6 @@ namespace CBinding.Formatting
 			return str == "default";
 		}
 		
-		// directive keywords that we care about
-		static string[] directiveKeywords = new string [] { "region", "endregion" };
-		
-		string GetDirectiveKeyword (char currentChar)
-		{
-			if (currentChar != ' ' && currentChar != '\t' && currentChar != '\n')
-				return null;
-			string str = linebuf.ToString ().TrimStart ().Substring (1);
-			
-			if (str.Length == 0)
-				return null;
-			
-			for (int i = 0; i < directiveKeywords.Length; i++) {
-				if (directiveKeywords[i].StartsWith (str)) {
-					if (str == directiveKeywords[i])
-						return directiveKeywords[i];
-					else
-						return null;
-				}
-			}
-			
-			return string.Empty;
-		}
-		
 		bool Folded2LevelsNonSpecial ()
 		{
 			return stack.PeekInside (0) == Inside.FoldedStatement &&
@@ -343,7 +319,7 @@ namespace CBinding.Formatting
 		bool FoldedClassDeclaration ()
 		{
 			return stack.PeekInside (0) == Inside.FoldedStatement &&
-				(keyword == "base" || keyword == "class" || keyword == "interface");
+				(keyword == "base" || keyword == "class");
 		}
 		
 		void PushFoldedStatement ()
@@ -869,18 +845,6 @@ namespace CBinding.Formatting
 						keyword = tmp;
 				} else if (c == ':' && WordIsDefault ()) {
 					keyword = "default";
-				}
-			} else if ((inside & (Inside.PreProcessor)) != 0 && stack.PeekKeyword (0) == null) {
-				// replace the stack item with a keyworded one
-				string preProcessorKeyword = GetDirectiveKeyword (c);
-				int peekLine = stack.PeekLineNr (0);
-				stack.Pop ();
-				stack.Push (Inside.PreProcessor, preProcessorKeyword, peekLine, 0);
-				// regions need to pop back out
-				if (preProcessorKeyword == "region" || preProcessorKeyword == "endregion") {
-					curIndent = stack.PeekIndent (0);
-					needsReindent = true;
-					
 				}
 			}
 			
