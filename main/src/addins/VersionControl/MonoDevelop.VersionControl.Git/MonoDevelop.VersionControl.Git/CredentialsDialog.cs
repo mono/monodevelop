@@ -35,6 +35,7 @@ namespace MonoDevelop.VersionControl.Git
 	public partial class CredentialsDialog : Gtk.Dialog
 	{
 		IEnumerable<CredentialItem> credentials;
+		CredentialItem.YesNoType singleYesNoCred;
 		
 		public CredentialsDialog (URIish uri, IEnumerable<CredentialItem> credentials)
 		{
@@ -60,11 +61,21 @@ namespace MonoDevelop.VersionControl.Git
 				
 				if (c is CredentialItem.YesNoType) {
 					CredentialItem.YesNoType cred = (CredentialItem.YesNoType) c;
-					CheckButton btn = new CheckButton ();
-					editor = btn;
-					btn.Toggled += delegate {
-						cred.SetValue (btn.Active);
-					};
+					if (credentials.Count (i => i is CredentialItem.YesNoType) == 1) {
+						singleYesNoCred = cred;
+						buttonOk.Hide ();
+						buttonYes.Show ();
+						buttonNo.Show ();
+						// Remove the last colon
+						lab.Text = lab.Text.Substring (0, lab.Text.Length - 1);
+					}
+					else {
+						CheckButton btn = new CheckButton ();
+						editor = btn;
+						btn.Toggled += delegate {
+							cred.SetValue (btn.Active);
+						};
+					}
 				}
 				else if (c is CredentialItem.StringType || c is CredentialItem.CharArrayType) {
 					CredentialItem cred = c;
@@ -93,6 +104,18 @@ namespace MonoDevelop.VersionControl.Git
 			table.ShowAll ();
 			Focus = firstEditor;
 			Default = buttonOk;
+		}
+		
+		protected virtual void OnButtonYesClicked (object sender, System.EventArgs e)
+		{
+			singleYesNoCred.SetValue (true);
+			Respond (ResponseType.Ok);
+		}
+		
+		protected virtual void OnButtonNoClicked (object sender, System.EventArgs e)
+		{
+			singleYesNoCred.SetValue (false);
+			Respond (ResponseType.Ok);
 		}
 	}
 }

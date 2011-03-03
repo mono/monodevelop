@@ -49,6 +49,7 @@ namespace MonoDevelop.VersionControl.Git
 			this.radioMD = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Use the MonoDevelop configuration:"));
 			this.radioMD.CanFocus = true;
 			this.radioMD.Name = "radioMD";
+			this.radioMD.Active = true;
 			this.radioMD.DrawIndicator = true;
 			this.radioMD.UseUnderline = true;
 			this.radioMD.Group = new global::GLib.SList (global::System.IntPtr.Zero);
