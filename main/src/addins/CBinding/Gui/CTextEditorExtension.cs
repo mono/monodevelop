@@ -599,7 +599,7 @@ namespace CBinding
 			return accumulator+1;
 		}// ResetTriggerOffset
 		
-		[CommandHandler (CBinding.CProjectCommands.GotoDeclaration)]
+		[CommandHandler (MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration)]
 		public void GotoDeclaration ()
 		{
 			LanguageItem item = GetLanguageItemAt (Editor.Caret.Location);
@@ -607,10 +607,11 @@ namespace CBinding
 				IdeApp.Workbench.OpenDocument ((FilePath)item.File, (int)item.Line, 1, true);
 		}
 		
-		[CommandUpdateHandler (CBinding.CProjectCommands.GotoDeclaration)]
+		[CommandUpdateHandler (MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration)]
 		public void CanGotoDeclaration (CommandInfo item)
 		{
 			item.Visible = (GetLanguageItemAt (Editor.Caret.Location) != null);
+			item.Bypass = !item.Visible;
 		}
 		
 		private LanguageItem GetLanguageItemAt (DocumentLocation location)
