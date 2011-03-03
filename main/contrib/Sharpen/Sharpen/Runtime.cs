@@ -35,21 +35,25 @@ namespace Sharpen
 
 		public Process Exec (string[] cmd, string[] envp, FilePath dir)
 		{
-			Process process = new Process ();
-			process.StartInfo.FileName = cmd[0];
-			process.StartInfo.Arguments = string.Join (" ", cmd, 1, cmd.Length - 1);
-			if (dir != null) {
-				process.StartInfo.WorkingDirectory = dir.GetPath ();
-			}
-			process.StartInfo.UseShellExecute = false;
-			if (envp != null) {
-				foreach (string str in envp) {
-					int index = str.IndexOf ('=');
-					process.StartInfo.EnvironmentVariables[str.Substring (0, index)] = str.Substring (index + 1);
+			try {
+				Process process = new Process ();
+				process.StartInfo.FileName = cmd[0];
+				process.StartInfo.Arguments = string.Join (" ", cmd, 1, cmd.Length - 1);
+				if (dir != null) {
+					process.StartInfo.WorkingDirectory = dir.GetPath ();
 				}
+				process.StartInfo.UseShellExecute = false;
+				if (envp != null) {
+					foreach (string str in envp) {
+						int index = str.IndexOf ('=');
+						process.StartInfo.EnvironmentVariables[str.Substring (0, index)] = str.Substring (index + 1);
+					}
+				}
+				process.Start ();
+				return process;
+			} catch (System.ComponentModel.Win32Exception ex) {
+				throw new IOException (ex.Message);
 			}
-			process.Start ();
-			return process;
 		}
 
 		public static string Getenv (string var)
