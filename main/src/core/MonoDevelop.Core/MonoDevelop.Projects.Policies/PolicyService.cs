@@ -52,6 +52,7 @@ namespace MonoDevelop.Projects.Policies
 		static DataSerializer serializer;
 		static Dictionary<string, Type> policyNames = new Dictionary<string, Type> ();
 		static Dictionary<Type, string> policyTypes = new Dictionary<Type, string> ();
+		static List<string> deletedUserSets = new List<string> ();
 		
 		static PolicySet defaultPolicies;
 		static PolicyBag defaultPolicyBag = new PolicyBag ();
@@ -1126,8 +1127,10 @@ namespace MonoDevelop.Projects.Policies
 		/// </param>
 		public static void RemoveUserPolicySet (PolicySet pset)
 		{
-			if (userSets.Remove (pset))
+			if (userSets.Remove (pset)) {
+				deletedUserSets.Add (GetPolicyFile (pset));
 				sets.Remove (pset);
+			}
 			else
 				throw new InvalidOperationException ("The provided property set is not a user defined property set");
 		}
@@ -1149,6 +1152,11 @@ namespace MonoDevelop.Projects.Policies
 		/// </summary>
 		public static void SavePolicies ()
 		{
+			foreach (var file in deletedUserSets) {
+				if (File.Exists (file))
+					File.Delete (file);
+			}
+			deletedUserSets.Clear ();
 			SavePolicy (defaultPolicies);
 			foreach (PolicySet ps in userSets)
 				SavePolicy (ps);
@@ -1156,7 +1164,7 @@ namespace MonoDevelop.Projects.Policies
 		
 		static void SavePolicy (PolicySet set)
 		{
-			string file = PoliciesFolder.Combine (set.Name ?? set.Id + ".mdpolicy.xml");
+			string file = GetPolicyFile (set);
 			string friendlyName = string.Format ("policy '{0}'", set.Name);
 			ParanoidSave (file, friendlyName, delegate (StreamWriter writer) {
 				var xws = new XmlWriterSettings () {
@@ -1167,6 +1175,11 @@ namespace MonoDevelop.Projects.Policies
 				set.SaveToXml (xw);
 				xw.WriteEndElement ();
 			});
+		}
+		
+		static string GetPolicyFile (PolicySet set)
+		{
+			return PoliciesFolder.Combine ((set.Name ?? set.Id) + ".mdpolicy.xml");
 		}
 		
 		static void LoadPolicies ()
