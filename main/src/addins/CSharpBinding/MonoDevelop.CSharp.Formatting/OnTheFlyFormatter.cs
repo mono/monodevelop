@@ -63,7 +63,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (data.ParsedDocument == null || data.ParsedDocument.CompilationUnit == null)
 				return;
 			var member = data.ParsedDocument.CompilationUnit.GetMemberAt (location.Line + (runAferCR ? -1 : 0), location.Column);
-			if (member == null)
+			if (member == null || member.Location.IsEmpty || member.BodyRegion.End.IsEmpty)
 				return;
 			
 			StringBuilder sb = new StringBuilder ();
@@ -85,8 +85,6 @@ namespace MonoDevelop.CSharp.Formatting
 				parent = parent.DeclaringType;
 			}
 			sb.AppendLine ();
-			System.Console.WriteLine ("caret offset:" + data.Editor.Caret.Offset);
-			System.Console.WriteLine (data.Editor.Length);
 			int startOffset = sb.Length;
 			sb.Append (data.Editor.GetTextBetween (member.Location.Line, 1, member.BodyRegion.End.Line + (runAferCR ? 1 : 0), member.BodyRegion.End.Column));
 			int endOffset = sb.Length;
