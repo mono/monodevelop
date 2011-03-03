@@ -19,9 +19,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		CellRendererToggle togRender;
 		CellRendererText textRender;
 		
-		public DirtyFilesDialog() : base (GettextCatalog.GetString ("Save Files"), IdeApp.Workbench.RootWindow, DialogFlags.Modal)
+		public DirtyFilesDialog () : base (GettextCatalog.GetString ("Save Files"), IdeApp.Workbench.RootWindow, DialogFlags.Modal)
 		{
-			tsFiles = new TreeStore (typeof (string), typeof (bool), typeof (SdiWorkspaceWindow), typeof (bool));
+			tsFiles = new TreeStore (typeof(string), typeof(bool), typeof(SdiWorkspaceWindow), typeof(bool));
 			tvFiles = new TreeView (tsFiles);
 			TreeIter topCombineIter = TreeIter.Zero;
 			Hashtable projectIters = new Hashtable ();
@@ -35,13 +35,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				if (viewcontent.Project != null) {
 					TreeIter projIter = TreeIter.Zero;
 					if (projectIters.ContainsKey (viewcontent.Project))
-						projIter = (TreeIter) projectIters[viewcontent.Project];
+						projIter = (TreeIter)projectIters [viewcontent.Project];
 					else {
 						if (topCombineIter.Equals (TreeIter.Zero))
 							projIter = tsFiles.AppendValues (GettextCatalog.GetString ("Project: {0}", viewcontent.Project.Name), true, null, false);
 						else
 							projIter = tsFiles.AppendValues (topCombineIter, GettextCatalog.GetString ("Project: {0}", viewcontent.Project.Name), true, null, false);
-						projectIters[viewcontent.Project] = projIter;
+						projectIters [viewcontent.Project] = projIter;
 					}
 					tsFiles.AppendValues (projIter, viewcontent.PathRelativeToProject, true, viewcontent.WorkbenchWindow);
 				} else {
@@ -116,30 +116,34 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			base.OnDestroyed ();
 		}
 		
-		ArrayList arrSaveWorkbenches = new ArrayList ();
 		void SaveAndQuit (object o, EventArgs e)
 		{
-			tsFiles.Foreach (new TreeModelForeachFunc (CollectWorkbenches));
-			foreach (SdiWorkspaceWindow window in arrSaveWorkbenches) {
-				window.ViewContent.Save (window.ViewContent.ContentName);
-			}
-
+			tsFiles.Foreach (delegate (TreeModel model, TreePath path, TreeIter iter) {
+				var window = tsFiles.GetValue (iter, 2) as SdiWorkspaceWindow;
+				if (window == null)
+					return false;
+				if ((bool)tsFiles.GetValue (iter, 1)) {
+					window.ViewContent.Save (window.ViewContent.ContentName);
+				} else {
+					window.ViewContent.DiscardChanges ();
+				}
+				return false;
+			});
+	
 			Respond (Gtk.ResponseType.Ok);
 			Hide ();
 		}
 
-		bool CollectWorkbenches (TreeModel model, TreePath path, TreeIter iter)
-		{
-			if ((bool)tsFiles.GetValue (iter, 1)) {
-				if (tsFiles.GetValue (iter, 2) != null)
-					arrSaveWorkbenches.Add (tsFiles.GetValue (iter, 2));
-			}
-			
-			return false;
-		}
-
 		void Quit (object o, EventArgs e)
 		{
+			tsFiles.Foreach (delegate (TreeModel model, TreePath path, TreeIter iter) {
+				var window = tsFiles.GetValue (iter, 2) as SdiWorkspaceWindow;
+				if (window == null)
+					return false;
+				window.ViewContent.DiscardChanges ();
+				return false;
+			});
+			
 			Respond (Gtk.ResponseType.Ok);
 			Hide ();
 		}
