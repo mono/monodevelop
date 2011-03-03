@@ -178,6 +178,8 @@ namespace MonoDevelop.Core.Assemblies
 		
 		protected override void OnInitialize ()
 		{
+			if (!monoRuntimeInfo.IsValidRuntime)
+				return;
 			foreach (string pcfile in GetAllPkgConfigFiles ()) {
 				try {
 					ParsePCFile (pcfile);

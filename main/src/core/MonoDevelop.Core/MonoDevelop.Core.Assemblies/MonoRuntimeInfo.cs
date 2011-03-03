@@ -184,6 +184,7 @@ namespace MonoDevelop.Core.Assemblies
 			
 			rt.IsRunning = true;
 			rt.initialized = true;
+			rt.isValidRuntime = true;
 			
 			return rt;
 		}
