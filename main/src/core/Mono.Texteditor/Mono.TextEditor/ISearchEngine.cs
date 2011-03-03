@@ -158,20 +158,24 @@ namespace Mono.TextEditor
 		
 		public override SearchResult GetMatchAt (int offset)
 		{
-			if ((!string.IsNullOrEmpty (SearchRequest.SearchPattern)) && offset + searchRequest.SearchPattern.Length <= this.textEditorData.Document.Length && compiledPattern.Length > 0) {
+			if (offset < 0)
+				return null;
+			Document doc = this.textEditorData.Document;
+			
+			if ((!string.IsNullOrEmpty (SearchRequest.SearchPattern)) && offset + searchRequest.SearchPattern.Length <= doc.Length && compiledPattern.Length > 0) {
 				if (searchRequest.CaseSensitive) {
-					for (int i = 0; i < compiledPattern.Length && offset + i < textEditorData.Length; i++) {
-						if (this.textEditorData.Document.GetCharAt (offset + i) != compiledPattern[i]) 
+					for (int i = 0; i < compiledPattern.Length && offset + i < doc.Length; i++) {
+						if (doc.GetCharAt (offset + i) != compiledPattern[i]) 
 							return null;
 					}
 				} else {
-					for (int i = 0; i < compiledPattern.Length && offset + i < textEditorData.Length; i++) {
-						if (System.Char.ToUpper (this.textEditorData.Document.GetCharAt (offset + i)) != compiledPattern[i]) 
+					for (int i = 0; i < compiledPattern.Length && offset + i < doc.Length; i++) {
+						if (System.Char.ToUpper (doc.GetCharAt (offset + i)) != compiledPattern[i]) 
 							return null;
 					}
 				}
 				if (searchRequest.WholeWordOnly) {
-					if (!this.textEditorData.Document.IsWholeWordAt (offset, compiledPattern.Length))
+					if (!doc.IsWholeWordAt (offset, compiledPattern.Length))
 						return null;
 				}
 				return new SearchResult (offset, compiledPattern.Length, false);
