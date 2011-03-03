@@ -79,6 +79,7 @@ namespace MonoDevelop.Components.Docking
 			title.Xalign = 0;
 			title.Xpad = 3;
 			title.UseMarkup = true;
+			title.Ellipsize = Pango.EllipsizeMode.End;
 			
 			btnDock = new Button (new Gtk.Image (pixAutoHide));
 			btnDock.Relief = ReliefStyle.None;
