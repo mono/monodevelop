@@ -1,0 +1,392 @@
+<CodeStyle version="1.0" mimeType="text/x-csrc">
+
+	<Type name = "BraceStyle">
+<!--		<Value _displayName="Do not change">DoNotChange</Value> -->
+		<Value _displayName="End of line">EndOfLine</Value>
+		<Value _displayName="End of line without space">EndOfLineWithoutSpace</Value>
+		<Value _displayName="Next line">NextLine</Value>
+		<Value _displayName="Next line shifted">NextLineShifted</Value>
+		<Value _displayName="Next line shifted2">NextLineShifted2</Value>
+	</Type>
+	
+	<Type name = "BraceForcement">
+		<Value _displayName="Do not change">DoNotChange</Value>
+		<Value _displayName="Remove braces">RemoveBraces</Value>
+		<Value _displayName="Add braces">AddBraces</Value>
+	</Type>
+	
+	<Type name = "ArrayInitializerPlacement">
+		<Value _displayName="Always break line">AlwaysNewLine</Value>
+		<Value _displayName="Never break line">AlwaysSameLine</Value>
+	</Type>
+	
+	<Example name = "methodSpaceExample"><![CDATA[
+class ClassDeclaration {
+	void Method ()
+	{
+		cout << "Hello World!" << endl;
+	}
+};
+]]></Example>
+	
+	<Example name = "constructorCallExample"><![CDATA[
+class ClassDeclaration {
+	ClassDeclaration () {}
+};
+]]></Example>
+
+	<Example name = "spaceExample"><![CDATA[
+class ClassDeclaration {
+	void TestMethod ()
+	{
+		try {
+			TestMethod ('A');
+		} catch (Exception e) {
+			// Do something
+		} finally {
+			// Do something
+		}
+	}
+
+	void TestMethod (char test)
+	{
+		switch (test) {
+			case 'A':
+				cout << "was A" << endl;
+				break;
+			case 'B':
+				cout << "was B" << endl;
+				break;
+		}
+	}
+
+	void Calculate (int a, int b)
+	{
+		if (a < b) {
+			for (int i = a; i < b; i++) {
+				cout << i << endl;
+			}
+		} else {
+			while (b < a) {
+				cout << b++ << endl;
+			}
+		}
+	}
+};
+]]></Example>
+
+	<Example name = "operatorExample"><![CDATA[
+class ClassDeclaration {
+	void TestMethod ()
+	{
+		int a = 5 << 5;
+		int b = (a + 5 - 3) * 6 / 2;
+		a += b;
+		a = a & ~255;
+		if (a == b || b < a >> 1) {
+			b -= a;
+		}
+	}
+};
+]]></Example>
+
+	<Example name = "condOpExample"><![CDATA[
+class ClassDeclaration {
+	char GetSign (int i)
+	{
+		return i < 0 ? '-' : '+';
+	}
+};
+]]></Example>
+
+	<Example name = "switchExample"><![CDATA[
+class ClassDeclaration {
+	void Test (int i)
+	{
+		switch (i) {
+			case 0:
+				cout << "was zero" << endl;
+				break;
+			case 1:
+				cout << "was one" << endl;
+				break;
+			default:
+				cout << "was " << i << endl;
+				break;
+		}
+	}
+};
+]]></Example>
+
+	<Example name="simpleIf"><![CDATA[
+class ClassDeclaration {
+	void Test (int i)
+	{
+		if (i == 5) {
+			cout << "== 5" << endl;
+		} else if (i > 0) {
+			cout << "> 0" << endl;
+		} else if (i < 0) {
+			cout << "< 0" << endl;
+		} else {
+			cout << "== 0" << endl;
+		}
+	}
+};
+]]></Example>
+
+	<Example name="simpleWhile"><![CDATA[
+class ClassDeclaration {
+	void Test ()
+	{
+		while (true) {
+			cout << "Hello World!" << endl;
+		}
+	}
+};
+]]></Example>
+
+	<Example name="simpleDoWhile"><![CDATA[
+class ClassDeclaration {
+	void Test ()
+	{
+		int i = 0;
+		do {
+			cout << "Hello World!" << endl;
+		} while (i++ < 10);
+	}
+};
+]]></Example>
+
+	<Example name="simpleFor"><![CDATA[
+class ClassDeclaration {
+	void Test ()
+	{
+		for (int i = 0; i < 10; i++) {
+			cout << "Hello World!" << endl;
+		}
+	}
+};
+]]></Example>
+
+	<Example name="simpleCatch"><![CDATA[
+class ClassDeclaration {
+	void Test ()
+	{
+		try {
+			cout << ""Hello World!"" << endl;
+		} catch (Exception) {
+			cout << ""Got exception!!"" << endl;
+		} finally {
+			cout << ""finally done."" << endl;
+		}
+	}
+};
+]]></Example>
+
+	<Example name="simpleSwitch"><![CDATA[
+class ClassDeclaration {
+	void Test (int i)
+	{
+		switch (i) {
+			case 0:
+				cout << "was zero" << endl;
+				break;
+			case 1:
+				cout << "was one" << endl;
+				break;
+			default:
+				cout << "was " << i << endl;
+				break;
+		}
+	}
+};
+]]></Example>
+
+	<Example name="simpleTypeCast"><![CDATA[
+class ClassDeclaration {
+	void Test (char c)
+	{
+		int i = (int)c;
+	}
+};
+]]></Example>
+
+	<Example name="simpleArrayInitializer"><![CDATA[
+class ClassDeclaration {
+	void Test ()
+	{
+		int *array = new int[4] { 1, 3, 3, 7 };
+	}
+};
+]]></Example>
+
+
+	<Category _displayName="Indentation">
+		<Category _displayName="Declarations">
+			<Option name="IndentNamespaceBody" _displayName="within namespaces"><Example><![CDATA[namespace Test { class AClass {}; }]]></Example></Option>
+			
+			<OptionCategory _displayName="within types">
+				<Option name="IndentClassBody" _displayName="within classes"><Example><![CDATA[class AClass { int aField; void AMethod () {} };]]></Example></Option>
+				<Option name="IndentStructBody" _displayName="within structs"><Example><![CDATA[struct AStruct { int aField; void AMethod () {} };]]></Example></Option>
+				<Option name="IndentEnumBody" _displayName="within enums"><Example><![CDATA[enum AEnum { A, B, C };]]></Example></Option>
+			</OptionCategory>
+			
+			<Option name="IndentMethodBody" _displayName="within methods" example="methodSpaceExample"/>
+		</Category>
+		
+		<Category _displayName="Statements">
+			<Option name="IndentBlocks" _displayName="within blocks" example="spaceExample"/>
+			<Option name="IndentSwitchBody" _displayName="Indent 'switch' body" example="switchExample"/>
+			<Option name="IndentCaseBody" _displayName="Indent 'case' body" example="switchExample"/>
+			<Option name="IndentBreakStatements" _displayName="Indent 'break' statements" example="switchExample"/>
+			
+			<Option name="AlignEmbeddedIfStatements" _displayName="Align embedded 'if' statements"><Example><![CDATA[class AClass { void AMethod () { if (a) if (b) { int c; } } };]]></Example></Option>
+		</Category>
+	</Category>
+	
+	<Category _displayName="Braces">
+		<Category _displayName="Declarations">
+			<Option name="NamespaceBraceStyle" _displayName="Namespace declaration"><Example>namespace TestNameSpace {}</Example></Option>
+			
+			<OptionCategory _displayName="Type declaration">
+				<Option name="ClassBraceStyle" _displayName="Class declaration"><Example>class ClassDeclaration {};</Example></Option>
+				<Option name="StructBraceStyle" _displayName="Struct declaration"><Example><![CDATA[struct StructDeclaration {};]]></Example></Option>
+				<Option name="EnumBraceStyle" _displayName="Enum declaration"><Example><![CDATA[enum EnumDeclaration { A, B, C };]]></Example></Option>
+			</OptionCategory>
+			
+			<OptionCategory _displayName="Method declaration">
+				<Option name="MethodBraceStyle" _displayName="Method declaration"><Example><![CDATA[class ClassDeclaration { void MyMethod () {} };]]></Example></Option>
+				<Option name="ConstructorBraceStyle" _displayName="Constructor declaration"><Example><![CDATA[class ClassDeclaration { public ClassDeclaration () {} };]]></Example></Option>
+				<Option name="DestructorBraceStyle" _displayName="Destructor declaration"><Example><![CDATA[class ClassDeclaration { ~ClassDeclaration () {} };]]></Example></Option>
+			</OptionCategory>
+		</Category>
+		
+		<Category _displayName="Brace forcement">
+			<Option name="IfElseBraceForcement" _displayName="'if...else' statement" example="simpleIf"><Example><![CDATA[
+
+]]></Example></Option>
+			<Option name="ForBraceForcement" _displayName="'for' statement" example="simpleFor"><Example><![CDATA[
+
+]]></Example></Option>
+			<Option name="WhileBraceForcement" _displayName="'while' statement" example="simpleWhile"><Example><![CDATA[
+class ClassDeclaration {
+	void Test ()
+	{
+		while (true) {
+			cout << "Hello World!" << endl;
+		}
+	}
+};
+]]></Example></Option>
+		</Category>
+		
+		<Category _displayName="Blocks">
+			<Option name="StatementBraceStyle" _displayName="Statements" example="spaceExample"/>
+		</Category>
+	</Category>
+	
+	<Category _displayName="New Lines">
+<!--		<OptionCategory _displayName="Allow one line embedded statements">
+			<Option name="AllowIfBlockInline" _displayName="'if'"><Example><![CDATA[
+class ClassDeclaration { 
+		public void Test ()
+		{
+			if (true) { Console.WriteLine ("Hello World!"); }
+			if (true) Console.WriteLine ("Hello World!");
+			if (true) { Foo (); Bar (); }
+		}
+	}
+]]></Example></Option>
+		</OptionCategory>-->
+	
+		<Category _displayName="Place on new line">
+			<Option name="PlaceElseOnNewLine" _displayName="'else'" example="simpleIf"/>
+			<Option name="PlaceElseIfOnNewLine" _displayName="'else if'" example="simpleIf"/>
+			<Option name="PlaceCatchOnNewLine" _displayName="'catch'" example="simpleCatch"/>
+			<Option name="PlaceFinallyOnNewLine" _displayName="'finally'" example="simpleCatch"/>
+			<Option name="PlaceWhileOnNewLine" _displayName="'while'" example="simpleDoWhile"/>
+			<Option name="PlaceArrayInitializersOnNewLine" _displayName="array initializers" example="simpleArrayInitializer"/>
+		</Category>
+	</Category>
+	
+	<Category _displayName="Spaces">
+		<Category _displayName="Before Parentheses">
+<!--		<Option name="BeforeMethodCallParentheses" _displayName="Method call" example ="methodSpaceExample"/>
+			
+			<Option name="BeforeDelegateDeclarationParentheses" _displayName="Delegate declaration" example ="delegateExample"/>
+			<Option name="BeforeConstructorDeclarationParentheses" _displayName="Constructor declaration" example ="constructorCallExample"/>
+		-->	
+			<Option name="NewParentheses" _displayName="Constructor call" example ="constructorCallExample"/>
+		<!--	
+			<OptionCategory _displayName="Statements">
+				<Option name="IfParentheses" _displayName="'if' statement" example="simpleIf"/>
+				<Option name="WhileParentheses" _displayName="'while' statement" example="simpleWhile"/>
+				<Option name="ForParentheses" _displayName="'for' statement" example="simpleFor"/>
+				<Option name="CatchParentheses" _displayName="'catch' statement" example="simpleCatch"/>
+				<Option name="SwitchParentheses" _displayName="'switch' statement" example="simpleSwitch"/>
+			</OptionCategory>-->
+		</Category>
+		<!--
+		<OptionCategory _displayName="Around Operators">
+			<Option name="AroundAssignmentParentheses" _displayName="Assignment (=, -=, ...)" example="operatorExample"/>
+			<Option name="AroundLogicalOperatorParentheses" _displayName="Logical (&amp;&amp;,||) operators" example="operatorExample"/>
+			<Option name="AroundEqualityOperatorParentheses" _displayName="Equality (==, !=) operators" example="operatorExample"/>
+			<Option name="AroundRelationalOperatorParentheses" _displayName="Relational (&lt;,&gt;,&lt;=,&gt;=) operators" example="operatorExample"/>
+			<Option name="AroundBitwiseOperatorParentheses" _displayName="Bitwise (&amp;,|,^) operators" example="operatorExample"/>
+			<Option name="AroundAdditiveOperatorParentheses" _displayName="Additive (+,-) operators" example="operatorExample"/>
+			<Option name="AroundMultiplicativeOperatorParentheses" _displayName="Multiplicative (*,/,%) operators" example="operatorExample"/>
+			<Option name="AroundShiftOperatorParentheses" _displayName="Shift (&lt;&lt;,&gt;&gt;) operators" example="operatorExample"/>
+		</OptionCategory>
+		-->
+		<Category _displayName="Within Parentheses">
+	<!--			<Option name="WithinParentheses" _displayName="Parentheses" example="operatorExample"/>
+			<Option name="WithinMethodCallParentheses" _displayName="Method call" example="methodSpaceExample"/>
+			<OptionCategory _displayName="Statements">
+				<Option name="WithinIfParentheses" _displayName="'if' statement" example="simpleIf"/>
+				<Option name="WithinWhileParentheses" _displayName="'while' statement" example="simpleWhile"/>
+				<Option name="WithinForParentheses" _displayName="'for' statement" example="simpleFor"/>
+				<Option name="WithinCatchParentheses" _displayName="'catch' statement" example="simpleCatch"/>
+				<Option name="WithinSwitchParentheses" _displayName="'switch' statement" example="simpleSwitch"/>
+			</OptionCategory> -->
+			
+			<OptionCategory _displayName="Expressions">
+<!--				<Option name="WithinCastParentheses" _displayName="Type cast" example="simpleTypeCast"/>
+				<Option name="WithinSizeOfParentheses" _displayName="'sizeof' expression"><Example><![CDATA[
+class ClassDeclaration { 
+		public void Test ()
+		{
+			int i = sizeof (ClassDeclaration);
+		}
+	}
+]]></Example>
+				</Option>-->
+			</OptionCategory>
+		</Category>
+		<!--
+		<Category _displayName="Conditional Operator (?:)">
+			<Option name="ConditionalOperatorBeforeConditionSpace" _displayName="before '?'" example="condOpExample"/>
+			<Option name="ConditionalOperatorAfterConditionSpace" _displayName="after '?'" example="condOpExample"/>
+			<Option name="ConditionalOperatorBeforeSeparatorSpace" _displayName="before ':'" example="condOpExample"/>
+			<Option name="ConditionalOperatorAfterSeparatorSpace" _displayName="after ':'" example="condOpExample"/>
+		</Category>-->
+		
+		<Category _displayName="Other">
+			<Option name="SpacesWithinBrackets" _displayName="Within brackets"><Example><![CDATA[
+class Example {
+	void Test ()
+	{
+		int a[5], b = 1;
+
+		a[0] = b;
+	}
+};
+]]></Example>
+</Option>
+<!--			<Option name="SpacesAfterComma" _displayName="After comma" example="simpleArrayInitializer"/>
+			<Option name="SpacesBeforeComma" _displayName="Before comma" example="simpleArrayInitializer"/>
+			<Option name="SpacesAfterSemicolon" _displayName="After semicolon" example="simpleFor"/>
+			<Option name="SpacesAfterTypecast" _displayName="After type cast" example="simpleTypeCast"/>-->
+		</Category>
+	</Category>
+</CodeStyle>

@@ -76,26 +76,26 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
-		<MimeType id="text/x-csrc" icon="md-c-file" isText="true">
+		<MimeType id="text/x-csrc" _description="C source code" icon="md-c-file" isText="true">
 			<File pattern="*.c" />
 		</MimeType>
-		<MimeType id="text/x-chdr" icon="md-h-file" isText="true">
+		<MimeType id="text/x-chdr" _description="C header" icon="md-h-file" isText="true">
 			<File pattern="*.h" />
 		</MimeType>
-		<MimeType id="text/x-c++src" icon="md-cpp-file" isText="true">
+		<MimeType id="text/x-c++src" _description="C++ source code" icon="md-cpp-file" isText="true">
 			<File pattern="*.cpp" />
 			<File pattern="*.cc" />
 			<File pattern="*.cxx" />
 		</MimeType>
-		<MimeType id="text/x-c++hdr" icon="md-h-file" isText="true">
+		<MimeType id="text/x-c++hdr" _description="C++ header" icon="md-h-file" isText="true">
 			<File pattern="*.hpp" />
 			<File pattern="*.hh" />
 			<File pattern="*.hxx" />
 		</MimeType>
-		<MimeType id="text/x-objcsrc" icon="md-c-file" isText="true">
+		<MimeType id="text/x-objcsrc" _description="Objective-C source code" icon="md-c-file" isText="true">
 			<File pattern="*.m" />
 		</MimeType>
-		<MimeType id="text/x-objc++src" icon="md-cpp-file" isText="true">
+		<MimeType id="text/x-objc++src" _description="Objective-C++ source code" icon="md-cpp-file" isText="true">
 			<File pattern="*.mm" />
 			<File pattern="*.M" />
 		</MimeType>
@@ -215,6 +215,19 @@
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class fileExtensions=".c,.cpp,.cxx,.cc,.h,.hpp,.hh,.hxx" class = "CBinding.CTextEditorExtension" />
+		<Class fileExtensions=".c,.cpp,.cxx,.cc,.h,.hpp,.hh,.hxx" class = "CBinding.Formatting.CTextEditorIndentation" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/CodeFormatters">
+		<Formatter mimeType="text/x-csrc" class="CBinding.Formatting.CFormatter" />
+		<Formatter mimeType="text/x-chdr" class="CBinding.Formatting.CFormatter" />
+		<Formatter mimeType="text/x-c++src" class="CBinding.Formatting.CFormatter" />
+		<Formatter mimeType="text/x-c++hdr" class="CBinding.Formatting.CFormatter" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/MimeTypePolicyPanels">
+		<Panel id = "CFormatting" _label = "C Format" mimeType="text/x-csrc" class = "CBinding.Formatting.CFormattingPolicyPanel" />
+		<Panel id = "CPlusPlusFormatting" _label = "C++ Format" mimeType="text/x-c++src" class = "CBinding.Formatting.CFormattingPolicyPanel" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
