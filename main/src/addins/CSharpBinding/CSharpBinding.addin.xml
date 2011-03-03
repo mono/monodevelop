@@ -5,7 +5,7 @@
        copyright   = "MIT X11"
        url         = "http://www.monodevelop.com/"
        description = "CSharp Language Binding"
-	   category    = "Language bindings"
+       category    = "Language bindings"
        version     = "2.6">
 	
 	<Dependencies>

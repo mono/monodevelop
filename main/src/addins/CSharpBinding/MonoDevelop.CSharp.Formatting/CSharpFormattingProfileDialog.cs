@@ -817,14 +817,14 @@ delegate void BarFoo ();
 			AddOption (whiteSpaceOptions, category, "WithinTypeOfParentheses", GettextCatalog.GetString ("within parenthesis"), example);
 			
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("Around Operators"), operatorExample);
-			AddOption (whiteSpaceOptions, category, "AroundAssignmentParentheses", GettextCatalog.GetString ("Assignment (=, -=, ...)"), operatorExample);
-			AddOption (whiteSpaceOptions, category, "AroundLogicalOperatorParentheses", GettextCatalog.GetString ("Logical (&amp;&amp;,||) operators"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "AroundAssignmentParentheses", GettextCatalog.GetString ("Assignment (=, +=, -=, ...)"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "AroundLogicalOperatorParentheses", GettextCatalog.GetString ("Logical (&&, ||) operators"), operatorExample);
 			AddOption (whiteSpaceOptions, category, "AroundEqualityOperatorParentheses", GettextCatalog.GetString ("Equality (==, !=) operators"), operatorExample);
-			AddOption (whiteSpaceOptions, category, "AroundRelationalOperatorParentheses", GettextCatalog.GetString ("Relational (&lt;,&gt;,&lt;=,&gt;=) operators"), operatorExample);
-			AddOption (whiteSpaceOptions, category, "AroundBitwiseOperatorParentheses", GettextCatalog.GetString ("Bitwise (&amp;,|,^) operators"), operatorExample);
-			AddOption (whiteSpaceOptions, category, "AroundAdditiveOperatorParentheses", GettextCatalog.GetString ("Additive (+,-) operators"), operatorExample);
-			AddOption (whiteSpaceOptions, category, "AroundMultiplicativeOperatorParentheses", GettextCatalog.GetString ("Multiplicative (*,/,%) operators"), operatorExample);
-			AddOption (whiteSpaceOptions, category, "AroundShiftOperatorParentheses", GettextCatalog.GetString ("Shift (&lt;&lt;,&gt;&gt;) operators"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "AroundRelationalOperatorParentheses", GettextCatalog.GetString ("Relational (<, >, <=, >=) operators"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "AroundBitwiseOperatorParentheses", GettextCatalog.GetString ("Bitwise &, |, ^, ~() operators"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "AroundAdditiveOperatorParentheses", GettextCatalog.GetString ("Additive (+, -) operators"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "AroundMultiplicativeOperatorParentheses", GettextCatalog.GetString ("Multiplicative (*, /, %) operators"), operatorExample);
+			AddOption (whiteSpaceOptions, category, "AroundShiftOperatorParentheses", GettextCatalog.GetString ("Shift (<<, >>) operators"), operatorExample);
 			AddOption (whiteSpaceOptions, category, "AroundNullCoalescingOperator", GettextCatalog.GetString ("Null coalescing (??) operator"), operatorExample);
 			
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("Conditional Operator (?:)"), condOpExample);
