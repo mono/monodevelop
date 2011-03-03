@@ -626,7 +626,6 @@ namespace MonoDevelop.CSharp.Resolver
 							resolver.resolvePosition = old;
 						}
 					}
-					
 					InvocationExpression invocation = (InvocationExpression)lambdaExpression.Parent;
 					MethodResolveResult result = visitor.Resolve (invocation.TargetObject) as MethodResolveResult;
 					if (result == null) {
@@ -634,7 +633,6 @@ namespace MonoDevelop.CSharp.Resolver
 						return null;
 					}
 					result.ResolveExtensionMethods ();
-					
 					for (int i = 0; i < invocation.Arguments.Count; i++) {
 						if (invocation.Arguments[i] == lambdaExpression && i < result.MostLikelyMethod.Parameters.Count) {
 							IParameter parameter = result.MostLikelyMethod.Parameters[i];
@@ -668,7 +666,6 @@ namespace MonoDevelop.CSharp.Resolver
 							return createdResult;
 						}
 					}
-					
 					if (lambdaReturnType != null && !string.IsNullOrEmpty (lambdaReturnType.ResolvedType.FullName))
 						return lambdaReturnType;
 					

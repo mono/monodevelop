@@ -173,54 +173,113 @@ namespace MonoDevelop.Projects.Dom
 			this.MethodModifier = MethodModifier;
 		}
 		
+		class ReturnTypeStepper
+		{
+			Stack<IReturnType> stack = new Stack<IReturnType> ();
+			
+			public IReturnType Cur {
+				get {
+					return stack.Peek ();
+				}
+			}
+			
+			public bool HasNext {
+				get {
+					return stack.Count > 0;
+				}
+			}
+			
+			public ReturnTypeStepper (IReturnType returnType)
+			{
+				stack .Push (returnType);
+			}
+			
+			public bool Step ()
+			{
+				if (stack.Count == 0)
+					return false;
+				IReturnType cur = stack.Pop ();
+				foreach (var generic in cur.GenericArguments.Reverse ()) {
+					stack.Push (generic);
+				}
+				return true;
+			}
+			
+			public bool Skip ()
+			{
+				if (stack.Count == 0)
+					return false;
+				stack.Pop ();
+				return true;
+			}
+			
+			
+		}
+		
 		public static IMethod CreateInstantiatedGenericMethod (IMethod method, IList<IReturnType> genericArguments, IList<IReturnType> methodArguments)
 		{
-//			System.Console.WriteLine("----");
-//			Console.WriteLine ("instantiate: " + method);
+			//System.Console.WriteLine("----");
+			//Console.WriteLine ("instantiate: " + method);
 			GenericMethodInstanceResolver resolver = new GenericMethodInstanceResolver ();
 			if (genericArguments != null) {
 				for (int i = 0; i < method.TypeParameters.Count && i < genericArguments.Count; i++) 
-					resolver.Add (method.DeclaringType != null ? method.DeclaringType.SourceProjectDom : null, new DomReturnType (method.TypeParameters[i].Name), genericArguments[i]);
+					resolver.Add (method.DeclaringType != null ? method.DeclaringType.SourceProjectDom : null, new DomReturnType (method.TypeParameters [i].Name), genericArguments [i]);
 			}
 			IMethod result = (IMethod)method.AcceptVisitor (resolver, method);
 			resolver = new GenericMethodInstanceResolver ();
-			if (methodArguments != null) {
-				// The stack should contain <TEMPLATE> / RealType pairs
-				Stack<KeyValuePair<IReturnType, IReturnType>> returnTypeStack = new Stack<KeyValuePair<IReturnType, IReturnType>> ();
-				for (int i = 0; i < method.Parameters.Count && i < methodArguments.Count; i++) {
-//					Console.WriteLine ("parameter:" + method.Parameters[i]);
-					returnTypeStack.Push (new KeyValuePair<IReturnType, IReturnType> (method.Parameters[i].ReturnType, methodArguments[i]));
-					while (returnTypeStack.Count > 0) {
-						KeyValuePair<IReturnType, IReturnType> curReturnType = returnTypeStack.Pop ();
-						//Console.WriteLine ("key:" + curReturnType.Key + "\n val:" + curReturnType.Value);
-						bool found = false;
-						for (int j = 0; j < method.TypeParameters.Count; j++) {
-							if (method.TypeParameters[j].Name == curReturnType.Key.FullName) {
-								found = true;
-								break;
-							}
-						}
-						if (found) {
-							resolver.Add (method.DeclaringType != null ? method.DeclaringType.SourceProjectDom : null, curReturnType.Key, curReturnType.Value);
-							continue;
-						}
-						//Console.WriteLine ("key:" + curReturnType.Key);
-						//Console.WriteLine ("value:" + curReturnType.Value);
-						for (int k = 0; k < System.Math.Min (curReturnType.Key.GenericArguments.Count, curReturnType.Value.GenericArguments.Count); k++) {
-							//Console.WriteLine ("add " + curReturnType.Key.GenericArguments[k] + " " + curReturnType.Value.GenericArguments[k]);
-							returnTypeStack.Push (new KeyValuePair<IReturnType, IReturnType> (curReturnType.Key.GenericArguments[k], 
-							                                                                  curReturnType.Value.GenericArguments[k]));
-						}
+			var containerSet = new HashSet<ITypeParameter> (method.TypeParameters);
+			
+			for (int i = 0; i < method.Parameters.Count && i < methodArguments.Count; i++) {
+				ReturnTypeStepper original = new ReturnTypeStepper (method.Parameters [i].ReturnType);
+				ReturnTypeStepper argument = new ReturnTypeStepper (methodArguments [i]);
+				while (original.HasNext && argument.HasNext) {
+					if (containerSet.Any (p => p.Name == original.Cur.DecoratedFullName)) {
+						resolver.Add (method.DeclaringType != null ? method.DeclaringType.SourceProjectDom : null, original.Cur, argument.Cur);
+						original.Skip ();
+						argument.Skip ();
+					} else {
+						original.Step ();
+						argument.Step ();
 					}
 				}
 			}
-//			System.Console.WriteLine("before:" + result);
+			
+			//			if (methodArguments != null) {
+			//				// The stack should contain <TEMPLATE> / RealType pairs
+			//				Stack<KeyValuePair<IReturnType, IReturnType>> returnTypeStack = new Stack<KeyValuePair<IReturnType, IReturnType>> ();
+			//				for (int i = 0; i < method.Parameters.Count && i < methodArguments.Count; i++) {
+			//					returnTypeStack.Push (new KeyValuePair<IReturnType, IReturnType> (method.Parameters[i].ReturnType, methodArguments[i]));
+			//					while (returnTypeStack.Count > 0) {
+			//						KeyValuePair<IReturnType, IReturnType> curReturnType = returnTypeStack.Pop ();
+			//						//Console.WriteLine ("key:" + curReturnType.Key + "\n val:" + curReturnType.Value);
+			//						bool found = false;
+			//						for (int j = 0; j < method.TypeParameters.Count; j++) {
+			//							if (method.TypeParameters[j].Name == curReturnType.Key.FullName) {
+			//								found = true;
+			//								break;
+			//							}
+			//						}
+			//						if (found) {
+			//							resolver.Add (method.DeclaringType != null ? method.DeclaringType.SourceProjectDom : null, curReturnType.Key, curReturnType.Value);
+			//							continue;
+			//						}
+			//						//Console.WriteLine ("key:" + curReturnType.Key);
+			//						//Console.WriteLine ("value:" + curReturnType.Value);
+			//						for (int k = 0; k < System.Math.Min (curReturnType.Key.GenericArguments.Count, curReturnType.Value.GenericArguments.Count); k++) {
+			//							//Console.WriteLine ("add " + curReturnType.Key.GenericArguments[k] + " " + curReturnType.Value.GenericArguments[k]);
+			//							returnTypeStack.Push (new KeyValuePair<IReturnType, IReturnType> (curReturnType.Key.GenericArguments[k], 
+			//							                                                                  curReturnType.Value.GenericArguments[k]));
+			//						}
+			//					}
+			//				}
+			//			}
+			//			System.Console.WriteLine("before:" + result);
 			result = (IMethod)result.AcceptVisitor (resolver, result);
 			((DomMethod)result).DeclaringType = method.DeclaringType;
 			((DomMethod)result).MethodModifier = method.MethodModifier;
 			
-//			System.Console.WriteLine("after:" + result);
-//			Console.WriteLine (result.Parameters[0]);
+			//			System.Console.WriteLine("after:" + result);
+			//			Console.WriteLine (result.Parameters[0]);
 			return result;
 		}
 		
@@ -230,7 +289,7 @@ namespace MonoDevelop.Projects.Dom
 			
 			public void Add (ProjectDom dom, IReturnType parameterType, IReturnType type)
 			{
-//				Console.WriteLine ("Add:" + parameterType +"->" + type);
+//				Console.WriteLine ("Add:" + parameterType +"\n\t->" + type);
 				if (type == null || string.IsNullOrEmpty (type.FullName))
 					return;
 				string name = parameterType.Name;

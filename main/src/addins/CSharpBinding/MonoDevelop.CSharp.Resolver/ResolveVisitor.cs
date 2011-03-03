@@ -61,6 +61,21 @@ namespace MonoDevelop.CSharp.Resolver
 		public IReturnType GetTypeSafe (Expression expression)
 		{
 			ResolveResult result = Resolve (expression);
+			if (expression is LambdaExpression) {
+				var lambda = (LambdaExpression)expression; 
+				var bodyType = GetTypeSafe (lambda.ExpressionBody);
+				DomReturnType constructedLambdaType = new DomReturnType (bodyType.FullName == DomReturnType.Void.FullName ? "System.Action" : "System.Func");
+				foreach (var param in lambda.Parameters) {
+					var typeParam = GetTypeSafe (param);
+					// add void place holder for types that can't be resolved.
+					if (typeParam == null || string.IsNullOrEmpty (typeParam.FullName))
+						typeParam = DomReturnType.Void;
+					constructedLambdaType.AddTypeParameter (typeParam);
+				}
+				if (bodyType.FullName != DomReturnType.Void.FullName)
+					constructedLambdaType.AddTypeParameter (bodyType ?? result.ResolvedType);
+				return constructedLambdaType;
+			}
 			return result.ResolvedType ?? DomReturnType.Void;
 		}
 		

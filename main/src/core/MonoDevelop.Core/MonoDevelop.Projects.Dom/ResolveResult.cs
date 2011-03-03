@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using MonoDevelop.Projects.Dom.Parser;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 
 namespace MonoDevelop.Projects.Dom
 {
@@ -424,11 +425,12 @@ namespace MonoDevelop.Projects.Dom
 				return false;
 			}
 		}
+		
 		public IMethod MostLikelyMethod {
 			get {
 				if (methods.Count == 0)
 					return null;
-				IMethod result = methods [0];
+				IMethod result = methods[0];
 				foreach (IMethod method in methods) {
 					if (method.Parameters.Any (p => p.IsParams)) {
 						if (method.Parameters.Count - 1 > arguments.Count)
@@ -446,17 +448,55 @@ namespace MonoDevelop.Projects.Dom
 						}
 						
 						IParameter parameter = method.Parameters[System.Math.Min (i, method.Parameters.Count - 1)];
-						if (IsCompatible (parameter.ReturnType, arguments[i]))
+						if (!IsCompatible (parameter.ReturnType, arguments[i])) {
 							match = false;
+							break;
+						}
 					}
 					if (match)
 						return method;
-					result = method;
+					if (MayBeBetter (result, method))
+						result = method;
 				}
 				return result;
 			}
 		}
 		
+		string CreateGenericIdString (IReturnType type)
+		{
+			StringBuilder result = new StringBuilder ();
+			result.Append (type.GenericArguments.Count);
+			result.Append ("<");
+			foreach (var generic in type.GenericArguments)
+				result.Append (CreateGenericIdString (generic));
+			result.Append (">");
+			return result.ToString ();
+		}
+		
+		bool MayBeBetter (IMethod current, IMethod possibleBetterMethod)
+		{
+			if (current == null)
+				return true;
+			if (possibleBetterMethod == null)
+				return false;
+			
+			int better = 0;
+			for (int i = 0; i < arguments.Count; i++) {
+				if (i >= current.Parameters.Count || i >= possibleBetterMethod.Parameters.Count)
+					return false;
+				IParameter curParameter = current.Parameters[System.Math.Min (i, current.Parameters.Count - 1)];
+				IParameter newParameter = possibleBetterMethod.Parameters[System.Math.Min (i, possibleBetterMethod.Parameters.Count - 1)];
+				string s1 = CreateGenericIdString (curParameter.ReturnType);
+				string s2 = CreateGenericIdString (newParameter.ReturnType);
+				string arg = CreateGenericIdString (arguments[i]);
+				if (arg.Contains (s1) || s1.Contains (arg))
+					better--;
+				if (arg.Contains (s2) || s2.Contains (arg))
+					better++;
+			}
+			return better >= 0;
+		}
+			
 		public bool IsCompatible (IReturnType baseType, IReturnType type)
 		{
 			if (baseType.ToInvariantString () == type.ToInvariantString ())
@@ -502,6 +542,7 @@ namespace MonoDevelop.Projects.Dom
 				return genericArguments.AsReadOnly ();
 			}
 		}
+		
 		public void AddGenericArgument (IReturnType arg)
 		{
 			genericArguments.Add (arg);
@@ -512,6 +553,7 @@ namespace MonoDevelop.Projects.Dom
 				return arguments.AsReadOnly ();
 			}
 		}
+		
 		public void AddArgument (IReturnType arg)
 		{
 			arguments.Add (arg);

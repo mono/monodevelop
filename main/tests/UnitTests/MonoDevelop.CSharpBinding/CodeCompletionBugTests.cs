@@ -3064,5 +3064,112 @@ class Foo
 ");
 			Assert.IsNotNull (provider.Find ("i"), "variable 'i' not found.");
 		}
+		
+		/// <summary>
+		/// Bug 676311 - auto completion too few proposals in fluent API (Moq)
+		/// </summary>
+		[Test()]
+		public void TestBug676311 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"using System;
+
+namespace Test
+{
+	public interface IFoo<T>
+	{
+		void Foo1 ();
+	}
+
+	public interface IFoo<T, S>
+	{
+		void Foo2 ();
+	}
+	
+	public class Test<T>
+	{
+		public IFoo<T> TestMe (Expression<Action<T>> act)
+		{
+			return null;
+		}
+		
+		public IFoo<T, S> TestMe<S> (Expression<Func<S, T>> func)
+		{
+			return null;
+		}
+		
+		public string TestMethod (string str)
+		{
+			return str;
+		}
+	}
+	
+	class MainClass
+	{
+		public static void Main (string[] args)
+		{
+			var t = new Test<string> ();
+			var s = t.TestMe (x => t.TestMethod (x));
+			$s.$
+		}
+	}
+}");
+			Assert.IsNotNull (provider.Find ("Foo2"), "method 'Foo2' not found.");
+		}
+		
+		/// <summary>
+		/// Bug 676311 - auto completion too few proposals in fluent API (Moq)
+		/// </summary>
+		[Test()]
+		public void TestBug676311_Case2 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"using System;
+using System.Linq.Expressions;
+
+namespace Test
+{
+	public interface IFoo<T>
+	{
+		void Foo1 ();
+	}
+
+	public interface IFoo<T, S>
+	{
+		void Foo2 ();
+	}
+	
+	public class Test<T>
+	{
+		public IFoo<T> TestMe (Expression<Action<T>> act)
+		{
+			return null;
+		}
+		
+		public IFoo<T, S> TestMe<S> (Expression<Func<S, T>> func)
+		{
+			return null;
+		}
+		
+		public void TestMethod (string str)
+		{
+		}
+	}
+	
+	class MainClass
+	{
+		public static void Main (string[] args)
+		{
+			var t = new Test<string> ();
+			var s = t.TestMe (x => t.TestMethod (x));
+			$s.$
+		}
+	}
+}");
+			Assert.IsNotNull (provider.Find ("Foo1"), "method 'Foo2' not found.");
+		}
+		
+		
+		
 	}
 }
