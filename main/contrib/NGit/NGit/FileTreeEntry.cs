@@ -52,7 +52,7 @@ namespace NGit
 	/// <see cref="Tree">Tree</see>
 	/// .
 	/// </summary>
-	[System.ObsoleteAttribute(@"To look up information about a single path, useNGit.Treewalk.TreeWalk.ForPath(Repository, string, NGit.Revwalk.RevTree) . To lookup information about multiple paths at once, use a and obtain the current entry's information from its getter methods."
+	[System.ObsoleteAttribute(@"To look up information about a single path, useNGit.Treewalk.TreeWalk.ForPath(Repository, string, NGit.Revwalk.RevTree) . To lookup information about multiple paths at once, use aNGit.Treewalk.TreeWalk and obtain the current entry's information from its getter methods."
 		)]
 	public class FileTreeEntry : TreeEntry
 	{

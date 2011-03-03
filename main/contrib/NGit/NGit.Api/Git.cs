@@ -460,6 +460,27 @@ namespace NGit.Api
 			return new CheckoutCommand(repo);
 		}
 
+		/// <summary>
+		/// Returns a command object to execute a
+		/// <code>reset</code>
+		/// command
+		/// </summary>
+		/// <seealso><a
+		/// *      href="http://www.kernel.org/pub/software/scm/git/docs/git-reset.html"
+		/// *      >Git documentation about reset</a></seealso>
+		/// <returns>
+		/// a
+		/// <see cref="ResetCommand">ResetCommand</see>
+		/// used to collect all optional parameters
+		/// and to finally execute the
+		/// <code>reset</code>
+		/// command
+		/// </returns>
+		public virtual ResetCommand Reset()
+		{
+			return new ResetCommand(repo);
+		}
+
 		/// <returns>the git repository this class is interacting with</returns>
 		public virtual Repository GetRepository()
 		{

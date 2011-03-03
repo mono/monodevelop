@@ -174,7 +174,7 @@ namespace NGit.Storage.File
 		/// <param name="packedGitMMAP">true to enable use of mmap when creating windows.</param>
 		/// <param name="deltaBaseCacheLimit">number of bytes to hold in the delta base cache.
 		/// 	</param>
-		[System.ObsoleteAttribute(@"Use  instead.")]
+		[System.ObsoleteAttribute(@"Use WindowCacheConfig instead.")]
 		public static void Reconfigure(int packedGitLimit, int packedGitWindowSize, bool 
 			packedGitMMAP, int deltaBaseCacheLimit)
 		{

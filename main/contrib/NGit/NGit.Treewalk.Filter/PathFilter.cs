@@ -134,5 +134,17 @@ namespace NGit.Treewalk.Filter
 		{
 			return "PATH(\"" + pathStr + "\")";
 		}
+
+		/// <param name="walker">The walk to check against.</param>
+		/// <returns>
+		/// 
+		/// <code>true</code>
+		/// if the path length of this filter matches the length
+		/// of the current path of the supplied TreeWalk.
+		/// </returns>
+		public virtual bool IsDone(TreeWalk walker)
+		{
+			return pathRaw.Length == walker.GetPathLength();
+		}
 	}
 }

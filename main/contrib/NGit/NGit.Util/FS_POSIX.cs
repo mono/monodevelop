@@ -41,6 +41,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using NGit.Util;
 using Sharpen;
@@ -67,20 +69,42 @@ namespace NGit.Util
 					 }, Encoding.Default.Name());
 				//
 				//
-				return new FilePath(w).GetParentFile().GetParentFile();
+				if (w == null || w.Length == 0)
+				{
+					return null;
+				}
+				FilePath parentFile = new FilePath(w).GetParentFile();
+				if (parentFile == null)
+				{
+					return null;
+				}
+				return parentFile.GetParentFile();
 			}
 			return null;
 		}
 
+		public override ProcessStartInfo RunInShell(string cmd, string[] args)
+		{
+			IList<string> argv = new AList<string>(4 + args.Length);
+			argv.AddItem("sh");
+			argv.AddItem("-c");
+			argv.AddItem(cmd + " \"$@\"");
+			argv.AddItem(cmd);
+			Sharpen.Collections.AddAll(argv, Arrays.AsList(args));
+			ProcessStartInfo proc = new ProcessStartInfo();
+			proc.SetCommand(argv);
+			return proc;
+		}
+
 		private static bool IsMacOS()
 		{
-			string osDotName = AccessController.DoPrivileged(new _PrivilegedAction_74());
+			string osDotName = AccessController.DoPrivileged(new _PrivilegedAction_95());
 			return "Mac OS X".Equals(osDotName);
 		}
 
-		private sealed class _PrivilegedAction_74 : PrivilegedAction<string>
+		private sealed class _PrivilegedAction_95 : PrivilegedAction<string>
 		{
-			public _PrivilegedAction_74()
+			public _PrivilegedAction_95()
 			{
 			}
 

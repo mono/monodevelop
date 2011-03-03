@@ -121,7 +121,7 @@ namespace NGit.Transport
 				if (credentialsProvider.Supports(u, p) && credentialsProvider.Get(uri, u, p))
 				{
 					username = u.GetValue();
-					password = Sharpen.Extensions.CreateString(p.GetValue());
+					password = new string(p.GetValue());
 					p.Clear();
 				}
 				else

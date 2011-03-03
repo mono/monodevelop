@@ -75,7 +75,8 @@ namespace NGit.Storage.File
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
-		internal override void Write(PackOutputStream @out, long pos, int cnt)
+		internal override void Write(PackOutputStream @out, long pos, int cnt, MessageDigest
+			 digest)
 		{
 			ByteBuffer s = buffer.Slice();
 			s.Position((int)(pos - start));
@@ -85,6 +86,10 @@ namespace NGit.Storage.File
 				int n = Math.Min(cnt, buf.Length);
 				s.Get(buf, 0, n);
 				@out.Write(buf, 0, n);
+				if (digest != null)
+				{
+					digest.Update(buf, 0, n);
+				}
 				cnt -= n;
 			}
 		}

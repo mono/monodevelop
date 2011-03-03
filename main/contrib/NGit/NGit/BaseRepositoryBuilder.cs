@@ -85,6 +85,10 @@ namespace NGit
 		/// <remarks>True only if the caller wants to force bare behavior.</remarks>
 		private bool bare;
 
+		/// <summary>True if the caller requires the repository to exist.</summary>
+		/// <remarks>True if the caller requires the repository to exist.</remarks>
+		private bool mustExist;
+
 		/// <summary>Configuration file of target repository, lazily loaded if required.</summary>
 		/// <remarks>Configuration file of target repository, lazily loaded if required.</remarks>
 		private Config config;
@@ -296,6 +300,29 @@ namespace NGit
 		public virtual bool IsBare()
 		{
 			return bare;
+		}
+
+		/// <summary>Require the repository to exist before it can be opened.</summary>
+		/// <remarks>Require the repository to exist before it can be opened.</remarks>
+		/// <param name="mustExist">
+		/// true if it must exist; false if it can be missing and created
+		/// after being built.
+		/// </param>
+		/// <returns>
+		/// 
+		/// <code>this</code>
+		/// (for chaining calls).
+		/// </returns>
+		public virtual B SetMustExist(bool mustExist)
+		{
+			this.mustExist = mustExist;
+			return Self();
+		}
+
+		/// <returns>true if the repository must exist before being opened.</returns>
+		public virtual bool IsMustExist()
+		{
+			return mustExist;
 		}
 
 		/// <summary>Set the top level directory of the working files.</summary>
@@ -670,7 +697,12 @@ namespace NGit
 		/// </exception>
 		public virtual R Build()
 		{
-			return (R)(object)new FileRepository(Setup());
+			R repo = (R)(object)new FileRepository(Setup());
+			if (IsMustExist() && !repo.ObjectDatabase.Exists())
+			{
+				throw new RepositoryNotFoundException(GetGitDir());
+			}
+			return repo;
 		}
 
 		/// <summary>

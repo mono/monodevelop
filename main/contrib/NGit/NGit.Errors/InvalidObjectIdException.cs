@@ -68,7 +68,8 @@ namespace NGit.Errors
 		{
 			try
 			{
-				return ": " + Sharpen.Extensions.CreateString(bytes, offset, length, "US-ASCII");
+				return ": " + Sharpen.Runtime.GetStringForBytes(bytes, offset, length, "US-ASCII"
+					);
 			}
 			catch (UnsupportedEncodingException)
 			{

@@ -410,6 +410,8 @@ namespace NGit
 
 		public string exceptionCaughtDuringExecutionOfPullCommand;
 
+		public string exceptionCaughtDuringExecutionOfResetCommand;
+
 		public string exceptionCaughtDuringExecutionOfRevertCommand;
 
 		public string exceptionCaughtDuringExecutionOfRmCommand;
@@ -828,7 +830,11 @@ namespace NGit
 
 		public string sequenceTooLargeForDiffAlgorithm;
 
+		public string serviceNotEnabledNoName;
+
 		public string serviceNotPermitted;
+
+		public string serviceNotPermittedNoName;
 
 		public string shortCompressedStreamAt;
 

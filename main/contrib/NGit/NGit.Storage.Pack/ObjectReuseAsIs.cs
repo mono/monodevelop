@@ -135,12 +135,13 @@ namespace NGit.Storage.Pack
 		/// <see cref="PackOutputStream.WriteObject(ObjectToPack)">PackOutputStream.WriteObject(ObjectToPack)
 		/// 	</see>
 		/// will cause
-		/// <see cref="CopyObjectAsIs(PackOutputStream, ObjectToPack)">CopyObjectAsIs(PackOutputStream, ObjectToPack)
+		/// <see cref="CopyObjectAsIs(PackOutputStream, ObjectToPack, bool)">CopyObjectAsIs(PackOutputStream, ObjectToPack, bool)
 		/// 	</see>
-		/// to be invoked
-		/// recursively on
+		/// to be
+		/// invoked recursively on
 		/// <code>this</code>
-		/// if the current object is scheduled for reuse.
+		/// if the current object is scheduled
+		/// for reuse.
 		/// </remarks>
 		/// <param name="out">the stream to write each object to.</param>
 		/// <param name="list">
@@ -175,13 +176,23 @@ namespace NGit.Storage.Pack
 		/// the output stream. The typical implementation is like:
 		/// <pre>
 		/// MyToPack mtp = (MyToPack) otp;
-		/// byte[] raw = validate(mtp); // throw SORNAE here, if at all
+		/// byte[] raw;
+		/// if (validate)
+		/// raw = validate(mtp); // throw SORNAE here, if at all
+		/// else
+		/// raw = readFast(mtp);
 		/// out.writeHeader(mtp, mtp.inflatedSize);
 		/// out.write(raw);
 		/// </pre>
 		/// </remarks>
 		/// <param name="out">stream the object should be written to.</param>
 		/// <param name="otp">the object's saved representation information.</param>
+		/// <param name="validate">
+		/// if true the representation must be validated and not be
+		/// corrupt before being reused. If false, validation may be
+		/// skipped as it will be performed elsewhere in the processing
+		/// pipeline.
+		/// </param>
 		/// <exception cref="NGit.Errors.StoredObjectRepresentationNotAvailableException">
 		/// the previously selected representation is no longer
 		/// available. If thrown before
@@ -197,7 +208,7 @@ namespace NGit.Storage.Pack
 		/// the stream's write method threw an exception. Packing will
 		/// abort.
 		/// </exception>
-		void CopyObjectAsIs(PackOutputStream @out, ObjectToPack otp);
+		void CopyObjectAsIs(PackOutputStream @out, ObjectToPack otp, bool validate);
 
 		/// <summary>Obtain the available cached packs.</summary>
 		/// <remarks>
@@ -222,8 +233,14 @@ namespace NGit.Storage.Pack
 		/// </remarks>
 		/// <param name="out">stream to append the pack onto.</param>
 		/// <param name="pack">the cached pack to send.</param>
+		/// <param name="validate">
+		/// if true the representation must be validated and not be
+		/// corrupt before being reused. If false, validation may be
+		/// skipped as it will be performed elsewhere in the processing
+		/// pipeline.
+		/// </param>
 		/// <exception cref="System.IO.IOException">the pack cannot be read, or stream did not accept a write.
 		/// 	</exception>
-		void CopyPackAsIs(PackOutputStream @out, CachedPack pack);
+		void CopyPackAsIs(PackOutputStream @out, CachedPack pack, bool validate);
 	}
 }

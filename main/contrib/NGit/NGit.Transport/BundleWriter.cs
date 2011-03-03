@@ -79,6 +79,8 @@ namespace NGit.Transport
 
 		private readonly ICollection<RevCommit> assume;
 
+		private readonly ICollection<ObjectId> tagTargets;
+
 		private PackConfig packConfig;
 
 		/// <summary>Create a writer for a bundle.</summary>
@@ -89,6 +91,7 @@ namespace NGit.Transport
 			db = repo;
 			include = new SortedDictionary<string, ObjectId>();
 			assume = new HashSet<RevCommit>();
+			tagTargets = new HashSet<ObjectId>();
 		}
 
 		/// <summary>Set the configuration used by the pack generator.</summary>
@@ -136,6 +139,17 @@ namespace NGit.Transport
 		public virtual void Include(Ref r)
 		{
 			Include(r.GetName(), r.GetObjectId());
+			if (r.GetPeeledObjectId() != null)
+			{
+				tagTargets.AddItem(r.GetPeeledObjectId());
+			}
+			else
+			{
+				if (r.GetObjectId() != null && r.GetName().StartsWith(Constants.R_HEADS))
+				{
+					tagTargets.AddItem(r.GetObjectId());
+				}
+			}
 		}
 
 		/// <summary>Assume a commit is available on the recipient's side.</summary>
@@ -193,7 +207,13 @@ namespace NGit.Transport
 				{
 					exc.AddItem(r.Id);
 				}
+				packWriter.SetDeltaBaseAsOffset(true);
 				packWriter.SetThin(exc.Count > 0);
+				packWriter.SetReuseValidatingObjects(false);
+				if (exc.Count == 0)
+				{
+					packWriter.SetTagTargets(tagTargets);
+				}
 				packWriter.PreparePack(monitor, inc, exc);
 				TextWriter w = new OutputStreamWriter(os, Constants.CHARSET);
 				w.Write(NGit.Transport.TransportBundleConstants.V2_BUNDLE_SIGNATURE);

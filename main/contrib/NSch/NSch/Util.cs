@@ -579,11 +579,11 @@ namespace NSch
 		{
 			try
 			{
-				return Sharpen.Extensions.CreateString(str, s, l, encoding);
+				return Sharpen.Runtime.GetStringForBytes(str, s, l, encoding);
 			}
 			catch (UnsupportedEncodingException)
 			{
-				return Sharpen.Extensions.CreateString(str, s, l);
+				return Sharpen.Runtime.GetStringForBytes(str, s, l);
 			}
 		}
 

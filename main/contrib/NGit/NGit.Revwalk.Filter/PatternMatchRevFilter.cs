@@ -148,6 +148,11 @@ namespace NGit.Revwalk.Filter
 			return compiledPattern.Reset(Text(cmit)).Matches();
 		}
 
+		public override bool RequiresCommitBody()
+		{
+			return true;
+		}
+
 		/// <summary>Obtain the raw text to match against.</summary>
 		/// <remarks>Obtain the raw text to match against.</remarks>
 		/// <param name="cmit">current commit being evaluated.</param>

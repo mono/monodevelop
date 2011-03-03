@@ -54,7 +54,8 @@ namespace NGit
 	/// A File argument is supplied to allow us to check for modifications in
 	/// a work tree or update the file.
 	/// </remarks>
-	[System.ObsoleteAttribute(@"Use  instead, with a  as a member.")]
+	[System.ObsoleteAttribute(@"Use NGit.Treewalk.TreeWalk instead, with a NGit.Dircache.DirCacheIterator as a member."
+		)]
 	public interface IndexTreeVisitor
 	{
 		/// <summary>Visit a blob, and corresponding tree and index entries.</summary>

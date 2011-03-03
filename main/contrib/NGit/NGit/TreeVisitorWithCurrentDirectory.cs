@@ -48,7 +48,8 @@ namespace NGit
 {
 	/// <summary>Abstract TreeVisitor for visiting all files known by a Tree.</summary>
 	/// <remarks>Abstract TreeVisitor for visiting all files known by a Tree.</remarks>
-	[System.ObsoleteAttribute(@"Use  instead, with a as one of its members.")]
+	[System.ObsoleteAttribute(@"Use NGit.Treewalk.TreeWalk instead, with aNGit.Treewalk.FileTreeIterator as one of its members."
+		)]
 	public abstract class TreeVisitorWithCurrentDirectory : TreeVisitor
 	{
 		private readonly AList<FilePath> stack = new AList<FilePath>(16);

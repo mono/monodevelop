@@ -81,41 +81,6 @@ namespace Sharpen
 			return CultureInfo.GetCultureInfo ("en-US");
 		}
 
-		public static string CreateString (string str)
-		{
-			return new string (str.ToCharArray ());
-		}
-
-		public static string CreateString (byte[] chars)
-		{
-			return Encoding.UTF8.GetString (chars);
-		}
-
-		public static string CreateString (char[] chars)
-		{
-			return new string (chars);
-		}
-
-		public static string CreateString (byte[] chars, string encoding)
-		{
-			return GetEncoding (encoding).GetString (chars);
-		}
-
-		public static string CreateString (byte[] chars, int start, int len)
-		{
-			return Encoding.UTF8.GetString (chars, start, len);
-		}
-
-		public static string CreateString (char[] chars, int start, int len)
-		{
-			return new string (chars, start, len);
-		}
-
-		public static string CreateString (byte[] chars, int start, int len, string encoding)
-		{
-			return GetEncoding (encoding).Decode (chars, start, len);
-		}
-
 		public static string Name (this Encoding e)
 		{
 			return e.BodyName.ToUpper ();
@@ -440,12 +405,6 @@ namespace Sharpen
 			return old;
 		}
 
-		public static void RemoveAll<T> (this IList<T> list, IEnumerable<T> toRemove)
-		{
-			foreach (T t in toRemove)
-				list.Remove (t);
-		}
-
 		public static T RemoveFirst<T> (this IList<T> list)
 		{
 			return list.Remove<T> (0);
@@ -497,8 +456,24 @@ namespace Sharpen
 			return 0;
 		}
 		
-		public static bool Contains<T,U> (this ICollection<T> col, U item) where T:U
+		public static void RemoveAll<T,U> (this ICollection<T> col, ICollection<U> items) where U:T
 		{
+			foreach (var u in items)
+				col.Remove (u);
+		}
+
+		public static bool ContainsAll<T,U> (this ICollection<T> col, ICollection<U> items) where U:T
+		{
+			foreach (var u in items)
+				if (!col.Any (n => (object.ReferenceEquals (n, u)) || n.Equals (u)))
+					return false;
+			return true;
+		}
+
+		public static bool Contains<T> (this ICollection<T> col, object item)
+		{
+			if (!(item is T))
+				return false;
 			return col.Any (n => (object.ReferenceEquals (n, item)) || n.Equals (item));
 		}
 
@@ -606,6 +581,15 @@ namespace Sharpen
 			List<U> list = new List<U> (s.Count);
 			for (int i = 0; i < s.Count; i++) {
 				list.Add ((U)s[i]);
+			}
+			return list;
+		}
+
+		public static ICollection<U> UpcastTo<T, U> (this ICollection<T> s) where T : U
+		{
+			List<U> list = new List<U> (s.Count);
+			foreach (var v in s) {
+				list.Add ((U)v);
 			}
 			return list;
 		}

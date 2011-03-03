@@ -73,8 +73,7 @@ namespace NGit.Treewalk
 	{
 		/// <summary>
 		/// An empty entry array, suitable for
-		/// <see cref="Init(org.eclipse.jgit.treewalk.WorkingTreeIterator.Entry[])">Init(org.eclipse.jgit.treewalk.WorkingTreeIterator.Entry[])
-		/// 	</see>
+		/// <see cref="Init(Entry[])">Init(Entry[])</see>
 		/// .
 		/// </summary>
 		protected internal static readonly WorkingTreeIterator.Entry[] EOF = new WorkingTreeIterator.Entry
@@ -188,8 +187,7 @@ namespace NGit.Treewalk
 		/// Initialize this iterator for the root level of a repository.
 		/// <p>
 		/// This method should only be invoked after calling
-		/// <see cref="Init(org.eclipse.jgit.treewalk.WorkingTreeIterator.Entry[])">Init(org.eclipse.jgit.treewalk.WorkingTreeIterator.Entry[])
-		/// 	</see>
+		/// <see cref="Init(Entry[])">Init(Entry[])</see>
 		/// ,
 		/// and only for the root iterator.
 		/// </remarks>
@@ -611,9 +609,9 @@ namespace NGit.Treewalk
 			return ignoreNode;
 		}
 
-		private sealed class _IComparer_501 : IComparer<WorkingTreeIterator.Entry>
+		private sealed class _IComparer_504 : IComparer<WorkingTreeIterator.Entry>
 		{
-			public _IComparer_501()
+			public _IComparer_504()
 			{
 			}
 
@@ -647,7 +645,7 @@ namespace NGit.Treewalk
 			}
 		}
 
-		private static readonly IComparer<WorkingTreeIterator.Entry> ENTRY_CMP = new _IComparer_501
+		private static readonly IComparer<WorkingTreeIterator.Entry> ENTRY_CMP = new _IComparer_504
 			();
 
 		internal static int LastPathChar(WorkingTreeIterator.Entry e)
@@ -1129,7 +1127,30 @@ namespace NGit.Treewalk
 				{
 					r = new IgnoreNode();
 				}
-				FilePath exclude = new FilePath(repository.Directory, "info/exclude");
+				FS fs = repository.FileSystem;
+				string path = repository.GetConfig().Get(CoreConfig.KEY).GetExcludesFile();
+				if (path != null)
+				{
+					FilePath excludesfile;
+					if (path.StartsWith("~/"))
+					{
+						excludesfile = fs.Resolve(fs.UserHome(), Sharpen.Runtime.Substring(path, 2));
+					}
+					else
+					{
+						excludesfile = fs.Resolve(null, path);
+					}
+					LoadRulesFromFile(r, excludesfile);
+				}
+				FilePath exclude = fs.Resolve(repository.Directory, "info/exclude");
+				LoadRulesFromFile(r, exclude);
+				return r.GetRules().IsEmpty() ? null : r;
+			}
+
+			/// <exception cref="System.IO.FileNotFoundException"></exception>
+			/// <exception cref="System.IO.IOException"></exception>
+			private void LoadRulesFromFile(IgnoreNode r, FilePath exclude)
+			{
 				if (exclude.Exists())
 				{
 					FileInputStream @in = new FileInputStream(exclude);
@@ -1142,7 +1163,6 @@ namespace NGit.Treewalk
 						@in.Close();
 					}
 				}
-				return r.GetRules().IsEmpty() ? null : r;
 			}
 		}
 

@@ -41,6 +41,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System.IO;
 using System.Text;
 using NGit;
 using Sharpen;
@@ -49,134 +50,94 @@ namespace NGit.Transport
 {
 	/// <summary>Write progress messages out to the sideband channel.</summary>
 	/// <remarks>Write progress messages out to the sideband channel.</remarks>
-	internal class SideBandProgressMonitor : ProgressMonitor
+	internal class SideBandProgressMonitor : BatchingProgressMonitor
 	{
-		private PrintWriter @out;
+		private readonly OutputStream @out;
 
-		private bool output;
-
-		private long taskBeganAt;
-
-		private long lastOutput;
-
-		private string msg;
-
-		private int lastWorked;
-
-		private int totalWork;
+		private bool write;
 
 		internal SideBandProgressMonitor(OutputStream os)
 		{
-			@out = new PrintWriter(new OutputStreamWriter(os, Constants.CHARSET));
+			@out = os;
+			write = true;
 		}
 
-		public override void Start(int totalTasks)
+		protected internal override void OnUpdate(string taskName, int workCurr)
 		{
-			// Ignore the number of tasks.
-			taskBeganAt = Runtime.CurrentTimeMillis();
-			lastOutput = taskBeganAt;
+			StringBuilder s = new StringBuilder();
+			Format(s, taskName, workCurr);
+			s.Append("   \r");
+			Send(s);
 		}
 
-		public override void BeginTask(string title, int total)
+		protected internal override void OnEndTask(string taskName, int workCurr)
 		{
-			EndTask();
-			msg = title;
-			lastWorked = 0;
-			totalWork = total;
+			StringBuilder s = new StringBuilder();
+			Format(s, taskName, workCurr);
+			s.Append(", done\n");
+			Send(s);
 		}
 
-		public override void Update(int completed)
+		private void Format(StringBuilder s, string taskName, int workCurr)
 		{
-			if (msg == null)
-			{
-				return;
-			}
-			int cmp = lastWorked + completed;
-			long now = Runtime.CurrentTimeMillis();
-			if (!output && now - taskBeganAt < 500)
-			{
-				return;
-			}
-			if (totalWork == UNKNOWN)
-			{
-				if (now - lastOutput >= 500)
-				{
-					Display(cmp, null);
-					lastOutput = now;
-				}
-			}
-			else
-			{
-				if ((cmp * 100 / totalWork) != (lastWorked * 100) / totalWork || now - lastOutput
-					 >= 500)
-				{
-					Display(cmp, null);
-					lastOutput = now;
-				}
-			}
-			lastWorked = cmp;
-			output = true;
+			s.Append(taskName);
+			s.Append(": ");
+			s.Append(workCurr);
 		}
 
-		private void Display(int cmp, string eol)
+		protected internal override void OnUpdate(string taskName, int cmp, int totalWork
+			, int pcnt)
 		{
-			StringBuilder m = new StringBuilder();
-			m.Append(msg);
-			m.Append(": ");
-			if (totalWork == UNKNOWN)
-			{
-				m.Append(cmp);
-			}
-			else
-			{
-				int pcnt = (cmp * 100 / totalWork);
-				if (pcnt < 100)
-				{
-					m.Append(' ');
-				}
-				if (pcnt < 10)
-				{
-					m.Append(' ');
-				}
-				m.Append(pcnt);
-				m.Append("% (");
-				m.Append(cmp);
-				m.Append("/");
-				m.Append(totalWork);
-				m.Append(")");
-			}
-			if (eol != null)
-			{
-				m.Append(eol);
-			}
-			else
-			{
-				m.Append("   \r");
-			}
-			@out.Write(m);
-			@out.Flush();
+			StringBuilder s = new StringBuilder();
+			Format(s, taskName, cmp, totalWork, pcnt);
+			s.Append("   \r");
+			Send(s);
 		}
 
-		public override bool IsCancelled()
+		protected internal override void OnEndTask(string taskName, int cmp, int totalWork
+			, int pcnt)
 		{
-			return false;
+			StringBuilder s = new StringBuilder();
+			Format(s, taskName, cmp, totalWork, pcnt);
+			s.Append("\n");
+			Send(s);
 		}
 
-		public override void EndTask()
+		private void Format(StringBuilder s, string taskName, int cmp, int totalWork, int
+			 pcnt)
 		{
-			if (output)
+			s.Append(taskName);
+			s.Append(": ");
+			if (pcnt < 100)
 			{
-				if (totalWork == UNKNOWN)
+				s.Append(' ');
+			}
+			if (pcnt < 10)
+			{
+				s.Append(' ');
+			}
+			s.Append(pcnt);
+			s.Append("% (");
+			s.Append(cmp);
+			s.Append("/");
+			s.Append(totalWork);
+			s.Append(")");
+		}
+
+		private void Send(StringBuilder s)
+		{
+			if (write)
+			{
+				try
 				{
-					Display(lastWorked, ", done\n");
+					@out.Write(Constants.Encode(s.ToString()));
+					@out.Flush();
 				}
-				else
+				catch (IOException)
 				{
-					Display(totalWork, "\n");
+					write = false;
 				}
 			}
-			output = false;
-			msg = null;
 		}
 	}
 }

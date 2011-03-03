@@ -130,7 +130,10 @@ namespace NGit.Api
 					transport.SetTagOpt(tagOption);
 				}
 				transport.SetFetchThin(thin);
-				transport.SetCredentialsProvider(credentialsProvider);
+				if (credentialsProvider != null)
+				{
+					transport.SetCredentialsProvider(credentialsProvider);
+				}
 				try
 				{
 					FetchResult result = transport.Fetch(monitor, refSpecs);

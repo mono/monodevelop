@@ -270,6 +270,12 @@ namespace NGit
 		/// <summary>Prefix for tag refs</summary>
 		public static readonly string R_TAGS = "refs/tags/";
 
+		/// <summary>Prefix for notes refs</summary>
+		public static readonly string R_NOTES = "refs/notes/";
+
+		/// <summary>Standard notes ref</summary>
+		public static readonly string R_NOTES_COMMITS = R_NOTES + "commits";
+
 		/// <summary>Prefix for any ref</summary>
 		public static readonly string R_REFS = "refs/";
 

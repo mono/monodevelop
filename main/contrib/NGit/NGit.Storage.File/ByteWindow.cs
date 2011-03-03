@@ -121,7 +121,8 @@ namespace NGit.Storage.File
 		protected internal abstract int Copy(int pos, byte[] dstbuf, int dstoff, int cnt);
 
 		/// <exception cref="System.IO.IOException"></exception>
-		internal abstract void Write(PackOutputStream @out, long pos, int cnt);
+		internal abstract void Write(PackOutputStream @out, long pos, int cnt, MessageDigest
+			 md);
 
 		/// <exception cref="Sharpen.DataFormatException"></exception>
 		internal int SetInput(long pos, Inflater inf)

@@ -122,37 +122,6 @@ namespace NGit.Transport
 			return new TransportGitSsh.JschConnection(this);
 		}
 
-		private static void SqMinimal(StringBuilder cmd, string val)
-		{
-			if (val.Matches("^[a-zA-Z0-9._/-]*$"))
-			{
-				// If the string matches only generally safe characters
-				// that the shell is not going to evaluate specially we
-				// should leave the string unquoted. Not all systems
-				// actually run a shell and over-quoting confuses them
-				// when it comes to the command name.
-				//
-				cmd.Append(val);
-			}
-			else
-			{
-				Sq(cmd, val);
-			}
-		}
-
-		private static void SqAlways(StringBuilder cmd, string val)
-		{
-			Sq(cmd, val);
-		}
-
-		private static void Sq(StringBuilder cmd, string val)
-		{
-			if (val.Length > 0)
-			{
-				cmd.Append(QuotedString.BOURNE.Quote(val));
-			}
-		}
-
 		internal virtual string CommandFor(string exe)
 		{
 			string path = uri.GetPath();
@@ -161,19 +130,9 @@ namespace NGit.Transport
 				path = (Sharpen.Runtime.Substring(uri.GetPath(), 1));
 			}
 			StringBuilder cmd = new StringBuilder();
-			int gitspace = exe.IndexOf("git ");
-			if (gitspace >= 0)
-			{
-				SqMinimal(cmd, Sharpen.Runtime.Substring(exe, 0, gitspace + 3));
-				cmd.Append(' ');
-				SqMinimal(cmd, Sharpen.Runtime.Substring(exe, gitspace + 4));
-			}
-			else
-			{
-				SqMinimal(cmd, exe);
-			}
+			cmd.Append(exe);
 			cmd.Append(' ');
-			SqAlways(cmd, path);
+			cmd.Append(QuotedString.BOURNE.Quote(path));
 			return cmd.ToString();
 		}
 
@@ -206,7 +165,7 @@ namespace NGit.Transport
 			}
 			StringBuilder pfx = new StringBuilder();
 			pfx.Append("fatal: ");
-			SqAlways(pfx, path);
+			pfx.Append(QuotedString.BOURNE.Quote(path));
 			pfx.Append(": ");
 			if (why.StartsWith(pfx.ToString()))
 			{
@@ -305,15 +264,15 @@ namespace NGit.Transport
 				}
 				PipedInputStream pipeIn = new PipedInputStream();
 				StreamCopyThread copier = new StreamCopyThread(pipeIn, @out);
-				PipedOutputStream pipeOut = new _PipedOutputStream_250(this, copier, pipeIn);
+				PipedOutputStream pipeOut = new _PipedOutputStream_221(this, copier, pipeIn);
 				// Just wake early, the thread will terminate anyway.
 				copier.Start();
 				return pipeOut;
 			}
 
-			private sealed class _PipedOutputStream_250 : PipedOutputStream
+			private sealed class _PipedOutputStream_221 : PipedOutputStream
 			{
-				public _PipedOutputStream_250(JschConnection _enclosing, StreamCopyThread copier, 
+				public _PipedOutputStream_221(JschConnection _enclosing, StreamCopyThread copier, 
 					PipedInputStream baseArg1) : base(baseArg1)
 				{
 					this._enclosing = _enclosing;

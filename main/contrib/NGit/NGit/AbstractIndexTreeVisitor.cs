@@ -51,7 +51,8 @@ namespace NGit
 	/// case about certain events
 	/// </summary>
 	/// <author>dwatson</author>
-	[System.ObsoleteAttribute(@"Use  instead, with a as one of the members.")]
+	[System.ObsoleteAttribute(@"Use NGit.Treewalk.TreeWalk instead, with aNGit.Dircache.DirCacheIterator as one of the members."
+		)]
 	public class AbstractIndexTreeVisitor : IndexTreeVisitor
 	{
 		/// <exception cref="System.IO.IOException"></exception>

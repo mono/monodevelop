@@ -85,9 +85,15 @@ namespace NGit.Storage.File
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
-		internal override void Write(PackOutputStream @out, long pos, int cnt)
+		internal override void Write(PackOutputStream @out, long pos, int cnt, MessageDigest
+			 digest)
 		{
-			@out.Write(array, (int)(pos - start), cnt);
+			int ptr = (int)(pos - start);
+			@out.Write(array, ptr, cnt);
+			if (digest != null)
+			{
+				digest.Update(array, ptr, cnt);
+			}
 		}
 
 		/// <exception cref="Sharpen.DataFormatException"></exception>

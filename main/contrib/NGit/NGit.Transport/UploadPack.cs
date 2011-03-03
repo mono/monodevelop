@@ -46,6 +46,7 @@ using System.IO;
 using NGit;
 using NGit.Errors;
 using NGit.Revwalk;
+using NGit.Revwalk.Filter;
 using NGit.Storage.Pack;
 using NGit.Transport;
 using NGit.Util.IO;
@@ -139,6 +140,10 @@ namespace NGit.Transport
 		/// <remarks>Capabilities requested by the client.</remarks>
 		private readonly ICollection<string> options = new HashSet<string>();
 
+		/// <summary>Raw ObjectIds the client has asked for, before validating them.</summary>
+		/// <remarks>Raw ObjectIds the client has asked for, before validating them.</remarks>
+		private readonly ICollection<ObjectId> wantIds = new HashSet<ObjectId>();
+
 		/// <summary>Objects the client wants to obtain.</summary>
 		/// <remarks>Objects the client wants to obtain.</remarks>
 		private readonly IList<RevObject> wantAll = new AList<RevObject>();
@@ -146,6 +151,10 @@ namespace NGit.Transport
 		/// <summary>Objects on both sides, these don't have to be sent.</summary>
 		/// <remarks>Objects on both sides, these don't have to be sent.</remarks>
 		private readonly IList<RevObject> commonBase = new AList<RevObject>();
+
+		/// <summary>Commit time of the oldest common commit, in seconds.</summary>
+		/// <remarks>Commit time of the oldest common commit, in seconds.</remarks>
+		private int oldestTime;
 
 		/// <summary>
 		/// null if
@@ -181,6 +190,10 @@ namespace NGit.Transport
 
 		private int multiAck = BasePackFetchConnection.MultiAck.OFF;
 
+		private PackWriter.Statistics statistics;
+
+		private UploadPackLogger logger;
+
 		/// <summary>Create a new pack upload for an open repository.</summary>
 		/// <remarks>Create a new pack upload for an open repository.</remarks>
 		/// <param name="copyFrom">the source repository.</param>
@@ -197,6 +210,8 @@ namespace NGit.Transport
 			SAVE = new RevFlagSet();
 			SAVE.AddItem(WANT);
 			SAVE.AddItem(PEER_HAS);
+			SAVE.AddItem(COMMON);
+			SAVE.AddItem(SATISFIED);
 			refFilter = RefFilter.DEFAULT;
 		}
 
@@ -210,6 +225,12 @@ namespace NGit.Transport
 		public RevWalk GetRevWalk()
 		{
 			return walk;
+		}
+
+		/// <returns>all refs which were advertised to the client.</returns>
+		public IDictionary<string, Ref> GetAdvertisedRefs()
+		{
+			return refs;
 		}
 
 		/// <returns>timeout (in seconds) before aborting an IO operation.</returns>
@@ -284,6 +305,14 @@ namespace NGit.Transport
 			this.packConfig = pc;
 		}
 
+		/// <summary>Set the logger.</summary>
+		/// <remarks>Set the logger.</remarks>
+		/// <param name="logger">the logger instance. If null, no logging occurs.</param>
+		public virtual void SetLogger(UploadPackLogger logger)
+		{
+			this.logger = logger;
+		}
+
 		/// <summary>Execute the upload task on the socket.</summary>
 		/// <remarks>Execute the upload task on the socket.</remarks>
 		/// <param name="input">
@@ -341,6 +370,18 @@ namespace NGit.Transport
 			}
 		}
 
+		/// <summary>Get the PackWriter's statistics if a pack was sent to the client.</summary>
+		/// <remarks>Get the PackWriter's statistics if a pack was sent to the client.</remarks>
+		/// <returns>
+		/// statistics about pack output, if a pack was sent. Null if no pack
+		/// was sent, such as during the negotation phase of a smart HTTP
+		/// connection, or if the client was already up-to-date.
+		/// </returns>
+		public virtual PackWriter.Statistics GetPackStatistics()
+		{
+			return statistics;
+		}
+
 		/// <exception cref="System.IO.IOException"></exception>
 		private void Service()
 		{
@@ -361,7 +402,7 @@ namespace NGit.Transport
 				}
 			}
 			RecvWants();
-			if (wantAll.IsEmpty())
+			if (wantIds.IsEmpty())
 			{
 				return;
 			}
@@ -411,7 +452,6 @@ namespace NGit.Transport
 		/// <exception cref="System.IO.IOException"></exception>
 		private void RecvWants()
 		{
-			HashSet<ObjectId> wantIds = new HashSet<ObjectId>();
 			bool isFirst = true;
 			for (; ; )
 			{
@@ -453,69 +493,12 @@ namespace NGit.Transport
 				wantIds.AddItem(ObjectId.FromString(Sharpen.Runtime.Substring(line, 5)));
 				isFirst = false;
 			}
-			if (wantIds.IsEmpty())
-			{
-				return;
-			}
-			AsyncRevObjectQueue q = walk.ParseAny(wantIds.AsIterable (), true);
-			try
-			{
-				for (; ; )
-				{
-					RevObject o;
-					try
-					{
-						o = q.Next();
-					}
-					catch (IOException error)
-					{
-						throw new PackProtocolException(MessageFormat.Format(JGitText.Get().notValid, error
-							.Message), error);
-					}
-					if (o == null)
-					{
-						break;
-					}
-					if (o.Has(WANT))
-					{
-					}
-					else
-					{
-						// Already processed, the client repeated itself.
-						if (advertised.Contains(o))
-						{
-							o.Add(WANT);
-							wantAll.AddItem(o);
-							if (o is RevTag)
-							{
-								o = walk.Peel(o);
-								if (o is RevCommit)
-								{
-									if (!o.Has(WANT))
-									{
-										o.Add(WANT);
-										wantAll.AddItem(o);
-									}
-								}
-							}
-						}
-						else
-						{
-							throw new PackProtocolException(MessageFormat.Format(JGitText.Get().notValid, o.Name
-								));
-						}
-					}
-				}
-			}
-			finally
-			{
-				q.Release();
-			}
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
 		private bool Negotiate()
 		{
+			okToGiveUp = false;
 			ObjectId last = ObjectId.ZeroId;
 			IList<ObjectId> peerHas = new AList<ObjectId>(64);
 			for (; ; )
@@ -583,9 +566,20 @@ namespace NGit.Transport
 			{
 				return last;
 			}
-			// If both sides have the same object; let the client know.
-			//
-			AsyncRevObjectQueue q = walk.ParseAny(peerHas.AsIterable(), false);
+			IList<ObjectId> toParse = peerHas;
+			HashSet<ObjectId> peerHasSet = null;
+			bool needMissing = false;
+			if (wantAll.IsEmpty() && !wantIds.IsEmpty())
+			{
+				// We have not yet parsed the want list. Parse it now.
+				peerHasSet = new HashSet<ObjectId>(peerHas);
+				int cnt = wantIds.Count + peerHasSet.Count;
+				toParse = new AList<ObjectId>(cnt);
+				Sharpen.Collections.AddAll(toParse, wantIds);
+				Sharpen.Collections.AddAll(toParse, peerHasSet);
+				needMissing = true;
+			}
+			AsyncRevObjectQueue q = walk.ParseAny(toParse.AsIterable(), needMissing);
 			try
 			{
 				for (; ; )
@@ -595,15 +589,64 @@ namespace NGit.Transport
 					{
 						obj = q.Next();
 					}
-					catch (MissingObjectException)
+					catch (MissingObjectException notFound)
 					{
+						if (wantIds.Contains(notFound.GetObjectId()))
+						{
+							throw new PackProtocolException(MessageFormat.Format(JGitText.Get().notValid, notFound
+								.Message), notFound);
+						}
 						continue;
 					}
 					if (obj == null)
 					{
 						break;
 					}
+					// If the object is still found in wantIds, the want
+					// list wasn't parsed earlier, and was done in this batch.
+					//
+					if (wantIds.Remove(obj))
+					{
+						if (!advertised.Contains(obj))
+						{
+							throw new PackProtocolException(MessageFormat.Format(JGitText.Get().notValid, obj
+								.Name));
+						}
+						if (!obj.Has(WANT))
+						{
+							obj.Add(WANT);
+							wantAll.AddItem(obj);
+						}
+						if (!(obj is RevCommit))
+						{
+							obj.Add(SATISFIED);
+						}
+						if (obj is RevTag)
+						{
+							RevObject target = walk.Peel(obj);
+							if (target is RevCommit)
+							{
+								if (!target.Has(WANT))
+								{
+									target.Add(WANT);
+									wantAll.AddItem(target);
+								}
+							}
+						}
+						if (!peerHasSet.Contains(obj))
+						{
+							continue;
+						}
+					}
 					last = obj;
+					if (obj is RevCommit)
+					{
+						RevCommit c = (RevCommit)obj;
+						if (oldestTime == 0 || c.CommitTime < oldestTime)
+						{
+							oldestTime = c.CommitTime;
+						}
+					}
 					if (obj.Has(PEER_HAS))
 					{
 						continue;
@@ -618,6 +661,8 @@ namespace NGit.Transport
 					{
 						case BasePackFetchConnection.MultiAck.OFF:
 						{
+							// If both sides have the same object; let the client know.
+							//
 							if (commonBase.Count == 1)
 							{
 								pckOut.WriteString("ACK " + obj.Name + "\n");
@@ -712,7 +757,7 @@ namespace NGit.Transport
 			{
 				foreach (RevObject obj in wantAll)
 				{
-					if (WantSatisfied(obj))
+					if (!WantSatisfied(obj))
 					{
 						return false;
 					}
@@ -732,13 +777,12 @@ namespace NGit.Transport
 			{
 				return true;
 			}
-			if (!(want is RevCommit))
-			{
-				want.Add(SATISFIED);
-				return true;
-			}
 			walk.ResetRetain(SAVE);
 			walk.MarkStart((RevCommit)want);
+			if (oldestTime != 0)
+			{
+				walk.SetRevFilter(CommitTimeRevFilter.After(oldestTime * 1000L));
+			}
 			for (; ; )
 			{
 				RevCommit c = walk.Next();
@@ -788,35 +832,88 @@ namespace NGit.Transport
 			try
 			{
 				pw.SetUseCachedPacks(true);
+				pw.SetReuseDeltaCommits(true);
 				pw.SetDeltaBaseAsOffset(options.Contains(OPTION_OFS_DELTA));
 				pw.SetThin(options.Contains(OPTION_THIN_PACK));
-				pw.PreparePack(pm, wantAll, commonBase);
+				pw.SetReuseValidatingObjects(false);
+				if (commonBase.IsEmpty())
+				{
+					ICollection<ObjectId> tagTargets = new HashSet<ObjectId>();
+					foreach (Ref @ref in refs.Values)
+					{
+						if (@ref.GetPeeledObjectId() != null)
+						{
+							tagTargets.AddItem(@ref.GetPeeledObjectId());
+						}
+						else
+						{
+							if (@ref.GetObjectId() == null)
+							{
+								continue;
+							}
+							else
+							{
+								if (@ref.GetName().StartsWith(Constants.R_HEADS))
+								{
+									tagTargets.AddItem(@ref.GetObjectId());
+								}
+							}
+						}
+					}
+					pw.SetTagTargets(tagTargets);
+				}
+				RevWalk rw = walk;
+				if (wantAll.IsEmpty())
+				{
+					pw.PreparePack(pm, wantIds, commonBase);
+				}
+				else
+				{
+					walk.Reset();
+					ObjectWalk ow = walk.ToObjectWalkWithSameObjects();
+					pw.PreparePack(pm, ow, wantAll, commonBase);
+					rw = ow;
+				}
 				if (options.Contains(OPTION_INCLUDE_TAG))
 				{
-					foreach (Ref r in refs.Values)
+					foreach (Ref vref in refs.Values)
 					{
-						RevObject o;
-						try
+						Ref @ref = vref;
+						ObjectId objectId = @ref.GetObjectId();
+						// If the object was already requested, skip it.
+						if (wantAll.IsEmpty())
 						{
-							o = walk.ParseAny(r.GetObjectId());
+							if (wantIds.Contains(objectId))
+							{
+								continue;
+							}
 						}
-						catch (IOException)
+						else
+						{
+							RevObject obj = rw.LookupOrNull(objectId);
+							if (obj != null && obj.Has(WANT))
+							{
+								continue;
+							}
+						}
+						if (!@ref.IsPeeled())
+						{
+							@ref = db.Peel(@ref);
+						}
+						ObjectId peeledId = @ref.GetPeeledObjectId();
+						if (peeledId == null)
 						{
 							continue;
 						}
-						if (o.Has(WANT) || !(o is RevTag))
+						objectId = @ref.GetObjectId();
+						if (pw.WillInclude(peeledId) && !pw.WillInclude(objectId))
 						{
-							continue;
-						}
-						RevTag t = (RevTag)o;
-						if (!pw.WillInclude(t) && pw.WillInclude(t.GetObject()))
-						{
-							pw.AddObject(t);
+							pw.AddObject(rw.ParseAny(objectId));
 						}
 					}
 				}
 				pw.WritePack(pm, NullProgressMonitor.INSTANCE, packOut);
-				packOut.Flush();
+				statistics = pw.GetStatistics();
 				if (msgOut != null)
 				{
 					string msg = pw.GetStatistics().GetMessage() + '\n';
@@ -831,6 +928,10 @@ namespace NGit.Transport
 			if (sideband)
 			{
 				pckOut.End();
+			}
+			if (logger != null && statistics != null)
+			{
+				logger.OnPackStatistics(statistics);
 			}
 		}
 	}

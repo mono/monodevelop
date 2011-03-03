@@ -256,6 +256,11 @@ namespace NGit.Revwalk
 			return false;
 		}
 
+		public override bool RequiresCommitBody()
+		{
+			return false;
+		}
+
 		/// <exception cref="NGit.Errors.MissingObjectException"></exception>
 		/// <exception cref="NGit.Errors.IncorrectObjectTypeException"></exception>
 		/// <exception cref="NGit.Errors.CorruptObjectException"></exception>

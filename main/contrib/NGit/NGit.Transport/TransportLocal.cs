@@ -42,6 +42,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using NGit;
@@ -159,26 +160,20 @@ namespace NGit.Transport
 		{
 			try
 			{
-				string[] args;
-				if (cmd.StartsWith("git-"))
-				{
-					args = new string[] { "git", Sharpen.Runtime.Substring(cmd, 4), PWD };
-				}
-				else
-				{
-					int gitspace = cmd.IndexOf("git ");
-					if (gitspace >= 0)
-					{
-						string git = Sharpen.Runtime.Substring(cmd, 0, gitspace + 3);
-						string subcmd = Sharpen.Runtime.Substring(cmd, gitspace + 4);
-						args = new string[] { git, subcmd, PWD };
-					}
-					else
-					{
-						args = new string[] { cmd, PWD };
-					}
-				}
-				return Runtime.GetRuntime().Exec(args, null, remoteGitDir);
+				string[] args = new string[] { "." };
+				ProcessStartInfo proc = local.FileSystem.RunInShell(cmd, args);
+				proc.WorkingDirectory = remoteGitDir;
+				// Remove the same variables CGit does.
+				var env = proc.EnvironmentVariables;
+				env.Remove ("GIT_ALTERNATE_OBJECT_DIRECTORIES");
+				env.Remove ("GIT_CONFIG");
+				env.Remove ("GIT_CONFIG_PARAMETERS");
+				env.Remove ("GIT_DIR");
+				env.Remove ("GIT_WORK_TREE");
+				env.Remove ("GIT_GRAFT_FILE");
+				env.Remove ("GIT_INDEX_FILE");
+				env.Remove ("GIT_NO_REPLACE_OBJECTS");
+				return proc.Start();
 			}
 			catch (IOException err)
 			{
@@ -212,7 +207,7 @@ namespace NGit.Transport
 				{
 					in_r = new PipedInputStream();
 					in_w = new PipedOutputStream(in_r);
-					out_r = new _PipedInputStream_192();
+					out_r = new _PipedInputStream_193();
 					// The client (BasePackFetchConnection) can write
 					// a huge burst before it reads again. We need to
 					// force the buffer to be big enough, otherwise it
@@ -224,7 +219,7 @@ namespace NGit.Transport
 					dst.Close();
 					throw new TransportException(this.uri, JGitText.Get().cannotConnectPipes, err);
 				}
-				this.worker = new _Thread_207(this, dst, out_r, in_w, "JGit-Upload-Pack");
+				this.worker = new _Thread_208(this, dst, out_r, in_w, "JGit-Upload-Pack");
 				// Client side of the pipes should report the problem.
 				// Clients side will notice we went away, and report.
 				// Ignore close failure, we probably crashed above.
@@ -234,9 +229,9 @@ namespace NGit.Transport
 				this.ReadAdvertisedRefs();
 			}
 
-			private sealed class _PipedInputStream_192 : PipedInputStream
+			private sealed class _PipedInputStream_193 : PipedInputStream
 			{
-				public _PipedInputStream_192()
+				public _PipedInputStream_193()
 				{
 					{
 						this.buffer = new byte[BasePackFetchConnection.MIN_CLIENT_BUFFER];
@@ -244,9 +239,9 @@ namespace NGit.Transport
 				}
 			}
 
-			private sealed class _Thread_207 : Sharpen.Thread
+			private sealed class _Thread_208 : Sharpen.Thread
 			{
-				public _Thread_207(InternalLocalFetchConnection _enclosing, Repository dst, PipedInputStream
+				public _Thread_208(InternalLocalFetchConnection _enclosing, Repository dst, PipedInputStream
 					 out_r, PipedOutputStream in_w, string baseArg1) : base(baseArg1)
 				{
 					this._enclosing = _enclosing;
@@ -419,7 +414,7 @@ namespace NGit.Transport
 					dst.Close();
 					throw new TransportException(this.uri, JGitText.Get().cannotConnectPipes, err);
 				}
-				this.worker = new _Thread_339(this, dst, out_r, in_w, "JGit-Receive-Pack");
+				this.worker = new _Thread_340(this, dst, out_r, in_w, "JGit-Receive-Pack");
 				// Client side of the pipes should report the problem.
 				// Clients side will notice we went away, and report.
 				// Ignore close failure, we probably crashed above.
@@ -429,9 +424,9 @@ namespace NGit.Transport
 				this.ReadAdvertisedRefs();
 			}
 
-			private sealed class _Thread_339 : Sharpen.Thread
+			private sealed class _Thread_340 : Sharpen.Thread
 			{
-				public _Thread_339(InternalLocalPushConnection _enclosing, Repository dst, PipedInputStream
+				public _Thread_340(InternalLocalPushConnection _enclosing, Repository dst, PipedInputStream
 					 out_r, PipedOutputStream in_w, string baseArg1) : base(baseArg1)
 				{
 					this._enclosing = _enclosing;
@@ -445,7 +440,7 @@ namespace NGit.Transport
 					try
 					{
 						ReceivePack rp = this._enclosing._enclosing.CreateReceivePack(dst);
-						rp.Receive(out_r, in_w, System.Console.Error);
+						rp.Receive(out_r, in_w, System.Console.OpenStandardError ());
 					}
 					catch (IOException)
 					{

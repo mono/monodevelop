@@ -42,15 +42,15 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using NGit;
+using NGit.Errors;
 using NGit.Storage.Pack;
 using NGit.Transport;
-using NGit.Util;
+using NGit.Transport.Resolver;
 using Sharpen;
 
 namespace NGit.Transport
@@ -71,12 +71,6 @@ namespace NGit.Transport
 
 		private readonly ThreadGroup processors;
 
-		private volatile bool exportAll;
-
-		private IDictionary<string, Repository> exports;
-
-		private ICollection<FilePath> exportBase;
-
 		private bool run;
 
 		private Sharpen.Thread acceptThread;
@@ -84,6 +78,12 @@ namespace NGit.Transport
 		private int timeout;
 
 		private PackConfig packConfig;
+
+		private volatile RepositoryResolver<DaemonClient> repositoryResolver;
+
+		private volatile UploadPackFactory<DaemonClient> uploadPackFactory;
+
+		private volatile ReceivePackFactory<DaemonClient> receivePackFactory;
 
 		/// <summary>Configure a daemon to listen on any available network port.</summary>
 		/// <remarks>Configure a daemon to listen on any available network port.</remarks>
@@ -100,16 +100,65 @@ namespace NGit.Transport
 		public Daemon(IPEndPoint addr)
 		{
 			myAddress = addr;
-			exports = new ConcurrentHashMap<string, Repository>();
-			exportBase = new CopyOnWriteArrayList<FilePath>();
 			processors = new ThreadGroup("Git-Daemon");
-			services = new DaemonService[] { new _DaemonService_115(this, "upload-pack", "uploadpack"
-				), new _DaemonService_129(this, "receive-pack", "receivepack") };
+			repositoryResolver = RepositoryResolver<DaemonClient>.NONE;
+			uploadPackFactory = new _UploadPackFactory_112(this);
+			receivePackFactory = new _ReceivePackFactory_123(this);
+			services = new DaemonService[] { new _DaemonService_143(this, "upload-pack", "uploadpack"
+				), new _DaemonService_158(this, "receive-pack", "receivepack") };
 		}
 
-		private sealed class _DaemonService_115 : DaemonService
+		private sealed class _UploadPackFactory_112 : UploadPackFactory<DaemonClient>
 		{
-			public _DaemonService_115(Daemon _enclosing, string baseArg1, string baseArg2) : 
+			public _UploadPackFactory_112(Daemon _enclosing)
+			{
+				this._enclosing = _enclosing;
+			}
+
+			/// <exception cref="NGit.Transport.Resolver.ServiceNotEnabledException"></exception>
+			/// <exception cref="NGit.Transport.Resolver.ServiceNotAuthorizedException"></exception>
+			public override UploadPack Create(DaemonClient req, Repository db)
+			{
+				UploadPack up = new UploadPack(db);
+				up.SetTimeout(this._enclosing.GetTimeout());
+				up.SetPackConfig(this._enclosing.GetPackConfig());
+				return up;
+			}
+
+			private readonly Daemon _enclosing;
+		}
+
+		private sealed class _ReceivePackFactory_123 : ReceivePackFactory<DaemonClient>
+		{
+			public _ReceivePackFactory_123(Daemon _enclosing)
+			{
+				this._enclosing = _enclosing;
+			}
+
+			/// <exception cref="NGit.Transport.Resolver.ServiceNotEnabledException"></exception>
+			/// <exception cref="NGit.Transport.Resolver.ServiceNotAuthorizedException"></exception>
+			public override ReceivePack Create(DaemonClient req, Repository db)
+			{
+				ReceivePack rp = new ReceivePack(db);
+				IPAddress peer = req.GetRemoteAddress();
+				string host = peer.ToString();
+				if (host == null)
+				{
+					host = peer.GetHostAddress();
+				}
+				string name = "anonymous";
+				string email = name + "@" + host;
+				rp.SetRefLogIdent(new PersonIdent(name, email));
+				rp.SetTimeout(this._enclosing.GetTimeout());
+				return rp;
+			}
+
+			private readonly Daemon _enclosing;
+		}
+
+		private sealed class _DaemonService_143 : DaemonService
+		{
+			public _DaemonService_143(Daemon _enclosing, string baseArg1, string baseArg2) : 
 				base(baseArg1, baseArg2)
 			{
 				this._enclosing = _enclosing;
@@ -119,21 +168,22 @@ namespace NGit.Transport
 			}
 
 			/// <exception cref="System.IO.IOException"></exception>
+			/// <exception cref="NGit.Transport.Resolver.ServiceNotEnabledException"></exception>
+			/// <exception cref="NGit.Transport.Resolver.ServiceNotAuthorizedException"></exception>
 			internal override void Execute(DaemonClient dc, Repository db)
 			{
-				UploadPack rp = new UploadPack(db);
+				UploadPack up = this._enclosing.uploadPackFactory.Create(dc, db);
 				InputStream @in = dc.GetInputStream();
-				rp.SetTimeout(this._enclosing.GetTimeout());
-				rp.SetPackConfig(this._enclosing.packConfig);
-				rp.Upload(@in, dc.GetOutputStream(), null);
+				OutputStream @out = dc.GetOutputStream();
+				up.Upload(@in, @out, null);
 			}
 
 			private readonly Daemon _enclosing;
 		}
 
-		private sealed class _DaemonService_129 : DaemonService
+		private sealed class _DaemonService_158 : DaemonService
 		{
-			public _DaemonService_129(Daemon _enclosing, string baseArg1, string baseArg2) : 
+			public _DaemonService_158(Daemon _enclosing, string baseArg1, string baseArg2) : 
 				base(baseArg1, baseArg2)
 			{
 				this._enclosing = _enclosing;
@@ -143,21 +193,14 @@ namespace NGit.Transport
 			}
 
 			/// <exception cref="System.IO.IOException"></exception>
+			/// <exception cref="NGit.Transport.Resolver.ServiceNotEnabledException"></exception>
+			/// <exception cref="NGit.Transport.Resolver.ServiceNotAuthorizedException"></exception>
 			internal override void Execute(DaemonClient dc, Repository db)
 			{
-				IPAddress peer = dc.GetRemoteAddress();
-				string host = peer.ToString();
-				if (host == null)
-				{
-					host = peer.GetHostAddress();
-				}
-				ReceivePack rp = new ReceivePack(db);
+				ReceivePack rp = this._enclosing.receivePackFactory.Create(dc, db);
 				InputStream @in = dc.GetInputStream();
-				string name = "anonymous";
-				string email = name + "@" + host;
-				rp.SetRefLogIdent(new PersonIdent(name, email));
-				rp.SetTimeout(this._enclosing.GetTimeout());
-				rp.Receive(@in, dc.GetOutputStream(), null);
+				OutputStream @out = dc.GetOutputStream();
+				rp.Receive(@in, @out, null);
 			}
 
 			private readonly Daemon _enclosing;
@@ -201,65 +244,6 @@ namespace NGit.Transport
 			}
 		}
 
-		/// <returns>
-		/// false if <code>git-daemon-export-ok</code> is required to export
-		/// a repository; true if <code>git-daemon-export-ok</code> is
-		/// ignored.
-		/// </returns>
-		/// <seealso cref="SetExportAll(bool)">SetExportAll(bool)</seealso>
-		public virtual bool IsExportAll()
-		{
-			return exportAll;
-		}
-
-		/// <summary>Set whether or not to export all repositories.</summary>
-		/// <remarks>
-		/// Set whether or not to export all repositories.
-		/// <p>
-		/// If false (the default), repositories must have a
-		/// <code>git-daemon-export-ok</code> file to be accessed through this
-		/// daemon.
-		/// <p>
-		/// If true, all repositories are available through the daemon, whether or
-		/// not <code>git-daemon-export-ok</code> exists.
-		/// </remarks>
-		/// <param name="export"></param>
-		public virtual void SetExportAll(bool export)
-		{
-			exportAll = export;
-		}
-
-		/// <summary>Add a single repository to the set that is exported by this daemon.</summary>
-		/// <remarks>
-		/// Add a single repository to the set that is exported by this daemon.
-		/// <p>
-		/// The existence (or lack-thereof) of <code>git-daemon-export-ok</code> is
-		/// ignored by this method. The repository is always published.
-		/// </remarks>
-		/// <param name="name">name the repository will be published under.</param>
-		/// <param name="db">the repository instance.</param>
-		public virtual void ExportRepository(string name, Repository db)
-		{
-			if (!name.EndsWith(Constants.DOT_GIT_EXT))
-			{
-				name = name + Constants.DOT_GIT_EXT;
-			}
-			exports.Put(name, db);
-			RepositoryCache.Register(db);
-		}
-
-		/// <summary>Recursively export all Git repositories within a directory.</summary>
-		/// <remarks>Recursively export all Git repositories within a directory.</remarks>
-		/// <param name="dir">
-		/// the directory to export. This directory must not itself be a
-		/// git repository, but any directory below it which has a file
-		/// named <code>git-daemon-export-ok</code> will be published.
-		/// </param>
-		public virtual void ExportDirectory(FilePath dir)
-		{
-			exportBase.AddItem(dir);
-		}
-
 		/// <returns>timeout (in seconds) before aborting an IO operation.</returns>
 		public virtual int GetTimeout()
 		{
@@ -278,6 +262,12 @@ namespace NGit.Transport
 			timeout = seconds;
 		}
 
+		/// <returns>configuration controlling packing, may be null.</returns>
+		public virtual PackConfig GetPackConfig()
+		{
+			return packConfig;
+		}
+
 		/// <summary>Set the configuration used by the pack generator.</summary>
 		/// <remarks>Set the configuration used by the pack generator.</remarks>
 		/// <param name="pc">
@@ -287,6 +277,46 @@ namespace NGit.Transport
 		public virtual void SetPackConfig(PackConfig pc)
 		{
 			this.packConfig = pc;
+		}
+
+		/// <summary>Set the resolver used to locate a repository by name.</summary>
+		/// <remarks>Set the resolver used to locate a repository by name.</remarks>
+		/// <param name="resolver">the resolver instance.</param>
+		public virtual void SetRepositoryResolver(RepositoryResolver<DaemonClient> resolver
+			)
+		{
+			repositoryResolver = resolver;
+		}
+
+		/// <summary>Set the factory to construct and configure per-request UploadPack.</summary>
+		/// <remarks>Set the factory to construct and configure per-request UploadPack.</remarks>
+		/// <param name="factory">the factory. If null upload-pack is disabled.</param>
+		public virtual void SetUploadPackFactory(UploadPackFactory<DaemonClient> factory)
+		{
+			if (factory != null)
+			{
+				uploadPackFactory = factory;
+			}
+			else
+			{
+				uploadPackFactory = UploadPackFactory<DaemonClient>.DISABLED;
+			}
+		}
+
+		/// <summary>Set the factory to construct and configure per-request ReceivePack.</summary>
+		/// <remarks>Set the factory to construct and configure per-request ReceivePack.</remarks>
+		/// <param name="factory">the factory. If null receive-pack is disabled.</param>
+		public virtual void SetReceivePackFactory(ReceivePackFactory<DaemonClient> factory
+			)
+		{
+			if (factory != null)
+			{
+				receivePackFactory = factory;
+			}
+			else
+			{
+				receivePackFactory = ReceivePackFactory<DaemonClient>.DISABLED;
+			}
 		}
 
 		/// <summary>Start this daemon on a background thread.</summary>
@@ -306,16 +336,16 @@ namespace NGit.Transport
 					.Port : 0, BACKLOG, myAddress != null ? myAddress.Address : null);
 				myAddress = (IPEndPoint)listenSock.LocalEndPoint;
 				run = true;
-				acceptThread = new _Thread_278(this, listenSock, processors, "Git-Daemon-Accept");
+				acceptThread = new _Thread_289(this, listenSock, processors, "Git-Daemon-Accept");
 				// Test again to see if we should keep accepting.
 				//
 				acceptThread.Start();
 			}
 		}
 
-		private sealed class _Thread_278 : Sharpen.Thread
+		private sealed class _Thread_289 : Sharpen.Thread
 		{
-			public _Thread_278(Daemon _enclosing, Socket listenSock, ThreadGroup baseArg1, string
+			public _Thread_289(Daemon _enclosing, Socket listenSock, ThreadGroup baseArg1, string
 				 baseArg2) : base(baseArg1, baseArg2)
 			{
 				this._enclosing = _enclosing;
@@ -390,13 +420,13 @@ namespace NGit.Transport
 			{
 				dc.SetRemoteAddress(((IPEndPoint)peer).Address);
 			}
-			new _Thread_324(dc, s, processors, "Git-Daemon-Client " + peer.ToString()).Start(
+			new _Thread_335(dc, s, processors, "Git-Daemon-Client " + peer.ToString()).Start(
 				);
 		}
 
-		private sealed class _Thread_324 : Sharpen.Thread
+		private sealed class _Thread_335 : Sharpen.Thread
 		{
-			public _Thread_324(DaemonClient dc, Socket s, ThreadGroup baseArg1, string baseArg2
+			public _Thread_335(DaemonClient dc, Socket s, ThreadGroup baseArg1, string baseArg2
 				) : base(baseArg1, baseArg2)
 			{
 				this.dc = dc;
@@ -409,8 +439,20 @@ namespace NGit.Transport
 				{
 					dc.Execute(s);
 				}
+				catch (RepositoryNotFoundException)
+				{
+				}
+				catch (ServiceNotEnabledException)
+				{
+				}
+				catch (ServiceNotAuthorizedException)
+				{
+				}
 				catch (IOException e)
 				{
+					// Ignored. Client cannot use this repository.
+					// Ignored. Client cannot use this repository.
+					// Ignored. Client cannot use this repository.
 					// Ignore unexpected IO exceptions from clients
 					Sharpen.Runtime.PrintStackTrace(e);
 				}
@@ -455,7 +497,7 @@ namespace NGit.Transport
 			}
 		}
 
-		internal virtual Repository OpenRepository(string name)
+		internal virtual Repository OpenRepository(DaemonClient client, string name)
 		{
 			// Assume any attempt to use \ was by a Windows client
 			// and correct to the more typical / used in Git URIs.
@@ -467,61 +509,28 @@ namespace NGit.Transport
 			{
 				return null;
 			}
-			// Forbid Windows UNC paths as they might escape the base
-			//
-			if (name.StartsWith("//"))
-			{
-				return null;
-			}
-			// Forbid funny paths which contain an up-reference, they
-			// might be trying to escape and read /../etc/password.
-			//
-			if (name.Contains("/../"))
-			{
-				return null;
-			}
-			name = Sharpen.Runtime.Substring(name, 1);
-			Repository db;
-			db = exports.Get(name.EndsWith(Constants.DOT_GIT_EXT) ? name : name + Constants.DOT_GIT_EXT
-				);
-			if (db != null)
-			{
-				db.IncrementOpen();
-				return db;
-			}
-			foreach (FilePath baseDir in exportBase)
-			{
-				FilePath gitdir = RepositoryCache.FileKey.Resolve(new FilePath(baseDir, name), FS
-					.DETECTED);
-				if (gitdir != null && CanExport(gitdir))
-				{
-					return OpenRepository(gitdir);
-				}
-			}
-			return null;
-		}
-
-		private static Repository OpenRepository(FilePath gitdir)
-		{
 			try
 			{
-				return RepositoryCache.Open(RepositoryCache.FileKey.Exact(gitdir, FS.DETECTED));
+				return repositoryResolver.Open(client, Sharpen.Runtime.Substring(name, 1));
 			}
-			catch (IOException)
+			catch (RepositoryNotFoundException)
 			{
 				// null signals it "wasn't found", which is all that is suitable
 				// for the remote client to know.
 				return null;
 			}
-		}
-
-		private bool CanExport(FilePath d)
-		{
-			if (IsExportAll())
+			catch (ServiceNotAuthorizedException)
 			{
-				return true;
+				// null signals it "wasn't found", which is all that is suitable
+				// for the remote client to know.
+				return null;
 			}
-			return new FilePath(d, "git-daemon-export-ok").Exists();
+			catch (ServiceNotEnabledException)
+			{
+				// null signals it "wasn't found", which is all that is suitable
+				// for the remote client to know.
+				return null;
+			}
 		}
 	}
 }

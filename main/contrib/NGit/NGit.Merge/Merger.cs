@@ -275,8 +275,7 @@ namespace NGit.Merge
 		/// Execute the merge.
 		/// <p>
 		/// This method is called from
-		/// <see cref="Merge(org.eclipse.jgit.lib.AnyObjectId[])">Merge(org.eclipse.jgit.lib.AnyObjectId[])
-		/// 	</see>
+		/// <see cref="Merge(NGit.AnyObjectId[])">Merge(NGit.AnyObjectId[])</see>
 		/// after the
 		/// <see cref="sourceObjects">sourceObjects</see>
 		/// ,
@@ -302,8 +301,7 @@ namespace NGit.Merge
 
 		/// <returns>
 		/// resulting tree, if
-		/// <see cref="Merge(org.eclipse.jgit.lib.AnyObjectId[])">Merge(org.eclipse.jgit.lib.AnyObjectId[])
-		/// 	</see>
+		/// <see cref="Merge(NGit.AnyObjectId[])">Merge(NGit.AnyObjectId[])</see>
 		/// returned true.
 		/// </returns>
 		public abstract ObjectId GetResultTreeId();

@@ -7,9 +7,16 @@ namespace Sharpen
 {
 	internal class Executors
 	{
+		static ThreadFactory defaultThreadFactory = new ThreadFactory ();
+		
 		public static ExecutorService NewFixedThreadPool (int threads)
 		{
 			return new FixedThreadPoolExecutorService ();
+		}
+		
+		public static ThreadFactory DefaultThreadFactory ()
+		{
+			return defaultThreadFactory;
 		}
 	}
 	

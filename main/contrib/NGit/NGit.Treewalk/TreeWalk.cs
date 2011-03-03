@@ -111,11 +111,26 @@ namespace NGit.Treewalk
 		public static NGit.Treewalk.TreeWalk ForPath(NGit.ObjectReader reader, string path
 			, params AnyObjectId[] trees)
 		{
-			NGit.Treewalk.TreeWalk r = new NGit.Treewalk.TreeWalk(reader);
-			r.Filter = PathFilterGroup.CreateFromStrings(Collections.Singleton(path));
-			r.Recursive = r.Filter.ShouldBeRecursive();
-			r.Reset(trees);
-			return r.Next() ? r : null;
+			NGit.Treewalk.TreeWalk tw = new NGit.Treewalk.TreeWalk(reader);
+			PathFilter f = PathFilter.Create(path);
+			tw.Filter = f;
+			tw.Reset(trees);
+			tw.Recursive = false;
+			while (tw.Next())
+			{
+				if (f.IsDone(tw))
+				{
+					return tw;
+				}
+				else
+				{
+					if (tw.IsSubtree)
+					{
+						tw.EnterSubtree();
+					}
+				}
+			}
+			return null;
 		}
 
 		/// <summary>Open a tree walk and filter to exactly one path.</summary>
@@ -848,6 +863,12 @@ namespace NGit.Treewalk
 				System.Array.Copy(t.path, 0, r, 0, n);
 				return r;
 			}
+		}
+
+		/// <returns>The path length of the current entry.</returns>
+		public virtual int GetPathLength()
+		{
+			return currentHead.pathLen;
 		}
 
 		/// <summary>Test if the supplied path matches the current entry's path.</summary>

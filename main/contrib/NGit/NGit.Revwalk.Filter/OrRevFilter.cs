@@ -128,10 +128,13 @@ namespace NGit.Revwalk.Filter
 
 			private readonly RevFilter b;
 
+			private readonly bool requiresCommitBody;
+
 			internal Binary(RevFilter one, RevFilter two)
 			{
 				a = one;
 				b = two;
+				requiresCommitBody = a.RequiresCommitBody() || b.RequiresCommitBody();
 			}
 
 			/// <exception cref="NGit.Errors.MissingObjectException"></exception>
@@ -140,6 +143,11 @@ namespace NGit.Revwalk.Filter
 			public override bool Include(RevWalk walker, RevCommit c)
 			{
 				return a.Include(walker, c) || b.Include(walker, c);
+			}
+
+			public override bool RequiresCommitBody()
+			{
+				return requiresCommitBody;
 			}
 
 			public override RevFilter Clone()
@@ -157,9 +165,17 @@ namespace NGit.Revwalk.Filter
 		{
 			private readonly RevFilter[] subfilters;
 
+			private readonly bool requiresCommitBody;
+
 			internal List(RevFilter[] list)
 			{
 				subfilters = list;
+				bool rcb = false;
+				foreach (RevFilter filter in subfilters)
+				{
+					rcb |= filter.RequiresCommitBody();
+				}
+				requiresCommitBody = rcb;
 			}
 
 			/// <exception cref="NGit.Errors.MissingObjectException"></exception>
@@ -175,6 +191,11 @@ namespace NGit.Revwalk.Filter
 					}
 				}
 				return false;
+			}
+
+			public override bool RequiresCommitBody()
+			{
+				return requiresCommitBody;
 			}
 
 			public override RevFilter Clone()

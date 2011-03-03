@@ -48,7 +48,7 @@ namespace NGit
 {
 	/// <summary>Tree-ish is an interface for tree-like Git objects.</summary>
 	/// <remarks>Tree-ish is an interface for tree-like Git objects.</remarks>
-	[System.ObsoleteAttribute(@"Use  to parse objects and resolve to a .  See the methodNGit.Revwalk.RevWalk.ParseTree(AnyObjectId) ."
+	[System.ObsoleteAttribute(@"Use NGit.Revwalk.RevWalk to parse objects and resolve to a NGit.Revwalk.RevTree .  See the methodNGit.Revwalk.RevWalk.ParseTree(AnyObjectId) ."
 		)]
 	public interface Treeish
 	{

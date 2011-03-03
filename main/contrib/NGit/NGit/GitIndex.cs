@@ -72,7 +72,7 @@ namespace NGit
 	/// An index can also contain a tree cache which we ignore for now. We drop the
 	/// tree cache when writing the index.
 	/// </remarks>
-	[System.ObsoleteAttribute(@"Use  instead.")]
+	[System.ObsoleteAttribute(@"Use NGit.Dircache.DirCache instead.")]
 	public class GitIndex
 	{
 		/// <summary>Stage 0 represents merged entries.</summary>
@@ -415,7 +415,7 @@ namespace NGit
 		}
 
 		/// <summary>An index entry</summary>
-		[System.ObsoleteAttribute(@"Use .")]
+		[System.ObsoleteAttribute(@"Use NGit.Dircache.DirCacheEntry .")]
 		public class Entry
 		{
 			internal long ctime;

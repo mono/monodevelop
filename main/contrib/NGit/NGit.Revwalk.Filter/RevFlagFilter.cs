@@ -138,6 +138,11 @@ namespace NGit.Revwalk.Filter
 			{
 				return c.HasAll(flags);
 			}
+
+			public override bool RequiresCommitBody()
+			{
+				return false;
+			}
 		}
 
 		private class HasAny : RevFlagFilter
@@ -152,6 +157,11 @@ namespace NGit.Revwalk.Filter
 			public override bool Include(RevWalk walker, RevCommit c)
 			{
 				return c.HasAny(flags);
+			}
+
+			public override bool RequiresCommitBody()
+			{
+				return false;
 			}
 		}
 	}

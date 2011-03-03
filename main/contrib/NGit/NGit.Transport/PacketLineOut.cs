@@ -63,6 +63,8 @@ namespace NGit.Transport
 
 		private readonly byte[] lenbuffer;
 
+		private bool flushOnEnd;
+
 		/// <summary>Create a new packet line writer.</summary>
 		/// <remarks>Create a new packet line writer.</remarks>
 		/// <param name="outputStream">stream.</param>
@@ -70,6 +72,23 @@ namespace NGit.Transport
 		{
 			@out = outputStream;
 			lenbuffer = new byte[5];
+			flushOnEnd = true;
+		}
+
+		/// <summary>
+		/// Set the flush behavior during
+		/// <see cref="End()">End()</see>
+		/// .
+		/// </summary>
+		/// <param name="flushOnEnd">
+		/// if true, a flush-pkt written during
+		/// <see cref="End()">End()</see>
+		/// also
+		/// flushes the underlying stream.
+		/// </param>
+		public virtual void SetFlushOnEnd(bool flushOnEnd)
+		{
+			this.flushOnEnd = flushOnEnd;
 		}
 
 		/// <summary>Write a UTF-8 encoded string as a single length-delimited packet.</summary>
@@ -119,7 +138,10 @@ namespace NGit.Transport
 		{
 			FormatLength(0);
 			@out.Write(lenbuffer, 0, 4);
-			Flush();
+			if (flushOnEnd)
+			{
+				Flush();
+			}
 		}
 
 		/// <summary>Flush the underlying OutputStream.</summary>

@@ -194,5 +194,39 @@ namespace Sharpen
 		{
 			return Environment.TickCount * 1000 * 1000;
 		}
+		
+		public static int CompareOrdinal (string s1, string s2)
+		{
+			return string.CompareOrdinal (s1, s2);
+		}
+
+		public static string GetStringForBytes (byte[] chars)
+		{
+			return Encoding.UTF8.GetString (chars);
+		}
+
+		public static string GetStringForBytes (byte[] chars, string encoding)
+		{
+			return GetEncoding (encoding).GetString (chars);
+		}
+
+		public static string GetStringForBytes (byte[] chars, int start, int len)
+		{
+			return Encoding.UTF8.GetString (chars, start, len);
+		}
+
+		public static string GetStringForBytes (byte[] chars, int start, int len, string encoding)
+		{
+			return GetEncoding (encoding).Decode (chars, start, len);
+		}
+		
+		public static Encoding GetEncoding (string name)
+		{
+//			Encoding e = Encoding.GetEncoding (name, EncoderFallback.ExceptionFallback, DecoderFallback.ExceptionFallback);
+			Encoding e = Encoding.GetEncoding (name.Replace ('_','-'));
+			if (e is UTF8Encoding)
+				return new UTF8Encoding (false, true);
+			return e;
+		}
 	}
 }

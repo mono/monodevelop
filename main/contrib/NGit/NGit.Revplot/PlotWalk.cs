@@ -142,7 +142,7 @@ namespace NGit.Revplot
 				int cmp = this.Kind(o1) - this.Kind(o2);
 				if (cmp == 0)
 				{
-					cmp = o1.GetName().CompareTo(o2.GetName());
+					cmp = Sharpen.Runtime.CompareOrdinal(o1.GetName(), o2.GetName());
 				}
 				return cmp;
 			}

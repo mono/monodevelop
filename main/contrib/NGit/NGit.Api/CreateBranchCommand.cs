@@ -103,7 +103,9 @@ namespace NGit.Api
 			ProcessOptions();
 			try
 			{
-				bool exists = repo.GetRef(name) != null;
+				Ref refToCheck = repo.GetRef(name);
+				bool exists = refToCheck != null && refToCheck.GetName().StartsWith(Constants.R_HEADS
+					);
 				if (!force && exists)
 				{
 					throw new RefAlreadyExistsException(MessageFormat.Format(JGitText.Get().refAlreadExists

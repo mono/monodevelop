@@ -293,5 +293,21 @@ namespace NGit.Util
 
 		/// <returns>the $prefix directory C Git would use.</returns>
 		public abstract FilePath GitPrefix();
+
+		/// <summary>Initialize a ProcesssBuilder to run a command using the system shell.</summary>
+		/// <remarks>Initialize a ProcesssBuilder to run a command using the system shell.</remarks>
+		/// <param name="cmd">
+		/// command to execute. This string should originate from the
+		/// end-user, and thus is platform specific.
+		/// </param>
+		/// <param name="args">
+		/// arguments to pass to command. These should be protected from
+		/// shell evaluation.
+		/// </param>
+		/// <returns>
+		/// a partially completed process builder. Caller should finish
+		/// populating directory, environment, and then start the process.
+		/// </returns>
+		public abstract ProcessStartInfo RunInShell(string cmd, string[] args);
 	}
 }

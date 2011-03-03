@@ -63,7 +63,7 @@ namespace NGit.Diff
 
 			public int Compare(DiffEntry a, DiffEntry b)
 			{
-				int cmp = this.NameOf(a).CompareTo(this.NameOf(b));
+				int cmp = Sharpen.Runtime.CompareOrdinal(this.NameOf(a), this.NameOf(b));
 				if (cmp == 0)
 				{
 					cmp = this.SortOf(a.GetChangeType()) - this.SortOf(b.GetChangeType());

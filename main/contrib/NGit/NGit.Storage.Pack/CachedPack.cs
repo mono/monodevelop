@@ -74,6 +74,31 @@ namespace NGit.Storage.Pack
 		/// <exception cref="System.IO.IOException">if the object count cannot be read.</exception>
 		public abstract long GetObjectCount();
 
+		/// <summary>Get the number of delta objects stored in this pack.</summary>
+		/// <remarks>
+		/// Get the number of delta objects stored in this pack.
+		/// <p>
+		/// This is an optional method, not every cached pack storage system knows
+		/// the precise number of deltas stored within the pack. This number must be
+		/// smaller than
+		/// <see cref="GetObjectCount()">GetObjectCount()</see>
+		/// as deltas are not supposed to span
+		/// across pack files.
+		/// <p>
+		/// This method must be fast, if the only way to determine delta counts is to
+		/// scan the pack file's contents one object at a time, implementors should
+		/// return 0 and avoid the high cost of the scan.
+		/// </remarks>
+		/// <returns>
+		/// the number of deltas; 0 if the number is not known or there are
+		/// no deltas.
+		/// </returns>
+		/// <exception cref="System.IO.IOException">if the delta count cannot be read.</exception>
+		public virtual long GetDeltaCount()
+		{
+			return 0;
+		}
+
 		/// <summary>Determine if the pack contains the requested objects.</summary>
 		/// <remarks>Determine if the pack contains the requested objects.</remarks>
 		/// <?></?>

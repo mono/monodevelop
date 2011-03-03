@@ -544,7 +544,7 @@ namespace NGit
 		{
 			get
 			{
-				return Sharpen.Extensions.CreateString(ToHexCharArray());
+				return new string(ToHexCharArray());
 			}
 		}
 

@@ -78,8 +78,7 @@ namespace NGit.Revwalk
 
 		/// <summary>
 		/// For
-		/// <see cref="Cleanup(org.eclipse.jgit.revwalk.RevCommit[])">Cleanup(org.eclipse.jgit.revwalk.RevCommit[])
-		/// 	</see>
+		/// <see cref="Cleanup(RevCommit[])">Cleanup(RevCommit[])</see>
 		/// to remove duplicate parents.
 		/// </summary>
 		private const int DUPLICATE = RevWalk.TEMP_MARK;

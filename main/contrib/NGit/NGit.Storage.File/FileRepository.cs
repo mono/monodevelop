@@ -249,6 +249,7 @@ namespace NGit.Storage.File
 			refs.Create();
 			objectDatabase.Create();
 			FileUtils.Mkdir(new FilePath(Directory, "branches"));
+			FileUtils.Mkdir(new FilePath(Directory, "hooks"));
 			RefUpdate head = UpdateRef(Constants.HEAD);
 			head.DisableRefLog();
 			head.Link(Constants.R_HEADS + Constants.MASTER);

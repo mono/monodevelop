@@ -272,7 +272,6 @@ namespace NGit.Transport
 		{
 			IList<ObjectId> remoteObjects = new AList<ObjectId>(GetRefs().Count);
 			IList<ObjectId> newObjects = new AList<ObjectId>(refUpdates.Count);
-			long start;
 			PackWriter writer = new PackWriter(transport.GetPackConfig(), local.NewObjectReader
 				());
 			try
@@ -291,17 +290,16 @@ namespace NGit.Transport
 				}
 				writer.SetUseCachedPacks(true);
 				writer.SetThin(thinPack);
+				writer.SetReuseValidatingObjects(false);
 				writer.SetDeltaBaseAsOffset(capableOfsDelta);
 				writer.PreparePack(monitor, newObjects, remoteObjects);
-				start = Runtime.CurrentTimeMillis();
 				writer.WritePack(monitor, monitor, @out);
 			}
 			finally
 			{
 				writer.Release();
 			}
-			@out.Flush();
-			packTransferTime = Runtime.CurrentTimeMillis() - start;
+			packTransferTime = writer.GetStatistics().GetTimeWriting();
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>

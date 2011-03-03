@@ -91,11 +91,12 @@ namespace NGit.Storage.File
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
-		internal virtual void CopyAsIs(PackOutputStream @out, WindowCursor wc)
+		internal virtual void CopyAsIs(PackOutputStream @out, bool validate, WindowCursor
+			 wc)
 		{
 			foreach (string packName in packNames)
 			{
-				GetPackFile(packName).CopyPackAsIs(@out, wc);
+				GetPackFile(packName).CopyPackAsIs(@out, validate, wc);
 			}
 		}
 

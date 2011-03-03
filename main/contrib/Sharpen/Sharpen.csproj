@@ -146,6 +146,10 @@
     <Compile Include="Sharpen\X509Certificate.cs" />
     <Compile Include="Sharpen\TrustManager.cs" />
     <Compile Include="Sharpen\SSLContext.cs" />
+    <Compile Include="Sharpen\AtomicBoolean.cs" />
+    <Compile Include="Sharpen\ScheduledThreadPoolExecutor.cs" />
+    <Compile Include="Sharpen\ThreadFactory.cs" />
+    <Compile Include="Sharpen\ThreadPoolExecutor.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

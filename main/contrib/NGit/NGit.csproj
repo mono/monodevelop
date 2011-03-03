@@ -497,6 +497,15 @@
     <Compile Include="NGit.Storage.Pack\IntSet.cs" />
     <Compile Include="NGit.Storage.File\LocalCachedPack.cs" />
     <Compile Include="NGit.Storage.Pack\CachedPack.cs" />
+    <Compile Include="NGit.Transport\UploadPackLogger.cs" />
+    <Compile Include="NGit.Transport.Resolver\FileResolver.cs" />
+    <Compile Include="NGit.Transport.Resolver\ReceivePackFactory.cs" />
+    <Compile Include="NGit.Transport.Resolver\RepositoryResolver.cs" />
+    <Compile Include="NGit.Transport.Resolver\ServiceNotAuthorizedException.cs" />
+    <Compile Include="NGit.Transport.Resolver\ServiceNotEnabledException.cs" />
+    <Compile Include="NGit.Transport.Resolver\UploadPackFactory.cs" />
+    <Compile Include="NGit.Api\ResetCommand.cs" />
+    <Compile Include="NGit\BatchingProgressMonitor.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

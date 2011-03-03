@@ -60,6 +60,8 @@ namespace NGit.Revplot
 
 		internal static readonly PlotLane[] NO_LANES = new PlotLane[] {  };
 
+		internal static readonly Ref[] NO_REFS = new Ref[] {  };
+
 		internal PlotLane[] passingLanes;
 
 		internal PlotLane lane;
@@ -75,6 +77,7 @@ namespace NGit.Revplot
 		{
 			passingLanes = NO_LANES;
 			children = NO_CHILDREN;
+			refs = NO_REFS;
 		}
 
 		internal virtual void AddPassingLane(PlotLane c)

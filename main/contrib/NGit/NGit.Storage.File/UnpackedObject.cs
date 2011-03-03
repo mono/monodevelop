@@ -373,6 +373,7 @@ namespace NGit.Storage.File
 					break;
 				}
 				avail += n;
+				off += n;
 				cnt -= n;
 			}
 			return avail;

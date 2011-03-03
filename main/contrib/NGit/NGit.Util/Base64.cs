@@ -65,19 +65,19 @@ namespace NGit.Util
 	{
 		/// <summary>The equals sign (=) as a byte.</summary>
 		/// <remarks>The equals sign (=) as a byte.</remarks>
-		private const byte EQUALS_SIGN = unchecked((byte)(byte)('='));
+		private const sbyte EQUALS_SIGN = (sbyte)('=');
 
 		/// <summary>Indicates equals sign in encoding.</summary>
 		/// <remarks>Indicates equals sign in encoding.</remarks>
-		private const byte EQUALS_SIGN_DEC = unchecked((byte)(-1));
+		private const sbyte EQUALS_SIGN_DEC = -1;
 
 		/// <summary>Indicates white space in encoding.</summary>
 		/// <remarks>Indicates white space in encoding.</remarks>
-		private const byte WHITE_SPACE_DEC = unchecked((byte)(-2));
+		private const sbyte WHITE_SPACE_DEC = -2;
 
 		/// <summary>Indicates an invalid byte during decoding.</summary>
 		/// <remarks>Indicates an invalid byte during decoding.</remarks>
-		private const byte INVALID_DEC = unchecked((byte)(-3));
+		private const sbyte INVALID_DEC = -3;
 
 		/// <summary>Preferred encoding.</summary>
 		/// <remarks>Preferred encoding.</remarks>
@@ -96,7 +96,7 @@ namespace NGit.Util
 		/// negative number indicating some other meaning. The table is only 7 bits
 		/// wide, as the 8th bit is discarded during decoding.
 		/// </remarks>
-		private static readonly byte[] DEC;
+		private static readonly sbyte[] DEC;
 
 		static Base64()
 		{
@@ -118,17 +118,17 @@ namespace NGit.Util
 				//
 				throw new RuntimeException(uee.Message, uee);
 			}
-			DEC = new byte[128];
+			DEC = new sbyte[128];
 			Arrays.Fill(DEC, INVALID_DEC);
 			for (int i = 0; i < 64; i++)
 			{
-				DEC[ENC[i]] = unchecked((byte)i);
+				DEC[ENC[i]] = unchecked((sbyte)i);
 			}
 			DEC[EQUALS_SIGN] = EQUALS_SIGN_DEC;
-			DEC[(byte)('\t')] = WHITE_SPACE_DEC;
-			DEC[(byte)('\n')] = WHITE_SPACE_DEC;
-			DEC[(byte)('\r')] = WHITE_SPACE_DEC;
-			DEC[(byte)(' ')] = WHITE_SPACE_DEC;
+			DEC[(sbyte)('\t')] = WHITE_SPACE_DEC;
+			DEC[(sbyte)('\n')] = WHITE_SPACE_DEC;
+			DEC[(sbyte)('\r')] = WHITE_SPACE_DEC;
+			DEC[(sbyte)(' ')] = WHITE_SPACE_DEC;
 		}
 
 		/// <summary>Defeats instantiation.</summary>
@@ -206,7 +206,7 @@ namespace NGit.Util
 						(0x3f))];
 					destination[destOffset + 2] = ENC[((int)(((uint)inBuff) >> 6)) & unchecked((int)(
 						0x3f))];
-					destination[destOffset + 3] = EQUALS_SIGN;
+					destination[destOffset + 3] = (byte)EQUALS_SIGN;
 					break;
 				}
 
@@ -215,8 +215,8 @@ namespace NGit.Util
 					destination[destOffset] = ENC[((int)(((uint)inBuff) >> 18))];
 					destination[destOffset + 1] = ENC[((int)(((uint)inBuff) >> 12)) & unchecked((int)
 						(0x3f))];
-					destination[destOffset + 2] = EQUALS_SIGN;
-					destination[destOffset + 3] = EQUALS_SIGN;
+					destination[destOffset + 2] = (byte)EQUALS_SIGN;
+					destination[destOffset + 3] = (byte)EQUALS_SIGN;
 					break;
 				}
 			}
@@ -255,11 +255,11 @@ namespace NGit.Util
 			}
 			try
 			{
-				return Sharpen.Extensions.CreateString(outBuff, 0, e, UTF_8);
+				return Sharpen.Runtime.GetStringForBytes(outBuff, 0, e, UTF_8);
 			}
 			catch (UnsupportedEncodingException)
 			{
-				return Sharpen.Extensions.CreateString(outBuff, 0, e);
+				return Sharpen.Runtime.GetStringForBytes(outBuff, 0, e);
 			}
 		}
 
@@ -339,7 +339,7 @@ namespace NGit.Util
 			for (int i = off; i < off + len; i++)
 			{
 				byte sbiCrop = unchecked((byte)(source[i] & unchecked((int)(0x7f))));
-				byte sbiDecode = DEC[sbiCrop];
+				sbyte sbiDecode = DEC[sbiCrop];
 				if (unchecked((sbyte)EQUALS_SIGN_DEC) <= sbiDecode)
 				{
 					b4[b4Posn++] = sbiCrop;

@@ -76,6 +76,9 @@ namespace NGit
 		/// <summary>The "bare" key</summary>
 		public static readonly string CONFIG_KEY_BARE = "bare";
 
+		/// <summary>The "excludesfile" key</summary>
+		public static readonly string CONFIG_KEY_EXCLUDESFILE = "excludesfile";
+
 		/// <summary>The "filemode" key</summary>
 		public static readonly string CONFIG_KEY_FILEMODE = "filemode";
 

@@ -81,7 +81,7 @@ namespace NGit
 		/// <returns>standard Comparator result of &lt; 0, 0, &gt; 0.</returns>
 		public static int CompareTo(Ref o1, string o2)
 		{
-			return o1.GetName().CompareTo(o2);
+			return Sharpen.Runtime.CompareOrdinal(o1.GetName(), o2);
 		}
 
 		/// <summary>Compare two references by name.</summary>
@@ -91,7 +91,7 @@ namespace NGit
 		/// <returns>standard Comparator result of &lt; 0, 0, &gt; 0.</returns>
 		public static int CompareTo(Ref o1, Ref o2)
 		{
-			return o1.GetName().CompareTo(o2.GetName());
+			return Sharpen.Runtime.CompareOrdinal(o1.GetName(), o2.GetName());
 		}
 	}
 }

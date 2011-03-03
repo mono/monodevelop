@@ -118,7 +118,7 @@ namespace NGit.Api
 
 			public int Compare(Ref o1, Ref o2)
 			{
-				return o1.GetName().CompareTo(o2.GetName());
+				return Sharpen.Runtime.CompareOrdinal(o1.GetName(), o2.GetName());
 			}
 		}
 

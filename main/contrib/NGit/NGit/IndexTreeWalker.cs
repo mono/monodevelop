@@ -51,7 +51,7 @@ namespace NGit
 	/// A class for traversing the index and one or two trees.
 	/// A visitor is invoked for executing actions, like figuring out how to merge.
 	/// </remarks>
-	[System.ObsoleteAttribute(@"Use  with multiple iterators, such as , , and a native treeNGit.Treewalk.TreeWalk.AddTree(AnyObjectId) ."
+	[System.ObsoleteAttribute(@"Use NGit.Treewalk.TreeWalk with multiple iterators, such as NGit.Dircache.DirCacheIterator ,NGit.Treewalk.FileTreeIterator , and a native treeNGit.Treewalk.TreeWalk.AddTree(AnyObjectId) ."
 		)]
 	public class IndexTreeWalker
 	{

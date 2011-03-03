@@ -128,12 +128,18 @@ namespace NGit.Transport
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
-		public override void Flush()
+		internal virtual void FlushBuffer()
 		{
 			if (HDR_SIZE < cnt)
 			{
 				WriteBuffer();
 			}
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
+		public override void Flush()
+		{
+			FlushBuffer();
 			@out.Flush();
 		}
 

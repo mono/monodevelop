@@ -336,22 +336,23 @@ namespace NGit.Storage.File
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
-		internal virtual void CopyPackAsIs(PackOutputStream @out, WindowCursor curs)
+		internal virtual void CopyPackAsIs(PackOutputStream @out, bool validate, WindowCursor
+			 curs)
 		{
 			// Pin the first window, this ensures the length is accurate.
 			curs.Pin(this, 0);
-			curs.CopyPackAsIs(this, @out, 12, length - (12 + 20));
+			curs.CopyPackAsIs(this, length, validate, @out);
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
 		/// <exception cref="NGit.Errors.StoredObjectRepresentationNotAvailableException"></exception>
-		internal void CopyAsIs(PackOutputStream @out, LocalObjectToPack src, WindowCursor
-			 curs)
+		internal void CopyAsIs(PackOutputStream @out, LocalObjectToPack src, bool validate
+			, WindowCursor curs)
 		{
 			BeginCopyAsIs(src);
 			try
 			{
-				CopyAsIs2(@out, src, curs);
+				CopyAsIs2(@out, src, validate, curs);
 			}
 			finally
 			{
@@ -361,11 +362,11 @@ namespace NGit.Storage.File
 
 		/// <exception cref="System.IO.IOException"></exception>
 		/// <exception cref="NGit.Errors.StoredObjectRepresentationNotAvailableException"></exception>
-		private void CopyAsIs2(PackOutputStream @out, LocalObjectToPack src, WindowCursor
-			 curs)
+		private void CopyAsIs2(PackOutputStream @out, LocalObjectToPack src, bool validate
+			, WindowCursor curs)
 		{
-			CRC32 crc1 = new CRC32();
-			CRC32 crc2 = new CRC32();
+			CRC32 crc1 = validate ? new CRC32() : null;
+			CRC32 crc2 = validate ? new CRC32() : null;
 			byte[] buf = @out.GetCopyBuffer();
 			// Rip apart the header so we can discover the size.
 			//
@@ -388,24 +389,36 @@ namespace NGit.Storage.File
 					c = buf[headerCnt++] & unchecked((int)(0xff));
 				}
 				while ((c & 128) != 0);
-				crc1.Update(buf, 0, headerCnt);
-				crc2.Update(buf, 0, headerCnt);
+				if (validate)
+				{
+					crc1.Update(buf, 0, headerCnt);
+					crc2.Update(buf, 0, headerCnt);
+				}
 			}
 			else
 			{
 				if (typeCode == Constants.OBJ_REF_DELTA)
 				{
-					crc1.Update(buf, 0, headerCnt);
-					crc2.Update(buf, 0, headerCnt);
+					if (validate)
+					{
+						crc1.Update(buf, 0, headerCnt);
+						crc2.Update(buf, 0, headerCnt);
+					}
 					ReadFully(src.offset + headerCnt, buf, 0, 20, curs);
-					crc1.Update(buf, 0, 20);
-					crc2.Update(buf, 0, 20);
+					if (validate)
+					{
+						crc1.Update(buf, 0, 20);
+						crc2.Update(buf, 0, 20);
+					}
 					headerCnt += 20;
 				}
 				else
 				{
-					crc1.Update(buf, 0, headerCnt);
-					crc2.Update(buf, 0, headerCnt);
+					if (validate)
+					{
+						crc1.Update(buf, 0, headerCnt);
+						crc2.Update(buf, 0, headerCnt);
+					}
 				}
 			}
 			long dataOffset = src.offset + headerCnt;
@@ -418,7 +431,7 @@ namespace NGit.Storage.File
 			try
 			{
 				quickCopy = curs.QuickCopy(this, dataOffset, dataLength);
-				if (Idx().HasCRC32Support())
+				if (validate && Idx().HasCRC32Support())
 				{
 					// Index has the CRC32 code cached, validate the object.
 					//
@@ -449,41 +462,48 @@ namespace NGit.Storage.File
 				}
 				else
 				{
-					// We don't have a CRC32 code in the index, so compute it
-					// now while inflating the raw data to get zlib to tell us
-					// whether or not the data is safe.
-					//
-					Inflater inf = curs.Inflater();
-					byte[] tmp = new byte[1024];
-					if (quickCopy != null)
+					if (validate)
 					{
-						quickCopy.Check(inf, tmp, dataOffset, (int)dataLength);
+						// We don't have a CRC32 code in the index, so compute it
+						// now while inflating the raw data to get zlib to tell us
+						// whether or not the data is safe.
+						//
+						Inflater inf = curs.Inflater();
+						byte[] tmp = new byte[1024];
+						if (quickCopy != null)
+						{
+							quickCopy.Check(inf, tmp, dataOffset, (int)dataLength);
+						}
+						else
+						{
+							long pos = dataOffset;
+							long cnt = dataLength;
+							while (cnt > 0)
+							{
+								int n = (int)Math.Min(cnt, buf.Length);
+								ReadFully(pos, buf, 0, n, curs);
+								crc1.Update(buf, 0, n);
+								inf.SetInput(buf, 0, n);
+								while (inf.Inflate(tmp, 0, tmp.Length) > 0)
+								{
+									continue;
+								}
+								pos += n;
+								cnt -= n;
+							}
+						}
+						if (!inf.IsFinished || inf.TotalIn != dataLength)
+						{
+							SetCorrupt(src.offset);
+							throw new EOFException(MessageFormat.Format(JGitText.Get().shortCompressedStreamAt
+								, src.offset));
+						}
+						expectedCRC = crc1.GetValue();
 					}
 					else
 					{
-						long pos = dataOffset;
-						long cnt = dataLength;
-						while (cnt > 0)
-						{
-							int n = (int)Math.Min(cnt, buf.Length);
-							ReadFully(pos, buf, 0, n, curs);
-							crc1.Update(buf, 0, n);
-							inf.SetInput(buf, 0, n);
-							while (inf.Inflate(tmp, 0, tmp.Length) > 0)
-							{
-								continue;
-							}
-							pos += n;
-							cnt -= n;
-						}
+						expectedCRC = -1;
 					}
-					if (!inf.IsFinished || inf.TotalIn != dataLength)
-					{
-						SetCorrupt(src.offset);
-						throw new EOFException(MessageFormat.Format(JGitText.Get().shortCompressedStreamAt
-							, src.offset));
-					}
-					expectedCRC = crc1.GetValue();
 				}
 			}
 			catch (DataFormatException dataFormat)
@@ -510,7 +530,7 @@ namespace NGit.Storage.File
 				// and we have it pinned.  Write this out without copying.
 				//
 				@out.WriteHeader(src, inflatedLength);
-				quickCopy.Write(@out, dataOffset, (int)dataLength);
+				quickCopy.Write(@out, dataOffset, (int)dataLength, null);
 			}
 			else
 			{
@@ -535,12 +555,15 @@ namespace NGit.Storage.File
 					{
 						int n = (int)Math.Min(cnt, buf.Length);
 						ReadFully(pos, buf, 0, n, curs);
-						crc2.Update(buf, 0, n);
+						if (validate)
+						{
+							crc2.Update(buf, 0, n);
+						}
 						@out.Write(buf, 0, n);
 						pos += n;
 						cnt -= n;
 					}
-					if (crc2.GetValue() != expectedCRC)
+					if (validate && crc2.GetValue() != expectedCRC)
 					{
 						throw new CorruptObjectException(MessageFormat.Format(JGitText.Get().objectAtHasBadZlibStream
 							, src.offset, GetPackFile()));
@@ -552,6 +575,11 @@ namespace NGit.Storage.File
 		internal virtual bool Invalid()
 		{
 			return invalid;
+		}
+
+		internal virtual void SetInvalid()
+		{
+			invalid = true;
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>

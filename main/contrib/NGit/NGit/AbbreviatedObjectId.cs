@@ -425,25 +425,25 @@ namespace NGit
 				AnyObjectId.FormatHexChar(b, 0, w1);
 				if (nibbles <= 8)
 				{
-					return Sharpen.Extensions.CreateString(b, 0, nibbles);
+					return new string(b, 0, nibbles);
 				}
 				AnyObjectId.FormatHexChar(b, 8, w2);
 				if (nibbles <= 16)
 				{
-					return Sharpen.Extensions.CreateString(b, 0, nibbles);
+					return new string(b, 0, nibbles);
 				}
 				AnyObjectId.FormatHexChar(b, 16, w3);
 				if (nibbles <= 24)
 				{
-					return Sharpen.Extensions.CreateString(b, 0, nibbles);
+					return new string(b, 0, nibbles);
 				}
 				AnyObjectId.FormatHexChar(b, 24, w4);
 				if (nibbles <= 32)
 				{
-					return Sharpen.Extensions.CreateString(b, 0, nibbles);
+					return new string(b, 0, nibbles);
 				}
 				AnyObjectId.FormatHexChar(b, 32, w5);
-				return Sharpen.Extensions.CreateString(b, 0, nibbles);
+				return new string(b, 0, nibbles);
 			}
 		}
 

@@ -475,7 +475,7 @@ namespace NGit
 					{
 						if (@ref == null)
 						{
-							@ref = ParseSimple(rw, Sharpen.Extensions.CreateString(rev, 0, i));
+							@ref = ParseSimple(rw, new string(rev, 0, i));
 							if (@ref == null)
 							{
 								return null;
@@ -505,7 +505,7 @@ namespace NGit
 											break;
 										}
 									}
-									string parentnum = Sharpen.Extensions.CreateString(rev, i + 1, j - i - 1);
+									string parentnum = new string(rev, i + 1, j - i - 1);
 									int pnum;
 									try
 									{
@@ -540,7 +540,7 @@ namespace NGit
 									{
 										if (rev[k] == '}')
 										{
-											item = Sharpen.Extensions.CreateString(rev, i + 2, k - i - 2);
+											item = new string(rev, i + 2, k - i - 2);
 											break;
 										}
 									}
@@ -638,7 +638,7 @@ namespace NGit
 					{
 						if (@ref == null)
 						{
-							@ref = ParseSimple(rw, Sharpen.Extensions.CreateString(rev, 0, i));
+							@ref = ParseSimple(rw, new string(rev, 0, i));
 							if (@ref == null)
 							{
 								return null;
@@ -657,7 +657,7 @@ namespace NGit
 								break;
 							}
 						}
-						string distnum = Sharpen.Extensions.CreateString(rev, i + 1, l - i - 1);
+						string distnum = new string(rev, i + 1, l - i - 1);
 						int dist;
 						try
 						{
@@ -692,7 +692,7 @@ namespace NGit
 						{
 							if (rev[m] == '}')
 							{
-								time = Sharpen.Extensions.CreateString(rev, i + 2, m - i - 2);
+								time = new string(rev, i + 2, m - i - 2);
 								break;
 							}
 						}
@@ -717,7 +717,7 @@ namespace NGit
 							{
 								cnt++;
 							}
-							string s = Sharpen.Extensions.CreateString(rev, i + 2, cnt);
+							string s = new string(rev, i + 2, cnt);
 							if (AbbreviatedObjectId.IsId(s))
 							{
 								ObjectId id = ResolveAbbreviation(s);
@@ -746,7 +746,7 @@ namespace NGit
 								}
 								else
 								{
-									id = Resolve(rw, Sharpen.Extensions.CreateString(rev, 0, i));
+									id = Resolve(rw, new string(rev, 0, i));
 								}
 							}
 							catch (RevisionSyntaxException)
@@ -767,8 +767,8 @@ namespace NGit
 						{
 							return tree.Copy();
 						}
-						TreeWalk tw = TreeWalk.ForPath(rw.GetObjectReader(), Sharpen.Extensions.CreateString
-							(rev, i + 1, rev.Length - i - 1), tree);
+						TreeWalk tw = TreeWalk.ForPath(rw.GetObjectReader(), new string(rev, i + 1, rev.Length
+							 - i - 1), tree);
 						return tw != null ? tw.GetObjectId(0) : null;
 					}
 

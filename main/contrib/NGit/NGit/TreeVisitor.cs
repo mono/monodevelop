@@ -54,7 +54,7 @@ namespace NGit
 	/// A TreeVisitor is invoked depth first for every node in a tree and is expected
 	/// to perform different actions.
 	/// </remarks>
-	[System.ObsoleteAttribute(@"Use  instead.")]
+	[System.ObsoleteAttribute(@"Use NGit.Treewalk.TreeWalk instead.")]
 	public interface TreeVisitor
 	{
 		/// <summary>Visit to a tree node before child nodes are visited.</summary>

@@ -52,7 +52,7 @@ namespace NGit
 	/// A tree visitor for writing a directory tree to the git object database. Blob
 	/// data is fetched from the files, not the cached blobs.
 	/// </remarks>
-	[System.ObsoleteAttribute(@"Use  instead.")]
+	[System.ObsoleteAttribute(@"Use NGit.Dircache.DirCache instead.")]
 	public class WriteTree : TreeVisitorWithCurrentDirectory
 	{
 		private readonly ObjectInserter inserter;

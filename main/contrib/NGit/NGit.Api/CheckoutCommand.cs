@@ -107,9 +107,7 @@ namespace NGit.Api
 					}
 					command.Call();
 				}
-				RevWalk revWalk = new RevWalk(repo);
 				Ref headRef = repo.GetRef(Constants.HEAD);
-				RevCommit headCommit = revWalk.ParseCommit(headRef.GetObjectId());
 				string refLogMessage = "checkout: moving from " + headRef.GetTarget().GetName();
 				ObjectId branch = repo.Resolve(name);
 				if (branch == null)
@@ -117,9 +115,13 @@ namespace NGit.Api
 					throw new RefNotFoundException(MessageFormat.Format(JGitText.Get().refNotResolved
 						, name));
 				}
+				RevWalk revWalk = new RevWalk(repo);
+				AnyObjectId headId = headRef.GetObjectId();
+				RevCommit headCommit = headId == null ? null : revWalk.ParseCommit(headId);
 				RevCommit newCommit = revWalk.ParseCommit(branch);
-				DirCacheCheckout dco = new DirCacheCheckout(repo, headCommit.Tree, repo.LockDirCache
-					(), newCommit.Tree);
+				RevTree headTree = headCommit == null ? null : headCommit.Tree;
+				DirCacheCheckout dco = new DirCacheCheckout(repo, headTree, repo.LockDirCache(), 
+					newCommit.Tree);
 				dco.SetFailOnConflict(true);
 				try
 				{

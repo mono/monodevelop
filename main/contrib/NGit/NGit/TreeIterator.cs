@@ -61,7 +61,7 @@ namespace NGit
 	/// make the iteration include Tree nodes as well either before or after the
 	/// child nodes have been visited.
 	/// </remarks>
-	[System.ObsoleteAttribute(@"Use  instead.")]
+	[System.ObsoleteAttribute(@"Use NGit.Treewalk.TreeWalk instead.")]
 	public class TreeIterator : Iterator<TreeEntry>
 	{
 		private Tree tree;

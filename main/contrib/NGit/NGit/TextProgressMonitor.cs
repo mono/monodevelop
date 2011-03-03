@@ -41,132 +41,126 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System.IO;
 using System.Text;
 using NGit;
 using Sharpen;
 
 namespace NGit
 {
-	/// <summary>A simple progress reporter printing on stderr</summary>
-	public class TextProgressMonitor : ProgressMonitor
+	/// <summary>A simple progress reporter printing on a stream.</summary>
+	/// <remarks>A simple progress reporter printing on a stream.</remarks>
+	public class TextProgressMonitor : BatchingProgressMonitor
 	{
-		private bool output;
+		private readonly TextWriter @out;
 
-		private long taskBeganAt;
-
-		private string msg;
-
-		private int lastWorked;
-
-		private int totalWork;
+		private bool write;
 
 		/// <summary>Initialize a new progress monitor.</summary>
 		/// <remarks>Initialize a new progress monitor.</remarks>
-		public TextProgressMonitor()
+		public TextProgressMonitor() : this(new PrintWriter(System.Console.Error))
 		{
-			taskBeganAt = Runtime.CurrentTimeMillis();
 		}
 
-		public override void Start(int totalTasks)
+		/// <summary>Initialize a new progress monitor.</summary>
+		/// <remarks>Initialize a new progress monitor.</remarks>
+		/// <param name="out">the stream to receive messages on.</param>
+		public TextProgressMonitor(TextWriter @out)
 		{
-			// Ignore the number of tasks.
-			taskBeganAt = Runtime.CurrentTimeMillis();
+			this.@out = @out;
+			this.write = true;
 		}
 
-		public override void BeginTask(string title, int total)
+		protected internal override void OnUpdate(string taskName, int workCurr)
 		{
-			EndTask();
-			msg = title;
-			lastWorked = 0;
-			totalWork = total;
+			StringBuilder s = new StringBuilder();
+			Format(s, taskName, workCurr);
+			Send(s);
 		}
 
-		public override void Update(int completed)
+		protected internal override void OnEndTask(string taskName, int workCurr)
 		{
-			if (msg == null)
+			StringBuilder s = new StringBuilder();
+			Format(s, taskName, workCurr);
+			s.Append("\n");
+			Send(s);
+		}
+
+		private void Format(StringBuilder s, string taskName, int workCurr)
+		{
+			s.Append("\r");
+			s.Append(taskName);
+			s.Append(": ");
+			while (s.Length < 25)
 			{
-				return;
+				s.Append(' ');
 			}
-			int cmp = lastWorked + completed;
-			if (!output && Runtime.CurrentTimeMillis() - taskBeganAt < 500)
+			s.Append(workCurr);
+		}
+
+		protected internal override void OnUpdate(string taskName, int cmp, int totalWork
+			, int pcnt)
+		{
+			StringBuilder s = new StringBuilder();
+			Format(s, taskName, cmp, totalWork, pcnt);
+			Send(s);
+		}
+
+		protected internal override void OnEndTask(string taskName, int cmp, int totalWork
+			, int pcnt)
+		{
+			StringBuilder s = new StringBuilder();
+			Format(s, taskName, cmp, totalWork, pcnt);
+			s.Append("\n");
+			Send(s);
+		}
+
+		private void Format(StringBuilder s, string taskName, int cmp, int totalWork, int
+			 pcnt)
+		{
+			s.Append("\r");
+			s.Append(taskName);
+			s.Append(": ");
+			while (s.Length < 25)
 			{
-				return;
+				s.Append(' ');
 			}
-			if (totalWork == UNKNOWN)
+			string endStr = totalWork.ToString();
+			string curStr = cmp.ToString();
+			while (curStr.Length < endStr.Length)
 			{
-				Display(cmp);
-				System.Console.Error.Flush();
+				curStr = " " + curStr;
 			}
-			else
+			if (pcnt < 100)
 			{
-				if ((cmp * 100 / totalWork) != (lastWorked * 100) / totalWork)
+				s.Append(' ');
+			}
+			if (pcnt < 10)
+			{
+				s.Append(' ');
+			}
+			s.Append(pcnt);
+			s.Append("% (");
+			s.Append(curStr);
+			s.Append("/");
+			s.Append(endStr);
+			s.Append(")");
+		}
+
+		private void Send(StringBuilder s)
+		{
+			if (write)
+			{
+				try
 				{
-					Display(cmp);
-					System.Console.Error.Flush();
+					@out.Write(s.ToString());
+					@out.Flush();
+				}
+				catch (IOException)
+				{
+					write = false;
 				}
 			}
-			lastWorked = cmp;
-			output = true;
-		}
-
-		private void Display(int cmp)
-		{
-			StringBuilder m = new StringBuilder();
-			m.Append('\r');
-			m.Append(msg);
-			m.Append(": ");
-			while (m.Length < 25)
-			{
-				m.Append(' ');
-			}
-			if (totalWork == UNKNOWN)
-			{
-				m.Append(cmp);
-			}
-			else
-			{
-				string twstr = totalWork.ToString();
-				string cmpstr = cmp.ToString();
-				while (cmpstr.Length < twstr.Length)
-				{
-					cmpstr = " " + cmpstr;
-				}
-				int pcnt = (cmp * 100 / totalWork);
-				if (pcnt < 100)
-				{
-					m.Append(' ');
-				}
-				if (pcnt < 10)
-				{
-					m.Append(' ');
-				}
-				m.Append(pcnt);
-				m.Append("% (");
-				m.Append(cmpstr);
-				m.Append("/");
-				m.Append(twstr);
-				m.Append(")");
-			}
-			System.Console.Error.Write(m);
-		}
-
-		public override bool IsCancelled()
-		{
-			return false;
-		}
-
-		public override void EndTask()
-		{
-			if (output)
-			{
-				if (totalWork != UNKNOWN)
-				{
-					Display(totalWork);
-				}
-				System.Console.Error.WriteLine();
-			}
-			output = false;
-			msg = null;
 		}
 	}
 }

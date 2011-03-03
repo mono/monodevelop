@@ -90,11 +90,15 @@ namespace NGit
 
 		private readonly bool logAllRefUpdates;
 
+		private readonly string excludesfile;
+
 		private CoreConfig(Config rc)
 		{
 			compression = rc.GetInt("core", "compression", Deflater.DEFAULT_COMPRESSION);
 			packIndexVersion = rc.GetInt("pack", "indexversion", 2);
 			logAllRefUpdates = rc.GetBoolean("core", "logallrefupdates", true);
+			excludesfile = rc.GetString(ConfigConstants.CONFIG_CORE_SECTION, null, ConfigConstants
+				.CONFIG_KEY_EXCLUDESFILE);
 		}
 
 		/// <returns>The compression level to use when storing loose objects</returns>
@@ -113,6 +117,12 @@ namespace NGit
 		public virtual bool IsLogAllRefUpdates()
 		{
 			return logAllRefUpdates;
+		}
+
+		/// <returns>path of excludesfile</returns>
+		public virtual string GetExcludesFile()
+		{
+			return excludesfile;
 		}
 	}
 }

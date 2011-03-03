@@ -136,13 +136,11 @@ namespace NGit.Transport
 
 		private OutputStream rawOut;
 
+		private OutputStream msgOut;
+
 		private PacketLineIn pckIn;
 
 		private PacketLineOut pckOut;
-
-		private TextWriter msgs;
-
-		private SideBandOutputStream msgOut;
 
 		private PackParser parser;
 
@@ -208,10 +206,10 @@ namespace NGit.Transport
 
 		private class ReceiveConfig
 		{
-			private sealed class _SectionParser_218 : Config.SectionParser<ReceivePack.ReceiveConfig
+			private sealed class _SectionParser_214 : Config.SectionParser<ReceivePack.ReceiveConfig
 				>
 			{
-				public _SectionParser_218()
+				public _SectionParser_214()
 				{
 				}
 
@@ -222,7 +220,7 @@ namespace NGit.Transport
 			}
 
 			internal static readonly Config.SectionParser<ReceivePack.ReceiveConfig> KEY = new 
-				_SectionParser_218();
+				_SectionParser_214();
 
 			internal readonly bool checkReceivedObjects;
 
@@ -553,9 +551,9 @@ namespace NGit.Transport
 			{
 				try
 				{
-					if (msgs != null)
+					if (msgOut != null)
 					{
-						msgs.Write("error: " + what + "\n");
+						msgOut.Write(Constants.Encode("error: " + what + "\n"));
 					}
 				}
 				catch (IOException)
@@ -580,9 +578,9 @@ namespace NGit.Transport
 		{
 			try
 			{
-				if (msgs != null)
+				if (msgOut != null)
 				{
-					msgs.Write(what + "\n");
+					msgOut.Write(Constants.Encode(what + "\n"));
 				}
 			}
 			catch (IOException)
@@ -610,13 +608,14 @@ namespace NGit.Transport
 		/// other network connections this should be null.
 		/// </param>
 		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
-		public virtual void Receive(InputStream input, OutputStream output, TextWriter 
+		public virtual void Receive(InputStream input, OutputStream output, OutputStream 
 			messages)
 		{
 			try
 			{
 				rawIn = input;
 				rawOut = output;
+				msgOut = messages;
 				if (timeout > 0)
 				{
 					Sharpen.Thread caller = Sharpen.Thread.CurrentThread();
@@ -630,10 +629,7 @@ namespace NGit.Transport
 				}
 				pckIn = new PacketLineIn(rawIn);
 				pckOut = new PacketLineOut(rawOut);
-				if (messages != null)
-				{
-					msgs = messages;
-				}
+				pckOut.SetFlushOnEnd(false);
 				enabledCapablities = new HashSet<string>();
 				commands = new AList<ReceiveCommand>();
 				Service();
@@ -643,14 +639,6 @@ namespace NGit.Transport
 				walk.Release();
 				try
 				{
-					if (pckOut != null)
-					{
-						pckOut.Flush();
-					}
-					if (msgs != null)
-					{
-						msgs.Flush();
-					}
 					if (sideBand)
 					{
 						// If we are using side band, we need to send a final
@@ -659,7 +647,23 @@ namespace NGit.Transport
 						// use the original output stream as rawOut is now the
 						// side band data channel.
 						//
-						new PacketLineOut(output).End();
+						((SideBandOutputStream)msgOut).FlushBuffer();
+						((SideBandOutputStream)rawOut).FlushBuffer();
+						PacketLineOut plo = new PacketLineOut(output);
+						plo.SetFlushOnEnd(false);
+						plo.End();
+					}
+					if (biDirectionalPipe)
+					{
+						// If this was a native git connection, flush the pipe for
+						// the caller. For smart HTTP we don't do this flush and
+						// instead let the higher level HTTP servlet code do it.
+						//
+						if (!sideBand && msgOut != null)
+						{
+							msgOut.Flush();
+						}
+						rawOut.Flush();
 					}
 				}
 				finally
@@ -668,9 +672,9 @@ namespace NGit.Transport
 					timeoutIn = null;
 					rawIn = null;
 					rawOut = null;
+					msgOut = null;
 					pckIn = null;
 					pckOut = null;
-					msgs = null;
 					refs = null;
 					enabledCapablities = null;
 					commands = null;
@@ -695,6 +699,7 @@ namespace NGit.Transport
 			if (biDirectionalPipe)
 			{
 				SendAdvertisedRefs(new RefAdvertiser.PacketLineOutRefAdvertiser(pckOut));
+				pckOut.Flush();
 			}
 			else
 			{
@@ -741,14 +746,14 @@ namespace NGit.Transport
 				UnlockPack();
 				if (reportStatus)
 				{
-					SendStatusReport(true, new _Reporter_655(this));
+					SendStatusReport(true, new _Reporter_662(this));
 					pckOut.End();
 				}
 				else
 				{
-					if (msgs != null)
+					if (msgOut != null)
 					{
-						SendStatusReport(false, new _Reporter_662(this));
+						SendStatusReport(false, new _Reporter_669(this));
 					}
 				}
 				postReceive.OnPostReceive(this, FilterCommands(ReceiveCommand.Result.OK));
@@ -759,9 +764,9 @@ namespace NGit.Transport
 			}
 		}
 
-		private sealed class _Reporter_655 : ReceivePack.Reporter
+		private sealed class _Reporter_662 : ReceivePack.Reporter
 		{
-			public _Reporter_655(ReceivePack _enclosing)
+			public _Reporter_662(ReceivePack _enclosing)
 			{
 				this._enclosing = _enclosing;
 			}
@@ -775,9 +780,9 @@ namespace NGit.Transport
 			private readonly ReceivePack _enclosing;
 		}
 
-		private sealed class _Reporter_662 : ReceivePack.Reporter
+		private sealed class _Reporter_669 : ReceivePack.Reporter
 		{
-			public _Reporter_662(ReceivePack _enclosing)
+			public _Reporter_669(ReceivePack _enclosing)
 			{
 				this._enclosing = _enclosing;
 			}
@@ -785,7 +790,7 @@ namespace NGit.Transport
 			/// <exception cref="System.IO.IOException"></exception>
 			internal override void SendString(string s)
 			{
-				this._enclosing.msgs.Write(s + "\n");
+				this._enclosing.msgOut.Write(Constants.Encode(s + "\n"));
 			}
 
 			private readonly ReceivePack _enclosing;
@@ -906,7 +911,7 @@ namespace NGit.Transport
 				msgOut = new SideBandOutputStream(SideBandOutputStream.CH_PROGRESS, SideBandOutputStream
 					.MAX_BUF, @out);
 				pckOut = new PacketLineOut(rawOut);
-				msgs = new OutputStreamWriter(msgOut, Constants.CHARSET);
+				pckOut.SetFlushOnEnd(false);
 			}
 		}
 

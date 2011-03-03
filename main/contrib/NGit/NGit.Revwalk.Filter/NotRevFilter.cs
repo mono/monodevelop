@@ -80,6 +80,11 @@ namespace NGit.Revwalk.Filter
 			return !a.Include(walker, c);
 		}
 
+		public override bool RequiresCommitBody()
+		{
+			return a.RequiresCommitBody();
+		}
+
 		public override RevFilter Clone()
 		{
 			return new NGit.Revwalk.Filter.NotRevFilter(a.Clone());

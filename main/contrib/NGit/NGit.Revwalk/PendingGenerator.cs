@@ -150,10 +150,6 @@ namespace NGit.Revwalk
 					if (c == null)
 					{
 						walker.reader.WalkAdviceEnd();
-						if (!(walker is ObjectWalk))
-						{
-							walker.reader.Release();
-						}
 						return null;
 					}
 					bool produce;
@@ -163,7 +159,10 @@ namespace NGit.Revwalk
 					}
 					else
 					{
-						c.ParseBody(walker);
+						if (filter.RequiresCommitBody())
+						{
+							c.ParseBody(walker);
+						}
 						produce = filter.Include(walker, c);
 					}
 					foreach (RevCommit p in c.parents)
@@ -228,7 +227,6 @@ namespace NGit.Revwalk
 			catch (StopWalkException)
 			{
 				walker.reader.WalkAdviceEnd();
-				walker.reader.Release();
 				pending.Clear();
 				return null;
 			}

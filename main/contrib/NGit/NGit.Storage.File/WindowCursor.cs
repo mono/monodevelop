@@ -43,6 +43,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using NGit;
 using NGit.Errors;
 using NGit.Revwalk;
@@ -151,10 +152,11 @@ namespace NGit.Storage.File
 
 		/// <exception cref="System.IO.IOException"></exception>
 		/// <exception cref="NGit.Errors.StoredObjectRepresentationNotAvailableException"></exception>
-		public void CopyObjectAsIs(PackOutputStream @out, ObjectToPack otp)
+		public void CopyObjectAsIs(PackOutputStream @out, ObjectToPack otp, bool validate
+			)
 		{
 			LocalObjectToPack src = (LocalObjectToPack)otp;
-			src.pack.CopyAsIs(@out, src, this);
+			src.pack.CopyAsIs(@out, src, validate, this);
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
@@ -209,23 +211,55 @@ namespace NGit.Storage.File
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
-		public void CopyPackAsIs(PackOutputStream @out, CachedPack pack)
+		public void CopyPackAsIs(PackOutputStream @out, CachedPack pack, bool validate)
 		{
-			((LocalCachedPack)pack).CopyAsIs(@out, this);
+			((LocalCachedPack)pack).CopyAsIs(@out, validate, this);
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
-		internal void CopyPackAsIs(PackFile pack, PackOutputStream @out, long position, long
-			 cnt)
+		internal void CopyPackAsIs(PackFile pack, long length, bool validate, PackOutputStream
+			 @out)
 		{
-			while (0 < cnt)
+			MessageDigest md = null;
+			if (validate)
+			{
+				md = Constants.NewMessageDigest();
+				byte[] buf = @out.GetCopyBuffer();
+				Pin(pack, 0);
+				if (window.Copy(0, buf, 0, 12) != 12)
+				{
+					pack.SetInvalid();
+					throw new IOException(JGitText.Get().packfileIsTruncated);
+				}
+				md.Update(buf, 0, 12);
+			}
+			long position = 12;
+			long remaining = length - (12 + 20);
+			while (0 < remaining)
 			{
 				Pin(pack, position);
 				int ptr = (int)(position - window.start);
-				int n = (int)Math.Min(window.Size() - ptr, cnt);
-				window.Write(@out, position, n);
+				int n = (int)Math.Min(window.Size() - ptr, remaining);
+				window.Write(@out, position, n, md);
 				position += n;
-				cnt -= n;
+				remaining -= n;
+			}
+			if (md != null)
+			{
+				byte[] buf = new byte[20];
+				byte[] actHash = md.Digest();
+				Pin(pack, position);
+				if (window.Copy(position, buf, 0, 20) != 20)
+				{
+					pack.SetInvalid();
+					throw new IOException(JGitText.Get().packfileIsTruncated);
+				}
+				if (!Arrays.Equals(actHash, buf))
+				{
+					pack.SetInvalid();
+					throw new IOException(MessageFormat.Format(JGitText.Get().packfileCorruptionDetected
+						, pack.GetPackFile().GetPath()));
+				}
 			}
 		}
 

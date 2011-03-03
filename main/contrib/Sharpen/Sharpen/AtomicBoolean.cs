@@ -1,10 +1,10 @@
 // 
-// AList.cs
+// AtomicBoolean.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
 // 
-// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,65 +24,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
-using System.Collections;
 
 namespace Sharpen
 {
-	internal class AList<T>: List<T>
+	public class AtomicBoolean
 	{
-		public AList ()
+		bool val;
+		
+		public AtomicBoolean ()
 		{
 		}
 		
-		public AList (int size): base (size)
+		public bool Get ()
 		{
+			return val;
 		}
 		
-		public AList (IEnumerable<T> t)
+		public void Set (bool v)
 		{
-			AddRange (t);
-		}
-		
-		public override bool Equals (object obj)
-		{
-			if (obj == this)
-				return true;
-			IList list = obj as IList;
-			if (list == null)
-				return false;
-			if (list.Count != Count)
-				return false;
-			for (int n=0; n<list.Count; n++) {
-				if (!object.Equals (this[n], list[n]))
-					return false;
-			}
-			return true;
-		}
-		
-		public override int GetHashCode ()
-		{
-			int n = 0;
-			foreach (object o in this)
-				if (o != null)
-					n += o.GetHashCode ();
-			return n;
-		}
-		
-		public void RemoveElement (T elem)
-		{
-			Remove (elem);
-		}
-		
-		public void TrimToSize ()
-		{
-			Capacity = Count;
-		}
-		
-		public void EnsureCapacity (int c)
-		{
-			if (c > Capacity && c > Count)
-				Capacity = c;
+			val = v;
 		}
 	}
 }

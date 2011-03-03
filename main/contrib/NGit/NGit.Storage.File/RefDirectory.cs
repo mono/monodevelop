@@ -286,11 +286,11 @@ namespace NGit.Storage.File
 			RefListBuilder<Ref> symbolic = scan.symbolic;
 			for (int idx = 0; idx < symbolic.Size(); )
 			{
-				Ref @ref = symbolic.Get(idx);
-				@ref = Resolve(@ref, 0, prefix, loose, packed);
-				if (@ref != null && @ref.GetObjectId() != null)
+				Ref symbolicRef = symbolic.Get(idx);
+				Ref resolvedRef = Resolve(symbolicRef, 0, prefix, loose, packed);
+				if (resolvedRef != null && resolvedRef.GetObjectId() != null)
 				{
-					symbolic.Set(idx, @ref);
+					symbolic.Set(idx, resolvedRef);
 					idx++;
 				}
 				else
@@ -298,8 +298,12 @@ namespace NGit.Storage.File
 					// A broken symbolic reference, we have to drop it from the
 					// collections the client is about to receive. Should be a
 					// rare occurrence so pay a copy penalty.
-					loose = loose.Remove(idx);
 					symbolic.Remove(idx);
+					int toRemove = loose.Find(symbolicRef.GetName());
+					if (0 <= toRemove)
+					{
+						loose = loose.Remove(toRemove);
+					}
 				}
 			}
 			return new RefMap(prefix, packed, Upcast(loose), symbolic.ToRefList());
@@ -943,12 +947,12 @@ namespace NGit.Storage.File
 		private void CommitPackedRefs(LockFile lck, RefList<Ref> refs, RefDirectory.PackedRefList
 			 oldPackedList)
 		{
-			new _RefWriter_769(this, lck, oldPackedList, refs, refs).WritePackedRefs();
+			new _RefWriter_771(this, lck, oldPackedList, refs, refs).WritePackedRefs();
 		}
 
-		private sealed class _RefWriter_769 : RefWriter
+		private sealed class _RefWriter_771 : RefWriter
 		{
-			public _RefWriter_769(RefDirectory _enclosing, LockFile lck, RefDirectory.PackedRefList
+			public _RefWriter_771(RefDirectory _enclosing, LockFile lck, RefDirectory.PackedRefList
 				 oldPackedList, RefList<Ref> refs, RefList<Ref> baseArg1) : base(baseArg1)
 			{
 				this._enclosing = _enclosing;

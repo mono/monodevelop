@@ -126,6 +126,11 @@ namespace NGit.Revwalk.Filter
 				return this;
 			}
 
+			public override bool RequiresCommitBody()
+			{
+				return false;
+			}
+
 			public override string ToString()
 			{
 				return "ALL";
@@ -148,6 +153,11 @@ namespace NGit.Revwalk.Filter
 				return this;
 			}
 
+			public override bool RequiresCommitBody()
+			{
+				return false;
+			}
+
 			public override string ToString()
 			{
 				return "NONE";
@@ -168,6 +178,11 @@ namespace NGit.Revwalk.Filter
 			public override RevFilter Clone()
 			{
 				return this;
+			}
+
+			public override bool RequiresCommitBody()
+			{
+				return false;
 			}
 
 			public override string ToString()
@@ -199,6 +214,11 @@ namespace NGit.Revwalk.Filter
 				return this;
 			}
 
+			public override bool RequiresCommitBody()
+			{
+				return false;
+			}
+
 			public override string ToString()
 			{
 				return "MERGE_BASE";
@@ -213,12 +233,22 @@ namespace NGit.Revwalk.Filter
 			return NotRevFilter.Create(this);
 		}
 
+		/// <returns>true if the filter needs the commit body to be parsed.</returns>
+		public virtual bool RequiresCommitBody()
+		{
+			// Assume true to be backward compatible with prior behavior.
+			return true;
+		}
+
 		/// <summary>Determine if the supplied commit should be included in results.</summary>
 		/// <remarks>Determine if the supplied commit should be included in results.</remarks>
 		/// <param name="walker">the active walker this filter is being invoked from within.</param>
 		/// <param name="cmit">
 		/// the commit currently being tested. The commit has been parsed
-		/// and its body is available for inspection.
+		/// and its body is available for inspection only if the filter
+		/// returns true from
+		/// <see cref="RequiresCommitBody()">RequiresCommitBody()</see>
+		/// .
 		/// </param>
 		/// <returns>
 		/// true to include this commit in the results; false to have this

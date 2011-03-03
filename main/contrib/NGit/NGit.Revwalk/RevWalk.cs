@@ -178,7 +178,7 @@ namespace NGit.Revwalk
 
 		internal readonly MutableObjectId idBuffer;
 
-		private readonly ObjectIdSubclassMap<RevObject> objects;
+		private ObjectIdSubclassMap<RevObject> objects;
 
 		private int freeFlags = APP_FLAGS;
 
@@ -1440,7 +1440,6 @@ namespace NGit.Revwalk
 					q.Add(p);
 				}
 			}
-			reader.Release();
 			roots.Clear();
 			queue = new DateRevQueue();
 			pending = new StartGenerator(this);
@@ -1508,12 +1507,12 @@ namespace NGit.Revwalk
 			{
 				throw new RevWalkException(e);
 			}
-			return new _Iterator_1237(this, first);
+			return new _Iterator_1236(this, first);
 		}
 
-		private sealed class _Iterator_1237 : Sharpen.Iterator<RevCommit>
+		private sealed class _Iterator_1236 : Sharpen.Iterator<RevCommit>
 		{
-			public _Iterator_1237(RevWalk _enclosing, RevCommit first)
+			public _Iterator_1236(RevWalk _enclosing, RevCommit first)
 			{
 				this._enclosing = _enclosing;
 				this.first = first;
@@ -1573,6 +1572,28 @@ namespace NGit.Revwalk
 		private bool IsNotStarted()
 		{
 			return pending is StartGenerator;
+		}
+
+		/// <summary>
+		/// Create and return an
+		/// <see cref="ObjectWalk">ObjectWalk</see>
+		/// using the same objects.
+		/// <p>
+		/// Prior to using this method, the caller must reset this RevWalk to clean
+		/// any flags that were used during the last traversal.
+		/// <p>
+		/// The returned ObjectWalk uses the same ObjectReader, internal object pool,
+		/// and free RevFlags. Once the ObjectWalk is created, this RevWalk should
+		/// not be used anymore.
+		/// </summary>
+		/// <returns>a new walk, using the exact same object pool.</returns>
+		public virtual ObjectWalk ToObjectWalkWithSameObjects()
+		{
+			ObjectWalk ow = new ObjectWalk(reader);
+			NGit.Revwalk.RevWalk rw = ow;
+			rw.objects = objects;
+			rw.freeFlags = freeFlags;
+			return ow;
 		}
 
 		/// <summary>Construct a new unparsed commit for the given object.</summary>

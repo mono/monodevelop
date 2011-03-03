@@ -3223,7 +3223,8 @@ loop_break: ;
 			{
 				if (o is ChannelSftp.LsEntry)
 				{
-					return this.filename.CompareTo(((ChannelSftp.LsEntry)o).GetFilename());
+					return Sharpen.Runtime.CompareOrdinal(this.filename, ((ChannelSftp.LsEntry)o).GetFilename
+						());
 				}
 				throw new InvalidCastException("a decendent of LsEntry must be given.");
 			}

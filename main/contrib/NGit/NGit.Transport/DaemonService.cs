@@ -65,14 +65,14 @@ namespace NGit.Transport
 		internal DaemonService(string cmdName, string cfgName)
 		{
 			command = cmdName.StartsWith("git-") ? cmdName : "git-" + cmdName;
-			configKey = new _SectionParser_65(this, cfgName);
+			configKey = new _SectionParser_67(this, cfgName);
 			overridable = true;
 		}
 
-		private sealed class _SectionParser_65 : Config.SectionParser<DaemonService.ServiceConfig
+		private sealed class _SectionParser_67 : Config.SectionParser<DaemonService.ServiceConfig
 			>
 		{
-			public _SectionParser_65(DaemonService _enclosing, string cfgName)
+			public _SectionParser_67(DaemonService _enclosing, string cfgName)
 			{
 				this._enclosing = _enclosing;
 				this.cfgName = cfgName;
@@ -142,10 +142,12 @@ namespace NGit.Transport
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
+		/// <exception cref="NGit.Transport.Resolver.ServiceNotEnabledException"></exception>
+		/// <exception cref="NGit.Transport.Resolver.ServiceNotAuthorizedException"></exception>
 		internal virtual void Execute(DaemonClient client, string commandLine)
 		{
 			string name = Sharpen.Runtime.Substring(commandLine, command.Length + 1);
-			Repository db = client.GetDaemon().OpenRepository(name);
+			Repository db = client.GetDaemon().OpenRepository(client, name);
 			if (db == null)
 			{
 				return;
@@ -173,6 +175,8 @@ namespace NGit.Transport
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
+		/// <exception cref="NGit.Transport.Resolver.ServiceNotEnabledException"></exception>
+		/// <exception cref="NGit.Transport.Resolver.ServiceNotAuthorizedException"></exception>
 		internal abstract void Execute(DaemonClient client, Repository db);
 	}
 }

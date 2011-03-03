@@ -42,6 +42,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using NGit;
+using NGit.Errors;
 using NGit.Storage.File;
 using Sharpen;
 
@@ -96,7 +97,12 @@ namespace NGit.Storage.File
 		/// </exception>
 		public override FileRepository Build()
 		{
-			return new FileRepository(Setup());
+			FileRepository repo = new FileRepository(Setup());
+			if (IsMustExist() && !((ObjectDirectory)repo.ObjectDatabase).Exists())
+			{
+				throw new RepositoryNotFoundException(GetGitDir());
+			}
+			return repo;
 		}
 	}
 }

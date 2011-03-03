@@ -77,8 +77,7 @@ namespace NGit.Util
 			if (pa != null)
 			{
 				CachedAuthenticator.CachedAuthentication ca_1 = new CachedAuthenticator.CachedAuthentication
-					(host, port, pa.GetUserName(), Sharpen.Extensions.CreateString(pa.GetPassword())
-					);
+					(host, port, pa.GetUserName(), new string(pa.GetPassword()));
 				Add(ca_1);
 				return ca_1.ToPasswordAuthentication();
 			}

@@ -177,7 +177,7 @@ namespace NGit.Treewalk.Filter
 
 				public int Compare(PathFilter o1, PathFilter o2)
 				{
-					return o1.pathStr.CompareTo(o2.pathStr);
+					return Sharpen.Runtime.CompareOrdinal(o1.pathStr, o2.pathStr);
 				}
 			}
 

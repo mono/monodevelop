@@ -98,6 +98,8 @@ namespace NGit.Transport
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
+		/// <exception cref="NGit.Transport.Resolver.ServiceNotEnabledException"></exception>
+		/// <exception cref="NGit.Transport.Resolver.ServiceNotAuthorizedException"></exception>
 		internal virtual void Execute(Socket sock)
 		{
 			rawIn = new BufferedInputStream(sock.GetInputStream());

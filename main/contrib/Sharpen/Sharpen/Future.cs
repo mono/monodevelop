@@ -4,7 +4,7 @@ namespace Sharpen
 
 	internal interface Future<T>
 	{
-		bool Cancel (bool b);
+		bool Cancel (bool mayInterruptIfRunning);
 		T Get ();
 	}
 }

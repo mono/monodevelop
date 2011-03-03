@@ -116,6 +116,7 @@ namespace NGit.Api
 		/// <exception cref="NGit.Api.Errors.DetachedHeadException"></exception>
 		/// <exception cref="NGit.Api.Errors.InvalidRemoteException"></exception>
 		/// <exception cref="NGit.Api.Errors.CanceledException"></exception>
+		/// <exception cref="NGit.Api.Errors.RefNotFoundException"></exception>
 		public override PullResult Call()
 		{
 			CheckCallable();
@@ -149,10 +150,8 @@ namespace NGit.Api
 				, ConfigConstants.CONFIG_KEY_REMOTE);
 			if (remote == null)
 			{
-				string missingKey = ConfigConstants.CONFIG_BRANCH_SECTION + DOT + branchName + DOT
-					 + ConfigConstants.CONFIG_KEY_REMOTE;
-				throw new InvalidConfigurationException(MessageFormat.Format(JGitText.Get().missingConfigurationForKey
-					, missingKey));
+				// fall back to default remote
+				remote = Constants.DEFAULT_REMOTE_NAME;
 			}
 			// get the name of the branch in the remote repository
 			// stored in configuration key branch.<branch name>.merge
@@ -236,6 +235,11 @@ namespace NGit.Api
 				try
 				{
 					commitToMerge = repo.Resolve(remoteBranchName);
+					if (commitToMerge == null)
+					{
+						throw new RefNotFoundException(MessageFormat.Format(JGitText.Get().refNotResolved
+							, remoteBranchName));
+					}
 				}
 				catch (IOException e)
 				{

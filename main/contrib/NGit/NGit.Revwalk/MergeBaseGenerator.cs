@@ -154,7 +154,6 @@ namespace NGit.Revwalk
 				if (c == null)
 				{
 					walker.reader.WalkAdviceEnd();
-					walker.reader.Release();
 					return null;
 				}
 				foreach (RevCommit p in c.parents)

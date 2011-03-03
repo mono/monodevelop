@@ -57,18 +57,36 @@ namespace NGit.Revwalk.Filter
 		/// <remarks>Create a new filter to select commits before a given date/time.</remarks>
 		/// <param name="ts">the point in time to cut on.</param>
 		/// <returns>a new filter to select commits on or before <code>ts</code>.</returns>
-		public static RevFilter BeforeFilter(DateTime ts)
+		public static RevFilter Before(DateTime ts)
 		{
-			return new CommitTimeRevFilter.Before(ts.GetTime());
+			return Before(ts.GetTime());
+		}
+
+		/// <summary>Create a new filter to select commits before a given date/time.</summary>
+		/// <remarks>Create a new filter to select commits before a given date/time.</remarks>
+		/// <param name="ts">the point in time to cut on, in milliseconds</param>
+		/// <returns>a new filter to select commits on or before <code>ts</code>.</returns>
+		public static RevFilter Before(long ts)
+		{
+			return new CommitTimeRevFilterBefore(ts);
 		}
 
 		/// <summary>Create a new filter to select commits after a given date/time.</summary>
 		/// <remarks>Create a new filter to select commits after a given date/time.</remarks>
 		/// <param name="ts">the point in time to cut on.</param>
 		/// <returns>a new filter to select commits on or after <code>ts</code>.</returns>
-		public static RevFilter AfterFilter(DateTime ts)
+		public static RevFilter After(DateTime ts)
 		{
-			return new CommitTimeRevFilter.After(ts.GetTime());
+			return After(ts.GetTime());
+		}
+
+		/// <summary>Create a new filter to select commits after a given date/time.</summary>
+		/// <remarks>Create a new filter to select commits after a given date/time.</remarks>
+		/// <param name="ts">the point in time to cut on, in milliseconds.</param>
+		/// <returns>a new filter to select commits on or after <code>ts</code>.</returns>
+		public static RevFilter After(long ts)
+		{
+			return new CommitTimeRevFilterAfter(ts);
 		}
 
 		/// <summary>
@@ -82,9 +100,25 @@ namespace NGit.Revwalk.Filter
 		/// <param name="since">the point in time to cut on.</param>
 		/// <param name="until">the point in time to cut off.</param>
 		/// <returns>a new filter to select commits between the given date/times.</returns>
-		public static RevFilter BetweenFilter(DateTime since, DateTime until)
+		public static RevFilter Between(DateTime since, DateTime until)
 		{
-			return new CommitTimeRevFilter.Between(since.GetTime(), until.GetTime());
+			return Between(since.GetTime(), until.GetTime());
+		}
+
+		/// <summary>
+		/// Create a new filter to select commits after or equal a given date/time <code>since</code>
+		/// and before or equal a given date/time <code>until</code>.
+		/// </summary>
+		/// <remarks>
+		/// Create a new filter to select commits after or equal a given date/time <code>since</code>
+		/// and before or equal a given date/time <code>until</code>.
+		/// </remarks>
+		/// <param name="since">the point in time to cut on, in milliseconds.</param>
+		/// <param name="until">the point in time to cut off, in millisconds.</param>
+		/// <returns>a new filter to select commits between the given date/times.</returns>
+		public static RevFilter Between(long since, long until)
+		{
+			return new CommitTimeRevFilterBetween(since, until);
 		}
 
 		internal readonly int when;
@@ -99,79 +133,84 @@ namespace NGit.Revwalk.Filter
 			return this;
 		}
 
-		private class Before : CommitTimeRevFilter
+		public override bool RequiresCommitBody()
 		{
-			internal Before(long ts) : base(ts)
-			{
-			}
+			return false;
+		}
+		// Since the walker sorts commits by commit time we can be
+		// reasonably certain there is nothing remaining worth our
+		// scanning if this commit is before the point in question.
+		//
+	}
 
-			/// <exception cref="NGit.Errors.StopWalkException"></exception>
-			/// <exception cref="NGit.Errors.MissingObjectException"></exception>
-			/// <exception cref="NGit.Errors.IncorrectObjectTypeException"></exception>
-			/// <exception cref="System.IO.IOException"></exception>
-			public override bool Include(RevWalk walker, RevCommit cmit)
-			{
-				return cmit.CommitTime <= when;
-			}
-
-			public override string ToString()
-			{
-				return base.ToString() + "(" + Sharpen.Extensions.CreateDate(when * 1000L) + ")";
-			}
+	class CommitTimeRevFilterBefore : CommitTimeRevFilter
+	{
+		internal CommitTimeRevFilterBefore(long ts) : base(ts)
+		{
 		}
 
-		private class After : CommitTimeRevFilter
+		/// <exception cref="NGit.Errors.StopWalkException"></exception>
+		/// <exception cref="NGit.Errors.MissingObjectException"></exception>
+		/// <exception cref="NGit.Errors.IncorrectObjectTypeException"></exception>
+		/// <exception cref="System.IO.IOException"></exception>
+		public override bool Include(RevWalk walker, RevCommit cmit)
 		{
-			internal After(long ts) : base(ts)
-			{
-			}
-
-			/// <exception cref="NGit.Errors.StopWalkException"></exception>
-			/// <exception cref="NGit.Errors.MissingObjectException"></exception>
-			/// <exception cref="NGit.Errors.IncorrectObjectTypeException"></exception>
-			/// <exception cref="System.IO.IOException"></exception>
-			public override bool Include(RevWalk walker, RevCommit cmit)
-			{
-				// Since the walker sorts commits by commit time we can be
-				// reasonably certain there is nothing remaining worth our
-				// scanning if this commit is before the point in question.
-				//
-				if (cmit.CommitTime < when)
-				{
-					throw StopWalkException.INSTANCE;
-				}
-				return true;
-			}
-
-			public override string ToString()
-			{
-				return base.ToString() + "(" + Sharpen.Extensions.CreateDate(when * 1000L) + ")";
-			}
+			return cmit.CommitTime <= when;
 		}
 
-		private class Between : CommitTimeRevFilter
+		public override string ToString()
 		{
-			private readonly int until;
+			return base.ToString() + "(" + Sharpen.Extensions.CreateDate(when * 1000L) + ")";
+		}
+	}
 
-			internal Between(long since, long until) : base(since)
-			{
-				this.until = (int)(until / 1000);
-			}
+	class CommitTimeRevFilterAfter : CommitTimeRevFilter
+	{
+		internal CommitTimeRevFilterAfter(long ts) : base(ts)
+		{
+		}
 
-			/// <exception cref="NGit.Errors.StopWalkException"></exception>
-			/// <exception cref="NGit.Errors.MissingObjectException"></exception>
-			/// <exception cref="NGit.Errors.IncorrectObjectTypeException"></exception>
-			/// <exception cref="System.IO.IOException"></exception>
-			public override bool Include(RevWalk walker, RevCommit cmit)
+		/// <exception cref="NGit.Errors.StopWalkException"></exception>
+		/// <exception cref="NGit.Errors.MissingObjectException"></exception>
+		/// <exception cref="NGit.Errors.IncorrectObjectTypeException"></exception>
+		/// <exception cref="System.IO.IOException"></exception>
+		public override bool Include(RevWalk walker, RevCommit cmit)
+		{
+			if (cmit.CommitTime < when)
 			{
-				return cmit.CommitTime <= until && cmit.CommitTime >= when;
+				throw StopWalkException.INSTANCE;
 			}
+			return true;
+		}
 
-			public override string ToString()
-			{
-				return base.ToString() + "(" + Sharpen.Extensions.CreateDate(when * 1000L) + " - "
-					 + Sharpen.Extensions.CreateDate(until * 1000L) + ")";
-			}
+		public override string ToString()
+		{
+			return base.ToString() + "(" + Sharpen.Extensions.CreateDate(when * 1000L) + ")";
+		}
+	}
+
+	class CommitTimeRevFilterBetween : CommitTimeRevFilter
+	{
+		private readonly int until;
+
+		internal CommitTimeRevFilterBetween(long since, long until) : base(since)
+		{
+			this.until = (int)(until / 1000);
+		}
+
+		/// <exception cref="NGit.Errors.StopWalkException"></exception>
+		/// <exception cref="NGit.Errors.MissingObjectException"></exception>
+		/// <exception cref="NGit.Errors.IncorrectObjectTypeException"></exception>
+		/// <exception cref="System.IO.IOException"></exception>
+		public override bool Include(RevWalk walker, RevCommit cmit)
+		{
+			return cmit.CommitTime <= until && cmit.CommitTime >= when;
+		}
+
+		public override string ToString()
+		{
+			return base.ToString() + "(" + Sharpen.Extensions.CreateDate(when * 1000L) + " - "
+				 + Sharpen.Extensions.CreateDate(until * 1000L) + ")";
 		}
 	}
 }

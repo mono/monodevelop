@@ -390,7 +390,7 @@ namespace NGit.Transport
 				DateTime maxWhen = Sharpen.Extensions.CreateDate(maxTime * 1000L);
 				walk.Sort(RevSort.COMMIT_TIME_DESC);
 				walk.MarkStart(reachableCommits);
-				walk.SetRevFilter(NGit.Revwalk.Filter.CommitTimeRevFilter.AfterFilter(maxWhen));
+				walk.SetRevFilter(CommitTimeRevFilter.After(maxWhen));
 				for (; ; )
 				{
 					RevCommit c = walk.Next();
@@ -721,6 +721,11 @@ READ_RESULT_break2: ;
 					c.Add(this._enclosing.COMMON);
 				}
 				return !remoteKnowsIsCommon;
+			}
+
+			public override bool RequiresCommitBody()
+			{
+				return false;
 			}
 
 			private readonly BasePackFetchConnection _enclosing;

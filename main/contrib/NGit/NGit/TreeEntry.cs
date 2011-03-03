@@ -51,7 +51,7 @@ namespace NGit
 {
 	/// <summary>This class represents an entry in a tree, like a blob or another tree.</summary>
 	/// <remarks>This class represents an entry in a tree, like a blob or another tree.</remarks>
-	[System.ObsoleteAttribute(@"To look up information about a single path, useNGit.Treewalk.TreeWalk.ForPath(Repository, string, NGit.Revwalk.RevTree) . To lookup information about multiple paths at once, use a and obtain the current entry's information from its getter methods."
+	[System.ObsoleteAttribute(@"To look up information about a single path, useNGit.Treewalk.TreeWalk.ForPath(Repository, string, NGit.Revwalk.RevTree) . To lookup information about multiple paths at once, use aNGit.Treewalk.TreeWalk and obtain the current entry's information from its getter methods."
 		)]
 	public abstract class TreeEntry : IComparable
 	{

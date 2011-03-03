@@ -143,6 +143,11 @@ namespace Sharpen
 			thread.Start ();
 		}
 		
+		public void Abort ()
+		{
+			thread.Abort ();
+		}
+		
 	}
 
 	internal class ThreadGroup

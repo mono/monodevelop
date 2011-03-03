@@ -627,7 +627,7 @@ namespace NGit.Transport
 			buf = b.ToByteArray();
 			if (buf.Length > 0)
 			{
-				Sharpen.Extensions.InitCause(err, new IOException("\n" + Sharpen.Extensions.CreateString
+				Sharpen.Extensions.InitCause(err, new IOException("\n" + Sharpen.Runtime.GetStringForBytes
 					(buf)));
 			}
 			return err;

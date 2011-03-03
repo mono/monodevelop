@@ -41,6 +41,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using NGit.Util;
 using Sharpen;
@@ -51,14 +53,14 @@ namespace NGit.Util
 	{
 		internal static bool Detect()
 		{
-			string osDotName = AccessController.DoPrivileged(new _PrivilegedAction_55());
+			string osDotName = AccessController.DoPrivileged(new _PrivilegedAction_58());
 			return osDotName != null && StringUtils.ToLowerCase(osDotName).IndexOf("windows")
 				 != -1;
 		}
 
-		private sealed class _PrivilegedAction_55 : PrivilegedAction<string>
+		private sealed class _PrivilegedAction_58 : PrivilegedAction<string>
 		{
-			public _PrivilegedAction_55()
+			public _PrivilegedAction_58()
 			{
 			}
 
@@ -129,6 +131,18 @@ namespace NGit.Util
 				return new FilePath(homeShare);
 			}
 			return base.UserHomeImpl();
+		}
+
+		public override ProcessStartInfo RunInShell(string cmd, string[] args)
+		{
+			IList<string> argv = new AList<string>(3 + args.Length);
+			argv.AddItem("cmd.exe");
+			argv.AddItem("/c");
+			argv.AddItem(cmd);
+			Sharpen.Collections.AddAll(argv, Arrays.AsList(args));
+			ProcessStartInfo proc = new ProcessStartInfo();
+			proc.SetCommand(argv);
+			return proc;
 		}
 	}
 }

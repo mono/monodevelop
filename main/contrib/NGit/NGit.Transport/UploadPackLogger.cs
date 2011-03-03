@@ -41,90 +41,29 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-using System.Collections.Generic;
-using System.Diagnostics;
-using NGit.Util;
+using NGit.Storage.Pack;
+using NGit.Transport;
 using Sharpen;
 
-namespace NGit.Util
+namespace NGit.Transport
 {
-	internal class FS_Win32_Cygwin : FS_Win32
+	/// <summary>
+	/// Logs activity that occurred within
+	/// <see cref="UploadPack">UploadPack</see>
+	/// .
+	/// <p>
+	/// Implementors of the interface are responsible for associating the current
+	/// thread to a particular connection, if they need to also include connection
+	/// information. One method is to use a
+	/// <see cref="Sharpen.ThreadLocal{T}">Sharpen.ThreadLocal&lt;T&gt;</see>
+	/// to remember
+	/// the connection information before invoking UploadPack.
+	/// </summary>
+	public interface UploadPackLogger
 	{
-		private static string cygpath;
-
-		internal static bool Detect()
-		{
-			string path = AccessController.DoPrivileged(new _PrivilegedAction_58());
-			if (path == null)
-			{
-				return false;
-			}
-			FilePath found = FS.SearchPath(path, "cygpath.exe");
-			if (found != null)
-			{
-				cygpath = found.GetPath();
-			}
-			return cygpath != null;
-		}
-
-		private sealed class _PrivilegedAction_58 : PrivilegedAction<string>
-		{
-			public _PrivilegedAction_58()
-			{
-			}
-
-			public string Run()
-			{
-				return Runtime.GetProperty("java.library.path");
-			}
-		}
-
-		public override FilePath Resolve(FilePath dir, string pn)
-		{
-			string w = ReadPipe(dir, new string[] { cygpath, "--windows", "--absolute", pn }, 
-				"UTF-8");
-			//
-			//
-			if (w != null)
-			{
-				return new FilePath(w);
-			}
-			return base.Resolve(dir, pn);
-		}
-
-		protected internal override FilePath UserHomeImpl()
-		{
-			string home = AccessController.DoPrivileged(new _PrivilegedAction_83());
-			if (home == null || home.Length == 0)
-			{
-				return base.UserHomeImpl();
-			}
-			return Resolve(new FilePath("."), home);
-		}
-
-		private sealed class _PrivilegedAction_83 : PrivilegedAction<string>
-		{
-			public _PrivilegedAction_83()
-			{
-			}
-
-			public string Run()
-			{
-				return Runtime.Getenv("HOME");
-			}
-		}
-
-		public override ProcessStartInfo RunInShell(string cmd, string[] args)
-		{
-			IList<string> argv = new AList<string>(4 + args.Length);
-			argv.AddItem("sh.exe");
-			argv.AddItem("-c");
-			argv.AddItem(cmd + " \"$@\"");
-			argv.AddItem(cmd);
-			Sharpen.Collections.AddAll(argv, Arrays.AsList(args));
-			ProcessStartInfo proc = new ProcessStartInfo();
-			proc.SetCommand(argv);
-			return proc;
-		}
+		/// <summary>Notice to the logger after a pack has been sent.</summary>
+		/// <remarks>Notice to the logger after a pack has been sent.</remarks>
+		/// <param name="stats">the statistics after sending a pack to the client.</param>
+		void OnPackStatistics(PackWriter.Statistics stats);
 	}
 }

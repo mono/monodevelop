@@ -392,8 +392,8 @@ namespace NGit.Api
 			DiffFormatter df = new DiffFormatter(bos);
 			df.SetRepository(repo);
 			df.Format(commitToPick.GetParent(0), commitToPick);
-			CreateFile(rebaseDir, PATCH, Sharpen.Extensions.CreateString(bos.ToByteArray(), Constants
-				.CHARACTER_ENCODING));
+			CreateFile(rebaseDir, PATCH, Sharpen.Runtime.GetStringForBytes(bos.ToByteArray(), 
+				Constants.CHARACTER_ENCODING));
 			CreateFile(rebaseDir, STOPPED_SHA, repo.NewObjectReader().Abbreviate(commitToPick
 				).Name);
 			return new RebaseResult(commitToPick);
@@ -895,8 +895,8 @@ namespace NGit.Api
 						case 0:
 						{
 							nextSpace = RawParseUtils.Next(buf, tokenBegin, ' ');
-							string actionToken = Sharpen.Extensions.CreateString(buf, tokenBegin, nextSpace -
-								 tokenBegin - 1);
+							string actionToken = Sharpen.Runtime.GetStringForBytes(buf, tokenBegin, nextSpace
+								 - tokenBegin - 1);
 							tokenBegin = nextSpace;
 							if (actionToken[0] == '#')
 							{
@@ -918,8 +918,8 @@ namespace NGit.Api
 								break;
 							}
 							nextSpace = RawParseUtils.Next(buf, tokenBegin, ' ');
-							string commitToken = Sharpen.Extensions.CreateString(buf, tokenBegin, nextSpace -
-								 tokenBegin - 1);
+							string commitToken = Sharpen.Runtime.GetStringForBytes(buf, tokenBegin, nextSpace
+								 - tokenBegin - 1);
 							tokenBegin = nextSpace;
 							current.commit = AbbreviatedObjectId.FromString(commitToken);
 							break;
