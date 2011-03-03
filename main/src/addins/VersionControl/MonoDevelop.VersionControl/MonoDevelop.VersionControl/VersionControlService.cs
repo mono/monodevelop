@@ -501,7 +501,7 @@ namespace MonoDevelop.VersionControl
 			Pad outPad = IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (monitor);
 			
 			AggregatedProgressMonitor mon = new AggregatedProgressMonitor (monitor);
-			mon.AddSlaveMonitor (IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (operation, "md-version-control", false, true, false, outPad));
+			mon.AddSlaveMonitor (IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (operation, "md-version-control", true, true, false, outPad));
 			return mon;
 		}
 		

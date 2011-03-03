@@ -52,6 +52,12 @@ namespace MonoDevelop.VersionControl
 			} catch (Exception e) {
 				string msg = GettextCatalog.GetString ("Version control operation failed: ");
 				msg += e.Message;
+				if (e.InnerException != null) {
+					msg = msg.Trim ();
+					if (!msg.EndsWith ("."))
+						msg += ".";
+					msg += " " + e.InnerException.Message;
+				}
 				tracker.ReportError (msg, null);
 				Console.Error.WriteLine(e);
 			} finally {			
