@@ -1,12 +1,13 @@
 namespace Sharpen
 {
 	using System;
+	using System.IO.Compression;
 
 	internal class GZIPOutputStream : OutputStream
 	{
 		public GZIPOutputStream (OutputStream os)
 		{
-			throw new NotImplementedException ();
+			Wrapped = new GZipStream (os, CompressionMode.Compress);
 		}
 	}
 }
