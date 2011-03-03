@@ -97,7 +97,7 @@ namespace MonoDevelop.Core.Text
 			bool textCharIsUpper = char.IsUpper (text[j]);
 			if (!onlyWordStart && filterChar == (textCharIsUpper ? text[j] : char.ToUpper (text[j]))) {
 				// cases don't match. Filter is upper char & letter is low, now prefer the match that does the word skip.
-				if (!(textCharIsUpper || filterTextLowerCaseTable[i])) {
+				if (!(textCharIsUpper || filterTextLowerCaseTable[i]) && j + 1 < text.Length) {
 					int possibleBetterResult = GetMatchChar (text, i, j + 1, onlyWordStart);
 					if (possibleBetterResult >= 0)
 						return possibleBetterResult;
