@@ -1143,7 +1143,7 @@ namespace Mono.Debugging.Client
 		/// from memory. It is not necessary to use this method if the subclass keeps
 		/// track of unbound breakpoints by itself.
 		/// </remarks>
-		internal protected void UnbindSourceFileBreakEvents (string fullFilePath)
+		internal protected void UnbindSourceFileBreakpoints (string fullFilePath)
 		{
 			List<BreakEventInfo> toUpdate = new List<BreakEventInfo> ();
 			lock (breakpoints) {
@@ -1460,9 +1460,9 @@ namespace Mono.Debugging.Client
 			session.BindSourceFileBreakpoints (fullFilePath);
 		}
 
-		public void UnbindSourceFileBreakEvents (string fullFilePath)
+		public void UnbindSourceFileBreakpoints (string fullFilePath)
 		{
-			session.UnbindSourceFileBreakEvents (fullFilePath);
+			session.UnbindSourceFileBreakpoints (fullFilePath);
 		}
 	}
 
