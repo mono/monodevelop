@@ -1084,10 +1084,21 @@ namespace Mono.Debugging.Client
 				BusyStateChanged (this, args);
 		}
 		
-		internal protected void NotifySourceFileLoaded (string fullFilePath)
+		/// <summary>
+		/// Tries to bind all unbound breakpoints of a source file
+		/// </summary>
+		/// <param name='fullFilePath'>
+		/// Source file path
+		/// </param>
+		/// <remarks>
+		/// This method can be called by a subclass to ask the debugger session to attempt
+		/// to bind all unbound breakpoints defined on the given file. This method could
+		/// be called, for example, when a new assembly that contains this file is loaded
+		/// into memory. It is not necessary to use this method if the subclass keeps
+		/// track of unbound breakpoints by itself.
+		/// </remarks>
+		internal protected void BindSourceFileBreakpoints (string fullFilePath)
 		{
-			if (!AutoRetryUnboundBreakEvents)
-				return;
 			lock (breakpoints) {
 				// Make a copy of the breakpoints table since it can be modified while iterating
 				Dictionary<BreakEvent, BreakEventInfo> breakpointsCopy = new Dictionary<BreakEvent, BreakEventInfo> (breakpoints);
@@ -1118,11 +1129,22 @@ namespace Mono.Debugging.Client
 				HandleException (ex);
 			}
 		}
-
-		internal protected void NotifySourceFileUnloaded (string fullFilePath)
+		
+		/// <summary>
+		/// Unbinds all bound breakpoints of a source file
+		/// </summary>
+		/// <param name='fullFilePath'>
+		/// The source file path
+		/// </param>
+		/// <remarks>
+		/// This method can be called by a subclass to ask the debugger session to
+		/// unbind all bound breakpoints defined on the given file. This method could
+		/// be called, for example, when an assembly that contains this file is unloaded
+		/// from memory. It is not necessary to use this method if the subclass keeps
+		/// track of unbound breakpoints by itself.
+		/// </remarks>
+		internal protected void UnbindSourceFileBreakEvents (string fullFilePath)
 		{
-			if (!AutoRetryUnboundBreakEvents)
-				return;
 			List<BreakEventInfo> toUpdate = new List<BreakEventInfo> ();
 			lock (breakpoints) {
 				// Make a copy of the breakpoints table since it can be modified while iterating
@@ -1179,12 +1201,6 @@ namespace Mono.Debugging.Client
 		/// a background thread, so it will not block the caller of the corresponding public methods.
 		/// </summary>
 		protected bool UseOperationThread { get; set; }
-		
-		/// <summary>
-		/// When set to true, the debugger session will automatically try to bind unbound breakpoints
-		/// when source files are loaded. False by default.
-		/// </summary>
-		protected bool AutoRetryUnboundBreakEvents { get; set; }
 		
 		/// <summary>
 		/// Called to start the execution of the debugger
@@ -1439,14 +1455,14 @@ namespace Mono.Debugging.Client
 			session.OnStarted ();
 		}
 		
-		public void NotifySourceFileLoaded (string fullFilePath)
+		public void BindSourceFileBreakpoints (string fullFilePath)
 		{
-			session.NotifySourceFileLoaded (fullFilePath);
+			session.BindSourceFileBreakpoints (fullFilePath);
 		}
 
-		public void NotifySourceFileUnloaded (string fullFilePath)
+		public void UnbindSourceFileBreakEvents (string fullFilePath)
 		{
-			session.NotifySourceFileUnloaded (fullFilePath);
+			session.UnbindSourceFileBreakEvents (fullFilePath);
 		}
 	}
 
