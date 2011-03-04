@@ -1430,6 +1430,7 @@
     <Compile Include="MonoDevelop.Ide.OnlineTemplates\ProjectTemplateIndex.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\TemplatePickerWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\NewProjectOptionsWidget.cs" />
+    <Compile Include="MonoDevelop.Ide.Extensions\FileTypeCondition.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

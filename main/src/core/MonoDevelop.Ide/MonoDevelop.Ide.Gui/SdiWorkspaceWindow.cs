@@ -30,10 +30,12 @@ using System.Collections.Generic;
 using System.IO;
 using Gtk;
 
+using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Extensions;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -41,6 +43,8 @@ namespace MonoDevelop.Ide.Gui
 	{
 		DefaultWorkbench workbench;
 		IViewContent content;
+		ExtensionContext extensionContext;
+		FileTypeCondition fileTypeCondition = new FileTypeCondition ();
 		
 		List<IAttachableViewContent> subViewContents = null;
 		Notebook subViewNotebook = null;
@@ -75,6 +79,10 @@ namespace MonoDevelop.Ide.Gui
 			box = new VBox ();
 			Add (box);
 			box.PackStart (content.Control);
+			
+			fileTypeCondition.SetFileName (content.ContentName ?? content.UntitledName);
+			extensionContext = AddinManager.CreateExtensionContext ();
+			extensionContext.RegisterCondition ("FileType", fileTypeCondition);
 			
 			content.WorkbenchWindow = this;
 			
@@ -117,6 +125,10 @@ namespace MonoDevelop.Ide.Gui
 				document = value;
 				OnDocumentChanged (EventArgs.Empty);
 			}
+		}
+		
+		public ExtensionContext ExtensionContext {
+			get { return extensionContext; }
 		}
 		
 		protected virtual void OnDocumentChanged (EventArgs e)
@@ -577,6 +589,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		protected virtual void OnTitleChanged(EventArgs e)
 		{
+			fileTypeCondition.SetFileName (content.ContentName ?? content.UntitledName);
+			
 			if (show_notification) {
 				tabLabel.Label.Markup = "<span foreground=\"blue\">" + Title + "</span>";
 				tabLabel.Label.UseMarkup = true;

@@ -28,6 +28,7 @@
 using System;
 using System.ComponentModel;
 using System.Collections.Generic;
+using Mono.Addins;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -42,6 +43,7 @@ namespace MonoDevelop.Ide.Gui
 		string DocumentType { get; set; }
 		string Title { get; set; }
 		bool ShowNotification { get; set; }
+		ExtensionContext ExtensionContext { get; }
 
 		void AttachViewContent (IAttachableViewContent subViewContent);
 		void SwitchView (int index);

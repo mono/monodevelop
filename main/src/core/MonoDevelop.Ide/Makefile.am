@@ -359,6 +359,7 @@ FILES =  \
 	MonoDevelop.Ide.Execution/MonoExecutionParametersWidget.cs \
 	MonoDevelop.Ide.Execution/ParameterizedExecutionHandler.cs \
 	MonoDevelop.Ide.Extensions/CustomToolExtensionNode.cs \
+	MonoDevelop.Ide.Extensions/FileTypeCondition.cs \
 	MonoDevelop.Ide.Extensions/IAddFileDialogHandler.cs \
 	MonoDevelop.Ide.Extensions/IOpenFileDialogHandler.cs \
 	MonoDevelop.Ide.Extensions/LayoutExtensionNode.cs \

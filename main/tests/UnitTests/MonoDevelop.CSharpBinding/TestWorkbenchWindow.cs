@@ -31,6 +31,7 @@ using System.Collections;
 
 using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
+using Mono.Addins;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {
@@ -67,6 +68,10 @@ namespace MonoDevelop.CSharpBinding.Tests
 			set { viewContent = value; }
 		}
 
+		public ExtensionContext ExtensionContext {
+			get { return AddinManager.AddinEngine; }
+		}
+		
 		public IEnumerable<IAttachableViewContent> SubViewContents { get { return new IAttachableViewContent[0]; } }
 
 		public IBaseViewContent ActiveViewContent {

@@ -530,7 +530,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			// If the new document is a text editor, attach the extensions
 			
-			ExtensionNodeList extensions = AddinManager.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
+			ExtensionNodeList extensions = window.ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
 			editorExtension = null;
 			TextEditorExtension last = null;
 			
