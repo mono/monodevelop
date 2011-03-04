@@ -37,7 +37,7 @@ namespace MonoDevelop.Debugger.Win32
 		Dictionary<int, ProcessInfo> processes = new Dictionary<int, ProcessInfo> ();
 		Dictionary<int, ThreadInfo> threads = new Dictionary<int,ThreadInfo> ();
 		Dictionary<string, ModuleInfo> modules;
-		Dictionary<CorBreakpoint, Breakpoint> breakpoints = new Dictionary<CorBreakpoint, Breakpoint>();
+		Dictionary<CorBreakpoint, BreakEventInfo> breakpoints = new Dictionary<CorBreakpoint, BreakEventInfo> ();
 		Dictionary<long, CorHandleValue> handles = new Dictionary<long, CorHandleValue>();
 		
 
@@ -255,14 +255,15 @@ namespace MonoDevelop.Debugger.Win32
 					return;
 				}
 			}
-			
-			Breakpoint bp;
-			if (breakpoints.TryGetValue (e.Breakpoint, out bp)) {
+
+			BreakEventInfo binfo;
+			if (breakpoints.TryGetValue (e.Breakpoint, out binfo)) {
 				e.Continue = true;
+				Breakpoint bp = (Breakpoint)binfo.BreakEvent;
 				
 				if (bp.HitCount > 1) {
 					// Just update the count and continue
-					UpdateHitCount (e.Breakpoint, bp.HitCount - 1);
+					binfo.UpdateHitCount (bp.HitCount - 1);
 					return;
 				}
 				
@@ -280,12 +281,12 @@ namespace MonoDevelop.Debugger.Win32
 				switch (bp.HitAction) {
 					case HitAction.CustomAction:
 						// If custom action returns true, execution must continue
-						if (OnCustomBreakpointAction (bp.CustomActionId, e.Breakpoint))
+						if (binfo.RunCustomBreakpointAction (bp.CustomActionId))
 							return;
 						break;
 					case HitAction.PrintExpression: {
 						string exp = EvaluateTrace (e.Thread, bp.TraceExpression);
-						UpdateLastTraceValue (e.Breakpoint, exp);
+						binfo.UpdateLastTraceValue (exp);
 						return;
 					}
 				}
@@ -375,7 +376,7 @@ namespace MonoDevelop.Debugger.Win32
 							di.Reader = reader;
 							di.Module = e.Module;
 							documents[docFile] = di;
-							NotifySourceFileLoaded (docFile);
+							BindSourceFileBreakpoints (docFile);
 						}
 					}
 					catch (Exception ex) {
@@ -422,7 +423,7 @@ namespace MonoDevelop.Debugger.Win32
 				}
 				foreach (string file in toRemove) {
 					documents.Remove (file);
-					NotifySourceFileUnloaded (file);
+					UnbindSourceFileBreakpoints (file);
 				}
 			}
 		}
@@ -534,9 +535,9 @@ namespace MonoDevelop.Debugger.Win32
 			process.Detach ();
 		}
 
-		protected override void OnEnableBreakEvent (object handle, bool enable)
+		protected override void OnEnableBreakEvent (BreakEventInfo binfo, bool enable)
 		{
-			CorBreakpoint bp = handle as CorFunctionBreakpoint;
+			CorBreakpoint bp = binfo.Handle as CorFunctionBreakpoint;
 			if (bp != null)
 				bp.Activate (enable);
 		}
@@ -625,15 +626,19 @@ namespace MonoDevelop.Debugger.Win32
 			}
 			return handleVal;
 		}
-		
-		protected override object OnInsertBreakEvent (BreakEvent be, bool activate)
+
+		protected override BreakEventInfo OnInsertBreakEvent (BreakEvent be)
 		{
+			BreakEventInfo binfo = new BreakEventInfo ();
+
 			lock (documents) {
 				Breakpoint bp = be as Breakpoint;
 				if (bp != null) {
 					DocInfo doc;
-					if (!documents.TryGetValue (System.IO.Path.GetFullPath (bp.FileName), out doc))
-						return null;
+					if (!documents.TryGetValue (System.IO.Path.GetFullPath (bp.FileName), out doc)) {
+						binfo.SetStatus (BreakEventStatus.NotBound, null);
+						return binfo;
+					}
 
 					int line;
                     try {
@@ -641,11 +646,14 @@ namespace MonoDevelop.Debugger.Win32
                     }
                     catch {
                         // Invalid line
-                        return null;
-                    }
+						binfo.SetStatus (BreakEventStatus.Invalid, null);
+						return binfo;
+					}
 					ISymbolMethod met = doc.Reader.GetMethodFromDocumentPosition (doc.Document, line, 0);
-					if (met == null)
-						return null;
+					if (met == null) {
+						binfo.SetStatus (BreakEventStatus.Invalid, null);
+						return binfo;
+					}
 
 					int offset = -1;
 					foreach (SequencePoint sp in met.GetSequencePoints ()) {
@@ -654,14 +662,19 @@ namespace MonoDevelop.Debugger.Win32
 							break;
 						}
 					}
-					if (offset == -1)
-						return null;
+					if (offset == -1) {
+						binfo.SetStatus (BreakEventStatus.Invalid, null);
+						return binfo;
+					}
 
 					CorFunction func = doc.Module.GetFunctionFromToken (met.Token.GetToken ());
 					CorFunctionBreakpoint corBp = func.ILCode.CreateBreakpoint (offset);
-					corBp.Activate (activate);
-					breakpoints [corBp] = bp;
-					return corBp;
+					corBp.Activate (bp.Enabled);
+					breakpoints[corBp] = binfo;
+
+					binfo.Handle = corBp;
+					binfo.SetStatus (BreakEventStatus.Bound, null);
+					return binfo;
 				}
 			}
 			return null;
@@ -737,11 +750,11 @@ namespace MonoDevelop.Debugger.Win32
 			process.Continue (false);
 		}
 
-		protected override void OnRemoveBreakEvent (object handle)
+		protected override void OnRemoveBreakEvent (BreakEventInfo bi)
 		{
 			if (terminated)
 				return;
-			CorFunctionBreakpoint corBp = (CorFunctionBreakpoint) handle;
+			CorFunctionBreakpoint corBp = (CorFunctionBreakpoint)bi.Handle;
 			corBp.Activate (false);
 		}
 
@@ -791,9 +804,8 @@ namespace MonoDevelop.Debugger.Win32
 			OnTargetEvent (args);
 		}
 
-		protected override object OnUpdateBreakEvent (object handle, BreakEvent be)
+		protected override void OnUpdateBreakEvent (BreakEventInfo be)
 		{
-			return null;
 		}
 
 		public CorValue RuntimeInvoke (CorEvaluationContext ctx, CorFunction function, CorType[] typeArgs, CorValue thisObj, CorValue[] arguments)
@@ -1237,5 +1249,10 @@ namespace MonoDevelop.Debugger.Win32
 			if (gv != null)
 				gv.SetValue (ctx.Adapter.TargetObjectToObject (ctx, val));
 		}
+	}
+
+	class CorBreakpointInfo : BreakEventInfo
+	{
+		public CorBreakpoint CorBreakpoint;
 	}
 }
