@@ -54,8 +54,8 @@ namespace MonoDevelop.Debugger.Gdb
 		bool isMonoProcess;
 		string currentProcessName;
 		List<string> tempVariableObjects = new List<string> ();
-		Dictionary<int,GdbBreakpoint> breakpoints = new Dictionary<int,GdbBreakpoint> ();
-		List<GdbBreakpoint> breakpointsWithHitCount = new List<GdbBreakpoint> ();
+		Dictionary<int,BreakEventInfo> breakpoints = new Dictionary<int,BreakEventInfo> ();
+		List<BreakEventInfo> breakpointsWithHitCount = new List<BreakEventInfo> ();
 		
 		DateTime lastBreakEventUpdate = DateTime.Now;
 		Dictionary<int, WaitCallback> breakUpdates = new Dictionary<int,WaitCallback> ();
@@ -268,7 +268,7 @@ namespace MonoDevelop.Debugger.Gdb
 			if (bp == null)
 				throw new NotSupportedException ();
 			
-			GdbBreakpoint bi = new GdbBreakpoint ();
+			BreakEventInfo bi = new BreakEventInfo ();
 			
 			lock (gdbLock) {
 				bool dres = InternalStop ();
@@ -311,7 +311,7 @@ namespace MonoDevelop.Debugger.Gdb
 					if (!be.Enabled)
 						RunCommand ("-break-disable", bh.ToString ());
 					breakpoints [bh] = bi;
-					bi.Id = bh;
+					bi.Handle = bh;
 					return bi;
 				} finally {
 					InternalResume (dres);
@@ -321,7 +321,7 @@ namespace MonoDevelop.Debugger.Gdb
 		
 		bool CheckBreakpoint (int handle)
 		{
-			GdbBreakpoint binfo;
+			BreakEventInfo binfo;
 			if (!breakpoints.TryGetValue (handle, out binfo))
 				return true;
 			
@@ -343,7 +343,7 @@ namespace MonoDevelop.Debugger.Gdb
 			return true;
 		}
 		
-		void NotifyBreakEventUpdate (GdbBreakpoint binfo, int hitCount, string lastTrace)
+		void NotifyBreakEventUpdate (BreakEventInfo binfo, int hitCount, string lastTrace)
 		{
 			bool notify = false;
 			
@@ -363,7 +363,7 @@ namespace MonoDevelop.Debugger.Gdb
 					notify = true;
 				} else {
 					// Queue the event notifications to avoid wasting too much time
-					breakUpdates [binfo.Id] = nc;
+					breakUpdates [(int)binfo.Handle] = nc;
 					if (!breakUpdateEventsQueued) {
 						breakUpdateEventsQueued = true;
 						
@@ -388,8 +388,8 @@ namespace MonoDevelop.Debugger.Gdb
 		
 		void UpdateHitCountData ()
 		{
-			foreach (GdbBreakpoint bp in breakpointsWithHitCount) {
-				GdbCommandResult res = RunCommand ("-break-info", bp.Id.ToString ());
+			foreach (BreakEventInfo bp in breakpointsWithHitCount) {
+				GdbCommandResult res = RunCommand ("-break-info", bp.Handle.ToString ());
 				string val = res.GetObject ("BreakpointTable").GetObject ("body").GetObject (0).GetObject ("bkpt").GetValue ("ignore");
 				if (val != null)
 					NotifyBreakEventUpdate (bp, int.Parse (val), null);
@@ -399,40 +399,37 @@ namespace MonoDevelop.Debugger.Gdb
 			breakpointsWithHitCount.Clear ();
 		}
 		
-		protected override void OnRemoveBreakEvent (BreakEventInfo b)
+		protected override void OnRemoveBreakEvent (BreakEventInfo binfo)
 		{
-			GdbBreakpoint binfo = (GdbBreakpoint) b;
 			lock (gdbLock) {
 				bool dres = InternalStop ();
 				breakpointsWithHitCount.Remove (binfo);
-				breakpoints.Remove (binfo.Id);
+				breakpoints.Remove ((int)binfo.Handle);
 				try {
-					RunCommand ("-break-delete", binfo.Id.ToString ());
+					RunCommand ("-break-delete", binfo.Handle.ToString ());
 				} finally {
 					InternalResume (dres);
 				}
 			}
 		}
 		
-		protected override void OnEnableBreakEvent (BreakEventInfo b, bool enable)
+		protected override void OnEnableBreakEvent (BreakEventInfo binfo, bool enable)
 		{
-			GdbBreakpoint binfo = (GdbBreakpoint) b;
 			lock (gdbLock) {
 				bool dres = InternalStop ();
 				try {
 					if (enable)
-						RunCommand ("-break-enable", binfo.Id.ToString ());
+						RunCommand ("-break-enable", binfo.Handle.ToString ());
 					else
-						RunCommand ("-break-disable", binfo.Id.ToString ());
+						RunCommand ("-break-disable", binfo.Handle.ToString ());
 				} finally {
 					InternalResume (dres);
 				}
 			}
 		}
 		
-		protected override void OnUpdateBreakEvent (BreakEventInfo b)
+		protected override void OnUpdateBreakEvent (BreakEventInfo binfo)
 		{
-			GdbBreakpoint binfo = (GdbBreakpoint) b;
 			Breakpoint bp = binfo.BreakEvent as Breakpoint;
 			if (bp == null)
 				throw new NotSupportedException ();
@@ -441,15 +438,15 @@ namespace MonoDevelop.Debugger.Gdb
 			
 			try {
 				if (bp.HitCount > 0) {
-					RunCommand ("-break-after", binfo.Id.ToString (), bp.HitCount.ToString ());
+					RunCommand ("-break-after", binfo.Handle.ToString (), bp.HitCount.ToString ());
 					breakpointsWithHitCount.Add (binfo);
 				} else
 					breakpointsWithHitCount.Remove (binfo);
 				
 				if (!string.IsNullOrEmpty (bp.ConditionExpression) && !bp.BreakIfConditionChanges)
-					RunCommand ("-break-condition", binfo.Id.ToString (), bp.ConditionExpression);
+					RunCommand ("-break-condition", binfo.Handle.ToString (), bp.ConditionExpression);
 				else
-					RunCommand ("-break-condition", binfo.Id.ToString ());
+					RunCommand ("-break-condition", binfo.Handle.ToString ());
 			} finally {
 				InternalResume (ss);
 			}
@@ -711,10 +708,5 @@ namespace MonoDevelop.Debugger.Gdb
 				RunCommand ("-var-delete", s);
 			tempVariableObjects.Clear ();
 		}
-	}
-	
-	class GdbBreakpoint: BreakEventInfo
-	{
-		public int Id;
 	}
 }
