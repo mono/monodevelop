@@ -50,7 +50,7 @@ namespace Mono.Debugging.Soft
 		bool useFullPaths = true;
 		Dictionary<string,TypeMirror> types = new Dictionary<string, TypeMirror> ();
 		Dictionary<EventRequest,BreakInfo> breakpoints = new Dictionary<EventRequest,BreakInfo> ();
-		List<BreakEvent> pending_bes = new List<BreakEvent> ();
+		List<BreakInfo> pending_bes = new List<BreakInfo> ();
 		ThreadMirror current_thread, recent_thread;
 		ProcessInfo[] procs;
 		ThreadInfo[] current_threads;
@@ -603,55 +603,60 @@ namespace Mono.Debugging.Soft
 					return t;
 			return null;
 		}
-
-		protected override object OnInsertBreakEvent (BreakEvent be, bool activate)
+		
+		protected override BreakEventInfo OnInsertBreakEvent (BreakEvent ev)
 		{
 			if (exited)
 				return null;
-			BreakInfo bi = new BreakInfo ();
-			bi.Enabled = activate;
-			bi.BreakEvent = be;
 			
-			if (be is Breakpoint) {
-				Breakpoint bp = (Breakpoint) be;
-				bi.Location = FindLocation (bp.FileName, bp.Line);
-				if (bi.Location != null)
+			BreakInfo bi = new BreakInfo ();
+			
+			if (ev is Breakpoint) {
+				Breakpoint bp = (Breakpoint) ev;
+				bool inisideLoadedRange;
+				bi.Location = FindLocation (bp.FileName, bp.Line, out inisideLoadedRange);
+				if (bi.Location != null) {
 					InsertBreakpoint (bp, bi);
-				else {
-					pending_bes.Add (bp);
-					SetBreakEventStatus (be, false, null);
+					bi.SetStatus (BreakEventStatus.Bound, null);
 				}
-			} else if (be is Catchpoint) {
-				var cp = (Catchpoint) be;
+				else {
+					pending_bes.Add (bi);
+					if (inisideLoadedRange)
+						bi.SetStatus (BreakEventStatus.Invalid, null);
+					else
+						bi.SetStatus (BreakEventStatus.NotBound, null);
+				}
+			} else if (ev is Catchpoint) {
+				var cp = (Catchpoint) ev;
 				TypeMirror type;
 				if (types.TryGetValue (cp.ExceptionName, out type)) {
 					InsertCatchpoint (cp, bi, type);
+					bi.SetStatus (BreakEventStatus.Bound, null);
 				} else {
-					pending_bes.Add (be);
-					SetBreakEventStatus (be, false, null);
+					pending_bes.Add (bi);
+					bi.SetStatus (BreakEventStatus.NotBound, null);
 				}
 			}
 			return bi;
 		}
 
-		protected override void OnRemoveBreakEvent (object handle)
+		protected override void OnRemoveBreakEvent (BreakEventInfo binfo)
 		{
 			if (exited)
 				return;
-			BreakInfo bi = (BreakInfo) handle;
+			BreakInfo bi = (BreakInfo) binfo;
 			if (bi.Req != null) {
 				bi.Req.Enabled = false;
 				RemoveQueuedBreakEvents (bi.Req);
 			}
-			pending_bes.Remove (bi.BreakEvent);
+			pending_bes.Remove (bi);
 		}
 
-		protected override void OnEnableBreakEvent (object handle, bool enable)
+		protected override void OnEnableBreakEvent (BreakEventInfo binfo, bool enable)
 		{
 			if (exited)
 				return;
-			BreakInfo bi = (BreakInfo) handle;
-			bi.Enabled = enable;
+			BreakInfo bi = (BreakInfo) binfo;
 			if (bi.Req != null) {
 				bi.Req.Enabled = enable;
 				if (!enable)
@@ -659,47 +664,45 @@ namespace Mono.Debugging.Soft
 			}
 		}
 
-		protected override object OnUpdateBreakEvent (object handle, BreakEvent be)
+		protected override void OnUpdateBreakEvent (BreakEventInfo binfo)
 		{
-			return handle;
 		}
 
 		void InsertBreakpoint (Breakpoint bp, BreakInfo bi)
 		{
 			bi.Req = vm.SetBreakpoint (bi.Location.Method, bi.Location.ILOffset);
-			bi.Req.Enabled = bi.Enabled;
+			bi.Req.Enabled = bi.BreakEvent.Enabled;
 			breakpoints [bi.Req] = bi;
 			
 			if (bi.Location.LineNumber != bp.Line)
-				AdjustBreakpointLocation (bp, bi.Location.LineNumber);
+				bi.AdjustBreakpointLocation (bi.Location.LineNumber);
 		}
 		
 		void InsertCatchpoint (Catchpoint cp, BreakInfo bi, TypeMirror excType)
 		{
 			var request = bi.Req = vm.CreateExceptionRequest (excType, true, true);
 			request.Count = cp.HitCount;
-			bi.Req.Enabled = bi.Enabled;
+			bi.Req.Enabled = bi.BreakEvent.Enabled;
 		}
 		
-		Location FindLocation (string file, int line)
+		Location FindLocation (string file, int line, out bool inisideLoadedRange)
 		{
+			inisideLoadedRange = false;
 			if (!started)
 				return null;
+
 			string filename = PathToFileName (file);
 	
-			// Try the current class first
-			Location target_loc = null;// = GetLocFromType (current_thread.GetFrames()[0].Method.DeclaringType, filename, line);
+			Location target_loc = null;
 	
 			// Try already loaded types in the current source file
-			if (target_loc == null) {
-				List<TypeMirror> types;
-	
-				if (source_to_type.TryGetValue (filename, out types)) {
-					foreach (TypeMirror t in types) {
-						target_loc = GetLocFromType (t, filename, line);
-						if (target_loc != null)
-							break;
-					}
+			List<TypeMirror> types;
+
+			if (source_to_type.TryGetValue (filename, out types)) {
+				foreach (TypeMirror t in types) {
+					target_loc = GetLocFromType (t, filename, line, out inisideLoadedRange);
+					if (target_loc != null || inisideLoadedRange)
+						break;
 				}
 			}
 	
@@ -909,7 +912,7 @@ namespace Mono.Debugging.Soft
 					int line = breakpoint.Value.Location.LineNumber;
 					OnDebuggerOutput (false, string.Format ("Re-pending breakpoint at {0}:{1}\n", file, line));
 					breakpoints.Remove (breakpoint.Key);
-					pending_bes.Add (breakpoint.Value.BreakEvent);
+					pending_bes.Add (breakpoint.Value);
 				}
 				
 				// Remove affected types from the loaded types list
@@ -1068,7 +1071,7 @@ namespace Mono.Debugging.Soft
 			
 			if (bp.HitCount > 1) {
 				// Just update the count and continue
-				UpdateHitCount (binfo, bp.HitCount - 1);
+				binfo.UpdateHitCount (bp.HitCount - 1);
 				return true;
 			}
 			
@@ -1086,10 +1089,10 @@ namespace Mono.Debugging.Soft
 			switch (bp.HitAction) {
 				case HitAction.CustomAction:
 					// If custom action returns true, execution must continue
-					return OnCustomBreakpointAction (bp.CustomActionId, binfo);
+					return binfo.RunCustomBreakpointAction (bp.CustomActionId);
 				case HitAction.PrintExpression: {
 					string exp = EvaluateTrace (thread, bp.TraceExpression);
-					UpdateLastTraceValue (binfo, exp);
+					binfo.UpdateLastTraceValue (exp);
 					return true;
 				}
 				case HitAction.Break:
@@ -1148,7 +1151,7 @@ namespace Mono.Debugging.Soft
 			
 			/* Handle pending breakpoints */
 			
-			var resolved = new List<BreakEvent> ();
+			var resolved = new List<BreakInfo> ();
 			
 			//get the source file paths
 			//full paths, from GetSourceFiles (true), are only supported by sdb protocol 2.2 and later
@@ -1179,18 +1182,23 @@ namespace Mono.Debugging.Soft
 					source_to_type[s] = typesList;
 				}
 				
-				foreach (var bp in pending_bes.OfType<Breakpoint> ()) {
+				foreach (var bi in pending_bes.Where (b => b.BreakEvent is Breakpoint)) {
+					Breakpoint bp = (Breakpoint) bi.BreakEvent;
 					if (PathComparer.Compare (PathToFileName (bp.FileName), s) == 0) {
-						Location l = GetLocFromType (t, s, bp.Line);
+						bool inisideLoadedRange;
+						Location l = GetLocFromType (t, s, bp.Line, out inisideLoadedRange);
 						if (l != null) {
 							OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint at '{0}:{1}' to {2} [0x{3:x5}].\n",
 							                                        s, l.LineNumber, l.Method.FullName, l.ILOffset));
-							ResolvePendingBreakpoint (bp, l);
-							resolved.Add (bp);
+							ResolvePendingBreakpoint (bi, l);
+							resolved.Add (bi);
 						} else {
-							OnDebuggerOutput (true, string.Format ("Could not insert pending breakpoint at '{0}:{1}'. " +
-								"Perhaps the source line does not contain any statements, or the source does not correspond " +
-								"to the current binary.\n", s, bp.Line));
+							if (inisideLoadedRange) {
+								bi.SetStatus (BreakEventStatus.Invalid, null);
+								OnDebuggerOutput (true, string.Format ("Could not insert pending breakpoint at '{0}:{1}'. " +
+									"Perhaps the source line does not contain any statements, or the source does not correspond " +
+									"to the current binary.\n", s, bp.Line));
+							}
 						}
 					}
 				}
@@ -1202,10 +1210,11 @@ namespace Mono.Debugging.Soft
 			
 			//handle pending catchpoints
 			
-			foreach (var cp in pending_bes.OfType<Catchpoint> ()) {
+			foreach (var bi in pending_bes.Where (b => b.BreakEvent is Catchpoint)) {
+				Catchpoint cp = (Catchpoint) bi.BreakEvent;
 				if (cp.ExceptionName == typeName) {
-					ResolvePendingCatchpoint (cp, t);
-					resolved.Add (cp);
+					ResolvePendingCatchpoint (bi, t);
+					resolved.Add (bi);
 				}
 			}
 			foreach (var be in resolved)
@@ -1224,10 +1233,16 @@ namespace Mono.Debugging.Soft
 			return PathComparer.Compare (p1, p2) == 0;
 		}
 		
-		Location GetLocFromType (TypeMirror type, string file, int line)
+		Location GetLocFromType (TypeMirror type, string file, int line, out bool insideTypeRange)
 		{
 			Location target_loc = null;
-			foreach (MethodMirror m in type.GetMethods ()) {
+			insideTypeRange = false;
+			
+			foreach (MethodMirror m in type.GetMethods ())
+			{
+				int rangeFirstLine = -1;
+				int rangeLastLine = -1;
+				
 				foreach (Location l in m.Locations) {
 					if (PathComparer.Compare (PathToFileName (l.SourceFile), file) == 0) {
 						// If we are inserting a breakpoint in line L, but L+1 has the same IL offset as L,
@@ -1242,30 +1257,39 @@ namespace Mono.Debugging.Soft
 							else
 								break;
 						}
+						rangeLastLine = l.LineNumber;
+						if (rangeFirstLine == -1)
+							rangeFirstLine = l.LineNumber;
+					} else {
+						if (rangeFirstLine != -1 && line >= rangeFirstLine && line <= rangeLastLine) {
+							insideTypeRange = true;
+							return null;
+						}
+						rangeFirstLine = -1;
 					}
 				}
 				if (target_loc != null)
 					break;
+				if (rangeFirstLine != -1 && line >= rangeFirstLine && line <= rangeLastLine) {
+					insideTypeRange = true;
+					return null;
+				}
 			}
 	
 			return target_loc;
 		}
 
-		void ResolvePendingBreakpoint (Breakpoint bp, Location l)
+		void ResolvePendingBreakpoint (BreakInfo bi, Location l)
 		{
-			BreakInfo bi = GetBreakInfo (bp);
-			if (bi != null) {
-				bi.Location = l;
-				InsertBreakpoint (bp, bi);
-				SetBreakEventStatus (bp, true, null);
-			}
+			bi.Location = l;
+			InsertBreakpoint ((Breakpoint) bi.BreakEvent, bi);
+			bi.SetStatus (BreakEventStatus.Bound, null);
 		}
 				
-		void ResolvePendingCatchpoint (Catchpoint cp, TypeMirror type)
+		void ResolvePendingCatchpoint (BreakInfo bi, TypeMirror type)
 		{
-			BreakInfo bi = GetBreakInfo (cp);
-			InsertCatchpoint (cp, bi, type);
-			SetBreakEventStatus (cp, true, null);
+			InsertCatchpoint ((Catchpoint) bi.BreakEvent, bi, type);
+			bi.SetStatus (BreakEventStatus.Bound, null);
 		}
 		
 		bool UpdateAssemblyFilters (AssemblyMirror asm)
@@ -1372,15 +1396,6 @@ namespace Mono.Debugging.Soft
 				return false;
 			}
 			return false;
-		}
-		
-		BreakInfo GetBreakInfo (BreakEvent be)
-		{
-			object bi;
-			if (GetBreakpointHandle (be, out bi))
-				return (BreakInfo) bi;
-			else
-				return null;
 		}
 		
 		public bool IsExternalCode (Mono.Debugger.Soft.StackFrame frame)
@@ -1531,12 +1546,10 @@ namespace Mono.Debugging.Soft
 		static extern int uname (IntPtr buf);
 	}
 	
-	class BreakInfo
+	class BreakInfo: BreakEventInfo
 	{
-		public bool Enabled;
 		public Location Location;
 		public EventRequest Req;
-		public BreakEvent BreakEvent;
 		public string LastConditionValue;
 	}
 	
