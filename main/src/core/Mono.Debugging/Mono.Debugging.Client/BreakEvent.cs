@@ -107,20 +107,16 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
-		public bool IsValid (DebuggerSession session)
+		public BreakEventStatus GetStatus (DebuggerSession session)
 		{
-			if (store == null)
-				throw new InvalidOperationException ();
-			if (session == null)
-				return true;
-			return session.IsBreakEventValid (this);
+			if (store == null || session == null)
+				return BreakEventStatus.Disconnected;
+			return session.GetBreakEventStatus (this);
 		}
 		
 		public string GetStatusMessage (DebuggerSession session)
 		{
-			if (store == null)
-				throw new InvalidOperationException ();
-			if (session == null)
+			if (store == null || session == null)
 				return string.Empty;
 			return session.GetBreakEventStatusMessage (this);
 		}

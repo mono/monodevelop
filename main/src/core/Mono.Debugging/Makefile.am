@@ -23,6 +23,8 @@ FILES =  \
 	Mono.Debugging.Client/Backtrace.cs \
 	Mono.Debugging.Client/BreakEvent.cs \
 	Mono.Debugging.Client/BreakEventArgs.cs \
+	Mono.Debugging.Client/BreakEventInfo.cs \
+	Mono.Debugging.Client/BreakEventStatus.cs \
 	Mono.Debugging.Client/Breakpoint.cs \
 	Mono.Debugging.Client/BreakpointEventArgs.cs \
 	Mono.Debugging.Client/BreakpointStore.cs \

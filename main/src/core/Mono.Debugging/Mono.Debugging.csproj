@@ -11,6 +11,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>mono.debugging.snk</AssemblyOriginatorKeyFile>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <AssemblyName>Mono.Debugging</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,7 +22,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <AssemblyName>Mono.Debugging</AssemblyName>
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
@@ -33,7 +33,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <AssemblyName>Mono.Debugging</AssemblyName>
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
@@ -108,6 +107,8 @@
     <Compile Include="Mono.Debugging.Evaluation\RemoteRawValue.cs" />
     <Compile Include="Mono.Debugging.Client\ExceptionInfo.cs" />
     <Compile Include="Mono.Debugging.Evaluation\ExceptionInfoSource.cs" />
+    <Compile Include="Mono.Debugging.Client\BreakEventStatus.cs" />
+    <Compile Include="Mono.Debugging.Client\BreakEventInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
