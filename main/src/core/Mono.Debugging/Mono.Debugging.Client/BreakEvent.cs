@@ -91,22 +91,37 @@ namespace Mono.Debugging.Client
 				return null;
 		}
 		
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="Mono.Debugging.Client.BreakEvent"/> is enabled.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if enabled; otherwise, <c>false</c>.
+		/// </value>
+		/// <remarks>
+		/// Changes in this property are automatically applied. There is no need to call CommitChanges().
+		/// </remarks>
 		public bool Enabled {
 			get {
-				if (store == null)
-					throw new InvalidOperationException ();
 				return enabled;
 			}
 			set {
-				if (store == null)
-					throw new InvalidOperationException ();
-				if (store.IsReadOnly)
+				if (store != null && store.IsReadOnly)
 					return;
 				enabled = value;
-				store.EnableBreakEvent (this, value);
+				if (store != null)
+					store.EnableBreakEvent (this, value);
 			}
 		}
-		
+
+		/// <summary>
+		/// Gets the status of the break event
+		/// </summary>
+		/// <returns>
+		/// The status of the break event for the given debug session
+		/// </returns>
+		/// <param name='session'>
+		/// Session for which to get the status of the break event
+		/// </param>
 		public BreakEventStatus GetStatus (DebuggerSession session)
 		{
 			if (store == null || session == null)
@@ -114,13 +129,31 @@ namespace Mono.Debugging.Client
 			return session.GetBreakEventStatus (this);
 		}
 		
+		/// <summary>
+		/// Gets a message describing the status of the break event
+		/// </summary>
+		/// <returns>
+		/// The status message of the break event for the given debug session
+		/// </returns>
+		/// <param name='session'>
+		/// Session for which to get the status message of the break event
+		/// </param>
 		public string GetStatusMessage (DebuggerSession session)
 		{
 			if (store == null || session == null)
 				return string.Empty;
 			return session.GetBreakEventStatusMessage (this);
 		}
-
+		
+		/// <summary>
+		/// Gets or sets the expression to be traced when the breakpoint is hit
+		/// </summary>
+		/// <remarks>
+		/// If this break event is hit and the HitAction is TraceExpression, the debugger
+		/// will evaluate and print the value of this property.
+		/// The CommitChanges() method has to be called for changes in this
+		/// property to take effect.
+		/// </remarks>
 		public string TraceExpression {
 			get {
 				return traceExpression;
@@ -130,6 +163,19 @@ namespace Mono.Debugging.Client
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the action to be performed when the breakpoint is hit
+		/// </summary>
+		/// <remarks>
+		/// If the value is Break, the debugger will pause the execution.
+		/// If the value is PrintExpression, the debugger will evaluate and
+		/// print the value of the TraceExpression property.
+		/// If the value is CustomAction, the debugger will execute the
+		/// CustomBreakEventHitHandler callback specified in DebuggerSession,
+		/// and will provide the value of CustomActionId as argument.
+		/// The CommitChanges() method has to be called for changes in this
+		/// property to take effect.
+		/// </remarks>
 		public HitAction HitAction {
 			get {
 				return hitAction;
@@ -138,7 +184,18 @@ namespace Mono.Debugging.Client
 				hitAction = value;
 			}
 		}
-
+		
+		/// <summary>
+		/// Gets or sets the custom action identifier.
+		/// </summary>
+		/// <remarks>
+		/// If this break event is hit and the value of HitAction is CustomAction,
+		/// the debugger will execute the CustomBreakEventHitHandler callback
+		/// specified in DebuggerSession, and will provide the value of this property
+		/// as argument.
+		/// The CommitChanges() method has to be called for changes in this
+		/// property to take effect.
+		/// </remarks>
 		public string CustomActionId {
 			get {
 				return customActionId;
@@ -156,7 +213,16 @@ namespace Mono.Debugging.Client
 				store = value;
 			}
 		}
-
+		
+		/// <summary>
+		/// Gets or sets the hit count.
+		/// </summary>
+		/// <remarks>
+		/// When the break event is hit, if the value of this propery is greater than 0 then
+		/// the value will be decremented and execution will be immediately resumed.
+		/// The CommitChanges() method has to be called for changes in this
+		/// property to take effect.
+		/// </remarks>
 		public int HitCount {
 			get {
 				return hitCount;
@@ -165,7 +231,13 @@ namespace Mono.Debugging.Client
 				hitCount = value;
 			}
 		}
-
+		
+		/// <summary>
+		/// Gets the last value traced.
+		/// </summary>
+		/// <remarks>
+		/// This property returns the last evaluation of TraceExpression.
+		/// </remarks>
 		public string LastTraceValue {
 			get {
 				return lastTraceValue;
@@ -175,6 +247,12 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		/// <summary>
+		/// Commits changes done in the break event properties
+		/// </summary>
+		/// <remarks>
+		/// This method must be called after doing changes in the break event properties.
+		/// </remarks>
 		public void CommitChanges ()
 		{
 			if (store != null)
@@ -187,11 +265,20 @@ namespace Mono.Debugging.Client
 				store.NotifyBreakEventUpdated (this);
 		}
 		
+		/// <summary>
+		/// Clone this instance.
+		/// </summary>
 		public BreakEvent Clone ()
 		{
 			return (BreakEvent) MemberwiseClone ();
 		}
 		
+		/// <summary>
+		/// Makes a copy of this instance
+		/// </summary>
+		/// <param name='ev'>
+		/// A break event from which to copy the data.
+		/// </param>
 		public virtual void CopyFrom (BreakEvent ev)
 		{
 			hitAction = ev.hitAction;

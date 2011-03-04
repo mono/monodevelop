@@ -48,7 +48,6 @@ namespace Mono.Debugging.Client
 	{
 		InternalDebuggerSession frontend;
 		Dictionary<BreakEvent,BreakEventInfo> breakpoints = new Dictionary<BreakEvent,BreakEventInfo> ();
-		Dictionary<object,BreakEventInfo> breakpointsByHandle = new Dictionary<object,BreakEventInfo> ();
 		bool isRunning;
 		bool started;
 		BreakpointStore breakpointStore;
@@ -1142,6 +1141,19 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		/// <summary>
+		/// Reports an unhandled exception in the debugger
+		/// </summary>
+		/// <returns>
+		/// True if the debugger engine handles the exception. False otherwise.
+		/// </returns>
+		/// <param name='ex'>
+		/// The exception
+		/// </param>
+		/// <remarks>
+		/// This method can be used by subclasses to report errors in the debugger that must be reported
+		/// to the user.
+		/// </remarks>
 		protected virtual bool HandleException (Exception ex)
 		{
 			if (exceptionHandler != null)
@@ -1162,23 +1174,6 @@ namespace Mono.Debugging.Client
 			}
 		}
 
-		internal void UnregisterBreakEventHandle (object handle)
-		{
-			breakpointsByHandle.Remove (handle);
-		}		
-		
-		internal void RegisterBreakEventHandle (object handle, BreakEventInfo binfo)
-		{
-			breakpointsByHandle [handle] = binfo;
-		}
-		
-		protected BreakEventInfo GetBreakEvent (object handle)
-		{
-			BreakEventInfo bi;
-			breakpointsByHandle.TryGetValue (handle, out bi);
-			return bi;
-		}
-		
 		/// <summary>
 		/// When set, operations such as OnRun, OnAttachToProcess, OnStepLine, etc, are run in
 		/// a background thread, so it will not block the caller of the corresponding public methods.
@@ -1191,58 +1186,213 @@ namespace Mono.Debugging.Client
 		/// </summary>
 		protected bool AutoRetryUnboundBreakEvents { get; set; }
 		
+		/// <summary>
+		/// Called to start the execution of the debugger
+		/// </summary>
+		/// <param name='startInfo'>
+		/// Startup information
+		/// </param>
 		protected abstract void OnRun (DebuggerStartInfo startInfo);
-
-		protected abstract void OnAttachToProcess (long processId);
 		
+		/// <summary>
+		/// Called to attach the debugger to a running process
+		/// </summary>
+		/// <param name='processId'>
+		/// Process identifier.
+		/// </param>
+		protected abstract void OnAttachToProcess (long processId);
+
+		/// <summary>
+		/// Called to detach the debugging session from the running process
+		/// </summary>
 		protected abstract void OnDetach ();
 		
+		/// <summary>
+		/// Called when the active thread has to be changed
+		/// </summary>
+		/// <param name='processId'>
+		/// Process identifier.
+		/// </param>
+		/// <param name='threadId'>
+		/// Thread identifier.
+		/// </param>
+		/// <remarks>
+		/// This method can only be called when the debuggee is stopped by the debugger
+		/// </remarks>
 		protected abstract void OnSetActiveThread (long processId, long threadId);
-
+		
+		/// <summary>
+		/// Called when the debug session has to be paused
+		/// </summary>
 		protected abstract void OnStop ();
 		
+		/// <summary>
+		/// Called when the target process has to be exited
+		/// </summary>
 		protected abstract void OnExit ();
-
-		// Step one source line
+		
+		
+		/// <summary>
+		/// Called to step one source code line
+		/// </summary>
+		/// <remarks>
+		/// This method can only be called when the debuggee is stopped by the debugger
+		/// </remarks>
 		protected abstract void OnStepLine ();
 
-		// Step one source line, but step over method calls
+		/// <summary>
+		/// Called to step one source line, but step over method calls
+		/// </summary>
+		/// <remarks>
+		/// This method can only be called when the debuggee is stopped by the debugger
+		/// </remarks>
 		protected abstract void OnNextLine ();
 
-		// Step one instruction
+		/// <summary>
+		/// Called to step one instruction
+		/// </summary>
+		/// <remarks>
+		/// This method can only be called when the debuggee is stopped by the debugger
+		/// </remarks>
 		protected abstract void OnStepInstruction ();
 
-		// Step one instruction, but step over method calls
+		/// <summary>
+		// Called to step one instruction, but step over method calls
+		/// </summary>
+		/// <remarks>
+		/// This method can only be called when the debuggee is stopped by the debugger
+		/// </remarks>
 		protected abstract void OnNextInstruction ();
 
-		// Continue until leaving the current method
+		/// <summary>
+		/// Called to continue execution until leaving the current method
+		/// </summary>
+		/// <remarks>
+		/// This method can only be called when the debuggee is stopped by the debugger
+		/// </remarks>
 		protected abstract void OnFinish ();
 
-		//breakpoints etc
-
-		protected virtual BreakEventInfo OnCreateBreakEventInfo ()
-		{
-			return new BreakEventInfo ();
-		}
-
-		protected abstract BreakEventInfo OnInsertBreakEvent (BreakEvent breakEvent);
-
-		protected abstract void OnRemoveBreakEvent (BreakEventInfo eventInfo);
-		
-		protected abstract void OnUpdateBreakEvent (BreakEventInfo eventInfo);
-		
-		protected abstract void OnEnableBreakEvent (BreakEventInfo eventInfo, bool enable);
-		
-		protected virtual bool AllowBreakEventChanges { get { return true; } }
-
+		/// <summary>
+		/// Called to resume execution
+		/// </summary>
+		/// <remarks>
+		/// This method can only be called when the debuggee is stopped by the debugger
+		/// </remarks>
 		protected abstract void OnContinue ();
 		
+		//breakpoints etc
+
+		/// <summary>
+		/// Called to insert a new breakpoint or catchpoint
+		/// </summary>
+		/// <param name='breakEvent'>
+		/// The break event.
+		/// </param>
+		/// <remarks>
+		/// Implementations of this method must: (1) create (and return) an instance of BreakEventInfo
+		/// (or a subclass of it). (2) Attempt to activate a breakpoint at the location
+		/// specified in breakEvent. If the breakpoint cannot be activated at the time this
+		/// method is called, it is the responsibility of the DebuggerSession subclass
+		/// to attempt it later on.
+		/// The BreakEventInfo object can be used to change the status of the breakpoint,
+		/// update the hit point, etc.
+		/// </remarks>
+		protected abstract BreakEventInfo OnInsertBreakEvent (BreakEvent breakEvent);
+		
+		/// <summary>
+		/// Called when a breakpoint has been removed.
+		/// </summary>
+		/// <param name='eventInfo'>
+		/// The breakpoint
+		/// </param>
+		/// <remarks>
+		/// Implementations of this method should remove or disable the breakpoint
+		/// in the debugging engine.
+		/// </remarks>
+		protected abstract void OnRemoveBreakEvent (BreakEventInfo eventInfo);
+
+		/// <summary>
+		/// Called when information about a breakpoint has changed
+		/// </summary>
+		/// <param name='eventInfo'>
+		/// The break event
+		/// </param>
+		/// <remarks>
+		/// This method is called when some information about the breakpoint changes.
+		/// Notice that the file and line of a breakpoint or the exception name of
+		/// a catchpoint can't be modified. Changes of the Enabled property are
+		/// notified by calling OnEnableBreakEvent. 
+		/// </remarks>
+		protected abstract void OnUpdateBreakEvent (BreakEventInfo eventInfo);
+		
+		/// <summary>
+		/// Called when a break event is enabled or disabled
+		/// </summary>
+		/// <param name='eventInfo'>
+		/// The break event
+		/// </param>
+		/// <param name='enable'>
+		/// The new status
+		/// </param>
+		protected abstract void OnEnableBreakEvent (BreakEventInfo eventInfo, bool enable);
+		
+		/// <summary>
+		/// Queried when the debugger session has to check if changes in breakpoints are allowed or not
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if break event changes are allowed; otherwise, <c>false</c>.
+		/// </value>
+		/// <remarks>
+		/// This property should return false if at the time it is invoked the debugger engine doesn't support
+		/// adding, removing or doing changes in breakpoints.
+		/// </remarks>
+		protected virtual bool AllowBreakEventChanges { get { return true; } }
+		
+		/// <summary>
+		/// Called to get a list of the threads of a process
+		/// </summary>
+		/// <param name='processId'>
+		/// Process identifier.
+		/// </param>
+		/// <remarks>
+		/// This method can only be called when the debuggee is stopped by the debugger
+		/// </remarks>
 		protected abstract ThreadInfo[] OnGetThreads (long processId);
 		
+		/// <summary>
+		/// Called to get a list of all debugee processes
+		/// </summary>
+		/// <remarks>
+		/// This method can only be called when the debuggee is stopped by the debugger
+		/// </remarks>
 		protected abstract ProcessInfo[] OnGetProcesses ();
 		
+		/// <summary>
+		/// Called to get the backtrace of a thread
+		/// </summary>
+		/// <param name='processId'>
+		/// Process identifier.
+		/// </param>
+		/// <param name='threadId'>
+		/// Thread identifier.
+		/// </param>
+		/// <remarks>
+		/// This method can only be called when the debuggee is stopped by the debugger
+		/// </remarks>
 		protected abstract Backtrace OnGetThreadBacktrace (long processId, long threadId);
-
+		
+		/// <summary>
+		/// Called to gets the disassembly of a source code file
+		/// </summary>
+		/// <returns>
+		/// An array of AssemblyLine, with one element for each source code line that could be disassembled
+		/// </returns>
+		/// <param name='file'>
+		/// The file.
+		/// </param>
+		/// <remarks>
+		/// This method can only be used when the debuggee is stopped by the debugger
+		/// </remarks>
 		protected virtual AssemblyLine[] OnDisassembleFile (string file)
 		{
 			return null;
