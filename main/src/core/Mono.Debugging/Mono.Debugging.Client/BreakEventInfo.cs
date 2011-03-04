@@ -37,6 +37,11 @@ namespace Mono.Debugging.Client
 		int adjustedLine = -1;
 		
 		/// <summary>
+		/// Gets or sets the implementation specific handle of the breakpoint
+		/// </summary>
+		public object Handle { get; set; }
+		
+		/// <summary>
 		/// Break event that this instance represents
 		/// </summary>
 		public BreakEvent BreakEvent { get; internal set; }
