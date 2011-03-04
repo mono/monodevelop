@@ -215,8 +215,8 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class fileExtensions=".c,.cpp,.cxx,.cc,.h,.hpp,.hh,.hxx" class = "CBinding.CTextEditorExtension" />
-		<Class fileExtensions=".c,.cpp,.cxx,.cc,.h,.hpp,.hh,.hxx" class = "CBinding.Formatting.CTextEditorIndentation" />
+		<Class fileExtensions=".c,.cpp,.cxx,.cc,.h,.hpp,.hh,.hxx,.m,.mm,.M" class = "CBinding.CTextEditorExtension" />
+		<Class fileExtensions=".c,.cpp,.cxx,.cc,.h,.hpp,.hh,.hxx,.m,.mm,.M" class = "CBinding.Formatting.CTextEditorIndentation" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/CodeFormatters">
@@ -265,10 +265,12 @@
 	
 	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
 		<Parser class = "CBinding.Parser.CDocumentParser" id = "CDocumentParser"
-			fileExtensions=".c,.cpp,.cxx,.cc,.h,.hpp,.hh,.hxx" />
+			fileExtensions=".c,.cpp,.cxx,.cc,.h,.hpp,.hh,.hxx,.m,.mm,.M" />
 	</Extension>
 	
 	<Extension path="/MonoDevelop/SourceEditor2/ContextMenu/Editor">
-		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" />
+		<Condition id="FileType" fileExtensions=".c,.cpp,.cxx,.cc,.h,.hpp,.hh,.hxx,.m,.mm,.M">
+			<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" />
+		</Condition>
 	</Extension>
 </Addin>
