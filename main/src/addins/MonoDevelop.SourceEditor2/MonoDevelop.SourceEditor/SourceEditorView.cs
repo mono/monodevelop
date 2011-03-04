@@ -204,6 +204,7 @@ namespace MonoDevelop.SourceEditor
 			
 			this.WorkbenchWindowChanged += delegate {
 				if (WorkbenchWindow != null) {
+					widget.TextEditor.ExtensionContext = WorkbenchWindow.ExtensionContext;
 					WorkbenchWindow.ActiveViewContentChanged += delegate {
 						widget.UpdateLineCol ();
 					};
@@ -1007,7 +1008,7 @@ namespace MonoDevelop.SourceEditor
 			if (args.Button == 3) {
 				TextEditor.Caret.Line = args.LineNumber;
 				TextEditor.Caret.Column = 1;
-				IdeApp.CommandService.ShowContextMenu ("/MonoDevelop/SourceEditor2/IconContextMenu/Editor");
+				IdeApp.CommandService.ShowContextMenu (WorkbenchWindow.ExtensionContext, "/MonoDevelop/SourceEditor2/IconContextMenu/Editor");
 			} else if (args.Button == 1) {
 				if (!string.IsNullOrEmpty (this.Document.FileName)) {
 					if (args.LineSegment != null)

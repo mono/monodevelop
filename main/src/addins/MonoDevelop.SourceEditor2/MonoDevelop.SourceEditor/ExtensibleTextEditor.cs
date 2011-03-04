@@ -44,6 +44,7 @@ using Mono.Addins;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeFormatting;
+using MonoDevelop.SourceEditor.Extension;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -52,6 +53,7 @@ namespace MonoDevelop.SourceEditor
 		internal object MemoryProbe = Counters.EditorsInMemory.CreateMemoryProbe ();
 		
 		SourceEditorView view;
+		ExtensionContext extensionContext;
 		
 		Cairo.Point menuPopupLocation;
 		
@@ -108,8 +110,6 @@ namespace MonoDevelop.SourceEditor
 			this.GetTextEditorData ().Paste += HandleTextPaste;
 			
 			this.ButtonPressEvent += OnPopupMenu;
-
-			AddinManager.AddExtensionNodeHandler ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
 		}
 		
 		void HandleSkipCharsOnReplace (object sender, ReplaceEventArgs args)
@@ -127,6 +127,21 @@ namespace MonoDevelop.SourceEditor
 						sc.Offset += args.Value.Length;
 					}
 				}
+			}
+		}
+		
+		public ExtensionContext ExtensionContext {
+			get {
+				return extensionContext;
+			}
+			set {
+				if (extensionContext != null) {
+					extensionContext.RemoveExtensionNodeHandler ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
+					TooltipProviders.Clear ();
+				}
+				extensionContext = value;
+				if (extensionContext != null)
+					extensionContext.AddExtensionNodeHandler ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
 			}
 		}
 		
@@ -161,9 +176,10 @@ namespace MonoDevelop.SourceEditor
 
 		protected override void OnDestroyed ()
 		{
+			ExtensionContext = null;
 			view = null;
 			this.ButtonPressEvent -= OnPopupMenu;
-			AddinManager.RemoveExtensionNodeHandler  ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
+
 			base.OnDestroyed ();
 		}
 		
@@ -581,7 +597,7 @@ namespace MonoDevelop.SourceEditor
 		void ShowPopup ()
 		{
 			HideTooltip ();
-			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/SourceEditor2/ContextMenu/Editor");
+			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet (ExtensionContext ?? AddinManager.AddinEngine, "/MonoDevelop/SourceEditor2/ContextMenu/Editor");
 			Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
 			menu.Append (new SeparatorMenuItem ());
 			menu.Append (CreateInputMethodMenuItem (GettextCatalog.GetString ("_Input Methods")));
