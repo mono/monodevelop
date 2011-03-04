@@ -34,86 +34,50 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.Ide;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
 	class HighlightCSharpSemanticRule : SemanticRule
 	{
-		ProjectDom ctx;
-//		Mono.TextEditor.Document document;
-//		MonoDevelop.Ide.Gui.Document doc;
-//		IParser parser;
-//		IResolver resolver;
-//		IExpressionFinder expressionFinder;
-		
-/*		void Init (Mono.TextEditor.Document document)
-		{
-			
-//			parser = ProjectDomService.GetParser (document.FileName, document.MimeType);
-//			expressionFinder = ProjectDomService.GetExpressionFinder (document.FileName);
-		}*/
-		
-		
-		ProjectDom GetParserContext (Mono.TextEditor.Document document)
-		{
-			var project = IdeApp.ProjectOperations.CurrentSelectedProject;
-			if (project != null)
-				return ProjectDomService.GetProjectDom (project);
-			return ProjectDom.Empty;
-		}
-		
-	//	string expression;
-/*		IMember GetLanguageItem (Mono.TextEditor.Document document, LineSegment line, int offset, string expression)
-		{
-			string txt = document.Text;
-			ExpressionResult expressionResult = new ExpressionResult (expression);
-//			ExpressionResult expressionResult = expressionFinder.FindFullExpression (txt, offset);
-			int lineNumber = document.OffsetToLineNumber (offset);
-			expressionResult.Region = new DomRegion (lineNumber, offset - line.Offset, lineNumber, offset + expression.Length - line.Offset);
-			expressionResult.ExpressionContext = ExpressionContext.IdentifierExpected;
-			
-			resolver = new NRefactoryResolver (ctx, doc.CompilationUnit, doc.TextEditor, document.FileName);
-			ResolveResult result = resolver.Resolve (expressionResult, expressionResult.Region.Start);
-			
-			if (result is MemberResolveResult) 
-				return ((MemberResolveResult)result).ResolvedMember;
-			return null;
-		}*/
-		
 		public override void Analyze (Mono.TextEditor.Document doc, LineSegment line, Chunk startChunk, int startOffset, int endOffset)
 		{
 			if (!MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", false) || doc == null || line == null || startChunk == null)
 				return;
-			ctx = GetParserContext (doc);
 			int lineNumber = doc.OffsetToLineNumber (line.Offset);
-			ParsedDocument parsedDocument = ProjectDomService.GetParsedDocument (ctx, doc.FileName);
+			var ideDocument = IdeApp.Workbench.Documents.FirstOrDefault (d => d.FileName == doc.FileName);
+			if (ideDocument == null)
+				return;
+			ParsedDocument parsedDocument = ideDocument.ParsedDocument;
 			ICompilationUnit unit = parsedDocument != null ? parsedDocument.CompilationUnit : null;
 			if (unit == null)
 				return;
+			
+			var ctx = ProjectDomService.GetProjectDom (ideDocument.Project);
 			for (Chunk chunk = startChunk; chunk != null; chunk = chunk.Next) {
 				if (chunk.Style != "text")
 					continue;
+				char charBefore = chunk.Offset > 0 ? doc.GetCharAt (chunk.Offset - 1) : '}';
+				char ch;
 				for (int i = chunk.Offset; i < chunk.EndOffset; i++) {
-					char charBefore = i > 0 ? doc.GetCharAt (i - 1) : '}';
-					if (Char.IsLetter (doc.GetCharAt (i)) && !Char.IsLetterOrDigit (charBefore)) {
-					} else {
+					ch = doc.GetCharAt (i);
+					if (!Char.IsLetter (ch) || Char.IsLetterOrDigit (charBefore)) {
+						charBefore = ch;
 						continue;
 					}
 					
 					int start = i;
-					bool wasWhitespace = false;
+					bool wasWhitespace = Char.IsWhiteSpace (charBefore);
 					bool wasDot = false;
 					int bracketCount = 0;
 					while (start > 0) {
-						char ch = doc.GetCharAt (start);
+						ch = doc.GetCharAt (start);
 						if (ch == '\n' || ch == '\r')
 							break;
-						if (wasWhitespace && IsNamePart(ch)) {
-							start++;
-							if (start < chunk.Offset)
-								start = Int32.MaxValue;
+						bool isNamePart = IsNamePart (ch);
+						if (wasWhitespace && isNamePart)
 							break;
-						}
+						
 						if (ch == '<') {
 							bracketCount--;
 							if (bracketCount < 0) {
@@ -132,11 +96,12 @@ namespace MonoDevelop.CSharp.Highlighting
 							wasWhitespace = false;
 							continue;
 						}
-						if (!IsNamePart(ch) && !Char.IsWhiteSpace (ch) && ch != '.') {
+						bool isWhiteSpace = Char.IsWhiteSpace (ch);
+						if (!isNamePart && !isWhiteSpace && ch != '.') {
 							start++;
 							break;
 						}
-						wasWhitespace = Char.IsWhiteSpace (ch);
+						wasWhitespace = isWhiteSpace;
 						wasDot = ch == '.' || wasDot && wasWhitespace;
 						start--;
 					}
@@ -146,7 +111,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					wasWhitespace = false;
 					List<Segment> nameSegments = new List<Segment> ();
 					while (end < chunk.EndOffset) {
-						char ch = doc.GetCharAt (end);
+						ch = doc.GetCharAt (end);
 						if (wasWhitespace && IsNamePart(ch))
 							break;
 						if (ch == '<') {
@@ -163,26 +128,29 @@ namespace MonoDevelop.CSharp.Highlighting
 							}
 							break;
 						}
-						if (!IsNamePart(ch) && !Char.IsWhiteSpace (ch)) 
+						bool isWhiteSpace = Char.IsWhiteSpace (ch);
+						if (!IsNamePart(ch) && !isWhiteSpace) 
 							break;
-						wasWhitespace = Char.IsWhiteSpace (ch);
+						wasWhitespace = isWhiteSpace;
 						end++;
 					}
-					if (start >= end) 
+					if (start >= end) {
+						charBefore = ch;
 						continue;
+					}
 					string typeString = doc.GetTextBetween (start, end);
 					IReturnType returnType = NRefactoryResolver.ParseReturnType (new ExpressionResult (typeString));
-						
+					
 					int nameEndOffset = start;
 					for (; nameEndOffset < end; nameEndOffset++) {
-						char ch = doc.GetCharAt (nameEndOffset);
+						ch = doc.GetCharAt (nameEndOffset);
 						if (nameEndOffset >= i && ch == '<') {
 							nameEndOffset++;
 							break;
 						}
 					}
 					nameSegments.Add (new Segment (i, nameEndOffset - i));
-
+					
 					int column = i - line.Offset;
 					IType callingType = unit.GetTypeAt (lineNumber, column);
 					List<IReturnType> genericParams = null;
@@ -203,6 +171,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					}
 					if (type != null)
 						nameSegments.ForEach (segment => HighlightSegment (startChunk, segment, "keyword.semantic.type"));
+					charBefore = ch;
 				}
 			}
 		}
