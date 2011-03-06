@@ -317,7 +317,7 @@ namespace MonoDevelop.MonoDroid
 			if (base.CheckNeedsBuild (configuration))
 				return true;
 			
-			if  (Files.Any (file => file.BuildAction == MonoDroidBuildAction.AndroidResource || file.BuildAction == MonoDroidBuildAction.AndroidAsset
+			if  (Files.Any (file => (file.BuildAction == MonoDroidBuildAction.AndroidResource || file.BuildAction == MonoDroidBuildAction.AndroidAsset)
 					&& File.Exists (file.FilePath) && File.GetLastWriteTime (file.FilePath) > apkBuildTime))
 				return true;
 				
