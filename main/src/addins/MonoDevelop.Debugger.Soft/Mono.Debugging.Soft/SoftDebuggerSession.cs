@@ -671,7 +671,7 @@ namespace Mono.Debugging.Soft
 		void InsertBreakpoint (Breakpoint bp, BreakInfo bi)
 		{
 			bi.Req = vm.SetBreakpoint (bi.Location.Method, bi.Location.ILOffset);
-			bi.Req.Enabled = bi.BreakEvent.Enabled;
+			bi.Req.Enabled = bp.Enabled;
 			breakpoints [bi.Req] = bi;
 			
 			if (bi.Location.LineNumber != bp.Line)
@@ -682,7 +682,7 @@ namespace Mono.Debugging.Soft
 		{
 			var request = bi.Req = vm.CreateExceptionRequest (excType, true, true);
 			request.Count = cp.HitCount;
-			bi.Req.Enabled = bi.BreakEvent.Enabled;
+			bi.Req.Enabled = cp.Enabled;
 		}
 		
 		Location FindLocation (string file, int line, out bool inisideLoadedRange)
