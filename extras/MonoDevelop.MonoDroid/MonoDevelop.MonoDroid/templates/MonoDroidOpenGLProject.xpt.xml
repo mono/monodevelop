@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <Template>
 	<TemplateConfiguration>
-		<_Name>MonoDroid OpenGL Application</_Name>
-		<_Category>C#/MonoDroid</_Category>
+		<_Name>MonoAndroid OpenGL Application</_Name>
+		<_Category>C#/MonoAndroid</_Category>
 		<Icon>monodroid-project</Icon>
 		<LanguageName>C#</LanguageName>
-		<_Description>Creates an MonoDroid project that uses OpenGL.</_Description>
+		<_Description>Creates an MonoAndroid project that uses OpenGL.</_Description>
 	</TemplateConfiguration>
 	
 	<Actions>
