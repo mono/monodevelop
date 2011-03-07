@@ -103,10 +103,10 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			get {
 				IType type = (IType)member;
 				if (useFullName) 
-					return type.SourceProject != null ? String.Format (GettextCatalog.GetString ("from Project \"{0}\""), type.SourceProject.Name) : String.Format (GettextCatalog.GetString ("from \"{0}\""), type.CompilationUnit.FileName);
+					return type.SourceProject != null ? String.Format (GettextCatalog.GetString ("from Project \"{0}\""), type.SourceProject.Name ?? "") : String.Format (GettextCatalog.GetString ("from \"{0}\""), (string)type.CompilationUnit.FileName ?? "");
 				if (type.SourceProject != null)
-					return String.Format (GettextCatalog.GetString ("from Project \"{0} in {1}\""), type.SourceProject.Name, type.Namespace);
-				return String.Format (GettextCatalog.GetString ("from \"{0} in {1}\""), type.CompilationUnit.FileName, type.Namespace);
+					return String.Format (GettextCatalog.GetString ("from Project \"{0} in {1}\""), type.SourceProject.Name ?? "", type.Namespace ?? "");
+				return String.Format (GettextCatalog.GetString ("from \"{0} in {1}\""), (string)type.CompilationUnit.FileName ?? "", type.Namespace ?? "");
 			}
 		}
 		
