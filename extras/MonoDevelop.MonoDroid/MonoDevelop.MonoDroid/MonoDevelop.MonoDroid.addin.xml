@@ -1,10 +1,10 @@
-<Addin id          = "MonoDroid"
+<Addin id          = "MonoAndroid"
        namespace   = "MonoDevelop"
-       name        = "MonoDroid development"
+       name        = "MonoAndroid development"
        author      = "Michael Hutchinson"
        copyright   = "MIT X11"
        url         = "http://monodevelop.com/"
-       description = "Support for developing and deploying MonoDroid applications."
+       description = "Support for developing and deploying MonoAndroid applications."
        category    = "Mobile Development"
        version     = "2.6">
 	
