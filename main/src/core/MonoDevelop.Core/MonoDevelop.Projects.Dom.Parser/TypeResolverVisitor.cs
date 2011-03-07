@@ -41,7 +41,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public void SetCurrentMember (IMember currentMember)
 		{
-			resolvePosition = currentMember.Location;
+			if (currentMember != null)
+				resolvePosition = currentMember.Location;
 			currentMethod = currentMember as IMethod;
 		}
 		
