@@ -212,6 +212,33 @@ using (IDisposable b = null) {
 		}
 		
 		
+		/// <summary>
+		/// Bug 677261 - Format Document with constructor with over-indented opening curly brace
+		/// </summary>
+		[Test()]
+		public void TestBug677261 ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test
+{
+	Test ()
+	   {
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.ConstructorBraceStyle = BraceStyle.EndOfLine;
+			
+			var compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
+			Assert.AreEqual (@"class Test
+{
+	Test () {
+	}
+}", data.Document.Text);
+		}
+		
 	}
 }
 

@@ -563,9 +563,15 @@ namespace MonoDevelop.CSharp.Formatting
 		public override object VisitConstructorDeclaration (ConstructorDeclaration constructorDeclaration, object data)
 		{
 			FixIndentationForceNewLine (constructorDeclaration.StartLocation);
-			if (!constructorDeclaration.Body.IsNull)
+			object result = null;
+			if (!constructorDeclaration.Body.IsNull) {
 				EnforceBraceStyle (policy.ConstructorBraceStyle, constructorDeclaration.Body.LBraceToken, constructorDeclaration.Body.RBraceToken);
-			object result = base.VisitConstructorDeclaration (constructorDeclaration, data);
+				if (policy.IndentMethodBody)
+					IndentLevel++;
+				result = base.VisitBlockStatement (constructorDeclaration.Body, data);
+				if (policy.IndentMethodBody)
+					IndentLevel--;
+			}
 			if (IsMember (constructorDeclaration.NextSibling))
 				EnsureBlankLinesAfter (constructorDeclaration, policy.BlankLinesBetweenMembers);
 			return result;
@@ -574,9 +580,15 @@ namespace MonoDevelop.CSharp.Formatting
 		public override object VisitDestructorDeclaration (DestructorDeclaration destructorDeclaration, object data)
 		{
 			FixIndentationForceNewLine (destructorDeclaration.StartLocation);
-			if (!destructorDeclaration.Body.IsNull)
+			object result = null;
+			if (!destructorDeclaration.Body.IsNull) {
 				EnforceBraceStyle (policy.DestructorBraceStyle, destructorDeclaration.Body.LBraceToken, destructorDeclaration.Body.RBraceToken);
-			object result = base.VisitDestructorDeclaration (destructorDeclaration, data);
+				if (policy.IndentMethodBody)
+					IndentLevel++;
+				result = base.VisitBlockStatement (destructorDeclaration.Body, data);
+				if (policy.IndentMethodBody)
+					IndentLevel--;
+			}
 			if (IsMember (destructorDeclaration.NextSibling))
 				EnsureBlankLinesAfter (destructorDeclaration, policy.BlankLinesBetweenMembers);
 			return result;
