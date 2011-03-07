@@ -199,6 +199,7 @@ namespace MonoDevelop.Core.Execution
 				RemotingService.RegisterAssemblyForSimpleResolve (type.Assembly.GetName ().Name);
 				object obj = processHost.CreateInstance (type);
 				RemotingService.RegisterMethodCallback (obj, "Dispose", RemoteProcessObjectDisposing, null);
+				RemotingService.RegisterMethodCallback (obj, "Shutdown", RemoteProcessObjectShuttingDown, null);
 				remoteObjects.Add (obj);
 				Counters.ExternalObjects++;
 				return obj;
@@ -228,6 +229,7 @@ namespace MonoDevelop.Core.Execution
 				RemotingService.RegisterAssemblyForSimpleResolve (Path.GetFileNameWithoutExtension (assemblyPath));
 				object obj = processHost.CreateInstance (assemblyPath, typeName);
 				RemotingService.RegisterMethodCallback (obj, "Dispose", RemoteProcessObjectDisposing, null);
+				RemotingService.RegisterMethodCallback (obj, "Shutdown", RemoteProcessObjectShuttingDown, null);
 				remoteObjects.Add (obj);
 				Counters.ExternalObjects++;
 				return obj;
@@ -245,6 +247,17 @@ namespace MonoDevelop.Core.Execution
 				} catch {
 				}
 				ReleaseInstance (obj);
+			});
+			return new ReturnMessage (null, null, 0, msg.LogicalCallContext, msg);
+		}
+		
+		IMethodReturnMessage RemoteProcessObjectShuttingDown (object obj, IMethodCallMessage msg)
+		{
+			ThreadPool.QueueUserWorkItem (delegate {
+				try {
+					process.Cancel ();
+				} catch {
+				}
 			});
 			return new ReturnMessage (null, null, 0, msg.LogicalCallContext, msg);
 		}

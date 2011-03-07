@@ -32,9 +32,23 @@ namespace MonoDevelop.Core.Execution
 {
 	public class RemoteProcessObject: MarshalByRefObject, IDisposable
 	{
+		/// <summary>
+		/// Disposes the object, and kills the remote process if there are no more remote objects running on it
+		/// </summary>
 		public virtual void Dispose ()
 		{
 			System.Runtime.Remoting.RemotingServices.Disconnect (this);
+		}
+		
+		/// <summary>
+		/// Shutdowns the remote process that is running this instance.
+		/// </summary>
+		/// <remarks>
+		/// This method can only be used if the remote process is not shared with other objects.
+		/// </remarks>
+		public void Shutdown ()
+		{
+			// Do nothing. This method is intercepted and executed by MonoDevelop.
 		}
 		
 		public override object InitializeLifetimeService ()
