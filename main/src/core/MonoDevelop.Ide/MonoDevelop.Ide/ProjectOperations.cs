@@ -156,7 +156,7 @@ namespace MonoDevelop.Ide
 		
 		public IAsyncOperation CurrentRunOperation {
 			get { return currentRunOperation; }
-			set { currentRunOperation = value; }
+			set { currentRunOperation = value ?? NullAsyncOperation.Success; }
 		}
 		
 		public bool IsBuilding (IBuildTarget target)
@@ -825,6 +825,29 @@ namespace MonoDevelop.Ide
 			prj.ParentFolder.Items.Remove (prj);
 			prj.Dispose ();
 			IdeApp.ProjectOperations.Save (sol);
+		}
+		
+		/// <summary>
+		/// Checks if an execution operation can start (asking the user if necessary)
+		/// </summary>
+		/// <returns>
+		/// True if execution can continue, false otherwise
+		/// </returns>
+		/// <remarks>
+		/// This method must be called before starting an execution operation. If there is already an execution in
+		/// progress, MonoDevelop will ask confirmation for stopping the current operation.
+		/// </remarks>
+		public bool ConfirmExecutionOperation ()
+		{
+			if (!currentRunOperation.IsCompleted) {
+				if (MessageService.Confirm (GettextCatalog.GetString ("An application is already running and will have to be stopped. Do you want to continue?"), AlertButton.Yes)) {
+					if (currentRunOperation != null && !currentRunOperation.IsCompleted)
+						currentRunOperation.Cancel ();
+					return true;
+				} else
+					return false;
+			} else
+				return true;
 		}
 
 		public bool CanExecute (IBuildTarget entry)
