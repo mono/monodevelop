@@ -48,7 +48,7 @@ namespace MonoDevelop.MonoDroid
 			get { return (MonoDroidProject) base.ParentItem; }
 		}
 		
-		[ItemProperty ("MonoDroidExtraArgs")]
+		[ItemProperty ("MandroidExtraArgs")]
 		string monoDroidExtraArgs;
 		
 		public string MonoDroidExtraArgs {
@@ -75,7 +75,7 @@ namespace MonoDevelop.MonoDroid
 			}
 		}
 		
-		[ItemProperty ("MonoDroidLinkMode", DefaultValue=MonoDroidLinkMode.Full)]
+		[ItemProperty ("AndroidDroidLinkMode", DefaultValue=MonoDroidLinkMode.Full)]
 		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
 		MonoDroidLinkMode monoDroidLinkMode = MonoDroidLinkMode.Full;
 		
