@@ -240,7 +240,7 @@ namespace Mono.Debugging.Client
 					if (breakpointStore != null) {
 						foreach (BreakEvent bp in breakpointStore) {
 							RemoveBreakEvent (bp);
-							Breakpoints.NotifyStatusChanged (bp);
+							NotifyBreakEventStatusChanged (bp);
 						}
 						breakpointStore.BreakEventAdded -= OnBreakpointAdded;
 						breakpointStore.BreakEventRemoved -= OnBreakpointRemoved;
@@ -532,7 +532,8 @@ namespace Mono.Debugging.Client
 						case BreakEventStatus.BindError: return "The breakpoint could not be bound";
 						case BreakEventStatus.Bound: return "";
 						case BreakEventStatus.Disconnected: return "";
-						case BreakEventStatus.Invalid: return "The breakpoint location is invalid";
+						case BreakEventStatus.Invalid: return "The breakpoint location is invalid. Perhaps the source line does " +
+							"not contain any statements, or the source does not correspond to the current binary";
 						case BreakEventStatus.NotBound: return "The breakpoint could not yet be bound to a valid location";
 						}
 					}
@@ -1158,9 +1159,26 @@ namespace Mono.Debugging.Client
 				}
 				foreach (BreakEventInfo be in toUpdate) {
 					breakpoints.Remove (be.BreakEvent);
-					Breakpoints.NotifyStatusChanged (be.BreakEvent);
+					NotifyBreakEventStatusChanged (be.BreakEvent);
 				}
 			}
+		}
+		
+		internal void NotifyBreakEventStatusChanged (BreakEvent be)
+		{
+			var s = GetBreakEventStatus (be);
+			if (s == BreakEventStatus.BindError || s == BreakEventStatus.Invalid)
+				OnDebuggerOutput (true, GetBreakEventErrorMessage (be) + ": " + GetBreakEventStatusMessage (be) + "\n");
+			Breakpoints.NotifyStatusChanged (be);
+		}
+		
+		string GetBreakEventErrorMessage (BreakEvent be)
+		{
+			Breakpoint bp = be as Breakpoint;
+			if (bp != null)
+				return string.Format ("Could not insert breakpoint at '{0}:{1}'", bp.FileName, bp.Line);
+			Catchpoint cp = (Catchpoint) be;
+			return string.Format ("Could not enable catchpoint for exception '{0}'", cp.ExceptionName);
 		}
 		
 		/// <summary>

@@ -60,7 +60,7 @@ namespace Mono.Debugging.Client
 		{
 			session = s;
 			BreakEvent = ev;
-			session.Breakpoints.NotifyStatusChanged (BreakEvent);
+			session.NotifyBreakEventStatusChanged (BreakEvent);
 			if (adjustedLine != -1)
 				session.AdjustBreakpointLocation ((Breakpoint)BreakEvent, adjustedLine);
 		}
@@ -97,10 +97,12 @@ namespace Mono.Debugging.Client
 		
 		public void SetStatus (BreakEventStatus s, string statusMessage)
 		{
-			Status = s;
-			StatusMessage = statusMessage;
-			if (session != null)
-				session.Breakpoints.NotifyStatusChanged (BreakEvent);
+			if (s != Status) {
+				Status = s;
+				StatusMessage = statusMessage;
+				if (session != null)
+					session.NotifyBreakEventStatusChanged (BreakEvent);
+			}
 		}
 		
 		public bool RunCustomBreakpointAction (string actionId)
