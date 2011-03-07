@@ -133,9 +133,9 @@ namespace MonoDevelop.Debugger.Soft.MonoDroid
 						}
 					}
 				},
-				new ChainedAsyncOperation () {
+				new ChainedAsyncOperation () { // Broadcast a message to kill any previous running instance
 					Skip = () => runningProcessId <= 0 ? "" : null,
-					Create = () => new AdbShellOperation (cmd.Device, "kill " + runningProcessId),
+					Create = () => new AdbKillProcessOperation (cmd.Device, cmd.PackageName),
 					Completed = (op) => {
 						if (!op.Success) {
 							this.OnDebuggerOutput (true, GettextCatalog.GetString ("Failed to stop already running activity"));

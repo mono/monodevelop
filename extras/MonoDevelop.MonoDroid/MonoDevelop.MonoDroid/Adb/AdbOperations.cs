@@ -311,6 +311,17 @@ namespace MonoDevelop.MonoDroid
 		}
 
 	}
+
+	// this mechanism can only be actually triggered when debugging, not in normal mode
+	public class AdbKillProcessOperation : AdbBaseShellOperation
+	{
+		public AdbKillProcessOperation (AndroidDevice device, string packageName) : 
+			base (device, "am broadcast -a mono.android.intent.action.SEPPUKU " +
+				"-c mono.android.intent.action.SEPPUKU." + packageName)
+		{
+			BeginConnect ();
+		}
+	}
 	
 	public sealed class AdbGetDateOperation : AdbBaseShellOperation
 	{

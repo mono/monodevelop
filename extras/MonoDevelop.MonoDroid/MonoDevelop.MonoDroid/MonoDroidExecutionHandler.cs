@@ -320,7 +320,7 @@ namespace MonoDevelop.MonoDroid
 				// Try to kill the activity if we were able to actually get its pid
 				if (pid != UNASSIGNED_PID) {
 					try {
-						new AdbShellOperation (device, "kill " + ProcessId);
+						new AdbKillProcessOperation (device, packageName);
 					} catch {}
 				}
 			}
