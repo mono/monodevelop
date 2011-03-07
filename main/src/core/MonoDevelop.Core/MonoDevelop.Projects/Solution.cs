@@ -39,6 +39,7 @@ using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Projects
 {
+	[ProjectModelDataItem]
 	public class Solution: WorkspaceItem, IConfigurationTarget, IPolicyProvider
 	{
 		internal object MemoryProbe = Counters.SolutionsInMemory.CreateMemoryProbe ();

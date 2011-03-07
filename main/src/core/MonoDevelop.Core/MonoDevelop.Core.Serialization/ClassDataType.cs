@@ -50,7 +50,7 @@ namespace MonoDevelop.Core.Serialization
 		
 		protected override void Initialize ()
 		{
-			DataItemAttribute atd = (DataItemAttribute) Context.AttributeProvider.GetCustomAttribute (ValueType, typeof(DataItemAttribute), false);
+			IDataItemAttribute atd = (IDataItemAttribute) Context.AttributeProvider.GetCustomAttribute (ValueType, typeof(IDataItemAttribute), false);
 			if (atd != null) {
 				if (!string.IsNullOrEmpty (atd.Name)) {
 					Name = atd.Name;

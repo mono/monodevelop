@@ -772,13 +772,13 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			public object[] GetCustomAttributes (object ob, Type type, bool inherit)
 			{
 				List<object> atts = new List<object> (2);
-				if (type.IsAssignableFrom (typeof(ItemPropertyAttribute))) {
+				if (typeof(ItemPropertyAttribute).IsAssignableFrom (type)) {
 					PropertyInfo prop = ob as PropertyInfo;
 					if (prop != null && prop.CanRead && prop.CanWrite && prop.GetGetMethod ().IsPublic && prop.GetSetMethod ().IsPublic) {
 						atts.Add (new ItemPropertyAttribute ());
 					}
 				}
-				if (type.IsAssignableFrom (typeof(DataItemAttribute)) && (ob is Type)) {
+				if (typeof(IDataItemAttribute).IsAssignableFrom (type) && (ob is Type)) {
 					Type t = (Type) ob;
 					if (t.Name.StartsWith ("Code"))
 						atts.Add (new DataItemAttribute (t.Name.Substring (4)));

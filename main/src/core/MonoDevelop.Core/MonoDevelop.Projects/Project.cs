@@ -56,7 +56,7 @@ namespace MonoDevelop.Projects
 	/// source code files and which can be built to generate an output.
 	/// </remarks>
 	[DataInclude(typeof(ProjectFile))]
-	[DataItem(FallbackType = typeof(UnknownProject))]
+	[ProjectModelDataItem(FallbackType = typeof(UnknownProject))]
 	public abstract class Project : SolutionEntityItem
 	{
 		string[] buildActions;

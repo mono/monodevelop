@@ -121,6 +121,7 @@ FILES =  \
 	MonoDevelop.Core.Serialization/GenericCollectionHandler.cs \
 	MonoDevelop.Core.Serialization/ICollectionHandler.cs \
 	MonoDevelop.Core.Serialization/ICustomDataItemHandler.cs \
+	MonoDevelop.Core.Serialization/IDataItemAttribute.cs \
 	MonoDevelop.Core.Serialization/IExtendedDataItem.cs \
 	MonoDevelop.Core.Serialization/ILoadController.cs \
 	MonoDevelop.Core.Serialization/IPropertyFilter.cs \
@@ -410,6 +411,7 @@ FILES =  \
 	MonoDevelop.Projects/ProjectItem.cs \
 	MonoDevelop.Projects/ProjectItemCollection.cs \
 	MonoDevelop.Projects/ProjectItemEventArgs.cs \
+	MonoDevelop.Projects/ProjectModelDataItemAttribute.cs \
 	MonoDevelop.Projects/ProjectParameters.cs \
 	MonoDevelop.Projects/ProjectPathItemPropertyAttribute.cs \
 	MonoDevelop.Projects/ProjectReference.cs \

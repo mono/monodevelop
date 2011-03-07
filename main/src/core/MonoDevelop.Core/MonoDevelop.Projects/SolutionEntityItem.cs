@@ -44,7 +44,7 @@ using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.Projects
 {
-	[DataItem (FallbackType = typeof(UnknownSolutionItem))]
+	[ProjectModelDataItem (FallbackType = typeof(UnknownSolutionItem))]
 	public abstract class SolutionEntityItem : SolutionItem, IConfigurationTarget, IWorkspaceFileObject
 	{
 		internal object MemoryProbe = Counters.ItemsInMemory.CreateMemoryProbe ();

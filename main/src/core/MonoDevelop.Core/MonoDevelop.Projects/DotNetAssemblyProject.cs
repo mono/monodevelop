@@ -31,6 +31,7 @@ using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Projects
 {
+	[ProjectModelDataItem]
 	public class DotNetAssemblyProject: DotNetProject
 	{
 		public DotNetAssemblyProject ()

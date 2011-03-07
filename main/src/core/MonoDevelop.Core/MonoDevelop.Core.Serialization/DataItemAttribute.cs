@@ -33,7 +33,7 @@ using System.Collections;
 namespace MonoDevelop.Core.Serialization
 {
 	[AttributeUsage (AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false)]
-	public class DataItemAttribute: Attribute
+	public class DataItemAttribute: Attribute, IDataItemAttribute
 	{
 		string name;
 		Type fallbackType;

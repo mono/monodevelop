@@ -36,6 +36,7 @@ using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.Projects
 {
+	[ProjectModelDataItem]
 	public class Workspace: WorkspaceItem, ICustomDataItem
 	{
 		WorkspaceItemCollection items;

@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Reflection;
 
 namespace MonoDevelop.Core.Serialization
@@ -36,16 +37,24 @@ namespace MonoDevelop.Core.Serialization
 		
 		public object GetCustomAttribute (object ob, Type type, bool inherit)
 		{
-			if (ob is MemberInfo)
-				return Attribute.GetCustomAttribute ((MemberInfo)ob, type, inherit);
+			if (ob is MemberInfo) {
+				if (type != null && !typeof(Attribute).IsAssignableFrom (type))
+					return Attribute.GetCustomAttributes ((MemberInfo)ob, inherit).FirstOrDefault (a => type.IsInstanceOfType (a));
+				else
+					return Attribute.GetCustomAttribute ((MemberInfo)ob, type, inherit);
+			}
 			else
 				return null;
 		}
 
 		public object[] GetCustomAttributes (object ob, Type type, bool inherit)
 		{
-			if (ob is MemberInfo)
-				return Attribute.GetCustomAttributes ((MemberInfo)ob, type, inherit);
+			if (ob is MemberInfo) {
+				if (type != null && !typeof(Attribute).IsAssignableFrom (type))
+					return Attribute.GetCustomAttributes ((MemberInfo)ob, inherit).Where (a => type.IsInstanceOfType (a)).ToArray ();
+				else
+					return Attribute.GetCustomAttributes ((MemberInfo)ob, type, inherit);
+			}
 			else
 				return null;
 		}
@@ -53,8 +62,12 @@ namespace MonoDevelop.Core.Serialization
 		public bool IsDefined (object ob, Type type, bool inherit)
 		{
 			MemberInfo mi = ob as MemberInfo;
-			if (mi != null)
-				return Attribute.IsDefined (mi, type, inherit);
+			if (mi != null) {
+				if (type != null && !typeof(Attribute).IsAssignableFrom (type))
+					return Attribute.GetCustomAttributes (mi, inherit).Any (a => type.IsInstanceOfType (a));
+				else
+					return Attribute.IsDefined (mi, type, inherit);
+			}
 			else
 				return false;
 		}
