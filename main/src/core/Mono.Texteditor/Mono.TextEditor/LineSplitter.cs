@@ -153,10 +153,8 @@ namespace Mono.TextEditor
 				nodes.Add (newLine);
 				offset = delimiterEndOffset;
 			}
-			if (text.Length != offset) {
-				var lastLine = new TreeNode (text.Length - offset, 0);
-				nodes.Add (lastLine);
-			}
+			var lastLine = new TreeNode (text.Length - offset, 0);
+			nodes.Add (lastLine);
 			
 			int height = GetTreeHeight (nodes.Count);
 			
