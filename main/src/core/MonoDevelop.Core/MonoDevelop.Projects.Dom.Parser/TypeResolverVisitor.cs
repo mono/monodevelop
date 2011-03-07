@@ -37,9 +37,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 		ICompilationUnit unit;
 		int unresolvedCount;
 		IMethod currentMethod;
+		DomLocation resolvePosition;
 		
 		public void SetCurrentMember (IMember currentMember)
 		{
+			resolvePosition = currentMember.Location;
 			currentMethod = currentMember as IMethod;
 		}
 		
@@ -51,15 +53,35 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public override INode Visit (IType type, IType data)
 		{
+			resolvePosition = type.Location;
 			return base.Visit (type, type);
 		}
 		
 		public override INode Visit (IMethod source, IType data)
 		{
 			currentMethod = source;
+			resolvePosition = source.Location;
 			INode res = base.Visit (source, data);
 			currentMethod = null;
 			return res;
+		}
+		
+		public override INode Visit (IEvent source, IType data)
+		{
+			resolvePosition = source.Location;
+			return base.Visit (source, data);
+		}
+		
+		public override INode Visit (IField field, IType data)
+		{
+			resolvePosition = field.Location;
+			return base.Visit (field, data);
+		}
+		
+		public override INode Visit (IProperty source, IType data)
+		{
+			resolvePosition = source.Location;
+			return base.Visit (source, data);
 		}
 		
 		bool visitAttribute = false;
@@ -121,11 +143,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 				}
 			}
 			
-			IType lookupType = db.SearchType (unit, contextType, contextType.Location, type);
+			IType lookupType = db.SearchType (unit, contextType, resolvePosition, type);
 			
 			if (visitAttribute && lookupType == null && type.Parts.Count > 0) {
 				type.Parts[type.Parts.Count - 1].Name += "Attribute";
-				lookupType = db.SearchType (unit, contextType, contextType.Location, type);
+				lookupType = db.SearchType (unit, contextType, resolvePosition, type);
 			}
 			
 			if (lookupType == null) {
@@ -159,7 +181,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			
 			DomReturnType rt = new DomReturnType (lookupType.Namespace, parts);
 			// Make sure the whole type is resolved
-			if (parts.Count > 1 && db.SearchType (unit, contextType, contextType.Location, rt) == null) {
+			if (parts.Count > 1 && db.SearchType (unit, contextType, resolvePosition, rt) == null) {
 				unresolvedCount++;
 				return type;
 			}
