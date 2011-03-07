@@ -147,6 +147,9 @@ namespace MonoDevelop.NUnit
 				}
 			}
 			
+			if (!IdeApp.ProjectOperations.ConfirmExecutionOperation ())
+				return NullProcessAsyncOperation.Failure;
+			
 			Pad resultsPad = IdeApp.Workbench.GetPad <TestResultsPad>();
 			if (resultsPad == null) {
 				resultsPad = IdeApp.Workbench.ShowPad (new TestResultsPad (), "MonoDevelop.NUnit.TestResultsPad", GettextCatalog.GetString ("Test results"), "Bottom", "md-solution");
@@ -167,6 +170,8 @@ namespace MonoDevelop.NUnit
 			};
 			
 			session.Start ();
+			
+			IdeApp.ProjectOperations.CurrentRunOperation = session;
 			
 			return session;
 		}
