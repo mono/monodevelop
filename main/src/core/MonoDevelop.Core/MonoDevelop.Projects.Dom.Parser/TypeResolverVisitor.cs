@@ -33,7 +33,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 {
 	public class TypeResolverVisitor: CopyDomVisitor<IType>
 	{
-		ProjectDom db;
+		readonly ProjectDom db;
 		ICompilationUnit unit;
 		int unresolvedCount;
 		IMethod currentMethod;
@@ -47,6 +47,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		public TypeResolverVisitor (ProjectDom db, ICompilationUnit unit)
 		{
+			if (db == null)
+				throw new ArgumentNullException ("db", "Type resolving needs a valid project dom.");
 			this.db = db;
 			this.unit = unit;
 		}
