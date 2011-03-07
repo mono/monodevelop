@@ -148,7 +148,7 @@ namespace MonoDevelop.CodeGeneration
 					Expression right;
 					right = new InvocationExpression (new MemberReferenceExpression (new IdentifierExpression (member.Name), "GetHashCode"));
 
-					IType type = Options.Dom.SearchType (Options.Document.ParsedDocument.CompilationUnit, member, member.ReturnType);
+					IType type = Options.Dom.SearchType (Options.Document.ParsedDocument.CompilationUnit, member is IType ? ((IType)member) : member.DeclaringType, member.Location, member.ReturnType);
 					if (type != null && type.ClassType != MonoDevelop.Projects.Dom.ClassType.Struct&& type.ClassType != MonoDevelop.Projects.Dom.ClassType.Enum)
 						right = new ParenthesizedExpression (new ConditionalExpression (new BinaryOperatorExpression (new IdentifierExpression (member.Name), BinaryOperatorType.InEquality, new PrimitiveExpression (null)), right, new PrimitiveExpression (0)));
 

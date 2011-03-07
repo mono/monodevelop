@@ -368,7 +368,7 @@ namespace MonoDevelop.DocFood
 				SplitWords (exceptionType, exceptionType.Name);
 				
 				if (type != null) {
-					IType resolvedType = type.SourceProjectDom.SearchType (type.CompilationUnit, type, exceptionType);
+					IType resolvedType = type.SourceProjectDom.SearchType (type.CompilationUnit, type, type.Location, exceptionType);
 					string sentence = AmbienceService.GetDocumentationSummary (resolvedType).Trim ();
 					if (sentence.StartsWith ("<para>") && sentence.EndsWith ("</para>"))
 						sentence = sentence.Substring ("<para>".Length, sentence.Length - "<para>".Length - "</para>".Length).Trim ();

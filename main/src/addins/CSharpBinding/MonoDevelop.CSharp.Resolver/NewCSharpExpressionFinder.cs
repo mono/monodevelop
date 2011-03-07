@@ -204,7 +204,7 @@ namespace MonoDevelop.CSharp.Resolver
 						}
 						IReturnType unresolvedReturnType = NRefactoryResolver.ParseReturnType (firstExprs);
 						if (unresolvedReturnType != null) {
-							IType resolvedType = projectContent.SearchType (unit, (INode)callingType ?? unit, unresolvedReturnType);
+							IType resolvedType = projectContent.SearchType (unit, callingType, new DomLocation (editor.Caret.Line, editor.Caret.Column), unresolvedReturnType);
 							return ExpressionContext.TypeDerivingFrom (resolvedType != null ? new DomReturnType (resolvedType) : null, unresolvedReturnType, true);
 						}
 					}
@@ -259,7 +259,7 @@ namespace MonoDevelop.CSharp.Resolver
 					return ExpressionContext.TypeDerivingFrom (DomReturnType.Object, DomReturnType.Object, true);
 				IReturnType unresolvedReturnType = NRefactoryResolver.ParseReturnType (possibleTypeExpression);
 				if (unresolvedReturnType != null) {
-					IType resolvedType = projectContent.SearchType (unit, (INode)callingType ?? unit, unresolvedReturnType);
+					IType resolvedType = projectContent.SearchType (unit, callingType, new DomLocation (editor.Caret.Line, editor.Caret.Column), unresolvedReturnType);
 					if (resolvedType != null)
 						return ExpressionContext.TypeDerivingFrom (new DomReturnType (resolvedType), unresolvedReturnType, true);
 				}
@@ -337,7 +337,7 @@ namespace MonoDevelop.CSharp.Resolver
 			if (firstExprs.Expression != null) {
 				IReturnType unresolvedReturnType = NRefactoryResolver.ParseReturnType (firstExprs);
 				if (unresolvedReturnType != null) {
-					IType resolvedType = projectContent.SearchType (unit, (INode)callingType ?? unit, unresolvedReturnType);
+					IType resolvedType = projectContent.SearchType (unit, callingType, new DomLocation (editor.Caret.Line, editor.Caret.Column), unresolvedReturnType);
 					return ExpressionContext.TypeDerivingFrom (resolvedType != null ? new DomReturnType (resolvedType) : null, unresolvedReturnType, true);
 				}
 				

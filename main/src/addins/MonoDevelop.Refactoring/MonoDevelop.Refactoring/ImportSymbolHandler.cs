@@ -81,7 +81,7 @@ namespace MonoDevelop.Refactoring
 			
 			foreach (IUsing u in unit.Usings.Where (u => u.ValidRegion.Contains (location))) {
 				foreach (string ns in u.Namespaces) {
-					if (dom.SearchType (unit, unit.GetTypeAt (location), unit.GetMemberAt (location), ns + "." + name) != null) {
+					if (dom.SearchType (unit, unit.GetTypeAt (location), location, ns + "." + name) != null) {
 						result.GenerateUsing = false;
 						result.InsertNamespace = true;
 						return result;

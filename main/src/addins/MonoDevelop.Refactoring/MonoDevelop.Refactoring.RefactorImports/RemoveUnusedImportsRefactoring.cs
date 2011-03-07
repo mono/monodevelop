@@ -59,7 +59,7 @@ namespace MonoDevelop.Refactoring.RefactorImports
 			foreach (TypeReference r in visitor.PossibleTypeReferences) {
 				if (r.IsKeyword)
 					continue;
-				IType type = dom.SearchType (compilationUnit, compilationUnit, r.ConvertToReturnType ());
+				IType type = dom.SearchType (compilationUnit, options.ResolveResult.CallingType, new DomLocation (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column), r.ConvertToReturnType ());
 				if (type != null) {
 					usedUsings.Add (type.Namespace);
 				}

@@ -121,11 +121,11 @@ namespace MonoDevelop.Projects.Dom.Parser
 				}
 			}
 			
-			IType lookupType = db.SearchType (unit, contextType, null, type);
+			IType lookupType = db.SearchType (unit, contextType, contextType.Location, type);
 			
 			if (visitAttribute && lookupType == null && type.Parts.Count > 0) {
 				type.Parts[type.Parts.Count - 1].Name += "Attribute";
-				lookupType = db.SearchType (unit, contextType, null, type);
+				lookupType = db.SearchType (unit, contextType, contextType.Location, type);
 			}
 			
 			if (lookupType == null) {
@@ -159,7 +159,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			
 			DomReturnType rt = new DomReturnType (lookupType.Namespace, parts);
 			// Make sure the whole type is resolved
-			if (parts.Count > 1 && db.SearchType (unit, contextType, null, rt) == null) {
+			if (parts.Count > 1 && db.SearchType (unit, contextType, contextType.Location, rt) == null) {
 				unresolvedCount++;
 				return type;
 			}

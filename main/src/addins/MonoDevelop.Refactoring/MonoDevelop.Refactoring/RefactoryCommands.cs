@@ -108,7 +108,6 @@ namespace MonoDevelop.Refactoring
 			resolveResult = GetResolveResult (doc, editor);
 			if (resolveResult is AggregatedResolveResult)
 				resolveResult = ((AggregatedResolveResult)resolveResult).PrimaryResult;
-			
 			item = null;
 			if (resolveResult is ParameterResolveResult) {
 				item = ((ParameterResolveResult)resolveResult).Parameter;

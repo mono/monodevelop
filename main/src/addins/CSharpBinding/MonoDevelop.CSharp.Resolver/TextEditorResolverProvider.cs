@@ -92,7 +92,6 @@ namespace MonoDevelop.CSharp.Resolver
 			ExpressionResult expressionResult = expressionFinder.FindExpression (data, wordEnd);
 			if (expressionResult == null)
 				return null;
-			
 			ResolveResult resolveResult;
 			DocumentLocation loc = data.Document.OffsetToLocation (offset);
 			string savedExpression = null;

@@ -996,7 +996,7 @@ namespace MonoDevelop.CSharp.Completion
 							break;
 						token = token.Trim ();
 						if (Char.IsLetterOrDigit (token[0]) || token[0] == '_') {
-							IType baseType = dom.SearchType (Document.CompilationUnit, Document.CompilationUnit, token);
+							IType baseType = dom.SearchType (Document.CompilationUnit, cls, result.Region.Start, token);
 							if (baseType != null) {
 								if (baseType.ClassType != ClassType.Interface)
 									isInterface = true;
@@ -1562,7 +1562,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			if (curType == null)
 				return;
-			IType searchType = dom.SearchType (Document.CompilationUnit, (MonoDevelop.Projects.Dom.INode)type ?? Document.CompilationUnit, curType);
+			IType searchType = dom.SearchType (Document.CompilationUnit, type, new DomLocation (ctx.TriggerLine, ctx.TriggerLineOffset + 1), curType);
 			//System.Console.WriteLine("Add Virtuals for:" + searchType + " / " + curType);
 			if (searchType == null)
 				return;
@@ -1645,13 +1645,13 @@ namespace MonoDevelop.CSharp.Completion
 			if (returnType != null)
 				type = dom.GetType (returnType);
 			if (type == null)
-				type = dom.SearchType (Document.CompilationUnit, (MonoDevelop.Projects.Dom.INode)Document.CompilationUnit ?? callingType, returnTypeUnresolved);
+				type = dom.SearchType (Document.CompilationUnit, callingType, location, returnTypeUnresolved);
 			
 			// special handling for nullable types: Bug 674516 - new completion for nullables should not include "Nullable"
 			if (type is InstantiatedType && ((InstantiatedType)type).UninstantiatedType.FullName == "System.Nullable" && ((InstantiatedType)type).GenericParameters.Count == 1) {
 				var genericParameter = ((InstantiatedType)type).GenericParameters[0];
 				returnType = returnTypeUnresolved = Document.CompilationUnit.ShortenTypeName (genericParameter, location);
-				type = dom.SearchType (Document.CompilationUnit, (MonoDevelop.Projects.Dom.INode)Document.CompilationUnit ?? callingType, genericParameter);
+				type = dom.SearchType (Document.CompilationUnit, callingType, location, genericParameter);
 			}
 			
 			if (type == null || !(type.IsAbstract || type.ClassType == ClassType.Interface)) {

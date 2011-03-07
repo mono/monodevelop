@@ -136,12 +136,12 @@ namespace MonoDevelop.CSharp.Resolver
 		
 		public IType SearchType (string fullyDecoratedName)
 		{
-			return dom.SearchType (Unit, CallingMember ?? (MonoDevelop.Projects.Dom.INode)CallingType ?? Unit, fullyDecoratedName);
+			return dom.SearchType (Unit, CallingType, resolvePosition, fullyDecoratedName);
 		}
 		
 		public IType SearchType (IReturnType type)
 		{
-			return dom.SearchType (Unit, CallingMember ?? (MonoDevelop.Projects.Dom.INode)CallingType ?? Unit, type);
+			return dom.SearchType (Unit, CallingType, resolvePosition, type);
 		}
 		
 		ICSharpCode.NRefactory.Ast.CompilationUnit memberCompilationUnit;
@@ -802,6 +802,7 @@ namespace MonoDevelop.CSharp.Resolver
 					goto end;
 				}
 			}
+			
 			if (this.callingMember != null) {
 				// special handling of property or field return types, they can have the same name as the return type
 				// ex.: MyType MyType { get; set; }  Type1 Type1;
