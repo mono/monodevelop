@@ -1195,9 +1195,6 @@ namespace Mono.Debugging.Soft
 						} else {
 							if (inisideLoadedRange) {
 								bi.SetStatus (BreakEventStatus.Invalid, null);
-								OnDebuggerOutput (true, string.Format ("Could not insert pending breakpoint at '{0}:{1}'. " +
-									"Perhaps the source line does not contain any statements, or the source does not correspond " +
-									"to the current binary.\n", s, bp.Line));
 							}
 						}
 					}
