@@ -277,16 +277,17 @@ namespace MonoDevelop.MonoDroid
 			return "AndroidDeviceId-" + conf.Id;
 		}
 		
-		bool HackGetUserAssemblyPaths = false;
+		// Disable this as we are not gonna use it for now.
+		//bool HackGetUserAssemblyPaths = false;
 		
 		//HACK: base.GetUserAssemblyPaths depends on GetOutputFileName being an assembly
 		new IList<string> GetUserAssemblyPaths (ConfigurationSelector configuration)
 		{
 			try {
-				HackGetUserAssemblyPaths = true;
+				//HackGetUserAssemblyPaths = true;
 				return base.GetUserAssemblyPaths (configuration);
 			} finally {
-				HackGetUserAssemblyPaths = false;
+				//HackGetUserAssemblyPaths = false;
 			}
 		}
 		
@@ -294,14 +295,11 @@ namespace MonoDevelop.MonoDroid
 		{
 			if (!IsAndroidApplication)
 				return base.GetOutputFileName (configuration);
-				
-			if (HackGetUserAssemblyPaths)
-				return base.GetOutputFileName (configuration);
-			
-			var cfg = GetConfiguration (configuration);
-			if (cfg == null)
-				return FilePath.Null;
-			return cfg.ApkPath;
+
+			// Don't return the apk file here,
+			// as it is produced in the sign step,
+			// not in the build step anymore (for now).
+			return base.GetOutputFileName (configuration);
 		}
 		
 		protected override bool CheckNeedsBuild (ConfigurationSelector configuration)
@@ -349,7 +347,7 @@ namespace MonoDevelop.MonoDroid
 			var cmd = CreateExecutionCommand (config, cfg);
 			return context.ExecutionHandler.CanExecute (cmd);
 		}
-		
+
 		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configSel)
 		{
 			var conf = (MonoDroidProjectConfiguration) GetConfiguration (configSel);
@@ -359,20 +357,6 @@ namespace MonoDevelop.MonoDroid
 					GettextCatalog.GetString ("MonoDroid projects must be built before uploading"), null);
 				return;
 			}
-			
-			var manifestFile = conf.ObjDir.Combine ("android", "AndroidManifest.xml");
-			if (!File.Exists (manifestFile)) {
-				monitor.ReportError ("Intermediate manifest file is missing", null);
-				return;
-			}
-			
-			var manifest = AndroidAppManifest.Load (manifestFile);
-			var activity = manifest.GetLaunchableActivityName ();
-			if (string.IsNullOrEmpty (activity)) {
-				monitor.ReportError ("Application does not contain a launchable activity", null);
-				return;
-			}
-			activity = manifest.PackageName + "/" + activity;
 			
 			IConsole console = null;
 			var opMon = new AggregatedOperationMonitor (monitor);
@@ -404,6 +388,11 @@ namespace MonoDevelop.MonoDroid
 				if (!uploadOp.Success || monitor.IsCancelRequested)
 					return;
 				
+				//get the activity name after signing produced the final manifest
+				string activity;
+				if (!GetActivityNameFromManifest (monitor, conf, out activity))
+					return;
+
 				//successful, persist the device choice
 				if (!useHandlerDevice)
 					SetDeviceTarget (conf, device.ID);
@@ -485,6 +474,27 @@ namespace MonoDevelop.MonoDroid
 			}
 			
 			monitor.Dispose ();
+		}
+
+		static bool GetActivityNameFromManifest (IProgressMonitor monitor, MonoDroidProjectConfiguration conf, out string activity)
+		{
+			activity = null;
+
+			var manifestFile = conf.ObjDir.Combine ("android", "AndroidManifest.xml");
+			if (!File.Exists (manifestFile)) {
+				monitor.ReportError ("Intermediate manifest file is missing", null);
+				return false;
+			}
+			
+			var manifest = AndroidAppManifest.Load (manifestFile);
+			activity = manifest.GetLaunchableActivityName ();
+			if (string.IsNullOrEmpty (activity)) {
+				monitor.ReportError ("Application does not contain a launchable activity", null);
+				return false;
+			}
+
+			activity = manifest.PackageName + "/" + activity;
+			return true;
 		}
 		
 		#endregion
