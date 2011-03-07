@@ -369,14 +369,18 @@ namespace MonoDevelop.NUnit
 				if (testName != null)
 					result = localMonitor.SingleTestResult;
 			} catch (Exception ex) {
-				LoggingService.LogError (ex.ToString ());
-				if (localMonitor.RunningTest != null) {
-					RuntimeErrorCleanup (testContext, localMonitor.RunningTest, ex);
+				if (!localMonitor.Canceled) {
+					LoggingService.LogError (ex.ToString ());
+					if (localMonitor.RunningTest != null) {
+						RuntimeErrorCleanup (testContext, localMonitor.RunningTest, ex);
+					} else {
+						testContext.Monitor.ReportRuntimeError (null, ex);
+						throw ex;
+					}
+					result = UnitTestResult.CreateFailure (ex);
 				} else {
-					testContext.Monitor.ReportRuntimeError (null, ex);
-					throw ex;
+					result = UnitTestResult.CreateFailure (GettextCatalog.GetString ("Canceled"), null);
 				}
-				result = UnitTestResult.CreateFailure (ex);
 			} finally {
 				testContext.Monitor.CancelRequested -= new TestHandler (rd.Cancel);
 				runner.Dispose ();
@@ -431,7 +435,7 @@ namespace MonoDevelop.NUnit
 			public void Cancel ()
 			{
 				LocalMonitor.Canceled = true;
-				Runner.Dispose ();
+				Runner.Shutdown ();
 				ClearRunningStatus (Test);
 			}
 			
