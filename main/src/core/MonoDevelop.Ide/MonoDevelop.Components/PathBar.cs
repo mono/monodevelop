@@ -342,20 +342,25 @@ namespace MonoDevelop.Components
 			int ox, oy;
 			ParentWindow.GetOrigin (out ox, out oy);
 			int w;
-			int dx = ox + this.Allocation.X + GetHoverXPosition (out w);
+			int itemXPosition = GetHoverXPosition (out w);
+			int dx = ox + this.Allocation.X + itemXPosition;
 			int dy = oy + this.Allocation.Bottom;
 			
 			var req = widget.SizeRequest ();
 			
-			int width = System.Math.Max (req.Width, w);
-			widget.WidthRequest = width;
 			Gdk.Rectangle geometry = Screen.GetMonitorGeometry (Screen.GetMonitorAtPoint (dx, dy));
-			
+			int width = System.Math.Max (req.Width, w);
+			if (width >= geometry.Width - spacing * 2) {
+				width = geometry.Width - spacing * 2;
+				dx = geometry.Left + spacing;
+			}
+			widget.WidthRequest = width;
 			if (dy + req.Height > geometry.Bottom)
 				dy = oy + this.Allocation.Y - req.Height;
 			if (dx + width > geometry.Right)
 				dx = geometry.Right - width;
 			(widget as Gtk.Window).Move (dx, dy);
+			(widget as Gtk.Window).Resize (width, req.Height);
 			widget.GrabFocus ();
 		}
 		

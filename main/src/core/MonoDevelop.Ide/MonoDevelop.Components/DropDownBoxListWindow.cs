@@ -162,7 +162,7 @@ namespace MonoDevelop.Components
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
-			var upper = Math.Max(0, DataProvider.IconCount);
+			var upper = Math.Max (0, DataProvider.IconCount);
 			var pageStep = list.VisibleRows;
 			vScrollbar.Adjustment.SetBounds (0, upper, 1, pageStep, pageStep);
 			
@@ -170,9 +170,14 @@ namespace MonoDevelop.Components
 				hBox.Remove (vScrollbar);
 		
 			requisition.Height = this.list.HeightRequest + 2;
-			int width = this.list.CalcWidth ();
-			if (list.VisibleRows < DataProvider.IconCount)
-				width += vScrollbar.Allocation.Width;
+			int width;
+			if (WidthRequest >= 0) {
+				width = WidthRequest;
+			} else {
+				width = this.list.CalcWidth ();
+				if (list.VisibleRows < DataProvider.IconCount)
+					width += vScrollbar.Allocation.Width;
+			}
 			requisition.Width = width;
 		}
 
@@ -407,7 +412,8 @@ namespace MonoDevelop.Components
 
 				int n = 0;
 				while (ypos < winHeight - margin && (page + n) < win.DataProvider.IconCount) {
-					layout.SetText (win.DataProvider.GetText (page + n) ?? "<null>");
+					string text = win.DataProvider.GetText (page + n) ?? "<null>";
+					layout.SetText (text);
 
 					Gdk.Pixbuf icon = win.DataProvider.GetIcon (page + n);
 					int iconHeight = icon != null ? icon.Height : 24;
@@ -415,38 +421,44 @@ namespace MonoDevelop.Components
 
 					int wi, he, typos, iypos;
 					layout.GetPixelSize (out wi, out he);
+					if (wi > Allocation.Width) {
+						int idx, trail;
+						if (layout.XyToIndex ((int)((Allocation.Width - xpos - iconWidth - 2) * Pango.Scale.PangoScale), 0, out idx, out trail) && idx > 3) {
+							text = text.Substring (0, idx - 3) + "...";
+							layout.SetText (text);
+							layout.GetPixelSize (out wi, out he);
+						}
+					}
 					typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
 					iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
 					
 					if (page + n == selection) {
 						if (!disableSelection) {
-							this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Selected),
+							this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Selected), 
 							                              true, margin, ypos, lineWidth, he + padding);
-							this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Selected),
+							this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Selected), 
 								                           xpos + iconWidth + 2, typos, layout);
-						}
-						else {
-							this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Selected),
+						} else {
+							this.GdkWindow.DrawRectangle (this.Style.BaseGC (StateType.Selected), 
 							                              false, margin, ypos, lineWidth, he + padding);
 							this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), 
 							                           xpos + iconWidth + 2, typos, layout);
 						}
-					}
-					else
-						this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal),
+					} else
+						this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), 
 						                           xpos + iconWidth + 2, typos, layout);
 					
 					if (icon != null)
-						this.GdkWindow.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), icon, 0, 0,
+						this.GdkWindow.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), icon, 0, 0, 
 						                           xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
 					
 					ypos += rowHeight;
 					n++;
 					
-					//reset the markup or it carries over to the next SetText
+//reset the markup or it carries over to the next SetText
 					layout.SetMarkup (string.Empty);
+					}
 				}
-			}
 			
 			int GetRowByPosition (int ypos)
 			{
