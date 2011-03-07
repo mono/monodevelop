@@ -275,7 +275,7 @@ namespace Mono.TextEditor
 			Editor.Document.CommitUpdateAll ();
 		}
 
-		void ExitTextLinkMode ()
+		public void ExitTextLinkMode ()
 		{
 			editor.Document.BeforeUndoOperation -= HandleEditorDocumentBeginUndo;
 			DestroyHelpWindow ();

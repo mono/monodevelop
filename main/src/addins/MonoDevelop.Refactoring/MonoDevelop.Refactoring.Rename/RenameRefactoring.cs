@@ -85,7 +85,6 @@ namespace MonoDevelop.Refactoring.Rename
 					MessageService.ShowCustomDialog (new RenameItemDialog (options, this));
 					return;
 				}
-
 				
 				List<TextLink> links = new List<TextLink> ();
 				TextLink link = new TextLink ("name");
@@ -103,6 +102,8 @@ namespace MonoDevelop.Refactoring.Rename
 				}
 				
 				links.Add (link);
+				if (editor.CurrentMode is TextLinkEditMode)
+					((TextLinkEditMode)editor.CurrentMode).ExitTextLinkMode ();
 				TextLinkEditMode tle = new TextLinkEditMode (editor, baseOffset, links);
 				tle.SetCaretPosition = false;
 				tle.SelectPrimaryLink = true;
