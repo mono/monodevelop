@@ -55,9 +55,9 @@ namespace MonoDevelop.VersionControl
 		/// </returns>
 		public static bool CreatePatch (VersionControlItemList items, bool test)
 		{
-			if (items.Count < 1)
-				return false;
-				
+			bool can = CanCreatePatch (items);
+			if (test || !can){ return can; }
+			
 			FilePath basePath = FindMostSpecificParent (items, FilePath.Null);
 			if (FilePath.Empty == basePath)
 				return false;
@@ -106,7 +106,7 @@ namespace MonoDevelop.VersionControl
 		
 		/// <summary>
 		/// Determines whether a patch can be created 
-		/// from a VersionControlItemList.
+		/// from a ChangeSet.
 		/// </summary>
 		public static bool CanCreatePatch (ChangeSet items) 
 		{
@@ -114,6 +114,23 @@ namespace MonoDevelop.VersionControl
 			
 			foreach (ChangeSetItem item in items.Items) {
 				if (!items.Repository.CanRevert (item.LocalPath)) {
+					return false;
+				}
+			}
+			
+			return true;
+		}
+		
+		/// <summary>
+		/// Determines whether a patch can be created 
+		/// from a VersionControlItemList.
+		/// </summary>
+		public static bool CanCreatePatch (VersionControlItemList items) 
+		{
+			if (null == items || 0 == items.Count){ return false; }
+			
+			foreach (var item in items) {
+				if (!item.Repository.CanRevert (item.Path)) {
 					return false;
 				}
 			}
