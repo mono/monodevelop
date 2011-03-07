@@ -61,10 +61,10 @@ namespace MonoDevelop.MonoDroid
 		[ProjectPathItemProperty ("AndroidManifest")]
 		string androidManifest;
 		
-		[ItemProperty ("MonoDroidResourcePrefix")]
+		[ItemProperty ("MonoAndroidResourcePrefix")]
 		string monoDroidResourcePrefix;
 
-		[ItemProperty ("MonoDroidAssetsPrefix")]
+		[ItemProperty ("MonoAndroidAssetsPrefix")]
 		string monoDroidAssetsPrefix;
 		
 		public override string ProjectType {
@@ -132,7 +132,7 @@ namespace MonoDevelop.MonoDroid
 				if (value == monoDroidAssetsPrefix)
 					return;
 				monoDroidAssetsPrefix = value;
-				NotifyModified ("MonoDroidAssetsPrefix");
+				NotifyModified ("MonoAndroidAssetsPrefix");
 			}
 		}
 		
@@ -145,7 +145,7 @@ namespace MonoDevelop.MonoDroid
 					return;
 				monoDroidResourcePrefix = value;
 				resPrefixes = null;
-				NotifyModified ("MonoDroidResourcePrefix");
+				NotifyModified ("MonoAndroidResourcePrefix");
 			}
 		}
 		
