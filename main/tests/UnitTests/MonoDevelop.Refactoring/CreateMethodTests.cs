@@ -355,6 +355,45 @@ class TestClass
 }
 ", true);
 		}
+		
+		/// <summary>
+		/// Bug 677527 - "Create Method" uses fully qualified namespace when "using" statement exists
+		/// </summary>
+		[Test()]
+		public void TestBug677527 ()
+		{
+			TestCreateMethod (
+@"using System.Text;
+
+namespace Test {
+	class TestClass
+	{
+		void TestMethod ()
+		{
+			StringBuilder sb = new StringBuilder ();
+			$NonExistantMethod (sb);
+		}
+	}
+}
+", @"using System.Text;
+
+namespace Test {
+	class TestClass
+	{
+		void NonExistantMethod (StringBuilder sb)
+		{
+			throw new System.NotImplementedException ();
+		}	
+		
+		void TestMethod ()
+		{
+			StringBuilder sb = new StringBuilder ();
+			NonExistantMethod (sb);
+		}
+	}
+}
+", true);
+		}
 	}
 	
 }
