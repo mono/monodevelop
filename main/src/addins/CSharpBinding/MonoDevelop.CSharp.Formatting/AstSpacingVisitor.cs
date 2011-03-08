@@ -622,7 +622,16 @@ namespace MonoDevelop.CSharp.Formatting
 		public override object VisitObjectCreateExpression (ObjectCreateExpression objectCreateExpression, object data)
 		{
 			ForceSpacesBefore (objectCreateExpression.LParToken, policy.NewParentheses);
-
+			
+			if (objectCreateExpression.Arguments.Any ()) {
+				ForceSpacesAfter (objectCreateExpression.LParToken, policy.WithinNewParentheses);
+				ForceSpacesBefore (objectCreateExpression.RParToken, policy.WithinNewParentheses);
+			} else {
+				ForceSpacesAfter (objectCreateExpression.LParToken, policy.BetweenEmptyNewParentheses);
+				ForceSpacesBefore (objectCreateExpression.RParToken, policy.BetweenEmptyNewParentheses);
+			}
+			FormatCommas (objectCreateExpression, policy.BeforeNewParameterComma, policy.AfterNewParameterComma);
+			
 			return base.VisitObjectCreateExpression (objectCreateExpression, data);
 		}
 

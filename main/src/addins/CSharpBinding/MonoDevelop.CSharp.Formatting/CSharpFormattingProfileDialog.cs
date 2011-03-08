@@ -771,6 +771,21 @@ delegate void BarFoo ();
 			AddOption (whiteSpaceOptions, category, "BeforeMethodCallParameterComma", GettextCatalog.GetString ("before comma in parenthesis"), example);
 			AddOption (whiteSpaceOptions, category, "AfterMethodCallParameterComma", GettextCatalog.GetString ("after comma in parenthesis"), example);
 			
+			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("Object creation"), example);
+			example = @"partial class Example {
+		void Test ()
+		{
+			var anExample = new Example (1, 2, 3);
+			var emptyExample = new Example ();
+		}
+}";
+			AddOption (whiteSpaceOptions, category, "NewParentheses", GettextCatalog.GetString ("before opening parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "WithinNewParentheses", GettextCatalog.GetString ("within parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "BetweenEmptyNewParentheses", GettextCatalog.GetString ("between empty parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "BeforeNewParameterComma", GettextCatalog.GetString ("before comma in parenthesis"), example);
+			AddOption (whiteSpaceOptions, category, "AfterNewParameterComma", GettextCatalog.GetString ("after comma in parenthesis"), example);
+			
+			
 			example = @"class Example {
 		void Test ()
 		{

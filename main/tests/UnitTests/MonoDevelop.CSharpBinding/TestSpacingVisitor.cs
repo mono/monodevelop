@@ -1041,6 +1041,91 @@ return (Test)null;
 		}
 		
 		[Test()]
+		public void TestWithinNewParentheses ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		new Test (1);
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.WithinNewParentheses = true;
+			
+			var compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			int i1 = data.Document.Text.LastIndexOf ("new");
+			int i2 = data.Document.Text.LastIndexOf (";") + ";".Length;
+			Assert.AreEqual (@"new Test ( 1 );", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		[Test()]
+		public void TestBetweenEmptyNewParentheses ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		new Test ();
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.BetweenEmptyNewParentheses = true;
+			
+			var compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			int i1 = data.Document.Text.LastIndexOf ("new");
+			int i2 = data.Document.Text.LastIndexOf (";") + ";".Length;
+			Assert.AreEqual (@"new Test ( );", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		[Test()]
+		public void TestBeforeNewParameterComma ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		new Test (1,2);
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.BeforeNewParameterComma = true;
+			policy.AfterNewParameterComma = false;
+			
+			var compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			int i1 = data.Document.Text.LastIndexOf ("new");
+			int i2 = data.Document.Text.LastIndexOf (";") + ";".Length;
+			Assert.AreEqual (@"new Test (1 ,2);", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		[Test()]
+		public void TestAfterNewParameterComma ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	void TestMe ()
+	{
+		new Test (1,2);
+	}
+}";
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.AfterNewParameterComma = true;
+			
+			var compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			int i1 = data.Document.Text.LastIndexOf ("new");
+			int i2 = data.Document.Text.LastIndexOf (";") + ";".Length;
+			Assert.AreEqual (@"new Test (1, 2);", data.Document.GetTextBetween (i1, i2));
+		}
+		
+		[Test()]
 		public void TestFieldDeclarationComma ()
 		{
 			TextEditorData data = new TextEditorData ();
