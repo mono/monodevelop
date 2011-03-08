@@ -288,6 +288,7 @@ src/addins/NUnit/Makefile
 src/addins/NUnit/NUnitRunner/Makefile
 src/addins/VersionControl/MonoDevelop.VersionControl/Makefile
 src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/Makefile
+src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/Makefile
 src/addins/VersionControl/MonoDevelop.VersionControl.Git/Makefile
 src/addins/VersionControl/Makefile
 src/addins/CSharpBinding/Makefile
