@@ -132,6 +132,7 @@ FILES =  \
 	Mono.TextEditor/TextEditorOptions.cs \
 	Mono.TextEditor/TextLinkEditMode.cs \
 	Mono.TextEditor/TextMarker.cs \
+	Mono.TextEditor/TextMarkerEvent.cs \
 	Mono.TextEditor/TextViewMargin.cs \
 	Mono.TextEditor/TypedSegment.cs 
 	Mono.TextEditor.Highlighting/Match.cs \

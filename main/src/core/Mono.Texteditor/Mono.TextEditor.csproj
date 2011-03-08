@@ -180,6 +180,7 @@
     <Compile Include="Mono.TextEditor.Vi\ViCommandMap.cs" />
     <Compile Include="Mono.TextEditor.Vi\ViEditor.cs" />
     <Compile Include="Mono.TextEditor.Utils\TextBreaker.cs" />
+    <Compile Include="Mono.TextEditor\TextMarkerEvent.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

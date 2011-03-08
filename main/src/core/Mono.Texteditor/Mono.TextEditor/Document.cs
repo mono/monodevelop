@@ -1286,6 +1286,24 @@ namespace Mono.TextEditor
 		}
 		public event EventHandler<FoldSegmentEventArgs> Folded;
 		#endregion
+		
+		public event EventHandler<TextMarkerEvent> MarkerAdded;
+		protected virtual void OnMarkerAdded (TextMarkerEvent e)
+		{
+			EventHandler<TextMarkerEvent> handler = this.MarkerAdded;
+			if (handler != null)
+				handler (this, e);
+		}
+
+		public event EventHandler<TextMarkerEvent> MarkerRemoved;
+		protected virtual void OnMarkerRemoved (TextMarkerEvent e)
+		{
+			EventHandler<TextMarkerEvent> handler = this.MarkerRemoved;
+			if (handler != null)
+				handler (this, e);
+		}
+
+		
 		List<TextMarker> extendingTextMarkers = new List<TextMarker> ();
 		public IEnumerable<LineSegment> LinesWithExtendingTextMarkers {
 			get {
@@ -1315,6 +1333,7 @@ namespace Mono.TextEditor
 				}
 			}
 			line.AddMarker (marker);
+			OnMarkerAdded (new TextMarkerEvent (line, marker));
 			if (commitUpdate)
 				this.CommitLineUpdate (line);
 		}
@@ -1346,6 +1365,7 @@ namespace Mono.TextEditor
 			}
 			
 			line.RemoveMarker (marker);
+			OnMarkerRemoved (new TextMarkerEvent (line, marker));
 			if (updateLine)
 				this.CommitLineUpdate (line);
 		}
