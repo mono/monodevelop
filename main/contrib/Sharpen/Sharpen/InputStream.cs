@@ -7,6 +7,7 @@ namespace Sharpen
 	{
 		private long mark;
 		protected Stream Wrapped;
+		protected Stream BaseStream;
 
 		public static implicit operator InputStream (Stream s)
 		{
@@ -20,7 +21,10 @@ namespace Sharpen
 		
 		public virtual int Available ()
 		{
-			return 0;
+			if (Wrapped is WrappedSystemStream)
+				return ((WrappedSystemStream)Wrapped).InputStream.Available ();
+			else
+				return 0;
 		}
 
 		public virtual void Close ()
@@ -37,22 +41,29 @@ namespace Sharpen
 
 		internal Stream GetWrappedStream ()
 		{
-			if (Wrapped != null) {
-				return Wrapped;
-			}
+			// Always create a wrapper stream (not directly Wrapped) since the subclass
+			// may be overriding methods that need to be called when used through the Stream class
 			return new WrappedSystemStream (this);
 		}
 
 		public virtual void Mark (int readlimit)
 		{
-			if (Wrapped != null) {
-				this.mark = Wrapped.Position;
+			if (Wrapped is WrappedSystemStream)
+				((WrappedSystemStream)Wrapped).InputStream.Mark (readlimit);
+			else {
+				if (BaseStream is WrappedSystemStream)
+					((WrappedSystemStream)BaseStream).OnMark (readlimit);
+				if (Wrapped != null)
+					this.mark = Wrapped.Position;
 			}
 		}
-
+		
 		public virtual bool MarkSupported ()
 		{
-			return ((Wrapped != null) && Wrapped.CanSeek);
+			if (Wrapped is WrappedSystemStream)
+				return ((WrappedSystemStream)Wrapped).InputStream.MarkSupported ();
+			else
+				return ((Wrapped != null) && Wrapped.CanSeek);
 		}
 
 		public virtual int Read ()
@@ -70,6 +81,9 @@ namespace Sharpen
 
 		public virtual int Read (byte[] b, int off, int len)
 		{
+			if (Wrapped is WrappedSystemStream)
+				return ((WrappedSystemStream)Wrapped).InputStream.Read (b, off, len);
+			
 			if (Wrapped != null) {
 				int num = Wrapped.Read (b, off, len);
 				return ((num <= 0) ? -1 : num);
@@ -87,14 +101,20 @@ namespace Sharpen
 
 		public virtual void Reset ()
 		{
-			if (Wrapped == null) {
-				throw new IOException ();
+			if (Wrapped is WrappedSystemStream)
+				((WrappedSystemStream)Wrapped).InputStream.Reset ();
+			else {
+				if (Wrapped == null)
+					throw new IOException ();
+				Wrapped.Position = mark;
 			}
-			Wrapped.Position = mark;
 		}
 
 		public virtual long Skip (long cnt)
 		{
+			if (Wrapped is WrappedSystemStream)
+				return ((WrappedSystemStream)Wrapped).InputStream.Skip (cnt);
+			
 			long n = cnt;
 			while (n > 0) {
 				if (Read () == -1)
@@ -102,6 +122,29 @@ namespace Sharpen
 				n--;
 			}
 			return cnt - n;
+		}
+		
+		internal bool CanSeek ()
+		{
+			if (Wrapped != null)
+				return Wrapped.CanSeek;
+			else
+				return false;
+		}
+		
+		internal long Position {
+			get {
+				if (Wrapped != null)
+					return Wrapped.Position;
+				else
+					throw new NotSupportedException ();
+			}
+			set {
+				if (Wrapped != null)
+					Wrapped.Position = value;
+				else
+					throw new NotSupportedException ();
+			}
 		}
 
 		static internal InputStream Wrap (Stream s)

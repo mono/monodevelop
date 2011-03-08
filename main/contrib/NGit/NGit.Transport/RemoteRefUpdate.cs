@@ -160,18 +160,149 @@ namespace NGit.Transport
 		/// </exception>
 		/// <exception cref="System.ArgumentException">if some required parameter was null</exception>
 		public RemoteRefUpdate(Repository localDb, string srcRef, string remoteName, bool
-			 forceUpdate, string localName, ObjectId expectedOldObjectId)
+			 forceUpdate, string localName, ObjectId expectedOldObjectId) : this(localDb, srcRef
+			, srcRef != null ? localDb.Resolve(srcRef) : ObjectId.ZeroId, remoteName, forceUpdate
+			, localName, expectedOldObjectId)
+		{
+		}
+
+		/// <summary>Construct remote ref update request by providing an update specification.
+		/// 	</summary>
+		/// <remarks>
+		/// Construct remote ref update request by providing an update specification.
+		/// Object is created with default
+		/// <see cref="Status.NOT_ATTEMPTED">Status.NOT_ATTEMPTED</see>
+		/// status and no
+		/// message.
+		/// </remarks>
+		/// <param name="localDb">local repository to push from.</param>
+		/// <param name="srcRef">source revision. Use null to delete.</param>
+		/// <param name="remoteName">
+		/// full name of a remote ref to update, e.g. "refs/heads/master"
+		/// (no wildcard, no short name).
+		/// </param>
+		/// <param name="forceUpdate">
+		/// true when caller want remote ref to be updated regardless
+		/// whether it is fast-forward update (old object is ancestor of
+		/// new object).
+		/// </param>
+		/// <param name="localName">
+		/// optional full name of a local stored tracking branch, to
+		/// update after push, e.g. "refs/remotes/zawir/dirty" (no
+		/// wildcard, no short name); null if no local tracking branch
+		/// should be updated.
+		/// </param>
+		/// <param name="expectedOldObjectId">
+		/// optional object id that caller is expecting, requiring to be
+		/// advertised by remote side before update; update will take
+		/// place ONLY if remote side advertise exactly this expected id;
+		/// null if caller doesn't care what object id remote side
+		/// advertise. Use
+		/// <see cref="NGit.ObjectId.ZeroId()">NGit.ObjectId.ZeroId()</see>
+		/// when expecting no
+		/// remote ref with this name.
+		/// </param>
+		/// <exception cref="System.IO.IOException">
+		/// when I/O error occurred during creating
+		/// <see cref="TrackingRefUpdate">TrackingRefUpdate</see>
+		/// for local tracking branch or srcRef
+		/// can't be resolved to any object.
+		/// </exception>
+		/// <exception cref="System.ArgumentException">if some required parameter was null</exception>
+		public RemoteRefUpdate(Repository localDb, Ref srcRef, string remoteName, bool forceUpdate
+			, string localName, ObjectId expectedOldObjectId) : this(localDb, srcRef != null
+			 ? srcRef.GetName() : null, srcRef != null ? srcRef.GetObjectId() : null, remoteName
+			, forceUpdate, localName, expectedOldObjectId)
+		{
+		}
+
+		/// <summary>Construct remote ref update request by providing an update specification.
+		/// 	</summary>
+		/// <remarks>
+		/// Construct remote ref update request by providing an update specification.
+		/// Object is created with default
+		/// <see cref="Status.NOT_ATTEMPTED">Status.NOT_ATTEMPTED</see>
+		/// status and no
+		/// message.
+		/// </remarks>
+		/// <param name="localDb">local repository to push from.</param>
+		/// <param name="srcRef">
+		/// source revision to label srcId with. If null srcId.name() will
+		/// be used instead.
+		/// </param>
+		/// <param name="srcId">
+		/// The new object that the caller wants remote ref to be after
+		/// update. Use null or
+		/// <see cref="NGit.ObjectId.ZeroId()">NGit.ObjectId.ZeroId()</see>
+		/// for delete
+		/// request.
+		/// </param>
+		/// <param name="remoteName">
+		/// full name of a remote ref to update, e.g. "refs/heads/master"
+		/// (no wildcard, no short name).
+		/// </param>
+		/// <param name="forceUpdate">
+		/// true when caller want remote ref to be updated regardless
+		/// whether it is fast-forward update (old object is ancestor of
+		/// new object).
+		/// </param>
+		/// <param name="localName">
+		/// optional full name of a local stored tracking branch, to
+		/// update after push, e.g. "refs/remotes/zawir/dirty" (no
+		/// wildcard, no short name); null if no local tracking branch
+		/// should be updated.
+		/// </param>
+		/// <param name="expectedOldObjectId">
+		/// optional object id that caller is expecting, requiring to be
+		/// advertised by remote side before update; update will take
+		/// place ONLY if remote side advertise exactly this expected id;
+		/// null if caller doesn't care what object id remote side
+		/// advertise. Use
+		/// <see cref="NGit.ObjectId.ZeroId()">NGit.ObjectId.ZeroId()</see>
+		/// when expecting no
+		/// remote ref with this name.
+		/// </param>
+		/// <exception cref="System.IO.IOException">
+		/// when I/O error occurred during creating
+		/// <see cref="TrackingRefUpdate">TrackingRefUpdate</see>
+		/// for local tracking branch or srcRef
+		/// can't be resolved to any object.
+		/// </exception>
+		/// <exception cref="System.ArgumentException">if some required parameter was null</exception>
+		public RemoteRefUpdate(Repository localDb, string srcRef, ObjectId srcId, string 
+			remoteName, bool forceUpdate, string localName, ObjectId expectedOldObjectId)
 		{
 			if (remoteName == null)
 			{
 				throw new ArgumentException(JGitText.Get().remoteNameCantBeNull);
 			}
-			this.srcRef = srcRef;
-			this.newObjectId = (srcRef == null ? ObjectId.ZeroId : localDb.Resolve(srcRef));
-			if (newObjectId == null)
+			if (srcId == null && srcRef != null)
 			{
 				throw new IOException(MessageFormat.Format(JGitText.Get().sourceRefDoesntResolveToAnyObject
 					, srcRef));
+			}
+			if (srcRef != null)
+			{
+				this.srcRef = srcRef;
+			}
+			else
+			{
+				if (srcId != null && !srcId.Equals(ObjectId.ZeroId))
+				{
+					this.srcRef = srcId.Name;
+				}
+				else
+				{
+					this.srcRef = null;
+				}
+			}
+			if (srcId != null)
+			{
+				this.newObjectId = srcId;
+			}
+			else
+			{
+				this.newObjectId = ObjectId.ZeroId;
 			}
 			this.remoteName = remoteName;
 			this.forceUpdate = forceUpdate;

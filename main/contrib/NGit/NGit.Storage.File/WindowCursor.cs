@@ -44,6 +44,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System;
 using System.Collections.Generic;
 using System.IO;
+using ICSharpCode.SharpZipLib;
 using NGit;
 using NGit.Errors;
 using NGit.Revwalk;
@@ -283,7 +284,7 @@ namespace NGit.Storage.File
 		/// this cursor does not match the provider or id and the proper
 		/// window could not be acquired through the provider's cache.
 		/// </exception>
-		/// <exception cref="Sharpen.DataFormatException">
+		/// <exception cref="ICSharpCode.SharpZipLib.SharpZipBaseException">
 		/// the inflater encountered an invalid chunk of data. Data
 		/// stream corruption is likely.
 		/// </exception>
@@ -310,7 +311,7 @@ namespace NGit.Storage.File
 						}
 						else
 						{
-							throw new DataFormatException();
+							throw new SharpZipBaseException();
 						}
 					}
 				}

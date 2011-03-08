@@ -124,13 +124,13 @@ namespace NGit.Storage.File
 		internal abstract void Write(PackOutputStream @out, long pos, int cnt, MessageDigest
 			 md);
 
-		/// <exception cref="Sharpen.DataFormatException"></exception>
+		/// <exception cref="ICSharpCode.SharpZipLib.SharpZipBaseException"></exception>
 		internal int SetInput(long pos, Inflater inf)
 		{
 			return SetInput((int)(pos - start), inf);
 		}
 
-		/// <exception cref="Sharpen.DataFormatException"></exception>
+		/// <exception cref="ICSharpCode.SharpZipLib.SharpZipBaseException"></exception>
 		protected internal abstract int SetInput(int pos, Inflater inf);
 	}
 }

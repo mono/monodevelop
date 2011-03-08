@@ -71,7 +71,7 @@ namespace NGit.Storage.File
 			return n;
 		}
 
-		/// <exception cref="Sharpen.DataFormatException"></exception>
+		/// <exception cref="ICSharpCode.SharpZipLib.SharpZipBaseException"></exception>
 		protected internal override int SetInput(int pos, Inflater inf)
 		{
 			int n = array.Length - pos;
@@ -96,7 +96,7 @@ namespace NGit.Storage.File
 			}
 		}
 
-		/// <exception cref="Sharpen.DataFormatException"></exception>
+		/// <exception cref="ICSharpCode.SharpZipLib.SharpZipBaseException"></exception>
 		internal void Check(Inflater inf, byte[] tmp, long pos, int cnt)
 		{
 			inf.SetInput(array, (int)(pos - start), cnt);

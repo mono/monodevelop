@@ -38,9 +38,8 @@ namespace Sharpen
 
 		internal Stream GetWrappedStream ()
 		{
-			if (this.Wrapped != null) {
-				return this.Wrapped;
-			}
+			// Always create a wrapper stream (not directly Wrapped) since the subclass
+			// may be overriding methods that need to be called when used through the Stream class
 			return new WrappedSystemStream (this);
 		}
 
@@ -53,10 +52,13 @@ namespace Sharpen
 
 		public virtual void Write (int b)
 		{
-			if (this.Wrapped == null) {
-				throw new NotImplementedException ();
+			if (Wrapped is WrappedSystemStream)
+				((WrappedSystemStream)Wrapped).OutputStream.Write (b);
+			else {
+				if (this.Wrapped == null)
+					throw new NotImplementedException ();
+				this.Wrapped.WriteByte ((byte)b);
 			}
-			this.Wrapped.WriteByte ((byte)b);
 		}
 
 		public virtual void Write (byte[] b)
@@ -66,11 +68,15 @@ namespace Sharpen
 
 		public virtual void Write (byte[] b, int offset, int len)
 		{
-			if (this.Wrapped != null) {
-				this.Wrapped.Write (b, offset, len);
-			} else {
-				for (int i = 0; i < len; i++) {
-					this.Write (b[i + offset]);
+			if (Wrapped is WrappedSystemStream)
+				((WrappedSystemStream)Wrapped).OutputStream.Write (b, offset, len);
+			else {
+				if (this.Wrapped != null) {
+					this.Wrapped.Write (b, offset, len);
+				} else {
+					for (int i = 0; i < len; i++) {
+						this.Write (b[i + offset]);
+					}
 				}
 			}
 		}

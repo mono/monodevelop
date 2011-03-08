@@ -44,6 +44,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System;
 using System.Collections.Generic;
 using System.IO;
+using ICSharpCode.SharpZipLib;
 using ICSharpCode.SharpZipLib.Zip.Compression;
 using NGit;
 using NGit.Errors;
@@ -308,7 +309,7 @@ namespace NGit.Storage.File
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
-		/// <exception cref="Sharpen.DataFormatException"></exception>
+		/// <exception cref="ICSharpCode.SharpZipLib.SharpZipBaseException"></exception>
 		private byte[] Decompress(long position, int sz, WindowCursor curs)
 		{
 			byte[] dstbuf;
@@ -506,7 +507,7 @@ namespace NGit.Storage.File
 					}
 				}
 			}
-			catch (DataFormatException dataFormat)
+			catch (SharpZipBaseException dataFormat)
 			{
 				SetCorrupt(src.offset);
 				CorruptObjectException corruptObject = new CorruptObjectException(MessageFormat.Format
@@ -539,6 +540,18 @@ namespace NGit.Storage.File
 					// Tiny optimization: Lots of objects are very small deltas or
 					// deflated commits that are likely to fit in the copy buffer.
 					//
+					if (!validate)
+					{
+						long pos = dataOffset;
+						long cnt = dataLength;
+						while (cnt > 0)
+						{
+							int n = (int)Math.Min(cnt, buf.Length);
+							ReadFully(pos, buf, 0, n, curs);
+							pos += n;
+							cnt -= n;
+						}
+					}
 					@out.WriteHeader(src, inflatedLength);
 					@out.Write(buf, 0, (int)dataLength);
 				}
@@ -959,7 +972,7 @@ SEARCH_break: ;
 				while (delta != null);
 				return new ObjectLoader.SmallObject(type, data);
 			}
-			catch (DataFormatException dfe)
+			catch (SharpZipBaseException dfe)
 			{
 				CorruptObjectException coe = new CorruptObjectException(MessageFormat.Format(JGitText
 					.Get().objectAtHasBadZlibStream, pos, GetPackFile()));
@@ -1029,7 +1042,7 @@ SEARCH_break: ;
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
-		/// <exception cref="Sharpen.DataFormatException"></exception>
+		/// <exception cref="ICSharpCode.SharpZipLib.SharpZipBaseException"></exception>
 		internal virtual byte[] GetDeltaHeader(WindowCursor wc, long pos)
 		{
 			// The delta stream starts as two variable length integers. If we
@@ -1165,7 +1178,7 @@ SEARCH_break: ;
 			{
 				return BinaryDelta.GetResultSize(GetDeltaHeader(curs, deltaAt));
 			}
-			catch (DataFormatException)
+			catch (SharpZipBaseException)
 			{
 				throw new CorruptObjectException(MessageFormat.Format(JGitText.Get().objectAtHasBadZlibStream
 					, pos, GetPackFile()));

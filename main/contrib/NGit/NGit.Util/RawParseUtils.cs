@@ -55,7 +55,7 @@ namespace NGit.Util
 	{
 		private static readonly byte[] digits10;
 
-		private static readonly byte[] digits16;
+		private static readonly sbyte[] digits16;
 
 		private static readonly byte[] footerLineKeyChars;
 
@@ -67,19 +67,19 @@ namespace NGit.Util
 			{
 				digits10[i] = unchecked((byte)(i - (byte)('0')));
 			}
-			digits16 = new byte[(byte)('f') + 1];
-			Arrays.Fill(digits16, unchecked((byte)-1));
+			digits16 = new sbyte[(byte)('f') + 1];
+			Arrays.Fill(digits16, (sbyte)-1);
 			for (char i_1 = '0'; i_1 <= '9'; i_1++)
 			{
-				digits16[i_1] = unchecked((byte)(i_1 - (byte)('0')));
+				digits16[i_1] = (sbyte)(i_1 - (sbyte)('0'));
 			}
 			for (char i_2 = 'a'; i_2 <= 'f'; i_2++)
 			{
-				digits16[i_2] = unchecked((byte)((i_2 - (byte)('a')) + 10));
+				digits16[i_2] = (sbyte)((i_2 - (sbyte)('a')) + 10);
 			}
 			for (char i_3 = 'A'; i_3 <= 'F'; i_3++)
 			{
-				digits16[i_3] = unchecked((byte)((i_3 - (byte)('A')) + 10));
+				digits16[i_3] = (sbyte)((i_3 - (sbyte)('A')) + 10);
 			}
 			footerLineKeyChars = new byte[(byte)('z') + 1];
 			footerLineKeyChars[(byte)('-')] = 1;
@@ -402,8 +402,8 @@ namespace NGit.Util
 		/// 	</exception>
 		public static int ParseHexInt4(byte digit)
 		{
-			byte r = digits16[digit];
-			if (((sbyte)r) < 0)
+			sbyte r = digits16[digit];
+			if (r < 0)
 			{
 				throw new IndexOutOfRangeException();
 			}

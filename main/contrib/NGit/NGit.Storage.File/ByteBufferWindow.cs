@@ -94,7 +94,7 @@ namespace NGit.Storage.File
 			}
 		}
 
-		/// <exception cref="Sharpen.DataFormatException"></exception>
+		/// <exception cref="ICSharpCode.SharpZipLib.SharpZipBaseException"></exception>
 		protected internal override int SetInput(int pos, Inflater inf)
 		{
 			ByteBuffer s = buffer.Slice();

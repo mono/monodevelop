@@ -7,6 +7,8 @@ namespace Sharpen
 	{
 		private InputStream ist;
 		private OutputStream ost;
+		int position;
+		int markedPosition;
 
 		public WrappedSystemStream (InputStream ist)
 		{
@@ -16,6 +18,14 @@ namespace Sharpen
 		public WrappedSystemStream (OutputStream ost)
 		{
 			this.ost = ost;
+		}
+		
+		public InputStream InputStream {
+			get { return ist; }
+		}
+
+		public OutputStream OutputStream {
+			get { return ost; }
 		}
 
 		public override void Close ()
@@ -36,12 +46,19 @@ namespace Sharpen
 		public override int Read (byte[] buffer, int offset, int count)
 		{
 			int res = this.ist.Read (buffer, offset, count);
-			return res != -1 ? res : 0;
+			if (res != -1) {
+				position += res;
+				return res;
+			} else
+				return 0;
 		}
 
 		public override int ReadByte ()
 		{
-			return this.ist.Read ();
+			int res = this.ist.Read ();
+			if (res != -1)
+				position++;
+			return res;
 		}
 
 		public override long Seek (long offset, SeekOrigin origin)
@@ -57,11 +74,13 @@ namespace Sharpen
 		public override void Write (byte[] buffer, int offset, int count)
 		{
 			this.ost.Write (buffer, offset, count);
+			position += count;
 		}
 
 		public override void WriteByte (byte value)
 		{
 			this.ost.Write (value);
+			position++;
 		}
 
 		public override bool CanRead {
@@ -69,7 +88,7 @@ namespace Sharpen
 		}
 
 		public override bool CanSeek {
-			get { return false; }
+			get { return true; }
 		}
 
 		public override bool CanWrite {
@@ -81,13 +100,30 @@ namespace Sharpen
 				throw new NotSupportedException ();
 			}
 		}
-
+		
+		internal void OnMark (int nb)
+		{
+			markedPosition = position;
+			ist.Mark (nb);
+		}
+		
 		public override long Position {
 			get {
-				throw new NotSupportedException ();
+				if (ist != null && ist.CanSeek ())
+					return ist.Position;
+				else
+					return position;
 			}
 			set {
-				throw new NotSupportedException ();
+				if (value == position)
+					return;
+				else if (value == markedPosition)
+					ist.Reset ();
+				else if (ist != null && ist.CanSeek ()) {
+					ist.Position = value;
+				}
+				else
+					throw new NotSupportedException ();
 			}
 		}
 	}

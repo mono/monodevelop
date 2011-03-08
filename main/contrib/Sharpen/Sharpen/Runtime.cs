@@ -43,6 +43,10 @@ namespace Sharpen
 					process.StartInfo.WorkingDirectory = dir.GetPath ();
 				}
 				process.StartInfo.UseShellExecute = false;
+				process.StartInfo.RedirectStandardInput = true;
+				process.StartInfo.RedirectStandardError = true;
+				process.StartInfo.RedirectStandardOutput = true;
+				process.StartInfo.CreateNoWindow = true;
 				if (envp != null) {
 					foreach (string str in envp) {
 						int index = str.IndexOf ('=');
