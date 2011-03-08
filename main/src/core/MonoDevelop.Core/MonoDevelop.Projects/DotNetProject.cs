@@ -49,7 +49,7 @@ using System.Globalization;
 namespace MonoDevelop.Projects
 {
 	[DataInclude(typeof(DotNetProjectConfiguration))]
-	[ProjectModelDataItem]
+	[ProjectModelDataItem ("AbstractDotNetProject")]
 	public abstract class DotNetProject : Project, IAssemblyProject
 	{
 
