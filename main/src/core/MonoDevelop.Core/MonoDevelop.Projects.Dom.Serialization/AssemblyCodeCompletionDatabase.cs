@@ -126,22 +126,41 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 		}
 		
+		/// <summary>
+		/// Searches for xml files. The .xml file extension is treated case insensitive.
+		/// </summary>
+		bool GetXml (string baseName, out FilePath xmlFileName)
+		{
+			string filePattern = Path.GetFileNameWithoutExtension (baseName) + ".*";
+			foreach (string fileName in Directory.EnumerateFileSystemEntries (Path.GetDirectoryName (baseName), filePattern)) {
+				if (fileName.ToLower ().EndsWith (".xml")) {
+					xmlFileName = fileName;
+					return true;
+				}
+			}
+			xmlFileName = "";
+			return false;
+		}
+		
 		Dictionary<string, string> xmlDocumentation = null;
 		public override string GetDocumentation (IMember member)
 		{
 			if (member == null)
-				return null;
+				return null; 
 			
 			if (xmlDocumentation == null) {
-				FilePath xmlFileName = System.IO.Path.ChangeExtension (assemblyFile, ".xml");
+				FilePath xmlFileName;
+				GetXml (assemblyFile, out xmlFileName);
 				var langCode = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
-				var langDirectory = xmlFileName.ParentDirectory.Combine (langCode);
+				
+				var langDirectory = Path.Combine (Path.GetDirectoryName (assemblyFile), langCode);
 				if (Directory.Exists (langDirectory)) {
-					var langXmlFlile = langDirectory.Combine (xmlFileName.FileName);
-					if (File.Exists (langXmlFlile))
-						xmlFileName = langXmlFlile;
+					var langXmlFile = Path.Combine (langDirectory, xmlFileName.FileName);
+					FilePath localizedXml;
+					if (GetXml (langXmlFile, out localizedXml))
+						xmlFileName = localizedXml;
 				}
-
+				
 				if (!xmlFileName.IsNull && File.Exists (xmlFileName)) {
 					xmlDocumentation = new Dictionary<string, string> ();
 					try {
