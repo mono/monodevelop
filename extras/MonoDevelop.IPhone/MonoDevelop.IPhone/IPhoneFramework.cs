@@ -35,6 +35,9 @@ using MonoDevelop.Ide;
 using Gtk;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.MacDev.Plist;
+
+using System.Runtime.InteropServices;
+
 namespace MonoDevelop.IPhone
 {
 public static class IPhoneFramework
@@ -153,7 +156,16 @@ public static class IPhoneFramework
 			
 			vals.DTPlatformVersion = ((PlistString)infos["DTPlatformVersion"]).Value;
 			
-			var xcodeVersion = GrabRootString ("/Developer/Applications/Xcode.app/Contents/Info.plist", "CFBundleShortVersionString");
+			var pool = SendMessage (GetClass ("NSAutoreleasePool"), GetSelector ("new"));
+			var bundle = SendMessage (GetClass ("NSString"), GetSelector ("stringWithUTF8String:"), "CFBundleShortVersionString");
+			var plist = SendMessage (GetClass ("NSString"), GetSelector ("stringWithUTF8String:"), "/Developer/Applications/Xcode.app/Contents/Info.plist");
+			var data = SendMessage (GetClass ("NSDictionary"), GetSelector ("dictionaryWithContentsOfFile:"), plist);
+			var val = SendMessage (data, GetSelector ("objectForKey:"), bundle);
+
+			var xcodeVersion = Marshal.PtrToStringAuto (SendMessage (val, GetSelector ("UTF8String")));
+
+			SendMessage (pool, GetSelector ("release"));
+
 			vals.DTXcode = "0" + xcodeVersion.Replace (".", "");
 			
 			vals.DTXcodeBuild = GrabRootString ("/Developer/Library/version.plist", "ProductBuildVersion");
@@ -324,6 +336,17 @@ public static class IPhoneFramework
 			public string DTCompiler { get; set; }
 			public string DTPlatformBuild { get; set; }
 		}
+
+		[DllImport ("/usr/lib/libobjc.dylib", EntryPoint = "sel_registerName")]
+		static extern IntPtr GetSelector (string selector);
+		[DllImport ("/usr/lib/libobjc.dylib", EntryPoint = "objc_getClass")]
+		static extern IntPtr GetClass (string klass);
+		[DllImport ("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
+		static extern IntPtr SendMessage (IntPtr klass, IntPtr selector);
+		[DllImport ("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
+		static extern IntPtr SendMessage (IntPtr klass, IntPtr selector, IntPtr arg1);
+		[DllImport ("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
+		static extern IntPtr SendMessage (IntPtr klass, IntPtr selector, string arg1);
 	}
 	
 	public class MonoTouchInstalledCondition : ConditionType
