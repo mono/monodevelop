@@ -10,7 +10,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Subversion
 {
-	class SubversionRepository: UrlBasedRepository
+	public class SubversionRepository: UrlBasedRepository
 	{
 		FilePath rootPath;
 		

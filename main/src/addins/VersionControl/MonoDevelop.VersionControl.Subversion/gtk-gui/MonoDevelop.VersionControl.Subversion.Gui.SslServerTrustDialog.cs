@@ -279,6 +279,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			this.radioAccept = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Accept this certificate permanently"));
 			this.radioAccept.CanFocus = true;
 			this.radioAccept.Name = "radioAccept";
+			this.radioAccept.Active = true;
 			this.radioAccept.DrawIndicator = true;
 			this.radioAccept.UseUnderline = true;
 			this.radioAccept.Group = new global::GLib.SList (global::System.IntPtr.Zero);

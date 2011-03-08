@@ -1,29 +1,20 @@
 <Addin id        = "VersionControl.Subversion"
        namespace = "MonoDevelop"
-       name      = "Subversion support"
+       name      = "Subversion core engine"
        author    = "Joshua Tauberer"
        copyright = "LGPL"
        url       = "http://taubz.for.net/code/diff"
-       description = "Subversion support for the Version Control Add-in"
-       category    = "Version Control"
+       description = "Subversion core engine"
+       category  = "Version Control"
+       flags     = "Hidden"
        version   = "2.6">
  
-	<Runtime>
-		<Import assembly="MonoDevelop.VersionControl.Subversion.dll"/>
-	</Runtime>
-
 	<Dependencies>
 	    <Addin id="Core" version="2.6"/>
 	    <Addin id="Ide" version="2.6"/>
 	    <Addin id="VersionControl" version="2.6"/>
 	</Dependencies>
 	
-	<Extension path = "/MonoDevelop/VersionControl/VersionControlSystems">
-		<Condition id="Platform" value="!windows">
-			<Class class = "MonoDevelop.VersionControl.Subversion.Unix.SvnClient" />
-		</Condition>
-	</Extension>
-
 	<Extension path = "/MonoDevelop/Ide/Commands/VersionControl">
 		<Command id = "MonoDevelop.VersionControl.Subversion.Commands.Resolve" 
 			_label = "Resolve"

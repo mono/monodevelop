@@ -1,0 +1,24 @@
+<Addin id        = "VersionControl.Subversion.Unix"
+       namespace = "MonoDevelop"
+       name      = "Subversion support"
+       author    = "Joshua Tauberer, Lluis Sanchez"
+       copyright = "LGPL"
+       url       = "http://taubz.for.net/code/diff"
+       description = "Subversion support for Linux and MacOSX"
+       category  = "Version Control"
+       version   = "2.6">
+ 
+	<Dependencies>
+	    <Addin id="Core" version="2.6"/>
+	    <Addin id="Ide" version="2.6"/>
+	    <Addin id="VersionControl" version="2.6"/>
+	    <Addin id="VersionControl.Subversion" version="2.6"/>
+	</Dependencies>
+	
+	<Extension path = "/MonoDevelop/VersionControl/VersionControlSystems">
+		<Condition id="Platform" value="!windows">
+			<Class class = "MonoDevelop.VersionControl.Subversion.Unix.SvnClient" />
+		</Condition>
+	</Extension>
+</Addin>
+	

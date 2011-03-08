@@ -9,8 +9,8 @@ using System.Collections;
 using System.Runtime.InteropServices;
 
 using MonoDevelop.Core;
+using MonoDevelop.VersionControl;
 using MonoDevelop.VersionControl.Subversion.Gui;
-
 
 namespace MonoDevelop.VersionControl.Subversion.Unix {
 	public abstract class LibSvnClient {
