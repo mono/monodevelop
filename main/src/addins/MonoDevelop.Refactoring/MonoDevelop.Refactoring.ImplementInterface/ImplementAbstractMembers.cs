@@ -59,16 +59,9 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			IType interfaceType = options.Dom.GetType (options.ResolveResult.ResolvedType);
 			IType declaringType = options.Document.CompilationUnit.GetTypeAt (location.Line, location.Column);
 			options.Document.Editor.Document.BeginAtomicUndo ();
-			CodeRefactorer refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
 			
-			List<KeyValuePair<IMember,IReturnType>> members = new List<KeyValuePair<IMember, IReturnType>> ();
-			foreach (IMember member in interfaceType.Members) {
-				if (member.IsAbstract && !declaringType.Members.Any (m => member.Name == m.Name)) {
-					members.Add (new KeyValuePair<IMember,IReturnType> (member, null));
-				}
-			}
-			refactorer.ImplementMembers (declaringType, members, "implemented abstract members of " + interfaceType.FullName);
-			
+			var missingAbstractMembers = interfaceType.Members.Where (member => member.IsAbstract && !declaringType.Members.Any (m => member.Name == m.Name));
+			CodeGenerationService.AddNewMembers (declaringType, missingAbstractMembers, "implemented abstract members of " + interfaceType.FullName);
 			options.Document.Editor.Document.EndAtomicUndo ();
 		}
 	}

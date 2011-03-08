@@ -46,19 +46,6 @@ namespace MonoDevelop.Projects.CodeGeneration
 		IType RenameClass (RefactorerContext ctx, IType cls, string newName);
 		IEnumerable<MemberReference> FindClassReferences (RefactorerContext ctx, string fileName, IType cls, bool includeXmlComment);
 		
-		IMember AddMember (RefactorerContext ctx, IType cls, CodeTypeMember memberInfo);
-		IMember ImplementMember (RefactorerContext ctx, IType cls, IMember member, IReturnType privateImplementationType);
-		
-		// these add contiguous blocks of memebers
-		// NOTE: Handling "foldingRegionName" is optional. Also, it can be null, in which case no region should be created.
-		void AddMembers (RefactorerContext ctx, IType cls, IEnumerable<CodeTypeMember> memberInfo, string foldingRegionName);
-		void ImplementMembers (RefactorerContext ctx, IType cls, IEnumerable<KeyValuePair<IMember,IReturnType>> members,
-		                       string foldingRegionName);
-		
-		// used by base AddMembers and ImplementMembers implementions
-		// expected to return file offset of space within the new region
-		int AddFoldingRegion (RefactorerContext ctx, IType cls, string regionName);
-		
 		void RemoveMember (RefactorerContext ctx, IType cls, IMember member);
 		IMember RenameMember (RefactorerContext ctx, IType cls, IMember member, string newName);
 		IMember ReplaceMember (RefactorerContext ctx, IType cls, IMember oldMember, CodeTypeMember memberInfo);
@@ -69,8 +56,6 @@ namespace MonoDevelop.Projects.CodeGeneration
 		
 		bool RenameParameter (RefactorerContext ctx, IParameter param, string newName);
 		IEnumerable<MemberReference> FindParameterReferences (RefactorerContext ctx, string fileName, IParameter param, bool includeXmlComment);
-		
-		IMember EncapsulateField (RefactorerContext ctx, IType cls, IField field, string propName, MemberAttributes attr, bool generateSetter);
 		
 		string ConvertToLanguageTypeName (string netTypeName);
 		void AddGlobalNamespaceImport (RefactorerContext ctx, string fileName, string nsName);

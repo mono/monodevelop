@@ -271,7 +271,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			}
 			indent += "\t";
 			
-			InsertionCursorEditMode mode = new InsertionCursorEditMode (data.Parent, MonoDevelop.Refactoring.HelperMethods.GetInsertionPoints (options.Document, declaringType));
+			InsertionCursorEditMode mode = new InsertionCursorEditMode (data.Parent, CodeGenerationService.GetInsertionPoints (options.Document, declaringType));
 			if (fileName == options.Document.FileName) {
 				for (int i = 0; i < mode.InsertionPoints.Count; i++) {
 					var point = mode.InsertionPoints[i];

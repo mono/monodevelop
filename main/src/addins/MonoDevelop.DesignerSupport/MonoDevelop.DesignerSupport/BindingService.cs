@@ -151,7 +151,7 @@ namespace MonoDevelop.DesignerSupport
 			IMember existingMember = GetCompatibleMemberInClass (dom, cls, member);
 			
 			if (existingMember == null)
-				return GetCodeGenerator (project).AddMember (specificPartToAffect, member);
+				return CodeGenerationService.AddCodeDomMember (specificPartToAffect, member);
 			
 			if (throwIfExists)
 				throw new MemberExistsException (cls.Name, member, MemberType.Method, existingMember.BodyRegion, cls.CompilationUnit.FileName);

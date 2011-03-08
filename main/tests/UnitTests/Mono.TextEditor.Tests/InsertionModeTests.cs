@@ -46,8 +46,7 @@ namespace Mono.TextEditor.Tests
 			TextEditor editor = new TextEditor ();
 			editor.Document.Text = input.Substring (0, idx) + input.Substring (idx + 1);
 			InsertionPoint point = new InsertionPoint (editor.Document.OffsetToLocation (idx), before, after);
-			Console.WriteLine (point);
-			point.Insert (editor, text);
+			point.Insert (editor.GetTextEditorData (), text);
 			return editor.Document.Text;
 			
 		}

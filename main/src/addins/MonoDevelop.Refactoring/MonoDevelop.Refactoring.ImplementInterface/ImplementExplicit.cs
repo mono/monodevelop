@@ -62,7 +62,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			
 			var editor = options.GetTextEditorData ().Parent;
 			
-			InsertionCursorEditMode mode = new InsertionCursorEditMode (editor, HelperMethods.GetInsertionPoints (options.Document, declaringType));
+			InsertionCursorEditMode mode = new InsertionCursorEditMode (editor, CodeGenerationService.GetInsertionPoints (options.Document, declaringType));
 			ModeHelpWindow helpWindow = new ModeHelpWindow ();
 			helpWindow.TransientFor = IdeApp.Workbench.RootWindow;
 			helpWindow.TitleText = GettextCatalog.GetString ("<b>Implement Interface -- Targeting</b>");
@@ -77,7 +77,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			mode.Exited += delegate(object s, InsertionCursorEventArgs args) {
 				if (args.Success) {
 					CodeGenerator generator = options.Document.CreateCodeGenerator ();
-					args.InsertionPoint.Insert (editor, generator.CreateInterfaceImplementation (declaringType, interfaceType, true));
+					args.InsertionPoint.Insert (options.GetTextEditorData (), generator.CreateInterfaceImplementation (declaringType, interfaceType, true));
 				}
 			};
 		}

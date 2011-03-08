@@ -941,7 +941,7 @@ namespace MonoDevelop.Refactoring
 			IType interfaceType = item as IType;
 			IType declaringType = klass;
 			
-			var mode = new Mono.TextEditor.InsertionCursorEditMode (editor, HelperMethods.GetInsertionPoints (doc, declaringType));
+			var mode = new Mono.TextEditor.InsertionCursorEditMode (editor, CodeGenerationService.GetInsertionPoints (doc, declaringType));
 			var helpWindow = new Mono.TextEditor.PopupWindow.ModeHelpWindow ();
 			helpWindow.TransientFor = IdeApp.Workbench.RootWindow;
 			helpWindow.TitleText = GettextCatalog.GetString ("<b>Implement Interface -- Targeting</b>");
@@ -956,7 +956,7 @@ namespace MonoDevelop.Refactoring
 			mode.Exited += delegate(object s, Mono.TextEditor.InsertionCursorEventArgs args) {
 				if (args.Success) {
 					var generator = doc.CreateCodeGenerator ();
-					args.InsertionPoint.Insert (editor, generator.CreateInterfaceImplementation (declaringType, interfaceType, explicitly));
+					args.InsertionPoint.Insert (doc.Editor, generator.CreateInterfaceImplementation (declaringType, interfaceType, explicitly));
 				}
 			};
 		}
@@ -986,7 +986,7 @@ namespace MonoDevelop.Refactoring
 			if (editor != null)
 				editor.BeginAtomicUndo ();
 				
-			try {
+/*			try {
 				List<KeyValuePair<IMember,IReturnType>> members = new List<KeyValuePair<IMember, IReturnType>> ();
 				foreach (IMember member in aclass.Members) {
 					if (member.IsAbstract && !klass.Members.Any (m => member.Name == m.Name)) 
@@ -996,7 +996,7 @@ namespace MonoDevelop.Refactoring
 			} finally {
 				if (editor != null)
 					editor.EndAtomicUndo ();
-			}
+			}*/
 		}
 		
 		public void EncapsulateField ()

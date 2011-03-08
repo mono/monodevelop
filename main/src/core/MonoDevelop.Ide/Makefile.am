@@ -669,6 +669,7 @@ FILES =  \
 	MonoDevelop.Ide.WebBrowser/StatusMessageChangedEventArgs.cs \
 	MonoDevelop.Ide.WebBrowser/TitleChangedEventArgs.cs \
 	MonoDevelop.Ide/AddEntryEventHandler.cs \
+	MonoDevelop.Ide/CodeGenerationService.cs \
 	MonoDevelop.Ide/DesktopService.cs \
 	MonoDevelop.Ide/DispatchService.cs \
 	MonoDevelop.Ide/ExitEventHandler.cs \

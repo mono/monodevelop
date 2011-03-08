@@ -39,6 +39,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.CSharp.Parser;
 using Mono.TextEditor;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Refactoring.Tests
 {
@@ -120,7 +121,7 @@ namespace MonoDevelop.Refactoring.Tests
 			
 			doc.ParsedDocument =  new McsParser ().Parse (null, "a.cs", data.Document.Text);
 			
-			var foundPoints = HelperMethods.GetInsertionPoints (doc, doc.ParsedDocument.CompilationUnit.Types[0]);
+			var foundPoints = CodeGenerationService.GetInsertionPoints (doc, doc.ParsedDocument.CompilationUnit.Types[0]);
 			Assert.AreEqual (loc.Count, foundPoints.Count, "point count doesn't match");
 			for (int i = 0; i < loc.Count; i++) {
 				Assert.AreEqual (loc[i].Location, foundPoints[i].Location, "point " + i + " doesn't match");

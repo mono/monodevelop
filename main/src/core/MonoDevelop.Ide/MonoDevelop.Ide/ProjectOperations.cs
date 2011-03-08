@@ -1835,8 +1835,15 @@ namespace MonoDevelop.Ide
 		
 		public TextEditorData GetTextEditorData (FilePath filePath)
 		{
+			bool isOpen;
+			return GetTextEditorData (filePath, out isOpen);
+		}
+
+		public TextEditorData GetTextEditorData (FilePath filePath, out bool isOpen)
+		{
 			foreach (var doc in IdeApp.Workbench.Documents) {
 				if (doc.FileName == filePath) {
+					isOpen = true;
 					return doc.Editor;
 				}
 			}
@@ -1844,6 +1851,7 @@ namespace MonoDevelop.Ide
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = filePath;
 			data.Text = File.ReadAllText (filePath);
+			isOpen = false;
 			return data;
 		}
 	}

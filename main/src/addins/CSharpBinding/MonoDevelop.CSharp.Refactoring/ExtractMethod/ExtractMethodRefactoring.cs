@@ -532,7 +532,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			insertNewMethod.Description = string.Format (GettextCatalog.GetString ("Create new method {0} from selected statement(s)"), param.Name);
 			var insertionPoint = param.InsertionPoint;
 			if (insertionPoint == null) {
-				var points = MonoDevelop.Refactoring.HelperMethods.GetInsertionPoints (options.Document, param.DeclaringMember.DeclaringType);
+				var points = CodeGenerationService.GetInsertionPoints (options.Document, param.DeclaringMember.DeclaringType);
 				insertionPoint = points.LastOrDefault (p => p.Location.Line < param.DeclaringMember.Location.Line);
 				if (insertionPoint == null)
 					insertionPoint = points.FirstOrDefault ();

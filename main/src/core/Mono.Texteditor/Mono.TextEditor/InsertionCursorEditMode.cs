@@ -59,15 +59,15 @@ namespace Mono.TextEditor
 			return string.Format ("[InsertionPoint: Location={0}, LineBefore={1}, LineAfter={2}]", Location, LineBefore, LineAfter);
 		}
 		
-		public void InsertNewLine (TextEditor editor, NewLineInsertion insertion, ref int offset)
+		public void InsertNewLine (TextEditorData editor, NewLineInsertion insertion, ref int offset)
 		{
 			string str = null;
 			switch (insertion) {
 			case NewLineInsertion.Eol:
-				str = editor.GetTextEditorData ().EolMarker;
+				str = editor.EolMarker;
 				break;
 			case NewLineInsertion.BlankLine:
-				str = editor.GetTextEditorData ().EolMarker + editor.GetTextEditorData ().EolMarker;
+				str = editor.EolMarker + editor.EolMarker;
 				break;
 			default:
 				return;
@@ -76,11 +76,11 @@ namespace Mono.TextEditor
 			offset += editor.Insert (offset, str);
 		}
 		
-		public void Insert (TextEditor editor, string text)
+		public void Insert (TextEditorData editor, string text)
 		{
 			int offset = editor.Document.LocationToOffset (Location);
 			editor.Document.BeginAtomicUndo ();
-			text = editor.GetTextEditorData ().FormatString (Location, text);
+			text = editor.FormatString (Location, text);
 			
 			LineSegment line = editor.Document.GetLineByOffset (offset);
 			

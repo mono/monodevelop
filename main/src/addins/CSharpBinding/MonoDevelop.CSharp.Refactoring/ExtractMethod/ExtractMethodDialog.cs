@@ -202,7 +202,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			if (editor != null) {
 				IType type = properties.DeclaringMember.DeclaringType;
 				
-				InsertionCursorEditMode mode = new InsertionCursorEditMode (editor, MonoDevelop.Refactoring.HelperMethods.GetInsertionPoints (options.Document, type));
+				InsertionCursorEditMode mode = new InsertionCursorEditMode (editor, CodeGenerationService.GetInsertionPoints (options.Document, type));
 				for (int i = 0; i < mode.InsertionPoints.Count; i++) {
 					var point = mode.InsertionPoints[i];
 					if (point.Location < editor.Caret.Location) {

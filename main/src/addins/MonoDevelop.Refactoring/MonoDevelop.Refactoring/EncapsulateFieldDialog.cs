@@ -408,7 +408,7 @@ namespace MonoDevelop.Refactoring {
 				data.Add (new FieldData (field, propertyName, read_only, mod));
 			} while (store.IterNext (ref iter));
 			
-			InsertionCursorEditMode mode = new InsertionCursorEditMode (editor.Editor.Parent, HelperMethods.GetInsertionPoints (editor, declaringType));
+			InsertionCursorEditMode mode = new InsertionCursorEditMode (editor.Editor.Parent, CodeGenerationService.GetInsertionPoints (editor, declaringType));
 			ModeHelpWindow helpWindow = new ModeHelpWindow ();
 			helpWindow.TransientFor = IdeApp.Workbench.RootWindow;
 			helpWindow.TitleText = GettextCatalog.GetString ("<b>Encapsulate Field -- Targeting</b>");
@@ -442,7 +442,7 @@ namespace MonoDevelop.Refactoring {
 						var f = data[j];
 						code.Append (generator.CreateFieldEncapsulation (declaringType, f.Field, f.PropertyName, f.Modifiers, f.ReadOnly));
 					}
-					args.InsertionPoint.Insert (editor.Editor.Parent, code.ToString ());
+					args.InsertionPoint.Insert (editor.Editor, code.ToString ());
 				}
 			};
 			((Widget) this).Destroy ();

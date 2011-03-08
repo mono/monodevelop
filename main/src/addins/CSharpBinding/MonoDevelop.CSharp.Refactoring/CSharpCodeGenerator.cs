@@ -417,11 +417,11 @@ namespace MonoDevelop.CSharp.Refactoring
 			static string GetModifiers (IType implementingType, IMember member)
 			{
 				StringBuilder result = new StringBuilder ();
-				if (member.IsPublic || member.DeclaringType.ClassType == ClassType.Interface) {
+				if (member.IsPublic || (member.DeclaringType != null && member.DeclaringType.ClassType == ClassType.Interface)) {
 					result.Append ("public ");
 				} else if (member.IsProtectedAndInternal) {
 					result.Append ("protected internal ");
-				} else if (member.IsProtectedOrInternal && implementingType.SourceProjectDom == member.DeclaringType.SourceProjectDom) {
+				} else if (member.IsProtectedOrInternal && (member.DeclaringType != null && implementingType.SourceProjectDom == member.DeclaringType.SourceProjectDom)) {
 					result.Append ("internal protected ");
 				} else if (member.IsProtected) {
 					result.Append ("protected ");
@@ -443,7 +443,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				result.Append (GetModifiers (options.ImplementingType, member));
 				
 				bool isFromInterface = false;
-				if (member.DeclaringType.ClassType == ClassType.Interface) {
+				if (member.DeclaringType != null && member.DeclaringType.ClassType == ClassType.Interface) {
 					isFromInterface = true;
 					if (options.ImplementingType != null) {
 						foreach (IType type in options.ImplementingType.SourceProjectDom.GetInheritanceTree (options.ImplementingType)) {

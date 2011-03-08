@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using Mono.TextEditor;
 using MonoDevelop.Projects.CodeGeneration;
 using System.Linq;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Refactoring.Tests
 {
@@ -64,7 +65,7 @@ namespace MonoDevelop.Refactoring.Tests
 			Assert.IsTrue (refactoring.IsValid (options));
 			
 			if (returnWholeFile) {
-				refactoring.SetInsertionPoint (MonoDevelop.Refactoring.HelperMethods.GetInsertionPoints (options.Document, refactoring.DeclaringType).First ());
+				refactoring.SetInsertionPoint (CodeGenerationService.GetInsertionPoints (options.Document, refactoring.DeclaringType).First ());
 			} else {
 				DocumentLocation loc = new DocumentLocation (1, 1);
 				refactoring.SetInsertionPoint (new InsertionPoint (loc, NewLineInsertion.Eol, NewLineInsertion.Eol));

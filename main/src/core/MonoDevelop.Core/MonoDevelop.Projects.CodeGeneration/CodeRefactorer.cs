@@ -269,33 +269,32 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return true;
 		}
 
-		public IMember AddMember (IType cls, CodeTypeMember member)
-		{
-			RefactorerContext gctx = GetGeneratorContext (cls);
-			IRefactorer gen = GetGeneratorForClass (cls);
-			IMember m = gen.AddMember (gctx, cls, member);
-			gctx.Save ();
-			return m;
-		}
+//		public IMember AddMember (IType cls, CodeTypeMember member)
+//		{
+//			RefactorerContext gctx = GetGeneratorContext (cls);
+//			IRefactorer gen = GetGeneratorForClass (cls);
+//			IMember m = gen.AddMember (gctx, cls, member);
+//			gctx.Save ();
+//			return m;
+//		}
+//		
+//		public IType AddMembers (IType cls, IEnumerable<CodeTypeMember> members, string foldingRegionName)
+//		{
+//			RefactorerContext gctx = GetGeneratorContext (cls);
+//			IRefactorer gen = GetGeneratorForClass (cls);
+//			gen.AddMembers (gctx, cls, members, foldingRegionName);
+//			gctx.Save ();
+//			return GetUpdatedClass (gctx, cls);
+//		}
 		
-		public IType AddMembers (IType cls, IEnumerable<CodeTypeMember> members, string foldingRegionName)
-		{
-			RefactorerContext gctx = GetGeneratorContext (cls);
-			IRefactorer gen = GetGeneratorForClass (cls);
-			gen.AddMembers (gctx, cls, members, foldingRegionName);
-			gctx.Save ();
-			return GetUpdatedClass (gctx, cls);
-		}
-		
-		public IMember ImplementMember (IType cls, IMember member, IReturnType privateReturnType)
-		{
-			
-			RefactorerContext gctx = GetGeneratorContext (cls);
-			IRefactorer gen = GetGeneratorForClass (cls);
-			IMember m = gen.ImplementMember (gctx, cls, member, privateReturnType);
-			gctx.Save ();
-			return m;
-		}
+//		public IMember ImplementMember (IType cls, IMember member, IReturnType privateReturnType)
+//		{
+//			RefactorerContext gctx = GetGeneratorContext (cls);
+//			IRefactorer gen = GetGeneratorForClass (cls);
+//			IMember m = gen.ImplementMember (gctx, cls, member, privateReturnType);
+//			gctx.Save ();
+//			return m;
+//		}
 		
 		public void AddGlobalNamespaceImport (ProjectDom dom, string fileName, string nsName)
 		{
@@ -316,16 +315,16 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return refactorer.CompleteStatement (new RefactorerContext (dom, fileProvider, null), fileName, caretLocation);
 		}
 		
-		public IType ImplementMembers (IType cls, IEnumerable<KeyValuePair<IMember,IReturnType>> members,
-		                                              string foldingRegionName)
-		{
-			RefactorerContext gctx = GetGeneratorContext (cls);
-			cls = GetUpdatedClass (gctx, cls);
-			IRefactorer gen = GetGeneratorForClass (cls);
-			gen.ImplementMembers (gctx, cls, members, foldingRegionName);
-			gctx.Save ();
-			return GetUpdatedClass (gctx, cls);
-		}
+//		public IType ImplementMembers (IType cls, IEnumerable<KeyValuePair<IMember,IReturnType>> members,
+//		                                              string foldingRegionName)
+//		{
+//			RefactorerContext gctx = GetGeneratorContext (cls);
+//			cls = GetUpdatedClass (gctx, cls);
+//			IRefactorer gen = GetGeneratorForClass (cls);
+//			gen.ImplementMembers (gctx, cls, members, foldingRegionName);
+//			gctx.Save ();
+//			return GetUpdatedClass (gctx, cls);
+//		}
 		
 		string GenerateGenerics (IRefactorer gen, IType iface, IReturnType hintReturnType)
 		{
@@ -375,93 +374,93 @@ namespace MonoDevelop.Projects.CodeGeneration
 			return null;
 		}
 		
-		public IType ImplementInterface (ICompilationUnit pinfo, IType klass, IType iface, bool explicitly, IType declaringClass, IReturnType hintReturnType)
-		{
-			if (klass == null)
-				throw new ArgumentNullException ("klass");
-			if (iface == null)
-				throw new ArgumentNullException ("iface");
-			RefactorerContext gctx = GetGeneratorContext (klass);
-			klass = GetUpdatedClass (gctx, klass);
-			
-			bool alreadyImplemented;
-			IReturnType prefix = null;
-			
-			List<KeyValuePair<IMember,IReturnType>> toImplement = new List<KeyValuePair<IMember,IReturnType>> ();
-			
-			prefix = new DomReturnType (iface);
-			
-			// Stub out non-implemented events defined by @iface
-			foreach (IEvent ev in iface.Events) {
-				if (ev.IsSpecialName)
-					continue;
-				bool needsExplicitly = explicitly;
-				
-				alreadyImplemented = gctx.ParserContext.GetInheritanceTree (klass).Any (x => x.ClassType != ClassType.Interface && x.Events.Any (y => y.Name == ev.Name));
-				
-				if (!alreadyImplemented)
-					toImplement.Add (new KeyValuePair<IMember,IReturnType> (ev, needsExplicitly ? prefix : null));
-			}
-			
-			// Stub out non-implemented methods defined by @iface
-			foreach (IMethod method in iface.Methods) {
-				if (method.IsSpecialName)
-					continue;
-				bool needsExplicitly = explicitly;
-				alreadyImplemented = false;
-				foreach (IType t in gctx.ParserContext.GetInheritanceTree (klass)) {
-					if (t.ClassType == ClassType.Interface)
-						continue;
-					foreach (IMethod cmet in t.Methods) {
-						if (cmet.Name == method.Name && Equals (cmet.Parameters, method.Parameters)) {
-							if (!needsExplicitly && !cmet.ReturnType.Equals (method.ReturnType))
-								needsExplicitly = true;
-							else
-								alreadyImplemented |= !needsExplicitly || (iface.FullName == GetExplicitPrefix (cmet.ExplicitInterfaces));
-						}
-					}
-				}
-				
-				if (!alreadyImplemented) 
-					toImplement.Add (new KeyValuePair<IMember,IReturnType> (method, needsExplicitly ? prefix : null));
-			}
-			
-			// Stub out non-implemented properties defined by @iface
-			foreach (IProperty prop in iface.Properties) {
-				if (prop.IsSpecialName)
-					continue;
-				bool needsExplicitly = explicitly;
-				alreadyImplemented = false;
-				foreach (IType t in gctx.ParserContext.GetInheritanceTree (klass)) {
-					if (t.ClassType == ClassType.Interface)
-						continue;
-					foreach (IProperty cprop in t.Properties) {
-						if (cprop.Name == prop.Name) {
-							if (!needsExplicitly && !cprop.ReturnType.Equals (prop.ReturnType))
-								needsExplicitly = true;
-							else
-								alreadyImplemented |= !needsExplicitly || (iface.FullName == GetExplicitPrefix (cprop.ExplicitInterfaces));
-						}
-					}
-				}
-				if (!alreadyImplemented)
-					toImplement.Add (new KeyValuePair<IMember,IReturnType> (prop, needsExplicitly ? prefix : null)); 				}
-			
-			Ambience ambience = AmbienceService.GetAmbienceForFile (klass.CompilationUnit.FileName);
-			//implement members
-			ImplementMembers (klass, toImplement, ambience.GetString (iface, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters) +  " implementation");
-			gctx.Save ();
-			
-			klass = GetUpdatedClass (gctx, klass);
-			foreach (IType baseClass in iface.SourceProjectDom.GetInheritanceTree (iface)) {
-				if (baseClass.Equals (iface) || baseClass.FullName == "System.Object")
-					continue;
-				klass = ImplementInterface (pinfo, klass, baseClass, explicitly, declaringClass, hintReturnType);
-			}
-			
-			
-			return klass;
-		}
+//		public IType ImplementInterface (ICompilationUnit pinfo, IType klass, IType iface, bool explicitly, IType declaringClass, IReturnType hintReturnType)
+//		{
+//			if (klass == null)
+//				throw new ArgumentNullException ("klass");
+//			if (iface == null)
+//				throw new ArgumentNullException ("iface");
+//			RefactorerContext gctx = GetGeneratorContext (klass);
+//			klass = GetUpdatedClass (gctx, klass);
+//			
+//			bool alreadyImplemented;
+//			IReturnType prefix = null;
+//			
+//			List<KeyValuePair<IMember,IReturnType>> toImplement = new List<KeyValuePair<IMember,IReturnType>> ();
+//			
+//			prefix = new DomReturnType (iface);
+//			
+//			// Stub out non-implemented events defined by @iface
+//			foreach (IEvent ev in iface.Events) {
+//				if (ev.IsSpecialName)
+//					continue;
+//				bool needsExplicitly = explicitly;
+//				
+//				alreadyImplemented = gctx.ParserContext.GetInheritanceTree (klass).Any (x => x.ClassType != ClassType.Interface && x.Events.Any (y => y.Name == ev.Name));
+//				
+//				if (!alreadyImplemented)
+//					toImplement.Add (new KeyValuePair<IMember,IReturnType> (ev, needsExplicitly ? prefix : null));
+//			}
+//			
+//			// Stub out non-implemented methods defined by @iface
+//			foreach (IMethod method in iface.Methods) {
+//				if (method.IsSpecialName)
+//					continue;
+//				bool needsExplicitly = explicitly;
+//				alreadyImplemented = false;
+//				foreach (IType t in gctx.ParserContext.GetInheritanceTree (klass)) {
+//					if (t.ClassType == ClassType.Interface)
+//						continue;
+//					foreach (IMethod cmet in t.Methods) {
+//						if (cmet.Name == method.Name && Equals (cmet.Parameters, method.Parameters)) {
+//							if (!needsExplicitly && !cmet.ReturnType.Equals (method.ReturnType))
+//								needsExplicitly = true;
+//							else
+//								alreadyImplemented |= !needsExplicitly || (iface.FullName == GetExplicitPrefix (cmet.ExplicitInterfaces));
+//						}
+//					}
+//				}
+//				
+//				if (!alreadyImplemented) 
+//					toImplement.Add (new KeyValuePair<IMember,IReturnType> (method, needsExplicitly ? prefix : null));
+//			}
+//			
+//			// Stub out non-implemented properties defined by @iface
+//			foreach (IProperty prop in iface.Properties) {
+//				if (prop.IsSpecialName)
+//					continue;
+//				bool needsExplicitly = explicitly;
+//				alreadyImplemented = false;
+//				foreach (IType t in gctx.ParserContext.GetInheritanceTree (klass)) {
+//					if (t.ClassType == ClassType.Interface)
+//						continue;
+//					foreach (IProperty cprop in t.Properties) {
+//						if (cprop.Name == prop.Name) {
+//							if (!needsExplicitly && !cprop.ReturnType.Equals (prop.ReturnType))
+//								needsExplicitly = true;
+//							else
+//								alreadyImplemented |= !needsExplicitly || (iface.FullName == GetExplicitPrefix (cprop.ExplicitInterfaces));
+//						}
+//					}
+//				}
+//				if (!alreadyImplemented)
+//					toImplement.Add (new KeyValuePair<IMember,IReturnType> (prop, needsExplicitly ? prefix : null)); 				}
+//			
+//			Ambience ambience = AmbienceService.GetAmbienceForFile (klass.CompilationUnit.FileName);
+//			//implement members
+//			ImplementMembers (klass, toImplement, ambience.GetString (iface, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters) +  " implementation");
+//			gctx.Save ();
+//			
+//			klass = GetUpdatedClass (gctx, klass);
+//			foreach (IType baseClass in iface.SourceProjectDom.GetInheritanceTree (iface)) {
+//				if (baseClass.Equals (iface) || baseClass.FullName == "System.Object")
+//					continue;
+//				klass = ImplementInterface (pinfo, klass, baseClass, explicitly, declaringClass, hintReturnType);
+//			}
+//			
+//			
+//			return klass;
+//		}
 		
 		IType GetUpdatedClass (RefactorerContext gctx, IType klass)
 		{
@@ -571,89 +570,44 @@ namespace MonoDevelop.Projects.CodeGeneration
 			}
 		}
 		
-		public bool RenameVariable (IProgressMonitor monitor, LocalVariable var, string newName)
-		{
-			try {
-				MemberReferenceCollection refs = new MemberReferenceCollection ();
-				Refactor (monitor, var, new RefactorDelegate (new RefactorFindVariableReferences (var, refs).Refactor));
-				refs.RenameAll (newName);
-				
-				RefactorerContext gctx = GetGeneratorContext (var);
-				IRefactorer r = GetGeneratorForVariable (var);
-				bool rv = r.RenameVariable (gctx, var, newName);
-				gctx.Save ();
-				
-				return rv;
-			} catch (Exception e) {
-				LoggingService.LogError (GettextCatalog.GetString ("Error while renaming {0} to {1}: {2}",  var, newName, e.ToString ()));
-				return false;
-			}
-		}
-		
-		public bool RenameParameter (IProgressMonitor monitor, IParameter param, string newName)
-		{
-			try {
-				MemberReferenceCollection refs = new MemberReferenceCollection ();
-				Refactor (monitor, param, new RefactorDelegate (new RefactorFindParameterReferences (param, refs, false).Refactor));
-				refs.RenameAll (newName);
-				
-				IMember member = param.DeclaringMember;
-				RefactorerContext gctx = GetGeneratorContext (member.DeclaringType);
-				IRefactorer r = GetGeneratorForClass (member.DeclaringType);
-				bool rv = r.RenameParameter (gctx, param, newName);
-				gctx.Save ();
-				
-				return rv;
-			} catch (Exception e) {
-				LoggingService.LogError (GettextCatalog.GetString ("Error while renaming {0} to {1}: {2}",  param, newName, e.ToString ()));
-				return false;
-			}
-		}
-		
-		public IMember EncapsulateField (IProgressMonitor monitor, IType cls, IField field, string propName, MemberAttributes attr, bool generateSetter, bool updateInternalRefs)
-		{
-			RefactoryScope scope = GetScope (field);
-			
-			MemberReferenceCollection refs = new MemberReferenceCollection ();
-			Refactor (monitor, cls, scope, new RefactorDelegate (new RefactorFindMemberReferences (cls, field, refs, false).Refactor));
-			
-			if (!updateInternalRefs) {
-				ArrayList list = new ArrayList ();
-				list.AddRange (refs);
-				list.Sort (new MemberReferenceCollection.MemberComparer ());
-				
-				foreach (MemberReference mref in list) {
-					bool rename = true;
-					foreach (IType part in field.DeclaringType.Parts) {
-						if (mref.FileName == part.CompilationUnit.FileName) {
-							DomRegion region = part.BodyRegion;
-							
-							// check if the reference is internal to the class
-							if ((mref.Line > region.Start.Line ||
-							     (mref.Line == region.Start.Line && mref.Column >= region.Start.Column)) &&
-							    (mref.Line < region.End.Line ||
-							     (mref.Line == region.End.Line && mref.Column <= region.End.Column))) {
-								// Internal to the class, don't rename
-								rename = false;
-								break;
-							}
-						}
-					}
-					
-					if (rename)
-						mref.Rename (propName);
-				}
-			} else {
-				refs.RenameAll (propName);
-			}
-			
-			RefactorerContext gctx = GetGeneratorContext (cls);
-			IRefactorer r = GetGeneratorForClass (cls);
-			IMember m = r.EncapsulateField (gctx, cls, field, propName, attr, generateSetter);
-			gctx.Save ();
-			
-			return m;
-		}
+//		public bool RenameVariable (IProgressMonitor monitor, LocalVariable var, string newName)
+//		{
+//			try {
+//				MemberReferenceCollection refs = new MemberReferenceCollection ();
+//				Refactor (monitor, var, new RefactorDelegate (new RefactorFindVariableReferences (var, refs).Refactor));
+//				refs.RenameAll (newName);
+//				
+//				RefactorerContext gctx = GetGeneratorContext (var);
+//				IRefactorer r = GetGeneratorForVariable (var);
+//				bool rv = r.RenameVariable (gctx, var, newName);
+//				gctx.Save ();
+//				
+//				return rv;
+//			} catch (Exception e) {
+//				LoggingService.LogError (GettextCatalog.GetString ("Error while renaming {0} to {1}: {2}",  var, newName, e.ToString ()));
+//				return false;
+//			}
+//		}
+//		
+//		public bool RenameParameter (IProgressMonitor monitor, IParameter param, string newName)
+//		{
+//			try {
+//				MemberReferenceCollection refs = new MemberReferenceCollection ();
+//				Refactor (monitor, param, new RefactorDelegate (new RefactorFindParameterReferences (param, refs, false).Refactor));
+//				refs.RenameAll (newName);
+//				
+//				IMember member = param.DeclaringMember;
+//				RefactorerContext gctx = GetGeneratorContext (member.DeclaringType);
+//				IRefactorer r = GetGeneratorForClass (member.DeclaringType);
+//				bool rv = r.RenameParameter (gctx, param, newName);
+//				gctx.Save ();
+//				
+//				return rv;
+//			} catch (Exception e) {
+//				LoggingService.LogError (GettextCatalog.GetString ("Error while renaming {0} to {1}: {2}",  param, newName, e.ToString ()));
+//				return false;
+//			}
+//		}
 		
 		public IType[] FindDerivedClasses (IType baseClass)
 		{

@@ -1431,6 +1431,7 @@
     <Compile Include="MonoDevelop.Ide.Projects\TemplatePickerWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\NewProjectOptionsWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\FileTypeCondition.cs" />
+    <Compile Include="MonoDevelop.Ide\CodeGenerationService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -1461,7 +1462,6 @@
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
-        <GtkDesignInfo gettextClass="MonoDevelop.Core.GettextCatalog" />
         <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../../">
           <BuildFilesVar Sync="true" Name="FILES" />
           <DeployFilesVar />

@@ -111,15 +111,13 @@ namespace MonoDevelop.Projects.CodeGeneration
 			IEditableTextFile buffer = ctx.GetFile (cls.CompilationUnit.FileName);
 			
 			int pos = GetNewMemberPosition (buffer, cls, member);
-			string code = GenerateCodeFromMember (member);
+			string code = GenerateCodeFromMember (member).Trim ();
 			
 			int line, col;
 			buffer.GetLineColumnFromPosition (pos, out line, out col);
 			
 			string indent = GetLineIndent (buffer, cls.Location.Line) + "\t";
 			code = Indent (code, indent, false);
-//			code = code.Trim (' ', '\t');
-			code += "\n";
 			buffer.InsertText (pos, code);
 			
 			return FindGeneratedMember (ctx, buffer, cls, member, line);
@@ -170,11 +168,13 @@ namespace MonoDevelop.Projects.CodeGeneration
 			StringBuilder generatedString = new StringBuilder ();
 			bool isFirst = true;
 			foreach (CodeTypeMember member in members) {
+				if (generatedString.Length > 0) {
+					generatedString.AppendLine ();
+				}
 				generatedString.Append (Indent (GenerateCodeFromMember (member), indent, isFirst));
-				generatedString.AppendLine ();
-				generatedString.Append (indent);
 				isFirst = false;
 			}
+			
 			// remove last new line + indent
 			generatedString.Length -= indent.Length + Environment.NewLine.Length;
 			// remove indent from last generated code member
@@ -1065,7 +1065,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 		protected virtual int GetNewMethodPosition (IEditableTextFile buffer, IType cls)
 		{
 			cls = GetMainPart (cls);
-			if (cls.MethodCount == 0) {
+			if (cls.MethodCount + cls.ConstructorCount == 0) {
 				return GetNewPropertyPosition (buffer, cls);
 				/*int pos = GetNewPropertyPosition (buffer, cls);
 				int line, col;
@@ -1074,7 +1074,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 				pos = GetNextLine (buffer, pos);
 				return EnsurePositionIsNotInRegionsAndIndented (cls.SourceProject as Project, buffer, ind, pos);*/
 			} else {
-				IMethod m = cls.Methods.Last ();
+				var m = cls.Members .Last ();
 				
 				int pos;
 				if (!m.BodyRegion.IsEmpty && m.BodyRegion.End.Line > 1) {
