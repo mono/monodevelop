@@ -323,7 +323,38 @@ class TestClass
 }");
 		}
 		
+		/// <summary>
+		/// Bug 677522 - "Create Method" creates at wrong indent level
+		/// </summary>
+		[Test()]
+		public void TestBug677522 ()
+		{
+			TestCreateMethod (
+@"namespace Test {
+	class TestClass
+	{
+		void TestMethod ()
+		{
+			$NonExistantMethod ();
+		}
+	}
+}
+", @"namespace Test {
+	class TestClass
+	{
+		void NonExistantMethod ()
+		{
+			throw new System.NotImplementedException ();
+		}	
 		
+		void TestMethod ()
+		{
+			NonExistantMethod ();
+		}
+	}
+}
+", true);
+		}
 	}
 	
 }

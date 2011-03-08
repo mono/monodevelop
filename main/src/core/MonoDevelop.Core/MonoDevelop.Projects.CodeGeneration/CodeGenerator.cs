@@ -53,6 +53,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			set;
 		}
 		
+		
 		public static CodeGenerator CreateGenerator (string mimeType, bool useSpaceIndent, int tabSize, string eolMarker)
 		{
 			MimeTypeExtensionNode node;
@@ -106,7 +107,7 @@ namespace MonoDevelop.Projects.CodeGeneration
 			});
 		}
 		
-		protected int IndentLevel {
+		public int IndentLevel {
 			get;
 			set;
 		}
@@ -135,7 +136,8 @@ namespace MonoDevelop.Projects.CodeGeneration
 				t = t.DeclaringType;
 			} while (t != null);
 			DomLocation lastLoc = DomLocation.Empty;
-			foreach (IUsing us in declaringType.CompilationUnit.Usings.Where (u => u.IsFromNamespace && u.Region.Contains (declaringType.Location))) {
+			foreach (IUsing us in declaringType.CompilationUnit.Usings.Where (u => u.IsFromNamespace && u.ValidRegion.Contains (declaringType.Location))) {
+				Console.WriteLine (us);
 				if (lastLoc == us.Region.Start)
 					continue;
 				lastLoc = us.Region.Start;

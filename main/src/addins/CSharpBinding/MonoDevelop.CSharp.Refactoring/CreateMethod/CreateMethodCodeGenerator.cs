@@ -89,7 +89,13 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 				declaringType = options.ResolveResult.CallingType;
 				methodName = data.GetTextBetween (target.StartLocation.Line, target.StartLocation.Column, target.EndLocation.Line, target.EndLocation.Column);
 			}
-			return declaringType != null && !HasCompatibleMethod (declaringType, methodName, invocation);
+			
+			if (declaringType != null && !HasCompatibleMethod (declaringType, methodName, invocation)) {
+				var doc = ProjectDomService.GetParsedDocument (declaringType.SourceProjectDom, declaringType.CompilationUnit.FileName);
+				declaringType = doc.CompilationUnit.GetTypeAt (declaringType.Location) ?? declaringType;
+				return true;
+			}
+			return false;
 		}
 		
 		IType GetDelegateType (RefactoringOptions options, MonoDevelop.CSharp.Ast.CompilationUnit unit)
