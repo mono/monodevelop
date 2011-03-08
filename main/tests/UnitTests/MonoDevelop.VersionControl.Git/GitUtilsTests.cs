@@ -199,6 +199,9 @@ namespace MonoDevelop.VersionControl.Git
 			blames.Add(new BlameFragment(530, 1, "37041bcf"));
 			blames.Add(new BlameFragment(531, 11, "1ee2429c"));
 			blames.Add(new BlameFragment(542, 1, "37041bcf"));
+			//Another minor discrepancy from "git blame" on a blank line that matches what is found by "git diff"
+			//blames.Add(new BlameFragment(543, 1, "1ee2429c"));
+			//blames.Add(new BlameFragment(544, 2, "3352c438"));
 			blames.Add(new BlameFragment(543, 3, "3352c438"));
 			blames.Add(new BlameFragment(546, 3, "37041bcf"));
 			blames.Add(new BlameFragment(549, 59, "3352c438"));
