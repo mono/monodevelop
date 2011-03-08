@@ -165,8 +165,6 @@ namespace Mono.TextEditor
 			textEditor.Document.Redone += delegate {
 				UpdateBracketHighlighting (this, EventArgs.Empty);
 			};
-			textEditor.Document.MarkerAdded += (s, a) => RemoveCachedLine (a.Line);
-			textEditor.Document.MarkerRemoved += (s, a) => RemoveCachedLine (a.Line);
 			Caret.PositionChanged += UpdateBracketHighlighting;
 			textEditor.VScroll += HandleVAdjustmentValueChanged;
 		}

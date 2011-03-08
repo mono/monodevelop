@@ -79,11 +79,21 @@ namespace Mono.TextEditor
 				return textEditorData.Document;
 			}
 			set {
-				textEditorData.Document.TextReplaced -= OnDocumentStateChanged;
-				textEditorData.Document.TextSet -= OnTextSet;
+				var oldDoc = textEditorData.Document;
+				if (oldDoc != null) {
+					oldDoc.TextReplaced -= OnDocumentStateChanged;
+					oldDoc.TextSet -= OnTextSet;
+					oldDoc.LineChanged -= UpdateLinesOnTextMarkerHeightChange; 
+					oldDoc.MarkerAdded -= HandleTextEditorDataDocumentMarkerChange;
+					oldDoc.MarkerRemoved -= HandleTextEditorDataDocumentMarkerChange;
+				}
+				
 				textEditorData.Document = value;
 				textEditorData.Document.TextReplaced += OnDocumentStateChanged;
 				textEditorData.Document.TextSet += OnTextSet;
+				textEditorData.Document.LineChanged += UpdateLinesOnTextMarkerHeightChange; 
+				textEditorData.Document.MarkerAdded += HandleTextEditorDataDocumentMarkerChange;
+				textEditorData.Document.MarkerRemoved += HandleTextEditorDataDocumentMarkerChange;
 			}
 		}
 		
@@ -123,7 +133,12 @@ namespace Mono.TextEditor
 		
 		public TextEditor () : this(new Document ())
 		{
-			textEditorData.Document.LineChanged += UpdateLinesOnTextMarkerHeightChange; 
+		}
+
+		void HandleTextEditorDataDocumentMarkerChange (object sender, TextMarkerEvent e)
+		{
+			TextViewMargin.RemoveCachedLine (e.Line);
+			Document.CommitLineUpdate (e.Line);
 		}
 		
 		void HAdjustmentValueChanged (object sender, EventArgs args)
@@ -238,6 +253,9 @@ namespace Mono.TextEditor
 			};
 			doc.TextReplaced += OnDocumentStateChanged;
 			doc.TextSet += OnTextSet;
+			doc.LineChanged += UpdateLinesOnTextMarkerHeightChange; 
+			doc.MarkerAdded += HandleTextEditorDataDocumentMarkerChange;
+			doc.MarkerRemoved += HandleTextEditorDataDocumentMarkerChange;
 
 			textEditorData.CurrentMode = initialMode;
 			
@@ -613,8 +631,14 @@ namespace Mono.TextEditor
 			if (popupWindow != null)
 				popupWindow.Destroy ();
 			
-			if (this.Document != null)
+			if (this.Document != null) {
 				this.Document.EndUndo -= HandleDocumenthandleEndUndo;
+				this.Document.TextReplaced -= OnDocumentStateChanged;
+				this.Document.TextSet -= OnTextSet;
+				this.Document.LineChanged -= UpdateLinesOnTextMarkerHeightChange; 
+				this.Document.MarkerAdded -= HandleTextEditorDataDocumentMarkerChange;
+				this.Document.MarkerRemoved -= HandleTextEditorDataDocumentMarkerChange;
+			}
 			
 			DisposeAnimations ();
 			
