@@ -76,9 +76,9 @@ namespace NGit.Dircache
 
 		private static readonly DirCacheEntry[] NO_ENTRIES = new DirCacheEntry[] {  };
 
-		private sealed class _IComparer_96 : IComparer<DirCacheEntry>
+		private sealed class _IComparer_97 : IComparer<DirCacheEntry>
 		{
-			public _IComparer_96()
+			public _IComparer_97()
 			{
 			}
 
@@ -93,7 +93,7 @@ namespace NGit.Dircache
 			}
 		}
 
-		internal static readonly IComparer<DirCacheEntry> ENT_CMP = new _IComparer_96();
+		internal static readonly IComparer<DirCacheEntry> ENT_CMP = new _IComparer_97();
 
 		internal static int Cmp(DirCacheEntry a, DirCacheEntry b)
 		{
@@ -221,10 +221,6 @@ namespace NGit.Dircache
 		/// <remarks>Location of the current version of the index file.</remarks>
 		private readonly FilePath liveFile;
 
-		/// <summary>Modification time of the file at the last read/write we did.</summary>
-		/// <remarks>Modification time of the file at the last read/write we did.</remarks>
-		private long lastModified;
-
 		/// <summary>Individual file index entries, sorted by path name.</summary>
 		/// <remarks>Individual file index entries, sorted by path name.</remarks>
 		private DirCacheEntry[] sortedEntries;
@@ -246,6 +242,9 @@ namespace NGit.Dircache
 
 		/// <summary>file system abstraction</summary>
 		private readonly FS fs;
+
+		/// <summary>Keep track of whether the index has changed or not</summary>
+		private FileSnapshot snapshot;
 
 		/// <summary>Create a new in-core index representation.</summary>
 		/// <remarks>
@@ -331,7 +330,7 @@ namespace NGit.Dircache
 			}
 			else
 			{
-				if (liveFile.LastModified() != lastModified)
+				if (snapshot == null || snapshot.IsModified(liveFile))
 				{
 					try
 					{
@@ -360,6 +359,7 @@ namespace NGit.Dircache
 						//
 						Clear();
 					}
+					snapshot = FileSnapshot.Save(liveFile);
 				}
 			}
 		}
@@ -372,14 +372,14 @@ namespace NGit.Dircache
 			{
 				return false;
 			}
-			return liveFile.LastModified() != lastModified;
+			return snapshot.IsModified(liveFile);
 		}
 
 		/// <summary>Empty this index, removing all entries.</summary>
 		/// <remarks>Empty this index, removing all entries.</remarks>
 		public virtual void Clear()
 		{
-			lastModified = 0;
+			snapshot = null;
 			sortedEntries = NO_ENTRIES;
 			entryCnt = 0;
 			tree = null;
@@ -429,7 +429,7 @@ namespace NGit.Dircache
 			{
 				sortedEntries[i] = new DirCacheEntry(infos, infoAt, @in, md);
 			}
-			lastModified = liveFile.LastModified();
+			snapshot = FileSnapshot.Save(liveFile);
 			// After the file entries are index extensions, and then a footer.
 			//
 			for (; ; )
@@ -626,7 +626,7 @@ namespace NGit.Dircache
 			dos.Write(tmp, 0, 12);
 			// Write the individual file entries.
 			//
-			if (lastModified <= 0)
+			if (snapshot == null)
 			{
 				// Write a new index, as no entries require smudging.
 				//
@@ -637,8 +637,8 @@ namespace NGit.Dircache
 			}
 			else
 			{
-				int smudge_s = (int)(lastModified / 1000);
-				int smudge_ns = ((int)(lastModified % 1000)) * 1000000;
+				int smudge_s = (int)(snapshot.LastModified() / 1000);
+				int smudge_ns = ((int)(snapshot.LastModified() % 1000)) * 1000000;
 				for (int i_1 = 0; i_1 < entryCnt; i_1++)
 				{
 					DirCacheEntry e = sortedEntries[i_1];
@@ -684,7 +684,7 @@ namespace NGit.Dircache
 			{
 				return false;
 			}
-			lastModified = tmp.GetCommitLastModified();
+			snapshot = tmp.GetCommitSnapshot();
 			return true;
 		}
 

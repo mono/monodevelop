@@ -42,6 +42,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using System.IO;
+using ICSharpCode.SharpZipLib;
 using NGit;
 using NGit.Errors;
 using NGit.Storage.File;
@@ -126,7 +127,7 @@ namespace NGit.Storage.File
 					byte[] b = pack.GetDeltaHeader(wc, objectOffset + headerLength);
 					size = BinaryDelta.GetResultSize(b);
 				}
-				catch (DataFormatException)
+				catch (SharpZipBaseException)
 				{
 				}
 				catch (IOException)

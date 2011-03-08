@@ -42,6 +42,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using System.IO;
+using ICSharpCode.SharpZipLib;
 using ICSharpCode.SharpZipLib.Zip.Compression;
 using NGit;
 using NGit.Errors;
@@ -183,7 +184,7 @@ namespace NGit.Storage.File
 					return new UnpackedObject.LargeObject(type, size, path, id, wc.db);
 				}
 			}
-			catch (ZipException)
+			catch (SharpZipBaseException)
 			{
 				throw new CorruptObjectException(id, JGitText.Get().corruptObjectBadStream);
 			}
@@ -233,7 +234,7 @@ namespace NGit.Storage.File
 					return size;
 				}
 			}
-			catch (ZipException)
+			catch (SharpZipBaseException)
 			{
 				throw new CorruptObjectException(id, JGitText.Get().corruptObjectBadStream);
 			}
@@ -251,7 +252,7 @@ namespace NGit.Storage.File
 				{
 					r = inf.Inflate(buf);
 				}
-				catch (DataFormatException)
+				catch (SharpZipBaseException)
 				{
 					throw new CorruptObjectException(id, JGitText.Get().corruptObjectBadStream);
 				}
@@ -323,7 +324,7 @@ namespace NGit.Storage.File
 					}
 					return r;
 				}
-				catch (ZipException)
+				catch (SharpZipBaseException)
 				{
 					throw new CorruptObjectException(id, JGitText.Get().corruptObjectBadStream);
 				}

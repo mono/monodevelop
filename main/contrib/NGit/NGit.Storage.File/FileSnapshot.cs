@@ -123,7 +123,8 @@ namespace NGit.Storage.File
 			this.cannotBeRacilyClean = NotRacyClean(read);
 		}
 
-		internal virtual long LastModified()
+		/// <returns>time of last snapshot update</returns>
+		public virtual long LastModified()
 		{
 			return lastModified;
 		}

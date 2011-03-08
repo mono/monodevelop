@@ -1062,7 +1062,8 @@ namespace MonoDevelop.Ide.Gui.Components
 						node.MoveToPosition (pos);
 					}
 				}
-				CancelTransfer ();
+				if (currentTransferOperation == DragOperation.Move)
+					CancelTransfer ();
 			} finally {
 				UnlockUpdates ();
 			}

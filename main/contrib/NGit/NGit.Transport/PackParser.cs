@@ -44,6 +44,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System;
 using System.Collections.Generic;
 using System.IO;
+using ICSharpCode.SharpZipLib;
 using ICSharpCode.SharpZipLib.Zip.Compression;
 using NGit;
 using NGit.Errors;
@@ -1782,7 +1783,7 @@ namespace NGit.Transport
 					this.actualSize += n;
 					return 0 < n ? n : -1;
 				}
-				catch (DataFormatException dfe)
+				catch (SharpZipBaseException dfe)
 				{
 					throw new CorruptObjectException(MessageFormat.Format(JGitText.Get().packfileCorruptionDetected
 						, dfe.Message));

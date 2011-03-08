@@ -705,32 +705,6 @@ namespace NGit
 						break;
 					}
 
-					case '-':
-					{
-						if (i + 4 < rev.Length && rev[i + 1] == 'g' && IsHex(rev[i + 2]) && IsHex(rev[i +
-							 3]))
-						{
-							// Possibly output from git describe?
-							// Resolve longest valid abbreviation.
-							int cnt = 2;
-							while (i + 2 + cnt < rev.Length && IsHex(rev[i + 2 + cnt]))
-							{
-								cnt++;
-							}
-							string s = new string(rev, i + 2, cnt);
-							if (AbbreviatedObjectId.IsId(s))
-							{
-								ObjectId id = ResolveAbbreviation(s);
-								if (id != null)
-								{
-									@ref = rw.ParseAny(id);
-									i += 1 + s.Length;
-								}
-							}
-						}
-						break;
-					}
-
 					case ':':
 					{
 						RevTree tree;
@@ -792,6 +766,18 @@ namespace NGit
 
 		//
 		//
+		private static bool IsAllHex(string str, int ptr)
+		{
+			while (ptr < str.Length)
+			{
+				if (!IsHex(str[ptr++]))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
 		/// <exception cref="System.IO.IOException"></exception>
 		private RevObject ParseSimple(RevWalk rw, string revstr)
 		{
@@ -814,6 +800,17 @@ namespace NGit
 			if (AbbreviatedObjectId.IsId(revstr))
 			{
 				return ResolveAbbreviation(revstr);
+			}
+			int dashg = revstr.IndexOf("-g");
+			if (4 < revstr.Length && 0 <= dashg && IsHex(revstr[dashg + 2]) && IsHex(revstr[dashg
+				 + 3]) && IsAllHex(revstr, dashg + 4))
+			{
+				// Possibly output from git describe?
+				string s = Sharpen.Runtime.Substring(revstr, dashg + 2);
+				if (AbbreviatedObjectId.IsId(s))
+				{
+					return ResolveAbbreviation(s);
+				}
 			}
 			return null;
 		}
