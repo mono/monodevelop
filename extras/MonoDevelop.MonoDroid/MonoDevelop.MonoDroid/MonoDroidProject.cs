@@ -290,7 +290,17 @@ namespace MonoDevelop.MonoDroid
 				//HackGetUserAssemblyPaths = false;
 			}
 		}
-		
+
+		protected override DateTime OnGetLastBuildTime (ConfigurationSelector configuration)
+		{
+			// Avoid a 'build' needed error by returning the last build time of the newest resource/asset file
+			var baseLastWriteTime = base.OnGetLastBuildTime (configuration);
+			var lastWriteTime = Files.Where (file => (file.BuildAction == MonoDroidBuildAction.AndroidResource || file.BuildAction == MonoDroidBuildAction.AndroidAsset)).
+				Max (file => File.Exists (file.FilePath) ? File.GetLastWriteTime (file.FilePath) : DateTime.MinValue);
+
+			return lastWriteTime > baseLastWriteTime ? lastWriteTime : baseLastWriteTime;
+		}
+
 		public override FilePath GetOutputFileName (ConfigurationSelector configuration)
 		{
 			if (!IsAndroidApplication)
