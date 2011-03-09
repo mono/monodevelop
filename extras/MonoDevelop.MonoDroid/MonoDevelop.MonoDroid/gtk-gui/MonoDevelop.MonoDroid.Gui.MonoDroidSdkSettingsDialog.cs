@@ -31,7 +31,7 @@ namespace MonoDevelop.MonoDroid.Gui
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("<span weight=\"bold\" size=\"x-large\">MonoDroid SDKs</span>");
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("<span weight=\"bold\" size=\"x-large\">Mono for Android SDKs</span>");
 			this.label1.UseMarkup = true;
 			this.vbox2.Add (this.label1);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label1]));

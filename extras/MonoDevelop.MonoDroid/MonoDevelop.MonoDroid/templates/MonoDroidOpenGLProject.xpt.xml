@@ -5,7 +5,7 @@
 		<_Category>C#/MonoAndroid</_Category>
 		<Icon>monodroid-project</Icon>
 		<LanguageName>C#</LanguageName>
-		<_Description>Creates an MonoAndroid project that uses OpenGL.</_Description>
+		<_Description>Creates an Mono for Android project that uses OpenGL.</_Description>
 	</TemplateConfiguration>
 	
 	<Actions>

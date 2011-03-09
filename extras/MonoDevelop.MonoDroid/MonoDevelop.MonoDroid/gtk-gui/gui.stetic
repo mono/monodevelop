@@ -21,7 +21,7 @@
           <widget class="Gtk.Label" id="label4">
             <property name="MemberName" />
             <property name="Xalign">0</property>
-            <property name="LabelProp" translatable="yes">MonoDroid requires the Android SDK and Java JDK to be installed. If these
+            <property name="LabelProp" translatable="yes">Mono for Android requires the Android SDK and Java JDK to be installed. If these
 have not been found automatically, you must specify the locations below.</property>
           </widget>
           <packing>
@@ -980,7 +980,7 @@ have not been found automatically, you must specify the locations below.</proper
             <child>
               <widget class="Gtk.Label" id="label1">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">&lt;span weight="bold" size="x-large"&gt;MonoDroid SDKs&lt;/span&gt;</property>
+                <property name="LabelProp" translatable="yes">&lt;span weight="bold" size="x-large"&gt;Mono for Android SDKs&lt;/span&gt;</property>
                 <property name="UseMarkup">True</property>
               </widget>
               <packing>
