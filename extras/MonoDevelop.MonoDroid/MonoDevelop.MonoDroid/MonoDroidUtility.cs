@@ -172,7 +172,7 @@ namespace MonoDevelop.MonoDroid
 	public class MonoDroidUploadOperation : IAsyncOperation
 	{
 		ChainedAsyncOperationSequence chop;
-		const int RuntimeVersion = 1;
+		const int RuntimeVersion = 2;
 		
 		public MonoDroidUploadOperation (IProgressMonitor monitor, AndroidDevice device, FilePath packageFile, string packageName,
 			IAsyncOperation signingOperation, bool replaceIfExists)

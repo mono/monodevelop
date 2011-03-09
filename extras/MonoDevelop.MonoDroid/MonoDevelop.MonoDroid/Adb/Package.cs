@@ -36,6 +36,8 @@ namespace MonoDevelop.MonoDroid
 {
 	public class InstalledPackage
 	{
+		private int version = -1;
+
 		public string Name { get; set; }
 		public string ApkFile { get; set; }
 
@@ -60,18 +62,23 @@ namespace MonoDevelop.MonoDroid
 			ApkFile = apkfile;
 		}
 
+		public InstalledPackage (string name, string apkfile, int version)
+		{
+			Name = name;
+			ApkFile = apkfile;
+			this.version = version;
+		}
+
 		public string ApkFileWithoutVersion {
 			get { return Path.GetFileNameWithoutExtension (ApkFile).Split ('-')[0]; }
 		}
 
-		public string Version {
+		public int Version {
 			get {
-				var tmp = Path.GetFileNameWithoutExtension (ApkFile);
+				if (version != -1)
+					return version;
 
-				if (!tmp.Contains ('-'))
-					return string.Empty;
-
-				return tmp.Split ('-')[1];
+				return int.MaxValue;
 			}
 		}
 
