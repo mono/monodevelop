@@ -206,6 +206,8 @@ namespace MonoDevelop.CSharp.Formatting
 				return;
 			DomLocation location = n.EndLocation;
 			int offset = data.Document.LocationToOffset (location.Line, location.Column);
+			if (offset < 0)
+				return;
 			int i = offset;
 			while (i < data.Document.Length && IsSpacing (data.Document.GetCharAt (i))) {
 				i++;
@@ -624,11 +626,15 @@ namespace MonoDevelop.CSharp.Formatting
 			ForceSpacesBefore (objectCreateExpression.LParToken, policy.NewParentheses);
 			
 			if (objectCreateExpression.Arguments.Any ()) {
-				ForceSpacesAfter (objectCreateExpression.LParToken, policy.WithinNewParentheses);
-				ForceSpacesBefore (objectCreateExpression.RParToken, policy.WithinNewParentheses);
+				if (!objectCreateExpression.LParToken.IsNull)
+					ForceSpacesAfter (objectCreateExpression.LParToken, policy.WithinNewParentheses);
+				if (!objectCreateExpression.RParToken.IsNull)
+					ForceSpacesBefore (objectCreateExpression.RParToken, policy.WithinNewParentheses);
 			} else {
-				ForceSpacesAfter (objectCreateExpression.LParToken, policy.BetweenEmptyNewParentheses);
-				ForceSpacesBefore (objectCreateExpression.RParToken, policy.BetweenEmptyNewParentheses);
+				if (!objectCreateExpression.LParToken.IsNull)
+					ForceSpacesAfter (objectCreateExpression.LParToken, policy.BetweenEmptyNewParentheses);
+				if (!objectCreateExpression.RParToken.IsNull)
+					ForceSpacesBefore (objectCreateExpression.RParToken, policy.BetweenEmptyNewParentheses);
 			}
 			FormatCommas (objectCreateExpression, policy.BeforeNewParameterComma, policy.AfterNewParameterComma);
 			
