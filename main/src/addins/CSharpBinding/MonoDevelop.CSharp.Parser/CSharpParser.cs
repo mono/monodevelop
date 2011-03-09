@@ -1191,7 +1191,7 @@ namespace MonoDevelop.CSharp.Parser
 			
 			public override object Visit (Block blockStatement)
 			{
-				if (blockStatement.IsCompilerGenerated) {
+				if (blockStatement.IsCompilerGenerated && blockStatement.Statements.Any ()) {
 					if (blockStatement.Statements.First () is Using)
 						return CreateUsingStatement (blockStatement);
 					return blockStatement.Statements.Last ().Accept (this);
@@ -2474,8 +2474,6 @@ namespace MonoDevelop.CSharp.Parser
 			node.AddChild (comment, AstNode.Roles.Comment);
 		}
 		
-
-		
 		internal static MonoDevelop.CSharp.Ast.CompilationUnit Parse (CompilerCompilationUnit top)
 		{
 			if (top == null)
@@ -2499,13 +2497,21 @@ namespace MonoDevelop.CSharp.Parser
 			
 			return conversionVisitor.Unit;
 		}
+
+		McsParser.ErrorReportPrinter errorReportPrinter = new McsParser.ErrorReportPrinter ();
+		
+		internal McsParser.ErrorReportPrinter ErrorReportPrinter {
+			get {
+				return errorReportPrinter;
+			}
+		}
 		
 		public MonoDevelop.CSharp.Ast.CompilationUnit Parse (TextEditorData data)
 		{
 			lock (CompilerCallableEntryPoint.parseLock) {
 				CompilerCompilationUnit top;
 				using (Stream stream = data.OpenStream ()) {
-					top = CompilerCallableEntryPoint.ParseFile (new string[] { "-v", "-unsafe"}, stream, data.Document.FileName ?? "empty.cs", Console.Out);
+					top = CompilerCallableEntryPoint.ParseFile (new string[] { "-v", "-unsafe"}, stream, data.Document.FileName ?? "empty.cs", errorReportPrinter);
 				}
 	
 				return Parse (top);

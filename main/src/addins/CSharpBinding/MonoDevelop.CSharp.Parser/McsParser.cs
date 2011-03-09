@@ -54,7 +54,7 @@ namespace MonoDevelop.CSharp.Parser
 			return new NRefactoryResolver (dom, doc.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, doc.Editor, fileName);
 		}
 		
-		class ErrorReportPrinter : ReportPrinter
+		internal class ErrorReportPrinter : ReportPrinter
 		{
 			public readonly List<Error> Errors = new List<Error> ();
 			
