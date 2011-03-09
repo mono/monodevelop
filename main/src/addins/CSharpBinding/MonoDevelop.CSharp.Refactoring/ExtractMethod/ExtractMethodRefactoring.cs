@@ -175,6 +175,17 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				get;
 				set;
 			}
+			
+			public int StartOffset {
+				get;
+				set;
+			}
+			
+			public int EndOffset {
+				get;
+				set;
+			}
+			
 	
 			/// <summary>
 			/// The type of the expression, if the text is an expression, otherwise null.
@@ -250,12 +261,23 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			var resolver = options.GetResolver ();
 			if (unit == null)
 				return false;
+			var selectionRange = data.SelectionRange;
+			var startOffset = selectionRange.Offset;
+			while (startOffset + 1 < data.Length && char.IsWhiteSpace (data.GetCharAt (startOffset + 1)))
+				startOffset++;
+			var endOffset = selectionRange.EndOffset;
+			while (startOffset < endOffset && endOffset - 1 > 0 && char.IsWhiteSpace (data.GetCharAt (endOffset - 1)))
+				endOffset--;
+			if (startOffset >= endOffset)
+				return false;
 			
-			var startLocation = data.Document.OffsetToLocation (data.SelectionRange.Offset);
-			var endLocation = data.Document.OffsetToLocation (data.SelectionRange.EndOffset);
+			var endLocation = data.OffsetToLocation (endOffset);
+			var startLocation = data.OffsetToLocation (startOffset);
+			param.StartOffset = startOffset;
+			param.EndOffset = endOffset;
 			param.Nodes = new List<AstNode> (unit.GetNodesBetween (startLocation.Line, startLocation.Column, endLocation.Line, endLocation.Column));
 			
-			string text = options.Document.Editor.GetTextAt (options.Document.Editor.SelectionRange);
+			string text = options.Document.Editor.GetTextBetween (startLocation, endLocation);
 			
 			param.Text = RemoveIndent (text, GetIndent (data.GetTextBetween (data.GetLine (startLocation.Line).Offset, data.GetLine (endLocation.Line).EndOffset))).TrimEnd ('\n', '\r');
 			VariableLookupVisitor visitor = new VariableLookupVisitor (resolver, param.Location);
@@ -263,7 +285,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			visitor.CutRegion = new DomRegion (startLocation.Line, startLocation.Column, endLocation.Line, endLocation.Column);
 			if (fillParameter) {
 				unit.AcceptVisitor (visitor, null);
-				if (param.Nodes != null && (param.Nodes.Count == 1 && param.Nodes[0].NodeType == NodeType.Expression)) {
+				if (param.Nodes != null && (param.Nodes.Count == 1 && param.Nodes [0].NodeType == NodeType.Expression)) {
 					ResolveResult resolveResult = resolver.Resolve (new ExpressionResult ("(" + text + ")"), param.Location);
 					if (resolveResult != null && resolveResult.ResolvedType != null)
 						param.ExpressionType = resolveResult.ResolvedType;
@@ -294,20 +316,20 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				// analyze the variables outside of the selected text
 				IMember member = param.DeclaringMember;
 			
-				int startOffset = data.Document.LocationToOffset (member.BodyRegion.Start.Line, member.BodyRegion.Start.Column);
-				int endOffset = data.Document.LocationToOffset (member.BodyRegion.End.Line, member.BodyRegion.End.Column);
-				if (data.SelectionRange.Offset < startOffset || endOffset < data.SelectionRange.EndOffset)
+				int bodyStartOffset = data.Document.LocationToOffset (member.BodyRegion.Start.Line, member.BodyRegion.Start.Column);
+				int bodyEndOffset = data.Document.LocationToOffset (member.BodyRegion.End.Line, member.BodyRegion.End.Column);
+				if (startOffset < bodyStartOffset || bodyEndOffset < endOffset)
 					return false;
-				text = data.Document.GetTextBetween (startOffset, data.SelectionRange.Offset) + data.Document.GetTextBetween (data.SelectionRange.EndOffset, endOffset);
-//				ICSharpCode.NRefactory.Ast.INode parsedNode = provider.ParseText (text);
-//				visitor = new VariableLookupVisitor (resolver, param.Location);
-//				visitor.CutRegion = new DomRegion (data.MainSelection.MinLine, data.MainSelection.MaxLine);
-//				visitor.MemberLocation = new Location (param.DeclaringMember.Location.Column, param.DeclaringMember.Location.Line);
-//				if (parsedNode != null)
-//					parsedNode.AcceptVisitor (visitor, null);
+				text = data.Document.GetTextBetween (bodyStartOffset, startOffset) + data.Document.GetTextBetween (endOffset, bodyEndOffset);
+				//				ICSharpCode.NRefactory.Ast.INode parsedNode = provider.ParseText (text);
+				//				visitor = new VariableLookupVisitor (resolver, param.Location);
+				//				visitor.CutRegion = new DomRegion (data.MainSelection.MinLine, data.MainSelection.MaxLine);
+				//				visitor.MemberLocation = new Location (param.DeclaringMember.Location.Column, param.DeclaringMember.Location.Line);
+				//				if (parsedNode != null)
+				//					parsedNode.AcceptVisitor (visitor, null);
 				
 				
-			/*	
+				/*	
 				param.VariablesOutside = new Dictionary<string, VariableDescriptor> ();
 				foreach (var pair in visitor.Variables) {
 					if (startLocation < pair.Value.Location || endLocation >= pair.Value.Location) {
@@ -521,8 +543,8 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			TextReplaceChange replacement = new TextReplaceChange ();
 			replacement.Description = string.Format (GettextCatalog.GetString ("Substitute selected statement(s) with call to {0}"), param.Name);
 			replacement.FileName = options.Document.FileName;
-			replacement.Offset = options.Document.Editor.SelectionRange.Offset;
-			replacement.RemovedChars = options.Document.Editor.SelectionRange.Length;
+			replacement.Offset = param.StartOffset;
+			replacement.RemovedChars = param.EndOffset - param.StartOffset;
 			replacement.MoveCaretToReplace = true;
 			replacement.InsertedText = GenerateMethodCall (options, param);
 			result.Add (replacement);
