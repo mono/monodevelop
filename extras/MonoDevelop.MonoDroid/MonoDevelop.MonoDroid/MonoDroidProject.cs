@@ -315,16 +315,8 @@ namespace MonoDevelop.MonoDroid
 			if (base.CheckNeedsBuild (configuration))
 				return true;
 			
-			if  (Files.Any (file => (file.BuildAction == MonoDroidBuildAction.AndroidResource || file.BuildAction == MonoDroidBuildAction.AndroidAsset)
-					&& File.Exists (file.FilePath) && File.GetLastWriteTime (file.FilePath) > apkBuildTime))
-				return true;
-				
-			var conf = GetConfiguration (configuration);
-			var manifestFile = GetManifestFileName (conf);
-			if (!manifestFile.IsNullOrEmpty && File.Exists (manifestFile)
-				&& File.GetLastWriteTime (manifestFile) > apkBuildTime)
-				return true;
-			
+			// Same as in GetOutputFileName: we removed the apk checks as the apk file
+			// is now generated in the sign step, not in the build step.
 			return false;
 		}
 		
@@ -423,10 +415,24 @@ namespace MonoDevelop.MonoDroid
 			}
 		}
 		
-		public bool PackageNeedsSigning (MonoDroidProjectConfiguration conf)
+		public bool PackageNeedsSigning (ConfigurationSelector configuration)
 		{
-			return !File.Exists (conf.ApkSignedPath) ||
-				File.GetLastWriteTime (conf.ApkSignedPath) < File.GetLastWriteTime (conf.ApkPath);
+			var conf = GetConfiguration (configuration);
+			if (!File.Exists (conf.ApkSignedPath))
+				return true;
+
+			var apkBuildTime = File.GetLastWriteTime (conf.ApkSignedPath);
+			if  (Files.Any (file => (file.BuildAction == MonoDroidBuildAction.AndroidResource || file.BuildAction == MonoDroidBuildAction.AndroidAsset)
+					&& File.Exists (file.FilePath) && File.GetLastWriteTime (file.FilePath) > apkBuildTime))
+				return true;
+				
+			var manifestFile = GetManifestFileName (conf);
+			if (!manifestFile.IsNullOrEmpty && File.Exists (manifestFile)
+				&& File.GetLastWriteTime (manifestFile) > apkBuildTime)
+				return true;
+
+			var outputFile = GetOutputFileName (configuration);
+			return File.GetLastWriteTime (conf.ApkSignedPath) < File.GetLastWriteTime (outputFile);
 		}
 		
 		public IAsyncOperation SignPackage (ConfigurationSelector configSel)
