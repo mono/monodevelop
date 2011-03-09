@@ -40,7 +40,7 @@ namespace MonoDevelop.Autotools
 			
 			box.PackStart (new Gtk.HSeparator (), false, false, 0);
 			
-			optionsWidget = new MakefileOptionPanelWidget (project, tmpData);
+			optionsWidget = new MakefileOptionPanelWidget (this, project, tmpData);
 			
 			box.PackStart (optionsWidget, false, false, 0);
 			box.BorderWidth = 6;

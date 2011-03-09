@@ -17,11 +17,13 @@ namespace MonoDevelop.Autotools
 		ComboBox [] combos = null;
 		bool isDotNetProject;
 		bool loading = true;
+		Window parentDialog;
 		
-		public MakefileOptionPanelWidget (Project project, MakefileData tmpData)
+		public MakefileOptionPanelWidget (Window parentDialog, Project project, MakefileData tmpData)
 			: this ()
 		{
 			this.data = tmpData;
+			this.parentDialog = parentDialog;
 			isDotNetProject = (project is DotNetProject);
 			if (!isDotNetProject) {
 				// Disable all References combos etc for non-dotnet projects
@@ -214,7 +216,7 @@ namespace MonoDevelop.Autotools
 					ShowMakefileNotFoundError (e);
 					return false;
 				} catch (Exception e) {
-					MessageService.ShowException ((Window) Toplevel, e, GettextCatalog.GetString ("Specified makefile is invalid: {0}", tmpData.AbsoluteMakefileName));
+					MessageService.ShowException (parentDialog, e, GettextCatalog.GetString ("Specified makefile is invalid: {0}", tmpData.AbsoluteMakefileName));
 					return false;
 				}
 
@@ -222,7 +224,7 @@ namespace MonoDevelop.Autotools
 					!File.Exists (System.IO.Path.Combine (tmpData.AbsoluteConfigureInPath, "configure.in")) &&
 				    !File.Exists (System.IO.Path.Combine (tmpData.AbsoluteConfigureInPath, "configure.ac")))
 				{
-					MessageService.ShowError ((Window)Toplevel, GettextCatalog.GetString ("Path specified for configure.in is invalid: {0}", tmpData.RelativeConfigureInPath));
+					MessageService.ShowError (parentDialog, GettextCatalog.GetString ("Path specified for configure.in is invalid: {0}", tmpData.RelativeConfigureInPath));
 					return false;
 				}
 
@@ -231,7 +233,7 @@ namespace MonoDevelop.Autotools
 					String.IsNullOrEmpty (tmpData.AsmRefVar.Name) ||
 					String.IsNullOrEmpty (tmpData.ProjectRefVar.Name))) {
 
-					MessageService.ShowError ((Window) Toplevel, GettextCatalog.GetString ("'Sync References' is enabled, but one of Reference variables is not set. Please correct this."));
+					MessageService.ShowError (parentDialog, GettextCatalog.GetString ("'Sync References' is enabled, but one of Reference variables is not set. Please correct this."));
 					return false;
 				}
 			
@@ -251,14 +253,14 @@ namespace MonoDevelop.Autotools
 				try {
 					tmpData.GetErrorRegex (true);
 				} catch (Exception e) {
-					MessageService.ShowError ((Window) Toplevel, GettextCatalog.GetString ("Invalid regex for Error messages: {0}", e.Message));
+					MessageService.ShowError (parentDialog, GettextCatalog.GetString ("Invalid regex for Error messages: {0}", e.Message));
 					return false;
 				}
 
 				try {
 					tmpData.GetWarningRegex (true);
 				} catch (Exception e) {
-					MessageService.ShowError ((Window) Toplevel, GettextCatalog.GetString (
+					MessageService.ShowError (parentDialog, GettextCatalog.GetString (
 						"Invalid regex for Warning messages: {0}", e.Message));
 					return false;
 				}
@@ -286,7 +288,7 @@ namespace MonoDevelop.Autotools
 		bool CheckNonEmptyFileVar (MakefileVar var, string id)
 		{
 			if (var.Sync && String.IsNullOrEmpty (var.Name.Trim ())) {
-				MessageService.ShowError ((Window) Toplevel,GettextCatalog.GetString (
+				MessageService.ShowError (parentDialog,GettextCatalog.GetString (
 					"File variable ({0}) is set for sync'ing, but no valid variable is selected. Either disable the sync'ing or select a variable name.", id));
 
 				return false;
@@ -741,14 +743,14 @@ namespace MonoDevelop.Autotools
 					ShowMakefileNotFoundError (e);
 			} catch (Exception e) {
 				if (showError)
-					MessageService.ShowException ((Window) this.Toplevel,e,
+					MessageService.ShowException (parentDialog,e,
 						GettextCatalog.GetString ("Error while trying to read the specified Makefile"));
 				return null;
 			}
 
 			if (vars != null && vars.Count == 0) {
 				if (showError)
-					MessageService.ShowError ((Window) this.Toplevel, 
+					MessageService.ShowError (parentDialog, 
 						GettextCatalog.GetString ("No variables found in the selected Makefile"));
 				return null;
 			}
@@ -935,7 +937,7 @@ namespace MonoDevelop.Autotools
 
 		void ShowMakefileNotFoundError (Exception e)
 		{
-				MessageService.ShowException ((Window) this.Toplevel, 
+				MessageService.ShowException (parentDialog, 
 			                                  e,
 			                                  GettextCatalog.GetString ("Unable to find the specified Makefile. You need to specify the path to an existing Makefile for use with the 'Makefile Integration' feature."));
 		}

@@ -22,7 +22,7 @@ namespace MonoDevelop.Autotools
 			if (data != null) {
 				tmpData = (MakefileData) data.Clone ();
 			}
-			return (widget = new MakefileOptionPanelWidget (project, tmpData));
+			return (widget = new MakefileOptionPanelWidget (ParentDialog, project, tmpData));
 		}
 		
 		public override bool ValidateChanges ()
