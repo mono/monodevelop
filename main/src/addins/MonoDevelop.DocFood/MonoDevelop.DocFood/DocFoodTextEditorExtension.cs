@@ -88,6 +88,20 @@ namespace MonoDevelop.DocFood
 			textEditorData.Caret.Offset = offset + insertedLength;
 			return false;
 		}
+
+		
+		bool IsEmptyBetweenLines (int start, int end)
+		{
+			for (int i = start + 1; i < end - 1; i++) {
+				LineSegment lineSegment = textEditorData.GetLine (i);
+				if (lineSegment == null)
+					break;
+				if (lineSegment.EditableLength != textEditorData.GetLineIndent (lineSegment).Length)
+					return false;
+				
+			}
+			return true;
+		}	
 		
 		IMember GetMemberToDocument ()
 		{
@@ -100,10 +114,12 @@ namespace MonoDevelop.DocFood
 				}
 				return null;
 			}
+			
 			IMember result = null;
 			foreach (IMember member in type.Members) {
-				if (member.Location > new DomLocation (textEditorData.Caret.Line, textEditorData.Caret.Column) && (result == null || member.Location < result.Location))
+				if (member.Location > new DomLocation (textEditorData.Caret.Line, textEditorData.Caret.Column) && (result == null || member.Location < result.Location) && IsEmptyBetweenLines (textEditorData.Caret.Line, member.Location.Line)) {
 					result = member;
+				}
 			}
 			return result;
 		}
