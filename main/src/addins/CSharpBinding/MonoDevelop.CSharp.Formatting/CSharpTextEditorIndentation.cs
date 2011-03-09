@@ -535,24 +535,19 @@ namespace MonoDevelop.CSharp.Formatting
 			string newIndent = string.Empty;
 			int cursor = textEditorData.Caret.Offset;
 			LineSegment line = textEditorData.Document.GetLine (textEditorData.Caret.Line);
-
-			/*
 			// Get context to the end of the line w/o changing the main engine's state
 			CSharpIndentEngine ctx = (CSharpIndentEngine)stateTracker.Engine.Clone ();
-			for (int max = line.Offset; max < line.Offset + line.EditableLength; max++) {
+			for (int max = cursor; max < line.Offset + line.EditableLength; max++) {
 				ctx.Push (textEditorData.Document.GetCharAt (max));
-			}*/
+			}
 			
 			int pos = line.Offset;
-
 			string curIndent = line.GetIndentation (textEditorData.Document);
 			int nlwsp = curIndent.Length;
 			int offset = cursor > pos + nlwsp ? cursor - (pos + nlwsp) : 0;
 			if (!stateTracker.Engine.LineBeganInsideMultiLineComment || (nlwsp < line.Length && textEditorData.Document.GetCharAt (line.Offset + nlwsp) == '*')) {
 				// Possibly replace the indent
-				//newIndent = ctx.ThisLineIndent;
-				newIndent = stateTracker.Engine.ThisLineIndent;
-				
+				newIndent = ctx.ThisLineIndent;
 				int newIndentLength = newIndent.Length;
 				if (newIndent != curIndent) {
 					if (CompletionWindowManager.IsVisible) {
