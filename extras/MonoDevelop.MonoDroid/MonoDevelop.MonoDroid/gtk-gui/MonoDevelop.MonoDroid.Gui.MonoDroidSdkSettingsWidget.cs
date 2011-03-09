@@ -34,7 +34,7 @@ namespace MonoDevelop.MonoDroid.Gui
 			this.label4 = new global::Gtk.Label ();
 			this.label4.Name = "label4";
 			this.label4.Xalign = 0F;
-			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("MonoDroid requires the Android SDK and Java JDK to be installed. If these\nhave not been found automatically, you must specify the locations below.");
+			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("Mono for Android requires the Android SDK and Java JDK to be installed. If these\nhave not been found automatically, you must specify the locations below.");
 			this.vbox1.Add (this.label4);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.label4]));
 			w1.Position = 0;

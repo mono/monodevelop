@@ -199,7 +199,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Other">
 		<Condition id="MonoDroidInstalled">
-			<Section id = "MonoDroidSdkSettings" _label = "MonoDroid SDKs"
+			<Section id = "MonoDroidSdkSettings" _label = "Mono for Android SDKs"
 				class="MonoDevelop.MonoDroid.Gui.MonoDroidSdkSettings"/>
 		</Condition>
 	</Extension>
@@ -207,9 +207,9 @@
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build">
 		<Condition id="ItemType" value="MonoDevelop.MonoDroid.MonoDroidProject">
 			<Section id = "MonoDroidBuildOptions"
-				_label = "MonoDroid Build"
+				_label = "Mono for Android Build"
 				class = "MonoDevelop.MonoDroid.Gui.MonoDroidBuildOptions" />
-			<Section id = "MonoDroidApplicationSettings" _label = "MonoDroid Application">
+			<Section id = "MonoDroidApplicationSettings" _label = "Mono for Android Application">
 				<Panel class = "MonoDevelop.MonoDroid.Gui.MonoDroidApplicationSettings" fill="true" />
 			</Section>
 		</Condition>
