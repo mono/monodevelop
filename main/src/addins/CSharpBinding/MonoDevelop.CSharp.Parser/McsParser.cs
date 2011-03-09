@@ -698,17 +698,16 @@ namespace MonoDevelop.CSharp.Parser
 					DomAttribute domAttribute = new DomAttribute ();
 					domAttribute.Name = attr.Name;
 					domAttribute.Region = ConvertRegion (attr.Location, attr.Location);
-					domAttribute.AttributeType = new DomReturnType (attr.Name);
+					domAttribute.AttributeType = ConvertReturnType (attr.TypeNameExpression);
 					if (attr.PosArguments != null) {
 						for (int i = 0; i < attr.PosArguments.Count; i++) {
 							CodeExpression domExp;
-							var exp = attr.PosArguments[i].Expr;
+							var exp = attr.PosArguments [i].Expr;
 							if (exp is TypeOf) {
 								TypeOf tof = (TypeOf)exp;
 								IReturnType rt = ConvertReturnType (tof.TypeExpression);
 								domExp = new CodeTypeOfExpression (rt.FullName);
-							}
-							else {
+							} else {
 								try {
 									domExp = ResolveMemberAccessExpression (exp);
 									// may be literal
@@ -728,10 +727,10 @@ namespace MonoDevelop.CSharp.Parser
 					}
 					if (attr.NamedArguments != null) {
 						for (int i = 0; i < attr.NamedArguments.Count; i++) {
-							var val = attr.NamedArguments[i].Expr as Constant;
+							var val = attr.NamedArguments [i].Expr as Constant;
 							if (val == null)
 								continue;
-							domAttribute.AddNamedArgument (((NamedArgument)attr.NamedArguments[i]).Name, new CodePrimitiveExpression (val.GetValue ()));
+							domAttribute.AddNamedArgument (((NamedArgument)attr.NamedArguments [i]).Name, new CodePrimitiveExpression (val.GetValue ()));
 						}
 					}
 					

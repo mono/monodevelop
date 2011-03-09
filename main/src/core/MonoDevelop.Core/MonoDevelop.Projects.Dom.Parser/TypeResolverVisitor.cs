@@ -128,7 +128,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 					method = currentMethod;
 				int idx = currentMethod.GetTypeParameterIndex (type.Name);
 				if (idx >= 0) {
-					ITypeParameter t = method.TypeParameters[idx];
+					ITypeParameter t = method.TypeParameters [idx];
 					DomReturnType typeParameterReturnType = new DomReturnType (type.FullName);
 					DomType constructedType = new InstantiatedParameterType (db, method, t);
 					
@@ -147,10 +147,12 @@ namespace MonoDevelop.Projects.Dom.Parser
 			}
 			
 			IType lookupType = db.SearchType (unit, contextType, resolvePosition, type);
-			
 			if (visitAttribute && lookupType == null && type.Parts.Count > 0) {
-				type.Parts[type.Parts.Count - 1].Name += "Attribute";
+				string oldName = type.Parts [type.Parts.Count - 1].Name;
+				type.Parts [type.Parts.Count - 1].Name += "Attribute";
 				lookupType = db.SearchType (unit, contextType, resolvePosition, type);
+				if (lookupType == null) 
+					type.Parts [type.Parts.Count - 1].Name = oldName;
 			}
 			
 			if (lookupType == null) {
@@ -167,7 +169,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				for (int n=curType.TypeParameters.Count - 1; n >= 0; n--)
 					newPart.AddTypeParameter (new DomReturnType ("?"));
 				
-				if (typePart >= type.Parts.Count || (type.Parts[typePart].Name != newPart.Name || type.Parts[typePart].GenericArguments.Count != newPart.GenericArguments.Count)) {
+				if (typePart >= type.Parts.Count || (type.Parts [typePart].Name != newPart.Name || type.Parts [typePart].GenericArguments.Count != newPart.GenericArguments.Count)) {
 					parts.Insert (0, newPart);
 					typePart++;
 				}
