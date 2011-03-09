@@ -48,7 +48,14 @@ namespace MonoDevelop.MonoDroid
 
 		public bool IsCurrentRuntimeInstalled (int version)
 		{
-			var packages = Packages.Where (p => p.Name == runtimeName && p.Version == version.ToString ());
+			var packages = Packages.Where (p => p.Name == runtimeName && p.Version == version);
+
+			return packages.Count () > 0;
+		}
+
+		public bool IsUnkownRuntimeInstalled ()
+		{
+			var packages = Packages.Where (p => p.Name == runtimeName && p.Version == int.MaxValue);
 
 			return packages.Count () > 0;
 		}
@@ -56,7 +63,7 @@ namespace MonoDevelop.MonoDroid
 		public List<InstalledPackage> GetOldRuntimes (int current)
 		{
 			var packages = Packages.Where (p =>
-				(p.Name == runtimeName && int.Parse (p.Version) < current) ||
+				(p.Name == runtimeName && p.Version < current) ||
 				p.Name == oldRuntimeName
 			);
 
@@ -67,7 +74,16 @@ namespace MonoDevelop.MonoDroid
 		{
 			string name = string.Format (platformName, platform);
 
-			var packages = Packages.Where (p => p.Name == name && p.Version == version.ToString ());
+			var packages = Packages.Where (p => p.Name == name && p.Version == version);
+
+			return packages.Count () > 0;
+		}
+
+		public bool IsUnkownPlatformInstalled (int platform)
+		{
+			string name = string.Format (platformName, platform);
+
+			var packages = Packages.Where (p => p.Name == name && p.Version == int.MaxValue);
 
 			return packages.Count () > 0;
 		}
@@ -78,7 +94,7 @@ namespace MonoDevelop.MonoDroid
 		{
 			string name = string.Format (platformName, platform);
 
-			var packages = Packages.Where (p => p.Name == name && int.Parse (p.Version) < current);
+			var packages = Packages.Where (p => p.Name == name && p.Version < current);
 
 			return packages.ToList ();
 		}
