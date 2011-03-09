@@ -95,7 +95,7 @@ namespace MonoDevelop.MonoDroid
 			InvokeSynch (() => MonoDroidFramework.EnsureSdksInstalled ());
 			
 			IAsyncOperation signOp = null;
-			if (project.PackageNeedsSigning (conf)) {
+			if (project.PackageNeedsSigning (configSel)) {
 				ClearUploadFlags (conf);
 				signOp = project.SignPackage (configSel);
 				opMon.AddOperation (signOp);
