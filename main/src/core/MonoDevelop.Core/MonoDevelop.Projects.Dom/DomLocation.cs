@@ -35,7 +35,7 @@ namespace MonoDevelop.Projects.Dom
 	{
 		public bool IsEmpty {
 			get {
-				return Line < 0;
+				return Line < 1;
 			}
 		}
 		
@@ -51,7 +51,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public static DomLocation Empty {
 			get {
-				return new DomLocation (-1, -1);
+				return new DomLocation (0, 0);
 			}
 		}
 		

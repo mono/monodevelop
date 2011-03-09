@@ -33,12 +33,12 @@ namespace MonoDevelop.Projects.Dom
 	[Serializable]
 	public struct DomRegion : IComparable, IComparable<DomRegion>
 	{
-		public readonly static DomRegion Empty = new DomRegion (-1, -1, -1, -1);
+		public readonly static DomRegion Empty = new DomRegion (0, 0, 0, 0);
 		DomLocation start, end;
 		
 		public bool IsEmpty {
 			get {
-				return Start.Line < 0;
+				return Start.Line < 1;
 			}
 		}
 
@@ -52,7 +52,7 @@ namespace MonoDevelop.Projects.Dom
 			set { end = value; }
 		}
 		
-		public DomRegion (int startLine, int endLine) : this (startLine, 0, endLine, 0)
+		public DomRegion (int startLine, int endLine) : this (startLine, 1, endLine, 1)
 		{
 		}
 		
