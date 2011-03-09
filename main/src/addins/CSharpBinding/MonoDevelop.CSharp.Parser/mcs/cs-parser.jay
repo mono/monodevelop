@@ -4112,6 +4112,7 @@ lambda_expression_body_simple
 	  expression_or_error	// Have to close block when error occurs
 	  {
 		Block b = end_block (lexer.Location);
+		b.IsCompilerGenerated = true;
 		b.AddStatement (new ContextualReturn ((Expression) $2));
 		$$ = b;
 	  } 

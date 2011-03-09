@@ -2219,19 +2219,21 @@ namespace MonoDevelop.CSharp.Parser
 				if (location == null || location.Count == 1) {
 					AddParameter (result, lambdaExpression.Parameters);
 					if (location != null)
-						result.AddChild (new CSharpTokenNode (Convert (location[0]), "=>".Length), MonoDevelop.CSharp.Ast.LambdaExpression.ArrowRole);
+						result.AddChild (new CSharpTokenNode (Convert (location [0]), "=>".Length), MonoDevelop.CSharp.Ast.LambdaExpression.ArrowRole);
 				} else {
 					result.AddChild (new CSharpTokenNode (Convert (lambdaExpression.Location), 1), MonoDevelop.CSharp.Ast.LambdaExpression.Roles.LPar);
 					AddParameter (result, lambdaExpression.Parameters);
 					if (location != null) {
-						result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), MonoDevelop.CSharp.Ast.LambdaExpression.Roles.RPar);
-						result.AddChild (new CSharpTokenNode (Convert (location[1]), "=>".Length), MonoDevelop.CSharp.Ast.LambdaExpression.ArrowRole);
+						result.AddChild (new CSharpTokenNode (Convert (location [0]), 1), MonoDevelop.CSharp.Ast.LambdaExpression.Roles.RPar);
+						result.AddChild (new CSharpTokenNode (Convert (location [1]), "=>".Length), MonoDevelop.CSharp.Ast.LambdaExpression.ArrowRole);
 					}
 				}
 				if (lambdaExpression.Block.IsCompilerGenerated) {
-					ContextualReturn generatedReturn = (ContextualReturn)lambdaExpression.Block.Statements[0];
+					Console.WriteLine ("1");
+					ContextualReturn generatedReturn = (ContextualReturn)lambdaExpression.Block.Statements [0];
 					result.AddChild ((AstNode)generatedReturn.Expr.Accept (this), MonoDevelop.CSharp.Ast.LambdaExpression.BodyRole);
 				} else {
+					Console.WriteLine ("2");
 					result.AddChild ((AstNode)lambdaExpression.Block.Accept (this), MonoDevelop.CSharp.Ast.LambdaExpression.BodyRole);
 				}
 				
