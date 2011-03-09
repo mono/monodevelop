@@ -181,74 +181,74 @@ namespace MonoDevelop.CSharp.Completion
 				return null;
 			}
 
-	//		IDisposable timer = null;
-		try {
-			if (dom == null /*|| Document.CompilationUnit == null*/)
-				return null;
-			if (completionChar != '#' && stateTracker.Engine.IsInsidePreprocessorDirective)
-				return null;
-		//	timer = Counters.ResolveTime.BeginTiming ();
-			DomLocation location = new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset - 1);
-			stateTracker.UpdateEngine ();
-			ExpressionResult result;
-			int cursor, newCursorOffset = 0;
-			switch (completionChar) {
-			case ':':
-			case '.':
-				if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
+			//		IDisposable timer = null;
+			try {
+				if (dom == null /*|| Document.CompilationUnit == null*/)
 					return null;
-				result = FindExpression (dom, completionContext);
-				if (result == null || result.Expression == null)
+				if (completionChar != '#' && stateTracker.Engine.IsInsidePreprocessorDirective)
 					return null;
-				int idx = result.Expression.LastIndexOf ('.');
-				if (idx > 0)
-					result.Expression = result.Expression.Substring (0, idx);
-				// don't parse expressions that end with more than 1 dot - see #646820
-				if (result.Expression.EndsWith ("."))
-					return null;
-				NRefactoryResolver resolver = CreateResolver ();
-				ResolveResult resolveResult = resolver.Resolve (result, location);
-				if (resolver.ResolvedExpression is ICSharpCode.NRefactory.Ast.PrimitiveExpression) {
-					ICSharpCode.NRefactory.Ast.PrimitiveExpression pex = (ICSharpCode.NRefactory.Ast.PrimitiveExpression)resolver.ResolvedExpression;
-					if (!tryToForceCompletion && !(pex.Value is string || pex.Value is char || pex.Value is bool))
+				//	timer = Counters.ResolveTime.BeginTiming ();
+				DomLocation location = new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset - 1);
+				stateTracker.UpdateEngine ();
+				ExpressionResult result;
+				int cursor, newCursorOffset = 0;
+				switch (completionChar) {
+				case ':':
+				case '.':
+					if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
 						return null;
-				}
-					
-				return CreateCompletionData (location, resolveResult, result, resolver);
-			case '#':
-				if (stateTracker.Engine.IsInsidePreprocessorDirective) 
-					return GetDirectiveCompletionData ();
-				return null;
-			case '>':
-				cursor = textEditorData.IsSomethingSelected ? textEditorData.SelectionRange.Offset : textEditorData.Caret.Offset;
-				
-				if (stateTracker.Engine.IsInsideDocLineComment) {
-					string lineText = textEditorData.GetLineText (completionContext.TriggerLine);
-					int startIndex = Math.Min (completionContext.TriggerLineOffset - 1, lineText.Length - 1);
-					
-					while (startIndex >= 0 && lineText[startIndex] != '<') {
-						--startIndex;
-						if (lineText[startIndex] == '/') { // already closed.
-							startIndex = -1;
-							break;
-						}
-					}
-					
-					if (startIndex >= 0) {
-						int endIndex = startIndex;
-						while (endIndex <= completionContext.TriggerLineOffset && endIndex < lineText.Length && !Char.IsWhiteSpace (lineText[endIndex])) {
-							endIndex++;
-						}
-						string tag = endIndex - startIndex - 1 > 0 ? lineText.Substring (startIndex + 1, endIndex - startIndex - 2) : null;
-						if (!String.IsNullOrEmpty (tag) && commentTags.IndexOf (tag) >= 0) {
-							textEditorData.Insert (cursor, "</" + tag + ">");
-							textEditorData.Caret.Offset = cursor; 
+					result = FindExpression (dom, completionContext);
+					if (result == null || result.Expression == null)
+						return null;
+					int idx = result.Expression.LastIndexOf ('.');
+					if (idx > 0)
+						result.Expression = result.Expression.Substring (0, idx);
+				// don't parse expressions that end with more than 1 dot - see #646820
+					if (result.Expression.EndsWith ("."))
+						return null;
+					NRefactoryResolver resolver = CreateResolver ();
+					ResolveResult resolveResult = resolver.Resolve (result, location);
+					if (resolver.ResolvedExpression is ICSharpCode.NRefactory.Ast.PrimitiveExpression) {
+						ICSharpCode.NRefactory.Ast.PrimitiveExpression pex = (ICSharpCode.NRefactory.Ast.PrimitiveExpression)resolver.ResolvedExpression;
+						if (!tryToForceCompletion && !(pex.Value is string || pex.Value is char || pex.Value is bool))
 							return null;
+					}
+					
+					return CreateCompletionData (location, resolveResult, result, resolver);
+				case '#':
+					if (stateTracker.Engine.IsInsidePreprocessorDirective) 
+						return GetDirectiveCompletionData ();
+					return null;
+				case '>':
+					cursor = textEditorData.IsSomethingSelected ? textEditorData.SelectionRange.Offset : textEditorData.Caret.Offset;
+				
+					if (stateTracker.Engine.IsInsideDocLineComment) {
+						string lineText = textEditorData.GetLineText (completionContext.TriggerLine);
+						int startIndex = Math.Min (completionContext.TriggerLineOffset - 1, lineText.Length - 1);
+					
+						while (startIndex >= 0 && lineText [startIndex] != '<') {
+							--startIndex;
+							if (lineText [startIndex] == '/') { // already closed.
+								startIndex = -1;
+								break;
+							}
+						}
+					
+						if (startIndex >= 0) {
+							int endIndex = startIndex;
+							while (endIndex <= completionContext.TriggerLineOffset && endIndex < lineText.Length && !Char.IsWhiteSpace (lineText [endIndex])) {
+								endIndex++;
+							}
+							string tag = endIndex - startIndex - 1 > 0 ? lineText.Substring (startIndex + 1, endIndex - startIndex - 2) : null;
+							if (!String.IsNullOrEmpty (tag) && commentTags.IndexOf (tag) >= 0) {
+								textEditorData.Insert (cursor, "</" + tag + ">");
+								textEditorData.Caret.Offset = cursor; 
+								return null;
+							}
 						}
 					}
-				}
-				return null;
-/* Disabled because it gives problems when declaring arrays - for example string [] should not pop up code completion.
+					return null;
+				/* Disabled because it gives problems when declaring arrays - for example string [] should not pop up code completion.
  			case '[':
 				if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
 					return null;
@@ -256,188 +256,188 @@ namespace MonoDevelop.CSharp.Completion
 				if (result.ExpressionContext == ExpressionContext.Attribute)
 					return CreateCtrlSpaceCompletionData (completionContext, result);
 				return null;*/
-			case '<':
-				if (stateTracker.Engine.IsInsideDocLineComment) 
-					return GetXmlDocumentationCompletionData ();
-				return null;
-			case '(':
-				if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
+				case '<':
+					if (stateTracker.Engine.IsInsideDocLineComment) 
+						return GetXmlDocumentationCompletionData ();
 					return null;
-				result = FindExpression (dom, completionContext, -1);
-				if (result == null || result.Expression == null)
-					return null;
-				resolver = CreateResolver ();
-				resolveResult = resolver.Resolve (result, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset - 2));
+				case '(':
+					if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
+						return null;
+					result = FindExpression (dom, completionContext, -1);
+					if (result == null || result.Expression == null)
+						return null;
+					resolver = CreateResolver ();
+					resolveResult = resolver.Resolve (result, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset - 2));
 				
-				if (resolveResult != null && resolver.ResolvedExpression is ICSharpCode.NRefactory.Ast.TypeOfExpression) {
-					CompletionDataList completionList = new ProjectDomCompletionDataList ();
+					if (resolveResult != null && resolver.ResolvedExpression is ICSharpCode.NRefactory.Ast.TypeOfExpression) {
+						CompletionDataList completionList = new ProjectDomCompletionDataList ();
 					
-					CompletionDataCollector col = new CompletionDataCollector (dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
-					AddPrimitiveTypes (col);
-					foreach (object o in dom.GetNamespaceContents (GetUsedNamespaces (), true, true)) {
-						col.Add (o);
-					}
-					if (resolver.CallingMember is IMethod) {
-						foreach (ITypeParameter tp in ((IMethod)resolver.CallingMember).TypeParameters) {
-							col.Add (tp.Name, "md-keyword");
+						CompletionDataCollector col = new CompletionDataCollector (dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
+						AddPrimitiveTypes (col);
+						foreach (object o in dom.GetNamespaceContents (GetUsedNamespaces (), true, true)) {
+							col.Add (o);
 						}
-					}
-					if (resolver.CallingType != null) {
-						foreach (ITypeParameter tp in resolver.CallingType.TypeParameters) {
-							col.Add (tp.Name, "md-keyword");
-						}
-					}
-					return completionList;
-				}
-				return null;
-			case '/':
-				cursor = textEditorData.IsSomethingSelected ? textEditorData.SelectionRange.Offset : textEditorData.Caret.Offset;
-				if (cursor < 2)
-					break;
-					
-				if (stateTracker.Engine.IsInsideDocLineComment) {
-					string lineText = textEditorData.GetLineText (completionContext.TriggerLine);
-					bool startsDocComment = true;
-					int slashes = 0;
-					for (int i = 0; i < completionContext.TriggerLineOffset && i < lineText.Length; i++) {
-						if (lineText[i] == '/') {
-							slashes++;
-							continue;
-						}
-						if (!Char.IsWhiteSpace (lineText[i])) {
-							startsDocComment = false;
-							break;
-						}
-					}
-					// check if lines above already start a doc comment
-					for (int i = completionContext.TriggerLine - 2; i >= 1; i--) {
-						string text = textEditorData.GetLineText (i);
-						if (text.Length == 0)
-							continue;
-						if (text.StartsWith ("///")) {
-							startsDocComment = false;
-							break;
-						}
-						break;
-					}
-						
-					// check if following lines start a doc comment
-					for (int i = completionContext.TriggerLine; i <= textEditorData.Document.LineCount; i++) {
-						string text = textEditorData.GetLineText (i);
-						if (text == null)
-							break;
-						text = text.Trim ();
-						if (text.Length == 0)
-							continue;
-						if (text.StartsWith ("///")) {
-							startsDocComment = false;
-							break;
-						}
-						break;
-					}
-					
-					if (!startsDocComment || slashes != 3)
-						break;
-					StringBuilder generatedComment = new StringBuilder ();
-					bool generateStandardComment = true;
-					ParsedDocument currentParsedDocument = Document.UpdateParseDocument ();
-					IType insideClass = NRefactoryResolver.GetTypeAtCursor (currentParsedDocument.CompilationUnit, Document.FileName, location);
-					if (insideClass != null) {
-						string indent = textEditorData.Document.GetLineIndent (completionContext.TriggerLine);
-						if (insideClass.ClassType == ClassType.Delegate) {
-							AppendSummary (generatedComment, indent, out newCursorOffset);
-							IMethod m = null;
-							foreach (IMethod method in insideClass.Methods)
-								m = method;
-							AppendMethodComment (generatedComment, indent, m);
-							generateStandardComment = false;
-						} else {
-							if (!IsInsideClassBody (insideClass, completionContext.TriggerLine, completionContext.TriggerLineOffset))
-								break;
-							string body = GenerateBody (insideClass, completionContext.TriggerLine, indent, out newCursorOffset);
-							if (!String.IsNullOrEmpty (body)) {
-								generatedComment.Append (body);
-								generateStandardComment = false;
+						if (resolver.CallingMember is IMethod) {
+							foreach (ITypeParameter tp in ((IMethod)resolver.CallingMember).TypeParameters) {
+								col.Add (tp.Name, "md-keyword");
 							}
 						}
+						if (resolver.CallingType != null) {
+							foreach (ITypeParameter tp in resolver.CallingType.TypeParameters) {
+								col.Add (tp.Name, "md-keyword");
+							}
+						}
+						return completionList;
 					}
-					if (generateStandardComment) {
-						string indent = textEditorData.Document.GetLineIndent (completionContext.TriggerLine);
-						AppendSummary (generatedComment, indent, out newCursorOffset);
-					}
-					textEditorData.Document.EndAtomicUndo ();
-					textEditorData.Document.BeginAtomicUndo ();
-					textEditorData.Insert (cursor, generatedComment.ToString ());
-					textEditorData.Caret.Offset = cursor + newCursorOffset;
 					return null;
-				}
-				return null;
-//			case '\n':
-//			case '\r': {
-//				if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
-//					return null;
-//				result = FindExpression (dom, completionContext);
-//				if (result == null)
-//					return null;
-//					
-//					
-//				int tokenIndex = completionContext.TriggerOffset;
-//				string token = GetPreviousToken (ref tokenIndex, false);
-//				if (result.ExpressionContext == ExpressionContext.ObjectInitializer) {
-//					if (token == "{" || token == ",")
-//						return CreateCtrlSpaceCompletionData (completionContext, result); 
-//				} 
-//				return null;
-//				}
-			case ' ':
-				if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
-					return null;
-				result = FindExpression (dom, completionContext);
-				if (result == null)
-					return null;
+				case '/':
+					cursor = textEditorData.IsSomethingSelected ? textEditorData.SelectionRange.Offset : textEditorData.Caret.Offset;
+					if (cursor < 2)
+						break;
 					
-				int tokenIndex = completionContext.TriggerOffset;
-				string token = GetPreviousToken (ref tokenIndex, false);
-				if (result.ExpressionContext == ExpressionContext.ObjectInitializer) {
-					resolver = CreateResolver ();
-					ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForObjectInitializer (textEditorData, resolver.Unit, Document.FileName, resolver.CallingType);
-					IReturnType objectInitializer = ((ExpressionContext.TypeExpressionContext)exactContext).UnresolvedType;
-					if (objectInitializer != null && objectInitializer.ArrayDimensions == 0 && objectInitializer.PointerNestingLevel == 0 && (token == "{" || token == ","))
-						return CreateCtrlSpaceCompletionData (completionContext, result); 
-				}
-				if (token == "=") {
-					int j = tokenIndex;
-					string prevToken = GetPreviousToken (ref j, false);
-					if (prevToken == "=" || prevToken == "+" || prevToken == "-") {
-						token = prevToken + token;
-						tokenIndex = j;
-					}
-				}
-				switch (token) {
-				case "=":
-				case "==":
-					result = FindExpression (dom, completionContext, tokenIndex - completionContext.TriggerOffset - 1);
-					resolver = CreateResolver ();
-					resolveResult = resolver.Resolve (result, location);
-					if (resolveResult != null) {
-						IType resolvedType = dom.GetType (resolveResult.ResolvedType);
-						if (resolvedType == null) 
-							return null;
-						if (resolvedType.ClassType == ClassType.Enum) {
-							CompletionDataList completionList = new ProjectDomCompletionDataList ();
-							CompletionDataCollector cdc = new CompletionDataCollector (dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
-							IReturnType returnType = new DomReturnType (resolvedType);
-							bool added = false;
-							foreach (IUsing u in Document.CompilationUnit.Usings) {
-								foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {
-									if (alias.Value.ToInvariantString () == returnType.ToInvariantString ()) {
-										cdc.Add (alias.Key, "md-class");
-										added = true;
-									}
+					if (stateTracker.Engine.IsInsideDocLineComment) {
+						string lineText = textEditorData.GetLineText (completionContext.TriggerLine);
+						bool startsDocComment = true;
+						int slashes = 0;
+						for (int i = 0; i < completionContext.TriggerLineOffset && i < lineText.Length; i++) {
+							if (lineText [i] == '/') {
+								slashes++;
+								continue;
+							}
+							if (!Char.IsWhiteSpace (lineText [i])) {
+								startsDocComment = false;
+								break;
+							}
+						}
+						// check if lines above already start a doc comment
+						for (int i = completionContext.TriggerLine - 2; i >= 1; i--) {
+							string text = textEditorData.GetLineText (i);
+							if (text.Length == 0)
+								continue;
+							if (text.StartsWith ("///")) {
+								startsDocComment = false;
+								break;
+							}
+							break;
+						}
+						
+						// check if following lines start a doc comment
+						for (int i = completionContext.TriggerLine; i <= textEditorData.Document.LineCount; i++) {
+							string text = textEditorData.GetLineText (i);
+							if (text == null)
+								break;
+							text = text.Trim ();
+							if (text.Length == 0)
+								continue;
+							if (text.StartsWith ("///")) {
+								startsDocComment = false;
+								break;
+							}
+							break;
+						}
+					
+						if (!startsDocComment || slashes != 3)
+							break;
+						StringBuilder generatedComment = new StringBuilder ();
+						bool generateStandardComment = true;
+						ParsedDocument currentParsedDocument = Document.UpdateParseDocument ();
+						IType insideClass = NRefactoryResolver.GetTypeAtCursor (currentParsedDocument.CompilationUnit, Document.FileName, location);
+						if (insideClass != null) {
+							string indent = textEditorData.Document.GetLineIndent (completionContext.TriggerLine);
+							if (insideClass.ClassType == ClassType.Delegate) {
+								AppendSummary (generatedComment, indent, out newCursorOffset);
+								IMethod m = null;
+								foreach (IMethod method in insideClass.Methods)
+									m = method;
+								AppendMethodComment (generatedComment, indent, m);
+								generateStandardComment = false;
+							} else {
+								if (!IsInsideClassBody (insideClass, completionContext.TriggerLine, completionContext.TriggerLineOffset))
+									break;
+								string body = GenerateBody (insideClass, completionContext.TriggerLine, indent, out newCursorOffset);
+								if (!String.IsNullOrEmpty (body)) {
+									generatedComment.Append (body);
+									generateStandardComment = false;
 								}
 							}
-							if (!added)
-								cdc.Add (returnType);/*
+						}
+						if (generateStandardComment) {
+							string indent = textEditorData.Document.GetLineIndent (completionContext.TriggerLine);
+							AppendSummary (generatedComment, indent, out newCursorOffset);
+						}
+						textEditorData.Document.EndAtomicUndo ();
+						textEditorData.Document.BeginAtomicUndo ();
+						textEditorData.Insert (cursor, generatedComment.ToString ());
+						textEditorData.Caret.Offset = cursor + newCursorOffset;
+						return null;
+					}
+					return null;
+				//			case '\n':
+				//			case '\r': {
+				//				if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
+				//					return null;
+				//				result = FindExpression (dom, completionContext);
+				//				if (result == null)
+				//					return null;
+				//					
+				//					
+				//				int tokenIndex = completionContext.TriggerOffset;
+				//				string token = GetPreviousToken (ref tokenIndex, false);
+				//				if (result.ExpressionContext == ExpressionContext.ObjectInitializer) {
+				//					if (token == "{" || token == ",")
+				//						return CreateCtrlSpaceCompletionData (completionContext, result); 
+				//				} 
+				//				return null;
+				//				}
+				case ' ':
+					if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
+						return null;
+					result = FindExpression (dom, completionContext);
+					if (result == null)
+						return null;
+					
+					int tokenIndex = completionContext.TriggerOffset;
+					string token = GetPreviousToken (ref tokenIndex, false);
+					if (result.ExpressionContext == ExpressionContext.ObjectInitializer) {
+						resolver = CreateResolver ();
+						ExpressionContext exactContext = new NewCSharpExpressionFinder (dom).FindExactContextForObjectInitializer (textEditorData, resolver.Unit, Document.FileName, resolver.CallingType);
+						IReturnType objectInitializer = ((ExpressionContext.TypeExpressionContext)exactContext).UnresolvedType;
+						if (objectInitializer != null && objectInitializer.ArrayDimensions == 0 && objectInitializer.PointerNestingLevel == 0 && (token == "{" || token == ","))
+							return CreateCtrlSpaceCompletionData (completionContext, result); 
+					}
+					if (token == "=") {
+						int j = tokenIndex;
+						string prevToken = GetPreviousToken (ref j, false);
+						if (prevToken == "=" || prevToken == "+" || prevToken == "-") {
+							token = prevToken + token;
+							tokenIndex = j;
+						}
+					}
+					switch (token) {
+					case "=":
+					case "==":
+						result = FindExpression (dom, completionContext, tokenIndex - completionContext.TriggerOffset - 1);
+						resolver = CreateResolver ();
+						resolveResult = resolver.Resolve (result, location);
+						if (resolveResult != null) {
+							IType resolvedType = dom.GetType (resolveResult.ResolvedType);
+							if (resolvedType == null) 
+								return null;
+							if (resolvedType.ClassType == ClassType.Enum) {
+								CompletionDataList completionList = new ProjectDomCompletionDataList ();
+								CompletionDataCollector cdc = new CompletionDataCollector (dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
+								IReturnType returnType = new DomReturnType (resolvedType);
+								bool added = false;
+								foreach (IUsing u in Document.CompilationUnit.Usings) {
+									foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {
+										if (alias.Value.ToInvariantString () == returnType.ToInvariantString ()) {
+											cdc.Add (alias.Key, "md-class");
+											added = true;
+										}
+									}
+								}
+								if (!added)
+									cdc.Add (returnType);/*
 							foreach (object o in CreateCtrlSpaceCompletionData (completionContext, result)) {
 								MemberCompletionData memberData = o as MemberCompletionData;
 								if (memberData == null || memberData.Member == null) {
@@ -455,18 +455,18 @@ namespace MonoDevelop.CSharp.Completion
 								if (returnType != null && returnType.FullName != DomReturnType.Void.FullName)
 									completionList.Add (memberData);
 							}*/
-							completionList.AutoCompleteEmptyMatch = false;
-							resolver.AddAccessibleCodeCompletionData (result.ExpressionContext, cdc);
-							return completionList;
-						}
+								completionList.AutoCompleteEmptyMatch = false;
+								resolver.AddAccessibleCodeCompletionData (result.ExpressionContext, cdc);
+								return completionList;
+							}
 						
-						if (resolvedType.FullName == DomReturnType.Bool.FullName) {
-							CompletionDataList completionList = new ProjectDomCompletionDataList ();
-							CompletionDataCollector cdc = new CompletionDataCollector (dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
-							completionList.AutoCompleteEmptyMatch = false;
-							cdc.Add ("true", "md-keyword");
-							cdc.Add ("false", "md-keyword");
-/*							foreach (object o in CreateCtrlSpaceCompletionData (completionContext, result)) {
+							if (resolvedType.FullName == DomReturnType.Bool.FullName) {
+								CompletionDataList completionList = new ProjectDomCompletionDataList ();
+								CompletionDataCollector cdc = new CompletionDataCollector (dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
+								completionList.AutoCompleteEmptyMatch = false;
+								cdc.Add ("true", "md-keyword");
+								cdc.Add ("false", "md-keyword");
+								/*							foreach (object o in CreateCtrlSpaceCompletionData (completionContext, result)) {
 								MemberCompletionData memberData = o as MemberCompletionData;
 								if (memberData == null || memberData.Member == null) {
 									completionList.Add (o as CompletionData);
@@ -484,251 +484,243 @@ namespace MonoDevelop.CSharp.Completion
 								if (returnType != null && returnType.FullName != DomReturnType.Void.FullName)
 									completionList.Add (memberData);
 							}*/
-							resolver.AddAccessibleCodeCompletionData (result.ExpressionContext, cdc);
-							return completionList;
-						}
+								resolver.AddAccessibleCodeCompletionData (result.ExpressionContext, cdc);
+								return completionList;
+							}
 							
-						if (resolvedType.ClassType == ClassType.Delegate && token == "=") {
-							IMethod delegateMethod = resolvedType.Methods.First ();
+							if (resolvedType.ClassType == ClassType.Delegate && token == "=") {
+								IMethod delegateMethod = resolvedType.Methods.First ();
+								CompletionDataList completionList = new ProjectDomCompletionDataList ();
+								
+								completionList.Add ("delegate", "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate {" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent + TextEditorProperties.IndentString + "|" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent + "};");
+								StringBuilder sb = new StringBuilder ("(");
+								for (int k = 0; k < delegateMethod.Parameters.Count; k++) {
+									if (k > 0)
+										sb.Append (", ");
+									IType parameterType = dom.GetType (delegateMethod.Parameters [k].ReturnType);
+									IReturnType returnType = parameterType != null ? new DomReturnType (parameterType) : delegateMethod.Parameters [k].ReturnType;
+									sb.Append (CompletionDataCollector.ambience.GetString (Document.CompilationUnit.ShortenTypeName (returnType, textEditorData.Caret.Line, textEditorData.Caret.Column), OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName | OutputFlags.UseFullInnerTypeName));
+									sb.Append (" ");
+									sb.Append (delegateMethod.Parameters [k].Name);
+								}
+								sb.Append (")");
+								completionList.Add ("delegate" + sb, "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate" + sb + " {" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent + TextEditorProperties.IndentString + "|" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent + "};");
+								string varName = GetPreviousToken (ref tokenIndex, false);
+								varName = GetPreviousToken (ref tokenIndex, false);
+								if (varName != ".") {
+									varName = null;
+								} else {
+									List<string> names = new List<string> ();
+									while (varName == ".") {
+										varName = GetPreviousToken (ref tokenIndex, false);
+										if (varName == "this") {
+											names.Add ("handle");
+										} else if (varName != null) {
+											string trimmedName = varName.Trim ();
+											if (trimmedName.Length == 0)
+												break;
+											names.Insert (0, trimmedName);
+										}
+										varName = GetPreviousToken (ref tokenIndex, false);
+									}
+									varName = String.Join ("", names.ToArray ());
+									foreach (char ch in varName) {
+										if (!char.IsLetterOrDigit (ch) && ch != '_') {
+											varName = "";
+											break;
+										}
+									}
+								}
+								completionList.Add (new EventCreationCompletionData (textEditorData, varName, resolvedType, null, sb.ToString (), resolver.CallingMember, resolvedType));
+								return completionList;
+							}
+						}
+						return null;
+					case "+=":
+					case "-=":
+						if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
+							return null;
+						result = FindExpression (dom, completionContext, tokenIndex - completionContext.TriggerOffset);
+						resolver = CreateResolver ();
+						resolveResult = resolver.Resolve (result, location);
+					
+						if (resolveResult is MemberResolveResult) {
+							MemberResolveResult mrr = resolveResult as MemberResolveResult;
+							IEvent evt = mrr.ResolvedMember as IEvent;
+							if (evt == null)
+								return null;
+							IType delegateType = resolver.SearchType (evt.ReturnType);
+							if (delegateType == null || delegateType.ClassType != ClassType.Delegate)
+								return null;
 							CompletionDataList completionList = new ProjectDomCompletionDataList ();
-								
-							completionList.Add ("delegate", "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate {" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent  + TextEditorProperties.IndentString + "|" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent +"};");
-							StringBuilder sb = new StringBuilder ("(");
-							for (int k = 0; k < delegateMethod.Parameters.Count; k++) {
-								if (k > 0)
-									sb.Append (", ");
-								IType parameterType = dom.GetType (delegateMethod.Parameters[k].ReturnType);
-								IReturnType returnType = parameterType != null ? new DomReturnType (parameterType) : delegateMethod.Parameters[k].ReturnType;
-								sb.Append (CompletionDataCollector.ambience.GetString (Document.CompilationUnit.ShortenTypeName (returnType, textEditorData.Caret.Line, textEditorData.Caret.Column), OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName  | OutputFlags.UseFullInnerTypeName));
-								sb.Append (" ");
-								sb.Append (delegateMethod.Parameters[k].Name);
+							CompletionDataCollector cdc = new CompletionDataCollector (dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
+						
+							IType declaringType = resolver.CallingType;
+							if (Document.LastErrorFreeParsedDocument != null) {
+								declaringType = Document.LastErrorFreeParsedDocument.CompilationUnit.GetType (declaringType.FullName, declaringType.TypeParameters.Count);
 							}
-							sb.Append (")");
-							completionList.Add ("delegate" + sb, "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate" + sb + " {" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent  + TextEditorProperties.IndentString + "|" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent +"};");
-							string varName = GetPreviousToken (ref tokenIndex, false);
-							varName = GetPreviousToken (ref tokenIndex, false);
-							if (varName != ".") {
-								varName = null;
-							} else {
-								List<string> names = new List<string> ();
-								while (varName == ".") {
-									varName = GetPreviousToken (ref tokenIndex, false);
-									if (varName == "this") {
-										names.Add ("handle");
-									} else if (varName != null) {
-										string trimmedName = varName.Trim ();
-										if (trimmedName.Length == 0)
+							IType typeFromDatabase = null;
+							if (declaringType != null) {
+								typeFromDatabase = dom.GetType (declaringType.FullName, new DomReturnType (declaringType).GenericArguments) ?? declaringType;
+								bool includeProtected = DomType.IncludeProtected (dom, typeFromDatabase, resolver.CallingType);
+								foreach (IType type in dom.GetInheritanceTree (typeFromDatabase)) {
+									foreach (IMethod method in type.Methods) {
+										if (method.IsAccessibleFrom (dom, resolver.CallingType, resolver.CallingMember, includeProtected) && MatchDelegate (delegateType, method)) {
+											CompletionData data = cdc.Add (method);
+											data.SetText (data.CompletionText + ";");
+										}
+									}
+								}
+							}
+							if (token == "+=") {
+								IMethod delegateMethod = delegateType.Methods.First ();
+								completionList.Add ("delegate", "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate {" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent + TextEditorProperties.IndentString + "|" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent + "};");
+								StringBuilder sb = new StringBuilder ("(");
+								for (int k = 0; k < delegateMethod.Parameters.Count; k++) {
+									if (k > 0)
+										sb.Append (", ");
+									IType parameterType = dom.GetType (delegateMethod.Parameters [k].ReturnType);
+									IReturnType returnType = parameterType != null ? new DomReturnType (parameterType) : delegateMethod.Parameters [k].ReturnType;
+									sb.Append (CompletionDataCollector.ambience.GetString (Document.CompilationUnit.ShortenTypeName (returnType, textEditorData.Caret.Line, textEditorData.Caret.Column), OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName | OutputFlags.UseFullInnerTypeName));
+									sb.Append (" ");
+									sb.Append (delegateMethod.Parameters [k].Name);
+								}
+								sb.Append (")");
+								completionList.Add ("delegate" + sb, "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate" + sb + " {" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent + TextEditorProperties.IndentString + "|" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent + "};");
+								string varName = GetPreviousToken (ref tokenIndex, false);
+								varName = GetPreviousToken (ref tokenIndex, false);
+								if (varName != ".") {
+									varName = null;
+								} else {
+									List<string> names = new List<string> ();
+									while (varName == ".") {
+										varName = GetPreviousToken (ref tokenIndex, false);
+										if (varName == "this") {
+											names.Add ("handle");
+										} else if (varName != null) {
+											string trimmedName = varName.Trim ();
+											if (trimmedName.Length == 0)
+												break;
+											names.Insert (0, trimmedName);
+										}
+										varName = GetPreviousToken (ref tokenIndex, false);
+									}
+									varName = String.Join ("", names.ToArray ());
+									foreach (char ch in varName) {
+										if (!char.IsLetterOrDigit (ch) && ch != '_') {
+											varName = "";
 											break;
-										names.Insert (0, trimmedName);
-									}
-									varName = GetPreviousToken (ref tokenIndex, false);
-								}
-								varName = String.Join ("", names.ToArray ());
-								foreach (char ch in varName) {
-									if (!char.IsLetterOrDigit (ch) && ch != '_') {
-										varName = "";
-										break;
+										}
 									}
 								}
+								
+								completionList.Add (new EventCreationCompletionData (textEditorData, varName, delegateType, evt, sb.ToString (), resolver.CallingMember, typeFromDatabase));
 							}
-							completionList.Add (new EventCreationCompletionData (textEditorData, varName, resolvedType, null, sb.ToString (), resolver.CallingMember, resolvedType));
 							return completionList;
 						}
-					}
-					return null;
-				case "+=":
-				case "-=":
-					if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
 						return null;
-					result = FindExpression (dom, completionContext, tokenIndex - completionContext.TriggerOffset);
-					resolver = CreateResolver ();
-					resolveResult = resolver.Resolve (result, location);
-					
-					if (resolveResult is MemberResolveResult) {
-						MemberResolveResult mrr = resolveResult as MemberResolveResult;
-						IEvent evt = mrr.ResolvedMember as IEvent;
-						if (evt == null)
-							return null;
-						IType delegateType = resolver.SearchType (evt.ReturnType);
-						if (delegateType == null || delegateType.ClassType != ClassType.Delegate)
-							return null;
-						CompletionDataList completionList = new ProjectDomCompletionDataList ();
-						CompletionDataCollector cdc = new CompletionDataCollector (dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
-						
-						IType declaringType = resolver.CallingType;
-						if (Document.LastErrorFreeParsedDocument != null) {
-							declaringType = Document.LastErrorFreeParsedDocument.CompilationUnit.GetType (declaringType.FullName, declaringType.TypeParameters.Count);
-						}
-						IType typeFromDatabase = null;
-						if (declaringType != null) {
-							typeFromDatabase = dom.GetType (declaringType.FullName, new DomReturnType (declaringType).GenericArguments) ?? declaringType;
-							bool includeProtected = DomType.IncludeProtected (dom, typeFromDatabase, resolver.CallingType);
-							foreach (IType type in dom.GetInheritanceTree (typeFromDatabase)) {
-								foreach (IMethod method in type.Methods) {
-									if (method.IsAccessibleFrom (dom, resolver.CallingType, resolver.CallingMember, includeProtected) && MatchDelegate (delegateType, method)) {
-										CompletionData data = cdc.Add (method);
-										data.SetText (data.CompletionText + ";");
-									}
-								}
-							}
-						}
-						if (token == "+=") {
-							IMethod delegateMethod = delegateType.Methods.First ();
-							completionList.Add ("delegate", "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate {" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent  + TextEditorProperties.IndentString + "|" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent +"};");
-							StringBuilder sb = new StringBuilder ("(");
-							for (int k = 0; k < delegateMethod.Parameters.Count; k++) {
-								if (k > 0)
-									sb.Append (", ");
-								IType parameterType = dom.GetType (delegateMethod.Parameters[k].ReturnType);
-								IReturnType returnType = parameterType != null ? new DomReturnType (parameterType) : delegateMethod.Parameters[k].ReturnType;
-								sb.Append (CompletionDataCollector.ambience.GetString (Document.CompilationUnit.ShortenTypeName (returnType, textEditorData.Caret.Line, textEditorData.Caret.Column), OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName  | OutputFlags.UseFullInnerTypeName));
-								sb.Append (" ");
-								sb.Append (delegateMethod.Parameters[k].Name);
-							}
-							sb.Append (")");
-							completionList.Add ("delegate" + sb, "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate" + sb + " {" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent  + TextEditorProperties.IndentString + "|" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent +"};");
-							string varName = GetPreviousToken (ref tokenIndex, false);
-							varName = GetPreviousToken (ref tokenIndex, false);
-							if (varName != ".") {
-								varName = null;
-							} else {
-								List<string> names = new List<string> ();
-								while (varName == ".") {
-									varName = GetPreviousToken (ref tokenIndex, false);
-									if (varName == "this") {
-										names.Add ("handle");
-									} else if (varName != null) {
-										string trimmedName = varName.Trim ();
-										if (trimmedName.Length == 0)
-											break;
-										names.Insert (0, trimmedName);
-									}
-									varName = GetPreviousToken (ref tokenIndex, false);
-								}
-								varName = String.Join ("", names.ToArray ());
-								foreach (char ch in varName) {
-									if (!char.IsLetterOrDigit (ch) && ch != '_') {
-										varName = "";
-										break;
-									}
-								}
-							}
-								
-							completionList.Add (new EventCreationCompletionData (textEditorData, varName, delegateType, evt, sb.ToString (), resolver.CallingMember, typeFromDatabase));
-						}
-						return completionList;
 					}
-					return null;
-				}
-				return HandleKeywordCompletion (completionContext, result, tokenIndex, token);
-			default:
-				if ((Char.IsLetter (completionChar) || completionChar == '_') && TextEditorProperties.EnableAutoCodeCompletion
-					    && !stateTracker.Engine.IsInsideDocLineComment
-					    && !stateTracker.Engine.IsInsideOrdinaryCommentOrString)
-				{
-					char prevCh = completionContext.TriggerOffset > 2
-							? textEditorData.GetCharAt (completionContext.TriggerOffset - 2)
-							: '\0';
-					
-					char nextCh = completionContext.TriggerOffset < textEditorData.Length
-							? textEditorData.GetCharAt (completionContext.TriggerOffset)
-							: ' ';
-					const string allowedChars = ";,[(){}+-*/%^?:&|~!<>=";
-					if (!Char.IsWhiteSpace (nextCh) && allowedChars.IndexOf (nextCh) < 0)
-						return null;
-					if (Char.IsWhiteSpace (prevCh) || allowedChars.IndexOf (prevCh) >= 0)
-					{
-						result = FindExpression (dom, completionContext, -1);
-						if (result == null)
+					return HandleKeywordCompletion (completionContext, result, tokenIndex, token);
+				default:
+					if ((Char.IsLetter (completionChar) || completionChar == '_') && TextEditorProperties.EnableAutoCodeCompletion && !stateTracker.Engine.IsInsideDocLineComment && !stateTracker.Engine.IsInsideOrdinaryCommentOrString) {
+						char prevCh = completionContext.TriggerOffset > 2 ? textEditorData.GetCharAt (completionContext.TriggerOffset - 2) : '\0';
+						char nextCh = completionContext.TriggerOffset < textEditorData.Length ? textEditorData.GetCharAt (completionContext.TriggerOffset) : ' ';
+						const string allowedChars = ";,[(){}+-*/%^?:&|~!<>=" ; 
+						if (!Char.IsWhiteSpace (nextCh) && allowedChars.IndexOf (nextCh) < 0)
 							return null;
-						if (IsInLinqContext (result)) {
-							tokenIndex = completionContext.TriggerOffset;
-							token = GetPreviousToken (ref tokenIndex, false); // token last typed
-							token = GetPreviousToken (ref tokenIndex, false); // possible linq keyword ?
-							triggerWordLength = 1;
+						if (Char.IsWhiteSpace (prevCh) || allowedChars.IndexOf (prevCh) >= 0) {
+							result = FindExpression (dom, completionContext, -1);
+							if (result == null)
+								return null;
+							if (IsInLinqContext (result)) {
+								tokenIndex = completionContext.TriggerOffset;
+								token = GetPreviousToken (ref tokenIndex, false); // token last typed
+								token = GetPreviousToken (ref tokenIndex, false); // possible linq keyword ?
+								triggerWordLength = 1;
 							
-							if (linqKeywords.Contains (token)) {
-								if (token == "from") // after from no auto code completion.
-									return null;
-								result.Expression = "";
-								return CreateCtrlSpaceCompletionData (completionContext, result);
-							}
-							CompletionDataList dataList = new ProjectDomCompletionDataList ();
-							CompletionDataCollector col = new CompletionDataCollector (dom, dataList, Document.CompilationUnit, null, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
-							foreach (string kw in linqKeywords) {
-								col.Add (kw, "md-keyword");
-							}
-							return dataList;
-						} else if (result.ExpressionContext != ExpressionContext.IdentifierExpected) {
-							triggerWordLength = 1;
-							bool autoSelect = true;
-							int cpos;
-							if ((prevCh == ',' || prevCh == '(') && GetParameterCompletionCommandOffset (out cpos)) {
-								CodeCompletionContext ctx = CompletionWidget.CreateCodeCompletionContext (cpos);
-								NRefactoryParameterDataProvider provider = ParameterCompletionCommand (ctx) as NRefactoryParameterDataProvider;
-								if (provider != null) {
-									int i = provider.GetCurrentParameterIndex (CompletionWidget, ctx) - 1;
-									if (i < provider.Methods[0].Parameters.Count) {
-										IType returnType = dom.GetType (provider.Methods[0].Parameters[i].ReturnType);
-										autoSelect = returnType == null || returnType.ClassType != ClassType.Delegate;
+								if (linqKeywords.Contains (token)) {
+									if (token == "from") // after from no auto code completion.
+										return null;
+									result.Expression = "";
+									return CreateCtrlSpaceCompletionData (completionContext, result);
+								}
+								CompletionDataList dataList = new ProjectDomCompletionDataList ();
+								CompletionDataCollector col = new CompletionDataCollector (dom, dataList, Document.CompilationUnit, null, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
+								foreach (string kw in linqKeywords) {
+									col.Add (kw, "md-keyword");
+								}
+								return dataList;
+							} else if (result.ExpressionContext != ExpressionContext.IdentifierExpected) {
+								triggerWordLength = 1;
+								bool autoSelect = true;
+								int cpos;
+								if ((prevCh == ',' || prevCh == '(') && GetParameterCompletionCommandOffset (out cpos)) {
+									CodeCompletionContext ctx = CompletionWidget.CreateCodeCompletionContext (cpos);
+									NRefactoryParameterDataProvider provider = ParameterCompletionCommand (ctx) as NRefactoryParameterDataProvider;
+									if (provider != null) {
+										int i = provider.GetCurrentParameterIndex (CompletionWidget, ctx) - 1;
+										if (i < provider.Methods [0].Parameters.Count) {
+											IType returnType = dom.GetType (provider.Methods [0].Parameters [i].ReturnType);
+											autoSelect = returnType == null || returnType.ClassType != ClassType.Delegate;
+										}
 									}
 								}
-							}
-							if (result.ExpressionContext == ExpressionContext.TypeName)
-								autoSelect = false;
-							CompletionDataList dataList = CreateCtrlSpaceCompletionData (completionContext, result);
-							dataList.AutoSelect = autoSelect;
-							return dataList;
-						} else {
-							result = FindExpression (dom, completionContext, 0);
-							tokenIndex = completionContext.TriggerOffset;
-								
-							// check foreach case, unfortunately the expression finder is too dumb to handle full type names
-							// should be overworked if the expression finder is replaced with a mcs ast based analyzer.
-							var possibleForeachToken = GetPreviousToken (ref tokenIndex, false); // starting letter
-							possibleForeachToken = GetPreviousToken (ref tokenIndex, false); // varname
-							
-							// read return types to '(' token
-							possibleForeachToken = GetPreviousToken (ref tokenIndex, false); // varType
-							if (possibleForeachToken == ">") {
-								while (possibleForeachToken != "(")
-									possibleForeachToken = GetPreviousToken (ref tokenIndex, false);
+								// Bug 677531 - Auto-complete doesn't always highlight generic parameter in method signature
+								//if (result.ExpressionContext == ExpressionContext.TypeName)
+								//	autoSelect = false;
+								CompletionDataList dataList = CreateCtrlSpaceCompletionData (completionContext, result);
+								dataList.AutoSelect = autoSelect;
+								return dataList;
 							} else {
-								possibleForeachToken = GetPreviousToken (ref tokenIndex, false); // (
-								if (possibleForeachToken == ".")
+								result = FindExpression (dom, completionContext, 0);
+								tokenIndex = completionContext.TriggerOffset;
+								
+								// check foreach case, unfortunately the expression finder is too dumb to handle full type names
+								// should be overworked if the expression finder is replaced with a mcs ast based analyzer.
+								var possibleForeachToken = GetPreviousToken (ref tokenIndex, false); // starting letter
+								possibleForeachToken = GetPreviousToken (ref tokenIndex, false); // varname
+							
+								// read return types to '(' token
+								possibleForeachToken = GetPreviousToken (ref tokenIndex, false); // varType
+								if (possibleForeachToken == ">") {
 									while (possibleForeachToken != "(")
 										possibleForeachToken = GetPreviousToken (ref tokenIndex, false);
-							}
-							possibleForeachToken = GetPreviousToken (ref tokenIndex, false); // foreach
+								} else {
+									possibleForeachToken = GetPreviousToken (ref tokenIndex, false); // (
+									if (possibleForeachToken == ".")
+										while (possibleForeachToken != "(")
+											possibleForeachToken = GetPreviousToken (ref tokenIndex, false);
+								}
+								possibleForeachToken = GetPreviousToken (ref tokenIndex, false); // foreach
 							
-							if (possibleForeachToken == "foreach") {
-								result.ExpressionContext = ExpressionContext.ForeachInToken;
-							} else {
-								return null;
-//								result.ExpressionContext = ExpressionContext.IdentifierExpected;
-							}
-							result.Expression = "";
-							result.Region = DomRegion.Empty;
+								if (possibleForeachToken == "foreach") {
+									result.ExpressionContext = ExpressionContext.ForeachInToken;
+								} else {
+									return null;
+									//								result.ExpressionContext = ExpressionContext.IdentifierExpected;
+								}
+								result.Expression = "";
+								result.Region = DomRegion.Empty;
 							
-							// identifier has already started with the first letter
-							completionContext.TriggerOffset--;
-							completionContext.TriggerLineOffset--;
-							completionContext.TriggerWordLength = 1;
-							return CreateCtrlSpaceCompletionData (completionContext, result);
+								// identifier has already started with the first letter
+								completionContext.TriggerOffset--;
+								completionContext.TriggerLineOffset--;
+								completionContext.TriggerWordLength = 1;
+								return CreateCtrlSpaceCompletionData (completionContext, result);
+							}
 						}
 					}
+					break;
 				}
-				break;
-			}
 			} catch (Exception e) {
 				LoggingService.LogError ("Unexpected code completion exception." + Environment.NewLine + 
 					"FileName: " + Document.FileName + Environment.NewLine + 
 					"Position: line=" + completionContext.TriggerLine + " col=" + completionContext.TriggerLineOffset + Environment.NewLine + 
-					"Line text: " + Document.Editor.GetLineText (completionContext.TriggerLine),
+					"Line text: " + Document.Editor.GetLineText (completionContext.TriggerLine), 
 					e);
 			} finally {
-	//			if (timer != null)
-	//				timer.Dispose ();
+				//			if (timer != null)
+				//				timer.Dispose ();
 			}
 			return null;
 		}
