@@ -6,7 +6,7 @@
        url         = "http://monodevelop.com/"
        description = "Support for developing and deploying MonoAndroid applications."
        category    = "Mobile Development"
-       version     = "2.6">
+       version     = "2.6.1">
 	
 	<Runtime>
 		<Import file = "templates/MonoDroidActivity.xft.xml" />
