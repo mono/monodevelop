@@ -546,6 +546,8 @@ namespace Mono.Debugging.Client
 		{
 			try {
 				var eventInfo = OnInsertBreakEvent (be);
+				if (eventInfo == null)
+					throw new InvalidOperationException ("OnInsertBreakEvent can't return a null value. If the breakpoint can't be bound or is invalid, a BreakEventInfo with the corresponding status must be returned");
 				lock (breakpoints) {
 					breakpoints [be] = eventInfo;
 				}
@@ -1116,17 +1118,21 @@ namespace Mono.Debugging.Client
 		void RetryEventBind (BreakEventInfo binfo)
 		{
 			// Try inserting the breakpoint again
+			BreakEvent be = binfo.BreakEvent;
 			try {
-				binfo = OnInsertBreakEvent (binfo.BreakEvent);
+				binfo = OnInsertBreakEvent (be);
+				if (binfo == null)
+					throw new InvalidOperationException ("OnInsertBreakEvent can't return a null value. If the breakpoint can't be bound or is invalid, a BreakEventInfo with the corresponding status must be returned");
 				lock (breakpoints) {
-					breakpoints [binfo.BreakEvent] = binfo;
+					breakpoints [be] = binfo;
 				}
+				binfo.AttachSession (this, be);
 			} catch (Exception ex) {
-				Breakpoint bp = binfo.BreakEvent as Breakpoint;
+				Breakpoint bp = be as Breakpoint;
 				if (bp != null)
 					OnDebuggerOutput (false, "Could not set breakpoint at location '" + bp.FileName + ":" + bp.Line + " (" + ex.Message + ")\n");
 				else
-					OnDebuggerOutput (false, "Could not set catchpoint for exception '" + ((Catchpoint)binfo.BreakEvent).ExceptionName + "' (" + ex.Message + ")\n");
+					OnDebuggerOutput (false, "Could not set catchpoint for exception '" + ((Catchpoint)be).ExceptionName + "' (" + ex.Message + ")\n");
 				HandleException (ex);
 			}
 		}
