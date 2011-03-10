@@ -14,6 +14,7 @@ obj/
 /main/tests/config
 /main/tests/UnitTests/test-results
 /main/contrib/bin/
+/local-libs
 
 # globs
 Makefile.in
@@ -105,6 +106,7 @@ autom4te.cache/
 /main/src/addins/VersionControl/Makefile
 /main/src/addins/VersionControl/MonoDevelop.VersionControl.Git/Makefile
 /main/src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/Makefile
+/main/src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/Makefile
 /main/src/addins/VersionControl/MonoDevelop.VersionControl/Makefile
 /main/src/addins/WelcomePage/Makefile
 /main/src/addins/WindowsPlatform/Makefile
