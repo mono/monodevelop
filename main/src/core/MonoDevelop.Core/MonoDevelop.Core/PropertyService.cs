@@ -153,7 +153,7 @@ namespace MonoDevelop.Core
 		{
 			if (IsWindows)
 				return UserDataLocations.ForWindows (profileVersion);
-			else if (IsWindows)
+			else if (IsMac)
 				return UserDataLocations.ForMac (profileVersion);
 			else
 				return UserDataLocations.ForUnix (profileVersion);
