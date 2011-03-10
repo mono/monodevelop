@@ -78,6 +78,7 @@ namespace MonoDevelop.Components.Commands
 		protected override void OnShown ()
 		{
 			base.OnShown ();
+			manager.RegisterUserInteraction ();
 			Update ();
 		}
 		protected override void OnRealized ()

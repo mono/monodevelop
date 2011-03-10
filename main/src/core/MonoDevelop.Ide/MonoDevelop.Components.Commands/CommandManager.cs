@@ -43,6 +43,8 @@ namespace MonoDevelop.Components.Commands
 		KeyBindingManager bindings;
 		Gtk.AccelGroup accelGroup;
 		string mode;
+		uint statusUpdateWait = 500;
+		DateTime lastUserInteraction;
 		
 		Dictionary<object,Command> cmds = new Dictionary<object,Command> ();
 		Hashtable handlerInfo = new Hashtable ();
@@ -196,6 +198,9 @@ namespace MonoDevelop.Components.Commands
 		{
 			if (!IsEnabled)
 				return;
+			
+			RegisterUserInteraction ();
+			
 			bool complete;
 			string accel = KeyBindingManager.AccelFromKey (e.Event, out complete);
 			
@@ -284,6 +289,7 @@ namespace MonoDevelop.Components.Commands
 			topLevelWindows.Remove (w);
 			if (w == lastFocused)
 				lastFocused = null;
+			RegisterUserInteraction ();
 		}
 		
 		public void Dispose ()
@@ -317,17 +323,13 @@ namespace MonoDevelop.Components.Commands
 			get { return enableToolbarUpdate; }
 			set {
 				if (enableToolbarUpdate != value) {
-					if (value) {
-						if (toolbars.Count > 0 || visitors.Count > 0) {
-							if (!toolbarUpdaterRunning) {
-								GLib.Timeout.Add (500, new GLib.TimeoutHandler (UpdateStatus));
-								toolbarUpdaterRunning = true;
-							}
-						}
-					} else {
-						toolbarUpdaterRunning = false;
-					}
 					enableToolbarUpdate = value;
+					if (value) {
+						if (toolbars.Count > 0 || visitors.Count > 0)
+							StartStatusUpdater ();
+					} else {
+						StopStatusUpdater ();
+					}
 				}
 			}
 		}
@@ -366,10 +368,7 @@ namespace MonoDevelop.Components.Commands
 		public void RegisterCommandTargetVisitor (ICommandTargetVisitor visitor)
 		{
 			visitors.Add (visitor);
-			if (enableToolbarUpdate && !toolbarUpdaterRunning) {
-				GLib.Timeout.Add (500, new GLib.TimeoutHandler (UpdateStatus));
-				toolbarUpdaterRunning = true;
-			}
+			StartStatusUpdater ();
 		}
 		
 		public void UnregisterCommandTargetVisitor (ICommandTargetVisitor visitor)
@@ -536,6 +535,8 @@ namespace MonoDevelop.Components.Commands
 		
 		public bool DispatchCommand (object commandId, object dataItem, object initialTarget, CommandSource source)
 		{
+			RegisterUserInteraction ();
+			
 			if (guiLock > 0)
 				return false;
 
@@ -1063,7 +1064,7 @@ namespace MonoDevelop.Components.Commands
 			return null;
 		}
 		
-		Gtk.Widget GetActiveWidget (Gtk.Window win)
+		Gtk.Window GetActiveWindow (Gtk.Window win)
 		{
 			Gtk.Window[] wins = Gtk.Window.ListToplevels ();
 			
@@ -1089,10 +1090,18 @@ namespace MonoDevelop.Components.Commands
 			lastFocused = newFocused;
 			UpdateAppFocusStatus (hasFocus, lastFocusedExists);
 			
-			if (!win.IsRealized)
-				win = null;
-			if (win != null) {
+			if (win.IsRealized) {
 				RegisterTopWindow (win);
+				return win;
+			}
+			else
+				return null;
+		}
+		
+		Gtk.Widget GetActiveWidget (Gtk.Window win)
+		{
+			win = GetActiveWindow (win);
+			if (win != null) {
 				Gtk.Widget widget = win;
 				while (widget is Gtk.Container) {
 					Gtk.Widget child = ((Gtk.Container)widget).FocusChild;
@@ -1108,12 +1117,101 @@ namespace MonoDevelop.Components.Commands
 		
 		bool UpdateStatus ()
 		{
-			if (!disposed)
+			if (!disposed && toolbarUpdaterRunning)
 				UpdateToolbars ();
-			else
+			else {
 				toolbarUpdaterRunning = false;
+				return false;
+			}
+			
+			uint newWait;
+			double secs = (DateTime.Now - lastUserInteraction).TotalSeconds;
+			if (secs < 10)
+				newWait = 500;
+			else if (secs < 30)
+				newWait = 700;
+			else {
+				// The application seems to be idle. Stop the status updater and
+				// start a pasive wait for user interaction
+				StartWaitingForUserInteraction ();
+				return false;
+			}
+			
+			if (newWait != statusUpdateWait && !waitingForUserInteraction) {
+				statusUpdateWait = newWait;
+				GLib.Timeout.Add (statusUpdateWait, new GLib.TimeoutHandler (UpdateStatus));
+				return false;
+			}
 				
-			return toolbarUpdaterRunning;
+			return true;
+		}
+		
+		bool waitingForUserInteraction;
+		Gtk.Window suspendedActiveWindow;
+		
+		void StartStatusUpdater ()
+		{
+			if (enableToolbarUpdate && !toolbarUpdaterRunning && !waitingForUserInteraction) {
+				lastUserInteraction = DateTime.Now;
+				// Make sure the first update is done quickly
+				statusUpdateWait = 1;
+				GLib.Timeout.Add (statusUpdateWait, new GLib.TimeoutHandler (UpdateStatus));
+				toolbarUpdaterRunning = true;
+			}
+		}
+		
+		void StopStatusUpdater ()
+		{
+			EndWaitingForUserInteraction ();
+			toolbarUpdaterRunning = false;
+		}
+		
+		void StartWaitingForUserInteraction ()
+		{
+			// Starts a pasive wait for user interaction.
+			// To do it, it subscribes the MotionNotify event
+			// of the main window. This event is unsubscribed when motion is detected
+			// Keyboard events are already subscribed in RegisterTopWindow
+			
+			waitingForUserInteraction = true;
+			toolbarUpdaterRunning = false;
+			Gtk.Window win = GetActiveWindow (rootWidget);
+			suspendedActiveWindow = win;
+			if (win != null) {
+				win.MotionNotifyEvent += HandleWinMotionNotifyEvent;
+				win.Destroyed += HandleWinDestroyed;
+			}
+		}
+		
+		void EndWaitingForUserInteraction ()
+		{
+			if (!waitingForUserInteraction)
+				return;
+			waitingForUserInteraction = false;
+			if (suspendedActiveWindow != null) {
+				suspendedActiveWindow.MotionNotifyEvent -= HandleWinMotionNotifyEvent;
+				suspendedActiveWindow.Destroyed -= HandleWinDestroyed;
+				suspendedActiveWindow = null;
+			}
+			StartStatusUpdater ();
+		}
+		
+		internal void RegisterUserInteraction ()
+		{
+			if (enableToolbarUpdate) {
+				lastUserInteraction = DateTime.Now;
+				EndWaitingForUserInteraction ();
+			}
+		}
+
+		void HandleWinDestroyed (object sender, EventArgs e)
+		{
+			suspendedActiveWindow = null;
+		}
+		
+		void HandleWinMotionNotifyEvent (object o, Gtk.MotionNotifyEventArgs args)
+		{
+			RegisterUserInteraction ();
 		}
 		
 		public void RegisterCommandBar (ICommandBar commandBar)
@@ -1122,10 +1220,8 @@ namespace MonoDevelop.Components.Commands
 				return;
 			
 			toolbars.Add (commandBar);
-			if (enableToolbarUpdate && !toolbarUpdaterRunning) {
-				GLib.Timeout.Add (500, new GLib.TimeoutHandler (UpdateStatus));
-				toolbarUpdaterRunning = true;
-			}
+			StartStatusUpdater ();
+			
 			commandBar.SetEnabled (guiLock == 0);
 			
 			object activeWidget = GetActiveWidget (rootWidget);
