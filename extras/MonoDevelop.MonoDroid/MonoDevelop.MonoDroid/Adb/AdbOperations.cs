@@ -316,7 +316,7 @@ namespace MonoDevelop.MonoDroid
 	{
 		public AdbKillProcessOperation (AndroidDevice device, string packageName) : 
 			base (device, "am broadcast -a mono.android.intent.action.SEPPUKU " +
-				"-c mono.android.intent.action.SEPPUKU." + packageName)
+				"-c mono.android.intent.category.SEPPUKU." + packageName)
 		{
 			BeginConnect ();
 		}
