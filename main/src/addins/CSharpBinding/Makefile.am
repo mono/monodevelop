@@ -58,6 +58,7 @@ FILES =  \
 	MonoDevelop.CSharp.Ast/Expressions/ConditionalExpression.cs \
 	MonoDevelop.CSharp.Ast/Expressions/DefaultValueExpression.cs \
 	MonoDevelop.CSharp.Ast/Expressions/DirectionExpression.cs \
+	MonoDevelop.CSharp.Ast/Expressions/EmptyExpression.cs \
 	MonoDevelop.CSharp.Ast/Expressions/Expression.cs \
 	MonoDevelop.CSharp.Ast/Expressions/IdentifierExpression.cs \
 	MonoDevelop.CSharp.Ast/Expressions/IndexerExpression.cs \

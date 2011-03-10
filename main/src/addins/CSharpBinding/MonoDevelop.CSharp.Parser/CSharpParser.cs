@@ -930,10 +930,8 @@ namespace MonoDevelop.CSharp.Parser
 			
 			public override object Visit (EmptyExpressionStatement emptyExpressionStatement)
 			{
-				// indicates an error
-				return new MonoDevelop.CSharp.Ast.EmptyStatement ();
+				return new MonoDevelop.CSharp.Ast.EmptyExpression (Convert (emptyExpressionStatement.Location));
 			}
-			
 			
 			public override object Visit (If ifStatement)
 			{
@@ -1040,7 +1038,9 @@ namespace MonoDevelop.CSharp.Parser
 			public override object Visit (StatementExpression statementExpression)
 			{
 				var result = new MonoDevelop.CSharp.Ast.ExpressionStatement ();
-				result.AddChild ((MonoDevelop.CSharp.Ast.Expression)statementExpression.Expr.Accept (this), MonoDevelop.CSharp.Ast.ExpressionStatement.Roles.Expression);
+				object expr = statementExpression.Expr.Accept (this);
+				Console.WriteLine ("Expr:" + expr);
+				result.AddChild ((MonoDevelop.CSharp.Ast.Expression)expr, MonoDevelop.CSharp.Ast.ExpressionStatement.Roles.Expression);
 				var location = LocationsBag.GetLocations (statementExpression);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), MonoDevelop.CSharp.Ast.ExpressionStatement.Roles.Semicolon);

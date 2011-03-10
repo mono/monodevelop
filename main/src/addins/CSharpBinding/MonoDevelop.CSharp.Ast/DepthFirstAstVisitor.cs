@@ -555,9 +555,14 @@ namespace MonoDevelop.CSharp.Ast
 			return VisitChildren (arraySpecifier, data);
 		}
 		
-		public virtual S VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, T data)
+		public virtual S VisitNamedArgumentExpression (NamedArgumentExpression namedArgumentExpression, T data)
 		{
 			return VisitChildren (namedArgumentExpression, data);
+		}
+		
+		public virtual S VisitEmptyExpression (EmptyExpression emptyExpression, T data)
+		{
+			return VisitChildren (emptyExpression, data);
 		}
 	}
 }

@@ -63,6 +63,7 @@ namespace MonoDevelop.CSharp.Ast
 		S VisitTypeOfExpression(TypeOfExpression typeOfExpression, T data);
 		S VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, T data);
 		S VisitUncheckedExpression(UncheckedExpression uncheckedExpression, T data);
+		S VisitEmptyExpression (EmptyExpression emptyExpression, T data);
 		
 		S VisitQueryExpression(QueryExpression queryExpression, T data);
 		S VisitQueryContinuationClause(QueryContinuationClause queryContinuationClause, T data);
