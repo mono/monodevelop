@@ -595,7 +595,7 @@ namespace MonoDevelop.CSharp.Resolver
 				} 
 			}
 			if (member.Count > 0) {
-				if (member[0] is IMethod) {
+				if (member [0] is IMethod) {
 					bool isStatic = result.StaticResolve;
 					List<IMember> nonMethodMembers = new List<IMember> ();
 					List<string> errors = new List<string> ();
@@ -604,20 +604,20 @@ namespace MonoDevelop.CSharp.Resolver
 						typeParameterCount = memberReferenceExpression.TypeArguments.Count;
 					
 					for (int i = 0; i < member.Count; i++) {
-						IMethod method = member[i] as IMethod;
+						IMethod method = member [i] as IMethod;
 						if (method == null)
-							nonMethodMembers.Add (member[i]);
+							nonMethodMembers.Add (member [i]);
 						
-						if (!member[i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected))
+						if (!member [i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected))
 							errors.Add (
-								MonoDevelop.Core.GettextCatalog.GetString ("'{0}' is inaccessible due to its protection level.",
+								MonoDevelop.Core.GettextCatalog.GetString ("'{0}' is inaccessible due to its protection level.", 
 								ambience.GetString (method, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics)));
 						
 						if (method != null && !method.IsFinalizer && (method.IsExtension || method.WasExtended)/* && method.IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, true)*/) {
 							continue;
 						}
-						if ((member[i].IsStatic ^ isStatic) || 
-/*						    !member[i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected) || */
+						if ((member [i].IsStatic ^ isStatic) || 
+						/*						    !member[i].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected) || */
 						    (method != null && (method.IsFinalizer || typeParameterCount > 0 && method.TypeParameters.Count != typeParameterCount))) {
 							member.RemoveAt (i);
 							i--;
@@ -628,7 +628,7 @@ namespace MonoDevelop.CSharp.Resolver
 					result = new MethodResolveResult (member);
 					((MethodResolveResult)result).Type = type;
 					((MethodResolveResult)result).StaticUsage = isStatic;
-					result.CallingType   = resolver.CallingType;
+					result.CallingType = resolver.CallingType;
 					result.CallingMember = resolver.CallingMember;
 					result.ResolveErrors.AddRange (errors);
 					result.StaticResolve = isStatic;
@@ -638,23 +638,22 @@ namespace MonoDevelop.CSharp.Resolver
 					}
 					((MethodResolveResult)result).ResolveExtensionMethods ();
 					if (nonMethodMembers.Count > 0) {
-						MemberResolveResult baseResult = (MemberResolveResult) CreateResult (nonMethodMembers[0].DeclaringType.CompilationUnit, nonMethodMembers[0].ReturnType);
-						baseResult.ResolvedMember = nonMethodMembers[0];
+						MemberResolveResult baseResult = (MemberResolveResult)CreateResult (nonMethodMembers [0].DeclaringType.CompilationUnit, nonMethodMembers [0].ReturnType);
+						baseResult.ResolvedMember = nonMethodMembers [0];
 						return new CombinedMethodResolveResult (baseResult, (MethodResolveResult)result);
 					}
 					//System.Console.WriteLine(result + "/" + result.ResolvedType);
 					return result;
 				}
-				
-				if (member[0] is IType) {
-					result = CreateResult (member[0].FullName);
+				if (member [0] is IType) {
+					result = CreateResult (member [0].FullName);
 					result.StaticResolve = true;
 				} else {
-					result = CreateResult (member[0].DeclaringType.CompilationUnit, member[0].ReturnType);
-					((MemberResolveResult)result).ResolvedMember = member[0];
+					result = CreateResult (member [0].DeclaringType.CompilationUnit, member [0].ReturnType);
+					((MemberResolveResult)result).ResolvedMember = member [0];
 				}
-				if (!member[0].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected))
-					result.ResolveErrors.Add (string.Format (MonoDevelop.Core.GettextCatalog.GetString ("'{0}' is inaccessible due to it's protection level."), ambience.GetString (member[0], OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics)));
+				if (!member [0].IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected))
+					result.ResolveErrors.Add (string.Format (MonoDevelop.Core.GettextCatalog.GetString ("'{0}' is inaccessible due to it's protection level."), ambience.GetString (member [0], OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics)));
 			
 				return result;
 			}

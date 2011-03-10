@@ -494,6 +494,7 @@
     <Compile Include="MonoDevelop.Projects.Dom.Parser\IDomObjectTable.cs" />
     <Compile Include="MonoDevelop.Core.Serialization\IDataItemAttribute.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectModelDataItemAttribute.cs" />
+    <Compile Include="MonoDevelop.Projects.Dom\DomOutputVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

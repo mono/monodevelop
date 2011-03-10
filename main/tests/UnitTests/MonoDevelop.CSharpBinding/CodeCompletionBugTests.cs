@@ -3169,7 +3169,63 @@ namespace Test
 			Assert.IsNotNull (provider.Find ("Foo1"), "method 'Foo2' not found.");
 		}
 		
-		
+		/// <summary>
+		/// Bug 678340 - Cannot infer types from Dictionary<K,V>.Values
+		/// </summary>
+		[Test()]
+		public void TestBug678340 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"using System;
+using System.Collections.Generic;
+
+public class Test
+{
+	public void SomeMethod ()
+	{
+		var foo = new Dictionary<string,Test> ();
+		foreach (var bar in foo.Values) {
+			$bar.$
+		}
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("SomeMethod"), "method 'SomeMethod' not found.");
+	}
+		/// <summary>
+		/// Bug 678340 - Cannot infer types from Dictionary<K,V>.Values
+		/// </summary>
+		[Test()]
+		public void TestBug678340_Case2 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"public class Foo<T>
+{
+	public class TestFoo
+	{
+		T Return ()
+		{
+			
+		}
+	}
+	
+	public TestFoo Bar;
+}
+
+public class Test
+{
+	public void SomeMethod ()
+	{
+		Foo<Test> foo;
+		var f = foo.Bar;
+		$f.Return ().$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("SomeMethod"), "method 'SomeMethod' not found.");
+		}
 		
 	}
 }

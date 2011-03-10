@@ -723,22 +723,22 @@ namespace MonoDevelop.CSharp.Resolver
 			ResolveResult result = null;
 			if (resultTable.TryGetValue (identifier, out result))
 				return result;
-			resultTable[identifier] = result;
-//			Console.WriteLine ("lookup: " + identifier);
-//			Console.WriteLine (lookupVariableLine);
+			resultTable [identifier] = result;
+			//Console.WriteLine ("lookup: " + identifier);
+			//Console.WriteLine (lookupVariableLine);
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in this.lookupTableVisitor.Variables) {
 				if (identifier == pair.Key) {
 					LocalLookupVariable var = null;
-//					Console.WriteLine ("--- RP:" + this.resolvePosition + "/" + pair.Value.Count);
+					//					Console.WriteLine ("--- RP:" + this.resolvePosition + "/" + pair.Value.Count);
 					foreach (LocalLookupVariable v2 in pair.Value) {
 						DomLocation varStartPos = new DomLocation (lookupVariableLine + v2.StartPos.Line, v2.StartPos.Column);
-						DomLocation varEndPos   = new DomLocation (lookupVariableLine + v2.EndPos.Line, v2.EndPos.Column);
-//						Console.WriteLine (v2.Name + ":" + varStartPos + " <> " + varEndPos + " resolve position:" + this.resolvePosition);
+						DomLocation varEndPos = new DomLocation (lookupVariableLine + v2.EndPos.Line, v2.EndPos.Column);
+						//						Console.WriteLine (v2.Name + ":" + varStartPos + " <> " + varEndPos + " resolve position:" + this.resolvePosition);
 						if (varStartPos > this.resolvePosition || (!v2.EndPos.IsEmpty && varEndPos < this.resolvePosition))
 							continue;
 						var = v2;
 					}
-//					Console.WriteLine ("var:" + var);
+					//Console.WriteLine ("var:" + var);
 					if (var == null)
 						continue;
 					IReturnType varType = null;
@@ -749,7 +749,7 @@ namespace MonoDevelop.CSharp.Resolver
 						QueryExpressionGroupClause grouBy = query.SelectOrGroupClause as QueryExpressionGroupClause;
 						DomLocation old = resolvePosition;
 						try {
-							resolvePosition = new DomLocation (lookupVariableLine + grouBy.Projection.StartLocation.Line,
+							resolvePosition = new DomLocation (lookupVariableLine + grouBy.Projection.StartLocation.Line, 
 							                                   grouBy.Projection.StartLocation.Column);
 							ResolveResult initializerResolve = visitor.Resolve (grouBy.Projection);
 							ResolveResult groupByResolve = visitor.Resolve (grouBy.GroupBy);
@@ -764,14 +764,14 @@ namespace MonoDevelop.CSharp.Resolver
 						if (var.ParentLambdaExpression != null) {
 							ResolveResult lambdaResolve = ResolveLambda (visitor, var.ParentLambdaExpression);
 							if (lambdaResolve != null) {
-								varType           = lambdaResolve.ResolvedType;
+								varType = lambdaResolve.ResolvedType;
 								varTypeUnresolved = lambdaResolve.UnresolvedType;
 								
 								IType type = Dom.GetType (varType);
 								if (type != null && type.ClassType == MonoDevelop.Projects.Dom.ClassType.Delegate) {
 									IMethod invocationMethod = type.Methods.First ();
 									if (invocationMethod.Parameters.Count > 0) {
-										varType = varTypeUnresolved = invocationMethod.Parameters[0].ReturnType;
+										varType = varTypeUnresolved = invocationMethod.Parameters [0].ReturnType;
 									}
 								}
 							} else {
@@ -780,21 +780,17 @@ namespace MonoDevelop.CSharp.Resolver
 						}
 						if (var.Initializer != null) {
 							ResolveResult initializerResolve = visitor.Resolve (var.Initializer);
-//							Console.WriteLine ("initializer : "+ var.Initializer + " result:" + initializerResolve + " isloopvar: " +var.IsLoopVariable);
-							varType           = var.IsLoopVariable ? DomType.GetComponentType (dom, initializerResolve.ResolvedType) : initializerResolve.ResolvedType;
+							varType = var.IsLoopVariable ? DomType.GetComponentType (dom, initializerResolve.ResolvedType) : initializerResolve.ResolvedType;
 							varTypeUnresolved = var.IsLoopVariable ? DomType.GetComponentType (dom, initializerResolve.UnresolvedType) : initializerResolve.UnresolvedType;
-//							Console.WriteLine ("resolved type:" + initializerResolve.ResolvedType + " is loop : " + var.IsLoopVariable);
-//							Console.WriteLine (varType);
-//							Console.WriteLine ("----------");
 						}
 					} else { 
 						varTypeUnresolved = varType = ConvertTypeReference (var.TypeRef);
 					}
 					varType = ResolveType (varType);
 					result = new LocalVariableResolveResult (
-						new LocalVariable (CallingMember, identifier, varType,
+						new LocalVariable (CallingMember, identifier, varType, 
 							new DomRegion (lookupVariableLine + var.StartPos.Line, var.StartPos.Column, 
-							               lookupVariableLine + var.StartPos.Line, var.EndPos.Column)),
+							               lookupVariableLine + var.StartPos.Line, var.EndPos.Column)), 
 							var.IsLoopVariable);
 					
 					result.ResolvedType = varType;
@@ -813,7 +809,7 @@ namespace MonoDevelop.CSharp.Resolver
 					while (pos < editor.Length && Char.IsWhiteSpace (editor.GetCharAt (pos)))
 						pos++;
 					StringBuilder memberName = new StringBuilder ();
-					while (pos < editor.Length && (Char.IsLetterOrDigit (editor.GetCharAt (pos)) || editor.GetCharAt (pos) == '_') ) {
+					while (pos < editor.Length && (Char.IsLetterOrDigit (editor.GetCharAt (pos)) || editor.GetCharAt (pos) == '_')) {
 						memberName.Append (editor.GetCharAt (pos));
 						pos++;
 					}
@@ -831,9 +827,7 @@ namespace MonoDevelop.CSharp.Resolver
 					goto end;
 				}
 				if (this.callingMember is IMethod || this.callingMember is IProperty) {
-					ReadOnlyCollection<IParameter> prms = this.callingMember is IMethod
-						? ((IMethod)this.callingMember).Parameters
-						: ((IProperty)this.callingMember).Parameters;
+					ReadOnlyCollection<IParameter> prms = this.callingMember is IMethod ? ((IMethod)this.callingMember).Parameters : ((IProperty)this.callingMember).Parameters;
 					if (prms != null) {
 						foreach (IParameter para in prms) {
 							if (para.Name == identifier) {
@@ -856,9 +850,7 @@ namespace MonoDevelop.CSharp.Resolver
 				// filter members
 				if (this.CallingMember != null) {
 					for (int i = 0; i < members.Count; i++) {
-						if (this.CallingMember.IsStatic && !members[i].IsStatic
-						    || !members[i].IsAccessibleFrom (dom, callingType, this.CallingMember, includeProtected))
-						{
+						if (this.CallingMember.IsStatic && !members [i].IsStatic || !members [i].IsAccessibleFrom (dom, callingType, this.CallingMember, includeProtected)) {
 							members.RemoveAt (i);
 							i--;
 							continue;
@@ -867,21 +859,21 @@ namespace MonoDevelop.CSharp.Resolver
 				}
 				
 				if (members.Count > 0) {
-					if (members[0] is IMethod) {
+					if (members [0] is IMethod) {
 						result = new MethodResolveResult (members);
 						if (CallingMember != null)
 							result.StaticResolve = CallingMember.IsStatic;
-					} else if (members[0] is IType) {
+					} else if (members [0] is IType) {
 						result = new MemberResolveResult (null, true);
-						result.UnresolvedType = result.ResolvedType = new DomReturnType ((IType)members[0]);
+						result.UnresolvedType = result.ResolvedType = new DomReturnType ((IType)members [0]);
 						goto end;
 					} else {
-						result = new MemberResolveResult (members[0]);
+						result = new MemberResolveResult (members [0]);
 					}
-					result.UnresolvedType = members[0].ReturnType;
-					result.ResolvedType = ResolveType (members[0].ReturnType);
+					result.UnresolvedType = members [0].ReturnType;
+					result.ResolvedType = ResolveType (members [0].ReturnType);
 					
-					if (members[0] is IProperty && searchedType != null && result.ResolvedType.FullName == searchedType.FullName) {
+					if (members [0] is IProperty && searchedType != null && result.ResolvedType.FullName == searchedType.FullName) {
 						result = new AggregatedResolveResult (result, new MemberResolveResult (null, true) {
 							UnresolvedType = new DomReturnType (searchedType),
 							ResolvedType = new DomReturnType (searchedType)
@@ -906,8 +898,8 @@ namespace MonoDevelop.CSharp.Resolver
 				foreach (IUsing u in unit.Usings) {
 					if (u.IsFromNamespace && u.Region.Contains (resolvePosition)) {
 						foreach (string ns in u.Namespaces) {
-							if (dom.NamespaceExists (ns + "."  + identifier, true)) {
-								result = new NamespaceResolveResult (ns + "."  + identifier);
+							if (dom.NamespaceExists (ns + "." + identifier, true)) {
+								result = new NamespaceResolveResult (ns + "." + identifier);
 								goto end;
 							}
 						}
@@ -922,10 +914,10 @@ namespace MonoDevelop.CSharp.Resolver
 			}
 		end:
 			if (result != null) {
-				result.CallingType   = CallingType;
+				result.CallingType = CallingType;
 				result.CallingMember = CallingMember;
 			}
-			resultTable[identifier] = result;
+			resultTable [identifier] = result;
 			return result;
 		}
 		
