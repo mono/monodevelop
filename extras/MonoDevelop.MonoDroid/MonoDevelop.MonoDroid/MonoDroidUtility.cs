@@ -181,6 +181,7 @@ namespace MonoDevelop.MonoDroid
 			var project = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
 			var conf = (MonoDroidProjectConfiguration) project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
 			int apiLevel = MonoDroidFramework.FrameworkVersionToApiLevel (project.TargetFramework.Id.Version);
+			string packagesListLocation = null;
 			PackageList list = null;
 			
 			replaceIfExists = replaceIfExists || signingOperation != null;
@@ -193,9 +194,20 @@ namespace MonoDevelop.MonoDroid
 					Completed = op => { DeviceNotFound = !op.Success; },
 					ErrorMessage = GettextCatalog.GetString ("Failed to get device")
 				},
+				new ChainedAsyncOperation<AdbShellOperation> () {
+					TaskName = GettextCatalog.GetString ("Getting the package list location from device"),
+					Create = () => new AdbShellOperation (device, "ls /data/system/packages.xml"),
+					Completed = op => {
+						string output = op.Output.Trim (new char [] { '\n', '\r' });
+						if (output == "/data/system/packages.xml")
+							packagesListLocation = output;
+						else
+							packagesListLocation = "/dbdata/system/packages.xml";
+					}
+				},
 				new ChainedAsyncOperation<AdbGetPackagesOperation> () {
 					TaskName = GettextCatalog.GetString ("Getting package list from device"),
-					Create = () => new AdbGetPackagesOperation (device),
+					Create = () => new AdbGetPackagesOperation (device, packagesListLocation),
 					Completed = op => list = op.PackageList,
 					ErrorMessage = GettextCatalog.GetString ("Failed to get package list")
 				},
