@@ -432,7 +432,8 @@ namespace Microsoft.Samples.Debugging.CorDebug
             IntPtr pUnk = NativeMethods.CreateDebuggingInterfaceFromVersion((int)CorDebuggerVersion.Whidbey, debuggerVersion);
             rawDebuggingAPI = new NativeApi.CorDebugClass(pUnk);
 #else
-            rawDebuggingAPI = NativeMethods.CreateDebuggingInterfaceFromVersion((int)CorDebuggerVersion.Whidbey,debuggerVersion);
+			int apiVersion = debuggerVersion.StartsWith ("v4") ? 4 : 3;
+			rawDebuggingAPI = NativeMethods.CreateDebuggingInterfaceFromVersion (apiVersion, debuggerVersion);
 #endif
 		    InitFromICorDebug(rawDebuggingAPI);
     	}
