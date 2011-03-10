@@ -67,12 +67,12 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 		
 		
-		public static IEnumerable<MemberReference> FindReferences (INode member, ISearchProgressMonitor monitor = null)
+		public static IEnumerable<MemberReference> FindReferences (INode member, IProgressMonitor monitor = null)
 		{
 			return FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, member, monitor);
 		}
 		
-		public static IEnumerable<MemberReference> FindReferences (Solution solution, INode member, ISearchProgressMonitor monitor = null)
+		public static IEnumerable<MemberReference> FindReferences (Solution solution, INode member, IProgressMonitor monitor = null)
 		{
 			var scope = GetScope (member);
 			ReferenceFinder finder;

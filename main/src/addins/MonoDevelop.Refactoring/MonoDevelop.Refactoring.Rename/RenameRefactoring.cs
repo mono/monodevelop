@@ -36,6 +36,7 @@ using MonoDevelop.Ide;
 using System.Linq;
 using Mono.TextEditor.PopupWindow;
 using MonoDevelop.Ide.FindInFiles;
+using MonoDevelop.Ide.ProgressMonitoring;
 
 namespace MonoDevelop.Refactoring.Rename
 {
@@ -144,11 +145,12 @@ namespace MonoDevelop.Refactoring.Rename
 		{
 			RenameProperties properties = (RenameProperties)prop;
 			List<Change> result = new List<Change> ();
-			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-				var col = ReferenceFinder.FindReferences (options.SelectedItem, monitor);
+			IEnumerable<MemberReference> col = null;
+			using (var monitor = new MessageDialogProgressMonitor (true, false, false, true)) {
+				col = ReferenceFinder.FindReferences (options.SelectedItem, monitor);
 				if (col == null)
 					return result;
-				
+					
 				if (properties.RenameFile && options.SelectedItem is IType) {
 					IType cls = (IType)options.SelectedItem;
 					int currentPart = 1;
@@ -159,7 +161,7 @@ namespace MonoDevelop.Refactoring.Rename
 						if (alreadyRenamed.Contains (part.CompilationUnit.FileName))
 							continue;
 						alreadyRenamed.Add (part.CompilationUnit.FileName);
-						
+							
 						string oldFileName = System.IO.Path.GetFileNameWithoutExtension (part.CompilationUnit.FileName);
 						string newFileName;
 						if (oldFileName.ToUpper () == properties.NewName.ToUpper () || oldFileName.ToUpper ().EndsWith ("." + properties.NewName.ToUpper ()))
@@ -171,7 +173,7 @@ namespace MonoDevelop.Refactoring.Rename
 							newFileName = currentPart != 1 ? properties.NewName + currentPart : properties.NewName;
 							currentPart++;
 						}
-						
+							
 						int t = 0;
 						while (System.IO.File.Exists (GetFullFileName (newFileName, part.CompilationUnit.FileName, t))) {
 							t++;

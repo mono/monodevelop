@@ -1039,7 +1039,6 @@ namespace MonoDevelop.CSharp.Parser
 			{
 				var result = new MonoDevelop.CSharp.Ast.ExpressionStatement ();
 				object expr = statementExpression.Expr.Accept (this);
-				Console.WriteLine ("Expr:" + expr);
 				result.AddChild ((MonoDevelop.CSharp.Ast.Expression)expr, MonoDevelop.CSharp.Ast.ExpressionStatement.Roles.Expression);
 				var location = LocationsBag.GetLocations (statementExpression);
 				if (location != null)

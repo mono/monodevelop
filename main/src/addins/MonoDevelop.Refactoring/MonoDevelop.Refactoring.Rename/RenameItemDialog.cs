@@ -33,6 +33,7 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.CodeGeneration;
 using System.Collections.Generic;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.ProgressMonitoring;
 
 namespace MonoDevelop.Refactoring.Rename
 {
@@ -157,16 +158,16 @@ namespace MonoDevelop.Refactoring.Rename
 		
 		void OnOKClicked (object sender, EventArgs e)
 		{
+			((Widget)this).Destroy ();
 			List<Change> changes = rename.PerformChanges (options, Properties);
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
 			RefactoringService.AcceptChanges (monitor, options.Dom, changes);
-			((Widget)this).Destroy ();
 		}
 		
 		void OnPreviewClicked (object sender, EventArgs e)
 		{
-			List<Change> changes = rename.PerformChanges (options, Properties);
 			((Widget)this).Destroy ();
+			List<Change> changes = rename.PerformChanges (options, Properties);
 			MessageService.ShowCustomDialog (new RefactoringPreviewDialog (options.Dom, changes));
 		}
 	}
