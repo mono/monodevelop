@@ -62,8 +62,12 @@ namespace MonoDevelop.MonoDroid
 			var cmd = (MonoDroidExecutionCommand) command;
 			var launchOp = MonoDroidFramework.Toolbox.StartActivity (cmd.Device, cmd.Activity);
 
-			return new MonoDroidProcess (cmd.Device, cmd.Activity, cmd.PackageName, 
-				console.Out.Write, console.Error.Write, launchOp);
+			/*return new MonoDroidProcess (cmd.Device, cmd.Activity, cmd.PackageName, 
+				console.Out.Write, console.Error.Write, launchOp);*/
+
+			// Don't track the normal running instances for now, as doing so
+			// doesn't allow the user to start debugging
+			return Core.Execution.NullProcessAsyncOperation.Success;
 		}
 	}
 
