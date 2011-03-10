@@ -67,6 +67,7 @@
     <Folder Include="MonoDevelop.MacDev.Plist\" />
     <Folder Include="MonoDevelop.MacDev.InterfaceBuilder\" />
     <Folder Include="icons\" />
+    <Folder Include="ObjCIntegration\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -92,6 +93,11 @@
     <Compile Include="XibCodeBehind.cs" />
     <Compile Include="Keychain.cs" />
     <Compile Include="SigningIdentityCombo.cs" />
+    <Compile Include="ObjCIntegration\NSObjectInfo.cs" />
+    <Compile Include="ObjCIntegration\NSObjectInfoTracker.cs" />
+    <Compile Include="ObjCIntegration\IBOutlet.cs" />
+    <Compile Include="ObjCIntegration\IBAction.cs" />
+    <Compile Include="ObjCIntegration\IBActionParameter.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">
