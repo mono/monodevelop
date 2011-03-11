@@ -640,7 +640,7 @@ namespace MonoDevelop.MonoDroid
 				}
 			}
 
-			if (((FilePath)fileName).IsChildPathOf (BaseDirectory.Combine (MonoDroidAssetsPrefix)))
+			if (!String.IsNullOrEmpty (MonoDroidAssetsPrefix) && ((FilePath)fileName).IsChildPathOf (BaseDirectory.Combine (MonoDroidAssetsPrefix)))
 				return MonoDroidBuildAction.AndroidAsset;
 				
 			return baseAction;
