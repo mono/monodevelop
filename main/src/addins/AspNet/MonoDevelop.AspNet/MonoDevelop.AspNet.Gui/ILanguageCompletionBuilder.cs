@@ -95,9 +95,10 @@ namespace MonoDevelop.AspNet.Gui
 	/// </summary>
 	public class DocumentInfo
 	{
-		public DocumentInfo (AspNetParsedDocument aspNetParsedDocument, IEnumerable<string> imports,
+		public DocumentInfo (ProjectDom dom, AspNetParsedDocument aspNetParsedDocument, IEnumerable<string> imports,
 		                     IList<ProjectDom> references)
 		{
+			this.Dom = dom;
 			this.AspNetDocument = aspNetParsedDocument;
 			this.Imports = imports;
 			this.References = references;
@@ -108,6 +109,7 @@ namespace MonoDevelop.AspNet.Gui
 		
 		IType codeBesideClass;
 		
+		public ProjectDom Dom { get; private set; }
 		public AspNetParsedDocument AspNetDocument { get; private set; }
 		public ParsedDocument ParsedDocument { get; set; }
 		public List<ExpressionNode> Expressions { get; private set; }

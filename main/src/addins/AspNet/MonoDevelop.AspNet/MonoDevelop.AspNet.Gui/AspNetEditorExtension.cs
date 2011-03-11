@@ -92,7 +92,7 @@ namespace MonoDevelop.AspNet.Gui
 			
 			if (documentBuilder != null) {
 				var usings = refman.GetUsings ();
-				documentInfo = new DocumentInfo (aspDoc, usings, refman.GetDoms ());
+				documentInfo = new DocumentInfo (document.Dom, aspDoc, usings, refman.GetDoms ());
 				documentInfo.ParsedDocument = documentBuilder.BuildDocument (documentInfo, Editor);
 				documentInfo.CodeBesideClass = CreateCodeBesideClass (documentInfo, refman);
 				domWrapper = new AspProjectDomWrapper (documentInfo);

@@ -53,22 +53,19 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			var editor = TextFileProvider.Instance.GetTextEditorData (fileName);
 			AspNetAppProject project = dom.Project as AspNetAppProject;
-			System.Console.WriteLine ("project:" + project);
 			if (project == null)
 				yield break;
 			
 			var unit = AspNetParserService.GetCompileUnit (project, fileName, true);
-			System.Console.WriteLine ("unit:" + unit);
 			if (unit == null)
 				yield break;
-			System.Console.WriteLine ("go ");
 			var refman = new DocumentReferenceManager (project);
 			
 			var parsedAspDocument = (AspNetParsedDocument)new AspNetParser ().Parse (dom, fileName, editor.Text);
 			refman.Doc = parsedAspDocument;
 			
 			var usings = refman.GetUsings ();
-			var documentInfo = new DocumentInfo (unit, usings, refman.GetDoms ());
+			var documentInfo = new DocumentInfo (dom, unit, usings, refman.GetDoms ());
 			
 			var builder = new AspLanguageBuilder ();
 			
@@ -76,12 +73,13 @@ namespace MonoDevelop.CSharp.Refactoring
 			var buildDocument = new Mono.TextEditor.Document ();
 			var offsetInfos = new List<LocalDocumentInfo.OffsetInfo> ();
 			buildDocument.Text = builder.BuildDocumentString (documentInfo, editor, offsetInfos, true);
-			var parsedDocument = AspLanguageBuilder.Parse (fileName, buildDocument.Text);
+			var parsedDocument = AspLanguageBuilder.Parse (dom, fileName, buildDocument.Text);
 			var resolver = new NRefactoryResolver (dom, parsedDocument.CompilationUnit, ICSharpCode.NRefactory.SupportedLanguage.CSharp, editor, fileName);
 			
 			FindMemberAstVisitor visitor = new FindMemberAstVisitor (buildDocument, resolver, member);
 			visitor.IncludeXmlDocumentation = IncludeDocumentation;
 			visitor.RunVisitor ();
+			
 			foreach (var result in visitor.FoundReferences) {
 				var offsetInfo = offsetInfos.FirstOrDefault (info => info.ToOffset <= result.Position && result.Position < info.ToOffset + info.Length);
 				if (offsetInfo == null)

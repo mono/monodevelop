@@ -46,9 +46,13 @@ namespace MonoDevelop.CSharp.Completion
 			return language == "C#";
 		}
 		
-		public static ParsedDocument Parse (string fileName, string text)
+		public static ParsedDocument Parse (ProjectDom dom, string fileName, string text)
 		{
-			return new MonoDevelop.CSharp.Parser.McsParser ().Parse (null, fileName, text);
+			var result = new MonoDevelop.CSharp.Parser.McsParser ().Parse (null, fileName, text);
+			foreach (DomType type in result.CompilationUnit.Types) {
+				type.SourceProjectDom = dom;
+			}
+			return result;
 		}
 		
 		static void WriteUsings (IEnumerable<string> usings, StringBuilder builder)
@@ -105,8 +109,7 @@ namespace MonoDevelop.CSharp.Completion
 			result.LocalDocument = sb.ToString ();
 			result.CaretPosition = caretPosition;
 			result.OriginalCaretPosition = data.Caret.Offset;
-			result.ParsedLocalDocument = Parse (info.AspNetDocument.FileName, sb.ToString ());
-			
+			result.ParsedLocalDocument = Parse (info.Dom, info.AspNetDocument.FileName, sb.ToString ());
 			return result;
 		}
 		
@@ -277,7 +280,7 @@ namespace MonoDevelop.CSharp.Completion
 		public ParsedDocument BuildDocument (DocumentInfo info, TextEditorData data)
 		{
 			var docStr = BuildDocumentString (info, data);
-			return Parse (info.AspNetDocument.FileName, docStr);
+			return Parse (info.Dom, info.AspNetDocument.FileName, docStr);
 		}
 		 
 		public string BuildDocumentString (DocumentInfo info, TextEditorData data, List<LocalDocumentInfo.OffsetInfo> offsetInfos = null, bool buildExpressions = false)
