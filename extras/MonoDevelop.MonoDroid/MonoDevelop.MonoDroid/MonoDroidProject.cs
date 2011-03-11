@@ -611,6 +611,8 @@ namespace MonoDevelop.MonoDroid
 			return new string[] {
 				BuildAction.Compile,
 				MonoDroidBuildAction.AndroidAsset,
+				MonoDroidBuildAction.AndroidJavaSource,
+				MonoDroidBuildAction.AndroidNativeLibrary,
 				MonoDroidBuildAction.AndroidResource,
 				BuildAction.None,
 			};
@@ -817,5 +819,7 @@ namespace MonoDevelop.MonoDroid
 	{
 		public static readonly string AndroidResource = "AndroidResource";
 		public static readonly string AndroidAsset = "AndroidAsset";
+		public static readonly string AndroidJavaSource = "AndroidJavaSource";
+		public static readonly string AndroidNativeLibrary = "AndroidNativeLibrary";
 	}
 }
