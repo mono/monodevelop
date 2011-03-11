@@ -169,15 +169,24 @@ namespace MonoDevelop.MonoDroid
 	
 	public sealed class AdbGetPackagesOperation : AdbTransportOperation
 	{
-		public AdbGetPackagesOperation (AndroidDevice device) : base (device)
+		const string DefaultPackagesFile = "/data/system/packages.xml";
+
+		string packageFileName;
+
+		public AdbGetPackagesOperation (AndroidDevice device) : this (device, DefaultPackagesFile)
 		{
+		}
+
+		public AdbGetPackagesOperation (AndroidDevice device, string packageFileName) : base (device)
+		{
+			this.packageFileName = packageFileName;
 			BeginConnect ();
 		}
 		
 		protected override void OnGotTransport ()
 		{
 			var sr = new StringWriter ();
-			WriteCommand ("shell:cat /data/system/packages.xml", () => GetStatus (() => ReadResponse (sr, OnGotResponse)));
+			WriteCommand ("shell:cat " + packageFileName, () => GetStatus (() => ReadResponse (sr, OnGotResponse)));
 		}
 		
 		void OnGotResponse (TextWriter tw)
