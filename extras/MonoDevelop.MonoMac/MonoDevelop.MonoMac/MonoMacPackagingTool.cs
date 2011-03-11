@@ -37,47 +37,41 @@ using MonoDevelop.MonoMac.Gui;
 
 namespace MonoDevelop.MonoMac
 {
-	public class MonoMacPackagingTool : IApplication
-	{
-		
-		MonoMacPackagingSettings JustLinkMonoSettings =
-			new MonoMacPackagingSettings { IncludeMono   = true,
-			 							   LinkerMode    = MonoMacLinkerMode.LinkAll,
-										   SignBundle    = false,
-										   SignPackage   = false,
-										   CreatePackage = false
-										 };
-				
-		public int Run (string [] arguments)
-		{
-			var monitor = new ConsoleProgressMonitor ();
-			var project = FindMonoMacProject (monitor);
-			
-			if (project == null) {
-				Console.WriteLine (GettextCatalog.GetString ("Error: Could not find a MonoMac project to bundle."));
-				return 1;
-			}
-			
-			MonoMacPackaging.BuildPackage (
-				  monitor,
-	              project,
-	              project.DefaultConfiguration.Selector,
-	              JustLinkMonoSettings,
-				  project.Name + ".app"
-			);
-	
-			return 0;
-		}
-		
-		MonoMacProject FindMonoMacProject (IProgressMonitor monitor)
-		{
-			var projects =
-				from solutionFile in Directory.GetFiles (".", "*.sln")
-				let solution = Services.ProjectService.ReadWorkspaceItem (monitor, solutionFile)
-				from project in solution.GetAllProjects ().OfType<MonoMacProject> ()
-				select project;
-			
-			return projects.FirstOrDefault ();
-		}
-	}
+    public class MonoMacPackagingTool : IApplication
+    {
+        MonoMacPackagingSettings JustLinkMonoSettings =
+            new MonoMacPackagingSettings { IncludeMono   = true,
+                                           LinkerMode    = MonoMacLinkerMode.LinkAll,
+                                           SignBundle    = false,
+                                           SignPackage   = false,
+                                           CreatePackage = false
+                                         };
+                
+        public int Run (string [] arguments)
+        {
+            var monitor = new ConsoleProgressMonitor ();
+            var project = FindMonoMacProject (monitor);
+            
+            if (project == null) {
+                Console.WriteLine (GettextCatalog.GetString ("Error: Could not find a MonoMac project to bundle."));
+                return 1;
+            }
+            
+            MonoMacPackaging.BuildPackage (monitor, project, project.DefaultConfiguration.Selector,
+                JustLinkMonoSettings, project.Name + ".app");
+    
+            return 0;
+        }
+        
+        MonoMacProject FindMonoMacProject (IProgressMonitor monitor)
+        {
+            var projects =
+                from solutionFile in Directory.GetFiles (".", "*.sln")
+                let solution = Services.ProjectService.ReadWorkspaceItem (monitor, solutionFile)
+                from project in solution.GetAllProjects ().OfType<MonoMacProject> ()
+                select project;
+            
+            return projects.FirstOrDefault ();
+        }
+    }
 }
