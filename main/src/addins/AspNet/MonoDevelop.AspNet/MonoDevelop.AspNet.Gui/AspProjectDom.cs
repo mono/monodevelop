@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.AspNet.Gui
 {
@@ -51,10 +52,11 @@ namespace MonoDevelop.AspNet.Gui
 			if (type == null)
 				return null;
 			var cu =info.ParsedDocument.CompilationUnit;
-			if (type.IsPartial && cu.Types[0].FullName == type.FullName) {
+			var firstType = cu.Types.FirstOrDefault ();
+			if (type.IsPartial && firstType != null && firstType.FullName == type.FullName) {
 				if (constructedType != null)
 					return constructedType;
-				constructedType = CompoundType.Merge (cu.Types[0], type);
+				constructedType = CompoundType.Merge (firstType, type);
 				constructedType = CompoundType.Merge (constructedType, info.CodeBesideClass);
 				constructedType.SourceProjectDom = this;
 				return constructedType;
