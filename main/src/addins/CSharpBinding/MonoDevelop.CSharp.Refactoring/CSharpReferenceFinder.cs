@@ -42,8 +42,17 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			IncludeDocumentation = true;
 		}
+
+		public override IEnumerable<MemberReference> FindReferences (ProjectDom dom, FilePath fileName, IEnumerable<INode> searchedMembers)
+		{
+			foreach (var member in searchedMembers) {
+				foreach (var reference in FindReferences (dom, fileName, member)) {
+					yield return reference;
+				}
+			}
+		}
 		
-		public override IEnumerable<MemberReference> FindReferences (ProjectDom dom, FilePath fileName, INode member)
+		IEnumerable<MemberReference> FindReferences (ProjectDom dom, FilePath fileName, INode member)
 		{
 			var editor = TextFileProvider.Instance.GetTextEditorData (fileName);
 			var doc    = ProjectDomService.GetParsedDocument (dom, fileName);

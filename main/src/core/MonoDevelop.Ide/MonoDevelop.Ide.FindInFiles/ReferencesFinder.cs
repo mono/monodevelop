@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			ProjectDom dom = null;
 			ICompilationUnit unit = null;
 			IEnumerable<INode> searchNodes = new INode[] { member };
-			 if (member is LocalVariable) {
+			if (member is LocalVariable) {
 				dom = ((LocalVariable)member).DeclaringMember.DeclaringType.SourceProjectDom;
 				unit = ((LocalVariable)member).CompilationUnit;
 			} else if (member is IParameter) {
@@ -93,6 +93,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				unit = ((IMember)member).DeclaringType.CompilationUnit;
 				searchNodes = CollectMembers (dom, (IMember)member);
 			}
+			var foundLocations = new HashSet<DomLocation> ();
 			
 			switch (scope) {
 			case RefactoryScope.File:
@@ -102,10 +103,12 @@ namespace MonoDevelop.Ide.FindInFiles
 				finder = GetReferenceFinder (DesktopService.GetMimeTypeForUri (unit.FileName));
 				if (finder == null)
 					yield break;
-				foreach (var searchNode in searchNodes) {
-					foreach (var foundReference in finder.FindReferences (dom, unit.FileName, searchNode)) {
-						yield return foundReference;
-					}
+				foreach (var foundReference in finder.FindReferences (dom, unit.FileName, searchNodes)) {
+					var location = new DomLocation (foundReference.Line, foundReference.Column);
+					if (foundLocations.Contains (location))
+						continue;
+					foundLocations.Add (location);
+					yield return foundReference;
 				}
 				break;
 			case RefactoryScope.Project:
@@ -118,10 +121,13 @@ namespace MonoDevelop.Ide.FindInFiles
 					finder = GetReferenceFinder (DesktopService.GetMimeTypeForUri (file.FilePath));
 					if (finder == null)
 						continue;
-					foreach (var searchNode in searchNodes) {
-						foreach (var foundReference in finder.FindReferences (dom, file.FilePath, searchNode)) {
-							yield return foundReference;
-						}
+					foundLocations.Clear ();
+					foreach (var foundReference in finder.FindReferences (dom, file.FilePath, searchNodes)) {
+						var location = new DomLocation (foundReference.Line, foundReference.Column);
+						if (foundLocations.Contains (location))
+							continue;
+						foundLocations.Add (location);
+						yield return foundReference;
 					}
 					if (monitor != null) {
 						if (counter % 10 == 0)
@@ -142,10 +148,13 @@ namespace MonoDevelop.Ide.FindInFiles
 						finder = GetReferenceFinder (DesktopService.GetMimeTypeForUri (file.FilePath));
 						if (finder == null)
 							continue;
-						foreach (var searchNode in searchNodes) {
-							foreach (var foundReference in finder.FindReferences (currentDom, file.FilePath, searchNode)) {
-								yield return foundReference;
-							}
+						foundLocations.Clear ();
+						foreach (var foundReference in finder.FindReferences (currentDom, file.FilePath, searchNodes)) {
+							var location = new DomLocation (foundReference.Line, foundReference.Column);
+							if (foundLocations.Contains (location))
+								continue;
+							foundLocations.Add (location);
+							yield return foundReference;
 						}
 					}
 					if (monitor != null)
@@ -157,7 +166,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 		
-		public abstract IEnumerable<MemberReference> FindReferences (ProjectDom dom, FilePath fileName, INode member);
+		public abstract IEnumerable<MemberReference> FindReferences (ProjectDom dom, FilePath fileName, IEnumerable<INode> searchedMembers);
 		
 		internal static IEnumerable<INode> CollectMembers (ProjectDom dom, IMember member)
 		{
