@@ -275,7 +275,7 @@ namespace Stetic
 		
 		void CheckDependencies (AssemblyResolver resolver, Hashtable visited, WidgetLibrary lib)
 		{
-			if (visited.Contains (lib.Name))
+			if (visited.Contains (lib.Name) || lib.Name == coreLibrary)
 				return;
 				
 			visited [lib.Name] = lib;

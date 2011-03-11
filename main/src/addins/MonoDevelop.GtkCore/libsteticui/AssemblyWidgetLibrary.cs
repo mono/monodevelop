@@ -117,7 +117,7 @@ namespace Stetic
 				}
 				
 				if (depasm == null) {
-					string file = resolver.Resolve (aname.FullName, Path.GetDirectoryName (asm.Location));
+					string file = resolver != null ? resolver.Resolve (aname.FullName, Path.GetDirectoryName (asm.Location)) : null;
 					if (file != null)
 						depasm = Assembly.LoadFrom (file);
 					else
