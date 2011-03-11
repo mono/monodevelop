@@ -280,6 +280,15 @@ namespace MonoDevelop.MonoDroid
 		{
 			return "AndroidDeviceId-" + conf.Id;
 		}
+
+		bool IsAndroidSpecialFile (ProjectFile file)
+		{
+			var buildAction = file.BuildAction;
+			return buildAction == MonoDroidBuildAction.AndroidAsset || 
+				buildAction == MonoDroidBuildAction.AndroidJavaSource ||
+				buildAction == MonoDroidBuildAction.AndroidNativeLibrary ||
+				buildAction == MonoDroidBuildAction.AndroidResource;
+		}
 		
 		// Disable this as we are not gonna use it for now.
 		//bool HackGetUserAssemblyPaths = false;
@@ -297,9 +306,9 @@ namespace MonoDevelop.MonoDroid
 
 		protected override DateTime OnGetLastBuildTime (ConfigurationSelector configuration)
 		{
-			// Avoid a 'build' needed error by returning the last build time of the newest resource/asset file
+			// Avoid a 'build' needed error by returning the last build time of the newest resource/asset/java/native file
 			var baseLastWriteTime = base.OnGetLastBuildTime (configuration);
-			var lastWriteTime = Files.Where (file => (file.BuildAction == MonoDroidBuildAction.AndroidResource || file.BuildAction == MonoDroidBuildAction.AndroidAsset)).
+			var lastWriteTime = Files.Where (file => IsAndroidSpecialFile (file)).
 				Max (file => File.Exists (file.FilePath) ? File.GetLastWriteTime (file.FilePath) : DateTime.MinValue);
 
 			return lastWriteTime > baseLastWriteTime ? lastWriteTime : baseLastWriteTime;
@@ -436,7 +445,7 @@ namespace MonoDevelop.MonoDroid
 				return true;
 
 			var apkBuildTime = File.GetLastWriteTime (conf.ApkSignedPath);
-			if  (Files.Any (file => (file.BuildAction == MonoDroidBuildAction.AndroidResource || file.BuildAction == MonoDroidBuildAction.AndroidAsset)
+			if  (Files.Any (file => IsAndroidSpecialFile (file)
 					&& File.Exists (file.FilePath) && File.GetLastWriteTime (file.FilePath) > apkBuildTime))
 				return true;
 				
