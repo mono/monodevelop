@@ -231,7 +231,11 @@ namespace MonoDevelop.MonoDroid
 		
 		public override bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
 		{
-			return framework.Id.Identifier == FX_MONODROID;
+			var frameworkId = framework.Id;
+			if (frameworkId.Identifier != FX_MONODROID)
+				return false;
+
+			return MonoDroidFramework.AndroidVersions.Any (version => version.OSVersion == frameworkId.Version);
 		}
 		
 		protected override void OnEndLoad ()
