@@ -55,6 +55,7 @@ namespace MonoDevelop.Platform.Mac
 				
 				var filterPopup = MacSelectFileDialogHandler.CreateFileFilterPopup (data, panel);
 				if (filterPopup != null) {
+					dropdownBox.Layout ();
 					var box = new MDBox (LayoutDirection.Vertical, 2, 2) {
 						dropdownBox.View,
 						filterPopup,
