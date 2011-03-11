@@ -69,7 +69,7 @@ namespace MonoDevelop.MonoMac.Gui
 			return mon.AsyncOperation;
 		}
 		
-		static bool BuildPackage (IProgressMonitor monitor, MonoMacProject project,
+		public static bool BuildPackage (IProgressMonitor monitor, MonoMacProject project,
 			ConfigurationSelector conf, MonoMacPackagingSettings settings, FilePath target)
 		{
 			string bundleKey = settings.BundleSigningKey;
