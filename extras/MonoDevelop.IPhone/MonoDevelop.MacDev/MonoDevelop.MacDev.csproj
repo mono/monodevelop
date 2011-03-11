@@ -98,6 +98,20 @@
     <Compile Include="ObjCIntegration\IBOutlet.cs" />
     <Compile Include="ObjCIntegration\IBAction.cs" />
     <Compile Include="ObjCIntegration\IBActionParameter.cs" />
+    <Compile Include="XcodeIntegration\PBXBuildFile.cs" />
+    <Compile Include="XcodeIntegration\PBXFileReference.cs" />
+    <Compile Include="XcodeIntegration\PBXFrameworksBuildPhase.cs" />
+    <Compile Include="XcodeIntegration\PBXGroup.cs" />
+    <Compile Include="XcodeIntegration\PBXNativeTarget.cs" />
+    <Compile Include="XcodeIntegration\PBXProject.cs" />
+    <Compile Include="XcodeIntegration\PBXResourcesBuildPhase.cs" />
+    <Compile Include="XcodeIntegration\PBXSourcesBuildPhase.cs" />
+    <Compile Include="XcodeIntegration\PBXVariantGroup.cs" />
+    <Compile Include="XcodeIntegration\XCBuildConfiguration.cs" />
+    <Compile Include="XcodeIntegration\XCConfigurationList.cs" />
+    <Compile Include="XcodeIntegration\XcodeObject.cs" />
+    <Compile Include="XcodeIntegration\XcodeProject.cs" />
+    <Compile Include="XcodeIntegration\XcodeType.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">
