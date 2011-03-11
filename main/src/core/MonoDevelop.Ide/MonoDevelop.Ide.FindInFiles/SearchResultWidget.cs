@@ -130,14 +130,14 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			treeviewSearchResults.RowActivated += TreeviewSearchResultsRowActivated;
 			
-			buttonStop = new ToolButton ("gtk-stop") { Sensitive = false };
+			buttonStop = new ToolButton (Stock.Stop) { Sensitive = false };
 
 			buttonStop.Clicked += ButtonStopClicked;
 			
 			buttonStop.TooltipText = GettextCatalog.GetString ("Stop");
 			toolbar.Insert (buttonStop, -1);
 
-			var buttonClear = new ToolButton ("gtk-clear");
+			var buttonClear = new ToolButton (Gtk.Stock.Clear);
 			buttonClear.Clicked += ButtonClearClicked;
 			buttonClear.TooltipText = GettextCatalog.GetString ("Clear results");
 			toolbar.Insert (buttonClear, -1);
@@ -147,7 +147,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			buttonOutput.TooltipText = GettextCatalog.GetString ("Show output");
 			toolbar.Insert (buttonOutput, -1);
 			
-			buttonPin = new ToggleToolButton ("md-pin-up");
+			buttonPin = new ToggleToolButton (Gui.Stock.PinUp);
 			buttonPin.Clicked += ButtonPinClicked;
 			buttonPin.TooltipText = GettextCatalog.GetString ("Pin results pad");
 			toolbar.Insert (buttonPin, -1);
@@ -173,7 +173,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		void ButtonPinClicked (object sender, EventArgs e)
 		{
-			buttonPin.StockId = buttonPin.Active ? "md-pin-down" : "md-pin-up";
+			buttonPin.StockId = buttonPin.Active? Gui.Stock.PinDown : Gui.Stock.PinUp;
 		}
 
 		void ButtonOutputClicked (object sender, EventArgs e)

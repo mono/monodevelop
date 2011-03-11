@@ -204,9 +204,9 @@
 	<StockIcon stockid = "md-message-log" resource = "view-message-log-16.png" size = "Menu"/>
 	<StockIcon stockid = "md-visual-style" resource = "visual-style-16.png" size = "Menu"/>
 	<StockIcon stockid = "md-visual-style" resource = "visual-style-24.png" />
-	<StockIcon stockid = "md-pin-active" resource = "hicolor_status_16x16_pin-active.png" />
-	<StockIcon stockid = "md-pin-down" resource = "hicolor_status_16x16_pin-down.png" />
-	<StockIcon stockid = "md-pin-up" resource = "hicolor_status_16x16_pin-up.png" />
+	<StockIcon stockid = "md-pin-active" resource = "hicolor_status_16x16_pin-active.png" size = "Menu"/>
+	<StockIcon stockid = "md-pin-down" resource = "hicolor_status_16x16_pin-down.png" size = "Menu"/>
+	<StockIcon stockid = "md-pin-up" resource = "hicolor_status_16x16_pin-up.png" size = "Menu"/>
 	<StockIcon stockid = "md-assembly-project" resource = "assembly-project-16.png" />
 	<StockIcon stockid = "md-parser" resource = "parsing.png" />
 	<!-- for some reason both pairs next/previous and forward/back are in use -->

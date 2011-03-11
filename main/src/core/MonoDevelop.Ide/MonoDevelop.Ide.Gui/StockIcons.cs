@@ -115,6 +115,8 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId ProtectedMethod = "md-protected-method";
 		public static readonly IconId ProtectedProperty = "md-protected-property";
 		public static readonly IconId ProtectedStruct = "md-protected-struct";
+		public static readonly IconId PinDown = "md-pin-down";
+		public static readonly IconId PinUp = "md-pin-up";
 		public static readonly IconId Question = Gtk.Stock.DialogQuestion;
 		public static readonly IconId QuitIcon = Gtk.Stock.Quit;
 		public static readonly IconId RedoIcon = Gtk.Stock.Redo;
