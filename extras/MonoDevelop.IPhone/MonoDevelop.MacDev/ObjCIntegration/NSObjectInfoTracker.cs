@@ -155,6 +155,9 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			string mFilePath = Path.Combine (directory, type.ObjCName + ".m");
 			
 			using (var sw = File.CreateText (hFilePath)) {
+				sw.WriteLine (modificationWarning);
+				sw.WriteLine ();
+				
 				sw.WriteLine ("#import <UIKit/UIKit.h>");
 				foreach (var reference in type.UserTypeReferences) {
 					sw.WriteLine ("#import \"{0}.h\"", reference);
@@ -185,6 +188,9 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			}
 			
 			using (var sw = File.CreateText (mFilePath)) {
+				sw.WriteLine (modificationWarning);
+				sw.WriteLine ();
+				
 				sw.WriteLine ("#import \"{0}.h\"", type.ObjCName);
 				sw.WriteLine ();
 				
@@ -211,6 +217,13 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				sw.WriteLine ("@end");
 			}
 		}
+		
+		static string modificationWarning =
+			"// WARNING\n" +
+			"// This file has been generated automatically by MonoDevelop to\n" +
+			"// mirror C# types. Changes in this file made by drag-connecting\n" +
+			"// from the UI designer will be synchronized back to C#, but\n" +
+			"// more complex manual changes may not transfer correctly.\n";
 		
 		void WriteActionSignature (IBAction action, TextWriter writer)
 		{
