@@ -859,8 +859,6 @@ namespace MonoDevelop.CSharp.Formatting
 					return;
 				}
 			}
-			Console.WriteLine ("offset={0}, removedChars={1}, insertedText={2}, currentText={3}", offset, removedChars, insertedText.Replace("\n", "\\n").Replace("\t", "\\t").Replace(" ", "."), currentText.Replace("\n", "\\n").Replace("\t", "\\t").Replace(" ", "."));
-			Console.WriteLine (Environment.StackTrace);
 			changes.Add (new AstSpacingVisitor.MyTextReplaceChange (data, offset, removedChars, insertedText));
 		}
 		
