@@ -163,14 +163,23 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			return it.ParentFolder.IsRoot ? (object) it.ParentSolution : (object) it.ParentFolder;
 		}
 		
-		void OnAddFile (object sender, ProjectFileEventArgs e)
+		void OnAddFile (object sender, ProjectFileEventArgs args)
 		{
-			AddFile (e.ProjectFile, e.Project);
+			if (args.CommonProject != null && args.Count > 2 && args.SingleVirtualDirectory) {
+				ITreeBuilder tb = GetFolder (args.CommonProject, args.CommonVirtualRootDirectory);
+				if (tb != null)
+					tb.UpdateChildren ();
+			}
+			else {
+				foreach (ProjectFileEventInfo e in args)
+					AddFile (e.ProjectFile, e.Project);
+			}
 		}
 		
-		void OnRemoveFile (object sender, ProjectFileEventArgs e)
+		void OnRemoveFile (object sender, ProjectFileEventArgs args)
 		{
-			RemoveFile (e.ProjectFile, e.Project);
+			foreach (ProjectFileEventInfo e in args)
+				RemoveFile (e.ProjectFile, e.Project);
 		}
 		
 		void AddFile (ProjectFile file, Project project)
@@ -187,10 +196,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				return;
 			}
 			
-			string filePath = file.IsLink
-				? project.BaseDirectory.Combine (file.ProjectVirtualPath).ParentDirectory
-				: file.FilePath.ParentDirectory;
-				
 			object data;
 			if (file.Subtype == Subtype.Directory)
 				data = new ProjectFolder (file.Name, project);
@@ -201,20 +206,35 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (tb.MoveToObject (data))
 				return;
 			
+			string filePath = file.IsLink
+				? project.BaseDirectory.Combine (file.ProjectVirtualPath).ParentDirectory
+				: file.FilePath.ParentDirectory;
+			
+			tb = GetFolder (project, filePath);
+			if (tb != null)
+				tb.AddChild (data);
+		}
+		
+		ITreeBuilder GetFolder (Project project, FilePath filePath)
+		{
+			ITreeBuilder tb = Context.GetTreeBuilder ();
 			if (filePath != project.BaseDirectory) {
-				if (tb.MoveToObject (new ProjectFolder (filePath, project)))
-					tb.AddChild (data);
+				if (tb.MoveToObject (new ProjectFolder (filePath, project))) {
+					return tb;
+				}
 				else {
 					// Make sure there is a path to that folder
 					tb = FindParentFolderNode (filePath, project);
-					if (tb != null)
+					if (tb != null) {
 						tb.UpdateChildren ();
+						return null;
+					}
 				}
 			} else {
 				if (tb.MoveToObject (project))
-					tb.AddChild (data);
-				tb.UpdateChildren ();
+					return tb;
 			}
+			return null;
 		}
 		
 		ITreeBuilder FindParentFolderNode (string path, Project project)
@@ -267,29 +287,35 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 		}
 		
-		void OnRenameFile (object sender, ProjectFileRenamedEventArgs e)
+		void OnRenameFile (object sender, ProjectFileRenamedEventArgs args)
 		{
-			ITreeBuilder tb = Context.GetTreeBuilder (e.ProjectFile);
-			if (tb != null) tb.Update ();
-		}
-		
-		void OnProjectModified (object sender, SolutionItemModifiedEventArgs e)
-		{
-			if (e.Hint == "References" || e.Hint == "Files")
-				return;
-			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem);
-			if (tb != null) {
-				if (e.Hint == "BaseDirectory" || e.Hint == "TargetFramework")
-					tb.UpdateAll ();
-				else
-					tb.Update ();
+			foreach (ProjectFileEventInfo e in args) {
+				ITreeBuilder tb = Context.GetTreeBuilder (e.ProjectFile);
+				if (tb != null) tb.Update ();
 			}
 		}
 		
-		void OnFilePropertyChanged (object sender, ProjectFileEventArgs args)
+		void OnProjectModified (object sender, SolutionItemModifiedEventArgs args)
 		{
-			ITreeBuilder tb = Context.GetTreeBuilder (args.Project);
-			if (tb != null) tb.UpdateAll ();
+			foreach (SolutionItemModifiedEventInfo e in args) {
+				if (e.Hint == "References" || e.Hint == "Files")
+					continue;
+				ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem);
+				if (tb != null) {
+					if (e.Hint == "BaseDirectory" || e.Hint == "TargetFramework")
+						tb.UpdateAll ();
+					else
+						tb.Update ();
+				}
+			}
+		}
+		
+		void OnFilePropertyChanged (object sender, ProjectFileEventArgs e)
+		{
+			foreach (ProjectFileEventInfo args in e) {
+				ITreeBuilder tb = Context.GetTreeBuilder (args.Project);
+				if (tb != null) tb.UpdateAll ();
+			}
 		}
 		
 		void IdeAppWorkspaceActiveConfigurationChanged (object sender, EventArgs e)

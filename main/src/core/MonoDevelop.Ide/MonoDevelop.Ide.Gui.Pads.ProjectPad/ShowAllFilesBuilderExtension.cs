@@ -162,18 +162,20 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				return false;
 		}
 		
-		void OnAddFile (object sender, ProjectFileEventArgs e)
+		void OnAddFile (object sender, ProjectFileEventArgs args)
 		{
-			if (!e.ProjectFile.IsLink) {
-				object target;
-				if (e.ProjectFile.Subtype == Subtype.Directory) {
-					target = new ProjectFolder (e.ProjectFile.FilePath, e.Project);
-				} else {
-					ITreeBuilder tb = Context.GetTreeBuilder (new SystemFile (e.ProjectFile.Name, e.Project));
-					if (tb != null) tb.Remove (true);
-					target = e.ProjectFile;
+			foreach (ProjectFileEventInfo e in args) {
+				if (!e.ProjectFile.IsLink) {
+					object target;
+					if (e.ProjectFile.Subtype == Subtype.Directory) {
+						target = new ProjectFolder (e.ProjectFile.FilePath, e.Project);
+					} else {
+						ITreeBuilder tb = Context.GetTreeBuilder (new SystemFile (e.ProjectFile.Name, e.Project));
+						if (tb != null) tb.Remove (true);
+						target = e.ProjectFile;
+					}
+					Context.Tree.AddNodeInsertCallback (target, new TreeNodeCallback (UpdateProjectFileParent));
 				}
-				Context.Tree.AddNodeInsertCallback (target, new TreeNodeCallback (UpdateProjectFileParent));
 			}
 		}
 		
@@ -188,13 +190,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 		}
 		
-		void OnRemoveFile (object sender, ProjectFileEventArgs e)
+		void OnRemoveFile (object sender, ProjectFileEventArgs args)
 		{
-			if (e.ProjectFile.Subtype != Subtype.Directory && 
-				!e.ProjectFile.IsLink &&
-				File.Exists (e.ProjectFile.Name)
-			) {
-				AddFile (e.ProjectFile.Name, e.Project);
+			foreach (ProjectFileEventInfo e in args) {
+				if (e.ProjectFile.Subtype != Subtype.Directory && 
+					!e.ProjectFile.IsLink &&
+					File.Exists (e.ProjectFile.Name)
+				) {
+					AddFile (e.ProjectFile.Name, e.Project);
+				}
 			}
 		}
 		
