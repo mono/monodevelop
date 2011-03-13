@@ -96,7 +96,7 @@ namespace MonoDevelop.Ide
 				}
 			};
 			
-			FileService.FileChanged += CheckWorkspaceItems;
+			FileService.FileChanged += (EventHandler<FileEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (CheckWorkspaceItems));;
 		}
 		
 		public WorkspaceItemCollection Items {
@@ -1137,7 +1137,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		void NotifyItemAddedToSolution (object sender, SolutionItemEventArgs args)
+		void NotifyItemAddedToSolution (object sender, SolutionItemChangeEventArgs args)
 		{
 			// Delay the notification of this event to ensure that the new project is properly
 			// registered in the parser database when it is fired
@@ -1148,7 +1148,7 @@ namespace MonoDevelop.Ide
 			});
 		}
 		
-		void NotifyItemRemovedFromSolution (object sender, SolutionItemEventArgs args)
+		void NotifyItemRemovedFromSolution (object sender, SolutionItemChangeEventArgs args)
 		{
 			NotifyItemRemovedFromSolutionRec (sender, args.SolutionItem, args.Solution);
 		}
@@ -1163,7 +1163,7 @@ namespace MonoDevelop.Ide
 					NotifyItemRemovedFromSolutionRec (sender, ce, sol);
 			}
 			if (ItemRemovedFromSolution != null)
-				ItemRemovedFromSolution (sender, new SolutionItemEventArgs (e, sol));
+				ItemRemovedFromSolution (sender, new SolutionItemChangeEventArgs (e, sol, false));
 		}
 		
 		void NotifyDescendantItemAdded (object s, WorkspaceItemEventArgs args)
@@ -1356,12 +1356,12 @@ namespace MonoDevelop.Ide
 		/// <summary>
 		/// Fired just before a project is added to a solution
 		/// </summary>
-		public event SolutionItemEventHandler ItemAddedToSolution;
+		public event SolutionItemChangeEventHandler ItemAddedToSolution;
 		
 		/// <summary>
 		/// Fired after a project is removed from a solution
 		/// </summary>
-		public event SolutionItemEventHandler ItemRemovedFromSolution;
+		public event SolutionItemChangeEventHandler ItemRemovedFromSolution;
 		
 		/// <summary>
 		/// Fired when the active solution configuration has changed

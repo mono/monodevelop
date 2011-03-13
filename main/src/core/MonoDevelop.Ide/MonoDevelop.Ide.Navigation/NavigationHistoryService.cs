@@ -32,6 +32,8 @@ using System.Collections.Generic;
 
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.Ide.Navigation
 {
@@ -288,27 +290,29 @@ namespace MonoDevelop.Ide.Navigation
 		
 		#region Text file line number and snippet updating
 		
-		static void LineCountChanged (object sender, MonoDevelop.Projects.Text.LineCountEventArgs args)
+		static void LineCountChanged (object sender, LineCountEventArgs args)
 		{
 //			MonoDevelop.Projects.Text.ITextFile textFile = (MonoDevelop.Projects.Text.ITextFile) sender;
 		}
 		
-		static void CommitCountChanges (object sender, MonoDevelop.Projects.Text.TextFileEventArgs args)
+		static void CommitCountChanges (object sender, TextFileEventArgs args)
 		{
 //			MonoDevelop.Projects.Text.ITextFile textFile = (MonoDevelop.Projects.Text.ITextFile) sender;
 		}
 		
-		static void ResetCountChanges (object sender, MonoDevelop.Projects.Text.TextFileEventArgs args)
+		static void ResetCountChanges (object sender, TextFileEventArgs args)
 		{
 //			MonoDevelop.Projects.Text.ITextFile textFile = (MonoDevelop.Projects.Text.ITextFile) sender;
 		}
 		
-		static void FileRenamed (object sender, MonoDevelop.Projects.ProjectFileRenamedEventArgs args)
+		static void FileRenamed (object sender, ProjectFileRenamedEventArgs e)
 		{
 			bool changed = false;
-			foreach (NavigationHistoryItem point in history) {
-				DocumentNavigationPoint dp = point.NavigationPoint as DocumentNavigationPoint;
-				changed &= (dp != null && dp.HandleRenameEvent (args.OldName, args.NewName));
+			foreach (ProjectFileRenamedEventInfo args in e) {
+				foreach (NavigationHistoryItem point in history) {
+					DocumentNavigationPoint dp = point.NavigationPoint as DocumentNavigationPoint;
+					changed &= (dp != null && dp.HandleRenameEvent (args.OldName, args.NewName));
+				}
 			}
 			if (changed)
 				OnHistoryChanged ();

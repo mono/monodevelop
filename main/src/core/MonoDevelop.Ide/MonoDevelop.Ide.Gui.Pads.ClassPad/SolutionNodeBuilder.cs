@@ -41,27 +41,23 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public class SolutionNodeBuilder: TypeNodeBuilder
 	{
-		SolutionItemEventHandler combineEntryAdded;
-		SolutionItemEventHandler combineEntryRemoved;
 		EventHandler<WorkspaceItemRenamedEventArgs> combineNameChanged;
 		EventHandler startupChanged;
 		
 		public SolutionNodeBuilder ()
 		{
-			combineEntryAdded = (SolutionItemEventHandler) DispatchService.GuiDispatch (new SolutionItemEventHandler (OnEntryAdded));
-			combineEntryRemoved = (SolutionItemEventHandler) DispatchService.GuiDispatch (new SolutionItemEventHandler (OnEntryRemoved));
 			combineNameChanged = (EventHandler<WorkspaceItemRenamedEventArgs>) DispatchService.GuiDispatch (new EventHandler<WorkspaceItemRenamedEventArgs> (OnCombineRenamed));
 			startupChanged = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnStartupChanged));
 			
-			IdeApp.Workspace.ItemAddedToSolution += combineEntryAdded;
-			IdeApp.Workspace.ItemRemovedFromSolution += combineEntryRemoved;
+			IdeApp.Workspace.ItemAddedToSolution += OnEntryAdded;
+			IdeApp.Workspace.ItemRemovedFromSolution += OnEntryRemoved;
 		}
 		
 		public override void Dispose ()
 		{
 			base.Dispose ();
-			IdeApp.Workspace.ItemAddedToSolution -= combineEntryAdded;
-			IdeApp.Workspace.ItemRemovedFromSolution -= combineEntryRemoved;
+			IdeApp.Workspace.ItemAddedToSolution -= OnEntryAdded;
+			IdeApp.Workspace.ItemRemovedFromSolution -= OnEntryRemoved;
 		}
 
 		public override Type NodeDataType {

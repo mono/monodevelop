@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	public class SolutionNodeBuilder: TypeNodeBuilder
 	{
-		SolutionItemEventHandler globalItemAddedRemoved;
+		SolutionItemChangeEventHandler globalItemAddedRemoved;
 		SolutionItemChangeEventHandler combineEntryAdded;
 		SolutionItemChangeEventHandler combineEntryRemoved;
 		EventHandler<WorkspaceItemRenamedEventArgs> combineNameChanged;
@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public SolutionNodeBuilder ()
 		{
-			globalItemAddedRemoved = (SolutionItemEventHandler) DispatchService.GuiDispatch (new SolutionItemEventHandler (OnSolutionItemAddedRemoved));
+			globalItemAddedRemoved = (SolutionItemChangeEventHandler) DispatchService.GuiDispatch (new SolutionItemChangeEventHandler (OnSolutionItemAddedRemoved));
 			combineEntryAdded = (SolutionItemChangeEventHandler) DispatchService.GuiDispatch (new SolutionItemChangeEventHandler (OnEntryAdded));
 			combineEntryRemoved = (SolutionItemChangeEventHandler) DispatchService.GuiDispatch (new SolutionItemChangeEventHandler (OnEntryRemoved));
 			combineNameChanged = (EventHandler<WorkspaceItemRenamedEventArgs>) DispatchService.GuiDispatch (new EventHandler<WorkspaceItemRenamedEventArgs> (OnCombineRenamed));
@@ -147,14 +147,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 		}
 		
-		void OnSolutionItemAddedRemoved (object sender, SolutionItemEventArgs e)
+		void OnSolutionItemAddedRemoved (object sender, SolutionItemChangeEventArgs e)
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder (e.Solution);
 			if (tb != null)
 				tb.Update ();	// Update the entry count
 		}
 
-		void OnEntryAdded (object sender, SolutionItemEventArgs e)
+		void OnEntryAdded (object sender, SolutionItemChangeEventArgs e)
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem.ParentSolution);
 			if (tb != null) {
@@ -163,7 +163,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 		}
 
-		void OnEntryRemoved (object sender, SolutionItemEventArgs e)
+		void OnEntryRemoved (object sender, SolutionItemChangeEventArgs e)
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem);
 			if (tb != null)
