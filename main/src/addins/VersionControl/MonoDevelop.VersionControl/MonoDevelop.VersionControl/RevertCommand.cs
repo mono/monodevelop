@@ -72,8 +72,8 @@ namespace MonoDevelop.VersionControl
 								doc.Reload ();
 							FileService.NotifyFileChanged (item.Path);
 						}
-						VersionControlService.NotifyFileStatusChanged (item.Repository, item.Path, item.IsDirectory);
 					}
+					VersionControlService.NotifyFileStatusChanged (items);
 				});
 			}
 		}

@@ -129,7 +129,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				MessageService.ShowError (GettextCatalog.GetString ("The file '{0}' could not be unlocked", path), ex.Message);
 				return false;
 			}
-			VersionControlService.NotifyFileStatusChanged (this, path, false);
+			VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (this, path, false));
 			return true;
 		}
 
@@ -230,8 +230,10 @@ namespace MonoDevelop.VersionControl.Subversion
 		public void Resolve (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
 			Svn.Resolve (localPaths, recurse, monitor);
-			foreach (string path in localPaths)
-				VersionControlService.NotifyFileStatusChanged (this, path, Directory.Exists (path));
+			FileUpdateEventArgs args = new FileUpdateEventArgs ();
+			foreach (var path in localPaths)
+				args.Add (new FileUpdateEventInfo (this, path, Directory.Exists (path)));
+			VersionControlService.NotifyFileStatusChanged (args);
 		}
 
 		public override void Revert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
@@ -289,9 +291,12 @@ namespace MonoDevelop.VersionControl.Subversion
 
 						// Found all parent unversioned dirs. Versin them now.
 						dirChain.Reverse ();
-						foreach (var d in dirChain)
+						FileUpdateEventArgs args = new FileUpdateEventArgs ();
+						foreach (var d in dirChain) {
 							Svn.Add (d, false, monitor);
-						VersionControlService.NotifyFileStatusChanged (this, dirChain [0], true);
+							args.Add (new FileUpdateEventInfo (this, dirChain [0], true));
+						}
+						VersionControlService.NotifyFileStatusChanged (args);
 					}
 					Svn.Add (path, recurse, monitor);
 				}

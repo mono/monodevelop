@@ -57,8 +57,7 @@ namespace MonoDevelop.VersionControl
 					list[0].Repository.Add (list.Paths, true, monitor);
 				
 				Gtk.Application.Invoke (delegate {
-					foreach (VersionControlItem item in items)
-						VersionControlService.NotifyFileStatusChanged (item.Repository, item.Path, item.IsDirectory);
+					VersionControlService.NotifyFileStatusChanged (items);
 				});
 			}
 		}
@@ -159,8 +158,7 @@ namespace MonoDevelop.VersionControl
 				}
 				
 				Gtk.Application.Invoke (delegate {
-					foreach (VersionControlItem item in items)
-						VersionControlService.NotifyFileStatusChanged (item.Repository, item.Path, item.IsDirectory);
+					VersionControlService.NotifyFileStatusChanged (items);
 				});
 			}
 		}

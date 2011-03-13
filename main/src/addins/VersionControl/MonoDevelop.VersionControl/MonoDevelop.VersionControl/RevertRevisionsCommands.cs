@@ -122,10 +122,10 @@ namespace MonoDevelop.VersionControl
 						Document doc = IdeApp.Workbench.GetDocument (path);
 						if (doc != null)
 							doc.Reload ();
-						VersionControlService.NotifyFileStatusChanged (vc, path, false);
+						VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (vc, path, false));
 						FileService.NotifyFileChanged (path);
 					} else {
-						VersionControlService.NotifyFileStatusChanged (vc, path, true);
+						VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (vc, path, true));
 					}
 				});
 			}

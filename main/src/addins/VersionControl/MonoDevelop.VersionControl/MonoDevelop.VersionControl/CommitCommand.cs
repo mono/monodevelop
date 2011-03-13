@@ -119,10 +119,16 @@ namespace MonoDevelop.VersionControl
 				foreach (ChangeSetItem it in changeSet.Items)
 					if (it.IsDirectory) dirs.Add (it.LocalPath);
 					else files.Add (it.LocalPath);
+				
+				FileUpdateEventArgs args = new FileUpdateEventArgs ();
+				
 				foreach (FilePath path in dirs)
-					VersionControlService.NotifyFileStatusChanged (vc, path, true);
+					args.Add (new FileUpdateEventInfo (vc, path, true));
 				foreach (FilePath path in files)
-					VersionControlService.NotifyFileStatusChanged (vc, path, false);
+					args.Add (new FileUpdateEventInfo (vc, path, false));
+				
+				if (args.Count > 0)
+					VersionControlService.NotifyFileStatusChanged (args);
 			}
 		}
 	}

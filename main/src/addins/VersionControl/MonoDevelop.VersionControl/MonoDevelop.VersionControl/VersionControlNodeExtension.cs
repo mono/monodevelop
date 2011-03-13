@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 using MonoDevelop.Core;
@@ -154,7 +155,7 @@ namespace MonoDevelop.VersionControl
 					data.Timestamp = DateTime.Now;
 				}
 				VersionInfo vi;
-				if (data.FileData.TryGetValue ((FilePath)filepath, out vi))
+				if (data.FileData.TryGetValue (filepath.CanonicalPath, out vi))
 					return vi.Status;
 			}
 			
@@ -169,26 +170,32 @@ namespace MonoDevelop.VersionControl
 		
 		void Monitor (object sender, FileUpdateEventArgs args)
 		{
-			if (args.IsDirectory) {
-				FilePath path = args.FilePath.CanonicalPath;
-				DirData dd;
-				if (filePaths.TryGetValue (path, out dd)) {
-					dd.FileData = null; // Clear the status cache
-					ITreeBuilder builder = Context.GetTreeBuilder (dd.Object);
-					if (builder != null)
-						builder.UpdateAll();
+			foreach (var dir in args.GroupByDirectory ()) {
+				if (dir.Count () > 3 || dir.Any (f => f.IsDirectory)) {
+					FilePath path = dir.Key.CanonicalPath;
+					DirData dd;
+					if (filePaths.TryGetValue (path, out dd)) {
+						dd.FileData = null; // Clear the status cache
+						ITreeBuilder builder = Context.GetTreeBuilder (dd.Object);
+						if (builder != null)
+							builder.UpdateAll();
+					}
+					continue;
 				}
-			} else {
-				// If it's a file, clear the cached version info for the file, if exists
-				FilePath path = args.FilePath.ParentDirectory;
-				DirData dd;
-				if (filePaths.TryGetValue (path.CanonicalPath, out dd) && dd.FileData != null) {
-					dd.FileData.Remove (args.FilePath.CanonicalPath);
-				}
-				if (filePaths.TryGetValue (args.FilePath.CanonicalPath, out dd)) {
-					ITreeBuilder builder = Context.GetTreeBuilder (dd.Object);
-					if (builder != null)
-						builder.UpdateAll();
+				else {
+					// All files, clear the cached version info for each file, if exists
+					foreach (FileUpdateEventInfo uinfo in dir) {
+						FilePath path = uinfo.FilePath.ParentDirectory;
+						DirData dd;
+						if (filePaths.TryGetValue (path.CanonicalPath, out dd) && dd.FileData != null) {
+							dd.FileData.Remove (uinfo.FilePath.CanonicalPath);
+						}
+						if (filePaths.TryGetValue (uinfo.FilePath.CanonicalPath, out dd)) {
+							ITreeBuilder builder = Context.GetTreeBuilder (dd.Object);
+							if (builder != null)
+								builder.UpdateAll();
+						}
+					}
 				}
 			}
 		}

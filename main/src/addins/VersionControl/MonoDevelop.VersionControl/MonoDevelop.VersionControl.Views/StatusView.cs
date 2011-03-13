@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -808,12 +809,25 @@ namespace MonoDevelop.VersionControl.Views
 		
 		void OnFileStatusChanged (object s, FileUpdateEventArgs args)
 		{
-			if (!args.FilePath.IsChildPathOf (filepath) && args.FilePath != filepath)
-				return;
-				
-			if (args.IsDirectory) {
+			if (args.Any (f => f.FilePath == filepath || (f.FilePath.IsChildPathOf (filepath) && f.IsDirectory))) {
 				StartUpdate ();
 				return;
+			}
+			foreach (FileUpdateEventInfo f in args) {
+				if (!OnFileStatusChanged (f))
+					break;
+			}
+			UpdateControlStatus ();
+		}
+		
+		bool OnFileStatusChanged (FileUpdateEventInfo args)
+		{
+			if (!args.FilePath.IsChildPathOf (filepath) && args.FilePath != filepath)
+				return true;
+			
+			if (args.IsDirectory) {
+				StartUpdate ();
+				return false;
 			}
 			
 			bool found = false;
@@ -855,7 +869,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 			catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
-				return;
+				return true;
 			}
 			
 			if (found) {
@@ -864,8 +878,7 @@ namespace MonoDevelop.VersionControl.Views
 					changeSet.RemoveFile (args.FilePath);
 					statuses.RemoveAt (oldStatusIndex);
 					filestore.Remove (ref oldStatusIter);
-					UpdateControlStatus ();
-					return;
+					return true;
 				}
 				
 				statuses [oldStatusIndex] = newInfo;
@@ -881,7 +894,7 @@ namespace MonoDevelop.VersionControl.Views
 					AppendFileInfo (newInfo);
 				}
 			}
-			UpdateControlStatus ();
+			return true;
 		}
 		
 		bool FileVisible (VersionInfo vinfo)

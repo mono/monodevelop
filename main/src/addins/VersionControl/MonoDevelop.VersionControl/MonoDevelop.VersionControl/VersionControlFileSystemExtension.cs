@@ -4,12 +4,14 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.FileSystem;
 using MonoDevelop.Ide;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.VersionControl
 {
 	internal class VersionControlFileSystemExtension: FileSystemExtension
 	{
-		public override bool CanHandlePath (string path, bool isDirectory)
+		public override bool CanHandlePath (FilePath path, bool isDirectory)
 		{
 			// FIXME: don't load this extension if the ide is not loaded.
 			if (IdeApp.ProjectOperations == null || !IdeApp.Workspace.IsOpen)
@@ -29,7 +31,7 @@ namespace MonoDevelop.VersionControl
 			return null;
 		}
 		
-		public override void CopyFile (string source, string dest, bool overwrite)
+		public override void CopyFile (FilePath source, FilePath dest, bool overwrite)
 		{
 			Repository repo = GetRepository (dest);
 			if (repo.RequestFileWritePermission (dest)) {
@@ -40,7 +42,7 @@ namespace MonoDevelop.VersionControl
 				throw new System.IO.IOException ("Write permission denied");
 		}
 		
-		public override void MoveFile (string source, string dest)
+		public override void MoveFile (FilePath source, FilePath dest)
 		{
 			IProgressMonitor monitor = new NullProgressMonitor ();
 			
@@ -55,19 +57,19 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 		
-		public override void DeleteFile (string file)
+		public override void DeleteFile (FilePath file)
 		{
 			Repository repo = GetRepository (file);
 			repo.DeleteFile (file, true, new NullProgressMonitor ());
 		}
 		
-		public override void CreateDirectory (string path)
+		public override void CreateDirectory (FilePath path)
 		{
 			Repository repo = GetRepository (path);
 			repo.CreateLocalDirectory (path);
 		}
 		
-		public override void MoveDirectory (string sourcePath, string destPath)
+		public override void MoveDirectory (FilePath sourcePath, FilePath destPath)
 		{
 			IProgressMonitor monitor = new NullProgressMonitor ();
 			
@@ -82,22 +84,23 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 		
-		public override void DeleteDirectory (string path)
+		public override void DeleteDirectory (FilePath path)
 		{
 			Repository repo = GetRepository (path);
 			repo.DeleteDirectory (path, true, new NullProgressMonitor ());
 		}
 		
-		public override bool RequestFileEdit (string file)
+		public override bool RequestFileEdit (FilePath file)
 		{
 			Repository repo = GetRepository (file);
 			return repo.RequestFileWritePermission (file);
 		}
 		
-		public override void NotifyFileChanged (string file)
+		public override void NotifyFilesChanged (IEnumerable<FilePath> files)
 		{
-			Repository repo = GetRepository (file);
-			VersionControlService.NotifyFileStatusChanged (repo, file, false);
+			FileUpdateEventArgs args = new FileUpdateEventArgs ();
+			args.AddRange (files.Select (f => new FileUpdateEventInfo (GetRepository (f), f, false)));
+			VersionControlService.NotifyFileStatusChanged (args);
 		}
 	}
 }
