@@ -31,10 +31,10 @@ namespace MonoDevelop.Core
 {
 	public interface IEventArgsChain
 	{
-		void Add (object args);
+		void MergeWith (IEventArgsChain args);
 	}
 	
-	public class EventArgsChain<T>: EventArgs, ICollection<T>, IEventArgsChain
+	public class EventArgsChain<T>: EventArgs, ICollection<T>, IEnumerable<T>, IEventArgsChain
 	{
 		List<T> events = new List<T> ();
 		
@@ -47,11 +47,21 @@ namespace MonoDevelop.Core
 			events.AddRange (args);
 		}
 		
-		void IEventArgsChain.Add (object args)
+		void IEventArgsChain.MergeWith (IEventArgsChain chain)
 		{
-			Add ((T)args);
+			events.AddRange (((EventArgsChain<T>)chain).events);
 		}
 		
+		public void MergeWith (EventArgsChain<T> chain)
+		{
+			events.AddRange (chain.events);
+		}
+
+		public void AddRange (IEnumerable<T> args)
+		{
+			events.AddRange (args);
+		}
+
 		#region ICollection[T] implementation
 		public void Add (T eventArgs)
 		{
