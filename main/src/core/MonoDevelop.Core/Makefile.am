@@ -148,6 +148,7 @@ FILES =  \
 	MonoDevelop.Core/DefaultAddinLocalizer.cs \
 	MonoDevelop.Core/EventArgsChain.cs \
 	MonoDevelop.Core/FileEventArgs.cs \
+	MonoDevelop.Core/FilePath.cs \
 	MonoDevelop.Core/FileService.cs \
 	MonoDevelop.Core/Gettext.cs \
 	MonoDevelop.Core/IAsyncOperation.cs \
