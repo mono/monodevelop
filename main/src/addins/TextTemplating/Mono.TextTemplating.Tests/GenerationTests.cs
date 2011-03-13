@@ -130,7 +130,7 @@ namespace Mono.TextTemplating.Tests
 namespace Microsoft.VisualStudio.TextTemplating {
     
     
-    public partial class GeneratedTextTransformation4f504ca0 : Microsoft.VisualStudio.TextTemplating.TextTransformation {
+    public partial class GeneratedTextTransformation4f504ca0 : global::Microsoft.VisualStudio.TextTemplating.TextTransformation {
         
         
         #line 9 """"
@@ -141,6 +141,7 @@ baz \#>
         #line hidden
         
         public override string TransformText() {
+            this.GenerationEnvironment = null;
             
             #line 2 """"
             this.Write(""Line One\nLine Two\n"");
@@ -163,7 +164,7 @@ foo
             #line hidden
             
             #line 7 """"
-            this.Write(Microsoft.VisualStudio.TextTemplating.ToStringHelper.ToStringWithCulture( bar ));
+            this.Write(global::Microsoft.VisualStudio.TextTemplating.ToStringHelper.ToStringWithCulture( bar ));
             
             #line default
             #line hidden
@@ -174,6 +175,10 @@ foo
             #line default
             #line hidden
             return this.GenerationEnvironment.ToString();
+        }
+        
+        protected override void Initialize() {
+            base.Initialize();
         }
     }
 }
