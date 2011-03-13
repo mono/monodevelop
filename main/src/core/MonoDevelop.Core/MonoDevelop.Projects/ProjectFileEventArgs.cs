@@ -33,7 +33,100 @@ namespace MonoDevelop.Projects
 {
 	public delegate void ProjectFileEventHandler(object sender, ProjectFileEventArgs e);
 	
-	public class ProjectFileEventArgs : EventArgs
+	public class ProjectFileEventArgs : EventArgsChain<ProjectFileEventInfo>
+	{
+		FilePath rootDir;
+		FilePath virtualRootDir;
+		bool singleDir;
+		bool singleVirtualDir;
+		Project commonProject;
+		
+		public ProjectFileEventArgs (Project project, ProjectFile file)
+		{
+			Add (new ProjectFileEventInfo (project, file));
+		}
+		
+		public ProjectFileEventArgs ()
+		{
+		}
+		
+		public Project CommonProject {
+			get {
+				if (rootDir.IsNull)
+					CalcRootDir (true, out rootDir, out singleDir);
+				return commonProject;
+			}
+		}
+		
+		public FilePath CommonRootDirectory {
+			get {
+				if (rootDir.IsNull)
+					CalcRootDir (false, out rootDir, out singleDir);
+				return rootDir;
+			}
+		}
+		
+		public bool SingleDirectory {
+			get {
+				if (rootDir.IsNull)
+					CalcRootDir (false, out rootDir, out singleDir);
+				return singleDir;
+			}
+		}
+		
+		public FilePath CommonVirtualRootDirectory {
+			get {
+				if (virtualRootDir.IsNull)
+					CalcRootDir (true, out virtualRootDir, out singleVirtualDir);
+				return virtualRootDir;
+			}
+		}
+		
+		public bool SingleVirtualDirectory {
+			get {
+				if (virtualRootDir.IsNull)
+					CalcRootDir (true, out virtualRootDir, out singleVirtualDir);
+				return singleVirtualDir;
+			}
+		}
+		
+		void CalcRootDir (bool calcVirtual, out FilePath baseDir, out bool sameDir)
+		{
+			baseDir = FilePath.Null;
+			sameDir = true;
+			commonProject = null;
+			
+			foreach (ProjectFileEventInfo f in this) {
+				FilePath parentDir;
+				if (calcVirtual && f.ProjectFile.IsLink)
+					parentDir = f.Project.BaseDirectory.Combine (f.ProjectFile.ProjectVirtualPath).ParentDirectory;
+				else
+					parentDir = f.ProjectFile.FilePath.ParentDirectory;
+				
+				if (baseDir.IsNull) {
+					commonProject = f.Project;
+					baseDir = parentDir;
+					continue;
+				}
+				
+				if (f.Project != commonProject)
+					commonProject = null;
+				
+				if (parentDir == baseDir)
+					continue;
+				else if (baseDir.IsChildPathOf (parentDir)) {
+					sameDir = false;
+					baseDir = parentDir;
+				} else {
+					sameDir = false;
+					while (!parentDir.IsChildPathOf (baseDir))
+						baseDir = baseDir.ParentDirectory;
+				}
+			}
+		}
+	}
+	
+	public class ProjectFileEventInfo
 	{
 		Project project;
 		ProjectFile file;
@@ -50,7 +143,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public ProjectFileEventArgs (Project project, ProjectFile file)
+		public ProjectFileEventInfo (Project project, ProjectFile file)
 		{
 			this.project = project;
 			this.file = file;
@@ -59,7 +152,15 @@ namespace MonoDevelop.Projects
 	
 	public delegate void ProjectFileRenamedEventHandler(object sender, ProjectFileRenamedEventArgs e);
 	
-	public class ProjectFileRenamedEventArgs : ProjectFileEventArgs
+	public class ProjectFileRenamedEventArgs : EventArgsChain<ProjectFileEventInfo>
+	{
+		public ProjectFileRenamedEventArgs (Project project, ProjectFile file, FilePath oldName)
+		{
+			Add (new ProjectFileRenamedEventInfo (project, file, oldName));
+		}
+	}
+	
+	public class ProjectFileRenamedEventInfo : ProjectFileEventInfo
 	{
 		FilePath oldName;
 	
@@ -71,7 +172,7 @@ namespace MonoDevelop.Projects
 			get { return ProjectFile.FilePath; }
 		}
 		
-		public ProjectFileRenamedEventArgs (Project project, ProjectFile file, FilePath oldName)
+		public ProjectFileRenamedEventInfo (Project project, ProjectFile file, FilePath oldName)
 		: base (project, file)
 		{
 			this.oldName = oldName;

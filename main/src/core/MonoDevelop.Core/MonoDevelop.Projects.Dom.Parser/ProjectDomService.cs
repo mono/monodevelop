@@ -612,13 +612,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 			Unload (args.Item);
 		}
 		
-		static void OnSolutionItemAdded (object sender, SolutionItemEventArgs args)
+		static void OnSolutionItemAdded (object sender, SolutionItemChangeEventArgs args)
 		{
 			if (args.SolutionItem is Project)
 				Load ((Project) args.SolutionItem);
 		}
 		
-		static void OnSolutionItemRemoved (object sender, SolutionItemEventArgs args)
+		static void OnSolutionItemRemoved (object sender, SolutionItemChangeEventArgs args)
 		{
 			if (args.SolutionItem is Project)
 				Unload ((Project) args.SolutionItem);

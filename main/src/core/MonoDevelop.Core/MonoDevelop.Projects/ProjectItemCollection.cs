@@ -25,7 +25,9 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
+using System.Collections;
 
 namespace MonoDevelop.Projects
 {
@@ -42,9 +44,9 @@ namespace MonoDevelop.Projects
 
 	internal interface IItemListHandler
 	{
-		void InternalAdd (object item, bool comesFromParent);
-		void InternalRemove (object item, bool comesFromParent);
-		bool CanHandle (object item);
+		void InternalAdd (IEnumerable<ProjectItem> items, bool comesFromParent);
+		void InternalRemove (IEnumerable<ProjectItem> items, bool comesFromParent);
+		bool CanHandle (ProjectItem item);
 	}
 	
 	public class ProjectItemCollection<T>: ItemCollection<T>, IItemListHandler where T: ProjectItem
@@ -64,8 +66,18 @@ namespace MonoDevelop.Projects
 		
 		public void AddRange (IEnumerable<T> items)
 		{
-			foreach (T item in items)
-				Add (item);
+			foreach (T t in items)
+				Items.Add (t);
+			NotifyAdded (items, false);
+			NotifyAdded (items, true);
+		}
+		
+		public void RemoveRange (IEnumerable<T> items)
+		{
+			foreach (T t in items)
+				Items.Remove (t);
+			NotifyRemoved (items, false);
+			NotifyRemoved (items, true);
 		}
 		
 		public void Bind<U> (ProjectItemCollection<U> subCollection) where U:T
@@ -75,10 +87,7 @@ namespace MonoDevelop.Projects
 			subCollections.Add (subCollection);
 			subCollection.parentCollection = this;
 			IItemListHandler list = subCollection;
-			foreach (object ob in this) {
-				if (list.CanHandle (ob))
-					list.InternalAdd (ob, true);
-			}
+			list.InternalAdd (this.Where (ob => list.CanHandle (ob)), true);
 		}
 		
 		public void Unbind<U> (ProjectItemCollection<U> subCollection) where U:T
@@ -99,64 +108,64 @@ namespace MonoDevelop.Projects
 		
 		protected override void OnItemAdded (T item)
 		{
-			NotifyAdded (item, true);
-			NotifyAdded (item, false);
+			var items = new T [] { item };
+			NotifyAdded (items, true);
+			NotifyAdded (items, false);
 		}
 		
 		protected override void OnItemRemoved (T item)
 		{
-			NotifyRemoved (item, true);
-			NotifyRemoved (item, false);
+			var items = new T [] { item };
+			NotifyRemoved (items, true);
+			NotifyRemoved (items, false);
 		}
 		
-		void IItemListHandler.InternalAdd (object obj, bool comesFromParent)
+		void IItemListHandler.InternalAdd (IEnumerable<ProjectItem> objs, bool comesFromParent)
 		{
-			Items.Add ((T) obj);
-			NotifyAdded ((T) obj, comesFromParent);
+			foreach (T t in objs)
+				Items.Add (t);
+			NotifyAdded (objs, comesFromParent);
 		}
 		
-		void IItemListHandler.InternalRemove (object obj, bool comesFromParent)
+		void IItemListHandler.InternalRemove (IEnumerable<ProjectItem> objs, bool comesFromParent)
 		{
-			Items.Remove ((T) obj);
-			NotifyRemoved ((T) obj, comesFromParent);
+			foreach (T t in objs)
+				Items.Remove (t);
+			NotifyRemoved (objs, comesFromParent);
 		}
 		
-		bool IItemListHandler.CanHandle (object obj)
+		bool IItemListHandler.CanHandle (ProjectItem obj)
 		{
 			return obj is T;
 		}
 		
-		void NotifyAdded (T item, bool comesFromParent)
+		void NotifyAdded (IEnumerable<ProjectItem> items, bool comesFromParent)
 		{
 			if (comesFromParent) {
 				if (subCollections != null) {
-					foreach (IItemListHandler col in subCollections) {
-						if (col.CanHandle (item))
-							col.InternalAdd (item, true);
-					}
+					foreach (IItemListHandler col in subCollections)
+						col.InternalAdd (items.Where (i => col.CanHandle (i)), true);
 				}
 			} else {
 				if (parentCollection != null)
-					parentCollection.InternalAdd (item, false);
+					parentCollection.InternalAdd (items, false);
 				if (parent != null)
-					parent.OnItemAdded (item);
+					parent.OnItemsAdded (items);
 			}
 		}
 		
-		void NotifyRemoved (T item, bool comesFromParent)
+		void NotifyRemoved (IEnumerable<ProjectItem> items, bool comesFromParent)
 		{
 			if (comesFromParent) {
 				if (subCollections != null) {
-					foreach (IItemListHandler col in subCollections) {
-						if (col.CanHandle (item))
-							col.InternalRemove (item, true);
-					}
+					foreach (IItemListHandler col in subCollections)
+						col.InternalRemove (items.Where (i => col.CanHandle (i)), true);
 				}
 			} else {
 				if (parentCollection != null)
-					parentCollection.InternalRemove (item, false);
+					parentCollection.InternalRemove (items, false);
 				if (parent != null)
-					parent.OnItemRemoved (item);
+					parent.OnItemsRemoved (items);
 			}
 		}
 	}

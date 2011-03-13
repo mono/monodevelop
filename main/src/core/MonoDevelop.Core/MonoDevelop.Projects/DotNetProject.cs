@@ -1033,21 +1033,19 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected internal override void OnItemAdded (ProjectItem obj)
+		protected internal override void OnItemsAdded (IEnumerable<ProjectItem> objs)
 		{
-			base.OnItemAdded (obj);
-			if (obj is ProjectReference) {
-				ProjectReference pref = (ProjectReference)obj;
+			base.OnItemsAdded (objs);
+			foreach (var pref in objs.OfType<ProjectReference> ()) {
 				pref.SetOwnerProject (this);
 				NotifyReferenceAddedToProject (pref);
 			}
 		}
 
-		protected internal override void OnItemRemoved (ProjectItem obj)
+		protected internal override void OnItemsRemoved (IEnumerable<ProjectItem> objs)
 		{
-			base.OnItemRemoved (obj);
-			if (obj is ProjectReference) {
-				ProjectReference pref = (ProjectReference)obj;
+			base.OnItemsRemoved (objs);
+			foreach (var pref in objs.OfType<ProjectReference> ()) {
 				pref.SetOwnerProject (null);
 				NotifyReferenceRemovedFromProject (pref);
 			}

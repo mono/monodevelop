@@ -27,6 +27,8 @@
 
 using System;
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects
 {
@@ -79,11 +81,19 @@ namespace MonoDevelop.Projects
 	
 	public delegate void SolutionItemModifiedEventHandler (object sender, SolutionItemModifiedEventArgs e);
 	
-	public class SolutionItemModifiedEventArgs: SolutionItemEventArgs
+	public class SolutionItemModifiedEventArgs: EventArgsChain<SolutionItemModifiedEventInfo>
+	{
+		public SolutionItemModifiedEventArgs (SolutionItem item, string hint)
+		{
+			Add (new SolutionItemModifiedEventInfo (item, hint));
+		}
+	}
+	
+	public class SolutionItemModifiedEventInfo: SolutionItemEventArgs
 	{
 		string hint;
 		
-		public SolutionItemModifiedEventArgs (SolutionItem item, string hint): base (item)
+		public SolutionItemModifiedEventInfo (SolutionItem item, string hint): base (item)
 		{
 			this.hint = hint;
 		}

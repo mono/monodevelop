@@ -24,15 +24,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
-	public class ProjectItemEventArgs: EventArgs
+	public class ProjectItemEventArgs: EventArgsChain<ProjectItemEventInfo>
+	{
+		public ProjectItemEventArgs ()
+		{
+		}
+		
+		public ProjectItemEventArgs (SolutionEntityItem solutionItem, ProjectItem item)
+		{
+			Add (new ProjectItemEventInfo (solutionItem, item)); 
+		}
+	}
+	
+	public class ProjectItemEventInfo
 	{
 		ProjectItem item;
 		SolutionEntityItem solutionItem;
 		
-		public ProjectItemEventArgs (SolutionEntityItem solutionItem, ProjectItem item)
+		public ProjectItemEventInfo (SolutionEntityItem solutionItem, ProjectItem item)
 		{
 			this.item = item;
 			this.solutionItem = solutionItem;

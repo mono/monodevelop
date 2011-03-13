@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Xml;
 using System.IO;
 using System.Collections;
@@ -465,18 +466,22 @@ namespace MonoDevelop.Projects
 			return source;
 		}
 		
-		internal protected virtual void OnItemAdded (ProjectItem obj)
+		internal protected virtual void OnItemsAdded (IEnumerable<ProjectItem> objs)
 		{
 			NotifyModified ("Items");
+			var args = new ProjectItemEventArgs ();
+			args.AddRange (objs.Select (pi => new ProjectItemEventInfo (this, pi)));
 			if (ProjectItemAdded != null)
-				ProjectItemAdded (this, new ProjectItemEventArgs (this, obj));
+				ProjectItemAdded (this, args);
 		}
 		
-		internal protected virtual void OnItemRemoved (ProjectItem obj)
+		internal protected virtual void OnItemsRemoved (IEnumerable<ProjectItem> objs)
 		{
 			NotifyModified ("Items");
+			var args = new ProjectItemEventArgs ();
+			args.AddRange (objs.Select (pi => new ProjectItemEventInfo (this, pi)));
 			if (ProjectItemRemoved != null)
-				ProjectItemRemoved (this, new ProjectItemEventArgs (this, obj));
+				ProjectItemRemoved (this, args);
 		}
 		
 		protected virtual void OnDefaultConfigurationChanged (ConfigurationEventArgs args)

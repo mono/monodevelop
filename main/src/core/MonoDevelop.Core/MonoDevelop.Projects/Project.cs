@@ -29,6 +29,7 @@
 
 
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -780,18 +781,16 @@ namespace MonoDevelop.Projects
 			return col;
 		}
 
-		protected internal override void OnItemAdded (ProjectItem obj)
+		protected internal override void OnItemsAdded (IEnumerable<ProjectItem> objs)
 		{
-			base.OnItemAdded (obj);
-			if (obj is ProjectFile)
-				NotifyFileAddedToProject ((ProjectFile)obj);
+			base.OnItemsAdded (objs);
+			NotifyFileAddedToProject (objs.OfType<ProjectFile> ());
 		}
 
-		protected internal override void OnItemRemoved (ProjectItem obj)
+		protected internal override void OnItemsRemoved (IEnumerable<ProjectItem> objs)
 		{
-			base.OnItemRemoved (obj);
-			if (obj is ProjectFile)
-				NotifyFileRemovedFromProject ((ProjectFile)obj);
+			base.OnItemsRemoved (objs);
+			NotifyFileRemovedFromProject (objs.OfType<ProjectFile> ());
 		}
 
 		internal void NotifyFileChangedInProject (ProjectFile file)
@@ -807,37 +806,50 @@ namespace MonoDevelop.Projects
 
 		List<ProjectFile> unresolvedDeps;
 
-		void NotifyFileRemovedFromProject (ProjectFile file)
+		void NotifyFileRemovedFromProject (IEnumerable<ProjectFile> objs)
 		{
-			file.SetProject (null);
-
-			if (DependencyResolutionEnabled) {
-				if (unresolvedDeps.Contains (file))
-					unresolvedDeps.Remove (file);
-				foreach (ProjectFile f in file.DependentChildren) {
-					f.DependsOnFile = null;
-					if (!string.IsNullOrEmpty (f.DependsOn))
-						unresolvedDeps.Add (f);
+			if (!objs.Any ())
+				return;
+			
+			var args = new ProjectFileEventArgs ();
+			
+			foreach (ProjectFile file in objs) {
+				file.SetProject (null);
+				args.Add (new ProjectFileEventInfo (this, file));
+				if (DependencyResolutionEnabled) {
+					if (unresolvedDeps.Contains (file))
+						unresolvedDeps.Remove (file);
+					foreach (ProjectFile f in file.DependentChildren) {
+						f.DependsOnFile = null;
+						if (!string.IsNullOrEmpty (f.DependsOn))
+							unresolvedDeps.Add (f);
+					}
+					file.DependsOnFile = null;
 				}
-				file.DependsOnFile = null;
+			}
+			SetDirty ();
+			NotifyModified ("Files");
+			OnFileRemovedFromProject (args);
+		}
+
+		void NotifyFileAddedToProject (IEnumerable<ProjectFile> objs)
+		{
+			if (!objs.Any ())
+				return;
+			
+			var args = new ProjectFileEventArgs ();
+			
+			foreach (ProjectFile file in objs) {
+				if (file.Project != null)
+					throw new InvalidOperationException ("ProjectFile already belongs to a project");
+				file.SetProject (this);
+				args.Add (new ProjectFileEventInfo (this, file));
+				ResolveDependencies (file);
 			}
 
 			SetDirty ();
 			NotifyModified ("Files");
-			OnFileRemovedFromProject (new ProjectFileEventArgs (this, file));
-		}
-
-		void NotifyFileAddedToProject (ProjectFile file)
-		{
-			if (file.Project != null)
-				throw new InvalidOperationException ("ProjectFile already belongs to a project");
-			file.SetProject (this);
-
-			ResolveDependencies (file);
-
-			SetDirty ();
-			NotifyModified ("Files");
-			OnFileAddedToProject (new ProjectFileEventArgs (this, file));
+			OnFileAddedToProject (args);
 		}
 
 		internal void ResolveDependencies (ProjectFile file)

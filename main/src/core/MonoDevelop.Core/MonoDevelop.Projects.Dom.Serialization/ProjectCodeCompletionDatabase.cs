@@ -92,33 +92,40 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		void OnFileChanged (object sender, ProjectFileEventArgs args)
 		{
-			FileEntry file = GetFile (args.ProjectFile.Name);
-			if (file != null) {
-				file.ParseErrorRetries = 0;
-				QueueParseJob (file);
+			foreach (ProjectFileEventInfo fargs in args) {
+				FileEntry file = GetFile (fargs.ProjectFile.Name);
+				if (file != null) {
+					file.ParseErrorRetries = 0;
+					QueueParseJob (file);
+				}
 			}
 		}
 		
 		void OnFileAdded (object sender, ProjectFileEventArgs args)
 		{
-			FileEntry file = AddFile (args.ProjectFile.Name);
-			// CheckModifiedFiles won't detect new files, so parsing
-			// must be manyally signaled
-			QueueParseJob (file);
+			foreach (ProjectFileEventInfo fargs in args) {
+				FileEntry file = AddFile (fargs.ProjectFile.Name);
+				// CheckModifiedFiles won't detect new files, so parsing
+				// must be manyally signaled
+				QueueParseJob (file);
+			}
 		}
 
 		void OnFileRemoved (object sender, ProjectFileEventArgs args)
 		{
-			RemoveFile (args.ProjectFile.Name);
+			foreach (ProjectFileEventInfo fargs in args)
+				RemoveFile (fargs.ProjectFile.Name);
 		}
 
 		void OnFileRenamed (object sender, ProjectFileRenamedEventArgs args)
 		{
-			RemoveFile (args.OldName);
-			FileEntry file = AddFile (args.NewName);
-			// CheckModifiedFiles won't detect new files, so parsing
-			// must be manyally signaled
-			QueueParseJob (file);
+			foreach (ProjectFileRenamedEventInfo fargs in args) {
+				RemoveFile (fargs.OldName);
+				FileEntry file = AddFile (fargs.NewName);
+				// CheckModifiedFiles won't detect new files, so parsing
+				// must be manyally signaled
+				QueueParseJob (file);
+			}
 		}
 		
 		void OnProjectModified (object s, SolutionItemModifiedEventArgs args)

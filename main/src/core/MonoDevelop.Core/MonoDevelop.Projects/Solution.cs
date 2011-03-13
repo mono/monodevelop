@@ -619,7 +619,7 @@ namespace MonoDevelop.Projects
 		internal protected virtual void OnSolutionItemAdded (SolutionItemChangeEventArgs args)
 		{
 			solutionItems = null;
-			
+
 			SolutionFolder sf = args.SolutionItem as SolutionFolder;
 			if (sf != null) {
 				foreach (SolutionItem eitem in sf.GetAllItems<SolutionItem> ())
@@ -761,7 +761,7 @@ namespace MonoDevelop.Projects
 				ReferenceRemovedFromProject (this, args);
 		}
 		
-		internal protected virtual void OnEntryModified (SolutionItemEventArgs args)
+		internal protected virtual void OnEntryModified (SolutionItemModifiedEventArgs args)
 		{
 			if (EntryModified != null)
 				EntryModified (this, args);
@@ -793,7 +793,7 @@ namespace MonoDevelop.Projects
 		public event ProjectFileRenamedEventHandler FileRenamedInProject;
 		public event ProjectReferenceEventHandler ReferenceAddedToProject;
 		public event ProjectReferenceEventHandler ReferenceRemovedFromProject;
-		public event SolutionItemEventHandler EntryModified;
+		public event SolutionItemModifiedEventHandler EntryModified;
 		public event SolutionItemEventHandler EntrySaved;
 		public event EventHandler<SolutionItemEventArgs> ItemReloadRequired;
 	}
