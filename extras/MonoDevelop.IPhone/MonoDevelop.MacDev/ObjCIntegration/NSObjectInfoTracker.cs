@@ -32,6 +32,7 @@ using System.Linq;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
+using System.Text.RegularExpressions;
 
 namespace MonoDevelop.MacDev.ObjCIntegration
 {
@@ -246,6 +247,40 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			}	
 		}
 		
+		Regex ibRegex = new Regex ("(- \\(IBAction\\)|IBOutlet)([^;]*);", RegexOptions.Compiled);
+		char[] colonChar = { ':' };
+		char[] whitespaceChars = { ' ', '\t', '\n', '\r' };
+		char[] splitActionParamsChars = { ' ', '\t', '\n', '\r', '*', '(', ')' };
+		
+		public NSObjectTypeInfo ParseHeader (string headerFile)
+		{
+			var text = File.ReadAllText (headerFile);
+			var matches = ibRegex.Matches (text);
+			var type =  new NSObjectTypeInfo (Path.GetFileNameWithoutExtension (headerFile), null, null, null, false);
+			foreach (Match match in matches) {
+				var kind = match.Groups[1].Value;
+				var def = match.Groups[2].Value;
+				if (kind == "IBOutlet") {
+					var split = def.Split (whitespaceChars, StringSplitOptions.RemoveEmptyEntries);
+					if (split.Length != 2)
+						continue;
+					type.Outlets.Add (new IBOutlet (split[1].TrimStart ('*'), null, split[0].TrimEnd ('*'), null));
+				} else {
+					string[] split = def.Split (colonChar);
+					var action = new IBAction (split[0].Trim (), null);
+					string label = null;
+					for (int i = 1; i < split.Length; i++) {
+						var s = split[i].Split (splitActionParamsChars, StringSplitOptions.RemoveEmptyEntries);
+						var par = new IBActionParameter (label, s[1], s[0], null);
+						label = s.Length == 3? s[2] : null;
+						action.Parameters.Add (par);
+					}
+					type.Actions.Add (action);
+				}
+			}
+			return type;
+		}
+		
 		IEnumerable<NSObjectTypeInfo> GetRegisteredObjects (ProjectDom dom)
 		{
 			var nso = dom.GetType (nsobjectType);
@@ -311,7 +346,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					if (att.PositionalArguments.Count == 1) {
 						var n = (string)((System.CodeDom.CodePrimitiveExpression)att.PositionalArguments[0]).Value;
 						if (!string.IsNullOrEmpty (n))
-							name = n.Split (new [] { ':' });
+							name = n.Split (colonChar);
 					}
 					var action = new IBAction (name != null? name [0] : meth.Name, meth.Name);
 					info.Actions.Add (action);
