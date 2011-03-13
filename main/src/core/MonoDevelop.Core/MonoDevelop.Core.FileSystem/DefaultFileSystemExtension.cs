@@ -29,47 +29,48 @@
 using System;
 using System.IO;
 using MonoDevelop.Core;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Core.FileSystem
 {
 	internal class DefaultFileSystemExtension: FileSystemExtension
 	{
-		public override bool CanHandlePath (string path, bool isDirectory)
+		public override bool CanHandlePath (FilePath path, bool isDirectory)
 		{
 			return true;
 		}
 		
-		public override void CopyFile (string source, string dest, bool overwrite)
+		public override void CopyFile (FilePath source, FilePath dest, bool overwrite)
 		{
 			File.Copy (source, dest, overwrite);
 		}
 		
-		public override void RenameFile (string file, string newName)
+		public override void RenameFile (FilePath file, string newName)
 		{
 			File.Move (file, newName);
 		}
 		
-		public override void MoveFile (string source, string dest)
+		public override void MoveFile (FilePath source, FilePath dest)
 		{
 			File.Move (source, dest);
 		}
 		
-		public override void DeleteFile (string file)
+		public override void DeleteFile (FilePath file)
 		{
 			File.Delete (file);
 		}
 		
-		public override void CreateDirectory (string path)
+		public override void CreateDirectory (FilePath path)
 		{
 			Directory.CreateDirectory (path);
 		}
 		
-		public override void CopyDirectory (string sourcePath, string destPath)
+		public override void CopyDirectory (FilePath sourcePath, FilePath destPath)
 		{
 			CopyDirectory (sourcePath, destPath, "");
 		}
 		
-		void CopyDirectory (string src, string dest, string subdir)
+		void CopyDirectory (FilePath src, FilePath dest, FilePath subdir)
 		{
 			string destDir = Path.Combine (dest, subdir);
 	
@@ -83,27 +84,27 @@ namespace MonoDevelop.Core.FileSystem
 				CopyDirectory (dir, dest, Path.Combine (subdir, Path.GetFileName (dir)));
 		}
 		
-		public override void RenameDirectory (string path, string newName)
+		public override void RenameDirectory (FilePath path, string newName)
 		{
 			Directory.Move (path, newName);
 		}
 		
-		public override void MoveDirectory (string source, string dest)
+		public override void MoveDirectory (FilePath source, FilePath dest)
 		{
 			Directory.Move (source, dest);
 		}
 		
-		public override void DeleteDirectory (string path)
+		public override void DeleteDirectory (FilePath path)
 		{
 			Directory.Delete (path, true);
 		}
 		
-		public override bool RequestFileEdit (string file)
+		public override bool RequestFileEdit (FilePath file)
 		{
 			return true;
 		}
 		
-		public override void NotifyFileChanged (string file)
+		public override void NotifyFilesChanged (IEnumerable<FilePath> file)
 		{
 		}
 	}

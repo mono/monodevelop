@@ -27,8 +27,10 @@
 
 
 using System;
+using System.Linq;
 using System.IO;
 using MonoDevelop.Core;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Core.FileSystem
 {
@@ -41,9 +43,9 @@ namespace MonoDevelop.Core.FileSystem
 			set { next = value; }
 		}
 		
-		public abstract bool CanHandlePath (string path, bool isDirectory);
+		public abstract bool CanHandlePath (FilePath path, bool isDirectory);
 		
-		FileSystemExtension GetNextForPath (string file, bool isDirectory)
+		FileSystemExtension GetNextForPath (FilePath file, bool isDirectory)
 		{
 			FileSystemExtension nx = next;
 			while (nx != null && !nx.CanHandlePath (file, isDirectory))
@@ -51,17 +53,17 @@ namespace MonoDevelop.Core.FileSystem
 			return nx;
 		}
 		
-		public virtual void CopyFile (string source, string dest, bool overwrite)
+		public virtual void CopyFile (FilePath source, FilePath dest, bool overwrite)
 		{
 			GetNextForPath (dest, false).CopyFile (source, dest, overwrite);
 		}
 		
-		public virtual void RenameFile (string file, string newName)
+		public virtual void RenameFile (FilePath file, string newName)
 		{
 			GetNextForPath (file, false).RenameFile (file, newName);
 		}
 		
-		public virtual void MoveFile (string source, string dest)
+		public virtual void MoveFile (FilePath source, FilePath dest)
 		{
 			GetNextForPath (source, false).MoveFile (source, dest);
 			
@@ -80,27 +82,27 @@ namespace MonoDevelop.Core.FileSystem
 			}
 		}
 		
-		public virtual void DeleteFile (string file)
+		public virtual void DeleteFile (FilePath file)
 		{
 			GetNextForPath (file, false).DeleteFile (file);
 		}
 		
-		public virtual void CreateDirectory (string path)
+		public virtual void CreateDirectory (FilePath path)
 		{
 			GetNextForPath (path, true).CreateDirectory (path);
 		}
 		
-		public virtual void CopyDirectory (string sourcePath, string destPath)
+		public virtual void CopyDirectory (FilePath sourcePath, FilePath destPath)
 		{
 			GetNextForPath (destPath, true).CopyDirectory (sourcePath, destPath);
 		}
 		
-		public virtual void RenameDirectory (string path, string newName)
+		public virtual void RenameDirectory (FilePath path, string newName)
 		{
 			GetNextForPath (path, true).RenameDirectory (path, newName);
 		}
 		
-		public virtual void MoveDirectory (string sourcePath, string destPath)
+		public virtual void MoveDirectory (FilePath sourcePath, FilePath destPath)
 		{
 			FileSystemExtension srcExt = GetNextForPath (sourcePath, true);
 			FileSystemExtension dstExt = GetNextForPath (destPath, true);
@@ -117,19 +119,20 @@ namespace MonoDevelop.Core.FileSystem
 			}
 		}
 		
-		public virtual void DeleteDirectory (string path)
+		public virtual void DeleteDirectory (FilePath path)
 		{
 			GetNextForPath (path, true).DeleteDirectory (path);
 		}
 		
-		public virtual bool RequestFileEdit (string file)
+		public virtual bool RequestFileEdit (FilePath file)
 		{
 			return GetNextForPath (file, false).RequestFileEdit (file);
 		}
 		
-		public virtual void NotifyFileChanged (string file)
+		public virtual void NotifyFilesChanged (IEnumerable<FilePath> files)
 		{
-			GetNextForPath (file, false).NotifyFileChanged (file);
+			foreach (var fsFiles in files.GroupBy (f => GetNextForPath (f, false)))
+				fsFiles.Key.NotifyFilesChanged (files);
 		}
 	}
 }
