@@ -81,8 +81,8 @@ namespace MonoDevelop.Projects.Extensions
 			Interlocked.Decrement (ref loading);
 			LoadOperation op = (LoadOperation) Thread.GetData (loadControlSlot);
 			if (op != null && --op.LoadingCount == 0) {
-				op.End ();
 				Thread.SetData (loadControlSlot, null);
+				op.End ();
 			}
 		}
 		
