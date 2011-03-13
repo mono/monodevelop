@@ -514,7 +514,6 @@ namespace MonoDevelop.Components
 
 		private class FramelessEntry : Entry
 		{
-			private Gdk.Window text_window;
 			private SearchEntry parent;
 			private Pango.Layout layout;
 			private Gdk.GC text_gc;

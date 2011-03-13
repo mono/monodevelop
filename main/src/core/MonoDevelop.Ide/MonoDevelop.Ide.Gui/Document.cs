@@ -558,7 +558,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void SetProject (Project project)
 		{
-			IExtensibleTextEditor editor = GetContent<IExtensibleTextEditor> ();
 			while (editorExtension != null) {
 				try {
 					editorExtension.Dispose ();
