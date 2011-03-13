@@ -911,12 +911,13 @@ namespace MonoDevelop.Ide.Gui
 //					DateTime t = DateTime.Now;
 					if (fileStatus == null)
 						return;
+					List<FilePath> modified = new List<FilePath> ();
 					foreach (FileData fd in fileStatus) {
 						try {
 							FileInfo fi = new FileInfo (fd.File);
 							if (fi.Exists) {
 								if (fi.LastWriteTime != fd.Time)
-									FileService.NotifyFileChanged (fd.File);
+									modified.Add (fd.File);
 							} else if (fd.Time != DateTime.MinValue) {
 								FileService.NotifyFileRemoved (fd.File);
 							}
@@ -924,6 +925,9 @@ namespace MonoDevelop.Ide.Gui
 							// Ignore
 						}
 					}
+					if (modified.Count > 0)
+						FileService.NotifyFilesChanged (modified);
+					
 //					Console.WriteLine ("CheckFileStatus " + (DateTime.Now - t).TotalMilliseconds + "ms " + fileStatus.Count);
 					fileStatus = null;
 				}

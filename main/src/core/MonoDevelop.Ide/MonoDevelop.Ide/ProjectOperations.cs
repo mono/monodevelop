@@ -1287,9 +1287,12 @@ namespace MonoDevelop.Ide
 			//Also, this is a better check because we handle vpaths and links.
 			//FIXME: it would be really nice if project.Files maintained these hashmaps
 			var vpathsInProject = new HashSet<FilePath> (project.Files.Select (pf => pf.ProjectVirtualPath));
-			var filesInProject = new HashSet<FilePath> (project.Files.Select (pf => pf.FilePath));
+			var filesInProject = new Dictionary<FilePath,ProjectFile> ();
+			foreach (var pf in project.Files)
+				filesInProject [pf.FilePath] = pf;
 			
-			using (monitor) {
+			using (monitor)
+			{
 				for (int i = 0; i < files.Length; i++) {
 					FilePath file = files[i];
 					
@@ -1321,16 +1324,16 @@ namespace MonoDevelop.Ide
 					//files in the target directory get added directly in their current location without moving/copying
 					if (file.CanonicalPath == targetPath) {
 						//FIXME: MD project system doesn't cope with duplicate includes - project save/load will remove the file
-						if (filesInProject.Contains (targetPath)) {
-							var link = project.Files.GetFile (targetPath).Link;
+						ProjectFile pf;
+						if (filesInProject.TryGetValue (targetPath, out pf)) {
+							var link = pf.Link;
 							MessageService.ShowWarning (GettextCatalog.GetString (
 								"The link '{0}' in the project already includes the file '{1}'", link, file));
 							continue;
 						}
-						var pf = new ProjectFile (file, fileBuildAction);
-						project.AddFile (pf);
+						pf = new ProjectFile (file, fileBuildAction);
 						vpathsInProject.Add (pf.ProjectVirtualPath);
-						filesInProject.Add (pf.FilePath);
+						filesInProject [pf.FilePath] = pf;
 						newFileList.Add (pf);
 						continue;
 					}
@@ -1362,8 +1365,10 @@ namespace MonoDevelop.Ide
 						int ret = -1;
 						if (action < 0) {
 							ret = MessageService.RunCustomDialog (md);
-							if (ret < 0)
+							if (ret < 0) {
+								project.Files.AddRange (newFileList.Where (f => f != null));
 								return newFileList;
+							}
 							if (remember != null && remember.Active) action = ret;
 						} else {
 							ret = action;
@@ -1371,19 +1376,19 @@ namespace MonoDevelop.Ide
 						
 						if (ret == ACTION_LINK) {
 							//FIXME: MD project system doesn't cope with duplicate includes - project save/load will remove the file
-							if (filesInProject.Contains (file)) {
-								var link = project.Files.GetFile (file).Link;
+							ProjectFile pf;
+							if (filesInProject.TryGetValue (file, out pf)) {
+								var link = pf.Link;
 								MessageService.ShowWarning (GettextCatalog.GetString (
 									"The link '{0}' in the project already includes the file '{1}'", link, file));
 								continue;
 							}
 							
-							var pf = new ProjectFile (file, fileBuildAction) {
+							pf = new ProjectFile (file, fileBuildAction) {
 								Link = vpath
 							};
-							project.AddFile (pf);
 							vpathsInProject.Add (pf.ProjectVirtualPath);
-							filesInProject.Add (pf.FilePath);
+							filesInProject [pf.FilePath] = pf;
 							newFileList.Add (pf);
 							continue;
 						}
@@ -1394,9 +1399,8 @@ namespace MonoDevelop.Ide
 							
 							if (MoveCopyFile (file, targetPath, ret == ACTION_MOVE)) {
 								var pf = new ProjectFile (targetPath, fileBuildAction);
-								project.AddFile (pf);
 								vpathsInProject.Add (pf.ProjectVirtualPath);
-								filesInProject.Add (pf.FilePath);
+								filesInProject [pf.FilePath] = pf;
 								newFileList.Add (pf);
 							}
 							else {
@@ -1413,6 +1417,7 @@ namespace MonoDevelop.Ide
 					}
 				}
 			}
+			project.Files.AddRange (newFileList.Where (f => f != null));
 			return newFileList;
 		}
 		
