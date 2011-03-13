@@ -33,6 +33,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Linq;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.AspNet
 {
@@ -283,14 +284,16 @@ namespace MonoDevelop.AspNet
 			Project.FileRenamedInProject += FileRenamedInProject;
 		}
 
-		void FileRenamedInProject (object sender, MonoDevelop.Projects.ProjectFileRenamedEventArgs e)
+		void FileRenamedInProject (object sender, ProjectFileRenamedEventArgs args)
 		{
-			cache.Remove (e.OldName);
+			foreach (ProjectFileRenamedEventInfo e in args)
+				cache.Remove (e.OldName);
 		}
 
-		void FileChangedInProject (object sender, MonoDevelop.Projects.ProjectFileEventArgs e)
+		void FileChangedInProject (object sender, ProjectFileEventArgs args)
 		{
-			cache.Remove (e.ProjectFile.Name);
+			foreach (ProjectFileEventInfo e in args)
+				cache.Remove (e.ProjectFile.Name);
 		}
 		
 		/// <summary>

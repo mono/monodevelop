@@ -13,24 +13,26 @@ namespace MonoDevelop.Deployment.Linux
 			IdeApp.Workspace.FileAddedToProject += OnFileAdded;
 		}
 		
-		void OnFileAdded (object o, ProjectFileEventArgs a)
+		void OnFileAdded (object o, ProjectFileEventArgs args)
 		{
-			if (a.ProjectFile.Name.EndsWith (".desktop")) {
-				DesktopEntry de = new DesktopEntry ();
-				try {
-					de.Load (a.ProjectFile.Name);
-					a.ProjectFile.BuildAction = BuildAction.Content;
-					DeployProperties props = DeployService.GetDeployProperties (a.ProjectFile);
-					props.TargetDirectory = LinuxTargetDirectory.DesktopApplications;
-					if (string.IsNullOrEmpty (de.Exec)) {
-						LinuxDeployData dd = LinuxDeployData.GetLinuxDeployData (a.Project);
-						if (dd.GenerateScript && !string.IsNullOrEmpty (dd.ScriptName)) {
-							de.Exec = dd.ScriptName;
-							de.Save (a.ProjectFile.Name);
+			foreach (ProjectFileEventInfo a in args) {
+				if (a.ProjectFile.Name.EndsWith (".desktop")) {
+					DesktopEntry de = new DesktopEntry ();
+					try {
+						de.Load (a.ProjectFile.Name);
+						a.ProjectFile.BuildAction = BuildAction.Content;
+						DeployProperties props = DeployService.GetDeployProperties (a.ProjectFile);
+						props.TargetDirectory = LinuxTargetDirectory.DesktopApplications;
+						if (string.IsNullOrEmpty (de.Exec)) {
+							LinuxDeployData dd = LinuxDeployData.GetLinuxDeployData (a.Project);
+							if (dd.GenerateScript && !string.IsNullOrEmpty (dd.ScriptName)) {
+								de.Exec = dd.ScriptName;
+								de.Save (a.ProjectFile.Name);
+							}
 						}
+					} catch (Exception ex) {
+						LoggingService.LogError ("Could not read .desktop file", ex);
 					}
-				} catch (Exception ex) {
-					LoggingService.LogError ("Could not read .desktop file", ex);
 				}
 			}
 		}

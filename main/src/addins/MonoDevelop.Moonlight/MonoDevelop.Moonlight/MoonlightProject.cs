@@ -360,41 +360,44 @@ namespace MonoDevelop.Moonlight
 		
 		static string[] groupedExtensions = { ".xaml" };
 		
-		protected override void OnFileAddedToProject (ProjectFileEventArgs e)
+		protected override void OnFileAddedToProject (ProjectFileEventArgs args)
 		{
 			//short-circuit if the project is being deserialised
 			if (Loading) {
-				base.OnFileAddedToProject (e);
+				base.OnFileAddedToProject (args);
 				return;
 			}
 			
-			//set some properties automatically
-			if (Path.GetExtension (e.ProjectFile.FilePath) == ".xaml") {
-				e.ProjectFile.Generator = "MSBuild:MarkupCompilePass1";
-				e.ProjectFile.ContentType = "Designer";
+			List<string> filesToAdd = new List<string> ();
+			foreach (ProjectFileEventInfo e in args) {
+				//set some properties automatically
+				if (Path.GetExtension (e.ProjectFile.FilePath) == ".xaml") {
+					e.ProjectFile.Generator = "MSBuild:MarkupCompilePass1";
+					e.ProjectFile.ContentType = "Designer";
+					
+					//fixme: detect Application xaml?
+					//if (e.ProjectFile.BuildAction == BuildAction.Page
+					//    && Path.GetFileName (e.ProjectFile.Name).Contains ("Application"))
+					//{
+					//	e.ProjectFile.BuildAction = BuildAction.ApplicationDefinition;
+					//}
+				}
 				
-				//fixme: detect Application xaml?
-				//if (e.ProjectFile.BuildAction == BuildAction.Page
-				//    && Path.GetFileName (e.ProjectFile.Name).Contains ("Application"))
-				//{
-				//	e.ProjectFile.BuildAction = BuildAction.ApplicationDefinition;
-				//}
+				//find any related files, e.g codebehind
+				IEnumerable<string> files = MonoDevelop.DesignerSupport.CodeBehind.GuessDependencies
+					(this, e.ProjectFile, groupedExtensions);
+				if (files != null)
+					filesToAdd.AddRange (files);
 			}
-			
-			//find any related files, e.g codebehind
-			IEnumerable<string> filesToAdd = MonoDevelop.DesignerSupport.CodeBehind.GuessDependencies
-				(this, e.ProjectFile, groupedExtensions);
 			
 			//let the base fire the event before we add files
 			//don't want to fire events out of order of files being added
-			base.OnFileAddedToProject (e);
+			base.OnFileAddedToProject (args);
 			
 			//make sure that the parent and child files are in the project
-			if (filesToAdd != null) {
-				foreach (string file in filesToAdd) {
-					//NOTE: this only adds files if they are not already in the project
-					AddFile (file);
-				}
+			foreach (string file in filesToAdd) {
+				//NOTE: this only adds files if they are not already in the project
+				AddFile (file);
 			}
 		}
 		

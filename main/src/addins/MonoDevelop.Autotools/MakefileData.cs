@@ -97,24 +97,26 @@ namespace MonoDevelop.Autotools
 						((DotNetProject)value).ReferenceAddedToProject += refhandler;
 					}
 
-					ProjectFileEventHandler filehandler = delegate (object sender, ProjectFileEventArgs e) {
+					ProjectFileEventHandler filehandler = delegate (object sender, ProjectFileEventArgs args) {
 						MakefileVar var = null;
-						switch (e.ProjectFile.BuildAction) {
-						case "Compile":
-							var = BuildFilesVar;
-							break;
-						case "Content":
-							var = DeployFilesVar;
-							break;
-						case "EmbeddedResource":
-							var = ResourcesVar;
-							break;
-						case "None":
-							var = OthersVar;
-							break;
+						foreach (ProjectFileEventInfo e in args) {
+							switch (e.ProjectFile.BuildAction) {
+							case "Compile":
+								var = BuildFilesVar;
+								break;
+							case "Content":
+								var = DeployFilesVar;
+								break;
+							case "EmbeddedResource":
+								var = ResourcesVar;
+								break;
+							case "None":
+								var = OthersVar;
+								break;
+							}
+							if (var != null && var.Sync)
+								dirty = true;
 						}
-						if (var != null && var.Sync)
-							dirty = true;
 					};
 
 					value.FileRemovedFromProject += filehandler;

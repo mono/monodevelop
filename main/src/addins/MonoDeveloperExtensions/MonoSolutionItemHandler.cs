@@ -231,35 +231,40 @@ namespace MonoDeveloper
 			return error;
 		}
 		
-		void OnFileAddedToProject (object s, ProjectFileEventArgs e)
+		void OnFileAddedToProject (object s, ProjectFileEventArgs args)
 		{
 			if (loading) return;
 			
-			if (e.ProjectFile.BuildAction != BuildAction.Compile)
-				return;
-			
-			AddSourceFile (e.ProjectFile.Name);
+			foreach (ProjectFileEventInfo e in args) {
+				if (e.ProjectFile.BuildAction != BuildAction.Compile)
+					continue;
+				AddSourceFile (e.ProjectFile.Name);
+			}
 		}
 		
-		void OnFileRemovedFromProject (object s, ProjectFileEventArgs e)
+		void OnFileRemovedFromProject (object s, ProjectFileEventArgs args)
 		{
 			if (loading) return;
 			
-			if (e.ProjectFile.BuildAction != BuildAction.Compile)
-				return;
+			foreach (ProjectFileEventInfo e in args) {
+				if (e.ProjectFile.BuildAction != BuildAction.Compile)
+					continue;
 
-			RemoveSourceFile (e.ProjectFile.Name);
+				RemoveSourceFile (e.ProjectFile.Name);
+			}
 		}
 		
- 		void OnFileRenamedInProject (object s, ProjectFileRenamedEventArgs e)
+ 		void OnFileRenamedInProject (object s, ProjectFileRenamedEventArgs args)
 		{
 			if (loading) return;
 			
-			if (e.ProjectFile.BuildAction != BuildAction.Compile)
-				return;
+			foreach (ProjectFileRenamedEventInfo e in args) {
+				if (e.ProjectFile.BuildAction != BuildAction.Compile)
+					continue;
 				
-			if (RemoveSourceFile (e.OldName))
-				AddSourceFile (e.NewName);
+				if (RemoveSourceFile (e.OldName))
+					AddSourceFile (e.NewName);
+			}
 		}
 
 		void AddSourceFile (string sourceFile)

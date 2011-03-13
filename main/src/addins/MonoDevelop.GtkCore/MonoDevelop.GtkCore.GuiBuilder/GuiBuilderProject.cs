@@ -317,40 +317,43 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		void OnFileAdded (object sender, ProjectFileEventArgs args)
+		void OnFileAdded (object sender, ProjectFileEventArgs e)
 		{
-			
-			ParsedDocument doc = ProjectDomService.GetParsedDocument (ProjectDomService.GetProjectDom (args.Project), args.ProjectFile.Name);
-			if (doc == null || doc.CompilationUnit == null)
-				return;
-
-			string dir = Path.Combine (Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData), "stetic"), "deleted-designs");
-			if (!Directory.Exists (dir) || Directory.GetFiles (dir).Length == 0)
-				return;
-
-			foreach (IType t in doc.CompilationUnit.Types) {
-				string path = Path.Combine (dir, t.FullName + ".xml");
-				if (!System.IO.File.Exists (path))
+			foreach (ProjectFileEventInfo args in e) {
+				ParsedDocument doc = ProjectDomService.GetParsedDocument (ProjectDomService.GetProjectDom (args.Project), args.ProjectFile.Name);
+				if (doc == null || doc.CompilationUnit == null)
 					continue;
-				XmlDocument xmldoc = new XmlDocument ();
-				xmldoc.Load (path);
-				AddNewComponent (xmldoc.DocumentElement);
-				System.IO.File.Delete (path);
+	
+				string dir = Path.Combine (Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData), "stetic"), "deleted-designs");
+				if (!Directory.Exists (dir) || Directory.GetFiles (dir).Length == 0)
+					continue;
+	
+				foreach (IType t in doc.CompilationUnit.Types) {
+					string path = Path.Combine (dir, t.FullName + ".xml");
+					if (!System.IO.File.Exists (path))
+						continue;
+					XmlDocument xmldoc = new XmlDocument ();
+					xmldoc.Load (path);
+					AddNewComponent (xmldoc.DocumentElement);
+					System.IO.File.Delete (path);
+				}
 			}
 		}
 
-		void OnFileRemoved (object sender, ProjectFileEventArgs args)
+		void OnFileRemoved (object sender, ProjectFileEventArgs e)
 		{
 			ArrayList toDelete = new ArrayList ();
 
-			ParsedDocument doc = ProjectDomService.GetParsedDocument (ProjectDomService.GetProjectDom (args.Project), args.ProjectFile.Name);
-			if (doc == null || doc.CompilationUnit == null)
-				return;
-
-			foreach (IType t in doc.CompilationUnit.Types) {
-				GuiBuilderWindow win = GetWindowForClass (t.FullName);
-				if (win != null)
-					toDelete.Add (win);
+			foreach (ProjectFileEventInfo args in e) {
+				ParsedDocument doc = ProjectDomService.GetParsedDocument (ProjectDomService.GetProjectDom (args.Project), args.ProjectFile.Name);
+				if (doc == null || doc.CompilationUnit == null)
+					continue;
+	
+				foreach (IType t in doc.CompilationUnit.Types) {
+					GuiBuilderWindow win = GetWindowForClass (t.FullName);
+					if (win != null)
+						toDelete.Add (win);
+				}
 			}
 			
 			foreach (GuiBuilderWindow win in toDelete)

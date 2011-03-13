@@ -423,31 +423,35 @@ namespace CBinding
 			}
 		}
 		
-		protected override void OnFileAddedToProject (ProjectFileEventArgs e)
+		protected override void OnFileAddedToProject (ProjectFileEventArgs args)
 		{
-			base.OnFileAddedToProject (e);
+			base.OnFileAddedToProject (args);
 			
-			if (!Loading && !IsCompileable (e.ProjectFile.Name) &&
-			    e.ProjectFile.BuildAction == BuildAction.Compile) {
-				e.ProjectFile.BuildAction = BuildAction.None;
+			foreach (ProjectFileEventInfo e in args) {
+				if (!Loading && !IsCompileable (e.ProjectFile.Name) &&
+				    e.ProjectFile.BuildAction == BuildAction.Compile) {
+					e.ProjectFile.BuildAction = BuildAction.None;
+				}
+				
+				if (e.ProjectFile.BuildAction == BuildAction.Compile)
+					TagDatabaseManager.Instance.UpdateFileTags (this, e.ProjectFile.Name);
 			}
-			
-			if (e.ProjectFile.BuildAction == BuildAction.Compile)
-				TagDatabaseManager.Instance.UpdateFileTags (this, e.ProjectFile.Name);
 		}
 		
 		protected override void OnFileChangedInProject (ProjectFileEventArgs e)
 		{
 			base.OnFileChangedInProject (e);
 			
-			TagDatabaseManager.Instance.UpdateFileTags (this, e.ProjectFile.Name);
+			foreach (ProjectFileEventInfo fe in e)
+				TagDatabaseManager.Instance.UpdateFileTags (this, fe.ProjectFile.Name);
 		}
 		
 		protected override void OnFileRemovedFromProject (ProjectFileEventArgs e)
 		{
 			base.OnFileRemovedFromProject (e);
 			
-			TagDatabaseManager.Instance.RemoveFileInfo (this, e.ProjectFile.Name);
+			foreach (ProjectFileEventInfo fe in e)
+				TagDatabaseManager.Instance.RemoveFileInfo (this, fe.ProjectFile.Name);
 		}
 
 		

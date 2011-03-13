@@ -624,11 +624,20 @@ namespace MonoDevelop.AspNet
 				base.OnFileAddedToProject (e);
 				return;
 			}
+
+			bool webConfigChange = false;
+			List<string> filesToAdd = new List<string> ();
 			
-			IEnumerable<string> filesToAdd = MonoDevelop.DesignerSupport.CodeBehind.GuessDependencies
-				(this, e.ProjectFile, groupedExtensions);
+			foreach (ProjectFileEventInfo fargs in e) {
+				IEnumerable<string> files = MonoDevelop.DesignerSupport.CodeBehind.GuessDependencies
+					(this, fargs.ProjectFile, groupedExtensions);
+				if (files != null)
+					filesToAdd.AddRange (files);
+				if (IsWebConfig (fargs.ProjectFile.FilePath))
+					webConfigChange = true;
+			}
 			
-			if (IsWebConfig (e.ProjectFile.FilePath))
+			if (webConfigChange)
 				UpdateWebConfigRefs ();
 			
 			//let the base fire the event before we add files
@@ -636,11 +645,9 @@ namespace MonoDevelop.AspNet
 			base.OnFileAddedToProject (e);
 			
 			//make sure that the parent and child files are in the project
-			if (filesToAdd != null) {
-				foreach (string file in filesToAdd) {
-					//NOTE: this only adds files if they are not already in the project
-					AddFile (file);
-				}
+			foreach (string file in filesToAdd) {
+				//NOTE: this only adds files if they are not already in the project
+				AddFile (file);
 			}
 		}
 		
