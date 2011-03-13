@@ -39,6 +39,12 @@ namespace MonoDevelop.Core
 		{
 			Add (new FileEventInfo (fileName, isDirectory));
 		}
+		
+		public FileEventArgs (IEnumerable<FilePath> files, bool isDirectory)
+		{
+			foreach (var f in files)
+				Add (new FileEventInfo (f, isDirectory));
+		}
 	}
 	
 	public class FileEventInfo
@@ -69,6 +75,11 @@ namespace MonoDevelop.Core
 	{
 		public FileCopyEventArgs (IEnumerable<FileCopyEventInfo> args): base (args)
 		{
+		}
+		
+		public FileCopyEventArgs (FilePath sourceFile, FilePath targetFile, bool isDirectory)
+		{
+			Add (new FileCopyEventInfo (sourceFile, targetFile, isDirectory));
 		}
 		
 		public FileCopyEventArgs ()
