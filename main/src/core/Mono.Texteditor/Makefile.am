@@ -54,6 +54,7 @@ FILES =  \
 	Mono.TextEditor.Theatrics/SmartScrolledWindow.cs \
 	Mono.TextEditor.Theatrics/Stage.cs \
 	Mono.TextEditor.Utils/Diff.cs \
+	Mono.TextEditor.Utils/RedBlackTree.cs \
 	Mono.TextEditor.Utils/TextBreaker.cs \
 	Mono.TextEditor.Vi/ViActionMaps.cs \
 	Mono.TextEditor.Vi/ViActions.cs \
@@ -115,7 +116,6 @@ FILES =  \
 	Mono.TextEditor/PangoUtil.cs \
 	Mono.TextEditor/Platform.cs \
 	Mono.TextEditor/PrimitiveLineSplitter.cs \
-	Mono.TextEditor/RedBlackTree.cs \
 	Mono.TextEditor/ReplaceEventArgs.cs \
 	Mono.TextEditor/SearchRequest.cs \
 	Mono.TextEditor/SearchResult.cs \

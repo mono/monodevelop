@@ -29,17 +29,9 @@ namespace Mono.TextEditor
 {
 	public class TypedSegment : ISegment
 	{
-		internal RedBlackTree<AbstractPartitioner.TreeNode>.RedBlackTreeNode treeNode;
-		
-		public RedBlackTree<AbstractPartitioner.TreeNode>.RedBlackTreeIterator Iter {
-			get {
-				return new RedBlackTree<AbstractPartitioner.TreeNode>.RedBlackTreeIterator (treeNode);
-			}
-		}
-		
 		public int Offset {
 			get {
-				return treeNode != null ? AbstractPartitioner.GetOffsetFromNode (treeNode) : -1;
+				return -1; //treeNode != null ? AbstractPartitioner.GetOffsetFromNode (treeNode) : -1;
 			}
 			set {
 				throw new NotSupportedException ();

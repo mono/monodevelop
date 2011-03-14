@@ -69,7 +69,6 @@
     <Compile Include="Mono.TextEditor\DocumentLocation.cs" />
     <Compile Include="Mono.TextEditor\DashedLineMargin.cs" />
     <Compile Include="Mono.TextEditor\Document.cs" />
-    <Compile Include="Mono.TextEditor\RedBlackTree.cs" />
     <Compile Include="Mono.TextEditor\GutterMargin.cs" />
     <Compile Include="Mono.TextEditor\GapBuffer.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\Rule.cs" />
@@ -182,6 +181,7 @@
     <Compile Include="Mono.TextEditor.Utils\TextBreaker.cs" />
     <Compile Include="Mono.TextEditor\TextMarkerEvent.cs" />
     <Compile Include="Mono.TextEditor\SegmentTree.cs" />
+    <Compile Include="Mono.TextEditor.Utils\RedBlackTree.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

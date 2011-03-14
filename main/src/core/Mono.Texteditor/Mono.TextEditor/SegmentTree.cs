@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Mono.TextEditor.Utils;
 
 namespace Mono.TextEditor
 {
@@ -48,27 +49,12 @@ namespace Mono.TextEditor
 				var root = tree.Root;
 				if (root == null)
 					yield break;
-				var node = root.OuterLeft;
+				var node = root.GetOuterLeft ();
 				while (node != null) {
-					yield return node.Value;
-					node = node.NextNode;
+					yield return node;
+					node = node.GetNextNode ();
 				}
 			}
-		}
-		
-		public SegmentTree ()
-		{
-			tree.ChildrenChanged += (sender, args) => UpdateNode (args.Node);
-			tree.NodeRotateLeft += (sender, args) => 
-			{
-				UpdateNode (args.Node);
-				UpdateNode (args.Node.Parent);
-			};
-			tree.NodeRotateRight += (sender, args) => 
-			{
-				UpdateNode (args.Node);
-				UpdateNode (args.Node.Parent);
-			};
 		}
 		
 		public void InstallListener (Document doc)
@@ -90,8 +76,8 @@ namespace Mono.TextEditor
 				}
 				var node = SearchFirstSegmentWithStartAfter (e.Offset);
 				if (node != null) {
-					node.Value.DistanceToPrevNode += length;
-					UpdateNode (node);
+					node.DistanceToPrevNode += length;
+					node.UpdateAugmentedData ();
 				}
 				return;
 			}
@@ -117,128 +103,88 @@ namespace Mono.TextEditor
 			var next = SearchFirstSegmentWithStartAfter (e.Offset + 1);
 
 			if (next != null) {
-				next.Value.DistanceToPrevNode += delta;
-				UpdateNode (next);
+				next.DistanceToPrevNode += delta;
+				next.UpdateAugmentedData ();
 			}
 		}
 		
-		static void UpdateNode (RedBlackTree<TreeSegment>.RedBlackTreeNode node)
+		public void Add (TreeSegment node)
 		{
 			if (node == null)
-				return;
-			int totalLength = node.Value.DistanceToPrevNode;
-			int distanceToMaxEnd = node.Value.Length;
+				throw new ArgumentNullException ("node");
+			if (node.segmentTree != null)
+				throw new InvalidOperationException ("Node already attached.");
 			
-			var left = node.Left;
-			if (left != null) {
-				totalLength += left.Value.TotalSubtreeLength;
-				int leftdistance = left.Value.DistanceToMaxEnd - node.Value.DistanceToPrevNode;
-				if (left.Right != null)
-					leftdistance -= left.Right.Value.TotalSubtreeLength;
-				if (leftdistance > distanceToMaxEnd)
-					distanceToMaxEnd = leftdistance;
-			}
+			node.segmentTree = this;
 			
-			var right = node.Right;
-			if (right != null) {
-				totalLength += right.Value.TotalSubtreeLength;
-				int rightdistance = right.Value.DistanceToMaxEnd + right.Value.DistanceToPrevNode;
-				if (right.Left != null)
-					rightdistance += right.Left.Value.TotalSubtreeLength;
-				if (rightdistance > distanceToMaxEnd)
-					distanceToMaxEnd = rightdistance;
-			}
-			
-			if (node.Value.TotalSubtreeLength != totalLength || node.Value.DistanceToMaxEnd != distanceToMaxEnd) {
-				node.Value.TotalSubtreeLength = totalLength;
-				node.Value.DistanceToMaxEnd = distanceToMaxEnd;
-				if (node.Parent != null)
-					UpdateNode (node.Parent);
-			}
-		}
-		
-		public void Add (TreeSegment segment)
-		{
-			if (segment == null)
-				throw new ArgumentNullException ("segment");
-			var node = new RedBlackTree<TreeSegment>.RedBlackTreeNode (segment);
-			segment.segmentTree = this;
-			segment.treeNode = node;
-			Add (node);
-		}
-		
-		void Add (RedBlackTree<TreeSegment>.RedBlackTreeNode node)
-		{
 			tree.Count++;
-			int insertionOffset = node.Value.Offset;
-			node.Value.DistanceToMaxEnd = node.Value.Length;
+			int insertionOffset = node.Offset;
+			node.DistanceToMaxEnd = node.Length;
 			
 			if (tree.Root == null) {
 				tree.Root = node;
-				node.Value.TotalSubtreeLength = node.Value.DistanceToPrevNode;
+				node.TotalSubtreeLength = node.DistanceToPrevNode;
 				return;
 			}
 			
-			if (insertionOffset < tree.Root.Value.TotalSubtreeLength) {
+			if (insertionOffset < tree.Root.TotalSubtreeLength) {
 				var n = SearchNode (ref insertionOffset);
-				node.Value.TotalSubtreeLength = node.Value.DistanceToPrevNode = insertionOffset;
-				n.Value.DistanceToPrevNode -= insertionOffset;
+				node.TotalSubtreeLength = node.DistanceToPrevNode = insertionOffset;
+				n.DistanceToPrevNode -= insertionOffset;
 				tree.InsertBefore (n, node);
 				return;
 			}
 			
-			node.Value.DistanceToPrevNode = node.Value.TotalSubtreeLength = insertionOffset - tree.Root.Value.TotalSubtreeLength;
-			tree.InsertRight (tree.Root.OuterRight, node);
+			node.DistanceToPrevNode = node.TotalSubtreeLength = insertionOffset - tree.Root.TotalSubtreeLength;
+			tree.InsertRight (tree.Root.GetOuterRight (), node);
 		}
-		
 		
 		public void Remove (TreeSegment node)
 		{
-			Remove (node.treeNode);
-			node.treeNode = null;
-			node.segmentTree = null;
-		}
-
-		void Remove (RedBlackTree<TreeSegment>.RedBlackTreeNode node)
-		{
-			var next = node.NextNode;
+			var calculatedOffset = node.Offset;
+			var next = node.GetNextNode ();
+			if (next != null)
+				next.DistanceToPrevNode += node.DistanceToPrevNode;
 			tree.Remove (node);
 			if (next != null)
-				UpdateNode (next);
+				next.UpdateAugmentedData ();
+			node.segmentTree = null;
+			node.parent = node.left = node.right = null;
+			node.DistanceToPrevNode = calculatedOffset;
 		}
 		
-		RedBlackTree<TreeSegment>.RedBlackTreeNode SearchFirstSegmentWithStartAfter (int startOffset)
+		TreeSegment SearchFirstSegmentWithStartAfter (int startOffset)
 		{
 			if (tree.Root == null)
 				return null;
 			if (startOffset <= 0)
-				return tree.Root.OuterLeft;
+				return tree.Root.GetOuterLeft ();
 			var result = SearchNode (ref startOffset);
 			while (startOffset == 0) {
-				var pre = result == null ? tree.Root.OuterRight : result.PrevNode;
-				startOffset += pre.Value.DistanceToPrevNode;
+				var pre = result == null ? tree.Root.GetOuterRight () : result.GetPrevNode ();
+				startOffset += pre.DistanceToPrevNode;
 				result = pre;
 			}
 			return result;
 		}
 		
-		RedBlackTree<TreeSegment>.RedBlackTreeNode SearchNode (ref int offset)
+		TreeSegment SearchNode (ref int offset)
 		{
 			var n = tree.Root;
 			while (true) {
-				if (n.Left != null) {
-					if (offset < n.Left.Value.TotalSubtreeLength) {
-						n = n.Left;
+				if (n.left != null) {
+					if (offset < n.left.TotalSubtreeLength) {
+						n = n.left;
 						continue;
 					}
-					offset -= n.Left.Value.TotalSubtreeLength;
+					offset -= n.left.TotalSubtreeLength;
 				}
-				if (offset < n.Value.DistanceToPrevNode) 
+				if (offset < n.DistanceToPrevNode) 
 					return n; 
-				offset -= n.Value.DistanceToPrevNode; 
-				if (n.Right == null) 
+				offset -= n.DistanceToPrevNode; 
+				if (n.right == null) 
 					return null;
-				n = n.Right;
+				n = n.right;
 			}
 		}
 		
@@ -256,10 +202,10 @@ namespace Mono.TextEditor
 		
 		struct Interval 
 		{
-			internal RedBlackTree<TreeSegment>.RedBlackTreeNode node;
+			internal TreeSegment node;
 			internal int start, end;
 			
-			public Interval (RedBlackTree<TreeSegment>.RedBlackTreeNode node,int start,int end)
+			public Interval (TreeSegment node,int start,int end)
 			{
 				this.node = node;
 				this.start = start;
@@ -279,55 +225,51 @@ namespace Mono.TextEditor
 					continue;
 				
 				var node = interval.node;
-				int nodeStart = interval.start - node.Value.DistanceToPrevNode;
-				int nodeEnd = interval.end - node.Value.DistanceToPrevNode;
-				if (node.Left != null) {
-					nodeStart -= node.Left.Value.TotalSubtreeLength;
-					nodeEnd -= node.Left.Value.TotalSubtreeLength;
+				int nodeStart = interval.start - node.DistanceToPrevNode;
+				int nodeEnd = interval.end - node.DistanceToPrevNode;
+				if (node.left != null) {
+					nodeStart -= node.left.TotalSubtreeLength;
+					nodeEnd -= node.left.TotalSubtreeLength;
 				}
 			
-				if (node.Value.DistanceToMaxEnd < nodeStart) 
+				if (node.DistanceToMaxEnd < nodeStart) 
 					yield break;
 			
-				if (node.Left != null)
-					intervalStack.Push (new Interval (node.Left, interval.start, interval.end));
+				if (node.left != null)
+					intervalStack.Push (new Interval (node.left, interval.start, interval.end));
 				
 				if (nodeEnd < 0) 
 					continue;
 				
-				if (nodeStart <= node.Value.Length) 
-					yield return node.Value;
+				if (nodeStart <= node.Length) 
+					yield return node;
 			
-				if (node.Right != null) 
-					intervalStack.Push (new Interval (node.Right, nodeStart, nodeEnd));
+				if (node.right != null) 
+					intervalStack.Push (new Interval (node.right, nodeStart, nodeEnd));
 			}
 		}
 	}
 	
-	public class TreeSegment : Segment
+	public class TreeSegment : Segment, IRedBlackTreeNode
 	{
 		internal SegmentTree segmentTree;
-		internal RedBlackTree<TreeSegment>.RedBlackTreeNode treeNode;
-
-		public RedBlackTree<TreeSegment>.RedBlackTreeIterator Iter {
-			get { return new RedBlackTree<TreeSegment>.RedBlackTreeIterator (treeNode); }
-		}
 
 		public override int Offset {
 			get {
-				var curNode = treeNode;
-				if (curNode == null)
-					return DistanceToPrevNode;
-				int offset = curNode.Value.DistanceToPrevNode;
-				if (curNode.Left != null)
-					offset += curNode.Left.Value.TotalSubtreeLength;
-				while (curNode.Parent != null) {
-					if (curNode == curNode.Parent.Right) {
-						if (curNode.Parent.Left != null)
-							offset += curNode.Parent.Left.Value.TotalSubtreeLength;
-						offset += curNode.Parent.Value.DistanceToPrevNode;
+				if (segmentTree == null)
+					return DistanceToMaxEnd;
+				
+				var curNode = this;
+				int offset = curNode.DistanceToPrevNode;
+				if (curNode.left != null)
+					offset += curNode.left.TotalSubtreeLength;
+				while (curNode.parent != null) {
+					if (curNode == curNode.parent.right) {
+						if (curNode.parent.left != null)
+							offset += curNode.parent.left.TotalSubtreeLength;
+						offset += curNode.parent.DistanceToPrevNode;
 					}
-					curNode = curNode.Parent;
+					curNode = curNode.parent;
 				}
 				return offset;
 			}
@@ -359,6 +301,74 @@ namespace Mono.TextEditor
 		public TreeSegment (ISegment segment) : base (segment)
 		{
 		}
+
+		#region IRedBlackTreeNode implementation
+		public void UpdateAugmentedData ()
+		{
+			int totalLength = DistanceToPrevNode;
+			int distanceToMaxEnd = Length;
+			
+			if (left != null) {
+				totalLength += left.TotalSubtreeLength;
+				int leftdistance = left.DistanceToMaxEnd - DistanceToPrevNode;
+				if (left.right != null)
+					leftdistance -= left.right.TotalSubtreeLength;
+				if (leftdistance > distanceToMaxEnd)
+					distanceToMaxEnd = leftdistance;
+			}
+			
+			if (right != null) {
+				totalLength += right.TotalSubtreeLength;
+				int rightdistance = right.DistanceToMaxEnd + right.DistanceToPrevNode;
+				if (right.left != null)
+					rightdistance += right.left.TotalSubtreeLength;
+				if (rightdistance > distanceToMaxEnd)
+					distanceToMaxEnd = rightdistance;
+			}
+			
+			if (TotalSubtreeLength != totalLength || DistanceToMaxEnd != distanceToMaxEnd) {
+				TotalSubtreeLength = totalLength;
+				DistanceToMaxEnd = distanceToMaxEnd;
+				if (parent != null)
+					parent.UpdateAugmentedData ();
+			}
+		}
+
+		internal TreeSegment parent, left, right;
+
+		Mono.TextEditor.Utils.IRedBlackTreeNode Mono.TextEditor.Utils.IRedBlackTreeNode.Parent {
+			get {
+				return parent;
+			}
+			set {
+				parent = (TreeSegment)value;
+			}
+		}
+
+		Mono.TextEditor.Utils.IRedBlackTreeNode Mono.TextEditor.Utils.IRedBlackTreeNode.Left {
+			get {
+				return left;
+			}
+			set {
+				left = (TreeSegment)value;
+			}
+		}
+
+		
+		IRedBlackTreeNode Mono.TextEditor.Utils.IRedBlackTreeNode.Right {
+			get {
+				return right;
+			}
+			set {
+				right = (TreeSegment)value;
+			}
+		}
+
+		RedBlackColor Mono.TextEditor.Utils.IRedBlackTreeNode.Color {
+			get;
+			set;
+		}
+		#endregion
 		
 	}
 }

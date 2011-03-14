@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Mono.TextEditor.Utils;
 
 namespace Mono.TextEditor
 {
@@ -35,26 +36,13 @@ namespace Mono.TextEditor
 	{
 		public IEnumerable<LineSegment> Lines {
 			get {
-				var iter = GetNode (0).Iter;
-				do {
-					yield return iter.Current;
-				} while (iter.MoveNext ());
+				foreach (LineSegment line in tree)
+					yield return line;
 			}
 		}
 
 		public LineSplitter ()
 		{
-			tree.ChildrenChanged += (sender, args) => UpdateNode (args.Node);
-			tree.NodeRotateLeft += (sender, args) =>
-			{
-				UpdateNode (args.Node);
-				UpdateNode (args.Node.Parent);
-			};
-			tree.NodeRotateRight += (sender, args) =>
-			{
-				UpdateNode (args.Node);
-				UpdateNode (args.Node.Parent);
-			};
 			Clear ();
 		}
 
@@ -63,11 +51,11 @@ namespace Mono.TextEditor
 			var startNode = GetNode (startLine - 1);
 			if (startNode == null)
 				yield break;
-			var iter = startNode.Iter;
 			int curLine = startLine;
 			do {
-				yield return iter.Current;
-			} while (iter.MoveNext () && curLine++ < endLine);
+				yield return startNode;
+				startNode = startNode.GetNextNode ();
+			} while (startNode != null && curLine++ < endLine);
 		}
 
 		public IEnumerable<LineSegment> GetLinesStartingAt (int startLine)
@@ -75,10 +63,10 @@ namespace Mono.TextEditor
 			var startNode = GetNode (startLine - 1);
 			if (startNode == null)
 				yield break;
-			var iter = startNode.Iter;
 			do {
-				yield return iter.Current;
-			} while (iter.MoveNext ());
+				yield return startNode;
+				startNode = startNode.GetNextNode ();
+			} while (startNode != null);
 		}
 
 		public IEnumerable<LineSegment> GetLinesReverseStartingAt (int startLine)
@@ -86,10 +74,10 @@ namespace Mono.TextEditor
 			var startNode = GetNode (startLine);
 			if (startNode == null)
 				yield break;
-			var iter = startNode.Iter;
 			do {
-				yield return iter.Current;
-			} while (iter.MoveBack ());
+				yield return startNode;
+				startNode = startNode.GetPrevNode ();
+			} while (startNode != null);
 		}
 
 		public LineSegment Get (int number)
@@ -129,18 +117,18 @@ namespace Mono.TextEditor
 				ChangeLength (startNode, startNode.Length - length);
 				return;
 			}
-			var iter = startNode.Iter;
-			iter.MoveNext ();
+			var iter = startNode;
+			iter = iter.GetNextNode ();
 			TreeNode line;
 			do {
-				line = iter.Current;
-				iter.MoveNext ();
+				line = iter;
+				iter = iter.GetNextNode ();
 				RemoveLine (line);
 			} while (line != endNode);
 			ChangeLength (startNode, startNode.Length - charsRemoved + charsLeft, endNode.DelimiterLength);
 		}
 
-		bool inInit;
+		//bool inInit;
 		public void Initalize (string text)
 		{
 			Clear ();
@@ -161,27 +149,26 @@ namespace Mono.TextEditor
 			var newRoot = BuildTree (nodes, 0, nodes.Count, height);
 			if (newRoot != null) {
 				tree.Root = newRoot;
-				tree.Root.Color = Mono.TextEditor.RedBlackTree<TreeNode>.Black;
+				tree.Root.Color = RedBlackColor.Black;
 				tree.Count = nodes.Count;
 			}
 		}
 		
-		public Mono.TextEditor.RedBlackTree<TreeNode>.RedBlackTreeNode BuildTree (System.Collections.Generic.List<TreeNode> nodes, int start, int end, int subtreeHeight)
+		TreeNode BuildTree (System.Collections.Generic.List<TreeNode> nodes, int start, int end, int subtreeHeight)
 		{
 			if (start == end)
 				return null;
 			int middle = (start + end) / 2;
-			var node = new RedBlackTree<TreeNode>.RedBlackTreeNode (nodes[middle]);
-			nodes[middle].treeNode = node;
-			node.Left = BuildTree (nodes, start, middle, subtreeHeight - 1);
-			node.Right = BuildTree (nodes, middle + 1, end, subtreeHeight - 1);
-			if (node.Left != null)
-				node.Left.Parent = node;
-			if (node.Right != null)
-				node.Right.Parent = node;
+			var node = nodes [middle];
+			node.left = BuildTree (nodes, start, middle, subtreeHeight - 1);
+			node.right = BuildTree (nodes, middle + 1, end, subtreeHeight - 1);
+			if (node.left != null)
+				node.left.parent = node;
+			if (node.right != null)
+				node.right.parent = node;
 			if (subtreeHeight == 1)
-				node.Color = Mono.TextEditor.RedBlackTree<TreeNode>.Red;
-			UpdateNode (node);
+				node.Color = RedBlackColor.Red;
+			((IRedBlackTreeNode)node).UpdateAugmentedData ();
 			return node;
 		}
 		
@@ -204,7 +191,6 @@ namespace Mono.TextEditor
 				int curLineLength = offset + delimiterEndOffset - lineOffset;
 				int oldDelimiterLength = line.DelimiterLength;
 				ChangeLength (line, curLineLength, delimiter.Length);
-				
 				line = InsertAfter (line, newLineLength, oldDelimiterLength);
 				textOffset = delimiterEndOffset;
 				lineOffset += curLineLength;
@@ -255,22 +241,28 @@ namespace Mono.TextEditor
 		}
 
 		#region Line segment tree
-		public class TreeNode : LineSegment
+		class TreeNode : LineSegment, IRedBlackTreeNode
 		{
-			internal RedBlackTree<TreeNode>.RedBlackTreeNode treeNode;
-
-			public RedBlackTree<TreeNode>.RedBlackTreeIterator Iter {
-				get { return new RedBlackTree<TreeNode>.RedBlackTreeIterator (treeNode); }
-			}
-
 			public override int Offset {
-				get { return treeNode != null ? GetOffsetFromNode (treeNode) : -1; }
+				get {
+					var node = this;
+					int offset = node.left != null ? node.left.TotalLength : 0;
+					while (node.parent != null) {
+						if (node == node.parent.right) {
+							if (node.parent.left != null && node.parent.left != null)
+								offset += node.parent.left.TotalLength;
+							if (node.parent != null)
+								offset += node.parent.Length;
+						}
+						node = node.parent;
+					}
+					return offset;
+				}
 				set {
 					throw new NotSupportedException ();
 				}
 			}
-
-
+	
 			public int Count = 1;
 			public int TotalLength;
 
@@ -282,68 +274,98 @@ namespace Mono.TextEditor
 			{
 				return String.Format ("[TreeNode: Line={0}, Count={1}, TotalLength={2}]", base.ToString (), Count, TotalLength);
 			}
+
+			#region IRedBlackTreeNode implementation
+			public void UpdateAugmentedData ()
+			{
+				int count = 1;
+				int totalLength = Length;
+			
+				if (left != null) {
+					count += left.Count;
+					totalLength += left.TotalLength;
+				}
+			
+				if (right != null) {
+					count += right.Count;
+					totalLength += right.TotalLength;
+				}
+				
+				if (count != Count || totalLength != TotalLength) {
+					Count = count;
+					TotalLength = totalLength;
+					if (parent != null)
+						parent.UpdateAugmentedData ();
+				}
+			}
+			
+			internal TreeNode parent, left, right;
+			
+			Mono.TextEditor.Utils.IRedBlackTreeNode Mono.TextEditor.Utils.IRedBlackTreeNode.Parent {
+				get {
+					return parent;
+				}
+				set {
+					parent = (TreeNode)value;
+				}
+			}
+
+			Mono.TextEditor.Utils.IRedBlackTreeNode Mono.TextEditor.Utils.IRedBlackTreeNode.Left {
+				get {
+					return left;
+				}
+				set {
+					left = (TreeNode)value;
+				}
+			}
+
+			Mono.TextEditor.Utils.IRedBlackTreeNode Mono.TextEditor.Utils.IRedBlackTreeNode.Right {
+				get {
+					return right;
+				}
+				set {
+					right = (TreeNode)value;
+				}
+			}
+
+			public RedBlackColor Color {
+				get;
+				set;
+			}
+			#endregion
 		}
 
-		readonly RedBlackTree<TreeNode> tree = new RedBlackTree<TreeNode> ();
+		readonly Mono.TextEditor.Utils.RedBlackTree<TreeNode> tree = new Mono.TextEditor.Utils.RedBlackTree<TreeNode> ();
 
 		public int Count {
 			get { return tree.Count; }
 		}
 
 		public int Length {
-			get { return tree.Root.Value.TotalLength; }
-		}
-
-		static void UpdateNode (RedBlackTree<TreeNode>.RedBlackTreeNode node)
-		{
-			if (node == null)
-				return;
-			
-			int count = 1;
-			int totalLength = node.Value.Length;
-			
-			if (node.Left != null) {
-				count += node.Left.Value.Count;
-				totalLength += node.Left.Value.TotalLength;
-			}
-			
-			if (node.Right != null) {
-				count += node.Right.Value.Count;
-				totalLength += node.Right.Value.TotalLength;
-			}
-			if (count != node.Value.Count || totalLength != node.Value.TotalLength) {
-				node.Value.Count = count;
-				node.Value.TotalLength = totalLength;
-				UpdateNode (node.Parent);
-			}
+			get { return tree.Root.TotalLength; }
 		}
 
 		public void Clear ()
 		{
-			tree.Root = new RedBlackTree<TreeNode>.RedBlackTreeNode (new TreeNode (0, 0));
-			tree.Root.Value.treeNode = tree.Root;
+			tree.Root = new TreeNode (0, 0);
 			tree.Count = 1;
 		}
 
-		public TreeNode InsertAfter (TreeNode segment, int length, int delimiterLength)
+		TreeNode InsertAfter (TreeNode segment, int length, int delimiterLength)
 		{
 			var result = new TreeNode (length, delimiterLength) { StartSpan = segment.StartSpan };
-			var newNode = new RedBlackTree<TreeNode>.RedBlackTreeNode (result);
-			var iter = segment.Iter;
-			if (iter == null) {
-				tree.Root = newNode;
-				result.treeNode = tree.Root;
+			if (segment == null) {
+				tree.Root = result;
 				tree.Count = 1;
 				return result;
 			}
 			
-			if (iter.Node.Right == null) {
-				tree.Insert (iter.Node, newNode, false);
+			if (segment.right == null) {
+				tree.InsertRight (segment, result);
 			} else {
-				tree.Insert (iter.Node.Right.OuterLeft, newNode, true);
+				tree.InsertLeft (segment.right.GetOuterLeft (), result);
 			}
-			result.treeNode = newNode;
-			UpdateNode (newNode);
+			result.UpdateAugmentedData ();
 			OnLineChanged (new LineEventArgs (result));
 			return result;
 		}
@@ -354,23 +376,21 @@ namespace Mono.TextEditor
 		}
 
 
-		public void ChangeLength (TreeNode line, int newLength)
+		void ChangeLength (TreeNode line, int newLength)
 		{
 			ChangeLength (line, newLength, line.DelimiterLength);
 		}
 
-		public void ChangeLength (TreeNode line, int newLength, int delimiterLength)
+		void ChangeLength (TreeNode line, int newLength, int delimiterLength)
 		{
 			line.Length = newLength;
 			line.DelimiterLength = delimiterLength;
 			OnLineChanged (new LineEventArgs (line));
-			UpdateNode (line.Iter.CurrentNode);
+			line.UpdateAugmentedData ();
 		}
 
 		protected virtual void OnLineChanged (LineEventArgs e)
 		{
-			if (inInit)
-				return;
 			EventHandler<LineEventArgs> handler = LineChanged;
 			if (handler != null)
 				handler (this, e);
@@ -379,8 +399,6 @@ namespace Mono.TextEditor
 
 		protected virtual void OnLineInserted (LineEventArgs e)
 		{
-			if (inInit)
-				return;
 			EventHandler<LineEventArgs> handler = LineInserted;
 			if (handler != null)
 				handler (this, e);
@@ -389,103 +407,81 @@ namespace Mono.TextEditor
 
 		protected virtual void OnLineRemoved (LineEventArgs e)
 		{
-			if (inInit)
-				return;
 			EventHandler<LineEventArgs> handler = LineRemoved;
 			if (handler != null)
 				handler (this, e);
 		}
 		public event EventHandler<LineEventArgs> LineRemoved;
 
-		public static int GetOffsetFromNode (RedBlackTree<TreeNode>.RedBlackTreeNode node)
+		TreeNode GetNodeAtOffset (int offset)
 		{
-			int offset = node.Left != null ? node.Left.Value.TotalLength : 0;
-			while (node.Parent != null) {
-				if (node == node.Parent.Right) {
-					if (node.Parent.Left != null && node.Parent.Left.Value != null)
-						offset += node.Parent.Left.Value.TotalLength;
-					if (node.Parent.Value != null)
-						offset += node.Parent.Value.Length;
-				}
-				node = node.Parent;
-			}
-			return offset;
-		}
-
-		RedBlackTree<TreeNode>.RedBlackTreeNode GetTreeNodeAtOffset (int offset)
-		{
-			if (offset == tree.Root.Value.TotalLength)
-				return tree.Root.OuterRight;
-			RedBlackTree<TreeNode>.RedBlackTreeNode node = tree.Root;
+			if (offset == tree.Root.TotalLength)
+				return tree.Root.GetOuterRight ();
+			var node = tree.Root;
 			int i = offset;
 			while (true) {
 				if (node == null)
 					return null;
-				if (node.Left != null && i < node.Left.Value.TotalLength) {
-					node = node.Left;
+				if (node.left != null && i < node.left.TotalLength) {
+					node = node.left;
 				} else {
-					if (node.Left != null)
-						i -= node.Left.Value.TotalLength;
-					i -= node.Value.Length;
+					if (node.left != null)
+						i -= node.left.TotalLength;
+					i -= node.Length;
 					if (i < 0)
 						return node;
-					node = node.Right;
+					node = node.right;
 				}
 			}
-		}
-
-		public TreeNode GetNodeAtOffset (int offset)
-		{
-			var node = GetTreeNodeAtOffset (offset);
-			return node != null ? node.Value : null;
 		}
 
 		public int OffsetToLineNumber (int offset)
 		{
-			var node = GetTreeNodeAtOffset (offset);
+			var node = GetNodeAtOffset (offset);
 			if (node == null)
 				return 0;
-			int result = node.Left != null ? node.Left.Value.Count : 0;
-			while (node.Parent != null) {
-				if (node == node.Parent.Right) {
-					if (node.Parent.Left != null)
-						result += node.Parent.Left.Value.Count;
+			int result = node.left != null ? node.left.Count : 0;
+			while (node.parent != null) {
+				if (node == node.parent.right) {
+					if (node.parent.left != null)
+						result += node.parent.left.Count;
 					result++;
 				}
-				node = node.Parent;
+				node = node.parent;
 			}
 			return result + 1;
 		}
 
-		public void RemoveLine (TreeNode line)
+		void RemoveLine (TreeNode line)
 		{
-			var parent = line.Iter.CurrentNode.Parent;
-			tree.RemoveAt (line.Iter);
-			UpdateNode (parent);
+			var parent = line.parent;
+			tree.Remove (line);
+			if (parent != null)
+				parent.UpdateAugmentedData ();
 			OnLineRemoved (new LineEventArgs (line));
 		}
 
-		public TreeNode GetNode (int index)
+		TreeNode GetNode (int index)
 		{
 			#if DEBUG
 			if (index < 0)
 				Debug.Assert (false, "index must be >=0 but was " + index + "." + Environment.NewLine + "Stack trace:" + Environment.StackTrace);
 			#endif
-			RedBlackTree<TreeNode>.RedBlackTreeNode node = tree.Root;
+			var node = tree.Root;
 			int i = index;
 			while (true) {
 				if (node == null)
 					return null;
-				if (node.Left != null && i < node.Left.Value.Count) {
-					node = node.Left;
+				if (node.left != null && i < node.left.Count) {
+					node = node.left;
 				} else {
-					if (node.Left != null) {
-						i -= node.Left.Value.Count;
+					if (node.left != null) {
+						i -= node.left.Count;
 					}
 					if (i <= 0)
-						return node.Value;
+						return node;
 					i--;
-					node = node.Right;
+					node = node.right;
 				}
 			}
 		}
