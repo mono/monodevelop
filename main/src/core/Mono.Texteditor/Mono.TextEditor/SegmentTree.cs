@@ -95,7 +95,7 @@ namespace Mono.TextEditor
 				}
 				return;
 			}
-
+			
 			int delta = (e.Value != null ? e.Value.Length : 0) - e.Count;
 
 			foreach (var segment in GetSegmentsOverlapping (e.Offset, e.Count)) {
@@ -195,9 +195,11 @@ namespace Mono.TextEditor
 		public void Remove (TreeSegment node)
 		{
 			Remove (node.treeNode);
+			node.treeNode = null;
+			node.segmentTree = null;
 		}
 
-		public void Remove (RedBlackTree<TreeSegment>.RedBlackTreeNode node)
+		void Remove (RedBlackTree<TreeSegment>.RedBlackTreeNode node)
 		{
 			var next = node.NextNode;
 			tree.Remove (node);
@@ -331,7 +333,7 @@ namespace Mono.TextEditor
 			}
 			set {
 				if (segmentTree != null)
-					segmentTree.Remove (treeNode);
+					segmentTree.Remove (this);
 				DistanceToPrevNode = value;
 				if (segmentTree != null)
 					segmentTree.Add (this);
