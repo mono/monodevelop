@@ -250,6 +250,13 @@ namespace Mono.TextEditor
 				targetList.Add (RTF_ATOM, /* FLAGS */0, RichTextType);
 				targetList.Add (MD_ATOM, /* FLAGS */0, MonoTextType);
 				targetList.AddTextTargets (TextType);
+				
+				//HACK: work around gtk_selection_data_set_text causing crashes on Mac w/ QuickSilver, Clipbard History etc.
+				if (Platform.IsMac) {
+					targetList.Remove ("COMPOUND_TEXT");
+					targetList.Remove ("TEXT");
+					targetList.Remove ("STRING");
+				}
 			}
 			
 			void CopyData (TextEditorData data, Selection selection)
