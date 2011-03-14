@@ -120,6 +120,7 @@ FILES =  \
 	Mono.TextEditor/SearchRequest.cs \
 	Mono.TextEditor/SearchResult.cs \
 	Mono.TextEditor/Segment.cs \
+	Mono.TextEditor/SegmentTree.cs \
 	Mono.TextEditor/Selection.cs \
 	Mono.TextEditor/SelectionActions.cs \
 	Mono.TextEditor/SharpDevelopWordFindStrategy.cs \

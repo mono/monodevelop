@@ -29,7 +29,7 @@ using System;
 
 namespace Mono.TextEditor
 {
-	public class FoldSegment : Segment, System.IComparable
+	public class FoldSegment : TreeSegment, System.IComparable
 	{
 		bool isFolded;
 		public bool IsFolded {

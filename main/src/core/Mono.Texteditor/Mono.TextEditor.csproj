@@ -181,6 +181,7 @@
     <Compile Include="Mono.TextEditor.Vi\ViEditor.cs" />
     <Compile Include="Mono.TextEditor.Utils\TextBreaker.cs" />
     <Compile Include="Mono.TextEditor\TextMarkerEvent.cs" />
+    <Compile Include="Mono.TextEditor\SegmentTree.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

@@ -62,7 +62,6 @@ namespace Mono.TextEditor.Tests
 					FoldSegment segment = foldSegments.Pop ();
 					segment.Length = i - segment.Offset + 1;
 					result.Add (segment);
-					System.Console.WriteLine("Add:" + segment);
 				}
 			}
 			return result;
@@ -91,14 +90,12 @@ namespace Mono.TextEditor.Tests
 15
 ]16
 17";
-			document.UpdateFoldSegments (GetFoldSegments (document));
-			do {
-				Gtk.Application.RunIteration ();
-			} while (!document.HasFoldSegments);
+			document.UpdateFoldSegments (GetFoldSegments (document), false);
 			Assert.AreEqual (4, document.LogicalToVisualLine (12));
 			Assert.AreEqual (6, document.LogicalToVisualLine (16));
 			Assert.AreEqual (7, document.LogicalToVisualLine (17));
 		}
+		
 		[Test()]
 		public void TestLogicalToVisualLine ()
 		{
@@ -122,10 +119,7 @@ namespace Mono.TextEditor.Tests
 15
 ]16
 17";
-			document.UpdateFoldSegments (GetFoldSegments (document));
-			do {
-				Gtk.Application.RunIteration ();
-			} while (!document.HasFoldSegments);
+			document.UpdateFoldSegments (GetFoldSegments (document), false);
 			Assert.AreEqual (13, document.VisualToLogicalLine (5));
 			Assert.AreEqual (18, document.VisualToLogicalLine (8));
 		}

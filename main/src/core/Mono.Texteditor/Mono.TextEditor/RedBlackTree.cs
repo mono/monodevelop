@@ -79,6 +79,33 @@ namespace Mono.TextEditor
 			Count++;
 			return new RedBlackTreeIterator (node);
 		}
+		
+		public void InsertBefore (RedBlackTreeNode node, RedBlackTreeNode newNode)
+		{
+			if (node.Left == null) {
+				InsertLeft (node, newNode);
+			} else {
+				InsertRight (node.Left.OuterRight, newNode);
+			}
+		}
+
+		public void InsertLeft (RedBlackTreeNode parentNode, RedBlackTreeNode newNode)
+		{
+			parentNode.Left = newNode;
+			newNode.Parent = parentNode;
+			newNode.Color = RedBlackTree<TreeSegment>.Red;
+			OnChildrenChanged (new RedBlackTreeNodeEventArgs (parentNode));
+			FixTreeOnInsert (newNode);
+		}
+
+		public void InsertRight (RedBlackTreeNode parentNode, RedBlackTreeNode newNode)
+		{
+			parentNode.Right = newNode;
+			newNode.Parent = parentNode;
+			newNode.Color = RedBlackTree<TreeSegment>.Red;
+			OnChildrenChanged (new RedBlackTreeNodeEventArgs (parentNode));
+			FixTreeOnInsert (newNode);
+		}
 
 		void FixTreeOnInsert (RedBlackTreeNode node)
 		{
@@ -273,6 +300,8 @@ namespace Mono.TextEditor
 				RotateRight (parent);
 			}
 		}
+		
+		
 
 		#region ICollection<T> implementation
 		public int Count { get; set; }
@@ -455,6 +484,36 @@ namespace Mono.TextEditor
 					return Parent == grandparent.Left ? grandparent.Right : grandparent.Left;
 				}
 			}
+			
+			public RedBlackTreeNode NextNode {
+				get {
+					if (Right == null) {
+						var node = this;
+						RedBlackTreeNode oldNode;
+						do {
+							oldNode = node;
+							node = node.Parent;
+						} while (node != null && node.Right == oldNode);
+						return node;
+					}
+					return Right.OuterLeft;
+				}
+			}
+			
+			public RedBlackTreeNode PrevNode {
+				get {
+					if (Left == null) {
+						var node = this;
+						RedBlackTreeNode oldNode;
+						do {
+							oldNode = node;
+							node = node.Parent;
+						} while (node != null && node.Left == oldNode);
+						return node;
+					}
+					return Left.OuterRight;
+				}
+			}
 		}
 
 		public class RedBlackTreeIterator : IEnumerator<T>
@@ -501,15 +560,7 @@ namespace Mono.TextEditor
 			{
 				if (!IsValid)
 					return false;
-				if (Node.Right == null) {
-					RedBlackTreeNode oldNode;
-					do {
-						oldNode = Node;
-						Node = Node.Parent;
-					} while (Node != null && Node.Right == oldNode);
-				} else {
-					Node = Node.Right.OuterLeft;
-				}
+				Node = Node.NextNode;
 				return IsValid;
 			}
 
@@ -517,15 +568,7 @@ namespace Mono.TextEditor
 			{
 				if (!IsValid)
 					return false;
-				if (Node.Left == null) {
-					RedBlackTreeNode oldNode;
-					do {
-						oldNode = Node;
-						Node = Node.Parent;
-					} while (Node != null && Node.Left == oldNode);
-				} else {
-					Node = Node.Left.OuterRight;
-				}
+				Node = Node.PrevNode;
 				return IsValid;
 			}
 		}

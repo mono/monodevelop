@@ -126,7 +126,7 @@ namespace Mono.TextEditor
 				throw new ArgumentNullException ("textEditor");
 			this.textEditor = textEditor;
 
-			textEditor.Document.TextReplaced += delegate(object sender, ReplaceEventArgs e) {
+			textEditor.Document.TextReplaced += delegate(object sender,ReplaceEventArgs e) {
 				RemoveCachedLine (Document.GetLineByOffset (e.Offset));
 				if (mouseSelectionMode == MouseSelectionMode.Word && e.Offset < mouseWordStart) {
 					int delta = -e.Count;
