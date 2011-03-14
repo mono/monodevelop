@@ -307,8 +307,12 @@ namespace MonoDevelop.MonoDroid
 						continue;
 
 					string [] stats = line.Split (space, StringSplitOptions.RemoveEmptyEntries);
-					if (stats.Length != 9)
+					if (stats.Length < 9)
 						throw new Exception ("'ps' output not recognized: '" + response + "'");
+
+					// Some devices have *system* processes with names containing spaces within. Ignore them.
+					if (stats.Length > 9)
+						continue;
 
 					if (stats [8].Trim () == packageName)
 						return Int32.Parse (stats [1]);
