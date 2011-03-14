@@ -1052,7 +1052,7 @@ namespace Mono.TextEditor
 		{
 			if (line == null)
 				return new FoldSegment[0];
-			return foldSegmentTree.GetSegmentsOverlapping (line).Cast<FoldSegment> ();
+			return foldSegmentTree.GetSegmentsOverlapping (line.Offset, line.EditableLength).Cast<FoldSegment> ();
 		}
 
 		public IEnumerable<FoldSegment> GetStartFoldings (int lineNumber)
