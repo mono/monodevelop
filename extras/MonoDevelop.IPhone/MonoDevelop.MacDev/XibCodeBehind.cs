@@ -50,25 +50,29 @@ namespace MonoDevelop.MacDev
 			project.FileAddedToProject += HandleProjectFileAddedToProject;
 		}
 
-		void HandleProjectFileAddedToProject (object sender, ProjectFileEventArgs e)
+		void HandleProjectFileAddedToProject (object sender, ProjectFileEventArgs args)
 		{
-			if (e.Project.Loading)
-				return;
-			
-			var pf = e.ProjectFile;
-			if (IsDesignerFile (pf)) {
-				var xibFile = GetXibFile (pf);
-				if (xibFile != null)
-					ThreadPool.QueueUserWorkItem (delegate { UpdateXibCodebehind (xibFile, pf, true); });
-			} else if (IsXibFile (pf)) {
-				ThreadPool.QueueUserWorkItem (delegate { UpdateXibCodebehind (pf, true); });
+			foreach (ProjectFileEventInfo e in args) {
+				if (e.Project.Loading)
+					continue;
+				
+				var pf = e.ProjectFile;
+				if (IsDesignerFile (pf)) {
+					var xibFile = GetXibFile (pf);
+					if (xibFile != null)
+						ThreadPool.QueueUserWorkItem (delegate { UpdateXibCodebehind (xibFile, pf, true); });
+				} else if (IsXibFile (pf)) {
+					ThreadPool.QueueUserWorkItem (delegate { UpdateXibCodebehind (pf, true); });
+				}
 			}
 		}
 
-		void HandleProjectFileChangedInProject (object sender, ProjectFileEventArgs e)
+		void HandleProjectFileChangedInProject (object sender, ProjectFileEventArgs args)
 		{
-			if (IsXibFile (e.ProjectFile))
-				ThreadPool.QueueUserWorkItem (delegate { UpdateXibCodebehind (e.ProjectFile); });
+			foreach (ProjectFileEventInfo e in args) {
+				if (IsXibFile (e.ProjectFile))
+					ThreadPool.QueueUserWorkItem (delegate { UpdateXibCodebehind (e.ProjectFile); });
+			}
 		}
 		
 		static bool IsXibFile (ProjectFile pf)
