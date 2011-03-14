@@ -171,7 +171,6 @@ namespace Mono.TextEditor.Utils
 
 		public void InsertLeft (IRedBlackTreeNode parentNode, IRedBlackTreeNode newNode)
 		{
-			Console.WriteLine ("insert left:" + newNode);
 			parentNode.Left = newNode;
 			newNode.Parent = parentNode;
 			newNode.Color = RedBlackColor.Red;
@@ -182,7 +181,6 @@ namespace Mono.TextEditor.Utils
 
 		public void InsertRight (IRedBlackTreeNode parentNode, IRedBlackTreeNode newNode)
 		{
-			Console.WriteLine ("insert right:" + newNode);
 			parentNode.Right = newNode;
 			newNode.Parent = parentNode;
 			newNode.Color = RedBlackColor.Red;

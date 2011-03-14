@@ -987,7 +987,7 @@ namespace Mono.TextEditor
 			while (i < oldSegments.Count) {
 				if (worker != null && worker.CancellationPending)
 					return;
-				newFoldSegmentTree.Add (oldSegments [i]);
+				newFoldSegmentTree.Add (new FoldSegment (oldSegments [i]));
 				i++;
 			}
 			if (needsUpdate) {
