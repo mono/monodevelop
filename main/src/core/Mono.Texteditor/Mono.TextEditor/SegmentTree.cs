@@ -257,7 +257,7 @@ namespace Mono.TextEditor
 		public override int Offset {
 			get {
 				if (segmentTree == null)
-					return DistanceToMaxEnd;
+					return DistanceToPrevNode;
 				
 				var curNode = this;
 				int offset = curNode.DistanceToPrevNode;

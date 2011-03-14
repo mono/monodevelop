@@ -991,10 +991,10 @@ namespace Mono.TextEditor
 				i++;
 			}
 			if (needsUpdate) {
-				newFoldSegmentTree.InstallListener (this);
-				foldSegmentTree.RemoveListener (this);
 				if (worker != null) {
 					Gtk.Application.Invoke (delegate {
+						newFoldSegmentTree.InstallListener (this);
+						foldSegmentTree.RemoveListener (this);
 						foldSegmentTree = newFoldSegmentTree;
 						if (updateFrom == null) {
 							CommitUpdateAll ();
@@ -1005,6 +1005,8 @@ namespace Mono.TextEditor
 						InformFoldTreeUpdated ();
 					});
 				} else {
+					newFoldSegmentTree.InstallListener (this);
+					foldSegmentTree.RemoveListener (this);		
 					foldSegmentTree = newFoldSegmentTree; // assume that document hasn't shown
 				}
 			}
