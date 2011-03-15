@@ -205,7 +205,7 @@ namespace MonoDevelop.VersionControl
 		
 		public override void OnNodeAdded (object dataObject)
 		{
-			FilePath path = GetDirPath (dataObject);
+			FilePath path = GetPath (dataObject);
 			if (path != FilePath.Null) {
 				DirData dd = new DirData ();
 				dd.Object = dataObject;
@@ -215,7 +215,7 @@ namespace MonoDevelop.VersionControl
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
-			FilePath path = GetDirPath (dataObject);
+			FilePath path = GetPath (dataObject);
 			if (path != FilePath.Null) {
 				path = path.CanonicalPath;
 				DirData data;
@@ -232,16 +232,6 @@ namespace MonoDevelop.VersionControl
 			} else if (dataObject is SystemFile) {
 				return ((SystemFile) dataObject).Path;
 			} else if (dataObject is IWorkspaceObject) {
-				return ((IWorkspaceObject)dataObject).BaseDirectory;
-			} else if (dataObject is ProjectFolder) {
-				return ((ProjectFolder)dataObject).Path;
-			}
-			return FilePath.Null;
-		}
-		
-		internal static string GetDirPath (object dataObject)
-		{
-			if (dataObject is IWorkspaceObject) {
 				return ((IWorkspaceObject)dataObject).BaseDirectory;
 			} else if (dataObject is ProjectFolder) {
 				return ((ProjectFolder)dataObject).Path;
