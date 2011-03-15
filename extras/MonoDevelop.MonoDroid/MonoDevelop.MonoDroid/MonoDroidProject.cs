@@ -536,51 +536,57 @@ namespace MonoDevelop.MonoDroid
 			if (Loading)
 				return;
 			
-			if (e.ProjectFile.BuildAction == MonoDroidBuildAction.AndroidResource)
+			if (e.Any (f => f.ProjectFile.BuildAction == MonoDroidBuildAction.AndroidResource))
 				QueueResgenUpdate ();
 		}
 		
-		protected override void OnFileRemovedFromProject (ProjectFileEventArgs e)
+		protected override void OnFileRemovedFromProject (ProjectFileEventArgs args)
 		{
-			base.OnFileRemovedFromProject (e);
+			base.OnFileRemovedFromProject (args);
 			if (Loading)
 				return;
 			
-			if (e.ProjectFile.BuildAction == MonoDroidBuildAction.AndroidResource)
-				QueueResgenUpdate ();
-			//clear the manifest element if the file is removed
-			else if (!AndroidManifest.IsNullOrEmpty && e.ProjectFile.FilePath == AndroidManifest)
-				AndroidManifest = null;
+			foreach (ProjectFileRenamedEventInfo e in args) {
+				if (e.ProjectFile.BuildAction == MonoDroidBuildAction.AndroidResource)
+					QueueResgenUpdate ();
+				//clear the manifest element if the file is removed
+				else if (!AndroidManifest.IsNullOrEmpty && e.ProjectFile.FilePath == AndroidManifest)
+					AndroidManifest = null;
+			}
 		}
 		
-		protected override void OnFileRenamedInProject (ProjectFileRenamedEventArgs e)
+		protected override void OnFileRenamedInProject (ProjectFileRenamedEventArgs args)
 		{
-			base.OnFileRenamedInProject (e);
+			base.OnFileRenamedInProject (args);
 			if (Loading)
 				return;
 			
-			if (e.ProjectFile.BuildAction == MonoDroidBuildAction.AndroidResource)
-				QueueResgenUpdate ();
-			//if renaming the file to "AndroidManifest.xml", and the manifest element is not in use, set it as a convenience
-			else if (AndroidManifest.IsNullOrEmpty && e.NewName.ToRelative (BaseDirectory) == "AndroidManifest.xml")
-				AndroidManifest = e.NewName;
-			//track manifest file renames or things will break
-			else if (AndroidManifest == e.OldName)
-				AndroidManifest = e.NewName;
+			foreach (ProjectFileRenamedEventInfo e in args) {
+				if (e.ProjectFile.BuildAction == MonoDroidBuildAction.AndroidResource)
+					QueueResgenUpdate ();
+				//if renaming the file to "AndroidManifest.xml", and the manifest element is not in use, set it as a convenience
+				else if (AndroidManifest.IsNullOrEmpty && e.NewName.ToRelative (BaseDirectory) == "AndroidManifest.xml")
+					AndroidManifest = e.NewName;
+				//track manifest file renames or things will break
+				else if (AndroidManifest == e.OldName)
+					AndroidManifest = e.NewName;
+			}
 		}
 		
-		protected override void OnFileAddedToProject (ProjectFileEventArgs e)
+		protected override void OnFileAddedToProject (ProjectFileEventArgs args)
 		{
-			base.OnFileAddedToProject (e);
+			base.OnFileAddedToProject (args);
 			if (Loading)
 				return;
 			
-			if (e.ProjectFile.BuildAction == MonoDroidBuildAction.AndroidResource)
-				QueueResgenUpdate ();
-			//if adding a file called AndroidManifest.xml, and the manifest element is not in use, set it as a convenience
-			//TODO: is it worth coping with LogicalNames?
-			else if (AndroidManifest.IsNullOrEmpty && e.ProjectFile.FilePath.ToRelative (BaseDirectory) == "AndroidManifest.xml")
-				AndroidManifest = e.ProjectFile.FilePath;
+			foreach (ProjectFileRenamedEventInfo e in args) {
+				if (e.ProjectFile.BuildAction == MonoDroidBuildAction.AndroidResource)
+					QueueResgenUpdate ();
+				//if adding a file called AndroidManifest.xml, and the manifest element is not in use, set it as a convenience
+				//TODO: is it worth coping with LogicalNames?
+				else if (AndroidManifest.IsNullOrEmpty && e.ProjectFile.FilePath.ToRelative (BaseDirectory) == "AndroidManifest.xml")
+					AndroidManifest = e.ProjectFile.FilePath;
+			}
 		}
 		
 		protected override void OnFilePropertyChangedInProject (ProjectFileEventArgs e)
@@ -589,7 +595,7 @@ namespace MonoDevelop.MonoDroid
 			if (Loading)
 				return;
 			
-			if (e.ProjectFile.BuildAction == MonoDroidBuildAction.AndroidResource)
+			if (e.Any (f => f.ProjectFile.BuildAction == MonoDroidBuildAction.AndroidResource))
 				QueueResgenUpdate ();
 		}
 		
