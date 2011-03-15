@@ -1,10 +1,10 @@
 // 
-// PreprocessorTests.cs
+// TemplateEnginePreprocessTemplateTests.cs
 //  
 // Author:
 //       Matt Ward
 // 
-// Copyright (c) Matt Ward
+// Copyright (c) 2010 Matt Ward
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -115,21 +115,22 @@ namespace Templating {
         
         public global::System.Text.StringBuilder GenerationEnvironment {
             get {
+                if ((this.builder == null)) {
+                    this.builder = new global::System.Text.StringBuilder();
+                }
                 return this.builder;
             }
             set {
-                if ((value == null)) {
-                    throw new System.ArgumentNullException();
-                }
                 this.builder = value;
             }
         }
         
         protected global::System.CodeDom.Compiler.CompilerErrorCollection Errors {
             get {
+                if ((this.errors == null)) {
+                    this.errors = new global::System.CodeDom.Compiler.CompilerErrorCollection();
+                }
                 return this.errors;
-            }
-            set {
             }
         }
         
@@ -137,7 +138,14 @@ namespace Templating {
             get {
                 return this.currentIndent;
             }
-            set {
+        }
+        
+        private global::System.Collections.Generic.Stack<int> Indents {
+            get {
+                if ((this.indents == null)) {
+                    this.indents = new global::System.Collections.Generic.Stack<int>();
+                }
+                return this.indents;
             }
         }
         
@@ -145,38 +153,36 @@ namespace Templating {
             get {
                 return this._toStringHelper;
             }
-            set {
-            }
         }
         
         public void Error(string message) {
-            this.errors.Add(new global::System.CodeDom.Compiler.CompilerError(null, -1, -1, null, message));
+            this.Errors.Add(new global::System.CodeDom.Compiler.CompilerError(null, -1, -1, null, message));
         }
         
         public void Warning(string message) {
             global::System.CodeDom.Compiler.CompilerError val = new global::System.CodeDom.Compiler.CompilerError(null, -1, -1, null, message);
             val.IsWarning = true;
-            this.errors.Add(val);
+            this.Errors.Add(val);
         }
         
         public string PopIndent() {
-            if ((this.indents.Count == 0)) {
+            if ((this.Indents.Count == 0)) {
                 return string.Empty;
             }
-            int lastPos = (this.currentIndent.Length - this.indents.Pop());
+            int lastPos = (this.currentIndent.Length - this.Indents.Pop());
             string last = this.currentIndent.Substring(lastPos);
             this.currentIndent = this.currentIndent.Substring(0, lastPos);
             return last;
         }
         
         public void PushIndent(string indent) {
-            this.indents.Push(indent.Length);
+            this.Indents.Push(indent.Length);
             this.currentIndent = (this.currentIndent + indent);
         }
         
         public void ClearIndent() {
             this.currentIndent = string.Empty;
-            this.indents.Clear();
+            this.Indents.Clear();
         }
         
         public void Write(string textToAppend) {
