@@ -118,7 +118,7 @@ namespace Mono.TextEditor.Utils
 				} while (curNode != null && curNode.Left == oldNode);
 				return (T)curNode;
 			}
-			return (T)node.Right.GetOuterRight ();
+			return (T)node.Left.GetOuterRight ();
 		}
 	}
 	
