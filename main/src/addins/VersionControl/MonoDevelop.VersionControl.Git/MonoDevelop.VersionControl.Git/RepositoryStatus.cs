@@ -54,15 +54,15 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		private string _root_path;
 		private bool _recursive;
-		private string _file_path;
+		private IEnumerable<string> _file_paths;
 		private bool changesExist;
 
-		internal RepositoryStatus(NGit.Repository repository, string singleFile, string rootDir, bool recursive)
+		internal RepositoryStatus(NGit.Repository repository, IEnumerable<string> singleFiles, string rootDir, bool recursive)
 		{
 			Repository = repository;
 			_root_path = rootDir;
 			_recursive = recursive;
-			_file_path = singleFile;
+			_file_paths = singleFiles;
 			Update();
 		}
 
@@ -132,19 +132,19 @@ namespace MonoDevelop.VersionControl.Git
 			Untracked = new HashSet<string>();
 			MergeConflict = new HashSet<string>();
 			
-			if (_file_path != null)
-				UpdateDirectory (_file_path, false);
+			if (_file_paths != null)
+				UpdateDirectory (_file_paths, false);
 			else if (_recursive)
-				UpdateDirectory (_root_path, true);
+				UpdateDirectory (new string[] { _root_path }, true);
 			else
-				UpdateDirectory (_root_path, false);
+				UpdateDirectory (new string[] { _root_path }, false);
 		}
 
 		/// <summary>
 		/// Run the diff operation. Until this is called, all lists will be empty
 		/// </summary>
 		/// <returns>true if anything is different between index, tree, and workdir</returns>
-		private void UpdateDirectory (string path, bool recursive)
+		private void UpdateDirectory (IEnumerable<string> paths, bool recursive)
 		{
 			RevWalk rw = new RevWalk (Repository);
 			ObjectId id = Repository.Resolve (Constants.HEAD);
@@ -167,8 +167,13 @@ namespace MonoDevelop.VersionControl.Git
 
 			List<TreeFilter> filters = new List<TreeFilter> ();
 			filters.Add (new SkipWorkTreeFilter(1));
-			if (path != ".")
-				filters.Add (PathFilter.Create (path));
+			
+			var pathFilters = paths.Where (p => p != ".").Select (p => PathFilter.Create (p)).ToArray ();
+			if (pathFilters.Length > 1) {
+				filters.Add (OrTreeFilter.Create (pathFilters)); // Use an OR to join all path filters
+			} else if (pathFilters.Length == 1)
+				filters.Add (pathFilters[0]);
+
 			if (filters.Count > 1)
 				treeWalk.Filter = AndTreeFilter.Create(filters);
 			else

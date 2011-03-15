@@ -44,11 +44,17 @@ using Mono.TextEditor.Utils;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public static class GitUtil
+	internal static class GitUtil
 	{
 		public static string ToGitPath (this NGit.Repository repo, FilePath filePath)
 		{
 			return filePath.FullPath.ToRelative (repo.WorkTree.ToString ()).ToString ().Replace ('\\', '/');
+		}
+
+		public static IEnumerable<string> ToGitPath (this NGit.Repository repo, IEnumerable<FilePath> filePaths)
+		{
+			foreach (var p in filePaths)
+				yield return ToGitPath (repo, p);
 		}
 
 		public static FilePath FromGitPath (this NGit.Repository repo, string filePath)
@@ -164,9 +170,9 @@ namespace MonoDevelop.VersionControl.Git
 			return new RepositoryStatus (repo, null, repo.ToGitPath (dir), recursive);
 		}
 		
-		public static RepositoryStatus GetFileStatus (NGit.Repository repo, string fileName)
+		public static RepositoryStatus GetFileStatus (NGit.Repository repo, IEnumerable<FilePath> fileNames)
 		{
-			return new RepositoryStatus (repo, repo.ToGitPath (fileName), null, false);
+			return new RepositoryStatus (repo, repo.ToGitPath (fileNames), null, false);
 		}
 		
 		public static ObjectId CreateCommit (NGit.Repository rep, string message, IList<ObjectId> parents, ObjectId indexTreeId, PersonIdent author, PersonIdent committer)
@@ -312,12 +318,12 @@ namespace MonoDevelop.VersionControl.Git
 			config.Save ();
 		}
 		
-		public static FileRepository Init (string targetLocalPath, string url, IProgressMonitor monitor)
+		public static LocalGitRepository Init (string targetLocalPath, string url, IProgressMonitor monitor)
 		{
 			InitCommand ci = new InitCommand ();
 			ci.SetDirectory (targetLocalPath);
-			var git = ci.Call ();
-			FileRepository repo = (FileRepository) git.GetRepository ();
+			ci.Call ();
+			LocalGitRepository repo = new LocalGitRepository (targetLocalPath);
 			
 			string branch = Constants.R_HEADS + "master";
 			
