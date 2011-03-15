@@ -69,7 +69,7 @@ namespace Mono.TextTemplating.Tests
 			string className = "GeneratedTextTransformation4f504ca0";
 			string code = GenerateCode (host, input, className, newline);
 			Assert.AreEqual (0, host.Errors.Count);
-			Assert.AreEqual (expectedOutput, StripHeader (code, newline));
+			Assert.AreEqual (expectedOutput, TemplatingEngineHelper.StripHeader (code, newline));
 		}
 		
 		#region Helpers
@@ -104,23 +104,6 @@ namespace Mono.TextTemplating.Tests
 			}
 		}
 
-		static string StripHeader (string input, string newLine)
-		{
-			using (var writer = new StringWriter ()) {
-				using (var reader = new StringReader (input)) {
-					for (int i = 0; i < 9; i++) {
-						reader.ReadLine ();
-					}
-					string line;
-					while ((line = reader.ReadLine ()) != null) {
-						writer.Write (line);
-						writer.Write (newLine);
-					}
-				}
-				return writer.ToString ();
-			}
-		}
-		
 		#endregion
 		
 		#region Expected output strings
