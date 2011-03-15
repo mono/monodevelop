@@ -42,7 +42,6 @@ namespace MonoDevelop.Ide.Gui
 		string title;
 		StatusBarContext statusBar;
 		Pad statusSourcePad;
-		bool reportingProgress;
 		
 		public StatusProgressMonitor (string title, string iconName, bool showErrorDialogs, bool showTaskTitles, bool lockGui, Pad statusSourcePad)
 		{
@@ -65,11 +64,7 @@ namespace MonoDevelop.Ide.Gui
 				statusBar.ShowMessage (icon, CurrentTask);
 			if (!UnknownWork)
 				statusBar.SetProgressFraction (GlobalWork);
-			if (!reportingProgress) {
-				reportingProgress = true;
-				DispatchService.RunPendingEvents ();
-				reportingProgress = false;
-			}
+			RunPendingEvents ();
 		}
 		
 		public void UpdateStatusBar ()

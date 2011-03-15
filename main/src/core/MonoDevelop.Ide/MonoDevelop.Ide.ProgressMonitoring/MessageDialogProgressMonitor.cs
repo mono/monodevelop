@@ -71,7 +71,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 				MessageService.PlaceDialog (dialog, MessageService.RootWindow);
 				dialog.Show ();
 				dialog.AsyncOperation = AsyncOperation;
-				DispatchService.RunPendingEvents ();
+				RunPendingEvents ();
 				this.hideWhenDone = hideWhenDone;
 				this.showDetails = showDetails;
 			}
@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 		{
 			if (dialog != null) {
 				dialog.WriteText (text);
-				DispatchService.RunPendingEvents ();
+				RunPendingEvents ();
 			}
 		}
 		
@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 			if (dialog != null) {
 				dialog.Message = CurrentTask;
 				dialog.Progress = GlobalWork;
-				DispatchService.RunPendingEvents ();
+				RunPendingEvents ();
 			}
 		}
 		
@@ -116,14 +116,14 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 				dialog.EndTask ();
 			}
 			base.EndTask ();
-			DispatchService.RunPendingEvents ();
+			RunPendingEvents ();
 		}
 						
 		public override void ReportWarning (string message)
 		{
 			if (dialog != null) {
 				dialog.WriteText (GettextCatalog.GetString ("WARNING: ") + message + "\n");
-				DispatchService.RunPendingEvents ();
+				RunPendingEvents ();
 			}
 			warningMessages.Add (message);
 		}
@@ -145,7 +145,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 			
 			if (dialog != null) {
 				dialog.WriteText (GettextCatalog.GetString ("ERROR: ") + message + "\n");
-				DispatchService.RunPendingEvents ();
+				RunPendingEvents ();
 			}
 		}
 		
