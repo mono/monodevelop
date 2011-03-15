@@ -205,7 +205,7 @@ namespace MonoDevelop.Core.Text
 					bool wordStartMatch = match && wordStart;
 	
 					if (lane.MatchMode == MatchMode.Substring) {
-						if (wordStartMatch) {
+						if (wordStartMatch && !LaneExists (MatchMode.Acronym, lane.MatchIndex + 1)) {
 							// Possible acronym match after a substring. Start a new lane.
 							MatchLane newLane = CloneLane (lane);
 							newLane.MatchMode = MatchMode.Acronym;
@@ -219,17 +219,19 @@ namespace MonoDevelop.Core.Text
 							matchLanes.Add (newLane);
 						}
 						if (match) {
-							// Maybe it is a false substring start, so add a new lane to keep
-							// track of the old lane
-							MatchLane newLane = CloneLane (lane);
-							newLane.MatchMode = MatchMode.Acronym;
-							matchLanes.Add (newLane);
+							if (!LaneExists (MatchMode.Acronym, lane.MatchIndex)) {
+								// Maybe it is a false substring start, so add a new lane to keep
+								// track of the old lane
+								MatchLane newLane = CloneLane (lane);
+								newLane.MatchMode = MatchMode.Acronym;
+								matchLanes.Add (newLane);
+								if (exactMatch)
+									newLane.ExactCaseMatches++;
+							}
 	
 							// Update the current lane
 							lane.Lengths [lane.Index]++;
 							lane.MatchIndex++;
-							if (exactMatch)
-								newLane.ExactCaseMatches++;
 						} else {
 							if (lane.Lengths [lane.Index] > 1)
 								lane.MatchMode = MatchMode.Acronym;
@@ -238,7 +240,7 @@ namespace MonoDevelop.Core.Text
 						}
 					}
 					else if (lane.MatchMode == MatchMode.Acronym) {
-						if (match && lane.Positions [lane.Index] == tn - 1) {
+						if (match && lane.Positions [lane.Index] == tn - 1 && !LaneExists (MatchMode.Substring, lane.MatchIndex + 1)) {
 							// Possible substring match after an acronim. Start a new lane.
 							MatchLane newLane = CloneLane (lane);
 							newLane.MatchMode = MatchMode.Substring;
@@ -250,7 +252,7 @@ namespace MonoDevelop.Core.Text
 							if (newLane.MatchIndex == filterLowerCase.Length)
 								return newLane;
 						}
-						if (wordStartMatch || (match && char.IsPunctuation (cfLower))) {
+						if ((wordStartMatch || (match && char.IsPunctuation (cfLower))) && !LaneExists (MatchMode.Acronym, lane.MatchIndex + 1)) {
 							// Maybe it is a false acronym start, so add a new lane to keep
 							// track of the old lane
 							MatchLane newLane = CloneLane (lane);
@@ -274,6 +276,18 @@ namespace MonoDevelop.Core.Text
 				tn++;
 			}
 			return null;
+		}
+		
+		bool LaneExists (MatchMode mode, int matchIndex)
+		{
+			if (matchLanes == null)
+				return false;
+			for (int n=0; n<matchLanes.Count; n++) {
+				MatchLane lane = matchLanes [n];
+				if (lane != null && lane.MatchMode == mode && lane.MatchIndex == matchIndex)
+					return true;
+			}
+			return false;
 		}
 		
 		bool IsSeparator (char ct)
