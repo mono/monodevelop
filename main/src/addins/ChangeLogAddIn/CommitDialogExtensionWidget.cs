@@ -156,7 +156,7 @@ namespace MonoDevelop.ChangeLogAddIn
 						File.WriteAllText (ce.File, ce.Message);
 					}
 					if (!cset.ContainsFile (ce.File)) {
-						if (!cset.Repository.IsVersioned (ce.File))
+						if (!cset.Repository.GetVersionInfo (ce.File).IsVersioned)
 							cset.Repository.Add (ce.File, false, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
 						cset.AddFile (ce.File);
 					}
