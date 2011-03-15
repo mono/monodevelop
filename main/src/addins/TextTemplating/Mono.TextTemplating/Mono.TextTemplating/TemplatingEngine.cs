@@ -594,8 +594,7 @@ namespace Mono.TextTemplating
 			var builderFieldRef = new CodeFieldReferenceExpression (thisRef, builderField.Name);
 			
 			var generationEnvironmentProp = GenerateGetterSetterProperty ("GenerationEnvironment", builderField);
-			generationEnvironmentProp.SetStatements.Insert (0, ArgNullCheck (new CodePropertySetValueReferenceExpression ()));
-			var genEnvPropRef = new CodePropertyReferenceExpression (thisRef, generationEnvironmentProp.Name);
+			AddPropertyGetterInitializationIfFieldIsNull (generationEnvironmentProp, builderFieldRef, TypeRef<StringBuilder> ());
 			
 			type.Members.Add (builderField);
 			type.Members.Add (sessionField);
@@ -605,6 +604,20 @@ namespace Mono.TextTemplating
 			AddErrorHelpers (type, settings);
 			AddIndentHelpers (type, settings);
 			AddWriteHelpers (type, settings);
+		}
+		
+		static void AddPropertyGetterInitializationIfFieldIsNull (CodeMemberProperty property, CodeFieldReferenceExpression fieldRef, CodeTypeReference typeRef)
+		{
+			var fieldInit = FieldInitializationIfNull (fieldRef, typeRef);
+			property.GetStatements.Insert (0, fieldInit);
+		}
+
+		static CodeConditionStatement FieldInitializationIfNull (CodeFieldReferenceExpression fieldRef, CodeTypeReference typeRef)
+		{
+			return new CodeConditionStatement (
+				new CodeBinaryOperatorExpression (fieldRef,
+					CodeBinaryOperatorType.ValueEquality, new CodePrimitiveExpression (null)),
+				new CodeAssignStatement (fieldRef, new CodeObjectCreateExpression (typeRef)));
 		}
 		
 		static void AddErrorHelpers (CodeTypeDeclaration type, TemplateSettings settings)
@@ -618,13 +631,19 @@ namespace Mono.TextTemplating
 			var errorsField = PrivateField (cecTypeRef, "errors");
 			var errorsFieldRef = new CodeFieldReferenceExpression (thisRef, errorsField.Name);
 			
+			var errorsProp = GenerateGetterProperty ("Errors", errorsField);
+			errorsProp.Attributes = MemberAttributes.Family | MemberAttributes.Final;
+			errorsProp.GetStatements.Insert (0, FieldInitializationIfNull (errorsFieldRef, TypeRef<CompilerErrorCollection>()));
+			
+			var errorsPropRef = new CodePropertyReferenceExpression (new CodeThisReferenceExpression (), "Errors");
+			
 			var compilerErrorTypeRef = TypeRef<CompilerError> ();
 			var errorMeth = new CodeMemberMethod () {
 				Name = "Error",
 				Attributes = MemberAttributes.Public | MemberAttributes.Final,
 			};
 			errorMeth.Parameters.Add (new CodeParameterDeclarationExpression (stringTypeRef, "message"));
-			errorMeth.Statements.Add (new CodeMethodInvokeExpression (errorsFieldRef, "Add",
+			errorMeth.Statements.Add (new CodeMethodInvokeExpression (errorsPropRef, "Add",
 				new CodeObjectCreateExpression (compilerErrorTypeRef, nullPrim, minusOnePrim, minusOnePrim, nullPrim,
 					new CodeArgumentReferenceExpression ("message"))));
 			
@@ -638,11 +657,8 @@ namespace Mono.TextTemplating
 					new CodeArgumentReferenceExpression ("message"))));
 			warningMeth.Statements.Add (new CodeAssignStatement (new CodePropertyReferenceExpression (
 				new CodeVariableReferenceExpression ("val"), "IsWarning"), new CodePrimitiveExpression (true)));
-			warningMeth.Statements.Add (new CodeMethodInvokeExpression (errorsFieldRef, "Add",
+			warningMeth.Statements.Add (new CodeMethodInvokeExpression (errorsPropRef, "Add",
 				new CodeVariableReferenceExpression ("val")));
-			
-			var errorsProp = GenerateGetterProperty ("Errors", errorsField);
-			errorsProp.Attributes = MemberAttributes.Family | MemberAttributes.Final;
 			
 			type.Members.Add (errorsField);
 			type.Members.Add (errorMeth);
@@ -662,6 +678,12 @@ namespace Mono.TextTemplating
 			var indentsField = PrivateField (stackIntTypeRef, "indents");
 			var indentsFieldRef = new CodeFieldReferenceExpression (thisRef, indentsField.Name);
 			
+			var indentsProp = GenerateGetterProperty ("Indents", indentsField);
+			indentsProp.Attributes = MemberAttributes.Private;
+			AddPropertyGetterInitializationIfFieldIsNull (indentsProp, indentsFieldRef, TypeRef<Stack<int>> ());
+			
+			var indentsPropRef = new CodeFieldReferenceExpression (thisRef, indentsProp.Name);
+			
 			var currentIndentField = PrivateField (stringTypeRef, "currentIndent");
 			currentIndentField.InitExpression = stringEmptyRef;
 			var currentIndentFieldRef = new CodeFieldReferenceExpression (thisRef, currentIndentField.Name);
@@ -672,14 +694,14 @@ namespace Mono.TextTemplating
 				Attributes = MemberAttributes.Public | MemberAttributes.Final,
 			};
 			popIndentMeth.Statements.Add (new CodeConditionStatement (
-				new CodeBinaryOperatorExpression (new CodePropertyReferenceExpression (indentsFieldRef, "Count"),
+				new CodeBinaryOperatorExpression (new CodePropertyReferenceExpression (indentsPropRef, "Count"),
 					CodeBinaryOperatorType.ValueEquality, zeroPrim),
 				new CodeMethodReturnStatement (stringEmptyRef)));
 			popIndentMeth.Statements.Add (new CodeVariableDeclarationStatement (intTypeRef, "lastPos",
 				new CodeBinaryOperatorExpression (
 					new CodePropertyReferenceExpression (currentIndentFieldRef, "Length"),
 					CodeBinaryOperatorType.Subtract,
-					new CodeMethodInvokeExpression (indentsFieldRef, "Pop"))));
+					new CodeMethodInvokeExpression (indentsPropRef, "Pop"))));
 			popIndentMeth.Statements.Add (new CodeVariableDeclarationStatement (stringTypeRef, "last",
 				new CodeMethodInvokeExpression (currentIndentFieldRef, "Substring", new CodeVariableReferenceExpression ("lastPos"))));
 			popIndentMeth.Statements.Add (new CodeAssignStatement (currentIndentFieldRef,
@@ -691,7 +713,7 @@ namespace Mono.TextTemplating
 				Attributes = MemberAttributes.Public | MemberAttributes.Final,
 			};
 			pushIndentMeth.Parameters.Add (new CodeParameterDeclarationExpression (stringTypeRef, "indent"));
-			pushIndentMeth.Statements.Add (new CodeMethodInvokeExpression (indentsFieldRef, "Push",
+			pushIndentMeth.Statements.Add (new CodeMethodInvokeExpression (indentsPropRef, "Push",
 				new CodePropertyReferenceExpression (new CodeArgumentReferenceExpression ("indent"), "Length")));
 			pushIndentMeth.Statements.Add (new CodeAssignStatement (currentIndentFieldRef,
 				new CodeBinaryOperatorExpression (currentIndentFieldRef, CodeBinaryOperatorType.Add, new CodeArgumentReferenceExpression ("indent"))));
@@ -701,7 +723,7 @@ namespace Mono.TextTemplating
 				Attributes = MemberAttributes.Public | MemberAttributes.Final,
 			};
 			clearIndentMeth.Statements.Add (new CodeAssignStatement (currentIndentFieldRef, stringEmptyRef));
-			clearIndentMeth.Statements.Add (new CodeMethodInvokeExpression (indentsFieldRef, "Clear"));
+			clearIndentMeth.Statements.Add (new CodeMethodInvokeExpression (indentsPropRef, "Clear"));
 			
 			var currentIndentProp = GenerateGetterProperty ("CurrentIndent", currentIndentField);
 			type.Members.Add (currentIndentField);
@@ -710,6 +732,7 @@ namespace Mono.TextTemplating
 			type.Members.Add (pushIndentMeth);
 			type.Members.Add (clearIndentMeth);
 			type.Members.Add (currentIndentProp);
+			type.Members.Add (indentsProp);
 		}
 		
 		static void AddWriteHelpers (CodeTypeDeclaration type, TemplateSettings settings)
@@ -875,7 +898,7 @@ namespace Mono.TextTemplating
 		
 		static void AddGetter (CodeMemberProperty property, CodeFieldReferenceExpression fieldRef)
 		{
-			property.HasSet = true;
+			property.HasGet = true;
 			property.GetStatements.Add (new CodeMethodReturnStatement (fieldRef));
 		}
 		
