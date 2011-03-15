@@ -37,6 +37,8 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Components;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -143,25 +145,32 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			Set<SolutionEntityItem> projects = new Set<SolutionEntityItem> ();
 			Set<Solution> solutions = new Set<Solution> ();
-			foreach (ITreeNavigator node in CurrentNodes) {
-				SystemFile file = (SystemFile) node.DataItem;
-				Project project = node.GetParentDataItem (typeof(Project), true) as Project;
-				if (project != null) {
-					project.AddFile (file.Path);
-					projects.Add (project);
-				}
-				else {
-					SolutionFolder folder = node.GetParentDataItem (typeof(SolutionFolder), true) as SolutionFolder;
-					if (folder != null) {
-						folder.Files.Add (file.Path);
-						solutions.Add (folder.ParentSolution);
+			var nodesByProject = CurrentNodes.GroupBy (n => n.GetParentDataItem (typeof(Project), true) as Project);
+			
+			foreach (var projectGroup in nodesByProject) {
+				Project project = projectGroup.Key;
+				List<FilePath> newFiles = new List<FilePath> ();
+				foreach (ITreeNavigator node in projectGroup) {
+					SystemFile file = (SystemFile) node.DataItem;
+					if (project != null) {
+						newFiles.Add (file.Path);
+						projects.Add (project);
 					}
 					else {
-						Solution sol = node.GetParentDataItem (typeof(Solution), true) as Solution;
-						sol.RootFolder.Files.Add (file.Path);
-						solutions.Add (sol);
+						SolutionFolder folder = node.GetParentDataItem (typeof(SolutionFolder), true) as SolutionFolder;
+						if (folder != null) {
+							folder.Files.Add (file.Path);
+							solutions.Add (folder.ParentSolution);
+						}
+						else {
+							Solution sol = node.GetParentDataItem (typeof(Solution), true) as Solution;
+							sol.RootFolder.Files.Add (file.Path);
+							solutions.Add (sol);
+						}
 					}
 				}
+				if (newFiles.Count > 0)
+					project.AddFiles (newFiles);
 			}
 			IdeApp.ProjectOperations.Save (projects);
 			foreach (Solution sol in solutions)
