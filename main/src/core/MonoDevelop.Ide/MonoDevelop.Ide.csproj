@@ -1462,6 +1462,7 @@
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
+        <GtkDesignInfo gettextClass="MonoDevelop.Core.GettextCatalog" />
         <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../../">
           <BuildFilesVar Sync="true" Name="FILES" />
           <DeployFilesVar />
