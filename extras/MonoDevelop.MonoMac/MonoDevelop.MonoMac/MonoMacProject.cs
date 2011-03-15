@@ -169,11 +169,11 @@ namespace MonoDevelop.MonoMac
 		static string[] groupedExtensions = { ".xib" };
 		
 		//based on MoonlightProject
-		protected override void OnFileAddedToProject (ProjectFileEventArgs e)
+		protected override void OnFileAddedToProject (ProjectFileEventArgs args)
 		{
 			//short-circuit if the project is being deserialised
 			if (Loading) {
-				base.OnFileAddedToProject (e);
+				base.OnFileAddedToProject (args);
 				return;
 			}
 			
@@ -183,20 +183,22 @@ namespace MonoDevelop.MonoMac
 			}
 			*/
 			
-			//find any related files, e.g codebehind
-			//FIXME: base this on the controller class names defined in the xib
-			var filesToAdd = MonoDevelop.DesignerSupport.CodeBehind.GuessDependencies (this, e.ProjectFile, groupedExtensions);
-			
+			List<string> filesToAdd = new List<string> ();
+			foreach (ProjectFileEventInfo e in args) {
+				//find any related files, e.g codebehind
+				//FIXME: base this on the controller class names defined in the xib
+				var files = MonoDevelop.DesignerSupport.CodeBehind.GuessDependencies (this, e.ProjectFile, groupedExtensions);
+				if (files != null)
+					filesToAdd.AddRange (files);
+			}
 			//let the base fire the event before we add files
 			//don't want to fire events out of order of files being added
-			base.OnFileAddedToProject (e);
+			base.OnFileAddedToProject (args);
 			
 			//make sure that the parent and child files are in the project
-			if (filesToAdd != null) {
-				foreach (string file in filesToAdd) {
-					//NOTE: this only adds files if they are not already in the project
-					AddFile (file);
-				}
+			foreach (string file in filesToAdd) {
+				//NOTE: this only adds files if they are not already in the project
+				AddFile (file);
 			}
 		}
 		
