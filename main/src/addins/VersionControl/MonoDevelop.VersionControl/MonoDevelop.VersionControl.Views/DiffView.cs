@@ -180,11 +180,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public static bool CanShow (VersionControlItemList items)
 		{
-			foreach (VersionControlItem item in items) {
-				if (item.Repository.IsModified (item.Path))
-					return true;
-			}
-			return false;
+			return items.Any (i => i.VersionInfo.HasLocalChanges);
 		}
 		
 		VersionControlDocumentInfo info;

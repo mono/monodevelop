@@ -85,7 +85,7 @@ namespace MonoDevelop.VersionControl.Views
 				return false;
 
 			VersionControlItem item = items [0];
-			if (item.Repository.IsVersioned (item.Path)) {
+			if (item.VersionInfo.IsVersioned) {
 				if (test) return true;
 				StatusView d = new StatusView (item.Path, item.Repository);
 				IdeApp.Workbench.OpenDocument (d, true);
@@ -416,7 +416,7 @@ namespace MonoDevelop.VersionControl.Views
 				colRemote.Visible = remoteStatus;
 				
 				try {
-					if (vc.CanCommit(filepath))
+					if (vc.GetVersionInfo (filepath).CanCommit)
 						buttonCommit.Sensitive = true;
 				} catch (Exception ex) {
 					LoggingService.LogError (ex.ToString ());
@@ -692,7 +692,7 @@ namespace MonoDevelop.VersionControl.Views
 			VersionControlItemList items = new VersionControlItemList ();
 			foreach (string file in files) {
 				Project prj = IdeApp.Workspace.GetProjectContainingFile (file);
-				items.Add (new VersionControlItem (vc, prj, file, Directory.Exists (file)));
+				items.Add (new VersionControlItem (vc, prj, file, Directory.Exists (file), null));
 			}
 			return items;
 		}

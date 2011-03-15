@@ -1,6 +1,7 @@
 
 using System;
 using MonoDevelop.Core;
+using System.IO;
 
 namespace MonoDevelop.VersionControl
 {
@@ -13,6 +14,9 @@ namespace MonoDevelop.VersionControl
 		Revision revision;
 		VersionStatus remoteStatus = VersionStatus.Versioned;
 		Revision remoteRevision;
+		bool opsLoaded;
+		VersionControlOperation operations;
+		Repository ownerRepository;
 
 		public VersionInfo (FilePath localPath, string repositoryPath, bool isDirectory, VersionStatus status, Revision revision, VersionStatus remoteStatus, Revision remoteRevision)
 		{
@@ -23,6 +27,16 @@ namespace MonoDevelop.VersionControl
 			this.revision = revision;
 			this.remoteStatus = remoteStatus;
 			this.remoteRevision = remoteRevision;
+		}
+		
+		internal void Init (Repository repo)
+		{
+			ownerRepository = repo;
+		}
+		
+		public static VersionInfo CreateUnversioned (FilePath path, bool isDirectory)
+		{
+			return new VersionInfo (path, "", isDirectory, VersionStatus.Unversioned, null, VersionStatus.Unversioned, null);
 		}
 		
 		public bool IsVersioned {
@@ -76,5 +90,38 @@ namespace MonoDevelop.VersionControl
 			get { return remoteRevision; }
 			internal set { remoteRevision = value; }
 		}
+		
+		public VersionControlOperation AllowedOperations {
+			get {
+				if (!opsLoaded && ownerRepository != null) {
+					opsLoaded = true;
+					operations = ownerRepository.GetSupportedOperations (this);
+				}
+				return operations;
+			}
+		}
+		
+		public bool SupportsOperation (VersionControlOperation op)
+		{
+			return (AllowedOperations & op) != 0;
+		}
+		
+		public bool CanAdd { get { return SupportsOperation (VersionControlOperation.Add); } }
+		
+		public bool CanAnnotate { get { return SupportsOperation (VersionControlOperation.Annotate); } }
+		
+		public bool CanCommit { get { return SupportsOperation (VersionControlOperation.Commit); } }
+		
+		public bool CanLock { get { return SupportsOperation (VersionControlOperation.Lock); } }
+		
+		public bool CanLog { get { return SupportsOperation (VersionControlOperation.Log); } }
+		
+		public bool CanRemove { get { return SupportsOperation (VersionControlOperation.Remove); } }
+		
+		public bool CanRevert { get { return SupportsOperation (VersionControlOperation.Revert); } }
+		
+		public bool CanUnlock { get { return SupportsOperation (VersionControlOperation.Unlock); } }
+		
+		public bool CanUpdate { get { return SupportsOperation (VersionControlOperation.Update); } }
 	}
 }

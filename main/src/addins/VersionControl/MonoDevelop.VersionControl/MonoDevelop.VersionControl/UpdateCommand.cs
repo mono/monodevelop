@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.IO;
 
@@ -16,9 +17,8 @@ namespace MonoDevelop.VersionControl
 	{
 		public static bool Update (VersionControlItemList items, bool test)
 		{
-			foreach (VersionControlItem it in items)
-				if (!it.Repository.CanUpdate (it.Path))
-					return false;
+			if (!items.All (i => i.VersionInfo.CanUpdate))
+				return false;
 			if (test)
 				return true;
 			

@@ -15,7 +15,7 @@ namespace MonoDevelop.VersionControl
 				return false;
 
 			VersionControlItem item = items [0];
-			if (item.Repository.CanCommit (item.Path)) {
+			if (item.VersionInfo.CanCommit) {
 				if (test) return true;
 				ChangeSet cset  = item.Repository.CreateChangeSet (item.Path);
 				cset.GlobalComment = VersionControlService.GetCommitComment (cset.BaseLocalPath);
@@ -42,7 +42,7 @@ namespace MonoDevelop.VersionControl
 					return false;
 				}
 				
-				if (vc.CanCommit (changeSet.BaseLocalPath)) {
+				if (vc.GetVersionInfo (changeSet.BaseLocalPath).CanCommit) {
 					if (test) return true;
 
 					if (!VersionControlService.NotifyPrepareCommit (vc, changeSet))

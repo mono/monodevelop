@@ -29,6 +29,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using Mono.TextEditor;
+using System.Linq;
 namespace MonoDevelop.VersionControl.Views
 {
 	internal class BlameView : BaseView, IAttachableViewContent, IUndoHandler, IClipboardHandler
@@ -51,7 +52,7 @@ namespace MonoDevelop.VersionControl.Views
 				return true;
 			}
 			else
-				return items.Count > 0 && CanShow (items[0].Repository, items[0].Path);
+				return items.All (i => i.VersionInfo.CanAnnotate);
 		}
 		
 		public static void Show (VersionControlItemList items)
@@ -62,14 +63,6 @@ namespace MonoDevelop.VersionControl.Views
 				document.Window.SwitchView (document.Window.FindView (typeof(BlameView)));
 			}
 		}
-		
-		public static bool CanShow (Repository repo, FilePath file)
-		{
-			if (null != repo && repo.CanGetAnnotations (file)) 
-				return true;
-			return false;
-		}
-		
 		
 		public BlameView (VersionControlDocumentInfo info) : base ("Blame")
 		{

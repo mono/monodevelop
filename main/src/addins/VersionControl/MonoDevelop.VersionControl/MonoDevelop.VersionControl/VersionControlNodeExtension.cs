@@ -84,8 +84,11 @@ namespace MonoDevelop.VersionControl
 			if (repo == null)
 				return;
 			
-			VersionStatus status = GetVersionInfo (repo, file);
-			Gdk.Pixbuf overlay = VersionControlService.LoadOverlayIconForStatus (status);
+			VersionInfo vi = GetVersionInfo (repo, file);
+			if (dataObject is ProjectFile)
+				((ProjectFile)dataObject).ExtendedProperties [typeof(VersionInfo)] = vi;
+			
+			Gdk.Pixbuf overlay = VersionControlService.LoadOverlayIconForStatus (vi.Status);
 			if (overlay != null)
 				AddOverlay (ref icon, overlay);
 		}
@@ -141,7 +144,7 @@ namespace MonoDevelop.VersionControl
 				data.FileData = null;
 		}
 		
-		VersionStatus GetVersionInfo (Repository vc, FilePath filepath)
+		VersionInfo GetVersionInfo (Repository vc, FilePath filepath)
 		{
 			FilePath dir = filepath;
 			dir = dir.ParentDirectory.CanonicalPath;
@@ -156,16 +159,16 @@ namespace MonoDevelop.VersionControl
 				}
 				VersionInfo vi;
 				if (data.FileData.TryGetValue (filepath.CanonicalPath, out vi))
-					return vi.Status;
+					return vi;
 			}
 			
 			VersionInfo node = vc.GetVersionInfo (filepath, false);
 			if (node != null) {
 				if (data != null)
 					data.FileData [filepath] = node;
-				return node.Status;
+				return node;
 			}
-			return VersionStatus.Unversioned;
+			return VersionInfo.CreateUnversioned (filepath, false);
 		}
 		
 		void Monitor (object sender, FileUpdateEventArgs args)
@@ -202,7 +205,7 @@ namespace MonoDevelop.VersionControl
 		
 		public override void OnNodeAdded (object dataObject)
 		{
-			FilePath path = GetPath (dataObject);
+			FilePath path = GetDirPath (dataObject);
 			if (path != FilePath.Null) {
 				DirData dd = new DirData ();
 				dd.Object = dataObject;
@@ -212,7 +215,7 @@ namespace MonoDevelop.VersionControl
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
-			FilePath path = GetPath (dataObject);
+			FilePath path = GetDirPath (dataObject);
 			if (path != FilePath.Null) {
 				path = path.CanonicalPath;
 				DirData data;
@@ -229,6 +232,16 @@ namespace MonoDevelop.VersionControl
 			} else if (dataObject is SystemFile) {
 				return ((SystemFile) dataObject).Path;
 			} else if (dataObject is IWorkspaceObject) {
+				return ((IWorkspaceObject)dataObject).BaseDirectory;
+			} else if (dataObject is ProjectFolder) {
+				return ((ProjectFolder)dataObject).Path;
+			}
+			return FilePath.Null;
+		}
+		
+		internal static string GetDirPath (object dataObject)
+		{
+			if (dataObject is IWorkspaceObject) {
 				return ((IWorkspaceObject)dataObject).BaseDirectory;
 			} else if (dataObject is ProjectFolder) {
 				return ((ProjectFolder)dataObject).Path;

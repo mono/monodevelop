@@ -64,6 +64,7 @@ FILES =  \
 	MonoDevelop.VersionControl/VersionControlItem.cs \
 	MonoDevelop.VersionControl/VersionControlItemList.cs \
 	MonoDevelop.VersionControl/VersionControlNodeExtension.cs \
+	MonoDevelop.VersionControl/VersionControlOperation.cs \
 	MonoDevelop.VersionControl/VersionControlPolicy.cs \
 	MonoDevelop.VersionControl/VersionControlService.cs \
 	MonoDevelop.VersionControl/VersionControlSystem.cs \

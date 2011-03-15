@@ -5,6 +5,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 using System.Text;
+using System.Linq;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -31,7 +32,7 @@ namespace MonoDevelop.VersionControl.Views
 					var document = IdeApp.Workbench.OpenDocument (item.Path);
 					DiffView.AttachViewContents (document, item);
 					document.Window.SwitchView (document.Window.FindView (typeof(LogView)));
-				} else if (item.Repository.IsHistoryAvailable (item.Path)) {
+				} else if (item.VersionInfo.CanLog) {
 					new Worker (item.Repository, item.Path, item.IsDirectory, since).Start ();
 				}
 			}
@@ -69,13 +70,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public static bool CanShow (VersionControlItemList items, Revision since)
 		{
-			bool found = false;
-			foreach (VersionControlItem item in items) {
-				if (item.Repository.IsHistoryAvailable (item.Path)) {
-					return true;
-				}
-			}
-			return found;
+			return items.All (i => i.VersionInfo.CanLog);
 		}
 		
 		VersionControlDocumentInfo info;

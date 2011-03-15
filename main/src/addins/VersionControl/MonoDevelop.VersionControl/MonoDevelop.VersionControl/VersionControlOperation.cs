@@ -1,10 +1,10 @@
 // 
-// SubviewAttachmentHandler.cs
+// VersionControlOperation.cs
 //  
 // Author:
-//       Mike Krüger <mkrueger@novell.com>
+//       Lluis Sanchez Gual <lluis@novell.com>
 // 
-// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,30 +24,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Components.Commands;
 
-namespace MonoDevelop.VersionControl.Views
+namespace MonoDevelop.VersionControl
 {
-	class SubviewAttachmentHandler : CommandHandler
+	[Flags]
+	public enum VersionControlOperation
 	{
-		protected override void Run ()
-		{
-			Ide.IdeApp.Workbench.DocumentOpened += HandleDocumentOpened;
-		}
-
-		void HandleDocumentOpened (object sender, Ide.Gui.DocumentEventArgs e)
-		{
-			if (e.Document.Project == null)
-				return;
-			var repo = VersionControlService.GetRepository (e.Document.Project);
-			if (repo == null)
-				return;
-			if (!e.Document.IsFile || !repo.GetVersionInfo (e.Document.FileName).IsVersioned)
-				return;
-			var item = new VersionControlItem (repo, e.Document.Project, e.Document.FileName, false, null);
-			
-			DiffView.AttachViewContents (e.Document, item);
-		}
+		None = 0,
+		Add = 1,
+		Remove = 2,
+		Commit = 4,
+		Revert = 8,
+		Update = 16,
+		Lock = 32,
+		Unlock = 64,
+		Annotate = 128,
+		Log = 256
 	}
 }
 

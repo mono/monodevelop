@@ -48,7 +48,7 @@ namespace MonoDevelop.VersionControl
 		{
 			try {
 				if (test) {
-					return (vc.CanRevert (path));
+					return (vc.GetVersionInfo (path).CanRevert);
 				}
 				
 				string question = GettextCatalog.GetString (

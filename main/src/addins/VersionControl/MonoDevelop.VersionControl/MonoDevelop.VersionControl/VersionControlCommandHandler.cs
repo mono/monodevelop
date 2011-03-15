@@ -74,12 +74,14 @@ namespace MonoDevelop.VersionControl
 			bool isDir;
 			IWorkspaceObject pentry;
 			Repository repo;
+			VersionInfo versionInfo = null;
 			
 			if (obj is ProjectFile) {
 				ProjectFile file = (ProjectFile)obj;
 				path = file.FilePath;
 				isDir = false;
 				pentry = file.Project;
+				versionInfo = file.ExtendedProperties [typeof(VersionInfo)] as VersionInfo;
 			} else if (obj is SystemFile) {
 				SystemFile file = (SystemFile)obj;
 				path = file.Path;
@@ -101,7 +103,7 @@ namespace MonoDevelop.VersionControl
 				return null;
 			
 			repo = VersionControlService.GetRepository (pentry);
-			return new VersionControlItem (repo, pentry, path, isDir);
+			return new VersionControlItem (repo, pentry, path, isDir, versionInfo);
 		}
 		
 	}

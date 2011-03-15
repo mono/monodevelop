@@ -216,6 +216,7 @@
     <Compile Include="MonoDevelop.VersionControl.Views\LogWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Views.LogWidget.cs" />
     <Compile Include="MonoDevelop.VersionControl\IRepositoryEditor.cs" />
+    <Compile Include="MonoDevelop.VersionControl\VersionControlOperation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -401,7 +401,8 @@ namespace MonoDevelop.VersionControl
 			try {
 				foreach (var repoFiles in e.GroupBy (i => GetRepository (i.Project))) {
 					Repository repo = repoFiles.Key;
-					FilePath[] paths = repoFiles.Where (i => repo.CanAdd (i.ProjectFile.FilePath)).Select (i => i.ProjectFile.FilePath).ToArray ();
+					var versionInfos = repo.GetVersionInfo (repoFiles.Select (f => f.ProjectFile.FilePath));
+					FilePath[] paths = versionInfos.Where (i => i.CanAdd).Select (i => i.LocalPath).ToArray ();
 					if (paths.Length > 0) {
 						if (monitor == null)
 							monitor = GetStatusMonitor ();
@@ -492,7 +493,7 @@ namespace MonoDevelop.VersionControl
 			SolutionItem entry = args.SolutionItem;
 			string path = entry.BaseDirectory;
 			
-			if (!repo.CanAdd (path))
+			if (!repo.GetVersionInfo (path).CanAdd)
 				return;
 			
 			// While we /could/ call repo.Add with `recursive = true', we don't

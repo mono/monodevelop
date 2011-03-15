@@ -37,13 +37,15 @@ namespace MonoDevelop.VersionControl
 		bool isDirectory;
 		IWorkspaceObject workspaceObject;
 		Repository repository;
+		VersionInfo versionInfo;
 
-		public VersionControlItem (Repository repository, IWorkspaceObject workspaceObject, FilePath path, bool isDirectory)
+		public VersionControlItem (Repository repository, IWorkspaceObject workspaceObject, FilePath path, bool isDirectory, VersionInfo versionInfo)
 		{
 			this.path = path;
 			this.repository = repository;
 			this.workspaceObject = workspaceObject;
 			this.isDirectory = isDirectory;
+			this.versionInfo = versionInfo;
 		}
 		
 		public IWorkspaceObject WorkspaceObject {
@@ -67,6 +69,22 @@ namespace MonoDevelop.VersionControl
 		public bool IsDirectory {
 			get {
 				return isDirectory;
+			}
+		}
+		
+		public VersionInfo VersionInfo {
+			get {
+				if (versionInfo == null) {
+					try {
+						versionInfo = repository.GetVersionInfo (path, false);
+						if (versionInfo == null)
+							versionInfo = new VersionInfo (path, "", isDirectory, VersionStatus.Unversioned, null, VersionStatus.Unversioned, null);
+					} catch (Exception ex) {
+						LoggingService.LogError ("Version control query failed", ex);
+						versionInfo = VersionInfo.CreateUnversioned (path, isDirectory);
+					}
+				}
+				return versionInfo;
 			}
 		}
 	}

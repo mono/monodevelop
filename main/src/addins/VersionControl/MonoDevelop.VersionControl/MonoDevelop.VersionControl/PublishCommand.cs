@@ -61,7 +61,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		public static bool CanPublish (Repository vc, string path, bool isDir) {
-			if (!vc.IsVersioned (path) && isDir) 
+			if (!vc.GetVersionInfo (path).IsVersioned && isDir) 
 				return true;
 			return false;
 		}

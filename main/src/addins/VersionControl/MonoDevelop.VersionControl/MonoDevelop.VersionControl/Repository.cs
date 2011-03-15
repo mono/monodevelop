@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
+using System.Linq;
 
 namespace MonoDevelop.VersionControl
 {
@@ -100,89 +101,84 @@ namespace MonoDevelop.VersionControl
 			get { return true; }
 		}
 		
-		// Returns true if the specified local file or directory is under version control
-		public virtual bool IsVersioned (FilePath localPath)
+		internal protected virtual VersionControlOperation GetSupportedOperations (VersionInfo vinfo)
 		{
-			VersionInfo vinfo = GetVersionInfo (localPath, false);
-			if (vinfo == null)
-				return false;
-			return vinfo.IsVersioned;
+			VersionControlOperation operations = VersionControlOperation.None;
+			bool exists = !vinfo.LocalPath.IsNullOrEmpty && (File.Exists (vinfo.LocalPath) || Directory.Exists (vinfo.LocalPath));
+			if (vinfo.IsVersioned) {
+				operations = VersionControlOperation.Commit | VersionControlOperation.Update | VersionControlOperation.Log;
+				if (exists) {
+					operations |= VersionControlOperation.Remove;
+					if (vinfo.HasLocalChanges)
+						operations |= VersionControlOperation.Revert;
+				}
+				if (AllowLocking && !vinfo.IsDirectory) {
+					if (!vinfo.HasLocalChanges && (vinfo.Status & VersionStatus.LockOwned) == 0)
+						operations |= VersionControlOperation.Lock;
+					if ((vinfo.Status & VersionStatus.LockOwned) != 0)
+						operations |= VersionControlOperation.Unlock;
+				}
+			}
+			else if (exists) {
+				operations = VersionControlOperation.Add;
+			}
+			return operations;
 		}
 		
-		// Returns true if the specified file has been modified since the last commit
-		public virtual bool IsModified (FilePath localFile)
+		// Returns the versioning status of a file or directory
+		public VersionInfo GetVersionInfo (FilePath localPath)
 		{
-			if (!File.Exists (localFile))
-				return false;
-			VersionInfo vinfo = GetVersionInfo (localFile, false);
-			if (vinfo == null)
-				return false;
-			return (vinfo.Status & VersionStatus.Modified) != 0;
+			return GetVersionInfo (localPath, false);
 		}
 		
-		// Returns true if the specified file or directory can be added to the repository
-		public virtual bool CanAdd (FilePath localPath)
+		// Returns the versioning status of a file or directory
+		public VersionInfo GetVersionInfo (FilePath localPath, bool getRemoteStatus)
 		{
-			if (!File.Exists (localPath) && !Directory.Exists (localPath))
-				return false;
-			VersionInfo vinfo = GetVersionInfo (localPath, false);
-			if (vinfo == null)
-				return false;
-			return !vinfo.IsVersioned;
-		}
-		
-		// Returns true if the repository has history for the specified local file
-		public virtual bool IsHistoryAvailable (FilePath localFile)
-		{
-			return IsVersioned (localFile);
-		}
-		
-		// Returns true if the specified path can be updated from the repository
-		public virtual bool CanUpdate (FilePath localPath)
-		{
-			return IsVersioned (localPath);
-		}
-		
-		// Returns true if the specified path can be committed to the repository
-		public virtual bool CanCommit (FilePath localPath)
-		{
-			return GetVersionInfo (localPath, false) != null;
-		}
-		
-		// Returns true if the specified path can be removed from the repository
-		public virtual bool CanRemove (FilePath localPath)
-		{
-			if (!File.Exists (localPath) && !Directory.Exists (localPath))
-				return false;
-			VersionInfo vinfo = GetVersionInfo (localPath, false);
-			if (vinfo == null)
-				return false;
-			return vinfo.IsVersioned;
-		}
-		
-		// Returns true if the specified path can be reverted
-		public virtual bool CanRevert (FilePath localPath)
-		{
-			VersionInfo vinfo = GetVersionInfo (localPath, false);
-			return vinfo != null && vinfo.IsVersioned && (vinfo.HasLocalChanges || Directory.Exists (localPath));
-		}
-
-		public virtual bool CanLock (FilePath localPath)
-		{
-			return false;
-		}
-
-		public virtual bool CanUnlock (FilePath localPath)
-		{
-			return false;
+			try {
+			VersionInfo vi = OnGetVersionInfo (new FilePath[] { localPath }, getRemoteStatus).Single ();
+				vi.Init (this);
+				return vi;
+			} catch {
+				Console.WriteLine ("pp:");
+				VersionInfo vi = OnGetVersionInfo (new FilePath[] { localPath }, getRemoteStatus).Single ();
+				throw;
+			}
 		}
 		
 		/// <summary>
-		/// Returns true if annotations can be retrieved for the specified path.
+		/// Returns the versioning status of a set of files or directories
 		/// </summary>
-		public virtual bool CanGetAnnotations (FilePath localPath)
+		/// <param name='paths'>
+		/// A list of files or directories
+		/// </param>
+		public IEnumerable<VersionInfo> GetVersionInfo (IEnumerable<FilePath> paths)
 		{
-			return false;
+			return GetVersionInfo (paths, false);
+		}
+		
+		/// <summary>
+		/// Returns the versioning status of a set of files or directories
+		/// </summary>
+		/// <param name='paths'>
+		/// A list of files or directories
+		/// </param>
+		/// <param name='getRemoteStatus'>
+		/// True if remote status information has to be included
+		/// </param>
+		public IEnumerable<VersionInfo> GetVersionInfo (IEnumerable<FilePath> paths, bool getRemoteStatus)
+		{
+			foreach (VersionInfo vi in OnGetVersionInfo (paths, false)) {
+				vi.Init (this);
+				yield return vi;
+			}
+		}
+		
+		public VersionInfo[] GetDirectoryVersionInfo (FilePath localDirectory, bool getRemoteStatus, bool recursive)
+		{
+			VersionInfo[] infos = OnGetDirectoryVersionInfo (localDirectory, getRemoteStatus, recursive);
+			foreach (var vi in infos)
+				vi.Init (this);
+			return infos;
 		}
 		
 		// Returns a path to the last version of the file updated from the repository
@@ -191,12 +187,22 @@ namespace MonoDevelop.VersionControl
 		// Returns the revision history of a file
 		public abstract Revision[] GetHistory (FilePath localFile, Revision since);
 		
-		// Returns the versioning status of a file or directory
-		// Returns null if the file or directory is not versioned.
-		public abstract VersionInfo GetVersionInfo (FilePath localPath, bool getRemoteStatus);
+		/// <summary>
+		/// Returns the versioning status of a set of files or directories
+		/// </summary>
+		/// <param name='paths'>
+		/// A list of files or directories
+		/// </param>
+		/// <param name='getRemoteStatus'>
+		/// True if remote status information has to be included
+		/// </param>
+		/// <remarks>
+		/// This method must return a VersionInfo object for every path in the 'paths' argument.
+		/// </remarks>
+		protected abstract IEnumerable<VersionInfo> OnGetVersionInfo (IEnumerable<FilePath> paths, bool getRemoteStatus);
 		
 		// Returns the versioning status of all files in a directory
-		public abstract VersionInfo[] GetDirectoryVersionInfo (FilePath localDirectory, bool getRemoteStatus, bool recursive);
+		protected abstract VersionInfo[] OnGetDirectoryVersionInfo (FilePath localDirectory, bool getRemoteStatus, bool recursive);
 		
 		// Imports a directory into the repository. 'serverPath' is the relative path in the repository.
 		// 'localPath' is the local directory to publish. 'files' is the list of files to add to the new

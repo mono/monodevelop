@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
@@ -22,12 +23,8 @@ namespace MonoDevelop.VersionControl
 		private static bool RevertInternal (VersionControlItemList items, bool test)
 		{
 			try {
-				if (test) {
-					foreach (VersionControlItem item in items)
-						if (!item.Repository.CanRevert (item.Path))
-							return false;
-					return true;
-				}
+				if (test)
+					return items.All (i => i.VersionInfo.CanRevert);
 
 				if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to revert the changes done in the selected files?"), 
 				                                GettextCatalog.GetString ("All changes made to the selected files will be permanently lost."),

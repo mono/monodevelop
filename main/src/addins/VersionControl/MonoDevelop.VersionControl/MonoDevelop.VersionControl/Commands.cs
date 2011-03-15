@@ -48,7 +48,7 @@ namespace MonoDevelop.VersionControl
 			if (repo == null || repo.VersionControlSystem == null || !repo.VersionControlSystem.IsInstalled)
 				return list;
 			
-			list.Add (new VersionControlItem (repo, wob, wob.BaseDirectory, true));
+			list.Add (new VersionControlItem (repo, wob, wob.BaseDirectory, true, null));
 			return list;
 		}
 		
@@ -95,7 +95,7 @@ namespace MonoDevelop.VersionControl
 			if (repo == null || repo.VersionControlSystem == null || !repo.VersionControlSystem.IsInstalled)
 				return null;
 			
-			return new VersionControlItem (repo, project, doc.FileName, false);
+			return new VersionControlItem (repo, project, doc.FileName, false, null);
 		}
 		
 		protected override void Run ()

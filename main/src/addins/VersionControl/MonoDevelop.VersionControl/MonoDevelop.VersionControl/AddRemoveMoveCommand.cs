@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.IO;
 
@@ -19,9 +20,8 @@ namespace MonoDevelop.VersionControl
 	{
 		public static bool Add (VersionControlItemList items, bool test)
 		{
-			foreach (VersionControlItem it in items)
-				if (!it.Repository.CanAdd (it.Path))
-					return false;
+			if (!items.All (i => i.VersionInfo.CanAdd))
+				return false;
 			if (test)
 				return true;
 			
@@ -29,13 +29,6 @@ namespace MonoDevelop.VersionControl
 			return true;
 		}
 		
-		public static bool CanAdd (Repository vc, string path) {
-			if (vc.CanAdd(path)) 
-				return true;
-			else
-				return false;
-		}
-
 		private class AddWorker : Task {
 			VersionControlItemList items;
 						
@@ -115,9 +108,8 @@ namespace MonoDevelop.VersionControl
 	{
 		public static bool Remove (VersionControlItemList items, bool test)
 		{
-			foreach (VersionControlItem it in items)
-				if (!it.Repository.CanRemove (it.Path))
-					return false;
+			if (!items.All (i => i.VersionInfo.CanRemove))
+				return false;
 			if (test)
 				return true;
 			
@@ -128,13 +120,6 @@ namespace MonoDevelop.VersionControl
 			return true;
 		}
 		
-		public static bool CanRemove (Repository vc, string path) {
-			if (vc.CanRemove(path)) 
-				return true;
-			else
-				return false;
-		}
-
 		private class RemoveWorker : Task {
 			VersionControlItemList items;
 						

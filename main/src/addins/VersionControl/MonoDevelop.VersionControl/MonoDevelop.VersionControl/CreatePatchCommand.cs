@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 using Mono.Addins;
@@ -112,13 +113,8 @@ namespace MonoDevelop.VersionControl
 		{
 			if (null == items || 0 == items.Count){ return false; }
 			
-			foreach (ChangeSetItem item in items.Items) {
-				if (!items.Repository.CanRevert (item.LocalPath)) {
-					return false;
-				}
-			}
-			
-			return true;
+			var vinfos = items.Repository.GetVersionInfo (items.Items.Select (i => i.LocalPath));
+			return vinfos.All (i => i.CanRevert);
 		}
 		
 		/// <summary>
@@ -128,14 +124,7 @@ namespace MonoDevelop.VersionControl
 		public static bool CanCreatePatch (VersionControlItemList items) 
 		{
 			if (null == items || 0 == items.Count){ return false; }
-			
-			foreach (var item in items) {
-				if (!item.Repository.CanRevert (item.Path)) {
-					return false;
-				}
-			}
-			
-			return true;
+			return items.All (i => i.VersionInfo.CanRevert);
 		}
 		
 		// Finds the most specific ancestor path of a set of version control items.
