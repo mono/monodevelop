@@ -56,6 +56,8 @@ namespace MonoDevelop.IPhone
 			if (proj == null || proj.CompileTarget != CompileTarget.Exe)
 				return base.Build (monitor, item, configuration);
 			
+			IPhoneFramework.CheckInfoCaches ();
+			
 			//prebuild
 			var conf = (IPhoneProjectConfiguration) proj.GetConfiguration (configuration);
 			bool isDevice = conf.Platform == IPhoneProject.PLAT_IPHONE;

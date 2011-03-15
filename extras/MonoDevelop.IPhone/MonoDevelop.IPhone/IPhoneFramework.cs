@@ -40,20 +40,28 @@ using System.Runtime.InteropServices;
 
 namespace MonoDevelop.IPhone
 {
-public static class IPhoneFramework
+	public static class IPhoneFramework
 	{
 		static bool? isInstalled = null;
 		static bool? simOnly = null;
 		static IPhoneSdkVersion? monoTouchVersion;
 		static IPhoneSdkVersion[] installedSdkVersions, knownOSVersions;
+		static DTSettings dtSettings;
+		static Dictionary<string,DTSdkSettings> sdkSettingsCache = new Dictionary<string,DTSdkSettings> ();
+		
+		static DateTime? lastSdkVersionWrite = DateTime.MinValue;
+		static DateTime? lastMTExeWrite = DateTime.MinValue;
 		
 		const string PLAT_PLIST = "/Developer/Platforms/iPhoneOS.platform/Info.plist";
 		const string SIM_PLIST = "/Developer/Platforms/iPhoneOSSimulator.platform/Info.plist";
+		const string MT_VERSION_FILE = "/Developer/MonoTouch/Version";
+		const string MONOTOUCH_EXE = "/Developer/MonoTouch/usr/bin/mtouch";
+		const string VERSION_PLIST = "/Developer/Library/version.plist";
 		
 		public static bool IsInstalled {
 			get {
 				if (!isInstalled.HasValue) {
-					isInstalled = Directory.Exists ("/Developer/MonoTouch");
+					isInstalled = File.Exists (MONOTOUCH_EXE);
 				}
 				return isInstalled.Value;
 			}
@@ -71,10 +79,10 @@ public static class IPhoneFramework
 		public static IPhoneSdkVersion MonoTouchVersion {
 			get {
 				if (!monoTouchVersion.HasValue) {
-					if (File.Exists ("/Developer/MonoTouch/Version")) {
+					if (File.Exists (MT_VERSION_FILE)) {
 						try {
 							monoTouchVersion = IPhoneSdkVersion.Parse (
-								File.ReadAllText ("/Developer/MonoTouch/Version").Trim ());
+								File.ReadAllText (MT_VERSION_FILE).Trim ());
 						} catch (Exception ex) {
 							LoggingService.LogError ("Failed to read MonoTouch version", ex);
 						}
@@ -115,8 +123,6 @@ public static class IPhoneFramework
 			return SdkIsInstalled (version.ToString ());
 		}
 		
-		static Dictionary<string,DTSdkSettings> sdkSettingsCache = new Dictionary<string,DTSdkSettings> ();
-		
 		public static DTSdkSettings GetSdkSettings (IPhoneSdkVersion sdk)
 		{
 			DTSdkSettings settings;
@@ -140,8 +146,6 @@ public static class IPhoneFramework
 			sdkSettingsCache[sdk.ToString ()] = settings;
 			return settings;
 		}
-		
-		static DTSettings dtSettings;
 		
 		public static DTSettings GetDTSettings ()
 		{
@@ -168,7 +172,7 @@ public static class IPhoneFramework
 
 			vals.DTXcode = "0" + xcodeVersion.Replace (".", "");
 			
-			vals.DTXcodeBuild = GrabRootString ("/Developer/Library/version.plist", "ProductBuildVersion");
+			vals.DTXcodeBuild = GrabRootString (VERSION_PLIST, "ProductBuildVersion");
 			
 			return (dtSettings = vals);
 		}
@@ -281,6 +285,46 @@ public static class IPhoneFramework
 			}
 			installedSdkVersions = vs.ToArray ();
 			Array.Sort (installedSdkVersions);
+		}
+		
+		public static void CheckInfoCaches ()
+		{
+			CheckSdkCaches ();
+			CheckMTCaches ();
+		}
+		
+		static void CheckSdkCaches ()
+		{
+			DateTime? lastWrite;
+			try {
+				lastWrite = File.GetLastWriteTime (VERSION_PLIST);
+			} catch (IOException ex) {
+				lastWrite = null;
+			}
+			if (lastWrite == lastSdkVersionWrite)
+				return;
+			lastSdkVersionWrite = lastWrite;
+			
+			installedSdkVersions = null;
+			knownOSVersions = null;
+			dtSettings = null;
+			sdkSettingsCache.Clear ();
+		}
+		
+		static void CheckMTCaches ()
+		{
+			DateTime? lastWrite;
+			try {
+				lastWrite = File.GetLastWriteTime (MONOTOUCH_EXE);
+			} catch (IOException ex) {
+				lastWrite = null;
+			}
+			if (lastWrite == lastMTExeWrite)
+				return;
+			lastMTExeWrite = lastWrite;
+			
+			simOnly = null;
+			monoTouchVersion = null;
 		}
 		
 		public static void ShowSimOnlyDialog ()
