@@ -73,6 +73,7 @@ namespace Mono.TextEditor
 				var length = (e.Value != null ? e.Value.Length : 0);
 				foreach (var segment in GetSegmentsAt (e.Offset).Where (s => s.Offset < e.Offset && e.Offset < s.EndOffset)) {
 					segment.Length += length;
+					segment.UpdateAugmentedData ();
 				}
 				var node = SearchFirstSegmentWithStartAfter (e.Offset);
 				if (node != null) {
@@ -91,13 +92,16 @@ namespace Mono.TextEditor
 					} else {
 						segment.Length = e.Offset - segment.Offset;
 					}
+					segment.UpdateAugmentedData ();
 					continue;
 				}
 				int remainingLength = segment.EndOffset - (e.Offset + e.Count);
 				Remove (segment);
-				segment.Offset = e.Offset + e.Count;
-				segment.Length = System.Math.Max (0, remainingLength);
-				Add (segment);
+				if (remainingLength > 0) {
+					segment.Offset = e.Offset + e.Count;
+					segment.Length = remainingLength;
+					Add (segment);
+				}
 			}
 
 			var next = SearchFirstSegmentWithStartAfter (e.Offset + 1);

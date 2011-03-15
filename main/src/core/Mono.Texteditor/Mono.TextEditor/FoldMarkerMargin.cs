@@ -71,6 +71,12 @@ namespace Mono.TextEditor
 			delayTimer.AutoReset = false;
 			delayTimer.Elapsed += DelayTimerElapsed;
 			editor.Caret.PositionChanged += HandleEditorCaretPositionChanged;
+			editor.Document.FoldTreeUpdated += HandleEditorDocumentFoldTreeUpdated;
+		}
+
+		void HandleEditorDocumentFoldTreeUpdated (object sender, EventArgs e)
+		{
+			editor.RedrawMargin (this);
 		}
 
 		void HandleEditorCaretPositionChanged (object sender, DocumentLocationEventArgs e)
@@ -217,6 +223,7 @@ namespace Mono.TextEditor
 		public override void Dispose ()
 		{
 			base.Dispose ();
+			editor.Document.FoldTreeUpdated -= HandleEditorDocumentFoldTreeUpdated;
 			if (delayTimer != null) {
 				delayTimer.Stop ();
 				delayTimer.Dispose ();
