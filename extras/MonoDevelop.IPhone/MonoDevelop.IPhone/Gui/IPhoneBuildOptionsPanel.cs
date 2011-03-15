@@ -84,6 +84,8 @@ namespace MonoDevelop.IPhone.Gui
 		
 		public IPhoneBuildOptionsWidget ()
 		{
+			IPhoneFramework.CheckInfoCaches ();
+			
 			this.Build ();
 			extraArgsEntry.AddOptions (menuOptions);
 			
