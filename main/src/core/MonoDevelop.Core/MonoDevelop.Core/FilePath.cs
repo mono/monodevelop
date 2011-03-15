@@ -147,6 +147,24 @@ namespace MonoDevelop.Core
 		{
 			return Empty.Combine (paths);
 		}
+		
+		public static FilePath GetCommonRootPath (IEnumerable<FilePath> paths)
+		{
+			FilePath root = FilePath.Null;
+			foreach (FilePath p in paths) {
+				if (root.IsNull)
+					root = p;
+				else if (root == p)
+					continue;
+				else if (root.IsChildPathOf (p))
+					root = p;
+				else {
+					while (!root.IsNullOrEmpty && !p.IsChildPathOf (root))
+						root = root.ParentDirectory;
+				}
+			}
+			return root;
+		}
 
 		public FilePath ToAbsolute (FilePath basePath)
 		{
@@ -246,6 +264,12 @@ namespace MonoDevelop.Core
 			for (int n = 0; n < paths.Length; n++)
 				array[n] = paths[n];
 			return array;
+		}
+		
+		public static IEnumerable<string> ToPathStrings (this IEnumerable<FilePath> paths)
+		{
+			foreach (FilePath p in paths)
+				yield return p.ToString ();
 		}
 	}
 }
