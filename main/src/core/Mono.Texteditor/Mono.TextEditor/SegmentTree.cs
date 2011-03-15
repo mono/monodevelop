@@ -73,6 +73,7 @@ namespace Mono.TextEditor
 				var length = (e.Value != null ? e.Value.Length : 0);
 				foreach (var segment in GetSegmentsAt (e.Offset).Where (s => s.Offset < e.Offset && e.Offset < s.EndOffset)) {
 					segment.Length += length;
+					segment.UpdateAugmentedData ();
 				}
 				var node = SearchFirstSegmentWithStartAfter (e.Offset);
 				if (node != null) {
@@ -91,13 +92,16 @@ namespace Mono.TextEditor
 					} else {
 						segment.Length = e.Offset - segment.Offset;
 					}
+					segment.UpdateAugmentedData ();
 					continue;
 				}
 				int remainingLength = segment.EndOffset - (e.Offset + e.Count);
 				Remove (segment);
-				segment.Offset = e.Offset + e.Count;
-				segment.Length = System.Math.Max (0, remainingLength);
-				Add (segment);
+				if (remainingLength > 0) {
+					segment.Offset = e.Offset + e.Count;
+					segment.Length = remainingLength;
+					Add (segment);
+				}
 			}
 
 			var next = SearchFirstSegmentWithStartAfter (e.Offset + 1);
@@ -123,19 +127,19 @@ namespace Mono.TextEditor
 			
 			if (tree.Root == null) {
 				tree.Root = node;
-				node.TotalSubtreeLength = node.DistanceToPrevNode;
+				node.TotalLength = node.DistanceToPrevNode;
 				return;
 			}
 			
-			if (insertionOffset < tree.Root.TotalSubtreeLength) {
+			if (insertionOffset < tree.Root.TotalLength) {
 				var n = SearchNode (ref insertionOffset);
-				node.TotalSubtreeLength = node.DistanceToPrevNode = insertionOffset;
+				node.TotalLength = node.DistanceToPrevNode = insertionOffset;
 				n.DistanceToPrevNode -= insertionOffset;
 				tree.InsertBefore (n, node);
 				return;
 			}
 			
-			node.DistanceToPrevNode = node.TotalSubtreeLength = insertionOffset - tree.Root.TotalSubtreeLength;
+			node.DistanceToPrevNode = node.TotalLength = insertionOffset - tree.Root.TotalLength;
 			tree.InsertRight (tree.Root.GetOuterRight (), node);
 		}
 		
@@ -173,11 +177,11 @@ namespace Mono.TextEditor
 			var n = tree.Root;
 			while (true) {
 				if (n.left != null) {
-					if (offset < n.left.TotalSubtreeLength) {
+					if (offset < n.left.TotalLength) {
 						n = n.left;
 						continue;
 					}
-					offset -= n.left.TotalSubtreeLength;
+					offset -= n.left.TotalLength;
 				}
 				if (offset < n.DistanceToPrevNode) 
 					return n; 
@@ -228,8 +232,8 @@ namespace Mono.TextEditor
 				int nodeStart = interval.start - node.DistanceToPrevNode;
 				int nodeEnd = interval.end - node.DistanceToPrevNode;
 				if (node.left != null) {
-					nodeStart -= node.left.TotalSubtreeLength;
-					nodeEnd -= node.left.TotalSubtreeLength;
+					nodeStart -= node.left.TotalLength;
+					nodeEnd -= node.left.TotalLength;
 				}
 			
 				if (node.DistanceToMaxEnd < nodeStart) 
@@ -262,11 +266,11 @@ namespace Mono.TextEditor
 				var curNode = this;
 				int offset = curNode.DistanceToPrevNode;
 				if (curNode.left != null)
-					offset += curNode.left.TotalSubtreeLength;
+					offset += curNode.left.TotalLength;
 				while (curNode.parent != null) {
 					if (curNode == curNode.parent.right) {
 						if (curNode.parent.left != null)
-							offset += curNode.parent.left.TotalSubtreeLength;
+							offset += curNode.parent.left.TotalLength;
 						offset += curNode.parent.DistanceToPrevNode;
 					}
 					curNode = curNode.parent;
@@ -282,8 +286,8 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		// TotalSubtreeLength = DistanceToPrevNode + Left.DistanceToPrevNode + Right.DistanceToPrevNode
-		internal int TotalSubtreeLength;
+		// TotalLength = DistanceToPrevNode + Left.DistanceToPrevNode + Right.DistanceToPrevNode
+		internal int TotalLength;
 		
 		internal int DistanceToPrevNode;
 		
@@ -309,25 +313,25 @@ namespace Mono.TextEditor
 			int distanceToMaxEnd = Length;
 			
 			if (left != null) {
-				totalLength += left.TotalSubtreeLength;
+				totalLength += left.TotalLength;
 				int leftdistance = left.DistanceToMaxEnd - DistanceToPrevNode;
 				if (left.right != null)
-					leftdistance -= left.right.TotalSubtreeLength;
+					leftdistance -= left.right.TotalLength;
 				if (leftdistance > distanceToMaxEnd)
 					distanceToMaxEnd = leftdistance;
 			}
 			
 			if (right != null) {
-				totalLength += right.TotalSubtreeLength;
+				totalLength += right.TotalLength;
 				int rightdistance = right.DistanceToMaxEnd + right.DistanceToPrevNode;
 				if (right.left != null)
-					rightdistance += right.left.TotalSubtreeLength;
+					rightdistance += right.left.TotalLength;
 				if (rightdistance > distanceToMaxEnd)
 					distanceToMaxEnd = rightdistance;
 			}
 			
-			if (TotalSubtreeLength != totalLength || DistanceToMaxEnd != distanceToMaxEnd) {
-				TotalSubtreeLength = totalLength;
+			if (TotalLength != totalLength || DistanceToMaxEnd != distanceToMaxEnd) {
+				TotalLength = totalLength;
 				DistanceToMaxEnd = distanceToMaxEnd;
 				if (parent != null)
 					parent.UpdateAugmentedData ();

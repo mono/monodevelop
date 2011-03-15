@@ -1008,6 +1008,7 @@ namespace Mono.TextEditor
 					newFoldSegmentTree.InstallListener (this);
 					foldSegmentTree.RemoveListener (this);		
 					foldSegmentTree = newFoldSegmentTree; // assume that document hasn't shown
+					InformFoldTreeUpdated ();
 				}
 			}
 		}
