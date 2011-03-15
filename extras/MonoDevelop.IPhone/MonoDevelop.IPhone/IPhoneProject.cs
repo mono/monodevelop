@@ -508,32 +508,36 @@ namespace MonoDevelop.IPhone
 		static string[] groupedExtensions = { ".xib" };
 		
 		//based on MoonlightProject
-		protected override void OnFileAddedToProject (ProjectFileEventArgs e)
+		protected override void OnFileAddedToProject (ProjectFileEventArgs args)
 		{
 			//short-circuit if the project is being deserialised
 			if (Loading) {
-				base.OnFileAddedToProject (e);
+				base.OnFileAddedToProject (args);
 				return;
 			}
 			
-			if (String.IsNullOrEmpty (MainNibFile) && Path.GetFileName (e.ProjectFile.FilePath) == "MainWindow.xib") {
-				MainNibFile = e.ProjectFile.FilePath;
-			}
+			List<string> filesToAdd = new List<string> ();
 			
-			//find any related files, e.g codebehind
-			//FIXME: base this on the controller class names defined in the xib
-			var filesToAdd = MonoDevelop.DesignerSupport.CodeBehind.GuessDependencies (this, e.ProjectFile, groupedExtensions);
+			foreach (ProjectFileEventInfo e in args) {
+				if (String.IsNullOrEmpty (MainNibFile) && Path.GetFileName (e.ProjectFile.FilePath) == "MainWindow.xib") {
+					MainNibFile = e.ProjectFile.FilePath;
+				}
+			
+				//find any related files, e.g codebehind
+				//FIXME: base this on the controller class names defined in the xib
+				var files = MonoDevelop.DesignerSupport.CodeBehind.GuessDependencies (this, e.ProjectFile, groupedExtensions);
+				if (files != null)
+					filesToAdd.AddRange (files);
+			}
 			
 			//let the base fire the event before we add files
 			//don't want to fire events out of order of files being added
-			base.OnFileAddedToProject (e);
+			base.OnFileAddedToProject (args);
 			
 			//make sure that the parent and child files are in the project
-			if (filesToAdd != null) {
-				foreach (string file in filesToAdd) {
-					//NOTE: this only adds files if they are not already in the project
-					AddFile (file);
-				}
+			foreach (string file in filesToAdd) {
+				//NOTE: this only adds files if they are not already in the project
+				AddFile (file);
 			}
 		}
 		
