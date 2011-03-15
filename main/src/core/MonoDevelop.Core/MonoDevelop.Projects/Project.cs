@@ -303,6 +303,11 @@ namespace MonoDevelop.Projects
 			return AddFile (filename, null);
 		}
 		
+		public IEnumerable<ProjectFile> AddFiles (IEnumerable<FilePath> files)
+		{
+			return AddFiles (files, null);
+		}
+		
 		/// <summary>
 		/// Adds a file to the project
 		/// </summary>
@@ -330,6 +335,21 @@ namespace MonoDevelop.Projects
 			ProjectFile newFileInformation = new ProjectFile (filename, buildAction);
 			Files.Add (newFileInformation);
 			return newFileInformation;
+		}
+		
+		public IEnumerable<ProjectFile> AddFiles (IEnumerable<FilePath> files, string buildAction)
+		{
+			List<ProjectFile> newFiles = new List<ProjectFile> ();
+			foreach (FilePath filename in files) {
+				string ba = buildAction;
+				if (String.IsNullOrEmpty (ba))
+					ba = GetDefaultBuildAction (filename);
+
+				ProjectFile newFileInformation = new ProjectFile (filename, ba);
+				newFiles.Add (newFileInformation);
+			}
+			Files.AddRange (newFiles);
+			return newFiles;
 		}
 		
 		/// <summary>
