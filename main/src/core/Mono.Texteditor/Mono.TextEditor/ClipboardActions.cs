@@ -71,7 +71,7 @@ namespace Mono.TextEditor
 			
 			public static readonly Gdk.Atom CLIPBOARD_ATOM        = Gdk.Atom.Intern ("CLIPBOARD", false);
 			public static readonly Gdk.Atom PRIMARYCLIPBOARD_ATOM = Gdk.Atom.Intern ("PRIMARY", false);
-			public static readonly Gdk.Atom RTF_ATOM = Gdk.Atom.Intern ("text/rtf", false);
+			public static readonly Gdk.Atom RTF_ATOM;
 			public static readonly Gdk.Atom MD_ATOM  = Gdk.Atom.Intern ("text/monotext", false);
 			
 			public CopyOperation ()	
@@ -246,6 +246,12 @@ namespace Mono.TextEditor
 			
 			static CopyOperation ()
 			{
+				if (Platform.IsMac) {
+					RTF_ATOM = Gdk.Atom.Intern ("NSRTFPboardType", false); //TODO: use public.rtf when dep on MacOS 10.6
+				} else {
+					RTF_ATOM = Gdk.Atom.Intern ("text/rtf", false);
+				}
+				
 				targetList = new Gtk.TargetList ();
 				targetList.Add (RTF_ATOM, /* FLAGS */0, RichTextType);
 				targetList.Add (MD_ATOM, /* FLAGS */0, MonoTextType);
