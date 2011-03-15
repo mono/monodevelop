@@ -755,7 +755,7 @@ namespace MonoDevelop.VersionControl.Git
 			cmd.SetRemote ("origin");
 			cmd.SetBranch ("refs/heads/master");
 			cmd.SetDirectory ((string)targetLocalPath);
-			cmd.SetProgressMonitor (new GitMonitor (monitor));
+			cmd.SetProgressMonitor (new GitMonitor (monitor, 4));
 			cmd.Call ();
 		}
 
@@ -1490,33 +1490,58 @@ namespace MonoDevelop.VersionControl.Git
 	class GitMonitor: NGit.ProgressMonitor
 	{
 		IProgressMonitor monitor;
+		int currentWork;
+		int currentStep;
+		bool taskStarted;
+		int totalTasksOverride = -1;
 		
 		public GitMonitor (IProgressMonitor monitor)
 		{
 			this.monitor = monitor;
 		}
 		
+		public GitMonitor (IProgressMonitor monitor, int totalTasksOverride)
+		{
+			this.monitor = monitor;
+			this.totalTasksOverride = totalTasksOverride;
+		}
+		
 		public override void Start (int totalTasks)
 		{
-			monitor.BeginTask (null, totalTasks);
+			currentStep = 0;
+			currentWork = totalTasksOverride != -1 ? totalTasksOverride : (totalTasks > 0 ? totalTasks : 1);
+			totalTasksOverride = -1;
+			monitor.BeginTask (null, currentWork);
 		}
 		
 		
 		public override void BeginTask (string title, int totalWork)
 		{
-			monitor.BeginTask (title, totalWork);
+			if (taskStarted)
+				EndTask ();
+			
+			taskStarted = true;
+			currentStep = 0;
+			currentWork = totalWork > 0 ? totalWork : 1;
+			monitor.BeginTask (title, currentWork);
 		}
 		
 		
 		public override void Update (int completed)
 		{
-			monitor.Step (completed);
+			currentStep += completed;
+			if (currentStep >= (currentWork / 100)) {
+				monitor.Step (currentStep);
+				currentStep = 0;
+			}
 		}
 		
 		
 		public override void EndTask ()
 		{
+			taskStarted = false;
 			monitor.EndTask ();
+			monitor.Step (1);
 		}
 		
 		
