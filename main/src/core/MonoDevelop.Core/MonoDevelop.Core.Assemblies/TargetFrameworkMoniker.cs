@@ -132,6 +132,18 @@ namespace MonoDevelop.Core.Assemblies
 			profile = value.Substring (i2 + ",Profile=".Length);
 		}
 		
+		internal string ToLegacyIdString ()
+		{
+			if (identifier == ID_SILVERLIGHT && (version == "2.0" || version == "3.0"))
+				return "SL" + version;
+			else if (identifier == ID_MONOTOUCH && version == "1.0")
+				return "IPhone";
+			else if (identifier == ID_NET_FRAMEWORK)
+				return version;
+			else
+				return ToString ();
+		}
+		
 		public override string ToString ()
 		{
 			string val = identifier + ",Version=v" + version;

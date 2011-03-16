@@ -73,7 +73,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 				}
 				if (project != null) {
 					data.Extract ("targetFramework");
-					data.Add (new DataValue ("targetFramework", project.TargetFramework.Id.ToString ()));
+					data.Add (new DataValue ("targetFramework", project.TargetFramework.Id.ToLegacyIdString ()));
 				}
 				WriteItems (handler, (SolutionEntityItem) obj, data);
 				return data;
