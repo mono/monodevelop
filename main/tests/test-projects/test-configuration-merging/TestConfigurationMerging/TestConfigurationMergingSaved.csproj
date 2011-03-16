@@ -9,6 +9,7 @@
     <OutputType>Exe</OutputType>
     <AssemblyName>TestConfigurationMerging</AssemblyName>
     <RootNamespace>TestConfigurationMerging</RootNamespace>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>

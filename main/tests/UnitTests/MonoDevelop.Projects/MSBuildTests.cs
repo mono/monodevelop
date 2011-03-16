@@ -176,6 +176,139 @@ namespace MonoDevelop.Projects
 		}
 		
 		[Test]
+		public void TestConfigurationMergingConfigPlatformCombinations ()
+		{
+			string projectFile = Util.GetSampleProject ("test-configuration-merging", "TestConfigurationMerging2.csproj");
+			DotNetProject p = Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			Assert.IsNotNull (p);
+
+			Assert.IsNotNull (p.Configurations ["Debug|x86"]);
+			Assert.IsNotNull (p.Configurations ["Debug|x86-64"]);
+			Assert.IsNotNull (p.Configurations ["Debug|Other"]);
+
+			Assert.IsNotNull (p.Configurations ["Release|x86"]);
+			Assert.IsNotNull (p.Configurations ["Release|x86-64"]);
+			Assert.IsNotNull (p.Configurations ["Release|Other"]);
+			
+			string originalContent = Util.GetXmlFileInfoset (p.FileName);
+			
+			p.Save (Util.GetMonitor ());
+
+			Assert.AreEqual (originalContent, Util.GetXmlFileInfoset (p.FileName));
+		}
+		
+		[Test]
+		public void TestConfigurationMergingDefaultValues ()
+		{
+			string projectFile = Util.GetSampleProject ("test-configuration-merging", "TestConfigurationMerging3.csproj");
+			DotNetProject p = Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			Assert.IsNotNull (p);
+
+			DotNetProjectConfiguration conf = p.Configurations ["Release|x86"] as DotNetProjectConfiguration;
+			Assert.IsNotNull (conf);
+			Assert.IsTrue (conf.DebugMode);
+			conf.DebugMode = false;
+			CSharpCompilerParameters cparams = (CSharpCompilerParameters) conf.CompilationParameters;
+			Assert.IsTrue (cparams.UnsafeCode);
+			cparams.UnsafeCode = false;
+			
+			p.Save (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName), Util.GetXmlFileInfoset (p.FileName + ".saved"));
+		}
+		
+		[Test]
+		public void TestConfigurationMergingKeepOldConfig ()
+		{
+			string projectFile = Util.GetSampleProject ("test-configuration-merging", "TestConfigurationMerging4.csproj");
+			DotNetProject p = Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			Assert.IsNotNull (p);
+
+			DotNetProjectConfiguration conf = p.Configurations ["Debug|x86"] as DotNetProjectConfiguration;
+			Assert.IsNotNull (conf);
+			Assert.IsTrue (conf.DebugMode);
+			CSharpCompilerParameters cparams = (CSharpCompilerParameters) conf.CompilationParameters;
+			Assert.IsTrue (cparams.UnsafeCode);
+			
+			conf = p.Configurations ["Release|x86"] as DotNetProjectConfiguration;
+			Assert.IsNotNull (conf);
+			Assert.IsFalse (conf.DebugMode);
+			conf.DebugMode = true;
+			cparams = (CSharpCompilerParameters) conf.CompilationParameters;
+			Assert.IsFalse (cparams.UnsafeCode);
+			cparams.UnsafeCode = true;
+			
+			p.Save (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName), Util.GetXmlFileInfoset (p.FileName + ".saved"));
+		}
+		
+		[Test]
+		public void TestConfigurationMergingChangeNoMergeToParent ()
+		{
+			string projectFile = Util.GetSampleProject ("test-configuration-merging", "TestConfigurationMerging5.csproj");
+			DotNetProject p = Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			Assert.IsNotNull (p);
+
+			DotNetProjectConfiguration conf = p.Configurations ["Debug|x86"] as DotNetProjectConfiguration;
+			Assert.IsNotNull (conf);
+			Assert.IsTrue (conf.SignAssembly);
+			
+			conf = p.Configurations ["Release|x86"] as DotNetProjectConfiguration;
+			Assert.IsNotNull (conf);
+			Assert.IsTrue (conf.SignAssembly);
+			conf.SignAssembly = false;
+			
+			p.Save (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName), Util.GetXmlFileInfoset (p.FileName + ".saved"));
+		}
+		
+		[Test]
+		public void TestConfigurationMergingChangeMergeToParent ()
+		{
+			string projectFile = Util.GetSampleProject ("test-configuration-merging", "TestConfigurationMerging6.csproj");
+			DotNetProject p = Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			Assert.IsNotNull (p);
+
+			DotNetProjectConfiguration conf = p.Configurations ["Debug|x86"] as DotNetProjectConfiguration;
+			Assert.IsNotNull (conf);
+			Assert.IsTrue (conf.SignAssembly);
+			conf.SignAssembly = false;
+			
+			conf = p.Configurations ["Release|x86"] as DotNetProjectConfiguration;
+			Assert.IsNotNull (conf);
+			Assert.IsTrue (conf.SignAssembly);
+			conf.SignAssembly = false;
+			
+			p.Save (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName), Util.GetXmlFileInfoset (p.FileName + ".saved"));
+		}
+		
+		[Test]
+		public void TestConfigurationMergingChangeMergeToParent2 ()
+		{
+			string projectFile = Util.GetSampleProject ("test-configuration-merging", "TestConfigurationMerging7.csproj");
+			DotNetProject p = Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			Assert.IsNotNull (p);
+
+			DotNetProjectConfiguration conf = p.Configurations ["Debug|x86"] as DotNetProjectConfiguration;
+			Assert.IsNotNull (conf);
+			Assert.IsTrue (conf.SignAssembly);
+			conf.SignAssembly = true;
+			
+			conf = p.Configurations ["Release|x86"] as DotNetProjectConfiguration;
+			Assert.IsNotNull (conf);
+			Assert.IsFalse (conf.SignAssembly);
+			conf.SignAssembly = true;
+			
+			p.Save (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName), Util.GetXmlFileInfoset (p.FileName + ".saved"));
+		}
+		
+		[Test]
 		public void ProjectReferenceWithSpace ()
 		{
 			string solFile = Util.GetSampleProject ("project-ref-with-spaces", "project-ref-with-spaces.sln");

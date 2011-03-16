@@ -1,7 +1,7 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8E25B644-45CA-457C-A08B-0F1C9AA51E71}</ProjectGuid>
@@ -9,32 +9,25 @@
     <AssemblyName>TestConfigurationMerging</AssemblyName>
     <RootNamespace>TestConfigurationMerging</RootNamespace>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86-64' ">
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug</OutputPath>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>2</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DebugType>none</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\ReleaseMod</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>1</WarningLevel>
+    <OutputPath>bin\Release</OutputPath>
+    <Optimize>true</Optimize>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <WarningLevel>3</WarningLevel>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Other' ">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Main.cs" />
-    <Compile Include="AssemblyInfo.cs" />
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
