@@ -1470,8 +1470,15 @@ namespace MonoDevelop.Ide
 			try {
 				//get the real ProjectFiles
 				if (sourceProject != null) {
-					var virtualPath = sourcePath.ToRelative (sourceProject.BaseDirectory);
-					filesToMove = sourceProject.Files.GetFilesInVirtualPath (virtualPath).ToList ();
+					if (sourceIsFolder) {
+						var virtualPath = sourcePath.ToRelative (sourceProject.BaseDirectory);
+						filesToMove = sourceProject.Files.GetFilesInVirtualPath (virtualPath).ToList ();
+					} else {
+						filesToMove = new List<ProjectFile> ();
+						var pf = sourceProject.GetProjectFile (sourcePath);
+						if (pf != null)
+							filesToMove.Add (pf);
+					}
 				}
 				//get all the non-project files and create fake ProjectFiles
 				if (!copyOnlyProjectFiles || sourceProject == null) {
