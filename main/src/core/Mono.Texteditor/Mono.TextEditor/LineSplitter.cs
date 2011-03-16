@@ -132,7 +132,8 @@ namespace Mono.TextEditor
 		public void Initalize (string text)
 		{
 			Clear ();
-			
+			if (string.IsNullOrEmpty (text))
+				return;
 			var nodes = new List<TreeNode> ();
 			int offset = 0;
 			foreach (var delimiter in FindDelimiter (text)) {
