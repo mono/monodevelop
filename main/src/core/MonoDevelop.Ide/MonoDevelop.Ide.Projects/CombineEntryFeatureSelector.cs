@@ -67,6 +67,7 @@ namespace MonoDevelop.Ide.Projects
 				box.Remove (w);
 				w.Destroy ();
 			}
+			
 			// Show enabled features at the beginning
 			foreach (ISolutionItemFeature feature in features)
 				if (feature.GetSupportLevel (parentCombine, entry) == FeatureSupportLevel.Enabled) {
@@ -86,7 +87,8 @@ namespace MonoDevelop.Ide.Projects
 				box.PackStart (lab, false, false, 0);
 				lab.Show ();
 			}
-			scrolled.AddWithViewport (box);
+			if (scrolled.Child == null)
+				scrolled.AddWithViewport (box);
 		}
 		
 		Gtk.Widget AddFeature (ISolutionItemFeature feature)
