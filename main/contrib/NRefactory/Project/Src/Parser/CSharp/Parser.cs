@@ -4157,6 +4157,9 @@ IsLocalVarDecl()) {
 			LocalVariableDecl(
 #line  1784 "Frames/cs.ATG" 
 out stmt);
+
+#line  1784 "Frames/cs.ATG" 
+			((LocalVariableDeclaration)stmt).SemicolonPosition = t.EndLocation; 
 		} else if (StartOf(6)) {
 			Expr(
 #line  1785 "Frames/cs.ATG" 

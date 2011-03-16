@@ -85,7 +85,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 		}
 		
-		public ExpressionResult (string expression, DomRegion region, ExpressionContext expressionContext) : this (expression, region, new [] {expressionContext})
+		public ExpressionResult (string expression, DomRegion region, ExpressionContext expressionContext = null) : this (expression, region, new [] {expressionContext})
 		{
 		}
 		

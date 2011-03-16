@@ -3248,6 +3248,27 @@ class TestClass
 			Assert.IsNotNull (provider.Find ("TestClass"), "class 'TestClass' not found.");
 		}
 		
+		/// <summary>
+		/// Bug 679995 - Variable missing from completiom
+		/// </summary>
+		/// 
+		[Test()]
+		public void TestBug679995 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"class TestClass
+{
+	public void Foo ()
+	{
+		using (var testMe = new TestClass ()) {
+			$$
+		}
+	}
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("testMe"), "variable 'testMe' not found.");
+		}
+		
 		
 	}
 }

@@ -1781,7 +1781,7 @@ ResourceAcquisition<out Statement stmt>
 .)
 =
 	(
-		IF (IsLocalVarDecl()) LocalVariableDecl<out stmt>
+		IF (IsLocalVarDecl()) LocalVariableDecl<out stmt>  (. ((LocalVariableDeclaration)stmt).SemicolonPosition = t.EndLocation; .)
 		| Expr<out expr> /* LL(1) conflict resoltion:                             *
 		                  * check if next is Qualident followed by ident          *
 		                  * ==> LocalVariableDecl                                 *

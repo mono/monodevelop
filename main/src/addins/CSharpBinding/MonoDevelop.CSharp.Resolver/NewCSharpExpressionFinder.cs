@@ -740,7 +740,7 @@ namespace MonoDevelop.CSharp.Resolver
 						return MakeResult (editor, lastExpressionStartOffset, offset, frame.contexts);
 					}
 				} else {
-					return new ExpressionResult (null, frame.contexts);
+					return new ExpressionResult (null, new DomRegion (editor.Caret.Line, editor.Caret.Column, editor.Caret.Line, editor.Caret.Column), frame.contexts);
 				}
 			} finally {
 				lexer.Dispose ();
@@ -1142,7 +1142,7 @@ namespace MonoDevelop.CSharp.Resolver
 				lastToken = token.Kind;
 			}
 			// offset is behind all tokens -> cannot find any expression
-			return new ExpressionResult (null, frame.context);
+			return new ExpressionResult (null, new DomRegion (editor.Caret.Line, editor.Caret.Column, editor.Caret.Line, editor.Caret.Column), frame.context);
 		}
 
 		ExpressionResult MakeResult (TextEditorData editor, int startOffset, int endOffset, IEnumerable<ExpressionContext> contexts)
