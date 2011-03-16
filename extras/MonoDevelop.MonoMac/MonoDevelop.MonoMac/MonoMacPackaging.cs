@@ -143,6 +143,20 @@ namespace MonoDevelop.MonoMac.Gui
 					monitor.BeginTask (GettextCatalog.GetString ("Merging Mono into app bundle"), 0);
 					
 					var args = new ProcessArgumentBuilder ();
+					switch (settings.LinkerMode){
+					case MonoMacLinkerMode.LinkNone:
+						args.Add ("--nolink");
+						break;
+						
+					case MonoMacLinkerMode.LinkFramework:
+						args.Add ("--linksdkonly");
+						break;
+						
+					case MonoMacLinkerMode.LinkAll:
+						// nothing
+						break;
+					}
+					
 					args.Add ("-o");
 					args.AddQuoted (tempDir);
 					args.Add ("-n");
