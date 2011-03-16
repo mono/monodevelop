@@ -135,7 +135,7 @@ namespace MonoDevelop.Projects.Policies
 			get {
 				if (serializer == null) {
 					serializer = new DataSerializer (new DataContext ());
-					serializer.IncludeDefaultValues = true;
+					serializer.SerializationContext.IncludeDefaultValues = true;
 				}
 				return serializer;
 			}

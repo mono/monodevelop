@@ -28,6 +28,7 @@
 
 using System;
 using MonoDevelop.Core;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Core.Serialization
 {
@@ -38,6 +39,7 @@ namespace MonoDevelop.Core.Serialization
 		DataSerializer serializer;
 		IProgressMonitor monitor;
 		char directorySeparatorChar = System.IO.Path.DirectorySeparatorChar;
+		HashSet<ItemProperty> forcedSerializationProps;
 		
 		public string BaseFile {
 			get { return file; }
@@ -80,7 +82,29 @@ namespace MonoDevelop.Core.Serialization
 			}
 		}
 		
-		internal bool IncludeDefaultValues { get; set; }
+		public bool IncludeDefaultValues { get; set; }
+		
+		public void ResetDefaultValueSerialization ()
+		{
+			forcedSerializationProps = null;
+		}
+		
+		public void ForceDefaultValueSerialization (ItemProperty prop)
+		{
+			if (forcedSerializationProps == null)
+				forcedSerializationProps = new HashSet<ItemProperty> ();
+			forcedSerializationProps.Add (prop);
+		}
+		
+		public bool IsDefaultValueSerializationForced (ItemProperty prop)
+		{
+			if (IncludeDefaultValues)
+				return true;
+			else if (forcedSerializationProps != null)
+				return forcedSerializationProps.Contains (prop);
+			else
+				return false;
+		}
 		
 		public virtual void Close ()
 		{
