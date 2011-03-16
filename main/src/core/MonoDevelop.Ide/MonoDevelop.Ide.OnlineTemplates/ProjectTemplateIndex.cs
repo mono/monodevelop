@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.OnlineTemplates
 		public void Write (string file)
 		{
 			var doc = new XDocument ();
-			doc.Add (new XElement ("TemplateIndex"));
+			doc.Add (new XElement ("TemplateIndex", new XAttribute ("format", FORMAT_VERSION)));
 			foreach (var item in this) {
 				doc.Root.Add (item.Write ());
 			}

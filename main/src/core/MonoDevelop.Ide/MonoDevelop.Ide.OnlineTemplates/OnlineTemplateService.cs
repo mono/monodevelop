@@ -42,13 +42,29 @@ namespace MonoDevelop.Ide.OnlineTemplates
 		
 		static FilePath ProjectTemplateIndexFile {
 			get {
-				return PropertyService.Locations.Cache.Combine ("OnlineProjectTemplateIndex.xml");
+				return PropertyService.Locations.Cache.Combine ("OnlineTemplates", "ProjectTemplateIndex.xml");
 			}
+		}
+		
+		internal static string GetOnlineTemplatesRoot ()
+		{
+			string platform;
+			if (PropertyService.IsWindows)
+				platform = "win32";
+			else if (PropertyService.IsMac)
+				platform = "mac";
+			else
+				platform = "linux";
+			
+			var version = Mono.Addins.AddinManager.CurrentAddin.Version;
+			
+			return "http://monodevelop.com/online-templates/" + platform + "/" + version + "/";
 		}
 		
 		public static Task<ProjectTemplateIndex> GetProjectTemplates ()
 		{
-			var up = UpdateTemplateIndex (PROJECT_TEMPLATE_INDEX_URL, ProjectTemplateIndexFile, TimeSpan.FromDays (1));
+			string url = GetOnlineTemplatesRoot () + "project-template-index.xml";
+			var up = UpdateTemplateIndex (url, ProjectTemplateIndexFile, TimeSpan.FromDays (1));
 			if (up != null) {
 				return up.ContinueWith (t => ProjectTemplateIndex.Load (ProjectTemplateIndexFile));
 			} else {
@@ -56,13 +72,16 @@ namespace MonoDevelop.Ide.OnlineTemplates
 			}
 		}
 		
-		static Task UpdateTemplateIndex (string url, string file, TimeSpan? updateIfOlderThan)
+		static Task UpdateTemplateIndex (string url, FilePath file, TimeSpan? updateIfOlderThan)
 		{
 			LoggingService.LogInfo ("Updating online template index '{0}'.", url);
 			
-			if (updateIfOlderThan.HasValue)
-				if (File.Exists (file) && (DateTime.Now - File.GetLastWriteTime (file)) < updateIfOlderThan.Value)
+			if (updateIfOlderThan.HasValue) {
+				if (File.Exists (file) && (DateTime.Now - File.GetLastWriteTime (file)) < updateIfOlderThan.Value) {
+					LoggingService.LogInfo ("Skipped updating online template index because cache is too recent");
 					return null;
+				}
+			}
 			
 			try {
 				return DownloadTemplateIndex (url, file);
@@ -73,7 +92,7 @@ namespace MonoDevelop.Ide.OnlineTemplates
 			}
 		}
 		
-		static Task DownloadTemplateIndex (string url, string file)
+		static Task DownloadTemplateIndex (string url, FilePath file)
 		{
 			var request = (HttpWebRequest) WebRequest.Create (url);
 			
@@ -88,8 +107,11 @@ namespace MonoDevelop.Ide.OnlineTemplates
 				try {
 					var response = (HttpWebResponse) twr.Result;
 					if (response.StatusCode == HttpStatusCode.OK) {
+						if (!Directory.Exists (file.ParentDirectory))
+							Directory.CreateDirectory (file.ParentDirectory);
 						using (var fs = File.Create (file))
 							response.GetResponseStream ().CopyTo (fs);
+						LoggingService.LogInfo ("Updated online template index '{0}'.", url);
 					}
 				} catch (WebException wex) {
 					var httpResp = wex.Response as HttpWebResponse;
@@ -106,7 +128,7 @@ namespace MonoDevelop.Ide.OnlineTemplates
 					LoggingService.LogWarning (message, ex);
 					throw;
 				} 
-			}, null);
+			});
 		}
 		
 		//Mono 2.8 doesn't implement Task.Factory.FromAsync
