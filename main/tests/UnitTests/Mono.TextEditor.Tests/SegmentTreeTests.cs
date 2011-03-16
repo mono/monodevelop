@@ -37,7 +37,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestSimpleAdd ()
 		{
-			var collection = new SegmentTree ();
+			var collection = new SegmentTree<TreeSegment> ();
 			
 			collection.Add (new TreeSegment (10, 10));
 			collection.Add (new TreeSegment (12, 2));
@@ -50,7 +50,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestGetSegmentsAt ()
 		{
-			var collection = new SegmentTree ();
+			var collection = new SegmentTree<TreeSegment> ();
 			
 			collection.Add (new TreeSegment (10, 10));
 			collection.Add (new TreeSegment (12, 2));
@@ -68,7 +68,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestGetSegmentsOverlapping ()
 		{
-			var collection = new SegmentTree ();
+			var collection = new SegmentTree<TreeSegment> ();
 			
 			collection.Add (new TreeSegment (10, 10));
 			collection.Add (new TreeSegment (12, 2));
@@ -82,7 +82,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestSimpleRemove ()
 		{
-			var collection = new SegmentTree ();
+			var collection = new SegmentTree<TreeSegment> ();
 			var seg1 = new TreeSegment (10, 10);
 			collection.Add (seg1);
 			var seg2 = new TreeSegment (12, 2);
