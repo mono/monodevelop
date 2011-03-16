@@ -374,38 +374,42 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			// Read configurations
 			
-			List<ConfigData> configData = GetConfigData (msproject);
-			List<ConfigData> readConfigData = new List<ConfigData> ();
+			List<ConfigData> configData = GetConfigData (msproject, false);
 			
 			MSBuildPropertyGroup mergedToProjectProperties = ExtractMergedtoprojectProperties (ser, globalGroup, EntityItem.CreateConfiguration ("Dummy"));
 			configData.Insert (0, new ConfigData (Unspecified, Unspecified, mergedToProjectProperties));
-			
+
+			// Create a project configuration for each configuration/platform combination
+
+			var platforms = new HashSet<string> ();
+			var configurations = new HashSet<string> ();
 			foreach (ConfigData cgrp in configData) {
-				readConfigData.Add (cgrp);
+				if (cgrp.Platform != Unspecified)
+					platforms.Add (cgrp.Platform);
+				if (cgrp.Config != Unspecified)
+					configurations.Add (cgrp.Config);
+			}
+			
+			if (platforms.Count == 0)
+				platforms.Add (string.Empty); // AnyCpu
 
-				string conf = cgrp.Config;
-				string platform = cgrp.Platform;
-
-				if (platform == Unspecified && conf != Unspecified && !ContainsSpecificPlatformConfiguration (configData, conf))
-					platform = string.Empty;
-
-				// It may be a partial configuration
-				if (conf == Unspecified || platform == Unspecified)
-					continue;
-				
-				MSBuildPropertySet grp = GetMergedConfiguration (readConfigData, conf, platform, null);
-				SolutionItemConfiguration config = EntityItem.CreateConfiguration (conf);
-				
-				config.Platform = platform;
-				DataItem data = ReadPropertyGroupMetadata (ser, grp, config);
-				ser.Deserialize (config, data);
-				EntityItem.Configurations.Add (config);
-				
-				if (config is DotNetProjectConfiguration) {
-					DotNetProjectConfiguration dpc = (DotNetProjectConfiguration) config;
-					if (dpc.CompilationParameters != null) {
-						data = ReadPropertyGroupMetadata (ser, grp, dpc.CompilationParameters);
-						ser.Deserialize (dpc.CompilationParameters, data);
+			foreach (string platform in platforms) {
+				foreach (string conf in configurations) {
+					
+					MSBuildPropertySet grp = GetMergedConfiguration (configData, conf, platform, null);
+					SolutionItemConfiguration config = EntityItem.CreateConfiguration (conf);
+					
+					config.Platform = platform;
+					DataItem data = ReadPropertyGroupMetadata (ser, grp, config);
+					ser.Deserialize (config, data);
+					EntityItem.Configurations.Add (config);
+					
+					if (config is DotNetProjectConfiguration) {
+						DotNetProjectConfiguration dpc = (DotNetProjectConfiguration) config;
+						if (dpc.CompilationParameters != null) {
+							data = ReadPropertyGroupMetadata (ser, grp, dpc.CompilationParameters);
+							ser.Deserialize (dpc.CompilationParameters, data);
+						}
 					}
 				}
 			}
@@ -442,15 +446,28 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			Item.NeedsReload = false;
 		}
 
-		MSBuildPropertyGroup ExtractMergedtoprojectProperties (MSBuildSerializer ser, MSBuildPropertySet pgroup, object ob)
+		MSBuildPropertyGroup ExtractMergedtoprojectProperties (MSBuildSerializer ser, MSBuildPropertySet pgroup, SolutionItemConfiguration ob)
 		{
 			XmlDocument doc = new XmlDocument ();
 			MSBuildPropertyGroup res = new MSBuildPropertyGroup (null, doc.CreateElement ("PropGroup"));
+
+			// When reading a project, all configuration properties specified in the global property group have to
+			// be merged with all project configurations, no matter if they have the MergeToProject attribute or not
 			
-			foreach (string propName in GetMergeToProjectProperties (ser, ob)) {
-				MSBuildProperty bp = pgroup.GetProperty (propName);
+			ClassDataType dt = (ClassDataType) ser.DataContext.GetConfigurationDataType (ob.GetType ());
+			foreach (ItemProperty prop in dt.GetProperties (ser.SerializationContext, ob)) {
+				MSBuildProperty bp = pgroup.GetProperty (prop.Name);
 				if (bp != null)
 					res.SetPropertyValue (bp.Name, bp.Value);
+			}
+			if (ob is DotNetProjectConfiguration) {
+				object cparams = ((DotNetProjectConfiguration)ob).CompilationParameters;
+				dt = (ClassDataType) ser.DataContext.GetConfigurationDataType (cparams.GetType ());
+				foreach (ItemProperty prop in dt.GetProperties (ser.SerializationContext, cparams)) {
+					MSBuildProperty bp = pgroup.GetProperty (prop.Name);
+					if (bp != null)
+						res.SetPropertyValue (bp.Name, bp.Value);
+				}
 			}
 			return res;
 		}
@@ -569,6 +586,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			public string Platform;
 			public MSBuildPropertyGroup Group;
 			public bool Exists;
+			public bool IsNew; // The group did not exist in the original file
 		}
 
 		MSBuildPropertySet GetMergedConfiguration (List<ConfigData> configData, string conf, string platform, MSBuildPropertyGroup propGroupLimit)
@@ -578,7 +596,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			foreach (ConfigData grp in configData) {
 				if (grp.Group == propGroupLimit)
 					break;
-				if ((grp.Config == conf || grp.Config == Unspecified) && (grp.Platform == platform || grp.Platform == Unspecified)) {
+				if ((grp.Config == conf || grp.Config == Unspecified || conf == Unspecified) && (grp.Platform == platform || grp.Platform == Unspecified || platform == Unspecified)) {
 					if (merged == null)
 						merged = grp.Group;
 					else if (merged is MSBuildPropertyGroupMerged)
@@ -719,10 +737,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			// Configurations
 
 			if (eitem.Configurations.Count > 0) {
-				List<ConfigData> configData = GetConfigData (msproject);
+				List<ConfigData> configData = GetConfigData (msproject, true);
+				
 				Dictionary<string,string> mergeToProjectProperties = new Dictionary<string,string> ();
-				List<string> mergeToProjectPropertyNames = new List<string> (GetMergeToProjectProperties (ser, eitem.Configurations [0]));
-				List<string> mergeToProjectPropertyNamesCopy = new List<string> (mergeToProjectPropertyNames);
+				HashSet<string> mergeToProjectPropertyNames = new HashSet<string> (GetMergeToProjectProperties ( ser, eitem.Configurations [0]));
+				HashSet<string> mergeToProjectPropertyNamesCopy = new HashSet<string> (mergeToProjectPropertyNames);
 				
 				foreach (SolutionItemConfiguration conf in eitem.Configurations) {
 					bool newConf = false;
@@ -731,6 +750,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						MSBuildPropertyGroup pg = msproject.AddNewPropertyGroup (false);
 						pg.Condition = BuildConfigCondition (conf.Name, conf.Platform);
 						cdata = new ConfigData (conf.Name, conf.Platform, pg);
+						cdata.IsNew = true;
 						configData.Add (cdata);
 						newConf = true;
 					}
@@ -738,9 +758,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					MSBuildPropertyGroup propGroup = cdata.Group;
 					cdata.Exists = true;
 					
-					DotNetProjectConfiguration netConfig = conf as DotNetProjectConfiguration;
-					
+					MSBuildPropertySet baseGroup = GetMergedConfiguration (configData, conf.Name, conf.Platform, propGroup);
+
+					// Force the serialization of properties defined in
+					// the base group, so that they can be later unmerged
+					ForceDefaultValueSerialization (ser, baseGroup, conf);
 					DataItem ditem = (DataItem) ser.Serialize (conf);
+					ser.SerializationContext.ResetDefaultValueSerialization ();
+					
+					DotNetProjectConfiguration netConfig = conf as DotNetProjectConfiguration;
 					
 					if (netConfig != null && netConfig.CompilationParameters != null) {
 						// Remove all compilation parameters properties from the data item, since we are going to write them again.
@@ -750,7 +776,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 							if (n != null)
 								ditem.ItemData.Remove (n);
 						}
+						ForceDefaultValueSerialization (ser, baseGroup, netConfig.CompilationParameters);
 						DataItem ditemComp = (DataItem) ser.Serialize (netConfig.CompilationParameters);
+						ser.SerializationContext.ResetDefaultValueSerialization ();
 						ditem.ItemData.AddRange (ditemComp.ItemData);
 					}
 	
@@ -759,9 +787,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					
 					WritePropertyGroupMetadata (propGroup, ditem.ItemData, ser, conf, netConfig != null ? netConfig.CompilationParameters : null);
 					
-					UnmergeBaseConfiguration (configData, propGroup, conf.Name, conf.Platform);
-					
 					CollectMergetoprojectProperties (propGroup, mergeToProjectPropertyNames, mergeToProjectProperties);
+					
+					propGroup.UnMerge (baseGroup, mergeToProjectPropertyNamesCopy);
 				}
 				
 				// Move properties with common values from configurations to the main
@@ -777,8 +805,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					foreach (string mp in mergeToProjectProperties.Keys)
 						propGroup.RemoveProperty (mp);
 				}
+				
+				// Remove groups corresponding to configurations that have been removed
+				// or groups which don't have any property and did not already exist
 				foreach (ConfigData cd in configData) {
-					if (!cd.Exists && cd.FullySpecified)
+					if ((!cd.Exists && cd.FullySpecified) || (cd.IsNew && !cd.Group.Properties.Any ()))
 						msproject.RemoveGroup (cd.Group);
 				}
 			}
@@ -866,8 +897,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					projectBuilder.Refresh ();
 			}
 		}
+		
+		void ForceDefaultValueSerialization (MSBuildSerializer ser, MSBuildPropertySet baseGroup, object ob)
+		{
+			ClassDataType dt = (ClassDataType) ser.DataContext.GetConfigurationDataType (ob.GetType());
+			foreach (ItemProperty prop in dt.GetProperties (ser.SerializationContext, ob)) {
+				if (baseGroup.GetProperty (prop.Name) != null)
+					ser.SerializationContext.ForceDefaultValueSerialization (prop);
+			}
+		}
 
-		void CollectMergetoprojectProperties (MSBuildPropertyGroup pgroup, List<String> propertyNames, Dictionary<string,string> mergeToProjectProperties)
+		void CollectMergetoprojectProperties (MSBuildPropertyGroup pgroup, HashSet<string> propertyNames, Dictionary<string,string> mergeToProjectProperties)
 		{
 			// This method checks every property in pgroup which has the MergeToProject flag.
 			// If the value of this property is the same as the one stored in mergeToProjectProperties
@@ -885,7 +925,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					}
 					// If there is no value, it can't be merged
 				}
-				else if (prop != null && prop.Value == mvalue)
+				else if (prop != null && prop.Value.Equals (mvalue, StringComparison.CurrentCultureIgnoreCase))
 					// Same value. It can be merged.
 					continue;
 
@@ -1092,13 +1132,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		void UnmergeBaseConfiguration (List<ConfigData> configData, MSBuildPropertyGroup propGroup, string conf, string platform)
-		{
-			MSBuildPropertySet baseGroup = GetMergedConfiguration (configData, conf, platform, propGroup);
-			if (baseGroup != null)
-				propGroup.UnMerge (baseGroup);
-		}
-		
 		void ReadBuildItemMetadata (DataSerializer ser, MSBuildItem buildItem, object dataItem, Type extendedType)
 		{
 			DataItem ditem = new DataItem ();
@@ -1220,12 +1253,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		List<ConfigData> GetConfigData (MSBuildProject msproject)
+		List<ConfigData> GetConfigData (MSBuildProject msproject, bool includeGlobalGroups)
 		{
 			List<ConfigData> configData = new List<ConfigData> ();
 			foreach (MSBuildPropertyGroup cgrp in msproject.PropertyGroups) {
 				string conf, platform;
-				if (ParseConfigCondition (cgrp.Condition, out conf, out platform))
+				if (ParseConfigCondition (cgrp.Condition, out conf, out platform) || includeGlobalGroups)
 					configData.Add (new ConfigData (conf, platform, cgrp));
 			}
 			return configData;
@@ -1309,7 +1342,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		bool ParseConfigCondition (string cond, out string config, out string platform)
 		{
-			config = platform = null;
+			config = platform = Unspecified;
 			int i = cond.IndexOf ("==");
 			if (i == -1)
 				return false;

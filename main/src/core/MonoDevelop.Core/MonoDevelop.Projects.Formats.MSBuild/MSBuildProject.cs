@@ -392,7 +392,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		string GetPropertyValue (string name);
 		bool RemoveProperty (string name);
 		void RemoveAllProperties ();
-		void UnMerge (MSBuildPropertySet baseGrp);
+		void UnMerge (MSBuildPropertySet baseGrp, ISet<string> propertiesToExclude);
 	}
 	
 	class MSBuildPropertyGroupMerged: MSBuildPropertySet
@@ -456,10 +456,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		public void UnMerge (MSBuildPropertySet baseGrp)
+		public void UnMerge (MSBuildPropertySet baseGrp, ISet<string> propertiesToExclude)
 		{
 			foreach (var g in groups) {
-				g.UnMerge (baseGrp);
+				g.UnMerge (baseGrp, propertiesToExclude);
 			}
 		}
 
@@ -573,11 +573,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			properties.Clear ();
 		}
 
-		public void UnMerge (MSBuildPropertySet baseGrp)
+		public void UnMerge (MSBuildPropertySet baseGrp, ISet<string> propsToExclude)
 		{
 			foreach (MSBuildProperty prop in baseGrp.Properties) {
+				if (propsToExclude != null && propsToExclude.Contains (prop.Name))
+					continue;
 				MSBuildProperty thisProp = GetProperty (prop.Name);
-				if (thisProp != null && prop.Value == thisProp.Value)
+				if (thisProp != null && prop.Value.Equals (thisProp.Value, StringComparison.CurrentCultureIgnoreCase))
 					RemoveProperty (prop.Name);
 			}
 		}
