@@ -148,7 +148,11 @@ namespace MonoDevelop.Ide.Projects
 			rightVbox.PackStart (vsplit, true, true, 0);
 			vsplit.Pack1 (templateView, true, false);
 			vsplit.Pack2 (infoScrolledWindow, true, false);
-			infoScrolledWindow.AddWithViewport (infoBox);
+			infoScrolledWindow.ShowBorderLine = true;
+			var vp = new Viewport ();
+			vp.ShadowType = ShadowType.None;
+			vp.Add (infoBox);
+			infoScrolledWindow.Add (vp);
 			infoBox.PackStart (infoHeaderLabel, false, false, 0);
 			infoBox.PackStart (infoDecriptionLabel, true, true, 0);
 			hsplit.ShowAll ();
@@ -196,6 +200,11 @@ namespace MonoDevelop.Ide.Projects
 					return null;
 				return sel.Template;
 			}
+		}
+		
+		public void SelectTemplate (string id)
+		{
+			templateView.SelectTemplate (id);
 		}
 		
 		public event EventHandler SelectionChanged;
@@ -408,6 +417,7 @@ namespace MonoDevelop.Ide.Projects
 			
 			public TemplateView ()
 			{
+				ShowBorderLine = true;
 				tree = new TemplateTreeView ();
 				tree.Selection.Changed += delegate {
 					if (SelectionChanged != null)
@@ -421,13 +431,17 @@ namespace MonoDevelop.Ide.Projects
 				Add (tree);
 				HscrollbarPolicy = PolicyType.Automatic;
 				VscrollbarPolicy = PolicyType.Automatic;
-				ShadowType = ShadowType.In;
+				ShadowType = ShadowType.None;
 				ShowAll ();
 			}
 			
 			public TemplateItem CurrentlySelected {
 				get { return tree.CurrentlySelected; }
-				set { tree.CurrentlySelected = value; }
+			}
+			
+			public void SelectTemplate (string id)
+			{
+				tree.SelectItem (id);
 			}
 			
 			public void AddItem (TemplateItem templateItem)
@@ -552,17 +566,19 @@ namespace MonoDevelop.Ide.Projects
 						return null;
 					return (TemplateItem) filterModel.GetValue (iter, 0);
 				}
-				set {
-					Gtk.TreeIter iter;
-					if (filterModel.GetIterFirst (out iter)) {
-						do {
-							var t = (TemplateItem) filterModel.GetValue (iter, 0);
-							if (t == value) {
-								Selection.SelectIter (iter);
-								return;
-							}
-						} while (filterModel.IterNext (ref iter));
-					}
+			}
+			
+			public void SelectItem (string id)
+			{
+				Gtk.TreeIter iter;
+				if (filterModel.GetIterFirst (out iter)) {
+					do {
+						var t = (TemplateItem) filterModel.GetValue (iter, 0);
+						if (t.Template.Id == id) {
+							Selection.SelectIter (iter);
+							return;
+						}
+					} while (filterModel.IterNext (ref iter));
 				}
 			}
 			
