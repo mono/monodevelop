@@ -468,8 +468,14 @@ namespace MonoDevelop.Projects
 					if (!Directory.Exists (Path.GetDirectoryName (dest)))
 						FileService.CreateDirectory (Path.GetDirectoryName (dest));
 
-					if (File.Exists (src))
+					if (File.Exists (src)) {
 						FileService.CopyFile (src, dest);
+						
+						// Copied files can't be read-only, so they can be removed when rebuilding the project
+						FileAttributes atts = File.GetAttributes (dest);
+						if (atts.HasFlag (FileAttributes.ReadOnly))
+							File.SetAttributes (dest, atts & ~FileAttributes.ReadOnly);
+					}
 					else
 						monitor.ReportError (GettextCatalog.GetString ("Could not find support file '{0}'.", src), null);
 

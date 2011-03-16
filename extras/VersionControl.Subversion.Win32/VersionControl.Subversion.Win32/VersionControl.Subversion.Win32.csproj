@@ -58,18 +58,9 @@
       <HintPath>..\..\..\main\build\bin\MonoDevelop.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MonoDevelop.Core.Gui, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\main\build\bin\MonoDevelop.Core.Gui.dll</HintPath>
-    </Reference>
     <Reference Include="MonoDevelop.Ide, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\main\build\bin\MonoDevelop.Ide.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="MonoDevelop.Projects, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\main\build\bin\MonoDevelop.Projects.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="MonoDevelop.VersionControl, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -116,6 +107,7 @@
     </Content>
     <Content Include="SubversionAddinWindows.exclude.addins">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>
