@@ -45,6 +45,9 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public virtual bool IsInstalled {
 			get {
+				if (framework.Assemblies.Length == 0)
+					return false;
+
 				foreach (string dir in runtime.GetFrameworkFolders (framework)) {
 					if (Directory.Exists (dir)) {
 						string firstAsm = Path.Combine (dir, framework.Assemblies [0].Name) + ".dll";
