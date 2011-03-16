@@ -33,6 +33,8 @@ namespace MonoDevelop.Components
 	{
 		const string styleName = "MonoDevelop.Components.CompactScrolledWindow";
 		
+		bool showBorderLine;
+		
 		static CompactScrolledWindow ()
 		{
 			Gtk.Rc.ParseString (@"style """ + styleName + @"""
@@ -45,6 +47,55 @@ namespace MonoDevelop.Components
 		{
 			//HACK to hide the useless padding that many themes have inside the ScrolledWindow - GTK default is 3
 			Gtk.Rc.ParseString (string.Format ("widget \"*.{0}\" style \"{1}\" ", Name, styleName));
+		}
+		
+		public bool ShowBorderLine {
+			get {
+				return showBorderLine;
+			}
+			set {
+				if (showBorderLine == value)
+					return;
+				showBorderLine = value;
+				if (showBorderLine)
+					BorderWidth = 1;
+				else
+					BorderWidth = 0;
+				QueueDraw ();
+			}
+		}
+		
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			var ret = base.OnExposeEvent (evnt);
+			if (!showBorderLine)
+				return ret;
+			
+			var alloc = Allocation;
+			double border = BorderWidth;
+			var halfBorder = border / 2.0;
+			
+			using (var cr = Gdk.CairoHelper.Create (evnt.Window)) {
+				Gdk.CairoHelper.Region (cr, evnt.Region);
+				cr.Clip ();
+				
+				var borderCol = Convert (Style.Dark (Gtk.StateType.Normal));
+				cr.Color = borderCol;
+				cr.LineWidth = border;
+				cr.Translate (alloc.X, alloc.Y);
+				cr.Rectangle (halfBorder, halfBorder, alloc.Width - border, alloc.Height - border);
+				cr.Stroke ();
+			}
+			
+			return ret;
+		}
+		
+		static Cairo.Color Convert (Gdk.Color color)
+		{
+			return new Cairo.Color (
+				color.Red   / (double) ushort.MaxValue,
+				color.Green / (double) ushort.MaxValue,
+				color.Blue  / (double) ushort.MaxValue);
 		}
 	}
 }
