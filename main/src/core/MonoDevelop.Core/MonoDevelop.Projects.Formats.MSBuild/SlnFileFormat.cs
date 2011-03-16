@@ -880,7 +880,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (sec == null || String.Compare (sec.Val, "postSolution", true) != 0)
 				return;
 
-			List<SolutionConfigurationEntry> noBuildList = new List<SolutionConfigurationEntry> ();
 			Dictionary<string, SolutionConfigurationEntry> cache = new Dictionary<string, SolutionConfigurationEntry> ();
 			Dictionary<string, string> ignoredProjects = new Dictionary<string, string> ();
 			SlnData slnData = GetSlnData (sln.RootFolder);
@@ -953,6 +952,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						combineConfigEntry = cache [key];
 					} else {
 						combineConfigEntry = GetConfigEntry (sln, item, slnConfig);
+						combineConfigEntry.Build = false; // Not buildable by default. Build will be enabled if a Build.0 entry is found
 						cache [key] = combineConfigEntry;
 					}
 	
@@ -967,21 +967,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					 */
 					if (action == "ActiveCfg") {
 						combineConfigEntry.ItemConfiguration = FromSlnConfigurationId (projConfig);
-						noBuildList.Add (combineConfigEntry);
 					} else if (action == "Build.0") {
-						noBuildList.Remove (combineConfigEntry);
+						combineConfigEntry.Build = true;
 					}
 				}
 				extras.RemoveAt (extras.Count - 1);
 			}
 
 			slnData.SectionExtras ["ProjectConfigurationPlatforms"] = extras;
-
-			foreach (SolutionConfigurationEntry e in noBuildList) {
-				//Mark (build=false) of all projects for which 
-				//ActiveCfg was found but no Build.0
-				e.Build = false;
-			}
 		}
 
 		/* Gets the CombineConfigurationEntry corresponding to the @entry in its parentCombine's 
