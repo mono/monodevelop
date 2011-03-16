@@ -78,7 +78,7 @@ namespace MonoDevelop.Projects.Dom
 		
 		public override string ToString ()
 		{
-			return string.Format ("[InstantiatedType: UninstantiatedType={1}, GenericParameters={0}]", string.Join (";", new List<string> (genericParameters.Select (gp => gp.ToString ())).ToArray ()), UninstantiatedType);
+			return string.Format ("[InstantiatedType: UninstantiatedType={1}, #GenericParameters={0}]", GenericParameters.Count, UninstantiatedType);
 		}
 	}
 }

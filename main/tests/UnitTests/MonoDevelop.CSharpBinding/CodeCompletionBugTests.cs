@@ -3227,5 +3227,27 @@ public class Test
 			Assert.IsNotNull (provider.Find ("SomeMethod"), "method 'SomeMethod' not found.");
 		}
 		
+		/// <summary>
+		/// Bug 679792 - MonoDevelop becomes unresponsive and leaks memory
+		/// </summary>
+		[Test()]
+		public void TestBug679792 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"using System.Collections.Generic;
+
+class TestClass
+{
+	public static void Main (string[] args)
+	{
+		Dictionary<string, Dictionary<string, TestClass>> cache;
+		$cache[""Hello""] [""World""] = new $
+	}
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("TestClass"), "class 'TestClass' not found.");
+		}
+		
+		
 	}
 }

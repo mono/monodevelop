@@ -669,8 +669,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			if (genericArguments != null)
 				genericArgumentCount = genericArguments.Count;
 			string fullName = ParserDatabase.GetDecoratedName (typeName, genericArgumentCount);
-			lock (rwlock)
-			{
+			lock (rwlock) {
 				ClassEntry ce;
 				if (!(caseSensitive ? typeEntries : typeEntriesIgnoreCase).TryGetValue (fullName, out ce)) {
 					int idx = typeName.LastIndexOf ('.');
@@ -684,7 +683,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					}
 					return null;
 				}
-				return genericArguments == null || genericArguments.Count == 0 ? GetClass (ce) : sourceProjectDom.CreateInstantiatedGenericType (GetClass (ce), genericArguments);
+				var result = GetClass (ce);
+				if (genericArguments != null && genericArguments.Count > 0)
+					result = sourceProjectDom.CreateInstantiatedGenericType (result, genericArguments);
+				return result;
 			}
 		}
 		
