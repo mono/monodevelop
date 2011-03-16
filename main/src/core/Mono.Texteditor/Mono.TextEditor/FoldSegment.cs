@@ -31,7 +31,7 @@ namespace Mono.TextEditor
 {
 	public class FoldSegment : TreeSegment, System.IComparable
 	{
-		bool isFolded;
+		internal bool isFolded;
 		public bool IsFolded {
 			get {
 				return isFolded;
@@ -83,7 +83,7 @@ namespace Mono.TextEditor
 		public FoldSegment (Document doc,string description,int offset,int length,FoldingType foldingType) : base (offset, length)
 		{
 			this.doc = doc;
-			this.IsFolded = false;
+			this.isFolded = false;
 			this.Description = description;
 			this.FoldingType = foldingType;
 		}
@@ -91,7 +91,7 @@ namespace Mono.TextEditor
 		public FoldSegment (FoldSegment foldSegment) : base (foldSegment.Offset, foldSegment.Length)
 		{
 			this.doc = foldSegment.doc;
-			this.IsFolded = foldSegment.IsFolded;
+			this.isFolded = foldSegment.IsFolded;
 			this.Description = foldSegment.Description;
 			this.FoldingType = foldSegment.FoldingType;
 		}

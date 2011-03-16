@@ -34,9 +34,9 @@ namespace Mono.TextEditor
 	/// A segment tree contains overlapping segments and get all segments overlapping a segment. It's implemented as a augmented interval tree
 	/// described in Cormen et al. (2001, Section 14.3: Interval trees, pp. 311–317).
 	/// </summary>
-	public class SegmentTree
+	public class SegmentTree<T> : ISegmentTree where T : TreeSegment
 	{
-		readonly RedBlackTree<TreeSegment> tree = new RedBlackTree<TreeSegment> ();
+		readonly RedBlackTree<T> tree = new RedBlackTree<T> ();
 		
 		public int Count {
 			get {
@@ -44,7 +44,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public IEnumerable<TreeSegment> Segments {
+		public IEnumerable<T> Segments {
 			get {
 				var root = tree.Root;
 				if (root == null)
@@ -126,7 +126,7 @@ namespace Mono.TextEditor
 			node.DistanceToMaxEnd = node.Length;
 			
 			if (tree.Root == null) {
-				tree.Root = node;
+				tree.Root = (T)node;
 				node.TotalLength = node.DistanceToPrevNode;
 				return;
 			}
@@ -174,7 +174,7 @@ namespace Mono.TextEditor
 		
 		TreeSegment SearchNode (ref int offset)
 		{
-			var n = tree.Root;
+			TreeSegment n = tree.Root;
 			while (true) {
 				if (n.left != null) {
 					if (offset < n.left.TotalLength) {
@@ -192,15 +192,15 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public IEnumerable<TreeSegment> GetSegmentsAt (int offset)
+		public IEnumerable<T> GetSegmentsAt (int offset)
 		{
 			return GetSegmentsOverlapping (offset, 0);
 		}
 		
-		public IEnumerable<TreeSegment> GetSegmentsOverlapping (ISegment segment)
+		public IEnumerable<T> GetSegmentsOverlapping (ISegment segment)
 		{
 			if (segment == null)
-				return Enumerable.Empty<TreeSegment> ();
+				return Enumerable.Empty<T> ();
 			return GetSegmentsOverlapping (segment.Offset, segment.Length);
 		}
 		
@@ -217,7 +217,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public IEnumerable<TreeSegment> GetSegmentsOverlapping (int offset, int length)
+		public IEnumerable<T> GetSegmentsOverlapping (int offset, int length)
 		{
 			if (tree.Root == null)
 				yield break;
@@ -246,7 +246,7 @@ namespace Mono.TextEditor
 					continue;
 				
 				if (nodeStart <= node.Length) 
-					yield return node;
+					yield return (T)node;
 			
 				if (node.right != null) 
 					intervalStack.Push (new Interval (node.right, nodeStart, nodeEnd));
@@ -254,9 +254,15 @@ namespace Mono.TextEditor
 		}
 	}
 	
+	interface ISegmentTree
+	{
+		void Add (TreeSegment segment);
+		void Remove (TreeSegment segment);
+	}
+	
 	public class TreeSegment : Segment, IRedBlackTreeNode
 	{
-		internal SegmentTree segmentTree;
+		internal ISegmentTree segmentTree;
 
 		public override int Offset {
 			get {
