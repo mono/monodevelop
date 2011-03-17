@@ -40,7 +40,7 @@ namespace MonoDevelop.Profiler
 
 		protected override void OnDestroyed ()
 		{
-			System.Console.WriteLine ("DESTROYED !!!");
+			oeaocao ("DESTROYED !!!");
 			if (timeout != 0) {
 				GLib.Source.Remove (timeout);
 				timeout = 0;

@@ -237,7 +237,7 @@ namespace MonoDevelop.Ide
 			}
 			
 			if (doc.GetLineIndent (line).Length + 1 < point.Location.Column)
-				point.LineBefore = isEndPoint ? NewLineInsertion.Eol : NewLineInsertion.BlankLine;
+				point.LineBefore = NewLineInsertion.Eol;
 			if (point.Location.Column < line.EditableLength + 1)
 				point.LineAfter = isEndPoint ? NewLineInsertion.Eol : NewLineInsertion.BlankLine;
 		}
@@ -248,9 +248,8 @@ namespace MonoDevelop.Ide
 			LineSegment curLine = doc.GetLine (line);
 			if (curLine != null) {
 				if (bodyEndOffset < curLine.Offset + curLine.EditableLength) {
-					System.Console.WriteLine (1);
 					// case1: positition is somewhere inside the start line
-					return new InsertionPoint (new DocumentLocation (line, column + 1), NewLineInsertion.BlankLine, NewLineInsertion.BlankLine);
+					return new InsertionPoint (new DocumentLocation (line, column + 1), NewLineInsertion.Eol, NewLineInsertion.BlankLine);
 				}
 			}
 			
@@ -259,16 +258,17 @@ namespace MonoDevelop.Ide
 			if (nextLine == null) // check for 1 line case.
 				return new InsertionPoint (new DocumentLocation (line, column + 1), NewLineInsertion.BlankLine, NewLineInsertion.BlankLine);
 			
-			for (int i = nextLine.Offset; i < nextLine.EndOffset; i++) {
+			for (int i = nextLine.Offset; i < nextLine.Offset + nextLine.EditableLength; i++) {
 				char ch = doc.GetCharAt (i);
 				if (!char.IsWhiteSpace (ch)) {
 					// case2: next line contains non ws chars.
-					System.Console.WriteLine (2);
-					return new InsertionPoint (new DocumentLocation (line + 1, 1), NewLineInsertion.BlankLine, NewLineInsertion.BlankLine);
+					if (line == 39)
+						System.Console.WriteLine (2 + "ch:" + (int)ch);
+					return new InsertionPoint (new DocumentLocation (line + 1, 1), NewLineInsertion.Eol, NewLineInsertion.BlankLine);
 				}
 			}
 			// case3: whitespace line
-			return new InsertionPoint (new DocumentLocation (line + 1, 1), NewLineInsertion.BlankLine, NewLineInsertion.None);
+			return new InsertionPoint (new DocumentLocation (line + 1, 1), NewLineInsertion.Eol, NewLineInsertion.None);
 		}
 		
 		static InsertionPoint GetSuitableInsertionPoint (IEnumerable<InsertionPoint> points, IType cls, IMember member)

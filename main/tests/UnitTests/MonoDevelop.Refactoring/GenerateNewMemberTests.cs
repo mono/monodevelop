@@ -174,7 +174,7 @@ class Test {
 		[Test()]
 		public void TestBasicInsertionPointOneLineCase ()
 		{
-			TestInsertionPoints (@"class Test {@Svoid TestMe () { }@v}");
+			TestInsertionPoints (@"class Test {@tvoid TestMe () { }@v}");
 		}
 		
 		
@@ -211,16 +211,16 @@ class Test {
 	void TestMe ()
 	{
 	}
-@U	
+@u	
 	int a;
-@U	
+@u	
 	class Test2 {
 		void TestMe2 ()
 		{
 	
 		}
 	}
-@U	
+@u	
 	public delegate void ADelegate ();
 	
 @d}
@@ -235,19 +235,19 @@ class Test {
 @D	static void A ()
 	{
 	}
-@S	static void B ()
+@t	static void B ()
 	{
 	}
-@U	
+@u	
 	public static void Main (string[] args)
 	{
 		System.Console.WriteLine ();
 	}
-@S	int g;
-@S	int i;
-@U	
+@t	int g;
+@t	int i;
+@u	
 	int j;
-@S	public delegate void Del(int a);
+@t	public delegate void Del(int a);
 @s}
 ");
 		}

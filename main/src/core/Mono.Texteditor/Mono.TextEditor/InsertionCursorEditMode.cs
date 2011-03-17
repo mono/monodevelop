@@ -310,7 +310,7 @@ namespace Mono.TextEditor
 				LineSegment lineBelow = editor.Document.GetLine (mode.CurrentInsertionPoint.Line);
 				
 				double aboveStart = 0, aboveEnd = editor.TextViewMargin.XOffset;
-				double belowStart = 0, belowEnd = editor.TextViewMargin.XOffset;
+				double /*belowStart = 0,*/ belowEnd = editor.TextViewMargin.XOffset;
 				int l = 0, tmp;
 				if (lineAbove != null) {
 					var wrapper = editor.TextViewMargin.GetLayout (lineAbove);
@@ -332,7 +332,7 @@ namespace Mono.TextEditor
 						wrapper.Layout.IndexToLineX (index, true, out l, out tmp);
 					}
 					
-					belowStart = tmp / Pango.Scale.PangoScale;
+					//belowStart = tmp / Pango.Scale.PangoScale;
 					belowEnd = wrapper.PangoWidth / Pango.Scale.PangoScale;
 					if (wrapper.IsUncached)
 						wrapper.Dispose ();
@@ -342,14 +342,14 @@ namespace Mono.TextEditor
 				x1 = editor.TextViewMargin.XOffset - editor.HAdjustment.Value;
 				x2 = x1;
 				if (aboveStart < belowEnd) {
-					x1 += aboveStart;
+					//x1 += aboveStart;
 					x2 += belowEnd;
 				} else if (aboveStart > belowEnd) {
 					delta *= -1;
-					x1 += belowEnd;
+					//x1 += belowEnd;
 					x2 += aboveStart;
 				} else {
-					x1 += System.Math.Min (aboveStart, belowStart);
+					//x1 += System.Math.Min (aboveStart, belowStart);
 					x2 += System.Math.Max (aboveEnd, belowEnd);
 					if (x1 == x2)
 						x2 += 50;
