@@ -403,7 +403,7 @@ namespace MonoDevelop.VersionControl.Views
 				};
 				
 				layout = new Pango.Layout (PangoContext);
-				Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.ButtonMotionMask | EventMask.LeaveNotifyMask;
+				Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask | EventMask.LeaveNotifyMask;
 				OptionsChanged ();
 				Show ();
 			}
