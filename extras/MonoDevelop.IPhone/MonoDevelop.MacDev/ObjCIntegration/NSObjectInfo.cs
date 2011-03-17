@@ -57,6 +57,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		public List<IBOutlet> Outlets { get; private set; }
 		public List<IBAction> Actions { get; private set; }
 		
+		public string[] DefinedIn { get; internal set; }
+		
 		public HashSet<string> UserTypeReferences { get; private set; }
 	}
 }

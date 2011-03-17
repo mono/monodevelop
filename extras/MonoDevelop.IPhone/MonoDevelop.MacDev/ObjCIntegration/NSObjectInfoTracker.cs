@@ -36,17 +36,14 @@ using System.Text.RegularExpressions;
 
 namespace MonoDevelop.MacDev.ObjCIntegration
 {
-	public class NSObjectInfoTracker
+	public class NSObjectInfoTracker : IDisposable
 	{
 		Dictionary<string,NSObjectTypeInfo> objcTypes = new Dictionary<string,NSObjectTypeInfo> ();
 		Dictionary<string,NSObjectTypeInfo> cliTypes = new Dictionary<string,NSObjectTypeInfo> ();
 		
-		IReturnType nsobjectType;
-		IReturnType registerAttType;
-		IReturnType connectAttType;
-		IReturnType exportAttType;
-		IReturnType modelAttType;
+		IReturnType nsobjectType, registerAttType, connectAttType, exportAttType, modelAttType;
 		DotNetProject project;
+		bool subscribedDomLoaded = false;
 		
 		public NSObjectInfoTracker (DotNetProject project, string wrapperRootNamespace)
 		{
@@ -59,7 +56,37 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			modelAttType = new DomReturnType (foundation, "ModelAttribute");
 			nsobjectType = new DomReturnType (foundation, "NSObject");
 			
+			//FIXME: might there be a race here?
 			var dom = ProjectDomService.GetProjectDom (project);
+			if (dom == null) {
+				subscribedDomLoaded = true;
+				ProjectDomService.DomRegistered += DomLoaded;
+			} else {
+				DomLoaded (dom);
+			}
+		}
+		
+		public void Dispose ()
+		{
+			if (subscribedDomLoaded) {
+				ProjectDomService.DomRegistered -= DomLoaded;
+				subscribedDomLoaded = false;
+			}
+		}
+
+		void DomLoaded (object sender, ProjectDomEventArgs e)
+		{
+			if (e.ProjectDom.Project != project)
+				return;
+			
+			ProjectDomService.DomRegistered -= DomLoaded;
+			subscribedDomLoaded = false;
+			
+			DomLoaded (e.ProjectDom);
+		}
+		
+		void DomLoaded (ProjectDom dom)
+		{
 			foreach (var type in GetRegisteredObjects (dom)) {
 				if (objcTypes.ContainsKey (type.ObjCName))
 					Console.WriteLine ("Duplicate obj-c type '{0}'", type.ObjCName);
@@ -74,7 +101,13 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			foreach (var type in objcTypes.Values) {
 				ResolveTypes (dom, type);
 			}
+			
+			if (TypesLoaded != null)
+				TypesLoaded (this, EventArgs.Empty);
 		}
+		
+		public event EventHandler TypesLoaded;
+		public event EventHandler UserTypeChanged;
 		
 		void ResolveTypes (ProjectDom dom, NSObjectTypeInfo type)
 		{
@@ -291,32 +324,41 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			yield return new NSObjectTypeInfo ("NSObject", nsobjectType.FullName, null, null, false);
 			
 			foreach (var type in dom.GetSubclasses (nso, true)) {
-				string objcName = null;
-				bool isModel = false;
-				foreach (var att in type.Attributes) {
-					if (att.AttributeType.FullName == registerAttType.FullName) {
-						//type registered with an explicit type name are up to the user to proide a valid name
-						if (att.PositionalArguments.Count == 1)
-							objcName = (string)((System.CodeDom.CodePrimitiveExpression)att.PositionalArguments[0]).Value;
-						//non-nested types in the root namespace have names accessible from obj-c
-						else if (string.IsNullOrEmpty (type.Namespace) && type.Name.IndexOf ('.') < 0)
-							objcName = type.Name;
-					}
-					if (att.AttributeType.FullName == modelAttType.FullName) {
-						isModel = true;
-					}
-				}
-				if (string.IsNullOrEmpty (objcName))
-					continue;
-				
-				var info = new NSObjectTypeInfo (objcName, type.FullName, null, type.BaseType.FullName, isModel);
-				info.IsUserType = type.SourceProject != null;
-				
-				if (info.IsUserType)
-					UpdateType (dom, info, type);
-				
-				yield return info;
+				var info = ConvertType (dom, type);
+				if (info != null)
+					yield return info;
 			}
+		}
+		
+		NSObjectTypeInfo ConvertType (ProjectDom dom, IType type)
+		{
+			string objcName = null;
+			bool isModel = false;
+			foreach (var att in type.Attributes) {
+				if (att.AttributeType.FullName == registerAttType.FullName) {
+					//type registered with an explicit type name are up to the user to proide a valid name
+					if (att.PositionalArguments.Count == 1)
+						objcName = (string)((System.CodeDom.CodePrimitiveExpression)att.PositionalArguments[0]).Value;
+					//non-nested types in the root namespace have names accessible from obj-c
+					else if (string.IsNullOrEmpty (type.Namespace) && type.Name.IndexOf ('.') < 0)
+						objcName = type.Name;
+				}
+				if (att.AttributeType.FullName == modelAttType.FullName) {
+					isModel = true;
+				}
+			}
+			if (string.IsNullOrEmpty (objcName))
+				return null;
+			
+			var info = new NSObjectTypeInfo (objcName, type.FullName, null, type.BaseType.FullName, isModel);
+			info.IsUserType = type.SourceProject != null;
+			
+			if (info.IsUserType) {
+				UpdateType (dom, info, type);
+				info.DefinedIn = type.Parts.Select (p => (string) p.CompilationUnit.FileName).ToArray ();
+			}
+			
+			return info;
 		}
 		
 		void UpdateType (ProjectDom dom, NSObjectTypeInfo info, IType type)
@@ -361,5 +403,24 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				}
 			}
 		}
+	}
+	
+	class UserTypeEventArgs : EventArgs
+	{
+		public UserTypeEventArgs (NSObjectTypeInfo type, UserTypeChange change)
+		{
+			this.Type = type;
+			this.Change = change;
+		}
+		
+		public NSObjectTypeInfo Type { get; private set; }
+		public UserTypeChange Change { get; private set; }
+	}
+	
+	enum UserTypeChange
+	{
+		Added,
+		Removed,
+		Modified
 	}
 }
