@@ -594,6 +594,44 @@ namespace MonoDevelop.CSharp.Resolver
 				this.resolver = resolver;
 			}
 			
+			ResolveResult AnalyzeLambdaInvocation (ResolveVisitor visitor, Expression lambdaExpression, ResolveResult lambdaReturnType, InvocationExpression invocation, IMethod method)
+			{
+				for (int i = 0; i < invocation.Arguments.Count; i++) {
+					if (invocation.Arguments [i] == lambdaExpression && i < method.Parameters.Count) {
+						IParameter parameter = method.Parameters [i];
+						IReturnType returnType = parameter.ReturnType;
+						IType type = resolver.Dom.GetType (returnType);
+					
+						bool isResolved = false;
+						if (type != null && type.ClassType == MonoDevelop.Projects.Dom.ClassType.Delegate) {
+							IMethod invocationMethod = type.Methods.First ();
+							if (invocationMethod.Parameters.Count > 0) {
+								if (lambdaReturnType == null || lambdaReturnType.ResolvedType == null || string.IsNullOrEmpty (lambdaReturnType.ResolvedType.FullName)) {
+									returnType = invocationMethod.Parameters [System.Math.Min (i, invocationMethod.Parameters.Count - 1)].ReturnType;
+								} else {
+									returnType = (IReturnType)new TypeReplaceVisitor (invocationMethod.ReturnType, lambdaReturnType.ResolvedType).Visit (returnType, null);
+								}
+								isResolved = true;
+							}
+						}
+											
+						if (!isResolved) {
+							while (returnType.GenericArguments.Count > 0) {
+								returnType = returnType.GenericArguments [0];
+							}
+						}
+						string invariantString = returnType.ToInvariantString ();
+						if (returnTypeDictionary.ContainsKey (invariantString))
+							return returnTypeDictionary [invariantString];
+						ResolveResult createdResult = visitor.CreateResult (returnType);
+						//							if (!(returnType.Type is AnonymousType))
+						returnTypeDictionary [invariantString] = createdResult;
+						return createdResult;
+					}
+				}
+				return null;
+			}
+			
 			internal ResolveResult ResolveLambda (ResolveVisitor visitor, Expression lambdaExpression)
 			{
 				if (expressions.Contains (lambdaExpression)) {
@@ -618,54 +656,33 @@ namespace MonoDevelop.CSharp.Resolver
 					if (!lambda.ExpressionBody.IsNull) {
 						DomLocation old = resolver.resolvePosition;
 						try {
-							resolver.resolvePosition = new DomLocation ((resolver.CallingMember != null ? resolver.CallingMember.Location.Line : 0) +
-							                                            lambda.ExpressionBody.StartLocation.Line - 2,
+							resolver.resolvePosition = new DomLocation ((resolver.CallingMember != null ? resolver.CallingMember.Location.Line : 0) + 
+							                                            lambda.ExpressionBody.StartLocation.Line - 2, 
 							                                            lambda.ExpressionBody.StartLocation.Column - 1);
-							lambdaReturnType =  visitor.Resolve (lambda.ExpressionBody);
+							lambdaReturnType = visitor.Resolve (lambda.ExpressionBody);
 						} finally {
 							resolver.resolvePosition = old;
 						}
 					}
 					InvocationExpression invocation = (InvocationExpression)lambdaExpression.Parent;
-					MethodResolveResult result = visitor.Resolve (invocation.TargetObject) as MethodResolveResult;
+					ResolveResult resolveResult = visitor.Resolve (invocation.TargetObject);
+					MethodResolveResult result = resolveResult as MethodResolveResult;
 					if (result == null) {
 						MonoDevelop.Core.LoggingService.LogWarning ("No compatible method found :" + invocation.TargetObject);
 						return null;
 					}
 					result.ResolveExtensionMethods ();
-					for (int i = 0; i < invocation.Arguments.Count; i++) {
-						if (invocation.Arguments[i] == lambdaExpression && i < result.MostLikelyMethod.Parameters.Count) {
-							IParameter parameter = result.MostLikelyMethod.Parameters[i];
-							IReturnType returnType = parameter.ReturnType;
-							IType type = resolver.Dom.GetType (returnType);
-							
-							bool isResolved = false;
-							if (type != null && type.ClassType == MonoDevelop.Projects.Dom.ClassType.Delegate) {
-								IMethod invocationMethod = type.Methods.First ();
-								if (invocationMethod.Parameters.Count > 0) {
-									if (lambdaReturnType == null || lambdaReturnType.ResolvedType == null || string.IsNullOrEmpty (lambdaReturnType.ResolvedType.FullName)) {
-										returnType = invocationMethod.Parameters[System.Math.Min (i, invocationMethod.Parameters.Count - 1)].ReturnType;
-									} else {
-										returnType = (IReturnType)new TypeReplaceVisitor (invocationMethod.ReturnType, lambdaReturnType.ResolvedType).Visit (returnType, null);
-									}
-									isResolved = true;
-								}
-							}
-						
-							if (!isResolved) {
-								while (returnType.GenericArguments.Count > 0) {
-									returnType = returnType.GenericArguments[0];
-								}
-							}
-							string invariantString = returnType.ToInvariantString ();
-							if (returnTypeDictionary.ContainsKey (invariantString))
-								return returnTypeDictionary[invariantString];
-							ResolveResult createdResult = visitor.CreateResult (returnType);
-//							if (!(returnType.Type is AnonymousType))
-								returnTypeDictionary[invariantString] = createdResult;
-							return createdResult;
+					IMethod method = result.MostLikelyMethod;
+					var lambdaResult = AnalyzeLambdaInvocation (visitor, lambdaExpression, lambdaReturnType, invocation, method);
+					if (lambdaResult == null) {
+						foreach (var otherMethod in result.Methods.Where (m => m != method)) {
+							lambdaResult = AnalyzeLambdaInvocation (visitor, lambdaExpression, lambdaReturnType, invocation, otherMethod);
+							if (lambdaResult != null)
+								break;
 						}
 					}
+					if (lambdaResult != null)
+						return lambdaResult;
 					if (lambdaReturnType != null && !string.IsNullOrEmpty (lambdaReturnType.ResolvedType.FullName))
 						return lambdaReturnType;
 					
@@ -766,7 +783,6 @@ namespace MonoDevelop.CSharp.Resolver
 							if (lambdaResolve != null) {
 								varType = lambdaResolve.ResolvedType;
 								varTypeUnresolved = lambdaResolve.UnresolvedType;
-								
 								IType type = Dom.GetType (varType);
 								if (type != null && type.ClassType == MonoDevelop.Projects.Dom.ClassType.Delegate) {
 									IMethod invocationMethod = type.Methods.First ();

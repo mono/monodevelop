@@ -3269,6 +3269,35 @@ class TestClass
 			Assert.IsNotNull (provider.Find ("testMe"), "variable 'testMe' not found.");
 		}
 		
-		
+		/// <summary>
+		/// Bug 680264 - Lamba completion inference issues
+		/// </summary>
+		/// 
+		[Test()]
+		public void TestBug680264 ()
+		{
+			CompletionDataList provider = CreateCtrlSpaceProvider (
+@"
+public delegate S Func<T, S> (T t);
+
+public static class Linq
+{
+	public static bool Any<T> (this T[] t, Func<T, bool> func)
+	{
+		return true;
+	}
+}
+
+class TestClass
+{
+	public void Foo ()
+	{
+		TestClass[] test;
+		$test.Any (t => t.$
+	}
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("Foo"), "method 'Foo' not found.");
+		}
 	}
 }

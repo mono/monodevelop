@@ -181,13 +181,13 @@ namespace MonoDevelop.CSharp.Completion
 				return null;
 			}
 
-			//		IDisposable timer = null;
+//		IDisposable timer = null;
 			try {
 				if (dom == null /*|| Document.CompilationUnit == null*/)
 					return null;
 				if (completionChar != '#' && stateTracker.Engine.IsInsidePreprocessorDirective)
 					return null;
-				//	timer = Counters.ResolveTime.BeginTiming ();
+//	timer = Counters.ResolveTime.BeginTiming ();
 				DomLocation location = new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset - 1);
 				stateTracker.UpdateEngine ();
 				ExpressionResult result;
@@ -203,7 +203,7 @@ namespace MonoDevelop.CSharp.Completion
 					int idx = result.Expression.LastIndexOf ('.');
 					if (idx > 0)
 						result.Expression = result.Expression.Substring (0, idx);
-				// don't parse expressions that end with more than 1 dot - see #646820
+// don't parse expressions that end with more than 1 dot - see #646820
 					if (result.Expression.EndsWith ("."))
 						return null;
 					NRefactoryResolver resolver = CreateResolver ();
@@ -248,7 +248,7 @@ namespace MonoDevelop.CSharp.Completion
 						}
 					}
 					return null;
-				/* Disabled because it gives problems when declaring arrays - for example string [] should not pop up code completion.
+/* Disabled because it gives problems when declaring arrays - for example string [] should not pop up code completion.
  			case '[':
 				if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
 					return null;
@@ -309,7 +309,7 @@ namespace MonoDevelop.CSharp.Completion
 								break;
 							}
 						}
-						// check if lines above already start a doc comment
+// check if lines above already start a doc comment
 						for (int i = completionContext.TriggerLine - 2; i >= 1; i--) {
 							string text = textEditorData.GetLineText (i);
 							if (text.Length == 0)
@@ -321,7 +321,7 @@ namespace MonoDevelop.CSharp.Completion
 							break;
 						}
 						
-						// check if following lines start a doc comment
+// check if following lines start a doc comment
 						for (int i = completionContext.TriggerLine; i <= textEditorData.Document.LineCount; i++) {
 							string text = textEditorData.GetLineText (i);
 							if (text == null)
@@ -372,23 +372,23 @@ namespace MonoDevelop.CSharp.Completion
 						return null;
 					}
 					return null;
-				//			case '\n':
-				//			case '\r': {
-				//				if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
-				//					return null;
-				//				result = FindExpression (dom, completionContext);
-				//				if (result == null)
-				//					return null;
-				//					
-				//					
-				//				int tokenIndex = completionContext.TriggerOffset;
-				//				string token = GetPreviousToken (ref tokenIndex, false);
-				//				if (result.ExpressionContext == ExpressionContext.ObjectInitializer) {
-				//					if (token == "{" || token == ",")
-				//						return CreateCtrlSpaceCompletionData (completionContext, result); 
-				//				} 
-				//				return null;
-				//				}
+//			case '\n':
+//			case '\r': {
+//				if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
+//					return null;
+//				result = FindExpression (dom, completionContext);
+//				if (result == null)
+//					return null;
+//					
+//					
+//				int tokenIndex = completionContext.TriggerOffset;
+//				string token = GetPreviousToken (ref tokenIndex, false);
+//				if (result.ExpressionContext == ExpressionContext.ObjectInitializer) {
+//					if (token == "{" || token == ",")
+//						return CreateCtrlSpaceCompletionData (completionContext, result); 
+//				} 
+//				return null;
+//				}
 				case ' ':
 					if (stateTracker.Engine.IsInsideDocLineComment || stateTracker.Engine.IsInsideOrdinaryCommentOrString)
 						return null;
@@ -466,7 +466,7 @@ namespace MonoDevelop.CSharp.Completion
 								completionList.AutoCompleteEmptyMatch = false;
 								cdc.Add ("true", "md-keyword");
 								cdc.Add ("false", "md-keyword");
-								/*							foreach (object o in CreateCtrlSpaceCompletionData (completionContext, result)) {
+/*							foreach (object o in CreateCtrlSpaceCompletionData (completionContext, result)) {
 								MemberCompletionData memberData = o as MemberCompletionData;
 								if (memberData == null || memberData.Member == null) {
 									completionList.Add (o as CompletionData);
@@ -625,7 +625,7 @@ namespace MonoDevelop.CSharp.Completion
 					if ((Char.IsLetter (completionChar) || completionChar == '_') && TextEditorProperties.EnableAutoCodeCompletion && !stateTracker.Engine.IsInsideDocLineComment && !stateTracker.Engine.IsInsideOrdinaryCommentOrString) {
 						char prevCh = completionContext.TriggerOffset > 2 ? textEditorData.GetCharAt (completionContext.TriggerOffset - 2) : '\0';
 						char nextCh = completionContext.TriggerOffset < textEditorData.Length ? textEditorData.GetCharAt (completionContext.TriggerOffset) : ' ';
-						const string allowedChars = ";,[(){}+-*/%^?:&|~!<>=" ; 
+						const string allowedChars = ";,[(){}+-*/%^?:&|~!<>=";
 						if (!Char.IsWhiteSpace (nextCh) && allowedChars.IndexOf (nextCh) < 0)
 							return null;
 						if (Char.IsWhiteSpace (prevCh) || allowedChars.IndexOf (prevCh) >= 0) {
@@ -659,9 +659,12 @@ namespace MonoDevelop.CSharp.Completion
 									NRefactoryParameterDataProvider provider = ParameterCompletionCommand (ctx) as NRefactoryParameterDataProvider;
 									if (provider != null) {
 										int i = provider.GetCurrentParameterIndex (CompletionWidget, ctx) - 1;
-										if (i < provider.Methods [0].Parameters.Count) {
-											IType returnType = dom.GetType (provider.Methods [0].Parameters [i].ReturnType);
-											autoSelect = returnType == null || returnType.ClassType != ClassType.Delegate;
+										foreach (var method in provider.Methods) {
+											if (i < method.Parameters.Count) {
+												IType returnType = dom.GetType (method.Parameters [i].ReturnType);
+												autoSelect = returnType == null || returnType.ClassType != ClassType.Delegate;
+												break;
+											}
 										}
 									}
 								}
