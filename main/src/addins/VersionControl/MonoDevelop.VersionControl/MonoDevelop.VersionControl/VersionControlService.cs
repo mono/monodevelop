@@ -401,6 +401,8 @@ namespace MonoDevelop.VersionControl
 			try {
 				foreach (var repoFiles in e.GroupBy (i => GetRepository (i.Project))) {
 					Repository repo = repoFiles.Key;
+					if (repo == null)
+						continue;
 					var versionInfos = repo.GetVersionInfo (repoFiles.Select (f => f.ProjectFile.FilePath));
 					FilePath[] paths = versionInfos.Where (i => i.CanAdd).Select (i => i.LocalPath).ToArray ();
 					if (paths.Length > 0) {
