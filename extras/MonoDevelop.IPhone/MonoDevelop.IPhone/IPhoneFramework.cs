@@ -298,7 +298,7 @@ namespace MonoDevelop.IPhone
 			DateTime? lastWrite;
 			try {
 				lastWrite = File.GetLastWriteTime (VERSION_PLIST);
-			} catch (IOException ex) {
+			} catch (IOException) {
 				lastWrite = null;
 			}
 			if (lastWrite == lastSdkVersionWrite)
@@ -316,7 +316,7 @@ namespace MonoDevelop.IPhone
 			DateTime? lastWrite;
 			try {
 				lastWrite = File.GetLastWriteTime (MONOTOUCH_EXE);
-			} catch (IOException ex) {
+			} catch (IOException) {
 				lastWrite = null;
 			}
 			if (lastWrite == lastMTExeWrite)
