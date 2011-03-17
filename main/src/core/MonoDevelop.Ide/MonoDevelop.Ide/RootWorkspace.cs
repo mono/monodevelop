@@ -783,6 +783,21 @@ namespace MonoDevelop.Ide
 			item.SaveUserProperties ();
 		}
 		
+		public FileStatusTracker GetFileStatusTracker ()
+		{
+			FileStatusTracker fs = new FileStatusTracker ();
+			fs.AddFiles (GetKnownFiles ());
+			return fs;
+		}
+		
+		IEnumerable<FilePath> GetKnownFiles ()
+		{
+			foreach (WorkspaceItem item in IdeApp.Workspace.Items) {
+				foreach (FilePath file in item.GetItemFiles (true))
+					yield return file;
+			}
+		}
+		
 		void CheckWorkspaceItems (object sender, FileEventArgs args)
 		{
 			List<FilePath> files = args.Select (e => e.FileName.CanonicalPath).ToList ();
@@ -1477,6 +1492,65 @@ namespace MonoDevelop.Ide
 		public ItemUnloadingEventArgs (IBuildTarget item)
 		{
 			this.item = item;
+		}
+	}
+	
+	public class FileStatusTracker: IDisposable
+	{
+		class FileData
+		{
+			public FileData (FilePath file, DateTime time)
+			{
+				this.File = file;
+				this.Time = time;
+			}
+			
+			public FilePath File;
+			public DateTime Time;
+		}
+		
+		List<FileData> fileStatus = new List<FileData> ();
+		
+		internal void AddFiles (IEnumerable<FilePath> files)
+		{
+			foreach (var file in files) {
+				try {
+					FileInfo fi = new FileInfo (file);
+					FileData fd = new FileData (file, fi.Exists ? fi.LastWriteTime : DateTime.MinValue);
+					fileStatus.Add (fd);
+				} catch {
+					// Ignore
+				}
+			}
+		}
+		
+		public void NotifyChanges ()
+		{
+			List<FilePath> modified = new List<FilePath> ();
+			foreach (FileData fd in fileStatus) {
+				try {
+					FileInfo fi = new FileInfo (fd.File);
+					if (fi.Exists) {
+						DateTime wt = fi.LastWriteTime;
+						if (wt != fd.Time) {
+							modified.Add (fd.File);
+							fd.Time = wt;
+						}
+					} else if (fd.Time != DateTime.MinValue) {
+						FileService.NotifyFileRemoved (fd.File);
+						fd.Time = DateTime.MinValue;
+					}
+				} catch {
+					// Ignore
+				}
+			}
+			if (modified.Count > 0)
+				FileService.NotifyFilesChanged (modified);
+		}
+		
+		void IDisposable.Dispose ()
+		{
+			NotifyChanges ();
 		}
 	}
 }
