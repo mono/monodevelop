@@ -37,7 +37,7 @@ namespace MonoDevelop.Projects.Extensions
 		
 		public string Directory {
 			get {
-				if (relative)
+				if (relative || !System.IO.Path.IsPathRooted (directory))
 					return this.Addin.GetFilePath (directory);
 				return directory;
 			}
