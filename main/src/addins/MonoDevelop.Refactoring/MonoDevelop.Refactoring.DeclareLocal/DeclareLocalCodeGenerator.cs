@@ -250,7 +250,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				} else {
 					lineSegment = data.Document.GetLine (data.Caret.Line);
 					insert.Offset = lineSegment.Offset;
-					insert.InsertedText = options.GetWhitespaces (lineSegment.Offset) + provider.OutputNode (options.Dom, varDecl) + Environment.NewLine;
+					insert.InsertedText = options.GetWhitespaces (lineSegment.Offset) + provider.OutputNode (options.Dom, varDecl) + data.EolMarker;
 					insertOffset = insert.Offset + options.GetWhitespaces (lineSegment.Offset).Length + provider.OutputNode (options.Dom, varDecl.TypeReference).Length + " ".Length;
 
 					TextReplaceChange replace = new TextReplaceChange ();
