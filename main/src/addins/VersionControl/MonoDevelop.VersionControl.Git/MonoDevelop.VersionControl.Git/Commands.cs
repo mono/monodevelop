@@ -29,6 +29,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using System.Linq;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -37,10 +38,32 @@ namespace MonoDevelop.VersionControl.Git
 		Push,
 		SwitchToBranch,
 		ManageBranches,
-		Merge
+		Merge,
+		Rebase,
+		Stash,
+		StashPop,
+		ManageStashes
 	}
 	
-	class PushCommandHandler: CommandHandler
+	class GitCommandHandler: CommandHandler
+	{
+		public GitRepository Repository {
+			get {
+				IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
+				if (wob != null)
+					return VersionControlService.GetRepository (wob) as GitRepository;
+				else
+					return null;
+			}
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = Repository != null;
+		}
+	}
+	
+	class PushCommandHandler: GitCommandHandler
 	{
 		protected override void Run ()
 		{
@@ -49,18 +72,9 @@ namespace MonoDevelop.VersionControl.Git
 			if (repo != null)
 				GitService.Push (repo);
 		}
-		
-		protected override void Update (CommandInfo info)
-		{
-			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
-			GitRepository repo = null;
-			if (wob != null)
-				repo = VersionControlService.GetRepository (wob) as GitRepository;
-			info.Visible = repo != null;
-		}
 	}
 	
-	class SwitchToBranchHandler: CommandHandler
+	class SwitchToBranchHandler: GitCommandHandler
 	{
 		protected override void Run (object dataItem)
 		{
@@ -71,10 +85,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		protected override void Update (CommandArrayInfo info)
 		{
-			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
-			if (wob == null)
-				return;
-			GitRepository repo = VersionControlService.GetRepository (wob) as GitRepository;
+			GitRepository repo = Repository;
 			if (repo != null) {
 				string currentBranch = repo.GetCurrentBranch ();
 				foreach (Branch branch in repo.GetBranches ()) {
@@ -86,7 +97,7 @@ namespace MonoDevelop.VersionControl.Git
 		}
 	}
 	
-	class ManageBranchesHandler: CommandHandler
+	class ManageBranchesHandler: GitCommandHandler
 	{
 		protected override void Run ()
 		{
@@ -94,33 +105,67 @@ namespace MonoDevelop.VersionControl.Git
 			GitRepository repo = VersionControlService.GetRepository (wob) as GitRepository;
 			GitService.ShowConfigurationDialog (repo);
 		}
-		
-		protected override void Update (CommandInfo info)
-		{
-			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
-			GitRepository repo = null;
-			if (wob != null)
-				repo = VersionControlService.GetRepository (wob) as GitRepository;
-			info.Visible = repo != null;
-		}
 	}
 	
-	class MergeBranchHandler: CommandHandler
+	class MergeBranchHandler: GitCommandHandler
 	{
 		protected override void Run ()
 		{
 			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
 			GitRepository repo = VersionControlService.GetRepository (wob) as GitRepository;
-			GitService.ShowMergeDialog (repo);
+			GitService.ShowMergeDialog (repo, false);
+		}
+	}
+	
+	class RebaseBranchHandler: GitCommandHandler
+	{
+		protected override void Run ()
+		{
+			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
+			GitRepository repo = VersionControlService.GetRepository (wob) as GitRepository;
+			GitService.ShowMergeDialog (repo, true);
+		}
+	}
+	
+	class StashHandler: GitCommandHandler
+	{
+		protected override void Run ()
+		{
+			var stashes = Repository.GetStashes ();
+			NewStashDialog dlg = new NewStashDialog ();
+			if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
+				using (IdeApp.Workspace.GetFileStatusTracker ())
+					stashes.Create (dlg.Comment);
+			}
+			dlg.Destroy ();
+		}
+	}
+	
+	class StashPopHandler: GitCommandHandler
+	{
+		protected override void Run ()
+		{
+			var stashes = Repository.GetStashes ();
+			using (IdeApp.Workspace.GetFileStatusTracker ())
+				stashes.Pop ();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
-			GitRepository repo = null;
-			if (wob != null)
-				repo = VersionControlService.GetRepository (wob) as GitRepository;
-			info.Visible = repo != null;
+			var repo = Repository;
+			if (repo != null) {
+				var s = repo.GetStashes ();
+				info.Enabled = s.Any ();
+			} else
+				info.Visible = false;
+		}
+	}
+	
+	class ManageStashesHandler: GitCommandHandler
+	{
+		protected override void Run ()
+		{
+			GitService.ShowStashManager (Repository);
 		}
 	}
 }

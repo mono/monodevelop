@@ -34,13 +34,11 @@ namespace MonoDevelop.VersionControl.Git
 {
 	public partial class CredentialsDialog : Gtk.Dialog
 	{
-		IEnumerable<CredentialItem> credentials;
 		CredentialItem.YesNoType singleYesNoCred;
 		
 		public CredentialsDialog (URIish uri, IEnumerable<CredentialItem> credentials)
 		{
 			this.Build ();
-			this.credentials = credentials;
 			
 			labelTop.Text = string.Format (labelTop.Text, uri.ToString ());
 			

@@ -5,10 +5,11 @@ namespace MonoDevelop.VersionControl.Git
 	public partial class MergeDialog
 	{
 		private global::Gtk.VBox vbox2;
-		private global::Gtk.Label label1;
+		private global::Gtk.Label labelHeader;
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 		private global::Gtk.TreeView tree;
 		private global::Gtk.Label labelOper;
+		private global::Gtk.CheckButton checkStage;
 		private global::Gtk.Button buttonCancel;
 		private global::Gtk.Button buttonOk;
 
@@ -28,12 +29,12 @@ namespace MonoDevelop.VersionControl.Git
 			this.vbox2.Spacing = 6;
 			this.vbox2.BorderWidth = ((uint)(9));
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.label1 = new global::Gtk.Label ();
-			this.label1.Name = "label1";
-			this.label1.Xalign = 0F;
-			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Select the branch to be merged with the current branch:");
-			this.vbox2.Add (this.label1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label1]));
+			this.labelHeader = new global::Gtk.Label ();
+			this.labelHeader.Name = "labelHeader";
+			this.labelHeader.Xalign = 0F;
+			this.labelHeader.LabelProp = global::Mono.Unix.Catalog.GetString ("Select the branch to be merged with the current branch:");
+			this.vbox2.Add (this.labelHeader);
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.labelHeader]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -63,15 +64,27 @@ namespace MonoDevelop.VersionControl.Git
 			w5.Position = 2;
 			w5.Expand = false;
 			w5.Fill = false;
+			// Container child vbox2.Gtk.Box+BoxChild
+			this.checkStage = new global::Gtk.CheckButton ();
+			this.checkStage.CanFocus = true;
+			this.checkStage.Name = "checkStage";
+			this.checkStage.Label = global::Mono.Unix.Catalog.GetString ("Stash/unstash local changes before/after the merge");
+			this.checkStage.DrawIndicator = true;
+			this.checkStage.UseUnderline = true;
+			this.vbox2.Add (this.checkStage);
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.checkStage]));
+			w6.Position = 3;
+			w6.Expand = false;
+			w6.Fill = false;
 			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
-			w6.Position = 0;
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
+			w7.Position = 0;
 			// Internal child MonoDevelop.VersionControl.Git.MergeDialog.ActionArea
-			global::Gtk.HButtonBox w7 = this.ActionArea;
-			w7.Name = "dialog1_ActionArea";
-			w7.Spacing = 10;
-			w7.BorderWidth = ((uint)(5));
-			w7.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
+			global::Gtk.HButtonBox w8 = this.ActionArea;
+			w8.Name = "dialog1_ActionArea";
+			w8.Spacing = 10;
+			w8.BorderWidth = ((uint)(5));
+			w8.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonCancel = new global::Gtk.Button ();
 			this.buttonCancel.CanDefault = true;
@@ -81,9 +94,9 @@ namespace MonoDevelop.VersionControl.Git
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7 [this.buttonCancel]));
-			w8.Expand = false;
-			w8.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8 [this.buttonCancel]));
+			w9.Expand = false;
+			w9.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonOk = new global::Gtk.Button ();
 			this.buttonOk.CanDefault = true;
@@ -92,10 +105,10 @@ namespace MonoDevelop.VersionControl.Git
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = global::Mono.Unix.Catalog.GetString ("Merge");
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w7 [this.buttonOk]));
-			w9.Position = 1;
-			w9.Expand = false;
-			w9.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w10 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8 [this.buttonOk]));
+			w10.Position = 1;
+			w10.Expand = false;
+			w10.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}

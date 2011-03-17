@@ -26,8 +26,11 @@ FILES =  \
 	gtk-gui/MonoDevelop.VersionControl.Git.EditBranchDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.EditRemoteDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.GitConfigurationDialog.cs \
+	gtk-gui/MonoDevelop.VersionControl.Git.GitOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.MergeDialog.cs \
+	gtk-gui/MonoDevelop.VersionControl.Git.NewStashDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.PushDialog.cs \
+	gtk-gui/MonoDevelop.VersionControl.Git.StashManagerDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.UserInfoConflictDialog.cs \
 	MonoDevelop.VersionControl.Git/Change.cs \
 	MonoDevelop.VersionControl.Git/Commands.cs \
@@ -40,14 +43,18 @@ FILES =  \
 	MonoDevelop.VersionControl.Git/GitConfigurationDialog.cs \
 	MonoDevelop.VersionControl.Git/GitCredentials.cs \
 	MonoDevelop.VersionControl.Git/GitNodeBuilderExtension.cs \
+	MonoDevelop.VersionControl.Git/GitOptionsPanel.cs \
+	MonoDevelop.VersionControl.Git/GitOptionsPanelWidget.cs \
 	MonoDevelop.VersionControl.Git/GitRepository.cs \
 	MonoDevelop.VersionControl.Git/GitService.cs \
 	MonoDevelop.VersionControl.Git/GitUtil.cs \
 	MonoDevelop.VersionControl.Git/GitVersionControl.cs \
 	MonoDevelop.VersionControl.Git/MergeDialog.cs \
+	MonoDevelop.VersionControl.Git/NewStashDialog.cs \
 	MonoDevelop.VersionControl.Git/PushDialog.cs \
 	MonoDevelop.VersionControl.Git/RepositoryStatus.cs \
 	MonoDevelop.VersionControl.Git/Stash.cs \
+	MonoDevelop.VersionControl.Git/StashManagerDialog.cs \
 	MonoDevelop.VersionControl.Git/UserInfoConflictDialog.cs
 
 RES =  \

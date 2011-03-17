@@ -37,12 +37,14 @@ namespace MonoDevelop.VersionControl.Git
 		GitRepository repo;
 		string currentSel;
 		string currentType;
+		bool rebasing;
 		
-		public MergeDialog (GitRepository repo)
+		public MergeDialog (GitRepository repo, bool rebasing)
 		{
 			this.Build ();
 			
 			this.repo = repo;
+			this.rebasing = rebasing;
 			
 			store = new TreeStore (typeof(string), typeof(Gdk.Pixbuf), typeof (string), typeof(string));
 			tree.Model = store;
@@ -58,11 +60,22 @@ namespace MonoDevelop.VersionControl.Git
 			
 			tree.Selection.Changed += HandleTreeSelectionChanged;
 			
+			if (rebasing) {
+				labelHeader.Text = GettextCatalog.GetString ("Select the branch to which to rebase:");
+				checkStage.Label = GettextCatalog.GetString ("Stash/unstash local changes before/after rebasing");
+			}
+			
+			checkStage.Active = true;
+			
 			Fill ();
 		}
 		
 		public string SelectedBranch {
 			get { return currentSel; }
+		}
+		
+		public bool StageChanges {
+			get { return checkStage.Active; }
 		}
 
 		void HandleTreeSelectionChanged (object sender, EventArgs e)
@@ -100,10 +113,19 @@ namespace MonoDevelop.VersionControl.Git
 			if (currentSel != null) {
 				string cb = repo.GetCurrentBranch ();
 				string txt = null;
-				switch (currentType) {
-				case "branch": txt = GettextCatalog.GetString ("The branch <b>{0}</b> will be merged into the branch <b>{1}</b>.", currentSel, cb); break;
-				case "tag": txt = GettextCatalog.GetString ("The tag <b>{0}</b> will be merged into the branch <b>{1}</b>.", currentSel, cb); break;
-				case "remote": txt = GettextCatalog.GetString ("The remote branch <b>{0}</b> will be merged into the branch <b>{1}</b>.", currentSel, cb); break;
+				if (rebasing) {
+					switch (currentType) {
+					case "branch": txt = GettextCatalog.GetString ("The branch <b>{1}</b> will be rebased to the branch <b>{0}</b>.", currentSel, cb); break;
+					case "tag": txt = GettextCatalog.GetString ("The branch <b>{1}</b> witl be rebased to the tag <b>{0}</b>.", currentSel, cb); break;
+					case "remote": txt = GettextCatalog.GetString ("The branch <b>{1}</b> will be rebased to the remote branch <b>{0}</b>.", currentSel, cb); break;
+					}
+				}
+				else {
+					switch (currentType) {
+					case "branch": txt = GettextCatalog.GetString ("The branch <b>{0}</b> will be merged into the branch <b>{1}</b>.", currentSel, cb); break;
+					case "tag": txt = GettextCatalog.GetString ("The tag <b>{0}</b> will be merged into the branch <b>{1}</b>.", currentSel, cb); break;
+					case "remote": txt = GettextCatalog.GetString ("The remote branch <b>{0}</b> will be merged into the branch <b>{1}</b>.", currentSel, cb); break;
+					}
 				}
 				labelOper.Visible = true;
 				labelOper.Markup = txt;

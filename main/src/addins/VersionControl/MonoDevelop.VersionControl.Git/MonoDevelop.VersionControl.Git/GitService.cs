@@ -33,6 +33,24 @@ namespace MonoDevelop.VersionControl.Git
 {
 	public static class GitService
 	{
+		public static bool UseRebaseOptionWhenPulling
+		{
+			get { return PropertyService.Get ("MonoDevelop.VersionControl.Git.UseRebaseOptionWhenPulling", true); }
+			set { PropertyService.Set ("MonoDevelop.VersionControl.Git.UseRebaseOptionWhenPulling", value); }
+		}
+		
+		public static bool StashUnstashWhenUpdating
+		{
+			get { return PropertyService.Get ("MonoDevelop.VersionControl.Git.StashUnstashWhenUpdating", true); }
+			set { PropertyService.Set ("MonoDevelop.VersionControl.Git.StashUnstashWhenUpdating", value); }
+		}
+		
+		public static bool StashUnstashWhenSwitchingBranches
+		{
+			get { return PropertyService.Get ("MonoDevelop.VersionControl.Git.StashUnstashWhenSwitchingBranches", true); }
+			set { PropertyService.Set ("MonoDevelop.VersionControl.Git.StashUnstashWhenSwitchingBranches", value); }
+		}
+		
 		public static void Push (GitRepository repo)
 		{
 			var dlg = new PushDialog (repo);
@@ -64,19 +82,26 @@ namespace MonoDevelop.VersionControl.Git
 			MessageService.ShowCustomDialog (dlg);
 		}
 	
-		public static void ShowMergeDialog (GitRepository repo)
+		public static void ShowMergeDialog (GitRepository repo, bool rebasing)
 		{
-			MergeDialog dlg = new MergeDialog (repo);
+			MergeDialog dlg = new MergeDialog (repo, rebasing);
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 					dlg.Hide ();
 					using (IProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Merging branch '{0}'...", dlg.SelectedBranch))) {
-						repo.Merge (dlg.SelectedBranch, monitor);
+						repo.Merge (dlg.SelectedBranch, dlg.StageChanges, monitor);
 					}
 				}
 			} finally {
 				dlg.Destroy ();
 			}
+		}
+	
+		public static void ShowStashManager (GitRepository repo)
+		{
+			StashManagerDialog dlg = new StashManagerDialog (repo);
+			MessageService.RunCustomDialog (dlg);
+			dlg.Destroy ();
 		}
 		
 		public static void SwitchToBranch (GitRepository repo, string branch)

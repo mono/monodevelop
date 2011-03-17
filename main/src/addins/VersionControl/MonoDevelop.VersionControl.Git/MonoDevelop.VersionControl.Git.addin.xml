@@ -38,6 +38,20 @@
 		<Command id = "MonoDevelop.VersionControl.Git.Commands.Merge" 
 			_label = "Merge Branch..."
 			defaultHandler = "MonoDevelop.VersionControl.Git.MergeBranchHandler" />
+		<Command id = "MonoDevelop.VersionControl.Git.Commands.Rebase" 
+			_label = "Rebase to Branch..."
+			defaultHandler = "MonoDevelop.VersionControl.Git.RebaseBranchHandler" />
+		<Command id = "MonoDevelop.VersionControl.Git.Commands.Stash" 
+			_label = "Stash..."
+			description = "Stash the changes in a dirty working directory away."
+			defaultHandler = "MonoDevelop.VersionControl.Git.StashHandler" />
+		<Command id = "MonoDevelop.VersionControl.Git.Commands.StashPop" 
+			_label = "Pop stash"
+			description = "Remove a single stashed state from the stash list and apply it on top of the current working tree state."
+			defaultHandler = "MonoDevelop.VersionControl.Git.StashPopHandler" />
+		<Command id = "MonoDevelop.VersionControl.Git.Commands.ManageStashes" 
+			_label = "Manage stashes"
+			defaultHandler = "MonoDevelop.VersionControl.Git.ManageStashesHandler" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/VersionControl">
@@ -46,8 +60,14 @@
 		<ItemSet id = "SwitchToBranch" _label = "Switch to Branch" autohide="true">
 			<CommandItem id = "MonoDevelop.VersionControl.Git.Commands.SwitchToBranch"/>
 		</ItemSet>
+		<SeparatorItem />
 		<CommandItem id = "MonoDevelop.VersionControl.Git.Commands.Merge"/>
+		<CommandItem id = "MonoDevelop.VersionControl.Git.Commands.Rebase"/>
 		<CommandItem id = "MonoDevelop.VersionControl.Git.Commands.ManageBranches"/>
+		<SeparatorItem />
+		<CommandItem id = "MonoDevelop.VersionControl.Git.Commands.Stash"/>
+		<CommandItem id = "MonoDevelop.VersionControl.Git.Commands.StashPop"/>
+		<CommandItem id = "MonoDevelop.VersionControl.Git.Commands.ManageStashes"/>
 		<SeparatorItem />
 	</Extension>
 	
@@ -69,6 +89,10 @@
 	
 	<Extension path = "/MonoDevelop/VersionControl/CommitDialogExtensions">
 		<Class class="MonoDevelop.VersionControl.Git.CommitDialogExtensionWidget" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/VersionControl">
+		<Section id = "Git" _label = "Git" class = "MonoDevelop.VersionControl.Git.GitOptionsPanel" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">

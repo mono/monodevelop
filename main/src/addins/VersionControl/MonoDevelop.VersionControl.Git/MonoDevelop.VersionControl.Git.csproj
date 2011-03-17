@@ -70,6 +70,13 @@
     <Compile Include="MonoDevelop.VersionControl.Git\CredentialsDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.CredentialsDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitCredentials.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git\GitOptionsPanelWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.GitOptionsPanelWidget.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git\GitOptionsPanel.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git\StashManagerDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.StashManagerDialog.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git\NewStashDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.NewStashDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
