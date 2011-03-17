@@ -79,9 +79,12 @@ namespace MonoDevelop.Projects
 					foreach (var node in AddinManager.GetExtensionNodes ("/MonoDevelop/ProjectModel/MonoDocSources"))
 						sources.Add (((MonoDocSourceNode)node).Directory);
 					
+					//remove nonexistent sources
+					foreach (var s in sources.ToList ().Where (d => !Directory.Exists (d)))
+						sources.Remove (s);
+					
 					foreach (var s in sources)
-						if (Directory.Exists (s))
-							helpTree.AddSource (s);
+						helpTree.AddSource (s);
 							
 				} catch (Exception ex) {
 					if (!(ex is ThreadAbortException) && !(ex.InnerException is ThreadAbortException))
