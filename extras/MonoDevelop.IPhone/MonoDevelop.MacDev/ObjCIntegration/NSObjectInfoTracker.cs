@@ -107,7 +107,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		}
 		
 		public event EventHandler TypesLoaded;
-		public event EventHandler UserTypeChanged;
+		public event EventHandler<UserTypeChangeEventArgs> UserTypeChanged;
 		
 		void ResolveTypes (ProjectDom dom, NSObjectTypeInfo type)
 		{
@@ -405,19 +405,29 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		}
 	}
 	
-	class UserTypeEventArgs : EventArgs
+	public class UserTypeChangeEventArgs : EventArgs
 	{
-		public UserTypeEventArgs (NSObjectTypeInfo type, UserTypeChange change)
+		public UserTypeChangeEventArgs (IList<UserTypeChange> changes)
+		{
+			this.Changes = changes;
+		}
+		
+		public IList<UserTypeChange> Changes { get; private set; }
+	}
+	
+	public class UserTypeChange
+	{
+		public UserTypeChange (NSObjectTypeInfo type, UserTypeChangeKind kind)
 		{
 			this.Type = type;
-			this.Change = change;
+			this.Kind = kind;
 		}
 		
 		public NSObjectTypeInfo Type { get; private set; }
-		public UserTypeChange Change { get; private set; }
+		public UserTypeChangeKind Kind { get; private set; }
 	}
 	
-	enum UserTypeChange
+	public enum UserTypeChangeKind
 	{
 		Added,
 		Removed,

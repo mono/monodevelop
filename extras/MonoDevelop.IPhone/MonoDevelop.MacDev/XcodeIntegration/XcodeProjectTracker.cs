@@ -37,46 +37,85 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 {
 	public class XcodeProjectTracker : IDisposable
 	{
+		string wrapperName;
 		DotNetProject dnp;
 		NSObjectInfoTracker typeTracker;
 		HashSet<string> userClasses = new HashSet<string> ();
 		
+		bool xcodeProjectDirty;
 		bool syncing;
+		bool disposed;
 		
 		FilePath outputDir;
 		
-		public XcodeProjectTracker (DotNetProject dnp, NSObjectInfoTracker typeTracker)
+		public XcodeProjectTracker (DotNetProject dnp, string wrapperName)
 		{
-			this.typeTracker = typeTracker;
 			this.dnp = dnp;
+			this.wrapperName = wrapperName;
 			
-			dnp.Saved += ProjectSaved;
-			dnp.FileChangedInProject += FileChangedInProject;
 			dnp.FileAddedToProject += FileAddedToProject;
+			dnp.FilePropertyChangedInProject += FilePropertyChangedInProject;
+			
+			if (dnp.Files.Any (IsPage))
+				EnableSyncing ();
+		}
+		
+		void EnableSyncing ()
+		{
+			if (syncing)
+				return;
+			syncing = true;
+			xcodeProjectDirty = true;
+			
+			typeTracker = new NSObjectInfoTracker (dnp, wrapperName);
+			UpdateOutputDir ();
+			
 			dnp.FileRemovedFromProject += FileRemovedFromProject;
 			dnp.NameChanged += ProjectNameChanged;
 			typeTracker.TypesLoaded += TypesLoaded;
+			typeTracker.UserTypeChanged += UserTypesChanged;
+		}
+		
+		void DisableSyncing ()
+		{
+			if (syncing)
+				return;
+			syncing = false;
+			xcodeProjectDirty = false;
 			
-			UpdateOutputDir ();
+			dnp.FileRemovedFromProject -= FileRemovedFromProject;
+			dnp.NameChanged -= ProjectNameChanged;
+			typeTracker.TypesLoaded -= TypesLoaded;
+			typeTracker.UserTypeChanged -= UserTypesChanged;
+			typeTracker.Dispose ();
+		}
+
+		void UserTypesChanged (object sender, UserTypeChangeEventArgs e)
+		{
+			foreach (var change in e.Changes) {
+				switch (change.Kind) {
+				case UserTypeChangeKind.Added:
+				case UserTypeChangeKind.Modified:
+					UpdateUserType (change.Type);
+					break;
+				case UserTypeChangeKind.Removed:
+					RemoveUserType (change.Type);
+					break;
+				}
+			}
 			
-			syncing = dnp.Files.Any (IsPage);
+			UpdateXcodeProject ();
 		}
 
 		void TypesLoaded (object sender, EventArgs e)
 		{
+			//TODO: skip types that were already in the project when MD was loaded
 			foreach (var ut in typeTracker.GetUserTypes ()) {
-				userClasses.Add (ut.ObjCName);
-				FilePath target = outputDir.Combine (ut.ObjCName + ".h");
-				if (File.Exists (target) && File.GetLastWriteTime (target) >= ut.DefinedIn.Max (f => File.GetLastWriteTime (f)))
-					continue;
-				if (!Directory.Exists (outputDir))
-					Directory.CreateDirectory (outputDir);
-				typeTracker.GenerateObjcType (ut, outputDir);
+				xcodeProjectDirty = true;
+				UpdateUserType (ut);
 			}
 			
-			if (syncing) {
-				UpdateXcodeProject ();
-			}
+			UpdateXcodeProject ();
 		}
 
 		void ProjectNameChanged (object sender, SolutionItemRenamedEventArgs e)
@@ -97,6 +136,11 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			return pf.BuildAction == BuildAction.Page;
 		}
 		
+		static bool IsContent (ProjectFile pf)
+		{
+			return pf.BuildAction == BuildAction.Content;
+		}
+		
 		static bool IsPageOrContent (ProjectFile pf)
 		{
 			return pf.BuildAction == BuildAction.Page || pf.BuildAction == BuildAction.Content;
@@ -105,30 +149,25 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		void FileRemovedFromProject (object sender, ProjectFileEventArgs e)
 		{
 			if (syncing && e.Any (finf => IsPage (finf.ProjectFile)))
-				syncing = dnp.Files.Any (IsPage);
-			if (!syncing)
-				return;
+				if (!dnp.Files.Any (IsPage))
+					DisableSyncing ();
 		}
 
 		void FileAddedToProject (object sender, ProjectFileEventArgs e)
 		{
 			if (!syncing && e.Any (finf => IsPage (finf.ProjectFile)))
-				syncing = true;
-			if (!syncing)
-				return;
+				EnableSyncing ();
 		}
 
-		void FileChangedInProject (object sender, ProjectFileEventArgs e)
+		void FilePropertyChangedInProject (object sender, ProjectFileEventArgs e)
 		{
-		}
-
-		void ProjectSaved (object sender, SolutionItemEventArgs e)
-		{
+			if (!syncing && e.Any (finf => IsPage (finf.ProjectFile)))
+				EnableSyncing ();
+			
+			if (!xcodeProjectDirty && syncing && e.Any (finf => IsContent (finf.ProjectFile)))
+				xcodeProjectDirty = true;
+			
 			UpdateXcodeProject ();
-		}
-		
-		void CopyAllFiles ()
-		{
 		}
 		
 		void CopyFile (ProjectFile p)
@@ -144,12 +183,44 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			}
 		}
 		
+		void UpdateUserType (NSObjectTypeInfo type)
+		{
+			if (userClasses.Add (type.ObjCName))
+				xcodeProjectDirty = true;
+			
+			FilePath target = outputDir.Combine (type.ObjCName + ".h");
+			if (File.Exists (target) && File.GetLastWriteTime (target) >= type.DefinedIn.Max (f => File.GetLastWriteTime (f)))
+				return;
+			
+			if (!Directory.Exists (outputDir))
+				Directory.CreateDirectory (outputDir);
+			
+			typeTracker.GenerateObjcType (type, outputDir);
+		}
+		
+		void RemoveUserType (NSObjectTypeInfo type)
+		{
+			userClasses.Remove (type.ObjCName);
+			xcodeProjectDirty = true;
+			
+			string header = outputDir.Combine (type.ObjCName + ".h");
+			if (File.Exists (header))
+				File.Delete (header);
+			string impl = outputDir.Combine (type.ObjCName + ".m");
+			if (File.Exists (impl))
+				File.Delete (impl);
+		}
+		
 		void UpdateXcodeProject ()
 		{
-			//TODO: need to update project if user class list changes
-			var projFile = outputDir.Combine (dnp.Name + ".xcodeproj", dnp.Name + ".pbxproj");
-			if (File.Exists (projFile) && File.GetLastWriteTime (dnp.FileName) <= File.GetLastWriteTime (projFile))
+			if (!syncing)
 				return;
+			
+			var projFile = outputDir.Combine (dnp.Name + ".xcodeproj", dnp.Name + ".pbxproj");
+			if (!xcodeProjectDirty && File.Exists (projFile))
+				return;
+			
+			xcodeProjectDirty = false;
 			
 			if (!Directory.Exists (outputDir))
 				Directory.CreateDirectory (outputDir);
@@ -170,10 +241,13 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		
 		public void Dispose ()
 		{
-			dnp.Saved -= ProjectSaved;
-			dnp.FileChangedInProject -= FileChangedInProject;
+			if (disposed)
+				return;
+			disposed = true;
+			
+			DisableSyncing ();
 			dnp.FileAddedToProject -= FileAddedToProject;
-			dnp.FileRemovedFromProject -= FileRemovedFromProject;
+			dnp.FilePropertyChangedInProject -= FilePropertyChangedInProject;;
 		}
 	}
 }
