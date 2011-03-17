@@ -69,15 +69,15 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			TextEditorData data = options.GetTextEditorData ();
 			if (data == null)
 				return false;
-			ResolveResult resolveResult;
 			if (data.IsSomethingSelected) {
 				ExpressionResult expressionResult = new ExpressionResult (data.SelectedText.Trim ());
 				if (expressionResult.Expression.Contains (" ") || expressionResult.Expression.Contains ("\t"))
 					expressionResult.Expression = "(" + expressionResult.Expression + ")";
-				resolveResult = resolver.Resolve (expressionResult, new DomLocation (data.Caret.Line, data.Caret.Column));
-				if (resolveResult == null)
+				var endPoint = data.MainSelection.Anchor < data.MainSelection.Lead ? data.MainSelection.Lead : data.MainSelection.Anchor; 
+				options.ResolveResult = resolver.Resolve (expressionResult, new DomLocation (endPoint.Line, endPoint.Column));
+				if (options.ResolveResult == null)
 					return false;
-				if (resolveResult.CallingMember == null || !resolveResult.CallingMember.BodyRegion.Contains (data.Caret.Line, data.Caret.Column))
+				if (options.ResolveResult.CallingMember == null || !options.ResolveResult.CallingMember.BodyRegion.Contains (endPoint.Line, endPoint.Column))
 					return false;
 				return true;
 			}
@@ -85,11 +85,11 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			string line = data.Document.GetTextAt (lineSegment);
 			Expression expression = provider.ParseExpression (line);
 			BlockStatement block = provider.ParseText (line) as BlockStatement;
-			if (expression == null || (block != null && block.Children[0] is LocalVariableDeclaration))
+			if (expression == null || (block != null && block.Children [0] is LocalVariableDeclaration))
 				return false;
 			
-			resolveResult = resolver.Resolve (new ExpressionResult (line), new DomLocation (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column));
-			return resolveResult.ResolvedType != null && !string.IsNullOrEmpty (resolveResult.ResolvedType.FullName) && resolveResult.ResolvedType.FullName != DomReturnType.Void.FullName;
+			options.ResolveResult = resolver.Resolve (new ExpressionResult (line), new DomLocation (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column));
+			return options.ResolveResult.ResolvedType != null && !string.IsNullOrEmpty (options.ResolveResult.ResolvedType.FullName) && options.ResolveResult.ResolvedType.FullName != DomReturnType.Void.FullName;
 		}
 		
 		public override void Run (RefactoringOptions options)
@@ -151,12 +151,19 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			TextEditorData data = options.GetTextEditorData ();
 			if (data == null)
 				return result;
+			
+			DocumentLocation endPoint;
+			if (data.IsSomethingSelected) {
+				endPoint = data.MainSelection.Anchor < data.MainSelection.Lead ? data.MainSelection.Lead : data.MainSelection.Anchor; 
+			} else {
+				endPoint = data.Caret.Location;
+			}
 			ResolveResult resolveResult;
 			LineSegment lineSegment;
 			ICSharpCode.NRefactory.Ast.CompilationUnit unit = provider.ParseFile (data.Document.Text);
-			var visitor = new VariableLookupVisitor (resolver, new DomLocation (data.Caret.Line, data.Caret.Column));
+			var visitor = new VariableLookupVisitor (resolver, new DomLocation (endPoint.Line, endPoint.Column));
 			if (options.ResolveResult == null) {
-				LoggingService.LogError ("resolve result == null:" + options.ResolveResult);
+				LoggingService.LogError ("Declare local error: resolve result == null");
 				return result;
 			}
 			IMember callingMember = options.ResolveResult.CallingMember;
@@ -168,7 +175,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				ExpressionResult expressionResult = new ExpressionResult (data.SelectedText.Trim ());
 				if (expressionResult.Expression.Contains (" ") || expressionResult.Expression.Contains ("\t"))
 					expressionResult.Expression = "(" + expressionResult.Expression + ")";
-				resolveResult = resolver.Resolve (expressionResult, new DomLocation (data.Caret.Line, data.Caret.Column));
+				resolveResult = resolver.Resolve (expressionResult, new DomLocation (endPoint.Line, endPoint.Column));
 				if (resolveResult == null)
 					return result;
 				IReturnType resolvedType = resolveResult.ResolvedType;
@@ -192,7 +199,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				varDecl.Variables.Add (new VariableDeclaration (varName, provider.ParseExpression (data.SelectedText)));
 				
 				GetContainingEmbeddedStatementVisitor blockVisitor = new GetContainingEmbeddedStatementVisitor ();
-				blockVisitor.LookupLocation = new Location (data.Caret.Column, data.Caret.Line );
+				blockVisitor.LookupLocation = new Location (endPoint.Column, endPoint.Line);
 			
 				unit.AcceptVisitor (blockVisitor, null);
 				
@@ -223,12 +230,12 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 					insert.RemovedChars = data.Document.LocationToOffset (blockVisitor.ContainingStatement.EndLocation.Line, blockVisitor.ContainingStatement.EndLocation.Column) - insert.Offset;
 					BlockStatement insertedBlock = new BlockStatement ();
 					insertedBlock.AddChild (varDecl);
-					if (blockVisitor.ContainsLocation (ifElse.TrueStatement[0])) {
-						insertedBlock.AddChild (ifElse.TrueStatement[0]);
-						ifElse.TrueStatement[0] = insertedBlock;
+					if (blockVisitor.ContainsLocation (ifElse.TrueStatement [0])) {
+						insertedBlock.AddChild (ifElse.TrueStatement [0]);
+						ifElse.TrueStatement [0] = insertedBlock;
 					} else {
-						insertedBlock.AddChild (ifElse.FalseStatement[0]);
-						ifElse.FalseStatement[0] = insertedBlock;
+						insertedBlock.AddChild (ifElse.FalseStatement [0]);
+						ifElse.FalseStatement [0] = insertedBlock;
 					}
 					
 					insert.InsertedText = provider.OutputNode (options.Dom, blockVisitor.ContainingStatement, options.GetWhitespaces (lineSegment.Offset));
@@ -290,7 +297,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 				
 				int idx = 0;
 				while (idx < insert.InsertedText.Length - varName.Length) {
-					if (insert.InsertedText.Substring (idx, varName.Length) == varName && (idx == 0 || insert.InsertedText[idx - 1] == ' ') && (idx == insert.InsertedText.Length - varName.Length - 1 || insert.InsertedText[idx + varName.Length] == ' ')) {
+					if (insert.InsertedText.Substring (idx, varName.Length) == varName && (idx == 0 || insert.InsertedText [idx - 1] == ' ') && (idx == insert.InsertedText.Length - varName.Length - 1 || insert.InsertedText [idx + varName.Length] == ' ')) {
 						selectionStart = insert.Offset + idx;
 						selectionEnd = selectionStart + varName.Length;
 						break;
@@ -366,7 +373,7 @@ namespace MonoDevelop.Refactoring.DeclareLocal
 			case "System.Object":
 				return new [] {"obj", "o"};
 			}
-			if (Char.IsLower (returnType.Name[0]))
+			if (Char.IsLower (returnType.Name [0]))
 				return new [] { "a" + Char.ToUpper (returnType.Name[0]) + returnType.Name.Substring (1) };
 			
 			return new [] { Char.ToLower (returnType.Name[0]) + returnType.Name.Substring (1) };
