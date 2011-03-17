@@ -18,7 +18,6 @@
     <OutputPath>..\..\..\build\AddIns\MonoDevelop.GtkCore2</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
@@ -30,7 +29,6 @@
     <OutputPath>..\..\..\build\AddIns\MonoDevelop.GtkCore2 </OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>

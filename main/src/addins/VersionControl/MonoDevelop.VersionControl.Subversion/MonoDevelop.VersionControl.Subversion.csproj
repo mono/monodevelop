@@ -18,7 +18,6 @@
     <OutputPath>..\..\..\..\build\AddIns\VersionControl</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Execution>
       <Execution clr-version="Net_2_0" />
@@ -30,7 +29,6 @@
     <OutputPath>..\..\..\..\build\AddIns\VersionControl\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Execution>
       <Execution clr-version="Net_2_0" />

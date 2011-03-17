@@ -17,7 +17,6 @@
     <OutputPath>..\..\..\build\AddIns\MonoDevelop.MsVisualStudio</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <AssemblyName>MonoDevelop.MsVisualStudio</AssemblyName>
     <Execution>
       <Execution clr-version="Net_2_0" />
@@ -29,7 +28,6 @@
     <OutputPath>..\..\..\build\AddIns\MonoDevelop.MsVisualStudio</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <AssemblyName>prj2make-sharp-lib</AssemblyName>
     <Execution>
       <Execution clr-version="Net_2_0" />

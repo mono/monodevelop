@@ -38,7 +38,6 @@
     <OutputPath>..\..\..\build\bin</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
@@ -56,7 +55,6 @@
         <Variable name="MONODEVELOP_LOCALE_PATH" value="../locale" />
       </EnvironmentVariables>
     </EnvironmentVariables>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <PlatformTarget>x86</PlatformTarget>
     <Execution>
       <Execution clr-version="Net_2_0" />
