@@ -62,6 +62,7 @@
       <HintPath>..\..\..\main\build\AddIns\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.MacDev.Plist\" />
@@ -112,6 +113,7 @@
     <Compile Include="XcodeIntegration\XcodeObject.cs" />
     <Compile Include="XcodeIntegration\XcodeProject.cs" />
     <Compile Include="XcodeIntegration\XcodeType.cs" />
+    <Compile Include="XcodeIntegration\XcodeProjectTracker.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">

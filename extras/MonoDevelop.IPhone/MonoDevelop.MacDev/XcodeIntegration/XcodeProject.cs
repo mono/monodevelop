@@ -96,6 +96,8 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			this.files.Add (target);
 			this.project.AddNativeTarget (nativeTarget);
 		}
+		
+		public string Name { get { return name; } }
 
 		PBXBuildFile AddFile (string name, string path, string tree)
 		{
@@ -148,9 +150,8 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 
 			if (!Directory.Exists (dir))
 				Directory.CreateDirectory (dir);
-
-			using (var writer = new StreamWriter (Path.Combine (dir, "project.pbxproj")))
-				writer.Write (this.ToString ());
+			
+			File.WriteAllText (Path.Combine (dir, "project.pbxproj"), this.ToString ());
 		}
 
 		public override string ToString ()
