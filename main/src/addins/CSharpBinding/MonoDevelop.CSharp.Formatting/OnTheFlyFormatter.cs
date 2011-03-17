@@ -86,7 +86,11 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 			sb.AppendLine ();
 			int startOffset = sb.Length;
-			sb.Append (data.Editor.GetTextBetween (member.Location.Line, 1, member.BodyRegion.End.Line + (runAferCR ? 1 : 0), member.BodyRegion.End.Column));
+			int memberStart = data.Editor.LocationToOffset (member.Location.Line, 1);
+			int memberEnd = data.Editor.LocationToOffset (member.BodyRegion.End.Line + (runAferCR ? 1 : 0), member.BodyRegion.End.Column);
+			if (memberEnd < 0)
+				memberEnd = data.Editor.Length;
+			sb.Append (data.Editor.GetTextBetween (memberStart, memberEnd));
 			int endOffset = sb.Length;
 			sb.AppendLine ();
 			sb.Append (new string ('}', closingBrackets));
