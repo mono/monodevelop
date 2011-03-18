@@ -665,7 +665,7 @@ namespace CBinding
 		    @"^\s*(?<file>.*):(?<line>\d*):\s*(?<level>.*)\s*:\s(?<message>.*)",
 		    RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 		private static Regex linkerRegex = new Regex (
-		    @"^\s*(?<file>[^:]*):(?<line>\d*):\s*(?<message>[^:]*)",
+		    @"^\s*(?<file>[^:]*):(?<line>\d*):\s*(?<message>.*)",
 		    RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 		
 		private CompilerError CreateErrorFromErrorString (string errorString, TextReader reader)
