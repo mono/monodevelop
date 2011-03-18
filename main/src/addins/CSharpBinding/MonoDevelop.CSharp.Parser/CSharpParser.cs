@@ -216,6 +216,12 @@ namespace MonoDevelop.CSharp.Parser
 				Console.WriteLine (member.GetType () + "-> Member {0}", member.GetSignatureForError ());
 			}
 			
+			ModuleContainer container;
+			public override void Visit (ModuleContainer mc)
+			{
+				this.container = mc;
+				base.Visit (mc);
+			}
 			Stack<TypeDeclaration> typeStack = new Stack<TypeDeclaration> ();
 			
 			public override void Visit (Class c)
@@ -1458,33 +1464,33 @@ namespace MonoDevelop.CSharp.Parser
 			public override object Visit (TypeExpression typeExpression)
 			{
 				string keyword;
-				if (typeExpression.Type == TypeManager.void_type) {
+				if (typeExpression.Type == container.Compiler.BuiltinTypes.Void) {
 					keyword = "void";
-				} else if (typeExpression.Type == TypeManager.string_type) {
+				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.String) {
 					keyword = "string";
-				} else if (typeExpression.Type == TypeManager.int32_type) {
+				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.Int) {
 					keyword = "int";
-				} else if (typeExpression.Type == TypeManager.object_type) {
+				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.Object) {
 					keyword = "object";
-				} else if (typeExpression.Type == TypeManager.float_type) {
+				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.Float) {
 					keyword = "float";
-				} else if (typeExpression.Type == TypeManager.double_type) {
+				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.Double) {
 					keyword = "double";
-				} else if (typeExpression.Type == TypeManager.int64_type) {
+				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.Long) {
 					keyword = "long";
-				} else if (typeExpression.Type == TypeManager.byte_type) {
+				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.Byte) {
 					keyword = "byte";
-				} else if (typeExpression.Type == TypeManager.uint32_type) {
+				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.UInt) {
 					keyword = "uint";
-				} else if (typeExpression.Type == TypeManager.uint64_type) {
+				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.ULong) {
 					keyword = "ulong";
-				} else if (typeExpression.Type == TypeManager.short_type) {
+				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.Short) {
 					keyword = "short";
-				} else if (typeExpression.Type == TypeManager.ushort_type) {
+				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.UShort) {
 					keyword = "ushort";
-				} else if (typeExpression.Type == TypeManager.sbyte_type) {
+				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.SByte) {
 					keyword = "sbyte";
-				} else if (typeExpression.Type == TypeManager.decimal_type) {
+				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.Decimal) {
 					keyword = "decimal";
 				} else {
 					keyword = "unknown";

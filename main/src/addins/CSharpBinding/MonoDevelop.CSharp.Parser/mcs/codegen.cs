@@ -101,6 +101,12 @@ namespace Mono.CSharp
 
 		#region Properties
 
+		public BuiltinTypes BuiltinTypes {
+			get {
+				return MemberContext.Module.Compiler.BuiltinTypes;
+			}
+		}
+
 		public TypeSpec CurrentType {
 			get { return member_context.CurrentType; }
 		}
@@ -361,40 +367,60 @@ namespace Mono.CSharp
 			}
 
 			var type = ac.Element;
-			if (TypeManager.IsEnumType (type))
+			if (type.Kind == MemberKind.Enum)
 				type = EnumSpec.GetUnderlyingType (type);
 
-			if (type == TypeManager.byte_type || type == TypeManager.bool_type)
+			switch (type.BuiltinType) {
+			case BuiltinTypeSpec.Type.Byte:
+			case BuiltinTypeSpec.Type.Bool:
 				Emit (OpCodes.Ldelem_U1);
-			else if (type == TypeManager.sbyte_type)
+				return;
+			case BuiltinTypeSpec.Type.SByte:
 				Emit (OpCodes.Ldelem_I1);
-			else if (type == TypeManager.short_type)
+				return;
+			case BuiltinTypeSpec.Type.Short:
 				Emit (OpCodes.Ldelem_I2);
-			else if (type == TypeManager.ushort_type || type == TypeManager.char_type)
+				return;
+			case BuiltinTypeSpec.Type.UShort:
+			case BuiltinTypeSpec.Type.Char:
 				Emit (OpCodes.Ldelem_U2);
-			else if (type == TypeManager.int32_type)
+				return;
+			case BuiltinTypeSpec.Type.Int:
 				Emit (OpCodes.Ldelem_I4);
-			else if (type == TypeManager.uint32_type)
+				return;
+			case BuiltinTypeSpec.Type.UInt:
 				Emit (OpCodes.Ldelem_U4);
-			else if (type == TypeManager.uint64_type)
+				return;
+			case BuiltinTypeSpec.Type.ULong:
+			case BuiltinTypeSpec.Type.Long:
 				Emit (OpCodes.Ldelem_I8);
-			else if (type == TypeManager.int64_type)
-				Emit (OpCodes.Ldelem_I8);
-			else if (type == TypeManager.float_type)
+				return;
+			case BuiltinTypeSpec.Type.Float:
 				Emit (OpCodes.Ldelem_R4);
-			else if (type == TypeManager.double_type)
+				return;
+			case BuiltinTypeSpec.Type.Double:
 				Emit (OpCodes.Ldelem_R8);
-			else if (type == TypeManager.intptr_type)
+				return;
+			case BuiltinTypeSpec.Type.IntPtr:
 				Emit (OpCodes.Ldelem_I);
-			else if (TypeManager.IsStruct (type)) {
+				return;
+			}
+
+			switch (type.Kind) {
+			case MemberKind.Struct:
 				Emit (OpCodes.Ldelema, type);
 				Emit (OpCodes.Ldobj, type);
-			} else if (type.IsGenericParameter) {
+				break;
+			case MemberKind.TypeParameter:
 				Emit (OpCodes.Ldelem, type);
-			} else if (type.IsPointer)
+				break;
+			case MemberKind.PointerType:
 				Emit (OpCodes.Ldelem_I);
-			else
+				break;
+			default:
 				Emit (OpCodes.Ldelem_Ref);
+				break;
+			}
 		}
 
 		//
@@ -412,31 +438,50 @@ namespace Mono.CSharp
 
 			var type = ac.Element;
 
-			if (type.IsEnum)
+			if (type.Kind == MemberKind.Enum)
 				type = EnumSpec.GetUnderlyingType (type);
 
-			if (type == TypeManager.byte_type || type == TypeManager.sbyte_type || type == TypeManager.bool_type)
+			switch (type.BuiltinType) {
+			case BuiltinTypeSpec.Type.Byte:
+			case BuiltinTypeSpec.Type.SByte:
+			case BuiltinTypeSpec.Type.Bool:
 				Emit (OpCodes.Stelem_I1);
-			else if (type == TypeManager.short_type || type == TypeManager.ushort_type || type == TypeManager.char_type)
+				return;
+			case BuiltinTypeSpec.Type.Short:
+			case BuiltinTypeSpec.Type.UShort:
+			case BuiltinTypeSpec.Type.Char:
 				Emit (OpCodes.Stelem_I2);
-			else if (type == TypeManager.int32_type || type == TypeManager.uint32_type)
+				return;
+			case BuiltinTypeSpec.Type.Int:
+			case BuiltinTypeSpec.Type.UInt:
 				Emit (OpCodes.Stelem_I4);
-			else if (type == TypeManager.int64_type || type == TypeManager.uint64_type)
+				return;
+			case BuiltinTypeSpec.Type.Long:
+			case BuiltinTypeSpec.Type.ULong:
 				Emit (OpCodes.Stelem_I8);
-			else if (type == TypeManager.float_type)
+				return;
+			case BuiltinTypeSpec.Type.Float:
 				Emit (OpCodes.Stelem_R4);
-			else if (type == TypeManager.double_type)
+				return;
+			case BuiltinTypeSpec.Type.Double:
 				Emit (OpCodes.Stelem_R8);
-			else if (type == TypeManager.intptr_type)
+				return;
+			}
+
+			switch (type.Kind) {
+			case MemberKind.Struct:
 				Emit (OpCodes.Stobj, type);
-			else if (TypeManager.IsStruct (type))
-				Emit (OpCodes.Stobj, type);
-			else if (type.IsGenericParameter)
+				break;
+			case MemberKind.TypeParameter:
 				Emit (OpCodes.Stelem, type);
-			else if (type.IsPointer)
+				break;
+			case MemberKind.PointerType:
 				Emit (OpCodes.Stelem_I);
-			else
+				break;
+			default:
 				Emit (OpCodes.Stelem_Ref);
+				break;
+			}
 		}
 
 		public void EmitInt (int i)
@@ -511,45 +556,59 @@ namespace Mono.CSharp
 		//
 		// Load the object from the pointer.  
 		//
-		public void EmitLoadFromPtr (TypeSpec t)
+		public void EmitLoadFromPtr (TypeSpec type)
 		{
-			if (t == TypeManager.int32_type)
+			if (type.Kind == MemberKind.Enum)
+				type = EnumSpec.GetUnderlyingType (type);
+
+			switch (type.BuiltinType) {
+			case BuiltinTypeSpec.Type.Int:
 				ig.Emit (OpCodes.Ldind_I4);
-			else if (t == TypeManager.uint32_type)
+				return;
+			case BuiltinTypeSpec.Type.UInt:
 				ig.Emit (OpCodes.Ldind_U4);
-			else if (t == TypeManager.short_type)
+				return;
+			case BuiltinTypeSpec.Type.Short:
 				ig.Emit (OpCodes.Ldind_I2);
-			else if (t == TypeManager.ushort_type)
+				return;
+			case BuiltinTypeSpec.Type.UShort:
+			case BuiltinTypeSpec.Type.Char:
 				ig.Emit (OpCodes.Ldind_U2);
-			else if (t == TypeManager.char_type)
-				ig.Emit (OpCodes.Ldind_U2);
-			else if (t == TypeManager.byte_type)
+				return;
+			case BuiltinTypeSpec.Type.Byte:
 				ig.Emit (OpCodes.Ldind_U1);
-			else if (t == TypeManager.sbyte_type)
+				return;
+			case BuiltinTypeSpec.Type.SByte:
+			case BuiltinTypeSpec.Type.Bool:
 				ig.Emit (OpCodes.Ldind_I1);
-			else if (t == TypeManager.uint64_type)
+				return;
+			case BuiltinTypeSpec.Type.ULong:
+			case BuiltinTypeSpec.Type.Long:
 				ig.Emit (OpCodes.Ldind_I8);
-			else if (t == TypeManager.int64_type)
-				ig.Emit (OpCodes.Ldind_I8);
-			else if (t == TypeManager.float_type)
+				return;
+			case BuiltinTypeSpec.Type.Float:
 				ig.Emit (OpCodes.Ldind_R4);
-			else if (t == TypeManager.double_type)
+				return;
+			case BuiltinTypeSpec.Type.Double:
 				ig.Emit (OpCodes.Ldind_R8);
-			else if (t == TypeManager.bool_type)
-				ig.Emit (OpCodes.Ldind_I1);
-			else if (t == TypeManager.intptr_type)
+				return;
+			case BuiltinTypeSpec.Type.IntPtr:
 				ig.Emit (OpCodes.Ldind_I);
-			else if (t.IsEnum) {
-				if (t == TypeManager.enum_type)
-					ig.Emit (OpCodes.Ldind_Ref);
-				else
-					EmitLoadFromPtr (EnumSpec.GetUnderlyingType (t));
-			} else if (TypeManager.IsStruct (t) || TypeManager.IsGenericParameter (t))
-				Emit (OpCodes.Ldobj, t);
-			else if (t.IsPointer)
+				return;
+			}
+
+			switch (type.Kind) {
+			case MemberKind.Struct:
+			case MemberKind.TypeParameter:
+				Emit (OpCodes.Ldobj, type);
+				break;
+			case MemberKind.PointerType:
 				ig.Emit (OpCodes.Ldind_I);
-			else
+				break;
+			default:
 				ig.Emit (OpCodes.Ldind_Ref);
+				break;
+			}
 		}
 
 		//
@@ -560,23 +619,37 @@ namespace Mono.CSharp
 			if (type.IsEnum)
 				type = EnumSpec.GetUnderlyingType (type);
 
-			if (type == TypeManager.int32_type || type == TypeManager.uint32_type)
+			switch (type.BuiltinType) {
+			case BuiltinTypeSpec.Type.Int:
+			case BuiltinTypeSpec.Type.UInt:
 				ig.Emit (OpCodes.Stind_I4);
-			else if (type == TypeManager.int64_type || type == TypeManager.uint64_type)
+				return;
+			case BuiltinTypeSpec.Type.Long:
+			case BuiltinTypeSpec.Type.ULong:
 				ig.Emit (OpCodes.Stind_I8);
-			else if (type == TypeManager.char_type || type == TypeManager.short_type ||
-				 type == TypeManager.ushort_type)
+				return;
+			case BuiltinTypeSpec.Type.Char:
+			case BuiltinTypeSpec.Type.Short:
+			case BuiltinTypeSpec.Type.UShort:
 				ig.Emit (OpCodes.Stind_I2);
-			else if (type == TypeManager.float_type)
+				return;
+			case BuiltinTypeSpec.Type.Float:
 				ig.Emit (OpCodes.Stind_R4);
-			else if (type == TypeManager.double_type)
+				return;
+			case BuiltinTypeSpec.Type.Double:
 				ig.Emit (OpCodes.Stind_R8);
-			else if (type == TypeManager.byte_type || type == TypeManager.sbyte_type ||
-				 type == TypeManager.bool_type)
+				return;
+			case BuiltinTypeSpec.Type.Byte:
+			case BuiltinTypeSpec.Type.SByte:
+			case BuiltinTypeSpec.Type.Bool:
 				ig.Emit (OpCodes.Stind_I1);
-			else if (type == TypeManager.intptr_type)
+				return;
+			case BuiltinTypeSpec.Type.IntPtr:
 				ig.Emit (OpCodes.Stind_I);
-			else if (TypeManager.IsStruct (type) || TypeManager.IsGenericParameter (type))
+				return;
+			}
+
+			if (type.IsStruct || TypeManager.IsGenericParameter (type))
 				Emit (OpCodes.Stobj, type);
 			else
 				ig.Emit (OpCodes.Stind_Ref);

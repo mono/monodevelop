@@ -40,7 +40,7 @@ namespace Mono.CSharp
 			}
 		}
 
-		void tokenize_file (CompilationUnit file)
+		void tokenize_file (CompilationSourceFile file)
 		{
 			Stream input;
 
@@ -69,20 +69,20 @@ namespace Mono.CSharp
 
 		void Parse (ModuleContainer module)
 		{
-			Location.Initialize ();
+			Location.Initialize (module.Compiler.SourceFiles);
 
-			bool tokenize_only = ctx.Settings.TokenizeOnly;
-			var cu = Location.SourceFiles;
-			for (int i = 0; i < cu.Count; ++i) {
+			bool tokenize_only = module.Compiler.Settings.TokenizeOnly;
+			var sources = module.Compiler.SourceFiles;
+			for (int i = 0; i < sources.Count; ++i) {
 				if (tokenize_only) {
-					tokenize_file (cu[i]);
+					tokenize_file (sources[i]);
 				} else {
-					Parse (cu[i], module);
+					Parse (sources[i], module);
 				}
 			}
 		}
 
-		void Parse (CompilationUnit file, ModuleContainer module)
+		void Parse (CompilationSourceFile file, ModuleContainer module)
 		{
 			Stream input;
 
@@ -108,9 +108,11 @@ namespace Mono.CSharp
 			input.Close ();
 		}	
 		
-		public void Parse (SeekableStreamReader reader, CompilationUnit file, ModuleContainer module)
+		public void Parse (SeekableStreamReader reader, CompilationSourceFile file, ModuleContainer module)
 		{
-			CSharpParser parser = new CSharpParser (reader, file, module);
+			file.NamespaceContainer = new NamespaceEntry (module, null, file, null);
+
+			CSharpParser parser = new CSharpParser (reader, file);
 			parser.parse ();
 		}
 		
@@ -197,7 +199,7 @@ namespace Mono.CSharp
 			// If we are an exe, require a source file for the entry point or
 			// if there is nothing to put in the assembly, and we are not a library
 			//
-			if (Location.FirstFile == null &&
+			if (settings.FirstSourceFile == null &&
 				((settings.Target == Target.Exe || settings.Target == Target.WinExe || settings.Target == Target.Module) ||
 				settings.Resources == null)) {
 				Report.Error (2008, "No files to compile were specified");
@@ -218,8 +220,11 @@ namespace Mono.CSharp
 			if (Report.Errors > 0)
 				return false;
 
-			if (settings.TokenizeOnly || settings.ParseOnly)
+			if (settings.TokenizeOnly || settings.ParseOnly) {
+				tr.StopTotal ();
+				tr.ShowStats ();
 				return true;
+			}
 
 			if (RootContext.ToplevelTypes.NamespaceEntry != null)
 				throw new InternalErrorException ("who set it?");
@@ -227,13 +232,14 @@ namespace Mono.CSharp
 			var output_file = settings.OutputFile;
 			string output_file_name;
 			if (output_file == null) {
-				output_file_name = Location.FirstFile;
+				var source_file = settings.FirstSourceFile;
 
-				if (output_file_name == null) {
+				if (source_file == null) {
 					Report.Error (1562, "If no source files are specified you must specify the output file with -out:");
 					return false;
 				}
 
+				output_file_name = source_file.Name;
 				int pos = output_file_name.LastIndexOf ('.');
 
 				if (pos > 0)
@@ -266,7 +272,7 @@ namespace Mono.CSharp
 			references_loader.LoadReferences (module);
 
 			tr.Start (TimeReporter.TimerType.PredefinedTypesInit);
-			if (!ctx.BuildinTypes.CheckDefinitions (module))
+			if (!ctx.BuiltinTypes.CheckDefinitions (module))
 				return false;
 
 			tr.Stop (TimeReporter.TimerType.PredefinedTypesInit);
@@ -276,13 +282,13 @@ namespace Mono.CSharp
 			var assembly = new AssemblyDefinitionDynamic (module, output_file_name, output_file);
 			module.SetDeclaringAssembly (assembly);
 
-			var importer = new ReflectionImporter (module, ctx.BuildinTypes);
+			var importer = new ReflectionImporter (module, ctx.BuiltinTypes);
 			assembly.Importer = importer;
 
 			var loader = new DynamicLoader (importer, ctx);
 			loader.LoadReferences (module);
 
-			if (!ctx.BuildinTypes.CheckDefinitions (module))
+			if (!ctx.BuiltinTypes.CheckDefinitions (module))
 				return false;
 
 			if (!assembly.Create (AppDomain.CurrentDomain, AssemblyBuilderAccess.Save))
@@ -292,6 +298,14 @@ namespace Mono.CSharp
 
 			loader.LoadModules (assembly, module.GlobalRootNamespace);
 #endif
+			module.InitializePredefinedTypes ();
+
+			tr.Start (TimeReporter.TimerType.UsingResolve);
+			foreach (var source_file in ctx.SourceFiles) {
+				source_file.NamespaceContainer.Resolve ();
+			}
+			tr.Stop (TimeReporter.TimerType.UsingResolve);
+
 			tr.Start (TimeReporter.TimerType.ModuleDefinitionTotal);
 			module.Define ();
 			tr.Stop (TimeReporter.TimerType.ModuleDefinitionTotal);
@@ -303,17 +317,6 @@ namespace Mono.CSharp
 				!settings.Documentation.OutputDocComment (
 					output_file, Report))
 				return false;
-
-			//
-			// Verify using aliases now
-			//
-			tr.Start (TimeReporter.TimerType.UsingVerification);
-			NamespaceEntry.VerifyAllUsing ();
-			tr.Stop (TimeReporter.TimerType.UsingVerification);
-			
-			if (Report.Errors > 0){
-				return false;
-			}
 
 			assembly.Resolve ();
 			
@@ -404,28 +407,12 @@ namespace Mono.CSharp
 			if (!full_flag)
 				return;
 
-			RootContext.Reset (full_flag);
-			TypeManager.Reset ();
-			ReferenceContainer.Reset ();
-			PointerContainer.Reset ();
-			Parameter.Reset ();
-
-			Unary.Reset ();
-			UnaryMutator.Reset ();
-			Binary.Reset ();
-			ConstantFold.Reset ();
-			CastFromDecimal.Reset ();
-			StringConcat.Reset ();
-			
-			NamespaceEntry.Reset ();
-			Attribute.Reset ();
 			AnonymousTypeClass.Reset ();
 			AnonymousMethodBody.Reset ();
 			AnonymousMethodStorey.Reset ();
 			SymbolWriter.Reset ();
 			Switch.Reset ();
 			Linq.QueryBlock.TransparentParameter.Reset ();
-			Convert.Reset ();
 			TypeInfo.Reset ();
 		}
 		
@@ -435,44 +422,42 @@ namespace Mono.CSharp
 		}
 		
 		internal static object parseLock = new object ();
+
 		public static CompilerCompilationUnit ParseFile (string[] args, Stream input, string inputFile, ReportPrinter reportPrinter)
 		{
 			lock (parseLock) {
 				try {
-//                                     Driver d = Driver.Create (args, false, null, reportPrinter);
-//                                     if (d == null)
-//                                             return null;
+					//                                     Driver d = Driver.Create (args, false, null, reportPrinter);
+					//                                     if (d == null)
+					//                                             return null;
        
-                                       var r = new Report (reportPrinter);
-                                       CommandLineParser cmd = new CommandLineParser (r, Console.Out);
-                                       var setting = cmd.ParseArguments (args);
-                                       if (setting == null || r.Errors > 0)
+					var r = new Report (reportPrinter);
+					CommandLineParser cmd = new CommandLineParser (r, Console.Out);
+					var setting = cmd.ParseArguments (args);
+					if (setting == null || r.Errors > 0)
 						return null;
 
-                                       CompilerContext ctx = new CompilerContext (setting, r);
-                                       var d = new Driver (ctx);
+					CompilerContext ctx = new CompilerContext (setting, r);
+					
+					var files = new List<CompilationSourceFile> ();
+					var unit = new CompilationSourceFile (inputFile, inputFile, 0);
+					var module = new ModuleContainer (ctx);
+					unit.NamespaceContainer = new NamespaceEntry (module, null, unit, null);
+					files.Add (unit);
+					Location.Initialize (files);
 
-					Location.AddFile (null, inputFile);
-					Location.Initialize ();
-	
 					// TODO: encoding from driver
 					SeekableStreamReader reader = new SeekableStreamReader (input, Encoding.Default);
+				
+					RootContext.ToplevelTypes = module;
 					
-					RootContext.ToplevelTypes = new ModuleContainer (ctx);
-					CompilationUnit unit = null;
-					try {
-						unit = (CompilationUnit) Location.SourceFiles [0];
-					} catch (Exception) {
-						string path = Path.GetFullPath (inputFile);
-						unit = new CompilationUnit (inputFile, path, 0);
-					}
-					CSharpParser parser = new CSharpParser (reader, unit, RootContext.ToplevelTypes);
+					CSharpParser parser = new CSharpParser (reader, unit);
 					parser.Lexer.TabSize = 1;
 					parser.Lexer.sbag = new SpecialsBag ();
 					parser.LocationsBag = new LocationsBag ();
 					parser.UsingsBag = new UsingsBag ();
 					parser.parse ();
-					
+				
 					return new CompilerCompilationUnit () { ModuleCompiled = RootContext.ToplevelTypes, LocationsBag = parser.LocationsBag, UsingsBag = parser.UsingsBag, SpecialsBag = parser.Lexer.sbag };
 				} finally {
 					Reset ();

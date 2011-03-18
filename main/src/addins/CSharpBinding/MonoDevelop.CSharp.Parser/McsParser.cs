@@ -384,41 +384,41 @@ namespace MonoDevelop.CSharp.Parser
 			{
 				if (typeName is TypeExpression) {
 					var typeExpr = (Mono.CSharp.TypeExpression)typeName;
-					if (typeExpr.Type == Mono.CSharp.TypeManager.object_type)
+					if (typeExpr.Type == container.Compiler.BuiltinTypes.Object)
 						return new DomReturnType (DomReturnType.Object.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.string_type)
+					if (typeExpr.Type == container.Compiler.BuiltinTypes.String)
 						return new DomReturnType (DomReturnType.String.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.int32_type)
+					if (typeExpr.Type == container.Compiler.BuiltinTypes.Int)
 						return new DomReturnType (DomReturnType.Int32.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.uint32_type)
+					if (typeExpr.Type == container.Compiler.BuiltinTypes.UInt)
 						return new DomReturnType (DomReturnType.UInt32.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.int64_type)
+					if (typeExpr.Type == container.Compiler.BuiltinTypes.Long)
 						return new DomReturnType (DomReturnType.Int64.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.uint64_type)
+					if (typeExpr.Type == container.Compiler.BuiltinTypes.ULong)
 						return new DomReturnType (DomReturnType.UInt64.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.float_type)
+					if (typeExpr.Type == container.Compiler.BuiltinTypes.Float)
 						return new DomReturnType (DomReturnType.Float.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.double_type)
+					if (typeExpr.Type == container.Compiler.BuiltinTypes.Double)
 						return new DomReturnType (DomReturnType.Double.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.char_type)
+					if (typeExpr.Type == container.Compiler.BuiltinTypes.Char)
 						return new DomReturnType (DomReturnType.Char.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.short_type)
+					if (typeExpr.Type == container.Compiler.BuiltinTypes.Short)
 						return new DomReturnType (DomReturnType.Int16.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.decimal_type)
+					if (typeExpr.Type == container.Compiler.BuiltinTypes.Decimal)
 						return new DomReturnType (DomReturnType.Decimal.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.bool_type)
+					if (typeExpr.Type == container.Compiler.BuiltinTypes.Bool)
 						return new DomReturnType (DomReturnType.Bool.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.sbyte_type)
+					if (typeExpr.Type == container.Compiler.BuiltinTypes.SByte)
 						return new DomReturnType (DomReturnType.SByte.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.byte_type)
+					if (typeExpr.Type == container.Compiler.BuiltinTypes.Byte)
 						return new DomReturnType (DomReturnType.Byte.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.ushort_type)
+					if (typeExpr.Type == container.Compiler.BuiltinTypes.UShort)
 						return new DomReturnType (DomReturnType.UInt16.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.void_type)
+					if (typeExpr.Type == container.Compiler.BuiltinTypes.Void)
 						return new DomReturnType (DomReturnType.Void.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.intptr_type)
+					if (typeExpr.Type == container.Compiler.BuiltinTypes.IntPtr)
 						return new DomReturnType (DomReturnType.IntPtr.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.uintptr_type)
+					if (typeExpr.Type == container.Compiler.BuiltinTypes.UIntPtr)
 						return new DomReturnType (DomReturnType.UIntPtr.FullName);
 					MonoDevelop.Core.LoggingService.LogError ("Error while converting :" + typeName + " - unknown type value");
 					return DomReturnType.Void;
@@ -472,6 +472,7 @@ namespace MonoDevelop.CSharp.Parser
 			#region Global
 			string currentNamespaceName = "";
 			Stack<UsingsBag.Namespace> currentNamespace = new Stack<UsingsBag.Namespace> ();
+			ModuleContainer container;
 			
 			string ConvertToString (MemberName name)
 			{
@@ -484,6 +485,7 @@ namespace MonoDevelop.CSharp.Parser
 			
 			public override void Visit (ModuleContainer mc)
 			{
+				this.container = mc;
 				foreach (var at in ConvertAttributes (mc.OptAttributes, mc))
 					Unit.Add (at);
 			}
