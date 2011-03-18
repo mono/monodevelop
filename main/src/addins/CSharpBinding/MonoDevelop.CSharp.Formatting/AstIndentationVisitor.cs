@@ -70,6 +70,11 @@ namespace MonoDevelop.CSharp.Formatting
 			set;
 		}
 		
+		public bool HadErrors {
+			get;
+			set;
+		}
+		
 		public AstIndentationVisitor (CSharpFormattingPolicy policy, TextEditorData data)
 		{
 			this.policy = policy;
@@ -621,7 +626,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitComment (MonoDevelop.CSharp.Ast.Comment comment, object data)
 		{
-			if (comment.StartsLine)
+			if (comment.StartsLine && !HadErrors)
 				FixIndentation (comment.StartLocation);
 			return null;
 		}

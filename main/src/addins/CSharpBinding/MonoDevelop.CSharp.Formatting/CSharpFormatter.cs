@@ -88,18 +88,21 @@ namespace MonoDevelop.CSharp.Formatting
 			//		OnTheFlyFormatter.Format (policyParent, mimeTypeChain, data, dom, caretLocation, true);
 		}
 
-		public override void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
+		public override void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, 
 			TextEditorData data, int startOffset, int endOffset)
 		{
-			var compilationUnit = new MonoDevelop.CSharp.Parser.CSharpParser ().Parse (data);
+			var parser = new MonoDevelop.CSharp.Parser.CSharpParser ();
+			var compilationUnit = parser.Parse (data);
+			bool hadErrors = parser.ErrorReportPrinter.ErrorsCount + parser.ErrorReportPrinter.FatalCounter > 0;
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 			var domSpacingVisitor = new AstSpacingVisitor (policy, data) {
 				AutoAcceptChanges = false,
 			};
 			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
-
+			
 			var domIndentationVisitor = new AstIndentationVisitor (policy, data) {
 				AutoAcceptChanges = false,
+				HadErrors = hadErrors
 			};
 			compilationUnit.AcceptVisitor (domIndentationVisitor, null);
 
@@ -112,7 +115,7 @@ namespace MonoDevelop.CSharp.Formatting
 			RefactoringService.AcceptChanges (null, null, changes);
 		}
 
-		public override string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
+		public override string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, 
 			string input, int startOffset, int endOffset)
 		{
 			var data = new TextEditorData ();
@@ -130,16 +133,19 @@ namespace MonoDevelop.CSharp.Formatting
 			//System.Console.WriteLine (data.Text.Replace (" ", ".").Replace ("\t", "->"));
 			//System.Console.WriteLine ("-----");
 
-			var compilationUnit = new MonoDevelop.CSharp.Parser.CSharpParser ().Parse (data);
+			MonoDevelop.CSharp.Parser.CSharpParser parser = new MonoDevelop.CSharp.Parser.CSharpParser ();
+			var compilationUnit = parser.Parse (data);
+			bool hadErrors = parser.ErrorReportPrinter.ErrorsCount + parser.ErrorReportPrinter.FatalCounter > 0;
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 
 			var domSpacingVisitor = new AstSpacingVisitor (policy, data) {
-				AutoAcceptChanges = false,
+				AutoAcceptChanges = false
 			};
 			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
 
 			var domIndentationVisitor = new AstIndentationVisitor (policy, data) {
 				AutoAcceptChanges = false,
+				HadErrors = hadErrors
 			};
 			compilationUnit.AcceptVisitor (domIndentationVisitor, null);
 

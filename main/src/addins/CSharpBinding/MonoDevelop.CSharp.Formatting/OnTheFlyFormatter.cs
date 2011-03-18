@@ -97,6 +97,7 @@ namespace MonoDevelop.CSharp.Formatting
 			TextEditorData stubData = new TextEditorData () { Text = sb.ToString () };
 			stubData.Document.FileName = data.FileName;
 			var parser = new MonoDevelop.CSharp.Parser.CSharpParser ();
+			bool hadErrors = parser.ErrorReportPrinter.ErrorsCount + parser.ErrorReportPrinter.FatalCounter > 0;
 			var compilationUnit = parser.Parse (stubData);
 			
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
@@ -107,6 +108,8 @@ namespace MonoDevelop.CSharp.Formatting
 
 			var domIndentationVisitor = new AstIndentationVisitor (policy, stubData) {
 				AutoAcceptChanges = false,
+				HadErrors = hadErrors
+				
 			};
 			domIndentationVisitor.CorrectBlankLines = correctBlankLines;
 			compilationUnit.AcceptVisitor (domIndentationVisitor, null);
