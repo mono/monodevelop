@@ -474,7 +474,7 @@ namespace MonoDevelop.VersionControl.Views
 				return;
 			Gtk.TreeIter selectIter = Gtk.TreeIter.Zero;
 			bool select = false;
-			foreach (RevisionPath rp in d.ChangedFiles) {
+			foreach (RevisionPath rp in info.Repository.GetRevisionChanges (d)) {
 				Gdk.Pixbuf actionIcon;
 				string action = null;
 				if (rp.Action == RevisionAction.Add) {

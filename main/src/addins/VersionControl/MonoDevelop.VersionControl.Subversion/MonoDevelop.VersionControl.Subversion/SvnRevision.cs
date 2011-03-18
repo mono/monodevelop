@@ -37,6 +37,8 @@ namespace MonoDevelop.VersionControl.Subversion
 		public readonly int Rev;
 		public readonly int Kind;
 		
+		public readonly RevisionPath[] ChangedFiles;
+		
 		public SvnRevision (Repository repo, int rev): base (repo) 
 		{
 			Rev = rev;
@@ -49,8 +51,9 @@ namespace MonoDevelop.VersionControl.Subversion
 		}
 		
 		public SvnRevision (Repository repo, int rev, DateTime time, string author, string message, RevisionPath[] changedFiles)
-			: base (repo, time, author, message, changedFiles)
+			: base (repo, time, author, message)
 		{
+			this.ChangedFiles = changedFiles;
 			Rev = rev;
 			Kind = 1;
 		}

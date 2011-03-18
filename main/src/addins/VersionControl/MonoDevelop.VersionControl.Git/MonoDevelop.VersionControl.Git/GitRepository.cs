@@ -135,44 +135,57 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			List<Revision> revs = new List<Revision> ();
 			
-			RevWalk walk = new RevWalk (repo);
 			var hc = GetHeadCommit ();
 			if (hc == null)
 				return new GitRevision [0];
+			
+			RevWalk walk = new RevWalk (repo);
+			string path = ToGitPath (localFile);
+			if (path != ".")
+				walk.SetTreeFilter (AndTreeFilter.Create (TreeFilter.ANY_DIFF, PathFilter.Create (path)));
 			walk.MarkStart (hc);
 			
 			foreach (RevCommit commit in walk) {
-				List<RevisionPath> paths = new List<RevisionPath> ();
-				foreach (Change change in GitUtil.GetCommitChanges (repo, commit)) {
-					FilePath cpath = FromGitPath (change.Path);
-					if (cpath != localFile && !cpath.IsChildPathOf (localFile))
-						continue;
-					RevisionAction ra;
-					switch (change.ChangeType) {
-					case ChangeType.Added:
-						ra = RevisionAction.Add;
-						break;
-					case ChangeType.Deleted:
-						ra = RevisionAction.Delete;
-						break;
-					default:
-						ra = RevisionAction.Modify;
-						break;
-					}
-					RevisionPath p = new RevisionPath (cpath, ra, null);
-					paths.Add (p);
-				}
-				if (paths.Count > 0) {
-					PersonIdent author = commit.GetAuthorIdent ();
-					GitRevision rev = new GitRevision (this, commit.Id.Name, author.GetWhen().ToLocalTime (), author.GetName (), commit.GetFullMessage (), paths.ToArray ());
-					rev.Email = author.GetEmailAddress ();
-					rev.ShortMessage = commit.GetShortMessage ();
-					revs.Add (rev);
-				}
+				PersonIdent author = commit.GetAuthorIdent ();
+				GitRevision rev = new GitRevision (this, commit.Id.Name, author.GetWhen().ToLocalTime (), author.GetName (), commit.GetFullMessage ());
+				rev.Email = author.GetEmailAddress ();
+				rev.ShortMessage = commit.GetShortMessage ();
+				rev.Commit = commit;
+				rev.FileForChanges = localFile;
+				revs.Add (rev);
 			}
 			return revs.ToArray ();
 		}
-
+		
+		protected override RevisionPath[] OnGetRevisionChanges (Revision revision)
+		{
+			GitRevision rev = (GitRevision) revision;
+			if (rev.Commit == null)
+				return new RevisionPath [0];
+			
+			List<RevisionPath> paths = new List<RevisionPath> ();
+			
+			foreach (Change change in GitUtil.GetCommitChanges (repo, rev.Commit)) {
+				FilePath cpath = FromGitPath (change.Path);
+				if (!rev.FileForChanges.IsNull && cpath != rev.FileForChanges && !cpath.IsChildPathOf (rev.FileForChanges))
+					continue;
+				RevisionAction ra;
+				switch (change.ChangeType) {
+				case ChangeType.Added:
+					ra = RevisionAction.Add;
+					break;
+				case ChangeType.Deleted:
+					ra = RevisionAction.Delete;
+					break;
+				default:
+					ra = RevisionAction.Modify;
+					break;
+				}
+				RevisionPath p = new RevisionPath (cpath, ra, null);
+				paths.Add (p);
+			}
+			return paths.ToArray ();
+		}
 
 
 		protected override IEnumerable<VersionInfo> OnGetVersionInfo (IEnumerable<FilePath> paths, bool getRemoteStatus)
@@ -1436,13 +1449,16 @@ namespace MonoDevelop.VersionControl.Git
 	public class GitRevision: Revision
 	{
 		string rev;
+		
+		internal RevCommit Commit { get; set; }
+		internal FilePath FileForChanges { get; set; }
 
 		public GitRevision (Repository repo, string rev) : base(repo)
 		{
 			this.rev = rev;
 		}
 
-		public GitRevision (Repository repo, string rev, DateTime time, string author, string message, RevisionPath[] changedFiles) : base(repo, time, author, message, changedFiles)
+		public GitRevision (Repository repo, string rev, DateTime time, string author, string message) : base(repo, time, author, message)
 		{
 			this.rev = rev;
 		}
