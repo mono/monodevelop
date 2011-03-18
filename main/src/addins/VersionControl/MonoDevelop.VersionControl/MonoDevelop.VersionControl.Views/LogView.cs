@@ -15,7 +15,6 @@ namespace MonoDevelop.VersionControl.Views
 		LogWidget widget;
 		Repository vc;
 		VersionInfo vinfo;
-		Gtk.ToolButton revertButton, revertToButton;
 		
 		ListStore changedpathstore;
 		
@@ -85,19 +84,6 @@ namespace MonoDevelop.VersionControl.Views
 			this.filepath = info.Item.Path;
 			var lw = new LogWidget (info);
 			
-			revertButton = new Gtk.ToolButton (new Gtk.Image ("vc-revert-command", Gtk.IconSize.Menu), GettextCatalog.GetString ("Revert changes from this revision"));
-			revertButton.IsImportant = true;
-//			revertButton.Sensitive = false;
-			revertButton.Clicked += new EventHandler (RevertRevisionClicked);
-			lw.CommandBar.Insert (revertButton, -1);
-			
-			revertToButton = new Gtk.ToolButton (new Gtk.Image ("vc-revert-command", Gtk.IconSize.Menu), GettextCatalog.GetString ("Revert to this revision"));
-			revertToButton.IsImportant = true;
-//			revertToButton.Sensitive = false;
-			revertToButton.Clicked += new EventHandler (RevertToRevisionClicked);
-			lw.CommandBar.Insert (revertToButton, -1);
-			lw.CommandBar.ShowAll ();
-			
 			widget = lw;
 			info.Updated += delegate {
 				lw.History = this.info.History;
@@ -127,36 +113,10 @@ namespace MonoDevelop.VersionControl.Views
 			info.VersionInfo = vinfo;
 			var lw = new LogWidget (info);
 			
-			revertButton = new Gtk.ToolButton (new Gtk.Image ("vc-revert-command", Gtk.IconSize.Menu), GettextCatalog.GetString ("Revert changes from this revision"));
-			revertButton.IsImportant = true;
-//			revertButton.Sensitive = false;
-			revertButton.Clicked += new EventHandler (RevertRevisionClicked);
-			lw.CommandBar.Insert (revertButton, -1);
-			
-			revertToButton = new Gtk.ToolButton (new Gtk.Image ("vc-revert-command", Gtk.IconSize.Menu), GettextCatalog.GetString ("Revert to this revision"));
-			revertToButton.IsImportant = true;
-//			revertToButton.Sensitive = false;
-			revertToButton.Clicked += new EventHandler (RevertToRevisionClicked);
-			lw.CommandBar.Insert (revertToButton, -1);
-			lw.CommandBar.ShowAll ();
 			widget = lw;
 			lw.History = history;
 		}
 
-		
-		void RevertToRevisionClicked (object src, EventArgs args) {
-			Revision d = widget.SelectedRevision;
-			if (RevertRevisionsCommands.RevertToRevision (vc, filepath, d, false))
-				VersionControlService.SetCommitComment (filepath, 
-				  string.Format ("(Revert to revision {0})", d.ToString ()), true);
-		}
-		
-		void RevertRevisionClicked (object src, EventArgs args) {
-			Revision d = widget.SelectedRevision;
-			if (RevertRevisionsCommands.RevertRevision (vc, filepath, d, false))
-				VersionControlService.SetCommitComment (filepath, 
-				  string.Format ("(Revert revision {0})", d.ToString ()), true);
-		}
 		
 		public override Gtk.Widget Control { 
 			get {
