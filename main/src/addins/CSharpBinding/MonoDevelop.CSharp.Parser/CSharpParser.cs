@@ -216,12 +216,6 @@ namespace MonoDevelop.CSharp.Parser
 				Console.WriteLine (member.GetType () + "-> Member {0}", member.GetSignatureForError ());
 			}
 			
-			ModuleContainer container;
-			public override void Visit (ModuleContainer mc)
-			{
-				this.container = mc;
-				base.Visit (mc);
-			}
 			Stack<TypeDeclaration> typeStack = new Stack<TypeDeclaration> ();
 			
 			public override void Visit (Class c)
@@ -669,24 +663,46 @@ namespace MonoDevelop.CSharp.Parser
 			}
 			
 			static Dictionary<Mono.CSharp.Modifiers, MonoDevelop.Projects.Dom.Modifiers> modifierTable = new Dictionary<Mono.CSharp.Modifiers, MonoDevelop.Projects.Dom.Modifiers> ();
+			static string[] keywordTable;
+			
 			static ConversionVisitor ()
 			{
-				modifierTable[Mono.CSharp.Modifiers.NEW] = MonoDevelop.Projects.Dom.Modifiers.New;
-				modifierTable[Mono.CSharp.Modifiers.PUBLIC] = MonoDevelop.Projects.Dom.Modifiers.Public;
-				modifierTable[Mono.CSharp.Modifiers.PROTECTED] = MonoDevelop.Projects.Dom.Modifiers.Protected;
-				modifierTable[Mono.CSharp.Modifiers.PRIVATE] = MonoDevelop.Projects.Dom.Modifiers.Private;
-				modifierTable[Mono.CSharp.Modifiers.INTERNAL] = MonoDevelop.Projects.Dom.Modifiers.Internal;
-				modifierTable[Mono.CSharp.Modifiers.ABSTRACT] = MonoDevelop.Projects.Dom.Modifiers.Abstract;
-				modifierTable[Mono.CSharp.Modifiers.VIRTUAL] = MonoDevelop.Projects.Dom.Modifiers.Virtual;
-				modifierTable[Mono.CSharp.Modifiers.SEALED] = MonoDevelop.Projects.Dom.Modifiers.Sealed;
-				modifierTable[Mono.CSharp.Modifiers.STATIC] = MonoDevelop.Projects.Dom.Modifiers.Static;
-				modifierTable[Mono.CSharp.Modifiers.OVERRIDE] = MonoDevelop.Projects.Dom.Modifiers.Override;
-				modifierTable[Mono.CSharp.Modifiers.READONLY] = MonoDevelop.Projects.Dom.Modifiers.Readonly;
-//				modifierTable[Mono.CSharp.Modifiers.] = Modifiers.Const;
-				modifierTable[Mono.CSharp.Modifiers.PARTIAL] = MonoDevelop.Projects.Dom.Modifiers.Partial;
-				modifierTable[Mono.CSharp.Modifiers.EXTERN] = MonoDevelop.Projects.Dom.Modifiers.Extern;
-				modifierTable[Mono.CSharp.Modifiers.VOLATILE] = MonoDevelop.Projects.Dom.Modifiers.Volatile;
-				modifierTable[Mono.CSharp.Modifiers.UNSAFE] = MonoDevelop.Projects.Dom.Modifiers.Unsafe;
+				modifierTable [Mono.CSharp.Modifiers.NEW] = MonoDevelop.Projects.Dom.Modifiers.New;
+				modifierTable [Mono.CSharp.Modifiers.PUBLIC] = MonoDevelop.Projects.Dom.Modifiers.Public;
+				modifierTable [Mono.CSharp.Modifiers.PROTECTED] = MonoDevelop.Projects.Dom.Modifiers.Protected;
+				modifierTable [Mono.CSharp.Modifiers.PRIVATE] = MonoDevelop.Projects.Dom.Modifiers.Private;
+				modifierTable [Mono.CSharp.Modifiers.INTERNAL] = MonoDevelop.Projects.Dom.Modifiers.Internal;
+				modifierTable [Mono.CSharp.Modifiers.ABSTRACT] = MonoDevelop.Projects.Dom.Modifiers.Abstract;
+				modifierTable [Mono.CSharp.Modifiers.VIRTUAL] = MonoDevelop.Projects.Dom.Modifiers.Virtual;
+				modifierTable [Mono.CSharp.Modifiers.SEALED] = MonoDevelop.Projects.Dom.Modifiers.Sealed;
+				modifierTable [Mono.CSharp.Modifiers.STATIC] = MonoDevelop.Projects.Dom.Modifiers.Static;
+				modifierTable [Mono.CSharp.Modifiers.OVERRIDE] = MonoDevelop.Projects.Dom.Modifiers.Override;
+				modifierTable [Mono.CSharp.Modifiers.READONLY] = MonoDevelop.Projects.Dom.Modifiers.Readonly;
+				//				modifierTable[Mono.CSharp.Modifiers.] = Modifiers.Const;
+				modifierTable [Mono.CSharp.Modifiers.PARTIAL] = MonoDevelop.Projects.Dom.Modifiers.Partial;
+				modifierTable [Mono.CSharp.Modifiers.EXTERN] = MonoDevelop.Projects.Dom.Modifiers.Extern;
+				modifierTable [Mono.CSharp.Modifiers.VOLATILE] = MonoDevelop.Projects.Dom.Modifiers.Volatile;
+				modifierTable [Mono.CSharp.Modifiers.UNSAFE] = MonoDevelop.Projects.Dom.Modifiers.Unsafe;
+				
+				keywordTable = new string[255];
+				for (int i = 0; i< keywordTable.Length; i++) 
+					keywordTable [i] = "unknown";
+				
+				keywordTable [(int)BuiltinTypeSpec.Type.Other] = "void";
+				keywordTable [(int)BuiltinTypeSpec.Type.String] = "string";
+				keywordTable [(int)BuiltinTypeSpec.Type.Int] = "int";
+				keywordTable [(int)BuiltinTypeSpec.Type.Object] = "object";
+				keywordTable [(int)BuiltinTypeSpec.Type.Float] = "float";
+				keywordTable [(int)BuiltinTypeSpec.Type.Double] = "double";
+				keywordTable [(int)BuiltinTypeSpec.Type.Long] = "long";
+				keywordTable [(int)BuiltinTypeSpec.Type.Byte] = "byte";
+				keywordTable [(int)BuiltinTypeSpec.Type.UInt] = "uint";
+				keywordTable [(int)BuiltinTypeSpec.Type.ULong] = "ulong";
+				keywordTable [(int)BuiltinTypeSpec.Type.Short] = "short";
+				keywordTable [(int)BuiltinTypeSpec.Type.UShort] = "ushort";
+				keywordTable [(int)BuiltinTypeSpec.Type.SByte] = "sbyte";
+				keywordTable [(int)BuiltinTypeSpec.Type.Decimal] = "decimal";
+				keywordTable [(int)BuiltinTypeSpec.Type.Char] = "char";
 			}
 			
 			void AddModifiers (AttributedNode parent, LocationsBag.MemberLocations location)
@@ -1460,42 +1476,10 @@ namespace MonoDevelop.CSharp.Parser
 			{
 				return defaultParameterValueExpression.Child.Accept (this);
 			}
-			
+
 			public override object Visit (TypeExpression typeExpression)
 			{
-				string keyword;
-				if (typeExpression.Type == container.Compiler.BuiltinTypes.Void) {
-					keyword = "void";
-				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.String) {
-					keyword = "string";
-				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.Int) {
-					keyword = "int";
-				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.Object) {
-					keyword = "object";
-				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.Float) {
-					keyword = "float";
-				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.Double) {
-					keyword = "double";
-				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.Long) {
-					keyword = "long";
-				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.Byte) {
-					keyword = "byte";
-				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.UInt) {
-					keyword = "uint";
-				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.ULong) {
-					keyword = "ulong";
-				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.Short) {
-					keyword = "short";
-				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.UShort) {
-					keyword = "ushort";
-				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.SByte) {
-					keyword = "sbyte";
-				} else if (typeExpression.Type == container.Compiler.BuiltinTypes.Decimal) {
-					keyword = "decimal";
-				} else {
-					keyword = "unknown";
-				}
-				return new IdentifierExpression (keyword, Convert (typeExpression.Location));
+				return new IdentifierExpression (keywordTable [(int)typeExpression.Type.BuiltinType], Convert (typeExpression.Location));
 			}
 
 			public override object Visit (LocalVariableReference localVariableReference)

@@ -284,6 +284,32 @@ namespace MonoDevelop.CSharp.Parser
 				get;
 				set;
 			}
+			static string[] keywordTable;
+			static ConversionVisitor ()
+			{
+				keywordTable = new string[255];
+				for (int i = 0; i < 255; i++) 
+					keywordTable [i] = DomReturnType.Void.FullName;
+				
+				keywordTable [(int)BuiltinTypeSpec.Type.Other] = DomReturnType.Void.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.String] = DomReturnType.String.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.Int] = DomReturnType.Int32.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.UInt] = DomReturnType.UInt32.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.Long] = DomReturnType.Int64.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.ULong] = DomReturnType.UInt64.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.Object] = "object";
+				keywordTable [(int)BuiltinTypeSpec.Type.Float] = DomReturnType.Float.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.Double] = DomReturnType.Double.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.Byte] = DomReturnType.Byte.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.SByte] = DomReturnType.SByte.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.Short] = DomReturnType.Int16.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.UShort] = DomReturnType.UInt16.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.Decimal] = DomReturnType.Decimal.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.Char] = DomReturnType.Char.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.Bool] = DomReturnType.Bool.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.IntPtr] = DomReturnType.IntPtr.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.UIntPtr] = DomReturnType.UIntPtr.FullName;
+			}
 			
 			public ConversionVisitor (LocationsBag locationsBag)
 			{
@@ -384,44 +410,7 @@ namespace MonoDevelop.CSharp.Parser
 			{
 				if (typeName is TypeExpression) {
 					var typeExpr = (Mono.CSharp.TypeExpression)typeName;
-					if (typeExpr.Type == container.Compiler.BuiltinTypes.Object)
-						return new DomReturnType (DomReturnType.Object.FullName);
-					if (typeExpr.Type == container.Compiler.BuiltinTypes.String)
-						return new DomReturnType (DomReturnType.String.FullName);
-					if (typeExpr.Type == container.Compiler.BuiltinTypes.Int)
-						return new DomReturnType (DomReturnType.Int32.FullName);
-					if (typeExpr.Type == container.Compiler.BuiltinTypes.UInt)
-						return new DomReturnType (DomReturnType.UInt32.FullName);
-					if (typeExpr.Type == container.Compiler.BuiltinTypes.Long)
-						return new DomReturnType (DomReturnType.Int64.FullName);
-					if (typeExpr.Type == container.Compiler.BuiltinTypes.ULong)
-						return new DomReturnType (DomReturnType.UInt64.FullName);
-					if (typeExpr.Type == container.Compiler.BuiltinTypes.Float)
-						return new DomReturnType (DomReturnType.Float.FullName);
-					if (typeExpr.Type == container.Compiler.BuiltinTypes.Double)
-						return new DomReturnType (DomReturnType.Double.FullName);
-					if (typeExpr.Type == container.Compiler.BuiltinTypes.Char)
-						return new DomReturnType (DomReturnType.Char.FullName);
-					if (typeExpr.Type == container.Compiler.BuiltinTypes.Short)
-						return new DomReturnType (DomReturnType.Int16.FullName);
-					if (typeExpr.Type == container.Compiler.BuiltinTypes.Decimal)
-						return new DomReturnType (DomReturnType.Decimal.FullName);
-					if (typeExpr.Type == container.Compiler.BuiltinTypes.Bool)
-						return new DomReturnType (DomReturnType.Bool.FullName);
-					if (typeExpr.Type == container.Compiler.BuiltinTypes.SByte)
-						return new DomReturnType (DomReturnType.SByte.FullName);
-					if (typeExpr.Type == container.Compiler.BuiltinTypes.Byte)
-						return new DomReturnType (DomReturnType.Byte.FullName);
-					if (typeExpr.Type == container.Compiler.BuiltinTypes.UShort)
-						return new DomReturnType (DomReturnType.UInt16.FullName);
-					if (typeExpr.Type == container.Compiler.BuiltinTypes.Void)
-						return new DomReturnType (DomReturnType.Void.FullName);
-					if (typeExpr.Type == container.Compiler.BuiltinTypes.IntPtr)
-						return new DomReturnType (DomReturnType.IntPtr.FullName);
-					if (typeExpr.Type == container.Compiler.BuiltinTypes.UIntPtr)
-						return new DomReturnType (DomReturnType.UIntPtr.FullName);
-					MonoDevelop.Core.LoggingService.LogError ("Error while converting :" + typeName + " - unknown type value");
-					return DomReturnType.Void;
+					return new DomReturnType (keywordTable [(int)typeExpr.Type.BuiltinType]);
 				}
 				
 				if (typeName is Mono.CSharp.QualifiedAliasMember) {
@@ -472,7 +461,6 @@ namespace MonoDevelop.CSharp.Parser
 			#region Global
 			string currentNamespaceName = "";
 			Stack<UsingsBag.Namespace> currentNamespace = new Stack<UsingsBag.Namespace> ();
-			ModuleContainer container;
 			
 			string ConvertToString (MemberName name)
 			{
@@ -485,7 +473,6 @@ namespace MonoDevelop.CSharp.Parser
 			
 			public override void Visit (ModuleContainer mc)
 			{
-				this.container = mc;
 				foreach (var at in ConvertAttributes (mc.OptAttributes, mc))
 					Unit.Add (at);
 			}
