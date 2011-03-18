@@ -284,7 +284,7 @@ namespace MonoDevelop.VersionControl.Git
 			VersionControlOperation ops = base.GetSupportedOperations (vinfo);
 			if (GetCurrentRemote () == null)
 				ops &= ~VersionControlOperation.Update;
-			if (vinfo.IsVersioned)
+			if (vinfo.IsVersioned && !vinfo.IsDirectory)
 				ops |= VersionControlOperation.Annotate;
 			return ops;
 		}

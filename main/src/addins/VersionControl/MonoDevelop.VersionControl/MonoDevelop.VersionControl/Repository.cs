@@ -109,7 +109,7 @@ namespace MonoDevelop.VersionControl
 				operations = VersionControlOperation.Commit | VersionControlOperation.Update | VersionControlOperation.Log;
 				if (exists) {
 					operations |= VersionControlOperation.Remove;
-					if (vinfo.HasLocalChanges)
+					if (vinfo.HasLocalChanges || vinfo.IsDirectory)
 						operations |= VersionControlOperation.Revert;
 				}
 				if (AllowLocking && !vinfo.IsDirectory) {
