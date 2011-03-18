@@ -84,7 +84,7 @@ namespace MonoDevelop.CSharp.Parser
 			lock (CompilerCallableEntryPoint.parseLock) {
 				if (string.IsNullOrEmpty (content))
 					return null;
-				
+				var tagComments = ProjectDomService.SpecialCommentTags.GetNames ();
 				List<string> compilerArguments = new List<string> ();
 				if (dom != null && dom.Project != null && MonoDevelop.Ide.IdeApp.Workspace != null) {
 					DotNetProjectConfiguration configuration = dom.Project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
@@ -121,7 +121,7 @@ namespace MonoDevelop.CSharp.Parser
 				foreach (var special in top.SpecialsBag.Specials) {
 					var comment = special as SpecialsBag.Comment;
 					if (comment != null) {
-						VisitComment (result, comment);
+						VisitComment (result, comment, tagComments);
 					} else {
 						VisitPreprocessorDirective (result, special as SpecialsBag.PreProcessorDirective);
 					}
@@ -147,7 +147,7 @@ namespace MonoDevelop.CSharp.Parser
 			}
 		}
 		
-		void VisitComment (ParsedDocument result, SpecialsBag.Comment comment)
+		void VisitComment (ParsedDocument result, SpecialsBag.Comment comment, string[] tagComments)
 		{
 			var cmt = new MonoDevelop.Projects.Dom.Comment (comment.Content);
 			cmt.CommentStartsLine = comment.StartsLine;
@@ -169,6 +169,12 @@ namespace MonoDevelop.CSharp.Parser
 			}
 			cmt.Region = new DomRegion (comment.Line, comment.Col, comment.EndLine, comment.EndCol);
 			result.Comments.Add (cmt);
+			foreach (string tag in tagComments) {
+				int idx = comment.Content.IndexOf (tag);
+				if (idx < 0)
+					continue;
+				result.Add (new Tag (tag, comment.Content, cmt.Region));
+			}
 		}
 
 		Stack<SpecialsBag.PreProcessorDirective> regions = new Stack<SpecialsBag.PreProcessorDirective> ();
