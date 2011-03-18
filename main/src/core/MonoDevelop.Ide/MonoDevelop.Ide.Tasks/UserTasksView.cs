@@ -126,14 +126,18 @@ namespace MonoDevelop.Ide.Tasks
 			delButton.Clicked += new EventHandler (DeleteUserTaskClicked); 
 			delButton.TooltipText = GettextCatalog.GetString ("Delete Task");
 
-			TaskService.UserTasks.TasksChanged += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (UserTasksChanged));
-			TaskService.UserTasks.TasksAdded += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (UserTasksChanged));
-			TaskService.UserTasks.TasksRemoved += (TaskEventHandler) DispatchService.GuiDispatch (new TaskEventHandler (UserTasksChanged));
+			TaskService.UserTasks.TasksChanged += DispatchService.GuiDispatch<TaskEventHandler> (UserTasksChanged);
+			TaskService.UserTasks.TasksAdded += DispatchService.GuiDispatch<TaskEventHandler> (UserTasksChanged);
+			TaskService.UserTasks.TasksRemoved += DispatchService.GuiDispatch<TaskEventHandler> (UserTasksChanged);
+			
+			if (IdeApp.Workspace.IsOpen)
+				solutionLoaded = true;
 			
 			IdeApp.Workspace.FirstWorkspaceItemOpened += CombineOpened;
 			IdeApp.Workspace.LastWorkspaceItemClosed += CombineClosed;
-			PropertyService.PropertyChanged += (EventHandler<PropertyChangedEventArgs>) DispatchService.GuiDispatch (new EventHandler<PropertyChangedEventArgs> (OnPropertyUpdated));	
+			PropertyService.PropertyChanged += DispatchService.GuiDispatch<EventHandler<PropertyChangedEventArgs>> (OnPropertyUpdated);
 			ValidateButtons ();
+			
 			// Initialize with existing tags.
 			UserTasksChanged (this, null);
 		}
