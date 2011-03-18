@@ -3,6 +3,11 @@ var MINOR_VERSION = 5;
 var POINT_VERSION = 9;
 var BUILD_VERSION = 0;
 
+var ASSEMBLY_MAJOR_VERSION = 2;
+var ASSEMBLY_MINOR_VERSION = 6;
+var ASSEMBLY_POINT_VERSION = 0;
+var ASSEMBLY_BUILD_VERSION = 0;
+
 var sh = new ActiveXObject("WScript.Shell");
 var fs = new ActiveXObject("Scripting.FileSystemObject");
 var MONO_LIBS = "C:\\Program Files\\MonoLibraries\\2.6";
@@ -10,17 +15,17 @@ var MD_DIR = "..\\..";
 var MD_EXTRAS_DIR = "..\\..\\extras";
 var PRODUCT_VERSION = "" + MAJOR_VERSION + "." + MINOR_VERSION + "." + POINT_VERSION + (BUILD_VERSION != 0 ? "." + BUILD_VERSION : "");
 var PRODUCT_VERSION_TEXT = "" + MAJOR_VERSION + "." + MINOR_VERSION + (POINT_VERSION != 0 || BUILD_VERSION != 0 ? "." + POINT_VERSION : "") + (BUILD_VERSION != 0 ? "." + BUILD_VERSION : "");
-var HKCRNAME = "MonoDevelop" + MAJOR_VERSION + "." + MINOR_VERSION + "." + POINT_VERSION + "." + BUILD_VERSION;
+var ASSEMBLY_VERSION = ASSEMBLY_MAJOR_VERSION + "." + ASSEMBLY_MINOR_VERSION + "." + ASSEMBLY_POINT_VERSION + "." + ASSEMBLY_BUILD_VERSION;
 var MONO_PRODUCT_VERSION = "" + MAJOR_VERSION + format (MINOR_VERSION, 2) + format (POINT_VERSION, 2) + format (BUILD_VERSION, 3);
 
 // Build the main solution and the windows-specific add-ins
 
 if (build ("main\\main.sln /p:Configuration=DebugWin32 /p:Platform=\"x86\"") != 0)
-	WScript.Quit (1);
+    WScript.Quit (1);
 if (build ("extras\\VersionControl.Subversion.Win32\\VersionControl.Subversion.Win32.sln") != 0)
-	WScript.Quit (1);
+    WScript.Quit(1);
 if (build ("extras\\MonoDevelop.Debugger.Win32\\MonoDevelop.Debugger.Win32.sln") != 0)
-	WScript.Quit (1);
+    WScript.Quit (1);
 
 // Copy support assemblies
 
@@ -36,6 +41,7 @@ fs.CopyFile (MONO_LIBS + "\\Mono.GetOptions.dll", "Libraries\\Mono.GetOptions.dl
 fs.CopyFile (MONO_LIBS + "\\monodoc.dll", "Libraries\\monodoc.dll");
 fs.CopyFile (MONO_LIBS + "\\Mono.Security.dll", "Libraries\\Mono.Security.dll");
 
+
 // Copy support files
 
 if (!fs.FolderExists ("ExtraFiles")) {
@@ -48,9 +54,10 @@ fs.CopyFolder ("ExtraFiles\\*", MD_DIR + "\\main\\build\\bin\\");
 
 // Set the version numbers
 
+
 regexreplace ("Product.wxs", /ProductVersionText = ".*?"/g, "ProductVersionText = \"" + PRODUCT_VERSION_TEXT + "\"");
-regexreplace ("Product.wxs", /ProductVersion = ".*?"/g, "ProductVersion = \"" + PRODUCT_VERSION + "\"");
-regexreplace ("Product.wxs", /HKCRNAME = ".*?"/g, "HKCRNAME = \"" + HKCRNAME + "\"");
+regexreplace("Product.wxs", /ProductVersion = ".*?"/g, "ProductVersion = \"" + PRODUCT_VERSION + "\"");
+regexreplace ("Product.wxs", /AssemblyVersion = ".*?"/g, "AssemblyVersion = \"" + ASSEMBLY_VERSION + "\"");
 
 // Create the updateinfo file
 
