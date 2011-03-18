@@ -2,7 +2,7 @@
 <?define ProductShortName = "MonoDevelop" ?>
 <?define ProductVersion = "2.5.9" ?>
 <?define ProductVersionText = "2.5.9" ?>
-<?define HKCRNAME = "MonoDevelop2.5.9.0" ?>
+<?define AssemblyVersion = "2.6.0.0" ?>
 <?define Manufacturer = "Novell" ?>
 <?define UpgradeCode = "9134F74C-E7E3-471A-9833-C86FB45CD38E" ?>
 
@@ -586,82 +586,82 @@
               <File Name="Microsoft.WindowsAPICodePack.dll" Source="$(var.BuildRoot)\AddIns\Microsoft.WindowsAPICodePack.dll" />
               <File Name="Microsoft.WindowsAPICodePack.Shell.dll" Source="$(var.BuildRoot)\AddIns\Microsoft.WindowsAPICodePack.Shell.dll" />
 
-              <RegistryKey Root='HKCR' Key='$(var.HKCRNAME)' Action='createAndRemoveOnUninstall'>
-                <RegistryValue Type='string' Name='AppUserModelID' Value='$(var.HKCRNAME)' />
+              <RegistryKey Root='HKCR' Key='$(var.AssemblyVersion)' Action='createAndRemoveOnUninstall'>
+                <RegistryValue Type='string' Name='AppUserModelID' Value='$(var.AssemblyVersion)' />
                 <RegistryValue Type='string' Name='CurVer' Value='$(var.ProductVersion)' />
                 <RegistryValue Type='string' Name='DefaultIcon' Value='@shell32.dll,-47' />
                 <RegistryValue Type='string' Name='FriendlyTypeName' Value='@shell32.dll,-8975' />
               </RegistryKey>
 
-              <RegistryKey Root='HKCR' Key='$(var.HKCRNAME)\shell\Open\Command' Action='createAndRemoveOnUninstall'>
+              <RegistryKey Root='HKCR' Key='MonoDevelop$(var.AssemblyVersion)\shell\Open\Command' Action='createAndRemoveOnUninstall'>
                 <RegistryValue Type='string' Value='[INSTALLLOCATION]bin\monodevelop.exe %1' />
               </RegistryKey>
 
               <RegistryKey Root='HKCR' Key='.asax\OpenWithProgids' Action='createAndRemoveOnUninstall'>
-                <RegistryValue Type='string' Name='$(var.HKCRNAME)' Value='' />
+                <RegistryValue Type='string' Name='MonoDevelop$(var.AssemblyVersion)' Value='' />
               </RegistryKey>
               <RegistryKey Root='HKCR' Key='.ascx\OpenWithProgids' Action='createAndRemoveOnUninstall'>
-                <RegistryValue Type='string' Name='$(var.HKCRNAME)' Value='' />
+                <RegistryValue Type='string' Name='MonoDevelop$(var.AssemblyVersion)' Value='' />
               </RegistryKey>
               <RegistryKey Root='HKCR' Key='.ashx\OpenWithProgids' Action='createAndRemoveOnUninstall'>
-                <RegistryValue Type='string' Name='$(var.HKCRNAME)' Value='' />
+                <RegistryValue Type='string' Name='MonoDevelop$(var.AssemblyVersion)' Value='' />
               </RegistryKey>
               <RegistryKey Root='HKCR' Key='.asmx\OpenWithProgids' Action='createAndRemoveOnUninstall'>
-                <RegistryValue Type='string' Name='$(var.HKCRNAME)' Value='' />
+                <RegistryValue Type='string' Name='MonoDevelop$(var.AssemblyVersion)' Value='' />
               </RegistryKey>
               <RegistryKey Root='HKCR' Key='.asp\OpenWithProgids' Action='createAndRemoveOnUninstall'>
-                <RegistryValue Type='string' Name='$(var.HKCRNAME)' Value='' />
+                <RegistryValue Type='string' Name='MonoDevelop$(var.AssemblyVersion)' Value='' />
               </RegistryKey>
               <RegistryKey Root='HKCR' Key='.aspx\OpenWithProgids' Action='createAndRemoveOnUninstall'>
-                <RegistryValue Type='string' Name='$(var.HKCRNAME)' Value='' />
+                <RegistryValue Type='string' Name='MonoDevelop$(var.AssemblyVersion)' Value='' />
               </RegistryKey>
               <RegistryKey Root='HKCR' Key='.c\OpenWithProgids' Action='createAndRemoveOnUninstall'>
-                <RegistryValue Type='string' Name='$(var.HKCRNAME)' Value='' />
+                <RegistryValue Type='string' Name='MonoDevelop$(var.AssemblyVersion)' Value='' />
               </RegistryKey>
               <RegistryKey Root='HKCR' Key='.cc\OpenWithProgids' Action='createAndRemoveOnUninstall'>
-                <RegistryValue Type='string' Name='$(var.HKCRNAME)' Value='' />
+                <RegistryValue Type='string' Name='MonoDevelop$(var.AssemblyVersion)' Value='' />
               </RegistryKey>
               <RegistryKey Root='HKCR' Key='.cs\OpenWithProgids' Action='createAndRemoveOnUninstall'>
-                <RegistryValue Type='string' Name='$(var.HKCRNAME)' Value='' />
+                <RegistryValue Type='string' Name='MonoDevelop$(var.AssemblyVersion)' Value='' />
               </RegistryKey>
               <RegistryKey Root='HKCR' Key='.csproj\OpenWithProgids' Action='createAndRemoveOnUninstall'>
-                <RegistryValue Type='string' Name='$(var.HKCRNAME)' Value='' />
+                <RegistryValue Type='string' Name='MonoDevelop$(var.AssemblyVersion)' Value='' />
               </RegistryKey>
               <RegistryKey Root='HKCR' Key='.cxx\OpenWithProgids' Action='createAndRemoveOnUninstall'>
-                <RegistryValue Type='string' Name='$(var.HKCRNAME)' Value='' />
+                <RegistryValue Type='string' Name='MonoDevelop$(var.AssemblyVersion)' Value='' />
               </RegistryKey>
               <RegistryKey Root='HKCR' Key='.h\OpenWithProgids' Action='createAndRemoveOnUninstall'>
-                <RegistryValue Type='string' Name='$(var.HKCRNAME)' Value='' />
+                <RegistryValue Type='string' Name='MonoDevelop$(var.AssemblyVersion)' Value='' />
               </RegistryKey>
               <RegistryKey Root='HKCR' Key='.hpp\OpenWithProgids' Action='createAndRemoveOnUninstall'>
-                <RegistryValue Type='string' Name='$(var.HKCRNAME)' Value='' />
+                <RegistryValue Type='string' Name='MonoDevelop$(var.AssemblyVersion)' Value='' />
               </RegistryKey>
               <RegistryKey Root='HKCR' Key='.htm\OpenWithProgids' Action='createAndRemoveOnUninstall'>
-                <RegistryValue Type='string' Name='$(var.HKCRNAME)' Value='' />
+                <RegistryValue Type='string' Name='MonoDevelop$(var.AssemblyVersion)' Value='' />
               </RegistryKey>
               <RegistryKey Root='HKCR' Key='.html\OpenWithProgids' Action='createAndRemoveOnUninstall'>
-                <RegistryValue Type='string' Name='$(var.HKCRNAME)' Value='' />
+                <RegistryValue Type='string' Name='MonoDevelop$(var.AssemblyVersion)' Value='' />
               </RegistryKey>
               <RegistryKey Root='HKCR' Key='.hxx\OpenWithProgids' Action='createAndRemoveOnUninstall'>
-                <RegistryValue Type='string' Name='$(var.HKCRNAME)' Value='' />
+                <RegistryValue Type='string' Name='MonoDevelop$(var.AssemblyVersion)' Value='' />
               </RegistryKey>
               <RegistryKey Root='HKCR' Key='.master\OpenWithProgids' Action='createAndRemoveOnUninstall'>
-                <RegistryValue Type='string' Name='$(var.HKCRNAME)' Value='' />
+                <RegistryValue Type='string' Name='MonoDevelop$(var.AssemblyVersion)' Value='' />
               </RegistryKey>
               <RegistryKey Root='HKCR' Key='.mdp\OpenWithProgids' Action='createAndRemoveOnUninstall'>
-                <RegistryValue Type='string' Name='$(var.HKCRNAME)' Value='' />
+                <RegistryValue Type='string' Name='MonoDevelop$(var.AssemblyVersion)' Value='' />
               </RegistryKey>
               <RegistryKey Root='HKCR' Key='.sln\OpenWithProgids' Action='createAndRemoveOnUninstall'>
-                <RegistryValue Type='string' Name='$(var.HKCRNAME)' Value='' />
+                <RegistryValue Type='string' Name='MonoDevelop$(var.AssemblyVersion)' Value='' />
               </RegistryKey>
               <RegistryKey Root='HKCR' Key='.vb\OpenWithProgids' Action='createAndRemoveOnUninstall'>
-                <RegistryValue Type='string' Name='$(var.HKCRNAME)' Value='' />
+                <RegistryValue Type='string' Name='MonoDevelop$(var.AssemblyVersion)' Value='' />
               </RegistryKey>
               <RegistryKey Root='HKCR' Key='.vbproj\OpenWithProgids' Action='createAndRemoveOnUninstall'>
-                <RegistryValue Type='string' Name='$(var.HKCRNAME)' Value='' />
+                <RegistryValue Type='string' Name='MonoDevelop$(var.AssemblyVersion)' Value='' />
               </RegistryKey>
               <RegistryKey Root='HKCR' Key='.xml\OpenWithProgids' Action='createAndRemoveOnUninstall'>
-                <RegistryValue Type='string' Name='$(var.HKCRNAME)' Value='' />
+                <RegistryValue Type='string' Name='MonoDevelop$(var.AssemblyVersion)' Value='' />
               </RegistryKey>
             </Component>
           </Directory>
