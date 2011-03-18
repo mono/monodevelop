@@ -378,14 +378,20 @@ namespace Mono.Debugging.Soft
 			TypeMirror type = (TypeMirror) t;
 			while (type != null) {
 				FieldInfoMirror field = FindByName (type.GetFields(), f => f.Name, name, ctx.CaseSensitive);
-				if (field != null)
+				if (field != null && (field.IsStatic || co != null))
 					return new FieldValueReference (ctx, field, co, type);
 				PropertyInfoMirror prop = FindByName (type.GetProperties(), p => p.Name, name, ctx.CaseSensitive);
-				if (prop != null)
+				if (prop != null && (IsStatic (prop) || co != null))
 					return new PropertyValueReference (ctx, prop, co, type, null);
 				type = type.BaseType;
 			}
 			return null;
+		}
+		
+		bool IsStatic (PropertyInfoMirror prop)
+		{
+			MethodMirror met = prop.GetGetMethod (true) ?? prop.GetSetMethod (true);
+			return met.IsStatic;
 		}
 		
 		static T FindByName<T> (IEnumerable<T> elems, Func<T,string> getName, string name, bool caseSensitive)
