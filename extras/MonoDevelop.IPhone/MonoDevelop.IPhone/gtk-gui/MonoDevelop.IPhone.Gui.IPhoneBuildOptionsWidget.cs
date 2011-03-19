@@ -31,14 +31,20 @@ namespace MonoDevelop.IPhone.Gui
 		private global::Gtk.Alignment codeGenerationAlignment;
 		private global::Gtk.VBox vbox5;
 		private global::Gtk.CheckButton useLlvmCheck;
+		private global::Gtk.HBox hbox4;
 		private global::Gtk.Label label14;
-		private global::Gtk.Alignment alignment7;
+		private global::Gtk.Image image6;
+		private global::Gtk.Alignment llvmOptionsAlignment;
 		private global::Gtk.VBox vbox6;
-		private global::Gtk.CheckButton useArmv7Check;
-		private global::Gtk.Label label15;
-		private global::Gtk.Alignment alignment4;
+		private global::Gtk.HBox hbox2;
+		private global::Gtk.Label label8;
+		private global::Gtk.ComboBox archCombo;
+		private global::Gtk.Label label13;
+		private global::Gtk.Image image4;
 		private global::Gtk.CheckButton useThumbCheck;
+		private global::Gtk.HBox hbox3;
 		private global::Gtk.Label label16;
+		private global::Gtk.Image image5;
 		private global::Gtk.Label runtimeOptionsLabel;
 		private global::Gtk.Alignment runtimeOptionsAlignment;
 		private global::Gtk.CheckButton useSGenCheck;
@@ -61,7 +67,7 @@ namespace MonoDevelop.IPhone.Gui
 			this.notebook1 = new global::Gtk.Notebook ();
 			this.notebook1.CanFocus = true;
 			this.notebook1.Name = "notebook1";
-			this.notebook1.CurrentPage = 0;
+			this.notebook1.CurrentPage = 1;
 			// Container child notebook1.Gtk.Notebook+NotebookChild
 			this.vbox2 = new global::Gtk.VBox ();
 			this.vbox2.Name = "vbox2";
@@ -304,48 +310,91 @@ namespace MonoDevelop.IPhone.Gui
 			this.useLlvmCheck.UseUnderline = true;
 			this.useLlvmCheck.Remove (this.useLlvmCheck.Child);
 			// Container child useLlvmCheck.Gtk.Container+ContainerChild
+			this.hbox4 = new global::Gtk.HBox ();
+			this.hbox4.Name = "hbox4";
+			this.hbox4.Spacing = 6;
+			// Container child hbox4.Gtk.Box+BoxChild
 			this.label14 = new global::Gtk.Label ();
 			this.label14.Name = "label14";
 			this.label14.LabelProp = global::Mono.Unix.Catalog.GetString ("Use LLVM optimizing compiler\n<small>Experimental, not compatible with debug mode</small>");
 			this.label14.UseMarkup = true;
-			this.useLlvmCheck.Add (this.label14);
-			this.vbox5.Add (this.useLlvmCheck);
-			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.useLlvmCheck]));
-			w23.Position = 0;
+			this.hbox4.Add (this.label14);
+			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.label14]));
+			w22.Position = 0;
+			w22.Expand = false;
+			w22.Fill = false;
+			// Container child hbox4.Gtk.Box+BoxChild
+			this.image6 = new global::Gtk.Image ();
+			this.image6.TooltipMarkup = "The experimental LLVM compiler generates code that is faster and smaller, but the compilation takes much longer. It is not compatible with debug mode.";
+			this.image6.Name = "image6";
+			this.image6.Xalign = 0F;
+			this.image6.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("information.png");
+			this.hbox4.Add (this.image6);
+			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.image6]));
+			w23.Position = 1;
 			w23.Expand = false;
 			w23.Fill = false;
+			this.useLlvmCheck.Add (this.hbox4);
+			this.vbox5.Add (this.useLlvmCheck);
+			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.useLlvmCheck]));
+			w25.Position = 0;
+			w25.Expand = false;
+			w25.Fill = false;
 			// Container child vbox5.Gtk.Box+BoxChild
-			this.alignment7 = new global::Gtk.Alignment (0F, 0.5F, 1F, 1F);
-			this.alignment7.Name = "alignment7";
-			this.alignment7.LeftPadding = ((uint)(24));
-			// Container child alignment7.Gtk.Container+ContainerChild
+			this.llvmOptionsAlignment = new global::Gtk.Alignment (0F, 0.5F, 1F, 1F);
+			this.llvmOptionsAlignment.Name = "llvmOptionsAlignment";
+			this.llvmOptionsAlignment.LeftPadding = ((uint)(24));
+			// Container child llvmOptionsAlignment.Gtk.Container+ContainerChild
 			this.vbox6 = new global::Gtk.VBox ();
 			this.vbox6.Name = "vbox6";
 			this.vbox6.Spacing = 2;
 			// Container child vbox6.Gtk.Box+BoxChild
-			this.useArmv7Check = new global::Gtk.CheckButton ();
-			this.useArmv7Check.CanFocus = true;
-			this.useArmv7Check.Name = "useArmv7Check";
-			this.useArmv7Check.Label = global::Mono.Unix.Catalog.GetString ("ARMv7");
-			this.useArmv7Check.DrawIndicator = true;
-			this.useArmv7Check.UseUnderline = true;
-			this.useArmv7Check.Remove (this.useArmv7Check.Child);
-			// Container child useArmv7Check.Gtk.Container+ContainerChild
-			this.label15 = new global::Gtk.Label ();
-			this.label15.Name = "label15";
-			this.label15.LabelProp = global::Mono.Unix.Catalog.GetString ("Use ARMv7 ABI\n<small>Makes generated code smaller, but requires iPhone 3GS or later</small> ");
-			this.label15.UseMarkup = true;
-			this.useArmv7Check.Add (this.label15);
-			this.vbox6.Add (this.useArmv7Check);
-			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.useArmv7Check]));
-			w25.Position = 0;
-			w25.Expand = false;
-			w25.Fill = false;
+			this.hbox2 = new global::Gtk.HBox ();
+			this.hbox2.Name = "hbox2";
+			this.hbox2.Spacing = 6;
+			// Container child hbox2.Gtk.Box+BoxChild
+			this.label8 = new global::Gtk.Label ();
+			this.label8.Name = "label8";
+			this.label8.Xalign = 0F;
+			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("Supported architectures:");
+			this.hbox2.Add (this.label8);
+			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.label8]));
+			w26.Position = 0;
+			w26.Expand = false;
+			w26.Fill = false;
+			// Container child hbox2.Gtk.Box+BoxChild
+			this.archCombo = global::Gtk.ComboBox.NewText ();
+			this.archCombo.Name = "archCombo";
+			this.hbox2.Add (this.archCombo);
+			global::Gtk.Box.BoxChild w27 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.archCombo]));
+			w27.Position = 1;
+			w27.Expand = false;
+			w27.Fill = false;
+			// Container child hbox2.Gtk.Box+BoxChild
+			this.label13 = new global::Gtk.Label ();
+			this.label13.Name = "label13";
+			this.hbox2.Add (this.label13);
+			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.label13]));
+			w28.PackType = ((global::Gtk.PackType)(1));
+			w28.Position = 2;
+			// Container child hbox2.Gtk.Box+BoxChild
+			this.image4 = new global::Gtk.Image ();
+			this.image4.TooltipMarkup = "ARMv7 code is faster and smaller but only works on iPhone 3GS and later. ARMv6 works on all devices.\n\nIncluding both ARMv6 and ARMv7 doubles the size of the executable, but allows use of ARMv7 on newer devices while still supporting older devices.";
+			this.image4.Name = "image4";
+			this.image4.Xalign = 0F;
+			this.image4.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("information.png");
+			this.hbox2.Add (this.image4);
+			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.image4]));
+			w29.PackType = ((global::Gtk.PackType)(1));
+			w29.Position = 3;
+			w29.Expand = false;
+			w29.Fill = false;
+			this.vbox6.Add (this.hbox2);
+			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.hbox2]));
+			w30.Position = 0;
+			w30.Expand = false;
+			w30.Fill = false;
 			// Container child vbox6.Gtk.Box+BoxChild
-			this.alignment4 = new global::Gtk.Alignment (0F, 0.5F, 1F, 1F);
-			this.alignment4.Name = "alignment4";
-			this.alignment4.LeftPadding = ((uint)(24));
-			// Container child alignment4.Gtk.Container+ContainerChild
 			this.useThumbCheck = new global::Gtk.CheckButton ();
 			this.useThumbCheck.CanFocus = true;
 			this.useThumbCheck.Name = "useThumbCheck";
@@ -354,29 +403,48 @@ namespace MonoDevelop.IPhone.Gui
 			this.useThumbCheck.UseUnderline = true;
 			this.useThumbCheck.Remove (this.useThumbCheck.Child);
 			// Container child useThumbCheck.Gtk.Container+ContainerChild
+			this.hbox3 = new global::Gtk.HBox ();
+			this.hbox3.Name = "hbox3";
+			this.hbox3.Spacing = 6;
+			// Container child hbox3.Gtk.Box+BoxChild
 			this.label16 = new global::Gtk.Label ();
 			this.label16.Name = "label16";
-			this.label16.LabelProp = global::Mono.Unix.Catalog.GetString ("Generate Thumb instructions\n<small>Makes generated code smaller, but may be slightly slower</small>");
+			this.label16.LabelProp = global::Mono.Unix.Catalog.GetString ("Use Thumb-2 instruction set for ARMv7");
 			this.label16.UseMarkup = true;
-			this.useThumbCheck.Add (this.label16);
-			this.alignment4.Add (this.useThumbCheck);
-			this.vbox6.Add (this.alignment4);
-			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.alignment4]));
-			w28.Position = 1;
-			w28.Expand = false;
-			w28.Fill = false;
-			this.alignment7.Add (this.vbox6);
-			this.vbox5.Add (this.alignment7);
-			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.alignment7]));
-			w30.Position = 1;
-			w30.Expand = false;
-			w30.Fill = false;
-			this.codeGenerationAlignment.Add (this.vbox5);
-			this.advancedVbox.Add (this.codeGenerationAlignment);
-			global::Gtk.Box.BoxChild w32 = ((global::Gtk.Box.BoxChild)(this.advancedVbox [this.codeGenerationAlignment]));
+			this.hbox3.Add (this.label16);
+			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.label16]));
+			w31.Position = 0;
+			w31.Expand = false;
+			w31.Fill = false;
+			// Container child hbox3.Gtk.Box+BoxChild
+			this.image5 = new global::Gtk.Image ();
+			this.image5.TooltipMarkup = "Thumb-2 code is smaller but may be slightly slower in some cases.";
+			this.image5.Name = "image5";
+			this.image5.Xalign = 0F;
+			this.image5.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("information.png");
+			this.hbox3.Add (this.image5);
+			global::Gtk.Box.BoxChild w32 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.image5]));
 			w32.Position = 1;
 			w32.Expand = false;
 			w32.Fill = false;
+			this.useThumbCheck.Add (this.hbox3);
+			this.vbox6.Add (this.useThumbCheck);
+			global::Gtk.Box.BoxChild w34 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.useThumbCheck]));
+			w34.Position = 1;
+			w34.Expand = false;
+			w34.Fill = false;
+			this.llvmOptionsAlignment.Add (this.vbox6);
+			this.vbox5.Add (this.llvmOptionsAlignment);
+			global::Gtk.Box.BoxChild w36 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.llvmOptionsAlignment]));
+			w36.Position = 1;
+			w36.Expand = false;
+			w36.Fill = false;
+			this.codeGenerationAlignment.Add (this.vbox5);
+			this.advancedVbox.Add (this.codeGenerationAlignment);
+			global::Gtk.Box.BoxChild w38 = ((global::Gtk.Box.BoxChild)(this.advancedVbox [this.codeGenerationAlignment]));
+			w38.Position = 1;
+			w38.Expand = false;
+			w38.Fill = false;
 			// Container child advancedVbox.Gtk.Box+BoxChild
 			this.runtimeOptionsLabel = new global::Gtk.Label ();
 			this.runtimeOptionsLabel.Name = "runtimeOptionsLabel";
@@ -384,10 +452,10 @@ namespace MonoDevelop.IPhone.Gui
 			this.runtimeOptionsLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Runtime Options</b>");
 			this.runtimeOptionsLabel.UseMarkup = true;
 			this.advancedVbox.Add (this.runtimeOptionsLabel);
-			global::Gtk.Box.BoxChild w33 = ((global::Gtk.Box.BoxChild)(this.advancedVbox [this.runtimeOptionsLabel]));
-			w33.Position = 2;
-			w33.Expand = false;
-			w33.Fill = false;
+			global::Gtk.Box.BoxChild w39 = ((global::Gtk.Box.BoxChild)(this.advancedVbox [this.runtimeOptionsLabel]));
+			w39.Position = 2;
+			w39.Expand = false;
+			w39.Fill = false;
 			// Container child advancedVbox.Gtk.Box+BoxChild
 			this.runtimeOptionsAlignment = new global::Gtk.Alignment (0F, 0.5F, 1F, 1F);
 			this.runtimeOptionsAlignment.Name = "runtimeOptionsAlignment";
@@ -408,10 +476,10 @@ namespace MonoDevelop.IPhone.Gui
 			this.useSGenCheck.Add (this.label7);
 			this.runtimeOptionsAlignment.Add (this.useSGenCheck);
 			this.advancedVbox.Add (this.runtimeOptionsAlignment);
-			global::Gtk.Box.BoxChild w36 = ((global::Gtk.Box.BoxChild)(this.advancedVbox [this.runtimeOptionsAlignment]));
-			w36.Position = 3;
-			w36.Expand = false;
-			w36.Fill = false;
+			global::Gtk.Box.BoxChild w42 = ((global::Gtk.Box.BoxChild)(this.advancedVbox [this.runtimeOptionsAlignment]));
+			w42.Position = 3;
+			w42.Expand = false;
+			w42.Fill = false;
 			// Container child advancedVbox.Gtk.Box+BoxChild
 			this.label17 = new global::Gtk.Label ();
 			this.label17.Name = "label17";
@@ -419,10 +487,10 @@ namespace MonoDevelop.IPhone.Gui
 			this.label17.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Internationalization</b>");
 			this.label17.UseMarkup = true;
 			this.advancedVbox.Add (this.label17);
-			global::Gtk.Box.BoxChild w37 = ((global::Gtk.Box.BoxChild)(this.advancedVbox [this.label17]));
-			w37.Position = 4;
-			w37.Expand = false;
-			w37.Fill = false;
+			global::Gtk.Box.BoxChild w43 = ((global::Gtk.Box.BoxChild)(this.advancedVbox [this.label17]));
+			w43.Position = 4;
+			w43.Expand = false;
+			w43.Fill = false;
 			// Container child advancedVbox.Gtk.Box+BoxChild
 			this.alignment8 = new global::Gtk.Alignment (0F, 0.5F, 1F, 1F);
 			this.alignment8.Name = "alignment8";
@@ -439,10 +507,10 @@ namespace MonoDevelop.IPhone.Gui
 			this.label5.LabelProp = global::Mono.Unix.Catalog.GetString ("<small>If the application uses certain international codesets, they must be\nspecified explicitly so that the linker can include supporting resources.</small>");
 			this.label5.UseMarkup = true;
 			this.vbox7.Add (this.label5);
-			global::Gtk.Box.BoxChild w38 = ((global::Gtk.Box.BoxChild)(this.vbox7 [this.label5]));
-			w38.Position = 0;
-			w38.Expand = false;
-			w38.Fill = false;
+			global::Gtk.Box.BoxChild w44 = ((global::Gtk.Box.BoxChild)(this.vbox7 [this.label5]));
+			w44.Position = 0;
+			w44.Expand = false;
+			w44.Fill = false;
 			// Container child vbox7.Gtk.Box+BoxChild
 			this.GtkScrolledWindow = new global::Gtk.ScrolledWindow ();
 			this.GtkScrolledWindow.Name = "GtkScrolledWindow";
@@ -453,16 +521,16 @@ namespace MonoDevelop.IPhone.Gui
 			this.i18nTreeView.Name = "i18nTreeView";
 			this.GtkScrolledWindow.Add (this.i18nTreeView);
 			this.vbox7.Add (this.GtkScrolledWindow);
-			global::Gtk.Box.BoxChild w40 = ((global::Gtk.Box.BoxChild)(this.vbox7 [this.GtkScrolledWindow]));
-			w40.Position = 1;
-			w40.Expand = false;
+			global::Gtk.Box.BoxChild w46 = ((global::Gtk.Box.BoxChild)(this.vbox7 [this.GtkScrolledWindow]));
+			w46.Position = 1;
+			w46.Expand = false;
 			this.alignment8.Add (this.vbox7);
 			this.advancedVbox.Add (this.alignment8);
-			global::Gtk.Box.BoxChild w42 = ((global::Gtk.Box.BoxChild)(this.advancedVbox [this.alignment8]));
-			w42.Position = 5;
+			global::Gtk.Box.BoxChild w48 = ((global::Gtk.Box.BoxChild)(this.advancedVbox [this.alignment8]));
+			w48.Position = 5;
 			this.notebook1.Add (this.advancedVbox);
-			global::Gtk.Notebook.NotebookChild w43 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.advancedVbox]));
-			w43.Position = 1;
+			global::Gtk.Notebook.NotebookChild w49 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.advancedVbox]));
+			w49.Position = 1;
 			// Notebook tab
 			this.label12 = new global::Gtk.Label ();
 			this.label12.Name = "label12";

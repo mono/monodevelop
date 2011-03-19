@@ -175,8 +175,8 @@ namespace MonoDevelop.IPhone
 		[ItemProperty ("MtouchUseLlvm")]
 		public bool MtouchUseLlvm { get; set; }
 		
-		[ItemProperty ("MtouchUseArmv7")]
-		public bool MtouchUseArmv7 { get; set; }
+		[ItemProperty ("MtouchArch")]
+		public MtouchArch MtouchArch { get; set; }
 		
 		[ItemProperty ("MtouchUseThumb")]
 		public bool MtouchUseThumb { get; set; }
@@ -204,7 +204,7 @@ namespace MonoDevelop.IPhone
 			MtouchExtraArgs = cfg.MtouchExtraArgs;
 			MtouchI18n = cfg.MtouchI18n;
 			MtouchUseLlvm = cfg.MtouchUseLlvm;
-			MtouchUseArmv7 = cfg.MtouchUseArmv7;
+			MtouchArch = cfg.MtouchArch;
 			MtouchUseThumb = cfg.MtouchUseThumb;
 			MtouchUseSGen = cfg.MtouchUseSGen;
 		}
@@ -257,5 +257,12 @@ namespace MonoDevelop.IPhone
 		None = 0,
 		SdkOnly,
 		Full,
+	}
+	
+	public enum MtouchArch
+	{
+		ARMv6 = 0,
+		ARMv6_ARMv7,
+		ARMv7,
 	}
 }

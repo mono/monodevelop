@@ -5,7 +5,6 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../build/MonoDevelop.MacDev.dll" />
     <widget-library name="../../../../main/build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../main/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
     <widget-library name="../../../../main/build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll" />
@@ -1308,7 +1307,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.IPhone.Gui.IPhoneBuildOptionsWidget" design-size="492 354">
+  <widget class="Gtk.Bin" id="MonoDevelop.IPhone.Gui.IPhoneBuildOptionsWidget" design-size="487 343">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
@@ -1316,7 +1315,7 @@
       <widget class="Gtk.Notebook" id="notebook1">
         <property name="MemberName" />
         <property name="CanFocus">True</property>
-        <property name="CurrentPage">0</property>
+        <property name="CurrentPage">1</property>
         <child>
           <widget class="Gtk.VBox" id="vbox2">
             <property name="MemberName" />
@@ -1694,11 +1693,37 @@
                         <property name="HasLabel">False</property>
                         <property name="UseUnderline">True</property>
                         <child>
-                          <widget class="Gtk.Label" id="label14">
+                          <widget class="Gtk.HBox" id="hbox4">
                             <property name="MemberName" />
-                            <property name="LabelProp" translatable="yes">Use LLVM optimizing compiler
+                            <property name="Spacing">6</property>
+                            <child>
+                              <widget class="Gtk.Label" id="label14">
+                                <property name="MemberName" />
+                                <property name="LabelProp" translatable="yes">Use LLVM optimizing compiler
 &lt;small&gt;Experimental, not compatible with debug mode&lt;/small&gt;</property>
-                            <property name="UseMarkup">True</property>
+                                <property name="UseMarkup">True</property>
+                              </widget>
+                              <packing>
+                                <property name="Position">0</property>
+                                <property name="AutoSize">True</property>
+                                <property name="Expand">False</property>
+                                <property name="Fill">False</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="Gtk.Image" id="image6">
+                                <property name="MemberName" />
+                                <property name="Tooltip" translatable="yes">The experimental LLVM compiler generates code that is faster and smaller, but the compilation takes much longer. It is not compatible with debug mode.</property>
+                                <property name="Xalign">0</property>
+                                <property name="Pixbuf">resource:information.png</property>
+                              </widget>
+                              <packing>
+                                <property name="Position">1</property>
+                                <property name="AutoSize">True</property>
+                                <property name="Expand">False</property>
+                                <property name="Fill">False</property>
+                              </packing>
+                            </child>
                           </widget>
                         </child>
                       </widget>
@@ -1710,7 +1735,7 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="Gtk.Alignment" id="alignment7">
+                      <widget class="Gtk.Alignment" id="llvmOptionsAlignment">
                         <property name="MemberName" />
                         <property name="Xalign">0</property>
                         <property name="LeftPadding">24</property>
@@ -1719,49 +1744,108 @@
                             <property name="MemberName" />
                             <property name="Spacing">2</property>
                             <child>
-                              <widget class="Gtk.CheckButton" id="useArmv7Check">
+                              <widget class="Gtk.HBox" id="hbox2">
                                 <property name="MemberName" />
-                                <property name="CanFocus">True</property>
-                                <property name="Label" translatable="yes">ARMv7</property>
-                                <property name="DrawIndicator">True</property>
-                                <property name="HasLabel">False</property>
-                                <property name="UseUnderline">True</property>
+                                <property name="Spacing">6</property>
                                 <child>
-                                  <widget class="Gtk.Label" id="label15">
+                                  <widget class="Gtk.Label" id="label8">
                                     <property name="MemberName" />
-                                    <property name="LabelProp" translatable="yes">Use ARMv7 ABI
-&lt;small&gt;Makes generated code smaller, but requires iPhone 3GS or later&lt;/small&gt; </property>
-                                    <property name="UseMarkup">True</property>
+                                    <property name="Xalign">0</property>
+                                    <property name="LabelProp" translatable="yes">Supported architectures:</property>
                                   </widget>
+                                  <packing>
+                                    <property name="Position">0</property>
+                                    <property name="AutoSize">True</property>
+                                    <property name="Expand">False</property>
+                                    <property name="Fill">False</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="Gtk.ComboBox" id="archCombo">
+                                    <property name="MemberName" />
+                                    <property name="IsTextCombo">True</property>
+                                    <property name="Items" translatable="yes" />
+                                  </widget>
+                                  <packing>
+                                    <property name="Position">1</property>
+                                    <property name="AutoSize">True</property>
+                                    <property name="Expand">False</property>
+                                    <property name="Fill">False</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="Gtk.Label" id="label13">
+                                    <property name="MemberName" />
+                                  </widget>
+                                  <packing>
+                                    <property name="PackType">End</property>
+                                    <property name="Position">2</property>
+                                    <property name="AutoSize">False</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="Gtk.Image" id="image4">
+                                    <property name="MemberName" />
+                                    <property name="Tooltip" translatable="yes">ARMv7 code is faster and smaller but only works on iPhone 3GS and later. ARMv6 works on all devices.
+
+Including both ARMv6 and ARMv7 doubles the size of the executable, but allows use of ARMv7 on newer devices while still supporting older devices.</property>
+                                    <property name="Xalign">0</property>
+                                    <property name="Pixbuf">resource:information.png</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="PackType">End</property>
+                                    <property name="Position">3</property>
+                                    <property name="AutoSize">False</property>
+                                    <property name="Expand">False</property>
+                                    <property name="Fill">False</property>
+                                  </packing>
                                 </child>
                               </widget>
                               <packing>
                                 <property name="Position">0</property>
-                                <property name="AutoSize">True</property>
+                                <property name="AutoSize">False</property>
                                 <property name="Expand">False</property>
                                 <property name="Fill">False</property>
                               </packing>
                             </child>
                             <child>
-                              <widget class="Gtk.Alignment" id="alignment4">
+                              <widget class="Gtk.CheckButton" id="useThumbCheck">
                                 <property name="MemberName" />
-                                <property name="Xalign">0</property>
-                                <property name="LeftPadding">24</property>
+                                <property name="CanFocus">True</property>
+                                <property name="Label" translatable="yes">Thumb</property>
+                                <property name="DrawIndicator">True</property>
+                                <property name="HasLabel">False</property>
+                                <property name="UseUnderline">True</property>
                                 <child>
-                                  <widget class="Gtk.CheckButton" id="useThumbCheck">
+                                  <widget class="Gtk.HBox" id="hbox3">
                                     <property name="MemberName" />
-                                    <property name="CanFocus">True</property>
-                                    <property name="Label" translatable="yes">Thumb</property>
-                                    <property name="DrawIndicator">True</property>
-                                    <property name="HasLabel">False</property>
-                                    <property name="UseUnderline">True</property>
+                                    <property name="Spacing">6</property>
                                     <child>
                                       <widget class="Gtk.Label" id="label16">
                                         <property name="MemberName" />
-                                        <property name="LabelProp" translatable="yes">Generate Thumb instructions
-&lt;small&gt;Makes generated code smaller, but may be slightly slower&lt;/small&gt;</property>
+                                        <property name="LabelProp" translatable="yes">Use Thumb-2 instruction set for ARMv7</property>
                                         <property name="UseMarkup">True</property>
                                       </widget>
+                                      <packing>
+                                        <property name="Position">0</property>
+                                        <property name="AutoSize">True</property>
+                                        <property name="Expand">False</property>
+                                        <property name="Fill">False</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <widget class="Gtk.Image" id="image5">
+                                        <property name="MemberName" />
+                                        <property name="Tooltip" translatable="yes">Thumb-2 code is smaller but may be slightly slower in some cases.</property>
+                                        <property name="Xalign">0</property>
+                                        <property name="Pixbuf">resource:information.png</property>
+                                      </widget>
+                                      <packing>
+                                        <property name="Position">1</property>
+                                        <property name="AutoSize">True</property>
+                                        <property name="Expand">False</property>
+                                        <property name="Fill">False</property>
+                                      </packing>
                                     </child>
                                   </widget>
                                 </child>
