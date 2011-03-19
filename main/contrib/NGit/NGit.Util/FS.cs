@@ -57,7 +57,15 @@ namespace NGit.Util
 		/// 	</summary>
 		/// <remarks>The auto-detected implementation selected for this operating system and JRE.
 		/// 	</remarks>
-		public static readonly NGit.Util.FS DETECTED;
+		public static readonly NGit.Util.FS DETECTED = Detect();
+
+		/// <summary>Auto-detect the appropriate file system abstraction.</summary>
+		/// <remarks>Auto-detect the appropriate file system abstraction.</remarks>
+		/// <returns>detected file system abstraction</returns>
+		public static NGit.Util.FS Detect()
+		{
+			return Detect(null);
+		}
 
 		/// <summary>
 		/// Auto-detect the appropriate file system abstraction, taking into account
@@ -84,11 +92,13 @@ namespace NGit.Util
 		/// <returns>detected file system abstraction</returns>
 		public static NGit.Util.FS Detect(bool? cygwinUsed)
 		{
-			if (FS_Win32.Detect())
+			if (FS_Win32.IsWin32())
 			{
-				bool useCygwin = (cygwinUsed == null && FS_Win32_Cygwin.Detect()) || true.Equals(
-					cygwinUsed);
-				if (useCygwin)
+				if (cygwinUsed == null)
+				{
+					cygwinUsed = Sharpen.Extensions.ValueOf(FS_Win32_Cygwin.IsCygwin());
+				}
+				if (cygwinUsed.Value)
 				{
 					return new FS_Win32_Cygwin();
 				}
@@ -99,7 +109,7 @@ namespace NGit.Util
 			}
 			else
 			{
-				if (FS_POSIX_Java6.Detect())
+				if (FS_POSIX_Java6.HasExecute())
 				{
 					return new FS_POSIX_Java6();
 				}
@@ -110,19 +120,28 @@ namespace NGit.Util
 			}
 		}
 
-		static FS()
-		{
-			DETECTED = Detect(null);
-		}
+		private volatile FS.Holder<FilePath> userHome;
 
-		private readonly FilePath userHome;
+		private volatile FS.Holder<FilePath> gitPrefix;
 
 		/// <summary>Constructs a file system abstraction.</summary>
 		/// <remarks>Constructs a file system abstraction.</remarks>
 		public FS()
 		{
-			this.userHome = UserHomeImpl();
 		}
+
+		/// <summary>Initialize this FS using another's current settings.</summary>
+		/// <remarks>Initialize this FS using another's current settings.</remarks>
+		/// <param name="src">the source FS to copy from.</param>
+		protected internal FS(NGit.Util.FS src)
+		{
+			// Do nothing by default.
+			userHome = src.userHome;
+			gitPrefix = src.gitPrefix;
+		}
+
+		/// <returns>a new instance of the same type of FS.</returns>
+		public abstract NGit.Util.FS NewInstance();
 
 		/// <summary>Does this operating system and JRE support the execute flag on files?</summary>
 		/// <returns>
@@ -196,7 +215,30 @@ namespace NGit.Util
 		/// <returns>the user's home directory; null if the user does not have one.</returns>
 		public virtual FilePath UserHome()
 		{
-			return userHome;
+			FS.Holder<FilePath> p = userHome;
+			if (p == null)
+			{
+				p = new FS.Holder<FilePath>(UserHomeImpl());
+				userHome = p;
+			}
+			return p.value;
+		}
+
+		/// <summary>Set the user's home directory location.</summary>
+		/// <remarks>Set the user's home directory location.</remarks>
+		/// <param name="path">
+		/// the location of the user's preferences; null if there is no
+		/// home directory for the current user.
+		/// </param>
+		/// <returns>
+		/// 
+		/// <code>this</code>
+		/// .
+		/// </returns>
+		public virtual NGit.Util.FS SetUserHome(FilePath path)
+		{
+			userHome = new FS.Holder<FilePath>(path);
+			return this;
 		}
 
 		/// <summary>Does this file system have problems with atomic renames?</summary>
@@ -208,7 +250,7 @@ namespace NGit.Util
 		/// <returns>the user's home directory; null if the user does not have one.</returns>
 		protected internal virtual FilePath UserHomeImpl()
 		{
-			string home = AccessController.DoPrivileged(new _PrivilegedAction_196());
+			string home = AccessController.DoPrivileged(new _PrivilegedAction_234());
 			if (home == null || home.Length == 0)
 			{
 				return null;
@@ -216,9 +258,9 @@ namespace NGit.Util
 			return new FilePath(home).GetAbsoluteFile();
 		}
 
-		private sealed class _PrivilegedAction_196 : PrivilegedAction<string>
+		private sealed class _PrivilegedAction_234 : PrivilegedAction<string>
 		{
-			public _PrivilegedAction_196()
+			public _PrivilegedAction_234()
 			{
 			}
 
@@ -292,7 +334,32 @@ namespace NGit.Util
 		}
 
 		/// <returns>the $prefix directory C Git would use.</returns>
-		public abstract FilePath GitPrefix();
+		public virtual FilePath GitPrefix()
+		{
+			FS.Holder<FilePath> p = gitPrefix;
+			if (p == null)
+			{
+				p = new FS.Holder<FilePath>(DiscoverGitPrefix());
+				gitPrefix = p;
+			}
+			return p.value;
+		}
+
+		/// <returns>the $prefix directory C Git would use.</returns>
+		protected internal abstract FilePath DiscoverGitPrefix();
+
+		/// <summary>Set the $prefix directory C Git uses.</summary>
+		/// <remarks>Set the $prefix directory C Git uses.</remarks>
+		/// <param name="path">the directory. Null if C Git is not installed.</param>
+		/// <returns>
+		/// 
+		/// <code>this</code>
+		/// </returns>
+		public virtual NGit.Util.FS SetGitPrefix(FilePath path)
+		{
+			gitPrefix = new FS.Holder<FilePath>(path);
+			return this;
+		}
 
 		/// <summary>Initialize a ProcesssBuilder to run a command using the system shell.</summary>
 		/// <remarks>Initialize a ProcesssBuilder to run a command using the system shell.</remarks>
@@ -309,5 +376,15 @@ namespace NGit.Util
 		/// populating directory, environment, and then start the process.
 		/// </returns>
 		public abstract ProcessStartInfo RunInShell(string cmd, string[] args);
+
+		private class Holder<V>
+		{
+			internal readonly V value;
+
+			internal Holder(V value)
+			{
+				this.value = value;
+			}
+		}
 	}
 }

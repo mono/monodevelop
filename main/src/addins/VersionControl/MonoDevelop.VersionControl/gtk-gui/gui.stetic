@@ -1863,6 +1863,7 @@
                           <widget class="Gtk.TextView" id="textviewDetails">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
+                            <property name="Editable">False</property>
                             <property name="Text" translatable="yes" />
                           </widget>
                         </child>

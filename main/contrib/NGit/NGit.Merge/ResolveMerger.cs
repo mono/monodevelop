@@ -349,7 +349,7 @@ namespace NGit.Merge
 		/// <returns>
 		/// <code>false</code> if the merge will fail because the index entry
 		/// didn't match ours or the working-dir file was dirty and a
-		/// conflict occured
+		/// conflict occurred
 		/// </returns>
 		/// <exception cref="NGit.Errors.MissingObjectException">NGit.Errors.MissingObjectException
 		/// 	</exception>
@@ -528,7 +528,7 @@ namespace NGit.Merge
 			}
 			if (result.ContainsConflicts())
 			{
-				// a conflict occured, the file will contain conflict markers
+				// a conflict occurred, the file will contain conflict markers
 				// the index will be populated with the three stages and only the
 				// workdir (if used) contains the halfways merged content
 				Add(tw.RawPath, @base, DirCacheEntry.STAGE_1);
@@ -539,7 +539,7 @@ namespace NGit.Merge
 			}
 			else
 			{
-				// no conflict occured, the file will contain fully merged content.
+				// no conflict occurred, the file will contain fully merged content.
 				// the index will be populated with the new merged version
 				DirCacheEntry dce = new DirCacheEntry(tw.PathString);
 				dce.FileMode = tw.GetFileMode(0);

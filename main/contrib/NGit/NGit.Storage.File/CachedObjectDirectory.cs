@@ -69,8 +69,8 @@ namespace NGit.Storage.File
 		/// The set that contains unpacked objects identifiers, it is created when
 		/// the cached instance is created.
 		/// </remarks>
-		private readonly ObjectIdSubclassMap<ObjectId> unpackedObjects = new ObjectIdSubclassMap
-			<ObjectId>();
+		private readonly ObjectIdOwnerMap<CachedObjectDirectory.UnpackedObjectId> unpackedObjects
+			 = new ObjectIdOwnerMap<CachedObjectDirectory.UnpackedObjectId>();
 
 		private readonly ObjectDirectory wrapped;
 
@@ -106,7 +106,8 @@ namespace NGit.Storage.File
 					}
 					try
 					{
-						unpackedObjects.Add(ObjectId.FromString(d + e));
+						ObjectId id = ObjectId.FromString(d + e);
+						unpackedObjects.Add(new CachedObjectDirectory.UnpackedObjectId(id));
 					}
 					catch (ArgumentException)
 					{
@@ -260,7 +261,7 @@ namespace NGit.Storage.File
 				case FileObjectDatabase.InsertLooseObjectResult.INSERTED:
 				case FileObjectDatabase.InsertLooseObjectResult.EXISTS_LOOSE:
 				{
-					unpackedObjects.AddIfAbsent(objectId);
+					unpackedObjects.AddIfAbsent(new CachedObjectDirectory.UnpackedObjectId(objectId));
 					break;
 				}
 
@@ -284,6 +285,14 @@ namespace NGit.Storage.File
 			 otp, WindowCursor curs)
 		{
 			wrapped.SelectObjectRepresentation(packer, otp, curs);
+		}
+
+		[System.Serializable]
+		private class UnpackedObjectId : ObjectIdOwnerMap.Entry
+		{
+			protected internal UnpackedObjectId(AnyObjectId id) : base(id)
+			{
+			}
 		}
 	}
 }

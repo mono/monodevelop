@@ -77,16 +77,6 @@ namespace NGit
 			return FileMode.SYMLINK;
 		}
 
-		/// <exception cref="System.IO.IOException"></exception>
-		public override void Accept(TreeVisitor tv, int flags)
-		{
-			if ((MODIFIED_ONLY & flags) == MODIFIED_ONLY && !IsModified())
-			{
-				return;
-			}
-			tv.VisitSymlink(this);
-		}
-
 		public override string ToString()
 		{
 			StringBuilder r = new StringBuilder();

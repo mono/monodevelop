@@ -41,6 +41,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System;
 using NGit.Api.Errors;
 using Sharpen;
 
@@ -52,8 +53,14 @@ namespace NGit.Api.Errors
 	{
 		private const long serialVersionUID = 1L;
 
-		/// <param name="msg"></param>
+		/// <param name="msg">message describing the invalid remote.</param>
 		public InvalidRemoteException(string msg) : base(msg)
+		{
+		}
+
+		/// <param name="msg">message describing the invalid remote.</param>
+		/// <param name="cause">why the remote is invalid.</param>
+		public InvalidRemoteException(string msg, Exception cause) : base(msg, cause)
 		{
 		}
 	}

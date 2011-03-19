@@ -176,6 +176,7 @@ namespace MonoDevelop.VersionControl.Views
 			this.textviewDetails = new global::Gtk.TextView ();
 			this.textviewDetails.CanFocus = true;
 			this.textviewDetails.Name = "textviewDetails";
+			this.textviewDetails.Editable = false;
 			this.scrolledwindow1.Add (this.textviewDetails);
 			this.vbox2.Add (this.scrolledwindow1);
 			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.scrolledwindow1]));

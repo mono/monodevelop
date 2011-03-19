@@ -76,10 +76,50 @@ namespace NGit.Transport
 	/// <seealso cref="WalkFetchConnection">WalkFetchConnection</seealso>
 	public class TransportSftp : SshTransport, WalkTransport
 	{
-		internal static bool CanHandle(URIish uri)
+		private sealed class _TransportProtocol_100 : TransportProtocol
 		{
-			return uri.IsRemote() && "sftp".Equals(uri.GetScheme());
+			public _TransportProtocol_100()
+			{
+			}
+
+			public override string GetName()
+			{
+				return JGitText.Get().transportProtoSFTP;
+			}
+
+			public override ICollection<string> GetSchemes()
+			{
+				return Sharpen.Collections.Singleton("sftp");
+			}
+
+			//$NON-NLS-1$
+			public override ICollection<TransportProtocol.URIishField> GetRequiredFields()
+			{
+				return Sharpen.Collections.UnmodifiableSet(EnumSet.Of(TransportProtocol.URIishField
+					.HOST, TransportProtocol.URIishField.PATH));
+			}
+
+			public override ICollection<TransportProtocol.URIishField> GetOptionalFields()
+			{
+				return Sharpen.Collections.UnmodifiableSet(EnumSet.Of(TransportProtocol.URIishField
+					.USER, TransportProtocol.URIishField.PASS, TransportProtocol.URIishField.PORT));
+			}
+
+			public override int GetDefaultPort()
+			{
+				return 22;
+			}
+
+			/// <exception cref="System.NotSupportedException"></exception>
+			public override NGit.Transport.Transport Open(URIish uri, Repository local, string
+				 remoteName)
+			{
+				return new NGit.Transport.TransportSftp(local, uri);
+			}
 		}
+
+		internal static readonly TransportProtocol PROTO_SFTP = new _TransportProtocol_100
+			();
 
 		protected internal TransportSftp(Repository local, URIish uri) : base(local, uri)
 		{
@@ -237,7 +277,7 @@ namespace NGit.Transport
 						mtimes.Put(n, ent_1.GetAttrs().GetMTime());
 						packs.AddItem(n);
 					}
-					packs.Sort(new _IComparer_219(mtimes));
+					packs.Sort(new _IComparer_248(mtimes));
 				}
 				catch (SftpException je)
 				{
@@ -247,9 +287,9 @@ namespace NGit.Transport
 				return packs;
 			}
 
-			private sealed class _IComparer_219 : IComparer<string>
+			private sealed class _IComparer_248 : IComparer<string>
 			{
-				public _IComparer_219(Dictionary<string, int> mtimes)
+				public _IComparer_248(Dictionary<string, int> mtimes)
 				{
 					this.mtimes = mtimes;
 				}

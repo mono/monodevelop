@@ -1190,7 +1190,7 @@ namespace NGit
 					}
 				}
 				inserter.Flush();
-				return current.GetTreeId();
+				return current.GetId();
 			}
 			finally
 			{

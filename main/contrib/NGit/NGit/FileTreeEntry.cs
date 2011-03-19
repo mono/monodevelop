@@ -102,16 +102,6 @@ namespace NGit
 			return GetRepository().Open(GetId(), Constants.OBJ_BLOB);
 		}
 
-		/// <exception cref="System.IO.IOException"></exception>
-		public override void Accept(TreeVisitor tv, int flags)
-		{
-			if ((MODIFIED_ONLY & flags) == MODIFIED_ONLY && !IsModified())
-			{
-				return;
-			}
-			tv.VisitFile(this);
-		}
-
 		public override string ToString()
 		{
 			StringBuilder r = new StringBuilder();

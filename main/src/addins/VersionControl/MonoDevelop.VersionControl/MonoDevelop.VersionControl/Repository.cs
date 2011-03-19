@@ -109,7 +109,7 @@ namespace MonoDevelop.VersionControl
 				operations = VersionControlOperation.Commit | VersionControlOperation.Update | VersionControlOperation.Log;
 				if (exists) {
 					operations |= VersionControlOperation.Remove;
-					if (vinfo.HasLocalChanges)
+					if (vinfo.HasLocalChanges || vinfo.IsDirectory)
 						operations |= VersionControlOperation.Revert;
 				}
 				if (AllowLocking && !vinfo.IsDirectory) {
@@ -180,6 +180,18 @@ namespace MonoDevelop.VersionControl
 				vi.Init (this);
 			return infos;
 		}
+		
+		/// <summary>
+		/// Returns the list of changes done in the given revision
+		/// </summary>
+		/// <param name='revision'>
+		/// A revision
+		/// </param>
+		public RevisionPath[] GetRevisionChanges (Revision revision)
+		{
+			return OnGetRevisionChanges (revision);
+		}
+		
 		
 		// Returns a path to the last version of the file updated from the repository
 		public abstract string GetBaseText (FilePath localFile);
@@ -459,6 +471,14 @@ namespace MonoDevelop.VersionControl
 		{
 			return new Annotation[0];
 		}
+
+		/// <summary>
+		/// Returns the list of changes done in the given revision
+		/// </summary>
+		/// <param name='revision'>
+		/// A revision
+		/// </param>
+		protected abstract RevisionPath[] OnGetRevisionChanges (Revision revision);
 	}
 	
 	public class Annotation

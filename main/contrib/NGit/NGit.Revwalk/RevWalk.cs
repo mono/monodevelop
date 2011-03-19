@@ -178,7 +178,7 @@ namespace NGit.Revwalk
 
 		internal readonly MutableObjectId idBuffer;
 
-		private ObjectIdSubclassMap<RevObject> objects;
+		private ObjectIdOwnerMap<RevObject> objects;
 
 		private int freeFlags = APP_FLAGS;
 
@@ -227,7 +227,7 @@ namespace NGit.Revwalk
 			repository = repo;
 			reader = or;
 			idBuffer = new MutableObjectId();
-			objects = new ObjectIdSubclassMap<RevObject>();
+			objects = new ObjectIdOwnerMap<RevObject>();
 			roots = new AList<RevCommit>();
 			queue = new DateRevQueue();
 			pending = new StartGenerator(this);

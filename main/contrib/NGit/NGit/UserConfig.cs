@@ -51,9 +51,9 @@ namespace NGit
 	/// <remarks>The standard "user" configuration parameters.</remarks>
 	public class UserConfig
 	{
-		private sealed class _SectionParser_53 : Config.SectionParser<NGit.UserConfig>
+		private sealed class _SectionParser_54 : Config.SectionParser<NGit.UserConfig>
 		{
-			public _SectionParser_53()
+			public _SectionParser_54()
 			{
 			}
 
@@ -69,23 +69,51 @@ namespace NGit
 		/// 	</see>
 		/// .
 		/// </summary>
-		public static readonly Config.SectionParser<NGit.UserConfig> KEY = new _SectionParser_53
+		public static readonly Config.SectionParser<NGit.UserConfig> KEY = new _SectionParser_54
 			();
 
-		private readonly string authorName;
+		private string authorName;
 
-		private readonly string authorEmail;
+		private string authorEmail;
 
-		private readonly string committerName;
+		private string committerName;
 
-		private readonly string committerEmail;
+		private string committerEmail;
+
+		private bool isAuthorNameImplicit;
+
+		private bool isAuthorEmailImplicit;
+
+		private bool isCommitterNameImplicit;
+
+		private bool isCommitterEmailImplicit;
 
 		private UserConfig(Config rc)
 		{
 			authorName = GetNameInternal(rc, Constants.GIT_AUTHOR_NAME_KEY);
+			if (authorName == null)
+			{
+				authorName = GetDefaultUserName();
+				isAuthorNameImplicit = true;
+			}
 			authorEmail = GetEmailInternal(rc, Constants.GIT_AUTHOR_EMAIL_KEY);
+			if (authorEmail == null)
+			{
+				authorEmail = GetDefaultEmail();
+				isAuthorEmailImplicit = true;
+			}
 			committerName = GetNameInternal(rc, Constants.GIT_COMMITTER_NAME_KEY);
+			if (committerName == null)
+			{
+				committerName = GetDefaultUserName();
+				isCommitterNameImplicit = true;
+			}
 			committerEmail = GetEmailInternal(rc, Constants.GIT_COMMITTER_EMAIL_KEY);
+			if (committerEmail == null)
+			{
+				committerEmail = GetDefaultEmail();
+				isCommitterEmailImplicit = true;
+			}
 		}
 
 		/// <returns>
@@ -130,6 +158,46 @@ namespace NGit
 			return committerEmail;
 		}
 
+		/// <returns>
+		/// true if the author name was not explicitly configured but
+		/// constructed from information the system has about the logged on
+		/// user
+		/// </returns>
+		public virtual bool IsAuthorNameImplicit()
+		{
+			return isAuthorNameImplicit;
+		}
+
+		/// <returns>
+		/// true if the author email was not explicitly configured but
+		/// constructed from information the system has about the logged on
+		/// user
+		/// </returns>
+		public virtual bool IsAuthorEmailImplicit()
+		{
+			return isAuthorEmailImplicit;
+		}
+
+		/// <returns>
+		/// true if the committer name was not explicitly configured but
+		/// constructed from information the system has about the logged on
+		/// user
+		/// </returns>
+		public virtual bool IsCommitterNameImplicit()
+		{
+			return isCommitterNameImplicit;
+		}
+
+		/// <returns>
+		/// true if the author email was not explicitly configured but
+		/// constructed from information the system has about the logged on
+		/// user
+		/// </returns>
+		public virtual bool IsCommitterEmailImplicit()
+		{
+			return isCommitterEmailImplicit;
+		}
+
 		private static string GetNameInternal(Config rc, string envKey)
 		{
 			// try to get the user name from the local and global configurations.
@@ -139,11 +207,17 @@ namespace NGit
 				// try to get the user name for the system property GIT_XXX_NAME
 				username = System().Getenv(envKey);
 			}
-			if (username == null)
-			{
-				// get the system user name
-				username = System().GetProperty(Constants.OS_USER_NAME_KEY);
-			}
+			return username;
+		}
+
+		/// <returns>
+		/// try to get user name of the logged on user from the operating
+		/// system
+		/// </returns>
+		private static string GetDefaultUserName()
+		{
+			// get the system user name
+			string username = System().GetProperty(Constants.OS_USER_NAME_KEY);
 			if (username == null)
 			{
 				username = Constants.UNKNOWN_USER_DEFAULT;
@@ -160,17 +234,18 @@ namespace NGit
 				// try to get the email for the system property GIT_XXX_EMAIL
 				email = System().Getenv(envKey);
 			}
-			if (email == null)
-			{
-				// try to construct an email
-				string username = System().GetProperty(Constants.OS_USER_NAME_KEY);
-				if (username == null)
-				{
-					username = Constants.UNKNOWN_USER_DEFAULT;
-				}
-				email = username + "@" + System().GetHostname();
-			}
 			return email;
+		}
+
+		/// <returns>
+		/// try to construct email for logged on user using system
+		/// information
+		/// </returns>
+		private static string GetDefaultEmail()
+		{
+			// try to construct an email
+			string username = GetDefaultUserName();
+			return username + "@" + System().GetHostname();
 		}
 
 		private static SystemReader System()

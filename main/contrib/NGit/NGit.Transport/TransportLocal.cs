@@ -49,7 +49,6 @@ using NGit;
 using NGit.Errors;
 using NGit.Storage.File;
 using NGit.Transport;
-using NGit.Util;
 using NGit.Util.IO;
 using Sharpen;
 
@@ -87,34 +86,64 @@ namespace NGit.Transport
 	/// </remarks>
 	internal class TransportLocal : NGit.Transport.Transport, PackTransport
 	{
-		private static readonly string PWD = ".";
-
-		internal static bool CanHandle(URIish uri, FS fs)
+		private sealed class _TransportProtocol_96 : TransportProtocol
 		{
-			if (uri.GetHost() != null || uri.GetPort() > 0 || uri.GetUser() != null || uri.GetPass
-				() != null || uri.GetPath() == null)
+			public _TransportProtocol_96()
 			{
-				return false;
 			}
-			if ("file".Equals(uri.GetScheme()) || uri.GetScheme() == null)
+
+			public override string GetName()
 			{
-				return fs.Resolve(new FilePath(PWD), uri.GetPath()).IsDirectory();
+				return JGitText.Get().transportProtoLocal;
 			}
-			return false;
+
+			public override ICollection<string> GetSchemes()
+			{
+				return Sharpen.Collections.Singleton("file");
+			}
+
+			//$NON-NLS-1$
+			public override bool CanHandle(URIish uri, Repository local, string remoteName)
+			{
+				if (uri.GetPath() == null || uri.GetPort() > 0 || uri.GetUser() != null || uri.GetPass
+					() != null || uri.GetHost() != null || (uri.GetScheme() != null && !this.GetSchemes
+					().Contains(uri.GetScheme())))
+				{
+					return false;
+				}
+				return true;
+			}
+
+			/// <exception cref="NGit.Errors.NoRemoteRepositoryException"></exception>
+			public override NGit.Transport.Transport Open(URIish uri, Repository local, string
+				 remoteName)
+			{
+				// If the reference is to a local file, C Git behavior says
+				// assume this is a bundle, since repositories are directories.
+				//
+				FilePath path = local.FileSystem.Resolve(new FilePath("."), uri.GetPath());
+				if (path.IsFile())
+				{
+					return new TransportBundleFile(local, uri, path);
+				}
+				FilePath gitDir = RepositoryCache.FileKey.Resolve(path, local.FileSystem);
+				if (gitDir == null)
+				{
+					throw new NoRemoteRepositoryException(uri, JGitText.Get().notFound);
+				}
+				return new NGit.Transport.TransportLocal(local, uri, gitDir);
+			}
 		}
+
+		internal static readonly TransportProtocol PROTO_LOCAL = new _TransportProtocol_96
+			();
 
 		private readonly FilePath remoteGitDir;
 
-		protected internal TransportLocal(Repository local, URIish uri) : base(local, uri
-			)
+		internal TransportLocal(Repository local, URIish uri, FilePath gitDir) : base(local
+			, uri)
 		{
-			FilePath d = local.FileSystem.Resolve(new FilePath(PWD), uri.GetPath()).GetAbsoluteFile
-				();
-			if (new FilePath(d, Constants.DOT_GIT).IsDirectory())
-			{
-				d = new FilePath(d, Constants.DOT_GIT);
-			}
-			remoteGitDir = d;
+			remoteGitDir = gitDir;
 		}
 
 		internal virtual UploadPack CreateUploadPack(Repository dst)
@@ -207,7 +236,7 @@ namespace NGit.Transport
 				{
 					in_r = new PipedInputStream();
 					in_w = new PipedOutputStream(in_r);
-					out_r = new _PipedInputStream_193();
+					out_r = new _PipedInputStream_218();
 					// The client (BasePackFetchConnection) can write
 					// a huge burst before it reads again. We need to
 					// force the buffer to be big enough, otherwise it
@@ -219,7 +248,7 @@ namespace NGit.Transport
 					dst.Close();
 					throw new TransportException(this.uri, JGitText.Get().cannotConnectPipes, err);
 				}
-				this.worker = new _Thread_208(this, dst, out_r, in_w, "JGit-Upload-Pack");
+				this.worker = new _Thread_233(this, dst, out_r, in_w, "JGit-Upload-Pack");
 				// Client side of the pipes should report the problem.
 				// Clients side will notice we went away, and report.
 				// Ignore close failure, we probably crashed above.
@@ -229,9 +258,9 @@ namespace NGit.Transport
 				this.ReadAdvertisedRefs();
 			}
 
-			private sealed class _PipedInputStream_193 : PipedInputStream
+			private sealed class _PipedInputStream_218 : PipedInputStream
 			{
-				public _PipedInputStream_193()
+				public _PipedInputStream_218()
 				{
 					{
 						this.buffer = new byte[BasePackFetchConnection.MIN_CLIENT_BUFFER];
@@ -239,9 +268,9 @@ namespace NGit.Transport
 				}
 			}
 
-			private sealed class _Thread_208 : Sharpen.Thread
+			private sealed class _Thread_233 : Sharpen.Thread
 			{
-				public _Thread_208(InternalLocalFetchConnection _enclosing, Repository dst, PipedInputStream
+				public _Thread_233(InternalLocalFetchConnection _enclosing, Repository dst, PipedInputStream
 					 out_r, PipedOutputStream in_w, string baseArg1) : base(baseArg1)
 				{
 					this._enclosing = _enclosing;
@@ -414,7 +443,7 @@ namespace NGit.Transport
 					dst.Close();
 					throw new TransportException(this.uri, JGitText.Get().cannotConnectPipes, err);
 				}
-				this.worker = new _Thread_340(this, dst, out_r, in_w, "JGit-Receive-Pack");
+				this.worker = new _Thread_365(this, dst, out_r, in_w, "JGit-Receive-Pack");
 				// Client side of the pipes should report the problem.
 				// Clients side will notice we went away, and report.
 				// Ignore close failure, we probably crashed above.
@@ -424,9 +453,9 @@ namespace NGit.Transport
 				this.ReadAdvertisedRefs();
 			}
 
-			private sealed class _Thread_340 : Sharpen.Thread
+			private sealed class _Thread_365 : Sharpen.Thread
 			{
-				public _Thread_340(InternalLocalPushConnection _enclosing, Repository dst, PipedInputStream
+				public _Thread_365(InternalLocalPushConnection _enclosing, Repository dst, PipedInputStream
 					 out_r, PipedOutputStream in_w, string baseArg1) : base(baseArg1)
 				{
 					this._enclosing = _enclosing;

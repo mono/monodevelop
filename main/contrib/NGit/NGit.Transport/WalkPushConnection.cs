@@ -257,7 +257,7 @@ namespace NGit.Transport
 				// be an empty pack, as the remote has all objects it
 				// needs to complete this change.
 				//
-				if (writer.GetObjectsNumber() == 0)
+				if (writer.GetObjectCount() == 0)
 				{
 					return;
 				}

@@ -33,6 +33,16 @@ namespace Sharpen
 		private List<T> list = new List<T> ();
 		private HashSet<T> table = new HashSet<T> ();
 		
+		public LinkedHashSet ()
+		{
+		}
+		
+		public LinkedHashSet (IEnumerable<T> items)
+		{
+			foreach (T t in items)
+				AddItem (t);
+		}
+		
 		public override bool AddItem (T element)
 		{
 			if (table.Add (element)) {

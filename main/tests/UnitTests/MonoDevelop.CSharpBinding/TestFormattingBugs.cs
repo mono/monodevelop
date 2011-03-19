@@ -120,7 +120,7 @@ using (IDisposable b = null) {
 			
 			TestStatementFormatting (policy,
 @"try {
-// Comment 1
+ // Comment 1
 	myObject.x = Run ();
 } catch (InvalidOperationException e) {
 	Console.WriteLine (e.Message);

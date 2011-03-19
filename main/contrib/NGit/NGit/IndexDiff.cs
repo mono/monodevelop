@@ -82,16 +82,14 @@ namespace NGit
 
 			private readonly int total;
 
-			public ProgressReportingFilter(IndexDiff _enclosing, ProgressMonitor monitor, int
-				 total)
+			public ProgressReportingFilter(ProgressMonitor monitor, int total)
 			{
-				this._enclosing = _enclosing;
 				this.monitor = monitor;
 				this.total = total;
-				this.stepSize = total / 100;
-				if (this.stepSize == 0)
+				stepSize = total / 100;
+				if (stepSize == 0)
 				{
-					this.stepSize = 1000;
+					stepSize = 1000;
 				}
 			}
 
@@ -105,14 +103,14 @@ namespace NGit
 			/// <exception cref="System.IO.IOException"></exception>
 			public override bool Include(TreeWalk walker)
 			{
-				this.count++;
-				if (this.count % this.stepSize == 0)
+				count++;
+				if (count % stepSize == 0)
 				{
-					if (this.count <= this.total)
+					if (count <= total)
 					{
-						this.monitor.Update(this.stepSize);
+						monitor.Update(stepSize);
 					}
-					if (this.monitor.IsCancelled())
+					if (monitor.IsCancelled())
 					{
 						throw StopWalkException.INSTANCE;
 					}
@@ -122,11 +120,9 @@ namespace NGit
 
 			public override TreeFilter Clone()
 			{
-				throw new InvalidOperationException("Do not clone this kind of filter: " + this.GetType
+				throw new InvalidOperationException("Do not clone this kind of filter: " + GetType
 					().FullName);
 			}
-
-			private readonly IndexDiff _enclosing;
 		}
 
 		private const int TREE = 0;
@@ -276,7 +272,7 @@ namespace NGit
 				}
 				int total = Math.Max(estIndexSize * 10 / 9, estWorkTreeSize * 10 / 9);
 				monitor.BeginTask(title, total);
-				filters.AddItem(new IndexDiff.ProgressReportingFilter(this, monitor, total));
+				filters.AddItem(new IndexDiff.ProgressReportingFilter(monitor, total));
 			}
 			if (filter != null)
 			{

@@ -70,31 +70,68 @@ namespace NGit.Transport
 	/// </remarks>
 	public class TransportGitSsh : SshTransport, PackTransport
 	{
-		internal static bool CanHandle(URIish uri)
+		private sealed class _TransportProtocol_89 : TransportProtocol
 		{
-			if (!uri.IsRemote())
+			public _TransportProtocol_89()
 			{
-				return false;
+				this.schemeNames = new string[] { "ssh", "ssh+git", "git+ssh" };
+				this.schemeSet = Sharpen.Collections.UnmodifiableSet(new LinkedHashSet<string>(Arrays
+					.AsList(this.schemeNames)));
 			}
-			string scheme = uri.GetScheme();
-			if ("ssh".Equals(scheme))
+
+			private readonly string[] schemeNames;
+
+			private readonly ICollection<string> schemeSet;
+
+			//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			public override string GetName()
 			{
-				return true;
+				return JGitText.Get().transportProtoSSH;
 			}
-			if ("ssh+git".Equals(scheme))
+
+			public override ICollection<string> GetSchemes()
 			{
-				return true;
+				return this.schemeSet;
 			}
-			if ("git+ssh".Equals(scheme))
+
+			public override ICollection<TransportProtocol.URIishField> GetRequiredFields()
 			{
-				return true;
+				return Sharpen.Collections.UnmodifiableSet(EnumSet.Of(TransportProtocol.URIishField
+					.HOST, TransportProtocol.URIishField.PATH));
 			}
-			if (scheme == null && uri.GetHost() != null && uri.GetPath() != null)
+
+			public override ICollection<TransportProtocol.URIishField> GetOptionalFields()
 			{
-				return true;
+				return Sharpen.Collections.UnmodifiableSet(EnumSet.Of(TransportProtocol.URIishField
+					.USER, TransportProtocol.URIishField.PASS, TransportProtocol.URIishField.PORT));
 			}
-			return false;
+
+			public override int GetDefaultPort()
+			{
+				return 22;
+			}
+
+			public override bool CanHandle(URIish uri, Repository local, string remoteName)
+			{
+				if (uri.GetScheme() == null)
+				{
+					// scp-style URI "host:path" does not have scheme.
+					return uri.GetHost() != null && uri.GetPath() != null && uri.GetHost().Length != 
+						0 && uri.GetPath().Length != 0;
+				}
+				return base.CanHandle(uri, local, remoteName);
+			}
+
+			/// <exception cref="System.NotSupportedException"></exception>
+			public override NGit.Transport.Transport Open(URIish uri, Repository local, string
+				 remoteName)
+			{
+				return new NGit.Transport.TransportGitSsh(local, uri);
+			}
 		}
+
+		internal static readonly TransportProtocol PROTO_SSH = new _TransportProtocol_89(
+			);
 
 		protected internal TransportGitSsh(Repository local, URIish uri) : base(local, uri
 			)
@@ -264,15 +301,15 @@ namespace NGit.Transport
 				}
 				PipedInputStream pipeIn = new PipedInputStream();
 				StreamCopyThread copier = new StreamCopyThread(pipeIn, @out);
-				PipedOutputStream pipeOut = new _PipedOutputStream_221(this, copier, pipeIn);
+				PipedOutputStream pipeOut = new _PipedOutputStream_259(this, copier, pipeIn);
 				// Just wake early, the thread will terminate anyway.
 				copier.Start();
 				return pipeOut;
 			}
 
-			private sealed class _PipedOutputStream_221 : PipedOutputStream
+			private sealed class _PipedOutputStream_259 : PipedOutputStream
 			{
-				public _PipedOutputStream_221(JschConnection _enclosing, StreamCopyThread copier, 
+				public _PipedOutputStream_259(JschConnection _enclosing, StreamCopyThread copier, 
 					PipedInputStream baseArg1) : base(baseArg1)
 				{
 					this._enclosing = _enclosing;

@@ -398,30 +398,35 @@ namespace MonoDevelop.ValaBinding
 			}
 		}
 		
-		protected override void OnFileAddedToProject (ProjectFileEventArgs e)
+		protected override void OnFileAddedToProject (ProjectFileEventArgs args)
 		{
-			base.OnFileAddedToProject (e);
+			base.OnFileAddedToProject (args);
 			
-			if (!IsCompileable (e.ProjectFile.Name) &&
-				e.ProjectFile.BuildAction == BuildAction.Compile) {
-				e.ProjectFile.BuildAction = BuildAction.None;
+			foreach (ProjectFileEventInfo e in args) {
+				if (!IsCompileable (e.ProjectFile.Name) &&
+					e.ProjectFile.BuildAction == BuildAction.Compile) {
+					e.ProjectFile.BuildAction = BuildAction.None;
+				}
+				
+				if (e.ProjectFile.BuildAction == BuildAction.Compile)
+					ProjectInformationManager.Instance.Get (this).AddFile (e.ProjectFile.FilePath);
 			}
-			
-			if (e.ProjectFile.BuildAction == BuildAction.Compile)
+		}
+		
+		protected override void OnFileChangedInProject (ProjectFileEventArgs args)
+		{
+			base.OnFileChangedInProject (args);
+			foreach (ProjectFileEventInfo e in args) {
+				// ProjectInformationManager.Instance.Get (this).Reparse ();
 				ProjectInformationManager.Instance.Get (this).AddFile (e.ProjectFile.FilePath);
+			}
 		}
 		
-		protected override void OnFileChangedInProject (ProjectFileEventArgs e)
+		protected override void OnFileRemovedFromProject (ProjectFileEventArgs args)
 		{
-			base.OnFileChangedInProject (e);
-//			ProjectInformationManager.Instance.Get (this).Reparse ();
-			ProjectInformationManager.Instance.Get (this).AddFile (e.ProjectFile.FilePath);
-		}
-		
-		protected override void OnFileRemovedFromProject (ProjectFileEventArgs e)
-		{
-			base.OnFileRemovedFromProject(e);
-			ProjectInformationManager.Instance.Get (this).RemoveFile (e.ProjectFile.FilePath);
+			base.OnFileRemovedFromProject(args);
+			foreach (ProjectFileEventInfo e in args)
+				ProjectInformationManager.Instance.Get (this).RemoveFile (e.ProjectFile.FilePath);
 		}
 		
 		private static void OnEntryAddedToCombine (object sender, SolutionItemEventArgs e)

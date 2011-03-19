@@ -84,7 +84,7 @@ namespace MonoDevelop.CSharp.Parser
 			lock (CompilerCallableEntryPoint.parseLock) {
 				if (string.IsNullOrEmpty (content))
 					return null;
-				
+				var tagComments = ProjectDomService.SpecialCommentTags.GetNames ();
 				List<string> compilerArguments = new List<string> ();
 				if (dom != null && dom.Project != null && MonoDevelop.Ide.IdeApp.Workspace != null) {
 					DotNetProjectConfiguration configuration = dom.Project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
@@ -121,7 +121,7 @@ namespace MonoDevelop.CSharp.Parser
 				foreach (var special in top.SpecialsBag.Specials) {
 					var comment = special as SpecialsBag.Comment;
 					if (comment != null) {
-						VisitComment (result, comment);
+						VisitComment (result, comment, tagComments);
 					} else {
 						VisitPreprocessorDirective (result, special as SpecialsBag.PreProcessorDirective);
 					}
@@ -147,7 +147,7 @@ namespace MonoDevelop.CSharp.Parser
 			}
 		}
 		
-		void VisitComment (ParsedDocument result, SpecialsBag.Comment comment)
+		void VisitComment (ParsedDocument result, SpecialsBag.Comment comment, string[] tagComments)
 		{
 			var cmt = new MonoDevelop.Projects.Dom.Comment (comment.Content);
 			cmt.CommentStartsLine = comment.StartsLine;
@@ -169,6 +169,12 @@ namespace MonoDevelop.CSharp.Parser
 			}
 			cmt.Region = new DomRegion (comment.Line, comment.Col, comment.EndLine, comment.EndCol);
 			result.Comments.Add (cmt);
+			foreach (string tag in tagComments) {
+				int idx = comment.Content.IndexOf (tag);
+				if (idx < 0)
+					continue;
+				result.Add (new Tag (tag, comment.Content, cmt.Region));
+			}
 		}
 
 		Stack<SpecialsBag.PreProcessorDirective> regions = new Stack<SpecialsBag.PreProcessorDirective> ();
@@ -278,6 +284,32 @@ namespace MonoDevelop.CSharp.Parser
 				get;
 				set;
 			}
+			static string[] keywordTable;
+			static ConversionVisitor ()
+			{
+				keywordTable = new string[255];
+				for (int i = 0; i < 255; i++) 
+					keywordTable [i] = DomReturnType.Void.FullName;
+				
+				keywordTable [(int)BuiltinTypeSpec.Type.Other] = DomReturnType.Void.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.String] = DomReturnType.String.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.Int] = DomReturnType.Int32.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.UInt] = DomReturnType.UInt32.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.Long] = DomReturnType.Int64.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.ULong] = DomReturnType.UInt64.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.Object] = "object";
+				keywordTable [(int)BuiltinTypeSpec.Type.Float] = DomReturnType.Float.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.Double] = DomReturnType.Double.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.Byte] = DomReturnType.Byte.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.SByte] = DomReturnType.SByte.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.Short] = DomReturnType.Int16.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.UShort] = DomReturnType.UInt16.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.Decimal] = DomReturnType.Decimal.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.Char] = DomReturnType.Char.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.Bool] = DomReturnType.Bool.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.IntPtr] = DomReturnType.IntPtr.FullName;
+				keywordTable [(int)BuiltinTypeSpec.Type.UIntPtr] = DomReturnType.UIntPtr.FullName;
+			}
 			
 			public ConversionVisitor (LocationsBag locationsBag)
 			{
@@ -378,44 +410,7 @@ namespace MonoDevelop.CSharp.Parser
 			{
 				if (typeName is TypeExpression) {
 					var typeExpr = (Mono.CSharp.TypeExpression)typeName;
-					if (typeExpr.Type == Mono.CSharp.TypeManager.object_type)
-						return new DomReturnType (DomReturnType.Object.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.string_type)
-						return new DomReturnType (DomReturnType.String.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.int32_type)
-						return new DomReturnType (DomReturnType.Int32.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.uint32_type)
-						return new DomReturnType (DomReturnType.UInt32.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.int64_type)
-						return new DomReturnType (DomReturnType.Int64.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.uint64_type)
-						return new DomReturnType (DomReturnType.UInt64.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.float_type)
-						return new DomReturnType (DomReturnType.Float.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.double_type)
-						return new DomReturnType (DomReturnType.Double.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.char_type)
-						return new DomReturnType (DomReturnType.Char.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.short_type)
-						return new DomReturnType (DomReturnType.Int16.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.decimal_type)
-						return new DomReturnType (DomReturnType.Decimal.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.bool_type)
-						return new DomReturnType (DomReturnType.Bool.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.sbyte_type)
-						return new DomReturnType (DomReturnType.SByte.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.byte_type)
-						return new DomReturnType (DomReturnType.Byte.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.ushort_type)
-						return new DomReturnType (DomReturnType.UInt16.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.void_type)
-						return new DomReturnType (DomReturnType.Void.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.intptr_type)
-						return new DomReturnType (DomReturnType.IntPtr.FullName);
-					if (typeExpr.Type == Mono.CSharp.TypeManager.uintptr_type)
-						return new DomReturnType (DomReturnType.UIntPtr.FullName);
-					MonoDevelop.Core.LoggingService.LogError ("Error while converting :" + typeName + " - unknown type value");
-					return DomReturnType.Void;
+					return new DomReturnType (keywordTable [(int)typeExpr.Type.BuiltinType]);
 				}
 				
 				if (typeName is Mono.CSharp.QualifiedAliasMember) {

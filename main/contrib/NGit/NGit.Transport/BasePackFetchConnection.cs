@@ -357,30 +357,25 @@ namespace NGit.Transport
 		{
 			foreach (Ref r in local.GetAllRefs().Values)
 			{
-				try
+				ObjectId id = r.GetPeeledObjectId();
+				if (id == null)
 				{
-					RevCommit o = walk.ParseCommit(r.GetObjectId());
-					o.Add(REACHABLE);
-					reachableCommits.AddItem(o);
+					id = r.GetObjectId();
 				}
-				catch (IOException)
+				if (id == null)
 				{
+					continue;
 				}
+				ParseReachable(id);
 			}
-			// If we cannot read the value of the ref skip it.
-			foreach (ObjectId id in have)
+			foreach (ObjectId id_1 in local.GetAdditionalHaves())
 			{
-				try
-				{
-					RevCommit o = walk.ParseCommit(id);
-					o.Add(REACHABLE);
-					reachableCommits.AddItem(o);
-				}
-				catch (IOException)
-				{
-				}
+				ParseReachable(id_1);
 			}
-			// If we cannot read the value of the ref skip it.
+			foreach (ObjectId id_2 in have)
+			{
+				ParseReachable(id_2);
+			}
 			if (maxTime > 0)
 			{
 				// Mark reachable commits until we reach maxTime. These may
@@ -411,6 +406,23 @@ namespace NGit.Transport
 			}
 		}
 
+		private void ParseReachable(ObjectId id)
+		{
+			try
+			{
+				RevCommit o = walk.ParseCommit(id);
+				if (!o.Has(REACHABLE))
+				{
+					o.Add(REACHABLE);
+					reachableCommits.AddItem(o);
+				}
+			}
+			catch (IOException)
+			{
+			}
+		}
+
+		// If we cannot read the value of the ref skip it.
 		/// <exception cref="System.IO.IOException"></exception>
 		private bool SendWants(ICollection<Ref> want)
 		{
@@ -517,12 +529,13 @@ namespace NGit.Transport
 			int havesSinceLastContinue = 0;
 			bool receivedContinue = false;
 			bool receivedAck = false;
+			bool negotiate = true;
 			if (statelessRPC)
 			{
 				state.WriteTo(@out, null);
 			}
 			NegotiateBegin();
-			for (; ; )
+			while (negotiate)
 			{
 				RevCommit c = walk.Next();
 				if (c == null)
@@ -599,6 +612,10 @@ namespace NGit.Transport
 							receivedAck = true;
 							receivedContinue = true;
 							havesSinceLastContinue = 0;
+							if (anr == PacketLineIn.AckNackResult.ACK_READY)
+							{
+								negotiate = false;
+							}
 							break;
 						}
 					}
@@ -693,12 +710,12 @@ READ_RESULT_break2: ;
 			walk.ResetRetain(REACHABLE, ADVERTISED);
 			walk.MarkStart(reachableCommits);
 			walk.Sort(RevSort.COMMIT_TIME_DESC);
-			walk.SetRevFilter(new _RevFilter_587(this));
+			walk.SetRevFilter(new _RevFilter_597(this));
 		}
 
-		private sealed class _RevFilter_587 : RevFilter
+		private sealed class _RevFilter_597 : RevFilter
 		{
-			public _RevFilter_587(BasePackFetchConnection _enclosing)
+			public _RevFilter_597(BasePackFetchConnection _enclosing)
 			{
 				this._enclosing = _enclosing;
 			}

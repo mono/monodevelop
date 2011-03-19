@@ -62,21 +62,21 @@ namespace NGit.Storage.Pack
 
 		private readonly ObjectId[] baseTrees;
 
-		private readonly ObjectIdSubclassMap<ObjectToPack> objectsMap;
+		private readonly ObjectIdOwnerMap<ObjectToPack> objectsMap;
 
 		private readonly IList<ObjectToPack> edgeObjects;
 
 		private readonly IntSet alreadyProcessed;
 
-		private readonly ObjectIdSubclassMap<BaseSearch.TreeWithData> treeCache;
+		private readonly ObjectIdOwnerMap<BaseSearch.TreeWithData> treeCache;
 
 		private readonly CanonicalTreeParser parser;
 
 		private readonly MutableObjectId idBuf;
 
 		internal BaseSearch(ProgressMonitor countingMonitor, ICollection<RevTree> bases, 
-			ObjectIdSubclassMap<ObjectToPack> objects, IList<ObjectToPack> edges, ObjectReader
-			 or)
+			ObjectIdOwnerMap<ObjectToPack> objects, IList<ObjectToPack> edges, ObjectReader 
+			or)
 		{
 			progress = countingMonitor;
 			reader = or;
@@ -84,7 +84,7 @@ namespace NGit.Storage.Pack
 			objectsMap = objects;
 			edgeObjects = edges;
 			alreadyProcessed = new IntSet();
-			treeCache = new ObjectIdSubclassMap<BaseSearch.TreeWithData>();
+			treeCache = new ObjectIdOwnerMap<BaseSearch.TreeWithData>();
 			parser = new CanonicalTreeParser();
 			idBuf = new MutableObjectId();
 		}
@@ -212,7 +212,7 @@ CHECK_BASE_break: ;
 		}
 
 		[System.Serializable]
-		private class TreeWithData : ObjectId
+		private class TreeWithData : ObjectIdOwnerMap.Entry
 		{
 			internal readonly byte[] buf;
 

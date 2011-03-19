@@ -41,12 +41,14 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System.Collections.Generic;
 using System.IO;
 using NGit;
 using NGit.Api;
 using NGit.Api.Errors;
 using NGit.Errors;
 using NGit.Revwalk;
+using NGit.Treewalk.Filter;
 using Sharpen;
 
 namespace NGit.Api
@@ -75,6 +77,8 @@ namespace NGit.Api
 
 		private bool startSpecified = false;
 
+		private readonly IList<PathFilter> pathFilters = new AList<PathFilter>();
+
 		/// <param name="repo"></param>
 		protected internal LogCommand(Repository repo) : base(repo)
 		{
@@ -99,6 +103,10 @@ namespace NGit.Api
 		public override Iterable<RevCommit> Call()
 		{
 			CheckCallable();
+			if (pathFilters.Count > 0)
+			{
+				walk.SetTreeFilter(PathFilterGroup.Create(pathFilters));
+			}
 			if (!startSpecified)
 			{
 				try
@@ -261,6 +269,24 @@ namespace NGit.Api
 			return Not(since).Add(until);
 		}
 
+		/// <summary>Show only commits that affect any of the specified paths.</summary>
+		/// <remarks>
+		/// Show only commits that affect any of the specified paths. The path must
+		/// either name a file or a directory exactly. Note that regex expressions or
+		/// wildcards are not supported.
+		/// </remarks>
+		/// <param name="path">a path is relative to the top level of the repository</param>
+		/// <returns>
+		/// 
+		/// <code>this</code>
+		/// </returns>
+		public virtual NGit.Api.LogCommand AddPath(string path)
+		{
+			CheckCallable();
+			pathFilters.AddItem(PathFilter.Create(path));
+			return this;
+		}
+
 		/// <exception cref="NGit.Errors.MissingObjectException"></exception>
 		/// <exception cref="NGit.Errors.IncorrectObjectTypeException"></exception>
 		/// <exception cref="NGit.Api.Errors.JGitInternalException"></exception>
@@ -290,7 +316,7 @@ namespace NGit.Api
 			}
 			catch (IOException e)
 			{
-				throw new JGitInternalException(MessageFormat.Format(JGitText.Get().exceptionOccuredDuringAddingOfOptionToALogCommand
+				throw new JGitInternalException(MessageFormat.Format(JGitText.Get().exceptionOccurredDuringAddingOfOptionToALogCommand
 					, start), e);
 			}
 		}

@@ -54,7 +54,7 @@ namespace NGit
 	/// <remarks>A representation of a Git tree entry. A Tree is a directory in Git.</remarks>
 	[System.ObsoleteAttribute(@"To look up information about a single path, useNGit.Treewalk.TreeWalk.ForPath(Repository, string, NGit.Revwalk.RevTree) . To lookup information about multiple paths at once, use aNGit.Treewalk.TreeWalk and obtain the current entry's information from its getter methods."
 		)]
-	public class Tree : TreeEntry, Treeish
+	public class Tree : TreeEntry
 	{
 		private static readonly TreeEntry[] EMPTY_TREE = new TreeEntry[] {  };
 
@@ -283,16 +283,6 @@ namespace NGit
 		public override Repository GetRepository()
 		{
 			return db;
-		}
-
-		public ObjectId GetTreeId()
-		{
-			return GetId();
-		}
-
-		public NGit.Tree GetTree()
-		{
-			return this;
 		}
 
 		/// <returns>true of the data of this Tree is loaded</returns>
@@ -611,37 +601,6 @@ namespace NGit
 		public virtual TreeEntry FindTreeMember(string s)
 		{
 			return FindMember(s, unchecked((byte)'/'));
-		}
-
-		/// <exception cref="System.IO.IOException"></exception>
-		public override void Accept(TreeVisitor tv, int flags)
-		{
-			TreeEntry[] c;
-			if ((MODIFIED_ONLY & flags) == MODIFIED_ONLY && !IsModified())
-			{
-				return;
-			}
-			if ((LOADED_ONLY & flags) == LOADED_ONLY && !IsLoaded())
-			{
-				tv.StartVisitTree(this);
-				tv.EndVisitTree(this);
-				return;
-			}
-			EnsureLoaded();
-			tv.StartVisitTree(this);
-			if ((CONCURRENT_MODIFICATION & flags) == CONCURRENT_MODIFICATION)
-			{
-				c = Members();
-			}
-			else
-			{
-				c = contents;
-			}
-			for (int k = 0; k < c.Length; k++)
-			{
-				c[k].Accept(tv, flags);
-			}
-			tv.EndVisitTree(this);
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>

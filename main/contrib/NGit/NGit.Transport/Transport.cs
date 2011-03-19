@@ -44,11 +44,11 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using NGit;
 using NGit.Errors;
 using NGit.Storage.Pack;
 using NGit.Transport;
-using NGit.Util;
 using Sharpen;
 
 namespace NGit.Transport
@@ -77,6 +77,205 @@ namespace NGit.Transport
 			PUSH
 		}
 
+		private static readonly IList<WeakReference<TransportProtocol>> protocols = new CopyOnWriteArrayList
+			<WeakReference<TransportProtocol>>();
+
+		static Transport()
+		{
+			// Registration goes backwards in order of priority.
+			Register(TransportLocal.PROTO_LOCAL);
+			Register(TransportBundleFile.PROTO_BUNDLE);
+//			Register(TransportAmazonS3.PROTO_S3);
+			Register(TransportGitAnon.PROTO_GIT);
+			Register(TransportSftp.PROTO_SFTP);
+			Register(TransportHttp.PROTO_FTP);
+			Register(TransportHttp.PROTO_HTTP);
+			Register(TransportGitSsh.PROTO_SSH);
+//			RegisterByService();
+		}
+
+/*		private static void RegisterByService()
+		{
+			ClassLoader ldr = Sharpen.Thread.CurrentThread().GetContextClassLoader();
+			if (ldr == null)
+			{
+				ldr = typeof(NGit.Transport.Transport).GetClassLoader();
+			}
+			Enumeration<Uri> catalogs = Catalogs(ldr);
+			while (catalogs.MoveNext())
+			{
+				Scan(ldr, catalogs.Current);
+			}
+		}
+
+		private static Enumeration<Uri> Catalogs(ClassLoader ldr)
+		{
+			try
+			{
+				string prefix = "META-INF/services/";
+				string name = prefix + typeof(NGit.Transport.Transport).FullName;
+				return ldr.GetResources(name);
+			}
+			catch (IOException)
+			{
+				return new Vector<Uri>().GetEnumerator();
+			}
+		}
+
+		private static void Scan(ClassLoader ldr, Uri url)
+		{
+			BufferedReader br;
+			try
+			{
+				InputStream urlIn = url.OpenStream();
+				br = new BufferedReader(new InputStreamReader(urlIn, "UTF-8"));
+			}
+			catch (IOException)
+			{
+				// If we cannot read from the service list, go to the next.
+				//
+				return;
+			}
+			try
+			{
+				string line;
+				while ((line = br.ReadLine()) != null)
+				{
+					if (line.Length > 0 && !line.StartsWith("#"))
+					{
+						Load(ldr, line);
+					}
+				}
+			}
+			catch (IOException)
+			{
+			}
+			finally
+			{
+				// If we failed during a read, ignore the error.
+				//
+				try
+				{
+					br.Close();
+				}
+				catch (IOException)
+				{
+				}
+			}
+		}
+
+		// Ignore the close error; we are only reading.
+		private static void Load(ClassLoader ldr, string cn)
+		{
+			Type clazz;
+			try
+			{
+				clazz = Sharpen.Runtime.GetType(cn, false, ldr);
+			}
+			catch (TypeLoadException)
+			{
+				// Doesn't exist, even though the service entry is present.
+				//
+				return;
+			}
+			foreach (FieldInfo f in Sharpen.Runtime.GetDeclaredFields(clazz))
+			{
+				if ((f.GetModifiers() & Modifier.STATIC) == Modifier.STATIC && typeof(TransportProtocol
+					).IsAssignableFrom(f.FieldType))
+				{
+					TransportProtocol proto;
+					try
+					{
+						proto = (TransportProtocol)f.GetValue(null);
+					}
+					catch (ArgumentException)
+					{
+						// If we cannot access the field, don't.
+						continue;
+					}
+					catch (MemberAccessException)
+					{
+						// If we cannot access the field, don't.
+						continue;
+					}
+					if (proto != null)
+					{
+						Register(proto);
+					}
+				}
+			}
+		}
+		*/
+
+		/// <summary>Register a TransportProtocol instance for use during open.</summary>
+		/// <remarks>
+		/// Register a TransportProtocol instance for use during open.
+		/// <p>
+		/// Protocol definitions are held by WeakReference, allowing them to be
+		/// garbage collected when the calling application drops all strongly held
+		/// references to the TransportProtocol. Therefore applications should use a
+		/// singleton pattern as described in
+		/// <see cref="TransportProtocol">TransportProtocol</see>
+		/// 's class
+		/// documentation to ensure their protocol does not get disabled by garbage
+		/// collection earlier than expected.
+		/// <p>
+		/// The new protocol is registered in front of all earlier protocols, giving
+		/// it higher priority than the built-in protocol definitions.
+		/// </remarks>
+		/// <param name="proto">the protocol definition. Must not be null.</param>
+		public static void Register(TransportProtocol proto)
+		{
+			protocols.Add(0, new WeakReference<TransportProtocol>(proto));
+		}
+
+		/// <summary>Unregister a TransportProtocol instance.</summary>
+		/// <remarks>
+		/// Unregister a TransportProtocol instance.
+		/// <p>
+		/// Unregistering a protocol usually isn't necessary, as protocols are held
+		/// by weak references and will automatically clear when they are garbage
+		/// collected by the JVM. Matching is handled by reference equality, so the
+		/// exact reference given to
+		/// <see cref="Register(TransportProtocol)">Register(TransportProtocol)</see>
+		/// must be
+		/// used.
+		/// </remarks>
+		/// <param name="proto">the exact object previously given to register.</param>
+		public static void Unregister(TransportProtocol proto)
+		{
+			foreach (WeakReference<TransportProtocol> @ref in protocols)
+			{
+				TransportProtocol refProto = @ref.Get();
+				if (refProto == null || refProto == proto)
+				{
+					protocols.Remove(@ref);
+				}
+			}
+		}
+
+		/// <summary>Obtain a copy of the registered protocols.</summary>
+		/// <remarks>Obtain a copy of the registered protocols.</remarks>
+		/// <returns>an immutable copy of the currently registered protocols.</returns>
+		public static IList<TransportProtocol> GetTransportProtocols()
+		{
+			int cnt = protocols.Count;
+			IList<TransportProtocol> res = new AList<TransportProtocol>(cnt);
+			foreach (WeakReference<TransportProtocol> @ref in protocols)
+			{
+				TransportProtocol proto = @ref.Get();
+				if (proto != null)
+				{
+					res.AddItem(proto);
+				}
+				else
+				{
+					protocols.Remove(@ref);
+				}
+			}
+			return Sharpen.Collections.UnmodifiableList(res);
+		}
+
 		/// <summary>Open a new transport instance to connect two repositories.</summary>
 		/// <remarks>
 		/// Open a new transport instance to connect two repositories.
@@ -99,6 +298,8 @@ namespace NGit.Transport
 		/// file and is not a well-formed URL.
 		/// </exception>
 		/// <exception cref="System.NotSupportedException">the protocol specified is not supported.
+		/// 	</exception>
+		/// <exception cref="NGit.Errors.TransportException">the transport cannot open this URI.
 		/// 	</exception>
 		public static NGit.Transport.Transport Open(Repository local, string remote)
 		{
@@ -126,13 +327,15 @@ namespace NGit.Transport
 		/// </exception>
 		/// <exception cref="System.NotSupportedException">the protocol specified is not supported.
 		/// 	</exception>
+		/// <exception cref="NGit.Errors.TransportException">the transport cannot open this URI.
+		/// 	</exception>
 		public static NGit.Transport.Transport Open(Repository local, string remote, Transport.Operation
 			 op)
 		{
 			RemoteConfig cfg = new RemoteConfig(local.GetConfig(), remote);
 			if (DoesNotExist(cfg))
 			{
-				return Open(local, new URIish(remote));
+				return Open(local, new URIish(remote), null);
 			}
 			return Open(local, cfg, op);
 		}
@@ -159,6 +362,8 @@ namespace NGit.Transport
 		/// file and is not a well-formed URL.
 		/// </exception>
 		/// <exception cref="System.NotSupportedException">the protocol specified is not supported.
+		/// 	</exception>
+		/// <exception cref="NGit.Errors.TransportException">the transport cannot open this URI.
 		/// 	</exception>
 		public static IList<NGit.Transport.Transport> OpenAll(Repository local, string remote
 			)
@@ -187,6 +392,8 @@ namespace NGit.Transport
 		/// </exception>
 		/// <exception cref="System.NotSupportedException">the protocol specified is not supported.
 		/// 	</exception>
+		/// <exception cref="NGit.Errors.TransportException">the transport cannot open this URI.
+		/// 	</exception>
 		public static IList<NGit.Transport.Transport> OpenAll(Repository local, string remote
 			, Transport.Operation op)
 		{
@@ -195,7 +402,7 @@ namespace NGit.Transport
 			{
 				AList<NGit.Transport.Transport> transports = new AList<NGit.Transport.Transport>(
 					1);
-				transports.AddItem(Open(local, new URIish(remote)));
+				transports.AddItem(Open(local, new URIish(remote), null));
 				return transports;
 			}
 			return OpenAll(local, cfg, op);
@@ -219,6 +426,8 @@ namespace NGit.Transport
 		/// in remote configuration, only the first is chosen.
 		/// </returns>
 		/// <exception cref="System.NotSupportedException">the protocol specified is not supported.
+		/// 	</exception>
+		/// <exception cref="NGit.Errors.TransportException">the transport cannot open this URI.
 		/// 	</exception>
 		/// <exception cref="System.ArgumentException">
 		/// if provided remote configuration doesn't have any URI
@@ -246,6 +455,8 @@ namespace NGit.Transport
 		/// </returns>
 		/// <exception cref="System.NotSupportedException">the protocol specified is not supported.
 		/// 	</exception>
+		/// <exception cref="NGit.Errors.TransportException">the transport cannot open this URI.
+		/// 	</exception>
 		/// <exception cref="System.ArgumentException">
 		/// if provided remote configuration doesn't have any URI
 		/// associated.
@@ -259,7 +470,7 @@ namespace NGit.Transport
 				throw new ArgumentException(MessageFormat.Format(JGitText.Get().remoteConfigHasNoURIAssociated
 					, cfg.Name));
 			}
-			NGit.Transport.Transport tn = Open(local, uris[0]);
+			NGit.Transport.Transport tn = Open(local, uris[0], cfg.Name);
 			tn.ApplyConfig(cfg);
 			return tn;
 		}
@@ -282,6 +493,8 @@ namespace NGit.Transport
 		/// configuration.
 		/// </returns>
 		/// <exception cref="System.NotSupportedException">the protocol specified is not supported.
+		/// 	</exception>
+		/// <exception cref="NGit.Errors.TransportException">the transport cannot open this URI.
 		/// 	</exception>
 		public static IList<NGit.Transport.Transport> OpenAll(Repository local, RemoteConfig
 			 cfg)
@@ -306,6 +519,8 @@ namespace NGit.Transport
 		/// </returns>
 		/// <exception cref="System.NotSupportedException">the protocol specified is not supported.
 		/// 	</exception>
+		/// <exception cref="NGit.Errors.TransportException">the transport cannot open this URI.
+		/// 	</exception>
 		public static IList<NGit.Transport.Transport> OpenAll(Repository local, RemoteConfig
 			 cfg, Transport.Operation op)
 		{
@@ -314,7 +529,7 @@ namespace NGit.Transport
 				uris.Count);
 			foreach (URIish uri in uris)
 			{
-				NGit.Transport.Transport tn = Open(local, uri);
+				NGit.Transport.Transport tn = Open(local, uri, cfg.Name);
 				tn.ApplyConfig(cfg);
 				transports.AddItem(tn);
 			}
@@ -352,119 +567,52 @@ namespace NGit.Transport
 			return cfg.URIs.IsEmpty() && cfg.PushURIs.IsEmpty();
 		}
 
-		/// <summary>Determines whether the transport can handle the given URIish.</summary>
-		/// <remarks>Determines whether the transport can handle the given URIish.</remarks>
-		/// <param name="remote">location of the remote repository.</param>
-		/// <param name="fs">type of filesystem the local repository is stored on.</param>
-		/// <returns>true if the protocol is supported.</returns>
-		public static bool CanHandleProtocol(URIish remote, FS fs)
+		/// <summary>Open a new transport instance to connect two repositories.</summary>
+		/// <remarks>Open a new transport instance to connect two repositories.</remarks>
+		/// <param name="local">existing local repository.</param>
+		/// <param name="uri">location of the remote repository.</param>
+		/// <returns>the new transport instance. Never null.</returns>
+		/// <exception cref="System.NotSupportedException">the protocol specified is not supported.
+		/// 	</exception>
+		/// <exception cref="NGit.Errors.TransportException">the transport cannot open this URI.
+		/// 	</exception>
+		public static NGit.Transport.Transport Open(Repository local, URIish uri)
 		{
-			if (TransportGitSsh.CanHandle(remote))
-			{
-				return true;
-			}
-			else
-			{
-				if (TransportHttp.CanHandle(remote))
-				{
-					return true;
-				}
-				else
-				{
-					if (TransportSftp.CanHandle(remote))
-					{
-						return true;
-					}
-					else
-					{
-						if (TransportGitAnon.CanHandle(remote))
-						{
-							return true;
-						}
-						else
-						{
-/*							if (TransportAmazonS3.CanHandle(remote))
-							{
-								return true;
-							}
-							else
-							{*/
-								if (TransportBundleFile.CanHandle(remote, fs))
-								{
-									return true;
-								}
-								else
-								{
-									if (TransportLocal.CanHandle(remote, fs))
-									{
-										return true;
-									}
-								}
-//							}
-						}
-					}
-				}
-			}
-			return false;
+			return Open(local, uri, null);
 		}
 
 		/// <summary>Open a new transport instance to connect two repositories.</summary>
 		/// <remarks>Open a new transport instance to connect two repositories.</remarks>
 		/// <param name="local">existing local repository.</param>
-		/// <param name="remote">location of the remote repository.</param>
+		/// <param name="uri">location of the remote repository.</param>
+		/// <param name="remoteName">
+		/// name of the remote, if the remote as configured in
+		/// <code>local</code>
+		/// ; otherwise null.
+		/// </param>
 		/// <returns>the new transport instance. Never null.</returns>
 		/// <exception cref="System.NotSupportedException">the protocol specified is not supported.
 		/// 	</exception>
-		public static NGit.Transport.Transport Open(Repository local, URIish remote)
+		/// <exception cref="NGit.Errors.TransportException">the transport cannot open this URI.
+		/// 	</exception>
+		public static NGit.Transport.Transport Open(Repository local, URIish uri, string 
+			remoteName)
 		{
-			if (TransportGitSsh.CanHandle(remote))
+			foreach (WeakReference<TransportProtocol> @ref in protocols)
 			{
-				return new TransportGitSsh(local, remote);
-			}
-			else
-			{
-				if (TransportHttp.CanHandle(remote))
+				TransportProtocol proto = @ref.Get();
+				if (proto == null)
 				{
-					return new TransportHttp(local, remote);
+					protocols.Remove(@ref);
+					continue;
 				}
-				else
+				if (proto.CanHandle(uri, local, remoteName))
 				{
-					if (TransportSftp.CanHandle(remote))
-					{
-						return new TransportSftp(local, remote);
-					}
-					else
-					{
-						if (TransportGitAnon.CanHandle(remote))
-						{
-							return new TransportGitAnon(local, remote);
-						}
-						else
-						{
-/*							if (TransportAmazonS3.CanHandle(remote))
-							{
-								return new TransportAmazonS3(local, remote);
-							}
-							else
-							{*/
-								if (TransportBundleFile.CanHandle(remote, local.FileSystem))
-								{
-									return new TransportBundleFile(local, remote);
-								}
-								else
-								{
-									if (TransportLocal.CanHandle(remote, local.FileSystem))
-									{
-										return new TransportLocal(local, remote);
-									}
-								}
-//							}
-						}
-					}
+					return proto.Open(uri, local, remoteName);
 				}
 			}
 			throw new NotSupportedException(MessageFormat.Format(JGitText.Get().URINotSupported
-				, remote));
+				, uri));
 		}
 
 		/// <summary>

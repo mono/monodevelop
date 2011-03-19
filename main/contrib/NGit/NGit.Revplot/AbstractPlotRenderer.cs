@@ -157,7 +157,7 @@ namespace NGit.Revplot
 				DrawCommitDot(dotX, dotY, dotSize, dotSize);
 			}
 			int textx = Math.Max(maxCenter + LANE_WIDTH / 2, dotX + dotSize) + 8;
-			int n = commit.refs == null ? 0 : commit.refs.Length;
+			int n = commit.refs.Length;
 			for (int i_1 = 0; i_1 < n; ++i_1)
 			{
 				textx += DrawLabel(textx + dotSize, h / 2, commit.refs[i_1]);

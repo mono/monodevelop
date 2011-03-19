@@ -181,7 +181,11 @@ namespace NGit.Transport
 					foreach (Ref r in additionalTags)
 					{
 						ObjectId id = r.GetPeeledObjectId();
-						if (id == null || transport.local.HasObject(id))
+						if (id == null)
+						{
+							id = r.GetObjectId();
+						}
+						if (transport.local.HasObject(id))
 						{
 							WantTag(r);
 						}
@@ -442,15 +446,27 @@ namespace NGit.Transport
 				{
 					continue;
 				}
+				Ref local = haveRefs.Get(r.GetName());
+				ObjectId obj = r.GetObjectId();
 				if (r.GetPeeledObjectId() == null)
 				{
-					additionalTags.AddItem(r);
+					if (local != null && obj.Equals(local.GetObjectId()))
+					{
+						continue;
+					}
+					if (askFor.ContainsKey(obj) || transport.local.HasObject(obj))
+					{
+						WantTag(r);
+					}
+					else
+					{
+						additionalTags.AddItem(r);
+					}
 					continue;
 				}
-				Ref local = haveRefs.Get(r.GetName());
 				if (local != null)
 				{
-					if (!r.GetObjectId().Equals(local.GetObjectId()))
+					if (!obj.Equals(local.GetObjectId()))
 					{
 						WantTag(r);
 					}

@@ -98,5 +98,10 @@ namespace MonoDevelop.VersionControl
 		{
 			return new Annotation[0];
 		}
+		
+		protected override RevisionPath[] OnGetRevisionChanges (Revision revision)
+		{
+			return new RevisionPath [0];
+		}
 	}
 }

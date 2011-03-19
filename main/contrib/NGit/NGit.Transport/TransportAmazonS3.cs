@@ -81,14 +81,44 @@ namespace NGit.Transport
 	{
 		internal static readonly string S3_SCHEME = "amazon-s3";
 
-		internal static bool CanHandle(URIish uri)
+		private sealed class _TransportProtocol_103 : TransportProtocol
 		{
-			if (!uri.IsRemote())
+			public _TransportProtocol_103()
 			{
-				return false;
 			}
-			return S3_SCHEME.Equals(uri.GetScheme());
+
+			public override string GetName()
+			{
+				return "Amazon S3";
+			}
+
+			public override ICollection<string> GetSchemes()
+			{
+				return Sharpen.Collections.Singleton(NGit.Transport.TransportAmazonS3.S3_SCHEME);
+			}
+
+			public override ICollection<TransportProtocol.URIishField> GetRequiredFields()
+			{
+				return Sharpen.Collections.UnmodifiableSet(EnumSet.Of(TransportProtocol.URIishField
+					.USER, TransportProtocol.URIishField.HOST, TransportProtocol.URIishField.PATH));
+			}
+
+			public override ICollection<TransportProtocol.URIishField> GetOptionalFields()
+			{
+				return Sharpen.Collections.UnmodifiableSet(EnumSet.Of(TransportProtocol.URIishField
+					.PASS));
+			}
+
+			/// <exception cref="System.NotSupportedException"></exception>
+			public override NGit.Transport.Transport Open(URIish uri, Repository local, string
+				 remoteName)
+			{
+				return new NGit.Transport.TransportAmazonS3(local, uri);
+			}
 		}
+
+		internal static readonly TransportProtocol PROTO_S3 = new _TransportProtocol_103(
+			);
 
 		/// <summary>User information necessary to connect to S3.</summary>
 		/// <remarks>User information necessary to connect to S3.</remarks>

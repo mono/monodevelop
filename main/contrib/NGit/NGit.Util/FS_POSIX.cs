@@ -51,7 +51,7 @@ namespace NGit.Util
 {
 	internal abstract class FS_POSIX : FS
 	{
-		public override FilePath GitPrefix()
+		protected internal override FilePath DiscoverGitPrefix()
 		{
 			string path = SystemReader.GetInstance().Getenv("PATH");
 			FilePath gitExe = SearchPath(path, "git");
@@ -83,6 +83,14 @@ namespace NGit.Util
 			return null;
 		}
 
+		public FS_POSIX() : base()
+		{
+		}
+
+		protected internal FS_POSIX(FS src) : base(src)
+		{
+		}
+
 		public override ProcessStartInfo RunInShell(string cmd, string[] args)
 		{
 			IList<string> argv = new AList<string>(4 + args.Length);
@@ -98,13 +106,13 @@ namespace NGit.Util
 
 		private static bool IsMacOS()
 		{
-			string osDotName = AccessController.DoPrivileged(new _PrivilegedAction_95());
+			string osDotName = AccessController.DoPrivileged(new _PrivilegedAction_103());
 			return "Mac OS X".Equals(osDotName);
 		}
 
-		private sealed class _PrivilegedAction_95 : PrivilegedAction<string>
+		private sealed class _PrivilegedAction_103 : PrivilegedAction<string>
 		{
-			public _PrivilegedAction_95()
+			public _PrivilegedAction_103()
 			{
 			}
 

@@ -1486,7 +1486,7 @@ namespace NGit
 
 			public virtual ICollection<string> Parse(Config cfg)
 			{
-				ICollection<string> result = new HashSet<string>();
+				ICollection<string> result = new LinkedHashSet<string>();
 				while (cfg != null)
 				{
 					foreach (Config.Entry e in cfg.state.Get().entryList)

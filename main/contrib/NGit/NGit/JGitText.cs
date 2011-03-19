@@ -366,6 +366,8 @@ namespace NGit
 
 		public string eitherGitDirOrWorkTreeRequired;
 
+		public string emptyCommit;
+
 		public string emptyPathNotPermitted;
 
 		public string encryptionError;
@@ -418,9 +420,9 @@ namespace NGit
 
 		public string exceptionCaughtDuringExecutionOfTagCommand;
 
-		public string exceptionOccuredDuringAddingOfOptionToALogCommand;
+		public string exceptionOccurredDuringAddingOfOptionToALogCommand;
 
-		public string exceptionOccuredDuringReadingOfGIT_DIR;
+		public string exceptionOccurredDuringReadingOfGIT_DIR;
 
 		public string expectedACKNAKFoundEOF;
 
@@ -473,6 +475,8 @@ namespace NGit
 		public string hunkHeaderDoesNotMatchBodyLineCountOf;
 
 		public string illegalArgumentNotA;
+
+		public string illegalCombinationOfArguments;
 
 		public string illegalStateExists;
 
@@ -661,8 +665,6 @@ namespace NGit
 		public string notAValidPack;
 
 		public string notFound;
-
-		public string notValid;
 
 		public string nothingToFetch;
 
@@ -894,6 +896,22 @@ namespace NGit
 
 		public string transportExceptionReadRef;
 
+		public string transportProtoAmazonS3;
+
+		public string transportProtoBundleFile;
+
+		public string transportProtoFTP;
+
+		public string transportProtoGitAnon;
+
+		public string transportProtoHTTP;
+
+		public string transportProtoLocal;
+
+		public string transportProtoSFTP;
+
+		public string transportProtoSSH;
+
 		public string treeEntryAlreadyExists;
 
 		public string treeIteratorDoesNotSupportRemove;
@@ -971,6 +989,8 @@ namespace NGit
 		public string userConfigFileInvalid;
 
 		public string walkFailure;
+
+		public string wantNotValid;
 
 		public string windowSizeMustBeLesserThanLimit;
 

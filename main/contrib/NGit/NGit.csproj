@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -39,7 +39,6 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="NGit\AbbreviatedObjectId.cs" />
-    <Compile Include="NGit\AbstractIndexTreeVisitor.cs" />
     <Compile Include="NGit\AnyObjectId.cs" />
     <Compile Include="NGit\AsyncObjectLoaderQueue.cs" />
     <Compile Include="NGit\AsyncObjectSizeQueue.cs" />
@@ -53,12 +52,9 @@
     <Compile Include="NGit\CoreConfig.cs" />
     <Compile Include="NGit\FileMode.cs" />
     <Compile Include="NGit\FileTreeEntry.cs" />
-    <Compile Include="NGit\ForceModified.cs" />
     <Compile Include="NGit\GitIndex.cs" />
     <Compile Include="NGit\GitlinkTreeEntry.cs" />
     <Compile Include="NGit\IndexDiff.cs" />
-    <Compile Include="NGit\IndexTreeVisitor.cs" />
-    <Compile Include="NGit\IndexTreeWalker.cs" />
     <Compile Include="NGit\InflaterCache.cs" />
     <Compile Include="NGit\JGitText.cs" />
     <Compile Include="NGit\MutableObjectId.cs" />
@@ -93,13 +89,7 @@
     <Compile Include="NGit\TransferConfig.cs" />
     <Compile Include="NGit\Tree.cs" />
     <Compile Include="NGit\TreeEntry.cs" />
-    <Compile Include="NGit\TreeIterator.cs" />
-    <Compile Include="NGit\TreeVisitor.cs" />
-    <Compile Include="NGit\TreeVisitorWithCurrentDirectory.cs" />
-    <Compile Include="NGit\Treeish.cs" />
     <Compile Include="NGit\UserConfig.cs" />
-    <Compile Include="NGit\WorkDirCheckout.cs" />
-    <Compile Include="NGit\WriteTree.cs" />
     <Compile Include="NGit.Api\AddCommand.cs" />
     <Compile Include="NGit.Api\CommitCommand.cs" />
     <Compile Include="NGit.Api\Git.cs" />
@@ -506,6 +496,9 @@
     <Compile Include="NGit.Transport.Resolver\UploadPackFactory.cs" />
     <Compile Include="NGit.Api\ResetCommand.cs" />
     <Compile Include="NGit\BatchingProgressMonitor.cs" />
+    <Compile Include="NGit\ObjectIdOwnerMap.cs" />
+    <Compile Include="NGit.Transport\TransportProtocol.cs" />
+    <Compile Include="NGit.Util\BlockList.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

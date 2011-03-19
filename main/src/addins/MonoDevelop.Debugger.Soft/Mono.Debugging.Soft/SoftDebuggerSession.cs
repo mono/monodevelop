@@ -1072,7 +1072,7 @@ namespace Mono.Debugging.Soft
 			if (bp == null)
 				return false;
 			
-			if (bp.HitCount > 1) {
+			if (bp.HitCount > 0) {
 				// Just update the count and continue
 				binfo.UpdateHitCount (bp.HitCount - 1);
 				return true;

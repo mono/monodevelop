@@ -94,6 +94,10 @@ namespace NGit.Api
 					if (builder.GetGitDir() == null)
 					{
 						FilePath d = new FilePath(".");
+						if (d.GetParentFile() != null)
+						{
+							d = d.GetParentFile();
+						}
 						if (!bare)
 						{
 							d = new FilePath(d, Constants.DOT_GIT);

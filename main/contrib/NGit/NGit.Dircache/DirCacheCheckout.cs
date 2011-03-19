@@ -55,18 +55,8 @@ namespace NGit.Dircache
 {
 	/// <summary>This class handles checking out one or two trees merging with the index.
 	/// 	</summary>
-	/// <remarks>
-	/// This class handles checking out one or two trees merging with the index. This
-	/// class does similar things as
-	/// <code>WorkDirCheckout</code>
-	/// but uses
-	/// <see cref="DirCache">DirCache</see>
-	/// instead of
-	/// <code>GitIndex</code>
-	/// <p>
-	/// The initial implementation of this class was refactored from
-	/// WorkDirCheckout}.
-	/// </remarks>
+	/// <remarks>This class handles checking out one or two trees merging with the index.
+	/// 	</remarks>
 	public class DirCacheCheckout
 	{
 		private Repository repo;

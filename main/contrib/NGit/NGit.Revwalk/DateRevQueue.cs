@@ -49,7 +49,7 @@ namespace NGit.Revwalk
 {
 	/// <summary>A queue of commits sorted by commit time order.</summary>
 	/// <remarks>A queue of commits sorted by commit time order.</remarks>
-	internal class DateRevQueue : AbstractRevQueue
+	public class DateRevQueue : AbstractRevQueue
 	{
 		private DateRevQueue.Entry head;
 

@@ -591,10 +591,12 @@ namespace NGit.Transport
 					}
 					catch (MissingObjectException notFound)
 					{
-						if (wantIds.Contains(notFound.GetObjectId()))
+						ObjectId id = notFound.GetObjectId();
+						if (wantIds.Contains(id))
 						{
-							throw new PackProtocolException(MessageFormat.Format(JGitText.Get().notValid, notFound
-								.Message), notFound);
+							string msg = MessageFormat.Format(JGitText.Get().wantNotValid, id.Name);
+							pckOut.WriteString("ERR " + msg);
+							throw new PackProtocolException(msg, notFound);
 						}
 						continue;
 					}
@@ -609,8 +611,9 @@ namespace NGit.Transport
 					{
 						if (!advertised.Contains(obj))
 						{
-							throw new PackProtocolException(MessageFormat.Format(JGitText.Get().notValid, obj
-								.Name));
+							string msg = MessageFormat.Format(JGitText.Get().wantNotValid, obj.Name);
+							pckOut.WriteString("ERR " + msg);
+							throw new PackProtocolException(msg);
 						}
 						if (!obj.Has(WANT))
 						{
@@ -692,11 +695,13 @@ namespace NGit.Transport
 			// create a pack at this point, let the client know so it stops
 			// telling us about its history.
 			//
+			bool didOkToGiveUp = false;
 			for (int i = peerHas.Count - 1; i >= 0; i--)
 			{
 				ObjectId id = peerHas[i];
 				if (walk.LookupOrNull(id) == null)
 				{
+					didOkToGiveUp = true;
 					if (OkToGiveUp())
 					{
 						switch (multiAck)
@@ -721,6 +726,12 @@ namespace NGit.Transport
 					}
 					break;
 				}
+			}
+			if (multiAck == BasePackFetchConnection.MultiAck.DETAILED && !didOkToGiveUp && OkToGiveUp
+				())
+			{
+				ObjectId id = peerHas[peerHas.Count - 1];
+				pckOut.WriteString("ACK " + id.Name + " ready\n");
 			}
 			peerHas.Clear();
 			return last;

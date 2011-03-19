@@ -83,6 +83,12 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			return Svn.GetHistory (this, sourcefile, since);
 		}
+		
+		protected override RevisionPath[] OnGetRevisionChanges (Revision revision)
+		{
+			SvnRevision rev = (SvnRevision) revision;
+			return rev.ChangedFiles ?? new RevisionPath [0];
+		}
 
 		protected override IEnumerable<VersionInfo> OnGetVersionInfo (IEnumerable<FilePath> paths, bool getRemoteStatus)
 		{
