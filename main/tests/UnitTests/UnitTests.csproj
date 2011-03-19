@@ -141,18 +141,22 @@
     <ProjectReference Include="..\..\src\addins\VersionControl\MonoDevelop.VersionControl\MonoDevelop.VersionControl.csproj">
       <Project>{19DE0F35-D204-4FD8-A553-A19ECE05E24D}</Project>
       <Name>MonoDevelop.VersionControl</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\src\addins\VersionControl\MonoDevelop.VersionControl.Git\MonoDevelop.VersionControl.Git.csproj">
       <Project>{0413DB7D-8B35-423F-9752-D75C9225E7DE}</Project>
       <Name>MonoDevelop.VersionControl.Git</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\contrib\NGit\NGit.csproj">
       <Project>{E3BFF8B4-189C-496A-A817-7E8B31E22B91}</Project>
       <Name>NGit</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\contrib\Sharpen\Sharpen.csproj">
       <Project>{72944A6C-45FF-4EF8-B349-8C9CABF519D4}</Project>
       <Name>Sharpen</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
