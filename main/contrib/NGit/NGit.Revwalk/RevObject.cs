@@ -51,7 +51,7 @@ namespace NGit.Revwalk
 	/// <summary>Base object type accessed during revision walking.</summary>
 	/// <remarks>Base object type accessed during revision walking.</remarks>
 	[System.Serializable]
-	public abstract class RevObject : ObjectId
+	public abstract class RevObject : ObjectIdOwnerMap.Entry
 	{
 		internal const int PARSED = 1;
 

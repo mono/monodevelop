@@ -286,61 +286,6 @@ namespace NGit
 			return ObjectDatabase.Open(objectId, typeHint);
 		}
 
-		/// <summary>Access a Tree object using a symbolic reference.</summary>
-		/// <remarks>
-		/// Access a Tree object using a symbolic reference. This reference may
-		/// be a SHA-1 or ref in combination with a number of symbols translating
-		/// from one ref or SHA1-1 to another, such as HEAD^{tree} etc.
-		/// </remarks>
-		/// <param name="revstr">a reference to a git commit object</param>
-		/// <returns>a Tree named by the specified string</returns>
-		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
-		/// <seealso cref="Resolve(string)">Resolve(string)</seealso>
-		[System.ObsoleteAttribute(@"Use Resolve(string) and pass its return value toNGit.Treewalk.TreeWalk.AddTree(AnyObjectId) ."
-			)]
-		public virtual Tree MapTree(string revstr)
-		{
-			ObjectId id = Resolve(revstr);
-			return id != null ? MapTree(id) : null;
-		}
-
-		/// <summary>Access a Tree by SHA'1 id.</summary>
-		/// <remarks>Access a Tree by SHA'1 id.</remarks>
-		/// <param name="id"></param>
-		/// <returns>Tree or null</returns>
-		/// <exception cref="System.IO.IOException">for I/O error or unexpected object type.</exception>
-		[System.ObsoleteAttribute(@"Use NGit.Treewalk.TreeWalk.AddTree(AnyObjectId) .")]
-		public virtual Tree MapTree(ObjectId id)
-		{
-			ObjectLoader or;
-			try
-			{
-				or = Open(id);
-			}
-			catch (MissingObjectException)
-			{
-				return null;
-			}
-			byte[] raw = or.GetCachedBytes();
-			switch (or.GetType())
-			{
-				case Constants.OBJ_TREE:
-				{
-					return new Tree(this, id, raw);
-				}
-
-				case Constants.OBJ_COMMIT:
-				{
-					return MapTree(ObjectId.FromString(raw, 5));
-				}
-
-				default:
-				{
-					throw new IncorrectObjectTypeException(id, Constants.TYPE_TREE);
-				}
-			}
-		}
-
 		/// <summary>Create a command to update, create or delete a ref in this repository.</summary>
 		/// <remarks>Create a command to update, create or delete a ref in this repository.</remarks>
 		/// <param name="ref">name of the ref the caller wants to modify.</param>

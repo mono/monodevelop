@@ -144,6 +144,7 @@ namespace NGit.Api
 			FetchCommand command = new FetchCommand(repo);
 			command.SetRemote(remote);
 			command.SetProgressMonitor(monitor);
+			command.SetTagOpt(TagOpt.FETCH_TAGS);
 			if (credentialsProvider != null)
 			{
 				command.SetCredentialsProvider(credentialsProvider);

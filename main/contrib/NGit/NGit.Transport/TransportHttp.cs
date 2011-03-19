@@ -80,19 +80,105 @@ namespace NGit.Transport
 
 		private static readonly string userAgent = ComputeUserAgent();
 
-		//$NON-NLS-1$
-		//$NON-NLS-1$
-		internal static bool CanHandle(URIish uri)
+		private sealed class _TransportProtocol_137 : TransportProtocol
 		{
-			if (!uri.IsRemote())
+			public _TransportProtocol_137()
 			{
-				return false;
+				this.schemeNames = new string[] { "http", "https" };
+				this.schemeSet = Sharpen.Collections.UnmodifiableSet(new LinkedHashSet<string>(Arrays
+					.AsList(this.schemeNames)));
 			}
-			string s = uri.GetScheme();
-			return "http".Equals(s) || "https".Equals(s) || "ftp".Equals(s);
+
+			private readonly string[] schemeNames;
+
+			private readonly ICollection<string> schemeSet;
+
+			//$NON-NLS-1$
+			//$NON-NLS-1$
+			//$NON-NLS-1$ //$NON-NLS-2$
+			public override string GetName()
+			{
+				return JGitText.Get().transportProtoHTTP;
+			}
+
+			public override ICollection<string> GetSchemes()
+			{
+				return this.schemeSet;
+			}
+
+			public override ICollection<TransportProtocol.URIishField> GetRequiredFields()
+			{
+				return Sharpen.Collections.UnmodifiableSet(EnumSet.Of(TransportProtocol.URIishField
+					.HOST, TransportProtocol.URIishField.PATH));
+			}
+
+			public override ICollection<TransportProtocol.URIishField> GetOptionalFields()
+			{
+				return Sharpen.Collections.UnmodifiableSet(EnumSet.Of(TransportProtocol.URIishField
+					.USER, TransportProtocol.URIishField.PASS, TransportProtocol.URIishField.PORT));
+			}
+
+			public override int GetDefaultPort()
+			{
+				return 80;
+			}
+
+			/// <exception cref="System.NotSupportedException"></exception>
+			public override NGit.Transport.Transport Open(URIish uri, Repository local, string
+				 remoteName)
+			{
+				return new NGit.Transport.TransportHttp(local, uri);
+			}
 		}
 
-		//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		internal static readonly TransportProtocol PROTO_HTTP = new _TransportProtocol_137
+			();
+
+		private sealed class _TransportProtocol_172 : TransportProtocol
+		{
+			public _TransportProtocol_172()
+			{
+			}
+
+			public override string GetName()
+			{
+				return JGitText.Get().transportProtoFTP;
+			}
+
+			public override ICollection<string> GetSchemes()
+			{
+				return Sharpen.Collections.Singleton("ftp");
+			}
+
+			//$NON-NLS-1$
+			public override ICollection<TransportProtocol.URIishField> GetRequiredFields()
+			{
+				return Sharpen.Collections.UnmodifiableSet(EnumSet.Of(TransportProtocol.URIishField
+					.HOST, TransportProtocol.URIishField.PATH));
+			}
+
+			public override ICollection<TransportProtocol.URIishField> GetOptionalFields()
+			{
+				return Sharpen.Collections.UnmodifiableSet(EnumSet.Of(TransportProtocol.URIishField
+					.USER, TransportProtocol.URIishField.PASS, TransportProtocol.URIishField.PORT));
+			}
+
+			public override int GetDefaultPort()
+			{
+				return 21;
+			}
+
+			/// <exception cref="System.NotSupportedException"></exception>
+			public override NGit.Transport.Transport Open(URIish uri, Repository local, string
+				 remoteName)
+			{
+				return new NGit.Transport.TransportHttp(local, uri);
+			}
+		}
+
+		internal static readonly TransportProtocol PROTO_FTP = new _TransportProtocol_172
+			();
+
 		private static string ComputeUserAgent()
 		{
 			string version;
@@ -109,10 +195,10 @@ namespace NGit.Transport
 			return "JGit/" + version;
 		}
 
-		private sealed class _SectionParser_151 : Config.SectionParser<TransportHttp.HttpConfig
+		private sealed class _SectionParser_212 : Config.SectionParser<TransportHttp.HttpConfig
 			>
 		{
-			public _SectionParser_151()
+			public _SectionParser_212()
 			{
 			}
 
@@ -124,7 +210,7 @@ namespace NGit.Transport
 		}
 
 		private static readonly Config.SectionParser<TransportHttp.HttpConfig> HTTP_KEY = 
-			new _SectionParser_151();
+			new _SectionParser_212();
 
 		private class HttpConfig
 		{

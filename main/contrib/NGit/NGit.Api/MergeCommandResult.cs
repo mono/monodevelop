@@ -289,7 +289,7 @@ namespace NGit.Api
 		/// }
 		/// }</pre>
 		/// </summary>
-		/// <returns>the conflicts or <code>null</code> if no conflict occured</returns>
+		/// <returns>the conflicts or <code>null</code> if no conflict occurred</returns>
 		public virtual IDictionary<string, int[][]> GetConflicts()
 		{
 			return conflicts;

@@ -68,7 +68,7 @@ namespace NGit.Api
 	{
 		private string remote = Constants.DEFAULT_REMOTE_NAME;
 
-		private IList<RefSpec> refSpecs;
+		private readonly IList<RefSpec> refSpecs;
 
 		private ProgressMonitor monitor = NullProgressMonitor.INSTANCE;
 
@@ -119,13 +119,19 @@ namespace NGit.Api
 			AList<PushResult> pushResults = new AList<PushResult>(3);
 			try
 			{
+				if (refSpecs.IsEmpty())
+				{
+					Ref head = repo.GetRef(Constants.HEAD);
+					if (head != null && head.IsSymbolic())
+					{
+						refSpecs.AddItem(new RefSpec(head.GetLeaf().GetName()));
+					}
+				}
 				if (force)
 				{
-					IList<RefSpec> orig = new AList<RefSpec>(refSpecs);
-					refSpecs.Clear();
-					foreach (RefSpec spec in orig)
+					for (int i = 0; i < refSpecs.Count; i++)
 					{
-						refSpecs.AddItem(spec.SetForceUpdate(true));
+						refSpecs.Set(i, refSpecs[i].SetForceUpdate(true));
 					}
 				}
 				IList<NGit.Transport.Transport> transports;
@@ -308,6 +314,74 @@ namespace NGit.Api
 			CheckCallable();
 			this.refSpecs.Clear();
 			Sharpen.Collections.AddAll(this.refSpecs, specs);
+			return this;
+		}
+
+		/// <summary>Push all branches under refs/heads/*.</summary>
+		/// <remarks>Push all branches under refs/heads/*.</remarks>
+		/// <returns>{code this}</returns>
+		public virtual NGit.Api.PushCommand SetPushAll()
+		{
+			refSpecs.AddItem(NGit.Transport.Transport.REFSPEC_PUSH_ALL);
+			return this;
+		}
+
+		/// <summary>Push all tags under refs/tags/*.</summary>
+		/// <remarks>Push all tags under refs/tags/*.</remarks>
+		/// <returns>{code this}</returns>
+		public virtual NGit.Api.PushCommand SetPushTags()
+		{
+			refSpecs.AddItem(NGit.Transport.Transport.REFSPEC_TAGS);
+			return this;
+		}
+
+		/// <summary>Add a reference to push.</summary>
+		/// <remarks>Add a reference to push.</remarks>
+		/// <param name="ref">the source reference. The remote name will match.</param>
+		/// <returns>
+		/// 
+		/// <code>this</code>
+		/// .
+		/// </returns>
+		public virtual NGit.Api.PushCommand Add(Ref @ref)
+		{
+			refSpecs.AddItem(new RefSpec(@ref.GetLeaf().GetName()));
+			return this;
+		}
+
+		/// <summary>Add a reference to push.</summary>
+		/// <remarks>Add a reference to push.</remarks>
+		/// <param name="nameOrSpec">any reference name, or a reference specification.</param>
+		/// <returns>
+		/// 
+		/// <code>this</code>
+		/// .
+		/// </returns>
+		/// <exception cref="NGit.Api.Errors.JGitInternalException">the reference name cannot be resolved.
+		/// 	</exception>
+		public virtual NGit.Api.PushCommand Add(string nameOrSpec)
+		{
+			if (0 <= nameOrSpec.IndexOf(':'))
+			{
+				refSpecs.AddItem(new RefSpec(nameOrSpec));
+			}
+			else
+			{
+				Ref src;
+				try
+				{
+					src = repo.GetRef(nameOrSpec);
+				}
+				catch (IOException e)
+				{
+					throw new JGitInternalException(JGitText.Get().exceptionCaughtDuringExecutionOfPushCommand
+						, e);
+				}
+				if (src != null)
+				{
+					Add(src);
+				}
+			}
 			return this;
 		}
 

@@ -48,6 +48,19 @@ namespace NGit.Util
 {
 	internal class FS_POSIX_Java5 : FS_POSIX
 	{
+		public FS_POSIX_Java5() : base()
+		{
+		}
+
+		protected internal FS_POSIX_Java5(FS src) : base(src)
+		{
+		}
+
+		public override FS NewInstance()
+		{
+			return new NGit.Util.FS_POSIX_Java5(this);
+		}
+
 		public override bool SupportsExecute()
 		{
 			return false;

@@ -103,17 +103,16 @@ namespace NGit.Revplot
 		private Ref[] GetRefs(AnyObjectId commitId)
 		{
 			ICollection<Ref> list = reverseRefMap.Get(commitId);
-			Ref[] tags;
 			if (list == null)
 			{
-				tags = null;
+				return PlotCommit<PlotLane>.NO_REFS;
 			}
 			else
 			{
-				tags = Sharpen.Collections.ToArray(list, new Ref[list.Count]);
+				Ref[] tags = Sharpen.Collections.ToArray(list, new Ref[list.Count]);
 				Arrays.Sort(tags, new PlotWalk.PlotRefComparator(this));
+				return tags;
 			}
-			return tags;
 		}
 
 		internal class PlotRefComparator : IComparer<Ref>

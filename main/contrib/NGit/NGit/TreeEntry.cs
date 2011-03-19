@@ -55,27 +55,6 @@ namespace NGit
 		)]
 	public abstract class TreeEntry : IComparable
 	{
-		/// <summary>
-		/// a flag for
-		/// <see cref="Accept(TreeVisitor, int)">Accept(TreeVisitor, int)</see>
-		/// to visit only modified entries
-		/// </summary>
-		public const int MODIFIED_ONLY = 1 << 0;
-
-		/// <summary>
-		/// a flag for
-		/// <see cref="Accept(TreeVisitor, int)">Accept(TreeVisitor, int)</see>
-		/// to visit only loaded entries
-		/// </summary>
-		public const int LOADED_ONLY = 1 << 1;
-
-		/// <summary>
-		/// a flag for
-		/// <see cref="Accept(TreeVisitor, int)">Accept(TreeVisitor, int)</see>
-		/// obsolete?
-		/// </summary>
-		public const int CONCURRENT_MODIFICATION = 1 << 2;
-
 		private byte[] nameUTF8;
 
 		private Tree parent;
@@ -268,33 +247,6 @@ namespace NGit
 			// which we do not support yet.
 			return FileMode.TREE.Equals(i.GetModeBits()) ? '/' : '\0';
 		}
-
-		/// <summary>
-		/// See @{link
-		/// <see cref="Accept(TreeVisitor, int)">Accept(TreeVisitor, int)</see>
-		/// .
-		/// </summary>
-		/// <param name="tv"></param>
-		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
-		public virtual void Accept(TreeVisitor tv)
-		{
-			Accept(tv, 0);
-		}
-
-		/// <summary>Visit the members of this TreeEntry.</summary>
-		/// <remarks>Visit the members of this TreeEntry.</remarks>
-		/// <param name="tv">A visitor object doing the work</param>
-		/// <param name="flags">
-		/// Specification for what members to visit. See
-		/// <see cref="MODIFIED_ONLY">MODIFIED_ONLY</see>
-		/// ,
-		/// <see cref="LOADED_ONLY">LOADED_ONLY</see>
-		/// ,
-		/// <see cref="CONCURRENT_MODIFICATION">CONCURRENT_MODIFICATION</see>
-		/// .
-		/// </param>
-		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
-		public abstract void Accept(TreeVisitor tv, int flags);
 
 		/// <returns>mode (type of object)</returns>
 		public abstract FileMode GetMode();

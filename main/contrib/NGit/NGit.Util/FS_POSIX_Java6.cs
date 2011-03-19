@@ -61,7 +61,7 @@ namespace NGit.Util
 			setExecute = NeedMethod(typeof(FilePath), "setExecutable", typeof(bool));
 		}
 
-		internal static bool Detect()
+		internal static bool HasExecute()
 		{
 			return canExecute != null && setExecute != null;
 		}
@@ -81,6 +81,19 @@ namespace NGit.Util
 			{
 				return null;
 			}
+		}
+
+		public FS_POSIX_Java6() : base()
+		{
+		}
+
+		protected internal FS_POSIX_Java6(FS src) : base(src)
+		{
+		}
+
+		public override FS NewInstance()
+		{
+			return new NGit.Util.FS_POSIX_Java6(this);
 		}
 
 		public override bool SupportsExecute()

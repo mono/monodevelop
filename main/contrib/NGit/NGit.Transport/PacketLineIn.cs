@@ -114,6 +114,10 @@ namespace NGit.Transport
 					}
 				}
 			}
+			if (line.StartsWith("ERR "))
+			{
+				throw new PackProtocolException(Sharpen.Runtime.Substring(line, 4));
+			}
 			throw new PackProtocolException(MessageFormat.Format(JGitText.Get().expectedACKNAKGot
 				, line));
 		}
@@ -132,7 +136,15 @@ namespace NGit.Transport
 			{
 				return string.Empty;
 			}
-			byte[] raw = new byte[len];
+			byte[] raw;
+			if (len <= lineBuffer.Length)
+			{
+				raw = lineBuffer;
+			}
+			else
+			{
+				raw = new byte[len];
+			}
 			IOUtil.ReadFully(@in, raw, 0, len);
 			if (raw[len - 1] == '\n')
 			{

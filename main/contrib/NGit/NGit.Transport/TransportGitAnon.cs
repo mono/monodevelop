@@ -41,6 +41,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -64,10 +65,50 @@ namespace NGit.Transport
 	{
 		internal const int GIT_PORT = Daemon.DEFAULT_PORT;
 
-		internal static bool CanHandle(URIish uri)
+		private sealed class _TransportProtocol_77 : TransportProtocol
 		{
-			return "git".Equals(uri.GetScheme());
+			public _TransportProtocol_77()
+			{
+			}
+
+			public override string GetName()
+			{
+				return JGitText.Get().transportProtoGitAnon;
+			}
+
+			public override ICollection<string> GetSchemes()
+			{
+				return Sharpen.Collections.Singleton("git");
+			}
+
+			//$NON-NLS-1$
+			public override ICollection<TransportProtocol.URIishField> GetRequiredFields()
+			{
+				return Sharpen.Collections.UnmodifiableSet(EnumSet.Of(TransportProtocol.URIishField
+					.HOST, TransportProtocol.URIishField.PATH));
+			}
+
+			public override ICollection<TransportProtocol.URIishField> GetOptionalFields()
+			{
+				return Sharpen.Collections.UnmodifiableSet(EnumSet.Of(TransportProtocol.URIishField
+					.PORT));
+			}
+
+			public override int GetDefaultPort()
+			{
+				return NGit.Transport.TransportGitAnon.GIT_PORT;
+			}
+
+			/// <exception cref="System.NotSupportedException"></exception>
+			public override NGit.Transport.Transport Open(URIish uri, Repository local, string
+				 remoteName)
+			{
+				return new NGit.Transport.TransportGitAnon(local, uri);
+			}
 		}
+
+		internal static readonly TransportProtocol PROTO_GIT = new _TransportProtocol_77(
+			);
 
 		protected internal TransportGitAnon(Repository local, URIish uri) : base(local, uri
 			)

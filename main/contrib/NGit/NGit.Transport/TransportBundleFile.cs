@@ -42,39 +42,80 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using NGit;
 using NGit.Errors;
 using NGit.Transport;
-using NGit.Util;
 using Sharpen;
 
 namespace NGit.Transport
 {
 	internal class TransportBundleFile : NGit.Transport.Transport, TransportBundle
 	{
-		internal static bool CanHandle(URIish uri, FS fs)
+		private sealed class _TransportProtocol_64 : TransportProtocol
 		{
-			if (uri.GetHost() != null || uri.GetPort() > 0 || uri.GetUser() != null || uri.GetPass
-				() != null || uri.GetPath() == null)
+			public _TransportProtocol_64()
 			{
-				return false;
+				this.schemeNames = new string[] { "bundle", "file" };
+				this.schemeSet = Sharpen.Collections.UnmodifiableSet(new LinkedHashSet<string>(Arrays
+					.AsList(this.schemeNames)));
 			}
-			if ("file".Equals(uri.GetScheme()) || uri.GetScheme() == null)
+
+			private readonly string[] schemeNames;
+
+			private readonly ICollection<string> schemeSet;
+
+			//$NON-NLS-1$ //$NON-NLS-2$
+			public override string GetName()
 			{
-				FilePath f = fs.Resolve(new FilePath("."), uri.GetPath());
-				return f.IsFile() || f.GetName().EndsWith(".bundle");
+				return JGitText.Get().transportProtoBundleFile;
 			}
-			return false;
+
+			public override ICollection<string> GetSchemes()
+			{
+				return this.schemeSet;
+			}
+
+			public override bool CanHandle(URIish uri, Repository local, string remoteName)
+			{
+				if (uri.GetPath() == null || uri.GetPort() > 0 || uri.GetUser() != null || uri.GetPass
+					() != null || uri.GetHost() != null || (uri.GetScheme() != null && !this.GetSchemes
+					().Contains(uri.GetScheme())))
+				{
+					return false;
+				}
+				return true;
+			}
+
+			/// <exception cref="System.NotSupportedException"></exception>
+			/// <exception cref="NGit.Errors.TransportException"></exception>
+			public override NGit.Transport.Transport Open(URIish uri, Repository local, string
+				 remoteName)
+			{
+				if ("bundle".Equals(uri.GetScheme()))
+				{
+					FilePath path = local.FileSystem.Resolve(new FilePath("."), uri.GetPath());
+					return new NGit.Transport.TransportBundleFile(local, uri, path);
+				}
+				// This is an ambiguous reference, it could be a bundle file
+				// or it could be a Git repository. Allow TransportLocal to
+				// resolve the path and figure out which type it is by testing
+				// the target.
+				//
+				return TransportLocal.PROTO_LOCAL.Open(uri, local, remoteName);
+			}
 		}
+
+		internal static readonly TransportProtocol PROTO_BUNDLE = new _TransportProtocol_64
+			();
 
 		private readonly FilePath bundle;
 
-		protected internal TransportBundleFile(Repository local, URIish uri) : base(local
-			, uri)
+		internal TransportBundleFile(Repository local, URIish uri, FilePath bundlePath) : 
+			base(local, uri)
 		{
-			bundle = local.FileSystem.Resolve(new FilePath("."), uri.GetPath()).GetAbsoluteFile
-				();
+			bundle = bundlePath;
 		}
 
 		/// <exception cref="System.NotSupportedException"></exception>

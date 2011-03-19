@@ -63,7 +63,6 @@ namespace NGit
 			//
 			int threads = 1;
 			alarmQueue = new ScheduledThreadPoolExecutor(threads, new _ThreadFactory_66());
-			alarmQueue.SetMaximumPoolSize(alarmQueue.GetCorePoolSize());
 			alarmQueue.SetContinueExistingPeriodicTasksAfterShutdownPolicy(false);
 			alarmQueue.SetExecuteExistingDelayedTasksAfterShutdownPolicy(false);
 			alarmQueue.PrestartAllCoreThreads();
@@ -72,7 +71,7 @@ namespace NGit
 			// This allows the class to GC.
 			//
 			alarmQueue.SetThreadFactory(Executors.DefaultThreadFactory());
-			alarmQueueKiller = new _object_88();
+			alarmQueueKiller = new _object_87();
 		}
 
 		private sealed class _ThreadFactory_66 : ThreadFactory
@@ -93,13 +92,13 @@ namespace NGit
 			}
 		}
 
-		private sealed class _object_88 : object
+		private sealed class _object_87 : object
 		{
-			public _object_88()
+			public _object_87()
 			{
 			}
 
-			~_object_88()
+			~_object_87()
 			{
 				BatchingProgressMonitor.alarmQueue.ShutdownNow();
 			}

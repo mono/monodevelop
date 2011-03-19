@@ -121,33 +121,38 @@ namespace NGit.Api
 			try
 			{
 				NGit.Transport.Transport transport = NGit.Transport.Transport.Open(repo, remote);
-				transport.SetCheckFetchedObjects(checkFetchedObjects);
-				transport.SetRemoveDeletedRefs(removeDeletedRefs);
-				transport.SetTimeout(timeout);
-				transport.SetDryRun(dryRun);
-				if (tagOption != null)
-				{
-					transport.SetTagOpt(tagOption);
-				}
-				transport.SetFetchThin(thin);
-				if (credentialsProvider != null)
-				{
-					transport.SetCredentialsProvider(credentialsProvider);
-				}
 				try
 				{
+					transport.SetCheckFetchedObjects(checkFetchedObjects);
+					transport.SetRemoveDeletedRefs(removeDeletedRefs);
+					transport.SetTimeout(timeout);
+					transport.SetDryRun(dryRun);
+					if (tagOption != null)
+					{
+						transport.SetTagOpt(tagOption);
+					}
+					transport.SetFetchThin(thin);
+					if (credentialsProvider != null)
+					{
+						transport.SetCredentialsProvider(credentialsProvider);
+					}
 					FetchResult result = transport.Fetch(monitor, refSpecs);
 					return result;
-				}
-				catch (TransportException e)
-				{
-					throw new JGitInternalException(JGitText.Get().exceptionCaughtDuringExecutionOfFetchCommand
-						, e);
 				}
 				finally
 				{
 					transport.Close();
 				}
+			}
+			catch (NoRemoteRepositoryException e)
+			{
+				throw new InvalidRemoteException(MessageFormat.Format(JGitText.Get().invalidRemote
+					, remote), e);
+			}
+			catch (TransportException e)
+			{
+				throw new JGitInternalException(JGitText.Get().exceptionCaughtDuringExecutionOfFetchCommand
+					, e);
 			}
 			catch (URISyntaxException)
 			{

@@ -77,16 +77,6 @@ namespace NGit
 			return FileMode.GITLINK;
 		}
 
-		/// <exception cref="System.IO.IOException"></exception>
-		public override void Accept(TreeVisitor tv, int flags)
-		{
-			if ((MODIFIED_ONLY & flags) == MODIFIED_ONLY && !IsModified())
-			{
-				return;
-			}
-			tv.VisitGitlink(this);
-		}
-
 		public override string ToString()
 		{
 			StringBuilder r = new StringBuilder();

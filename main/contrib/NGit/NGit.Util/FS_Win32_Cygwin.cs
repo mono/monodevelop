@@ -52,7 +52,7 @@ namespace NGit.Util
 	{
 		private static string cygpath;
 
-		internal static bool Detect()
+		internal static bool IsCygwin()
 		{
 			string path = AccessController.DoPrivileged(new _PrivilegedAction_58());
 			if (path == null)
@@ -79,6 +79,19 @@ namespace NGit.Util
 			}
 		}
 
+		public FS_Win32_Cygwin() : base()
+		{
+		}
+
+		protected internal FS_Win32_Cygwin(FS src) : base(src)
+		{
+		}
+
+		public override FS NewInstance()
+		{
+			return new NGit.Util.FS_Win32_Cygwin(this);
+		}
+
 		public override FilePath Resolve(FilePath dir, string pn)
 		{
 			string w = ReadPipe(dir, new string[] { cygpath, "--windows", "--absolute", pn }, 
@@ -94,7 +107,7 @@ namespace NGit.Util
 
 		protected internal override FilePath UserHomeImpl()
 		{
-			string home = AccessController.DoPrivileged(new _PrivilegedAction_83());
+			string home = AccessController.DoPrivileged(new _PrivilegedAction_95());
 			if (home == null || home.Length == 0)
 			{
 				return base.UserHomeImpl();
@@ -102,9 +115,9 @@ namespace NGit.Util
 			return Resolve(new FilePath("."), home);
 		}
 
-		private sealed class _PrivilegedAction_83 : PrivilegedAction<string>
+		private sealed class _PrivilegedAction_95 : PrivilegedAction<string>
 		{
-			public _PrivilegedAction_83()
+			public _PrivilegedAction_95()
 			{
 			}
 

@@ -55,7 +55,7 @@ namespace NGit.Transport
 	/// objects from the pack. This extension of ObjectId includes the offset.
 	/// </remarks>
 	[System.Serializable]
-	public class PackedObjectInfo : ObjectId
+	public class PackedObjectInfo : ObjectIdOwnerMap.Entry
 	{
 		private long offset;
 

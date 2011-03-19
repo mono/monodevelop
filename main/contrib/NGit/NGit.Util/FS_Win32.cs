@@ -51,7 +51,7 @@ namespace NGit.Util
 {
 	internal class FS_Win32 : FS
 	{
-		internal static bool Detect()
+		internal static bool IsWin32()
 		{
 			string osDotName = AccessController.DoPrivileged(new _PrivilegedAction_58());
 			return osDotName != null && StringUtils.ToLowerCase(osDotName).IndexOf("windows")
@@ -68,6 +68,19 @@ namespace NGit.Util
 			{
 				return Runtime.GetProperty("os.name");
 			}
+		}
+
+		public FS_Win32() : base()
+		{
+		}
+
+		protected internal FS_Win32(FS src) : base(src)
+		{
+		}
+
+		public override FS NewInstance()
+		{
+			return new NGit.Util.FS_Win32(this);
 		}
 
 		public override bool SupportsExecute()
@@ -90,7 +103,7 @@ namespace NGit.Util
 			return true;
 		}
 
-		public override FilePath GitPrefix()
+		protected internal override FilePath DiscoverGitPrefix()
 		{
 			string path = SystemReader.GetInstance().Getenv("PATH");
 			FilePath gitExe = SearchPath(path, "git.exe", "git.cmd");

@@ -55,23 +55,29 @@ namespace NGit
 	/// This map provides an efficient translation from any ObjectId instance to a
 	/// cached subclass of ObjectId that has the same value.
 	/// <p>
-	/// Raw value equality is tested when comparing two ObjectIds (or subclasses),
-	/// not reference equality and not <code>.equals(Object)</code> equality. This
-	/// allows subclasses to override <code>equals</code> to supply their own
-	/// extended semantics.
+	/// If object instances are stored in only one map,
+	/// <see cref="ObjectIdOwnerMap{V}">ObjectIdOwnerMap&lt;V&gt;</see>
+	/// is a
+	/// more efficient implementation.
 	/// </summary>
 	/// <?></?>
 	public class ObjectIdSubclassMap<V> : Iterable<V> where V:ObjectId
 	{
+		private const int INITIAL_TABLE_SIZE = 2048;
+
 		private int size;
 
-		private V[] obj_hash;
+		private int grow;
+
+		private int mask;
+
+		private V[] table;
 
 		/// <summary>Create an empty map.</summary>
 		/// <remarks>Create an empty map.</remarks>
 		public ObjectIdSubclassMap()
 		{
-			obj_hash = CreateArray(32);
+			InitTable(INITIAL_TABLE_SIZE);
 		}
 
 		/// <summary>Remove all entries from this map.</summary>
@@ -79,7 +85,7 @@ namespace NGit
 		public virtual void Clear()
 		{
 			size = 0;
-			obj_hash = CreateArray(32);
+			InitTable(INITIAL_TABLE_SIZE);
 		}
 
 		/// <summary>Lookup an existing mapping.</summary>
@@ -88,18 +94,17 @@ namespace NGit
 		/// <returns>the instance mapped to toFind, or null if no mapping exists.</returns>
 		public virtual V Get(AnyObjectId toFind)
 		{
-			int i = Index(toFind);
+			int msk = mask;
+			int i = toFind.w1 & msk;
+			V[] tbl = table;
 			V obj;
-			while ((obj = obj_hash[i]) != null)
+			while ((obj = tbl[i]) != null)
 			{
 				if (AnyObjectId.Equals(obj, toFind))
 				{
 					return obj;
 				}
-				if (++i == obj_hash.Length)
-				{
-					i = 0;
-				}
+				i = (i + 1) & msk;
 			}
 			return null;
 		}
@@ -131,12 +136,11 @@ namespace NGit
 		/// <?></?>
 		public virtual void Add<Q>(Q newValue) where Q:V
 		{
-			if (obj_hash.Length - 1 <= size * 2)
+			if (++size == grow)
 			{
 				Grow();
 			}
 			Insert(newValue);
-			size++;
 		}
 
 		/// <summary>Store an object for future lookup.</summary>
@@ -165,29 +169,27 @@ namespace NGit
 		/// <?></?>
 		public virtual V AddIfAbsent<Q>(Q newValue) where Q:V
 		{
-			int i = Index(newValue);
+			int msk = mask;
+			int i = ((ObjectId)newValue).w1 & msk;
+			V[] tbl = table;
 			V obj;
-			while ((obj = obj_hash[i]) != null)
+			while ((obj = tbl[i]) != null)
 			{
 				if (AnyObjectId.Equals(obj, newValue))
 				{
 					return obj;
 				}
-				if (++i == obj_hash.Length)
-				{
-					i = 0;
-				}
+				i = (i + 1) & msk;
 			}
-			if (obj_hash.Length - 1 <= size * 2)
+			if (++size == grow)
 			{
 				Grow();
 				Insert(newValue);
 			}
 			else
 			{
-				obj_hash[i] = newValue;
+				tbl[i] = newValue;
 			}
-			size++;
 			return newValue;
 		}
 
@@ -209,12 +211,12 @@ namespace NGit
 
 		public override Sharpen.Iterator<V> Iterator()
 		{
-			return new _Iterator_186(this);
+			return new _Iterator_190(this);
 		}
 
-		private sealed class _Iterator_186 : Sharpen.Iterator<V>
+		private sealed class _Iterator_190 : Sharpen.Iterator<V>
 		{
-			public _Iterator_186(ObjectIdSubclassMap<V> _enclosing)
+			public _Iterator_190(ObjectIdSubclassMap<V> _enclosing)
 			{
 				this._enclosing = _enclosing;
 			}
@@ -230,9 +232,9 @@ namespace NGit
 
 			public override V Next()
 			{
-				while (this.i < this._enclosing.obj_hash.Length)
+				while (this.i < this._enclosing.table.Length)
 				{
-					V v = this._enclosing.obj_hash[this.i++];
+					V v = this._enclosing.table[this.i++];
 					if (v != null)
 					{
 						this.found++;
@@ -250,37 +252,38 @@ namespace NGit
 			private readonly ObjectIdSubclassMap<V> _enclosing;
 		}
 
-		private int Index(AnyObjectId id)
-		{
-			return ((int)(((uint)id.w1) >> 1)) % obj_hash.Length;
-		}
-
 		private void Insert(V newValue)
 		{
-			int j = Index(newValue);
-			while (obj_hash[j] != null)
+			int msk = mask;
+			int j = newValue.w1 & msk;
+			V[] tbl = table;
+			while (tbl[j] != null)
 			{
-				if (++j >= obj_hash.Length)
-				{
-					j = 0;
-				}
+				j = (j + 1) & msk;
 			}
-			obj_hash[j] = newValue;
+			tbl[j] = newValue;
 		}
 
 		private void Grow()
 		{
-			V[] old_hash = obj_hash;
-			int old_hash_size = obj_hash.Length;
-			obj_hash = CreateArray(2 * old_hash_size);
-			for (int i = 0; i < old_hash_size; i++)
+			V[] oldTable = table;
+			int oldSize = table.Length;
+			InitTable(oldSize << 1);
+			for (int i = 0; i < oldSize; i++)
 			{
-				V obj = old_hash[i];
+				V obj = oldTable[i];
 				if (obj != null)
 				{
 					Insert(obj);
 				}
 			}
+		}
+
+		private void InitTable(int sz)
+		{
+			grow = sz >> 1;
+			mask = sz - 1;
+			table = CreateArray(sz);
 		}
 
 		private V[] CreateArray(int sz)
