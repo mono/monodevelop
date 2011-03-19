@@ -530,213 +530,30 @@ namespace MonoDevelop.VersionControl.Git
 
 		public override void Commit (ChangeSet changeSet, IProgressMonitor monitor)
 		{
-			PersonIdent author = new PersonIdent (repo);
-			PersonIdent committer = new PersonIdent (repo);
 			string message = changeSet.GlobalComment;
-			
 			if (string.IsNullOrEmpty (message))
 				throw new ArgumentException ("Commit message must not be null or empty!", "message");
-			if (string.IsNullOrEmpty (author.GetName ()))
-				throw new ArgumentException ("Author name must not be null or empty!", "author");
 			
-			RepositoryState state = repo.GetRepositoryState ();
-			if (!state.CanCommit ()) {
-				throw new WrongRepositoryStateException ("Cannot commit with repository in state: " + state);
-			}
-		
-			try {
-				Ref head = repo.GetRef (Constants.HEAD);
-				if (head == null)
-					throw new InvalidOperationException ("No HEAD");
-				
-				List<ObjectId> parents = new List<ObjectId>();
-				
-				// determine the current HEAD and the commit it is referring to
-				ObjectId headId = repo.Resolve (Constants.HEAD + "^{commit}");
-				if (headId != null)
-					parents.Insert (0, headId);
-				
-				ObjectInserter odi = repo.NewObjectInserter ();
-				try {
-					List<string> filePaths = GetFilesInPaths (changeSet.Items.Select (i => i.LocalPath));
-					ObjectId indexTreeId = CreateCommitTree (filePaths);
-					
-					ObjectId commitId = GitUtil.CreateCommit (repo, message, parents, indexTreeId, author, committer);
-					
-					RevWalk revWalk = new RevWalk (repo);
-					try {
-						RevCommit revCommit = revWalk.ParseCommit (commitId);
-						RefUpdate ru = repo.UpdateRef (Constants.HEAD);
-						ru.SetNewObjectId (commitId);
-						ru.SetRefLogMessage ("commit : " + revCommit.GetShortMessage (), false);
-						ru.SetExpectedOldObjectId (headId);
-						RefUpdate.Result rc = ru.Update ();
-						switch (rc) {
-						case RefUpdate.Result.NEW:
-						case RefUpdate.Result.FAST_FORWARD:
-						{
-							Unstage (filePaths);
-							if (state == RepositoryState.MERGING_RESOLVED) {
-								// Commit was successful. Now delete the files
-								// used for merge commits
-								repo.WriteMergeCommitMsg (null);
-								repo.WriteMergeHeads (null);
-							}
-							return;
-						}
-						
-						case RefUpdate.Result.REJECTED:
-						case RefUpdate.Result.LOCK_FAILURE:
-							throw new ConcurrentRefUpdateException (JGitText.Get ().couldNotLockHEAD, ru.GetRef (), rc);
-
-						default:
-							throw new JGitInternalException ("Reference update failed");
-						}
-					} finally {
-						revWalk.Release ();
-					}
-				} finally {
-					odi.Release ();
-				}
-			} catch (UnmergedPathException) {
-				// since UnmergedPathException is a subclass of IOException
-				// which should not be wrapped by a JGitInternalException we
-				// have to catch and re-throw it here
-				throw;
-			} catch (IOException e) {
-				throw new JGitInternalException (JGitText.Get ().exceptionCaughtDuringExecutionOfCommitCommand, e);
-			}
-		}		
-
-		ObjectId CreateCommitTree (IEnumerable<string> files)
-		{
-			int basePathLength = Path.GetFullPath (this.path).TrimEnd ('/','\\').Length;
+			NGit.Api.Git git = new NGit.Api.Git (repo);
+			NGit.Api.CommitCommand commit = git.Commit ();
+			commit.SetMessage (message);
 			
-			// Expand directory paths into file paths. Convert paths to full paths.
-			List<string> filePaths = new List<string> ();
-			foreach (var path in files) {
-				string fullPath = path;
-				if (!Path.IsPathRooted (fullPath))
-					fullPath = Path.Combine (path, fullPath);
-				fullPath = Path.GetFullPath (fullPath).TrimEnd ('/','\\');
-				DirectoryInfo dir = new DirectoryInfo (fullPath);
-				if (dir.Exists)
-					filePaths.AddRange (GetDirectoryFiles (dir));
-				else
-					filePaths.Add (fullPath);
-			}
+			foreach (string path in GetFilesInPaths (changeSet.Items.Select (i => i.LocalPath)))
+				commit.SetOnly (path);
 			
-			// Read the tree of the last commit. We are going to update it.
-			var hc = GetHeadCommit ();
-			NGit.Tree tree = hc != null ? repo.MapTree (hc) : new Tree (repo);
-
-			// Keep a list of trees that have been modified, since they have to be written.
-			HashSet<NGit.Tree> modifiedTrees = new HashSet<NGit.Tree> ();
-			
-			// Update the tree
-			foreach (string fullPath in filePaths) {
-				string relPath = fullPath.Substring (basePathLength + 1).Replace ('\\','/');				
-				NGit.TreeEntry treeEntry = tree.FindBlobMember (relPath);
-				
-				if (File.Exists (fullPath)) {
-					// Looks like an old directory is now a file. Delete the subtree and create a new entry for the file.
-					if (treeEntry != null && !(treeEntry is FileTreeEntry))
-						treeEntry.Delete ();
-
-					FileTreeEntry fileEntry = treeEntry as FileTreeEntry;
-					var inserter = repo.ObjectDatabase.NewInserter ();
-					ObjectId id;
-					try {
-						FileStream fs = new FileStream (fullPath, System.IO.FileMode.Open, FileAccess.Read);
-						id = inserter.Insert(Constants.OBJ_BLOB, fs.Length, fs);
-						inserter.Flush();
-					}
-					finally {
-						inserter.Release ();
-					}
-					
-					bool executable = repo.FileSystem.CanExecute (fullPath);
-					if (fileEntry == null) {
-						// It's a new file. Add it.
-						fileEntry = (FileTreeEntry) tree.AddFile (relPath);
-						treeEntry = fileEntry;
-					} else if (fileEntry.GetId () == id && executable == fileEntry.IsExecutable ()) {
-						// Same file, ignore it
-						continue;
-					}
-					
-					fileEntry.SetId (id);
-					fileEntry.SetExecutable (executable);
-				}
-				else {
-					// Deleted file or directory. Remove from the tree
-					if (treeEntry != null) {
-						NGit.Tree ptree = treeEntry.GetParent ();
-						treeEntry.Delete ();
-						// Remove the subtree if it's now empty
-						while (ptree != null && ptree.MemberCount() == 0) {
-							NGit.Tree nextParent = ptree.GetParent ();
-							ptree.Delete ();
-							ptree = nextParent;
-						}
-					}
-					else
-						continue; // Already deleted.
-				}
-				modifiedTrees.Add (treeEntry.GetParent ());
-			}
-
-			// check if tree is different from current commit's tree
-			if (modifiedTrees.Count == 0)
-				throw new InvalidOperationException("There are no changes to commit");
-			
-			// Create new trees if there is any change
-			return SaveTree (tree, modifiedTrees);
-		}
-		
-		ObjectId SaveTree (NGit.Tree tree, HashSet<NGit.Tree> modifiedTrees)
-		{
-			// Saves tree that have been modified (that is, which are in the provided list or
-			// which have child trees that have been modified)
-			
-			bool childModified = false;
-			foreach (var te in tree.Members ()) {
-				NGit.Tree childTree = te as NGit.Tree;
-				if (childTree != null) {
-					ObjectId newId = SaveTree (childTree, modifiedTrees);
-					if (newId != null) {
-						childTree.SetId (newId);
-						childModified = true;
-					}
-				}
-			}
-			if (childModified || modifiedTrees.Contains (tree)) {
-				var writer = repo.ObjectDatabase.NewInserter ();
-				try {
-					return writer.Insert (Constants.OBJ_TREE, tree.Format ());
-				} finally {
-					writer.Release ();
-				}
-			} else
-				return null;
+			commit.Call ();
 		}
 		
 		List<string> GetFilesInPaths (IEnumerable<FilePath> paths)
 		{
-			int basePathLength = Path.GetFullPath (this.path).TrimEnd ('/','\\').Length;
-			
 			// Expand directory paths into file paths. Convert paths to full paths.
 			List<string> filePaths = new List<string> ();
 			foreach (var path in paths) {
-				string fullPath = path;
-				if (!Path.IsPathRooted (fullPath))
-					fullPath = Path.Combine (path, fullPath);
-				fullPath = Path.GetFullPath (fullPath).TrimEnd ('/','\\');
-				DirectoryInfo dir = new DirectoryInfo (fullPath);
+				DirectoryInfo dir = new DirectoryInfo (path);
 				if (dir.Exists)
 					filePaths.AddRange (GetDirectoryFiles (dir));
 				else
-					filePaths.Add (fullPath);
+					filePaths.Add (ToGitPath (path));
 			}
 			return filePaths;
 		}
@@ -752,20 +569,6 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 		
-		void Unstage (IEnumerable<string> files)
-		{
-			GitIndex index = repo.GetIndex ();
-			index.RereadIfNecessary();
-			
-			foreach (var file in files) {
-				string path = file;
-				GitIndex.Entry e = index.GetEntry (ToGitPath (path));
-				if (e != null)
-					index.Add (repo.WorkTree, path);
-			}
-			index.Write();
-		}
-
 		public void GetUserInfo (out string name, out string email)
 		{
 			UserConfig config = repo.GetConfig ().Get (UserConfig.KEY);
