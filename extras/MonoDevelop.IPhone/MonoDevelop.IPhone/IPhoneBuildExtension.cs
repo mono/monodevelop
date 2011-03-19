@@ -142,6 +142,18 @@ namespace MonoDevelop.IPhone
 				foreach (string asm in assemblyRefs)
 					args.AddQuotedFormat ("-r={0}", asm);
 				
+				IPhoneSdkVersion osVersion = IPhoneSdkVersion.V3_0;
+				try {
+					osVersion = IPhoneSdkVersion.Parse (conf.MtouchMinimumOSVersion);
+				} catch {
+					result.AddWarning ("Could not parse minimum OS version '" + conf.MtouchMinimumOSVersion + "'");
+				}
+				
+				if (osVersion < IPhoneSdkVersion.V3_0 && conf.MtouchArch == MtouchArch.ARMv7) {
+					result.AddError ("Apps with a minimum OS older than 3.1 cannot be ARMv7 only");
+					return result;
+				}
+				
 				AppendExtrasMtouchArgs (args, sdkVersion, proj, conf);
 				
 				args.AddQuoted (conf.CompiledOutputName);
@@ -356,11 +368,16 @@ namespace MonoDevelop.IPhone
 					args.Add ("--sgen");
 				if (conf.MtouchUseLlvm) {
 					args.Add ("--llvm");
-					if (conf.MtouchUseArmv7) {
+					switch (conf.MtouchArch) {
+					case MtouchArch.ARMv6_ARMv7:
+						args.Add ("--fat");
+						break;
+					case MtouchArch.ARMv7:
 						args.Add ("--armv7");
-						if (conf.MtouchUseThumb)
-							args.Add ("--thumb");
+						break;
 					}
+					if (conf.MtouchArch != MtouchArch.ARMv6 && conf.MtouchUseThumb)
+						args.Add ("--thumb");
 				}
 			}
 			
@@ -395,6 +412,7 @@ namespace MonoDevelop.IPhone
 				
 				bool sim = conf.Platform != IPhoneProject.PLAT_IPHONE;
 				bool v3_2_orNewer = sdkVersion >= IPhoneSdkVersion.V3_2;
+				bool v3_1_orNewer = sdkVersion >= IPhoneSdkVersion.V3_1;
 				bool v4_0_orNewer = sdkVersion >= IPhoneSdkVersion.V4_0;
 				bool supportsIPhone = (proj.SupportedDevices & TargetDevice.IPhone) != 0;
 				bool supportsIPad = (proj.SupportedDevices & TargetDevice.IPad) != 0;
@@ -472,6 +490,21 @@ namespace MonoDevelop.IPhone
 				SetIfNotPresent (dict,  "LSRequiresIPhoneOS", true);
 				if (v3_2_orNewer)
 					SetIfNotPresent (dict,  "UIDeviceFamily", GetSupportedDevices (proj.SupportedDevices));
+				
+				if (v3_1_orNewer) {
+					if (conf.MtouchArch != MtouchArch.ARMv6_ARMv7) {
+						var val = conf.MtouchArch == MtouchArch.ARMv6? "armv6" : "armv7";
+						var key = "UIRequiredDeviceCapabilities";
+						var caps = dict.TryGetValue (key) ?? (dict[key] = new PlistArray ());
+						var a = caps as PlistArray;
+						if (a != null) {
+							a.Add (val);
+						} else {
+							var d = (PlistDictionary) caps;
+							d[val] = new PlistBoolean (true);
+						}
+					}
+				}
 				
 				SetIfNotPresent (dict, "MinimumOSVersion", conf.MtouchMinimumOSVersion);
 				

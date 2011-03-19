@@ -79,6 +79,7 @@ namespace MonoDevelop.IPhone.Gui
 		
 		ListStore i18nStore = new ListStore (typeof (string), typeof (bool));
 		ListStore sdkStore = new ListStore (typeof (string), typeof (IPhoneSdkVersion));
+		ListStore archStore = new ListStore (typeof (string));
 		
 		bool enableMtouch4Features;
 		
@@ -95,6 +96,7 @@ namespace MonoDevelop.IPhone.Gui
 			
 			i18nTreeView.Model = i18nStore;
 			sdkCombo.Model = sdkStore;
+			archCombo.Model = archStore;
 			
 			var toggle = new CellRendererToggle ();
 			i18nTreeView.AppendColumn ("", toggle, "active", 1);
@@ -107,11 +109,14 @@ namespace MonoDevelop.IPhone.Gui
 			};
 			
 			sdkCombo.Changed += HandleSdkComboChanged;
+			minOSComboEntry.Entry.Changed += delegate {
+				UpdateArches ();
+			};
 			
 			enableMtouch4Features = IPhoneFramework.MonoTouchVersion >= new IPhoneSdkVersion (3, 99);
 			if (enableMtouch4Features) {
 				useLlvmCheck.Toggled += UpdateCodegenCheckSensitivity;
-				useArmv7Check.Toggled += UpdateCodegenCheckSensitivity;
+				archCombo.Changed += UpdateCodegenCheckSensitivity;
 			} else {
 				advancedVbox.Remove (codeGenerationLabel);
 				codeGenerationLabel.Destroy ();
@@ -123,14 +128,38 @@ namespace MonoDevelop.IPhone.Gui
 				runtimeOptionsAlignment.Destroy ();
 			}
 			
+			//sGen is currently unsupported
+			if (enableMtouch4Features)
+				useSGenCheck.Sensitive = false;
+			
 			this.ShowAll ();
+		}
+		
+		void UpdateArches ()
+		{
+			var active = archCombo.Active;
+			archStore.Clear ();
+			
+			var osVersion = IPhoneSdkVersion.V3_1;
+			try {
+				osVersion = IPhoneSdkVersion.Parse (minOSComboEntry.Entry.Text);
+			} catch {}
+			
+			archStore.AppendValues ("ARMv6");
+			archStore.AppendValues ("ARMv6 + ARMv7");
+			
+			if (osVersion >= IPhoneSdkVersion.V3_1){
+				archStore.AppendValues ("ARMv7");
+			}
+			
+			archCombo.Active = Math.Min (active, archStore.IterNChildren () - 1);
 		}
 
 		void UpdateCodegenCheckSensitivity (object sender, EventArgs e)
 		{
 			var llvmActive = useLlvmCheck.Active;
-			useArmv7Check.Sensitive = llvmActive;
-			useThumbCheck.Sensitive = llvmActive && useArmv7Check.Active;
+			llvmOptionsAlignment.Sensitive = llvmActive;
+			useThumbCheck.Sensitive = llvmActive && archCombo.Active > 0;
 		}
 
 		/// <summary>
@@ -156,11 +185,14 @@ namespace MonoDevelop.IPhone.Gui
 			debugCheck.Active = cfg.MtouchDebug;
 			linkCombo.Active = (int) cfg.MtouchLink;
 			LoadSdkValues (cfg.MtouchSdkVersion);
+			
 			minOSComboEntry.Entry.Text = cfg.MtouchMinimumOSVersion;
+			UpdateArches ();
+			
 			LoadI18nValues (cfg.MtouchI18n);
 			if (enableMtouch4Features) {
 				useLlvmCheck.Active = cfg.MtouchUseLlvm;
-				useArmv7Check.Active = cfg.MtouchUseArmv7;
+				archCombo.Active = Math.Min ((int)cfg.MtouchArch, archStore.IterNChildren () - 1);
 				useThumbCheck.Active = cfg.MtouchUseThumb;
 				useSGenCheck.Active = cfg.MtouchUseSGen;
 				UpdateCodegenCheckSensitivity (null, null);
@@ -177,8 +209,8 @@ namespace MonoDevelop.IPhone.Gui
 			cfg.MtouchI18n = GetI18nValues ();
 			if (enableMtouch4Features) {
 				cfg.MtouchUseLlvm = useLlvmCheck.Active;
-				cfg.MtouchUseArmv7 = cfg.MtouchUseLlvm && useArmv7Check.Active;
-				cfg.MtouchUseThumb = cfg.MtouchUseArmv7 && useThumbCheck.Active;
+				cfg.MtouchArch = (MtouchArch)archCombo.Active;
+				cfg.MtouchUseThumb = cfg.MtouchArch != MtouchArch.ARMv6 && useThumbCheck.Active;
 				cfg.MtouchUseSGen = useSGenCheck.Active;
 			}
 		}
