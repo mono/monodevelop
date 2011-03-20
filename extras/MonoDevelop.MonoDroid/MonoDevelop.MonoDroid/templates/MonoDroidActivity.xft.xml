@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <Template>
 	<TemplateConfiguration>
-		<_Name>MonoDroid Activity</_Name>
+		<_Name>Mono for Android Activity</_Name>
 		<Icon>md-text-file-icon</Icon>
-		<_Category>MonoDroid</_Category>
+		<_Category>MonoAndroid</_Category>
 		<LanguageName>C#</LanguageName>
 		<ProjectType>MonoDroid</ProjectType>
-		<_Description>Creates a MonoDroid Activity.</_Description>
+		<_Description>Creates a Mono for Android Activity.</_Description>
 	</TemplateConfiguration>
 	
 	<Conditions>

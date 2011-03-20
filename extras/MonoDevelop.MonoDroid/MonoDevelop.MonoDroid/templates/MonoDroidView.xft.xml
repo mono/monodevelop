@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <Template>
 	<TemplateConfiguration>
-		<_Name>MonoDroid View</_Name>
+		<_Name>MonoAndroid View</_Name>
 		<Icon>md-text-file-icon</Icon>
-		<_Category>MonoDroid</_Category>
+		<_Category>MonoAndroid</_Category>
 		<LanguageName>C#</LanguageName>
 		<ProjectType>MonoDroid</ProjectType>
-		<_Description>Creates a MonoDroid View.</_Description>
+		<_Description>Creates a Mono for Android View.</_Description>
 	</TemplateConfiguration>
 	
 	<Conditions>
