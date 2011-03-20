@@ -172,7 +172,6 @@ namespace MonoDevelop.MonoDroid
 	public class MonoDroidUploadOperation : IAsyncOperation
 	{
 		ChainedAsyncOperationSequence chop;
-		const int RuntimeVersion = 3;
 		
 		public MonoDroidUploadOperation (IProgressMonitor monitor, AndroidDevice device, FilePath packageFile, string packageName,
 			IAsyncOperation signingOperation, bool replaceIfExists)
@@ -181,6 +180,7 @@ namespace MonoDevelop.MonoDroid
 			var project = DefaultUploadToDeviceHandler.GetActiveExecutableMonoDroidProject ();
 			var conf = (MonoDroidProjectConfiguration) project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
 			int apiLevel = MonoDroidFramework.FrameworkVersionToApiLevel (project.TargetFramework.Id.Version);
+			int runtimeVersion = MonoDroidFramework.GetRuntimeVersion ();
 			string packagesListLocation = null;
 			PackageList list = null;
 			
@@ -213,10 +213,10 @@ namespace MonoDevelop.MonoDroid
 				},
 				new ChainedAsyncOperation () {
 					TaskName = GettextCatalog.GetString ("Uninstalling old version of shared runtime package"),
-					Skip = () => !conf.AndroidUseSharedRuntime || list.GetOldRuntimesAndPlatforms (apiLevel, RuntimeVersion).Count () == 0 ? 
+					Skip = () => !conf.AndroidUseSharedRuntime || list.GetOldRuntimesAndPlatforms (apiLevel, runtimeVersion).Count () == 0 ? 
 						"" : null,
 					Create = () => { // Cleanup task, no need to wait for it
-						foreach (InstalledPackage oldPackage in list.GetOldRuntimesAndPlatforms (apiLevel, RuntimeVersion))
+						foreach (InstalledPackage oldPackage in list.GetOldRuntimesAndPlatforms (apiLevel, runtimeVersion))
 							toolbox.Uninstall (device, oldPackage.Name, monitor.Log, monitor.Log);
 						return Core.Execution.NullProcessAsyncOperation.Success;
 					},
@@ -224,7 +224,7 @@ namespace MonoDevelop.MonoDroid
 				},
 				new ChainedAsyncOperation () {
 					TaskName = GettextCatalog.GetString ("Installing shared runtime package on device"),
-					Skip = () => !conf.AndroidUseSharedRuntime || list.IsCurrentRuntimeInstalled (RuntimeVersion) ? 
+					Skip = () => !conf.AndroidUseSharedRuntime || list.IsCurrentRuntimeInstalled (runtimeVersion) ? 
 						"" : null,
 					Create = () => {
 						var pkg = MonoDroidFramework.SharedRuntimePackage;
@@ -240,7 +240,7 @@ namespace MonoDevelop.MonoDroid
 				},
 				new ChainedAsyncOperation () {
 					TaskName = GettextCatalog.GetString ("Installing the platform framework"),
-					Skip = () => !conf.AndroidUseSharedRuntime || list.IsCurrentPlatformInstalled (apiLevel, RuntimeVersion) ? 
+					Skip = () => !conf.AndroidUseSharedRuntime || list.IsCurrentPlatformInstalled (apiLevel, runtimeVersion) ? 
 						"" : null,
 					Create = () => {
 						var platformApk = MonoDroidFramework.GetPlatformPackage (apiLevel);
