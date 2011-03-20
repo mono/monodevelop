@@ -213,7 +213,7 @@ namespace MonoDevelop.MonoDroid
 				conf.MonoDroidLinkMode = MonoDroidLinkMode.None;
 			} else {
 				conf.AndroidUseSharedRuntime = false;
-				conf.MonoDroidLinkMode = MonoDroidLinkMode.Full;
+				conf.MonoDroidLinkMode = MonoDroidLinkMode.SdkOnly;
 			}
 
 			return conf;
