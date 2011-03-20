@@ -546,7 +546,7 @@ namespace MonoDevelop.MonoDroid
 			if (Loading)
 				return;
 			
-			foreach (ProjectFileRenamedEventInfo e in args) {
+			foreach (ProjectFileEventInfo e in args) {
 				if (e.ProjectFile.BuildAction == MonoDroidBuildAction.AndroidResource)
 					QueueResgenUpdate ();
 				//clear the manifest element if the file is removed
@@ -579,7 +579,7 @@ namespace MonoDevelop.MonoDroid
 			if (Loading)
 				return;
 			
-			foreach (ProjectFileRenamedEventInfo e in args) {
+			foreach (ProjectFileEventInfo e in args) {
 				if (e.ProjectFile.BuildAction == MonoDroidBuildAction.AndroidResource)
 					QueueResgenUpdate ();
 				//if adding a file called AndroidManifest.xml, and the manifest element is not in use, set it as a convenience
