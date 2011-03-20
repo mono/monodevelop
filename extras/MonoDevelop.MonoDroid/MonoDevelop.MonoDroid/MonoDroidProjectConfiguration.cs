@@ -92,6 +92,18 @@ namespace MonoDevelop.MonoDroid
 			get { return androidUseSharedRuntime; }
 			set { androidUseSharedRuntime = value; }
 		}
+
+		[ItemProperty ("MandroidI18n", DefaultValue=null)]
+		string mandroidI18n;
+
+		public string MandroidI18n {
+			get { return mandroidI18n; }
+			set { 
+				if (String.IsNullOrEmpty (value))
+					value = null;
+				mandroidI18n = value;
+			}
+		}
 		
 		public string PackageName {
 			get {
@@ -136,6 +148,7 @@ namespace MonoDevelop.MonoDroid
 			androidManifest = cfg.androidManifest;
 			monoDroidLinkMode = cfg.monoDroidLinkMode;
 			androidUseSharedRuntime = cfg.androidUseSharedRuntime;
+			mandroidI18n = cfg.mandroidI18n;
 		}
 	}
 	
