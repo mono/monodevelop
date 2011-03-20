@@ -28,6 +28,8 @@ using System;
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
+using System.Xml;
+using System.Xml.Linq;
 using Mono.Addins;
 using MonoDevelop.Core;
 using System.Text;
@@ -179,6 +181,13 @@ namespace MonoDevelop.MonoDroid
 		public static FilePath GetPlatformPackage (int apiLevel)
 		{
 			return MonoDroidToolsDir.Combine ("platforms", "android-" + apiLevel, "Mono.Android.Platform.apk");
+		}
+
+		public static int GetRuntimeVersion ()
+		{
+			var doc = XDocument.Load (MonoDroidToolsDir.Combine ("Mono.Android.DebugRuntime-debug.xml"));
+			var version = doc.Element ("manifest").Attribute ("{http://schemas.android.com/apk/res/android}versionCode");
+			return int.Parse (version.Value);
 		}
 
 		public static IEnumerable<string> GetToolsPaths ()
