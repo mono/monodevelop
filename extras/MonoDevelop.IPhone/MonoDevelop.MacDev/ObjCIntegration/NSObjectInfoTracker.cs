@@ -62,7 +62,9 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				subscribedDomLoaded = true;
 				ProjectDomService.DomRegistered += DomLoaded;
 			} else {
-				DomLoaded (dom);
+				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+					DomLoaded (dom);
+				});
 			}
 		}
 		
@@ -82,11 +84,16 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			ProjectDomService.DomRegistered -= DomLoaded;
 			subscribedDomLoaded = false;
 			
-			DomLoaded (e.ProjectDom);
+			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+				DomLoaded (e.ProjectDom);
+			});
 		}
 		
 		void DomLoaded (ProjectDom dom)
 		{
+			//make sure it's up to date, or it might still be parsing
+			dom.ForceUpdate (true);
+			
 			foreach (var type in GetRegisteredObjects (dom)) {
 				if (objcTypes.ContainsKey (type.ObjCName))
 					Console.WriteLine ("Duplicate obj-c type '{0}'", type.ObjCName);
@@ -173,6 +180,16 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					}
 				}
 			}
+		}
+		
+		public void Update ()
+		{
+			objcTypes.Clear ();
+			cliTypes.Clear ();
+			
+			var dom = ProjectDomService.GetProjectDom (project);
+			if (dom != null)
+				DomLoaded (dom);
 		}
 		
 		public IEnumerable<NSObjectTypeInfo> GetUserTypes ()
