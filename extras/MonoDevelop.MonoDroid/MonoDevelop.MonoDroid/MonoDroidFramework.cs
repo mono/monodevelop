@@ -62,7 +62,7 @@ namespace MonoDevelop.MonoDroid
 				MonoDroidSdk.GetPaths (out monoDroidToolsDir, out monoDroidFrameworkDir, out androidPath, out javaPath);
 				
 				if (monoDroidToolsDir == null) {
-					LoggingService.LogInfo ("MonoDroid SDK not found, disabling MonoDroid addin");
+					LoggingService.LogInfo ("Mono for Android SDK not found, disabling Mono for Android addin");
 					return;
 				}
 				
@@ -70,12 +70,12 @@ namespace MonoDevelop.MonoDroid
 				MonoDroidFrameworkDir = monoDroidFrameworkDir;
 				
 				if (androidPath == null) {
-					LoggingService.LogError ("Android SDK not found, needed by MonoDroid addin");
+					LoggingService.LogError ("Android SDK not found, needed by Mono for Android addin");
 					return;
 				}
 				
 				if (javaPath == null) {
-					LoggingService.LogError ("Java SDK not found, needed by MonoDroid addin");
+					LoggingService.LogError ("Java SDK not found, needed by Mono for Android addin");
 					return;
 				}
 				
@@ -93,7 +93,7 @@ namespace MonoDevelop.MonoDroid
 					DeviceManager.AndroidSdkChanged ();
 				
 			} catch (Exception ex) {
-				LoggingService.LogError ("Error detecting MonoDroid SDK", ex);
+				LoggingService.LogError ("Error detecting Mono for Android SDK", ex);
 			}
 		}
 		

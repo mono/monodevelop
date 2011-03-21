@@ -84,7 +84,7 @@ namespace MonoDevelop.MonoDroid
 			SystemPackageInfo info = base.GetFrameworkPackageInfo ("monodroid");
 			info.Name = "monodroid";
 			info.Version = isCore? "core" : version;
-			info.Description = isCore? "MonoDroid Core" : "MonoDroid " + version;
+			info.Description = isCore? "Mono for Android Core" : "Mono for Android " + version;
 			return info;
 		}
 		
@@ -119,7 +119,7 @@ namespace MonoDevelop.MonoDroid
 			SystemPackageInfo info = base.GetFrameworkPackageInfo ("monodroid");
 			info.Name = "monodroid";
 			info.Version = isCore? "core" : version;
-			info.Description = isCore? "MonoDroid Core" : "MonoDroid " + version;
+			info.Description = isCore? "Mono for Android Core" : "Mono for Android " + version;
 			return info;
 		}
 		

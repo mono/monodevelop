@@ -369,7 +369,7 @@ namespace MonoDevelop.MonoDroid
 			
 			if (NeedsBuilding (configSel)) {
 				monitor.ReportError (
-					GettextCatalog.GetString ("MonoDroid projects must be built before uploading"), null);
+					GettextCatalog.GetString ("Mono for Android projects must be built before uploading"), null);
 				return;
 			}
 			
