@@ -276,10 +276,19 @@ namespace Mono.TextEditor
 			return GetTextAt (segment.Offset, segment.Length);
 		}
 		
+		/// <summary>
+		/// Gets the line text without the delimiter.
+		/// </summary>
+		/// <returns>
+		/// The line text.
+		/// </returns>
+		/// <param name='line'>
+		/// The line number.
+		/// </param>
 		public string GetLineText (int line)
 		{
 			var lineSegment = GetLine (line);
-			return lineSegment != null ? GetTextAt (lineSegment) : null;
+			return lineSegment != null ? GetTextAt (lineSegment.Offset, lineSegment.EditableLength) : null;
 		}
 		
 		public string GetLineText (int line, bool includeDelimiter)
