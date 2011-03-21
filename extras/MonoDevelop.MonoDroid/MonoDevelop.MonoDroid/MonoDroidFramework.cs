@@ -325,7 +325,7 @@ namespace MonoDevelop.MonoDroid
 			new AndroidVersion (6, "2.0.1"),
 			new AndroidVersion (7, "2.1"),
 			new AndroidVersion (8, "2.2"),
-			new AndroidVersion (9, "2.3"),
+			new AndroidVersion (10, "2.3"),
 		};
 		
 		public static AndroidVersion DefaultAndroidVersion {
