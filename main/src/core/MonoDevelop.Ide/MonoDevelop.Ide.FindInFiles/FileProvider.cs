@@ -29,6 +29,8 @@ using System.Linq;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using System.Text;
+using MonoDevelop.Core;
+using System;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -79,7 +81,14 @@ namespace MonoDevelop.Ide.FindInFiles
 			Document doc = SearchDocument ();
 			if (doc != null) 
 				return new StringReader (doc.Editor.Text);
-			return new StreamReader (FileName);
+			try {
+				if (!File.Exists (FileName))
+					return null;
+				return new StreamReader (FileName);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while opening " + FileName, e);
+				return null;
+			}
 		}
 		
 		Document SearchDocument ()
@@ -95,6 +104,8 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			somethingReplaced = false;
 			TextReader reader = Open ();
+			if (reader == null)
+				return;
 			buffer = new StringBuilder (reader.ReadToEnd ());
 			reader.Close ();
 			document = SearchDocument ();

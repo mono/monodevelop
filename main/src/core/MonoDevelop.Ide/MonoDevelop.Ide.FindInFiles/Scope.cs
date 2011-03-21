@@ -102,11 +102,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (IdeApp.Workspace.IsOpen) {
 				foreach (Project project in IdeApp.Workspace.GetAllProjects ()) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in project '{0}'", project.Name));
-					foreach (ProjectFile file in project.Files) {
-						if (!File.Exists (file.Name))
-							continue;
-						if (filterOptions.NameMatches (file.Name))
-							yield return new FileProvider (file.Name, project);
+					foreach (ProjectFile file in project.Files.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name))) {
+						yield return new FileProvider (file.Name, project);
 					}
 				}
 			}
@@ -141,13 +138,9 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			if (IdeApp.Workspace.IsOpen) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in project '{0}'", project.Name));
-				foreach (ProjectFile file in project.Files) {
-					if (!File.Exists (file.Name))
-						continue;
-					if (filterOptions.NameMatches (file.Name))
-						yield return new FileProvider (file.Name, project);
-				}
+				return project.Files.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name)).Select (f => new FileProvider (f.Name, project));
 			}
+			return Enumerable.Empty<FileProvider> ();
 		}
 		
 		public override string GetDescription (FilterOptions filterOptions, string pattern, string replacePattern)
