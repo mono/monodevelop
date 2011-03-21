@@ -220,10 +220,12 @@ namespace MonoDevelop.CSharp.Formatting
 			if (n == null || n.IsNull)
 				return 0;
 			DomLocation location = n.StartLocation;
-
+			// respect manual line breaks.
+			if (data.Document.GetLineIndent (location.Line).Length == location.Column - 1)
+				return 0;
+	
 			int offset = data.Document.LocationToOffset (location.Line, location.Column);
 			int i = offset - 1;
-
 			while (i >= 0 && IsSpacing (data.Document.GetCharAt (i))) {
 				i--;
 			}
