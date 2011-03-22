@@ -751,7 +751,7 @@ delegate void BarFoo ();
 			AddOption (whiteSpaceOptions, category, "SwitchParentheses", GettextCatalog.GetString ("before opening parenthesis"), switchExample);
 			
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'lock'"), simpleLock);
-			AddOption (whiteSpaceOptions, category, "SwitchParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleLock);
+			AddOption (whiteSpaceOptions, category, "LockParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleLock);
 			
 			
 			upperCategory = AddOption (whiteSpaceOptions, null, GettextCatalog.GetString ("Expressions"), null);
