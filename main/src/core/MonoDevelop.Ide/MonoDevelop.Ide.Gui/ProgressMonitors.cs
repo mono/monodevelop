@@ -61,7 +61,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IProgressMonitor GetRunProgressMonitor ()
 		{
-			return GetOutputProgressMonitor (GettextCatalog.GetString ("Application Output"), Stock.RunProgramIcon, true, true);
+			return GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.RunProgramIcon, true, true);
+		}
+		
+		public IProgressMonitor GetToolOutputProgressMonitor (bool bringToFront)
+		{
+			return GetOutputProgressMonitor ("MonoDevelop.Ide.ToolOutput", GettextCatalog.GetString ("Tool Output"), Stock.RunProgramIcon, bringToFront, true);
 		}
 		
 		public IProgressMonitor GetLoadProgressMonitor (bool lockGui)
@@ -76,7 +81,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IConsole CreateConsole (bool closeOnDispose)
 		{
-			return (IConsole) GetOutputProgressMonitor (GettextCatalog.GetString ("Application Output"), Stock.RunProgramIcon, true, true);
+			return (IConsole) GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.RunProgramIcon, true, true);
 		}
 		
 		/******************************/
@@ -104,7 +109,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IProgressMonitor GetOutputProgressMonitor (string title, IconId icon, bool bringToFront, bool allowMonitorReuse)
 		{
-			Pad pad = CreateMonitorPad (title, icon, bringToFront, allowMonitorReuse, true);
+			return GetOutputProgressMonitor (null, title, icon, bringToFront, allowMonitorReuse);
+		}
+		
+		public IProgressMonitor GetOutputProgressMonitor (string id, string title, IconId icon, bool bringToFront, bool allowMonitorReuse)
+		{
+			Pad pad = CreateMonitorPad (id, title, icon, bringToFront, allowMonitorReuse, true);
 			pad.Visible = true;
 			return ((DefaultMonitorPad) pad.Content).BeginProgress (title);
 		}
@@ -129,11 +139,14 @@ namespace MonoDevelop.Ide.Gui
 			return null;
 		}
 		
-		Pad CreateMonitorPad (string title, string icon, bool bringToFront, bool allowMonitorReuse, bool show)
+		Pad CreateMonitorPad (string id, string title, string icon, bool bringToFront, bool allowMonitorReuse, bool show)
 		{
 			Pad pad = null;
 			if (icon == null)
 				icon = Stock.OutputIcon;
+			
+			if (id == null)
+				id = title;
 
 			int instanceCount = -1;
 			if (allowMonitorReuse) {
@@ -142,7 +155,7 @@ namespace MonoDevelop.Ide.Gui
 					for (int n=0; n<outputMonitors.Count; n++) {
 						Pad mpad = (Pad) outputMonitors [n];
 						DefaultMonitorPad mon = (DefaultMonitorPad) mpad.Content;
-						if (mon.TypeTag == title) {
+						if (mon.TypeTag == id) {
 							if (mon.InstanceNum > instanceCount)
 								instanceCount = mon.InstanceNum;
 							if (mon.AllowReuse) {
@@ -161,8 +174,8 @@ namespace MonoDevelop.Ide.Gui
 			instanceCount++;
 			DefaultMonitorPad monitorPad = new DefaultMonitorPad (title, icon, instanceCount);
 			
-			string newPadId = "OutputPad-" + title.Replace (' ','_') + "-" + instanceCount;
-			string basePadId = "OutputPad-" + title.Replace (' ','_') + "-0";
+			string newPadId = "OutputPad-" + id + "-" + instanceCount;
+			string basePadId = "OutputPad-" + id + "-0";
 			
 			if (instanceCount > 0) {
 				// Translate the title before adding the count

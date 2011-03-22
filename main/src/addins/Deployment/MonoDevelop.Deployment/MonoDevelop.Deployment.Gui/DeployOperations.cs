@@ -28,7 +28,7 @@ namespace MonoDevelop.Deployment.Gui
 		
 		static IAsyncOperation BuildPackages (ICollection packages)
 		{
-			IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (GettextCatalog.GetString ("Packaging Output"), MonoDevelop.Ide.Gui.Stock.RunProgramIcon, true, true);
+			IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetToolOutputProgressMonitor (true);
 
 			// Run the deploy command in a background thread to avoid
 			// deadlocks with the gui thread
