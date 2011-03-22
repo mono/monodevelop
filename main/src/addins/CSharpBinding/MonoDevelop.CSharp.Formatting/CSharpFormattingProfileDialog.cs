@@ -759,6 +759,10 @@ delegate void BarFoo ();
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'lock'"), simpleLock);
 			AddOption (whiteSpaceOptions, category, "LockParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleLock);
 			AddOption (whiteSpaceOptions, category, "WithinLockParentheses", GettextCatalog.GetString ("within parenthesis"), simpleLock);
+
+			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'using'"), simpleUsingStatement);
+			AddOption (whiteSpaceOptions, category, "UsingParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleUsingStatement);
+			AddOption (whiteSpaceOptions, category, "WithinUsingParentheses", GettextCatalog.GetString ("within parenthesis"), simpleUsingStatement);
 			
 			
 			upperCategory = AddOption (whiteSpaceOptions, null, GettextCatalog.GetString ("Expressions"), null);
