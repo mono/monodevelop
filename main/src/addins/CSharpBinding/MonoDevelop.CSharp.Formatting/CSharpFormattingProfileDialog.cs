@@ -864,7 +864,7 @@ delegate void BarFoo ();
 		int[] test;
 	}";
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("Array Declarations"), example);
-			AddOption (whiteSpaceOptions, category, "SpacesBeforeArrayDeclarationBrackets", GettextCatalog.GetString ("before opening bracket"), condOpExample);
+			AddOption (whiteSpaceOptions, category, "SpacesBeforeArrayDeclarationBrackets", GettextCatalog.GetString ("before opening bracket"), example);
 			/*
 			whiteSpaceOptions= new ListStore (typeof (Option), typeof (bool), typeof (bool)); 
 			column = new TreeViewColumn ();
