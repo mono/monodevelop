@@ -172,7 +172,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 
 			instanceCount++;
-			DefaultMonitorPad monitorPad = new DefaultMonitorPad (title, icon, instanceCount);
+			DefaultMonitorPad monitorPad = new DefaultMonitorPad (id, icon, instanceCount);
 			
 			string newPadId = "OutputPad-" + id + "-" + instanceCount;
 			string basePadId = "OutputPad-" + id + "-0";
