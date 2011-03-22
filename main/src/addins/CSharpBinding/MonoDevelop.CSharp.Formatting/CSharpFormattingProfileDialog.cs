@@ -732,26 +732,33 @@ delegate void BarFoo ();
 			
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'if'"), simpleIf);
 			AddOption (whiteSpaceOptions, category, "IfParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleIf);
+			AddOption (whiteSpaceOptions, category, "WithinIfParentheses", GettextCatalog.GetString ("within parenthesis"), simpleIf);
 			
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'while'"), simpleWhile);
 			AddOption (whiteSpaceOptions, category, "WhileParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleWhile);
+			AddOption (whiteSpaceOptions, category, "WithinWhileParentheses", GettextCatalog.GetString ("within parenthesis"), simpleWhile);
 
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'for'"), simpleFor);
 			AddOption (whiteSpaceOptions, category, "ForParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleFor);
+			AddOption (whiteSpaceOptions, category, "WithinForParentheses", GettextCatalog.GetString ("within parenthesis"), simpleFor);
 			AddOption (whiteSpaceOptions, category, "SpacesBeforeForSemicolon", GettextCatalog.GetString ("before semicolon"), simpleFor);
 			AddOption (whiteSpaceOptions, category, "SpacesAfterForSemicolon", GettextCatalog.GetString ("after semicolon"), simpleFor);
 
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'foreach'"), simpleForeach);
 			AddOption (whiteSpaceOptions, category, "ForeachParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleForeach);
+			AddOption (whiteSpaceOptions, category, "WithinForEachParentheses", GettextCatalog.GetString ("within parenthesis"), simpleForeach);
 
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'catch'"), simpleCatch);
 			AddOption (whiteSpaceOptions, category, "CatchParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleCatch);
+			AddOption (whiteSpaceOptions, category, "WithinCatchParentheses", GettextCatalog.GetString ("within parenthesis"), simpleCatch);
 			
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'switch'"), switchExample);
 			AddOption (whiteSpaceOptions, category, "SwitchParentheses", GettextCatalog.GetString ("before opening parenthesis"), switchExample);
+			AddOption (whiteSpaceOptions, category, "WithinSwitchParentheses", GettextCatalog.GetString ("within parenthesis"), switchExample);
 			
 			category = AddOption (whiteSpaceOptions, upperCategory, null, GettextCatalog.GetString ("'lock'"), simpleLock);
 			AddOption (whiteSpaceOptions, category, "LockParentheses", GettextCatalog.GetString ("before opening parenthesis"), simpleLock);
+			AddOption (whiteSpaceOptions, category, "WithinLockParentheses", GettextCatalog.GetString ("within parenthesis"), simpleLock);
 			
 			
 			upperCategory = AddOption (whiteSpaceOptions, null, GettextCatalog.GetString ("Expressions"), null);
