@@ -675,6 +675,31 @@ Test a;
 }", data.Document.Text);
 		}
 		
+		[Test()]
+		public void TestConstantVariableDeclarationIndentation ()
+		{
+			TextEditorData data = new TextEditorData ();
+			data.Document.FileName = "a.cs";
+			data.Document.Text = @"class Test {
+	Test TestMethod ()
+	{
+const int a=5;
+	}
+}";
+			
+			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
+			policy.ClassBraceStyle = BraceStyle.EndOfLine;
+			var compilationUnit = new CSharpParser ().Parse (data);
+			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			Console.WriteLine (data.Document.Text);
+			Assert.AreEqual (@"class Test {
+	Test TestMethod ()
+	{
+		const int a = 5;
+	}
+}", data.Document.Text);
+		}
 		
 		[Test()]
 		public void TestYieldIndentation ()

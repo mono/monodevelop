@@ -144,7 +144,7 @@ namespace Mono.CSharp
 		LocationsBag lbag;
 		UsingsBag ubag;
 		List<Tuple<Modifiers, Location>> mod_locations;
-		Location parameterModifierLocation;
+		Location parameterModifierLocation, savedLocation;
 %}
 
 %token EOF
@@ -4781,9 +4781,13 @@ block_variable_declaration
 	  }
 	  const_variable_initializer opt_const_declarators SEMICOLON
 	  {
-		$$ = current_variable;
+		if (current_variable.Initializer != null) {
+			lbag.AddLocation (current_variable, GetLocation ($1), savedLocation, GetLocation ($7));
+		} else {
+			lbag.AddLocation (current_variable, GetLocation ($1), GetLocation ($7));
+		}
+		$$ = current_variable;;
 		current_variable = null;
-		lbag.AddLocation ($$, GetLocation ($1), GetLocation ($7));
 	  }
 	;
 
@@ -4843,6 +4847,7 @@ const_variable_initializer
 	  }
 	| ASSIGN constant_initializer_expr 
 	  {
+		savedLocation = GetLocation ($1);
 		current_variable.Initializer = (Expression) $2;
 	  }
 	;

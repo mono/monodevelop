@@ -2718,12 +2718,12 @@ namespace Mono.CSharp
 			return res;
 		}
 
-		int consume_identifier (int c, bool quoted)
+		int consume_identifier (int c, bool quoted) 
 		{
-//
-// This method is very performance sensitive. It accounts
-// for approximately 25% of all parser time
-//
+			//
+			// This method is very performance sensitive. It accounts
+			// for approximately 25% of all parser time
+			//
 
 			int pos = 0;
 			int column = col;
@@ -2732,19 +2732,19 @@ namespace Mono.CSharp
 				int surrogate;
 				c = escape (c, out surrogate);
 				if (surrogate != 0) {
-					id_builder [pos++] = (char)c;
+					id_builder [pos++] = (char) c;
 					c = surrogate;
 				}
 			}
 
-			id_builder [pos++] = (char)c;
+			id_builder [pos++] = (char) c;
 
 			try {
 				while (true) {
 					c = reader.Read ();
 
 					if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || (c >= '0' && c <= '9')) {
-						id_builder [pos++] = (char)c;
+						id_builder [pos++] = (char) c;
 						continue;
 					}
 
@@ -2753,15 +2753,15 @@ namespace Mono.CSharp
 							int surrogate;
 							c = escape (c, out surrogate);
 							if (surrogate != 0) {
-								if (is_identifier_part_character ((char)c))
-									id_builder [pos++] = (char)c;
+								if (is_identifier_part_character ((char) c))
+									id_builder[pos++] = (char) c;
 								c = surrogate;
 							}
 
 							continue;
 						}
-					} else if (Char.IsLetter ((char)c) || Char.GetUnicodeCategory ((char)c) == UnicodeCategory.ConnectorPunctuation) {
-						id_builder [pos++] = (char)c;
+					} else if (Char.IsLetter ((char) c) || Char.GetUnicodeCategory ((char) c) == UnicodeCategory.ConnectorPunctuation) {
+						id_builder [pos++] = (char) c;
 						continue;
 					}
 
@@ -2776,10 +2776,10 @@ namespace Mono.CSharp
 
 			col += pos - 1;
 
-//
-// Optimization: avoids doing the keyword lookup
-// on uppercase letters
-//
+			//
+			// Optimization: avoids doing the keyword lookup
+			// on uppercase letters
+			//
 			if (id_builder [0] >= '_' && !quoted) {
 				int keyword = GetKeyword (id_builder, pos);
 				if (keyword != -1) {
@@ -2789,17 +2789,9 @@ namespace Mono.CSharp
 			}
 
 			string s = InternIdentifier (id_builder, pos);
-#if FULL_AST
-			if (quoted) {
-				val = LocatedToken.Create ("@" + s, ref_line, column - 1);
-			} else {
-				val = LocatedToken.Create (s, ref_line, column);
-			}
-#else
 			val = LocatedToken.Create (s, ref_line, column);
-#endif
 			if (quoted && parsing_attribute_section)
-				AddEscapedIdentifier (((LocatedToken)val).Location);
+				AddEscapedIdentifier (((LocatedToken) val).Location);
 
 			return Token.IDENTIFIER;
 		}
@@ -3126,7 +3118,9 @@ namespace Mono.CSharp
 								sbag.EndComment (line, col + 1);
 							}
 						}
-												
+						
+						while ((d = get_char ()) != -1 && d != '\n');
+						
 						any_token_seen |= tokens_seen;
 						tokens_seen = false;
 						comments_seen = false;
