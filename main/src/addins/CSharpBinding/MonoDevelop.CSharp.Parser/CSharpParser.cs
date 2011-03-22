@@ -2478,9 +2478,9 @@ namespace MonoDevelop.CSharp.Parser
 				var comment = special as SpecialsBag.Comment;
 				
 				if (comment != null) {
-					var type  = (MonoDevelop.CSharp.Ast.CommentType)comment.CommentType;
-					var start =  new AstLocation (comment.Line, comment.Col);
-					var end =  new AstLocation (comment.EndLine, comment.EndCol);
+					var type = (MonoDevelop.CSharp.Ast.CommentType)comment.CommentType;
+					var start = new AstLocation (comment.Line, comment.Col);
+					var end = new AstLocation (comment.EndLine, comment.EndCol);
 					var domComment = new MonoDevelop.CSharp.Ast.Comment (type, start, end);
 					domComment.StartsLine = comment.StartsLine;
 					domComment.Content = comment.Content;
@@ -2493,7 +2493,7 @@ namespace MonoDevelop.CSharp.Parser
 
 		McsParser.ErrorReportPrinter errorReportPrinter = new McsParser.ErrorReportPrinter ();
 		
-		internal McsParser.ErrorReportPrinter ErrorReportPrinter {
+		public McsParser.ErrorReportPrinter ErrorReportPrinter {
 			get {
 				return errorReportPrinter;
 			}

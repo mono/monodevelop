@@ -683,7 +683,7 @@ Test a;
 			data.Document.Text = @"class Test {
 	Test TestMethod ()
 	{
-const int a=5;
+const int a = 5;
 	}
 }";
 			
@@ -691,7 +691,6 @@ const int a=5;
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			var compilationUnit = new CSharpParser ().Parse (data);
 			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
 			Console.WriteLine (data.Document.Text);
 			Assert.AreEqual (@"class Test {
 	Test TestMethod ()
@@ -1227,6 +1226,14 @@ if (b) {
 }", data.Document.Text);
 		}
 		
+		static void TestErrors (CSharpParser parser)
+		{
+			foreach (var error in parser.ErrorReportPrinter.Errors) {
+				Console.WriteLine (error.Message);
+			}
+			Assert.AreEqual (0, parser.ErrorReportPrinter.ErrorsCount);
+		}
+		
 		[Test()]
 		public void TestIfForcementWithComment ()
 		{
@@ -1245,7 +1252,9 @@ if (b) {
 			
 			policy.StatementBraceStyle = BraceStyle.EndOfLine;
 			policy.IfElseBraceForcement = BraceForcement.AddBraces;
-			var compilationUnit = new CSharpParser ().Parse (data);
+			CSharpParser parser = new CSharpParser ();
+			var compilationUnit = parser.Parse (data);
+			TestErrors (parser);
 			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
 			System.Console.WriteLine (data.Document.Text);
 			Assert.AreEqual (@"class Test

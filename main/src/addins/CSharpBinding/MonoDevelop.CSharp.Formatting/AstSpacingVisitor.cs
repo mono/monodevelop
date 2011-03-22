@@ -330,8 +330,8 @@ namespace MonoDevelop.CSharp.Formatting
 					}
 				}
 			}
-			Console.WriteLine ("offset={0}, removedChars={1}, insertedText={2}", offset, removedChars , insertedText == null ? "<null>" : insertedText.Replace("\n", "\\n").Replace("\t", "\\t").Replace(" ", "."));
-			Console.WriteLine (Environment.StackTrace);
+			//Console.WriteLine ("offset={0}, removedChars={1}, insertedText={2}", offset, removedChars , insertedText == null ? "<null>" : insertedText.Replace("\n", "\\n").Replace("\t", "\\t").Replace(" ", "."));
+			//Console.WriteLine (Environment.StackTrace);
 			changes.Add (new MyTextReplaceChange (data, offset, removedChars, insertedText));
 		}
 

@@ -676,6 +676,7 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			if (node == null)
 				return null;
+			int originalLevel = curIndent.Level;
 			bool isBlock = node is BlockStatement;
 			switch (braceForcement) {
 			case BraceForcement.DoNotChange:
@@ -704,7 +705,7 @@ namespace MonoDevelop.CSharp.Formatting
 						break;
 					}
 					if (IsLineIsEmptyUpToEol (data.Document.LocationToOffset (node.StartLocation.Line, node.StartLocation.Column)))
-						startBrace += data.EolMarker + data.Document.GetLineIndent (node.StartLocation.Line);
+						startBrace += data.EolMarker + curIndent.IndentString + curIndent.SingleIndent;
 					AddChange (start, offset - start, startBrace);
 				}
 				break;
@@ -726,7 +727,6 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 				break;
 			}
-			int originalLevel = curIndent.Level;
 			if (isBlock) {
 				BlockStatement block = node as BlockStatement;
 				if (allowInLine && block.StartLocation.Line == block.EndLocation.Line && block.Statements.Count () <= 1) {
@@ -864,6 +864,9 @@ namespace MonoDevelop.CSharp.Formatting
 					return;
 				}
 			}
+			//Console.WriteLine ("offset={0}, removedChars={1}, insertedText={2}", offset, removedChars , insertedText == null ? "<null>" : insertedText.Replace("\n", "\\n").Replace("\t", "\\t").Replace(" ", "."));
+			//Console.WriteLine (Environment.StackTrace);
+			
 			changes.Add (new AstSpacingVisitor.MyTextReplaceChange (data, offset, removedChars, insertedText));
 		}
 		
