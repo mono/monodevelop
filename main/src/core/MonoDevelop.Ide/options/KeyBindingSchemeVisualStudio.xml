@@ -45,7 +45,7 @@
 	<binding command="Pad|MonoDevelop.DesignerSupport.ToolboxPad" shortcut="Control+W|X" />
 	<binding command="Pad|ConnectionManagerPad" shortcut="Alt+Shift+D" />
 	<binding command="Pad|MonoDevelop.Ide.Gui.Pads.HelpTree" shortcut="Control+W|F1" />
-	<binding command="Pad|OutputPad - Sortida del muntatge - 0" shortcut="Control+W|O" />
+	<binding command="Pad|OutputPad-MonoDevelop.Ide.ApplicationOutput-0" shortcut="Control+W|O" />
 	<binding command="MonoDevelop.Ide.Commands.SearchCommands.NextBookmark" shortcut="Control+B|N" />
 	<binding command="MonoDevelop.Ide.Commands.SearchCommands.PrevBookmark" shortcut="Control+B|P" />
 	<binding command="MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark" shortcut="Control+B|T" />
