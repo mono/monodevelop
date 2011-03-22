@@ -39,7 +39,6 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 	{
 		string wrapperName;
 		DotNetProject dnp;
-		NSObjectInfoTracker typeTracker;
 		HashSet<string> userClasses = new HashSet<string> ();
 		
 		bool xcodeProjectDirty;
@@ -67,14 +66,14 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			syncing = true;
 			xcodeProjectDirty = true;
 			
-			typeTracker = new NSObjectInfoTracker (dnp, wrapperName);
+			//typeTracker = new NSObjectInfoTracker (dnp, wrapperName);
 			UpdateOutputDir ();
 			
 			dnp.FileRemovedFromProject += FileRemovedFromProject;
 			dnp.FileChangedInProject += FileChangedInProject;
 			dnp.NameChanged += ProjectNameChanged;
-			typeTracker.TypesLoaded += TypesLoaded;
-			typeTracker.UserTypeChanged += UserTypesChanged;
+//			typeTracker.TypesLoaded += TypesLoaded;
+//			typeTracker.UserTypeChanged += UserTypesChanged;
 		}
 		
 		void DisableSyncing ()
@@ -87,9 +86,9 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			dnp.FileRemovedFromProject -= FileRemovedFromProject;
 			dnp.FileChangedInProject -= FileChangedInProject;
 			dnp.NameChanged -= ProjectNameChanged;
-			typeTracker.TypesLoaded -= TypesLoaded;
-			typeTracker.UserTypeChanged -= UserTypesChanged;
-			typeTracker.Dispose ();
+//			typeTracker.TypesLoaded -= TypesLoaded;
+//			typeTracker.UserTypeChanged -= UserTypesChanged;
+//			typeTracker.Dispose ();
 		}
 
 		void UserTypesChanged (object sender, UserTypeChangeEventArgs e)
@@ -190,11 +189,16 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		
 		void UpdateTypes (bool rescan)
 		{
-			if (rescan)
-				typeTracker.Update ();
+			var pinfo = NSObjectInfoService.GetProjectInfo (dnp);
+			if (pinfo == null) {
+				Console.WriteLine ("Null PI");
+				return;
+			}
+			
+			pinfo.Update (rescan);
 			
 			var currentUTs = new Dictionary<string,NSObjectTypeInfo> ();
-			foreach (var ut in typeTracker.GetUserTypes ()) {
+			foreach (var ut in pinfo.GetTypes ().Where (t => t.IsUserType)) {
 				currentUTs.Add (ut.ObjCName, ut);
 			}
 			
@@ -232,7 +236,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			if (!Directory.Exists (outputDir))
 				Directory.CreateDirectory (outputDir);
 			
-			typeTracker.GenerateObjcType (type, outputDir);
+			type.GenerateObjcType (outputDir);
 		}
 		
 		void RemoveUserType (string objcName)

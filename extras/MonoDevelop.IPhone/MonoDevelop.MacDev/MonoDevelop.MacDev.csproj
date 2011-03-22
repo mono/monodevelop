@@ -95,7 +95,6 @@
     <Compile Include="Keychain.cs" />
     <Compile Include="SigningIdentityCombo.cs" />
     <Compile Include="ObjCIntegration\NSObjectInfo.cs" />
-    <Compile Include="ObjCIntegration\NSObjectInfoTracker.cs" />
     <Compile Include="ObjCIntegration\IBOutlet.cs" />
     <Compile Include="ObjCIntegration\IBAction.cs" />
     <Compile Include="ObjCIntegration\IBActionParameter.cs" />
@@ -114,6 +113,8 @@
     <Compile Include="XcodeIntegration\XcodeProject.cs" />
     <Compile Include="XcodeIntegration\XcodeType.cs" />
     <Compile Include="XcodeIntegration\XcodeProjectTracker.cs" />
+    <Compile Include="ObjCIntegration\NSObjectInfoService.cs" />
+    <Compile Include="ObjCIntegration\NSObjectProjectInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">
