@@ -38,6 +38,11 @@ namespace MonoDevelop.Debugger.Visualizer
 			return val.TypeName == "Gdk.Pixbuf";
 		}
 		
+		public bool CanEdit (ObjectValue val)
+		{
+			return false;
+		}
+		
 		public Gtk.Widget GetVisualizerWidget (ObjectValue val)
 		{
 			Gdk.Pixbuf pixbuf;

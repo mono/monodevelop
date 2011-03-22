@@ -81,6 +81,11 @@ namespace MonoDevelop.Debugger.Visualizer
 			val.SetRawValue (textView.Buffer.Text);
 			return true;
 		}
+		
+		public bool CanEdit (ObjectValue val)
+		{
+			return true;
+		}
 	}
 }
 
