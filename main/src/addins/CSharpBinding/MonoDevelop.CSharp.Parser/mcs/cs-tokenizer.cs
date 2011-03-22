@@ -2789,7 +2789,15 @@ namespace Mono.CSharp
 			}
 
 			string s = InternIdentifier (id_builder, pos);
+#if FULL_AST
+			if (quoted) {
+				val = LocatedToken.Create ("@" + s, ref_line, column - 1);
+			} else {
+				val = LocatedToken.Create (s, ref_line, column);
+			}
+#else
 			val = LocatedToken.Create (s, ref_line, column);
+#endif
 			if (quoted && parsing_attribute_section)
 				AddEscapedIdentifier (((LocatedToken) val).Location);
 
@@ -3119,8 +3127,6 @@ namespace Mono.CSharp
 							}
 						}
 						
-						while ((d = get_char ()) != -1 && d != '\n');
-						
 						any_token_seen |= tokens_seen;
 						tokens_seen = false;
 						comments_seen = false;
@@ -3300,6 +3306,9 @@ namespace Mono.CSharp
 					tokens_seen = true;
 					return consume_identifier (c);
 				}
+
+				if (char.IsWhiteSpace ((char) c))
+					continue;
 
 				Report.Error (1056, Location, "Unexpected character `{0}'", ((char) c).ToString ());
 			}

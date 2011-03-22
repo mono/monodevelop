@@ -6877,7 +6877,7 @@ void case_647()
 		yyVal = Modifiers.NEW;
 		StoreModifierLocation (yyVal, GetLocation (yyVals[0+yyTop]));
 		
-		if (current_container == RootContext.ToplevelTypes)
+		if (current_container == module)
 			Report.Error (1530, GetLocation (yyVals[0+yyTop]), "Keyword `new' is not allowed on namespace elements");
 	  }
 
@@ -11549,7 +11549,7 @@ MakeName (MemberName class_name)
 {
 	Namespace ns = current_namespace.NS;
 
-	if (current_container == RootContext.ToplevelTypes) {
+	if (current_container == module) {
 		if (ns.Name.Length != 0)
 			return new MemberName (ns.MemberName, class_name);
 		else
@@ -11673,9 +11673,6 @@ public void parse ()
 			Report.Error (589, lexer.Location, "Internal compiler error during parsing");
 		}
 	}
-
-	if (RootContext.ToplevelTypes.NamespaceEntry != null)
-		throw new InternalErrorException ("who set it?");
 }
 
 void CheckToken (int error, int yyToken, string msg, Location loc)

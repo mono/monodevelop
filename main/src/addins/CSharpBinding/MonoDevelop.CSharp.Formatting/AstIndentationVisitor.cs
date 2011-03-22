@@ -705,7 +705,7 @@ namespace MonoDevelop.CSharp.Formatting
 						break;
 					}
 					if (IsLineIsEmptyUpToEol (data.Document.LocationToOffset (node.StartLocation.Line, node.StartLocation.Column)))
-						startBrace += data.EolMarker + curIndent.IndentString + curIndent.SingleIndent;
+						startBrace += data.EolMarker + data.Document.GetLineIndent (node.StartLocation.Line);
 					AddChange (start, offset - start, startBrace);
 				}
 				break;
