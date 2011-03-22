@@ -626,7 +626,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitComment (MonoDevelop.CSharp.Ast.Comment comment, object data)
 		{
-			if (comment.StartsLine && !HadErrors)
+			if (comment.StartsLine && !HadErrors && comment.StartLocation.Column > 1)
 				FixIndentation (comment.StartLocation);
 			return null;
 		}
