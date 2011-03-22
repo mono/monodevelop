@@ -55,15 +55,91 @@ namespace MonoDevelop.CSharpBinding.Tests
 			return CreateProvider (text, true);
 		}
 		
+		class TestCompletionWidget : ICompletionWidget
+		{
+			Mono.TextEditor.TextEditorData data;
+			
+			public TestCompletionWidget (Mono.TextEditor.TextEditorData data)
+			{
+				this.data = data;
+			}
+
+			#region ICompletionWidget implementation
+			public event EventHandler CompletionContextChanged;
+
+			public string GetText (int startOffset, int endOffset)
+			{
+				return data.GetTextBetween (startOffset, endOffset);
+			}
+
+			public char GetChar (int offset)
+			{
+				return data.GetCharAt (offset);
+			}
+
+			public void Replace (int offset, int count, string text)
+			{
+				data.Replace (offset, count, text);
+			}
+
+			public CodeCompletionContext CreateCodeCompletionContext (int triggerOffset)
+			{
+				CodeCompletionContext result = new CodeCompletionContext ();
+				result.TriggerOffset = triggerOffset;
+				var loc = data.OffsetToLocation (triggerOffset);
+				result.TriggerLine = loc.Line;
+				result.TriggerLineOffset = loc.Column - 1;
+				return result;
+			}
+
+			public string GetCompletionText (CodeCompletionContext ctx)
+			{
+				if (ctx == null)
+					return null;
+				int min = Math.Min (ctx.TriggerOffset, data.Caret.Offset);
+				int max = Math.Max (ctx.TriggerOffset, data.Caret.Offset);
+				return data.GetTextBetween (min, max);
+			}
+
+			public void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word)
+			{
+			}
+
+			void ICompletionWidget.SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word, int completeWordOffset)
+			{
+			}
+
+			public CodeCompletionContext CurrentCodeCompletionContext {
+				get;
+				set;
+			}
+
+			public int TextLength {
+				get;
+				set;
+			}
+
+			public int SelectedLength {
+				get;
+				set;
+			}
+
+			public Gtk.Style GtkStyle {
+				get;
+				set;
+			}
+			#endregion
+			
+		}
 		static CompletionDataList CreateProvider (string text, bool isCtrlSpace)
 		{
 			string parsedText;
 			string editorText;
 			int cursorPosition = text.IndexOf ('$');
 			int endPos = text.IndexOf ('$', cursorPosition + 1);
-			if (endPos == -1)
+			if (endPos == -1) {
 				parsedText = editorText = text.Substring (0, cursorPosition) + text.Substring (cursorPosition + 1);
-			else {
+			} else {
 				parsedText = text.Substring (0, cursorPosition) + new string (' ', endPos - cursorPosition) + text.Substring (endPos + 1);
 				editorText = text.Substring (0, cursorPosition) + text.Substring (cursorPosition + 1, endPos - cursorPosition - 1) + text.Substring (endPos + 1);
 				cursorPosition = endPos - 1; 
@@ -93,9 +169,11 @@ namespace MonoDevelop.CSharpBinding.Tests
 			foreach (var e in doc.ParsedDocument.Errors)
 				Console.WriteLine (e);
 			CSharpTextEditorCompletion textEditorCompletion = new CSharpTextEditorCompletion (doc);
-			
 			int triggerWordLength = 1;
 			CodeCompletionContext ctx = new CodeCompletionContext ();
+			textEditorCompletion.CompletionWidget = new TestCompletionWidget (doc.Editor) {
+				CurrentCodeCompletionContext = ctx
+			};
 			ctx.TriggerOffset = sev.CursorPosition;
 			int line, column;
 			sev.GetLineColumnFromPosition (sev.CursorPosition, out line, out column);

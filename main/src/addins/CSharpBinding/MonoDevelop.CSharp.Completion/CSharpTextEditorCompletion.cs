@@ -187,11 +187,16 @@ namespace MonoDevelop.CSharp.Completion
 					return null;
 				if (completionChar != '#' && stateTracker.Engine.IsInsidePreprocessorDirective)
 					return null;
-//	timer = Counters.ResolveTime.BeginTiming ();
+				//	timer = Counters.ResolveTime.BeginTiming ();
 				DomLocation location = new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset - 1);
 				stateTracker.UpdateEngine ();
 				ExpressionResult result;
-				int cursor, newCursorOffset = 0;
+				int cursor, newCursorOffset = 0, cpos;
+				IType resolvedType;
+				CodeCompletionContext ctx;
+				NRefactoryParameterDataProvider provider;
+				
+				
 				switch (completionChar) {
 				case ':':
 				case '.':
@@ -203,7 +208,7 @@ namespace MonoDevelop.CSharp.Completion
 					int idx = result.Expression.LastIndexOf ('.');
 					if (idx > 0)
 						result.Expression = result.Expression.Substring (0, idx);
-// don't parse expressions that end with more than 1 dot - see #646820
+					// don't parse expressions that end with more than 1 dot - see #646820
 					if (result.Expression.EndsWith ("."))
 						return null;
 					NRefactoryResolver resolver = CreateResolver ();
@@ -268,8 +273,10 @@ namespace MonoDevelop.CSharp.Completion
 						return null;
 					resolver = CreateResolver ();
 					resolveResult = resolver.Resolve (result, new DomLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset - 2));
-				
-					if (resolveResult != null && resolver.ResolvedExpression is ICSharpCode.NRefactory.Ast.TypeOfExpression) {
+					if (resolveResult == null)
+						return null;
+					
+					if (resolver.ResolvedExpression is ICSharpCode.NRefactory.Ast.TypeOfExpression) {
 						CompletionDataList completionList = new ProjectDomCompletionDataList ();
 					
 						CompletionDataCollector col = new CompletionDataCollector (dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
@@ -289,7 +296,21 @@ namespace MonoDevelop.CSharp.Completion
 						}
 						return completionList;
 					}
+					if (resolveResult is MethodResolveResult) {
+						var methodResolveResult = resolveResult as MethodResolveResult;
+						return CreatePossibleEnumCompletion (resolver, location, result.ExpressionContext, methodResolveResult.Methods, 0);	
+					}
 					return null;
+				case ',':
+					if (!GetParameterCompletionCommandOffset (out cpos)) 
+						return null;
+					ctx = CompletionWidget.CreateCodeCompletionContext (cpos);
+					provider = ParameterCompletionCommand (ctx) as NRefactoryParameterDataProvider;
+					if (provider != null) {
+						int currentParameter = provider.GetCurrentParameterIndex (CompletionWidget, ctx) - 1;
+						return CreatePossibleEnumCompletion (CreateResolver (), location, ExpressionContext.MethodBody, provider.Methods, currentParameter);	
+					}
+					break;
 				case '/':
 					cursor = textEditorData.IsSomethingSelected ? textEditorData.SelectionRange.Offset : textEditorData.Caret.Offset;
 					if (cursor < 2)
@@ -414,13 +435,24 @@ namespace MonoDevelop.CSharp.Completion
 						}
 					}
 					switch (token) {
+					case "(":
+					case ",":
+						if (!GetParameterCompletionCommandOffset (out cpos)) 
+							break;
+						ctx = CompletionWidget.CreateCodeCompletionContext (cpos);
+						provider = ParameterCompletionCommand (ctx) as NRefactoryParameterDataProvider;
+						if (provider != null) {
+							int currentParameter = provider.GetCurrentParameterIndex (CompletionWidget, ctx) - 1;
+							return CreatePossibleEnumCompletion (CreateResolver (), location, ExpressionContext.IdentifierExpected, provider.Methods, currentParameter);	
+						}
+						break;
 					case "=":
 					case "==":
 						result = FindExpression (dom, completionContext, tokenIndex - completionContext.TriggerOffset - 1);
 						resolver = CreateResolver ();
 						resolveResult = resolver.Resolve (result, location);
 						if (resolveResult != null) {
-							IType resolvedType = dom.GetType (resolveResult.ResolvedType);
+							resolvedType = dom.GetType (resolveResult.ResolvedType);
 							if (resolvedType == null) 
 								return null;
 							if (resolvedType.ClassType == ClassType.Enum) {
@@ -436,7 +468,7 @@ namespace MonoDevelop.CSharp.Completion
 										}
 									}
 								}
-								if (!added)
+								if (!added && !string.IsNullOrEmpty (returnType.Namespace))
 									cdc.Add (returnType);/*
 							foreach (object o in CreateCtrlSpaceCompletionData (completionContext, result)) {
 								MemberCompletionData memberData = o as MemberCompletionData;
@@ -457,6 +489,7 @@ namespace MonoDevelop.CSharp.Completion
 							}*/
 								completionList.AutoCompleteEmptyMatch = false;
 								resolver.AddAccessibleCodeCompletionData (result.ExpressionContext, cdc);
+								AddEnumMembers (completionList, resolvedType);
 								return completionList;
 							}
 						
@@ -510,7 +543,7 @@ namespace MonoDevelop.CSharp.Completion
 								if (varName != ".") {
 									varName = null;
 								} else {
-									List<string> names = new List<string> ();
+									List<string > names = new List<string> ();
 									while (varName == ".") {
 										varName = GetPreviousToken (ref tokenIndex, false);
 										if (varName == "this") {
@@ -592,7 +625,7 @@ namespace MonoDevelop.CSharp.Completion
 								if (varName != ".") {
 									varName = null;
 								} else {
-									List<string> names = new List<string> ();
+									List<string > names = new List<string> ();
 									while (varName == ".") {
 										varName = GetPreviousToken (ref tokenIndex, false);
 										if (varName == "this") {
@@ -653,15 +686,15 @@ namespace MonoDevelop.CSharp.Completion
 							} else if (result.ExpressionContext != ExpressionContext.IdentifierExpected) {
 								triggerWordLength = 1;
 								bool autoSelect = true;
-								int cpos;
+								IType returnType = null;
 								if ((prevCh == ',' || prevCh == '(') && GetParameterCompletionCommandOffset (out cpos)) {
-									CodeCompletionContext ctx = CompletionWidget.CreateCodeCompletionContext (cpos);
-									NRefactoryParameterDataProvider provider = ParameterCompletionCommand (ctx) as NRefactoryParameterDataProvider;
-									if (provider != null) {
-										int i = provider.GetCurrentParameterIndex (CompletionWidget, ctx) - 1;
-										foreach (var method in provider.Methods) {
+									ctx = CompletionWidget.CreateCodeCompletionContext (cpos);
+									NRefactoryParameterDataProvider dataProvider = ParameterCompletionCommand (ctx) as NRefactoryParameterDataProvider;
+									if (dataProvider != null) {
+										int i = dataProvider.GetCurrentParameterIndex (CompletionWidget, ctx) - 1;
+										foreach (var method in dataProvider.Methods) {
 											if (i < method.Parameters.Count) {
-												IType returnType = dom.GetType (method.Parameters [i].ReturnType);
+												returnType = dom.GetType (method.Parameters [i].ReturnType);
 												autoSelect = returnType == null || returnType.ClassType != ClassType.Delegate;
 												break;
 											}
@@ -672,6 +705,7 @@ namespace MonoDevelop.CSharp.Completion
 								//if (result.ExpressionContext == ExpressionContext.TypeName)
 								//	autoSelect = false;
 								CompletionDataList dataList = CreateCtrlSpaceCompletionData (completionContext, result);
+								AddEnumMembers (dataList, returnType);
 								dataList.AutoSelect = autoSelect;
 								return dataList;
 							} else {
@@ -726,6 +760,43 @@ namespace MonoDevelop.CSharp.Completion
 				//				timer.Dispose ();
 			}
 			return null;
+		}
+		
+		public void AddEnumMembers (CompletionDataList completionList, IType resolvedType)
+		{
+			if (resolvedType == null || resolvedType.ClassType != ClassType.Enum)
+				return;
+			string typeString = Document.CompilationUnit.ShortenTypeName (new DomReturnType (resolvedType), new DomLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column)).ToInvariantString ();
+			
+			foreach (var field in resolvedType.Fields) {
+				completionList.Add (typeString + "." + field.Name, field.StockIcon);
+			}
+			completionList.DefaultCompletionString = typeString;
+		}
+
+		public CompletionDataList CreatePossibleEnumCompletion (NRefactoryResolver resolver, DomLocation location, ExpressionContext context, IEnumerable<IMethod> possibleMethods, int parameter)
+		{
+			CompletionDataList completionList = new ProjectDomCompletionDataList ();
+			var addedEnums = new HashSet<string> ();
+			IType resolvedType = null;
+			foreach (var method in possibleMethods) {
+				if (method.Parameters.Count <= parameter)
+					continue;
+				resolvedType = dom.GetType (method.Parameters [parameter].ReturnType);
+				if (resolvedType == null || resolvedType.ClassType != ClassType.Enum)
+					continue;
+				if (addedEnums.Contains (resolvedType.DecoratedFullName))
+					continue;
+				addedEnums.Add (resolvedType.DecoratedFullName);
+				AddEnumMembers (completionList, resolvedType);
+			}
+			if (addedEnums.Count == 0)
+				return null;
+			CompletionDataCollector cdc = new CompletionDataCollector (dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
+			completionList.AutoCompleteEmptyMatch = false;
+			//completionList.AutoSelect = false;
+			resolver.AddAccessibleCodeCompletionData (context, cdc);
+			return completionList;
 		}
 		
 		public bool IsInLinqContext (ExpressionResult result)
@@ -794,8 +865,8 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override bool GetParameterCompletionCommandOffset (out int cpos)
 		{
-			// Start calculating the parameter offset from the beginning of the
-			// current member, instead of the beginning of the file. 
+// Start calculating the parameter offset from the beginning of the
+// current member, instead of the beginning of the file. 
 			cpos = textEditorData.Caret.Offset - 1;
 			IMember mem = Document.ParsedDocument.CompilationUnit.GetMemberAt (textEditorData.Caret.Line, textEditorData.Caret.Column);
 			if (mem == null || (mem is IType))
@@ -1456,7 +1527,6 @@ namespace MonoDevelop.CSharp.Completion
 			{
 				if (!data.ContainsKey (name))
 					data.Add (name, null);
-				
 				return CompletionList.Add (name, icon);
 			}
 			
