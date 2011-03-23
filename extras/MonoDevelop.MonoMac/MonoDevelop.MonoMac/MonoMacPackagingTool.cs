@@ -67,7 +67,7 @@ namespace MonoDevelop.MonoMac
         {
             return new MonoMacPackagingSettings {
                 IncludeMono   = false,
-                LinkerMode    = MonoMacLinkerMode.LinkAll,
+                LinkerMode    = MonoMacLinkerMode.LinkNone,
                 SignBundle    = false,
                 SignPackage   = false,
                 CreatePackage = false
