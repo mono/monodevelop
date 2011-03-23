@@ -125,16 +125,23 @@ namespace MonoDevelop.CSharp.Completion
 			descriptionCreated = true;
 			if (Member is IMethod && ((IMethod)Member).WasExtended)
 				sb.Append (GettextCatalog.GetString ("(Extension) "));
-			sb.Append (ambience.GetString (Member,
-				OutputFlags.ClassBrowserEntries | OutputFlags.IncludeKeywords | OutputFlags.UseFullName | OutputFlags.IncludeParameterName  | OutputFlags.IncludeMarkup
-					| (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None)));
+			sb.Append (ambience.GetString (Member, 
+				OutputFlags.ClassBrowserEntries | OutputFlags.IncludeKeywords | OutputFlags.UseFullName | OutputFlags.IncludeParameterName | OutputFlags.IncludeMarkup  | (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None)));
 
 			if (Member is IMember) {
-				if ((Member as IMember).IsObsolete) {
+				var m = (IMember)Member;
+				if (m.IsObsolete) {
 					sb.AppendLine ();
 					sb.Append (GettextCatalog.GetString ("[Obsolete]"));
 					DisplayFlags |= DisplayFlags.Obsolete;
 				}
+				var returnType = m.SourceProjectDom.GetType (m.ReturnType);
+				if (returnType != null && returnType.ClassType == ClassType.Delegate) {
+					sb.AppendLine ();
+					sb.AppendLine (GettextCatalog.GetString ("Delegate information"));
+					sb.Append (ambience.GetString (returnType, OutputFlags.ReformatDelegates | OutputFlags.IncludeReturnType | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName));
+				}
+				
 				string docMarkup = AmbienceService.GetDocumentationMarkup ("<summary>" + AmbienceService.GetDocumentationSummary ((IMember)Member) + "</summary>", new AmbienceService.DocumentationFormatOptions {
 					Ambience = ambience
 				});
