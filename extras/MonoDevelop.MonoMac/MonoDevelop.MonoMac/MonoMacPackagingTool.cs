@@ -42,16 +42,16 @@ namespace MonoDevelop.MonoMac
 {
     public class MonoMacPackagingTool : IApplication
     {
-		string LinkerModeOptionHelpText {
-			get {
-				var settings = GetDefaultSettings ();
-				string defaultMode = Enum.GetName (typeof (MonoMacLinkerMode), settings.LinkerMode),
-	            	   linkerModes = string.Join (", ", Enum.GetNames (typeof (MonoMacLinkerMode))),
-	            	   linkerModesWithDefault = linkerModes.Replace (defaultMode, "["+defaultMode+"]");
-				return "Linker mode ("+linkerModesWithDefault+").";
-			}
-		}
-		
+        string LinkerModeOptionHelpText {
+            get {
+                var settings = GetDefaultSettings ();
+                string defaultMode = Enum.GetName (typeof (MonoMacLinkerMode), settings.LinkerMode),
+                       linkerModes = string.Join (", ", Enum.GetNames (typeof (MonoMacLinkerMode))),
+                       linkerModesWithDefault = linkerModes.Replace (defaultMode, "["+defaultMode+"]");
+                return "Linker mode ("+linkerModesWithDefault+").";
+            }
+        }
+        
         MonoMacPackagingSettings GetDefaultSettings ()
         {
             return new MonoMacPackagingSettings {
