@@ -365,7 +365,7 @@ namespace MonoDevelop.Projects
 			targetPath = Path.GetFullPath (targetPath);
 			
 			if (sourcePath != targetPath) {
-				if (!CopyFiles (monitor, obj, obj.GetItemFiles (true), targetPath))
+				if (!CopyFiles (monitor, obj, obj.GetItemFiles (true), targetPath, true))
 					return null;
 				
 				string newFile = Path.Combine (targetPath, Path.GetFileName (rootSourceFile));
@@ -381,12 +381,19 @@ namespace MonoDevelop.Projects
 						obj.ConvertToFormat (format, true);
 					obj.Save (monitor);
 					List<FilePath> newFiles = obj.GetItemFiles (true);
+					
+					foreach (FilePath f in newFiles) {
+						if (!f.IsChildPathOf (targetPath)) {
+							if (obj is Solution)
+								monitor.ReportError ("The solution '" + obj.Name + "' is referencing the file '" + f.FileName + "' which is located outside the root solution directory.", null);
+							else
+								monitor.ReportError ("The project '" + obj.Name + "' is referencing the file '" + f.FileName + "' which is located outside the project directory.", null);
+						}
+						oldFiles.Remove (f);
+					}
 	
 					// Remove old files
 					foreach (FilePath file in oldFiles) {
-						if (newFiles.Contains (file))
-							continue;
-						
 						if (File.Exists (file)) {
 							File.Delete (file);
 						
@@ -432,7 +439,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		bool CopyFiles (IProgressMonitor monitor, IWorkspaceFileObject obj, List<FilePath> files, FilePath targetBasePath)
+		bool CopyFiles (IProgressMonitor monitor, IWorkspaceFileObject obj, IEnumerable<FilePath> files, FilePath targetBasePath, bool ignoreExternalFiles)
 		{
 			FilePath baseDir = obj.BaseDirectory.FullPath;
 			foreach (FilePath file in files) {
@@ -445,6 +452,8 @@ namespace MonoDevelop.Projects
 				
 				// Can't export files from outside the root solution directory
 				if (!fname.IsChildPathOf (baseDir)) {
+					if (ignoreExternalFiles)
+						continue;
 					if (obj is Solution)
 						monitor.ReportError ("The solution '" + obj.Name + "' is referencing the file '" + Path.GetFileName (file) + "' which is located outside the root solution directory.", null);
 					else
