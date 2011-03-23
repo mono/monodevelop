@@ -10,15 +10,11 @@ namespace MonoDevelop.VersionControl
 {
 	public class ChangeSet
 	{
-		public string globalComment = string.Empty;
-		public string GlobalComment {
-			get { return globalComment; }
-			set { globalComment = value; }
-		}
-		
+		string globalComment = string.Empty;
 		List<ChangeSetItem> items = new List<ChangeSetItem> ();
 		Repository repo;
 		FilePath basePath;
+		Hashtable extendedProperties;
 
 		internal protected ChangeSet (Repository repo, FilePath basePath)
 		{
@@ -31,6 +27,19 @@ namespace MonoDevelop.VersionControl
 				basePath = bp + System.IO.Path.DirectorySeparatorChar;
 			
 			this.basePath = basePath;
+		}
+		
+		public IDictionary ExtendedProperties {
+			get {
+				if (extendedProperties == null)
+					extendedProperties = new Hashtable ();
+				return extendedProperties;
+			}
+		}
+		
+		public string GlobalComment {
+			get { return globalComment; }
+			set { globalComment = value; }
 		}
 		
 		public bool IsEmpty {
