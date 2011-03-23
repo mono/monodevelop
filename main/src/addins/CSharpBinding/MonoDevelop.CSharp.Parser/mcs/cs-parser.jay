@@ -144,7 +144,7 @@ namespace Mono.CSharp
 		LocationsBag lbag;
 		UsingsBag ubag;
 		List<Tuple<Modifiers, Location>> mod_locations;
-		Location parameterModifierLocation;
+		Location parameterModifierLocation, savedLocation;
 %}
 
 %token EOF
@@ -4277,7 +4277,7 @@ modifier
 		$$ = Modifiers.NEW;
 		StoreModifierLocation ($$, GetLocation ($1));
 		
-		if (current_container == RootContext.ToplevelTypes)
+		if (current_container == module)
 			Report.Error (1530, GetLocation ($1), "Keyword `new' is not allowed on namespace elements");
 	  }
 	| PUBLIC
@@ -4781,9 +4781,13 @@ block_variable_declaration
 	  }
 	  const_variable_initializer opt_const_declarators SEMICOLON
 	  {
-		$$ = current_variable;
+		if (current_variable.Initializer != null) {
+			lbag.AddLocation (current_variable, GetLocation ($1), savedLocation, GetLocation ($7));
+		} else {
+			lbag.AddLocation (current_variable, GetLocation ($1), GetLocation ($7));
+		}
+		$$ = current_variable;;
 		current_variable = null;
-		lbag.AddLocation ($$, GetLocation ($1), GetLocation ($7));
 	  }
 	;
 
@@ -4843,6 +4847,7 @@ const_variable_initializer
 	  }
 	| ASSIGN constant_initializer_expr 
 	  {
+		savedLocation = GetLocation ($1);
 		current_variable.Initializer = (Expression) $2;
 	  }
 	;
@@ -6137,7 +6142,7 @@ MakeName (MemberName class_name)
 {
 	Namespace ns = current_namespace.NS;
 
-	if (current_container == RootContext.ToplevelTypes) {
+	if (current_container == module) {
 		if (ns.Name.Length != 0)
 			return new MemberName (ns.MemberName, class_name);
 		else
@@ -6261,9 +6266,6 @@ public void parse ()
 			Report.Error (589, lexer.Location, "Internal compiler error during parsing");
 		}
 	}
-
-	if (RootContext.ToplevelTypes.NamespaceEntry != null)
-		throw new InternalErrorException ("who set it?");
 }
 
 void CheckToken (int error, int yyToken, string msg, Location loc)

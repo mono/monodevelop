@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
+using System.Text;
 using Gtk;
 using MonoDevelop.Ide.Gui.Dialogs;
 
@@ -59,6 +61,10 @@ namespace MonoDevelop.MonoDroid.Gui
 	
 	public partial class MonoDroidBuildOptionsWidget : Gtk.Bin
 	{
+		string[] i18n = { "cjk", "mideast", "other", "rare", "west" };
+		
+		ListStore i18nStore = new ListStore (typeof (string), typeof (bool));
+		
 		public MonoDroidBuildOptionsWidget ()
 		{
 			this.Build ();
@@ -66,6 +72,18 @@ namespace MonoDevelop.MonoDroid.Gui
 			linkerCombo.AppendText ("Don't link"); //MtouchLinkMode.None
 			linkerCombo.AppendText ("Link SDK assemblies only"); //MtouchLinkMode.SdkOnly
 			linkerCombo.AppendText ("Link all assemblies"); //MtouchLinkMode.All
+			
+			i18NTreeView.Model = i18nStore;
+			
+			var toggle = new CellRendererToggle ();
+			i18NTreeView.AppendColumn ("", toggle, "active", 1);
+			i18NTreeView.AppendColumn ("", new CellRendererText (), "text", 0);
+			i18NTreeView.HeadersVisible = false;
+			toggle.Toggled += delegate(object o, ToggledArgs args) {
+				TreeIter iter;
+				if (i18nStore.GetIter (out iter, new TreePath (args.Path)))
+					i18nStore.SetValue (iter, 1, !(bool)i18nStore.GetValue (iter, 1));
+			};
 			
 			ShowAll ();
 		}
@@ -75,6 +93,7 @@ namespace MonoDevelop.MonoDroid.Gui
 			extraMonoDroidArgsEntry.Text = cfg.MonoDroidExtraArgs ?? "";
 			linkerCombo.Active = (int) cfg.MonoDroidLinkMode;
 			sharedRuntimeCheck.Active = cfg.AndroidUseSharedRuntime;
+			LoadI18nValues (cfg.MandroidI18n);
 		}
 		
 		public void StorePanelContents (MonoDroidProjectConfiguration cfg)
@@ -82,6 +101,36 @@ namespace MonoDevelop.MonoDroid.Gui
 			cfg.MonoDroidExtraArgs = extraMonoDroidArgsEntry.Text;
 			cfg.MonoDroidLinkMode = (MonoDroidLinkMode) linkerCombo.Active;
 			cfg.AndroidUseSharedRuntime = sharedRuntimeCheck.Active;
+			cfg.MandroidI18n = GetI18nValues ();
+		}
+		
+		void LoadI18nValues (string values)
+		{
+			i18nStore.Clear ();
+			if (values == null) {
+				foreach (string s in i18n)				
+					i18nStore.AppendValues (s, false);
+			} else {		
+				var arr = values.Split (',');
+				foreach (string s in i18n)
+					i18nStore.AppendValues (s, arr.Contains (s));
+			}
+		}
+		
+		string GetI18nValues ()
+		{	
+			var sb = new StringBuilder ();
+			TreeIter iter;
+			if (i18nStore.GetIterFirst (out iter)) {
+				do {
+					if ((bool)i18nStore.GetValue (iter, 1)) {
+						if (sb.Length != 0)
+							sb.Append (",");
+						sb.Append ((string)i18nStore.GetValue (iter, 0));
+					}
+				} while (i18nStore.IterNext (ref iter));
+			}
+			return sb.ToString ();
 		}
 	}
 }

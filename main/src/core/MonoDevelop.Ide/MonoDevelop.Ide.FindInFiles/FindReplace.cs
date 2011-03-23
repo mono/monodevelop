@@ -29,6 +29,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using System.Linq;
 
 
 namespace MonoDevelop.Ide.FindInFiles
@@ -116,15 +117,17 @@ namespace MonoDevelop.Ide.FindInFiles
 		IEnumerable<SearchResult> FindAll (IProgressMonitor monitor, FileProvider provider, string pattern, string replacePattern, FilterOptions filter)
 		{
 			if (string.IsNullOrEmpty (pattern))
-				return new SearchResult[0];
+				return Enumerable.Empty<SearchResult> ();
 			string content;
 			try {
 				TextReader reader = provider.Open ();
+				if (reader == null)
+					return Enumerable.Empty<SearchResult> ();
 				content = reader.ReadToEnd ();
 				reader.Close ();
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while reading file", e);
-				return new SearchResult[0];
+				return Enumerable.Empty<SearchResult> ();
 			}
 			if (filter.RegexSearch)
 				return RegexSearch (monitor, provider, content, replacePattern, filter);

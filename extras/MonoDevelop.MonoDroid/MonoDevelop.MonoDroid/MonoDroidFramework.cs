@@ -28,6 +28,8 @@ using System;
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
+using System.Xml;
+using System.Xml.Linq;
 using Mono.Addins;
 using MonoDevelop.Core;
 using System.Text;
@@ -60,7 +62,7 @@ namespace MonoDevelop.MonoDroid
 				MonoDroidSdk.GetPaths (out monoDroidToolsDir, out monoDroidFrameworkDir, out androidPath, out javaPath);
 				
 				if (monoDroidToolsDir == null) {
-					LoggingService.LogInfo ("MonoDroid SDK not found, disabling MonoDroid addin");
+					LoggingService.LogInfo ("Mono for Android SDK not found, disabling Mono for Android addin");
 					return;
 				}
 				
@@ -68,12 +70,12 @@ namespace MonoDevelop.MonoDroid
 				MonoDroidFrameworkDir = monoDroidFrameworkDir;
 				
 				if (androidPath == null) {
-					LoggingService.LogError ("Android SDK not found, needed by MonoDroid addin");
+					LoggingService.LogError ("Android SDK not found, needed by Mono for Android addin");
 					return;
 				}
 				
 				if (javaPath == null) {
-					LoggingService.LogError ("Java SDK not found, needed by MonoDroid addin");
+					LoggingService.LogError ("Java SDK not found, needed by Mono for Android addin");
 					return;
 				}
 				
@@ -91,7 +93,7 @@ namespace MonoDevelop.MonoDroid
 					DeviceManager.AndroidSdkChanged ();
 				
 			} catch (Exception ex) {
-				LoggingService.LogError ("Error detecting MonoDroid SDK", ex);
+				LoggingService.LogError ("Error detecting Mono for Android SDK", ex);
 			}
 		}
 		
@@ -179,6 +181,13 @@ namespace MonoDevelop.MonoDroid
 		public static FilePath GetPlatformPackage (int apiLevel)
 		{
 			return MonoDroidToolsDir.Combine ("platforms", "android-" + apiLevel, "Mono.Android.Platform.apk");
+		}
+
+		public static int GetRuntimeVersion ()
+		{
+			var doc = XDocument.Load (MonoDroidToolsDir.Combine ("Mono.Android.DebugRuntime-debug.xml"));
+			var version = doc.Element ("manifest").Attribute ("{http://schemas.android.com/apk/res/android}versionCode");
+			return int.Parse (version.Value);
 		}
 
 		public static IEnumerable<string> GetToolsPaths ()
@@ -316,7 +325,7 @@ namespace MonoDevelop.MonoDroid
 			new AndroidVersion (6, "2.0.1"),
 			new AndroidVersion (7, "2.1"),
 			new AndroidVersion (8, "2.2"),
-			new AndroidVersion (9, "2.3"),
+			new AndroidVersion (10, "2.3"),
 		};
 		
 		public static AndroidVersion DefaultAndroidVersion {

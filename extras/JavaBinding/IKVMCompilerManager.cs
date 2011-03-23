@@ -185,7 +185,7 @@ namespace JavaBinding
 			string outclass = Path.Combine (outdir, configuration.OutputAssembly + ".class");
 			string asm = Path.GetFileNameWithoutExtension (outclass);
 			
-			StringBuilder args = new StringBuilder ("*.class ");
+			StringBuilder args = new StringBuilder ("-recurse:*.class ");
 			
 			args.Append ("-assembly:"); args.Append (asm);
 			args.Append (" -target:"); args.Append (TargetToString (configuration.CompileTarget));

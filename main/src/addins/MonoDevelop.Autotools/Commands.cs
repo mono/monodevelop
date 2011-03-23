@@ -86,7 +86,7 @@ namespace MonoDevelop.Autotools
 				}
 
 				ctx = new DeployContext (new TarballDeployTarget (dialog.GenerateAutotools), "Linux", null);
-				monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ( GettextCatalog.GetString("Makefiles Output"), "md-package", true, true);
+				monitor = IdeApp.Workbench.ProgressMonitors.GetToolOutputProgressMonitor (true);
 				deployer.GenerateFiles (ctx, solution, dialog.DefaultConfiguration, monitor);
 			} finally {
 				dialog.Destroy ();

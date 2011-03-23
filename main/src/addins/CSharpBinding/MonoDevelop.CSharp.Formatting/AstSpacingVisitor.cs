@@ -220,10 +220,12 @@ namespace MonoDevelop.CSharp.Formatting
 			if (n == null || n.IsNull)
 				return 0;
 			DomLocation location = n.StartLocation;
-
+			// respect manual line breaks.
+			if (data.Document.GetLineIndent (location.Line).Length == location.Column - 1)
+				return 0;
+	
 			int offset = data.Document.LocationToOffset (location.Line, location.Column);
 			int i = offset - 1;
-
 			while (i >= 0 && IsSpacing (data.Document.GetCharAt (i))) {
 				i--;
 			}
@@ -311,8 +313,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		void AddChange (int offset, int removedChars, string insertedText)
 		{
-			if (changes.Cast<AstSpacingVisitor.MyTextReplaceChange> ().Any (c => c.Offset == offset && c.RemovedChars == removedChars 
- && c.InsertedText == insertedText))
+			if (changes.Cast<AstSpacingVisitor.MyTextReplaceChange> ().Any (c => c.Offset == offset && c.RemovedChars == removedChars  && c.InsertedText == insertedText))
 				return;
 			string currentText = data.Document.GetTextAt (offset, removedChars);
 			if (currentText == insertedText)
@@ -329,8 +330,8 @@ namespace MonoDevelop.CSharp.Formatting
 					}
 				}
 			}
-			//			Console.WriteLine ("offset={0}, removedChars={1}, insertedText={2}", offset, removedChars, insertedText.Replace("\n", "\\n").Replace("\t", "\\t").Replace(" ", "."));
-			//			Console.WriteLine (Environment.StackTrace);
+			//Console.WriteLine ("offset={0}, removedChars={1}, insertedText={2}", offset, removedChars , insertedText == null ? "<null>" : insertedText.Replace("\n", "\\n").Replace("\t", "\\t").Replace(" ", "."));
+			//Console.WriteLine (Environment.StackTrace);
 			changes.Add (new MyTextReplaceChange (data, offset, removedChars, insertedText));
 		}
 
@@ -450,10 +451,16 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public override object VisitVariableDeclarationStatement (VariableDeclarationStatement variableDeclarationStatement, object data)
 		{
+			if ((variableDeclarationStatement.Modifiers & Modifiers.Const) == Modifiers.Const) {
+				ForceSpacesAround (variableDeclarationStatement.Type, true);
+			} else {
+				ForceSpacesAfter (variableDeclarationStatement.Type, true);
+			}
 			foreach (var initializer in variableDeclarationStatement.Variables) {
 				initializer.AcceptVisitor (this, data);
 			}
 			FormatCommas (variableDeclarationStatement, policy.BeforeLocalVariableDeclarationComma, policy.AfterLocalVariableDeclarationComma);
+			FixSemicolon (variableDeclarationStatement.SemicolonToken);
 			return data;
 		}
 

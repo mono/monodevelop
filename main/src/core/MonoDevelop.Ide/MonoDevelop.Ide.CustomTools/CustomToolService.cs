@@ -111,8 +111,7 @@ namespace MonoDevelop.Ide.CustomTools
 				}
 			}
 			
-			string title = GettextCatalog.GetString ("Custom Tool");
-			var monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (title, null, false, true);
+			var monitor = IdeApp.Workbench.ProgressMonitors.GetToolOutputProgressMonitor (false);
 			var result = new SingleFileCustomToolResult ();
 			var aggOp = new AggregatedOperationMonitor (monitor);
 			try {

@@ -491,7 +491,7 @@ namespace MonoDevelop.Debugger
 			// When using an external console, create a new internal console which will be used
 			// to show the debugger log
 			if (startInfo.UseExternalConsole)
-				console = (IConsole) IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (GettextCatalog.GetString ("Application Output"), Stock.RunProgramIcon, true, true);
+				console = (IConsole) IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
 			else
 				console = c;
 			

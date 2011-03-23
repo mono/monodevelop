@@ -167,10 +167,16 @@ namespace Mono.Debugging.Client
 			return ob;
 		}
 		
+		/// <summary>
+		/// Gets the flags of the value
+		/// </summary>
 		public ObjectValueFlags Flags {
 			get { return flags; }
 		}
-		
+
+		/// <summary>
+		/// Name of the value (for example, the property name)
+		/// </summary>
 		public string Name {
 			get {
 				if (name == null)
@@ -182,7 +188,25 @@ namespace Mono.Debugging.Client
 				name = value;
 			}
 		}
-		
+
+		/// <summary>
+		/// Gets or sets the value of the object
+		/// </summary>
+		/// <value>
+		/// The value.
+		/// </value>
+		/// <exception cref='InvalidOperationException'>
+		/// Is thrown when trying to set a value on a read-only ObjectValue
+		/// </exception>
+		/// <remarks>
+		/// This value is a string representation of the ObjectValue. The content depends on several evaluation
+		/// options. For example, if ToString calls are enabled, this value will be the result of calling
+		/// ToString.
+		/// If the object is a primitive type, in general the Value will be an expression that represents the
+		/// value in the target language. For example, when debugging C#, if the property is an string, the value
+		/// will include the quotation marks and chars like '\' will be properly escaped.
+		/// If you need to get the real CLR value of the object, use GetRawValue.
+		/// </remarks>
 		public virtual string Value {
 			get {
 				return value;
@@ -197,12 +221,43 @@ namespace Mono.Debugging.Client
 				}
 			}
 		}
+
+		/// <summary>
+		/// Gets or sets the display value of this object
+		/// </summary>
+		/// <remarks>
+		/// This method returns a string to be used when showing the value of this object.
+		/// In most cases, the Value and DisplayValue properties return the same text, but there are some cases
+		/// in which DisplayValue may return a more convenient textual representation of the value, which
+		/// may not be a valid target language expression.
+		/// For example in C#, an enum Value includes the full enum type name (e.g. "Gtk.ResponseType.OK"),
+		/// while DisplayValue only has the enum value name ("OK").
+		/// </remarks>
+		public string DisplayValue {
+			get { return displayValue ?? Value; }
+			set { displayValue = value; }
+		}
 		
+		/// <summary>
+		/// Sets the value of this object, using the default evaluation options
+		/// </summary>
 		public void SetValue (string value)
 		{
 			SetValue (value, parentFrame.DebuggerSession.EvaluationOptions);
 		}
 		
+		/// <summary>
+		/// Sets the value of this object, using the specified evaluation options
+		/// </summary>
+		/// <param name='value'>
+		/// The value
+		/// </param>
+		/// <param name='options'>
+		/// The options
+		/// </param>
+		/// <exception cref='InvalidOperationException'>
+		/// Is thrown if the value is read-only
+		/// </exception>
 		public void SetValue (string value, EvaluationOptions options)
 		{
 			if (IsReadOnly || source == null)
@@ -214,11 +269,40 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		/// <summary>
+		/// Gets the raw value of this object
+		/// </summary>
+		/// <returns>
+		/// The raw value.
+		/// </returns>
+		/// <remarks>
+		/// This method can be used to get the CLR value of the object. For example, if this ObjectValue is
+		/// a property of type String, this method will return the System.String value of the property.
+		/// If this ObjectValue refers to an object instead of a primitive value, then a RawValue object
+		/// will be returned. RawValue can be used to get and set members of an object, and to call methods.
+		/// If this ObjectValue refers to an array, then a RawValueArray object will be returned.
+		/// </remarks>
 		public object GetRawValue ()
 		{
 			return GetRawValue (parentFrame.DebuggerSession.EvaluationOptions);
 		}
 		
+		/// <summary>
+		/// Gets the raw value of this object
+		/// </summary>
+		/// <param name='options'>
+		/// The evaluation options
+		/// </param>
+		/// <returns>
+		/// The raw value.
+		/// </returns>
+		/// <remarks>
+		/// This method can be used to get the CLR value of the object. For example, if this ObjectValue is
+		/// a property of type String, this method will return the System.String value of the property.
+		/// If this ObjectValue refers to an object instead of a primitive value, then a RawValue object
+		/// will be returned. RawValue can be used to get and set members of an object, and to call methods.
+		/// If this ObjectValue refers to an array, then a RawValueArray object will be returned.
+		/// </remarks>
 		public object GetRawValue (EvaluationOptions options)
 		{
 			object res = source.GetRawValue (path, options);
@@ -228,30 +312,53 @@ namespace Mono.Debugging.Client
 			return res;
 		}
 		
+		/// <summary>
+		/// Sets the raw value of this object
+		/// </summary>
+		/// <param name='value'>
+		/// The value
+		/// </param>
+		/// <remarks>
+		/// The provided value can be a primitive type, a RawValue object or a RawValueArray object.
+		/// </remarks>
 		public void SetRawValue (object value)
 		{
 			SetRawValue (value, parentFrame.DebuggerSession.EvaluationOptions);
 		}
 		
+		/// <summary>
+		/// Sets the raw value of this object
+		/// </summary>
+		/// <param name='value'>
+		/// The value
+		/// </param>
+		/// <param name='options'>
+		/// The evaluation options
+		/// </param>
+		/// <remarks>
+		/// The provided value can be a primitive type, a RawValue object or a RawValueArray object.
+		/// </remarks>
 		public void SetRawValue (object value, EvaluationOptions options)
 		{
 			source.SetRawValue (path, value, options);
 		}
 		
-		public string DisplayValue {
-			get { return displayValue ?? Value; }
-			set { displayValue = value; }
-		}
-		
+		/// <summary>
+		/// Full name of the type of the object
+		/// </summary>
 		public string TypeName {
 			get { return typeName; }
 			set { typeName = value; }
 		}
 		
 		/// <summary>
-		/// The expression to concatenate to a parent expression to get this child
-		/// (for example ".foo" if this object represents a "foo" field of an object
+		/// Gets or sets the child selector.
 		/// </summary>
+		/// <remarks>
+		/// The child selector is an expression which can be concatenated to a parent expression to get this child.
+		/// For example, if this object is a reference to a field named 'foo' of an object, the child
+		/// selector is '.foo'.
+		/// </remarks>
 		public string ChildSelector {
 			get {
 				if (childSelector != null)
@@ -264,6 +371,12 @@ namespace Mono.Debugging.Client
 			set { childSelector = value; }
 		}
 		
+		/// <summary>
+		/// Gets a value indicating whether this object has children.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if this instance has children; otherwise, <c>false</c>.
+		/// </value>
 		public bool HasChildren {
 			get {
 				if (IsEvaluating)
@@ -280,12 +393,39 @@ namespace Mono.Debugging.Client
 					return false;
 			}
 		}
-		
+
+		/// <summary>
+		/// Gets a child value
+		/// </summary>
+		/// <returns>
+		/// The child.
+		/// </returns>
+		/// <param name='name'>
+		/// Name of the member
+		/// </param>
+		/// <remarks>
+		/// This method can be used to get a member of an object (such as a field or property)
+		/// </remarks>
 		public ObjectValue GetChild (string name)
 		{
 			return GetChild (name, parentFrame.DebuggerSession.EvaluationOptions);
 		}
 		
+		/// <summary>
+		/// Gets a child value
+		/// </summary>
+		/// <returns>
+		/// The child.
+		/// </returns>
+		/// <param name='name'>
+		/// Name of the member
+		/// </param>
+		/// <param name='options'>
+		/// Options to be used to evaluate the child
+		/// </param>
+		/// <remarks>
+		/// This method can be used to get a member of an object (such as a field or property)
+		/// </remarks>
 		public ObjectValue GetChild (string name, EvaluationOptions options)
 		{
 			if (IsArray)
@@ -312,11 +452,26 @@ namespace Mono.Debugging.Client
 			return null;
 		}
 		
+		/// <summary>
+		/// Gets all children of the object
+		/// </summary>
+		/// <returns>
+		/// An array of all child values
+		/// </returns>
 		public ObjectValue[] GetAllChildren ()
 		{
 			return GetAllChildren (parentFrame.DebuggerSession.EvaluationOptions);
 		}
 		
+		/// <summary>
+		/// Gets all children of the object
+		/// </summary>
+		/// <returns>
+		/// An array of all child values
+		/// </returns>
+		/// <param name='options'>
+		/// Options to be used to evaluate the children
+		/// </param>
 		public ObjectValue[] GetAllChildren (EvaluationOptions options)
 		{
 			if (IsEvaluating)
@@ -343,11 +498,38 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		/// <summary>
+		/// Gets an item of an array
+		/// </summary>
+		/// <returns>
+		/// The array item.
+		/// </returns>
+		/// <param name='index'>
+		/// Item index
+		/// </param>
+		/// <exception cref='InvalidOperationException'>
+		/// Is thrown if this object is not an array (IsArray returns false)
+		/// </exception>
 		public ObjectValue GetArrayItem (int index)
 		{
 			return GetArrayItem (index, parentFrame.DebuggerSession.EvaluationOptions);
 		}
 		
+		/// <summary>
+		/// Gets an item of an array
+		/// </summary>
+		/// <returns>
+		/// The array item.
+		/// </returns>
+		/// <param name='index'>
+		/// Item index
+		/// </param>
+		/// <param name='options'>
+		/// Options to be used to evaluate the item
+		/// </param>
+		/// <exception cref='InvalidOperationException'>
+		/// Is thrown if this object is not an array (IsArray returns false)
+		/// </exception>
 		public ObjectValue GetArrayItem (int index, EvaluationOptions options)
 		{
 			if (!IsArray)
@@ -372,6 +554,12 @@ namespace Mono.Debugging.Client
 			return children [index];
 		}
 		
+		/// <summary>
+		/// Gets the number of items of an array
+		/// </summary>
+		/// <exception cref='InvalidOperationException'>
+		/// Is thrown if this object is not an array (IsArray returns false)
+		/// </exception>
 		public int ArrayCount {
 			get {
 				if (!IsArray)
@@ -443,11 +631,23 @@ namespace Mono.Debugging.Client
 			}
 		}
 		
+		/// <summary>
+		/// Refreshes the value of this object
+		/// </summary>
+		/// <remarks>
+		/// This method can be called to get a more up-to-date value for this object.
+		/// </remarks>
 		public void Refresh ()
 		{
 			Refresh (parentFrame.DebuggerSession.EvaluationOptions);
 		}
 		
+		/// <summary>
+		/// Refreshes the value of this object
+		/// </summary>
+		/// <remarks>
+		/// This method can be called to get a more up-to-date value for this object.
+		/// </remarks>
 		public void Refresh (EvaluationOptions options)
 		{
 			if (!CanRefresh)
@@ -455,7 +655,13 @@ namespace Mono.Debugging.Client
 			ObjectValue val = source.GetValue (path, options);
 			UpdateFrom (val, false);
 		}
-		
+
+		/// <summary>
+		/// Gets a wait handle which can be used to wait for the evaluation of this object to end
+		/// </summary>
+		/// <value>
+		/// The wait handle.
+		/// </value>
 		public WaitHandle WaitHandle {
 			get {
 				lock (this) {

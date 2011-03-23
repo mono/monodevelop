@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <Template>
 	<TemplateConfiguration>
-		<_Name>MonoAndroid Application</_Name>
-		<_Category>C#/MonoDroid</_Category>
+		<_Name>Mono for Android Application</_Name>
+		<_Category>C#/Mono for Android</_Category>
 		<Icon>monodroid-project</Icon>
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates a Mono for Android Application with an Activity.</_Description>

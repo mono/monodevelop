@@ -71,6 +71,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			UpdateOutputDir ();
 			
 			dnp.FileRemovedFromProject += FileRemovedFromProject;
+			dnp.FileChangedInProject += FileChangedInProject;
 			dnp.NameChanged += ProjectNameChanged;
 			typeTracker.TypesLoaded += TypesLoaded;
 			typeTracker.UserTypeChanged += UserTypesChanged;
@@ -84,6 +85,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			xcodeProjectDirty = false;
 			
 			dnp.FileRemovedFromProject -= FileRemovedFromProject;
+			dnp.FileChangedInProject -= FileChangedInProject;
 			dnp.NameChanged -= ProjectNameChanged;
 			typeTracker.TypesLoaded -= TypesLoaded;
 			typeTracker.UserTypeChanged -= UserTypesChanged;
@@ -99,25 +101,22 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 					UpdateUserType (change.Type);
 					break;
 				case UserTypeChangeKind.Removed:
-					RemoveUserType (change.Type);
+					RemoveUserType (change.Type.ObjCName);
 					break;
 				}
 			}
 			
 			UpdateXcodeProject ();
 		}
-
+	
 		void TypesLoaded (object sender, EventArgs e)
 		{
 			//TODO: skip types that were already in the project when MD was loaded
-			foreach (var ut in typeTracker.GetUserTypes ()) {
-				xcodeProjectDirty = true;
-				UpdateUserType (ut);
-			}
+			UpdateTypes (false);
 			
 			UpdateXcodeProject ();
 		}
-
+		
 		void ProjectNameChanged (object sender, SolutionItemRenamedEventArgs e)
 		{
 			if (!outputDir.IsNullOrEmpty && Directory.Exists (outputDir)) {
@@ -151,12 +150,28 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			if (syncing && e.Any (finf => IsPage (finf.ProjectFile)))
 				if (!dnp.Files.Any (IsPage))
 					DisableSyncing ();
+			
+			if (syncing)
+				UpdateTypes (true);
 		}
 
 		void FileAddedToProject (object sender, ProjectFileEventArgs e)
 		{
 			if (!syncing && e.Any (finf => IsPage (finf.ProjectFile)))
 				EnableSyncing ();
+			
+			if (syncing)
+				UpdateTypes (true);
+			
+			UpdateXcodeProject ();
+		}
+
+		void FileChangedInProject (object sender, ProjectFileEventArgs e)
+		{
+			if (syncing)
+				UpdateTypes (true);
+			
+			UpdateXcodeProject ();
 		}
 
 		void FilePropertyChangedInProject (object sender, ProjectFileEventArgs e)
@@ -167,7 +182,29 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			if (!xcodeProjectDirty && syncing && e.Any (finf => IsContent (finf.ProjectFile)))
 				xcodeProjectDirty = true;
 			
+			if (syncing)
+				UpdateTypes (true);
+			
 			UpdateXcodeProject ();
+		}
+		
+		void UpdateTypes (bool rescan)
+		{
+			if (rescan)
+				typeTracker.Update ();
+			
+			var currentUTs = new Dictionary<string,NSObjectTypeInfo> ();
+			foreach (var ut in typeTracker.GetUserTypes ()) {
+				currentUTs.Add (ut.ObjCName, ut);
+			}
+			
+			foreach (var removed in this.userClasses.Where (c => !currentUTs.ContainsKey (c)).ToList ()) {
+				RemoveUserType (removed);
+			}
+			
+			foreach (var ut in currentUTs) {
+				UpdateUserType (ut.Value);
+			}
 		}
 		
 		void CopyFile (ProjectFile p)
@@ -198,15 +235,15 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			typeTracker.GenerateObjcType (type, outputDir);
 		}
 		
-		void RemoveUserType (NSObjectTypeInfo type)
+		void RemoveUserType (string objcName)
 		{
-			userClasses.Remove (type.ObjCName);
+			userClasses.Remove (objcName);
 			xcodeProjectDirty = true;
 			
-			string header = outputDir.Combine (type.ObjCName + ".h");
+			string header = outputDir.Combine (objcName + ".h");
 			if (File.Exists (header))
 				File.Delete (header);
-			string impl = outputDir.Combine (type.ObjCName + ".m");
+			string impl = outputDir.Combine (objcName + ".m");
 			if (File.Exists (impl))
 				File.Delete (impl);
 		}

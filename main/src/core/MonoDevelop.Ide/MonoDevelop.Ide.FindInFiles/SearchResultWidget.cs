@@ -357,6 +357,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (searchResult == null)
 				return;
 			Document doc = GetDocument (searchResult);
+			if (doc == null)
+				return;
 			int lineNr = doc.OffsetToLineNumber (searchResult.Offset);
 			fileNameRenderer.Markup = MarkupText (System.IO.Path.GetFileName (searchResult.FileName) + ":" + lineNr, didRead);
 		}
@@ -530,11 +532,13 @@ namespace MonoDevelop.Ide.FindInFiles
 			Document doc;
 			if (!documents.TryGetValue (result.FileName, out doc)) {
 				TextReader reader = result.FileProvider.Open ();
-				doc = Document.CreateImmutableDocument (reader.ReadToEnd ());
+				if (reader == null)
+					return null;
+					doc = Document.CreateImmutableDocument (reader.ReadToEnd ());
 				doc.MimeType = DesktopService.GetMimeTypeForUri (result.FileName);
 				
 				reader.Close ();
-				documents[result.FileName] = doc;
+				documents [result.FileName] = doc;
 			}
 			return doc;
 		}
@@ -577,6 +581,8 @@ namespace MonoDevelop.Ide.FindInFiles
 		DocumentLocation GetLocation (SearchResult searchResult)
 		{
 			Document doc = GetDocument (searchResult);
+			if (doc == null)
+				return DocumentLocation.Empty;
 			int lineNr = doc.OffsetToLineNumber (searchResult.Offset);
 			LineSegment line = doc.GetLine (lineNr);
 			return new DocumentLocation (lineNr, searchResult.Offset - line.Offset + 1);
@@ -611,6 +617,8 @@ namespace MonoDevelop.Ide.FindInFiles
 					continue;
 				DocumentLocation loc = GetLocation (result);
 				Document doc = GetDocument (result);
+				if (doc == null)
+					continue;
 				LineSegment line = doc.GetLine (loc.Line);
 				
 				sb.AppendFormat ("{0} ({1}, {2}):{3}", result.FileName, loc.Line, loc.Column, doc.GetTextAt (line.Offset, line.EditableLength));
@@ -674,9 +682,11 @@ namespace MonoDevelop.Ide.FindInFiles
 				return null;
 
 			treeviewSearchResults.Selection.SelectIter (iter);
-			treeviewSearchResults.ScrollToCell (store.GetPath (iter), treeviewSearchResults.Columns[0], false, 0, 0);
+			treeviewSearchResults.ScrollToCell (store.GetPath (iter), treeviewSearchResults.Columns [0], false, 0, 0);
 			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
 			Document doc = GetDocument (searchResult);
+			if (doc == null)
+				return null;
 			DocumentLocation location = doc.OffsetToLocation (searchResult.Offset);
 			return new SearchTextFileNavigationPoint (searchResult.FileName, location.Line, location.Column);
 		}

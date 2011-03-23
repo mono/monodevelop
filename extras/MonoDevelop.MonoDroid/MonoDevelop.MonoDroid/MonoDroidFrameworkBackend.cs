@@ -71,7 +71,7 @@ namespace MonoDevelop.MonoDroid
 			case "2.0.1": return "6";
 			case "2.1":   return "7";
 			case "2.2":   return "8";
-			case "2.3":   return "9";
+			case "2.3":   return "10";
 			default:      return null;
 			}
 		}
@@ -84,7 +84,7 @@ namespace MonoDevelop.MonoDroid
 			SystemPackageInfo info = base.GetFrameworkPackageInfo ("monodroid");
 			info.Name = "monodroid";
 			info.Version = isCore? "core" : version;
-			info.Description = isCore? "MonoDroid Core" : "MonoDroid " + version;
+			info.Description = isCore? "Mono for Android Core" : "Mono for Android " + version;
 			return info;
 		}
 		
@@ -119,7 +119,7 @@ namespace MonoDevelop.MonoDroid
 			SystemPackageInfo info = base.GetFrameworkPackageInfo ("monodroid");
 			info.Name = "monodroid";
 			info.Version = isCore? "core" : version;
-			info.Description = isCore? "MonoDroid Core" : "MonoDroid " + version;
+			info.Description = isCore? "Mono for Android Core" : "Mono for Android " + version;
 			return info;
 		}
 		

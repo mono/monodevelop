@@ -905,12 +905,14 @@ namespace MonoDevelop.CSharp.Parser
 			public override object Visit (BlockConstantDeclaration blockVariableDeclaration)
 			{
 				var result = new VariableDeclarationStatement ();
+				
+				var location = LocationsBag.GetLocations (blockVariableDeclaration);
+				if (location != null)
+					result.AddChild (new CSharpModifierToken (Convert (location [0]), MonoDevelop.Projects.Dom.Modifiers.Const), VariableDeclarationStatement.ModifierRole);
+				
 				result.AddChild (ConvertToType (blockVariableDeclaration.TypeExpression), VariableDeclarationStatement.Roles.Type);
 				
 				var varInit = new VariableInitializer ();
-				var location = LocationsBag.GetLocations (blockVariableDeclaration);
-				if (location != null)
-					varInit.AddChild (new CSharpModifierToken (Convert (location[0]), MonoDevelop.Projects.Dom.Modifiers.Const), VariableDeclarationStatement.ModifierRole);
 				varInit.AddChild (new Identifier (blockVariableDeclaration.Variable.Name, Convert (blockVariableDeclaration.Variable.Location)), VariableInitializer.Roles.Identifier);
 				if (blockVariableDeclaration.Initializer != null) {
 					if (location != null)
@@ -2476,9 +2478,9 @@ namespace MonoDevelop.CSharp.Parser
 				var comment = special as SpecialsBag.Comment;
 				
 				if (comment != null) {
-					var type  = (MonoDevelop.CSharp.Ast.CommentType)comment.CommentType;
-					var start =  new AstLocation (comment.Line, comment.Col);
-					var end =  new AstLocation (comment.EndLine, comment.EndCol);
+					var type = (MonoDevelop.CSharp.Ast.CommentType)comment.CommentType;
+					var start = new AstLocation (comment.Line, comment.Col);
+					var end = new AstLocation (comment.EndLine, comment.EndCol);
 					var domComment = new MonoDevelop.CSharp.Ast.Comment (type, start, end);
 					domComment.StartsLine = comment.StartsLine;
 					domComment.Content = comment.Content;
@@ -2491,7 +2493,7 @@ namespace MonoDevelop.CSharp.Parser
 
 		McsParser.ErrorReportPrinter errorReportPrinter = new McsParser.ErrorReportPrinter ();
 		
-		internal McsParser.ErrorReportPrinter ErrorReportPrinter {
+		public McsParser.ErrorReportPrinter ErrorReportPrinter {
 			get {
 				return errorReportPrinter;
 			}

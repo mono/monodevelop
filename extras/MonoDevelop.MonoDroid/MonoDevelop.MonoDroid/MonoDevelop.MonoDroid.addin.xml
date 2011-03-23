@@ -1,10 +1,10 @@
 <Addin id          = "MonoAndroid"
        namespace   = "MonoDevelop"
-       name        = "MonoAndroid development"
+       name        = "Mono for Android development"
        author      = "Michael Hutchinson"
        copyright   = "MIT X11"
        url         = "http://monodevelop.com/"
-       description = "Support for developing and deploying MonoAndroid applications."
+       description = "Support for developing and deploying Mono for Android applications."
        category    = "Mobile Development"
        version     = "2.6.1">
 	
@@ -140,13 +140,13 @@
 	<Extension path = "/MonoDevelop/Ide/Commands/Project">
 		<Condition id="MonoDroidInstalled">
 			<Command id = "MonoDevelop.MonoDroid.MonoDroidCommands.UploadToDevice" 
-				_description = "Upload the MonoDroid application to the device" 
+				_description = "Upload the Mono for Android application to the device" 
 				defaultHandler = "MonoDevelop.MonoDroid.DefaultUploadToDeviceHandler"
 				_label = "Upload to Device" />
 			<Command id = "MonoDevelop.MonoDroid.MonoDroidCommands.SelectDeviceTarget"
 				type = "radio|array"
 				defaultHandler = "MonoDevelop.MonoDroid.SelectDeviceTargetHandler"
-				_label = "MonoDroid Device" />
+				_label = "Mono for Android Device" />
 			<Command id = "MonoDevelop.MonoDroid.MonoDroidCommands.ManageDevices"
 				_description = "Manage Android Devices" 
 				defaultHandler = "MonoDevelop.MonoDroid.ManageDevicesHandler"
@@ -165,7 +165,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
 		<Condition id="MonoDroidInstalled">
-			<ItemSet id = "SelectSimulatorTarget" _label = "MonoDroid Device Target" 
+			<ItemSet id = "SelectSimulatorTarget" _label = "Mono for Android Device Target" 
 			         insertafter = "SelectActiveRuntime"  >
 				<CommandItem id = "MonoDevelop.MonoDroid.MonoDroidCommands.SelectDeviceTarget" />
 				<SeparatorItem />
@@ -264,7 +264,7 @@
 	
 		<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
 			<DebuggerEngine id="Mono.Debugger.Soft.MonoDroid"
-				name="Mono Soft Debugger for MonoDroid"
+				name="Mono Soft Debugger for Mono for Android"
 				features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints"
 				type="MonoDevelop.Debugger.Soft.MonoDroid.MonoDroidSoftDebuggerEngine" />
 		</Extension>

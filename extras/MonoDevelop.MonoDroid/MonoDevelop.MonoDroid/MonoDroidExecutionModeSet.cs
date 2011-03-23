@@ -34,7 +34,7 @@ namespace MonoDevelop.MonoDroid
 {
 	public class MonoDroidExecutionModeSet : IExecutionModeSet
 	{
-		public string Name { get { return "MonoDroid";  } }
+		public string Name { get { return "Mono for Android";  } }
 		
 		public IEnumerable<IExecutionMode> ExecutionModes {
 			get {

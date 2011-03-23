@@ -4,6 +4,7 @@ namespace MonoDevelop.MonoDroid.Gui
 {
 	public partial class MonoDroidBuildOptionsWidget
 	{
+		private global::Gtk.Notebook notebook1;
 		private global::Gtk.Table table1;
 		private global::Gtk.Entry extraMonoDroidArgsEntry;
 		private global::Gtk.HBox hbox1;
@@ -11,6 +12,15 @@ namespace MonoDevelop.MonoDroid.Gui
 		private global::Gtk.Label label1;
 		private global::Gtk.Label label2;
 		private global::Gtk.CheckButton sharedRuntimeCheck;
+		private global::Gtk.Label label3;
+		private global::Gtk.VBox vbox2;
+		private global::Gtk.Label label5;
+		private global::Gtk.Alignment alignment1;
+		private global::Gtk.VBox vbox3;
+		private global::Gtk.Label label6;
+		private global::Gtk.ScrolledWindow GtkScrolledWindow;
+		private global::Gtk.TreeView i18NTreeView;
+		private global::Gtk.Label label4;
 
 		protected virtual void Build ()
 		{
@@ -19,6 +29,11 @@ namespace MonoDevelop.MonoDroid.Gui
 			global::Stetic.BinContainer.Attach (this);
 			this.Name = "MonoDevelop.MonoDroid.Gui.MonoDroidBuildOptionsWidget";
 			// Container child MonoDevelop.MonoDroid.Gui.MonoDroidBuildOptionsWidget.Gtk.Container+ContainerChild
+			this.notebook1 = new global::Gtk.Notebook ();
+			this.notebook1.CanFocus = true;
+			this.notebook1.Name = "notebook1";
+			this.notebook1.CurrentPage = 1;
+			// Container child notebook1.Gtk.Notebook+NotebookChild
 			this.table1 = new global::Gtk.Table (((uint)(4)), ((uint)(2)), false);
 			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(6));
@@ -90,7 +105,74 @@ namespace MonoDevelop.MonoDroid.Gui
 			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.sharedRuntimeCheck]));
 			w6.RightAttach = ((uint)(2));
 			w6.YOptions = ((global::Gtk.AttachOptions)(4));
-			this.Add (this.table1);
+			this.notebook1.Add (this.table1);
+			// Notebook tab
+			this.label3 = new global::Gtk.Label ();
+			this.label3.Name = "label3";
+			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("General");
+			this.notebook1.SetTabLabel (this.table1, this.label3);
+			this.label3.ShowAll ();
+			// Container child notebook1.Gtk.Notebook+NotebookChild
+			this.vbox2 = new global::Gtk.VBox ();
+			this.vbox2.Name = "vbox2";
+			this.vbox2.Spacing = 6;
+			this.vbox2.BorderWidth = ((uint)(6));
+			// Container child vbox2.Gtk.Box+BoxChild
+			this.label5 = new global::Gtk.Label ();
+			this.label5.Name = "label5";
+			this.label5.Xalign = 0F;
+			this.label5.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Internationalization</b>");
+			this.label5.UseMarkup = true;
+			this.vbox2.Add (this.label5);
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label5]));
+			w8.Position = 0;
+			w8.Expand = false;
+			w8.Fill = false;
+			// Container child vbox2.Gtk.Box+BoxChild
+			this.alignment1 = new global::Gtk.Alignment (0F, 0.5F, 1F, 1F);
+			this.alignment1.Name = "alignment1";
+			this.alignment1.LeftPadding = ((uint)(24));
+			// Container child alignment1.Gtk.Container+ContainerChild
+			this.vbox3 = new global::Gtk.VBox ();
+			this.vbox3.Name = "vbox3";
+			this.vbox3.Spacing = 6;
+			// Container child vbox3.Gtk.Box+BoxChild
+			this.label6 = new global::Gtk.Label ();
+			this.label6.Name = "label6";
+			this.label6.Xalign = 0F;
+			this.label6.LabelProp = global::Mono.Unix.Catalog.GetString ("<small>If the application uses certain international codesets, they must be\nspecified explicitly so that the linker can include supporting resources.</small>");
+			this.label6.UseMarkup = true;
+			this.vbox3.Add (this.label6);
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.label6]));
+			w9.Position = 0;
+			w9.Expand = false;
+			w9.Fill = false;
+			// Container child vbox3.Gtk.Box+BoxChild
+			this.GtkScrolledWindow = new global::Gtk.ScrolledWindow ();
+			this.GtkScrolledWindow.Name = "GtkScrolledWindow";
+			this.GtkScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
+			// Container child GtkScrolledWindow.Gtk.Container+ContainerChild
+			this.i18NTreeView = new global::Gtk.TreeView ();
+			this.i18NTreeView.CanFocus = true;
+			this.i18NTreeView.Name = "i18NTreeView";
+			this.GtkScrolledWindow.Add (this.i18NTreeView);
+			this.vbox3.Add (this.GtkScrolledWindow);
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.GtkScrolledWindow]));
+			w11.Position = 1;
+			this.alignment1.Add (this.vbox3);
+			this.vbox2.Add (this.alignment1);
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.alignment1]));
+			w13.Position = 1;
+			this.notebook1.Add (this.vbox2);
+			global::Gtk.Notebook.NotebookChild w14 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.vbox2]));
+			w14.Position = 1;
+			// Notebook tab
+			this.label4 = new global::Gtk.Label ();
+			this.label4.Name = "label4";
+			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("Advanced");
+			this.notebook1.SetTabLabel (this.vbox2, this.label4);
+			this.label4.ShowAll ();
+			this.Add (this.notebook1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}

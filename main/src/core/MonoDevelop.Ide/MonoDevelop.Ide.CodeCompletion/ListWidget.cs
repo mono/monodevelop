@@ -259,7 +259,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public bool SelectionEnabled {
 			get {
-				return AutoSelect && (AutoCompleteEmptyMatch || !string.IsNullOrEmpty (CompletionString) || !string.IsNullOrEmpty (DefaultCompletionString));
+				return AutoSelect && (AutoCompleteEmptyMatch || !string.IsNullOrEmpty (CompletionString));
 			}
 		}
 		

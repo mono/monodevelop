@@ -626,7 +626,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public override object VisitComment (MonoDevelop.CSharp.Ast.Comment comment, object data)
 		{
-			if (comment.StartsLine && !HadErrors)
+			if (comment.StartsLine && !HadErrors && comment.StartLocation.Column > 1)
 				FixIndentation (comment.StartLocation);
 			return null;
 		}
@@ -676,6 +676,7 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			if (node == null)
 				return null;
+			int originalLevel = curIndent.Level;
 			bool isBlock = node is BlockStatement;
 			switch (braceForcement) {
 			case BraceForcement.DoNotChange:
@@ -726,7 +727,6 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 				break;
 			}
-			int originalLevel = curIndent.Level;
 			if (isBlock) {
 				BlockStatement block = node as BlockStatement;
 				if (allowInLine && block.StartLocation.Line == block.EndLocation.Line && block.Statements.Count () <= 1) {
@@ -864,6 +864,9 @@ namespace MonoDevelop.CSharp.Formatting
 					return;
 				}
 			}
+			//Console.WriteLine ("offset={0}, removedChars={1}, insertedText={2}", offset, removedChars , insertedText == null ? "<null>" : insertedText.Replace("\n", "\\n").Replace("\t", "\\t").Replace(" ", "."));
+			//Console.WriteLine (Environment.StackTrace);
+			
 			changes.Add (new AstSpacingVisitor.MyTextReplaceChange (data, offset, removedChars, insertedText));
 		}
 		

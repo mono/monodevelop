@@ -285,9 +285,9 @@ namespace MonoDevelop.VersionControl.Git
 			ObjectId cid = _repo.Resolve (stash.CommitId);
 			RevWalk rw = new RevWalk (_repo);
 			RevCommit wip = rw.ParseCommit (cid);
-			RevCommit index = wip.Parents.Last ();
-			rw.ParseHeaders (index);
-			return GitUtil.MergeTrees (_repo, index, wip, "Stash", false);
+			RevCommit oldHead = wip.Parents.First();
+			rw.ParseHeaders (oldHead);
+			return GitUtil.MergeTrees (_repo, oldHead, wip, "Stash", false);
 		}
 		
 		public void Remove (Stash s)
