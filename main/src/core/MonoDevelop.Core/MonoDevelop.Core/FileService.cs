@@ -459,7 +459,7 @@ namespace MonoDevelop.Core
 		public static event EventHandler<FileCopyEventArgs> FileRenamed;
 		static void OnFileRenamed (FileCopyEventArgs args)
 		{
-			foreach (FileEventInfo fi in args) {
+			foreach (FileCopyEventInfo fi in args) {
 				if (fi.IsDirectory)
 					Counters.DirectoriesRenamed++;
 				else
