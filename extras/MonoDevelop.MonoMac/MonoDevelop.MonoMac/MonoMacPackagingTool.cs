@@ -42,6 +42,18 @@ namespace MonoDevelop.MonoMac
 {
     public class MonoMacPackagingTool : IApplication
     {
+
+        const string DefaultConfiguration = "Release";
+
+        string ConfigurationOptionHelpText {
+            get {
+                string configs = "Release, Debug, ...",
+                       configsWithDefault = configs.Replace (DefaultConfiguration, "["+DefaultConfiguration+"]");
+
+                return "Configuration to bundle ("+configsWithDefault+").";
+            }
+        }
+
         string LinkerModeOptionHelpText {
             get {
                 var settings = GetDefaultSettings ();
@@ -66,7 +78,7 @@ namespace MonoDevelop.MonoMac
         public int Run (string [] arguments)
         {
             bool showHelp = false;
-            string configName = "Release";
+            string configName = DefaultConfiguration;
             var settings = GetDefaultSettings ();
           
             var options = new OptionSet {
@@ -89,7 +101,7 @@ namespace MonoDevelop.MonoMac
                     settings.SignPackage = v != null;
                     settings.PackageSigningKey = v;
                 }},
-                { "c|configuration=", "Configuration to bundle ([Release], Debug, ...).", v => {
+                { "c|configuration=", ConfigurationOptionHelpText, v => {
                     if (v != null)
                         configName = v;
                 }},
