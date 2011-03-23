@@ -49,7 +49,6 @@ namespace MonoDevelop.MonoMac
             get {
                 string configs = "Release, Debug, ...",
                        configsWithDefault = configs.Replace (DefaultConfiguration, "["+DefaultConfiguration+"]");
-
                 return "Configuration to bundle ("+configsWithDefault+").";
             }
         }
@@ -85,9 +84,6 @@ namespace MonoDevelop.MonoMac
                 { "i|include-mono", "Include Mono in the bundle.", v => {
                     settings.IncludeMono = v != null;
                 }},
-                { "k|create-package", "Create bundle package/installer.", v => {
-                    settings.CreatePackage = v != null;
-                }},
                 { "l|linker-mode=", LinkerModeOptionHelpText, v => {
                     MonoMacLinkerMode mode;
                     if (Enum.TryParse<MonoMacLinkerMode> (v, out mode))
@@ -104,6 +100,12 @@ namespace MonoDevelop.MonoMac
                 { "c|configuration=", ConfigurationOptionHelpText, v => {
                     if (v != null)
                         configName = v;
+                }},
+                { "k|create-package", "Create bundle package/installer.", v => {
+                    settings.CreatePackage = v != null;
+                }},
+                { "d|product-definition=", "Product definition.", v => {
+                    settings.ProductDefinition = v;
                 }},
                 { "h|help", "Show bundle tool help.", v => {
                     showHelp = v != null;
