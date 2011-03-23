@@ -58,9 +58,8 @@ namespace MonoDevelop.Ide
 			
 			var generator = dotNetProject.LanguageBinding.GetCodeDomProvider ();
 			StringWriter sw = new StringWriter ();
-			
 			var options = new CodeGeneratorOptions ();
-			options.IndentString = "\t";
+			options.IndentString = data.GetLineIndent (type.Location.Line) + "\t";
 			if (newMember is CodeMemberMethod)
 				options.BracingStyle = "C";
 			generator.GenerateCodeFromMember (newMember, sw, options);
@@ -89,6 +88,8 @@ namespace MonoDevelop.Ide
 			var suitableInsertionPoint = GetSuitableInsertionPoint (insertionPoints, type, newMember);
 			
 			var generator = CreateCodeGenerator (data);
+
+			generator.IndentLevel = CalculateBodyIndentLevel (parsedDocument.CompilationUnit.GetTypeAt (type.Location));
 			var generatedCode = generator.CreateMemberImplementation (type, newMember, implementExplicit);
 			suitableInsertionPoint.Insert (data, generatedCode.Code);
 			if (!isOpen) {
@@ -99,6 +100,24 @@ namespace MonoDevelop.Ide
 					MessageService.ShowError (GettextCatalog.GetString ("Failed to write file '{0}'.", type.CompilationUnit.FileName));
 				}
 			}
+		}
+		
+		public static int CalculateBodyIndentLevel (IType declaringType)
+		{
+			int indentLevel = 0;
+			IType t = declaringType;
+			do {
+				indentLevel++;
+				t = t.DeclaringType;
+			} while (t != null);
+			DomLocation lastLoc = DomLocation.Empty;
+			foreach (IUsing us in declaringType.CompilationUnit.Usings.Where (u => u.IsFromNamespace && u.ValidRegion.Contains (declaringType.Location))) {
+				if (lastLoc == us.Region.Start)
+					continue;
+				lastLoc = us.Region.Start;
+				indentLevel++;
+			}
+			return indentLevel;
 		}
 		
 		public static void AddNewMembers (IType type, IEnumerable<IMember> newMembers, string regionName = null, Func<IMember, bool> implementExplicit = null)
@@ -112,7 +131,7 @@ namespace MonoDevelop.Ide
 			var suitableInsertionPoint = GetSuitableInsertionPoint (insertionPoints, type, newMembers.First ());
 			
 			var generator = CreateCodeGenerator (data);
-			
+			generator.IndentLevel = CalculateBodyIndentLevel (parsedDocument.CompilationUnit.GetTypeAt (type.Location));
 			StringBuilder sb = new StringBuilder ();
 			foreach (IMember newMember in newMembers) {
 				if (sb.Length > 0) {
