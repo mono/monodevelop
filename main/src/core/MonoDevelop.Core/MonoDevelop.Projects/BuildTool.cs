@@ -187,23 +187,31 @@ namespace MonoDevelop.Projects
 
 				case "p":
 				case "project":
+					if (string.IsNullOrEmpty (value))
+						throw new Exception ("Project name not specified (syntax is: -p:PROJECT)");
 				    project = value;
 				    break;
 
 				case "c":
 				case "configuration":
+					if (string.IsNullOrEmpty (value))
+						throw new Exception ("Configuration name not specified (syntax is: -c:CONFIGURATION)");
 				    config = value;
 				    break;
 
 				case "t":
 				case "target":
+					if (string.IsNullOrEmpty (value))
+						throw new Exception ("Target name not specified (syntax is: -t:TARGET)");
 				    command = value;
 				    break;
 
 				case "r":
 				case "runtime":
-						runtime = value;
-						break;
+					if (string.IsNullOrEmpty (value))
+						throw new Exception ("Runtime prefix not specified (syntax is: -r:PREFIX)");
+					runtime = value;
+					break;
 
 				default:
 				    throw new Exception("Unknown option '" + option + "'");
