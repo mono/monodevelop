@@ -42,10 +42,20 @@ namespace MonoDevelop.MonoMac
 {
     public class MonoMacPackagingTool : IApplication
     {
+		string LinkerModeOptionHelpText {
+			get {
+				var settings = GetDefaultSettings ();
+				string defaultMode = Enum.GetName (typeof (MonoMacLinkerMode), settings.LinkerMode),
+	            	   linkerModes = string.Join (", ", Enum.GetNames (typeof (MonoMacLinkerMode))),
+	            	   linkerModesWithDefault = linkerModes.Replace (defaultMode, "["+defaultMode+"]");
+				return "Linker mode ("+linkerModesWithDefault+").";
+			}
+		}
+		
         MonoMacPackagingSettings GetDefaultSettings ()
         {
             return new MonoMacPackagingSettings {
-                IncludeMono   = true,
+                IncludeMono   = false,
                 LinkerMode    = MonoMacLinkerMode.LinkAll,
                 SignBundle    = false,
                 SignPackage   = false,
@@ -58,16 +68,15 @@ namespace MonoDevelop.MonoMac
             bool showHelp = false;
             string configName = "Release";
             var settings = GetDefaultSettings ();
-            var linkerModes = string.Join (", ", Enum.GetNames (typeof (MonoMacLinkerMode)));
-            
+          
             var options = new OptionSet {
                 { "i|include-mono", "Include Mono in the bundle.", v => {
                     settings.IncludeMono = v != null;
                 }},
-                { "k|create-package", "Create bundle package (installer).", v => {
+                { "k|create-package", "Create bundle package/installer.", v => {
                     settings.CreatePackage = v != null;
                 }},
-                { "l|linker-mode=", "Linker mode ("+linkerModes+").", v => {
+                { "l|linker-mode=", LinkerModeOptionHelpText, v => {
                     MonoMacLinkerMode mode;
                     if (Enum.TryParse<MonoMacLinkerMode> (v, out mode))
                         settings.LinkerMode = mode;
@@ -80,7 +89,7 @@ namespace MonoDevelop.MonoMac
                     settings.SignPackage = v != null;
                     settings.PackageSigningKey = v;
                 }},
-                { "c|configuration=", "Project configuration to bundle (Release).", v => {
+                { "c|configuration=", "Configuration to bundle ([Release], Debug, ...).", v => {
                     if (v != null)
                         configName = v;
                 }},
