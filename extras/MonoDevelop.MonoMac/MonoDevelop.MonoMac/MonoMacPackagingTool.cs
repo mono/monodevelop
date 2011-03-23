@@ -43,65 +43,65 @@ namespace MonoDevelop.MonoMac
     public class MonoMacPackagingTool : IApplication
     {
         MonoMacPackagingSettings GetDefaultSettings ()
-		{
-        	return new MonoMacPackagingSettings {
-				IncludeMono   = true,
-				LinkerMode    = MonoMacLinkerMode.LinkAll,
-				SignBundle    = false,
-				SignPackage   = false,
-				CreatePackage = false
-			};
-		}
-		
+        {
+            return new MonoMacPackagingSettings {
+                IncludeMono   = true,
+                LinkerMode    = MonoMacLinkerMode.LinkAll,
+                SignBundle    = false,
+                SignPackage   = false,
+                CreatePackage = false
+            };
+        }
+        
         public int Run (string [] arguments)
         {
-			bool showHelp = false;
-			string configName = "Release";
-			var settings = GetDefaultSettings ();
-			var linkerModes = string.Join (", ", Enum.GetNames (typeof (MonoMacLinkerMode)));
-			
-			var options = new OptionSet {
-				{ "i|include-mono", "Include Mono in the bundle.", v => {
-					settings.IncludeMono = v != null;
-				}},
-				{ "k|create-package", "Create bundle package (installer).", v => {
-					settings.CreatePackage = v != null;
-				}},
-				{ "l|linker-mode=", "Linker mode ("+linkerModes+").", v => {
-					MonoMacLinkerMode mode;
-					if (Enum.TryParse<MonoMacLinkerMode> (v, out mode))
-						settings.LinkerMode = mode;
-				}},
-				{ "b|sign-bundle=", "Sign bundle with specified key.", v => {
-					settings.SignBundle = v != null;
-					settings.BundleSigningKey = v;
-				}},
-				{ "p|sign-package=", "Sign package with specified key.", v => {
-					settings.SignPackage = v != null;
-					settings.PackageSigningKey = v;
-				}},
-				{ "c|configuration=", "Project configuration to bundle (Release).", v => {
-					if (v != null)
-						configName = v;
-				}},
-				{ "h|help", "Show bundle tool help.", v => {
-					showHelp = v != null;
-				}}
-			};
-			
-			try {
-				options.Parse (arguments);
-			} catch (OptionException e) {
-	            Console.WriteLine ("bundle: {0}", e.Message);
-	            Console.WriteLine ("Try `bundle --help' for more information.");
-	            return 1;
-			}
-			
-			if (showHelp) {
-				ShowHelp (options);
-				return 0;
-			}
-				
+            bool showHelp = false;
+            string configName = "Release";
+            var settings = GetDefaultSettings ();
+            var linkerModes = string.Join (", ", Enum.GetNames (typeof (MonoMacLinkerMode)));
+            
+            var options = new OptionSet {
+                { "i|include-mono", "Include Mono in the bundle.", v => {
+                    settings.IncludeMono = v != null;
+                }},
+                { "k|create-package", "Create bundle package (installer).", v => {
+                    settings.CreatePackage = v != null;
+                }},
+                { "l|linker-mode=", "Linker mode ("+linkerModes+").", v => {
+                    MonoMacLinkerMode mode;
+                    if (Enum.TryParse<MonoMacLinkerMode> (v, out mode))
+                        settings.LinkerMode = mode;
+                }},
+                { "b|sign-bundle=", "Sign bundle with specified key.", v => {
+                    settings.SignBundle = v != null;
+                    settings.BundleSigningKey = v;
+                }},
+                { "p|sign-package=", "Sign package with specified key.", v => {
+                    settings.SignPackage = v != null;
+                    settings.PackageSigningKey = v;
+                }},
+                { "c|configuration=", "Project configuration to bundle (Release).", v => {
+                    if (v != null)
+                        configName = v;
+                }},
+                { "h|help", "Show bundle tool help.", v => {
+                    showHelp = v != null;
+                }}
+            };
+            
+            try {
+                options.Parse (arguments);
+            } catch (OptionException e) {
+                Console.WriteLine ("bundle: {0}", e.Message);
+                Console.WriteLine ("Try `bundle --help' for more information.");
+                return 1;
+            }
+            
+            if (showHelp) {
+                ShowHelp (options);
+                return 0;
+            }
+                
             var monitor = new ConsoleProgressMonitor ();
             var project = FindMonoMacProject (monitor);
             
@@ -110,26 +110,26 @@ namespace MonoDevelop.MonoMac
                 return 1;
             }
             
-			var config = project.Configurations.FirstOrDefault<ItemConfiguration> (c => c.Name == configName);
-			
-			if (config == null) {
+            var config = project.Configurations.FirstOrDefault<ItemConfiguration> (c => c.Name == configName);
+            
+            if (config == null) {
                 Console.WriteLine (GettextCatalog.GetString ("Error: Could not find configuration: ") + configName);
                 return 1;
-			}
-			
+            }
+            
             MonoMacPackaging.BuildPackage (monitor, project, config.Selector, settings, project.Name + ".app");
     
             return 0;
         }
-		
-		void ShowHelp (OptionSet options)
-	    {
-	        Console.WriteLine ("Usage: bundle [options]");
-			Console.WriteLine ("Builds an application bundle from the MonoMac project under the current directory.");
-	        Console.WriteLine ();
-	        Console.WriteLine ("Options:");
-	        options.WriteOptionDescriptions (Console.Out);
-	    }
+        
+        void ShowHelp (OptionSet options)
+        {
+            Console.WriteLine ("Usage: bundle [options]");
+            Console.WriteLine ("Builds an application bundle from the MonoMac project under the current directory.");
+            Console.WriteLine ();
+            Console.WriteLine ("Options:");
+            options.WriteOptionDescriptions (Console.Out);
+        }
         
         MonoMacProject FindMonoMacProject (IProgressMonitor monitor)
         {
@@ -138,7 +138,7 @@ namespace MonoDevelop.MonoMac
                 let solution = Services.ProjectService.ReadWorkspaceItem (monitor, solutionFile)
                 from project in solution.GetAllProjects ().OfType<MonoMacProject> ()
                 select project;
-			
+            
             return projects.FirstOrDefault ();
         }
     }
