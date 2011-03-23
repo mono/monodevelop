@@ -842,13 +842,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				foreach (ProjectDom dom in references)
 					ProjectDomService.UnrefDom (dom.Uri);
 			}
-		}
-		
-		internal void FireLoaded ()
-		{
-			if (Loaded != null) {
-				Loaded (this, EventArgs.Empty);
-			}
+			OnUnloaded ();
 		}
 
 		internal void UpdateReferences ()
@@ -870,6 +864,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			references = refs;
 			foreach (ProjectDom dom in oldRefs)
 				ProjectDomService.UnrefDom (dom.Uri); 
+			OnReferencesUpdated ();
 		}
 		
 		object IDomObjectTable.GetSharedObject (object ob)
@@ -958,7 +953,22 @@ namespace MonoDevelop.Projects.Dom.Parser
 		{
 		}
 		
-		public event EventHandler Loaded;
+		void OnUnloaded ()
+		{
+			var evt = Unloaded;
+			if (evt != null)
+				evt (this, EventArgs.Empty);
+		}
+		
+		void OnReferencesUpdated ()
+		{
+			var evt = ReferencesUpdated;
+			if (evt != null)
+				evt (this, EventArgs.Empty);
+		}
+		
+		public event EventHandler Unloaded;
+		public event EventHandler ReferencesUpdated;
 	}
 
 	public class SimpleProjectDom : ProjectDom
