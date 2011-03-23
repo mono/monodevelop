@@ -257,7 +257,7 @@ namespace MonoDevelop.Platform
 		
 		private static string EscapeDir (string dir)
 		{
-			return dir.Replace (" ", "\\ ");
+			return dir.Replace (" ", "\\ ").Replace (";", "\\;");
 		}
 		
 		private static string BashPause {
