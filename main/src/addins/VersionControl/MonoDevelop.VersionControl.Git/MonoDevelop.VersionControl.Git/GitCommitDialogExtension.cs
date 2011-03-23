@@ -31,16 +31,20 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	public class CommitDialogExtensionWidget: CommitDialogExtension
+	public class GitCommitDialogExtension: CommitDialogExtension
 	{
-		Gtk.CheckButton pushCheckbox;
+		GitCommitDialogExtensionWidget widget;
 		
 		public override bool Initialize (ChangeSet changeSet)
 		{
 			if (changeSet.Repository is GitRepository) {
-				pushCheckbox = new Gtk.CheckButton (GettextCatalog.GetString ("Push changes to remote repository after commit"));
-				Add (pushCheckbox);
-				ShowAll ();
+				widget = new GitCommitDialogExtensionWidget ();
+				Add (widget);
+				widget.Show ();
+				Show ();
+				widget.Changed += delegate {
+					AllowCommit = widget.CommitterIsAuthor || widget.AuthorName.Length > 0;
+				};
 				return true;
 			} else
 				return false;
@@ -53,6 +57,13 @@ namespace MonoDevelop.VersionControl.Git
 			// don't match, it shows a dialog asking the user what to do.
 			
 			GitRepository repo = (GitRepository) changeSet.Repository;
+			
+			if (!widget.CommitterIsAuthor) {
+				if (widget.AuthorName.Length > 0)
+					changeSet.ExtendedProperties ["Git.AuthorName"] = widget.AuthorName;
+				if (widget.AuthorMail.Length > 0)
+					changeSet.ExtendedProperties ["Git.AuthorEmail"] = widget.AuthorMail;
+			}
 			
 			Solution sol = null;
 			// Locate the solution to which the changes belong
@@ -116,7 +127,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override void OnEndCommit (ChangeSet changeSet, bool success)
 		{
-			if (success && pushCheckbox.Active)
+			if (success && widget.PushAfterCommit)
 				GitService.Push ((GitRepository) changeSet.Repository);
 		}
 	}

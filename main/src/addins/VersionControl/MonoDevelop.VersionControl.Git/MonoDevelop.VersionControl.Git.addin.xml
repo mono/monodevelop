@@ -88,7 +88,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/VersionControl/CommitDialogExtensions">
-		<Class class="MonoDevelop.VersionControl.Git.CommitDialogExtensionWidget" />
+		<Class class="MonoDevelop.VersionControl.Git.GitCommitDialogExtension" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/VersionControl">

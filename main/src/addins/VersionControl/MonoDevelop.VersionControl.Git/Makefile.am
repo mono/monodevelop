@@ -25,6 +25,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.VersionControl.Git.CredentialsDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.EditBranchDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.EditRemoteDialog.cs \
+	gtk-gui/MonoDevelop.VersionControl.Git.GitCommitDialogExtensionWidget.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.GitConfigurationDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.GitOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.MergeDialog.cs \
@@ -34,12 +35,13 @@ FILES =  \
 	gtk-gui/MonoDevelop.VersionControl.Git.UserInfoConflictDialog.cs \
 	MonoDevelop.VersionControl.Git/Change.cs \
 	MonoDevelop.VersionControl.Git/Commands.cs \
-	MonoDevelop.VersionControl.Git/CommitDialogExtensionWidget.cs \
 	MonoDevelop.VersionControl.Git/ConflictResolutionDialog.cs \
 	MonoDevelop.VersionControl.Git/CredentialsDialog.cs \
 	MonoDevelop.VersionControl.Git/EditBranchDialog.cs \
 	MonoDevelop.VersionControl.Git/EditRemoteDialog.cs \
 	MonoDevelop.VersionControl.Git/GitClient.cs \
+	MonoDevelop.VersionControl.Git/GitCommitDialogExtension.cs \
+	MonoDevelop.VersionControl.Git/GitCommitDialogExtensionWidget.cs \
 	MonoDevelop.VersionControl.Git/GitConfigurationDialog.cs \
 	MonoDevelop.VersionControl.Git/GitCredentials.cs \
 	MonoDevelop.VersionControl.Git/GitNodeBuilderExtension.cs \

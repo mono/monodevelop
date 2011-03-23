@@ -49,7 +49,6 @@
     <Compile Include="MonoDevelop.VersionControl.Git\PushDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.PushDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitNodeBuilderExtension.cs" />
-    <Compile Include="MonoDevelop.VersionControl.Git\CommitDialogExtensionWidget.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitService.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\UserInfoConflictDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.UserInfoConflictDialog.cs" />
@@ -77,6 +76,9 @@
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.StashManagerDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\NewStashDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.NewStashDialog.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git\GitCommitDialogExtensionWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.GitCommitDialogExtensionWidget.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git\GitCommitDialogExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

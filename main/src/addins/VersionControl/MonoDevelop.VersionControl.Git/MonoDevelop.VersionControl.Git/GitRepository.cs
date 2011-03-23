@@ -538,6 +538,10 @@ namespace MonoDevelop.VersionControl.Git
 			NGit.Api.CommitCommand commit = git.Commit ();
 			commit.SetMessage (message);
 			
+			if (changeSet.ExtendedProperties.Contains ("Git.AuthorName")) {
+				commit.SetAuthor ((string)changeSet.ExtendedProperties ["Git.AuthorName"], (string)changeSet.ExtendedProperties ["Git.AuthorEmail"]);
+			}
+			
 			foreach (string path in GetFilesInPaths (changeSet.Items.Select (i => i.LocalPath)))
 				commit.SetOnly (path);
 			
