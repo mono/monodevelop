@@ -78,10 +78,6 @@ namespace MonoDevelop.MonoMac.Gui
 				installerImage = null;
 			}
 			
-			//linker currently not implemented, hide completely
-			((Gtk.Container)linkerAlignment.Parent).Remove (linkerAlignment);
-			linkerAlignment.Destroy ();
-			
 			UpdateSensitivity ();
 		}
 		
