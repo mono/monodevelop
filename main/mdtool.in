@@ -2,7 +2,7 @@
 
 #this script should be in $PREFIX/bin
 MONO_EXEC="exec -a mdtool mono"
-EXE_PATH="${0%%/bin/mdtool}/lib/monodevelop/bin/mdrun.exe"
+EXE_PATH="${0%%/bin/mdtool}/lib/monodevelop/bin/mdtool.exe"
 
 ##NOTE: remove this for stable releases
 if [ -z "$MD_NO_DEBUG" ]; then

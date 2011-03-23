@@ -1,5 +1,5 @@
 
-ASSEMBLY = $(top_builddir)/build/bin/mdrun.exe
+ASSEMBLY = $(top_builddir)/build/bin/mdtool.exe
 
 FILES = src/AssemblyInfo.cs \
 src/mdrun.cs
