@@ -1128,7 +1128,7 @@ field_declaration
 	    }
 
 		current_field.Initializer = (ConstInitializer) $7;	    
-		lbag.AddMember (current_field, GetModifierLocations (), GetLocation ($9), GetLocation ($3));
+		lbag.AddMember (current_field, GetModifierLocations (), GetLocation ($3), GetLocation ($9));
 		$$ = current_field;
 	    current_field = null;
 	  }

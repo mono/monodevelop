@@ -4330,7 +4330,7 @@ void case_139()
 	    }
 
 		current_field.Initializer = (ConstInitializer) yyVals[-2+yyTop];	    
-		lbag.AddMember (current_field, GetModifierLocations (), GetLocation (yyVals[0+yyTop]), GetLocation (yyVals[-6+yyTop]));
+		lbag.AddMember (current_field, GetModifierLocations (), GetLocation (yyVals[-6+yyTop]), GetLocation (yyVals[0+yyTop]));
 		yyVal = current_field;
 	    current_field = null;
 	  }

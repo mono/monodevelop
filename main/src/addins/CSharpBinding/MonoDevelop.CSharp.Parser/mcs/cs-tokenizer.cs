@@ -11,7 +11,6 @@
 // Copyright 2004-2008 Novell, Inc
 //
 //
-
 using System;
 using System.Text;
 using System.Collections.Generic;
@@ -23,7 +22,6 @@ namespace Mono.CSharp
 	/// <summary>
 	///    Tokenizer for C# source code. 
 	/// </summary>
-
 	public class Tokenizer : yyParser.yyInput
 	{
 		class KeywordEntry<T>
@@ -32,7 +30,7 @@ namespace Mono.CSharp
 			public KeywordEntry<T> Next;
 			public readonly char[] Value;
 
-			public KeywordEntry (string value, T token)
+			public KeywordEntry (string value,T token)
 			{
 				this.Value = value.ToCharArray ();
 				this.Token = token;
@@ -75,7 +73,6 @@ namespace Mono.CSharp
 		{
 			int row, column;
 			string value;
-
 			static LocatedToken[] buffer;
 			static int pos;
 
@@ -87,7 +84,7 @@ namespace Mono.CSharp
 			{
 				return Create (null, row, column);
 			}
-			
+
 			public static LocatedToken Create (string value, int row, int column)
 			{
 				//
@@ -124,7 +121,7 @@ namespace Mono.CSharp
 			{
 				token = Create (row, col);
 			}
-			
+
 			public static void Initialize ()
 			{
 				if (buffer == null)
@@ -205,7 +202,6 @@ namespace Mono.CSharp
 		// namespace yet
 		//
 		public int parsing_declaration;
-
 		public bool parsing_attribute_section;
 
 		//
@@ -267,12 +263,10 @@ namespace Mono.CSharp
 		static readonly char[] pragma_warning_disable = "disable".ToCharArray ();
 		static readonly char[] pragma_warning_restore = "restore".ToCharArray ();
 		static readonly char[] pragma_checksum = "checksum".ToCharArray ();
-
 		static readonly char[] simple_whitespaces = new char[] { ' ', '\t' };
-		
 		bool startsLine = true;
 		internal SpecialsBag sbag;
-		
+
 		public bool PropertyParsing {
 			get { return handle_get_set; }
 			set { handle_get_set = value; }
@@ -297,7 +291,7 @@ namespace Mono.CSharp
 			get { return tab_size; }
 			set { tab_size = value; }
 		}
-		
+
 		public XmlCommentState doc_state {
 			get { return xml_doc_state; }
 			set {
@@ -312,7 +306,7 @@ namespace Mono.CSharp
 		//
 		// This is used to trigger completion generation on the parser
 		public bool CompleteOnEOF;
-		
+
 		void AddEscapedIdentifier (Location loc)
 		{
 			if (escaped_identifiers == null)
@@ -336,9 +330,9 @@ namespace Mono.CSharp
 		// Pre-processor
 		//
 		const int TAKING        = 1;
-		const int ELSE_SEEN     = 4;
+		const int ELSE_SEEN = 4;
 		const int PARENT_TAKING = 8;
-		const int REGION        = 16;		
+		const int REGION = 16;		
 
 		//
 		// pre-processor if stack state:
@@ -346,16 +340,12 @@ namespace Mono.CSharp
 		Stack<int> ifstack;
 
 		static System.Text.StringBuilder string_builder;
-
 		const int max_id_size = 512;
-		static readonly char [] id_builder = new char [max_id_size];
-
+		static readonly char[] id_builder = new char [max_id_size];
 		public static Dictionary<char[], string>[] identifiers = new Dictionary<char[], string>[max_id_size + 1];
-
 		const int max_number_size = 512;
-		static char [] number_builder = new char [max_number_size];
+		static char[] number_builder = new char [max_number_size];
 		static int number_pos;
-
 		static char[] value_builder = new char[256];
 
 		public int Line {
@@ -372,7 +362,8 @@ namespace Mono.CSharp
 		//
 		Stack<Position> position_stack = new Stack<Position> (2);
 
-		class Position {
+		class Position
+		{
 			public int position;
 			public int line;
 			public int ref_line;
@@ -433,14 +424,14 @@ namespace Mono.CSharp
 		public void DiscardPosition ()
 		{
 			position_stack.Pop ();
-		}
+	}
 		
 		static void AddKeyword (string kw, int token)
 		{
 			keyword_strings.Add (kw, null);
 
 			AddKeyword (keywords, kw, token);
-		}
+}
 
 		static void AddPreprocessorKeyword (string kw, PreprocessorDirective directive)
 		{
