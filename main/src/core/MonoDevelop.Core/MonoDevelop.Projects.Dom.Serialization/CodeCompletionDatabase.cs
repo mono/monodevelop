@@ -534,9 +534,6 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				globalAttributesPosition = attributesOffset;
 			}
 			
-#if CHECK_STRINGS
-			StringNameTable.PrintTop100 ();
-#endif
 			return true;
 		}
 		
@@ -1547,8 +1544,17 @@ namespace MonoDevelop.Projects.Dom
 #if CHECK_STRINGS
 		static Hashtable all = new Hashtable ();
 		static int count;
+#pragma warning disable 0414
+		static TablePrinter printer = new TablePrinter ();
+#pragma warning restore 0414
 		
-		public static void PrintTop100 ()
+		class TablePrinter {
+			~TablePrinter () {
+				StringNameTable.PrintTop200 ();
+			}
+		}
+
+		public static void PrintTop200 ()
 		{
 			string[] ss = new string [all.Count];
 			int[] nn = new int [all.Count];
@@ -1562,7 +1568,7 @@ namespace MonoDevelop.Projects.Dom
 			n=0;
 			Console.WriteLine ("{0} total strings", count);
 			Console.WriteLine ("{0} unique strings", nn.Length);
-			for (int i = nn.Length - 1; i > nn.Length - 101 && i >= 0; i--) {
+			for (int i = nn.Length - 1; i > nn.Length - 201 && i >= 0; i--) {
 				Console.WriteLine ("\"{1}\", // {2}", n, ss[i], nn[i]);
 			}
 		}
