@@ -47,6 +47,7 @@ namespace MonoDevelop.Core.Serialization
 		object initValue;
 		string insertBefore;
 		bool isExternal;
+		object[] customAttributes;
 		
 		public ItemMember ()
 		{
@@ -71,6 +72,14 @@ namespace MonoDevelop.Core.Serialization
 			this.declaringType = declaringType;
 			this.name = name;
 			this.isExternal = isExternal;
+			this.type = typeof(string);
+		}
+		
+		public ItemMember (Type declaringType, string name, object[] customAttributes)
+		{
+			this.declaringType = declaringType;
+			this.name = name;
+			this.customAttributes = customAttributes;
 			this.type = typeof(string);
 		}
 		
@@ -125,6 +134,15 @@ namespace MonoDevelop.Core.Serialization
 			}
 			set {
 				isExternal = value;
+			}
+		}
+		
+		public object[] CustomAttributes {
+			get {
+				return this.customAttributes;
+			}
+			set {
+				customAttributes = value;
 			}
 		}
 	}

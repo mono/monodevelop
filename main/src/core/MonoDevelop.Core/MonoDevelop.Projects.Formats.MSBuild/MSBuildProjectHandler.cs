@@ -1436,7 +1436,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			new ItemMember (typeof(SolutionEntityItem), "ProjectTypeGuids"),
 			new ItemMember (typeof(DotNetProjectConfiguration), "DebugType"),
 			new ItemMember (typeof(DotNetProjectConfiguration), "ErrorReport"),
-			new ItemMember (typeof(DotNetProjectConfiguration), "TargetFrameworkVersion"),
+			new ItemMember (typeof(DotNetProjectConfiguration), "TargetFrameworkVersion", new object[] { new MergeToProjectAttribute () }),
 			new ItemMember (typeof(ProjectReference), "RequiredTargetFramework"),
 			new ItemMember (typeof(Project), "InternalTargetFrameworkVersion", true),
 		};

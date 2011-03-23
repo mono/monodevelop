@@ -48,6 +48,7 @@ namespace MonoDevelop.Core.Serialization
 		bool unsorted;
 		bool external;
 		object initValue;
+		object[] customAttributes;
 		
 		public ItemProperty ()
 		{
@@ -147,10 +148,15 @@ namespace MonoDevelop.Core.Serialization
 		
 		public virtual object[] CustomAttributes {
 			get {
-				if (member != null)
+				if (customAttributes != null)
+					return customAttributes;
+				else if (member != null)
 					return member.GetCustomAttributes (true);
 				else
 					return new object [0];
+			}
+			set {
+				customAttributes = value;
 			}
 		}
 		

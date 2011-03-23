@@ -68,6 +68,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					foreach (ItemMember prop in MSBuildProjectHandler.ExtendedMSBuildProperties) {
 						ItemProperty iprop = new ItemProperty (prop.Name, prop.Type);
 						iprop.IsExternal = prop.IsExternal;
+						if (prop.CustomAttributes != null)
+							iprop.CustomAttributes = prop.CustomAttributes;
 						dataContext.RegisterProperty (prop.DeclaringType, iprop);
 					}
 				}
