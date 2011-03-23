@@ -767,7 +767,8 @@ namespace MonoDevelop.CSharp.Completion
 			if (resolvedType == null || resolvedType.ClassType != ClassType.Enum)
 				return;
 			string typeString = Document.CompilationUnit.ShortenTypeName (new DomReturnType (resolvedType), new DomLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column)).ToInvariantString ();
-			
+			if (typeString.Contains ("."))
+				completionList.Add (typeString, resolvedType.StockIcon);
 			foreach (var field in resolvedType.Fields) {
 				completionList.Add (typeString + "." + field.Name, field.StockIcon);
 			}
