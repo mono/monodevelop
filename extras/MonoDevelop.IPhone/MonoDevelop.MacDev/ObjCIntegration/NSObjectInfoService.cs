@@ -71,19 +71,45 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		public static NSObjectProjectInfo GetProjectInfo (ProjectDom dom)
 		{
 			NSObjectProjectInfo info;
-			if (infos.TryGetValue (dom, out info))
-				return info;
 			
-			//only include DOMs that can resolve NSObject
-			var nso = dom.GetType (nsobjectType);
-			if (nso == null) {
-				infos[dom] = null;
-				return null;
-			}	
-			
-			info = new NSObjectProjectInfo (dom);
-			infos[dom] = info;
+			lock (infos) {
+				if (infos.TryGetValue (dom, out info))
+					return info;
+				
+				//only include DOMs that can resolve NSObject
+				var nso = dom.GetType (nsobjectType);
+				if (nso == null) {
+					infos[dom] = null;
+					return null;
+				}
+				
+				info = new NSObjectProjectInfo (dom);
+				infos[dom] = info;
+				dom.Unloaded += HandleDomUnloaded;
+				dom.ReferencesUpdated += HandleDomReferencesUpdated;
+			}
 			return info;
+		}
+
+		static void HandleDomReferencesUpdated (object sender, EventArgs e)
+		{
+			var dom = (ProjectDom)sender;
+			NSObjectProjectInfo info;
+			lock (infos) {
+				if (!infos.TryGetValue (dom, out info))
+					return;
+			}
+			info.SetNeedsUpdating ();
+		}
+
+		static void HandleDomUnloaded (object sender, EventArgs e)
+		{
+			var dom = (ProjectDom)sender;
+			lock (infos) {
+				dom.Unloaded -= HandleDomUnloaded;
+				dom.ReferencesUpdated -= HandleDomReferencesUpdated;
+				infos.Remove (dom);
+			}
 		}
 		
 		internal static IEnumerable<NSObjectTypeInfo> GetRegisteredObjects (ProjectDom dom)

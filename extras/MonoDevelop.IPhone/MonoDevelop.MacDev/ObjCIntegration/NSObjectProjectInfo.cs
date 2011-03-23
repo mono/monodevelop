@@ -48,9 +48,14 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			needsUpdating = true;
 		}
 		
-		internal void Update (bool force)
+		internal void SetNeedsUpdating ()
 		{
 			needsUpdating = true;
+		}
+		
+		internal void Update (bool force)
+		{
+			SetNeedsUpdating ();
 			Update ();
 		}
 		
