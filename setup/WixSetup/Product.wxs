@@ -47,7 +47,7 @@
                 <Shortcut Id="md_shortcut" Directory="ProgramMenuDir" Name="$(var.ProductShortName)" WorkingDirectory="bin" Icon="MonoDevelop.exe" IconIndex="0" Advertise="yes" />
               </File>
               <File Name="mdhost.exe" Source="$(var.BuildRoot)\bin\mdhost.exe" />
-              <File Name="mdrun.exe" Source="$(var.BuildRoot)\bin\mdrun.exe" />
+              <File Name="mdtool.exe" Source="$(var.BuildRoot)\bin\mdtool.exe" />
               <File Name="mdmonitor.exe" Source="$(var.BuildRoot)\bin\mdmonitor.exe" />
               <File Name="Mono.Cecil.dll" Source="$(var.BuildRoot)\bin\Mono.Cecil.dll" />
               <File Name="Mono.Cecil.Mdb.dll" Source="$(var.BuildRoot)\bin\Mono.Cecil.Mdb.dll" />
