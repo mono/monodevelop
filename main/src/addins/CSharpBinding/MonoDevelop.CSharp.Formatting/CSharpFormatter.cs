@@ -95,21 +95,15 @@ namespace MonoDevelop.CSharp.Formatting
 			var compilationUnit = parser.Parse (data);
 			bool hadErrors = parser.ErrorReportPrinter.ErrorsCount + parser.ErrorReportPrinter.FatalCounter > 0;
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-			var domSpacingVisitor = new AstSpacingVisitor (policy, data) {
+			var formattingVisitor = new AstFormattingVisitor (policy, data) {
 				AutoAcceptChanges = false,
 			};
-			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
+			compilationUnit.AcceptVisitor (formattingVisitor, null);
 			
-			var domIndentationVisitor = new AstIndentationVisitor (policy, data) {
-				AutoAcceptChanges = false,
-				HadErrors = hadErrors
-			};
-			compilationUnit.AcceptVisitor (domIndentationVisitor, null);
-
+			
 			var changes = new List<Change> ();
 
-			changes.AddRange (domSpacingVisitor.Changes.
-				Concat (domIndentationVisitor.Changes).
+			changes.AddRange (formattingVisitor.Changes.
 				Where (c => c is TextReplaceChange && (startOffset <= ((TextReplaceChange)c).Offset && ((TextReplaceChange)c).Offset < endOffset)));
 
 			RefactoringService.AcceptChanges (null, null, changes);
@@ -138,21 +132,14 @@ namespace MonoDevelop.CSharp.Formatting
 			bool hadErrors = parser.ErrorReportPrinter.ErrorsCount + parser.ErrorReportPrinter.FatalCounter > 0;
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 
-			var domSpacingVisitor = new AstSpacingVisitor (policy, data) {
+			var formattingVisitor = new AstFormattingVisitor (policy, data) {
 				AutoAcceptChanges = false
 			};
-			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
-
-			var domIndentationVisitor = new AstIndentationVisitor (policy, data) {
-				AutoAcceptChanges = false,
-				HadErrors = hadErrors
-			};
-			compilationUnit.AcceptVisitor (domIndentationVisitor, null);
+			compilationUnit.AcceptVisitor (formattingVisitor, null);
 
 			var changes = new List<Change> ();
 
-			changes.AddRange (domSpacingVisitor.Changes.
-				Concat (domIndentationVisitor.Changes).
+			changes.AddRange (formattingVisitor.Changes.
 				Where (c => c is TextReplaceChange && (startOffset <= ((TextReplaceChange)c).Offset && ((TextReplaceChange)c).Offset < endOffset)));
 
 			RefactoringService.AcceptChanges (null, null, changes);

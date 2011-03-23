@@ -148,8 +148,7 @@ FILES =  \
 	MonoDevelop.CSharp.Completion/NRefactoryIndexerParameterDataProvider.cs \
 	MonoDevelop.CSharp.Completion/NRefactoryParameterDataProvider.cs \
 	MonoDevelop.CSharp.Completion/NRefactoryTemplateParameterDataProvider.cs \
-	MonoDevelop.CSharp.Formatting/AstIndentationVisitor.cs \
-	MonoDevelop.CSharp.Formatting/AstSpacingVisitor.cs \
+	MonoDevelop.CSharp.Formatting/AstFormattingVisitor.cs \
 	MonoDevelop.CSharp.Formatting/CSharpFormatter.cs \
 	MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.cs \
 	MonoDevelop.CSharp.Formatting/CSharpFormattingPolicyPanel.cs \

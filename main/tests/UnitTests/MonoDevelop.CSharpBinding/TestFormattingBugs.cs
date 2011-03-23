@@ -139,7 +139,7 @@ using (IDisposable b = null) {
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text =
+			data.Document.Text = 
 @"class Test
 {
 	MyType TestMethod ()
@@ -148,17 +148,12 @@ using (IDisposable b = null) {
 	}
 }";
 			var compilationUnit = new CSharpParser ().Parse (data);
-			AstSpacingVisitor domSpacingVisitor = new AstSpacingVisitor (policy, data);
-			domSpacingVisitor.AutoAcceptChanges = false;
-			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
-			
-			AstIndentationVisitor domIndentationVisitor = new AstIndentationVisitor (policy, data);
-			domIndentationVisitor.AutoAcceptChanges = false;
-			compilationUnit.AcceptVisitor (domIndentationVisitor, null);
+			AstFormattingVisitor formattingVistior = new AstFormattingVisitor (policy, data);
+			formattingVistior.AutoAcceptChanges = false;
+			compilationUnit.AcceptVisitor (formattingVistior, null);
 			
 			List<Change> changes = new List<Change> ();
-			changes.AddRange (domSpacingVisitor.Changes);
-			changes.AddRange (domIndentationVisitor.Changes);
+			changes.AddRange (formattingVistior.Changes);
 			RefactoringService.AcceptChanges (null, null, changes);
 			
 			for (int i = 1; i <= data.Document.LineCount; i++) {
@@ -167,9 +162,8 @@ using (IDisposable b = null) {
 					continue;
 				data.Remove (line.Offset, 2);
 			}
-			string text = data.Document.GetTextBetween (data.Document.GetLine (5).Offset,
+			string text = data.Document.GetTextBetween (data.Document.GetLine (5).Offset, 
 			                                            data.Document.GetLine (data.Document.LineCount - 1).Offset).Trim ();
-			Console.WriteLine (text);
 			Assert.AreEqual (expectedOutput, text);
 		}
 
@@ -202,11 +196,11 @@ using (IDisposable b = null) {
 			policy.MethodBraceStyle = BraceStyle.EndOfLine;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			
 			Assert.AreEqual (@"class Test
 {
-	Test MyMethod() { // Comment
+	Test MyMethod () { // Comment
 	}
 }", data.Document.Text);
 		}
@@ -231,7 +225,7 @@ using (IDisposable b = null) {
 			policy.ConstructorBraceStyle = BraceStyle.EndOfLine;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			Assert.AreEqual (@"class Test
 {
 	Test () {

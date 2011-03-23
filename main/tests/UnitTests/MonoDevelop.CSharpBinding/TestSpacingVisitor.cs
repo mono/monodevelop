@@ -58,7 +58,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			policy.AfterFieldDeclarationComma = false;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			Assert.AreEqual (@"class Test {
 	int a,b,c;
 }", data.Document.Text);
@@ -79,7 +79,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			policy.AfterFieldDeclarationComma = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			Assert.AreEqual (@"class Test {
 	int a , b , c;
 }", data.Document.Text);
@@ -95,12 +95,12 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 }";
 			
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
-			policy.ClassBraceStyle =  BraceStyle.EndOfLine;
+			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			policy.AfterFieldDeclarationComma = true;
 			policy.BeforeFieldDeclarationComma = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			Assert.AreEqual (@"class Test {
 	fixed int a[10] , b[10] , c[10];
 }", data.Document.Text);
@@ -121,7 +121,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			policy.BeforeFieldDeclarationComma = false;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			Assert.AreEqual (@"class Test {
 	const int a = 1,b = 2,c = 3;
 }", data.Document.Text);
@@ -141,8 +141,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			policy.BeforeMethodDeclarationParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
-			Console.WriteLine (data.Document.Text);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			Assert.AreEqual (@"public abstract class Test
 {
 	public abstract Test TestMethod ();
@@ -167,7 +166,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.BeforeConstructorDeclarationParentheses = true;
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			Assert.AreEqual (@"class Test
 {
 	~Test ()
@@ -185,7 +184,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			data.Document.Text = "class Test { void TestMe () { result = left" +op+"right; } }";
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.IndexOf ("left");
 			int i2 = data.Document.Text.IndexOf ("right") + "right".Length;
 			if (i1 < 0 || i2 < 0)
@@ -283,7 +282,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			policy.ConditionalOperatorBeforeSeparatorSpace = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			
 			int i1 = data.Document.Text.IndexOf ("condition");
 			int i2 = data.Document.Text.IndexOf ("falseexpr") + "falseexpr".Length;
@@ -302,7 +301,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			policy.ConditionalOperatorBeforeSeparatorSpace = false;
 			
 			compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			i1 = data.Document.Text.IndexOf ("true");
 			i2 = data.Document.Text.IndexOf ("falseexpr") + "falseexpr".Length;
 			Assert.AreEqual (@"true?trueexpr:falseexpr", data.Document.GetTextBetween (i1, i2));
@@ -323,7 +322,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			policy.BeforeMethodCallParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.IndexOf ("MethodCall");
 			int i2 = data.Document.Text.IndexOf (";") + ";".Length;
 			Assert.AreEqual (@"MethodCall ();", data.Document.GetTextBetween (i1, i2));
@@ -338,7 +337,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			policy.BeforeMethodCallParentheses = false;
 			
 			compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			i1 = data.Document.Text.IndexOf ("MethodCall");
 			i2 = data.Document.Text.IndexOf (";") + ";".Length;
 			Assert.AreEqual (@"MethodCall();", data.Document.GetTextBetween (i1, i2));
@@ -360,7 +359,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
 			
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"( true )", data.Document.GetTextBetween (i1, i2));
@@ -375,7 +374,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			policy.WithinMethodCallParentheses = false;
 			
 			compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			i1 = data.Document.Text.LastIndexOf ("(");
 			i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"(true)", data.Document.GetTextBetween (i1, i2));
@@ -396,7 +395,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			policy.IfParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.IndexOf ("if");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"if (true)", data.Document.GetTextBetween (i1, i2));
@@ -417,7 +416,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			policy.WithinIfParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"( true )", data.Document.GetTextBetween (i1, i2));
@@ -438,7 +437,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			policy.WhileParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.IndexOf ("while");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"while (true)", data.Document.GetTextBetween (i1, i2));
@@ -459,7 +458,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			policy.WithinWhileParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"( true )", data.Document.GetTextBetween (i1, i2));
@@ -480,7 +479,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			policy.ForParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.IndexOf ("for");
 			int i2 = data.Document.Text.LastIndexOf ("(") + "(".Length;
 			Assert.AreEqual (@"for (", data.Document.GetTextBetween (i1, i2));
@@ -501,7 +500,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			policy.WithinForParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"( ;; )", data.Document.GetTextBetween (i1, i2));
@@ -522,7 +521,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			policy.ForeachParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.IndexOf ("foreach");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"foreach (var o in list)", data.Document.GetTextBetween (i1, i2));
@@ -543,7 +542,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			policy.WithinForEachParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"( var o in list )", data.Document.GetTextBetween (i1, i2));
@@ -564,7 +563,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			policy.CatchParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.IndexOf ("catch");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"catch (Exception)", data.Document.GetTextBetween (i1, i2));
@@ -585,7 +584,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			policy.WithinCatchParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"( Exception )", data.Document.GetTextBetween (i1, i2));
@@ -606,7 +605,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			policy.LockParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.IndexOf ("lock");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"lock (this)", data.Document.GetTextBetween (i1, i2));
@@ -627,7 +626,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			policy.WithinLockParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"( this )", data.Document.GetTextBetween (i1, i2));
@@ -649,7 +648,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			policy.SpacesAfterForSemicolon = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("for");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			
@@ -671,7 +670,7 @@ namespace MonoDevelop.CSharpBinding.FormattingTests
 			policy.SpacesAfterForSemicolon = false;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("for");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			
@@ -693,7 +692,7 @@ return (Test)null;
 			policy.SpacesAfterTypecast = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("return");
 			int i2 = data.Document.Text.LastIndexOf ("null") + "null".Length;
 			
@@ -715,7 +714,7 @@ return (Test)null;
 			policy.UsingParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.IndexOf ("using");
 			int i2 = data.Document.Text.LastIndexOf ("(") + "(".Length;
 			Assert.AreEqual (@"using (", data.Document.GetTextBetween (i1, i2));
@@ -736,7 +735,7 @@ return (Test)null;
 			policy.WithinUsingParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"( a )", data.Document.GetTextBetween (i1, i2));
@@ -749,7 +748,7 @@ return (Test)null;
 			data.Document.Text = "class Test { void TestMe () { left" +op+"right; } }";
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.IndexOf ("left");
 			int i2 = data.Document.Text.IndexOf ("right") + "right".Length;
 			if (i1 < 0 || i2 < 0)
@@ -791,7 +790,7 @@ return (Test)null;
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.AroundAssignmentParentheses = true;
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("left");
 			int i2 = data.Document.Text.LastIndexOf ("right") + "right".Length;
 			Assert.AreEqual (@"left = right", data.Document.GetTextBetween (i1, i2));
@@ -812,7 +811,7 @@ return (Test)null;
 			policy.SwitchParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.IndexOf ("switch");
 			int i2 = data.Document.Text.LastIndexOf ("(") + "(".Length;
 			Assert.AreEqual (@"switch (", data.Document.GetTextBetween (i1, i2));
@@ -833,7 +832,7 @@ return (Test)null;
 			policy.WithinSwitchParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"( test )", data.Document.GetTextBetween (i1, i2));
@@ -854,7 +853,7 @@ return (Test)null;
 			policy.WithinParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"( test )", data.Document.GetTextBetween (i1, i2));
@@ -874,7 +873,7 @@ return (Test)null;
 			policy.WithinMethodDeclarationParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"( int a )", data.Document.GetTextBetween (i1, i2));
@@ -895,7 +894,7 @@ return (Test)null;
 			policy.WithinCastParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"( int )", data.Document.GetTextBetween (i1, i2));
@@ -916,7 +915,7 @@ return (Test)null;
 			policy.WithinSizeOfParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"( int )", data.Document.GetTextBetween (i1, i2));
@@ -937,7 +936,7 @@ return (Test)null;
 			policy.BeforeSizeOfParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("sizeof");
 			int i2 = data.Document.Text.LastIndexOf ("(") + "(".Length;
 			Assert.AreEqual (@"sizeof (", data.Document.GetTextBetween (i1, i2));
@@ -958,7 +957,7 @@ return (Test)null;
 			policy.WithinTypeOfParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"( int )", data.Document.GetTextBetween (i1, i2));
@@ -979,7 +978,7 @@ return (Test)null;
 			policy.BeforeTypeOfParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("typeof");
 			int i2 = data.Document.Text.LastIndexOf ("(") + "(".Length;
 			Assert.AreEqual (@"typeof (", data.Document.GetTextBetween (i1, i2));
@@ -1000,7 +999,7 @@ return (Test)null;
 			policy.WithinCheckedExpressionParantheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"( a + b )", data.Document.GetTextBetween (i1, i2));
@@ -1013,7 +1012,7 @@ return (Test)null;
 }";
 			
 			compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			i1 = data.Document.Text.LastIndexOf ("(");
 			i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"( a + b )", data.Document.GetTextBetween (i1, i2));
@@ -1034,7 +1033,7 @@ return (Test)null;
 			policy.NewParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("new");
 			int i2 = data.Document.Text.LastIndexOf (";") + ";".Length;
 			Assert.AreEqual (@"new Test ();", data.Document.GetTextBetween (i1, i2));
@@ -1055,7 +1054,7 @@ return (Test)null;
 			policy.WithinNewParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("new");
 			int i2 = data.Document.Text.LastIndexOf (";") + ";".Length;
 			Assert.AreEqual (@"new Test ( 1 );", data.Document.GetTextBetween (i1, i2));
@@ -1076,7 +1075,7 @@ return (Test)null;
 			policy.BetweenEmptyNewParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("new");
 			int i2 = data.Document.Text.LastIndexOf (";") + ";".Length;
 			Assert.AreEqual (@"new Test ( );", data.Document.GetTextBetween (i1, i2));
@@ -1098,7 +1097,7 @@ return (Test)null;
 			policy.AfterNewParameterComma = false;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("new");
 			int i2 = data.Document.Text.LastIndexOf (";") + ";".Length;
 			Assert.AreEqual (@"new Test (1 ,2);", data.Document.GetTextBetween (i1, i2));
@@ -1119,7 +1118,7 @@ return (Test)null;
 			policy.AfterNewParameterComma = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("new");
 			int i2 = data.Document.Text.LastIndexOf (";") + ";".Length;
 			Assert.AreEqual (@"new Test (1, 2);", data.Document.GetTextBetween (i1, i2));
@@ -1138,14 +1137,14 @@ return (Test)null;
 			policy.AfterFieldDeclarationComma = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("int");
 			int i2 = data.Document.Text.LastIndexOf (";") + ";".Length;
 			Assert.AreEqual (@"int a, b, c;", data.Document.GetTextBetween (i1, i2));
 			policy.BeforeFieldDeclarationComma = true;
 			
 			compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			i1 = data.Document.Text.LastIndexOf ("int");
 			i2 = data.Document.Text.LastIndexOf (";") + ";".Length;
 			Assert.AreEqual (@"int a , b , c;", data.Document.GetTextBetween (i1, i2));
@@ -1153,7 +1152,7 @@ return (Test)null;
 			policy.BeforeFieldDeclarationComma = false;
 			policy.AfterFieldDeclarationComma = false;
 			compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			i1 = data.Document.Text.LastIndexOf ("int");
 			i2 = data.Document.Text.LastIndexOf (";") + ";".Length;
 			Assert.AreEqual (@"int a,b,c;", data.Document.GetTextBetween (i1, i2));
@@ -1172,14 +1171,14 @@ return (Test)null;
 			policy.AfterMethodDeclarationParameterComma = false;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"(int a ,int b ,int c)", data.Document.GetTextBetween (i1, i2));
 			compilationUnit = new CSharpParser ().Parse (data);
 			
 			policy.BeforeMethodDeclarationParameterComma = false;
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			i1 = data.Document.Text.LastIndexOf ("(");
 			i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"(int a,int b,int c)", data.Document.GetTextBetween (i1, i2));
@@ -1198,14 +1197,14 @@ return (Test)null;
 			policy.AfterMethodDeclarationParameterComma = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"(int a, int b, int c)", data.Document.GetTextBetween (i1, i2));
 			compilationUnit = new CSharpParser ().Parse (data);
 			
 			policy.AfterMethodDeclarationParameterComma = false;
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			i1 = data.Document.Text.LastIndexOf ("(");
 			i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"(int a,int b,int c)", data.Document.GetTextBetween (i1, i2));
@@ -1227,7 +1226,7 @@ return (Test)null;
 			policy.WithinWhileParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.IndexOf ("x");
 			int i2 = data.Document.Text.LastIndexOf ("null") + "null".Length;
 			Assert.AreEqual (@"x => x != null", data.Document.GetTextBetween (i1, i2));
@@ -1249,18 +1248,18 @@ return (Test)null;
 			policy.AfterLocalVariableDeclarationComma = false;
 
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.IndexOf ("int");
 			int i2 = data.Document.Text.IndexOf (";") + ";".Length;
 			Assert.AreEqual (@"int a ,b ,c;", data.Document.GetTextBetween (i1, i2));
 
 			compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 
 			policy.BeforeLocalVariableDeclarationComma = false;
 
 			compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			i1 = data.Document.Text.IndexOf ("int");
 			i2 = data.Document.Text.IndexOf (";") + ";".Length;
 			Assert.AreEqual (@"int a,b,c;", data.Document.GetTextBetween (i1, i2));
@@ -1282,19 +1281,19 @@ return (Test)null;
 			policy.AfterLocalVariableDeclarationComma = true;
 
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.IndexOf ("int");
 			int i2 = data.Document.Text.IndexOf (";") + ";".Length;
 			Assert.AreEqual (@"int a = 5 , b = 6 , c;", data.Document.GetTextBetween (i1, i2));
 
 			compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 
 			policy.BeforeLocalVariableDeclarationComma = false;
 			policy.AfterLocalVariableDeclarationComma = false;
 
 			compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			i1 = data.Document.Text.IndexOf ("int");
 			i2 = data.Document.Text.IndexOf (";") + ";".Length;
 			Assert.AreEqual (@"int a = 5,b = 6,c;", data.Document.GetTextBetween (i1, i2));
@@ -1318,7 +1317,7 @@ return (Test)null;
 			policy.BeforeConstructorDeclarationParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			Assert.AreEqual (@"class Test
 {
 	Test ()
@@ -1340,14 +1339,14 @@ return (Test)null;
 			policy.AfterConstructorDeclarationParameterComma = false;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"(int a ,int b ,int c)", data.Document.GetTextBetween (i1, i2));
 			compilationUnit = new CSharpParser ().Parse (data);
 			
 			policy.BeforeConstructorDeclarationParameterComma = false;
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			i1 = data.Document.Text.LastIndexOf ("(");
 			i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"(int a,int b,int c)", data.Document.GetTextBetween (i1, i2));
@@ -1366,14 +1365,14 @@ return (Test)null;
 			policy.AfterConstructorDeclarationParameterComma = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"(int a, int b, int c)", data.Document.GetTextBetween (i1, i2));
 			compilationUnit = new CSharpParser ().Parse (data);
 			
 			policy.AfterConstructorDeclarationParameterComma = false;
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			i1 = data.Document.Text.LastIndexOf ("(");
 			i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"(int a,int b,int c)", data.Document.GetTextBetween (i1, i2));
@@ -1393,7 +1392,7 @@ return (Test)null;
 			policy.WithinConstructorDeclarationParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"( int a )", data.Document.GetTextBetween (i1, i2));
@@ -1413,7 +1412,7 @@ return (Test)null;
 			policy.BetweenEmptyConstructorDeclarationParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"( )", data.Document.GetTextBetween (i1, i2));
@@ -1433,7 +1432,7 @@ return (Test)null;
 			policy.BeforeDelegateDeclarationParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			Assert.AreEqual (@"delegate void Test ();", data.Document.Text);
 		}
 		
@@ -1448,7 +1447,7 @@ return (Test)null;
 			policy.BeforeDelegateDeclarationParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			Assert.AreEqual (@"delegate void TestDelegate ();", data.Document.Text);
 		}
 		
@@ -1463,14 +1462,14 @@ return (Test)null;
 			policy.AfterDelegateDeclarationParameterComma = false;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"(int a ,int b ,int c)", data.Document.GetTextBetween (i1, i2));
 			compilationUnit = new CSharpParser ().Parse (data);
 			
 			policy.BeforeDelegateDeclarationParameterComma = false;
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			i1 = data.Document.Text.LastIndexOf ("(");
 			i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"(int a,int b,int c)", data.Document.GetTextBetween (i1, i2));
@@ -1487,14 +1486,14 @@ return (Test)null;
 			policy.AfterDelegateDeclarationParameterComma = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"(int a, int b, int c)", data.Document.GetTextBetween (i1, i2));
 			compilationUnit = new CSharpParser ().Parse (data);
 			
 			policy.AfterDelegateDeclarationParameterComma = false;
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			i1 = data.Document.Text.LastIndexOf ("(");
 			i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"(int a,int b,int c)", data.Document.GetTextBetween (i1, i2));
@@ -1510,7 +1509,7 @@ return (Test)null;
 			policy.WithinDelegateDeclarationParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"( int a )", data.Document.GetTextBetween (i1, i2));
@@ -1526,7 +1525,7 @@ return (Test)null;
 			policy.BetweenEmptyDelegateDeclarationParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"( )", data.Document.GetTextBetween (i1, i2));
@@ -1552,7 +1551,7 @@ return (Test)null;
 			policy.BeforeMethodCallParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			Assert.AreEqual (@"class FooBar
 {
 	public void Foo ()
@@ -1579,14 +1578,14 @@ return (Test)null;
 			policy.AfterMethodCallParameterComma = false;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"(a ,b ,c)", data.Document.GetTextBetween (i1, i2));
 			compilationUnit = new CSharpParser ().Parse (data);
 			
 			policy.BeforeMethodCallParameterComma = false;
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			i1 = data.Document.Text.LastIndexOf ("(");
 			i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"(a,b,c)", data.Document.GetTextBetween (i1, i2));
@@ -1609,14 +1608,14 @@ return (Test)null;
 			policy.AfterMethodCallParameterComma = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"(a, b, c)", data.Document.GetTextBetween (i1, i2));
 			compilationUnit = new CSharpParser ().Parse (data);
 			
 			policy.AfterMethodCallParameterComma = false;
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			i1 = data.Document.Text.LastIndexOf ("(");
 			i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"(a,b,c)", data.Document.GetTextBetween (i1, i2));
@@ -1638,7 +1637,7 @@ return (Test)null;
 			policy.WithinMethodCallParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"( a )", data.Document.GetTextBetween (i1, i2));
@@ -1660,7 +1659,7 @@ return (Test)null;
 			policy.BetweenEmptyMethodCallParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("(");
 			int i2 = data.Document.Text.LastIndexOf (")") + ")".Length;
 			Assert.AreEqual (@"( )", data.Document.GetTextBetween (i1, i2));
@@ -1687,7 +1686,7 @@ return (Test)null;
 			policy.BeforeIndexerDeclarationBracket = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			Assert.AreEqual (@"class FooBar
 {
 	public int this [int a, int b] {
@@ -1716,7 +1715,7 @@ return (Test)null;
 			policy.AfterIndexerDeclarationParameterComma = false;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("[");
 			int i2 = data.Document.Text.LastIndexOf ("]") + "]".Length;
 			Assert.AreEqual (@"[int a ,int b]", data.Document.GetTextBetween (i1, i2));
@@ -1740,7 +1739,7 @@ return (Test)null;
 			policy.AfterIndexerDeclarationParameterComma = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("[");
 			int i2 = data.Document.Text.LastIndexOf ("]") + "]".Length;
 			Assert.AreEqual (@"[int a, int b]", data.Document.GetTextBetween (i1, i2));
@@ -1763,7 +1762,7 @@ return (Test)null;
 			policy.WithinIndexerDeclarationBracket = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.LastIndexOf ("[");
 			int i2 = data.Document.Text.LastIndexOf ("]") + "]".Length;
 			Assert.AreEqual (@"[ int a, int b ]", data.Document.GetTextBetween (i1, i2));
@@ -1790,9 +1789,10 @@ return (Test)null;
 			policy.SpacesBeforeBrackets = false;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			
-			Assert.AreEqual (@"class Test {
+			Assert.AreEqual (@"class Test
+{
 	void TestMe ()
 	{
 		this[ 0 ] = 5;
@@ -1806,7 +1806,8 @@ return (Test)null;
 		{
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = "a.cs";
-			data.Document.Text = @"class Test {
+			data.Document.Text = @"class Test
+{
 	void TestMe ()
 	{
 		this[0] = 5;
@@ -1816,9 +1817,10 @@ return (Test)null;
 			policy.SpacesBeforeBrackets = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			
-			Assert.AreEqual (@"class Test {
+			Assert.AreEqual (@"class Test
+{
 	void TestMe ()
 	{
 		this [0] = 5;
@@ -1844,7 +1846,7 @@ return (Test)null;
 			policy.AfterBracketComma = false;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			
 			int i1 = data.Document.Text.LastIndexOf ("[");
 			int i2 = data.Document.Text.LastIndexOf ("]") + "]".Length;
@@ -1866,7 +1868,7 @@ return (Test)null;
 			policy.AfterBracketComma = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			
 			int i1 = data.Document.Text.LastIndexOf ("[");
 			int i2 = data.Document.Text.LastIndexOf ("]") + "]".Length;
@@ -1888,9 +1890,10 @@ return (Test)null;
 			policy.SpacesBeforeArrayDeclarationBrackets = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			
-			Assert.AreEqual (@"class Test {
+			Assert.AreEqual (@"class Test
+{
 	int [] a;
 	int [][] b;
 }", data.Document.Text);
@@ -1913,7 +1916,7 @@ return (Test)null;
 			policy.ForParentheses = true;
 			
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstSpacingVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			int i1 = data.Document.Text.IndexOf ("Foo");
 			int i2 = data.Document.Text.LastIndexOf (";") + ";".Length;
 			Assert.AreEqual (@"Foo ();", data.Document.GetTextBetween (i1, i2));

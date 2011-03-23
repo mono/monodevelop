@@ -57,7 +57,7 @@ namespace Test
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.BlankLinesAfterUsings = 2;
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			Assert.AreEqual (@"using System;
 using System.Text;
 
@@ -68,7 +68,7 @@ namespace Test
 			
 		policy.BlankLinesAfterUsings = 0;
 		compilationUnit = new CSharpParser ().Parse (data);
-		compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
+		compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 		Assert.AreEqual (@"using System;
 using System.Text;
 namespace Test
@@ -91,7 +91,7 @@ namespace Test
 			policy.BlankLinesAfterUsings = 0;
 			policy.BlankLinesBeforeUsings = 2;
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			Assert.AreEqual (@"
 
 using System;
@@ -102,7 +102,7 @@ namespace Test
 			
 		policy.BlankLinesBeforeUsings = 0;
 		compilationUnit = new CSharpParser ().Parse (data);
-		compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
+		compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 		Assert.AreEqual (@"using System;
 using System.Text;
 namespace Test
@@ -125,7 +125,7 @@ namespace Test
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.BlankLinesBeforeFirstDeclaration = 2;
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			Assert.AreEqual (@"namespace Test
 {
 
@@ -137,7 +137,7 @@ namespace Test
 			
 		policy.BlankLinesBeforeFirstDeclaration = 0;
 		compilationUnit = new CSharpParser ().Parse (data);
-		compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
+		compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 		Assert.AreEqual (@"namespace Test
 {
 	class Test
@@ -168,7 +168,7 @@ namespace Test
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.BlankLinesBetweenTypes = 1;
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			Assert.AreEqual (@"namespace Test
 {
 	class Test1
@@ -186,7 +186,7 @@ namespace Test
 			
 		policy.BlankLinesBetweenTypes = 0;
 		compilationUnit = new CSharpParser ().Parse (data);
-		compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
+		compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 		Assert.AreEqual (@"namespace Test
 {
 	class Test1
@@ -216,7 +216,7 @@ namespace Test
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.BlankLinesBetweenFields = 1;
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			Assert.AreEqual (@"class Test
 {
 	int a;
@@ -228,7 +228,7 @@ namespace Test
 			
 		policy.BlankLinesBetweenFields = 0;
 		compilationUnit = new CSharpParser ().Parse (data);
-		compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
+		compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 		Assert.AreEqual (@"class Test
 {
 	int a;
@@ -252,7 +252,7 @@ namespace Test
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.BlankLinesBetweenEventFields = 1;
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			Assert.AreEqual (@"class Test
 {
 	public event EventHandler a;
@@ -264,7 +264,7 @@ namespace Test
 			
 		policy.BlankLinesBetweenEventFields = 0;
 		compilationUnit = new CSharpParser ().Parse (data);
-		compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
+		compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 		Assert.AreEqual (@"class Test
 {
 	public event EventHandler a;
@@ -295,8 +295,7 @@ namespace Test
 			CSharpFormattingPolicy policy = new CSharpFormattingPolicy ();
 			policy.BlankLinesBetweenMembers = 1;
 			var compilationUnit = new CSharpParser ().Parse (data);
-			compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
-			Console.WriteLine (data.Text);
+			compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 			Assert.AreEqual (@"class Test
 {
 	void AMethod ()
@@ -314,7 +313,7 @@ namespace Test
 			
 		policy.BlankLinesBetweenMembers = 0;
 		compilationUnit = new CSharpParser ().Parse (data);
-		compilationUnit.AcceptVisitor (new AstIndentationVisitor (policy, data), null);
+		compilationUnit.AcceptVisitor (new AstFormattingVisitor (policy, data), null);
 		Assert.AreEqual (@"class Test
 {
 	void AMethod ()

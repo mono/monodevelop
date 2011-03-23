@@ -101,27 +101,19 @@ namespace MonoDevelop.CSharp.Formatting
 			var compilationUnit = parser.Parse (stubData);
 			
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-			var domSpacingVisitor = new AstSpacingVisitor (policy, stubData) {
+			var domSpacingVisitor = new AstFormattingVisitor (policy, stubData) {
 				AutoAcceptChanges = false,
 			};
 			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
 
-			var domIndentationVisitor = new AstIndentationVisitor (policy, stubData) {
-				AutoAcceptChanges = false,
-				HadErrors = hadErrors
-				
-			};
-			domIndentationVisitor.CorrectBlankLines = correctBlankLines;
-			compilationUnit.AcceptVisitor (domIndentationVisitor, null);
 			
 			var changes = new List<Change> ();
 			changes.AddRange (domSpacingVisitor.Changes.Cast<TextReplaceChange> ().Where (c => startOffset < c.Offset && c.Offset < endOffset));
-			changes.AddRange (domIndentationVisitor.Changes.Cast<TextReplaceChange> ().Where (c => startOffset < c.Offset && c.Offset < endOffset));
 			int delta = data.Editor.LocationToOffset (member.Location.Line, 1) - startOffset;
 			HashSet<int> lines = new HashSet<int> ();
 			foreach (TextReplaceChange change in changes) {
-				if (change is AstSpacingVisitor.MyTextReplaceChange) 
-					((AstSpacingVisitor.MyTextReplaceChange)change).SetTextEditorData (data.Editor);
+				if (change is AstFormattingVisitor.MyTextReplaceChange) 
+					((AstFormattingVisitor.MyTextReplaceChange)change).SetTextEditorData (data.Editor);
 				change.Offset += delta;
 				lines.Add (data.Editor.OffsetToLineNumber (change.Offset));
 			}

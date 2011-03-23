@@ -356,8 +356,6 @@
     <Compile Include="MonoDevelop.CSharp.Ast\TypeMembers\EnumMemberDeclaration.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\GeneralScope\Comment.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\AstNode.cs" />
-    <Compile Include="MonoDevelop.CSharp.Formatting\AstIndentationVisitor.cs" />
-    <Compile Include="MonoDevelop.CSharp.Formatting\AstSpacingVisitor.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\Role.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\AstType.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\MemberType.cs" />
@@ -378,6 +376,7 @@
     <Compile Include="MonoDevelop.CSharp.Ast\LookupTableVisitor.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\Utils\ModiferNodeExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Ast\Expressions\EmptyExpression.cs" />
+    <Compile Include="MonoDevelop.CSharp.Formatting\AstFormattingVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
