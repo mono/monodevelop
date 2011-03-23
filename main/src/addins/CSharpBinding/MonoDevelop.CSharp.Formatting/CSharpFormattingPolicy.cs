@@ -1042,7 +1042,7 @@ namespace MonoDevelop.CSharp.Formatting
 							result.Name = reader.GetAttribute ("name");
 						}
 					} else if (reader.NodeType == XmlNodeType.EndElement && reader.LocalName == "FormattingProfile") {
-						Console.WriteLine ("result:" + result.Name);
+						//Console.WriteLine ("result:" + result.Name);
 						return result;
 					}
 				}

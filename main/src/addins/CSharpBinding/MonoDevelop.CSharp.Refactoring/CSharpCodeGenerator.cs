@@ -308,7 +308,6 @@ namespace MonoDevelop.CSharp.Refactoring
 							result.Append ("new ()");
 							constraintCount++;
 						}
-						System.Console.WriteLine ("c:" + p.Constraints.Count);
 						foreach (var c in p.Constraints) {
 							if (constraintCount != 0)
 								result.Append (", ");

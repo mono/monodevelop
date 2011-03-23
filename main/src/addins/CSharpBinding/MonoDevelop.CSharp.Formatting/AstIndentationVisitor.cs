@@ -328,7 +328,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 			if (policy.IndentPropertyBody)
 				IndentLevel++;
-			System.Console.WriteLine ("one line: " + oneLine);
+			///System.Console.WriteLine ("one line: " + oneLine);
 			if (!propertyDeclaration.Getter.IsNull) {
 				if (!oneLine) {
 					if (!IsLineIsEmptyUpToEol (propertyDeclaration.Getter.StartLocation)) {
@@ -1058,7 +1058,6 @@ namespace MonoDevelop.CSharp.Formatting
 		public override object VisitUnsafeStatement (UnsafeStatement unsafeStatement, object data)
 		{
 			FixStatementIndentation (unsafeStatement.StartLocation);
-			Console.WriteLine (unsafeStatement.Body);
 			return FixEmbeddedStatment (policy.StatementBraceStyle, BraceForcement.DoNotChange, unsafeStatement.Body);
 		}
 		
