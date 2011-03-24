@@ -69,7 +69,7 @@ namespace MonoDevelop.MonoMac.Gui
 			return mon.AsyncOperation;
 		}
 		
-		static bool BuildPackage (IProgressMonitor monitor, MonoMacProject project,
+		public static bool BuildPackage (IProgressMonitor monitor, MonoMacProject project,
 			ConfigurationSelector conf, MonoMacPackagingSettings settings, FilePath target)
 		{
 			string bundleKey = settings.BundleSigningKey;
@@ -112,7 +112,6 @@ namespace MonoDevelop.MonoMac.Gui
 			}
 			
 			var cfg = (MonoMacProjectConfiguration) project.GetConfiguration (conf);
-			
 			FilePath tempDir = "/tmp/monomac-build-" + DateTime.Now.Ticks;
 			FilePath workingApp = tempDir.Combine (cfg.AppDirectory.FileName);
 			

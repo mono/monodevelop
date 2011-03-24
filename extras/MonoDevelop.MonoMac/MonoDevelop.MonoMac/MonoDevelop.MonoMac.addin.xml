@@ -35,6 +35,12 @@
 		<Addin id="MacPlatform" version="2.6"/>
 	</Dependencies>
 	
+	<Extension path = "/MonoDevelop/Core/Applications">
+		<Application id = "mac-bundle"
+			      class = "MonoDevelop.MonoMac.MonoMacPackagingTool"
+			description = "Mac application bundle and installer generator."/>
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id = "MonoMacPlist"
 		            file = "templates/MonoMacPlist.xft.xml"/>
