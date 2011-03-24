@@ -90,6 +90,8 @@
     <Compile Include="MonoMacCommands.cs" />
     <Compile Include="Gui\MonoMacPackagingSettingsDialog.cs" />
     <Compile Include="MonoMacPackaging.cs" />
+    <Compile Include="MonoMacPackagingTool.cs" />
+    <Compile Include="MonoMacPackagingToolOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MonoMac.addin.xml">
