@@ -234,10 +234,10 @@ namespace MonoDevelop.CSharp.Completion
 			var flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics;
 			if (staticResolve)
 				flags |= OutputFlags.StaticUsage;
-			string name = (this.delegateName ?? (methods[overload].IsConstructor ? ambience.GetString (methods[overload].DeclaringType, flags) : methods[overload].Name));
+			string name = (this.delegateName ?? (methods [overload].IsConstructor ? ambience.GetString (methods [overload].DeclaringType, flags) : methods [overload].Name));
 			StringBuilder parameters = new StringBuilder ();
 			int curLen = 0;
-			string prefix = !methods[overload].IsConstructor ? ambience.GetString (methods[overload].ReturnType, flags) + " " : "";
+			string prefix = !methods [overload].IsConstructor ? ambience.GetString (methods [overload].ReturnType, flags) + " " : "";
 
 			foreach (string parameter in parameterMarkup) {
 				if (parameters.Length > 0)
@@ -255,7 +255,7 @@ namespace MonoDevelop.CSharp.Completion
 				parameters.Append (parameter);
 			}
 			StringBuilder sb = new StringBuilder ();
-			if (!staticResolve && methods[overload].WasExtended)
+			if (!staticResolve && methods [overload].WasExtended)
 				sb.Append (GettextCatalog.GetString ("(Extension) "));
 			sb.Append (prefix);
 			sb.Append ("<b>");
@@ -264,13 +264,13 @@ namespace MonoDevelop.CSharp.Completion
 			sb.Append (parameters.ToString ());
 			sb.Append (")");
 
-			if (methods[overload].IsObsolete) {
+			if (methods [overload].IsObsolete) {
 				sb.AppendLine ();
 				sb.Append (GettextCatalog.GetString ("[Obsolete]"));
 			}
-			IParameter curParameter = currentParameter >= 0 && currentParameter < methods[overload].Parameters.Count ? methods[overload].Parameters[currentParameter] : null;
+			IParameter curParameter = currentParameter >= 0 && currentParameter < methods [overload].Parameters.Count ? methods [overload].Parameters [currentParameter] : null;
 
-			string docText = AmbienceService.GetDocumentation (methods[overload]);
+			string docText = AmbienceService.GetDocumentation (methods [overload]);
 
 			if (!string.IsNullOrEmpty (docText)) {
 				string text = docText;
@@ -278,11 +278,11 @@ namespace MonoDevelop.CSharp.Completion
 					Regex paramRegex = new Regex ("(\\<param\\s+name\\s*=\\s*\"" + curParameter.Name + "\"\\s*\\>.*?\\</param\\>)", RegexOptions.Compiled);
 					Match match = paramRegex.Match (docText);
 					if (match.Success) {
-						text = match.Groups[1].Value;
-						text = "<summary>" + AmbienceService.GetDocumentationSummary (methods[overload]) + "</summary>" + text;
+						text = match.Groups [1].Value;
+						text = "<summary>" + AmbienceService.GetDocumentationSummary (methods [overload]) + "</summary>" + text;
 					}
 				} else {
-					text = "<summary>" + AmbienceService.GetDocumentationSummary (methods[overload]) + "</summary>";
+					text = "<summary>" + AmbienceService.GetDocumentationSummary (methods [overload]) + "</summary>";
 				}
 				sb.AppendLine ();
 				sb.Append (AmbienceService.GetDocumentationMarkup (text, new AmbienceService.DocumentationFormatOptions {
@@ -290,6 +290,18 @@ namespace MonoDevelop.CSharp.Completion
 					Ambience = ambience,
 					SmallText = true
 				}));
+			}
+			
+			if (curParameter != null) {
+				var returnType = curParameter.DeclaringMember.SourceProjectDom.GetType (curParameter.ReturnType);
+				if (returnType != null && returnType.ClassType == ClassType.Delegate) {
+					sb.AppendLine ();
+					sb.AppendLine ();
+					sb.Append ("<small>");
+					sb.AppendLine (GettextCatalog.GetString ("Delegate information"));
+					sb.Append (ambience.GetString (returnType, OutputFlags.ReformatDelegates | OutputFlags.IncludeReturnType | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName));
+					sb.Append ("</small>");
+				}
 			}
 			return sb.ToString ();
 		}
