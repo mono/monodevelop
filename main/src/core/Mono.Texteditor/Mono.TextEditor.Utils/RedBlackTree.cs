@@ -273,6 +273,8 @@ namespace Mono.TextEditor.Utils
 
 		public void Remove (IRedBlackTreeNode node)
 		{
+			Count--;
+			
 			if (node.Left != null && node.Right != null) {
 				IRedBlackTreeNode outerLeft = node.Right.GetOuterLeft ();
 				Remove (outerLeft);
@@ -289,7 +291,6 @@ namespace Mono.TextEditor.Utils
 				outerLeft.UpdateAugmentedData ();
 				return;
 			}
-			Count--;
 			// node has only one child
 			IRedBlackTreeNode child = node.Left ?? node.Right;
 			

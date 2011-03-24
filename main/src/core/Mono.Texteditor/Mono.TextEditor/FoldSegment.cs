@@ -32,13 +32,15 @@ namespace Mono.TextEditor
 	public class FoldSegment : TreeSegment, System.IComparable
 	{
 		internal bool isFolded;
+		internal bool isAttached;
 		public bool IsFolded {
 			get {
 				return isFolded;
 			}
 			set {
 				isFolded = value;
-				doc.InformFoldChanged (new FoldSegmentEventArgs (this));
+				if (isAttached)
+					doc.InformFoldChanged (new FoldSegmentEventArgs (this));
 			}
 		}
 		

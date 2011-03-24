@@ -945,6 +945,7 @@ namespace Mono.TextEditor
 		
 		void RemoveFolding (FoldSegment folding)
 		{
+			folding.isAttached = false;
 			if (folding.isFolded)
 				foldedSegments.Remove (folding);
 			foldedSegments.Remove (folding);
@@ -971,11 +972,18 @@ namespace Mono.TextEditor
 					FoldSegment curSegment = oldSegments [oldIndex];
 					curSegment.Length = newFoldSegment.Length;
 					curSegment.Description = newFoldSegment.Description;
+					if (curSegment.IsFolded && !newFoldSegment.IsFolded) {
+						foldedSegments.Remove (curSegment);
+					} else if (!curSegment.IsFolded && newFoldSegment.IsFolded) {
+						curSegment.isFolded = true;
+						foldedSegments.Add (curSegment);
+					} 
 				} else {
 					LineSegment startLine = splitter.GetLineByOffset (offset);
 					LineSegment endLine = splitter.GetLineByOffset (newFoldSegment.EndOffset);
 					newFoldSegment.EndColumn = newFoldSegment.EndOffset - endLine.Offset;
 					newFoldSegment.Column = offset - startLine.Offset;
+					newFoldSegment.isAttached = true;
 					if (newFoldSegment.IsFolded)
 						foldedSegments.Add (newFoldSegment);
 					foldSegmentTree.Add (newFoldSegment);

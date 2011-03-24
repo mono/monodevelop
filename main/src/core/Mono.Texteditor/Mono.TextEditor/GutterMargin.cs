@@ -97,7 +97,7 @@ namespace Mono.TextEditor
 			if (args.Button != 1 || args.LineNumber < DocumentLocation.MinLine)
 				return;
 			editor.LockedMargin = this;
-			int lineNumber       = args.LineNumber;
+			int lineNumber = args.LineNumber;
 			bool extendSelection = (args.ModifierState & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask;
 			if (lineNumber <= editor.Document.LineCount) {
 				DocumentLocation loc = new DocumentLocation (lineNumber, DocumentLocation.MinColumn);
@@ -109,7 +109,7 @@ namespace Mono.TextEditor
 					if (!editor.IsSomethingSelected) {
 						editor.MainSelection = new Selection (loc, loc);
 					} 
-					editor.MainSelection.Lead   = loc;
+					editor.MainSelection.Lead = loc;
 				} else {
 					anchorLocation = loc;
 					editor.ClearSelection ();

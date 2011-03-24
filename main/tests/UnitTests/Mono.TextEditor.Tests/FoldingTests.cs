@@ -95,6 +95,51 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (6, document.LogicalToVisualLine (16));
 			Assert.AreEqual (7, document.LogicalToVisualLine (17));
 		}
+
+		[Test()]
+		public void TestUpdateFoldSegmentBug ()
+		{
+			Document document = new Mono.TextEditor.Document ();
+			document.Text = 
+@"-[0
+1
++[2
+3
+4
+5
+6
+7
+8
+9
+10]
+11
+]12
+13
++[14
+15
+16
+17
+18
+19
+20
+21
+22]
+23
+24
+25
+26";
+			var segments = GetFoldSegments (document);
+			document.UpdateFoldSegments (segments, false);
+			Assert.AreEqual (25, document.VisualToLogicalLine (9));
+			segments.RemoveAt (1);
+			
+			document.UpdateFoldSegments (segments, false);
+			
+			Assert.AreEqual (17, document.LogicalToVisualLine (25));
+			segments.RemoveAt (1);
+			document.UpdateFoldSegments (segments, false);
+			Assert.AreEqual (25, document.LogicalToVisualLine (25));
+		}
 		
 		[Test()]
 		public void TestLogicalToVisualLine ()

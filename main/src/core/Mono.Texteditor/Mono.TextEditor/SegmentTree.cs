@@ -121,11 +121,12 @@ namespace Mono.TextEditor
 			
 			node.segmentTree = this;
 			
-			tree.Count++;
+		
 			int insertionOffset = node.Offset;
 			node.DistanceToMaxEnd = node.Length;
 			
 			if (tree.Root == null) {
+				tree.Count = 1;
 				tree.Root = (T)node;
 				node.TotalLength = node.DistanceToPrevNode;
 				return;
