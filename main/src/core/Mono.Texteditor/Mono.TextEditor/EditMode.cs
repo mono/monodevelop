@@ -113,8 +113,21 @@ namespace Mono.TextEditor
 					string text = Caret.Column > line.EditableLength + 1 ? textEditorData.GetVirtualSpaces (Caret.Line, Caret.Column) + ch.ToString () : ch.ToString ();
 					if (textEditorData.IsSomethingSelected && textEditorData.MainSelection.SelectionMode == SelectionMode.Block) {
 						int length = 0;
+						var visualInsertLocation = editor.LogicalToVisualLocation (Caret.Location);
 						for (int lineNumber = textEditorData.MainSelection.MinLine; lineNumber <= textEditorData.MainSelection.MaxLine; lineNumber++) {
-							length = textEditorData.Insert (textEditorData.Document.GetLine (lineNumber).Offset + Caret.Column - 1, text);
+							LineSegment lineSegment = textEditorData.GetLine (lineNumber);
+							int insertOffset = lineSegment.GetLogicalColumn (textEditorData, visualInsertLocation.Column) - 1;
+							string textToInsert;
+							if (lineSegment.EditableLength < insertOffset) {
+								int visualLastColumn = lineSegment.GetVisualColumn (textEditorData, lineSegment.EditableLength + 1);
+								int charsToInsert = visualInsertLocation.Column - visualLastColumn;
+								int spaceCount = charsToInsert % editor.Options.TabSize;
+								textToInsert = new string ('\t', (charsToInsert - spaceCount) / editor.Options.TabSize) + new string (' ', spaceCount) + text;
+								insertOffset = lineSegment.EditableLength;
+							} else {
+								textToInsert = text;
+							}
+							length = textEditorData.Insert (lineSegment.Offset + insertOffset, textToInsert);
 						}
 						Caret.PreserveSelection = true;
 						Caret.Column += length - 1;

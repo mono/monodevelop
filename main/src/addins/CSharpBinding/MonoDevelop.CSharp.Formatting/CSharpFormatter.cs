@@ -109,8 +109,7 @@ namespace MonoDevelop.CSharp.Formatting
 			RefactoringService.AcceptChanges (null, null, changes);
 		}
 
-		public override string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, 
-			string input, int startOffset, int endOffset)
+		public override string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, string input, int startOffset, int endOffset)
 		{
 			var data = new TextEditorData ();
 			data.Document.SuppressHighlightUpdate = true;
@@ -130,6 +129,8 @@ namespace MonoDevelop.CSharp.Formatting
 			MonoDevelop.CSharp.Parser.CSharpParser parser = new MonoDevelop.CSharp.Parser.CSharpParser ();
 			var compilationUnit = parser.Parse (data);
 			bool hadErrors = parser.ErrorReportPrinter.ErrorsCount + parser.ErrorReportPrinter.FatalCounter > 0;
+			if (hadErrors)
+				return null;
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 
 			var formattingVisitor = new AstFormattingVisitor (policy, data) {

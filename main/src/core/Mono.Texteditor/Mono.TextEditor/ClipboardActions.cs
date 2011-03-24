@@ -427,13 +427,24 @@ namespace Mono.TextEditor
 						data.Caret.PreserveSelection = true;
 						data.DeleteSelectedText (false);
 						int textLength = 0;
-						int column = data.Caret.Column;
 						int minLine = data.MainSelection.MinLine;
 						int maxLine = data.MainSelection.MaxLine;
+						var visualInsertLocation = data.LogicalToVisualLocation (data.Caret.Location);
 						for (int lineNumber = minLine; lineNumber <= maxLine; lineNumber++) {
-							int offset = data.Document.GetLine (lineNumber).Offset + column - 1;
-							textLength = data.Insert (offset, text);
-							data.PasteText (offset, text);
+							LineSegment lineSegment = data.GetLine (lineNumber);
+							int insertOffset = lineSegment.GetLogicalColumn (data, visualInsertLocation.Column) - 1;
+							if (lineSegment.EditableLength < insertOffset) {
+								int visualLastColumn = lineSegment.GetVisualColumn (data, lineSegment.EditableLength + 1);
+								int charsToInsert = visualInsertLocation.Column - visualLastColumn;
+								int spaceCount = charsToInsert % data.Options.TabSize;
+								string textToInsert = new string ('\t', (charsToInsert - spaceCount) / data.Options.TabSize) + new string (' ', spaceCount) + text;
+								insertOffset = lineSegment.EditableLength;
+								data.Insert (lineSegment.Offset + insertOffset, textToInsert);
+								data.PasteText (lineSegment.Offset + insertOffset, textToInsert);
+							} else {
+								textLength = data.Insert (lineSegment.Offset + insertOffset, text);
+								data.PasteText (lineSegment.Offset + insertOffset, text);
+							}
 						}
 						
 						data.Caret.Offset += textLength;
