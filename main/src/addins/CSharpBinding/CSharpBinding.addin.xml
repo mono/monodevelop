@@ -50,7 +50,7 @@
 		<FileFilter id = "Html"
 		            insertbefore="AllFiles"
 		            _label = "Web Files"
-		            extensions = "*.htm,*.html,*.aspx,*.ascx,*.asp"/>
+		            extensions = "*.htm,*.html,*.aspx,*.ascx,*.asp,*.master"/>
 			    
 		<FileFilter id = "Xml"
 		            insertbefore="AllFiles"
