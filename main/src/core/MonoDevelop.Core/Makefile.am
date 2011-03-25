@@ -199,6 +199,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom.Parser/ProjectDomDecorator.cs \
 	MonoDevelop.Projects.Dom.Parser/ProjectDomEventArgs.cs \
 	MonoDevelop.Projects.Dom.Parser/ProjectDomService.cs \
+	MonoDevelop.Projects.Dom.Parser/ProjectDomStats.cs \
 	MonoDevelop.Projects.Dom.Parser/TypeNameResolver.cs \
 	MonoDevelop.Projects.Dom.Parser/TypeResolverVisitor.cs \
 	MonoDevelop.Projects.Dom.Serialization/AssemblyCodeCompletionDatabase.cs \
@@ -213,6 +214,7 @@ FILES =  \
 	MonoDevelop.Projects.Dom.Serialization/ParserDatabase.cs \
 	MonoDevelop.Projects.Dom.Serialization/ProjectCodeCompletionDatabase.cs \
 	MonoDevelop.Projects.Dom.Serialization/SimpleCodeCompletionDatabase.cs \
+	MonoDevelop.Projects.Dom.Serialization/StatsVisitor.cs \
 	MonoDevelop.Projects.Dom/AbstractMember.cs \
 	MonoDevelop.Projects.Dom/AbstractTypeParameterMember.cs \
 	MonoDevelop.Projects.Dom/AnonymousType.cs \

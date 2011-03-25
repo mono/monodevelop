@@ -195,5 +195,12 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		{
 			database.ForceUpdateBROKEN ();
 		}
+		
+		internal override ProjectDomStats GetStats ()
+		{
+			ProjectDomStats s = database.GetStats ();
+			s.Add (base.GetStats ());
+			return s;
+		}
 	}
 }

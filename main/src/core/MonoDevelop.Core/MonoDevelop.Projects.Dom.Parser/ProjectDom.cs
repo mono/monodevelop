@@ -874,18 +874,42 @@ namespace MonoDevelop.Projects.Dom.Parser
 			else
 				return ob;
 		}
-
+		
+		internal IEnumerable<IReturnType> GetSharedReturnTypes ()
+		{
+			return returnTypeCache.Values;
+		}
+		
 		internal IReturnType GetSharedReturnType (IReturnType rt)
 		{
 			string id = rt.ToInvariantString ();
 			IReturnType s;
-			if (returnTypeCache.TryGetValue (id, out s))
-				return s;
-
-			s = DomReturnType.GetSharedReturnType (rt);
-			if (object.ReferenceEquals (s, rt))
-				returnTypeCache [id] = rt;
+			if (!returnTypeCache.TryGetValue (id, out s)) {
+				s = DomReturnType.GetSharedReturnType (rt, true);
+				if (s == null) {
+					s = rt;
+					returnTypeCache [id] = rt;
+				}
+			}
 			return s;
+		}
+		
+		internal virtual ProjectDomStats GetStats ()
+		{
+			ProjectDomStats stats = new ProjectDomStats ();
+			
+			StatsVisitor v = new StatsVisitor (stats);
+			v.SharedTypes = GetSharedReturnTypes ().ToArray ();
+			foreach (IType t in instantiatedTypeCache.Values) {
+				stats.InstantiatedTypes++;
+				v.Reset ();
+				v.Visit (t, "Instantiated/");
+				if (v.Failures.Count > 0) {
+					stats.UnsharedReturnTypes += v.Failures.Count;
+					stats.ClassesWithUnsharedReturnTypes++;
+				}
+			}
+			return stats;
 		}
 		
 		internal abstract IEnumerable<string> OnGetReferences ();

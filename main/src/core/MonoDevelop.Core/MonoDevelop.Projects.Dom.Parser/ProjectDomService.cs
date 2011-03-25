@@ -1061,6 +1061,65 @@ namespace MonoDevelop.Projects.Dom.Parser
 			
 			return unresolvedCount;
 		}
+		
+		internal static void DumpSharedReturnTypes ()
+		{
+			StreamWriter w = new StreamWriter ("rt.txt");
+			
+			w.WriteLine ("Summary");
+			w.WriteLine ("-------");
+			w.WriteLine ();
+			
+			ProjectDomStats globalStats = new ProjectDomStats ();
+			int nt = 0;
+			Dictionary<string,int> count = new Dictionary<string, int> ();
+			foreach (ProjectDom p in databases.Values) {
+				w.WriteLine (p.GetSharedReturnTypes ().Count () + " " + p.Uri);
+				ProjectDomStats stats = p.GetStats ();
+				globalStats.Add (stats);
+				stats.Dump (w, "  ");
+				foreach (var tt in p.GetSharedReturnTypes ().Select (tt => tt.ToInvariantString ())) {
+					int c;
+					count.TryGetValue (tt, out c);
+					count [tt] = c + 1;
+					nt++;
+				}
+			}
+			
+			w.WriteLine ();
+			w.WriteLine ("Totals");
+			w.WriteLine ("------");
+			w.WriteLine ();
+			
+			w.WriteLine ("Total databases: " + databases.Count);
+			w.WriteLine ("Total RTs in cache: " + nt);
+			w.WriteLine ("Total RTs in cache shareable: " + count.Count);
+			
+			globalStats.Dump (w, "");
+			
+			w.WriteLine ();
+			w.WriteLine ("Detail");
+			w.WriteLine ("------");
+			w.WriteLine ();
+			
+			foreach (ProjectDom p in databases.Values) {
+				w.WriteLine ("### " + p.Uri);
+				List<string> ts = new List<string> (p.GetSharedReturnTypes ().Select (tt => tt.ToInvariantString ()));
+				ts.Sort ();
+				w.WriteLine ("Total: " + ts.Count);
+				foreach (var tt in ts)
+					w.WriteLine (tt);
+				w.WriteLine ();
+			}
+			
+			w.WriteLine ("@@@ Summary");
+			List<KeyValuePair<string,int>> names = new List<KeyValuePair<string, int>> (count);
+			names.Sort ((a,b) => a.Value != b.Value ? a.Value.CompareTo(b.Value) : a.Key.CompareTo(b.Key));
+			w.WriteLine ("Total: " + names.Count);
+			foreach (var tt in names)
+				w.WriteLine (tt.Value + "\t" + tt.Key);
+			w.Close ();
+		}
 
 		internal static void StartParseOperation ()
 		{
@@ -1140,5 +1199,4 @@ namespace MonoDevelop.Projects.Dom.Parser
 	{
 		IProgressMonitor CreateProgressMonitor ();
 	}
-	
 }

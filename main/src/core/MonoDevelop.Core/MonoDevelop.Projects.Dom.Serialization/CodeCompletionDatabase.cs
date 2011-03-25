@@ -114,6 +114,36 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			}
 		}
 		
+		internal ProjectDomStats GetStats ()
+		{
+			ProjectDomStats stats = new ProjectDomStats ();
+			stats.ClassEntries = typeEntries.Count;
+			
+			int typesWithUnshared = 0;
+			StatsVisitor v = new StatsVisitor (stats);
+			v.SharedTypes = SourceProjectDom.GetSharedReturnTypes ().ToArray ();
+			List<string> detail = new List<string> ();
+			foreach (ClassEntry ce in typeEntries.Values) {
+				if (ce.Class != null) {
+					stats.LoadedClasses++;
+					v.Reset ();
+					v.Visit (ce.Class, "");
+					if (v.Failures.Count > 0) {
+						stats.UnsharedReturnTypes += v.Failures.Count;
+						stats.ClassesWithUnsharedReturnTypes++;
+						if (typesWithUnshared++ < 10) {
+							detail.Add (" * " + ce.Class.FullName + ": RTs:" + v.ReturnTypeCount + ", non shared:" + v.Failures.Count);
+							foreach (var s in v.Failures)
+								detail.Add ("    - " + s);
+						}
+					}
+				}
+			}
+			
+			stats.UnsharedReturnTypesDetail = detail;
+			return stats;
+		}
+		
 		public virtual string GetDocumentation (IMember member)
 		{
 			return member != null ? member.Documentation : null;
