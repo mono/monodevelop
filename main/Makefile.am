@@ -88,8 +88,8 @@ DOCFILES = \
 
 mpacks: $(PACKAGES)
 	test -z "packages" || mkdir -p packages
-	mono build/bin/mdrun.exe setup p $(PACKAGES:%=%) -d:packages
-	mono build/bin/mdrun.exe setup rb packages
+	$(MDTOOL_RUN) setup p $(PACKAGES:%=%) -d:packages
+	$(MDTOOL_RUN) setup rb packages
 
 apidocs:
 	monodocer $(DOCFILES:%=--assembly:%) -delete --path docs/api

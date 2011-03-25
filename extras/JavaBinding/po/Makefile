@@ -7,7 +7,7 @@ top_srcdir=../
 include $(top_srcdir)/Makefile.include
 include $(top_srcdir)/config.make
 
-MDTOOL = $(LOCAL_PKGCONFIG) mono `$(LOCAL_PKGCONFIG) pkg-config --variable=libdir monodevelop`/bin/mdrun.exe
+MDTOOL = $(LOCAL_PKGCONFIG) mono `$(LOCAL_PKGCONFIG) pkg-config --variable=libdir monodevelop`/bin/mdtool.exe
 BUILD_DIR = ../build/locale
 INSTALL_DIR = $(DESTDIR)$(prefix)/lib/monodevelop/AddIns/JavaBinding/locale
 

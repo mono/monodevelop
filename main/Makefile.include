@@ -19,4 +19,4 @@ MD_LAUNCH_SETUP= \
 	MONODEVELOP_LOCALE_PATH="$(abs_top_builddir)/build/locale" \
 	MONO_ADDINS_REGISTRY="$(MD_BIN_PATH)"
 
-MDTOOL_RUN=$(MD_LAUNCH_SETUP) exec -a "mdtool" $(RUNTIME) --debug "$(MD_BIN_PATH)/mdrun.exe"
+MDTOOL_RUN=$(MD_LAUNCH_SETUP) exec -a "mdtool" $(RUNTIME) --debug "$(MD_BIN_PATH)/mdtool.exe"

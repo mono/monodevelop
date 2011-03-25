@@ -11,7 +11,7 @@ ifeq ($(strip $(ISLOCAL)),)
 		PKG_CONFIG_PATH="../../local-config:${PKG_CONFIG_PATH}" \
 		MONODEVELOP_LOCALE_PATH="${LOCAL_MDBUILD}/locale" \
 		MONO_ADDINS_REGISTRY="${LOCAL_MDBUILD}/bin" \
-		mono --debug "${LOCAL_MDBUILD}/bin/mdrun.exe"
+		mono --debug "${LOCAL_MDBUILD}/bin/mdtool.exe"
 else
 	MDTOOL=mdtool
 endif

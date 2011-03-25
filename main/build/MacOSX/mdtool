@@ -14,7 +14,7 @@ export PATH="$MONO_FRAMEWORK_PATH/bin:$PATH"
 
 DIR=$(cd "$(dirname "$0")"; pwd)
 
-EXE_PATH="$DIR/lib/monodevelop/bin/mdrun.exe"
+EXE_PATH="$DIR/lib/monodevelop/bin/mdtool.exe"
 
 #use stuff bundled into the app bundle
 export MONO_GAC_PREFIX="$DIR:$MONO_GAC_PREFIX"
