@@ -25,18 +25,20 @@
 // THE SOFTWARE.
 
 using System;
-using System.Xml;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Serialization;
-using MonoDevelop.Projects;
-using System.IO;
 using System.Collections.Generic;
-using MonoDevelop.Core.ProgressMonitoring;
-using MonoDevelop.Core.Execution;
-using MonoDevelop.Ide;
+using System.IO;
 using System.Reflection;
-using MonoDevelop.MacDev.Plist;
 using System.Text;
+using System.Xml;
+
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Core.Serialization;
+using MonoDevelop.Ide;
+using MonoDevelop.MacDev.Plist;
+using MonoDevelop.MacDev.XcodeIntegration;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.IPhone
 {
@@ -309,6 +311,8 @@ namespace MonoDevelop.IPhone
 			}
 		}
 		
+		XcodeProjectTracker projectTracker;
+		
 		void Init ()
 		{
 			CodeBehindGenerator = new IPhoneCodeBehind (this);
@@ -333,6 +337,8 @@ namespace MonoDevelop.IPhone
 			FixCSharpPlatformTarget ();
 			
 			base.OnEndLoad ();
+			
+			projectTracker = new XcodeProjectTracker (this, "MonoTouch");
 		}
 		
 		// HACK: Using older MD, C# projects may have become created with the wrong platform target
@@ -553,6 +559,15 @@ namespace MonoDevelop.IPhone
 			doc.Root = new PlistDictionary ();
 			doc.WriteToFile (name);
 			return AddFile (name);
+		}
+		
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			if (projectTracker != null) {
+				projectTracker.Dispose ();
+				projectTracker = null;
+			}
 		}
 	}
 }
