@@ -622,7 +622,7 @@ namespace MonoDevelop.Projects.Dom
 			if (type is InstantiatedType)
 				return type;
 			string name = GetInstantiatedTypeName (type.Name, genericArguments);
-			GenericTypeInstanceResolver resolver = new GenericTypeInstanceResolver ();
+			GenericTypeInstanceResolver resolver = new GenericTypeInstanceResolver (type.SourceProjectDom);
 			resolver.Parent = parent;
 			if (genericArguments != null) {
 				int j = genericArguments.Count - 1;
@@ -763,7 +763,13 @@ namespace MonoDevelop.Projects.Dom
 		{
 			public GenericTypeInstanceResolver Parent;
 			public Dictionary<string, IReturnType> typeTable = new Dictionary<string,IReturnType> ();
+			ProjectDom dom;
 			
+			public GenericTypeInstanceResolver (ProjectDom dom)
+			{
+				this.dom = dom;
+			}
+
 			public void Add (string name, IReturnType type)
 			{
 				typeTable.Add (name, type);
@@ -804,7 +810,8 @@ namespace MonoDevelop.Projects.Dom
 					result = LookupReturnType (curType.DecoratedFullName + "." + decoratedName, type, typeToInstantiate);
 					curType = curType.DeclaringType;
 				}
-				return result ?? base.Visit (type, typeToInstantiate);
+				result = result ?? (IReturnType) base.Visit (type, typeToInstantiate);
+				return dom != null ? dom.GetSharedReturnType (result) : result;
 			}
 			
 			protected override DomType CreateInstance (IType type, IType typeToInstantiate)
