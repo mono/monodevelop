@@ -28,10 +28,8 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace OSXIntegration.Framework
+namespace MonoDevelop.MacInterop
 {
-	
-	
 	internal static class CoreFoundation
 	{
 		const string CFLib = "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation";

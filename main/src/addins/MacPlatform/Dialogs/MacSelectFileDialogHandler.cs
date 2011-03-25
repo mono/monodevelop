@@ -25,16 +25,17 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Components.Extensions;
-using OSXIntegration.Framework;
-using MonoDevelop.Ide.Extensions;
-using MonoMac.AppKit;
-using MonoDevelop.Core;
+using System.Drawing;
+using System.Linq;
 using System.Collections.Generic;
 using MonoMac.Foundation;
-using System.Linq;
-using System.Drawing;
+using MonoMac.AppKit;
+
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Extensions;
+using MonoDevelop.Components.Extensions;
+using MonoDevelop.MacInterop;
 
 namespace MonoDevelop.Platform.Mac
 {

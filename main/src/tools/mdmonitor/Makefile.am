@@ -2,12 +2,10 @@
 ASSEMBLY = $(top_builddir)/build/bin/mdmonitor.exe
 
 FILES =  \
-	../../addins/MacPlatform/Framework/AppleEvent.cs \
-	../../addins/MacPlatform/Framework/AppleScript.cs \
-	../../addins/MacPlatform/Framework/ApplicationEvents.cs \
-	../../addins/MacPlatform/Framework/Carbon.cs \
-	../../addins/MacPlatform/Framework/ComponentManager.cs \
-	../../addins/MacPlatform/Framework/CoreFoundation.cs \
+	../../addins/MacPlatform/MacInterop/AppleEvent.cs \
+	../../addins/MacPlatform/MacInterop/ApplicationEvents.cs \
+	../../addins/MacPlatform/MacInterop/Carbon.cs \
+	../../addins/MacPlatform/MacInterop/CoreFoundation.cs \
 	AssemblyInfo.cs \
 	ChartSerieInfo.cs \
 	ChartView.cs \

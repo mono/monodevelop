@@ -26,7 +26,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace OSXIntegration.Framework
+namespace MonoDevelop.MacInterop
 {
 	public static class ApplicationEvents
 	{

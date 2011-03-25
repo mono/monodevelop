@@ -25,17 +25,18 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core.Execution;
 using System.Diagnostics;
-using OSXIntegration.Framework;
 using System.Text;
-using MonoDevelop.Core;
 using System.Threading;
 using System.Collections.Generic;
 
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.MacInterop;
+
 namespace MonoDevelop.Platform.Mac
 {
-	public class ExternalConsoleProcess : IProcessAsyncOperation
+	internal class ExternalConsoleProcess : IProcessAsyncOperation
 	{
 /*
 NOTES ON CONTROLLING A TERMINAL WITH APPLESCRIPT	 

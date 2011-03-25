@@ -33,13 +33,14 @@ FILES =  \
 	Dialogs/SelectEncodingPanel.cs \
 	Dialogs/SelectEncodingPopUpButton.cs \
 	ExternalConsoleProcess.cs \
-	Framework/AppleEvent.cs \
-	Framework/AppleScript.cs \
-	Framework/ApplicationEvents.cs \
-	Framework/Carbon.cs \
-	Framework/ComponentManager.cs \
-	Framework/CoreFoundation.cs \
-	Framework/HIToolbox.cs \
+	MacInterop/AppleEvent.cs \
+	MacInterop/AppleScript.cs \
+	MacInterop/ApplicationEvents.cs \
+	MacInterop/Carbon.cs \
+	MacInterop/ComponentManager.cs \
+	MacInterop/CoreFoundation.cs \
+	MacInterop/GtkQuartz.cs \
+	MacInterop/HIToolbox.cs \
 	MacPlatform.cs \
 	Menus/OSXMenu.cs
 

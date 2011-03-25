@@ -25,19 +25,18 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Components.Extensions;
-using OSXIntegration.Framework;
-using MonoDevelop.Ide.Extensions;
-using MonoMac.AppKit;
-using MonoDevelop.Core;
+using System.Drawing;
+using System.Linq;
 using System.Collections.Generic;
 using MonoMac.Foundation;
-using System.Linq;
-using System.Drawing;
-using MonoDevelop.Projects.Text;
-using MonoDevelop.Ide.Gui;
+using MonoMac.AppKit;
+
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using System.Runtime.InteropServices;
+using MonoDevelop.Ide.Extensions;
+using MonoDevelop.Components.Extensions;
+using MonoDevelop.MacInterop;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Platform.Mac
 {
@@ -224,36 +223,5 @@ namespace MonoDevelop.Platform.Mac
 		}
 	}
 	
-	static class GtkQuartz
-	{
-		//this may be needed to work around focusing issues in GTK/Cocoa interop
-		public static void FocusWindow (Gtk.Window widget)
-		{
-			var window = GetWindow (widget);
-			if (window != null)
-				window.MakeKeyAndOrderFront (window);
-		}
-		
-		public static NSWindow GetWindow (Gtk.Window window)
-		{
-			var ptr = gdk_quartz_window_get_nswindow (window.GdkWindow.Handle);
-			if (ptr == IntPtr.Zero)
-				return null;
-			return MonoMac.ObjCRuntime.Runtime.GetNSObject (ptr) as NSWindow;
-		}
-		
-		public static NSView GetView (Gtk.Widget widget)
-		{
-			var ptr = gdk_quartz_window_get_nsview (widget.GdkWindow.Handle);
-			if (ptr == IntPtr.Zero)
-				return null;
-			return MonoMac.ObjCRuntime.Runtime.GetNSObject (ptr) as NSView;
-		}
-		
-		[DllImport ("libgtk-quartz-2.0.dylib")]
-		static extern IntPtr gdk_quartz_window_get_nsview (IntPtr window);
-		
-		[DllImport ("libgtk-quartz-2.0.dylib")]
-		static extern IntPtr gdk_quartz_window_get_nswindow (IntPtr window);
-	}
+
 }

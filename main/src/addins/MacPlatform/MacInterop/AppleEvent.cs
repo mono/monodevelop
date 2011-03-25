@@ -27,9 +27,9 @@ using System;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 
-namespace OSXIntegration.Framework
+namespace MonoDevelop.MacInterop
 {
-	static class AppleEvent
+	internal static class AppleEvent
 	{
 		const string AELib = Carbon.CarbonLib;
 		
@@ -187,13 +187,13 @@ namespace OSXIntegration.Framework
 	public delegate T AEDescValueSelector<TRef,T> (ref TRef desc);
 	
 	[StructLayout(LayoutKind.Sequential, Pack = 2)]
-	struct AEDesc
+	public struct AEDesc
 	{
 		public uint descriptorType;
 		public IntPtr dataHandle;
 	}
 	
-	enum AEDescStatus
+	public enum AEDescStatus
 	{
 		Ok = 0,
 		MemoryFull = -108,
@@ -204,7 +204,7 @@ namespace OSXIntegration.Framework
 		ReplyNotArrived = -1718,
 	}
 	
-	enum AESendMode {
+	public enum AESendMode {
 		NoReply = 0x00000001,
 		QueueReply = 0x00000002,
 		WaitReply = 0x00000003,
@@ -217,5 +217,10 @@ namespace OSXIntegration.Framework
 		DontRecord = 0x00001000,
 		DontExecute = 0x00002000,
 		ProcessNonReplyEvents = 0x00008000,
+	}
+
+	struct DescType
+	{
+		public OSType Value;
 	}
 }

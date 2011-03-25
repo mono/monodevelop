@@ -68,14 +68,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MacPlatform.cs" />
     <Compile Include="Menus\OSXMenu.cs" />
-    <Compile Include="Framework\Carbon.cs" />
-    <Compile Include="Framework\CoreFoundation.cs" />
-    <Compile Include="Framework\HIToolbox.cs" />
     <Compile Include="Commands.cs" />
-    <Compile Include="Framework\ApplicationEvents.cs" />
-    <Compile Include="Framework\AppleEvent.cs" />
-    <Compile Include="Framework\AppleScript.cs" />
-    <Compile Include="Framework\ComponentManager.cs" />
     <Compile Include="ExternalConsoleProcess.cs" />
     <Compile Include="Dialogs\MacAddFileDialogHandler.cs" />
     <Compile Include="Dialogs\MacOpenFileDialogHandler.cs" />
@@ -85,6 +78,14 @@
     <Compile Include="Dialogs\SelectEncodingPopUpButton.cs" />
     <Compile Include="Dialogs\Layout.cs" />
     <Compile Include="Dialogs\MacAlertDialogHandler.cs" />
+    <Compile Include="MacInterop\Carbon.cs" />
+    <Compile Include="MacInterop\CoreFoundation.cs" />
+    <Compile Include="MacInterop\HIToolbox.cs" />
+    <Compile Include="MacInterop\ApplicationEvents.cs" />
+    <Compile Include="MacInterop\AppleEvent.cs" />
+    <Compile Include="MacInterop\AppleScript.cs" />
+    <Compile Include="MacInterop\ComponentManager.cs" />
+    <Compile Include="MacInterop\GtkQuartz.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
@@ -113,7 +114,7 @@
   </ProjectExtensions>
   <ItemGroup>
     <Folder Include="Menus\" />
-    <Folder Include="Framework\" />
     <Folder Include="Dialogs\" />
+    <Folder Include="MacInterop\" />
   </ItemGroup>
 </Project>

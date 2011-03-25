@@ -63,23 +63,17 @@
     <Compile Include="ChartView.cs" />
     <Compile Include="ChartSerieInfo.cs" />
     <Compile Include="MacIntegration\MacIntegration.cs" />
-    <Compile Include="..\..\addins\MacPlatform\Framework\ApplicationEvents.cs">
-      <Link>MacIntegration\ApplicationEvents.cs</Link>
-    </Compile>
-    <Compile Include="..\..\addins\MacPlatform\Framework\Carbon.cs">
-      <Link>MacIntegration\Carbon.cs</Link>
-    </Compile>
-    <Compile Include="..\..\addins\MacPlatform\Framework\CoreFoundation.cs">
-      <Link>MacIntegration\CoreFoundation.cs</Link>
-    </Compile>
-    <Compile Include="..\..\addins\MacPlatform\Framework\AppleEvent.cs">
+    <Compile Include="..\..\addins\MacPlatform\MacInterop\AppleEvent.cs">
       <Link>MacIntegration\AppleEvent.cs</Link>
     </Compile>
-    <Compile Include="..\..\addins\MacPlatform\Framework\AppleScript.cs">
-      <Link>MacIntegration\AppleScript.cs</Link>
+    <Compile Include="..\..\addins\MacPlatform\MacInterop\ApplicationEvents.cs">
+      <Link>MacIntegration\ApplicationEvents.cs</Link>
     </Compile>
-    <Compile Include="..\..\addins\MacPlatform\Framework\ComponentManager.cs">
-      <Link>MacIntegration\ComponentManager.cs</Link>
+    <Compile Include="..\..\addins\MacPlatform\MacInterop\Carbon.cs">
+      <Link>MacIntegration\Carbon.cs</Link>
+    </Compile>
+    <Compile Include="..\..\addins\MacPlatform\MacInterop\CoreFoundation.cs">
+      <Link>MacIntegration\CoreFoundation.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>

@@ -28,9 +28,8 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace OSXIntegration.Framework
+namespace MonoDevelop.MacInterop
 {
-	
 	internal static class HIToolbox
 	{
 		const string hiToolboxLib = "/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/HIToolbox.framework/Versions/A/HIToolbox";

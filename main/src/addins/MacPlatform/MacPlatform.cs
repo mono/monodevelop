@@ -30,24 +30,25 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
+
+using MonoMac.AppKit;
+using MonoMac.Foundation;
+
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide; 
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Desktop;
-using MonoDevelop.Ide.Gui;
-using OSXIntegration.Framework;
-using MonoDevelop.Ide; 
-using System.Linq;
-using MonoDevelop.Core.Execution;
-using MonoDevelop.Platform.Mac;
-using MonoDevelop.Core;
-using MonoMac.Foundation;
-using MonoMac.AppKit;
-using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.MacInterop;
 
-namespace MonoDevelop.Platform
+namespace MonoDevelop.Platform.Mac
 {
-	public class MacPlatform : PlatformService
+	class MacPlatform : PlatformService
 	{
 		static TimerCounter timer = InstrumentationService.CreateTimerCounter ("Mac Platform Initialization", "Platform Service");
 		static TimerCounter mimeTimer = InstrumentationService.CreateTimerCounter ("Mac Mime Database", "Platform Service");
@@ -178,10 +179,10 @@ namespace MonoDevelop.Platform
 			try {
 				InitApp (commandManager);
 				CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
-				OSXIntegration.OSXMenu.Recreate (commandManager, ces, ignoreCommands);
+				OSXMenu.Recreate (commandManager, ces, ignoreCommands);
 			} catch (Exception ex) {
 				try {
-					OSXIntegration.OSXMenu.Destroy (true);
+					OSXMenu.Destroy (true);
 				} catch {}
 				MonoDevelop.Core.LoggingService.LogError ("Could not install global menu", ex);
 				setupFail = true;
@@ -196,7 +197,7 @@ namespace MonoDevelop.Platform
 			if (initedApp)
 				return;
 			
-			OSXIntegration.OSXMenu.AddCommandIDMappings (new Dictionary<object, CarbonCommandID> ()
+			OSXMenu.AddCommandIDMappings (new Dictionary<object, CarbonCommandID> ()
 			{
 				{ CommandManager.ToCommandId (EditCommands.Copy), CarbonCommandID.Copy },
 				{ CommandManager.ToCommandId (EditCommands.Cut), CarbonCommandID.Cut },
@@ -223,8 +224,8 @@ namespace MonoDevelop.Platform
 			commandManager.GetCommand (ToolCommands.AddinManager).Text = GettextCatalog.GetString ("Add-in Manager...");
 			
 			initedApp = true;
-			OSXIntegration.OSXMenu.SetAppQuitCommand (CommandManager.ToCommandId (FileCommands.Exit));
-			OSXIntegration.OSXMenu.AddAppMenuItems (
+			OSXMenu.SetAppQuitCommand (CommandManager.ToCommandId (FileCommands.Exit));
+			OSXMenu.AddAppMenuItems (
 				commandManager,
 			    CommandManager.ToCommandId (HelpCommands.About),
 				CommandManager.ToCommandId (Command.Separator),

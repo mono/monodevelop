@@ -30,15 +30,14 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Components.Commands;
-using OSXIntegration.Framework;
+using MonoDevelop.MacInterop;
 using System.Text;
 using MonoDevelop.Ide;
 using MonoDevelop.Platform;
 
-namespace OSXIntegration
+namespace MonoDevelop.Platform.Mac
 {
-	
-	public static class OSXMenu
+	static class OSXMenu
 	{
 		static IntPtr rootMenu;
 		static IntPtr appMenu;

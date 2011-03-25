@@ -26,15 +26,12 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace OSXIntegration.Framework
+namespace MonoDevelop.MacInterop
 {
-	internal static class AppleScript
+	public static class AppleScript
 	{
-		//IntPtr defaultComponent = ;
-
 		static AppleScript ()
 		{
-			
 		}
 
 		[DllImport (Carbon.CarbonLib)]
@@ -196,11 +193,6 @@ namespace OSXIntegration.Framework
 		OffendingObject = 1701998434, // 'erob'
 		ExpectedType = 1701999220, // 'errt'
 		Range = 1701998183, // 'erng'
-	}
-
-	struct DescType
-	{
-		public OSType Value;
 	}
 	
 	enum OsaError : int //this is a ComponentResult typedef - is it long on int64?

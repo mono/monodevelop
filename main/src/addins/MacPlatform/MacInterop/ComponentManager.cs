@@ -27,11 +27,11 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace OSXIntegration.Framework
+namespace MonoDevelop.MacInterop
 {
 	// http://developer.apple.com/mac/library/documentation/Carbon/Reference/Component_Manager/Reference/reference.html
 	
-	static class ComponentManager
+	internal class ComponentManager
 	{
 		[DllImport (Carbon.CarbonLib)]
 		public static extern ComponentInstance OpenDefaultComponent (OSType componentType, OSType componentSubType);
@@ -44,7 +44,7 @@ namespace OSXIntegration.Framework
 	}
 	
 	[StructLayout (LayoutKind.Sequential, Pack=2)]
-	struct ComponentInstance
+	internal struct ComponentInstance
 	{
 		IntPtr handle;
 		
@@ -55,7 +55,7 @@ namespace OSXIntegration.Framework
 		}
 	}
 	
-	enum ComponentResult : long
+	internal enum ComponentResult : long
 	{
 		InvalidComponentId = -3000,
 		ValidInstancesExist = -3001,
@@ -67,7 +67,7 @@ namespace OSXIntegration.Framework
 		BadComponentInstance	 = 0x80008001
 	}
 	
-	enum ComponentErr : int //this is an OSErr
+	internal enum ComponentErr : int //this is an OSErr
 	{
 		InvalidComponentId = -3000,
 		ValidInstancesExist = -3001,
@@ -80,7 +80,7 @@ namespace OSXIntegration.Framework
 	}
 	
 	[Flags]
-	enum DefaultComponent {
+	internal enum DefaultComponent {
 		Identical = 0,
 		AnyFlags = 1,
 		AnyManufacturer = 2,
@@ -89,7 +89,7 @@ namespace OSXIntegration.Framework
 		AnyFlagsAnyManufacturerAnySubType =  (AnyFlags & AnyManufacturer & AnySubType)
 	}
 	
-	enum ComponentRequest {
+	internal enum ComponentRequest {
 		OpenSelect = -1,
 		CloseSelect = -2,
 		CanDoSelect = -3,

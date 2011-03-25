@@ -26,7 +26,7 @@
 using System;
 using Gtk;
 using MonoDevelop.Core.Instrumentation;
-using OSXIntegration.Framework;
+using MonoDevelop.MacInterop;
 
 namespace Mono.Instrumentation.Monitor
 {

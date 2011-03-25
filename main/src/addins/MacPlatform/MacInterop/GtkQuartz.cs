@@ -1,10 +1,10 @@
 // 
-// Commands.cs
+// GtkQuartz.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc. (http://www.novell.com)
+// Copyright (c) 2011 Novell, Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,48 +24,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Ide;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.MacInterop;
+using System;
+using System.Runtime.InteropServices;
+using MonoMac.AppKit;
 
 namespace MonoDevelop.Platform.Mac
 {
-	internal enum Commands
+	static class GtkQuartz
 	{
-		MinimizeWindow,
-		HideWindow,
-		HideOthers,
-		CheckForUpdates,
-	}
-	
-	internal class MinimizeWindowHandler : CommandHandler
-	{
-		protected override void Run ()
+		//this may be needed to work around focusing issues in GTK/Cocoa interop
+		public static void FocusWindow (Gtk.Window widget)
 		{
-			IdeApp.Workbench.RootWindow.Iconify ();
-		}
-	}
-	
-	internal class HideWindowHandler : CommandHandler
-	{
-		protected override void Run ()
-		{
-			HideOthersHandler.RunMenuCommand (CarbonCommandID.Hide);
-		}
-	}
-	
-	internal class HideOthersHandler : CommandHandler
-	{
-		protected override void Run ()
-		{
-			RunMenuCommand (CarbonCommandID.HideOthers);
+			var window = GetWindow (widget);
+			if (window != null)
+				window.MakeKeyAndOrderFront (window);
 		}
 		
-		internal static void RunMenuCommand (CarbonCommandID commandID)
+		public static NSWindow GetWindow (Gtk.Window window)
 		{
-			var item = HIToolbox.GetMenuItem ((uint)commandID);
-			var cmd = new CarbonHICommand ((uint)commandID, item);
-			Carbon.ProcessHICommand (ref cmd);
+			var ptr = gdk_quartz_window_get_nswindow (window.GdkWindow.Handle);
+			if (ptr == IntPtr.Zero)
+				return null;
+			return MonoMac.ObjCRuntime.Runtime.GetNSObject (ptr) as NSWindow;
 		}
+		
+		public static NSView GetView (Gtk.Widget widget)
+		{
+			var ptr = gdk_quartz_window_get_nsview (widget.GdkWindow.Handle);
+			if (ptr == IntPtr.Zero)
+				return null;
+			return MonoMac.ObjCRuntime.Runtime.GetNSObject (ptr) as NSView;
+		}
+		
+		[DllImport ("libgtk-quartz-2.0.dylib")]
+		static extern IntPtr gdk_quartz_window_get_nsview (IntPtr window);
+		
+		[DllImport ("libgtk-quartz-2.0.dylib")]
+		static extern IntPtr gdk_quartz_window_get_nswindow (IntPtr window);
 	}
 }
