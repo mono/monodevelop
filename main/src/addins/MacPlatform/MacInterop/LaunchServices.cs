@@ -1,10 +1,10 @@
 // 
-// Interop.cs
+// LaunchServices.cs
 //  
 // Author:
 //       Michael Hutchinson <mhutchinson@novell.com>
 // 
-// Copyright (c) 2010 Novell, Inc.
+// Copyright (c) 2011 Novell, Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using MonoMac.Foundation;
 
-namespace MonoDevelop.MonoMac
+namespace MonoDevelop.MacInterop
 {
 	public class ApplicationStartInfo
 	{
@@ -46,7 +46,7 @@ namespace MonoDevelop.MonoMac
 		public bool NewInstance { get; set; }
 	}
 	
-	static class LaunchServices
+	public static class LaunchServices
 	{
 		const string APP_SERVICES = "/System/Library/Frameworks/ApplicationServices.framework/Versions/A/ApplicationServices";
 		const string CFLIB = "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation";
@@ -157,50 +157,10 @@ namespace MonoDevelop.MonoMac
 		struct FSRef
 		{
 		}
-	}
 		
-	enum OSStatus
-	{
-		Ok = 0
-	}
-	
-	public struct ProcessSerialNumber
-	{
-		uint high;
-		uint low;
-		
-		public ProcessSerialNumber (uint high, uint low)
+		enum OSStatus
 		{
-			this.high = high;
-			this.low = low;
-		}
-		
-		public uint High { get { return high; } }
-		public uint Low { get { return low; } }
-	}
-	
-	public static class ProcessManager
-	{
-		const string CARBON = "/System/Library/Frameworks/Carbon.framework/Versions/A/Carbon";
-		
-		[DllImport (CARBON)]
-		static extern OSStatus GetProcessPID (ref ProcessSerialNumber psn, out int pid);
-		
-		[DllImport (CARBON)]
-		static extern OSStatus KillProcess (ref ProcessSerialNumber process);
-		
-		public static int GetProcessPid (ProcessSerialNumber psn)
-		{
-			int pid;
-			if (GetProcessPID (ref psn, out pid) == OSStatus.Ok)
-				return pid;
-			return -1;
-		}
-		
-		public static bool KillProcess (ProcessSerialNumber psn)
-		{
-			return KillProcess (ref psn) == OSStatus.Ok;
+			Ok = 0
 		}
 	}
 }
-

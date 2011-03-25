@@ -25,14 +25,16 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
 using System.IO;
 using System.Threading;
 using System.Text;
 using System.Diagnostics;
-using MonoDevelop.Ide;
 using System.Collections.Generic;
+
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Ide;
+using MonoDevelop.MacInterop;
 
 namespace MonoDevelop.MonoMac
 {
@@ -82,7 +84,7 @@ namespace MonoDevelop.MonoMac
 			}
 			
 			asi.Environment ["MONOMAC_DEBUGLAUNCHER_LOGDIR"] = logDir;
-			 
+			
 			var psn = LaunchServices.OpenApplication (asi);
 			return new MonoMacProcess (psn, outTail, errTail);
 		}

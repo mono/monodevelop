@@ -25,19 +25,20 @@
 // THE SOFTWARE.
 
 using System;
-using Mono.Debugger.Soft;
-using Mono.Debugging;
-using Mono.Debugging.Client;
 using System.Threading;
 using System.Diagnostics;
-using MonoDevelop.MonoMac;
 using System.IO;
-using MonoDevelop.Core;
 using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using System.Collections.Generic;
+using Mono.Debugger.Soft;
+using Mono.Debugging;
 using Mono.Debugging.Soft;
+using Mono.Debugging.Client;
+using MonoDevelop.MonoMac;
+using MonoDevelop.Core;
+using MonoDevelop.MacInterop;
 
 namespace MonoDevelop.Debugger.Soft.MonoMac
 {

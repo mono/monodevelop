@@ -41,6 +41,8 @@ FILES =  \
 	MacInterop/CoreFoundation.cs \
 	MacInterop/GtkQuartz.cs \
 	MacInterop/HIToolbox.cs \
+	MacInterop/LaunchServices.cs \
+	MacInterop/ProcessManager.cs \
 	MacPlatform.cs \
 	Menus/OSXMenu.cs
 

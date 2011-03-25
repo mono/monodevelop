@@ -32,6 +32,7 @@
 		<Addin id="Core" version="2.6"/>
 		<Addin id="Ide"  version="2.6"/>
 		<Addin id="MacDev" version="2.6"/>
+		<Addin id="MacPlatform" version="2.6"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
@@ -121,6 +122,7 @@
 			<Addin id="Ide"  version="2.6"/>
 			<Addin id="Debugger" version="2.6"/>
 			<Addin id="Debugger.Soft" version="2.6"/>
+			<Addin id="MacPlatform" version="2.6"/>
 		</Dependencies>
 	
 		<Extension path="/MonoDevelop/Debugging/DebuggerEngines">

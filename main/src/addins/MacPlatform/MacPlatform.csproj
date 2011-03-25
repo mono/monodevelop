@@ -86,6 +86,8 @@
     <Compile Include="MacInterop\AppleScript.cs" />
     <Compile Include="MacInterop\ComponentManager.cs" />
     <Compile Include="MacInterop\GtkQuartz.cs" />
+    <Compile Include="MacInterop\LaunchServices.cs" />
+    <Compile Include="MacInterop\ProcessManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />
