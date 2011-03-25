@@ -235,6 +235,7 @@
     <Compile Include="Mono.TextEditor.Tests\TextBreakerTests.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitUtilsTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\SegmentTreeTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\RedBlackTreeTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
