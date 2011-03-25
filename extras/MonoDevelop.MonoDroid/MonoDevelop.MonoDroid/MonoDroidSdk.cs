@@ -33,9 +33,9 @@ using System.Runtime.InteropServices;
 namespace MonoDroid
 {
 	// Thie file must be kept in sync between: 
-	//  - The MonoDroid MSBuild tooling
-	//  - The MonoDroid VS Plugin
-	//  - The MonoDroid MonoDevelop Plugin [extras/MonoDevelop.MonoDroid/MonoDevelop.MonoDroid/MonoDroidSdk.cs]
+	//  - The Mono for Android MSBuild tooling
+	//  - The Mono for Android VS Plugin
+	//  - The Mono for Android MonoDevelop Plugin [extras/MonoDevelop.MonoDroid/MonoDevelop.MonoDroid/MonoDroidSdk.cs]
 	internal static class MonoDroidSdk
 	{
 		public static readonly bool IsWindows, IsMac;
@@ -125,18 +125,17 @@ namespace MonoDroid
 			string monoAndroidPath  = Environment.GetEnvironmentVariable ("MONO_ANDROID_PATH");
 			string monodroidPath    = Environment.GetEnvironmentVariable ("MONODROID_PATH");
 			string libmandroid      = Path.Combine ("lib", "mandroid");
-			string mandroid         = "mandroid.exe";
 			string libmonodroid     = Path.Combine ("lib", "monodroid");
-			string monodroid        = "monodroid.exe";
+			string debugRuntime     = "Mono.Android.DebugRuntime-debug.apk";
 
 			foreach (var loc in new[]{
-					new { D = monoAndroidPath,              L = libmandroid,  E = mandroid  },
-					new { D = monodroidPath,                L = libmandroid,  E = mandroid  },
-					new { D = monodroidPath,                L = libmonodroid, E = monodroid },
-					new { D = "/Developer/MonoAndroid/usr", L = libmandroid,  E = mandroid  },
-					new { D = "/Developer/MonoDroid/usr",   L = libmonodroid, E = monodroid },
-					new { D = "/opt/mono-android",          L = libmandroid,  E = mandroid  },
-					new { D = "/opt/monodroid",             L = libmonodroid, E = monodroid }})
+					new { D = monoAndroidPath,              L = libmandroid,  E = debugRuntime  },
+					new { D = monodroidPath,                L = libmandroid,  E = debugRuntime  },
+					new { D = monodroidPath,                L = libmonodroid, E = debugRuntime },
+					new { D = "/Developer/MonoAndroid/usr", L = libmandroid,  E = debugRuntime  },
+					new { D = "/Developer/MonoDroid/usr",   L = libmonodroid, E = debugRuntime },
+					new { D = "/opt/mono-android",          L = libmandroid,  E = debugRuntime  },
+					new { D = "/opt/monodroid",             L = libmonodroid, E = debugRuntime }})
 				if (CheckMonoDroidPath (loc.D, loc.L, loc.E, out monoDroidBinDir, out monoDroidFrameworkDir))
 					return;
 		}
@@ -274,7 +273,7 @@ namespace MonoDroid
 			}
 		}
 		
-		const string MDREG_KEY = @"SOFTWARE\Novell\MonoDroid";
+		const string MDREG_KEY = @"SOFTWARE\Novell\Mono for Android";
 		const string MDREG_ANDROID = "AndroidSdkDirectory";
 		const string MDREG_JAVA = "JavaSdkDirectory";
 		const string MDREG_MONODROID = "InstallDirectory";
