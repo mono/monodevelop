@@ -89,14 +89,22 @@ namespace MonoDevelop.MonoMac
 		
 		string GetTarget (MonoMacProject project)
 		{
-			var outputFile = project.Name + (Options.PackagingSettings.CreatePackage ? ".pkg" : ".app");
+			var extension = Options.PackagingSettings.CreatePackage ? ".pkg" : ".app";
+			var outputFile = project.Name + extension;
 			
-			// If tool was passed a path, we make it the target.
+			// If tool was passed a path, we make it the target destination.
 			if (Options.Files.Any ()) {
 				var path = Options.Files.First ();
-				return Directory.Exists (path) ? Path.Combine (path, outputFile) : path;
+				if (Directory.Exists (path) && !path.EndsWith (extension)) {
+					// We were passed a destination directory (and it's not really a bundle).
+					return Path.Combine (path, outputFile);
+				} else {
+					// We were passed a destination filepath, or something erroneous. Either way,
+					// we continue and report any problem with the target during the build phase.
+					return path;
+				}
 			}
-			
+				
 			return outputFile;
 		}
 
