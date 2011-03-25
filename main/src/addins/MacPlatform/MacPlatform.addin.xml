@@ -17,7 +17,7 @@
 	
 	<Extension path = "/MonoDevelop/Core/PlatformService">
 		<Class id      = "PlatformService"
-		       class   = "MonoDevelop.Platform.MacPlatform"/>
+		       class   = "MonoDevelop.Platform.Mac.MacPlatform"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands/Window">
