@@ -655,8 +655,11 @@ namespace MonoDevelop.MonoDroid
 				}
 			}
 
-			if (!String.IsNullOrEmpty (MonoDroidAssetsPrefix) && ((FilePath)fileName).IsChildPathOf (BaseDirectory.Combine (MonoDroidAssetsPrefix)))
-				return MonoDroidBuildAction.AndroidAsset;
+			if (!String.IsNullOrEmpty (MonoDroidAssetsPrefix)) {
+				var assetsDir = BaseDirectory.Combine (MonoDroidAssetsPrefix);
+				if (((FilePath)fileName).IsChildPathOf (assetsDir) && !fileName.Contains ("AboutAssets.txt"))
+					return MonoDroidBuildAction.AndroidAsset;
+			}
 				
 			return baseAction;
 		}
