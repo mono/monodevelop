@@ -112,6 +112,7 @@ namespace MonoDevelop.MonoMac.Gui
 			}
 			
 			var cfg = (MonoMacProjectConfiguration) project.GetConfiguration (conf);
+			
 			FilePath tempDir = "/tmp/monomac-build-" + DateTime.Now.Ticks;
 			FilePath workingApp = tempDir.Combine (cfg.AppDirectory.FileName);
 			

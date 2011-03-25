@@ -55,7 +55,7 @@ namespace MonoDevelop.MonoMac
 			}
 			
 			if (options.ShowHelp) {
-				Console.WriteLine ("Usage: {0} [options]", Name);
+				Console.WriteLine ("Usage: {0} [OPTIONS] [DEST]", Name);
 				Console.WriteLine ("Builds an application bundle from the MonoMac project under the current directory.");
 				Console.WriteLine ();
 				options.Show ();
@@ -75,8 +75,21 @@ namespace MonoDevelop.MonoMac
 				return 1;
 			}
 			
-			MonoMacPackaging.BuildPackage (monitor, project, config.Selector, options.PackagingSettings, project.Name + ".app");			
+			MonoMacPackaging.BuildPackage (monitor, project, config.Selector, options.PackagingSettings, GetTarget (project, options));			
 			return 0;
+		}
+		
+		string GetTarget (MonoMacProject project, MonoMacPackagingToolOptions options)
+		{
+			var outputFile = project.Name + (options.PackagingSettings.CreatePackage ? ".pkg" : ".app");
+			
+			// If tool was passed a path, we make it the target.
+			if (options.Files.Any ()) {
+				var path = options.Files.First ();
+				return Directory.Exists (path) ? Path.Combine (path, outputFile) : path;
+			}
+			
+			return outputFile;
 		}
 
 		MonoMacProject MaybeFindMonoMacProject (IProgressMonitor monitor)
