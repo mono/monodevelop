@@ -44,6 +44,7 @@ namespace MonoDevelop.MonoMac
 		const string DefaultConfiguration = "Release";
 
 		public bool ShowHelp { get; private set; }
+		public string Project { get; private set; }
 		public string Configuration { get; private set; }
 		public IEnumerable<string> Files { get; private set; }
 		public MonoMacPackagingSettings PackagingSettings { get; private set; }
@@ -80,6 +81,9 @@ namespace MonoDevelop.MonoMac
 			PackagingSettings = GetDefaultPackagingSettings ();
             
 			Options = new OptionSet {
+				{ "p|project=", "Name of the project to build.", v => {
+					Project = v;
+				}},
 				{ "i|include-mono", "Include Mono in the bundle.", v => {
 					PackagingSettings.IncludeMono = v != null;
 				}},
@@ -92,7 +96,7 @@ namespace MonoDevelop.MonoMac
 					PackagingSettings.SignBundle = v != null;
 					PackagingSettings.BundleSigningKey = v;
 				}},
-				{ "p|sign-package=", "Sign package with specified key.", v => {
+				{ "s|sign-package=", "Sign package with specified key.", v => {
 					PackagingSettings.SignPackage = v != null;
 					PackagingSettings.PackageSigningKey = v;
 				}},

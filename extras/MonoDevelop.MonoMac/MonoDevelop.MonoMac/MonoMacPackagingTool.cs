@@ -40,63 +40,75 @@ namespace MonoDevelop.MonoMac
 	public class MonoMacPackagingTool : IApplication
 	{
 		const string Name = "mac-bundle";
-
+		
+		IProgressMonitor Monitor;
+		MonoMacPackagingToolOptions Options;
+		
 		public int Run (string[] arguments)
 		{
-			var options = new MonoMacPackagingToolOptions (arguments);
+			Monitor = new ConsoleProgressMonitor ();
+			Options = new MonoMacPackagingToolOptions (arguments);
 			
-			switch (options.Parse ()) {
+			switch (Options.Parse ()) {
 			case MonoMacPackagingToolOptions.ParseResult.Failure:
-				Console.WriteLine ("{0}: {1}", Name, options.ParseFailureMessage);
+				Console.WriteLine ("{0}: {1}", Name, Options.ParseFailureMessage);
 				Console.WriteLine ("Try `{0} --help' for more information.", Name);
 				return 1;
 			case MonoMacPackagingToolOptions.ParseResult.Success:
 				break;
 			}
 			
-			if (options.ShowHelp) {
-				Console.WriteLine ("Usage: {0} [OPTIONS] [DEST]", Name);
-				Console.WriteLine ("Builds an application bundle from the MonoMac project under the current directory.");
-				Console.WriteLine ();
-				options.Show ();
+			if (Options.ShowHelp) {
+				ShowUsage ();
 				return 0;
 			}
 			
-			var monitor = new ConsoleProgressMonitor ();
-			var project = MaybeFindMonoMacProject (monitor);
+			var project = MaybeFindMonoMacProject ();
 			if (project == null) {
-				Console.WriteLine ("Error: No MonoMac project found.");
+				Console.WriteLine ("Error: Could not find MonoMac project.");
 				return 1;
 			}
 			
-			var config = project.Configurations.FirstOrDefault<ItemConfiguration> (c => c.Name == options.Configuration);
+			var config = project.Configurations.FirstOrDefault<ItemConfiguration> (c => c.Name == Options.Configuration);
 			if (config == null) {
-				Console.WriteLine ("Error: Could not find configuration: {0}", options.Configuration);
+				Console.WriteLine ("Error: Could not find configuration: {0}", Options.Configuration);
 				return 1;
 			}
 			
-			MonoMacPackaging.BuildPackage (monitor, project, config.Selector, options.PackagingSettings, GetTarget (project, options));			
+			MonoMacPackaging.BuildPackage (Monitor, project, config.Selector, Options.PackagingSettings, GetTarget (project));			
 			return 0;
 		}
 		
-		string GetTarget (MonoMacProject project, MonoMacPackagingToolOptions options)
+		void ShowUsage ()
 		{
-			var outputFile = project.Name + (options.PackagingSettings.CreatePackage ? ".pkg" : ".app");
+			Console.WriteLine ("Usage: {0} [Options] [DEST]", Name);
+			Console.WriteLine ("Builds an application bundle from the MonoMac project under the current directory.");
+			Console.WriteLine ();
+			Options.Show ();
+		}
+		
+		string GetTarget (MonoMacProject project)
+		{
+			var outputFile = project.Name + (Options.PackagingSettings.CreatePackage ? ".pkg" : ".app");
 			
 			// If tool was passed a path, we make it the target.
-			if (options.Files.Any ()) {
-				var path = options.Files.First ();
+			if (Options.Files.Any ()) {
+				var path = Options.Files.First ();
 				return Directory.Exists (path) ? Path.Combine (path, outputFile) : path;
 			}
 			
 			return outputFile;
 		}
 
-		MonoMacProject MaybeFindMonoMacProject (IProgressMonitor monitor)
+		MonoMacProject MaybeFindMonoMacProject ()
 		{
+			if (Options.Project != null) {
+				return Services.ProjectService.ReadSolutionItem (Monitor, Options.Project) as MonoMacProject;
+			}
+			
 			var projects =
 				from solutionFile in Directory.GetFiles (".", "*.sln")
-				let solution = Services.ProjectService.ReadWorkspaceItem (monitor, solutionFile) 
+				let solution = Services.ProjectService.ReadWorkspaceItem (Monitor, solutionFile) 
 				from project in solution.GetAllProjects ().OfType<MonoMacProject> ()
 				select project;
 			
