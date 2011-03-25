@@ -38,7 +38,6 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		Dictionary<string,NSObjectTypeInfo> objcTypes = new Dictionary<string,NSObjectTypeInfo> ();
 		Dictionary<string,NSObjectTypeInfo> cliTypes = new Dictionary<string,NSObjectTypeInfo> ();
 		
-		DotNetProject project;
 		ProjectDom dom;
 		bool needsUpdating;
 		

@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.MacDev.ObjCIntegration;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.MacDev.XcodeIntegration
 {
@@ -51,12 +52,12 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		{
 			this.dnp = dnp;
 			this.wrapperName = wrapperName;
-			
-			dnp.FileAddedToProject += FileAddedToProject;
-			dnp.FilePropertyChangedInProject += FilePropertyChangedInProject;
-			
-			if (dnp.Files.Any (IsPage))
-				EnableSyncing ();
+		}
+		
+		public IAsyncOperation OpenDocument (FilePath xib)
+		{
+			EnableSyncing ();
+			throw new NotImplementedException ();
 		}
 		
 		void EnableSyncing ()
@@ -66,14 +67,13 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			syncing = true;
 			xcodeProjectDirty = true;
 			
-			//typeTracker = new NSObjectInfoTracker (dnp, wrapperName);
 			UpdateOutputDir ();
 			
+			dnp.FileAddedToProject += FileAddedToProject;
+			dnp.FilePropertyChangedInProject += FilePropertyChangedInProject;
 			dnp.FileRemovedFromProject += FileRemovedFromProject;
 			dnp.FileChangedInProject += FileChangedInProject;
 			dnp.NameChanged += ProjectNameChanged;
-//			typeTracker.TypesLoaded += TypesLoaded;
-//			typeTracker.UserTypeChanged += UserTypesChanged;
 		}
 		
 		void DisableSyncing ()
@@ -83,45 +83,11 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			syncing = false;
 			xcodeProjectDirty = false;
 			
+			dnp.FileAddedToProject -= FileAddedToProject;
+			dnp.FilePropertyChangedInProject -= FilePropertyChangedInProject;;
 			dnp.FileRemovedFromProject -= FileRemovedFromProject;
 			dnp.FileChangedInProject -= FileChangedInProject;
 			dnp.NameChanged -= ProjectNameChanged;
-//			typeTracker.TypesLoaded -= TypesLoaded;
-//			typeTracker.UserTypeChanged -= UserTypesChanged;
-//			typeTracker.Dispose ();
-		}
-
-		void UserTypesChanged (object sender, UserTypeChangeEventArgs e)
-		{
-			foreach (var change in e.Changes) {
-				switch (change.Kind) {
-				case UserTypeChangeKind.Added:
-				case UserTypeChangeKind.Modified:
-					UpdateUserType (change.Type);
-					break;
-				case UserTypeChangeKind.Removed:
-					RemoveUserType (change.Type.ObjCName);
-					break;
-				}
-			}
-			
-			UpdateXcodeProject ();
-		}
-	
-		void TypesLoaded (object sender, EventArgs e)
-		{
-			//TODO: skip types that were already in the project when MD was loaded
-			UpdateTypes (false);
-			
-			UpdateXcodeProject ();
-		}
-		
-		void ProjectNameChanged (object sender, SolutionItemRenamedEventArgs e)
-		{
-			if (!outputDir.IsNullOrEmpty && Directory.Exists (outputDir)) {
-				Directory.Delete (outputDir, true);
-			}
-			UpdateOutputDir ();
 		}
 		
 		void UpdateOutputDir ()
@@ -144,6 +110,17 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			return pf.BuildAction == BuildAction.Page || pf.BuildAction == BuildAction.Content;
 		}
 		
+		#region Project change tracking
+		
+		void ProjectNameChanged (object sender, SolutionItemRenamedEventArgs e)
+		{
+			//FIXME: get Xcode to close and re-open the project
+			if (!outputDir.IsNullOrEmpty && Directory.Exists (outputDir)) {
+				Directory.Delete (outputDir, true);
+			}
+			UpdateOutputDir ();
+		}
+		
 		void FileRemovedFromProject (object sender, ProjectFileEventArgs e)
 		{
 			if (syncing && e.Any (finf => IsPage (finf.ProjectFile)))
@@ -156,9 +133,6 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 
 		void FileAddedToProject (object sender, ProjectFileEventArgs e)
 		{
-			if (!syncing && e.Any (finf => IsPage (finf.ProjectFile)))
-				EnableSyncing ();
-			
 			if (syncing)
 				UpdateTypes (true);
 			
@@ -175,9 +149,6 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 
 		void FilePropertyChangedInProject (object sender, ProjectFileEventArgs e)
 		{
-			if (!syncing && e.Any (finf => IsPage (finf.ProjectFile)))
-				EnableSyncing ();
-			
 			if (!xcodeProjectDirty && syncing && e.Any (finf => IsContent (finf.ProjectFile)))
 				xcodeProjectDirty = true;
 			
@@ -187,14 +158,13 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			UpdateXcodeProject ();
 		}
 		
+		#endregion
+		
+		#region Outbound syncing
+		
 		void UpdateTypes (bool rescan)
 		{
 			var pinfo = NSObjectInfoService.GetProjectInfo (dnp);
-			if (pinfo == null) {
-				Console.WriteLine ("Null PI");
-				return;
-			}
-			
 			pinfo.Update (rescan);
 			
 			var currentUTs = new Dictionary<string,NSObjectTypeInfo> ();
@@ -237,6 +207,12 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 				Directory.CreateDirectory (outputDir);
 			
 			type.GenerateObjcType (outputDir);
+			
+			string headerFlag = outputDir.Combine (type.ObjCName + ".h.modified");
+			if (File.Exists (headerFlag))
+				File.SetLastWriteTime (headerFlag, DateTime.Now);
+			else
+				File.WriteAllText (headerFlag, "");
 		}
 		
 		void RemoveUserType (string objcName)
@@ -280,6 +256,8 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			xcp.Generate (outputDir);
 		}
 		
+		#endregion
+		
 		public void Dispose ()
 		{
 			if (disposed)
@@ -287,8 +265,6 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			disposed = true;
 			
 			DisableSyncing ();
-			dnp.FileAddedToProject -= FileAddedToProject;
-			dnp.FilePropertyChangedInProject -= FilePropertyChangedInProject;;
 		}
 	}
 }
