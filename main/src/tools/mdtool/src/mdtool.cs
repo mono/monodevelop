@@ -1,5 +1,5 @@
 //
-// mdrun.cs
+// mdtool.cs
 //
 // Author:
 //   Lluis Sanchez Gual

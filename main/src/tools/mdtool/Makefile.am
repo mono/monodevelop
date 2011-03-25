@@ -2,7 +2,7 @@
 ASSEMBLY = $(top_builddir)/build/bin/mdtool.exe
 
 FILES = src/AssemblyInfo.cs \
-src/mdrun.cs
+src/mdtool.cs
 
 all: $(ASSEMBLY) $(ASSEMBLY).config
 

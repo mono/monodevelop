@@ -178,7 +178,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{5D3F7E65
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mdhost", "src\tools\mdhost\mdhost.csproj", "{BFE8691A-D323-4622-9021-7B8B27F81599}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mdrun", "src\tools\mdrun\mdrun.csproj", "{8A04FF99-5DFE-4E3D-A24F-72A621C8DDC6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mdtool", "src\tools\mdtool\mdtool.csproj", "{8A04FF99-5DFE-4E3D-A24F-72A621C8DDC6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mdmonitor", "src\tools\mdmonitor\mdmonitor.csproj", "{D0B5AF2B-4BC1-4EB4-81D3-E5B85DDCE925}"
 EndProject

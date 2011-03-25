@@ -122,7 +122,7 @@ autom4te.cache/
 /main/src/tools/SharpCoco/Makefile
 /main/src/tools/mdhost/Makefile
 /main/src/tools/mdmonitor/Makefile
-/main/src/tools/mdrun/Makefile
+/main/src/tools/mdtool/Makefile
 /main/tests/Makefile
 /main/tests/UnitTests/Makefile
 /main/theme-icons/Makefile

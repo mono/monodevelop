@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8A04FF99-5DFE-4E3D-A24F-72A621C8DDC6}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>mdrun</RootNamespace>
+    <RootNamespace>mdtool</RootNamespace>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <AssemblyName>mdtool</AssemblyName>
   </PropertyGroup>
@@ -48,14 +48,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\AssemblyInfo.cs" />
-    <Compile Include="src\mdrun.cs" />
+    <Compile Include="src\mdtool.cs" />
     <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
-        <Deployment.LinuxDeployData scriptName="mdrun" />
+        <Deployment.LinuxDeployData scriptName="mdtool" />
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
