@@ -160,7 +160,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				return type;
 			}
 			
-			List<IReturnTypePart> parts = new List<IReturnTypePart> (type.Parts.Count);
+			List<IReturnTypePart > parts = new List<IReturnTypePart> (type.Parts.Count);
 			IType curType = lookupType.DeclaringType;
 			int typePart = 0;
 			while (curType != null) {
@@ -187,10 +187,12 @@ namespace MonoDevelop.Projects.Dom.Parser
 			DomReturnType rt = new DomReturnType (lookupType.Namespace, parts);
 			// Make sure the whole type is resolved
 			if (parts.Count > 1 && db.SearchType (unit, contextType, resolvePosition, rt) == null) {
-				unresolvedCount++;
-				return type;
+				rt = new DomReturnType (null, parts);
+				if (db.SearchType (unit, contextType, resolvePosition, rt) == null) {
+					unresolvedCount++;
+					return type;
+				}
 			}
-			
 			rt.PointerNestingLevel = type.PointerNestingLevel;
 			rt.IsNullable = type.IsNullable;
 			rt.ArrayDimensions = type.ArrayDimensions;
