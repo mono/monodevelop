@@ -113,7 +113,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				return DomReturnType.GetSharedReturnType (index);
 			
 			string ns = ReadString (reader, nameTable);
-			List<IReturnTypePart> parts = new List<IReturnTypePart> ();
+			List<ReturnTypePart> parts = new List<ReturnTypePart> ();
 			
 			uint partCount = ReadUInt (reader, 500);
 			while (partCount-- > 0) {

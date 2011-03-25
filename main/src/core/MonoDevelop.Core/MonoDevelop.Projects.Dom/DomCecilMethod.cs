@@ -86,7 +86,7 @@ namespace MonoDevelop.Projects.Dom
 				foreach (TypeReference typeRef in genType.GenericArguments) {
 					DomReturnType param = GetReturnType (typeRef);
 					
-					foreach (IReturnTypePart part in result.Parts) {
+					foreach (ReturnTypePart part in result.Parts) {
 						if (part.Tag is TypeDefinition) {
 							TypeDefinition typeDef = (TypeDefinition)part.Tag;
 							foreach (TypeReference typeParam in typeDef.GenericParameters) {

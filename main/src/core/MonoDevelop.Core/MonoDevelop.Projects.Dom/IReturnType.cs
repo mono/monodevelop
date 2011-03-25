@@ -43,7 +43,6 @@ namespace MonoDevelop.Projects.Dom
 	{
 		string Name {
 			get;
-			set;
 		}
 		
 		ReadOnlyCollection<IReturnType> GenericArguments {
@@ -56,19 +55,15 @@ namespace MonoDevelop.Projects.Dom
 		/// </summary>
 		bool IsGenerated {
 			get;
-			set;
 		}
 		
 		object Tag {
 			get;
-			set;
 		}
 		
 		string HelpUrl {
 			get;
 		}
-
-		void AddTypeParameter (IReturnType type);
 	}
 	
 	/// <summary>
@@ -86,10 +81,9 @@ namespace MonoDevelop.Projects.Dom
 		
 		string Namespace {
 			get;
-			set;
 		}
 		
-		List<IReturnTypePart> Parts {
+		ReadOnlyCollection<IReturnTypePart> Parts {
 			get;
 		}
 

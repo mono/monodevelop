@@ -182,10 +182,10 @@ namespace MonoDevelop.Projects.Dom
 		
 		public virtual INode Visit (IReturnType type, T data)
 		{
-			List<IReturnTypePart> parts = new List<IReturnTypePart> (type.Parts.Count);
+			List<ReturnTypePart> parts = new List<ReturnTypePart> (type.Parts.Count);
 			
 			foreach (IReturnTypePart part in type.Parts)
-				parts.Add ((IReturnTypePart) Visit (part, data));
+				parts.Add ((ReturnTypePart) Visit (part, data));
 			
 			DomReturnType rt = new DomReturnType (type.Namespace, parts);
 			rt.PointerNestingLevel = type.PointerNestingLevel;

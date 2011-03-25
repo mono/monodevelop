@@ -142,17 +142,17 @@ namespace MonoDevelop.Projects.Dom.Parser
 					typeParameterReturnType.PointerNestingLevel = type.PointerNestingLevel;
 					for (int i = 0; i < type.ArrayDimensions; i++)
 						typeParameterReturnType.SetDimension (i, type.GetDimension (i));
-					return typeParameterReturnType;
+					return db.GetSharedReturnType (typeParameterReturnType);
 				}
 			}
 			
 			IType lookupType = db.SearchType (unit, contextType, resolvePosition, type);
 			if (visitAttribute && lookupType == null && type.Parts.Count > 0) {
-				string oldName = type.Parts [type.Parts.Count - 1].Name;
-				type.Parts [type.Parts.Count - 1].Name += "Attribute";
-				lookupType = db.SearchType (unit, contextType, resolvePosition, type);
-				if (lookupType == null) 
-					type.Parts [type.Parts.Count - 1].Name = oldName;
+				DomReturnType typeCopy = new DomReturnType (type);
+				typeCopy.Parts [typeCopy.Parts.Count - 1].Name += "Attribute";
+				lookupType = db.SearchType (unit, contextType, resolvePosition, typeCopy);
+				if (lookupType != null) 
+					type = typeCopy;
 			}
 			
 			if (lookupType == null) {
@@ -160,7 +160,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				return type;
 			}
 			
-			List<IReturnTypePart > parts = new List<IReturnTypePart> (type.Parts.Count);
+			List<ReturnTypePart> parts = new List<ReturnTypePart> (type.Parts.Count);
 			IType curType = lookupType.DeclaringType;
 			int typePart = 0;
 			while (curType != null) {

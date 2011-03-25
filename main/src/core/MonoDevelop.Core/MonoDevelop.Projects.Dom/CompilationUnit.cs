@@ -204,10 +204,11 @@ namespace MonoDevelop.Projects.Dom
 			
 			public override INode Visit (IReturnType type, object data)
 			{
-				IReturnType returnType = (IReturnType)base.Visit (type, data);
-				if (BuiltInTypes.Contains (returnType.FullName))
-					return returnType;
+				IReturnType rt = (IReturnType)base.Visit (type, data);
+				if (BuiltInTypes.Contains (rt.FullName))
+					return rt;
 				
+				DomReturnType returnType = new DomReturnType (rt);
 				string longest = "";
 				string lastAlias = null;
 				if (callingType != null && returnType.DecoratedFullName.StartsWith (callingType.FullName)) {
