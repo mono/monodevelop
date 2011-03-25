@@ -474,7 +474,7 @@ namespace MonoDevelop.Projects.Gui
 				SimulatedInput = "\t",
 				AutoSelect = true,
 				CompleteWithSpaceOrPunctuation = true,
-				AutoCompleteEmptyMatch = false,
+				AutoCompleteEmptyMatch = true,
 				CompletionData = new[] {
 					"A",
 					"B",
@@ -490,7 +490,7 @@ namespace MonoDevelop.Projects.Gui
 				SimulatedInput = " ",
 				AutoSelect = true,
 				CompleteWithSpaceOrPunctuation = true,
-				AutoCompleteEmptyMatch = false,
+				AutoCompleteEmptyMatch = true,
 				CompletionData = new[] {
 					"A",
 					"B",
