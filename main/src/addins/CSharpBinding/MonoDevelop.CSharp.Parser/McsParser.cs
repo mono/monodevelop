@@ -297,7 +297,7 @@ namespace MonoDevelop.CSharp.Parser
 				keywordTable [(int)BuiltinTypeSpec.Type.UInt] = DomReturnType.UInt32.FullName;
 				keywordTable [(int)BuiltinTypeSpec.Type.Long] = DomReturnType.Int64.FullName;
 				keywordTable [(int)BuiltinTypeSpec.Type.ULong] = DomReturnType.UInt64.FullName;
-				keywordTable [(int)BuiltinTypeSpec.Type.Object] = "object";
+				keywordTable [(int)BuiltinTypeSpec.Type.Object] = DomReturnType.Object.FullName;
 				keywordTable [(int)BuiltinTypeSpec.Type.Float] = DomReturnType.Float.FullName;
 				keywordTable [(int)BuiltinTypeSpec.Type.Double] = DomReturnType.Double.FullName;
 				keywordTable [(int)BuiltinTypeSpec.Type.Byte] = DomReturnType.Byte.FullName;
