@@ -224,16 +224,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		// Parses a file an updates the parser database
 		public static ParsedDocument Parse (Project project, string fileName)
 		{
-			return Parse (project, fileName, delegate () {
-				if (!System.IO.File.Exists (fileName))
-					return "";
-				try {
-					return System.IO.File.ReadAllText (fileName);
-				} catch (Exception e) {
-					LoggingService.LogError ("Error reading file {0} for ProjectDomService: {1}", fileName, e);
-					return "";
-				}
-			});
+			return Parse (project, fileName, (Func<string>)null);
 		}
 		
 		public static ParsedDocument Parse (Project project, string fileName, string content)
@@ -866,9 +857,16 @@ namespace MonoDevelop.Projects.Dom.Parser
 				ParsedDocument parseInformation = null;
 				string fileContent;
 				if (getContent == null) {
-					StreamReader sr = new StreamReader (fileName);
-					fileContent = sr.ReadToEnd ();
-					sr.Close ();
+					if (!System.IO.File.Exists (fileName))
+						fileContent = "";
+					else {
+						try {
+							fileContent = System.IO.File.ReadAllText (fileName);
+						} catch (Exception e) {
+							LoggingService.LogError ("Error reading file {0} for ProjectDomService: {1}", fileName, e);
+							fileContent = "";
+						}
+					}
 				} else
 					fileContent = getContent ();
 				
@@ -902,7 +900,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 									} else {
 										db.UpdateTagComments (fileName, parseInformation.TagComments);
 										db.RemoveTemporaryCompilationUnit (parseInformation.CompilationUnit);
-										TypeUpdateInformation res = db.UpdateFromParseInfo (parseInformation.CompilationUnit);
+										TypeUpdateInformation res = db.UpdateFromParseInfo (parseInformation.CompilationUnit, getContent == null);
 										if (res != null)
 											NotifyTypeUpdate (project, fileName, res);
 										UpdatedCommentTasks (fileName, parseInformation.TagComments, project);
@@ -914,7 +912,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 						}
 					} else {
 						ProjectDom db = GetFileDom (fileName);
-						db.UpdateFromParseInfo (parseInformation.CompilationUnit);
+						db.UpdateFromParseInfo (parseInformation.CompilationUnit, getContent == null);
 					}
 				}
 				

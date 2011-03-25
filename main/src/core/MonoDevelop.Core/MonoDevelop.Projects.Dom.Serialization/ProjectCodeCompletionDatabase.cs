@@ -237,7 +237,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			if (monitor != null) monitor.BeginTask (string.Format (GettextCatalog.GetString ("Parsing file: {0}"), Path.GetFileName (fileName)), 1);
 			
 			try {
-				ProjectDomService.Parse (project, fileName, delegate () { return File.ReadAllText (fileName); });
+				ProjectDomService.Parse (project, fileName);
 				// The call to ProjectDomService.Parse will call UpdateFromParseInfo when done
 			} finally {
 				if (monitor != null) monitor.EndTask ();
@@ -246,7 +246,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		int totalUnresolvedCount;
 		
-		public TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit parserInfo, string fileName)
+		public TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit parserInfo, string fileName, bool isFromFile)
 		{
 			lock (rwlock) {
 				ICompilationUnit cu = parserInfo;
@@ -267,9 +267,17 @@ namespace MonoDevelop.Projects.Dom.Serialization
 							
 							// Enqueue the file for quickly reparse. Types can't be resolved most probably because
 							// the file that implements them is not yet parsed.
-							ProjectDomService.QueueParseJob (SourceProjectDom, 
-							                                 delegate { UpdateFromParseInfo (parserInfo, fileName); },
-							                                 file.FileName);
+							
+							if (isFromFile) {
+								// To reduce memory usage, we don't keep the compilation unit in memory if the
+								// content comes from a saved file. We'll just reparse the file.
+								file.InParseQueue = false;
+								QueueParseJob (file);
+							} else {
+								ProjectDomService.QueueParseJob (SourceProjectDom, 
+								                                 delegate { UpdateFromParseInfo (parserInfo, fileName, false); },
+								                                 file.FileName);
+							}
 						}
 					}
 					else {

@@ -763,7 +763,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return null;
 		}
 		
-		public virtual TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit unit)
+		public virtual TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit unit, bool isFromFile)
 		{
 			return null;
 		}

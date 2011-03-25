@@ -90,7 +90,7 @@ namespace MonoDevelop.Projects.Dom.MemoryDatabase
 			return result;
 		}
 		Dictionary<string, int> files = new Dictionary<string, int> ();
-		public override TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit cu)
+		public override TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit cu, bool isFromFile)
 		{
 			//List<IType> types = new List<IType> (cu.Types);
 			//ProjectDomService.ResolveTypes (this, cu, ResolveTypeParameters (cu.Types), out types);

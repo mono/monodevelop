@@ -155,9 +155,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return decorated.GetType (typeName, genericArgumentsCount, deepSearchReferences, caseSensitive);
 		}
 		
-		public override TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit unit)
+		public override TypeUpdateInformation UpdateFromParseInfo (ICompilationUnit unit, bool isFromFile)
 		{
-			return decorated.UpdateFromParseInfo (unit);
+			return decorated.UpdateFromParseInfo (unit, isFromFile);
 		}
 		
 		public override IType CreateInstantiatedGenericType (IType type, IList<IReturnType> genericArguments)
