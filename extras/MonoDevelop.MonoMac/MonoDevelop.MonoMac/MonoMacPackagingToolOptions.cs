@@ -45,6 +45,7 @@ namespace MonoDevelop.MonoMac
 
 		public bool ShowHelp { get; private set; }
 		public string Configuration { get; private set; }
+		public IEnumerable<string> Files { get; private set; }
 		public MonoMacPackagingSettings PackagingSettings { get; private set; }
 
 		public string ParseFailureMessage { get; private set; }
@@ -124,7 +125,7 @@ namespace MonoDevelop.MonoMac
 		public ParseResult Parse ()
 		{
 			try {
-				Options.Parse (Arguments);
+				Files = Options.Parse (Arguments);
 			} catch (OptionException e) {
 				ParseFailureMessage = e.Message;
 				return ParseResult.Failure;
