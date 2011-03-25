@@ -166,8 +166,9 @@ namespace MonoDevelop.CSharp.Highlighting
 					if (type == null && unit != null && returnType != null)
 						type = unit.GetType (returnType.FullName, returnType.GenericArguments.Count);
 					if (ctx != null && type == null && returnType != null) {
-						returnType.Name += "Attribute";
-						type = ctx.SearchType (unit, callingType, new DomLocation (lineNumber, 1), returnType);
+						DomReturnType rt = new DomReturnType (returnType);
+						rt.Name += "Attribute";
+						type = ctx.SearchType (unit, callingType, new DomLocation (lineNumber, 1), rt);
 					}
 					if (type != null)
 						nameSegments.ForEach (segment => HighlightSegment (startChunk, segment, "keyword.semantic.type"));
