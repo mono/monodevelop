@@ -203,7 +203,8 @@ namespace MonoDevelop.MonoDroid
 							packagesListLocation = output;
 						else
 							packagesListLocation = "/dbdata/system/packages.xml";
-					}
+					},
+					ErrorMessage = GettextCatalog.GetString ("Failed to determine the packages.xml file location")
 				},
 				new ChainedAsyncOperation<AdbGetPackagesOperation> () {
 					TaskName = GettextCatalog.GetString ("Getting package list from device"),
