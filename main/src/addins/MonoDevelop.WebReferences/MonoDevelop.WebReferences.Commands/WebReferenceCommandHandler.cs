@@ -36,7 +36,7 @@ namespace MonoDevelop.WebReferences.Commands
 			}
 			
 			WebReferenceDialog dialog = new WebReferenceDialog (project);
-			dialog.NamespacePrefix = project.Name;
+			dialog.NamespacePrefix = project.DefaultNamespace;
 			
 			try {
 				if (MessageService.RunCustomDialog (dialog) == (int)Gtk.ResponseType.Ok) {
