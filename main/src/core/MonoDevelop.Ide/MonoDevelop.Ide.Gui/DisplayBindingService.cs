@@ -32,60 +32,85 @@ using System.Collections.Generic;
 using Mono.Addins;
 
 using MonoDevelop.Ide.Codons;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui
 {
 	public static class DisplayBindingService
 	{
-		static List<DisplayBindingCodon> displayBindings = new List<DisplayBindingCodon> ();
-		
-		static DisplayBindingService ()
+		static IEnumerable<T> GetBindings<T> ()
 		{
-			//FIXME: this ignores node ordering
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/DisplayBindings", delegate(object sender, ExtensionNodeEventArgs args) {
-				DisplayBindingCodon displayBindingCodon = (DisplayBindingCodon)args.ExtensionNode;
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					displayBindings.Add (displayBindingCodon);
-					break;
-				case ExtensionChange.Remove:
-					displayBindings.Remove (displayBindingCodon);
-					break;
-				}
-			});
+			return AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/DisplayBindings")
+				.OfType<T> ();
 		}
 		
-		static IEnumerable<IDisplayBinding> RealDisplayBindings {
-			get {
-				return displayBindings.Select (d => d.DisplayBinding).OfType<IDisplayBinding> ();
+		static IEnumerable<IDisplayBinding> GetDisplayBindings (string filename, string mimeType)
+		{
+			if (mimeType == null && filename != null)
+				mimeType = DesktopService.GetMimeTypeForUri (filename);
+			
+			foreach (var b in GetBindings<IDisplayBinding> ()) {
+				if ((filename != null && b.CanHandleFile (filename)) || (mimeType != null && b.CanHandleMimeType (mimeType)))
+					yield return b;
 			}
 		}
 		
-		public static IDisplayBinding GetDefaultBindingForUri (string uri)
+		public static IViewDisplayBinding GetDefaultViewBinding (string filename, string mimeType)
 		{
-			return GetDefaultBinding (uri, null);
+			return GetDisplayBindings (filename, mimeType).OfType<IViewDisplayBinding> ()
+				.FirstOrDefault (d => d.CanUseAsDefault);
 		}
 		
-		public static IDisplayBinding GetDefaultBinding (string uri, string mimeType)
+		static IDisplayBinding GetDefaultBinding (string filename, string mimeType)
 		{
-			return RealDisplayBindings.FirstOrDefault (binding =>
-				binding.CanUseAsDefault && (
-			    		(uri != null && binding.CanCreateContentForUri (uri))
-			    		|| (mimeType != null && binding.CanCreateContentForMimeType (mimeType))));
+			return GetDisplayBindings (filename, mimeType).FirstOrDefault ();
 		}
 		
-		public static IEnumerable<IDisplayBinding> GetBindingsForMimeType (string mimeType)
+		static IEnumerable<IDisplayBinding> GetBindingsForMimeType (string mimeType)
 		{
-			return RealDisplayBindings.Where (b => b.CanCreateContentForMimeType (mimeType));
+			return GetBindings<IDisplayBinding> ().Where (b => b.CanHandleMimeType (mimeType));
 		}
 		
 		public static void AttachSubWindows (IWorkbenchWindow workbenchWindow)
 		{
-			foreach (DisplayBindingCodon codon in displayBindings) {
-				IAttachableDisplayBinding binding = codon.DisplayBinding as IAttachableDisplayBinding;
-				if (binding != null && binding.CanAttachTo (workbenchWindow.ViewContent)) 
-					workbenchWindow.AttachViewContent (binding.CreateViewContent (workbenchWindow.ViewContent));
+			foreach (var b in GetBindings<IAttachableDisplayBinding> ()) {
+				if (b.CanAttachTo (workbenchWindow.ViewContent)) 
+					workbenchWindow.AttachViewContent (b.CreateViewContent (workbenchWindow.ViewContent));
 			}
+		}
+
+		public static IEnumerable<FileViewer> GetFileViewers (FilePath fileName)
+		{
+			string mimeType = DesktopService.GetMimeTypeForUri (fileName);
+			var viewerIds = new HashSet<string> ();
+			
+			foreach (var b in GetBindings<IDisplayBinding> ()) {
+				if (b.CanHandleMimeType (mimeType)) {
+					var vb = b as IViewDisplayBinding;
+					if (vb != null) {
+						yield return new FileViewer (vb);
+					} else {
+						var eb = (IExternalDisplayBinding) b;
+						var app = eb.GetApplicationForMimeType (mimeType);
+						if (viewerIds.Add (app.Id))
+							yield return new FileViewer (app);
+					}
+				} else if (b.CanHandleFile (fileName)) {
+					var vb = b as IViewDisplayBinding;
+					if (vb != null) {
+						yield return new FileViewer (vb);
+					} else {
+						var eb = (IExternalDisplayBinding) b;
+						var app = eb.GetApplicationForFile (mimeType);
+						if (viewerIds.Add (app.Id))
+							yield return new FileViewer (app);
+					}
+				}
+			}
+
+			foreach (var app in DesktopService.GetApplications (fileName))
+				if (viewerIds.Add (app.Id))
+					yield return new FileViewer (app);
 		}
 	}
 }

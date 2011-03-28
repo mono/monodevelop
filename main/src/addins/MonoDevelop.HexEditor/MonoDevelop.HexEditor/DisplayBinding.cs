@@ -30,7 +30,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.HexEditor
 {
-	public class HexEditorDisplayBinding : DisplayBinding
+	public class HexEditorDisplayBinding : ViewDisplayBinding
 	{
 		public override string Name {
 			get {
@@ -38,12 +38,12 @@ namespace MonoDevelop.HexEditor
 			}
 		}
 		
-		public override MonoDevelop.Ide.Gui.IViewContent CreateContentForUri (string fileName)
+		public override MonoDevelop.Ide.Gui.IViewContent CreateContentForFile (string fileName)
 		{
 			return new HexEditorView ();
 		}
 
-		public override bool CanCreateContentForMimeType (string mimetype)
+		public override bool CanHandleMimeType (string mimetype)
 		{
 			return true;
 		}
@@ -59,8 +59,8 @@ namespace MonoDevelop.HexEditor
 			}*/
 			return result;
 		}
-
-		public override bool CanCreateContentForUri (string fileName)
+		
+		public override bool CanHandleFile (string filename)
 		{
 			return true;
 		}

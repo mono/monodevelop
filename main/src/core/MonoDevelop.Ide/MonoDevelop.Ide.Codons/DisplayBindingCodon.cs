@@ -30,13 +30,10 @@ using Mono.Addins;
 
 namespace MonoDevelop.Ide.Codons
 {
-	[ExtensionNode (Description="A display binding. The specified class must implement MonoDevelop.Ide.Codons.IDisplayBinding.")]
+	[ExtensionNode (Description="An external display binding. The specified class must implement " +
+		"MonoDevelop.Ide.Codons.IViewDisplayBinding, IExternalDisplayBinding or IAttachableDisplayBinding.")]
 	internal class DisplayBindingCodon : TypeExtensionNode
 	{
-		public IBaseDisplayBinding DisplayBinding {
-			get {
-				return GetInstance () as IBaseDisplayBinding;
-			}
-		}
+		public object Binding { get { return GetInstance (); } }
 	}
 }

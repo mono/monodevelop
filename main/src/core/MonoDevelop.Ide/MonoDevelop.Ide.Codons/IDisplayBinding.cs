@@ -30,13 +30,25 @@ using System.IO;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Desktop;
 
 namespace MonoDevelop.Ide.Codons
 {
-	public interface IDisplayBinding : IBaseDisplayBinding
+	public interface IDisplayBinding
 	{
-		bool CanCreateContentForMimeType (string mimeType);
+		bool CanHandleMimeType (string mimeType);
+		bool CanHandleFile (string filename);
 		
+		/// <summary>
+		/// Whether the display binding can be used as the default handler for the content types
+		/// that it handles. If this is false, the binding is only used when the user explicitly picks it.
+		/// </summary>
+		bool CanUseAsDefault { get; }
+	}
+	
+	///<summary>A display binding that opens </summary>
+	public interface IViewDisplayBinding : IDisplayBinding
+	{
 		/// <summary>
 		/// 
 		/// </summary>
@@ -49,15 +61,14 @@ namespace MonoDevelop.Ide.Codons
 		/// <returns>
 		/// A <see cref="IViewContent"/>
 		/// </returns>
-		IViewContent CreateContentForMimeType (string mimeType, System.IO.Stream content);
-		
-		bool CanCreateContentForUri (string uri);
-		IViewContent CreateContentForUri (string uri);
-		
-		/// <summary>
-		/// Whether the display binding can be used as the default handler for the content types
-		/// that it handles. If this is false, the binding is only used when the user explicitly picks it.
-		/// </summary>
-		bool CanUseAsDefault { get; }
+		IViewContent CreateContentForMimeType (string mimeType, Stream content);
+		IViewContent CreateContentForFile (string filename);
+		string Name { get; }
+	}
+	
+	public interface IExternalDisplayBinding : IDisplayBinding
+	{
+		DesktopApplication GetApplicationForMimeType (string mimeType);
+		DesktopApplication GetApplicationForFile (string filename);
 	}
 }

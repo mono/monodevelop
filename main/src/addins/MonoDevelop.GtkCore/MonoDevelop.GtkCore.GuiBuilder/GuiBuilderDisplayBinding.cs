@@ -34,7 +34,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class GuiBuilderDisplayBinding : DisplayBinding
+	public class GuiBuilderDisplayBinding : ViewDisplayBinding
 	{
 		bool excludeThis = false;
 		
@@ -42,7 +42,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			get { return "Window Designer"; }
 		}
 		
-		public override bool CanCreateContentForUri (string fileName)
+		public override bool CanHandleFile (string fileName)
 		{
 			if (excludeThis) return false;
 			
@@ -50,16 +50,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return false;
 			
 			excludeThis = true;
-			var db = DisplayBindingService.GetDefaultBindingForUri (fileName);
+			var db = DisplayBindingService.GetDefaultViewBinding (fileName, null);
 			excludeThis = false;
 			return db != null;
 		}
 
-		public override IViewContent CreateContentForUri (string fileName)
+		public override IViewContent CreateContentForFile (string fileName)
 		{
 			excludeThis = true;
-			var db = DisplayBindingService.GetDefaultBindingForUri (fileName);
-			GuiBuilderView view = new GuiBuilderView (db.CreateContentForUri (fileName), GetWindow (fileName));
+			var db = DisplayBindingService.GetDefaultViewBinding (fileName, null);
+			GuiBuilderView view = new GuiBuilderView (db.CreateContentForFile (fileName), GetWindow (fileName));
 			excludeThis = false;
 			return view;
 		}

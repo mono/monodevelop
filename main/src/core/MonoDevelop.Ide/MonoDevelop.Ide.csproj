@@ -851,7 +851,6 @@
     <Compile Include="MonoDevelop.Ide.Gui\WorkbenchMemento.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\SdiWorkspaceWindow.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\DisplayBindingCodon.cs" />
-    <Compile Include="MonoDevelop.Ide.Codons\IDisplayBinding.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\FileTemplateTypeCodon.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\ProjectTemplateCodon.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\NodeBuilderCodon.cs" />
@@ -1010,10 +1009,8 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.FindInFiles.SearchResultWidget.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\ISearchProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\SearchProgressMonitor.cs" />
-    <Compile Include="MonoDevelop.Ide.Codons\IAttachableDisplayBinding.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\IAttachableViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\AbstractAttachableViewContent.cs" />
-    <Compile Include="MonoDevelop.Ide.Codons\IBaseDisplayBinding.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormattingCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Execution\ParameterizedExecutionHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Execution\ExecutionModeCommandService.cs" />
@@ -1431,6 +1428,8 @@
     <Compile Include="MonoDevelop.Ide.Projects\NewProjectOptionsWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\FileTypeCondition.cs" />
     <Compile Include="MonoDevelop.Ide\CodeGenerationService.cs" />
+    <Compile Include="MonoDevelop.Ide.Codons\IDisplayBinding.cs" />
+    <Compile Include="MonoDevelop.Ide.Codons\IAttachableDisplayBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog" />

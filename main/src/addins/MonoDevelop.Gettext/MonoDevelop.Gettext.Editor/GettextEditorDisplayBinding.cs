@@ -35,18 +35,18 @@ using MonoDevelop.Ide.Codons;
 
 namespace MonoDevelop.Gettext
 {	
-	public class GettextEditorDisplayBinding : DisplayBinding
+	public class GettextEditorDisplayBinding : ViewDisplayBinding
 	{
 		public override string Name {
 			get { return GettextCatalog.GetString ("Gettext Editor"); }
 		}
 		
-		public override bool CanCreateContentForUri (string fileName)
+		public override bool CanHandleFile (string fileName)
 		{
 			return Path.GetExtension (fileName).Equals (".po", StringComparison.OrdinalIgnoreCase);
 		}
 		
-		public override IViewContent CreateContentForUri (string fileName)
+		public override IViewContent CreateContentForFile (string fileName)
 		{
 			foreach (TranslationProject tp in IdeApp.Workspace.GetAllSolutionItems<TranslationProject>  ())
 				if (tp.BaseDirectory == Path.GetDirectoryName (fileName))

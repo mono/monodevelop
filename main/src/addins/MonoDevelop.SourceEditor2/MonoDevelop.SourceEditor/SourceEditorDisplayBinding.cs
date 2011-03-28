@@ -31,7 +31,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class SourceEditorDisplayBinding : DisplayBinding
+	public class SourceEditorDisplayBinding : ViewDisplayBinding
 	{
 		public static FilePath SyntaxModePath {
 			get {
@@ -69,12 +69,12 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public override MonoDevelop.Ide.Gui.IViewContent CreateContentForUri (string fileName)
+		public override MonoDevelop.Ide.Gui.IViewContent CreateContentForFile (string fileName)
 		{
 			return new SourceEditorView ();
 		}
 
-		public override bool CanCreateContentForMimeType (string mimetype)
+		public override bool CanHandleMimeType (string mimetype)
 		{
 			if (String.IsNullOrEmpty (mimetype))
 				return false;
@@ -93,7 +93,7 @@ namespace MonoDevelop.SourceEditor
 			return result;
 		}
 
-		public override bool CanCreateContentForUri (string fileName)
+		public override bool CanHandleFile (string fileName)
 		{
 			string mt = DesktopService.GetMimeTypeForUri (fileName);
 			return DesktopService.GetMimeTypeIsText (mt);

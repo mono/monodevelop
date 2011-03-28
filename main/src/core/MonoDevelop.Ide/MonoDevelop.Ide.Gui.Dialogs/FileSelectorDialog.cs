@@ -213,8 +213,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				viewerSelector.AppendText (GettextCatalog.GetString ("Solution Workbench"));
 				currentViewers.Add (null);
 			}
-			FileViewer[] vs = IdeApp.Workbench.GetFileViewers (Filename);
-			foreach (FileViewer vw in vs) {
+			foreach (FileViewer vw in DisplayBindingService.GetFileViewers (Filename)) {
 				if (!vw.IsExternal) {
 					viewerSelector.AppendText (vw.Title);
 					currentViewers.Add (vw);

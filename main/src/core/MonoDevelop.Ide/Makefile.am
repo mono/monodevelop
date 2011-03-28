@@ -312,7 +312,6 @@ FILES =  \
 	MonoDevelop.Ide.Codons/FileTemplateConditionTypeCodon.cs \
 	MonoDevelop.Ide.Codons/FileTemplateTypeCodon.cs \
 	MonoDevelop.Ide.Codons/IAttachableDisplayBinding.cs \
-	MonoDevelop.Ide.Codons/IBaseDisplayBinding.cs \
 	MonoDevelop.Ide.Codons/IDisplayBinding.cs \
 	MonoDevelop.Ide.Codons/LanguageActiveCondition.cs \
 	MonoDevelop.Ide.Codons/NodeBuilderCodon.cs \

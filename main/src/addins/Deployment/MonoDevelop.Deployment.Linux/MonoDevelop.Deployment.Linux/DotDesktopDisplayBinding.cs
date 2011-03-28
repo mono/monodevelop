@@ -8,19 +8,19 @@ using MonoDevelop.Ide.Codons;
 
 namespace MonoDevelop.Deployment.Linux
 {
-	public class DotDesktopDisplayBinding: DisplayBinding
+	public class DotDesktopDisplayBinding: ViewDisplayBinding
 	{
-		public override bool CanCreateContentForUri (string fileName)
+		public override bool CanHandleFile (string fileName)
 		{
 			return fileName.EndsWith (".desktop");
 		}
 		
-		public override bool CanCreateContentForMimeType (string mimetype)
+		public override bool CanHandleMimeType (string mimetype)
 		{
 			return mimetype == "application/x-desktop";
 		}
 
-		public override IViewContent CreateContentForUri (string fileName)
+		public override IViewContent CreateContentForFile (string fileName)
 		{
 			return new DotDesktopView ();
 		}

@@ -302,21 +302,6 @@ namespace MonoDevelop.Ide.Gui
 			return ShowPad (new PadCodon (padContent, id, label, defaultPlacement, icon));
 		}
 
-		public FileViewer[] GetFileViewers (FilePath fileName)
-		{
-			List<FileViewer> list = new List<FileViewer> ();
-			
-			string mimeType = DesktopService.GetMimeTypeForUri (fileName);
-
-			foreach (IDisplayBinding bin in DisplayBindingService.GetBindingsForMimeType (mimeType))
-				list.Add (new FileViewer (bin));
-
-			foreach (var app in DesktopService.GetApplications (fileName))
-				list.Add (new FileViewer (app));
-			
-			return list.ToArray ();
-		}
-
 		public Document OpenDocument (FilePath fileName)
 		{
 			return OpenDocument (fileName, true);
@@ -352,12 +337,12 @@ namespace MonoDevelop.Ide.Gui
 			return OpenDocument (fileName, line, column, bringToFront, encoding, null, highlightCaretLine);
 		}
 
-		internal Document OpenDocument (FilePath fileName, int line, int column, bool bringToFront, string encoding, IDisplayBinding binding)
+		internal Document OpenDocument (FilePath fileName, int line, int column, bool bringToFront, string encoding, IViewDisplayBinding binding)
 		{
 			return OpenDocument (fileName, line, column, bringToFront, encoding, binding, true);
 		}
 		
-		internal Document OpenDocument (FilePath fileName, int line, int column, bool bringToFront, string encoding, IDisplayBinding binding, bool highlightCaretLine)
+		internal Document OpenDocument (FilePath fileName, int line, int column, bool bringToFront, string encoding, IViewDisplayBinding binding, bool highlightCaretLine)
 		{
 			if (string.IsNullOrEmpty (fileName))
 				return null;
@@ -450,7 +435,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public Document NewDocument (string defaultName, string mimeType, Stream content)
 		{
-			IDisplayBinding binding = DisplayBindingService.GetDefaultBinding (null, mimeType);
+			IViewDisplayBinding binding = DisplayBindingService.GetDefaultViewBinding (null, mimeType);
 			IViewContent newContent;
 			
 			if (binding != null) {
@@ -720,12 +705,12 @@ namespace MonoDevelop.Ide.Gui
 				
 				Counters.OpenDocumentTimer.Trace ("Looking for binding");
 				
-				IDisplayBinding binding;
+				IViewDisplayBinding binding;
 				
 				if (openFileInfo.DisplayBinding != null) {
 					binding = openFileInfo.DisplayBinding;
 				} else {
-					binding = DisplayBindingService.GetDefaultBinding (fileName, DesktopService.GetMimeTypeForUri (fileName));
+					binding = DisplayBindingService.GetDefaultViewBinding (fileName, DesktopService.GetMimeTypeForUri (fileName));
 				}
 				
 				if (binding != null) {
@@ -979,7 +964,7 @@ namespace MonoDevelop.Ide.Gui
 		public bool BringToFront { get; set; }
 		public int Line { get; set; }
 		public int Column { get; set; }
-		public IDisplayBinding DisplayBinding { get; set; }
+		public IViewDisplayBinding DisplayBinding { get; set; }
 		public IViewContent NewContent { get; set; }
 		public string Encoding { get; set; }
 		public bool HighlightCaretLine { get; set; }
@@ -999,20 +984,20 @@ namespace MonoDevelop.Ide.Gui
 	
 	class LoadFileWrapper
 	{
-		IDisplayBinding binding;
+		IViewDisplayBinding binding;
 		Project project;
 		FileOpenInformation fileInfo;
 		DefaultWorkbench workbench;
 		IViewContent newContent;
 		
-		public LoadFileWrapper (DefaultWorkbench workbench, IDisplayBinding binding, FileOpenInformation fileInfo)
+		public LoadFileWrapper (DefaultWorkbench workbench, IViewDisplayBinding binding, FileOpenInformation fileInfo)
 		{
 			this.workbench = workbench;
 			this.fileInfo = fileInfo;
 			this.binding = binding;
 		}
 		
-		public LoadFileWrapper (DefaultWorkbench workbench, IDisplayBinding binding, Project project, FileOpenInformation fileInfo)
+		public LoadFileWrapper (DefaultWorkbench workbench, IViewDisplayBinding binding, Project project, FileOpenInformation fileInfo)
 			: this (workbench, binding, fileInfo)
 		{
 			this.project = project;
@@ -1022,11 +1007,11 @@ namespace MonoDevelop.Ide.Gui
 		{
 			try {
 				Counters.OpenDocumentTimer.Trace ("Creating content");
-				if (binding.CanCreateContentForUri (fileName)) {
-					newContent = binding.CreateContentForUri (fileName);
+				if (binding.CanHandleFile (fileName)) {
+					newContent = binding.CreateContentForFile (fileName);
 				} else {
 					string mimeType = DesktopService.GetMimeTypeForUri (fileName);
-					if (!binding.CanCreateContentForMimeType (mimeType)) {
+					if (!binding.CanHandleMimeType (mimeType)) {
 						fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), null);
 						return;
 					}

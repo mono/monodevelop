@@ -16,7 +16,11 @@ namespace MonoDevelop.VersionControl
 	public abstract class BaseView : AbstractBaseViewContent, IViewContent
 	{
 		string name;
-		public BaseView(string name) { this.name = name; }
+		
+		public BaseView (string name)
+		{
+			this.name = name;
+		}
 		
 		protected virtual void SaveAs(string fileName) {
 		}
@@ -69,7 +73,7 @@ namespace MonoDevelop.VersionControl
 			set { }
 		}
 		
-		string IBaseViewContent.TabPageLabel {
+		public string TabPageLabel {
 			get { return name; }
 		}
 
@@ -87,6 +91,4 @@ namespace MonoDevelop.VersionControl
 		event EventHandler IViewContent.ContentNameChanged { add { } remove { } }
 		event EventHandler IViewContent.DirtyChanged { add { } remove { } }
 	}
-	
-
 }

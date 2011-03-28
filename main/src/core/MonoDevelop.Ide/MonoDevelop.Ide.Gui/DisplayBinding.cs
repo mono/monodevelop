@@ -29,22 +29,23 @@
 using System;
 using MonoDevelop.Ide.Codons;
 using System.IO;
+using MonoDevelop.Ide.Desktop;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public abstract class DisplayBinding: IDisplayBinding
+	public abstract class ViewDisplayBinding: IViewDisplayBinding
 	{
-		public virtual bool CanCreateContentForMimeType (string mimetype)
+		public virtual bool CanHandleMimeType (string mimetype)
 		{
 			return false;
 		}
 		
-		public virtual bool CanCreateContentForUri (string uri)
+		public virtual bool CanHandleFile (string filename)
 		{
 			return false;
 		}
 
-		public virtual IViewContent CreateContentForUri (string uri)
+		public virtual IViewContent CreateContentForFile (string filename)
 		{
 			throw new NotSupportedException ();
 		}
@@ -53,9 +54,34 @@ namespace MonoDevelop.Ide.Gui
 		{
 			throw new NotSupportedException ();
 		}
-
-		public abstract string Name {
-			get;
+		
+		public virtual bool CanUseAsDefault {
+			get { return true; }
+		}
+		
+		public abstract string Name { get; }
+	}
+	
+	public abstract class ExternalDisplayBinding : IExternalDisplayBinding
+	{
+		public virtual bool CanHandleMimeType (string mimetype)
+		{
+			return false;
+		}
+		
+		public virtual bool CanHandleFile (string filename)
+		{
+			return false;
+		}
+		
+		public DesktopApplication GetApplicationForMimeType (string mimeType)
+		{
+			throw new NotSupportedException ();
+		}
+		
+		public DesktopApplication GetApplicationForFile (string filename)
+		{
+			throw new NotSupportedException ();
 		}
 		
 		public virtual bool CanUseAsDefault {
@@ -63,10 +89,8 @@ namespace MonoDevelop.Ide.Gui
 		}
 	}
 	
-	//this is a dummy binding simply used as an anchor point in the extension chain
-	class DefaultDisplayBinding: DisplayBinding
+	//dummy binding, anchor point for extension tree
+	class DefaultDisplayBinding : ExternalDisplayBinding
 	{
-		public override string Name { get { return ""; } }
 	}
-
 }

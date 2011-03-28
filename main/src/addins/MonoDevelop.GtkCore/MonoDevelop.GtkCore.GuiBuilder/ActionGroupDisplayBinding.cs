@@ -41,7 +41,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class ActionGroupDisplayBinding : DisplayBinding
+	public class ActionGroupDisplayBinding : ViewDisplayBinding
 	{
 		bool excludeThis = false;
 		
@@ -49,7 +49,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			get { return "Action Group Editor"; }
 		}
 		
-		public override bool CanCreateContentForUri (string fileName)
+		public override bool CanHandleFile (string fileName)
 		{
 			if (excludeThis)
 				return false;
@@ -60,23 +60,24 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return false;
 			
 			excludeThis = true;
-			var db = DisplayBindingService.GetDefaultBindingForUri (fileName);
+			var db = DisplayBindingService.GetDefaultViewBinding (fileName, null);
 			excludeThis = false;
 			return db != null;
 		}
 		
-		public override IViewContent CreateContentForUri (string fileName)
+		public override IViewContent CreateContentForFile (string fileName)
 		{
 			excludeThis = true;
-			var db = DisplayBindingService.GetDefaultBindingForUri (fileName);
+			var db = DisplayBindingService.GetDefaultViewBinding (fileName, null);
 			
 			Project project = IdeApp.Workspace.GetProjectContainingFile (fileName);
 			GtkDesignInfo info = GtkDesignInfo.FromProject ((DotNetProject) project);
 			
-			ActionGroupView view = new ActionGroupView (db.CreateContentForUri (fileName), GetActionGroup (fileName), info.GuiBuilderProject);
+			ActionGroupView view = new ActionGroupView (db.CreateContentForFile (fileName), GetActionGroup (fileName), info.GuiBuilderProject);
 			excludeThis = false;
 			return view;
 		}
+		
 		Stetic.ActionGroupInfo GetActionGroup (string file)
 		{
 			Project project = IdeApp.Workspace.GetProjectContainingFile (file);

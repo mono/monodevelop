@@ -212,7 +212,7 @@ namespace MonoDevelop.Platform.Mac
 				button.Menu.AddItem (new NSMenuItem () { Title = GettextCatalog.GetString ("Solution Workbench") });
 				currentViewers.Add (null);
 			}
-			foreach (var vw in IdeApp.Workbench.GetFileViewers (filename)) {
+			foreach (var vw in DisplayBindingService.GetFileViewers (filename)) {
 				if (!vw.IsExternal) {
 					button.Menu.AddItem (new NSMenuItem () { Title = vw.Title });
 					currentViewers.Add (vw);

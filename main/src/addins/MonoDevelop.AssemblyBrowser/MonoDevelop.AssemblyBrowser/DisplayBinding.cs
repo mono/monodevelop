@@ -34,7 +34,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class AssemblyBrowserDisplayBinding : DisplayBinding
+	public class AssemblyBrowserDisplayBinding : ViewDisplayBinding
 	{
 		public override string Name {
 			get {
@@ -55,7 +55,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return viewContent;
 		}
 		
-		public override bool CanCreateContentForMimeType (string mimeType)
+		public override bool CanHandleMimeType (string mimeType)
 		{
 			return mimeType == "application/x-ms-dos-executable" || mimeType == "application/x-executable" || mimeType == "application/x-msdownload";
 		}

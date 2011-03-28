@@ -30,10 +30,9 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Codons
 {
-	public interface IAttachableDisplayBinding : IBaseDisplayBinding
+	public interface IAttachableDisplayBinding
 	{
 		bool CanAttachTo (IViewContent content);
-		
 		IAttachableViewContent CreateViewContent (IViewContent viewContent);
 	}
 }

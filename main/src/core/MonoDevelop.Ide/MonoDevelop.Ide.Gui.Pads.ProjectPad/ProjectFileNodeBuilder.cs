@@ -297,14 +297,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		internal static void PopulateOpenWithViewers (CommandArrayInfo info, string filePath)
 		{
-			var viewers = IdeApp.Workbench.GetFileViewers (filePath);
+			var viewers = DisplayBindingService.GetFileViewers (filePath).ToList ();
 			
 			//show the default viewer first
 			var def = viewers.FirstOrDefault (v => v.CanUseAsDefault) ?? viewers.FirstOrDefault (v => v.IsExternal);
 			if (def != null) {
 				CommandInfo ci = info.Add (def.Title, def);
 				ci.Description = GettextCatalog.GetString ("Open with '{0}'", def.Title);
-				if (viewers.Length > 1)
+				if (viewers.Count > 1)
 					info.AddSeparator ();
 			}
 			

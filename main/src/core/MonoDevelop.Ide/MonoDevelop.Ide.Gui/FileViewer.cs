@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide.Gui
 {
 	public class FileViewer
 	{
-		IDisplayBinding binding;
+		IViewDisplayBinding binding;
 		DesktopApplication app;
 		
 		internal FileViewer (DesktopApplication app)
@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.Gui
 			this.app = app;
 		}
 		
-		internal FileViewer (IDisplayBinding binding)
+		internal FileViewer (IViewDisplayBinding binding)
 		{
 			this.binding = binding;
 		}
